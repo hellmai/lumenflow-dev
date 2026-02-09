@@ -27,7 +27,11 @@ import fg from 'fast-glob';
 import { parse as parseYaml } from 'yaml';
 import { cleanupSignals } from '@lumenflow/memory/dist/signal-cleanup-core.js';
 import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
+import {
+  EXIT_CODES,
+  LUMENFLOW_PATHS,
+  PROTECTED_WU_STATUSES,
+} from '@lumenflow/core/dist/wu-constants.js';
 import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
 
 /**
@@ -44,11 +48,6 @@ const TOOL_NAME = 'signal:cleanup';
  * Bytes per KB for formatting
  */
 const BYTES_PER_KB = 1024;
-
-/**
- * Active WU statuses that should protect signals
- */
-const ACTIVE_WU_STATUSES = ['in_progress', 'blocked'];
 
 /**
  * CLI argument options specific to signal:cleanup
@@ -159,7 +158,7 @@ async function getActiveWuIds(baseDir: string): Promise<Set<string>> {
         const content = await fs.readFile(filePath, 'utf-8');
         const wu = parseYaml(content) as { id?: string; status?: string };
 
-        if (wu.id && wu.status && ACTIVE_WU_STATUSES.includes(wu.status)) {
+        if (wu.id && wu.status && PROTECTED_WU_STATUSES.includes(wu.status)) {
           activeIds.add(wu.id);
         }
       } catch {

@@ -83,6 +83,32 @@ export const WU_STATUS = {
 };
 
 /**
+ * WU-1540: Protected WU statuses for cleanup and signal protection.
+ *
+ * WUs in these statuses should NOT have their signals, memory, or state
+ * cleaned up. Both in_progress and blocked WUs need protection because
+ * blocked WUs will resume work after the blocker is resolved.
+ *
+ * Used by: wu-done-auto-cleanup.ts, signal-cleanup.ts, state-cleanup.ts
+ */
+export const PROTECTED_WU_STATUSES: readonly string[] = [
+  WU_STATUS.IN_PROGRESS,
+  WU_STATUS.BLOCKED,
+] as const;
+
+/**
+ * WU-1540: Progressable WU statuses for initiative advancement.
+ *
+ * Only WUs in these statuses indicate active work that should trigger
+ * initiative status progression (e.g., draft -> in_progress).
+ * Blocked WUs are explicitly excluded because a blocked WU does not
+ * represent forward progress on the initiative.
+ *
+ * Used by: initiative-validation.ts (shouldProgressInitiativeStatus)
+ */
+export const PROGRESSABLE_WU_STATUSES: readonly string[] = [WU_STATUS.IN_PROGRESS] as const;
+
+/**
  * WU status groups for state management (WU-1742)
  *
  * Used by state-bootstrap.ts to categorize YAML statuses.

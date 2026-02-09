@@ -11,6 +11,8 @@
  * - state:doctor (reports incomplete initiatives)
  */
 
+import { PROGRESSABLE_WU_STATUSES } from '@lumenflow/core/dist/wu-constants.js';
+
 /**
  * Result of initiative completeness validation
  */
@@ -67,9 +69,6 @@ interface WUDoc {
 
 /** Initiative statuses that can transition to in_progress */
 const PROGRESSABLE_STATUSES = ['draft', 'open'];
-
-/** WU statuses that indicate active work */
-const ACTIVE_WU_STATUSES = ['in_progress'];
 
 /**
  * Validates initiative completeness and returns warnings for missing fields.
@@ -183,7 +182,9 @@ export function shouldProgressInitiativeStatus(
   const initiativeWUs = wus.filter((wu) => wu.initiative === initiativeId);
 
   // Check if any WU is actively being worked on
-  const hasActiveWU = initiativeWUs.some((wu) => ACTIVE_WU_STATUSES.includes(wu.status || ''));
+  const hasActiveWU = initiativeWUs.some((wu) =>
+    PROGRESSABLE_WU_STATUSES.includes(wu.status || ''),
+  );
 
   if (hasActiveWU) {
     return {
