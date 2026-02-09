@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1538 — Refactor core exit handling to throw typed errors](wu/WU-1538.yaml) — Framework: Core Lifecycle
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml) — Framework: CLI WU Commands
 - [WU-1536 — Execute hard sweep for dist import boundaries](wu/WU-1536.yaml) — Framework: Core Lifecycle
 - [WU-1535 — Re-enable compiler and lint guardrails](wu/WU-1535.yaml) — Operations: Tooling
