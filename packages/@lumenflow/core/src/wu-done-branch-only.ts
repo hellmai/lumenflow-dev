@@ -44,7 +44,11 @@ import { emit } from './telemetry.js';
 // WU-1061: Import docs regeneration utilities
 import { maybeRegenerateAndStageDocs } from './wu-done-docs-generate.js';
 // WU-1492: Import PR creation utilities for branch-pr mode
-import { createPR, printPRCreatedMessage } from './wu-done-pr.js';
+import {
+  createPR,
+  printPRCreatedMessage,
+  WU_DONE_COMPLETION_MODES,
+} from './wu-done-pr.js';
 
 export const LANE_SIGNALS_NDJSON = path.join(LUMENFLOW_PATHS.TELEMETRY, 'lane-signals.ndjson');
 
@@ -93,7 +97,7 @@ export async function collectActualFilesForLaneBranch(laneBranch, gitAdapter = g
  * @param {string} params.wuId - WU ID
  * @param {string} [params.lane] - WU lane
  * @param {string|null} [params.laneBranch] - Lane branch
- * @param {'worktree'|'branch-only'|'branch-pr'} params.completionMode - Completion path mode
+ * @param {string} params.completionMode - Completion path mode
  * @param {object} [params.gitAdapter] - Optional git adapter (test injection)
  * @param {function} [params.emitFn] - Optional emit function (test injection)
  * @returns {Promise<void>}
@@ -306,7 +310,7 @@ export async function executeBranchOnlyCompletion(context) {
       wuId: id,
       lane: docForUpdate.lane,
       laneBranch,
-      completionMode: 'branch-only',
+      completionMode: WU_DONE_COMPLETION_MODES.BRANCH_ONLY,
       gitAdapter,
     });
 
@@ -458,7 +462,7 @@ export async function executeBranchPRCompletion(context) {
     wuId: id,
     lane: docMain.lane,
     laneBranch,
-    completionMode: 'branch-pr',
+    completionMode: WU_DONE_COMPLETION_MODES.BRANCH_PR,
     gitAdapter,
   });
 
