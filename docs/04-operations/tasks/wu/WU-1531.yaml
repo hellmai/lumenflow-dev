@@ -2,7 +2,7 @@ id: WU-1531
 title: Reduce code_paths false positives in parity + prep
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -52,3 +52,5 @@ session_id: 89fda63c-77df-4a41-89e8-451f37dc3b2e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T10:28:38.352Z
+locked: true
+completed_at: 2026-02-09T10:40:07.999Z
