@@ -18,8 +18,8 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import * as yaml from 'yaml';
-import { clearConfigCache, getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
-import { WU_PATHS, createWuPaths } from '@lumenflow/core/dist/wu-paths.js';
+import { clearConfigCache, getConfig } from '@lumenflow/core/config';
+import { WU_PATHS, createWuPaths } from '@lumenflow/core/wu-paths';
 
 /** Config file name constant */
 const CONFIG_FILE = '.lumenflow.config.yaml';
@@ -88,7 +88,7 @@ describe('WU-1311: CLI path centralization', () => {
 
       // getResolvedPaths returns paths even if they don't exist
       // state-doctor should check existence and warn
-      const { getResolvedPaths } = await import('@lumenflow/core/dist/lumenflow-config.js');
+      const { getResolvedPaths } = await import('@lumenflow/core/config');
       const paths = getResolvedPaths({ projectRoot: tempDir });
 
       expect(paths.wuDir).toBe(path.join(tempDir, 'nonexistent/wu'));

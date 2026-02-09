@@ -20,9 +20,9 @@ import {
   type BottleneckAnalysis,
   type DependencyGraph,
 } from '@lumenflow/metrics';
-import { buildDependencyGraphAsync, renderMermaid } from '@lumenflow/core/dist/dependency-graph.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
+import { buildDependencyGraphAsync, renderMermaid } from '@lumenflow/core/dependency-graph';
+import { die } from '@lumenflow/core/error-handler';
+import { getConfig } from '@lumenflow/core/config';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */

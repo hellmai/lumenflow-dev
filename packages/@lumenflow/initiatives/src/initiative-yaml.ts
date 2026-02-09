@@ -1,12 +1,12 @@
 import { existsSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
-import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { createError, ErrorCodes } from '@lumenflow/core/dist/error-handler.js';
+import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { validateInitiative } from './initiative-schema.js';
 import { INIT_PATHS } from './initiative-paths.js';
 import { INIT_PATTERNS } from './initiative-constants.js';
-import { readWU } from '@lumenflow/core/dist/wu-yaml.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { readWU } from '@lumenflow/core/wu-yaml';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
 // FILE_SYSTEM removed - not used in this module
 
 /**

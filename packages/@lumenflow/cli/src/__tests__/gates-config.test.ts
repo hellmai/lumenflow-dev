@@ -18,14 +18,14 @@ import {
   TestRunnerSchema,
   GatesCommandsConfigSchema,
   parseConfig,
-} from '@lumenflow/core/dist/lumenflow-config-schema.js';
+} from '@lumenflow/core/config-schema';
 import {
   resolvePackageManager,
   resolveBuildCommand,
   resolveGatesCommands,
   resolveTestRunner,
   getIgnorePatterns,
-} from '@lumenflow/core/dist/gates-config.js';
+} from '@lumenflow/core/gates-config';
 
 describe('WU-1356: Package manager and script configuration', () => {
   let tempDir: string;
@@ -299,7 +299,7 @@ describe('WU-1467: Stubbed gates eliminated from enforced gate flows', () => {
   it('GATE_NAMES does not include prompts:lint as an authoritative gate', () => {
     // prompts:lint was a stub -- it should not be listed as a gate name
     // that implies authoritative enforcement
-    const { GATE_NAMES } = require('@lumenflow/core/dist/wu-constants.js');
+    const { GATE_NAMES } = require('@lumenflow/core/wu-constants');
     // The PROMPTS_LINT key should NOT exist in GATE_NAMES
     // since it was removed from enforced gate flows
     expect(GATE_NAMES.PROMPTS_LINT).toBeUndefined();
@@ -307,23 +307,23 @@ describe('WU-1467: Stubbed gates eliminated from enforced gate flows', () => {
 
   it('SCRIPTS.PROMPTS_LINT is retained for script surface', () => {
     // The script name constant should still exist for the root package.json script
-    const { SCRIPTS } = require('@lumenflow/core/dist/wu-constants.js');
+    const { SCRIPTS } = require('@lumenflow/core/wu-constants');
     expect(SCRIPTS.PROMPTS_LINT).toBe('prompts:lint');
   });
 
   it('SCRIPTS.COS_GATES is retained for script surface', () => {
-    const { SCRIPTS } = require('@lumenflow/core/dist/wu-constants.js');
+    const { SCRIPTS } = require('@lumenflow/core/wu-constants');
     expect(SCRIPTS.COS_GATES).toBe('cos:gates');
   });
 
   it('TELEMETRY_STEPS does not include cos-gates', () => {
     // cos:gates was a stub -- it should not appear in telemetry steps
-    const { TELEMETRY_STEPS } = require('@lumenflow/core/dist/wu-constants.js');
+    const { TELEMETRY_STEPS } = require('@lumenflow/core/wu-constants');
     expect(TELEMETRY_STEPS.COS_GATES).toBeUndefined();
   });
 
   it('SCRIPTS.TASKS_VALIDATE points to wu:validate --all for consistency', () => {
-    const { SCRIPTS } = require('@lumenflow/core/dist/wu-constants.js');
+    const { SCRIPTS } = require('@lumenflow/core/wu-constants');
     // tasks:validate should now route to the real wu:validate command
     expect(SCRIPTS.TASKS_VALIDATE).toBe('tasks:validate');
   });

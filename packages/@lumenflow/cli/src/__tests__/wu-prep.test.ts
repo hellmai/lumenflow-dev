@@ -1,15 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import * as locationResolver from '@lumenflow/core/dist/context/location-resolver.js';
-import * as errorHandler from '@lumenflow/core/dist/error-handler.js';
-import * as wuYaml from '@lumenflow/core/dist/wu-yaml.js';
-import { CONTEXT_VALIDATION, WU_STATUS, CLAIMED_MODES } from '@lumenflow/core/dist/wu-constants.js';
+import * as locationResolver from '@lumenflow/core/context/location-resolver';
+import * as errorHandler from '@lumenflow/core/error-handler';
+import * as wuYaml from '@lumenflow/core/wu-yaml';
+import { CONTEXT_VALIDATION, WU_STATUS, CLAIMED_MODES } from '@lumenflow/core/wu-constants';
 
 const { LOCATION_TYPES } = CONTEXT_VALIDATION;
 
 // Mock dependencies
-vi.mock('@lumenflow/core/dist/context/location-resolver.js');
-vi.mock('@lumenflow/core/dist/error-handler.js');
-vi.mock('@lumenflow/core/dist/wu-yaml.js');
+vi.mock('@lumenflow/core/context/location-resolver');
+vi.mock('@lumenflow/core/error-handler');
+vi.mock('@lumenflow/core/wu-yaml');
 vi.mock('../gates.js', () => ({
   runGates: vi.fn().mockResolvedValue(true),
 }));
@@ -32,7 +32,7 @@ describe('wu-prep (WU-1223)', () => {
       });
 
       // Import after mocks are set up
-      const { resolveLocation } = await import('@lumenflow/core/dist/context/location-resolver.js');
+      const { resolveLocation } = await import('@lumenflow/core/context/location-resolver');
       const location = await resolveLocation();
 
       // Verify the mock returns main
@@ -50,7 +50,7 @@ describe('wu-prep (WU-1223)', () => {
         worktreeWuId: 'WU-1223',
       });
 
-      const { resolveLocation } = await import('@lumenflow/core/dist/context/location-resolver.js');
+      const { resolveLocation } = await import('@lumenflow/core/context/location-resolver');
       const location = await resolveLocation();
 
       // Verify the mock returns worktree
@@ -70,7 +70,7 @@ describe('wu-prep (WU-1223)', () => {
 
       vi.mocked(wuYaml.readWU).mockReturnValue(mockDoc as ReturnType<typeof wuYaml.readWU>);
 
-      const { readWU } = await import('@lumenflow/core/dist/wu-yaml.js');
+      const { readWU } = await import('@lumenflow/core/wu-yaml');
       const doc = readWU('path/to/wu.yaml', 'WU-1223');
 
       expect(doc.status).toBe(WU_STATUS.DONE);
@@ -112,7 +112,7 @@ describe('wu:done worktree check (WU-1223)', () => {
       worktreeWuId: 'WU-1223',
     });
 
-    const { resolveLocation } = await import('@lumenflow/core/dist/context/location-resolver.js');
+    const { resolveLocation } = await import('@lumenflow/core/context/location-resolver');
     const location = await resolveLocation();
 
     // The error message should guide user to wu:prep workflow

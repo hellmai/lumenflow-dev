@@ -16,7 +16,7 @@
  */
 
 import { execFileSync } from 'node:child_process';
-import { STDIO_MODES, EXIT_CODES, PKG_MANAGER } from '@lumenflow/core/dist/wu-constants.js';
+import { STDIO_MODES, EXIT_CODES, PKG_MANAGER } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 import {
   parseDepsRemoveArgs,

@@ -15,18 +15,18 @@ import { tmpdir } from 'node:os';
 // Mock modules before importing
 const mockWithMicroWorktree = vi.fn();
 
-vi.mock('@lumenflow/core/dist/micro-worktree.js', () => ({
+vi.mock('@lumenflow/core/micro-worktree', () => ({
   withMicroWorktree: mockWithMicroWorktree,
 }));
 
-vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
+vi.mock('@lumenflow/core/git-adapter', () => ({
   getGitForCwd: vi.fn(() => ({
     branch: vi.fn().mockResolvedValue({ current: 'main' }),
     status: vi.fn().mockResolvedValue({ isClean: () => true }),
   })),
 }));
 
-vi.mock('@lumenflow/core/dist/wu-helpers.js', () => ({
+vi.mock('@lumenflow/core/wu-helpers', () => ({
   ensureOnMain: vi.fn().mockResolvedValue(undefined),
 }));
 

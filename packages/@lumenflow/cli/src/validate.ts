@@ -25,9 +25,9 @@ import {
   validateAllWUs,
   type ValidationResult,
   type ValidationSummary,
-} from '@lumenflow/core/dist/validators/wu-tasks.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { EMOJI, PATTERNS } from '@lumenflow/core/dist/wu-constants.js';
+} from '@lumenflow/core/validators/wu-tasks';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { EMOJI, PATTERNS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 const LOG_PREFIX = '[validate]';

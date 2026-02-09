@@ -15,8 +15,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { WU_OPTIONS, NEGATED_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { validateWUCompleteness } from '@lumenflow/core/dist/wu-schema.js';
+import { WU_OPTIONS, NEGATED_OPTIONS } from '@lumenflow/core/arg-parser';
+import { validateWUCompleteness } from '@lumenflow/core/wu-schema';
 
 describe('wu:validate strict validation (WU-1329)', () => {
   describe('WU_OPTIONS.noStrict configuration', () => {

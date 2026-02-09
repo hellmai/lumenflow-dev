@@ -20,12 +20,12 @@ vi.mock('@lumenflow/core', () => ({
 }));
 
 // Mock the worktree-guard module
-vi.mock('@lumenflow/core/dist/core/worktree-guard.js', () => ({
+vi.mock('@lumenflow/core/core/worktree-guard', () => ({
   isInWorktree: vi.fn(),
 }));
 
 import { getGitForCwd, createGitForPath } from '@lumenflow/core';
-import { isInWorktree } from '@lumenflow/core/dist/core/worktree-guard.js';
+import { isInWorktree } from '@lumenflow/core/core/worktree-guard';
 
 describe('guard-main-branch (WU-1130)', () => {
   beforeEach(() => {

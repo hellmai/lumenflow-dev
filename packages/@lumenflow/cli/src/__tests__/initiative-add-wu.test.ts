@@ -10,8 +10,8 @@ import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vite
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { parseYAML, stringifyYAML, readWU } from '@lumenflow/core/dist/wu-yaml.js';
-import { readInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
+import { parseYAML, stringifyYAML, readWU } from '@lumenflow/core/wu-yaml';
+import { readInitiative } from '@lumenflow/initiatives/yaml';
 
 // Test constants to avoid lint warnings about duplicate strings
 const TEST_WU_ID = 'WU-123';
@@ -66,16 +66,16 @@ const mockGit = {
   status: vi.fn().mockResolvedValue({ isClean: () => true }),
 };
 
-vi.mock('@lumenflow/core/dist/git-adapter.js', () => ({
+vi.mock('@lumenflow/core/git-adapter', () => ({
   getGitForCwd: vi.fn(() => mockGit),
 }));
 
-vi.mock('@lumenflow/core/dist/wu-helpers.js', () => ({
+vi.mock('@lumenflow/core/wu-helpers', () => ({
   ensureOnMain: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock('@lumenflow/core/dist/micro-worktree.js', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@lumenflow/core/dist/micro-worktree.js')>();
+vi.mock('@lumenflow/core/micro-worktree', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@lumenflow/core/micro-worktree')>();
   return {
     ...actual,
     withMicroWorktree: vi.fn(async ({ execute }) => {

@@ -30,8 +30,8 @@ import {
   type InitiativeDoc,
   type WUEntry,
 } from '@lumenflow/initiatives';
-import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
+import { EXIT_CODES } from '@lumenflow/core/wu-constants';
+import { getConfig } from '@lumenflow/core/config';
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);

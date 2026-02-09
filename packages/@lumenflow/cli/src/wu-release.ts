@@ -19,13 +19,13 @@
 
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { generateBacklog, generateStatus } from '@lumenflow/core/dist/backlog-generator.js';
-import { todayISO } from '@lumenflow/core/dist/date-utils.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { readWU, writeWU, appendNote } from '@lumenflow/core/dist/wu-yaml.js';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
+import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generator';
+import { todayISO } from '@lumenflow/core/date-utils';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { readWU, writeWU, appendNote } from '@lumenflow/core/wu-yaml';
 import {
   REMOTES,
   BRANCHES,
@@ -35,11 +35,11 @@ import {
   FILE_SYSTEM,
   EXIT_CODES,
   MICRO_WORKTREE_OPERATIONS,
-} from '@lumenflow/core/dist/wu-constants.js';
-import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import { WUStateStore } from '@lumenflow/core/dist/wu-state-store.js';
-import { releaseLaneLock } from '@lumenflow/core/dist/lane-lock.js';
+} from '@lumenflow/core/wu-constants';
+import { ensureOnMain } from '@lumenflow/core/wu-helpers';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { WUStateStore } from '@lumenflow/core/wu-state-store';
+import { releaseLaneLock } from '@lumenflow/core/lane-lock';
 import { runCLI } from './cli-entry-point.js';
 
 const PREFIX = '[wu-release]';

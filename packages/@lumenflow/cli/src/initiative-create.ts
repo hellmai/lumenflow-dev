@@ -27,25 +27,25 @@
  * Context: WU-1247 (original implementation), WU-1439 (micro-worktree migration)
  */
 
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { INIT_PATHS } from '@lumenflow/initiatives/dist/initiative-paths.js';
+import { stringifyYAML } from '@lumenflow/core/wu-yaml';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { INIT_PATHS } from '@lumenflow/initiatives/paths';
 import {
   INIT_PATTERNS,
   INIT_COMMIT_FORMATS,
   INIT_DEFAULTS,
-} from '@lumenflow/initiatives/dist/initiative-constants.js';
+} from '@lumenflow/initiatives/constants';
 // WU-1211: Import initiative validation for completeness warnings
-import { validateInitiativeCompleteness } from '@lumenflow/initiatives/dist/initiative-validation.js';
-import { FILE_SYSTEM } from '@lumenflow/core/dist/wu-constants.js';
-import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+import { validateInitiativeCompleteness } from '@lumenflow/initiatives/initiative-validation';
+import { FILE_SYSTEM } from '@lumenflow/core/wu-constants';
+import { ensureOnMain } from '@lumenflow/core/wu-helpers';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 // WU-1428: Use date-utils for consistent YYYY-MM-DD format (library-first)
-import { todayISO } from '@lumenflow/core/dist/date-utils.js';
+import { todayISO } from '@lumenflow/core/date-utils';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[initiative:create]';

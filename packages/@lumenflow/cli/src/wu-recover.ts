@@ -17,15 +17,12 @@
  */
 
 import { existsSync, rmSync, writeFileSync } from 'node:fs';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { computeContext } from '@lumenflow/core/dist/context/index.js';
-import {
-  analyzeRecovery,
-  type RecoveryAnalysis,
-} from '@lumenflow/core/dist/recovery/recovery-analyzer.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { readWU, writeWU } from '@lumenflow/core/dist/wu-yaml.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { computeContext } from '@lumenflow/core/context/index';
+import { analyzeRecovery, type RecoveryAnalysis } from '@lumenflow/core/recovery/recovery-analyzer';
+import { die } from '@lumenflow/core/error-handler';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { readWU, writeWU } from '@lumenflow/core/wu-yaml';
 import {
   CONTEXT_VALIDATION,
   EMOJI,
@@ -33,12 +30,12 @@ import {
   DEFAULTS,
   toKebab,
   FILE_SYSTEM,
-} from '@lumenflow/core/dist/wu-constants.js';
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import { WUStateStore } from '@lumenflow/core/dist/wu-state-store.js';
-import { generateBacklog, generateStatus } from '@lumenflow/core/dist/backlog-generator.js';
-import { releaseLaneLock } from '@lumenflow/core/dist/lane-lock.js';
+} from '@lumenflow/core/wu-constants';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { WUStateStore } from '@lumenflow/core/wu-state-store';
+import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generator';
+import { releaseLaneLock } from '@lumenflow/core/lane-lock';
 import { join, relative } from 'node:path';
 
 const { RECOVERY_ACTIONS } = CONTEXT_VALIDATION;

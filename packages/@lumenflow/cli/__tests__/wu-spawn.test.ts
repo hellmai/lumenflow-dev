@@ -7,8 +7,8 @@ import {
   TRUNCATION_WARNING_BANNER,
   SPAWN_END_SENTINEL,
 } from '../dist/wu-spawn.js';
-import { GenericStrategy } from '@lumenflow/core/dist/spawn-strategy.js';
-import { LumenFlowConfigSchema } from '@lumenflow/core/dist/lumenflow-config-schema.js';
+import { GenericStrategy } from '@lumenflow/core/spawn-strategy';
+import { LumenFlowConfigSchema } from '@lumenflow/core/config-schema';
 
 describe('wu-spawn truncation prevention (WU-1131)', () => {
   const mockDoc = {

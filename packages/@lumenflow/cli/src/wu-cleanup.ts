@@ -17,16 +17,16 @@
  */
 
 import { execSync } from 'node:child_process';
-import { createGitForPath, getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
+import { createGitForPath, getGitForCwd } from '@lumenflow/core/git-adapter';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { cleanupWorktreeBuildArtifacts } from '@lumenflow/core/dist/rebase-artifact-cleanup.js';
-import { detectCurrentWorktree } from '@lumenflow/core/dist/wu-done-validators.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { readWU } from '@lumenflow/core/dist/wu-yaml.js';
-import { isGhCliAvailable } from '@lumenflow/core/dist/wu-done-pr.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { die } from '@lumenflow/core/error-handler';
+import { cleanupWorktreeBuildArtifacts } from '@lumenflow/core/rebase-artifact-cleanup';
+import { detectCurrentWorktree } from '@lumenflow/core/wu-done-validators';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { readWU } from '@lumenflow/core/wu-yaml';
+import { isGhCliAvailable } from '@lumenflow/core/wu-done-pr';
 import {
   BOX,
   BRANCHES,
@@ -37,9 +37,9 @@ import {
   REMOTES,
   STRING_LITERALS,
   WU_STATUS,
-} from '@lumenflow/core/dist/wu-constants.js';
+} from '@lumenflow/core/wu-constants';
 // WU-2278: Import ownership validation for cross-agent protection
-import { validateWorktreeOwnership } from '@lumenflow/core/dist/worktree-ownership.js';
+import { validateWorktreeOwnership } from '@lumenflow/core/worktree-ownership';
 
 const CLEANUP_OPTIONS = {
   artifacts: {

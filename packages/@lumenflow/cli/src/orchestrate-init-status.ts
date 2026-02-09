@@ -21,8 +21,8 @@ import {
   type LaneAvailabilityResult,
   type LaneConfig,
 } from '@lumenflow/initiatives';
-import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { getConfig } from '@lumenflow/core/config';
 import chalk from 'chalk';
 
 const LOG_PREFIX = '[orchestrate:init-status]';

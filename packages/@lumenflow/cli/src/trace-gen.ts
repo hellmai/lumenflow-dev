@@ -19,8 +19,8 @@ import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { parse as parseYaml } from 'yaml';
-import { EXIT_CODES, FILE_SYSTEM } from '@lumenflow/core/dist/wu-constants.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { EXIT_CODES, FILE_SYSTEM } from '@lumenflow/core/wu-constants';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */

@@ -9,16 +9,16 @@
  *   pnpm initiative:status --id INIT-001 --format json
  */
 
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { die } from '@lumenflow/core/error-handler';
 import {
   findInitiative,
   getInitiativeProgress,
   getInitiativeWUs,
   getInitiativePhases,
-} from '@lumenflow/initiatives/dist/initiative-yaml.js';
-import { OUTPUT_FORMATS } from '@lumenflow/initiatives/dist/initiative-constants.js';
-import { WU_STATUS } from '@lumenflow/core/dist/wu-constants.js';
+} from '@lumenflow/initiatives/yaml';
+import { OUTPUT_FORMATS } from '@lumenflow/initiatives/constants';
+import { WU_STATUS } from '@lumenflow/core/wu-constants';
 
 function getWUBlockers(doc) {
   return doc.blocked_by || doc.dependencies || [];

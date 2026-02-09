@@ -32,12 +32,12 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { cleanupMemory } from '@lumenflow/memory/dist/mem-cleanup-core.js';
+import { cleanupMemory } from '@lumenflow/memory/cleanup';
 // WU-1474: Import decay archival for manual --decay mode
-import { archiveByDecay } from '@lumenflow/memory/dist/decay/archival.js';
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
-import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
+import { archiveByDecay } from '@lumenflow/memory/decay/archival';
+import { getConfig } from '@lumenflow/core/config';
+import { createWUParser } from '@lumenflow/core/arg-parser';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 /**

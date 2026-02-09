@@ -17,11 +17,11 @@
 
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
-import { parseYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { inferSubLane } from '@lumenflow/core/dist/lane-inference.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { FILE_SYSTEM, EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
+import { parseYAML } from '@lumenflow/core/wu-yaml';
+import { inferSubLane } from '@lumenflow/core/lane-inference';
+import { die } from '@lumenflow/core/error-handler';
+import { FILE_SYSTEM, EXIT_CODES } from '@lumenflow/core/wu-constants';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
 
 function parseArgs(argv) {
   const args = { paths: [], desc: '', id: null };

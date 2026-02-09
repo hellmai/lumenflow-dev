@@ -16,19 +16,15 @@
 
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import {
-  readWUYaml,
-  validateBranchName,
-  extractWUFromBranch,
-} from '@lumenflow/core/dist/wu-helpers.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
+import { readWUYaml, validateBranchName, extractWUFromBranch } from '@lumenflow/core/wu-helpers';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { die } from '@lumenflow/core/error-handler';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import {
   detectOrphanWorktrees,
   detectMissingTrackedWorktrees,
   removeOrphanDirectory,
-} from '@lumenflow/core/dist/orphan-detector.js';
+} from '@lumenflow/core/orphan-detector';
 import {
   BRANCHES,
   WU_STATUS,
@@ -38,7 +34,7 @@ import {
   EMOJI,
   LOG_PREFIX,
   WORKTREE_WARNINGS,
-} from '@lumenflow/core/dist/wu-constants.js';
+} from '@lumenflow/core/wu-constants';
 
 interface PruneArgs {
   dryRun: boolean;

@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
+import { getConfig } from '@lumenflow/core/config';
 
 /**
  * Centralized path constants for Initiative management scripts.

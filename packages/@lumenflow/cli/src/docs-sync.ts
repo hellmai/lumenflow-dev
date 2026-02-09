@@ -11,7 +11,7 @@ import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core';
 // WU-1362: Import worktree guard utilities for branch checking
-import { isMainBranch, isInWorktree } from '@lumenflow/core/dist/core/worktree-guard.js';
+import { isMainBranch, isInWorktree } from '@lumenflow/core/core/worktree-guard';
 
 export type VendorType = 'claude' | 'cursor' | 'aider' | 'all' | 'none';
 

@@ -19,8 +19,8 @@ import fg from 'fast-glob';
 import { minimatch } from 'minimatch';
 import { parse as parseYAML } from 'yaml';
 import chalk from 'chalk';
-import { createWUParser } from '@lumenflow/core/dist/arg-parser.js';
-import { findProjectRoot } from '@lumenflow/core/dist/lumenflow-config.js';
+import { createWUParser } from '@lumenflow/core/arg-parser';
+import { findProjectRoot } from '@lumenflow/core/config';
 import { runCLI } from './cli-entry-point.js';
 
 /** Constants */

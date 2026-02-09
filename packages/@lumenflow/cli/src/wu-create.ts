@@ -28,66 +28,55 @@
  *          WU-1439 (refactor to shared helper)
  */
 
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 // WU-1352: Use centralized YAML functions from wu-yaml.ts
-import { stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
+import { stringifyYAML } from '@lumenflow/core/wu-yaml';
 // WU-1428: Use date-utils for consistent YYYY-MM-DD format (library-first)
-import { todayISO } from '@lumenflow/core/dist/date-utils.js';
-import { validateLaneFormat, extractParent } from '@lumenflow/core/dist/lane-checker.js';
+import { todayISO } from '@lumenflow/core/date-utils';
+import { validateLaneFormat, extractParent } from '@lumenflow/core/lane-checker';
 // WU-2330: Import lane inference for sub-lane suggestions
-import { inferSubLane } from '@lumenflow/core/dist/lane-inference.js';
-import { parseBacklogFrontmatter } from '@lumenflow/core/dist/backlog-parser.js';
-import { createWUParser, WU_CREATE_OPTIONS, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { getConfig } from '@lumenflow/core/dist/lumenflow-config.js';
-import { validateWU } from '@lumenflow/core/dist/wu-schema.js';
-import {
-  getPlanPath,
-  getPlanProtocolRef,
-  getPlansDir,
-} from '@lumenflow/core/dist/lumenflow-home.js';
-import { hasSpecRefs, validateSpecRefs } from '@lumenflow/core/dist/wu-create-validators.js';
+import { inferSubLane } from '@lumenflow/core/lane-inference';
+import { parseBacklogFrontmatter } from '@lumenflow/core/backlog-parser';
+import { createWUParser, WU_CREATE_OPTIONS, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { getConfig } from '@lumenflow/core/config';
+import { validateWU } from '@lumenflow/core/wu-schema';
+import { getPlanPath, getPlanProtocolRef, getPlansDir } from '@lumenflow/core/lumenflow-home';
+import { hasSpecRefs, validateSpecRefs } from '@lumenflow/core/wu-create-validators';
 import {
   COMMIT_FORMATS,
   FILE_SYSTEM,
   READINESS_UI,
   STRING_LITERALS,
   WU_TYPES,
-} from '@lumenflow/core/dist/wu-constants.js';
+} from '@lumenflow/core/wu-constants';
 // WU-1593: Use centralized validateWUIDFormat (DRY)
-import { ensureOnMain, validateWUIDFormat } from '@lumenflow/core/dist/wu-helpers.js';
+import { ensureOnMain, validateWUIDFormat } from '@lumenflow/core/wu-helpers';
 // WU-1439: Use shared micro-worktree helper
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 // WU-1246: Auto-generate WU IDs when --id not provided
-import { generateWuIdWithRetry } from '@lumenflow/core/dist/wu-id-generator.js';
+import { generateWuIdWithRetry } from '@lumenflow/core/wu-id-generator';
 // WU-1620: Import spec completeness validator for readiness summary
-import { validateSpecCompleteness } from '@lumenflow/core/dist/wu-done-validators.js';
+import { validateSpecCompleteness } from '@lumenflow/core/wu-done-validators';
 // WU-1620: Import readWU to read back created YAML for validation
-import { readWU } from '@lumenflow/core/dist/wu-yaml.js';
+import { readWU } from '@lumenflow/core/wu-yaml';
 // WU-2253: Import WU spec linter for acceptance/code_paths validation
-import { lintWUSpec, formatLintErrors } from '@lumenflow/core/dist/wu-lint.js';
+import { lintWUSpec, formatLintErrors } from '@lumenflow/core/wu-lint';
 // WU-1329: Import path existence validators for strict mode
 import {
   validateCodePathsExistence,
   validateTestPathsExistence,
-} from '@lumenflow/core/dist/wu-preflight-validators.js';
+} from '@lumenflow/core/wu-preflight-validators';
 // WU-1025: Import placeholder validator for inline content validation
-import {
-  validateNoPlaceholders,
-  buildPlaceholderErrorMessage,
-} from '@lumenflow/core/dist/wu-validator.js';
-import { isCodeFile } from '@lumenflow/core/dist/manual-test-validator.js';
-import { WU_CREATE_DEFAULTS } from '@lumenflow/core/dist/wu-create-defaults.js';
-import {
-  isDocsOrProcessType,
-  hasAnyTests,
-  hasManualTests,
-} from '@lumenflow/core/dist/wu-type-helpers.js';
+import { validateNoPlaceholders, buildPlaceholderErrorMessage } from '@lumenflow/core/wu-validator';
+import { isCodeFile } from '@lumenflow/core/manual-test-validator';
+import { WU_CREATE_DEFAULTS } from '@lumenflow/core/wu-create-defaults';
+import { isDocsOrProcessType, hasAnyTests, hasManualTests } from '@lumenflow/core/wu-type-helpers';
 // WU-1211: Import initiative validation for phase check
-import { checkInitiativePhases, findInitiative } from '@lumenflow/initiatives/dist/index.js';
+import { checkInitiativePhases, findInitiative } from '@lumenflow/initiatives';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[wu:create]';

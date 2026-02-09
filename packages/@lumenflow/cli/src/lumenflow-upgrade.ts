@@ -29,9 +29,9 @@ import {
   PKG_FLAGS,
   DEFAULTS,
   BRANCHES,
-} from '@lumenflow/core/dist/wu-constants.js';
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
+} from '@lumenflow/core/wu-constants';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */

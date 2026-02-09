@@ -26,7 +26,7 @@
  * }
  * ```
  */
-import { EXIT_CODES } from '@lumenflow/core/dist/wu-constants.js';
+import { EXIT_CODES } from '@lumenflow/core/wu-constants';
 import { initColorSupport, StreamErrorHandler } from '@lumenflow/core';
 
 /**

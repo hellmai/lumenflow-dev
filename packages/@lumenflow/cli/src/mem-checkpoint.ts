@@ -16,9 +16,9 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { createCheckpoint } from '@lumenflow/memory/dist/mem-checkpoint-core.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
+import { createCheckpoint } from '@lumenflow/memory/checkpoint';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 /**

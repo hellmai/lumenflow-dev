@@ -19,11 +19,11 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import fg from 'fast-glob';
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { createWuPaths } from '@lumenflow/core/dist/wu-paths.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { die } from '@lumenflow/core/error-handler';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { createWuPaths } from '@lumenflow/core/wu-paths';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */

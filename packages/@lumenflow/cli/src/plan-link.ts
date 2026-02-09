@@ -20,17 +20,17 @@
  * Context: WU-1313 (INIT-013 Plan Tooling)
  */
 
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
-import { withMicroWorktree } from '@lumenflow/core/dist/micro-worktree.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { INIT_PATHS } from '@lumenflow/initiatives/dist/initiative-paths.js';
-import { parseYAML, stringifyYAML } from '@lumenflow/core/dist/wu-yaml.js';
-import { LOG_PREFIX as CORE_LOG_PREFIX } from '@lumenflow/core/dist/wu-constants.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { ensureOnMain } from '@lumenflow/core/wu-helpers';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { INIT_PATHS } from '@lumenflow/initiatives/paths';
+import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
+import { LOG_PREFIX as CORE_LOG_PREFIX } from '@lumenflow/core/wu-constants';
 
 /** Log prefix for console output */
 export const LOG_PREFIX = CORE_LOG_PREFIX.PLAN_LINK ?? '[plan:link]';

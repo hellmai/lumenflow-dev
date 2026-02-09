@@ -26,9 +26,9 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { generateRecoveryContext } from '@lumenflow/memory/dist/mem-recover-core.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/dist/wu-constants.js';
+import { generateRecoveryContext } from '@lumenflow/memory/mem-recover-core';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 /**

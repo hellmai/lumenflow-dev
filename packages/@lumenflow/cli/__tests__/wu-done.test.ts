@@ -19,10 +19,10 @@ import {
   computeBranchOnlyFallback,
   checkPostMergeDirtyState,
 } from '../dist/wu-done.js';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 
 // Mock die function for WU-1153 tests
-vi.mock('@lumenflow/core/dist/error-handler.js', () => ({
+vi.mock('@lumenflow/core/error-handler', () => ({
   die: vi.fn(),
 }));
 
@@ -353,7 +353,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
 
       // Import the function we're testing
       const { validateCodePathsCommittedBeforeDone } =
-        await import('@lumenflow/core/dist/wu-done-validation.js');
+        await import('@lumenflow/core/wu-done-validation');
 
       const result = await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter);
       expect(result.valid).toBe(true);
@@ -372,7 +372,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       };
 
       const { validateCodePathsCommittedBeforeDone } =
-        await import('@lumenflow/core/dist/wu-done-validation.js');
+        await import('@lumenflow/core/wu-done-validation');
 
       const result = await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter);
       expect(result.valid).toBe(true);
@@ -391,7 +391,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       };
 
       const { validateCodePathsCommittedBeforeDone } =
-        await import('@lumenflow/core/dist/wu-done-validation.js');
+        await import('@lumenflow/core/wu-done-validation');
 
       const result = await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter);
       expect(result.valid).toBe(true);
@@ -414,7 +414,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       };
 
       const { validateCodePathsCommittedBeforeDone } =
-        await import('@lumenflow/core/dist/wu-done-validation.js');
+        await import('@lumenflow/core/wu-done-validation');
 
       const result = await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter);
       expect(result.valid).toBe(false);
@@ -438,7 +438,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       };
 
       const { validateCodePathsCommittedBeforeDone } =
-        await import('@lumenflow/core/dist/wu-done-validation.js');
+        await import('@lumenflow/core/wu-done-validation');
 
       const result = await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter);
       expect(result.valid).toBe(false);
@@ -457,7 +457,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       const uncommittedPaths = [WU_DONE_FILE, NEW_FILE];
 
       const { buildCodePathsCommittedErrorMessage } =
-        await import('@lumenflow/core/dist/wu-done-validation.js');
+        await import('@lumenflow/core/wu-done-validation');
       const message = buildCodePathsCommittedErrorMessage(id, uncommittedPaths);
 
       expect(message).toContain(TEST_WU_ID_1153);
@@ -473,7 +473,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       const uncommittedPaths = [WU_DONE_FILE];
 
       const { buildCodePathsCommittedErrorMessage } =
-        await import('@lumenflow/core/dist/wu-done-validation.js');
+        await import('@lumenflow/core/wu-done-validation');
       const message = buildCodePathsCommittedErrorMessage(id, uncommittedPaths);
 
       expect(message).toContain('1 code_path for WU-1153 are not committed');
@@ -489,7 +489,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       ];
 
       const { buildCodePathsCommittedErrorMessage } =
-        await import('@lumenflow/core/dist/wu-done-validation.js');
+        await import('@lumenflow/core/wu-done-validation');
       const message = buildCodePathsCommittedErrorMessage(id, uncommittedPaths);
 
       expect(message).toContain('3 code_paths for WU-1153 are not committed');
@@ -501,7 +501,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
 
   describe('integration with die function', () => {
     it('should call die when validation fails and abort flag is true', async () => {
-      const { die } = await import('@lumenflow/core/dist/error-handler.js');
+      const { die } = await import('@lumenflow/core/error-handler');
       const mockDie = vi.mocked(die);
 
       const mockGitAdapter = {
@@ -514,7 +514,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       };
 
       const { validateCodePathsCommittedBeforeDone } =
-        await import('@lumenflow/core/dist/wu-done-validation.js');
+        await import('@lumenflow/core/wu-done-validation');
 
       await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter, { abortOnFailure: true });
 
@@ -525,7 +525,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
     });
 
     it('should not call die when abort flag is false', async () => {
-      const { die } = await import('@lumenflow/core/dist/error-handler.js');
+      const { die } = await import('@lumenflow/core/error-handler');
       const mockDie = vi.mocked(die);
 
       const mockGitAdapter = {
@@ -538,7 +538,7 @@ describe('WU-1153: wu:done guard for uncommitted code_paths', () => {
       };
 
       const { validateCodePathsCommittedBeforeDone } =
-        await import('@lumenflow/core/dist/wu-done-validation.js');
+        await import('@lumenflow/core/wu-done-validation');
 
       await validateCodePathsCommittedBeforeDone(wu, mockGitAdapter, { abortOnFailure: false });
 

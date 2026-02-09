@@ -21,27 +21,27 @@
  * Context: WU-1328 (initial implementation)
  */
 
-import { getGitForCwd } from '@lumenflow/core/dist/git-adapter.js';
-import { die } from '@lumenflow/core/dist/error-handler.js';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { die } from '@lumenflow/core/error-handler';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/dist/arg-parser.js';
-import { INIT_PATHS } from '@lumenflow/initiatives/dist/initiative-paths.js';
+import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { INIT_PATHS } from '@lumenflow/initiatives/paths';
 import {
   INIT_PATTERNS,
   INIT_COMMIT_FORMATS,
   INIT_LOG_PREFIX,
-} from '@lumenflow/initiatives/dist/initiative-constants.js';
-import { WU_PATHS } from '@lumenflow/core/dist/wu-paths.js';
-import { PATTERNS } from '@lumenflow/core/dist/wu-constants.js';
-import { ensureOnMain } from '@lumenflow/core/dist/wu-helpers.js';
+} from '@lumenflow/initiatives/constants';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { PATTERNS } from '@lumenflow/core/wu-constants';
+import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import {
   withMicroWorktree,
   isRetryExhaustionError as coreIsRetryExhaustionError,
   formatRetryExhaustionError as coreFormatRetryExhaustionError,
-} from '@lumenflow/core/dist/micro-worktree.js';
-import { readWU, writeWU } from '@lumenflow/core/dist/wu-yaml.js';
-import { readInitiative, writeInitiative } from '@lumenflow/initiatives/dist/initiative-yaml.js';
+} from '@lumenflow/core/micro-worktree';
+import { readWU, writeWU } from '@lumenflow/core/wu-yaml';
+import { readInitiative, writeInitiative } from '@lumenflow/initiatives/yaml';
 
 /** Log prefix for console output */
 export const LOG_PREFIX = INIT_LOG_PREFIX.REMOVE_WU;
