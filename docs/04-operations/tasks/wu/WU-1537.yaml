@@ -2,7 +2,7 @@ id: WU-1537
 title: Standardize CLI entrypoints on runCLI wrapper
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -35,8 +35,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: CLI commands currently use mixed entrypoint patterns including runCLI, main.catch, and one legacy import.meta.url path. Problem: inconsistent wrappers create uneven EPIPE handling and error lifecycle behavior. Solution: migrate all command entrypoints to runCLI(main) and remove the legacy pattern.'
+description: 'Context: CLI commands currently use mixed entrypoint patterns including runCLI,
+  main.catch, and one legacy import.meta.url path. Problem: inconsistent wrappers create uneven
+  EPIPE handling and error lifecycle behavior. Solution: migrate all command entrypoints to
+  runCLI(main) and remove the legacy pattern.'
 acceptance:
   - All CLI commands use runCLI(main) with consistent EPIPE and error handling semantics.
   - Legacy import.meta.url entrypoint logic is removed from integrate command.
   - Entry-point tests validate behavior for direct invocation and piped output scenarios.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1537
+claimed_at: 2026-02-09T22:49:49.816Z
+baseline_main_sha: 605d2ed67fb0e056ac3ec6e3ae4a75ec8c6cf4b1
+session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T22:49:49.823Z
