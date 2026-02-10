@@ -1,0 +1,33 @@
+id: WU-1579
+title: Align init-scripts gitignore tests with WU-1519 state-tracking policy
+lane: 'Framework: CLI Enforcement'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-10
+code_paths:
+  - packages/@lumenflow/cli/src/__tests__/init-scripts.test.ts
+  - packages/@lumenflow/cli/src/init.ts
+tests:
+  manual:
+    - Run vitest for init-scripts and confirm no .lumenflow/state ignore expectation remains
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/init-scripts.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1579.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Main currently has failing init-scripts tests expecting .lumenflow/state in generated .gitignore. Problem: WU-1519 changed policy to track .lumenflow/state, so current template intentionally excludes only .lumenflow/telemetry and worktrees; tests are stale and failing on main. Solution: update/init-scripts expectations and any related assertions to match current tracked-state policy, restoring passing tests on main.'
+acceptance:
+  - init-scripts .gitignore tests no longer expect .lumenflow/state to be ignored
+  - init-scripts suite passes on main after fix
