@@ -3,7 +3,7 @@ title: Fix pre-existing test failures in orchestration.schemas, filesystem-metri
   terminal-renderer.adapter
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -36,3 +36,11 @@ description: Fix pre-existing wu:validate registration parity test failures on m
 acceptance:
   - packages/@lumenflow/cli/src/__tests__/wu-validate.test.ts passes
   - Parity integration assertions reflect package.json-trigger registration heuristic
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1555
+claimed_at: 2026-02-10T13:32:26.554Z
+baseline_main_sha: 22171856f76cfb8b4e361e095a0606bf527e78cf
+session_id: bfdfa7f7-991f-473b-8ba7-1257fe307c6a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T13:32:26.559Z
