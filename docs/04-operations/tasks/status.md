@@ -8,9 +8,8 @@ _Last updated: 2026-02-10_
 - [WU-1554 — Fix wu:done post-merge metadata double-write leaving main dirty](wu/WU-1554.yaml)
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml)
 - [WU-1548 — Centralize status and remaining duplicated literals](wu/WU-1548.yaml)
-- [WU-1550 — Introduce gate and validator registry patterns](wu/WU-1550.yaml)
-- [WU-1539 — Centralize duplicated stamp and events path literals](wu/WU-1539.yaml)
 - [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml)
+- [WU-1545 — Lock down dist imports and verify boundary](wu/WU-1545.yaml)
 - [WU-1547 — Lock down dist imports and verify boundary](wu/WU-1547.yaml)
 
 ## Completed
@@ -502,3 +501,4 @@ _Last updated: 2026-02-10_
 - [WU-1538 — Refactor core exit handling to throw typed errors](wu/WU-1538.yaml) — 2026-02-09
 - [WU-1536 — Add subpath exports and codemod dist imports](wu/WU-1536.yaml) — 2026-02-09
 - [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml) — 2026-02-09
+- [WU-1539 — Centralize duplicated stamp and events path literals](wu/WU-1539.yaml) — 2026-02-10

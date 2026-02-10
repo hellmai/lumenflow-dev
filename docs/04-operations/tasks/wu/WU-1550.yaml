@@ -2,7 +2,7 @@ id: WU-1550
 title: Introduce gate and validator registry patterns
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: ready
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -33,9 +33,6 @@ notes: Track J from enterprise hardening initiative. Covers plan findings 27-28 
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
-claimed_at: 2026-02-09T23:41:28.426Z
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1550
-session_id: 5a8af49b-f1b3-49c7-8377-c48dad33a7ea
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
