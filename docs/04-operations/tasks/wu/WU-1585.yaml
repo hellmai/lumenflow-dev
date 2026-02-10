@@ -1,0 +1,43 @@
+id: WU-1585
+title: 'Core strict wave 2B: WU management strict fixes'
+lane: 'Framework: Core Validation'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-10
+code_paths:
+  - packages/@lumenflow/core/src/wu-repair-core.ts
+  - packages/@lumenflow/core/src/wu-status-transition.ts
+  - packages/@lumenflow/core/src/wu-validator.ts
+tests:
+  manual:
+    - pnpm --filter @lumenflow/core typecheck and validate WU repair/validator command paths
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-repair-core.test.ts
+    - packages/@lumenflow/core/src/__tests__/state-machine.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-preflight-validators.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1585.done
+dependencies: []
+initiative: INIT-022
+phase: 7
+blocked_by:
+  - WU-1584
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: after lifecycle hotspots, strict debt remains in core WU management logic including repair, status transitions, and validation paths. Problem: these modules form central state and policy boundaries; weak typing here increases regression risk. Solution: remediate strict errors in management modules with explicit contracts and reusable narrowing patterns from Wave 0 foundations.'
+acceptance:
+  - Strict errors are removed from targeted WU management files
+  - Validator and status-transition behavior remains stable under existing tests
+  - No net increase in as any usage in touched core files
+  - Core management and validator tests pass
+  - Core strict progress baseline reflects reduced debt for this wave
