@@ -77,7 +77,10 @@ function buildStatusLiteralRegex(): RegExp {
   const statusPattern = STATUS_LITERALS.join('|');
   // Match quoted status strings preceded by common code patterns:
   // === 'status', !== 'status', = 'status', ('status'), : 'status'
-  return new RegExp(`(?:===?|!==?|[=:(,]|\\b(?:status|doc\\.status))\\s*['"](?:${statusPattern})['"]`, 'g');
+  return new RegExp(
+    `(?:===?|!==?|[=:(,]|\\b(?:status|doc\\.status))\\s*['"](?:${statusPattern})['"]`,
+    'g',
+  );
 }
 
 const STATUS_LITERAL_REGEX = buildStatusLiteralRegex();
@@ -102,7 +105,13 @@ async function getProductionSourceFiles(packageDir: string): Promise<string[]> {
   const files = await glob('**/*.ts', {
     cwd: packageDir,
     absolute: true,
-    ignore: ['**/__tests__/**', '**/__snapshots__/**', '**/dist/**', '**/node_modules/**', '**/e2e/**'],
+    ignore: [
+      '**/__tests__/**',
+      '**/__snapshots__/**',
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/e2e/**',
+    ],
   });
   return files;
 }
@@ -167,7 +176,10 @@ describe('WU-1548: Status literal regression guard', () => {
       const report = allViolations
         .map(({ file, violations }) => {
           const details = violations
-            .map((v) => `    Line ${v.line}: '${v.literal}' -> WU_STATUS.${v.literal.toUpperCase()} | ${v.content}`)
+            .map(
+              (v) =>
+                `    Line ${v.line}: '${v.literal}' -> WU_STATUS.${v.literal.toUpperCase()} | ${v.content}`,
+            )
             .join('\n');
           return `  ${file}:\n${details}`;
         })
@@ -205,7 +217,10 @@ describe('WU-1548: Status literal regression guard', () => {
       const report = allViolations
         .map(({ file, violations }) => {
           const details = violations
-            .map((v) => `    Line ${v.line}: '${v.literal}' -> WU_STATUS.${v.literal.toUpperCase()} | ${v.content}`)
+            .map(
+              (v) =>
+                `    Line ${v.line}: '${v.literal}' -> WU_STATUS.${v.literal.toUpperCase()} | ${v.content}`,
+            )
             .join('\n');
           return `  ${file}:\n${details}`;
         })
@@ -243,7 +258,10 @@ describe('WU-1548: Status literal regression guard', () => {
       const report = allViolations
         .map(({ file, violations }) => {
           const details = violations
-            .map((v) => `    Line ${v.line}: '${v.literal}' -> WU_STATUS.${v.literal.toUpperCase()} | ${v.content}`)
+            .map(
+              (v) =>
+                `    Line ${v.line}: '${v.literal}' -> WU_STATUS.${v.literal.toUpperCase()} | ${v.content}`,
+            )
             .join('\n');
           return `  ${file}:\n${details}`;
         })
@@ -289,9 +307,7 @@ describe('WU-1548: Status literal regression guard', () => {
     }
 
     if (duplicates.length > 0) {
-      const report = duplicates
-        .map((d) => `  ${d.file}:${d.line}: ${d.content}`)
-        .join('\n');
+      const report = duplicates.map((d) => `  ${d.file}:${d.line}: ${d.content}`).join('\n');
 
       expect.fail(
         `Found ${duplicates.length} duplicated MEMORY_DIR definition(s).\n\n` +
@@ -332,9 +348,7 @@ describe('WU-1548: Status literal regression guard', () => {
     }
 
     if (duplicates.length > 0) {
-      const report = duplicates
-        .map((d) => `  ${d.file}:${d.line}: ${d.content}`)
-        .join('\n');
+      const report = duplicates.map((d) => `  ${d.file}:${d.line}: ${d.content}`).join('\n');
 
       expect.fail(
         `Found ${duplicates.length} duplicated SIGNALS_FILE definition(s).\n\n` +
@@ -374,9 +388,7 @@ describe('WU-1548: Status literal regression guard', () => {
 
     // There should be exactly 1 definition (the shared source)
     if (definitions.length > 1) {
-      const report = definitions
-        .map((d) => `  ${d.file}:${d.line}: ${d.content}`)
-        .join('\n');
+      const report = definitions.map((d) => `  ${d.file}:${d.line}: ${d.content}`).join('\n');
 
       expect.fail(
         `Found ${definitions.length} NodeFsError interface definitions (expected 1 shared source).\n\n` +
@@ -420,7 +432,8 @@ describe('WU-1548: Status literal regression guard', () => {
     ];
 
     const violations: Array<{ file: string; line: number; content: string }> = [];
-    const TASK_PATH_PATTERN = /['"]docs\/04-operations\/tasks(?:\/(?:wu|backlog\.md|status\.md|initiatives))/;
+    const TASK_PATH_PATTERN =
+      /['"]docs\/04-operations\/tasks(?:\/(?:wu|backlog\.md|status\.md|initiatives))/;
 
     for (const file of sourceFiles) {
       if (allowedForPaths.some((allowed) => file.includes(allowed))) continue;
@@ -441,9 +454,7 @@ describe('WU-1548: Status literal regression guard', () => {
     }
 
     if (violations.length > 0) {
-      const report = violations
-        .map((v) => `  ${v.file}:${v.line}: ${v.content}`)
-        .join('\n');
+      const report = violations.map((v) => `  ${v.file}:${v.line}: ${v.content}`).join('\n');
 
       expect.fail(
         `Found ${violations.length} hardcoded task path(s) in @lumenflow/core.\n\n` +

@@ -342,7 +342,9 @@ export async function computeBacklogContentWithMainMerge(
   // If not already done, create and apply the complete event
   if (currentState.status !== WU_STATUS.DONE) {
     if (currentState.status !== WU_STATUS.IN_PROGRESS) {
-      throw new Error(`WU ${wuId} is in status "${currentState.status}", expected "${WU_STATUS.IN_PROGRESS}"`);
+      throw new Error(
+        `WU ${wuId} is in status "${currentState.status}", expected "${WU_STATUS.IN_PROGRESS}"`,
+      );
     }
     const completeEvent = mergedStore.createCompleteEvent(wuId);
     mergedStore.applyEvent(completeEvent);
@@ -394,7 +396,9 @@ export async function computeStatusContentWithMainMerge(
   // If not already done, create and apply the complete event
   if (currentState.status !== WU_STATUS.DONE) {
     if (currentState.status !== WU_STATUS.IN_PROGRESS) {
-      throw new Error(`WU ${wuId} is in status "${currentState.status}", expected "${WU_STATUS.IN_PROGRESS}"`);
+      throw new Error(
+        `WU ${wuId} is in status "${currentState.status}", expected "${WU_STATUS.IN_PROGRESS}"`,
+      );
     }
     const completeEvent = mergedStore.createCompleteEvent(wuId);
     mergedStore.applyEvent(completeEvent);
@@ -447,7 +451,9 @@ export async function computeWUEventsContentWithMainMerge(
   }
 
   if (currentState.status !== WU_STATUS.IN_PROGRESS) {
-    throw new Error(`WU ${wuId} is in status "${currentState.status}", expected "${WU_STATUS.IN_PROGRESS}"`);
+    throw new Error(
+      `WU ${wuId} is in status "${currentState.status}", expected "${WU_STATUS.IN_PROGRESS}"`,
+    );
   }
 
   // Add complete event

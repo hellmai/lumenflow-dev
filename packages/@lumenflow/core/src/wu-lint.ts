@@ -259,7 +259,13 @@ function isCliCommandPath(codePath: string): boolean {
  * WU-1504: Terminal WU statuses that should skip parity validation.
  * Matches the same set used by WU-1384 for completeness check skipping.
  */
-const TERMINAL_STATUSES = new Set([WU_STATUS.DONE, WU_STATUS.CANCELLED, WU_STATUS.COMPLETED, WU_STATUS.ABANDONED, WU_STATUS.SUPERSEDED]);
+const TERMINAL_STATUSES = new Set([
+  WU_STATUS.DONE,
+  WU_STATUS.CANCELLED,
+  WU_STATUS.COMPLETED,
+  WU_STATUS.ABANDONED,
+  WU_STATUS.SUPERSEDED,
+]);
 
 /**
  * WU-1504: Validate CLI command registration parity.
