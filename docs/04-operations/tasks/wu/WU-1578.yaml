@@ -1,0 +1,40 @@
+id: WU-1578
+title: Formalize client integration contract/constants for vendor-agnostic init
+lane: 'Framework: CLI Enforcement'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-10
+code_paths:
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/commands/integrate.ts
+  - packages/@lumenflow/core/src/wu-context-constants.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/cli/src/__tests__/init-greenfield.test.ts
+  - packages/@lumenflow/cli/src/__tests__/commands/integrate.test.ts
+tests:
+  manual:
+    - 'Init smoke check: --client claude and --client cursor produce expected tracked outputs'
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/init-greenfield.test.ts
+    - packages/@lumenflow/cli/src/__tests__/commands/integrate.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1578.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: WU-1576 fixed the onboarding commit gap and introduced integration dispatch, but client identifiers and integration contracts are still partly implicit and split across files. Problem: this leaves room for string literal regressions, weaker compile-time guarantees, and drift between init and integrate behavior across clients. Solution: define and use a shared client integration contract and client-id constants, keep init vendor-agnostic via adapter boundary, and add regression tests for claude and non-claude flows.'
+acceptance:
+  - Init/integrate client dispatch uses shared constants (no new hardcoded client IDs in touched files)
+  - Client integration boundary is typed and explicit (adapter contract)
+  - Init remains clean for non-claude clients and still includes enforcement artifacts for claude
+  - Unit tests cover both claude and non-claude integration paths
