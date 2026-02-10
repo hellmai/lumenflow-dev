@@ -2,7 +2,7 @@ id: WU-1567
 title: Normalize backlog/status formatting drift
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -41,3 +41,6 @@ session_id: afd585b7-b5a8-4490-a0d5-9440e8d6afc4
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T13:36:45.509Z
+locked: true
+completed_at: 2026-02-10T13:38:03.737Z
+completed: 2026-02-10

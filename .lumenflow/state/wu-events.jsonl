@@ -1087,4 +1087,5 @@
 {"type":"complete","wuId":"WU-1559","timestamp":"2026-02-10T13:14:56.392Z"}
 {"type":"claim","wuId":"WU-1555","timestamp":"2026-02-10T13:32:26.588Z","lane":"Framework: CLI WU Commands","title":"Fix pre-existing test failures in orchestration.schemas, filesystem-metrics.adapter, terminal-renderer.adapter"}
 {"type":"complete","wuId":"WU-1555","timestamp":"2026-02-10T13:34:53.676Z"}
-{"type":"claim","wuId":"WU-1567","lane":"Content: Framework Docs","title":"Normalize backlog/status formatting drift","timestamp":"2026-02-10T13:36:45.544Z"}
+{"type":"claim","wuId":"WU-1567","timestamp":"2026-02-10T13:36:45.544Z","lane":"Content: Framework Docs","title":"Normalize backlog/status formatting drift"}
+{"type":"complete","wuId":"WU-1567","timestamp":"2026-02-10T13:38:06.374Z"}
