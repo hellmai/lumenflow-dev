@@ -74,6 +74,47 @@ describe('generateBacklog', () => {
     const entryMatches = backlog.match(/- \[WU-100/g) ?? [];
     expect(entryMatches).toHaveLength(1);
   });
+
+  it('escapes markdown-sensitive text and returns newline-terminated output', async () => {
+    const events =
+      [
+        JSON.stringify({
+          type: 'create',
+          wuId: 'WU-777',
+          timestamp: '2026-02-07T10:00:00.000Z',
+          lane: 'Content: docs/_frameworks guard-*',
+          title: 'Escape _frameworks guard-* [alpha]',
+        }),
+        JSON.stringify({
+          type: 'claim',
+          wuId: 'WU-777',
+          timestamp: '2026-02-07T10:01:00.000Z',
+          lane: 'Content: docs/_frameworks guard-*',
+          title: 'Escape _frameworks guard-* [alpha]',
+        }),
+      ].join('\n') + '\n';
+
+    writeFileSync(join(stateDir, 'wu-events.jsonl'), events);
+
+    const store = new WUStateStore(stateDir);
+    await store.load();
+
+    const backlog = await generateBacklog(store, { wuDir });
+    const status = await generateStatus(store);
+
+    expect(backlog).toContain(
+      '> Agent: Read **docs/04-operations/\\_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first',
+    );
+    expect(backlog).toContain(
+      '- [WU-777 — Escape \\_frameworks guard-\\* \\[alpha\\]](wu/WU-777.yaml) — Content: docs/\\_frameworks guard-\\*',
+    );
+    expect(status).toContain(
+      '- [WU-777 — Escape \\_frameworks guard-\\* \\[alpha\\]](wu/WU-777.yaml)',
+    );
+
+    expect(backlog.endsWith('\n')).toBe(true);
+    expect(status.endsWith('\n')).toBe(true);
+  });
 });
 
 /**
