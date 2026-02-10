@@ -437,4 +437,88 @@ acceptance:
       }
     });
   });
+
+  describe('untracked stamp masking guard', () => {
+    it('treats an untracked local stamp as missing for done-status consistency checks', async () => {
+      const { checkWUConsistency } = await import('../wu-consistency-checker.js');
+
+      const wuPath = path.join(testProjectRoot, 'docs/04-operations/tasks/wu/WU-7777.yaml');
+      writeFileSync(
+        wuPath,
+        `id: WU-7777
+title: Test untracked stamp masking
+lane: 'Framework: Core Validation'
+type: bug
+status: done
+priority: P1
+created: 2026-02-10
+code_paths: []
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts: []
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+description: Test
+acceptance:
+  - Test
+`,
+      );
+      writeFileSync(
+        path.join(testProjectRoot, '.lumenflow/stamps/WU-7777.done'),
+        'WU WU-7777 — Test\nCompleted: 2026-02-10\n',
+      );
+
+      const report = await checkWUConsistency('WU-7777', testProjectRoot, {
+        trackedStampIds: new Set(),
+      });
+
+      expect(report.errors.some((err) => err.type === 'YAML_DONE_NO_STAMP')).toBe(true);
+      expect(report.stats.hasStamp).toBe(false);
+    });
+
+    it('accepts a done stamp when it is tracked', async () => {
+      const { checkWUConsistency } = await import('../wu-consistency-checker.js');
+
+      const wuPath = path.join(testProjectRoot, 'docs/04-operations/tasks/wu/WU-7778.yaml');
+      writeFileSync(
+        wuPath,
+        `id: WU-7778
+title: Test tracked stamp visibility
+lane: 'Framework: Core Validation'
+type: bug
+status: done
+priority: P1
+created: 2026-02-10
+code_paths: []
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts: []
+dependencies: []
+risks: []
+notes: ''
+requires_review: false
+description: Test
+acceptance:
+  - Test
+`,
+      );
+      writeFileSync(
+        path.join(testProjectRoot, '.lumenflow/stamps/WU-7778.done'),
+        'WU WU-7778 — Test\nCompleted: 2026-02-10\n',
+      );
+
+      const report = await checkWUConsistency('WU-7778', testProjectRoot, {
+        trackedStampIds: new Set(['WU-7778']),
+      });
+
+      expect(report.errors.some((err) => err.type === 'YAML_DONE_NO_STAMP')).toBe(false);
+      expect(report.stats.hasStamp).toBe(true);
+    });
+  });
 });

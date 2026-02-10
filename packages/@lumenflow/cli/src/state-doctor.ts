@@ -48,6 +48,7 @@ import { existsSync } from 'node:fs';
 import { createStamp } from '@lumenflow/core/stamp-utils';
 import { createStateDoctorFixDeps } from './state-doctor-fix.js';
 import { runCLI } from './cli-entry-point.js';
+import { resolveStateDoctorStampIds } from './state-doctor-stamps.js';
 
 /**
  * Log prefix for state:doctor output
@@ -202,9 +203,7 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
      */
     listStamps: async (): Promise<string[]> => {
       try {
-        const stampsDir = path.join(baseDir, config.state.stampsDir);
-        const stampFiles = await fg('WU-*.done', { cwd: stampsDir });
-        return stampFiles.map((file) => file.replace('.done', ''));
+        return await resolveStateDoctorStampIds(baseDir, config.state.stampsDir);
       } catch {
         return [];
       }
