@@ -1,12 +1,58 @@
 id: INIT-022
 slug: strict-mode-core-cli
 title: Enable TypeScript Strict Mode in Core and CLI
-description: ''
-status: draft
+description: 'Context: @lumenflow/core and @lumenflow/cli currently keep strict:false with a
+  measured strict-mode backlog of 1,862 TypeScript errors (core: 1,361; cli: 501). Problem: this
+  leaves the platform with weaker type-safety than the rest of the monorepo and increases regression
+  risk in lifecycle-critical flows. Solution: ship Wave 0 foundations first (progress tracking +
+  type helpers), then execute bounded WUs across CLI and Core with max two concurrent WUs per
+  package until strict:true is restored in both packages.'
+status: in_progress
 priority: P1
 owner: platform
 created: 2026-02-10
 target_date: 2026-03-31
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: 'Wave 0A: Strict mode progress tracking infrastructure'
+    status: pending
+  - id: 2
+    title: 'Wave 0B: Types foundation and shared strict helpers'
+    status: pending
+  - id: 3
+    title: 'Wave 1A: CLI high-impact strict fixes'
+    status: pending
+  - id: 4
+    title: 'Wave 1B: CLI initiative and gates strict fixes'
+    status: pending
+  - id: 5
+    title: 'Wave 1C: CLI remaining strict fixes and strict enablement'
+    status: pending
+  - id: 6
+    title: 'Wave 2A: Core WU lifecycle strict fixes'
+    status: pending
+  - id: 7
+    title: 'Wave 2B: Core WU management strict fixes'
+    status: pending
+  - id: 8
+    title: 'Wave 2C: Core backlog and compliance strict fixes'
+    status: pending
+  - id: 9
+    title: 'Wave 2D: Core infrastructure strict fixes'
+    status: pending
+  - id: 10
+    title: 'Wave 2E: Core remaining strict fixes and strict enablement'
+    status: pending
+success_metrics:
+  - packages/@lumenflow/cli/tsconfig.json sets compilerOptions.strict=true and removes
+    _strictException
+  - packages/@lumenflow/core/tsconfig.json sets compilerOptions.strict=true and removes
+    _strictException
+  - tools/__tests__/tsconfig-strict.test.ts no longer treats core/cli as exceptions
+  - pnpm --filter @lumenflow/cli typecheck passes with strict enabled
+  - pnpm --filter @lumenflow/core typecheck passes with strict enabled
+  - pnpm build passes without downstream breakage
+  - pnpm test passes
+  - pnpm gates passes
+  - No net increase in as any usage in core and cli (baseline core=14, cli=0)
 labels: []
