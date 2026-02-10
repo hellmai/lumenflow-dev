@@ -47,11 +47,6 @@ const TOOL_NAME = 'mem:inbox';
 const SIGNALS_FILE_NAME = 'signals.jsonl';
 
 /**
- * Memory directory relative to project root
- */
-const MEMORY_DIR = '.lumenflow/memory';
-
-/**
  * CLI argument options specific to mem:inbox
  */
 const CLI_OPTIONS = {
@@ -249,7 +244,7 @@ async function runWatchMode(baseDir, filterOptions, markAsRead, quiet) {
   };
 
   // Watch the signals file for changes using chokidar
-  const signalsPath = path.join(baseDir, MEMORY_DIR, SIGNALS_FILE_NAME);
+  const signalsPath = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR, SIGNALS_FILE_NAME);
   const watcher = chokidarWatch(signalsPath, {
     // Watch parent directory so we detect file creation too
     ignoreInitial: true,

@@ -50,6 +50,10 @@ const STATUS_LITERALS = [
  */
 const ALLOWED_FILES_STATUS = [
   'wu-constants.ts',
+  // WU-1549: Decomposed sub-modules that define the source-of-truth constants
+  'wu-statuses.ts', // WU_STATUS enum values
+  'wu-ui-constants.ts', // STATUS_SECTIONS display labels
+  'wu-domain-constants.ts', // WU_DEFAULTS with status defaults
   'wu-schema.ts',
   'wu-state-schema.ts',
   'state-machine.ts',
@@ -426,6 +430,7 @@ describe('WU-1548: Status literal regression guard', () => {
     // Files allowed to use hardcoded paths (constants definitions, config schemas)
     const allowedForPaths = [
       'wu-constants.ts',
+      'wu-paths-constants.ts', // WU-1549: DIRECTORIES source-of-truth definitions
       'lumenflow-config-schema.ts',
       'wu-paths.ts',
       '__tests__/',
