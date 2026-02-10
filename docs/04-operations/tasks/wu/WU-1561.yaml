@@ -2,7 +2,7 @@ id: WU-1561
 title: Enforce --help-first rule for CLI commands via hook
 lane: 'Operations: Tooling'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -52,3 +52,6 @@ session_id: c2c11336-9f8c-44ae-bb88-beefe40748cd
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T13:05:34.721Z
+locked: true
+completed_at: 2026-02-10T13:11:12.823Z
+completed: 2026-02-10
