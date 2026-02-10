@@ -14,6 +14,8 @@ import {
   die,
   createError,
   createAgentFriendlyError,
+  toError,
+  getErrorMessage,
   ErrorCodes,
 } from '../error-handler.js';
 
@@ -123,6 +125,29 @@ describe('error-handler', () => {
       });
 
       expect(error.tryNext).toHaveLength(2);
+    });
+  });
+
+  describe('WU-1574 strict-mode helpers', () => {
+    it('toError returns the original Error instance', () => {
+      const original = new Error('boom');
+      const normalized = toError(original);
+      expect(normalized).toBe(original);
+    });
+
+    it('toError normalizes unknown values into Error', () => {
+      const normalized = toError({ code: 500 });
+      expect(normalized).toBeInstanceOf(Error);
+      expect(normalized.message).toBe('Unknown error');
+    });
+
+    it('getErrorMessage extracts message from unknown values', () => {
+      expect(getErrorMessage('fatal')).toBe('fatal');
+      expect(getErrorMessage({ message: 'bad input' })).toBe('bad input');
+    });
+
+    it('getErrorMessage supports custom fallback message', () => {
+      expect(getErrorMessage(undefined, 'fallback')).toBe('fallback');
     });
   });
 

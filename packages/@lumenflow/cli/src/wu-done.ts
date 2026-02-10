@@ -45,7 +45,7 @@ import prettyMs from 'pretty-ms';
 import { runGates } from './gates.js';
 import { buildClaimRepairCommand } from './wu-claim-repair-guidance.js';
 import { getGitForCwd, createGitForPath } from '@lumenflow/core/git-adapter';
-import { die } from '@lumenflow/core/error-handler';
+import { die, getErrorMessage } from '@lumenflow/core/error-handler';
 // WU-1223: Location detection for worktree check
 import { resolveLocation } from '@lumenflow/core/context/location-resolver';
 import { existsSync, readFileSync, mkdirSync, appendFileSync, unlinkSync, statSync } from 'node:fs';
@@ -101,6 +101,7 @@ import {
   SKIP_GATES_REASONS,
   CHECKPOINT_MESSAGES,
   LUMENFLOW_PATHS,
+  getWUStatusDisplay,
   // WU-1223: Location types for worktree detection
   CONTEXT_VALIDATION,
 } from '@lumenflow/core/wu-constants';
@@ -209,7 +210,7 @@ async function validateClaimMetadataBeforeGates(id, worktreePath, yamlStatus) {
       errors.push(`State store does not show ${id} as in_progress (path: ${eventsPath})`);
     }
   } catch (err) {
-    errors.push(`Cannot read state store: ${err.message} (path: ${eventsPath})`);
+    errors.push(`Cannot read state store: ${getErrorMessage(err)} (path: ${eventsPath})`);
   }
 
   // If no errors, we're good
@@ -444,7 +445,7 @@ async function _assertWorktreeWUInProgressInStateStore(id, worktreePath) {
     die(
       `Cannot read WU state store for ${id}.\n\n` +
         `Path: ${eventsPath}\n\n` +
-        `Error: ${err.message}\n\n` +
+        `Error: ${getErrorMessage(err)}\n\n` +
         `If this WU was claimed on an older tool version or the event log is missing/corrupt,\n` +
         `repair the worktree state store before rerunning wu:done.`,
     );
@@ -489,7 +490,7 @@ async function createPreGatesCheckpoint(id, worktreePath, baseDir = process.cwd(
   } catch (err) {
     // Non-blocking: checkpoint failure should not block wu:done
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not create pre-gates checkpoint: ${err.message}`,
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not create pre-gates checkpoint: ${getErrorMessage(err)}`,
     );
   }
 }
@@ -517,7 +518,7 @@ async function broadcastCompletionSignal(id, title, baseDir = process.cwd()) {
   } catch (err) {
     // Non-blocking: signal failure should not block wu:done
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not broadcast completion signal: ${err.message}`,
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not broadcast completion signal: ${getErrorMessage(err)}`,
     );
   }
 }
@@ -553,7 +554,7 @@ async function checkInboxForRecentSignals(id, baseDir = process.cwd()) {
   } catch (err) {
     // Non-blocking: inbox check failure should not block wu:done
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not check inbox for signals: ${err.message}`,
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not check inbox for signals: ${getErrorMessage(err)}`,
     );
   }
 }
@@ -598,7 +599,7 @@ export async function updateSpawnRegistryOnCompletion(id, baseDir = process.cwd(
   } catch (err) {
     // Non-blocking: spawn registry update failure should not block wu:done
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not update spawn registry for ${id}: ${err.message}`,
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not update spawn registry for ${id}: ${getErrorMessage(err)}`,
     );
   }
 }
@@ -659,7 +660,9 @@ export async function isBranchAlreadyMerged(branch) {
 
     return false;
   } catch (e) {
-    console.warn(`${LOG_PREFIX.DONE} Could not check if branch is already merged: ${e.message}`);
+    console.warn(
+      `${LOG_PREFIX.DONE} Could not check if branch is already merged: ${getErrorMessage(e)}`,
+    );
     return false;
   }
 }
@@ -704,7 +707,7 @@ export function checkBacklogConsistencyForWU(id, backlogPath) {
   } catch (e) {
     // If validation fails (e.g., file not found), warn but don't block
     console.warn(
-      `${LOG_PREFIX.DONE} Warning: Could not validate backlog consistency: ${e.message}`,
+      `${LOG_PREFIX.DONE} Warning: Could not validate backlog consistency: ${getErrorMessage(e)}`,
     );
     return { valid: true, error: null };
   }
@@ -998,7 +1001,7 @@ async function detectParallelCompletions(id, doc) {
     return { hasParallelCompletions: true, completedWUs, warning };
   } catch (err) {
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not detect parallel completions: ${err.message}`,
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not detect parallel completions: ${getErrorMessage(err)}`,
     );
     return noParallel;
   }
@@ -1053,7 +1056,9 @@ async function ensureMainUpToDate() {
 
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Main is up-to-date with origin`);
   } catch (err) {
-    console.warn(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not verify main sync: ${err.message}`);
+    console.warn(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not verify main sync: ${getErrorMessage(err)}`,
+    );
     console.warn(`${LOG_PREFIX.DONE} Proceeding anyway (network issue or no remote)`);
   }
 }
@@ -1286,7 +1291,9 @@ function checkNodeModulesStaleness(worktreePath) {
     }
   } catch (e) {
     // Non-critical check - just warn if it fails
-    console.warn(`${LOG_PREFIX.DONE} Could not check node_modules staleness: ${e.message}`);
+    console.warn(
+      `${LOG_PREFIX.DONE} Could not check node_modules staleness: ${getErrorMessage(e)}`,
+    );
   }
 }
 
@@ -1545,7 +1552,9 @@ async function rollbackTransaction(txState, wuPath, stampPath, backlogPath, stat
       unlinkSync(stampPath);
       console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Removed ${stampPath}`);
     } catch (err) {
-      console.error(`${LOG_PREFIX.DONE} ${EMOJI.FAILURE} Failed to remove stamp: ${err.message}`);
+      console.error(
+        `${LOG_PREFIX.DONE} ${EMOJI.FAILURE} Failed to remove stamp: ${getErrorMessage(err)}`,
+      );
     }
   }
 
@@ -1596,7 +1605,7 @@ async function rollbackTransaction(txState, wuPath, stampPath, backlogPath, stat
       }
     }
   } catch (e) {
-    console.warn(`${LOG_PREFIX.DONE} Warning: Could not reset main: ${e.message}`);
+    console.warn(`${LOG_PREFIX.DONE} Warning: Could not reset main: ${getErrorMessage(e)}`);
   }
 
   // WU-1280: Verify clean git status after rollback
@@ -1745,7 +1754,7 @@ async function checkOwnership(id, doc, worktreePath, overrideOwner = false, over
         }
       } catch (err) {
         console.warn(
-          `${LOG_PREFIX.DONE} Warning: Failed to read assigned_to from worktree: ${err.message}`,
+          `${LOG_PREFIX.DONE} Warning: Failed to read assigned_to from worktree: ${getErrorMessage(err)}`,
         );
       }
     }
@@ -2330,7 +2339,7 @@ async function executeGates({
     } catch (err) {
       // Non-blocking: checkpoint failure should not block wu:done
       console.warn(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} ${CHECKPOINT_MESSAGES.COULD_NOT_CREATE}: ${err.message}`,
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} ${CHECKPOINT_MESSAGES.COULD_NOT_CREATE}: ${getErrorMessage(err)}`,
       );
     }
   }
@@ -2543,9 +2552,13 @@ export function computeBranchOnlyFallback({
   };
 }
 
+export function getYamlStatusForDisplay(status: unknown) {
+  return getWUStatusDisplay(status);
+}
+
 function printStateHUD({ id, docMain, isBranchOnly, isDocsOnly, derivedWorktree, STAMPS_DIR }) {
   const stampExists = existsSync(path.join(STAMPS_DIR, `${id}.done`)) ? 'yes' : 'no';
-  const yamlStatus = docMain.status || 'unknown';
+  const yamlStatus = getYamlStatusForDisplay(docMain.status);
   const yamlLocked = docMain.locked === true ? 'true' : 'false';
   const mode = isBranchOnly ? 'branch-only' : isDocsOnly ? 'docs-only' : 'worktree';
   const branch = defaultBranchFrom(docMain) || 'n/a';
@@ -2887,7 +2900,7 @@ async function main() {
     }
   } catch (err) {
     // Non-blocking: lock release failure should not block completion
-    console.warn(`${LOG_PREFIX.DONE} Warning: Could not release lane lock: ${err.message}`);
+    console.warn(`${LOG_PREFIX.DONE} Warning: Could not release lane lock: ${getErrorMessage(err)}`);
   }
 
   // WU-1438: Auto-end agent session
@@ -2902,7 +2915,7 @@ async function main() {
     // No warning if no active session - silent no-op is expected
   } catch (err) {
     // Non-blocking: session end failure should not block completion
-    console.warn(`${LOG_PREFIX.DONE} Warning: Could not end agent session: ${err.message}`);
+    console.warn(`${LOG_PREFIX.DONE} Warning: Could not end agent session: ${getErrorMessage(err)}`);
   }
 
   // WU-1588: Broadcast completion signal after session end
@@ -2948,7 +2961,7 @@ async function main() {
   } catch (err) {
     // Double fail-open: even if runDecayOnDone itself throws unexpectedly, never block wu:done
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Decay archival error (fail-open): ${err.message}`,
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Decay archival error (fail-open): ${getErrorMessage(err)}`,
     );
   }
 
@@ -3018,7 +3031,9 @@ export async function printMigrationDeploymentNudge(codePaths, baseDir) {
     }
   } catch (err) {
     // Non-blocking: migration check failure should not block wu:done
-    console.warn(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not check migrations: ${err.message}`);
+    console.warn(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not check migrations: ${getErrorMessage(err)}`,
+    );
   }
 }
 

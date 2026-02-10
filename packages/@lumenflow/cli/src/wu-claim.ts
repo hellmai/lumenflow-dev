@@ -48,7 +48,7 @@ import {
 // WU-1574: parseBacklogFrontmatter/getSectionHeadings removed - state store replaces backlog parsing
 import { detectConflicts } from '@lumenflow/core/code-paths-overlap';
 import { getGitForCwd, createGitForPath } from '@lumenflow/core/git-adapter';
-import { die } from '@lumenflow/core/error-handler';
+import { die, getErrorMessage } from '@lumenflow/core/error-handler';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 // WU-1491: Mode resolution for --cloud and flag combinations
 import { resolveClaimMode } from './wu-claim-mode.js';
@@ -71,6 +71,7 @@ import {
   FILE_SYSTEM,
   STRING_LITERALS,
   LUMENFLOW_PATHS,
+  resolveWUStatus,
 } from '@lumenflow/core/wu-constants';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { ensureOnMain, ensureMainUpToDate } from '@lumenflow/core/wu-helpers';
@@ -140,7 +141,7 @@ async function surfaceUnreadSignalsForDisplay(baseDir: string): Promise<void> {
     }
   } catch (err) {
     // WU-1473 AC4: Fail-open - never block claim on memory errors
-    console.warn(`${PREFIX} Warning: Could not surface unread signals: ${err.message}`);
+    console.warn(`${PREFIX} Warning: Could not surface unread signals: ${getErrorMessage(err)}`);
   }
 }
 
@@ -193,6 +194,10 @@ export function validateManualTestsForClaim(doc, id) {
       `${id}: Missing required tests.manual for non-documentation WU.\n` +
       `Add at least one manual verification step under tests.manual before claiming.`,
   };
+}
+
+export function resolveClaimStatus(status: unknown) {
+  return resolveWUStatus(status, WU_STATUS.READY);
 }
 
 /**
@@ -252,7 +257,7 @@ function preflightValidateWU(WU_PATH, id) {
   } catch (e) {
     die(
       `Failed to parse WU YAML ${WU_PATH}\n\n` +
-        `YAML parsing error: ${e.message}\n\n` +
+        `YAML parsing error: ${getErrorMessage(e)}\n\n` +
         `Fix the YAML syntax errors before claiming.`,
     );
   }
@@ -268,7 +273,7 @@ function preflightValidateWU(WU_PATH, id) {
   }
 
   // Validate state transition is allowed
-  const currentStatus = doc.status || WU_STATUS.READY;
+  const currentStatus = resolveClaimStatus(doc.status);
   try {
     assertTransition(currentStatus, WU_STATUS.IN_PROGRESS, id);
   } catch (error) {
@@ -276,7 +281,7 @@ function preflightValidateWU(WU_PATH, id) {
       `Cannot claim ${id} - invalid state transition\n\n` +
         `Current status: ${currentStatus}\n` +
         `Attempted transition: ${currentStatus} → in_progress\n\n` +
-        `Reason: ${error.message}`,
+        `Reason: ${getErrorMessage(error)}`,
     );
   }
 
@@ -370,7 +375,7 @@ async function updateWUYaml(
   } catch (e) {
     die(
       `Failed to read WU file: ${WU_PATH}\n\n` +
-        `Error: ${e.message}\n\n` +
+        `Error: ${getErrorMessage(e)}\n\n` +
         `Options:\n` +
         `  1. Check file permissions: ls -la ${WU_PATH}\n` +
         `  2. Ensure you have read access to the repository`,
@@ -382,7 +387,7 @@ async function updateWUYaml(
   } catch (e) {
     die(
       `Failed to parse YAML ${WU_PATH}\n\n` +
-        `Error: ${e.message}\n\n` +
+        `Error: ${getErrorMessage(e)}\n\n` +
         `Options:\n` +
         `  1. Validate YAML syntax: pnpm wu:validate --id ${id}\n` +
         `  2. Fix YAML errors manually and retry`,
@@ -398,11 +403,11 @@ async function updateWUYaml(
   }
 
   // Validate state transition before updating
-  const currentStatus = doc.status || WU_STATUS.READY;
+  const currentStatus = resolveClaimStatus(doc.status);
   try {
     assertTransition(currentStatus, WU_STATUS.IN_PROGRESS, id);
   } catch (error) {
-    die(`State transition validation failed: ${error.message}`);
+    die(`State transition validation failed: ${getErrorMessage(error)}`);
   }
 
   // Update status and lane (lane only if provided and different)
@@ -509,7 +514,9 @@ async function maybeProgressInitiativeStatus(
     return { updated: true, initPath: initRelativePath };
   } catch (error) {
     // Non-fatal: log warning and continue
-    console.warn(`${PREFIX} ⚠️  Could not check initiative status progression: ${error.message}`);
+    console.warn(
+      `${PREFIX} ⚠️  Could not check initiative status progression: ${getErrorMessage(error)}`,
+    );
     return { updated: false, initPath: null };
   }
 }
@@ -991,7 +998,7 @@ function validateLaneFormatWithError(lane) {
     validateLaneFormat(lane);
   } catch (error) {
     die(
-      `Invalid lane format: ${error.message}\n\n` +
+      `Invalid lane format: ${getErrorMessage(error)}\n\n` +
         `Valid formats:\n` +
         `  - Parent-only: "Operations", "Intelligence", "Experience", etc.\n` +
         `  - Sub-lane: "Operations: Tooling", "Intelligence: Prompts", etc.\n\n` +
@@ -1162,7 +1169,7 @@ async function claimBranchOnlyMode(ctx) {
   } catch (error) {
     die(
       `Canonical claim state may be updated, but branch creation failed.\n\n` +
-        `Error: ${error.message}\n\n` +
+        `Error: ${getErrorMessage(error)}\n\n` +
         `Recovery:\n` +
         `  1. Run: git fetch ${REMOTES.ORIGIN} ${BRANCHES.MAIN}\n` +
         `  2. Retry: pnpm wu:claim --id ${id} --lane "${args.lane}"\n` +
@@ -1886,7 +1893,7 @@ async function main() {
       } catch (err) {
         die(
           `Failed to clean up orphan directory at ${worktree}\n\n` +
-            `Error: ${err.message}\n\n` +
+            `Error: ${getErrorMessage(err)}\n\n` +
             `Manual cleanup: rm -rf ${absoluteWorktreePath}`,
         );
       }
@@ -1909,7 +1916,7 @@ async function main() {
       }
     } catch (err) {
       // Non-blocking: session start failure should not block claim
-      console.warn(`${PREFIX} Warning: Could not start agent session: ${err.message}`);
+      console.warn(`${PREFIX} Warning: Could not start agent session: ${getErrorMessage(err)}`);
     }
 
     // Execute claim workflow

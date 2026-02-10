@@ -34,6 +34,40 @@ export const WU_STATUS = {
   SUPERSEDED: 'superseded',
 };
 
+export type WUStatus = (typeof WU_STATUS)[keyof typeof WU_STATUS];
+
+/**
+ * Display-only fallback labels for non-canonical status values.
+ */
+export const WU_STATUS_FALLBACK = {
+  UNKNOWN: 'unknown',
+} as const;
+
+export type WUStatusDisplay = WUStatus | (typeof WU_STATUS_FALLBACK)[keyof typeof WU_STATUS_FALLBACK];
+
+const WU_STATUS_SET = new Set<string>(Object.values(WU_STATUS));
+
+/**
+ * Type guard for canonical WU statuses.
+ */
+export function isWUStatus(value: unknown): value is WUStatus {
+  return typeof value === 'string' && WU_STATUS_SET.has(value);
+}
+
+/**
+ * Resolve arbitrary status values to canonical WU statuses.
+ */
+export function resolveWUStatus(value: unknown, fallback: WUStatus = WU_STATUS.READY): WUStatus {
+  return isWUStatus(value) ? value : fallback;
+}
+
+/**
+ * Resolve status values for logs/UI where unknown is an allowed display state.
+ */
+export function getWUStatusDisplay(value: unknown): WUStatusDisplay {
+  return isWUStatus(value) ? value : WU_STATUS_FALLBACK.UNKNOWN;
+}
+
 /**
  * WU-1540: Protected WU statuses for cleanup and signal protection.
  *

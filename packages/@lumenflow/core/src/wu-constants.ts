@@ -22,6 +22,7 @@
 // WU Status constants
 export {
   WU_STATUS,
+  WU_STATUS_FALLBACK,
   PROTECTED_WU_STATUSES,
   PROGRESSABLE_WU_STATUSES,
   WU_STATUS_GROUPS,
@@ -31,7 +32,12 @@ export {
   WU_EXPOSURE,
   WU_EXPOSURE_VALUES,
   TEST_TYPES,
+  isWUStatus,
+  resolveWUStatus,
+  getWUStatusDisplay,
 } from './wu-statuses.js';
+
+export type { WUStatus, WUStatusDisplay } from './wu-statuses.js';
 
 // Git constants
 export {

@@ -17,7 +17,11 @@
 
 import { describe, it, expect } from 'vitest';
 import { resolveClaimMode } from '../wu-claim-mode.js';
-import { validateManualTestsForClaim, buildRollbackYamlDoc } from '../wu-claim.js';
+import {
+  validateManualTestsForClaim,
+  buildRollbackYamlDoc,
+  resolveClaimStatus,
+} from '../wu-claim.js';
 import { CLAIMED_MODES, WU_STATUS } from '@lumenflow/core/wu-constants';
 
 describe('wu-claim mode resolution (WU-1491)', () => {
@@ -317,5 +321,16 @@ describe('wu-claim transaction safety (WU-1521)', () => {
       expect(claimedDoc.assigned_to).toBe('agent@test.com');
       expect(claimedDoc.claimed_mode).toBe('worktree');
     });
+  });
+});
+
+describe('WU-1574: strict claim status helpers', () => {
+  it('resolveClaimStatus returns canonical status when valid', () => {
+    expect(resolveClaimStatus(WU_STATUS.BLOCKED)).toBe(WU_STATUS.BLOCKED);
+  });
+
+  it('resolveClaimStatus falls back to ready for unknown values', () => {
+    expect(resolveClaimStatus(undefined)).toBe(WU_STATUS.READY);
+    expect(resolveClaimStatus('invalid-status')).toBe(WU_STATUS.READY);
   });
 });
