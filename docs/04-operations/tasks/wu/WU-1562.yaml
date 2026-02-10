@@ -1,0 +1,40 @@
+id: WU-1562
+title: Enforce runtime parity for lifecycle commands
+lane: 'Operations: Tooling'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-10
+code_paths:
+  - tools/cli-entry.mjs
+  - tools/__tests__/cli-entry.test.ts
+  - package.json
+  - packages/@lumenflow/cli/__tests__/spec-linter-worktree.test.ts
+tests:
+  manual:
+    - Run pnpm wu:repair --all --check and verify no repair commit is created.
+  unit:
+    - tools/__tests__/cli-entry.test.ts
+    - packages/@lumenflow/cli/__tests__/spec-linter-worktree.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1562.done
+dependencies: []
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-021.yaml
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: lifecycle fixes landed in src but runtime scripts execute dist, allowing stale command behavior and repair loops. Problem: wu:repair --all --check mutated state and wu:done/state flows missed source fixes because dist was stale. Solution: route critical lifecycle scripts through cli-entry and require fresh CLI/core build for those entries, with failing-first regression tests.'
+acceptance:
+  - 'TDD: failing-first test proves lifecycle scripts (wu:claim, wu:done, wu:repair, state:doctor) use tools/cli-entry.mjs.'
+  - 'TDD: failing-first test proves cli-entry enforces fresh build for strict lifecycle entries even when dist exists.'
+  - Implementation updates cli-entry build policy and package scripts so runtime reflects current src behavior for lifecycle flows.
+  - 'Regression: pnpm wu:repair --all --check exits with detection-only status and does not create repair commits when inconsistencies exist.'
