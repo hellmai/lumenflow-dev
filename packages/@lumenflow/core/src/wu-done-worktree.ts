@@ -1541,9 +1541,7 @@ async function maybeRollbackMain(
     const gitMainForRollback = createGitForPath(mainCheckoutPath);
     await rollbackMainAfterMergeFailure(gitMainForRollback, preMainMergeSha, wuId);
   } catch (err) {
-    console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1577: Main rollback error: ${err.message}`,
-    );
+    console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1577: Main rollback error: ${err.message}`);
   }
 }
 
