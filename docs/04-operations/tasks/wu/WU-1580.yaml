@@ -7,7 +7,6 @@ priority: P2
 created: 2026-02-10
 code_paths:
   - packages/@lumenflow/core/src/domain/__tests__/orchestration.schemas.test.ts
-  - packages/@lumenflow/core/src/domain/orchestration.schemas.ts
 tests:
   manual:
     - Run targeted vitest for orchestration.schemas and verify zero failures
@@ -20,10 +19,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-10T22:50:04.074Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1580
+session_id: 0703aa76-3fe3-474b-89bb-fd0c53ad8aca
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T22:50:04.081Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -35,11 +41,3 @@ description: 'Context: Gates currently fail on main in
 acceptance:
   - orchestration.schemas.test.ts passes on main
   - safeParse success expectations for valid fixtures are restored
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1580
-claimed_at: 2026-02-10T22:50:04.074Z
-baseline_main_sha: d3ec8c8418a95e8d0a5f495c6d8c116e7e5429aa
-session_id: 0703aa76-3fe3-474b-89bb-fd0c53ad8aca
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-10T22:50:04.081Z
