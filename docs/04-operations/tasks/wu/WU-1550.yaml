@@ -2,7 +2,7 @@ id: WU-1550
 title: Introduce gate and validator registry patterns
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -38,7 +38,7 @@ escalation_triggers: []
 requires_human_escalation: false
 approved_by:
   - tom@hellm.ai
-approved_at: 2026-02-09T23:41:28.432Z
+approved_at: 2026-02-10T00:23:48.991Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -51,3 +51,7 @@ acceptance:
   - Validators use ValidatorRegistry for declarative registration.
   - New gates/validators added by creating a file and registering, not modifying executeGates() or
     wu-done.ts.
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1550
+claimed_at: 2026-02-10T00:23:48.987Z
+baseline_main_sha: 159c8345313db871edb07a29acc8f5fc24a4f0ba
+session_id: bad17a3f-a3d3-4975-ab89-e42fe8171515
