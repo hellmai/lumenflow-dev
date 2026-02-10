@@ -43,7 +43,9 @@ export const WU_STATUS_FALLBACK = {
   UNKNOWN: 'unknown',
 } as const;
 
-export type WUStatusDisplay = WUStatus | (typeof WU_STATUS_FALLBACK)[keyof typeof WU_STATUS_FALLBACK];
+export type WUStatusDisplay =
+  | WUStatus
+  | (typeof WU_STATUS_FALLBACK)[keyof typeof WU_STATUS_FALLBACK];
 
 const WU_STATUS_SET = new Set<string>(Object.values(WU_STATUS));
 
