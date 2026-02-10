@@ -39,7 +39,9 @@ function buildWorkspaceAliases(): Array<{ find: RegExp; replacement: string }> {
   for (const packageName of WORKSPACE_PACKAGES) {
     const packageDir = path.resolve(WORKSPACE_ROOT, `packages/@lumenflow/${packageName}`);
     const packageJsonPath = path.join(packageDir, 'package.json');
-    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8')) as PackageJsonWithExports;
+    const packageJson = JSON.parse(
+      readFileSync(packageJsonPath, 'utf-8'),
+    ) as PackageJsonWithExports;
     const exportsMap = packageJson.exports ?? {};
 
     for (const [subpath, exportEntry] of Object.entries(exportsMap)) {
@@ -64,9 +66,7 @@ function buildWorkspaceAliases(): Array<{ find: RegExp; replacement: string }> {
       if (subpath.startsWith('./')) {
         const exportName = subpath.slice(2);
         aliases.push({
-          find: new RegExp(
-            `^@lumenflow/${escapeRegex(packageName)}/${escapeRegex(exportName)}$`,
-          ),
+          find: new RegExp(`^@lumenflow/${escapeRegex(packageName)}/${escapeRegex(exportName)}$`),
           replacement: sourcePath,
         });
       }
