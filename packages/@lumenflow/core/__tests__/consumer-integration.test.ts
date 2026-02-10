@@ -129,31 +129,27 @@ describe('Consumer Integration Tests', () => {
   });
 
   describe('Command Execution', () => {
-    it(
-      'should run validate command successfully',
-      { timeout: COMMAND_TEST_TIMEOUT_MS },
-      () => {
-        // Run a public validation command and verify binary/path resolution.
-        try {
-          const output = execSync('npx validate --help', {
-            cwd: tempProjectDir,
-            encoding: 'utf8',
-            stdio: 'pipe',
-          });
+    it('should run validate command successfully', { timeout: COMMAND_TEST_TIMEOUT_MS }, () => {
+      // Run a public validation command and verify binary/path resolution.
+      try {
+        const output = execSync('npx validate --help', {
+          cwd: tempProjectDir,
+          encoding: 'utf8',
+          stdio: 'pipe',
+        });
 
-          // Should not throw and should produce output
-          expect(typeof output).toBe('string');
-          expect(output.length).toBeGreaterThan(0);
-        } catch (error: any) {
-          // Command might fail due to missing LumenFlow structure,
-          // but it should not fail due to missing binaries or path resolution
-          const errorMessage = error.message || error.stdout || error.stderr;
-          expect(errorMessage).not.toContain('command not found');
-          expect(errorMessage).not.toContain('ENOENT');
-          expect(errorMessage).not.toContain('Cannot find module');
-        }
-      },
-    );
+        // Should not throw and should produce output
+        expect(typeof output).toBe('string');
+        expect(output.length).toBeGreaterThan(0);
+      } catch (error: any) {
+        // Command might fail due to missing LumenFlow structure,
+        // but it should not fail due to missing binaries or path resolution
+        const errorMessage = error.message || error.stdout || error.stderr;
+        expect(errorMessage).not.toContain('command not found');
+        expect(errorMessage).not.toContain('ENOENT');
+        expect(errorMessage).not.toContain('Cannot find module');
+      }
+    });
 
     it(
       'should run gates command and verify paths resolve',
