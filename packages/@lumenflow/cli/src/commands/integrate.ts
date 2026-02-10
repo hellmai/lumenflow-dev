@@ -298,9 +298,7 @@ export async function main(): Promise<void> {
 
   if (opts.client !== LUMENFLOW_CLIENT_IDS.CLAUDE_CODE) {
     console.error(`[integrate] Unsupported client: ${opts.client}`);
-    console.error(
-      `[integrate] Currently only "${LUMENFLOW_CLIENT_IDS.CLAUDE_CODE}" is supported`,
-    );
+    console.error(`[integrate] Currently only "${LUMENFLOW_CLIENT_IDS.CLAUDE_CODE}" is supported`);
     process.exit(1);
   }
 
