@@ -2,7 +2,7 @@ id: WU-1567
 title: Normalize backlog/status formatting drift
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -26,7 +26,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Fix recurring prettier drift in docs/04-operations/tasks/backlog.md and docs/04-operations/tasks/status.md so full gates pass cleanly on main without manual repair-loop formatting commits.
+description: Fix recurring prettier drift in docs/04-operations/tasks/backlog.md and
+  docs/04-operations/tasks/status.md so full gates pass cleanly on main without manual repair-loop
+  formatting commits.
 acceptance:
-  - pnpm format:check passes for docs/04-operations/tasks/backlog.md and docs/04-operations/tasks/status.md
+  - pnpm format:check passes for docs/04-operations/tasks/backlog.md and
+    docs/04-operations/tasks/status.md
   - pnpm gates on main no longer fails at format:check for these files
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-1567
+claimed_at: 2026-02-10T13:36:45.501Z
+baseline_main_sha: b9ccab0062ed38668d147e1d68e8fa6ea38cbb1d
+session_id: afd585b7-b5a8-4490-a0d5-9440e8d6afc4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T13:36:45.509Z
