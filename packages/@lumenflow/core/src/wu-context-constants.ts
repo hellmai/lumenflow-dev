@@ -220,6 +220,20 @@ export const HOOK_MESSAGES = {
 } as const;
 
 /**
+ * Canonical client IDs for client-specific integrations and config keys.
+ *
+ * Centralizes runtime client identifiers used across init/integrate flows
+ * to avoid string literal drift between CLI commands and schema defaults.
+ */
+export const LUMENFLOW_CLIENT_IDS = {
+  CLAUDE_CODE: 'claude-code',
+} as const;
+
+/** Type for supported client IDs with integration support */
+export type LumenflowClientId =
+  (typeof LUMENFLOW_CLIENT_IDS)[keyof typeof LUMENFLOW_CLIENT_IDS];
+
+/**
  * Claude Code hook script constants (WU-1394)
  *
  * Centralized constants for Claude Code enforcement and recovery hooks.

@@ -197,7 +197,8 @@ export { CONTEXT_VALIDATION } from './wu-constants.js';
 export type { ValidationErrorCode, PredicateSeverity, ValidationMode } from './wu-constants.js';
 
 // WU-1394: Claude Code hook constants for enforcement and recovery
-export { CLAUDE_HOOKS, getHookCommand } from './wu-constants.js';
+export { LUMENFLOW_CLIENT_IDS, CLAUDE_HOOKS, getHookCommand } from './wu-constants.js';
+export type { LumenflowClientId } from './wu-constants.js';
 
 // WU-1126: Enum-style constants for port interfaces (const + type pairs)
 // These provide named constants to avoid magic string literals in code

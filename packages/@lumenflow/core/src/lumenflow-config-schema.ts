@@ -13,6 +13,7 @@ import { z } from 'zod';
 import { GatesExecutionConfigSchema } from './gates-config.js';
 // WU-1259: Import methodology config schema for resolvePolicy()
 import { MethodologyConfigSchema } from './resolve-policy.js';
+import { LUMENFLOW_CLIENT_IDS } from './wu-context-constants.js';
 
 /**
  * WU-1356: Package manager options
@@ -931,7 +932,7 @@ export const ClientConfigSchema = z.object({
  */
 export const AgentsConfigSchema = z.object({
   /** Default client to use if not specified (default: 'claude-code') */
-  defaultClient: z.string().default('claude-code'),
+  defaultClient: z.string().default(LUMENFLOW_CLIENT_IDS.CLAUDE_CODE),
 
   /** Client-specific configurations */
   clients: z.record(z.string(), ClientConfigSchema).default({}),
