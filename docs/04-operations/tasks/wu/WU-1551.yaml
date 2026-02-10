@@ -2,7 +2,7 @@ id: WU-1551
 title: Fix floating promises and replace setInterval polling
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: ready
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -42,10 +42,6 @@ acceptance:
   - patrol-loop.ts promise chain has terminal .catch() error handler.
   - No unguarded async callbacks in setInterval or setTimeout patterns remain.
 claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1551
-claimed_at: 2026-02-09T23:52:46.188Z
-baseline_main_sha: 0c2c890ec8b0addcab2ddae0986e42e461e778ad
-session_id: cc01dbf5-c705-46bb-a813-2b7f2d534251
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T23:52:46.206Z
