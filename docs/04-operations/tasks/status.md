@@ -12,7 +12,6 @@ _Last updated: 2026-02-10_
 - [WU-1550 — Introduce gate and validator registry patterns](wu/WU-1550.yaml)
 - [WU-1539 — Centralize duplicated stamp and events path literals](wu/WU-1539.yaml)
 - [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml)
-- [WU-1545 — Lock down dist imports and verify boundary](wu/WU-1545.yaml)
 - [WU-1547 — Lock down dist imports and verify boundary](wu/WU-1547.yaml)
 
 ## Completed
