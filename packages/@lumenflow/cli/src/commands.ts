@@ -53,6 +53,15 @@ const SCRIPT_COMMANDS: CommandCategory[] = [
     ],
   },
   {
+    name: 'Metrics & Flow',
+    commands: [
+      {
+        name: 'strict:progress',
+        description: 'Report strict TypeScript backlog and guard regressions',
+      },
+    ],
+  },
+  {
     name: 'Setup & Development',
     commands: [{ name: 'setup', description: 'Install deps and build CLI (first time)' }],
   },
