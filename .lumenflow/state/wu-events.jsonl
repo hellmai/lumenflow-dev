@@ -1054,3 +1054,4 @@
 {"type":"release","wuId":"WU-1551","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-10T02:11:26.685Z"}
 {"type":"claim","wuId":"WU-1551","lane":"Framework: Core Lifecycle","title":"Fix floating promises and replace setInterval polling","timestamp":"2026-02-10T02:14:02.443Z"}
 {"type":"claim","wuId":"WU-1556","lane":"Operations: Tooling","title":"Stop lifecycle repair loops and enforce closeout consistency","timestamp":"2026-02-10T09:47:33.596Z"}
+{"type":"claim","wuId":"WU-1562","lane":"Operations: Tooling","title":"Enforce runtime parity for lifecycle commands","timestamp":"2026-02-10T10:09:53.690Z"}

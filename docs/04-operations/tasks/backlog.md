@@ -20,14 +20,13 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1562 — Enforce runtime parity for lifecycle commands](wu/WU-1562.yaml) — Operations: Tooling
-- [WU-1561 — Enforce --help-first rule for CLI commands via hook](wu/WU-1561.yaml) — Operations: Tooling
-- [WU-1560 — INIT-020 YAML cleanup and WU-1534 notes correction](wu/WU-1560.yaml) — Content: Framework Docs
-- [WU-1559 — Add injection-focused tests for command execution surfaces](wu/WU-1559.yaml) — Framework: CLI Enforcement
-- [WU-1558 — Eliminate process.chdir from gates.ts](wu/WU-1558.yaml) — Framework: CLI WU Commands
-- [WU-1557 — Fix remaining process.exit calls in core library functions](wu/WU-1557.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1555 — Fix pre-existing test failures in orchestration.schemas, filesystem-metrics.adapter, terminal-renderer.adapter](wu/WU-1555.yaml) — Framework: Core Lifecycle
+- [WU-1557 — Fix remaining process.exit calls in core library functions](wu/WU-1557.yaml) — Framework: Core Lifecycle
+- [WU-1558 — Eliminate process.chdir from gates.ts](wu/WU-1558.yaml) — Framework: CLI WU Commands
+- [WU-1559 — Add injection-focused tests for command execution surfaces](wu/WU-1559.yaml) — Framework: CLI Enforcement
+- [WU-1560 — INIT-020 YAML cleanup and WU-1534 notes correction](wu/WU-1560.yaml) — Content: Framework Docs
+- [WU-1561 — Enforce --help-first rule for CLI commands via hook](wu/WU-1561.yaml) — Operations: Tooling
 
 ## 🔧 In progress
 
@@ -42,6 +41,7 @@ sections:
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml) — Framework: CLI WU Commands
 - [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml) — Framework: Core Lifecycle
 - [WU-1556 — Stop lifecycle repair loops and enforce closeout consistency](wu/WU-1556.yaml) — Operations: Tooling
+- [WU-1562 — Enforce runtime parity for lifecycle commands](wu/WU-1562.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 
