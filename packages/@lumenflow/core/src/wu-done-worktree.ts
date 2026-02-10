@@ -32,7 +32,7 @@ import {
 } from './wu-done-validators.js';
 import { getGitForCwd, createGitForPath } from './git-adapter.js';
 import { readWU, writeWU } from './wu-yaml.js';
-import { WU_PATHS, createWuPaths } from './wu-paths.js';
+import { WU_PATHS } from './wu-paths.js';
 import {
   BRANCHES,
   REMOTES,
@@ -114,6 +114,35 @@ import { validateWUEvent } from './wu-state-schema.js';
  * @property {boolean} [cleanupSafe] - WU-1811: Whether worktree cleanup is safe (all steps succeeded)
  */
 
+interface WorktreeMetadataPaths {
+  wuPath: string;
+  statusPath: string;
+  backlogPath: string;
+  stampsDir: string;
+  stampPath: string;
+  eventsPath: string;
+}
+
+/**
+ * Resolve all metadata/state paths as absolute worktree-local paths.
+ *
+ * WU-1563: Prevents wu:done from writing lifecycle metadata into main checkout
+ * when worktree mode is active.
+ */
+export function resolveWorktreeMetadataPaths(
+  worktreePath: string,
+  id: string,
+): WorktreeMetadataPaths {
+  return {
+    wuPath: path.join(worktreePath, WU_PATHS.WU(id)),
+    statusPath: path.join(worktreePath, WU_PATHS.STATUS()),
+    backlogPath: path.join(worktreePath, WU_PATHS.BACKLOG()),
+    stampsDir: path.join(worktreePath, WU_PATHS.STAMPS_DIR()),
+    stampPath: path.join(worktreePath, WU_PATHS.STAMP(id)),
+    eventsPath: path.join(worktreePath, LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME),
+  };
+}
+
 /**
  * Execute worktree mode completion
  *
@@ -138,16 +167,8 @@ export async function executeWorktreeCompletion(context) {
     // NOTE: recordTransactionState/rollbackTransaction removed in WU-1369 (atomic pattern)
   } = context;
 
-  // Calculate WU path relative to repo root (before chdir)
-  // Other paths are recalculated inside the worktree using WU_PATHS
-  const metadataWUPath = path.join(
-    worktreePath,
-    'docs',
-    '04-operations',
-    'tasks',
-    'wu',
-    `${id}.yaml`,
-  );
+  const worktreeMetadataPaths = resolveWorktreeMetadataPaths(worktreePath, id);
+  const metadataWUPath = worktreeMetadataPaths.wuPath;
 
   // Read WU YAML and validate current state
   const docForUpdate = readWU(metadataWUPath, id);
@@ -253,14 +274,13 @@ export async function executeWorktreeCompletion(context) {
     // WU-1541: Use explicit worktree paths and git adapter instead of process.chdir
     console.log(`\n${LOG_PREFIX.DONE} Updating metadata in worktree: ${worktreePath}`);
     const worktreeGit = createGitForPath(worktreePath);
-    const worktreePaths = createWuPaths({ projectRoot: worktreePath });
 
-    // Calculate absolute paths within the worktree
-    const workingWUPath = worktreePaths.WU(id);
-    const workingStatusPath = worktreePaths.STATUS();
-    const workingBacklogPath = worktreePaths.BACKLOG();
-    const workingStampsDir = worktreePaths.STAMPS_DIR();
-    const workingStampPath = path.join(workingStampsDir, `${id}.done`);
+    // WU-1563: Use absolute metadata paths rooted in worktreePath.
+    const workingWUPath = worktreeMetadataPaths.wuPath;
+    const workingStatusPath = worktreeMetadataPaths.statusPath;
+    const workingBacklogPath = worktreeMetadataPaths.backlogPath;
+    const workingStampsDir = worktreeMetadataPaths.stampsDir;
+    const workingStampPath = worktreeMetadataPaths.stampPath;
 
     // ======================================================================
     // PHASE 1: RUN ALL VALIDATIONS FIRST (before any file writes)
@@ -354,12 +374,8 @@ export async function executeWorktreeCompletion(context) {
 
     // WU-2310: Capture file state before transaction commit
     // This allows rollback if git commit fails AFTER files are written
-    // WU-1541: Use absolute path via worktreePaths instead of relative path after chdir
-    const workingEventsPath = path.join(
-      worktreePath,
-      LUMENFLOW_PATHS.STATE_DIR,
-      WU_EVENTS_FILE_NAME,
-    );
+    // WU-1541: Use absolute path via worktree metadata paths instead of relative path after chdir
+    const workingEventsPath = worktreeMetadataPaths.eventsPath;
     const pathsToSnapshot = [
       workingWUPath,
       workingStatusPath,
