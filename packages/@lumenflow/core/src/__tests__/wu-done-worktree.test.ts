@@ -17,7 +17,10 @@ describe('wu:done worktree metadata path isolation', () => {
     mkdirSync(join(worktreeRoot, 'docs', '04-operations', 'tasks'), { recursive: true });
     mkdirSync(join(worktreeRoot, '.lumenflow', 'state'), { recursive: true });
 
-    writeFileSync(join(worktreeRoot, 'docs', '04-operations', 'tasks', 'backlog.md'), '# Backlog\n');
+    writeFileSync(
+      join(worktreeRoot, 'docs', '04-operations', 'tasks', 'backlog.md'),
+      '# Backlog\n',
+    );
     writeFileSync(
       join(worktreeRoot, '.lumenflow', 'state', 'wu-events.jsonl'),
       `${JSON.stringify({
