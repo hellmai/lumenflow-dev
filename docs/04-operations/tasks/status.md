@@ -4,7 +4,7 @@ _Last updated: 2026-02-10_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1573 — Build strict-mode progress tracking infrastructure](wu/WU-1573.yaml)
 
 ## Completed
 

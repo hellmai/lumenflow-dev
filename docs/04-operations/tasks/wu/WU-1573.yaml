@@ -2,7 +2,7 @@ id: WU-1573
 title: Build strict-mode progress tracking infrastructure
 lane: 'Operations: Tooling'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
   - tools/__tests__/tsconfig-strict.test.ts
 tests:
   manual:
-    - pnpm strict:progress prints baseline counts and exits non-zero when regression guard is violated
+    - pnpm strict:progress prints baseline counts and exits non-zero when regression guard is
+      violated
   unit:
     - packages/@lumenflow/cli/src/__tests__/commands.test.ts
     - tools/__tests__/tsconfig-strict.test.ts
@@ -32,10 +33,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: strict mode is still disabled in @lumenflow/core and @lumenflow/cli with a measured backlog of 1,862 strict errors. Problem: there is no first-class progress command or regression baseline to track strict debt burn-down safely across many parallel WUs. Solution: add strict-progress reporting and baseline artifacts, plus tests/guards so future WUs can reduce errors without drift.'
+description: 'Context: strict mode is still disabled in @lumenflow/core and @lumenflow/cli with a
+  measured backlog of 1,862 strict errors. Problem: there is no first-class progress command or
+  regression baseline to track strict debt burn-down safely across many parallel WUs. Solution: add
+  strict-progress reporting and baseline artifacts, plus tests/guards so future WUs can reduce
+  errors without drift.'
 acceptance:
   - A CLI command surfaces per-package strict error counts and top TS error codes for core and cli
   - A machine-readable baseline artifact is generated and stored for regression tracking
   - Documentation/tests cover how to update baseline intentionally versus failing on regressions
-  - tools/__tests__/tsconfig-strict.test.ts reports strict posture for core and cli without weakening current guarantees
+  - tools/__tests__/tsconfig-strict.test.ts reports strict posture for core and cli without
+    weakening current guarantees
   - The new reporting flow is usable from CI and local development
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1573
+claimed_at: 2026-02-10T16:43:42.326Z
+baseline_main_sha: bb8a5df45737e3ba42881767fd9c98d3f88ad244
+session_id: e6eeb229-5620-4f0c-a7d5-54d3dc370619
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T16:43:42.334Z
