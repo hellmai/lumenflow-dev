@@ -1,0 +1,43 @@
+id: WU-1581
+title: 'CLI strict wave 1A: high-impact WU command hotspots'
+lane: 'Framework: CLI WU Commands'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-10
+code_paths:
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/cli/src/wu-edit.ts
+tests:
+  manual:
+    - pnpm --filter @lumenflow/cli typecheck and confirm no strict regressions in the three hotspot files
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-edit.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1581.done
+dependencies: []
+initiative: INIT-022
+phase: 3
+blocked_by:
+  - WU-1574
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: strict backlog concentration in CLI is highest in wu-done, wu-claim, and wu-edit. Problem: these hotspots dominate remaining CLI strict debt and block safe strict enablement in later waves. Solution: add explicit types, unknown-error normalization, and narrow data-shape guards across the three hotspots while preserving command behavior and test coverage.'
+acceptance:
+  - Strict errors are removed from wu-done, wu-claim, and wu-edit without behavioral regressions
+  - Unknown/error handling uses shared helpers instead of ad-hoc any casts
+  - No net increase in as any usage in the touched CLI files
+  - CLI unit tests for touched commands pass
+  - Progress baseline reflects reduced strict debt for touched files
