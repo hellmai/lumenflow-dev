@@ -13,7 +13,13 @@ import * as path from 'node:path';
 import * as yaml from 'yaml';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { getDefaultConfig, createWUParser, WU_OPTIONS, CLAUDE_HOOKS } from '@lumenflow/core';
+import {
+  getDefaultConfig,
+  createWUParser,
+  WU_OPTIONS,
+  CLAUDE_HOOKS,
+  LUMENFLOW_CLIENT_IDS,
+} from '@lumenflow/core';
 // WU-1067: Import GATE_PRESETS for --preset support
 import { GATE_PRESETS } from '@lumenflow/core/gates-config';
 // WU-1171: Import merge block utilities
@@ -25,7 +31,7 @@ import { runDoctorForInit } from './doctor.js';
 // WU-1505: Use shared SessionStart hook generator (vendor wrappers stay thin)
 import { generateSessionStartRecoveryScript } from './hooks/enforcement-generator.js';
 // WU-1576: Import integrate to fold enforcement hooks into init for Claude
-import { integrateClaudeCode } from './commands/integrate.js';
+import { integrateClaudeCode, type IntegrateEnforcementConfig } from './commands/integrate.js';
 // WU-1433: Import public manifest to derive scripts (no hardcoded subset)
 import { getPublicManifest } from './public-manifest.js';
 import { runCLI } from './cli-entry-point.js';
@@ -143,7 +149,7 @@ export type DetectedIDE = 'claude' | 'cursor' | 'windsurf' | 'vscode' | undefine
 // eslint-disable-next-line sonarjs/redundant-type-aliases -- Intentional backwards compatibility
 export type VendorType = ClientType;
 
-const DEFAULT_CLIENT_CLAUDE = 'claude-code' as const;
+const DEFAULT_CLIENT_CLAUDE = LUMENFLOW_CLIENT_IDS.CLAUDE_CODE;
 
 export type DefaultClient = typeof DEFAULT_CLIENT_CLAUDE | 'none';
 
@@ -2465,12 +2471,19 @@ function hasOriginRemote(targetDir: string): boolean {
 // Vendor-agnostic dispatch map: client key in config → integration adapter.
 // Each adapter runs integration and returns relative paths of files it created.
 // init.ts has zero knowledge of client-specific paths — adapters own that.
-const CLIENT_INTEGRATIONS: Record<
-  string,
-  (projectDir: string, enforcement: Record<string, unknown>) => Promise<string[]>
-> = {
-  [DEFAULT_CLIENT_CLAUDE]: (projectDir, enforcement) =>
-    integrateClaudeCode(projectDir, { enforcement }),
+type ClientIntegrationAdapter = (
+  projectDir: string,
+  enforcement: IntegrateEnforcementConfig,
+) => Promise<string[]>;
+
+interface ClientIntegration {
+  run: ClientIntegrationAdapter;
+}
+
+const CLIENT_INTEGRATIONS: Record<string, ClientIntegration> = {
+  [LUMENFLOW_CLIENT_IDS.CLAUDE_CODE]: {
+    run: (projectDir, enforcement) => integrateClaudeCode(projectDir, { enforcement }),
+  },
   // When new clients gain enforcement: add adapter entry here.
 };
 
@@ -2493,13 +2506,13 @@ async function runClientIntegrations(targetDir: string, result: ScaffoldResult):
   if (!clients) return integrationFiles;
 
   for (const [clientKey, clientConfig] of Object.entries(clients)) {
-    const enforcement = clientConfig.enforcement as Record<string, unknown> | undefined;
+    const enforcement = clientConfig.enforcement as IntegrateEnforcementConfig | undefined;
     if (!enforcement?.hooks) continue;
 
-    const integrateFn = CLIENT_INTEGRATIONS[clientKey];
-    if (!integrateFn) continue;
+    const integration = CLIENT_INTEGRATIONS[clientKey];
+    if (!integration) continue;
 
-    const createdFiles = await integrateFn(targetDir, enforcement);
+    const createdFiles = await integration.run(targetDir, enforcement);
     integrationFiles.push(...createdFiles);
   }
 

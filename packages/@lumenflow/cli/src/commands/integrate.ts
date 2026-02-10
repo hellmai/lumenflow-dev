@@ -18,7 +18,13 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as yaml from 'yaml';
-import { createWUParser, WU_OPTIONS, CLAUDE_HOOKS, DIRECTORIES } from '@lumenflow/core';
+import {
+  createWUParser,
+  WU_OPTIONS,
+  CLAUDE_HOOKS,
+  DIRECTORIES,
+  LUMENFLOW_CLIENT_IDS,
+} from '@lumenflow/core';
 import {
   generateEnforcementHooks,
   generateEnforceWorktreeScript,
@@ -35,7 +41,7 @@ const INTEGRATE_OPTIONS = {
   client: {
     name: 'client',
     flags: '--client <type>',
-    description: 'Client type to integrate (claude-code)',
+    description: `Client type to integrate (${LUMENFLOW_CLIENT_IDS.CLAUDE_CODE})`,
   },
   force: WU_OPTIONS.force,
 };
@@ -99,7 +105,7 @@ export function parseIntegrateOptions(): {
   });
 
   return {
-    client: opts.client ?? 'claude-code',
+    client: opts.client ?? LUMENFLOW_CLIENT_IDS.CLAUDE_CODE,
     force: opts.force ?? false,
   };
 }
@@ -278,7 +284,7 @@ function readEnforcementConfig(projectDir: string): IntegrateEnforcementConfig |
   try {
     const content = fs.readFileSync(configPath, 'utf-8');
     const config = yaml.parse(content);
-    return config?.agents?.clients?.['claude-code']?.enforcement ?? null;
+    return config?.agents?.clients?.[LUMENFLOW_CLIENT_IDS.CLAUDE_CODE]?.enforcement ?? null;
   } catch {
     return null;
   }
@@ -290,9 +296,11 @@ function readEnforcementConfig(projectDir: string): IntegrateEnforcementConfig |
 export async function main(): Promise<void> {
   const opts = parseIntegrateOptions();
 
-  if (opts.client !== 'claude-code') {
+  if (opts.client !== LUMENFLOW_CLIENT_IDS.CLAUDE_CODE) {
     console.error(`[integrate] Unsupported client: ${opts.client}`);
-    console.error('[integrate] Currently only "claude-code" is supported');
+    console.error(
+      `[integrate] Currently only "${LUMENFLOW_CLIENT_IDS.CLAUDE_CODE}" is supported`,
+    );
     process.exit(1);
   }
 
@@ -307,7 +315,7 @@ export async function main(): Promise<void> {
     console.log(`
 agents:
   clients:
-    claude-code:
+    ${LUMENFLOW_CLIENT_IDS.CLAUDE_CODE}:
       enforcement:
         hooks: true
         block_outside_worktree: true

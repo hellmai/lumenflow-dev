@@ -25,6 +25,7 @@ const ARC42_DOCS_STRUCTURE = 'arc42' as const;
 const STARTING_PROMPT_FILE = 'starting-prompt.md';
 const LUMENFLOW_CONFIG_FILE = '.lumenflow.config.yaml';
 const LANE_INFERENCE_FILE = '.lumenflow.lane-inference.yaml';
+const TEST_CLAUDE_CLIENT_ID = 'claude-code';
 
 describe('greenfield onboarding (WU-1364)', () => {
   let tempDir: string;
@@ -472,6 +473,27 @@ describe('greenfield onboarding (WU-1364)', () => {
       expect(createdStr).toContain('enforce-worktree.sh');
       expect(createdStr).toContain('require-wu.sh');
       expect(createdStr).toContain('warn-incomplete.sh');
+    });
+
+    it('should write enforcement config under canonical client ID key', async () => {
+      await scaffoldProject(tempDir, getClaudeOptions());
+
+      const configPath = path.join(tempDir, LUMENFLOW_CONFIG_FILE);
+      const content = fs.readFileSync(configPath, 'utf-8');
+      const config = yaml.parse(content);
+
+      expect(config?.agents?.clients?.[TEST_CLAUDE_CLIENT_ID]).toBeDefined();
+    });
+
+    it('should leave integrationFiles empty for non-claude clients', async () => {
+      const result = await scaffoldProject(tempDir, {
+        force: false,
+        full: true,
+        client: 'cursor',
+        docsStructure: ARC42_DOCS_STRUCTURE,
+      });
+
+      expect(result.integrationFiles ?? []).toEqual([]);
     });
   });
 
