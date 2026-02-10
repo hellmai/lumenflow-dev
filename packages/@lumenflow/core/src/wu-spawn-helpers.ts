@@ -13,7 +13,8 @@
 
 import { Command } from 'commander';
 import { SpawnRegistryStore } from './spawn-registry-store.js';
-import { LUMENFLOW_PATHS } from './wu-constants.js';
+import { ProcessExitError } from './error-handler.js';
+import { EXIT_CODES, LUMENFLOW_PATHS } from './wu-constants.js';
 
 /**
  * Option definitions for thinking mode configuration.
@@ -61,7 +62,7 @@ export function parseSpawnArgs(argv) {
     program.parse(argv);
   } catch (err) {
     if (err.code === 'commander.helpDisplayed' || err.code === 'commander.version') {
-      process.exit(0);
+      throw new ProcessExitError('Help displayed', EXIT_CODES.SUCCESS);
     }
     throw err;
   }

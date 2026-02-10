@@ -1,5 +1,5 @@
 import { Command, type OptionValues } from 'commander';
-import { createError, ErrorCodes } from './error-handler.js';
+import { createError, ErrorCodes, ProcessExitError } from './error-handler.js';
 import { EXIT_CODES } from './wu-constants.js';
 
 /**
@@ -645,9 +645,10 @@ export function createWUParser(config: {
   try {
     program.parse(filteredArgv);
   } catch (err) {
-    // Commander throws on help/version display - exit gracefully
+    // Commander throws on help/version display.
+    // Core modules throw typed exit errors; CLI entrypoints map them to process.exit().
     if (err.code === 'commander.helpDisplayed' || err.code === 'commander.version') {
-      process.exit(EXIT_CODES.SUCCESS);
+      throw new ProcessExitError('Help displayed', EXIT_CODES.SUCCESS);
     }
     // Commander throws on missing required options
     if (
