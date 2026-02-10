@@ -1109,4 +1109,5 @@
 {"type":"claim","wuId":"WU-1578","timestamp":"2026-02-10T22:20:32.637Z","lane":"Framework: CLI Enforcement","title":"Formalize client integration contract/constants for vendor-agnostic init"}
 {"type":"complete","wuId":"WU-1578","timestamp":"2026-02-10T22:27:20.448Z"}
 {"type":"complete","wuId":"WU-1575","timestamp":"2026-02-10T22:35:11.852Z"}
-{"type":"claim","wuId":"WU-1579","lane":"Framework: CLI Enforcement","title":"Align init-scripts gitignore tests with WU-1519 state-tracking policy","timestamp":"2026-02-10T22:43:39.508Z"}
+{"type":"claim","wuId":"WU-1579","timestamp":"2026-02-10T22:43:39.508Z","lane":"Framework: CLI Enforcement","title":"Align init-scripts gitignore tests with WU-1519 state-tracking policy"}
+{"type":"complete","wuId":"WU-1579","timestamp":"2026-02-10T22:47:34.807Z"}

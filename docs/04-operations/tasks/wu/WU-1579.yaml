@@ -2,7 +2,7 @@ id: WU-1579
 title: Align init-scripts gitignore tests with WU-1519 state-tracking policy
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -44,3 +44,6 @@ description: 'Context: Main currently has failing init-scripts tests expecting .
 acceptance:
   - init-scripts .gitignore tests no longer expect .lumenflow/state to be ignored
   - init-scripts suite passes on main after fix
+locked: true
+completed_at: 2026-02-10T22:47:32.236Z
+completed: 2026-02-10

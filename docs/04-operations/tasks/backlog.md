@@ -32,10 +32,17 @@ sections:
 - [WU-1574 — Establish strict-mode shared type foundations](wu/WU-1574.yaml) — Framework: Core Validation
 - [WU-1580 — Fix pre-existing orchestration schema test regressions blocking gates](wu/WU-1580.yaml) — Framework: CLI Enforcement
 - [WU-1581 — CLI strict wave 1A: high-impact WU command hotspots](wu/WU-1581.yaml) — Framework: CLI WU Commands
+- [WU-1582 — CLI strict wave 1B: initiative and gates command fixes](wu/WU-1582.yaml) — Framework: CLI Orchestration
+- [WU-1583 — CLI strict wave 1C: remaining fixes and strict enablement](wu/WU-1583.yaml) — Framework: CLI Enforcement
+- [WU-1584 — Core strict wave 2A: lifecycle strict hotspots](wu/WU-1584.yaml) — Framework: Core Lifecycle
+- [WU-1585 — Core strict wave 2B: WU management strict fixes](wu/WU-1585.yaml) — Framework: Core Validation
+- [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml) — Framework: Core Lifecycle
+- [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
+- [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
 
 ## 🔧 In progress
 
-- [WU-1579 — Align init-scripts gitignore tests with WU-1519 state-tracking policy](wu/WU-1579.yaml) — Framework: CLI Enforcement
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -565,4 +572,5 @@ sections:
 - [WU-1576 — Fold integrate into init for bomb-proof onboarding](wu/WU-1576.yaml)
 - [WU-1578 — Formalize client integration contract/constants for vendor-agnostic init](wu/WU-1578.yaml)
 - [WU-1575 — Fix pre-existing CLI test failures blocking gates](wu/WU-1575.yaml)
+- [WU-1579 — Align init-scripts gitignore tests with WU-1519 state-tracking policy](wu/WU-1579.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
