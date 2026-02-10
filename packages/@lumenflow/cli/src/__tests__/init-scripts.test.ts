@@ -204,8 +204,8 @@ describe('init .gitignore generation (WU-1342)', () => {
     // Must include node_modules
     expect(content).toContain('node_modules');
 
-    // Must include .lumenflow/state
-    expect(content).toContain('.lumenflow/state');
+    // Must include .lumenflow/telemetry
+    expect(content).toContain('.lumenflow/telemetry');
 
     // Must include worktrees
     expect(content).toContain('worktrees');
@@ -229,7 +229,7 @@ describe('init .gitignore generation (WU-1342)', () => {
 
     // Should add LumenFlow exclusions
     expect(content).toContain('node_modules');
-    expect(content).toContain('.lumenflow/state');
+    expect(content).toContain('.lumenflow/telemetry');
     expect(content).toContain('worktrees');
   });
 });

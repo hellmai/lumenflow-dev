@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateCreateSpec } from '../dist/wu-create.js';
+import { validateCreateSpec } from '../src/wu-create.js';
 
 describe('wu:create spec validation (WU-1043)', () => {
   const baseArgs = {
@@ -14,6 +14,7 @@ describe('wu:create spec validation (WU-1043)', () => {
       acceptance: ['Acceptance criterion'],
       // WU-1173: codePaths is now an array (supports repeatable pattern)
       codePaths: ['packages/@lumenflow/cli/src/wu-create.ts'],
+      testPathsManual: ['Manual test: verify wu:create validation output'],
       testPathsUnit: ['packages/@lumenflow/cli/__tests__/wu-create.test.ts'],
       exposure: 'backend-only',
       specRefs: ['docs/04-operations/plans/WU-9999-plan.md'],

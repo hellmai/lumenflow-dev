@@ -39,7 +39,7 @@ import {
   MethodologyDefaultsSchema,
   AgentsConfigSchema,
   ClientConfigSchema,
-} from '@lumenflow/core';
+} from '../packages/@lumenflow/core/src/index.ts';
 import { PUBLIC_MANIFEST } from '../packages/@lumenflow/cli/src/public-manifest.ts';
 
 const __filename = fileURLToPath(import.meta.url);

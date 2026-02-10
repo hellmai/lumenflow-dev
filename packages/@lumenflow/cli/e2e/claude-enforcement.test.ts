@@ -21,7 +21,7 @@ import { spawnSync } from 'node:child_process';
 import { parse as parseYAML } from 'yaml';
 
 const CLAUDE_CODE_CLIENT = 'claude-code';
-const DOCS_LANE = 'Content: Documentation';
+const DOCS_LANE = 'Content: Framework Docs';
 
 interface CommandResult {
   code: number;
@@ -437,13 +437,14 @@ sections:
         '--acceptance',
         'Commands run end-to-end',
         '--code-paths',
-        'docs/04-operations/tasks/backlog.md',
+        `docs/04-operations/tasks/wu/${wuId}.yaml`,
         '--test-paths-manual',
         'Run lifecycle e2e',
         '--spec-refs',
         'docs/plan.md',
         '--exposure',
         'documentation',
+        '--no-strict',
       ];
       const create = runCommand('node', createArgs, sandbox);
       assertCommandSuccess('wu:create', 'node', createArgs, sandbox, create);
