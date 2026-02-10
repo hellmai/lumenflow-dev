@@ -2,7 +2,7 @@ id: WU-1577
 title: Prevent wu:done rollback leaks on main during merge failure
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-10
 code_paths:
@@ -19,7 +19,10 @@ artifacts:
   - .lumenflow/stamps/WU-1577.done
 dependencies: []
 risks: []
-notes: 'Added validateMainNotBehindOrigin() pre-transaction check and rollbackMainAfterMergeFailure() to wu-done-worktree.ts. The pre-transaction check aborts before any file writes when local main is behind origin. The catch block now captures preMainMergeSha before merge and resets main to it if push/rebase fails post-merge, preventing wu-events.jsonl/backlog/status leaks.'
+notes: Added validateMainNotBehindOrigin() pre-transaction check and rollbackMainAfterMergeFailure()
+  to wu-done-worktree.ts. The pre-transaction check aborts before any file writes when local main is
+  behind origin. The catch block now captures preMainMergeSha before merge and resets main to it if
+  push/rebase fails post-merge, preventing wu-events.jsonl/backlog/status leaks.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -49,3 +52,6 @@ session_id: fe6d989c-0bef-42c4-a06f-5b4c1ee9523c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T17:53:57.300Z
+locked: true
+completed_at: 2026-02-10T18:07:10.782Z
+completed: 2026-02-10

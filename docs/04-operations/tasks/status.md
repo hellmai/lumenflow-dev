@@ -6,7 +6,6 @@ _Last updated: 2026-02-10_
 
 - [WU-1575 — Fix pre-existing CLI test failures blocking gates](wu/WU-1575.yaml)
 - [WU-1576 — Fold integrate into init for bomb-proof onboarding](wu/WU-1576.yaml)
-- [WU-1577 — Prevent wu:done rollback leaks on main during merge failure](wu/WU-1577.yaml)
 
 ## Completed
 
@@ -528,3 +527,4 @@ _Last updated: 2026-02-10_
 - [WU-1571 — Regenerate backlog/status after WU-1570 generator update](wu/WU-1571.yaml) — 2026-02-10
 - [WU-1572 — Auto-sync initiative phase/status during wu:done](wu/WU-1572.yaml) — 2026-02-10
 - [WU-1573 — Build strict-mode progress tracking infrastructure](wu/WU-1573.yaml) — 2026-02-10
+- [WU-1577 — Prevent wu:done rollback leaks on main during merge failure](wu/WU-1577.yaml) — 2026-02-10

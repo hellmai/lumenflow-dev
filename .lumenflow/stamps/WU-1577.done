@@ -1,0 +1,2 @@
+WU WU-1577 — Prevent wu:done rollback leaks on main during merge failure
+Completed: 2026-02-10
