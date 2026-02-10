@@ -13,7 +13,7 @@ target_date: 2026-02-28
 phases:
   - id: 1
     title: Fix remaining process.exit in core library functions
-    status: pending
+    status: done
   - id: 2
     title: Eliminate process.chdir from gates.ts
     status: pending
