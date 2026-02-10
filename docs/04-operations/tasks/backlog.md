@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1564 — Reconcile INIT-020 lifecycle event-store mismatches](wu/WU-1564.yaml) — Content: Specs Governance
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1555 — Fix pre-existing test failures in orchestration.schemas, filesystem-metrics.adapter, terminal-renderer.adapter](wu/WU-1555.yaml) — Framework: Core Lifecycle
 - [WU-1557 — Fix remaining process.exit calls in core library functions](wu/WU-1557.yaml) — Framework: Core Lifecycle
@@ -36,11 +35,11 @@ sections:
 - [WU-1548 — Centralize status and remaining duplicated literals](wu/WU-1548.yaml) — Framework: Core Lifecycle
 - [WU-1547 — Lock down dist imports and verify boundary](wu/WU-1547.yaml) — Framework: Core Lifecycle
 - [WU-1550 — Introduce gate and validator registry patterns](wu/WU-1550.yaml) — Framework: CLI WU Commands
-- [WU-1544 — Re-enable TypeScript lint rules](wu/WU-1544.yaml) — Operations: Tooling
 - [WU-1545 — Lock down dist imports and verify boundary](wu/WU-1545.yaml) — Framework: Core Lifecycle
 - [WU-1546 — Re-enable TypeScript lint rules](wu/WU-1546.yaml) — Operations: Tooling
 - [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml) — Framework: Core Lifecycle
 - [WU-1556 — Stop lifecycle repair loops and enforce closeout consistency](wu/WU-1556.yaml) — Operations: Tooling
+- [WU-1564 — Reconcile INIT-020 lifecycle event-store mismatches](wu/WU-1564.yaml) — Content: Specs Governance
 
 ## ⛔ Blocked
 
@@ -541,4 +540,5 @@ sections:
 - [WU-1562 — Enforce runtime parity for lifecycle commands](wu/WU-1562.yaml)
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml)
 - [WU-1563 — Fix wu:done worktree metadata path isolation regression](wu/WU-1563.yaml)
+- [WU-1544 — Re-enable TypeScript lint rules](wu/WU-1544.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
