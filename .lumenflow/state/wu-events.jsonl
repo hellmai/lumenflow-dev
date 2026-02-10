@@ -1062,3 +1062,11 @@
 {"wuId":"WU-1544","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-10T11:37:09.347Z"}
 {"type":"claim","wuId":"WU-1564","lane":"Content: Specs Governance","title":"Reconcile INIT-020 lifecycle event-store mismatches","timestamp":"2026-02-10T11:40:06.012Z"}
 {"type":"release","wuId":"WU-1552","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-10T11:43:11.205Z"}
+{"wuId":"WU-1545","type":"complete","reason":"WU-1564 reconciliation: align state store with YAML status 'done'","timestamp":"2026-02-10T11:43:36.368Z"}
+{"wuId":"WU-1546","type":"complete","reason":"WU-1564 reconciliation: align state store with YAML status 'done'","timestamp":"2026-02-10T11:43:36.368Z"}
+{"wuId":"WU-1547","type":"complete","reason":"WU-1564 reconciliation: align state store with YAML status 'done'","timestamp":"2026-02-10T11:43:36.368Z"}
+{"wuId":"WU-1548","type":"complete","reason":"WU-1564 reconciliation: align state store with YAML status 'done'","timestamp":"2026-02-10T11:43:36.368Z"}
+{"wuId":"WU-1550","type":"complete","reason":"WU-1564 reconciliation: align state store with YAML status 'done'","timestamp":"2026-02-10T11:43:36.368Z"}
+{"wuId":"WU-1551","type":"complete","reason":"WU-1564 reconciliation: align state store with YAML status 'done'","timestamp":"2026-02-10T11:43:36.368Z"}
+{"wuId":"WU-1554","type":"complete","reason":"WU-1564 reconciliation: align state store with YAML status 'done'","timestamp":"2026-02-10T11:43:36.368Z"}
+{"wuId":"WU-1556","type":"complete","reason":"WU-1564 reconciliation: align state store with YAML status 'done'","timestamp":"2026-02-10T11:43:36.368Z"}
