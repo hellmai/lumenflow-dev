@@ -24,6 +24,8 @@ import { isMainBranch, isInWorktree } from '@lumenflow/core/core/worktree-guard'
 import { runDoctorForInit } from './doctor.js';
 // WU-1505: Use shared SessionStart hook generator (vendor wrappers stay thin)
 import { generateSessionStartRecoveryScript } from './hooks/enforcement-generator.js';
+// WU-1576: Import integrate to fold enforcement hooks into init for Claude
+import { integrateClaudeCode } from './commands/integrate.js';
 // WU-1433: Import public manifest to derive scripts (no hardcoded subset)
 import { getPublicManifest } from './public-manifest.js';
 import { runCLI } from './cli-entry-point.js';
@@ -428,6 +430,8 @@ export function checkPrerequisites(): PrerequisiteResults {
  * WU-1307: Default lane definitions for config generation
  * These lanes match the parent lanes used in onboarding documentation.
  */
+// WU-1576: Lane definitions must have zero overlapping code_paths.
+// Each path must appear in exactly one lane to avoid doctor warnings.
 const DEFAULT_LANE_DEFINITIONS = [
   {
     name: 'Framework: Core',
@@ -440,19 +444,14 @@ const DEFAULT_LANE_DEFINITIONS = [
     code_paths: ['packages/**/cli/**', 'src/cli/**', 'bin/**'],
   },
   {
-    name: 'Experience: UI',
-    wip_limit: 1,
-    code_paths: ['apps/web/**', 'src/components/**', 'src/pages/**', 'src/app/**'],
-  },
-  {
     name: 'Experience: Web',
     wip_limit: 1,
-    code_paths: ['apps/web/**', 'web/**'],
+    code_paths: ['apps/web/**', 'web/**', 'src/components/**', 'src/pages/**', 'src/app/**'],
   },
   {
     name: 'Operations: Infrastructure',
     wip_limit: 1,
-    code_paths: ['apps/**', 'infrastructure/**', 'deploy/**'],
+    code_paths: ['infrastructure/**', 'deploy/**'],
   },
   {
     name: 'Operations: CI/CD',
@@ -2452,6 +2451,68 @@ function hasOriginRemote(targetDir: string): boolean {
 }
 
 /**
+ * WU-1576: Run client-specific integrations (enforcement hooks) based on config.
+ *
+ * Reads the just-scaffolded .lumenflow.config.yaml and runs integration for any
+ * client that has enforcement.hooks enabled. This is vendor-agnostic: when new
+ * clients add enforcement support, register them in CLIENT_INTEGRATIONS.
+ *
+ * Must run BEFORE the initial commit so all generated files are included.
+ */
+
+// Vendor-agnostic dispatch map: client key in config → integration function
+const CLIENT_INTEGRATIONS: Record<
+  string,
+  (projectDir: string, enforcement: Record<string, unknown>) => Promise<void>
+> = {
+  'claude-code': async (projectDir, enforcement) => {
+    await integrateClaudeCode(projectDir, { enforcement });
+  },
+  // Future: 'cursor': integrateCursor, 'windsurf': integrateWindsurf, etc.
+};
+
+async function runClientIntegrations(
+  targetDir: string,
+  result: ScaffoldResult,
+): Promise<void> {
+  const configPath = path.join(targetDir, CONFIG_FILE_NAME);
+  if (!fs.existsSync(configPath)) return;
+
+  let config: Record<string, unknown>;
+  try {
+    const content = fs.readFileSync(configPath, 'utf-8');
+    config = yaml.parse(content) as Record<string, unknown>;
+  } catch {
+    return; // Config unreadable — skip silently
+  }
+
+  const agents = config.agents as Record<string, unknown> | undefined;
+  const clients = agents?.clients as Record<string, Record<string, unknown>> | undefined;
+  if (!clients) return;
+
+  for (const [clientKey, clientConfig] of Object.entries(clients)) {
+    const enforcement = clientConfig.enforcement as Record<string, unknown> | undefined;
+    if (!enforcement?.hooks) continue;
+
+    const integrateFn = CLIENT_INTEGRATIONS[clientKey];
+    if (!integrateFn) continue;
+
+    await integrateFn(targetDir, enforcement);
+
+    // Track generated files in scaffold result
+    if (enforcement.block_outside_worktree) {
+      result.created.push(`.claude/hooks/enforce-worktree.sh`);
+    }
+    if (enforcement.require_wu_for_edits) {
+      result.created.push(`.claude/hooks/require-wu.sh`);
+    }
+    if (enforcement.warn_on_stop_without_wu_done) {
+      result.created.push(`.claude/hooks/warn-incomplete.sh`);
+    }
+  }
+}
+
+/**
  * WU-1364: Create initial commit if git repo has no commits
  */
 function createInitialCommitIfNeeded(targetDir: string): boolean {
@@ -2715,6 +2776,11 @@ export async function scaffoldProject(
   if (options.full) {
     await injectPackageJsonScripts(targetDir, options, result);
   }
+
+  // WU-1576: Run client integrations (enforcement hooks) BEFORE initial commit
+  // Reads the just-scaffolded config to find clients with enforcement enabled.
+  // Vendor-agnostic: dispatches per-client; currently only claude-code is supported.
+  await runClientIntegrations(targetDir, result);
 
   // WU-1364: Create initial commit if git repo has no commits
   // This must be done after all files are created
@@ -3830,9 +3896,14 @@ export async function main(): Promise<void> {
 
   // WU-1359: Show complete lifecycle with auto-ID (no --id flag required)
   // WU-1364: Added initiative-first guidance for product visions
+  // WU-1576: Show enforcement hooks status when applicable
+  const hasEnforcementHooks = result.created.some((f) => f.includes('/hooks/'));
   console.log('\n[lumenflow init] Done! Next steps:');
   console.log('  1. Review AGENTS.md and LUMENFLOW.md for workflow documentation');
   console.log(`  2. Edit ${CONFIG_FILE_NAME} to match your project structure`);
+  if (hasEnforcementHooks) {
+    console.log('  ✓ Enforcement hooks installed (worktree discipline, WU requirement, session warnings)');
+  }
   console.log('');
   console.log('  For a product vision (multi-phase work):');
   console.log('     pnpm initiative:create --id INIT-001 --title "Project Name" \\');

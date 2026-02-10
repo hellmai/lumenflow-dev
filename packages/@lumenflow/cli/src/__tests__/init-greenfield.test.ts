@@ -18,6 +18,7 @@ import * as os from 'node:os';
 import { execFileSync } from 'node:child_process';
 
 import { scaffoldProject, type ScaffoldOptions } from '../init.js';
+import * as yaml from 'yaml';
 
 // Constants to avoid duplicate strings
 const ARC42_DOCS_STRUCTURE = 'arc42' as const;
@@ -388,6 +389,177 @@ describe('greenfield onboarding (WU-1364)', () => {
         expect(output).toMatch(/initiative|product vision|INIT-/i);
       } finally {
         console.log = originalLog;
+      }
+    });
+  });
+
+  describe('AC: WU-1576 — Init with --client claude auto-runs integrate', () => {
+    function getClaudeOptions(): ScaffoldOptions {
+      return {
+        force: false,
+        full: true,
+        client: 'claude',
+        docsStructure: ARC42_DOCS_STRUCTURE,
+      };
+    }
+
+    it('should generate enforcement hook scripts during init with --client claude', async () => {
+      initEmptyGitRepo();
+      await scaffoldProject(tempDir, getClaudeOptions());
+
+      // Enforcement hooks should exist after init (not requiring separate integrate step)
+      const hooksDir = path.join(tempDir, '.claude', 'hooks');
+      expect(fs.existsSync(path.join(hooksDir, 'enforce-worktree.sh'))).toBe(true);
+      expect(fs.existsSync(path.join(hooksDir, 'require-wu.sh'))).toBe(true);
+      expect(fs.existsSync(path.join(hooksDir, 'warn-incomplete.sh'))).toBe(true);
+    });
+
+    it('should include enforcement hooks in the initial commit', async () => {
+      initEmptyGitRepo();
+      await scaffoldProject(tempDir, getClaudeOptions());
+
+      // All enforcement hooks should be committed (not left as untracked files)
+      const statusOutput = execFileSync('git', ['status', '--porcelain'], {
+        cwd: tempDir,
+        encoding: 'utf-8',
+        stdio: 'pipe',
+      }).trim();
+
+      // No untracked or modified files should remain for hooks
+      expect(statusOutput).not.toContain('.claude/hooks/enforce-worktree.sh');
+      expect(statusOutput).not.toContain('.claude/hooks/require-wu.sh');
+      expect(statusOutput).not.toContain('.claude/hooks/warn-incomplete.sh');
+      expect(statusOutput).not.toContain('.claude/settings.json');
+    });
+
+    it('should update settings.json with hook configuration during init', async () => {
+      initEmptyGitRepo();
+      await scaffoldProject(tempDir, getClaudeOptions());
+
+      const settingsPath = path.join(tempDir, '.claude', 'settings.json');
+      expect(fs.existsSync(settingsPath)).toBe(true);
+
+      const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
+      // Should have PreToolUse hooks for Write|Edit
+      expect(settings.hooks?.PreToolUse).toBeDefined();
+      const writeEditHook = settings.hooks.PreToolUse.find(
+        (h: { matcher: string }) => h.matcher === 'Write|Edit',
+      );
+      expect(writeEditHook).toBeDefined();
+      expect(writeEditHook.hooks.length).toBeGreaterThanOrEqual(2); // enforce-worktree + require-wu
+    });
+
+    it('should NOT generate enforcement hooks for non-claude clients', async () => {
+      initEmptyGitRepo();
+      await scaffoldProject(tempDir, {
+        force: false,
+        full: true,
+        client: 'cursor',
+        docsStructure: ARC42_DOCS_STRUCTURE,
+      });
+
+      // Cursor client should not have claude enforcement hooks
+      const hooksDir = path.join(tempDir, '.claude', 'hooks');
+      expect(fs.existsSync(path.join(hooksDir, 'enforce-worktree.sh'))).toBe(false);
+    });
+
+    it('should report enforcement hooks in created files list', async () => {
+      initEmptyGitRepo();
+      const result = await scaffoldProject(tempDir, getClaudeOptions());
+
+      // The result.created should mention enforcement hooks
+      const createdStr = result.created.join('\n');
+      expect(createdStr).toContain('enforce-worktree.sh');
+      expect(createdStr).toContain('require-wu.sh');
+      expect(createdStr).toContain('warn-incomplete.sh');
+    });
+  });
+
+  describe('AC: WU-1576 — Init Next Steps mentions integrate for Claude', () => {
+    it('should mention enforcement hooks in Next Steps when --client claude', async () => {
+      const consoleLogs: string[] = [];
+      const originalLog = console.log;
+      console.log = (...args: unknown[]) => {
+        consoleLogs.push(args.join(' '));
+      };
+
+      try {
+        const { main } = await import('../init.js');
+        const originalCwd = process.cwd();
+        process.chdir(tempDir);
+        const originalArgv = process.argv;
+        process.argv = ['node', 'init', '--full', '--client', 'claude'];
+
+        try {
+          await main();
+        } finally {
+          process.argv = originalArgv;
+          process.chdir(originalCwd);
+        }
+
+        const output = consoleLogs.join('\n');
+        // Should mention that enforcement hooks were installed
+        expect(output).toMatch(/enforcement hooks|hooks installed|integrate/i);
+      } finally {
+        console.log = originalLog;
+      }
+    });
+  });
+
+  describe('AC: WU-1576 — Default lane definitions have zero overlaps', () => {
+    it('should generate lane definitions with no overlapping code_paths', async () => {
+      await scaffoldProject(tempDir, getArc42Options());
+
+      const configPath = path.join(tempDir, LUMENFLOW_CONFIG_FILE);
+      const content = fs.readFileSync(configPath, 'utf-8');
+      const config = yaml.parse(content);
+
+      const lanes = config.lanes?.definitions ?? [];
+      expect(lanes.length).toBeGreaterThan(0);
+
+      // Check every pair of lanes for overlapping code_paths
+      for (let i = 0; i < lanes.length; i++) {
+        for (let j = i + 1; j < lanes.length; j++) {
+          const pathsA = lanes[i].code_paths ?? [];
+          const pathsB = lanes[j].code_paths ?? [];
+          // No path should appear in both lanes
+          const overlap = pathsA.filter((p: string) => pathsB.includes(p));
+          expect(overlap).toEqual([]);
+        }
+      }
+    });
+
+    it('should not have glob patterns where one lane is a subset of another', async () => {
+      await scaffoldProject(tempDir, getArc42Options());
+
+      const configPath = path.join(tempDir, LUMENFLOW_CONFIG_FILE);
+      const content = fs.readFileSync(configPath, 'utf-8');
+      const config = yaml.parse(content);
+
+      const lanes = config.lanes?.definitions ?? [];
+
+      // Collect all code_paths with their lane names
+      const allPaths: Array<{ lane: string; pattern: string }> = [];
+      for (const lane of lanes) {
+        for (const p of lane.code_paths ?? []) {
+          allPaths.push({ lane: lane.name, pattern: p });
+        }
+      }
+
+      // Check that no path is a prefix/subset of another lane's path
+      // e.g., "apps/**" should not coexist with "apps/web/**" in different lanes
+      for (const a of allPaths) {
+        for (const b of allPaths) {
+          if (a.lane === b.lane) continue;
+          // Strip glob suffix and check prefix overlap
+          const baseA = a.pattern.replace(/\/?\*\*.*$/, '');
+          const baseB = b.pattern.replace(/\/?\*\*.*$/, '');
+          if (baseA && baseB && baseA !== baseB) {
+            const aContainsB = baseB.startsWith(baseA + '/');
+            const bContainsA = baseA.startsWith(baseB + '/');
+            expect(aContainsB || bContainsA).toBe(false);
+          }
+        }
       }
     });
   });
