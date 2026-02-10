@@ -10,6 +10,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { WU_OPTIONS, WU_CREATE_OPTIONS, createWUParser, parseWUArgs } from '../arg-parser.js';
+import { ProcessExitError } from '../error-handler.js';
 
 // Test fixture constants (WU-1173: avoid duplicate string lint errors)
 const TEST_PATH_A = 'src/a.ts';
@@ -480,6 +481,36 @@ describe('arg-parser', () => {
       });
 
       expect(opts.acceptance).toEqual(['Criterion 1', 'Criterion 2']);
+    });
+
+    it('should throw ProcessExitError for --help instead of calling process.exit', () => {
+      process.argv = ['node', 'test.js', '--help'];
+
+      expect(() =>
+        createWUParser({
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
+          options: [WU_OPTIONS.id],
+        }),
+      ).toThrow(ProcessExitError);
+
+      expect(process.exit).not.toHaveBeenCalled();
+    });
+
+    it('should throw ProcessExitError with exit code 0 for --help', () => {
+      process.argv = ['node', 'test.js', '--help'];
+
+      try {
+        createWUParser({
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
+          options: [WU_OPTIONS.id],
+        });
+        throw new Error('Expected ProcessExitError to be thrown');
+      } catch (err) {
+        expect(err).toBeInstanceOf(ProcessExitError);
+        expect((err as ProcessExitError).exitCode).toBe(0);
+      }
     });
 
     it('should return empty array for unused repeatable options', () => {

@@ -12,7 +12,7 @@ import { readFileSync } from 'fs';
 import { createHash } from 'crypto';
 import { parseYAML } from './wu-yaml.js';
 import { createError, ErrorCodes } from './error-handler.js';
-import { EXIT_CODES, STRING_LITERALS } from './wu-constants.js';
+import { STRING_LITERALS } from './wu-constants.js';
 
 // Cache tokenizer instance (expensive to create)
 let tokenizerCache = null;
@@ -159,7 +159,3 @@ export function cleanup() {
 
 // Auto-cleanup on process exit
 process.on('exit', cleanup);
-process.on('SIGINT', () => {
-  cleanup();
-  process.exit(EXIT_CODES.SUCCESS);
-});
