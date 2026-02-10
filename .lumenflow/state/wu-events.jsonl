@@ -1113,4 +1113,5 @@
 {"type":"complete","wuId":"WU-1579","timestamp":"2026-02-10T22:47:34.807Z"}
 {"type":"claim","wuId":"WU-1580","timestamp":"2026-02-10T22:50:04.108Z","lane":"Framework: CLI Enforcement","title":"Fix pre-existing orchestration schema test regressions blocking gates"}
 {"type":"complete","wuId":"WU-1580","timestamp":"2026-02-10T22:55:12.582Z"}
-{"type":"claim","wuId":"WU-1574","lane":"Framework: Core Validation","title":"Establish strict-mode shared type foundations","timestamp":"2026-02-10T23:12:03.510Z"}
+{"type":"claim","wuId":"WU-1574","timestamp":"2026-02-10T23:12:03.510Z","lane":"Framework: Core Validation","title":"Establish strict-mode shared type foundations"}
+{"type":"complete","wuId":"WU-1574","timestamp":"2026-02-10T23:32:41.528Z"}

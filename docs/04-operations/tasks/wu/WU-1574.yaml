@@ -2,7 +2,7 @@ id: WU-1574
 title: Establish strict-mode shared type foundations
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -58,3 +58,6 @@ session_id: 99732769-0e1d-4892-acbf-d41c793f07d5
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T23:12:03.494Z
+locked: true
+completed_at: 2026-02-10T23:32:38.860Z
+completed: 2026-02-10
