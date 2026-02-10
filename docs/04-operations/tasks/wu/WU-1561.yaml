@@ -13,7 +13,8 @@ tests:
   manual:
     - Run a LumenFlow CLI command without prior --help and verify hook warns or blocks
     - Run --help first, then the command, and verify hook allows it
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/cli-entry-point.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1561.done
