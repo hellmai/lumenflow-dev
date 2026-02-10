@@ -1073,4 +1073,5 @@
 {"type":"complete","wuId":"WU-1564","timestamp":"2026-02-10T11:47:12.845Z"}
 {"type":"claim","wuId":"WU-1565","timestamp":"2026-02-10T12:09:42.886Z","lane":"Framework: Core Validation","title":"Guard lifecycle checks against untracked done-stamp masking"}
 {"type":"complete","wuId":"WU-1565","timestamp":"2026-02-10T12:20:21.488Z"}
-{"type":"claim","wuId":"WU-1560","lane":"Content: Framework Docs","title":"INIT-020 YAML cleanup and WU-1534 notes correction","timestamp":"2026-02-10T12:38:40.169Z"}
+{"type":"claim","wuId":"WU-1560","timestamp":"2026-02-10T12:38:40.169Z","lane":"Content: Framework Docs","title":"INIT-020 YAML cleanup and WU-1534 notes correction"}
+{"type":"complete","wuId":"WU-1560","timestamp":"2026-02-10T12:40:37.217Z"}
