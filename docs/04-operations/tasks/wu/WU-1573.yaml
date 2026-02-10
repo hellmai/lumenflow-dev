@@ -8,14 +8,18 @@ created: 2026-02-10
 code_paths:
   - package.json
   - packages/@lumenflow/cli/src/commands.ts
-  - packages/@lumenflow/cli/src/flow-report.ts
+  - packages/@lumenflow/cli/src/__tests__/commands.test.ts
+  - packages/@lumenflow/cli/src/strict-progress.ts
+  - packages/@lumenflow/cli/src/__tests__/strict-progress.test.ts
   - tools/__tests__/tsconfig-strict.test.ts
+  - .lumenflow/strict-progress-baseline.json
 tests:
   manual:
     - pnpm strict:progress prints baseline counts and exits non-zero when regression guard is
       violated
   unit:
     - packages/@lumenflow/cli/src/__tests__/commands.test.ts
+    - packages/@lumenflow/cli/src/__tests__/strict-progress.test.ts
     - tools/__tests__/tsconfig-strict.test.ts
   e2e: []
 artifacts:

@@ -44,6 +44,21 @@ interface TsConfig {
   [key: string]: unknown;
 }
 
+function parseStrictExceptionCount(raw: unknown): number | null {
+  if (typeof raw !== 'string') {
+    return null;
+  }
+
+  const numbers = raw.match(/\d[\d,]*/g);
+  if (!numbers || numbers.length === 0) {
+    return null;
+  }
+
+  const first = numbers[0].replace(/,/g, '');
+  const parsed = Number.parseInt(first, 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 describe('WU-1535: Strict TypeScript build configuration', () => {
   describe('AC1: tsconfig.build.json enforces strict: true and noEmitOnError: true', () => {
     it('should have strict: true in tsconfig.build.json', () => {
@@ -108,6 +123,17 @@ describe('WU-1535: Strict TypeScript build configuration', () => {
       it(`${pkgName} should have noEmitOnError: true even with strict exception`, () => {
         const config = readJson(path) as TsConfig;
         expect(config.compilerOptions?.noEmitOnError).toBe(true);
+      });
+
+      it(`${pkgName} exposes strict backlog posture when strict is disabled`, () => {
+        const config = readJson(path) as TsConfig;
+
+        if (config.compilerOptions?.strict === false) {
+          const count = parseStrictExceptionCount(config._strictException);
+          expect(typeof count).toBe('number');
+        } else {
+          expect(config.compilerOptions?.strict).toBe(true);
+        }
       });
     }
   });
