@@ -18,7 +18,15 @@ import { describe, it, expect } from 'vitest';
 import { glob } from 'glob';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { WU_STATUS, LUMENFLOW_PATHS, DIRECTORIES } from '../wu-constants.js';
+import {
+  WU_STATUS,
+  LUMENFLOW_PATHS,
+  DIRECTORIES,
+  isWUStatus,
+  resolveWUStatus,
+  getWUStatusDisplay,
+  WU_STATUS_FALLBACK,
+} from '../wu-constants.js';
 
 /**
  * Canonical status values that must use WU_STATUS.* constants
@@ -156,6 +164,29 @@ function scanFileForStatusLiterals(
 
   return violations;
 }
+
+describe('WU-1574: status guard foundations', () => {
+  it('isWUStatus detects valid statuses', () => {
+    expect(isWUStatus(WU_STATUS.READY)).toBe(true);
+    expect(isWUStatus(WU_STATUS.BLOCKED)).toBe(true);
+  });
+
+  it('isWUStatus rejects unknown values', () => {
+    expect(isWUStatus('not-a-status')).toBe(false);
+    expect(isWUStatus(null)).toBe(false);
+    expect(isWUStatus({ status: WU_STATUS.READY })).toBe(false);
+  });
+
+  it('resolveWUStatus uses canonical fallback', () => {
+    expect(resolveWUStatus(undefined)).toBe(WU_STATUS.READY);
+    expect(resolveWUStatus(WU_STATUS.DONE, WU_STATUS.IN_PROGRESS)).toBe(WU_STATUS.DONE);
+  });
+
+  it('getWUStatusDisplay returns unknown fallback for invalid values', () => {
+    expect(getWUStatusDisplay(WU_STATUS.IN_PROGRESS)).toBe(WU_STATUS.IN_PROGRESS);
+    expect(getWUStatusDisplay(undefined)).toBe(WU_STATUS_FALLBACK.UNKNOWN);
+  });
+});
 
 describe('WU-1548: Status literal regression guard', () => {
   it('should not have bare status string literals in @lumenflow/core production source files', async () => {

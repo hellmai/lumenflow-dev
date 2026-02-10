@@ -18,6 +18,21 @@
 
 import path from 'node:path';
 
+const UNKNOWN_ERROR_MESSAGE = 'Unknown error';
+
+interface MessageLikeError {
+  message: string;
+}
+
+function hasMessage(value: unknown): value is MessageLikeError {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'message' in value &&
+    typeof (value as MessageLikeError).message === 'string'
+  );
+}
+
 /**
  * Typed error for process exit signals from library code.
  * WU-1538: Core modules throw this instead of calling process.exit directly.
@@ -79,6 +94,43 @@ export class WUError extends Error {
       Error.captureStackTrace(this, WUError);
     }
   }
+}
+
+/**
+ * Normalize unknown thrown values into Error instances.
+ *
+ * This is the strict-mode-safe boundary helper for `catch (err: unknown)`.
+ * Consumers should call this before accessing `.message`.
+ *
+ * @param {unknown} error - Unknown thrown value
+ * @param {string} [fallbackMessage='Unknown error'] - Message used when value has no message
+ * @returns {Error} Normalized Error instance
+ */
+export function toError(error: unknown, fallbackMessage = UNKNOWN_ERROR_MESSAGE): Error {
+  if (error instanceof Error) {
+    return error;
+  }
+
+  if (typeof error === 'string' && error.length > 0) {
+    return new Error(error);
+  }
+
+  if (hasMessage(error)) {
+    return new Error(error.message);
+  }
+
+  return new Error(fallbackMessage);
+}
+
+/**
+ * Strict-safe helper for extracting error messages from unknown values.
+ *
+ * @param {unknown} error - Unknown thrown value
+ * @param {string} [fallbackMessage='Unknown error'] - Message used when value has no message
+ * @returns {string} Resolved error message
+ */
+export function getErrorMessage(error: unknown, fallbackMessage = UNKNOWN_ERROR_MESSAGE): string {
+  return toError(error, fallbackMessage).message;
 }
 
 /**

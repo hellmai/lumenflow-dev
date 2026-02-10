@@ -1,15 +1,31 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ensureCleanWorktree } from '../wu-done-check.js';
-import { checkPostMergeDirtyState, computeBranchOnlyFallback } from '../wu-done.js';
+import {
+  checkPostMergeDirtyState,
+  computeBranchOnlyFallback,
+  getYamlStatusForDisplay,
+} from '../wu-done.js';
 import * as gitAdapter from '@lumenflow/core/git-adapter';
 import * as errorHandler from '@lumenflow/core/error-handler';
 import { validateInputs } from '@lumenflow/core/wu-done-inputs';
+import { WU_STATUS } from '@lumenflow/core/wu-constants';
 
 // Mock dependencies
 vi.mock('@lumenflow/core/git-adapter');
 vi.mock('@lumenflow/core/error-handler');
 
 describe('wu-done', () => {
+  describe('WU-1574: strict status display helper', () => {
+    it('returns canonical status when YAML status is valid', () => {
+      expect(getYamlStatusForDisplay(WU_STATUS.DONE)).toBe(WU_STATUS.DONE);
+    });
+
+    it('returns unknown when YAML status is invalid', () => {
+      expect(getYamlStatusForDisplay(undefined)).toBe('unknown');
+      expect(getYamlStatusForDisplay('bad-status')).toBe('unknown');
+    });
+  });
+
   // WU-1494: Verify --pr-draft is accepted by wu:done arg parser
   describe('--pr-draft parser/help parity (WU-1494)', () => {
     let originalArgv: string[];

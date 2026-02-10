@@ -40,7 +40,7 @@ import {
   calculateBackoff,
 } from '@lumenflow/core';
 import chalk from 'chalk';
-import ms from 'ms';
+import ms, { type StringValue } from 'ms';
 
 // ============================================================================
 // WU-1242: Watch Mode Constants
@@ -212,7 +212,7 @@ interface Signal {
 }
 
 function parseTimeString(timeStr: string): Date {
-  const msValue = ms(timeStr);
+  const msValue = ms(timeStr as StringValue);
   if (typeof msValue === 'number') {
     return new Date(Date.now() - msValue);
   }
@@ -370,7 +370,7 @@ export function parseWatchOptions(opts: { interval?: string }): WatchModeOptions
       intervalMs = minutes * 60 * 1000;
     } else {
       // Parse with ms library (handles units like "5m", "1h", "30s")
-      const parsed = ms(opts.interval);
+      const parsed = ms(opts.interval as StringValue);
       if (typeof parsed === 'number') {
         intervalMs = parsed;
       }
