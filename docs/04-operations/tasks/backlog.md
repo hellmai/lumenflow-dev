@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1561 — Enforce --help-first rule for CLI commands via hook](wu/WU-1561.yaml) — Operations: Tooling
 - [WU-1560 — INIT-020 YAML cleanup and WU-1534 notes correction](wu/WU-1560.yaml) — Content: Framework Docs
 - [WU-1559 — Add injection-focused tests for command execution surfaces](wu/WU-1559.yaml) — Framework: CLI Enforcement
 - [WU-1558 — Eliminate process.chdir from gates.ts](wu/WU-1558.yaml) — Framework: CLI WU Commands

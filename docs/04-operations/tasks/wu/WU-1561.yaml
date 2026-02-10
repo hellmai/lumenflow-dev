@@ -1,0 +1,38 @@
+id: WU-1561
+title: Enforce --help-first rule for CLI commands via hook
+lane: 'Operations: Tooling'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-10
+code_paths:
+  - .claude/hooks/help-first-guard.sh
+tests:
+  manual:
+    - Run a LumenFlow CLI command without prior --help and verify hook warns or blocks
+    - Run --help first, then the command, and verify hook allows it
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1561.done
+dependencies: []
+initiative: INIT-021
+phase: 5
+spec_refs:
+  - lumenflow://plans/polished-frolicking-minsky.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: CLAUDE.md rule 1 states agents must run command --help before first use of any unfamiliar CLI command. Problem: Agents routinely skip this, guess flags, and hit avoidable errors (wrong flag names, missing required options, incorrect lane formats). This wastes tokens and tool calls on trial-and-error. Solution: Add a PreToolUse hook on Bash that detects LumenFlow CLI invocations (pnpm wu:*, pnpm initiative:*, pnpm orchestrate:*, etc.) and warns or blocks if --help has not been run for that command in the current session.'
+acceptance:
+  - PreToolUse hook detects first use of a LumenFlow CLI command in a session
+  - Hook warns or blocks if --help was not run for that command previously in the session
+  - Hook tracks which commands have had --help run via session state
+  - Hook does not block --help invocations themselves
