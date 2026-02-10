@@ -22,7 +22,7 @@ phases:
     status: done
   - id: 4
     title: INIT-020 YAML cleanup and WU-1534 notes fix
-    status: pending
+    status: done
   - id: 5
     title: Enforce --help-first rule for CLI commands via hook
     status: pending
