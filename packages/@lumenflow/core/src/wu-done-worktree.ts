@@ -255,6 +255,25 @@ export async function executeWorktreeCompletion(context) {
   // Validate state transition
   assertTransition(currentStatus, WU_STATUS.DONE, id);
 
+  // WU-1577: Abort early if local main is behind origin/main.
+  // This prevents metadata leaks: if merge succeeds but push fails because
+  // main is behind, wu-events.jsonl/backlog/status would leak onto local main.
+  // Must run BEFORE transaction to guarantee no files are modified.
+  {
+    const gitMainPreCheck = createGitForPath(originalCwd);
+    const mainSyncResult = await validateMainNotBehindOrigin(gitMainPreCheck);
+    if (!mainSyncResult.valid) {
+      throw createError(
+        ErrorCodes.GIT_ERROR,
+        `Local main is ${mainSyncResult.commitsBehind} commit(s) behind origin/main.\n\n` +
+          `wu:done aborted BEFORE any writes to prevent metadata leaks (WU-1577).\n\n` +
+          `Fix: git pull origin main\n` +
+          `Then retry: pnpm wu:done --id ${id}`,
+        { wuId: id, commitsBehind: mainSyncResult.commitsBehind },
+      );
+    }
+  }
+
   // WU-1369: Create atomic transaction for metadata updates
   // This ensures NO files are modified if any validation fails
   const transaction = new WUTransaction(id);
@@ -266,6 +285,9 @@ export async function executeWorktreeCompletion(context) {
   // WU-1943: Track pre-commit SHA and git commit state for rollback on merge failure
   let preCommitSha = null;
   let gitCommitMade = false;
+  // WU-1577: Track pre-merge main SHA for rollback on push failure
+  let preMainMergeSha: string | null = null;
+  let mainMerged = false;
   // WU-2310: Track snapshot for file rollback on git commit failure
   /** @type {Map<string, string|null>|null} */
   let transactionSnapshot = null;
@@ -585,6 +607,11 @@ export async function executeWorktreeCompletion(context) {
                 // Non-fatal: if restore fails, the merge will catch it
               }
             }
+            // WU-1577: Capture main SHA before merge for rollback on push failure
+            {
+              const gitMainForSha = createGitForPath(originalCwd);
+              preMainMergeSha = await gitMainForSha.getCommitHash('HEAD');
+            }
             // WU-1747: Wrap merge with lock for atomic operation under concurrent load
             // WU-1749 Bug 2: Pass worktreePath and wuId for auto-rebase on retry
             await withMergeLock(id, async () => {
@@ -592,6 +619,7 @@ export async function executeWorktreeCompletion(context) {
             });
             console.log(MERGE.ATOMIC_SUCCESS);
             merged = true;
+            mainMerged = true;
           }
 
           // Sync/rebase before push (handles concurrent main advancement)
@@ -718,6 +746,20 @@ export async function executeWorktreeCompletion(context) {
         } catch (rollbackErr) {
           // Log but don't fail - rollback is best-effort
           console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Rollback error: ${rollbackErr.message}`);
+        }
+      }
+
+      // WU-1577: If merge to main succeeded but push/rebase failed, rollback main
+      // This prevents wu-events.jsonl/backlog/status leaking onto local main
+      if (mainMerged && preMainMergeSha) {
+        try {
+          const gitMainForRollback = createGitForPath(originalCwd);
+          await rollbackMainAfterMergeFailure(gitMainForRollback, preMainMergeSha, id);
+        } catch (mainRollbackErr) {
+          // Log but don't fail - rollback is best-effort
+          console.log(
+            `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1577: Main rollback error: ${mainRollbackErr.message}`,
+          );
         }
       }
 
@@ -1439,6 +1481,93 @@ export async function rollbackBranchOnMergeFailure(gitAdapter, preCommitSha, wuI
   } catch (error) {
     console.log(
       `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1943: Could not rollback branch for ${wuId}: ${error.message}`,
+    );
+
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * WU-1577: Validate that local main is not behind origin/main before transaction.
+ *
+ * Defense-in-depth check inside the core layer. The CLI layer already has
+ * `ensureMainUpToDate()`, but this adds a guard directly before the
+ * transaction starts in `executeWorktreeCompletion()`. This prevents
+ * metadata leaks when the merge succeeds but the subsequent push fails
+ * because main was behind.
+ *
+ * Fail-open: if the fetch or comparison fails (network issue), returns valid=true
+ * to avoid blocking legitimate work when there's no remote.
+ *
+ * @param gitAdapter - Git adapter instance (must be in main checkout context)
+ * @returns Validation result with commitsBehind count
+ */
+export async function validateMainNotBehindOrigin(
+  gitAdapter,
+): Promise<{ valid: boolean; commitsBehind: number; failOpen?: boolean }> {
+  try {
+    await gitAdapter.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+
+    const localSha = await gitAdapter.getCommitHash(BRANCHES.MAIN);
+    const remoteSha = await gitAdapter.getCommitHash(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
+
+    if (localSha === remoteSha) {
+      return { valid: true, commitsBehind: 0 };
+    }
+
+    const behindRaw = await gitAdapter.revList([
+      '--count',
+      `${BRANCHES.MAIN}..${REMOTES.ORIGIN}/${BRANCHES.MAIN}`,
+    ]);
+    const commitsBehind = Number(behindRaw.trim()) || 0;
+
+    if (commitsBehind > 0) {
+      return { valid: false, commitsBehind };
+    }
+
+    // Local is ahead of remote (not behind) — valid
+    return { valid: true, commitsBehind: 0 };
+  } catch {
+    // Fail-open: network error or no remote — allow wu:done to proceed
+    return { valid: true, commitsBehind: 0, failOpen: true };
+  }
+}
+
+/**
+ * WU-1577: Rollback main checkout to pre-merge SHA after merge/push failure.
+ *
+ * When executeWorktreeCompletion() merges the lane branch into local main
+ * (ff-only) but the subsequent pull --rebase or push fails, main is left
+ * with leaked metadata (wu-events.jsonl complete event, backlog, status).
+ * This function resets main to its pre-merge state so no metadata leaks.
+ *
+ * Best-effort: never throws. Returns success/failure status for logging.
+ *
+ * @param gitAdapter - Git adapter instance (must be in main checkout context)
+ * @param preMainMergeSha - SHA to reset to (captured before merge)
+ * @param wuId - WU ID for logging
+ * @returns Rollback result
+ */
+export async function rollbackMainAfterMergeFailure(
+  gitAdapter,
+  preMainMergeSha: string,
+  wuId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1577: Rolling back main to pre-merge state for ${wuId}...`,
+    );
+
+    await gitAdapter.reset(preMainMergeSha, { hard: true });
+
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} WU-1577: Main rollback complete — no metadata leaked`,
+    );
+
+    return { success: true };
+  } catch (error) {
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1577: Could not rollback main for ${wuId}: ${error.message}`,
     );
 
     return { success: false, error: error.message };
