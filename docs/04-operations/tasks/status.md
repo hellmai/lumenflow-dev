@@ -5,6 +5,7 @@ _Last updated: 2026-02-10_
 ## In Progress
 
 - [WU-1575 — Fix pre-existing CLI test failures blocking gates](wu/WU-1575.yaml)
+- [WU-1578 — Formalize client integration contract/constants for vendor-agnostic init](wu/WU-1578.yaml)
 
 ## Completed
 
