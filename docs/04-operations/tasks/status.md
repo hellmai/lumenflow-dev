@@ -4,7 +4,7 @@ _Last updated: 2026-02-10_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1572 — Auto-sync initiative phase/status during wu:done](wu/WU-1572.yaml)
 
 ## Completed
 

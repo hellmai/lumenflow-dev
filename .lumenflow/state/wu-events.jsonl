@@ -1097,3 +1097,4 @@
 {"type":"complete","wuId":"WU-1570","timestamp":"2026-02-10T13:55:57.810Z"}
 {"type":"claim","wuId":"WU-1571","timestamp":"2026-02-10T13:56:52.356Z","lane":"Content: Framework Docs","title":"Regenerate backlog/status after WU-1570 generator update"}
 {"type":"complete","wuId":"WU-1571","timestamp":"2026-02-10T13:57:46.318Z"}
+{"type":"claim","wuId":"WU-1572","lane":"Framework: Core Lifecycle","title":"Auto-sync initiative phase/status during wu:done","timestamp":"2026-02-10T14:53:48.166Z"}
