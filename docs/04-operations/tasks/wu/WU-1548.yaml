@@ -2,7 +2,7 @@ id: WU-1548
 title: Centralize status and remaining duplicated literals
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -53,3 +53,5 @@ session_id: 5a8af49b-f1b3-49c7-8377-c48dad33a7ea
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T23:38:44.930Z
+locked: true
+completed: 2026-02-10

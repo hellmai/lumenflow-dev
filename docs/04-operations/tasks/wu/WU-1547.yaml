@@ -2,7 +2,7 @@ id: WU-1547
 title: Lock down dist imports and verify boundary
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -28,8 +28,8 @@ spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
 notes: Track C2 from enterprise hardening initiative. Split from WU-1536. Depends on C1 (WU-1536)
-  completing first. TODO in eslint.config.mjs line 51 is pre-existing documentation comment explaining
-  why sonarjs/todo-tag and fixme-tag rules are disabled, not an action item.
+  completing first. TODO in eslint.config.mjs line 51 is pre-existing documentation comment
+  explaining why sonarjs/todo-tag and fixme-tag rules are disabled, not an action item.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -55,3 +55,5 @@ session_id: cc01dbf5-c705-46bb-a813-2b7f2d534251
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T00:07:44.362Z
+locked: true
+completed: 2026-02-10
