@@ -62,6 +62,7 @@ export {
   FILE_TOOLS,
   SENSITIVE_DATA_ERRORS,
   SENSITIVE_DATA_CONFIG,
+  type NodeFsError,
 } from './wu-paths-constants.js';
 
 // CLI and tooling constants

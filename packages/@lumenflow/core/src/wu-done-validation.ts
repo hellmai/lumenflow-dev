@@ -19,6 +19,9 @@ import {
   TEST_TYPES,
   VALIDATION,
   WU_TYPES,
+  WU_STATUS,
+  DIRECTORIES,
+  LUMENFLOW_PATHS,
 } from './wu-constants.js';
 import { WU_PATHS } from './wu-paths.js';
 import { PLACEHOLDER_SENTINEL } from './wu-schema.js';
@@ -269,8 +272,8 @@ export function validatePostMutation({ id, wuPath, stampPath }) {
     }
 
     // Verify status is done
-    if (doc.status !== 'done') {
-      errors.push(`Invalid status in ${id}.yaml (expected: 'done', got: '${doc.status}')`);
+    if (doc.status !== WU_STATUS.DONE) {
+      errors.push(`Invalid status in ${id}.yaml (expected: '${WU_STATUS.DONE}', got: '${doc.status}')`);
     }
   } catch (err) {
     errors.push(`Failed to parse WU YAML after mutation: ${err.message}`);

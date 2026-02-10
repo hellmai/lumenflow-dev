@@ -27,6 +27,7 @@ import {
   SCRIPTS,
   PRETTIER_FLAGS,
   LUMENFLOW_PATHS,
+  WU_STATUS,
 } from './wu-constants.js';
 import { applyExposureDefaults } from './wu-done-validation.js';
 import { createFileNotFoundError, createValidationError } from './wu-done-errors.js';
@@ -145,7 +146,7 @@ export async function updateMetadataFiles({ id, title, doc, wuPath, statusPath, 
   }
 
   // Update WU YAML (mark as done, lock, set completion timestamp)
-  doc.status = 'done';
+  doc.status = WU_STATUS.DONE;
   doc.locked = true;
   doc.completed_at = new Date().toISOString();
   writeWU(wuPath, doc);

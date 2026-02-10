@@ -17,6 +17,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import type { NodeFsError } from '@lumenflow/core/wu-constants';
 import { validateMemoryNode, type MemoryNode } from './memory-schema.js';
 
 /**
@@ -44,12 +45,7 @@ const PRIORITY_RANK: Record<PriorityLevel, number> = {
 /** Default rank for nodes without priority (lowest priority) */
 const DEFAULT_PRIORITY_RANK = 999;
 
-/**
- * Node.js file system error with code
- */
-interface NodeFsError extends Error {
-  code?: string;
-}
+// WU-1548: NodeFsError imported from @lumenflow/core/wu-constants (consolidated)
 
 /**
  * Indexed memory result from loadMemory

@@ -16,6 +16,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { loadMemory, appendNode } from './memory-store.js';
 import type { MemoryNode } from './memory-schema.js';
+import type { NodeFsError } from '@lumenflow/core/wu-constants';
 import { validateLaneFormat } from '@lumenflow/core/lane-checker';
 import { createWuPaths } from '@lumenflow/core/wu-paths';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
@@ -117,12 +118,7 @@ function compareNodes(a: TriageMemoryNode, b: TriageMemoryNode): number {
   return a.id.localeCompare(b.id);
 }
 
-/**
- * Node.js file system error with code
- */
-interface NodeFsError extends Error {
-  code?: string;
-}
+// WU-1548: NodeFsError imported from @lumenflow/core/wu-constants (consolidated)
 
 /**
  * Load relationships from relationships.jsonl

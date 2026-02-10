@@ -13,6 +13,7 @@
 import { existsSync } from 'node:fs';
 import { minimatch } from 'minimatch';
 import { loadInvariants, INVARIANT_TYPES } from './invariants-runner.js';
+import { WU_STATUS } from './wu-constants.js';
 
 /**
  * Error type constants for WU spec linting
@@ -258,7 +259,7 @@ function isCliCommandPath(codePath: string): boolean {
  * WU-1504: Terminal WU statuses that should skip parity validation.
  * Matches the same set used by WU-1384 for completeness check skipping.
  */
-const TERMINAL_STATUSES = new Set(['done', 'cancelled', 'completed', 'abandoned', 'superseded']);
+const TERMINAL_STATUSES = new Set([WU_STATUS.DONE, WU_STATUS.CANCELLED, WU_STATUS.COMPLETED, WU_STATUS.ABANDONED, WU_STATUS.SUPERSEDED]);
 
 /**
  * WU-1504: Validate CLI command registration parity.

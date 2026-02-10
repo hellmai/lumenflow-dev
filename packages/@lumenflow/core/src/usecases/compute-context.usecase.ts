@@ -21,6 +21,7 @@ import type {
   GitState,
 } from '../ports/context.ports.js';
 import type { WuContext, WuState, SessionState } from '../validation/types.js';
+import { WU_STATUS } from '../wu-constants.js';
 
 /**
  * Options for computing WU context.
@@ -99,7 +100,7 @@ export class ComputeContextUseCase {
         };
 
         // Step 5: If running from main and WU is in_progress, read worktree git state
-        if (location.type === 'main' && wu.status === 'in_progress') {
+        if (location.type === 'main' && wu.status === WU_STATUS.IN_PROGRESS) {
           const worktreePath = this.getWorktreePath(location.mainCheckout, wu.lane, wu.id);
           worktreeGit = await this.gitStateReader.readGitState(worktreePath);
         }

@@ -19,6 +19,8 @@
  * @see {@link packages/@lumenflow/core/src/__tests__/state-doctor-core.test.ts} - Tests
  */
 
+import { WU_STATUS } from './wu-constants.js';
+
 /**
  * Issue type constants
  */
@@ -233,19 +235,19 @@ function deriveStatusFromEvents(events: MockEvent[]): string | undefined {
     switch (event.type) {
       case 'claim':
       case 'create':
-        status = 'in_progress';
+        status = WU_STATUS.IN_PROGRESS;
         break;
       case 'release':
-        status = 'ready';
+        status = WU_STATUS.READY;
         break;
       case 'complete':
-        status = 'done';
+        status = WU_STATUS.DONE;
         break;
       case 'block':
-        status = 'blocked';
+        status = WU_STATUS.BLOCKED;
         break;
       case 'unblock':
-        status = 'in_progress';
+        status = WU_STATUS.IN_PROGRESS;
         break;
       // checkpoint doesn't change status
     }
@@ -305,12 +307,12 @@ function detectOrphanedWUs(wus: MockWU[], stamps: Set<string>): DiagnosisIssue[]
   const issues: DiagnosisIssue[] = [];
 
   for (const wu of wus) {
-    if (wu.status === 'done' && !stamps.has(wu.id)) {
+    if (wu.status === WU_STATUS.DONE && !stamps.has(wu.id)) {
       issues.push({
         type: ISSUE_TYPES.ORPHANED_WU,
         severity: ISSUE_SEVERITY.WARNING,
         wuId: wu.id,
-        description: `WU ${wu.id} has status 'done' but no stamp file exists`,
+        description: `WU ${wu.id} has status '${WU_STATUS.DONE}' but no stamp file exists`,
         suggestion: `Create stamp file for ${wu.id} using: pnpm state:doctor --fix`,
         canAutoFix: true,
       });
@@ -426,12 +428,12 @@ function getCorrectiveEventType(
   derivedStatus: string,
 ): 'release' | 'complete' | null {
   // Transition from in_progress to ready: emit release
-  if (yamlStatus === 'ready' && derivedStatus === 'in_progress') {
+  if (yamlStatus === WU_STATUS.READY && derivedStatus === WU_STATUS.IN_PROGRESS) {
     return 'release';
   }
 
   // Transition from in_progress to done: emit complete
-  if (yamlStatus === 'done' && derivedStatus === 'in_progress') {
+  if (yamlStatus === WU_STATUS.DONE && derivedStatus === WU_STATUS.IN_PROGRESS) {
     return 'complete';
   }
 

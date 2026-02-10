@@ -7,7 +7,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { WU_PATHS } from '../wu-paths.js';
 import { parseYAML } from '../wu-yaml.js';
 import { validateWU, validateWUCompleteness } from '../wu-schema.js';
-import { FILE_SYSTEM } from '../wu-constants.js';
+import { FILE_SYSTEM, WU_STATUS } from '../wu-constants.js';
 
 export interface ValidationResult {
   valid: boolean;
@@ -100,7 +100,7 @@ export function validateAllWUs(
       try {
         const text = readFileSync(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
         const doc = parseYAML(text);
-        if ((doc as { status?: string }).status !== 'done') {
+        if ((doc as { status?: string }).status !== WU_STATUS.DONE) {
           continue;
         }
       } catch {

@@ -175,6 +175,10 @@ export * from './force-bypass-audit.js';
 // WU-1075: LumenFlow directory paths (exported from wu-constants)
 export { LUMENFLOW_PATHS } from './wu-constants.js';
 
+// WU-1548: Centralized status constants, directories, and shared types
+export { WU_STATUS, DIRECTORIES } from './wu-constants.js';
+export type { NodeFsError } from './wu-constants.js';
+
 // WU-1233: Stream error handling (EPIPE protection)
 export { STREAM_ERRORS, EXIT_CODES } from './wu-constants.js';
 export * from './stream-error-handler.js';

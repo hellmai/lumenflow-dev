@@ -237,10 +237,7 @@ function printResult(result, quiet, ttl) {
  */
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
-/**
- * WU-1474: Memory directory path relative to base
- */
-const MEMORY_DIR = '.lumenflow/memory';
+// WU-1548: Using LUMENFLOW_PATHS.MEMORY_DIR from wu-constants (consolidated)
 
 /**
  * WU-1474: Print decay archival result to console
@@ -300,7 +297,7 @@ async function runDecayMode(baseDir, dryRun, json, quiet) {
     const halfLifeDays = decayConfig?.half_life_days ?? 30;
     const halfLifeMs = halfLifeDays * MS_PER_DAY;
 
-    const memoryDir = path.join(baseDir, MEMORY_DIR);
+    const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
     decayResult = await archiveByDecay(memoryDir, {
       threshold,
       halfLifeMs,

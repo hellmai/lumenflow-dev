@@ -165,10 +165,10 @@ sections:
 
   const yamlEntries = loadYamlWuEntries(resolveWuDir(options));
 
-  const storeReady = Array.from(store.getByStatus('ready'));
-  const storeInProgress = Array.from(store.getByStatus('in_progress'));
-  const storeBlocked = Array.from(store.getByStatus('blocked'));
-  const storeDone = Array.from(store.getByStatus('done'));
+  const storeReady = Array.from(store.getByStatus(WU_STATUS.READY));
+  const storeInProgress = Array.from(store.getByStatus(WU_STATUS.IN_PROGRESS));
+  const storeBlocked = Array.from(store.getByStatus(WU_STATUS.BLOCKED));
+  const storeDone = Array.from(store.getByStatus(WU_STATUS.DONE));
 
   const storeIds = new Set([...storeReady, ...storeInProgress, ...storeBlocked, ...storeDone]);
 
@@ -284,7 +284,7 @@ _Last updated: ${today}_
   sections.push('');
   sections.push('## In Progress');
   sections.push('');
-  const inProgress = store.getByStatus('in_progress');
+  const inProgress = store.getByStatus(WU_STATUS.IN_PROGRESS);
   if (inProgress.size === 0) {
     sections.push('(No items currently in progress)');
   } else {
@@ -297,7 +297,7 @@ _Last updated: ${today}_
   }
 
   // Blocked section (only show if has WUs)
-  const blocked = store.getByStatus('blocked');
+  const blocked = store.getByStatus(WU_STATUS.BLOCKED);
   if (blocked.size > 0) {
     sections.push('');
     sections.push('## Blocked');
@@ -314,7 +314,7 @@ _Last updated: ${today}_
   sections.push('');
   sections.push('## Completed');
   sections.push('');
-  const done = store.getByStatus('done');
+  const done = store.getByStatus(WU_STATUS.DONE);
   if (done.size === 0) {
     sections.push('(No completed items)');
   } else {
@@ -398,10 +398,10 @@ export function computeStoreChecksum(store) {
 
 /** @type {Record<string, string>} Section heading to status mapping */
 const SECTION_STATUS_MAP = {
-  '## 🚀 Ready (pull from here)': 'ready',
-  '## 🔧 In progress': 'in_progress',
-  '## ⛔ Blocked': 'blocked',
-  '## ✅ Done': 'done',
+  '## 🚀 Ready (pull from here)': WU_STATUS.READY,
+  '## 🔧 In progress': WU_STATUS.IN_PROGRESS,
+  '## ⛔ Blocked': WU_STATUS.BLOCKED,
+  '## ✅ Done': WU_STATUS.DONE,
 };
 
 /**

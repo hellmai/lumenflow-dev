@@ -19,7 +19,7 @@ import { validateWUEvent, type WUEvent } from './wu-state-schema.js';
 import { generateBacklog, generateStatus } from './backlog-generator.js';
 import { getStateStoreDirFromBacklog } from './wu-paths.js';
 import { getGitForCwd } from './git-adapter.js';
-import { REMOTES, BRANCHES, LUMENFLOW_PATHS } from './wu-constants.js';
+import { REMOTES, BRANCHES, LUMENFLOW_PATHS, WU_STATUS } from './wu-constants.js';
 
 /**
  * Creates a unique key for an event to detect duplicates.
@@ -213,7 +213,7 @@ export async function computeBacklogContentWithMerge(
   }
 
   // If not already done, create and apply the complete event
-  if (currentState.status !== 'done') {
+  if (currentState.status !== WU_STATUS.DONE) {
     const completeEvent = mergedStore.createCompleteEvent(wuId);
     mergedStore.applyEvent(completeEvent);
   }
@@ -256,7 +256,7 @@ export async function getMergedEventsContent(
     }
 
     const currentState = tempStore.getWUState(wuId);
-    if (currentState && currentState.status === 'in_progress') {
+    if (currentState && currentState.status === WU_STATUS.IN_PROGRESS) {
       const completeEvent = tempStore.createCompleteEvent(wuId);
       mergedEvents.push(completeEvent);
     }
@@ -340,9 +340,9 @@ export async function computeBacklogContentWithMainMerge(
   }
 
   // If not already done, create and apply the complete event
-  if (currentState.status !== 'done') {
-    if (currentState.status !== 'in_progress') {
-      throw new Error(`WU ${wuId} is in status "${currentState.status}", expected "in_progress"`);
+  if (currentState.status !== WU_STATUS.DONE) {
+    if (currentState.status !== WU_STATUS.IN_PROGRESS) {
+      throw new Error(`WU ${wuId} is in status "${currentState.status}", expected "${WU_STATUS.IN_PROGRESS}"`);
     }
     const completeEvent = mergedStore.createCompleteEvent(wuId);
     mergedStore.applyEvent(completeEvent);
@@ -392,9 +392,9 @@ export async function computeStatusContentWithMainMerge(
   }
 
   // If not already done, create and apply the complete event
-  if (currentState.status !== 'done') {
-    if (currentState.status !== 'in_progress') {
-      throw new Error(`WU ${wuId} is in status "${currentState.status}", expected "in_progress"`);
+  if (currentState.status !== WU_STATUS.DONE) {
+    if (currentState.status !== WU_STATUS.IN_PROGRESS) {
+      throw new Error(`WU ${wuId} is in status "${currentState.status}", expected "${WU_STATUS.IN_PROGRESS}"`);
     }
     const completeEvent = mergedStore.createCompleteEvent(wuId);
     mergedStore.applyEvent(completeEvent);
@@ -441,13 +441,13 @@ export async function computeWUEventsContentWithMainMerge(
     throw new Error(`WU ${wuId} not found in merged state store`);
   }
 
-  if (currentState.status === 'done') {
+  if (currentState.status === WU_STATUS.DONE) {
     // Already done, no update needed
     return null;
   }
 
-  if (currentState.status !== 'in_progress') {
-    throw new Error(`WU ${wuId} is in status "${currentState.status}", expected "in_progress"`);
+  if (currentState.status !== WU_STATUS.IN_PROGRESS) {
+    throw new Error(`WU ${wuId} is in status "${currentState.status}", expected "${WU_STATUS.IN_PROGRESS}"`);
   }
 
   // Add complete event
