@@ -20,7 +20,7 @@ import {
   PROTECTED_WU_STATUSES,
   PROGRESSABLE_WU_STATUSES,
   WU_STATUS,
-} from '@lumenflow/core/dist/wu-constants.js';
+} from '@lumenflow/core/wu-constants';
 
 // Constants for repeated test values
 const TEST_INIT_ID = 'INIT-001';

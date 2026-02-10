@@ -173,6 +173,33 @@ export default tseslint.config(
       'no-debugger': 'error',
       'prefer-const': 'error',
       'no-var': 'error',
+
+      // Import boundary enforcement (WU-1547)
+      // Block direct dist/* imports from published packages - use subpath exports instead
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@lumenflow/core/dist/*'],
+              message: 'Use @lumenflow/core subpath exports instead of dist imports.',
+            },
+            {
+              group: ['@lumenflow/memory/dist/*'],
+              message: 'Use @lumenflow/memory subpath exports instead of dist imports.',
+            },
+            {
+              group: ['@lumenflow/initiatives/dist/*'],
+              message:
+                'Use @lumenflow/initiatives subpath exports instead of dist imports.',
+            },
+            {
+              group: ['@lumenflow/agent/dist/*'],
+              message: 'Use @lumenflow/agent subpath exports instead of dist imports.',
+            },
+          ],
+        },
+      ],
     },
   },
 

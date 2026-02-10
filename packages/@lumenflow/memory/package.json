@@ -44,8 +44,7 @@
     "./mem-profile-core": "./dist/mem-profile-core.js",
     "./mem-promote-core": "./dist/mem-promote-core.js",
     "./mem-recover-core": "./dist/mem-recover-core.js",
-    "./signal-cleanup-core": "./dist/signal-cleanup-core.js",
-    "./dist/*": "./dist/*"
+    "./signal-cleanup-core": "./dist/signal-cleanup-core.js"
   },
   "main": "./dist/index.js",
   "files": [

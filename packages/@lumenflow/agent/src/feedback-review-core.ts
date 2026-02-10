@@ -11,7 +11,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { INCIDENT_SEVERITY, LUMENFLOW_PATHS } from '@lumenflow/core/lib/wu-constants.js';
+import { INCIDENT_SEVERITY, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 
 /**
  * Severity weights for scoring

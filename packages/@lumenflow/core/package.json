@@ -131,10 +131,9 @@
     "./wu-spawn-skills": "./dist/wu-spawn-skills.js",
     "./wu-type-helpers": "./dist/wu-type-helpers.js",
     "./wu-validation": "./dist/wu-validation.js",
+    "./wu-validation-constants": "./dist/wu-validation-constants.js",
     "./wu-validator": "./dist/wu-validator.js",
-    "./wu-yaml-fixer": "./dist/wu-yaml-fixer.js",
-    "./dist/*": "./dist/*",
-    "./lib/*": "./dist/*"
+    "./wu-yaml-fixer": "./dist/wu-yaml-fixer.js"
   },
   "main": "./dist/index.js",
   "bin": {

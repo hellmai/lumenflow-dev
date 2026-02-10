@@ -148,7 +148,7 @@ import {
   buildDependencyGraph,
   buildDependencyGraphAsync,
   validateGraph,
-} from '@lumenflow/core/lib/dependency-graph.js';
+} from '@lumenflow/core/dependency-graph';
 
 /**
  * WU-1251: Helper to get all dependencies from a WU doc.
@@ -171,13 +171,13 @@ function getAllDependencies(doc: { blocked_by?: string[]; dependencies?: string[
   const allDeps = new Set([...blockedBy, ...dependencies]);
   return Array.from(allDeps);
 }
-import { createError, ErrorCodes } from '@lumenflow/core/lib/error-handler.js';
-import { WU_STATUS, STRING_LITERALS } from '@lumenflow/core/lib/wu-constants.js';
-import { WU_PATHS } from '@lumenflow/core/lib/wu-paths.js';
-import { parseYAML } from '@lumenflow/core/lib/wu-yaml.js';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
+import { WU_STATUS, STRING_LITERALS } from '@lumenflow/core/wu-constants';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { parseYAML } from '@lumenflow/core/wu-yaml';
 // WU-2027: Import spawn generation for embedding in orchestration output
-import { generateTaskInvocation } from '@lumenflow/core/lib/wu-spawn.js';
-import { SpawnStrategyFactory } from '@lumenflow/core/lib/spawn-strategy.js';
+import { generateTaskInvocation } from '@lumenflow/core/wu-spawn';
+import { SpawnStrategyFactory } from '@lumenflow/core/spawn-strategy';
 
 /**
  * Wave manifest directory path (gitignored).
