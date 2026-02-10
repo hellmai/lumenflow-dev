@@ -29,6 +29,7 @@ import {
   type LLMTelemetryEvent,
   type WUMetrics,
 } from '@lumenflow/metrics';
+
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { runCLI } from './cli-entry-point.js';
 

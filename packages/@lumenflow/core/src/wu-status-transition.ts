@@ -15,12 +15,11 @@
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { assertTransition } from './state-machine.js';
-import { BACKLOG_BULLET_FORMAT } from './wu-constants.js';
 // WU-1574: Removed BacklogManager - using state store + generator
 import { WUStateStore } from './wu-state-store.js';
 import { generateBacklog } from './backlog-generator.js';
 import { writeFile } from 'node:fs/promises';
-import { parseBacklogFrontmatter, getSectionHeadings } from './backlog-parser.js';
+// backlog-parser imports removed (dead code after WU-1574 state store refactor)
 import { createError, ErrorCodes } from './error-handler.js';
 import { todayISO } from './date-utils.js';
 import { getStateStoreDirFromBacklog, WU_PATHS } from './wu-paths.js';
@@ -190,33 +189,7 @@ function createNoteEntry(direction, reason) {
  */
 // WU-1574: Made async for generateBacklog
 async function updateBacklogAndStatus(paths, id, title, fromStatus, toStatus, direction, reason) {
-  // Parse frontmatter to get section headings
-  let frontmatter;
-  try {
-    ({ frontmatter } = parseBacklogFrontmatter(paths.backlog));
-  } catch (err) {
-    throw createError(
-      ErrorCodes.YAML_PARSE_ERROR,
-      `Failed to parse backlog frontmatter: ${err.message}`,
-      { path: paths.backlog, originalError: err.message },
-    );
-  }
-
-  const headings = frontmatter ? getSectionHeadings(frontmatter) : {};
-  const inProgressHeading = headings.in_progress || '## 🔧 In progress';
-  const blockedHeading = headings.blocked || '## ⛔ Blocked';
-
-  // Determine source and target sections (preserved for documentation; replaced by state-store regen)
-  let _fromSection, _toSection, _format;
-  if (direction === 'block') {
-    _fromSection = inProgressHeading;
-    _toSection = blockedHeading;
-    _format = BACKLOG_BULLET_FORMAT.BLOCKED;
-  } else {
-    _fromSection = blockedHeading;
-    _toSection = inProgressHeading;
-    _format = BACKLOG_BULLET_FORMAT.PROGRESS;
-  }
+  // WU-1574: Section variables removed - backlog is now fully regenerated from state store
 
   // WU-1574: Regenerate backlog.md from state store (replaces BacklogManager)
   const stateDir = getStateStoreDirFromBacklog(paths.backlog);

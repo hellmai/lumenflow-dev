@@ -59,6 +59,23 @@ interface ParsedWU {
 }
 
 /**
+ * Shape of a parsed WU YAML for metrics collection.
+ * Replaces `any` with a structural type for type safety.
+ */
+interface ParsedWU {
+  id: string;
+  status: string;
+  lane: string;
+  title: string;
+  code_paths?: string[];
+  test_paths?: { unit?: string[] };
+  claimed_at?: string;
+  created?: string;
+  worktree_path?: string;
+  blocked_reason?: string;
+}
+
+/**
  * FileSystem implementation of MetricsCollector.
  *
  * Reads orchestration data from local filesystem.

@@ -21,6 +21,7 @@ import {
   type DependencyGraph,
 } from '@lumenflow/metrics';
 import { buildDependencyGraphAsync, renderMermaid } from '@lumenflow/core/dependency-graph';
+
 import { getConfig } from '@lumenflow/core/config';
 import { runCLI } from './cli-entry-point.js';
 

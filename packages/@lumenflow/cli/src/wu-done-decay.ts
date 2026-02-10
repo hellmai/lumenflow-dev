@@ -9,6 +9,7 @@
  */
 
 import { archiveByDecay } from '@lumenflow/memory/decay/archival';
+
 import type { MemoryDecayConfig } from '@lumenflow/core/config-schema';
 import { LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import path from 'node:path';

@@ -31,7 +31,7 @@ export async function ensureCleanWorktree(worktreePath: string) {
     }
   } catch (err: unknown) {
     // If worktree is missing or git fails, let the flow continue (handled by other checks)
-    const message = err instanceof Error ? err.message : String(err);
-    console.warn(`${LOG_PREFIX.DONE} Warning: Could not check worktree status: ${message}`);
+    const error = err instanceof Error ? err : new Error(String(err));
+    console.warn(`${LOG_PREFIX.DONE} Warning: Could not check worktree status: ${error.message}`);
   }
 }

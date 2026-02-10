@@ -34,7 +34,6 @@
 
 // WU-2542: Import from @lumenflow/core to establish shim layer dependency
 
-// Side-effect import to establish shim layer dependency
 import '@lumenflow/core';
 
 // WU-1153: wu:done guard for uncommitted code_paths is implemented in core package
