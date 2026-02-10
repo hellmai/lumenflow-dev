@@ -1056,3 +1056,4 @@
 {"type":"claim","wuId":"WU-1556","lane":"Operations: Tooling","title":"Stop lifecycle repair loops and enforce closeout consistency","timestamp":"2026-02-10T09:47:33.596Z"}
 {"type":"claim","wuId":"WU-1562","lane":"Operations: Tooling","title":"Enforce runtime parity for lifecycle commands","timestamp":"2026-02-10T10:09:53.690Z"}
 {"type":"complete","wuId":"WU-1562","reason":"wu:repair consistency reconciliation for stamp/yaml mismatch","timestamp":"2026-02-10T10:14:52.699Z"}
+{"wuId":"WU-1537","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-10T11:20:13.246Z"}
