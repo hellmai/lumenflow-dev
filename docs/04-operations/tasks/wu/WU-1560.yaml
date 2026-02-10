@@ -2,7 +2,7 @@ id: WU-1560
 title: INIT-020 YAML cleanup and WU-1534 notes correction
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -28,7 +28,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-020 completed all 16 WUs but its YAML was not updated. Problem: INIT-020.yaml still shows status in_progress with 14/15 phases as pending. WU-1534 has misleading notes saying no implementation work when the code was actually hardened. Solution: Update INIT-020 YAML status and phases, correct WU-1534 notes.'
+description: 'Context: INIT-020 completed all 16 WUs but its YAML was not updated. Problem:
+  INIT-020.yaml still shows status in_progress with 14/15 phases as pending. WU-1534 has misleading
+  notes saying no implementation work when the code was actually hardened. Solution: Update INIT-020
+  YAML status and phases, correct WU-1534 notes.'
 acceptance:
   - INIT-020.yaml status is done with all phase statuses set to done
   - WU-1534 notes accurately describe the hardening work performed
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-1560
+claimed_at: 2026-02-10T12:38:40.129Z
+baseline_main_sha: f38d1323d1bd04b53bdadd29a194eee6c101773e
+session_id: ad33f293-fbb9-4028-8e71-6456d8ca2938
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T12:38:40.133Z
