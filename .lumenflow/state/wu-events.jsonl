@@ -1061,3 +1061,4 @@
 {"type":"complete","wuId":"WU-1563","timestamp":"2026-02-10T11:36:00.687Z"}
 {"wuId":"WU-1544","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-10T11:37:09.347Z"}
 {"type":"claim","wuId":"WU-1564","lane":"Content: Specs Governance","title":"Reconcile INIT-020 lifecycle event-store mismatches","timestamp":"2026-02-10T11:40:06.012Z"}
+{"type":"release","wuId":"WU-1552","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-10T11:43:11.205Z"}

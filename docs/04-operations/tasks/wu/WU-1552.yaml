@@ -2,7 +2,7 @@ id: WU-1552
 title: Restructure INIT-020 to 15-WU plan per sizing guide
 lane: 'Content: Specs Governance'
 type: documentation
-status: in_progress
+status: ready
 priority: P1
 created: 2026-02-09
 code_paths: []
@@ -33,10 +33,6 @@ acceptance:
     to E1 (path literals only).
   - INIT-020 phases expanded to 15 with WU ID mapping and phase 8 marked done.
 claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-specs-governance-wu-1552
-claimed_at: 2026-02-09T19:19:03.836Z
-baseline_main_sha: f66498958b7277407167041e9034b62e916ed466
-session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T19:19:03.845Z
