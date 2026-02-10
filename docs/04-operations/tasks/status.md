@@ -4,7 +4,7 @@ _Last updated: 2026-02-10_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1574 — Establish strict-mode shared type foundations](wu/WU-1574.yaml)
 
 ## Completed
 
