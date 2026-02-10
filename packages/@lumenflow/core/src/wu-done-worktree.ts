@@ -595,10 +595,7 @@ export async function executeWorktreeCompletion(context) {
               }
             }
             // WU-1577: Capture main SHA before merge for rollback on push failure
-            {
-              const gitMainForSha = createGitForPath(originalCwd);
-              preMainMergeSha = await gitMainForSha.getCommitHash('HEAD');
-            }
+            preMainMergeSha = await createGitForPath(originalCwd).getCommitHash('HEAD');
             // WU-1747: Wrap merge with lock for atomic operation under concurrent load
             // WU-1749 Bug 2: Pass worktreePath and wuId for auto-rebase on retry
             await withMergeLock(id, async () => {
@@ -738,17 +735,7 @@ export async function executeWorktreeCompletion(context) {
 
       // WU-1577: If merge to main succeeded but push/rebase failed, rollback main
       // This prevents wu-events.jsonl/backlog/status leaking onto local main
-      if (mainMerged && preMainMergeSha) {
-        try {
-          const gitMainForRollback = createGitForPath(originalCwd);
-          await rollbackMainAfterMergeFailure(gitMainForRollback, preMainMergeSha, id);
-        } catch (mainRollbackErr) {
-          // Log but don't fail - rollback is best-effort
-          console.log(
-            `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1577: Main rollback error: ${mainRollbackErr.message}`,
-          );
-        }
-      }
+      await maybeRollbackMain(mainMerged, preMainMergeSha, originalCwd, id);
 
       console.log(`\n${BOX.TOP}`);
       if (fileRollbackSuccess) {
@@ -1535,6 +1522,27 @@ async function ensureMainNotBehindOrigin(mainCheckoutPath: string, wuId: string)
         `Fix: git pull origin main\n` +
         `Then retry: pnpm wu:done --id ${wuId}`,
       { wuId, commitsBehind: result.commitsBehind },
+    );
+  }
+}
+
+/**
+ * WU-1577: Conditionally rollback main if merge was done but push failed.
+ * Extracted from the catch block to keep cognitive complexity low.
+ */
+async function maybeRollbackMain(
+  mainMerged: boolean,
+  preMainMergeSha: string | null,
+  mainCheckoutPath: string,
+  wuId: string,
+): Promise<void> {
+  if (!mainMerged || !preMainMergeSha) return;
+  try {
+    const gitMainForRollback = createGitForPath(mainCheckoutPath);
+    await rollbackMainAfterMergeFailure(gitMainForRollback, preMainMergeSha, wuId);
+  } catch (err) {
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1577: Main rollback error: ${err.message}`,
     );
   }
 }
