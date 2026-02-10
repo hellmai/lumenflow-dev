@@ -2,7 +2,7 @@ id: WU-1556
 title: Stop lifecycle repair loops and enforce closeout consistency
 lane: 'Operations: Tooling'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-10
 code_paths:
@@ -63,3 +63,5 @@ acceptance:
     consistency before reporting complete.'
   - 'TDD: add failing-first regression coverage for completion field normalization (completed vs
     completed_at) in done/repair paths.'
+locked: true
+completed: 2026-02-10
