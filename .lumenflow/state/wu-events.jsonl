@@ -1105,3 +1105,4 @@
 {"type":"claim","wuId":"WU-1576","timestamp":"2026-02-10T17:14:04.409Z","lane":"Framework: CLI Enforcement","title":"Fold integrate into init for bomb-proof onboarding"}
 {"type":"claim","wuId":"WU-1577","timestamp":"2026-02-10T17:53:57.337Z","lane":"Framework: Core Lifecycle","title":"Prevent wu:done rollback leaks on main during merge failure"}
 {"type":"complete","wuId":"WU-1577","timestamp":"2026-02-10T18:07:13.519Z"}
+{"type":"complete","wuId":"WU-1576","timestamp":"2026-02-10T18:21:24.343Z"}
