@@ -1106,4 +1106,5 @@
 {"type":"claim","wuId":"WU-1577","timestamp":"2026-02-10T17:53:57.337Z","lane":"Framework: Core Lifecycle","title":"Prevent wu:done rollback leaks on main during merge failure"}
 {"type":"complete","wuId":"WU-1577","timestamp":"2026-02-10T18:07:13.519Z"}
 {"type":"complete","wuId":"WU-1576","timestamp":"2026-02-10T18:21:24.343Z"}
-{"type":"claim","wuId":"WU-1578","lane":"Framework: CLI Enforcement","title":"Formalize client integration contract/constants for vendor-agnostic init","timestamp":"2026-02-10T22:20:32.637Z"}
+{"type":"claim","wuId":"WU-1578","timestamp":"2026-02-10T22:20:32.637Z","lane":"Framework: CLI Enforcement","title":"Formalize client integration contract/constants for vendor-agnostic init"}
+{"type":"complete","wuId":"WU-1578","timestamp":"2026-02-10T22:27:20.448Z"}

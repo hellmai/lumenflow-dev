@@ -2,7 +2,7 @@ id: WU-1578
 title: Formalize client integration contract/constants for vendor-agnostic init
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -52,3 +52,6 @@ session_id: 218de9d0-6cdc-41fa-97f4-7f47593bbca5
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T22:20:32.603Z
+locked: true
+completed_at: 2026-02-10T22:27:17.759Z
+completed: 2026-02-10
