@@ -51,7 +51,7 @@ import { readWURaw } from '@lumenflow/core/wu-yaml';
 import { createWuPaths } from '@lumenflow/core/wu-paths';
 import { getChangedLintableFiles, isLintableFile } from '@lumenflow/core/incremental-lint';
 import { buildVitestChangedArgs, isCodeFilePath } from '@lumenflow/core/incremental-test';
-import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { createGitForPath } from '@lumenflow/core/git-adapter';
 import { runCoverageGate, COVERAGE_GATE_MODES } from '@lumenflow/core/coverage-gate';
 import {
   buildGatesLogPath,
@@ -548,12 +548,14 @@ export function loadCurrentWUCodePaths(options: { cwd?: string } = {}): string[]
 async function runDocsOnlyFilteredTests({
   packages,
   agentLog,
+  cwd = process.cwd(),
 }: {
   packages: string[];
   agentLog?: { logFd: number; logPath: string } | null;
+  cwd?: string;
 }): Promise<{ ok: boolean; duration: number }> {
   const start = Date.now();
-  const logLine = makeGateLogger({ agentLog, useAgentMode: !!agentLog });
+  const logLine = makeGateLogger({ agentLog, useAgentMode: !!agentLog, cwd });
 
   if (packages.length === 0) {
     logLine('📝 docs-only mode: no packages to test, skipping');
@@ -563,11 +565,11 @@ async function runDocsOnlyFilteredTests({
   logLine(`\n> Tests (docs-only filtered: ${packages.join(', ')})\n`);
 
   // WU-1356: Use configured test command with filter
-  const gatesCommands = resolveGatesCommands(process.cwd());
+  const gatesCommands = resolveGatesCommands(cwd);
 
   // If there's a configured test_docs_only command, use it
   if (gatesCommands.test_docs_only) {
-    const result = run(gatesCommands.test_docs_only, { agentLog });
+    const result = run(gatesCommands.test_docs_only, { agentLog, cwd });
     return { ok: result.ok, duration: Date.now() - start };
   }
 
@@ -641,12 +643,14 @@ function emitFormatCheckGuidance({
   agentLog,
   useAgentMode,
   files,
+  cwd,
 }: {
   agentLog?: { logFd: number; logPath: string } | null;
   useAgentMode: boolean;
   files?: string[] | null;
+  cwd: string;
 }) {
-  const formattedFiles = collectPrettierListDifferent(process.cwd(), files ?? []);
+  const formattedFiles = collectPrettierListDifferent(cwd, files ?? []);
   if (!formattedFiles.length) return;
 
   const lines = formatFormatCheckGuidance(formattedFiles);
@@ -680,8 +684,15 @@ function readLogTail(logPath: string, { maxLines = 40, maxBytes = 64 * 1024 } = 
   }
 }
 
-function createAgentLogContext({ wuId, lane }: { wuId: string | null; lane: string | null }) {
-  const cwd = process.cwd();
+function createAgentLogContext({
+  wuId,
+  lane,
+  cwd,
+}: {
+  wuId: string | null;
+  lane: string | null;
+  cwd: string;
+}) {
   const logPath = buildGatesLogPath({ cwd, env: process.env, wuId, lane });
   mkdirSync(path.dirname(logPath), { recursive: true });
   const logFd = openSync(logPath, 'a');
@@ -703,14 +714,21 @@ function createAgentLogContext({ wuId, lane }: { wuId: string | null; lane: stri
 
 function run(
   cmd: string,
-  { agentLog }: { agentLog?: { logFd: number; logPath: string } | null } = {},
+  {
+    agentLog,
+    cwd = process.cwd(),
+  }: { agentLog?: { logFd: number; logPath: string } | null; cwd?: string } = {},
 ) {
   const start = Date.now();
 
   if (!agentLog) {
     console.log(`\n> ${cmd}\n`);
     try {
-      execSync(cmd, { stdio: 'inherit', encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
+      execSync(cmd, {
+        stdio: 'inherit',
+        encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
+        cwd,
+      });
       return { ok: true, duration: Date.now() - start };
     } catch {
       return { ok: false, duration: Date.now() - start };
@@ -722,20 +740,20 @@ function run(
   const result = spawnSync(cmd, [], {
     shell: true,
     stdio: ['ignore', agentLog.logFd, agentLog.logFd],
-    cwd: process.cwd(),
+    cwd,
     encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
   });
 
   return { ok: result.status === EXIT_CODES.SUCCESS, duration: Date.now() - start };
 }
 
-async function runSpecLinterGate({ agentLog, useAgentMode }: GateLogContext) {
+async function runSpecLinterGate({ agentLog, useAgentMode, cwd }: GateLogContext) {
   const start = Date.now();
   const wuId = getCurrentWU();
 
   if (wuId) {
     const scopedCmd = pnpmCmd('wu:validate', '--id', wuId);
-    const scopedResult = run(scopedCmd, { agentLog });
+    const scopedResult = run(scopedCmd, { agentLog, cwd });
     if (!scopedResult.ok) {
       return { ok: false, duration: Date.now() - start };
     }
@@ -745,13 +763,14 @@ async function runSpecLinterGate({ agentLog, useAgentMode }: GateLogContext) {
     writeSync(agentLog.logFd, '⚠️  Unable to detect current WU; skipping scoped validation.\n');
   }
 
-  const globalResult = run(pnpmRun(SCRIPTS.SPEC_LINTER), { agentLog });
+  const globalResult = run(pnpmRun(SCRIPTS.SPEC_LINTER), { agentLog, cwd });
   return { ok: globalResult.ok, duration: Date.now() - start };
 }
 
 type GateLogContext = {
   agentLog?: { logFd: number; logPath: string } | null;
   useAgentMode: boolean;
+  cwd?: string;
 };
 
 function makeGateLogger({ agentLog, useAgentMode }: GateLogContext) {
@@ -766,12 +785,12 @@ function makeGateLogger({ agentLog, useAgentMode }: GateLogContext) {
   };
 }
 
-async function runBacklogSyncGate({ agentLog, useAgentMode }: GateLogContext) {
+async function runBacklogSyncGate({ agentLog, useAgentMode, cwd }: GateLogContext) {
   const start = Date.now();
   const logLine = makeGateLogger({ agentLog, useAgentMode });
   logLine('\n> Backlog sync\n');
 
-  const result = await validateBacklogSync({ cwd: process.cwd() });
+  const result = await validateBacklogSync({ cwd });
 
   if (result.errors.length > 0) {
     logLine('❌ Backlog sync errors:');
@@ -788,12 +807,12 @@ async function runBacklogSyncGate({ agentLog, useAgentMode }: GateLogContext) {
   return { ok: result.valid, duration: Date.now() - start };
 }
 
-async function runSupabaseDocsGate({ agentLog, useAgentMode }: GateLogContext) {
+async function runSupabaseDocsGate({ agentLog, useAgentMode, cwd }: GateLogContext) {
   const start = Date.now();
   const logLine = makeGateLogger({ agentLog, useAgentMode });
   logLine('\n> Supabase docs linter\n');
 
-  const result = await runSupabaseDocsLinter({ cwd: process.cwd(), logger: { log: logLine } });
+  const result = await runSupabaseDocsLinter({ cwd, logger: { log: logLine } });
 
   if (result.skipped) {
     logLine(`⚠️  ${result.message ?? 'Supabase docs linter skipped.'}`);
@@ -807,13 +826,13 @@ async function runSupabaseDocsGate({ agentLog, useAgentMode }: GateLogContext) {
   return { ok: result.ok, duration: Date.now() - start };
 }
 
-async function runSystemMapGate({ agentLog, useAgentMode }: GateLogContext) {
+async function runSystemMapGate({ agentLog, useAgentMode, cwd }: GateLogContext) {
   const start = Date.now();
   const logLine = makeGateLogger({ agentLog, useAgentMode });
   logLine('\n> System map validation\n');
 
   const result = await runSystemMapValidation({
-    cwd: process.cwd(),
+    cwd,
     logger: { log: logLine, warn: logLine, error: logLine },
   });
 
@@ -844,6 +863,7 @@ async function runLaneHealthGate({
   agentLog,
   useAgentMode,
   mode,
+  cwd,
 }: GateLogContext & { mode: LaneHealthMode }) {
   const start = Date.now();
   const logLine = makeGateLogger({ agentLog, useAgentMode });
@@ -856,7 +876,7 @@ async function runLaneHealthGate({
 
   logLine(`\n> Lane health check (mode: ${mode})\n`);
 
-  const report = runLaneHealthCheck({ projectRoot: process.cwd() });
+  const report = runLaneHealthCheck({ projectRoot: cwd });
 
   if (!report.healthy) {
     logLine('⚠️  Lane health issues detected:');
@@ -895,7 +915,7 @@ async function filterExistingFiles(files: string[]): Promise<string[]> {
   return existingFiles.filter((file): file is string => Boolean(file));
 }
 
-async function runFormatCheckGate({ agentLog, useAgentMode }: GateLogContext): Promise<{
+async function runFormatCheckGate({ agentLog, useAgentMode, cwd }: GateLogContext): Promise<{
   ok: boolean;
   duration: number;
   fileCount: number;
@@ -908,18 +928,18 @@ async function runFormatCheckGate({ agentLog, useAgentMode }: GateLogContext): P
   let isMainBranch = false;
 
   try {
-    git = getGitForCwd();
+    git = createGitForPath(cwd);
     const currentBranch = await git.getCurrentBranch();
     isMainBranch = currentBranch === BRANCHES.MAIN || currentBranch === BRANCHES.MASTER;
   } catch (error) {
     logLine(`⚠️  Failed to determine branch for format check: ${error.message}`);
-    const result = run(pnpmCmd(SCRIPTS.FORMAT_CHECK), { agentLog });
+    const result = run(pnpmCmd(SCRIPTS.FORMAT_CHECK), { agentLog, cwd });
     return { ...result, duration: Date.now() - start, fileCount: -1 };
   }
 
   if (isMainBranch) {
     logLine('📋 On main branch - running full format check');
-    const result = run(pnpmCmd(SCRIPTS.FORMAT_CHECK), { agentLog });
+    const result = run(pnpmCmd(SCRIPTS.FORMAT_CHECK), { agentLog, cwd });
     return { ...result, duration: Date.now() - start, fileCount: -1 };
   }
 
@@ -950,7 +970,7 @@ async function runFormatCheckGate({ agentLog, useAgentMode }: GateLogContext): P
           : '';
 
     logLine(`📋 Running full format check${reason}`);
-    const result = run(pnpmCmd(SCRIPTS.FORMAT_CHECK), { agentLog });
+    const result = run(pnpmCmd(SCRIPTS.FORMAT_CHECK), { agentLog, cwd });
     return { ...result, duration: Date.now() - start, fileCount: -1 };
   }
 
@@ -962,7 +982,7 @@ async function runFormatCheckGate({ agentLog, useAgentMode }: GateLogContext): P
   }
 
   logLine(`\n> format:check (incremental: ${existingFiles.length} files)\n`);
-  const result = run(buildPrettierCheckCommand(existingFiles), { agentLog });
+  const result = run(buildPrettierCheckCommand(existingFiles), { agentLog, cwd });
   return {
     ...result,
     duration: Date.now() - start,
@@ -978,7 +998,11 @@ async function runFormatCheckGate({ agentLog, useAgentMode }: GateLogContext): P
  */
 async function runIncrementalLint({
   agentLog,
-}: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
+  cwd,
+}: {
+  agentLog?: { logFd: number; logPath: string } | null;
+  cwd: string;
+}) {
   const start = Date.now();
   const logLine = (line: string) => {
     if (!agentLog) {
@@ -990,13 +1014,13 @@ async function runIncrementalLint({
 
   try {
     // Check if we're on main branch
-    const git = getGitForCwd();
+    const git = createGitForPath(cwd);
     const currentBranch = await git.getCurrentBranch();
     const isMainBranch = currentBranch === BRANCHES.MAIN || currentBranch === BRANCHES.MASTER;
 
     if (isMainBranch) {
       logLine('📋 On main branch - running full lint');
-      const result = run(pnpmCmd(SCRIPTS.LINT), { agentLog });
+      const result = run(pnpmCmd(SCRIPTS.LINT), { agentLog, cwd });
       return { ...result, fileCount: -1 };
     }
 
@@ -1011,7 +1035,7 @@ async function runIncrementalLint({
 
     if (plan.mode === 'full') {
       logLine('📋 Running full lint (incremental plan forced full)');
-      const result = run(pnpmCmd(SCRIPTS.LINT), { agentLog });
+      const result = run(pnpmCmd(SCRIPTS.LINT), { agentLog, cwd });
       return { ...result, fileCount: -1 };
     }
 
@@ -1044,12 +1068,12 @@ async function runIncrementalLint({
         ? {
             stdio: ['ignore', agentLog.logFd, agentLog.logFd] as const,
             encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
-            cwd: process.cwd(),
+            cwd,
           }
         : {
             stdio: 'inherit' as const,
             encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
-            cwd: process.cwd(),
+            cwd,
           },
     );
 
@@ -1061,7 +1085,7 @@ async function runIncrementalLint({
     };
   } catch (error) {
     console.error('⚠️  Incremental lint failed, falling back to full lint:', error.message);
-    const result = run(pnpmCmd(SCRIPTS.LINT), { agentLog });
+    const result = run(pnpmCmd(SCRIPTS.LINT), { agentLog, cwd });
     return { ...result, fileCount: -1 };
   }
 }
@@ -1075,7 +1099,11 @@ async function runIncrementalLint({
  */
 async function runChangedTests({
   agentLog,
-}: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
+  cwd,
+}: {
+  agentLog?: { logFd: number; logPath: string } | null;
+  cwd: string;
+}) {
   const start = Date.now();
   // eslint-disable-next-line sonarjs/no-identical-functions -- Pre-existing: logLine helper duplicated across gate runners
   const logLine = (line: string) => {
@@ -1087,17 +1115,17 @@ async function runChangedTests({
   };
 
   // WU-1356: Get configured commands
-  const gatesCommands = resolveGatesCommands(process.cwd());
-  const testRunner = resolveTestRunner(process.cwd());
+  const gatesCommands = resolveGatesCommands(cwd);
+  const testRunner = resolveTestRunner(cwd);
 
   try {
-    const git = getGitForCwd();
+    const git = createGitForPath(cwd);
     const currentBranch = await git.getCurrentBranch();
     const isMainBranch = currentBranch === BRANCHES.MAIN || currentBranch === BRANCHES.MASTER;
 
     if (isMainBranch) {
       logLine('📋 On main branch - running full test suite');
-      const result = run(gatesCommands.test_full, { agentLog });
+      const result = run(gatesCommands.test_full, { agentLog, cwd });
       return { ...result, isIncremental: false };
     }
 
@@ -1141,7 +1169,7 @@ async function runChangedTests({
       }
 
       logLine('📋 Running full test suite to avoid missing coverage');
-      const result = run(gatesCommands.test_full, { agentLog });
+      const result = run(gatesCommands.test_full, { agentLog, cwd });
       return { ...result, duration: Date.now() - start, isIncremental: false };
     }
 
@@ -1150,7 +1178,7 @@ async function runChangedTests({
 
     // If test_incremental is configured, use it directly
     if (gatesCommands.test_incremental) {
-      const result = run(gatesCommands.test_incremental, { agentLog });
+      const result = run(gatesCommands.test_incremental, { agentLog, cwd });
       return { ...result, duration: Date.now() - start, isIncremental: true };
     }
 
@@ -1158,18 +1186,18 @@ async function runChangedTests({
     if (testRunner === 'vitest') {
       const result = run(
         pnpmCmd('vitest', 'run', ...buildVitestChangedArgs({ baseBranch: 'origin/main' })),
-        { agentLog },
+        { agentLog, cwd },
       );
       return { ...result, duration: Date.now() - start, isIncremental: true };
     }
 
     // For other runners without configured incremental, fall back to full
     logLine('⚠️  No incremental test command configured, running full suite');
-    const result = run(gatesCommands.test_full, { agentLog });
+    const result = run(gatesCommands.test_full, { agentLog, cwd });
     return { ...result, duration: Date.now() - start, isIncremental: false };
   } catch (error) {
     console.error('⚠️  Changed tests failed, falling back to full suite:', error.message);
-    const result = run(gatesCommands.test_full, { agentLog });
+    const result = run(gatesCommands.test_full, { agentLog, cwd });
     return { ...result, isIncremental: false };
   }
 }
@@ -1212,7 +1240,11 @@ const SAFETY_CRITICAL_TEST_FILES = [
  */
 async function runSafetyCriticalTests({
   agentLog,
-}: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
+  cwd,
+}: {
+  agentLog?: { logFd: number; logPath: string } | null;
+  cwd: string;
+}) {
   const start = Date.now();
   // eslint-disable-next-line sonarjs/no-identical-functions -- Pre-existing: logLine helper duplicated across gate runners
   const logLine = (line: string) => {
@@ -1224,7 +1256,7 @@ async function runSafetyCriticalTests({
   };
 
   // WU-1006: Skip safety-critical tests if apps/web doesn't exist (repo-agnostic)
-  const webDir = path.join(process.cwd(), DIRECTORIES.APPS_WEB);
+  const webDir = path.join(cwd, DIRECTORIES.APPS_WEB);
   try {
     await access(webDir);
   } catch {
@@ -1253,12 +1285,12 @@ async function runSafetyCriticalTests({
         ? {
             stdio: ['ignore', agentLog.logFd, agentLog.logFd] as const,
             encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
-            cwd: process.cwd(),
+            cwd,
           }
         : {
             stdio: 'inherit' as const,
             encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
-            cwd: process.cwd(),
+            cwd,
           },
     );
 
@@ -1284,7 +1316,11 @@ async function runSafetyCriticalTests({
  */
 async function runIntegrationTests({
   agentLog,
-}: { agentLog?: { logFd: number; logPath: string } | null } = {}) {
+  cwd,
+}: {
+  agentLog?: { logFd: number; logPath: string } | null;
+  cwd: string;
+}) {
   const start = Date.now();
   // eslint-disable-next-line sonarjs/no-identical-functions -- Pre-existing: logLine helper duplicated across gate runners
   const logLine = (line: string) => {
@@ -1307,7 +1343,7 @@ async function runIntegrationTests({
         "'**/*.integration.*'",
         "'**/golden-*.test.*'",
       )}`,
-      { agentLog },
+      { agentLog, cwd },
     );
 
     const duration = Date.now() - start;
@@ -1325,7 +1361,7 @@ async function getChangedFilesForIncremental({
   git,
   baseBranch = 'origin/main',
 }: {
-  git: ReturnType<typeof getGitForCwd>;
+  git: ReturnType<typeof createGitForPath>;
   baseBranch?: string;
 }) {
   const mergeBase = await git.mergeBase('HEAD', baseBranch);
@@ -1359,11 +1395,12 @@ async function getChangedFilesForIncremental({
  * @returns {Promise<string[]>} List of all changed files
  */
 interface GetAllChangedFilesOptions {
-  git?: ReturnType<typeof getGitForCwd>;
+  git?: ReturnType<typeof createGitForPath>;
+  cwd?: string;
 }
 
 async function getAllChangedFiles(options: GetAllChangedFilesOptions = {}) {
-  const { git = getGitForCwd() } = options;
+  const { git = createGitForPath(options.cwd ?? process.cwd()) } = options;
 
   try {
     return await getChangedFilesForIncremental({ git });
@@ -1374,10 +1411,7 @@ async function getAllChangedFiles(options: GetAllChangedFilesOptions = {}) {
 }
 
 /**
- * WU-1541: runGates still uses process.chdir as a contained, self-restoring pattern.
- * The executeGates function and ~30 sub-functions use process.cwd() extensively.
- * A full refactor to pass explicit cwd through all gate functions would be a separate WU.
- * The try/finally pattern here is safe: chdir is always restored even on error.
+ * Run gates for a specific working directory without mutating global process cwd.
  */
 export async function runGates(
   options: {
@@ -1392,30 +1426,21 @@ export async function runGates(
     argv?: string[];
   } = {},
 ): Promise<boolean> {
-  const originalCwd = process.cwd();
-  const targetCwd = options.cwd ?? originalCwd;
-
-  if (targetCwd !== originalCwd) {
-    process.chdir(targetCwd);
-  }
-
   try {
     return await executeGates({
       ...options,
+      cwd: options.cwd ?? process.cwd(),
       coverageMode: options.coverageMode ?? COVERAGE_GATE_MODES.BLOCK,
     });
   } catch {
     return false;
-  } finally {
-    if (targetCwd !== originalCwd) {
-      process.chdir(originalCwd);
-    }
   }
 }
 
 // Main execution
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing: main() orchestrates multi-step gate workflow
 async function executeGates(opts: {
+  cwd?: string;
   docsOnly?: boolean;
   fullLint?: boolean;
   fullTests?: boolean;
@@ -1425,12 +1450,13 @@ async function executeGates(opts: {
   strict?: boolean;
   argv?: string[];
 }): Promise<boolean> {
+  const cwd = opts.cwd ?? process.cwd();
   const argv = opts.argv ?? process.argv.slice(2);
   // Get context for telemetry
   const wu_id = getCurrentWU();
   const lane = getCurrentLane();
   const useAgentMode = shouldUseGatesAgentMode({ argv, env: process.env });
-  const agentLog = useAgentMode ? createAgentLogContext({ wuId: wu_id, lane }) : null;
+  const agentLog = useAgentMode ? createAgentLogContext({ wuId: wu_id, lane, cwd }) : null;
   // Parse command line arguments (now via Commander)
   const isDocsOnly = opts.docsOnly || false;
   const isFullLint = opts.fullLint || false;
@@ -1440,7 +1466,7 @@ async function executeGates(opts: {
   // WU-1262: Resolve coverage config from methodology policy
   // This derives coverage threshold and mode from methodology.testing setting
   // WU-1280: Use resolveTestPolicy to also get tests_required for test failure handling
-  const resolvedTestPolicy = resolveTestPolicy(process.cwd());
+  const resolvedTestPolicy = resolveTestPolicy(cwd);
   // WU-1433: Coverage gate mode (warn or block)
   // WU-2334: Default changed from WARN to BLOCK for TDD enforcement
   // WU-1262: CLI flag overrides resolved policy, which overrides methodology defaults
@@ -1450,12 +1476,12 @@ async function executeGates(opts: {
   // When tests_required=false (methodology.testing: none), test failures produce warnings only
   const testsRequired = resolvedTestPolicy.tests_required;
   // WU-1191: Lane health gate mode (warn, error, or off)
-  const laneHealthMode = loadLaneHealthConfig(process.cwd());
+  const laneHealthMode = loadLaneHealthConfig(cwd);
   // WU-1356: Resolve configured gates commands for test execution
-  const configuredGatesCommands = resolveGatesCommands(process.cwd());
+  const configuredGatesCommands = resolveGatesCommands(cwd);
   // WU-1520: Strict mode and script existence checking for graceful degradation
   const isStrict = opts.strict || false;
-  const packageJsonScripts = loadPackageJsonScripts(process.cwd());
+  const packageJsonScripts = loadPackageJsonScripts(cwd);
   // WU-1520: Track gate results for summary
   const gateResults: GateResult[] = [];
 
@@ -1471,7 +1497,7 @@ async function executeGates(opts: {
 
   if (!isDocsOnly) {
     try {
-      changedFiles = await getAllChangedFiles();
+      changedFiles = await getAllChangedFiles({ cwd });
       riskTier = detectRiskTier({ changedFiles });
 
       const logLine = useAgentMode
@@ -1502,7 +1528,7 @@ async function executeGates(opts: {
   // WU-1299: Load code_paths and compute docs-only test plan
   let docsOnlyTestPlan: DocsOnlyTestPlan | null = null;
   if (effectiveDocsOnly) {
-    const codePaths = loadCurrentWUCodePaths({ cwd: process.cwd() });
+    const codePaths = loadCurrentWUCodePaths({ cwd });
     docsOnlyTestPlan = resolveDocsOnlyTestPlan({ codePaths });
   }
 
@@ -1550,6 +1576,7 @@ async function executeGates(opts: {
       return runDocsOnlyFilteredTests({
         packages: pkgs,
         agentLog: ctx.agentLog,
+        cwd: ctx.cwd,
       });
     };
   }
@@ -1590,7 +1617,7 @@ async function executeGates(opts: {
     const gateAction = resolveGateAction(gate.name, gateScriptName, packageJsonScripts, isStrict);
 
     if (gateAction === 'skip') {
-      const logLine = makeGateLogger({ agentLog, useAgentMode });
+      const logLine = makeGateLogger({ agentLog, useAgentMode, cwd });
       const warningMsg = buildMissingScriptWarning(gateScriptName!);
       logLine(`\n${warningMsg}\n`);
       gateResults.push({
@@ -1603,7 +1630,7 @@ async function executeGates(opts: {
     }
 
     if (gateAction === 'fail') {
-      const logLine = makeGateLogger({ agentLog, useAgentMode });
+      const logLine = makeGateLogger({ agentLog, useAgentMode, cwd });
       logLine(`\n❌ "${gateScriptName}" script not found in package.json (--strict mode)\n`);
       gateResults.push({
         name: gate.name,
@@ -1617,7 +1644,7 @@ async function executeGates(opts: {
     }
 
     if (gate.run) {
-      result = await gate.run({ agentLog, useAgentMode });
+      result = await gate.run({ agentLog, useAgentMode, cwd });
       if (gate.name === GATE_NAMES.FORMAT_CHECK) {
         lastFormatCheckFiles = result.filesChecked ?? null;
       }
@@ -1629,7 +1656,7 @@ async function executeGates(opts: {
 
       logLine('\n> Invariants check\n');
 
-      const invariantsResult = runInvariants({ baseDir: process.cwd(), silent: false });
+      const invariantsResult = runInvariants({ baseDir: cwd, silent: false });
       result = {
         ok: invariantsResult.success,
         duration: 0, // runInvariants doesn't track duration
@@ -1641,17 +1668,17 @@ async function executeGates(opts: {
       }
     } else if (gate.cmd === GATE_COMMANDS.INCREMENTAL) {
       // Special handling for incremental lint
-      result = await runIncrementalLint({ agentLog });
+      result = await runIncrementalLint({ agentLog, cwd });
     } else if (gate.cmd === GATE_COMMANDS.SAFETY_CRITICAL_TEST) {
       // WU-2062: Safety-critical tests always run
-      result = await runSafetyCriticalTests({ agentLog });
+      result = await runSafetyCriticalTests({ agentLog, cwd });
     } else if (gate.cmd === GATE_COMMANDS.INCREMENTAL_TEST) {
       // WU-1920: Special handling for changed tests
-      result = await runChangedTests({ agentLog });
+      result = await runChangedTests({ agentLog, cwd });
       lastTestResult = result;
     } else if (gate.cmd === GATE_COMMANDS.TIERED_TEST) {
       // WU-2062: Integration tests for high-risk changes
-      result = await runIntegrationTests({ agentLog });
+      result = await runIntegrationTests({ agentLog, cwd });
     } else if (gate.cmd === GATE_COMMANDS.COVERAGE_GATE) {
       // WU-1920: Skip coverage gate when tests were changed (partial coverage)
       // WU-2244: --full-coverage overrides incremental skip behavior
@@ -1708,7 +1735,7 @@ async function executeGates(opts: {
         logger: { log: logLine },
       });
     } else {
-      result = run(gate.cmd, { agentLog });
+      result = run(gate.cmd, { agentLog, cwd });
     }
 
     // Emit telemetry event
@@ -1739,7 +1766,7 @@ async function executeGates(opts: {
       }
 
       if (gate.name === GATE_NAMES.FORMAT_CHECK) {
-        emitFormatCheckGuidance({ agentLog, useAgentMode, files: lastFormatCheckFiles });
+        emitFormatCheckGuidance({ agentLog, useAgentMode, files: lastFormatCheckFiles, cwd });
       }
 
       // WU-1520: Track failed gate before dying
@@ -1750,7 +1777,7 @@ async function executeGates(opts: {
       });
 
       // WU-1520: Print summary before failing
-      const logLine = makeGateLogger({ agentLog, useAgentMode });
+      const logLine = makeGateLogger({ agentLog, useAgentMode, cwd });
       logLine(`\n${formatGateSummary(gateResults)}\n`);
 
       if (useAgentMode) {
@@ -1773,11 +1800,11 @@ async function executeGates(opts: {
 
   // WU-2064: Create/update gates-latest.log symlink for easy agent access
   if (agentLog) {
-    updateGatesLatestSymlink({ logPath: agentLog.logPath, cwd: process.cwd(), env: process.env });
+    updateGatesLatestSymlink({ logPath: agentLog.logPath, cwd, env: process.env });
   }
 
   // WU-1520: Print gate summary showing passed/skipped/failed/warned
-  const summaryLogLine = makeGateLogger({ agentLog, useAgentMode });
+  const summaryLogLine = makeGateLogger({ agentLog, useAgentMode, cwd });
   summaryLogLine(`\n${formatGateSummary(gateResults)}`);
 
   if (!useAgentMode) {
