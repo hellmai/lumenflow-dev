@@ -2,7 +2,7 @@ id: WU-1568
 title: Make backlog/status generation Prettier-stable
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -27,8 +27,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Root cause: generateBacklog/generateStatus emit raw markdown text containing unescaped '_' and '*' (paths/titles), and outputs can miss trailing newline. Prettier then rewrites generated docs after lifecycle operations, causing recurring format:check failures. Fix generator to escape markdown-special chars in plain text segments and emit newline-terminated output."
+description: "Root cause: generateBacklog/generateStatus emit raw markdown text containing unescaped
+  '_' and '*' (paths/titles), and outputs can miss trailing newline. Prettier then rewrites
+  generated docs after lifecycle operations, causing recurring format:check failures. Fix generator
+  to escape markdown-special chars in plain text segments and emit newline-terminated output."
 acceptance:
   - Generated backlog/status markdown remains stable when checked by prettier
   - Main gates format-check no longer fails due to generated backlog/status markdown churn
   - Regression tests cover markdown escaping and trailing newline behavior
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1568
+claimed_at: 2026-02-10T13:40:21.570Z
+baseline_main_sha: 3e12cef4ee8d2a78c3d5fbce5edae14c2bbb9689
+session_id: 2996c4b6-e987-4cec-8273-f4d9811c0701
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T13:40:21.576Z
