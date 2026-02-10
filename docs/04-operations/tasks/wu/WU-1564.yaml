@@ -7,6 +7,9 @@ priority: P0
 created: 2026-02-10
 code_paths:
   - .lumenflow/state/wu-events.jsonl
+  - docs/04-operations/tasks/wu/WU-1552.yaml
+  - docs/04-operations/tasks/status.md
+  - docs/04-operations/tasks/backlog.md
 tests:
   manual:
     - Run pnpm state:doctor --json and confirm statusMismatches = 0.
@@ -22,10 +25,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-10T11:40:05.968Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-specs-governance-wu-1564
+session_id: 81b50213-f381-4a1e-ae37-ec396102d804
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T11:40:05.976Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +50,3 @@ acceptance:
   - pnpm state:doctor --json reports zero status_mismatch issues after reconciliation.
   - pnpm wu:repair --all --check shows only intentional non-event issues (if any), with no
     YAML_DONE_STATUS_IN_PROGRESS drift for reconciled WUs.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-specs-governance-wu-1564
-claimed_at: 2026-02-10T11:40:05.968Z
-baseline_main_sha: 178d3dd9672c8009181f4f27efc30a01fd52125e
-session_id: 81b50213-f381-4a1e-ae37-ec396102d804
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-10T11:40:05.976Z
