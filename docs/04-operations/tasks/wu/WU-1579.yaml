@@ -6,8 +6,7 @@ status: in_progress
 priority: P2
 created: 2026-02-10
 code_paths:
-  - packages/@lumenflow/cli/src/__tests__/init-scripts.test.ts
-  - packages/@lumenflow/cli/src/init.ts
+  - docs/04-operations/tasks/wu/WU-1579.yaml
 tests:
   manual:
     - Run vitest for init-scripts and confirm no .lumenflow/state ignore expectation remains
@@ -18,16 +17,22 @@ artifacts:
   - .lumenflow/stamps/WU-1579.done
 dependencies: []
 risks: []
-notes: >-
-    Already fixed by WU-1575 (commit 7f13c604). WU-1575 updated the two stale
-    .lumenflow/state assertions in init-scripts.test.ts to .lumenflow/telemetry,
-    aligning with WU-1519 tracked-state policy. Verified: all 20 init-scripts tests
-    and all 73 init.test.ts tests pass. No remaining stale assertions found.
+notes: 'Already fixed by WU-1575 (commit 7f13c604). WU-1575 updated the two stale .lumenflow/state
+  assertions in init-scripts.test.ts to .lumenflow/telemetry, aligning with WU-1519 tracked-state
+  policy. Verified: all 20 init-scripts tests and all 73 init.test.ts tests pass. No remaining stale
+  assertions found.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-10T22:43:39.468Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1579
+session_id: 5f4d9388-cecb-48a6-adbc-b5efd5810d88
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T22:43:39.475Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -39,11 +44,3 @@ description: 'Context: Main currently has failing init-scripts tests expecting .
 acceptance:
   - init-scripts .gitignore tests no longer expect .lumenflow/state to be ignored
   - init-scripts suite passes on main after fix
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1579
-claimed_at: 2026-02-10T22:43:39.468Z
-baseline_main_sha: 4694ea460ad416077eabdb1b15e94895e2d7149f
-session_id: 5f4d9388-cecb-48a6-adbc-b5efd5810d88
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-10T22:43:39.475Z
