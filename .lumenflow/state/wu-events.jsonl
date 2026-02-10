@@ -1093,4 +1093,5 @@
 {"type":"complete","wuId":"WU-1568","timestamp":"2026-02-10T13:46:49.544Z"}
 {"type":"claim","wuId":"WU-1569","timestamp":"2026-02-10T13:49:56.021Z","lane":"Content: Framework Docs","title":"Regenerate backlog/status after markdown escaping fix"}
 {"type":"complete","wuId":"WU-1569","timestamp":"2026-02-10T13:51:03.883Z"}
-{"type":"claim","wuId":"WU-1570","lane":"Framework: Core Lifecycle","title":"Avoid over-escaping underscores in backlog/status markdown","timestamp":"2026-02-10T13:52:10.029Z"}
+{"type":"claim","wuId":"WU-1570","timestamp":"2026-02-10T13:52:10.029Z","lane":"Framework: Core Lifecycle","title":"Avoid over-escaping underscores in backlog/status markdown"}
+{"type":"complete","wuId":"WU-1570","timestamp":"2026-02-10T13:55:57.810Z"}
