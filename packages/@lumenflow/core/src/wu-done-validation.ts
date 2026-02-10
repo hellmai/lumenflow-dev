@@ -273,7 +273,9 @@ export function validatePostMutation({ id, wuPath, stampPath }) {
 
     // Verify status is done
     if (doc.status !== WU_STATUS.DONE) {
-      errors.push(`Invalid status in ${id}.yaml (expected: '${WU_STATUS.DONE}', got: '${doc.status}')`);
+      errors.push(
+        `Invalid status in ${id}.yaml (expected: '${WU_STATUS.DONE}', got: '${doc.status}')`,
+      );
     }
   } catch (err) {
     errors.push(`Failed to parse WU YAML after mutation: ${err.message}`);
