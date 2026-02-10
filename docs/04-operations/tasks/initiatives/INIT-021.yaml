@@ -5,7 +5,7 @@ description: 'Context: INIT-020 Enterprise Hardening Sweep completed 13/15 succe
   3 process.exit() calls remain in core library functions, 1 process.chdir() site in gates.ts,
   injection tests missing for WU-1534, and INIT-020 YAML is stale. Solution: Mop-up initiative to
   close residual gaps and fix administrative issues.'
-status: draft
+status: in_progress
 priority: P1
 owner: platform
 created: 2026-02-10
@@ -33,4 +33,3 @@ success_metrics:
   - INIT-020.yaml status is done with all phases marked done
   - PreToolUse hook blocks LumenFlow CLI commands that have not had --help run in the current session
 labels: []
-related_plan: lumenflow://plans/polished-frolicking-minsky.md
