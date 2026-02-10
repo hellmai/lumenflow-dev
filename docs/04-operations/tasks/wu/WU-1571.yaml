@@ -2,7 +2,7 @@ id: WU-1571
 title: Regenerate backlog/status after WU-1570 generator update
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -29,7 +29,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Regenerate backlog.md and status.md once after WU-1570 so metadata reflects the merged underscore-boundary escaping logic from main and format-check is clean.
+description: Regenerate backlog.md and status.md once after WU-1570 so metadata reflects the merged
+  underscore-boundary escaping logic from main and format-check is clean.
 acceptance:
   - backlog.md and status.md match Prettier output without rewrites
   - pnpm gates passes on main
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-1571
+claimed_at: 2026-02-10T13:56:52.319Z
+baseline_main_sha: cacacb3b22ee48429093f23f84aec0ff3ce50b31
+session_id: c13473f4-3b6b-460b-b281-92e66edc8121
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T13:56:52.325Z
