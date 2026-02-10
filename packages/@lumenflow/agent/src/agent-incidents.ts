@@ -2,11 +2,7 @@ import { z } from 'zod';
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { VALIDATION_LIMITS } from '@lumenflow/core/wu-validation-constants';
-import {
-  LUMENFLOW_PATHS,
-  FILE_EXTENSIONS,
-  STRING_LITERALS,
-} from '@lumenflow/core/wu-constants';
+import { LUMENFLOW_PATHS, FILE_EXTENSIONS, STRING_LITERALS } from '@lumenflow/core/wu-constants';
 
 /**
  * Incident severity values as a const tuple for z.enum
