@@ -1085,3 +1085,4 @@
 {"type":"complete","wuId":"WU-1561","timestamp":"2026-02-10T13:11:15.571Z"}
 {"type":"claim","wuId":"WU-1559","timestamp":"2026-02-10T13:11:37.583Z","lane":"Framework: CLI Enforcement","title":"Add injection-focused tests for command execution surfaces"}
 {"type":"complete","wuId":"WU-1559","timestamp":"2026-02-10T13:14:56.392Z"}
+{"type":"claim","wuId":"WU-1555","lane":"Framework: CLI WU Commands","title":"Fix pre-existing test failures in orchestration.schemas, filesystem-metrics.adapter, terminal-renderer.adapter","timestamp":"2026-02-10T13:32:26.588Z"}
