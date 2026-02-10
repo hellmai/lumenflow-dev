@@ -242,6 +242,12 @@ export const LUMENFLOW_PATHS = {
   /** Force bypass audit log */
   FORCE_BYPASSES: '.lumenflow/force-bypasses.log',
 
+  /** WU-1539: Skip-gates audit log */
+  SKIP_GATES_AUDIT: '.lumenflow/skip-gates-audit.log',
+
+  /** WU-1539: Skip-COS-gates audit log */
+  SKIP_COS_GATES_AUDIT: '.lumenflow/skip-cos-gates-audit.log',
+
   /** Test baseline file for ratchet pattern (WU-1430) */
   TEST_BASELINE: '.lumenflow/test-baseline.json',
 
