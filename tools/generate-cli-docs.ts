@@ -22,8 +22,7 @@ import * as ts from 'typescript';
 // Note: Using Zod 4's native .toJSONSchema() instead of zod-to-json-schema library
 // which doesn't support Zod 4
 
-// Import directly from built packages - no regex parsing needed
-// Use relative path to the built dist folder for workspace compatibility
+// Import from @lumenflow/core via subpath exports (WU-1545)
 import {
   WU_OPTIONS,
   WU_CREATE_OPTIONS,
@@ -40,7 +39,7 @@ import {
   MethodologyDefaultsSchema,
   AgentsConfigSchema,
   ClientConfigSchema,
-} from '../packages/@lumenflow/core/dist/index.js';
+} from '@lumenflow/core';
 import { PUBLIC_MANIFEST } from '../packages/@lumenflow/cli/src/public-manifest.ts';
 
 const __filename = fileURLToPath(import.meta.url);
