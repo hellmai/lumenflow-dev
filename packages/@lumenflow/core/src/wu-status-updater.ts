@@ -12,7 +12,7 @@ import { parseBacklogFrontmatter } from './backlog-parser.js';
 import { getSectionHeadingsWithDefaults } from './section-headings.js';
 import { todayISO } from './date-utils.js';
 import { die, createError, ErrorCodes } from './error-handler.js';
-import { FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
+import { STRING_LITERALS } from './wu-constants.js';
 
 /**
  * Remove WU from In Progress section (idempotent)

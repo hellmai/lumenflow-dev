@@ -7,12 +7,12 @@
  * Part of WU-676: Single-Call LLM Orchestrator token budget enforcement.
  */
 
-import { Tiktoken, get_encoding } from 'tiktoken';
+import { get_encoding } from 'tiktoken';
 import { readFileSync } from 'fs';
 import { createHash } from 'crypto';
 import { parseYAML } from './wu-yaml.js';
 import { createError, ErrorCodes } from './error-handler.js';
-import { EXIT_CODES, FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
+import { EXIT_CODES, STRING_LITERALS } from './wu-constants.js';
 
 // Cache tokenizer instance (expensive to create)
 let tokenizerCache = null;

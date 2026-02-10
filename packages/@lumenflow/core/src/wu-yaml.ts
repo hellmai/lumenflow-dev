@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync, promises as fs } from 'node:fs';
 import { parse, stringify } from 'yaml';
 import { createError, ErrorCodes } from './error-handler.js';
-import { FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
+import { STRING_LITERALS } from './wu-constants.js';
 import { createWuPaths } from './wu-paths.js';
 
 /**

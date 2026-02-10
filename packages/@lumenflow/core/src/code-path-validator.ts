@@ -24,7 +24,7 @@
 
 import path from 'node:path';
 import { existsSync, readFileSync } from 'node:fs';
-import { execSync, type ExecSyncOptionsWithStringEncoding } from 'node:child_process';
+import { execSync } from 'node:child_process';
 import micromatch from 'micromatch';
 
 import { getGitForCwd } from './git-adapter.js';
@@ -36,8 +36,6 @@ import {
   GIT_COMMANDS,
   LOG_PREFIX,
   EMOJI,
-  FILE_SYSTEM,
-  STDIO,
 } from './wu-constants.js';
 
 // Type definitions

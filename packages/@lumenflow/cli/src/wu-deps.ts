@@ -14,7 +14,6 @@
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { die } from '@lumenflow/core/error-handler';
 import {
-  buildDependencyGraph,
   buildDependencyGraphAsync,
   renderASCII,
   renderMermaid,
@@ -164,5 +163,5 @@ function renderGraphJSON(
 // path but import.meta.url resolves to the real path - they never match
 import { runCLI } from './cli-entry-point.js';
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

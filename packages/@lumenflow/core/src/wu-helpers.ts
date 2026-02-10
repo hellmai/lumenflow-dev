@@ -12,7 +12,7 @@ import { execSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parse } from 'yaml';
-import { BRANCHES, REMOTES, FILE_SYSTEM, STDIO, REAL_GIT, PATTERNS } from './wu-constants.js';
+import { BRANCHES, REMOTES, STDIO, REAL_GIT, PATTERNS } from './wu-constants.js';
 import { die } from './error-handler.js';
 import { isAgentBranchWithDetails } from './branch-check.js';
 

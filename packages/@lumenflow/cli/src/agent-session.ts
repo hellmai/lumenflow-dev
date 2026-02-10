@@ -42,8 +42,9 @@ const program = new Command()
       console.log(`  WU: ${chalk.cyan(opts.wu)}`);
       console.log(`  Tier: ${chalk.cyan(tier)}`);
       console.log(`  Agent: ${chalk.cyan(opts.agentType)}`);
-    } catch (err: any) {
-      console.error(chalk.red(`Error: ${err.message}`));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(chalk.red(`Error: ${message}`));
       process.exit(EXIT_CODES.ERROR);
     }
   });

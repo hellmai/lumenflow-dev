@@ -22,7 +22,6 @@
 
 import { z } from 'zod';
 import {
-  WU_STATUS,
   WU_STATUS_GROUPS,
   WU_DEFAULTS,
   STRING_LITERALS,
@@ -121,7 +120,7 @@ const normalizedStringArray = z.array(z.string()).transform((arr) =>
  * // Input: "Problem:\\n\\n1. First issue"
  * // Output: "Problem:\n\n1. First issue"
  */
-const normalizedMultilineString = z.string().transform((s) => s.replace(/\\n/g, '\n'));
+const _normalizedMultilineString = z.string().transform((s) => s.replace(/\\n/g, '\n'));
 
 /**
  * Refinement: File path cannot contain newlines (post-normalization safety check)

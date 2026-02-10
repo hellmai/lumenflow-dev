@@ -83,14 +83,9 @@ import {
   prepareRecoveryWithSquash,
 } from './wu-done-retry-helpers.js';
 // WU-1747: Import retry, lock, and checkpoint modules for concurrent load resilience
-import { withRetry, createRetryConfig, RETRYABLE_ERROR_PATTERNS } from './retry-strategy.js';
+import { withRetry, createRetryConfig } from './retry-strategy.js';
 import { withMergeLock } from './merge-lock.js';
-import {
-  createPreGatesCheckpoint,
-  markGatesPassed,
-  canSkipGates,
-  clearCheckpoint,
-} from './wu-checkpoint.js';
+import {} from './wu-checkpoint.js';
 // WU-1749: Import state store constant for append-only file path
 import { WU_EVENTS_FILE_NAME } from './wu-state-store.js';
 import { validateWUEvent } from './wu-state-schema.js';
@@ -1280,7 +1275,7 @@ export async function mergeLaneBranch(branch, options: MergeLaneBranchOptions = 
   // WU-1749 Bug 2: Now rebases lane branch on retry instead of just pulling main
   const retryConfig = createRetryConfig('wu_done', {
     maxAttempts: options.maxAttempts,
-    onRetry: async (attempt, error, delay) => {
+    onRetry: async (attempt, error, _delay) => {
       console.log(
         `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Merge attempt ${attempt} failed: ${error.message}`,
       );

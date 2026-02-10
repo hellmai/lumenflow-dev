@@ -21,7 +21,6 @@ import {
   type DependencyGraph,
 } from '@lumenflow/metrics';
 import { buildDependencyGraphAsync, renderMermaid } from '@lumenflow/core/dependency-graph';
-import { die } from '@lumenflow/core/error-handler';
 import { getConfig } from '@lumenflow/core/config';
 import { runCLI } from './cli-entry-point.js';
 
@@ -232,5 +231,5 @@ async function main() {
 // path but import.meta.url resolves to the real path - they never match
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

@@ -17,7 +17,6 @@ import { readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { readWURaw, writeWU, appendNote } from '@lumenflow/core/wu-yaml';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
-import { die } from '@lumenflow/core/error-handler';
 import {
   CLI_FLAGS,
   EXIT_CODES,
@@ -388,5 +387,5 @@ async function main(): Promise<void> {
 // path but import.meta.url resolves to the real path - they never match
 import { runCLI } from './cli-entry-point.js';
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

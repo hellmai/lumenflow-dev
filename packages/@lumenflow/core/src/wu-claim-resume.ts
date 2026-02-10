@@ -16,7 +16,6 @@
 
 import { existsSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { FILE_SYSTEM } from './wu-constants.js';
 import { readLockMetadata, getLockFilePath } from './lane-lock.js';
 
 /** Log prefix for resume messages */

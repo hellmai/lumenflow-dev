@@ -195,5 +195,5 @@ export async function main(): Promise<void> {
 // CLI entry point
 // WU-1071: Use import.meta.main for proper CLI detection with pnpm symlinks
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

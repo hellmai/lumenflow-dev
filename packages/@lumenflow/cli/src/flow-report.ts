@@ -29,7 +29,6 @@ import {
   type LLMTelemetryEvent,
   type WUMetrics,
 } from '@lumenflow/metrics';
-import { die } from '@lumenflow/core/error-handler';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { runCLI } from './cli-entry-point.js';
 
@@ -385,5 +384,5 @@ async function main() {
 // path but import.meta.url resolves to the real path - they never match
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

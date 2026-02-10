@@ -399,7 +399,7 @@ async function deleteSingleWU(id: string, dryRun: boolean) {
 async function deleteBatchWUs(ids: string[], dryRun: boolean) {
   console.log(`${PREFIX} Starting batch delete for ${ids.length} WU(s): ${ids.join(', ')}`);
 
-  const wusToDelete: Array<{ id: string; wu: any; wuPath: string }> = [];
+  const wusToDelete: Array<{ id: string; wu: Record<string, unknown>; wuPath: string }> = [];
   const stampsToDelete: string[] = [];
 
   for (const id of ids) {
@@ -495,5 +495,5 @@ export async function main() {
 
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

@@ -299,5 +299,5 @@ async function main(): Promise<void> {
 // Run main if executed directly
 import { runCLI } from './cli-entry-point.js';
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

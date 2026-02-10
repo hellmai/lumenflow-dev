@@ -31,8 +31,9 @@ const program = new Command()
       console.log(`  Lane: ${chalk.cyan(summary.lane)}`);
       console.log(`  Duration: ${chalk.cyan(summary.started)} → ${chalk.cyan(summary.completed)}`);
       console.log(`  Incidents: ${summary.incidents_logged} (${summary.incidents_major} major)`);
-    } catch (err: any) {
-      console.error(chalk.red(`Error: ${err.message}`));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(chalk.red(`Error: ${message}`));
       process.exit(EXIT_CODES.ERROR);
     }
   });

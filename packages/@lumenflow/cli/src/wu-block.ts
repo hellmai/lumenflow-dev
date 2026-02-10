@@ -39,7 +39,6 @@ import {
   PATTERNS,
   LOG_PREFIX,
   FILE_SYSTEM,
-  EXIT_CODES,
   STRING_LITERALS,
   MICRO_WORKTREE_OPERATIONS,
 } from '@lumenflow/core/wu-constants';
@@ -344,5 +343,5 @@ async function main() {
 
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

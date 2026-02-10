@@ -9,8 +9,8 @@
  * @module gate-defaults
  */
 
-import type { GateRegistry, GateDefinition, GateLogContext } from './gate-registry.js';
-import type { DocsOnlyTestPlan, LaneHealthMode } from './gates-types.js';
+import type { GateRegistry, GateDefinition } from './gate-registry.js';
+import type { DocsOnlyTestPlan } from './gates-types.js';
 import { GATE_NAMES, GATE_COMMANDS, SCRIPTS } from '@lumenflow/core/wu-constants';
 
 /**

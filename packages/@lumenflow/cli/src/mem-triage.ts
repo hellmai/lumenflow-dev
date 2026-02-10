@@ -23,7 +23,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { listOpenDiscoveries, promoteDiscovery, archiveDiscovery } from '@lumenflow/memory/triage';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { createWUParser } from '@lumenflow/core/arg-parser';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
@@ -383,5 +383,5 @@ async function main() {
 
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

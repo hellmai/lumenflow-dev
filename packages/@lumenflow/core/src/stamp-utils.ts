@@ -17,7 +17,6 @@ import path from 'node:path';
 import { parse, isValid } from 'date-fns';
 import { WU_PATHS } from './wu-paths.js';
 import { todayISO } from './date-utils.js';
-import { FILE_SYSTEM } from './wu-constants.js';
 
 /**
  * Stamp format error types (WU-2242)

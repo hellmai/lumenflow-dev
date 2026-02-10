@@ -421,7 +421,7 @@ function filterActiveGraph(graph) {
  * @param {object} node - Node to check
  * @returns {boolean} True if all dependencies are satisfied
  */
-function areDependenciesSatisfied(activeGraph, fullGraph, node) {
+function _areDependenciesSatisfied(activeGraph, fullGraph, node) {
   for (const depId of node.blockedBy) {
     // Dependency is satisfied if:
     // 1. It doesn't exist in the graph (orphan reference, treat as satisfied)

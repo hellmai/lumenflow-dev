@@ -9,7 +9,6 @@
  */
 
 import { writeFileSync, unlinkSync } from 'node:fs';
-import { FILE_SYSTEM } from './wu-constants.js';
 
 /**
  * Error entry for failed file restoration

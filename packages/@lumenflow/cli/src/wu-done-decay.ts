@@ -9,7 +9,6 @@
  */
 
 import { archiveByDecay } from '@lumenflow/memory/decay/archival';
-import { DEFAULT_HALF_LIFE_MS } from '@lumenflow/memory/decay/scoring';
 import type { MemoryDecayConfig } from '@lumenflow/core/config-schema';
 import { LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import path from 'node:path';

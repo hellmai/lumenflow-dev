@@ -3853,5 +3853,5 @@ export async function main(): Promise<void> {
 // This ensures main() runs when the script is executed as a CLI entry point
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

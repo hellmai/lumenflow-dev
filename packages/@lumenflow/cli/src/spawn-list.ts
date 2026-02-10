@@ -188,5 +188,5 @@ async function main() {
 // path but import.meta.url resolves to the real path - they never match
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

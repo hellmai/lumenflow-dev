@@ -32,7 +32,7 @@ import {
   DEFAULT_TOOL_TIMEOUT_MS,
 } from './tool.constants.js';
 
-import { validateToolInput, createErrorOutput, createSuccessOutput } from './tool.schemas.js';
+import { validateToolInput, createErrorOutput } from './tool.schemas.js';
 
 import { getWUContext, assertWorktreeRequired } from './worktree-guard.js';
 import { getActiveScope, isPathInScope } from './scope-checker.js';

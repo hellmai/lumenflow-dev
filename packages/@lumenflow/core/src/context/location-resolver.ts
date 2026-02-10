@@ -61,7 +61,7 @@ export async function resolveLocation(cwd: string = process.cwd()): Promise<Loca
 
     // Get git root and git dir using simple-git revparse
     const gitRoot = (await git.revparse(['--show-toplevel'])).trim();
-    const gitDir = (await git.revparse(['--git-dir'])).trim();
+    const _gitDir = (await git.revparse(['--git-dir'])).trim();
 
     // Detect if we're in a worktree (in worktrees, .git is a file not a dir)
     // WU-1223: Fixed - check .git in gitRoot, not the gitDir path returned by rev-parse

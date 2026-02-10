@@ -29,8 +29,9 @@ export async function ensureCleanWorktree(worktreePath: string) {
           `  3. Retry pnpm wu:done --id WU-XXXX`,
       );
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     // If worktree is missing or git fails, let the flow continue (handled by other checks)
-    console.warn(`${LOG_PREFIX.DONE} Warning: Could not check worktree status: ${err.message}`);
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`${LOG_PREFIX.DONE} Warning: Could not check worktree status: ${message}`);
   }
 }

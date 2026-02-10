@@ -13,7 +13,7 @@
  * @see {@link packages/@lumenflow/cli/src/deps-remove.ts} - Safe wrapper for pnpm remove
  */
 
-import { LOG_PREFIX, EMOJI } from './wu-constants.js';
+import { EMOJI } from './wu-constants.js';
 
 /**
  * pnpm subcommands that mutate dependencies.

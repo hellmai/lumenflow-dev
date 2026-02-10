@@ -261,5 +261,5 @@ async function main() {
 // path but import.meta.url resolves to the real path - they never match
 import { runCLI } from './cli-entry-point.js';
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

@@ -7,7 +7,6 @@ import { readFileSync, existsSync } from 'node:fs';
 import matter from 'gray-matter';
 import yaml from 'yaml';
 import { createError, ErrorCodes } from './error-handler.js';
-import { FILE_SYSTEM } from './wu-constants.js';
 
 /**
  * Parse YAML frontmatter from backlog.md

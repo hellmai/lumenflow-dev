@@ -26,14 +26,7 @@ import { readWU, writeWU, parseYAML, stringifyYAML } from './wu-yaml.js';
 import { WU_PATHS } from './wu-paths.js';
 import { WUStateStore, WU_EVENTS_FILE_NAME } from './wu-state-store.js';
 import { getGitForCwd, createGitForPath } from './git-adapter.js';
-import {
-  EXIT_CODES,
-  LOG_PREFIX,
-  EMOJI,
-  WU_STATUS,
-  FILE_SYSTEM,
-  LUMENFLOW_PATHS,
-} from './wu-constants.js';
+import { EXIT_CODES, LOG_PREFIX, EMOJI, WU_STATUS, LUMENFLOW_PATHS } from './wu-constants.js';
 import { die } from './error-handler.js';
 import { ensureOnMain, ensureMainUpToDate, validateWUIDFormat } from './wu-helpers.js';
 import { withMicroWorktree } from './micro-worktree.js';

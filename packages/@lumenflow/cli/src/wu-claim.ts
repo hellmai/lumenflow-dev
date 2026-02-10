@@ -765,7 +765,7 @@ async function applyCanonicalClaimUpdate(ctx, sessionId) {
  * @param lane - Lane name for the release event
  * @param title - WU title for the release event
  */
-async function rollbackCanonicalClaim(id: string, lane: string, title: string): Promise<void> {
+async function rollbackCanonicalClaim(id: string, _lane: string, _title: string): Promise<void> {
   console.log(`${PREFIX} Rolling back canonical claim for ${id}...`);
 
   try {

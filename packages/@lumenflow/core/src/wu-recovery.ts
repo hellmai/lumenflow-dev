@@ -26,14 +26,7 @@ import { moveWUToDoneBacklog } from './wu-backlog-updater.js';
 import { getGitForCwd } from './git-adapter.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { rollbackFiles } from './rollback-utils.js';
-import {
-  LOG_PREFIX,
-  EMOJI,
-  WU_STATUS,
-  FILE_SYSTEM,
-  getProjectRoot,
-  LUMENFLOW_PATHS,
-} from './wu-constants.js';
+import { LOG_PREFIX, EMOJI, WU_STATUS, getProjectRoot, LUMENFLOW_PATHS } from './wu-constants.js';
 
 import { RETRY_PRESETS } from './retry-strategy.js';
 
@@ -339,7 +332,7 @@ export async function recoverZombieState({ id, doc, _worktreePath, _args }) {
     addToStatusCompleted(statusPath, id, doc.title);
     results.docs.status = { updated: true };
 
-    moveWUToDoneBacklog(backlogPath, id, doc.title);
+    await moveWUToDoneBacklog(backlogPath, id, doc.title);
     results.docs.backlog = { updated: true };
 
     console.log(RECOVERY.DOCS_UPDATED);

@@ -34,7 +34,8 @@
 
 // WU-2542: Import from @lumenflow/core to establish shim layer dependency
 
-import { VERSION as LUMENFLOW_VERSION } from '@lumenflow/core';
+// Side-effect import to establish shim layer dependency
+import '@lumenflow/core';
 
 // WU-1153: wu:done guard for uncommitted code_paths is implemented in core package
 // The guard runs in executeWorktreeCompletion() before metadata transaction
@@ -53,11 +54,7 @@ import path from 'node:path';
 // WU-1825: Import from unified code-path-validator (consolidates 3 validators)
 import { validateWUCodePaths } from '@lumenflow/core/code-path-validator';
 // WU-1983: Migration deployment utilities
-import {
-  discoverLocalMigrations,
-  hasMigrationChanges,
-  formatMigrationReport,
-} from '@lumenflow/core/migration-deployer';
+import { discoverLocalMigrations, hasMigrationChanges } from '@lumenflow/core/migration-deployer';
 import { validateDocsOnly, getAllowedPathsDescription } from '@lumenflow/core/docs-path-validator';
 import { scanLogForViolations, rotateLog } from '@lumenflow/core/commands-logger';
 import { rollbackFiles } from '@lumenflow/core/rollback-utils';
@@ -98,7 +95,6 @@ import {
   SCRIPTS,
   CLI_FLAGS,
   FILE_SYSTEM,
-  STDIO,
   EXIT_CODES,
   STRING_LITERALS,
   MICRO_WORKTREE_OPERATIONS,
@@ -112,7 +108,7 @@ import {
 import { isDocumentationType } from '@lumenflow/core/wu-type-helpers';
 import { printGateFailureBox, printStatusPreview } from '@lumenflow/core/wu-done-ui';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
-import { WU_PATHS, createWuPaths } from '@lumenflow/core/wu-paths';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { getConfig } from '@lumenflow/core/config';
 import { writeWU, appendNote, parseYAML } from '@lumenflow/core/wu-yaml';
 import {
@@ -437,7 +433,7 @@ export function buildGatesCommand(options: BuildGatesOptions): string {
   return `${PKG_MANAGER} ${SCRIPTS.GATES}`;
 }
 
-async function assertWorktreeWUInProgressInStateStore(id, worktreePath) {
+async function _assertWorktreeWUInProgressInStateStore(id, worktreePath) {
   const resolvedWorktreePath = path.resolve(worktreePath);
   const stateDir = path.join(resolvedWorktreePath, '.lumenflow', 'state');
   const eventsPath = path.join(resolvedWorktreePath, LUMENFLOW_PATHS.WU_EVENTS);
@@ -748,7 +744,7 @@ function getCommitHeaderLimit() {
  * Context: WU-635 (multi-agent coordination)
  * See: CLAUDE.md §2.2
  */
-async function ensureCleanWorkingTree() {
+async function _ensureCleanWorkingTree() {
   const status = await getGitForCwd().getStatus();
   if (status.trim()) {
     die(
@@ -3112,5 +3108,5 @@ async function detectChangedDocPaths(worktreePath: string, baseBranch: string) {
 // path but import.meta.url resolves to the real path - they never match
 import { runCLI } from './cli-entry-point.js';
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

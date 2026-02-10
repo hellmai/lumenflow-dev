@@ -258,7 +258,7 @@ export async function recoverStuckSpawn(spawnId, options: RecoverStuckSpawnOptio
   }
 
   // Get lock for this spawn's lane
-  const laneKebab = laneToKebab(spawn.lane);
+  const _laneKebab = laneToKebab(spawn.lane);
   const lockPath = getLockFilePath(spawn.lane, baseDir);
   const lockMetadata = readLockMetadata(lockPath);
 

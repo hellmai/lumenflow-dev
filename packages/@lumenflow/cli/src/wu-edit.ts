@@ -38,7 +38,6 @@ import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import {
   FILE_SYSTEM,
-  EXIT_CODES,
   MICRO_WORKTREE_OPERATIONS,
   LOG_PREFIX,
   COMMIT_FORMATS,
@@ -48,7 +47,6 @@ import {
   PKG_MANAGER,
   SCRIPTS,
   PRETTIER_FLAGS,
-  STDIO,
   READINESS_UI,
   // WU-1039: Import exposure values for validation (Library-First, no magic strings)
   WU_EXPOSURE_VALUES,
@@ -1251,5 +1249,5 @@ async function main() {
 // path but import.meta.url resolves to the real path - they never match
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }
