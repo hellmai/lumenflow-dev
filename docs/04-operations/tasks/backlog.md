@@ -25,7 +25,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1572 — Auto-sync initiative phase/status during wu:done](wu/WU-1572.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -549,4 +549,5 @@ sections:
 - [WU-1569 — Regenerate backlog/status after markdown escaping fix](wu/WU-1569.yaml)
 - [WU-1570 — Avoid over-escaping underscores in backlog/status markdown](wu/WU-1570.yaml)
 - [WU-1571 — Regenerate backlog/status after WU-1570 generator update](wu/WU-1571.yaml)
+- [WU-1572 — Auto-sync initiative phase/status during wu:done](wu/WU-1572.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
