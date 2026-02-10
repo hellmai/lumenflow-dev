@@ -2,7 +2,7 @@ id: WU-1545
 title: Lock down dist imports and verify boundary
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -60,3 +60,5 @@ acceptance:
   - Wildcard dist and lib exports removed from core, memory, initiatives, and agent package.json
     files.
   - rg @lumenflow/.+/dist/ packages/ apps/ tools/ actions/ returns zero results.
+locked: true
+completed: 2026-02-10
