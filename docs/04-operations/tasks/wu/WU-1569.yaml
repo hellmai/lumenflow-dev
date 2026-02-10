@@ -2,7 +2,7 @@ id: WU-1569
 title: Regenerate backlog/status after markdown escaping fix
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -43,3 +43,6 @@ session_id: a839c832-1f4c-48e8-b373-1c4acd9cc575
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T13:49:55.985Z
+locked: true
+completed_at: 2026-02-10T13:51:01.098Z
+completed: 2026-02-10
