@@ -347,4 +347,14 @@ export default tseslint.config(
       'sonarjs/no-duplicate-string': 'off',
     },
   },
+
+  // Agent package needs console output and dynamic file operations for session/incident management
+  {
+    files: ['packages/@lumenflow/agent/src/**/*.ts'],
+    rules: {
+      'no-console': 'off', // Agent session and incident logging
+      'security/detect-non-literal-fs-filename': 'off', // Dynamic file operations
+      'security/detect-object-injection': 'off', // Dynamic object access
+    },
+  },
 );
