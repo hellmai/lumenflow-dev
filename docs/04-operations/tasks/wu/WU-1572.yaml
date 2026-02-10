@@ -1,0 +1,40 @@
+id: WU-1572
+title: Auto-sync initiative phase/status during wu:done
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-10
+code_paths:
+  - packages/@lumenflow/core/src/wu-done-metadata.ts
+  - packages/@lumenflow/core/src/wu-done-worktree.ts
+  - packages/@lumenflow/core/src/wu-paths.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+tests:
+  manual:
+    - Complete a WU linked to an initiative phase and verify initiative YAML phase/status auto-update
+  unit:
+    - packages/@lumenflow/core/src/__tests__/initiative-sync-on-wu-done.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1572.done
+dependencies: []
+spec_refs:
+  - INIT-020
+  - INIT-021
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: WU completion currently updates WU metadata and stamps but can leave parent initiative phase/status stale, requiring manual initiative:edit repairs. Solution: during wu:done metadata transaction, if a WU has initiative/phase, recompute parent initiative phase and overall status from WU YAML statuses and commit initiative YAML atomically with wu completion.'
+acceptance:
+  - Completing the last pending WU in a phase marks that initiative phase done automatically
+  - Completing the final pending WU in an initiative marks initiative status done automatically
+  - Concurrent/partial completions are idempotent and do not regress already-correct initiative states
+  - wu:done staged-file validation allows only the current parent initiative YAML when auto-sync is applied
