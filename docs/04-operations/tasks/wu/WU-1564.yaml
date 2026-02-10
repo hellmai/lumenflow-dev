@@ -1,0 +1,35 @@
+id: WU-1564
+title: Reconcile INIT-020 lifecycle event-store mismatches
+lane: 'Content: Specs Governance'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-10
+code_paths:
+  - .lumenflow/state/wu-events.jsonl
+tests:
+  manual:
+    - Run pnpm state:doctor --json and confirm statusMismatches = 0.
+    - Run pnpm wu:repair --all --check and confirm no YAML_DONE_STATUS_IN_PROGRESS for the reconciled WUs.
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1564.done
+dependencies: []
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-020.yaml
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: INIT-020 legacy closeout left 9 WUs with YAML done but state store in_progress because complete events are missing. Problem: state:doctor --fix currently pushes per-WU micro-commits and repeatedly collides under heavy main traffic, leaving reconciliation partial. Solution: apply one batch reconciliation commit that appends complete events for affected WUs and validate zero status_mismatch afterward.'
+acceptance:
+  - Append complete events for WU-1544, WU-1545, WU-1546, WU-1547, WU-1548, WU-1550, WU-1551, WU-1554, and WU-1556 in one tracked commit.
+  - pnpm state:doctor --json reports zero status_mismatch issues after reconciliation.
+  - pnpm wu:repair --all --check shows only intentional non-event issues (if any), with no YAML_DONE_STATUS_IN_PROGRESS drift for reconciled WUs.
