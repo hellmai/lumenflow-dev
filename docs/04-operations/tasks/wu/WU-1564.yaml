@@ -2,7 +2,7 @@ id: WU-1564
 title: Reconcile INIT-020 lifecycle event-store mismatches
 lane: 'Content: Specs Governance'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-10
 code_paths:
@@ -49,3 +49,6 @@ acceptance:
   - pnpm state:doctor --json reports zero status_mismatch issues after reconciliation.
   - pnpm wu:repair --all --check shows only intentional non-event issues (if any), with no
     YAML_DONE_STATUS_IN_PROGRESS drift for reconciled WUs.
+locked: true
+completed_at: 2026-02-10T11:47:10.154Z
+completed: 2026-02-10
