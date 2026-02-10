@@ -2,7 +2,7 @@ id: WU-1577
 title: Prevent wu:done rollback leaks on main during merge failure
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-10
 code_paths:
@@ -31,9 +31,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: A failed wu:done retry for WU-1575 leaked .lumenflow/state/wu-events.jsonl changes into the local main checkout, including a complete event that should not persist after rollback. Problem: the failure path rolls back lane branch state but can leave main dirty when main is behind origin or merge/rebase fails after metadata mutation. Solution: hard-fail early when main is behind origin before any transaction writes, and extend rollback/recovery to restore main checkout state so wu-events/backlog/status never leak after failed wu:done.'
+description: 'Context: A failed wu:done retry for WU-1575 leaked .lumenflow/state/wu-events.jsonl
+  changes into the local main checkout, including a complete event that should not persist after
+  rollback. Problem: the failure path rolls back lane branch state but can leave main dirty when
+  main is behind origin or merge/rebase fails after metadata mutation. Solution: hard-fail early
+  when main is behind origin before any transaction writes, and extend rollback/recovery to restore
+  main checkout state so wu-events/backlog/status never leak after failed wu:done.'
 acceptance:
   - wu:done aborts before transaction writes when local main is behind origin/main
-  - on merge/rebase failure after metadata mutation, main checkout remains clean (no wu-events/backlog/status leakage)
-  - failed wu:done does not leave a local complete event for the target WU in .lumenflow/state/wu-events.jsonl
+  - on merge/rebase failure after metadata mutation, main checkout remains clean (no
+    wu-events/backlog/status leakage)
+  - failed wu:done does not leave a local complete event for the target WU in
+    .lumenflow/state/wu-events.jsonl
   - idempotent retry path still succeeds after syncing main
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1577
+claimed_at: 2026-02-10T17:53:57.291Z
+baseline_main_sha: be3f8ec845a55a681c29f7d8b171c23e7c0fff98
+session_id: fe6d989c-0bef-42c4-a06f-5b4c1ee9523c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T17:53:57.300Z
