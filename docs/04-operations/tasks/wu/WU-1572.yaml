@@ -2,7 +2,7 @@ id: WU-1572
 title: Auto-sync initiative phase/status during wu:done
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -32,9 +32,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU completion currently updates WU metadata and stamps but can leave parent initiative phase/status stale, requiring manual initiative:edit repairs. Solution: during wu:done metadata transaction, if a WU has initiative/phase, recompute parent initiative phase and overall status from WU YAML statuses and commit initiative YAML atomically with wu completion.'
+description: 'Context: WU completion currently updates WU metadata and stamps but can leave parent
+  initiative phase/status stale, requiring manual initiative:edit repairs. Solution: during wu:done
+  metadata transaction, if a WU has initiative/phase, recompute parent initiative phase and overall
+  status from WU YAML statuses and commit initiative YAML atomically with wu completion.'
 acceptance:
   - Completing the last pending WU in a phase marks that initiative phase done automatically
   - Completing the final pending WU in an initiative marks initiative status done automatically
-  - Concurrent/partial completions are idempotent and do not regress already-correct initiative states
-  - wu:done staged-file validation allows only the current parent initiative YAML when auto-sync is applied
+  - Concurrent/partial completions are idempotent and do not regress already-correct initiative
+    states
+  - wu:done staged-file validation allows only the current parent initiative YAML when auto-sync is
+    applied
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1572
+claimed_at: 2026-02-10T14:53:48.128Z
+baseline_main_sha: 87e8277ef799551c6d2d80f20713a4a289a19f0c
+session_id: c4f69a76-32c2-40c5-b05b-df03dccf786e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T14:53:48.134Z
