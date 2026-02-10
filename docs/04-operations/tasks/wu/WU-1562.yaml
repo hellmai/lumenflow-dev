@@ -2,7 +2,7 @@ id: WU-1562
 title: Enforce runtime parity for lifecycle commands
 lane: 'Operations: Tooling'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -60,3 +60,6 @@ acceptance:
     src behavior for lifecycle flows.
   - 'Regression: pnpm wu:repair --all --check exits with detection-only status and does not create
     repair commits when inconsistencies exist.'
+locked: true
+completed_at: 2026-02-10T10:14:52.692Z
+completed: 2026-02-10
