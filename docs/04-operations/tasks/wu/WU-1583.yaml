@@ -1,0 +1,46 @@
+id: WU-1583
+title: 'CLI strict wave 1C: remaining fixes and strict enablement'
+lane: 'Framework: CLI Enforcement'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-10
+code_paths:
+  - packages/@lumenflow/cli/src/mem-create.ts
+  - packages/@lumenflow/cli/src/mem-signal.ts
+  - packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
+  - packages/@lumenflow/cli/tsconfig.json
+  - tools/__tests__/tsconfig-strict.test.ts
+tests:
+  manual:
+    - pnpm --filter @lumenflow/cli typecheck and pnpm vitest run tools/__tests__/tsconfig-strict.test.ts
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/hooks/enforcement.test.ts
+    - packages/@lumenflow/cli/src/__tests__/strict-progress.test.ts
+    - tools/__tests__/tsconfig-strict.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1583.done
+dependencies: []
+initiative: INIT-022
+phase: 5
+blocked_by:
+  - WU-1581
+  - WU-1582
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: after hotspot remediation, CLI still has distributed strict debt across memory/enforcement paths and tsconfig exception wiring. Problem: strict cannot be enabled safely until remaining files are cleaned and strict exception metadata is removed. Solution: fix remaining CLI strict issues in scoped clusters, enable strict in CLI tsconfig, and update strict-exception tests/tooling accordingly.'
+acceptance:
+  - Remaining targeted CLI files are strict-clean with explicit types and narrowed unknown handling
+  - packages/@lumenflow/cli/tsconfig.json sets strict=true and removes strict exception metadata
+  - tools strict-mode tests are updated to reflect CLI strict enablement
+  - pnpm --filter @lumenflow/cli typecheck passes with strict enabled
+  - No net increase in as any usage in CLI
