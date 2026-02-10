@@ -68,10 +68,39 @@ function compareWuIds(a, b) {
   return a.localeCompare(b);
 }
 
+function isAsciiAlphaNumeric(char: string) {
+  return /[A-Za-z0-9]/.test(char);
+}
+
 function escapeMarkdownText(value) {
-  return normalizeYamlScalar(value)
-    .replaceAll('\\', '\\\\')
-    .replace(/([_*[\]`])/g, '\\$1');
+  const normalized = normalizeYamlScalar(value);
+  let escaped = '';
+
+  for (let index = 0; index < normalized.length; index += 1) {
+    const char = normalized[index];
+
+    if (char === '\\') {
+      escaped += '\\\\';
+      continue;
+    }
+
+    if (char === '_') {
+      const previous = index > 0 ? normalized[index - 1] : '';
+      const next = index < normalized.length - 1 ? normalized[index + 1] : '';
+      const isIdentifierUnderscore = isAsciiAlphaNumeric(previous) && isAsciiAlphaNumeric(next);
+      escaped += isIdentifierUnderscore ? '_' : '\\_';
+      continue;
+    }
+
+    if (char === '*' || char === '[' || char === ']' || char === '`') {
+      escaped += `\\${char}`;
+      continue;
+    }
+
+    escaped += char;
+  }
+
+  return escaped;
 }
 
 function resolveWuDir(options: BacklogYamlOptions = {}) {

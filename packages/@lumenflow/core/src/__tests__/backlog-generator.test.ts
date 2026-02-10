@@ -82,15 +82,15 @@ describe('generateBacklog', () => {
           type: 'create',
           wuId: 'WU-777',
           timestamp: '2026-02-07T10:00:00.000Z',
-          lane: 'Content: docs/_frameworks guard-*',
-          title: 'Escape _frameworks guard-* [alpha]',
+          lane: 'Content: docs/_frameworks guard-* node_modules spec_refs',
+          title: 'Escape _frameworks guard-* [alpha] and keep node_modules spec_refs',
         }),
         JSON.stringify({
           type: 'claim',
           wuId: 'WU-777',
           timestamp: '2026-02-07T10:01:00.000Z',
-          lane: 'Content: docs/_frameworks guard-*',
-          title: 'Escape _frameworks guard-* [alpha]',
+          lane: 'Content: docs/_frameworks guard-* node_modules spec_refs',
+          title: 'Escape _frameworks guard-* [alpha] and keep node_modules spec_refs',
         }),
       ].join('\n') + '\n';
 
@@ -106,11 +106,15 @@ describe('generateBacklog', () => {
       '> Agent: Read **docs/04-operations/\\_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first',
     );
     expect(backlog).toContain(
-      '- [WU-777 — Escape \\_frameworks guard-\\* \\[alpha\\]](wu/WU-777.yaml) — Content: docs/\\_frameworks guard-\\*',
+      '- [WU-777 — Escape \\_frameworks guard-\\* \\[alpha\\] and keep node_modules spec_refs](wu/WU-777.yaml) — Content: docs/\\_frameworks guard-\\* node_modules spec_refs',
     );
     expect(status).toContain(
-      '- [WU-777 — Escape \\_frameworks guard-\\* \\[alpha\\]](wu/WU-777.yaml)',
+      '- [WU-777 — Escape \\_frameworks guard-\\* \\[alpha\\] and keep node_modules spec_refs](wu/WU-777.yaml)',
     );
+    expect(backlog).not.toContain('node\\_modules');
+    expect(backlog).not.toContain('spec\\_refs');
+    expect(status).not.toContain('node\\_modules');
+    expect(status).not.toContain('spec\\_refs');
 
     expect(backlog.endsWith('\n')).toBe(true);
     expect(status.endsWith('\n')).toBe(true);
