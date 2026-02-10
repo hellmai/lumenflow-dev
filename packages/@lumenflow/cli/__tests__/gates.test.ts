@@ -420,6 +420,15 @@ describe('docs-only mode package filtering (WU-1299)', () => {
   });
 });
 
+describe('gates cwd handling (WU-1558)', () => {
+  it('does not mutate process cwd via process.chdir', () => {
+    const gatesSourcePath = path.resolve(import.meta.dirname, '../src/gates.ts');
+    const gatesSource = readFileSync(gatesSourcePath, 'utf-8');
+
+    expect(gatesSource).not.toContain('process.chdir(');
+  });
+});
+
 describe('workspace lint/typecheck script coverage (WU-1461)', () => {
   const repoRoot = path.resolve(import.meta.dirname, '../../../..');
 
