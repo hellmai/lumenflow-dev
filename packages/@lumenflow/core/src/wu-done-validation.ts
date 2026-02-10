@@ -20,8 +20,6 @@ import {
   VALIDATION,
   WU_TYPES,
   WU_STATUS,
-  DIRECTORIES,
-  LUMENFLOW_PATHS,
 } from './wu-constants.js';
 import { WU_PATHS } from './wu-paths.js';
 import { PLACEHOLDER_SENTINEL } from './wu-schema.js';
