@@ -6,9 +6,6 @@ status: in_progress
 priority: P2
 created: 2026-02-10
 code_paths:
-  - packages/@lumenflow/cli/package.json
-  - packages/@lumenflow/cli/src/public-manifest.ts
-  - packages/@lumenflow/mcp/src/tools.ts
   - packages/@lumenflow/core/__tests__/consumer-integration.test.ts
 tests:
   manual:
@@ -25,10 +22,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-10T12:42:22.853Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1566
+session_id: 92f8033f-b9ef-4a68-bc64-879554e59cad
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T12:42:22.861Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +46,3 @@ acceptance:
   - Required CLI binaries expected by consumer integration are present and executable after package
     install
   - Core package targeted test run for consumer integration passes without workaround flags
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1566
-claimed_at: 2026-02-10T12:42:22.853Z
-baseline_main_sha: 18e9b0528e7c33441c3c4ece801d6a65aa42472d
-session_id: 92f8033f-b9ef-4a68-bc64-879554e59cad
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-10T12:42:22.861Z
