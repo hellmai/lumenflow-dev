@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml) — Framework: Core Lifecycle
 - [WU-1585 — Core strict wave 2B: WU management strict fixes](wu/WU-1585.yaml) — Framework: Core Validation
 - [WU-1584 — Core strict wave 2A: lifecycle strict hotspots](wu/WU-1584.yaml) — Framework: Core Lifecycle
