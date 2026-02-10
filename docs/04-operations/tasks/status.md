@@ -4,7 +4,7 @@ _Last updated: 2026-02-10_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1580 — Fix pre-existing orchestration schema test regressions blocking gates](wu/WU-1580.yaml)
 
 ## Completed
 

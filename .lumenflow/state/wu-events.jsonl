@@ -1111,3 +1111,4 @@
 {"type":"complete","wuId":"WU-1575","timestamp":"2026-02-10T22:35:11.852Z"}
 {"type":"claim","wuId":"WU-1579","timestamp":"2026-02-10T22:43:39.508Z","lane":"Framework: CLI Enforcement","title":"Align init-scripts gitignore tests with WU-1519 state-tracking policy"}
 {"type":"complete","wuId":"WU-1579","timestamp":"2026-02-10T22:47:34.807Z"}
+{"type":"claim","wuId":"WU-1580","lane":"Framework: CLI Enforcement","title":"Fix pre-existing orchestration schema test regressions blocking gates","timestamp":"2026-02-10T22:50:04.108Z"}

@@ -2,7 +2,7 @@ id: WU-1580
 title: Fix pre-existing orchestration schema test regressions blocking gates
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -27,7 +27,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Gates currently fail on main in packages/@lumenflow/core/src/domain/__tests__/orchestration.schemas.test.ts (multiple safeParse expectations now false). Problem: WU completion for unrelated work is blocked by pre-existing schema/test drift. Solution: align orchestration schema and/or fixtures so valid GlobalStatus/WUProgress/DashboardData samples pass again, restoring gate stability.'
+description: 'Context: Gates currently fail on main in
+  packages/@lumenflow/core/src/domain/__tests__/orchestration.schemas.test.ts (multiple safeParse
+  expectations now false). Problem: WU completion for unrelated work is blocked by pre-existing
+  schema/test drift. Solution: align orchestration schema and/or fixtures so valid
+  GlobalStatus/WUProgress/DashboardData samples pass again, restoring gate stability.'
 acceptance:
   - orchestration.schemas.test.ts passes on main
   - safeParse success expectations for valid fixtures are restored
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1580
+claimed_at: 2026-02-10T22:50:04.074Z
+baseline_main_sha: d3ec8c8418a95e8d0a5f495c6d8c116e7e5429aa
+session_id: 0703aa76-3fe3-474b-89bb-fd0c53ad8aca
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T22:50:04.081Z
