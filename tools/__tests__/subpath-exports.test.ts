@@ -228,9 +228,7 @@ describe('WU-1545: Lock down dist imports and verify boundary', () => {
       }
 
       if (violations.length > 0) {
-        const summary = violations
-          .map((v) => `  ${v.file}: ${v.specifiers.join(', ')}`)
-          .join('\n');
+        const summary = violations.map((v) => `  ${v.file}: ${v.specifiers.join(', ')}`).join('\n');
         expect.fail(
           `Found ${violations.length} files still importing from dist paths:\n${summary}`,
         );
