@@ -2,7 +2,7 @@ id: WU-1551
 title: Fix floating promises and replace setInterval polling
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -44,4 +44,8 @@ acceptance:
 claimed_mode: worktree
 approved_by:
   - tom@hellm.ai
-approved_at: 2026-02-09T23:52:46.206Z
+approved_at: 2026-02-10T02:14:02.411Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1551
+claimed_at: 2026-02-10T02:14:02.405Z
+baseline_main_sha: 8da9e795904ae5ec8f2a5e8798afd7e29b8bdc05
+session_id: 814053ea-2474-4b4f-ab46-9176cd261a71
