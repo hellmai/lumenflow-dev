@@ -1059,3 +1059,4 @@
 {"type":"complete","wuId":"WU-1537","timestamp":"2026-02-10T11:20:13.246Z"}
 {"type":"claim","wuId":"WU-1563","timestamp":"2026-02-10T11:27:16.744Z","lane":"Framework: Core Lifecycle","title":"Fix wu:done worktree metadata path isolation regression"}
 {"type":"complete","wuId":"WU-1563","timestamp":"2026-02-10T11:36:00.687Z"}
+{"wuId":"WU-1544","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-10T11:37:09.347Z"}
