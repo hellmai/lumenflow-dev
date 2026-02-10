@@ -80,6 +80,7 @@
     "orchestrate:monitor": "node packages/@lumenflow/cli/dist/orchestrate-monitor.js",
     "spawn:list": "node packages/@lumenflow/cli/dist/spawn-list.js",
     "flow:report": "node packages/@lumenflow/cli/dist/flow-report.js",
+    "strict:progress": "node packages/@lumenflow/cli/dist/strict-progress.js",
     "flow:bottlenecks": "node packages/@lumenflow/cli/dist/flow-bottlenecks.js",
     "metrics:snapshot": "node packages/@lumenflow/cli/dist/metrics-snapshot.js",
     "initiative:bulk-assign": "node packages/@lumenflow/cli/dist/initiative-bulk-assign-wus.js",
