@@ -4,7 +4,7 @@ _Last updated: 2026-02-10_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1579 — Align init-scripts gitignore tests with WU-1519 state-tracking policy](wu/WU-1579.yaml)
 
 ## Completed
 

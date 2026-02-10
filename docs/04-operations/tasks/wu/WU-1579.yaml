@@ -2,7 +2,7 @@ id: WU-1579
 title: Align init-scripts gitignore tests with WU-1519 state-tracking policy
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -27,7 +27,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Main currently has failing init-scripts tests expecting .lumenflow/state in generated .gitignore. Problem: WU-1519 changed policy to track .lumenflow/state, so current template intentionally excludes only .lumenflow/telemetry and worktrees; tests are stale and failing on main. Solution: update/init-scripts expectations and any related assertions to match current tracked-state policy, restoring passing tests on main.'
+description: 'Context: Main currently has failing init-scripts tests expecting .lumenflow/state in
+  generated .gitignore. Problem: WU-1519 changed policy to track .lumenflow/state, so current
+  template intentionally excludes only .lumenflow/telemetry and worktrees; tests are stale and
+  failing on main. Solution: update/init-scripts expectations and any related assertions to match
+  current tracked-state policy, restoring passing tests on main.'
 acceptance:
   - init-scripts .gitignore tests no longer expect .lumenflow/state to be ignored
   - init-scripts suite passes on main after fix
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1579
+claimed_at: 2026-02-10T22:43:39.468Z
+baseline_main_sha: 4694ea460ad416077eabdb1b15e94895e2d7149f
+session_id: 5f4d9388-cecb-48a6-adbc-b5efd5810d88
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T22:43:39.475Z

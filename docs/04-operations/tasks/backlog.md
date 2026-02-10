@@ -20,16 +20,15 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1581 — CLI strict wave 1A: high-impact WU command hotspots](wu/WU-1581.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1574 — Establish strict-mode shared type foundations](wu/WU-1574.yaml) — Framework: Core Validation
-- [WU-1579 — Align init-scripts gitignore tests with WU-1519 state-tracking policy](wu/WU-1579.yaml) — Framework: CLI Enforcement
 - [WU-1580 — Fix pre-existing orchestration schema test regressions blocking gates](wu/WU-1580.yaml) — Framework: CLI Enforcement
+- [WU-1581 — CLI strict wave 1A: high-impact WU command hotspots](wu/WU-1581.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1579 — Align init-scripts gitignore tests with WU-1519 state-tracking policy](wu/WU-1579.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
