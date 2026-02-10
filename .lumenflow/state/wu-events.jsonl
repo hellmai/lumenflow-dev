@@ -1079,4 +1079,5 @@
 {"type":"complete","wuId":"WU-1566","timestamp":"2026-02-10T12:47:07.884Z"}
 {"type":"claim","wuId":"WU-1557","timestamp":"2026-02-10T12:47:55.869Z","lane":"Framework: Core Lifecycle","title":"Fix remaining process.exit calls in core library functions"}
 {"type":"complete","wuId":"WU-1557","timestamp":"2026-02-10T12:52:29.473Z"}
-{"type":"claim","wuId":"WU-1558","lane":"Framework: CLI WU Commands","title":"Eliminate process.chdir from gates.ts","timestamp":"2026-02-10T12:52:53.838Z"}
+{"type":"claim","wuId":"WU-1558","timestamp":"2026-02-10T12:52:53.838Z","lane":"Framework: CLI WU Commands","title":"Eliminate process.chdir from gates.ts"}
+{"type":"complete","wuId":"WU-1558","timestamp":"2026-02-10T13:03:33.309Z"}
