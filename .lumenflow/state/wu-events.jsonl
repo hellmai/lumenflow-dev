@@ -1091,4 +1091,5 @@
 {"type":"complete","wuId":"WU-1567","timestamp":"2026-02-10T13:38:06.374Z"}
 {"type":"claim","wuId":"WU-1568","timestamp":"2026-02-10T13:40:21.590Z","lane":"Framework: Core Lifecycle","title":"Make backlog/status generation Prettier-stable"}
 {"type":"complete","wuId":"WU-1568","timestamp":"2026-02-10T13:46:49.544Z"}
-{"type":"claim","wuId":"WU-1569","lane":"Content: Framework Docs","title":"Regenerate backlog/status after markdown escaping fix","timestamp":"2026-02-10T13:49:56.021Z"}
+{"type":"claim","wuId":"WU-1569","timestamp":"2026-02-10T13:49:56.021Z","lane":"Content: Framework Docs","title":"Regenerate backlog/status after markdown escaping fix"}
+{"type":"complete","wuId":"WU-1569","timestamp":"2026-02-10T13:51:03.883Z"}
