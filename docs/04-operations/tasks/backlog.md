@@ -14,7 +14,7 @@ sections:
     insertion: after_heading_blank_line
 ---
 
-> Agent: Read **docs/04-operations/\_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\_frameworks/lumenflow/lumenflow-complete.md** for execution.
+> Agent: Read **docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md** for execution.
 
 # Backlog (single source of truth)
 
@@ -31,15 +31,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1554 — Fix wu:done post-merge metadata double-write leaving main dirty](wu/WU-1554.yaml) — Framework: CLI WU Commands
-- [WU-1548 — Centralize status and remaining duplicated literals](wu/WU-1548.yaml) — Framework: Core Lifecycle
-- [WU-1547 — Lock down dist imports and verify boundary](wu/WU-1547.yaml) — Framework: Core Lifecycle
-- [WU-1550 — Introduce gate and validator registry patterns](wu/WU-1550.yaml) — Framework: CLI WU Commands
-- [WU-1545 — Lock down dist imports and verify boundary](wu/WU-1545.yaml) — Framework: Core Lifecycle
-- [WU-1546 — Re-enable TypeScript lint rules](wu/WU-1546.yaml) — Operations: Tooling
-- [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml) — Framework: Core Lifecycle
-- [WU-1556 — Stop lifecycle repair loops and enforce closeout consistency](wu/WU-1556.yaml) — Operations: Tooling
-- [WU-1564 — Reconcile INIT-020 lifecycle event-store mismatches](wu/WU-1564.yaml) — Content: Specs Governance
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -102,7 +94,7 @@ sections:
 - [WU-1057 — Update LumenFlow docs - Nova theme, logos, and content audit](wu/WU-1057.yaml)
 - [WU-1058 — Documentation overhaul - fix critical gaps and inaccuracies](wu/WU-1058.yaml)
 - [WU-1059 — Auto-generate CLI and config documentation from source](wu/WU-1059.yaml)
-- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/\* changes](wu/WU-1061.yaml)
+- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/* changes](wu/WU-1061.yaml)
 - [WU-1062 — External plan storage and no-main-write mode for wu:create](wu/WU-1062.yaml)
 - [WU-1064 — Fix CLI silent failure - async main() without catch handler](wu/WU-1064.yaml)
 - [WU-1065 — Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring](wu/WU-1065.yaml)
@@ -147,7 +139,7 @@ sections:
 - [WU-1108 — INIT-003 Phase 4a: Migrate file operations (4 tools)](wu/WU-1108.yaml)
 - [WU-1105 — INIT-003 Phase 3a: Migrate init:plan command](wu/WU-1105.yaml)
 - [WU-1110 — INIT-003 Phase 5a: Migrate metrics commands](wu/WU-1110.yaml)
-- [WU-1129 — Fix pre-existing prettier format failures in apps/docs/\*.mdx](wu/WU-1129.yaml)
+- [WU-1129 — Fix pre-existing prettier format failures in apps/docs/*.mdx](wu/WU-1129.yaml)
 - [WU-1111 — INIT-003 Phase 5b: Migrate guards & validation (7 tools)](wu/WU-1111.yaml)
 - [WU-1112 — INIT-003 Phase 6: Migrate remaining Tier 1 tools](wu/WU-1112.yaml)
 - [WU-1109 — INIT-003 Phase 4b: Migrate git operations (5 tools)](wu/WU-1109.yaml)
@@ -168,7 +160,7 @@ sections:
 - [WU-1120 — Docs Audit: Advanced & Polish - skills tutorial + TypeDoc + cookbook](wu/WU-1120.yaml)
 - [WU-1127 — lumenflow:upgrade must use micro-worktree (users blocked from upgrading)](wu/WU-1127.yaml)
 - [WU-1128 — Add upgrade guide to lumenflow.dev](wu/WU-1128.yaml)
-- [WU-1130 — Fix guard-\* commands to recognize worktree context](wu/WU-1130.yaml)
+- [WU-1130 — Fix guard-* commands to recognize worktree context](wu/WU-1130.yaml)
 - [WU-1133 — Fix doc alignment: constraints-capsule reference and vendor overlays](wu/WU-1133.yaml)
 - [WU-1132 — Harden worktree validation hook to fail-closed](wu/WU-1132.yaml)
 - [WU-1136 — Docs: memory path fix + agent invocation guide + pre-clear checkpoint hook](wu/WU-1136.yaml)
@@ -541,4 +533,13 @@ sections:
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml)
 - [WU-1563 — Fix wu:done worktree metadata path isolation regression](wu/WU-1563.yaml)
 - [WU-1544 — Re-enable TypeScript lint rules](wu/WU-1544.yaml)
+- [WU-1545 — Lock down dist imports and verify boundary](wu/WU-1545.yaml)
+- [WU-1546 — Re-enable TypeScript lint rules](wu/WU-1546.yaml)
+- [WU-1547 — Lock down dist imports and verify boundary](wu/WU-1547.yaml)
+- [WU-1548 — Centralize status and remaining duplicated literals](wu/WU-1548.yaml)
+- [WU-1550 — Introduce gate and validator registry patterns](wu/WU-1550.yaml)
+- [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml)
+- [WU-1554 — Fix wu:done post-merge metadata double-write leaving main dirty](wu/WU-1554.yaml)
+- [WU-1556 — Stop lifecycle repair loops and enforce closeout consistency](wu/WU-1556.yaml)
+- [WU-1564 — Reconcile INIT-020 lifecycle event-store mismatches](wu/WU-1564.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
