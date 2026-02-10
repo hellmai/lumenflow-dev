@@ -24,10 +24,11 @@ sections:
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1574 — Establish strict-mode shared type foundations](wu/WU-1574.yaml) — Framework: Core Validation
+- [WU-1575 — Fix pre-existing CLI test failures blocking gates](wu/WU-1575.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-- [WU-1573 — Build strict-mode progress tracking infrastructure](wu/WU-1573.yaml) — Operations: Tooling
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -552,4 +553,5 @@ sections:
 - [WU-1570 — Avoid over-escaping underscores in backlog/status markdown](wu/WU-1570.yaml)
 - [WU-1571 — Regenerate backlog/status after WU-1570 generator update](wu/WU-1571.yaml)
 - [WU-1572 — Auto-sync initiative phase/status during wu:done](wu/WU-1572.yaml)
+- [WU-1573 — Build strict-mode progress tracking infrastructure](wu/WU-1573.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

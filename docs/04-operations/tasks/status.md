@@ -4,7 +4,7 @@ _Last updated: 2026-02-10_
 
 ## In Progress
 
-- [WU-1573 — Build strict-mode progress tracking infrastructure](wu/WU-1573.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -525,3 +525,4 @@ _Last updated: 2026-02-10_
 - [WU-1570 — Avoid over-escaping underscores in backlog/status markdown](wu/WU-1570.yaml) — 2026-02-10
 - [WU-1571 — Regenerate backlog/status after WU-1570 generator update](wu/WU-1571.yaml) — 2026-02-10
 - [WU-1572 — Auto-sync initiative phase/status during wu:done](wu/WU-1572.yaml) — 2026-02-10
+- [WU-1573 — Build strict-mode progress tracking infrastructure](wu/WU-1573.yaml) — 2026-02-10
