@@ -2,7 +2,7 @@ id: WU-1566
 title: Fix consumer integration binary resolution regression
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
   - packages/@lumenflow/core/__tests__/consumer-integration.test.ts
 tests:
   manual:
-    - Run pnpm --filter @lumenflow/core test -- __tests__/consumer-integration.test.ts and verify zero failures
+    - Run pnpm --filter @lumenflow/core test -- __tests__/consumer-integration.test.ts and verify
+      zero failures
   unit:
     - packages/@lumenflow/core/__tests__/consumer-integration.test.ts
   e2e: []
@@ -31,8 +32,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: @lumenflow/core consumer-integration tests fail on main because expected CLI binaries (notably validate-backlog-sync) are missing from installed @lumenflow/cli package. Problem: this blocks full gates and forces skip-gates usage in unrelated WUs. Solution: align CLI package bin exposure and consumer integration expectations, with regression tests proving required binaries resolve from npm install layout.'
+description: 'Context: @lumenflow/core consumer-integration tests fail on main because expected CLI
+  binaries (notably validate-backlog-sync) are missing from installed @lumenflow/cli package.
+  Problem: this blocks full gates and forces skip-gates usage in unrelated WUs. Solution: align CLI
+  package bin exposure and consumer integration expectations, with regression tests proving required
+  binaries resolve from npm install layout.'
 acceptance:
   - Consumer integration binary-resolution suite passes
-  - Required CLI binaries expected by consumer integration are present and executable after package install
+  - Required CLI binaries expected by consumer integration are present and executable after package
+    install
   - Core package targeted test run for consumer integration passes without workaround flags
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1566
+claimed_at: 2026-02-10T12:42:22.853Z
+baseline_main_sha: 18e9b0528e7c33441c3c4ece801d6a65aa42472d
+session_id: 92f8033f-b9ef-4a68-bc64-879554e59cad
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T12:42:22.861Z
