@@ -2,7 +2,7 @@ id: WU-1544
 title: Re-enable TypeScript lint rules
 lane: 'Operations: Tooling'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
   - packages/@lumenflow/memory/src
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -23,7 +24,9 @@ phase: 2
 spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
-notes: Track B3 from enterprise hardening initiative. Split from original WU-1535 per wu-sizing-guide.md (Oversized -> MUST Split). Complex - use checkpoint-resume with checkpoints per rule.
+notes: Track B3 from enterprise hardening initiative. Split from original WU-1535 per
+  wu-sizing-guide.md (Oversized -> MUST Split). Complex - use checkpoint-resume with checkpoints per
+  rule.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -32,8 +35,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: TypeScript lint rules (no-explicit-any, no-floating-promises, no-unused-vars) are disabled for CLI and core. Problem: disabled rules allow type erosion and unhandled promise rejections. Solution: re-enable rules one at a time with checkpoint-resume, fix violations per rule.'
+description: 'Context: TypeScript lint rules (no-explicit-any, no-floating-promises, no-unused-vars)
+  are disabled for CLI and core. Problem: disabled rules allow type erosion and unhandled promise
+  rejections. Solution: re-enable rules one at a time with checkpoint-resume, fix violations per
+  rule.'
 acceptance:
-  - no-explicit-any, no-floating-promises, and no-unused-vars rules are re-enabled in eslint.config.mjs.
+  - no-explicit-any, no-floating-promises, and no-unused-vars rules are re-enabled in
+    eslint.config.mjs.
   - All violations are resolved with proper types, .catch() handlers, or removal of dead code.
   - pnpm lint passes with all three rules active.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1544
+claimed_at: 2026-02-10T00:24:40.095Z
+baseline_main_sha: b1c44a31952936b940072bcf7d8a290b7e7bacb2
+session_id: bad17a3f-a3d3-4975-ab89-e42fe8171515
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T00:24:40.100Z
