@@ -353,14 +353,9 @@ describe('patrol-loop (WU-1242)', () => {
     it('does not produce unhandled rejections when checkFn throws without onError', async () => {
       const { PatrolLoop } = await import('../patrol-loop.js');
 
-      // Track unhandled rejections
-      const unhandledRejections: Error[] = [];
-      const handler = (event: PromiseRejectionEvent) => {
-        unhandledRejections.push(event.reason);
-      };
-
-      // Node.js uses 'unhandledRejection' on process, but in test env
-      // we can verify by checking the patrol continues and no error propagates
+      // Verify the patrol continues gracefully when checkFn throws
+      // and no onError callback is provided. If .catch() were missing,
+      // the promise rejection would be unhandled.
       const checkFn = vi.fn().mockRejectedValue(new Error('should be caught'));
 
       const patrol = new PatrolLoop({
