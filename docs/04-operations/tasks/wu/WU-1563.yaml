@@ -2,7 +2,7 @@ id: WU-1563
 title: Fix wu:done worktree metadata path isolation regression
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-10
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-transaction-collectors.ts
 tests:
   manual:
-    - Run pnpm state:doctor --json after completing a fixture WU and verify zero status_mismatch for that WU.
+    - Run pnpm state:doctor --json after completing a fixture WU and verify zero status_mismatch for
+      that WU.
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-worktree.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-transaction-collectors.test.ts
@@ -31,8 +32,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: lifecycle closeout still shows status_mismatch loops after INIT-020. Problem: worktree-mode wu:done path handling can write metadata/events using repo-relative paths, allowing main-checkout writes and missing complete events for done WUs. Solution: enforce absolute worktree-local metadata/event paths in wu:done transaction flow and add failing-first regression tests for path isolation and complete-event emission.'
+description: 'Context: lifecycle closeout still shows status_mismatch loops after INIT-020. Problem:
+  worktree-mode wu:done path handling can write metadata/events using repo-relative paths, allowing
+  main-checkout writes and missing complete events for done WUs. Solution: enforce absolute
+  worktree-local metadata/event paths in wu:done transaction flow and add failing-first regression
+  tests for path isolation and complete-event emission.'
 acceptance:
-  - 'TDD: failing-first test proves worktree-mode metadata writes target absolute paths under worktreePath (never main checkout relative paths).'
-  - 'TDD: failing-first test proves wu:done completion appends a complete event for the WU in worktree-mode transaction output.'
-  - Implementation uses explicit absolute paths for WU/status/backlog/stamp/wu-events in worktree flow and passes targeted tests.
+  - 'TDD: failing-first test proves worktree-mode metadata writes target absolute paths under
+    worktreePath (never main checkout relative paths).'
+  - 'TDD: failing-first test proves wu:done completion appends a complete event for the WU in
+    worktree-mode transaction output.'
+  - Implementation uses explicit absolute paths for WU/status/backlog/stamp/wu-events in worktree
+    flow and passes targeted tests.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1563
+claimed_at: 2026-02-10T11:27:16.703Z
+baseline_main_sha: f09760cc23916e4a58cbbbc1ef83aa5cb48f91d9
+session_id: 104c1550-22d9-4610-9253-58f4c467f8c0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T11:27:16.711Z
