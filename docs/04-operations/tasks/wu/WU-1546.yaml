@@ -24,6 +24,7 @@ spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
 notes: Track B3 from enterprise hardening initiative. Split from original WU-1535 per wu-sizing-guide.md.
+  TODO comment in eslint.config.mjs line 51 is pre-existing (describes why sonarjs/todo-tag is disabled) -- not introduced by this WU.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
