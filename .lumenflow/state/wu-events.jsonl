@@ -1089,3 +1089,4 @@
 {"type":"complete","wuId":"WU-1555","timestamp":"2026-02-10T13:34:53.676Z"}
 {"type":"claim","wuId":"WU-1567","timestamp":"2026-02-10T13:36:45.544Z","lane":"Content: Framework Docs","title":"Normalize backlog/status formatting drift"}
 {"type":"complete","wuId":"WU-1567","timestamp":"2026-02-10T13:38:06.374Z"}
+{"type":"claim","wuId":"WU-1568","lane":"Framework: Core Lifecycle","title":"Make backlog/status generation Prettier-stable","timestamp":"2026-02-10T13:40:21.590Z"}
