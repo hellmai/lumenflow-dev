@@ -1,0 +1,12 @@
+id: INIT-022
+slug: strict-mode-core-cli
+title: Enable TypeScript Strict Mode in Core and CLI
+description: ''
+status: draft
+priority: P1
+owner: platform
+created: 2026-02-10
+target_date: 2026-03-31
+phases: []
+success_metrics: []
+labels: []
