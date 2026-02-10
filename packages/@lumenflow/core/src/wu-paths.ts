@@ -14,7 +14,7 @@ import { getConfig, getProjectRoot as getProjectRootFromConfig } from './lumenfl
  * Directory depth constants for path resolution.
  * These define how many levels deep each standard file is from repo root.
  */
-const PATH_DEPTHS = {
+const _PATH_DEPTHS = {
   /** backlog.md is 4 levels deep: docs/04-operations/tasks/backlog.md */
   BACKLOG: 4,
   /** status.md is 4 levels deep: docs/04-operations/tasks/status.md */

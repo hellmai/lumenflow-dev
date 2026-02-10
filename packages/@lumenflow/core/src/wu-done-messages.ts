@@ -8,7 +8,7 @@
  * Prevents duplication and makes text maintainable.
  */
 
-import { LOG_PREFIX, EMOJI, REMOTES, BRANCHES, BOX } from './wu-constants.js';
+import { LOG_PREFIX, EMOJI, REMOTES, BRANCHES } from './wu-constants.js';
 
 // Re-export LOG_PREFIX for backwards compatibility
 export { LOG_PREFIX };
@@ -175,7 +175,7 @@ export const PREFLIGHT = {
  * Merge operation messages (WU-1303)
  */
 export const MERGE = {
-  STARTING: (branch) => `\n${LOG_PREFIX.DONE} Merging lane branch to main (metadata + code)...`,
+  STARTING: (_branch) => `\n${LOG_PREFIX.DONE} Merging lane branch to main (metadata + code)...`,
   BRANCH_MERGE: (branch) =>
     `\n${LOG_PREFIX.DONE} Merging branch ${branch} to main (fast-forward only)...`,
   SUCCESS: (branch) =>

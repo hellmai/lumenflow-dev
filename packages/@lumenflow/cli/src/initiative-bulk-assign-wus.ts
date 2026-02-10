@@ -18,11 +18,10 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import fg from 'fast-glob';
-import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
+import { parse as parseYaml } from 'yaml';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { die } from '@lumenflow/core/error-handler';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
-import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { createWuPaths } from '@lumenflow/core/wu-paths';
 import { runCLI } from './cli-entry-point.js';
 
@@ -410,5 +409,5 @@ async function main() {
 // path but import.meta.url resolves to the real path - they never match
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

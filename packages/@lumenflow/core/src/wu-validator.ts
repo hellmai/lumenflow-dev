@@ -14,7 +14,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
-import { FILE_SYSTEM, STDIO } from './wu-constants.js';
+import { STDIO } from './wu-constants.js';
 import { PLACEHOLDER_SENTINEL } from './wu-schema.js';
 
 /**

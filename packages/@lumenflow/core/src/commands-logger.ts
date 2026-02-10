@@ -17,7 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getCurrentBranch, isMainWorktree } from './wu-helpers.js';
-import { FILE_SYSTEM, GIT_FLAGS, STRING_LITERALS, LUMENFLOW_PATHS } from './wu-constants.js';
+import { GIT_FLAGS, STRING_LITERALS, LUMENFLOW_PATHS } from './wu-constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

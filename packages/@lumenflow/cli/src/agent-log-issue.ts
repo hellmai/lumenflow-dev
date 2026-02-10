@@ -82,11 +82,15 @@ const program = new Command()
         console.log();
         console.log(chalk.yellow('  ⚠  Consider documenting this in your WU notes as well.'));
       }
-    } catch (err: any) {
-      console.error(chalk.red(`Error: ${err.message}`));
-      if (err.issues) {
+    } catch (err: unknown) {
+      const error = err as {
+        message?: string;
+        issues?: Array<{ path: string[]; message: string }>;
+      };
+      console.error(chalk.red(`Error: ${error.message ?? 'Unknown error'}`));
+      if (error.issues) {
         console.error(chalk.red('Validation errors:'));
-        err.issues.forEach((issue: any) => {
+        error.issues.forEach((issue) => {
           console.error(chalk.red(`  - ${issue.path.join('.')}: ${issue.message}`));
         });
       }

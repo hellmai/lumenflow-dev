@@ -197,6 +197,8 @@ export default tseslint.config(
     rules: {
       // Test files legitimately use any types for mocking
       '@typescript-eslint/no-explicit-any': 'off',
+      // Test runner (Vitest/Jest) manages async describe/it callbacks internally
+      '@typescript-eslint/no-floating-promises': 'off',
       // Test files use dynamic paths for fixtures and temp directories
       'security/detect-non-literal-fs-filename': 'off',
       // Test files use dynamic patterns for assertion matching
@@ -284,18 +286,12 @@ export default tseslint.config(
       'no-console': 'off', // CLI tools output to console
       'security/detect-non-literal-fs-filename': 'off', // CLI operates on user-supplied paths
       'security/detect-object-injection': 'off', // CLI parses dynamic argument objects
-      // CLI entry points use IIFE patterns with fire-and-forget promises
-      '@typescript-eslint/no-floating-promises': 'off',
       // CLI code often uses non-null assertions for parsed/validated data
       '@typescript-eslint/no-non-null-assertion': 'off',
       // CLI may use require for dynamic loading
       '@typescript-eslint/no-require-imports': 'off',
       // CLI may use dynamic delete for object cleanup
       '@typescript-eslint/no-dynamic-delete': 'off',
-      // CLI package has unused imports from incremental development - tracked for cleanup
-      '@typescript-eslint/no-unused-vars': 'off',
-      // CLI may have explicit any for dynamic argument parsing
-      '@typescript-eslint/no-explicit-any': 'off',
       // CLI callbacks may be async without await
       '@typescript-eslint/no-misused-promises': 'off',
       // CLI has many repeated status/error messages - constants not practical
@@ -313,18 +309,12 @@ export default tseslint.config(
       'no-console': 'off', // CLI output for status messages
       'security/detect-non-literal-fs-filename': 'off', // Core manages dynamic file paths
       'security/detect-object-injection': 'off', // Core uses dynamic object access
-      // Core infrastructure uses IIFE patterns for async initialization
-      '@typescript-eslint/no-floating-promises': 'off',
       // Core code uses non-null assertions for validated data structures
       '@typescript-eslint/no-non-null-assertion': 'off',
       // Core may use require for conditional loading
       '@typescript-eslint/no-require-imports': 'off',
       // Core may use dynamic delete for state cleanup
       '@typescript-eslint/no-dynamic-delete': 'off',
-      // Core package has unused imports from incremental development - tracked for cleanup
-      '@typescript-eslint/no-unused-vars': 'off',
-      // Core may have explicit any for dynamic data structures
-      '@typescript-eslint/no-explicit-any': 'off',
       // Core callbacks may be async without await (e.g., event handlers)
       '@typescript-eslint/no-misused-promises': 'off',
       // Core has many repeated status/error messages - constants not practical

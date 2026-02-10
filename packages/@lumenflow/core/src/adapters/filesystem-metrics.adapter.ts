@@ -18,7 +18,7 @@
  */
 
 import { readFile } from 'node:fs/promises';
-import { join, dirname, basename } from 'node:path';
+import { join } from 'node:path';
 import fg from 'fast-glob';
 import { parse as parseYaml } from 'yaml';
 import { differenceInMilliseconds, subHours } from 'date-fns';
@@ -37,10 +37,26 @@ import {
   MANDATORY_TRIGGERS,
   TIMELINE_WINDOW_HOURS,
   MAX_ALERTS_DISPLAY,
+  type Lane,
 } from '../domain/orchestration.constants.js';
-import { FILE_SYSTEM, WU_STATUS } from '../wu-constants.js';
+import { WU_STATUS } from '../wu-constants.js';
 
 import { scanWorktrees } from '../worktree-scanner.js';
+
+/** Minimal shape of a parsed WU YAML document used within the metrics adapter. */
+interface ParsedWU {
+  id: string;
+  title: string;
+  lane: string;
+  status: string;
+  code_paths?: string[];
+  test_paths?: { unit?: string[]; e2e?: string[] };
+  claimed_at?: string;
+  created?: string;
+  worktree_path?: string;
+  blocked_reason?: string;
+  [key: string]: unknown;
+}
 
 /**
  * FileSystem implementation of MetricsCollector.
@@ -74,7 +90,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
    */
   async getGlobalStatus(): Promise<GlobalStatus> {
     try {
-      const [statusContent, activeWUs, stamps] = await Promise.all([
+      const [_statusContent, activeWUs, stamps] = await Promise.all([
         this.readStatusFile(),
         this.readAllWUs(),
         this.readStamps(),
@@ -109,7 +125,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
         if (longest) {
           longestRunning = {
             wuId: longest.id,
-            lane: longest.lane,
+            lane: longest.lane as Lane,
             durationMs: differenceInMilliseconds(
               new Date(),
               new Date(longest.claimed_at ?? longest.created),
@@ -280,7 +296,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
 
         progress.push({
           wuId: wu.id,
-          lane: wu.lane,
+          lane: wu.lane as Lane,
           title: wu.title,
           dodProgress,
           dodTotal: DOD_TOTAL,
@@ -421,14 +437,14 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
     return await readFile(statusPath, { encoding: 'utf-8' });
   }
 
-  private async readAllWUs(): Promise<Array<any>> {
+  private async readAllWUs(): Promise<ParsedWU[]> {
     const wuDir = join(this.baseDir, FILESYSTEM_PATHS.WU_DIR);
     const wuFiles = await fg('WU-*.yaml', { cwd: wuDir, absolute: true });
 
     const wus = await Promise.all(
       wuFiles.map(async (file) => {
         const content = await readFile(file, { encoding: 'utf-8' });
-        return parseYaml(content);
+        return parseYaml(content) as ParsedWU;
       }),
     );
 
@@ -442,10 +458,11 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
     const stamps = await Promise.all(
       stampFiles.map(async (file) => {
         const content = await readFile(file, { encoding: 'utf-8' });
-        const data = parseYaml(content);
+        const data = parseYaml(content) as Record<string, unknown>;
         return {
-          wuId: data.id ?? '',
-          completedAt: data.completed_at ?? data.timestamp ?? new Date().toISOString(),
+          wuId: (data.id as string) ?? '',
+          completedAt:
+            (data.completed_at as string) ?? (data.timestamp as string) ?? new Date().toISOString(),
         };
       }),
     );
@@ -496,15 +513,15 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
     return events;
   }
 
-  private isTimelineEvent(obj: any): obj is TimelineEvent {
+  private isTimelineEvent(obj: unknown): obj is TimelineEvent {
+    if (obj === null || typeof obj !== 'object') return false;
+    const record = obj as Record<string, unknown>;
     return (
-      obj &&
-      typeof obj === 'object' &&
-      typeof obj.timestamp === 'string' &&
-      typeof obj.event === 'string' &&
-      typeof obj.wuId === 'string' &&
-      typeof obj.detail === 'string' &&
-      typeof obj.severity === 'string'
+      typeof record.timestamp === 'string' &&
+      typeof record.event === 'string' &&
+      typeof record.wuId === 'string' &&
+      typeof record.detail === 'string' &&
+      typeof record.severity === 'string'
     );
   }
 
@@ -527,7 +544,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
     return minimatch(path, pattern);
   }
 
-  private calculateDoDProgress(wu: any): number {
+  private calculateDoDProgress(wu: ParsedWU): number {
     // Simplified DoD calculation
     // In reality, would parse actual DoD checkpoints from WU YAML or telemetry
     let progress = 0;
@@ -542,7 +559,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
     return Math.min(progress, DOD_TOTAL);
   }
 
-  private generateHeadline(wu: any, agents: Record<string, string>): string {
+  private generateHeadline(wu: ParsedWU, agents: Record<string, string>): string {
     // Tufte-style: data-dense, narrative sentence
     const pendingAgents = Object.entries(agents)
       .filter(([, status]) => status === 'pending')

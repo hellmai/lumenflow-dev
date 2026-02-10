@@ -17,7 +17,6 @@ import type {
   ILocationResolver,
   IGitStateReader,
   IWuStateReader,
-  LocationContext,
   GitState,
 } from '../ports/context.ports.js';
 import type { WuContext, WuState, SessionState } from '../validation/types.js';

@@ -10,14 +10,7 @@
  */
 
 import { z, type ZodTypeAny } from 'zod';
-import {
-  TOOL_DOMAINS,
-  PERMISSION_LEVELS,
-  TOOL_STATUS,
-  type ToolDomain,
-  type PermissionLevel,
-  type ToolStatus,
-} from './tool.constants.js';
+import { TOOL_DOMAINS, PERMISSION_LEVELS, TOOL_STATUS } from './tool.constants.js';
 
 /**
  * Schema for tool input

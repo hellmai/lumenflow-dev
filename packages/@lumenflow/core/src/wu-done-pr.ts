@@ -14,7 +14,7 @@
 import { execSync } from 'node:child_process';
 import { getGitForCwd } from './git-adapter.js';
 import { createError, ErrorCodes } from './error-handler.js';
-import { LOG_PREFIX, EMOJI, REMOTES, FILE_SYSTEM, STDIO } from './wu-constants.js';
+import { LOG_PREFIX, EMOJI, REMOTES, STDIO } from './wu-constants.js';
 import { createWuPaths } from './wu-paths.js';
 
 /**

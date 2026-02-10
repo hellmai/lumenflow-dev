@@ -37,7 +37,6 @@ import {
   BRANCHES,
   GIT_REFS,
   FILE_SYSTEM,
-  EXIT_CODES,
   MICRO_WORKTREE_OPERATIONS,
 } from '@lumenflow/core/wu-constants';
 import { defaultBranchFrom } from '@lumenflow/core/wu-done-validators';
@@ -306,5 +305,5 @@ async function main() {
 
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

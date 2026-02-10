@@ -16,9 +16,8 @@
  */
 
 import { existsSync, writeFileSync, mkdirSync, readFileSync, unlinkSync } from 'node:fs';
-import type { WriteFileOptions } from 'node:fs';
 import path from 'node:path';
-import { LOG_PREFIX, EMOJI, FILE_SYSTEM } from './wu-constants.js';
+import { LOG_PREFIX, EMOJI } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 
 /**

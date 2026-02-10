@@ -319,5 +319,5 @@ agents:
 // Run if executed directly
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

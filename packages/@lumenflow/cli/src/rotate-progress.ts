@@ -16,7 +16,7 @@
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse as parseYaml } from 'yaml';
-import { EXIT_CODES, STATUS_SECTIONS, FILE_SYSTEM, PATTERNS } from '@lumenflow/core/wu-constants';
+import { EXIT_CODES, STATUS_SECTIONS, FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { runCLI } from './cli-entry-point.js';
 
@@ -298,5 +298,5 @@ async function main(): Promise<void> {
 
 // Run main if executed directly
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

@@ -117,5 +117,5 @@ export type { DepsRemoveArgs };
 
 // Run main if executed directly
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

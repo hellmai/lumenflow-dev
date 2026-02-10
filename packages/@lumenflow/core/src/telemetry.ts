@@ -9,13 +9,7 @@
 import { appendFileSync, mkdirSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
-import {
-  LUMENFLOW_PATHS,
-  FILE_EXTENSIONS,
-  FILE_SYSTEM,
-  STDIO,
-  STRING_LITERALS,
-} from './wu-constants.js';
+import { LUMENFLOW_PATHS, FILE_EXTENSIONS, STDIO, STRING_LITERALS } from './wu-constants.js';
 
 const TELEMETRY_DIR = LUMENFLOW_PATHS.TELEMETRY;
 const GATES_LOG = `${TELEMETRY_DIR}/gates${FILE_EXTENSIONS.NDJSON}`;

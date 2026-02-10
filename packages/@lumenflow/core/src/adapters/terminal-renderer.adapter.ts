@@ -22,7 +22,6 @@
 
 import picocolors from 'picocolors';
 import Table from 'cli-table3';
-import cliProgress from 'cli-progress';
 import type { IDashboardRenderer } from '../ports/dashboard-renderer.port.js';
 import type {
   DashboardData,
@@ -36,7 +35,6 @@ import type {
   Alert,
 } from '../domain/orchestration.types.js';
 import type { AgentName } from '../domain/orchestration.constants.js';
-import { DOD_TOTAL } from '../domain/orchestration.constants.js';
 
 // Constants for rendering (no magic strings)
 const SECTION_SEPARATOR = '\n' + '─'.repeat(80) + '\n';

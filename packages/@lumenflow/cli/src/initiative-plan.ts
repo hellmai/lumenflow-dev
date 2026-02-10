@@ -389,7 +389,7 @@ async function main(): Promise<void> {
 // Guard main() for testability - use import.meta.main (WU-1071)
 import { runCLI } from './cli-entry-point.js';
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }
 
 // Export for testing

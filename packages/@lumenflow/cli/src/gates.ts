@@ -94,7 +94,6 @@ import {
   DIRECTORIES,
   GATE_NAMES,
   GATE_COMMANDS,
-  CLI_MODES,
   EXIT_CODES,
   FILE_SYSTEM,
   PRETTIER_ARGS,
@@ -102,13 +101,11 @@ import {
 } from '@lumenflow/core/wu-constants';
 // WU-1520: Gates graceful degradation for missing optional scripts
 import {
-  checkScriptExists,
   buildMissingScriptWarning,
   loadPackageJsonScripts,
   resolveGateAction,
   formatGateSummary,
   type GateResult,
-  SKIPPABLE_GATE_SCRIPTS,
 } from './gates-graceful-degradation.js';
 import { runCLI } from './cli-entry-point.js';
 // WU-1550: Gate registry for declarative gate registration
@@ -1805,5 +1802,5 @@ async function main(): Promise<void> {
 // The old pattern fails with pnpm symlinks because process.argv[1] is the symlink
 // path but import.meta.url resolves to the real path - they never match
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

@@ -21,7 +21,6 @@ import { createWuPaths, WU_PATHS } from './wu-paths.js';
 import {
   CONSISTENCY_TYPES,
   CONSISTENCY_MESSAGES,
-  FILE_SYSTEM,
   LOG_PREFIX,
   REMOTES,
   STRING_LITERALS,
@@ -632,7 +631,7 @@ async function createStampInWorktree(
  * @param {string} projectRoot - Project root directory
  * @returns {Promise<void>}
  */
-async function createStampInProject(id: string, title: string, projectRoot: string) {
+async function _createStampInProject(id: string, title: string, projectRoot: string) {
   const stampsDir = path.join(projectRoot, WU_PATHS.STAMPS_DIR());
   const stampPath = path.join(projectRoot, WU_PATHS.STAMP(id));
 
@@ -721,7 +720,7 @@ async function updateYamlToDoneInWorktree(
  * @param {string} projectRoot - Project root directory
  * @returns {Promise<void>}
  */
-async function updateYamlToDone(id: string, projectRoot: string) {
+async function _updateYamlToDone(id: string, projectRoot: string) {
   const paths = createWuPaths({ projectRoot });
   const wuPath = path.join(projectRoot, paths.WU(id));
 
@@ -837,7 +836,7 @@ async function removeWUFromSectionInWorktree(
  * @param {string} sectionHeading - Section heading to target
  * @returns {Promise<void>}
  */
-async function removeWUFromSection(filePath: string, id: string, sectionHeading: string) {
+async function _removeWUFromSection(filePath: string, id: string, sectionHeading: string) {
   try {
     await access(filePath, constants.R_OK);
   } catch {

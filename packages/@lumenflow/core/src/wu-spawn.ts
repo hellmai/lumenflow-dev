@@ -2086,7 +2086,7 @@ async function main() {
   const clientContext = { name: clientName, config: resolveClientConfig(config, clientName) };
 
   if (clientName === 'codex-cli' || args.codex) {
-    const prompt = generateCodexPrompt(doc, id, strategy, {
+    const _prompt = generateCodexPrompt(doc, id, strategy, {
       ...thinkingOptions,
       client: clientContext,
       config,
@@ -2131,5 +2131,5 @@ async function main() {
 
 // Guard main() for testability
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  main();
+  void main();
 }

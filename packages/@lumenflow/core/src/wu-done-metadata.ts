@@ -7,7 +7,7 @@ import { existsSync } from 'node:fs';
 import { exec as execCallback } from 'node:child_process';
 import { promisify } from 'node:util';
 
-import { getGitForCwd, createGitForPath } from './git-adapter.js';
+import { getGitForCwd } from './git-adapter.js';
 import { updateStatusRemoveInProgress, addToStatusCompleted } from './wu-status-updater.js';
 import { moveWUToDoneBacklog } from './wu-backlog-updater.js';
 import { createStamp } from './stamp-utils.js';

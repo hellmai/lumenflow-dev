@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import matter from 'gray-matter';
 import { createError, ErrorCodes } from './error-handler.js';
-import { FILE_SYSTEM, STRING_LITERALS } from './wu-constants.js';
+import { STRING_LITERALS } from './wu-constants.js';
 
 /**
  * Backlog/Status file editor module.

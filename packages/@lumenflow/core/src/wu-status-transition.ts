@@ -21,19 +21,11 @@ import { WUStateStore } from './wu-state-store.js';
 import { generateBacklog } from './backlog-generator.js';
 import { writeFile } from 'node:fs/promises';
 import { parseBacklogFrontmatter, getSectionHeadings } from './backlog-parser.js';
-import { getGitForCwd } from './git-adapter.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { todayISO } from './date-utils.js';
 import { getStateStoreDirFromBacklog, WU_PATHS } from './wu-paths.js';
 import { readWU, writeWU, appendNote } from './wu-yaml.js';
-import {
-  toKebab,
-  REMOTES,
-  BRANCHES,
-  WU_STATUS,
-  FILE_SYSTEM,
-  STRING_LITERALS,
-} from './wu-constants.js';
+import { toKebab, REMOTES, BRANCHES, WU_STATUS, STRING_LITERALS } from './wu-constants.js';
 
 /**
  * Direction type for status transitions
@@ -214,16 +206,16 @@ async function updateBacklogAndStatus(paths, id, title, fromStatus, toStatus, di
   const inProgressHeading = headings.in_progress || '## 🔧 In progress';
   const blockedHeading = headings.blocked || '## ⛔ Blocked';
 
-  // Determine source and target sections
-  let fromSection, toSection, format;
+  // Determine source and target sections (preserved for documentation; replaced by state-store regen)
+  let _fromSection, _toSection, _format;
   if (direction === 'block') {
-    fromSection = inProgressHeading;
-    toSection = blockedHeading;
-    format = BACKLOG_BULLET_FORMAT.BLOCKED;
+    _fromSection = inProgressHeading;
+    _toSection = blockedHeading;
+    _format = BACKLOG_BULLET_FORMAT.BLOCKED;
   } else {
-    fromSection = blockedHeading;
-    toSection = inProgressHeading;
-    format = BACKLOG_BULLET_FORMAT.PROGRESS;
+    _fromSection = blockedHeading;
+    _toSection = inProgressHeading;
+    _format = BACKLOG_BULLET_FORMAT.PROGRESS;
   }
 
   // WU-1574: Regenerate backlog.md from state store (replaces BacklogManager)

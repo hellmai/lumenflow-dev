@@ -24,14 +24,7 @@
  */
 
 import { Command } from 'commander';
-import {
-  existsSync,
-  readFileSync,
-  writeFileSync,
-  readdirSync,
-  statSync,
-  unlinkSync,
-} from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync, unlinkSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
@@ -40,14 +33,7 @@ import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { die } from '@lumenflow/core/error-handler';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
-import {
-  REMOTES,
-  BRANCHES,
-  FILE_SYSTEM,
-  STDIO_MODES,
-  EXIT_CODES,
-  PKG_MANAGER,
-} from '@lumenflow/core/wu-constants';
+import { REMOTES, FILE_SYSTEM, PKG_MANAGER } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */
@@ -67,7 +53,7 @@ const SEMVER_REGEX = /^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?$/;
 const JSON_INDENT = 2;
 
 /** Default npm registry */
-const NPM_REGISTRY = 'https://registry.npmjs.org';
+const _NPM_REGISTRY = 'https://registry.npmjs.org';
 
 /** Environment variable for npm authentication token */
 const NPM_TOKEN_ENV = 'NPM_TOKEN';
@@ -477,7 +463,7 @@ async function main(): Promise<void> {
 
           // If we exited pre mode, include the deleted pre.json in files to commit
           // (the deletion will be staged automatically by git add -A behavior)
-          const changesetPrePath = join(CHANGESET_DIR, CHANGESET_PRE_JSON);
+          const _changesetPrePath = join(CHANGESET_DIR, CHANGESET_PRE_JSON);
           const filesToCommit = [...relativePaths];
           // Note: Deletion of pre.json is handled by git detecting the missing file
 
@@ -557,5 +543,5 @@ export { main };
 
 // Guard main() for testability
 if (import.meta.main) {
-  runCLI(main);
+  void runCLI(main);
 }

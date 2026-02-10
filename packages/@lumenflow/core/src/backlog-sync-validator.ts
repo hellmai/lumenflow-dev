@@ -10,14 +10,7 @@ import path from 'node:path';
 import { parseYAML } from './wu-yaml.js';
 import { parseBacklogFrontmatter, getSectionHeadings } from './backlog-parser.js';
 import { extractParent } from './lane-checker.js';
-import {
-  CONFIG_FILES,
-  PATTERNS,
-  FILE_SYSTEM,
-  STRING_LITERALS,
-  WU_STATUS,
-  getProjectRoot,
-} from './wu-constants.js';
+import { CONFIG_FILES, STRING_LITERALS, WU_STATUS, getProjectRoot } from './wu-constants.js';
 
 /**
  * Check if parent lane has sub-lane taxonomy in .lumenflow.lane-inference.yaml
