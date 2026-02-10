@@ -4,7 +4,7 @@ _Last updated: 2026-02-10_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1570 — Avoid over-escaping underscores in backlog/status markdown](wu/WU-1570.yaml)
 
 ## Completed
 
@@ -34,7 +34,7 @@ _Last updated: 2026-02-10_
 - [WU-1026 — Allow agent branches to bypass worktree requirements](wu/WU-1026.yaml) — 2026-01-19
 - [WU-1027 — Block agents from deleting worktrees](wu/WU-1027.yaml) — 2026-01-19
 - [WU-1028 — Fix agent wu:done amnesia - docs and distribution](wu/WU-1028.yaml) — 2026-01-19
-- [WU-1029 — Fix wu:claim fallback to symlink nested node\_modules](wu/WU-1029.yaml) — 2026-01-19
+- [WU-1029 — Fix wu:claim fallback to symlink nested node_modules](wu/WU-1029.yaml) — 2026-01-19
 - [WU-1030 — Fix wu:create/wu:edit pre-push block leaving main ahead](wu/WU-1030.yaml) — 2026-01-19
 - [WU-1031 — Make wu:done resilient to missing worktree](wu/WU-1031.yaml) — 2026-01-20
 - [WU-1032 — Upgrade Core Dependencies and Fix Documentation](wu/WU-1032.yaml) — 2026-01-20
@@ -71,7 +71,7 @@ _Last updated: 2026-02-10_
 - [WU-1067 — Make gates language-agnostic via config-driven execution](wu/WU-1067.yaml) — 2026-01-23
 - [WU-1068 — LumenFlow Framework Cleanup - Remove ExampleApp leakage and fix code smells](wu/WU-1068.yaml) — 2026-01-23
 - [WU-1069 — Validate spec-refs rejects repo-internal plan paths](wu/WU-1069.yaml) — 2026-01-23
-- [WU-1070 — Add audit logging and guarding for LUMENFLOW\_FORCE bypass](wu/WU-1070.yaml) — 2026-01-23
+- [WU-1070 — Add audit logging and guarding for LUMENFLOW_FORCE bypass](wu/WU-1070.yaml) — 2026-01-23
 - [WU-1071 — Fix CLI entry guard for pnpm symlink resolution](wu/WU-1071.yaml) — 2026-01-23
 - [WU-1072 — Fix wu:done staging whitelist for auto-generated docs + document wu:cleanup PR-only behavior](wu/WU-1072.yaml) — 2026-01-23
 - [WU-1074 — Add release command for npm publishing](wu/WU-1074.yaml) — 2026-01-23
@@ -81,7 +81,7 @@ _Last updated: 2026-02-10_
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
 - [WU-1080 — Add wu:release command to recover orphaned WUs](wu/WU-1080.yaml) — 2026-01-23
-- [WU-1081 — Remove prerelease npm script and add LUMENFLOW\_FORCE to micro-worktree push](wu/WU-1081.yaml) — 2026-01-23
+- [WU-1081 — Remove prerelease npm script and add LUMENFLOW_FORCE to micro-worktree push](wu/WU-1081.yaml) — 2026-01-23
 - [WU-1082 — Agent branch patterns registry with fetch + cache](wu/WU-1082.yaml) — 2026-01-24
 - [WU-1083 — Scaffold agent onboarding docs and skills in lumenflow init](wu/WU-1083.yaml) — 2026-01-24
 - [WU-1084 — wu:done should fail if main has uncommitted changes after merge](wu/WU-1084.yaml) — 2026-01-24
@@ -143,16 +143,16 @@ _Last updated: 2026-02-10_
 - [WU-1140 — Fix docs formatting for CLI reference](wu/WU-1140.yaml) — 2026-01-27
 - [WU-1144 — Bug: wu:edit --notes and --acceptance overwrite instead of append](wu/WU-1144.yaml) — 2026-01-27
 - [WU-1145 — Bug: wu:done metadata update overwrites concurrent backlog changes](wu/WU-1145.yaml) — 2026-01-27
-- [WU-1063 — Fix wu:edit dropping spec\_refs](wu/WU-1063.yaml) — 2026-01-27
+- [WU-1063 — Fix wu:edit dropping spec_refs](wu/WU-1063.yaml) — 2026-01-27
 - [WU-1073 — Add --risks option to wu:edit command](wu/WU-1073.yaml) — 2026-01-27
 - [WU-1135 — Add vendor-agnostic pre-write checks to constraints and agent templates](wu/WU-1135.yaml) — 2026-01-27
 - [WU-1147 — Backlog generator merges YAML WUs missing from state store](wu/WU-1147.yaml) — 2026-01-27
 - [WU-1134 — Add worktree block recovery guidance to wu:spawn output](wu/WU-1134.yaml) — 2026-01-27
 - [WU-1148 — Bug: docs:generate output not formatted by wu:done](wu/WU-1148.yaml) — 2026-01-27
-- [WU-1150 — Fix TOOL\_PATHS hardcoded paths for consumer repos](wu/WU-1150.yaml) — 2026-01-27
-- [WU-1152 — Fix resolveNodeModulePath to check cwd/node\_modules for sibling packages](wu/WU-1152.yaml) — 2026-01-28
+- [WU-1150 — Fix TOOL_PATHS hardcoded paths for consumer repos](wu/WU-1150.yaml) — 2026-01-27
+- [WU-1152 — Fix resolveNodeModulePath to check cwd/node_modules for sibling packages](wu/WU-1152.yaml) — 2026-01-28
 - [WU-1159 — Bug: templates/ not included in npm package - docs-sync broken](wu/WU-1159.yaml) — 2026-01-28
-- [WU-1153 — Add wu:done guard for uncommitted code\_paths](wu/WU-1153.yaml) — 2026-01-28
+- [WU-1153 — Add wu:done guard for uncommitted code_paths](wu/WU-1153.yaml) — 2026-01-28
 - [WU-1163 — Replace internal doc paths in error messages with lumenflow.dev URLs](wu/WU-1163.yaml) — 2026-01-28
 - [WU-1165 — Bug: incremental tests run full suite](wu/WU-1165.yaml) — 2026-01-28
 - [WU-1160 — Remove all stale .mjs references from TypeScript codebase](wu/WU-1160.yaml) — 2026-01-28
@@ -188,7 +188,7 @@ _Last updated: 2026-02-10_
 - [WU-1182 — Standardize Commander usage across CLI tools](wu/WU-1182.yaml) — 2026-01-29
 - [WU-1192 — Consolidate wu-spawn prompt generation to single source of truth](wu/WU-1192.yaml) — 2026-01-29
 - [WU-1193 — Orchestration cleanup: fix constants, rename init:plan, remove ghost commands](wu/WU-1193.yaml) — 2026-01-29
-- [WU-1187 — WIP justification: require wip\_justification when WIP > 1](wu/WU-1187.yaml) — 2026-01-29
+- [WU-1187 — WIP justification: require wip_justification when WIP > 1](wu/WU-1187.yaml) — 2026-01-29
 - [WU-1197 — Fix pre-existing lint errors in lane-checker.ts](wu/WU-1197.yaml) — 2026-01-29
 - [WU-1188 — lane:health command: overlap detection and coverage gaps](wu/WU-1188.yaml) — 2026-01-29
 - [WU-1191 — Doctor and gate integration for lane health](wu/WU-1191.yaml) — 2026-01-29
@@ -199,12 +199,12 @@ _Last updated: 2026-02-10_
 - [WU-1198 — Documentation: Lane tooling and WIP enforcement](wu/WU-1198.yaml) — 2026-01-29
 - [WU-1178 — Document automatic CLI/config docs generation system](wu/WU-1178.yaml) — 2026-01-29
 - [WU-1203 — Add configurable progress signals to memory config](wu/WU-1203.yaml) — 2026-01-29
-- [WU-1206 — Add progress\_signals example to .lumenflow.config.yaml](wu/WU-1206.yaml) — 2026-01-29
+- [WU-1206 — Add progress_signals example to .lumenflow.config.yaml](wu/WU-1206.yaml) — 2026-01-29
 - [WU-1207 — Archive old WU events to prevent unbounded growth](wu/WU-1207.yaml) — 2026-01-29
 - [WU-1208 — Create unified pnpm state:cleanup command](wu/WU-1208.yaml) — 2026-01-29
 - [WU-1209 — Add state:doctor command for integrity checks](wu/WU-1209.yaml) — 2026-01-29
 - [WU-1211 — Add initiative completeness validation](wu/WU-1211.yaml) — 2026-01-29
-- [WU-1214 — Add progress\_signals configuration to memory docs](wu/WU-1214.yaml) — 2026-01-29
+- [WU-1214 — Add progress_signals configuration to memory docs](wu/WU-1214.yaml) — 2026-01-29
 - [WU-1213 — Fix pre-existing lint errors in wu-claim.ts, wu-create.ts, initiative-create.ts](wu/WU-1213.yaml) — 2026-01-29
 - [WU-1210 — Fix wu-spawn.test.ts failing 'Required at Milestones' assertion](wu/WU-1210.yaml) — 2026-01-29
 - [WU-1215 — Update distribution gitignore with complete recursive patterns](wu/WU-1215.yaml) — 2026-01-29
@@ -248,7 +248,7 @@ _Last updated: 2026-02-10_
 - [WU-1278 — Fix orchestrate:monitor path stripping bug](wu/WU-1278.yaml) — 2026-01-31
 - [WU-1279 — Wire methodology policy into spawn prompt generation](wu/WU-1279.yaml) — 2026-01-31
 - [WU-1237 — Add mem:promote and mem:profile for project knowledge management](wu/WU-1237.yaml) — 2026-01-31
-- [WU-1280 — Gates should consume tests\_required from resolved policy](wu/WU-1280.yaml) — 2026-01-31
+- [WU-1280 — Gates should consume tests_required from resolved policy](wu/WU-1280.yaml) — 2026-01-31
 - [WU-1238 — Add access tracking and decay scoring to memory layer](wu/WU-1238.yaml) — 2026-01-31
 - [WU-1281 — Fix mem:context lane filtering and recency selection](wu/WU-1281.yaml) — 2026-01-31
 - [WU-1283 — Fix agent documentation loading - inline tooling in entry points](wu/WU-1283.yaml) — 2026-01-31
@@ -260,7 +260,7 @@ _Last updated: 2026-02-10_
 - [WU-1288 — Wire methodology policy into wu:spawn CLI output](wu/WU-1288.yaml) — 2026-01-31
 - [WU-1292 — Expose mem:context CLI options for lane and limits](wu/WU-1292.yaml) — 2026-01-31
 - [WU-1287 — Align spawn memory context with mem-context-core](wu/WU-1287.yaml) — 2026-01-31
-- [WU-1289 — Add spawn\_context\_max\_size to config schema](wu/WU-1289.yaml) — 2026-01-31
+- [WU-1289 — Add spawn_context_max_size to config schema](wu/WU-1289.yaml) — 2026-01-31
 - [WU-1290 — Update Codex spawn prompt to reflect methodology policy](wu/WU-1290.yaml) — 2026-01-31
 - [WU-1291 — Decide on spawn template system (activate or remove)](wu/WU-1291.yaml) — 2026-01-31
 - [WU-1295 — Fix build failure in wu-spawn-context optional mem-context import](wu/WU-1295.yaml) — 2026-02-01
@@ -293,14 +293,14 @@ _Last updated: 2026-02-10_
 - [WU-1333 — Ensure initiative:add/remove-wu handles moving origin](wu/WU-1333.yaml) — 2026-02-02
 - [WU-1336 — Centralize retry exhaustion handling for micro-worktree operations](wu/WU-1336.yaml) — 2026-02-02
 - [WU-1337 — Add retry/rebase for push-only micro-worktree operations](wu/WU-1337.yaml) — 2026-02-02
-- [WU-1327 — Document lock\_policy and pilot guidance](wu/WU-1327.yaml) — 2026-02-02
-- [WU-1325 — Update CLI commands to enforce lock\_policy](wu/WU-1325.yaml) — 2026-02-02
-- [WU-1322 — Add lock\_policy field to lane configuration schema](wu/WU-1322.yaml) — 2026-02-02
-- [WU-1326 — Update orchestrator wave building for lock\_policy](wu/WU-1326.yaml) — 2026-02-02
-- [WU-1323 — Update lane lock system to honor lock\_policy](wu/WU-1323.yaml) — 2026-02-02
-- [WU-1324 — Update lane checker WIP counting for lock\_policy](wu/WU-1324.yaml) — 2026-02-02
+- [WU-1327 — Document lock_policy and pilot guidance](wu/WU-1327.yaml) — 2026-02-02
+- [WU-1325 — Update CLI commands to enforce lock_policy](wu/WU-1325.yaml) — 2026-02-02
+- [WU-1322 — Add lock_policy field to lane configuration schema](wu/WU-1322.yaml) — 2026-02-02
+- [WU-1326 — Update orchestrator wave building for lock_policy](wu/WU-1326.yaml) — 2026-02-02
+- [WU-1323 — Update lane lock system to honor lock_policy](wu/WU-1323.yaml) — 2026-02-02
+- [WU-1324 — Update lane checker WIP counting for lock_policy](wu/WU-1324.yaml) — 2026-02-02
 - [WU-1341 — Add Idea to Shipping guide for lumenflow.dev](wu/WU-1341.yaml) — 2026-02-02
-- [WU-1340 — Fix INIT-013 wiring: apply lock\_policy in orchestrator + spawn warnings](wu/WU-1340.yaml) — 2026-02-02
+- [WU-1340 — Fix INIT-013 wiring: apply lock_policy in orchestrator + spawn warnings](wu/WU-1340.yaml) — 2026-02-02
 - [WU-1342 — Fix lumenflow init scaffolding bugs from 2.5.0 testing](wu/WU-1342.yaml) — 2026-02-02
 - [WU-1343 — Fix CLI naming and merge guidance in lumenflow.dev docs](wu/WU-1343.yaml) — 2026-02-02
 - [WU-1344 — wu:prep prints copy-paste skip-gates command on pre-existing failure](wu/WU-1344.yaml) — 2026-02-02
@@ -318,7 +318,7 @@ _Last updated: 2026-02-10_
 - [WU-1360 — Add rapid prototyping guide and workflow enforcement hooks](wu/WU-1360.yaml) — 2026-02-02
 - [WU-1359 — Enhance init output and add wu:proto command for new user experience](wu/WU-1359.yaml) — 2026-02-02
 - [WU-1364 — Improve greenfield onboarding with initiative-first workflow](wu/WU-1364.yaml) — 2026-02-02
-- [WU-1220 — Investigate improper LUMENFLOW\_FORCE usage in agent sessions](wu/WU-1220.yaml) — 2026-02-03
+- [WU-1220 — Investigate improper LUMENFLOW_FORCE usage in agent sessions](wu/WU-1220.yaml) — 2026-02-03
 - [WU-1338 — Fix consumer-integration test failure for hardcoded paths in gates binary](wu/WU-1338.yaml) — 2026-02-03
 - [WU-1334 — Backfill existing WU specs with strict validation fields](wu/WU-1334.yaml) — 2026-02-03
 - [WU-1365 — Micro-worktree robustness: error handling, cleanup, and prettier availability](wu/WU-1365.yaml) — 2026-02-03
@@ -377,7 +377,7 @@ _Last updated: 2026-02-10_
 - [WU-1423 — Complete beacon→lumenflow migration: rename config schema and all references](wu/WU-1423.yaml) — 2026-02-04
 - [WU-1428 — Remove all beacon references: delete migration utility and purge codebase](wu/WU-1428.yaml) — 2026-02-04
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml) — 2026-02-04
-- [WU-1429 — wu:create: tighten spec\_refs + add notes flag + contextual warnings](wu/WU-1429.yaml) — 2026-02-04
+- [WU-1429 — wu:create: tighten spec_refs + add notes flag + contextual warnings](wu/WU-1429.yaml) — 2026-02-04
 - [WU-1430 — Audit and centralize hardcoded path strings into constants](wu/WU-1430.yaml) — 2026-02-04
 - [WU-1422 — MCP: Complete WU tools (+17)](wu/WU-1422.yaml) — 2026-02-04
 - [WU-1427 — Document MCP server on lumenflow.dev](wu/WU-1427.yaml) — 2026-02-04
@@ -425,7 +425,7 @@ _Last updated: 2026-02-10_
 - [WU-1456 — Shared Schemas: Memory commands](wu/WU-1456.yaml) — 2026-02-06
 - [WU-1457 — Shared Schemas: Flow + Metrics + Validate + Setup + Agent + Orchestration + Spawn](wu/WU-1457.yaml) — 2026-02-06
 - [WU-1458 — MCP/CLI parity enforcement](wu/WU-1458.yaml) — 2026-02-06
-- [WU-1475 — Preserve initiative related\_plan in initiative:add-wu](wu/WU-1475.yaml) — 2026-02-06
+- [WU-1475 — Preserve initiative related_plan in initiative:add-wu](wu/WU-1475.yaml) — 2026-02-06
 - [WU-1476 — Add remove-success-metric support to initiative:edit](wu/WU-1476.yaml) — 2026-02-06
 - [WU-1472 — Append-only signal read receipts for concurrent-safe consumption](wu/WU-1472.yaml) — 2026-02-06
 - [WU-1471 — Auto-checkpoint enforcement hooks + wu:done checkpoint gate](wu/WU-1471.yaml) — 2026-02-06
@@ -434,7 +434,7 @@ _Last updated: 2026-02-10_
 - [WU-1481 — MCP parity truth gate against public CLI manifest](wu/WU-1481.yaml) — 2026-02-06
 - [WU-1482 — MCP parity remediation wave 1 (state/lane/gates/setup commands)](wu/WU-1482.yaml) — 2026-02-06
 - [WU-1473 — CLI wiring for orchestrator recovery and signal consumption](wu/WU-1473.yaml) — 2026-02-06
-- [WU-1485 — Remove LUMENFLOW\_FORCE suggestions from hook error messages](wu/WU-1485.yaml) — 2026-02-06
+- [WU-1485 — Remove LUMENFLOW_FORCE suggestions from hook error messages](wu/WU-1485.yaml) — 2026-02-06
 - [WU-1483 — MCP parity remediation wave 2 (file/git/plan/signal commands)](wu/WU-1483.yaml) — 2026-02-06
 - [WU-1474 — Activate decay policy in completion lifecycle](wu/WU-1474.yaml) — 2026-02-06
 - [WU-1484 — Complete CLI shared-validator wiring for schema-backed commands](wu/WU-1484.yaml) — 2026-02-06
@@ -484,7 +484,7 @@ _Last updated: 2026-02-10_
 - [WU-1529 — Purge remaining live .beacon references from hooks and agent overlays](wu/WU-1529.yaml) — 2026-02-09
 - [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml) — 2026-02-09
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — 2026-02-09
-- [WU-1531 — Reduce code\_paths false positives in parity + prep](wu/WU-1531.yaml) — 2026-02-09
+- [WU-1531 — Reduce code_paths false positives in parity + prep](wu/WU-1531.yaml) — 2026-02-09
 - [WU-1530 — Single-pass wu:create validation and mandatory --help rule](wu/WU-1530.yaml) — 2026-02-09
 - [WU-1532 — Remove dead registration-parity residue after WU-1530](wu/WU-1532.yaml) — 2026-02-09
 - [WU-1533 — BUG: wu:done auto-cleanup mutates main checkout (event rollover leaves dirty state)](wu/WU-1533.yaml) — 2026-02-09
