@@ -1083,3 +1083,4 @@
 {"type":"complete","wuId":"WU-1558","timestamp":"2026-02-10T13:03:33.309Z"}
 {"type":"claim","wuId":"WU-1561","timestamp":"2026-02-10T13:05:34.752Z","lane":"Operations: Tooling","title":"Enforce --help-first rule for CLI commands via hook"}
 {"type":"complete","wuId":"WU-1561","timestamp":"2026-02-10T13:11:15.571Z"}
+{"type":"claim","wuId":"WU-1559","lane":"Framework: CLI Enforcement","title":"Add injection-focused tests for command execution surfaces","timestamp":"2026-02-10T13:11:37.583Z"}

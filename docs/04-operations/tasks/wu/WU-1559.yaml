@@ -2,7 +2,7 @@ id: WU-1559
 title: Add injection-focused tests for command execution surfaces
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -30,8 +30,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1534 hardened deps-add, deps-remove, and trace-gen with execFileSync argv arrays and regex validation. Problem: Acceptance criterion 3 (injection-focused tests cover malicious argument cases) has no dedicated test coverage. Solution: Add test suites validating that shell metacharacters, null bytes, and overlength strings are rejected by validatePackageName and validateWuId, and that execFileSync argv isolation prevents injection.'
+description: 'Context: WU-1534 hardened deps-add, deps-remove, and trace-gen with execFileSync argv
+  arrays and regex validation. Problem: Acceptance criterion 3 (injection-focused tests cover
+  malicious argument cases) has no dedicated test coverage. Solution: Add test suites validating
+  that shell metacharacters, null bytes, and overlength strings are rejected by validatePackageName
+  and validateWuId, and that execFileSync argv isolation prevents injection.'
 acceptance:
   - Injection tests exist for validatePackageName covering shell metacharacters and null bytes
   - Injection tests exist for validateWuId covering malformed WU IDs
   - Tests verify execFileSync argv isolation prevents shell injection
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1559
+claimed_at: 2026-02-10T13:11:37.544Z
+baseline_main_sha: d17495d4eadc022a9999c80ac0bc9c6d82b56c20
+session_id: 278d32b3-911a-4bb5-8b15-04f44ba8e479
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T13:11:37.549Z
