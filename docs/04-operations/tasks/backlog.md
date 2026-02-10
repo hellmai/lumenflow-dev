@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1556 — Stop lifecycle repair loops and enforce closeout consistency](wu/WU-1556.yaml) — Operations: Tooling
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1555 — Fix pre-existing test failures in orchestration.schemas, filesystem-metrics.adapter, terminal-renderer.adapter](wu/WU-1555.yaml) — Framework: Core Lifecycle
 
@@ -36,6 +35,7 @@ sections:
 - [WU-1546 — Re-enable TypeScript lint rules](wu/WU-1546.yaml) — Operations: Tooling
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml) — Framework: CLI WU Commands
 - [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml) — Framework: Core Lifecycle
+- [WU-1556 — Stop lifecycle repair loops and enforce closeout consistency](wu/WU-1556.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 

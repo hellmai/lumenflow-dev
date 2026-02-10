@@ -2,7 +2,7 @@ id: WU-1556
 title: Stop lifecycle repair loops and enforce closeout consistency
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-10
 code_paths:
@@ -13,8 +13,10 @@ code_paths:
   - packages/@lumenflow/core/src/state-doctor-core.ts
 tests:
   manual:
-    - Run pnpm wu:repair --all --check on a seeded inconsistent fixture and verify no files/commits are created.
-    - Run pnpm state:doctor --json after WU closeout fixture flow and verify zero status_mismatch for repaired WUs.
+    - Run pnpm wu:repair --all --check on a seeded inconsistent fixture and verify no files/commits
+      are created.
+    - Run pnpm state:doctor --json after WU closeout fixture flow and verify zero status_mismatch
+      for repaired WUs.
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-consistency-checker.test.ts
     - packages/@lumenflow/core/src/__tests__/state-doctor-core.test.ts
@@ -27,7 +29,9 @@ dependencies: []
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-020.yaml
 risks: []
-notes: 'Observed symptoms to close: state:doctor reports 9 status_mismatch issues; repeated fix: repair and fix(state-doctor) commit loops after INIT-020 closeout; status.md In Progress drift; mixed completion fields across INIT-020 WUs.'
+notes: 'Observed symptoms to close: state:doctor reports 9 status_mismatch issues; repeated fix:
+  repair and fix(state-doctor) commit loops after INIT-020 closeout; status.md In Progress drift;
+  mixed completion fields across INIT-020 WUs.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -36,10 +40,26 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-020 closeout produced repeated repair commits while lifecycle state stayed inconsistent. Problem: repair/check behavior and metadata reconciliation can leave YAML, stamps, status docs, and state store out of sync. Solution: harden repair and done flows, then backstop with regression tests written first (TDD).'
+description: 'Context: INIT-020 closeout produced repeated repair commits while lifecycle state
+  stayed inconsistent. Problem: repair/check behavior and metadata reconciliation can leave YAML,
+  stamps, status docs, and state store out of sync. Solution: harden repair and done flows, then
+  backstop with regression tests written first (TDD).'
 acceptance:
-  - 'TDD: add failing-first regression test proving wu:repair --all --check is read-only and performs no writes/commits.'
-  - 'TDD: add failing-first regression test proving batch YAML_DONE_STATUS_IN_PROGRESS repairs are cumulative for shared files (no overwrite clobber).'
-  - 'TDD: add failing-first regression test proving STAMP_EXISTS_YAML_NOT_DONE repair reconciles state so no status_mismatch remains for repaired WUs.'
-  - 'TDD: add failing-first regression test proving wu:done success path enforces YAML/stamp/state consistency before reporting complete.'
-  - 'TDD: add failing-first regression coverage for completion field normalization (completed vs completed_at) in done/repair paths.'
+  - 'TDD: add failing-first regression test proving wu:repair --all --check is read-only and
+    performs no writes/commits.'
+  - 'TDD: add failing-first regression test proving batch YAML_DONE_STATUS_IN_PROGRESS repairs are
+    cumulative for shared files (no overwrite clobber).'
+  - 'TDD: add failing-first regression test proving STAMP_EXISTS_YAML_NOT_DONE repair reconciles
+    state so no status_mismatch remains for repaired WUs.'
+  - 'TDD: add failing-first regression test proving wu:done success path enforces YAML/stamp/state
+    consistency before reporting complete.'
+  - 'TDD: add failing-first regression coverage for completion field normalization (completed vs
+    completed_at) in done/repair paths.'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1556
+claimed_at: 2026-02-10T09:47:33.560Z
+baseline_main_sha: b365549d8cfaedd0c6e81ebbe00aabb69d071efe
+session_id: 3b49fe84-00ea-4087-afa1-26df65293bf1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T09:47:33.566Z
