@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1557 — Fix remaining process.exit calls in core library functions](wu/WU-1557.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1555 — Fix pre-existing test failures in orchestration.schemas, filesystem-metrics.adapter, terminal-renderer.adapter](wu/WU-1555.yaml) — Framework: Core Lifecycle
 

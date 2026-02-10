@@ -1,0 +1,38 @@
+id: WU-1557
+title: Fix remaining process.exit calls in core library functions
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-10
+code_paths:
+  - packages/@lumenflow/core/src/arg-parser.ts
+  - packages/@lumenflow/core/src/wu-spawn-helpers.ts
+  - packages/@lumenflow/core/src/token-counter.ts
+tests:
+  manual:
+    - Verify pnpm gates passes with all process.exit calls replaced
+  unit:
+    - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1557.done
+dependencies: []
+initiative: INIT-021
+phase: 1
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: INIT-020 introduced ProcessExitError pattern for core modules. Problem: 3 process.exit() calls remain in library functions (not CLI entrypoints): arg-parser.ts Commander help handler, wu-spawn-helpers.ts Commander help handler, token-counter.ts redundant SIGINT handler. Solution: Replace with throw ProcessExitError or remove redundant handler.'
+acceptance:
+  - arg-parser.ts Commander help handler throws ProcessExitError instead of calling process.exit
+  - wu-spawn-helpers.ts Commander help handler throws ProcessExitError instead of calling process.exit
+  - token-counter.ts redundant SIGINT handler removed
+  - All existing tests pass after changes
