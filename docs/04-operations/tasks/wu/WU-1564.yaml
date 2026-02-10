@@ -2,7 +2,7 @@ id: WU-1564
 title: Reconcile INIT-020 lifecycle event-store mismatches
 lane: 'Content: Specs Governance'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-10
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
 tests:
   manual:
     - Run pnpm state:doctor --json and confirm statusMismatches = 0.
-    - Run pnpm wu:repair --all --check and confirm no YAML_DONE_STATUS_IN_PROGRESS for the reconciled WUs.
+    - Run pnpm wu:repair --all --check and confirm no YAML_DONE_STATUS_IN_PROGRESS for the
+      reconciled WUs.
   unit: []
   e2e: []
 artifacts:
@@ -28,8 +29,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-020 legacy closeout left 9 WUs with YAML done but state store in_progress because complete events are missing. Problem: state:doctor --fix currently pushes per-WU micro-commits and repeatedly collides under heavy main traffic, leaving reconciliation partial. Solution: apply one batch reconciliation commit that appends complete events for affected WUs and validate zero status_mismatch afterward.'
+description: 'Context: INIT-020 legacy closeout left 9 WUs with YAML done but state store
+  in_progress because complete events are missing. Problem: state:doctor --fix currently pushes
+  per-WU micro-commits and repeatedly collides under heavy main traffic, leaving reconciliation
+  partial. Solution: apply one batch reconciliation commit that appends complete events for affected
+  WUs and validate zero status_mismatch afterward.'
 acceptance:
-  - Append complete events for WU-1544, WU-1545, WU-1546, WU-1547, WU-1548, WU-1550, WU-1551, WU-1554, and WU-1556 in one tracked commit.
+  - Append complete events for WU-1544, WU-1545, WU-1546, WU-1547, WU-1548, WU-1550, WU-1551,
+    WU-1554, and WU-1556 in one tracked commit.
   - pnpm state:doctor --json reports zero status_mismatch issues after reconciliation.
-  - pnpm wu:repair --all --check shows only intentional non-event issues (if any), with no YAML_DONE_STATUS_IN_PROGRESS drift for reconciled WUs.
+  - pnpm wu:repair --all --check shows only intentional non-event issues (if any), with no
+    YAML_DONE_STATUS_IN_PROGRESS drift for reconciled WUs.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-specs-governance-wu-1564
+claimed_at: 2026-02-10T11:40:05.968Z
+baseline_main_sha: 178d3dd9672c8009181f4f27efc30a01fd52125e
+session_id: 81b50213-f381-4a1e-ae37-ec396102d804
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T11:40:05.976Z
