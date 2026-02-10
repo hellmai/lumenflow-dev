@@ -5,7 +5,6 @@ _Last updated: 2026-02-10_
 ## In Progress
 
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml)
-- [WU-1548 — Centralize status and remaining duplicated literals](wu/WU-1548.yaml)
 - [WU-1550 — Introduce gate and validator registry patterns](wu/WU-1550.yaml)
 - [WU-1544 — Re-enable TypeScript lint rules](wu/WU-1544.yaml)
 - [WU-1546 — Re-enable TypeScript lint rules](wu/WU-1546.yaml)
