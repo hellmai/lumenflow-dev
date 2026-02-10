@@ -83,26 +83,26 @@ pnpm exec initiative-edit --id INIT-001 --add-phase "Phase 2: Core"
 If a command is not listed here, do not run it during setup.
 If you are unsure about a command, run `<command> --help` first. Do not guess.
 
-| Command                                              | Purpose                                      |
-| ---------------------------------------------------- | -------------------------------------------- |
-| `node --version`                                     | Verify toolchain (require ≥22)               |
-| `pnpm --version`                                     | Verify toolchain (require ≥9)                |
-| `git --version`                                      | Verify toolchain (require ≥2)                |
-| `git init`                                           | New project only                             |
-| `pnpm init`                                          | Only if no `package.json` and user approved  |
-| `pnpm add -D @lumenflow/cli`                         | Install LumenFlow CLI                        |
-| `pnpm exec lumenflow --client <client>`              | Initialize LumenFlow (new repos)             |
-| `pnpm exec lumenflow --client <client> --merge`      | Initialize LumenFlow (existing repos)        |
-| `pnpm exec lumenflow-doctor`                         | Verify enforcement (errors block)            |
-| `pnpm exec lumenflow-doctor --deep`                  | Optional: extended WU validation             |
-| `pnpm wu:create --help`                              | Verify scripts were injected                 |
+| Command                                              | Purpose                                         |
+| ---------------------------------------------------- | ----------------------------------------------- |
+| `node --version`                                     | Verify toolchain (require ≥22)                  |
+| `pnpm --version`                                     | Verify toolchain (require ≥9)                   |
+| `git --version`                                      | Verify toolchain (require ≥2)                   |
+| `git init`                                           | New project only                                |
+| `pnpm init`                                          | Only if no `package.json` and user approved     |
+| `pnpm add -D @lumenflow/cli`                         | Install LumenFlow CLI                           |
+| `pnpm exec lumenflow --client <client>`              | Initialize LumenFlow (new repos)                |
+| `pnpm exec lumenflow --client <client> --merge`      | Initialize LumenFlow (existing repos)           |
+| `pnpm exec lumenflow-doctor`                         | Verify enforcement (errors block)               |
+| `pnpm exec lumenflow-doctor --deep`                  | Optional: extended WU validation                |
+| `pnpm wu:create --help`                              | Verify scripts were injected                    |
 | `pnpm exec lumenflow-integrate --client claude-code` | Regenerate enforcement hooks (auto-run by init) |
-| `pnpm exec initiative-create ...`                    | Create an initiative                         |
-| `pnpm exec initiative-edit ...`                      | Add initiative phases                        |
-| `pnpm wu:create ...`                                 | Create first WU                              |
-| `pnpm wu:status --id WU-XXX`                         | Confirm WU status                            |
-| `pnpm wu:claim --id WU-XXX --lane "..."`             | Only if user explicitly says "proceed"       |
-| `git add -A && git commit -m "..."`                  | Commit scaffold/LumenFlow setup only         |
+| `pnpm exec initiative-create ...`                    | Create an initiative                            |
+| `pnpm exec initiative-edit ...`                      | Add initiative phases                           |
+| `pnpm wu:create ...`                                 | Create first WU                                 |
+| `pnpm wu:status --id WU-XXX`                         | Confirm WU status                               |
+| `pnpm wu:claim --id WU-XXX --lane "..."`             | Only if user explicitly says "proceed"          |
+| `git add -A && git commit -m "..."`                  | Commit scaffold/LumenFlow setup only            |
 
 Read-only commands allowed: `pwd`, `ls`, `cat`, `rg`, `git status`.
 

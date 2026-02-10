@@ -2474,10 +2474,7 @@ const CLIENT_INTEGRATIONS: Record<
   // When new clients gain enforcement: add adapter entry here.
 };
 
-async function runClientIntegrations(
-  targetDir: string,
-  result: ScaffoldResult,
-): Promise<string[]> {
+async function runClientIntegrations(targetDir: string, result: ScaffoldResult): Promise<string[]> {
   const integrationFiles: string[] = [];
   const configPath = path.join(targetDir, CONFIG_FILE_NAME);
   if (!fs.existsSync(configPath)) return integrationFiles;
