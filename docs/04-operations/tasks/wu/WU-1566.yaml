@@ -2,7 +2,7 @@ id: WU-1566
 title: Fix consumer integration binary resolution regression
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -46,3 +46,6 @@ acceptance:
   - Required CLI binaries expected by consumer integration are present and executable after package
     install
   - Core package targeted test run for consumer integration passes without workaround flags
+locked: true
+completed_at: 2026-02-10T12:47:05.064Z
+completed: 2026-02-10
