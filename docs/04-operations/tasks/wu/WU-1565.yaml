@@ -2,7 +2,7 @@ id: WU-1565
 title: Guard lifecycle checks against untracked done-stamp masking
 lane: 'Framework: Core Validation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -57,3 +57,6 @@ session_id: 2d5643cd-0bf9-4022-9ecd-e0f0479b9258
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T12:09:42.851Z
+locked: true
+completed_at: 2026-02-10T12:20:18.633Z
+completed: 2026-02-10
