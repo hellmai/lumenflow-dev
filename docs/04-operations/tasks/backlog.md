@@ -25,7 +25,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1571 — Regenerate backlog/status after WU-1570 generator update](wu/WU-1571.yaml) — Content: Framework Docs
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -548,4 +548,5 @@ sections:
 - [WU-1568 — Make backlog/status generation Prettier-stable](wu/WU-1568.yaml)
 - [WU-1569 — Regenerate backlog/status after markdown escaping fix](wu/WU-1569.yaml)
 - [WU-1570 — Avoid over-escaping underscores in backlog/status markdown](wu/WU-1570.yaml)
+- [WU-1571 — Regenerate backlog/status after WU-1570 generator update](wu/WU-1571.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

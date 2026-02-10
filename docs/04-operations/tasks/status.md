@@ -4,7 +4,7 @@ _Last updated: 2026-02-10_
 
 ## In Progress
 
-- [WU-1571 — Regenerate backlog/status after WU-1570 generator update](wu/WU-1571.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -523,3 +523,4 @@ _Last updated: 2026-02-10_
 - [WU-1568 — Make backlog/status generation Prettier-stable](wu/WU-1568.yaml) — 2026-02-10
 - [WU-1569 — Regenerate backlog/status after markdown escaping fix](wu/WU-1569.yaml) — 2026-02-10
 - [WU-1570 — Avoid over-escaping underscores in backlog/status markdown](wu/WU-1570.yaml) — 2026-02-10
+- [WU-1571 — Regenerate backlog/status after WU-1570 generator update](wu/WU-1571.yaml) — 2026-02-10
