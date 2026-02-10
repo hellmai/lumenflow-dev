@@ -3,7 +3,7 @@ title: Fix pre-existing test failures in orchestration.schemas, filesystem-metri
   terminal-renderer.adapter
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -44,3 +44,6 @@ session_id: bfdfa7f7-991f-473b-8ba7-1257fe307c6a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T13:32:26.559Z
+locked: true
+completed_at: 2026-02-10T13:34:50.979Z
+completed: 2026-02-10
