@@ -4,7 +4,7 @@ _Last updated: 2026-02-10_
 
 ## In Progress
 
-- [WU-1579 — Align init-scripts gitignore tests with WU-1519 state-tracking policy](wu/WU-1579.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -530,3 +530,4 @@ _Last updated: 2026-02-10_
 - [WU-1576 — Fold integrate into init for bomb-proof onboarding](wu/WU-1576.yaml) — 2026-02-10
 - [WU-1578 — Formalize client integration contract/constants for vendor-agnostic init](wu/WU-1578.yaml) — 2026-02-10
 - [WU-1575 — Fix pre-existing CLI test failures blocking gates](wu/WU-1575.yaml) — 2026-02-10
+- [WU-1579 — Align init-scripts gitignore tests with WU-1519 state-tracking policy](wu/WU-1579.yaml) — 2026-02-10
