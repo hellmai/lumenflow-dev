@@ -1,17 +1,19 @@
 id: WU-1555
-title: Fix pre-existing test failures in orchestration.schemas, filesystem-metrics.adapter, terminal-renderer.adapter
-lane: 'Framework: Core Lifecycle'
+title: Fix pre-existing test failures in orchestration.schemas, filesystem-metrics.adapter,
+  terminal-renderer.adapter
+lane: 'Framework: CLI WU Commands'
 type: refactor
 status: ready
 priority: P2
 created: 2026-02-10
 code_paths:
-  - packages/@lumenflow/core/src/domain
-  - packages/@lumenflow/core/src/adapters
+  - packages/@lumenflow/cli/src/__tests__/wu-validate.test.ts
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
-  unit: []
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-validate.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1555.done
@@ -26,7 +28,11 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Fix 18 pre-existing test failures across 3 test files: orchestration.schemas.test.ts (11 failures), filesystem-metrics.adapter.test.ts (1 failure), terminal-renderer.adapter.test.ts (6 failures). These failures exist on main and block gates for all WUs.'
+description: Fix pre-existing wu:validate registration parity test failures on main. After WU-1530
+  narrowed parity triggers to packages/@lumenflow/cli/package.json, wu-validate integration tests
+  still use old CLI source-file fixtures, causing false expectations and gate failures. Update tests
+  to use package.json-trigger fixtures and keep strict/non-strict warning assertions aligned with
+  current lint behavior.
 acceptance:
-  - All 18 currently-failing tests pass
-  - No new test failures introduced
+  - packages/@lumenflow/cli/src/__tests__/wu-validate.test.ts passes
+  - Parity integration assertions reflect package.json-trigger registration heuristic
