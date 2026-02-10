@@ -1,0 +1,35 @@
+id: WU-1558
+title: Eliminate process.chdir from gates.ts
+lane: 'Framework: CLI WU Commands'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-10
+code_paths:
+  - packages/@lumenflow/cli/src/gates.ts
+tests:
+  manual:
+    - Run pnpm gates from a worktree to verify cwd handling still works
+  unit:
+    - packages/@lumenflow/cli/__tests__/gates.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1558.done
+dependencies: []
+initiative: INIT-021
+phase: 2
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: INIT-020 WU-1541 removed process.chdir from wu-done-worktree.ts. Problem: gates.ts:1395-1413 still has a save/restore process.chdir pattern for gate execution in non-default cwd. Solution: Pass explicit cwd through executeGates options instead of mutating global state.'
+acceptance:
+  - gates.ts no longer calls process.chdir in production code
+  - Gate execution uses explicit cwd option passed through the call chain
+  - All existing gate tests pass after changes
