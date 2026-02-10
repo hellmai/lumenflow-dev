@@ -19,7 +19,7 @@ phases:
     status: done
   - id: 3
     title: Add injection-focused tests for WU-1534
-    status: pending
+    status: done
   - id: 4
     title: INIT-020 YAML cleanup and WU-1534 notes fix
     status: pending
