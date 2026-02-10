@@ -2,7 +2,7 @@ id: WU-1546
 title: Re-enable TypeScript lint rules
 lane: 'Operations: Tooling'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
   - packages/@lumenflow/memory/src
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -32,8 +33,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: TypeScript lint rules (no-explicit-any, no-floating-promises, no-unused-vars) are disabled for CLI and core. Problem: disabled rules allow type erosion and unhandled promise rejections. Solution: re-enable rules one at a time with checkpoint-resume, fix violations per rule.'
+description: 'Context: TypeScript lint rules (no-explicit-any, no-floating-promises, no-unused-vars)
+  are disabled for CLI and core. Problem: disabled rules allow type erosion and unhandled promise
+  rejections. Solution: re-enable rules one at a time with checkpoint-resume, fix violations per
+  rule.'
 acceptance:
-  - no-explicit-any, no-floating-promises, and no-unused-vars rules are re-enabled in eslint.config.mjs.
+  - no-explicit-any, no-floating-promises, and no-unused-vars rules are re-enabled in
+    eslint.config.mjs.
   - All violations are resolved with proper types, .catch() handlers, or removal of dead code.
   - pnpm lint passes with all three rules active.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1546
+claimed_at: 2026-02-10T00:50:46.503Z
+baseline_main_sha: 312e4be8ed418aa3b3b33c5dd89aaf0269ad7ff7
+session_id: 35d9f32f-d622-4c0f-b308-f29dcfdbd7af
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T00:50:46.509Z

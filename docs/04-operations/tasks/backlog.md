@@ -22,7 +22,6 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1543 — Re-enable security lint rules](wu/WU-1543.yaml) — Operations: Tooling
-- [WU-1546 — Re-enable TypeScript lint rules](wu/WU-1546.yaml) — Operations: Tooling
 - [WU-1555 — Fix pre-existing test failures in orchestration.schemas, filesystem-metrics.adapter, terminal-renderer.adapter](wu/WU-1555.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
@@ -36,6 +35,7 @@ sections:
 - [WU-1550 — Introduce gate and validator registry patterns](wu/WU-1550.yaml) — Framework: CLI WU Commands
 - [WU-1544 — Re-enable TypeScript lint rules](wu/WU-1544.yaml) — Operations: Tooling
 - [WU-1545 — Lock down dist imports and verify boundary](wu/WU-1545.yaml) — Framework: Core Lifecycle
+- [WU-1546 — Re-enable TypeScript lint rules](wu/WU-1546.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 
