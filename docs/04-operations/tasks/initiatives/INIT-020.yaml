@@ -7,7 +7,7 @@ description: 'Context: LumenFlow is a critical workflow runtime and currently ha
   Solution: execute a hard one-sweep remediation across command execution, compiler and lint
   guardrails, package API boundaries, runtime exit handling, duplicated constants, and process state
   isolation with full regression validation.'
-status: in_progress
+status: done
 priority: P0
 owner: platform
 created: 2026-02-09
@@ -15,49 +15,49 @@ target_date: 2026-03-31
 phases:
   - id: 1
     title: 'A: Command execution hardening (WU-1534)'
-    status: pending
+    status: done
   - id: 2
     title: 'B1: Enable strict TypeScript build (WU-1535)'
-    status: pending
+    status: done
   - id: 3
     title: 'B2: Re-enable security lint rules (WU-1543)'
-    status: pending
+    status: done
   - id: 4
     title: 'H: CLI entry-point standardization (WU-1537)'
-    status: pending
+    status: done
   - id: 5
     title: 'D: Core runtime boundary cleanup (WU-1538)'
-    status: pending
+    status: done
   - id: 6
     title: 'E1: Centralize stamp/events path literals (WU-1539)'
-    status: pending
+    status: done
   - id: 7
     title: 'G: Status semantics split (WU-1540)'
-    status: pending
+    status: done
   - id: 8
     title: 'F: Process chdir isolation (WU-1541)'
     status: done
   - id: 9
     title: 'B3: Re-enable TypeScript lint rules (WU-1546)'
-    status: pending
+    status: done
   - id: 10
     title: 'C1: Add subpath exports + codemod imports (WU-1536)'
-    status: pending
+    status: done
   - id: 11
     title: 'C2: Lock down dist imports (WU-1547)'
-    status: pending
+    status: done
   - id: 12
     title: 'E2: Centralize status + remaining literals (WU-1548)'
-    status: pending
+    status: done
   - id: 13
     title: 'I: Decompose wu-constants + segregate interfaces (WU-1549)'
-    status: pending
+    status: done
   - id: 14
     title: 'J: Gate and validator registry patterns (WU-1550)'
-    status: pending
+    status: done
   - id: 15
     title: 'K: Fix floating promises + replace polling (WU-1551)'
-    status: pending
+    status: done
 success_metrics:
   - No string-concatenated shell execution remains in deps-add, deps-remove, or trace-gen.
   - Build and package tsconfig files enforce strict type checking and noEmitOnError.
