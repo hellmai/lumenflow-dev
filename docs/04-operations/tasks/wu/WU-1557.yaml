@@ -2,7 +2,7 @@ id: WU-1557
 title: Fix remaining process.exit calls in core library functions
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -30,9 +30,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-020 introduced ProcessExitError pattern for core modules. Problem: 3 process.exit() calls remain in library functions (not CLI entrypoints): arg-parser.ts Commander help handler, wu-spawn-helpers.ts Commander help handler, token-counter.ts redundant SIGINT handler. Solution: Replace with throw ProcessExitError or remove redundant handler.'
+description: 'Context: INIT-020 introduced ProcessExitError pattern for core modules. Problem: 3
+  process.exit() calls remain in library functions (not CLI entrypoints): arg-parser.ts Commander
+  help handler, wu-spawn-helpers.ts Commander help handler, token-counter.ts redundant SIGINT
+  handler. Solution: Replace with throw ProcessExitError or remove redundant handler.'
 acceptance:
   - arg-parser.ts Commander help handler throws ProcessExitError instead of calling process.exit
-  - wu-spawn-helpers.ts Commander help handler throws ProcessExitError instead of calling process.exit
+  - wu-spawn-helpers.ts Commander help handler throws ProcessExitError instead of calling
+    process.exit
   - token-counter.ts redundant SIGINT handler removed
   - All existing tests pass after changes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1557
+claimed_at: 2026-02-10T12:47:55.831Z
+baseline_main_sha: bd69c2dcb5f42019b609d6684af9a4b716b6dc32
+session_id: 40e502f3-ad58-4329-a8e5-1fef3b58c3ad
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T12:47:55.839Z
