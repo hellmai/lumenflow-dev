@@ -18,7 +18,11 @@ artifacts:
   - .lumenflow/stamps/WU-1579.done
 dependencies: []
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+    Already fixed by WU-1575 (commit 7f13c604). WU-1575 updated the two stale
+    .lumenflow/state assertions in init-scripts.test.ts to .lumenflow/telemetry,
+    aligning with WU-1519 tracked-state policy. Verified: all 20 init-scripts tests
+    and all 73 init.test.ts tests pass. No remaining stale assertions found.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
