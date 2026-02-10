@@ -7,9 +7,8 @@ priority: P0
 created: 2026-02-10
 code_paths:
   - .lumenflow/state/wu-events.jsonl
-  - docs/04-operations/tasks/wu/WU-1552.yaml
   - docs/04-operations/tasks/status.md
-  - docs/04-operations/tasks/backlog.md
+  - docs/04-operations/tasks/wu/WU-1564.yaml
 tests:
   manual:
     - Run pnpm state:doctor --json and confirm statusMismatches = 0.
