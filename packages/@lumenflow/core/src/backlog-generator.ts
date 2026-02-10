@@ -68,6 +68,12 @@ function compareWuIds(a, b) {
   return a.localeCompare(b);
 }
 
+function escapeMarkdownText(value) {
+  return normalizeYamlScalar(value)
+    .replaceAll('\\', '\\\\')
+    .replace(/([_*[\]`])/g, '\\$1');
+}
+
 function resolveWuDir(options: BacklogYamlOptions = {}) {
   const paths = createWuPaths({ projectRoot: options.projectRoot });
   const configured = options.wuDir || paths.WU_DIR();
@@ -157,7 +163,7 @@ sections:
     insertion: after_heading_blank_line
 ---
 
-> Agent: Read **docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md** for execution.
+> Agent: Read **docs/04-operations/\\_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\\_frameworks/lumenflow/lumenflow-complete.md** for execution.
 
 # Backlog (single source of truth)
 
@@ -217,7 +223,9 @@ sections:
     for (const wuId of ready) {
       const entry = getMergedBacklogEntry(store, yamlEntries, wuId);
       if (entry) {
-        sections.push(`- [${wuId} — ${entry.title}](wu/${wuId}.yaml) — ${entry.lane}`);
+        sections.push(
+          `- [${wuId} — ${escapeMarkdownText(entry.title)}](wu/${wuId}.yaml) — ${escapeMarkdownText(entry.lane)}`,
+        );
       }
     }
   }
@@ -232,7 +240,9 @@ sections:
     for (const wuId of inProgress) {
       const entry = getMergedBacklogEntry(store, yamlEntries, wuId);
       if (entry) {
-        sections.push(`- [${wuId} — ${entry.title}](wu/${wuId}.yaml) — ${entry.lane}`);
+        sections.push(
+          `- [${wuId} — ${escapeMarkdownText(entry.title)}](wu/${wuId}.yaml) — ${escapeMarkdownText(entry.lane)}`,
+        );
       }
     }
   }
@@ -247,7 +257,9 @@ sections:
     for (const wuId of blocked) {
       const entry = getMergedBacklogEntry(store, yamlEntries, wuId);
       if (entry) {
-        sections.push(`- [${wuId} — ${entry.title}](wu/${wuId}.yaml) — ${entry.lane}`);
+        sections.push(
+          `- [${wuId} — ${escapeMarkdownText(entry.title)}](wu/${wuId}.yaml) — ${escapeMarkdownText(entry.lane)}`,
+        );
       }
     }
   }
@@ -262,12 +274,12 @@ sections:
     for (const wuId of done) {
       const entry = getMergedBacklogEntry(store, yamlEntries, wuId);
       if (entry) {
-        sections.push(`- [${wuId} — ${entry.title}](wu/${wuId}.yaml)`);
+        sections.push(`- [${wuId} — ${escapeMarkdownText(entry.title)}](wu/${wuId}.yaml)`);
       }
     }
   }
 
-  return frontmatter + sections.join('\n');
+  return `${frontmatter}${sections.join('\n')}\n`;
 }
 export async function generateStatus(store) {
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
@@ -291,7 +303,7 @@ _Last updated: ${today}_
     for (const wuId of inProgress) {
       const state = store.wuState.get(wuId);
       if (state) {
-        sections.push(`- [${wuId} — ${state.title}](wu/${wuId}.yaml)`);
+        sections.push(`- [${wuId} — ${escapeMarkdownText(state.title)}](wu/${wuId}.yaml)`);
       }
     }
   }
@@ -305,7 +317,7 @@ _Last updated: ${today}_
     for (const wuId of blocked) {
       const state = store.wuState.get(wuId);
       if (state) {
-        sections.push(`- [${wuId} — ${state.title}](wu/${wuId}.yaml)`);
+        sections.push(`- [${wuId} — ${escapeMarkdownText(state.title)}](wu/${wuId}.yaml)`);
       }
     }
   }
@@ -323,12 +335,14 @@ _Last updated: ${today}_
       if (state) {
         // WU-2244: Use completedAt from event, fall back to today if not available
         const completionDate = getCompletionDate(store, wuId);
-        sections.push(`- [${wuId} — ${state.title}](wu/${wuId}.yaml) — ${completionDate}`);
+        sections.push(
+          `- [${wuId} — ${escapeMarkdownText(state.title)}](wu/${wuId}.yaml) — ${completionDate}`,
+        );
       }
     }
   }
 
-  return header + sections.join('\n');
+  return `${header}${sections.join('\n')}\n`;
 }
 
 /**
