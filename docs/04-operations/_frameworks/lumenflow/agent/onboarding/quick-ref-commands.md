@@ -14,6 +14,27 @@ Reference for CLI commands. Organized by category for quick discovery.
 > yarn wu:create --help
 > ```
 
+## Help-First Usage Examples By Category
+
+Run `--help` first, then run the real command with explicit flags.
+
+| Category            | Help-First Example                    | Real Command Example                                      |
+| ------------------- | ------------------------------------- | --------------------------------------------------------- |
+| Setup & Development | `pnpm bootstrap --help`               | `pnpm bootstrap`                                          |
+| WU Lifecycle        | `pnpm wu:claim --help`                | `pnpm wu:claim --id WU-1561 --lane "Operations: Tooling"` |
+| WU Maintenance      | `pnpm wu:recover --help`              | `pnpm wu:recover --id WU-1561`                            |
+| Gates & Quality     | `pnpm gates --help`                   | `pnpm gates --docs-only`                                  |
+| Memory & Sessions   | `pnpm mem:checkpoint --help`          | `pnpm mem:checkpoint --wu WU-1561`                        |
+| State Management    | `pnpm state:doctor --help`            | `pnpm state:doctor --json`                                |
+| Dependencies        | `pnpm deps:add --help`                | `pnpm deps:add --pkg zod`                                 |
+| Plans               | `pnpm initiative:plan --help`         | `pnpm initiative:plan --initiative INIT-021 --create`     |
+| Initiatives         | `pnpm initiative:status --help`       | `pnpm initiative:status --id INIT-021`                    |
+| Orchestration       | `pnpm orchestrate:init-status --help` | `pnpm orchestrate:init-status --id INIT-021`              |
+| Metrics & Flow      | `pnpm flow:report --help`             | `pnpm flow:report`                                        |
+| Documentation       | `pnpm docs:validate --help`           | `pnpm docs:validate`                                      |
+| Release             | `pnpm pre-release:check --help`       | `pnpm pre-release:check`                                  |
+| Agent Utilities     | `pnpm agent:issues-query --help`      | `pnpm agent:issues-query`                                 |
+
 ---
 
 ## Setup & Development

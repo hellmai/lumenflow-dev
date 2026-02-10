@@ -108,6 +108,7 @@ describe('CLI subprocess error handling', () => {
 
       // Should have some error output
       expect(result.stderr.length + result.stdout.length).toBeGreaterThan(0);
+      expect(`${result.stderr}\n${result.stdout}`).toMatch(/--help/i);
     });
   });
 });

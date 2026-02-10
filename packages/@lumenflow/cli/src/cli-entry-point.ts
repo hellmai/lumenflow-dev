@@ -29,6 +29,14 @@
 import { EXIT_CODES } from '@lumenflow/core/wu-constants';
 import { initColorSupport, StreamErrorHandler, ProcessExitError } from '@lumenflow/core';
 
+const HELP_HINT_MESSAGE = 'Hint: Run with --help to see valid options.';
+const COMMANDER_USAGE_ERROR_CODES = new Set([
+  'commander.unknownOption',
+  'commander.missingArgument',
+  'commander.missingMandatoryOptionValue',
+  'commander.optionMissingArgument',
+]);
+
 /**
  * Wraps an async main function with proper error handling.
  * WU-1085: Also initializes color support based on NO_COLOR/FORCE_COLOR/--no-color
@@ -60,6 +68,9 @@ export async function runCLI(main: () => Promise<void>): Promise<void> {
     // Generic errors: log message and exit with error code
     const message = getErrorMessage(err);
     console.error(message);
+    if (shouldPrintHelpHint(err, message)) {
+      console.error(HELP_HINT_MESSAGE);
+    }
     process.exit(EXIT_CODES.ERROR);
   }
 }
@@ -75,4 +86,46 @@ function getErrorMessage(err: unknown): string {
     return err.message;
   }
   return String(err);
+}
+
+function shouldPrintHelpHint(err: unknown, message: string): boolean {
+  const directCode = getStringProperty(err, 'code');
+  if (directCode && COMMANDER_USAGE_ERROR_CODES.has(directCode)) {
+    return true;
+  }
+
+  const details = getObjectProperty(err, 'details');
+  const detailsCode = getStringProperty(details, 'code');
+  if (detailsCode && COMMANDER_USAGE_ERROR_CODES.has(detailsCode)) {
+    return true;
+  }
+
+  const normalized = message.toLowerCase();
+  return (
+    normalized.includes('unknown option') ||
+    normalized.includes('required option') ||
+    normalized.includes('missing argument') ||
+    normalized.includes('option argument missing')
+  );
+}
+
+function getObjectProperty(value: unknown, key: string): Record<string, unknown> | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+  const maybeObject = value as Record<string, unknown>;
+  const property = maybeObject[key];
+  if (!property || typeof property !== 'object') {
+    return null;
+  }
+  return property as Record<string, unknown>;
+}
+
+function getStringProperty(value: unknown, key: string): string | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+  const maybeObject = value as Record<string, unknown>;
+  const property = maybeObject[key];
+  return typeof property === 'string' ? property : null;
 }

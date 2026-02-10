@@ -71,6 +71,42 @@ describe('runCLI', () => {
     expect(mockConsoleError).toHaveBeenCalledWith('Unknown error');
     expect(mockExit).toHaveBeenCalledWith(EXIT_CODES.ERROR);
   });
+
+  it('should print --help hint for unknown option errors', async () => {
+    const error = Object.assign(new Error("unknown option '--bogus'"), {
+      code: 'commander.unknownOption',
+    });
+    const main = vi.fn().mockRejectedValue(error);
+
+    await runCLI(main);
+
+    expect(mockConsoleError).toHaveBeenNthCalledWith(1, "unknown option '--bogus'");
+    expect(mockConsoleError).toHaveBeenNthCalledWith(
+      2,
+      'Hint: Run with --help to see valid options.',
+    );
+    expect(mockExit).toHaveBeenCalledWith(EXIT_CODES.ERROR);
+  });
+
+  it('should print --help hint for missing required option errors', async () => {
+    const error = Object.assign(new Error("required option '--id <wuId>' not specified"), {
+      code: 'VALIDATION_ERROR',
+      details: { code: 'commander.missingMandatoryOptionValue' },
+    });
+    const main = vi.fn().mockRejectedValue(error);
+
+    await runCLI(main);
+
+    expect(mockConsoleError).toHaveBeenNthCalledWith(
+      1,
+      "required option '--id <wuId>' not specified",
+    );
+    expect(mockConsoleError).toHaveBeenNthCalledWith(
+      2,
+      'Hint: Run with --help to see valid options.',
+    );
+    expect(mockExit).toHaveBeenCalledWith(EXIT_CODES.ERROR);
+  });
 });
 
 /**

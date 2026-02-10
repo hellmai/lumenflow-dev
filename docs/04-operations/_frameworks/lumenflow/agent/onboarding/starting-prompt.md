@@ -6,6 +6,37 @@ This is the complete onboarding document for AI agents working with LumenFlow. R
 
 ---
 
+## Mandatory: Help-First CLI Usage
+
+Before using any LumenFlow CLI command for the first time in a session, run `--help` first.
+
+```bash
+pnpm wu:claim --help
+pnpm wu:done --help
+pnpm initiative:status --help
+```
+
+Rules:
+
+1. Run `<command> --help` before first use of that command.
+2. Copy exact flags from help output; do not guess option names.
+3. If you hit an argument/flag error, rerun `--help` before retrying.
+
+Optional Claude Code enforcement layer (recommended for teams):
+
+```bash
+# .claude/hooks/pretooluse-help-first.sh (optional local hook)
+cmd="$1"
+if [[ "$cmd" =~ ^pnpm\ (wu:|initiative:|orchestrate:|mem:|state:) ]] && [[ "$cmd" != *"--help"* ]]; then
+  echo "Help-first rule: run '$cmd --help' before first use." >&2
+  exit 2
+fi
+```
+
+This hook is optional and client-specific. The primary enforcement is this onboarding workflow and quick-reference examples.
+
+---
+
 ## When Starting From Product Vision
 
 If you are starting a new project or feature from a product vision (e.g., "Build a task management app"), **do NOT create standalone WUs immediately**. Instead, follow the initiative-first workflow:
