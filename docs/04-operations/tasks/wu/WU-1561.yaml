@@ -2,7 +2,7 @@ id: WU-1561
 title: Enforce --help-first rule for CLI commands via hook
 lane: 'Operations: Tooling'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
   - quick-ref-commands.md includes usage examples with exact flags for every command category
   - CLI commands print a hint to run --help when invoked with invalid or missing flags
   - Hook for Claude Code added as optional enforcement layer (not the primary fix)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1561
+claimed_at: 2026-02-10T13:05:34.711Z
+baseline_main_sha: eb3357b5d388da8a35eced21ede647e9338d204f
+session_id: c2c11336-9f8c-44ae-bb88-beefe40748cd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T13:05:34.721Z

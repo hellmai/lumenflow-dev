@@ -1081,3 +1081,4 @@
 {"type":"complete","wuId":"WU-1557","timestamp":"2026-02-10T12:52:29.473Z"}
 {"type":"claim","wuId":"WU-1558","timestamp":"2026-02-10T12:52:53.838Z","lane":"Framework: CLI WU Commands","title":"Eliminate process.chdir from gates.ts"}
 {"type":"complete","wuId":"WU-1558","timestamp":"2026-02-10T13:03:33.309Z"}
+{"type":"claim","wuId":"WU-1561","lane":"Operations: Tooling","title":"Enforce --help-first rule for CLI commands via hook","timestamp":"2026-02-10T13:05:34.752Z"}
