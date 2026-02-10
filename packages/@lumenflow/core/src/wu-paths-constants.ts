@@ -218,6 +218,9 @@ export const LUMENFLOW_PATHS = {
   /** Memory layer JSONL file */
   MEMORY_JSONL: '.lumenflow/memory/memory.jsonl',
 
+  /** WU-1539: Memory signals JSONL file */
+  MEMORY_SIGNALS: '.lumenflow/memory/signals.jsonl',
+
   /** Audit log for tool calls */
   AUDIT_LOG: '.lumenflow/telemetry/tools.ndjson',
 
