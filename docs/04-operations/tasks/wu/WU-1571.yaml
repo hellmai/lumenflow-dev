@@ -2,7 +2,7 @@ id: WU-1571
 title: Regenerate backlog/status after WU-1570 generator update
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -42,3 +42,6 @@ session_id: c13473f4-3b6b-460b-b281-92e66edc8121
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T13:56:52.325Z
+locked: true
+completed_at: 2026-02-10T13:57:43.609Z
+completed: 2026-02-10

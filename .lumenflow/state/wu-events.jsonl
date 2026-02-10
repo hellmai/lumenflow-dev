@@ -1095,4 +1095,5 @@
 {"type":"complete","wuId":"WU-1569","timestamp":"2026-02-10T13:51:03.883Z"}
 {"type":"claim","wuId":"WU-1570","timestamp":"2026-02-10T13:52:10.029Z","lane":"Framework: Core Lifecycle","title":"Avoid over-escaping underscores in backlog/status markdown"}
 {"type":"complete","wuId":"WU-1570","timestamp":"2026-02-10T13:55:57.810Z"}
-{"type":"claim","wuId":"WU-1571","lane":"Content: Framework Docs","title":"Regenerate backlog/status after WU-1570 generator update","timestamp":"2026-02-10T13:56:52.356Z"}
+{"type":"claim","wuId":"WU-1571","timestamp":"2026-02-10T13:56:52.356Z","lane":"Content: Framework Docs","title":"Regenerate backlog/status after WU-1570 generator update"}
+{"type":"complete","wuId":"WU-1571","timestamp":"2026-02-10T13:57:46.318Z"}
