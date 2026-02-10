@@ -18,7 +18,7 @@ phases:
     status: done
   - id: 2
     title: 'Wave 0B: Types foundation and shared strict helpers'
-    status: pending
+    status: done
   - id: 3
     title: 'Wave 1A: CLI high-impact strict fixes'
     status: pending
