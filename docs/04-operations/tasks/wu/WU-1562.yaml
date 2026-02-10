@@ -23,12 +23,26 @@ dependencies: []
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-021.yaml
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  Implemented runtime parity hardening: routed wu:claim/wu:done/wu:repair/state:doctor scripts
+  through tools/cli-entry.mjs, added strict lifecycle fresh-build policy in cli-entry, and added
+  regression tests for script routing and strict rebuild behavior. Validated wu:repair --all --check
+  is detection-only (no repair commit created).
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-10T10:09:53.648Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1562
+session_id: b05fed85-3a73-4aee-b373-b80fdfdca119
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T10:09:53.659Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -46,11 +60,3 @@ acceptance:
     src behavior for lifecycle flows.
   - 'Regression: pnpm wu:repair --all --check exits with detection-only status and does not create
     repair commits when inconsistencies exist.'
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1562
-claimed_at: 2026-02-10T10:09:53.648Z
-baseline_main_sha: 9824edab46dfc06ea129bf9a39980de15835625b
-session_id: b05fed85-3a73-4aee-b373-b80fdfdca119
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-10T10:09:53.659Z
