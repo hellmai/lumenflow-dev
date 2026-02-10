@@ -259,20 +259,7 @@ export async function executeWorktreeCompletion(context) {
   // This prevents metadata leaks: if merge succeeds but push fails because
   // main is behind, wu-events.jsonl/backlog/status would leak onto local main.
   // Must run BEFORE transaction to guarantee no files are modified.
-  {
-    const gitMainPreCheck = createGitForPath(originalCwd);
-    const mainSyncResult = await validateMainNotBehindOrigin(gitMainPreCheck);
-    if (!mainSyncResult.valid) {
-      throw createError(
-        ErrorCodes.GIT_ERROR,
-        `Local main is ${mainSyncResult.commitsBehind} commit(s) behind origin/main.\n\n` +
-          `wu:done aborted BEFORE any writes to prevent metadata leaks (WU-1577).\n\n` +
-          `Fix: git pull origin main\n` +
-          `Then retry: pnpm wu:done --id ${id}`,
-        { wuId: id, commitsBehind: mainSyncResult.commitsBehind },
-      );
-    }
-  }
+  await ensureMainNotBehindOrigin(originalCwd, id);
 
   // WU-1369: Create atomic transaction for metadata updates
   // This ensures NO files are modified if any validation fails
@@ -1530,6 +1517,25 @@ export async function validateMainNotBehindOrigin(
   } catch {
     // Fail-open: network error or no remote — allow wu:done to proceed
     return { valid: true, commitsBehind: 0, failOpen: true };
+  }
+}
+
+/**
+ * WU-1577: Helper that throws if local main is behind origin.
+ * Extracted from executeWorktreeCompletion to keep cognitive complexity in check.
+ */
+async function ensureMainNotBehindOrigin(mainCheckoutPath: string, wuId: string): Promise<void> {
+  const gitMainPreCheck = createGitForPath(mainCheckoutPath);
+  const result = await validateMainNotBehindOrigin(gitMainPreCheck);
+  if (!result.valid) {
+    throw createError(
+      ErrorCodes.GIT_ERROR,
+      `Local main is ${result.commitsBehind} commit(s) behind origin/main.\n\n` +
+        `wu:done aborted BEFORE any writes to prevent metadata leaks (WU-1577).\n\n` +
+        `Fix: git pull origin main\n` +
+        `Then retry: pnpm wu:done --id ${wuId}`,
+      { wuId, commitsBehind: result.commitsBehind },
+    );
   }
 }
 
