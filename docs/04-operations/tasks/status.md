@@ -8,7 +8,6 @@ _Last updated: 2026-02-10_
 - [WU-1548 — Centralize status and remaining duplicated literals](wu/WU-1548.yaml)
 - [WU-1547 — Lock down dist imports and verify boundary](wu/WU-1547.yaml)
 - [WU-1545 — Lock down dist imports and verify boundary](wu/WU-1545.yaml)
-- [WU-1546 — Re-enable TypeScript lint rules](wu/WU-1546.yaml)
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml)
 
 ## Completed
