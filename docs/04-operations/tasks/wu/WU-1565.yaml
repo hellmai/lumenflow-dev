@@ -1,0 +1,37 @@
+id: WU-1565
+title: Guard lifecycle checks against untracked done-stamp masking
+lane: 'Framework: Core Validation'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-10
+code_paths:
+  - packages/@lumenflow/core/src/wu-consistency-checker.ts
+  - packages/@lumenflow/cli/src/state-doctor.ts
+tests:
+  manual:
+    - Run pnpm state:doctor --json and pnpm wu:repair --all --check in a repo with untracked done stamps; verify missing-stamp issues are reported instead of false clean
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-consistency-checker.test.ts
+    - packages/@lumenflow/cli/src/__tests__/state-doctor.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1565.done
+dependencies: []
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-020.yaml
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: state:doctor and wu:repair can report false-clean lifecycle integrity when local untracked .lumenflow/stamps/WU-*.done files exist (often hidden by status.showUntrackedFiles=no). Problem: untracked local artifacts mask missing tracked stamps on main, allowing polluted closeout and misleading diagnostics. Solution: make stamp detection index-aware for lifecycle integrity checks and add regression tests covering untracked-stamp masking.'
+acceptance:
+  - state:doctor and wu:repair treat untracked local stamp files as missing for lifecycle integrity checks
+  - With untracked local stamp and YAML status done, diagnostics report missing-stamp inconsistency (no false-clean)
+  - Regression tests cover untracked stamp masking and pass
