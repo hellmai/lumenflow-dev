@@ -143,8 +143,10 @@ export {
 export {
   CONTEXT_VALIDATION,
   HOOK_MESSAGES,
+  LUMENFLOW_CLIENT_IDS,
   CLAUDE_HOOKS,
   getHookCommand,
+  type LumenflowClientId,
   type LocationType,
   type ValidationErrorCode,
   type RecoveryActionType,
