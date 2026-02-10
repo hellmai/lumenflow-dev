@@ -4,7 +4,7 @@ _Last updated: 2026-02-10_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1575 — Fix pre-existing CLI test failures blocking gates](wu/WU-1575.yaml)
 
 ## Completed
 
