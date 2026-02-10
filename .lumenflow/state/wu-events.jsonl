@@ -1102,3 +1102,4 @@
 {"type":"claim","wuId":"WU-1573","timestamp":"2026-02-10T16:43:42.366Z","lane":"Operations: Tooling","title":"Build strict-mode progress tracking infrastructure"}
 {"type":"complete","wuId":"WU-1573","timestamp":"2026-02-10T16:56:56.789Z"}
 {"type":"claim","wuId":"WU-1575","lane":"Framework: CLI WU Commands","title":"Fix pre-existing CLI test failures blocking gates","timestamp":"2026-02-10T17:00:27.915Z"}
+{"type":"claim","wuId":"WU-1576","lane":"Framework: CLI Enforcement","title":"Fold integrate into init for bomb-proof onboarding","timestamp":"2026-02-10T17:14:04.409Z"}

@@ -2,7 +2,7 @@ id: WU-1576
 title: Fold integrate into init for bomb-proof onboarding
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -30,10 +30,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Dogfood testing revealed that new agents installing LumenFlow miss committing enforcement hooks. Root cause: lumenflow init auto-commits before integrate runs, so hooks are left uncommitted. Problem: Two-step init+integrate creates a commit gap where enforcement hooks are generated but never committed. The quickstart labels integrate as optional and init Next Steps output does not mention it. Solution: (1) Fold integrate into init when --client claude, running it before the auto-commit. (2) Update quickstart to make integrate a required step. (3) Add integrate guidance to init Next Steps output. (4) Fix default lane overlaps in template.'
+description: 'Context: Dogfood testing revealed that new agents installing LumenFlow miss committing
+  enforcement hooks. Root cause: lumenflow init auto-commits before integrate runs, so hooks are
+  left uncommitted. Problem: Two-step init+integrate creates a commit gap where enforcement hooks
+  are generated but never committed. The quickstart labels integrate as optional and init Next Steps
+  output does not mention it. Solution: (1) Fold integrate into init when --client claude, running
+  it before the auto-commit. (2) Update quickstart to make integrate a required step. (3) Add
+  integrate guidance to init Next Steps output. (4) Fix default lane overlaps in template.'
 acceptance:
   - lumenflow init --client claude auto-runs integrate before initial commit
   - All enforcement hooks are included in the initial commit
   - init Next Steps output mentions integrate when --client claude
   - quickstart.mdx promotes integrate from optional aside to required step for Claude
   - Default lane definitions have zero overlaps
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1576
+claimed_at: 2026-02-10T17:14:04.358Z
+baseline_main_sha: c2583bc76dc85fbae3218493eb7ed17f906b43f7
+session_id: fe6d989c-0bef-42c4-a06f-5b4c1ee9523c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T17:14:04.369Z
