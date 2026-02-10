@@ -2,7 +2,7 @@ id: WU-1539
 title: Centralize duplicated stamp and events path literals
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -30,8 +30,12 @@ phase: 6
 spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
-notes: 'Track E1 from enterprise hardening initiative. Split from original scope per
-  wu-sizing-guide.md. See WU-1548 (E2: status + remaining literals) which can run in parallel.'
+notes: >-
+  Track E1 from enterprise hardening initiative. Split from original scope per wu-sizing-guide.md.
+  See WU-1548 (E2: status + remaining literals) which can run in parallel.
+
+
+  [ADMIN-REPAIR 2026-02-10]: status changed from 'in_progress' to 'done'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -51,3 +55,4 @@ acceptance:
   - Duplicated local path constants (WU_EVENTS_PATH, WU_EVENTS_FILE, SIGNALS_FILE) removed in favor
     of shared constants.
   - Path-literal regression tests validate no reintroduction of banned literals.
+locked: true
