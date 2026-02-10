@@ -1,0 +1,7 @@
+{
+  "wuId": "WU-1549",
+  "title": "Decompose wu-constants and segregate fat interfaces",
+  "lane": "Framework: Core Validation",
+  "completedAt": "2026-02-10T00:26:43.511897+00:00",
+  "completedBy": "tom@hellm.ai"
+}

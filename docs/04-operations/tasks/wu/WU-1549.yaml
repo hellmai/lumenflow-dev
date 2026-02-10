@@ -2,7 +2,7 @@ id: WU-1549
 title: Decompose wu-constants and segregate fat interfaces
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-09
 code_paths:
