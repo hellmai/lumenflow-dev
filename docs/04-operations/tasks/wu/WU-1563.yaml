@@ -2,7 +2,7 @@ id: WU-1563
 title: Fix wu:done worktree metadata path isolation regression
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-10
 code_paths:
@@ -49,3 +49,6 @@ acceptance:
     worktree-mode transaction output.'
   - Implementation uses explicit absolute paths for WU/status/backlog/stamp/wu-events in worktree
     flow and passes targeted tests.
+locked: true
+completed_at: 2026-02-10T11:35:58.019Z
+completed: 2026-02-10

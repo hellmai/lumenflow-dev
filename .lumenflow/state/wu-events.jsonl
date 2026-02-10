@@ -1025,36 +1025,37 @@
 {"type":"complete","wuId":"WU-1534","timestamp":"2026-02-09T23:28:46.467Z"}
 {"type":"complete","wuId":"WU-1540","timestamp":"2026-02-09T23:30:11.703Z"}
 {"type":"complete","wuId":"WU-1536","timestamp":"2026-02-09T23:35:00.988Z"}
-{"type":"claim","wuId":"WU-1536","timestamp":"2026-02-09T23:40:00.000Z","lane":"Framework: Core Lifecycle","title":"Add subpath exports and codemod dist imports"}
 {"type":"complete","wuId":"WU-1538","timestamp":"2026-02-09T23:35:05.132Z"}
-{"wuId":"WU-1536","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-09T23:38:09.868Z"}
-{"type":"claim","wuId":"WU-1548","lane":"Framework: Core Lifecycle","title":"Centralize status and remaining duplicated literals","timestamp":"2026-02-09T23:38:44.960Z"}
-{"type":"claim","wuId":"WU-1550","lane":"Framework: CLI WU Commands","title":"Introduce gate and validator registry patterns","timestamp":"2026-02-09T23:41:28.448Z"}
-{"type":"claim","wuId":"WU-1539","lane":"Framework: Core Lifecycle","title":"Centralize duplicated stamp and events path literals","timestamp":"2026-02-09T23:36:22.783Z"}
-{"wuId":"WU-1536","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-09T23:49:51.361Z"}
-{"wuId":"WU-1535","type":"complete","reason":"manual fix: wu:done completed successfully but rebase reordered metadata commit","timestamp":"2026-02-09T23:48:00.000Z"}
-{"type":"claim","wuId":"WU-1551","lane":"Framework: Core Lifecycle","title":"Fix floating promises and replace setInterval polling","timestamp":"2026-02-09T23:52:46.256Z"}
-{"type":"claim","wuId":"WU-1545","lane":"Framework: Core Lifecycle","title":"Lock down dist imports and verify boundary","timestamp":"2026-02-09T23:53:40.467Z"}
-{"type":"claim","wuId":"WU-1547","lane":"Framework: Core Lifecycle","title":"Lock down dist imports and verify boundary","timestamp":"2026-02-10T00:07:44.398Z"}
+{"type":"claim","wuId":"WU-1539","timestamp":"2026-02-09T23:36:22.783Z","lane":"Framework: Core Lifecycle","title":"Centralize duplicated stamp and events path literals"}
+{"type":"complete","wuId":"WU-1536","timestamp":"2026-02-09T23:38:09.868Z"}
+{"type":"claim","wuId":"WU-1548","timestamp":"2026-02-09T23:38:44.960Z","lane":"Framework: Core Lifecycle","title":"Centralize status and remaining duplicated literals"}
+{"type":"claim","wuId":"WU-1536","timestamp":"2026-02-09T23:40:00.000Z","lane":"Framework: Core Lifecycle","title":"Add subpath exports and codemod dist imports"}
+{"type":"claim","wuId":"WU-1550","timestamp":"2026-02-09T23:41:28.448Z","lane":"Framework: CLI WU Commands","title":"Introduce gate and validator registry patterns"}
+{"type":"complete","wuId":"WU-1535","timestamp":"2026-02-09T23:48:00.000Z"}
+{"type":"complete","wuId":"WU-1536","timestamp":"2026-02-09T23:49:51.361Z"}
+{"type":"claim","wuId":"WU-1551","timestamp":"2026-02-09T23:52:46.256Z","lane":"Framework: Core Lifecycle","title":"Fix floating promises and replace setInterval polling"}
+{"type":"claim","wuId":"WU-1545","timestamp":"2026-02-09T23:53:40.467Z","lane":"Framework: Core Lifecycle","title":"Lock down dist imports and verify boundary"}
+{"type":"claim","wuId":"WU-1549","timestamp":"2026-02-09T23:58:22.540Z","lane":"Framework: Core Validation","title":"Decompose wu-constants and segregate fat interfaces"}
+{"type":"claim","wuId":"WU-1547","timestamp":"2026-02-10T00:07:44.398Z","lane":"Framework: Core Lifecycle","title":"Lock down dist imports and verify boundary"}
 {"type":"complete","wuId":"WU-1539","timestamp":"2026-02-10T00:10:32.562Z"}
-{"type":"release","wuId":"WU-1550","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-10T00:20:33.269Z"}
-{"type":"claim","wuId":"WU-1549","lane":"Framework: Core Validation","title":"Decompose wu-constants and segregate fat interfaces","timestamp":"2026-02-09T23:58:22.540Z"}
-{"wuId":"WU-1545","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-10T00:23:11.500Z"}
-{"type":"claim","wuId":"WU-1550","lane":"Framework: CLI WU Commands","title":"Introduce gate and validator registry patterns","timestamp":"2026-02-10T00:23:49.005Z"}
-{"type":"claim","wuId":"WU-1544","lane":"Operations: Tooling","title":"Re-enable TypeScript lint rules","timestamp":"2026-02-10T00:24:40.148Z"}
+{"type":"release","wuId":"WU-1550","timestamp":"2026-02-10T00:20:33.269Z","reason":"Reset via wu:recover --action reset"}
+{"type":"complete","wuId":"WU-1545","timestamp":"2026-02-10T00:23:11.500Z"}
+{"type":"claim","wuId":"WU-1550","timestamp":"2026-02-10T00:23:49.005Z","lane":"Framework: CLI WU Commands","title":"Introduce gate and validator registry patterns"}
+{"type":"claim","wuId":"WU-1544","timestamp":"2026-02-10T00:24:40.148Z","lane":"Operations: Tooling","title":"Re-enable TypeScript lint rules"}
 {"type":"complete","wuId":"WU-1549","timestamp":"2026-02-10T00:26:43.562Z"}
-{"type":"claim","wuId":"WU-1543","lane":"Operations: Tooling","title":"Re-enable security lint rules","timestamp":"2026-02-10T00:31:27.787Z"}
-{"type":"claim","wuId":"WU-1545","lane":"Framework: Core Lifecycle","title":"Lock down dist imports and verify boundary","timestamp":"2026-02-10T00:38:08.770Z"}
-{"type":"release","wuId":"WU-1543","reason":"Empty worktree, no commits. Superseded by WU-1546.","timestamp":"2026-02-10T00:47:37.003Z"}
-{"type":"claim","wuId":"WU-1546","lane":"Operations: Tooling","title":"Re-enable TypeScript lint rules","timestamp":"2026-02-10T00:50:46.543Z"}
-{"type":"claim","wuId":"WU-1543","lane":"Operations: Tooling","title":"Re-enable security lint rules (reclaim)","timestamp":"2026-02-10T00:51:00.000Z"}
+{"type":"claim","wuId":"WU-1543","timestamp":"2026-02-10T00:31:27.787Z","lane":"Operations: Tooling","title":"Re-enable security lint rules"}
+{"type":"claim","wuId":"WU-1545","timestamp":"2026-02-10T00:38:08.770Z","lane":"Framework: Core Lifecycle","title":"Lock down dist imports and verify boundary"}
+{"type":"release","wuId":"WU-1543","timestamp":"2026-02-10T00:47:37.003Z","reason":"Empty worktree, no commits. Superseded by WU-1546."}
+{"type":"claim","wuId":"WU-1546","timestamp":"2026-02-10T00:50:46.543Z","lane":"Operations: Tooling","title":"Re-enable TypeScript lint rules"}
+{"type":"claim","wuId":"WU-1543","timestamp":"2026-02-10T00:51:00.000Z","lane":"Operations: Tooling","title":"Re-enable security lint rules (reclaim)"}
 {"type":"complete","wuId":"WU-1543","timestamp":"2026-02-10T01:05:00.000Z"}
-{"type":"release","wuId":"WU-1537","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-10T02:02:06.686Z"}
-{"type":"claim","wuId":"WU-1537","lane":"Framework: CLI WU Commands","title":"Standardize CLI entrypoints on runCLI wrapper","timestamp":"2026-02-10T02:07:05.224Z"}
-{"type":"release","wuId":"WU-1551","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-10T02:11:26.685Z"}
-{"type":"claim","wuId":"WU-1551","lane":"Framework: Core Lifecycle","title":"Fix floating promises and replace setInterval polling","timestamp":"2026-02-10T02:14:02.443Z"}
-{"type":"claim","wuId":"WU-1556","lane":"Operations: Tooling","title":"Stop lifecycle repair loops and enforce closeout consistency","timestamp":"2026-02-10T09:47:33.596Z"}
-{"type":"claim","wuId":"WU-1562","lane":"Operations: Tooling","title":"Enforce runtime parity for lifecycle commands","timestamp":"2026-02-10T10:09:53.690Z"}
-{"type":"complete","wuId":"WU-1562","reason":"wu:repair consistency reconciliation for stamp/yaml mismatch","timestamp":"2026-02-10T10:14:52.699Z"}
-{"wuId":"WU-1537","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-10T11:20:13.246Z"}
-{"type":"claim","wuId":"WU-1563","lane":"Framework: Core Lifecycle","title":"Fix wu:done worktree metadata path isolation regression","timestamp":"2026-02-10T11:27:16.744Z"}
+{"type":"release","wuId":"WU-1537","timestamp":"2026-02-10T02:02:06.686Z","reason":"Reset via wu:recover --action reset"}
+{"type":"claim","wuId":"WU-1537","timestamp":"2026-02-10T02:07:05.224Z","lane":"Framework: CLI WU Commands","title":"Standardize CLI entrypoints on runCLI wrapper"}
+{"type":"release","wuId":"WU-1551","timestamp":"2026-02-10T02:11:26.685Z","reason":"Reset via wu:recover --action reset"}
+{"type":"claim","wuId":"WU-1551","timestamp":"2026-02-10T02:14:02.443Z","lane":"Framework: Core Lifecycle","title":"Fix floating promises and replace setInterval polling"}
+{"type":"claim","wuId":"WU-1556","timestamp":"2026-02-10T09:47:33.596Z","lane":"Operations: Tooling","title":"Stop lifecycle repair loops and enforce closeout consistency"}
+{"type":"claim","wuId":"WU-1562","timestamp":"2026-02-10T10:09:53.690Z","lane":"Operations: Tooling","title":"Enforce runtime parity for lifecycle commands"}
+{"type":"complete","wuId":"WU-1562","timestamp":"2026-02-10T10:14:52.699Z"}
+{"type":"complete","wuId":"WU-1537","timestamp":"2026-02-10T11:20:13.246Z"}
+{"type":"claim","wuId":"WU-1563","timestamp":"2026-02-10T11:27:16.744Z","lane":"Framework: Core Lifecycle","title":"Fix wu:done worktree metadata path isolation regression"}
+{"type":"complete","wuId":"WU-1563","timestamp":"2026-02-10T11:36:00.687Z"}

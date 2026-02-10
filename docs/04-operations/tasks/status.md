@@ -14,7 +14,6 @@ _Last updated: 2026-02-10_
 - [WU-1546 — Re-enable TypeScript lint rules](wu/WU-1546.yaml)
 - [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml)
 - [WU-1556 — Stop lifecycle repair loops and enforce closeout consistency](wu/WU-1556.yaml)
-- [WU-1563 — Fix wu:done worktree metadata path isolation regression](wu/WU-1563.yaml)
 
 ## Completed
 
@@ -73,7 +72,7 @@ _Last updated: 2026-02-10_
 - [WU-1057 — Update LumenFlow docs - Nova theme, logos, and content audit](wu/WU-1057.yaml) — 2026-01-22
 - [WU-1058 — Documentation overhaul - fix critical gaps and inaccuracies](wu/WU-1058.yaml) — 2026-01-22
 - [WU-1059 — Auto-generate CLI and config documentation from source](wu/WU-1059.yaml) — 2026-01-22
-- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/\* changes](wu/WU-1061.yaml) — 2026-01-22
+- [WU-1061 — Integrate docs:generate into wu:done for @lumenflow/* changes](wu/WU-1061.yaml) — 2026-01-22
 - [WU-1062 — External plan storage and no-main-write mode for wu:create](wu/WU-1062.yaml) — 2026-01-22
 - [WU-1064 — Fix CLI silent failure - async main() without catch handler](wu/WU-1064.yaml) — 2026-01-22
 - [WU-1065 — Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring](wu/WU-1065.yaml) — 2026-01-22
@@ -118,7 +117,7 @@ _Last updated: 2026-02-10_
 - [WU-1108 — INIT-003 Phase 4a: Migrate file operations (4 tools)](wu/WU-1108.yaml) — 2026-01-25
 - [WU-1105 — INIT-003 Phase 3a: Migrate init:plan command](wu/WU-1105.yaml) — 2026-01-25
 - [WU-1110 — INIT-003 Phase 5a: Migrate metrics commands](wu/WU-1110.yaml) — 2026-01-25
-- [WU-1129 — Fix pre-existing prettier format failures in apps/docs/\*.mdx](wu/WU-1129.yaml) — 2026-01-26
+- [WU-1129 — Fix pre-existing prettier format failures in apps/docs/*.mdx](wu/WU-1129.yaml) — 2026-01-26
 - [WU-1111 — INIT-003 Phase 5b: Migrate guards & validation (7 tools)](wu/WU-1111.yaml) — 2026-01-26
 - [WU-1112 — INIT-003 Phase 6: Migrate remaining Tier 1 tools](wu/WU-1112.yaml) — 2026-01-26
 - [WU-1109 — INIT-003 Phase 4b: Migrate git operations (5 tools)](wu/WU-1109.yaml) — 2026-01-26
@@ -139,7 +138,7 @@ _Last updated: 2026-02-10_
 - [WU-1120 — Docs Audit: Advanced & Polish - skills tutorial + TypeDoc + cookbook](wu/WU-1120.yaml) — 2026-01-26
 - [WU-1127 — lumenflow:upgrade must use micro-worktree (users blocked from upgrading)](wu/WU-1127.yaml) — 2026-01-26
 - [WU-1128 — Add upgrade guide to lumenflow.dev](wu/WU-1128.yaml) — 2026-01-26
-- [WU-1130 — Fix guard-\* commands to recognize worktree context](wu/WU-1130.yaml) — 2026-01-26
+- [WU-1130 — Fix guard-* commands to recognize worktree context](wu/WU-1130.yaml) — 2026-01-26
 - [WU-1133 — Fix doc alignment: constraints-capsule reference and vendor overlays](wu/WU-1133.yaml) — 2026-01-26
 - [WU-1132 — Harden worktree validation hook to fail-closed](wu/WU-1132.yaml) — 2026-01-26
 - [WU-1136 — Docs: memory path fix + agent invocation guide + pre-clear checkpoint hook](wu/WU-1136.yaml) — 2026-01-26
@@ -503,10 +502,11 @@ _Last updated: 2026-02-10_
 - [WU-1534 — Harden CLI command execution surfaces](wu/WU-1534.yaml) — 2026-02-09
 - [WU-1540 — Split protected and progressable status constants](wu/WU-1540.yaml) — 2026-02-09
 - [WU-1538 — Refactor core exit handling to throw typed errors](wu/WU-1538.yaml) — 2026-02-09
-- [WU-1536 — Add subpath exports and codemod dist imports](wu/WU-1536.yaml) — 2026-02-09
 - [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml) — 2026-02-09
+- [WU-1536 — Add subpath exports and codemod dist imports](wu/WU-1536.yaml) — 2026-02-09
 - [WU-1539 — Centralize duplicated stamp and events path literals](wu/WU-1539.yaml) — 2026-02-10
 - [WU-1549 — Decompose wu-constants and segregate fat interfaces](wu/WU-1549.yaml) — 2026-02-10
 - [WU-1543 — Re-enable security lint rules (reclaim)](wu/WU-1543.yaml) — 2026-02-10
 - [WU-1562 — Enforce runtime parity for lifecycle commands](wu/WU-1562.yaml) — 2026-02-10
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml) — 2026-02-10
+- [WU-1563 — Fix wu:done worktree metadata path isolation regression](wu/WU-1563.yaml) — 2026-02-10
