@@ -28,7 +28,8 @@ spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
 notes: Track C2 from enterprise hardening initiative. Split from WU-1536. Depends on C1 (WU-1536)
-  completing first.
+  completing first. TODO in eslint.config.mjs line 51 is pre-existing documentation comment explaining
+  why sonarjs/todo-tag and fixme-tag rules are disabled, not an action item.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
