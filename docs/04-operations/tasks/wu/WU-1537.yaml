@@ -2,7 +2,7 @@ id: WU-1537
 title: Standardize CLI entrypoints on runCLI wrapper
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -35,7 +35,7 @@ escalation_triggers: []
 requires_human_escalation: false
 approved_by:
   - tom@hellm.ai
-approved_at: 2026-02-09T23:25:18.922Z
+approved_at: 2026-02-10T02:07:05.188Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -47,3 +47,7 @@ acceptance:
   - All CLI commands use runCLI(main) with consistent EPIPE and error handling semantics.
   - Legacy import.meta.url entrypoint logic is removed from integrate command.
   - Entry-point tests validate behavior for direct invocation and piped output scenarios.
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1537
+claimed_at: 2026-02-10T02:07:05.181Z
+baseline_main_sha: c8fd10969a0a519092213f4295503f6115708e73
+session_id: 814053ea-2474-4b4f-ab46-9176cd261a71
