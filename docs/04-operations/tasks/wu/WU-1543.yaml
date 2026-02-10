@@ -2,7 +2,9 @@ id: WU-1543
 title: Re-enable security lint rules
 lane: 'Operations: Tooling'
 type: refactor
-status: in_progress
+status: done
+locked: true
+completed_at: '2026-02-10T01:05:00.000Z'
 priority: P2
 created: 2026-02-10
 code_paths:
