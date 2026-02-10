@@ -2,7 +2,7 @@ id: WU-1550
 title: Introduce gate and validator registry patterns
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -17,7 +17,6 @@ tests:
     - Verify new gates can be added by creating a file and registering without modifying
       executeGates().
   unit:
-    - packages/@lumenflow/cli/src/__tests__/gate-registry.test.ts
     - packages/@lumenflow/cli/src/__tests__/gate-registry.test.ts
     - packages/@lumenflow/cli/src/__tests__/gate-registry-defaults.test.ts
   e2e: []
@@ -55,3 +54,5 @@ worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-
 claimed_at: 2026-02-10T00:23:48.987Z
 baseline_main_sha: 159c8345313db871edb07a29acc8f5fc24a4f0ba
 session_id: bad17a3f-a3d3-4975-ab89-e42fe8171515
+locked: true
+completed_at: 2026-02-10T00:25:00.000Z
