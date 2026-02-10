@@ -239,6 +239,8 @@ export interface ScaffoldResult {
   merged?: string[];
   /** WU-1171: Warnings encountered during scaffolding */
   warnings?: string[];
+  /** WU-1576: Files created by client integration adapters (enforcement hooks etc.) */
+  integrationFiles?: string[];
 }
 
 const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
@@ -521,7 +523,7 @@ function generateLumenflowConfigYaml(
   if (client === 'claude') {
     (config as Record<string, unknown>).agents = {
       clients: {
-        'claude-code': {
+        [DEFAULT_CLIENT_CLAUDE]: {
           enforcement: {
             hooks: true,
             block_outside_worktree: true,
@@ -2460,35 +2462,37 @@ function hasOriginRemote(targetDir: string): boolean {
  * Must run BEFORE the initial commit so all generated files are included.
  */
 
-// Vendor-agnostic dispatch map: client key in config → integration function
+// Vendor-agnostic dispatch map: client key in config → integration adapter.
+// Each adapter runs integration and returns relative paths of files it created.
+// init.ts has zero knowledge of client-specific paths — adapters own that.
 const CLIENT_INTEGRATIONS: Record<
   string,
-  (projectDir: string, enforcement: Record<string, unknown>) => Promise<void>
+  (projectDir: string, enforcement: Record<string, unknown>) => Promise<string[]>
 > = {
-  'claude-code': async (projectDir, enforcement) => {
-    await integrateClaudeCode(projectDir, { enforcement });
-  },
-  // Future: 'cursor': integrateCursor, 'windsurf': integrateWindsurf, etc.
+  [DEFAULT_CLIENT_CLAUDE]: (projectDir, enforcement) =>
+    integrateClaudeCode(projectDir, { enforcement }),
+  // When new clients gain enforcement: add adapter entry here.
 };
 
 async function runClientIntegrations(
   targetDir: string,
   result: ScaffoldResult,
-): Promise<void> {
+): Promise<string[]> {
+  const integrationFiles: string[] = [];
   const configPath = path.join(targetDir, CONFIG_FILE_NAME);
-  if (!fs.existsSync(configPath)) return;
+  if (!fs.existsSync(configPath)) return integrationFiles;
 
   let config: Record<string, unknown>;
   try {
     const content = fs.readFileSync(configPath, 'utf-8');
     config = yaml.parse(content) as Record<string, unknown>;
   } catch {
-    return; // Config unreadable — skip silently
+    return integrationFiles; // Config unreadable — skip silently
   }
 
   const agents = config.agents as Record<string, unknown> | undefined;
   const clients = agents?.clients as Record<string, Record<string, unknown>> | undefined;
-  if (!clients) return;
+  if (!clients) return integrationFiles;
 
   for (const [clientKey, clientConfig] of Object.entries(clients)) {
     const enforcement = clientConfig.enforcement as Record<string, unknown> | undefined;
@@ -2497,19 +2501,13 @@ async function runClientIntegrations(
     const integrateFn = CLIENT_INTEGRATIONS[clientKey];
     if (!integrateFn) continue;
 
-    await integrateFn(targetDir, enforcement);
-
-    // Track generated files in scaffold result
-    if (enforcement.block_outside_worktree) {
-      result.created.push(`.claude/hooks/enforce-worktree.sh`);
-    }
-    if (enforcement.require_wu_for_edits) {
-      result.created.push(`.claude/hooks/require-wu.sh`);
-    }
-    if (enforcement.warn_on_stop_without_wu_done) {
-      result.created.push(`.claude/hooks/warn-incomplete.sh`);
-    }
+    const createdFiles = await integrateFn(targetDir, enforcement);
+    integrationFiles.push(...createdFiles);
   }
+
+  result.created.push(...integrationFiles);
+  result.integrationFiles = integrationFiles;
+  return integrationFiles;
 }
 
 /**
@@ -2777,9 +2775,9 @@ export async function scaffoldProject(
     await injectPackageJsonScripts(targetDir, options, result);
   }
 
-  // WU-1576: Run client integrations (enforcement hooks) BEFORE initial commit
-  // Reads the just-scaffolded config to find clients with enforcement enabled.
-  // Vendor-agnostic: dispatches per-client; currently only claude-code is supported.
+  // WU-1576: Run client integrations (enforcement hooks) BEFORE initial commit.
+  // Reads the just-scaffolded config, dispatches to registered adapters per client.
+  // Vendor-agnostic: init.ts has zero knowledge of client-specific file paths.
   await runClientIntegrations(targetDir, result);
 
   // WU-1364: Create initial commit if git repo has no commits
@@ -3896,13 +3894,12 @@ export async function main(): Promise<void> {
 
   // WU-1359: Show complete lifecycle with auto-ID (no --id flag required)
   // WU-1364: Added initiative-first guidance for product visions
-  // WU-1576: Show enforcement hooks status when applicable
-  const hasEnforcementHooks = result.created.some((f) => f.includes('/hooks/'));
+  // WU-1576: Show enforcement hooks status — vendor-agnostic (any adapter that produced files)
   console.log('\n[lumenflow init] Done! Next steps:');
   console.log('  1. Review AGENTS.md and LUMENFLOW.md for workflow documentation');
   console.log(`  2. Edit ${CONFIG_FILE_NAME} to match your project structure`);
-  if (hasEnforcementHooks) {
-    console.log('  ✓ Enforcement hooks installed (worktree discipline, WU requirement, session warnings)');
+  if (result.integrationFiles && result.integrationFiles.length > 0) {
+    console.log('  \u2713 Enforcement hooks installed — regenerate with: pnpm lumenflow:integrate');
   }
   console.log('');
   console.log('  For a product vision (multi-phase work):');

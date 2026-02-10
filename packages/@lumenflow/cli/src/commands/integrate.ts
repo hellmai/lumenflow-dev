@@ -18,7 +18,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as yaml from 'yaml';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core';
+import { createWUParser, WU_OPTIONS, CLAUDE_HOOKS, DIRECTORIES } from '@lumenflow/core';
 import {
   generateEnforcementHooks,
   generateEnforceWorktreeScript,
@@ -108,7 +108,7 @@ export function parseIntegrateOptions(): {
  * Read existing Claude settings.json
  */
 function readClaudeSettings(projectDir: string): ClaudeSettings {
-  const settingsPath = path.join(projectDir, '.claude', 'settings.json');
+  const settingsPath = path.join(projectDir, DIRECTORIES.CLAUDE, 'settings.json');
 
   if (!fs.existsSync(settingsPath)) {
     return {
@@ -207,22 +207,22 @@ function mergeHooksIntoSettings(
 export async function integrateClaudeCode(
   projectDir: string,
   config: IntegrateClientConfig,
-): Promise<void> {
+): Promise<string[]> {
   const enforcement = config.enforcement;
+  const created: string[] = [];
 
   // Skip if enforcement not enabled
   if (!enforcement?.hooks) {
     console.log('[integrate] Enforcement hooks not enabled, skipping');
-    return;
+    return created;
   }
 
-  const claudeDir = path.join(projectDir, '.claude');
-  const hooksDir = path.join(claudeDir, 'hooks');
+  const hooksDir = path.join(projectDir, DIRECTORIES.CLAUDE_HOOKS);
 
   // Create directories
   if (!fs.existsSync(hooksDir)) {
     fs.mkdirSync(hooksDir, { recursive: true });
-    console.log('[integrate] Created .claude/hooks directory');
+    console.log('[integrate] Created hooks directory');
   }
 
   // Generate hooks based on config
@@ -232,32 +232,37 @@ export async function integrateClaudeCode(
     warn_on_stop_without_wu_done: enforcement.warn_on_stop_without_wu_done ?? false,
   });
 
-  // Write hook scripts
+  // Write hook scripts — each flag maps to a constant script name and generator
   if (enforcement.block_outside_worktree) {
-    const scriptPath = path.join(hooksDir, 'enforce-worktree.sh');
+    const scriptPath = path.join(hooksDir, CLAUDE_HOOKS.SCRIPTS.ENFORCE_WORKTREE);
     fs.writeFileSync(scriptPath, generateEnforceWorktreeScript(), { mode: 0o755 });
-    console.log('[integrate] Generated enforce-worktree.sh');
+    console.log(`[integrate] Generated ${CLAUDE_HOOKS.SCRIPTS.ENFORCE_WORKTREE}`);
+    created.push(path.join(DIRECTORIES.CLAUDE_HOOKS, CLAUDE_HOOKS.SCRIPTS.ENFORCE_WORKTREE));
   }
 
   if (enforcement.require_wu_for_edits) {
-    const scriptPath = path.join(hooksDir, 'require-wu.sh');
+    const scriptPath = path.join(hooksDir, CLAUDE_HOOKS.SCRIPTS.REQUIRE_WU);
     fs.writeFileSync(scriptPath, generateRequireWuScript(), { mode: 0o755 });
-    console.log('[integrate] Generated require-wu.sh');
+    console.log(`[integrate] Generated ${CLAUDE_HOOKS.SCRIPTS.REQUIRE_WU}`);
+    created.push(path.join(DIRECTORIES.CLAUDE_HOOKS, CLAUDE_HOOKS.SCRIPTS.REQUIRE_WU));
   }
 
   if (enforcement.warn_on_stop_without_wu_done) {
-    const scriptPath = path.join(hooksDir, 'warn-incomplete.sh');
+    const scriptPath = path.join(hooksDir, CLAUDE_HOOKS.SCRIPTS.WARN_INCOMPLETE);
     fs.writeFileSync(scriptPath, generateWarnIncompleteScript(), { mode: 0o755 });
-    console.log('[integrate] Generated warn-incomplete.sh');
+    console.log(`[integrate] Generated ${CLAUDE_HOOKS.SCRIPTS.WARN_INCOMPLETE}`);
+    created.push(path.join(DIRECTORIES.CLAUDE_HOOKS, CLAUDE_HOOKS.SCRIPTS.WARN_INCOMPLETE));
   }
 
   // Update settings.json
   const existingSettings = readClaudeSettings(projectDir);
   const updatedSettings = mergeHooksIntoSettings(existingSettings, generatedHooks);
 
-  const settingsPath = path.join(claudeDir, 'settings.json');
+  const settingsPath = path.join(projectDir, DIRECTORIES.CLAUDE, 'settings.json');
   fs.writeFileSync(settingsPath, JSON.stringify(updatedSettings, null, 2) + '\n', 'utf-8');
-  console.log('[integrate] Updated .claude/settings.json');
+  console.log('[integrate] Updated settings.json');
+
+  return created;
 }
 
 /**
