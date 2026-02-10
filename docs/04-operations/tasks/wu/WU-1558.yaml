@@ -2,7 +2,7 @@ id: WU-1558
 title: Eliminate process.chdir from gates.ts
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -28,8 +28,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-020 WU-1541 removed process.chdir from wu-done-worktree.ts. Problem: gates.ts:1395-1413 still has a save/restore process.chdir pattern for gate execution in non-default cwd. Solution: Pass explicit cwd through executeGates options instead of mutating global state.'
+description: 'Context: INIT-020 WU-1541 removed process.chdir from wu-done-worktree.ts. Problem:
+  gates.ts:1395-1413 still has a save/restore process.chdir pattern for gate execution in
+  non-default cwd. Solution: Pass explicit cwd through executeGates options instead of mutating
+  global state.'
 acceptance:
   - gates.ts no longer calls process.chdir in production code
   - Gate execution uses explicit cwd option passed through the call chain
   - All existing gate tests pass after changes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1558
+claimed_at: 2026-02-10T12:52:53.800Z
+baseline_main_sha: dfe54bdcc65f0a853a6518e3359ac0a46a439f9a
+session_id: e7220745-c09e-404c-8e06-764d861941ae
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T12:52:53.807Z
