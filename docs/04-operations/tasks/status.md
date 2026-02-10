@@ -10,7 +10,6 @@ _Last updated: 2026-02-10_
 - [WU-1550 — Introduce gate and validator registry patterns](wu/WU-1550.yaml)
 - [WU-1544 — Re-enable TypeScript lint rules](wu/WU-1544.yaml)
 - [WU-1545 — Lock down dist imports and verify boundary](wu/WU-1545.yaml)
-- [WU-1546 — Re-enable TypeScript lint rules](wu/WU-1546.yaml)
 - [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml)
 - [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml)
 
