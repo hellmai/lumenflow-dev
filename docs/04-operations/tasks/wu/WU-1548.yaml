@@ -10,7 +10,6 @@ code_paths:
   - packages/@lumenflow/cli/src
   - packages/@lumenflow/core/src
   - packages/@lumenflow/memory/src
-  - packages/@lumenflow/initiatives/src
 tests:
   manual:
     - Run targeted grep checks for replaced status literals and confirm zero unexpected remaining
