@@ -2,7 +2,7 @@ id: WU-1569
 title: Regenerate backlog/status after markdown escaping fix
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -29,8 +29,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Regenerate docs/04-operations/tasks/backlog.md and status.md using the WU-1568 escaping changes and normalize formatting/newline to restore clean gates on main.
+description: Regenerate docs/04-operations/tasks/backlog.md and status.md using the WU-1568 escaping
+  changes and normalize formatting/newline to restore clean gates on main.
 acceptance:
   - backlog.md is Prettier-stable after regeneration
   - status.md is Prettier-stable after regeneration
   - pnpm gates passes on main after completion
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-framework-docs-wu-1569
+claimed_at: 2026-02-10T13:49:55.977Z
+baseline_main_sha: bfb27bf140d5d113d02acee8601646b2afde55c6
+session_id: a839c832-1f4c-48e8-b373-1c4acd9cc575
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T13:49:55.985Z
