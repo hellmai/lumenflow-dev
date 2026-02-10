@@ -7,10 +7,10 @@ priority: P1
 created: 2026-02-10
 code_paths:
   - tools/generate-cli-docs.ts
-  - packages/@lumenflow/cli/__tests__/docs-generate.test.ts
   - packages/@lumenflow/cli/__tests__/wu-create.test.ts
   - packages/@lumenflow/cli/src/__tests__/init-scripts.test.ts
-  - packages/@lumenflow/cli/src/__tests__/hooks/enforcement.test.ts
+  - packages/@lumenflow/cli/vitest.config.ts
+  - packages/@lumenflow/cli/e2e/claude-enforcement.test.ts
 tests:
   manual:
     - pnpm --filter @lumenflow/cli test
@@ -26,10 +26,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-10T17:00:27.875Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1575
+session_id: fe6d989c-0bef-42c4-a06f-5b4c1ee9523c
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T17:00:27.883Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +49,3 @@ acceptance:
   - WU create validation test suite runs green in @lumenflow/cli
   - Init scripts and enforcement hook test suites run green in @lumenflow/cli
   - pnpm --filter @lumenflow/cli test passes without local-only workarounds
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1575
-claimed_at: 2026-02-10T17:00:27.875Z
-baseline_main_sha: 8ee5ad7528b6c9ca8c03bd60893b1a2d3d24d282
-session_id: fe6d989c-0bef-42c4-a06f-5b4c1ee9523c
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-10T17:00:27.883Z
