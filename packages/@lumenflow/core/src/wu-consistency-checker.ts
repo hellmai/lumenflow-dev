@@ -86,9 +86,9 @@ export async function checkWUConsistency(
     hasStampFile = false;
   }
   const trackedStampIds =
-    options.trackedStampIds ?? (await listTrackedWUStampIds({ projectRoot, stampsDir: paths.STAMPS_DIR() }));
-  const hasStamp =
-    hasStampFile && (trackedStampIds === null || trackedStampIds.has(id));
+    options.trackedStampIds ??
+    (await listTrackedWUStampIds({ projectRoot, stampsDir: paths.STAMPS_DIR() }));
+  const hasStamp = hasStampFile && (trackedStampIds === null || trackedStampIds.has(id));
 
   // Parse backlog sections
   let backlogContent = '';
