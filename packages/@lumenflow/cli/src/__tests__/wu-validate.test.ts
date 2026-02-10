@@ -67,7 +67,7 @@ describe('wu:validate registration parity integration (WU-1504)', () => {
   it('should detect missing registration surfaces for CLI command WUs', () => {
     const wu = {
       id: 'WU-TEST',
-      code_paths: ['packages/@lumenflow/cli/src/wu-new-feature.ts'],
+      code_paths: ['packages/@lumenflow/cli/package.json'],
     };
 
     const result = validateRegistrationParity(wu);
@@ -84,7 +84,7 @@ describe('wu:validate registration parity integration (WU-1504)', () => {
     const wu = {
       id: 'WU-TEST',
       code_paths: [
-        'packages/@lumenflow/cli/src/wu-new-feature.ts',
+        'packages/@lumenflow/cli/package.json',
         REGISTRATION_SURFACES.PUBLIC_MANIFEST,
         REGISTRATION_SURFACES.MCP_TOOLS,
       ],
@@ -101,7 +101,7 @@ describe('wu:validate registration parity integration (WU-1504)', () => {
     // and in strict mode those become [STRICT] errors
     const wu = {
       id: 'WU-STRICT',
-      code_paths: ['packages/@lumenflow/cli/src/wu-new-feature.ts'],
+      code_paths: ['packages/@lumenflow/cli/package.json'],
     };
     const parityResult = validateRegistrationParity(wu);
     const warnings = parityResult.errors.map((e) => `[LINT] ${e.message}`);
@@ -121,7 +121,7 @@ describe('wu:validate registration parity integration (WU-1504)', () => {
   it('parity errors should remain advisory in non-strict mode', () => {
     const wu = {
       id: 'WU-NONSTRICT',
-      code_paths: ['packages/@lumenflow/cli/src/wu-new-feature.ts'],
+      code_paths: ['packages/@lumenflow/cli/package.json'],
     };
     const parityResult = validateRegistrationParity(wu);
     const warnings = parityResult.errors.map((e) => `[LINT] ${e.message}`);
