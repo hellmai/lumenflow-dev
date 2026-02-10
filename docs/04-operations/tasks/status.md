@@ -6,6 +6,7 @@ _Last updated: 2026-02-10_
 
 - [WU-1575 — Fix pre-existing CLI test failures blocking gates](wu/WU-1575.yaml)
 - [WU-1576 — Fold integrate into init for bomb-proof onboarding](wu/WU-1576.yaml)
+- [WU-1577 — Prevent wu:done rollback leaks on main during merge failure](wu/WU-1577.yaml)
 
 ## Completed
 
