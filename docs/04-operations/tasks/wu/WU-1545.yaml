@@ -27,13 +27,26 @@ blocked_by:
 spec_refs:
   - lumenflow://plans/polished-frolicking-whale.md
 risks: []
-notes: Track C2 from enterprise hardening initiative. Split from original WU-1536. Depends on C1
+notes: >-
+  Track C2 from enterprise hardening initiative. Split from original WU-1536. Depends on C1
   (WU-1536) completing first.
+
+
+  Track C2 from enterprise hardening initiative. Split from original WU-1536. Depends on C1
+  (WU-1536) completing first. TODO in eslint.config.mjs line 51 is pre-existing documentation
+  comment, not incomplete work.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-09T23:53:40.422Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1545
+session_id: cc01dbf5-c705-46bb-a813-2b7f2d534251
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-09T23:53:40.430Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -46,9 +59,3 @@ acceptance:
   - Wildcard dist and lib exports removed from core, memory, initiatives, and agent package.json
     files.
   - rg @lumenflow/.+/dist/ packages/ apps/ tools/ actions/ returns zero results.
-claimed_mode: worktree
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-09T23:53:40.430Z
-locked: true
-completed: 2026-02-10
