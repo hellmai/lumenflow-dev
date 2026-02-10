@@ -2479,13 +2479,14 @@ async function runClientIntegrations(targetDir: string, result: ScaffoldResult):
   const configPath = path.join(targetDir, CONFIG_FILE_NAME);
   if (!fs.existsSync(configPath)) return integrationFiles;
 
-  let config: Record<string, unknown>;
+  let config: Record<string, unknown> | null;
   try {
     const content = fs.readFileSync(configPath, 'utf-8');
-    config = yaml.parse(content) as Record<string, unknown>;
+    config = yaml.parse(content) as Record<string, unknown> | null;
   } catch {
     return integrationFiles; // Config unreadable — skip silently
   }
+  if (!config) return integrationFiles;
 
   const agents = config.agents as Record<string, unknown> | undefined;
   const clients = agents?.clients as Record<string, Record<string, unknown>> | undefined;
