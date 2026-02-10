@@ -1040,3 +1040,4 @@
 {"type":"complete","wuId":"WU-1539","timestamp":"2026-02-10T00:10:32.562Z"}
 {"type":"release","wuId":"WU-1550","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-10T00:20:33.269Z"}
 {"type":"claim","wuId":"WU-1549","lane":"Framework: Core Validation","title":"Decompose wu-constants and segregate fat interfaces","timestamp":"2026-02-09T23:58:22.540Z"}
+{"wuId":"WU-1543","type":"complete","reason":"state:doctor --fix: reconciling state store with YAML status 'done'","timestamp":"2026-02-10T00:23:06.873Z"}
