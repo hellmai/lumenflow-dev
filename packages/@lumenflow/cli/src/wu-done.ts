@@ -2900,7 +2900,9 @@ async function main() {
     }
   } catch (err) {
     // Non-blocking: lock release failure should not block completion
-    console.warn(`${LOG_PREFIX.DONE} Warning: Could not release lane lock: ${getErrorMessage(err)}`);
+    console.warn(
+      `${LOG_PREFIX.DONE} Warning: Could not release lane lock: ${getErrorMessage(err)}`,
+    );
   }
 
   // WU-1438: Auto-end agent session
@@ -2915,7 +2917,9 @@ async function main() {
     // No warning if no active session - silent no-op is expected
   } catch (err) {
     // Non-blocking: session end failure should not block completion
-    console.warn(`${LOG_PREFIX.DONE} Warning: Could not end agent session: ${getErrorMessage(err)}`);
+    console.warn(
+      `${LOG_PREFIX.DONE} Warning: Could not end agent session: ${getErrorMessage(err)}`,
+    );
   }
 
   // WU-1588: Broadcast completion signal after session end
