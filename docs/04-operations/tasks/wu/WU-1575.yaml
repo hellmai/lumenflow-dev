@@ -1,0 +1,41 @@
+id: WU-1575
+title: Fix pre-existing CLI test failures blocking gates
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-10
+code_paths:
+  - tools/generate-cli-docs.ts
+  - packages/@lumenflow/cli/__tests__/docs-generate.test.ts
+  - packages/@lumenflow/cli/__tests__/wu-create.test.ts
+  - packages/@lumenflow/cli/src/__tests__/init-scripts.test.ts
+  - packages/@lumenflow/cli/src/__tests__/hooks/enforcement.test.ts
+tests:
+  manual:
+    - pnpm --filter @lumenflow/cli test
+  unit:
+    - packages/@lumenflow/cli/__tests__/docs-generate.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-create.test.ts
+    - packages/@lumenflow/cli/src/__tests__/init-scripts.test.ts
+    - packages/@lumenflow/cli/src/__tests__/hooks/enforcement.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1575.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: full gates currently fail on main due pre-existing @lumenflow/cli test failures. Problem: docs generation tests fail with module resolution errors for @lumenflow/core, wu-create spec validation tests fail assertions, and init script expectations are out of sync. Solution: repair these suites on main so unrelated WUs can complete without skip-gates.'
+acceptance:
+  - CLI docs generation and validation tests run green in @lumenflow/cli
+  - WU create validation test suite runs green in @lumenflow/cli
+  - Init scripts and enforcement hook test suites run green in @lumenflow/cli
+  - pnpm --filter @lumenflow/cli test passes without local-only workarounds
