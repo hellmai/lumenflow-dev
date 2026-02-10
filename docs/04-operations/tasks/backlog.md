@@ -21,14 +21,13 @@ sections:
 ## 🚀 Ready (pull from here)
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
-- [WU-1543 — Re-enable security lint rules](wu/WU-1543.yaml) — Operations: Tooling
+- [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml) — Framework: CLI WU Commands
 - [WU-1555 — Fix pre-existing test failures in orchestration.schemas, filesystem-metrics.adapter, terminal-renderer.adapter](wu/WU-1555.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1554 — Fix wu:done post-merge metadata double-write leaving main dirty](wu/WU-1554.yaml) — Framework: CLI WU Commands
-- [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml) — Framework: CLI WU Commands
 - [WU-1548 — Centralize status and remaining duplicated literals](wu/WU-1548.yaml) — Framework: Core Lifecycle
 - [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml) — Framework: Core Lifecycle
 - [WU-1547 — Lock down dist imports and verify boundary](wu/WU-1547.yaml) — Framework: Core Lifecycle
@@ -532,4 +531,5 @@ sections:
 - [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml)
 - [WU-1539 — Centralize duplicated stamp and events path literals](wu/WU-1539.yaml)
 - [WU-1549 — Decompose wu-constants and segregate fat interfaces](wu/WU-1549.yaml)
+- [WU-1543 — Re-enable security lint rules (reclaim)](wu/WU-1543.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

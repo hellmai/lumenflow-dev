@@ -6,7 +6,6 @@ _Last updated: 2026-02-10_
 
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml)
 - [WU-1554 — Fix wu:done post-merge metadata double-write leaving main dirty](wu/WU-1554.yaml)
-- [WU-1537 — Standardize CLI entrypoints on runCLI wrapper](wu/WU-1537.yaml)
 - [WU-1548 — Centralize status and remaining duplicated literals](wu/WU-1548.yaml)
 - [WU-1551 — Fix floating promises and replace setInterval polling](wu/WU-1551.yaml)
 - [WU-1547 — Lock down dist imports and verify boundary](wu/WU-1547.yaml)
@@ -506,3 +505,4 @@ _Last updated: 2026-02-10_
 - [WU-1535 — Enable strict TypeScript build configuration](wu/WU-1535.yaml) — 2026-02-09
 - [WU-1539 — Centralize duplicated stamp and events path literals](wu/WU-1539.yaml) — 2026-02-10
 - [WU-1549 — Decompose wu-constants and segregate fat interfaces](wu/WU-1549.yaml) — 2026-02-10
+- [WU-1543 — Re-enable security lint rules (reclaim)](wu/WU-1543.yaml) — 2026-02-10

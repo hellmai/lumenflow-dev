@@ -2,7 +2,7 @@ id: WU-1537
 title: Standardize CLI entrypoints on runCLI wrapper
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: ready
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -30,9 +30,6 @@ requires_review: false
 locked: true
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
-claimed_at: 2026-02-09T23:25:18.916Z
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1537
-session_id: 284d882f-ecf2-4c8d-a361-f60a56c5fdfc
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
