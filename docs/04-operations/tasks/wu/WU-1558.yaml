@@ -2,7 +2,7 @@ id: WU-1558
 title: Eliminate process.chdir from gates.ts
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -44,3 +44,6 @@ session_id: e7220745-c09e-404c-8e06-764d861941ae
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T12:52:53.807Z
+locked: true
+completed_at: 2026-02-10T13:03:30.632Z
+completed: 2026-02-10
