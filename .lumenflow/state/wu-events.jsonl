@@ -1071,3 +1071,4 @@
 {"type":"complete","wuId":"WU-1554","timestamp":"2026-02-10T11:43:36.368Z"}
 {"type":"complete","wuId":"WU-1556","timestamp":"2026-02-10T11:43:36.368Z"}
 {"type":"complete","wuId":"WU-1564","timestamp":"2026-02-10T11:47:12.845Z"}
+{"type":"claim","wuId":"WU-1565","lane":"Framework: Core Validation","title":"Guard lifecycle checks against untracked done-stamp masking","timestamp":"2026-02-10T12:09:42.886Z"}
