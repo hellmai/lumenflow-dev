@@ -2,12 +2,7 @@ import { execSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
-import {
-  PATTERNS,
-  BRANCHES,
-  STRING_LITERALS,
-  EXIT_CODES,
-} from '@lumenflow/core/wu-constants';
+import { PATTERNS, BRANCHES, STRING_LITERALS, EXIT_CODES } from '@lumenflow/core/wu-constants';
 import { createWuPaths } from '@lumenflow/core/wu-paths';
 
 function run(cmd: string): string {

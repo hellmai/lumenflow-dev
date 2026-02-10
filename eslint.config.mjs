@@ -190,8 +190,7 @@ export default tseslint.config(
             },
             {
               group: ['@lumenflow/initiatives/dist/*'],
-              message:
-                'Use @lumenflow/initiatives subpath exports instead of dist imports.',
+              message: 'Use @lumenflow/initiatives subpath exports instead of dist imports.',
             },
             {
               group: ['@lumenflow/agent/dist/*'],
