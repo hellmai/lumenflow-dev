@@ -2,7 +2,7 @@ id: WU-1545
 title: Lock down dist imports and verify boundary
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-09
 code_paths:
