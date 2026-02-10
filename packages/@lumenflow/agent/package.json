@@ -28,8 +28,7 @@
     "./verification": "./dist/agent-verification.js",
     "./auto-session": "./dist/auto-session-integration.js",
     "./feedback-promote": "./dist/feedback-promote-core.js",
-    "./feedback-review": "./dist/feedback-review-core.js",
-    "./dist/*": "./dist/*"
+    "./feedback-review": "./dist/feedback-review-core.js"
   },
   "main": "./dist/index.js",
   "files": [

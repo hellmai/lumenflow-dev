@@ -10,8 +10,8 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { stringifyYAML, parseYAML } from '@lumenflow/core/lib/wu-yaml.js';
-import { LUMENFLOW_PATHS } from '@lumenflow/core/lib/wu-constants.js';
+import { stringifyYAML, parseYAML } from '@lumenflow/core/wu-yaml';
+import { LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 
 /**
  * Directory for draft WU specs

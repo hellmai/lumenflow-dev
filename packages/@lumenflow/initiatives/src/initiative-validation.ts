@@ -11,7 +11,7 @@
  * - state:doctor (reports incomplete initiatives)
  */
 
-import { PROGRESSABLE_WU_STATUSES } from '@lumenflow/core/dist/wu-constants.js';
+import { PROGRESSABLE_WU_STATUSES } from '@lumenflow/core/wu-constants';
 
 /**
  * Result of initiative completeness validation

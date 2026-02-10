@@ -1,14 +1,14 @@
 import { execSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { createError, ErrorCodes } from '@lumenflow/core/lib/error-handler.js';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import {
   PATTERNS,
   BRANCHES,
   STRING_LITERALS,
   EXIT_CODES,
-} from '@lumenflow/core/lib/wu-constants.js';
-import { createWuPaths } from '@lumenflow/core/lib/wu-paths.js';
+} from '@lumenflow/core/wu-constants';
+import { createWuPaths } from '@lumenflow/core/wu-paths';
 
 function run(cmd: string): string {
   try {

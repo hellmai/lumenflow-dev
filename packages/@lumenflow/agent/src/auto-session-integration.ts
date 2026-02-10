@@ -16,7 +16,7 @@ import { randomUUID } from 'crypto';
 import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { startSession as startMemorySession } from '@lumenflow/memory/start';
-import { LUMENFLOW_PATHS } from '@lumenflow/core/lib/wu-constants.js';
+import { LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 
 const SESSION_FILENAME = 'current.json';
 

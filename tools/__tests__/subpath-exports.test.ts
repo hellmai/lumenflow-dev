@@ -1,11 +1,14 @@
 /**
  * @file subpath-exports.test.ts
- * Test suite for WU-1536: Add subpath exports and codemod dist imports
+ * Test suite for WU-1536 and WU-1547: Subpath exports, dist import migration, and enforcement
  *
  * Verifies:
  * 1. All 4 packages have explicit subpath exports (no reliance on wildcard)
  * 2. No consumer code uses @lumenflow/PKG/dist/PATH imports
  * 3. All subpath exports point to valid dist files
+ * 4. (WU-1547) no-restricted-imports lint rule blocks new dist/* imports
+ * 5. (WU-1547) Wildcard dist/lib exports removed from all 4 package.json files
+ * 6. (WU-1547) Zero dist-path usage repo-wide (packages/apps/tools/actions)
  */
 
 import { describe, it, expect } from 'vitest';
@@ -138,6 +141,104 @@ describe('WU-1536: Subpath exports and dist import migration', () => {
           .join('\n');
         expect.fail(
           `Found ${violations.length} files still importing from dist paths:\n${summary}${violations.length > 10 ? `\n  ... and ${violations.length - 10} more` : ''}`,
+        );
+      }
+    });
+  });
+});
+
+describe('WU-1547: Lock down dist imports and verify boundary', () => {
+  describe('AC1: no-restricted-imports lint rule blocks new dist/* imports', () => {
+    it('eslint.config.mjs contains no-restricted-imports rule for @lumenflow/*/dist/*', () => {
+      const eslintConfigPath = join(ROOT, 'eslint.config.mjs');
+      const content = readFileSync(eslintConfigPath, 'utf-8');
+
+      // The config must have no-restricted-imports targeting @lumenflow dist paths
+      expect(content).toContain('no-restricted-imports');
+
+      // Must reference the dist path pattern for all 4 packages
+      for (const pkg of TARGET_PACKAGES) {
+        expect(content).toContain(`@lumenflow/${pkg}/dist/`);
+      }
+    });
+
+    it('no-restricted-imports rule is set to error severity', () => {
+      const eslintConfigPath = join(ROOT, 'eslint.config.mjs');
+      const content = readFileSync(eslintConfigPath, 'utf-8');
+
+      // The rule must be at error level (not warn/off)
+      // Look for the pattern: 'no-restricted-imports': ['error', ...]
+      expect(content).toMatch(/['"]no-restricted-imports['"]\s*:\s*\[\s*['"]error['"]/);
+    });
+  });
+
+  describe('AC2: Wildcard dist and lib exports removed from all 4 package.json files', () => {
+    for (const pkg of TARGET_PACKAGES) {
+      it(`@lumenflow/${pkg}/package.json has no ./dist/* wildcard export`, () => {
+        const pkgJsonPath = join(ROOT, 'packages/@lumenflow', pkg, 'package.json');
+        const pkgJson = JSON.parse(readFileSync(pkgJsonPath, 'utf-8'));
+        const exports = pkgJson.exports || {};
+
+        expect(exports['./dist/*']).toBeUndefined();
+      });
+
+      it(`@lumenflow/${pkg}/package.json has no ./lib/* wildcard export`, () => {
+        const pkgJsonPath = join(ROOT, 'packages/@lumenflow', pkg, 'package.json');
+        const pkgJson = JSON.parse(readFileSync(pkgJsonPath, 'utf-8'));
+        const exports = pkgJson.exports || {};
+
+        expect(exports['./lib/*']).toBeUndefined();
+      });
+    }
+  });
+
+  describe('AC3: Zero dist-path usage repo-wide', () => {
+    /**
+     * Scans all source directories (packages, apps, tools, actions)
+     * for dist-path import specifiers using the @lumenflow/PKG/dist/ pattern.
+     * This is the broadest check - covers everything the rg command would find.
+     */
+    const repoWideScanDirs = [
+      'packages/@lumenflow/cli/src',
+      'packages/@lumenflow/cli/__tests__',
+      'packages/@lumenflow/cli/e2e',
+      'packages/@lumenflow/core/src',
+      'packages/@lumenflow/core/__tests__',
+      'packages/@lumenflow/memory/src',
+      'packages/@lumenflow/memory/__tests__',
+      'packages/@lumenflow/initiatives/src',
+      'packages/@lumenflow/initiatives/__tests__',
+      'packages/@lumenflow/agent/src',
+      'packages/@lumenflow/agent/__tests__',
+      'packages/@lumenflow/metrics/src',
+      'packages/@lumenflow/shims/src',
+      'packages/@lumenflow/mcp/src',
+      'apps',
+      'actions',
+    ];
+
+    it('no source files import from @lumenflow/{core,memory,initiatives,agent}/dist/', () => {
+      const violations: Array<{ file: string; specifiers: string[] }> = [];
+
+      for (const dir of repoWideScanDirs) {
+        const fullDir = join(ROOT, dir);
+        const files = findTsFiles(fullDir);
+
+        for (const file of files) {
+          const distImports = extractDistImports(file);
+          if (distImports.length > 0) {
+            const relFile = file.replace(ROOT + '/', '');
+            violations.push({ file: relFile, specifiers: distImports });
+          }
+        }
+      }
+
+      if (violations.length > 0) {
+        const summary = violations
+          .map((v) => `  ${v.file}: ${v.specifiers.join(', ')}`)
+          .join('\n');
+        expect.fail(
+          `Found ${violations.length} files still importing from dist paths:\n${summary}`,
         );
       }
     });

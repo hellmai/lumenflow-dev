@@ -29,8 +29,7 @@
     "./schema": "./dist/initiative-schema.js",
     "./constants": "./dist/initiative-constants.js",
     "./paths": "./dist/initiative-paths.js",
-    "./initiative-validation": "./dist/initiative-validation.js",
-    "./dist/*": "./dist/*"
+    "./initiative-validation": "./dist/initiative-validation.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
