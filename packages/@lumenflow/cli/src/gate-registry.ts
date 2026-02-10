@@ -16,6 +16,7 @@
 export type GateLogContext = {
   agentLog?: { logFd: number; logPath: string } | null;
   useAgentMode: boolean;
+  cwd?: string;
 };
 
 /**
