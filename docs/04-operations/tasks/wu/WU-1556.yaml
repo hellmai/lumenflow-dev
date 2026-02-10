@@ -6,11 +6,12 @@ status: in_progress
 priority: P0
 created: 2026-02-10
 code_paths:
-  - packages/@lumenflow/cli/src/wu-repair.ts
   - packages/@lumenflow/core/src/wu-repair-core.ts
   - packages/@lumenflow/core/src/wu-consistency-checker.ts
   - packages/@lumenflow/core/src/wu-done-validation.ts
-  - packages/@lumenflow/core/src/state-doctor-core.ts
+  - packages/@lumenflow/core/src/wu-done-worktree.ts
+  - packages/@lumenflow/core/src/wu-done-metadata.ts
+  - packages/@lumenflow/core/src/wu-transaction-collectors.ts
 tests:
   manual:
     - Run pnpm wu:repair --all --check on a seeded inconsistent fixture and verify no files/commits
@@ -33,10 +34,17 @@ notes: 'Observed symptoms to close: state:doctor reports 9 status_mismatch issue
   repair and fix(state-doctor) commit loops after INIT-020 closeout; status.md In Progress drift;
   mixed completion fields across INIT-020 WUs.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-10T09:47:33.560Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1556
+session_id: 3b49fe84-00ea-4087-afa1-26df65293bf1
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T09:47:33.566Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -55,11 +63,3 @@ acceptance:
     consistency before reporting complete.'
   - 'TDD: add failing-first regression coverage for completion field normalization (completed vs
     completed_at) in done/repair paths.'
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1556
-claimed_at: 2026-02-10T09:47:33.560Z
-baseline_main_sha: b365549d8cfaedd0c6e81ebbe00aabb69d071efe
-session_id: 3b49fe84-00ea-4087-afa1-26df65293bf1
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-10T09:47:33.566Z
