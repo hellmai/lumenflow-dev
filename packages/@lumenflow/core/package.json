@@ -92,6 +92,7 @@
     "./rollback-utils": "./dist/rollback-utils.js",
     "./schemas/memory-arg-validators": "./dist/schemas/memory-arg-validators.js",
     "./spawn-strategy": "./dist/spawn-strategy.js",
+    "./stamp-tracking": "./dist/stamp-tracking.js",
     "./stamp-utils": "./dist/stamp-utils.js",
     "./state-cleanup-core": "./dist/state-cleanup-core.js",
     "./state-doctor-core": "./dist/state-doctor-core.js",

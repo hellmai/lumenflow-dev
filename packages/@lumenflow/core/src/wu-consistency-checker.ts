@@ -32,15 +32,25 @@ import {
 import { todayISO, normalizeToDateString } from './date-utils.js';
 import { createGitForPath } from './git-adapter.js';
 import { withMicroWorktree } from './micro-worktree.js';
+import { listTrackedWUStampIds } from './stamp-tracking.js';
+
+interface CheckWUConsistencyOptions {
+  trackedStampIds?: Set<string> | null;
+}
 
 /**
  * Check a single WU for state inconsistencies
  *
  * @param {string} id - WU ID (e.g., 'WU-123')
  * @param {string} [projectRoot=process.cwd()] - Project root directory
+ * @param {CheckWUConsistencyOptions} [options] - Optional precomputed context
  * @returns {Promise<object>} Consistency report with valid, errors, and stats
  */
-export async function checkWUConsistency(id, projectRoot = process.cwd()) {
+export async function checkWUConsistency(
+  id,
+  projectRoot = process.cwd(),
+  options: CheckWUConsistencyOptions = {},
+) {
   const errors = [];
   const paths = createWuPaths({ projectRoot });
   const wuPath = path.join(projectRoot, paths.WU(id));
@@ -67,14 +77,18 @@ export async function checkWUConsistency(id, projectRoot = process.cwd()) {
   const title = wuDoc?.title || '';
   const worktreePathFromYaml = wuDoc?.worktree_path || '';
 
-  // Check stamp existence
-  let hasStamp = false;
+  // Check stamp existence (guard against untracked local stamp artifacts)
+  let hasStampFile = false;
   try {
     await access(stampPath, constants.R_OK);
-    hasStamp = true;
+    hasStampFile = true;
   } catch {
-    hasStamp = false;
+    hasStampFile = false;
   }
+  const trackedStampIds =
+    options.trackedStampIds ?? (await listTrackedWUStampIds({ projectRoot, stampsDir: paths.STAMPS_DIR() }));
+  const hasStamp =
+    hasStampFile && (trackedStampIds === null || trackedStampIds.has(id));
 
   // Parse backlog sections
   let backlogContent = '';
@@ -214,10 +228,14 @@ export async function checkAllWUConsistency(projectRoot = process.cwd()) {
 
   const allErrors = [];
   const wuFiles = (await readdir(wuDir)).filter((f) => /^WU-\d+\.yaml$/.test(f));
+  const trackedStampIds = await listTrackedWUStampIds({
+    projectRoot,
+    stampsDir: paths.STAMPS_DIR(),
+  });
 
   for (const file of wuFiles) {
     const id = file.replace('.yaml', '');
-    const report = await checkWUConsistency(id, projectRoot);
+    const report = await checkWUConsistency(id, projectRoot, { trackedStampIds });
     allErrors.push(...report.errors);
   }
 
@@ -239,6 +257,10 @@ export async function checkAllWUConsistency(projectRoot = process.cwd()) {
 export async function checkLaneForOrphanDoneWU(lane, excludeId, projectRoot = process.cwd()) {
   const paths = createWuPaths({ projectRoot });
   const wuDir = path.join(projectRoot, paths.WU_DIR());
+  const trackedStampIds = await listTrackedWUStampIds({
+    projectRoot,
+    stampsDir: paths.STAMPS_DIR(),
+  });
   try {
     await access(wuDir, constants.R_OK);
   } catch {
@@ -270,7 +292,7 @@ export async function checkLaneForOrphanDoneWU(lane, excludeId, projectRoot = pr
     }
 
     if (wuDoc?.lane === lane && wuDoc?.status === WU_STATUS.DONE) {
-      const report = await checkWUConsistency(id, projectRoot);
+      const report = await checkWUConsistency(id, projectRoot, { trackedStampIds });
       if (!report.valid) {
         orphans.push({ id, errors: report.errors });
       }
