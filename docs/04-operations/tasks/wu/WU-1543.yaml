@@ -2,14 +2,15 @@ id: WU-1543
 title: Re-enable security lint rules
 lane: 'Operations: Tooling'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-10
 code_paths:
   - eslint.config.mjs
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -28,3 +29,11 @@ requires_design_approval: false
 description: Re-enable security lint rules in eslint.config.mjs for CLI and core packages
 acceptance:
   - Security lint rules re-enabled
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1543
+claimed_at: 2026-02-10T00:31:27.741Z
+baseline_main_sha: d0e383fff9f2e9919e37a72001035dd966c66345
+session_id: b0fc10d0-3d87-48f3-ba72-0a4f4a1f008d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T00:31:27.750Z
