@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1580 — Fix pre-existing orchestration schema test regressions blocking gates](wu/WU-1580.yaml) — Framework: CLI Enforcement
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1574 — Establish strict-mode shared type foundations](wu/WU-1574.yaml) — Framework: Core Validation
@@ -29,7 +28,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1575 — Fix pre-existing CLI test failures blocking gates](wu/WU-1575.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -558,4 +557,5 @@ sections:
 - [WU-1577 — Prevent wu:done rollback leaks on main during merge failure](wu/WU-1577.yaml)
 - [WU-1576 — Fold integrate into init for bomb-proof onboarding](wu/WU-1576.yaml)
 - [WU-1578 — Formalize client integration contract/constants for vendor-agnostic init](wu/WU-1578.yaml)
+- [WU-1575 — Fix pre-existing CLI test failures blocking gates](wu/WU-1575.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
