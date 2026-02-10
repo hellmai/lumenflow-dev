@@ -2,7 +2,7 @@ id: WU-1580
 title: Fix pre-existing orchestration schema test regressions blocking gates
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -41,3 +41,6 @@ description: 'Context: Gates currently fail on main in
 acceptance:
   - orchestration.schemas.test.ts passes on main
   - safeParse success expectations for valid fixtures are restored
+locked: true
+completed_at: 2026-02-10T22:55:09.872Z
+completed: 2026-02-10
