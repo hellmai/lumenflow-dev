@@ -115,33 +115,27 @@ describe('Consumer Integration Tests', () => {
     it('should have executable CLI commands available', () => {
       const nodeModulesBin = join(tempProjectDir, NODE_MODULES_BIN);
 
-      // Check that CLI binaries are available
+      // Check that public CLI binaries are available
       const gatesBin = join(nodeModulesBin, 'gates');
-      const validateBin = join(nodeModulesBin, 'validate-backlog-sync');
+      const validateBin = join(nodeModulesBin, 'validate');
       const wuStatusBin = join(nodeModulesBin, 'wu-status');
+      const internalValidateBacklogSyncBin = join(nodeModulesBin, 'validate-backlog-sync');
 
       expect(existsSync(gatesBin)).toBe(true);
       expect(existsSync(validateBin)).toBe(true);
       expect(existsSync(wuStatusBin)).toBe(true);
+      expect(existsSync(internalValidateBacklogSyncBin)).toBe(false);
     });
   });
 
   describe('Command Execution', () => {
     it(
-      'should run validate-backlog-sync command successfully',
+      'should run validate command successfully',
       { timeout: COMMAND_TEST_TIMEOUT_MS },
       () => {
-        // Create a minimal LumenFlow project structure for testing
-        const docsDir = join(tempProjectDir, 'docs', '04-operations', 'tasks');
-        mkdirSync(docsDir, { recursive: true });
-
-        // Create a minimal backlog.md
-        const backlogPath = join(docsDir, 'backlog.md');
-        writeFileSync(backlogPath, '# Backlog\n\nNo WUs yet.\n');
-
-        // Run validate-backlog-sync
+        // Run a public validation command and verify binary/path resolution.
         try {
-          const output = execSync('npx validate-backlog-sync', {
+          const output = execSync('npx validate --help', {
             cwd: tempProjectDir,
             encoding: 'utf8',
             stdio: 'pipe',
@@ -197,8 +191,8 @@ describe('Consumer Integration Tests', () => {
     it('should have all required CLI binaries properly resolved', () => {
       const nodeModulesBin = join(tempProjectDir, NODE_MODULES_BIN);
 
-      // Test a few key binaries to ensure they're executable and don't have hardcoded paths
-      const keyBinaries = ['gates', 'validate-backlog-sync', 'wu-status', 'wu-claim', 'wu-done'];
+      // Test key public binaries to ensure they're executable and don't have hardcoded paths
+      const keyBinaries = ['gates', 'validate', 'wu-status', 'wu-claim', 'wu-done'];
 
       keyBinaries.forEach((binary: string) => {
         const binaryPath = join(nodeModulesBin, binary);
