@@ -430,11 +430,7 @@ export async function repairWUInconsistency(
 
             for (const error of fileRepairs) {
               try {
-                const result = await repairSingleErrorInWorktree(
-                  error,
-                  worktreePath,
-                  worktreePath,
-                );
+                const result = await repairSingleErrorInWorktree(error, worktreePath, worktreePath);
                 if (result.success && result.files) {
                   filesModified.push(...result.files);
                   repaired++;

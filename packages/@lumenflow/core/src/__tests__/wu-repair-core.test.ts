@@ -40,4 +40,3 @@ describe('wu-repair-core check mode', () => {
     expect(mocks.repairWUInconsistency).not.toHaveBeenCalled();
   });
 });
-

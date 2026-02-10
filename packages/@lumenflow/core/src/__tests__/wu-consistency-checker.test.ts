@@ -87,7 +87,9 @@ vi.mock('../micro-worktree.js', async () => {
             cpSync(docsSource, path.join(microWorktreePath, 'docs'), { recursive: true });
           }
           if (existsSync(lumenflowSource)) {
-            cpSync(lumenflowSource, path.join(microWorktreePath, '.lumenflow'), { recursive: true });
+            cpSync(lumenflowSource, path.join(microWorktreePath, '.lumenflow'), {
+              recursive: true,
+            });
           }
 
           const result = await options.execute({
@@ -328,7 +330,10 @@ acceptance:
       expect(updatedWU.completed).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(updatedWU.completed).toBe(String(updatedWU.completed_at).slice(0, 10));
 
-      const events = readFileSync(path.join(testProjectRoot, '.lumenflow/state/wu-events.jsonl'), 'utf-8')
+      const events = readFileSync(
+        path.join(testProjectRoot, '.lumenflow/state/wu-events.jsonl'),
+        'utf-8',
+      )
         .trim()
         .split('\n')
         .map((line) => JSON.parse(line) as { type: string; wuId: string });

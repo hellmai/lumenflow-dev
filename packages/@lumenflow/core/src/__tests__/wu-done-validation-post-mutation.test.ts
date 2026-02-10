@@ -97,4 +97,3 @@ describe('validatePostMutation state consistency', () => {
     }
   });
 });
-
