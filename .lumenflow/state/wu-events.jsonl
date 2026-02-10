@@ -1043,3 +1043,4 @@
 {"type":"claim","wuId":"WU-1550","lane":"Framework: CLI WU Commands","title":"Introduce gate and validator registry patterns","timestamp":"2026-02-10T00:23:49.005Z"}
 {"type":"claim","wuId":"WU-1544","lane":"Operations: Tooling","title":"Re-enable TypeScript lint rules","timestamp":"2026-02-10T00:24:40.148Z"}
 {"type":"complete","wuId":"WU-1549","timestamp":"2026-02-10T00:26:43.562Z"}
+{"type":"claim","wuId":"WU-1543","lane":"Operations: Tooling","title":"Re-enable security lint rules","timestamp":"2026-02-10T00:31:27.787Z"}
