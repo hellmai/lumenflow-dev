@@ -60,6 +60,7 @@ const OPERATION_NAME = 'release';
 const LUMENFLOW_PACKAGES_DIR = 'packages/@lumenflow';
 
 /** Semver regex pattern (strict) */
+// eslint-disable-next-line security/detect-unsafe-regex -- static semver pattern; no backtracking risk
 const SEMVER_REGEX = /^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?$/;
 
 /** JSON indent size for package.json files */

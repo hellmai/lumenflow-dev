@@ -318,6 +318,7 @@ function defaultExecOnMain(mainCheckout: string): ExecOnMainFn {
       cmd.includes('wu:validate') && cmd.includes('--json') && existsSync(wuValidateDist);
 
     if (shouldUseDistWuValidate) {
+      // eslint-disable-next-line sonarjs/no-os-command-from-path -- node resolved from PATH; running dist script
       const result = spawnSync('node', [wuValidateDist, '--all', '--json'], {
         cwd: mainCheckout,
         encoding: 'utf-8',
@@ -352,6 +353,7 @@ function defaultExecOnMain(mainCheckout: string): ExecOnMainFn {
 }
 
 function runScopedValidation({ wuId, cwd }: { wuId: string; cwd: string }): boolean {
+  // eslint-disable-next-line sonarjs/no-os-command-from-path -- pnpm resolved from PATH; CLI orchestration
   const result = spawnSync('pnpm', ['wu:validate', '--id', wuId], {
     cwd,
     encoding: 'utf-8',

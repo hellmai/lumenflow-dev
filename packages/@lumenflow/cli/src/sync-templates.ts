@@ -107,6 +107,7 @@ export function convertToTemplate(content: string, projectRoot: string): string 
   // Replace absolute project paths with {{PROJECT_ROOT}}
   // Escape special regex characters in the path
   const escapedPath = projectRoot.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // eslint-disable-next-line security/detect-non-literal-regexp -- path is escaped for regex; not user input
   const pathPattern = new RegExp(escapedPath, 'g');
   output = output.replace(pathPattern, '{{PROJECT_ROOT}}');
 

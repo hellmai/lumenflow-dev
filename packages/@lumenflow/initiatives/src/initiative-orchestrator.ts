@@ -1352,6 +1352,7 @@ function getExistingWaveManifests(initId: string): WaveManifest[] {
   }
 
   const files = readdirSync(WAVE_MANIFEST_DIR);
+  // eslint-disable-next-line security/detect-non-literal-regexp -- initId from internal state, not user input
   const pattern = new RegExp(`^${initId}-wave-(\\d+)\\.json$`);
   const manifests = [];
 

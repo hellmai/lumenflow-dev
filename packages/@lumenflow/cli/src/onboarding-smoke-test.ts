@@ -258,6 +258,8 @@ export function validateLaneInferenceFormat(options: {
 /**
  * Initialize a git repository in the given directory
  */
+// git binary is resolved from PATH; this is a CLI smoke test that requires git
+/* eslint-disable sonarjs/no-os-command-from-path */
 function initializeGitRepo(projectDir: string): void {
   execFileSync(GIT_BINARY, ['init'], { cwd: projectDir, stdio: 'pipe' });
 
@@ -280,6 +282,7 @@ function initializeGitRepo(projectDir: string): void {
     stdio: 'pipe',
   });
 }
+/* eslint-enable sonarjs/no-os-command-from-path */
 
 /**
  * Create a sample WU YAML file for testing

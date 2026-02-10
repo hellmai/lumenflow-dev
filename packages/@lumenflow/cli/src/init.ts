@@ -359,6 +359,7 @@ function getCommandVersion(command: string, args: string[]): string {
  */
 function parseVersion(versionStr: string): number[] {
   // Extract version numbers using a non-backtracking pattern
+  // eslint-disable-next-line security/detect-unsafe-regex -- static semver pattern; no backtracking risk
   const match = /^v?(\d+)\.(\d+)(?:\.(\d+))?/.exec(versionStr);
   if (!match) {
     return [0, 0, 0];
@@ -569,6 +570,7 @@ function normalizeFrameworkName(framework: string): { name: string; slug: string
 function processTemplate(content: string, tokens: Record<string, string>): string {
   let output = content;
   for (const [key, value] of Object.entries(tokens)) {
+    // eslint-disable-next-line security/detect-non-literal-regexp -- key is from internal token map, not user input
     output = output.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), value);
   }
   return output;
@@ -2405,6 +2407,7 @@ function getFileMode(options: ScaffoldOptions): FileMode {
  */
 function isGitRepo(targetDir: string): boolean {
   try {
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; CLI tool requires git
     execFileSync('git', ['rev-parse', '--git-dir'], {
       cwd: targetDir,
       stdio: 'pipe',
@@ -2420,6 +2423,7 @@ function isGitRepo(targetDir: string): boolean {
  */
 function hasGitCommits(targetDir: string): boolean {
   try {
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; CLI tool requires git
     execFileSync('git', ['rev-parse', 'HEAD'], {
       cwd: targetDir,
       stdio: 'pipe',
@@ -2435,6 +2439,7 @@ function hasGitCommits(targetDir: string): boolean {
  */
 function hasOriginRemote(targetDir: string): boolean {
   try {
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; CLI tool requires git
     const result = execFileSync('git', ['remote', 'get-url', 'origin'], {
       cwd: targetDir,
       encoding: 'utf-8',
@@ -2457,9 +2462,11 @@ function createInitialCommitIfNeeded(targetDir: string): boolean {
   try {
     // Stage all files
 
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; CLI tool requires git
     execFileSync('git', ['add', '.'], { cwd: targetDir, stdio: 'pipe' });
     // Create initial commit
 
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; CLI tool requires git
     execFileSync('git', ['commit', '-m', 'chore: initialize LumenFlow project'], {
       cwd: targetDir,
       stdio: 'pipe',
@@ -2485,6 +2492,7 @@ export function renameMasterToMainIfNeeded(targetDir: string): boolean {
   }
 
   try {
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; CLI tool requires git
     const currentBranch = execFileSync('git', ['branch', '--show-current'], {
       cwd: targetDir,
       encoding: 'utf-8',
@@ -2495,6 +2503,7 @@ export function renameMasterToMainIfNeeded(targetDir: string): boolean {
       return false;
     }
 
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; CLI tool requires git
     execFileSync('git', ['branch', '-m', 'master', 'main'], {
       cwd: targetDir,
       stdio: 'pipe',

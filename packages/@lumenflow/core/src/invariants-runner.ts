@@ -187,6 +187,7 @@ function validateForbiddenPattern(invariant, baseDir) {
     });
 
     // Check each file for the forbidden pattern
+    // eslint-disable-next-line security/detect-non-literal-regexp -- pattern from invariant config, not user input
     const regex = new RegExp(pattern);
 
     for (const file of files) {
@@ -235,6 +236,7 @@ function validateRequiredPattern(invariant, baseDir) {
   const ignorePatterns = EXCLUDED_DIRS.map((dir) => `**/${dir}/**`);
 
   // Check if pattern exists in any file matching the scope
+  // eslint-disable-next-line security/detect-non-literal-regexp -- pattern from invariant config, not user input
   const regex = new RegExp(pattern);
 
   for (const scopePattern of scope) {
@@ -310,6 +312,7 @@ function validateForbiddenImport(invariant, baseDir) {
     // - export ... from 'module' or "module"
     // - require('module') or require("module")
     // - import('module') or import("module") for dynamic imports
+    // eslint-disable-next-line security/detect-non-literal-regexp -- module name from invariant config, not user input
     return new RegExp(
       `(?:` +
         `import\\s+[^;]*from\\s*['"]${escapedMod}['"]|` + // static import

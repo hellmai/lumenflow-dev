@@ -223,6 +223,7 @@ export function extractGitContext(
     // Check if this is a git repo using execSync directly
     // SECURITY: This is a static command with no user input
 
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; workflow tooling requires git
     execSync('git rev-parse --is-inside-work-tree', {
       cwd: projectRoot,
       encoding: 'utf-8',

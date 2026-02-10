@@ -199,6 +199,10 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'off',
       // Test files use dynamic paths for fixtures and temp directories
       'security/detect-non-literal-fs-filename': 'off',
+      // Test files use dynamic patterns for assertion matching
+      'security/detect-non-literal-regexp': 'off',
+      // Test files use regex patterns that are safe in test context
+      'security/detect-unsafe-regex': 'off',
       // Test files testing subprocess execution legitimately use PATH
       'sonarjs/no-os-command-from-path': 'off',
       // Test files legitimately use /tmp for isolation
@@ -260,18 +264,26 @@ export default tseslint.config(
     },
   },
 
+  // Hardcoded-strings module defines path detection constants (Unix system directories)
+  // that are NOT filesystem usage - they are patterns used to detect hardcoded paths in code
+  {
+    files: ['packages/@lumenflow/core/src/hardcoded-strings.ts'],
+    rules: {
+      'sonarjs/publicly-writable-directories': 'off', // Detection constants, not filesystem usage
+    },
+  },
+
   // CLI package is a command-line tool that legitimately uses console for output
-  // Security rules are relaxed because CLI inherently works with user-provided paths
+  // Security: detect-non-literal-fs-filename and detect-object-injection remain off
+  // because CLI commands inherently operate on user-supplied dynamic file paths
+  // and parse dynamic argument objects. Re-enabling would produce 500+ false
+  // positives with no security benefit (inputs are from the local operator).
   {
     files: ['packages/@lumenflow/cli/src/**/*.ts'],
     rules: {
       'no-console': 'off', // CLI tools output to console
-      'security/detect-non-literal-fs-filename': 'off', // CLI works with dynamic paths
-      'security/detect-object-injection': 'off', // CLI parses dynamic arguments
-      'security/detect-non-literal-regexp': 'off', // CLI may use dynamic patterns
-      'security/detect-unsafe-regex': 'off', // CLI regex patterns are trusted
-      'sonarjs/no-os-command-from-path': 'off', // CLI executes git, pnpm, etc.
-      'sonarjs/publicly-writable-directories': 'off', // CLI uses temp directories
+      'security/detect-non-literal-fs-filename': 'off', // CLI operates on user-supplied paths
+      'security/detect-object-injection': 'off', // CLI parses dynamic argument objects
       // CLI entry points use IIFE patterns with fire-and-forget promises
       '@typescript-eslint/no-floating-promises': 'off',
       // CLI code often uses non-null assertions for parsed/validated data
@@ -292,16 +304,15 @@ export default tseslint.config(
   },
 
   // Core package is workflow infrastructure that works with dynamic paths, console output, etc.
+  // Security: detect-non-literal-fs-filename and detect-object-injection remain off
+  // because core modules manage worktrees, state files, and git operations on dynamic paths.
+  // Re-enabling would produce 500+ false positives with no security benefit.
   {
     files: ['packages/@lumenflow/core/src/**/*.ts'],
     rules: {
       'no-console': 'off', // CLI output for status messages
-      'security/detect-non-literal-fs-filename': 'off', // Dynamic file operations
-      'security/detect-object-injection': 'off', // Dynamic object access
-      'security/detect-non-literal-regexp': 'off', // Pattern matching
-      'security/detect-unsafe-regex': 'off', // Workflow regex patterns are trusted
-      'sonarjs/publicly-writable-directories': 'off', // Temp directory usage
-      'sonarjs/no-os-command-from-path': 'off', // Git and pnpm execution
+      'security/detect-non-literal-fs-filename': 'off', // Core manages dynamic file paths
+      'security/detect-object-injection': 'off', // Core uses dynamic object access
       // Core infrastructure uses IIFE patterns for async initialization
       '@typescript-eslint/no-floating-promises': 'off',
       // Core code uses non-null assertions for validated data structures
@@ -328,8 +339,6 @@ export default tseslint.config(
       'no-console': 'off', // Orchestrator output
       'security/detect-non-literal-fs-filename': 'off', // Dynamic file operations
       'security/detect-object-injection': 'off', // Dynamic object access
-      'security/detect-non-literal-regexp': 'off', // Pattern matching
-      'security/detect-unsafe-regex': 'off', // Initiative regex patterns are trusted
       // Orchestrator uses non-null assertions for validated initiative data
       '@typescript-eslint/no-non-null-assertion': 'off',
       // Initiatives has repeated phase/status messages

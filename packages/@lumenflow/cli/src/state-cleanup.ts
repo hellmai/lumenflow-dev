@@ -36,11 +36,7 @@ import { cleanupMemory } from '@lumenflow/memory/cleanup';
 import { archiveWuEvents } from '@lumenflow/core/wu-events-cleanup';
 import { cleanupState, type StateCleanupResult } from '@lumenflow/core/state-cleanup-core';
 import { createWUParser } from '@lumenflow/core/arg-parser';
-import {
-  EXIT_CODES,
-  LUMENFLOW_PATHS,
-  PROTECTED_WU_STATUSES,
-} from '@lumenflow/core/wu-constants';
+import { EXIT_CODES, LUMENFLOW_PATHS, PROTECTED_WU_STATUSES } from '@lumenflow/core/wu-constants';
 import { getConfig } from '@lumenflow/core/config';
 import fg from 'fast-glob';
 import { parse as parseYaml } from 'yaml';

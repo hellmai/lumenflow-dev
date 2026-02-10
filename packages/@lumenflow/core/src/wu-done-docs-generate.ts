@@ -79,6 +79,7 @@ export async function stageDocOutputs(): Promise<void> {
  * @returns void
  */
 export function runDocsGenerate(repoRoot: string): void {
+  // eslint-disable-next-line sonarjs/no-os-command-from-path -- pnpm resolved from PATH; workflow tooling orchestration
   execSync('pnpm turbo docs:generate', {
     cwd: repoRoot,
     stdio: STDIO.INHERIT,

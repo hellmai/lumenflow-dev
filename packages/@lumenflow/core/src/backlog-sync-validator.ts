@@ -80,6 +80,7 @@ export function validateBacklogSync(backlogPath) {
   // - `- [x] WU-123` (checked checkbox)
   // - `- [WU-123 - title](...)` (markdown link)
   // Does NOT match prose like "See WU-123 for details" or "WU-123 → WU-124"
+  // eslint-disable-next-line security/detect-unsafe-regex -- static backlog pattern; input is line-bounded markdown
   const BACKLOG_ITEM_PATTERN = /^\s*[-*]\s*(?:\[[ x]\]\s*)?\[?(WU-\d+)/i;
 
   for (const line of lines) {
@@ -255,6 +256,7 @@ export function fixBacklogDuplicates(backlogPath, options: FixBacklogDuplicatesO
   }
 
   // WU-1334: Same pattern as validateBacklogSync - only match list items
+  // eslint-disable-next-line security/detect-unsafe-regex -- static backlog pattern; input is line-bounded markdown
   const BACKLOG_ITEM_PATTERN = /^\s*[-*]\s*(?:\[[ x]\]\s*)?\[?(WU-\d+)/i;
 
   // Parse sections and track line numbers for each WU

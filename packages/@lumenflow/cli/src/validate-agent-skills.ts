@@ -78,6 +78,7 @@ export function validateSkillFile(skillPath: string): SkillValidationResult {
 
   // Check for required sections
   for (const section of REQUIRED_SECTIONS) {
+    // eslint-disable-next-line security/detect-non-literal-regexp -- section name from internal constant array, not user input
     const sectionPattern = new RegExp(`^##\\s+${section}`, 'im');
     if (!sectionPattern.test(content)) {
       errors.push(`Missing required section: "## ${section}"`);
@@ -86,6 +87,7 @@ export function validateSkillFile(skillPath: string): SkillValidationResult {
 
   // Check for recommended sections
   for (const section of RECOMMENDED_SECTIONS) {
+    // eslint-disable-next-line security/detect-non-literal-regexp -- section name from internal constant array, not user input
     const sectionPattern = new RegExp(`^##\\s+${section}`, 'im');
     if (!sectionPattern.test(content)) {
       warnings.push(`Missing recommended section: "## ${section}"`);

@@ -258,6 +258,7 @@ export function scanFileForMocks(filePath) {
  */
 function getRepoRoot() {
   try {
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; workflow tooling requires git
     return execSync('git rev-parse --show-toplevel', {
       encoding: 'utf-8',
       stdio: [STDIO.PIPE, STDIO.PIPE, STDIO.IGNORE],

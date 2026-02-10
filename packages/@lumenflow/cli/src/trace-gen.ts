@@ -206,6 +206,7 @@ export function buildTraceEntry(input: TraceInput): TraceEntry {
 function getWuCommits(wuId: string): CommitInfo[] {
   try {
     const gitArgs = buildGitLogArgs(wuId);
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; CLI tool requires git
     const output = execFileSync('git', gitArgs, {
       encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
     });
@@ -236,6 +237,7 @@ function getWuCommits(wuId: string): CommitInfo[] {
 function getWuFiles(wuId: string): string[] {
   try {
     const gitArgs = buildGitFilesArgs(wuId);
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; CLI tool requires git
     const output = execFileSync('git', gitArgs, {
       encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
     });

@@ -164,6 +164,7 @@ export function buildRotatedContent(statusContent: string, completedWUs: string[
   // For each completed WU, move it from In Progress to Completed
   for (const wuId of completedWUs) {
     // Find and remove the line from In Progress section
+    // eslint-disable-next-line security/detect-non-literal-regexp -- wuId is from internal state, not user input
     const wuLineRegex = new RegExp(`\\n?-\\s*\\[?[\\sx]?\\]?\\s*\\[?${wuId}[^\\n]*`, 'gi');
     const match = content.match(wuLineRegex);
 

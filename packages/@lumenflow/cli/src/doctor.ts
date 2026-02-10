@@ -331,6 +331,7 @@ function getCommandVersion(command: string, args: string[]): string {
  * Parse semver version string to compare
  */
 function parseVersion(versionStr: string): number[] {
+  // eslint-disable-next-line security/detect-unsafe-regex -- static semver pattern; no backtracking risk
   const match = versionStr.match(/(\d+)\.(\d+)\.?(\d+)?/);
   if (!match) {
     return [0, 0, 0];
@@ -436,6 +437,7 @@ function checkPrerequisites(): DoctorResult['prerequisites'] {
  */
 function getGitRepoRoot(projectDir: string): string | null {
   try {
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; CLI tool requires git
     const repoRoot = execFileSync('git', ['rev-parse', '--show-toplevel'], {
       cwd: projectDir,
       encoding: 'utf-8',
@@ -464,6 +466,7 @@ async function checkManagedFilesDirty(projectDir: string): Promise<ManagedFilesD
     }
 
     // Run git status from repo root, not the passed projectDir
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; CLI tool requires git
     const statusOutput = execFileSync('git', ['status', '--porcelain'], {
       cwd: repoRoot,
       encoding: 'utf-8',
@@ -577,6 +580,7 @@ function parseWorktreePruneOutput(output: string): WorktreePruneParseResult {
 async function checkWorktreeSanity(projectDir: string): Promise<WorktreeSanityResult> {
   try {
     // First check if this is a git repo
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; CLI tool requires git
     execFileSync('git', ['rev-parse', '--git-dir'], {
       cwd: projectDir,
       encoding: 'utf-8',
@@ -588,6 +592,7 @@ async function checkWorktreeSanity(projectDir: string): Promise<WorktreeSanityRe
     let pruneOutput: string;
     let commandFailed = false;
     try {
+      // eslint-disable-next-line sonarjs/no-os-command-from-path -- pnpm resolved from PATH; CLI orchestration
       pruneOutput = execFileSync('pnpm', ['wu:prune'], {
         cwd: projectDir,
         encoding: 'utf-8',
@@ -692,6 +697,7 @@ async function checkWUValidity(projectDir: string): Promise<WUValidityResult> {
     let cliError = false;
     let cliErrorMessage = '';
     try {
+      // eslint-disable-next-line sonarjs/no-os-command-from-path -- pnpm resolved from PATH; CLI orchestration
       validateOutput = execFileSync('pnpm', ['wu:validate', '--all', '--no-strict'], {
         cwd: projectDir,
         encoding: 'utf-8',

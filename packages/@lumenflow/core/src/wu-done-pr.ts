@@ -63,6 +63,7 @@ export function isPRModeEnabled(doc, args) {
  */
 export function isGhCliAvailable() {
   try {
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- gh resolved from PATH; workflow tooling requires gh
     execSync('gh --version', { encoding: 'utf-8', stdio: STDIO.IGNORE });
     return true;
   } catch {

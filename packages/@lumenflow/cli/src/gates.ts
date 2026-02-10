@@ -284,6 +284,7 @@ const TEST_CONFIG_PATTERNS = [
   /^vitest\.config\.(ts|mts|js|mjs|cjs)$/i,
   /^jest\.config\.(ts|js|mjs|cjs|json)$/i,
   /^\.mocharc\.(js|json|yaml|yml)$/i,
+  // eslint-disable-next-line security/detect-unsafe-regex -- static tsconfig pattern; no backtracking risk
   /^tsconfig(\..+)?\.json$/i,
 ];
 

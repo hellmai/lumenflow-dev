@@ -115,6 +115,7 @@ function getCurrentDate(): string {
 function processTemplate(content: string, tokens: Record<string, string>): string {
   let output = content;
   for (const [key, value] of Object.entries(tokens)) {
+    // eslint-disable-next-line security/detect-non-literal-regexp -- key is from internal token map, not user input
     output = output.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), value);
   }
   return output;

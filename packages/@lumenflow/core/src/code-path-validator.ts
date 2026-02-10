@@ -127,6 +127,7 @@ function isMarkdownFile(filePath: string): boolean {
  */
 function getRepoRoot(): string {
   try {
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; workflow tooling requires git
     return execSync('git rev-parse --show-toplevel', {
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'ignore'],

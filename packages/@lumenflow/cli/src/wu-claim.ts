@@ -158,6 +158,7 @@ async function ensureCleanOrClaimOnlyWhenNoAuto() {
   // WU-1311: Use config-based paths instead of hardcoded docs/04-operations paths
   const config = getConfig();
   const wuDirPattern = config.directories.wuDir.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // eslint-disable-next-line security/detect-non-literal-regexp -- config path escaped for regex; not user input
   const wuYamlRegex = new RegExp(`${wuDirPattern}/WU-\\d+\\.yaml`);
   const hasClaimFiles = staged.some(
     (l) =>

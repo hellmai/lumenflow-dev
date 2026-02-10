@@ -455,6 +455,7 @@ export function replaceTokens(content: string, tokens: Record<string, string | u
   for (const [key, value] of Object.entries(tokens)) {
     if (value !== undefined) {
       // Use global replace with escaped regex for safety
+      // eslint-disable-next-line security/detect-non-literal-regexp -- key is from internal token map, not user input
       const pattern = new RegExp(`\\{${escapeRegex(key)}\\}`, 'g');
       result = result.replace(pattern, value);
     }

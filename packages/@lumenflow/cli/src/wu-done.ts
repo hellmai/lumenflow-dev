@@ -1397,6 +1397,7 @@ async function validateStagedFiles(id, isDocsOnly = false, gitAdapter?) {
   if (unexpected.length > 0) {
     // WU-1311: Use config-based pattern for WU YAML detection
     const wuDirPattern = config.directories.wuDir.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // eslint-disable-next-line security/detect-non-literal-regexp -- config path escaped for regex; not user input
     const wuYamlRegex = new RegExp(`^${wuDirPattern}/WU-\\d+\\.yaml$`);
     const otherWuYamlOnly = unexpected.every((f) => wuYamlRegex.test(f));
     if (otherWuYamlOnly) {

@@ -36,6 +36,7 @@ export const INIT_PATTERNS = {
   INIT_ID_EXTRACT: /INIT-[\dA-Z][\dA-Z-]*/,
 
   /** Kebab-case slug format */
+  // eslint-disable-next-line security/detect-unsafe-regex -- static slug pattern; no backtracking risk
   SLUG: /^[a-z0-9]+(-[a-z0-9]+)*$/,
 
   /** Date format (YYYY-MM-DD) */

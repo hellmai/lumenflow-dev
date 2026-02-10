@@ -17,12 +17,7 @@
  */
 
 import { execFileSync } from 'node:child_process';
-import {
-  STDIO_MODES,
-  EXIT_CODES,
-  PKG_MANAGER,
-  DEFAULTS,
-} from '@lumenflow/core/wu-constants';
+import { STDIO_MODES, EXIT_CODES, PKG_MANAGER, DEFAULTS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */
@@ -34,6 +29,7 @@ const LOG_PREFIX = '[deps:add]';
  * Matches: react, react-dom, @scope/pkg, pkg@1.2.3, @scope/pkg@^1.0.0
  * Rejects: anything containing shell metacharacters, spaces, newlines.
  */
+// eslint-disable-next-line security/detect-unsafe-regex -- static validation pattern; input bounded by CLI arg length
 const PACKAGE_NAME_PATTERN = /^(@[a-z0-9][\w.-]*\/)?[a-z0-9][\w.-]*(@[^\s;|&`$()<>'"\\]+)?$/i;
 
 /**

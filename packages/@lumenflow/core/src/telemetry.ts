@@ -76,6 +76,7 @@ export function emitGateEvent(data) {
  */
 export function getCurrentWU() {
   try {
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; workflow tooling requires git
     const branch = execSync('git rev-parse --abbrev-ref HEAD', {
       encoding: 'utf-8',
       stdio: [STDIO.PIPE, STDIO.PIPE, STDIO.IGNORE],
@@ -98,6 +99,7 @@ export function getCurrentWU() {
  */
 export function getCurrentLane() {
   try {
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; workflow tooling requires git
     const branch = execSync('git rev-parse --abbrev-ref HEAD', {
       encoding: 'utf-8',
       stdio: [STDIO.PIPE, STDIO.PIPE, STDIO.IGNORE],

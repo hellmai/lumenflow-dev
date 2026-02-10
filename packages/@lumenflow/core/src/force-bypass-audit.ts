@@ -70,6 +70,7 @@ export function getAuditLogPath(projectRoot: string): string {
  */
 function getGitUser(): string {
   try {
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; workflow tooling requires git
     return execSync('git config user.name', { encoding: 'utf8' }).trim();
   } catch {
     return 'unknown';
@@ -83,6 +84,7 @@ function getGitUser(): string {
  */
 function getGitBranch(): string {
   try {
+    // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; workflow tooling requires git
     return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
   } catch {
     return 'unknown';

@@ -1047,6 +1047,7 @@ async function checkWorktreeExists(id, projectRoot) {
     const output = await git.worktreeList();
     // Match WU ID followed by non-digit or end of string to prevent
     // false positives (e.g., wu-204 matching wu-2049)
+    // eslint-disable-next-line security/detect-non-literal-regexp -- WU ID from internal state, not user input
     const pattern = new RegExp(`${id.toLowerCase()}(?![0-9])`, 'i');
     return pattern.test(output);
   } catch {

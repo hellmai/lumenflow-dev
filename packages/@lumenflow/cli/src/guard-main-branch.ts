@@ -79,6 +79,7 @@ function getLaneBranchPattern(): RegExp {
   const config = getConfig();
   const prefix = config?.git?.laneBranchPrefix ?? 'lane/';
   const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // eslint-disable-next-line security/detect-non-literal-regexp -- prefix from config file, not user input; escaped for safety
   return new RegExp(`^${escaped}`);
 }
 
