@@ -230,8 +230,7 @@ export const LUMENFLOW_CLIENT_IDS = {
 } as const;
 
 /** Type for supported client IDs with integration support */
-export type LumenflowClientId =
-  (typeof LUMENFLOW_CLIENT_IDS)[keyof typeof LUMENFLOW_CLIENT_IDS];
+export type LumenflowClientId = (typeof LUMENFLOW_CLIENT_IDS)[keyof typeof LUMENFLOW_CLIENT_IDS];
 
 /**
  * Claude Code hook script constants (WU-1394)
