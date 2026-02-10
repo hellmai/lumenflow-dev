@@ -1051,3 +1051,4 @@
 {"type":"complete","wuId":"WU-1543","timestamp":"2026-02-10T01:05:00.000Z"}
 {"type":"release","wuId":"WU-1537","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-10T02:02:06.686Z"}
 {"type":"claim","wuId":"WU-1537","lane":"Framework: CLI WU Commands","title":"Standardize CLI entrypoints on runCLI wrapper","timestamp":"2026-02-10T02:07:05.224Z"}
+{"type":"release","wuId":"WU-1551","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-10T02:11:26.685Z"}
