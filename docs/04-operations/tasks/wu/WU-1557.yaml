@@ -2,7 +2,7 @@ id: WU-1557
 title: Fix remaining process.exit calls in core library functions
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -48,3 +48,6 @@ session_id: 40e502f3-ad58-4329-a8e5-1fef3b58c3ad
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T12:47:55.839Z
+locked: true
+completed_at: 2026-02-10T12:52:26.840Z
+completed: 2026-02-10
