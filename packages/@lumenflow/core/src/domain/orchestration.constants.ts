@@ -9,6 +9,8 @@
  * @see {@link ../ports/metrics-collector.port.ts} - Uses these constants
  */
 
+import { DIRECTORIES, LUMENFLOW_PATHS } from '../wu-constants.js';
+
 /**
  * Total number of Definition of Done checkpoints.
  * Used by dashboard to show DoD progress (X/11).
@@ -154,10 +156,10 @@ export const MANDATORY_TRIGGERS: Record<string, readonly string[]> = {
  * Used by FileSystemMetricsCollector to avoid hardcoded strings.
  */
 export const FILESYSTEM_PATHS = {
-  WU_DIR: 'docs/04-operations/tasks/wu',
-  STATUS_FILE: 'docs/04-operations/tasks/status.md',
-  BACKLOG_FILE: 'docs/04-operations/tasks/backlog.md',
-  TELEMETRY_DIR: '.lumenflow/telemetry',
-  STAMPS_DIR: '.lumenflow/stamps',
-  SESSION_FILE: '.lumenflow/sessions/current.json',
+  WU_DIR: DIRECTORIES.WU_DIR,
+  STATUS_FILE: DIRECTORIES.STATUS_PATH,
+  BACKLOG_FILE: DIRECTORIES.BACKLOG_PATH,
+  TELEMETRY_DIR: LUMENFLOW_PATHS.TELEMETRY,
+  STAMPS_DIR: LUMENFLOW_PATHS.STAMPS_DIR,
+  SESSION_FILE: LUMENFLOW_PATHS.SESSION_CURRENT,
 };

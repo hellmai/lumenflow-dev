@@ -24,6 +24,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { loadMemory } from './memory-store.js';
 import { MEMORY_PATTERNS, type MemoryNode } from './memory-schema.js';
+import type { NodeFsError } from '@lumenflow/core/wu-constants';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
@@ -62,12 +63,7 @@ interface ReadyRelationship {
   metadata?: Record<string, unknown>;
 }
 
-/**
- * Node.js file system error with code
- */
-interface NodeFsError extends Error {
-  code?: string;
-}
+// WU-1548: NodeFsError imported from @lumenflow/core/wu-constants (consolidated)
 
 /**
  * Gets the priority rank for a node.

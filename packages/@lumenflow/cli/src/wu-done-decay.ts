@@ -11,6 +11,7 @@
 import { archiveByDecay } from '@lumenflow/memory/decay/archival';
 import { DEFAULT_HALF_LIFE_MS } from '@lumenflow/memory/decay/scoring';
 import type { MemoryDecayConfig } from '@lumenflow/core/config-schema';
+import { LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import path from 'node:path';
 
 /**
@@ -32,10 +33,7 @@ const SKIP_REASONS = {
  */
 const ON_DONE_TRIGGER = 'on_done';
 
-/**
- * Memory directory path relative to base
- */
-const MEMORY_DIR = '.lumenflow/memory';
+// WU-1548: Using LUMENFLOW_PATHS.MEMORY_DIR from wu-constants (consolidated)
 
 /**
  * Result of running decay during wu:done
@@ -91,7 +89,7 @@ export async function runDecayOnDone(
 
   // Run decay archival with fail-open behavior
   try {
-    const memoryDir = path.join(baseDir, MEMORY_DIR);
+    const memoryDir = path.join(baseDir, LUMENFLOW_PATHS.MEMORY_DIR);
     const halfLifeMs = decayConfig.half_life_days * MS_PER_DAY;
 
     const result = await archiveByDecay(memoryDir, {

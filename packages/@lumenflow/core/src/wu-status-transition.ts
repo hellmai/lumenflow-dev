@@ -15,6 +15,7 @@
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { assertTransition } from './state-machine.js';
+import { BACKLOG_BULLET_FORMAT } from './wu-constants.js';
 // WU-1574: Removed BacklogManager - using state store + generator
 import { WUStateStore } from './wu-state-store.js';
 import { generateBacklog } from './backlog-generator.js';
@@ -218,11 +219,11 @@ async function updateBacklogAndStatus(paths, id, title, fromStatus, toStatus, di
   if (direction === 'block') {
     fromSection = inProgressHeading;
     toSection = blockedHeading;
-    format = 'blocked';
+    format = BACKLOG_BULLET_FORMAT.BLOCKED;
   } else {
     fromSection = blockedHeading;
     toSection = inProgressHeading;
-    format = 'progress';
+    format = BACKLOG_BULLET_FORMAT.PROGRESS;
   }
 
   // WU-1574: Regenerate backlog.md from state store (replaces BacklogManager)

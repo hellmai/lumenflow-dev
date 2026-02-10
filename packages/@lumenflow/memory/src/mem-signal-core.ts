@@ -17,6 +17,7 @@
 import { randomBytes } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import type { NodeFsError } from '@lumenflow/core/wu-constants';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
@@ -142,12 +143,7 @@ function generateSignalId() {
   return `${SIGNAL_ID_PREFIX}${hex}`;
 }
 
-/**
- * Node.js file system error with code
- */
-interface NodeFsError extends Error {
-  code?: string;
-}
+// WU-1548: NodeFsError imported from @lumenflow/core/wu-constants (consolidated)
 
 /**
  * Gets the memory directory path for a project.

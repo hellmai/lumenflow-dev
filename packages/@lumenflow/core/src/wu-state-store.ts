@@ -31,6 +31,7 @@ import {
 import path from 'node:path';
 import os from 'node:os';
 import { validateWUEvent, type WUEvent } from './wu-state-schema.js';
+import { WU_STATUS } from './wu-constants.js';
 
 /**
  * Lock timeout in milliseconds (5 minutes)
@@ -202,22 +203,22 @@ export class WUStateStore {
 
     if (type === 'create' || type === 'claim') {
       const claimEvent = event as WUEvent & { lane: string; title: string };
-      this._setState(wuId, 'in_progress', claimEvent.lane, claimEvent.title);
+      this._setState(wuId, WU_STATUS.IN_PROGRESS, claimEvent.lane, claimEvent.title);
       return;
     }
 
     if (type === 'block') {
-      this._transitionToStatus(wuId, 'blocked');
+      this._transitionToStatus(wuId, WU_STATUS.BLOCKED);
       return;
     }
 
     if (type === 'unblock') {
-      this._transitionToStatus(wuId, 'in_progress');
+      this._transitionToStatus(wuId, WU_STATUS.IN_PROGRESS);
       return;
     }
 
     if (type === 'complete') {
-      this._transitionToStatus(wuId, 'done');
+      this._transitionToStatus(wuId, WU_STATUS.DONE);
       // WU-2244: Store completion timestamp for accurate date reporting
       const current = this.wuState.get(wuId);
       if (current) {
@@ -248,7 +249,7 @@ export class WUStateStore {
 
     // WU-1080: Handle release event - transitions from in_progress to ready
     if (type === 'release') {
-      this._transitionToStatus(wuId, 'ready');
+      this._transitionToStatus(wuId, WU_STATUS.READY);
     }
   }
 
@@ -327,8 +328,8 @@ export class WUStateStore {
   async claim(wuId: string, lane: string, title: string): Promise<void> {
     // Check state machine: can't claim if already in_progress
     const currentState = this.wuState.get(wuId);
-    if (currentState && currentState.status === 'in_progress') {
-      throw new Error(`WU ${wuId} is already in_progress`);
+    if (currentState && currentState.status === WU_STATUS.IN_PROGRESS) {
+      throw new Error(`WU ${wuId} is already ${WU_STATUS.IN_PROGRESS}`);
     }
 
     const event = {
@@ -354,8 +355,8 @@ export class WUStateStore {
   async complete(wuId: string): Promise<void> {
     // Check state machine: can only complete if in_progress
     const currentState = this.wuState.get(wuId);
-    if (!currentState || currentState.status !== 'in_progress') {
-      throw new Error(`WU ${wuId} is not in_progress`);
+    if (!currentState || currentState.status !== WU_STATUS.IN_PROGRESS) {
+      throw new Error(`WU ${wuId} is not ${WU_STATUS.IN_PROGRESS}`);
     }
 
     const event = {
@@ -384,8 +385,8 @@ export class WUStateStore {
    */
   createCompleteEvent(wuId: string, timestamp: string = new Date().toISOString()): WUEvent {
     const currentState = this.wuState.get(wuId);
-    if (!currentState || currentState.status !== 'in_progress') {
-      throw new Error(`WU ${wuId} is not in_progress`);
+    if (!currentState || currentState.status !== WU_STATUS.IN_PROGRESS) {
+      throw new Error(`WU ${wuId} is not ${WU_STATUS.IN_PROGRESS}`);
     }
 
     const event = { type: 'complete' as const, wuId, timestamp };
@@ -426,8 +427,8 @@ export class WUStateStore {
   async block(wuId: string, reason: string): Promise<void> {
     // Check state machine: can only block if in_progress
     const currentState = this.wuState.get(wuId);
-    if (!currentState || currentState.status !== 'in_progress') {
-      throw new Error(`WU ${wuId} is not in_progress`);
+    if (!currentState || currentState.status !== WU_STATUS.IN_PROGRESS) {
+      throw new Error(`WU ${wuId} is not ${WU_STATUS.IN_PROGRESS}`);
     }
 
     const event = {
@@ -452,8 +453,8 @@ export class WUStateStore {
   async unblock(wuId: string): Promise<void> {
     // Check state machine: can only unblock if blocked
     const currentState = this.wuState.get(wuId);
-    if (!currentState || currentState.status !== 'blocked') {
-      throw new Error(`WU ${wuId} is not blocked`);
+    if (!currentState || currentState.status !== WU_STATUS.BLOCKED) {
+      throw new Error(`WU ${wuId} is not ${WU_STATUS.BLOCKED}`);
     }
 
     const event = {
@@ -570,8 +571,8 @@ export class WUStateStore {
   async release(wuId: string, reason: string): Promise<void> {
     // Check state machine: can only release if in_progress
     const currentState = this.wuState.get(wuId);
-    if (!currentState || currentState.status !== 'in_progress') {
-      throw new Error(`WU ${wuId} is not in_progress`);
+    if (!currentState || currentState.status !== WU_STATUS.IN_PROGRESS) {
+      throw new Error(`WU ${wuId} is not ${WU_STATUS.IN_PROGRESS}`);
     }
 
     const event = {
@@ -599,8 +600,8 @@ export class WUStateStore {
     timestamp: string = new Date().toISOString(),
   ): WUEvent {
     const currentState = this.wuState.get(wuId);
-    if (!currentState || currentState.status !== 'in_progress') {
-      throw new Error(`WU ${wuId} is not in_progress`);
+    if (!currentState || currentState.status !== WU_STATUS.IN_PROGRESS) {
+      throw new Error(`WU ${wuId} is not ${WU_STATUS.IN_PROGRESS}`);
     }
 
     const event = { type: 'release' as const, wuId, reason, timestamp };

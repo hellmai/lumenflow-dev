@@ -19,7 +19,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parseYAML } from '../wu-yaml.js';
 import { validateAutomatedTestRequirement, isCodeFile } from '../manual-test-validator.js';
-import { DIRECTORIES } from '../wu-constants.js';
+import { DIRECTORIES, WU_STATUS } from '../wu-constants.js';
 
 /**
  * Invariant metadata
@@ -32,7 +32,7 @@ export const INVARIANT_TYPE = 'wu-automated-tests';
  * Only validate active work - in_progress and blocked WUs.
  * Done, ready, and waiting WUs are either already validated or not yet being worked.
  */
-const ACTIVE_STATUSES = Object.freeze(['in_progress', 'blocked']);
+const ACTIVE_STATUSES = Object.freeze([WU_STATUS.IN_PROGRESS, WU_STATUS.BLOCKED]);
 
 /**
  * Default path to WU YAML files relative to base directory.

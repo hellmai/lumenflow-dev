@@ -34,6 +34,7 @@ import {
   LUMENFLOW_PATHS,
   GIT_COMMANDS,
   GIT_FLAGS,
+  WU_STATUS,
 } from './wu-constants.js';
 import { RECOVERY } from './wu-done-messages.js';
 import { die, createError, ErrorCodes } from './error-handler.js';
@@ -224,7 +225,7 @@ export async function executeBranchOnlyCompletion(context) {
 
   // Validate state transition
   try {
-    assertTransition(currentStatus, 'done', id);
+    assertTransition(currentStatus, WU_STATUS.DONE, id);
   } catch (error) {
     die(`State transition validation failed: ${error.message}`);
   }

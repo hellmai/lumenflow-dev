@@ -22,6 +22,7 @@ import { parse as parseYaml } from 'yaml';
 import { readFile } from 'node:fs/promises';
 import { WUStateStore, type WUStateEntry } from './wu-state-store.js';
 import { getConfig } from './lumenflow-config.js';
+import { WU_STATUS } from './wu-constants.js';
 
 /**
  * WU list entry returned by listWUs.
@@ -142,7 +143,7 @@ export async function listWUs(options: ListWUsOptions = {}): Promise<WUListEntry
 
     // Get status: state store takes precedence
     const stateEntry = stateMap.get(wuId);
-    const yamlStatus = typeof yamlData.status === 'string' ? yamlData.status : 'ready';
+    const yamlStatus = typeof yamlData.status === 'string' ? yamlData.status : WU_STATUS.READY;
     const status = stateEntry?.status ?? yamlStatus;
 
     // Get lane: prefer state store (more current), fall back to YAML
@@ -201,7 +202,7 @@ async function loadStateStore(stateDir: string): Promise<Map<string, WUStateEntr
     await store.load();
 
     // Collect all known statuses
-    const statuses = ['in_progress', 'blocked', 'done', 'ready'];
+    const statuses = [WU_STATUS.IN_PROGRESS, WU_STATUS.BLOCKED, WU_STATUS.DONE, WU_STATUS.READY];
 
     for (const status of statuses) {
       const wuIds = store.getByStatus(status);

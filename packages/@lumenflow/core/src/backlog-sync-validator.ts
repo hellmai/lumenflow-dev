@@ -15,6 +15,7 @@ import {
   PATTERNS,
   FILE_SYSTEM,
   STRING_LITERALS,
+  WU_STATUS,
   getProjectRoot,
 } from './wu-constants.js';
 
@@ -294,7 +295,7 @@ export function fixBacklogDuplicates(backlogPath, options: FixBacklogDuplicatesO
       const lineNum = sections.ready.lineNumbers.get(wu);
       if (lineNum !== undefined) {
         linesToRemove.add(lineNum);
-        removed.push({ wu, section: 'ready' });
+        removed.push({ wu, section: WU_STATUS.READY });
       }
     }
   }
@@ -305,7 +306,7 @@ export function fixBacklogDuplicates(backlogPath, options: FixBacklogDuplicatesO
       const lineNum = sections.in_progress.lineNumbers.get(wu);
       if (lineNum !== undefined) {
         linesToRemove.add(lineNum);
-        removed.push({ wu, section: 'in_progress' });
+        removed.push({ wu, section: WU_STATUS.IN_PROGRESS });
       }
     }
   }

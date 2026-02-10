@@ -19,6 +19,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const ms = require('ms') as (value: string) => number;
+import type { NodeFsError } from '@lumenflow/core/wu-constants';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 import {
   SIGNAL_FILE_NAME,
@@ -121,12 +122,7 @@ export interface RemovalDecision {
   reason: string;
 }
 
-/**
- * Node.js file system error with code
- */
-interface NodeFsError extends Error {
-  code?: string;
-}
+// WU-1548: NodeFsError imported from @lumenflow/core/wu-constants (consolidated)
 
 /**
  * Parse a TTL duration string into milliseconds.

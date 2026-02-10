@@ -10,6 +10,8 @@
  * deadlocks, while still enforcing validation on new/active WUs.
  */
 
+import { WU_STATUS } from './wu-constants.js';
+
 /**
  * List of parent-only lanes that are deprecated (legacy).
  * WUs with these lanes are considered legacy artifacts and may have stamp-status mismatches.
@@ -87,7 +89,7 @@ export function isLegacyStampedWU(wu, stampedIds) {
   }
 
   // If status is 'done', this is a normal WU (no mismatch)
-  if (status.toLowerCase() === 'done') {
+  if (status.toLowerCase() === WU_STATUS.DONE) {
     return false;
   }
 

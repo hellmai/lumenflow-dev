@@ -62,6 +62,7 @@ export {
   FILE_TOOLS,
   PHI_ERRORS,
   PHI_CONFIG,
+  type NodeFsError,
 } from './wu-paths-constants.js';
 
 // CLI and tooling constants

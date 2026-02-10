@@ -34,7 +34,7 @@ const OPERATION_NAME = 'state-doctor';
  */
 const LOG_PREFIX = '[state:doctor]';
 
-// WU-1539: Use centralized LUMENFLOW_PATHS.MEMORY_SIGNALS and LUMENFLOW_PATHS.WU_EVENTS
+// WU-1539/WU-1548: Use centralized LUMENFLOW_PATHS.MEMORY_SIGNALS and LUMENFLOW_PATHS.WU_EVENTS
 
 /**
  * Backlog file path (WU-1301: uses config-based paths)

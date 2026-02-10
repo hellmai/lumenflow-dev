@@ -46,7 +46,7 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 /**
  * Import centralized path constants (WU-1430)
  */
-import { LUMENFLOW_PATHS } from './wu-constants.js';
+import { LUMENFLOW_PATHS, WU_STATUS, type NodeFsError } from './wu-constants.js';
 
 /**
  * Default event archival configuration
@@ -121,12 +121,7 @@ export interface ArchiveWuEventsResult {
   breakdown: ArchivalBreakdown;
 }
 
-/**
- * Node.js file system error with code
- */
-interface NodeFsError extends Error {
-  code?: string;
-}
+// NodeFsError imported from wu-constants.ts (WU-1548: consolidated)
 
 /**
  * Parse an archiveAfter duration string into milliseconds.
@@ -280,7 +275,7 @@ async function getActiveWuIdsFromStore(baseDir: string): Promise<Set<string>> {
   const store = new WUStateStore(path.join(baseDir, LUMENFLOW_PATHS.STATE_DIR));
   await store.load();
 
-  const activeStatuses = ['in_progress', 'blocked', 'waiting'];
+  const activeStatuses = [WU_STATUS.IN_PROGRESS, WU_STATUS.BLOCKED, 'waiting'];
   const activeIds = new Set<string>();
 
   for (const status of activeStatuses) {

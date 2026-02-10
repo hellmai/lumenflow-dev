@@ -54,7 +54,7 @@ import { runCLI } from './cli-entry-point.js';
  */
 const LOG_PREFIX = '[state:doctor]';
 
-// WU-1539: Use centralized LUMENFLOW_PATHS.MEMORY_SIGNALS and LUMENFLOW_PATHS.WU_EVENTS
+// WU-1539/WU-1548: Use centralized LUMENFLOW_PATHS.MEMORY_SIGNALS and LUMENFLOW_PATHS.WU_EVENTS
 
 /**
  * Tool name for audit logging

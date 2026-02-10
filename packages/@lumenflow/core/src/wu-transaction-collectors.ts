@@ -29,7 +29,7 @@ import { parseBacklogFrontmatter } from './backlog-parser.js';
 import { getSectionHeadingsWithDefaults } from './section-headings.js';
 import { todayISO } from './date-utils.js';
 import { createError, ErrorCodes } from './error-handler.js';
-import { STRING_LITERALS } from './wu-constants.js';
+import { STRING_LITERALS, WU_STATUS } from './wu-constants.js';
 // WU-1145, WU-1319: Import concurrent merge utilities
 import {
   computeBacklogContentWithMainMerge,
@@ -48,7 +48,7 @@ import {
  */
 export function computeWUYAMLContent(doc) {
   // Apply done state updates
-  doc.status = 'done';
+  doc.status = WU_STATUS.DONE;
   doc.locked = true;
   doc.completed_at = new Date().toISOString();
 

@@ -12,6 +12,20 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 
 /**
+ * WU-1548: Shared Node.js filesystem error interface.
+ *
+ * Consolidates duplicated NodeFsError definitions that existed across
+ * memory-store.ts, mem-triage-core.ts, mem-signal-core.ts, mem-ready-core.ts,
+ * signal-cleanup-core.ts, and wu-events-cleanup.ts.
+ *
+ * Use this interface when catching fs errors and checking the `code` property
+ * (e.g., 'ENOENT', 'EACCES', 'EPERM').
+ */
+export interface NodeFsError extends Error {
+  code?: string;
+}
+
+/**
  * File system constants
  *
  * WU-923: Centralized to eliminate hardcoded strings

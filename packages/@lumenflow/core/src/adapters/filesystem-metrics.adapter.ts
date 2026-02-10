@@ -38,7 +38,7 @@ import {
   TIMELINE_WINDOW_HOURS,
   MAX_ALERTS_DISPLAY,
 } from '../domain/orchestration.constants.js';
-import { FILE_SYSTEM } from '../wu-constants.js';
+import { FILE_SYSTEM, WU_STATUS } from '../wu-constants.js';
 
 import { scanWorktrees } from '../worktree-scanner.js';
 
@@ -80,8 +80,8 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
         this.readStamps(),
       ]);
 
-      const activeWUsList = activeWUs.filter((wu) => wu.status === 'in_progress');
-      const blockedWUs = activeWUs.filter((wu) => wu.status === 'blocked');
+      const activeWUsList = activeWUs.filter((wu) => wu.status === WU_STATUS.IN_PROGRESS);
+      const blockedWUs = activeWUs.filter((wu) => wu.status === WU_STATUS.BLOCKED);
 
       // Count completed WUs in last 24 hours
       const twentyFourHoursAgo = subHours(new Date(), TIMELINE_WINDOW_HOURS);
@@ -251,7 +251,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
     try {
       const allWUs = await this.readAllWUs();
       const activeWUs = allWUs.filter(
-        (wu) => wu.status === 'in_progress' || wu.status === 'blocked',
+        (wu) => wu.status === WU_STATUS.IN_PROGRESS || wu.status === WU_STATUS.BLOCKED,
       );
 
       const progress: WUProgress[] = [];
@@ -335,7 +335,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
 
     try {
       const allWUs = await this.readAllWUs();
-      const activeWUs = allWUs.filter((wu) => wu.status === 'in_progress');
+      const activeWUs = allWUs.filter((wu) => wu.status === WU_STATUS.IN_PROGRESS);
 
       // HIGH: Mandatory agents not invoked
       for (const wu of activeWUs) {
@@ -385,7 +385,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
       }
 
       // LOW: Available lanes with ready WUs
-      const readyWUs = allWUs.filter((wu) => wu.status === 'ready');
+      const readyWUs = allWUs.filter((wu) => wu.status === WU_STATUS.READY);
       const readyByLane = new Map<string, number>();
 
       for (const wu of readyWUs) {
@@ -548,7 +548,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
       .filter(([, status]) => status === 'pending')
       .map(([agent]) => agent);
 
-    if (wu.status === 'blocked') {
+    if (wu.status === WU_STATUS.BLOCKED) {
       return `Blocked: ${wu.blocked_reason ?? 'Unknown reason'}`;
     }
 

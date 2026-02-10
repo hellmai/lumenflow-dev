@@ -981,7 +981,7 @@ function parseBacklogSections(content, id) {
       continue;
     }
     if (line.trim() === '## 🔧 In progress') {
-      currentSection = 'in_progress';
+      currentSection = WU_STATUS.IN_PROGRESS;
       continue;
     }
     if (line.trim().startsWith('## ')) {
@@ -991,7 +991,7 @@ function parseBacklogSections(content, id) {
 
     if (line.includes(exactPattern)) {
       if (currentSection === WU_STATUS.DONE) inDone = true;
-      if (currentSection === 'in_progress') inProgress = true;
+      if (currentSection === WU_STATUS.IN_PROGRESS) inProgress = true;
     }
   }
 
@@ -1015,7 +1015,7 @@ function parseStatusSections(content, id) {
 
   for (const line of lines) {
     if (line.trim() === '## In Progress') {
-      currentSection = 'in_progress';
+      currentSection = WU_STATUS.IN_PROGRESS;
       continue;
     }
     if (line.trim().startsWith('## ')) {
@@ -1023,7 +1023,7 @@ function parseStatusSections(content, id) {
       continue;
     }
 
-    if (currentSection === 'in_progress' && line.includes(exactPattern)) {
+    if (currentSection === WU_STATUS.IN_PROGRESS && line.includes(exactPattern)) {
       inProgress = true;
     }
   }
