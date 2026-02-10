@@ -105,6 +105,7 @@ export function readIncidents(
         incidents.push(incident);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : String(err);
+        // eslint-disable-next-line no-console -- Agent infra uses stderr for diagnostics
         console.warn(`Skipping malformed incident in ${logFile}: ${errorMessage}`);
       }
     }
