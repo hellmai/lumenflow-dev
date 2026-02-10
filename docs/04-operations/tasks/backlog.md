@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1560 — INIT-020 YAML cleanup and WU-1534 notes correction](wu/WU-1560.yaml) — Content: Framework Docs
 - [WU-1559 — Add injection-focused tests for command execution surfaces](wu/WU-1559.yaml) — Framework: CLI Enforcement
 - [WU-1558 — Eliminate process.chdir from gates.ts](wu/WU-1558.yaml) — Framework: CLI WU Commands
 - [WU-1557 — Fix remaining process.exit calls in core library functions](wu/WU-1557.yaml) — Framework: Core Lifecycle
