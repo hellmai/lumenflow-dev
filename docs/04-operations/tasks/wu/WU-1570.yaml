@@ -2,7 +2,7 @@ id: WU-1570
 title: Avoid over-escaping underscores in backlog/status markdown
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -48,3 +48,6 @@ session_id: b2981a02-412d-48f5-b263-6447cfac81ac
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T13:52:09.997Z
+locked: true
+completed_at: 2026-02-10T13:55:55.109Z
+completed: 2026-02-10
