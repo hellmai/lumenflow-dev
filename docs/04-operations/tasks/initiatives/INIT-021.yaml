@@ -23,10 +23,14 @@ phases:
   - id: 4
     title: INIT-020 YAML cleanup and WU-1534 notes fix
     status: pending
+  - id: 5
+    title: Enforce --help-first rule for CLI commands via hook
+    status: pending
 success_metrics:
   - Zero process.exit() calls in core library functions (only at CLI entrypoint boundaries)
   - Zero process.chdir() calls in production CLI code
   - Injection-focused tests exist for deps-add, deps-remove, and trace-gen
   - INIT-020.yaml status is done with all phases marked done
+  - PreToolUse hook blocks LumenFlow CLI commands that have not had --help run in the current session
 labels: []
 related_plan: lumenflow://plans/polished-frolicking-minsky.md
