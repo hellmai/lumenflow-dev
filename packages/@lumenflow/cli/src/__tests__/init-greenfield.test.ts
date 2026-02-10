@@ -498,8 +498,8 @@ describe('greenfield onboarding (WU-1364)', () => {
         }
 
         const output = consoleLogs.join('\n');
-        // Should mention that enforcement hooks were installed
-        expect(output).toMatch(/enforcement hooks|hooks installed|integrate/i);
+        // AC#3: Next Steps must explicitly mention integrate command
+        expect(output).toContain('lumenflow:integrate');
       } finally {
         console.log = originalLog;
       }
