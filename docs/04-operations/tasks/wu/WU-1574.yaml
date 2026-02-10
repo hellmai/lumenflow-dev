@@ -2,7 +2,7 @@ id: WU-1574
 title: Establish strict-mode shared type foundations
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -13,7 +13,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-claim.ts
 tests:
   manual:
-    - pnpm --filter @lumenflow/core typecheck && pnpm --filter @lumenflow/cli typecheck with strict helper imports
+    - pnpm --filter @lumenflow/core typecheck && pnpm --filter @lumenflow/cli typecheck with strict
+      helper imports
   unit:
     - packages/@lumenflow/core/src/__tests__/error-handler.test.ts
     - packages/@lumenflow/core/src/__tests__/status-literal-guard.test.ts
@@ -35,10 +36,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: strict-error remediation currently repeats the same fixes (unknown error normalization, type guards, missing ambient typings) across many files. Problem: without shared foundations, strict migration WUs will duplicate logic, increase merge conflicts, and introduce inconsistent patterns. Solution: add shared strict utilities and type packages first, then make downstream WUs consume them consistently.'
+description: 'Context: strict-error remediation currently repeats the same fixes (unknown error
+  normalization, type guards, missing ambient typings) across many files. Problem: without shared
+  foundations, strict migration WUs will duplicate logic, increase merge conflicts, and introduce
+  inconsistent patterns. Solution: add shared strict utilities and type packages first, then make
+  downstream WUs consume them consistently.'
 acceptance:
-  - Shared unknown-error normalization utility exists and is consumed by at least one core and one cli strict hotspot
-  - Missing type packages for current strict blockers (for example ms or micromatch) are added with tests/typecheck validation
-  - Shared type guards/helpers for common strict migration patterns are added in library code, not duplicated ad hoc
+  - Shared unknown-error normalization utility exists and is consumed by at least one core and one
+    cli strict hotspot
+  - Missing type packages for current strict blockers (for example ms or micromatch) are added with
+    tests/typecheck validation
+  - Shared type guards/helpers for common strict migration patterns are added in library code, not
+    duplicated ad hoc
   - Documentation or code comments define expected usage of shared strict helpers
   - Foundation changes compile and are reusable by subsequent INIT-022 WUs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1574
+claimed_at: 2026-02-10T23:12:03.490Z
+baseline_main_sha: 8d7c6bbf57d002fcb0fd24d38da45e9779356230
+session_id: 99732769-0e1d-4892-acbf-d41c793f07d5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-10T23:12:03.494Z
