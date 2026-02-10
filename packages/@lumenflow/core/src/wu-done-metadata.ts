@@ -150,7 +150,8 @@ export async function updateMetadataFiles({ id, title, doc, wuPath, statusPath, 
   doc.status = WU_STATUS.DONE;
   doc.locked = true;
   doc.completed_at = new Date().toISOString();
-  doc.completed = normalizeToDateString(doc.completed ?? doc.completed_at) ?? doc.completed_at.slice(0, 10);
+  doc.completed =
+    normalizeToDateString(doc.completed ?? doc.completed_at) ?? doc.completed_at.slice(0, 10);
   writeWU(wuPath, doc);
 
   // Update status.md (remove from In Progress, add to Completed)

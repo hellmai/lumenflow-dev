@@ -27,4 +27,3 @@ describe('computeWUYAMLContent completion normalization', () => {
     expect(parsed.completed).toBe(String(parsed.completed_at).slice(0, 10));
   });
 });
-

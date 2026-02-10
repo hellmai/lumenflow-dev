@@ -229,8 +229,8 @@ export function validateSpecCompleteness(doc, _id) {
 function deriveStatusFromEventsContent(
   eventsContent: string,
   wuId: string,
-): typeof WU_STATUS[keyof typeof WU_STATUS] | undefined {
-  let status: typeof WU_STATUS[keyof typeof WU_STATUS] | undefined;
+): (typeof WU_STATUS)[keyof typeof WU_STATUS] | undefined {
+  let status: (typeof WU_STATUS)[keyof typeof WU_STATUS] | undefined;
 
   for (const line of eventsContent.split('\n')) {
     if (!line.trim()) continue;

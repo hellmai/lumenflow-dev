@@ -52,7 +52,8 @@ export function computeWUYAMLContent(doc) {
   doc.locked = true;
   doc.completed_at = new Date().toISOString();
   // Keep legacy completion date in sync for tooling that still reads `completed`.
-  doc.completed = normalizeToDateString(doc.completed ?? doc.completed_at) ?? doc.completed_at.slice(0, 10);
+  doc.completed =
+    normalizeToDateString(doc.completed ?? doc.completed_at) ?? doc.completed_at.slice(0, 10);
 
   // Serialize to YAML
   return stringifyYAML(doc);
