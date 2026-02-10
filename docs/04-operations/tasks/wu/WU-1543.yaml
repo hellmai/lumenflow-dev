@@ -2,7 +2,7 @@ id: WU-1543
 title: Re-enable security lint rules
 lane: 'Operations: Tooling'
 type: refactor
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-09
 code_paths:
@@ -51,3 +51,5 @@ session_id: 5a8af49b-f1b3-49c7-8377-c48dad33a7ea
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T23:37:24.910Z
+locked: true
+completed: 2026-02-10
