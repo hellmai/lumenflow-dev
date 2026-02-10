@@ -2,7 +2,7 @@ id: WU-1560
 title: INIT-020 YAML cleanup and WU-1534 notes correction
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-10
 code_paths:
@@ -43,3 +43,6 @@ session_id: ad33f293-fbb9-4028-8e71-6456d8ca2938
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-10T12:38:40.133Z
+locked: true
+completed_at: 2026-02-10T12:40:34.500Z
+completed: 2026-02-10
