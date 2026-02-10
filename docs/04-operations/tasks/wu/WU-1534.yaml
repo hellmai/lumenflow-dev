@@ -29,7 +29,8 @@ spec_refs:
 risks: []
 notes: |-
   Track A from enterprise hardening initiative.
-  Released (2026-02-09): No implementation work, releasing to work on WU-1535
+  Initial release happened during a re-claim cycle on 2026-02-09, but the final WU delivery completed implementation:
+  deps-add/deps-remove/trace-gen were migrated to argv-based execution with strict argument validation and injection hardening.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
