@@ -2,7 +2,7 @@ id: WU-1545
 title: Lock down dist imports and verify boundary
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-09
 code_paths:
@@ -54,3 +54,5 @@ session_id: cc01dbf5-c705-46bb-a813-2b7f2d534251
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-09T23:53:40.430Z
+locked: true
+completed: 2026-02-10
