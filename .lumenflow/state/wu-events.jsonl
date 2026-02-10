@@ -1099,4 +1099,5 @@
 {"type":"complete","wuId":"WU-1571","timestamp":"2026-02-10T13:57:46.318Z"}
 {"type":"claim","wuId":"WU-1572","timestamp":"2026-02-10T14:53:48.166Z","lane":"Framework: Core Lifecycle","title":"Auto-sync initiative phase/status during wu:done"}
 {"type":"complete","wuId":"WU-1572","timestamp":"2026-02-10T15:16:25.010Z"}
-{"type":"claim","wuId":"WU-1573","lane":"Operations: Tooling","title":"Build strict-mode progress tracking infrastructure","timestamp":"2026-02-10T16:43:42.366Z"}
+{"type":"claim","wuId":"WU-1573","timestamp":"2026-02-10T16:43:42.366Z","lane":"Operations: Tooling","title":"Build strict-mode progress tracking infrastructure"}
+{"type":"complete","wuId":"WU-1573","timestamp":"2026-02-10T16:56:56.789Z"}
