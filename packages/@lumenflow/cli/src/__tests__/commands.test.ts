@@ -26,7 +26,14 @@ const packageJsonPath = join(__dirname, '../../package.json');
 
 // Script commands that are NOT CLI binaries (pnpm scripts only)
 // These appear in the registry but should NOT be in the manifest
-const SCRIPT_COMMANDS = new Set(['format', 'lint', 'typecheck', 'test', 'setup', 'strict:progress']);
+const SCRIPT_COMMANDS = new Set([
+  'format',
+  'lint',
+  'typecheck',
+  'test',
+  'setup',
+  'strict:progress',
+]);
 
 describe('lumenflow commands', () => {
   describe('getCommandsRegistry', () => {

@@ -236,7 +236,9 @@ export function compareSnapshotToBaseline(
 
     if (!baselinePkg) {
       if (currentPkg.total_errors > 0) {
-        regressions.push(`${packageName} has ${currentPkg.total_errors} errors with no baseline entry`);
+        regressions.push(
+          `${packageName} has ${currentPkg.total_errors} errors with no baseline entry`,
+        );
       }
       continue;
     }

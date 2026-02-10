@@ -77,9 +77,9 @@ describe('strict-progress baseline comparison', () => {
     const comparison = compareSnapshotToBaseline(snapshot, baseline);
 
     expect(comparison.hasRegression).toBe(true);
-    expect(comparison.regressions.some((r) => r.includes('@lumenflow/core total errors increased'))).toBe(
-      true,
-    );
+    expect(
+      comparison.regressions.some((r) => r.includes('@lumenflow/core total errors increased')),
+    ).toBe(true);
   });
 
   it('does not report regressions when totals and per-file counts do not increase', () => {
@@ -130,7 +130,9 @@ describe('strict-progress baseline comparison', () => {
 
     expect(comparison.hasRegression).toBe(true);
     expect(
-      comparison.regressions.some((r) => r.includes('@lumenflow/new-package has 1 errors with no baseline entry')),
+      comparison.regressions.some((r) =>
+        r.includes('@lumenflow/new-package has 1 errors with no baseline entry'),
+      ),
     ).toBe(true);
   });
 });
