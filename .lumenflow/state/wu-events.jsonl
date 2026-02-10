@@ -1075,4 +1075,5 @@
 {"type":"complete","wuId":"WU-1565","timestamp":"2026-02-10T12:20:21.488Z"}
 {"type":"claim","wuId":"WU-1560","timestamp":"2026-02-10T12:38:40.169Z","lane":"Content: Framework Docs","title":"INIT-020 YAML cleanup and WU-1534 notes correction"}
 {"type":"complete","wuId":"WU-1560","timestamp":"2026-02-10T12:40:37.217Z"}
-{"type":"claim","wuId":"WU-1566","lane":"Framework: CLI WU Commands","title":"Fix consumer integration binary resolution regression","timestamp":"2026-02-10T12:42:22.893Z"}
+{"type":"claim","wuId":"WU-1566","timestamp":"2026-02-10T12:42:22.893Z","lane":"Framework: CLI WU Commands","title":"Fix consumer integration binary resolution regression"}
+{"type":"complete","wuId":"WU-1566","timestamp":"2026-02-10T12:47:07.884Z"}
