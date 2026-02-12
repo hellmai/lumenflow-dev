@@ -1,18 +1,19 @@
 /**
  * @file cloud-detect.test.ts
- * @description Tests for cloud auto-detection core logic
+ * @description Tests for cloud activation and branch-aware guard logic
  *
- * WU-1495: Config-driven cloud auto-detection core
+ * WU-1495: Config-driven cloud detection core
+ * WU-1610: explicit-only cloud activation
  *
  * Acceptance Criteria:
  * AC1: Config schema includes cloud.auto_detect (default false) and cloud.env_signals ({name, equals?}[]).
  * AC2: Detection precedence enforces explicit activation first: --cloud/LUMENFLOW_CLOUD=1 always wins.
- * AC3: Env-signal auto-detection runs only when cloud.auto_detect is true.
+ * AC3: env_signals do not activate cloud mode.
  * AC4: Core detection logic has no hardcoded vendor-specific environment signals.
  * AC5: wu:claim --cloud with LUMENFLOW_CLOUD=1 already set does not conflict or double-apply.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
   detectCloudMode,
   resolveEffectiveCloudActivation,
@@ -133,8 +134,8 @@ describe('WU-1495: Cloud auto-detection core', () => {
     });
   });
 
-  describe('AC3: Env-signal auto-detection runs only when auto_detect is true', () => {
-    it('should not run env-signal detection when auto_detect is false', () => {
+  describe('AC3: env_signals do not activate cloud mode', () => {
+    it('should not activate cloud from env signals when auto_detect is false', () => {
       const input: CloudDetectInput = {
         cloudFlag: false,
         env: { [ENV_CI]: CLOUD_VALUE_TRUE },
@@ -150,7 +151,7 @@ describe('WU-1495: Cloud auto-detection core', () => {
       expect(result.source).toBeUndefined();
     });
 
-    it('should detect cloud via env signal when auto_detect is true and signal matches', () => {
+    it('should not activate cloud from env signals even when auto_detect is true', () => {
       const input: CloudDetectInput = {
         cloudFlag: false,
         env: { [ENV_CI]: CLOUD_VALUE_TRUE },
@@ -162,27 +163,12 @@ describe('WU-1495: Cloud auto-detection core', () => {
 
       const result = detectCloudMode(input);
 
-      expect(result.isCloud).toBe(true);
-      expect(result.source).toBe(CLOUD_ACTIVATION_SOURCE.ENV_SIGNAL);
-      expect(result.matchedSignal).toBe(ENV_CI);
-    });
-
-    it('should not detect cloud when auto_detect is true but no signals match', () => {
-      const input: CloudDetectInput = {
-        cloudFlag: false,
-        env: {},
-        config: {
-          auto_detect: true,
-          env_signals: [{ name: ENV_CI }],
-        },
-      };
-
-      const result = detectCloudMode(input);
-
       expect(result.isCloud).toBe(false);
+      expect(result.source).toBeUndefined();
+      expect(result.matchedSignal).toBeUndefined();
     });
 
-    it('should match env signal by name only (presence check)', () => {
+    it('should not activate cloud from env signal presence checks', () => {
       const input: CloudDetectInput = {
         cloudFlag: false,
         env: { [ENV_GITHUB_ACTIONS]: 'true' },
@@ -194,11 +180,10 @@ describe('WU-1495: Cloud auto-detection core', () => {
 
       const result = detectCloudMode(input);
 
-      expect(result.isCloud).toBe(true);
-      expect(result.matchedSignal).toBe(ENV_GITHUB_ACTIONS);
+      expect(result.isCloud).toBe(false);
     });
 
-    it('should match env signal with equals constraint', () => {
+    it('should not activate cloud from env signal equals matches', () => {
       const input: CloudDetectInput = {
         cloudFlag: false,
         env: { [ENV_CI]: 'true' },
@@ -210,26 +195,10 @@ describe('WU-1495: Cloud auto-detection core', () => {
 
       const result = detectCloudMode(input);
 
-      expect(result.isCloud).toBe(true);
-      expect(result.matchedSignal).toBe(ENV_CI);
-    });
-
-    it('should not match env signal when equals constraint does not match', () => {
-      const input: CloudDetectInput = {
-        cloudFlag: false,
-        env: { [ENV_CI]: 'false' },
-        config: {
-          auto_detect: true,
-          env_signals: [{ name: ENV_CI, equals: 'true' }],
-        },
-      };
-
-      const result = detectCloudMode(input);
-
       expect(result.isCloud).toBe(false);
     });
 
-    it('should match first matching signal from multiple configured signals', () => {
+    it('should not activate cloud from first match among multiple configured env signals', () => {
       const input: CloudDetectInput = {
         cloudFlag: false,
         env: { [ENV_CODEX]: CLOUD_VALUE_TRUE },
@@ -241,11 +210,10 @@ describe('WU-1495: Cloud auto-detection core', () => {
 
       const result = detectCloudMode(input);
 
-      expect(result.isCloud).toBe(true);
-      expect(result.matchedSignal).toBe(ENV_CODEX);
+      expect(result.isCloud).toBe(false);
     });
 
-    it('should return false when auto_detect is true but env_signals is empty', () => {
+    it('should remain false when auto_detect is true but env_signals is empty', () => {
       const input: CloudDetectInput = {
         cloudFlag: false,
         env: { [ENV_CI]: CLOUD_VALUE_TRUE },
@@ -280,7 +248,7 @@ describe('WU-1495: Cloud auto-detection core', () => {
       expect(result.isCloud).toBe(false);
     });
 
-    it('should only match user-configured env signals, not built-in ones', () => {
+    it('should ignore user-configured env signals for activation', () => {
       const customSignal = 'MY_CUSTOM_CLOUD_SIGNAL';
       const input: CloudDetectInput = {
         cloudFlag: false,
@@ -296,8 +264,8 @@ describe('WU-1495: Cloud auto-detection core', () => {
 
       const result = detectCloudMode(input);
 
-      expect(result.isCloud).toBe(true);
-      expect(result.matchedSignal).toBe(customSignal);
+      expect(result.isCloud).toBe(false);
+      expect(result.matchedSignal).toBeUndefined();
     });
   });
 
@@ -337,8 +305,8 @@ describe('WU-1495: Cloud auto-detection core', () => {
     });
   });
 
-  describe('WU-1592: CLAUDECODE signal support', () => {
-    it('detects cloud when CLAUDECODE=1 and signal requires exact match', () => {
+  describe('WU-1592/WU-1610: CLAUDECODE signal no longer activates cloud', () => {
+    it('does not activate cloud when CLAUDECODE=1 signal matches', () => {
       const input: CloudDetectInput = {
         cloudFlag: false,
         env: { CLAUDECODE: '1' },
@@ -350,9 +318,9 @@ describe('WU-1495: Cloud auto-detection core', () => {
 
       const result = detectCloudMode(input);
 
-      expect(result.isCloud).toBe(true);
-      expect(result.source).toBe(CLOUD_ACTIVATION_SOURCE.ENV_SIGNAL);
-      expect(result.matchedSignal).toBe('CLAUDECODE');
+      expect(result.isCloud).toBe(false);
+      expect(result.source).toBeUndefined();
+      expect(result.matchedSignal).toBeUndefined();
     });
   });
 
@@ -400,7 +368,7 @@ describe('WU-1495: Cloud auto-detection core', () => {
   });
 
   describe('WU-1609: Branch-aware effective cloud activation guard', () => {
-    it('suppresses env-signal cloud activation on main branch', () => {
+    it('does not suppress when env-signals no longer activate cloud on main branch', () => {
       const detection = detectCloudMode({
         cloudFlag: false,
         env: { [ENV_CI]: CLOUD_VALUE_TRUE },
@@ -416,31 +384,10 @@ describe('WU-1495: Cloud auto-detection core', () => {
       });
 
       expect(effective.isCloud).toBe(false);
-      expect(effective.suppressed).toBe(true);
-      expect(effective.blocked).toBe(false);
-      expect(effective.source).toBe(CLOUD_ACTIVATION_SOURCE.ENV_SIGNAL);
-      expect(effective.reason).toBe(CLOUD_EFFECTIVE_REASON.SUPPRESSED_ENV_SIGNAL_ON_PROTECTED);
-    });
-
-    it('allows env-signal cloud activation on non-main branches', () => {
-      const detection = detectCloudMode({
-        cloudFlag: false,
-        env: { [ENV_CI]: CLOUD_VALUE_TRUE },
-        config: {
-          auto_detect: true,
-          env_signals: [{ name: ENV_CI }],
-        },
-      });
-
-      const effective = resolveEffectiveCloudActivation({
-        detection,
-        currentBranch: BRANCH_FEATURE,
-      });
-
-      expect(effective.isCloud).toBe(true);
       expect(effective.suppressed).toBe(false);
       expect(effective.blocked).toBe(false);
-      expect(effective.source).toBe(CLOUD_ACTIVATION_SOURCE.ENV_SIGNAL);
+      expect(effective.source).toBeUndefined();
+      expect(effective.reason).toBeUndefined();
     });
 
     it('blocks explicit cloud activation on main branch', () => {
@@ -463,6 +410,52 @@ describe('WU-1495: Cloud auto-detection core', () => {
       expect(effective.suppressed).toBe(false);
       expect(effective.source).toBe(CLOUD_ACTIVATION_SOURCE.FLAG);
       expect(effective.reason).toBe(CLOUD_EFFECTIVE_REASON.BLOCKED_EXPLICIT_ON_PROTECTED);
+    });
+  });
+
+  describe('WU-1610: explicit-only cloud activation', () => {
+    it('does not activate cloud from env signal on non-main branches', () => {
+      const detection = detectCloudMode({
+        cloudFlag: false,
+        env: { [ENV_CI]: CLOUD_VALUE_TRUE, [ENV_CODEX]: CLOUD_VALUE_TRUE },
+        config: {
+          auto_detect: true,
+          env_signals: [{ name: ENV_CI }, { name: ENV_CODEX }],
+        },
+      });
+
+      const effective = resolveEffectiveCloudActivation({
+        detection,
+        currentBranch: BRANCH_FEATURE,
+      });
+
+      expect(detection.isCloud).toBe(false);
+      expect(effective.isCloud).toBe(false);
+      expect(effective.suppressed).toBe(false);
+      expect(effective.blocked).toBe(false);
+      expect(effective.reason).toBeUndefined();
+    });
+
+    it('does not activate cloud from env signal on main/master either', () => {
+      const detection = detectCloudMode({
+        cloudFlag: false,
+        env: { [ENV_CI]: CLOUD_VALUE_TRUE },
+        config: {
+          auto_detect: true,
+          env_signals: [{ name: ENV_CI }],
+        },
+      });
+
+      const effective = resolveEffectiveCloudActivation({
+        detection,
+        currentBranch: BRANCH_MAIN,
+      });
+
+      expect(detection.isCloud).toBe(false);
+      expect(effective.isCloud).toBe(false);
+      expect(effective.suppressed).toBe(false);
+      expect(effective.blocked).toBe(false);
+      expect(effective.reason).toBeUndefined();
     });
   });
 });

@@ -336,17 +336,21 @@ agents:
       preamble: true
       skillsDir: '.claude/skills'
 
-# WU-1495: Cloud auto-detection configuration
-# Controls opt-in cloud mode detection via environment signals.
-# Explicit activation (--cloud / LUMENFLOW_CLOUD=1) always takes precedence.
+# WU-1495/WU-1610: Cloud activation configuration
+# Cloud mode is explicit-only:
+#   - --cloud
+#   - LUMENFLOW_CLOUD=1
+# Runtime identity env vars (e.g., CLAUDECODE/CODEX/CI) do NOT activate cloud mode.
 cloud:
-  auto_detect: true
-  env_signals:
-    - name: CLAUDECODE
-      equals: '1'
-    - name: CODEX
-      equals: '1'
-    - name: CI
+  auto_detect: false
+  env_signals: []
+  # Optional runtime identity hints (non-activating):
+  # env_signals:
+  #   - name: CLAUDECODE
+  #     equals: '1'
+  #   - name: CODEX
+  #     equals: '1'
+  #   - name: CI
 
 # WU-1203: Memory layer configuration
 # Controls memory persistence, checkpoints, and sub-agent coordination signals
