@@ -4,7 +4,7 @@ title: Align wu:spawn semantics with delegation provenance
 description: Align command semantics, provenance recording, and enforcement so delegation tracking
   is accurate across clients and orchestration. Separate pure prompt generation from side-effectful
   delegation tracking, and evolve provenance from intent-only to intent-plus-pickup evidence.
-status: draft
+status: open
 priority: P0
 owner: 'Framework: CLI'
 created: 2026-02-12
