@@ -35,7 +35,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1590 — Cloud Lifecycle: create, claim, prep, done, cleanup in branch-pr](wu/WU-1590.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -572,4 +572,5 @@ sections:
 - [WU-1594 — Sync backlog lane display after wu:edit lane changes](wu/WU-1594.yaml)
 - [WU-1589 — Cloud Foundation: claimed_branch schema, resolver, hook](wu/WU-1589.yaml)
 - [WU-1595 — Harden WU-1589 branch foundation edge cases and coverage](wu/WU-1595.yaml)
+- [WU-1590 — Cloud Lifecycle: create, claim, prep, done, cleanup in branch-pr](wu/WU-1590.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
