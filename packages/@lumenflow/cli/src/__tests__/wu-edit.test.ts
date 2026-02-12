@@ -6,7 +6,12 @@
  * across all array options.
  */
 import { describe, it, expect } from 'vitest';
-import { applyEdits, mergeStringField, validateDoneWUEdits } from '../wu-edit.js';
+import {
+  applyEdits,
+  getWuEditCommitFiles,
+  mergeStringField,
+  validateDoneWUEdits,
+} from '../wu-edit.js';
 
 describe('wu-edit applyEdits', () => {
   describe('WU-1225: code_paths append-by-default', () => {
@@ -154,5 +159,17 @@ describe('wu-edit mergeStringField', () => {
   it('returns new value if existing is undefined', () => {
     const result = mergeStringField(undefined, 'new', false);
     expect(result).toBe('new');
+  });
+});
+
+describe('WU-1594: backlog sync artifacts for wu:edit', () => {
+  it('includes backlog.md in commit files for lane/spec metadata sync', () => {
+    const files = getWuEditCommitFiles('WU-1594', [
+      'docs/04-operations/tasks/initiatives/INIT-023.yaml',
+    ]);
+
+    expect(files).toContain('docs/04-operations/tasks/wu/WU-1594.yaml');
+    expect(files).toContain('docs/04-operations/tasks/backlog.md');
+    expect(files).toContain('docs/04-operations/tasks/initiatives/INIT-023.yaml');
   });
 });
