@@ -7,7 +7,6 @@ priority: P2
 created: 2026-02-12
 code_paths:
   - .claude/hooks/track-agent-launch.sh
-  - .claude/hooks/pre-compact-checkpoint.sh
   - .claude/settings.json
 tests:
   manual:
