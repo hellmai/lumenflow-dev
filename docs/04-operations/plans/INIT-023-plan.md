@@ -59,7 +59,10 @@ Pattern B (Layer Split) in four dependent WUs:
 
 ## Risks
 
-<!-- What could go wrong? How will you mitigate? -->
+- Branch resolution regressions could route operations to incorrect branches.
+- Cloud claim conflict semantics may introduce coordination deadlocks if not explicit.
+- Mixed local/cloud workflows can regress if default behavior changes unintentionally.
+- Auto-detect rollout can cause accidental mode switching if enabled too early.
 
 ## Open Questions
 
