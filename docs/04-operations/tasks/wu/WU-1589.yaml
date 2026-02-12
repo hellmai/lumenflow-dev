@@ -28,6 +28,7 @@ initiative: INIT-023
 phase: 1
 spec_refs:
   - lumenflow://plans/zazzy-launching-pretzel.md
+  - lumenflow://plans/INIT-023-plan.md
 risks: []
 notes: Pattern B decomposition WU-A foundation slice. Establish shared metadata + resolver invariants used by downstream cloud lifecycle commands.
 requires_review: false
