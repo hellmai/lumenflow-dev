@@ -81,7 +81,13 @@ import { checkInitiativePhases, findInitiative } from '@lumenflow/initiatives';
 // WU-1590: Cloud create context builder for --cloud path
 import { buildCloudCreateContext } from './wu-create-cloud.js';
 // WU-1495: Cloud auto-detection from config-driven env signals
-import { detectCloudMode } from '@lumenflow/core/cloud-detect';
+import {
+  detectCloudMode,
+  resolveEffectiveCloudActivation,
+  CLOUD_ACTIVATION_SOURCE,
+  type CloudDetectConfig,
+  type EffectiveCloudActivationResult,
+} from '@lumenflow/core/cloud-detect';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[wu:create]';
@@ -114,6 +120,33 @@ function containsCodeFiles(codePaths: string[] | undefined): boolean {
 
 function hasAnyItems(value: unknown): boolean {
   return Array.isArray(value) && value.length > 0;
+}
+
+interface ResolveCreateCloudActivationInput {
+  cloudFlag: boolean;
+  env: Readonly<Record<string, string | undefined>>;
+  config: CloudDetectConfig;
+  currentBranch: string;
+}
+
+/**
+ * Resolve branch-aware cloud activation for wu:create.
+ *
+ * This keeps cloud detection source attribution while enforcing protected-branch
+ * guardrails (main/master).
+ */
+export function resolveCloudActivationForCreate(
+  input: ResolveCreateCloudActivationInput,
+): EffectiveCloudActivationResult {
+  const detection = detectCloudMode({
+    cloudFlag: input.cloudFlag,
+    env: input.env,
+    config: input.config,
+  });
+  return resolveEffectiveCloudActivation({
+    detection,
+    currentBranch: input.currentBranch,
+  });
 }
 
 /**
@@ -902,14 +935,35 @@ async function main() {
 
   // WU-1590: Build cloud create context for --cloud path
   const config = getConfig();
-  const cloudDetection = detectCloudMode({
+  const currentBranch = await getGitForCwd().getCurrentBranch();
+  const cloudEffective = resolveCloudActivationForCreate({
     cloudFlag: Boolean(args.cloud),
     env: process.env as Record<string, string | undefined>,
     config: config.cloud,
+    currentBranch,
   });
+  if (cloudEffective.blocked) {
+    const sourceHint =
+      cloudEffective.source === CLOUD_ACTIVATION_SOURCE.FLAG
+        ? '--cloud'
+        : 'LUMENFLOW_CLOUD=1';
+    die(
+      `${LOG_PREFIX} Cloud mode blocked on protected branch "${currentBranch}".\n\n` +
+        `Explicit cloud activation (${sourceHint}) is not allowed on main/master.\n` +
+        `Switch to a non-main branch for cloud mode, or run without cloud activation on main/master.`,
+    );
+  }
+  if (cloudEffective.suppressed) {
+    const signalSuffix = cloudEffective.matchedSignal
+      ? ` (signal: ${cloudEffective.matchedSignal})`
+      : '';
+    console.log(
+      `${LOG_PREFIX} Cloud auto-detection suppressed on protected branch "${currentBranch}"${signalSuffix}; continuing with standard flow.`,
+    );
+  }
   const cloudCtx = buildCloudCreateContext({
-    cloud: cloudDetection.isCloud,
-    currentBranch: cloudDetection.isCloud ? await getGitForCwd().getCurrentBranch() : 'main',
+    cloud: cloudEffective.isCloud,
+    currentBranch,
   });
   if (cloudCtx.isCloud) {
     console.log(`${LOG_PREFIX} Cloud mode: skipping ensureOnMain and micro-worktree isolation`);

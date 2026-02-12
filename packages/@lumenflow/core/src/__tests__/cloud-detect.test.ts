@@ -15,9 +15,10 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   detectCloudMode,
+  resolveEffectiveCloudActivation,
   type CloudDetectInput,
-  type CloudDetectResult,
   CLOUD_ACTIVATION_SOURCE,
+  CLOUD_EFFECTIVE_REASON,
 } from '../cloud-detect.js';
 
 // Test constants to avoid magic strings (sonarjs/no-duplicate-string)
@@ -27,6 +28,8 @@ const ENV_GITHUB_ACTIONS = 'GITHUB_ACTIONS';
 const ENV_CODEX = 'CODEX';
 const CLOUD_VALUE_TRUE = '1';
 const CLOUD_VALUE_FALSE = '0';
+const BRANCH_MAIN = 'main';
+const BRANCH_FEATURE = 'claude/feature-guard-test';
 
 describe('WU-1495: Cloud auto-detection core', () => {
   describe('AC2: Detection precedence - explicit activation always wins', () => {
@@ -393,6 +396,73 @@ describe('WU-1495: Cloud auto-detection core', () => {
 
       // Empty string is not considered "present"
       expect(result.isCloud).toBe(false);
+    });
+  });
+
+  describe('WU-1609: Branch-aware effective cloud activation guard', () => {
+    it('suppresses env-signal cloud activation on main branch', () => {
+      const detection = detectCloudMode({
+        cloudFlag: false,
+        env: { [ENV_CI]: CLOUD_VALUE_TRUE },
+        config: {
+          auto_detect: true,
+          env_signals: [{ name: ENV_CI }],
+        },
+      });
+
+      const effective = resolveEffectiveCloudActivation({
+        detection,
+        currentBranch: BRANCH_MAIN,
+      });
+
+      expect(effective.isCloud).toBe(false);
+      expect(effective.suppressed).toBe(true);
+      expect(effective.blocked).toBe(false);
+      expect(effective.source).toBe(CLOUD_ACTIVATION_SOURCE.ENV_SIGNAL);
+      expect(effective.reason).toBe(CLOUD_EFFECTIVE_REASON.SUPPRESSED_ENV_SIGNAL_ON_PROTECTED);
+    });
+
+    it('allows env-signal cloud activation on non-main branches', () => {
+      const detection = detectCloudMode({
+        cloudFlag: false,
+        env: { [ENV_CI]: CLOUD_VALUE_TRUE },
+        config: {
+          auto_detect: true,
+          env_signals: [{ name: ENV_CI }],
+        },
+      });
+
+      const effective = resolveEffectiveCloudActivation({
+        detection,
+        currentBranch: BRANCH_FEATURE,
+      });
+
+      expect(effective.isCloud).toBe(true);
+      expect(effective.suppressed).toBe(false);
+      expect(effective.blocked).toBe(false);
+      expect(effective.source).toBe(CLOUD_ACTIVATION_SOURCE.ENV_SIGNAL);
+    });
+
+    it('blocks explicit cloud activation on main branch', () => {
+      const detection = detectCloudMode({
+        cloudFlag: true,
+        env: {},
+        config: {
+          auto_detect: true,
+          env_signals: [{ name: ENV_CI }],
+        },
+      });
+
+      const effective = resolveEffectiveCloudActivation({
+        detection,
+        currentBranch: BRANCH_MAIN,
+      });
+
+      expect(effective.isCloud).toBe(false);
+      expect(effective.blocked).toBe(true);
+      expect(effective.suppressed).toBe(false);
+      expect(effective.source).toBe(CLOUD_ACTIVATION_SOURCE.FLAG);
+      expect(effective.reason).toBe(CLOUD_EFFECTIVE_REASON.BLOCKED_EXPLICIT_ON_PROTECTED);
     });
   });
 });

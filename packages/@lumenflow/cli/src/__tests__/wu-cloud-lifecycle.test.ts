@@ -14,6 +14,8 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CLAIMED_MODES } from '@lumenflow/core/wu-constants';
+import { resolveClaimMode } from '../wu-claim-mode.js';
+import { CLOUD_EFFECTIVE_REASON } from '@lumenflow/core/cloud-detect';
 
 afterEach(() => {
   vi.resetModules();
@@ -141,6 +143,52 @@ describe('wu:claim cloud canonical update strategy (WU-1598)', () => {
     });
 
     expect(shouldPersist).toBe(true);
+  });
+});
+
+describe('WU-1609: command cloud-path suppression on protected main/master', () => {
+  it('wu:create suppresses env-signal cloud on main and stays on standard path', async () => {
+    const { resolveCloudActivationForCreate } = await import('../wu-create.js');
+    const { buildCloudCreateContext } = await import('../wu-create-cloud.js');
+
+    const effective = resolveCloudActivationForCreate({
+      cloudFlag: false,
+      env: { CI: '1' },
+      config: {
+        auto_detect: true,
+        env_signals: [{ name: 'CI' }],
+      },
+      currentBranch: 'main',
+    });
+
+    expect(effective.isCloud).toBe(false);
+    expect(effective.suppressed).toBe(true);
+    expect(effective.reason).toBe(CLOUD_EFFECTIVE_REASON.SUPPRESSED_ENV_SIGNAL_ON_PROTECTED);
+
+    const createCtx = buildCloudCreateContext({ cloud: effective.isCloud, currentBranch: 'main' });
+    expect(createCtx.skipEnsureOnMain).toBe(false);
+    expect(createCtx.skipMicroWorktree).toBe(false);
+  });
+
+  it('wu:claim suppresses env-signal cloud on main and keeps non-cloud claimed mode', async () => {
+    const { resolveCloudActivationForClaim } = await import('../wu-claim.js');
+
+    const effective = resolveCloudActivationForClaim({
+      cloudFlag: false,
+      env: { CI: '1' },
+      config: {
+        auto_detect: true,
+        env_signals: [{ name: 'CI' }],
+      },
+      currentBranch: 'main',
+    });
+
+    expect(effective.isCloud).toBe(false);
+    expect(effective.suppressed).toBe(true);
+    expect(effective.reason).toBe(CLOUD_EFFECTIVE_REASON.SUPPRESSED_ENV_SIGNAL_ON_PROTECTED);
+
+    const mode = resolveClaimMode({ cloud: effective.isCloud });
+    expect(mode.mode).toBe(CLAIMED_MODES.WORKTREE);
   });
 });
 
