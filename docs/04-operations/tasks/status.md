@@ -1,10 +1,10 @@
 # Work Unit Status
 
-_Last updated: 2026-02-10_
+_Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1593 — Fix plan command script wiring and expose plan CLI wrappers](wu/WU-1593.yaml)
 
 ## Completed
 
