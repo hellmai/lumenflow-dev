@@ -512,7 +512,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
         );
       });
 
-      it('should pass when spawn registry entry exists for initiative-governed WU', async () => {
+      it('should enforce pickup evidence when spawn entry is intent-only', async () => {
         process.chdir(tempDir);
         const registryPath = join(tempDir, '.lumenflow/state/spawn-registry.jsonl');
         writeFileSync(
@@ -522,7 +522,37 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
             parentWuId: 'WU-1500',
             targetWuId: TEST_WU_ID,
             lane: TEST_LANE,
+            intent: 'delegation',
             spawnedAt: new Date().toISOString(),
+            status: 'pending',
+            completedAt: null,
+          }) + '\n',
+          'utf-8',
+        );
+
+        await expect(
+          enforceSpawnProvenanceForDone(
+            TEST_WU_ID,
+            { initiative: 'INIT-023', lane: TEST_LANE },
+            { baseDir: tempDir, force: false },
+          ),
+        ).rejects.toThrow('Missing pickup evidence');
+      });
+
+      it('should pass when spawn registry entry includes pickup evidence for initiative-governed WU', async () => {
+        process.chdir(tempDir);
+        const registryPath = join(tempDir, '.lumenflow/state/spawn-registry.jsonl');
+        writeFileSync(
+          registryPath,
+          JSON.stringify({
+            id: 'spawn-a1b2',
+            parentWuId: 'WU-1500',
+            targetWuId: TEST_WU_ID,
+            lane: TEST_LANE,
+            intent: 'delegation',
+            spawnedAt: new Date().toISOString(),
+            pickedUpAt: new Date().toISOString(),
+            pickedUpBy: 'agent@test.com',
             status: 'pending',
             completedAt: null,
           }) + '\n',
@@ -550,7 +580,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
         const message = buildMissingSpawnProvenanceMessage(TEST_WU_ID, 'INIT-023');
         expect(message).toContain('Missing spawn provenance');
         expect(message).toContain('--force');
-        expect(message).toContain('wu:spawn');
+        expect(message).toContain('wu:delegate');
       });
     });
 

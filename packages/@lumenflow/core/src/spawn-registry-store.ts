@@ -248,6 +248,34 @@ export class SpawnRegistryStore {
   }
 
   /**
+   * Records claim-time pickup evidence for a spawn entry.
+   *
+   * WU-1605: This distinguishes intent-only delegation records from
+   * delegated work that was actually picked up via wu:claim.
+   *
+   * @param {string} spawnId - Spawn ID to update
+   * @param {string} pickedUpBy - Agent identity that claimed the target WU
+   * @param {string} [pickedUpAt] - Optional ISO timestamp (defaults to now)
+   * @returns {Promise<void>}
+   * @throws {Error} If spawn ID not found
+   */
+  async recordPickup(spawnId: string, pickedUpBy: string, pickedUpAt?: string): Promise<void> {
+    const existing = this.spawns.get(spawnId);
+    if (!existing) {
+      throw new Error(`Spawn ID ${spawnId} not found`);
+    }
+
+    const event: SpawnEvent = {
+      ...existing,
+      pickedUpBy,
+      pickedUpAt: pickedUpAt ?? new Date().toISOString(),
+    };
+
+    await this._appendEvent(event);
+    this._applyEvent(event);
+  }
+
+  /**
    * Gets all spawns for a parent WU.
    *
    * @param {string} parentWuId - Parent WU ID
