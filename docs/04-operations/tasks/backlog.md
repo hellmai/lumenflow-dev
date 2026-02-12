@@ -30,12 +30,11 @@ sections:
 - [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml) — Framework: Core Lifecycle
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
-- [WU-1598 — Resolve cloud canonical-claim behavior and harden cloud lifecycle coverage](wu/WU-1598.yaml) — Framework: CLI WU Commands
 - [WU-1599 — Make wu:spawn provenance auditable and enforceable for initiative execution](wu/WU-1599.yaml) — Framework: CLI Orchestration
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1598 — Resolve cloud canonical-claim behavior and harden cloud lifecycle coverage](wu/WU-1598.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 

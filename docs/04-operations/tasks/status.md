@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1598 — Resolve cloud canonical-claim behavior and harden cloud lifecycle coverage](wu/WU-1598.yaml)
 
 ## Completed
 

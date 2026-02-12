@@ -2,7 +2,7 @@ id: WU-1598
 title: Resolve cloud canonical-claim behavior and harden cloud lifecycle coverage
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -52,3 +52,11 @@ acceptance:
     branch modes.
   - Cloud lifecycle integration tests cover create/claim/prep/done/cleanup regressions relevant to
     branch-pr execution and canonical-claim behavior.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1598
+claimed_at: 2026-02-12T12:33:47.864Z
+baseline_main_sha: 7ecbd7658cd18caefa8c83376f4d0c35ecb0dbe9
+session_id: d649e5b9-9c7c-4a72-a2e8-8828fb2122d7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T12:33:47.870Z
