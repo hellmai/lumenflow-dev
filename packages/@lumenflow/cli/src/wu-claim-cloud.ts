@@ -77,3 +77,35 @@ export interface BranchExistsCheckInput {
 export function shouldSkipBranchExistsCheck(input: BranchExistsCheckInput): boolean {
   return input.isCloud;
 }
+
+export interface BranchClaimExecutionInput {
+  claimedMode: string;
+  isCloud: boolean;
+  currentBranch: string;
+  requestedBranch: string;
+}
+
+export interface BranchClaimExecution {
+  executionBranch: string;
+  shouldCreateBranch: boolean;
+}
+
+/**
+ * Resolve execution branch behavior for branch-only style claims.
+ *
+ * In cloud branch-pr mode, agents must stay on the current branch and avoid
+ * creating/switching to lane-derived branches.
+ */
+export function resolveBranchClaimExecution(input: BranchClaimExecutionInput): BranchClaimExecution {
+  if (input.claimedMode === CLAIMED_MODES.BRANCH_PR && input.isCloud) {
+    return {
+      executionBranch: input.currentBranch,
+      shouldCreateBranch: false,
+    };
+  }
+
+  return {
+    executionBranch: input.requestedBranch,
+    shouldCreateBranch: true,
+  };
+}

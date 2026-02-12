@@ -333,7 +333,7 @@ async function main() {
 
   // 3. Delete branch (local + remote)
   // WU-1590: Skip branch deletion for cloud-managed branches (claude/*, codex/*, etc.)
-  if (isCloudManagedBranch(laneBranch)) {
+  if (await isCloudManagedBranch(laneBranch)) {
     console.log(`[wu-cleanup] Skipping branch deletion: ${laneBranch} is cloud-managed`);
   } else {
     await deleteBranch(laneBranch);
