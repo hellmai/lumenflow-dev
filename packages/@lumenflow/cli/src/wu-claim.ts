@@ -220,18 +220,18 @@ interface ClaimBranchMetadataInput {
  * canonical state on main during claim; they commit claim metadata on their own branch.
  */
 export function shouldApplyCanonicalClaimUpdate(input: ClaimCanonicalUpdateInput): boolean {
-  if (Boolean(input.noPush)) {
+  if (input.noPush) {
     return false;
   }
 
-  return !(Boolean(input.isCloud) && input.claimedMode === CLAIMED_MODES.BRANCH_PR);
+  return !(input.isCloud && input.claimedMode === CLAIMED_MODES.BRANCH_PR);
 }
 
 /**
  * Decide whether wu:claim should write claim metadata directly to the active branch.
  */
 export function shouldPersistClaimMetadataOnBranch(input: ClaimBranchMetadataInput): boolean {
-  return Boolean(input.noPush) || input.claimedMode === CLAIMED_MODES.BRANCH_PR;
+  return input.noPush === true || input.claimedMode === CLAIMED_MODES.BRANCH_PR;
 }
 
 /**
