@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1613 — Document agent launch tracking hook in recovery pipeline docs](wu/WU-1613.yaml)
 
 ## Completed
 

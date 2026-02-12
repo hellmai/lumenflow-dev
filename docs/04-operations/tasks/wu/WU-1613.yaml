@@ -2,7 +2,7 @@ id: WU-1613
 title: Document agent launch tracking hook in recovery pipeline docs
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-12
 code_paths:
@@ -24,7 +24,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add documentation for the PostToolUse agent-launch tracking hook (WU-1612) to the recovery pipeline section of lumenflow-complete.md. Covers how the hook fits into the PreCompact/SessionStart recovery chain.
+description: Add documentation for the PostToolUse agent-launch tracking hook (WU-1612) to the
+  recovery pipeline section of lumenflow-complete.md. Covers how the hook fits into the
+  PreCompact/SessionStart recovery chain.
 acceptance:
   - Section 5.3 of lumenflow-complete.md updated with agent launch tracking description
-  - 'Describes the three-hook recovery pipeline: PostToolUse records, PreCompact captures, SessionStart surfaces'
+  - 'Describes the three-hook recovery pipeline: PostToolUse records, PreCompact captures,
+    SessionStart surfaces'
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-framework-docs-wu-1613
+claimed_at: 2026-02-12T15:55:25.306Z
+baseline_main_sha: 59ecd265cb7c1b81fd1086f27e7c4206fb5788da
+session_id: 387d215a-5f75-4ec2-854a-96743fc6ad34
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T15:55:25.312Z
