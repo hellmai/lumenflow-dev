@@ -67,6 +67,7 @@ vi.mock('@lumenflow/core/wu-constants', () => ({
   EXIT_CODES: { SUCCESS: 0, ERROR: 1 },
   MICRO_WORKTREE_OPERATIONS: { WU_DELETE: 'wu-delete' },
   LOG_PREFIX: { DELETE: '[wu:delete]' },
+  CLAIMED_MODES: { BRANCH_PR: 'branch-pr', BRANCH_ONLY: 'branch-only' },
   WU_STATUS: { IN_PROGRESS: 'in_progress' },
   LUMENFLOW_PATHS: { WU_EVENTS: '.lumenflow/state/wu-events.jsonl' },
 }));
