@@ -7,8 +7,6 @@ priority: P0
 created: 2026-02-12
 code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/cli/src/wu-spawn.ts
-  - packages/@lumenflow/core/src/spawn-registry-store.ts
   - packages/@lumenflow/cli/src/__tests__/agent-spawn-coordination.test.ts
 tests:
   manual:
@@ -28,10 +26,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-12T12:51:03.285Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1599
+session_id: d044627c-5295-4581-9bcd-de419a0cf595
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T12:51:03.290Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -49,11 +54,3 @@ acceptance:
   - Spawn-related tests are deterministic and validate both compliant and non-compliant completion
     paths.
   - Legacy/manual non-initiative workflows remain supported with documented behavior.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1599
-claimed_at: 2026-02-12T12:51:03.285Z
-baseline_main_sha: 314f63f58fec29470baa999d679773455eec9509
-session_id: d044627c-5295-4581-9bcd-de419a0cf595
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-12T12:51:03.290Z
