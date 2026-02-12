@@ -1,0 +1,151 @@
+---
+name: design-first
+description: 5-step design validation before implementation. Question requirements, delete unnecessary, simplify, speed up, automate last. Use BEFORE TDD, BEFORE writing any code.
+version: 1.0.0
+source: .claude/skills/design-first/SKILL.md
+last_updated: {{DATE}}
+allowed-tools: Read, Grep, Glob
+---
+
+# Design-First Skill (5-Step Algorithm)
+
+Before writing code, follow these 5 steps IN ORDER. The order matters—don't optimize something that shouldn't exist.
+
+## When to Use
+
+Activate this skill when:
+
+- Starting work on a feature WU
+- Creating an initiative plan
+- Designing a new component or system
+- Before loading tdd-workflow skill
+
+**Critical**: This skill comes BEFORE TDD. Question whether the feature should exist before writing the first failing test.
+
+## The 5 Steps
+
+### Step 1: Question the Requirements
+
+Before accepting any requirement, ask:
+
+| Question                          | If "No" Then...                  |
+| --------------------------------- | -------------------------------- |
+| Is the requirement specific?      | Get clarity before proceeding    |
+| Is this the real problem?         | Dig deeper into root cause       |
+| Would users actually want this?   | Validate with evidence           |
+| Does this already exist?          | Use existing feature/library     |
+| Who requested this? Right person? | Verify authority to define scope |
+
+**STOP if**: You cannot articulate the specific user problem being solved in 1-2 sentences.
+
+### Step 2: Try to Delete
+
+Before building anything:
+
+| Question                             | Action             |
+| ------------------------------------ | ------------------ |
+| Can we remove this feature entirely? | Try removing it    |
+| What would break without it?         | If nothing, cut it |
+| Is this "nice to have"?              | Cut for MVP        |
+| Are there unnecessary steps?         | Eliminate them     |
+
+**The 10% Rule**: You must consider at least 3 things for deletion. If you end up keeping everything, you weren't aggressive enough. If you don't have to put back at least 10% of what you deleted, you didn't delete enough.
+
+**Document**: What you considered deleting and why it was retained.
+
+### Step 3: Simplify / Optimize
+
+Only after Steps 1-2:
+
+- Can this use fewer abstractions?
+- Can this use existing patterns? (Check codebase first)
+- Can this use a library? (Load `/skill library-first`)
+- Is this the simplest solution that works?
+
+**Warning**: The most common mistake of smart engineers is optimizing something that should not exist.
+
+### Step 4: Speed Up
+
+Only after Step 3:
+
+- Are there performance bottlenecks?
+- Can caching help?
+- Is latency acceptable?
+
+**Skip if**: Feature doesn't have explicit performance requirements. Don't prematurely optimize.
+
+### Step 5: Automate
+
+Last step, never first:
+
+- Is the manual process proven to work?
+- Is the process stable enough to automate?
+- Will automation actually help users?
+
+**Warning**: Automating a bad process makes bad things happen faster.
+
+## Required Documentation
+
+Before implementation, document in WU notes or plan:
+
+```yaml
+design_validation:
+  step1_requirements:
+    problem: 'User cannot X because Y'
+    validated_by: 'User interview / data / assumption'
+  step2_deletion:
+    considered: ['Feature A', 'Component B', 'Step C']
+    removed: ['Component B']
+    retained_reason: 'Feature A needed for acceptance criteria'
+  step3_simplification:
+    approach: 'Using existing library X instead of custom code'
+    library_refs: ['zod', 'date-fns']
+  step4_speed: 'N/A - no performance requirements'
+  step5_automation: 'Manual first, will automate in future WU'
+```
+
+## Decision Tree
+
+```
+Starting a feature?
+├─ Can you articulate the user problem in 1-2 sentences?
+│   └─ NO → STOP. Clarify requirements first.
+│
+├─ Have you considered what to delete?
+│   └─ NO → STOP. List 3+ things to potentially cut.
+│
+├─ Is there a simpler approach?
+│   └─ MAYBE → Load /skill library-first, check for existing patterns
+│
+└─ All steps complete?
+    └─ YES → Proceed to /skill tdd-workflow
+```
+
+## Integration with Other Skills
+
+| Skill           | Relationship                                               |
+| --------------- | ---------------------------------------------------------- |
+| `library-first` | Step 3 — Use during Simplify phase                         |
+| `tdd-workflow`  | Comes AFTER design-first. Don't test what shouldn't exist. |
+| `code-quality`  | Step 3 — SOLID/DRY/KISS alignment                          |
+
+## Red Flags (Stop and Reconsider)
+
+- Writing code without answering Step 1 questions
+- Keeping everything you started with (Step 2 not applied)
+- Automating before manual process proven (Step 5 violation)
+- Optimizing before simplifying (Steps 3-4 order violation)
+- Building custom code when a library exists (Step 3 violation)
+
+## Anti-Patterns
+
+| Anti-Pattern                           | What to Do Instead                      |
+| -------------------------------------- | --------------------------------------- |
+| "We might need this later"             | YAGNI — delete it, add when needed      |
+| "Let me optimize this first"           | Simplify first, optimize after it works |
+| "I'll automate this from the start"    | Prove it manually, then automate        |
+| "The requirement says X, so I'll do X" | Question X first                        |
+
+---
+
+**Core Principle**: "The best code is no code. The best feature is no feature. Question everything before building anything."

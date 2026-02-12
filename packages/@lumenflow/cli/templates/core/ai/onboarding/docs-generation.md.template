@@ -28,7 +28,7 @@ import {
   DirectoriesSchema,
   GatesConfigSchema,
   // ... other schemas
-} from '@lumenflow/core';
+} from '../packages/@lumenflow/core/dist/index.js';
 ```
 
 **Benefits:**

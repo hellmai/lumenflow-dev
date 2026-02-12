@@ -114,14 +114,16 @@ When `requireRemote: true` (default):
 
 ## Core Principles
 
-1. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
-2. **Library-First**: Search existing libraries before custom code
-3. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
-4. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
-5. **Branch Safety**: NEVER edit files on main branch. Run `git branch --show-current` before edits.
-6. **Gates Before Done**: All gates must pass before `wu:done`
-7. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
-8. **Always wu:done**: Complete every WU by running `pnpm wu:done`
+1. **Design-First** (feature/refactor WUs): Load `/skill design-first` before implementation. Question requirements, delete unnecessary, simplify before optimizing
+2. **TDD**: Failing test -> implementation -> passing test (>=90% coverage on new code)
+3. **Library-First**: Search existing libraries before custom code
+4. **DRY/SOLID/KISS/YAGNI**: No magic numbers, no hardcoded strings
+5. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
+6. **Branch Safety**: NEVER edit files on main branch. Run `git branch --show-current` before edits.
+7. **Command Clarity**: If you are unsure about a command, run `<command> --help` first. Do not guess.
+8. **Gates Before Done**: All gates must pass before `wu:done`
+9. **Do Not Bypass Hooks**: No `--no-verify`, fix issues properly
+10. **Always wu:done**: Complete every WU by running `pnpm wu:done`
 
 ---
 
@@ -135,6 +137,16 @@ LumenFlow enforces safety at the repository level so protections apply to all ag
   - `.lumenflow/safety-blocks.log`
   - `.lumenflow/force-bypasses.log`
 
+**IMPORTANT**: All worktree management MUST use `wu:` commands (not raw git):
+
+- Create/claim worktrees: `pnpm wu:claim`
+- Complete and remove: `pnpm wu:done`
+- Clean stale worktrees: `pnpm wu:prune`
+- Fix inconsistent state: `pnpm wu:recover`
+- Release abandoned WUs: `pnpm wu:release`
+
+Never run `git worktree remove`, `git worktree prune`, or `git branch -D` on lane branches directly.
+
 ---
 
 ## Global State
@@ -147,6 +159,15 @@ Canonical global state is defined by:
 `wu:claim` updates canonical claim state on `origin/main` using a push-only micro-worktree, then
 creates the lane branch and pushes it by default for global visibility. Use `--no-push` only for
 air-gapped/offline work; it creates a local-only claim and warns explicitly.
+
+### Cloud Branch-PR Lifecycle
+
+For cloud agents (Codex/Claude web/CI) operating on feature branches:
+
+- `wu:create --cloud` writes WU specs on the active branch (no main checkout requirement)
+- `wu:claim --cloud` sets `claimed_mode: branch-pr` and persists `claimed_branch`
+- `wu:done` completes via PR flow; run `wu:cleanup` after merge for stamps/state cleanup
+- `wu:recover` and `wu:repair --admin` apply branch-pr fixes on the claimed branch (not `origin/main`)
 
 ---
 
@@ -329,8 +350,8 @@ Pre-configured agent definitions in `.claude/agents/`:
 | `code-reviewer`   | Quality checks             |
 | `bug-triage`      | Bug classification         |
 
-Generate handoff prompts: `pnpm wu:brief --id WU-XXX --client claude-code`
-Record delegation lineage: `pnpm wu:delegate --id WU-XXX --parent-wu WU-YYY --client claude-code`
+Generate handoff prompts (prompt-only, execution is a separate step): `pnpm wu:brief --id WU-XXX --client claude-code`
+Record explicit delegation lineage when needed: `pnpm wu:delegate --id WU-XXX --parent-wu WU-YYY --client claude-code`
 
 ---
 
