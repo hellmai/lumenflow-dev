@@ -560,6 +560,89 @@ async function checkInboxForRecentSignals(id, baseDir = process.cwd()) {
 }
 
 /**
+ * Returns true when completion should enforce spawn provenance.
+ * Initiative-linked WUs are expected to carry machine-verifiable spawn lineage.
+ */
+export function shouldEnforceSpawnProvenance(doc): boolean {
+  return typeof doc?.initiative === 'string' && doc.initiative.trim().length > 0;
+}
+
+/**
+ * Build actionable remediation guidance for missing spawn provenance.
+ */
+export function buildMissingSpawnProvenanceMessage(id, initiativeId): string {
+  return (
+    `Missing spawn provenance for initiative-governed WU ${id} (${initiativeId}).\n\n` +
+    `This completion path enforces auditable wu:spawn lineage for initiative work.\n\n` +
+    `Fix options:\n` +
+    `  1. Re-run with --force for an audited override (legacy/manual workflow)\n` +
+    `  2. Register spawn lineage before completion (preferred):\n` +
+    `     pnpm wu:spawn --id ${id} --parent-wu WU-XXXX --client codex-cli --codex\n\n` +
+    `Then retry: pnpm wu:done --id ${id}`
+  );
+}
+
+/**
+ * Record forced spawn-provenance bypass in memory signals for auditability.
+ */
+async function recordSpawnProvenanceOverride(id, doc, baseDir = process.cwd()): Promise<void> {
+  try {
+    const initiativeId = typeof doc?.initiative === 'string' ? doc.initiative.trim() : 'unknown';
+    const lane = typeof doc?.lane === 'string' ? doc.lane : undefined;
+    const result = await createSignal(baseDir, {
+      message: `spawn-provenance override used for ${id} in ${initiativeId} via --force`,
+      wuId: id,
+      lane,
+    });
+    if (result.success) {
+      console.log(
+        `${LOG_PREFIX.DONE} ${EMOJI.INFO} Spawn-provenance override recorded (${result.signal.id})`,
+      );
+    }
+  } catch (err) {
+    console.warn(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not record spawn-provenance override: ${getErrorMessage(err)}`,
+    );
+  }
+}
+
+/**
+ * Enforce spawn provenance policy for initiative-governed WUs before completion.
+ */
+export async function enforceSpawnProvenanceForDone(
+  id,
+  doc,
+  options: {
+    baseDir?: string;
+    force?: boolean;
+  } = {},
+): Promise<void> {
+  if (!shouldEnforceSpawnProvenance(doc)) {
+    return;
+  }
+
+  const initiativeId = doc.initiative.trim();
+  const baseDir = options.baseDir ?? process.cwd();
+  const force = options.force === true;
+  const store = new SpawnRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
+  await store.load();
+
+  const spawnEntry = store.getByTarget(id);
+  if (spawnEntry) {
+    return;
+  }
+
+  if (!force) {
+    die(buildMissingSpawnProvenanceMessage(id, initiativeId));
+  }
+
+  console.warn(
+    `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1599: spawn provenance override accepted for ${id} (${initiativeId}) via --force`,
+  );
+  await recordSpawnProvenanceOverride(id, doc, baseDir);
+}
+
+/**
  * WU-1946: Update spawn registry on WU completion.
  * Non-blocking wrapper - failures logged as warnings.
  *
@@ -2658,6 +2741,12 @@ async function main() {
   const title = preFlightResult.title;
   // Note: docForValidation is returned but not used after pre-flight checks
   // The metadata transaction uses docForUpdate instead
+
+  // WU-1599: Enforce auditable spawn provenance for initiative-governed WUs.
+  await enforceSpawnProvenanceForDone(id, docMain, {
+    baseDir: mainCheckoutPath,
+    force: Boolean(args.force),
+  });
 
   // Step 0: Run gates (WU-1215: extracted to executeGates function)
   const worktreePath = effectiveWorktreePath;
