@@ -4,7 +4,7 @@ title: God File Decomposition Initiative
 description: Complete mechanical decomposition of 10 high-churn god files into command- and
   domain-focused modules, using merge-conflict-prioritized split strategy (11 WUs, 3 phases, no new
   abstractions).
-status: draft
+status: in_progress
 priority: P1
 owner: Framework Team
 created: 2026-02-12
@@ -25,4 +25,3 @@ success_metrics:
   - No remaining target file exceeds 800 lines in decomposed scope (except explicit exceptions)
   - ' is updated and initiative-linked to its plan URI'
 labels: []
-related_plan: lumenflow://plans/optimized-sprouting-salamander.md
