@@ -1,7 +1,7 @@
 id: WU-1605
 title: Add claim-time pickup evidence and enforce intent-vs-pickup provenance at wu:done
 lane: 'Framework: CLI WU Commands'
-type: bug
+type: feature
 status: ready
 priority: P1
 created: 2026-02-12
@@ -15,7 +15,8 @@ code_paths:
   - packages/@lumenflow/mcp/src/tools.ts
 tests:
   manual:
-    - Execute delegated claim and completion scenarios and confirm policy outcomes for intent-only, pickup-confirmed, and override paths.
+    - Execute delegated claim and completion scenarios and confirm policy outcomes for intent-only,
+      pickup-confirmed, and override paths.
   unit:
     - packages/@lumenflow/cli/__tests__/wu-claim.test.ts
     - packages/@lumenflow/cli/__tests__/wu-done.test.ts
@@ -29,7 +30,8 @@ phase: 3
 blocked_by:
   - WU-1604
 risks: []
-notes: This WU closes the semantic gap between generated/recorded delegation intent and actual execution pickup.
+notes: This WU closes the semantic gap between generated/recorded delegation intent and actual
+  execution pickup.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -38,8 +40,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Current provenance can only prove delegation intent, not that an agent actually picked up delegated work. Add a claim-time handshake (e.g. delegated-by metadata) and evolve wu:done checks so completion policy can validate both intent and pickup evidence with auditable override behavior.
+description: Current provenance can only prove delegation intent, not that an agent actually picked
+  up delegated work. Add a claim-time handshake (e.g. delegated-by metadata) and evolve wu:done
+  checks so completion policy can validate both intent and pickup evidence with auditable override
+  behavior.
 acceptance:
   - wu:claim supports recording delegated pickup metadata tied to prior delegation intent.
-  - wu:done enforcement distinguishes intent-only records from confirmed pickup and reports actionable remediation.
-  - Automated tests cover success, missing-pickup, and audited override paths for initiative-governed WUs.
+  - wu:done enforcement distinguishes intent-only records from confirmed pickup and reports
+    actionable remediation.
+  - Automated tests cover success, missing-pickup, and audited override paths for
+    initiative-governed WUs.
