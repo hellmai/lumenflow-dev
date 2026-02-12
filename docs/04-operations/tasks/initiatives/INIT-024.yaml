@@ -1,0 +1,12 @@
+id: INIT-024
+slug: wu-brief-delegate-provenance-alignment
+title: Align wu:spawn semantics with delegation provenance
+description: ''
+status: draft
+priority: P0
+owner: 'Framework: CLI'
+created: 2026-02-12
+target_date: 2026-02-20
+phases: []
+success_metrics: []
+labels: []
