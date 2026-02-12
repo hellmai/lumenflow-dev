@@ -869,6 +869,25 @@ const METADATA_LIFECYCLE_PREFIXES = [
   '.lumenflow/archive/',
 ];
 
+const PROTECTED_MAIN_LIKE_BRANCHES = new Set([BRANCHES.MAIN, BRANCHES.MASTER]);
+
+export function isProtectedMainLikeBranch(branchName: string | null | undefined): boolean {
+  if (!branchName) {
+    return false;
+  }
+
+  return PROTECTED_MAIN_LIKE_BRANCHES.has(branchName.trim());
+}
+
+export function shouldAutoCommitLifecycleWrites(branchName: string | null | undefined): boolean {
+  if (!branchName || branchName.trim().length === 0) {
+    // Fail-safe: unknown branch should never trigger direct lifecycle commits.
+    return false;
+  }
+
+  return !isProtectedMainLikeBranch(branchName);
+}
+
 function parsePorcelainPath(line: string): string | null {
   if (line.length < 4) return null;
   const pathPart = line.slice(3).trim();
@@ -2930,11 +2949,13 @@ async function main() {
 
   // WU-1084: Check for uncommitted changes on main after merge
   // WU-1554: Pass metadataDir so metadata files are classified separately
+  const gitMain = getGitForCwd();
+  const currentBranch = await gitMain.getCurrentBranch();
+  const allowLifecycleAutoCommit = shouldAutoCommitLifecycleWrites(currentBranch);
   const metadataDir = path.dirname(STATUS_PATH);
-  const postMergeStatus = await getGitForCwd().getStatus();
+  const postMergeStatus = await gitMain.getStatus();
   const dirtyCheck = checkPostMergeDirtyState(postMergeStatus, id, metadataDir);
   if (dirtyCheck.internalOnlyFiles.length > 0) {
-    const gitMain = getGitForCwd();
     try {
       await gitMain.raw(['restore', '--', ...dirtyCheck.internalOnlyFiles]);
       console.log(
@@ -2949,23 +2970,44 @@ async function main() {
   // WU-1554: Auto-commit metadata files left dirty after merge+rebase
   // This handles push-only claim mode and concurrent agent advancement
   if (dirtyCheck.metadataFiles.length > 0) {
-    const gitMain = getGitForCwd();
-    try {
-      await gitMain.add(dirtyCheck.metadataFiles);
-      await gitMain.commit(`chore: post-merge metadata sync for ${id} [skip ci]`);
-      await gitMain.raw(['pull', '--rebase', '--autostash', 'origin', 'main']);
-      await gitMain.push('origin', 'main');
-      console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Auto-committed post-merge metadata: ${dirtyCheck.metadataFiles.join(', ')}`,
-      );
-    } catch (commitErr) {
-      console.warn(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not auto-commit metadata files: ${commitErr.message}`,
-      );
+    if (allowLifecycleAutoCommit) {
+      try {
+        await gitMain.add(dirtyCheck.metadataFiles);
+        await gitMain.commit(`chore: post-merge metadata sync for ${id} [skip ci]`);
+        await gitMain.raw(['pull', '--rebase', '--autostash', 'origin', currentBranch]);
+        await gitMain.push('origin', currentBranch);
+        console.log(
+          `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Auto-committed post-merge metadata: ${dirtyCheck.metadataFiles.join(', ')}`,
+        );
+      } catch (commitErr) {
+        console.warn(
+          `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not auto-commit metadata files: ${commitErr.message}`,
+        );
+      }
+    } else {
+      try {
+        await gitMain.raw(['restore', '--', ...dirtyCheck.metadataFiles]);
+        console.log(
+          `${LOG_PREFIX.DONE} ${EMOJI.INFO} Protected branch ${currentBranch}: restored lifecycle metadata files instead of committing on branch`,
+        );
+      } catch (restoreErr) {
+        console.warn(
+          `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not restore metadata lifecycle files on protected branch ${currentBranch}: ${restoreErr.message}`,
+        );
+      }
     }
   }
-  if (dirtyCheck.isDirty) {
-    die(dirtyCheck.error);
+  const postLifecycleStatus = await gitMain.getStatus();
+  const postLifecycleDirty = checkPostMergeDirtyState(postLifecycleStatus, id, metadataDir);
+  if (!allowLifecycleAutoCommit && postLifecycleDirty.metadataFiles.length > 0) {
+    die(
+      `Protected branch ${currentBranch} still has lifecycle metadata changes after wu:done:\n` +
+        `${postLifecycleDirty.metadataFiles.join(STRING_LITERALS.NEWLINE)}\n\n` +
+        `wu:done will not commit directly on ${currentBranch}. Resolve and retry from the WU worktree/lane branch.`,
+    );
+  }
+  if (postLifecycleDirty.isDirty) {
+    die(postLifecycleDirty.error);
   }
 
   // Step 6 & 7: Cleanup (remove worktree, delete branch) - WU-1215
@@ -3082,13 +3124,19 @@ async function main() {
   const codePaths = docMain.code_paths || [];
   await printMigrationDeploymentNudge(codePaths, mainCheckoutPath);
 
-  // WU-1366: Auto state cleanup after successful completion
-  // Non-fatal: errors are logged but do not block completion
-  await runAutoCleanupAfterDone(mainCheckoutPath);
+  if (allowLifecycleAutoCommit) {
+    // WU-1366: Auto state cleanup after successful completion
+    // Non-fatal: errors are logged but do not block completion
+    await runAutoCleanupAfterDone(mainCheckoutPath);
 
-  // WU-1533: Auto-commit any dirty state files left by cleanup
-  // Prevents leaving main checkout dirty after wu:done
-  await commitCleanupChanges();
+    // WU-1533: Auto-commit any dirty state files left by cleanup.
+    // Branch-aware: in branch-pr mode this stays on the lane branch.
+    await commitCleanupChanges({ targetBranch: currentBranch });
+  } else {
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-1611: Skipping auto-cleanup mutations on protected branch ${currentBranch}`,
+    );
+  }
 }
 
 /**

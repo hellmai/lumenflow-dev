@@ -4,6 +4,8 @@ import {
   checkPostMergeDirtyState,
   computeBranchOnlyFallback,
   getYamlStatusForDisplay,
+  isProtectedMainLikeBranch,
+  shouldAutoCommitLifecycleWrites,
 } from '../wu-done.js';
 import * as gitAdapter from '@lumenflow/core/git-adapter';
 import * as errorHandler from '@lumenflow/core/error-handler';
@@ -275,6 +277,26 @@ describe('wu-done', () => {
       const status = ' M .lumenflow/flow.log\n';
       const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
       expect(result.metadataFiles).toEqual([]);
+    });
+  });
+
+  describe('WU-1611: protected branch lifecycle write guard', () => {
+    it('treats main and master as protected', () => {
+      expect(isProtectedMainLikeBranch('main')).toBe(true);
+      expect(isProtectedMainLikeBranch('master')).toBe(true);
+    });
+
+    it('does not treat lane branches as protected', () => {
+      expect(isProtectedMainLikeBranch('lane/framework-cli/wu-1611')).toBe(false);
+    });
+
+    it('disables lifecycle auto-commit on protected branches', () => {
+      expect(shouldAutoCommitLifecycleWrites('main')).toBe(false);
+      expect(shouldAutoCommitLifecycleWrites('master')).toBe(false);
+    });
+
+    it('allows lifecycle auto-commit on non-protected branches', () => {
+      expect(shouldAutoCommitLifecycleWrites('lane/framework-cli/wu-1611')).toBe(true);
     });
   });
 });

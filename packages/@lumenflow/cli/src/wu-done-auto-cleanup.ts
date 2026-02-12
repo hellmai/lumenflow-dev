@@ -23,7 +23,7 @@ import fg from 'fast-glob';
 import { readFile } from 'node:fs/promises';
 import { parse as parseYaml } from 'yaml';
 import path from 'node:path';
-import { LOG_PREFIX, EMOJI, PROTECTED_WU_STATUSES } from '@lumenflow/core/wu-constants';
+import { LOG_PREFIX, EMOJI, PROTECTED_WU_STATUSES, BRANCHES } from '@lumenflow/core/wu-constants';
 
 /**
  * Get active WU IDs (in_progress or blocked) by scanning WU YAML files.
@@ -186,10 +186,17 @@ function getCleanupCommitMessage(): string {
  *
  * Non-fatal: errors are logged but never thrown.
  */
-export async function commitCleanupChanges(): Promise<void> {
+interface CommitCleanupChangesOptions {
+  targetBranch?: string;
+}
+
+export async function commitCleanupChanges(
+  options: CommitCleanupChangesOptions = {},
+): Promise<void> {
   try {
     const git = getGitForCwd();
     const status = await git.getStatus();
+    const targetBranch = options.targetBranch || BRANCHES.MAIN;
 
     if (!status) {
       return;
@@ -215,8 +222,8 @@ export async function commitCleanupChanges(): Promise<void> {
     // Stage only cleanup files, commit, pull --rebase, push
     await git.add(cleanupFiles);
     await git.commit(commitMessage);
-    await git.raw(['pull', '--rebase', '--autostash', 'origin', 'main']);
-    await git.push('origin', 'main');
+    await git.raw(['pull', '--rebase', '--autostash', 'origin', targetBranch]);
+    await git.push('origin', targetBranch);
 
     console.log(
       `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Committed cleanup changes: ${cleanupFiles.join(', ')}`,

@@ -448,5 +448,35 @@ describe('wu:done auto cleanup (WU-1366)', () => {
         '.lumenflow/archive/wu-events-2026-01.jsonl',
       ]);
     });
+
+    it('uses the provided target branch for pull/push operations', async () => {
+      const mockGetStatus = vi.fn().mockResolvedValue(' M .lumenflow/state/wu-events.jsonl');
+      const mockAdd = vi.fn().mockResolvedValue(undefined);
+      const mockCommit = vi.fn().mockResolvedValue(undefined);
+      const mockRaw = vi.fn().mockResolvedValue('');
+      const mockPush = vi.fn().mockResolvedValue(undefined);
+
+      vi.doMock('@lumenflow/core/git-adapter', () => ({
+        getGitForCwd: vi.fn().mockReturnValue({
+          getStatus: mockGetStatus,
+          add: mockAdd,
+          commit: mockCommit,
+          raw: mockRaw,
+          push: mockPush,
+        }),
+      }));
+
+      const { commitCleanupChanges } = await import('../wu-done-auto-cleanup.js');
+      await commitCleanupChanges({ targetBranch: 'lane/framework-cli/wu-1611' });
+
+      expect(mockRaw).toHaveBeenCalledWith([
+        'pull',
+        '--rebase',
+        '--autostash',
+        'origin',
+        'lane/framework-cli/wu-1611',
+      ]);
+      expect(mockPush).toHaveBeenCalledWith('origin', 'lane/framework-cli/wu-1611');
+    });
   });
 });
