@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-- [WU-1618 — Improve wu:edit scope preflight and replace-code-paths UX](wu/WU-1618.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -560,3 +560,4 @@ _Last updated: 2026-02-12_
 - [WU-1604 — Add wu:delegate for side-effectful lineage recording and orchestration integration](wu/WU-1604.yaml) — 2026-02-12
 - [WU-1617 — Remove wu:spawn alias and migrate command/docs to wu:brief + wu:delegate](wu/WU-1617.yaml) — 2026-02-12
 - [WU-1616 — Fix lifecycle schema command count expectation after wu:brief addition](wu/WU-1616.yaml) — 2026-02-12
+- [WU-1618 — Improve wu:edit scope preflight and replace-code-paths UX](wu/WU-1618.yaml) — 2026-02-12
