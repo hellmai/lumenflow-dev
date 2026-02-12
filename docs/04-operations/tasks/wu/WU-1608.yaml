@@ -7,7 +7,6 @@ priority: P1
 created: 2026-02-12
 code_paths:
   - packages/@lumenflow/cli/src/wu-spawn.ts
-  - packages/@lumenflow/cli/src/wu-brief.ts
   - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
   - packages/@lumenflow/mcp/src/tools.ts
 tests:
@@ -25,10 +24,17 @@ risks: []
 notes: Fix HIGH issues from WU-1603 code review. Must use TDD — write failing tests for prefix and
   equivalence BEFORE fixing implementation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-12T15:16:02.723Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1608
+session_id: b39031a6-4dc1-4c0c-b686-8980642d9731
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T15:16:02.727Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +48,3 @@ acceptance:
     prompt output
   - Behavioral test verifies deprecated:true emits warning and deprecated:false does not
   - MCP wu:brief tool uses its own error code, not WU_SPAWN_ERROR
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1608
-claimed_at: 2026-02-12T15:16:02.723Z
-baseline_main_sha: 1b2d4996b79b5a7931a482d420fc6e9d5ac9297f
-session_id: b39031a6-4dc1-4c0c-b686-8980642d9731
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-12T15:16:02.727Z
