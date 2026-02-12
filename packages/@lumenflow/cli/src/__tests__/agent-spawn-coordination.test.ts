@@ -28,6 +28,11 @@ import {
   generateParallelToolCallGuidance,
   generateCompletionFormat,
 } from '../wu-spawn.js';
+import {
+  buildMissingSpawnProvenanceMessage,
+  enforceSpawnProvenanceForDone,
+  shouldEnforceSpawnProvenance,
+} from '../wu-done.js';
 import { SpawnStrategyFactory } from '@lumenflow/core/spawn-strategy';
 import { createSignal, loadSignals } from '@lumenflow/memory';
 
@@ -474,6 +479,78 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
 
         const parsed = lines.map((line) => JSON.parse(line));
         expect(parsed.map((e) => e.targetWuId)).toEqual(['WU-001', 'WU-002', 'WU-003']);
+      });
+    });
+
+    describe('spawn provenance enforcement for completion (WU-1599)', () => {
+      it('should enforce provenance for initiative-governed WUs without --force', async () => {
+        process.chdir(tempDir);
+
+        await expect(
+          enforceSpawnProvenanceForDone(
+            TEST_WU_ID,
+            { initiative: 'INIT-023', lane: TEST_LANE },
+            { baseDir: tempDir, force: false },
+          ),
+        ).rejects.toThrow('Missing spawn provenance');
+      });
+
+      it('should allow legacy/manual override with --force and record audit signal', async () => {
+        process.chdir(tempDir);
+
+        await expect(
+          enforceSpawnProvenanceForDone(
+            TEST_WU_ID,
+            { initiative: 'INIT-023', lane: TEST_LANE },
+            { baseDir: tempDir, force: true },
+          ),
+        ).resolves.toBeUndefined();
+
+        const signals = await loadSignals(tempDir, { wuId: TEST_WU_ID });
+        expect(signals.some((signal) => signal.message.includes('spawn-provenance override'))).toBe(
+          true,
+        );
+      });
+
+      it('should pass when spawn registry entry exists for initiative-governed WU', async () => {
+        process.chdir(tempDir);
+        const registryPath = join(tempDir, '.lumenflow/state/spawn-registry.jsonl');
+        writeFileSync(
+          registryPath,
+          JSON.stringify({
+            id: 'spawn-a1b2',
+            parentWuId: 'WU-1500',
+            targetWuId: TEST_WU_ID,
+            lane: TEST_LANE,
+            spawnedAt: new Date().toISOString(),
+            status: 'pending',
+            completedAt: null,
+          }) + '\n',
+          'utf-8',
+        );
+
+        await expect(
+          enforceSpawnProvenanceForDone(
+            TEST_WU_ID,
+            { initiative: 'INIT-023', lane: TEST_LANE },
+            { baseDir: tempDir, force: false },
+          ),
+        ).resolves.toBeUndefined();
+      });
+
+      it('should not enforce provenance for non-initiative WUs', () => {
+        expect(shouldEnforceSpawnProvenance({ lane: TEST_LANE })).toBe(false);
+        expect(shouldEnforceSpawnProvenance({ initiative: '', lane: TEST_LANE })).toBe(false);
+        expect(shouldEnforceSpawnProvenance({ initiative: 'INIT-023', lane: TEST_LANE })).toBe(
+          true,
+        );
+      });
+
+      it('should provide actionable remediation guidance', () => {
+        const message = buildMissingSpawnProvenanceMessage(TEST_WU_ID, 'INIT-023');
+        expect(message).toContain('Missing spawn provenance');
+        expect(message).toContain('--force');
+        expect(message).toContain('wu:spawn');
       });
     });
 
