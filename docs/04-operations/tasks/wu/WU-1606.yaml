@@ -27,7 +27,14 @@ phase: 4
 blocked_by:
   - WU-1605
 risks: []
-notes: Final docs consolidation pass for INIT-024; must run after command/provenance implementation WUs complete.
+notes: >-
+  Final docs consolidation pass for INIT-024; must run after command/provenance implementation WUs
+  complete.
+
+
+  Execution note: WU-1602 and WU-1606 intentionally overlap on internal/Starlight docs. Execute
+  WU-1606 against the post-WU-1602 merged state and treat WU-1606 as final docs consolidation for
+  INIT-024.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
@@ -36,8 +43,11 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: After command and provenance changes land, update internal docs and Starlight references so the published and in-repo documentation matches actual CLI behavior, command names, and provenance semantics.
+description: After command and provenance changes land, update internal docs and Starlight
+  references so the published and in-repo documentation matches actual CLI behavior, command names,
+  and provenance semantics.
 acceptance:
-  - Internal docs (AGENTS.md, LUMENFLOW.md, onboarding guides) reflect final wu:brief/wu:spawn/wu:delegate behavior and provenance terminology.
+  - Internal docs (AGENTS.md, LUMENFLOW.md, onboarding guides) reflect final
+    wu:brief/wu:spawn/wu:delegate behavior and provenance terminology.
   - Starlight CLI docs and package README are regenerated/synced for command-surface changes.
   - Documentation drift check passes (docs:validate) with no pending generated-doc diffs.
