@@ -1,13 +1,13 @@
 # LumenFlow Constraints Capsule
 
-**Version:** 1.1
+**Version:** 1.2
 **Last updated:** {{DATE}}
 
-This document contains the 7 non-negotiable constraints that every agent must keep "in working memory" from first plan through `wu:done`.
+This document contains the 8 non-negotiable constraints that every agent must keep "in working memory" from first plan through `wu:done`.
 
 ---
 
-## The 7 Non-Negotiable Constraints
+## The 8 Non-Negotiable Constraints
 
 ### 1. Worktree Discipline and Git Safety
 
@@ -38,7 +38,13 @@ Before ANY Write/Edit/Read operation:
    - You may run **read-only** commands from main (e.g., `pnpm gates --docs-only`).
    - **All file writes still require a worktree**. If no worktree exists, claim one first.
 
-**Why:** Worktree isolation prevents cross-contamination between parallel WUs and protects the main branch.
+4. **Branch-PR exception (cloud agents)**:
+   - WUs claimed with `--cloud` (or `LUMENFLOW_CLOUD=1`) set `claimed_mode: branch-pr`.
+   - Branch-PR WUs work on the lane branch from the main checkout without a worktree.
+   - `wu:prep` and `wu:done` are valid from the main checkout when `claimed_mode` is `branch-pr`.
+   - This exception applies only to WUs with `claimed_mode: branch-pr` in their YAML; all other WUs must use worktrees.
+
+**Why:** Worktree isolation prevents cross-contamination between parallel WUs and protects the main branch. The branch-pr exception exists because cloud agents (Codex, Claude web, CI bots) cannot create local worktrees but still participate in lane-locked, PR-gated workflows.
 
 **NEVER "QUICK FIX" ON MAIN**
 
@@ -149,6 +155,27 @@ If you see something broken on main (failing gates, format issues, typos, lint e
    ```
 
 **Why:** Agents should not be blocked by unrelated failures. The ratchet ensures quality improves over time (failures can only be removed, never added without justification).
+
+---
+
+### 8. Lane-Fit Reasoning (WU-1496)
+
+**Rule:** Agents must evaluate lane fitness during WU and initiative scoping and propose lane changes when boundaries no longer fit scope.
+
+**Enforcement:**
+
+- Before claiming a WU, verify that the WU's `code_paths` align with the claimed lane's `code_paths` in `.lumenflow.config.yaml`
+- If a WU's scope expands beyond its lane's boundaries (e.g., a "Content: Documentation" WU that also modifies CLI code), propose a lane change or split the WU
+- During initiative planning, ensure each WU is assigned to the lane whose `code_paths` cover the majority of the work
+- Use `pnpm lane:suggest --paths "..."` to get lane recommendations for ambiguous scoping
+
+**When to propose a lane change:**
+
+- WU `code_paths` overlap with another lane's territory by more than 50%
+- The WU description implies work that does not match the lane's purpose
+- Initiative orchestration reveals a systematic mismatch between WU assignments and lane ownership
+
+**Why:** Lane boundaries define ownership, WIP limits, and parallel execution safety. Misassigned WUs undermine these guarantees and create coordination confusion.
 
 ---
 

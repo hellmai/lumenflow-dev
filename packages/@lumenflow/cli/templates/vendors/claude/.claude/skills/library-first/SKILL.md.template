@@ -90,6 +90,7 @@ library_decisions:
 
 ## Integration with Other Skills
 
+- **design-first**: Library-First is Step 3 (Simplify) of the 5-step algorithm
 - **tdd-workflow**: Library selection happens BEFORE writing tests
 - **code-quality**: Library-first prevents DRY violations
 

@@ -21,6 +21,8 @@ Activate this skill when:
 - Need to understand which layer code belongs in
 - Writing use cases with dependency injection
 
+**Prerequisite**: Load `/skill design-first` FIRST to question requirements and simplify before writing tests.
+
 **Use skill first**: Follow RED-GREEN-REFACTOR cycle and 5-step AI-TDD pattern.
 
 **Spawn test-engineer agent when**: Complex test scenarios require golden dataset creation, VCR cassette setup needed, or coverage gaps require investigation.

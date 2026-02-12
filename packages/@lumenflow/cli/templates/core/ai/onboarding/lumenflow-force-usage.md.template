@@ -38,7 +38,7 @@ Analysis of 347 logged bypass events shows:
 **Legitimate human operations:**
 
 ```
-{{DATE}}T14:08:55.172Z | pre-push | Tom | main | release v1.6.0 | {{PROJECT_ROOT}}
+{{DATE}}T14:08:55.172Z | pre-push | Tom | main | release v1.6.0 | <cwd>
 {{DATE}}T10:41:23.185Z | pre-push | Tom | main | Recovery: wu:done partially completed, merging remaining changes
 ```
 
