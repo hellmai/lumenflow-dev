@@ -1,7 +1,7 @@
 id: WU-1620
 title: Unblock docs-only gates by ignoring local Claude settings and formatting INIT-023 plan
 lane: 'Content: Framework Docs'
-type: documentation
+type: refactor
 status: in_progress
 priority: P1
 created: 2026-02-12
@@ -19,10 +19,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-12T19:31:55.483Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-1620
+session_id: 590d73ce-b3f9-4343-ba26-3c9233d44974
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T19:31:55.490Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -33,11 +40,3 @@ acceptance:
   - pnpm gates --docs-only passes from main
   - Prettier no longer checks .claude/settings.local.json
   - docs/04-operations/plans/INIT-023-plan.md is formatted
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-1620
-claimed_at: 2026-02-12T19:31:55.483Z
-baseline_main_sha: f9d697df4504f625809f1942472fd7e07b54f7ff
-session_id: 590d73ce-b3f9-4343-ba26-3c9233d44974
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-12T19:31:55.490Z
