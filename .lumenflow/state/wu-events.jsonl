@@ -1137,4 +1137,5 @@
 {"type":"complete","wuId":"WU-1598","timestamp":"2026-02-12T12:50:32.253Z"}
 {"type":"claim","wuId":"WU-1599","timestamp":"2026-02-12T12:51:03.322Z","lane":"Framework: CLI Orchestration","title":"Make wu:spawn provenance auditable and enforceable for initiative execution"}
 {"type":"complete","wuId":"WU-1599","timestamp":"2026-02-12T12:56:24.968Z"}
-{"type":"claim","wuId":"WU-1600","lane":"Framework: CLI WU Commands","title":"Remove wu-state-cloud fallback and use canonical CLAIMED_MODES","timestamp":"2026-02-12T13:14:32.003Z"}
+{"type":"claim","wuId":"WU-1600","timestamp":"2026-02-12T13:14:32.003Z","lane":"Framework: CLI WU Commands","title":"Remove wu-state-cloud fallback and use canonical CLAIMED_MODES"}
+{"type":"complete","wuId":"WU-1600","timestamp":"2026-02-12T13:22:29.219Z"}
