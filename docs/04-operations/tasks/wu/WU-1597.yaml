@@ -2,7 +2,7 @@ id: WU-1597
 title: Harden cleanup cloud branch protection fallback
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -50,3 +50,6 @@ acceptance:
   - Cleanup still protects centrally detected agent branches via isAgentBranch.
   - Unit tests for isCloudManagedBranch are deterministic and do not require network access.
   - Relevant cli tests and wu:prep pass.
+locked: true
+completed_at: 2026-02-12T12:09:58.699Z
+completed: 2026-02-12
