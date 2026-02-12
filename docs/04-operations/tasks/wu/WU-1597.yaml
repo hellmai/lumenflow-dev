@@ -2,7 +2,7 @@ id: WU-1597
 title: Harden cleanup cloud branch protection fallback
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
   - packages/@lumenflow/cli/__tests__/wu-cleanup.test.ts
 tests:
   manual:
-    - Simulate registry-unavailable path and confirm claude/* + codex/* are treated as cloud-managed and not deleted by cleanup.
+    - Simulate registry-unavailable path and confirm claude/* + codex/* are treated as cloud-managed
+      and not deleted by cleanup.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-cloud-lifecycle.test.ts
     - packages/@lumenflow/cli/__tests__/wu-cleanup.test.ts
@@ -32,9 +33,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1596 aligned cleanup branch protection with isAgentBranch but this introduced a fail-open path when registry patterns are unavailable. Problem: in degraded/offline conditions isAgentBranch falls back to narrow defaults and claude/codex branches may be treated as deletable. Solution: restore hardcoded fallback protection for primary cloud branch prefixes while retaining centralized isAgentBranch checks, and add deterministic tests that do not rely on network registry fetches.'
+description: 'Context: WU-1596 aligned cleanup branch protection with isAgentBranch but this
+  introduced a fail-open path when registry patterns are unavailable. Problem: in degraded/offline
+  conditions isAgentBranch falls back to narrow defaults and claude/codex branches may be treated as
+  deletable. Solution: restore hardcoded fallback protection for primary cloud branch prefixes while
+  retaining centralized isAgentBranch checks, and add deterministic tests that do not rely on
+  network registry fetches.'
 acceptance:
-  - Cloud cleanup continues to protect claude/* and codex/* even when agent pattern registry is unavailable.
+  - Cloud cleanup continues to protect claude/* and codex/* even when agent pattern registry is
+    unavailable.
   - Cleanup still protects centrally detected agent branches via isAgentBranch.
   - Unit tests for isCloudManagedBranch are deterministic and do not require network access.
   - Relevant cli tests and wu:prep pass.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1597
+claimed_at: 2026-02-12T12:04:12.123Z
+baseline_main_sha: b9cae9a37f1f06af83e406b295a1fedca3716ffd
+session_id: 3be122db-ed26-4481-a256-038251026625
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T12:04:12.129Z
