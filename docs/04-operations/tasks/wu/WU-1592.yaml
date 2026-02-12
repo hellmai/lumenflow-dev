@@ -1,0 +1,50 @@
+id: WU-1592
+title: Cloud Recovery, docs, and auto-detect rollout for branch-pr
+lane: 'Operations: Tooling'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-12
+code_paths:
+  - packages/@lumenflow/cli/src/wu-recover.ts
+  - packages/@lumenflow/cli/src/wu-repair.ts
+  - packages/@lumenflow/core/src/wu-repair-core.ts
+  - packages/@lumenflow/core/src/cloud-detect.ts
+  - .lumenflow.config.yaml
+  - AGENTS.md
+  - LUMENFLOW.md
+tests:
+  manual:
+    - Run recover/repair scenarios for branch-pr WUs and confirm no main-targeting writes occur.
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-recover.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-repair.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-repair-core.test.ts
+    - packages/@lumenflow/core/src/__tests__/cloud-detect.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1592.done
+dependencies: []
+initiative: INIT-023
+phase: 4
+blocked_by:
+  - WU-1590
+spec_refs:
+  - lumenflow://plans/zazzy-launching-pretzel.md
+risks: []
+notes: Pattern B decomposition WU-D recovery and rollout slice. Executes after critical lifecycle baseline (WU-1590) and can run alongside WU-1591.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Cloud branch-pr lifecycle completion requires recovery/admin tooling and documentation parity, plus an intentional rollout of cloud auto-detection. Problem: recover/repair still assume main-targeting paths, cloud workflow guidance is fragmented, and auto-detect activation can create regressions if enabled too early. Solution: add branch-pr-aware recover/repair flows, update authoritative docs, and roll out auto_detect signals only after lifecycle/state command stabilization.'
+acceptance:
+  - Add cloud branch-pr paths for wu:recover and wu:repair that commit state fixes on branch instead of main.
+  - Update AGENTS.md and LumenFlow operational docs with canonical cloud branch-pr lifecycle, including cleanup behavior.
+  - Enable cloud auto-detect with targeted signals only after WU-A through WU-C acceptance criteria are satisfied.
+  - Preserve explicit --cloud and LUMENFLOW_CLOUD behavior and avoid regressions in local workflows.
+  - Add/extend tests for recover/repair branch-pr behavior and cloud detect configuration handling.
