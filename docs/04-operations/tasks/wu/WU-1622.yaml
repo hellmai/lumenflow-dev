@@ -1,0 +1,35 @@
+id: WU-1622
+title: Fix lumenflow:upgrade push failure — missing ALLOWED_WU_TOOLS entry and stale node_modules
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-12
+code_paths:
+  - packages/@lumenflow/cli/src/lumenflow-upgrade.ts
+  - .husky/hooks/pre-push.mjs
+  - packages/@lumenflow/core/src/micro-worktree.ts
+tests:
+  manual:
+    - Run pnpm lumenflow:upgrade --latest --dry-run and verify lumenflow-upgrade appears in ALLOWED_WU_TOOLS
+  unit:
+    - packages/@lumenflow/cli/__tests__/pre-push-hook.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1622.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'lumenflow:upgrade uses micro-worktree to update packages but push fails because: (1) lumenflow-upgrade is not in ALLOWED_WU_TOOLS in pre-push hook, so the hook runs full validation instead of early-exiting, and (2) node_modules on main is stale after the lockfile merge since pnpm install is not run before pushing.'
+acceptance:
+  - lumenflow-upgrade is added to ALLOWED_WU_TOOLS in pre-push hook template
+  - lumenflow:upgrade runs pnpm install --frozen-lockfile on main after merge and before push
+  - Pre-push hook test covers lumenflow-upgrade tool value
