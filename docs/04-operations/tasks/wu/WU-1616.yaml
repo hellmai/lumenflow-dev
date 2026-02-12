@@ -7,7 +7,6 @@ priority: P2
 created: 2026-02-12
 code_paths:
   - packages/@lumenflow/core/src/__tests__/wu-lifecycle-schemas.test.ts
-  - packages/@lumenflow/core/src/schemas/wu-lifecycle-schemas.ts
 tests:
   manual:
     - Run pnpm --filter @lumenflow/core test and verify wu-lifecycle-schemas suite no longer fails
