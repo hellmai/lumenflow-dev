@@ -24,8 +24,11 @@ This directory contains agent definitions for Claude Code Task tool orchestratio
 ## Spawning Agents
 
 ```bash
-# Generate spawn prompt for a WU
-pnpm wu:spawn --id WU-XXX --client claude-code
+# Generate handoff prompt for a WU
+pnpm wu:brief --id WU-XXX --client claude-code
+
+# Generate prompt + record delegation lineage
+pnpm wu:delegate --id WU-XXX --parent-wu WU-YYY
 
 # Use Task tool with agent type
 # Task tool parameter: subagent_type: "lumenflow-pm"
@@ -97,4 +100,4 @@ All agents must load and verify against `.lumenflow/constraints.md` before start
 
 - `.claude/skills/` — Domain expertise and validation checklists
 - `.lumenflow.config.yaml` — Agent configuration
-- `pnpm wu:spawn` — Generate agent prompts
+- `pnpm wu:brief` / `pnpm wu:delegate` — Generate agent prompts

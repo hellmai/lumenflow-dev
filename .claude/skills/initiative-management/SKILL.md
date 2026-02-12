@@ -124,31 +124,31 @@ Initiatives often span multiple lanes. Key coordination patterns:
 2. **Parallel execution**: Multiple lanes work simultaneously on independent WUs
 3. **Integration points**: Final WU combines work from all lanes
 
-## Spawning Sub-Agents for Initiative WUs (MANDATORY)
+## Delegating Sub-Agents for Initiative WUs (MANDATORY)
 
-When orchestrating an initiative with multiple WUs, use `wu:spawn` to generate complete Task invocations:
+When orchestrating an initiative with multiple WUs, use `wu:brief` or `wu:delegate` to generate complete Task invocations:
 
 ```bash
 # For each WU being delegated to a sub-agent:
-pnpm wu:spawn --id WU-1501   # Generates Task invocation with full context
-pnpm wu:spawn --id WU-1502
-pnpm wu:spawn --id WU-1503
+pnpm wu:brief --id WU-1501 --client claude-code    # Prompt generation only
+pnpm wu:delegate --id WU-1502 --parent-wu WU-1500  # Prompt + lineage recording
+pnpm wu:delegate --id WU-1503 --parent-wu WU-1500
 ```
 
 ### Orchestration Pattern
 
-1. **Generate prompts**: Run `pnpm wu:spawn --id WU-XXX` for each WU
+1. **Generate prompts**: Run `pnpm wu:brief --id WU-XXX` (or `wu:delegate` for lineage) for each WU
 2. **Spawn in parallel**: Use Task tool with `run_in_background: true`
 3. **Monitor progress**: Use `pnpm mem:inbox --since 30m` (NOT TaskOutput - causes context explosion)
 4. **Synthesise**: Combine results from all sub-agents
 
-### What wu:spawn Provides
+### What wu:brief/wu:delegate Provides
 
 - Context loading preamble (LUMENFLOW.md, README, lumenflow-complete, WU YAML)
 - Full acceptance criteria from WU spec
 - Constraints block at end (per "Lost in the Middle" research)
 
-### When NOT to Use wu:spawn
+### When NOT to Use wu:brief/wu:delegate
 
 - Helper agents for the orchestrator's own WU (use inline context)
 - Validation agents checking orchestrator's work
