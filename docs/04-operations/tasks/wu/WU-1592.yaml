@@ -7,9 +7,7 @@ priority: P1
 created: 2026-02-12
 code_paths:
   - packages/@lumenflow/cli/src/wu-recover.ts
-  - packages/@lumenflow/cli/src/wu-repair.ts
   - packages/@lumenflow/core/src/wu-repair-core.ts
-  - packages/@lumenflow/core/src/cloud-detect.ts
   - .lumenflow.config.yaml
   - AGENTS.md
   - LUMENFLOW.md
