@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-- [WU-1599 — Make wu:spawn provenance auditable and enforceable for initiative execution](wu/WU-1599.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -543,3 +543,4 @@ _Last updated: 2026-02-12_
 - [WU-1596 — P0 hotfix: cloud branch-pr lifecycle blockers from INIT-023 review](wu/WU-1596.yaml) — 2026-02-12
 - [WU-1597 — Harden cleanup cloud branch protection fallback](wu/WU-1597.yaml) — 2026-02-12
 - [WU-1598 — Resolve cloud canonical-claim behavior and harden cloud lifecycle coverage](wu/WU-1598.yaml) — 2026-02-12
+- [WU-1599 — Make wu:spawn provenance auditable and enforceable for initiative execution](wu/WU-1599.yaml) — 2026-02-12
