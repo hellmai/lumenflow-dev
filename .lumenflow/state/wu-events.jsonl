@@ -1179,5 +1179,6 @@
 {"type":"complete","wuId":"WU-1605","timestamp":"2026-02-12T20:04:47.811Z"}
 {"type":"claim","wuId":"WU-1606","timestamp":"2026-02-12T20:05:13.671Z","lane":"Content: Site Comms","title":"Sync internal and Starlight docs for wu:brief/delegate provenance changes"}
 {"type":"complete","wuId":"WU-1606","timestamp":"2026-02-12T20:09:29.325Z"}
-{"type":"claim","wuId":"WU-1621","lane":"Framework: CLI Orchestration","title":"Harden initiative metadata writes against origin movement","timestamp":"2026-02-12T20:40:46.328Z"}
-{"type":"claim","wuId":"WU-1622","lane":"Framework: CLI WU Commands","title":"Fix lumenflow:upgrade push failure — missing ALLOWED_WU_TOOLS entry and stale node_modules","timestamp":"2026-02-12T20:49:29.855Z"}
+{"type":"claim","wuId":"WU-1621","timestamp":"2026-02-12T20:40:46.328Z","lane":"Framework: CLI Orchestration","title":"Harden initiative metadata writes against origin movement"}
+{"type":"claim","wuId":"WU-1622","timestamp":"2026-02-12T20:49:29.855Z","lane":"Framework: CLI WU Commands","title":"Fix lumenflow:upgrade push failure — missing ALLOWED_WU_TOOLS entry and stale node_modules"}
+{"type":"complete","wuId":"WU-1622","timestamp":"2026-02-12T20:56:06.907Z"}

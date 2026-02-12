@@ -34,7 +34,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1621 — Harden initiative metadata writes against origin movement](wu/WU-1621.yaml) — Framework: CLI Orchestration
-- [WU-1622 — Fix lumenflow:upgrade push failure — missing ALLOWED_WU_TOOLS entry and stale node_modules](wu/WU-1622.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -599,4 +598,5 @@ sections:
 - [WU-1620 — Unblock docs-only gates by ignoring local Claude settings and formatting INIT-023 plan](wu/WU-1620.yaml)
 - [WU-1605 — Add claim-time pickup evidence and enforce intent-vs-pickup provenance at wu:done](wu/WU-1605.yaml)
 - [WU-1606 — Sync internal and Starlight docs for wu:brief/delegate provenance changes](wu/WU-1606.yaml)
+- [WU-1622 — Fix lumenflow:upgrade push failure — missing ALLOWED_WU_TOOLS entry and stale node_modules](wu/WU-1622.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

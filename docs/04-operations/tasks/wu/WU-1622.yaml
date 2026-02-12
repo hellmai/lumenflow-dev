@@ -2,7 +2,7 @@ id: WU-1622
 title: Fix lumenflow:upgrade push failure — missing ALLOWED_WU_TOOLS entry and stale node_modules
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-12
 code_paths:
@@ -45,3 +45,6 @@ session_id: d2ba37ea-f829-45b1-b5de-38c41ae130e9
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T20:49:29.814Z
+locked: true
+completed_at: 2026-02-12T20:56:04.236Z
+completed: 2026-02-12
