@@ -2,7 +2,7 @@ id: WU-1602
 title: Align docs terminology from spawn execution to delegation intent
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -50,3 +50,6 @@ session_id: 7799e455-c26a-46ca-a64e-0f3b049445b0
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T14:05:38.299Z
+locked: true
+completed_at: 2026-02-12T14:08:23.367Z
+completed: 2026-02-12
