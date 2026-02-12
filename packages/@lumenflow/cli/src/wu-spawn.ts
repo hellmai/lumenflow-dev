@@ -1467,6 +1467,8 @@ interface SpawnOutputWithRegistryOptions {
   isCodexClient: boolean;
   parentWu?: string;
   lane?: string;
+  /** WU-1608: Log prefix to use instead of module-level default */
+  logPrefix?: string;
 }
 
 interface SpawnOutputWithRegistryDependencies {
@@ -1485,18 +1487,18 @@ export async function emitSpawnOutputWithRegistry(
   options: SpawnOutputWithRegistryOptions,
   dependencies: SpawnOutputWithRegistryDependencies = {},
 ): Promise<void> {
-  const { id, output, isCodexClient, parentWu, lane } = options;
+  const { id, output, isCodexClient, parentWu, lane, logPrefix: prefix = LOG_PREFIX } = options;
   const log = dependencies.log ?? console.log;
   const recordSpawn = dependencies.recordSpawn ?? recordSpawnToRegistry;
   const formatSpawnMessage = dependencies.formatSpawnMessage ?? formatSpawnRecordedMessage;
 
   if (isCodexClient) {
-    log(`${LOG_PREFIX} Generated Codex/GPT prompt for ${id}`);
-    log(`${LOG_PREFIX} Copy the Markdown below:\n`);
+    log(`${prefix} Generated Codex/GPT prompt for ${id}`);
+    log(`${prefix} Copy the Markdown below:\n`);
     log(output.trimEnd());
   } else {
-    log(`${LOG_PREFIX} Generated Task tool invocation for ${id}`);
-    log(`${LOG_PREFIX} Copy the block below to spawn a sub-agent:\n`);
+    log(`${prefix} Generated Task tool invocation for ${id}`);
+    log(`${prefix} Copy the block below to spawn a sub-agent:\n`);
     log(output);
   }
 
@@ -1756,6 +1758,7 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
       isCodexClient: true,
       parentWu: args.parentWu,
       lane: doc.lane,
+      logPrefix,
     });
     return;
   }
@@ -1777,6 +1780,7 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
     isCodexClient: false,
     parentWu: args.parentWu,
     lane: doc.lane,
+    logPrefix,
   });
 }
 
