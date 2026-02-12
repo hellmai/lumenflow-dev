@@ -1117,5 +1117,9 @@
 {"type":"complete","wuId":"WU-1574","timestamp":"2026-02-10T23:32:41.528Z"}
 {"type":"claim","wuId":"WU-1593","timestamp":"2026-02-12T09:06:55.733Z","lane":"Operations: Tooling","title":"Fix plan command script wiring and expose plan CLI wrappers"}
 {"type":"complete","wuId":"WU-1593","timestamp":"2026-02-12T09:11:59.266Z"}
+<<<<<<< HEAD
 {"type":"claim","wuId":"WU-1594","timestamp":"2026-02-12T09:20:11.230Z","lane":"Framework: CLI WU Commands","title":"Sync backlog lane display after wu:edit lane changes"}
 {"type":"complete","wuId":"WU-1594","timestamp":"2026-02-12T09:25:13.583Z"}
+=======
+{"type":"claim","wuId":"WU-1589","lane":"Framework: Core Lifecycle","title":"Cloud Foundation: claimed_branch schema, resolver, hook","timestamp":"2026-02-12T09:20:54.734Z"}
+>>>>>>> ddf7788a (wu(wu-1589): claim for framework-core-lifecycle lane)

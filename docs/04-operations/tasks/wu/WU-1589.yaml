@@ -2,7 +2,7 @@ id: WU-1589
 title: 'Cloud Foundation: claimed_branch schema, resolver, hook'
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -53,3 +53,11 @@ acceptance:
   - Ensure rollback/release/recover clear both claimed_mode and claimed_branch when resetting to
     ready.
   - Add/extend tests for schema, resolver precedence, and branch-pr hook behavior.
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-1589
+claimed_at: 2026-02-12T09:20:54.716Z
+baseline_main_sha: 588bb603074aaabbaaf65829f07ba48425c8b5bf
+session_id: d375483a-809f-47a1-80d6-491dafe78232
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T09:20:54.721Z
