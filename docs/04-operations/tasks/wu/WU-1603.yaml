@@ -15,6 +15,7 @@ code_paths:
   - packages/@lumenflow/core/src/schemas/wu-lifecycle-schemas.ts
   - packages/@lumenflow/core/src/schemas/wu-lifecycle-arg-validators.ts
   - packages/@lumenflow/core/src/schemas/index.ts
+  - package.json
 tests:
   manual:
     - Run wu:brief and wu:spawn for claude and codex clients and verify equivalent prompt output
