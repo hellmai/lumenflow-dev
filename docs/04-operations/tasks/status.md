@@ -5,6 +5,7 @@ _Last updated: 2026-02-12_
 ## In Progress
 
 - [WU-1608 — Fix wu:brief LOG_PREFIX leak and tautological tests](wu/WU-1608.yaml)
+- [WU-1610 — Follow-up: make cloud activation explicit-only and decouple runtime identity](wu/WU-1610.yaml)
 
 ## Completed
 
