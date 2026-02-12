@@ -5,6 +5,7 @@ _Last updated: 2026-02-12_
 ## In Progress
 
 - [WU-1608 — Fix wu:brief LOG_PREFIX leak and tautological tests](wu/WU-1608.yaml)
+- [WU-1611 — Prevent wu:done post-merge metadata leak from dirtying main](wu/WU-1611.yaml)
 
 ## Completed
 

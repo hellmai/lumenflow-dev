@@ -2,7 +2,7 @@ id: WU-1611
 title: Prevent wu:done post-merge metadata leak from dirtying main
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -28,8 +28,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:done can leave main dirty after completion when metadata files are modified post-merge. Problem: wu:done attempts an auto-commit of metadata files on main, but pre-commit blocks direct main commits, leaving files like .lumenflow/state/wu-events.jsonl dirty. Solution: remove direct-main auto-commit path and enforce clean-main restoration/error handling with targeted tests.'
+description: 'Context: wu:done can leave main dirty after completion when metadata files are
+  modified post-merge. Problem: wu:done attempts an auto-commit of metadata files on main, but
+  pre-commit blocks direct main commits, leaving files like .lumenflow/state/wu-events.jsonl dirty.
+  Solution: remove direct-main auto-commit path and enforce clean-main restoration/error handling
+  with targeted tests.'
 acceptance:
   - wu:done does not attempt a direct commit on main for post-merge metadata files
   - if metadata files are dirty post-merge, wu:done restores or fails without leaving main dirty
   - existing lifecycle behavior remains unchanged for non-metadata and internal files
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1611
+claimed_at: 2026-02-12T15:37:00.693Z
+baseline_main_sha: cc9695d4e23535251d628a7a22373d6a75b22e27
+session_id: c22b2f5c-09e5-4a8e-8f25-bd395adc9df0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T15:37:00.699Z
