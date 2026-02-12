@@ -19,6 +19,9 @@ phases:
   - id: 3
     title: Execution-proof provenance handshake
     status: pending
+  - id: 4
+    title: Docs and migration alignment
+    status: pending
 success_metrics:
   - Codex and Claude client modes both persist delegation lineage when requested (no early-return
     drop).
@@ -27,6 +30,8 @@ success_metrics:
     with prompt-only generation.
   - Completion enforcement can distinguish delegation intent from actual pickup evidence and
     supports audited overrides.
+  - Internal docs and Starlight references are updated and docs drift check passes after
+    command/provenance changes.
 labels: []
 lanes:
   - 'Framework: CLI Orchestration'
@@ -34,6 +39,7 @@ lanes:
   - 'Framework: Core State Recovery'
   - 'Framework: Initiatives'
   - 'Content: Framework Docs'
+  - 'Content: Site Comms'
 wus:
   - WU-1601
   - WU-1602
