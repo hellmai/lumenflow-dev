@@ -11,7 +11,7 @@ created: 2026-02-12
 phases:
   - id: 1
     title: WU-A Cloud Foundation (schema/resolver/hook)
-    status: pending
+    status: done
   - id: 2
     title: WU-B Cloud Lifecycle (create/claim/prep/done/cleanup)
     status: pending

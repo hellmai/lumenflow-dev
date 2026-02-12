@@ -30,7 +30,6 @@ sections:
 - [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml) — Framework: Core Lifecycle
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
-- [WU-1589 — Cloud Foundation: claimed_branch schema, resolver, hook](wu/WU-1589.yaml) — Framework: Core Lifecycle
 - [WU-1590 — Cloud Lifecycle: create, claim, prep, done, cleanup in branch-pr](wu/WU-1590.yaml) — Framework: CLI WU Commands
 - [WU-1591 — Cloud State Commands: branch-pr support for edit/block/unblock/release/delete](wu/WU-1591.yaml) — Framework: CLI WU Commands
 - [WU-1592 — Cloud Recovery, docs, and auto-detect rollout for branch-pr](wu/WU-1592.yaml) — Framework: Core State Recovery
@@ -572,4 +571,5 @@ sections:
 - [WU-1574 — Establish strict-mode shared type foundations](wu/WU-1574.yaml)
 - [WU-1593 — Fix plan command script wiring and expose plan CLI wrappers](wu/WU-1593.yaml)
 - [WU-1594 — Sync backlog lane display after wu:edit lane changes](wu/WU-1594.yaml)
+- [WU-1589 — Cloud Foundation: claimed_branch schema, resolver, hook](wu/WU-1589.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
