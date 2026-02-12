@@ -2,7 +2,7 @@ id: WU-1619
 title: Migrate remaining agent-facing docs from wu:spawn to wu:brief/wu:delegate
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -28,9 +28,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 35 stale wu:spawn references remain in agent-facing overlay and skill files. These mislead agents into using a command that no longer exists. Replace with wu:brief/wu:delegate across .claude/CLAUDE.md, .cursor/rules, .windsurf/rules, and .claude/skills/*.
+description: 35 stale wu:spawn references remain in agent-facing overlay and skill files. These
+  mislead agents into using a command that no longer exists. Replace with wu:brief/wu:delegate
+  across .claude/CLAUDE.md, .cursor/rules, .windsurf/rules, and .claude/skills/*.
 acceptance:
   - No wu:spawn command references in .claude/CLAUDE.md
   - No wu:spawn command references in .cursor/rules/lumenflow.md
   - No wu:spawn command references in .windsurf/rules/lumenflow.md
   - No wu:spawn command references in .claude/skills/ files or .claude/agents/README.md
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-1619
+claimed_at: 2026-02-12T19:19:42.208Z
+baseline_main_sha: bd37f3f16af16591faa52026acc43b9206fe1d7b
+session_id: 1f713175-5247-4154-a4d1-7baf0f054082
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T19:19:42.213Z

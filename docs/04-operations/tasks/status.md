@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1619 — Migrate remaining agent-facing docs from wu:spawn to wu:brief/wu:delegate](wu/WU-1619.yaml)
 
 ## Completed
 
