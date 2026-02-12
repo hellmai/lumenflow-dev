@@ -38,6 +38,7 @@ import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { WUStateStore } from '@lumenflow/core/wu-state-store';
 import { releaseLaneLock } from '@lumenflow/core/lane-lock';
+import { shouldUseBranchPrStatePath } from './wu-state-cloud.js';
 import { runCLI } from './cli-entry-point.js';
 
 const PREFIX = '[wu-release]';
@@ -50,6 +51,10 @@ const PREFIX = '[wu-release]';
 export function clearClaimMetadataOnRelease(doc: Record<string, unknown>): void {
   delete doc.claimed_mode;
   delete doc.claimed_branch;
+}
+
+export function shouldUseBranchPrReleasePath(doc: { claimed_mode?: string }): boolean {
+  return shouldUseBranchPrStatePath(doc);
 }
 
 async function main() {
@@ -68,8 +73,6 @@ async function main() {
     die('Reason is required for releasing a WU. Use --reason "..."');
   }
 
-  await ensureOnMain(getGitForCwd());
-
   // Read WU doc from main to validate state
   const mainWUPath = WU_PATHS.WU(id);
   let doc;
@@ -86,6 +89,11 @@ async function main() {
   }
   const title = doc.title || '';
   const lane = doc.lane || 'Unknown';
+  const branchPrPath = shouldUseBranchPrReleasePath(doc);
+
+  if (!branchPrPath) {
+    await ensureOnMain(getGitForCwd());
+  }
 
   // Validate current status is in_progress
   const currentStatus = doc.status || WU_STATUS.READY;
@@ -103,58 +111,100 @@ async function main() {
   const baseMsg = `wu(${id.toLowerCase()}): release`;
   const commitMsg = `${baseMsg} — ${args.reason}`;
 
-  // Use micro-worktree pattern to avoid pre-commit hook blocking commits to main
-  await withMicroWorktree({
-    operation: MICRO_WORKTREE_OPERATIONS.WU_BLOCK, // Reuse block operation type
-    id,
-    logPrefix: PREFIX,
-    pushOnly: true, // Push directly to origin/main without touching local main
-    execute: async ({ worktreePath }) => {
-      // Build paths relative to micro-worktree
-      const microWUPath = path.join(worktreePath, WU_PATHS.WU(id));
-      const microStatusPath = path.join(worktreePath, WU_PATHS.STATUS());
-      const microBacklogPath = path.join(worktreePath, WU_PATHS.BACKLOG());
+  if (branchPrPath) {
+    const currentBranch = await getGitForCwd().getCurrentBranch();
+    const claimedBranch = typeof doc.claimed_branch === 'string' ? doc.claimed_branch : '';
+    if (claimedBranch && currentBranch !== claimedBranch) {
+      die(
+        `Cannot release branch-pr WU ${id}: current branch does not match claimed_branch.\n\n` +
+          `Current branch: ${currentBranch}\n` +
+          `Claimed branch: ${claimedBranch}`,
+      );
+    }
 
-      // Update WU YAML in micro-worktree - set status back to ready
-      const microDoc = readWU(microWUPath, id);
-      microDoc.status = WU_STATUS.READY;
-      // WU-1595: Clear claim metadata when releasing back to ready.
-      clearClaimMetadataOnRelease(microDoc);
-      const noteLine = `Released (${todayISO()}): ${args.reason}`;
-      appendNote(microDoc, noteLine);
-      writeWU(microWUPath, microDoc);
+    doc.status = WU_STATUS.READY;
+    clearClaimMetadataOnRelease(doc);
+    const noteLine = `Released (${todayISO()}): ${args.reason}`;
+    appendNote(doc, noteLine);
+    writeWU(mainWUPath, doc);
 
-      // Append release event to WUStateStore
-      const stateDir = path.join(worktreePath, '.lumenflow', 'state');
-      const store = new WUStateStore(stateDir);
-      await store.load();
-      await store.release(id, args.reason);
+    const stateDir = path.join(process.cwd(), '.lumenflow', 'state');
+    const store = new WUStateStore(stateDir);
+    await store.load();
+    await store.release(id, args.reason);
 
-      // Generate backlog.md and status.md from state store
-      const backlogContent = await generateBacklog(store);
-      writeFileSync(microBacklogPath, backlogContent, {
-        encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
-      });
+    const backlogContent = await generateBacklog(store);
+    writeFileSync(WU_PATHS.BACKLOG(), backlogContent, {
+      encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+    });
 
-      const statusContent = await generateStatus(store);
-      writeFileSync(microStatusPath, statusContent, {
-        encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
-      });
+    const statusContent = await generateStatus(store);
+    writeFileSync(WU_PATHS.STATUS(), statusContent, {
+      encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+    });
 
-      return {
-        commitMessage: commitMsg,
-        files: [
-          WU_PATHS.WU(id),
-          WU_PATHS.STATUS(),
-          WU_PATHS.BACKLOG(),
-          '.lumenflow/state/wu-events.jsonl',
-        ],
-      };
-    },
-  });
+    await getGitForCwd().add([
+      WU_PATHS.WU(id),
+      WU_PATHS.STATUS(),
+      WU_PATHS.BACKLOG(),
+      '.lumenflow/state/wu-events.jsonl',
+    ]);
+    await getGitForCwd().commit(commitMsg);
+    await getGitForCwd().push(REMOTES.ORIGIN, currentBranch);
+  } else {
+    // Use micro-worktree pattern to avoid pre-commit hook blocking commits to main
+    await withMicroWorktree({
+      operation: MICRO_WORKTREE_OPERATIONS.WU_BLOCK, // Reuse block operation type
+      id,
+      logPrefix: PREFIX,
+      pushOnly: true, // Push directly to origin/main without touching local main
+      execute: async ({ worktreePath }) => {
+        // Build paths relative to micro-worktree
+        const microWUPath = path.join(worktreePath, WU_PATHS.WU(id));
+        const microStatusPath = path.join(worktreePath, WU_PATHS.STATUS());
+        const microBacklogPath = path.join(worktreePath, WU_PATHS.BACKLOG());
 
-  // Fetch to update local main tracking
-  await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+        // Update WU YAML in micro-worktree - set status back to ready
+        const microDoc = readWU(microWUPath, id);
+        microDoc.status = WU_STATUS.READY;
+        // WU-1595: Clear claim metadata when releasing back to ready.
+        clearClaimMetadataOnRelease(microDoc);
+        const noteLine = `Released (${todayISO()}): ${args.reason}`;
+        appendNote(microDoc, noteLine);
+        writeWU(microWUPath, microDoc);
+
+        // Append release event to WUStateStore
+        const stateDir = path.join(worktreePath, '.lumenflow', 'state');
+        const store = new WUStateStore(stateDir);
+        await store.load();
+        await store.release(id, args.reason);
+
+        // Generate backlog.md and status.md from state store
+        const backlogContent = await generateBacklog(store);
+        writeFileSync(microBacklogPath, backlogContent, {
+          encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+        });
+
+        const statusContent = await generateStatus(store);
+        writeFileSync(microStatusPath, statusContent, {
+          encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+        });
+
+        return {
+          commitMessage: commitMsg,
+          files: [
+            WU_PATHS.WU(id),
+            WU_PATHS.STATUS(),
+            WU_PATHS.BACKLOG(),
+            '.lumenflow/state/wu-events.jsonl',
+          ],
+        };
+      },
+    });
+
+    // Fetch to update local main tracking
+    await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+  }
 
   // Release lane lock so another WU can be claimed
   try {

@@ -47,6 +47,7 @@ import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { WUStateStore } from '@lumenflow/core/wu-state-store';
 // WU-1574: Import backlog generator to replace BacklogManager
 import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generator';
+import { shouldUseBranchPrStatePath } from './wu-state-cloud.js';
 import { runCLI } from './cli-entry-point.js';
 
 // ensureOnMain() moved to wu-helpers.ts (WU-1256)
@@ -59,6 +60,10 @@ const PREFIX = LOG_PREFIX.UNBLOCK;
 // All backlog/status updates now use WUStateStore + backlog generator
 
 // defaultBranchFrom() consolidated to wu-done-validators.ts (emergency fix)
+
+export function shouldUseBranchPrUnblockPath(doc: { claimed_mode?: string }): boolean {
+  return shouldUseBranchPrStatePath(doc);
+}
 
 function branchExists(branch) {
   try {
@@ -156,8 +161,6 @@ async function main() {
   const id = args.id.toUpperCase();
   if (!PATTERNS.WU_ID.test(id)) die(`Invalid WU id '${args.id}'. Expected format WU-123`);
 
-  await ensureOnMain(getGitForCwd());
-
   // Read WU doc from main to get title, lane, and validate state transition
   const mainWUPath = WU_PATHS.WU(id);
   let doc;
@@ -174,6 +177,11 @@ async function main() {
   }
   const title = doc.title || '';
   const lane = doc.lane || 'Unknown';
+  const branchPrPath = shouldUseBranchPrUnblockPath(doc);
+
+  if (!branchPrPath) {
+    await ensureOnMain(getGitForCwd());
+  }
 
   // Validate state transition before micro-worktree
   const currentStatus = doc.status || WU_STATUS.BLOCKED;
@@ -209,63 +217,111 @@ async function main() {
   const commitMsg = args.reason ? `${baseMsg} — ${args.reason}` : baseMsg;
 
   if (!args.noAuto) {
-    // Use micro-worktree pattern to avoid pre-commit hook blocking commits to main
-    await withMicroWorktree({
-      operation: MICRO_WORKTREE_OPERATIONS.WU_UNBLOCK,
-      id,
-      logPrefix: PREFIX,
-      pushOnly: true, // Push directly to origin/main without touching local main
-      execute: async ({ worktreePath }) => {
-        // Build paths relative to micro-worktree
-        const microWUPath = path.join(worktreePath, WU_PATHS.WU(id));
-        const microStatusPath = path.join(worktreePath, WU_PATHS.STATUS());
-        const microBacklogPath = path.join(worktreePath, WU_PATHS.BACKLOG());
+    if (branchPrPath) {
+      const currentBranch = await getGitForCwd().getCurrentBranch();
+      const claimedBranch = typeof doc.claimed_branch === 'string' ? doc.claimed_branch : '';
+      if (claimedBranch && currentBranch !== claimedBranch) {
+        die(
+          `Cannot unblock branch-pr WU ${id}: current branch does not match claimed_branch.\n\n` +
+            `Current branch: ${currentBranch}\n` +
+            `Claimed branch: ${claimedBranch}`,
+        );
+      }
 
-        // Update WU YAML in micro-worktree
-        const microDoc = readWU(microWUPath, id);
-        microDoc.status = WU_STATUS.IN_PROGRESS;
-        const noteLine = args.reason
-          ? `Unblocked (${todayISO()}): ${args.reason}`
-          : `Unblocked (${todayISO()})`;
-        appendNote(microDoc, noteLine);
-        writeWU(microWUPath, microDoc);
+      doc.status = WU_STATUS.IN_PROGRESS;
+      const noteLine = args.reason
+        ? `Unblocked (${todayISO()}): ${args.reason}`
+        : `Unblocked (${todayISO()})`;
+      appendNote(doc, noteLine);
+      writeWU(mainWUPath, doc);
 
-        // WU-1574: Update state store first, then regenerate backlog.md from state
-        const stateDir = path.join(worktreePath, '.lumenflow', 'state');
-        const store = new WUStateStore(stateDir);
-        await store.load();
-        await store.unblock(id);
+      const stateDir = path.join(process.cwd(), '.lumenflow', 'state');
+      const store = new WUStateStore(stateDir);
+      await store.load();
+      await store.unblock(id);
 
-        // Generate backlog.md and status.md from state store
-        const backlogContent = await generateBacklog(store);
-        writeFileSync(microBacklogPath, backlogContent, {
-          encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
-        });
+      const backlogContent = await generateBacklog(store);
+      writeFileSync(WU_PATHS.BACKLOG(), backlogContent, {
+        encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+      });
 
-        const statusContent = await generateStatus(store);
-        writeFileSync(microStatusPath, statusContent, {
-          encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
-        });
+      const statusContent = await generateStatus(store);
+      writeFileSync(WU_PATHS.STATUS(), statusContent, {
+        encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+      });
 
-        return {
-          commitMessage: commitMsg,
-          files: [
-            WU_PATHS.WU(id),
-            WU_PATHS.STATUS(),
-            WU_PATHS.BACKLOG(),
-            '.lumenflow/state/wu-events.jsonl',
-          ],
-        };
-      },
-    });
+      await getGitForCwd().add([
+        WU_PATHS.WU(id),
+        WU_PATHS.STATUS(),
+        WU_PATHS.BACKLOG(),
+        '.lumenflow/state/wu-events.jsonl',
+      ]);
+      await getGitForCwd().commit(commitMsg);
+      await getGitForCwd().push(REMOTES.ORIGIN, currentBranch);
+    } else {
+      // Use micro-worktree pattern to avoid pre-commit hook blocking commits to main
+      await withMicroWorktree({
+        operation: MICRO_WORKTREE_OPERATIONS.WU_UNBLOCK,
+        id,
+        logPrefix: PREFIX,
+        pushOnly: true, // Push directly to origin/main without touching local main
+        execute: async ({ worktreePath }) => {
+          // Build paths relative to micro-worktree
+          const microWUPath = path.join(worktreePath, WU_PATHS.WU(id));
+          const microStatusPath = path.join(worktreePath, WU_PATHS.STATUS());
+          const microBacklogPath = path.join(worktreePath, WU_PATHS.BACKLOG());
 
-    // Fetch to update local main tracking
-    await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+          // Update WU YAML in micro-worktree
+          const microDoc = readWU(microWUPath, id);
+          microDoc.status = WU_STATUS.IN_PROGRESS;
+          const noteLine = args.reason
+            ? `Unblocked (${todayISO()}): ${args.reason}`
+            : `Unblocked (${todayISO()})`;
+          appendNote(microDoc, noteLine);
+          writeWU(microWUPath, microDoc);
+
+          // WU-1574: Update state store first, then regenerate backlog.md from state
+          const stateDir = path.join(worktreePath, '.lumenflow', 'state');
+          const store = new WUStateStore(stateDir);
+          await store.load();
+          await store.unblock(id);
+
+          // Generate backlog.md and status.md from state store
+          const backlogContent = await generateBacklog(store);
+          writeFileSync(microBacklogPath, backlogContent, {
+            encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+          });
+
+          const statusContent = await generateStatus(store);
+          writeFileSync(microStatusPath, statusContent, {
+            encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+          });
+
+          return {
+            commitMessage: commitMsg,
+            files: [
+              WU_PATHS.WU(id),
+              WU_PATHS.STATUS(),
+              WU_PATHS.BACKLOG(),
+              '.lumenflow/state/wu-events.jsonl',
+            ],
+          };
+        },
+      });
+
+      // Fetch to update local main tracking
+      await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+    }
   } else {
     // Manual mode: expect files already staged
     ensureStaged([mainWUPath, WU_PATHS.STATUS(), WU_PATHS.BACKLOG()]);
-    getGitForCwd().run(`git commit -m ${JSON.stringify(commitMsg)}`);
-    getGitForCwd().run(`git push ${REMOTES.ORIGIN} ${BRANCHES.MAIN}`);
+    await getGitForCwd().commit(commitMsg);
+    if (branchPrPath) {
+      const currentBranch = await getGitForCwd().getCurrentBranch();
+      await getGitForCwd().push(REMOTES.ORIGIN, currentBranch);
+    } else {
+      await getGitForCwd().push(REMOTES.ORIGIN, BRANCHES.MAIN);
+    }
   }
 
   handleWorktreeCreation(args, doc);
