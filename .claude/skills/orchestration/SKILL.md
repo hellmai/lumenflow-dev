@@ -27,20 +27,23 @@ Activate this skill when:
 # ✅ CORRECT: Use orchestrate:initiative for initiatives
 pnpm orchestrate:initiative --initiative INIT-XXX
 
-# ✅ CORRECT: Use wu:spawn for individual WUs
-pnpm wu:spawn --id WU-XXX
+# ✅ CORRECT: Use wu:brief for prompt generation
+pnpm wu:brief --id WU-XXX --client claude-code
+
+# ✅ CORRECT: Use wu:delegate for lineage-tracked delegation
+pnpm wu:delegate --id WU-XXX --parent-wu WU-YYY
 ```
 
 **❌ NEVER do this:**
 
-- Directly invoke Task tool for WU execution without using wu:spawn output
+- Directly invoke Task tool for WU execution without using wu:brief/wu:delegate output
 - Manually craft spawn prompts (they miss context loading, TDD directives, constraints)
-- Skip wu:spawn when delegating entire WUs to sub-agents
+- Skip wu:brief/wu:delegate when delegating entire WUs to sub-agents
 
 **Why this matters:**
 
-1. `wu:spawn` generates prompts with context loading preamble, TDD directives, and constraints block
-2. Sub-agents need `wu:claim` (inside spawn prompts) to create proper lane locks and event tracking
+1. `wu:brief` generates prompts with context loading preamble, TDD directives, and constraints block
+2. Sub-agents need `wu:claim` (inside generated prompts) to create proper lane locks and event tracking
 3. Direct Task spawns bypass all safety mechanisms, coordination signals, and spawn registry tracking
 
 **If you see agents running without proper worktree claims, STOP and investigate.**
@@ -49,18 +52,18 @@ pnpm wu:spawn --id WU-XXX
 
 ## Verbatim Output Verification (WU-1131)
 
-When using `wu:spawn` output to invoke Task agents, you **MUST** verify the output was not truncated.
+When using `wu:brief`/`wu:delegate` output to invoke Task agents, you **MUST** verify the output was not truncated.
 
 ### Truncation Detection
 
-`wu:spawn` output includes:
+`wu:brief`/`wu:delegate` output includes:
 
 - **Warning banner** at the start with truncation instructions
 - **End sentinel** `<!-- LUMENFLOW_SPAWN_END -->` after the constraints block
 
 ### Verification Checklist
 
-Before spawning a sub-agent with `wu:spawn` output:
+Before spawning a sub-agent with `wu:brief`/`wu:delegate` output:
 
 1. **Check for end sentinel**: The output MUST end with `<!-- LUMENFLOW_SPAWN_END -->`
 2. **Verify constraints block**: Look for `</constraints>` before the end sentinel
@@ -68,9 +71,9 @@ Before spawning a sub-agent with `wu:spawn` output:
 
 ```bash
 # Quick verification commands
-pnpm wu:spawn --id WU-XXX | tail -5    # Should show LUMENFLOW_SPAWN_END
-pnpm wu:spawn --id WU-XXX | head -20   # Should show TRUNCATION_WARNING
-pnpm wu:spawn --id WU-XXX | grep -c 'constraints'  # Should return 2 (open and close tags)
+pnpm wu:brief --id WU-XXX | tail -5    # Should show LUMENFLOW_SPAWN_END
+pnpm wu:brief --id WU-XXX | head -20   # Should show TRUNCATION_WARNING
+pnpm wu:brief --id WU-XXX | grep -c 'constraints'  # Should return 2 (open and close tags)
 ```
 
 ### What Truncation Causes
@@ -84,7 +87,7 @@ If spawn output is truncated, sub-agents will:
 
 ### If Truncation Is Detected
 
-1. Re-run `wu:spawn` and capture full output
+1. Re-run `wu:brief` and capture full output
 2. If context window is too small, use `--codex` for shorter Markdown format
 3. Consider breaking WU into smaller sub-WUs if prompt is too large
 
@@ -205,16 +208,16 @@ pnpm wu:block --id WU-XXX --reason "Spawn stuck for 45 minutes"
 # For zombie lane locks
 pnpm lane:unlock "Operations: Tooling" --reason "Zombie lock (PID 12345 not running)"
 
-# After recovery, re-spawn
+# After recovery, re-delegate
 pnpm wu:unblock --id WU-XXX
-pnpm wu:spawn --id WU-XXX
+pnpm wu:brief --id WU-XXX
 ```
 
 ## Decision Tree
 
 ```
 Starting WU?
-├── Run: pnpm wu:spawn --id WU-XXX
+├── Run: pnpm wu:brief --id WU-XXX --client <client>
 └── Review generated prompt with agent recommendations
 
 Initiative with multiple WUs?

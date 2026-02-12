@@ -97,7 +97,7 @@ done
 # Additional context if recovery was displayed
 if [[ "$FOUND_RECOVERY" == "true" ]]; then
   echo "IMPORTANT: Your context was compacted. Review the recovery info above." >&2
-  echo "Recommended: Run 'pnpm wu:spawn --id $WU_ID' for fresh full context." >&2
+  echo "Recommended: Run 'pnpm wu:brief --id $WU_ID --client claude-code' for fresh full context." >&2
   echo "" >&2
 fi
 

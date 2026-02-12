@@ -26,16 +26,16 @@ Activate this skill when:
 - Git prevents duplicate branches = automatic locking
 - No heartbeats, no session files
 
-## Spawning Sub-Agents
+## Delegating to Sub-Agents
 
-**Use wu:spawn** when delegating entire WU:
+**Use wu:brief/wu:delegate** when delegating an entire WU:
 
 ```bash
-pnpm wu:spawn --id WU-XXX              # Standard
-pnpm wu:spawn --id WU-XXX --thinking   # Complex WUs
+pnpm wu:brief --id WU-XXX --client claude-code      # Generate prompt only
+pnpm wu:delegate --id WU-XXX --parent-wu WU-YYY     # Generate prompt + record lineage
 ```
 
-**DON'T use wu:spawn** for helper agents (code-reviewer, test-engineer) on YOUR WU.
+**DON'T use wu:brief/wu:delegate** for helper agents (code-reviewer, test-engineer) on YOUR WU.
 
 ## Parallel Spawning
 

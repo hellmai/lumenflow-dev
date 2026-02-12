@@ -42,7 +42,7 @@ git add -A && git commit -m "checkpoint: progress on X"
 git push origin lane/<lane>/wu-xxx
 
 # 3. Generate fresh agent prompt
-pnpm wu:spawn --id WU-XXX
+pnpm wu:brief --id WU-XXX --client claude-code
 
 # 4. EXIT current session (do NOT continue after compaction)
 
@@ -97,8 +97,8 @@ LumenFlow implements automatic recovery hooks that preserve context across compa
 # Generate recovery context manually (if hooks didn't fire)
 pnpm mem:recover --wu WU-XXX
 
-# Generate spawn prompt with full context
-pnpm wu:spawn --id WU-XXX
+# Generate prompt with full context
+pnpm wu:brief --id WU-XXX --client claude-code
 ```
 
 **Important**: The recovery hooks are a safety net. The recommended approach is still to spawn
