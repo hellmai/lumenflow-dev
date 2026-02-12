@@ -1127,3 +1127,4 @@
 {"type":"complete","wuId":"WU-1590","timestamp":"2026-02-12T10:11:20.233Z"}
 {"type":"claim","wuId":"WU-1591","timestamp":"2026-02-12T10:12:02.782Z","lane":"Framework: CLI WU Commands","title":"Cloud State Commands: branch-pr support for edit/block/unblock/release/delete"}
 {"type":"complete","wuId":"WU-1591","timestamp":"2026-02-12T10:24:59.596Z"}
+{"type":"claim","wuId":"WU-1592","lane":"Framework: Core State Recovery","title":"Cloud Recovery, docs, and auto-detect rollout for branch-pr","timestamp":"2026-02-12T10:25:31.550Z"}

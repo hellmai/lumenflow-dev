@@ -30,11 +30,10 @@ sections:
 - [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml) — Framework: Core Lifecycle
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
-- [WU-1592 — Cloud Recovery, docs, and auto-detect rollout for branch-pr](wu/WU-1592.yaml) — Framework: Core State Recovery
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1592 — Cloud Recovery, docs, and auto-detect rollout for branch-pr](wu/WU-1592.yaml) — Framework: Core State Recovery
 
 ## ⛔ Blocked
 

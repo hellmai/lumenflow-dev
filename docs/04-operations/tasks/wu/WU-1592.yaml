@@ -2,7 +2,7 @@ id: WU-1592
 title: Cloud Recovery, docs, and auto-detect rollout for branch-pr
 lane: 'Framework: Core State Recovery'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -57,3 +57,11 @@ acceptance:
     are satisfied.
   - Preserve explicit --cloud and LUMENFLOW_CLOUD behavior and avoid regressions in local workflows.
   - Add/extend tests for recover/repair branch-pr behavior and cloud detect configuration handling.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-state-recovery-wu-1592
+claimed_at: 2026-02-12T10:25:31.513Z
+baseline_main_sha: f6e5620320b35a146d0ca76cd030aa7c8a9ba7b3
+session_id: a589e445-2319-4378-8fe0-e79151db905e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T10:25:31.518Z
