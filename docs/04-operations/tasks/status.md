@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1615 — Add missing spec_refs to WU-1605](wu/WU-1615.yaml)
 
 ## Completed
 
