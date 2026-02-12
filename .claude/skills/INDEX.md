@@ -60,8 +60,8 @@ Master registry of all available skills for LumenFlow development.
 # List all skills with triggers
 ls .claude/skills/*/SKILL.md
 
-# Generate spawn prompt with skill selection
-pnpm wu:spawn --id WU-XXX
+# Generate prompt with skill selection
+pnpm wu:brief --id WU-XXX --client claude-code
 
 # Get context tier recommendation
 pnpm session:recommend

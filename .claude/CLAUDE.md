@@ -14,7 +14,8 @@ Then read `LUMENFLOW.md` for workflow details.
 | `pnpm wu:claim --id WU-XXX --lane <Lane>` | Claim WU and create worktree             |
 | `pnpm wu:prep --id WU-XXX`                | Run gates in worktree                    |
 | `pnpm wu:done --id WU-XXX`                | Complete WU (from main)                  |
-| `pnpm wu:spawn --id WU-XXX`               | Generate sub-agent spawn prompt          |
+| `pnpm wu:brief --id WU-XXX --client <client>` | Generate handoff prompt (no execution)   |
+| `pnpm wu:delegate --id WU-XXX --parent-wu <P>` | Generate prompt + record delegation lineage |
 | `pnpm wu:recover --id WU-XXX`             | Fix WU state inconsistencies             |
 
 ### Gates & Orchestration
@@ -54,16 +55,15 @@ View all skills: `ls .claude/skills/`
 
 ## Agents
 
-Spawn sub-agents for parallel work:
+Delegate WUs to sub-agents:
 
 ```bash
-pnpm wu:spawn --id WU-XXX --client claude-code
+pnpm wu:brief --id WU-XXX --client claude-code    # Generate prompt only
+pnpm wu:delegate --id WU-XXX --parent-wu WU-YYY   # Generate prompt + record lineage
 ```
 
-Use `wu:spawn` when:
-
-- You need parallel investigation or implementation on the same WU.
-- You want a standardized, context-loaded prompt for another agent.
+Use `wu:brief` when you want a context-loaded prompt for another agent.
+Use `wu:delegate` when you also need auditable lineage tracking (initiative work).
 
 Available agents in `.claude/agents/`:
 
