@@ -1157,3 +1157,4 @@
 {"type":"complete","wuId":"WU-1612","timestamp":"2026-02-12T15:46:57.062Z"}
 {"type":"complete","wuId":"WU-1611","timestamp":"2026-02-12T15:48:07.038Z"}
 {"type":"complete","wuId":"WU-1608","timestamp":"2026-02-12T15:49:28.964Z"}
+{"type":"claim","wuId":"WU-1613","lane":"Content: Framework Docs","title":"Document agent launch tracking hook in recovery pipeline docs","timestamp":"2026-02-12T15:55:25.345Z"}
