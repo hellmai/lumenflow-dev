@@ -35,7 +35,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1619 — Migrate remaining agent-facing docs from wu:spawn to wu:brief/wu:delegate](wu/WU-1619.yaml) — Content: Framework Docs
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -596,4 +596,5 @@ sections:
 - [WU-1617 — Remove wu:spawn alias and migrate command/docs to wu:brief + wu:delegate](wu/WU-1617.yaml)
 - [WU-1616 — Fix lifecycle schema command count expectation after wu:brief addition](wu/WU-1616.yaml)
 - [WU-1618 — Improve wu:edit scope preflight and replace-code-paths UX](wu/WU-1618.yaml)
+- [WU-1619 — Migrate remaining agent-facing docs from wu:spawn to wu:brief/wu:delegate](wu/WU-1619.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
