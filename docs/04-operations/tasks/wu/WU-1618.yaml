@@ -2,7 +2,7 @@ id: WU-1618
 title: Improve wu:edit scope preflight and replace-code-paths UX
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -49,3 +49,6 @@ session_id: 9a76deab-c614-42a6-aa1e-7cb88603e3b8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T19:09:17.173Z
+locked: true
+completed_at: 2026-02-12T19:15:36.462Z
+completed: 2026-02-12

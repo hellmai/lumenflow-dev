@@ -35,7 +35,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1618 — Improve wu:edit scope preflight and replace-code-paths UX](wu/WU-1618.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -595,4 +595,5 @@ sections:
 - [WU-1604 — Add wu:delegate for side-effectful lineage recording and orchestration integration](wu/WU-1604.yaml)
 - [WU-1617 — Remove wu:spawn alias and migrate command/docs to wu:brief + wu:delegate](wu/WU-1617.yaml)
 - [WU-1616 — Fix lifecycle schema command count expectation after wu:brief addition](wu/WU-1616.yaml)
+- [WU-1618 — Improve wu:edit scope preflight and replace-code-paths UX](wu/WU-1618.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
