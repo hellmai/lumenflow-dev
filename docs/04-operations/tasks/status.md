@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1601 — Fix wu:spawn Codex path dropping --parent-wu registry writes](wu/WU-1601.yaml)
 
 ## Completed
 

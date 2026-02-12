@@ -2,7 +2,7 @@ id: WU-1601
 title: Fix wu:spawn Codex path dropping --parent-wu registry writes
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
 tests:
   manual:
-    - Run wu:spawn for codex-cli and claude-code with --parent-wu and verify registry entries are persisted in both paths.
+    - Run wu:spawn for codex-cli and claude-code with --parent-wu and verify registry entries are
+      persisted in both paths.
   unit:
     - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
   e2e: []
@@ -21,7 +22,8 @@ dependencies: []
 initiative: INIT-024
 phase: 1
 risks: []
-notes: P0 correctness fix before semantic decomposition work. Keep scope narrow to behavior parity and regression safety.
+notes: P0 correctness fix before semantic decomposition work. Keep scope narrow to behavior parity
+  and regression safety.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -30,8 +32,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The Codex client path in wu:spawn returns before registry persistence, so --parent-wu lineage is silently dropped for Codex output while other clients persist correctly. This creates false negatives in delegation provenance and inconsistent behavior between clients.
+description: The Codex client path in wu:spawn returns before registry persistence, so --parent-wu
+  lineage is silently dropped for Codex output while other clients persist correctly. This creates
+  false negatives in delegation provenance and inconsistent behavior between clients.
 acceptance:
   - wu:spawn with --client codex-cli --parent-wu records a spawn registry entry exactly once.
   - Non-Codex spawn paths preserve existing registry behavior without duplicate writes.
   - Automated tests cover registry persistence for both Codex and non-Codex execution paths.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1601
+claimed_at: 2026-02-12T13:55:44.715Z
+baseline_main_sha: 06cff7070e73ad4815edb27e5e1805a2747a58c2
+session_id: 01036a31-45ed-44eb-814a-3ac72859bec2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T13:55:44.721Z
