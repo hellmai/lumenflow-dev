@@ -10,9 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/core/src/spawn-registry-schema.ts
   - packages/@lumenflow/core/src/spawn-registry-store.ts
-  - packages/@lumenflow/core/src/wu-state-store.ts
-  - packages/@lumenflow/cli/src/public-manifest.ts
-  - packages/@lumenflow/mcp/src/tools.ts
+  - packages/@lumenflow/cli/src/__tests__/agent-spawn-coordination.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
 tests:
   manual:
     - Execute delegated claim and completion scenarios and confirm policy outcomes for intent-only,
@@ -25,20 +24,27 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1605.done
 dependencies: []
-spec_refs:
-  - lumenflow://plans/WU-1605-plan.md
 initiative: INIT-024
 phase: 3
 blocked_by:
   - WU-1604
+spec_refs:
+  - lumenflow://plans/WU-1605-plan.md
 risks: []
 notes: This WU closes the semantic gap between generated/recorded delegation intent and actual
   execution pickup.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-12T19:55:14.979Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1605
+session_id: d68d5a67-9f41-4dc7-b60e-0f851a88f2fb
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T19:55:14.987Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -52,11 +58,3 @@ acceptance:
     actionable remediation.
   - Automated tests cover success, missing-pickup, and audited override paths for
     initiative-governed WUs.
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1605
-claimed_at: 2026-02-12T19:55:14.979Z
-baseline_main_sha: 6d66e2dd70a08e3df6a127b688798e31e791c53a
-session_id: d68d5a67-9f41-4dc7-b60e-0f851a88f2fb
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-12T19:55:14.987Z
