@@ -66,7 +66,9 @@ Pattern B (Layer Split) in four dependent WUs:
 
 ## Open Questions
 
-<!-- Unresolved questions or decisions needed -->
+- Should cloud coordination remain warning-based in some environments, or hard-fail by default with `--force` takeover only?
+- Should non-lane cloud branches always skip deletion, or allow opt-in cleanup for selected platforms?
+- Should `spec_refs` standardize on `lumenflow://plans/<id>-plan.md` for all new initiatives and WUs?
 
 ## References
 
