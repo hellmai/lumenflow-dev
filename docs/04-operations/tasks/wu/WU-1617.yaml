@@ -2,7 +2,7 @@ id: WU-1617
 title: Remove wu:spawn alias and migrate command/docs to wu:brief + wu:delegate
 lane: 'Framework: CLI Orchestration'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -18,7 +18,8 @@ code_paths:
   - AGENTS.md
 tests:
   manual:
-    - Run pnpm wu:brief --help and pnpm wu:delegate --help; verify wu:spawn is no longer listed in docs or command references.
+    - Run pnpm wu:brief --help and pnpm wu:delegate --help; verify wu:spawn is no longer listed in
+      docs or command references.
   unit:
     - packages/@lumenflow/cli/src/__tests__/commands.test.ts
     - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
@@ -37,8 +38,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:spawn was kept as a deprecated alias after wu:brief introduction. Problem: deprecation adds ambiguity and extra maintenance for a command with minimal real usage. Solution: remove wu:spawn command/tooling surface, keep explicit wu:brief for generation and wu:delegate for lineage side effects, and update internal + Starlight docs accordingly.'
+description: 'Context: wu:spawn was kept as a deprecated alias after wu:brief introduction. Problem:
+  deprecation adds ambiguity and extra maintenance for a command with minimal real usage. Solution:
+  remove wu:spawn command/tooling surface, keep explicit wu:brief for generation and wu:delegate for
+  lineage side effects, and update internal + Starlight docs accordingly.'
 acceptance:
-  - wu:spawn command is removed from CLI scripts/manifest and invoking it is no longer part of supported lifecycle.
+  - wu:spawn command is removed from CLI scripts/manifest and invoking it is no longer part of
+    supported lifecycle.
   - MCP/public command surfaces expose wu:brief and wu:delegate without wu:spawn alias.
-  - Internal and Starlight documentation no longer instruct users to use wu:spawn for delegation/prompt generation.
+  - Internal and Starlight documentation no longer instruct users to use wu:spawn for
+    delegation/prompt generation.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1617
+claimed_at: 2026-02-12T18:27:22.439Z
+baseline_main_sha: d16bd29354aa06eba68c3e818122af8684485ae7
+session_id: 37f9e297-b3da-4785-8e2e-f9ad2c8fdbe4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T18:27:22.444Z
