@@ -20,12 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1606 — Sync internal and Starlight docs for wu:brief/delegate provenance changes](wu/WU-1606.yaml) — Content: Site Comms
-- [WU-1605 — Add claim-time pickup evidence and enforce intent-vs-pickup provenance at wu:done](wu/WU-1605.yaml) — Framework: CLI WU Commands
-- [WU-1604 — Add wu:delegate for side-effectful lineage recording and orchestration integration](wu/WU-1604.yaml) — Framework: Initiatives
-- [WU-1603 — Introduce wu:brief as pure prompt generator and deprecate wu:spawn alias](wu/WU-1603.yaml) — Framework: CLI Orchestration
-- [WU-1602 — Align docs terminology from spawn execution to delegation intent](wu/WU-1602.yaml) — Content: Framework Docs
-- [WU-1601 — Fix wu:spawn Codex path dropping --parent-wu registry writes](wu/WU-1601.yaml) — Framework: CLI Orchestration
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1581 — CLI strict wave 1A: high-impact WU command hotspots](wu/WU-1581.yaml) — Framework: CLI WU Commands
@@ -36,6 +30,12 @@ sections:
 - [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml) — Framework: Core Lifecycle
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
+- [WU-1601 — Fix wu:spawn Codex path dropping --parent-wu registry writes](wu/WU-1601.yaml) — Framework: CLI Orchestration
+- [WU-1602 — Align docs terminology from spawn execution to delegation intent](wu/WU-1602.yaml) — Content: Framework Docs
+- [WU-1603 — Introduce wu:brief as pure prompt generator and deprecate wu:spawn alias](wu/WU-1603.yaml) — Framework: CLI Orchestration
+- [WU-1604 — Add wu:delegate for side-effectful lineage recording and orchestration integration](wu/WU-1604.yaml) — Framework: Initiatives
+- [WU-1605 — Add claim-time pickup evidence and enforce intent-vs-pickup provenance at wu:done](wu/WU-1605.yaml) — Framework: CLI WU Commands
+- [WU-1606 — Sync internal and Starlight docs for wu:brief/delegate provenance changes](wu/WU-1606.yaml) — Content: Site Comms
 
 ## 🔧 In progress
 
