@@ -32,6 +32,7 @@
     "wu:recover": "node packages/@lumenflow/cli/dist/wu-recover.js",
     "wu:validate": "node tools/cli-entry.mjs wu-validate",
     "wu:brief": "node packages/@lumenflow/cli/dist/wu-brief.js",
+    "wu:delegate": "node packages/@lumenflow/cli/dist/wu-spawn.js --delegate",
     "wu:spawn": "node packages/@lumenflow/cli/dist/wu-spawn.js",
     "wu:preflight": "node packages/@lumenflow/cli/dist/wu-preflight.js",
     "wu:repair": "node tools/cli-entry.mjs wu-repair",

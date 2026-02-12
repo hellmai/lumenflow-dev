@@ -20,6 +20,7 @@ import {
   generateSpawnId,
   SpawnStatus,
   type SpawnEvent,
+  type SpawnIntentValue,
 } from './spawn-registry-schema.js';
 
 /**
@@ -187,13 +188,19 @@ export class SpawnRegistryStore {
    * @param {string} parentWuId - Parent WU ID (orchestrator)
    * @param {string} targetWuId - Target WU ID (spawned work)
    * @param {string} lane - Lane for the spawned work
+   * @param {SpawnIntentValue} [intent] - Optional intent source (e.g., delegation)
    * @returns {Promise<string>} The generated spawn ID
    * @throws {Error} If validation fails
    *
    * @example
    * const spawnId = await store.record('WU-1000', 'WU-1001', 'Operations: Tooling');
    */
-  async record(parentWuId: string, targetWuId: string, lane: string): Promise<string> {
+  async record(
+    parentWuId: string,
+    targetWuId: string,
+    lane: string,
+    intent?: SpawnIntentValue,
+  ): Promise<string> {
     const id = generateSpawnId(parentWuId, targetWuId);
 
     const event = {
@@ -201,6 +208,7 @@ export class SpawnRegistryStore {
       parentWuId,
       targetWuId,
       lane,
+      ...(intent ? { intent } : {}),
       spawnedAt: new Date().toISOString(),
       status: SpawnStatus.PENDING,
       completedAt: null,

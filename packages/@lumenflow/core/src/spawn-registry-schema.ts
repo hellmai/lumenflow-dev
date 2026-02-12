@@ -32,6 +32,23 @@ export type SpawnStatusValue = (typeof SpawnStatus)[keyof typeof SpawnStatus];
 export const SPAWN_STATUSES = ['pending', 'completed', 'timeout', 'crashed', 'escalated'] as const;
 
 /**
+ * Optional spawn intent source values.
+ *
+ * WU-1604: Explicit delegation intent should be distinguishable from legacy
+ * spawn-style records when present.
+ */
+export const SpawnIntent = {
+  DELEGATION: 'delegation',
+  LEGACY_SPAWN: 'legacy-spawn',
+} as const;
+
+/** Type for spawn intent values */
+export type SpawnIntentValue = (typeof SpawnIntent)[keyof typeof SpawnIntent];
+
+/** Array of valid spawn intent values */
+export const SPAWN_INTENTS = ['delegation', 'legacy-spawn'] as const;
+
+/**
  * Regex patterns for spawn validation
  */
 export const SPAWN_PATTERNS = {
@@ -49,6 +66,7 @@ const ERROR_MESSAGES = {
   WU_ID: 'WU ID must match pattern WU-XXX (e.g., WU-1000)',
   LANE_REQUIRED: 'Lane is required',
   STATUS: `Status must be one of: ${SPAWN_STATUSES.join(', ')}`,
+  INTENT: `Intent must be one of: ${SPAWN_INTENTS.join(', ')}`,
   TIMESTAMP_REQUIRED: 'Timestamp is required',
 };
 
@@ -70,6 +88,9 @@ export const SpawnEventSchema = z.object({
 
   /** Lane for the spawned work */
   lane: z.string().min(1, { message: ERROR_MESSAGES.LANE_REQUIRED }),
+
+  /** Optional intent source (delegation or legacy spawn path) */
+  intent: z.enum(SPAWN_INTENTS, { error: ERROR_MESSAGES.INTENT }).optional(),
 
   /** ISO 8601 timestamp when spawn was recorded */
   spawnedAt: z.string().datetime({ message: ERROR_MESSAGES.TIMESTAMP_REQUIRED }),

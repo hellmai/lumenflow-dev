@@ -24,4 +24,13 @@ describe('orchestrate-initiative wiring (WU-1340)', () => {
     expect(content).toContain('resolveLaneConfigsFromConfig');
     expect(content).toContain('getConfig(');
   });
+
+  it('guides manual execution with explicit brief/delegate semantics', () => {
+    const content = fs.readFileSync(ORCHESTRATE_PATH, 'utf-8');
+
+    expect(content).toContain('pnpm wu:brief --id <WU-ID> --client claude-code');
+    expect(content).toContain(
+      'pnpm wu:delegate --id <WU-ID> --parent-wu <PARENT-WU-ID> --client claude-code',
+    );
+  });
 });

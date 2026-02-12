@@ -179,6 +179,7 @@ const ErrorCodes = {
   WU_CLEANUP_ERROR: 'WU_CLEANUP_ERROR',
   WU_SPAWN_ERROR: 'WU_SPAWN_ERROR',
   WU_BRIEF_ERROR: 'WU_BRIEF_ERROR',
+  WU_DELEGATE_ERROR: 'WU_DELEGATE_ERROR',
   WU_VALIDATE_ERROR: 'WU_VALIDATE_ERROR',
   WU_INFER_LANE_ERROR: 'WU_INFER_LANE_ERROR',
   WU_UNLOCK_LANE_ERROR: 'WU_UNLOCK_LANE_ERROR',
@@ -245,6 +246,7 @@ const ErrorMessages = {
   NEW_STRING_REQUIRED: 'new_string is required',
   REASON_REQUIRED: 'reason is required',
   CLIENT_REQUIRED: 'client is required',
+  PARENT_WU_REQUIRED: 'parent_wu is required',
   SECTION_REQUIRED: 'section is required',
   PLAN_REQUIRED: 'plan is required',
 } as const;
@@ -2130,6 +2132,19 @@ export const wuCleanupTool: ToolDefinition = {
 };
 
 /**
+ * Build common argument list for wu:brief / wu:spawn / wu:delegate prompt tools.
+ */
+function buildWuPromptArgs(input: Record<string, unknown>): string[] {
+  const args = ['--id', input.id as string];
+  if (input.client) args.push('--client', input.client as string);
+  if (input.thinking) args.push('--thinking');
+  if (input.budget) args.push('--budget', String(input.budget));
+  if (input.parent_wu) args.push('--parent-wu', input.parent_wu as string);
+  if (input.no_context) args.push('--no-context');
+  return args;
+}
+
+/**
  * wu_brief - Generate handoff prompt for sub-agent WU execution (WU-1603)
  *
  * This is the canonical prompt-generation tool. wu_spawn is retained
@@ -2146,12 +2161,7 @@ export const wuBriefTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
-    if (input.client) args.push('--client', input.client as string);
-    if (input.thinking) args.push('--thinking');
-    if (input.budget) args.push('--budget', String(input.budget));
-    if (input.parent_wu) args.push('--parent-wu', input.parent_wu as string);
-    if (input.no_context) args.push('--no-context');
+    const args = buildWuPromptArgs(input);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('wu:brief', args, cliOptions);
@@ -2184,12 +2194,7 @@ export const wuSpawnTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
-    if (input.client) args.push('--client', input.client as string);
-    if (input.thinking) args.push('--thinking');
-    if (input.budget) args.push('--budget', String(input.budget));
-    if (input.parent_wu) args.push('--parent-wu', input.parent_wu as string);
-    if (input.no_context) args.push('--no-context');
+    const args = buildWuPromptArgs(input);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('wu:spawn', args, cliOptions);
@@ -2200,6 +2205,38 @@ export const wuSpawnTool: ToolDefinition = {
       return error(
         result.stderr || result.error?.message || 'wu:spawn failed',
         ErrorCodes.WU_SPAWN_ERROR,
+      );
+    }
+  },
+};
+
+/**
+ * wu_delegate - Generate prompt and explicitly record delegation lineage intent
+ */
+export const wuDelegateTool: ToolDefinition = {
+  name: 'wu_delegate',
+  description: 'Generate delegation prompt and record explicit lineage intent',
+  inputSchema: wuSpawnSchema,
+
+  async execute(input, options) {
+    if (!input.id) {
+      return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+    if (!input.parent_wu) {
+      return error(ErrorMessages.PARENT_WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = buildWuPromptArgs(input);
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('wu:delegate', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Delegation prompt generated' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'wu:delegate failed',
+        ErrorCodes.WU_DELEGATE_ERROR,
       );
     }
   },
@@ -4019,6 +4056,7 @@ export const allTools: ToolDefinition[] = [
   wuCleanupTool,
   wuBriefTool,
   wuSpawnTool,
+  wuDelegateTool,
   wuValidateTool,
   wuInferLaneTool,
   wuUnlockLaneTool,

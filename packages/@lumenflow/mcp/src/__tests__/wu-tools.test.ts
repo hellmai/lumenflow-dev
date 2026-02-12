@@ -22,6 +22,7 @@ import {
   wuDeleteTool,
   wuCleanupTool,
   wuSpawnTool,
+  wuDelegateTool,
   wuValidateTool,
   wuInferLaneTool,
   wuUnlockLaneTool,
@@ -641,6 +642,37 @@ describe('WU MCP tools (WU-1422)', () => {
         expect.arrayContaining(['--id', 'WU-1422', '--client', 'gemini-cli']),
         expect.any(Object),
       );
+    });
+  });
+
+  describe('wu_delegate', () => {
+    it('should generate delegation prompt and record intent via CLI shell-out', async () => {
+      mockRunCliCommand.mockResolvedValue({
+        success: true,
+        stdout: 'Delegation prompt generated',
+        stderr: '',
+        exitCode: 0,
+      });
+
+      const result = await wuDelegateTool.execute({
+        id: 'WU-1604',
+        parent_wu: 'WU-1600',
+        client: 'claude-code',
+      });
+
+      expect(result.success).toBe(true);
+      expect(mockRunCliCommand).toHaveBeenCalledWith(
+        'wu:delegate',
+        expect.arrayContaining(['--id', 'WU-1604', '--parent-wu', 'WU-1600', '--client', 'claude-code']),
+        expect.any(Object),
+      );
+    });
+
+    it('should require parent_wu parameter', async () => {
+      const result = await wuDelegateTool.execute({ id: 'WU-1604' });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.message).toContain('parent_wu');
     });
   });
 

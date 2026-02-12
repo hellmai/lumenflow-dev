@@ -130,6 +130,13 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     category: COMMAND_CATEGORIES.WU_LIFECYCLE,
   },
   {
+    name: 'wu:delegate',
+    binName: 'wu-spawn',
+    binPath: './dist/wu-spawn.js',
+    description: 'Generate delegation prompt and record explicit lineage intent',
+    category: COMMAND_CATEGORIES.WU_LIFECYCLE,
+  },
+  {
     name: 'wu:spawn',
     binName: 'wu-spawn',
     binPath: './dist/wu-spawn.js',

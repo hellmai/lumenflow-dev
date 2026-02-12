@@ -3,6 +3,7 @@
  * Spawn List Command (WU-1950)
  *
  * Displays spawn trees for WUs or initiatives.
+ * WU-1604: Includes explicit delegation lineage records from wu:delegate.
  * Shows parent-child relationships with status indicators.
  *
  * Usage:

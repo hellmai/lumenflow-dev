@@ -48,6 +48,20 @@ function cleanupTestStamps() {
   }
 }
 
+describe('WU-1604: delegation command generation', () => {
+  it('generateSpawnCommands outputs explicit delegation commands', async () => {
+    const { generateSpawnCommands } = await import('../src/initiative-orchestrator.js');
+
+    const commands = generateSpawnCommands([
+      { id: 'WU-1604', doc: { lane: 'Framework: Initiatives', status: 'ready' } },
+    ]);
+
+    expect(commands).toEqual([
+      'pnpm wu:delegate --id WU-1604 --parent-wu <PARENT-WU-ID> --client claude-code',
+    ]);
+  });
+});
+
 describe('WU-2040: Dependency stamp checking logic', () => {
   beforeEach(() => {
     cleanupTestStamps();

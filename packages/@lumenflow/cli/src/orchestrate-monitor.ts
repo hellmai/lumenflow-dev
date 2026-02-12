@@ -5,6 +5,7 @@
  *
  * Monitors spawned agent progress and spawn health.
  * Wires CLI to spawn-monitor APIs in @lumenflow/core.
+ * WU-1604: Registry entries can come from explicit delegation intent.
  *
  * Features:
  * - Stuck detection: identifies pending spawns older than threshold

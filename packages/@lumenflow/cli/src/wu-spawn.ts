@@ -120,6 +120,14 @@ const SPAWN_DEPRECATION_MESSAGE =
   'wu:spawn is deprecated and will be removed in a future release. Use wu:brief instead.';
 
 const LOG_PREFIX = '[wu:spawn]';
+const BRIEF_LOG_PREFIX = '[wu:brief]';
+const DELEGATE_LOG_PREFIX = '[wu:delegate]';
+
+const DELEGATE_OPTION = {
+  name: 'delegate',
+  flags: '--delegate',
+  description: 'Record delegation lineage intent (requires --parent-wu)',
+};
 
 /**
  * Detect mandatory agents based on code paths.
@@ -1459,6 +1467,7 @@ interface ParsedArgs {
   client?: string;
   vendor?: string;
   noContext?: boolean;
+  delegate?: boolean;
 }
 
 interface SpawnOutputWithRegistryOptions {
@@ -1467,6 +1476,8 @@ interface SpawnOutputWithRegistryOptions {
   isCodexClient: boolean;
   parentWu?: string;
   lane?: string;
+  /** Record lineage intent in registry (wu:delegate explicit path only). */
+  recordDelegationIntent?: boolean;
   /** WU-1608: Log prefix to use instead of module-level default */
   logPrefix?: string;
 }
@@ -1478,16 +1489,24 @@ interface SpawnOutputWithRegistryDependencies {
 }
 
 /**
- * Emit spawn output and optionally persist parent/child lineage.
+ * Emit prompt output and optionally persist parent/child lineage.
  *
- * WU-1601: Both codex and non-codex paths must persist parent lineage when
- * --parent-wu is provided. Keeping this in one function prevents path drift.
+ * WU-1604: Prompt generation (wu:brief / wu:spawn alias) is side-effect free.
+ * Only explicit delegation mode records lineage intent.
  */
 export async function emitSpawnOutputWithRegistry(
   options: SpawnOutputWithRegistryOptions,
   dependencies: SpawnOutputWithRegistryDependencies = {},
 ): Promise<void> {
-  const { id, output, isCodexClient, parentWu, lane, logPrefix: prefix = LOG_PREFIX } = options;
+  const {
+    id,
+    output,
+    isCodexClient,
+    parentWu,
+    lane,
+    recordDelegationIntent = false,
+    logPrefix: prefix = LOG_PREFIX,
+  } = options;
   const log = dependencies.log ?? console.log;
   const recordSpawn = dependencies.recordSpawn ?? recordSpawnToRegistry;
   const formatSpawnMessage = dependencies.formatSpawnMessage ?? formatSpawnRecordedMessage;
@@ -1502,7 +1521,7 @@ export async function emitSpawnOutputWithRegistry(
     log(output);
   }
 
-  if (!parentWu) {
+  if (!recordDelegationIntent || !parentWu) {
     return;
   }
 
@@ -1551,6 +1570,7 @@ function parseAndValidateArgs(parserConfig: BriefParserConfig = SPAWN_PARSER_CON
       WU_OPTIONS.client,
       WU_OPTIONS.vendor,
       WU_OPTIONS.noContext, // WU-1240: Skip memory context injection
+      DELEGATE_OPTION,
     ],
     required: ['id'],
     allowPositionalId: true,
@@ -1612,18 +1632,22 @@ function loadWUDocument(id: string, wuPath: string): WUDocument {
 /**
  * Resolve the client name from args and config
  */
-function resolveClientName(args: ParsedArgs, config: ReturnType<typeof getConfig>): string {
+function resolveClientName(
+  args: ParsedArgs,
+  config: ReturnType<typeof getConfig>,
+  logPrefix = LOG_PREFIX,
+): string {
   let clientName = args.client;
 
   if (!clientName && args.vendor) {
-    console.warn(`${LOG_PREFIX} ${EMOJI.WARNING} Warning: --vendor is deprecated. Use --client.`);
+    console.warn(`${logPrefix} ${EMOJI.WARNING} Warning: --vendor is deprecated. Use --client.`);
     clientName = args.vendor;
   }
 
   // Codex handling (deprecated legacy flag)
   if (args.codex && !clientName) {
     console.warn(
-      `${LOG_PREFIX} ${EMOJI.WARNING} Warning: --codex is deprecated. Use --client codex-cli.`,
+      `${logPrefix} ${EMOJI.WARNING} Warning: --codex is deprecated. Use --client codex-cli.`,
     );
     clientName = 'codex-cli';
   }
@@ -1634,7 +1658,11 @@ function resolveClientName(args: ParsedArgs, config: ReturnType<typeof getConfig
 /**
  * Check lane occupation and warn if occupied by a different WU
  */
-async function checkAndWarnLaneOccupation(lane: string | undefined, id: string): Promise<void> {
+async function checkAndWarnLaneOccupation(
+  lane: string | undefined,
+  id: string,
+  logPrefix = LOG_PREFIX,
+): Promise<void> {
   if (!lane) return;
 
   const existingLock = checkLaneOccupation(lane);
@@ -1643,7 +1671,7 @@ async function checkAndWarnLaneOccupation(lane: string | undefined, id: string):
     const { isLockStale } = await import('@lumenflow/core/lane-lock');
     const isStale = isLockStale(existingLock);
     const warning = generateLaneOccupationWarning(existingLock, id, { isStale });
-    console.warn(`${LOG_PREFIX} ${EMOJI.WARNING}\n${warning}\n`);
+    console.warn(`${logPrefix} ${EMOJI.WARNING}\n${warning}\n`);
   }
 }
 
@@ -1669,23 +1697,42 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
   const {
     deprecated = false,
     parserConfig = BRIEF_PARSER_CONFIG,
-    logPrefix = LOG_PREFIX,
+    logPrefix = BRIEF_LOG_PREFIX,
   } = options;
 
-  // WU-1603: Emit deprecation warning when invoked as wu:spawn
-  if (deprecated) {
-    console.warn(`${logPrefix} ${EMOJI.WARNING} ${SPAWN_DEPRECATION_MESSAGE}`);
-  }
+  const args = parseAndValidateArgs(parserConfig);
+  const explicitDelegation = args.delegate === true;
+  const effectiveLogPrefix = explicitDelegation ? DELEGATE_LOG_PREFIX : logPrefix;
 
   // WU-2202: Validate dependencies BEFORE any other operation
   // This prevents false lane occupancy reports when yaml package is missing
-  const commandLabel = deprecated ? 'wu:spawn' : 'wu:brief';
+  const commandLabel = explicitDelegation ? 'wu:delegate' : deprecated ? 'wu:spawn' : 'wu:brief';
   const depResult = await validateSpawnDependencies();
   if (!depResult.valid) {
     die(formatDependencyError(commandLabel, depResult.missing));
   }
 
-  const args = parseAndValidateArgs(parserConfig);
+  if (explicitDelegation && !args.parentWu) {
+    die(
+      'wu:delegate requires --parent-wu to record delegation lineage intent.\n\n' +
+        'Example:\n' +
+        '  pnpm wu:delegate --id WU-123 --parent-wu WU-100 --client claude-code',
+    );
+  }
+
+  if (deprecated && !explicitDelegation) {
+    console.warn(`${effectiveLogPrefix} ${EMOJI.WARNING} ${SPAWN_DEPRECATION_MESSAGE}`);
+  }
+
+  if (!explicitDelegation && args.parentWu) {
+    console.warn(
+      `${effectiveLogPrefix} ${EMOJI.WARNING} --parent-wu does not record lineage in generation-only mode.`,
+    );
+    console.warn(
+      `${effectiveLogPrefix} ${EMOJI.WARNING} Use wu:delegate for explicit, side-effectful delegation intent tracking.`,
+    );
+    console.warn('');
+  }
 
   const id = args.id.toUpperCase();
   if (!PATTERNS.WU_ID.test(id)) {
@@ -1698,15 +1745,15 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
   // Warn if WU is not in ready or in_progress status
   const validStatuses = [WU_STATUS.READY, WU_STATUS.IN_PROGRESS];
   if (!validStatuses.includes(doc.status)) {
-    console.warn(`${logPrefix} ${EMOJI.WARNING} Warning: ${id} has status '${doc.status}'.`);
+    console.warn(`${effectiveLogPrefix} ${EMOJI.WARNING} Warning: ${id} has status '${doc.status}'.`);
     console.warn(
-      `${logPrefix} ${EMOJI.WARNING} Sub-agents typically work on ready or in_progress WUs.`,
+      `${effectiveLogPrefix} ${EMOJI.WARNING} Sub-agents typically work on ready or in_progress WUs.`,
     );
     console.warn('');
   }
 
   // WU-1603: Check if lane is already occupied and warn
-  await checkAndWarnLaneOccupation(doc.lane, id);
+  await checkAndWarnLaneOccupation(doc.lane, id, effectiveLogPrefix);
 
   // Build thinking mode options for task invocation
   const thinkingOptions = {
@@ -1717,7 +1764,7 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
 
   // Client Resolution
   const config = getConfig();
-  const clientName = resolveClientName(args, config);
+  const clientName = resolveClientName(args, config, effectiveLogPrefix);
 
   // WU-1240: Generate memory context if not skipped
   const baseDir = process.cwd();
@@ -1734,7 +1781,9 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
         maxSize,
       });
       if (memoryContextContent) {
-        console.log(`${logPrefix} Memory context loaded (${memoryContextContent.length} bytes)`);
+        console.log(
+          `${effectiveLogPrefix} Memory context loaded (${memoryContextContent.length} bytes)`,
+        );
       }
     }
   }
@@ -1758,7 +1807,8 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
       isCodexClient: true,
       parentWu: args.parentWu,
       lane: doc.lane,
-      logPrefix,
+      recordDelegationIntent: explicitDelegation,
+      logPrefix: effectiveLogPrefix,
     });
     return;
   }
@@ -1780,7 +1830,8 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
     isCodexClient: false,
     parentWu: args.parentWu,
     lane: doc.lane,
-    logPrefix,
+    recordDelegationIntent: explicitDelegation,
+    logPrefix: effectiveLogPrefix,
   });
 }
 

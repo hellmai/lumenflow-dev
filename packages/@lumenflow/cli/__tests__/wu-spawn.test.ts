@@ -799,78 +799,91 @@ describe('wu-spawn methodology policy integration (WU-1288)', () => {
   });
 });
 
-describe('wu-spawn registry persistence across output clients (WU-1601)', () => {
-  it('records exactly once for codex output when --parent-wu is provided', async () => {
-    const log = vi.fn();
-    const recordSpawn = vi.fn().mockResolvedValue({
-      success: true,
-      spawnId: 'spawn-1601-codex',
-    });
-    const formatSpawnMessage = vi
-      .fn()
-      .mockReturnValue('[wu:spawn] Spawn recorded spawn-1601-codex');
-
-    await emitSpawnOutputWithRegistry(
-      {
-        id: 'WU-1601',
-        output: 'codex-output',
-        isCodexClient: true,
-        parentWu: 'WU-1599',
-        lane: 'Framework: CLI Orchestration',
-      },
-      { log, recordSpawn, formatSpawnMessage },
-    );
-
-    expect(recordSpawn).toHaveBeenCalledTimes(1);
-    expect(recordSpawn).toHaveBeenCalledWith({
-      parentWuId: 'WU-1599',
-      targetWuId: 'WU-1601',
-      lane: 'Framework: CLI Orchestration',
-      baseDir: '.lumenflow/state',
-    });
-    expect(formatSpawnMessage).toHaveBeenCalledWith('spawn-1601-codex', undefined);
-  });
-
-  it('records exactly once for non-codex output when --parent-wu is provided', async () => {
-    const log = vi.fn();
-    const recordSpawn = vi.fn().mockResolvedValue({
-      success: true,
-      spawnId: 'spawn-1601-task',
-    });
-    const formatSpawnMessage = vi.fn().mockReturnValue('[wu:spawn] Spawn recorded spawn-1601-task');
-
-    await emitSpawnOutputWithRegistry(
-      {
-        id: 'WU-1601',
-        output: 'task-output',
-        isCodexClient: false,
-        parentWu: 'WU-1599',
-        lane: 'Framework: CLI Orchestration',
-      },
-      { log, recordSpawn, formatSpawnMessage },
-    );
-
-    expect(recordSpawn).toHaveBeenCalledTimes(1);
-    expect(recordSpawn).toHaveBeenCalledWith({
-      parentWuId: 'WU-1599',
-      targetWuId: 'WU-1601',
-      lane: 'Framework: CLI Orchestration',
-      baseDir: '.lumenflow/state',
-    });
-    expect(formatSpawnMessage).toHaveBeenCalledWith('spawn-1601-task', undefined);
-  });
-
-  it('does not record when --parent-wu is absent', async () => {
+describe('wu delegation lineage persistence (WU-1604)', () => {
+  it('does not record lineage for codex output by default, even when --parent-wu is provided', async () => {
     const log = vi.fn();
     const recordSpawn = vi.fn();
     const formatSpawnMessage = vi.fn();
 
     await emitSpawnOutputWithRegistry(
       {
-        id: 'WU-1601',
+        id: 'WU-1604',
         output: 'codex-output',
         isCodexClient: true,
-        lane: 'Framework: CLI Orchestration',
+        parentWu: 'WU-1600',
+        lane: 'Framework: Initiatives',
+      },
+      { log, recordSpawn, formatSpawnMessage },
+    );
+
+    expect(recordSpawn).not.toHaveBeenCalled();
+    expect(formatSpawnMessage).not.toHaveBeenCalled();
+  });
+
+  it('does not record lineage for task output by default, even when --parent-wu is provided', async () => {
+    const log = vi.fn();
+    const recordSpawn = vi.fn();
+    const formatSpawnMessage = vi.fn();
+
+    await emitSpawnOutputWithRegistry(
+      {
+        id: 'WU-1604',
+        output: 'task-output',
+        isCodexClient: false,
+        parentWu: 'WU-1600',
+        lane: 'Framework: Initiatives',
+      },
+      { log, recordSpawn, formatSpawnMessage },
+    );
+
+    expect(recordSpawn).not.toHaveBeenCalled();
+    expect(formatSpawnMessage).not.toHaveBeenCalled();
+  });
+
+  it('records lineage exactly once when delegation mode is explicit', async () => {
+    const log = vi.fn();
+    const recordSpawn = vi.fn().mockResolvedValue({
+      success: true,
+      spawnId: 'spawn-1604-delegate',
+    });
+    const formatSpawnMessage = vi
+      .fn()
+      .mockReturnValue('[wu:delegate] Delegation recorded spawn-1604-delegate');
+
+    await emitSpawnOutputWithRegistry(
+      {
+        id: 'WU-1604',
+        output: 'task-output',
+        isCodexClient: false,
+        parentWu: 'WU-1600',
+        lane: 'Framework: Initiatives',
+        recordDelegationIntent: true,
+      },
+      { log, recordSpawn, formatSpawnMessage },
+    );
+
+    expect(recordSpawn).toHaveBeenCalledTimes(1);
+    expect(recordSpawn).toHaveBeenCalledWith({
+      parentWuId: 'WU-1600',
+      targetWuId: 'WU-1604',
+      lane: 'Framework: Initiatives',
+      baseDir: '.lumenflow/state',
+    });
+    expect(formatSpawnMessage).toHaveBeenCalledWith('spawn-1604-delegate', undefined);
+  });
+
+  it('does not record in explicit delegation mode when --parent-wu is absent', async () => {
+    const log = vi.fn();
+    const recordSpawn = vi.fn();
+    const formatSpawnMessage = vi.fn();
+
+    await emitSpawnOutputWithRegistry(
+      {
+        id: 'WU-1604',
+        output: 'codex-output',
+        isCodexClient: true,
+        lane: 'Framework: Initiatives',
+        recordDelegationIntent: true,
       },
       { log, recordSpawn, formatSpawnMessage },
     );

@@ -1206,7 +1206,9 @@ export function formatExecutionPlan(initiative: InitiativeDoc, plan: ExecutionPl
  * @returns {string[]} Array of spawn command strings
  */
 export function generateSpawnCommands(wave: WUEntry[]): string[] {
-  return wave.map((wu) => `pnpm wu:spawn --id ${wu.id}`);
+  return wave.map(
+    (wu) => `pnpm wu:delegate --id ${wu.id} --parent-wu <PARENT-WU-ID> --client claude-code`,
+  );
 }
 
 /**

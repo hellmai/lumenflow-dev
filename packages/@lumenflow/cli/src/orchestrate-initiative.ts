@@ -148,9 +148,12 @@ const program = new Command()
         console.log('    pnpm orchestrate:initiative -i ' + initIds[0]);
         console.log('    Best for: Small initiatives (<4 WUs), quick execution');
         console.log('');
-        console.log(chalk.cyan('  Option 3: Manual spawn per WU'));
-        console.log('    pnpm wu:spawn --id <WU-ID> --client claude-code');
-        console.log('    Best for: Testing, debugging, single WU execution');
+        console.log(chalk.cyan('  Option 3: Manual briefing/delegation per WU'));
+        console.log('    pnpm wu:brief --id <WU-ID> --client claude-code');
+        console.log(
+          '    pnpm wu:delegate --id <WU-ID> --parent-wu <PARENT-WU-ID> --client claude-code',
+        );
+        console.log('    Best for: Testing, debugging, explicit lineage tracking');
         console.log('');
         console.log(chalk.bold('Monitoring Commands:'));
         console.log('  pnpm mem:inbox --since 10m          # Check for signals from agents');
