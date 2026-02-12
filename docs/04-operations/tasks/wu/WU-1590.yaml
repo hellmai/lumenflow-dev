@@ -1,6 +1,6 @@
 id: WU-1590
 title: 'Cloud Lifecycle: create, claim, prep, done, cleanup in branch-pr'
-lane: 'Operations: Tooling'
+lane: 'Framework: CLI WU Commands'
 type: feature
 status: ready
 priority: P0
