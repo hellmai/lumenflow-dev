@@ -4,7 +4,7 @@
  *
  * WU-1412: Tools available: context_get, wu_list, wu_status, wu_create, wu_claim, wu_done, gates_run
  * WU-1422: Additional WU tools: wu_block, wu_unblock, wu_edit, wu_release, wu_recover, wu_repair,
- *          wu_deps, wu_prep, wu_preflight, wu_prune, wu_delete, wu_cleanup, wu_spawn, wu_validate,
+ *          wu_deps, wu_prep, wu_preflight, wu_prune, wu_delete, wu_cleanup, wu_validate,
  *          wu_infer_lane, wu_unlock_lane
  * WU-1424: Initiative tools: initiative_list, initiative_status, initiative_create, initiative_edit,
  *          initiative_add_wu, initiative_remove_wu, initiative_bulk_assign, initiative_plan
@@ -177,7 +177,6 @@ const ErrorCodes = {
   WU_PRUNE_ERROR: 'WU_PRUNE_ERROR',
   WU_DELETE_ERROR: 'WU_DELETE_ERROR',
   WU_CLEANUP_ERROR: 'WU_CLEANUP_ERROR',
-  WU_SPAWN_ERROR: 'WU_SPAWN_ERROR',
   WU_BRIEF_ERROR: 'WU_BRIEF_ERROR',
   WU_DELEGATE_ERROR: 'WU_DELEGATE_ERROR',
   WU_VALIDATE_ERROR: 'WU_VALIDATE_ERROR',
@@ -2132,7 +2131,7 @@ export const wuCleanupTool: ToolDefinition = {
 };
 
 /**
- * Build common argument list for wu:brief / wu:spawn / wu:delegate prompt tools.
+ * Build common argument list for wu:brief / wu:delegate prompt tools.
  */
 function buildWuPromptArgs(input: Record<string, unknown>): string[] {
   const args = ['--id', input.id as string];
@@ -2147,13 +2146,12 @@ function buildWuPromptArgs(input: Record<string, unknown>): string[] {
 /**
  * wu_brief - Generate handoff prompt for sub-agent WU execution (WU-1603)
  *
- * This is the canonical prompt-generation tool. wu_spawn is retained
- * as a backward-compatible alias.
+ * This is the canonical prompt-generation tool.
  */
 export const wuBriefTool: ToolDefinition = {
   name: 'wu_brief',
   description: 'Generate handoff prompt for sub-agent WU execution',
-  // WU-1454: Use shared schema (same parameters as wu:spawn)
+  // WU-1454: Use shared schema (same parameters as wu:delegate)
   inputSchema: wuSpawnSchema,
 
   async execute(input, options) {
@@ -2172,39 +2170,6 @@ export const wuBriefTool: ToolDefinition = {
       return error(
         result.stderr || result.error?.message || 'wu:brief failed',
         ErrorCodes.WU_BRIEF_ERROR,
-      );
-    }
-  },
-};
-
-/**
- * wu_spawn - Generate Task tool invocation for sub-agent WU execution
- *
- * WU-1603: Deprecated alias for wu_brief. Retained for backward compatibility.
- * Delegates to wu:spawn CLI which emits deprecation warning.
- */
-export const wuSpawnTool: ToolDefinition = {
-  name: 'wu_spawn',
-  description: 'Generate sub-agent spawn prompt for WU execution (deprecated: use wu_brief)',
-  // WU-1454: Use shared schema
-  inputSchema: wuSpawnSchema,
-
-  async execute(input, options) {
-    if (!input.id) {
-      return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
-    }
-
-    const args = buildWuPromptArgs(input);
-
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:spawn', args, cliOptions);
-
-    if (result.success) {
-      return success({ message: result.stdout || 'Spawn prompt generated' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:spawn failed',
-        ErrorCodes.WU_SPAWN_ERROR,
       );
     }
   },
@@ -4055,7 +4020,6 @@ export const allTools: ToolDefinition[] = [
   wuDeleteTool,
   wuCleanupTool,
   wuBriefTool,
-  wuSpawnTool,
   wuDelegateTool,
   wuValidateTool,
   wuInferLaneTool,

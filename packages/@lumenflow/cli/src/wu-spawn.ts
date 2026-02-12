@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
 /**
- * WU Spawn Helper
+ * WU Prompt Helper
  *
- * Generates ready-to-use Task tool invocations for sub-agent WU execution.
+ * Generates ready-to-use handoff prompts for sub-agent WU execution.
  * Includes context loading preamble, skills selection guidance, and constraints block.
  *
  * Usage:
- *   pnpm wu:spawn --id WU-123
- *   pnpm wu:spawn --id WU-123 --codex
+ *   pnpm wu:brief --id WU-123
+ *   pnpm wu:brief --id WU-123 --codex
+ *   pnpm wu:delegate --id WU-123 --parent-wu WU-100
  *
  * Output:
  *   A complete Task tool invocation block with:
@@ -20,7 +21,7 @@
  *
  * Skills Selection:
  *   This command is AGENT-FACING. Unlike /wu-prompt (human-facing, skills selected
- *   at generation time), wu:spawn instructs the sub-agent to read the skill catalogue
+ *   at generation time), wu:brief instructs the sub-agent to read the skill catalogue
  *   and select skills at execution time based on WU context.
  *
  * Codex Mode:
@@ -100,9 +101,6 @@ export {
   generateAgentCoordinationSection,
 };
 
-// WU-1603: Export deprecation message for use by wu:brief and tests
-export { SPAWN_DEPRECATION_MESSAGE };
-
 /**
  * Mandatory agent trigger patterns.
  * Mirrors MANDATORY_TRIGGERS from orchestration.constants.ts.
@@ -115,19 +113,8 @@ const MANDATORY_TRIGGERS: Record<string, readonly string[]> = {
   // No mandatory triggers for LumenFlow framework development.
 };
 
-/** WU-1603: Deprecation message for wu:spawn alias */
-const SPAWN_DEPRECATION_MESSAGE =
-  'wu:spawn is deprecated and will be removed in a future release. Use wu:brief instead.';
-
-const LOG_PREFIX = '[wu:spawn]';
 const BRIEF_LOG_PREFIX = '[wu:brief]';
 const DELEGATE_LOG_PREFIX = '[wu:delegate]';
-
-const DELEGATE_OPTION = {
-  name: 'delegate',
-  flags: '--delegate',
-  description: 'Record delegation lineage intent (requires --parent-wu)',
-};
 
 /**
  * Detect mandatory agents based on code paths.
@@ -1467,7 +1454,6 @@ interface ParsedArgs {
   client?: string;
   vendor?: string;
   noContext?: boolean;
-  delegate?: boolean;
 }
 
 interface SpawnOutputWithRegistryOptions {
@@ -1491,7 +1477,7 @@ interface SpawnOutputWithRegistryDependencies {
 /**
  * Emit prompt output and optionally persist parent/child lineage.
  *
- * WU-1604: Prompt generation (wu:brief / wu:spawn alias) is side-effect free.
+ * WU-1604: Prompt generation (wu:brief) is side-effect free.
  * Only explicit delegation mode records lineage intent.
  */
 export async function emitSpawnOutputWithRegistry(
@@ -1505,7 +1491,7 @@ export async function emitSpawnOutputWithRegistry(
     parentWu,
     lane,
     recordDelegationIntent = false,
-    logPrefix: prefix = LOG_PREFIX,
+    logPrefix: prefix = BRIEF_LOG_PREFIX,
   } = options;
   const log = dependencies.log ?? console.log;
   const recordSpawn = dependencies.recordSpawn ?? recordSpawnToRegistry;
@@ -1537,10 +1523,10 @@ export async function emitSpawnOutputWithRegistry(
 }
 
 /**
- * WU-1603: Parser configuration for wu:brief / wu:spawn commands
+ * Parser configuration for wu:brief / wu:delegate commands
  */
 interface BriefParserConfig {
-  /** CLI command name (e.g., 'wu-brief' or 'wu-spawn') */
+  /** CLI command name (e.g., 'wu-brief' or 'wu-delegate') */
   name: string;
   /** CLI description shown in --help */
   description: string;
@@ -1551,12 +1537,12 @@ const BRIEF_PARSER_CONFIG: BriefParserConfig = {
   description: 'Generate handoff prompt for sub-agent WU execution',
 };
 
-const SPAWN_PARSER_CONFIG: BriefParserConfig = {
-  name: 'wu-spawn',
-  description: 'Generate handoff prompt for sub-agent WU execution (deprecated: use wu:brief)',
+const DELEGATE_PARSER_CONFIG: BriefParserConfig = {
+  name: 'wu-delegate',
+  description: 'Generate delegation prompt and record explicit lineage intent',
 };
 
-function parseAndValidateArgs(parserConfig: BriefParserConfig = SPAWN_PARSER_CONFIG): ParsedArgs {
+function parseAndValidateArgs(parserConfig: BriefParserConfig = BRIEF_PARSER_CONFIG): ParsedArgs {
   const args = createWUParser({
     name: parserConfig.name,
     description: parserConfig.description,
@@ -1570,7 +1556,6 @@ function parseAndValidateArgs(parserConfig: BriefParserConfig = SPAWN_PARSER_CON
       WU_OPTIONS.client,
       WU_OPTIONS.vendor,
       WU_OPTIONS.noContext, // WU-1240: Skip memory context injection
-      DELEGATE_OPTION,
     ],
     required: ['id'],
     allowPositionalId: true,
@@ -1635,7 +1620,7 @@ function loadWUDocument(id: string, wuPath: string): WUDocument {
 function resolveClientName(
   args: ParsedArgs,
   config: ReturnType<typeof getConfig>,
-  logPrefix = LOG_PREFIX,
+  logPrefix = BRIEF_LOG_PREFIX,
 ): string {
   let clientName = args.client;
 
@@ -1661,7 +1646,7 @@ function resolveClientName(
 async function checkAndWarnLaneOccupation(
   lane: string | undefined,
   id: string,
-  logPrefix = LOG_PREFIX,
+  logPrefix = BRIEF_LOG_PREFIX,
 ): Promise<void> {
   if (!lane) return;
 
@@ -1676,37 +1661,34 @@ async function checkAndWarnLaneOccupation(
 }
 
 /**
- * WU-1603: Options for running the brief/spawn logic
+ * Options for running prompt-generation logic.
  */
 export interface RunBriefOptions {
-  /** Whether to show deprecation warning (true for wu:spawn alias path) */
-  deprecated?: boolean;
   /** Parser config override (command name and description) */
   parserConfig?: BriefParserConfig;
   /** Log prefix override for output messages */
   logPrefix?: string;
+  /** Execution mode for command entry points */
+  mode?: 'brief' | 'delegate';
 }
 
 /**
- * WU-1603: Shared entry point for wu:brief and wu:spawn
- *
- * Both commands call this function. wu:spawn passes { deprecated: true }
- * to emit the deprecation notice; wu:brief passes { deprecated: false }.
+ * Shared entry point for wu:brief and wu:delegate.
  */
 export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void> {
   const {
-    deprecated = false,
-    parserConfig = BRIEF_PARSER_CONFIG,
+    mode = 'brief',
+    parserConfig = mode === 'delegate' ? DELEGATE_PARSER_CONFIG : BRIEF_PARSER_CONFIG,
     logPrefix = BRIEF_LOG_PREFIX,
   } = options;
 
   const args = parseAndValidateArgs(parserConfig);
-  const explicitDelegation = args.delegate === true;
+  const explicitDelegation = mode === 'delegate';
   const effectiveLogPrefix = explicitDelegation ? DELEGATE_LOG_PREFIX : logPrefix;
 
   // WU-2202: Validate dependencies BEFORE any other operation
   // This prevents false lane occupancy reports when yaml package is missing
-  const commandLabel = explicitDelegation ? 'wu:delegate' : deprecated ? 'wu:spawn' : 'wu:brief';
+  const commandLabel = explicitDelegation ? 'wu:delegate' : 'wu:brief';
   const depResult = await validateSpawnDependencies();
   if (!depResult.valid) {
     die(formatDependencyError(commandLabel, depResult.missing));
@@ -1718,10 +1700,6 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
         'Example:\n' +
         '  pnpm wu:delegate --id WU-123 --parent-wu WU-100 --client claude-code',
     );
-  }
-
-  if (deprecated && !explicitDelegation) {
-    console.warn(`${effectiveLogPrefix} ${EMOJI.WARNING} ${SPAWN_DEPRECATION_MESSAGE}`);
   }
 
   if (!explicitDelegation && args.parentWu) {
@@ -1838,17 +1816,14 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
 }
 
 /**
- * Main entry point for wu:spawn (deprecated alias)
+ * Main entry point for removed wu:spawn command.
  *
- * WU-1603: wu:spawn is now a backward-compatible alias for wu:brief.
- * It emits a deprecation warning, then delegates to the shared runBriefLogic.
+ * WU-1617: command removed in favor of explicit wu:brief and wu:delegate.
  */
 async function main(): Promise<void> {
-  await runBriefLogic({
-    deprecated: true,
-    parserConfig: SPAWN_PARSER_CONFIG,
-    logPrefix: '[wu:spawn]',
-  });
+  die(
+    'wu:spawn has been removed. Use wu:brief for prompt generation or wu:delegate for explicit delegation lineage.',
+  );
 }
 
 // Guard main() for testability (WU-1366)

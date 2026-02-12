@@ -4,8 +4,7 @@
  * WU Brief - Pure Prompt Generator (WU-1603)
  *
  * Generates ready-to-use handoff prompts for sub-agent WU execution.
- * This is the canonical command for prompt generation; wu:spawn is
- * retained as a backward-compatible alias with deprecation messaging.
+ * This is the canonical command for prompt generation.
  *
  * Usage:
  *   pnpm wu:brief --id WU-123
@@ -28,13 +27,9 @@ const BRIEF_LOG_PREFIX = '[wu:brief]';
 
 /**
  * Main entry point for wu:brief (canonical command)
- *
- * WU-1603: wu:brief is the primary prompt-generation command.
- * It does NOT emit a deprecation warning (deprecated: false).
  */
 async function main(): Promise<void> {
   await runBriefLogic({
-    deprecated: false,
     parserConfig: {
       name: 'wu-brief',
       description: 'Generate handoff prompt for sub-agent WU execution',

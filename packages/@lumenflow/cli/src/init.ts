@@ -2119,7 +2119,7 @@ Context compaction causes agents to lose critical rules. The disciplined approac
 
 1. Checkpoint your progress: \`pnpm mem:checkpoint --wu WU-XXX\`
 2. Commit and push work
-3. Generate fresh agent prompt: \`pnpm wu:spawn --id WU-XXX\`
+3. Generate fresh agent prompt: \`pnpm wu:brief --id WU-XXX --client claude-code\`
 4. EXIT current session (do NOT continue after compaction)
 
 ---

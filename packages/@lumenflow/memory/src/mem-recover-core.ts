@@ -69,7 +69,7 @@ const SECTION_HEADERS = {
 const ESSENTIAL_CLI_COMMANDS = `| Command | Purpose |
 |---------|---------|
 | pnpm wu:status --id WU-XXX | Check WU status and location |
-| pnpm wu:spawn --id WU-XXX | Generate fresh agent spawn prompt |
+| pnpm wu:brief --id WU-XXX --client claude-code | Generate fresh agent handoff prompt |
 | pnpm gates | Run quality gates before completion |
 | pnpm mem:checkpoint | Save progress checkpoint |`;
 
@@ -255,7 +255,7 @@ ${cliRef}
     : '';
 
   const footer = `## ${SECTION_HEADERS.NEXT_ACTION}
-Run \`pnpm wu:spawn --id ${wuId}\` to spawn a fresh agent with full context.
+Run \`pnpm wu:brief --id ${wuId} --client claude-code\` to generate a fresh handoff prompt.
 `;
 
   // Build sections in priority order
@@ -268,7 +268,7 @@ Run \`pnpm wu:spawn --id ${wuId}\` to spawn a fresh agent with full context.
     // Even fixed content exceeds budget - return minimal recovery
     const minimal = `# ${SECTION_HEADERS.RECOVERY_TITLE}
 WU: ${wuId}
-Run: pnpm wu:spawn --id ${wuId}
+Run: pnpm wu:brief --id ${wuId} --client claude-code
 `;
     return { context: minimal, truncated: true };
   }

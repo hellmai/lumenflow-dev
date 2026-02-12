@@ -770,7 +770,7 @@ You are resuming work after context compaction. Your previous context was lost.
 **WU:** \${WU_ID}
 
 ## Next Action
-Run \\\`pnpm wu:spawn --id \${WU_ID}\\\` to spawn a fresh agent with full context.
+Run \\\`pnpm wu:brief --id \${WU_ID} --client claude-code\\\` to generate a fresh handoff prompt.
 EOF
   }
 
@@ -779,7 +779,7 @@ EOF
   echo "═══════════════════════════════════════════════════════" >&2
   echo "⚠️  COMPACTION: Checkpoint saved for \${WU_ID}" >&2
   echo "Recovery context: \${RECOVERY_FILE}" >&2
-  echo "Next: pnpm wu:spawn --id \${WU_ID}" >&2
+  echo "Next: pnpm wu:brief --id \${WU_ID} --client claude-code" >&2
   echo "═══════════════════════════════════════════════════════" >&2
 else
   # WU-1473: Non-worktree orchestrator context recovery
@@ -910,7 +910,7 @@ done
 # Additional context if recovery was displayed
 if [[ "\$FOUND_RECOVERY" == "true" ]]; then
   echo "IMPORTANT: Your context was compacted. Review the recovery info above." >&2
-  echo "Recommended: Run 'pnpm wu:spawn --id \$WU_ID' for fresh full context." >&2
+  echo "Recommended: Run 'pnpm wu:brief --id \$WU_ID --client claude-code' for fresh full context." >&2
   echo "" >&2
 fi
 

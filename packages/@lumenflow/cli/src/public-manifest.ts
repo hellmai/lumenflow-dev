@@ -131,16 +131,9 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
   },
   {
     name: 'wu:delegate',
-    binName: 'wu-spawn',
-    binPath: './dist/wu-spawn.js',
+    binName: 'wu-delegate',
+    binPath: './dist/wu-delegate.js',
     description: 'Generate delegation prompt and record explicit lineage intent',
-    category: COMMAND_CATEGORIES.WU_LIFECYCLE,
-  },
-  {
-    name: 'wu:spawn',
-    binName: 'wu-spawn',
-    binPath: './dist/wu-spawn.js',
-    description: 'Generate sub-agent spawn prompt (deprecated: use wu:brief)',
     category: COMMAND_CATEGORIES.WU_LIFECYCLE,
   },
   {

@@ -3,7 +3,7 @@
  * @description Tests for additional WU MCP tool implementations
  *
  * WU-1422: MCP tools: wu_block, wu_unblock, wu_edit, wu_release, wu_recover, wu_repair,
- * wu_deps, wu_prep, wu_preflight, wu_prune, wu_delete, wu_cleanup, wu_spawn, wu_validate,
+ * wu_deps, wu_prep, wu_preflight, wu_prune, wu_delete, wu_cleanup, wu_validate,
  * wu_infer_lane, wu_unlock_lane
  */
 
@@ -21,7 +21,6 @@ import {
   wuPruneTool,
   wuDeleteTool,
   wuCleanupTool,
-  wuSpawnTool,
   wuDelegateTool,
   wuValidateTool,
   wuInferLaneTool,
@@ -600,48 +599,14 @@ describe('WU MCP tools (WU-1422)', () => {
     });
   });
 
-  describe('wu_spawn', () => {
-    it('should generate spawn prompt via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
-        success: true,
-        stdout: '<task>Spawn prompt for WU-1422</task>',
-        stderr: '',
-        exitCode: 0,
-      });
-
-      const result = await wuSpawnTool.execute({ id: 'WU-1422' });
-
-      expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'wu:spawn',
-        expect.arrayContaining(['--id', 'WU-1422']),
-        expect.any(Object),
-      );
+  describe('wu_spawn removal (WU-1617)', () => {
+    it('should not expose wu_spawn in MCP tool registry', () => {
+      expect(allTools.some((tool) => tool.name === 'wu_spawn')).toBe(false);
     });
 
-    it('should require id parameter', async () => {
-      const result = await wuSpawnTool.execute({});
-
-      expect(result.success).toBe(false);
-      expect(result.error?.message).toContain('id');
-    });
-
-    it('should support client option', async () => {
-      mockRunCliCommand.mockResolvedValue({
-        success: true,
-        stdout: 'Spawn prompt for gemini',
-        stderr: '',
-        exitCode: 0,
-      });
-
-      const result = await wuSpawnTool.execute({ id: 'WU-1422', client: 'gemini-cli' });
-
-      expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'wu:spawn',
-        expect.arrayContaining(['--id', 'WU-1422', '--client', 'gemini-cli']),
-        expect.any(Object),
-      );
+    it('should not expose wu:spawn in public CLI manifest', () => {
+      const commandNames = PUBLIC_MANIFEST.map((command) => command.name);
+      expect(commandNames).not.toContain('wu:spawn');
     });
   });
 

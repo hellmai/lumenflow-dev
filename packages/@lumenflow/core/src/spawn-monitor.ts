@@ -724,7 +724,9 @@ export async function processSpawnFailureSignals(options: RunRecoveryOptions = {
         console.log(`${SIGNAL_HANDLER_LOG_PREFIX} [WARNING] ${reason}`);
         console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Spawn: ${payload.spawn_id}`);
         console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Target: ${payload.target_wu_id}`);
-        console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Suggestion: Re-spawn with pnpm wu:spawn`);
+        console.log(
+          `${SIGNAL_HANDLER_LOG_PREFIX}   Suggestion: Re-generate with pnpm wu:brief --id ${payload.target_wu_id} --client claude-code`,
+        );
         break;
 
       case SignalResponseAction.BLOCK:

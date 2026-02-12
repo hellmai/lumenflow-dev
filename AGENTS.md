@@ -80,7 +80,8 @@ pnpm wu:cleanup --id WU-XXXX
 | `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands        |
 | `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                            |
 | `pnpm wu:unblock --id WU-XXX`                  | Unblock WU                                      |
-| `pnpm wu:spawn --id WU-XXX --client <client>`  | Generate delegation prompt (no automatic spawn) |
+| `pnpm wu:brief --id WU-XXX --client <client>`  | Generate handoff prompt (no automatic execution) |
+| `pnpm wu:delegate --id WU-XXX --parent-wu <P>` | Generate prompt + record delegation lineage      |
 | `pnpm wu:recover --id WU-XXX`                  | Analyze and fix WU state inconsistencies        |
 
 ### Gates & Quality
