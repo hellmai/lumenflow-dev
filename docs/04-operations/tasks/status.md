@@ -6,6 +6,7 @@ _Last updated: 2026-02-12_
 
 - [WU-1608 — Fix wu:brief LOG_PREFIX leak and tautological tests](wu/WU-1608.yaml)
 - [WU-1611 — Prevent wu:done post-merge metadata leak from dirtying main](wu/WU-1611.yaml)
+- [WU-1612 — PostToolUse hook to track agent launches for compaction recovery](wu/WU-1612.yaml)
 
 ## Completed
 
