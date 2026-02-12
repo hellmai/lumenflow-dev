@@ -7,17 +7,19 @@ priority: P0
 created: 2026-02-12
 code_paths:
   - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/cli/src/__tests__/gates-spec-linter-scope.test.ts
 tests:
   manual:
     - Run gates from a worktree and verify unrelated invalid WUs do not block spec:linter
   unit:
     - packages/@lumenflow/cli/src/__tests__/gates-integration-tests.test.ts
+    - packages/@lumenflow/cli/src/__tests__/gates-spec-linter-scope.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1614.done
 dependencies: []
 spec_refs:
-  - lumenflow://plans/WU-XXXX-plan.md
+  - lumenflow://plans/WU-1614-plan.md
 risks: []
 notes: Follow-up to WU-1608/WU-1611 lifecycle regressions and scoped validation expectation.
 requires_review: false

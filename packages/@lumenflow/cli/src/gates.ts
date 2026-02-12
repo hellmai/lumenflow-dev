@@ -747,24 +747,87 @@ function run(
   return { ok: result.status === EXIT_CODES.SUCCESS, duration: Date.now() - start };
 }
 
+/**
+ * Parse a WU ID from a branch name.
+ * Returns canonical upper-case ID (e.g., WU-123) or null when not present.
+ */
+export function parseWUFromBranchName(branchName: string | null | undefined): string | null {
+  if (!branchName) {
+    return null;
+  }
+
+  const match = branchName.match(/wu-(\d+)/i);
+  if (!match) {
+    return null;
+  }
+
+  return `WU-${match[1]}`.toUpperCase();
+}
+
+/**
+ * Resolve spec-linter execution strategy.
+ * If current WU is known, run scoped validation only.
+ * If unknown, fall back to global validation.
+ */
+export function resolveSpecLinterPlan(wuId: string | null): {
+  scopedWuId: string | null;
+  runGlobal: boolean;
+} {
+  if (wuId) {
+    return {
+      scopedWuId: wuId,
+      runGlobal: false,
+    };
+  }
+
+  return {
+    scopedWuId: null,
+    runGlobal: true,
+  };
+}
+
+async function detectCurrentWUForCwd(cwd?: string): Promise<string | null> {
+  const workingDir = cwd ?? process.cwd();
+
+  try {
+    const branch = await createGitForPath(workingDir).getCurrentBranch();
+    const parsed = parseWUFromBranchName(branch);
+    if (parsed) {
+      return parsed;
+    }
+  } catch {
+    // Fall back to legacy process-cwd based resolver below.
+  }
+
+  return getCurrentWU();
+}
+
 async function runSpecLinterGate({ agentLog, useAgentMode, cwd }: GateLogContext) {
   const start = Date.now();
-  const wuId = getCurrentWU();
+  const wuId = await detectCurrentWUForCwd(cwd);
+  const plan = resolveSpecLinterPlan(wuId);
 
-  if (wuId) {
-    const scopedCmd = pnpmCmd('wu:validate', '--id', wuId);
+  if (plan.scopedWuId) {
+    const scopedCmd = pnpmCmd('wu:validate', '--id', plan.scopedWuId);
     const scopedResult = run(scopedCmd, { agentLog, cwd });
     if (!scopedResult.ok) {
       return { ok: false, duration: Date.now() - start };
     }
-  } else if (!useAgentMode) {
+    return { ok: true, duration: Date.now() - start };
+  }
+
+  if (!useAgentMode) {
     console.log('⚠️  Unable to detect current WU; skipping scoped validation.');
   } else if (agentLog) {
     writeSync(agentLog.logFd, '⚠️  Unable to detect current WU; skipping scoped validation.\n');
   }
 
-  const globalResult = run(pnpmRun(SCRIPTS.SPEC_LINTER), { agentLog, cwd });
-  return { ok: globalResult.ok, duration: Date.now() - start };
+  if (!plan.runGlobal) {
+    return { ok: true, duration: Date.now() - start };
+  }
+
+  const fallbackResult = run(pnpmRun(SCRIPTS.SPEC_LINTER), { agentLog, cwd });
+  return { ok: fallbackResult.ok, duration: Date.now() - start };
 }
 
 type GateLogContext = {
