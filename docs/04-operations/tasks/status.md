@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1600 — Remove wu-state-cloud fallback and use canonical CLAIMED_MODES](wu/WU-1600.yaml)
 
 ## Completed
 
