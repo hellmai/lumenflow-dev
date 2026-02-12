@@ -1143,4 +1143,5 @@
 {"type":"complete","wuId":"WU-1601","timestamp":"2026-02-12T14:05:11.429Z"}
 {"type":"claim","wuId":"WU-1602","timestamp":"2026-02-12T14:05:38.332Z","lane":"Content: Framework Docs","title":"Align docs terminology from spawn execution to delegation intent"}
 {"type":"complete","wuId":"WU-1602","timestamp":"2026-02-12T14:08:26.115Z"}
-{"type":"claim","wuId":"WU-1607","lane":"Framework: CLI Orchestration","title":"Ignore spawn-registry runtime artifact in git status","timestamp":"2026-02-12T14:36:42.325Z"}
+{"type":"claim","wuId":"WU-1607","timestamp":"2026-02-12T14:36:42.325Z","lane":"Framework: CLI Orchestration","title":"Ignore spawn-registry runtime artifact in git status"}
+{"type":"complete","wuId":"WU-1607","timestamp":"2026-02-12T14:38:21.672Z"}
