@@ -44,6 +44,8 @@ coverage/
 
 # LumenFlow runtime state (allow state/wu-events.jsonl for completion tracking)
 /.lumenflow/state/*.backup*
+# Runtime delegation lineage registry (local/session state only)
+/.lumenflow/state/spawn-registry.jsonl
 # WU-1533: Archive files are created by auto-cleanup, not tracked
 /.lumenflow/archive/
 /.lumenflow/memory/
@@ -62,6 +64,7 @@ coverage/
 **/.lumenflow/sessions/
 **/.lumenflow/checkpoints/
 **/.lumenflow/artifacts/
+**/.lumenflow/state/spawn-registry.jsonl
 
 # Legacy .beacon paths (deprecated, kept for transition)
 /.beacon/state/*.backup*
