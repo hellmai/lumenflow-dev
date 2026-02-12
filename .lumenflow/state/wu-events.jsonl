@@ -1171,3 +1171,4 @@
 {"type":"complete","wuId":"WU-1616","timestamp":"2026-02-12T19:06:29.938Z"}
 {"type":"claim","wuId":"WU-1618","timestamp":"2026-02-12T19:09:17.213Z","lane":"Framework: CLI WU Commands","title":"Improve wu:edit scope preflight and replace-code-paths UX"}
 {"type":"complete","wuId":"WU-1618","timestamp":"2026-02-12T19:15:39.159Z"}
+{"type":"claim","wuId":"WU-1619","lane":"Content: Framework Docs","title":"Migrate remaining agent-facing docs from wu:spawn to wu:brief/wu:delegate","timestamp":"2026-02-12T19:19:42.248Z"}
