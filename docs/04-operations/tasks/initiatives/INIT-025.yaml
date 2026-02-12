@@ -1,13 +1,28 @@
 id: INIT-025
 slug: god-file-decomposition
 title: God File Decomposition Initiative
-description: ''
+description: Complete mechanical decomposition of 10 high-churn god files into command- and
+  domain-focused modules, using merge-conflict-prioritized split strategy (11 WUs, 3 phases, no new
+  abstractions).
 status: draft
 priority: P1
 owner: Framework Team
 created: 2026-02-12
 target_date: 2026-02-28
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: 'Phase 1: Mechanical Splits'
+    status: pending
+  - id: 2
+    title: 'Phase 2: Structural Extractions'
+    status: pending
+  - id: 3
+    title: 'Phase 3: Remaining Files + cleanup'
+    status: pending
+success_metrics:
+  - All listed decompositions are completed via new files + thin barrels with backward-compatible
+    exports
+  - No remaining target file exceeds 800 lines in decomposed scope (except explicit exceptions)
+  - ' is updated and initiative-linked to its plan URI'
 labels: []
 related_plan: lumenflow://plans/optimized-sprouting-salamander.md
