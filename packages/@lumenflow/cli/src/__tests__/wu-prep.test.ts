@@ -358,7 +358,7 @@ describe('wu-prep code_paths coverage preflight (WU-1531)', () => {
 
       expect(message).toContain('packages/@lumenflow/cli/src/wu-prep.ts');
       expect(message).toContain('packages/@lumenflow/core/src/wu-lint.ts');
-      expect(message).toContain('pnpm wu:edit --id WU-1531 --replace-code-paths');
+      expect(message).toContain('pnpm wu:edit --id WU-1531 --replace-code-paths --code-paths');
     });
   });
 });

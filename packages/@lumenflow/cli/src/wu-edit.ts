@@ -86,6 +86,7 @@ import {
   resolveInProgressEditMode,
 } from './wu-state-cloud.js';
 import { runCLI } from './cli-entry-point.js';
+import { checkCodePathCoverageBeforeGates, formatCodePathCoverageFailure } from './wu-prep.js';
 
 const PREFIX = LOG_PREFIX.EDIT;
 
@@ -389,52 +390,147 @@ function validateInitiativeExists(initId) {
   return initPath;
 }
 
+const NON_SCOPE_RELEVANT_PATHS = new Set([
+  '.lumenflow/state/wu-events.jsonl',
+  'docs/04-operations/tasks/backlog.md',
+  'docs/04-operations/tasks/status.md',
+]);
+
+/**
+ * WU-1618: Treat backlog/state bookkeeping files as non-scope signals.
+ */
+export function hasScopeRelevantBranchChanges(changedFiles: string[]): boolean {
+  return changedFiles.some((filePath) => {
+    const normalized = filePath.trim().replace(/\\/g, '/');
+    if (!normalized) {
+      return false;
+    }
+    if (NON_SCOPE_RELEVANT_PATHS.has(normalized)) {
+      return false;
+    }
+    return !normalized.startsWith('docs/04-operations/tasks/wu/');
+  });
+}
+
+/**
+ * WU-1618: Support `--replace-code-paths <paths>` shorthand by normalizing to
+ * `--replace-code-paths --code-paths <paths>` before Commander parsing.
+ */
+export function normalizeReplaceCodePathsArgv(argv: string[]): string[] {
+  const normalized = [...argv];
+  for (let i = 0; i < normalized.length; i += 1) {
+    if (normalized[i] !== '--replace-code-paths') {
+      continue;
+    }
+    const next = normalized[i + 1];
+    if (next && !next.startsWith('-')) {
+      normalized.splice(i + 1, 0, '--code-paths');
+      i += 1;
+    }
+  }
+  return normalized;
+}
+
 /**
  * Parse command line arguments
  */
 function parseArgs() {
-  return createWUParser({
-    name: 'wu-edit',
-    description: 'Edit WU spec files with micro-worktree isolation',
-    options: [
-      WU_OPTIONS.id,
-      EDIT_OPTIONS.specFile,
-      EDIT_OPTIONS.description,
-      EDIT_OPTIONS.acceptance,
-      EDIT_OPTIONS.notes,
-      // WU-1144: Add explicit replace flags for notes and acceptance
-      EDIT_OPTIONS.replaceNotes,
-      EDIT_OPTIONS.replaceAcceptance,
-      EDIT_OPTIONS.codePaths,
-      EDIT_OPTIONS.replaceCodePaths,
-      EDIT_OPTIONS.risks,
-      EDIT_OPTIONS.replaceRisks,
-      EDIT_OPTIONS.append,
-      // WU-1390: Add test path flags
-      WU_OPTIONS.testPathsManual,
-      WU_OPTIONS.testPathsUnit,
-      WU_OPTIONS.testPathsE2e,
-      // WU-1456: Add lane reassignment
-      EDIT_OPTIONS.lane,
-      // WU-1620: Add type and priority
-      EDIT_OPTIONS.type,
-      EDIT_OPTIONS.priority,
-      // WU-1929: Add initiative and phase
-      EDIT_OPTIONS.initiative,
-      EDIT_OPTIONS.phase,
-      // WU-2564: Add blocked_by and dependencies
-      EDIT_OPTIONS.blockedBy,
-      EDIT_OPTIONS.replaceBlockedBy,
-      EDIT_OPTIONS.addDep,
-      EDIT_OPTIONS.replaceDependencies,
-      // WU-1039: Add exposure for done WU metadata updates
-      WU_OPTIONS.exposure,
-      // WU-1329: Strict validation is default, --no-strict bypasses
-      WU_OPTIONS.noStrict,
-    ],
-    required: ['id'],
-    allowPositionalId: true,
+  const normalizedArgv = normalizeReplaceCodePathsArgv(process.argv);
+  const originalArgv = process.argv;
+  process.argv = normalizedArgv;
+  try {
+    return createWUParser({
+      name: 'wu-edit',
+      description: 'Edit WU spec files with micro-worktree isolation',
+      options: [
+        WU_OPTIONS.id,
+        EDIT_OPTIONS.specFile,
+        EDIT_OPTIONS.description,
+        EDIT_OPTIONS.acceptance,
+        EDIT_OPTIONS.notes,
+        // WU-1144: Add explicit replace flags for notes and acceptance
+        EDIT_OPTIONS.replaceNotes,
+        EDIT_OPTIONS.replaceAcceptance,
+        EDIT_OPTIONS.codePaths,
+        EDIT_OPTIONS.replaceCodePaths,
+        EDIT_OPTIONS.risks,
+        EDIT_OPTIONS.replaceRisks,
+        EDIT_OPTIONS.append,
+        // WU-1390: Add test path flags
+        WU_OPTIONS.testPathsManual,
+        WU_OPTIONS.testPathsUnit,
+        WU_OPTIONS.testPathsE2e,
+        // WU-1456: Add lane reassignment
+        EDIT_OPTIONS.lane,
+        // WU-1620: Add type and priority
+        EDIT_OPTIONS.type,
+        EDIT_OPTIONS.priority,
+        // WU-1929: Add initiative and phase
+        EDIT_OPTIONS.initiative,
+        EDIT_OPTIONS.phase,
+        // WU-2564: Add blocked_by and dependencies
+        EDIT_OPTIONS.blockedBy,
+        EDIT_OPTIONS.replaceBlockedBy,
+        EDIT_OPTIONS.addDep,
+        EDIT_OPTIONS.replaceDependencies,
+        // WU-1039: Add exposure for done WU metadata updates
+        WU_OPTIONS.exposure,
+        // WU-1329: Strict validation is default, --no-strict bypasses
+        WU_OPTIONS.noStrict,
+      ],
+      required: ['id'],
+      allowPositionalId: true,
+    });
+  } finally {
+    process.argv = originalArgv;
+  }
+}
+
+function enforceInProgressCodePathCoverage(options: {
+  id: string;
+  editOpts: Record<string, unknown>;
+  codePaths: string[] | undefined;
+  cwd: string;
+}): void {
+  const { id, editOpts, codePaths = [], cwd } = options;
+  const hasCodePathEdit = Array.isArray(editOpts.codePaths)
+    ? editOpts.codePaths.length > 0
+    : Boolean(editOpts.codePaths);
+
+  if (!hasCodePathEdit) {
+    return;
+  }
+
+  if (!Array.isArray(codePaths) || codePaths.length === 0) {
+    return;
+  }
+
+  const coverage = checkCodePathCoverageBeforeGates({
+    wuId: id,
+    codePaths,
+    cwd,
   });
+
+  if (coverage.valid) {
+    return;
+  }
+
+  if (!hasScopeRelevantBranchChanges(coverage.changedFiles)) {
+    console.warn(
+      `${PREFIX} ⚠️  code_paths coverage check deferred (no scope-relevant branch changes yet).`,
+    );
+    return;
+  }
+
+  die(
+    `${formatCodePathCoverageFailure({
+      wuId: id,
+      missingCodePaths: coverage.missingCodePaths,
+      changedFiles: coverage.changedFiles,
+      error: coverage.error,
+    })}\n\n` +
+      `${PREFIX} Tip: if you're still defining scope before code changes, run wu:edit again after your first scope-relevant commit.`,
+  );
 }
 
 /**
@@ -1020,6 +1116,15 @@ async function main() {
   // Check we have something to edit
   // Note: repeatable options (acceptance, codePaths, testPaths*) default to empty arrays,
   // so we check .length instead of truthiness
+  if (opts.replaceCodePaths && (!opts.codePaths || opts.codePaths.length === 0)) {
+    die(
+      '--replace-code-paths requires at least one code path.\n\n' +
+        'Use one of these forms:\n' +
+        '  pnpm wu:edit --id WU-123 --replace-code-paths --code-paths "path/a.ts" --code-paths "path/b.ts"\n' +
+        '  pnpm wu:edit --id WU-123 --replace-code-paths "path/a.ts,path/b.ts"',
+    );
+  }
+
   const hasEdits =
     opts.specFile ||
     opts.description ||
@@ -1184,6 +1289,12 @@ async function main() {
     }
 
     await ensureCleanWorkingTree();
+    enforceInProgressCodePathCoverage({
+      id,
+      editOpts: opts,
+      codePaths: normalizedWU.code_paths,
+      cwd: process.cwd(),
+    });
     await applyEditsInWorktree({
       worktreePath: process.cwd(),
       id,
@@ -1245,6 +1356,12 @@ async function main() {
     // Calculate expected branch and validate
     const expectedBranch = getLaneBranch(originalWU.lane, id);
     await validateWorktreeBranch(absoluteWorktreePath, expectedBranch, id);
+    enforceInProgressCodePathCoverage({
+      id,
+      editOpts: opts,
+      codePaths: normalizedWU.code_paths,
+      cwd: absoluteWorktreePath,
+    });
 
     // Apply edits in the worktree (WU-1750: use normalized data)
     await applyEditsInWorktree({
