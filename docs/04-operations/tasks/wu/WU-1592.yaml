@@ -2,7 +2,7 @@ id: WU-1592
 title: Cloud Recovery, docs, and auto-detect rollout for branch-pr
 lane: 'Framework: Core State Recovery'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -63,3 +63,6 @@ session_id: a589e445-2319-4378-8fe0-e79151db905e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T10:25:31.518Z
+locked: true
+completed_at: 2026-02-12T10:35:20.745Z
+completed: 2026-02-12

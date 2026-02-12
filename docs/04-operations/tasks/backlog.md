@@ -33,7 +33,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1592 — Cloud Recovery, docs, and auto-detect rollout for branch-pr](wu/WU-1592.yaml) — Framework: Core State Recovery
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -572,4 +572,5 @@ sections:
 - [WU-1595 — Harden WU-1589 branch foundation edge cases and coverage](wu/WU-1595.yaml)
 - [WU-1590 — Cloud Lifecycle: create, claim, prep, done, cleanup in branch-pr](wu/WU-1590.yaml)
 - [WU-1591 — Cloud State Commands: branch-pr support for edit/block/unblock/release/delete](wu/WU-1591.yaml)
+- [WU-1592 — Cloud Recovery, docs, and auto-detect rollout for branch-pr](wu/WU-1592.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
