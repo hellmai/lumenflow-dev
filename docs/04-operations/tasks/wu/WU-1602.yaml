@@ -1,0 +1,38 @@
+id: WU-1602
+title: Align docs terminology from spawn execution to delegation intent
+lane: 'Content: Framework Docs'
+type: documentation
+status: ready
+priority: P1
+created: 2026-02-12
+code_paths:
+  - AGENTS.md
+  - LUMENFLOW.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
+  - docs/05-business/content/medium-lumenflow-introduction.md
+tests:
+  manual:
+    - Review updated docs for consistent terminology and verify command examples remain valid.
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1602.done
+dependencies: []
+initiative: INIT-024
+phase: 1
+risks: []
+notes: Documentation-only pass to remove semantic ambiguity before command decomposition and provenance model changes land.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Current docs and onboarding copy often imply that wu:spawn executes a sub-agent, while the command actually generates handoff content. This WU aligns terminology to delegation intent and clarifies that prompt generation and execution are separate concerns.
+acceptance:
+  - Framework and onboarding docs describe wu:spawn/briefing behavior as prompt generation rather than automatic execution.
+  - Delegation provenance language is updated to distinguish intent recording from pickup/execution confirmation.
+  - Command references remain accurate and internally consistent across AGENTS.md, LUMENFLOW.md, and onboarding docs.

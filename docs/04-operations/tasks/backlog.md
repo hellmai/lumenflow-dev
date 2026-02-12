@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1602 — Align docs terminology from spawn execution to delegation intent](wu/WU-1602.yaml) — Content: Framework Docs
 - [WU-1601 — Fix wu:spawn Codex path dropping --parent-wu registry writes](wu/WU-1601.yaml) — Framework: CLI Orchestration
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
