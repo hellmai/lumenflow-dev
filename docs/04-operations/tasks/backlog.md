@@ -33,7 +33,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1606 — Sync internal and Starlight docs for wu:brief/delegate provenance changes](wu/WU-1606.yaml) — Content: Site Comms
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -597,4 +597,5 @@ sections:
 - [WU-1619 — Migrate remaining agent-facing docs from wu:spawn to wu:brief/wu:delegate](wu/WU-1619.yaml)
 - [WU-1620 — Unblock docs-only gates by ignoring local Claude settings and formatting INIT-023 plan](wu/WU-1620.yaml)
 - [WU-1605 — Add claim-time pickup evidence and enforce intent-vs-pickup provenance at wu:done](wu/WU-1605.yaml)
+- [WU-1606 — Sync internal and Starlight docs for wu:brief/delegate provenance changes](wu/WU-1606.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

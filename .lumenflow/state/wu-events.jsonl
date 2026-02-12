@@ -1177,4 +1177,5 @@
 {"type":"complete","wuId":"WU-1620","timestamp":"2026-02-12T19:37:58.861Z"}
 {"type":"claim","wuId":"WU-1605","timestamp":"2026-02-12T19:55:15.019Z","lane":"Framework: CLI WU Commands","title":"Add claim-time pickup evidence and enforce intent-vs-pickup provenance at wu:done"}
 {"type":"complete","wuId":"WU-1605","timestamp":"2026-02-12T20:04:47.811Z"}
-{"type":"claim","wuId":"WU-1606","lane":"Content: Site Comms","title":"Sync internal and Starlight docs for wu:brief/delegate provenance changes","timestamp":"2026-02-12T20:05:13.671Z"}
+{"type":"claim","wuId":"WU-1606","timestamp":"2026-02-12T20:05:13.671Z","lane":"Content: Site Comms","title":"Sync internal and Starlight docs for wu:brief/delegate provenance changes"}
+{"type":"complete","wuId":"WU-1606","timestamp":"2026-02-12T20:09:29.325Z"}

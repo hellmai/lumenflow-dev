@@ -4,7 +4,7 @@ title: Align wu:spawn semantics with delegation provenance
 description: Align command semantics, provenance recording, and enforcement so delegation tracking
   is accurate across clients and orchestration. Separate pure prompt generation from side-effectful
   delegation tracking, and evolve provenance from intent-only to intent-plus-pickup evidence.
-status: in_progress
+status: done
 priority: P0
 owner: 'Framework: CLI'
 created: 2026-02-12
@@ -21,7 +21,7 @@ phases:
     status: done
   - id: 4
     title: Docs and migration alignment
-    status: pending
+    status: done
 success_metrics:
   - Codex and Claude client modes both persist delegation lineage when requested (no early-return
     drop).
