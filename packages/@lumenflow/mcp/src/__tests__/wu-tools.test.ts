@@ -663,7 +663,14 @@ describe('WU MCP tools (WU-1422)', () => {
       expect(result.success).toBe(true);
       expect(mockRunCliCommand).toHaveBeenCalledWith(
         'wu:delegate',
-        expect.arrayContaining(['--id', 'WU-1604', '--parent-wu', 'WU-1600', '--client', 'claude-code']),
+        expect.arrayContaining([
+          '--id',
+          'WU-1604',
+          '--parent-wu',
+          'WU-1600',
+          '--client',
+          'claude-code',
+        ]),
         expect.any(Object),
       );
     });
