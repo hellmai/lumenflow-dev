@@ -5,6 +5,7 @@ _Last updated: 2026-02-12_
 ## In Progress
 
 - [WU-1590 — Cloud Lifecycle: create, claim, prep, done, cleanup in branch-pr](wu/WU-1590.yaml)
+- [WU-1595 — Harden WU-1589 branch foundation edge cases and coverage](wu/WU-1595.yaml)
 
 ## Completed
 
