@@ -1173,3 +1173,4 @@
 {"type":"complete","wuId":"WU-1618","timestamp":"2026-02-12T19:15:39.159Z"}
 {"type":"claim","wuId":"WU-1619","timestamp":"2026-02-12T19:19:42.248Z","lane":"Content: Framework Docs","title":"Migrate remaining agent-facing docs from wu:spawn to wu:brief/wu:delegate"}
 {"type":"complete","wuId":"WU-1619","timestamp":"2026-02-12T19:26:33.717Z"}
+{"type":"claim","wuId":"WU-1620","lane":"Content: Framework Docs","title":"Unblock docs-only gates by ignoring local Claude settings and formatting INIT-023 plan","timestamp":"2026-02-12T19:31:55.516Z"}
