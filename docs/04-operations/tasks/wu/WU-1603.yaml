@@ -7,11 +7,14 @@ priority: P1
 created: 2026-02-12
 code_paths:
   - packages/@lumenflow/cli/src/wu-spawn.ts
-  - packages/@lumenflow/core/src/arg-parser.ts
+  - packages/@lumenflow/cli/src/wu-brief.ts
   - packages/@lumenflow/cli/package.json
   - packages/@lumenflow/cli/src/public-manifest.ts
   - packages/@lumenflow/mcp/src/tools.ts
   - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
+  - packages/@lumenflow/core/src/schemas/wu-lifecycle-schemas.ts
+  - packages/@lumenflow/core/src/schemas/wu-lifecycle-arg-validators.ts
+  - packages/@lumenflow/core/src/schemas/index.ts
 tests:
   manual:
     - Run wu:brief and wu:spawn for claude and codex clients and verify equivalent prompt output
@@ -30,10 +33,17 @@ risks: []
 notes: Do not change orchestration provenance semantics in this WU; focus on command surface and
   compatibility behavior.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-12T14:40:22.337Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1603
+session_id: ea2b2178-246c-4bf3-b013-3674cecf6dc3
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T14:40:22.343Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -45,11 +55,3 @@ acceptance:
     clients.
   - wu:spawn remains functional as a compatibility alias and emits clear deprecation guidance.
   - CLI help/docs for both commands describe prompt generation semantics accurately and consistently.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1603
-claimed_at: 2026-02-12T14:40:22.337Z
-baseline_main_sha: f6c1c8f19f7c136a02feb1181756ba260532f885
-session_id: ea2b2178-246c-4bf3-b013-3674cecf6dc3
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-12T14:40:22.343Z
