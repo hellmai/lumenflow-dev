@@ -2,7 +2,7 @@ id: WU-1614
 title: Scope spec:linter gate to active WU and cwd
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -48,3 +48,6 @@ session_id: 387d215a-5f75-4ec2-854a-96743fc6ad34
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T15:55:53.631Z
+locked: true
+completed_at: 2026-02-12T16:02:59.518Z
+completed: 2026-02-12
