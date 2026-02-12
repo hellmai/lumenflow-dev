@@ -2,7 +2,7 @@ id: WU-1595
 title: Harden WU-1589 branch foundation edge cases and coverage
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -16,7 +16,8 @@ code_paths:
   - packages/@lumenflow/cli/__tests__/wu-recover.test.ts
 tests:
   manual:
-    - Run pre-commit branch-pr decision path with lane branch and claimed_mode=branch-pr and confirm allowance logic.
+    - Run pre-commit branch-pr decision path with lane branch and claimed_mode=branch-pr and confirm
+      allowance logic.
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-paths.test.ts
     - .husky/hooks/__tests__/pre-commit.test.ts
@@ -38,9 +39,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Review of WU-1589 found edge-case and coverage gaps in cloud branch foundation behavior. Problem: defaultBranchFrom can throw when claimed_branch is non-string, pre-commit branch-pr tests do not assert hook behavior, and release/recover claimed_branch reset behavior lacks direct tests. Solution: harden claimed_branch type handling, add behavior-level pre-commit branch-pr tests, and add focused tests for release/recover claim reset semantics.'
+description: 'Context: Review of WU-1589 found edge-case and coverage gaps in cloud branch
+  foundation behavior. Problem: defaultBranchFrom can throw when claimed_branch is non-string,
+  pre-commit branch-pr tests do not assert hook behavior, and release/recover claimed_branch reset
+  behavior lacks direct tests. Solution: harden claimed_branch type handling, add behavior-level
+  pre-commit branch-pr tests, and add focused tests for release/recover claim reset semantics.'
 acceptance:
-  - defaultBranchFrom handles non-string claimed_branch values safely and falls back to lane-derived naming without throwing.
-  - Pre-commit branch-pr allowance is covered by behavior-level tests that exercise decision logic, not only regex parsing.
+  - defaultBranchFrom handles non-string claimed_branch values safely and falls back to lane-derived
+    naming without throwing.
+  - Pre-commit branch-pr allowance is covered by behavior-level tests that exercise decision logic,
+    not only regex parsing.
   - Add direct tests covering claimed_branch reset semantics in wu-release and wu-recover paths.
   - Existing branch-only/worktree behavior remains unchanged.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1595
+claimed_at: 2026-02-12T10:01:53.603Z
+baseline_main_sha: 027e712db98e0735d4f5d51a2821b42fba35497a
+session_id: 1f6c337a-d986-419e-9aed-336c53cee4cc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T10:01:53.607Z
