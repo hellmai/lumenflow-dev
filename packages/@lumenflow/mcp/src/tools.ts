@@ -2129,11 +2129,52 @@ export const wuCleanupTool: ToolDefinition = {
 };
 
 /**
+ * wu_brief - Generate handoff prompt for sub-agent WU execution (WU-1603)
+ *
+ * This is the canonical prompt-generation tool. wu_spawn is retained
+ * as a backward-compatible alias.
+ */
+export const wuBriefTool: ToolDefinition = {
+  name: 'wu_brief',
+  description: 'Generate handoff prompt for sub-agent WU execution',
+  // WU-1454: Use shared schema (same parameters as wu:spawn)
+  inputSchema: wuSpawnSchema,
+
+  async execute(input, options) {
+    if (!input.id) {
+      return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args = ['--id', input.id as string];
+    if (input.client) args.push('--client', input.client as string);
+    if (input.thinking) args.push('--thinking');
+    if (input.budget) args.push('--budget', String(input.budget));
+    if (input.parent_wu) args.push('--parent-wu', input.parent_wu as string);
+    if (input.no_context) args.push('--no-context');
+
+    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
+    const result = await runCliCommand('wu:brief', args, cliOptions);
+
+    if (result.success) {
+      return success({ message: result.stdout || 'Brief prompt generated' });
+    } else {
+      return error(
+        result.stderr || result.error?.message || 'wu:brief failed',
+        ErrorCodes.WU_SPAWN_ERROR,
+      );
+    }
+  },
+};
+
+/**
  * wu_spawn - Generate Task tool invocation for sub-agent WU execution
+ *
+ * WU-1603: Deprecated alias for wu_brief. Retained for backward compatibility.
+ * Delegates to wu:spawn CLI which emits deprecation warning.
  */
 export const wuSpawnTool: ToolDefinition = {
   name: 'wu_spawn',
-  description: 'Generate sub-agent spawn prompt for WU execution',
+  description: 'Generate sub-agent spawn prompt for WU execution (deprecated: use wu_brief)',
   // WU-1454: Use shared schema
   inputSchema: wuSpawnSchema,
 
@@ -3975,6 +4016,7 @@ export const allTools: ToolDefinition[] = [
   wuPruneTool,
   wuDeleteTool,
   wuCleanupTool,
+  wuBriefTool,
   wuSpawnTool,
   wuValidateTool,
   wuInferLaneTool,

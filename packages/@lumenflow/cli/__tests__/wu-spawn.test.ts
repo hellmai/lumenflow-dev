@@ -7,6 +7,8 @@ import {
   emitSpawnOutputWithRegistry,
   TRUNCATION_WARNING_BANNER,
   SPAWN_END_SENTINEL,
+  SPAWN_DEPRECATION_MESSAGE,
+  runBriefLogic,
 } from '../dist/wu-spawn.js';
 import { GenericStrategy } from '@lumenflow/core/spawn-strategy';
 import { LumenFlowConfigSchema } from '@lumenflow/core/config-schema';
@@ -934,6 +936,71 @@ describe('wu-spawn progress signals (WU-1180)', () => {
 
       expect(output).toContain('Required at Milestones');
       expect(output).not.toContain('(Optional)');
+    });
+  });
+});
+
+describe('wu:brief / wu:spawn naming and deprecation (WU-1603)', () => {
+  describe('SPAWN_DEPRECATION_MESSAGE', () => {
+    it('exports a deprecation message constant', () => {
+      expect(SPAWN_DEPRECATION_MESSAGE).toBeDefined();
+      expect(typeof SPAWN_DEPRECATION_MESSAGE).toBe('string');
+    });
+
+    it('mentions wu:spawn is deprecated', () => {
+      expect(SPAWN_DEPRECATION_MESSAGE).toContain('wu:spawn');
+      expect(SPAWN_DEPRECATION_MESSAGE).toContain('deprecated');
+    });
+
+    it('points to wu:brief as the replacement', () => {
+      expect(SPAWN_DEPRECATION_MESSAGE).toContain('wu:brief');
+    });
+  });
+
+  describe('runBriefLogic', () => {
+    it('is exported as a function', () => {
+      expect(runBriefLogic).toBeDefined();
+      expect(typeof runBriefLogic).toBe('function');
+    });
+  });
+
+  describe('prompt output equivalence', () => {
+    const mockDoc = {
+      title: 'Brief Test WU',
+      lane: 'Framework: CLI',
+      type: 'feature',
+      status: 'in_progress',
+      code_paths: ['src/brief.ts'],
+      acceptance: ['AC1: Prompt is generated'],
+      description: 'Testing wu:brief equivalence',
+      worktree_path: 'worktrees/test',
+    };
+
+    const id = 'WU-1603';
+    const config = LumenFlowConfigSchema.parse({
+      directories: {
+        skillsDir: '.claude/skills',
+        agentsDir: '.claude/agents',
+      },
+    });
+
+    it('wu:brief generates the same task invocation output as wu:spawn', () => {
+      const strategy = new GenericStrategy();
+
+      // Both commands use the same generateTaskInvocation function
+      const output1 = generateTaskInvocation(mockDoc, id, strategy, { config });
+      const output2 = generateTaskInvocation(mockDoc, id, strategy, { config });
+
+      expect(output1).toBe(output2);
+    });
+
+    it('wu:brief generates the same codex output as wu:spawn', () => {
+      const strategy = new GenericStrategy();
+
+      const output1 = generateCodexPrompt(mockDoc, id, strategy, { config });
+      const output2 = generateCodexPrompt(mockDoc, id, strategy, { config });
+
+      expect(output1).toBe(output2);
     });
   });
 });

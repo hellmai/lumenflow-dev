@@ -100,6 +100,9 @@ export {
   generateAgentCoordinationSection,
 };
 
+// WU-1603: Export deprecation message for use by wu:brief and tests
+export { SPAWN_DEPRECATION_MESSAGE };
+
 /**
  * Mandatory agent trigger patterns.
  * Mirrors MANDATORY_TRIGGERS from orchestration.constants.ts.
@@ -111,6 +114,10 @@ export {
 const MANDATORY_TRIGGERS: Record<string, readonly string[]> = {
   // No mandatory triggers for LumenFlow framework development.
 };
+
+/** WU-1603: Deprecation message for wu:spawn alias */
+const SPAWN_DEPRECATION_MESSAGE =
+  'wu:spawn is deprecated and will be removed in a future release. Use wu:brief instead.';
 
 const LOG_PREFIX = '[wu:spawn]';
 
@@ -1508,10 +1515,30 @@ export async function emitSpawnOutputWithRegistry(
   log(`\n${registryMessage}`);
 }
 
-function parseAndValidateArgs(): ParsedArgs {
+/**
+ * WU-1603: Parser configuration for wu:brief / wu:spawn commands
+ */
+interface BriefParserConfig {
+  /** CLI command name (e.g., 'wu-brief' or 'wu-spawn') */
+  name: string;
+  /** CLI description shown in --help */
+  description: string;
+}
+
+const BRIEF_PARSER_CONFIG: BriefParserConfig = {
+  name: 'wu-brief',
+  description: 'Generate handoff prompt for sub-agent WU execution',
+};
+
+const SPAWN_PARSER_CONFIG: BriefParserConfig = {
+  name: 'wu-spawn',
+  description: 'Generate handoff prompt for sub-agent WU execution (deprecated: use wu:brief)',
+};
+
+function parseAndValidateArgs(parserConfig: BriefParserConfig = SPAWN_PARSER_CONFIG): ParsedArgs {
   const args = createWUParser({
-    name: 'wu-spawn',
-    description: 'Generate Task tool invocation for sub-agent WU execution',
+    name: parserConfig.name,
+    description: parserConfig.description,
     options: [
       WU_OPTIONS.id,
       WU_OPTIONS.thinking,
@@ -1619,17 +1646,44 @@ async function checkAndWarnLaneOccupation(lane: string | undefined, id: string):
 }
 
 /**
- * Main entry point
+ * WU-1603: Options for running the brief/spawn logic
  */
-async function main(): Promise<void> {
-  // WU-2202: Validate dependencies BEFORE any other operation
-  // This prevents false lane occupancy reports when yaml package is missing
-  const depResult = await validateSpawnDependencies();
-  if (!depResult.valid) {
-    die(formatDependencyError('wu:spawn', depResult.missing));
+export interface RunBriefOptions {
+  /** Whether to show deprecation warning (true for wu:spawn alias path) */
+  deprecated?: boolean;
+  /** Parser config override (command name and description) */
+  parserConfig?: BriefParserConfig;
+  /** Log prefix override for output messages */
+  logPrefix?: string;
+}
+
+/**
+ * WU-1603: Shared entry point for wu:brief and wu:spawn
+ *
+ * Both commands call this function. wu:spawn passes { deprecated: true }
+ * to emit the deprecation notice; wu:brief passes { deprecated: false }.
+ */
+export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void> {
+  const {
+    deprecated = false,
+    parserConfig = BRIEF_PARSER_CONFIG,
+    logPrefix = LOG_PREFIX,
+  } = options;
+
+  // WU-1603: Emit deprecation warning when invoked as wu:spawn
+  if (deprecated) {
+    console.warn(`${logPrefix} ${EMOJI.WARNING} ${SPAWN_DEPRECATION_MESSAGE}`);
   }
 
-  const args = parseAndValidateArgs();
+  // WU-2202: Validate dependencies BEFORE any other operation
+  // This prevents false lane occupancy reports when yaml package is missing
+  const commandLabel = deprecated ? 'wu:spawn' : 'wu:brief';
+  const depResult = await validateSpawnDependencies();
+  if (!depResult.valid) {
+    die(formatDependencyError(commandLabel, depResult.missing));
+  }
+
+  const args = parseAndValidateArgs(parserConfig);
 
   const id = args.id.toUpperCase();
   if (!PATTERNS.WU_ID.test(id)) {
@@ -1642,9 +1696,9 @@ async function main(): Promise<void> {
   // Warn if WU is not in ready or in_progress status
   const validStatuses = [WU_STATUS.READY, WU_STATUS.IN_PROGRESS];
   if (!validStatuses.includes(doc.status)) {
-    console.warn(`${LOG_PREFIX} ${EMOJI.WARNING} Warning: ${id} has status '${doc.status}'.`);
+    console.warn(`${logPrefix} ${EMOJI.WARNING} Warning: ${id} has status '${doc.status}'.`);
     console.warn(
-      `${LOG_PREFIX} ${EMOJI.WARNING} Sub-agents typically work on ready or in_progress WUs.`,
+      `${logPrefix} ${EMOJI.WARNING} Sub-agents typically work on ready or in_progress WUs.`,
     );
     console.warn('');
   }
@@ -1678,7 +1732,7 @@ async function main(): Promise<void> {
         maxSize,
       });
       if (memoryContextContent) {
-        console.log(`${LOG_PREFIX} Memory context loaded (${memoryContextContent.length} bytes)`);
+        console.log(`${logPrefix} Memory context loaded (${memoryContextContent.length} bytes)`);
       }
     }
   }
@@ -1723,6 +1777,20 @@ async function main(): Promise<void> {
     isCodexClient: false,
     parentWu: args.parentWu,
     lane: doc.lane,
+  });
+}
+
+/**
+ * Main entry point for wu:spawn (deprecated alias)
+ *
+ * WU-1603: wu:spawn is now a backward-compatible alias for wu:brief.
+ * It emits a deprecation warning, then delegates to the shared runBriefLogic.
+ */
+async function main(): Promise<void> {
+  await runBriefLogic({
+    deprecated: true,
+    parserConfig: SPAWN_PARSER_CONFIG,
+    logPrefix: '[wu:spawn]',
   });
 }
 

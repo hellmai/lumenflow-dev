@@ -336,6 +336,7 @@ export const lifecycleCommandSchemas = {
   'wu:prune': wuPruneSchema,
   'wu:delete': wuDeleteSchema,
   'wu:cleanup': wuCleanupSchema,
+  'wu:brief': wuSpawnSchema,
   'wu:spawn': wuSpawnSchema,
   'wu:validate': wuValidateSchema,
   'wu:infer-lane': wuInferLaneSchema,

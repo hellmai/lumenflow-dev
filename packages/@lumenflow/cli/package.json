@@ -42,6 +42,7 @@
     "wu-create": "./dist/wu-create.js",
     "wu-proto": "./dist/wu-proto.js",
     "wu-edit": "./dist/wu-edit.js",
+    "wu-brief": "./dist/wu-brief.js",
     "wu-spawn": "./dist/wu-spawn.js",
     "wu-validate": "./dist/wu-validate.js",
     "wu-preflight": "./dist/wu-preflight.js",

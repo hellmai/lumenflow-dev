@@ -123,6 +123,7 @@ export {
   validateWuPruneArgs,
   validateWuDeleteArgs,
   validateWuCleanupArgs,
+  validateWuBriefArgs,
   validateWuSpawnArgs,
   validateWuValidateArgs,
   validateWuInferLaneArgs,
