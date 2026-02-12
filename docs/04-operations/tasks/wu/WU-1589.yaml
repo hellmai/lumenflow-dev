@@ -2,7 +2,7 @@ id: WU-1589
 title: 'Cloud Foundation: claimed_branch schema, resolver, hook'
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -60,3 +60,6 @@ session_id: d375483a-809f-47a1-80d6-491dafe78232
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T09:20:54.721Z
+locked: true
+completed_at: 2026-02-12T09:29:39.896Z
+completed: 2026-02-12
