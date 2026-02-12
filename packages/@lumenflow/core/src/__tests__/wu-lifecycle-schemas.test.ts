@@ -621,7 +621,6 @@ describe('Lifecycle Command Registry (WU-1454)', () => {
   });
 
   it('should have entries for all lifecycle commands', () => {
-
     for (const cmd of expectedCommands) {
       expect(lifecycleCommandSchemas).toHaveProperty(cmd);
     }
