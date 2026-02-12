@@ -34,7 +34,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1598 — Resolve cloud canonical-claim behavior and harden cloud lifecycle coverage](wu/WU-1598.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -576,4 +576,5 @@ sections:
 - [WU-1592 — Cloud Recovery, docs, and auto-detect rollout for branch-pr](wu/WU-1592.yaml)
 - [WU-1596 — P0 hotfix: cloud branch-pr lifecycle blockers from INIT-023 review](wu/WU-1596.yaml)
 - [WU-1597 — Harden cleanup cloud branch protection fallback](wu/WU-1597.yaml)
+- [WU-1598 — Resolve cloud canonical-claim behavior and harden cloud lifecycle coverage](wu/WU-1598.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

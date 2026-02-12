@@ -1133,4 +1133,5 @@
 {"type":"complete","wuId":"WU-1596","timestamp":"2026-02-12T11:52:44.317Z"}
 {"type":"claim","wuId":"WU-1597","timestamp":"2026-02-12T12:04:12.150Z","lane":"Framework: CLI WU Commands","title":"Harden cleanup cloud branch protection fallback"}
 {"type":"complete","wuId":"WU-1597","timestamp":"2026-02-12T12:10:01.384Z"}
-{"type":"claim","wuId":"WU-1598","lane":"Framework: CLI WU Commands","title":"Resolve cloud canonical-claim behavior and harden cloud lifecycle coverage","timestamp":"2026-02-12T12:33:47.894Z"}
+{"type":"claim","wuId":"WU-1598","timestamp":"2026-02-12T12:33:47.894Z","lane":"Framework: CLI WU Commands","title":"Resolve cloud canonical-claim behavior and harden cloud lifecycle coverage"}
+{"type":"complete","wuId":"WU-1598","timestamp":"2026-02-12T12:50:32.253Z"}
