@@ -804,7 +804,9 @@ describe('wu-spawn registry persistence across output clients (WU-1601)', () => 
       success: true,
       spawnId: 'spawn-1601-codex',
     });
-    const formatSpawnMessage = vi.fn().mockReturnValue('[wu:spawn] Spawn recorded spawn-1601-codex');
+    const formatSpawnMessage = vi
+      .fn()
+      .mockReturnValue('[wu:spawn] Spawn recorded spawn-1601-codex');
 
     await emitSpawnOutputWithRegistry(
       {
