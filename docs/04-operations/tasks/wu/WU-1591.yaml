@@ -29,6 +29,7 @@ blocked_by:
   - WU-1590
 spec_refs:
   - lumenflow://plans/zazzy-launching-pretzel.md
+  - lumenflow://plans/INIT-023-plan.md
 risks: []
 notes: Pattern B decomposition WU-C state command layer. Depends on WU-1590 critical lifecycle patterns and branch resolver behavior.
 requires_review: false
