@@ -37,7 +37,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1608 — Fix wu:brief LOG_PREFIX leak and tautological tests](wu/WU-1608.yaml) — Framework: CLI Orchestration
-- [WU-1610 — Follow-up: make cloud activation explicit-only and decouple runtime identity](wu/WU-1610.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -587,4 +586,5 @@ sections:
 - [WU-1607 — Ignore spawn-registry runtime artifact in git status](wu/WU-1607.yaml)
 - [WU-1603 — Introduce wu:brief as pure prompt generator and deprecate wu:spawn alias](wu/WU-1603.yaml)
 - [WU-1609 — P0 hotfix: block cloud activation on main for wu:create/wu:claim](wu/WU-1609.yaml)
+- [WU-1610 — Follow-up: make cloud activation explicit-only and decouple runtime identity](wu/WU-1610.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

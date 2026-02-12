@@ -2,7 +2,7 @@ id: WU-1610
 title: 'Follow-up: make cloud activation explicit-only and decouple runtime identity'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -61,3 +61,6 @@ session_id: 973a6ccf-300c-4216-8149-d432267b1557
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T15:20:37.539Z
+locked: true
+completed_at: 2026-02-12T15:26:10.431Z
+completed: 2026-02-12

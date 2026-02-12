@@ -5,7 +5,6 @@ _Last updated: 2026-02-12_
 ## In Progress
 
 - [WU-1608 — Fix wu:brief LOG_PREFIX leak and tautological tests](wu/WU-1608.yaml)
-- [WU-1610 — Follow-up: make cloud activation explicit-only and decouple runtime identity](wu/WU-1610.yaml)
 
 ## Completed
 
@@ -551,3 +550,4 @@ _Last updated: 2026-02-12_
 - [WU-1607 — Ignore spawn-registry runtime artifact in git status](wu/WU-1607.yaml) — 2026-02-12
 - [WU-1603 — Introduce wu:brief as pure prompt generator and deprecate wu:spawn alias](wu/WU-1603.yaml) — 2026-02-12
 - [WU-1609 — P0 hotfix: block cloud activation on main for wu:create/wu:claim](wu/WU-1609.yaml) — 2026-02-12
+- [WU-1610 — Follow-up: make cloud activation explicit-only and decouple runtime identity](wu/WU-1610.yaml) — 2026-02-12
