@@ -3,7 +3,7 @@
  * @description Tests for WU lifecycle shared schemas (WU-1454)
  *
  * These tests verify that:
- * 1. All 16 WU lifecycle schemas exist and validate correctly
+ * 1. All 17 WU lifecycle schemas exist and validate correctly
  * 2. Required vs optional fields are correct
  * 3. Enum values are properly constrained
  * 4. Schema registry includes all 16 lifecycle commands
@@ -596,29 +596,31 @@ describe('WU Lifecycle Schemas (WU-1454)', () => {
 // =============================================================================
 
 describe('Lifecycle Command Registry (WU-1454)', () => {
-  it('should include all 16 WU lifecycle commands', () => {
-    expect(Object.keys(lifecycleCommandSchemas)).toHaveLength(16);
+  const expectedCommands = [
+    'wu:block',
+    'wu:unblock',
+    'wu:edit',
+    'wu:release',
+    'wu:recover',
+    'wu:repair',
+    'wu:deps',
+    'wu:prep',
+    'wu:preflight',
+    'wu:prune',
+    'wu:delete',
+    'wu:cleanup',
+    'wu:brief',
+    'wu:spawn',
+    'wu:validate',
+    'wu:infer-lane',
+    'wu:unlock-lane',
+  ] as const;
+
+  it('should include all expected WU lifecycle commands', () => {
+    expect(Object.keys(lifecycleCommandSchemas)).toHaveLength(expectedCommands.length);
   });
 
   it('should have entries for all lifecycle commands', () => {
-    const expectedCommands = [
-      'wu:block',
-      'wu:unblock',
-      'wu:edit',
-      'wu:release',
-      'wu:recover',
-      'wu:repair',
-      'wu:deps',
-      'wu:prep',
-      'wu:preflight',
-      'wu:prune',
-      'wu:delete',
-      'wu:cleanup',
-      'wu:spawn',
-      'wu:validate',
-      'wu:infer-lane',
-      'wu:unlock-lane',
-    ];
 
     for (const cmd of expectedCommands) {
       expect(lifecycleCommandSchemas).toHaveProperty(cmd);
