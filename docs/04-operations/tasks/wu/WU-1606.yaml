@@ -6,14 +6,7 @@ status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
-  - AGENTS.md
-  - LUMENFLOW.md
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
   - docs/05-business/content/medium-lumenflow-introduction.md
-  - apps/docs/src/content/docs/reference/cli.mdx
-  - apps/docs/src/content/docs/reference/config.mdx
-  - packages/@lumenflow/cli/README.md
 tests:
   manual:
     - Run pnpm docs:validate (and pnpm docs:generate if needed), then verify no docs drift remains.
@@ -36,10 +29,17 @@ notes: >-
   WU-1606 against the post-WU-1602 merged state and treat WU-1606 as final docs consolidation for
   INIT-024.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-12T20:05:13.632Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1606
+session_id: 0086a6b4-717e-4194-9c1d-6901391be48c
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T20:05:13.637Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -51,11 +51,3 @@ acceptance:
     wu:brief/wu:spawn/wu:delegate behavior and provenance terminology.
   - Starlight CLI docs and package README are regenerated/synced for command-surface changes.
   - Documentation drift check passes (docs:validate) with no pending generated-doc diffs.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1606
-claimed_at: 2026-02-12T20:05:13.632Z
-baseline_main_sha: 81013e0b4ff7d82822f147984aab2492a24c5e68
-session_id: 0086a6b4-717e-4194-9c1d-6901391be48c
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-12T20:05:13.637Z
