@@ -1,0 +1,35 @@
+id: WU-1615
+title: Add missing spec_refs to WU-1605
+lane: 'Framework: CLI WU Commands'
+type: process
+status: ready
+priority: P0
+created: 2026-02-12
+code_paths:
+  - docs/04-operations/tasks/wu/WU-1605.yaml
+tests:
+  manual:
+    - Run wu:validate for WU-1605 and all WUs
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1615.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-XXXX-plan.md
+  - lumenflow://plans/WU-1615-plan.md
+risks: []
+notes: Maintenance unblock before resuming INIT-024 delivery WUs.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: strict spec:linter and wu:validate --all fail on WU-1605 because spec_refs is missing. Problem: this pre-existing metadata defect creates fallback/global validation noise and operational friction. Solution: add a valid plan reference to WU-1605 and verify strict validation passes.'
+acceptance:
+  - WU-1605 includes a valid spec_refs entry
+  - pnpm wu:validate --id WU-1605 passes
+  - pnpm wu:validate --all no longer fails on missing spec_refs for WU-1605
