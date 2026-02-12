@@ -18,22 +18,22 @@ Reference for CLI commands. Organized by category for quick discovery.
 
 Run `--help` first, then run the real command with explicit flags.
 
-| Category            | Help-First Example                    | Real Command Example                                      |
-| ------------------- | ------------------------------------- | --------------------------------------------------------- |
-| Setup & Development | `pnpm bootstrap --help`               | `pnpm bootstrap`                                          |
-| WU Lifecycle        | `pnpm wu:claim --help`                | `pnpm wu:claim --id WU-1561 --lane "Operations: Tooling"` |
-| WU Maintenance      | `pnpm wu:recover --help`              | `pnpm wu:recover --id WU-1561`                            |
-| Gates & Quality     | `pnpm gates --help`                   | `pnpm gates --docs-only`                                  |
-| Memory & Sessions   | `pnpm mem:checkpoint --help`          | `pnpm mem:checkpoint --wu WU-1561`                        |
-| State Management    | `pnpm state:doctor --help`            | `pnpm state:doctor --json`                                |
-| Dependencies        | `pnpm deps:add --help`                | `pnpm deps:add --pkg zod`                                 |
+| Category            | Help-First Example                    | Real Command Example                                                     |
+| ------------------- | ------------------------------------- | ------------------------------------------------------------------------ |
+| Setup & Development | `pnpm bootstrap --help`               | `pnpm bootstrap`                                                         |
+| WU Lifecycle        | `pnpm wu:claim --help`                | `pnpm wu:claim --id WU-1561 --lane "Operations: Tooling"`                |
+| WU Maintenance      | `pnpm wu:recover --help`              | `pnpm wu:recover --id WU-1561`                                           |
+| Gates & Quality     | `pnpm gates --help`                   | `pnpm gates --docs-only`                                                 |
+| Memory & Sessions   | `pnpm mem:checkpoint --help`          | `pnpm mem:checkpoint --wu WU-1561`                                       |
+| State Management    | `pnpm state:doctor --help`            | `pnpm state:doctor --json`                                               |
+| Dependencies        | `pnpm deps:add --help`                | `pnpm deps:add --pkg zod`                                                |
 | Plans               | `pnpm plan:link --help`               | `pnpm plan:link --id INIT-021 --plan lumenflow://plans/INIT-021-plan.md` |
-| Initiatives         | `pnpm initiative:status --help`       | `pnpm initiative:status --id INIT-021`                    |
-| Orchestration       | `pnpm orchestrate:init-status --help` | `pnpm orchestrate:init-status --id INIT-021`              |
-| Metrics & Flow      | `pnpm flow:report --help`             | `pnpm flow:report`                                        |
-| Documentation       | `pnpm docs:validate --help`           | `pnpm docs:validate`                                      |
-| Release             | `pnpm pre-release:check --help`       | `pnpm pre-release:check`                                  |
-| Agent Utilities     | `pnpm agent:issues-query --help`      | `pnpm agent:issues-query`                                 |
+| Initiatives         | `pnpm initiative:status --help`       | `pnpm initiative:status --id INIT-021`                                   |
+| Orchestration       | `pnpm orchestrate:init-status --help` | `pnpm orchestrate:init-status --id INIT-021`                             |
+| Metrics & Flow      | `pnpm flow:report --help`             | `pnpm flow:report`                                                       |
+| Documentation       | `pnpm docs:validate --help`           | `pnpm docs:validate`                                                     |
+| Release             | `pnpm pre-release:check --help`       | `pnpm pre-release:check`                                                 |
+| Agent Utilities     | `pnpm agent:issues-query --help`      | `pnpm agent:issues-query`                                                |
 
 ---
 
@@ -225,14 +225,14 @@ If the plan exists only in conversation, use `--plan` on `wu:create` to generate
 stub in `$LUMENFLOW_HOME/plans/`, then summarize the conversation there and reference it via
 `spec_refs`. Feature WUs require `spec_refs`; notes do not replace the plan link.
 
-| Command                                               | Description                                                |
-| ----------------------------------------------------- | ---------------------------------------------------------- |
-| `pnpm plan:create --id INIT-XXX --title "..."`        | Create a repo-native plan file in `docs/04-operations/plans/` |
-| `pnpm plan:edit --id INIT-XXX --section Goal --content "..."` | Edit a section in a plan file                       |
-| `pnpm plan:link --id INIT-XXX --plan lumenflow://plans/INIT-XXX-plan.md` | Link plan URI to initiative or WU          |
-| `pnpm plan:promote --id INIT-XXX`                     | Promote plan status to approved                             |
-| `pnpm initiative:plan --initiative INIT-XXX --plan <path>` | Legacy-compatible initiative linking command               |
-| `pnpm initiative:plan --initiative INIT-XXX --create` | Legacy-compatible create-and-link flow                      |
+| Command                                                                  | Description                                                   |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| `pnpm plan:create --id INIT-XXX --title "..."`                           | Create a repo-native plan file in `docs/04-operations/plans/` |
+| `pnpm plan:edit --id INIT-XXX --section Goal --content "..."`            | Edit a section in a plan file                                 |
+| `pnpm plan:link --id INIT-XXX --plan lumenflow://plans/INIT-XXX-plan.md` | Link plan URI to initiative or WU                             |
+| `pnpm plan:promote --id INIT-XXX`                                        | Promote plan status to approved                               |
+| `pnpm initiative:plan --initiative INIT-XXX --plan <path>`               | Legacy-compatible initiative linking command                  |
+| `pnpm initiative:plan --initiative INIT-XXX --create`                    | Legacy-compatible create-and-link flow                        |
 
 ### Linking Plans
 
