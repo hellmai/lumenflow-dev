@@ -15,7 +15,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-done-paths.ts
 tests:
   manual:
-    - 'Execute full branch-pr lifecycle on claude/* branch: create, claim, prep, done, cleanup with PR merge verification.'
+    - 'Execute full branch-pr lifecycle on claude/* branch: create, claim, prep, done, cleanup with
+      PR merge verification.'
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
@@ -31,10 +32,10 @@ phase: 2
 blocked_by:
   - WU-1589
 spec_refs:
-  - lumenflow://plans/zazzy-launching-pretzel.md
   - lumenflow://plans/INIT-023-plan.md
 risks: []
-notes: Pattern B decomposition WU-B critical path. Depends on WU-1589 foundation resolver and schema fields.
+notes: Pattern B decomposition WU-B critical path. Depends on WU-1589 foundation resolver and schema
+  fields.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -43,11 +44,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Cloud agents execute from existing feature branches and must complete the entire WU lifecycle without worktrees or direct main writes. Problem: wu:create, wu:claim, wu:prep, wu:done, and wu:cleanup still contain lane-derived branch assumptions and main-canonical update paths that break branch-pr operation. Solution: implement explicit cloud lifecycle paths that persist claimed_branch, respect current branch execution, validate against HEAD where required, and complete via PR + safe cleanup semantics.'
+description: 'Context: Cloud agents execute from existing feature branches and must complete the
+  entire WU lifecycle without worktrees or direct main writes. Problem: wu:create, wu:claim,
+  wu:prep, wu:done, and wu:cleanup still contain lane-derived branch assumptions and main-canonical
+  update paths that break branch-pr operation. Solution: implement explicit cloud lifecycle paths
+  that persist claimed_branch, respect current branch execution, validate against HEAD where
+  required, and complete via PR + safe cleanup semantics.'
 acceptance:
-  - Add wu:create --cloud path that writes and commits WU specs on current branch without ensureOnMain or micro-worktree main updates.
-  - Update wu:claim --cloud to persist claimed_branch and bypass remote/local branch-exists checks when claiming on the current branch.
-  - Update wu:done branch-pr preflight to skip ensureOnMain and validate branch-pr code_paths against HEAD.
-  - Ensure wu:prep branch-pr validates against claimed_branch via defaultBranchFrom() resolver precedence.
-  - Update wu:cleanup to resolve claimed_branch, verify merged PR against that branch, skip worktree-only checks in branch-pr mode, and avoid deleting non-lane cloud-managed branches.
+  - Add wu:create --cloud path that writes and commits WU specs on current branch without
+    ensureOnMain or micro-worktree main updates.
+  - Update wu:claim --cloud to persist claimed_branch and bypass remote/local branch-exists checks
+    when claiming on the current branch.
+  - Update wu:done branch-pr preflight to skip ensureOnMain and validate branch-pr code_paths
+    against HEAD.
+  - Ensure wu:prep branch-pr validates against claimed_branch via defaultBranchFrom() resolver
+    precedence.
+  - Update wu:cleanup to resolve claimed_branch, verify merged PR against that branch, skip
+    worktree-only checks in branch-pr mode, and avoid deleting non-lane cloud-managed branches.
   - Add coverage for create/claim/prep/done/cleanup branch-pr paths.
