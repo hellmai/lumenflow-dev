@@ -4,7 +4,14 @@ Created: 2026-02-12
 
 ## Goal
 
-<!-- What is the primary objective? -->
+Enable complete cloud/branch-pr lifecycle support in LumenFlow so cloud agents can execute:
+- `wu:create --cloud`
+- `wu:claim --cloud`
+- `wu:prep`
+- `wu:done`
+- `wu:cleanup`
+
+All from feature branches with PR-based completion, while preserving existing local worktree behavior.
 
 ## Scope
 
