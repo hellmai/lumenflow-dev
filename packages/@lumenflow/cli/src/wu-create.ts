@@ -944,9 +944,7 @@ async function main() {
   });
   if (cloudEffective.blocked) {
     const sourceHint =
-      cloudEffective.source === CLOUD_ACTIVATION_SOURCE.FLAG
-        ? '--cloud'
-        : 'LUMENFLOW_CLOUD=1';
+      cloudEffective.source === CLOUD_ACTIVATION_SOURCE.FLAG ? '--cloud' : 'LUMENFLOW_CLOUD=1';
     die(
       `${LOG_PREFIX} Cloud mode blocked on protected branch "${currentBranch}".\n\n` +
         `Explicit cloud activation (${sourceHint}) is not allowed on main/master.\n` +
