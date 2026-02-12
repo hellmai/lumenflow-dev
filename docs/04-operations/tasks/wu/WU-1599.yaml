@@ -1,0 +1,42 @@
+id: WU-1599
+title: Make wu:spawn provenance auditable and enforceable for initiative execution
+lane: 'Framework: CLI Orchestration'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-12
+code_paths:
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/spawn-registry-store.ts
+  - packages/@lumenflow/cli/src/__tests__/agent-spawn-coordination.test.ts
+tests:
+  manual:
+    - Attempt completion of an initiative WU without spawn provenance and verify enforcement/remediation guidance.
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/agent-spawn-coordination.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1599.done
+dependencies: []
+initiative: INIT-023
+phase: 4
+spec_refs:
+  - lumenflow://plans/INIT-023-plan.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Review finding #5 identified a governance gap: spawn compliance is not auditable when work is done without wu:spawn parent tracking. Problem: wu:done currently treats missing spawn-registry entries as informational, allowing initiative WUs to complete without machine-verifiable spawn provenance. Solution: enforce auditable provenance semantics for initiative-orchestrated work by adding explicit policy checks and deterministic tests around spawn-registry presence, with a controlled override path for legacy/manual WUs.'
+acceptance:
+  - Completion path for initiative-governed WUs enforces spawn provenance policy (or explicit override) instead of silent informational pass-through.
+  - wu:done logs actionable remediation when provenance is missing and records override usage for auditability.
+  - Spawn-related tests are deterministic and validate both compliant and non-compliant completion paths.
+  - Legacy/manual non-initiative workflows remain supported with documented behavior.
