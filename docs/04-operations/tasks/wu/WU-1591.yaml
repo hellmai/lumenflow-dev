@@ -2,7 +2,7 @@ id: WU-1591
 title: 'Cloud State Commands: branch-pr support for edit/block/unblock/release/delete'
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -55,3 +55,11 @@ acceptance:
     pushes to main.
   - Preserve existing worktree/local behavior when cloud mode is not active.
   - Add/extend tests for branch-pr behavior across edit, block/unblock, release, and delete commands.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1591
+claimed_at: 2026-02-12T10:12:02.754Z
+baseline_main_sha: 89e61715bac8cf0694693161626a79d8c69ab25d
+session_id: f71777d2-84c5-4848-9da3-cbcd47fd8b07
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T10:12:02.758Z

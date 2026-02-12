@@ -1125,3 +1125,4 @@
 {"type":"claim","wuId":"WU-1595","timestamp":"2026-02-12T10:01:53.623Z","lane":"Framework: Core Lifecycle","title":"Harden WU-1589 branch foundation edge cases and coverage"}
 {"type":"complete","wuId":"WU-1595","timestamp":"2026-02-12T10:09:06.528Z"}
 {"type":"complete","wuId":"WU-1590","timestamp":"2026-02-12T10:11:20.233Z"}
+{"type":"claim","wuId":"WU-1591","lane":"Framework: CLI WU Commands","title":"Cloud State Commands: branch-pr support for edit/block/unblock/release/delete","timestamp":"2026-02-12T10:12:02.782Z"}
