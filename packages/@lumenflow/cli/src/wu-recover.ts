@@ -134,6 +134,21 @@ function getWorktreePath(wuId: string, lane: string): string {
 }
 
 /**
+ * WU-1595: Reset WU claim metadata when transitioning back to ready.
+ *
+ * Mutates the provided document.
+ */
+export function resetClaimMetadataForReady(doc: Record<string, unknown>): void {
+  doc.status = WU_STATUS.READY;
+  Reflect.deleteProperty(doc, 'worktree_path');
+  Reflect.deleteProperty(doc, 'claimed_at');
+  Reflect.deleteProperty(doc, 'session_id');
+  Reflect.deleteProperty(doc, 'baseline_main_sha');
+  Reflect.deleteProperty(doc, 'claimed_mode');
+  Reflect.deleteProperty(doc, 'claimed_branch');
+}
+
+/**
  * Execute resume action - reconcile state and continue
  *
  * WU-1226: Uses micro-worktree isolation for all state changes.
@@ -250,16 +265,8 @@ async function executeReset(wuId: string): Promise<boolean> {
         const microWuPath = join(microPath, relative(process.cwd(), wuPath));
         const microDoc = readWU(microWuPath, wuId);
 
-        // Reset WU status to ready and clear claim fields
-        microDoc.status = WU_STATUS.READY;
-        // Use Reflect.deleteProperty to satisfy sonarjs/no-delete rule
-        Reflect.deleteProperty(microDoc, 'worktree_path');
-        Reflect.deleteProperty(microDoc, 'claimed_at');
-        Reflect.deleteProperty(microDoc, 'session_id');
-        Reflect.deleteProperty(microDoc, 'baseline_main_sha');
-        // WU-1589: Clear claimed_mode and claimed_branch on reset to ready
-        Reflect.deleteProperty(microDoc, 'claimed_mode');
-        Reflect.deleteProperty(microDoc, 'claimed_branch');
+        // Reset WU status to ready and clear claim fields.
+        resetClaimMetadataForReady(microDoc);
         writeWU(microWuPath, microDoc);
 
         // WU-1419: Emit release event to state store so re-claiming works

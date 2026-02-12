@@ -193,7 +193,7 @@ export function detectWorkspaceMode(doc) {
  */
 export function defaultBranchFrom(doc) {
   // Priority 1: Use claimed_branch if present (WU-1589)
-  if (doc.claimed_branch && doc.claimed_branch.trim()) {
+  if (typeof doc.claimed_branch === 'string' && doc.claimed_branch.trim()) {
     return doc.claimed_branch;
   }
 

@@ -104,6 +104,17 @@ describe('wu-done-paths', () => {
       };
       expect(defaultBranchFrom(doc)).toBe('refs/heads/codex/my-branch');
     });
+
+    it('should ignore non-string claimed_branch and fall back to lane-derived branch', () => {
+      const doc = {
+        id: 'WU-1589',
+        lane: 'Framework: Core Lifecycle',
+        claimed_branch: 123,
+      } as unknown as { id: string; lane: string; claimed_branch: string };
+
+      expect(() => defaultBranchFrom(doc)).not.toThrow();
+      expect(defaultBranchFrom(doc)).toBe('lane/framework-core-lifecycle/wu-1589');
+    });
   });
 
   // WU-1589: AC1 - claimed_branch schema field

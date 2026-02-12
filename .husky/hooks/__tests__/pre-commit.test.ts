@@ -6,6 +6,7 @@ import {
   filterStagedWUYamlFiles,
   validateWUYamlString,
   formatMainBranchBlockMessage,
+  shouldAllowMainCheckoutLaneCommit,
 } from '../pre-commit.mjs';
 
 describe('pre-commit hook (WU-1164)', () => {
@@ -160,6 +161,18 @@ describe('pre-commit hook (WU-1164)', () => {
       const modeMatch = yamlContent.match(/^claimed_mode:\s*(.+)$/m);
       expect(modeMatch).not.toBeNull();
       expect(modeMatch![1].trim()).toBe('branch-only');
+    });
+
+    it('should allow branch-pr mode in main-checkout lane-branch decision', () => {
+      expect(shouldAllowMainCheckoutLaneCommit('branch-pr')).toBe(true);
+    });
+
+    it('should allow branch-only mode in main-checkout lane-branch decision', () => {
+      expect(shouldAllowMainCheckoutLaneCommit('branch-only')).toBe(true);
+    });
+
+    it('should block worktree mode in main-checkout lane-branch decision', () => {
+      expect(shouldAllowMainCheckoutLaneCommit('worktree')).toBe(false);
     });
   });
 
