@@ -5,7 +5,6 @@ _Last updated: 2026-02-12_
 ## In Progress
 
 - [WU-1590 — Cloud Lifecycle: create, claim, prep, done, cleanup in branch-pr](wu/WU-1590.yaml)
-- [WU-1595 — Harden WU-1589 branch foundation edge cases and coverage](wu/WU-1595.yaml)
 
 ## Completed
 
@@ -537,3 +536,4 @@ _Last updated: 2026-02-12_
 - [WU-1593 — Fix plan command script wiring and expose plan CLI wrappers](wu/WU-1593.yaml) — 2026-02-12
 - [WU-1594 — Sync backlog lane display after wu:edit lane changes](wu/WU-1594.yaml) — 2026-02-12
 - [WU-1589 — Cloud Foundation: claimed_branch schema, resolver, hook](wu/WU-1589.yaml) — 2026-02-12
+- [WU-1595 — Harden WU-1589 branch foundation edge cases and coverage](wu/WU-1595.yaml) — 2026-02-12

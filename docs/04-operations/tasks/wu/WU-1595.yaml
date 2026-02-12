@@ -2,7 +2,7 @@ id: WU-1595
 title: Harden WU-1589 branch foundation edge cases and coverage
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -59,3 +59,6 @@ session_id: 1f6c337a-d986-419e-9aed-336c53cee4cc
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T10:01:53.607Z
+locked: true
+completed_at: 2026-02-12T10:09:03.641Z
+completed: 2026-02-12
