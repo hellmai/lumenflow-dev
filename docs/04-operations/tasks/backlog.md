@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1596 — P0 hotfix: cloud branch-pr lifecycle blockers from INIT-023 review](wu/WU-1596.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1581 — CLI strict wave 1A: high-impact WU command hotspots](wu/WU-1581.yaml) — Framework: CLI WU Commands
@@ -34,7 +33,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1596 — P0 hotfix: cloud branch-pr lifecycle blockers from INIT-023 review](wu/WU-1596.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
