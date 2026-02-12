@@ -25,6 +25,7 @@ import {
   buildTagName,
   type ReleaseOptions,
 } from '../release.js';
+import { clearClaimMetadataOnRelease } from '../wu-release.js';
 
 describe('release command', () => {
   describe('WU-1462 packaging config invariants', () => {
@@ -251,6 +252,26 @@ describe('release command integration', () => {
     expect(typeof module.validateSemver).toBe('function');
     expect(typeof module.findPackageJsonPaths).toBe('function');
     expect(typeof module.updatePackageVersions).toBe('function');
+  });
+});
+
+describe('WU-1595: wu-release claim metadata reset coverage', () => {
+  it('clears claimed_mode and claimed_branch while preserving other fields', () => {
+    const doc = {
+      id: 'WU-1595',
+      status: 'in_progress',
+      claimed_mode: 'branch-pr',
+      claimed_branch: 'feature/cloud-agent-branch',
+      worktree_path: '/tmp/worktree',
+      notes: 'keep this',
+    };
+
+    clearClaimMetadataOnRelease(doc);
+
+    expect(doc.claimed_mode).toBeUndefined();
+    expect(doc.claimed_branch).toBeUndefined();
+    expect(doc.worktree_path).toBe('/tmp/worktree');
+    expect(doc.notes).toBe('keep this');
   });
 });
 

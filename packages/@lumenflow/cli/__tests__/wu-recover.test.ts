@@ -152,6 +152,32 @@ describe('wu:recover CLI (WU-1090)', () => {
     });
   });
 
+  describe('WU-1595: reset claim metadata helper', () => {
+    it('clears claimed_mode and claimed_branch when resetting to ready', async () => {
+      const { resetClaimMetadataForReady } = await import('../dist/wu-recover.js');
+
+      const doc = {
+        status: WU_STATUS.IN_PROGRESS,
+        worktree_path: '/tmp/worktree',
+        claimed_at: '2026-02-12T00:00:00.000Z',
+        baseline_main_sha: 'abc123',
+        session_id: '00000000-0000-0000-0000-000000000000',
+        claimed_mode: 'branch-pr',
+        claimed_branch: 'feature/cloud-branch',
+      };
+
+      resetClaimMetadataForReady(doc);
+
+      expect(doc.status).toBe(WU_STATUS.READY);
+      expect(doc.claimed_mode).toBeUndefined();
+      expect(doc.claimed_branch).toBeUndefined();
+      expect(doc.worktree_path).toBeUndefined();
+      expect(doc.claimed_at).toBeUndefined();
+      expect(doc.baseline_main_sha).toBeUndefined();
+      expect(doc.session_id).toBeUndefined();
+    });
+  });
+
   describe('validateRecoveryAction', () => {
     it('accepts valid action type', async () => {
       const { validateRecoveryAction } = await import('../dist/wu-recover.js');

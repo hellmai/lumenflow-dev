@@ -42,6 +42,16 @@ import { runCLI } from './cli-entry-point.js';
 
 const PREFIX = '[wu-release]';
 
+/**
+ * WU-1595: Clear branch claim metadata when releasing WU back to ready.
+ *
+ * Mutates the provided document.
+ */
+export function clearClaimMetadataOnRelease(doc: Record<string, unknown>): void {
+  delete doc.claimed_mode;
+  delete doc.claimed_branch;
+}
+
 async function main() {
   const args = createWUParser({
     name: 'wu-release',
@@ -108,9 +118,8 @@ async function main() {
       // Update WU YAML in micro-worktree - set status back to ready
       const microDoc = readWU(microWUPath, id);
       microDoc.status = WU_STATUS.READY;
-      // WU-1589: Clear claim metadata when releasing back to ready
-      delete microDoc.claimed_mode;
-      delete microDoc.claimed_branch;
+      // WU-1595: Clear claim metadata when releasing back to ready.
+      clearClaimMetadataOnRelease(microDoc);
       const noteLine = `Released (${todayISO()}): ${args.reason}`;
       appendNote(microDoc, noteLine);
       writeWU(microWUPath, microDoc);

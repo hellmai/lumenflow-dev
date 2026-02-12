@@ -156,6 +156,15 @@ export function formatMainBranchBlockMessage(branch) {
   return lines.join('\n');
 }
 
+/**
+ * WU-1595: Decide whether a lane-branch commit from main checkout is allowed.
+ *
+ * branch-only and branch-pr are no-worktree claim modes and should be allowed.
+ */
+export function shouldAllowMainCheckoutLaneCommit(claimedMode) {
+  return claimedMode === 'branch-only' || claimedMode === 'branch-pr';
+}
+
 // WU-1070: Inline audit logging (fail-open, no external imports for hook reliability)
 function logForceBypass(hookName, projectRoot) {
   if (process.env.LUMENFLOW_FORCE !== '1') return;
@@ -423,8 +432,7 @@ export async function main() {
             const modeMatch = content.match(/^claimed_mode:\s*(.+)$/m);
             const claimedMode = modeMatch ? modeMatch[1].trim() : null;
 
-            // WU-1589: Allow both branch-only and branch-pr modes on main checkout
-            if (claimedMode === 'branch-only' || claimedMode === 'branch-pr') {
+            if (shouldAllowMainCheckoutLaneCommit(claimedMode)) {
               process.exit(0);
             }
 
