@@ -2,7 +2,7 @@ id: WU-1617
 title: Remove wu:spawn alias and migrate command/docs to wu:brief + wu:delegate
 lane: 'Framework: CLI Orchestration'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -90,3 +90,6 @@ acceptance:
   - MCP/public command surfaces expose wu:brief and wu:delegate without wu:spawn alias.
   - Internal and Starlight documentation no longer instruct users to use wu:spawn for
     delegation/prompt generation.
+locked: true
+completed_at: 2026-02-12T18:57:56.224Z
+completed: 2026-02-12
