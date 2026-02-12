@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-- [WU-1596 — P0 hotfix: cloud branch-pr lifecycle blockers from INIT-023 review](wu/WU-1596.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -540,3 +540,4 @@ _Last updated: 2026-02-12_
 - [WU-1590 — Cloud Lifecycle: create, claim, prep, done, cleanup in branch-pr](wu/WU-1590.yaml) — 2026-02-12
 - [WU-1591 — Cloud State Commands: branch-pr support for edit/block/unblock/release/delete](wu/WU-1591.yaml) — 2026-02-12
 - [WU-1592 — Cloud Recovery, docs, and auto-detect rollout for branch-pr](wu/WU-1592.yaml) — 2026-02-12
+- [WU-1596 — P0 hotfix: cloud branch-pr lifecycle blockers from INIT-023 review](wu/WU-1596.yaml) — 2026-02-12
