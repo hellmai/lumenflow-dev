@@ -1,0 +1,42 @@
+id: WU-1598
+title: Resolve cloud canonical-claim behavior and harden cloud lifecycle coverage
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-12
+code_paths:
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/cli/src/wu-state-cloud.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-cloud-lifecycle.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-lifecycle-integration.test.ts
+tests:
+  manual:
+    - Run branch-pr lifecycle on a cloud branch and verify claim/create/prep/done/cleanup behavior matches acceptance criteria.
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-cloud-lifecycle.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-lifecycle-integration.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1598.done
+dependencies: []
+initiative: INIT-023
+phase: 2
+spec_refs:
+  - lumenflow://plans/INIT-023-plan.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: INIT-023 still has open review findings. Finding #3 reports that wu:claim --cloud mutates canonical state on origin/main via push-only micro-worktree. Finding #7 reports a DRY constant divergence in wu-state-cloud.ts. Finding #8 reports insufficient integration coverage for real cloud lifecycle execution paths. Problem: these remain open at pre-release and leave behavior/policy ambiguity plus test blind spots. Solution: implement the agreed canonical-claim behavior for branch-pr claims, remove state constant duplication by importing canonical CLAIMED_MODES, and add deterministic integration coverage that exercises real lifecycle command paths and catches regressions.'
+acceptance:
+  - Branch-pr claim path behavior for canonical state is explicitly enforced in code and documented in command-level tests (no ambiguous mixed behavior).
+  - wu-state-cloud.ts uses canonical CLAIMED_MODES constants instead of local string literals for branch modes.
+  - Cloud lifecycle integration tests cover create/claim/prep/done/cleanup command flow assertions relevant to branch-pr regressions.
+  - Existing non-cloud worktree lifecycle behavior remains unchanged and existing tests continue to pass.
