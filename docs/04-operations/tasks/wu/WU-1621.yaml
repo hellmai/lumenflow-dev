@@ -1,0 +1,44 @@
+id: WU-1621
+title: Harden initiative metadata writes against origin movement
+lane: 'Framework: CLI Orchestration'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-12
+code_paths:
+  - packages/@lumenflow/cli/src/initiative-edit.ts
+  - packages/@lumenflow/cli/src/initiative-plan.ts
+  - packages/@lumenflow/cli/src/plan-link.ts
+  - packages/@lumenflow/cli/src/plan-edit.ts
+  - packages/@lumenflow/cli/src/initiative-add-wu.ts
+  - packages/@lumenflow/cli/src/initiative-remove-wu.ts
+tests:
+  manual:
+    - Simulate fast sequential initiative:edit/plan links against a moving origin/main and verify command succeeds or returns clear retry exhaustion without malformed YAML.
+    - Inject synthetic concurrent metadata update race in tests or integration harness and assert no lost updates.
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
+    - packages/@lumenflow/cli/src/__tests__/initiative-plan.test.ts
+    - packages/@lumenflow/cli/src/__tests__/plan-link.test.ts
+    - packages/@lumenflow/cli/src/__tests__/plan-edit.test.ts
+    - packages/@lumenflow/cli/src/__tests__/initiative-add-wu.test.ts
+    - packages/@lumenflow/cli/src/__tests__/initiative-remove-wu.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1621.done
+dependencies: []
+initiative: INIT-025
+risks: []
+notes: 'Single WU in Framework: CLI Orchestration aligned to .lumenflow.lane-inference.yaml.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: initiative edit and plan linking commands that use push-only micro-worktree updates can fail on sequential updates when origin moves between push attempts. This WU improves retry behavior, rebase convergence, and payload validation to avoid metadata corruption or retries loops.
+acceptance:
+  - initiatives and plans can be updated reliably under push-only mode even with sequential metadata edits
+  - failed retries report clear terminal state and do not leave malformed initiative or plan linkage metadata
