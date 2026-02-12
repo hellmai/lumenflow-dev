@@ -391,8 +391,8 @@ import { loadMemory, appendNode } from '@lumenflow/memory/store';
 
 ### Context Injection
 
-| Function                         | Description                                   |
-| -------------------------------- | --------------------------------------------- |
+| Function                         | Description                                     |
+| -------------------------------- | ----------------------------------------------- |
 | `generateContext(baseDir, opts)` | Generate formatted context block for `wu:brief` |
 
 ### Project Indexing

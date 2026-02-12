@@ -69,20 +69,20 @@ pnpm wu:cleanup --id WU-XXXX
 
 ### WU Lifecycle
 
-| Command                                        | Description                                     |
-| ---------------------------------------------- | ----------------------------------------------- |
-| `pnpm wu:create --id WU-XXX --lane <Lane> ..`  | Create new WU spec                              |
-| `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree (default)          |
-| `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree)  |
-| `pnpm wu:prep --id WU-XXX`                     | Run gates, prep for wu:done                     |
-| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, stamp, cleanup)       |
-| `pnpm wu:cleanup --id WU-XXX`                  | Post-merge cleanup (branch-pr mode)             |
-| `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands        |
-| `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                            |
-| `pnpm wu:unblock --id WU-XXX`                  | Unblock WU                                      |
+| Command                                        | Description                                      |
+| ---------------------------------------------- | ------------------------------------------------ |
+| `pnpm wu:create --id WU-XXX --lane <Lane> ..`  | Create new WU spec                               |
+| `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree (default)           |
+| `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree)   |
+| `pnpm wu:prep --id WU-XXX`                     | Run gates, prep for wu:done                      |
+| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, stamp, cleanup)        |
+| `pnpm wu:cleanup --id WU-XXX`                  | Post-merge cleanup (branch-pr mode)              |
+| `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands         |
+| `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                             |
+| `pnpm wu:unblock --id WU-XXX`                  | Unblock WU                                       |
 | `pnpm wu:brief --id WU-XXX --client <client>`  | Generate handoff prompt (no automatic execution) |
 | `pnpm wu:delegate --id WU-XXX --parent-wu <P>` | Generate prompt + record delegation lineage      |
-| `pnpm wu:recover --id WU-XXX`                  | Analyze and fix WU state inconsistencies        |
+| `pnpm wu:recover --id WU-XXX`                  | Analyze and fix WU state inconsistencies         |
 
 ### Gates & Quality
 
