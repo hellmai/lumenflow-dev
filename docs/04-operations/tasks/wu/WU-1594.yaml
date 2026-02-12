@@ -2,7 +2,7 @@ id: WU-1594
 title: Sync backlog lane display after wu:edit lane changes
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -29,8 +29,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:edit updates WU YAML lane fields but backlog.md can retain stale lane labels, causing lane assignment drift. Problem: metadata projection is not refreshed after wu:edit operations, so backlog output can diverge from spec YAML. Solution: regenerate backlog projection during wu:edit micro-worktree edits and cover lane-reassignment behavior with unit tests.'
+description: 'Context: wu:edit updates WU YAML lane fields but backlog.md can retain stale lane
+  labels, causing lane assignment drift. Problem: metadata projection is not refreshed after wu:edit
+  operations, so backlog output can diverge from spec YAML. Solution: regenerate backlog projection
+  during wu:edit micro-worktree edits and cover lane-reassignment behavior with unit tests.'
 acceptance:
   - wu:edit lane reassignment updates backlog projection in the same commit.
-  - Add unit tests that fail before the fix and pass after, covering backlog sync behavior for lane edits.
-  - Existing wu:edit behavior remains unchanged for non-lane fields except synchronized backlog output.
+  - Add unit tests that fail before the fix and pass after, covering backlog sync behavior for lane
+    edits.
+  - Existing wu:edit behavior remains unchanged for non-lane fields except synchronized backlog
+    output.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1594
+claimed_at: 2026-02-12T09:20:11.201Z
+baseline_main_sha: 2aa73b5c4daca2a0b50869c49c52ed08ab1c6a2e
+session_id: d375483a-809f-47a1-80d6-491dafe78232
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T09:20:11.210Z
