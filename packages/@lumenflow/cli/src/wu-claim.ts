@@ -221,6 +221,7 @@ export function buildRollbackYamlDoc(doc) {
 
   // Remove claim-specific metadata fields
   delete rolled.claimed_mode;
+  delete rolled.claimed_branch; // WU-1589: Clear claimed_branch on rollback
   delete rolled.claimed_at;
   delete rolled.worktree_path;
   delete rolled.baseline_main_sha;

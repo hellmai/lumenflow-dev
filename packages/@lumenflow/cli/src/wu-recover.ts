@@ -257,6 +257,9 @@ async function executeReset(wuId: string): Promise<boolean> {
         Reflect.deleteProperty(microDoc, 'claimed_at');
         Reflect.deleteProperty(microDoc, 'session_id');
         Reflect.deleteProperty(microDoc, 'baseline_main_sha');
+        // WU-1589: Clear claimed_mode and claimed_branch on reset to ready
+        Reflect.deleteProperty(microDoc, 'claimed_mode');
+        Reflect.deleteProperty(microDoc, 'claimed_branch');
         writeWU(microWuPath, microDoc);
 
         // WU-1419: Emit release event to state store so re-claiming works

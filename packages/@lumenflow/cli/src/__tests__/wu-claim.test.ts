@@ -289,6 +289,32 @@ describe('wu-claim transaction safety (WU-1521)', () => {
       expect(rolledBack.assigned_to).toBeUndefined();
     });
 
+    // WU-1589: AC4 - buildRollbackYamlDoc should also clear claimed_branch
+    it('should clear claimed_branch when rolling back (WU-1589)', () => {
+      const claimedDoc = {
+        id: 'WU-1589',
+        title: 'Cloud Foundation WU',
+        lane: 'Framework: Core Lifecycle',
+        status: WU_STATUS.IN_PROGRESS,
+        type: 'feature',
+        assigned_to: 'agent@test.com',
+        claimed_mode: 'branch-pr',
+        claimed_branch: 'codex/feature-cloud-branch',
+        claimed_at: '2026-02-12T00:00:00Z',
+        worktree_path: null,
+        baseline_main_sha: 'def456',
+        session_id: 'sess-456',
+      };
+
+      const rolledBack = buildRollbackYamlDoc(claimedDoc);
+
+      expect(rolledBack.status).toBe(WU_STATUS.READY);
+      expect(rolledBack.claimed_mode).toBeUndefined();
+      expect(rolledBack.claimed_branch).toBeUndefined();
+      expect(rolledBack.claimed_at).toBeUndefined();
+      expect(rolledBack.assigned_to).toBeUndefined();
+    });
+
     it('should handle doc that is already in ready status (no-op)', () => {
       const readyDoc = {
         id: 'WU-1521',

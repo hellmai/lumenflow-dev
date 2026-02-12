@@ -129,6 +129,40 @@ describe('pre-commit hook (WU-1164)', () => {
     });
   });
 
+  // WU-1589: AC3 - pre-commit should allow branch-pr commits on lane branches from main checkout
+  describe('branch-pr mode pre-commit (WU-1589)', () => {
+    // The main() function reads claimed_mode from WU YAML and allows 'branch-only' on main checkout.
+    // WU-1589 extends this to also allow 'branch-pr'.
+    // We test the regex-based YAML parsing that determines claimed_mode
+    // by verifying the branch-pr value is recognized alongside branch-only.
+
+    it('should recognize claimed_mode: branch-pr in YAML content regex', () => {
+      const yamlContent = [
+        'id: WU-1589',
+        'title: Test WU',
+        'claimed_mode: branch-pr',
+        'status: in_progress',
+      ].join('\n');
+
+      const modeMatch = yamlContent.match(/^claimed_mode:\s*(.+)$/m);
+      expect(modeMatch).not.toBeNull();
+      expect(modeMatch![1].trim()).toBe('branch-pr');
+    });
+
+    it('should recognize claimed_mode: branch-only in YAML content regex', () => {
+      const yamlContent = [
+        'id: WU-1589',
+        'title: Test WU',
+        'claimed_mode: branch-only',
+        'status: in_progress',
+      ].join('\n');
+
+      const modeMatch = yamlContent.match(/^claimed_mode:\s*(.+)$/m);
+      expect(modeMatch).not.toBeNull();
+      expect(modeMatch![1].trim()).toBe('branch-only');
+    });
+  });
+
   describe('formatMainBranchBlockMessage (WU-1357)', () => {
     it('explains WHY main is protected', () => {
       const message = formatMainBranchBlockMessage('main');

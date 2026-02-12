@@ -405,6 +405,16 @@ const sharedFields = {
   /** Claimed mode (worktree/branch-only/worktree-pr/branch-pr) */
   claimed_mode: z.enum(['worktree', 'branch-only', 'worktree-pr', 'branch-pr']).optional(),
 
+  /**
+   * WU-1589: Canonical branch name for this WU claim.
+   *
+   * Set at claim time to record the actual branch used.
+   * Used by defaultBranchFrom() as highest-priority source for branch resolution.
+   * Essential for branch-pr mode where cloud agents may use non-lane-derived branch names.
+   * Cleared on rollback/release/recover when resetting to ready.
+   */
+  claimed_branch: z.string().optional(),
+
   /** Assigned agent email */
   assigned_to: z.string().email().optional(),
 

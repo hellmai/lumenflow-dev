@@ -182,11 +182,22 @@ export function detectWorkspaceMode(doc) {
 }
 
 /**
- * Calculate lane branch name from WU YAML
+ * Calculate branch name from WU YAML
+ *
+ * WU-1589: Resolver precedence:
+ * 1. claimed_branch (canonical, set at claim time for branch-pr cloud agents)
+ * 2. Lane-derived naming (lane/<kebab-lane>/<wu-id>, legacy default)
+ *
  * @param {object} doc - WU YAML document
- * @returns {string|null} Lane branch name (e.g., lane/operations-tooling/wu-1215)
+ * @returns {string|null} Branch name or null if neither source available
  */
 export function defaultBranchFrom(doc) {
+  // Priority 1: Use claimed_branch if present (WU-1589)
+  if (doc.claimed_branch && doc.claimed_branch.trim()) {
+    return doc.claimed_branch;
+  }
+
+  // Priority 2: Fall back to lane-derived naming
   const lane = (doc.lane || '').toString();
   const laneK = toKebab(lane);
   const idK = (doc.id || '').toLowerCase();

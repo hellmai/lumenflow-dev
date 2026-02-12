@@ -108,6 +108,9 @@ async function main() {
       // Update WU YAML in micro-worktree - set status back to ready
       const microDoc = readWU(microWUPath, id);
       microDoc.status = WU_STATUS.READY;
+      // WU-1589: Clear claim metadata when releasing back to ready
+      delete microDoc.claimed_mode;
+      delete microDoc.claimed_branch;
       const noteLine = `Released (${todayISO()}): ${args.reason}`;
       appendNote(microDoc, noteLine);
       writeWU(microWUPath, microDoc);

@@ -423,7 +423,8 @@ export async function main() {
             const modeMatch = content.match(/^claimed_mode:\s*(.+)$/m);
             const claimedMode = modeMatch ? modeMatch[1].trim() : null;
 
-            if (claimedMode === 'branch-only') {
+            // WU-1589: Allow both branch-only and branch-pr modes on main checkout
+            if (claimedMode === 'branch-only' || claimedMode === 'branch-pr') {
               process.exit(0);
             }
 
