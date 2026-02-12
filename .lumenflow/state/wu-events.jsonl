@@ -1150,3 +1150,4 @@
 {"type":"claim","wuId":"WU-1609","timestamp":"2026-02-12T15:05:36.466Z","lane":"Framework: CLI WU Commands","title":"P0 hotfix: block cloud activation on main for wu:create/wu:claim"}
 {"type":"complete","wuId":"WU-1609","timestamp":"2026-02-12T15:15:59.431Z"}
 {"type":"claim","wuId":"WU-1608","lane":"Framework: CLI Orchestration","title":"Fix wu:brief LOG_PREFIX leak and tautological tests","timestamp":"2026-02-12T15:16:02.761Z"}
+{"type":"claim","wuId":"WU-1610","lane":"Framework: CLI WU Commands","title":"Follow-up: make cloud activation explicit-only and decouple runtime identity","timestamp":"2026-02-12T15:20:37.571Z"}
