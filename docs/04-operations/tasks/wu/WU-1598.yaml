@@ -2,7 +2,7 @@ id: WU-1598
 title: Resolve cloud canonical-claim behavior and harden cloud lifecycle coverage
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -60,3 +60,6 @@ session_id: d649e5b9-9c7c-4a72-a2e8-8828fb2122d7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T12:33:47.870Z
+locked: true
+completed_at: 2026-02-12T12:50:29.378Z
+completed: 2026-02-12

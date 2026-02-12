@@ -4,7 +4,7 @@ title: LumenFlow Cloud Branch-PR Lifecycle Completion
 description: Deliver complete cloud/branch-pr lifecycle support for LumenFlow so cloud agents can
   execute create->claim->prep->done->cleanup from feature branches with PR completion, without
   breaking local worktree workflow.
-status: done
+status: in_progress
 priority: P0
 owner: 'Operations: Tooling'
 created: 2026-02-12
@@ -20,7 +20,7 @@ phases:
     status: done
   - id: 4
     title: WU-D Cloud Recovery + Docs + Auto-Detect
-    status: done
+    status: in_progress
 success_metrics:
   - 'Cloud branch-pr lifecycle passes end-to-end: wu:create --cloud, wu:claim --cloud, wu:prep,
     wu:done, wu:cleanup.'
