@@ -249,7 +249,7 @@ export function formatCodePathCoverageFailure(options: {
     `Fix options:\n` +
     `  1. Commit changes that touch each missing code_path\n` +
     `  2. Update WU scope to match actual branch work:\n` +
-    `     pnpm wu:edit --id ${wuId} --replace-code-paths "<path1,path2,...>"\n` +
+    `     pnpm wu:edit --id ${wuId} --replace-code-paths --code-paths "<path1>" --code-paths "<path2>"\n` +
     `  3. Re-run: pnpm wu:prep --id ${wuId}`
   );
 }

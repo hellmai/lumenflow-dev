@@ -9,7 +9,9 @@ import { describe, it, expect } from 'vitest';
 import {
   applyEdits,
   getWuEditCommitFiles,
+  hasScopeRelevantBranchChanges,
   mergeStringField,
+  normalizeReplaceCodePathsArgv,
   validateDoneWUEdits,
 } from '../wu-edit.js';
 
@@ -171,5 +173,55 @@ describe('WU-1594: backlog sync artifacts for wu:edit', () => {
     expect(files).toContain('docs/04-operations/tasks/wu/WU-1594.yaml');
     expect(files).toContain('docs/04-operations/tasks/backlog.md');
     expect(files).toContain('docs/04-operations/tasks/initiatives/INIT-023.yaml');
+  });
+});
+
+describe('WU-1618: replace-code-paths UX', () => {
+  it('normalizes inline replace-code-paths value into --code-paths input', () => {
+    const argv = [
+      'node',
+      'wu-edit.js',
+      '--id',
+      'WU-1618',
+      '--replace-code-paths',
+      'packages/a.ts,packages/b.ts',
+    ];
+
+    const normalized = normalizeReplaceCodePathsArgv(argv);
+    expect(normalized).toEqual([
+      'node',
+      'wu-edit.js',
+      '--id',
+      'WU-1618',
+      '--replace-code-paths',
+      '--code-paths',
+      'packages/a.ts,packages/b.ts',
+    ]);
+  });
+
+  it('does not inject code-paths when replace-code-paths has no value', () => {
+    const argv = ['node', 'wu-edit.js', '--id', 'WU-1618', '--replace-code-paths', '--notes', 'x'];
+    const normalized = normalizeReplaceCodePathsArgv(argv);
+    expect(normalized).toEqual(argv);
+  });
+});
+
+describe('WU-1618: scope-relevant branch change detection', () => {
+  it('returns false for metadata-only branch changes', () => {
+    const result = hasScopeRelevantBranchChanges([
+      '.lumenflow/state/wu-events.jsonl',
+      'docs/04-operations/tasks/backlog.md',
+      'docs/04-operations/tasks/status.md',
+      'docs/04-operations/tasks/wu/WU-1618.yaml',
+    ]);
+    expect(result).toBe(false);
+  });
+
+  it('returns true when source changes are present', () => {
+    const result = hasScopeRelevantBranchChanges([
+      '.lumenflow/state/wu-events.jsonl',
+      'packages/@lumenflow/cli/src/wu-edit.ts',
+    ]);
+    expect(result).toBe(true);
   });
 });

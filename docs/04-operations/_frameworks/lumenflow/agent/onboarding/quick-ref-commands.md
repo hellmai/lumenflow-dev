@@ -125,6 +125,9 @@ pnpm exec lumenflow --client all      # All clients
 | `pnpm lane:health`                | Check lane config health         |
 | `pnpm lane:suggest --paths "..."` | Suggest lane for code paths      |
 
+Before rerunning `wu:prep` after docs-heavy edits, format touched docs first:
+`pnpm prettier --write <changed-doc-paths...>`.
+
 ---
 
 ## Memory & Sessions
