@@ -2,7 +2,7 @@ id: WU-1600
 title: Remove wu-state-cloud fallback and use canonical CLAIMED_MODES
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -29,8 +29,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Remove the runtime fallback in wu-state-cloud.ts and rely on canonical CLAIMED_MODES from @lumenflow/core. Update tests/mocks to provide CLAIMED_MODES explicitly so behavior is deterministic and hardcoding is eliminated.
+description: Remove the runtime fallback in wu-state-cloud.ts and rely on canonical CLAIMED_MODES
+  from @lumenflow/core. Update tests/mocks to provide CLAIMED_MODES explicitly so behavior is
+  deterministic and hardcoding is eliminated.
 acceptance:
-  - wu-state-cloud.ts uses canonical CLAIMED_MODES import directly with no local fallback object or try/catch
+  - wu-state-cloud.ts uses canonical CLAIMED_MODES import directly with no local fallback object or
+    try/catch
   - Tests pass with explicit CLAIMED_MODES in mocks where needed; no implicit fallback dependency
-  - No behavior regression for branch-pr state path selection across wu:edit/block/unblock/release/delete
+  - No behavior regression for branch-pr state path selection across
+    wu:edit/block/unblock/release/delete
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1600
+claimed_at: 2026-02-12T13:14:31.961Z
+baseline_main_sha: 7d359fdbf8b0115e43c503d10cc2c2127c835fbb
+session_id: c4d66360-fac1-461e-975f-ebc5819cd624
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T13:14:31.969Z
