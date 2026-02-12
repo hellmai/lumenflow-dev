@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1599 — Make wu:spawn provenance auditable and enforceable for initiative execution](wu/WU-1599.yaml)
 
 ## Completed
 

@@ -1135,3 +1135,4 @@
 {"type":"complete","wuId":"WU-1597","timestamp":"2026-02-12T12:10:01.384Z"}
 {"type":"claim","wuId":"WU-1598","timestamp":"2026-02-12T12:33:47.894Z","lane":"Framework: CLI WU Commands","title":"Resolve cloud canonical-claim behavior and harden cloud lifecycle coverage"}
 {"type":"complete","wuId":"WU-1598","timestamp":"2026-02-12T12:50:32.253Z"}
+{"type":"claim","wuId":"WU-1599","lane":"Framework: CLI Orchestration","title":"Make wu:spawn provenance auditable and enforceable for initiative execution","timestamp":"2026-02-12T12:51:03.322Z"}
