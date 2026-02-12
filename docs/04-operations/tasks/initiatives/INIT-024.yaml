@@ -12,7 +12,7 @@ target_date: 2026-02-20
 phases:
   - id: 1
     title: P0 correctness and semantics foundation
-    status: in_progress
+    status: done
   - id: 2
     title: 'Command decomposition: brief vs delegate'
     status: pending
