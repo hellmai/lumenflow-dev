@@ -7,9 +7,7 @@ priority: P1
 created: 2026-02-12
 code_paths:
   - packages/@lumenflow/cli/src/wu-cleanup-cloud.ts
-  - packages/@lumenflow/cli/src/wu-cleanup.ts
   - packages/@lumenflow/cli/src/__tests__/wu-cloud-lifecycle.test.ts
-  - packages/@lumenflow/cli/__tests__/wu-cleanup.test.ts
 tests:
   manual:
     - Simulate registry-unavailable path and confirm claude/* + codex/* are treated as cloud-managed
@@ -26,10 +24,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-12T12:04:12.123Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1597
+session_id: 3be122db-ed26-4481-a256-038251026625
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T12:04:12.129Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -45,11 +50,3 @@ acceptance:
   - Cleanup still protects centrally detected agent branches via isAgentBranch.
   - Unit tests for isCloudManagedBranch are deterministic and do not require network access.
   - Relevant cli tests and wu:prep pass.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1597
-claimed_at: 2026-02-12T12:04:12.123Z
-baseline_main_sha: b9cae9a37f1f06af83e406b295a1fedca3716ffd
-session_id: 3be122db-ed26-4481-a256-038251026625
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-12T12:04:12.129Z
