@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-- [WU-1616 — Fix lifecycle schema command count expectation after wu:brief addition](wu/WU-1616.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -559,3 +559,4 @@ _Last updated: 2026-02-12_
 - [WU-1615 — Add missing spec_refs to WU-1605](wu/WU-1615.yaml) — 2026-02-12
 - [WU-1604 — Add wu:delegate for side-effectful lineage recording and orchestration integration](wu/WU-1604.yaml) — 2026-02-12
 - [WU-1617 — Remove wu:spawn alias and migrate command/docs to wu:brief + wu:delegate](wu/WU-1617.yaml) — 2026-02-12
+- [WU-1616 — Fix lifecycle schema command count expectation after wu:brief addition](wu/WU-1616.yaml) — 2026-02-12
