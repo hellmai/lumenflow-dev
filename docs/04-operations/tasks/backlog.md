@@ -37,7 +37,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1607 — Ignore spawn-registry runtime artifact in git status](wu/WU-1607.yaml) — Framework: CLI Orchestration
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -584,4 +584,5 @@ sections:
 - [WU-1600 — Remove wu-state-cloud fallback and use canonical CLAIMED_MODES](wu/WU-1600.yaml)
 - [WU-1601 — Fix wu:spawn Codex path dropping --parent-wu registry writes](wu/WU-1601.yaml)
 - [WU-1602 — Align docs terminology from spawn execution to delegation intent](wu/WU-1602.yaml)
+- [WU-1607 — Ignore spawn-registry runtime artifact in git status](wu/WU-1607.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

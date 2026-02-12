@@ -2,7 +2,7 @@ id: WU-1607
 title: Ignore spawn-registry runtime artifact in git status
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -41,3 +41,6 @@ session_id: b9fc92e0-2ded-4975-89e5-33291e575dd1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T14:36:42.279Z
+locked: true
+completed_at: 2026-02-12T14:38:18.911Z
+completed: 2026-02-12
