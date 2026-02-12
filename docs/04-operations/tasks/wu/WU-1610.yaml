@@ -2,7 +2,7 @@ id: WU-1610
 title: 'Follow-up: make cloud activation explicit-only and decouple runtime identity'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -15,8 +15,10 @@ code_paths:
   - AGENTS.md
 tests:
   manual:
-    - On a non-main local branch with CI/CLAUDECODE/CODEX set but without --cloud/LUMENFLOW_CLOUD=1, run wu:create and wu:claim and verify standard non-cloud paths.
-    - With explicit --cloud or LUMENFLOW_CLOUD=1 on non-main branch, verify cloud behavior; on main/master verify fail-fast message.
+    - On a non-main local branch with CI/CLAUDECODE/CODEX set but without --cloud/LUMENFLOW_CLOUD=1,
+      run wu:create and wu:claim and verify standard non-cloud paths.
+    - With explicit --cloud or LUMENFLOW_CLOUD=1 on non-main branch, verify cloud behavior; on
+      main/master verify fail-fast message.
   unit:
     - packages/@lumenflow/core/src/__tests__/cloud-detect.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-cloud-lifecycle.test.ts
@@ -29,7 +31,8 @@ dependencies: []
 spec_refs:
   - /home/USER/.claude/plans/zazzy-launching-pretzel.md
 risks: []
-notes: Keep scope to activation semantics and safety guarantees; avoid changing unrelated branch-pr lifecycle logic.
+notes: Keep scope to activation semantics and safety guarantees; avoid changing unrelated branch-pr
+  lifecycle logic.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -38,10 +41,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1609 fixed the immediate regression by guarding cloud activation on main/master, but cloud auto-detection still conflates runtime identity signals (e.g. CLAUDECODE/CODEX/CI) with actual cloud execution context. Problem: env-signal auto-detection can still trigger cloud execution paths in non-main local environments and creates vendor-coupled behavior via config indirection. Solution: move to explicit-only cloud activation (--cloud or LUMENFLOW_CLOUD=1), stop using env_signals for execution-path activation, and preserve branch guards from WU-1609.'
+description: 'Context: WU-1609 fixed the immediate regression by guarding cloud activation on
+  main/master, but cloud auto-detection still conflates runtime identity signals (e.g.
+  CLAUDECODE/CODEX/CI) with actual cloud execution context. Problem: env-signal auto-detection can
+  still trigger cloud execution paths in non-main local environments and creates vendor-coupled
+  behavior via config indirection. Solution: move to explicit-only cloud activation (--cloud or
+  LUMENFLOW_CLOUD=1), stop using env_signals for execution-path activation, and preserve branch
+  guards from WU-1609.'
 acceptance:
   - 'Cloud execution paths activate only from explicit sources: --cloud or LUMENFLOW_CLOUD=1.'
   - env_signals no longer cause wu:create or wu:claim to enter cloud mode on any branch.
-  - 'WU-1609 protected-branch behavior remains: explicit cloud on main/master fails fast; env-signal-like inputs are non-activating.'
+  - 'WU-1609 protected-branch behavior remains: explicit cloud on main/master fails fast;
+    env-signal-like inputs are non-activating.'
   - Core and command-level tests cover explicit-only activation and no-regression lifecycle behavior.
   - Configuration/docs are updated to clarify runtime identity vs cloud activation concerns.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1610
+claimed_at: 2026-02-12T15:20:37.529Z
+baseline_main_sha: 5a633e888ad522adc251c33f98b5f38ec1c153c1
+session_id: 973a6ccf-300c-4216-8149-d432267b1557
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T15:20:37.539Z
