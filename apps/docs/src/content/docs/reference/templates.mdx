@@ -1,11 +1,11 @@
 ---
 title: Template Format
-description: Spawn prompt template format reference with YAML frontmatter
+description: Brief prompt template format reference with YAML frontmatter
 ---
 
 import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
-Templates are markdown files with YAML frontmatter that define reusable prompt sections for `wu:spawn`. The template system enables customization of agent prompts without modifying core LumenFlow code.
+Templates are markdown files with YAML frontmatter that define reusable prompt sections for `wu:brief`. The template system enables customization of agent prompts without modifying core LumenFlow code.
 
 ## Template Location
 
@@ -260,7 +260,7 @@ condition: "type === 'feature' && laneParent === 'Framework'"
 
 ## Assembly Process
 
-When `wu:spawn` runs, templates are assembled in this order:
+When `wu:brief` runs, templates are assembled in this order:
 
 1. **Load manifest** from `.lumenflow/templates/manifest.yaml`
 2. **Load templates** from `spawn-prompt/` directory
@@ -287,7 +287,7 @@ Client-specific templates take priority:
       skills-selection.md     # Cursor override (same id)
 ```
 
-When running `wu:spawn --client claude`:
+When running `wu:brief --id WU-XXX --client claude-code`:
 
 1. Load base `skills-selection.md`
 2. Override with `templates.claude/spawn-prompt/skills-selection.md`
@@ -360,4 +360,4 @@ Error: manifest.yaml: Template entry 'my-template' is missing required fields: o
 
 - [Manifest Schema](/reference/spawn-manifest) - Configure template assembly
 - [Customizing Spawn Prompts](/guides/customizing-spawn-prompts) - Create custom templates
-- [CLI Reference](/reference/cli) - `wu:spawn` command options
+- [CLI Reference](/reference/cli) - `wu:brief` and `wu:delegate` command options

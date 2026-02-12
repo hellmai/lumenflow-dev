@@ -368,7 +368,7 @@ LumenFlow supports **agent skills** — modular knowledge bundles that provide d
 
 ### Loading Skills
 
-Skills are loaded automatically by `wu:spawn` based on WU context, or manually:
+Skills are loaded automatically by `wu:brief` based on WU context, or manually:
 
 ```bash
 # Claude Code
@@ -429,10 +429,10 @@ Pre-configured agent definitions for Task tool orchestration live in `.claude/ag
 
 ### Spawning Agents
 
-Use `wu:spawn` to generate Task tool invocations with proper context:
+Use `wu:brief` to generate Task tool invocations with proper context:
 
 ```bash
-pnpm wu:spawn --id WU-001 --client claude-code
+pnpm wu:brief --id WU-001 --client claude-code
 ```
 
 ## Next Steps

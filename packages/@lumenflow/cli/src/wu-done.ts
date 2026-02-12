@@ -573,11 +573,11 @@ export function shouldEnforceSpawnProvenance(doc): boolean {
 export function buildMissingSpawnProvenanceMessage(id, initiativeId): string {
   return (
     `Missing spawn provenance for initiative-governed WU ${id} (${initiativeId}).\n\n` +
-    `This completion path enforces auditable wu:spawn lineage for initiative work.\n\n` +
+    `This completion path enforces auditable delegation lineage for initiative work.\n\n` +
     `Fix options:\n` +
     `  1. Re-run with --force for an audited override (legacy/manual workflow)\n` +
     `  2. Register spawn lineage before completion (preferred):\n` +
-    `     pnpm wu:spawn --id ${id} --parent-wu WU-XXXX --client codex-cli --codex\n\n` +
+    `     pnpm wu:delegate --id ${id} --parent-wu WU-XXXX --client codex-cli\n\n` +
     `Then retry: pnpm wu:done --id ${id}`
   );
 }

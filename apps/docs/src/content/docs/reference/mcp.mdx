@@ -48,7 +48,7 @@ The MCP server exposes **99 tools** organized into 12 categories:
 | Core WU Operations            | 7     | Basic WU lifecycle and context             |
 | Public Parity Operations (W1) | 15    | Ops/setup parity families from public CLI  |
 | Public Parity Operations (W2) | 15    | File/git/plan/signal parity families       |
-| Additional WU Operations      | 16    | Extended WU management                     |
+| Additional WU Operations      | 17    | Extended WU management                     |
 | Initiative Operations         | 8     | Multi-phase project orchestration          |
 | Memory Operations             | 14    | Session tracking and agent coordination    |
 | Agent Operations              | 4     | Agent session management and issue logging |
@@ -371,18 +371,31 @@ Clean up worktree and branch after PR merge (PR-based completion workflow).
 | `id` | string | Yes | WU ID to cleanup |
 | `artifacts` | boolean | No | Remove build artifacts |
 
-### wu_spawn
+### wu_brief
 
-Generate sub-agent spawn prompt for WU execution.
+Generate handoff prompt for sub-agent WU execution.
 
 **Input:**
 | Parameter | Type | Required | Description |
-| ----------- | ------- | -------- | ---------------------------------------- |
-| `id` | string | Yes | WU ID to spawn |
+| ----------- | ------- | -------- | ----------------------------------------- |
+| `id` | string | Yes | WU ID to brief |
 | `client` | string | No | Client name (claude-code, gemini-cli, etc) |
 | `thinking` | boolean | No | Enable extended thinking |
 | `budget` | number | No | Token budget for extended thinking |
-| `parent_wu` | string | No | Parent WU ID for orchestrator context |
+| `no_context`| boolean | No | Skip memory context injection |
+
+### wu_delegate
+
+Generate delegation prompt and record explicit lineage intent.
+
+**Input:**
+| Parameter | Type | Required | Description |
+| ----------- | ------- | -------- | ----------------------------------------- |
+| `id` | string | Yes | WU ID to delegate |
+| `parent_wu` | string | Yes | Parent WU ID for delegation lineage |
+| `client` | string | No | Client name (claude-code, gemini-cli, etc) |
+| `thinking` | boolean | No | Enable extended thinking |
+| `budget` | number | No | Token budget for extended thinking |
 | `no_context`| boolean | No | Skip memory context injection |
 
 ### wu_validate
@@ -1128,7 +1141,7 @@ MCP Server (@lumenflow/mcp)
 │   │   ├── wu_done → CLI: wu:done
 │   │   └── gates_run → CLI: gates
 │   │
-│   ├── Additional WU Operations (16)
+│   ├── Additional WU Operations (17)
 │   │   ├── wu_block → CLI: wu:block
 │   │   ├── wu_unblock → CLI: wu:unblock
 │   │   ├── wu_edit → CLI: wu:edit
@@ -1141,7 +1154,8 @@ MCP Server (@lumenflow/mcp)
 │   │   ├── wu_prune → CLI: wu:prune
 │   │   ├── wu_delete → CLI: wu:delete
 │   │   ├── wu_cleanup → CLI: wu:cleanup
-│   │   ├── wu_spawn → CLI: wu:spawn
+│   │   ├── wu_brief → CLI: wu:brief
+│   │   ├── wu_delegate → CLI: wu:delegate
 │   │   ├── wu_validate → CLI: wu:validate
 │   │   ├── wu_infer_lane → CLI: wu:infer-lane
 │   │   └── wu_unlock_lane → CLI: wu:unlock-lane

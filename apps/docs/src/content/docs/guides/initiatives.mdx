@@ -175,8 +175,9 @@ Shows the execution plan without spawning agents. The output includes:
 <Aside type="tip">
   After dry-run, the output provides three options: 1. **Checkpoint-per-wave** (recommended): `pnpm
   orchestrate:initiative -i INIT-001 -c` - best for large initiatives 2. **Full execution**: `pnpm
-  orchestrate:initiative -i INIT-001` - best for small initiatives 3. **Manual spawn**: `pnpm
-  wu:spawn --id WU-XXX` - best for testing individual WUs
+  orchestrate:initiative -i INIT-001` - best for small initiatives 3. **Manual brief/delegate**:
+  `pnpm wu:brief --id WU-XXX --client claude-code` or `pnpm wu:delegate --id WU-XXX --parent-wu
+  WU-YYY --client claude-code` - best for testing individual WUs
 </Aside>
 
 ### Execute with Checkpoints

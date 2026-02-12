@@ -124,15 +124,15 @@ describe('init scripts generation (WU-1307)', () => {
     expect(packageJson.scripts?.gates).toBeDefined();
   });
 
-  // WU-1342: Test for all 17 essential commands
-  it('should include all 17 essential commands (WU-1342)', async () => {
+  // WU-1617: wu:spawn removed; wu:brief + wu:delegate are essential
+  it('should include all 18 essential commands (WU-1342, WU-1617)', async () => {
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
 
     // Assert
     const packageJson = readPackageJson();
 
-    // All 17 essential commands that must be present per WU-1342 acceptance criteria
+    // All essential commands for local operation and delegation flows
     const essentialScripts = [
       // Core WU lifecycle
       'wu:claim',
@@ -144,7 +144,8 @@ describe('init scripts generation (WU-1307)', () => {
       // Additional critical commands (WU-1342)
       'wu:prep',
       'wu:recover',
-      'wu:spawn',
+      'wu:brief',
+      'wu:delegate',
       'wu:validate',
       'wu:infer-lane',
       // Memory commands
@@ -174,7 +175,7 @@ describe('init scripts generation (WU-1307)', () => {
         key === 'gates' ||
         key === 'gates:docs',
     );
-    expect(lumenflowScripts.length).toBeGreaterThanOrEqual(17);
+    expect(lumenflowScripts.length).toBeGreaterThanOrEqual(18);
   });
 });
 

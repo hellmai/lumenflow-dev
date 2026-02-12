@@ -319,12 +319,12 @@ const skill = await loadSkill('my-skill');
 console.log(skill.content);
 ```
 
-### Via wu:spawn
+### Via wu:brief
 
 When spawning agents, skills are auto-suggested based on WU context:
 
 ```bash
-pnpm wu:spawn --id WU-123
+pnpm wu:brief --id WU-123 --client claude-code
 # Output includes recommended skills
 ```
 

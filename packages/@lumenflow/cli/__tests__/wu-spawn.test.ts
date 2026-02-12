@@ -7,7 +7,6 @@ import {
   emitSpawnOutputWithRegistry,
   TRUNCATION_WARNING_BANNER,
   SPAWN_END_SENTINEL,
-  SPAWN_DEPRECATION_MESSAGE,
   runBriefLogic,
 } from '../dist/wu-spawn.js';
 import { GenericStrategy } from '@lumenflow/core/spawn-strategy';
@@ -953,23 +952,7 @@ describe('wu-spawn progress signals (WU-1180)', () => {
   });
 });
 
-describe('wu:brief / wu:spawn naming and deprecation (WU-1603)', () => {
-  describe('SPAWN_DEPRECATION_MESSAGE', () => {
-    it('exports a deprecation message constant', () => {
-      expect(SPAWN_DEPRECATION_MESSAGE).toBeDefined();
-      expect(typeof SPAWN_DEPRECATION_MESSAGE).toBe('string');
-    });
-
-    it('mentions wu:spawn is deprecated', () => {
-      expect(SPAWN_DEPRECATION_MESSAGE).toContain('wu:spawn');
-      expect(SPAWN_DEPRECATION_MESSAGE).toContain('deprecated');
-    });
-
-    it('points to wu:brief as the replacement', () => {
-      expect(SPAWN_DEPRECATION_MESSAGE).toContain('wu:brief');
-    });
-  });
-
+describe('wu:brief / wu:delegate command wiring (WU-1617)', () => {
   describe('runBriefLogic', () => {
     it('is exported as a function', () => {
       expect(runBriefLogic).toBeDefined();
@@ -977,7 +960,7 @@ describe('wu:brief / wu:spawn naming and deprecation (WU-1603)', () => {
     });
   });
 
-  describe('prompt output equivalence', () => {
+  describe('prompt output determinism', () => {
     const mockDoc = {
       title: 'Brief Test WU',
       lane: 'Framework: CLI',
@@ -997,33 +980,30 @@ describe('wu:brief / wu:spawn naming and deprecation (WU-1603)', () => {
       },
     });
 
-    it('wu:brief and wu:spawn produce identical task invocation output', () => {
+    it('produces identical task invocation output for identical inputs', () => {
       const strategy = new GenericStrategy();
 
-      // WU-1608: Simulate the two different entry points calling the shared generator
-      // Both wu:brief and wu:spawn use generateTaskInvocation with the same args,
-      // so calling it once and verifying structure proves equivalence.
       const briefOutput = generateTaskInvocation(mockDoc, id, strategy, { config });
-      const spawnOutput = generateTaskInvocation(mockDoc, id, strategy, { config });
+      const repeatedOutput = generateTaskInvocation(mockDoc, id, strategy, { config });
 
       // Structural assertions that prove the content is correct, not just identical
       expect(briefOutput).toContain('Brief Test WU');
       expect(briefOutput).toContain('WU-1603');
       expect(briefOutput).toContain('AC1: Prompt is generated');
-      expect(briefOutput).toBe(spawnOutput);
+      expect(briefOutput).toBe(repeatedOutput);
     });
 
-    it('wu:brief and wu:spawn produce identical codex output', () => {
+    it('produces identical codex output for identical inputs', () => {
       const strategy = new GenericStrategy();
 
       const briefOutput = generateCodexPrompt(mockDoc, id, strategy, { config });
-      const spawnOutput = generateCodexPrompt(mockDoc, id, strategy, { config });
+      const repeatedOutput = generateCodexPrompt(mockDoc, id, strategy, { config });
 
       // Structural assertions that prove the content is correct, not just identical
       expect(briefOutput).toContain('Brief Test WU');
       expect(briefOutput).toContain('WU-1603');
       expect(briefOutput).toContain('AC1: Prompt is generated');
-      expect(briefOutput).toBe(spawnOutput);
+      expect(briefOutput).toBe(repeatedOutput);
     });
   });
 });

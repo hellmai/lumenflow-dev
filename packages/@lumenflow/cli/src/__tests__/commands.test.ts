@@ -165,6 +165,9 @@ describe('public CLI manifest (WU-1432)', () => {
       expect(names).toContain('wu:done');
       expect(names).toContain('wu:prep');
       expect(names).toContain('wu:status');
+      expect(names).toContain('wu:brief');
+      expect(names).toContain('wu:delegate');
+      expect(names).not.toContain('wu:spawn');
 
       // Gates - must be public
       expect(names).toContain('gates');
