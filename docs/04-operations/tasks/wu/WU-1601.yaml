@@ -1,0 +1,37 @@
+id: WU-1601
+title: Fix wu:spawn Codex path dropping --parent-wu registry writes
+lane: 'Framework: CLI Orchestration'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-12
+code_paths:
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/wu-spawn-helpers.ts
+  - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
+tests:
+  manual:
+    - Run wu:spawn for codex-cli and claude-code with --parent-wu and verify registry entries are persisted in both paths.
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1601.done
+dependencies: []
+initiative: INIT-024
+phase: 1
+risks: []
+notes: P0 correctness fix before semantic decomposition work. Keep scope narrow to behavior parity and regression safety.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: The Codex client path in wu:spawn returns before registry persistence, so --parent-wu lineage is silently dropped for Codex output while other clients persist correctly. This creates false negatives in delegation provenance and inconsistent behavior between clients.
+acceptance:
+  - wu:spawn with --client codex-cli --parent-wu records a spawn registry entry exactly once.
+  - Non-Codex spawn paths preserve existing registry behavior without duplicate writes.
+  - Automated tests cover registry persistence for both Codex and non-Codex execution paths.
