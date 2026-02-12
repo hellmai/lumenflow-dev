@@ -2,7 +2,7 @@ id: WU-1613
 title: Document agent launch tracking hook in recovery pipeline docs
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-12
 code_paths:
@@ -39,3 +39,6 @@ session_id: 387d215a-5f75-4ec2-854a-96743fc6ad34
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T15:55:25.312Z
+locked: true
+completed_at: 2026-02-12T15:58:30.157Z
+completed: 2026-02-12
