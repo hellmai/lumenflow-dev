@@ -334,6 +334,25 @@ describe('WU-1495: Cloud auto-detection core', () => {
     });
   });
 
+  describe('WU-1592: CLAUDECODE signal support', () => {
+    it('detects cloud when CLAUDECODE=1 and signal requires exact match', () => {
+      const input: CloudDetectInput = {
+        cloudFlag: false,
+        env: { CLAUDECODE: '1' },
+        config: {
+          auto_detect: true,
+          env_signals: [{ name: 'CLAUDECODE', equals: '1' }],
+        },
+      };
+
+      const result = detectCloudMode(input);
+
+      expect(result.isCloud).toBe(true);
+      expect(result.source).toBe(CLOUD_ACTIVATION_SOURCE.ENV_SIGNAL);
+      expect(result.matchedSignal).toBe('CLAUDECODE');
+    });
+  });
+
   describe('Edge cases', () => {
     it('should handle undefined env gracefully', () => {
       const input: CloudDetectInput = {

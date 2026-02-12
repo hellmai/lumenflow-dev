@@ -148,6 +148,10 @@ export function resetClaimMetadataForReady(doc: Record<string, unknown>): void {
   Reflect.deleteProperty(doc, 'claimed_branch');
 }
 
+export function shouldUseBranchPrRecoverPath(doc: { claimed_mode?: string }): boolean {
+  return doc.claimed_mode === 'branch-pr';
+}
+
 /**
  * Execute resume action - reconcile state and continue
  *
@@ -164,6 +168,7 @@ async function executeResume(wuId: string): Promise<boolean> {
   }
 
   const doc = readWU(wuPath, wuId);
+  const branchPrPath = shouldUseBranchPrRecoverPath(doc);
 
   // If status is already in_progress, nothing to do
   if (doc.status !== WU_STATUS.READY) {
@@ -171,6 +176,38 @@ async function executeResume(wuId: string): Promise<boolean> {
       `${LOG_PREFIX} ${EMOJI.SUCCESS} Resume completed - WU already has status '${doc.status}'`,
     );
     return true;
+  }
+
+  if (branchPrPath) {
+    try {
+      const git = getGitForCwd();
+      const currentBranch = await git.getCurrentBranch();
+      const claimedBranch = typeof doc.claimed_branch === 'string' ? doc.claimed_branch : '';
+      if (claimedBranch && claimedBranch !== currentBranch) {
+        console.error(
+          `${LOG_PREFIX} ${EMOJI.FAILURE} Current branch '${currentBranch}' does not match claimed_branch '${claimedBranch}'`,
+        );
+        return false;
+      }
+
+      doc.status = WU_STATUS.IN_PROGRESS;
+      writeWU(wuPath, doc);
+
+      await git.add(WU_PATHS.WU(wuId));
+      await git.commit(`fix(wu-recover): resume ${wuId} - set status to in_progress`);
+      await git.push('origin', currentBranch);
+
+      console.log(`${LOG_PREFIX} ${EMOJI.SUCCESS} Updated ${wuId} status to in_progress`);
+      console.log(
+        `${LOG_PREFIX} ${EMOJI.SUCCESS} Resume completed on branch ${currentBranch} - you can continue working`,
+      );
+      return true;
+    } catch (err) {
+      console.error(
+        `${LOG_PREFIX} ${EMOJI.FAILURE} Branch-pr resume failed: ${(err as Error).message}`,
+      );
+      return false;
+    }
   }
 
   // WU-1226: Use micro-worktree isolation for state changes
@@ -227,6 +264,7 @@ async function executeReset(wuId: string): Promise<boolean> {
   }
 
   const doc = readWU(wuPath, wuId);
+  const branchPrPath = shouldUseBranchPrRecoverPath(doc);
   const worktreePath = getWorktreePath(wuId, doc.lane || '');
   const lane = doc.lane || '';
 
@@ -252,67 +290,115 @@ async function executeReset(wuId: string): Promise<boolean> {
     }
   }
 
-  // WU-1226: Use micro-worktree isolation for WU YAML state changes
-  // WU-1419: Also emit release event to state store
+  // WU-1226/WU-1592: Use micro-worktree for local workflow; branch-pr writes on claimed branch.
+  // WU-1419: Also emit release event to state store.
   try {
-    await withMicroWorktree({
-      operation: OPERATION_NAME,
-      id: wuId,
-      logPrefix: LOG_PREFIX,
-      pushOnly: true, // Don't modify local main
-      execute: async ({ worktreePath: microPath }) => {
-        // Read WU in micro-worktree context
-        const microWuPath = join(microPath, relative(process.cwd(), wuPath));
-        const microDoc = readWU(microWuPath, wuId);
+    if (branchPrPath) {
+      const git = getGitForCwd();
+      const currentBranch = await git.getCurrentBranch();
+      const claimedBranch = typeof doc.claimed_branch === 'string' ? doc.claimed_branch : '';
+      if (claimedBranch && claimedBranch !== currentBranch) {
+        console.error(
+          `${LOG_PREFIX} ${EMOJI.FAILURE} Current branch '${currentBranch}' does not match claimed_branch '${claimedBranch}'`,
+        );
+        return false;
+      }
 
-        // Reset WU status to ready and clear claim fields.
-        resetClaimMetadataForReady(microDoc);
-        writeWU(microWuPath, microDoc);
+      resetClaimMetadataForReady(doc);
+      writeWU(wuPath, doc);
 
-        // WU-1419: Emit release event to state store so re-claiming works
-        // Without this, state store still thinks WU is in_progress, blocking re-claim
-        const stateDir = join(microPath, '.lumenflow', 'state');
-        const store = new WUStateStore(stateDir);
-        await store.load();
+      const filesToCommit: string[] = [WU_PATHS.WU(wuId)];
+      let commitMessage = `fix(wu-recover): reset ${wuId} - clear claim and set status to ready`;
 
-        // Only emit release event if WU is currently in_progress in state store
-        const currentState = store.getWUState(wuId);
-        if (currentState && currentState.status === 'in_progress') {
-          await store.release(wuId, 'Reset via wu:recover --action reset');
-          console.log(`${LOG_PREFIX} Emitted release event to state store`);
+      const stateDir = join(process.cwd(), '.lumenflow', 'state');
+      const store = new WUStateStore(stateDir);
+      await store.load();
+      const currentState = store.getWUState(wuId);
+      if (currentState && currentState.status === 'in_progress') {
+        await store.release(wuId, 'Reset via wu:recover --action reset');
+        console.log(`${LOG_PREFIX} Emitted release event to state store`);
 
-          // Regenerate backlog.md and status.md from state store
-          const microBacklogPath = join(microPath, WU_PATHS.BACKLOG());
-          const microStatusPath = join(microPath, WU_PATHS.STATUS());
+        const backlogContent = await generateBacklog(store);
+        writeFileSync(WU_PATHS.BACKLOG(), backlogContent, {
+          encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+        });
 
-          const backlogContent = await generateBacklog(store);
-          writeFileSync(microBacklogPath, backlogContent, {
-            encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
-          });
+        const statusContent = await generateStatus(store);
+        writeFileSync(WU_PATHS.STATUS(), statusContent, {
+          encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+        });
 
-          const statusContent = await generateStatus(store);
-          writeFileSync(microStatusPath, statusContent, {
-            encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
-          });
+        filesToCommit.push(
+          WU_PATHS.STATUS(),
+          WU_PATHS.BACKLOG(),
+          '.lumenflow/state/wu-events.jsonl',
+        );
+        commitMessage = `fix(wu-recover): reset ${wuId} - clear claim and emit release event`;
+      }
 
+      await git.add(filesToCommit);
+      await git.commit(commitMessage);
+      await git.push('origin', currentBranch);
+    } else {
+      await withMicroWorktree({
+        operation: OPERATION_NAME,
+        id: wuId,
+        logPrefix: LOG_PREFIX,
+        pushOnly: true, // Don't modify local main
+        execute: async ({ worktreePath: microPath }) => {
+          // Read WU in micro-worktree context
+          const microWuPath = join(microPath, relative(process.cwd(), wuPath));
+          const microDoc = readWU(microWuPath, wuId);
+
+          // Reset WU status to ready and clear claim fields.
+          resetClaimMetadataForReady(microDoc);
+          writeWU(microWuPath, microDoc);
+
+          // WU-1419: Emit release event to state store so re-claiming works
+          // Without this, state store still thinks WU is in_progress, blocking re-claim
+          const stateDir = join(microPath, '.lumenflow', 'state');
+          const store = new WUStateStore(stateDir);
+          await store.load();
+
+          // Only emit release event if WU is currently in_progress in state store
+          const currentState = store.getWUState(wuId);
+          if (currentState && currentState.status === 'in_progress') {
+            await store.release(wuId, 'Reset via wu:recover --action reset');
+            console.log(`${LOG_PREFIX} Emitted release event to state store`);
+
+            // Regenerate backlog.md and status.md from state store
+            const microBacklogPath = join(microPath, WU_PATHS.BACKLOG());
+            const microStatusPath = join(microPath, WU_PATHS.STATUS());
+
+            const backlogContent = await generateBacklog(store);
+            writeFileSync(microBacklogPath, backlogContent, {
+              encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+            });
+
+            const statusContent = await generateStatus(store);
+            writeFileSync(microStatusPath, statusContent, {
+              encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+            });
+
+            return {
+              commitMessage: `fix(wu-recover): reset ${wuId} - clear claim and emit release event`,
+              files: [
+                relative(process.cwd(), wuPath),
+                WU_PATHS.STATUS(),
+                WU_PATHS.BACKLOG(),
+                '.lumenflow/state/wu-events.jsonl',
+              ],
+            };
+          }
+
+          // WU not in state store as in_progress, just update YAML
           return {
-            commitMessage: `fix(wu-recover): reset ${wuId} - clear claim and emit release event`,
-            files: [
-              relative(process.cwd(), wuPath),
-              WU_PATHS.STATUS(),
-              WU_PATHS.BACKLOG(),
-              '.lumenflow/state/wu-events.jsonl',
-            ],
+            commitMessage: `fix(wu-recover): reset ${wuId} - clear claim and set status to ready`,
+            files: [relative(process.cwd(), wuPath)],
           };
-        }
-
-        // WU not in state store as in_progress, just update YAML
-        return {
-          commitMessage: `fix(wu-recover): reset ${wuId} - clear claim and set status to ready`,
-          files: [relative(process.cwd(), wuPath)],
-        };
-      },
-    });
+        },
+      });
+    }
 
     // Release lane lock so another WU can be claimed
     if (lane) {

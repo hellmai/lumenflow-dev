@@ -160,6 +160,15 @@ Canonical global state is defined by:
 creates the lane branch and pushes it by default for global visibility. Use `--no-push` only for
 air-gapped/offline work; it creates a local-only claim and warns explicitly.
 
+### Cloud Branch-PR Lifecycle
+
+For cloud agents (Codex/Claude web/CI) operating on feature branches:
+
+- `wu:create --cloud` writes WU specs on the active branch (no main checkout requirement)
+- `wu:claim --cloud` sets `claimed_mode: branch-pr` and persists `claimed_branch`
+- `wu:done` completes via PR flow; run `wu:cleanup` after merge for stamps/state cleanup
+- `wu:recover` and `wu:repair --admin` apply branch-pr fixes on the claimed branch (not `origin/main`)
+
 ---
 
 ## Documentation Structure

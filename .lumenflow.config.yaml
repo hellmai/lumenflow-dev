@@ -339,13 +339,14 @@ agents:
 # WU-1495: Cloud auto-detection configuration
 # Controls opt-in cloud mode detection via environment signals.
 # Explicit activation (--cloud / LUMENFLOW_CLOUD=1) always takes precedence.
-# cloud:
-#   auto_detect: false     # Set true to enable env-signal auto-detection
-#   env_signals:           # Environment signals to check (user-configured, no hardcoded vendors)
-#     - name: CI           # Presence check: any non-empty value triggers detection
-#     - name: CODEX
-#     - name: GITHUB_ACTIONS
-#       equals: 'true'     # Exact match: value must equal 'true'
+cloud:
+  auto_detect: true
+  env_signals:
+    - name: CLAUDECODE
+      equals: '1'
+    - name: CODEX
+      equals: '1'
+    - name: CI
 
 # WU-1203: Memory layer configuration
 # Controls memory persistence, checkpoints, and sub-agent coordination signals

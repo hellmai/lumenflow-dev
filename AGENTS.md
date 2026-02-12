@@ -30,28 +30,33 @@ cd <project-root> && pnpm wu:done --id WU-XXXX
 Cloud agents (Codex, Claude web, CI bots) that cannot use local worktrees use the **branch-pr** mode. This is a first-class lifecycle, not a workaround.
 
 ```bash
-# 1. Claim in cloud mode (creates lane branch, no worktree)
+# 1. Create in cloud mode (optional if WU already exists)
+pnpm wu:create --id WU-XXXX --lane <Lane> ... --cloud
+
+# 2. Claim in cloud mode (creates lane branch, no worktree)
 pnpm wu:claim --id WU-XXXX --lane <Lane> --cloud
 # Or: LUMENFLOW_CLOUD=1 pnpm wu:claim --id WU-XXXX --lane <Lane>
 
-# 2. Work on the lane branch in your cloud environment
+# 3. Work on the lane branch in your cloud environment
 
-# 3. Prep (validates branch, runs gates)
+# 4. Prep (validates branch, runs gates)
 pnpm wu:prep --id WU-XXXX
 
-# 4. Complete (creates PR instead of merging to main)
+# 5. Complete (creates PR instead of merging to main)
 pnpm wu:done --id WU-XXXX
 # Output: PR created. After merge, run: pnpm wu:cleanup --id WU-XXXX
 
-# 5. Post-merge cleanup (after PR is merged)
+# 6. Post-merge cleanup (after PR is merged)
 pnpm wu:cleanup --id WU-XXXX
 ```
 
 **Key differences from worktree mode:**
 
 - `wu:claim --cloud` sets `claimed_mode: branch-pr` (no worktree created)
+- `wu:create --cloud` writes WU specs on the active branch (no main checkout requirement)
 - `wu:done` creates a PR instead of fast-forward merging to main
 - `wu:cleanup` handles post-merge stamp creation and state updates
+- `wu:recover` and `wu:repair` respect branch-pr claimed branches for recovery/admin fixes
 
 > **Complete CLI reference:** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
 
@@ -199,8 +204,8 @@ This file provides universal guidance for all AI agents. Additional vendor-speci
 
 | Step         | Location    | Command                                                   |
 | ------------ | ----------- | --------------------------------------------------------- |
-| 1. Create WU | main        | `pnpm wu:create --id WU-XXX --lane <Lane> ...`            |
-| 2. Claim     | main        | `pnpm wu:claim --id WU-XXX --lane <Lane> --cloud`         |
+| 1. Create WU | lane branch | `pnpm wu:create --id WU-XXX --lane <Lane> ... --cloud`    |
+| 2. Claim     | lane branch | `pnpm wu:claim --id WU-XXX --lane <Lane> --cloud`         |
 | 3. Work      | lane branch | Work on `lane/<lane>/wu-xxx` in cloud environment         |
 | 4. Prep      | lane branch | `pnpm wu:prep --id WU-XXX` (validates branch, runs gates) |
 | 5. Complete  | lane branch | `pnpm wu:done --id WU-XXX` (creates PR)                   |

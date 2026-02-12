@@ -39,4 +39,11 @@ describe('wu-repair-core check mode', () => {
     expect(result.exitCode).toBe(1);
     expect(mocks.repairWUInconsistency).not.toHaveBeenCalled();
   });
+
+  it('selects branch-pr admin repair path from claimed_mode', async () => {
+    const { shouldUseBranchPrAdminRepairPath } = await import('../wu-repair-core.js');
+
+    expect(shouldUseBranchPrAdminRepairPath({ claimed_mode: 'branch-pr' })).toBe(true);
+    expect(shouldUseBranchPrAdminRepairPath({ claimed_mode: 'worktree' })).toBe(false);
+  });
 });

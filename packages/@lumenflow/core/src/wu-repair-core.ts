@@ -383,6 +383,10 @@ function validateWUExists(id) {
   return wu;
 }
 
+export function shouldUseBranchPrAdminRepairPath(wu: { claimed_mode?: string }): boolean {
+  return wu.claimed_mode === 'branch-pr';
+}
+
 /**
  * Ensure working tree is clean
  */
@@ -565,6 +569,7 @@ export async function runAdminRepairMode(options) {
 
   // Now validate WU exists
   const originalWU = validateWUExists(id);
+  const branchPrPath = shouldUseBranchPrAdminRepairPath(originalWU);
 
   // Apply repairs
   const { updated: updatedWU, changes } = applyAdminRepairs(originalWU, options);
@@ -580,37 +585,65 @@ export async function runAdminRepairMode(options) {
     console.log(`${ADMIN_PREFIX}   • ${change}`);
   }
 
-  // Pre-flight checks for micro-worktree operation
-  await ensureOnMain(getGitForCwd());
   await ensureCleanWorkingTree();
-  await ensureMainUpToDate(getGitForCwd(), 'wu:repair --admin');
-
-  console.log(`${ADMIN_PREFIX} Applying repairs via micro-worktree...`);
+  if (!branchPrPath) {
+    // Pre-flight checks for micro-worktree operation
+    await ensureOnMain(getGitForCwd());
+    await ensureMainUpToDate(getGitForCwd(), 'wu:repair --admin');
+  }
 
   try {
-    await withMicroWorktree({
-      operation: OPERATION_NAME,
-      id: id,
-      logPrefix: ADMIN_PREFIX,
-      execute: async ({ worktreePath }) => {
-        // Write updated WU to micro-worktree
-        const wuPath = path.join(worktreePath, WU_PATHS.WU(id));
-        // Normalize dates before dumping to prevent ISO timestamp corruption
-        normalizeWUDates(updatedWU);
-        const yamlContent = stringifyYAML(updatedWU);
+    if (branchPrPath) {
+      const git = getGitForCwd();
+      const currentBranch = await git.getCurrentBranch();
+      const claimedBranch =
+        typeof originalWU.claimed_branch === 'string' ? originalWU.claimed_branch : '';
+      if (claimedBranch && claimedBranch !== currentBranch) {
+        die(
+          `Cannot run admin repair for ${id}: current branch '${currentBranch}' does not match claimed_branch '${claimedBranch}'.`,
+        );
+      }
 
-        writeFileSync(wuPath, yamlContent, { encoding: 'utf-8' });
-        console.log(`${ADMIN_PREFIX} ${EMOJI.SUCCESS} Updated ${id}.yaml in micro-worktree`);
+      const wuPath = WU_PATHS.WU(id);
+      normalizeWUDates(updatedWU);
+      const yamlContent = stringifyYAML(updatedWU);
+      writeFileSync(wuPath, yamlContent, { encoding: 'utf-8' });
+      console.log(`${ADMIN_PREFIX} ${EMOJI.SUCCESS} Updated ${id}.yaml on branch ${currentBranch}`);
 
-        return {
-          commitMessage: generateAdminCommitMessage(id, changes),
-          files: [WU_PATHS.WU(id)],
-        };
-      },
-    });
+      await git.add(wuPath);
+      await git.commit(generateAdminCommitMessage(id, changes));
+      await git.push('origin', currentBranch);
+    } else {
+      console.log(`${ADMIN_PREFIX} Applying repairs via micro-worktree...`);
+      await withMicroWorktree({
+        operation: OPERATION_NAME,
+        id: id,
+        logPrefix: ADMIN_PREFIX,
+        execute: async ({ worktreePath }) => {
+          // Write updated WU to micro-worktree
+          const wuPath = path.join(worktreePath, WU_PATHS.WU(id));
+          // Normalize dates before dumping to prevent ISO timestamp corruption
+          normalizeWUDates(updatedWU);
+          const yamlContent = stringifyYAML(updatedWU);
+
+          writeFileSync(wuPath, yamlContent, { encoding: 'utf-8' });
+          console.log(`${ADMIN_PREFIX} ${EMOJI.SUCCESS} Updated ${id}.yaml in micro-worktree`);
+
+          return {
+            commitMessage: generateAdminCommitMessage(id, changes),
+            files: [WU_PATHS.WU(id)],
+          };
+        },
+      });
+    }
 
     console.log(`${ADMIN_PREFIX} ${EMOJI.SUCCESS} Successfully repaired ${id}`);
-    console.log(`${ADMIN_PREFIX} Changes pushed to origin/main`);
+    if (branchPrPath) {
+      const currentBranch = await getGitForCwd().getCurrentBranch();
+      console.log(`${ADMIN_PREFIX} Changes pushed to origin/${currentBranch}`);
+    } else {
+      console.log(`${ADMIN_PREFIX} Changes pushed to origin/main`);
+    }
     console.log(`${ADMIN_PREFIX} Audit trail logged to WU notes`);
     return { success: true, exitCode: EXIT_CODES.SUCCESS };
   } catch (err) {

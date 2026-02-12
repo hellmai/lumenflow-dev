@@ -178,6 +178,15 @@ describe('wu:recover CLI (WU-1090)', () => {
     });
   });
 
+  describe('WU-1592: branch-pr recovery path selection', () => {
+    it('selects branch-pr recover path when claimed_mode is branch-pr', async () => {
+      const { shouldUseBranchPrRecoverPath } = await import('../dist/wu-recover.js');
+
+      expect(shouldUseBranchPrRecoverPath({ claimed_mode: 'branch-pr' })).toBe(true);
+      expect(shouldUseBranchPrRecoverPath({ claimed_mode: 'worktree' })).toBe(false);
+    });
+  });
+
   describe('validateRecoveryAction', () => {
     it('accepts valid action type', async () => {
       const { validateRecoveryAction } = await import('../dist/wu-recover.js');
