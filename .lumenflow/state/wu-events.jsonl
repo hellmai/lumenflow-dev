@@ -1152,5 +1152,6 @@
 {"type":"claim","wuId":"WU-1608","timestamp":"2026-02-12T15:16:02.761Z","lane":"Framework: CLI Orchestration","title":"Fix wu:brief LOG_PREFIX leak and tautological tests"}
 {"type":"claim","wuId":"WU-1610","timestamp":"2026-02-12T15:20:37.571Z","lane":"Framework: CLI WU Commands","title":"Follow-up: make cloud activation explicit-only and decouple runtime identity"}
 {"type":"complete","wuId":"WU-1610","timestamp":"2026-02-12T15:26:13.251Z"}
-{"type":"claim","wuId":"WU-1611","lane":"Framework: CLI WU Commands","title":"Prevent wu:done post-merge metadata leak from dirtying main","timestamp":"2026-02-12T15:37:00.716Z"}
-{"type":"claim","wuId":"WU-1612","lane":"Framework: CLI Enforcement","title":"PostToolUse hook to track agent launches for compaction recovery","timestamp":"2026-02-12T15:38:16.648Z"}
+{"type":"claim","wuId":"WU-1611","timestamp":"2026-02-12T15:37:00.716Z","lane":"Framework: CLI WU Commands","title":"Prevent wu:done post-merge metadata leak from dirtying main"}
+{"type":"claim","wuId":"WU-1612","timestamp":"2026-02-12T15:38:16.648Z","lane":"Framework: CLI Enforcement","title":"PostToolUse hook to track agent launches for compaction recovery"}
+{"type":"complete","wuId":"WU-1612","timestamp":"2026-02-12T15:46:57.062Z"}

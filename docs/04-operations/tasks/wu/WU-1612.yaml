@@ -2,7 +2,7 @@ id: WU-1612
 title: PostToolUse hook to track agent launches for compaction recovery
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-12
 code_paths:
@@ -21,12 +21,11 @@ dependencies: []
 spec_refs:
   - lumenflow://conversation/agent-compaction-recovery
 risks: []
-notes: >-
-  Single new hook script (track-agent-launch.sh) + one settings.json entry.
-  Uses existing mem:signal bus — no new state files. WU ID detected from git
-  branch name (fast, no pnpm dependency). Signal is synchronous with 5s timeout
-  to ensure delivery without blocking. Tested with dict and string tool_response
-  formats, foreground and background agents, and missing agent_id edge case.
+notes: Single new hook script (track-agent-launch.sh) + one settings.json entry. Uses existing
+  mem:signal bus — no new state files. WU ID detected from git branch name (fast, no pnpm
+  dependency). Signal is synchronous with 5s timeout to ensure delivery without blocking. Tested
+  with dict and string tool_response formats, foreground and background agents, and missing agent_id
+  edge case.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -52,3 +51,6 @@ session_id: c22b2f5c-09e5-4a8e-8f25-bd395adc9df0
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T15:38:16.612Z
+locked: true
+completed_at: 2026-02-12T15:46:54.170Z
+completed: 2026-02-12
