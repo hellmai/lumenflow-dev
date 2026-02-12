@@ -96,7 +96,9 @@ export interface BranchClaimExecution {
  * In cloud branch-pr mode, agents must stay on the current branch and avoid
  * creating/switching to lane-derived branches.
  */
-export function resolveBranchClaimExecution(input: BranchClaimExecutionInput): BranchClaimExecution {
+export function resolveBranchClaimExecution(
+  input: BranchClaimExecutionInput,
+): BranchClaimExecution {
   if (input.claimedMode === CLAIMED_MODES.BRANCH_PR && input.isCloud) {
     return {
       executionBranch: input.currentBranch,
