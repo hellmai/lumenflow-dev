@@ -1454,6 +1454,60 @@ interface ParsedArgs {
   noContext?: boolean;
 }
 
+interface SpawnOutputWithRegistryOptions {
+  id: string;
+  output: string;
+  isCodexClient: boolean;
+  parentWu?: string;
+  lane?: string;
+}
+
+interface SpawnOutputWithRegistryDependencies {
+  log?: (message: string) => void;
+  recordSpawn?: typeof recordSpawnToRegistry;
+  formatSpawnMessage?: typeof formatSpawnRecordedMessage;
+}
+
+/**
+ * Emit spawn output and optionally persist parent/child lineage.
+ *
+ * WU-1601: Both codex and non-codex paths must persist parent lineage when
+ * --parent-wu is provided. Keeping this in one function prevents path drift.
+ */
+export async function emitSpawnOutputWithRegistry(
+  options: SpawnOutputWithRegistryOptions,
+  dependencies: SpawnOutputWithRegistryDependencies = {},
+): Promise<void> {
+  const { id, output, isCodexClient, parentWu, lane } = options;
+  const log = dependencies.log ?? console.log;
+  const recordSpawn = dependencies.recordSpawn ?? recordSpawnToRegistry;
+  const formatSpawnMessage = dependencies.formatSpawnMessage ?? formatSpawnRecordedMessage;
+
+  if (isCodexClient) {
+    log(`${LOG_PREFIX} Generated Codex/GPT prompt for ${id}`);
+    log(`${LOG_PREFIX} Copy the Markdown below:\n`);
+    log(output.trimEnd());
+  } else {
+    log(`${LOG_PREFIX} Generated Task tool invocation for ${id}`);
+    log(`${LOG_PREFIX} Copy the block below to spawn a sub-agent:\n`);
+    log(output);
+  }
+
+  if (!parentWu) {
+    return;
+  }
+
+  const registryResult = await recordSpawn({
+    parentWuId: parentWu,
+    targetWuId: id,
+    lane: lane || 'Unknown',
+    baseDir: '.lumenflow/state',
+  });
+
+  const registryMessage = formatSpawnMessage(registryResult.spawnId, registryResult.error);
+  log(`\n${registryMessage}`);
+}
+
 function parseAndValidateArgs(): ParsedArgs {
   const args = createWUParser({
     name: 'wu-spawn',
@@ -1634,15 +1688,21 @@ async function main(): Promise<void> {
   const strategy = SpawnStrategyFactory.create(clientName);
   const clientContext = { name: clientName, config: resolveClientConfig(config, clientName) };
 
-  if (clientName === 'codex-cli' || args.codex) {
+  const isCodexClient = clientName === 'codex-cli' || args.codex;
+
+  if (isCodexClient) {
     const prompt = generateCodexPrompt(doc, id, strategy, {
       ...thinkingOptions,
       client: clientContext,
       config,
     });
-    console.log(`${LOG_PREFIX} Generated Codex/GPT prompt for ${id}`);
-    console.log(`${LOG_PREFIX} Copy the Markdown below:\n`);
-    console.log(prompt.trimEnd());
+    await emitSpawnOutputWithRegistry({
+      id,
+      output: prompt,
+      isCodexClient: true,
+      parentWu: args.parentWu,
+      lane: doc.lane,
+    });
     return;
   }
 
@@ -1657,27 +1717,13 @@ async function main(): Promise<void> {
     memoryContextContent,
     noContext: args.noContext,
   });
-
-  console.log(`${LOG_PREFIX} Generated Task tool invocation for ${id}`);
-  console.log(`${LOG_PREFIX} Copy the block below to spawn a sub-agent:\n`);
-  console.log(invocation);
-
-  // WU-1945: Record spawn event to registry (non-blocking)
-  // Only record if --parent-wu is provided (orchestrator context)
-  if (args.parentWu) {
-    const registryResult = await recordSpawnToRegistry({
-      parentWuId: args.parentWu,
-      targetWuId: id,
-      lane: doc.lane || 'Unknown',
-      baseDir: '.lumenflow/state',
-    });
-
-    const registryMessage = formatSpawnRecordedMessage(
-      registryResult.spawnId,
-      registryResult.error,
-    );
-    console.log(`\n${registryMessage}`);
-  }
+  await emitSpawnOutputWithRegistry({
+    id,
+    output: invocation,
+    isCodexClient: false,
+    parentWu: args.parentWu,
+    lane: doc.lane,
+  });
 }
 
 // Guard main() for testability (WU-1366)

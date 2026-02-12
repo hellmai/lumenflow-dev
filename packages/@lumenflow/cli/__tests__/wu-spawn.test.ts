@@ -1,9 +1,10 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   generateTaskInvocation,
   generateCodexPrompt,
   generateTestGuidance,
   generateAgentCoordinationSection,
+  emitSpawnOutputWithRegistry,
   TRUNCATION_WARNING_BANNER,
   SPAWN_END_SENTINEL,
 } from '../dist/wu-spawn.js';
@@ -793,6 +794,85 @@ describe('wu-spawn methodology policy integration (WU-1288)', () => {
       expect(output).not.toContain('TDD DIRECTIVE');
       expect(output).not.toContain(TEST_AFTER_LABEL);
     });
+  });
+});
+
+describe('wu-spawn registry persistence across output clients (WU-1601)', () => {
+  it('records exactly once for codex output when --parent-wu is provided', async () => {
+    const log = vi.fn();
+    const recordSpawn = vi.fn().mockResolvedValue({
+      success: true,
+      spawnId: 'spawn-1601-codex',
+    });
+    const formatSpawnMessage = vi.fn().mockReturnValue('[wu:spawn] Spawn recorded spawn-1601-codex');
+
+    await emitSpawnOutputWithRegistry(
+      {
+        id: 'WU-1601',
+        output: 'codex-output',
+        isCodexClient: true,
+        parentWu: 'WU-1599',
+        lane: 'Framework: CLI Orchestration',
+      },
+      { log, recordSpawn, formatSpawnMessage },
+    );
+
+    expect(recordSpawn).toHaveBeenCalledTimes(1);
+    expect(recordSpawn).toHaveBeenCalledWith({
+      parentWuId: 'WU-1599',
+      targetWuId: 'WU-1601',
+      lane: 'Framework: CLI Orchestration',
+      baseDir: '.lumenflow/state',
+    });
+    expect(formatSpawnMessage).toHaveBeenCalledWith('spawn-1601-codex', undefined);
+  });
+
+  it('records exactly once for non-codex output when --parent-wu is provided', async () => {
+    const log = vi.fn();
+    const recordSpawn = vi.fn().mockResolvedValue({
+      success: true,
+      spawnId: 'spawn-1601-task',
+    });
+    const formatSpawnMessage = vi.fn().mockReturnValue('[wu:spawn] Spawn recorded spawn-1601-task');
+
+    await emitSpawnOutputWithRegistry(
+      {
+        id: 'WU-1601',
+        output: 'task-output',
+        isCodexClient: false,
+        parentWu: 'WU-1599',
+        lane: 'Framework: CLI Orchestration',
+      },
+      { log, recordSpawn, formatSpawnMessage },
+    );
+
+    expect(recordSpawn).toHaveBeenCalledTimes(1);
+    expect(recordSpawn).toHaveBeenCalledWith({
+      parentWuId: 'WU-1599',
+      targetWuId: 'WU-1601',
+      lane: 'Framework: CLI Orchestration',
+      baseDir: '.lumenflow/state',
+    });
+    expect(formatSpawnMessage).toHaveBeenCalledWith('spawn-1601-task', undefined);
+  });
+
+  it('does not record when --parent-wu is absent', async () => {
+    const log = vi.fn();
+    const recordSpawn = vi.fn();
+    const formatSpawnMessage = vi.fn();
+
+    await emitSpawnOutputWithRegistry(
+      {
+        id: 'WU-1601',
+        output: 'codex-output',
+        isCodexClient: true,
+        lane: 'Framework: CLI Orchestration',
+      },
+      { log, recordSpawn, formatSpawnMessage },
+    );
+
+    expect(recordSpawn).not.toHaveBeenCalled();
+    expect(formatSpawnMessage).not.toHaveBeenCalled();
   });
 });
 
