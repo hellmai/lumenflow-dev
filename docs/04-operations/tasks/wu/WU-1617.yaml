@@ -16,6 +16,22 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
   - LUMENFLOW.md
   - AGENTS.md
+  - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/core/src/spawn-monitor.ts
+  - packages/@lumenflow/memory/src/mem-recover-core.ts
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/quick-ref-commands.md.template
+  - packages/@lumenflow/cli/README.md
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - apps/docs/src/content/docs/reference/mcp.mdx
+  - apps/docs/src/content/docs/guides/ai-agents.mdx
+  - apps/docs/src/content/docs/guides/initiatives.mdx
+  - apps/docs/src/content/docs/guides/custom-skills.mdx
+  - apps/docs/src/content/docs/guides/customizing-spawn-prompts.mdx
+  - apps/docs/src/content/docs/reference/spawn-manifest.mdx
+  - apps/docs/src/content/docs/reference/templates.mdx
 tests:
   manual:
     - Run pnpm wu:brief --help and pnpm wu:delegate --help; verify wu:spawn is no longer listed in
@@ -24,6 +40,10 @@ tests:
     - packages/@lumenflow/cli/src/__tests__/commands.test.ts
     - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
     - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
+    - packages/@lumenflow/cli/src/__tests__/init-scripts.test.ts
+    - packages/@lumenflow/cli/src/__tests__/commands.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/tools.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1617.done
@@ -31,10 +51,17 @@ dependencies: []
 risks: []
 notes: User requested full removal (no deprecation) and docs cleanup, including Starlight docs.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-12T18:27:22.439Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1617
+session_id: 37f9e297-b3da-4785-8e2e-f9ad2c8fdbe4
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T18:27:22.444Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -48,11 +75,3 @@ acceptance:
   - MCP/public command surfaces expose wu:brief and wu:delegate without wu:spawn alias.
   - Internal and Starlight documentation no longer instruct users to use wu:spawn for
     delegation/prompt generation.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1617
-claimed_at: 2026-02-12T18:27:22.439Z
-baseline_main_sha: d16bd29354aa06eba68c3e818122af8684485ae7
-session_id: 37f9e297-b3da-4785-8e2e-f9ad2c8fdbe4
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-12T18:27:22.444Z
