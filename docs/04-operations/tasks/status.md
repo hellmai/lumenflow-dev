@@ -5,6 +5,7 @@ _Last updated: 2026-02-12_
 ## In Progress
 
 - [WU-1621 — Harden initiative metadata writes against origin movement](wu/WU-1621.yaml)
+- [WU-1622 — Fix lumenflow:upgrade push failure — missing ALLOWED_WU_TOOLS entry and stale node_modules](wu/WU-1622.yaml)
 
 ## Completed
 
