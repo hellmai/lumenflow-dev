@@ -11,7 +11,6 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-cleanup.ts
   - packages/@lumenflow/cli/src/wu-cleanup-cloud.ts
   - packages/@lumenflow/cli/src/wu-claim-cloud.ts
-  - packages/@lumenflow/cli/src/wu-state-cloud.ts
   - packages/@lumenflow/cli/src/__tests__/wu-cloud-lifecycle.test.ts
   - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
   - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
