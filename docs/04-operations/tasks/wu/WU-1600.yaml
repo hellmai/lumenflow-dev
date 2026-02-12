@@ -20,12 +20,23 @@ artifacts:
   - .lumenflow/stamps/WU-1600.done
 dependencies: []
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: 'TDD execution: added a failing contract test requiring canonical CLAIMED_MODES import and no
+  fallback shim in wu-state-cloud.ts, then removed fallback try/catch/object and wired direct
+  CLAIMED_MODES usage. Updated wu-delete test mock to include CLAIMED_MODES so tests remain explicit
+  and deterministic. Verified with: pnpm exec vitest run
+  src/__tests__/wu-state-commands-cloud.test.ts src/__tests__/wu-delete.test.ts (11/11 passing).'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-12T13:14:31.961Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1600
+session_id: c4d66360-fac1-461e-975f-ebc5819cd624
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T13:14:31.969Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -38,11 +49,3 @@ acceptance:
   - Tests pass with explicit CLAIMED_MODES in mocks where needed; no implicit fallback dependency
   - No behavior regression for branch-pr state path selection across
     wu:edit/block/unblock/release/delete
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1600
-claimed_at: 2026-02-12T13:14:31.961Z
-baseline_main_sha: 7d359fdbf8b0115e43c503d10cc2c2127c835fbb
-session_id: c4d66360-fac1-461e-975f-ebc5819cd624
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-12T13:14:31.969Z
