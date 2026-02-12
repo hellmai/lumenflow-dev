@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1621 — Harden initiative metadata writes against origin movement](wu/WU-1621.yaml)
 
 ## Completed
 
