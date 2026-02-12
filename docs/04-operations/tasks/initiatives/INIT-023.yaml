@@ -20,7 +20,7 @@ phases:
     status: pending
   - id: 4
     title: WU-D Cloud Recovery + Docs + Auto-Detect
-    status: pending
+    status: in_progress
 success_metrics:
   - 'Cloud branch-pr lifecycle passes end-to-end: wu:create --cloud, wu:claim --cloud, wu:prep,
     wu:done, wu:cleanup.'
