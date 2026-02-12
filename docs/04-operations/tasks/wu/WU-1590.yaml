@@ -32,6 +32,7 @@ blocked_by:
   - WU-1589
 spec_refs:
   - lumenflow://plans/zazzy-launching-pretzel.md
+  - lumenflow://plans/INIT-023-plan.md
 risks: []
 notes: Pattern B decomposition WU-B critical path. Depends on WU-1589 foundation resolver and schema fields.
 requires_review: false
