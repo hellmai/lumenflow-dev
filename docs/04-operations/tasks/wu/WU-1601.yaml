@@ -7,7 +7,6 @@ priority: P0
 created: 2026-02-12
 code_paths:
   - packages/@lumenflow/cli/src/wu-spawn.ts
-  - packages/@lumenflow/core/src/wu-spawn-helpers.ts
   - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
 tests:
   manual:
@@ -25,10 +24,17 @@ risks: []
 notes: P0 correctness fix before semantic decomposition work. Keep scope narrow to behavior parity
   and regression safety.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-12T13:55:44.715Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1601
+session_id: 01036a31-45ed-44eb-814a-3ac72859bec2
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T13:55:44.721Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -39,11 +45,3 @@ acceptance:
   - wu:spawn with --client codex-cli --parent-wu records a spawn registry entry exactly once.
   - Non-Codex spawn paths preserve existing registry behavior without duplicate writes.
   - Automated tests cover registry persistence for both Codex and non-Codex execution paths.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1601
-claimed_at: 2026-02-12T13:55:44.715Z
-baseline_main_sha: 06cff7070e73ad4815edb27e5e1805a2747a58c2
-session_id: 01036a31-45ed-44eb-814a-3ac72859bec2
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-12T13:55:44.721Z
