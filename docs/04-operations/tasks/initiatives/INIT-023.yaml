@@ -28,10 +28,5 @@ success_metrics:
   - Local worktree lifecycle behavior remains unchanged when --cloud and LUMENFLOW_CLOUD are not
     enabled.
 labels: []
-lanes:
-  - 'Framework: Core Lifecycle'
-  - 'Framework: CLI WU Commands'
-  - 'Framework: Core State Recovery'
-  - 'Operations: Tooling'
-  - 'Content: Framework Docs'
-related_plan: lumenflow://plans/INIT-023-plan.md
+wus:
+  - WU-1597
