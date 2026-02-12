@@ -153,6 +153,9 @@ export const validateWuDeleteArgs = createValidator<WuDeleteInput>(wuDeleteSchem
 /** Validate wu:cleanup arguments */
 export const validateWuCleanupArgs = createValidator<WuCleanupInput>(wuCleanupSchema);
 
+/** Validate wu:brief arguments (WU-1603: same schema as wu:spawn) */
+export const validateWuBriefArgs = createValidator<WuSpawnInput>(wuSpawnSchema);
+
 /** Validate wu:spawn arguments */
 export const validateWuSpawnArgs = createValidator<WuSpawnInput>(wuSpawnSchema);
 

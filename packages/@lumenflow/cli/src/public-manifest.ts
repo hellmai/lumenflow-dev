@@ -123,10 +123,17 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     category: COMMAND_CATEGORIES.WU_LIFECYCLE,
   },
   {
+    name: 'wu:brief',
+    binName: 'wu-brief',
+    binPath: './dist/wu-brief.js',
+    description: 'Generate handoff prompt for sub-agent WU execution',
+    category: COMMAND_CATEGORIES.WU_LIFECYCLE,
+  },
+  {
     name: 'wu:spawn',
     binName: 'wu-spawn',
     binPath: './dist/wu-spawn.js',
-    description: 'Generate sub-agent spawn prompt',
+    description: 'Generate sub-agent spawn prompt (deprecated: use wu:brief)',
     category: COMMAND_CATEGORIES.WU_LIFECYCLE,
   },
   {
