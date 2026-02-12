@@ -15,7 +15,6 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/wu-cloud-lifecycle.test.ts
   - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
   - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
-  - packages/@lumenflow/cli/__tests__/wu-cleanup.test.ts
 tests:
   manual:
     - 'Run cloud lifecycle smoke path on claude/*: wu:create --cloud then wu:claim --cloud and
@@ -37,10 +36,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-12T11:32:02.797Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1596
+session_id: a687fb08-a57f-4c3b-9383-e665e6dddb7a
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T11:32:02.802Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -63,11 +69,3 @@ acceptance:
   - Add regression tests covering cloud create and cloud claim command-path behavior for these
     defects.
   - All relevant CLI/core tests pass and wu:prep + wu:done succeed for the WU.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1596
-claimed_at: 2026-02-12T11:32:02.797Z
-baseline_main_sha: 851a451e580dc5dad68ae3ec573f978ad4c35527
-session_id: a687fb08-a57f-4c3b-9383-e665e6dddb7a
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-12T11:32:02.802Z
