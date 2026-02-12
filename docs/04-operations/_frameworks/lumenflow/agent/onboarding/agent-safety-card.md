@@ -246,9 +246,9 @@ cd worktrees/<lane>-wu-xxx
 
 ### For Orchestrators
 
-When spawning sub-agents via `pnpm wu:spawn`:
+When generating sub-agent handoff via `pnpm wu:brief` (or `pnpm wu:delegate` for lineage):
 
-1. The spawn prompt includes constraint #9 (WORKTREE DISCIPLINE)
+1. The handoff prompt includes constraint #9 (WORKTREE DISCIPLINE)
 2. Sub-agents are instructed to manually verify worktree location
 3. This constraint compensates for the missing hook enforcement
 

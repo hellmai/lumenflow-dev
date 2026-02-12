@@ -100,7 +100,7 @@ await sendSignal('/path/to/project', {
 
 ### Context Injection (WU-1234)
 
-Generate deterministic context blocks for wu:spawn prompts:
+Generate deterministic context blocks for `wu:brief` prompts:
 
 ```typescript
 import { generateContext } from '@lumenflow/memory/context';
@@ -393,7 +393,7 @@ import { loadMemory, appendNode } from '@lumenflow/memory/store';
 
 | Function                         | Description                                   |
 | -------------------------------- | --------------------------------------------- |
-| `generateContext(baseDir, opts)` | Generate formatted context block for wu:spawn |
+| `generateContext(baseDir, opts)` | Generate formatted context block for `wu:brief` |
 
 ### Project Indexing
 

@@ -38,7 +38,7 @@ invariants:
 
 - **Gates:** `tools/gates.mjs` runs invariants **first** (before lint/type/test) so regressions fail fast
 - **Non-bypassable:** `tools/wu-done.mjs` runs invariants even when `--skip-gates` is used
-- **Prompt surfacing:** `tools/wu-spawn.mjs` injects relevant invariants into agent prompts when the WU's `code_paths` match them
+- **Prompt surfacing:** `wu:brief` injects relevant invariants into agent prompts when the WU's `code_paths` match them
 
 ---
 
@@ -204,9 +204,9 @@ Invariants run as the first gate. If they fail, subsequent gates are skipped.
 
 ## Relation to WU Specs
 
-### wu-spawn.mjs Context Injection
+### wu:brief Context Injection
 
-When spawning agents via `pnpm wu:spawn`, the system:
+When generating handoff prompts via `pnpm wu:brief --id WU-XXX --client claude-code`, the system:
 
 1. Loads `tools/invariants.yml`
 2. Matches invariants against the WU's `code_paths`
@@ -278,5 +278,5 @@ The runner excludes common directories (`node_modules/`, `worktrees/`, `.next/`,
 - **Registry:** [tools/invariants.yml](../../../../tools/invariants.yml)
 - **Runner:** [tools/lib/invariants-runner.mjs](../../../../tools/lib/invariants-runner.mjs)
 - **Gates integration:** [tools/gates.mjs](../../../../tools/gates.mjs)
-- **wu:spawn integration:** [tools/wu-spawn.mjs](../../../../tools/wu-spawn.mjs)
+- **Prompt integration:** [`packages/@lumenflow/cli/src/wu-spawn.ts`](../../../../packages/@lumenflow/cli/src/wu-spawn.ts)
 - **Introduced by:** WU-2252

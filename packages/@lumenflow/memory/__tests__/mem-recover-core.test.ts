@@ -243,7 +243,7 @@ describe('mem-recover-core (WU-1390)', () => {
       });
 
       expect(result.context).toContain('wu:status');
-      expect(result.context).toContain('wu:spawn');
+      expect(result.context).toContain('wu:brief');
       expect(result.context).toContain('gates');
       expect(result.context).toContain('mem:checkpoint');
     });
@@ -270,14 +270,14 @@ describe('mem-recover-core (WU-1390)', () => {
       expect(result.context).toContain(TEST_WU_ID);
     });
 
-    it('includes next action with wu:spawn command', async () => {
+    it('includes next action with wu:brief command', async () => {
       const result = await generateRecoveryContext({
         wuId: TEST_WU_ID,
         baseDir: testDir,
       });
 
       expect(result.context).toContain('Next Action');
-      expect(result.context).toContain(`pnpm wu:spawn --id ${TEST_WU_ID}`);
+      expect(result.context).toContain(`pnpm wu:brief --id ${TEST_WU_ID} --client claude-code`);
     });
 
     it('returns size in bytes', async () => {
@@ -349,9 +349,9 @@ describe('mem-recover-core (WU-1390)', () => {
         maxSize: 50, // Impossibly small
       });
 
-      // Should have minimal content with WU ID and spawn command
+      // Should have minimal content with WU ID and brief command
       expect(result.context).toContain(TEST_WU_ID);
-      expect(result.context).toContain('wu:spawn');
+      expect(result.context).toContain('wu:brief');
       expect(result.truncated).toBe(true);
     });
 
