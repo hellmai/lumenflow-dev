@@ -32,6 +32,15 @@ code_paths:
   - apps/docs/src/content/docs/guides/customizing-spawn-prompts.mdx
   - apps/docs/src/content/docs/reference/spawn-manifest.mdx
   - apps/docs/src/content/docs/reference/templates.mdx
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/agent-invocation-guide.md.template
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/agent-safety-card.md.template
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/starting-prompt.md.template
+  - packages/@lumenflow/cli/templates/core/LUMENFLOW.md.template
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/rapid-prototyping.md
+  - apps/docs/src/content/docs/guides/migrating-methodology.mdx
 tests:
   manual:
     - Run pnpm wu:brief --help and pnpm wu:delegate --help; verify wu:spawn is no longer listed in
