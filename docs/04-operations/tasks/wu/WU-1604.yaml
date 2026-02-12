@@ -2,7 +2,7 @@ id: WU-1604
 title: Add wu:delegate for side-effectful lineage recording and orchestration integration
 lane: 'Framework: Initiatives'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -59,3 +59,6 @@ session_id: 4bbe0e7b-8874-4547-9d23-3400cd238ae3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T17:45:25.770Z
+locked: true
+completed_at: 2026-02-12T18:12:48.637Z
+completed: 2026-02-12
