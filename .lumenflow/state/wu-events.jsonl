@@ -1165,4 +1165,5 @@
 {"type":"complete","wuId":"WU-1615","timestamp":"2026-02-12T17:43:28.489Z"}
 {"type":"claim","wuId":"WU-1604","timestamp":"2026-02-12T17:45:25.803Z","lane":"Framework: Initiatives","title":"Add wu:delegate for side-effectful lineage recording and orchestration integration"}
 {"type":"complete","wuId":"WU-1604","timestamp":"2026-02-12T18:12:51.333Z"}
-{"type":"claim","wuId":"WU-1617","lane":"Framework: CLI Orchestration","title":"Remove wu:spawn alias and migrate command/docs to wu:brief + wu:delegate","timestamp":"2026-02-12T18:27:22.476Z"}
+{"type":"claim","wuId":"WU-1617","timestamp":"2026-02-12T18:27:22.476Z","lane":"Framework: CLI Orchestration","title":"Remove wu:spawn alias and migrate command/docs to wu:brief + wu:delegate"}
+{"type":"complete","wuId":"WU-1617","timestamp":"2026-02-12T18:57:58.939Z"}

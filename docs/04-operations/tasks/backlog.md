@@ -36,7 +36,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1617 — Remove wu:spawn alias and migrate command/docs to wu:brief + wu:delegate](wu/WU-1617.yaml) — Framework: CLI Orchestration
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -594,4 +594,5 @@ sections:
 - [WU-1614 — Scope spec:linter gate to active WU and cwd](wu/WU-1614.yaml)
 - [WU-1615 — Add missing spec_refs to WU-1605](wu/WU-1615.yaml)
 - [WU-1604 — Add wu:delegate for side-effectful lineage recording and orchestration integration](wu/WU-1604.yaml)
+- [WU-1617 — Remove wu:spawn alias and migrate command/docs to wu:brief + wu:delegate](wu/WU-1617.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
