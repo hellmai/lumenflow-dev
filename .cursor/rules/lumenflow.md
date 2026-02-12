@@ -41,7 +41,8 @@ pnpm wu:done --id WU-XXX
 | `pnpm wu:claim --id WU-XXX --lane <Lane>` | Claim WU and create worktree             |
 | `pnpm wu:prep --id WU-XXX`                | Run gates in worktree                    |
 | `pnpm wu:done --id WU-XXX`                | Complete WU (from main)                  |
-| `pnpm wu:spawn --id WU-XXX`               | Generate sub-agent spawn prompt          |
+| `pnpm wu:brief --id WU-XXX --client <client>` | Generate handoff prompt (no execution)   |
+| `pnpm wu:delegate --id WU-XXX --parent-wu <P>` | Generate prompt + record delegation lineage |
 | `pnpm wu:recover --id WU-XXX`             | Fix WU state inconsistencies             |
 
 ### Gates & Orchestration
