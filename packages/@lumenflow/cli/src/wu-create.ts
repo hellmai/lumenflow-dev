@@ -50,6 +50,7 @@ import {
   COMMIT_FORMATS,
   FILE_SYSTEM,
   READINESS_UI,
+  REMOTES,
   STRING_LITERALS,
   WU_TYPES,
 } from '@lumenflow/core/wu-constants';
@@ -195,6 +196,31 @@ export function collectInitiativeWarnings({
   }
 
   return warnings;
+}
+
+export interface CloudCreateGitAdapter {
+  add(files: string | string[]): Promise<void>;
+  commit(message: string): Promise<void>;
+  push(remote: string, branch: string, options?: { setUpstream?: boolean }): Promise<void>;
+}
+
+export interface CloudCreateCommitInput {
+  git: CloudCreateGitAdapter;
+  wuPath: string;
+  backlogPath: string;
+  commitMessage: string;
+  targetBranch: string;
+}
+
+/**
+ * Execute cloud-mode wu:create git operations.
+ * Stages WU + backlog files, commits, and pushes to the active cloud branch.
+ */
+export async function commitCloudCreateArtifacts(input: CloudCreateCommitInput): Promise<void> {
+  const { git, wuPath, backlogPath, commitMessage, targetBranch } = input;
+  await git.add([wuPath, backlogPath]);
+  await git.commit(commitMessage);
+  await git.push(REMOTES.ORIGIN, targetBranch, { setUpstream: true });
 }
 
 /**
@@ -1091,10 +1117,13 @@ async function main() {
 
       const shortTitle = truncateTitle(args.title);
       const commitMessage = COMMIT_FORMATS.CREATE(wuId, shortTitle);
-
-      const git = getGitForCwd();
-      await git.add([wuPath, backlogPath].map((f) => JSON.stringify(f)).join(' '));
-      await git.commit(commitMessage);
+      await commitCloudCreateArtifacts({
+        git: getGitForCwd(),
+        wuPath,
+        backlogPath,
+        commitMessage,
+        targetBranch: cloudCtx.targetBranch,
+      });
 
       console.log(`${LOG_PREFIX} Cloud mode: committed WU spec on ${cloudCtx.targetBranch}`);
     } else {

@@ -3,8 +3,13 @@
  * Tests for wu:create helpers and warnings (WU-1429)
  */
 
-import { describe, it, expect } from 'vitest';
-import { buildWUContent, collectInitiativeWarnings, validateCreateSpec } from '../wu-create.js';
+import { describe, it, expect, vi } from 'vitest';
+import {
+  buildWUContent,
+  collectInitiativeWarnings,
+  commitCloudCreateArtifacts,
+  validateCreateSpec,
+} from '../wu-create.js';
 
 const BASE_WU = {
   id: 'WU-1429',
@@ -25,6 +30,29 @@ const BASE_WU = {
 };
 
 describe('wu:create helpers (WU-1429)', () => {
+  it('cloud create stages files as an array and pushes target branch', async () => {
+    const git = {
+      add: vi.fn().mockResolvedValue(undefined),
+      commit: vi.fn().mockResolvedValue(undefined),
+      push: vi.fn().mockResolvedValue(undefined),
+    };
+
+    await commitCloudCreateArtifacts({
+      git,
+      wuPath: 'docs/04-operations/tasks/wu/WU-1596.yaml',
+      backlogPath: 'docs/04-operations/tasks/backlog.md',
+      commitMessage: 'docs: create wu-1596 for cloud fixes',
+      targetBranch: 'claude/session-1596',
+    });
+
+    expect(git.add).toHaveBeenCalledWith([
+      'docs/04-operations/tasks/wu/WU-1596.yaml',
+      'docs/04-operations/tasks/backlog.md',
+    ]);
+    expect(git.commit).toHaveBeenCalledWith('docs: create wu-1596 for cloud fixes');
+    expect(git.push).toHaveBeenCalledWith('origin', 'claude/session-1596', { setUpstream: true });
+  });
+
   it('should default notes to non-empty placeholder when not provided', () => {
     const wu = buildWUContent({
       ...BASE_WU,

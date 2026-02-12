@@ -23,6 +23,7 @@ import {
   resolveClaimStatus,
 } from '../wu-claim.js';
 import { CLAIMED_MODES, WU_STATUS } from '@lumenflow/core/wu-constants';
+import { resolveBranchClaimExecution } from '../wu-claim-cloud.js';
 
 describe('wu-claim mode resolution (WU-1491)', () => {
   describe('resolveClaimMode', () => {
@@ -95,6 +96,32 @@ describe('wu-claim mode resolution (WU-1491)', () => {
       expect(result.requireLaneLock).toBe(true);
       expect(result.requireLaneWipCheck).toBe(true);
     });
+  });
+});
+
+describe('wu-claim cloud branch execution resolution (WU-1596)', () => {
+  it('reuses current branch and skips branch creation for cloud branch-pr claims', () => {
+    const result = resolveBranchClaimExecution({
+      claimedMode: CLAIMED_MODES.BRANCH_PR,
+      isCloud: true,
+      currentBranch: 'claude/session-1596',
+      requestedBranch: 'lane/framework-cli-wu-commands/wu-1596',
+    });
+
+    expect(result.executionBranch).toBe('claude/session-1596');
+    expect(result.shouldCreateBranch).toBe(false);
+  });
+
+  it('keeps requested branch and creates it for non-cloud branch-only flow', () => {
+    const result = resolveBranchClaimExecution({
+      claimedMode: CLAIMED_MODES.BRANCH_ONLY,
+      isCloud: false,
+      currentBranch: 'main',
+      requestedBranch: 'lane/framework-cli-wu-commands/wu-1596',
+    });
+
+    expect(result.executionBranch).toBe('lane/framework-cli-wu-commands/wu-1596');
+    expect(result.shouldCreateBranch).toBe(true);
   });
 });
 

@@ -249,14 +249,22 @@ describe('wu:cleanup branch-pr mode (WU-1590 AC5)', () => {
     it('should detect non-lane cloud branches (should not delete)', async () => {
       const { isCloudManagedBranch } = await import('../wu-cleanup-cloud.js');
 
-      expect(isCloudManagedBranch('claude/feature-xyz')).toBe(true);
-      expect(isCloudManagedBranch('codex/feature-branch')).toBe(true);
+      await expect(isCloudManagedBranch('claude/feature-xyz')).resolves.toBe(true);
+      await expect(isCloudManagedBranch('codex/feature-branch')).resolves.toBe(true);
+    });
+
+    it('should protect all supported agent branch families', async () => {
+      const { isCloudManagedBranch } = await import('../wu-cleanup-cloud.js');
+
+      await expect(isCloudManagedBranch('copilot/cloud-fix')).resolves.toBe(true);
+      await expect(isCloudManagedBranch('cursor/cloud-fix')).resolves.toBe(true);
+      await expect(isCloudManagedBranch('agent/cloud-fix')).resolves.toBe(true);
     });
 
     it('should NOT flag lane-derived branches as cloud-managed', async () => {
       const { isCloudManagedBranch } = await import('../wu-cleanup-cloud.js');
 
-      expect(isCloudManagedBranch('lane/framework-cli/wu-1590')).toBe(false);
+      await expect(isCloudManagedBranch('lane/framework-cli/wu-1590')).resolves.toBe(false);
     });
   });
 });

@@ -52,8 +52,8 @@ import { die, getErrorMessage } from '@lumenflow/core/error-handler';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 // WU-1491: Mode resolution for --cloud and flag combinations
 import { resolveClaimMode } from './wu-claim-mode.js';
-// WU-1590: Cloud claim helpers for skipping branch-exists checks in cloud mode
-import { shouldSkipBranchExistsCheck } from './wu-claim-cloud.js';
+// WU-1590: Cloud claim helpers for branch-pr/cloud execution behavior
+import { shouldSkipBranchExistsCheck, resolveBranchClaimExecution } from './wu-claim-cloud.js';
 // WU-1495: Cloud auto-detection from config-driven env signals
 import { detectCloudMode } from '@lumenflow/core/cloud-detect';
 import { WU_PATHS, getStateStoreDirFromBacklog } from '@lumenflow/core/wu-paths';
@@ -1170,22 +1170,33 @@ async function claimBranchOnlyMode(ctx) {
     STATUS_PATH,
     BACKLOG_PATH,
     claimedMode,
+    shouldCreateBranch,
+    currentBranch,
     sessionId,
     updatedTitle,
     currentBranchForCloud, // WU-1590: For persisting claimed_branch
   } = ctx;
 
-  // Create branch and switch to it from origin/main (avoids local main mutation)
-  try {
-    await getGitForCwd().createBranch(branch, `${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
-  } catch (error) {
+  if (shouldCreateBranch) {
+    // Create branch and switch to it from origin/main (avoids local main mutation)
+    try {
+      await getGitForCwd().createBranch(branch, `${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
+    } catch (error) {
+      die(
+        `Canonical claim state may be updated, but branch creation failed.\n\n` +
+          `Error: ${getErrorMessage(error)}\n\n` +
+          `Recovery:\n` +
+          `  1. Run: git fetch ${REMOTES.ORIGIN} ${BRANCHES.MAIN}\n` +
+          `  2. Retry: pnpm wu:claim --id ${id} --lane "${args.lane}"\n` +
+          `  3. If needed, delete local branch: git branch -D ${branch}`,
+      );
+    }
+  } else if (currentBranch !== branch) {
     die(
-      `Canonical claim state may be updated, but branch creation failed.\n\n` +
-        `Error: ${getErrorMessage(error)}\n\n` +
-        `Recovery:\n` +
-        `  1. Run: git fetch ${REMOTES.ORIGIN} ${BRANCHES.MAIN}\n` +
-        `  2. Retry: pnpm wu:claim --id ${id} --lane "${args.lane}"\n` +
-        `  3. If needed, delete local branch: git branch -D ${branch}`,
+      `Cloud branch-pr claim must run on the active branch.\n\n` +
+        `Current branch: ${currentBranch}\n` +
+        `Resolved branch: ${branch}\n\n` +
+        `Switch to ${branch} and retry, or omit conflicting --branch flags.`,
     );
   }
 
@@ -1861,9 +1872,8 @@ async function main() {
     }
 
     // WU-1590: Capture current branch for cloud claim metadata (before any branch switching)
-    const currentBranchForCloud = effectiveCloud
-      ? await getGitForCwd().getCurrentBranch()
-      : undefined;
+    const currentBranch = await getGitForCwd().getCurrentBranch();
+    const currentBranchForCloud = effectiveCloud ? currentBranch : undefined;
 
     // WU-1491: Resolve claimed mode from flag combination
     const modeResult = resolveClaimMode({
@@ -1883,18 +1893,25 @@ async function main() {
     }
 
     // WU-1590: Skip branch-exists checks in cloud mode (branch already exists by definition)
+    const branchExecution = resolveBranchClaimExecution({
+      claimedMode,
+      isCloud: effectiveCloud,
+      currentBranch,
+      requestedBranch: branch,
+    });
+    const effectiveBranch = branchExecution.executionBranch;
     const skipBranchChecks = shouldSkipBranchExistsCheck({
       isCloud: effectiveCloud,
-      currentBranch: await getGitForCwd().getCurrentBranch(),
-      laneBranch: branch,
+      currentBranch,
+      laneBranch: effectiveBranch,
     });
 
     // Check if remote branch already exists (prevents duplicate global claims)
     if (!args.noPush && !skipBranchChecks) {
-      const remoteExists = await getGitForCwd().remoteBranchExists(REMOTES.ORIGIN, branch);
+      const remoteExists = await getGitForCwd().remoteBranchExists(REMOTES.ORIGIN, effectiveBranch);
       if (remoteExists) {
         die(
-          `Remote branch ${REMOTES.ORIGIN}/${branch} already exists. WU may already be claimed.\n\n` +
+          `Remote branch ${REMOTES.ORIGIN}/${effectiveBranch} already exists. WU may already be claimed.\n\n` +
             `Options:\n` +
             `  1. Coordinate with the owning agent or wait for completion\n` +
             `  2. Choose a different WU\n` +
@@ -1905,10 +1922,10 @@ async function main() {
 
     // Check if branch already exists locally (prevents duplicate claims)
     if (!skipBranchChecks) {
-      const branchAlreadyExists = await getGitForCwd().branchExists(branch);
+      const branchAlreadyExists = await getGitForCwd().branchExists(effectiveBranch);
       if (branchAlreadyExists) {
         die(
-          `Branch ${branch} already exists. WU may already be claimed.\n\n` +
+          `Branch ${effectiveBranch} already exists. WU may already be claimed.\n\n` +
             `Git branch existence = WU claimed (natural locking).\n\n` +
             `Options:\n` +
             `  1. Check git worktree list to see if worktree exists\n` +
@@ -1961,12 +1978,14 @@ async function main() {
       id,
       laneK,
       title,
-      branch,
+      branch: effectiveBranch,
       worktree,
       WU_PATH,
       STATUS_PATH,
       BACKLOG_PATH,
       claimedMode,
+      shouldCreateBranch: branchExecution.shouldCreateBranch,
+      currentBranch,
       fixableIssues, // WU-1361: Pass fixable issues for worktree application
       stagedChanges,
       currentBranchForCloud, // WU-1590: For persisting claimed_branch in branch-pr mode
