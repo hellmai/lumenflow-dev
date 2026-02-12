@@ -15,7 +15,7 @@ phases:
     status: done
   - id: 2
     title: 'Command decomposition: brief vs delegate'
-    status: in_progress
+    status: done
   - id: 3
     title: Execution-proof provenance handshake
     status: pending

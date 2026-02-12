@@ -33,10 +33,11 @@ sections:
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
 - [WU-1605 — Add claim-time pickup evidence and enforce intent-vs-pickup provenance at wu:done](wu/WU-1605.yaml) — Framework: CLI WU Commands
 - [WU-1606 — Sync internal and Starlight docs for wu:brief/delegate provenance changes](wu/WU-1606.yaml) — Content: Site Comms
+- [WU-1616 — Fix lifecycle schema command count expectation after wu:brief addition](wu/WU-1616.yaml) — Framework: Core Validation
 
 ## 🔧 In progress
 
-- [WU-1604 — Add wu:delegate for side-effectful lineage recording and orchestration integration](wu/WU-1604.yaml) — Framework: Initiatives
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -593,4 +594,5 @@ sections:
 - [WU-1613 — Document agent launch tracking hook in recovery pipeline docs](wu/WU-1613.yaml)
 - [WU-1614 — Scope spec:linter gate to active WU and cwd](wu/WU-1614.yaml)
 - [WU-1615 — Add missing spec_refs to WU-1605](wu/WU-1615.yaml)
+- [WU-1604 — Add wu:delegate for side-effectful lineage recording and orchestration integration](wu/WU-1604.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

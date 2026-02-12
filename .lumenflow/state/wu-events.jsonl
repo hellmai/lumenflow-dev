@@ -1163,4 +1163,5 @@
 {"type":"complete","wuId":"WU-1614","timestamp":"2026-02-12T16:03:02.362Z"}
 {"type":"claim","wuId":"WU-1615","timestamp":"2026-02-12T17:40:47.882Z","lane":"Framework: CLI WU Commands","title":"Add missing spec_refs to WU-1605"}
 {"type":"complete","wuId":"WU-1615","timestamp":"2026-02-12T17:43:28.489Z"}
-{"type":"claim","wuId":"WU-1604","lane":"Framework: Initiatives","title":"Add wu:delegate for side-effectful lineage recording and orchestration integration","timestamp":"2026-02-12T17:45:25.803Z"}
+{"type":"claim","wuId":"WU-1604","timestamp":"2026-02-12T17:45:25.803Z","lane":"Framework: Initiatives","title":"Add wu:delegate for side-effectful lineage recording and orchestration integration"}
+{"type":"complete","wuId":"WU-1604","timestamp":"2026-02-12T18:12:51.333Z"}
