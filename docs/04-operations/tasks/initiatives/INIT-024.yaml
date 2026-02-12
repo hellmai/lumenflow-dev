@@ -1,12 +1,36 @@
 id: INIT-024
 slug: wu-brief-delegate-provenance-alignment
 title: Align wu:spawn semantics with delegation provenance
-description: ''
+description: Align command semantics, provenance recording, and enforcement so delegation tracking
+  is accurate across clients and orchestration. Separate pure prompt generation from side-effectful
+  delegation tracking, and evolve provenance from intent-only to intent-plus-pickup evidence.
 status: draft
 priority: P0
 owner: 'Framework: CLI'
 created: 2026-02-12
 target_date: 2026-02-20
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: P0 correctness and semantics foundation
+    status: pending
+  - id: 2
+    title: 'Command decomposition: brief vs delegate'
+    status: pending
+  - id: 3
+    title: Execution-proof provenance handshake
+    status: pending
+success_metrics:
+  - Codex and Claude client modes both persist delegation lineage when requested (no early-return
+    drop).
+  - Prompt generation is available as a pure command with no hidden side effects.
+  - Delegation registry records intent via explicit side-effect command and is no longer conflated
+    with prompt-only generation.
+  - Completion enforcement can distinguish delegation intent from actual pickup evidence and
+    supports audited overrides.
 labels: []
+lanes:
+  - 'Framework: CLI Orchestration'
+  - 'Framework: CLI WU Commands'
+  - 'Framework: Core State Recovery'
+  - 'Framework: Initiatives'
+  - 'Content: Framework Docs'
