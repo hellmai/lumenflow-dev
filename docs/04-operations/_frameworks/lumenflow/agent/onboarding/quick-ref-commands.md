@@ -77,20 +77,20 @@ pnpm exec lumenflow --client all      # All clients
 
 ## WU Lifecycle
 
-| Command                                        | Description                                    |
-| ---------------------------------------------- | ---------------------------------------------- |
-| `pnpm wu:create --id WU-XXX --lane <Lane> ..`  | Create new WU spec (see required fields below) |
-| `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree (default)         |
-| `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree) |
-| `pnpm wu:prep --id WU-XXX`                     | Run gates, prep for wu:done                    |
-| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, stamp, cleanup)      |
-| `pnpm wu:edit --id WU-XXX --description "..."` | Edit WU spec fields (run --help for all flags) |
-| `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                           |
-| `pnpm wu:unblock --id WU-XXX`                  | Unblock WU                                     |
-| `pnpm wu:release --id WU-XXX`                  | Release orphaned WU (in_progress to ready)     |
-| `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands       |
-| `pnpm wu:spawn --id WU-XXX --client <client>`  | Generate sub-agent spawn prompt                |
-| `pnpm wu:spawn --id WU-XXX --no-context`       | Spawn prompt without memory context injection  |
+| Command                                        | Description                                      |
+| ---------------------------------------------- | ------------------------------------------------ |
+| `pnpm wu:create --id WU-XXX --lane <Lane> ..`  | Create new WU spec (see required fields below)   |
+| `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree (default)           |
+| `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree)   |
+| `pnpm wu:prep --id WU-XXX`                     | Run gates, prep for wu:done                      |
+| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, stamp, cleanup)        |
+| `pnpm wu:edit --id WU-XXX --description "..."` | Edit WU spec fields (run --help for all flags)   |
+| `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                             |
+| `pnpm wu:unblock --id WU-XXX`                  | Unblock WU                                       |
+| `pnpm wu:release --id WU-XXX`                  | Release orphaned WU (in_progress to ready)       |
+| `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands         |
+| `pnpm wu:spawn --id WU-XXX --client <client>`  | Generate delegation prompt (does not execute)    |
+| `pnpm wu:spawn --id WU-XXX --no-context`       | Generate prompt without memory context injection |
 
 ### WU Maintenance
 
@@ -292,12 +292,12 @@ Plans use the `lumenflow://plans/` URI scheme for references:
 
 ## Orchestration
 
-| Command                                      | Description                      |
-| -------------------------------------------- | -------------------------------- |
-| `pnpm orchestrate:initiative --id INIT-XXX`  | Orchestrate initiative execution |
-| `pnpm orchestrate:init-status --id INIT-XXX` | Compact initiative progress view |
-| `pnpm orchestrate:monitor`                   | Monitor spawn/agent activity     |
-| `pnpm spawn:list`                            | List active spawned agents       |
+| Command                                      | Description                       |
+| -------------------------------------------- | --------------------------------- |
+| `pnpm orchestrate:initiative --id INIT-XXX`  | Orchestrate initiative execution  |
+| `pnpm orchestrate:init-status --id INIT-XXX` | Compact initiative progress view  |
+| `pnpm orchestrate:monitor`                   | Monitor delegation/agent activity |
+| `pnpm spawn:list`                            | List active delegation records    |
 
 ---
 

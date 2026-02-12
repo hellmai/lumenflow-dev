@@ -350,7 +350,7 @@ Pre-configured agent definitions in `.claude/agents/`:
 | `code-reviewer`   | Quality checks             |
 | `bug-triage`      | Bug classification         |
 
-Generate spawn prompts: `pnpm wu:spawn --id WU-XXX --client claude-code`
+Generate delegation prompts (prompt-only, execution is a separate step): `pnpm wu:spawn --id WU-XXX --client claude-code`
 
 ---
 

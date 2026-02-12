@@ -2,12 +2,11 @@
 
 **Last updated:** 2026-01-31
 
-This guide defines how to spawn and brief sub-agents so they start with the right context,
-follow LumenFlow constraints, and leave durable artifacts for handoff.
+This guide defines how to generate and hand off sub-agent delegation briefs so agents start with the right context, follow LumenFlow constraints, and leave durable artifacts for handoff.
 
 Use this document when:
 
-- Spawning sub-agents or parallel WUs
+- Generating delegation briefs for sub-agents or parallel WUs
 - Writing orchestrator prompts
 - Starting a new session after `/clear`
 - Coordinating multi-wave initiatives
@@ -38,7 +37,7 @@ Use Tier 1 after `/clear` to stay lean, then load more only if needed.
 ## 2) Session Management (Spawn Fresh)
 
 When approaching context limits, **spawn a fresh agent instead of compaction**.
-The spawn prompt is the bridge between sessions.
+The spawn prompt is the bridge between sessions. `wu:spawn` only generates this prompt; execution happens when you invoke your Task tool with that prompt.
 
 **Mandatory triggers:**
 
@@ -54,7 +53,8 @@ pnpm mem:checkpoint "Progress: completed X, next: Y" --wu WU-XXX
 git add -A && git commit -m "checkpoint: progress on X"
 git push origin lane/<lane>/wu-xxx
 pnpm wu:spawn --id WU-XXX
-# Exit current session; start fresh with the generated prompt.
+# Copy generated prompt into Task tool to start the next agent session.
+# Exit current session; start fresh in the new session.
 ```
 
 **Optional safety net:** If your client supports hooks, add a pre-clear checkpoint hook:
@@ -98,6 +98,14 @@ This is useful when:
 - Starting completely fresh without prior context
 - Debugging context-related issues
 - Memory layer contains stale or irrelevant data
+
+---
+
+## 2b) Delegation Provenance (Intent vs Execution)
+
+`wu:spawn` provenance records **delegation intent**: that a brief was generated for a target WU (especially with `--parent-wu`).
+
+It does **not** by itself prove pickup or execution. Pickup/execution confirmation comes from lifecycle evidence (claim/completion events, checkpoints, signals, and final `wu:done`).
 
 ---
 

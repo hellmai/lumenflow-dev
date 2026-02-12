@@ -66,19 +66,19 @@ pnpm wu:cleanup --id WU-XXXX
 
 ### WU Lifecycle
 
-| Command                                        | Description                                    |
-| ---------------------------------------------- | ---------------------------------------------- |
-| `pnpm wu:create --id WU-XXX --lane <Lane> ..`  | Create new WU spec                             |
-| `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree (default)         |
-| `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree) |
-| `pnpm wu:prep --id WU-XXX`                     | Run gates, prep for wu:done                    |
-| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, stamp, cleanup)      |
-| `pnpm wu:cleanup --id WU-XXX`                  | Post-merge cleanup (branch-pr mode)            |
-| `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands       |
-| `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                           |
-| `pnpm wu:unblock --id WU-XXX`                  | Unblock WU                                     |
-| `pnpm wu:spawn --id WU-XXX --client <client>`  | Generate sub-agent spawn prompt                |
-| `pnpm wu:recover --id WU-XXX`                  | Analyze and fix WU state inconsistencies       |
+| Command                                        | Description                                     |
+| ---------------------------------------------- | ----------------------------------------------- |
+| `pnpm wu:create --id WU-XXX --lane <Lane> ..`  | Create new WU spec                              |
+| `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree (default)          |
+| `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree)  |
+| `pnpm wu:prep --id WU-XXX`                     | Run gates, prep for wu:done                     |
+| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, stamp, cleanup)       |
+| `pnpm wu:cleanup --id WU-XXX`                  | Post-merge cleanup (branch-pr mode)             |
+| `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands        |
+| `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                            |
+| `pnpm wu:unblock --id WU-XXX`                  | Unblock WU                                      |
+| `pnpm wu:spawn --id WU-XXX --client <client>`  | Generate delegation prompt (no automatic spawn) |
+| `pnpm wu:recover --id WU-XXX`                  | Analyze and fix WU state inconsistencies        |
 
 ### Gates & Quality
 
@@ -104,12 +104,12 @@ pnpm wu:cleanup --id WU-XXXX
 
 ### Orchestration & Initiatives
 
-| Command                                    | Description                      |
-| ------------------------------------------ | -------------------------------- |
-| `pnpm orchestrate:init-status -i INIT-XXX` | Compact initiative progress view |
-| `pnpm orchestrate:initiative -i INIT-XXX`  | Orchestrate initiative execution |
-| `pnpm orchestrate:monitor`                 | Monitor spawn/agent activity     |
-| `pnpm initiative:status --id INIT-XXX`     | Show initiative status           |
+| Command                                    | Description                       |
+| ------------------------------------------ | --------------------------------- |
+| `pnpm orchestrate:init-status -i INIT-XXX` | Compact initiative progress view  |
+| `pnpm orchestrate:initiative -i INIT-XXX`  | Orchestrate initiative execution  |
+| `pnpm orchestrate:monitor`                 | Monitor delegation/agent activity |
+| `pnpm initiative:status --id INIT-XXX`     | Show initiative status            |
 
 ### State & Maintenance
 
