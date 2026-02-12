@@ -2,7 +2,7 @@ id: WU-1603
 title: Introduce wu:brief as pure prompt generator and deprecate wu:spawn alias
 lane: 'Framework: CLI Orchestration'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -56,3 +56,6 @@ acceptance:
     clients.
   - wu:spawn remains functional as a compatibility alias and emits clear deprecation guidance.
   - CLI help/docs for both commands describe prompt generation semantics accurately and consistently.
+locked: true
+completed_at: 2026-02-12T14:51:44.792Z
+completed: 2026-02-12

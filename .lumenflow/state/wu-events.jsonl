@@ -1145,4 +1145,5 @@
 {"type":"complete","wuId":"WU-1602","timestamp":"2026-02-12T14:08:26.115Z"}
 {"type":"claim","wuId":"WU-1607","timestamp":"2026-02-12T14:36:42.325Z","lane":"Framework: CLI Orchestration","title":"Ignore spawn-registry runtime artifact in git status"}
 {"type":"complete","wuId":"WU-1607","timestamp":"2026-02-12T14:38:21.672Z"}
-{"type":"claim","wuId":"WU-1603","lane":"Framework: CLI Orchestration","title":"Introduce wu:brief as pure prompt generator and deprecate wu:spawn alias","timestamp":"2026-02-12T14:40:22.376Z"}
+{"type":"claim","wuId":"WU-1603","timestamp":"2026-02-12T14:40:22.376Z","lane":"Framework: CLI Orchestration","title":"Introduce wu:brief as pure prompt generator and deprecate wu:spawn alias"}
+{"type":"complete","wuId":"WU-1603","timestamp":"2026-02-12T14:51:47.523Z"}
