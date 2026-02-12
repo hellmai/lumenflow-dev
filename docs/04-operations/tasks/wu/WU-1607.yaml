@@ -2,7 +2,7 @@ id: WU-1607
 title: Ignore spawn-registry runtime artifact in git status
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -25,8 +25,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: spawn-registry.jsonl is runtime coordination state created by wu:spawn provenance flows. It is local/session-specific and should not appear as an untracked repository change on main checkouts. Add git ignore coverage so this state artifact never surfaces as pending code work.
+description: spawn-registry.jsonl is runtime coordination state created by wu:spawn provenance
+  flows. It is local/session-specific and should not appear as an untracked repository change on
+  main checkouts. Add git ignore coverage so this state artifact never surfaces as pending code
+  work.
 acceptance:
   - Creating .lumenflow/state/spawn-registry.jsonl does not show in git status.
   - Existing tracked workflow state files remain unchanged in behavior.
   - No other runtime state ignore rules regress.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1607
+claimed_at: 2026-02-12T14:36:42.268Z
+baseline_main_sha: ace2373538096883fb299708d73c5c9db548c514
+session_id: b9fc92e0-2ded-4975-89e5-33291e575dd1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T14:36:42.279Z
