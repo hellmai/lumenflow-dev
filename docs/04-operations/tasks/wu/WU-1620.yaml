@@ -2,7 +2,7 @@ id: WU-1620
 title: Unblock docs-only gates by ignoring local Claude settings and formatting INIT-023 plan
 lane: 'Content: Framework Docs'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -40,3 +40,6 @@ acceptance:
   - pnpm gates --docs-only passes from main
   - Prettier no longer checks .claude/settings.local.json
   - docs/04-operations/plans/INIT-023-plan.md is formatted
+locked: true
+completed_at: 2026-02-12T19:37:56.011Z
+completed: 2026-02-12
