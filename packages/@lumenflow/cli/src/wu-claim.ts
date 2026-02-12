@@ -106,6 +106,7 @@ import { getAssignedEmail } from '@lumenflow/core/wu-claim-helpers';
 import { symlinkNodeModules, symlinkNestedNodeModules } from '@lumenflow/core/worktree-symlink';
 // WU-1572: Import WUStateStore for event-sourced state tracking
 import { WUStateStore } from '@lumenflow/core/wu-state-store';
+import { SpawnRegistryStore } from '@lumenflow/core/spawn-registry-store';
 // WU-1574: Import backlog generator to replace BacklogManager
 import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generator';
 // WU-2411: Import resume helpers for agent handoff
@@ -296,6 +297,71 @@ export function buildRollbackYamlDoc(doc) {
   delete rolled.assigned_to;
 
   return rolled;
+}
+
+export interface ClaimPickupEvidenceResult {
+  matchedSpawn: boolean;
+  recorded: boolean;
+  alreadyRecorded: boolean;
+  spawnId?: string;
+}
+
+/**
+ * Returns true when a spawn record includes claim-time pickup evidence.
+ */
+export function hasClaimPickupEvidence(entry): boolean {
+  const pickedUpAt =
+    typeof entry?.pickedUpAt === 'string' && entry.pickedUpAt.trim().length > 0
+      ? entry.pickedUpAt
+      : '';
+  const pickedUpBy =
+    typeof entry?.pickedUpBy === 'string' && entry.pickedUpBy.trim().length > 0
+      ? entry.pickedUpBy
+      : '';
+  return pickedUpAt.length > 0 && pickedUpBy.length > 0;
+}
+
+/**
+ * WU-1605: Record delegated pickup evidence at wu:claim time when a spawn/delegate
+ * provenance record already exists for this target WU.
+ */
+export async function recordClaimPickupEvidence(
+  id: string,
+  options: {
+    baseDir?: string;
+    claimedBy?: string;
+  } = {},
+): Promise<ClaimPickupEvidenceResult> {
+  const baseDir = options.baseDir ?? process.cwd();
+  const claimedBy =
+    typeof options.claimedBy === 'string' && options.claimedBy.trim().length > 0
+      ? options.claimedBy.trim()
+      : 'unknown';
+
+  const store = new SpawnRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
+  await store.load();
+
+  const spawnEntry = store.getByTarget(id);
+  if (!spawnEntry) {
+    return { matchedSpawn: false, recorded: false, alreadyRecorded: false };
+  }
+
+  if (hasClaimPickupEvidence(spawnEntry)) {
+    return {
+      matchedSpawn: true,
+      recorded: false,
+      alreadyRecorded: true,
+      spawnId: spawnEntry.id,
+    };
+  }
+
+  await store.recordPickup(spawnEntry.id, claimedBy);
+  return {
+    matchedSpawn: true,
+    recorded: true,
+    alreadyRecorded: false,
+    spawnId: spawnEntry.id,
+  };
 }
 
 /**
@@ -2117,6 +2183,35 @@ async function main() {
       await claimBranchOnlyMode(ctx);
     } else {
       await claimWorktreeMode(ctx);
+    }
+
+    // WU-1605: Record claim-time pickup evidence for delegation provenance.
+    // Non-blocking: this metadata should not block claim completion.
+    try {
+      let claimedBy = process.env.GIT_AUTHOR_EMAIL?.trim();
+      try {
+        claimedBy = await getAssignedEmail(getGitForCwd());
+      } catch {
+        // Fall back to env/default when git email lookup fails in this context.
+      }
+
+      const pickupResult = await recordClaimPickupEvidence(id, {
+        baseDir: process.cwd(),
+        claimedBy,
+      });
+      if (pickupResult.recorded) {
+        console.log(
+          `${PREFIX} ${EMOJI.SUCCESS} Recorded delegation pickup evidence (${pickupResult.spawnId})`,
+        );
+      } else if (pickupResult.alreadyRecorded) {
+        console.log(
+          `${PREFIX} ${EMOJI.INFO} Delegation pickup evidence already recorded (${pickupResult.spawnId})`,
+        );
+      }
+    } catch (err) {
+      console.warn(
+        `${PREFIX} Warning: Could not record delegation pickup evidence: ${getErrorMessage(err)}`,
+      );
     }
 
     // Mark claim as successful - lock should remain for wu:done to release
