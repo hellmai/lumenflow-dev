@@ -32,11 +32,10 @@ sections:
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
 - [WU-1605 — Add claim-time pickup evidence and enforce intent-vs-pickup provenance at wu:done](wu/WU-1605.yaml) — Framework: CLI WU Commands
 - [WU-1606 — Sync internal and Starlight docs for wu:brief/delegate provenance changes](wu/WU-1606.yaml) — Content: Site Comms
-- [WU-1616 — Fix lifecycle schema command count expectation after wu:brief addition](wu/WU-1616.yaml) — Framework: Core Validation
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1616 — Fix lifecycle schema command count expectation after wu:brief addition](wu/WU-1616.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 

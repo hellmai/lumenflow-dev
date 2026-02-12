@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1616 — Fix lifecycle schema command count expectation after wu:brief addition](wu/WU-1616.yaml)
 
 ## Completed
 

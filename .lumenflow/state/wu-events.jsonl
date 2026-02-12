@@ -1167,3 +1167,4 @@
 {"type":"complete","wuId":"WU-1604","timestamp":"2026-02-12T18:12:51.333Z"}
 {"type":"claim","wuId":"WU-1617","timestamp":"2026-02-12T18:27:22.476Z","lane":"Framework: CLI Orchestration","title":"Remove wu:spawn alias and migrate command/docs to wu:brief + wu:delegate"}
 {"type":"complete","wuId":"WU-1617","timestamp":"2026-02-12T18:57:58.939Z"}
+{"type":"claim","wuId":"WU-1616","lane":"Framework: Core Validation","title":"Fix lifecycle schema command count expectation after wu:brief addition","timestamp":"2026-02-12T19:02:32.947Z"}

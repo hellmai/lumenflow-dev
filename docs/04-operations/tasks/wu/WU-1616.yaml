@@ -2,7 +2,7 @@ id: WU-1616
 title: Fix lifecycle schema command count expectation after wu:brief addition
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-12
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/core/src/schemas/wu-lifecycle-schemas.ts
 tests:
   manual:
-    - Run pnpm --filter @lumenflow/core test and verify wu-lifecycle-schemas suite no longer fails on command count.
+    - Run pnpm --filter @lumenflow/core test and verify wu-lifecycle-schemas suite no longer fails
+      on command count.
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-lifecycle-schemas.test.ts
   e2e: []
@@ -27,8 +28,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: lifecycle command registry now includes wu:brief. Problem: wu-lifecycle-schemas test still asserts 16 commands and fails global core tests/gates on main. Solution: align lifecycle schema/test expectations to current command set and preserve schema parity checks.'
+description: 'Context: lifecycle command registry now includes wu:brief. Problem:
+  wu-lifecycle-schemas test still asserts 16 commands and fails global core tests/gates on main.
+  Solution: align lifecycle schema/test expectations to current command set and preserve schema
+  parity checks.'
 acceptance:
   - Core lifecycle schema tests pass with current registry command count.
   - Registry parity assertions remain accurate for lifecycle command schemas.
   - Unrelated WUs can run gates without failing on stale lifecycle command count assertions.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1616
+claimed_at: 2026-02-12T19:02:32.905Z
+baseline_main_sha: 8e90aab04ce3ca106f8fc3986f75851b18b5fd8d
+session_id: 787ac0ae-a899-4544-aaea-795bbdeba616
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T19:02:32.913Z
