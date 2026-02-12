@@ -8,16 +8,18 @@ created: 2026-02-12
 code_paths:
   - packages/@lumenflow/cli/src/wu-create.ts
   - packages/@lumenflow/cli/src/wu-claim.ts
-  - packages/@lumenflow/cli/src/wu-prep.ts
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/cli/src/wu-cleanup.ts
-  - packages/@lumenflow/core/src/wu-done-branch-only.ts
-  - packages/@lumenflow/core/src/wu-done-paths.ts
+  - packages/@lumenflow/cli/src/wu-create-cloud.ts
+  - packages/@lumenflow/cli/src/wu-claim-cloud.ts
+  - packages/@lumenflow/cli/src/wu-done-cloud.ts
+  - packages/@lumenflow/cli/src/wu-cleanup-cloud.ts
 tests:
   manual:
     - 'Execute full branch-pr lifecycle on claude/* branch: create, claim, prep, done, cleanup with
       PR merge verification.'
   unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-cloud-lifecycle.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
