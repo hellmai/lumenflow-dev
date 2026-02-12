@@ -38,7 +38,7 @@ Use Tier 1 after `/clear` to stay lean, then load more only if needed.
 ## 2) Session Management (Spawn Fresh)
 
 When approaching context limits, **spawn a fresh agent instead of compaction**.
-The spawn prompt is the bridge between sessions.
+The handoff prompt is the bridge between sessions.
 
 **Mandatory triggers:**
 
@@ -47,13 +47,13 @@ The spawn prompt is the bridge between sessions.
 - Performance degradation (forgotten context, redundant queries)
 - About to run `/compact` or `/clear`
 
-**Spawn fresh protocol:**
+**Start-fresh protocol:**
 
 ```bash
 pnpm mem:checkpoint "Progress: completed X, next: Y" --wu WU-XXX
 git add -A && git commit -m "checkpoint: progress on X"
 git push origin lane/<lane>/wu-xxx
-pnpm wu:spawn --id WU-XXX
+pnpm wu:brief --id WU-XXX --client claude-code
 # Exit current session; start fresh with the generated prompt.
 ```
 
@@ -67,8 +67,8 @@ pnpm mem:checkpoint "Pre-clear: <summary>" --wu WU-XXX --trigger pre-clear
 
 ## 2a) Memory Context Injection (Automatic)
 
-When the memory layer is initialized (`memory.jsonl` exists), `wu:spawn` automatically
-injects relevant memory context into the spawn prompt under a `## Memory Context` section.
+When the memory layer is initialized (`memory.jsonl` exists), `wu:brief` automatically
+injects relevant memory context into the handoff prompt under a `## Memory Context` section.
 
 **What gets included:**
 
@@ -87,10 +87,10 @@ memory:
 
 **Skip context injection:**
 
-Use `--no-context` when you want a clean spawn without memory context:
+Use `--no-context` when you want a clean prompt without memory context:
 
 ```bash
-pnpm wu:spawn --id WU-XXX --no-context
+pnpm wu:brief --id WU-XXX --client claude-code --no-context
 ```
 
 This is useful when:

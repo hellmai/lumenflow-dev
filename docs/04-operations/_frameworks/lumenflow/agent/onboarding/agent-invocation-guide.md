@@ -34,10 +34,10 @@ Use Tier 1 after `/clear` to stay lean, then load more only if needed.
 
 ---
 
-## 2) Session Management (Spawn Fresh)
+## 2) Session Management (Start Fresh)
 
-When approaching context limits, **spawn a fresh agent instead of compaction**.
-The spawn prompt is the bridge between sessions. `wu:spawn` only generates this prompt; execution happens when you invoke your Task tool with that prompt.
+When approaching context limits, **start a fresh agent instead of compaction**.
+The handoff prompt is the bridge between sessions. `wu:brief` generates this prompt; execution happens when you invoke your Task tool with that prompt.
 
 **Mandatory triggers:**
 
@@ -46,13 +46,13 @@ The spawn prompt is the bridge between sessions. `wu:spawn` only generates this 
 - Performance degradation (forgotten context, redundant queries)
 - About to run `/compact` or `/clear`
 
-**Spawn fresh protocol:**
+**Start-fresh protocol:**
 
 ```bash
 pnpm mem:checkpoint "Progress: completed X, next: Y" --wu WU-XXX
 git add -A && git commit -m "checkpoint: progress on X"
 git push origin lane/<lane>/wu-xxx
-pnpm wu:spawn --id WU-XXX
+pnpm wu:brief --id WU-XXX --client claude-code
 # Copy generated prompt into Task tool to start the next agent session.
 # Exit current session; start fresh in the new session.
 ```
@@ -67,8 +67,8 @@ pnpm mem:checkpoint "Pre-clear: <summary>" --wu WU-XXX --trigger pre-clear
 
 ## 2a) Memory Context Injection (Automatic)
 
-When the memory layer is initialized (`memory.jsonl` exists), `wu:spawn` automatically
-injects relevant memory context into the spawn prompt under a `## Memory Context` section.
+When the memory layer is initialized (`memory.jsonl` exists), `wu:brief` automatically
+injects relevant memory context into the handoff prompt under a `## Memory Context` section.
 
 **What gets included:**
 
@@ -87,10 +87,10 @@ memory:
 
 **Skip context injection:**
 
-Use `--no-context` when you want a clean spawn without memory context:
+Use `--no-context` when you want a clean prompt without memory context:
 
 ```bash
-pnpm wu:spawn --id WU-XXX --no-context
+pnpm wu:brief --id WU-XXX --client claude-code --no-context
 ```
 
 This is useful when:
@@ -103,7 +103,7 @@ This is useful when:
 
 ## 2b) Delegation Provenance (Intent vs Execution)
 
-`wu:spawn` provenance records **delegation intent**: that a brief was generated for a target WU (especially with `--parent-wu`).
+`wu:delegate` records **delegation intent**: that a brief was generated for a target WU with explicit parent lineage.
 
 It does **not** by itself prove pickup or execution. Pickup/execution confirmation comes from lifecycle evidence (claim/completion events, checkpoints, signals, and final `wu:done`).
 
