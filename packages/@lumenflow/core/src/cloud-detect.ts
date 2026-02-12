@@ -1,18 +1,18 @@
 /**
  * @file cloud-detect.ts
- * @description Cloud mode auto-detection core logic
+ * @description Cloud mode activation and branch-aware guard logic
  *
- * WU-1495: Config-driven cloud auto-detection with precedence rules.
+ * WU-1495: Config-driven cloud detection foundation.
+ * WU-1610: Cloud activation is explicit-only.
  *
  * Detection precedence (highest to lowest):
  * 1. --cloud CLI flag (explicit activation)
  * 2. LUMENFLOW_CLOUD=1 environment variable (explicit activation)
- * 3. env_signals from config (opt-in auto-detection, only when auto_detect=true)
  *
  * Design decisions:
  * - Pure function with no I/O (env is injected, not read from process.env)
- * - No hardcoded vendor-specific signals (all signals come from config)
  * - LUMENFLOW_CLOUD only accepts '1' as truthy (not 'true', 'yes', etc.)
+ * - Runtime identity signals are intentionally not used for cloud activation
  *
  * @module cloud-detect
  */
@@ -20,7 +20,10 @@
 /**
  * Environment signal configuration from .lumenflow.config.yaml
  *
- * Defines an environment variable to check for cloud detection.
+ * Defines an environment variable match rule.
+ *
+ * Note: These signals are runtime identity/context hints and are not used
+ * for cloud execution-path activation (WU-1610).
  * When `equals` is omitted, presence of the variable (non-empty) is sufficient.
  * When `equals` is provided, the value must match exactly.
  */
@@ -35,9 +38,9 @@ export interface CloudEnvSignalConfig {
  * Cloud detection configuration from .lumenflow.config.yaml
  */
 export interface CloudDetectConfig {
-  /** Whether to enable env-signal auto-detection (default: false) */
+  /** Deprecated activation toggle for env signals (ignored by detection logic) */
   readonly auto_detect: boolean;
-  /** Environment signals to check when auto_detect is true */
+  /** Runtime identity signals from config (not used for activation) */
   readonly env_signals: readonly CloudEnvSignalConfig[];
 }
 
@@ -62,7 +65,7 @@ export const CLOUD_ACTIVATION_SOURCE = {
   FLAG: 'flag',
   /** Activated via LUMENFLOW_CLOUD=1 environment variable */
   ENV_VAR: 'env_var',
-  /** Activated via env_signals auto-detection */
+  /** Reserved legacy value (no longer emitted by detectCloudMode) */
   ENV_SIGNAL: 'env_signal',
 } as const;
 
@@ -140,19 +143,18 @@ const DEFAULT_PROTECTED_BRANCHES = ['main', 'master'] as const;
 /**
  * Detect whether cloud mode should be activated.
  *
- * Implements a strict precedence chain:
+ * Implements explicit-only activation:
  * 1. --cloud flag (explicit, always wins)
  * 2. LUMENFLOW_CLOUD=1 (explicit env var, always wins)
- * 3. env_signals auto-detection (opt-in, only when config.auto_detect=true)
  *
  * This function is pure: it takes all inputs explicitly and performs no I/O.
- * No vendor-specific signals are hardcoded; all signals come from config.
+ * Runtime identity signals are intentionally ignored for activation.
  *
  * @param input - Detection inputs (flag, env, config)
  * @returns Detection result with source attribution
  */
 export function detectCloudMode(input: CloudDetectInput): CloudDetectResult {
-  const { cloudFlag, env, config } = input;
+  const { cloudFlag, env } = input;
 
   // Precedence 1: --cloud CLI flag (highest priority)
   if (cloudFlag) {
@@ -168,38 +170,6 @@ export function detectCloudMode(input: CloudDetectInput): CloudDetectResult {
       isCloud: true,
       source: CLOUD_ACTIVATION_SOURCE.ENV_VAR,
     };
-  }
-
-  // Precedence 3: env_signals auto-detection (only when auto_detect=true)
-  if (config.auto_detect) {
-    for (const signal of config.env_signals) {
-      const envValue = env[signal.name];
-
-      // Skip if env var is not set or is empty
-      if (envValue === undefined || envValue === '') {
-        continue;
-      }
-
-      // If equals constraint is provided, check exact match
-      if (signal.equals !== undefined) {
-        if (envValue === signal.equals) {
-          return {
-            isCloud: true,
-            source: CLOUD_ACTIVATION_SOURCE.ENV_SIGNAL,
-            matchedSignal: signal.name,
-          };
-        }
-        // Value doesn't match equals constraint, skip this signal
-        continue;
-      }
-
-      // No equals constraint - presence of non-empty value is sufficient
-      return {
-        isCloud: true,
-        source: CLOUD_ACTIVATION_SOURCE.ENV_SIGNAL,
-        matchedSignal: signal.name,
-      };
-    }
   }
 
   // No activation source matched

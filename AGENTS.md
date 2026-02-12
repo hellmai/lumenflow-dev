@@ -29,6 +29,8 @@ cd <project-root> && pnpm wu:done --id WU-XXXX
 
 Cloud agents (Codex, Claude web, CI bots) that cannot use local worktrees use the **branch-pr** mode. This is a first-class lifecycle, not a workaround.
 
+**Activation is explicit-only:** cloud mode is enabled only by `--cloud` or `LUMENFLOW_CLOUD=1`. Runtime identity env vars such as `CLAUDECODE`, `CODEX`, or `CI` do not activate cloud mode.
+
 ```bash
 # 1. Create in cloud mode (optional if WU already exists)
 pnpm wu:create --id WU-XXXX --lane <Lane> ... --cloud
@@ -57,6 +59,7 @@ pnpm wu:cleanup --id WU-XXXX
 - `wu:done` creates a PR instead of fast-forward merging to main
 - `wu:cleanup` handles post-merge stamp creation and state updates
 - `wu:recover` and `wu:repair` respect branch-pr claimed branches for recovery/admin fixes
+- Cloud mode is never auto-enabled by runtime identity env vars (`CLAUDECODE`, `CODEX`, `CI`)
 
 > **Complete CLI reference:** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
 

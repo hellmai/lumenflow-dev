@@ -15,7 +15,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CLAIMED_MODES } from '@lumenflow/core/wu-constants';
 import { resolveClaimMode } from '../wu-claim-mode.js';
-import { CLOUD_EFFECTIVE_REASON } from '@lumenflow/core/cloud-detect';
 
 afterEach(() => {
   vi.resetModules();
@@ -162,8 +161,9 @@ describe('WU-1609: command cloud-path suppression on protected main/master', () 
     });
 
     expect(effective.isCloud).toBe(false);
-    expect(effective.suppressed).toBe(true);
-    expect(effective.reason).toBe(CLOUD_EFFECTIVE_REASON.SUPPRESSED_ENV_SIGNAL_ON_PROTECTED);
+    expect(effective.suppressed).toBe(false);
+    expect(effective.blocked).toBe(false);
+    expect(effective.reason).toBeUndefined();
 
     const createCtx = buildCloudCreateContext({ cloud: effective.isCloud, currentBranch: 'main' });
     expect(createCtx.skipEnsureOnMain).toBe(false);
@@ -184,8 +184,58 @@ describe('WU-1609: command cloud-path suppression on protected main/master', () 
     });
 
     expect(effective.isCloud).toBe(false);
-    expect(effective.suppressed).toBe(true);
-    expect(effective.reason).toBe(CLOUD_EFFECTIVE_REASON.SUPPRESSED_ENV_SIGNAL_ON_PROTECTED);
+    expect(effective.suppressed).toBe(false);
+    expect(effective.blocked).toBe(false);
+    expect(effective.reason).toBeUndefined();
+
+    const mode = resolveClaimMode({ cloud: effective.isCloud });
+    expect(mode.mode).toBe(CLAIMED_MODES.WORKTREE);
+  });
+});
+
+describe('WU-1610: command activation is explicit-only', () => {
+  it('wu:create does not enter cloud path from env-signal config on non-main branch', async () => {
+    const { resolveCloudActivationForCreate } = await import('../wu-create.js');
+    const { buildCloudCreateContext } = await import('../wu-create-cloud.js');
+
+    const effective = resolveCloudActivationForCreate({
+      cloudFlag: false,
+      env: { CI: '1', CODEX: '1' },
+      config: {
+        auto_detect: true,
+        env_signals: [{ name: 'CI' }, { name: 'CODEX' }],
+      },
+      currentBranch: 'codex/local-branch',
+    });
+
+    expect(effective.isCloud).toBe(false);
+    expect(effective.suppressed).toBe(false);
+    expect(effective.blocked).toBe(false);
+
+    const createCtx = buildCloudCreateContext({
+      cloud: effective.isCloud,
+      currentBranch: 'codex/local-branch',
+    });
+    expect(createCtx.skipEnsureOnMain).toBe(false);
+    expect(createCtx.skipMicroWorktree).toBe(false);
+  });
+
+  it('wu:claim does not resolve to branch-pr from env-signal config on non-main branch', async () => {
+    const { resolveCloudActivationForClaim } = await import('../wu-claim.js');
+
+    const effective = resolveCloudActivationForClaim({
+      cloudFlag: false,
+      env: { CI: '1', CLAUDECODE: '1' },
+      config: {
+        auto_detect: true,
+        env_signals: [{ name: 'CI' }, { name: 'CLAUDECODE', equals: '1' }],
+      },
+      currentBranch: 'claude/local-branch',
+    });
+
+    expect(effective.isCloud).toBe(false);
+    expect(effective.suppressed).toBe(false);
+    expect(effective.blocked).toBe(false);
 
     const mode = resolveClaimMode({ cloud: effective.isCloud });
     expect(mode.mode).toBe(CLAIMED_MODES.WORKTREE);
