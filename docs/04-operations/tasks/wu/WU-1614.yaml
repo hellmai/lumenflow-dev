@@ -2,7 +2,7 @@ id: WU-1614
 title: Scope spec:linter gate to active WU and cwd
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -28,8 +28,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: gates.ts runSpecLinterGate attempts scoped wu:validate but still always runs global spec:linter, and WU detection is based on process cwd. Problem: unrelated WU YAML failures (e.g. WU-1605 missing spec_refs) can block completions, especially when getCurrentWU cannot detect from non-process cwd. Solution: detect WU from gate cwd and run global spec:linter only when scoped WU cannot be determined.'
+description: 'Context: gates.ts runSpecLinterGate attempts scoped wu:validate but still always runs
+  global spec:linter, and WU detection is based on process cwd. Problem: unrelated WU YAML failures
+  (e.g. WU-1605 missing spec_refs) can block completions, especially when getCurrentWU cannot detect
+  from non-process cwd. Solution: detect WU from gate cwd and run global spec:linter only when
+  scoped WU cannot be determined.'
 acceptance:
   - runSpecLinterGate uses gate cwd to resolve current branch/WU
-  - when current WU is detected, spec:linter gate validates only that WU and does not run global wu:validate --all
+  - when current WU is detected, spec:linter gate validates only that WU and does not run global
+    wu:validate --all
   - when current WU cannot be detected, global spec:linter fallback remains
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1614
+claimed_at: 2026-02-12T15:55:53.623Z
+baseline_main_sha: c1f7122e07a640dac2685838439db38e1ec86d2b
+session_id: 387d215a-5f75-4ec2-854a-96743fc6ad34
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T15:55:53.631Z
