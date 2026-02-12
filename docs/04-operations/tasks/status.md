@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1597 — Harden cleanup cloud branch protection fallback](wu/WU-1597.yaml)
 
 ## Completed
 

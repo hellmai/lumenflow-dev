@@ -1131,3 +1131,4 @@
 {"type":"complete","wuId":"WU-1592","timestamp":"2026-02-12T10:35:23.358Z"}
 {"type":"claim","wuId":"WU-1596","timestamp":"2026-02-12T11:32:02.834Z","lane":"Framework: CLI WU Commands","title":"P0 hotfix: cloud branch-pr lifecycle blockers from INIT-023 review"}
 {"type":"complete","wuId":"WU-1596","timestamp":"2026-02-12T11:52:44.317Z"}
+{"type":"claim","wuId":"WU-1597","lane":"Framework: CLI WU Commands","title":"Harden cleanup cloud branch protection fallback","timestamp":"2026-02-12T12:04:12.150Z"}
