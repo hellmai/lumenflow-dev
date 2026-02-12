@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1620 — Unblock docs-only gates by ignoring local Claude settings and formatting INIT-023 plan](wu/WU-1620.yaml)
 
 ## Completed
 
