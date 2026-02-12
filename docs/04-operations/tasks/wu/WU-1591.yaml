@@ -2,7 +2,7 @@ id: WU-1591
 title: 'Cloud State Commands: branch-pr support for edit/block/unblock/release/delete'
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -64,3 +64,6 @@ session_id: f71777d2-84c5-4848-9da3-cbcd47fd8b07
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T10:12:02.758Z
+locked: true
+completed_at: 2026-02-12T10:24:56.837Z
+completed: 2026-02-12

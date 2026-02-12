@@ -17,7 +17,7 @@ phases:
     status: done
   - id: 3
     title: WU-C Cloud State Commands (edit/block/unblock/release/delete)
-    status: pending
+    status: done
   - id: 4
     title: WU-D Cloud Recovery + Docs + Auto-Detect
     status: in_progress
