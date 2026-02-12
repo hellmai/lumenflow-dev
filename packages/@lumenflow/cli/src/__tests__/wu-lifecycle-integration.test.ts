@@ -16,7 +16,8 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
-import { WU_STATUS } from '@lumenflow/core/wu-constants';
+import { CLAIMED_MODES, WU_STATUS } from '@lumenflow/core/wu-constants';
+import { shouldApplyCanonicalClaimUpdate, shouldPersistClaimMetadataOnBranch } from '../wu-claim.js';
 
 // Test constants
 const TEST_WU_ID = 'WU-9901';
@@ -468,6 +469,53 @@ describe('WU Lifecycle Integration Tests (WU-1363)', () => {
         doc = parseYAML(readFileSync(wuPath, 'utf-8'));
         expect(doc.status).toBe(WU_STATUS.DONE);
       });
+    });
+  });
+
+  describe('cloud branch-pr claim strategy integration (WU-1598)', () => {
+    it('should route cloud branch-pr claims to branch-local metadata with no canonical main update', () => {
+      const shouldApplyCanonical = shouldApplyCanonicalClaimUpdate({
+        isCloud: true,
+        claimedMode: CLAIMED_MODES.BRANCH_PR,
+        noPush: false,
+      });
+      const shouldPersistOnBranch = shouldPersistClaimMetadataOnBranch({
+        claimedMode: CLAIMED_MODES.BRANCH_PR,
+        noPush: false,
+      });
+
+      expect(shouldApplyCanonical).toBe(false);
+      expect(shouldPersistOnBranch).toBe(true);
+    });
+
+    it('should preserve existing non-cloud branch-only push behavior', () => {
+      const shouldApplyCanonical = shouldApplyCanonicalClaimUpdate({
+        isCloud: false,
+        claimedMode: CLAIMED_MODES.BRANCH_ONLY,
+        noPush: false,
+      });
+      const shouldPersistOnBranch = shouldPersistClaimMetadataOnBranch({
+        claimedMode: CLAIMED_MODES.BRANCH_ONLY,
+        noPush: false,
+      });
+
+      expect(shouldApplyCanonical).toBe(true);
+      expect(shouldPersistOnBranch).toBe(false);
+    });
+
+    it('should keep local-only branch mode writing metadata when --no-push is enabled', () => {
+      const shouldApplyCanonical = shouldApplyCanonicalClaimUpdate({
+        isCloud: false,
+        claimedMode: CLAIMED_MODES.BRANCH_ONLY,
+        noPush: true,
+      });
+      const shouldPersistOnBranch = shouldPersistClaimMetadataOnBranch({
+        claimedMode: CLAIMED_MODES.BRANCH_ONLY,
+        noPush: true,
+      });
+
+      expect(shouldApplyCanonical).toBe(false);
+      expect(shouldPersistOnBranch).toBe(true);
     });
   });
 });

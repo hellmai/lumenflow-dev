@@ -202,6 +202,38 @@ export function resolveClaimStatus(status: unknown) {
   return resolveWUStatus(status, WU_STATUS.READY);
 }
 
+interface ClaimCanonicalUpdateInput {
+  isCloud?: boolean;
+  claimedMode?: string;
+  noPush?: boolean;
+}
+
+interface ClaimBranchMetadataInput {
+  claimedMode?: string;
+  noPush?: boolean;
+}
+
+/**
+ * Decide whether wu:claim should update canonical state on origin/main.
+ *
+ * Cloud branch-pr claims run on platform-managed branches and should not mutate
+ * canonical state on main during claim; they commit claim metadata on their own branch.
+ */
+export function shouldApplyCanonicalClaimUpdate(input: ClaimCanonicalUpdateInput): boolean {
+  if (Boolean(input.noPush)) {
+    return false;
+  }
+
+  return !(Boolean(input.isCloud) && input.claimedMode === CLAIMED_MODES.BRANCH_PR);
+}
+
+/**
+ * Decide whether wu:claim should write claim metadata directly to the active branch.
+ */
+export function shouldPersistClaimMetadataOnBranch(input: ClaimBranchMetadataInput): boolean {
+  return Boolean(input.noPush) || input.claimedMode === CLAIMED_MODES.BRANCH_PR;
+}
+
 /**
  * WU-1521: Build a rolled-back version of a WU YAML doc by stripping claim metadata.
  *
@@ -1202,8 +1234,12 @@ async function claimBranchOnlyMode(ctx) {
 
   let finalTitle = updatedTitle || title;
   const msg = COMMIT_FORMATS.CLAIM(id.toLowerCase(), laneK);
+  const shouldPersistClaimMetadata = shouldPersistClaimMetadataOnBranch({
+    claimedMode,
+    noPush: Boolean(args.noPush),
+  });
 
-  if (args.noPush) {
+  if (shouldPersistClaimMetadata) {
     if (args.noAuto) {
       await ensureCleanOrClaimOnlyWhenNoAuto();
     } else {
@@ -1234,10 +1270,13 @@ async function claimBranchOnlyMode(ctx) {
           filesToAdd.push(initProgress.initPath);
         }
       }
-      await getGitForCwd().add(filesToAdd.map((f) => JSON.stringify(f)).join(' '));
+      await getGitForCwd().add(filesToAdd);
     }
 
     await getGitForCwd().commit(msg);
+  }
+
+  if (args.noPush) {
     console.warn(
       `${PREFIX} Warning: --no-push enabled. Claim is local-only and NOT visible to other agents.`,
     );
@@ -1992,7 +2031,12 @@ async function main() {
     };
     let updatedTitle = title;
     claimTitle = title;
-    if (!args.noPush) {
+    const shouldApplyCanonicalUpdate = shouldApplyCanonicalClaimUpdate({
+      isCloud: effectiveCloud,
+      claimedMode,
+      noPush: Boolean(args.noPush),
+    });
+    if (shouldApplyCanonicalUpdate) {
       updatedTitle = (await applyCanonicalClaimUpdate(baseCtx, sessionId)) || updatedTitle;
       // WU-1521: Mark that canonical claim was pushed to origin/main
       // If claim fails after this point, the finally block will rollback
@@ -2001,6 +2045,10 @@ async function main() {
 
       // Refresh origin/main after push-only update so worktrees start from canonical state
       await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+    } else if (!args.noPush && claimedMode === CLAIMED_MODES.BRANCH_PR) {
+      console.log(
+        `${PREFIX} Skipping canonical claim update on origin/main for cloud branch-pr claim.`,
+      );
     }
     const ctx = {
       ...baseCtx,

@@ -110,6 +110,40 @@ describe('wu:claim --cloud claimed_branch persistence (WU-1590 AC2)', () => {
   });
 });
 
+describe('wu:claim cloud canonical update strategy (WU-1598)', () => {
+  it('should skip canonical claim updates on origin/main for cloud branch-pr claims', async () => {
+    const { shouldApplyCanonicalClaimUpdate } = await import('../wu-claim.js');
+    const shouldApply = shouldApplyCanonicalClaimUpdate({
+      isCloud: true,
+      claimedMode: CLAIMED_MODES.BRANCH_PR,
+      noPush: false,
+    });
+
+    expect(shouldApply).toBe(false);
+  });
+
+  it('should keep canonical claim updates for non-cloud worktree claims', async () => {
+    const { shouldApplyCanonicalClaimUpdate } = await import('../wu-claim.js');
+    const shouldApply = shouldApplyCanonicalClaimUpdate({
+      isCloud: false,
+      claimedMode: CLAIMED_MODES.WORKTREE,
+      noPush: false,
+    });
+
+    expect(shouldApply).toBe(true);
+  });
+
+  it('should write claim metadata on working branch for cloud branch-pr claims', async () => {
+    const { shouldPersistClaimMetadataOnBranch } = await import('../wu-claim.js');
+    const shouldPersist = shouldPersistClaimMetadataOnBranch({
+      claimedMode: CLAIMED_MODES.BRANCH_PR,
+      noPush: false,
+    });
+
+    expect(shouldPersist).toBe(true);
+  });
+});
+
 // --- AC3: wu:done branch-pr preflight skips ensureOnMain ---
 describe('wu:done branch-pr preflight (WU-1590 AC3)', () => {
   describe('shouldSkipEnsureOnMainForDone', () => {
