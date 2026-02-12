@@ -44,8 +44,8 @@ pnpm wu:create --lane "Experience: UI" --title "Add login form"
 For complex work, spawn sub-agents to work in parallel:
 
 ```bash
-# Generate spawn prompt for parallel agent
-pnpm wu:spawn --id WU-123 --client claude-code
+# Generate handoff prompt for parallel agent
+pnpm wu:brief --id WU-123 --client claude-code
 ```
 
 Sub-agents work on different aspects simultaneously:

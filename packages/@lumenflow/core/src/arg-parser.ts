@@ -464,11 +464,11 @@ export const WU_OPTIONS: Record<string, WUOption> = {
     description: 'Parent WU ID for orchestrator context (e.g., WU-1000)',
   },
 
-  // WU-1240: Skip memory context injection in spawn prompts
+  // WU-1240: Skip memory context injection in handoff prompts
   noContext: {
     name: 'noContext',
     flags: '--no-context',
-    description: 'Skip memory context injection in spawn prompts',
+    description: 'Skip memory context injection in handoff prompts',
     isNegated: true,
   },
 

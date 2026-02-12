@@ -27,7 +27,7 @@ LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiati
 | Quality Gates   | [`gates`](#gates), [`gates:docs`](#gatesdocs), [`lane:health`](#lanehealth), [`lane:suggest`](#lanesuggest), [`lumenflow-gates`](#lumenflow-gates), [`lumenflow-validate`](#lumenflow-validate), [`validate`](#validate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Setup           | [`backlog:prune`](#backlogprune), [`docs:sync`](#docssync), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`lumenflow`](#lumenflow), [`lumenflow-init`](#lumenflow-init), [`lumenflow:commands`](#lumenflowcommands), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:integrate`](#lumenflowintegrate), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade), [`sync:templates`](#synctemplates) |
 | Sub-Agents      | [`spawn:list`](#spawnlist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| Work Units      | [`wu:block`](#wublock), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer-lane`](#wuinfer-lane), [`wu:preflight`](#wupreflight), [`wu:prep`](#wuprep), [`wu:proto`](#wuproto), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:spawn`](#wuspawn), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock-lane`](#wuunlock-lane), [`wu:validate`](#wuvalidate)                                                                                                                                                                               |
+| Work Units      | [`wu:block`](#wublock), [`wu:brief`](#wubrief), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delegate`](#wudelegate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer-lane`](#wuinfer-lane), [`wu:preflight`](#wupreflight), [`wu:prep`](#wuprep), [`wu:proto`](#wuproto), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock-lane`](#wuunlock-lane), [`wu:validate`](#wuvalidate)                                                                                                                                                 |
 
 ## Agent Lifecycle
 
@@ -945,6 +945,14 @@ pnpm wu:block --id <wuId>
 | `--remove-worktree`           | Remove worktree when blocking                                                    | No       |
 | `--no-auto`                   | Skip auto-updating YAML/backlog/status                                           | No       |
 
+### wu:brief
+
+Generate handoff prompt for sub-agent WU execution
+
+```bash
+pnpm wu:brief
+```
+
 ### wu:claim
 
 Claim WU and create worktree
@@ -1026,6 +1034,15 @@ pnpm wu:create --lane <lane> --title <title>
 | `--ui-pairing-wus &lt;wuIds&gt;`    | UI WU IDs that consume this API (repeatable or comma-separated, for api exposure)                                     | No       |
 | `--plan`                            | Create plan template in $LUMENFLOW_HOME/plans/ (external plan storage)                                                | No       |
 | `--no-strict`                       | Bypass strict validation (skip code_paths/test_paths existence checks, treat warnings as advisory). Logged when used. | No       |
+| `--cloud`                           | Use cloud/branch-pr mode (no worktree, PR-based completion for cloud agents and MCP callers)                          | No       |
+
+### wu:delegate
+
+Generate delegation prompt and record explicit lineage intent
+
+```bash
+pnpm wu:delegate
+```
 
 ### wu:delete
 
@@ -1208,28 +1225,6 @@ Repair WU state issues
 ```bash
 pnpm wu:repair
 ```
-
-### wu:spawn
-
-Generate sub-agent spawn prompt
-
-```bash
-pnpm wu:spawn --id <wuId>
-```
-
-**Options:**
-
-| Flag                       | Description                                                                      | Required |
-| -------------------------- | -------------------------------------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;`    | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
-| `--thinking`               | Enable extended thinking for sub-agent WU execution                              | No       |
-| `--no-thinking`            | Explicitly disable extended thinking (default behavior)                          | No       |
-| `--budget &lt;tokens&gt;`  | Token budget for extended thinking (requires --thinking)                         | No       |
-| `--codex`                  | Output a Codex/GPT-friendly Markdown prompt (instead of Claude Task antml)       | No       |
-| `--parent-wu &lt;wuId&gt;` | Parent WU ID for orchestrator context (e.g., WU-1000)                            | No       |
-| `--client &lt;client&gt;`  | Client name (claude-code, gemini-cli, etc)                                       | No       |
-| `--vendor &lt;vendor&gt;`  | Deprecated alias for --client                                                    | No       |
-| `--no-context`             | Skip memory context injection in spawn prompts                                   | No       |
 
 ### wu:status
 

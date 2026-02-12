@@ -129,7 +129,7 @@ When writing or editing files, use paths relative to the worktree root.
 
 ```bash
 # WRONG - absolute paths
-Write to: /home/user/project/worktrees/cli-wu-123/src/index.ts
+Write to: <repo-root>/worktrees/cli-wu-123/src/index.ts
 
 # RIGHT - relative paths
 Write to: src/index.ts
@@ -257,22 +257,25 @@ pnpm wu:done --id WU-XXX --skip-gates \
 
 ---
 
-## Spawning Sub-Agents with wu:spawn
+## Delegating Sub-Agents with wu:brief / wu:delegate
 
-Use `wu:spawn` to create parallel sub-agents for complex WUs that require multiple agents working simultaneously on different aspects.
+Use `wu:brief` to create parallel sub-agent handoff prompts for complex WUs. Use `wu:delegate` when you also need explicit lineage recording.
 
-### When to Use wu:spawn
+### When to Use wu:brief
 
 - **Parallel work:** Multiple agents needed on the same WU simultaneously
 - **Specialized expertise:** Different agents for different domains (frontend, backend, docs)
 - **Context isolation:** Preventing context limit issues on large WUs
 - **Wave-based execution:** Coordinating multiple phases of work
 
-### How to Use wu:spawn
+### How to Use wu:brief / wu:delegate
 
 ```bash
-# Spawn a sub-agent with client-specific context
-pnpm wu:spawn --id WU-XXXX --client <client-type>
+# Generate a handoff prompt (no lineage side effect)
+pnpm wu:brief --id WU-XXXX --client <client-type>
+
+# Generate + record explicit delegation lineage
+pnpm wu:delegate --id WU-XXXX --parent-wu WU-YYYY --client <client-type>
 
 # Valid client values:
 # - claude-code    # Claude Code CLI
@@ -300,7 +303,8 @@ pnpm wu:spawn --id WU-XXXX --client <client-type>
 | `pnpm wu:status --id WU-XXX`              | Show WU state and valid commands  | Check current state   |
 | `pnpm wu:claim --id WU-XXX --lane "Lane"` | Claim WU and create worktree      | Start working         |
 | `pnpm wu:edit --id WU-XXX --field value`  | Edit WU spec fields               | Update notes/desc     |
-| `pnpm wu:spawn --id WU-XXX --client X`    | Spawn sub-agent for parallel work | Complex WUs           |
+| `pnpm wu:brief --id WU-XXX --client X`    | Generate sub-agent handoff prompt | Complex WUs           |
+| `pnpm wu:delegate --id WU-XXX --parent-wu P` | Generate prompt + record delegation | Auditable delegation |
 | `pnpm gates`                              | Run quality gates                 | Before wu:done        |
 | `pnpm gates --docs-only`                  | Run docs-only gates               | For documentation WUs |
 | `pnpm wu:done --id WU-XXX`                | Complete WU, merge, cleanup       | After gates pass      |

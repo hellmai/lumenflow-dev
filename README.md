@@ -14,7 +14,7 @@ This monorepo contains the open-source LumenFlow framework for AI-native softwar
 | `@lumenflow/memory`      | Session tracking, context recovery, agent coordination                 |
 | `@lumenflow/initiatives` | Multi-phase project orchestration across WUs                           |
 | `@lumenflow/agent`       | Agent definitions, skill loading, verification                         |
-| `@lumenflow/cli`         | Command-line tools for wu:claim, wu:done, wu:spawn                     |
+| `@lumenflow/cli`         | Command-line tools for wu:claim, wu:done, wu:brief, wu:delegate        |
 | `@lumenflow/metrics`     | DORA metrics, flow analysis, telemetry                                 |
 | `@lumenflow/shims`       | Git and pnpm safety shims                                              |
 

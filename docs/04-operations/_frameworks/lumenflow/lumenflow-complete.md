@@ -260,7 +260,8 @@ lanes:
 - `wu:claim`: Checks only in_progress WUs against WIP limit
 - `wu:block`: Releases the lane lock, freeing the lane for new claims
 - `wu:unblock`: Re-acquires the lane lock (may fail if lane is now occupied)
-- `wu:spawn`: Considers policy when checking lane availability
+- `wu:brief`: Considers policy when generating handoff prompts
+- `wu:delegate`: Uses same lane checks while recording delegation lineage
 
 **Pilot recommendation (INIT-013):**
 

@@ -329,7 +329,8 @@ Pre-configured agent definitions in `.claude/agents/`:
 | `code-reviewer`   | Quality checks             |
 | `bug-triage`      | Bug classification         |
 
-Generate spawn prompts: `pnpm wu:spawn --id WU-XXX --client claude-code`
+Generate handoff prompts: `pnpm wu:brief --id WU-XXX --client claude-code`
+Record delegation lineage: `pnpm wu:delegate --id WU-XXX --parent-wu WU-YYY --client claude-code`
 
 ---
 

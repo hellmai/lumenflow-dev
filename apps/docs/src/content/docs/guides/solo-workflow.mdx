@@ -188,7 +188,7 @@ npx wu-done --id WU-015
 
 ```bash
 # Generate prompt for AI agent
-npx wu-spawn --id WU-015
+npx wu-brief --id WU-015 --client claude-code
 
 # Paste into Claude/GPT/Cursor with full context
 # Agent works in worktree, runs gates, completes
@@ -307,7 +307,7 @@ npx wu-create \
 
 # 2. Generate agent prompt
 # Use the generated ID from the output (example: WU-020)
-npx wu-spawn --id WU-020
+npx wu-brief --id WU-020 --client claude-code
 
 # 3. Give to AI agent
 # Agent claims, works in worktree, completes
