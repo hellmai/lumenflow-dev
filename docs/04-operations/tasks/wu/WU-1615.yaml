@@ -16,7 +16,6 @@ artifacts:
   - .lumenflow/stamps/WU-1615.done
 dependencies: []
 spec_refs:
-  - lumenflow://plans/WU-XXXX-plan.md
   - lumenflow://plans/WU-1615-plan.md
 risks: []
 notes: Maintenance unblock before resuming INIT-024 delivery WUs.

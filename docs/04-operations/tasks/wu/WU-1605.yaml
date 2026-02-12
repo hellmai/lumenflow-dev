@@ -25,6 +25,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1605.done
 dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1605-plan.md
 initiative: INIT-024
 phase: 3
 blocked_by:
