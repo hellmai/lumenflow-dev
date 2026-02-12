@@ -39,6 +39,12 @@ import {
 } from '@lumenflow/core/wu-constants';
 // WU-2278: Import ownership validation for cross-agent protection
 import { validateWorktreeOwnership } from '@lumenflow/core/worktree-ownership';
+// WU-1590: Cloud cleanup helpers for branch-pr mode
+import {
+  resolveCleanupBranch,
+  shouldSkipWorktreeChecks,
+  isCloudManagedBranch,
+} from './wu-cleanup-cloud.js';
 
 const CLEANUP_OPTIONS = {
   artifacts: {
@@ -246,7 +252,12 @@ async function main() {
   // args.id is already "wu-706", don't double-prepend "wu-"
   const idK = args.id.toLowerCase();
 
-  const laneBranch = `lane/${laneK}/${idK}`;
+  // WU-1590: Resolve cleanup branch from claimed_branch (cloud) or lane-derived fallback
+  const laneBranch = resolveCleanupBranch({
+    claimed_branch: wu.claimed_branch,
+    lane: wu.lane || '',
+    id: idK,
+  });
   const worktreePath = path.join('worktrees', `${laneK}-${idK}`);
   const absoluteWorktreePath = path.resolve(worktreePath);
 
@@ -256,24 +267,30 @@ async function main() {
   console.log(`[wu-cleanup] Worktree: ${worktreePath}`);
   console.log();
 
+  // WU-1590: Determine if worktree checks should be skipped (branch-pr mode)
+  const skipWorktree = shouldSkipWorktreeChecks(wu);
+
   // WU-2278: Validate worktree ownership before cleanup
-  // Prevents cross-agent worktree deletion
-  const ownershipResult = validateWorktreeOwnership({ worktreePath, wuId: id });
-  if (!ownershipResult.valid) {
-    console.error();
-    console.error(BOX.TOP);
-    console.error('║  OWNERSHIP VALIDATION FAILED');
-    console.error(BOX.MID);
-    console.error(`║  ${ownershipResult.error}`);
-    console.error('║');
-    console.error("║  This prevents accidentally deleting another agent's worktree.");
-    console.error(BOX.BOT);
-    process.exit(EXIT_CODES.ERROR);
+  // Prevents cross-agent worktree deletion (skip for branch-pr: no worktree)
+  if (!skipWorktree) {
+    const ownershipResult = validateWorktreeOwnership({ worktreePath, wuId: id });
+    if (!ownershipResult.valid) {
+      console.error();
+      console.error(BOX.TOP);
+      console.error('║  OWNERSHIP VALIDATION FAILED');
+      console.error(BOX.MID);
+      console.error(`║  ${ownershipResult.error}`);
+      console.error('║');
+      console.error("║  This prevents accidentally deleting another agent's worktree.");
+      console.error(BOX.BOT);
+      process.exit(EXIT_CODES.ERROR);
+    }
   }
 
   const cleanupCheck = {
-    hasUncommittedChanges: await hasUncommittedChanges(absoluteWorktreePath),
-    hasUnpushedCommits: await hasUnpushedCommits(absoluteWorktreePath),
+    // WU-1590: Skip worktree-specific checks in branch-pr mode (no worktree to check)
+    hasUncommittedChanges: skipWorktree ? false : await hasUncommittedChanges(absoluteWorktreePath),
+    hasUnpushedCommits: skipWorktree ? false : await hasUnpushedCommits(absoluteWorktreePath),
     hasStamp: hasStampFile(id),
     yamlStatus: wu.status,
     ghAvailable: isGhCliAvailable(),
@@ -306,12 +323,21 @@ async function main() {
     process.exit(EXIT_CODES.ERROR);
   }
 
-  // 2. Remove worktree
-  await removeWorktree(worktreePath);
-  console.log();
+  // 2. Remove worktree (skip in branch-pr mode: no worktree exists)
+  if (!skipWorktree) {
+    await removeWorktree(worktreePath);
+    console.log();
+  } else {
+    console.log('[wu-cleanup] Branch-PR mode: no worktree to remove');
+  }
 
   // 3. Delete branch (local + remote)
-  await deleteBranch(laneBranch);
+  // WU-1590: Skip branch deletion for cloud-managed branches (claude/*, codex/*, etc.)
+  if (isCloudManagedBranch(laneBranch)) {
+    console.log(`[wu-cleanup] Skipping branch deletion: ${laneBranch} is cloud-managed`);
+  } else {
+    await deleteBranch(laneBranch);
+  }
   console.log();
 
   console.log(BOX.TOP);

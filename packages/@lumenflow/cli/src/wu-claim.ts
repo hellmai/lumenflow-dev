@@ -52,6 +52,8 @@ import { die, getErrorMessage } from '@lumenflow/core/error-handler';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 // WU-1491: Mode resolution for --cloud and flag combinations
 import { resolveClaimMode } from './wu-claim-mode.js';
+// WU-1590: Cloud claim helpers for persisting claimed_branch and skipping branch-exists checks
+import { buildCloudClaimMetadata, shouldSkipBranchExistsCheck } from './wu-claim-cloud.js';
 // WU-1495: Cloud auto-detection from config-driven env signals
 import { detectCloudMode } from '@lumenflow/core/cloud-detect';
 import { WU_PATHS, getStateStoreDirFromBacklog } from '@lumenflow/core/wu-paths';
@@ -355,6 +357,7 @@ async function updateWUYaml(
   worktreePath = null,
   sessionId = null,
   gitAdapter = null,
+  claimedBranch: string | null = null, // WU-1590: Persist claimed_branch for branch-pr cloud agents
 ) {
   // Check file exists
 
@@ -416,6 +419,11 @@ async function updateWUYaml(
   if (lane) doc.lane = lane;
   // Record claimed mode (worktree or branch-only)
   doc.claimed_mode = claimedMode;
+  // WU-1590: Persist claimed_branch for branch-pr cloud agents so downstream commands
+  // (wu:prep, wu:done, wu:cleanup) can resolve the actual branch via defaultBranchFrom()
+  if (claimedBranch) {
+    doc.claimed_branch = claimedBranch;
+  }
   // WU-1226: Record worktree path to prevent resolution failures if lane field changes
   if (worktreePath) {
     doc.worktree_path = worktreePath;
@@ -677,6 +685,7 @@ async function applyCanonicalClaimUpdate(ctx, sessionId) {
     claimedMode,
     fixableIssues,
     stagedChanges,
+    currentBranchForCloud, // WU-1590: For persisting claimed_branch
   } = ctx;
   const commitMsg = COMMIT_FORMATS.CLAIM(id.toLowerCase(), laneK);
   const worktreePathForYaml =
@@ -718,6 +727,7 @@ async function applyCanonicalClaimUpdate(ctx, sessionId) {
           worktreePathForYaml,
           sessionId,
           microGit,
+          currentBranchForCloud || null, // WU-1590: Persist claimed_branch for branch-pr
         );
         updatedTitle = updateResult.title || updatedTitle;
         await addOrReplaceInProgressStatus(microStatusPath, id, updatedTitle);
@@ -1162,6 +1172,7 @@ async function claimBranchOnlyMode(ctx) {
     claimedMode,
     sessionId,
     updatedTitle,
+    currentBranchForCloud, // WU-1590: For persisting claimed_branch
   } = ctx;
 
   // Create branch and switch to it from origin/main (avoids local main mutation)
@@ -1186,7 +1197,8 @@ async function claimBranchOnlyMode(ctx) {
       await ensureCleanOrClaimOnlyWhenNoAuto();
     } else {
       // WU-1211: updateWUYaml now returns {title, initiative}
-      const updateResult = await updateWUYaml(WU_PATH, id, args.lane, claimedMode, null, sessionId);
+      // WU-1590: Pass claimed_branch for branch-pr persistence
+      const updateResult = await updateWUYaml(WU_PATH, id, args.lane, claimedMode, null, sessionId, null, currentBranchForCloud || null);
       finalTitle = updateResult.title || finalTitle;
       await addOrReplaceInProgressStatus(STATUS_PATH, id, finalTitle);
       await removeFromReadyAndAddToInProgressBacklog(BACKLOG_PATH, id, finalTitle, args.lane);
@@ -1839,6 +1851,11 @@ async function main() {
       );
     }
 
+    // WU-1590: Capture current branch for cloud claim metadata (before any branch switching)
+    const currentBranchForCloud = effectiveCloud
+      ? await getGitForCwd().getCurrentBranch()
+      : undefined;
+
     // WU-1491: Resolve claimed mode from flag combination
     const modeResult = resolveClaimMode({
       branchOnly: args.branchOnly,
@@ -1856,8 +1873,15 @@ async function main() {
       await validateBranchOnlyMode(STATUS_PATH, id);
     }
 
+    // WU-1590: Skip branch-exists checks in cloud mode (branch already exists by definition)
+    const skipBranchChecks = shouldSkipBranchExistsCheck({
+      isCloud: effectiveCloud,
+      currentBranch: await getGitForCwd().getCurrentBranch(),
+      laneBranch: branch,
+    });
+
     // Check if remote branch already exists (prevents duplicate global claims)
-    if (!args.noPush) {
+    if (!args.noPush && !skipBranchChecks) {
       const remoteExists = await getGitForCwd().remoteBranchExists(REMOTES.ORIGIN, branch);
       if (remoteExists) {
         die(
@@ -1871,16 +1895,18 @@ async function main() {
     }
 
     // Check if branch already exists locally (prevents duplicate claims)
-    const branchAlreadyExists = await getGitForCwd().branchExists(branch);
-    if (branchAlreadyExists) {
-      die(
-        `Branch ${branch} already exists. WU may already be claimed.\n\n` +
-          `Git branch existence = WU claimed (natural locking).\n\n` +
-          `Options:\n` +
-          `  1. Check git worktree list to see if worktree exists\n` +
-          `  2. Coordinate with the owning agent or wait for them to complete\n` +
-          `  3. Choose a different WU`,
-      );
+    if (!skipBranchChecks) {
+      const branchAlreadyExists = await getGitForCwd().branchExists(branch);
+      if (branchAlreadyExists) {
+        die(
+          `Branch ${branch} already exists. WU may already be claimed.\n\n` +
+            `Git branch existence = WU claimed (natural locking).\n\n` +
+            `Options:\n` +
+            `  1. Check git worktree list to see if worktree exists\n` +
+            `  2. Coordinate with the owning agent or wait for them to complete\n` +
+            `  3. Choose a different WU`,
+        );
+      }
     }
 
     // Layer 3 defense (WU-1476): Pre-flight orphan check
@@ -1934,6 +1960,7 @@ async function main() {
       claimedMode,
       fixableIssues, // WU-1361: Pass fixable issues for worktree application
       stagedChanges,
+      currentBranchForCloud, // WU-1590: For persisting claimed_branch in branch-pr mode
     };
     let updatedTitle = title;
     claimTitle = title;

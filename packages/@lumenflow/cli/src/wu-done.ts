@@ -108,6 +108,8 @@ import {
 import { isDocumentationType } from '@lumenflow/core/wu-type-helpers';
 import { printGateFailureBox, printStatusPreview } from '@lumenflow/core/wu-done-ui';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
+// WU-1590: Cloud done helpers for branch-pr preflight
+import { shouldSkipEnsureOnMainForDone } from './wu-done-cloud.js';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { getConfig } from '@lumenflow/core/config';
 import { writeWU, appendNote, parseYAML } from '@lumenflow/core/wu-yaml';
@@ -2612,9 +2614,14 @@ async function main() {
   // Capture main checkout path once. process.cwd() may drift later during recovery flows.
   const mainCheckoutPath = process.cwd();
 
+  // WU-1590: branch-pr mode should skip ensureOnMain and worktree checks (like branch-only)
+  const skipEnsureOnMain = shouldSkipEnsureOnMainForDone(docMain);
+
   // Resolve worktree path early so we can detect missing worktree before pre-flight checks
+  // WU-1590: branch-pr has no worktree, treat like branch-only for path resolution
+  const isNoWorktreeMode = isBranchOnly || isBranchPR;
   const resolvedWorktreePath =
-    derivedWorktree && !isBranchOnly
+    derivedWorktree && !isNoWorktreeMode
       ? path.isAbsolute(derivedWorktree)
         ? derivedWorktree
         : path.resolve(mainCheckoutPath, derivedWorktree)
@@ -2622,7 +2629,8 @@ async function main() {
   const worktreeExists = resolvedWorktreePath ? existsSync(resolvedWorktreePath) : false;
   const { allowFallback: allowBranchOnlyFallback, effectiveBranchOnly } = computeBranchOnlyFallback(
     {
-      isBranchOnly,
+      // WU-1590: Treat branch-pr like branch-only for fallback computation
+      isBranchOnly: isNoWorktreeMode,
       branchOnlyRequested: args.branchOnly,
       worktreeExists,
       derivedWorktree,

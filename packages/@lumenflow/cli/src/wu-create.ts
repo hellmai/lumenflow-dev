@@ -77,6 +77,10 @@ import { WU_CREATE_DEFAULTS } from '@lumenflow/core/wu-create-defaults';
 import { isDocsOrProcessType, hasAnyTests, hasManualTests } from '@lumenflow/core/wu-type-helpers';
 // WU-1211: Import initiative validation for phase check
 import { checkInitiativePhases, findInitiative } from '@lumenflow/initiatives';
+// WU-1590: Cloud create context builder for --cloud path
+import { buildCloudCreateContext } from './wu-create-cloud.js';
+// WU-1495: Cloud auto-detection from config-driven env signals
+import { detectCloudMode } from '@lumenflow/core/cloud-detect';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[wu:create]';
@@ -818,6 +822,8 @@ async function main() {
       WU_CREATE_OPTIONS.plan,
       // WU-1329: Strict validation is default, --no-strict bypasses
       WU_OPTIONS.noStrict,
+      // WU-1590: Cloud mode for cloud agents
+      WU_OPTIONS.cloud,
     ],
     required: ['lane', 'title'], // WU-1246: --id is now optional (auto-generated if not provided)
     allowPositionalId: false,
@@ -868,7 +874,24 @@ async function main() {
   // WU-2330: Warn if a more specific sub-lane matches code_paths or description
   warnIfBetterLaneExists(args.lane, args.codePaths, args.title, args.description);
 
-  await ensureOnMain(getGitForCwd());
+  // WU-1590: Build cloud create context for --cloud path
+  const config = getConfig();
+  const cloudDetection = detectCloudMode({
+    cloudFlag: Boolean(args.cloud),
+    env: process.env as Record<string, string | undefined>,
+    config: config.cloud,
+  });
+  const cloudCtx = buildCloudCreateContext({
+    cloud: cloudDetection.isCloud,
+    currentBranch: cloudDetection.isCloud ? await getGitForCwd().getCurrentBranch() : 'main',
+  });
+  if (cloudCtx.isCloud) {
+    console.log(`${LOG_PREFIX} Cloud mode: skipping ensureOnMain and micro-worktree isolation`);
+  }
+
+  if (!cloudCtx.skipEnsureOnMain) {
+    await ensureOnMain(getGitForCwd());
+  }
   checkWUExists(wuId);
 
   // WU-1368: Get assigned_to from flag or git config user.email
@@ -1021,72 +1044,92 @@ async function main() {
     createPlanTemplate(wuId, args.title);
   }
 
-  // Transaction: micro-worktree isolation (WU-1439)
+  // Transaction: micro-worktree isolation (WU-1439) or cloud direct commit (WU-1590)
   try {
     const priority = args.priority || DEFAULT_PRIORITY;
     const type = effectiveType;
 
-    const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
-    process.env.LUMENFLOW_WU_TOOL = OPERATION_NAME;
-    try {
-      await withMicroWorktree({
-        operation: OPERATION_NAME,
-        id: wuId,
-        logPrefix: LOG_PREFIX,
-        execute: async ({ worktreePath }) => {
-          // Create WU YAML in micro-worktree
-          const wuPath = createWUYamlInWorktree(
-            worktreePath,
-            wuId,
-            args.lane,
-            args.title,
-            priority,
-            type,
-            {
-              // Initiative system fields (WU-1247)
-              initiative: args.initiative,
-              phase: args.phase,
-              blockedBy: args.blockedBy,
-              blocks: args.blocks,
-              labels: args.labels,
-              // WU-1368: Assigned to
-              assignedTo,
-              // WU-1364: Full spec inline options
-              description: args.description,
-              acceptance: args.acceptance,
-              notes: resolvedNotes,
-              codePaths: args.codePaths,
-              testPathsManual: resolvedTestPathsManual,
-              testPathsUnit: args.testPathsUnit,
-              testPathsE2e: args.testPathsE2e,
-              // WU-1998: Exposure field options
-              exposure: args.exposure,
-              userJourney: args.userJourney,
-              uiPairingWus: args.uiPairingWus,
-              // WU-2320: Spec references
-              specRefs: mergedSpecRefs,
-            },
-          );
+    // WU-1590: Shared create options for both paths
+    const createOpts = {
+      // Initiative system fields (WU-1247)
+      initiative: args.initiative,
+      phase: args.phase,
+      blockedBy: args.blockedBy,
+      blocks: args.blocks,
+      labels: args.labels,
+      // WU-1368: Assigned to
+      assignedTo,
+      // WU-1364: Full spec inline options
+      description: args.description,
+      acceptance: args.acceptance,
+      notes: resolvedNotes,
+      codePaths: args.codePaths,
+      testPathsManual: resolvedTestPathsManual,
+      testPathsUnit: args.testPathsUnit,
+      testPathsE2e: args.testPathsE2e,
+      // WU-1998: Exposure field options
+      exposure: args.exposure,
+      userJourney: args.userJourney,
+      uiPairingWus: args.uiPairingWus,
+      // WU-2320: Spec references
+      specRefs: mergedSpecRefs,
+    };
 
-          // Update backlog.md in micro-worktree
-          const backlogPath = updateBacklogInWorktree(worktreePath, wuId, args.lane, args.title);
+    if (cloudCtx.skipMicroWorktree) {
+      // WU-1590: Cloud path - write and commit directly on current branch
+      const cwd = process.cwd();
+      const wuPath = createWUYamlInWorktree(cwd, wuId, args.lane, args.title, priority, type, createOpts);
+      const backlogPath = updateBacklogInWorktree(cwd, wuId, args.lane, args.title);
 
-          // Build commit message
-          const shortTitle = truncateTitle(args.title);
-          const commitMessage = COMMIT_FORMATS.CREATE(wuId, shortTitle);
+      const shortTitle = truncateTitle(args.title);
+      const commitMessage = COMMIT_FORMATS.CREATE(wuId, shortTitle);
 
-          // Return commit message and files to commit
-          return {
-            commitMessage,
-            files: [wuPath, backlogPath],
-          };
-        },
-      });
-    } finally {
-      if (previousWuTool === undefined) {
-        delete process.env.LUMENFLOW_WU_TOOL;
-      } else {
-        process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+      const git = getGitForCwd();
+      await git.add([wuPath, backlogPath].map((f) => JSON.stringify(f)).join(' '));
+      await git.commit(commitMessage);
+
+      console.log(`${LOG_PREFIX} Cloud mode: committed WU spec on ${cloudCtx.targetBranch}`);
+    } else {
+      // Standard path: micro-worktree isolation
+      const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
+      process.env.LUMENFLOW_WU_TOOL = OPERATION_NAME;
+      try {
+        await withMicroWorktree({
+          operation: OPERATION_NAME,
+          id: wuId,
+          logPrefix: LOG_PREFIX,
+          execute: async ({ worktreePath }) => {
+            // Create WU YAML in micro-worktree
+            const wuPath = createWUYamlInWorktree(
+              worktreePath,
+              wuId,
+              args.lane,
+              args.title,
+              priority,
+              type,
+              createOpts,
+            );
+
+            // Update backlog.md in micro-worktree
+            const backlogPath = updateBacklogInWorktree(worktreePath, wuId, args.lane, args.title);
+
+            // Build commit message
+            const shortTitle = truncateTitle(args.title);
+            const commitMessage = COMMIT_FORMATS.CREATE(wuId, shortTitle);
+
+            // Return commit message and files to commit
+            return {
+              commitMessage,
+              files: [wuPath, backlogPath],
+            };
+          },
+        });
+      } finally {
+        if (previousWuTool === undefined) {
+          delete process.env.LUMENFLOW_WU_TOOL;
+        } else {
+          process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+        }
       }
     }
 
@@ -1101,7 +1144,7 @@ async function main() {
   } catch (error) {
     die(
       `Transaction failed: ${error.message}\n\n` +
-        `Micro-worktree cleanup was attempted automatically.\n` +
+        `${cloudCtx.skipMicroWorktree ? 'Cloud commit' : 'Micro-worktree cleanup was attempted automatically.'}\n` +
         `If issue persists, check for orphaned branches: git branch | grep tmp/${OPERATION_NAME}`,
     );
   }
