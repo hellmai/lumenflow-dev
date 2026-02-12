@@ -2,7 +2,7 @@ id: WU-1593
 title: Fix plan command script wiring and expose plan CLI wrappers
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual:
-    - Run pnpm init:plan --help and pnpm plan:create|plan:edit|plan:link|plan:promote --help successfully.
+    - Run pnpm init:plan --help and pnpm plan:create|plan:edit|plan:link|plan:promote --help
+      successfully.
   unit:
     - packages/@lumenflow/cli/src/__tests__/plan-link.test.ts
     - packages/@lumenflow/cli/src/__tests__/initiative-plan.test.ts
@@ -23,7 +24,8 @@ phase: 4
 spec_refs:
   - lumenflow://plans/INIT-023-plan.md
 risks: []
-notes: Operational ergonomics fix discovered during INIT-023 execution. Keeps tooling-first workflow intact for cloud agents.
+notes: Operational ergonomics fix discovered during INIT-023 execution. Keeps tooling-first workflow
+  intact for cloud agents.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -32,9 +34,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: During INIT-023 planning execution, command surface inconsistencies caused avoidable failures and manual workarounds. Problem: package scripts include a broken init:plan alias pointing to a missing dist file and do not expose plan:create/edit/link/promote wrappers, forcing direct node invocations. Solution: correct the script alias to a valid command target, add official plan:* wrappers, and validate the command surface via CLI help smoke checks.'
+description: 'Context: During INIT-023 planning execution, command surface inconsistencies caused
+  avoidable failures and manual workarounds. Problem: package scripts include a broken init:plan
+  alias pointing to a missing dist file and do not expose plan:create/edit/link/promote wrappers,
+  forcing direct node invocations. Solution: correct the script alias to a valid command target, add
+  official plan:* wrappers, and validate the command surface via CLI help smoke checks.'
 acceptance:
   - init:plan script resolves to an existing dist command and no longer throws MODULE_NOT_FOUND.
-  - Add package scripts for plan:create, plan:edit, plan:link, and plan:promote pointing to existing dist entrypoints.
+  - Add package scripts for plan:create, plan:edit, plan:link, and plan:promote pointing to existing
+    dist entrypoints.
   - CLI smoke checks pass for init:plan and all plan:* wrappers with --help.
   - Document no behavior regression for existing initiative:plan command.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1593
+claimed_at: 2026-02-12T09:06:55.685Z
+baseline_main_sha: e22d2b45e3d2bfb77010ad6b23a9ff12b4e56fe9
+session_id: 12343b94-75d2-41a0-8100-a82f2dfa46e5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T09:06:55.693Z

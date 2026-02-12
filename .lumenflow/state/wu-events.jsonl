@@ -1115,3 +1115,4 @@
 {"type":"complete","wuId":"WU-1580","timestamp":"2026-02-10T22:55:12.582Z"}
 {"type":"claim","wuId":"WU-1574","timestamp":"2026-02-10T23:12:03.510Z","lane":"Framework: Core Validation","title":"Establish strict-mode shared type foundations"}
 {"type":"complete","wuId":"WU-1574","timestamp":"2026-02-10T23:32:41.528Z"}
+{"type":"claim","wuId":"WU-1593","lane":"Operations: Tooling","title":"Fix plan command script wiring and expose plan CLI wrappers","timestamp":"2026-02-12T09:06:55.733Z"}
