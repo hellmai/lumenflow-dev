@@ -1078,7 +1078,15 @@ async function main() {
     if (cloudCtx.skipMicroWorktree) {
       // WU-1590: Cloud path - write and commit directly on current branch
       const cwd = process.cwd();
-      const wuPath = createWUYamlInWorktree(cwd, wuId, args.lane, args.title, priority, type, createOpts);
+      const wuPath = createWUYamlInWorktree(
+        cwd,
+        wuId,
+        args.lane,
+        args.title,
+        priority,
+        type,
+        createOpts,
+      );
       const backlogPath = updateBacklogInWorktree(cwd, wuId, args.lane, args.title);
 
       const shortTitle = truncateTitle(args.title);

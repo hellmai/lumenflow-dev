@@ -1198,7 +1198,16 @@ async function claimBranchOnlyMode(ctx) {
     } else {
       // WU-1211: updateWUYaml now returns {title, initiative}
       // WU-1590: Pass claimed_branch for branch-pr persistence
-      const updateResult = await updateWUYaml(WU_PATH, id, args.lane, claimedMode, null, sessionId, null, currentBranchForCloud || null);
+      const updateResult = await updateWUYaml(
+        WU_PATH,
+        id,
+        args.lane,
+        claimedMode,
+        null,
+        sessionId,
+        null,
+        currentBranchForCloud || null,
+      );
       finalTitle = updateResult.title || finalTitle;
       await addOrReplaceInProgressStatus(STATUS_PATH, id, finalTitle);
       await removeFromReadyAndAddToInProgressBacklog(BACKLOG_PATH, id, finalTitle, args.lane);
