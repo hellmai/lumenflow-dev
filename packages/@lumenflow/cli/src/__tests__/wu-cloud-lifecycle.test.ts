@@ -12,8 +12,13 @@
  * AC6: Coverage for create/claim/prep/done/cleanup branch-pr paths
  */
 
-import { describe, it, expect } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CLAIMED_MODES } from '@lumenflow/core/wu-constants';
+
+afterEach(() => {
+  vi.resetModules();
+  vi.doUnmock('@lumenflow/core');
+});
 
 // --- AC1: wu:create --cloud path ---
 describe('wu:create --cloud path (WU-1590 AC1)', () => {
@@ -246,25 +251,58 @@ describe('wu:cleanup branch-pr mode (WU-1590 AC5)', () => {
   });
 
   describe('isCloudManagedBranch', () => {
-    it('should detect non-lane cloud branches (should not delete)', async () => {
+    it('should protect claude/codex via fallback prefixes without calling agent matcher', async () => {
+      const isAgentBranch = vi.fn(async () => {
+        throw new Error('isAgentBranch should not be called for fallback prefixes');
+      });
+      vi.doMock('@lumenflow/core', () => ({ isAgentBranch }));
+
       const { isCloudManagedBranch } = await import('../wu-cleanup-cloud.js');
 
       await expect(isCloudManagedBranch('claude/feature-xyz')).resolves.toBe(true);
       await expect(isCloudManagedBranch('codex/feature-branch')).resolves.toBe(true);
+      expect(isAgentBranch).not.toHaveBeenCalled();
     });
 
-    it('should protect all supported agent branch families', async () => {
+    it('should protect centrally detected agent branches', async () => {
+      const isAgentBranch = vi.fn(async (branch: string) => {
+        return (
+          branch.startsWith('copilot/') ||
+          branch.startsWith('cursor/') ||
+          branch.startsWith('agent/')
+        );
+      });
+      vi.doMock('@lumenflow/core', () => ({ isAgentBranch }));
+
       const { isCloudManagedBranch } = await import('../wu-cleanup-cloud.js');
 
       await expect(isCloudManagedBranch('copilot/cloud-fix')).resolves.toBe(true);
       await expect(isCloudManagedBranch('cursor/cloud-fix')).resolves.toBe(true);
       await expect(isCloudManagedBranch('agent/cloud-fix')).resolves.toBe(true);
+      expect(isAgentBranch).toHaveBeenCalledWith('copilot/cloud-fix');
+      expect(isAgentBranch).toHaveBeenCalledWith('cursor/cloud-fix');
+      expect(isAgentBranch).toHaveBeenCalledWith('agent/cloud-fix');
+    });
+
+    it('should not classify unknown branches as cloud-managed when matcher returns false', async () => {
+      const isAgentBranch = vi.fn(async () => false);
+      vi.doMock('@lumenflow/core', () => ({ isAgentBranch }));
+
+      const { isCloudManagedBranch } = await import('../wu-cleanup-cloud.js');
+
+      await expect(isCloudManagedBranch('feature/local-branch')).resolves.toBe(false);
     });
 
     it('should NOT flag lane-derived branches as cloud-managed', async () => {
+      const isAgentBranch = vi.fn(async () => {
+        throw new Error('isAgentBranch should not be called for lane/* branches');
+      });
+      vi.doMock('@lumenflow/core', () => ({ isAgentBranch }));
+
       const { isCloudManagedBranch } = await import('../wu-cleanup-cloud.js');
 
       await expect(isCloudManagedBranch('lane/framework-cli/wu-1590')).resolves.toBe(false);
+      expect(isAgentBranch).not.toHaveBeenCalled();
     });
   });
 });
