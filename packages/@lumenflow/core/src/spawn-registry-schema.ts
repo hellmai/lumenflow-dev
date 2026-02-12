@@ -68,6 +68,7 @@ const ERROR_MESSAGES = {
   STATUS: `Status must be one of: ${SPAWN_STATUSES.join(', ')}`,
   INTENT: `Intent must be one of: ${SPAWN_INTENTS.join(', ')}`,
   TIMESTAMP_REQUIRED: 'Timestamp is required',
+  PICKUP_BY_REQUIRED: 'pickedUpBy must be a non-empty string when pickup is recorded',
 };
 
 /**
@@ -102,6 +103,12 @@ export const SpawnEventSchema = z.object({
 
   /** ISO 8601 timestamp when spawn completed (null if pending) */
   completedAt: z.string().datetime().nullable(),
+
+  /** ISO 8601 timestamp when delegated work was picked up via wu:claim */
+  pickedUpAt: z.string().datetime().optional(),
+
+  /** Agent identity that picked up delegated work via wu:claim */
+  pickedUpBy: z.string().min(1, { message: ERROR_MESSAGES.PICKUP_BY_REQUIRED }).optional(),
 });
 
 /**
