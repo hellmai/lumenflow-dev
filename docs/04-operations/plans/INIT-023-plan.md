@@ -52,7 +52,10 @@ Pattern B (Layer Split) in four dependent WUs:
 
 ## Success Criteria
 
-<!-- How will you know when this is complete? Measurable outcomes? -->
+- End-to-end cloud branch-pr flow succeeds on feature branches with PR completion:
+  `wu:create --cloud` -> `wu:claim --cloud` -> `wu:prep` -> `wu:done` -> `wu:cleanup`.
+- No required direct main-checkout mutation path for cloud execution modes.
+- Existing local worktree lifecycle remains behaviorally unchanged when cloud mode is not active.
 
 ## Risks
 
