@@ -2,7 +2,7 @@ id: WU-1615
 title: Add missing spec_refs to WU-1605
 lane: 'Framework: CLI WU Commands'
 type: process
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -43,3 +43,6 @@ session_id: dc196f7d-7e2d-4955-9c33-7b87a9ae8db3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T17:40:47.847Z
+locked: true
+completed_at: 2026-02-12T17:43:25.796Z
+completed: 2026-02-12
