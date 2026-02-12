@@ -1122,3 +1122,4 @@
 {"type":"complete","wuId":"WU-1594","timestamp":"2026-02-12T09:25:13.583Z"}
 {"type":"complete","wuId":"WU-1589","timestamp":"2026-02-12T09:29:42.602Z"}
 {"type":"claim","wuId":"WU-1590","lane":"Framework: CLI WU Commands","title":"Cloud Lifecycle: create, claim, prep, done, cleanup in branch-pr","timestamp":"2026-02-12T09:50:10.320Z"}
+{"type":"claim","wuId":"WU-1595","lane":"Framework: Core Lifecycle","title":"Harden WU-1589 branch foundation edge cases and coverage","timestamp":"2026-02-12T10:01:53.623Z"}
