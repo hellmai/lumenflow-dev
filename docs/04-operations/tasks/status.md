@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-- [WU-1594 — Sync backlog lane display after wu:edit lane changes](wu/WU-1594.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -534,3 +534,4 @@ _Last updated: 2026-02-12_
 - [WU-1580 — Fix pre-existing orchestration schema test regressions blocking gates](wu/WU-1580.yaml) — 2026-02-10
 - [WU-1574 — Establish strict-mode shared type foundations](wu/WU-1574.yaml) — 2026-02-10
 - [WU-1593 — Fix plan command script wiring and expose plan CLI wrappers](wu/WU-1593.yaml) — 2026-02-12
+- [WU-1594 — Sync backlog lane display after wu:edit lane changes](wu/WU-1594.yaml) — 2026-02-12
