@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1593 — Fix plan command script wiring and expose plan CLI wrappers](wu/WU-1593.yaml) — Operations: Tooling
 - [WU-1592 — Cloud Recovery, docs, and auto-detect rollout for branch-pr](wu/WU-1592.yaml) — Operations: Tooling
 - [WU-1591 — Cloud State Commands: branch-pr support for edit/block/unblock/release/delete](wu/WU-1591.yaml) — Operations: Tooling
 - [WU-1590 — Cloud Lifecycle: create, claim, prep, done, cleanup in branch-pr](wu/WU-1590.yaml) — Operations: Tooling
