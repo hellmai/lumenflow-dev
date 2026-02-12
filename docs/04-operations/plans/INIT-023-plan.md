@@ -15,7 +15,16 @@ All from feature branches with PR-based completion, while preserving existing lo
 
 ## Scope
 
-<!-- What is in scope and out of scope? -->
+In scope:
+- Cloud-compatible lifecycle for `wu:create`, `wu:claim`, `wu:prep`, `wu:done`, and `wu:cleanup`.
+- Branch-pr metadata and branch resolution hardening (`claimed_branch` and resolver precedence).
+- Branch-pr support for state commands (`wu:edit`, `wu:block`, `wu:unblock`, `wu:release`, `wu:delete`).
+- Cloud-aware recovery/admin paths (`wu:recover`, `wu:repair`).
+- Documentation and controlled auto-detect rollout.
+
+Out of scope:
+- Product/UI features unrelated to LumenFlow workflow runtime.
+- Broad redesign of local worktree lifecycle semantics.
 
 ## Approach
 
