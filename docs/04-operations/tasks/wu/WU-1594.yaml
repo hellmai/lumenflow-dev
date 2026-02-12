@@ -1,0 +1,36 @@
+id: WU-1594
+title: Sync backlog lane display after wu:edit lane changes
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-12
+code_paths:
+  - packages/@lumenflow/cli/src/wu-edit.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-edit.test.ts
+tests:
+  manual:
+    - Run wu:edit --lane on a ready WU and confirm backlog lane label updates immediately.
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-edit.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1594.done
+dependencies: []
+initiative: INIT-023
+phase: 4
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu:edit updates WU YAML lane fields but backlog.md can retain stale lane labels, causing lane assignment drift. Problem: metadata projection is not refreshed after wu:edit operations, so backlog output can diverge from spec YAML. Solution: regenerate backlog projection during wu:edit micro-worktree edits and cover lane-reassignment behavior with unit tests.'
+acceptance:
+  - wu:edit lane reassignment updates backlog projection in the same commit.
+  - Add unit tests that fail before the fix and pass after, covering backlog sync behavior for lane edits.
+  - Existing wu:edit behavior remains unchanged for non-lane fields except synchronized backlog output.
