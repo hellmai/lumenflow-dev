@@ -583,6 +583,37 @@ export function buildMissingSpawnProvenanceMessage(id, initiativeId): string {
 }
 
 /**
+ * Build actionable remediation guidance for intent-only spawn provenance
+ * (delegation intent exists but claim-time pickup evidence is missing).
+ */
+export function buildMissingSpawnPickupEvidenceMessage(id, initiativeId): string {
+  return (
+    `Missing pickup evidence for initiative-governed WU ${id} (${initiativeId}).\n\n` +
+    `Delegation intent exists, but this WU has no claim-time pickup handshake.\n` +
+    `Completion policy requires both intent and pickup evidence.\n\n` +
+    `Fix options:\n` +
+    `  1. Re-run with --force for an audited override (legacy/manual claim)\n` +
+    `  2. Ensure future delegated work is picked up via wu:claim (records handshake automatically)\n\n` +
+    `Then retry: pnpm wu:done --id ${id}`
+  );
+}
+
+/**
+ * Returns true when spawn provenance includes claim-time pickup evidence.
+ */
+export function hasSpawnPickupEvidence(spawnEntry): boolean {
+  const pickedUpAt =
+    typeof spawnEntry?.pickedUpAt === 'string' && spawnEntry.pickedUpAt.trim().length > 0
+      ? spawnEntry.pickedUpAt
+      : '';
+  const pickedUpBy =
+    typeof spawnEntry?.pickedUpBy === 'string' && spawnEntry.pickedUpBy.trim().length > 0
+      ? spawnEntry.pickedUpBy
+      : '';
+  return pickedUpAt.length > 0 && pickedUpBy.length > 0;
+}
+
+/**
  * Record forced spawn-provenance bypass in memory signals for auditability.
  */
 async function recordSpawnProvenanceOverride(id, doc, baseDir = process.cwd()): Promise<void> {
@@ -628,16 +659,28 @@ export async function enforceSpawnProvenanceForDone(
   await store.load();
 
   const spawnEntry = store.getByTarget(id);
-  if (spawnEntry) {
+  if (!spawnEntry) {
+    if (!force) {
+      die(buildMissingSpawnProvenanceMessage(id, initiativeId));
+    }
+
+    console.warn(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1599: spawn provenance override accepted for ${id} (${initiativeId}) via --force`,
+    );
+    await recordSpawnProvenanceOverride(id, doc, baseDir);
+    return;
+  }
+
+  if (hasSpawnPickupEvidence(spawnEntry)) {
     return;
   }
 
   if (!force) {
-    die(buildMissingSpawnProvenanceMessage(id, initiativeId));
+    die(buildMissingSpawnPickupEvidenceMessage(id, initiativeId));
   }
 
   console.warn(
-    `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1599: spawn provenance override accepted for ${id} (${initiativeId}) via --force`,
+    `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1605: pickup evidence override accepted for ${id} (${initiativeId}) via --force`,
   );
   await recordSpawnProvenanceOverride(id, doc, baseDir);
 }
