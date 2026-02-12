@@ -44,7 +44,6 @@ import {
   LOG_PREFIX,
   COMMIT_FORMATS,
   WU_STATUS,
-  CLAIMED_MODES,
   getLaneBranch,
   PKG_MANAGER,
   SCRIPTS,
@@ -81,6 +80,11 @@ import {
   validateCodePathsExistence,
   validateTestPathsExistence,
 } from '@lumenflow/core/wu-preflight-validators';
+import {
+  BRANCH_PR_EDIT_MODE,
+  BLOCKED_EDIT_MODE,
+  resolveInProgressEditMode,
+} from './wu-state-cloud.js';
 import { runCLI } from './cli-entry-point.js';
 
 const PREFIX = LOG_PREFIX.EDIT;
@@ -508,6 +512,8 @@ const EDIT_MODE = {
   MICRO_WORKTREE: 'micro_worktree',
   /** In-progress worktree WUs: Apply edits directly in active worktree (WU-1365) */
   WORKTREE: 'worktree',
+  /** In-progress branch-pr WUs: apply edits directly on the claimed branch */
+  BRANCH_PR: BRANCH_PR_EDIT_MODE,
 };
 
 /**
@@ -553,19 +559,22 @@ function validateWUEditable(id) {
 
   // Handle in_progress WUs based on claimed_mode (WU-1365)
   if (wu.status === WU_STATUS.IN_PROGRESS) {
-    const claimedMode = wu.claimed_mode || CLAIMED_MODES.WORKTREE; // Default to worktree for legacy WUs
+    const editMode = resolveInProgressEditMode(
+      typeof wu.claimed_mode === 'string' ? wu.claimed_mode : undefined,
+    );
 
-    // Block branch-only and branch-pr WUs with actionable guidance
-    // WU-1492: branch-pr WUs have no worktree, same as branch-only
-    if (claimedMode === CLAIMED_MODES.BRANCH_ONLY || claimedMode === CLAIMED_MODES.BRANCH_PR) {
+    if (editMode === BLOCKED_EDIT_MODE) {
       die(
-        `Cannot edit ${claimedMode} WU ${id} via wu:edit.\n\n` +
-          `WUs claimed with claimed_mode='${claimedMode}' cannot be edited via wu:edit.\n` +
+        `Cannot edit branch-only WU ${id} via wu:edit.\n\n` +
+          `WUs claimed with claimed_mode='branch-only' cannot be edited via wu:edit.\n` +
           `To modify the spec, edit the file directly on the lane branch and commit.`,
       );
     }
 
-    // Worktree mode WUs can be edited (WU-1365)
+    if (editMode === EDIT_MODE.BRANCH_PR) {
+      return { wu, editMode: EDIT_MODE.BRANCH_PR, isDone: false };
+    }
+
     return { wu, editMode: EDIT_MODE.WORKTREE, isDone: false };
   }
 
@@ -1139,8 +1148,54 @@ async function main() {
     validateLaneFormat(normalizedWU.lane);
   }
 
-  // WU-1365: Handle based on edit mode
-  if (editMode === EDIT_MODE.WORKTREE) {
+  // WU-1365/WU-1591: Handle based on edit mode
+  if (editMode === EDIT_MODE.BRANCH_PR) {
+    if (opts.initiative && opts.initiative !== originalWU.initiative) {
+      die(
+        `Cannot change initiative for in_progress WU ${id}.\n\n` +
+          `Initiative reassignment requires atomic updates to initiative YAML files on main,\n` +
+          `which is not possible while the WU is in_progress.\n\n` +
+          `Options:\n` +
+          `  1. Complete the WU first: pnpm wu:done --id ${id}\n` +
+          `     Then reassign: pnpm wu:edit --id ${id} --initiative ${opts.initiative}\n` +
+          `  2. Block the WU if not ready to complete:\n` +
+          `     pnpm wu:block --id ${id} --reason "Needs initiative reassignment"`,
+      );
+    }
+
+    const claimedBranch =
+      typeof originalWU.claimed_branch === 'string' ? originalWU.claimed_branch : '';
+    if (!claimedBranch) {
+      die(
+        `Cannot edit branch-pr WU ${id}: claimed_branch is missing.\n\n` +
+          `This WU was claimed without persisted branch metadata.\n` +
+          `Re-claim in cloud mode or repair metadata before retrying.`,
+      );
+    }
+
+    const currentBranch = await getGitForCwd().getCurrentBranch();
+    if (currentBranch !== claimedBranch) {
+      die(
+        `Cannot edit branch-pr WU ${id}: current branch does not match claimed_branch.\n\n` +
+          `Current branch: ${currentBranch}\n` +
+          `Claimed branch: ${claimedBranch}\n\n` +
+          `Switch to the claimed branch and retry.`,
+      );
+    }
+
+    await ensureCleanWorkingTree();
+    await applyEditsInWorktree({
+      worktreePath: process.cwd(),
+      id,
+      updatedWU: normalizedWU,
+    });
+    await getGitForCwd().push('origin', currentBranch);
+
+    console.log(`${PREFIX} ✅ Successfully edited ${id} on branch ${currentBranch}`);
+    console.log(`${PREFIX} Changes committed and pushed to origin/${currentBranch}`);
+
+    displayReadinessSummary(id);
+  } else if (editMode === EDIT_MODE.WORKTREE) {
     // WU-1929: Block initiative changes for in_progress WUs
     // Initiative files are on main, not in worktrees, so bidirectional updates
     // cannot be done atomically. Users should complete the WU first.

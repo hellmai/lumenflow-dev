@@ -12,6 +12,7 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-release.ts
   - packages/@lumenflow/cli/src/wu-delete.ts
   - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/cli/src/wu-state-cloud.ts
 tests:
   manual:
     - 'Validate branch-pr state command sequence: edit, block, unblock, release/delete on cloud
@@ -20,6 +21,7 @@ tests:
     - packages/@lumenflow/cli/src/__tests__/wu-edit.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-delete.test.ts
     - packages/@lumenflow/cli/src/__tests__/release.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-state-commands-cloud.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1591.done

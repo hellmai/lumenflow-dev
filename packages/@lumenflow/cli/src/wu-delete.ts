@@ -41,6 +41,7 @@ import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { INIT_PATHS } from '@lumenflow/initiatives/paths';
 import { INIT_PATTERNS } from '@lumenflow/initiatives/constants';
 import { readInitiative, writeInitiative } from '@lumenflow/initiatives/yaml';
+import { shouldUseBranchPrDeletePath } from './wu-state-cloud.js';
 import { runCLI } from './cli-entry-point.js';
 
 const PREFIX = LOG_PREFIX.DELETE || '[wu:delete]';
@@ -334,6 +335,7 @@ async function deleteSingleWU(id: string, dryRun: boolean) {
 
   validateWUIDFormat(id);
   const { wu, wuPath } = validateWUDeletable(id);
+  const branchPrPath = shouldUseBranchPrDeletePath([wu as { claimed_mode?: string }]);
 
   console.log(`${PREFIX} WU details:`);
   console.log(`${PREFIX}   Title: ${wu.title}`);
@@ -355,40 +357,62 @@ async function deleteSingleWU(id: string, dryRun: boolean) {
     process.exit(EXIT_CODES.SUCCESS);
   }
 
-  await ensureOnMain(getGitForCwd());
   await ensureCleanWorkingTree();
-  await ensureMainUpToDate(getGitForCwd(), 'wu:delete');
+  if (!branchPrPath) {
+    await ensureOnMain(getGitForCwd());
+    await ensureMainUpToDate(getGitForCwd(), 'wu:delete');
+  }
 
-  console.log(`${PREFIX} Deleting via micro-worktree...`);
+  if (branchPrPath) {
+    const currentBranch = await getGitForCwd().getCurrentBranch();
+    if (
+      typeof wu.claimed_branch === 'string' &&
+      wu.claimed_branch &&
+      wu.claimed_branch !== currentBranch
+    ) {
+      die(
+        `Cannot delete branch-pr WU ${id}: current branch does not match claimed_branch.\n\n` +
+          `Current branch: ${currentBranch}\n` +
+          `Claimed branch: ${wu.claimed_branch}`,
+      );
+    }
 
-  // WU-1245: Set LUMENFLOW_WU_TOOL for pre-push hook allowlist
-  const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
-  process.env.LUMENFLOW_WU_TOOL = MICRO_WORKTREE_OPERATIONS.WU_DELETE;
-  try {
-    await withMicroWorktree({
-      operation: MICRO_WORKTREE_OPERATIONS.WU_DELETE,
-      id: id,
-      logPrefix: PREFIX,
-      execute: async ({ worktreePath }) => {
-        await cleanupDeletedWUsInWorktree({ worktreePath, ids: [id] });
+    await cleanupDeletedWUsInWorktree({ worktreePath: process.cwd(), ids: [id] });
+    await getGitForCwd().addWithDeletions([]);
+    await getGitForCwd().commit(`docs: delete ${id.toLowerCase()}`);
+    await getGitForCwd().push('origin', currentBranch);
+  } else {
+    console.log(`${PREFIX} Deleting via micro-worktree...`);
 
-        // WU-1528: Return empty files array so withMicroWorktree uses
-        // `git add -A .` to stage all changes atomically (deletions + modifications).
-        // Passing specific paths would fail for deleted files with
-        // 'fatal: pathspec ... did not match any files'.
-        const commitMessage = `docs: delete ${id.toLowerCase()}`;
-        return {
-          commitMessage,
-          files: [],
-        };
-      },
-    });
-  } finally {
-    // Restore previous LUMENFLOW_WU_TOOL value
-    if (previousWuTool === undefined) {
-      delete process.env.LUMENFLOW_WU_TOOL;
-    } else {
-      process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+    // WU-1245: Set LUMENFLOW_WU_TOOL for pre-push hook allowlist
+    const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
+    process.env.LUMENFLOW_WU_TOOL = MICRO_WORKTREE_OPERATIONS.WU_DELETE;
+    try {
+      await withMicroWorktree({
+        operation: MICRO_WORKTREE_OPERATIONS.WU_DELETE,
+        id: id,
+        logPrefix: PREFIX,
+        execute: async ({ worktreePath }) => {
+          await cleanupDeletedWUsInWorktree({ worktreePath, ids: [id] });
+
+          // WU-1528: Return empty files array so withMicroWorktree uses
+          // `git add -A .` to stage all changes atomically (deletions + modifications).
+          // Passing specific paths would fail for deleted files with
+          // 'fatal: pathspec ... did not match any files'.
+          const commitMessage = `docs: delete ${id.toLowerCase()}`;
+          return {
+            commitMessage,
+            files: [],
+          };
+        },
+      });
+    } finally {
+      // Restore previous LUMENFLOW_WU_TOOL value
+      if (previousWuTool === undefined) {
+        delete process.env.LUMENFLOW_WU_TOOL;
+      } else {
+        process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+      }
     }
   }
 
@@ -411,6 +435,9 @@ async function deleteBatchWUs(ids: string[], dryRun: boolean) {
       stampsToDelete.push(id);
     }
   }
+  const branchPrPath = shouldUseBranchPrDeletePath(
+    wusToDelete.map((entry) => entry.wu as { claimed_mode?: string }),
+  );
 
   console.log(`${PREFIX} WUs to delete:`);
   for (const { id, wu, wuPath } of wusToDelete) {
@@ -430,39 +457,64 @@ async function deleteBatchWUs(ids: string[], dryRun: boolean) {
     process.exit(EXIT_CODES.SUCCESS);
   }
 
-  await ensureOnMain(getGitForCwd());
   await ensureCleanWorkingTree();
-  await ensureMainUpToDate(getGitForCwd(), 'wu:delete --batch');
+  if (!branchPrPath) {
+    await ensureOnMain(getGitForCwd());
+    await ensureMainUpToDate(getGitForCwd(), 'wu:delete --batch');
+  }
 
-  console.log(`${PREFIX} Deleting ${ids.length} WU(s) via micro-worktree...`);
+  if (branchPrPath) {
+    const currentBranch = await getGitForCwd().getCurrentBranch();
+    const mismatched = wusToDelete.find(
+      (entry) =>
+        typeof entry.wu.claimed_branch === 'string' &&
+        entry.wu.claimed_branch &&
+        entry.wu.claimed_branch !== currentBranch,
+    );
+    if (mismatched) {
+      die(
+        `Cannot batch-delete branch-pr WUs: current branch does not match claimed_branch.\n\n` +
+          `Current branch: ${currentBranch}\n` +
+          `WU ${mismatched.id} claimed_branch: ${String(mismatched.wu.claimed_branch)}`,
+      );
+    }
 
-  // WU-1245: Set LUMENFLOW_WU_TOOL for pre-push hook allowlist
-  const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
-  process.env.LUMENFLOW_WU_TOOL = MICRO_WORKTREE_OPERATIONS.WU_DELETE;
-  try {
-    await withMicroWorktree({
-      operation: MICRO_WORKTREE_OPERATIONS.WU_DELETE,
-      id: `batch-${ids.length}`,
-      logPrefix: PREFIX,
-      execute: async ({ worktreePath }) => {
-        await cleanupDeletedWUsInWorktree({ worktreePath, ids });
+    await cleanupDeletedWUsInWorktree({ worktreePath: process.cwd(), ids });
+    await getGitForCwd().addWithDeletions([]);
+    const idList = ids.map((candidateId) => candidateId.toLowerCase()).join(', ');
+    await getGitForCwd().commit(`chore(repair): delete ${ids.length} orphaned wus (${idList})`);
+    await getGitForCwd().push('origin', currentBranch);
+  } else {
+    console.log(`${PREFIX} Deleting ${ids.length} WU(s) via micro-worktree...`);
 
-        // WU-1528: Return empty files array so withMicroWorktree uses
-        // `git add -A .` to stage all changes atomically (deletions + modifications).
-        const idList = ids.map((id) => id.toLowerCase()).join(', ');
-        const commitMessage = `chore(repair): delete ${ids.length} orphaned wus (${idList})`;
-        return {
-          commitMessage,
-          files: [],
-        };
-      },
-    });
-  } finally {
-    // Restore previous LUMENFLOW_WU_TOOL value
-    if (previousWuTool === undefined) {
-      delete process.env.LUMENFLOW_WU_TOOL;
-    } else {
-      process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+    // WU-1245: Set LUMENFLOW_WU_TOOL for pre-push hook allowlist
+    const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
+    process.env.LUMENFLOW_WU_TOOL = MICRO_WORKTREE_OPERATIONS.WU_DELETE;
+    try {
+      await withMicroWorktree({
+        operation: MICRO_WORKTREE_OPERATIONS.WU_DELETE,
+        id: `batch-${ids.length}`,
+        logPrefix: PREFIX,
+        execute: async ({ worktreePath }) => {
+          await cleanupDeletedWUsInWorktree({ worktreePath, ids });
+
+          // WU-1528: Return empty files array so withMicroWorktree uses
+          // `git add -A .` to stage all changes atomically (deletions + modifications).
+          const idList = ids.map((candidateId) => candidateId.toLowerCase()).join(', ');
+          const commitMessage = `chore(repair): delete ${ids.length} orphaned wus (${idList})`;
+          return {
+            commitMessage,
+            files: [],
+          };
+        },
+      });
+    } finally {
+      // Restore previous LUMENFLOW_WU_TOOL value
+      if (previousWuTool === undefined) {
+        delete process.env.LUMENFLOW_WU_TOOL;
+      } else {
+        process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+      }
     }
   }
 
