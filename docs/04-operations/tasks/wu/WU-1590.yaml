@@ -2,7 +2,7 @@ id: WU-1590
 title: 'Cloud Lifecycle: create, claim, prep, done, cleanup in branch-pr'
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -62,3 +62,11 @@ acceptance:
   - Update wu:cleanup to resolve claimed_branch, verify merged PR against that branch, skip
     worktree-only checks in branch-pr mode, and avoid deleting non-lane cloud-managed branches.
   - Add coverage for create/claim/prep/done/cleanup branch-pr paths.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1590
+claimed_at: 2026-02-12T09:50:10.279Z
+baseline_main_sha: 4e81cd55b3370b9e08cfc5cb6b47cebfa195f04f
+session_id: 1f6c337a-d986-419e-9aed-336c53cee4cc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T09:50:10.284Z

@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1590 — Cloud Lifecycle: create, claim, prep, done, cleanup in branch-pr](wu/WU-1590.yaml)
 
 ## Completed
 

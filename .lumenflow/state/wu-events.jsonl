@@ -1121,3 +1121,4 @@
 {"type":"claim","wuId":"WU-1589","timestamp":"2026-02-12T09:20:54.734Z","lane":"Framework: Core Lifecycle","title":"Cloud Foundation: claimed_branch schema, resolver, hook"}
 {"type":"complete","wuId":"WU-1594","timestamp":"2026-02-12T09:25:13.583Z"}
 {"type":"complete","wuId":"WU-1589","timestamp":"2026-02-12T09:29:42.602Z"}
+{"type":"claim","wuId":"WU-1590","lane":"Framework: CLI WU Commands","title":"Cloud Lifecycle: create, claim, prep, done, cleanup in branch-pr","timestamp":"2026-02-12T09:50:10.320Z"}
