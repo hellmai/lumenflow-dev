@@ -31,6 +31,7 @@ blocked_by:
   - WU-1590
 spec_refs:
   - lumenflow://plans/zazzy-launching-pretzel.md
+  - lumenflow://plans/INIT-023-plan.md
 risks: []
 notes: Pattern B decomposition WU-D recovery and rollout slice. Executes after critical lifecycle baseline (WU-1590) and can run alongside WU-1591.
 requires_review: false
