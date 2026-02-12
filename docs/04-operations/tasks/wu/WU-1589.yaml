@@ -1,6 +1,6 @@
 id: WU-1589
 title: 'Cloud Foundation: claimed_branch schema, resolver, hook'
-lane: 'Operations: Tooling'
+lane: 'Framework: Core Lifecycle'
 type: feature
 status: ready
 priority: P0
