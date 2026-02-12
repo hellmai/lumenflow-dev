@@ -37,7 +37,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1593 — Fix plan command script wiring and expose plan CLI wrappers](wu/WU-1593.yaml) — Operations: Tooling
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -570,4 +570,5 @@ sections:
 - [WU-1579 — Align init-scripts gitignore tests with WU-1519 state-tracking policy](wu/WU-1579.yaml)
 - [WU-1580 — Fix pre-existing orchestration schema test regressions blocking gates](wu/WU-1580.yaml)
 - [WU-1574 — Establish strict-mode shared type foundations](wu/WU-1574.yaml)
+- [WU-1593 — Fix plan command script wiring and expose plan CLI wrappers](wu/WU-1593.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
