@@ -178,6 +178,7 @@ const ErrorCodes = {
   WU_DELETE_ERROR: 'WU_DELETE_ERROR',
   WU_CLEANUP_ERROR: 'WU_CLEANUP_ERROR',
   WU_SPAWN_ERROR: 'WU_SPAWN_ERROR',
+  WU_BRIEF_ERROR: 'WU_BRIEF_ERROR',
   WU_VALIDATE_ERROR: 'WU_VALIDATE_ERROR',
   WU_INFER_LANE_ERROR: 'WU_INFER_LANE_ERROR',
   WU_UNLOCK_LANE_ERROR: 'WU_UNLOCK_LANE_ERROR',
@@ -2160,7 +2161,7 @@ export const wuBriefTool: ToolDefinition = {
     } else {
       return error(
         result.stderr || result.error?.message || 'wu:brief failed',
-        ErrorCodes.WU_SPAWN_ERROR,
+        ErrorCodes.WU_BRIEF_ERROR,
       );
     }
   },

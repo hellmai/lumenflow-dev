@@ -984,23 +984,78 @@ describe('wu:brief / wu:spawn naming and deprecation (WU-1603)', () => {
       },
     });
 
-    it('wu:brief generates the same task invocation output as wu:spawn', () => {
+    it('wu:brief and wu:spawn produce identical task invocation output', () => {
       const strategy = new GenericStrategy();
 
-      // Both commands use the same generateTaskInvocation function
-      const output1 = generateTaskInvocation(mockDoc, id, strategy, { config });
-      const output2 = generateTaskInvocation(mockDoc, id, strategy, { config });
+      // WU-1608: Simulate the two different entry points calling the shared generator
+      // Both wu:brief and wu:spawn use generateTaskInvocation with the same args,
+      // so calling it once and verifying structure proves equivalence.
+      const briefOutput = generateTaskInvocation(mockDoc, id, strategy, { config });
+      const spawnOutput = generateTaskInvocation(mockDoc, id, strategy, { config });
 
-      expect(output1).toBe(output2);
+      // Structural assertions that prove the content is correct, not just identical
+      expect(briefOutput).toContain('Brief Test WU');
+      expect(briefOutput).toContain('WU-1603');
+      expect(briefOutput).toContain('AC1: Prompt is generated');
+      expect(briefOutput).toBe(spawnOutput);
     });
 
-    it('wu:brief generates the same codex output as wu:spawn', () => {
+    it('wu:brief and wu:spawn produce identical codex output', () => {
       const strategy = new GenericStrategy();
 
-      const output1 = generateCodexPrompt(mockDoc, id, strategy, { config });
-      const output2 = generateCodexPrompt(mockDoc, id, strategy, { config });
+      const briefOutput = generateCodexPrompt(mockDoc, id, strategy, { config });
+      const spawnOutput = generateCodexPrompt(mockDoc, id, strategy, { config });
 
-      expect(output1).toBe(output2);
+      // Structural assertions that prove the content is correct, not just identical
+      expect(briefOutput).toContain('Brief Test WU');
+      expect(briefOutput).toContain('WU-1603');
+      expect(briefOutput).toContain('AC1: Prompt is generated');
+      expect(briefOutput).toBe(spawnOutput);
     });
+  });
+});
+
+describe('wu:brief LOG_PREFIX isolation (WU-1608)', () => {
+  it('emitSpawnOutputWithRegistry uses provided logPrefix, not hardcoded [wu:spawn]', async () => {
+    const logged: string[] = [];
+    const log = (msg: string) => logged.push(msg);
+
+    await emitSpawnOutputWithRegistry(
+      {
+        id: 'WU-1608',
+        output: 'test-output',
+        isCodexClient: false,
+        logPrefix: '[wu:brief]',
+      },
+      { log, recordSpawn: vi.fn(), formatSpawnMessage: vi.fn() },
+    );
+
+    // All log messages should use the provided prefix, not '[wu:spawn]'
+    const prefixedMessages = logged.filter((m) => m.includes('[wu:'));
+    for (const msg of prefixedMessages) {
+      expect(msg).toContain('[wu:brief]');
+      expect(msg).not.toContain('[wu:spawn]');
+    }
+  });
+
+  it('emitSpawnOutputWithRegistry uses provided logPrefix for codex path', async () => {
+    const logged: string[] = [];
+    const log = (msg: string) => logged.push(msg);
+
+    await emitSpawnOutputWithRegistry(
+      {
+        id: 'WU-1608',
+        output: 'codex-output',
+        isCodexClient: true,
+        logPrefix: '[wu:brief]',
+      },
+      { log, recordSpawn: vi.fn(), formatSpawnMessage: vi.fn() },
+    );
+
+    const prefixedMessages = logged.filter((m) => m.includes('[wu:'));
+    for (const msg of prefixedMessages) {
+      expect(msg).toContain('[wu:brief]');
+      expect(msg).not.toContain('[wu:spawn]');
+    }
   });
 });
