@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-- [WU-1601 — Fix wu:spawn Codex path dropping --parent-wu registry writes](wu/WU-1601.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -545,3 +545,4 @@ _Last updated: 2026-02-12_
 - [WU-1598 — Resolve cloud canonical-claim behavior and harden cloud lifecycle coverage](wu/WU-1598.yaml) — 2026-02-12
 - [WU-1599 — Make wu:spawn provenance auditable and enforceable for initiative execution](wu/WU-1599.yaml) — 2026-02-12
 - [WU-1600 — Remove wu-state-cloud fallback and use canonical CLAIMED_MODES](wu/WU-1600.yaml) — 2026-02-12
+- [WU-1601 — Fix wu:spawn Codex path dropping --parent-wu registry writes](wu/WU-1601.yaml) — 2026-02-12
