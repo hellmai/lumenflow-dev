@@ -2,7 +2,7 @@ id: WU-1619
 title: Migrate remaining agent-facing docs from wu:spawn to wu:brief/wu:delegate
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -21,7 +21,9 @@ artifacts:
 dependencies: []
 initiative: INIT-024
 risks: []
-notes: Replaced wu:spawn command references with wu:brief/wu:delegate across all agent-facing overlay files, skill files, agent README, and recovery hooks. Historical references in old WU YAMLs, ADRs, and changelog left intentionally untouched.
+notes: Replaced wu:spawn command references with wu:brief/wu:delegate across all agent-facing
+  overlay files, skill files, agent README, and recovery hooks. Historical references in old WU
+  YAMLs, ADRs, and changelog left intentionally untouched.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
@@ -47,3 +49,6 @@ session_id: 1f713175-5247-4154-a4d1-7baf0f054082
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T19:19:42.213Z
+locked: true
+completed_at: 2026-02-12T19:26:31.042Z
+completed: 2026-02-12
