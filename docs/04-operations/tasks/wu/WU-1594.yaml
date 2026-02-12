@@ -2,7 +2,7 @@ id: WU-1594
 title: Sync backlog lane display after wu:edit lane changes
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -47,3 +47,6 @@ session_id: d375483a-809f-47a1-80d6-491dafe78232
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T09:20:11.210Z
+locked: true
+completed_at: 2026-02-12T09:25:10.783Z
+completed: 2026-02-12
