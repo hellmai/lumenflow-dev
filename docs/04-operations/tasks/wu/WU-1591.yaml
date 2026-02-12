@@ -11,7 +11,6 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-unblock.ts
   - packages/@lumenflow/cli/src/wu-release.ts
   - packages/@lumenflow/cli/src/wu-delete.ts
-  - packages/@lumenflow/cli/src/wu-claim.ts
   - packages/@lumenflow/cli/src/wu-state-cloud.ts
 tests:
   manual:
