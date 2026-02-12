@@ -1,0 +1,35 @@
+id: WU-1614
+title: Scope spec:linter gate to active WU and cwd
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-12
+code_paths:
+  - packages/@lumenflow/cli/src/gates.ts
+tests:
+  manual:
+    - Run gates from a worktree and verify unrelated invalid WUs do not block spec:linter
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/gates-integration-tests.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1614.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-XXXX-plan.md
+risks: []
+notes: Follow-up to WU-1608/WU-1611 lifecycle regressions and scoped validation expectation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: gates.ts runSpecLinterGate attempts scoped wu:validate but still always runs global spec:linter, and WU detection is based on process cwd. Problem: unrelated WU YAML failures (e.g. WU-1605 missing spec_refs) can block completions, especially when getCurrentWU cannot detect from non-process cwd. Solution: detect WU from gate cwd and run global spec:linter only when scoped WU cannot be determined.'
+acceptance:
+  - runSpecLinterGate uses gate cwd to resolve current branch/WU
+  - when current WU is detected, spec:linter gate validates only that WU and does not run global wu:validate --all
+  - when current WU cannot be detected, global spec:linter fallback remains
