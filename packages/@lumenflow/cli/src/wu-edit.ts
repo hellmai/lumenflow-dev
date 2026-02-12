@@ -35,7 +35,9 @@ import { join, resolve } from 'node:path';
 // WU-1620: Import readWU for readiness summary
 import { parseYAML, stringifyYAML, readWU } from '@lumenflow/core/wu-yaml';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
-import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { WU_PATHS, getStateStoreDirFromBacklog } from '@lumenflow/core/wu-paths';
+import { generateBacklog } from '@lumenflow/core/backlog-generator';
+import { WUStateStore } from '@lumenflow/core/wu-state-store';
 import {
   FILE_SYSTEM,
   MICRO_WORKTREE_OPERATIONS,
@@ -759,6 +761,30 @@ export function mergeStringField(
 }
 
 /**
+ * WU-1594: Ensure wu:edit commits always include regenerated backlog projection.
+ *
+ * @param {string} id - WU ID
+ * @param {string[]} extraFiles - Additional files modified during edit
+ * @returns {string[]} Deduplicated list of files for commit
+ */
+export function getWuEditCommitFiles(id: string, extraFiles: string[] = []): string[] {
+  return [...new Set([WU_PATHS.WU(id), ...extraFiles, WU_PATHS.BACKLOG()])];
+}
+
+/**
+ * WU-1594: Regenerate backlog.md from state store after wu:edit updates.
+ *
+ * @param {string} backlogPath - Absolute path to backlog.md in micro-worktree
+ */
+async function regenerateBacklogFromState(backlogPath: string): Promise<void> {
+  const stateDir = getStateStoreDirFromBacklog(backlogPath);
+  const store = new WUStateStore(stateDir);
+  await store.load();
+  const content = await generateBacklog(store);
+  writeFileSync(backlogPath, content, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
+}
+
+/**
  * Load spec file and merge with original WU (preserving id and status)
  * @param {string} specPath - Path to spec file
  * @param {object} originalWU - Original WU object
@@ -1199,7 +1225,7 @@ async function main() {
         id: id,
         logPrefix: PREFIX,
         execute: async ({ worktreePath }) => {
-          const files = [WU_PATHS.WU(id)];
+          const extraFiles: string[] = [];
 
           // Write updated WU to micro-worktree (WU-1750: use normalized data)
           const wuPath = join(worktreePath, WU_PATHS.WU(id));
@@ -1219,12 +1245,17 @@ async function main() {
               oldInitiative,
               newInitiative,
             );
-            files.push(...initiativeFiles);
+            extraFiles.push(...initiativeFiles);
           }
+
+          // WU-1594: Keep backlog projection synchronized with WU lane/spec edits.
+          const backlogPath = join(worktreePath, WU_PATHS.BACKLOG());
+          await regenerateBacklogFromState(backlogPath);
+          console.log(`${PREFIX} ✅ Regenerated backlog.md in micro-worktree`);
 
           return {
             commitMessage: COMMIT_FORMATS.EDIT(id),
-            files,
+            files: getWuEditCommitFiles(id, extraFiles),
           };
         },
       });
