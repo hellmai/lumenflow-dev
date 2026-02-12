@@ -14,8 +14,8 @@
 import { CLAIMED_MODES, toKebab } from '@lumenflow/core/wu-constants';
 import { isAgentBranch } from '@lumenflow/core';
 
-/** Prefixes for cloud-managed branches that should not be deleted */
-const CLOUD_BRANCH_PREFIXES = ['ci/', 'cloud/'];
+/** Fail-safe prefixes for cloud-managed branches that should not be deleted */
+const CLOUD_BRANCH_PREFIXES = ['claude/', 'codex/', 'ci/', 'cloud/'];
 
 /** Prefix for LumenFlow lane-derived branches */
 const LANE_BRANCH_PREFIX = 'lane/';
@@ -83,11 +83,15 @@ export async function isCloudManagedBranch(branchName: string): Promise<boolean>
     return false;
   }
 
+  // Always protect known cloud prefixes even when registry lookup is unavailable.
+  if (CLOUD_BRANCH_PREFIXES.some((prefix) => branchName.startsWith(prefix))) {
+    return true;
+  }
+
   // Keep cleanup behavior aligned with centralized agent branch registry semantics.
   if (await isAgentBranch(branchName)) {
     return true;
   }
 
-  // Preserve historical protection for additional cloud-managed prefixes.
-  return CLOUD_BRANCH_PREFIXES.some((prefix) => branchName.startsWith(prefix));
+  return false;
 }
