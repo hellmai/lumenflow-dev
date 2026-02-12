@@ -1,6 +1,6 @@
 id: WU-1592
 title: Cloud Recovery, docs, and auto-detect rollout for branch-pr
-lane: 'Operations: Tooling'
+lane: 'Framework: Core State Recovery'
 type: feature
 status: ready
 priority: P1
