@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1617 — Remove wu:spawn alias and migrate command/docs to wu:brief + wu:delegate](wu/WU-1617.yaml)
 
 ## Completed
 
