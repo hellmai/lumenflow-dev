@@ -2,7 +2,7 @@ id: WU-1605
 title: Add claim-time pickup evidence and enforce intent-vs-pickup provenance at wu:done
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -52,3 +52,11 @@ acceptance:
     actionable remediation.
   - Automated tests cover success, missing-pickup, and audited override paths for
     initiative-governed WUs.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1605
+claimed_at: 2026-02-12T19:55:14.979Z
+baseline_main_sha: 6d66e2dd70a08e3df6a127b688798e31e791c53a
+session_id: d68d5a67-9f41-4dc7-b60e-0f851a88f2fb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T19:55:14.987Z
