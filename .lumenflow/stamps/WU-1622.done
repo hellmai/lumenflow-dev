@@ -1,0 +1,2 @@
+WU WU-1622 — Fix lumenflow:upgrade push failure — missing ALLOWED_WU_TOOLS entry and stale node_modules
+Completed: 2026-02-12
