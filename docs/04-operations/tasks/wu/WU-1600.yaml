@@ -2,7 +2,7 @@ id: WU-1600
 title: Remove wu-state-cloud fallback and use canonical CLAIMED_MODES
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -49,3 +49,6 @@ acceptance:
   - Tests pass with explicit CLAIMED_MODES in mocks where needed; no implicit fallback dependency
   - No behavior regression for branch-pr state path selection across
     wu:edit/block/unblock/release/delete
+locked: true
+completed_at: 2026-02-12T13:22:26.588Z
+completed: 2026-02-12
