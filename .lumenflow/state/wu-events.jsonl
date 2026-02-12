@@ -1175,4 +1175,5 @@
 {"type":"complete","wuId":"WU-1619","timestamp":"2026-02-12T19:26:33.717Z"}
 {"type":"claim","wuId":"WU-1620","timestamp":"2026-02-12T19:31:55.516Z","lane":"Content: Framework Docs","title":"Unblock docs-only gates by ignoring local Claude settings and formatting INIT-023 plan"}
 {"type":"complete","wuId":"WU-1620","timestamp":"2026-02-12T19:37:58.861Z"}
-{"type":"claim","wuId":"WU-1605","lane":"Framework: CLI WU Commands","title":"Add claim-time pickup evidence and enforce intent-vs-pickup provenance at wu:done","timestamp":"2026-02-12T19:55:15.019Z"}
+{"type":"claim","wuId":"WU-1605","timestamp":"2026-02-12T19:55:15.019Z","lane":"Framework: CLI WU Commands","title":"Add claim-time pickup evidence and enforce intent-vs-pickup provenance at wu:done"}
+{"type":"complete","wuId":"WU-1605","timestamp":"2026-02-12T20:04:47.811Z"}
