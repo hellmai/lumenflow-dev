@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1603 — Introduce wu:brief as pure prompt generator and deprecate wu:spawn alias](wu/WU-1603.yaml) — Framework: CLI Orchestration
 - [WU-1602 — Align docs terminology from spawn execution to delegation intent](wu/WU-1602.yaml) — Content: Framework Docs
 - [WU-1601 — Fix wu:spawn Codex path dropping --parent-wu registry writes](wu/WU-1601.yaml) — Framework: CLI Orchestration
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands

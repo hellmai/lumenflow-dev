@@ -1,0 +1,42 @@
+id: WU-1603
+title: Introduce wu:brief as pure prompt generator and deprecate wu:spawn alias
+lane: 'Framework: CLI Orchestration'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-12
+code_paths:
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/arg-parser.ts
+  - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/mcp/src/tools.ts
+  - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
+tests:
+  manual:
+    - Run wu:brief and wu:spawn for claude and codex clients and verify equivalent prompt output plus deprecation messaging on alias path.
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1603.done
+dependencies: []
+initiative: INIT-024
+phase: 2
+blocked_by:
+  - WU-1601
+risks: []
+notes: Do not change orchestration provenance semantics in this WU; focus on command surface and compatibility behavior.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Separate naming from side effects by introducing wu:brief as the pure prompt-generation command. Keep wu:spawn as a backward-compatible alias with deprecation messaging so existing workflows continue to function while semantics are clarified.
+acceptance:
+  - wu:brief generates the same handoff payloads currently produced by wu:spawn for supported clients.
+  - wu:spawn remains functional as a compatibility alias and emits clear deprecation guidance.
+  - CLI help/docs for both commands describe prompt generation semantics accurately and consistently.
