@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-- [WU-1609 — P0 hotfix: block cloud activation on main for wu:create/wu:claim](wu/WU-1609.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -549,3 +549,4 @@ _Last updated: 2026-02-12_
 - [WU-1602 — Align docs terminology from spawn execution to delegation intent](wu/WU-1602.yaml) — 2026-02-12
 - [WU-1607 — Ignore spawn-registry runtime artifact in git status](wu/WU-1607.yaml) — 2026-02-12
 - [WU-1603 — Introduce wu:brief as pure prompt generator and deprecate wu:spawn alias](wu/WU-1603.yaml) — 2026-02-12
+- [WU-1609 — P0 hotfix: block cloud activation on main for wu:create/wu:claim](wu/WU-1609.yaml) — 2026-02-12

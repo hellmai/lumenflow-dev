@@ -2,7 +2,7 @@ id: WU-1609
 title: 'P0 hotfix: block cloud activation on main for wu:create/wu:claim'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -59,3 +59,6 @@ session_id: b39031a6-4dc1-4c0c-b686-8980642d9731
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T15:05:36.425Z
+locked: true
+completed_at: 2026-02-12T15:15:56.736Z
+completed: 2026-02-12
