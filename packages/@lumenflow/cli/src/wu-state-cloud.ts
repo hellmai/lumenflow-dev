@@ -7,8 +7,10 @@
  * branch without micro-worktree pushes to main.
  */
 
-export const BRANCH_PR_MODE = 'branch-pr';
-export const BRANCH_ONLY_MODE = 'branch-only';
+import { CLAIMED_MODES } from '@lumenflow/core/wu-constants';
+
+export const BRANCH_PR_MODE = CLAIMED_MODES.BRANCH_PR;
+export const BRANCH_ONLY_MODE = CLAIMED_MODES.BRANCH_ONLY;
 
 export const WORKTREE_EDIT_MODE = 'worktree';
 export const BRANCH_PR_EDIT_MODE = 'branch-pr';
