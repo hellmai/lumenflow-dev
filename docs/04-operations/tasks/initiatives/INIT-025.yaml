@@ -10,3 +10,4 @@ target_date: 2026-02-28
 phases: []
 success_metrics: []
 labels: []
+related_plan: lumenflow://plans/optimized-sprouting-salamander.md
