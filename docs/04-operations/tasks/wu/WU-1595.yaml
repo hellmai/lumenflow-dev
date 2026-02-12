@@ -1,0 +1,46 @@
+id: WU-1595
+title: Harden WU-1589 branch foundation edge cases and coverage
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-12
+code_paths:
+  - packages/@lumenflow/core/src/wu-done-paths.ts
+  - packages/@lumenflow/core/src/__tests__/wu-done-paths.test.ts
+  - .husky/hooks/pre-commit.mjs
+  - .husky/hooks/__tests__/pre-commit.test.ts
+  - packages/@lumenflow/cli/src/wu-release.ts
+  - packages/@lumenflow/cli/src/wu-recover.ts
+  - packages/@lumenflow/cli/src/__tests__/release.test.ts
+  - packages/@lumenflow/cli/__tests__/wu-recover.test.ts
+tests:
+  manual:
+    - Run pre-commit branch-pr decision path with lane branch and claimed_mode=branch-pr and confirm allowance logic.
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-done-paths.test.ts
+    - .husky/hooks/__tests__/pre-commit.test.ts
+    - packages/@lumenflow/cli/src/__tests__/release.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-recover.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1595.done
+dependencies: []
+initiative: INIT-023
+phase: 1
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Review of WU-1589 found edge-case and coverage gaps in cloud branch foundation behavior. Problem: defaultBranchFrom can throw when claimed_branch is non-string, pre-commit branch-pr tests do not assert hook behavior, and release/recover claimed_branch reset behavior lacks direct tests. Solution: harden claimed_branch type handling, add behavior-level pre-commit branch-pr tests, and add focused tests for release/recover claim reset semantics.'
+acceptance:
+  - defaultBranchFrom handles non-string claimed_branch values safely and falls back to lane-derived naming without throwing.
+  - Pre-commit branch-pr allowance is covered by behavior-level tests that exercise decision logic, not only regex parsing.
+  - Add direct tests covering claimed_branch reset semantics in wu-release and wu-recover paths.
+  - Existing branch-only/worktree behavior remains unchanged.
