@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1594 — Sync backlog lane display after wu:edit lane changes](wu/WU-1594.yaml)
 
 ## Completed
 
