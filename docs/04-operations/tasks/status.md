@@ -4,7 +4,6 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-- [WU-1613 — Document agent launch tracking hook in recovery pipeline docs](wu/WU-1613.yaml)
 - [WU-1614 — Scope spec:linter gate to active WU and cwd](wu/WU-1614.yaml)
 
 ## Completed
@@ -555,3 +554,4 @@ _Last updated: 2026-02-12_
 - [WU-1612 — PostToolUse hook to track agent launches for compaction recovery](wu/WU-1612.yaml) — 2026-02-12
 - [WU-1611 — Prevent wu:done post-merge metadata leak from dirtying main](wu/WU-1611.yaml) — 2026-02-12
 - [WU-1608 — Fix wu:brief LOG_PREFIX leak and tautological tests](wu/WU-1608.yaml) — 2026-02-12
+- [WU-1613 — Document agent launch tracking hook in recovery pipeline docs](wu/WU-1613.yaml) — 2026-02-12
