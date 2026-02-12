@@ -2,7 +2,7 @@ id: WU-1596
 title: 'P0 hotfix: cloud branch-pr lifecycle blockers from INIT-023 review'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -18,7 +18,9 @@ code_paths:
   - packages/@lumenflow/cli/__tests__/wu-cleanup.test.ts
 tests:
   manual:
-    - 'Run cloud lifecycle smoke path on claude/*: wu:create --cloud then wu:claim --cloud and verify claimed_branch/branch alignment; verify wu:cleanup does not delete supported agent branch patterns.'
+    - 'Run cloud lifecycle smoke path on claude/*: wu:create --cloud then wu:claim --cloud and
+      verify claimed_branch/branch alignment; verify wu:cleanup does not delete supported agent
+      branch patterns.'
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-cloud-lifecycle.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
@@ -42,11 +44,30 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Post-initiative P0 review found release-blocking defects in cloud branch-pr lifecycle implementation from INIT-023. Problem: wu:create --cloud stages files via an invalid git.add pathspec pattern and does not push; wu:claim --cloud can persist claimed_branch that diverges from actual execution branch due to branch creation flow, breaking downstream state commands; cleanup branch protection for cloud-managed branches is incomplete versus agent branch pattern logic. Solution: implement targeted hotfixes to cloud create/claim/cleanup behavior, align branch protection logic, and add regression tests that exercise real command-path decisions to prevent recurrence.'
+description: 'Context: Post-initiative P0 review found release-blocking defects in cloud branch-pr
+  lifecycle implementation from INIT-023. Problem: wu:create --cloud stages files via an invalid
+  git.add pathspec pattern and does not push; wu:claim --cloud can persist claimed_branch that
+  diverges from actual execution branch due to branch creation flow, breaking downstream state
+  commands; cleanup branch protection for cloud-managed branches is incomplete versus agent branch
+  pattern logic. Solution: implement targeted hotfixes to cloud create/claim/cleanup behavior, align
+  branch protection logic, and add regression tests that exercise real command-path decisions to
+  prevent recurrence.'
 acceptance:
   - Fix wu:create --cloud to stage files using git.add array semantics and push to remote branch.
-  - Fix wu:claim --cloud branch-pr flow so claimed_branch matches actual working branch and branch-pr claims do not incorrectly create/switch to a new lane branch in cloud mode.
-  - Ensure branch-pr state commands continue to validate current branch against claimed_branch after claim hotfix.
-  - Align wu:cleanup cloud-managed branch protection with centralized agent branch detection semantics to avoid deleting supported agent branches.
-  - Add regression tests covering cloud create and cloud claim command-path behavior for these defects.
+  - Fix wu:claim --cloud branch-pr flow so claimed_branch matches actual working branch and
+    branch-pr claims do not incorrectly create/switch to a new lane branch in cloud mode.
+  - Ensure branch-pr state commands continue to validate current branch against claimed_branch after
+    claim hotfix.
+  - Align wu:cleanup cloud-managed branch protection with centralized agent branch detection
+    semantics to avoid deleting supported agent branches.
+  - Add regression tests covering cloud create and cloud claim command-path behavior for these
+    defects.
   - All relevant CLI/core tests pass and wu:prep + wu:done succeed for the WU.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1596
+claimed_at: 2026-02-12T11:32:02.797Z
+baseline_main_sha: 851a451e580dc5dad68ae3ec573f978ad4c35527
+session_id: a687fb08-a57f-4c3b-9383-e665e6dddb7a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T11:32:02.802Z

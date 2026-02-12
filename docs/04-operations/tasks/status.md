@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1596 — P0 hotfix: cloud branch-pr lifecycle blockers from INIT-023 review](wu/WU-1596.yaml)
 
 ## Completed
 
