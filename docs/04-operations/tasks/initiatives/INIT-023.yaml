@@ -34,3 +34,4 @@ lanes:
   - 'Framework: Core State Recovery'
   - 'Operations: Tooling'
   - 'Content: Framework Docs'
+related_plan: lumenflow://plans/INIT-023-plan.md
