@@ -36,7 +36,6 @@ labels: []
 lanes:
   - 'Framework: CLI Orchestration'
   - 'Framework: CLI WU Commands'
-  - 'Framework: Core State Recovery'
   - 'Framework: Initiatives'
   - 'Content: Framework Docs'
   - 'Content: Site Comms'
