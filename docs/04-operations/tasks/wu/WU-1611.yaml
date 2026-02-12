@@ -2,7 +2,7 @@ id: WU-1611
 title: Prevent wu:done post-merge metadata leak from dirtying main
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -45,3 +45,6 @@ session_id: c22b2f5c-09e5-4a8e-8f25-bd395adc9df0
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T15:37:00.699Z
+locked: true
+completed_at: 2026-02-12T15:48:04.203Z
+completed: 2026-02-12

@@ -37,7 +37,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1608 — Fix wu:brief LOG_PREFIX leak and tautological tests](wu/WU-1608.yaml) — Framework: CLI Orchestration
-- [WU-1611 — Prevent wu:done post-merge metadata leak from dirtying main](wu/WU-1611.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -589,4 +588,5 @@ sections:
 - [WU-1609 — P0 hotfix: block cloud activation on main for wu:create/wu:claim](wu/WU-1609.yaml)
 - [WU-1610 — Follow-up: make cloud activation explicit-only and decouple runtime identity](wu/WU-1610.yaml)
 - [WU-1612 — PostToolUse hook to track agent launches for compaction recovery](wu/WU-1612.yaml)
+- [WU-1611 — Prevent wu:done post-merge metadata leak from dirtying main](wu/WU-1611.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
