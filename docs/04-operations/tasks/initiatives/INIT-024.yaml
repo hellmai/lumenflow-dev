@@ -34,3 +34,9 @@ lanes:
   - 'Framework: Core State Recovery'
   - 'Framework: Initiatives'
   - 'Content: Framework Docs'
+wus:
+  - WU-1601
+  - WU-1602
+  - WU-1603
+  - WU-1604
+  - WU-1605
