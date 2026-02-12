@@ -55,7 +55,13 @@ import { resolveClaimMode } from './wu-claim-mode.js';
 // WU-1590: Cloud claim helpers for branch-pr/cloud execution behavior
 import { shouldSkipBranchExistsCheck, resolveBranchClaimExecution } from './wu-claim-cloud.js';
 // WU-1495: Cloud auto-detection from config-driven env signals
-import { detectCloudMode } from '@lumenflow/core/cloud-detect';
+import {
+  detectCloudMode,
+  resolveEffectiveCloudActivation,
+  CLOUD_ACTIVATION_SOURCE,
+  type CloudDetectConfig,
+  type EffectiveCloudActivationResult,
+} from '@lumenflow/core/cloud-detect';
 import { WU_PATHS, getStateStoreDirFromBacklog } from '@lumenflow/core/wu-paths';
 import {
   BRANCHES,
@@ -176,6 +182,33 @@ async function ensureCleanOrClaimOnlyWhenNoAuto() {
 }
 
 const PREFIX = LOG_PREFIX.CLAIM;
+
+interface ResolveClaimCloudActivationInput {
+  cloudFlag: boolean;
+  env: Readonly<Record<string, string | undefined>>;
+  config: CloudDetectConfig;
+  currentBranch: string;
+}
+
+/**
+ * Resolve branch-aware cloud activation for wu:claim.
+ *
+ * This preserves source attribution from detectCloudMode while enforcing
+ * protected-branch behavior for explicit vs env-signal activation.
+ */
+export function resolveCloudActivationForClaim(
+  input: ResolveClaimCloudActivationInput,
+): EffectiveCloudActivationResult {
+  const detection = detectCloudMode({
+    cloudFlag: input.cloudFlag,
+    env: input.env,
+    config: input.config,
+  });
+  return resolveEffectiveCloudActivation({
+    detection,
+    currentBranch: input.currentBranch,
+  });
+}
 
 /**
  * WU-1508: Enforce tests.manual at claim time for non-doc/process WUs.
@@ -1745,6 +1778,41 @@ async function main() {
   if (!PATTERNS.WU_ID.test(id)) die(`Invalid WU id '${args.id}'. Expected format WU-123`);
 
   await ensureOnMain(getGitForCwd());
+  // WU-1609: Resolve branch-aware cloud activation at preflight so explicit
+  // protected-branch cloud requests fail before lane locking/state mutation.
+  const preflightBranch = await getGitForCwd().getCurrentBranch();
+  const preflightCloudEffective = resolveCloudActivationForClaim({
+    cloudFlag: Boolean(args.cloud),
+    env: process.env as Record<string, string | undefined>,
+    config: getConfig().cloud,
+    currentBranch: preflightBranch,
+  });
+  if (preflightCloudEffective.blocked) {
+    const sourceHint =
+      preflightCloudEffective.source === CLOUD_ACTIVATION_SOURCE.FLAG
+        ? '--cloud'
+        : 'LUMENFLOW_CLOUD=1';
+    die(
+      `Cloud mode blocked on protected branch "${preflightBranch}".\n\n` +
+        `Explicit cloud activation (${sourceHint}) is not allowed on main/master.\n` +
+        `Switch to a non-main branch for cloud mode, or run wu:claim without cloud activation on main/master.`,
+    );
+  }
+  if (preflightCloudEffective.suppressed) {
+    const signalSuffix = preflightCloudEffective.matchedSignal
+      ? ` (signal: ${preflightCloudEffective.matchedSignal})`
+      : '';
+    console.log(
+      `${PREFIX} Cloud auto-detection suppressed on protected branch "${preflightBranch}"${signalSuffix}; continuing with standard claim flow.`,
+    );
+  } else if (
+    preflightCloudEffective.isCloud &&
+    preflightCloudEffective.source === CLOUD_ACTIVATION_SOURCE.ENV_SIGNAL
+  ) {
+    console.log(
+      `${PREFIX} Cloud mode auto-detected (source: ${preflightCloudEffective.source}${preflightCloudEffective.matchedSignal ? `, signal: ${preflightCloudEffective.matchedSignal}` : ''})`,
+    );
+  }
 
   // WU-2411: Handle --resume flag for agent handoff
   if (args.resume) {
@@ -1895,23 +1963,11 @@ async function main() {
     const title = (await readWUTitle(id)) || '';
     const branch = args.branch || `lane/${laneK}/${idK}`;
     const worktree = args.worktree || `worktrees/${laneK}-${idK}`;
-    // WU-1495: Cloud auto-detection from config-driven env signals
-    // Detection precedence: --cloud flag > LUMENFLOW_CLOUD=1 > env_signals (opt-in)
-    const config = getConfig();
-    const cloudDetection = detectCloudMode({
-      cloudFlag: Boolean(args.cloud),
-      env: process.env as Record<string, string | undefined>,
-      config: config.cloud,
-    });
-    const effectiveCloud = cloudDetection.isCloud;
-    if (cloudDetection.isCloud && !args.cloud) {
-      console.log(
-        `${PREFIX} Cloud mode auto-detected (source: ${cloudDetection.source}${cloudDetection.matchedSignal ? `, signal: ${cloudDetection.matchedSignal}` : ''})`,
-      );
-    }
+    const currentBranch = preflightBranch;
+    const cloudEffective = preflightCloudEffective;
+    const effectiveCloud = cloudEffective.isCloud;
 
     // WU-1590: Capture current branch for cloud claim metadata (before any branch switching)
-    const currentBranch = await getGitForCwd().getCurrentBranch();
     const currentBranchForCloud = effectiveCloud ? currentBranch : undefined;
 
     // WU-1491: Resolve claimed mode from flag combination

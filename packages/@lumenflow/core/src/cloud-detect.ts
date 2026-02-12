@@ -82,11 +82,60 @@ export interface CloudDetectResult {
   readonly matchedSignal?: string;
 }
 
+/**
+ * Effective cloud activation decision reason on a specific branch.
+ */
+export const CLOUD_EFFECTIVE_REASON = {
+  /** env-signal auto-detection was suppressed on a protected branch */
+  SUPPRESSED_ENV_SIGNAL_ON_PROTECTED: 'suppressed_env_signal_on_protected',
+  /** explicit cloud activation was blocked on a protected branch */
+  BLOCKED_EXPLICIT_ON_PROTECTED: 'blocked_explicit_on_protected',
+} as const;
+
+/** Type for effective decision reason values */
+export type CloudEffectiveReason =
+  (typeof CLOUD_EFFECTIVE_REASON)[keyof typeof CLOUD_EFFECTIVE_REASON];
+
+/**
+ * Input for branch-aware effective cloud activation.
+ */
+export interface EffectiveCloudActivationInput {
+  /** Raw cloud detection output */
+  readonly detection: CloudDetectResult;
+  /** Current git branch */
+  readonly currentBranch: string;
+  /** Protected branches where cloud activation is restricted (default: main/master) */
+  readonly protectedBranches?: readonly string[];
+}
+
+/**
+ * Branch-aware effective cloud activation decision.
+ */
+export interface EffectiveCloudActivationResult {
+  /** Whether cloud mode should be used after branch guard */
+  readonly isCloud: boolean;
+  /** Original activation source (if any) */
+  readonly source?: CloudActivationSource;
+  /** Matched env signal name (when source is env_signal) */
+  readonly matchedSignal?: string;
+  /** Whether activation came from explicit source (--cloud or LUMENFLOW_CLOUD=1) */
+  readonly explicit: boolean;
+  /** Whether cloud mode was suppressed (env-signal on protected branch) */
+  readonly suppressed: boolean;
+  /** Whether cloud mode was blocked (explicit activation on protected branch) */
+  readonly blocked: boolean;
+  /** Decision reason when suppressed/blocked */
+  readonly reason?: CloudEffectiveReason;
+}
+
 /** Environment variable name for explicit cloud activation */
 const LUMENFLOW_CLOUD_ENV = 'LUMENFLOW_CLOUD';
 
 /** Value that activates cloud mode via LUMENFLOW_CLOUD env var */
 const LUMENFLOW_CLOUD_ACTIVE_VALUE = '1';
+
+/** Default protected branches where cloud activation is constrained */
+const DEFAULT_PROTECTED_BRANCHES = ['main', 'master'] as const;
 
 /**
  * Detect whether cloud mode should be activated.
@@ -155,4 +204,67 @@ export function detectCloudMode(input: CloudDetectInput): CloudDetectResult {
 
   // No activation source matched
   return { isCloud: false };
+}
+
+/**
+ * Resolve effective cloud activation with branch-aware protection.
+ *
+ * Rules:
+ * - On protected branches (main/master by default):
+ *   - env-signal auto-detection is suppressed (falls back to non-cloud mode)
+ *   - explicit activation (--cloud or LUMENFLOW_CLOUD=1) is blocked
+ * - On non-protected branches, detection result is preserved
+ */
+export function resolveEffectiveCloudActivation(
+  input: EffectiveCloudActivationInput,
+): EffectiveCloudActivationResult {
+  const { detection, currentBranch } = input;
+  const protectedBranches = input.protectedBranches ?? DEFAULT_PROTECTED_BRANCHES;
+
+  if (!detection.isCloud) {
+    return {
+      isCloud: false,
+      explicit: false,
+      suppressed: false,
+      blocked: false,
+    };
+  }
+
+  const explicit =
+    detection.source === CLOUD_ACTIVATION_SOURCE.FLAG ||
+    detection.source === CLOUD_ACTIVATION_SOURCE.ENV_VAR;
+  const isProtectedBranch = protectedBranches.includes(currentBranch);
+
+  if (!isProtectedBranch) {
+    return {
+      isCloud: true,
+      source: detection.source,
+      matchedSignal: detection.matchedSignal,
+      explicit,
+      suppressed: false,
+      blocked: false,
+    };
+  }
+
+  if (explicit) {
+    return {
+      isCloud: false,
+      source: detection.source,
+      matchedSignal: detection.matchedSignal,
+      explicit: true,
+      suppressed: false,
+      blocked: true,
+      reason: CLOUD_EFFECTIVE_REASON.BLOCKED_EXPLICIT_ON_PROTECTED,
+    };
+  }
+
+  return {
+    isCloud: false,
+    source: detection.source,
+    matchedSignal: detection.matchedSignal,
+    explicit: false,
+    suppressed: true,
+    blocked: false,
+    reason: CLOUD_EFFECTIVE_REASON.SUPPRESSED_ENV_SIGNAL_ON_PROTECTED,
+  };
 }
