@@ -1169,3 +1169,4 @@
 {"type":"complete","wuId":"WU-1617","timestamp":"2026-02-12T18:57:58.939Z"}
 {"type":"claim","wuId":"WU-1616","timestamp":"2026-02-12T19:02:32.947Z","lane":"Framework: Core Validation","title":"Fix lifecycle schema command count expectation after wu:brief addition"}
 {"type":"complete","wuId":"WU-1616","timestamp":"2026-02-12T19:06:29.938Z"}
+{"type":"claim","wuId":"WU-1618","lane":"Framework: CLI WU Commands","title":"Improve wu:edit scope preflight and replace-code-paths UX","timestamp":"2026-02-12T19:09:17.213Z"}

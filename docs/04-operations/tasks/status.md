@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1618 — Improve wu:edit scope preflight and replace-code-paths UX](wu/WU-1618.yaml)
 
 ## Completed
 

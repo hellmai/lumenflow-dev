@@ -2,7 +2,7 @@ id: WU-1618
 title: Improve wu:edit scope preflight and replace-code-paths UX
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual:
-    - Run pnpm wu:edit --id WU-XXXX --replace-code-paths <path1,path2> in an in-progress worktree and verify guidance/coverage behavior is explicit.
+    - Run pnpm wu:edit --id WU-XXXX --replace-code-paths <path1,path2> in an in-progress worktree
+      and verify guidance/coverage behavior is explicit.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-edit.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
@@ -30,8 +31,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: stale code_paths are currently caught late at wu:prep and replace-code-paths usage is easy to misuse. Problem: teams lose time rerunning prep and wu:edit can silently accept confusing replace syntax. Solution: add earlier in-progress scope feedback in wu:edit, improve replace-code-paths ergonomics/error guidance, and add explicit docs formatting guidance in workflow docs/output.'
+description: 'Context: stale code_paths are currently caught late at wu:prep and replace-code-paths
+  usage is easy to misuse. Problem: teams lose time rerunning prep and wu:edit can silently accept
+  confusing replace syntax. Solution: add earlier in-progress scope feedback in wu:edit, improve
+  replace-code-paths ergonomics/error guidance, and add explicit docs formatting guidance in
+  workflow docs/output.'
 acceptance:
-  - wu:edit surfaces in-progress code_paths coverage mismatches earlier than wu:prep when branch changes exist.
+  - wu:edit surfaces in-progress code_paths coverage mismatches earlier than wu:prep when branch
+    changes exist.
   - wu:edit supports or clearly guides replace-code-paths usage without silent no-op confusion.
   - Workflow guidance includes an explicit format step for touched docs before wu:prep/wu:done.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1618
+claimed_at: 2026-02-12T19:09:17.165Z
+baseline_main_sha: 237e7081fb8908b524894f22361288b5fab06422
+session_id: 9a76deab-c614-42a6-aa1e-7cb88603e3b8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T19:09:17.173Z
