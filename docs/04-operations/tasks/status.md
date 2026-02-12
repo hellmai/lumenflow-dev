@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1607 — Ignore spawn-registry runtime artifact in git status](wu/WU-1607.yaml)
 
 ## Completed
 
