@@ -1,12 +1,33 @@
 id: INIT-023
 slug: lumenflow-cloud-branch-pr-lifecycle
 title: LumenFlow Cloud Branch-PR Lifecycle Completion
-description: ''
+description: Deliver complete cloud/branch-pr lifecycle support for LumenFlow so cloud agents can
+  execute create->claim->prep->done->cleanup from feature branches with PR completion, without
+  breaking local worktree workflow.
 status: draft
 priority: P0
 owner: 'Operations: Tooling'
 created: 2026-02-12
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: WU-A Cloud Foundation (schema/resolver/hook)
+    status: pending
+  - id: 2
+    title: WU-B Cloud Lifecycle (create/claim/prep/done/cleanup)
+    status: pending
+  - id: 3
+    title: WU-C Cloud State Commands (edit/block/unblock/release/delete)
+    status: pending
+  - id: 4
+    title: WU-D Cloud Recovery + Docs + Auto-Detect
+    status: pending
+success_metrics:
+  - 'Cloud branch-pr lifecycle passes end-to-end: wu:create --cloud, wu:claim --cloud, wu:prep,
+    wu:done, wu:cleanup.'
+  - No direct main mutations required for cloud execution paths beyond approved PR merge workflows.
+  - Local worktree lifecycle behavior remains unchanged when --cloud and LUMENFLOW_CLOUD are not
+    enabled.
 labels: []
 related_plan: lumenflow://plans/zazzy-launching-pretzel.md
+lanes:
+  - 'Operations: Tooling'
