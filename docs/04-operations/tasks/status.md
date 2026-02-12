@@ -4,7 +4,7 @@ _Last updated: 2026-02-12_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1609 — P0 hotfix: block cloud activation on main for wu:create/wu:claim](wu/WU-1609.yaml)
 
 ## Completed
 

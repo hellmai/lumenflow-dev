@@ -2,7 +2,7 @@ id: WU-1609
 title: 'P0 hotfix: block cloud activation on main for wu:create/wu:claim'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-12
 code_paths:
@@ -13,8 +13,10 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/wu-cloud-lifecycle.test.ts
 tests:
   manual:
-    - Run wu:create and wu:claim on main/master with CI env signal and verify no cloud-path activation or direct-main writes.
-    - Run wu:create/wu:claim on non-main branch with explicit cloud and env-signal cloud and verify cloud behavior unchanged.
+    - Run wu:create and wu:claim on main/master with CI env signal and verify no cloud-path
+      activation or direct-main writes.
+    - Run wu:create/wu:claim on non-main branch with explicit cloud and env-signal cloud and verify
+      cloud behavior unchanged.
   unit:
     - packages/@lumenflow/core/src/__tests__/cloud-detect.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-cloud-lifecycle.test.ts
@@ -34,10 +36,26 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: env-signal auto-detection can activate cloud mode on main/master in wu:create and wu:claim, causing direct-main cloud paths and pre-commit failures. Problem: auto-detected cloud should never activate on protected main/master, and explicit cloud activation on main/master should fail fast with clear guidance. Solution: add shared branch-aware guard for effective cloud activation and wire into wu:create and wu:claim with source-aware behavior, preserving non-main cloud behavior.'
+description: 'Context: env-signal auto-detection can activate cloud mode on main/master in wu:create
+  and wu:claim, causing direct-main cloud paths and pre-commit failures. Problem: auto-detected
+  cloud should never activate on protected main/master, and explicit cloud activation on main/master
+  should fail fast with clear guidance. Solution: add shared branch-aware guard for effective cloud
+  activation and wire into wu:create and wu:claim with source-aware behavior, preserving non-main
+  cloud behavior.'
 acceptance:
-  - Env-signal auto-detected cloud on main/master is suppressed and commands remain in non-cloud paths.
-  - Explicit cloud activation (--cloud or LUMENFLOW_CLOUD=1) on main/master fails fast with clear error.
+  - Env-signal auto-detected cloud on main/master is suppressed and commands remain in non-cloud
+    paths.
+  - Explicit cloud activation (--cloud or LUMENFLOW_CLOUD=1) on main/master fails fast with clear
+    error.
   - Non-main branches retain existing cloud behavior for both explicit and auto-detected sources.
-  - wu:create and wu:claim command-level tests prove no cloud path entry on main/master from env-signal detection.
+  - wu:create and wu:claim command-level tests prove no cloud path entry on main/master from
+    env-signal detection.
   - No command attempts direct main writes in this scenario.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1609
+claimed_at: 2026-02-12T15:05:36.417Z
+baseline_main_sha: 6def415eb1980fa7d593999b1b4d0aada06ed625
+session_id: b39031a6-4dc1-4c0c-b686-8980642d9731
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T15:05:36.425Z
