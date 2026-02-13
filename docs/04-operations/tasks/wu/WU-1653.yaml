@@ -2,7 +2,7 @@ id: WU-1653
 title: Fix wu:claim to respect requireRemote=false and wu:done stamp force-add
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -49,3 +49,6 @@ session_id: 46087bda-5f06-4d46-9f15-0ba327dfc645
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T17:19:27.235Z
+locked: true
+completed_at: 2026-02-13T17:24:53.932Z
+completed: 2026-02-13
