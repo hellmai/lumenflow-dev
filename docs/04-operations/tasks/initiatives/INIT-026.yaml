@@ -1,12 +1,36 @@
 id: INIT-026
 slug: atomic-wu-done
 title: Atomic wu:done - eliminate dirty-main bug class
-description: ''
-status: draft
+description: Eliminate the dirty-main bug class in wu:done by replacing live-main merge/push paths
+  with atomic temp-worktree merge semantics. Ship a single resilient completion path where failures
+  leave main untouched, retries converge under origin movement, and both worktree and branch-only
+  non-PR modes are covered by deterministic failure-injection and idempotent rerun tests.
+status: open
 priority: P0
 owner: Platform Engineering
 created: 2026-02-13
 target_date: 2026-03-06
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: Extract shared micro-worktree helpers (no behavior change)
+    status: pending
+  - id: 2
+    title: Implement atomic merge executor and worktree-mode integration
+    status: pending
+  - id: 3
+    title: Integrate branch-only non-PR mode and idempotent rerun coverage
+    status: pending
+  - id: 4
+    title: Burn-in and remove obsolete dirty-main rollback code
+    status: pending
+success_metrics:
+  - wu:done failure injection leaves main worktree clean across merge, push, and callback failure
+    paths
+  - No orphaned tmp branches/worktrees remain after failed wu:done attempts
+  - Idempotent rerun succeeds without duplicate events, stamps, backlog entries, or status corruption
+  - Branch-only non-PR completion path converges under origin movement with clear retry-exhaustion
+    guidance
 labels: []
+lanes:
+  - 'Framework: CLI Orchestration'
+  - 'Framework: Core Systems'
