@@ -2,7 +2,7 @@ id: WU-1642
 title: Split mcp tools.ts into domain modules
 lane: 'Framework: MCP'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -29,8 +29,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Mechanically decompose packages/@lumenflow/mcp/src/tools.ts into domain-scoped modules with a thin barrel, preserving exports and runtime behavior.
+description: Mechanically decompose packages/@lumenflow/mcp/src/tools.ts into domain-scoped modules
+  with a thin barrel, preserving exports and runtime behavior.
 acceptance:
-  - tools.ts is reduced to barrel/orchestration wiring while tool definitions are moved into domain files.
+  - tools.ts is reduced to barrel/orchestration wiring while tool definitions are moved into domain
+    files.
   - All moved tool exports remain backward compatible from existing import paths.
   - No behavioral changes are introduced; tests continue validating existing MCP tool behavior.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1642
+claimed_at: 2026-02-13T22:07:49.506Z
+baseline_main_sha: 97c244fc781ee432213a7ac84cf28cee9682f826
+session_id: f6d07652-6637-4e19-9ac6-c7e65e903182
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T22:07:49.512Z

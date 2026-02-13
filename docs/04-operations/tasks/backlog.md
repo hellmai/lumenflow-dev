@@ -30,7 +30,6 @@ sections:
 - [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml) — Framework: Core Lifecycle
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
-- [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml) — Framework: MCP
 - [WU-1643 — Extract init.ts template constants into data module](wu/WU-1643.yaml) — Framework: CLI Enforcement
 - [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml) — Framework: CLI Enforcement
 - [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml) — Framework: CLI Enforcement
@@ -50,6 +49,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1648 — Split initiative-orchestrator.ts by domain responsibilities](wu/WU-1648.yaml) — Framework: Initiatives
+- [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml) — Framework: MCP
 
 ## ⛔ Blocked
 
