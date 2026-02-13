@@ -9,6 +9,7 @@
  */
 
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { readFile } from 'node:fs/promises';
 import { validateMainNotBehindOrigin, rollbackMainAfterMergeFailure } from '../wu-done-worktree.js';
 
 // ---------------------------------------------------------------------------
@@ -101,5 +102,18 @@ describe('rollbackMainAfterMergeFailure (AC2, AC3)', () => {
     await expect(
       rollbackMainAfterMergeFailure(mockGit as any, 'sha', 'WU-1577'),
     ).resolves.toBeDefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// AC5: worktree merge/push path uses atomic merge orchestration
+// ---------------------------------------------------------------------------
+describe('worktree merge orchestration (AC5)', () => {
+  it('routes merge+push through withAtomicMerge and no longer wires preMainMergeSha rollback path', async () => {
+    const source = await readFile(new URL('../wu-done-worktree.ts', import.meta.url), 'utf-8');
+
+    expect(source).toContain('withAtomicMerge(');
+    expect(source).not.toContain('preMainMergeSha =');
+    expect(source).not.toContain('maybeRollbackMain(mainMerged');
   });
 });
