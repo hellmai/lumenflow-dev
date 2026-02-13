@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1658 — Add regression coverage for wu:done post-push reconciliation and cleanup](wu/WU-1658.yaml)
 
 ## Completed
 

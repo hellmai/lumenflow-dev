@@ -1235,3 +1235,4 @@
 {"type":"complete","wuId":"WU-1657","timestamp":"2026-02-13T20:19:38.021Z"}
 {"type":"claim","wuId":"WU-1660","timestamp":"2026-02-13T20:25:17.292Z","lane":"Framework: CLI WU Commands","title":"Fix pre-existing terminal renderer global-status test regression"}
 {"type":"complete","wuId":"WU-1660","timestamp":"2026-02-13T20:30:37.343Z"}
+{"type":"claim","wuId":"WU-1658","lane":"Framework: Core State Recovery","title":"Add regression coverage for wu:done post-push reconciliation and cleanup","timestamp":"2026-02-13T20:35:33.523Z"}
