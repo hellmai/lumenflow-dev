@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1624 — Prevent local state divergence after failed wu:done recovery](wu/WU-1624.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -566,3 +566,4 @@ _Last updated: 2026-02-13_
 - [WU-1605 — Add claim-time pickup evidence and enforce intent-vs-pickup provenance at wu:done](wu/WU-1605.yaml) — 2026-02-12
 - [WU-1606 — Sync internal and Starlight docs for wu:brief/delegate provenance changes](wu/WU-1606.yaml) — 2026-02-12
 - [WU-1622 — Fix lumenflow:upgrade push failure — missing ALLOWED_WU_TOOLS entry and stale node_modules](wu/WU-1622.yaml) — 2026-02-12
+- [WU-1624 — Prevent local state divergence after failed wu:done recovery](wu/WU-1624.yaml) — 2026-02-13
