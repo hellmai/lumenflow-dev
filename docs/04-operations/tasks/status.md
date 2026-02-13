@@ -5,7 +5,6 @@ _Last updated: 2026-02-13_
 ## In Progress
 
 - [WU-1631 — Add 4 missing subpath exports to @lumenflow/core (active-wu-detector, hardcoded-strings, linter-constants, prompt-linter)](wu/WU-1631.yaml)
-- [WU-1633 — Harden CLI bootstrap fallback for lifecycle hotfixes](wu/WU-1633.yaml)
 
 ## Completed
 
@@ -572,3 +571,4 @@ _Last updated: 2026-02-13_
 - [WU-1625 — Add 8 missing subpath exports to @lumenflow/core for consumer compatibility](wu/WU-1625.yaml) — 2026-02-13
 - [WU-1626 — Extract micro-worktree shared helper surface](wu/WU-1626.yaml) — 2026-02-13
 - [WU-1632 — Hotfix missing micro-worktree-shared source on main](wu/WU-1632.yaml) — 2026-02-13
+- [WU-1633 — Harden CLI bootstrap fallback for lifecycle hotfixes](wu/WU-1633.yaml) — 2026-02-13
