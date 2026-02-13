@@ -1,0 +1,46 @@
+id: WU-1662
+title: Define typed XState wu:done pipeline machine in core
+lane: 'Framework: Core State Recovery'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-13
+code_paths:
+  - packages/@lumenflow/core/package.json
+  - packages/@lumenflow/core/src/state-machine.ts
+  - packages/@lumenflow/core/src/wu-transaction.ts
+  - packages/@lumenflow/core/src/wu-recovery.ts
+  - packages/@lumenflow/core/src/rollback-utils.ts
+tests:
+  manual:
+    - Run targeted unit suite for state/recovery modules and verify typed machine transition contracts and snapshot semantics.
+  unit:
+    - packages/@lumenflow/core/src/__tests__/state-machine.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-worktree.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1662.done
+dependencies: []
+initiative: INIT-025
+phase: 1
+blocked_by:
+  - WU-1661
+spec_refs:
+  - lumenflow://plans/INIT-025-plan.md
+  - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
+risks: []
+notes: 'Sizing (wu-sizing-guide): Medium due state/recovery complexity and expected >50 tool calls; execute with checkpoint-resume discipline.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu:done orchestration and recovery logic currently operate as an implicit state machine spread across large modules with overlapping rollback paths. Problem: state transitions, recovery boundaries, and snapshot semantics are difficult to reason about and test exhaustively. Solution: introduce a typed XState v5 machine definition in core for wu:done pipeline states and transition contracts, with snapshot/rehydration support designed as the canonical execution model.'
+acceptance:
+  - A typed wu:done pipeline state machine definition exists in core with explicit states/events/guards for validate->prepare->gate->commit->merge->push->cleanup (and failure paths).
+  - Machine snapshot serialization and rehydration behavior is validated with targeted unit coverage.
+  - No public wu:done CLI behavior changes are introduced in this WU; this is machine-definition foundation work only.
+  - State/recovery test coverage is expanded to assert valid/invalid transition contracts.
