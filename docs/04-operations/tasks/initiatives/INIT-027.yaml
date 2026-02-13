@@ -4,7 +4,7 @@ title: LumenFlow Tooling Cohesion Docs and Starlight IA
 description: Reduce lifecycle friction by documenting how LumenFlow tools compose
   (wu:create/claim/brief/prep/done/recover), adding failure-mode runbooks, and surfacing this
   guidance in Starlight and contributor entrypoints.
-status: draft
+status: in_progress
 priority: P2
 owner: 'Framework: CLI Orchestration'
 created: 2026-02-13
@@ -25,7 +25,3 @@ success_metrics:
   - AGENTS.md and LUMENFLOW.md link to canonical lifecycle and troubleshooting pages
   - Starlight docs navigation exposes tooling lifecycle and troubleshooting entrypoints
 labels: []
-lanes:
-  - 'Content: Specs Governance'
-  - 'Content: Framework Docs'
-  - 'Content: Site Comms'

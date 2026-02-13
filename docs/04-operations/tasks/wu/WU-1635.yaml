@@ -2,7 +2,7 @@ id: WU-1635
 title: Document canonical lifecycle map and failure-mode runbook
 lane: 'Content: Specs Governance'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
 tests:
   manual:
-    - Open updated markdown docs and verify command sequences are consistent, cross-links resolve, and remediation steps are actionable
+    - Open updated markdown docs and verify command sequences are consistent, cross-links resolve,
+      and remediation steps are actionable
   unit: []
   e2e: []
 artifacts:
@@ -29,8 +30,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Create a single canonical operations-doc reference that explains how wu:create, wu:claim, wu:brief, wu:prep, wu:done, wu:recover, and orchestration/memory tools fit together, plus a runbook for recurrent failure modes seen in active usage.
+description: Create a single canonical operations-doc reference that explains how wu:create,
+  wu:claim, wu:brief, wu:prep, wu:done, wu:recover, and orchestration/memory tools fit together,
+  plus a runbook for recurrent failure modes seen in active usage.
 acceptance:
-  - Canonical command-mode matrix (worktree vs cloud/branch-pr) is documented with expected location and handoff points
-  - Failure-mode runbook includes concrete remediation for main-behind-origin, partial-claim state, spawn-provenance enforcement, and wu:recover usage
+  - Canonical command-mode matrix (worktree vs cloud/branch-pr) is documented with expected location
+    and handoff points
+  - Failure-mode runbook includes concrete remediation for main-behind-origin, partial-claim state,
+    spawn-provenance enforcement, and wu:recover usage
   - Updated docs are internally cross-linked from quick-ref and complete framework guidance
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-specs-governance-wu-1635
+claimed_at: 2026-02-13T14:20:32.002Z
+baseline_main_sha: efc98b26f69c425cd52d61e24334be0dc6c75040
+session_id: bb1d3e14-9fcd-4315-b0e8-7dab4813b628
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T14:20:32.006Z
