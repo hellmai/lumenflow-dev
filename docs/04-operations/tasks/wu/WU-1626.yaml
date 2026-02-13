@@ -6,9 +6,7 @@ status: in_progress
 priority: P0
 created: 2026-02-13
 code_paths:
-  - packages/@lumenflow/core/src/micro-worktree-shared.ts
   - packages/@lumenflow/core/src/micro-worktree.ts
-  - packages/@lumenflow/core/src/index.ts
 tests:
   manual:
     - Run core micro-worktree tests and verify no behavior change for existing commands
@@ -25,10 +23,17 @@ spec_refs:
 risks: []
 notes: Phase 1A of INIT-026. No behavior changes allowed.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-13T10:31:25.005Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1626
+session_id: c061efa8-e834-49f9-a80d-685797f55cb4
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T10:31:25.011Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +45,3 @@ acceptance:
     stable exports
   - micro-worktree.ts imports/re-exports the shared helpers without behavior changes
   - core callers remain backward compatible via unchanged public exports
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1626
-claimed_at: 2026-02-13T10:31:25.005Z
-baseline_main_sha: cd51758cee642a5bd3c7259d372419c3f32a4323
-session_id: c061efa8-e834-49f9-a80d-685797f55cb4
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-13T10:31:25.011Z
