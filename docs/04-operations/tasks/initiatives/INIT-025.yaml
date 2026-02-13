@@ -4,7 +4,7 @@ title: God File Decomposition Initiative
 description: Complete mechanical decomposition of 10 high-churn god files into command- and
   domain-focused modules, using merge-conflict-prioritized split strategy (11 WUs, 3 phases, no new
   abstractions).
-status: done
+status: in_progress
 priority: P1
 owner: Framework Team
 created: 2026-02-12
@@ -30,3 +30,5 @@ notes:
     decomposition execution scope remains pending. INIT-025 reopened to in_progress.'
   - '2026-02-13 WU-1639: initiative metadata reconciled with delivered scope; decomposition
     execution WUs remain to be planned and executed.'
+  - '2026-02-13 post-WU-1640: reopened for execution; decomposition phases/WUs still pending
+    delivery.'
