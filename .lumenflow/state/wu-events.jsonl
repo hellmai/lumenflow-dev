@@ -1254,15 +1254,8 @@
 {"type":"claim","wuId":"WU-1644","timestamp":"2026-02-13T22:22:25.139Z","lane":"Framework: CLI Enforcement","title":"Extract init.ts scaffolding and detection helpers"}
 {"type":"claim","wuId":"WU-1662","timestamp":"2026-02-13T22:23:09.115Z","lane":"Framework: Core State Recovery","title":"Define typed XState wu:done pipeline machine in core"}
 {"type":"complete","wuId":"WU-1642","timestamp":"2026-02-13T22:24:46.607Z"}
-<<<<<<< HEAD
 {"type":"claim","wuId":"WU-1651","lane":"Framework: CLI WU Commands","title":"Extract wu-create.ts validation, content, and readiness builders","timestamp":"2026-02-13T22:25:42.094Z"}
 {"type":"claim","wuId":"WU-1650","lane":"Framework: CLI WU Commands","title":"Extract wu-edit.ts validation and apply operations","timestamp":"2026-02-13T22:26:14.053Z"}
 {"type":"claim","wuId":"WU-1652","lane":"Framework: CLI WU Commands","title":"Extract wu-spawn.ts prompt builders and strategy resolver","timestamp":"2026-02-13T22:26:38.972Z"}
 {"type":"claim","wuId":"WU-1645","lane":"Framework: CLI Enforcement","title":"Split enforcement-generator hook script builders","timestamp":"2026-02-13T22:27:03.132Z"}
-=======
-{"type":"claim","wuId":"WU-1651","timestamp":"2026-02-13T22:25:42.094Z","lane":"Framework: CLI WU Commands","title":"Extract wu-create.ts validation, content, and readiness builders"}
-{"type":"claim","wuId":"WU-1650","timestamp":"2026-02-13T22:26:14.053Z","lane":"Framework: CLI WU Commands","title":"Extract wu-edit.ts validation and apply operations"}
-{"type":"claim","wuId":"WU-1652","timestamp":"2026-02-13T22:26:38.972Z","lane":"Framework: CLI WU Commands","title":"Extract wu-spawn.ts prompt builders and strategy resolver"}
-{"type":"claim","wuId":"WU-1645","timestamp":"2026-02-13T22:27:03.132Z","lane":"Framework: CLI Enforcement","title":"Split enforcement-generator hook script builders"}
 {"type":"complete","wuId":"WU-1649","timestamp":"2026-02-13T22:27:06.343Z"}
->>>>>>> 1f1b0582 (wu(wu-1649): done - extract wu-claim.ts validation and mode handlers)
