@@ -2,7 +2,7 @@ id: WU-1621
 title: Harden initiative metadata writes against origin movement
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-12
 code_paths:
