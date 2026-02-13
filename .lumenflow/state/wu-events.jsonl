@@ -1185,3 +1185,4 @@
 {"type":"release","wuId":"WU-1621","timestamp":"2026-02-13T09:15:31.800Z","reason":"Reset via wu:recover --action reset"}
 {"type":"claim","wuId":"WU-1624","timestamp":"2026-02-13T09:22:44.404Z","lane":"Framework: Core State Recovery","title":"Prevent local state divergence after failed wu:done recovery"}
 {"type":"complete","wuId":"WU-1624","timestamp":"2026-02-13T09:31:56.286Z"}
+{"type":"claim","wuId":"WU-1621","lane":"Framework: CLI Orchestration","title":"Harden initiative metadata writes against origin movement","timestamp":"2026-02-13T09:32:52.423Z"}
