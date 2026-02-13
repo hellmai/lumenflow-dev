@@ -6,9 +6,8 @@ status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
-  - apps/docs/src/content/docs/index.mdx
-  - apps/docs/src/content.config.ts
   - apps/docs/astro.config.mjs
+  - apps/docs/src/content/docs/index.mdx
 tests:
   manual:
     - Run docs site locally and verify lifecycle/troubleshooting nav entries and links render
@@ -23,10 +22,17 @@ phase: 3
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-13T14:20:56.877Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1637
+session_id: bb1d3e14-9fcd-4315-b0e8-7dab4813b628
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T14:20:56.880Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -37,11 +43,3 @@ acceptance:
   - Starlight navigation includes discoverable entries for tooling lifecycle and troubleshooting
   - Docs-site landing/index content links users to canonical lifecycle and runbook pages
   - Navigation/link changes avoid duplication and point to single-source docs
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1637
-claimed_at: 2026-02-13T14:20:56.877Z
-baseline_main_sha: 4321177e26e09a6782ec04831205c9c876160240
-session_id: bb1d3e14-9fcd-4315-b0e8-7dab4813b628
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-13T14:20:56.880Z
