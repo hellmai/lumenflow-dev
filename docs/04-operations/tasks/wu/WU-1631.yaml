@@ -1,8 +1,9 @@
 id: WU-1631
-title: Add 4 missing subpath exports to @lumenflow/core (active-wu-detector, hardcoded-strings, linter-constants, prompt-linter)
+title: Add 4 missing subpath exports to @lumenflow/core (active-wu-detector, hardcoded-strings,
+  linter-constants, prompt-linter)
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -25,6 +26,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: ExampleApp consumer reports 4 modules still using fragile node_modules/ direct paths because they have no public export in the exports map.
+description: ExampleApp consumer reports 4 modules still using fragile node_modules/ direct paths
+  because they have no public export in the exports map.
 acceptance:
   - All 4 modules have explicit exports in package.json
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1631
+claimed_at: 2026-02-13T11:56:28.014Z
+baseline_main_sha: 950a67f8659db337f52c188a0a0dd963e1fd7fe9
+session_id: c061efa8-e834-49f9-a80d-685797f55cb4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T11:56:28.020Z
