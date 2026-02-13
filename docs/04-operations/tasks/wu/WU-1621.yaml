@@ -2,7 +2,7 @@ id: WU-1621
 title: Harden initiative metadata writes against origin movement
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: in_progress
+status: ready
 priority: P1
 created: 2026-02-12
 code_paths:
@@ -49,11 +49,6 @@ acceptance:
     edits
   - failed retries report clear terminal state and do not leave malformed initiative or plan linkage
     metadata
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1621
-claimed_at: 2026-02-12T20:40:46.288Z
-baseline_main_sha: 627107599ab0cf615edf5bb099ca576ab0a6edea
-session_id: d2ba37ea-f829-45b1-b5de-38c41ae130e9
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-12T20:40:46.296Z
