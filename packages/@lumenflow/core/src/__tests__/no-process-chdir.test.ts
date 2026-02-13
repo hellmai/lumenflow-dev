@@ -136,29 +136,49 @@ describe('WU-1541: No process.chdir in normal execution paths', () => {
     );
 
     it('should not treat literal marker text as a merge conflict', async () => {
-      const nonConflictingGitAdapter = {
-        raw: vi.fn().mockResolvedValue('merged\n+<<<<<<< HEAD\n+example fixture text\n+>>>>>>>'),
-      };
+      const openMarker = `${'<'.repeat(7)} HEAD`;
+      const closeMarker = `${'>'.repeat(7)} merged`;
+      const mergeTreeOutput = [
+        'merged',
+        `+${openMarker}`,
+        '+example fixture text',
+        `+${closeMarker}`,
+      ].join('\n');
 
-      vi.doMock('../git-adapter.js', () => ({
-        getGitForCwd: vi.fn(() => nonConflictingGitAdapter),
-        createGitForPath: vi.fn(() => nonConflictingGitAdapter),
-      }));
+      const spawnSync = vi.fn().mockReturnValue({
+        status: 0,
+        stdout: mergeTreeOutput,
+        stderr: '',
+      });
+
+      vi.doMock('node:child_process', async (importOriginal) => {
+        const actual = await importOriginal<typeof import('node:child_process')>();
+        return {
+          ...actual,
+          spawnSync,
+        };
+      });
 
       const { checkMergeConflicts } = await import('../wu-done-worktree.js');
 
       await expect(checkMergeConflicts(TEST_BRANCH)).resolves.toBeUndefined();
+      expect(spawnSync).toHaveBeenCalled();
     });
 
     it('should throw conflict error with rendered message (not function source)', async () => {
-      const conflictingGitAdapter = {
-        raw: vi.fn().mockRejectedValue(new Error('CONFLICT (content): Merge conflict in f.txt')),
-      };
+      const spawnSync = vi.fn().mockReturnValue({
+        status: 1,
+        stdout: '',
+        stderr: 'merge conflict',
+      });
 
-      vi.doMock('../git-adapter.js', () => ({
-        getGitForCwd: vi.fn(() => conflictingGitAdapter),
-        createGitForPath: vi.fn(() => conflictingGitAdapter),
-      }));
+      vi.doMock('node:child_process', async (importOriginal) => {
+        const actual = await importOriginal<typeof import('node:child_process')>();
+        return {
+          ...actual,
+          spawnSync,
+        };
+      });
 
       const { checkMergeConflicts } = await import('../wu-done-worktree.js');
 
@@ -166,6 +186,7 @@ describe('WU-1541: No process.chdir in normal execution paths', () => {
       await expect(checkMergeConflicts(TEST_BRANCH)).rejects.not.toThrow(
         '(remote = REMOTES.ORIGIN, mainBranch = BRANCHES.MAIN)',
       );
+      expect(spawnSync).toHaveBeenCalled();
     });
   });
 
