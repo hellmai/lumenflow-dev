@@ -6,7 +6,6 @@ status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
-  - packages/@lumenflow/core/src/wu-done-worktree.ts
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/cli/src/wu-recover.ts
 tests:
@@ -26,10 +25,17 @@ risks: []
 notes: 'Recurring incident: local .lumenflow/state/wu-events.jsonl drift after failed wu:done with
   recovery.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-13T09:22:44.383Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-state-recovery-wu-1624
+session_id: 6419ee1f-7508-4f60-92fb-3b84bfe3e7df
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T09:22:44.389Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +49,3 @@ acceptance:
     the same WU again.
   - Regression coverage reproduces the failure path and proves state remains clean/consistent after
     rollback.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-state-recovery-wu-1624
-claimed_at: 2026-02-13T09:22:44.383Z
-baseline_main_sha: 2fe40b4f767cb39ac17f90fac26e49042383f2f7
-session_id: 6419ee1f-7508-4f60-92fb-3b84bfe3e7df
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-13T09:22:44.389Z
