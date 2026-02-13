@@ -1241,3 +1241,4 @@
 {"type":"complete","wuId":"WU-1659","timestamp":"2026-02-13T20:49:35.687Z"}
 {"type":"claim","wuId":"WU-1667","timestamp":"2026-02-13T21:49:50.039Z","lane":"Framework: CLI Orchestration","title":"Add --phase-title support to initiative:edit and update command docs surfaces"}
 {"type":"complete","wuId":"WU-1667","timestamp":"2026-02-13T21:58:02.476Z"}
+{"type":"claim","wuId":"WU-1668","lane":"Framework: Core Validation","title":"Fix schema-parity registry count expectations for lifecycle command set","timestamp":"2026-02-13T22:00:12.798Z"}
