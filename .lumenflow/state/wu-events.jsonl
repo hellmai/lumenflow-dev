@@ -1201,4 +1201,5 @@
 {"type":"complete","wuId":"WU-1627","timestamp":"2026-02-13T13:13:41.439Z"}
 {"type":"claim","wuId":"WU-1623","timestamp":"2026-02-13T13:17:28.866Z","lane":"Framework: Core State Recovery","title":"Stabilize core full-suite timeout flake in gates"}
 {"type":"complete","wuId":"WU-1623","timestamp":"2026-02-13T13:25:59.108Z"}
-{"type":"claim","wuId":"WU-1628","lane":"Framework: Core Lifecycle","title":"Integrate withAtomicMerge into wu-done worktree mode","timestamp":"2026-02-13T13:26:36.414Z"}
+{"type":"claim","wuId":"WU-1628","timestamp":"2026-02-13T13:26:36.414Z","lane":"Framework: Core Lifecycle","title":"Integrate withAtomicMerge into wu-done worktree mode"}
+{"type":"complete","wuId":"WU-1628","timestamp":"2026-02-13T13:31:45.051Z"}

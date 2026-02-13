@@ -2,7 +2,7 @@ id: WU-1628
 title: Integrate withAtomicMerge into wu-done worktree mode
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -48,3 +48,6 @@ acceptance:
   - wu-done-worktree uses withAtomicMerge for worktree-mode lane merge/push
   - legacy preMainMergeSha and main-rollback merge-failure path are removed from worktree-mode flow
   - existing completion semantics and preflight checks remain intact
+locked: true
+completed_at: 2026-02-13T13:31:42.362Z
+completed: 2026-02-13
