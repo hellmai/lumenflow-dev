@@ -1196,4 +1196,5 @@
 {"type":"complete","wuId":"WU-1632","timestamp":"2026-02-13T12:21:30.393Z"}
 {"type":"claim","wuId":"WU-1633","timestamp":"2026-02-13T12:33:00.665Z","lane":"Framework: CLI Enforcement","title":"Harden CLI bootstrap fallback for lifecycle hotfixes"}
 {"type":"complete","wuId":"WU-1633","timestamp":"2026-02-13T12:46:32.389Z"}
-{"type":"claim","wuId":"WU-1627","lane":"Framework: Core Lifecycle","title":"Implement withAtomicMerge core executor with failure-injection tests","timestamp":"2026-02-13T13:05:30.371Z"}
+{"type":"claim","wuId":"WU-1627","timestamp":"2026-02-13T13:05:30.371Z","lane":"Framework: Core Lifecycle","title":"Implement withAtomicMerge core executor with failure-injection tests"}
+{"type":"complete","wuId":"WU-1631","timestamp":"2026-02-13T13:12:20.685Z"}
