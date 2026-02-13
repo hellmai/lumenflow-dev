@@ -1192,4 +1192,5 @@
 {"type":"claim","wuId":"WU-1626","timestamp":"2026-02-13T10:31:25.025Z","lane":"Framework: Core Lifecycle","title":"Extract micro-worktree shared helper surface"}
 {"type":"claim","wuId":"WU-1631","timestamp":"2026-02-13T11:56:28.065Z","lane":"Framework: Core Lifecycle","title":"Add 4 missing subpath exports to @lumenflow/core (active-wu-detector, hardcoded-strings, linter-constants, prompt-linter)"}
 {"type":"complete","wuId":"WU-1626","timestamp":"2026-02-13T12:04:27.366Z"}
-{"type":"claim","wuId":"WU-1632","lane":"Framework: Core Lifecycle","title":"Hotfix missing micro-worktree-shared source on main","timestamp":"2026-02-13T12:16:03.540Z"}
+{"type":"claim","wuId":"WU-1632","timestamp":"2026-02-13T12:16:03.540Z","lane":"Framework: Core Lifecycle","title":"Hotfix missing micro-worktree-shared source on main"}
+{"type":"complete","wuId":"WU-1632","timestamp":"2026-02-13T12:21:30.393Z"}
