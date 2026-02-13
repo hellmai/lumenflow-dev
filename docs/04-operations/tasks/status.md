@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1639 — Reconcile INIT-025 lifecycle metadata with actual decomposition scope](wu/WU-1639.yaml)
 
 ## Completed
 
