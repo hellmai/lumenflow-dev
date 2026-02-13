@@ -41,13 +41,12 @@ sections:
 - [WU-1650 — Extract wu-edit.ts validation and apply operations](wu/WU-1650.yaml) — Framework: CLI WU Commands
 - [WU-1651 — Extract wu-create.ts validation, content, and readiness builders](wu/WU-1651.yaml) — Framework: CLI WU Commands
 - [WU-1652 — Extract wu-spawn.ts prompt builders and strategy resolver](wu/WU-1652.yaml) — Framework: CLI WU Commands
-- [WU-1657 — wu:done stabilize post-push local catch-up and cleanup idempotency](wu/WU-1657.yaml) — Framework: Core Lifecycle
 - [WU-1658 — Add regression coverage for wu:done post-push reconciliation and cleanup](wu/WU-1658.yaml) — Framework: Core State Recovery
 - [WU-1659 — wu:done eliminate duplicate full-gates runs and reduce flake amplification](wu/WU-1659.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1657 — wu:done stabilize post-push local catch-up and cleanup idempotency](wu/WU-1657.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
