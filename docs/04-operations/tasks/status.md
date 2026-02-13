@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1653 — Fix wu:claim to respect requireRemote=false and wu:done stamp force-add](wu/WU-1653.yaml)
 
 ## Completed
 
