@@ -43,7 +43,14 @@ Bring test coverage to 80%+ on all new modules. Remove P0 EMERGENCY FIX comments
 
 ## Success Criteria
 
-<!-- How will you know when this is complete? Measurable outcomes? -->
+- No file in the wu:done pipeline exceeds 500 lines (orchestrator) or 800 lines (phase modules)
+- wu:done has an explicit, typed state machine with documented state transitions
+- Single rollback mechanism (TransactionManager) replaces the current 4
+- Gates execute exactly once per wu:done invocation (by design, not by dedup hack)
+- Zero P0 EMERGENCY FIX comments remain in production code
+- 80%+ test coverage on all new/decomposed modules
+- All 10 target god files are under 800 lines (or have documented exceptions)
+- No behavioral regressions: wu:done public API and workflow semantics unchanged
 
 ## Risks
 
