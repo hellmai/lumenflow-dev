@@ -11,6 +11,10 @@ code_paths:
   - packages/@lumenflow/cli/src/public-manifest.ts
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - packages/@lumenflow/cli/README.md
+  - packages/@lumenflow/cli/src/shared-validators.ts
+  - packages/@lumenflow/core/src/schemas/initiative-schemas.ts
 tests:
   manual:
     - 'Run pnpm initiative:edit --id INIT-025 --phase-id 1 --phase-title "Phase 1: State-Machine
@@ -33,10 +37,17 @@ risks: []
 notes: 'Sizing (wu-sizing-guide): Medium WU (cross-cutting CLI command + docs surfaces, expected
   50-100 tool calls) with checkpoint-resume if context/tool thresholds are hit.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-13T21:49:50.017Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1667
+session_id: 2169018e-3710-4144-97e1-c87e9c1be65f
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T21:49:50.023Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -55,11 +66,3 @@ acceptance:
   - Docs surfaces are updated where needed (internal onboarding quick-ref, framework-complete
     reference, and npm/public command manifest backed docs generation path).
   - Unit tests cover success, validation failures, and idempotent rename behavior.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1667
-claimed_at: 2026-02-13T21:49:50.017Z
-baseline_main_sha: 7d002ba61a175ff68fc0f86ef03ea0ac18e4986b
-session_id: 2169018e-3710-4144-97e1-c87e9c1be65f
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-13T21:49:50.023Z
