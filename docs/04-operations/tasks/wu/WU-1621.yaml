@@ -10,7 +10,6 @@ code_paths:
   - packages/@lumenflow/cli/src/initiative-plan.ts
   - packages/@lumenflow/cli/src/plan-link.ts
   - packages/@lumenflow/cli/src/plan-edit.ts
-  - packages/@lumenflow/cli/src/initiative-add-wu.ts
   - packages/@lumenflow/cli/src/initiative-remove-wu.ts
 tests:
   manual:
@@ -37,6 +36,9 @@ assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-12T20:40:46.296Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -49,11 +51,3 @@ acceptance:
     edits
   - failed retries report clear terminal state and do not leave malformed initiative or plan linkage
     metadata
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-13T09:32:52.411Z
-claimed_mode: worktree
-worktree_path: worktrees/framework-cli-orchestration-wu-1621
-claimed_at: 2026-02-13T09:32:52.405Z
-baseline_main_sha: bb288124a44d531ac4133d1ed93771d7c7ccbffc
-session_id: 406f3750-542a-49d0-8a3e-c8910bc3ca12
