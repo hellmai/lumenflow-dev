@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -607,3 +607,4 @@ _Last updated: 2026-02-13_
 - [WU-1662 — Define typed XState wu:done pipeline machine in core](wu/WU-1662.yaml) — 2026-02-13
 - [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml) — 2026-02-13
 - [WU-1647 — Split gates.ts into runners, plan resolvers, and utilities](wu/WU-1647.yaml) — 2026-02-13
+- [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml) — 2026-02-13
