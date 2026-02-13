@@ -3,6 +3,7 @@ import { ensureCleanWorktree } from '../wu-done-check.js';
 import {
   checkPostMergeDirtyState,
   computeBranchOnlyFallback,
+  getLifecycleRestoreTargetsOnFailure,
   getYamlStatusForDisplay,
   isProtectedMainLikeBranch,
   shouldAutoCommitLifecycleWrites,
@@ -297,6 +298,30 @@ describe('wu-done', () => {
 
     it('allows lifecycle auto-commit on non-protected branches', () => {
       expect(shouldAutoCommitLifecycleWrites('lane/framework-cli/wu-1611')).toBe(true);
+    });
+  });
+
+  describe('WU-1624: failure cleanup restore targets', () => {
+    it('combines internal and metadata lifecycle files for restore', () => {
+      const targets = getLifecycleRestoreTargetsOnFailure({
+        internalOnlyFiles: ['.lumenflow/flow.log'],
+        metadataFiles: ['.lumenflow/state/wu-events.jsonl', 'docs/04-operations/tasks/status.md'],
+      });
+
+      expect(targets).toEqual([
+        '.lumenflow/flow.log',
+        '.lumenflow/state/wu-events.jsonl',
+        'docs/04-operations/tasks/status.md',
+      ]);
+    });
+
+    it('deduplicates overlapping file entries', () => {
+      const targets = getLifecycleRestoreTargetsOnFailure({
+        internalOnlyFiles: ['.lumenflow/state/wu-events.jsonl'],
+        metadataFiles: ['.lumenflow/state/wu-events.jsonl'],
+      });
+
+      expect(targets).toEqual(['.lumenflow/state/wu-events.jsonl']);
     });
   });
 });

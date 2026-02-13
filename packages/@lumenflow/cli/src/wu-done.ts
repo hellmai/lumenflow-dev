@@ -1029,6 +1029,19 @@ export function checkPostMergeDirtyState(
 }
 
 /**
+ * Build the list of lifecycle files that are safe to restore after a failed wu:done attempt.
+ *
+ * On failure, wu:done can leave internal lifecycle logs and metadata lifecycle files dirty on main.
+ * These files are managed by lifecycle tooling and should not block re-claim/retry.
+ */
+export function getLifecycleRestoreTargetsOnFailure(dirtyState: {
+  internalOnlyFiles: string[];
+  metadataFiles: string[];
+}): string[] {
+  return Array.from(new Set([...dirtyState.internalOnlyFiles, ...dirtyState.metadataFiles]));
+}
+
+/**
  * Extract completed WU IDs from git log output.
  * @param {string} logOutput - Git log output (one commit per line)
  * @param {string} currentId - Current WU ID to exclude
@@ -2966,6 +2979,31 @@ async function main() {
         process.exit(EXIT_CODES.SUCCESS);
       }
     } catch (err) {
+      // WU-1624: Failure-path lifecycle cleanup
+      // When mode execution fails before reaching post-merge cleanup, lifecycle metadata
+      // (especially wu-events.jsonl) can remain dirty on main and block future claims.
+      // Restore lifecycle-managed files before exiting so retries/re-claims can proceed.
+      if (!isBranchPR && !effectiveBranchOnly) {
+        try {
+          const gitMainForFailureCleanup = getGitForCwd();
+          const failureStatus = await gitMainForFailureCleanup.getStatus();
+          const metadataDir = path.dirname(STATUS_PATH);
+          const failureDirty = checkPostMergeDirtyState(failureStatus, id, metadataDir);
+          const restoreTargets = getLifecycleRestoreTargetsOnFailure(failureDirty);
+
+          if (restoreTargets.length > 0) {
+            await gitMainForFailureCleanup.raw(['restore', '--', ...restoreTargets]);
+            console.log(
+              `${LOG_PREFIX.DONE} ${EMOJI.INFO} Restored lifecycle files after failed completion: ${restoreTargets.join(', ')}`,
+            );
+          }
+        } catch (cleanupErr) {
+          console.warn(
+            `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not restore lifecycle files after failure: ${cleanupErr.message}`,
+          );
+        }
+      }
+
       // P0 FIX: Release lane lock before error exit
       try {
         const lane = docMain.lane;
