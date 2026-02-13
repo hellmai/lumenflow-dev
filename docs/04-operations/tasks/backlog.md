@@ -35,7 +35,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1624 — Prevent local state divergence after failed wu:done recovery](wu/WU-1624.yaml) — Framework: Core State Recovery
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -601,4 +601,5 @@ sections:
 - [WU-1605 — Add claim-time pickup evidence and enforce intent-vs-pickup provenance at wu:done](wu/WU-1605.yaml)
 - [WU-1606 — Sync internal and Starlight docs for wu:brief/delegate provenance changes](wu/WU-1606.yaml)
 - [WU-1622 — Fix lumenflow:upgrade push failure — missing ALLOWED_WU_TOOLS entry and stale node_modules](wu/WU-1622.yaml)
+- [WU-1624 — Prevent local state divergence after failed wu:done recovery](wu/WU-1624.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
