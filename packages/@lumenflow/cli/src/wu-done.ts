@@ -38,7 +38,7 @@ import '@lumenflow/core';
 
 // WU-1663: XState pipeline actor for state-driven orchestration
 import { createActor } from 'xstate';
-import { wuDoneMachine, WU_DONE_EVENTS, WU_DONE_STATES } from '@lumenflow/core/wu-done-machine';
+import { wuDoneMachine, WU_DONE_EVENTS } from '@lumenflow/core/wu-done-machine';
 
 // WU-1153: wu:done guard for uncommitted code_paths is implemented in core package
 // The guard runs in executeWorktreeCompletion() before metadata transaction
