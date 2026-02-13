@@ -6,7 +6,7 @@ status: in_progress
 priority: P0
 created: 2026-02-13
 code_paths:
-  - packages/@lumenflow/core/src/wu-done-worktree.ts
+  - packages/@lumenflow/core/src/wu-done-initiative-sync.ts
 tests:
   manual:
     - Complete a WU linked to an initiative with pending phases and verify initiative does not end
