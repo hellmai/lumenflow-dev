@@ -137,9 +137,7 @@ describe('WU-1541: No process.chdir in normal execution paths', () => {
 
     it('should not treat literal marker text as a merge conflict', async () => {
       const nonConflictingGitAdapter = {
-        raw: vi
-          .fn()
-          .mockResolvedValue('merged\n+<<<<<<< HEAD\n+example fixture text\n+>>>>>>>'),
+        raw: vi.fn().mockResolvedValue('merged\n+<<<<<<< HEAD\n+example fixture text\n+>>>>>>>'),
       };
 
       vi.doMock('../git-adapter.js', () => ({
