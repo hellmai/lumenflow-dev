@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1634 — Fix wu:done silent mode-execution failure messaging](wu/WU-1634.yaml)
 
 ## Completed
 
