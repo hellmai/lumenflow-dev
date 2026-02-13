@@ -2,7 +2,7 @@ id: WU-1623
 title: Stabilize core full-suite timeout flake in gates
 lane: 'Framework: Core State Recovery'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -48,3 +48,6 @@ acceptance:
   - Behavioral intent of existing tests is preserved while runtime is made deterministic under
     full-suite load.
   - WU-1621 can reference this WU as fix-wu for audited skip-gates completion of pre-existing flake.
+locked: true
+completed_at: 2026-02-13T13:25:56.230Z
+completed: 2026-02-13

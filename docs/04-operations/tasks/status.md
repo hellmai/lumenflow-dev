@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1623 — Stabilize core full-suite timeout flake in gates](wu/WU-1623.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -574,3 +574,4 @@ _Last updated: 2026-02-13_
 - [WU-1633 — Harden CLI bootstrap fallback for lifecycle hotfixes](wu/WU-1633.yaml) — 2026-02-13
 - [WU-1631 — Add 4 missing subpath exports to @lumenflow/core (active-wu-detector, hardcoded-strings, linter-constants, prompt-linter)](wu/WU-1631.yaml) — 2026-02-13
 - [WU-1627 — Implement withAtomicMerge core executor with failure-injection tests](wu/WU-1627.yaml) — 2026-02-13
+- [WU-1623 — Stabilize core full-suite timeout flake in gates](wu/WU-1623.yaml) — 2026-02-13
