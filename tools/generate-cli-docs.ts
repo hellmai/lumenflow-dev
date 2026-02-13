@@ -326,10 +326,9 @@ function extractCommandMetadata(): CommandMetadata[] {
     lumenflow: 'Setup',
   };
 
-  const manifestCategoryOverrides: Record<string, string> = {
-    'Gates & Quality': 'Quality Gates',
-    'Setup & Development': 'Setup',
-  };
+  // Starlight categories should match the public manifest categories (WU-1656).
+  // Only override when the Starlight name must differ from the manifest name.
+  const manifestCategoryOverrides: Record<string, string> = {};
 
   // Manual options for commands that do not use createWUParser (Commander-only)
   const manualOptions: Record<string, WUOption[]> = {
@@ -480,8 +479,11 @@ function extractCommandMetadata(): CommandMetadata[] {
   for (const manifestCommand of PUBLIC_MANIFEST) {
     const binPath = binEntries[manifestCommand.binName] ?? manifestCommand.binPath;
     const extracted = extractFromBin(manifestCommand.binName, binPath);
+    // WU-1656: Prefer manifest category (source of truth), with optional
+    // override for Starlight-specific naming. Prefix-based lookup is last resort.
     const category =
       manifestCategoryOverrides[manifestCommand.category] ||
+      manifestCommand.category ||
       categories[manifestCommand.name.split(':')[0]] ||
       extracted.category;
 
@@ -900,10 +902,20 @@ function generateConfigMdx(sections: ConfigSection[]): string {
  * Maps internal categories to README section names.
  */
 const README_CATEGORIES: Record<string, string> = {
+  // Manifest category names (WU-1656: now used directly)
+  'WU Lifecycle': 'Work Unit Management',
+  'WU Maintenance': 'Work Unit Management',
+  'Gates & Quality': 'Verification & Gates',
+  'Memory & Sessions': 'Memory & Session',
+  Initiatives: 'Initiative Orchestration',
+  Plans: 'System & Setup',
+  Orchestration: 'Initiative Orchestration',
+  'Setup & Development': 'System & Setup',
+  'Metrics & Flow': 'Metrics & Analytics',
+  'State Management': 'System & Setup',
+  // Legacy prefix-based category names (fallback for non-manifest commands)
   'Work Units': 'Work Unit Management',
   'Memory Layer': 'Memory & Session',
-  Initiatives: 'Initiative Orchestration',
-  Orchestration: 'Initiative Orchestration',
   'Sub-Agents': 'Initiative Orchestration',
   'Flow Metrics': 'Metrics & Analytics',
   Metrics: 'Metrics & Analytics',

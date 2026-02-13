@@ -76,6 +76,7 @@
     "initiative-list": "./dist/initiative-list.js",
     "initiative-status": "./dist/initiative-status.js",
     "initiative-add-wu": "./dist/initiative-add-wu.js",
+    "initiative-remove-wu": "./dist/initiative-remove-wu.js",
     "initiative-plan": "./dist/initiative-plan.js",
     "init-plan": "./dist/initiative-plan.js",
     "plan-create": "./dist/plan-create.js",

@@ -15,91 +15,75 @@ LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiati
 
 ## Commands Overview
 
-| Category        | Commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Agent Lifecycle | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Flow Metrics    | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Initiatives     | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign`](#initiativebulk-assign), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| Memory Layer    | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:recover`](#memrecover), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage)                                                                                                                                                                                                                                                                                                                                         |
-| Metrics         | [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Orchestration   | [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Other           | [`init:plan`](#initplan), [`plan:create`](#plancreate), [`plan:edit`](#planedit), [`plan:link`](#planlink), [`plan:promote`](#planpromote), [`signal:cleanup`](#signalcleanup), [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Quality Gates   | [`gates`](#gates), [`gates:docs`](#gatesdocs), [`lane:health`](#lanehealth), [`lane:suggest`](#lanesuggest), [`lumenflow-gates`](#lumenflow-gates), [`lumenflow-validate`](#lumenflow-validate), [`validate`](#validate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Setup           | [`backlog:prune`](#backlogprune), [`docs:sync`](#docssync), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`lumenflow`](#lumenflow), [`lumenflow-init`](#lumenflow-init), [`lumenflow:commands`](#lumenflowcommands), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:integrate`](#lumenflowintegrate), [`lumenflow:metrics`](#lumenflowmetrics), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade), [`sync:templates`](#synctemplates) |
-| Sub-Agents      | [`spawn:list`](#spawnlist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| Work Units      | [`wu:block`](#wublock), [`wu:brief`](#wubrief), [`wu:claim`](#wuclaim), [`wu:cleanup`](#wucleanup), [`wu:create`](#wucreate), [`wu:delegate`](#wudelegate), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:infer-lane`](#wuinfer-lane), [`wu:preflight`](#wupreflight), [`wu:prep`](#wuprep), [`wu:proto`](#wuproto), [`wu:prune`](#wuprune), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:repair`](#wurepair), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:unlock-lane`](#wuunlock-lane), [`wu:validate`](#wuvalidate)                                                                                                                                                 |
+| Category            | Commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Gates & Quality     | [`gates`](#gates), [`gates:docs`](#gatesdocs), [`lane:health`](#lanehealth), [`lane:suggest`](#lanesuggest), [`lumenflow-gates`](#lumenflow-gates), [`lumenflow-validate`](#lumenflow-validate), [`validate`](#validate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Initiatives         | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign`](#initiativebulk-assign), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:remove-wu`](#initiativeremove-wu), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                                                                             |
+| Memory & Sessions   | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:recover`](#memrecover), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage), [`signal:cleanup`](#signalcleanup)                                                                                                                                                                                                                                                           |
+| Metrics & Flow      | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport), [`lumenflow:metrics`](#lumenflowmetrics), [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Orchestration       | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end), [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor), [`spawn:list`](#spawnlist)                                                                                                                                                                                                                                                                                                                                                               |
+| Plans               | [`init:plan`](#initplan), [`plan:create`](#plancreate), [`plan:edit`](#planedit), [`plan:link`](#planlink), [`plan:promote`](#planpromote)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Setup & Development | [`backlog:prune`](#backlogprune), [`docs:sync`](#docssync), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`lumenflow`](#lumenflow), [`lumenflow-init`](#lumenflow-init), [`lumenflow:commands`](#lumenflowcommands), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:integrate`](#lumenflowintegrate), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade), [`sync:templates`](#synctemplates) |
+| State Management    | [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| WU Lifecycle        | [`wu:block`](#wublock), [`wu:brief`](#wubrief), [`wu:claim`](#wuclaim), [`wu:create`](#wucreate), [`wu:delegate`](#wudelegate), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:prep`](#wuprep), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:validate`](#wuvalidate)                                                                                                                                                                                                                                                                                                                                                                   |
+| WU Maintenance      | [`wu:cleanup`](#wucleanup), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:infer-lane`](#wuinfer-lane), [`wu:preflight`](#wupreflight), [`wu:proto`](#wuproto), [`wu:prune`](#wuprune), [`wu:repair`](#wurepair), [`wu:unlock-lane`](#wuunlock-lane)                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
-## Agent Lifecycle
+## Gates & Quality
 
-### agent:issues-query
+### gates
 
-Query GitHub issues for agent work
+Run all quality gates
 
 ```bash
-pnpm agent:issues-query
+pnpm gates
 ```
 
-### agent:log-issue
+### gates:docs
 
-Log issue during agent session
+Run docs-only quality gates (alias)
 
 ```bash
-pnpm agent:log-issue --category <cat> --severity <sev> --title <title> --description <desc>
+pnpm gates:docs
 ```
 
-**Options:**
+### lane:health
 
-| Flag                         | Description                                  | Required |
-| ---------------------------- | -------------------------------------------- | -------- | --------- | --------- | ------ | --- |
-| `--category &lt;cat&gt;`     | Issue category (workflow                     | tooling  | confusion | violation | error) | Yes |
-| `--severity &lt;sev&gt;`     | Severity level (blocker                      | major    | minor     | info)     | Yes    |
-| `--title &lt;title&gt;`      | Short description (5-100 chars)              | Yes      |
-| `--description &lt;desc&gt;` | Detailed context (10-2000 chars)             | Yes      |
-| `--resolution &lt;res&gt;`   | How the issue was resolved                   | No       |
-| `--tag &lt;tag&gt;`          | Tag for categorization (repeatable)          | No       |
-| `--step &lt;step&gt;`        | Current workflow step (e.g., wu:done, gates) | No       |
-| `--file &lt;file&gt;`        | Related file path (repeatable)               | No       |
-
-### agent:session
-
-Start agent session
+Check lane config health
 
 ```bash
-pnpm agent:session --wu <wuId> --tier <tier>
+pnpm lane:health
 ```
 
-**Options:**
+### lane:suggest
 
-| Flag                        | Description                       | Required |
-| --------------------------- | --------------------------------- | -------- |
-| `--wu &lt;wuId&gt;`         | WU ID to work on (e.g., WU-1234)  | Yes      |
-| `--tier &lt;tier&gt;`       | Context tier (1, 2, or 3)         | Yes      |
-| `--agent-type &lt;type&gt;` | Agent type (default: claude-code) | No       |
-
-### agent:session-end
-
-End agent session
+Suggest lane for code paths
 
 ```bash
-pnpm agent:session-end
+pnpm lane:suggest
 ```
 
-## Flow Metrics
+### lumenflow-gates
 
-### flow:bottlenecks
-
-Identify flow bottlenecks
+Run all quality gates (alias)
 
 ```bash
-pnpm flow:bottlenecks
+pnpm lumenflow-gates
 ```
 
-### flow:report
+### lumenflow-validate
 
-Generate flow metrics report
+Run validation checks (alias)
 
 ```bash
-pnpm flow:report
+pnpm lumenflow-validate
+```
+
+### validate
+
+Run validation checks
+
+```bash
+pnpm validate
 ```
 
 ## Initiatives
@@ -209,6 +193,21 @@ pnpm initiative:plan --initiative <ref>
 | -------------------------- | ------------------------------------ | -------- |
 | `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes      |
 
+### initiative:remove-wu
+
+Remove WU from initiative
+
+```bash
+pnpm initiative:remove-wu --initiative <ref> --wu <wuId>
+```
+
+**Options:**
+
+| Flag                       | Description                          | Required |
+| -------------------------- | ------------------------------------ | -------- |
+| `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes      |
+| `--wu &lt;wuId&gt;`        | Work Unit ID to link (e.g., WU-123)  | Yes      |
+
 ### initiative:status
 
 Show initiative status
@@ -225,7 +224,7 @@ pnpm initiative:status
 | `--format &lt;format&gt;` | Output format (table, json, ascii, mermaid)                                      | No       |
 | `--color`                 | Enable colored output                                                            | No       |
 
-## Memory Layer
+## Memory & Sessions
 
 ### mem:checkpoint
 
@@ -496,7 +495,51 @@ pnpm mem:triage
 | `--json`                       | Output as JSON                                        | No       |
 | `-q, --quiet`                  | Suppress output except errors                         | No       |
 
-## Metrics
+### signal:cleanup
+
+Clean up stale signals
+
+```bash
+pnpm signal:cleanup
+```
+
+**Options:**
+
+| Flag                            | Description                                       | Required |
+| ------------------------------- | ------------------------------------------------- | -------- |
+| `--dry-run`                     | Preview cleanup without making changes            | No       |
+| `--ttl &lt;duration&gt;`        | TTL for read signals (e.g., 7d, 24h). Default: 7d | No       |
+| `--unread-ttl &lt;duration&gt;` | TTL for unread signals (e.g., 30d). Default: 30d  | No       |
+| `--max-entries &lt;count&gt;`   | Maximum signals to retain. Default: 500           | No       |
+| `--json`                        | Output as JSON                                    | No       |
+| `-q, --quiet`                   | Suppress output except errors                     | No       |
+| `-b, --base-dir &lt;path&gt;`   | Base directory (defaults to current directory)    | No       |
+
+## Metrics & Flow
+
+### flow:bottlenecks
+
+Identify flow bottlenecks
+
+```bash
+pnpm flow:bottlenecks
+```
+
+### flow:report
+
+Generate flow metrics report
+
+```bash
+pnpm flow:report
+```
+
+### lumenflow:metrics
+
+View workflow metrics (alias)
+
+```bash
+pnpm lumenflow:metrics
+```
 
 ### metrics
 
@@ -515,6 +558,59 @@ pnpm metrics:snapshot
 ```
 
 ## Orchestration
+
+### agent:issues-query
+
+Query GitHub issues for agent work
+
+```bash
+pnpm agent:issues-query
+```
+
+### agent:log-issue
+
+Log issue during agent session
+
+```bash
+pnpm agent:log-issue --category <cat> --severity <sev> --title <title> --description <desc>
+```
+
+**Options:**
+
+| Flag                         | Description                                  | Required |
+| ---------------------------- | -------------------------------------------- | -------- | --------- | --------- | ------ | --- |
+| `--category &lt;cat&gt;`     | Issue category (workflow                     | tooling  | confusion | violation | error) | Yes |
+| `--severity &lt;sev&gt;`     | Severity level (blocker                      | major    | minor     | info)     | Yes    |
+| `--title &lt;title&gt;`      | Short description (5-100 chars)              | Yes      |
+| `--description &lt;desc&gt;` | Detailed context (10-2000 chars)             | Yes      |
+| `--resolution &lt;res&gt;`   | How the issue was resolved                   | No       |
+| `--tag &lt;tag&gt;`          | Tag for categorization (repeatable)          | No       |
+| `--step &lt;step&gt;`        | Current workflow step (e.g., wu:done, gates) | No       |
+| `--file &lt;file&gt;`        | Related file path (repeatable)               | No       |
+
+### agent:session
+
+Start agent session
+
+```bash
+pnpm agent:session --wu <wuId> --tier <tier>
+```
+
+**Options:**
+
+| Flag                        | Description                       | Required |
+| --------------------------- | --------------------------------- | -------- |
+| `--wu &lt;wuId&gt;`         | WU ID to work on (e.g., WU-1234)  | Yes      |
+| `--tier &lt;tier&gt;`       | Context tier (1, 2, or 3)         | Yes      |
+| `--agent-type &lt;type&gt;` | Agent type (default: claude-code) | No       |
+
+### agent:session-end
+
+End agent session
+
+```bash
+pnpm agent:session-end
+```
 
 ### orchestrate:init-status
 
@@ -540,7 +636,23 @@ Monitor spawn/agent activity
 pnpm orchestrate:monitor
 ```
 
-## Other
+### spawn:list
+
+List active spawned agents
+
+```bash
+pnpm spawn:list
+```
+
+**Options:**
+
+| Flag                          | Description                                           | Required |
+| ----------------------------- | ----------------------------------------------------- | -------- |
+| `--wu &lt;wuId&gt;`           | Work Unit ID to link (e.g., WU-123)                   | No       |
+| `--initiative &lt;initId&gt;` | Initiative ID to show all spawns for (e.g., INIT-001) | No       |
+| `--json`                      | Output as JSON                                        | No       |
+
+## Plans
 
 ### init:plan
 
@@ -613,131 +725,7 @@ pnpm plan:promote --id <wuId>
 | ----------------------- | -------------------------------------------------------------------------------- | -------- |
 | `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
 
-### signal:cleanup
-
-Clean up stale signals
-
-```bash
-pnpm signal:cleanup
-```
-
-**Options:**
-
-| Flag                            | Description                                       | Required |
-| ------------------------------- | ------------------------------------------------- | -------- |
-| `--dry-run`                     | Preview cleanup without making changes            | No       |
-| `--ttl &lt;duration&gt;`        | TTL for read signals (e.g., 7d, 24h). Default: 7d | No       |
-| `--unread-ttl &lt;duration&gt;` | TTL for unread signals (e.g., 30d). Default: 30d  | No       |
-| `--max-entries &lt;count&gt;`   | Maximum signals to retain. Default: 500           | No       |
-| `--json`                        | Output as JSON                                    | No       |
-| `-q, --quiet`                   | Suppress output except errors                     | No       |
-| `-b, --base-dir &lt;path&gt;`   | Base directory (defaults to current directory)    | No       |
-
-### state:bootstrap
-
-Bootstrap state store
-
-```bash
-pnpm state:bootstrap
-```
-
-### state:cleanup
-
-Clean up stale state data
-
-```bash
-pnpm state:cleanup
-```
-
-**Options:**
-
-| Flag                          | Description                                    | Required |
-| ----------------------------- | ---------------------------------------------- | -------- |
-| `--dry-run`                   | Preview cleanup without making changes         | No       |
-| `--signals-only`              | Only execute signal cleanup                    | No       |
-| `--memory-only`               | Only execute memory cleanup                    | No       |
-| `--events-only`               | Only execute event archival                    | No       |
-| `--json`                      | Output as JSON                                 | No       |
-| `-q, --quiet`                 | Suppress output except errors and summary      | No       |
-| `-b, --base-dir &lt;path&gt;` | Base directory (defaults to current directory) | No       |
-
-### state:doctor
-
-Diagnose state store issues
-
-```bash
-pnpm state:doctor
-```
-
-**Options:**
-
-| Flag                          | Description                                    | Required |
-| ----------------------------- | ---------------------------------------------- | -------- |
-| `--fix`                       | Auto-repair safe issues                        | No       |
-| `--dry-run`                   | Preview repairs without making changes         | No       |
-| `--json`                      | Output as JSON                                 | No       |
-| `-q, --quiet`                 | Suppress output except errors and summary      | No       |
-| `-b, --base-dir &lt;path&gt;` | Base directory (defaults to current directory) | No       |
-
-## Quality Gates
-
-### gates
-
-Run all quality gates
-
-```bash
-pnpm gates
-```
-
-### gates:docs
-
-Run docs-only quality gates (alias)
-
-```bash
-pnpm gates:docs
-```
-
-### lane:health
-
-Check lane config health
-
-```bash
-pnpm lane:health
-```
-
-### lane:suggest
-
-Suggest lane for code paths
-
-```bash
-pnpm lane:suggest
-```
-
-### lumenflow-gates
-
-Run all quality gates (alias)
-
-```bash
-pnpm lumenflow-gates
-```
-
-### lumenflow-validate
-
-Run validation checks (alias)
-
-```bash
-pnpm lumenflow-validate
-```
-
-### validate
-
-Run validation checks
-
-```bash
-pnpm validate
-```
-
-## Setup
+## Setup & Development
 
 ### backlog:prune
 
@@ -867,14 +855,6 @@ Generate enforcement hooks for client
 pnpm lumenflow:integrate
 ```
 
-### lumenflow:metrics
-
-View workflow metrics (alias)
-
-```bash
-pnpm lumenflow:metrics
-```
-
 ### lumenflow:release
 
 Run release workflow
@@ -907,25 +887,55 @@ Sync templates to project (alias)
 pnpm sync:templates
 ```
 
-## Sub-Agents
+## State Management
 
-### spawn:list
+### state:bootstrap
 
-List active spawned agents
+Bootstrap state store
 
 ```bash
-pnpm spawn:list
+pnpm state:bootstrap
+```
+
+### state:cleanup
+
+Clean up stale state data
+
+```bash
+pnpm state:cleanup
 ```
 
 **Options:**
 
-| Flag                          | Description                                           | Required |
-| ----------------------------- | ----------------------------------------------------- | -------- |
-| `--wu &lt;wuId&gt;`           | Work Unit ID to link (e.g., WU-123)                   | No       |
-| `--initiative &lt;initId&gt;` | Initiative ID to show all spawns for (e.g., INIT-001) | No       |
-| `--json`                      | Output as JSON                                        | No       |
+| Flag                          | Description                                    | Required |
+| ----------------------------- | ---------------------------------------------- | -------- |
+| `--dry-run`                   | Preview cleanup without making changes         | No       |
+| `--signals-only`              | Only execute signal cleanup                    | No       |
+| `--memory-only`               | Only execute memory cleanup                    | No       |
+| `--events-only`               | Only execute event archival                    | No       |
+| `--json`                      | Output as JSON                                 | No       |
+| `-q, --quiet`                 | Suppress output except errors and summary      | No       |
+| `-b, --base-dir &lt;path&gt;` | Base directory (defaults to current directory) | No       |
 
-## Work Units
+### state:doctor
+
+Diagnose state store issues
+
+```bash
+pnpm state:doctor
+```
+
+**Options:**
+
+| Flag                          | Description                                    | Required |
+| ----------------------------- | ---------------------------------------------- | -------- |
+| `--fix`                       | Auto-repair safe issues                        | No       |
+| `--dry-run`                   | Preview repairs without making changes         | No       |
+| `--json`                      | Output as JSON                                 | No       |
+| `-q, --quiet`                 | Suppress output except errors and summary      | No       |
+| `-b, --base-dir &lt;path&gt;` | Base directory (defaults to current directory) | No       |
+
+## WU Lifecycle
 
 ### wu:block
 
@@ -982,21 +992,6 @@ pnpm wu:claim --id <wuId> --lane <lane>
 | `--skip-setup`                | Skip automatic pnpm install in worktree after creation (faster claims when deps already built)                                                                                                         | No       |
 | `--no-push`                   | Skip pushing claim branch or canonical updates (air-gapped/offline)                                                                                                                                    | No       |
 
-### wu:cleanup
-
-Cleanup after PR merge
-
-```bash
-pnpm wu:cleanup
-```
-
-**Options:**
-
-| Flag                    | Description                                                                      | Required |
-| ----------------------- | -------------------------------------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
-| `--artifacts`           | Remove build artifacts (dist, tsbuildinfo) in current worktree                   | No       |
-
 ### wu:create
 
 Create new WU spec
@@ -1043,39 +1038,6 @@ Generate delegation prompt and record explicit lineage intent
 ```bash
 pnpm wu:delegate
 ```
-
-### wu:delete
-
-Delete WU spec and cleanup
-
-```bash
-pnpm wu:delete
-```
-
-**Options:**
-
-| Flag                    | Description                                                                      | Required |
-| ----------------------- | -------------------------------------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
-| `--dry-run`             | Show what would be deleted without making changes                                | No       |
-| `--batch &lt;ids&gt;`   | Delete multiple WUs atomically (comma-separated: WU-1,WU-2,WU-3)                 | No       |
-
-### wu:deps
-
-Show WU dependencies
-
-```bash
-pnpm wu:deps
-```
-
-**Options:**
-
-| Flag                         | Description                                                                      | Required |
-| ---------------------------- | -------------------------------------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;`      | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
-| `--format &lt;format&gt;`    | Output format (table, json, ascii, mermaid)                                      | No       |
-| `-d, --depth &lt;number&gt;` | Maximum traversal depth                                                          | No       |
-| `--direction &lt;dir&gt;`    | Graph direction (up, down, both)                                                 | No       |
 
 ### wu:done
 
@@ -1124,29 +1086,6 @@ pnpm wu:edit --id <wuId>
 | `--add-dep &lt;wuIds&gt;`           | Comma-separated WU IDs to add to dependencies array (appends to existing; use --replace-dependencies to overwrite)    | No       |
 | `--replace-dependencies`            | Replace existing dependencies instead of appending                                                                    | No       |
 
-### wu:infer-lane
-
-Infer lane from code paths/description
-
-```bash
-pnpm wu:infer-lane
-```
-
-### wu:preflight
-
-Pre-flight checks before wu:done
-
-```bash
-pnpm wu:preflight --id <wuId>
-```
-
-**Options:**
-
-| Flag                          | Description                                                                      | Required |
-| ----------------------------- | -------------------------------------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;`       | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
-| `-w, --worktree &lt;path&gt;` | Override worktree path                                                           | No       |
-
 ### wu:prep
 
 Run gates in worktree, prep for wu:done
@@ -1161,33 +1100,6 @@ pnpm wu:prep --id <wuId>
 | ----------------------- | -------------------------------------------------------------------------------- | -------- |
 | `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
 | `--docs-only`           | Run docs-only gates (format, spec-linter)                                        | No       |
-
-### wu:proto
-
-Create WU prototype
-
-```bash
-pnpm wu:proto --lane <lane> --title <title>
-```
-
-**Options:**
-
-| Flag                          | Description                                              | Required |
-| ----------------------------- | -------------------------------------------------------- | -------- |
-| `-l, --lane &lt;lane&gt;`     | Lane name (e.g., "Operations: Tooling")                  | Yes      |
-| `-t, --title &lt;title&gt;`   | Work Unit title                                          | Yes      |
-| `--description &lt;text&gt;`  | WU description text (Context/Problem/Solution)           | No       |
-| `--code-paths &lt;paths&gt;`  | Code paths (repeatable)                                  | No       |
-| `--labels &lt;labels&gt;`     | Labels (repeatable)                                      | No       |
-| `--assigned-to &lt;email&gt;` | Override assigned_to (defaults to git config user.email) | No       |
-
-### wu:prune
-
-Clean stale worktrees
-
-```bash
-pnpm wu:prune
-```
 
 ### wu:recover
 
@@ -1218,14 +1130,6 @@ pnpm wu:release --id <wuId> --reason <reason>
 | `-i, --id &lt;wuId&gt;`       | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
 | `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner)                 | Yes      |
 
-### wu:repair
-
-Repair WU state issues
-
-```bash
-pnpm wu:repair
-```
-
 ### wu:status
 
 Show WU status, location, valid commands
@@ -1254,6 +1158,129 @@ pnpm wu:unblock --id <wuId>
 | `--no-auto`                   | Skip auto-updating YAML/backlog/status                                           | No       |
 | `-f, --force`                 | Force operation                                                                  | No       |
 
+### wu:validate
+
+Validate WU spec
+
+```bash
+pnpm wu:validate
+```
+
+**Options:**
+
+| Flag                    | Description                                                                                                           | Required |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID.                                      | No       |
+| `--no-strict`           | Bypass strict validation (skip code_paths/test_paths existence checks, treat warnings as advisory). Logged when used. | No       |
+
+## WU Maintenance
+
+### wu:cleanup
+
+Cleanup after PR merge
+
+```bash
+pnpm wu:cleanup
+```
+
+**Options:**
+
+| Flag                    | Description                                                                      | Required |
+| ----------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
+| `--artifacts`           | Remove build artifacts (dist, tsbuildinfo) in current worktree                   | No       |
+
+### wu:delete
+
+Delete WU spec and cleanup
+
+```bash
+pnpm wu:delete
+```
+
+**Options:**
+
+| Flag                    | Description                                                                      | Required |
+| ----------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
+| `--dry-run`             | Show what would be deleted without making changes                                | No       |
+| `--batch &lt;ids&gt;`   | Delete multiple WUs atomically (comma-separated: WU-1,WU-2,WU-3)                 | No       |
+
+### wu:deps
+
+Show WU dependencies
+
+```bash
+pnpm wu:deps
+```
+
+**Options:**
+
+| Flag                         | Description                                                                      | Required |
+| ---------------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`      | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | No       |
+| `--format &lt;format&gt;`    | Output format (table, json, ascii, mermaid)                                      | No       |
+| `-d, --depth &lt;number&gt;` | Maximum traversal depth                                                          | No       |
+| `--direction &lt;dir&gt;`    | Graph direction (up, down, both)                                                 | No       |
+
+### wu:infer-lane
+
+Infer lane from code paths/description
+
+```bash
+pnpm wu:infer-lane
+```
+
+### wu:preflight
+
+Pre-flight checks before wu:done
+
+```bash
+pnpm wu:preflight --id <wuId>
+```
+
+**Options:**
+
+| Flag                          | Description                                                                      | Required |
+| ----------------------------- | -------------------------------------------------------------------------------- | -------- |
+| `-i, --id &lt;wuId&gt;`       | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
+| `-w, --worktree &lt;path&gt;` | Override worktree path                                                           | No       |
+
+### wu:proto
+
+Create WU prototype
+
+```bash
+pnpm wu:proto --lane <lane> --title <title>
+```
+
+**Options:**
+
+| Flag                          | Description                                              | Required |
+| ----------------------------- | -------------------------------------------------------- | -------- |
+| `-l, --lane &lt;lane&gt;`     | Lane name (e.g., "Operations: Tooling")                  | Yes      |
+| `-t, --title &lt;title&gt;`   | Work Unit title                                          | Yes      |
+| `--description &lt;text&gt;`  | WU description text (Context/Problem/Solution)           | No       |
+| `--code-paths &lt;paths&gt;`  | Code paths (repeatable)                                  | No       |
+| `--labels &lt;labels&gt;`     | Labels (repeatable)                                      | No       |
+| `--assigned-to &lt;email&gt;` | Override assigned_to (defaults to git config user.email) | No       |
+
+### wu:prune
+
+Clean stale worktrees
+
+```bash
+pnpm wu:prune
+```
+
+### wu:repair
+
+Repair WU state issues
+
+```bash
+pnpm wu:repair
+```
+
 ### wu:unlock-lane
 
 Unlock stuck lane
@@ -1269,21 +1296,6 @@ pnpm wu:unlock-lane
 | `-l, --lane &lt;lane&gt;`     | Lane name (e.g., "Operations: Tooling")                          | No       |
 | `-r, --reason &lt;reason&gt;` | Reason for action (required with --skip-gates, --override-owner) | No       |
 | `-f, --force`                 | Force operation                                                  | No       |
-
-### wu:validate
-
-Validate WU spec
-
-```bash
-pnpm wu:validate
-```
-
-**Options:**
-
-| Flag                    | Description                                                                                                           | Required |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID.                                      | No       |
-| `--no-strict`           | Bypass strict validation (skip code_paths/test_paths existence checks, treat warnings as advisory). Logged when used. | No       |
 
 ---
 

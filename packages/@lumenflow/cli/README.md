@@ -78,51 +78,54 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### Memory & Session
 
-| Command              | Description                                |
-| -------------------- | ------------------------------------------ |
-| `agent-issues-query` | Query GitHub issues for agent work         |
-| `agent-log-issue`    | Log issue during agent session             |
-| `agent-session`      | Start agent session                        |
-| `agent-session-end`  | End agent session                          |
-| `mem-checkpoint`     | Save progress checkpoint                   |
-| `mem-cleanup`        | Clean up stale memory data                 |
-| `mem-context`        | Get context for current lane/WU            |
-| `mem-create`         | Create memory node (bug discovery)         |
-| `mem-delete`         | Delete/archive a memory node               |
-| `mem-export`         | Export memory as markdown                  |
-| `mem-inbox`          | Check coordination signals                 |
-| `mem-init`           | Initialize memory for WU                   |
-| `mem-ready`          | Check pending memory nodes                 |
-| `mem-recover`        | Generate recovery context after compaction |
-| `mem-signal`         | Broadcast coordination signal              |
-| `mem-start`          | Start a memory session                     |
-| `mem-summarize`      | Summarize memory context                   |
-| `mem-triage`         | Triage discovered bugs                     |
+| Command          | Description                                |
+| ---------------- | ------------------------------------------ |
+| `mem-checkpoint` | Save progress checkpoint                   |
+| `mem-cleanup`    | Clean up stale memory data                 |
+| `mem-context`    | Get context for current lane/WU            |
+| `mem-create`     | Create memory node (bug discovery)         |
+| `mem-delete`     | Delete/archive a memory node               |
+| `mem-export`     | Export memory as markdown                  |
+| `mem-inbox`      | Check coordination signals                 |
+| `mem-init`       | Initialize memory for WU                   |
+| `mem-ready`      | Check pending memory nodes                 |
+| `mem-recover`    | Generate recovery context after compaction |
+| `mem-signal`     | Broadcast coordination signal              |
+| `mem-start`      | Start a memory session                     |
+| `mem-summarize`  | Summarize memory context                   |
+| `mem-triage`     | Triage discovered bugs                     |
+| `signal-cleanup` | Clean up stale signals                     |
 
 ### Initiative Orchestration
 
-| Command                      | Description                      |
-| ---------------------------- | -------------------------------- |
-| `initiative-add-wu`          | Add WU to initiative             |
-| `initiative-bulk-assign-wus` | Bulk assign WUs to initiative    |
-| `initiative-create`          | Create new initiative            |
-| `initiative-edit`            | Edit initiative fields           |
-| `initiative-list`            | List all initiatives             |
-| `initiative-plan`            | Link plan to initiative          |
-| `initiative-status`          | Show initiative status           |
-| `orchestrate-init-status`    | Compact initiative progress view |
-| `orchestrate-initiative`     | Orchestrate initiative execution |
-| `orchestrate-monitor`        | Monitor spawn/agent activity     |
-| `spawn-list`                 | List active spawned agents       |
+| Command                      | Description                        |
+| ---------------------------- | ---------------------------------- |
+| `agent-issues-query`         | Query GitHub issues for agent work |
+| `agent-log-issue`            | Log issue during agent session     |
+| `agent-session`              | Start agent session                |
+| `agent-session-end`          | End agent session                  |
+| `initiative-add-wu`          | Add WU to initiative               |
+| `initiative-bulk-assign-wus` | Bulk assign WUs to initiative      |
+| `initiative-create`          | Create new initiative              |
+| `initiative-edit`            | Edit initiative fields             |
+| `initiative-list`            | List all initiatives               |
+| `initiative-plan`            | Link plan to initiative            |
+| `initiative-remove-wu`       | Remove WU from initiative          |
+| `initiative-status`          | Show initiative status             |
+| `orchestrate-init-status`    | Compact initiative progress view   |
+| `orchestrate-initiative`     | Orchestrate initiative execution   |
+| `orchestrate-monitor`        | Monitor spawn/agent activity       |
+| `spawn-list`                 | List active spawned agents         |
 
 ### Metrics & Analytics
 
-| Command            | Description                  |
-| ------------------ | ---------------------------- |
-| `flow-bottlenecks` | Identify flow bottlenecks    |
-| `flow-report`      | Generate flow metrics report |
-| `metrics`          | View workflow metrics        |
-| `metrics-snapshot` | Capture metrics snapshot     |
+| Command             | Description                   |
+| ------------------- | ----------------------------- |
+| `flow-bottlenecks`  | Identify flow bottlenecks     |
+| `flow-report`       | Generate flow metrics report  |
+| `lumenflow-metrics` | View workflow metrics (alias) |
+| `metrics`           | View workflow metrics         |
+| `metrics-snapshot`  | Capture metrics snapshot      |
 
 ### Lane Tooling
 
@@ -152,7 +155,6 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `lumenflow-doctor`         | Diagnose LumenFlow configuration          |
 | `lumenflow-init`           | Initialize LumenFlow in a project (alias) |
 | `lumenflow-integrate`      | Generate enforcement hooks for client     |
-| `lumenflow-metrics`        | View workflow metrics (alias)             |
 | `lumenflow-release`        | Run release workflow                      |
 | `lumenflow-sync-templates` | Sync templates to project                 |
 | `lumenflow-upgrade`        | Upgrade LumenFlow packages                |
@@ -160,7 +162,6 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `plan-edit`                | Edit plan content                         |
 | `plan-link`                | Link plan to WU or initiative             |
 | `plan-promote`             | Promote plan to WU                        |
-| `signal-cleanup`           | Clean up stale signals                    |
 | `state-bootstrap`          | Bootstrap state store                     |
 | `state-cleanup`            | Clean up stale state data                 |
 | `state-doctor`             | Diagnose state store issues               |

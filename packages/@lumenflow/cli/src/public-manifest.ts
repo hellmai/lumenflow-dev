@@ -419,6 +419,13 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     category: COMMAND_CATEGORIES.INITIATIVES,
   },
   {
+    name: 'initiative:remove-wu',
+    binName: 'initiative-remove-wu',
+    binPath: './dist/initiative-remove-wu.js',
+    description: 'Remove WU from initiative',
+    category: COMMAND_CATEGORIES.INITIATIVES,
+  },
+  {
     name: 'initiative:plan',
     binName: 'initiative-plan',
     binPath: './dist/initiative-plan.js',
