@@ -18,7 +18,7 @@ phases:
     status: in_progress
   - id: 3
     title: 'Phase 3: Coverage Hardening + Cleanup'
-    status: in_progress
+    status: done
 success_metrics:
   - All listed decompositions are completed via new files + thin barrels with backward-compatible
     exports

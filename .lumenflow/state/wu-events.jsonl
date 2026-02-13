@@ -1262,3 +1262,4 @@
 {"type":"claim","wuId":"WU-1647","timestamp":"2026-02-13T22:32:33.346Z","lane":"Framework: Core Lifecycle","title":"Split gates.ts into runners, plan resolvers, and utilities"}
 {"type":"complete","wuId":"WU-1651","timestamp":"2026-02-13T22:37:05.548Z"}
 {"type":"complete","wuId":"WU-1652","timestamp":"2026-02-13T22:40:01.231Z"}
+{"type":"complete","wuId":"WU-1650","timestamp":"2026-02-13T22:44:42.211Z"}
