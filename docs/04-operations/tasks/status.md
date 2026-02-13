@@ -4,7 +4,6 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml)
 - [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml)
 - [WU-1647 — Split gates.ts into runners, plan resolvers, and utilities](wu/WU-1647.yaml)
 
@@ -607,3 +606,4 @@ _Last updated: 2026-02-13_
 - [WU-1652 — Extract wu-spawn.ts prompt builders and strategy resolver](wu/WU-1652.yaml) — 2026-02-13
 - [WU-1650 — Extract wu-edit.ts validation and apply operations](wu/WU-1650.yaml) — 2026-02-13
 - [WU-1662 — Define typed XState wu:done pipeline machine in core](wu/WU-1662.yaml) — 2026-02-13
+- [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml) — 2026-02-13
