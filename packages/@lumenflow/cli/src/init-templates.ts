@@ -1963,4 +1963,3 @@ export const GATE_STUB_SCRIPTS: Record<string, string> = {
   typecheck:
     'echo "[lumenflow] typecheck stub -- add TypeScript or your type checker to enable this gate (e.g. tsc --noEmit)" && exit 0',
 };
-
