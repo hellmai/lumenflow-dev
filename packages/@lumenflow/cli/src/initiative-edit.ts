@@ -10,6 +10,7 @@
  * - Setting blocked_by and blocked_reason
  * - Unblocking initiatives
  * - Adding lanes
+ * - Renaming phase titles
  * - Appending notes
  * - Fixing malformed created dates (WU-2547)
  *
@@ -28,6 +29,7 @@
  *   pnpm initiative:edit --id INIT-001 --unblock
  *   pnpm initiative:edit --id INIT-001 --add-lane "Operations: Tooling"
  *   pnpm initiative:edit --id INIT-001 --notes "Phase 2 started"
+ *   pnpm initiative:edit --id INIT-001 --phase-id 1 --phase-title "Phase 1: Foundation"
  *
  * Part of WU-1451: Add initiative:edit command for updating initiative status and blockers
  * @see {@link packages/@lumenflow/cli/src/lib/micro-worktree.ts} - Shared micro-worktree logic
@@ -168,6 +170,11 @@ const EDIT_OPTIONS = {
     flags: '--phase-status <status>',
     description: `Update phase status (${PHASE_STATUSES.join(', ')})`,
   },
+  phaseTitle: {
+    name: 'phaseTitle',
+    flags: '--phase-title <title>',
+    description: 'Update phase title (use with --phase-id)',
+  },
   // WU-2547: Created date field
   created: {
     name: 'created',
@@ -200,6 +207,7 @@ function parseArgs() {
       // WU-1836: Phase status update options
       EDIT_OPTIONS.phaseId,
       EDIT_OPTIONS.phaseStatus,
+      EDIT_OPTIONS.phaseTitle,
       // WU-2547: Created date field
       EDIT_OPTIONS.created,
     ],
@@ -436,6 +444,17 @@ function applyPhaseStatusEdit(updated, phaseId, phaseStatus) {
 }
 
 /**
+ * Apply phase title update
+ */
+function applyPhaseTitleEdit(updated, phaseId, phaseTitle) {
+  const numericId = Number(phaseId);
+  const phase = updated.phases.find((p) => p.id === numericId);
+  if (phase) {
+    phase.title = phaseTitle;
+  }
+}
+
+/**
  * Apply edits to Initiative YAML
  * Returns the updated Initiative object
  */
@@ -459,6 +478,10 @@ export function applyEdits(initiative, opts) {
   // WU-1836: Phase status update
   if (opts.phaseId && opts.phaseStatus) {
     applyPhaseStatusEdit(updated, opts.phaseId, opts.phaseStatus);
+  }
+
+  if (opts.phaseId && opts.phaseTitle) {
+    applyPhaseTitleEdit(updated, opts.phaseId, opts.phaseTitle);
   }
 
   // WU-2547: Created date update
@@ -485,6 +508,7 @@ export function hasAnyEdits(opts) {
     (opts.addPhase && opts.addPhase.length > 0) ||
     (opts.addSuccessMetric && opts.addSuccessMetric.length > 0) ||
     (opts.removeSuccessMetric && opts.removeSuccessMetric.length > 0) ||
+    Boolean(opts.phaseTitle) ||
     (opts.phaseId && opts.phaseStatus) ||
     opts.created
   );
@@ -507,6 +531,7 @@ export function buildNoEditsMessage() {
     '  --add-phase <title>         Add phase with auto-incremented id (repeatable)\n' +
     '  --add-success-metric <text> Add success metric (repeatable, deduplicated)\n' +
     '  --remove-success-metric <text> Remove success metric (repeatable, exact match)\n' +
+    '  --phase-id <id> --phase-title <title>  Update specific phase title\n' +
     '  --phase-id <id> --phase-status <status>  Update specific phase status\n' +
     '  --created <YYYY-MM-DD>      Set created date'
   );
@@ -530,23 +555,34 @@ async function main() {
   validateInitIdFormat(id);
   const originalInit = loadInitiative(id);
 
-  // WU-1836: Validate --phase-id and --phase-status are used together
-  if (opts.phaseId && !opts.phaseStatus) {
+  // WU-1836/WU-1667: Validate phase edit options are used with --phase-id
+  const hasPhaseStatusEdit = Boolean(opts.phaseStatus);
+  const hasPhaseTitleEdit = Boolean(opts.phaseTitle);
+  const hasAnyPhaseEdit = hasPhaseStatusEdit || hasPhaseTitleEdit;
+
+  if (opts.phaseId && !hasAnyPhaseEdit) {
     die(
-      `--phase-status is required when using --phase-id.\n\n` +
-        `Usage: pnpm initiative:edit --id ${id} --phase-id ${opts.phaseId} --phase-status done`,
+      `--phase-status or --phase-title is required when using --phase-id.\n\n` +
+        `Usage: pnpm initiative:edit --id ${id} --phase-id ${opts.phaseId} --phase-status done\n` +
+        `   or: pnpm initiative:edit --id ${id} --phase-id ${opts.phaseId} --phase-title "Phase title"`,
     );
   }
-  if (opts.phaseStatus && !opts.phaseId) {
+  if (hasAnyPhaseEdit && !opts.phaseId) {
+    const usedFlag = hasPhaseTitleEdit ? '--phase-title' : '--phase-status';
     die(
-      `--phase-id is required when using --phase-status.\n\n` +
-        `Usage: pnpm initiative:edit --id ${id} --phase-id 1 --phase-status ${opts.phaseStatus}`,
+      `--phase-id is required when using ${usedFlag}.\n\n` +
+        `Usage: pnpm initiative:edit --id ${id} --phase-id 1 --phase-status ${
+          opts.phaseStatus || 'done'
+        }\n` +
+        `   or: pnpm initiative:edit --id ${id} --phase-id 1 --phase-title "Phase title"`,
     );
   }
 
-  // WU-1836: Validate phase exists and status is valid enum before proceeding
-  if (opts.phaseId && opts.phaseStatus) {
+  // WU-1836/WU-1667: Validate phase exists and status enum before applying edits
+  if (opts.phaseId && hasAnyPhaseEdit) {
     validatePhaseExists(originalInit, opts.phaseId);
+  }
+  if (opts.phaseStatus) {
     validatePhaseStatus(opts.phaseStatus);
   }
 

@@ -82,6 +82,7 @@ type InitiativeEditCliArgs = {
   removeSuccessMetric?: string[];
   phaseId?: string;
   phaseStatus?: string;
+  phaseTitle?: string;
   created?: string;
 };
 
@@ -126,6 +127,7 @@ export function normalizeInitiativeEditCliArgs(
     remove_success_metric: args.removeSuccessMetric,
     phase_id: args.phaseId,
     phase_status: args.phaseStatus,
+    phase_title: args.phaseTitle,
     created: args.created,
   };
 }

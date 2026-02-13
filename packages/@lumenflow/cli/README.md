@@ -98,24 +98,24 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### Initiative Orchestration
 
-| Command                      | Description                        |
-| ---------------------------- | ---------------------------------- |
-| `agent-issues-query`         | Query GitHub issues for agent work |
-| `agent-log-issue`            | Log issue during agent session     |
-| `agent-session`              | Start agent session                |
-| `agent-session-end`          | End agent session                  |
-| `initiative-add-wu`          | Add WU to initiative               |
-| `initiative-bulk-assign-wus` | Bulk assign WUs to initiative      |
-| `initiative-create`          | Create new initiative              |
-| `initiative-edit`            | Edit initiative fields             |
-| `initiative-list`            | List all initiatives               |
-| `initiative-plan`            | Link plan to initiative            |
-| `initiative-remove-wu`       | Remove WU from initiative          |
-| `initiative-status`          | Show initiative status             |
-| `orchestrate-init-status`    | Compact initiative progress view   |
-| `orchestrate-initiative`     | Orchestrate initiative execution   |
-| `orchestrate-monitor`        | Monitor spawn/agent activity       |
-| `spawn-list`                 | List active spawned agents         |
+| Command                      | Description                               |
+| ---------------------------- | ----------------------------------------- |
+| `agent-issues-query`         | Query GitHub issues for agent work        |
+| `agent-log-issue`            | Log issue during agent session            |
+| `agent-session`              | Start agent session                       |
+| `agent-session-end`          | End agent session                         |
+| `initiative-add-wu`          | Add WU to initiative                      |
+| `initiative-bulk-assign-wus` | Bulk assign WUs to initiative             |
+| `initiative-create`          | Create new initiative                     |
+| `initiative-edit`            | Edit initiative fields and phase metadata |
+| `initiative-list`            | List all initiatives                      |
+| `initiative-plan`            | Link plan to initiative                   |
+| `initiative-remove-wu`       | Remove WU from initiative                 |
+| `initiative-status`          | Show initiative status                    |
+| `orchestrate-init-status`    | Compact initiative progress view          |
+| `orchestrate-initiative`     | Orchestrate initiative execution          |
+| `orchestrate-monitor`        | Monitor spawn/agent activity              |
+| `spawn-list`                 | List active spawned agents                |
 
 ### Metrics & Analytics
 
