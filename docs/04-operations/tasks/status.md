@@ -4,7 +4,6 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1626 — Extract micro-worktree shared helper surface](wu/WU-1626.yaml)
 - [WU-1631 — Add 4 missing subpath exports to @lumenflow/core (active-wu-detector, hardcoded-strings, linter-constants, prompt-linter)](wu/WU-1631.yaml)
 
 ## Completed
@@ -570,3 +569,4 @@ _Last updated: 2026-02-13_
 - [WU-1624 — Prevent local state divergence after failed wu:done recovery](wu/WU-1624.yaml) — 2026-02-13
 - [WU-1621 — Harden initiative metadata writes against origin movement](wu/WU-1621.yaml) — 2026-02-13
 - [WU-1625 — Add 8 missing subpath exports to @lumenflow/core for consumer compatibility](wu/WU-1625.yaml) — 2026-02-13
+- [WU-1626 — Extract micro-worktree shared helper surface](wu/WU-1626.yaml) — 2026-02-13

@@ -2,7 +2,7 @@ id: WU-1626
 title: Extract micro-worktree shared helper surface
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -45,3 +45,6 @@ acceptance:
     stable exports
   - micro-worktree.ts imports/re-exports the shared helpers without behavior changes
   - core callers remain backward compatible via unchanged public exports
+locked: true
+completed_at: 2026-02-13T12:04:24.698Z
+completed: 2026-02-13
