@@ -1,0 +1,43 @@
+id: WU-1630
+title: Remove obsolete dirty-main rollback and post-merge recovery paths after burn-in
+lane: 'Framework: CLI Orchestration'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-13
+code_paths:
+  - packages/@lumenflow/core/src/wu-done-worktree.ts
+  - packages/@lumenflow/core/src/wu-done-branch-only.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+tests:
+  manual:
+    - Run wu:prep then wu:done on a real test WU and verify clean main status after completion
+  unit:
+    - packages/@lumenflow/core/src/__tests__/atomic-merge.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1630.done
+dependencies: []
+initiative: INIT-026
+phase: 4
+blocked_by:
+  - WU-1628
+  - WU-1629
+spec_refs:
+  - lumenflow://plans/joyful-dazzling-rossum.md
+risks: []
+notes: Phase 2 cleanup WU after short burn-in on WU-1628/WU-1629.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: After atomic merge has burned in, remove dead rollback/recovery paths that only existed for live-main merge side effects. Simplify catch/cleanup paths in core and remove post-merge dirty-main remediation logic in CLI wu-done.
+acceptance:
+  - worktree and branch-only code paths no longer contain live-main rollback utilities made obsolete by atomic merge
+  - cli wu-done post-merge dirty-main restore/check logic is removed where no longer needed
+  - remaining error paths are simpler and preserve clear terminal guidance
