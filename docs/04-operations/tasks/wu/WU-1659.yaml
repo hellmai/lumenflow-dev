@@ -2,7 +2,7 @@ id: WU-1659
 title: wu:done eliminate duplicate full-gates runs and reduce flake amplification
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -51,3 +51,6 @@ session_id: a33910d1-4099-4865-a928-7abc2eebbb30
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T20:43:02.521Z
+locked: true
+completed_at: 2026-02-13T20:49:33.048Z
+completed: 2026-02-13
