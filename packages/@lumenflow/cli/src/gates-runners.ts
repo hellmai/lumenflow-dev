@@ -11,7 +11,7 @@ import { spawnSync } from 'node:child_process';
 import { writeSync } from 'node:fs';
 import { access } from 'node:fs/promises';
 import path from 'node:path';
-import { getChangedLintableFiles, isLintableFile } from '@lumenflow/core/incremental-lint';
+import { getChangedLintableFiles } from '@lumenflow/core/incremental-lint';
 import { buildVitestChangedArgs, isCodeFilePath } from '@lumenflow/core/incremental-test';
 import { createGitForPath } from '@lumenflow/core/git-adapter';
 import { resolveGatesCommands, resolveTestRunner } from '@lumenflow/core/gates-config';
