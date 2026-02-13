@@ -54,5 +54,7 @@ Execution strategy (no feature flag, direct replacement):
 
 ## References
 
-- ID: INIT-026
-- Created: 2026-02-13
+- Initiative: INIT-026
+- Execution WUs: WU-1626, WU-1627, WU-1628, WU-1629, WU-1630
+- Linked plan URI: lumenflow://plans/INIT-026-plan.md
+- Source draft: /home/USER/.claude/plans/joyful-dazzling-rossum.md
