@@ -30,7 +30,9 @@ Phase 1 (state-machine foundation): WU-1661 reconcile initiative metadata; WU-16
 
 ## Open Questions
 
-- Resolved: Use XState v5 for wu:done pipeline orchestration and keep WU lifecycle state-machine hand-rolled/typed unless lifecycle complexity materially grows.\n- Resolved: Use @xstate/graph (not deprecated @xstate/test) for model-based transition coverage where feasible.\n- Pending: Decide whether waiting-state sign-off flow belongs in a separate initiative after INIT-025 Phase 1 completion.
+- Resolved: Use XState v5 for wu:done pipeline orchestration and keep WU lifecycle state-machine hand-rolled/typed unless lifecycle complexity materially grows.
+- Resolved: Use @xstate/graph (not deprecated @xstate/test) for model-based transition coverage where feasible.
+- Pending: Decide whether waiting-state sign-off flow belongs in a separate initiative after INIT-025 Phase 1 completion.
 
 ## References
 
