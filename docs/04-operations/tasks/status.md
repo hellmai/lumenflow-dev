@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1659 — wu:done eliminate duplicate full-gates runs and reduce flake amplification](wu/WU-1659.yaml)
 
 ## Completed
 
