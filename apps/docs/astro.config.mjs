@@ -52,6 +52,12 @@ export default defineConfig({
             { label: 'Cookbook', slug: 'guides/cookbook' },
             { label: 'Initiatives', slug: 'guides/initiatives' },
             { label: 'Flow Metrics', slug: 'guides/metrics' },
+          ],
+        },
+        {
+          label: 'Tooling & Lifecycle',
+          items: [
+            { label: 'WU Completion Workflow', slug: 'guides/wu-prep-workflow' },
             { label: 'Troubleshooting', slug: 'guides/troubleshooting' },
           ],
         },
