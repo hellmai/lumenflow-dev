@@ -16,14 +16,7 @@ Phase 1 (state-machine foundation): WU-1661 reconcile initiative metadata; WU-16
 
 ## Success Criteria
 
-- No file in the wu:done pipeline exceeds 500 lines (orchestrator) or 800 lines (phase modules)
-- wu:done has an explicit, typed state machine with documented state transitions
-- Single rollback mechanism (TransactionManager) replaces the current 4
-- Gates execute exactly once per wu:done invocation (by design, not by dedup hack)
-- Zero P0 EMERGENCY FIX comments remain in production code
-- 80%+ test coverage on all new/decomposed modules
-- All 10 target god files are under 800 lines (or have documented exceptions)
-- No behavioral regressions: wu:done public API and workflow semantics unchanged
+- INIT-025 metadata, linked plan, and execution WUs are mutually consistent and actionable.\n- wu:done pipeline is represented by explicit typed states with validated transition/recovery paths.\n- Duplicate gate amplification remains eliminated while preserving required safety checks.\n- Existing mechanical decomposition WUs complete without regressions to public contracts.\n- Coverage and failure-path confidence increase measurably across state/recovery modules.
 
 ## Risks
 
