@@ -5,7 +5,6 @@ _Last updated: 2026-02-13_
 ## In Progress
 
 - [WU-1638 — Remove obsolete dirty-main defensive code after INIT-026 atomic merge](wu/WU-1638.yaml)
-- [WU-1637 — Expose tooling lifecycle and troubleshooting in Starlight navigation](wu/WU-1637.yaml)
 - [WU-1636 — Align AGENTS and LUMENFLOW entrypoint guidance to canonical lifecycle docs](wu/WU-1636.yaml)
 
 ## Completed
@@ -582,3 +581,4 @@ _Last updated: 2026-02-13_
 - [WU-1630 — Remove obsolete dirty-main rollback and post-merge recovery paths after burn-in](wu/WU-1630.yaml) — 2026-02-13
 - [WU-1635 — Document canonical lifecycle map and failure-mode runbook](wu/WU-1635.yaml) — 2026-02-13
 - [WU-1634 — Fix wu:done silent mode-execution failure messaging](wu/WU-1634.yaml) — 2026-02-13
+- [WU-1637 — Expose tooling lifecycle and troubleshooting in Starlight navigation](wu/WU-1637.yaml) — 2026-02-13

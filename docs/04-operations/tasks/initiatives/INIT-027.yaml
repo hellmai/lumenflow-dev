@@ -17,7 +17,7 @@ phases:
     status: in_progress
   - id: 3
     title: Starlight IA and discoverability
-    status: in_progress
+    status: done
 success_metrics:
   - Canonical lifecycle map and command-mode matrix published in operations docs
   - 'Failure-mode runbook covers recurring issues: main-behind-origin, partial-claim state, spawn

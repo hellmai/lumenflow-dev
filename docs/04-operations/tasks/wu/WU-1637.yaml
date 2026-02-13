@@ -2,7 +2,7 @@ id: WU-1637
 title: Expose tooling lifecycle and troubleshooting in Starlight navigation
 lane: 'Content: Site Comms'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -43,3 +43,6 @@ acceptance:
   - Starlight navigation includes discoverable entries for tooling lifecycle and troubleshooting
   - Docs-site landing/index content links users to canonical lifecycle and runbook pages
   - Navigation/link changes avoid duplication and point to single-source docs
+locked: true
+completed_at: 2026-02-13T14:28:28.838Z
+completed: 2026-02-13
