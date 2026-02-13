@@ -24,53 +24,30 @@
  *   pnpm wu:edit --id WU-123 --acceptance "Criterion 1" --acceptance "Criterion 2"
  *
  * Part of WU-1274: Add wu:edit command for spec-only changes
+ * WU-1650: Decomposed into wu-edit-validators.ts and wu-edit-operations.ts
  * @see {@link packages/@lumenflow/cli/src/lib/micro-worktree.ts} - Shared micro-worktree logic
  */
 
-import { getGitForCwd, createGitForPath } from '@lumenflow/core/git-adapter';
+import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { die } from '@lumenflow/core/error-handler';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-// WU-1352: Use centralized YAML helper instead of raw js-yaml (Emergency fix Session 2)
-// WU-1620: Import readWU for readiness summary
-import { parseYAML, stringifyYAML, readWU } from '@lumenflow/core/wu-yaml';
+import { stringifyYAML } from '@lumenflow/core/wu-yaml';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
-import { WU_PATHS, getStateStoreDirFromBacklog } from '@lumenflow/core/wu-paths';
-import { generateBacklog } from '@lumenflow/core/backlog-generator';
-import { WUStateStore } from '@lumenflow/core/wu-state-store';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import {
   FILE_SYSTEM,
   MICRO_WORKTREE_OPERATIONS,
   LOG_PREFIX,
   COMMIT_FORMATS,
-  WU_STATUS,
   getLaneBranch,
-  PKG_MANAGER,
-  SCRIPTS,
-  PRETTIER_FLAGS,
-  READINESS_UI,
-  // WU-1039: Import exposure values for validation (Library-First, no magic strings)
-  WU_EXPOSURE_VALUES,
 } from '@lumenflow/core/wu-constants';
 // WU-1593: Use centralized validateWUIDFormat (DRY)
 import { ensureOnMain, ensureMainUpToDate, validateWUIDFormat } from '@lumenflow/core/wu-helpers';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
-import { validateLaneFormat } from '@lumenflow/core/lane-checker';
-// WU-1620: Import validateSpecCompleteness for readiness summary
-// WU-1806: Import detectCurrentWorktree for worktree path resolution
-import {
-  defaultWorktreeFrom,
-  validateSpecCompleteness,
-  detectCurrentWorktree,
-} from '@lumenflow/core/wu-done-validators';
 import { validateReadyWU } from '@lumenflow/core/wu-schema';
-import { execSync } from 'node:child_process';
-// WU-1442: Import date normalization to fix date corruption from js-yaml
-import { normalizeToDateString } from '@lumenflow/core/date-utils';
-// WU-1929: Import initiative-related modules for bidirectional initiative updates
-import { INIT_PATTERNS } from '@lumenflow/initiatives/constants';
-import { INIT_PATHS } from '@lumenflow/initiatives/paths';
-import { readInitiative, writeInitiative } from '@lumenflow/initiatives/yaml';
+// WU-1806: Import detectCurrentWorktree for worktree path resolution
+import { defaultWorktreeFrom, detectCurrentWorktree } from '@lumenflow/core/wu-done-validators';
 // WU-2004: Import schema normalization for legacy WU formats
 import { normalizeWUSchema } from '@lumenflow/core/wu-schema-normalization';
 // WU-2253: Import WU spec linter for acceptance/code_paths validation
@@ -80,108 +57,48 @@ import {
   validateCodePathsExistence,
   validateTestPathsExistence,
 } from '@lumenflow/core/wu-preflight-validators';
-import {
-  BRANCH_PR_EDIT_MODE,
-  BLOCKED_EDIT_MODE,
-  resolveInProgressEditMode,
-} from './wu-state-cloud.js';
+import { validateLaneFormat } from '@lumenflow/core/lane-checker';
 import { runCLI } from './cli-entry-point.js';
-import { checkCodePathCoverageBeforeGates, formatCodePathCoverageFailure } from './wu-prep.js';
+
+// WU-1650: Import from decomposed modules
+import {
+  validateDoneWUEdits,
+  validateWUEditable,
+  validateWorktreeExists,
+  validateWorktreeClean,
+  validateWorktreeBranch,
+  normalizeReplaceCodePathsArgv,
+  EDIT_MODE,
+} from './wu-edit-validators.js';
+
+import {
+  applyEdits,
+  applyEditsInWorktree,
+  getWuEditCommitFiles,
+  regenerateBacklogFromState,
+  normalizeWUDates,
+  updateInitiativeWusArrays,
+  enforceInProgressCodePathCoverage,
+  displayReadinessSummary,
+} from './wu-edit-operations.js';
+
+// WU-1650: Re-export for backwards compatibility
+// All test files and external consumers import from wu-edit.ts
+export {
+  validateDoneWUEdits,
+  validateExposureValue,
+  normalizeReplaceCodePathsArgv,
+  hasScopeRelevantBranchChanges,
+} from './wu-edit-validators.js';
+
+export {
+  applyExposureEdit,
+  applyEdits,
+  mergeStringField,
+  getWuEditCommitFiles,
+} from './wu-edit-operations.js';
 
 const PREFIX = LOG_PREFIX.EDIT;
-
-/**
- * WU-1039: Validate which edits are allowed on done WUs
- *
- * Done WUs only allow metadata reassignment: initiative, phase, and exposure.
- * All other edits are blocked to preserve WU immutability after completion.
- *
- * @param opts - Parsed CLI options
- * @returns { valid: boolean, disallowedEdits: string[] }
- */
-export function validateDoneWUEdits(opts: Record<string, unknown>): {
-  valid: boolean;
-  disallowedEdits: string[];
-} {
-  const disallowedEdits: string[] = [];
-
-  // Check for disallowed edits on done WUs
-  if (opts.specFile) disallowedEdits.push('--spec-file');
-  if (opts.description) disallowedEdits.push('--description');
-  if (opts.acceptance && Array.isArray(opts.acceptance) && opts.acceptance.length > 0) {
-    disallowedEdits.push('--acceptance');
-  }
-  if (opts.notes) disallowedEdits.push('--notes');
-  if (opts.codePaths && Array.isArray(opts.codePaths) && opts.codePaths.length > 0) {
-    disallowedEdits.push('--code-paths');
-  }
-  if (opts.risks && Array.isArray(opts.risks) && opts.risks.length > 0) {
-    disallowedEdits.push('--risks');
-  }
-  if (opts.lane) disallowedEdits.push('--lane');
-  if (opts.type) disallowedEdits.push('--type');
-  if (opts.priority) disallowedEdits.push('--priority');
-  if (
-    opts.testPathsManual &&
-    Array.isArray(opts.testPathsManual) &&
-    opts.testPathsManual.length > 0
-  ) {
-    disallowedEdits.push('--test-paths-manual');
-  }
-  if (opts.testPathsUnit && Array.isArray(opts.testPathsUnit) && opts.testPathsUnit.length > 0) {
-    disallowedEdits.push('--test-paths-unit');
-  }
-  if (opts.testPathsE2e && Array.isArray(opts.testPathsE2e) && opts.testPathsE2e.length > 0) {
-    disallowedEdits.push('--test-paths-e2e');
-  }
-
-  return {
-    valid: disallowedEdits.length === 0,
-    disallowedEdits,
-  };
-}
-
-/**
- * WU-1039: Validate exposure value against schema
- *
- * Uses WU_EXPOSURE_VALUES from core constants (Library-First, no magic strings).
- *
- * @param exposure - Exposure value to validate
- * @returns { valid: boolean, error?: string }
- */
-export function validateExposureValue(exposure: string): {
-  valid: boolean;
-  error?: string;
-} {
-  // WU_EXPOSURE_VALUES is readonly array, need to cast for includes check
-  const validValues = WU_EXPOSURE_VALUES as readonly string[];
-  if (!validValues.includes(exposure)) {
-    return {
-      valid: false,
-      error: `Invalid exposure value: "${exposure}"\n\nValid values: ${WU_EXPOSURE_VALUES.join(', ')}`,
-    };
-  }
-  return { valid: true };
-}
-
-/**
- * WU-1039: Apply exposure edit to WU object
- *
- * Returns a new WU object with updated exposure (immutable pattern).
- *
- * @param wu - Original WU object
- * @param exposure - New exposure value
- * @returns Updated WU object (does not mutate original)
- */
-export function applyExposureEdit(
-  wu: Record<string, unknown>,
-  exposure: string,
-): Record<string, unknown> {
-  return {
-    ...wu,
-    exposure,
-  };
-}
 
 /**
  * Custom options for wu-edit (not in shared WU_OPTIONS)
@@ -304,134 +221,6 @@ const EDIT_OPTIONS = {
 };
 
 /**
- * WU-1929: Update initiative wus: arrays bidirectionally
- *
- * When a WU's initiative field changes, this function:
- * 1. Removes the WU ID from the old initiative's wus: array (if exists)
- * 2. Adds the WU ID to the new initiative's wus: array
- *
- * @param {string} worktreePath - Path to the worktree (for file operations)
- * @param {string} wuId - WU ID being updated
- * @param {string|undefined} oldInitId - Previous initiative ID (may be undefined)
- * @param {string} newInitId - New initiative ID
- * @returns {Array<string>} Array of relative file paths that were modified
- */
-
-function updateInitiativeWusArrays(worktreePath, wuId, oldInitId, newInitId) {
-  const modifiedFiles = [];
-
-  // Remove from old initiative if it exists and is different from new
-  if (oldInitId && oldInitId !== newInitId) {
-    const oldInitPath = join(worktreePath, INIT_PATHS.INITIATIVE(oldInitId));
-
-    if (existsSync(oldInitPath)) {
-      try {
-        const oldInit = readInitiative(oldInitPath, oldInitId);
-        if (Array.isArray(oldInit.wus) && oldInit.wus.includes(wuId)) {
-          oldInit.wus = oldInit.wus.filter((id) => id !== wuId);
-          writeInitiative(oldInitPath, oldInit);
-          modifiedFiles.push(INIT_PATHS.INITIATIVE(oldInitId));
-          console.log(`${PREFIX} ✅ Removed ${wuId} from ${oldInitId} wus: array`);
-        }
-      } catch (err) {
-        // Old initiative may not exist or be invalid - log warning but continue
-        console.warn(`${PREFIX} ⚠️  Could not update old initiative ${oldInitId}: ${err.message}`);
-      }
-    }
-  }
-
-  // Add to new initiative
-  const newInitPath = join(worktreePath, INIT_PATHS.INITIATIVE(newInitId));
-
-  if (existsSync(newInitPath)) {
-    try {
-      const newInit = readInitiative(newInitPath, newInitId);
-      if (!Array.isArray(newInit.wus)) {
-        newInit.wus = [];
-      }
-      if (!newInit.wus.includes(wuId)) {
-        newInit.wus.push(wuId);
-        writeInitiative(newInitPath, newInit);
-        modifiedFiles.push(INIT_PATHS.INITIATIVE(newInitId));
-        console.log(`${PREFIX} ✅ Added ${wuId} to ${newInitId} wus: array`);
-      }
-    } catch (err) {
-      die(`Failed to update new initiative ${newInitId}: ${err.message}`);
-    }
-  }
-
-  return modifiedFiles;
-}
-
-/**
- * WU-1929: Validate initiative ID format
- * @param {string} initId - Initiative ID to validate
- */
-function validateInitiativeFormat(initId) {
-  if (!INIT_PATTERNS.INIT_ID.test(initId)) {
-    die(
-      `Invalid Initiative ID format: "${initId}"\n\n` +
-        `Expected format: INIT-<number> or INIT-<NAME> (e.g., INIT-001, INIT-TOOLING)`,
-    );
-  }
-}
-
-/**
- * WU-1929: Validate initiative exists on disk
- * @param {string} initId - Initiative ID to check
- * @returns {string} Path to initiative file
- */
-function validateInitiativeExists(initId) {
-  const initPath = INIT_PATHS.INITIATIVE(initId);
-
-  if (!existsSync(initPath)) {
-    die(`Initiative not found: ${initId}\n\nFile does not exist: ${initPath}`);
-  }
-  return initPath;
-}
-
-const NON_SCOPE_RELEVANT_PATHS = new Set([
-  '.lumenflow/state/wu-events.jsonl',
-  'docs/04-operations/tasks/backlog.md',
-  'docs/04-operations/tasks/status.md',
-]);
-
-/**
- * WU-1618: Treat backlog/state bookkeeping files as non-scope signals.
- */
-export function hasScopeRelevantBranchChanges(changedFiles: string[]): boolean {
-  return changedFiles.some((filePath) => {
-    const normalized = filePath.trim().replace(/\\/g, '/');
-    if (!normalized) {
-      return false;
-    }
-    if (NON_SCOPE_RELEVANT_PATHS.has(normalized)) {
-      return false;
-    }
-    return !normalized.startsWith('docs/04-operations/tasks/wu/');
-  });
-}
-
-/**
- * WU-1618: Support `--replace-code-paths <paths>` shorthand by normalizing to
- * `--replace-code-paths --code-paths <paths>` before Commander parsing.
- */
-export function normalizeReplaceCodePathsArgv(argv: string[]): string[] {
-  const normalized = [...argv];
-  for (let i = 0; i < normalized.length; i += 1) {
-    if (normalized[i] !== '--replace-code-paths') {
-      continue;
-    }
-    const next = normalized[i + 1];
-    if (next && !next.startsWith('-')) {
-      normalized.splice(i + 1, 0, '--code-paths');
-      i += 1;
-    }
-  }
-  return normalized;
-}
-
-/**
  * Parse command line arguments
  */
 function parseArgs() {
@@ -486,334 +275,6 @@ function parseArgs() {
   }
 }
 
-function enforceInProgressCodePathCoverage(options: {
-  id: string;
-  editOpts: Record<string, unknown>;
-  codePaths: string[] | undefined;
-  cwd: string;
-}): void {
-  const { id, editOpts, codePaths = [], cwd } = options;
-  const hasCodePathEdit = Array.isArray(editOpts.codePaths)
-    ? editOpts.codePaths.length > 0
-    : Boolean(editOpts.codePaths);
-
-  if (!hasCodePathEdit) {
-    return;
-  }
-
-  if (!Array.isArray(codePaths) || codePaths.length === 0) {
-    return;
-  }
-
-  const coverage = checkCodePathCoverageBeforeGates({
-    wuId: id,
-    codePaths,
-    cwd,
-  });
-
-  if (coverage.valid) {
-    return;
-  }
-
-  if (!hasScopeRelevantBranchChanges(coverage.changedFiles)) {
-    console.warn(
-      `${PREFIX} ⚠️  code_paths coverage check deferred (no scope-relevant branch changes yet).`,
-    );
-    return;
-  }
-
-  die(
-    `${formatCodePathCoverageFailure({
-      wuId: id,
-      missingCodePaths: coverage.missingCodePaths,
-      changedFiles: coverage.changedFiles,
-      error: coverage.error,
-    })}\n\n` +
-      `${PREFIX} Tip: if you're still defining scope before code changes, run wu:edit again after your first scope-relevant commit.`,
-  );
-}
-
-/**
- * WU-1620: Display readiness summary after edit
- *
- * Shows whether WU is ready for wu:claim based on spec completeness.
- * Non-blocking - just informational to help agents understand what's missing.
- *
- * @param {string} id - WU ID
- */
-function displayReadinessSummary(id: string) {
-  try {
-    const wuPath = WU_PATHS.WU(id);
-    const wuDoc = readWU(wuPath, id);
-
-    const { valid, errors } = validateSpecCompleteness(wuDoc, id);
-
-    const {
-      BOX,
-      BOX_WIDTH,
-      MESSAGES,
-      ERROR_MAX_LENGTH,
-      ERROR_TRUNCATE_LENGTH,
-      TRUNCATION_SUFFIX,
-      PADDING,
-    } = READINESS_UI;
-
-    console.log(`\n${BOX.TOP_LEFT}${BOX.HORIZONTAL.repeat(BOX_WIDTH)}${BOX.TOP_RIGHT}`);
-    if (valid) {
-      console.log(
-        `${BOX.VERTICAL} ${MESSAGES.READY_YES}${''.padEnd(PADDING.READY_YES)}${BOX.VERTICAL}`,
-      );
-      console.log(`${BOX.VERTICAL}${''.padEnd(BOX_WIDTH)}${BOX.VERTICAL}`);
-      const claimCmd = `Run: pnpm wu:claim --id ${id}`;
-      console.log(
-        `${BOX.VERTICAL} ${claimCmd}${''.padEnd(BOX_WIDTH - claimCmd.length - 1)}${BOX.VERTICAL}`,
-      );
-    } else {
-      console.log(
-        `${BOX.VERTICAL} ${MESSAGES.READY_NO}${''.padEnd(PADDING.READY_NO)}${BOX.VERTICAL}`,
-      );
-      console.log(`${BOX.VERTICAL}${''.padEnd(BOX_WIDTH)}${BOX.VERTICAL}`);
-      console.log(
-        `${BOX.VERTICAL} ${MESSAGES.MISSING_HEADER}${''.padEnd(PADDING.MISSING_HEADER)}${BOX.VERTICAL}`,
-      );
-      for (const error of errors) {
-        // Truncate long error messages to fit box
-        const truncated =
-          error.length > ERROR_MAX_LENGTH
-            ? `${error.substring(0, ERROR_TRUNCATE_LENGTH)}${TRUNCATION_SUFFIX}`
-            : error;
-        console.log(
-          `${BOX.VERTICAL}   ${MESSAGES.BULLET} ${truncated}${''.padEnd(Math.max(0, PADDING.ERROR_BULLET - truncated.length))}${BOX.VERTICAL}`,
-        );
-      }
-      console.log(`${BOX.VERTICAL}${''.padEnd(BOX_WIDTH)}${BOX.VERTICAL}`);
-      const editCmd = `Run: pnpm wu:edit --id ${id} --help`;
-      console.log(
-        `${BOX.VERTICAL} ${editCmd}${''.padEnd(BOX_WIDTH - editCmd.length - 1)}${BOX.VERTICAL}`,
-      );
-    }
-    console.log(`${BOX.BOTTOM_LEFT}${BOX.HORIZONTAL.repeat(BOX_WIDTH)}${BOX.BOTTOM_RIGHT}`);
-  } catch (err) {
-    // Non-blocking - if validation fails, just warn
-    console.warn(`${PREFIX} ⚠️  Could not validate readiness: ${err.message}`);
-  }
-}
-
-/**
- * Edit modes for WU editing
- * WU-1365: Worktree-aware editing support
- */
-const EDIT_MODE = {
-  /** Ready WUs: Use micro-worktree on main (existing behavior) */
-  MICRO_WORKTREE: 'micro_worktree',
-  /** In-progress worktree WUs: Apply edits directly in active worktree (WU-1365) */
-  WORKTREE: 'worktree',
-  /** In-progress branch-pr WUs: apply edits directly on the claimed branch */
-  BRANCH_PR: BRANCH_PR_EDIT_MODE,
-};
-
-/**
- * Normalize date fields in WU object to prevent date corruption
- *
- * WU-1442: js-yaml parses unquoted YYYY-MM-DD dates as Date objects.
- * When yaml.dump() serializes them back, it outputs ISO timestamps.
- * This function normalizes Date objects back to YYYY-MM-DD strings.
- *
- * @param {object} wu - WU object from yaml.load()
- * @returns {object} WU object with normalized date fields
- */
-function normalizeWUDates(wu) {
-  if (wu.created !== undefined) {
-    wu.created = normalizeToDateString(wu.created);
-  }
-  return wu;
-}
-
-/**
- * Check WU exists and determine edit mode
- * WU-1365: Now supports worktree-aware editing for in_progress WUs
- *
- * @param {string} id - WU ID
- * @returns {{ wu: object, editMode: string }} WU object and edit mode
- */
-function validateWUEditable(id) {
-  const wuPath = WU_PATHS.WU(id);
-
-  if (!existsSync(wuPath)) {
-    die(`WU ${id} not found at ${wuPath}\n\nEnsure the WU exists and you're in the repo root.`);
-  }
-
-  const content = readFileSync(wuPath, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
-  const wu = parseYAML(content);
-
-  // WU-1929: Done WUs allow initiative/phase edits only (metadata reassignment)
-  // WU-1365: Other fields on done WUs are immutable
-  if (wu.status === WU_STATUS.DONE) {
-    // Return done status - main() will validate allowed fields
-    return { wu, editMode: EDIT_MODE.MICRO_WORKTREE, isDone: true };
-  }
-
-  // Handle in_progress WUs based on claimed_mode (WU-1365)
-  if (wu.status === WU_STATUS.IN_PROGRESS) {
-    const editMode = resolveInProgressEditMode(
-      typeof wu.claimed_mode === 'string' ? wu.claimed_mode : undefined,
-    );
-
-    if (editMode === BLOCKED_EDIT_MODE) {
-      die(
-        `Cannot edit branch-only WU ${id} via wu:edit.\n\n` +
-          `WUs claimed with claimed_mode='branch-only' cannot be edited via wu:edit.\n` +
-          `To modify the spec, edit the file directly on the lane branch and commit.`,
-      );
-    }
-
-    if (editMode === EDIT_MODE.BRANCH_PR) {
-      return { wu, editMode: EDIT_MODE.BRANCH_PR, isDone: false };
-    }
-
-    return { wu, editMode: EDIT_MODE.WORKTREE, isDone: false };
-  }
-
-  // Ready WUs use micro-worktree (existing behavior)
-  if (wu.status === WU_STATUS.READY) {
-    return { wu, editMode: EDIT_MODE.MICRO_WORKTREE, isDone: false };
-  }
-
-  // Block other statuses (blocked, etc.)
-  die(
-    `Cannot edit WU ${id}: status is '${wu.status}'.\n\n` +
-      `Only WUs in '${WU_STATUS.READY}' or '${WU_STATUS.IN_PROGRESS}' (worktree mode) can be edited.`,
-  );
-}
-
-/**
- * Validate worktree exists on disk
- * WU-1365: Required check before worktree editing
- *
- * @param {string} worktreePath - Absolute path to worktree
- * @param {string} id - WU ID (for error messages)
- */
-function validateWorktreeExists(worktreePath, id) {
-  if (!existsSync(worktreePath)) {
-    die(
-      `Cannot edit WU ${id}: worktree path missing from disk.\n\n` +
-        `Expected worktree at: ${worktreePath}\n\n` +
-        `The worktree may have been removed or the path is incorrect.\n` +
-        `If the worktree was accidentally deleted, you may need to re-claim the WU.`,
-    );
-  }
-}
-
-/**
- * Validate worktree has no uncommitted changes
- * WU-1365: Required check to prevent edit conflicts
- *
- * @param {string} worktreePath - Absolute path to worktree
- * @param {string} id - WU ID (for error messages)
- */
-async function validateWorktreeClean(worktreePath, id) {
-  try {
-    const gitAdapter = createGitForPath(worktreePath);
-    const status = (await gitAdapter.raw(['status', '--porcelain'])).trim();
-
-    if (status !== '') {
-      die(
-        `Cannot edit WU ${id}: worktree has uncommitted changes.\n\n` +
-          `Uncommitted changes in ${worktreePath}:\n${status}\n\n` +
-          `Commit or discard your changes before editing the WU spec:\n` +
-          `  cd ${worktreePath}\n` +
-          `  git add . && git commit -m "wip: save progress"\n\n` +
-          `Then retry wu:edit.`,
-      );
-    }
-  } catch (err) {
-    die(
-      `Cannot edit WU ${id}: failed to check worktree status.\n\n` +
-        `Error: ${err.message}\n\n` +
-        `Worktree path: ${worktreePath}`,
-    );
-  }
-}
-
-/**
- * Validate worktree is on expected lane branch
- * WU-1365: Prevents editing WUs in worktrees with mismatched branches
- *
- * @param {string} worktreePath - Absolute path to worktree
- * @param {string} expectedBranch - Expected branch name (e.g., lane/operations-tooling/wu-1365)
- * @param {string} id - WU ID (for error messages)
- */
-async function validateWorktreeBranch(worktreePath, expectedBranch, id) {
-  try {
-    const gitAdapter = createGitForPath(worktreePath);
-    const actualBranch = (await gitAdapter.raw(['rev-parse', '--abbrev-ref', 'HEAD'])).trim();
-
-    if (actualBranch !== expectedBranch) {
-      die(
-        `Cannot edit WU ${id}: worktree branch does not match expected lane branch.\n\n` +
-          `Expected branch: ${expectedBranch}\n` +
-          `Actual branch:   ${actualBranch}\n\n` +
-          `This may indicate a corrupted worktree state.\n` +
-          `Verify the worktree is correctly set up for this WU.`,
-      );
-    }
-  } catch (err) {
-    die(
-      `Cannot edit WU ${id}: failed to check worktree branch.\n\n` +
-        `Error: ${err.message}\n\n` +
-        `Worktree path: ${worktreePath}`,
-    );
-  }
-}
-
-/**
- * Apply edits directly in an active worktree (WU-1365)
- * Used for in_progress WUs with claimed_mode=worktree
- *
- * @param {object} params - Parameters
- * @param {string} params.worktreePath - Absolute path to worktree
- * @param {string} params.id - WU ID
- * @param {object} params.updatedWU - Updated WU object
- */
-async function applyEditsInWorktree({ worktreePath, id, updatedWU }) {
-  const wuPath = join(worktreePath, WU_PATHS.WU(id));
-  // WU-1442: Normalize dates before dumping to prevent ISO timestamp corruption
-  normalizeWUDates(updatedWU);
-  // Emergency fix Session 2: Use centralized stringifyYAML helper
-  const yamlContent = stringifyYAML(updatedWU);
-
-  writeFileSync(wuPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
-  console.log(`${PREFIX} ✅ Updated ${id}.yaml in worktree`);
-
-  // Format the file
-  try {
-    execSync(`${PKG_MANAGER} ${SCRIPTS.PRETTIER} ${PRETTIER_FLAGS.WRITE} "${wuPath}"`, {
-      cwd: worktreePath,
-      encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
-      stdio: 'pipe',
-    });
-    console.log(`${PREFIX} ✅ Formatted ${id}.yaml`);
-  } catch (err) {
-    console.warn(`${PREFIX} ⚠️ Could not format file: ${err.message}`);
-  }
-
-  // Stage and commit using git adapter (library-first)
-  const commitMsg = COMMIT_FORMATS.SPEC_UPDATE(id);
-  try {
-    const gitAdapter = createGitForPath(worktreePath);
-    await gitAdapter.add(wuPath);
-    await gitAdapter.commit(commitMsg);
-    console.log(`${PREFIX} ✅ Committed: ${commitMsg}`);
-  } catch (err) {
-    die(
-      `Failed to commit edit in worktree.\n\n` +
-        `Error: ${err.message}\n\n` +
-        `The WU file was updated but could not be committed.\n` +
-        `You may need to commit manually in the worktree.`,
-    );
-  }
-}
-
 /**
  * Ensure working tree is clean
  */
@@ -824,262 +285,6 @@ async function ensureCleanWorkingTree() {
       `Working tree is not clean. Cannot edit WU.\n\nUncommitted changes:\n${status}\n\nCommit or stash changes before editing:\n  git add . && git commit -m "..."\n`,
     );
   }
-}
-
-/**
- * Merge array values: replace by default, append if --append flag is set (WU-1388)
- * @param {Array} existing - Current array value from WU
- * @param {Array} newValues - New values from CLI
- * @param {boolean} shouldAppend - Whether to append instead of replace
- * @returns {Array} Merged array
- */
-function mergeArrayField(existing, newValues, shouldAppend) {
-  if (!shouldAppend) {
-    return newValues;
-  }
-  const existingArray = Array.isArray(existing) ? existing : [];
-  return [...existingArray, ...newValues];
-}
-
-/**
- * WU-1144: Merge string field values with append-by-default behavior
- *
- * Notes and acceptance criteria should append by default (preserving original),
- * with explicit --replace-notes and --replace-acceptance flags for overwrite.
- *
- * @param {string | undefined} existing - Current string value from WU
- * @param {string} newValue - New value from CLI
- * @param {boolean} shouldReplace - Whether to replace instead of append
- * @returns {string} Merged string value
- */
-export function mergeStringField(
-  existing: string | undefined,
-  newValue: string,
-  shouldReplace: boolean,
-): string {
-  // If replace mode or no existing value, just use new value
-  if (shouldReplace || !existing || existing.trim() === '') {
-    return newValue;
-  }
-  // Append with double newline separator
-  return `${existing}\n\n${newValue}`;
-}
-
-/**
- * WU-1594: Ensure wu:edit commits always include regenerated backlog projection.
- *
- * @param {string} id - WU ID
- * @param {string[]} extraFiles - Additional files modified during edit
- * @returns {string[]} Deduplicated list of files for commit
- */
-export function getWuEditCommitFiles(id: string, extraFiles: string[] = []): string[] {
-  return [...new Set([WU_PATHS.WU(id), ...extraFiles, WU_PATHS.BACKLOG()])];
-}
-
-/**
- * WU-1594: Regenerate backlog.md from state store after wu:edit updates.
- *
- * @param {string} backlogPath - Absolute path to backlog.md in micro-worktree
- */
-async function regenerateBacklogFromState(backlogPath: string): Promise<void> {
-  const stateDir = getStateStoreDirFromBacklog(backlogPath);
-  const store = new WUStateStore(stateDir);
-  await store.load();
-  const content = await generateBacklog(store);
-  writeFileSync(backlogPath, content, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
-}
-
-/**
- * Load spec file and merge with original WU (preserving id and status)
- * @param {string} specPath - Path to spec file
- * @param {object} originalWU - Original WU object
- * @returns {object} Merged WU object
- */
-function loadSpecFile(specPath, originalWU) {
-  const resolvedPath = resolve(specPath);
-
-  if (!existsSync(resolvedPath)) {
-    die(`Spec file not found: ${resolvedPath}`);
-  }
-
-  const specContent = readFileSync(resolvedPath, {
-    encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
-  });
-  const newSpec = parseYAML(specContent);
-
-  // Preserve id and status from original (cannot be changed via edit)
-  return {
-    ...newSpec,
-    id: originalWU.id,
-    status: originalWU.status,
-  };
-}
-
-/**
- * Apply edits to WU YAML
- * Returns the updated WU object
- */
-// eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
-export function applyEdits(wu, opts) {
-  // Full spec replacement from file
-  if (opts.specFile) {
-    return loadSpecFile(opts.specFile, wu);
-  }
-
-  const updated = { ...wu };
-
-  // Field-level updates
-  if (opts.description) {
-    updated.description = opts.description;
-  }
-
-  // WU-1144: Handle --acceptance with append-by-default behavior
-  // Appends to existing acceptance criteria unless --replace-acceptance is set
-  if (opts.acceptance && opts.acceptance.length > 0) {
-    // Invert the logic: append by default, replace with --replace-acceptance
-    const shouldAppend = !opts.replaceAcceptance;
-    updated.acceptance = mergeArrayField(wu.acceptance, opts.acceptance, shouldAppend);
-  }
-
-  // WU-1144: Handle --notes with append-by-default behavior
-  // Appends to existing notes unless --replace-notes is set
-  if (opts.notes) {
-    updated.notes = mergeStringField(wu.notes, opts.notes, opts.replaceNotes ?? false);
-  }
-
-  // WU-1456: Handle lane reassignment
-  if (opts.lane) {
-    validateLaneFormat(opts.lane);
-    updated.lane = opts.lane;
-  }
-
-  // WU-1620: Handle type and priority updates
-  if (opts.type) {
-    updated.type = opts.type;
-  }
-  if (opts.priority) {
-    updated.priority = opts.priority;
-  }
-
-  // WU-1929: Handle initiative and phase updates
-  // Note: Initiative bidirectional updates (initiative wus: arrays) are handled separately
-  // in the main function after applyEdits, since they require file I/O
-  if (opts.initiative) {
-    validateInitiativeFormat(opts.initiative);
-    validateInitiativeExists(opts.initiative);
-    updated.initiative = opts.initiative;
-  }
-  if (opts.phase !== undefined && opts.phase !== null) {
-    const phaseNum = parseInt(opts.phase, 10);
-    if (isNaN(phaseNum) || phaseNum < 1) {
-      die(
-        `Invalid phase number: "${opts.phase}"\n\nPhase must be a positive integer (e.g., 1, 2, 3)`,
-      );
-    }
-    updated.phase = phaseNum;
-  }
-
-  // Handle repeatable --code-paths flags (WU-1225: append by default, replace with --replace-code-paths)
-  // WU-1816: Split comma-separated string into array (same pattern as test paths)
-  // WU-1870: Fix to split comma-separated values WITHIN array elements (Commander passes ['a,b'] not 'a,b')
-  if (opts.codePaths && opts.codePaths.length > 0) {
-    const rawCodePaths = opts.codePaths;
-    const codePaths = Array.isArray(rawCodePaths)
-      ? rawCodePaths
-          .flatMap((p) => p.split(','))
-          .map((p) => p.trim())
-          .filter(Boolean)
-      : rawCodePaths
-          .split(',')
-          .map((p) => p.trim())
-          .filter(Boolean);
-    // WU-1225: Invert logic - append by default, replace with --replace-code-paths
-    // Also support legacy --append flag for backwards compatibility
-    const shouldAppend = !opts.replaceCodePaths || opts.append;
-    updated.code_paths = mergeArrayField(wu.code_paths, codePaths, shouldAppend);
-  }
-
-  // WU-1225: Handle repeatable --risks flags (append by default, replace with --replace-risks)
-  // Split comma-separated values within each entry for consistency with other list fields
-  if (opts.risks && opts.risks.length > 0) {
-    const rawRisks = opts.risks;
-    const risks = Array.isArray(rawRisks)
-      ? rawRisks
-          .flatMap((risk) => risk.split(','))
-          .map((risk) => risk.trim())
-          .filter(Boolean)
-      : rawRisks
-          .split(',')
-          .map((risk) => risk.trim())
-          .filter(Boolean);
-    // WU-1225: Invert logic - append by default
-    const shouldAppend = !opts.replaceRisks || opts.append;
-    updated.risks = mergeArrayField(wu.risks, risks, shouldAppend);
-  }
-
-  // WU-1390: Handle test path flags (DRY refactor)
-  // WU-1225: Test paths now append by default (consistent with --acceptance and --code-paths)
-  const testPathMappings = [
-    { optKey: 'testPathsManual', field: 'manual' },
-    { optKey: 'testPathsUnit', field: 'unit' },
-    { optKey: 'testPathsE2e', field: 'e2e' },
-  ];
-
-  for (const { optKey, field } of testPathMappings) {
-    const rawPaths = opts[optKey];
-    if (rawPaths && rawPaths.length > 0) {
-      // Split comma-separated string into array (options are comma-separated per description)
-      // WU-1870: Fix to split comma-separated values WITHIN array elements
-      const paths = Array.isArray(rawPaths)
-        ? rawPaths
-            .flatMap((p) => p.split(','))
-            .map((p) => p.trim())
-            .filter(Boolean)
-        : rawPaths
-            .split(',')
-            .map((p) => p.trim())
-            .filter(Boolean);
-      updated.tests = updated.tests || {};
-      // WU-1225: Append by default (no individual replace flags for test paths yet)
-      const shouldAppend = true;
-      updated.tests[field] = mergeArrayField(wu.tests?.[field], paths, shouldAppend);
-    }
-  }
-
-  // WU-2564: Handle --blocked-by flag
-  // WU-1225: Append by default, replace with --replace-blocked-by
-  if (opts.blockedBy) {
-    const rawBlockedBy = opts.blockedBy;
-    const blockedByIds = rawBlockedBy
-      .split(',')
-      .map((id) => id.trim())
-      .filter(Boolean);
-    const shouldAppend = !opts.replaceBlockedBy || opts.append;
-    updated.blocked_by = mergeArrayField(wu.blocked_by, blockedByIds, shouldAppend);
-  }
-
-  // WU-2564: Handle --add-dep flag
-  // WU-1225: Append by default, replace with --replace-dependencies
-  if (opts.addDep) {
-    const rawAddDep = opts.addDep;
-    const depIds = rawAddDep
-      .split(',')
-      .map((id) => id.trim())
-      .filter(Boolean);
-    const shouldAppend = !opts.replaceDependencies || opts.append;
-    updated.dependencies = mergeArrayField(wu.dependencies, depIds, shouldAppend);
-  }
-
-  // WU-1039: Handle --exposure flag with validation
-  if (opts.exposure) {
-    const exposureResult = validateExposureValue(opts.exposure);
-    if (!exposureResult.valid) {
-      die(exposureResult.error);
-    }
-    updated.exposure = opts.exposure;
-  }
-
-  return updated;
 }
 
 /**
@@ -1178,7 +383,7 @@ async function main() {
   const updatedWU = applyEdits(originalWU, opts);
 
   // WU-2004: Normalize legacy schema fields before validation
-  // Converts: summary→description, string risks→array, test_paths→tests, etc.
+  // Converts: summary->description, string risks->array, test_paths->tests, etc.
   const normalizedForValidation = normalizeWUSchema(updatedWU);
 
   // WU-1539: Validate WU structure after applying edits (fail-fast, allows placeholders)
@@ -1186,9 +391,9 @@ async function main() {
   const validationResult = validateReadyWU(normalizedForValidation);
   if (!validationResult.success) {
     const errors = validationResult.error.issues
-      .map((issue) => `  • ${issue.path.join('.')}: ${issue.message}`)
+      .map((issue) => `  - ${issue.path.join('.')}: ${issue.message}`)
       .join('\n');
-    die(`${PREFIX} ❌ WU YAML validation failed:\n\n${errors}\n\nFix the issues above and retry.`);
+    die(`${PREFIX} WU YAML validation failed:\n\n${errors}\n\nFix the issues above and retry.`);
   }
 
   // WU-2253: Validate acceptance/code_paths consistency and invariants compliance
@@ -1199,7 +404,7 @@ async function main() {
   if (!lintResult.valid) {
     const formatted = formatLintErrors(lintResult.errors);
     die(
-      `${PREFIX} ❌ WU SPEC LINT FAILED:\n\n${formatted}\n` +
+      `${PREFIX} WU SPEC LINT FAILED:\n\n${formatted}\n` +
         `Fix the issues above before editing this WU.`,
     );
   }
@@ -1238,9 +443,9 @@ async function main() {
     }
 
     if (strictErrors.length > 0) {
-      const errorList = strictErrors.map((e) => `  • ${e}`).join('\n');
+      const errorList = strictErrors.map((e) => `  - ${e}`).join('\n');
       die(
-        `${PREFIX} ❌ Strict validation failed:\n\n${errorList}\n\n` +
+        `${PREFIX} Strict validation failed:\n\n${errorList}\n\n` +
           `Options:\n` +
           `  1. Fix the paths in the WU spec to match actual files\n` +
           `  2. Use --no-strict to bypass path existence checks (not recommended)`,
@@ -1302,7 +507,7 @@ async function main() {
     });
     await getGitForCwd().push('origin', currentBranch);
 
-    console.log(`${PREFIX} ✅ Successfully edited ${id} on branch ${currentBranch}`);
+    console.log(`${PREFIX} Successfully edited ${id} on branch ${currentBranch}`);
     console.log(`${PREFIX} Changes committed and pushed to origin/${currentBranch}`);
 
     displayReadinessSummary(id);
@@ -1354,7 +559,7 @@ async function main() {
     await validateWorktreeClean(absoluteWorktreePath, id);
 
     // Calculate expected branch and validate
-    const expectedBranch = getLaneBranch(originalWU.lane, id);
+    const expectedBranch = getLaneBranch(originalWU.lane as string, id);
     await validateWorktreeBranch(absoluteWorktreePath, expectedBranch, id);
     enforceInProgressCodePathCoverage({
       id,
@@ -1370,7 +575,7 @@ async function main() {
       updatedWU: normalizedWU,
     });
 
-    console.log(`${PREFIX} ✅ Successfully edited ${id} in worktree`);
+    console.log(`${PREFIX} Successfully edited ${id} in worktree`);
     console.log(`${PREFIX} Changes committed to lane branch`);
 
     // WU-1620: Display readiness summary
@@ -1407,14 +612,14 @@ async function main() {
           const yamlContent = stringifyYAML(normalizedWU);
 
           writeFileSync(wuPath, yamlContent, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
-          console.log(`${PREFIX} ✅ Updated ${id}.yaml in micro-worktree`);
+          console.log(`${PREFIX} Updated ${id}.yaml in micro-worktree`);
 
           // WU-1929: Handle bidirectional initiative updates
           if (initiativeChanged) {
             const initiativeFiles = updateInitiativeWusArrays(
               worktreePath,
               id,
-              oldInitiative,
+              oldInitiative as string | undefined,
               newInitiative,
             );
             extraFiles.push(...initiativeFiles);
@@ -1423,7 +628,7 @@ async function main() {
           // WU-1594: Keep backlog projection synchronized with WU lane/spec edits.
           const backlogPath = join(worktreePath, WU_PATHS.BACKLOG());
           await regenerateBacklogFromState(backlogPath);
-          console.log(`${PREFIX} ✅ Regenerated backlog.md in micro-worktree`);
+          console.log(`${PREFIX} Regenerated backlog.md in micro-worktree`);
 
           return {
             commitMessage: COMMIT_FORMATS.EDIT(id),
@@ -1439,7 +644,7 @@ async function main() {
       }
     }
 
-    console.log(`${PREFIX} ✅ Successfully edited ${id}`);
+    console.log(`${PREFIX} Successfully edited ${id}`);
     console.log(`${PREFIX} Changes pushed to origin/main`);
 
     // WU-1620: Display readiness summary
