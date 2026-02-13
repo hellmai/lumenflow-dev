@@ -78,6 +78,7 @@ const ALLOWED_FILES_STATUS = [
   'commands-logger.ts', // Command outcome statuses (allowed/blocked/unknown)
   'section-headings.ts', // Document type parameter ('backlog'/'status')
   'core/tool.constants.ts', // Tool execution statuses (cancelled/timeout)
+  'wu-done-machine.ts', // WU-1662: XState pipeline states (distinct from WU lifecycle statuses)
 ];
 
 /**
