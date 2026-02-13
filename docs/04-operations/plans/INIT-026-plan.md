@@ -22,7 +22,14 @@ Out of scope:
 
 ## Approach
 
-<!-- How will you achieve the goal? Key phases or milestones? -->
+Execution strategy (no feature flag, direct replacement):
+
+1. WU-1626 (Phase 1A): Extract `micro-worktree-shared.ts` and re-export helpers from `micro-worktree.ts` with no behavior change.
+2. WU-1627 (Phase 1B core): Implement `withAtomicMerge()` in `packages/@lumenflow/core/src/atomic-merge.ts` with bounded merge/push retry and deterministic cleanup.
+3. WU-1628 (Phase 1B worktree): Replace worktree-mode merge/push block in `wu-done-worktree.ts` with `withAtomicMerge({ id, laneBranch })`.
+4. WU-1629 (Phase 3 branch-only): Replace non-PR branch-only live-main flow in `wu-done-branch-only.ts` with `withAtomicMerge(..., afterMerge)` and add idempotent rerun coverage.
+5. Burn-in period: complete real WUs through new path and monitor failure signatures.
+6. WU-1630 (Phase 4 cleanup): Remove obsolete rollback/post-merge dirty-main code in core + CLI once burn-in proves stable.
 
 ## Success Criteria
 
