@@ -37,7 +37,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1631 — Add 4 missing subpath exports to @lumenflow/core (active-wu-detector, hardcoded-strings, linter-constants, prompt-linter)](wu/WU-1631.yaml) — Framework: Core Lifecycle
 - [WU-1627 — Implement withAtomicMerge core executor with failure-injection tests](wu/WU-1627.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
@@ -610,4 +609,5 @@ sections:
 - [WU-1626 — Extract micro-worktree shared helper surface](wu/WU-1626.yaml)
 - [WU-1632 — Hotfix missing micro-worktree-shared source on main](wu/WU-1632.yaml)
 - [WU-1633 — Harden CLI bootstrap fallback for lifecycle hotfixes](wu/WU-1633.yaml)
+- [WU-1631 — Add 4 missing subpath exports to @lumenflow/core (active-wu-detector, hardcoded-strings, linter-constants, prompt-linter)](wu/WU-1631.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

@@ -3,7 +3,7 @@ title: Add 4 missing subpath exports to @lumenflow/core (active-wu-detector, har
   linter-constants, prompt-linter)
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -38,3 +38,6 @@ session_id: c061efa8-e834-49f9-a80d-685797f55cb4
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T11:56:28.020Z
+locked: true
+completed_at: 2026-02-13T13:12:17.942Z
+completed: 2026-02-13
