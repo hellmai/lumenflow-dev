@@ -1,0 +1,36 @@
+id: WU-1652
+title: Extract wu-spawn.ts prompt builders and strategy resolver
+lane: 'Framework: CLI WU Commands'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-13
+code_paths:
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+tests:
+  manual:
+    - Run wu:spawn for representative clients/modes and verify generated prompts and warnings remain unchanged.
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-spawn-lane-warning.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1652.done
+dependencies: []
+initiative: INIT-025
+phase: 3
+risks: []
+notes: INIT-025 Phase 3 WU-C4. Mechanical extraction only.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Mechanically split packages/@lumenflow/cli/src/wu-spawn.ts into prompt-builder and strategy-resolution modules while keeping command UX and spawn behavior stable.
+acceptance:
+  - Prompt rendering/building logic is extracted into dedicated module(s) and imported by wu-spawn.ts.
+  - Strategy/client resolution logic is extracted without changing branch/lane behavior.
+  - wu:spawn command output and execution semantics remain backward compatible.
