@@ -1,9 +1,7 @@
 id: INIT-025
 slug: god-file-decomposition
 title: God File Decomposition Initiative
-description: Complete mechanical decomposition of 10 high-churn god files into command- and
-  domain-focused modules, using merge-conflict-prioritized split strategy (11 WUs, 3 phases, no new
-  abstractions).
+description: Complete mechanical decomposition of 10 high-churn god files into command- and domain-focused modules, using merge-conflict-prioritized split strategy (11 WUs, 3 phases, no new abstractions).
 status: in_progress
 priority: P1
 owner: Framework Team
@@ -20,15 +18,12 @@ phases:
     title: 'Phase 3: Remaining Files + cleanup'
     status: pending
 success_metrics:
-  - All listed decompositions are completed via new files + thin barrels with backward-compatible
-    exports
+  - All listed decompositions are completed via new files + thin barrels with backward-compatible exports
   - No remaining target file exceeds 800 lines in decomposed scope (except explicit exceptions)
   - Plan artifact is linked and maintained in repo via LumenFlow tooling.
 labels: []
 notes:
-  - '2026-02-13 reconciliation: WU-1621 completed prerequisite initiative metadata hardening;
-    decomposition execution scope remains pending. INIT-025 reopened to in_progress.'
-  - '2026-02-13 WU-1639: initiative metadata reconciled with delivered scope; decomposition
-    execution WUs remain to be planned and executed.'
-  - '2026-02-13 post-WU-1640: reopened for execution; decomposition phases/WUs still pending
-    delivery.'
+  - '2026-02-13 reconciliation: WU-1621 completed prerequisite initiative metadata hardening; decomposition execution scope remains pending. INIT-025 reopened to in_progress.'
+  - '2026-02-13 WU-1639: initiative metadata reconciled with delivered scope; decomposition execution WUs remain to be planned and executed.'
+  - '2026-02-13 post-WU-1640: reopened for execution; decomposition phases/WUs still pending delivery.'
+related_plan: lumenflow://plans/INIT-025-plan.md
