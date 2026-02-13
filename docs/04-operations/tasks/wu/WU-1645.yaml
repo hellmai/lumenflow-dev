@@ -1,0 +1,35 @@
+id: WU-1645
+title: Split enforcement-generator hook script builders
+lane: 'Framework: CLI Enforcement'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-13
+code_paths:
+  - packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
+tests:
+  manual:
+    - Regenerate enforcement hooks and compare generated script content/paths with baseline behavior.
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/hooks/enforcement.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1645.done
+dependencies: []
+initiative: INIT-025
+phase: 1
+risks: []
+notes: INIT-025 Phase 1 WU-A4. Mechanical move + re-export pattern only.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Decompose packages/@lumenflow/cli/src/hooks/enforcement-generator.ts into per-hook generator modules with a thin dispatcher/orchestrator entrypoint.
+acceptance:
+  - Individual hook script generators are moved into dedicated files under hooks/generators.
+  - enforcement-generator.ts retains dispatcher behavior and public contract compatibility.
+  - Generated hook script content remains unchanged for existing options.
