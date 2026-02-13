@@ -1,0 +1,35 @@
+id: WU-1636
+title: Align AGENTS and LUMENFLOW entrypoint guidance to canonical lifecycle docs
+lane: 'Content: Framework Docs'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-13
+code_paths:
+  - AGENTS.md
+  - LUMENFLOW.md
+tests:
+  manual:
+    - Read AGENTS.md and LUMENFLOW.md end-to-end and confirm lifecycle instructions are aligned and link to canonical docs
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1636.done
+dependencies: []
+initiative: INIT-027
+phase: 2
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Update contributor-facing entrypoint docs so AGENTS.md and LUMENFLOW.md consistently point to the canonical lifecycle map and failure runbook, reducing duplicate/contradictory guidance.
+acceptance:
+  - AGENTS.md references canonical lifecycle + troubleshooting docs instead of duplicating workflow details
+  - LUMENFLOW.md references the same canonical lifecycle + troubleshooting docs and command ordering
+  - Cross-links are consistent and do not conflict with quick-start local/cloud sections
