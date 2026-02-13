@@ -2,14 +2,15 @@ id: WU-1652
 title: Extract wu-spawn.ts prompt builders and strategy resolver
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
   - packages/@lumenflow/cli/src/wu-spawn.ts
 tests:
   manual:
-    - Run wu:spawn for representative clients/modes and verify generated prompts and warnings remain unchanged.
+    - Run wu:spawn for representative clients/modes and verify generated prompts and warnings remain
+      unchanged.
   unit:
     - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
     - packages/@lumenflow/cli/__tests__/wu-spawn-lane-warning.test.ts
@@ -29,8 +30,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Mechanically split packages/@lumenflow/cli/src/wu-spawn.ts into prompt-builder and strategy-resolution modules while keeping command UX and spawn behavior stable.
+description: Mechanically split packages/@lumenflow/cli/src/wu-spawn.ts into prompt-builder and
+  strategy-resolution modules while keeping command UX and spawn behavior stable.
 acceptance:
-  - Prompt rendering/building logic is extracted into dedicated module(s) and imported by wu-spawn.ts.
+  - Prompt rendering/building logic is extracted into dedicated module(s) and imported by
+    wu-spawn.ts.
   - Strategy/client resolution logic is extracted without changing branch/lane behavior.
   - wu:spawn command output and execution semantics remain backward compatible.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1652
+claimed_at: 2026-02-13T22:26:38.916Z
+baseline_main_sha: 8741089a4858ac076e9f11d3ae47d7286bfc023a
+session_id: c65a9b89-e9f6-422c-844f-523d0e33216b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T22:26:38.926Z
