@@ -314,9 +314,9 @@ export async function main(): Promise<void> {
     console.log(`\nLink Removed:`);
     console.log(`  WU:         ${wuId}`);
     console.log(`  Initiative: ${initId}`);
-      console.log(`\nNext steps:`);
-      console.log(`  - View initiative status: pnpm initiative:status ${initId}`);
-      console.log(`  - View WU: cat ${WU_PATHS.WU(wuId)}`);
+    console.log(`\nNext steps:`);
+    console.log(`  - View initiative status: pnpm initiative:status ${initId}`);
+    console.log(`  - View WU: cat ${WU_PATHS.WU(wuId)}`);
   } catch (error) {
     if (error instanceof Error && isRetryExhaustionError(error)) {
       die(formatRetryExhaustionError(error, wuId, initId));
