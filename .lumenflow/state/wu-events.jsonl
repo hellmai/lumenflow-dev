@@ -1249,3 +1249,4 @@
 {"type":"claim","wuId":"WU-1643","timestamp":"2026-02-13T22:08:37.596Z","lane":"Framework: CLI Enforcement","title":"Extract init.ts template constants into data module"}
 {"type":"claim","wuId":"WU-1661","timestamp":"2026-02-13T22:09:04.376Z","lane":"Content: Specs Governance","title":"Reconcile INIT-025 metadata and phase mapping for state-machine execution"}
 {"type":"complete","wuId":"WU-1661","timestamp":"2026-02-13T22:12:42.349Z"}
+{"type":"complete","wuId":"WU-1643","timestamp":"2026-02-13T22:16:34.266Z"}
