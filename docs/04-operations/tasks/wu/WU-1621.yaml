@@ -51,4 +51,9 @@ acceptance:
     metadata
 approved_by:
   - tom@hellm.ai
-approved_at: 2026-02-12T20:40:46.296Z
+approved_at: 2026-02-13T09:32:52.411Z
+claimed_mode: worktree
+worktree_path: worktrees/framework-cli-orchestration-wu-1621
+claimed_at: 2026-02-13T09:32:52.405Z
+baseline_main_sha: bb288124a44d531ac4133d1ed93771d7c7ccbffc
+session_id: 406f3750-542a-49d0-8a3e-c8910bc3ca12
