@@ -2,7 +2,7 @@ id: WU-1643
 title: Extract init.ts template constants into data module
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -29,8 +29,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Extract large template string constants from packages/@lumenflow/cli/src/init.ts into a dedicated init-templates module to reduce file size and isolate static data.
+description: Extract large template string constants from packages/@lumenflow/cli/src/init.ts into a
+  dedicated init-templates module to reduce file size and isolate static data.
 acceptance:
   - Template constants are moved from init.ts into init-templates.ts with identical content.
   - init.ts imports templates from init-templates.ts and command output remains unchanged.
   - No behavioral logic changes are introduced in this WU.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1643
+claimed_at: 2026-02-13T22:08:37.570Z
+baseline_main_sha: 17624d6fe96ff2eb29e9f92ce41fc2d1f129ef58
+session_id: f6d07652-6637-4e19-9ac6-c7e65e903182
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T22:08:37.576Z
