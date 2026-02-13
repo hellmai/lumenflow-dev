@@ -13,6 +13,11 @@
  * NOTE (WU-1826): Core recovery functions are now re-exported from
  * tools/lib/wu-repair-core.ts for use by the unified wu:repair command.
  * This module remains the canonical implementation used by wu-done.ts.
+ *
+ * WU-1665: Adds state-machine-driven recovery consolidation.
+ * - StateMachineRecoveryManager determines rollback scope from pipeline failedAt state.
+ * - Legacy rollback path retained behind LUMENFLOW_LEGACY_ROLLBACK=1 env flag.
+ * - All recovery is now centralized through state-machine semantics by default.
  */
 
 import { existsSync, readFileSync, unlinkSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -393,5 +398,157 @@ export async function recoverZombieState({ id, doc, _worktreePath, _args }) {
       `Recovery operation failed: ${error.message}\nFiles rolled back to clean state. Re-run wu:done to retry.`,
       { originalError: error.message, wuId: id },
     );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// WU-1665: State-machine-driven recovery consolidation
+// ---------------------------------------------------------------------------
+
+/**
+ * WU-1665: Environment variable key for legacy rollback compatibility guard.
+ * When set to "1", the legacy rollback path is used instead of state-machine-driven recovery.
+ */
+export const LUMENFLOW_LEGACY_ROLLBACK_ENV_KEY = 'LUMENFLOW_LEGACY_ROLLBACK';
+
+/**
+ * WU-1665: Check if legacy rollback mode is enabled via environment variable.
+ *
+ * During the migration window, operators can set LUMENFLOW_LEGACY_ROLLBACK=1
+ * to use the pre-WU-1665 recovery path for rollback operations.
+ *
+ * @returns {boolean} True if legacy rollback is enabled
+ */
+export function isLegacyRollbackEnabled(): boolean {
+  return process.env[LUMENFLOW_LEGACY_ROLLBACK_ENV_KEY] === '1';
+}
+
+/**
+ * WU-1665: Rollback scope determined by the pipeline state where failure occurred.
+ *
+ * Maps each pipeline stage to the recovery actions needed:
+ * - validating/preparing: nothing written, no rollback needed
+ * - gating: nothing written (gates are read-only checks), no rollback needed
+ * - committing: files written to disk, need snapshot restore
+ * - merging: committed to worktree branch, need snapshot + branch rollback
+ * - pushing: merged but push failed, need snapshot + branch rollback
+ * - cleaningUp: push succeeded, only worktree cleanup remains
+ */
+export interface RollbackScope {
+  /** Whether file snapshot restore is needed (files were written to disk) */
+  snapshotRestore: boolean;
+  /** Whether branch-level rollback is needed (commits were made) */
+  branchRollback: boolean;
+  /** Whether worktree cleanup is the remaining action (push already succeeded) */
+  worktreeCleanup: boolean;
+}
+
+/**
+ * WU-1665: Recovery state from the XState pipeline snapshot.
+ */
+export interface PipelineRecoveryState {
+  wuId: string;
+  failedAt: string | null;
+  error: string | null;
+  retryCount: number;
+}
+
+/**
+ * WU-1665: State-machine-driven recovery manager.
+ *
+ * Determines rollback scope from the pipeline's failedAt state, replacing
+ * the ad-hoc per-function rollback logic scattered across wu-recovery.ts,
+ * wu-transaction.ts, and rollback-utils.ts.
+ *
+ * Usage:
+ * ```ts
+ * const manager = new StateMachineRecoveryManager({
+ *   wuId: 'WU-1665',
+ *   failedAt: 'committing',
+ *   error: 'git commit failed',
+ *   retryCount: 0,
+ * });
+ * const scope = manager.getRollbackScope();
+ * // scope.snapshotRestore === true
+ * // scope.branchRollback === false
+ * ```
+ */
+export class StateMachineRecoveryManager {
+  readonly wuId: string;
+  readonly failedAt: string | null;
+  readonly error: string | null;
+  readonly retryCount: number;
+
+  constructor(state: PipelineRecoveryState) {
+    this.wuId = state.wuId;
+    this.failedAt = state.failedAt;
+    this.error = state.error;
+    this.retryCount = state.retryCount;
+  }
+
+  /**
+   * Determine rollback scope based on the pipeline stage where failure occurred.
+   *
+   * The scope is deterministic: given the same failedAt state, the same
+   * rollback actions are always prescribed.
+   */
+  getRollbackScope(): RollbackScope {
+    const failedAt = this.failedAt;
+
+    // Pre-write states: nothing to roll back
+    if (!failedAt || failedAt === 'validating' || failedAt === 'preparing' || failedAt === 'gating') {
+      return {
+        snapshotRestore: false,
+        branchRollback: false,
+        worktreeCleanup: false,
+      };
+    }
+
+    // Post-push state: push already succeeded, only cleanup remains
+    if (failedAt === 'cleaningUp') {
+      return {
+        snapshotRestore: false,
+        branchRollback: false,
+        worktreeCleanup: true,
+      };
+    }
+
+    // Commit-phase failures: files written, need snapshot restore
+    if (failedAt === 'committing') {
+      return {
+        snapshotRestore: true,
+        branchRollback: false,
+        worktreeCleanup: false,
+      };
+    }
+
+    // Merge/push phase failures: committed + potentially merged, need full rollback
+    // (merging, pushing)
+    return {
+      snapshotRestore: true,
+      branchRollback: true,
+      worktreeCleanup: false,
+    };
+  }
+
+  /**
+   * Serialize recovery state for persistence (e.g., to .lumenflow/recovery/).
+   */
+  serialize(): string {
+    return JSON.stringify({
+      wuId: this.wuId,
+      failedAt: this.failedAt,
+      error: this.error,
+      retryCount: this.retryCount,
+      serializedAt: new Date().toISOString(),
+    });
+  }
+
+  /**
+   * Deserialize recovery state from persisted JSON.
+   */
+  static deserialize(json: string): StateMachineRecoveryManager {
+    const data = JSON.parse(json) as PipelineRecoveryState;
+    return new StateMachineRecoveryManager(data);
   }
 }

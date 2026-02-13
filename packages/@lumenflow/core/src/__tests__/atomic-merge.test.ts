@@ -321,3 +321,118 @@ describe('withAtomicMerge', () => {
     );
   });
 });
+
+// ---------------------------------------------------------------------------
+// WU-1665: Failure-mode recovery parity tests
+// ---------------------------------------------------------------------------
+
+describe('WU-1665: failure-mode recovery parity with state-machine rollback', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should export rollbackFromPipelineState from rollback-utils for centralized recovery', async () => {
+    const mod = await import('../rollback-utils.js');
+    expect(typeof mod.rollbackFromPipelineState).toBe('function');
+  });
+
+  it('should produce deterministic recovery outcome for push-failure injection', async () => {
+    const { rollbackFromPipelineState, RollbackResult } = await import('../rollback-utils.js');
+
+    // Simulate push failure: files committed to worktree, push to origin failed.
+    // Rollback scope: snapshot restore + branch rollback.
+    const pushResult = rollbackFromPipelineState({
+      failedAt: 'pushing',
+      snapshot: null,
+      filesToRestore: [],
+    });
+
+    expect(pushResult).toBeInstanceOf(RollbackResult);
+    // Push failures after a successful commit need scope metadata indicating
+    // branch rollback is required. The result captures the scope.
+    expect(pushResult.scope).toBeDefined();
+    expect(pushResult.scope!.branchRollback).toBe(true);
+    expect(pushResult.scope!.snapshotRestore).toBe(true);
+  });
+
+  it('should produce deterministic no-op outcome for validation-failure injection', async () => {
+    const { rollbackFromPipelineState, RollbackResult } = await import('../rollback-utils.js');
+
+    // Validation failures: nothing was written, nothing to rollback
+    const result = rollbackFromPipelineState({
+      failedAt: 'validating',
+      snapshot: null,
+      filesToRestore: [],
+    });
+
+    expect(result).toBeInstanceOf(RollbackResult);
+    expect(result.success).toBe(true);
+    expect(result.scope).toBeDefined();
+    expect(result.scope!.snapshotRestore).toBe(false);
+    expect(result.scope!.branchRollback).toBe(false);
+  });
+
+  it('should produce deterministic outcome for cleanup-failure injection (post-push)', async () => {
+    const { rollbackFromPipelineState } = await import('../rollback-utils.js');
+
+    // Cleanup failures: push already succeeded, only worktree cleanup remains
+    const result = rollbackFromPipelineState({
+      failedAt: 'cleaningUp',
+      snapshot: null,
+      filesToRestore: [],
+    });
+
+    expect(result.scope).toBeDefined();
+    expect(result.scope!.snapshotRestore).toBe(false);
+    expect(result.scope!.branchRollback).toBe(false);
+    expect(result.scope!.worktreeCleanup).toBe(true);
+  });
+
+  it('should restore files from snapshot when commit-phase rollback is needed', async () => {
+    const { mkdtempSync, writeFileSync, readFileSync, rmSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { tmpdir } = await import('node:os');
+    const { rollbackFromPipelineState } = await import('../rollback-utils.js');
+
+    const tempDir = mkdtempSync(join(tmpdir(), 'commit-rollback-'));
+    try {
+      const f1 = join(tempDir, 'a.txt');
+      const f2 = join(tempDir, 'b.txt');
+      writeFileSync(f1, 'original-a', 'utf-8');
+      writeFileSync(f2, 'original-b', 'utf-8');
+
+      // Snapshot before modifications
+      const snapshot = new Map<string, string | null>([
+        [f1, 'original-a'],
+        [f2, 'original-b'],
+      ]);
+
+      // Simulate modifications (transaction commit wrote files)
+      writeFileSync(f1, 'modified-a', 'utf-8');
+      writeFileSync(f2, 'modified-b', 'utf-8');
+
+      // Rollback from committing state
+      const result = rollbackFromPipelineState({
+        failedAt: 'committing',
+        snapshot,
+        filesToRestore: [
+          { name: 'a.txt', path: f1, content: 'original-a' },
+          { name: 'b.txt', path: f2, content: 'original-b' },
+        ],
+      });
+
+      expect(result.success).toBe(true);
+      expect(readFileSync(f1, 'utf-8')).toBe('original-a');
+      expect(readFileSync(f2, 'utf-8')).toBe('original-b');
+    } finally {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+});

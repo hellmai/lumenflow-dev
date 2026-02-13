@@ -13,6 +13,10 @@
  * This ensures no partial state on validation failure:
  * - If validation fails → no files written
  * - If any write fails → error with cleanup info
+ *
+ * WU-1665: Adds executeSnapshotRestore for state-machine-driven recovery.
+ * The restoreFromSnapshot function is the low-level primitive;
+ * executeSnapshotRestore is the entry point for pipeline-state-aware rollback.
  */
 
 import { existsSync, writeFileSync, mkdirSync, readFileSync, unlinkSync } from 'node:fs';
@@ -345,4 +349,21 @@ export function restoreFromSnapshot(snapshot: Map<string, string | null>): {
   }
 
   return { restored, errors };
+}
+
+/**
+ * WU-1665: Execute snapshot restore for state-machine-driven recovery.
+ *
+ * This is the high-level entry point for snapshot-based rollback, used by the
+ * centralized rollbackFromPipelineState function in rollback-utils.ts.
+ * It delegates to restoreFromSnapshot but accepts a serializable Map format.
+ *
+ * @param {Map<string, string|null>} snapshot - Map of file paths to original content
+ * @returns {{ restored: string[], errors: { path: string, error: string }[] }}
+ */
+export function executeSnapshotRestore(snapshot: Map<string, string | null>): {
+  restored: string[];
+  errors: { path: string; error: string }[];
+} {
+  return restoreFromSnapshot(snapshot);
 }
