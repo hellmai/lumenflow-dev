@@ -2,7 +2,7 @@ id: WU-1664
 title: Extract wu:done worktree completion services for state-driven execution
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -58,3 +58,6 @@ acceptance:
   - Existing lifecycle/worktree regression coverage continues to pass with no behavioral regressions.
   - Code structure clearly separates state orchestration concerns from git/worktree side-effect
     services.
+locked: true
+completed_at: 2026-02-13T23:10:38.890Z
+completed: 2026-02-13

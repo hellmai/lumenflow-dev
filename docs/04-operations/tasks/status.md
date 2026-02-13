@@ -4,7 +4,6 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1664 — Extract wu:done worktree completion services for state-driven execution](wu/WU-1664.yaml)
 - [WU-1666 — Add model-based wu:done pipeline test coverage with @xstate/graph](wu/WU-1666.yaml)
 
 ## Completed
@@ -610,3 +609,4 @@ _Last updated: 2026-02-13_
 - [WU-1647 — Split gates.ts into runners, plan resolvers, and utilities](wu/WU-1647.yaml) — 2026-02-13
 - [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml) — 2026-02-13
 - [WU-1663 — Wire wu:done CLI orchestrator to XState pipeline actor](wu/WU-1663.yaml) — 2026-02-13
+- [WU-1664 — Extract wu:done worktree completion services for state-driven execution](wu/WU-1664.yaml) — 2026-02-13
