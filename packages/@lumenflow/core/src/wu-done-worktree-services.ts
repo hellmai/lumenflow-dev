@@ -25,9 +25,7 @@ import {
   branchExists,
   validatePostMutation,
 } from './wu-done-validators.js';
-import { createGitForPath } from './git-adapter.js';
 import { validateDoneWU, validateAndNormalizeWUYAML } from './wu-schema.js';
-import { validateCodePathsCommittedBeforeDone } from './wu-done-validation.js';
 import { assertTransition } from './state-machine.js';
 import { validateMainNotBehindOrigin, resolveWorktreeMetadataPaths } from './wu-done-worktree.js';
 import { emitLaneSignalForCompletion } from './wu-done-branch-only.js';
@@ -41,18 +39,9 @@ import { WUTransaction, createTransactionSnapshot, restoreFromSnapshot } from '.
 import { maybeRegenerateAndStageDocs } from './wu-done-docs-generate.js';
 import { withMergeLock } from './merge-lock.js';
 import { withAtomicMerge } from './atomic-merge.js';
-import {
-  BRANCHES,
-  REMOTES,
-  LOG_PREFIX,
-  EMOJI,
-  WU_STATUS,
-  LUMENFLOW_PATHS,
-} from './wu-constants.js';
-import { WU_EVENTS_FILE_NAME } from './wu-state-store.js';
+import { BRANCHES, LOG_PREFIX, WU_STATUS } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { createValidationError } from './wu-done-errors.js';
-import { readWU, writeWU } from './wu-yaml.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -71,7 +60,7 @@ export interface WorktreeServiceDeps {
 /**
  * Result of the validateWorktreeState service.
  */
-export interface ValidationResult {
+export interface WorktreeValidationResult {
   /** Whether the worktree state is valid for completion */
   valid: boolean;
   /** Error messages if validation failed */
@@ -156,8 +145,8 @@ export interface ValidateWorktreeStateInput {
  */
 export async function validateWorktreeState(
   input: ValidateWorktreeStateInput,
-): Promise<ValidationResult> {
-  const { wuId, worktreePath, doc, mainCheckoutPath, gitAdapterForMain } = input;
+): Promise<WorktreeValidationResult> {
+  const { wuId, worktreePath, doc, gitAdapterForMain } = input;
   const errors: string[] = [];
   let zombieDetected = false;
   let normalizedDoc = doc;
@@ -436,7 +425,7 @@ export interface MergeToMainInput {
  * @returns Merge result with PR URL if applicable
  */
 export async function mergeToMain(input: MergeToMainInput): Promise<MergeResult> {
-  const { wuId, doc, worktreePath, args } = input;
+  const { wuId, doc, args } = input;
 
   if (args.noMerge) {
     return { merged: false, prUrl: null };
