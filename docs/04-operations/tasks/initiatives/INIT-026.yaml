@@ -5,7 +5,7 @@ description: Eliminate the dirty-main bug class in wu:done by replacing live-mai
   with atomic temp-worktree merge semantics. Ship a single resilient completion path where failures
   leave main untouched, retries converge under origin movement, and both worktree and branch-only
   non-PR modes are covered by deterministic failure-injection and idempotent rerun tests.
-status: in_progress
+status: done
 priority: P0
 owner: Platform Engineering
 created: 2026-02-13
@@ -22,7 +22,7 @@ phases:
     status: done
   - id: 4
     title: Burn-in and remove obsolete dirty-main rollback code
-    status: pending
+    status: done
 success_metrics:
   - wu:done failure injection leaves main worktree clean across merge, push, and callback failure
     paths
