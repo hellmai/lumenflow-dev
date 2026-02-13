@@ -11,13 +11,13 @@ created: 2026-02-13
 phases:
   - id: 1
     title: Canonical lifecycle and failure-mode docs
-    status: pending
+    status: done
   - id: 2
     title: Contributor entrypoint cross-linking
-    status: pending
+    status: in_progress
   - id: 3
     title: Starlight IA and discoverability
-    status: pending
+    status: in_progress
 success_metrics:
   - Canonical lifecycle map and command-mode matrix published in operations docs
   - 'Failure-mode runbook covers recurring issues: main-behind-origin, partial-claim state, spawn

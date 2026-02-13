@@ -2,7 +2,7 @@ id: WU-1635
 title: Document canonical lifecycle map and failure-mode runbook
 lane: 'Content: Specs Governance'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -21,14 +21,11 @@ dependencies: []
 initiative: INIT-027
 phase: 1
 risks: []
-notes: >-
-  Added section 2.6 (Canonical Lifecycle Map) to lumenflow-complete.md with
-  command-mode matrix covering all wu:* and memory/orchestration commands in
-  both worktree and cloud/branch-PR modes. Added Appendix A (Failure-Mode
-  Runbook) with concrete remediation for main-behind-origin, partial-claim
-  state, spawn-provenance enforcement, wu:recover usage, and common compound
-  failures. Added cross-links from quick-ref-commands.md and wu-sizing-guide.md
-  to both new sections.
+notes: Added section 2.6 (Canonical Lifecycle Map) to lumenflow-complete.md with command-mode matrix
+  covering all wu:* and memory/orchestration commands in both worktree and cloud/branch-PR modes.
+  Added Appendix A (Failure-Mode Runbook) with concrete remediation for main-behind-origin,
+  partial-claim state, spawn-provenance enforcement, wu:recover usage, and common compound failures.
+  Added cross-links from quick-ref-commands.md and wu-sizing-guide.md to both new sections.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
@@ -54,3 +51,6 @@ session_id: bb1d3e14-9fcd-4315-b0e8-7dab4813b628
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T14:20:32.006Z
+locked: true
+completed_at: 2026-02-13T14:26:10.855Z
+completed: 2026-02-13
