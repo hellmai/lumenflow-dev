@@ -472,7 +472,7 @@ describe('cli-entry.mjs fallback behavior (WU-1366)', () => {
     it('should use package_manager defaults when config exists without custom build_command', () => {
       const dir = mkdtempSync(path.join(tmpdir(), 'cli-entry-test-'));
       try {
-        writeFileSync(path.join(dir, '.lumenflow.config.yaml'), "package_manager: npm\n");
+        writeFileSync(path.join(dir, '.lumenflow.config.yaml'), 'package_manager: npm\n');
         const result = getBuildCommand(dir);
         expect(result.command).toBe('npm');
         expect(result.args).toEqual(['run', 'build', '--', '--filter=@lumenflow/cli']);
@@ -499,7 +499,7 @@ describe('cli-entry.mjs fallback behavior (WU-1366)', () => {
     it('should fall back to pnpm defaults when config has invalid package_manager', () => {
       const dir = mkdtempSync(path.join(tmpdir(), 'cli-entry-test-'));
       try {
-        writeFileSync(path.join(dir, '.lumenflow.config.yaml'), "package_manager: invalid\n");
+        writeFileSync(path.join(dir, '.lumenflow.config.yaml'), 'package_manager: invalid\n');
         const result = getBuildCommand(dir);
         expect(result.command).toBe('pnpm');
         expect(result.args).toContain('build');
