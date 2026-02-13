@@ -7,11 +7,11 @@ priority: P2
 created: 2026-02-13
 code_paths:
   - packages/@lumenflow/cli/src/doctor.ts
-  - packages/@lumenflow/core/src/orphan-detector.ts
   - packages/@lumenflow/core/src/index.ts
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
   - packages/@lumenflow/core/src/lumenflow-config.ts
-  - packages/@lumenflow/cli/src/__tests__/doctor.test.ts
+  - packages/@lumenflow/core/src/__tests__/orphan-detector.test.ts
+  - packages/@lumenflow/core/src/__tests__/lumenflow-config-schema.test.ts
 tests:
   manual:
     - Run lumenflow-doctor in a clean project and verify no false-positive orphan warning
@@ -32,10 +32,17 @@ notes: 'Reported by . Root cause: parseWorktreePruneOutput uses /orphan director
   getResolvedPaths(). Lane: CLI Enforcement (doctor is a diagnostic/enforcement tool, not a WU
   command).'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-13T17:39:07.528Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1654
+session_id: a75643fc-ffaf-43bb-ad1a-5d4d6ef804e7
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T17:39:07.532Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -61,11 +68,3 @@ acceptance:
   - Doctor tests updated for structured detector calls; full test suite passes
   - 'Core tests updated: orphan-detector.test.ts covers export surface;
     lumenflow-config-schema.test.ts covers safeGitPath field'
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1654
-claimed_at: 2026-02-13T17:39:07.528Z
-baseline_main_sha: b9fd27cc7d5d97850137dadc654193700aa3581f
-session_id: a75643fc-ffaf-43bb-ad1a-5d4d6ef804e7
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-13T17:39:07.532Z
