@@ -224,7 +224,10 @@ export async function runIncrementalLint({
       fileCount: existingFiles.length,
     };
   } catch (error) {
-    console.error('\u26A0\uFE0F  Incremental lint failed, falling back to full lint:', error.message);
+    console.error(
+      '\u26A0\uFE0F  Incremental lint failed, falling back to full lint:',
+      error.message,
+    );
     const result = run(pnpmCmd(SCRIPTS.LINT), { agentLog, cwd });
     return { ...result, fileCount: -1 };
   }
@@ -496,7 +499,10 @@ export async function runSpecLinterGate({ agentLog, useAgentMode, cwd }: GateLog
   if (!useAgentMode) {
     console.log('\u26A0\uFE0F  Unable to detect current WU; skipping scoped validation.');
   } else if (agentLog) {
-    writeSync(agentLog.logFd, '\u26A0\uFE0F  Unable to detect current WU; skipping scoped validation.\n');
+    writeSync(
+      agentLog.logFd,
+      '\u26A0\uFE0F  Unable to detect current WU; skipping scoped validation.\n',
+    );
   }
 
   if (!plan.runGlobal) {

@@ -49,7 +49,10 @@
 import { writeSync } from 'node:fs';
 import { emitGateEvent, getCurrentWU, getCurrentLane } from '@lumenflow/core/telemetry';
 import { die } from '@lumenflow/core/error-handler';
-import { shouldUseGatesAgentMode, updateGatesLatestSymlink } from '@lumenflow/core/gates-agent-mode';
+import {
+  shouldUseGatesAgentMode,
+  updateGatesLatestSymlink,
+} from '@lumenflow/core/gates-agent-mode';
 // WU-2062: Import risk detector for tiered test execution
 import { detectRiskTier, RISK_TIERS } from '@lumenflow/core/risk-detector';
 // WU-2252: Import invariants runner for first-check validation
@@ -339,7 +342,10 @@ async function executeGates(opts: {
       }
       logLine('');
     } catch (error) {
-      console.error('\u26A0\uFE0F  Risk detection failed, defaulting to standard tier:', error.message);
+      console.error(
+        '\u26A0\uFE0F  Risk detection failed, defaulting to standard tier:',
+        error.message,
+      );
       riskTier = {
         tier: RISK_TIERS.STANDARD,
         isDocsOnly: false,
