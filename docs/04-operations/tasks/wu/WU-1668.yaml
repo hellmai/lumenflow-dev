@@ -2,7 +2,7 @@ id: WU-1668
 title: Fix schema-parity registry count expectations for lifecycle command set
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -48,3 +48,6 @@ session_id: 83b962cd-4462-43f9-a05e-4dc7905fb68f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T22:00:12.761Z
+locked: true
+completed_at: 2026-02-13T22:02:57.148Z
+completed: 2026-02-13
