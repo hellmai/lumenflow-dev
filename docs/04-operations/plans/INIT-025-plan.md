@@ -24,7 +24,9 @@ Phase 1 (state-machine foundation): WU-1661 reconcile initiative metadata; WU-16
 
 ## Risks
 
-- Migration regressions in failure paths: mitigate with staged compatibility guard and failure-mode tests before legacy removal.\n- Lane/WIP contention across Core State Recovery and CLI command lanes: mitigate with explicit dependency ordering (WU-1662 -> WU-1663/WU-1664 -> WU-1665/WU-1666).\n- Tooling drift between initiative metadata and plan text: mitigate with reconciliation WU and linked plan governance checks.
+- Migration regressions in failure paths: mitigate with staged compatibility guard and failure-mode tests before legacy removal.
+- Lane/WIP contention across Core State Recovery and CLI command lanes: mitigate with explicit dependency ordering (WU-1662 -> WU-1663/WU-1664 -> WU-1665/WU-1666).
+- Tooling drift between initiative metadata and plan text: mitigate with reconciliation WU and linked plan governance checks.
 
 ## Open Questions
 
