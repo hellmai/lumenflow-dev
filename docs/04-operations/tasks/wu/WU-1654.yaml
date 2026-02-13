@@ -17,6 +17,8 @@ tests:
     - Run lumenflow-doctor in a clean project and verify no false-positive orphan warning
   unit:
     - packages/@lumenflow/cli/src/__tests__/doctor.test.ts
+    - packages/@lumenflow/core/src/__tests__/orphan-detector.test.ts
+    - packages/@lumenflow/core/src/__tests__/lumenflow-config-schema.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1654.done
@@ -44,17 +46,18 @@ description: lumenflow doctor parses wu:prune text output with regexes instead o
   getConfig()/getResolvedPaths() from @lumenflow/core.
 acceptance:
   - Doctor calls detectOrphanWorktrees() and detectMissingTrackedWorktrees() from @lumenflow/core
-    directly instead of shelling out to wu:prune and parsing text
+    directly instead of shelling out to pnpm wu:prune and parsing text
   - orphan-detector exports detectOrphanWorktrees and detectMissingTrackedWorktrees from
     @lumenflow/core public API (named exports in index.ts, not wildcard)
   - parseWorktreePruneOutput regex function and WorktreePruneParseResult interface removed entirely
     from doctor.ts
   - 'DirectoriesSchema in lumenflow-config-schema.ts extended with safeGitPath field (default:
     scripts/safe-git); getResolvedPaths() in lumenflow-config.ts returns it'
-  - Doctor reads safe-git path from getResolvedPaths().safeGitPath instead of hardcoded path.join()
-  - Doctor uses getConfig()/getResolvedPaths() for path resolution instead of hardcoded path.join()
-    calls
+  - checkSafeGit() in doctor.ts reads safe-git path from getResolvedPaths().safeGitPath instead of
+    hardcoded path.join(projectDir, scripts, safe-git)
   - Zero false-positive orphan detection when wu:prune reports 0 orphans
   - WorktreeSanityResult interface contract (orphans, stale, message) preserved or intentionally
     revised with corresponding test updates
   - Doctor tests updated for structured detector calls; full test suite passes
+  - 'Core tests updated: orphan-detector.test.ts covers export surface;
+    lumenflow-config-schema.test.ts covers safeGitPath field'
