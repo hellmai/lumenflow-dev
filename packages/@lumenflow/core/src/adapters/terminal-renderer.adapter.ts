@@ -188,6 +188,9 @@ export class TerminalDashboardRenderer implements IDashboardRenderer {
    * @private
    */
   private renderGlobalStatus(status: GlobalStatus): void {
+    const pendingMandatory = status.pendingMandatory ?? [];
+    const worktreesWithUncommittedChanges = status.worktreesWithUncommittedChanges ?? [];
+
     console.log(SECTION_SEPARATOR);
     console.log(picocolors.bold(`${HEADER_PREFIX} Global Status\n`));
 
@@ -214,9 +217,9 @@ export class TerminalDashboardRenderer implements IDashboardRenderer {
       );
     }
 
-    if (status.pendingMandatory.length > 0) {
+    if (pendingMandatory.length > 0) {
       console.log(`\n${picocolors.yellow(BULLET)} ${picocolors.bold('Pending Mandatory Agents:')}`);
-      for (const pending of status.pendingMandatory) {
+      for (const pending of pendingMandatory) {
         console.log(`  ${picocolors.gray('-')} ${picocolors.cyan(pending.wuId)}: ${pending.agent}`);
       }
     }
@@ -242,11 +245,11 @@ export class TerminalDashboardRenderer implements IDashboardRenderer {
     }
 
     // WU-1748: Display worktrees with uncommitted changes
-    if (status.worktreesWithUncommittedChanges.length > 0) {
+    if (worktreesWithUncommittedChanges.length > 0) {
       console.log(
         `\n${picocolors.yellow(BULLET)} ${picocolors.bold('Worktrees with Uncommitted Changes:')}`,
       );
-      for (const wt of status.worktreesWithUncommittedChanges) {
+      for (const wt of worktreesWithUncommittedChanges) {
         const lastActivity = wt.lastActivityTimestamp
           ? new Date(wt.lastActivityTimestamp).toLocaleString('en-GB')
           : 'Unknown';

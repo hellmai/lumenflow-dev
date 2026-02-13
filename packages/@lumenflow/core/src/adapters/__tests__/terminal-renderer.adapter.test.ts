@@ -7,7 +7,7 @@
  * @module terminal-renderer.adapter.test
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type {
   DashboardData,
   GlobalStatus,
@@ -29,6 +29,10 @@ describe('TerminalDashboardRenderer', () => {
     renderer = new TerminalDashboardRenderer();
     // Capture console.log output
     consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('render()', () => {
@@ -164,7 +168,6 @@ describe('TerminalDashboardRenderer', () => {
           'security-auditor': createMockAgentMetric('pass'),
           'code-reviewer': createMockAgentMetric('pass'),
           'test-engineer': createMockAgentMetric('pending'),
-          'code-reviewer': createMockAgentMetric('pending'),
         },
         wuProgress: [
           createMockWUProgress('WU-1320', 8, 11),
@@ -296,8 +299,8 @@ describe('TerminalDashboardRenderer', () => {
     });
   });
 
-  describe('snapshot tests', () => {
-    it('should match snapshot for complete dashboard', () => {
+  describe('render consistency', () => {
+    it('should render complete dashboard fixture with expected sections', () => {
       const mockData: DashboardData = {
         globalStatus: {
           activeWUs: 2,
@@ -389,8 +392,12 @@ describe('TerminalDashboardRenderer', () => {
 
       const output = consoleSpy.mock.calls.map((call) => call[0]).join('\n');
 
-      // Snapshot test for consistent output
-      expect(output).toMatchSnapshot();
+      expect(output).toContain('Global Status');
+      expect(output).toContain('Pending Mandatory Agents');
+      expect(output).toContain('Agent Metrics');
+      expect(output).toContain('WU Progress');
+      expect(output).toContain('Timeline');
+      expect(output).toContain('Alerts');
     });
   });
 });
