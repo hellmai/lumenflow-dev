@@ -155,6 +155,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.0.17
         version: 4.0.17(vitest@4.0.17(@edge-runtime/vm@3.2.0)(@types/node@22.19.6)(yaml@2.8.2))
+      '@xstate/graph':
+        specifier: ^3.0.4
+        version: 3.0.4(xstate@5.28.0)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1636,6 +1639,11 @@ packages:
 
   '@vitest/utils@4.0.17':
     resolution: {integrity: sha512-RG6iy+IzQpa9SB8HAFHJ9Y+pTzI+h8553MrciN9eC6TFBErqrQaTas4vG+MVj8S4uKk8uTT2p0vgZPnTdxd96w==}
+
+  '@xstate/graph@3.0.4':
+    resolution: {integrity: sha512-b12RA7E//+7FJVrD09Td+BhHRJbeKZnK+98xXBd+JmccG360xVP1lyzVhUZPgBgwPdmIGBJqhKzmWYJQ9c8ojQ==}
+    peerDependencies:
+      xstate: ^5.19.4
 
   '@zag-js/dom-query@1.32.0':
     resolution: {integrity: sha512-12XCCV1bchIFC7wjtYim5sEqUrAddzt0eysMTbBrCuK5r6TmLecwLtxUNKIRQ8adkCn0jqecUiuNyXojaArP3g==}
@@ -5482,6 +5490,10 @@ snapshots:
     dependencies:
       '@vitest/pretty-format': 4.0.17
       tinyrainbow: 3.0.3
+
+  '@xstate/graph@3.0.4(xstate@5.28.0)':
+    dependencies:
+      xstate: 5.28.0
 
   '@zag-js/dom-query@1.32.0':
     dependencies:
