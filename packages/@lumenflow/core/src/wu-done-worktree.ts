@@ -1247,7 +1247,8 @@ export async function checkMergeConflicts(branch) {
 
     const stderr = typeof result.stderr === 'string' ? result.stderr.trim() : '';
     const detail =
-      stderr || `${GIT_COMMANDS.GIT} ${GIT_COMMANDS.MERGE_TREE} exited with status ${String(result.status)}`;
+      stderr ||
+      `${GIT_COMMANDS.GIT} ${GIT_COMMANDS.MERGE_TREE} exited with status ${String(result.status)}`;
     console.warn(`${LOG_PREFIX.DONE} Warning: Could not check merge conflicts: ${detail}`);
   } catch (e) {
     if (e.code === ErrorCodes.GIT_ERROR) throw e;
