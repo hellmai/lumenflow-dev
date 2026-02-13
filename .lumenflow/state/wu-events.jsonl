@@ -1269,3 +1269,4 @@
 {"type":"complete","wuId":"WU-1645","timestamp":"2026-02-13T22:48:13.417Z"}
 {"type":"claim","wuId":"WU-1664","lane":"Framework: Core Lifecycle","title":"Extract wu:done worktree completion services for state-driven execution","timestamp":"2026-02-13T22:49:53.947Z"}
 {"type":"claim","wuId":"WU-1663","lane":"Framework: CLI WU Commands","title":"Wire wu:done CLI orchestrator to XState pipeline actor","timestamp":"2026-02-13T22:50:25.788Z"}
+{"type":"claim","wuId":"WU-1666","lane":"Framework: CLI WU Commands","title":"Add model-based wu:done pipeline test coverage with @xstate/graph","timestamp":"2026-02-13T22:51:15.609Z"}

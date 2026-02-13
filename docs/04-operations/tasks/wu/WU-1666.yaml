@@ -2,7 +2,7 @@ id: WU-1666
 title: Add model-based wu:done pipeline test coverage with @xstate/graph
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -50,3 +50,11 @@ acceptance:
     limitations.
   - Coverage evidence demonstrates increased confidence in state-transition regressions versus prior
     baseline.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1666
+claimed_at: 2026-02-13T22:51:15.563Z
+baseline_main_sha: 5a81bde9b1f9a5444846bef65fc8f29f4832cf78
+session_id: 18220a6e-bfeb-4237-9492-25f2a6adbc06
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T22:51:15.571Z
