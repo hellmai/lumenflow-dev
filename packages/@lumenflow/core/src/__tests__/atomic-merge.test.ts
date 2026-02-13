@@ -133,7 +133,9 @@ describe('withAtomicMerge', () => {
 
   it('treats local catch-up fetch failure as non-blocking after successful remote push', async () => {
     const h = setupHarness();
-    h.mainGit.fetch.mockResolvedValueOnce(undefined).mockRejectedValueOnce(new Error('dirty metadata'));
+    h.mainGit.fetch
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error('dirty metadata'));
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     const mod = await import(ATOMIC_MERGE_MODULE);
@@ -148,15 +150,19 @@ describe('withAtomicMerge', () => {
     });
     expect(h.shared.pushRefspecWithRetry).toHaveBeenCalledTimes(1);
     expect(h.mainGit.merge).not.toHaveBeenCalled();
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Could not fast-forward local main'));
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Could not fast-forward local main'),
+    );
     warnSpy.mockRestore();
   });
 
   it('supports idempotent rerun when first completion had local catch-up friction', async () => {
     const h = setupHarness();
-    h.mainGit.merge.mockRejectedValueOnce(new Error('not possible to fast-forward')).mockResolvedValue({
-      success: true,
-    });
+    h.mainGit.merge
+      .mockRejectedValueOnce(new Error('not possible to fast-forward'))
+      .mockResolvedValue({
+        success: true,
+      });
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     const mod = await import(ATOMIC_MERGE_MODULE);
@@ -184,7 +190,9 @@ describe('withAtomicMerge', () => {
     expect(h.shared.cleanupOrphanedMicroWorktree).toHaveBeenCalledTimes(2);
     expect(h.shared.pushRefspecWithRetry).toHaveBeenCalledTimes(2);
     expect(h.shared.cleanupMicroWorktree).toHaveBeenCalledTimes(2);
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Could not fast-forward local main'));
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Could not fast-forward local main'),
+    );
     warnSpy.mockRestore();
   });
 
