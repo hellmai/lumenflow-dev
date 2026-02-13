@@ -13,7 +13,7 @@ target_date: 2026-03-06
 phases:
   - id: 1
     title: Extract shared micro-worktree helpers (no behavior change)
-    status: pending
+    status: done
   - id: 2
     title: Implement atomic merge executor and worktree-mode integration
     status: pending
