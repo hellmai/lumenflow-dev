@@ -272,7 +272,9 @@ export async function executeBranchOnlyCompletion(context) {
           branch: laneBranch,
         });
         await gitWorktree.commit(msg);
-        console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Metadata committed in atomic temp worktree`);
+        console.log(
+          `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Metadata committed in atomic temp worktree`,
+        );
       },
     });
 
@@ -291,7 +293,9 @@ export async function executeBranchOnlyCompletion(context) {
 
   // Legacy fallback path for --no-merge or missing lane branch.
   if (!args.noMerge) {
-    console.log(`${LOG_PREFIX.DONE} No lane branch found (${laneBranch || 'unknown'}), skipping merge`);
+    console.log(
+      `${LOG_PREFIX.DONE} No lane branch found (${laneBranch || 'unknown'}), skipping merge`,
+    );
     await gitAdapter.checkout(BRANCHES.MAIN);
   } else {
     console.log(`\n${LOG_PREFIX.DONE} Switching to ${BRANCHES.MAIN} for completion commit...`);
