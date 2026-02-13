@@ -10,7 +10,6 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseYAML } from '@lumenflow/core/wu-yaml';
 import { createGitForPath } from '@lumenflow/core/git-adapter';
-import { getErrorMessage } from '@lumenflow/core/error-handler';
 import {
   BRANCHES,
   REMOTES,

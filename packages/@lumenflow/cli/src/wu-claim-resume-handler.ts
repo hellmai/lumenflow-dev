@@ -8,7 +8,7 @@
 
 import path from 'node:path';
 import { createGitForPath } from '@lumenflow/core/git-adapter';
-import { die, getErrorMessage } from '@lumenflow/core/error-handler';
+import { die } from '@lumenflow/core/error-handler';
 import { toKebab, LOG_PREFIX, EMOJI } from '@lumenflow/core/wu-constants';
 import { emitWUFlowEvent } from '@lumenflow/core/telemetry';
 import {

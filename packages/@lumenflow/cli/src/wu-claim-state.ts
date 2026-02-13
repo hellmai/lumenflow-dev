@@ -6,7 +6,7 @@
  * All functions are mechanical extractions preserving original behavior.
  */
 
-import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { rmSync } from 'node:fs';
 import { access, readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
