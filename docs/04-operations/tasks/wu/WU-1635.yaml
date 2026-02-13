@@ -1,0 +1,36 @@
+id: WU-1635
+title: Document canonical lifecycle map and failure-mode runbook
+lane: 'Content: Specs Governance'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-13
+code_paths:
+  - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
+tests:
+  manual:
+    - Open updated markdown docs and verify command sequences are consistent, cross-links resolve, and remediation steps are actionable
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1635.done
+dependencies: []
+initiative: INIT-027
+phase: 1
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Create a single canonical operations-doc reference that explains how wu:create, wu:claim, wu:brief, wu:prep, wu:done, wu:recover, and orchestration/memory tools fit together, plus a runbook for recurrent failure modes seen in active usage.
+acceptance:
+  - Canonical command-mode matrix (worktree vs cloud/branch-pr) is documented with expected location and handoff points
+  - Failure-mode runbook includes concrete remediation for main-behind-origin, partial-claim state, spawn-provenance enforcement, and wu:recover usage
+  - Updated docs are internally cross-linked from quick-ref and complete framework guidance
