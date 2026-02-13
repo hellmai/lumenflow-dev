@@ -37,6 +37,10 @@ notes:
     rollback cleanup.'
   - '2026-02-13 execution kickoff: Phase 1 reconciliation/state-machine foundation WUs
     (WU-1661..WU-1666) are now specified and ready for claim order.'
+  - '2026-02-13 review: phase titles are stale and should read: Phase 1 = State Machine Foundation,
+    Phase 2 = Mechanical Decomposition, Phase 3 = Coverage Hardening + Cleanup. initiative:edit does
+    not support --phase-title; will be corrected when tooling supports it or via next
+    initiative-level edit.'
 related_plan: lumenflow://plans/INIT-025-plan.md
 lanes:
   - 'Content: Specs Governance'
