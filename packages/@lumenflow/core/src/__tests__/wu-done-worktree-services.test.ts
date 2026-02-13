@@ -113,7 +113,10 @@ function createTempWorktree() {
     '  manual: []',
     'exposure: backend-only',
   ].join('\n');
-  writeFileSync(join(root, 'docs', '04-operations', 'tasks', 'wu', `${TEST_WU_ID}.yaml`), wuContent);
+  writeFileSync(
+    join(root, 'docs', '04-operations', 'tasks', 'wu', `${TEST_WU_ID}.yaml`),
+    wuContent,
+  );
 
   // Create state store events file with a claim event
   writeFileSync(
@@ -494,9 +497,8 @@ describe('WU-1664: wu:done worktree completion services', () => {
     });
 
     it('should not change branch-only exports', async () => {
-      const { executeBranchOnlyCompletion, executeBranchPRCompletion } = await import(
-        '../wu-done-branch-only.js'
-      );
+      const { executeBranchOnlyCompletion, executeBranchPRCompletion } =
+        await import('../wu-done-branch-only.js');
       expect(typeof executeBranchOnlyCompletion).toBe('function');
       expect(typeof executeBranchPRCompletion).toBe('function');
     });

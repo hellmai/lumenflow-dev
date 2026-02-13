@@ -32,10 +32,7 @@ import { assertTransition } from './state-machine.js';
 import { validateMainNotBehindOrigin, resolveWorktreeMetadataPaths } from './wu-done-worktree.js';
 import { emitLaneSignalForCompletion } from './wu-done-branch-only.js';
 import { WU_DONE_COMPLETION_MODES } from './wu-done-pr.js';
-import {
-  clearRecoveryAttempts,
-  detectZombieState,
-} from './wu-recovery.js';
+import { clearRecoveryAttempts, detectZombieState } from './wu-recovery.js';
 import {
   countPreviousCompletionAttempts,
   squashPreviousCompletionAttempts,
