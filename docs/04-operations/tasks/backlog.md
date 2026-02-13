@@ -33,7 +33,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1634 — Fix wu:done silent mode-execution failure messaging](wu/WU-1634.yaml) — Framework: CLI Orchestration
 - [WU-1638 — Remove obsolete dirty-main defensive code after INIT-026 atomic merge](wu/WU-1638.yaml) — Framework: CLI WU Commands
 - [WU-1637 — Expose tooling lifecycle and troubleshooting in Starlight navigation](wu/WU-1637.yaml) — Content: Site Comms
 - [WU-1636 — Align AGENTS and LUMENFLOW entrypoint guidance to canonical lifecycle docs](wu/WU-1636.yaml) — Content: Framework Docs
@@ -615,4 +614,5 @@ sections:
 - [WU-1629 — Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage](wu/WU-1629.yaml)
 - [WU-1630 — Remove obsolete dirty-main rollback and post-merge recovery paths after burn-in](wu/WU-1630.yaml)
 - [WU-1635 — Document canonical lifecycle map and failure-mode runbook](wu/WU-1635.yaml)
+- [WU-1634 — Fix wu:done silent mode-execution failure messaging](wu/WU-1634.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
