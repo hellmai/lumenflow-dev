@@ -7,7 +7,6 @@ priority: P1
 created: 2026-02-13
 code_paths:
   - packages/@lumenflow/cli/src/wu-claim.ts
-  - packages/@lumenflow/core/src/wu-helpers.ts
 tests:
   manual:
     - In a repo with git.requireRemote=false and no origin remote, run wu:create then wu:claim and
@@ -23,10 +22,17 @@ risks: []
 notes: 'Derived from post-completion review of WU-1653: stamp force-add is correct, but no-remote
   claim flow still has gaps.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-13T17:38:47.573Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1655
+session_id: a75643fc-ffaf-43bb-ad1a-5d4d6ef804e7
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T17:38:47.580Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -45,11 +51,3 @@ acceptance:
     local fallback and no push, or blocked early with a clear preflight error before mutation).
   - Targeted unit coverage added for requireRemote=false claim behavior and existing wu:claim test
     suites continue passing.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1655
-claimed_at: 2026-02-13T17:38:47.573Z
-baseline_main_sha: b4d179b7b84b78ef44dc1da98a277694a59f60eb
-session_id: a75643fc-ffaf-43bb-ad1a-5d4d6ef804e7
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-13T17:38:47.580Z
