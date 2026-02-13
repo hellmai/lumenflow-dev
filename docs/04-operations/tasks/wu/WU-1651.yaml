@@ -2,7 +2,7 @@ id: WU-1651
 title: Extract wu-create.ts validation, content, and readiness builders
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -45,3 +45,6 @@ session_id: c65a9b89-e9f6-422c-844f-523d0e33216b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T22:25:42.075Z
+locked: true
+completed_at: 2026-02-13T22:37:02.755Z
+completed: 2026-02-13
