@@ -7,6 +7,7 @@ _Last updated: 2026-02-13_
 - [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml)
 - [WU-1649 — Extract wu-claim.ts validation and mode handlers](wu/WU-1649.yaml)
 - [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml)
+- [WU-1662 — Define typed XState wu:done pipeline machine in core](wu/WU-1662.yaml)
 
 ## Completed
 
