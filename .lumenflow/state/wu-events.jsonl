@@ -1259,3 +1259,4 @@
 {"type":"claim","wuId":"WU-1652","lane":"Framework: CLI WU Commands","title":"Extract wu-spawn.ts prompt builders and strategy resolver","timestamp":"2026-02-13T22:26:38.972Z"}
 {"type":"claim","wuId":"WU-1645","lane":"Framework: CLI Enforcement","title":"Split enforcement-generator hook script builders","timestamp":"2026-02-13T22:27:03.132Z"}
 {"type":"complete","wuId":"WU-1649","timestamp":"2026-02-13T22:27:06.343Z"}
+{"type":"claim","wuId":"WU-1647","lane":"Framework: Core Lifecycle","title":"Split gates.ts into runners, plan resolvers, and utilities","timestamp":"2026-02-13T22:32:33.346Z"}

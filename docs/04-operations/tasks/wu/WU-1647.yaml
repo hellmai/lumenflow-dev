@@ -1,15 +1,16 @@
 id: WU-1647
 title: Split gates.ts into runners, plan resolvers, and utilities
-lane: 'Framework: CLI Enforcement'
+lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
   - packages/@lumenflow/cli/src/gates.ts
 tests:
   manual:
-    - Run pnpm gates and verify expected sequencing, status output, and exit behavior remain unchanged.
+    - Run pnpm gates and verify expected sequencing, status output, and exit behavior remain
+      unchanged.
   unit:
     - packages/@lumenflow/cli/__tests__/gates.test.ts
     - packages/@lumenflow/cli/src/__tests__/gates-config.test.ts
@@ -29,8 +30,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Mechanically decompose packages/@lumenflow/cli/src/gates.ts into focused modules for gate runners, plan resolution, and utility helpers while preserving gate behavior.
+description: Mechanically decompose packages/@lumenflow/cli/src/gates.ts into focused modules for
+  gate runners, plan resolution, and utility helpers while preserving gate behavior.
 acceptance:
   - run* gate functions are extracted into dedicated modules and imported by gates.ts orchestrator.
-  - Gate planning/resolution logic is moved without changing lint/test/typecheck/spec-linter behavior.
+  - Gate planning/resolution logic is moved without changing lint/test/typecheck/spec-linter
+    behavior.
   - CLI gates interface and output remain backward compatible.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1647
+claimed_at: 2026-02-13T22:32:33.305Z
+baseline_main_sha: c53ffad086c1e73c1b88e78781a36cd406430e11
+session_id: 8c2c9fd6-c157-4f78-bb02-44e3f0af34e8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T22:32:33.314Z

@@ -9,6 +9,8 @@ _Last updated: 2026-02-13_
 - [WU-1651 — Extract wu-create.ts validation, content, and readiness builders](wu/WU-1651.yaml)
 - [WU-1650 — Extract wu-edit.ts validation and apply operations](wu/WU-1650.yaml)
 - [WU-1652 — Extract wu-spawn.ts prompt builders and strategy resolver](wu/WU-1652.yaml)
+- [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml)
+- [WU-1647 — Split gates.ts into runners, plan resolvers, and utilities](wu/WU-1647.yaml)
 
 ## Completed
 
