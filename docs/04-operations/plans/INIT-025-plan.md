@@ -12,24 +12,7 @@ In scope: Phase 1 reconciliation + wu:done state-machine foundation (WU-1661..WU
 
 ## Approach
 
-### Phase 1: wu:done State Machine (Priority)
-
-**WU A: Define state machine and extract phases**
-Extract an explicit state machine from wu-done.ts with named states: `validating -> preparing -> gating -> committing -> merging -> pushing -> cleanup`. Each state has: entry conditions, the work it does, exit conditions, and a single rollback path. Replace the implicit Step 0/0a/0b/0.6/0.75 numbering with typed state transitions. Target: orchestrator under 500 lines delegating to phase modules.
-
-**WU B: Consolidate rollback to single transaction manager**
-Replace the 4 current rollback mechanisms (transaction abort, file snapshot, branch rollback, zombie recovery) with one TransactionManager that tracks what was modified and can undo it. Zombie states become impossible because the state machine prevents partial completion.
-
-**WU C: Single-pass gates by design**
-Gates run exactly once, in the `gating` state. wu:prep records a gates-passed stamp with commit SHA. wu:done validates the stamp matches HEAD and skips re-running gates. No more duplicate full-suite execution.
-
-### Phase 2: Mechanical Splits (Remaining God Files)
-
-Split the remaining god files (mcp/tools.ts, cli/init.ts, cli/wu-claim.ts, core/wu-spawn.ts, cli/gates.ts, cli/wu-edit.ts) into focused modules using barrel re-exports for backward compatibility. These are mechanical splits -- no architectural changes, just file size reduction. One WU per file, thin barrel preserves existing imports.
-
-### Phase 3: Test Coverage + Cleanup
-
-Bring test coverage to 80%+ on all new modules. Remove P0 EMERGENCY FIX comments. Remove dead zombie recovery code that the state machine makes unnecessary. Update INIT-025 plan with final metrics.
+Phase 1 (state-machine foundation): WU-1661 reconcile initiative metadata; WU-1662 define typed XState machine; WU-1663 wire CLI orchestrator; WU-1664 extract lifecycle services; WU-1665 consolidate rollback with staged compatibility guard; WU-1666 add model-based transition coverage using @xstate/graph. Phase 2 executes existing mechanical split WUs. Phase 3 removes temporary legacy paths and hardens coverage/reporting.
 
 ## Success Criteria
 
