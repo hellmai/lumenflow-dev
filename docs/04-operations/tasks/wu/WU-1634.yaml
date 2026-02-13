@@ -2,14 +2,15 @@ id: WU-1634
 title: Fix wu:done silent mode-execution failure messaging
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
 tests:
   manual:
-    - Run wu:done on a controlled failing path and verify terminal prints root failure message plus remediation guidance
+    - Run wu:done on a controlled failing path and verify terminal prints root failure message plus
+      remediation guidance
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
     - packages/@lumenflow/cli/__tests__/wu-done.test.ts
@@ -28,8 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: wu:done currently catches mode-execution failures and exits with code 1 without surfacing the underlying error context to the terminal. This creates opaque failures (for example, merge/preflight failures) and forces log spelunking. Update the catch/error path to preserve clear terminal guidance while keeping existing failure semantics.
+description: wu:done currently catches mode-execution failures and exits with code 1 without
+  surfacing the underlying error context to the terminal. This creates opaque failures (for example,
+  merge/preflight failures) and forces log spelunking. Update the catch/error path to preserve clear
+  terminal guidance while keeping existing failure semantics.
 acceptance:
   - wu:done mode-execution failures print the underlying error message/context before exit
   - terminal output includes actionable next-step guidance for recoverable failures
   - existing exit code behavior and rollback/cleanup semantics remain unchanged
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1634
+claimed_at: 2026-02-13T14:13:08.154Z
+baseline_main_sha: 09b4a6ba21057afb5344d8467aa09d6cfa1ce278
+session_id: bb1d3e14-9fcd-4315-b0e8-7dab4813b628
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T14:13:08.161Z
