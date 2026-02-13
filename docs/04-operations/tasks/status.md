@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1625 — Add 8 missing subpath exports to @lumenflow/core for consumer compatibility](wu/WU-1625.yaml)
 
 ## Completed
 
