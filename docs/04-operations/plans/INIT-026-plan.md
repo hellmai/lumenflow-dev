@@ -41,7 +41,12 @@ Execution strategy (no feature flag, direct replacement):
 
 ## Risks
 
-<!-- What could go wrong? How will you mitigate? -->
+- Risk: High push churn on `origin/main` causes repeated contention.
+  Mitigation: bounded retry with clear terminal guidance and deterministic cleanup.
+- Risk: Regressions in less-traveled branch-only non-PR path.
+  Mitigation: dedicated integration tests and idempotent rerun assertions before cleanup WU.
+- Risk: Tight coupling to micro-worktree internals.
+  Mitigation: stable shared helper module (`micro-worktree-shared.ts`) as explicit API boundary.
 
 ## Open Questions
 
