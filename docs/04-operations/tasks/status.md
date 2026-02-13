@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1660 — Fix pre-existing terminal renderer global-status test regression](wu/WU-1660.yaml)
 
 ## Completed
 

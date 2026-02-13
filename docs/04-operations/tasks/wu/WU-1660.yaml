@@ -2,7 +2,7 @@ id: WU-1660
 title: Fix pre-existing terminal renderer global-status test regression
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -27,9 +27,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: main currently fails core adapter tests because TerminalDashboardRenderer assumes status.worktreesWithUncommittedChanges is always present. Problem: fixture and backward-compat paths without this field throw TypeError, blocking wu:prep/wu:done across unrelated WUs. Solution: make renderer global-status handling null-safe and update targeted tests/snapshots so missing optional fields do not crash rendering.'
+description: 'Context: main currently fails core adapter tests because TerminalDashboardRenderer
+  assumes status.worktreesWithUncommittedChanges is always present. Problem: fixture and
+  backward-compat paths without this field throw TypeError, blocking wu:prep/wu:done across
+  unrelated WUs. Solution: make renderer global-status handling null-safe and update targeted
+  tests/snapshots so missing optional fields do not crash rendering.'
 acceptance:
-  - TerminalDashboardRenderer renderGlobalStatus handles missing worktreesWithUncommittedChanges without throwing.
-  - packages/@lumenflow/core/src/adapters/__tests__/terminal-renderer.adapter.test.ts passes on main after fix.
-  - Fix is backward-compatible for older dashboard payload shapes and does not regress existing output sections.
+  - TerminalDashboardRenderer renderGlobalStatus handles missing worktreesWithUncommittedChanges
+    without throwing.
+  - packages/@lumenflow/core/src/adapters/__tests__/terminal-renderer.adapter.test.ts passes on main
+    after fix.
+  - Fix is backward-compatible for older dashboard payload shapes and does not regress existing
+    output sections.
   - Targeted tests added/updated and gates pass for the WU.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1660
+claimed_at: 2026-02-13T20:25:17.249Z
+baseline_main_sha: 5bbed836378d34b7de2bb367fe99fd5fe4a4f8db
+session_id: 877bf399-c488-4502-89f0-01c3688b7a3a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T20:25:17.259Z
