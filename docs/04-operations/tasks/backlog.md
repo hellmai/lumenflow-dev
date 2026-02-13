@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1637 — Expose tooling lifecycle and troubleshooting in Starlight navigation](wu/WU-1637.yaml) — Content: Site Comms
 - [WU-1636 — Align AGENTS and LUMENFLOW entrypoint guidance to canonical lifecycle docs](wu/WU-1636.yaml) — Content: Framework Docs
 - [WU-1635 — Document canonical lifecycle map and failure-mode runbook](wu/WU-1635.yaml) — Content: Specs Governance
 - [WU-1634 — Fix wu:done silent mode-execution failure messaging](wu/WU-1634.yaml) — Framework: CLI Orchestration
