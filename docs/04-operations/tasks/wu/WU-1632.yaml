@@ -7,7 +7,6 @@ priority: P0
 created: 2026-02-13
 code_paths:
   - packages/@lumenflow/core/src/micro-worktree-shared.ts
-  - packages/@lumenflow/core/src/micro-worktree.ts
 tests:
   manual:
     - Run pnpm --filter @lumenflow/core typecheck and verify no TS2307 for micro-worktree-shared
@@ -25,10 +24,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-13T12:16:03.495Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1632
+session_id: 348376d6-ab01-4437-b6bd-7c957cd1d11b
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T12:16:03.503Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +46,3 @@ acceptance:
     surface required by micro-worktree.ts
   - pnpm --filter @lumenflow/core typecheck passes
   - pnpm build --filter=@lumenflow/cli passes from main
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1632
-claimed_at: 2026-02-13T12:16:03.495Z
-baseline_main_sha: 845a506a9ff5ced83758fa605cc390c89562638b
-session_id: 348376d6-ab01-4437-b6bd-7c957cd1d11b
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-13T12:16:03.503Z
