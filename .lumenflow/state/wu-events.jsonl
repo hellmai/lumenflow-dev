@@ -1208,3 +1208,4 @@
 {"type":"claim","wuId":"WU-1630","timestamp":"2026-02-13T13:39:43.996Z","lane":"Framework: CLI Orchestration","title":"Remove obsolete dirty-main rollback and post-merge recovery paths after burn-in"}
 {"type":"complete","wuId":"WU-1630","timestamp":"2026-02-13T13:56:05.360Z"}
 {"type":"claim","wuId":"WU-1634","lane":"Framework: CLI Orchestration","title":"Fix wu:done silent mode-execution failure messaging","timestamp":"2026-02-13T14:13:08.175Z"}
+{"type":"claim","wuId":"WU-1638","lane":"Framework: CLI WU Commands","title":"Remove obsolete dirty-main defensive code after INIT-026 atomic merge","timestamp":"2026-02-13T14:17:01.237Z"}
