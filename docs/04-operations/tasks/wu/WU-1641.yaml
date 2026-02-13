@@ -2,7 +2,7 @@ id: WU-1641
 title: Fix initiative status commands ignoring initiative YAML status/phase state
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/orchestrate-init-status.ts
 tests:
   manual:
-    - Set initiative YAML status to in_progress with pending phases and verify both commands do not display done.
+    - Set initiative YAML status to in_progress with pending phases and verify both commands do not
+      display done.
   unit:
     - packages/@lumenflow/cli/__tests__/orchestrate-init-status.test.ts
   e2e: []
@@ -28,8 +29,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: initiative:status and orchestrate:init-status currently report done from WU-count aggregation even when initiative YAML status is in_progress and phases are pending. Align status derivation with initiative YAML lifecycle and phase coherence.
+description: initiative:status and orchestrate:init-status currently report done from WU-count
+  aggregation even when initiative YAML status is in_progress and phases are pending. Align status
+  derivation with initiative YAML lifecycle and phase coherence.
 acceptance:
-  - initiative:status reports in_progress when initiative YAML status is in_progress, even if all currently registered WUs are done.
-  - orchestrate:init-status reports in_progress when initiative YAML status is in_progress and phases remain pending.
+  - initiative:status reports in_progress when initiative YAML status is in_progress, even if all
+    currently registered WUs are done.
+  - orchestrate:init-status reports in_progress when initiative YAML status is in_progress and
+    phases remain pending.
   - status output includes clear mismatch handling without falsely marking done.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1641
+claimed_at: 2026-02-13T17:07:14.779Z
+baseline_main_sha: 1688ce8139ee6e06e020f3b34c917f3586971f1b
+session_id: 35b60fa7-cb13-4add-9398-57f91dfcd280
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T17:07:14.785Z
