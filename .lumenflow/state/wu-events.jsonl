@@ -1199,4 +1199,5 @@
 {"type":"claim","wuId":"WU-1627","timestamp":"2026-02-13T13:05:30.371Z","lane":"Framework: Core Lifecycle","title":"Implement withAtomicMerge core executor with failure-injection tests"}
 {"type":"complete","wuId":"WU-1631","timestamp":"2026-02-13T13:12:20.685Z"}
 {"type":"complete","wuId":"WU-1627","timestamp":"2026-02-13T13:13:41.439Z"}
-{"type":"claim","wuId":"WU-1623","lane":"Framework: Core State Recovery","title":"Stabilize core full-suite timeout flake in gates","timestamp":"2026-02-13T13:17:28.866Z"}
+{"type":"claim","wuId":"WU-1623","timestamp":"2026-02-13T13:17:28.866Z","lane":"Framework: Core State Recovery","title":"Stabilize core full-suite timeout flake in gates"}
+{"type":"complete","wuId":"WU-1623","timestamp":"2026-02-13T13:25:59.108Z"}
