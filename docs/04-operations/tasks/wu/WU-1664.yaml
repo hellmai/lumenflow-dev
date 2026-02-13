@@ -6,9 +6,9 @@ status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
-  - packages/@lumenflow/core/src/wu-done-worktree.ts
-  - packages/@lumenflow/core/src/wu-done-branch-only.ts
-  - packages/@lumenflow/core/src/__tests__/wu-done-worktree.test.ts
+  - packages/@lumenflow/core/src/wu-done-worktree-services.ts
+  - packages/@lumenflow/core/src/__tests__/wu-done-worktree-services.test.ts
+  - packages/@lumenflow/core/src/index.ts
 tests:
   manual:
     - Execute representative worktree completion scenarios (normal, retry, cleanup) and confirm
@@ -30,10 +30,17 @@ risks: []
 notes: 'Sizing (wu-sizing-guide): Medium due multi-path lifecycle decomposition and validation
   depth; checkpoint-resume recommended.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-13T22:49:53.927Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1664
+session_id: 18220a6e-bfeb-4237-9492-25f2a6adbc06
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T22:49:53.933Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -51,11 +58,3 @@ acceptance:
   - Existing lifecycle/worktree regression coverage continues to pass with no behavioral regressions.
   - Code structure clearly separates state orchestration concerns from git/worktree side-effect
     services.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1664
-claimed_at: 2026-02-13T22:49:53.927Z
-baseline_main_sha: ef73caf49cb483afc4037cb0dde7a25deef1b883
-session_id: 18220a6e-bfeb-4237-9492-25f2a6adbc06
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-13T22:49:53.933Z
