@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1659 — wu:done eliminate duplicate full-gates runs and reduce flake amplification](wu/WU-1659.yaml) — Framework: CLI WU Commands
 - [WU-1658 — Add regression coverage for wu:done post-push reconciliation and cleanup](wu/WU-1658.yaml) — Framework: Core State Recovery
 - [WU-1657 — wu:done stabilize post-push local catch-up and cleanup idempotency](wu/WU-1657.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
