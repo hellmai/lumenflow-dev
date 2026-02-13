@@ -20,6 +20,30 @@ import {
 import { OUTPUT_FORMATS } from '@lumenflow/initiatives/constants';
 import { WU_STATUS } from '@lumenflow/core/wu-constants';
 
+function normalizeLifecycleStatus(value) {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+function hasIncompletePhase(phases) {
+  if (!Array.isArray(phases) || phases.length === 0) {
+    return false;
+  }
+  return phases.some((phase) => {
+    if (phase === null || typeof phase !== 'object') {
+      return true;
+    }
+    return normalizeLifecycleStatus(phase.status) !== WU_STATUS.DONE;
+  });
+}
+
+export function deriveInitiativeLifecycleStatus(status, phases) {
+  const normalizedStatus = normalizeLifecycleStatus(status);
+  if (normalizedStatus === WU_STATUS.DONE && hasIncompletePhase(phases)) {
+    return WU_STATUS.IN_PROGRESS;
+  }
+  return normalizedStatus || WU_STATUS.IN_PROGRESS;
+}
+
 function getWUBlockers(doc) {
   return doc.blocked_by || doc.dependencies || [];
 }
@@ -45,12 +69,18 @@ function renderDetailed(initiative, useColor) {
   const wus = getInitiativeWUs(id);
   const wuById = new Map(wus.map((wu) => [wu.id, wu]));
   const phaseGroups = getInitiativePhases(id);
+  const status = deriveInitiativeLifecycleStatus(doc.status, doc.phases);
 
   // Header
   console.log(`\n${id}: ${doc.title}`);
   console.log(
-    `Status: ${doc.status} | Progress: ${progress.percentage}% (${progress.done}/${progress.total} WUs)`,
+    `Status: ${status} | Progress: ${progress.percentage}% (${progress.done}/${progress.total} WUs)`,
   );
+  if (status !== normalizeLifecycleStatus(doc.status)) {
+    console.log(
+      `Lifecycle mismatch: metadata status '${doc.status}' is inconsistent with phase state; reporting '${status}'.`,
+    );
+  }
 
   // Start here (actionable next steps)
   console.log('\nStart here:');
@@ -142,13 +172,15 @@ function renderJSON(initiative) {
   const progress = getInitiativeProgress(id);
   const wus = getInitiativeWUs(id);
   const phaseGroups = getInitiativePhases(id);
+  const status = deriveInitiativeLifecycleStatus(doc.status, doc.phases);
 
   const output = {
     id,
     slug: doc.slug,
     title: doc.title,
     description: doc.description,
-    status: doc.status,
+    status,
+    rawStatus: doc.status,
     priority: doc.priority,
     owner: doc.owner,
     created: doc.created,

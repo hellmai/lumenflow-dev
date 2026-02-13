@@ -31,6 +31,31 @@ function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+function normalizeLifecycleStatus(value: unknown): string {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+function hasIncompletePhase(phases: unknown): boolean {
+  if (!Array.isArray(phases) || phases.length === 0) {
+    return false;
+  }
+  return phases.some((phase) => {
+    if (phase === null || typeof phase !== 'object') {
+      return true;
+    }
+    const status = normalizeLifecycleStatus((phase as { status?: unknown }).status);
+    return status !== 'done';
+  });
+}
+
+function deriveInitiativeLifecycleStatus(status: unknown, phases: unknown): string {
+  const normalizedStatus = normalizeLifecycleStatus(status);
+  if (normalizedStatus === 'done' && hasIncompletePhase(phases)) {
+    return 'in_progress';
+  }
+  return normalizedStatus || 'in_progress';
+}
+
 function getCompletedWUs(wuIds: string[]): Set<string> {
   const completed = new Set<string>();
 
@@ -77,8 +102,18 @@ const program = new Command()
       console.log(chalk.cyan(`${LOG_PREFIX} Loading initiative ${opts.initiative}...`));
 
       const { initiative, wus } = loadInitiativeWUs(opts.initiative);
+      const lifecycleStatus = deriveInitiativeLifecycleStatus(initiative.status, initiative.phases);
+      const rawStatus = normalizeLifecycleStatus(initiative.status);
 
       console.log(chalk.bold(`\nInitiative: ${initiative.id} - ${initiative.title}`));
+      console.log(chalk.bold(`Lifecycle Status: ${lifecycleStatus}`));
+      if (rawStatus && rawStatus !== lifecycleStatus) {
+        console.log(
+          chalk.yellow(
+            `Lifecycle mismatch: metadata status '${initiative.status}' conflicts with phase state; reporting '${lifecycleStatus}'.`,
+          ),
+        );
+      }
       console.log('');
 
       const progress = calculateProgress(wus);
@@ -115,4 +150,7 @@ const program = new Command()
     }
   });
 
-program.parse();
+// WU-1181 parity: avoid top-level parse when imported in tests
+if (import.meta.main) {
+  program.parse();
+}

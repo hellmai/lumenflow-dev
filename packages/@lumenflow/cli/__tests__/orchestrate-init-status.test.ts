@@ -23,4 +23,12 @@ describe('orchestrate:init-status wiring (WU-1340)', () => {
 
     expect(content).toContain('Lane Availability');
   });
+
+  it('reports lifecycle status from initiative metadata', () => {
+    const content = fs.readFileSync(STATUS_PATH, 'utf-8');
+
+    expect(content).toContain('Lifecycle Status');
+    expect(content).toContain('initiative.status');
+    expect(content).toContain('phase');
+  });
 });
