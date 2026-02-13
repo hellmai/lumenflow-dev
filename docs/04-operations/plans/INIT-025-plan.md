@@ -68,7 +68,11 @@ Mitigation: Strict rule -- no behavioral changes in this initiative. State machi
 
 ## Open Questions
 
-<!-- Unresolved questions or decisions needed -->
+1. **State machine library vs hand-rolled?** XState/TypeState would give formal guarantees but add a dependency. A simple discriminated union with switch/case may suffice for 7 states. Leaning toward hand-rolled for zero dependencies.
+
+2. **Should WU-1659 (gate dedup) merge before or after Phase 1?** If 1659 lands first as a tactical patch, Phase 1 WU C supersedes it with a cleaner design. If 1659 is skipped, Phase 1 WU C handles it architecturally. Either way works.
+
+3. **mcp/tools.ts (4081 lines) -- is this really a god file or just large by nature?** MCP tool registration may be inherently verbose. Need to assess whether splitting by tool category (wu-tools, mem-tools, etc.) actually improves maintainability or just adds indirection.
 
 ## References
 
