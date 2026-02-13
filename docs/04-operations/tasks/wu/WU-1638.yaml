@@ -6,12 +6,18 @@ status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
-  - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/core/src/wu-done-validation.ts
-  - packages/@lumenflow/core/src/rollback-utils.ts
+  - packages/@lumenflow/core/src/wu-done-validators.ts
+  - packages/@lumenflow/core/src/wu-context-constants.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
+  - packages/@lumenflow/cli/src/hooks/enforcement-sync.ts
   - .claude/hooks/warn-dirty-main.sh
   - .claude/hooks/session-start-recovery.sh
   - .claude/settings.json
+  - packages/@lumenflow/core/src/__tests__/wu-done-dirty-main.test.ts
+  - packages/@lumenflow/cli/src/__tests__/hooks/enforcement.test.ts
+  - packages/@lumenflow/cli/src/__tests__/memory-integration.test.ts
 tests:
   manual:
     - Run pnpm wu:done on a real WU and verify no dirty-main warnings or guard triggers
@@ -26,10 +32,17 @@ notes: Post-INIT-026 cleanup. withAtomicMerge() makes all dirty-main defenses de
   rollbackBranchOnMergeFailure() in wu-done-worktree.ts should STAY - it rolls back the lane branch,
   not main.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-13T14:17:01.195Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1638
+session_id: bb1d3e14-9fcd-4315-b0e8-7dab4813b628
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T14:17:01.202Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -47,11 +60,3 @@ acceptance:
   - rollbackTransaction() and rollback-utils.ts imports removed from CLI wu-done.ts
   - wu-done-dirty-main.test.ts deleted
   - pnpm gates passes
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1638
-claimed_at: 2026-02-13T14:17:01.195Z
-baseline_main_sha: da56b3bc05263babbb862b31382ae8b79266e77a
-session_id: bb1d3e14-9fcd-4315-b0e8-7dab4813b628
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-13T14:17:01.202Z
