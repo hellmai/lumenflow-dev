@@ -17,6 +17,7 @@ import {
   MemoryConfigSchema,
   StatePathsSchema,
   LumenFlowConfigSchema,
+  DirectoriesSchema,
   parseConfig,
   getDefaultConfig,
   LockPolicySchema,
@@ -1298,5 +1299,34 @@ describe('WU-1495: Cloud Config Schema', () => {
       };
       expect(_config.auto_detect).toBe(true);
     });
+  });
+});
+
+/**
+ * WU-1654: DirectoriesSchema safeGitPath field
+ * Verifies configurable safe-git path with correct default.
+ */
+describe('WU-1654: DirectoriesSchema safeGitPath', () => {
+  it('should have safeGitPath field defaulting to scripts/safe-git', () => {
+    const result = DirectoriesSchema.safeParse({});
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.safeGitPath).toBe('scripts/safe-git');
+    }
+  });
+
+  it('should accept custom safeGitPath value', () => {
+    const result = DirectoriesSchema.safeParse({ safeGitPath: 'tools/shims/git' });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.safeGitPath).toBe('tools/shims/git');
+    }
+  });
+
+  it('should include safeGitPath in full config defaults', () => {
+    const config = getDefaultConfig();
+    expect(config.directories.safeGitPath).toBe('scripts/safe-git');
   });
 });

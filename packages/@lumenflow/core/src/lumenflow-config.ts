@@ -174,6 +174,8 @@ export function getResolvedPaths(options: { projectRoot?: string } = {}): {
   plansDir: string;
   templatesDir: string;
   onboardingDir: string;
+  /** WU-1654: Safe-git wrapper absolute path */
+  safeGitPath: string;
 } {
   const projectRoot = options.projectRoot || getProjectRoot();
   const config = getConfig({ projectRoot });
@@ -192,6 +194,7 @@ export function getResolvedPaths(options: { projectRoot?: string } = {}): {
     plansDir: path.join(projectRoot, config.directories.plansDir),
     templatesDir: path.join(projectRoot, config.directories.templatesDir),
     onboardingDir: path.join(projectRoot, config.directories.onboardingDir),
+    safeGitPath: path.join(projectRoot, config.directories.safeGitPath),
   };
 }
 

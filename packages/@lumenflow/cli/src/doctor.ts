@@ -9,7 +9,12 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { createWUParser } from '@lumenflow/core';
+import {
+  createWUParser,
+  getResolvedPaths,
+  detectOrphanWorktrees,
+  detectMissingTrackedWorktrees,
+} from '@lumenflow/core';
 import { loadLaneDefinitions, detectLaneOverlaps } from './lane-health.js';
 import { runCLI } from './cli-entry-point.js';
 
@@ -221,19 +226,28 @@ function checkHusky(projectDir: string): CheckResult {
  * Check if safe-git wrapper is present
  */
 function checkSafeGit(projectDir: string): CheckResult {
-  const safeGitPath = path.join(projectDir, 'scripts', 'safe-git');
+  // WU-1654: Read safe-git path from config instead of hardcoding
+  let safeGitPath: string;
+  try {
+    const resolved = getResolvedPaths({ projectRoot: projectDir });
+    safeGitPath = resolved.safeGitPath;
+  } catch {
+    // Graceful fallback if config can't be loaded
+    safeGitPath = path.join(projectDir, 'scripts', 'safe-git');
+  }
+  const relativePath = path.relative(projectDir, safeGitPath);
 
   if (!fs.existsSync(safeGitPath)) {
     return {
       passed: false,
       message: 'Safe-git wrapper missing',
-      details: 'The scripts/safe-git file should exist to block destructive git commands',
+      details: `The ${relativePath} file should exist to block destructive git commands`,
     };
   }
 
   return {
     passed: true,
-    message: 'Safe-git wrapper present (scripts/safe-git)',
+    message: `Safe-git wrapper present (${relativePath})`,
   };
 }
 
@@ -516,66 +530,9 @@ async function checkManagedFilesDirty(projectDir: string): Promise<ManagedFilesD
 }
 
 /**
- * WU-1387: Parse wu:prune output for worktree issues
- * Detects orphan directories, missing tracked worktrees, stale, blocked, and unclaimed worktrees
- */
-interface WorktreePruneParseResult {
-  orphans: number;
-  stale: number;
-  blocked: number;
-  unclaimed: number;
-  missing: number;
-  warnings: number;
-  errors: number;
-}
-
-function parseWorktreePruneOutput(output: string): WorktreePruneParseResult {
-  // Parse summary line for orphan directories: "Orphan directories: N"
-  const orphanSummaryMatch = output.match(/Orphan directories:\s*(\d+)/);
-  const orphansFromSummary = orphanSummaryMatch ? parseInt(orphanSummaryMatch[1], 10) : 0;
-
-  // Also count "orphan director" mentions (the detailed output)
-  const orphanDetailMatches = output.match(/orphan director/gi) || [];
-  const orphansFromDetail = orphanDetailMatches.length;
-
-  // Use the higher count (summary is authoritative, but detail catches other mentions)
-  const orphans = Math.max(orphansFromSummary, orphansFromDetail > 0 ? 1 : 0);
-
-  // Parse specific worktree warnings from wu:prune output
-  // These appear as "Stale worktree:", "Blocked worktree:", "Unclaimed worktree:"
-  const staleCount = (output.match(/Stale worktree:/gi) || []).length;
-  const blockedCount = (output.match(/Blocked worktree:/gi) || []).length;
-  const unclaimedCount = (output.match(/Unclaimed worktree:/gi) || []).length;
-
-  // Parse missing tracked worktrees: "Missing tracked worktree" header
-  const missingMatch = output.match(/Missing tracked worktree/gi) || [];
-  const missingCount = missingMatch.length > 0 ? 1 : 0; // At least one if header present
-
-  // Also count specific missing path lines
-  const missingPathMatches = output.match(/worktrees \(tracked by git but directory missing\)/gi);
-  const missingFromDetail = missingPathMatches ? missingPathMatches.length : 0;
-
-  // Parse summary warnings and errors
-  const warningSummaryMatch = output.match(/Warnings:\s*(\d+)/);
-  const warnings = warningSummaryMatch ? parseInt(warningSummaryMatch[1], 10) : 0;
-
-  const errorSummaryMatch = output.match(/Errors:\s*(\d+)/);
-  const errors = errorSummaryMatch ? parseInt(errorSummaryMatch[1], 10) : 0;
-
-  return {
-    orphans,
-    stale: staleCount,
-    blocked: blockedCount,
-    unclaimed: unclaimedCount,
-    missing: Math.max(missingCount, missingFromDetail),
-    warnings,
-    errors,
-  };
-}
-
-/**
- * WU-1386: Check worktree sanity by calling wu:prune in dry-run mode
- * WU-1387: Enhanced parsing for orphan, missing, stale, blocked, and unclaimed worktrees
+ * WU-1654: Check worktree sanity using @lumenflow/core orphan-detector directly.
+ * Replaces the previous approach of shelling out to wu:prune and parsing text with regexes.
+ * Library-first: uses structured detectOrphanWorktrees() and detectMissingTrackedWorktrees().
  */
 async function checkWorktreeSanity(projectDir: string): Promise<WorktreeSanityResult> {
   try {
@@ -587,77 +544,30 @@ async function checkWorktreeSanity(projectDir: string): Promise<WorktreeSanityRe
       stdio: ['pipe', 'pipe', 'pipe'],
     });
 
-    // Call wu:prune in dry-run mode (default) via pnpm
-    // Capture both stdout and stderr to parse the output
-    let pruneOutput: string;
-    let commandFailed = false;
-    try {
-      // eslint-disable-next-line sonarjs/no-os-command-from-path -- pnpm resolved from PATH; CLI orchestration
-      pruneOutput = execFileSync('pnpm', ['wu:prune'], {
-        cwd: projectDir,
-        encoding: 'utf-8',
-        stdio: ['pipe', 'pipe', 'pipe'],
-        timeout: 30000, // 30 second timeout
-      });
-    } catch (e: unknown) {
-      const execError = e as {
-        stdout?: string;
-        stderr?: string;
-        status?: number;
-        message?: string;
-      };
-      pruneOutput = (execError.stdout || '') + (execError.stderr || '');
+    // WU-1654: Call orphan-detector functions directly instead of shelling out to wu:prune
+    const orphanResult = await detectOrphanWorktrees(projectDir);
+    const missingTracked = await detectMissingTrackedWorktrees(projectDir);
 
-      // Check if this is a "command not found" type error vs wu:prune finding issues
-      // If pnpm can't run the script (no package.json, script not defined, etc.), gracefully skip
-      const errorMsg = execError.message || pruneOutput || '';
-      if (
-        errorMsg.includes('ERR_PNPM') ||
-        errorMsg.includes('ENOENT') ||
-        errorMsg.includes('Missing script') ||
-        errorMsg.includes('command not found') ||
-        !pruneOutput.includes('[wu-prune]')
-      ) {
-        // Command couldn't run - gracefully skip
-        return {
-          passed: true,
-          orphans: 0,
-          stale: 0,
-          message: 'Worktree check skipped (wu:prune not available)',
-        };
-      }
-      // Otherwise, wu:prune ran but found issues (non-zero exit)
-      commandFailed = true;
-    }
+    const orphanCount = orphanResult.orphans.length;
+    const missingCount = missingTracked.length;
+    const errorCount = orphanResult.errors.length;
+    const totalIssues = orphanCount + missingCount + errorCount;
+    const passed = totalIssues === 0;
 
-    // WU-1387: Enhanced parsing for all worktree issue types
-    const parsed = parseWorktreePruneOutput(pruneOutput);
-
-    // Calculate total issues (orphans count as issues, plus stale, blocked, unclaimed, missing)
-    const totalIssues =
-      parsed.orphans + parsed.stale + parsed.blocked + parsed.unclaimed + parsed.missing;
-    const hasIssues = totalIssues > 0 || parsed.warnings > 0 || parsed.errors > 0;
-    const passed = !hasIssues && !commandFailed;
-
-    // Build descriptive message
+    // Build descriptive message preserving WorktreeSanityResult contract
     let message = 'All worktrees are valid';
     if (!passed) {
       const parts: string[] = [];
-      if (parsed.orphans > 0) parts.push(`${parsed.orphans} orphan(s)`);
-      if (parsed.missing > 0) parts.push(`${parsed.missing} missing`);
-      if (parsed.stale > 0) parts.push(`${parsed.stale} stale`);
-      if (parsed.blocked > 0) parts.push(`${parsed.blocked} blocked`);
-      if (parsed.unclaimed > 0) parts.push(`${parsed.unclaimed} unclaimed`);
-      if (parts.length === 0 && (parsed.warnings > 0 || parsed.errors > 0)) {
-        parts.push(`${parsed.warnings} warning(s), ${parsed.errors} error(s)`);
-      }
-      message = parts.length > 0 ? `Worktree issues: ${parts.join(', ')}` : 'Worktree issues found';
+      if (orphanCount > 0) parts.push(`${orphanCount} orphan(s)`);
+      if (missingCount > 0) parts.push(`${missingCount} missing`);
+      if (errorCount > 0) parts.push(`${errorCount} error(s)`);
+      message = `Worktree issues: ${parts.join(', ')}`;
     }
 
     return {
       passed,
-      orphans: parsed.orphans,
-      stale: parsed.stale + parsed.blocked + parsed.unclaimed + parsed.missing, // Combined for API compat
+      orphans: orphanCount,
+      stale: missingCount, // Combined non-orphan issues for API compat
       message,
     };
   } catch {
