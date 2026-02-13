@@ -2,7 +2,7 @@ id: WU-1645
 title: Split enforcement-generator hook script builders
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -42,3 +42,6 @@ session_id: c65a9b89-e9f6-422c-844f-523d0e33216b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T22:27:03.111Z
+locked: true
+completed_at: 2026-02-13T22:48:10.666Z
+completed: 2026-02-13
