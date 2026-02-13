@@ -32,7 +32,6 @@ sections:
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
 - [WU-1646 — Extract wu-done.ts into thin orchestrator and helper modules](wu/WU-1646.yaml) — Framework: CLI WU Commands
 - [WU-1663 — Wire wu:done CLI orchestrator to XState pipeline actor](wu/WU-1663.yaml) — Framework: CLI WU Commands
-- [WU-1664 — Extract wu:done worktree completion services for state-driven execution](wu/WU-1664.yaml) — Framework: Core Lifecycle
 - [WU-1665 — Consolidate wu:done rollback and recovery onto staged state-machine migration](wu/WU-1665.yaml) — Framework: Core State Recovery
 - [WU-1666 — Add model-based wu:done pipeline test coverage with @xstate/graph](wu/WU-1666.yaml) — Framework: CLI WU Commands
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml) — Framework: Core Validation
@@ -40,7 +39,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1664 — Extract wu:done worktree completion services for state-driven execution](wu/WU-1664.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

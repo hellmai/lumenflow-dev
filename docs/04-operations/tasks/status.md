@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1664 — Extract wu:done worktree completion services for state-driven execution](wu/WU-1664.yaml)
 
 ## Completed
 

@@ -1267,3 +1267,4 @@
 {"type":"complete","wuId":"WU-1644","timestamp":"2026-02-13T22:46:26.070Z"}
 {"type":"complete","wuId":"WU-1647","timestamp":"2026-02-13T22:47:11.826Z"}
 {"type":"complete","wuId":"WU-1645","timestamp":"2026-02-13T22:48:13.417Z"}
+{"type":"claim","wuId":"WU-1664","lane":"Framework: Core Lifecycle","title":"Extract wu:done worktree completion services for state-driven execution","timestamp":"2026-02-13T22:49:53.947Z"}
