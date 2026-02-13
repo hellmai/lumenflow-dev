@@ -12,17 +12,17 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
   - packages/@lumenflow/cli/src/hooks/enforcement-sync.ts
-  - .claude/hooks/warn-dirty-main.sh
   - .claude/hooks/session-start-recovery.sh
   - .claude/settings.json
-  - packages/@lumenflow/core/src/__tests__/wu-done-dirty-main.test.ts
   - packages/@lumenflow/cli/src/__tests__/hooks/enforcement.test.ts
   - packages/@lumenflow/cli/src/__tests__/memory-integration.test.ts
 tests:
   manual:
     - Run pnpm wu:done on a real WU and verify no dirty-main warnings or guard triggers
+    - 'Deleted files: .claude/hooks/warn-dirty-main.sh, packages/@lumenflow/core/src/__tests__/wu-done-dirty-main.test.ts'
   unit:
-    - packages/@lumenflow/core/src/__tests__/wu-done-dirty-main.test.ts
+    - packages/@lumenflow/cli/src/__tests__/hooks/enforcement.test.ts
+    - packages/@lumenflow/cli/src/__tests__/memory-integration.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1638.done
