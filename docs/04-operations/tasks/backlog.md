@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1651 — Extract wu-create.ts validation, content, and readiness builders](wu/WU-1651.yaml) — Framework: CLI WU Commands
 - [WU-1650 — Extract wu-edit.ts validation and apply operations](wu/WU-1650.yaml) — Framework: CLI WU Commands
 - [WU-1649 — Extract wu-claim.ts validation and mode handlers](wu/WU-1649.yaml) — Framework: CLI WU Commands
 - [WU-1648 — Split initiative-orchestrator.ts by domain responsibilities](wu/WU-1648.yaml) — Framework: Initiatives
