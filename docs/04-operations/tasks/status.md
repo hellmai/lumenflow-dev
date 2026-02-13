@@ -4,7 +4,6 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml)
 - [WU-1649 — Extract wu-claim.ts validation and mode handlers](wu/WU-1649.yaml)
 - [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml)
 - [WU-1662 — Define typed XState wu:done pipeline machine in core](wu/WU-1662.yaml)
@@ -602,3 +601,4 @@ _Last updated: 2026-02-13_
 - [WU-1661 — Reconcile INIT-025 metadata and phase mapping for state-machine execution](wu/WU-1661.yaml) — 2026-02-13
 - [WU-1643 — Extract init.ts template constants into data module](wu/WU-1643.yaml) — 2026-02-13
 - [WU-1648 — Split initiative-orchestrator.ts by domain responsibilities](wu/WU-1648.yaml) — 2026-02-13
+- [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml) — 2026-02-13

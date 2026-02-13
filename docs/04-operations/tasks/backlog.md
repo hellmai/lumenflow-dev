@@ -43,7 +43,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml) — Framework: MCP
 - [WU-1649 — Extract wu-claim.ts validation and mode handlers](wu/WU-1649.yaml) — Framework: CLI WU Commands
 - [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml) — Framework: CLI Enforcement
 - [WU-1662 — Define typed XState wu:done pipeline machine in core](wu/WU-1662.yaml) — Framework: Core State Recovery
@@ -645,4 +644,5 @@ sections:
 - [WU-1661 — Reconcile INIT-025 metadata and phase mapping for state-machine execution](wu/WU-1661.yaml)
 - [WU-1643 — Extract init.ts template constants into data module](wu/WU-1643.yaml)
 - [WU-1648 — Split initiative-orchestrator.ts by domain responsibilities](wu/WU-1648.yaml)
+- [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
