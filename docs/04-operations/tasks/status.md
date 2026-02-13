@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1655 — Fix wu:claim no-remote regressions left after WU-1653](wu/WU-1655.yaml)
 
 ## Completed
 
