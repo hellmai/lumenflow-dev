@@ -152,3 +152,69 @@ export function updateGatesLatestSymlink({ logPath, cwd, env }: UpdateGatesLates
     return false;
   }
 }
+
+export const WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS = {
+  SKIP_GATES_FLAG: 'skip-gates-flag',
+  REUSE_STEP_ZERO: 'reuse-step-zero',
+  REUSE_CHECKPOINT: 'reuse-checkpoint',
+  RUN_REQUIRED: 'run-required',
+} as const;
+
+export type WuDonePreCommitGateDecisionReason =
+  (typeof WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS)[keyof typeof WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS];
+
+export interface WuDonePreCommitGateDecisionInput {
+  skipGates: boolean;
+  fullGatesRanInCurrentRun: boolean;
+  skippedByCheckpoint: boolean;
+  checkpointId?: string | null;
+}
+
+export interface WuDonePreCommitGateDecision {
+  runPreCommitFullSuite: boolean;
+  reason: WuDonePreCommitGateDecisionReason;
+  message: string;
+}
+
+/**
+ * Decide whether wu:done pre-flight hook validation should rerun full gates.
+ *
+ * WU-1659: Avoid duplicate full-suite execution when Step 0 already ran gates
+ * (or reused a valid checkpoint), while keeping operator-visible reasoning.
+ */
+export function resolveWuDonePreCommitGateDecision(
+  input: WuDonePreCommitGateDecisionInput,
+): WuDonePreCommitGateDecision {
+  if (input.skipGates) {
+    return {
+      runPreCommitFullSuite: false,
+      reason: WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS.SKIP_GATES_FLAG,
+      message: 'Pre-flight hook validation skipped because --skip-gates is active.',
+    };
+  }
+
+  if (input.fullGatesRanInCurrentRun) {
+    return {
+      runPreCommitFullSuite: false,
+      reason: WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS.REUSE_STEP_ZERO,
+      message:
+        'Pre-flight hook validation reuses Step 0 gate results; duplicate full-suite run skipped.',
+    };
+  }
+
+  if (input.skippedByCheckpoint) {
+    const checkpointSuffix = input.checkpointId ? ` (${input.checkpointId})` : '';
+    return {
+      runPreCommitFullSuite: false,
+      reason: WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS.REUSE_CHECKPOINT,
+      message: `Pre-flight hook validation reuses checkpoint gate attestation${checkpointSuffix}; duplicate full-suite run skipped.`,
+    };
+  }
+
+  return {
+    runPreCommitFullSuite: true,
+    reason: WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS.RUN_REQUIRED,
+    message:
+      'No gate attestation found for this wu:done run; executing pre-flight hook gate suite.',
+  };
+}

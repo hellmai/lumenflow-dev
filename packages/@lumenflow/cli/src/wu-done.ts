@@ -43,6 +43,7 @@ import '@lumenflow/core';
 import { execSync } from 'node:child_process';
 import prettyMs from 'pretty-ms';
 import { runGates } from './gates.js';
+import { resolveWuDonePreCommitGateDecision } from '@lumenflow/core/gates-agent-mode';
 import { buildClaimRepairCommand } from './wu-claim-repair-guidance.js';
 import { getGitForCwd, createGitForPath } from '@lumenflow/core/git-adapter';
 import { die, getErrorMessage } from '@lumenflow/core/error-handler';
@@ -2266,6 +2267,12 @@ interface ExecuteGatesParams {
   branchName?: string;
 }
 
+interface ExecuteGatesResult {
+  fullGatesRanInCurrentRun: boolean;
+  skippedByCheckpoint: boolean;
+  checkpointId: string | null;
+}
+
 async function executeGates({
   id,
   args,
@@ -2273,11 +2280,19 @@ async function executeGates({
   isDocsOnly,
   worktreePath,
   branchName,
-}: ExecuteGatesParams) {
+}: ExecuteGatesParams): Promise<ExecuteGatesResult> {
+  const gateResult: ExecuteGatesResult = {
+    fullGatesRanInCurrentRun: false,
+    skippedByCheckpoint: false,
+    checkpointId: null,
+  };
+
   // WU-1747: Check if gates can be skipped based on valid checkpoint
   // This allows resuming wu:done without re-running gates if nothing changed
   const skipResult = canSkipGates(id, { currentHeadSha: undefined });
   if (skipResult.canSkip) {
+    gateResult.skippedByCheckpoint = true;
+    gateResult.checkpointId = skipResult.checkpoint.checkpointId;
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} ${CHECKPOINT_MESSAGES.SKIPPING_GATES_VALID}`);
     console.log(
       `${LOG_PREFIX.DONE} ${CHECKPOINT_MESSAGES.CHECKPOINT_LABEL}: ${skipResult.checkpoint.checkpointId}`,
@@ -2293,7 +2308,7 @@ async function executeGates({
       reason: SKIP_GATES_REASONS.CHECKPOINT_VALID,
       checkpoint_id: skipResult.checkpoint.checkpointId,
     });
-    return; // Skip gates entirely
+    return gateResult; // Skip gates entirely
   }
 
   // WU-1747: Create checkpoint before gates for resumption on failure
@@ -2419,6 +2434,7 @@ async function executeGates({
 
       die(`Gates failed in Branch-Only mode. Fix issues and try again.`);
     }
+    gateResult.fullGatesRanInCurrentRun = true;
   } else if (worktreePath && existsSync(worktreePath)) {
     // Worktree mode: run gates in the dedicated worktree
     // WU-1012: Pass both auto-detected and explicit docs-only flags
@@ -2426,6 +2442,7 @@ async function executeGates({
       isDocsOnly,
       docsOnly: Boolean(args.docsOnly),
     });
+    gateResult.fullGatesRanInCurrentRun = true;
   } else {
     die(
       `Worktree not found (${worktreePath || 'unknown'}). Gates must run in the lane worktree.\n` +
@@ -2484,6 +2501,8 @@ async function executeGates({
   // WU-1747: Mark checkpoint as gates passed for resumption on failure
   // This allows subsequent wu:done attempts to skip gates if nothing changed
   markGatesPassed(id);
+
+  return gateResult;
 }
 
 /**
@@ -2674,7 +2693,13 @@ async function main() {
     // Otherwise silently allow - fail-open
   }
 
-  await executeGates({ id, args, isBranchOnly: effectiveBranchOnly, isDocsOnly, worktreePath });
+  const gateExecutionResult = await executeGates({
+    id,
+    args,
+    isBranchOnly: effectiveBranchOnly,
+    isDocsOnly,
+    worktreePath,
+  });
 
   // Print State HUD for visibility (WU-1215: extracted to printStateHUD function)
   printStateHUD({
@@ -2686,20 +2711,24 @@ async function main() {
     STAMPS_DIR,
   });
 
-  // Step 0.5: Pre-flight validation - run ALL pre-commit hooks BEFORE merge
-  // This prevents partial completion states where merge succeeds but commit fails
-  // Validates all 8 gates: secrets, file size, ESLint, Prettier, TypeScript, audit, architecture, tasks
-  // WU-2308: Pass worktreePath to run audit from worktree (checks fixed deps, not stale main deps)
-  // WU-1145: Skip pre-flight when skipGates is true (pre-flight runs gates which was already skipped)
-  if (!args.skipGates) {
+  // Step 0.5: Pre-flight hook validation policy.
+  // WU-1659: Reuse Step 0 gate attestation/checkpoint and avoid duplicate full-suite execution.
+  const preCommitGateDecision = resolveWuDonePreCommitGateDecision({
+    skipGates: Boolean(args.skipGates),
+    fullGatesRanInCurrentRun: gateExecutionResult.fullGatesRanInCurrentRun,
+    skippedByCheckpoint: gateExecutionResult.skippedByCheckpoint,
+    checkpointId: gateExecutionResult.checkpointId,
+  });
+  console.log(`${LOG_PREFIX.DONE} ${preCommitGateDecision.message}`);
+
+  // Fallback path remains available if gate attestation is missing for any reason.
+  if (preCommitGateDecision.runPreCommitFullSuite) {
     const hookResult = await validateAllPreCommitHooks(id, worktreePath, {
       runGates: ({ cwd }) => runGates({ cwd, docsOnly: false }),
     });
     if (!hookResult.valid) {
       die('Pre-flight validation failed. Fix hook issues and try again.');
     }
-  } else {
-    console.log(`${LOG_PREFIX.DONE} Skipping pre-flight hook validation (--skip-gates)`);
   }
 
   // Step 0.6: WU-1781 - Run tasks:validate preflight BEFORE any merge/push operations

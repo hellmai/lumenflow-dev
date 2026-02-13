@@ -23,6 +23,10 @@ import {
   GATE_PRESETS,
   loadLaneHealthConfig,
 } from '../gates-config.js';
+import {
+  resolveWuDonePreCommitGateDecision,
+  WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS,
+} from '../gates-agent-mode.js';
 
 // Test constants to avoid sonarjs/no-duplicate-string lint errors
 const TEST_COMMANDS = {
@@ -822,6 +826,44 @@ methodology:
       expect(result.threshold).toBe(0);
       expect(result.mode).toBe('off');
       expect(result.tests_required).toBe(false);
+    });
+  });
+
+  describe('wu:done gate dedup policy (WU-1659)', () => {
+    it('skips duplicate pre-flight full suite when step-0 gates already ran', () => {
+      const decision = resolveWuDonePreCommitGateDecision({
+        skipGates: false,
+        fullGatesRanInCurrentRun: true,
+        skippedByCheckpoint: false,
+      });
+
+      expect(decision.runPreCommitFullSuite).toBe(false);
+      expect(decision.reason).toBe(WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS.REUSE_STEP_ZERO);
+      expect(decision.message).toContain('duplicate full-suite run skipped');
+    });
+
+    it('skips duplicate pre-flight full suite when checkpoint attestation is valid', () => {
+      const decision = resolveWuDonePreCommitGateDecision({
+        skipGates: false,
+        fullGatesRanInCurrentRun: false,
+        skippedByCheckpoint: true,
+        checkpointId: 'ckpt-5678',
+      });
+
+      expect(decision.runPreCommitFullSuite).toBe(false);
+      expect(decision.reason).toBe(WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS.REUSE_CHECKPOINT);
+      expect(decision.message).toContain('ckpt-5678');
+    });
+
+    it('requires pre-flight full suite when no gate attestation exists', () => {
+      const decision = resolveWuDonePreCommitGateDecision({
+        skipGates: false,
+        fullGatesRanInCurrentRun: false,
+        skippedByCheckpoint: false,
+      });
+
+      expect(decision.runPreCommitFullSuite).toBe(true);
+      expect(decision.reason).toBe(WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS.RUN_REQUIRED);
     });
   });
 });

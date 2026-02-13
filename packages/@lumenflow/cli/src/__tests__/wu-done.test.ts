@@ -2,6 +2,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { ensureCleanWorktree } from '../wu-done-check.js';
 import { computeBranchOnlyFallback, getYamlStatusForDisplay } from '../wu-done.js';
+import {
+  resolveWuDonePreCommitGateDecision,
+  WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS,
+} from '@lumenflow/core/gates-agent-mode';
 import * as gitAdapter from '@lumenflow/core/git-adapter';
 import * as errorHandler from '@lumenflow/core/error-handler';
 import { validateInputs } from '@lumenflow/core/wu-done-inputs';
@@ -27,6 +31,38 @@ describe('wu-done', () => {
       expect(source).toContain(
         'Next step: resolve the reported error and retry: pnpm wu:done --id ${id}',
       );
+    });
+  });
+
+  describe('WU-1659: pre-flight gate deduplication', () => {
+    it('reuses step-0 gates and skips duplicate full-suite pre-flight run', () => {
+      const decision = resolveWuDonePreCommitGateDecision({
+        skipGates: false,
+        fullGatesRanInCurrentRun: true,
+        skippedByCheckpoint: false,
+      });
+
+      expect(decision.runPreCommitFullSuite).toBe(false);
+      expect(decision.reason).toBe(WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS.REUSE_STEP_ZERO);
+    });
+
+    it('reuses checkpoint attestation when gates were skipped by valid checkpoint', () => {
+      const decision = resolveWuDonePreCommitGateDecision({
+        skipGates: false,
+        fullGatesRanInCurrentRun: false,
+        skippedByCheckpoint: true,
+        checkpointId: 'ckpt-1234',
+      });
+
+      expect(decision.runPreCommitFullSuite).toBe(false);
+      expect(decision.reason).toBe(WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS.REUSE_CHECKPOINT);
+      expect(decision.message).toContain('ckpt-1234');
+    });
+
+    it('wu-done uses the gate dedup policy before pre-flight hook validation', async () => {
+      const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
+      expect(source).toContain('resolveWuDonePreCommitGateDecision');
+      expect(source).toContain('preCommitGateDecision.runPreCommitFullSuite');
     });
   });
 
