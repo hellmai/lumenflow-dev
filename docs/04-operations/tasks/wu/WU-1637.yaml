@@ -2,7 +2,7 @@ id: WU-1637
 title: Expose tooling lifecycle and troubleshooting in Starlight navigation
 lane: 'Content: Site Comms'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - apps/docs/astro.config.mjs
 tests:
   manual:
-    - Run docs site locally and verify lifecycle/troubleshooting nav entries and links render correctly
+    - Run docs site locally and verify lifecycle/troubleshooting nav entries and links render
+      correctly
   unit: []
   e2e: []
 artifacts:
@@ -29,8 +30,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Update the Starlight docs information architecture so lifecycle/tooling guidance and troubleshooting are easy to discover from the docs site, with clear links into canonical framework docs.
+description: Update the Starlight docs information architecture so lifecycle/tooling guidance and
+  troubleshooting are easy to discover from the docs site, with clear links into canonical framework
+  docs.
 acceptance:
   - Starlight navigation includes discoverable entries for tooling lifecycle and troubleshooting
   - Docs-site landing/index content links users to canonical lifecycle and runbook pages
   - Navigation/link changes avoid duplication and point to single-source docs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1637
+claimed_at: 2026-02-13T14:20:56.877Z
+baseline_main_sha: 4321177e26e09a6782ec04831205c9c876160240
+session_id: bb1d3e14-9fcd-4315-b0e8-7dab4813b628
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T14:20:56.880Z

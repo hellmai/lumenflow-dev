@@ -31,13 +31,13 @@ sections:
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
 - [WU-1636 — Align AGENTS and LUMENFLOW entrypoint guidance to canonical lifecycle docs](wu/WU-1636.yaml) — Content: Framework Docs
-- [WU-1637 — Expose tooling lifecycle and troubleshooting in Starlight navigation](wu/WU-1637.yaml) — Content: Site Comms
 
 ## 🔧 In progress
 
 - [WU-1634 — Fix wu:done silent mode-execution failure messaging](wu/WU-1634.yaml) — Framework: CLI Orchestration
 - [WU-1638 — Remove obsolete dirty-main defensive code after INIT-026 atomic merge](wu/WU-1638.yaml) — Framework: CLI WU Commands
 - [WU-1635 — Document canonical lifecycle map and failure-mode runbook](wu/WU-1635.yaml) — Content: Specs Governance
+- [WU-1637 — Expose tooling lifecycle and troubleshooting in Starlight navigation](wu/WU-1637.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 
