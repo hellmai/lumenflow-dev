@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml) — Framework: CLI Enforcement
 - [WU-1643 — Extract init.ts template constants into data module](wu/WU-1643.yaml) — Framework: CLI Enforcement
 - [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml) — Framework: MCP
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
