@@ -73,9 +73,6 @@ import {
   // WU-2310: Type vs code_paths preflight validation
   validateTypeVsCodePathsPreflight,
   buildTypeVsCodePathsErrorMessage,
-  // WU-1503: Dirty-main pre-merge guard
-  validateDirtyMain,
-  buildDirtyMainErrorMessage,
 } from '@lumenflow/core/wu-done-validators';
 // WU-1825: validateCodePathsExist moved to unified code-path-validator
 import { validateCodePathsExist } from '@lumenflow/core/code-path-validator';
@@ -2010,50 +2007,6 @@ async function executePreFlightChecks({
   } else {
     // Worktree mode: must be on main
     await ensureOnMain(getGitForCwd());
-
-    // WU-1503: Dirty-main pre-merge guard (replaces blanket ensureCleanWorkingTree)
-    // Distinguishes between WU-related dirty files (allowed) and unrelated dirty
-    // files (blocked with actionable guidance). Uses --force for audited bypass.
-    {
-      const gitAdapter = getGitForCwd();
-      const gitStatus = await gitAdapter.raw(['status', '--porcelain']);
-      if (gitStatus && gitStatus.trim()) {
-        const wuCodePaths = docForValidation.code_paths || [];
-        const dirtyResult = validateDirtyMain(gitStatus, id, wuCodePaths);
-        if (!dirtyResult.valid) {
-          if (args.force) {
-            console.log(
-              `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1503: Dirty-main guard bypassed with --force`,
-            );
-            console.log(
-              `${LOG_PREFIX.DONE} Unrelated dirty files (${dirtyResult.unrelatedFiles.length}):`,
-            );
-            for (const f of dirtyResult.unrelatedFiles) {
-              console.log(`${LOG_PREFIX.DONE}   - ${f}`);
-            }
-          } else {
-            die(buildDirtyMainErrorMessage(id, dirtyResult.unrelatedFiles));
-          }
-        } else if (dirtyResult.relatedFiles.length > 0) {
-          console.log(
-            `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-1503: ${dirtyResult.relatedFiles.length} related dirty file(s) on main (allowed)`,
-          );
-          // WU-1554: Auto-restore related dirty files so ff-only merge can proceed.
-          // These files will be overwritten by the merge commit anyway.
-          // Without this, git merge --ff-only refuses to overwrite dirty tracked files.
-          try {
-            await gitAdapter.raw(['checkout', '--', ...dirtyResult.relatedFiles]);
-            console.log(
-              `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-1554: Auto-restored ${dirtyResult.relatedFiles.length} related file(s) for clean merge`,
-            );
-          } catch (restoreErr) {
-            console.warn(
-              `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1554: Could not auto-restore related files: ${restoreErr.message}`,
-            );
-          }
-        }
-      }
-    }
 
     // Prevent coordination failures by ensuring main is up-to-date
     await ensureMainUpToDate();

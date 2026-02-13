@@ -251,8 +251,6 @@ export const CLAUDE_HOOKS = {
     SESSION_START_RECOVERY: 'session-start-recovery.sh',
     /** WU-1471: Auto-checkpoint hook for PostToolUse and SubagentStop events */
     AUTO_CHECKPOINT: 'auto-checkpoint.sh',
-    /** WU-1502: PostToolUse Bash hook for dirty-main warning */
-    WARN_DIRTY_MAIN: 'warn-dirty-main.sh',
   },
 
   /** Hook command path prefix (uses Claude Code's $CLAUDE_PROJECT_DIR variable) */
