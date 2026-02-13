@@ -2,7 +2,7 @@ id: WU-1667
 title: Add --phase-title support to initiative:edit and update command docs surfaces
 lane: 'Framework: CLI Orchestration'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -13,8 +13,10 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
 tests:
   manual:
-    - 'Run pnpm initiative:edit --id INIT-025 --phase-id 1 --phase-title "Phase 1: State-Machine Foundation" and verify only phase 1 title changes.'
-    - Run pnpm initiative:edit --id INIT-025 --phase-title "X" and verify command fails with actionable message requiring --phase-id.
+    - 'Run pnpm initiative:edit --id INIT-025 --phase-id 1 --phase-title "Phase 1: State-Machine
+      Foundation" and verify only phase 1 title changes.'
+    - Run pnpm initiative:edit --id INIT-025 --phase-title "X" and verify command fails with
+      actionable message requiring --phase-id.
     - Run pnpm docs:generate && pnpm docs:validate and verify command docs stay in sync.
   unit:
     - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
@@ -28,7 +30,8 @@ spec_refs:
   - lumenflow://plans/INIT-025-plan.md
   - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
 risks: []
-notes: 'Sizing (wu-sizing-guide): Medium WU (cross-cutting CLI command + docs surfaces, expected 50-100 tool calls) with checkpoint-resume if context/tool thresholds are hit.'
+notes: 'Sizing (wu-sizing-guide): Medium WU (cross-cutting CLI command + docs surfaces, expected
+  50-100 tool calls) with checkpoint-resume if context/tool thresholds are hit.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
@@ -37,10 +40,26 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: initiative:edit can change phase status and add phases but cannot rename an existing phase title. Problem: initiative metadata requires manual YAML edits for phase title corrections, which breaks normal CLI governance flow and blocks clean INIT-025 phase naming updates. Solution: add --phase-title (with --phase-id) to initiative:edit for deterministic phase title updates, and update internal/straight/npm-facing command documentation surfaces so the new option is discoverable and validated.'
+description: 'Context: initiative:edit can change phase status and add phases but cannot rename an
+  existing phase title. Problem: initiative metadata requires manual YAML edits for phase title
+  corrections, which breaks normal CLI governance flow and blocks clean INIT-025 phase naming
+  updates. Solution: add --phase-title (with --phase-id) to initiative:edit for deterministic phase
+  title updates, and update internal/straight/npm-facing command documentation surfaces so the new
+  option is discoverable and validated.'
 acceptance:
-  - initiative:edit accepts --phase-title <title> when --phase-id is provided and updates only the targeted phase title.
-  - Validation rejects --phase-title without --phase-id and rejects unknown phase IDs with clear guidance.
+  - initiative:edit accepts --phase-title <title> when --phase-id is provided and updates only the
+    targeted phase title.
+  - Validation rejects --phase-title without --phase-id and rejects unknown phase IDs with clear
+    guidance.
   - Help output and command metadata include --phase-title in initiative:edit usage/options.
-  - Docs surfaces are updated where needed (internal onboarding quick-ref, framework-complete reference, and npm/public command manifest backed docs generation path).
+  - Docs surfaces are updated where needed (internal onboarding quick-ref, framework-complete
+    reference, and npm/public command manifest backed docs generation path).
   - Unit tests cover success, validation failures, and idempotent rename behavior.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1667
+claimed_at: 2026-02-13T21:49:50.017Z
+baseline_main_sha: 7d002ba61a175ff68fc0f86ef03ea0ac18e4986b
+session_id: 2169018e-3710-4144-97e1-c87e9c1be65f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T21:49:50.023Z

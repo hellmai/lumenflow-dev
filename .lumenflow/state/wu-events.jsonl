@@ -1239,3 +1239,4 @@
 {"type":"complete","wuId":"WU-1658","timestamp":"2026-02-13T20:42:28.413Z"}
 {"type":"claim","wuId":"WU-1659","timestamp":"2026-02-13T20:43:02.557Z","lane":"Framework: CLI WU Commands","title":"wu:done eliminate duplicate full-gates runs and reduce flake amplification"}
 {"type":"complete","wuId":"WU-1659","timestamp":"2026-02-13T20:49:35.687Z"}
+{"type":"claim","wuId":"WU-1667","lane":"Framework: CLI Orchestration","title":"Add --phase-title support to initiative:edit and update command docs surfaces","timestamp":"2026-02-13T21:49:50.039Z"}
