@@ -2840,6 +2840,13 @@ async function main() {
         // Intentionally ignore lock release errors during error handling
       }
 
+      console.error(
+        `\n${LOG_PREFIX.DONE} ${EMOJI.FAILURE} Mode execution failed: ${getErrorMessage(err)}`,
+      );
+      console.error(
+        `${LOG_PREFIX.DONE} ${EMOJI.INFO} Next step: resolve the reported error and retry: pnpm wu:done --id ${id}`,
+      );
+
       // WU-1811: Check if cleanup is safe before removing worktree
       // If cleanupSafe is false (or undefined), preserve worktree for recovery
       if (err.cleanupSafe === false) {

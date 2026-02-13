@@ -20,6 +20,16 @@ describe('wu-done', () => {
     });
   });
 
+  describe('WU-1634: mode-execution failure messaging', () => {
+    it('surfaces root error context and retry guidance before exiting', async () => {
+      const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
+      expect(source).toContain('Mode execution failed:');
+      expect(source).toContain(
+        'Next step: resolve the reported error and retry: pnpm wu:done --id ${id}',
+      );
+    });
+  });
+
   describe('WU-1574: strict status display helper', () => {
     it('returns canonical status when YAML status is valid', () => {
       expect(getYamlStatusForDisplay(WU_STATUS.DONE)).toBe(WU_STATUS.DONE);

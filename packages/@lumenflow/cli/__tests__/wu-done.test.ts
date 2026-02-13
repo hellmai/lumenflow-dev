@@ -11,6 +11,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { readFile } from 'node:fs/promises';
 
 // Import the functions we're testing from dist (built files)
 import {
@@ -208,6 +209,16 @@ describe('wu:done --docs-only flag (WU-1012)', () => {
       // Should suggest removing the flag or changing the WU type
       expect(result.errors[0]).toMatch(/remove.*--docs-only|change.*exposure/i);
     });
+  });
+});
+
+describe('WU-1634: mode-execution failure messaging', () => {
+  it('surfaces root error context and retry guidance before exiting', async () => {
+    const source = await readFile('packages/@lumenflow/cli/src/wu-done.ts', 'utf-8');
+    expect(source).toContain('Mode execution failed:');
+    expect(source).toContain(
+      'Next step: resolve the reported error and retry: pnpm wu:done --id ${id}',
+    );
   });
 });
 
