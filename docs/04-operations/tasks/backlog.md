@@ -33,7 +33,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1638 — Remove obsolete dirty-main defensive code after INIT-026 atomic merge](wu/WU-1638.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -615,4 +615,5 @@ sections:
 - [WU-1634 — Fix wu:done silent mode-execution failure messaging](wu/WU-1634.yaml)
 - [WU-1637 — Expose tooling lifecycle and troubleshooting in Starlight navigation](wu/WU-1637.yaml)
 - [WU-1636 — Align AGENTS and LUMENFLOW entrypoint guidance to canonical lifecycle docs](wu/WU-1636.yaml)
+- [WU-1638 — Remove obsolete dirty-main defensive code after INIT-026 atomic merge](wu/WU-1638.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
