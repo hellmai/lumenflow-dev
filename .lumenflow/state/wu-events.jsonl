@@ -1243,8 +1243,9 @@
 {"type":"complete","wuId":"WU-1667","timestamp":"2026-02-13T21:58:02.476Z"}
 {"type":"claim","wuId":"WU-1668","timestamp":"2026-02-13T22:00:12.798Z","lane":"Framework: Core Validation","title":"Fix schema-parity registry count expectations for lifecycle command set"}
 {"type":"complete","wuId":"WU-1668","timestamp":"2026-02-13T22:02:59.817Z"}
-{"type":"claim","wuId":"WU-1648","lane":"Framework: Initiatives","title":"Split initiative-orchestrator.ts by domain responsibilities","timestamp":"2026-02-13T22:07:28.570Z"}
-{"type":"claim","wuId":"WU-1642","lane":"Framework: MCP","title":"Split mcp tools.ts into domain modules","timestamp":"2026-02-13T22:07:49.534Z"}
-{"type":"claim","wuId":"WU-1649","lane":"Framework: CLI WU Commands","title":"Extract wu-claim.ts validation and mode handlers","timestamp":"2026-02-13T22:08:14.498Z"}
-{"type":"claim","wuId":"WU-1643","lane":"Framework: CLI Enforcement","title":"Extract init.ts template constants into data module","timestamp":"2026-02-13T22:08:37.596Z"}
-{"type":"claim","wuId":"WU-1661","lane":"Content: Specs Governance","title":"Reconcile INIT-025 metadata and phase mapping for state-machine execution","timestamp":"2026-02-13T22:09:04.376Z"}
+{"type":"claim","wuId":"WU-1648","timestamp":"2026-02-13T22:07:28.570Z","lane":"Framework: Initiatives","title":"Split initiative-orchestrator.ts by domain responsibilities"}
+{"type":"claim","wuId":"WU-1642","timestamp":"2026-02-13T22:07:49.534Z","lane":"Framework: MCP","title":"Split mcp tools.ts into domain modules"}
+{"type":"claim","wuId":"WU-1649","timestamp":"2026-02-13T22:08:14.498Z","lane":"Framework: CLI WU Commands","title":"Extract wu-claim.ts validation and mode handlers"}
+{"type":"claim","wuId":"WU-1643","timestamp":"2026-02-13T22:08:37.596Z","lane":"Framework: CLI Enforcement","title":"Extract init.ts template constants into data module"}
+{"type":"claim","wuId":"WU-1661","timestamp":"2026-02-13T22:09:04.376Z","lane":"Content: Specs Governance","title":"Reconcile INIT-025 metadata and phase mapping for state-machine execution"}
+{"type":"complete","wuId":"WU-1661","timestamp":"2026-02-13T22:12:42.349Z"}
