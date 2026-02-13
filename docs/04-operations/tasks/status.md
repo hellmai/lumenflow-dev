@@ -7,7 +7,6 @@ _Last updated: 2026-02-13_
 - [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml)
 - [WU-1662 — Define typed XState wu:done pipeline machine in core](wu/WU-1662.yaml)
 - [WU-1650 — Extract wu-edit.ts validation and apply operations](wu/WU-1650.yaml)
-- [WU-1652 — Extract wu-spawn.ts prompt builders and strategy resolver](wu/WU-1652.yaml)
 - [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml)
 - [WU-1647 — Split gates.ts into runners, plan resolvers, and utilities](wu/WU-1647.yaml)
 
@@ -607,3 +606,4 @@ _Last updated: 2026-02-13_
 - [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml) — 2026-02-13
 - [WU-1649 — Extract wu-claim.ts validation and mode handlers](wu/WU-1649.yaml) — 2026-02-13
 - [WU-1651 — Extract wu-create.ts validation, content, and readiness builders](wu/WU-1651.yaml) — 2026-02-13
+- [WU-1652 — Extract wu-spawn.ts prompt builders and strategy resolver](wu/WU-1652.yaml) — 2026-02-13
