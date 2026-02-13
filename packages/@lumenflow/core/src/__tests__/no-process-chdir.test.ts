@@ -95,6 +95,64 @@ describe('WU-1541: No process.chdir in normal execution paths', () => {
       },
       FULL_SUITE_TEST_TIMEOUT_MS,
     );
+
+    it(
+      'should trigger generated docs reconciliation after successful auto-rebase when wuId is provided',
+      async () => {
+        const mockGitAdapter = {
+          fetch: vi.fn().mockResolvedValue(undefined),
+          rebase: vi.fn().mockResolvedValue(undefined),
+          raw: vi.fn().mockResolvedValue(''),
+          add: vi.fn().mockResolvedValue(undefined),
+          commit: vi.fn().mockResolvedValue(undefined),
+          push: vi.fn().mockResolvedValue(undefined),
+          getStatus: vi.fn().mockResolvedValue(''),
+        };
+        const maybeRegenerateAndStageDocs = vi
+          .fn()
+          .mockResolvedValue({ docsChanged: false, regenerated: false });
+
+        vi.doMock('../git-adapter.js', () => ({
+          getGitForCwd: vi.fn(() => mockGitAdapter),
+          createGitForPath: vi.fn(() => mockGitAdapter),
+        }));
+        vi.doMock('../wu-done-docs-generate.js', async () => {
+          const actual = await vi.importActual('../wu-done-docs-generate.js');
+          return {
+            ...actual,
+            maybeRegenerateAndStageDocs,
+          };
+        });
+
+        const { autoRebaseBranch } = await import('../wu-done-worktree.js');
+        await autoRebaseBranch(TEST_BRANCH, FAKE_WORKTREE_PATH, 'WU-1657');
+
+        expect(maybeRegenerateAndStageDocs).toHaveBeenCalledWith({
+          baseBranch: 'origin/main',
+          repoRoot: FAKE_WORKTREE_PATH,
+        });
+      },
+      FULL_SUITE_TEST_TIMEOUT_MS,
+    );
+
+    it('should throw conflict error with rendered message (not function source)', async () => {
+      const conflictingGitAdapter = {
+        mergeBase: vi.fn().mockResolvedValue('abc123'),
+        mergeTree: vi.fn().mockResolvedValue('<<<<<<< HEAD\nconflict\n>>>>>>>'),
+      };
+
+      vi.doMock('../git-adapter.js', () => ({
+        getGitForCwd: vi.fn(() => conflictingGitAdapter),
+        createGitForPath: vi.fn(() => conflictingGitAdapter),
+      }));
+
+      const { checkMergeConflicts } = await import('../wu-done-worktree.js');
+
+      await expect(checkMergeConflicts(TEST_BRANCH)).rejects.toThrow('MERGE CONFLICTS DETECTED');
+      await expect(checkMergeConflicts(TEST_BRANCH)).rejects.not.toThrow(
+        '(remote = REMOTES.ORIGIN, mainBranch = BRANCHES.MAIN)',
+      );
+    });
   });
 
   describe('runGates passes explicit cwd without process.chdir', () => {

@@ -10,7 +10,7 @@ import { getCleanupInstallConfig, CLEANUP_INSTALL_TIMEOUT_MS } from './cleanup-i
 import { createValidationError } from './wu-done-errors.js';
 import { defaultWorktreeFrom, defaultBranchFrom, branchExists } from './wu-done-paths.js';
 import { isBranchAlreadyMerged } from './wu-done-branch-utils.js';
-import { CLAIMED_MODES, EMOJI, LOG_PREFIX, REMOTES } from './wu-constants.js';
+import { BRANCHES, CLAIMED_MODES, EMOJI, LOG_PREFIX, REMOTES } from './wu-constants.js';
 import { exec as execCallback } from 'node:child_process';
 import { promisify } from 'node:util';
 
@@ -126,6 +126,21 @@ async function deleteBranchWithCleanup(laneBranch) {
   // Use -D (force) when confirmed merged to handle rebased branches
   const isMerged = await isBranchAlreadyMerged(laneBranch);
 
+  const isMergedIntoRemoteMain = async () => {
+    try {
+      await gitAdapter.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+      await gitAdapter.raw([
+        'merge-base',
+        '--is-ancestor',
+        laneBranch,
+        `${REMOTES.ORIGIN}/${BRANCHES.MAIN}`,
+      ]);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   try {
     await gitAdapter.deleteBranch(laneBranch, { force: isMerged });
     const modeIndicator = isMerged ? ' (force: merged)' : '';
@@ -142,6 +157,28 @@ async function deleteBranchWithCleanup(laneBranch) {
       console.warn(`${LOG_PREFIX.DONE} Could not delete remote branch: ${e.message}`);
     }
   } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : String(e);
+
+    // WU-1657: If local merge state lags and branch reports "not fully merged",
+    // check against origin/main and force-delete when remote already contains the branch.
+    if (/not fully merged/i.test(errorMessage)) {
+      const mergedOnRemoteMain = await isMergedIntoRemoteMain();
+      if (mergedOnRemoteMain) {
+        try {
+          await gitAdapter.deleteBranch(laneBranch, { force: true });
+          console.log(
+            `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Deleted local branch ${laneBranch} (force: merged on origin/main)`,
+          );
+          return;
+        } catch (forceErr) {
+          const forceMessage = forceErr instanceof Error ? forceErr.message : String(forceErr);
+          console.warn(
+            `${LOG_PREFIX.DONE} Could not force-delete branch ${laneBranch} after remote-merge verification: ${forceMessage}`,
+          );
+        }
+      }
+    }
+
     console.warn(`${LOG_PREFIX.DONE} Could not delete branch ${laneBranch}: ${e.message}`);
   }
 }
