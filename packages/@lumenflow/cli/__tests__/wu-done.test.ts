@@ -214,7 +214,7 @@ describe('wu:done --docs-only flag (WU-1012)', () => {
 
 describe('WU-1634: mode-execution failure messaging', () => {
   it('surfaces root error context and retry guidance before exiting', async () => {
-    const source = await readFile('packages/@lumenflow/cli/src/wu-done.ts', 'utf-8');
+    const source = await readFile(new URL('../src/wu-done.ts', import.meta.url), 'utf-8');
     expect(source).toContain('Mode execution failed:');
     expect(source).toContain(
       'Next step: resolve the reported error and retry: pnpm wu:done --id ${id}',
