@@ -2,7 +2,7 @@ id: WU-1623
 title: Stabilize core full-suite timeout flake in gates
 lane: 'Framework: Core State Recovery'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-consistency-checker.ts
 tests:
   manual:
-    - Run full pnpm gates and confirm no timeout failures in targeted core tests across two consecutive runs.
+    - Run full pnpm gates and confirm no timeout failures in targeted core tests across two
+      consecutive runs.
   unit:
     - packages/@lumenflow/core/src/__tests__/no-process-chdir.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-repair-core.test.ts
@@ -30,8 +31,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Intermittent gate failures occur in full-suite test runs due to 5s timeouts in core tests that pass in isolation. This blocks unrelated WUs at wu:prep/wu:done despite no deterministic regression in changed code.
+description: Intermittent gate failures occur in full-suite test runs due to 5s timeouts in core
+  tests that pass in isolation. This blocks unrelated WUs at wu:prep/wu:done despite no
+  deterministic regression in changed code.
 acceptance:
-  - Full-suite gates run without timeout failures in no-process-chdir and wu-repair-core related tests under normal CI/local conditions.
-  - Behavioral intent of existing tests is preserved while runtime is made deterministic under full-suite load.
+  - Full-suite gates run without timeout failures in no-process-chdir and wu-repair-core related
+    tests under normal CI/local conditions.
+  - Behavioral intent of existing tests is preserved while runtime is made deterministic under
+    full-suite load.
   - WU-1621 can reference this WU as fix-wu for audited skip-gates completion of pre-existing flake.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-state-recovery-wu-1623
+claimed_at: 2026-02-13T13:17:28.830Z
+baseline_main_sha: 504cc856ff8690b9d4724a662ce52814d6dd850d
+session_id: 7e3ac5b1-7390-4f8b-a43f-71ac315b7f97
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T13:17:28.836Z
