@@ -17,7 +17,6 @@ import {
   validateDocsOnlyFlag,
   buildGatesCommand,
   computeBranchOnlyFallback,
-  checkPostMergeDirtyState,
 } from '../dist/wu-done.js';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 
@@ -247,81 +246,6 @@ describe('branch-only fallback (WU-1031)', () => {
 
     expect(result.allowFallback).toBe(false);
     expect(result.effectiveBranchOnly).toBe(true);
-  });
-});
-
-/**
- * WU-1084: Post-merge dirty state detection
- *
- * Tests that wu:done fails if main has uncommitted changes after merge.
- * This catches cases where pnpm format touched files outside code_paths.
- */
-describe('post-merge dirty state detection (WU-1084)', () => {
-  describe('checkPostMergeDirtyState', () => {
-    it('should return error when main has uncommitted changes after merge', () => {
-      // Simulate dirty status (modified file)
-      const gitStatus = ' M packages/other/file.ts';
-      const wuId = 'WU-1084';
-
-      const result = checkPostMergeDirtyState(gitStatus, wuId);
-
-      expect(result.isDirty).toBe(true);
-      expect(result.error).toBeDefined();
-      expect(result.error).toContain('uncommitted changes after merge');
-    });
-
-    it('should return success when main is clean after merge', () => {
-      // Empty status = clean working tree
-      const gitStatus = '';
-      const wuId = 'WU-1084';
-
-      const result = checkPostMergeDirtyState(gitStatus, wuId);
-
-      expect(result.isDirty).toBe(false);
-      expect(result.error).toBeUndefined();
-    });
-
-    it('should list dirty files in error message', () => {
-      // Multiple dirty files
-      const gitStatus = ' M packages/other/file.ts\n M docs/some-doc.md\n?? untracked.txt';
-      const wuId = 'WU-1084';
-
-      const result = checkPostMergeDirtyState(gitStatus, wuId);
-
-      expect(result.isDirty).toBe(true);
-      expect(result.error).toContain('packages/other/file.ts');
-      expect(result.error).toContain('docs/some-doc.md');
-      expect(result.error).toContain('untracked.txt');
-    });
-
-    it('should include WU ID in error message', () => {
-      const gitStatus = ' M file.ts';
-      const wuId = 'WU-9999';
-
-      const result = checkPostMergeDirtyState(gitStatus, wuId);
-
-      expect(result.error).toContain('WU-9999');
-    });
-
-    it('should suggest recovery options in error message', () => {
-      const gitStatus = ' M file.ts';
-      const wuId = 'WU-1084';
-
-      const result = checkPostMergeDirtyState(gitStatus, wuId);
-
-      // Should suggest commit, discard, or re-run options
-      expect(result.error).toMatch(/commit|discard|re-run/i);
-    });
-
-    it('should handle whitespace-only status as clean', () => {
-      // Status with only whitespace/newlines should be treated as clean
-      const gitStatus = '   \n  \n';
-      const wuId = 'WU-1084';
-
-      const result = checkPostMergeDirtyState(gitStatus, wuId);
-
-      expect(result.isDirty).toBe(false);
-    });
   });
 });
 

@@ -10,7 +10,7 @@
 
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { readFile } from 'node:fs/promises';
-import { validateMainNotBehindOrigin, rollbackMainAfterMergeFailure } from '../wu-done-worktree.js';
+import { validateMainNotBehindOrigin } from '../wu-done-worktree.js';
 
 // ---------------------------------------------------------------------------
 // AC1: validateMainNotBehindOrigin
@@ -59,49 +59,10 @@ describe('validateMainNotBehindOrigin (AC1)', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// AC2 + AC3: rollbackMainAfterMergeFailure
-// ---------------------------------------------------------------------------
-describe('rollbackMainAfterMergeFailure (AC2, AC3)', () => {
-  it('resets main to pre-merge SHA on successful rollback', async () => {
-    const mockGit = {
-      reset: vi.fn().mockResolvedValue(undefined),
-    };
-
-    const result = await rollbackMainAfterMergeFailure(
-      mockGit as any,
-      'pre-merge-sha-abc',
-      'WU-1577',
-    );
-
-    expect(result.success).toBe(true);
-    expect(mockGit.reset).toHaveBeenCalledWith('pre-merge-sha-abc', { hard: true });
-  });
-
-  it('returns failure when git reset fails', async () => {
-    const mockGit = {
-      reset: vi.fn().mockRejectedValue(new Error('reset failed')),
-    };
-
-    const result = await rollbackMainAfterMergeFailure(
-      mockGit as any,
-      'pre-merge-sha-abc',
-      'WU-1577',
-    );
-
-    expect(result.success).toBe(false);
-    expect(result.error).toContain('reset failed');
-  });
-
-  it('does not throw even if git operations fail (best-effort)', async () => {
-    const mockGit = {
-      reset: vi.fn().mockRejectedValue(new Error('catastrophic failure')),
-    };
-
-    // Should not throw
-    await expect(
-      rollbackMainAfterMergeFailure(mockGit as any, 'sha', 'WU-1577'),
-    ).resolves.toBeDefined();
+describe('legacy rollback helper removal (AC2, AC3)', () => {
+  it('does not retain rollbackMainAfterMergeFailure in worktree flow after atomic merge burn-in', async () => {
+    const source = await readFile(new URL('../wu-done-worktree.ts', import.meta.url), 'utf-8');
+    expect(source).not.toContain('rollbackMainAfterMergeFailure(');
   });
 });
 
