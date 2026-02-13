@@ -1,10 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { ensureCleanWorktree } from '../wu-done-check.js';
-import {
-  computeBranchOnlyFallback,
-  getYamlStatusForDisplay,
-} from '../wu-done.js';
+import { computeBranchOnlyFallback, getYamlStatusForDisplay } from '../wu-done.js';
 import * as gitAdapter from '@lumenflow/core/git-adapter';
 import * as errorHandler from '@lumenflow/core/error-handler';
 import { validateInputs } from '@lumenflow/core/wu-done-inputs';
@@ -146,5 +143,4 @@ describe('wu-done', () => {
       expect(result.effectiveBranchOnly).toBe(true);
     });
   });
-
 });

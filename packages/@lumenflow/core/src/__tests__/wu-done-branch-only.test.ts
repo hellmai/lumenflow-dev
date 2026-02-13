@@ -40,10 +40,7 @@ vi.mock('../atomic-merge.js', () => ({
 }));
 
 import { defaultBranchFrom, branchExists } from '../wu-done-validators.js';
-import {
-  executeBranchOnlyCompletion,
-  executeBranchPRCompletion,
-} from '../wu-done-branch-only.js';
+import { executeBranchOnlyCompletion, executeBranchPRCompletion } from '../wu-done-branch-only.js';
 import { createPR } from '../wu-done-pr.js';
 
 describe('legacy branch-only merge helper removal', () => {
