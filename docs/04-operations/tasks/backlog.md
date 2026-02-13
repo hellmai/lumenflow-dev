@@ -30,7 +30,6 @@ sections:
 - [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml) — Framework: Core Lifecycle
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
-- [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml) — Framework: CLI Enforcement
 - [WU-1646 — Extract wu-done.ts into thin orchestrator and helper modules](wu/WU-1646.yaml) — Framework: CLI WU Commands
 - [WU-1647 — Split gates.ts into runners, plan resolvers, and utilities](wu/WU-1647.yaml) — Framework: CLI Enforcement
 - [WU-1663 — Wire wu:done CLI orchestrator to XState pipeline actor](wu/WU-1663.yaml) — Framework: CLI WU Commands
@@ -46,6 +45,7 @@ sections:
 - [WU-1651 — Extract wu-create.ts validation, content, and readiness builders](wu/WU-1651.yaml) — Framework: CLI WU Commands
 - [WU-1650 — Extract wu-edit.ts validation and apply operations](wu/WU-1650.yaml) — Framework: CLI WU Commands
 - [WU-1652 — Extract wu-spawn.ts prompt builders and strategy resolver](wu/WU-1652.yaml) — Framework: CLI WU Commands
+- [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
