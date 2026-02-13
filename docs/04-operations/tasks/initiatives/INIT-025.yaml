@@ -11,13 +11,13 @@ created: 2026-02-12
 target_date: 2026-02-28
 phases:
   - id: 1
-    title: 'Phase 1: Mechanical Splits'
+    title: 'Phase 1: State-Machine Foundation'
     status: in_progress
   - id: 2
-    title: 'Phase 2: Structural Extractions'
+    title: 'Phase 2: Mechanical Decomposition'
     status: pending
   - id: 3
-    title: 'Phase 3: Remaining Files + cleanup'
+    title: 'Phase 3: Coverage Hardening + Cleanup'
     status: pending
 success_metrics:
   - All listed decompositions are completed via new files + thin barrels with backward-compatible
@@ -37,10 +37,21 @@ notes:
     rollback cleanup.'
   - '2026-02-13 execution kickoff: Phase 1 reconciliation/state-machine foundation WUs
     (WU-1661..WU-1666) are now specified and ready for claim order.'
-  - '2026-02-13 review: phase titles are stale and should read: Phase 1 = State Machine Foundation,
-    Phase 2 = Mechanical Decomposition, Phase 3 = Coverage Hardening + Cleanup. initiative:edit does
-    not support --phase-title; will be corrected when tooling supports it or via next
-    initiative-level edit.'
+  - '2026-02-13 WU-1667 delivered --phase-title support; phase titles updated to reflect
+    state-machine-first execution sequence.'
+  - '2026-02-13 WU-1659 (done): gate dedup baseline established -- wu:done no longer runs full
+    gates redundantly after a successful wu:prep pass. This is the gate amplification fix that
+    informs INIT-025 Phase 1 state-machine work (WU-1662..WU-1666).'
+  - '2026-02-13 @xstate/test deprecation decision: use @xstate/graph (XState v5 compatible) for
+    model-based transition coverage instead of the deprecated @xstate/test package. Applies to
+    WU-1666 and any future model-based testing within INIT-025.'
+  - '2026-02-13 WU-1646 supersession: WU-1646 (mechanical wu-done.ts extraction) is superseded by
+    the state-machine foundation WUs (WU-1662..WU-1665). WU-1646 remains as a Phase 2 fallback only
+    if state-machine WUs fail to deliver. If Phase 1 completes successfully, WU-1646 should be
+    closed as superseded.'
+  - '2026-02-13 WU-1661 reconciliation: phase titles, execution ordering, WU-1659 gate dedup
+    baseline, @xstate/test deprecation decision, and WU-1646 supersession guidance are now
+    explicitly documented in initiative metadata and plan.'
 related_plan: lumenflow://plans/INIT-025-plan.md
 lanes:
   - 'Content: Specs Governance'
