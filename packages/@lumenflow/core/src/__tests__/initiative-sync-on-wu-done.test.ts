@@ -134,6 +134,55 @@ describe('computeInitiativeSyncWriteOnWUComplete', () => {
     expect(initiative.status).toBe('done');
   });
 
+  it('keeps initiative in_progress when all WUs are done but a phase remains pending', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'wu-init-sync-'));
+    tempRoots.push(root);
+
+    const wuDir = path.join(root, 'docs/04-operations/tasks/wu');
+    const initiativesDir = path.join(root, 'docs/04-operations/tasks/initiatives');
+    mkdirSync(wuDir, { recursive: true });
+    mkdirSync(initiativesDir, { recursive: true });
+
+    writeYaml(path.join(initiativesDir, 'INIT-203.yaml'), {
+      id: 'INIT-203',
+      status: 'in_progress',
+      phases: [
+        { id: 1, title: 'Phase 1', status: 'in_progress' },
+        { id: 2, title: 'Phase 2', status: 'pending' },
+      ],
+    });
+
+    writeYaml(path.join(wuDir, 'WU-2031.yaml'), {
+      id: 'WU-2031',
+      status: 'done',
+      initiative: 'INIT-203',
+      phase: 1,
+    });
+    writeYaml(path.join(wuDir, 'WU-2032.yaml'), {
+      id: 'WU-2032',
+      status: 'in_progress',
+      initiative: 'INIT-203',
+      phase: 1,
+    });
+
+    const update = computeInitiativeSyncWriteOnWUComplete({
+      wuId: 'WU-2032',
+      wuDoc: {
+        id: 'WU-2032',
+        status: 'done',
+        initiative: 'INIT-203',
+        phase: 1,
+      },
+      projectRoot: root,
+    });
+
+    expect(update).not.toBeNull();
+    const initiative = parseYAML(update!.content) as Record<string, unknown>;
+    expect(getPhaseStatus(initiative, 1)).toBe('done');
+    expect(getPhaseStatus(initiative, 2)).toBe('pending');
+    expect(initiative.status).toBe('in_progress');
+  });
+
   it('is idempotent for partial completion and does not regress a correct in_progress phase', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'wu-init-sync-'));
     tempRoots.push(root);

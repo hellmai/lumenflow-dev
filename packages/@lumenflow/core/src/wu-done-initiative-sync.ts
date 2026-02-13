@@ -101,14 +101,35 @@ function derivePhaseStatus(wusInPhase: WUSummary[]): string {
   return PHASE_STATUS.PENDING;
 }
 
-function deriveInitiativeStatus(currentStatus: string, initiativeWUs: WUSummary[]): string {
+function hasIncompletePhase(phases: unknown): boolean {
+  if (!Array.isArray(phases) || phases.length === 0) {
+    return false;
+  }
+
+  return phases.some((phaseEntry) => {
+    const phase = toRecord(phaseEntry);
+    if (!phase) {
+      return true;
+    }
+    return normalizeStatus(phase.status) !== PHASE_STATUS.DONE;
+  });
+}
+
+function deriveInitiativeStatus(
+  currentStatus: string,
+  initiativeWUs: WUSummary[],
+  phases: unknown,
+): string {
   if (currentStatus === INIT_STATUS.ARCHIVED || initiativeWUs.length === 0) {
     return currentStatus;
   }
-  if (initiativeWUs.every((wu) => isDoneStatus(wu.status))) {
-    return INIT_STATUS.DONE;
+  if (!initiativeWUs.every((wu) => isDoneStatus(wu.status))) {
+    return INIT_STATUS.IN_PROGRESS;
   }
-  return INIT_STATUS.IN_PROGRESS;
+  if (hasIncompletePhase(phases)) {
+    return INIT_STATUS.IN_PROGRESS;
+  }
+  return INIT_STATUS.DONE;
 }
 
 function parseYamlFile(filePath: string): Record<string, unknown> | null {
@@ -288,7 +309,11 @@ export function computeInitiativeSyncWriteOnWUComplete(
   }
 
   const currentInitiativeStatus = normalizeStatus(initiativeDoc.status);
-  const nextInitiativeStatus = deriveInitiativeStatus(currentInitiativeStatus, initiativeWUs);
+  const nextInitiativeStatus = deriveInitiativeStatus(
+    currentInitiativeStatus,
+    initiativeWUs,
+    nextDoc.phases,
+  );
   const statusChanged =
     nextInitiativeStatus !== '' && nextInitiativeStatus !== currentInitiativeStatus;
 
