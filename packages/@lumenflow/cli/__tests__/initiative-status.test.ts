@@ -9,7 +9,7 @@ describe('initiative:status lifecycle wiring', () => {
     const content = fs.readFileSync(STATUS_PATH, 'utf-8');
 
     expect(content).toContain('deriveInitiativeLifecycleStatus');
-    expect(content).toContain("normalizedStatus === WU_STATUS.DONE && hasIncompletePhase(phases)");
+    expect(content).toContain('normalizedStatus === WU_STATUS.DONE && hasIncompletePhase(phases)');
     expect(content).toContain('return WU_STATUS.IN_PROGRESS');
   });
 
