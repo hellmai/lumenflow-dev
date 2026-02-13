@@ -2,7 +2,7 @@ id: WU-1643
 title: Extract init.ts template constants into data module
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -43,3 +43,6 @@ session_id: f6d07652-6637-4e19-9ac6-c7e65e903182
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T22:08:37.576Z
+locked: true
+completed_at: 2026-02-13T22:16:31.422Z
+completed: 2026-02-13

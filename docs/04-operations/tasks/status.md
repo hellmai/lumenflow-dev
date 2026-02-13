@@ -7,7 +7,6 @@ _Last updated: 2026-02-13_
 - [WU-1648 — Split initiative-orchestrator.ts by domain responsibilities](wu/WU-1648.yaml)
 - [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml)
 - [WU-1649 — Extract wu-claim.ts validation and mode handlers](wu/WU-1649.yaml)
-- [WU-1643 — Extract init.ts template constants into data module](wu/WU-1643.yaml)
 
 ## Completed
 
@@ -600,3 +599,4 @@ _Last updated: 2026-02-13_
 - [WU-1667 — Add --phase-title support to initiative:edit and update command docs surfaces](wu/WU-1667.yaml) — 2026-02-13
 - [WU-1668 — Fix schema-parity registry count expectations for lifecycle command set](wu/WU-1668.yaml) — 2026-02-13
 - [WU-1661 — Reconcile INIT-025 metadata and phase mapping for state-machine execution](wu/WU-1661.yaml) — 2026-02-13
+- [WU-1643 — Extract init.ts template constants into data module](wu/WU-1643.yaml) — 2026-02-13

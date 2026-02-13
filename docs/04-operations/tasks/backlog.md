@@ -48,7 +48,6 @@ sections:
 - [WU-1648 — Split initiative-orchestrator.ts by domain responsibilities](wu/WU-1648.yaml) — Framework: Initiatives
 - [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml) — Framework: MCP
 - [WU-1649 — Extract wu-claim.ts validation and mode handlers](wu/WU-1649.yaml) — Framework: CLI WU Commands
-- [WU-1643 — Extract init.ts template constants into data module](wu/WU-1643.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
@@ -645,4 +644,5 @@ sections:
 - [WU-1667 — Add --phase-title support to initiative:edit and update command docs surfaces](wu/WU-1667.yaml)
 - [WU-1668 — Fix schema-parity registry count expectations for lifecycle command set](wu/WU-1668.yaml)
 - [WU-1661 — Reconcile INIT-025 metadata and phase mapping for state-machine execution](wu/WU-1661.yaml)
+- [WU-1643 — Extract init.ts template constants into data module](wu/WU-1643.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
