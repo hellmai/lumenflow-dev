@@ -2,7 +2,7 @@ id: WU-1625
 title: Add 8 missing subpath exports to @lumenflow/core for consumer compatibility
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -25,7 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: WU-1547 removed the dist/* wildcard export from @lumenflow/core, but 8 modules that consumers depend on were not added to the explicit exports map. This breaks ExampleApp upgrading from 2.15.2 to 2.18.1.
+description: WU-1547 removed the dist/* wildcard export from @lumenflow/core, but 8 modules that
+  consumers depend on were not added to the explicit exports map. This breaks ExampleApp upgrading
+  from 2.15.2 to 2.18.1.
 acceptance:
   - All 8 missing modules are added to the exports map in @lumenflow/core/package.json
   - Subpath exports test validates all 8 new exports resolve correctly
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1625
+claimed_at: 2026-02-13T09:51:28.740Z
+baseline_main_sha: 5e3db61376bc87df2f47633a80a59d33455d3535
+session_id: a3d28680-b022-4d73-99fd-fd1aaf35545c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T09:51:28.748Z
