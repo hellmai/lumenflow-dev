@@ -19,6 +19,11 @@ artifacts:
 dependencies: []
 initiative: INIT-025
 phase: 2
+blocked_by:
+  - WU-1662
+  - WU-1663
+  - WU-1664
+  - WU-1665
 risks: []
 notes: >-
   INIT-025 Phase 2 WU-B1. Mechanical extraction only, no new abstractions.
@@ -27,6 +32,10 @@ notes: >-
   2026-02-13 supersession note: execution sequencing now routes wu:done state-machine foundation
   through WU-1662..WU-1665 under INIT-025 Phase 1; keep this WU as legacy mechanical fallback only
   unless explicitly reactivated.
+
+
+  2026-02-13 review: blocked by state-machine WUs (WU-1662..WU-1665) which supersede this mechanical
+  extraction. If state-machine WUs deliver successfully, this WU should be closed as superseded.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
