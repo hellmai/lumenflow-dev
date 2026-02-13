@@ -34,35 +34,35 @@ describe('WU-1541: No process.chdir in normal execution paths', () => {
     it(
       'should use createGitForPath(worktreePath) for worktree git operations',
       async () => {
-      // Track which factory function is called and with what args
-      const createGitForPathCalls: string[] = [];
+        // Track which factory function is called and with what args
+        const createGitForPathCalls: string[] = [];
 
-      const mockGitAdapter = {
-        fetch: vi.fn().mockResolvedValue(undefined),
-        rebase: vi.fn().mockResolvedValue(undefined),
-        raw: vi.fn().mockResolvedValue(''),
-        add: vi.fn().mockResolvedValue(undefined),
-        commit: vi.fn().mockResolvedValue(undefined),
-        push: vi.fn().mockResolvedValue(undefined),
-        getCurrentBranch: vi.fn().mockResolvedValue(TEST_BRANCH),
-      };
+        const mockGitAdapter = {
+          fetch: vi.fn().mockResolvedValue(undefined),
+          rebase: vi.fn().mockResolvedValue(undefined),
+          raw: vi.fn().mockResolvedValue(''),
+          add: vi.fn().mockResolvedValue(undefined),
+          commit: vi.fn().mockResolvedValue(undefined),
+          push: vi.fn().mockResolvedValue(undefined),
+          getCurrentBranch: vi.fn().mockResolvedValue(TEST_BRANCH),
+        };
 
-      vi.doMock('../git-adapter.js', () => ({
-        getGitForCwd: vi.fn(() => mockGitAdapter),
-        createGitForPath: vi.fn((baseDir: string) => {
-          createGitForPathCalls.push(baseDir);
-          return mockGitAdapter;
-        }),
-      }));
+        vi.doMock('../git-adapter.js', () => ({
+          getGitForCwd: vi.fn(() => mockGitAdapter),
+          createGitForPath: vi.fn((baseDir: string) => {
+            createGitForPathCalls.push(baseDir);
+            return mockGitAdapter;
+          }),
+        }));
 
-      const { autoRebaseBranch } = await import('../wu-done-worktree.js');
+        const { autoRebaseBranch } = await import('../wu-done-worktree.js');
 
-      await autoRebaseBranch(TEST_BRANCH, FAKE_WORKTREE_PATH);
+        await autoRebaseBranch(TEST_BRANCH, FAKE_WORKTREE_PATH);
 
-      // After WU-1541 refactoring:
-      // autoRebaseBranch should use createGitForPath(worktreePath)
-      // instead of process.chdir(worktreePath) + getGitForCwd()
-      expect(createGitForPathCalls).toContain(FAKE_WORKTREE_PATH);
+        // After WU-1541 refactoring:
+        // autoRebaseBranch should use createGitForPath(worktreePath)
+        // instead of process.chdir(worktreePath) + getGitForCwd()
+        expect(createGitForPathCalls).toContain(FAKE_WORKTREE_PATH);
         expect(chdirSpy).not.toHaveBeenCalled();
       },
       FULL_SUITE_TEST_TIMEOUT_MS,
@@ -71,26 +71,26 @@ describe('WU-1541: No process.chdir in normal execution paths', () => {
     it(
       'should not call process.chdir even on rebase failure',
       async () => {
-      const mockGitAdapter = {
-        fetch: vi.fn().mockResolvedValue(undefined),
-        rebase: vi.fn().mockRejectedValue(new Error('rebase conflict')),
-        raw: vi.fn().mockResolvedValue(''),
-        add: vi.fn().mockResolvedValue(undefined),
-        commit: vi.fn().mockResolvedValue(undefined),
-        getStatus: vi.fn().mockResolvedValue(''),
-      };
+        const mockGitAdapter = {
+          fetch: vi.fn().mockResolvedValue(undefined),
+          rebase: vi.fn().mockRejectedValue(new Error('rebase conflict')),
+          raw: vi.fn().mockResolvedValue(''),
+          add: vi.fn().mockResolvedValue(undefined),
+          commit: vi.fn().mockResolvedValue(undefined),
+          getStatus: vi.fn().mockResolvedValue(''),
+        };
 
-      vi.doMock('../git-adapter.js', () => ({
-        getGitForCwd: vi.fn(() => mockGitAdapter),
-        createGitForPath: vi.fn(() => mockGitAdapter),
-      }));
+        vi.doMock('../git-adapter.js', () => ({
+          getGitForCwd: vi.fn(() => mockGitAdapter),
+          createGitForPath: vi.fn(() => mockGitAdapter),
+        }));
 
-      const { autoRebaseBranch } = await import('../wu-done-worktree.js');
+        const { autoRebaseBranch } = await import('../wu-done-worktree.js');
 
-      // autoRebaseBranch returns { success: false } on failure, doesn't throw
-      await autoRebaseBranch(TEST_BRANCH, FAKE_WORKTREE_PATH);
+        // autoRebaseBranch returns { success: false } on failure, doesn't throw
+        await autoRebaseBranch(TEST_BRANCH, FAKE_WORKTREE_PATH);
 
-      // Even on error path, process.chdir should not be called
+        // Even on error path, process.chdir should not be called
         expect(chdirSpy).not.toHaveBeenCalled();
       },
       FULL_SUITE_TEST_TIMEOUT_MS,
