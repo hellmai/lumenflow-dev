@@ -42,10 +42,11 @@ sections:
 - [WU-1650 — Extract wu-edit.ts validation and apply operations](wu/WU-1650.yaml) — Framework: CLI WU Commands
 - [WU-1651 — Extract wu-create.ts validation, content, and readiness builders](wu/WU-1651.yaml) — Framework: CLI WU Commands
 - [WU-1652 — Extract wu-spawn.ts prompt builders and strategy resolver](wu/WU-1652.yaml) — Framework: CLI WU Commands
+- [WU-1654 — Doctor: replace regex parsing with library-first structured calls](wu/WU-1654.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-- [WU-1653 — Fix wu:claim to respect requireRemote=false and wu:done stamp force-add](wu/WU-1653.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -631,4 +632,5 @@ sections:
 - [WU-1639 — Reconcile INIT-025 lifecycle metadata with actual decomposition scope](wu/WU-1639.yaml)
 - [WU-1640 — Prevent false initiative done when phases remain pending](wu/WU-1640.yaml)
 - [WU-1641 — Fix initiative status commands ignoring initiative YAML status/phase state](wu/WU-1641.yaml)
+- [WU-1653 — Fix wu:claim to respect requireRemote=false and wu:done stamp force-add](wu/WU-1653.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
