@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1668 — Fix schema-parity registry count expectations for lifecycle command set](wu/WU-1668.yaml) — Framework: Core Validation
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1581 — CLI strict wave 1A: high-impact WU command hotspots](wu/WU-1581.yaml) — Framework: CLI WU Commands
@@ -48,11 +47,10 @@ sections:
 - [WU-1664 — Extract wu:done worktree completion services for state-driven execution](wu/WU-1664.yaml) — Framework: Core Lifecycle
 - [WU-1665 — Consolidate wu:done rollback and recovery onto staged state-machine migration](wu/WU-1665.yaml) — Framework: Core State Recovery
 - [WU-1666 — Add model-based wu:done pipeline test coverage with @xstate/graph](wu/WU-1666.yaml) — Framework: CLI WU Commands
-- [WU-1668 — Fix schema-parity registry count expectations for lifecycle command set](wu/WU-1668.yaml) — Framework: Core Validation
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1668 — Fix schema-parity registry count expectations for lifecycle command set](wu/WU-1668.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 
