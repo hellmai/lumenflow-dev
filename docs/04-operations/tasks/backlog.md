@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1624 — Prevent local state divergence after failed wu:done recovery](wu/WU-1624.yaml) — Framework: Core State Recovery
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1621 — Harden initiative metadata writes against origin movement](wu/WU-1621.yaml) — Framework: CLI Orchestration
