@@ -36,4 +36,7 @@ Phase 1 (state-machine foundation): WU-1661 reconcile initiative metadata; WU-16
 
 ## References
 
-- Initiative: INIT-025\n- Linked Plan URI: lumenflow://plans/INIT-025-plan.md\n- Sizing Guide: docs/04-operations/\_frameworks/lumenflow/wu-sizing-guide.md\n- Phase 1 WUs: WU-1661, WU-1662, WU-1663, WU-1664, WU-1665, WU-1666
+- Initiative: INIT-025
+- Linked Plan URI: lumenflow://plans/INIT-025-plan.md
+- Sizing Guide: docs/04-operations/\_frameworks/lumenflow/wu-sizing-guide.md
+- Phase 1 WUs: WU-1661, WU-1662, WU-1663, WU-1664, WU-1665, WU-1666
