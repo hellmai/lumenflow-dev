@@ -2,7 +2,7 @@ id: WU-1636
 title: Align AGENTS and LUMENFLOW entrypoint guidance to canonical lifecycle docs
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - LUMENFLOW.md
 tests:
   manual:
-    - Read AGENTS.md and LUMENFLOW.md end-to-end and confirm lifecycle instructions are aligned and link to canonical docs
+    - Read AGENTS.md and LUMENFLOW.md end-to-end and confirm lifecycle instructions are aligned and
+      link to canonical docs
   unit: []
   e2e: []
 artifacts:
@@ -28,8 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Update contributor-facing entrypoint docs so AGENTS.md and LUMENFLOW.md consistently point to the canonical lifecycle map and failure runbook, reducing duplicate/contradictory guidance.
+description: Update contributor-facing entrypoint docs so AGENTS.md and LUMENFLOW.md consistently
+  point to the canonical lifecycle map and failure runbook, reducing duplicate/contradictory
+  guidance.
 acceptance:
-  - AGENTS.md references canonical lifecycle + troubleshooting docs instead of duplicating workflow details
+  - AGENTS.md references canonical lifecycle + troubleshooting docs instead of duplicating workflow
+    details
   - LUMENFLOW.md references the same canonical lifecycle + troubleshooting docs and command ordering
   - Cross-links are consistent and do not conflict with quick-start local/cloud sections
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-1636
+claimed_at: 2026-02-13T14:21:20.428Z
+baseline_main_sha: 0383df4cbe2b45ca1dd3c2fb6e70f83017fd2a92
+session_id: bb1d3e14-9fcd-4315-b0e8-7dab4813b628
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T14:21:20.434Z

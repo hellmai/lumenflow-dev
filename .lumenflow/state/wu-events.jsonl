@@ -1211,3 +1211,4 @@
 {"type":"claim","wuId":"WU-1638","lane":"Framework: CLI WU Commands","title":"Remove obsolete dirty-main defensive code after INIT-026 atomic merge","timestamp":"2026-02-13T14:17:01.237Z"}
 {"type":"claim","wuId":"WU-1635","lane":"Content: Specs Governance","title":"Document canonical lifecycle map and failure-mode runbook","timestamp":"2026-02-13T14:20:32.025Z"}
 {"type":"claim","wuId":"WU-1637","lane":"Content: Site Comms","title":"Expose tooling lifecycle and troubleshooting in Starlight navigation","timestamp":"2026-02-13T14:20:56.901Z"}
+{"type":"claim","wuId":"WU-1636","lane":"Content: Framework Docs","title":"Align AGENTS and LUMENFLOW entrypoint guidance to canonical lifecycle docs","timestamp":"2026-02-13T14:21:20.472Z"}
