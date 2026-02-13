@@ -563,6 +563,84 @@ These patterns were discovered during [WU-218](../tasks/wu/WU-218.yaml) when an 
 - [ ] Use `pnpm wu:done --id WU-XXX` to complete (ONLY way to finish a WU)
 - [ ] If blocked, use `pnpm wu:block` (not manual edits to backlog/status)
 
+### 2.6 Canonical Lifecycle Map (WU-1635)
+
+This section provides a single-page reference for how every `wu:*` command, memory tool, and orchestration tool fits into the WU lifecycle. It covers both **worktree mode** (default, local agents) and **cloud/branch-PR mode** (Codex, CI bots, GitHub App).
+
+#### 2.6.1 Command-Mode Matrix
+
+Each command runs from a specific **location** (main checkout, worktree, or lane branch) and produces a defined **handoff** to the next step. Using a command from the wrong location triggers a context-validation error with a copy-paste fix.
+
+| Command | Worktree Mode | Cloud/Branch-PR Mode | Expected Location | Handoff |
+| --- | --- | --- | --- | --- |
+| `wu:create` | Creates WU YAML on main via micro-worktree push | Same (or `--cloud` writes on active branch) | Main checkout (or any branch with `--cloud`) | WU spec ready for `wu:claim` |
+| `wu:claim` | Updates canonical state on `origin/main`, creates worktree at `worktrees/<lane>-wu-xxx` | `--cloud` sets `claimed_mode: branch-pr`, no worktree created | Main checkout | `cd worktrees/<lane>-wu-xxx` (worktree) or stay on branch (cloud) |
+| `wu:brief` | Generates handoff prompt with memory context for another agent | Same | Main checkout or worktree | Copy prompt to new agent session |
+| `wu:delegate` | Generates prompt and records delegation lineage | Same | Main checkout or worktree | Delegation record + prompt |
+| `wu:prep` | Runs gates in worktree, prints `wu:done` copy-paste instruction | Validates branch, runs gates in-place | Worktree (worktree mode) or main checkout (branch-pr) | Copy-paste `wu:done` command |
+| `wu:done` | Fast-forward merge to main, stamp, cleanup, push | Creates PR (does NOT merge), stamp deferred to `wu:cleanup` | Main checkout | WU complete (worktree) or PR created (cloud) |
+| `wu:cleanup` | N/A (wu:done handles everything) | Post-PR-merge: stamp, YAML update, branch delete | Main checkout (after PR merge) | WU fully complete |
+| `wu:block` | Sets status to `blocked`, frees lane | Same | Worktree or main | Lane freed for new claim |
+| `wu:unblock` | Sets status to `in_progress`, re-acquires lane | Same | Worktree or main | Resume work |
+| `wu:recover` | Analyzes and fixes state inconsistencies | Applies branch-pr fixes on claimed branch | Main checkout or worktree | State reconciled |
+| `wu:release` | Releases orphaned WU (`in_progress` to `ready`) | Same | Main checkout | WU available for reclaim |
+| `wu:status` | Shows status, location, valid commands | Same | Any | Informational only |
+
+**Memory and orchestration tools** (run from worktree or main):
+
+| Command | Purpose | Typical Location |
+| --- | --- | --- |
+| `mem:checkpoint` | Save progress for context recovery | Worktree |
+| `mem:recover` | Generate recovery context after compaction | Main or worktree |
+| `mem:signal` | Broadcast coordination signal to other agents | Worktree |
+| `mem:inbox` | Read coordination signals from other agents | Main or worktree |
+| `mem:start` | Start session, surfaces unread signals | Worktree |
+| `orchestrate:initiative` | Orchestrate initiative wave execution | Main |
+| `orchestrate:init-status` | Compact initiative progress view | Main |
+| `orchestrate:monitor` | Monitor delegation/agent activity | Main |
+| `state:doctor` | Diagnose and auto-fix state store issues | Main |
+
+#### 2.6.2 Lifecycle Flow (Worktree Mode)
+
+```
+wu:create ──> wu:claim ──> cd worktree ──> [implement] ──> wu:prep ──> wu:done
+                                 |                            |            |
+                                 |  mem:checkpoint (periodic)  |            |
+                                 |  mem:signal (coordination)  |            |
+                                 |                            |            |
+                                 |  wu:block (if stalled) ────+            |
+                                 |  wu:unblock (when ready) ──+            |
+                                 |                                         |
+                                 +--- gates run here (worktree) ──> merge to main
+                                                                    stamp created
+                                                                    worktree removed
+                                                                    push to origin
+```
+
+#### 2.6.3 Lifecycle Flow (Cloud/Branch-PR Mode)
+
+```
+wu:create --cloud ──> wu:claim --cloud ──> [work on lane branch] ──> wu:prep ──> wu:done
+                                                    |                               |
+                                                    |                         PR created
+                                                    |                               |
+                                                    |                      [review + merge]
+                                                    |                               |
+                                                    +───────────────> wu:cleanup ────+
+                                                                        stamp created
+                                                                        YAML updated
+                                                                        branch deleted
+```
+
+#### 2.6.4 Cross-References
+
+- **Failure-mode runbook**: See [Appendix A](#appendix-a-failure-mode-runbook-wu-1635) in this document
+- **Troubleshooting wu:done**: See [troubleshooting-wu-done.md](./agent/onboarding/troubleshooting-wu-done.md)
+- **First WU mistakes**: See [first-wu-mistakes.md](./agent/onboarding/first-wu-mistakes.md)
+- **Quick command reference**: See [quick-ref-commands.md](./agent/onboarding/quick-ref-commands.md)
+- **WU sizing guide**: See [wu-sizing-guide.md](./wu-sizing-guide.md)
+- **Workspace modes**: See [workspace-modes.md](./workspace-modes.md) (if it exists) or section 2.4 above
+
 ---
 
 ## 3. Tech Stack
@@ -2387,5 +2465,257 @@ Review flow reports weekly to identify bottlenecks and optimize delivery.
 
 ---
 
-**Status**: Effective immediately. All work must comply with this unified workflow.  
+---
+
+## Appendix A: Failure-Mode Runbook (WU-1635)
+
+This appendix documents recurrent failure modes observed in active LumenFlow usage and provides concrete remediation steps for each.
+
+### A.1 Main Behind Origin (Non-Fast-Forward Push Failure)
+
+**Symptoms:**
+
+- `wu:done` fails with `non-fast-forward` error
+- `git push origin main` is rejected
+- Error message: `Updates were rejected because the tip of your current branch is behind its remote counterpart`
+
+**Root Cause:** Another agent (or manual push) updated `origin/main` between your last fetch and your push. This is common when multiple agents work concurrently.
+
+**Remediation:**
+
+```bash
+# DO NOT manually rebase or force-push. Simply rerun wu:done.
+# wu:done has built-in auto-rebase that handles race conditions cleanly.
+pnpm wu:done --id WU-XXX
+
+# If wu:done fails 3x consecutively:
+# 1. Check if another agent is actively pushing (pnpm orchestrate:monitor)
+# 2. Wait 30 seconds and retry
+# 3. If still failing, check for merge conflicts:
+git fetch origin main
+git log --oneline HEAD..origin/main  # See what landed since your last sync
+```
+
+**What NOT to do:**
+
+- Do NOT run `git rebase origin/main` manually on the main branch
+- Do NOT use `LUMENFLOW_FORCE=1 git push` -- this bypasses safety hooks
+- Do NOT use `git push --force` -- GitHub rejects force pushes to main
+
+**Prevention:** The `git.push_retry` config in `.lumenflow.config.yaml` automatically retries with exponential backoff (default: 3 attempts). If you experience frequent collisions, consider increasing `retries` or `max_delay_ms`.
+
+---
+
+### A.2 Partial-Claim State (Worktree Exists but Status is Wrong)
+
+**Symptoms:**
+
+- `wu:claim` fails with `already in_progress` but no worktree exists
+- Worktree exists at `worktrees/<lane>-wu-xxx` but WU YAML says `ready`
+- `wu:done` says WU is not `in_progress`
+- Lane appears occupied but no active work is happening
+
+**Root Cause:** A previous `wu:claim` was interrupted (network failure, agent crash, timeout) after updating the state store but before creating the worktree (or vice versa).
+
+**Remediation:**
+
+```bash
+# Step 1: Diagnose the issue
+pnpm wu:recover --id WU-XXX
+
+# Step 2: Apply the suggested fix based on diagnosis
+
+# If worktree exists but status is wrong (resume work):
+pnpm wu:recover --id WU-XXX --action resume
+
+# If no worktree exists but status says in_progress (reset to ready):
+pnpm wu:recover --id WU-XXX --action reset
+
+# If worktree is leftover from a completed WU (clean up):
+pnpm wu:recover --id WU-XXX --action cleanup
+
+# If state store and YAML disagree:
+pnpm state:doctor --fix
+```
+
+**Alternative: Manual state reconciliation** (when `wu:recover` cannot fix the issue):
+
+```bash
+# Check what the state store thinks
+pnpm wu:status --id WU-XXX
+
+# Check for orphaned worktrees
+ls worktrees/
+
+# If lane is stuck, unlock it
+pnpm wu:unlock-lane --lane "<Lane Name>"
+
+# If WU is stuck in_progress with no active agent, release it
+pnpm wu:release --id WU-XXX
+```
+
+**Prevention:** The micro-worktree push pattern (WU-1262) with push retry (WU-1332) reduces partial-claim failures. If you see this regularly, check network stability between agent and `origin`.
+
+---
+
+### A.3 Spawn-Provenance Enforcement (Missing Delegation Lineage)
+
+**Symptoms:**
+
+- Orchestrator cannot track which sub-agent owns which WU
+- `orchestrate:monitor` shows agents without parent linkage
+- After context compaction, orchestrator loses awareness of spawned agents
+- Initiative progress appears stale despite active work
+
+**Root Cause:** Sub-agents were spawned using `wu:brief` (prompt-only) instead of `wu:delegate` (prompt + lineage tracking), or the agent launch tracking hook is not installed.
+
+**Remediation:**
+
+```bash
+# Check current delegation records
+pnpm spawn:list
+
+# Check unread signals for agent launches
+pnpm mem:inbox --wu WU-XXX
+
+# If delegation record is missing, add it retroactively
+pnpm wu:delegate --id WU-CHILD --parent-wu WU-PARENT --client claude-code
+
+# If agent launch tracking hook is missing:
+pnpm lumenflow:integrate --client claude-code
+# This generates .claude/hooks/track-agent-launch.sh
+```
+
+**When to use `wu:delegate` vs `wu:brief`:**
+
+| Scenario | Use | Reason |
+| --- | --- | --- |
+| Initiative work (INIT-XXX) | `wu:delegate` | Auditable lineage required for initiative tracking |
+| One-off handoff | `wu:brief` | No lineage needed, prompt-only |
+| Sub-agent spawn from orchestrator | `wu:delegate` | Parent-child relationship must be recorded |
+| Manual agent restart | `wu:brief` | Resuming same agent, not new delegation |
+
+**Prevention:**
+
+1. Always use `wu:delegate` (not `wu:brief`) when spawning sub-agents for initiative work
+2. Install the agent launch tracking hook (see section 5.3.1)
+3. Run `pnpm mem:inbox` at session start to discover previously spawned agents
+
+---
+
+### A.4 wu:recover Usage (State Inconsistency Resolution)
+
+**Symptoms:**
+
+- Any mismatch between WU YAML status, state store events, worktree existence, and lane locks
+- Commands fail with unexpected state errors
+- `state:doctor` reports issues
+
+**When to use `wu:recover`:**
+
+| Issue | Command | What It Does |
+| --- | --- | --- |
+| Worktree exists, YAML says `ready` | `wu:recover --id WU-XXX --action resume` | Emits claim event, reconciles state |
+| YAML says `in_progress`, no worktree | `wu:recover --id WU-XXX --action reset` | Emits release event, sets to `ready` |
+| WU is `done` but worktree lingers | `wu:recover --id WU-XXX --action cleanup` | Removes worktree, verifies stamp |
+| State store and YAML disagree | `pnpm state:doctor --fix` | Emits corrective events |
+| Lane stuck occupied | `pnpm wu:unlock-lane --lane "X"` | Clears stale lane lock |
+
+**Full diagnostic sequence:**
+
+```bash
+# 1. Check WU status from all sources
+pnpm wu:status --id WU-XXX
+
+# 2. Run state doctor for global issues
+pnpm state:doctor
+
+# 3. If state:doctor finds issues, auto-fix safe ones
+pnpm state:doctor --fix
+
+# 4. If WU-specific, use wu:recover
+pnpm wu:recover --id WU-XXX
+
+# 5. Follow the suggested action from wu:recover output
+pnpm wu:recover --id WU-XXX --action <suggested-action>
+
+# 6. Verify the fix
+pnpm wu:status --id WU-XXX
+```
+
+**Escalation:** If `wu:recover` and `state:doctor --fix` cannot resolve the issue, use `wu:repair --admin` (requires explicit user approval) or report the inconsistency to the user for manual investigation.
+
+---
+
+### A.5 Common Compound Failures
+
+These scenarios involve multiple failure modes interacting.
+
+**Scenario: Agent crash during wu:done**
+
+The agent crashed after `wu:done` merged to main but before pushing to origin.
+
+```bash
+# 1. Check local vs remote state
+git log --oneline main..origin/main   # What remote has that local doesn't
+git log --oneline origin/main..main   # What local has that remote doesn't
+
+# 2. If local is ahead, push
+git push origin main
+
+# 3. If worktree still exists, clean it up
+pnpm wu:recover --id WU-XXX --action cleanup
+```
+
+**Scenario: Two agents claim the same lane**
+
+This should be prevented by WIP=1 enforcement, but can happen if state store updates race.
+
+```bash
+# 1. Check lane status
+pnpm lane:health
+
+# 2. Identify which WU should have the lane
+pnpm wu:status --id WU-AAA
+pnpm wu:status --id WU-BBB
+
+# 3. Release the WU that should not be active
+pnpm wu:release --id WU-BBB  # The later/incorrect claim
+
+# 4. If lane lock is stuck
+pnpm wu:unlock-lane --lane "<Lane Name>"
+```
+
+**Scenario: wu:prep passes but wu:done fails**
+
+Gates passed in the worktree, but `wu:done` fails during merge.
+
+```bash
+# Most common cause: main advanced since wu:prep ran
+# Simply rerun wu:done (it auto-rebases)
+pnpm wu:done --id WU-XXX
+
+# If merge conflict (rare with fast-forward-only):
+# Return to worktree, rebase on latest main, fix conflicts, rerun wu:prep
+cd worktrees/<lane>-wu-xxx
+git fetch origin main
+git rebase origin/main
+# Fix any conflicts
+pnpm wu:prep --id WU-XXX
+cd /path/to/main && pnpm wu:done --id WU-XXX
+```
+
+---
+
+### A.6 Cross-References
+
+- **Troubleshooting wu:done**: [troubleshooting-wu-done.md](./agent/onboarding/troubleshooting-wu-done.md) -- Most common agent mistake (forgetting to run wu:done)
+- **First WU mistakes**: [first-wu-mistakes.md](./agent/onboarding/first-wu-mistakes.md) -- Common first-time pitfalls
+- **Lifecycle map**: [Section 2.6](#26-canonical-lifecycle-map-wu-1635) in this document
+- **Quick command reference**: [quick-ref-commands.md](./agent/onboarding/quick-ref-commands.md)
+- **WU sizing guide**: [wu-sizing-guide.md](./wu-sizing-guide.md) -- Context safety triggers and session strategies
+
+---
+
+**Status**: Effective immediately. All work must comply with this unified workflow.
 **Next Review**: Quarterly or upon major architectural changes.

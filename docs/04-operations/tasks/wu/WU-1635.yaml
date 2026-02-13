@@ -21,7 +21,14 @@ dependencies: []
 initiative: INIT-027
 phase: 1
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  Added section 2.6 (Canonical Lifecycle Map) to lumenflow-complete.md with
+  command-mode matrix covering all wu:* and memory/orchestration commands in
+  both worktree and cloud/branch-PR modes. Added Appendix A (Failure-Mode
+  Runbook) with concrete remediation for main-behind-origin, partial-claim
+  state, spawn-provenance enforcement, wu:recover usage, and common compound
+  failures. Added cross-links from quick-ref-commands.md and wu-sizing-guide.md
+  to both new sections.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
