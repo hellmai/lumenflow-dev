@@ -2,7 +2,7 @@ id: WU-1648
 title: Split initiative-orchestrator.ts by domain responsibilities
 lane: 'Framework: Initiatives'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -44,3 +44,6 @@ session_id: f6d07652-6637-4e19-9ac6-c7e65e903182
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T22:07:28.525Z
+locked: true
+completed_at: 2026-02-13T22:18:07.161Z
+completed: 2026-02-13
