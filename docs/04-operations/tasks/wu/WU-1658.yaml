@@ -2,7 +2,7 @@ id: WU-1658
 title: Add regression coverage for wu:done post-push reconciliation and cleanup
 lane: 'Framework: Core State Recovery'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -30,10 +30,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Recent wu:done runs showed a repeatable path where remote push succeeds but local post-push catch-up and cleanup behaviors become inconsistent, producing retry loops and branch cleanup noise. Problem: we lack targeted automated coverage for this sequence, so regressions can reappear unnoticed. Solution: add focused tests that simulate successful atomic push with local catch-up friction and verify idempotent completion semantics.'
+description: 'Context: Recent wu:done runs showed a repeatable path where remote push succeeds but
+  local post-push catch-up and cleanup behaviors become inconsistent, producing retry loops and
+  branch cleanup noise. Problem: we lack targeted automated coverage for this sequence, so
+  regressions can reappear unnoticed. Solution: add focused tests that simulate successful atomic
+  push with local catch-up friction and verify idempotent completion semantics.'
 acceptance:
-  - Regression test reproduces successful remote push with local catch-up friction and verifies wu:done does not report failure for the completed remote merge path.
+  - Regression test reproduces successful remote push with local catch-up friction and verifies
+    wu:done does not report failure for the completed remote merge path.
   - Regression test covers rerun/idempotency behavior after a successful remote push.
-  - Regression test verifies cleanup behavior is deterministic when local branch-delete preconditions differ from remote merge state.
+  - Regression test verifies cleanup behavior is deterministic when local branch-delete
+    preconditions differ from remote merge state.
   - Tests fail before fix and pass after WU-1657 implementation.
   - Full gates pass.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-state-recovery-wu-1658
+claimed_at: 2026-02-13T20:35:33.481Z
+baseline_main_sha: 64ee6a41115266e19af64d29340913c7ffe524c3
+session_id: 8b3083ca-bd0a-4699-847f-446782ed2f48
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T20:35:33.486Z
