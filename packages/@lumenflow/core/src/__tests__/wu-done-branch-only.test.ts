@@ -8,6 +8,9 @@ const mockGit = {
   add: vi.fn(),
   checkout: vi.fn(),
 };
+const atomicMergeMocks = vi.hoisted(() => ({
+  withAtomicMerge: vi.fn(),
+}));
 
 vi.mock('../git-adapter.js', () => ({
   getGitForCwd: () => mockGit,
@@ -28,10 +31,19 @@ vi.mock('../wu-done-validators.js', () => ({
   branchExists: vi.fn(),
   generateCommitMessage: vi.fn(() => 'wu(wu-1492): done'),
   updateMetadataFiles: vi.fn(),
+  collectMetadataToTransaction: vi.fn(),
   stageAndFormatMetadata: vi.fn(),
 }));
+vi.mock('../atomic-merge.js', () => ({
+  withAtomicMerge: atomicMergeMocks.withAtomicMerge,
+}));
 
-import { mergeLaneBranch, executeBranchPRCompletion } from '../wu-done-branch-only.js';
+import { defaultBranchFrom, branchExists } from '../wu-done-validators.js';
+import {
+  mergeLaneBranch,
+  executeBranchOnlyCompletion,
+  executeBranchPRCompletion,
+} from '../wu-done-branch-only.js';
 import { createPR } from '../wu-done-pr.js';
 
 describe('mergeLaneBranch retry behavior', () => {
@@ -200,5 +212,96 @@ describe('executeBranchPRCompletion', () => {
         prUrl: 'https://github.com/pr/3',
       }),
     );
+  });
+});
+
+describe('executeBranchOnlyCompletion (atomic non-PR path)', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.mocked(defaultBranchFrom).mockResolvedValue('lane/framework-core/wu-1629');
+    vi.mocked(branchExists).mockResolvedValue(true);
+    atomicMergeMocks.withAtomicMerge.mockResolvedValue({
+      tempBranchName: 'tmp/wu-done-branch-only/wu-1629',
+      worktreePath: '/tmp/wu-done-branch-only-xyz',
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('routes branch-only merge/push through withAtomicMerge and avoids checkout to main', async () => {
+    const context = {
+      id: 'WU-1629',
+      args: {},
+      docMain: {
+        id: 'WU-1629',
+        lane: 'Framework: Core Lifecycle',
+        claimed_mode: 'worktree',
+        status: 'in_progress',
+      },
+      title: 'Atomic branch-only integration',
+      isDocsOnly: false,
+      maxCommitLength: 100,
+      recordTransactionState: vi.fn(),
+      rollbackTransaction: vi.fn(),
+      validateStagedFiles: vi.fn(),
+    };
+
+    const result = await executeBranchOnlyCompletion(context);
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        success: true,
+        committed: true,
+        pushed: true,
+        merged: true,
+      }),
+    );
+    expect(atomicMergeMocks.withAtomicMerge).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'WU-1629',
+        laneBranch: 'lane/framework-core/wu-1629',
+        operation: 'wu-done-branch-only',
+        afterMerge: expect.any(Function),
+      }),
+    );
+    expect(mockGit.checkout).not.toHaveBeenCalled();
+  });
+
+  it('supports idempotent rerun after injected partial failure', async () => {
+    atomicMergeMocks.withAtomicMerge
+      .mockRejectedValueOnce(new Error('injected partial failure'))
+      .mockResolvedValueOnce({
+        tempBranchName: 'tmp/wu-done-branch-only/wu-1629',
+        worktreePath: '/tmp/wu-done-branch-only-xyz',
+      });
+
+    const context = {
+      id: 'WU-1629',
+      args: {},
+      docMain: {
+        id: 'WU-1629',
+        lane: 'Framework: Core Lifecycle',
+        claimed_mode: 'worktree',
+        status: 'in_progress',
+      },
+      title: 'Atomic branch-only integration',
+      isDocsOnly: false,
+      maxCommitLength: 100,
+      recordTransactionState: vi.fn(),
+      rollbackTransaction: vi.fn(),
+      validateStagedFiles: vi.fn(),
+    };
+
+    await expect(executeBranchOnlyCompletion(context)).rejects.toThrow('injected partial failure');
+    await expect(executeBranchOnlyCompletion(context)).resolves.toEqual(
+      expect.objectContaining({
+        success: true,
+        merged: true,
+      }),
+    );
+    expect(atomicMergeMocks.withAtomicMerge).toHaveBeenCalledTimes(2);
   });
 });

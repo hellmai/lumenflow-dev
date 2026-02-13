@@ -21,6 +21,7 @@ import {
   branchExists,
   generateCommitMessage,
   updateMetadataFiles,
+  collectMetadataToTransaction,
   stageAndFormatMetadata,
 } from './wu-done-validators.js';
 import { getGitForCwd } from './git-adapter.js';
@@ -42,6 +43,8 @@ import { validateWU, validateDoneWU } from './wu-schema.js';
 import { assertTransition } from './state-machine.js';
 import { detectZombieState, recoverZombieState } from './wu-recovery.js';
 import { emit } from './telemetry.js';
+import { withAtomicMerge } from './atomic-merge.js';
+import { WUTransaction } from './wu-transaction.js';
 // WU-1061: Import docs regeneration utilities
 import { maybeRegenerateAndStageDocs } from './wu-done-docs-generate.js';
 // WU-1492: Import PR creation utilities for branch-pr mode
@@ -165,20 +168,131 @@ export async function executeBranchOnlyCompletion(context) {
   let merged = false;
   const laneBranch = await defaultBranchFrom(docMain);
 
-  // Step 1: Switch to main and optionally merge lane branch
+  // Step 1: Use atomic merge path for branch-only non-PR completion.
+  // This keeps live main untouched while merge/push and metadata commit execute.
   const gitAdapter = getGitForCwd();
+  if (!args.noMerge && laneBranch && (await branchExists(laneBranch))) {
+    await withAtomicMerge({
+      id,
+      laneBranch,
+      operation: 'wu-done-branch-only',
+      logPrefix: LOG_PREFIX.DONE,
+      command: `pnpm wu:done --id ${id}`,
+      afterMerge: async ({ worktreePath, gitWorktree }) => {
+        const metadataBasePath = worktreePath;
+        const metadataWUPath = path.join(
+          metadataBasePath,
+          'docs',
+          '04-operations',
+          'tasks',
+          'wu',
+          `${id}.yaml`,
+        );
+        const metadataStatusPath = path.join(
+          metadataBasePath,
+          'docs',
+          '04-operations',
+          'tasks',
+          'status.md',
+        );
+        const metadataBacklogPath = path.join(
+          metadataBasePath,
+          'docs',
+          '04-operations',
+          'tasks',
+          'backlog.md',
+        );
+        const metadataStampsDir = path.join(metadataBasePath, LUMENFLOW_PATHS.STAMPS_DIR);
+        const metadataStampPath = path.join(metadataStampsDir, `${id}.done`);
+        const docForUpdate = readWU(metadataWUPath, id);
+        const currentStatus = docForUpdate.status || WU_STATUS.IN_PROGRESS;
+
+        assertTransition(currentStatus, WU_STATUS.DONE, id);
+
+        const schemaResult = validateWU(docForUpdate);
+        if (!schemaResult.success) {
+          const errors = schemaResult.error.issues.map(
+            (issue) => `  - ${issue.path.join('.')}: ${issue.message}`,
+          );
+          throw createError(
+            ErrorCodes.VALIDATION_ERROR,
+            `WU YAML validation failed:\n${errors.join(STRING_LITERALS.NEWLINE)}`,
+            { wuId: id },
+          );
+        }
+
+        const completenessResult = validateDoneWU(docForUpdate);
+        if (!completenessResult.valid) {
+          throw createError(
+            ErrorCodes.VALIDATION_ERROR,
+            `Cannot mark WU as done - spec incomplete:\n  ${completenessResult.errors.join('\n  ')}`,
+            { wuId: id },
+          );
+        }
+
+        const transaction = new WUTransaction(id);
+        await collectMetadataToTransaction({
+          id,
+          title,
+          doc: docForUpdate,
+          wuPath: metadataWUPath,
+          statusPath: metadataStatusPath,
+          backlogPath: metadataBacklogPath,
+          stampPath: metadataStampPath,
+          transaction,
+          projectRoot: metadataBasePath,
+        });
+        const txCommitResult = transaction.commit();
+        if (!txCommitResult.success) {
+          throw createError(
+            ErrorCodes.TRANSACTION_ERROR,
+            `Atomic metadata write failed for ${id}: ${txCommitResult.failed.map((entry) => entry.path).join(', ')}`,
+            { wuId: id },
+          );
+        }
+
+        await maybeRegenerateAndStageDocs({
+          baseBranch: BRANCHES.MAIN,
+          repoRoot: metadataBasePath,
+        });
+
+        await stageAndFormatMetadata({
+          id,
+          wuPath: metadataWUPath,
+          statusPath: metadataStatusPath,
+          backlogPath: metadataBacklogPath,
+          stampsDir: metadataStampsDir,
+          gitAdapter: gitWorktree,
+          repoRoot: metadataBasePath,
+        });
+
+        await validateStagedFiles(id, isDocsOnly);
+
+        const msg = generateCommitMessage(id, title, maxCommitLength, {
+          branch: laneBranch,
+        });
+        await gitWorktree.commit(msg);
+        console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Metadata committed in atomic temp worktree`);
+      },
+    });
+
+    merged = true;
+
+    await emitLaneSignalForCompletion({
+      wuId: id,
+      lane: docMain.lane,
+      laneBranch,
+      completionMode: WU_DONE_COMPLETION_MODES.BRANCH_ONLY,
+      gitAdapter,
+    });
+
+    return { success: true, committed: true, pushed: true, merged };
+  }
+
+  // Legacy fallback path for --no-merge or missing lane branch.
   if (!args.noMerge) {
-    if (laneBranch && (await branchExists(laneBranch))) {
-      console.log(`\n${LOG_PREFIX.DONE} Switching to ${BRANCHES.MAIN} for merge...`);
-      await gitAdapter.checkout(BRANCHES.MAIN);
-      await mergeLaneBranch(laneBranch);
-      merged = true;
-    } else {
-      console.log(
-        `${LOG_PREFIX.DONE} No lane branch found (${laneBranch || 'unknown'}), skipping merge`,
-      );
-      await gitAdapter.checkout(BRANCHES.MAIN);
-    }
+    console.log(`${LOG_PREFIX.DONE} No lane branch found (${laneBranch || 'unknown'}), skipping merge`);
+    await gitAdapter.checkout(BRANCHES.MAIN);
   } else {
     console.log(`\n${LOG_PREFIX.DONE} Switching to ${BRANCHES.MAIN} for completion commit...`);
     await gitAdapter.checkout(BRANCHES.MAIN);

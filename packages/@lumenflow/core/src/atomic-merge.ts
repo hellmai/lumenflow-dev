@@ -125,13 +125,14 @@ export async function withAtomicMerge(
       await afterMerge({ worktreePath, gitWorktree, tempBranchName });
     }
 
+    const pushDescription = `${operation} atomic merge push for ${id} (automated)`;
     await pushRefspecWithRetry(
       gitWorktree,
       mainGit,
       REMOTES.ORIGIN,
       tempBranchName,
       BRANCHES.MAIN,
-      `atomic merge push for ${id} (automated)`,
+      pushDescription,
       logPrefix,
     );
 

@@ -120,7 +120,7 @@ describe('withAtomicMerge', () => {
       'origin',
       'tmp/wu-done/wu-1627',
       'main',
-      'atomic merge push for WU-1627 (automated)',
+      'wu-done atomic merge push for WU-1627 (automated)',
       '[wu-done]',
     );
     expect(h.mainGit.merge).toHaveBeenCalledWith('origin/main', { ffOnly: true });
@@ -233,5 +233,26 @@ describe('withAtomicMerge', () => {
       gitWorktree: h.gitWorktree,
       tempBranchName: 'tmp/wu-done/wu-1627',
     });
+  });
+
+  it('includes operation name in push description for branch-only traceability', async () => {
+    const h = setupHarness();
+    const mod = await import(ATOMIC_MERGE_MODULE);
+
+    await mod.withAtomicMerge({
+      id: 'WU-1629',
+      laneBranch: 'lane/framework-core-lifecycle/wu-1629',
+      operation: 'wu-done-branch-only',
+    });
+
+    expect(h.shared.pushRefspecWithRetry).toHaveBeenCalledWith(
+      h.gitWorktree,
+      h.mainGit,
+      'origin',
+      'tmp/wu-done/wu-1627',
+      'main',
+      'wu-done-branch-only atomic merge push for WU-1629 (automated)',
+      '[wu-done]',
+    );
   });
 });
