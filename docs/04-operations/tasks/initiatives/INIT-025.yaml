@@ -12,7 +12,7 @@ target_date: 2026-02-28
 phases:
   - id: 1
     title: 'Phase 1: Mechanical Splits'
-    status: pending
+    status: in_progress
   - id: 2
     title: 'Phase 2: Structural Extractions'
     status: pending
@@ -35,6 +35,8 @@ notes:
   - '2026-02-13 phase interpretation for execution: Phase 1 = reconciliation + wu:done state machine
     foundation; Phase 2 = mechanical decomposition WUs; Phase 3 = coverage hardening and legacy
     rollback cleanup.'
+  - '2026-02-13 execution kickoff: Phase 1 reconciliation/state-machine foundation WUs
+    (WU-1661..WU-1666) are now specified and ready for claim order.'
 related_plan: lumenflow://plans/INIT-025-plan.md
 lanes:
   - 'Content: Specs Governance'
