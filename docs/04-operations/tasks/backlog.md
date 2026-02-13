@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1664 — Extract wu:done worktree completion services for state-driven execution](wu/WU-1664.yaml) — Framework: Core Lifecycle
 - [WU-1663 — Wire wu:done CLI orchestrator to XState pipeline actor](wu/WU-1663.yaml) — Framework: CLI WU Commands
 - [WU-1662 — Define typed XState wu:done pipeline machine in core](wu/WU-1662.yaml) — Framework: Core State Recovery
 - [WU-1661 — Reconcile INIT-025 metadata and phase mapping for state-machine execution](wu/WU-1661.yaml) — Content: Specs Governance
