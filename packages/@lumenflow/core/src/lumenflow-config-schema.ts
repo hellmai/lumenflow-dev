@@ -205,6 +205,9 @@ export const DirectoriesSchema = z.object({
 
   /** Onboarding directory (default: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding') - WU-1310 */
   onboardingDir: z.string().default('docs/04-operations/_frameworks/lumenflow/agent/onboarding'),
+
+  /** Safe-git wrapper path relative to project root (default: 'scripts/safe-git') - WU-1654 */
+  safeGitPath: z.string().default('scripts/safe-git'),
 });
 
 /**

@@ -8,6 +8,12 @@ import { describe, it, expect } from 'vitest';
 import { getMissingWorktreesFromTracked } from '../orphan-detector.js';
 import { WORKTREE_WARNINGS } from '../wu-constants.js';
 
+// WU-1654: Verify orphan-detector exports are available from @lumenflow/core public API
+import {
+  detectOrphanWorktrees,
+  detectMissingTrackedWorktrees,
+} from '../index.js';
+
 describe('orphan-detector missing tracked worktrees (WU-1056)', () => {
   it('returns tracked paths that are missing on disk', () => {
     const tracked = ['/tmp/wt-1', '/tmp/wt-2', '/tmp/wt-3'];
@@ -30,5 +36,19 @@ describe('orphan-detector missing tracked worktrees (WU-1056)', () => {
     const missing = getMissingWorktreesFromTracked(tracked, existsFn);
 
     expect(missing).toEqual([]);
+  });
+});
+
+/**
+ * WU-1654: Verify orphan-detector functions are exported from @lumenflow/core public API
+ * These tests ensure the named exports exist (not wildcard) and are callable.
+ */
+describe('WU-1654: orphan-detector exports from @lumenflow/core', () => {
+  it('exports detectOrphanWorktrees as a function', () => {
+    expect(typeof detectOrphanWorktrees).toBe('function');
+  });
+
+  it('exports detectMissingTrackedWorktrees as a function', () => {
+    expect(typeof detectMissingTrackedWorktrees).toBe('function');
   });
 });

@@ -141,6 +141,9 @@ export * from './worktree-ownership.js';
 export * from './micro-worktree.js';
 export * from './atomic-merge.js';
 
+// WU-1654: Orphan worktree detection (named exports for doctor integration)
+export { detectOrphanWorktrees, detectMissingTrackedWorktrees } from './orphan-detector.js';
+
 // Guards and validators
 // NOTE: Configuration added below
 export * from './dependency-guard.js';
