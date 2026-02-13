@@ -2,7 +2,7 @@ id: WU-1639
 title: Reconcile INIT-025 lifecycle metadata with actual decomposition scope
 lane: 'Content: Specs Governance'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -44,3 +44,6 @@ session_id: ff2ffff6-767d-4ae2-9322-6f2cb349d56c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T16:04:52.943Z
+locked: true
+completed_at: 2026-02-13T16:09:08.894Z
+completed: 2026-02-13
