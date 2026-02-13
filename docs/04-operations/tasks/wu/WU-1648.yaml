@@ -2,7 +2,7 @@ id: WU-1648
 title: Split initiative-orchestrator.ts by domain responsibilities
 lane: 'Framework: Initiatives'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -29,8 +29,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Mechanically decompose packages/@lumenflow/initiatives/src/initiative-orchestrator.ts into domain-focused modules for execution planning, checkpointing, and formatting/orchestration output.
+description: Mechanically decompose packages/@lumenflow/initiatives/src/initiative-orchestrator.ts
+  into domain-focused modules for execution planning, checkpointing, and formatting/orchestration
+  output.
 acceptance:
   - initiative-orchestrator.ts becomes a thin composition layer importing extracted domain modules.
   - Execution plan generation and orchestrate output behavior remain unchanged.
   - Existing initiative orchestration contracts remain backward compatible.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-initiatives-wu-1648
+claimed_at: 2026-02-13T22:07:28.517Z
+baseline_main_sha: 6a0f74d4f8058c4014ed7a9a04658e7d90df5a9c
+session_id: f6d07652-6637-4e19-9ac6-c7e65e903182
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T22:07:28.525Z

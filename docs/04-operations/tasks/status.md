@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1648 — Split initiative-orchestrator.ts by domain responsibilities](wu/WU-1648.yaml)
 
 ## Completed
 
