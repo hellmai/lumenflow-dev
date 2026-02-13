@@ -2,7 +2,7 @@ id: WU-1657
 title: wu:done stabilize post-push local catch-up and cleanup idempotency
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -58,3 +58,6 @@ acceptance:
   - After successful auto-rebase in wu:done, auto-generated docs artifacts are reconciled
     (regenerated and formatted as needed) before final merge checks, preventing repeated
     format-check loops.
+locked: true
+completed_at: 2026-02-13T20:19:35.294Z
+completed: 2026-02-13

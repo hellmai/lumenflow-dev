@@ -46,7 +46,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1657 — wu:done stabilize post-push local catch-up and cleanup idempotency](wu/WU-1657.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -636,4 +636,5 @@ sections:
 - [WU-1655 — Fix wu:claim no-remote regressions left after WU-1653](wu/WU-1655.yaml)
 - [WU-1654 — Doctor: replace regex parsing with library-first structured calls](wu/WU-1654.yaml)
 - [WU-1656 — Fix CLI/MCP/docs parity gaps](wu/WU-1656.yaml)
+- [WU-1657 — wu:done stabilize post-push local catch-up and cleanup idempotency](wu/WU-1657.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
