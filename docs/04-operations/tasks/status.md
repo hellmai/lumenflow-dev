@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1623 — Stabilize core full-suite timeout flake in gates](wu/WU-1623.yaml)
 
 ## Completed
 
