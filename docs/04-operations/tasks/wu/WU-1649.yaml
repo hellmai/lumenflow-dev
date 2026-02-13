@@ -2,14 +2,15 @@ id: WU-1649
 title: Extract wu-claim.ts validation and mode handlers
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
   - packages/@lumenflow/cli/src/wu-claim.ts
 tests:
   manual:
-    - Run representative wu:claim scenarios (worktree and branch-pr) and verify unchanged outputs/state transitions.
+    - Run representative wu:claim scenarios (worktree and branch-pr) and verify unchanged
+      outputs/state transitions.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
     - packages/@lumenflow/cli/__tests__/wu-claim.test.ts
@@ -29,8 +30,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Mechanically decompose packages/@lumenflow/cli/src/wu-claim.ts into focused modules for validation, worktree-mode flow, branch-only flow, and state-update helpers while preserving behavior.
+description: Mechanically decompose packages/@lumenflow/cli/src/wu-claim.ts into focused modules for
+  validation, worktree-mode flow, branch-only flow, and state-update helpers while preserving
+  behavior.
 acceptance:
   - wu-claim.ts is reduced to orchestration and delegates to extracted mode/validation modules.
   - Worktree and branch-pr claim semantics remain unchanged.
   - State/backlog updates remain backward compatible with existing lifecycle behavior.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1649
+claimed_at: 2026-02-13T22:08:14.440Z
+baseline_main_sha: f1023ef60df401981148deba60c76226b73eb72b
+session_id: f6d07652-6637-4e19-9ac6-c7e65e903182
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T22:08:14.447Z

@@ -35,7 +35,6 @@ sections:
 - [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml) — Framework: CLI Enforcement
 - [WU-1646 — Extract wu-done.ts into thin orchestrator and helper modules](wu/WU-1646.yaml) — Framework: CLI WU Commands
 - [WU-1647 — Split gates.ts into runners, plan resolvers, and utilities](wu/WU-1647.yaml) — Framework: CLI Enforcement
-- [WU-1649 — Extract wu-claim.ts validation and mode handlers](wu/WU-1649.yaml) — Framework: CLI WU Commands
 - [WU-1650 — Extract wu-edit.ts validation and apply operations](wu/WU-1650.yaml) — Framework: CLI WU Commands
 - [WU-1651 — Extract wu-create.ts validation, content, and readiness builders](wu/WU-1651.yaml) — Framework: CLI WU Commands
 - [WU-1652 — Extract wu-spawn.ts prompt builders and strategy resolver](wu/WU-1652.yaml) — Framework: CLI WU Commands
@@ -50,6 +49,7 @@ sections:
 
 - [WU-1648 — Split initiative-orchestrator.ts by domain responsibilities](wu/WU-1648.yaml) — Framework: Initiatives
 - [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml) — Framework: MCP
+- [WU-1649 — Extract wu-claim.ts validation and mode handlers](wu/WU-1649.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 

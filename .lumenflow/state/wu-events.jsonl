@@ -1245,3 +1245,4 @@
 {"type":"complete","wuId":"WU-1668","timestamp":"2026-02-13T22:02:59.817Z"}
 {"type":"claim","wuId":"WU-1648","lane":"Framework: Initiatives","title":"Split initiative-orchestrator.ts by domain responsibilities","timestamp":"2026-02-13T22:07:28.570Z"}
 {"type":"claim","wuId":"WU-1642","lane":"Framework: MCP","title":"Split mcp tools.ts into domain modules","timestamp":"2026-02-13T22:07:49.534Z"}
+{"type":"claim","wuId":"WU-1649","lane":"Framework: CLI WU Commands","title":"Extract wu-claim.ts validation and mode handlers","timestamp":"2026-02-13T22:08:14.498Z"}
