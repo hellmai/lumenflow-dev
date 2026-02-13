@@ -2,7 +2,7 @@ id: WU-1659
 title: wu:done eliminate duplicate full-gates runs and reduce flake amplification
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/core/src/gates-agent-mode.ts
 tests:
   manual:
-    - Run wu:prep then wu:done for a WU and verify wu:done does not rerun the full suite redundantly while still enforcing required checks.
+    - Run wu:prep then wu:done for a WU and verify wu:done does not rerun the full suite redundantly
+      while still enforcing required checks.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
     - packages/@lumenflow/core/src/__tests__/gates-config.test.ts
@@ -28,10 +29,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:done currently triggers full gates in multiple phases (validation and pre-commit checks), which doubles suite execution and amplifies unrelated flaky timeouts under worktree load. Problem: WU completion fails for infrastructure flake rather than WU logic, causing repeated retries and operational delay. Solution: make gate execution in wu:done single-source-of-truth and non-duplicative after successful wu:prep, while preserving invariant/safety checks required for completion integrity.'
+description: 'Context: wu:done currently triggers full gates in multiple phases (validation and
+  pre-commit checks), which doubles suite execution and amplifies unrelated flaky timeouts under
+  worktree load. Problem: WU completion fails for infrastructure flake rather than WU logic, causing
+  repeated retries and operational delay. Solution: make gate execution in wu:done
+  single-source-of-truth and non-duplicative after successful wu:prep, while preserving
+  invariant/safety checks required for completion integrity.'
 acceptance:
-  - wu:done does not execute full gates redundantly after a successful wu:prep/gates pass for the same WU state.
+  - wu:done does not execute full gates redundantly after a successful wu:prep/gates pass for the
+    same WU state.
   - Required non-duplicative safety checks (invariants/spec validation) remain enforced in wu:done.
-  - A flaky test in the wider suite is not amplified by duplicate full-suite execution in a single wu:done run.
+  - A flaky test in the wider suite is not amplified by duplicate full-suite execution in a single
+    wu:done run.
   - Behavior is documented in wu:done output/logs so operators can see which checks ran and why.
   - Targeted tests updated/added and gates pass.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1659
+claimed_at: 2026-02-13T20:43:02.512Z
+baseline_main_sha: 755a68f334eed8443bb5b2c289a14bc2e80bcb8e
+session_id: a33910d1-4099-4865-a928-7abc2eebbb30
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T20:43:02.521Z
