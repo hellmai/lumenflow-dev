@@ -5,6 +5,7 @@ _Last updated: 2026-02-13_
 ## In Progress
 
 - [WU-1631 — Add 4 missing subpath exports to @lumenflow/core (active-wu-detector, hardcoded-strings, linter-constants, prompt-linter)](wu/WU-1631.yaml)
+- [WU-1632 — Hotfix missing micro-worktree-shared source on main](wu/WU-1632.yaml)
 
 ## Completed
 
