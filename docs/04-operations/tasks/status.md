@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1630 — Remove obsolete dirty-main rollback and post-merge recovery paths after burn-in](wu/WU-1630.yaml)
 
 ## Completed
 
