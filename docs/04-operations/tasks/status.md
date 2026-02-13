@@ -7,6 +7,7 @@ _Last updated: 2026-02-13_
 - [WU-1634 — Fix wu:done silent mode-execution failure messaging](wu/WU-1634.yaml)
 - [WU-1638 — Remove obsolete dirty-main defensive code after INIT-026 atomic merge](wu/WU-1638.yaml)
 - [WU-1635 — Document canonical lifecycle map and failure-mode runbook](wu/WU-1635.yaml)
+- [WU-1637 — Expose tooling lifecycle and troubleshooting in Starlight navigation](wu/WU-1637.yaml)
 
 ## Completed
 
