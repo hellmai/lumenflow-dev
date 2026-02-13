@@ -1247,3 +1247,4 @@
 {"type":"claim","wuId":"WU-1642","lane":"Framework: MCP","title":"Split mcp tools.ts into domain modules","timestamp":"2026-02-13T22:07:49.534Z"}
 {"type":"claim","wuId":"WU-1649","lane":"Framework: CLI WU Commands","title":"Extract wu-claim.ts validation and mode handlers","timestamp":"2026-02-13T22:08:14.498Z"}
 {"type":"claim","wuId":"WU-1643","lane":"Framework: CLI Enforcement","title":"Extract init.ts template constants into data module","timestamp":"2026-02-13T22:08:37.596Z"}
+{"type":"claim","wuId":"WU-1661","lane":"Content: Specs Governance","title":"Reconcile INIT-025 metadata and phase mapping for state-machine execution","timestamp":"2026-02-13T22:09:04.376Z"}

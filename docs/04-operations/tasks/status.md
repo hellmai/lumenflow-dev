@@ -8,6 +8,7 @@ _Last updated: 2026-02-13_
 - [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml)
 - [WU-1649 — Extract wu-claim.ts validation and mode handlers](wu/WU-1649.yaml)
 - [WU-1643 — Extract init.ts template constants into data module](wu/WU-1643.yaml)
+- [WU-1661 — Reconcile INIT-025 metadata and phase mapping for state-machine execution](wu/WU-1661.yaml)
 
 ## Completed
 
