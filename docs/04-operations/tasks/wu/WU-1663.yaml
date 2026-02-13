@@ -2,7 +2,7 @@ id: WU-1663
 title: Wire wu:done CLI orchestrator to XState pipeline actor
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -53,3 +53,11 @@ acceptance:
     rollback migration WUs.
   - Legacy rollback mechanisms (rollbackTransaction, zombie recovery) remain active and functional;
     this WU does NOT remove or disable them.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1663
+claimed_at: 2026-02-13T22:50:25.749Z
+baseline_main_sha: 168f3793d97185b021b2dff1b5b68c0521bd2caa
+session_id: 18220a6e-bfeb-4237-9492-25f2a6adbc06
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T22:50:25.753Z

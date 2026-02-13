@@ -5,6 +5,7 @@ _Last updated: 2026-02-13_
 ## In Progress
 
 - [WU-1664 — Extract wu:done worktree completion services for state-driven execution](wu/WU-1664.yaml)
+- [WU-1663 — Wire wu:done CLI orchestrator to XState pipeline actor](wu/WU-1663.yaml)
 
 ## Completed
 
