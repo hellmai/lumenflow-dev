@@ -5,6 +5,7 @@ _Last updated: 2026-02-13_
 ## In Progress
 
 - [WU-1648 — Split initiative-orchestrator.ts by domain responsibilities](wu/WU-1648.yaml)
+- [WU-1642 — Split mcp tools.ts into domain modules](wu/WU-1642.yaml)
 
 ## Completed
 
