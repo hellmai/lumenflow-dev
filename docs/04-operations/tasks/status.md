@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1641 — Fix initiative status commands ignoring initiative YAML status/phase state](wu/WU-1641.yaml)
 
 ## Completed
 
