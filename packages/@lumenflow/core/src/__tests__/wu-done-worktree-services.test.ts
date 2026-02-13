@@ -26,12 +26,17 @@ import {
   mergeToMain,
   finalizeCompletion,
   type WorktreeServiceDeps,
-  type ValidationResult,
+  type WorktreeValidationResult,
   type PreparationResult,
   type CommitResult,
   type MergeResult,
   type FinalizationResult,
 } from '../wu-done-worktree-services.js';
+
+// Mock docs generation to avoid shelling out to pnpm turbo in tests
+vi.mock('../wu-done-docs-generate.js', () => ({
+  maybeRegenerateAndStageDocs: vi.fn().mockResolvedValue(undefined),
+}));
 
 // Re-export check: these services should be importable from core index
 import * as coreIndex from '../index.js';
@@ -423,8 +428,8 @@ describe('WU-1664: wu:done worktree completion services', () => {
       expect(deps.wuId).toBe('WU-100');
     });
 
-    it('should export ValidationResult type (compile-time check)', () => {
-      const result: ValidationResult = {
+    it('should export WorktreeValidationResult type (compile-time check)', () => {
+      const result: WorktreeValidationResult = {
         valid: true,
         errors: [],
         zombieDetected: false,
