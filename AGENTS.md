@@ -1,8 +1,8 @@
 # Universal Agent Instructions
 
-**Last updated:** 2026-02-06
+**Last updated:** 2026-02-13
 
-> **Works with any AI coding assistant.** This file provides instructions that work regardless of which AI tool you're using—Claude Code, Cursor, Windsurf, Cline, Codex, Aider, or any other. Just read this file and follow the workflow.
+> **Works with any AI coding assistant.** This file provides instructions that work regardless of which AI tool you're using -- Claude Code, Cursor, Windsurf, Cline, Codex, Aider, or any other. Just read this file and follow the workflow.
 
 This project uses LumenFlow workflow. For complete documentation, see [LUMENFLOW.md](LUMENFLOW.md).
 
@@ -17,7 +17,7 @@ cd worktrees/<lane>-wu-xxxx
 
 # 2. Work in worktree
 
-# 3. Prep (WU-1223: runs gates in worktree)
+# 3. Prep (runs gates in worktree)
 pnpm wu:prep --id WU-XXXX
 # This prints a copy-paste command for step 4
 
@@ -61,79 +61,29 @@ pnpm wu:cleanup --id WU-XXXX
 - `wu:recover` and `wu:repair` respect branch-pr claimed branches for recovery/admin fixes
 - Cloud mode is never auto-enabled by runtime identity env vars (`CLAUDECODE`, `CODEX`, `CI`)
 
-> **Complete CLI reference:** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
-
 ---
 
-## CLI Command Reference
+## CLI Commands and Lifecycle Reference
 
-### WU Lifecycle
+For complete CLI command documentation (60+ commands), see [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md).
 
-| Command                                        | Description                                      |
-| ---------------------------------------------- | ------------------------------------------------ |
-| `pnpm wu:create --id WU-XXX --lane <Lane> ..`  | Create new WU spec                               |
-| `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree (default)           |
-| `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree)   |
-| `pnpm wu:prep --id WU-XXX`                     | Run gates, prep for wu:done                      |
-| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, stamp, cleanup)        |
-| `pnpm wu:cleanup --id WU-XXX`                  | Post-merge cleanup (branch-pr mode)              |
-| `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands         |
-| `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                             |
-| `pnpm wu:unblock --id WU-XXX`                  | Unblock WU                                       |
-| `pnpm wu:brief --id WU-XXX --client <client>`  | Generate handoff prompt (no automatic execution) |
-| `pnpm wu:delegate --id WU-XXX --parent-wu <P>` | Generate prompt + record delegation lineage      |
-| `pnpm wu:recover --id WU-XXX`                  | Analyze and fix WU state inconsistencies         |
+**Essential commands:**
 
-### Gates & Quality
+| Command              | Description                                   |
+| -------------------- | --------------------------------------------- |
+| `pnpm wu:claim`      | Claim WU and create worktree (or `--cloud`)   |
+| `pnpm wu:prep`       | Run gates in worktree, prep for wu:done       |
+| `pnpm wu:done`       | Complete WU (merge or PR, stamp, cleanup)     |
+| `pnpm wu:status`     | Show WU status, location, valid commands      |
+| `pnpm wu:recover`    | Analyze and fix WU state inconsistencies      |
+| `pnpm gates`         | Run all quality gates (`--docs-only` for docs) |
+| `pnpm mem:checkpoint` | Save progress checkpoint                      |
 
-| Command                  | Description                  |
-| ------------------------ | ---------------------------- |
-| `pnpm gates`             | Run all quality gates        |
-| `pnpm gates --docs-only` | Run gates for docs changes   |
-| `pnpm format`            | Format all files (Prettier)  |
-| `pnpm lint`              | Run ESLint                   |
-| `pnpm typecheck`         | Run TypeScript type checking |
-| `pnpm test`              | Run all tests (Vitest)       |
+**Two-step completion (wu:prep then wu:done):**
 
-### Memory & Coordination
+The completion workflow is a two-step process. Run `wu:prep` from the worktree (runs gates, prints copy-paste instruction), then run `wu:done` from main (merge + cleanup). Do NOT run `wu:done` from a worktree.
 
-| Command                             | Description                        |
-| ----------------------------------- | ---------------------------------- |
-| `pnpm mem:checkpoint --wu WU-XXX`   | Save progress checkpoint           |
-| `pnpm mem:inbox --since 30m`        | Check coordination signals         |
-| `pnpm mem:signal "msg" --wu WU-XXX` | Broadcast coordination signal      |
-| `pnpm mem:create "msg" --wu WU-XXX` | Create memory node (bug discovery) |
-| `pnpm mem:context --wu WU-XXX`      | Get context for current lane/WU    |
-| `pnpm mem:delete --id <node-id>`    | Delete/archive a memory node       |
-
-### Orchestration & Initiatives
-
-| Command                                    | Description                       |
-| ------------------------------------------ | --------------------------------- |
-| `pnpm orchestrate:init-status -i INIT-XXX` | Compact initiative progress view  |
-| `pnpm orchestrate:initiative -i INIT-XXX`  | Orchestrate initiative execution  |
-| `pnpm orchestrate:monitor`                 | Monitor delegation/agent activity |
-| `pnpm initiative:status --id INIT-XXX`     | Show initiative status            |
-
-### State & Maintenance
-
-| Command                          | Description                 |
-| -------------------------------- | --------------------------- |
-| `pnpm wu:prune`                  | Clean stale worktrees       |
-| `pnpm wu:unlock-lane --lane <L>` | Unlock stuck lane           |
-| `pnpm state:doctor`              | Diagnose state store issues |
-| `pnpm backlog:prune`             | Clean stale backlog entries |
-
----
-
-## Critical: Use wu:prep Then wu:done (WU-1223)
-
-**Two-step completion:**
-
-1. From worktree: `pnpm wu:prep --id WU-XXXX` (runs gates, prints copy-paste instruction)
-2. From main: `pnpm wu:done --id WU-XXXX` (merge + cleanup only)
-
-Do NOT run `wu:done` from a worktree (it will error). See [LUMENFLOW.md](LUMENFLOW.md) for details.
+For detailed troubleshooting, see [troubleshooting-wu-done.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md).
 
 ---
 
@@ -144,40 +94,15 @@ Do NOT run `wu:done` from a worktree (it will error). See [LUMENFLOW.md](LUMENFL
 3. **Gates Before Done**: Run `pnpm gates` before `wu:done`
 4. **Never Bypass Hooks**: No `--no-verify`
 
----
-
-## Forbidden Commands
-
-**Destructive Git Operations** (never use directly):
-
-- `git reset --hard`
-- `git push --force`
-- `git clean -fd` or `git clean -f`
-- `git checkout .` (discards all changes)
-- `git stash` (on main)
-- `--no-verify`
-
-**Worktree Management** (use `wu:` commands instead):
-
-- `git worktree remove` (use `wu:done` or `wu:prune`)
-- `git worktree prune` (use `wu:prune`)
-- `git branch -D` on lane branches (use `wu:done`)
+For the complete set of non-negotiable constraints (git safety, forbidden commands, skip-gates policy, and more), see [.lumenflow/constraints.md](.lumenflow/constraints.md).
 
 ---
 
-## Safe Alternatives
+## Safety: Forbidden Commands and Safe Alternatives
 
-When you need to recover from problems, use these `wu:` commands instead of raw git:
+LumenFlow enforces safety at the repository level via git wrappers and hooks. For the full list of forbidden commands and their safe `wu:` alternatives, see [.lumenflow/constraints.md](.lumenflow/constraints.md).
 
-| Instead of...                | Use...                            |
-| ---------------------------- | --------------------------------- |
-| `git worktree remove`        | `pnpm wu:done` or `pnpm wu:prune` |
-| `git branch -D lane/...`     | `pnpm wu:done --id WU-XXX`        |
-| Manually fixing WU state     | `pnpm wu:recover --id WU-XXX`     |
-| Abandoning an in-progress WU | `pnpm wu:release --id WU-XXX`     |
-| Cleaning stale worktrees     | `pnpm wu:prune`                   |
-
-These commands handle the full cleanup safely (worktree removal, branch deletion, state updates).
+**Key rule:** Always use `wu:` commands for worktree and branch management -- never raw `git worktree` or `git branch -D` commands. Use `wu:recover` for state inconsistencies, `wu:release` for abandoned WUs, and `wu:prune` for stale worktrees.
 
 ---
 
@@ -199,10 +124,10 @@ This file provides universal guidance for all AI agents. Additional vendor-speci
 | Step         | Location | Command                                                                                                                                                                                |
 | ------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1. Create WU | main     | `pnpm wu:create --id WU-XXX --lane <Lane> --title "Title" --description "..." --acceptance "..." --code-paths "..." --test-paths-unit "..." --exposure backend-only --spec-refs "..."` |
-| 2. Claim     | main     | `pnpm wu:claim --id WU-XXX --lane <Lane>`                                                                                                                                              |
+| 2. Claim     | main     | `pnpm wu:claim --id WU-XXX --lane <Lane>`                                                                                                                                             |
 | 3. Work      | worktree | `cd worktrees/<lane>-wu-xxx`                                                                                                                                                           |
-| 4. Prep      | worktree | `pnpm wu:prep --id WU-XXX` (runs gates)                                                                                                                                                |
-| 5. Complete  | main     | `pnpm wu:done --id WU-XXX` (copy-paste from wu:prep)                                                                                                                                   |
+| 4. Prep      | worktree | `pnpm wu:prep --id WU-XXX` (runs gates)                                                                                                                                               |
+| 5. Complete  | main     | `pnpm wu:done --id WU-XXX` (copy-paste from wu:prep)                                                                                                                                  |
 
 ### Cloud (Branch-PR Mode)
 
@@ -217,9 +142,10 @@ This file provides universal guidance for all AI agents. Additional vendor-speci
 
 ---
 
-## Safety Reminders
+## Further Reading
 
-- **Worktree Discipline**: After claiming a WU, immediately `cd` to the worktree
-- **Main is read-only**: Do not edit files in the main checkout after claiming
-- **Gates before done**: Always run `pnpm gates` before `wu:done`
-- **Never skip hooks**: The `--no-verify` flag is forbidden
+- [LUMENFLOW.md](LUMENFLOW.md) -- Main workflow documentation (principles, setup, initiatives, skills)
+- [.lumenflow/constraints.md](.lumenflow/constraints.md) -- Non-negotiable rules and forbidden commands
+- [Quick Reference: Commands](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md) -- Complete CLI reference (60+ commands)
+- [Troubleshooting wu:done](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md) -- Most common completion mistakes
+- [LumenFlow Complete Guide](docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md) -- Full framework reference (lifecycle, lanes, gates, DoD)

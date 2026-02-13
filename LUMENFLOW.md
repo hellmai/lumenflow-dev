@@ -1,6 +1,6 @@
 # LumenFlow Workflow Guide
 
-**Last updated:** 2026-01-26
+**Last updated:** 2026-02-13
 
 LumenFlow is a vendor-agnostic workflow framework for AI-native software development.
 
@@ -10,18 +10,9 @@ LumenFlow is a vendor-agnostic workflow framework for AI-native software develop
 
 ## Critical Rule: Use wu:prep Then wu:done
 
-**WU-1223 NEW WORKFLOW:**
+Completion is a **two-step process**: run `wu:prep` from the worktree (runs gates, prints copy-paste instruction), then run `wu:done` from main (merge + cleanup only). Do NOT run `wu:done` from a worktree, skip `wu:prep`, or forget to run `wu:done` after `wu:prep`.
 
-1. From worktree: `pnpm wu:prep --id WU-XXXX` (runs gates, prints copy-paste instruction)
-2. From main: `pnpm wu:done --id WU-XXXX` (merge + cleanup only)
-
-**DO NOT:**
-
-- Run `wu:done` from a worktree (it will error)
-- Forget to run `wu:done` after `wu:prep`
-- Skip `wu:prep` and go directly to `wu:done` (gates won't run in worktree)
-
-See: [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md)
+For detailed troubleshooting, common mistakes, and recovery steps, see [troubleshooting-wu-done.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md).
 
 ---
 
@@ -129,23 +120,7 @@ When `requireRemote: true` (default):
 
 ## Universal Agent Safety (WU-1170)
 
-LumenFlow enforces safety at the repository level so protections apply to all agents and humans.
-
-- **Git wrapper**: `scripts/safe-git` blocks destructive operations (e.g. `worktree remove`, `reset --hard`, `clean -fd`, `push --force`).
-- **Husky hooks**: staged secret scanning, absolute-path scanning, lockfile sync, and worktree discipline.
-- **Audit logs**:
-  - `.lumenflow/safety-blocks.log`
-  - `.lumenflow/force-bypasses.log`
-
-**IMPORTANT**: All worktree management MUST use `wu:` commands (not raw git):
-
-- Create/claim worktrees: `pnpm wu:claim`
-- Complete and remove: `pnpm wu:done`
-- Clean stale worktrees: `pnpm wu:prune`
-- Fix inconsistent state: `pnpm wu:recover`
-- Release abandoned WUs: `pnpm wu:release`
-
-Never run `git worktree remove`, `git worktree prune`, or `git branch -D` on lane branches directly.
+LumenFlow enforces safety at the repository level via git wrappers, Husky hooks, and audit logs. All worktree management MUST use `wu:` commands (not raw git). For the complete list of forbidden commands, safe alternatives, and enforcement details, see [.lumenflow/constraints.md](.lumenflow/constraints.md).
 
 ---
 
@@ -205,23 +180,9 @@ The `--merge` flag uses bounded markers (`LUMENFLOW:START`/`END`) to safely inse
 
 ## Worktree Discipline (IMMUTABLE LAW)
 
-After claiming a WU, you MUST work in its worktree:
+After claiming a WU, immediately `cd worktrees/<lane>-wu-xxx` and work exclusively in the worktree. Main checkout becomes read-only -- hooks will block WU commits from main. Return to main only to run `wu:done`.
 
-```bash
-# 1. Claim creates worktree
-pnpm wu:claim --id WU-XXX --lane <lane>
-
-# 2. IMMEDIATELY cd to worktree
-cd worktrees/<lane>-wu-xxx
-
-# 3. ALL work happens here (edits, git add/commit/push, tests, gates)
-
-# 4. Return to main ONLY to complete
-cd /path/to/main
-pnpm wu:done --id WU-XXX
-```
-
-Main checkout becomes read-only after claim. Hooks will block WU commits from main.
+For the full worktree lifecycle (parallel execution, bootstrap, isolation guarantees), see [lumenflow-complete.md section 2.4](docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md). For the mandatory pre-write check, see [.lumenflow/constraints.md](.lumenflow/constraints.md).
 
 ---
 
@@ -237,67 +198,31 @@ Main checkout becomes read-only after claim. Hooks will block WU commits from ma
 
 ## Core Commands
 
-> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md)
+> **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md). Always run `<command> --help` for the authoritative option list.
 
-| Command                         | Description                                            |
-| ------------------------------- | ------------------------------------------------------ |
-| `pnpm wu:create`                | Create new WU spec                                     |
-| `pnpm wu:claim`                 | Claim WU, update canonical state, create worktree      |
-| `pnpm wu:done`                  | Complete WU (merge, stamp, cleanup)                    |
-| `pnpm wu:block`                 | Block WU (transitions to blocked, frees lane)          |
-| `pnpm wu:unblock`               | Unblock WU (transitions to in_progress)                |
-| `pnpm wu:release`               | Release orphaned WU (in_progress to ready for reclaim) |
-| `pnpm wu:status`                | Show WU status, location, and valid commands           |
-| `pnpm wu:recover`               | Analyze and fix WU state inconsistencies               |
-| `pnpm gates`                    | Run quality gates                                      |
-| `pnpm mem:checkpoint`           | Save memory checkpoint                                 |
-| `pnpm exec lumenflow docs:sync` | Sync agent docs after upgrading LumenFlow packages     |
+| Command            | Description                                            |
+| ------------------ | ------------------------------------------------------ |
+| `pnpm wu:create`   | Create new WU spec                                     |
+| `pnpm wu:claim`    | Claim WU, update canonical state, create worktree      |
+| `pnpm wu:prep`     | Run gates in worktree, prep for wu:done                |
+| `pnpm wu:done`     | Complete WU (merge, stamp, cleanup)                    |
+| `pnpm wu:status`   | Show WU status, location, and valid commands           |
+| `pnpm wu:recover`  | Analyze and fix WU state inconsistencies               |
+| `pnpm wu:block`    | Block WU (transitions to blocked, frees lane)          |
+| `pnpm wu:unblock`  | Unblock WU (transitions to in_progress)                |
+| `pnpm wu:release`  | Release orphaned WU (in_progress to ready for reclaim) |
+| `pnpm gates`       | Run quality gates (`--docs-only` for docs WUs)         |
+| `pnpm mem:checkpoint` | Save memory checkpoint                              |
 
-### Context-Aware Validation (WU-1090)
+Commands include **context-aware validation** that checks location, WU status, and git state. When validation fails, commands provide copy-paste ready fix commands. Configure in `.lumenflow.config.yaml` under `experimental.context_validation`.
 
-WU lifecycle commands include context-aware validation that automatically checks:
-
-- **Location**: Whether you are in main checkout or a worktree
-- **WU Status**: Whether the WU is in the correct state for the command
-- **Git State**: Uncommitted changes, commits ahead/behind
-
-When validation fails, commands provide copy-paste ready fix commands:
-
-```
-ERROR: WRONG_LOCATION - wu:done must be run from main checkout
-
-FIX: Run this command:
-  cd <repo-root> && pnpm wu:done --id WU-1090
-```
-
-Configure validation behavior in `.lumenflow.config.yaml`:
-
-```yaml
-experimental:
-  context_validation: true # Enable/disable validation
-  validation_mode: 'warn' # 'off' | 'warn' | 'error'
-  show_next_steps: true # Show guidance after command success
-```
-
-### Recovery Commands
-
-If WU state becomes inconsistent (e.g., worktree exists but status is 'ready'), use recovery:
-
-```bash
-# Analyze issues
-pnpm wu:recover --id WU-XXX
-
-# Apply suggested fix
-pnpm wu:recover --id WU-XXX --action resume   # Reconcile state, preserve work
-pnpm wu:recover --id WU-XXX --action reset    # Reset to ready, discard worktree
-pnpm wu:recover --id WU-XXX --action cleanup  # Remove leftover worktree
-```
+For recovery commands, state management, memory coordination, and orchestration tools, see [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md).
 
 ---
 
 ## Constraints
 
-See [.lumenflow/constraints.md](.lumenflow/constraints.md) for the 6 non-negotiable rules:
+See [.lumenflow/constraints.md](.lumenflow/constraints.md) for the 8 non-negotiable rules:
 
 1. Worktree discipline and git safety
 2. WUs are specs, not code
@@ -305,6 +230,8 @@ See [.lumenflow/constraints.md](.lumenflow/constraints.md) for the 6 non-negotia
 4. LLM-first, zero-fallback inference
 5. Gates and skip-gates
 6. Safety and governance
+7. Test ratchet pattern
+8. Lane-fit reasoning
 
 ---
 
@@ -357,7 +284,10 @@ Record explicit delegation lineage when needed: `pnpm wu:delegate --id WU-XXX --
 
 ## References
 
-- [LumenFlow Complete Guide](docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md)
-- [WU Sizing Guide](docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md)
+- [LumenFlow Complete Guide](docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md) -- Full framework reference (lifecycle, lanes, gates, DoD)
+- [Quick Reference: Commands](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md) -- Complete CLI reference (60+ commands)
+- [Troubleshooting wu:done](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md) -- Most common completion mistakes
+- [.lumenflow/constraints.md](.lumenflow/constraints.md) -- Non-negotiable rules and forbidden commands
+- [WU Sizing Guide](docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md) -- Scoping work and context safety
 - [Skills Index](.claude/skills/INDEX.md)
 - [Agents README](.claude/agents/README.md)
