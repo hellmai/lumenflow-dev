@@ -10,11 +10,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { parseYAML } from '@lumenflow/core/wu-yaml';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { createGitForPath } from '@lumenflow/core/git-adapter';
-import {
-  FILE_SYSTEM,
-  WU_STATUS,
-  WU_EXPOSURE_VALUES,
-} from '@lumenflow/core/wu-constants';
+import { FILE_SYSTEM, WU_STATUS, WU_EXPOSURE_VALUES } from '@lumenflow/core/wu-constants';
 import { INIT_PATTERNS } from '@lumenflow/initiatives/constants';
 import { INIT_PATHS } from '@lumenflow/initiatives/paths';
 import {
