@@ -2,7 +2,7 @@ id: WU-1638
 title: Remove obsolete dirty-main defensive code after INIT-026 atomic merge
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -19,7 +19,8 @@ code_paths:
 tests:
   manual:
     - Run pnpm wu:done on a real WU and verify no dirty-main warnings or guard triggers
-    - 'Deleted files: .claude/hooks/warn-dirty-main.sh, packages/@lumenflow/core/src/__tests__/wu-done-dirty-main.test.ts'
+    - 'Deleted files: .claude/hooks/warn-dirty-main.sh,
+      packages/@lumenflow/core/src/__tests__/wu-done-dirty-main.test.ts'
   unit:
     - packages/@lumenflow/cli/src/__tests__/hooks/enforcement.test.ts
     - packages/@lumenflow/cli/src/__tests__/memory-integration.test.ts
@@ -60,3 +61,6 @@ acceptance:
   - rollbackTransaction() and rollback-utils.ts imports removed from CLI wu-done.ts
   - wu-done-dirty-main.test.ts deleted
   - pnpm gates passes
+locked: true
+completed_at: 2026-02-13T14:34:28.759Z
+completed: 2026-02-13
