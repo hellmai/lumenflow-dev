@@ -1,10 +1,7 @@
 id: INIT-026
 slug: atomic-wu-done
 title: Atomic wu:done - eliminate dirty-main bug class
-description: Eliminate the dirty-main bug class in wu:done by replacing live-main merge/push paths
-  with atomic temp-worktree merge semantics. Ship a single resilient completion path where failures
-  leave main untouched, retries converge under origin movement, and both worktree and branch-only
-  non-PR modes are covered by deterministic failure-injection and idempotent rerun tests.
+description: Eliminate the dirty-main bug class in wu:done by replacing live-main merge/push paths with atomic temp-worktree merge semantics. Ship a single resilient completion path where failures leave main untouched, retries converge under origin movement, and both worktree and branch-only non-PR modes are covered by deterministic failure-injection and idempotent rerun tests.
 status: open
 priority: P0
 owner: Platform Engineering
@@ -24,14 +21,12 @@ phases:
     title: Burn-in and remove obsolete dirty-main rollback code
     status: pending
 success_metrics:
-  - wu:done failure injection leaves main worktree clean across merge, push, and callback failure
-    paths
+  - wu:done failure injection leaves main worktree clean across merge, push, and callback failure paths
   - No orphaned tmp branches/worktrees remain after failed wu:done attempts
   - Idempotent rerun succeeds without duplicate events, stamps, backlog entries, or status corruption
-  - Branch-only non-PR completion path converges under origin movement with clear retry-exhaustion
-    guidance
+  - Branch-only non-PR completion path converges under origin movement with clear retry-exhaustion guidance
 labels: []
 lanes:
   - 'Framework: CLI Orchestration'
   - 'Framework: Core Systems'
-related_plan: lumenflow://plans/joyful-dazzling-rossum.md
+related_plan: lumenflow://plans/INIT-026-plan.md
