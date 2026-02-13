@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-done-worktree.ts
 tests:
   manual:
-    - Create local metadata drift in main, complete a WU, and verify wu:done succeeds remotely with clean idempotent local recovery behavior.
+    - Create local metadata drift in main, complete a WU, and verify wu:done succeeds remotely with
+      clean idempotent local recovery behavior.
   unit:
     - packages/@lumenflow/core/src/__tests__/atomic-merge.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-done-worktree.test.ts
@@ -28,11 +29,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: After successful atomic merge/push in wu:done, local-main catch-up can fail when local metadata files (for example .lumenflow/state/wu-events.jsonl) are dirty, and cleanup may then fail to delete the lane branch due to local merge-state mismatch. Problem: completion succeeds remotely but local reconciliation is brittle, causing repeated retries and operational noise. Solution: make post-push local catch-up and branch cleanup robust and idempotent so a successful remote push completes cleanly without manual git recovery.'
+description: 'Context: After successful atomic merge/push in wu:done, local-main catch-up can fail
+  when local metadata files (for example .lumenflow/state/wu-events.jsonl) are dirty, and cleanup
+  may then fail to delete the lane branch due to local merge-state mismatch. Problem: completion
+  succeeds remotely but local reconciliation is brittle, causing repeated retries and operational
+  noise. Solution: make post-push local catch-up and branch cleanup robust and idempotent so a
+  successful remote push completes cleanly without manual git recovery.'
 acceptance:
-  - When atomic push to origin/main succeeds, wu:done treats local-main catch-up as non-blocking reconciliation and never converts a successful remote merge into completion failure.
-  - If local metadata files are dirty during catch-up, wu:done handles this deterministically (skip/defer or isolated reconciliation) without requiring manual git commands.
-  - Cleanup branch deletion logic is idempotent and does not fail solely because local main state lags; successful remote merge should allow safe local cleanup semantics.
-  - A rerun of wu:done after a successful remote push is safe and does not produce partial-state loops.
+  - When atomic push to origin/main succeeds, wu:done treats local-main catch-up as non-blocking
+    reconciliation and never converts a successful remote merge into completion failure.
+  - If local metadata files are dirty during catch-up, wu:done handles this deterministically
+    (skip/defer or isolated reconciliation) without requiring manual git commands.
+  - Cleanup branch deletion logic is idempotent and does not fail solely because local main state
+    lags; successful remote merge should allow safe local cleanup semantics.
+  - A rerun of wu:done after a successful remote push is safe and does not produce partial-state
+    loops.
   - Existing wu:done behavior for pre-push failure safety remains unchanged (no live-main pollution).
   - Targeted tests added/updated and full gates pass.
+  - After successful auto-rebase in wu:done, auto-generated docs artifacts are reconciled
+    (regenerated and formatted as needed) before final merge checks, preventing repeated
+    format-check loops.
