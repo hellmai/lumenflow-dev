@@ -21,25 +21,25 @@ describe('wu-repair-core check mode', () => {
   it(
     'treats --all --check as read-only and does not perform repairs',
     async () => {
-    mocks.checkAllWUConsistency.mockResolvedValue({
-      valid: false,
-      checked: 2,
-      errors: [
-        {
-          type: 'YAML_DONE_STATUS_IN_PROGRESS',
-          wuId: 'WU-1001',
-          description: 'WU WU-1001 appears in status.md In Progress section',
-          canAutoRepair: true,
-        },
-      ],
-    });
-    mocks.repairWUInconsistency.mockResolvedValue({ repaired: 1, failed: 0, skipped: 0 });
+      mocks.checkAllWUConsistency.mockResolvedValue({
+        valid: false,
+        checked: 2,
+        errors: [
+          {
+            type: 'YAML_DONE_STATUS_IN_PROGRESS',
+            wuId: 'WU-1001',
+            description: 'WU WU-1001 appears in status.md In Progress section',
+            canAutoRepair: true,
+          },
+        ],
+      });
+      mocks.repairWUInconsistency.mockResolvedValue({ repaired: 1, failed: 0, skipped: 0 });
 
-    const { runConsistencyRepairMode } = await import('../wu-repair-core.js');
-    const result = await runConsistencyRepairMode({ all: true, check: true });
+      const { runConsistencyRepairMode } = await import('../wu-repair-core.js');
+      const result = await runConsistencyRepairMode({ all: true, check: true });
 
-    expect(result.success).toBe(false);
-    expect(result.exitCode).toBe(1);
+      expect(result.success).toBe(false);
+      expect(result.exitCode).toBe(1);
       expect(mocks.repairWUInconsistency).not.toHaveBeenCalled();
     },
     FULL_SUITE_TEST_TIMEOUT_MS,
@@ -48,9 +48,9 @@ describe('wu-repair-core check mode', () => {
   it(
     'selects branch-pr admin repair path from claimed_mode',
     async () => {
-    const { shouldUseBranchPrAdminRepairPath } = await import('../wu-repair-core.js');
+      const { shouldUseBranchPrAdminRepairPath } = await import('../wu-repair-core.js');
 
-    expect(shouldUseBranchPrAdminRepairPath({ claimed_mode: 'branch-pr' })).toBe(true);
+      expect(shouldUseBranchPrAdminRepairPath({ claimed_mode: 'branch-pr' })).toBe(true);
       expect(shouldUseBranchPrAdminRepairPath({ claimed_mode: 'worktree' })).toBe(false);
     },
     FULL_SUITE_TEST_TIMEOUT_MS,
