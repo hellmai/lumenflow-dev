@@ -8,7 +8,17 @@ Eliminate the dirty-main failure class in `wu:done` by replacing live-main merge
 
 ## Scope
 
-<!-- What is in scope and out of scope? -->
+In scope:
+
+- Introduce `withAtomicMerge()` in core and integrate it into both live-main merge paths.
+- Extract shared micro-worktree helper surface for stable reuse.
+- Add failure-injection, retry-exhaustion, idempotent rerun, and branch-only non-PR integration coverage.
+- Remove obsolete dirty-main rollback/post-merge remediation code after burn-in.
+
+Out of scope:
+
+- Event-merge simplification in `wu-done-concurrent-merge.ts`.
+- Changes to `wu:prep`, global gates, or PR-mode behavior.
 
 ## Approach
 
