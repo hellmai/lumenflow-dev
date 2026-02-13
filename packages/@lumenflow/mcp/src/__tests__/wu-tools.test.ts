@@ -1234,7 +1234,6 @@ describe('Manifest parity truth gate (WU-1481)', () => {
   const EXPECTED_ALLOWED_EXTRAS = [
     'context_get',
     'gates_run',
-    'initiative_remove_wu',
     'validate_agent_skills',
     'validate_agent_sync',
     'validate_backlog_sync',

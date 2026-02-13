@@ -121,9 +121,12 @@ pnpm exec lumenflow --client all      # All clients
 | `pnpm lint`                       | Run ESLint                       |
 | `pnpm typecheck`                  | Run TypeScript type checking     |
 | `pnpm test`                       | Run all tests (Vitest)           |
-| `pnpm spec:linter`                | Validate WU specs (all)          |
+| `pnpm spec:linter`                | Validate WU specs (all) ¹        |
 | `pnpm lane:health`                | Check lane config health         |
 | `pnpm lane:suggest --paths "..."` | Suggest lane for code paths      |
+
+¹ **Script aliases:** `spec:linter` and `tasks:validate` are pnpm script aliases
+for `wu:validate --all`. They are not standalone CLI commands.
 
 Before rerunning `wu:prep` after docs-heavy edits, format touched docs first:
 `pnpm prettier --write <changed-doc-paths...>`.
