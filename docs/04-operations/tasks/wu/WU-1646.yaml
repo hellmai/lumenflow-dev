@@ -28,20 +28,23 @@ risks: []
 notes: >-
   INIT-025 Phase 2 WU-B1. Mechanical extraction only, no new abstractions.
 
-
   2026-02-13 supersession note: execution sequencing now routes wu:done state-machine foundation
   through WU-1662..WU-1665 under INIT-025 Phase 1; keep this WU as legacy mechanical fallback only
   unless explicitly reactivated.
 
-
   2026-02-13 review: blocked by state-machine WUs (WU-1662..WU-1665) which supersede this mechanical
   extraction. If state-machine WUs deliver successfully, this WU should be closed as superseded.
 
-
   2026-02-13 WU-1661 reconciliation: supersession guidance formalized in INIT-025-plan.md. After
   Phase 1 completion, evaluate closure. The state-machine decomposition (WU-1662..WU-1665) achieves
-  the same structural goals as this mechanical extraction with stronger typed contracts and validated
-  transition paths. See INIT-025-plan.md "WU-1646 Supersession Guidance" section for decision rule.
+  the same structural goals as this mechanical extraction with stronger typed contracts and
+  validated transition paths. See INIT-025-plan.md "WU-1646 Supersession Guidance" section for
+  decision rule.
+
+  2026-02-13 CLOSED AS SUPERSEDED: Phase 1 WUs (WU-1662..WU-1665) all delivered successfully.
+  State-machine decomposition of wu-done.ts achieves the same structural goals with stronger typed
+  contracts. Per INIT-025-plan.md supersession guidance, this mechanical extraction WU is no longer
+  needed.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
