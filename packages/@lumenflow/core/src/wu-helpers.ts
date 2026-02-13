@@ -265,9 +265,12 @@ export async function ensureOnMain(git) {
  *
  * @param {object} git - Git adapter with async fetch() and getCommitHash() methods
  * @param {string} [scriptName='wu'] - Script name for logging
+ * @param {object} [options] - Options
+ * @param {boolean} [options.skipRemote=false] - WU-1653: Skip remote check (requireRemote=false)
  * @throws {Error} If main is out of sync with origin
  */
-export async function ensureMainUpToDate(git, _scriptName = 'wu') {
+export async function ensureMainUpToDate(git, _scriptName = 'wu', { skipRemote = false } = {}) {
+  if (skipRemote) return;
   await git.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
   const localMain = await git.getCommitHash(BRANCHES.MAIN);
   const remoteMain = await git.getCommitHash(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
