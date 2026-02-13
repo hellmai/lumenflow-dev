@@ -1,0 +1,39 @@
+id: WU-1626
+title: Extract micro-worktree shared helper surface
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P0
+created: 2026-02-13
+code_paths:
+  - packages/@lumenflow/core/src/micro-worktree-shared.ts
+  - packages/@lumenflow/core/src/micro-worktree.ts
+  - packages/@lumenflow/core/src/index.ts
+tests:
+  manual:
+    - Run core micro-worktree tests and verify no behavior change for existing commands
+  unit:
+    - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1626.done
+dependencies: []
+initiative: INIT-026
+phase: 1
+spec_refs:
+  - lumenflow://plans/joyful-dazzling-rossum.md
+risks: []
+notes: Phase 1A of INIT-026. No behavior changes allowed.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Extract a stable helper surface from micro-worktree into micro-worktree-shared.ts so atomic merge can reuse temp branch/worktree/push-retry primitives without tight coupling. This WU is a pure move/re-export with no behavior change.
+acceptance:
+  - micro-worktree-shared.ts contains the extracted temp-branch/worktree and push-retry helpers with stable exports
+  - micro-worktree.ts imports/re-exports the shared helpers without behavior changes
+  - core callers remain backward compatible via unchanged public exports
