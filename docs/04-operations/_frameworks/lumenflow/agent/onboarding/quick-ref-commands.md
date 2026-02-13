@@ -626,3 +626,15 @@ Hooks provide automatic enforcement at the tool level:
 - **block_outside_worktree**: Blocks Write/Edit to main when worktrees exist
 - **require_wu_for_edits**: Requires a claimed WU for Write/Edit operations
 - **warn_on_stop_without_wu_done**: Warns when session ends with active worktrees
+
+---
+
+## Lifecycle Map and Troubleshooting
+
+For a complete picture of how all WU commands, memory tools, and orchestration tools fit together, and for remediation of common failure modes, see:
+
+- **[Canonical Lifecycle Map](../../lumenflow-complete.md#26-canonical-lifecycle-map-wu-1635)** -- Command-mode matrix (worktree vs cloud/branch-PR), expected locations, and handoff points
+- **[Failure-Mode Runbook](../../lumenflow-complete.md#appendix-a-failure-mode-runbook-wu-1635)** -- Concrete remediation for main-behind-origin, partial-claim state, spawn-provenance enforcement, and wu:recover usage
+- **[Troubleshooting wu:done](./troubleshooting-wu-done.md)** -- Most common agent mistake (two-step wu:prep + wu:done workflow)
+- **[First WU Mistakes](./first-wu-mistakes.md)** -- Common first-time pitfalls and how to avoid them
+- **[WU Sizing Guide](../../wu-sizing-guide.md)** -- Context safety triggers, complexity assessment, and session strategies

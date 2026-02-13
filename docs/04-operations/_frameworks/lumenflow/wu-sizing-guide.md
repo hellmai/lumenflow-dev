@@ -356,6 +356,8 @@ pnpm wu:brief --id WU-XXX --client claude-code
 - [parallel-session-optimization.md](./agent/onboarding/parallel-session-optimization.md) — Running 4-6 WUs concurrently
 - [agent-invocation-guide.md](./agent/onboarding/agent-invocation-guide.md) — Orchestrator-worker patterns
 - [lumenflow-complete.md](./lumenflow-complete.md) — Full LumenFlow framework
+- [Canonical Lifecycle Map](./lumenflow-complete.md#26-canonical-lifecycle-map-wu-1635) — Command-mode matrix and handoff points
+- [Failure-Mode Runbook](./lumenflow-complete.md#appendix-a-failure-mode-runbook-wu-1635) — Remediation for common operational failures
 
 ---
 
