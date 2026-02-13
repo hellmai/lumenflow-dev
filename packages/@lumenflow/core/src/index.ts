@@ -97,6 +97,8 @@ export * from './wu-yaml.js';
 export { getAssignedEmail } from './wu-claim-helpers.js';
 
 export * from './wu-done-worktree.js';
+// WU-1664: Extracted worktree completion services for state-machine-driven execution
+export * from './wu-done-worktree-services.js';
 export * from './wu-done-validators.js';
 // WU-1145: Concurrent backlog merge utilities
 export * from './wu-done-concurrent-merge.js';
