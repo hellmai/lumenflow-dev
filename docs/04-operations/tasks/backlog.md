@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1629 — Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage](wu/WU-1629.yaml) — Framework: Core Lifecycle
 - [WU-1628 — Integrate withAtomicMerge into wu-done worktree mode](wu/WU-1628.yaml) — Framework: Core Lifecycle
 - [WU-1627 — Implement withAtomicMerge core executor with failure-injection tests](wu/WU-1627.yaml) — Framework: Core Lifecycle
 - [WU-1626 — Extract micro-worktree shared helper surface](wu/WU-1626.yaml) — Framework: Core Lifecycle
