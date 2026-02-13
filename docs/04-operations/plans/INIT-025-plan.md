@@ -24,11 +24,7 @@ Phase 1 (state-machine foundation): WU-1661 reconcile initiative metadata; WU-16
 
 ## Open Questions
 
-1. **State machine library vs hand-rolled?** XState/TypeState would give formal guarantees but add a dependency. A simple discriminated union with switch/case may suffice for 7 states. Leaning toward hand-rolled for zero dependencies.
-
-2. **Should WU-1659 (gate dedup) merge before or after Phase 1?** If 1659 lands first as a tactical patch, Phase 1 WU C supersedes it with a cleaner design. If 1659 is skipped, Phase 1 WU C handles it architecturally. Either way works.
-
-3. **mcp/tools.ts (4081 lines) -- is this really a god file or just large by nature?** MCP tool registration may be inherently verbose. Need to assess whether splitting by tool category (wu-tools, mem-tools, etc.) actually improves maintainability or just adds indirection.
+- Resolved: Use XState v5 for wu:done pipeline orchestration and keep WU lifecycle state-machine hand-rolled/typed unless lifecycle complexity materially grows.\n- Resolved: Use @xstate/graph (not deprecated @xstate/test) for model-based transition coverage where feasible.\n- Pending: Decide whether waiting-state sign-off flow belongs in a separate initiative after INIT-025 Phase 1 completion.
 
 ## References
 
