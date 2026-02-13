@@ -2,7 +2,7 @@ id: WU-1630
 title: Remove obsolete dirty-main rollback and post-merge recovery paths after burn-in
 lane: 'Framework: CLI Orchestration'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -36,8 +36,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: After atomic merge has burned in, remove dead rollback/recovery paths that only existed for live-main merge side effects. Simplify catch/cleanup paths in core and remove post-merge dirty-main remediation logic in CLI wu-done.
+description: After atomic merge has burned in, remove dead rollback/recovery paths that only existed
+  for live-main merge side effects. Simplify catch/cleanup paths in core and remove post-merge
+  dirty-main remediation logic in CLI wu-done.
 acceptance:
-  - worktree and branch-only code paths no longer contain live-main rollback utilities made obsolete by atomic merge
+  - worktree and branch-only code paths no longer contain live-main rollback utilities made obsolete
+    by atomic merge
   - cli wu-done post-merge dirty-main restore/check logic is removed where no longer needed
   - remaining error paths are simpler and preserve clear terminal guidance
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1630
+claimed_at: 2026-02-13T13:39:43.973Z
+baseline_main_sha: 97eeb9b249c514a57b9ee645edb5d30a94328636
+session_id: 73f3c941-e228-4753-9c79-ba1935cdfab8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T13:39:43.978Z

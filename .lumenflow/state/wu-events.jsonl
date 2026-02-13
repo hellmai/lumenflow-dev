@@ -1205,3 +1205,4 @@
 {"type":"complete","wuId":"WU-1628","timestamp":"2026-02-13T13:31:45.051Z"}
 {"type":"claim","wuId":"WU-1629","timestamp":"2026-02-13T13:32:19.764Z","lane":"Framework: Core Lifecycle","title":"Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage"}
 {"type":"complete","wuId":"WU-1629","timestamp":"2026-02-13T13:39:10.999Z"}
+{"type":"claim","wuId":"WU-1630","lane":"Framework: CLI Orchestration","title":"Remove obsolete dirty-main rollback and post-merge recovery paths after burn-in","timestamp":"2026-02-13T13:39:43.996Z"}
