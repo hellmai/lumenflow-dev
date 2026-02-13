@@ -1,11 +1,31 @@
 id: INIT-027
 slug: lumenflow-tooling-docs-cohesion
 title: LumenFlow Tooling Cohesion Docs and Starlight IA
-description: ''
+description: Reduce lifecycle friction by documenting how LumenFlow tools compose
+  (wu:create/claim/brief/prep/done/recover), adding failure-mode runbooks, and surfacing this
+  guidance in Starlight and contributor entrypoints.
 status: draft
 priority: P2
 owner: 'Framework: CLI Orchestration'
 created: 2026-02-13
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: Canonical lifecycle and failure-mode docs
+    status: pending
+  - id: 2
+    title: Contributor entrypoint cross-linking
+    status: pending
+  - id: 3
+    title: Starlight IA and discoverability
+    status: pending
+success_metrics:
+  - Canonical lifecycle map and command-mode matrix published in operations docs
+  - 'Failure-mode runbook covers recurring issues: main-behind-origin, partial-claim state, spawn
+    provenance override, and recovery paths'
+  - AGENTS.md and LUMENFLOW.md link to canonical lifecycle and troubleshooting pages
+  - Starlight docs navigation exposes tooling lifecycle and troubleshooting entrypoints
 labels: []
+lanes:
+  - 'Content: Specs Governance'
+  - 'Content: Framework Docs'
+  - 'Content: Site Comms'
