@@ -14,7 +14,6 @@ import {
   FILE_SYSTEM,
   WU_STATUS,
   WU_EXPOSURE_VALUES,
-  LOG_PREFIX,
 } from '@lumenflow/core/wu-constants';
 import { INIT_PATTERNS } from '@lumenflow/initiatives/constants';
 import { INIT_PATHS } from '@lumenflow/initiatives/paths';
@@ -23,8 +22,6 @@ import {
   BLOCKED_EDIT_MODE,
   resolveInProgressEditMode,
 } from './wu-state-cloud.js';
-
-const PREFIX = LOG_PREFIX.EDIT;
 
 /**
  * Edit modes for WU editing
