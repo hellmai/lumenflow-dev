@@ -2,14 +2,15 @@ id: WU-1639
 title: Reconcile INIT-025 lifecycle metadata with actual decomposition scope
 lane: 'Content: Specs Governance'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
   - docs/04-operations/tasks/initiatives/INIT-025.yaml
 tests:
   manual:
-    - pnpm initiative:status --id INIT-025 reports non-false completion state until decomposition scope is delivered.
+    - pnpm initiative:status --id INIT-025 reports non-false completion state until decomposition
+      scope is delivered.
     - pnpm orchestrate:init-status -i INIT-025 shows phase/WU state consistent with initiative YAML.
   unit: []
   e2e: []
@@ -27,8 +28,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: INIT-025 is marked done, but planned decomposition scope (11 WUs / 3 phases) is not represented in execution state. Reconcile initiative status and metadata so lifecycle state reflects actual delivered work and remaining scope.
+description: INIT-025 is marked done, but planned decomposition scope (11 WUs / 3 phases) is not
+  represented in execution state. Reconcile initiative status and metadata so lifecycle state
+  reflects actual delivered work and remaining scope.
 acceptance:
   - INIT-025 status and phase statuses reflect actual execution state (not falsely complete).
   - Malformed success metric text in INIT-025 is corrected.
-  - INIT-025 metadata clearly distinguishes completed prerequisite hardening work (WU-1621) from pending decomposition execution.
+  - INIT-025 metadata clearly distinguishes completed prerequisite hardening work (WU-1621) from
+    pending decomposition execution.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-specs-governance-wu-1639
+claimed_at: 2026-02-13T16:04:52.934Z
+baseline_main_sha: c7160a5d37a86afa975eec766b4ea6b56740ddeb
+session_id: ff2ffff6-767d-4ae2-9322-6f2cb349d56c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T16:04:52.943Z

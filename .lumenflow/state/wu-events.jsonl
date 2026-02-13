@@ -1217,3 +1217,4 @@
 {"type":"complete","wuId":"WU-1637","timestamp":"2026-02-13T14:28:31.579Z"}
 {"type":"complete","wuId":"WU-1636","timestamp":"2026-02-13T14:30:11.706Z"}
 {"type":"complete","wuId":"WU-1638","timestamp":"2026-02-13T14:34:31.576Z"}
+{"type":"claim","wuId":"WU-1639","lane":"Content: Specs Governance","title":"Reconcile INIT-025 lifecycle metadata with actual decomposition scope","timestamp":"2026-02-13T16:04:52.975Z"}
