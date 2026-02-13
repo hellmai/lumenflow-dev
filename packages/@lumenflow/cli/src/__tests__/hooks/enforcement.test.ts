@@ -148,32 +148,23 @@ describe('WU-1367: Hook Generation', () => {
     });
   });
 
-  describe('WU-1505: SessionStart dirty-main warning', () => {
-    it('should include dirty-main detection using git status --porcelain', async () => {
+  describe('SessionStart recovery (WU-1638: dirty-main warning removed)', () => {
+    it('should NOT include dirty-main detection (removed by WU-1638)', async () => {
       const { generateSessionStartRecoveryScript } =
         await import('../../hooks/enforcement-generator.js');
       const script = generateSessionStartRecoveryScript();
 
-      expect(script).toContain('status --porcelain');
-      expect(script).toContain('DIRTY_LINES=');
+      expect(script).not.toContain('DIRTY MAIN CHECKOUT DETECTED');
+      expect(script).not.toContain('DIRTY_LINES=');
     });
 
-    it('should include main-checkout-only guard', async () => {
+    it('should still include recovery file detection', async () => {
       const { generateSessionStartRecoveryScript } =
         await import('../../hooks/enforcement-generator.js');
       const script = generateSessionStartRecoveryScript();
 
-      expect(script).toContain('CURRENT_BRANCH=');
-      expect(script).toContain('[[ "$CURRENT_BRANCH" == "main" ]]');
-    });
-
-    it('should skip warning when running inside a worktree checkout', async () => {
-      const { generateSessionStartRecoveryScript } =
-        await import('../../hooks/enforcement-generator.js');
-      const script = generateSessionStartRecoveryScript();
-
-      expect(script).toContain('WORKTREES_DIR=');
-      expect(script).toContain('[[ "$CWD" != "${WORKTREES_DIR}/"* ]]');
+      expect(script).toContain('RECOVERY_DIR=');
+      expect(script).toContain('recovery-pending-');
     });
   });
 });
@@ -615,102 +606,25 @@ agents:
 });
 
 // =================================================================
-// WU-1502: PostToolUse Bash dirty-main warning hook
-// =================================================================
-
-describe('WU-1502: generateWarnDirtyMainScript', () => {
+describe('generateEnforcementHooks PostToolUse hooks', () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
 
-  it('should be exported from enforcement-generator', async () => {
-    const mod = await import('../../hooks/enforcement-generator.js');
-    expect(typeof mod.generateWarnDirtyMainScript).toBe('function');
-  });
-
-  it('should generate a bash script', async () => {
-    const { generateWarnDirtyMainScript } = await import('../../hooks/enforcement-generator.js');
-    const script = generateWarnDirtyMainScript();
-
-    expect(script).toContain('#!/bin/bash');
-    expect(script).toContain('WU-1502');
-  });
-
-  it('should detect main branch and skip in worktrees', async () => {
-    const { generateWarnDirtyMainScript } = await import('../../hooks/enforcement-generator.js');
-    const script = generateWarnDirtyMainScript();
-
-    // Must check current branch
-    expect(script).toContain('CURRENT_BRANCH=');
-    // Must be a no-op inside worktrees
-    expect(script).toContain('WORKTREES_DIR=');
-    // Must check for main branch
-    expect(script).toContain('"main"');
-  });
-
-  it('should use git status --porcelain to detect dirty files', async () => {
-    const { generateWarnDirtyMainScript } = await import('../../hooks/enforcement-generator.js');
-    const script = generateWarnDirtyMainScript();
-
-    expect(script).toContain('git');
-    expect(script).toContain('status');
-    expect(script).toContain('--porcelain');
-  });
-
-  it('should list modified paths in warning output', async () => {
-    const { generateWarnDirtyMainScript } = await import('../../hooks/enforcement-generator.js');
-    const script = generateWarnDirtyMainScript();
-
-    // Should output modified files to stderr
-    expect(script).toContain('>&2');
-    // Should contain guidance about WU/worktree
-    expect(script).toContain('wu:claim');
-  });
-
-  it('should always exit 0 (warning only, never block)', async () => {
-    const { generateWarnDirtyMainScript } = await import('../../hooks/enforcement-generator.js');
-    const script = generateWarnDirtyMainScript();
-
-    // The script must not contain exit 2 (blocking)
-    expect(script).not.toContain('exit 2');
-    // Must end with exit 0
-    expect(script).toContain('exit 0');
-  });
-
-  it('should only process Bash tool calls via tool_name check', async () => {
-    const { generateWarnDirtyMainScript } = await import('../../hooks/enforcement-generator.js');
-    const script = generateWarnDirtyMainScript();
-
-    // Must read stdin JSON and check tool_name
-    expect(script).toContain('tool_name');
-    expect(script).toContain('Bash');
-  });
-});
-
-describe('WU-1502: generateEnforcementHooks includes PostToolUse Bash hook', () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-  });
-
-  it('should always include PostToolUse Bash dirty-main hook entry', async () => {
+  it('should not include PostToolUse hooks with minimal config', async () => {
     const { generateEnforcementHooks } = await import('../../hooks/enforcement-generator.js');
 
-    // Even with minimal config, PostToolUse should include the dirty-main warning
     const hooks = generateEnforcementHooks({
       block_outside_worktree: false,
       require_wu_for_edits: false,
       warn_on_stop_without_wu_done: false,
     });
 
-    // Should have a postToolUse entry matching "Bash"
-    expect(hooks.postToolUse).toBeDefined();
-    const bashEntry = hooks.postToolUse?.find((entry) => entry.matcher === 'Bash');
-    expect(bashEntry).toBeDefined();
-    expect(bashEntry!.hooks.length).toBeGreaterThan(0);
-    expect(bashEntry!.hooks[0].command).toContain('warn-dirty-main.sh');
+    // No postToolUse hooks when no auto-checkpoint configured
+    expect(hooks.postToolUse).toBeUndefined();
   });
 
-  it('should keep existing PostToolUse hooks when auto_checkpoint is enabled', async () => {
+  it('should include PostToolUse auto-checkpoint hook when enabled', async () => {
     const { generateEnforcementHooks } = await import('../../hooks/enforcement-generator.js');
 
     const hooks = generateEnforcementHooks({
@@ -721,22 +635,8 @@ describe('WU-1502: generateEnforcementHooks includes PostToolUse Bash hook', () 
     });
 
     expect(hooks.postToolUse).toBeDefined();
-    // Should have both: auto-checkpoint (matcher: .*) and dirty-main (matcher: Bash)
-    const bashEntry = hooks.postToolUse?.find((entry) => entry.matcher === 'Bash');
     const allEntry = hooks.postToolUse?.find((entry) => entry.matcher === '.*');
-    expect(bashEntry).toBeDefined();
     expect(allEntry).toBeDefined();
-  });
-});
-
-describe('WU-1502: CLAUDE_HOOKS constants include warn-dirty-main', () => {
-  it('should have WARN_DIRTY_MAIN in SCRIPTS', async () => {
-    const { CLAUDE_HOOKS } = await import('@lumenflow/core/wu-constants');
-    expect(CLAUDE_HOOKS.SCRIPTS.WARN_DIRTY_MAIN).toBe('warn-dirty-main.sh');
-  });
-
-  it('should have BASH matcher in MATCHERS', async () => {
-    const { CLAUDE_HOOKS } = await import('@lumenflow/core/wu-constants');
-    expect(CLAUDE_HOOKS.MATCHERS.BASH).toBe('Bash');
+    expect(allEntry!.hooks[0].command).toContain('auto-checkpoint.sh');
   });
 });

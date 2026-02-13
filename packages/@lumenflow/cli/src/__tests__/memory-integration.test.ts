@@ -377,12 +377,10 @@ describe('Memory Layer Integration Tests (WU-1363)', () => {
 
           const hooks = generateEnforcementHooks(config);
 
-          // Should have postToolUse with auto-checkpoint + WU-1502 dirty-main
+          // Should have postToolUse with auto-checkpoint
           expect(hooks.postToolUse).toBeDefined();
-          expect(hooks.postToolUse).toHaveLength(2);
+          expect(hooks.postToolUse).toHaveLength(1);
           expect(hooks.postToolUse?.[0].hooks[0].command).toContain('auto-checkpoint.sh');
-          expect(hooks.postToolUse?.[1].matcher).toBe('Bash');
-          expect(hooks.postToolUse?.[1].hooks[0].command).toContain('warn-dirty-main.sh');
         });
 
         it('should generate subagentStop hook when auto_checkpoint enabled', () => {
@@ -411,11 +409,8 @@ describe('Memory Layer Integration Tests (WU-1363)', () => {
 
           const hooks = generateEnforcementHooks(config);
 
-          // WU-1502: postToolUse always contains dirty-main hook, but NOT auto-checkpoint
-          expect(hooks.postToolUse).toBeDefined();
-          expect(hooks.postToolUse).toHaveLength(1);
-          expect(hooks.postToolUse?.[0].matcher).toBe('Bash');
-          expect(hooks.postToolUse?.[0].hooks[0].command).toContain('warn-dirty-main.sh');
+          // No auto-checkpoint when disabled, no postToolUse hooks
+          expect(hooks.postToolUse).toBeUndefined();
           expect(hooks.subagentStop).toBeUndefined();
         });
 
@@ -428,12 +423,8 @@ describe('Memory Layer Integration Tests (WU-1363)', () => {
 
           const hooks = generateEnforcementHooks(config);
 
-          // preToolUse should be absent (no write/edit hooks requested either)
-          // WU-1502: postToolUse always contains dirty-main hook, but NOT auto-checkpoint
-          expect(hooks.postToolUse).toBeDefined();
-          expect(hooks.postToolUse).toHaveLength(1);
-          expect(hooks.postToolUse?.[0].matcher).toBe('Bash');
-          expect(hooks.postToolUse?.[0].hooks[0].command).toContain('warn-dirty-main.sh');
+          // No postToolUse hooks when no auto-checkpoint and no dirty-main hook
+          expect(hooks.postToolUse).toBeUndefined();
           expect(hooks.subagentStop).toBeUndefined();
         });
       });

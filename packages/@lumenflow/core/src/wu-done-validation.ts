@@ -9,11 +9,9 @@ import { parseYAML } from './wu-yaml.js';
 import { die } from './error-handler.js';
 import {
   BRANCHES,
-  DIRECTORIES,
   EMOJI,
   FILE_SYSTEM,
   GIT_COMMANDS,
-  LUMENFLOW_PATHS,
   LOG_PREFIX,
   STRING_LITERALS,
   TEST_TYPES,
@@ -21,7 +19,6 @@ import {
   WU_TYPES,
   WU_STATUS,
 } from './wu-constants.js';
-import { WU_PATHS } from './wu-paths.js';
 import { PLACEHOLDER_SENTINEL } from './wu-schema.js';
 import { resolveExposureDefault } from './wu-validation.js';
 import { validateAutomatedTestRequirement } from './manual-test-validator.js';
@@ -635,198 +632,4 @@ or neither is modified. This prevents partial state corruption.
 
 Context: WU-1153 prevents lost work from metadata rollbacks
 `;
-}
-
-/**
- * WU-1503: Metadata allowlist patterns for dirty-main pre-merge guard.
- *
- * These paths are always considered "related" to any wu:done operation,
- * regardless of the WU's code_paths. They represent files that wu:done
- * itself may create or modify during the completion workflow.
- */
-export const METADATA_ALLOWLIST_PATTERNS: string[] = [
-  DIRECTORIES.STATUS_PATH,
-  DIRECTORIES.BACKLOG_PATH,
-  LUMENFLOW_PATHS.WU_EVENTS,
-  LUMENFLOW_PATHS.FLOW_LOG,
-  LUMENFLOW_PATHS.SKIP_GATES_AUDIT,
-  LUMENFLOW_PATHS.SKIP_COS_GATES_AUDIT,
-  // WU YAML and stamps are matched dynamically by WU ID (see isMetadataAllowlisted)
-];
-
-/**
- * WU-1503: Check if a file path is on the metadata allowlist for a given WU.
- *
- * Matches:
- * - Static patterns from METADATA_ALLOWLIST_PATTERNS
- * - Dynamic WU-specific patterns: WU YAML file and completion stamp
- *
- * @param filePath - Dirty file path from git status
- * @param wuId - Current WU ID (e.g., "WU-1503")
- * @returns true if the file is on the metadata allowlist
- */
-function isMetadataAllowlisted(filePath: string, wuId: string): boolean {
-  // Static allowlist
-  if (METADATA_ALLOWLIST_PATTERNS.includes(filePath)) {
-    return true;
-  }
-
-  // Dynamic WU-specific patterns
-  if (filePath === WU_PATHS.WU(wuId)) {
-    return true;
-  }
-
-  // Stamps directory (any stamp file is allowed during wu:done)
-  if (filePath.startsWith(`${LUMENFLOW_PATHS.STAMPS_DIR}/`)) {
-    return true;
-  }
-
-  return false;
-}
-
-/**
- * WU-1503: Check if a file path matches any of the WU's code_paths.
- *
- * Supports both exact matches and prefix/directory matches
- * (e.g., code_path "packages/@lumenflow/cli/src/" matches
- *  dirty file "packages/@lumenflow/cli/src/wu-done.ts").
- *
- * @param filePath - Dirty file path from git status
- * @param codePaths - WU code_paths array
- * @returns true if the file is covered by code_paths
- */
-function isCodePathRelated(filePath: string, codePaths: string[]): boolean {
-  for (const codePath of codePaths) {
-    // Exact match
-    if (filePath === codePath) {
-      return true;
-    }
-    // Prefix match (code_path is a directory prefix)
-    if (codePath.endsWith('/') && filePath.startsWith(codePath)) {
-      return true;
-    }
-    // Reverse prefix match (dirty file is a parent of code_path)
-    if (filePath.endsWith('/') && codePath.startsWith(filePath)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-/**
- * WU-1503: Parse a file path from a git status --porcelain line.
- *
- * Porcelain format: XY filename
- * For renames: XY old-name -> new-name
- *
- * @param line - Single line from git status --porcelain output
- * @returns Parsed file path, or null for unparseable lines
- */
-function parseGitStatusPath(line: string): string | null {
-  if (line.length < 4) {
-    return null;
-  }
-
-  // The path starts at position 3 (after XY and space)
-  const pathPart = line.substring(3).trim();
-
-  if (!pathPart) {
-    return null;
-  }
-
-  // Handle renames: "old-name -> new-name" - use destination
-  const arrowIndex = pathPart.indexOf(' -> ');
-  if (arrowIndex !== -1) {
-    return pathPart.substring(arrowIndex + 4);
-  }
-
-  return pathPart;
-}
-
-/**
- * WU-1503: Validate that main checkout dirty state does not contain unrelated files.
- *
- * Performs a pre-merge dirty-main check by comparing dirty paths from
- * `git status --porcelain` against the WU's code_paths plus an explicit
- * metadata allowlist.
- *
- * @param gitStatusOutput - Raw output from `git status --porcelain`
- * @param wuId - WU ID (e.g., "WU-1503")
- * @param codePaths - WU code_paths array from YAML spec
- * @returns Validation result with unrelated files list
- */
-export interface DirtyMainResult {
-  valid: boolean;
-  unrelatedFiles: string[];
-  relatedFiles: string[];
-}
-
-export function validateDirtyMain(
-  gitStatusOutput: string,
-  wuId: string,
-  codePaths: string[],
-): DirtyMainResult {
-  // Split lines BEFORE trimming to preserve leading spaces in porcelain format.
-  // Porcelain lines start with 2-char status codes (e.g., " M", "??", "M ")
-  // where the leading space is significant.
-  const lines = gitStatusOutput.split('\n').filter((line) => line.length >= 4);
-
-  if (lines.length === 0) {
-    return { valid: true, unrelatedFiles: [], relatedFiles: [] };
-  }
-  const unrelatedFiles: string[] = [];
-  const relatedFiles: string[] = [];
-
-  for (const line of lines) {
-    const filePath = parseGitStatusPath(line);
-    if (!filePath) {
-      continue;
-    }
-
-    // Check if file is on the metadata allowlist or matches code_paths
-    if (isMetadataAllowlisted(filePath, wuId) || isCodePathRelated(filePath, codePaths)) {
-      relatedFiles.push(filePath);
-    } else {
-      unrelatedFiles.push(filePath);
-    }
-  }
-
-  return {
-    valid: unrelatedFiles.length === 0,
-    unrelatedFiles,
-    relatedFiles,
-  };
-}
-
-/**
- * WU-1503: Build actionable error message for dirty-main guard failure.
- *
- * Provides remediation guidance for unrelated dirty files on main,
- * including the --force bypass option.
- *
- * @param wuId - WU ID (e.g., "WU-1503")
- * @param unrelatedFiles - List of unrelated dirty file paths
- * @returns Formatted error message with remediation guidance
- */
-export function buildDirtyMainErrorMessage(wuId: string, unrelatedFiles: string[]): string {
-  const count = unrelatedFiles.length;
-  const fileList = unrelatedFiles.map((f) => `  - ${f}`).join('\n');
-
-  return (
-    `DIRTY MAIN PRE-MERGE GUARD (WU-1503)\n\n` +
-    `${count} unrelated file(s) found dirty on main checkout:\n\n` +
-    `${fileList}\n\n` +
-    `wu:done for ${wuId} cannot proceed because unrelated dirty files\n` +
-    `would survive completion and pollute subsequent WUs.\n\n` +
-    `Remediation options:\n` +
-    `  1. Commit the changes in a separate WU:\n` +
-    `     git add ${unrelatedFiles.join(' ')}\n` +
-    `     git commit -m "fix: address unrelated changes"\n\n` +
-    `  2. Discard the changes if they are unwanted:\n` +
-    `     git checkout -- ${unrelatedFiles.join(' ')}\n\n` +
-    `  3. Force bypass (audited, use with caution):\n` +
-    `     pnpm wu:done --id ${wuId} --force\n\n` +
-    `After resolving, retry:\n` +
-    `  pnpm wu:done --id ${wuId}`
-  );
 }

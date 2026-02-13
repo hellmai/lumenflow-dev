@@ -18,7 +18,6 @@ import {
   generateEnforceWorktreeScript,
   generateRequireWuScript,
   generateWarnIncompleteScript,
-  generateWarnDirtyMainScript,
   generatePreCompactCheckpointScript,
   generateSessionStartRecoveryScript,
   generateAutoCheckpointScript,
@@ -444,10 +443,6 @@ export async function syncEnforcementHooks(projectDir: string): Promise<boolean>
       generateAutoCheckpointScript(enforcement.auto_checkpoint.interval_tool_calls),
     );
   }
-
-  // WU-1502: Always write dirty-main warning hook when enforcement.hooks is enabled
-  // Detects file modifications on main after Bash commands
-  writeHookScript(projectDir, HOOK_SCRIPTS.WARN_DIRTY_MAIN, generateWarnDirtyMainScript());
 
   // Always write recovery hook scripts when enforcement.hooks is enabled (WU-1394)
   // These enable durable context recovery after compaction
