@@ -70,7 +70,11 @@ import { isBranchAlreadyMerged } from './wu-done-branch-utils.js';
 // WU-1371: Import rebase artifact cleanup functions
 import { detectRebasedArtifacts, cleanupRebasedArtifacts } from './rebase-artifact-cleanup.js';
 // WU-1061: Import docs regeneration utilities
-import { maybeRegenerateAndStageDocs } from './wu-done-docs-generate.js';
+import {
+  maybeRegenerateAndStageDocs,
+  DOC_OUTPUT_FILES,
+  formatDocOutputs,
+} from './wu-done-docs-generate.js';
 import { WUTransaction, createTransactionSnapshot, restoreFromSnapshot } from './wu-transaction.js';
 // WU-1506: Import backlog invariant repair
 // WU-1574: Removed repairBacklogInvariants - no longer needed with state store architecture
@@ -986,6 +990,46 @@ export async function autoRebaseBranch(branch, worktreePath, wuId) {
       }
     }
 
+    // WU-1657: Reconcile generated docs after rebase to avoid format-check loops.
+    // A rebase can pull generated docs changes from main that need regeneration and/or formatting.
+    if (wuId) {
+      const docsResult = await maybeRegenerateAndStageDocs({
+        baseBranch: `${REMOTES.ORIGIN}/${BRANCHES.MAIN}`,
+        repoRoot: worktreePath,
+      });
+
+      if (!docsResult.regenerated) {
+        const changedDocOutputs = await gitWorktree.raw([
+          'diff',
+          '--name-only',
+          `${REMOTES.ORIGIN}/${BRANCHES.MAIN}...HEAD`,
+          '--',
+          ...DOC_OUTPUT_FILES,
+        ]);
+
+        if (changedDocOutputs.trim().length > 0) {
+          console.log(
+            `${LOG_PREFIX.DONE} ${EMOJI.INFO} Reconciling rebased generated docs outputs...`,
+          );
+          formatDocOutputs(worktreePath);
+          await gitWorktree.add([...DOC_OUTPUT_FILES]);
+        }
+      }
+
+      const stagedDocOutputs = await gitWorktree.raw([
+        'diff',
+        '--cached',
+        '--name-only',
+        '--',
+        ...DOC_OUTPUT_FILES,
+      ]);
+
+      if (stagedDocOutputs.trim().length > 0) {
+        await gitWorktree.commit(COMMIT_FORMATS.REBASE_ARTIFACT_CLEANUP(wuId));
+        console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Committed rebased generated docs reconciliation`);
+      }
+    }
+
     // Force-push lane branch with lease (safe force push)
     await gitWorktree.raw(['push', '--force-with-lease', REMOTES.ORIGIN, branch]);
 
@@ -1167,10 +1211,14 @@ export async function checkMergeConflicts(branch) {
     const result = await gitAdapter.mergeTree(mergeBase, BRANCHES.MAIN, branch);
 
     if (result.includes('<<<<<<<') || result.includes('>>>>>>>')) {
-      throw createError(ErrorCodes.GIT_ERROR, PREFLIGHT.CONFLICT_ERROR, {
-        branch,
-        operation: 'merge-tree',
-      });
+      throw createError(
+        ErrorCodes.GIT_ERROR,
+        PREFLIGHT.CONFLICT_ERROR(REMOTES.ORIGIN, BRANCHES.MAIN),
+        {
+          branch,
+          operation: 'merge-tree',
+        },
+      );
     }
 
     console.log(PREFLIGHT.NO_CONFLICTS);

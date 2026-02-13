@@ -13,6 +13,7 @@ const mockGit = {
   worktreeRemove: vi.fn(),
   deleteBranch: vi.fn(),
   raw: vi.fn(),
+  fetch: vi.fn(),
 };
 
 vi.mock('../git-adapter.js', () => ({
@@ -67,6 +68,7 @@ vi.mock('node:util', async () => {
 });
 
 import { runCleanup } from '../wu-done-cleanup.js';
+import { isBranchAlreadyMerged } from '../wu-done-branch-utils.js';
 
 describe('wu-done-cleanup branch-pr handling (WU-1492)', () => {
   beforeEach(() => {
@@ -123,5 +125,28 @@ describe('wu-done-cleanup branch-pr handling (WU-1492)', () => {
 
     // Worktree SHOULD be removed in default worktree mode
     expect(mockGit.worktreeRemove).toHaveBeenCalled();
+  });
+
+  it('retries local branch deletion with force when remote main already contains the branch', async () => {
+    vi.mocked(isBranchAlreadyMerged).mockResolvedValue(false);
+    mockGit.deleteBranch.mockRejectedValueOnce(new Error('not fully merged'));
+    mockGit.deleteBranch.mockResolvedValueOnce(undefined);
+    mockGit.raw.mockResolvedValue('');
+
+    const doc = {
+      id: 'WU-1657',
+      lane: 'Framework: Core Lifecycle',
+      claimed_mode: 'worktree',
+    };
+
+    await runCleanup(doc, {});
+
+    expect(mockGit.deleteBranch).toHaveBeenCalledTimes(2);
+    expect(mockGit.deleteBranch).toHaveBeenNthCalledWith(1, 'lane/framework-core/wu-1492', {
+      force: false,
+    });
+    expect(mockGit.deleteBranch).toHaveBeenNthCalledWith(2, 'lane/framework-core/wu-1492', {
+      force: true,
+    });
   });
 });
