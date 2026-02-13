@@ -2,7 +2,7 @@ id: WU-1653
 title: Fix wu:claim to respect requireRemote=false and wu:done stamp force-add
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-done-metadata.ts
 tests:
   manual:
-    - Create temp project with lumenflow init, wu:create, wu:claim without any remote - should succeed
+    - Create temp project with lumenflow init, wu:create, wu:claim without any remote - should
+      succeed
     - Add .lumenflow/stamps/ to .gitignore, run wu:done - should succeed via force-add
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree-require-remote.test.ts
@@ -29,9 +30,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: Testing LumenFlow new-project experience on Haven revealed wu:claim fails 3x with 'origin does not appear to be a git repository' even when git.requireRemote=false. Problem: wu:claim never checks shouldSkipRemoteOperations() — only micro-worktree flow does. Additionally wu:done crashes if stamps dir is gitignored because git add lacks --force. Solution: Add shouldSkipRemoteOperations() guards to all 5 remote-calling sites in wu-claim.ts, guard shouldApplyCanonicalClaimUpdate, and use git add --force for stamps in wu-done-metadata.ts."
+description: "Context: Testing LumenFlow new-project experience on Haven revealed wu:claim fails 3x
+  with 'origin does not appear to be a git repository' even when git.requireRemote=false. Problem:
+  wu:claim never checks shouldSkipRemoteOperations() — only micro-worktree flow does. Additionally
+  wu:done crashes if stamps dir is gitignored because git add lacks --force. Solution: Add
+  shouldSkipRemoteOperations() guards to all 5 remote-calling sites in wu-claim.ts, guard
+  shouldApplyCanonicalClaimUpdate, and use git add --force for stamps in wu-done-metadata.ts."
 acceptance:
   - wu:claim succeeds on a project with no git remote when requireRemote=false
   - wu:done succeeds even if .lumenflow/stamps/ is in .gitignore
   - Existing micro-worktree-require-remote tests still pass
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1653
+claimed_at: 2026-02-13T17:19:27.229Z
+baseline_main_sha: 7c9614ab2b775af1c013d4b7118348e45914cef8
+session_id: 46087bda-5f06-4d46-9f15-0ba327dfc645
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T17:19:27.235Z
