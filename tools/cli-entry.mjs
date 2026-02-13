@@ -74,6 +74,22 @@ function buildCliDist({ repoRoot, entryPath, exists, spawn }) {
   return { path: null, built: false, source: 'none' };
 }
 
+function resolveExistingDist({ repoRoot, entry, mainRepoPath, exists }) {
+  const repoEntryPath = resolveCliDistEntry(repoRoot, entry);
+  if (exists(repoEntryPath)) {
+    return { path: repoEntryPath, source: 'repo' };
+  }
+
+  if (mainRepoPath) {
+    const mainEntryPath = resolveCliDistEntry(mainRepoPath, entry);
+    if (exists(mainEntryPath)) {
+      return { path: mainEntryPath, source: 'main' };
+    }
+  }
+
+  return null;
+}
+
 /**
  * WU-1356: Parse simple YAML for package_manager and build_command
  *
@@ -137,7 +153,7 @@ export function getBuildCommand(repoRoot) {
   }
 
   // Use default for the package manager
-  const defaultCmd = DEFAULT_BUILD_COMMANDS[packageManager] || DEFAULT_BUILD_COMMANDS.pnpm;
+  const defaultCmd = DEFAULT_BUILD_COMMANDS[packageManager];
   return { command: defaultCmd[0], args: defaultCmd.slice(1) };
 }
 
@@ -187,8 +203,27 @@ export function ensureCliDist({
   const entryPath = resolveCliDistEntry(repoRoot, entry);
 
   if (STRICT_LIFECYCLE_ENTRIES.has(entry)) {
+    const existingDist = resolveExistingDist({
+      repoRoot,
+      entry,
+      mainRepoPath,
+      exists,
+    });
+
     logger.log(`[cli-entry] ${entry} requires fresh dist; building before execution...`);
-    return buildCliDist({ repoRoot, entryPath, exists, spawn });
+    const buildResult = buildCliDist({ repoRoot, entryPath, exists, spawn });
+    if (buildResult.path) {
+      return buildResult;
+    }
+
+    if (existingDist) {
+      logger.warn(
+        `[cli-entry] ${entry} build failed; falling back to existing CLI dist from ${existingDist.source}.`,
+      );
+      return { path: existingDist.path, built: false, source: existingDist.source };
+    }
+
+    return buildResult;
   }
 
   if (exists(entryPath)) {
@@ -240,9 +275,20 @@ export function runCliEntry({
   exit(runResult.status ?? EXIT_CODES.ERROR);
 }
 
-const [, , entry = DEFAULT_ENTRY, ...args] = process.argv;
-const isDirectRun = pathToFileURL(process.argv[1] || '').href === import.meta.url;
+export function maybeRunCliEntry({
+  argv = process.argv,
+  moduleUrl = import.meta.url,
+  run = runCliEntry,
+} = {}) {
+  const [, , entry = DEFAULT_ENTRY, ...args] = argv;
+  const isDirectRun = pathToFileURL(argv[1] || '').href === moduleUrl;
 
-if (isDirectRun) {
-  runCliEntry({ entry, args });
+  if (!isDirectRun) {
+    return false;
+  }
+
+  run({ entry, args });
+  return true;
 }
+
+maybeRunCliEntry();
