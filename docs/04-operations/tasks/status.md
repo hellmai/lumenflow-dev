@@ -5,6 +5,7 @@ _Last updated: 2026-02-13_
 ## In Progress
 
 - [WU-1634 — Fix wu:done silent mode-execution failure messaging](wu/WU-1634.yaml)
+- [WU-1638 — Remove obsolete dirty-main defensive code after INIT-026 atomic merge](wu/WU-1638.yaml)
 
 ## Completed
 

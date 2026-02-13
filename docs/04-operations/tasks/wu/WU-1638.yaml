@@ -2,7 +2,7 @@ id: WU-1638
 title: Remove obsolete dirty-main defensive code after INIT-026 atomic merge
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -22,7 +22,9 @@ artifacts:
   - .lumenflow/stamps/WU-1638.done
 dependencies: []
 risks: []
-notes: Post-INIT-026 cleanup. withAtomicMerge() makes all dirty-main defenses dead code. rollbackBranchOnMergeFailure() in wu-done-worktree.ts should STAY - it rolls back the lane branch, not main.
+notes: Post-INIT-026 cleanup. withAtomicMerge() makes all dirty-main defenses dead code.
+  rollbackBranchOnMergeFailure() in wu-done-worktree.ts should STAY - it rolls back the lane branch,
+  not main.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -31,7 +33,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: INIT-026 eliminated the dirty-main bug class by routing all wu:done merges through withAtomicMerge() in temp worktrees. Main is never touched during merge+push, so the defensive patches added in WU-1502/1503/1505/1515/1533/1554 are now dead code. Remove ~600 lines of hooks, pre-merge guards, auto-restore logic, branch-only rollback, and their tests.
+description: INIT-026 eliminated the dirty-main bug class by routing all wu:done merges through
+  withAtomicMerge() in temp worktrees. Main is never touched during merge+push, so the defensive
+  patches added in WU-1502/1503/1505/1515/1533/1554 are now dead code. Remove ~600 lines of hooks,
+  pre-merge guards, auto-restore logic, branch-only rollback, and their tests.
 acceptance:
   - warn-dirty-main.sh hook removed
   - session-start dirty-main warning removed from session-start-recovery.sh
@@ -42,3 +47,11 @@ acceptance:
   - rollbackTransaction() and rollback-utils.ts imports removed from CLI wu-done.ts
   - wu-done-dirty-main.test.ts deleted
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1638
+claimed_at: 2026-02-13T14:17:01.195Z
+baseline_main_sha: da56b3bc05263babbb862b31382ae8b79266e77a
+session_id: bb1d3e14-9fcd-4315-b0e8-7dab4813b628
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T14:17:01.202Z
