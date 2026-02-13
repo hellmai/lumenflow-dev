@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1656 — Fix CLI/MCP/docs parity gaps](wu/WU-1656.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -589,3 +589,4 @@ _Last updated: 2026-02-13_
 - [WU-1653 — Fix wu:claim to respect requireRemote=false and wu:done stamp force-add](wu/WU-1653.yaml) — 2026-02-13
 - [WU-1655 — Fix wu:claim no-remote regressions left after WU-1653](wu/WU-1655.yaml) — 2026-02-13
 - [WU-1654 — Doctor: replace regex parsing with library-first structured calls](wu/WU-1654.yaml) — 2026-02-13
+- [WU-1656 — Fix CLI/MCP/docs parity gaps](wu/WU-1656.yaml) — 2026-02-13

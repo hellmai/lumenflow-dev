@@ -44,7 +44,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1656 — Fix CLI/MCP/docs parity gaps](wu/WU-1656.yaml) — Content: Framework Docs
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -633,4 +633,5 @@ sections:
 - [WU-1653 — Fix wu:claim to respect requireRemote=false and wu:done stamp force-add](wu/WU-1653.yaml)
 - [WU-1655 — Fix wu:claim no-remote regressions left after WU-1653](wu/WU-1655.yaml)
 - [WU-1654 — Doctor: replace regex parsing with library-first structured calls](wu/WU-1654.yaml)
+- [WU-1656 — Fix CLI/MCP/docs parity gaps](wu/WU-1656.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
