@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1629 — Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage](wu/WU-1629.yaml)
 
 ## Completed
 
