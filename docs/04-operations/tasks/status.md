@@ -1,10 +1,10 @@
 # Work Unit Status
 
-_Last updated: 2026-02-12_
+_Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1621 — Harden initiative metadata writes against origin movement](wu/WU-1621.yaml)
+(No items currently in progress)
 
 ## Completed
 
