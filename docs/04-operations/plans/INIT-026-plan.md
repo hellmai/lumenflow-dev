@@ -4,7 +4,7 @@ Created: 2026-02-13
 
 ## Goal
 
-<!-- What is the primary objective? -->
+Eliminate the dirty-main failure class in `wu:done` by replacing live-main merge/push with atomic temp-worktree merge semantics. The completion path must either fully succeed or fail with `main` left untouched, including both worktree mode and branch-only non-PR mode.
 
 ## Scope
 
