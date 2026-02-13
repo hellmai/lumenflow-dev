@@ -4,7 +4,7 @@
  *
  * This test verifies that ALL shared schema modules are covered:
  * - command-schemas.ts (5 original commands)
- * - wu-lifecycle-schemas.ts (16 lifecycle commands)
+ * - wu-lifecycle-schemas.ts (17 lifecycle commands)
  * - initiative-schemas.ts (8 initiative commands)
  * - memory-schemas.ts (13 memory commands)
  * - flow-schemas.ts (4 flow/metrics commands)
@@ -39,7 +39,7 @@ const ALL_REGISTRIES = {
   command: { registry: commandSchemas, expectedCount: 5, label: 'Command (WU-1431)' },
   lifecycle: {
     registry: lifecycleCommandSchemas,
-    expectedCount: 16,
+    expectedCount: 17,
     label: 'WU Lifecycle (WU-1454)',
   },
   initiative: {
@@ -61,8 +61,8 @@ const ALL_REGISTRIES = {
   },
 } as const;
 
-// Total expected: 5 + 16 + 8 + 13 + 4 + 5 + 18 = 69
-const TOTAL_EXPECTED_SCHEMAS = 69;
+// Total expected: 5 + 17 + 8 + 13 + 4 + 5 + 18 = 70
+const TOTAL_EXPECTED_SCHEMAS = 70;
 
 describe('Comprehensive Schema Parity (WU-1458)', () => {
   describe('All schema modules are covered', () => {
