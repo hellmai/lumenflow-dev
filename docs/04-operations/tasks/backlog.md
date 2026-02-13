@@ -41,11 +41,11 @@ sections:
 - [WU-1650 — Extract wu-edit.ts validation and apply operations](wu/WU-1650.yaml) — Framework: CLI WU Commands
 - [WU-1651 — Extract wu-create.ts validation, content, and readiness builders](wu/WU-1651.yaml) — Framework: CLI WU Commands
 - [WU-1652 — Extract wu-spawn.ts prompt builders and strategy resolver](wu/WU-1652.yaml) — Framework: CLI WU Commands
-- [WU-1654 — Doctor: replace regex parsing with library-first structured calls](wu/WU-1654.yaml) — Framework: CLI Enforcement
 
 ## 🔧 In progress
 
 - [WU-1655 — Fix wu:claim no-remote regressions left after WU-1653](wu/WU-1655.yaml) — Framework: CLI WU Commands
+- [WU-1654 — Doctor: replace regex parsing with library-first structured calls](wu/WU-1654.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
