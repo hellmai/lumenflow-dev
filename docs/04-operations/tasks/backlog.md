@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml) — Framework: CLI Enforcement
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1581 — CLI strict wave 1A: high-impact WU command hotspots](wu/WU-1581.yaml) — Framework: CLI WU Commands
@@ -37,10 +36,10 @@ sections:
 - [WU-1665 — Consolidate wu:done rollback and recovery onto staged state-machine migration](wu/WU-1665.yaml) — Framework: Core State Recovery
 - [WU-1666 — Add model-based wu:done pipeline test coverage with @xstate/graph](wu/WU-1666.yaml) — Framework: CLI WU Commands
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml) — Framework: Core Validation
+- [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml) — Framework: CLI Enforcement
 
 ## 🔧 In progress
 
-- [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml) — Framework: CLI Enforcement
 - [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml) — Framework: CLI Enforcement
 - [WU-1647 — Split gates.ts into runners, plan resolvers, and utilities](wu/WU-1647.yaml) — Framework: Core Lifecycle
 
@@ -647,4 +646,5 @@ sections:
 - [WU-1652 — Extract wu-spawn.ts prompt builders and strategy resolver](wu/WU-1652.yaml)
 - [WU-1650 — Extract wu-edit.ts validation and apply operations](wu/WU-1650.yaml)
 - [WU-1662 — Define typed XState wu:done pipeline machine in core](wu/WU-1662.yaml)
+- [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
