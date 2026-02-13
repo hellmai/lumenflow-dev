@@ -2,14 +2,15 @@ id: WU-1644
 title: Extract init.ts scaffolding and detection helpers
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
 tests:
   manual:
-    - Run init command with representative options and verify generated structure and scripts are unchanged.
+    - Run init command with representative options and verify generated structure and scripts are
+      unchanged.
   unit:
     - packages/@lumenflow/cli/__tests__/init.test.ts
     - packages/@lumenflow/cli/src/__tests__/init-greenfield.test.ts
@@ -31,8 +32,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: After template extraction, mechanically extract scaffolding/file-utils/detection helpers from init.ts into dedicated modules while preserving behavior and command interface.
+description: After template extraction, mechanically extract scaffolding/file-utils/detection
+  helpers from init.ts into dedicated modules while preserving behavior and command interface.
 acceptance:
-  - Scaffolding and detection helper functions are moved to focused modules and imported by init.ts orchestrator.
+  - Scaffolding and detection helper functions are moved to focused modules and imported by init.ts
+    orchestrator.
   - init.ts remains behaviorally equivalent for client detection and scaffold generation.
   - No API/CLI contract changes are introduced.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1644
+claimed_at: 2026-02-13T22:22:25.105Z
+baseline_main_sha: c909301e92759c7e950c7ab8397f763b3495471d
+session_id: 52046cec-c90d-44a2-bd1d-d5ec3f6351a4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T22:22:25.110Z
