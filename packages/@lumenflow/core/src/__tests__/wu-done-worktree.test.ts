@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -67,5 +67,141 @@ describe('wu:done worktree metadata path isolation', () => {
 
     expect(lastEvent.type).toBe('complete');
     expect(lastEvent.wuId).toBe(TEST_WU_ID);
+  });
+
+  it('returns no wu-events update when rerun sees the WU already completed', async () => {
+    const eventsPath = join(worktreeRoot, '.lumenflow', 'state', 'wu-events.jsonl');
+    writeFileSync(
+      eventsPath,
+      `${JSON.stringify({
+        type: 'claim',
+        wuId: TEST_WU_ID,
+        lane: 'Framework: Core Lifecycle',
+        title: 'Test claim',
+        timestamp: '2026-02-10T00:00:00.000Z',
+      })}\n` +
+        `${JSON.stringify({
+          type: 'complete',
+          wuId: TEST_WU_ID,
+          timestamp: '2026-02-10T00:05:00.000Z',
+        })}\n`,
+      'utf-8',
+    );
+
+    const paths = resolveWorktreeMetadataPaths(worktreeRoot, TEST_WU_ID);
+    const eventsUpdate = await computeWUEventsContentWithMainMerge(paths.backlogPath, TEST_WU_ID);
+
+    expect(eventsUpdate).toBeNull();
+  });
+});
+
+describe('wu:done cleanup fallback determinism (WU-1658)', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.resetModules();
+  });
+
+  async function loadCleanupHarness(options: { remoteContainsBranch: boolean }) {
+    const laneBranch = 'lane/framework-core-state-recovery/wu-1658';
+    const mockGit = {
+      worktreeRemove: vi.fn(),
+      deleteBranch: vi.fn(),
+      raw: vi.fn(),
+      fetch: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockGit.deleteBranch.mockRejectedValueOnce(new Error('not fully merged'));
+    if (options.remoteContainsBranch) {
+      mockGit.deleteBranch.mockResolvedValueOnce(undefined);
+      mockGit.raw.mockImplementation(async (args: string[]) => {
+        if (args[0] === 'merge-base') {
+          return '';
+        }
+        return '';
+      });
+    } else {
+      mockGit.raw.mockImplementation(async (args: string[]) => {
+        if (args[0] === 'merge-base') {
+          throw new Error('not ancestor');
+        }
+        return '';
+      });
+    }
+
+    vi.doMock('../git-adapter.js', () => ({
+      getGitForCwd: () => mockGit,
+    }));
+    vi.doMock('../cleanup-lock.js', () => ({
+      withCleanupLock: vi.fn(async (_id, fn) => fn()),
+    }));
+    vi.doMock('../worktree-ownership.js', () => ({
+      validateWorktreeOwnership: vi.fn(() => ({ valid: true })),
+    }));
+    vi.doMock('../wu-done-paths.js', () => ({
+      defaultWorktreeFrom: vi.fn(async () => 'worktrees/framework-core-state-recovery-wu-1658'),
+      defaultBranchFrom: vi.fn(async () => laneBranch),
+      branchExists: vi.fn(async () => true),
+    }));
+    vi.doMock('../wu-done-branch-utils.js', () => ({
+      isBranchAlreadyMerged: vi.fn(async () => false),
+    }));
+    vi.doMock('node:fs', async () => {
+      const actual = await vi.importActual<typeof import('node:fs')>('node:fs');
+      return {
+        ...actual,
+        existsSync: vi.fn(() => false),
+      };
+    });
+
+    const { runCleanup } = await import('../wu-done-cleanup.js');
+
+    return {
+      laneBranch,
+      mockGit,
+      runCleanup,
+    };
+  }
+
+  it('force-deletes local branch when remote main already contains merged branch', async () => {
+    const { laneBranch, mockGit, runCleanup } = await loadCleanupHarness({
+      remoteContainsBranch: true,
+    });
+
+    await runCleanup(
+      {
+        id: 'WU-1658',
+        lane: 'Framework: Core State Recovery',
+        claimed_mode: 'worktree',
+      },
+      {},
+    );
+
+    expect(mockGit.deleteBranch).toHaveBeenCalledTimes(2);
+    expect(mockGit.deleteBranch).toHaveBeenNthCalledWith(1, laneBranch, { force: false });
+    expect(mockGit.deleteBranch).toHaveBeenNthCalledWith(2, laneBranch, { force: true });
+  });
+
+  it('does not force-delete when remote main does not contain the branch', async () => {
+    const { laneBranch, mockGit, runCleanup } = await loadCleanupHarness({
+      remoteContainsBranch: false,
+    });
+
+    await runCleanup(
+      {
+        id: 'WU-1658',
+        lane: 'Framework: Core State Recovery',
+        claimed_mode: 'worktree',
+      },
+      {},
+    );
+
+    expect(mockGit.deleteBranch).toHaveBeenCalledTimes(1);
+    expect(mockGit.deleteBranch).toHaveBeenCalledWith(laneBranch, { force: false });
   });
 });
