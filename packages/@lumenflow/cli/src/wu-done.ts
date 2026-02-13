@@ -2970,7 +2970,13 @@ async function main() {
   const codePaths = docMain.code_paths || [];
   await printMigrationDeploymentNudge(codePaths, mainCheckoutPath);
 
-  if (allowLifecycleAutoCommit) {
+  const currentBranch = (await getGitForCwd().getCurrentBranch()).trim();
+  const shouldRunCleanupMutations =
+    currentBranch.length > 0 &&
+    currentBranch !== BRANCHES.MAIN &&
+    currentBranch !== BRANCHES.MASTER;
+
+  if (shouldRunCleanupMutations) {
     // WU-1366: Auto state cleanup after successful completion
     // Non-fatal: errors are logged but do not block completion
     await runAutoCleanupAfterDone(mainCheckoutPath);
