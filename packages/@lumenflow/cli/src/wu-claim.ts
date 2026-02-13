@@ -81,7 +81,7 @@ import {
   LUMENFLOW_PATHS,
   resolveWUStatus,
 } from '@lumenflow/core/wu-constants';
-import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { withMicroWorktree, shouldSkipRemoteOperations } from '@lumenflow/core/micro-worktree';
 import { ensureOnMain, ensureMainUpToDate } from '@lumenflow/core/wu-helpers';
 import { emitWUFlowEvent } from '@lumenflow/core/telemetry';
 import {
@@ -254,7 +254,8 @@ interface ClaimBranchMetadataInput {
  * canonical state on main during claim; they commit claim metadata on their own branch.
  */
 export function shouldApplyCanonicalClaimUpdate(input: ClaimCanonicalUpdateInput): boolean {
-  if (input.noPush) {
+  // WU-1653: Skip canonical update when no remote (requireRemote=false)
+  if (input.noPush || shouldSkipRemoteOperations()) {
     return false;
   }
 
@@ -1569,11 +1570,16 @@ async function claimWorktreeMode(ctx) {
 
   // WU-1741: Step 1 - Create work worktree+branch from main
   console.log(`${PREFIX} Creating worktree (branch = coordination lock)...`);
-  const startPoint = args.noPush ? BRANCHES.MAIN : `${REMOTES.ORIGIN}/${BRANCHES.MAIN}`;
+  // WU-1653: Use local main when no remote (requireRemote=false)
+  const startPoint =
+    args.noPush || shouldSkipRemoteOperations()
+      ? BRANCHES.MAIN
+      : `${REMOTES.ORIGIN}/${BRANCHES.MAIN}`;
   await getGitForCwd().worktreeAdd(worktree, branch, startPoint);
   console.log(`${PREFIX} ${EMOJI.SUCCESS} Worktree created at ${worktree}`);
 
-  if (!args.noPush) {
+  // WU-1653: Skip push when requireRemote=false (no remote exists)
+  if (!args.noPush && !shouldSkipRemoteOperations()) {
     const wtGit = createGitForPath(worktreePath);
     await wtGit.push(REMOTES.ORIGIN, branch, { setUpstream: true });
   }
@@ -1907,9 +1913,13 @@ async function main() {
   }
 
   // WU-1361: Fetch latest remote before validation (no local main mutation)
-  if (!args.noPush) {
+  // WU-1653: Also skip when git.requireRemote=false (local-only mode)
+  const skipRemote = shouldSkipRemoteOperations();
+  if (!args.noPush && !skipRemote) {
     await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
     await ensureMainUpToDate(getGitForCwd(), 'wu:claim');
+  } else if (skipRemote) {
+    console.log(`${PREFIX} Local-only mode (git.requireRemote=false): skipping origin sync`);
   } else {
     console.warn(
       `${PREFIX} Warning: --no-push enabled. Skipping origin/main sync; local state may be stale.`,
@@ -2068,7 +2078,8 @@ async function main() {
     });
 
     // Check if remote branch already exists (prevents duplicate global claims)
-    if (!args.noPush && !skipBranchChecks) {
+    // WU-1653: Skip when requireRemote=false (no remote to check)
+    if (!args.noPush && !skipBranchChecks && !shouldSkipRemoteOperations()) {
       const remoteExists = await getGitForCwd().remoteBranchExists(REMOTES.ORIGIN, effectiveBranch);
       if (remoteExists) {
         die(
@@ -2166,7 +2177,10 @@ async function main() {
       claimTitle = updatedTitle || title;
 
       // Refresh origin/main after push-only update so worktrees start from canonical state
-      await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+      // WU-1653: Skip fetch when requireRemote=false (no remote)
+      if (!shouldSkipRemoteOperations()) {
+        await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+      }
     } else if (!args.noPush && claimedMode === CLAIMED_MODES.BRANCH_PR) {
       console.log(
         `${PREFIX} Skipping canonical claim update on origin/main for cloud branch-pr claim.`,

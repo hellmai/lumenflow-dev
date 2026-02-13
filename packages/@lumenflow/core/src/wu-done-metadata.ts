@@ -291,7 +291,7 @@ export async function stageAndFormatMetadata({
   const wuEventsPath = repoRoot
     ? path.join(repoRoot, LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME)
     : path.join(LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME);
-  const filesToStage = [wuPath, statusPath, backlogPath, stampsDir];
+  const filesToStage = [wuPath, statusPath, backlogPath];
   if (initiativePath) {
     filesToStage.push(initiativePath);
   }
@@ -299,6 +299,8 @@ export async function stageAndFormatMetadata({
     filesToStage.push(wuEventsPath);
   }
   await gitCwd.add(filesToStage);
+  // WU-1653: Force-add stamps to override .gitignore (stamps must always be tracked)
+  await gitCwd.raw(['add', '--force', stampsDir]);
 
   // Format documentation
   console.log(`${LOG_PREFIX.DONE} Formatting auto-generated documentation...`);
