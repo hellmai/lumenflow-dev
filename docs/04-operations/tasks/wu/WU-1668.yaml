@@ -2,14 +2,15 @@ id: WU-1668
 title: Fix schema-parity registry count expectations for lifecycle command set
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-13
 code_paths:
   - packages/@lumenflow/core/src/schemas/__tests__/schema-parity.test.ts
 tests:
   manual:
-    - Run pnpm exec vitest run packages/@lumenflow/core/src/schemas/__tests__/schema-parity.test.ts and confirm count assertions pass.
+    - Run pnpm exec vitest run packages/@lumenflow/core/src/schemas/__tests__/schema-parity.test.ts
+      and confirm count assertions pass.
   unit:
     - packages/@lumenflow/core/src/schemas/__tests__/schema-parity.test.ts
   e2e: []
@@ -19,7 +20,8 @@ dependencies: []
 spec_refs:
   - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
 risks: []
-notes: Discovered while executing WU-1667; treated as pre-existing gate failure on main and tracked as fix WU for skip-gates audit.
+notes: Discovered while executing WU-1667; treated as pre-existing gate failure on main and tracked
+  as fix WU for skip-gates audit.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -28,8 +30,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: gates currently fail on main due to stale expected lifecycle schema counts in packages/@lumenflow/core/src/schemas/__tests__/schema-parity.test.ts (expects 16, actual 17). Problem: unrelated WUs are blocked by this pre-existing parity assertion drift. Solution: update expected registry totals/count assertions to match current lifecycle schema registry and restore green gates.'
+description: 'Context: gates currently fail on main due to stale expected lifecycle schema counts in
+  packages/@lumenflow/core/src/schemas/__tests__/schema-parity.test.ts (expects 16, actual 17).
+  Problem: unrelated WUs are blocked by this pre-existing parity assertion drift. Solution: update
+  expected registry totals/count assertions to match current lifecycle schema registry and restore
+  green gates.'
 acceptance:
-  - schema-parity lifecycle registry count assertion reflects current lifecycleCommandSchemas cardinality.
+  - schema-parity lifecycle registry count assertion reflects current lifecycleCommandSchemas
+    cardinality.
   - total expected schema count assertion is updated consistently.
   - Targeted schema parity tests pass on main and in worktrees.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1668
+claimed_at: 2026-02-13T22:00:12.753Z
+baseline_main_sha: a845b34849c4625ddc3c649e1c45d1fb97bc8f87
+session_id: 83b962cd-4462-43f9-a05e-4dc7905fb68f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T22:00:12.761Z

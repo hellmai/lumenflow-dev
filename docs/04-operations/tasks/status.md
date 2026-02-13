@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1668 — Fix schema-parity registry count expectations for lifecycle command set](wu/WU-1668.yaml)
 
 ## Completed
 
