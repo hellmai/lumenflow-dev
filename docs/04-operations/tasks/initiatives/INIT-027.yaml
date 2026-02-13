@@ -4,7 +4,7 @@ title: LumenFlow Tooling Cohesion Docs and Starlight IA
 description: Reduce lifecycle friction by documenting how LumenFlow tools compose
   (wu:create/claim/brief/prep/done/recover), adding failure-mode runbooks, and surfacing this
   guidance in Starlight and contributor entrypoints.
-status: in_progress
+status: done
 priority: P2
 owner: 'Framework: CLI Orchestration'
 created: 2026-02-13
@@ -14,7 +14,7 @@ phases:
     status: done
   - id: 2
     title: Contributor entrypoint cross-linking
-    status: in_progress
+    status: done
   - id: 3
     title: Starlight IA and discoverability
     status: done
