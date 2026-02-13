@@ -12,7 +12,7 @@ target_date: 2026-02-28
 phases:
   - id: 1
     title: 'Phase 1: State-Machine Foundation'
-    status: in_progress
+    status: done
   - id: 2
     title: 'Phase 2: Mechanical Decomposition'
     status: in_progress

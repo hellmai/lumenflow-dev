@@ -2,7 +2,7 @@ id: WU-1665
 title: Consolidate wu:done rollback and recovery onto staged state-machine migration
 lane: 'Framework: Core State Recovery'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -64,3 +64,6 @@ session_id: 73b17867-5860-4f95-a7e9-5bf49ddf4b1d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T23:12:47.069Z
+locked: true
+completed_at: 2026-02-13T23:21:03.457Z
+completed: 2026-02-13
