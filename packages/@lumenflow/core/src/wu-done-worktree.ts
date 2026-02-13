@@ -1026,7 +1026,9 @@ export async function autoRebaseBranch(branch, worktreePath, wuId) {
 
       if (stagedDocOutputs.trim().length > 0) {
         await gitWorktree.commit(COMMIT_FORMATS.REBASE_ARTIFACT_CLEANUP(wuId));
-        console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Committed rebased generated docs reconciliation`);
+        console.log(
+          `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Committed rebased generated docs reconciliation`,
+        );
       }
     }
 
