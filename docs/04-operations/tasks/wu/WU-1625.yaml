@@ -2,7 +2,7 @@ id: WU-1625
 title: Add 8 missing subpath exports to @lumenflow/core for consumer compatibility
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -39,3 +39,6 @@ session_id: a3d28680-b022-4d73-99fd-fd1aaf35545c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T09:51:28.748Z
+locked: true
+completed_at: 2026-02-13T10:09:05.279Z
+completed: 2026-02-13

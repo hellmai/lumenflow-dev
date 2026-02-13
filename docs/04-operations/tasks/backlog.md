@@ -34,7 +34,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1625 — Add 8 missing subpath exports to @lumenflow/core for consumer compatibility](wu/WU-1625.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -602,4 +602,5 @@ sections:
 - [WU-1622 — Fix lumenflow:upgrade push failure — missing ALLOWED_WU_TOOLS entry and stale node_modules](wu/WU-1622.yaml)
 - [WU-1624 — Prevent local state divergence after failed wu:done recovery](wu/WU-1624.yaml)
 - [WU-1621 — Harden initiative metadata writes against origin movement](wu/WU-1621.yaml)
+- [WU-1625 — Add 8 missing subpath exports to @lumenflow/core for consumer compatibility](wu/WU-1625.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

@@ -1187,4 +1187,5 @@
 {"type":"complete","wuId":"WU-1624","timestamp":"2026-02-13T09:31:56.286Z"}
 {"type":"claim","wuId":"WU-1621","timestamp":"2026-02-13T09:32:52.423Z","lane":"Framework: CLI Orchestration","title":"Harden initiative metadata writes against origin movement"}
 {"type":"complete","wuId":"WU-1621","timestamp":"2026-02-13T09:43:40.686Z"}
-{"type":"claim","wuId":"WU-1625","lane":"Framework: Core Lifecycle","title":"Add 8 missing subpath exports to @lumenflow/core for consumer compatibility","timestamp":"2026-02-13T09:51:28.771Z"}
+{"type":"claim","wuId":"WU-1625","timestamp":"2026-02-13T09:51:28.771Z","lane":"Framework: Core Lifecycle","title":"Add 8 missing subpath exports to @lumenflow/core for consumer compatibility"}
+{"type":"complete","wuId":"WU-1625","timestamp":"2026-02-13T10:09:08.059Z"}

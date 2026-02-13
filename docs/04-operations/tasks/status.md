@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1625 — Add 8 missing subpath exports to @lumenflow/core for consumer compatibility](wu/WU-1625.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -568,3 +568,4 @@ _Last updated: 2026-02-13_
 - [WU-1622 — Fix lumenflow:upgrade push failure — missing ALLOWED_WU_TOOLS entry and stale node_modules](wu/WU-1622.yaml) — 2026-02-12
 - [WU-1624 — Prevent local state divergence after failed wu:done recovery](wu/WU-1624.yaml) — 2026-02-13
 - [WU-1621 — Harden initiative metadata writes against origin movement](wu/WU-1621.yaml) — 2026-02-13
+- [WU-1625 — Add 8 missing subpath exports to @lumenflow/core for consumer compatibility](wu/WU-1625.yaml) — 2026-02-13
