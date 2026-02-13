@@ -1,7 +1,7 @@
 id: WU-1637
 title: Expose tooling lifecycle and troubleshooting in Starlight navigation
 lane: 'Content: Site Comms'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-02-13
