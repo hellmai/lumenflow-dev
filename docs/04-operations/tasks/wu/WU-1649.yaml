@@ -2,7 +2,7 @@ id: WU-1649
 title: Extract wu-claim.ts validation and mode handlers
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -45,3 +45,6 @@ session_id: f6d07652-6637-4e19-9ac6-c7e65e903182
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T22:08:14.447Z
+locked: true
+completed_at: 2026-02-13T22:27:03.823Z
+completed: 2026-02-13
