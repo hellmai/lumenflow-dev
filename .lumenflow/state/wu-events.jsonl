@@ -1225,3 +1225,4 @@
 {"type":"complete","wuId":"WU-1641","timestamp":"2026-02-13T17:12:23.501Z"}
 {"type":"claim","wuId":"WU-1653","timestamp":"2026-02-13T17:19:27.271Z","lane":"Framework: CLI WU Commands","title":"Fix wu:claim to respect requireRemote=false and wu:done stamp force-add"}
 {"type":"complete","wuId":"WU-1653","timestamp":"2026-02-13T17:24:56.584Z"}
+{"type":"claim","wuId":"WU-1655","lane":"Framework: CLI WU Commands","title":"Fix wu:claim no-remote regressions left after WU-1653","timestamp":"2026-02-13T17:38:47.601Z"}
