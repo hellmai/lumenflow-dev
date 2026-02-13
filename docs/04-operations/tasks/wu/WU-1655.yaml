@@ -1,0 +1,37 @@
+id: WU-1655
+title: Fix wu:claim no-remote regressions left after WU-1653
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-13
+code_paths:
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/core/src/wu-helpers.ts
+tests:
+  manual:
+    - In a repo with git.requireRemote=false and no origin remote, run wu:create then wu:claim and verify WU metadata updates + commit succeed without remote errors.
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-cloud-lifecycle.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1655.done
+dependencies: []
+risks: []
+notes: 'Derived from post-completion review of WU-1653: stamp force-add is correct, but no-remote claim flow still has gaps.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: WU-1653 added remote-skip guards, but review found claim paths that still depend on origin/main or skip metadata updates when git.requireRemote=false. Problem: wu:claim can fail or under-apply state updates in no-remote mode, especially around canonical-update gating, baseline SHA sourcing, and branch-only flow. Solution: make no-remote behavior explicit and consistent across claim flows, with deterministic fallback to local main where appropriate and targeted tests for requireRemote=false.'
+acceptance:
+  - Worktree-mode wu:claim with git.requireRemote=false and no origin remote succeeds without remote calls and still writes/commits expected claim metadata.
+  - No-remote path does not skip required metadata updates when canonical claim update is disabled.
+  - Baseline SHA assignment in claim metadata works without origin/main (uses a safe local fallback).
+  - Branch-only claim flow has no hidden origin dependency in no-remote mode (either supported with local fallback and no push, or blocked early with a clear preflight error before mutation).
+  - Targeted unit coverage added for requireRemote=false claim behavior and existing wu:claim test suites continue passing.
