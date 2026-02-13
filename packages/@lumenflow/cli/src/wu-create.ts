@@ -404,9 +404,7 @@ async function main() {
       ? args.notes
       : WU_CREATE_DEFAULTS.AUTO_NOTES_PLACEHOLDER;
   if (resolvedNotes === WU_CREATE_DEFAULTS.AUTO_NOTES_PLACEHOLDER) {
-    console.warn(
-      `${LOG_PREFIX} No --notes provided; using placeholder notes (edit before done).`,
-    );
+    console.warn(`${LOG_PREFIX} No --notes provided; using placeholder notes (edit before done).`);
   }
 
   const hasProvidedTests =
