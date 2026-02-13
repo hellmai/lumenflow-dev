@@ -1,0 +1,40 @@
+id: WU-1661
+title: Reconcile INIT-025 metadata and phase mapping for state-machine execution
+lane: 'Content: Specs Governance'
+type: documentation
+status: ready
+priority: P0
+created: 2026-02-13
+code_paths:
+  - docs/04-operations/tasks/initiatives/INIT-025.yaml
+  - docs/04-operations/plans/INIT-025-plan.md
+  - docs/04-operations/tasks/wu/WU-1646.yaml
+tests:
+  manual:
+    - Run pnpm initiative:status --id INIT-025 and verify updated description/notes/plan linkage are visible and coherent.
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1661.done
+dependencies: []
+initiative: INIT-025
+phase: 1
+spec_refs:
+  - lumenflow://plans/INIT-025-plan.md
+  - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
+risks: []
+notes: 'Sizing (wu-sizing-guide): Simple docs-only WU (<40 files, <50 tool calls); single-session expected.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: INIT-025 metadata and execution docs still reflect mechanical-only decomposition, while the approved plan now requires a state-machine-first phase for wu:done hardening. Problem: initiative governance and orchestration signals are misaligned, creating execution ambiguity and review churn. Solution: reconcile initiative metadata, phase interpretation notes, and linked docs so planning/orchestration tools reflect the approved state-machine-first sequence.'
+acceptance:
+  - INIT-025 metadata clearly documents state-machine-first execution ordering and phase interpretation.
+  - WU-1659 gate dedup baseline and @xstate/test deprecation decision are explicitly recorded in initiative notes/spec context.
+  - Supersession guidance for WU-1646 is documented in initiative execution mapping.
+  - INIT-025 remains linked to lumenflow://plans/INIT-025-plan.md and passes tasks/spec validation checks.
