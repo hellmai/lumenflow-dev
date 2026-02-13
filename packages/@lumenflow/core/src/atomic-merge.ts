@@ -60,7 +60,9 @@ async function mergeLaneBranchWithRetry(options: {
 
   for (let attempt = 1; attempt <= mergeRetries; attempt++) {
     try {
-      console.log(`${logPrefix} Merging ${laneBranch} in temp worktree (attempt ${attempt}/${mergeRetries})...`);
+      console.log(
+        `${logPrefix} Merging ${laneBranch} in temp worktree (attempt ${attempt}/${mergeRetries})...`,
+      );
       await gitWorktree.merge(laneBranch, { ffOnly: true });
       console.log(`${logPrefix} ✅ Temp-worktree merge succeeded`);
       return;
@@ -140,7 +142,9 @@ export async function withAtomicMerge(
       console.log(`${logPrefix} ✅ Local ${BRANCHES.MAIN} caught up`);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.warn(`${logPrefix} ⚠️ Could not fast-forward local ${BRANCHES.MAIN}: ${errorMessage}`);
+      console.warn(
+        `${logPrefix} ⚠️ Could not fast-forward local ${BRANCHES.MAIN}: ${errorMessage}`,
+      );
     }
 
     return { tempBranchName, worktreePath };
