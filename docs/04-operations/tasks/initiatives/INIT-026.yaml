@@ -1,0 +1,12 @@
+id: INIT-026
+slug: atomic-wu-done
+title: Atomic wu:done - eliminate dirty-main bug class
+description: ''
+status: draft
+priority: P0
+owner: Platform Engineering
+created: 2026-02-13
+target_date: 2026-03-06
+phases: []
+success_metrics: []
+labels: []
