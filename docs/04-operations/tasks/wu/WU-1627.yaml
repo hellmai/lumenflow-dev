@@ -2,7 +2,7 @@ id: WU-1627
 title: Implement withAtomicMerge core executor with failure-injection tests
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -34,8 +34,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Create withAtomicMerge in core to run lane-branch fast-forward merge and push inside an ephemeral temp worktree, with bounded merge/push retry and guaranteed cleanup. This WU establishes the atomic merge primitive and validates fail-path cleanliness before integration.
+description: Create withAtomicMerge in core to run lane-branch fast-forward merge and push inside an
+  ephemeral temp worktree, with bounded merge/push retry and guaranteed cleanup. This WU establishes
+  the atomic merge primitive and validates fail-path cleanliness before integration.
 acceptance:
-  - withAtomicMerge merges lane branch in temp worktree and pushes to origin/main without touching live main during risky steps
-  - failure-injection tests prove main remains clean on merge failure, push failure, callback failure, and retry exhaustion
+  - withAtomicMerge merges lane branch in temp worktree and pushes to origin/main without touching
+    live main during risky steps
+  - failure-injection tests prove main remains clean on merge failure, push failure, callback
+    failure, and retry exhaustion
   - retry-exhaustion errors return clear terminal guidance
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1627
+claimed_at: 2026-02-13T13:05:30.321Z
+baseline_main_sha: 5744fd39953904b320e227481485d49b05140e14
+session_id: 0c4f28c9-c843-4079-9456-4ca6cea8ac54
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T13:05:30.327Z
