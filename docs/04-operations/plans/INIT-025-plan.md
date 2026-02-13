@@ -16,7 +16,11 @@ Phase 1 (state-machine foundation): WU-1661 reconcile initiative metadata; WU-16
 
 ## Success Criteria
 
-- INIT-025 metadata, linked plan, and execution WUs are mutually consistent and actionable.\n- wu:done pipeline is represented by explicit typed states with validated transition/recovery paths.\n- Duplicate gate amplification remains eliminated while preserving required safety checks.\n- Existing mechanical decomposition WUs complete without regressions to public contracts.\n- Coverage and failure-path confidence increase measurably across state/recovery modules.
+- INIT-025 metadata, linked plan, and execution WUs are mutually consistent and actionable.
+- wu:done pipeline is represented by explicit typed states with validated transition/recovery paths.
+- Duplicate gate amplification remains eliminated while preserving required safety checks.
+- Existing mechanical decomposition WUs complete without regressions to public contracts.
+- Coverage and failure-path confidence increase measurably across state/recovery modules.
 
 ## Risks
 
