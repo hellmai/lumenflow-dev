@@ -1209,24 +1209,29 @@ export async function checkMergeCommits(branch, options: CheckBranchOptions = {}
 export async function checkMergeConflicts(branch) {
   const gitAdapter = getGitForCwd();
   try {
-    const mergeBase = await gitAdapter.mergeBase(BRANCHES.MAIN, branch);
-    const result = await gitAdapter.mergeTree(mergeBase, BRANCHES.MAIN, branch);
+    // Use git's merge semantics instead of output marker matching.
+    // --write-tree exits non-zero on real merge conflicts.
+    await gitAdapter.raw(['merge-tree', '--write-tree', BRANCHES.MAIN, branch]);
+    console.log(PREFLIGHT.NO_CONFLICTS);
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    const isConflict =
+      /conflict/i.test(message) ||
+      /changed in both/i.test(message) ||
+      /added in both/i.test(message) ||
+      /deleted by/i.test(message);
 
-    if (result.includes('<<<<<<<') || result.includes('>>>>>>>')) {
+    if (isConflict) {
       throw createError(
         ErrorCodes.GIT_ERROR,
         PREFLIGHT.CONFLICT_ERROR(REMOTES.ORIGIN, BRANCHES.MAIN),
         {
           branch,
-          operation: 'merge-tree',
+          operation: 'merge-tree --write-tree',
         },
       );
     }
-
-    console.log(PREFLIGHT.NO_CONFLICTS);
-  } catch (e) {
-    if (e.code === ErrorCodes.GIT_ERROR) throw e;
-    console.warn(`${LOG_PREFIX.DONE} Warning: Could not check merge conflicts: ${e.message}`);
+    console.warn(`${LOG_PREFIX.DONE} Warning: Could not check merge conflicts: ${message}`);
   }
 }
 
