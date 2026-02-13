@@ -26,7 +26,11 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
-import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import {
+  withMicroWorktree,
+  isRetryExhaustionError as coreIsRetryExhaustionError,
+  formatRetryExhaustionError as coreFormatRetryExhaustionError,
+} from '@lumenflow/core/micro-worktree';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { INIT_PATHS } from '@lumenflow/initiatives/paths';
 import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
@@ -37,6 +41,15 @@ export const LOG_PREFIX = CORE_LOG_PREFIX.PLAN_LINK ?? '[plan:link]';
 
 /** Micro-worktree operation name */
 const OPERATION_NAME = 'plan-link';
+
+/**
+ * WU-1621: operation-level push retry override for plan:link.
+ */
+export const PLAN_LINK_PUSH_RETRY_OVERRIDE = {
+  retries: 8,
+  min_delay_ms: 300,
+  max_delay_ms: 4000,
+};
 
 /** LumenFlow URI scheme for plan references */
 const PLAN_URI_SCHEME = 'lumenflow://plans/';
@@ -49,6 +62,30 @@ const INIT_ID_PATTERN = /^INIT-[A-Z0-9]+$/i;
 
 /** Target type */
 type TargetType = 'wu' | 'initiative';
+
+/**
+ * Check if an error is a push retry exhaustion error.
+ */
+export function isRetryExhaustionError(error: Error): boolean {
+  return coreIsRetryExhaustionError(error);
+}
+
+/**
+ * Format retry exhaustion error with actionable command guidance.
+ */
+export function formatRetryExhaustionError(error: Error, id: string, planUri: string): string {
+  return coreFormatRetryExhaustionError(error, {
+    command: `pnpm plan:link --id ${id} --plan ${planUri}`,
+  });
+}
+
+function parseYamlObject(rawText: string, entityLabel: string): Record<string, unknown> {
+  const parsed = parseYAML(rawText);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    die(`Invalid ${entityLabel} payload: YAML root must be an object`);
+  }
+  return parsed as Record<string, unknown>;
+}
 
 /**
  * Resolve the target type from an ID
@@ -120,14 +157,21 @@ export function linkPlanToWU(worktreePath: string, wuId: string, planUri: string
 
   // Read raw YAML to preserve all fields
   const rawText = readFileSync(wuAbsPath, { encoding: 'utf-8' });
-  const doc = parseYAML(rawText) as Record<string, unknown>;
+  const doc = parseYamlObject(rawText, `WU ${wuId}`);
+  if (doc.id !== undefined && doc.id !== wuId) {
+    die(`WU YAML id mismatch. Expected ${wuId}, found ${String(doc.id)}`);
+  }
 
   // Check for existing spec_refs
-  let specRefs = doc.spec_refs as string[] | undefined;
-
-  if (!specRefs) {
-    specRefs = [];
+  const rawSpecRefs = doc.spec_refs;
+  if (rawSpecRefs !== undefined) {
+    const isStringArray =
+      Array.isArray(rawSpecRefs) && rawSpecRefs.every((ref) => typeof ref === 'string');
+    if (!isStringArray) {
+      die(`Invalid spec_refs in ${wuId}: expected array of strings`);
+    }
   }
+  const specRefs = Array.isArray(rawSpecRefs) ? [...rawSpecRefs] : [];
 
   // Check if already linked
   if (specRefs.includes(planUri)) {
@@ -169,10 +213,17 @@ export function linkPlanToInitiative(
 
   // Read raw YAML to preserve all fields
   const rawText = readFileSync(initAbsPath, { encoding: 'utf-8' });
-  const doc = parseYAML(rawText) as Record<string, unknown>;
+  const doc = parseYamlObject(rawText, `initiative ${initId}`);
+  if (doc.id !== initId) {
+    die(`Initiative YAML id mismatch. Expected ${initId}, found ${String(doc.id)}`);
+  }
 
   // Check for existing related_plan
-  const existingPlan = doc.related_plan as string | undefined;
+  const relatedPlan = doc.related_plan;
+  if (relatedPlan !== undefined && typeof relatedPlan !== 'string') {
+    die(`Invalid related_plan in ${initId}: expected string when present`);
+  }
+  const existingPlan = relatedPlan as string | undefined;
 
   if (existingPlan === planUri) {
     console.log(`${LOG_PREFIX} Plan already linked to ${initId} (idempotent)`);
@@ -241,6 +292,7 @@ async function main(): Promise<void> {
       id,
       logPrefix: LOG_PREFIX,
       pushOnly: true,
+      pushRetryOverride: PLAN_LINK_PUSH_RETRY_OVERRIDE,
       execute: async ({ worktreePath }) => {
         // Validate plan exists
         validatePlanExists(worktreePath, planUri);
@@ -273,6 +325,9 @@ async function main(): Promise<void> {
     console.log(`  Target:  ${id} (${targetType})`);
     console.log(`  Plan:    ${planUri}`);
   } catch (error) {
+    if (error instanceof Error && isRetryExhaustionError(error)) {
+      die(formatRetryExhaustionError(error, id, planUri));
+    }
     die(
       `Plan linking failed: ${(error as Error).message}\n\n` +
         `Micro-worktree cleanup was attempted automatically.\n` +

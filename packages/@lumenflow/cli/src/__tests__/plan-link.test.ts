@@ -148,6 +148,30 @@ describe('plan:link command', () => {
 
       expect(() => linkPlanToWU(tempDir, 'WU-9999', 'lumenflow://plans/plan.md')).toThrow();
     });
+
+    it('should fail with clear error when spec_refs has invalid type', async () => {
+      const { linkPlanToWU } = await import('../plan-link.js');
+
+      const wuDir = join(tempDir, ...TEST_WU_DIR.split('/'));
+      mkdirSync(wuDir, { recursive: true });
+      const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
+      writeFileSync(
+        wuPath,
+        [
+          `id: ${TEST_WU_ID}`,
+          `title: ${TEST_WU_TITLE}`,
+          `lane: "${TEST_LANE}"`,
+          'status: ready',
+          'type: feature',
+          'spec_refs: lumenflow://plans/old.md',
+          '',
+        ].join('\n'),
+      );
+
+      expect(() => linkPlanToWU(tempDir, TEST_WU_ID, TEST_WU_PLAN_URI)).toThrow(
+        /spec_refs.*array/i,
+      );
+    });
   });
 
   describe('linkPlanToInitiative', () => {
@@ -226,6 +250,31 @@ describe('plan:link command', () => {
 
       consoleSpy.mockRestore();
     });
+
+    it('should fail with clear error when related_plan has invalid type', async () => {
+      const { linkPlanToInitiative } = await import('../plan-link.js');
+
+      const initDir = join(tempDir, ...TEST_INIT_DIR.split('/'));
+      mkdirSync(initDir, { recursive: true });
+      const initPath = join(initDir, `${TEST_INIT_ID}.yaml`);
+      writeFileSync(
+        initPath,
+        [
+          `id: ${TEST_INIT_ID}`,
+          `slug: ${TEST_INIT_SLUG}`,
+          `title: ${TEST_INIT_TITLE}`,
+          `status: ${TEST_STATUS_OPEN}`,
+          `created: ${TEST_DATE}`,
+          'related_plan:',
+          '  bad: value',
+          '',
+        ].join('\n'),
+      );
+
+      expect(() => linkPlanToInitiative(tempDir, TEST_INIT_ID, TEST_INIT_PLAN_URI)).toThrow(
+        /related_plan.*string/i,
+      );
+    });
   });
 
   describe('validatePlanExists', () => {
@@ -284,6 +333,13 @@ describe('plan:link CLI exports', () => {
     expect(typeof planLink.linkPlanToInitiative).toBe('function');
     expect(typeof planLink.validatePlanExists).toBe('function');
     expect(typeof planLink.resolveTargetType).toBe('function');
+    expect(typeof planLink.isRetryExhaustionError).toBe('function');
+    expect(typeof planLink.formatRetryExhaustionError).toBe('function');
+    expect(planLink.PLAN_LINK_PUSH_RETRY_OVERRIDE).toEqual({
+      retries: 8,
+      min_delay_ms: 300,
+      max_delay_ms: 4000,
+    });
     expect(typeof planLink.LOG_PREFIX).toBe('string');
   });
 });

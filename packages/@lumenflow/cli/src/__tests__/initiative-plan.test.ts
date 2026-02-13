@@ -259,6 +259,44 @@ describe('init:plan command', () => {
 
       consoleSpy.mockRestore();
     });
+
+    it('should fail with clear error when related_plan has invalid type', async () => {
+      const { updateInitiativeWithPlan } = await import('../initiative-plan.js');
+
+      const initDir = join(tempDir, 'docs', '04-operations', 'tasks', 'initiatives');
+      mkdirSync(initDir, { recursive: true });
+      const initPath = join(initDir, 'INIT-001.yaml');
+      writeFileSync(
+        initPath,
+        [
+          'id: INIT-001',
+          'slug: test-initiative',
+          'title: Test Initiative',
+          'status: open',
+          'created: 2026-01-25',
+          'related_plan:',
+          '  - lumenflow://plans/invalid.md',
+          '',
+        ].join('\n'),
+      );
+
+      expect(() =>
+        updateInitiativeWithPlan(tempDir, 'INIT-001', 'lumenflow://plans/new-plan.md'),
+      ).toThrow(/related_plan.*string/i);
+    });
+
+    it('should fail with clear error when initiative payload is not an object', async () => {
+      const { updateInitiativeWithPlan } = await import('../initiative-plan.js');
+
+      const initDir = join(tempDir, 'docs', '04-operations', 'tasks', 'initiatives');
+      mkdirSync(initDir, { recursive: true });
+      const initPath = join(initDir, 'INIT-001.yaml');
+      writeFileSync(initPath, '- not-an-initiative-object\n');
+
+      expect(() =>
+        updateInitiativeWithPlan(tempDir, 'INIT-001', 'lumenflow://plans/new-plan.md'),
+      ).toThrow(/must be an object/i);
+    });
   });
 
   describe('createPlanTemplate', () => {
@@ -364,6 +402,13 @@ describe('init:plan CLI integration', () => {
     expect(typeof initPlan.updateInitiativeWithPlan).toBe('function');
     expect(typeof initPlan.createPlanTemplate).toBe('function');
     expect(typeof initPlan.getCommitMessage).toBe('function');
+    expect(typeof initPlan.isRetryExhaustionError).toBe('function');
+    expect(typeof initPlan.formatRetryExhaustionError).toBe('function');
+    expect(initPlan.INITIATIVE_PLAN_PUSH_RETRY_OVERRIDE).toEqual({
+      retries: 8,
+      min_delay_ms: 300,
+      max_delay_ms: 4000,
+    });
     expect(typeof initPlan.LOG_PREFIX).toBe('string');
   });
 });

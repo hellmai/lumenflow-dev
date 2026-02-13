@@ -396,6 +396,39 @@ describe('initiative:remove-wu command', () => {
 
       expect(changed).toBe(false);
     });
+
+    it('should preserve related_plan and unknown fields when updating wus list', async () => {
+      const { updateInitiativeInWorktree } = await import('../initiative-remove-wu.js');
+
+      const initDir = join(tempDir, INIT_REL_PATH);
+      mkdirSync(initDir, { recursive: true });
+      const initPath = join(initDir, `${TEST_INIT_ID}.yaml`);
+      writeFileSync(
+        initPath,
+        [
+          `id: ${TEST_INIT_ID}`,
+          `slug: ${TEST_INIT_SLUG}`,
+          `title: ${TEST_INIT_TITLE}`,
+          `status: ${TEST_INIT_STATUS}`,
+          `created: ${TEST_DATE}`,
+          'wus:',
+          `  - ${TEST_WU_ID}`,
+          `  - ${TEST_WU_ID_2}`,
+          'related_plan: lumenflow://plans/INIT-001-plan.md',
+          'custom_metadata:',
+          '  owner: platform',
+          '',
+        ].join('\n'),
+      );
+
+      const changed = updateInitiativeInWorktree(tempDir, TEST_INIT_ID, TEST_WU_ID);
+      expect(changed).toBe(true);
+
+      const updated = parseYAML(readFileSync(initPath, 'utf-8'));
+      expect(updated.wus).toEqual([TEST_WU_ID_2]);
+      expect(updated.related_plan).toBe('lumenflow://plans/INIT-001-plan.md');
+      expect(updated.custom_metadata).toEqual({ owner: 'platform' });
+    });
   });
 
   describe('LOG_PREFIX', () => {
@@ -437,6 +470,11 @@ describe('initiative:remove-wu CLI integration', () => {
     expect(typeof initRemoveWu.checkWUIsLinked).toBe('function');
     expect(typeof initRemoveWu.updateWUInWorktree).toBe('function');
     expect(typeof initRemoveWu.updateInitiativeInWorktree).toBe('function');
+    expect(initRemoveWu.INITIATIVE_REMOVE_WU_PUSH_RETRY_OVERRIDE).toEqual({
+      retries: 8,
+      min_delay_ms: 300,
+      max_delay_ms: 4000,
+    });
     expect(typeof initRemoveWu.LOG_PREFIX).toBe('string');
     expect(typeof initRemoveWu.OPERATION_NAME).toBe('string');
   });

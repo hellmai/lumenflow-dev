@@ -23,7 +23,7 @@
 
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { die } from '@lumenflow/core/error-handler';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { INIT_PATHS } from '@lumenflow/initiatives/paths';
@@ -40,14 +40,23 @@ import {
   isRetryExhaustionError as coreIsRetryExhaustionError,
   formatRetryExhaustionError as coreFormatRetryExhaustionError,
 } from '@lumenflow/core/micro-worktree';
-import { readWU, writeWU } from '@lumenflow/core/wu-yaml';
-import { readInitiative, writeInitiative } from '@lumenflow/initiatives/yaml';
+import { parseYAML, readWU, stringifyYAML, writeWU } from '@lumenflow/core/wu-yaml';
+import { readInitiative } from '@lumenflow/initiatives/yaml';
 
 /** Log prefix for console output */
 export const LOG_PREFIX = INIT_LOG_PREFIX.REMOVE_WU;
 
 /** Micro-worktree operation name */
 export const OPERATION_NAME = 'initiative-remove-wu';
+
+/**
+ * WU-1621: operation-level push retry override for initiative:remove-wu.
+ */
+export const INITIATIVE_REMOVE_WU_PUSH_RETRY_OVERRIDE = {
+  retries: 8,
+  min_delay_ms: 300,
+  max_delay_ms: 4000,
+};
 
 /**
  * WU-1333/WU-1336: Check if an error is a retry exhaustion error
@@ -188,16 +197,39 @@ export function updateInitiativeInWorktree(
   const initRelPath = INIT_PATHS.INITIATIVE(initId);
   const initAbsPath = join(worktreePath, initRelPath);
 
-  const doc = readInitiative(initAbsPath, initId);
+  // Read raw YAML to preserve unknown fields like related_plan.
+  const rawText = readFileSync(initAbsPath, { encoding: 'utf-8' });
+  const parsed = parseYAML(rawText);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    die(`Invalid initiative payload for ${initId}: YAML root must be an object`);
+  }
+
+  const doc = parsed as Record<string, unknown>;
+  if (doc.id !== initId) {
+    die(`Initiative YAML id mismatch. Expected ${initId}, found ${String(doc.id)}`);
+  }
+
+  const relatedPlan = doc.related_plan;
+  if (relatedPlan !== undefined && typeof relatedPlan !== 'string') {
+    die(`Invalid related_plan in ${initId}: expected string when present`);
+  }
+
+  const wus = doc.wus;
+  if (wus === undefined) {
+    return false;
+  }
+  if (!Array.isArray(wus) || !wus.every((id) => typeof id === 'string')) {
+    die(`Invalid initiative.wus in ${initId}: expected array of WU IDs`);
+  }
 
   // Skip if no wus array or WU not in list (idempotent)
-  if (!Array.isArray(doc.wus) || !doc.wus.includes(wuId)) {
+  if (!wus.includes(wuId)) {
     return false;
   }
 
   // Remove WU from list
-  doc.wus = doc.wus.filter((id: string) => id !== wuId);
-  writeInitiative(initAbsPath, doc);
+  doc.wus = wus.filter((id: string) => id !== wuId);
+  writeFileSync(initAbsPath, stringifyYAML(doc), { encoding: 'utf-8' });
 
   console.log(`${LOG_PREFIX} Removed ${wuId} from ${initId} wus list`);
   return true;
@@ -245,6 +277,7 @@ export async function main(): Promise<void> {
       id: `${wuId}-${initId}`.toLowerCase(),
       logPrefix: LOG_PREFIX,
       pushOnly: true,
+      pushRetryOverride: INITIATIVE_REMOVE_WU_PUSH_RETRY_OVERRIDE,
       execute: async ({ worktreePath }) => {
         const files: string[] = [];
 
@@ -281,10 +314,13 @@ export async function main(): Promise<void> {
     console.log(`\nLink Removed:`);
     console.log(`  WU:         ${wuId}`);
     console.log(`  Initiative: ${initId}`);
-    console.log(`\nNext steps:`);
-    console.log(`  - View initiative status: pnpm initiative:status ${initId}`);
-    console.log(`  - View WU: cat ${WU_PATHS.WU(wuId)}`);
+      console.log(`\nNext steps:`);
+      console.log(`  - View initiative status: pnpm initiative:status ${initId}`);
+      console.log(`  - View WU: cat ${WU_PATHS.WU(wuId)}`);
   } catch (error) {
+    if (error instanceof Error && isRetryExhaustionError(error)) {
+      die(formatRetryExhaustionError(error, wuId, initId));
+    }
     die(
       `Transaction failed: ${(error as Error).message}\n\n` +
         `Micro-worktree cleanup was attempted automatically.\n` +

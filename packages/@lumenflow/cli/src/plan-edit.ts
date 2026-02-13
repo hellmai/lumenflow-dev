@@ -25,7 +25,11 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
-import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import {
+  withMicroWorktree,
+  isRetryExhaustionError as coreIsRetryExhaustionError,
+  formatRetryExhaustionError as coreFormatRetryExhaustionError,
+} from '@lumenflow/core/micro-worktree';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { LOG_PREFIX as CORE_LOG_PREFIX } from '@lumenflow/core/wu-constants';
 
@@ -35,11 +39,36 @@ export const LOG_PREFIX = CORE_LOG_PREFIX.PLAN_EDIT ?? '[plan:edit]';
 /** Micro-worktree operation name */
 const OPERATION_NAME = 'plan-edit';
 
+/**
+ * WU-1621: operation-level push retry override for plan:edit.
+ */
+export const PLAN_EDIT_PUSH_RETRY_OVERRIDE = {
+  retries: 8,
+  min_delay_ms: 300,
+  max_delay_ms: 4000,
+};
+
 /** WU ID pattern */
 const WU_ID_PATTERN = /^WU-\d+$/;
 
 /** Initiative ID pattern */
 const INIT_ID_PATTERN = /^INIT-[A-Z0-9]+$/i;
+
+/**
+ * Check if an error is a push retry exhaustion error.
+ */
+export function isRetryExhaustionError(error: Error): boolean {
+  return coreIsRetryExhaustionError(error);
+}
+
+/**
+ * Format retry exhaustion error with actionable command guidance.
+ */
+export function formatRetryExhaustionError(error: Error, id: string, section: string): string {
+  return coreFormatRetryExhaustionError(error, {
+    command: `pnpm plan:edit --id ${id} --section "${section}" --content "<text>"`,
+  });
+}
 
 /**
  * Get the path to a plan file from its ID
@@ -227,6 +256,7 @@ async function main(): Promise<void> {
       id,
       logPrefix: LOG_PREFIX,
       pushOnly: true,
+      pushRetryOverride: PLAN_EDIT_PUSH_RETRY_OVERRIDE,
       execute: async ({ worktreePath }) => {
         const planRelPath = join(WU_PATHS.PLANS_DIR(), `${id}-plan.md`);
         const planAbsPath = join(worktreePath, planRelPath);
@@ -266,6 +296,9 @@ async function main(): Promise<void> {
     console.log(`  Section: ${section}`);
     console.log(`  Mode:    ${appendContent ? 'append' : 'replace'}`);
   } catch (error) {
+    if (error instanceof Error && isRetryExhaustionError(error)) {
+      die(formatRetryExhaustionError(error, id, section));
+    }
     die(
       `Plan edit failed: ${(error as Error).message}\n\n` +
         `Micro-worktree cleanup was attempted automatically.\n` +

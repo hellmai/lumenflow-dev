@@ -4,7 +4,10 @@ import * as fs from 'node:fs';
 import {
   applyArrayEdits,
   buildNoEditsMessage,
+  formatRetryExhaustionError,
   hasAnyEdits,
+  INITIATIVE_EDIT_PUSH_RETRY_OVERRIDE,
+  isRetryExhaustionError,
   validateEditArgs,
 } from '../initiative-edit.js';
 
@@ -103,5 +106,33 @@ describe('initiative:edit success metric editing', () => {
 
     expect(result.valid).toBe(false);
     expect(result.errors.some((error) => error.includes('status'))).toBe(true);
+  });
+});
+
+describe('initiative:edit retry handling (WU-1621)', () => {
+  it('exports operation-level push retry override', () => {
+    expect(INITIATIVE_EDIT_PUSH_RETRY_OVERRIDE).toEqual({
+      retries: 8,
+      min_delay_ms: 300,
+      max_delay_ms: 4000,
+    });
+  });
+
+  it('detects retry exhaustion errors', () => {
+    expect(
+      isRetryExhaustionError(new Error('Push failed after 3 attempts. Origin main is busy.')),
+    ).toBe(true);
+    expect(isRetryExhaustionError(new Error('Network timeout'))).toBe(false);
+  });
+
+  it('formats actionable retry exhaustion guidance', () => {
+    const formatted = formatRetryExhaustionError(
+      new Error('Push failed after 3 attempts. Origin main may have significant traffic.'),
+      'INIT-015',
+    );
+
+    expect(formatted).toContain('Next steps:');
+    expect(formatted).toContain('initiative:edit');
+    expect(formatted).toContain('--id INIT-015');
   });
 });

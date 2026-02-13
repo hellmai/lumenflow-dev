@@ -28,7 +28,11 @@ import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { INIT_PATHS } from '@lumenflow/initiatives/paths';
 import { INIT_PATTERNS } from '@lumenflow/initiatives/constants';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
-import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import {
+  withMicroWorktree,
+  isRetryExhaustionError as coreIsRetryExhaustionError,
+  formatRetryExhaustionError as coreFormatRetryExhaustionError,
+} from '@lumenflow/core/micro-worktree';
 import { readInitiative } from '@lumenflow/initiatives/yaml';
 import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
 import { LOG_PREFIX as CORE_LOG_PREFIX } from '@lumenflow/core/wu-constants';
@@ -39,6 +43,15 @@ export const LOG_PREFIX = CORE_LOG_PREFIX.INITIATIVE_PLAN;
 
 /** Micro-worktree operation name */
 const OPERATION_NAME = 'initiative-plan';
+
+/**
+ * WU-1621: operation-level push retry override for initiative:plan.
+ */
+export const INITIATIVE_PLAN_PUSH_RETRY_OVERRIDE = {
+  retries: 8,
+  min_delay_ms: 300,
+  max_delay_ms: 4000,
+};
 
 /** Standard plans directory relative to repo root (WU-1301: uses config-based paths) */
 const PLANS_DIR = WU_PATHS.PLANS_DIR();
@@ -63,6 +76,48 @@ const CREATE_OPTION = {
   flags: '--create',
   description: 'Create a new plan template instead of linking existing file',
 };
+
+/**
+ * Check if an error is a push retry exhaustion error.
+ */
+export function isRetryExhaustionError(error: Error): boolean {
+  return coreIsRetryExhaustionError(error);
+}
+
+/**
+ * Format retry exhaustion error with actionable command guidance.
+ */
+export function formatRetryExhaustionError(
+  error: Error,
+  initId: string,
+  opts: { create?: boolean; planPath?: string } = {},
+): string {
+  const command = opts.create
+    ? `pnpm initiative:plan --initiative ${initId} --create`
+    : `pnpm initiative:plan --initiative ${initId} --plan ${opts.planPath ?? '<path-to-plan.md>'}`;
+  return coreFormatRetryExhaustionError(error, { command });
+}
+
+function parseInitiativePlanPayload(rawText: string, initId: string): Record<string, unknown> {
+  const parsed = parseYAML(rawText);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    die(`Invalid initiative payload for ${initId}: YAML root must be an object`);
+  }
+
+  const doc = parsed as Record<string, unknown>;
+  if (doc.id !== initId) {
+    die(`Initiative YAML id mismatch. Expected ${initId}, found ${doc.id}`);
+  }
+
+  const relatedPlan = doc.related_plan;
+  if (relatedPlan !== undefined && typeof relatedPlan !== 'string') {
+    die(
+      `Invalid related_plan in ${initId}: expected string when present, found ${typeof relatedPlan}`,
+    );
+  }
+
+  return doc;
+}
 
 /**
  * Validate Initiative ID format
@@ -154,12 +209,7 @@ export function updateInitiativeWithPlan(
   // Read raw YAML to preserve unknown fields like related_plan
   // (readInitiative strips them via zod schema validation)
   const rawText = readFileSync(initAbsPath, { encoding: 'utf-8' });
-  const doc = parseYAML(rawText) as Record<string, unknown>;
-
-  // Validate ID matches
-  if (doc.id !== initId) {
-    die(`Initiative YAML id mismatch. Expected ${initId}, found ${doc.id}`);
-  }
+  const doc = parseInitiativePlanPayload(rawText, initId);
 
   // Check for existing plan link
   const existingPlan = doc.related_plan as string | undefined;
@@ -291,6 +341,7 @@ async function main(): Promise<void> {
         id: initId,
         logPrefix: LOG_PREFIX,
         pushOnly: true,
+        pushRetryOverride: INITIATIVE_PLAN_PUSH_RETRY_OVERRIDE,
         execute: async ({ worktreePath }) => {
           // Create plan template
           targetPlanPath = createPlanTemplate(worktreePath, initId, initTitle);
@@ -317,6 +368,9 @@ async function main(): Promise<void> {
       console.log(`  1. Edit the plan file with your goals and approach`);
       console.log(`  2. View initiative: pnpm initiative:status ${initId}`);
     } catch (error) {
+      if (error instanceof Error && isRetryExhaustionError(error)) {
+        die(formatRetryExhaustionError(error, initId, { create: true }));
+      }
       die(
         `Transaction failed: ${(error as Error).message}\n\n` +
           `Micro-worktree cleanup was attempted automatically.\n` +
@@ -347,6 +401,7 @@ async function main(): Promise<void> {
         id: initId,
         logPrefix: LOG_PREFIX,
         pushOnly: true,
+        pushRetryOverride: INITIATIVE_PLAN_PUSH_RETRY_OVERRIDE,
         execute: async ({ worktreePath }) => {
           // Update initiative with plan link
           const changed = updateInitiativeWithPlan(worktreePath, initId, planUri);
@@ -370,6 +425,9 @@ async function main(): Promise<void> {
       console.log(`\nNext steps:`);
       console.log(`  - View initiative: pnpm initiative:status ${initId}`);
     } catch (error) {
+      if (error instanceof Error && isRetryExhaustionError(error)) {
+        die(formatRetryExhaustionError(error, initId, { planPath }));
+      }
       die(
         `Transaction failed: ${(error as Error).message}\n\n` +
           `Micro-worktree cleanup was attempted automatically.\n` +

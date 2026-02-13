@@ -197,6 +197,13 @@ describe('plan:edit CLI exports', () => {
     expect(typeof planEdit.appendToSection).toBe('function');
     expect(typeof planEdit.getPlanPath).toBe('function');
     expect(typeof planEdit.getCommitMessage).toBe('function');
+    expect(typeof planEdit.isRetryExhaustionError).toBe('function');
+    expect(typeof planEdit.formatRetryExhaustionError).toBe('function');
+    expect(planEdit.PLAN_EDIT_PUSH_RETRY_OVERRIDE).toEqual({
+      retries: 8,
+      min_delay_ms: 300,
+      max_delay_ms: 4000,
+    });
     expect(typeof planEdit.LOG_PREFIX).toBe('string');
   });
 });

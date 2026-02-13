@@ -49,11 +49,43 @@ import {
 } from '@lumenflow/initiatives/constants';
 import { FILE_SYSTEM, MICRO_WORKTREE_OPERATIONS } from '@lumenflow/core/wu-constants';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
-import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import {
+  withMicroWorktree,
+  isRetryExhaustionError as coreIsRetryExhaustionError,
+  formatRetryExhaustionError as coreFormatRetryExhaustionError,
+} from '@lumenflow/core/micro-worktree';
 import { runCLI } from './cli-entry-point.js';
 import { validateInitiativeEditCliArgs } from './shared-validators.js';
 
 const PREFIX = INIT_LOG_PREFIX.EDIT;
+
+/**
+ * WU-1621: operation-level push retry override for initiative:edit.
+ *
+ * initiative metadata updates are often chained with plan-link updates;
+ * a slightly wider retry window improves convergence when origin/main moves.
+ */
+export const INITIATIVE_EDIT_PUSH_RETRY_OVERRIDE = {
+  retries: 8,
+  min_delay_ms: 300,
+  max_delay_ms: 4000,
+};
+
+/**
+ * Check if an error is a push retry exhaustion error.
+ */
+export function isRetryExhaustionError(error: Error): boolean {
+  return coreIsRetryExhaustionError(error);
+}
+
+/**
+ * Format retry exhaustion error with actionable command guidance.
+ */
+export function formatRetryExhaustionError(error: Error, initId: string): string {
+  return coreFormatRetryExhaustionError(error, {
+    command: `pnpm initiative:edit --id ${initId} --status <status>`,
+  });
+}
 
 /**
  * Custom options for initiative-edit
@@ -273,7 +305,20 @@ function loadInitiative(id) {
   }
 
   const content = readFileSync(initPath, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
-  return parseYAML(content as string);
+  const parsed = parseYAML(content as string);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    die(
+      `Invalid Initiative payload in ${initPath}: expected YAML object.\n\n` +
+        `Run: pnpm initiative:status ${id} to inspect and repair metadata.`,
+    );
+  }
+
+  const doc = parsed as Record<string, unknown>;
+  if (doc.id !== id) {
+    die(`Initiative YAML id mismatch. Expected ${id}, found ${String(doc.id)}`);
+  }
+
+  return doc;
 }
 
 /**
@@ -532,6 +577,7 @@ async function main() {
       id: id,
       logPrefix: PREFIX,
       pushOnly: true, // WU-1435: Push directly to origin/main without touching local main
+      pushRetryOverride: INITIATIVE_EDIT_PUSH_RETRY_OVERRIDE,
       execute: async ({ worktreePath }) => {
         // Write updated Initiative to micro-worktree
         const initPath = join(worktreePath, INIT_PATHS.INITIATIVE(id));
@@ -549,6 +595,11 @@ async function main() {
 
     console.log(`${PREFIX} Successfully edited ${id}`);
     console.log(`${PREFIX} Changes pushed to origin/main`);
+  } catch (error) {
+    if (error instanceof Error && isRetryExhaustionError(error)) {
+      die(formatRetryExhaustionError(error, id));
+    }
+    throw error;
   } finally {
     // WU-1255: Restore LUMENFLOW_WU_TOOL to previous value
     if (previousWuTool === undefined) {
