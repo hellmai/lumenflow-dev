@@ -31,13 +31,13 @@ sections:
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
 - [WU-1646 — Extract wu-done.ts into thin orchestrator and helper modules](wu/WU-1646.yaml) — Framework: CLI WU Commands
-- [WU-1665 — Consolidate wu:done rollback and recovery onto staged state-machine migration](wu/WU-1665.yaml) — Framework: Core State Recovery
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml) — Framework: Core Validation
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml) — Framework: CLI Enforcement
 
 ## 🔧 In progress
 
 - [WU-1666 — Add model-based wu:done pipeline test coverage with @xstate/graph](wu/WU-1666.yaml) — Framework: CLI WU Commands
+- [WU-1665 — Consolidate wu:done rollback and recovery onto staged state-machine migration](wu/WU-1665.yaml) — Framework: Core State Recovery
 
 ## ⛔ Blocked
 
