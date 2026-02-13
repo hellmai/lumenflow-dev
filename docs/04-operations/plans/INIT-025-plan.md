@@ -4,7 +4,7 @@ Created: 2026-02-12
 
 ## Goal
 
-Decompose the 10 largest god files (1400-4100 lines each) into focused modules under 800 lines, with architectural restructuring where needed (not just mechanical splits). Priority target: the wu:done pipeline (3090+1568 lines across orchestrator and worktree module), which has accumulated 100+ patch references and 4 emergency fixes, causing ongoing stability churn.
+Deliver INIT-025 as a state-machine-first hardening initiative: formalize wu:done execution with a typed XState pipeline and staged recovery consolidation, then finish remaining god-file decomposition with stronger verification and governance consistency.
 
 ## Scope
 
