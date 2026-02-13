@@ -28,3 +28,5 @@ labels: []
 notes:
   - '2026-02-13 reconciliation: WU-1621 completed prerequisite initiative metadata hardening;
     decomposition execution scope remains pending. INIT-025 reopened to in_progress.'
+  - '2026-02-13 WU-1639: initiative metadata reconciled with delivered scope; decomposition execution
+    WUs remain to be planned and executed.'
