@@ -50,7 +50,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1668 — Fix schema-parity registry count expectations for lifecycle command set](wu/WU-1668.yaml) — Framework: Core Validation
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -645,4 +645,5 @@ sections:
 - [WU-1658 — Add regression coverage for wu:done post-push reconciliation and cleanup](wu/WU-1658.yaml)
 - [WU-1659 — wu:done eliminate duplicate full-gates runs and reduce flake amplification](wu/WU-1659.yaml)
 - [WU-1667 — Add --phase-title support to initiative:edit and update command docs surfaces](wu/WU-1667.yaml)
+- [WU-1668 — Fix schema-parity registry count expectations for lifecycle command set](wu/WU-1668.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
