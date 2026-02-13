@@ -107,6 +107,9 @@ export const GIT_FLAGS = {
   /** Check ancestry without output (merge-base) */
   IS_ANCESTOR: '--is-ancestor',
 
+  /** Write merged tree object and return conflict status code */
+  WRITE_TREE: '--write-tree',
+
   /** Set upstream tracking */
   UPSTREAM: '-u',
 
@@ -180,6 +183,9 @@ export const GIT_COMMANDS = {
 
   /** Git merge-base command */
   MERGE_BASE: 'merge-base',
+
+  /** Git merge-tree command */
+  MERGE_TREE: 'merge-tree',
 
   /** Git rev-parse command */
   REV_PARSE: 'rev-parse',
