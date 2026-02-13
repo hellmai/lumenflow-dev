@@ -48,10 +48,11 @@ sections:
 - [WU-1664 — Extract wu:done worktree completion services for state-driven execution](wu/WU-1664.yaml) — Framework: Core Lifecycle
 - [WU-1665 — Consolidate wu:done rollback and recovery onto staged state-machine migration](wu/WU-1665.yaml) — Framework: Core State Recovery
 - [WU-1666 — Add model-based wu:done pipeline test coverage with @xstate/graph](wu/WU-1666.yaml) — Framework: CLI WU Commands
+- [WU-1668 — Fix schema-parity registry count expectations for lifecycle command set](wu/WU-1668.yaml) — Framework: Core Validation
 
 ## 🔧 In progress
 
-- [WU-1667 — Add --phase-title support to initiative:edit and update command docs surfaces](wu/WU-1667.yaml) — Framework: CLI Orchestration
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -645,4 +646,5 @@ sections:
 - [WU-1660 — Fix pre-existing terminal renderer global-status test regression](wu/WU-1660.yaml)
 - [WU-1658 — Add regression coverage for wu:done post-push reconciliation and cleanup](wu/WU-1658.yaml)
 - [WU-1659 — wu:done eliminate duplicate full-gates runs and reduce flake amplification](wu/WU-1659.yaml)
+- [WU-1667 — Add --phase-title support to initiative:edit and update command docs surfaces](wu/WU-1667.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

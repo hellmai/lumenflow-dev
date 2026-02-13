@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1667 — Add --phase-title support to initiative:edit and update command docs surfaces](wu/WU-1667.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -594,3 +594,4 @@ _Last updated: 2026-02-13_
 - [WU-1660 — Fix pre-existing terminal renderer global-status test regression](wu/WU-1660.yaml) — 2026-02-13
 - [WU-1658 — Add regression coverage for wu:done post-push reconciliation and cleanup](wu/WU-1658.yaml) — 2026-02-13
 - [WU-1659 — wu:done eliminate duplicate full-gates runs and reduce flake amplification](wu/WU-1659.yaml) — 2026-02-13
+- [WU-1667 — Add --phase-title support to initiative:edit and update command docs surfaces](wu/WU-1667.yaml) — 2026-02-13

@@ -2,7 +2,7 @@ id: WU-1667
 title: Add --phase-title support to initiative:edit and update command docs surfaces
 lane: 'Framework: CLI Orchestration'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -66,3 +66,6 @@ acceptance:
   - Docs surfaces are updated where needed (internal onboarding quick-ref, framework-complete
     reference, and npm/public command manifest backed docs generation path).
   - Unit tests cover success, validation failures, and idempotent rename behavior.
+locked: true
+completed_at: 2026-02-13T21:57:59.753Z
+completed: 2026-02-13
