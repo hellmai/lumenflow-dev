@@ -1233,4 +1233,5 @@
 {"type":"complete","wuId":"WU-1656","timestamp":"2026-02-13T18:07:41.168Z"}
 {"type":"claim","wuId":"WU-1657","timestamp":"2026-02-13T18:12:36.345Z","lane":"Framework: Core Lifecycle","title":"wu:done stabilize post-push local catch-up and cleanup idempotency"}
 {"type":"complete","wuId":"WU-1657","timestamp":"2026-02-13T20:19:38.021Z"}
-{"type":"claim","wuId":"WU-1660","lane":"Framework: CLI WU Commands","title":"Fix pre-existing terminal renderer global-status test regression","timestamp":"2026-02-13T20:25:17.292Z"}
+{"type":"claim","wuId":"WU-1660","timestamp":"2026-02-13T20:25:17.292Z","lane":"Framework: CLI WU Commands","title":"Fix pre-existing terminal renderer global-status test regression"}
+{"type":"complete","wuId":"WU-1660","timestamp":"2026-02-13T20:30:37.343Z"}

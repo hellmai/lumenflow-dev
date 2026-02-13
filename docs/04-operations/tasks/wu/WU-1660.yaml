@@ -2,7 +2,7 @@ id: WU-1660
 title: Fix pre-existing terminal renderer global-status test regression
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -48,3 +48,6 @@ session_id: 877bf399-c488-4502-89f0-01c3688b7a3a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T20:25:17.259Z
+locked: true
+completed_at: 2026-02-13T20:30:34.509Z
+completed: 2026-02-13

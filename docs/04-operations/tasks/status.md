@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1660 — Fix pre-existing terminal renderer global-status test regression](wu/WU-1660.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -591,3 +591,4 @@ _Last updated: 2026-02-13_
 - [WU-1654 — Doctor: replace regex parsing with library-first structured calls](wu/WU-1654.yaml) — 2026-02-13
 - [WU-1656 — Fix CLI/MCP/docs parity gaps](wu/WU-1656.yaml) — 2026-02-13
 - [WU-1657 — wu:done stabilize post-push local catch-up and cleanup idempotency](wu/WU-1657.yaml) — 2026-02-13
+- [WU-1660 — Fix pre-existing terminal renderer global-status test regression](wu/WU-1660.yaml) — 2026-02-13
