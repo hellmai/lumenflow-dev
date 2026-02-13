@@ -41,7 +41,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml) — Framework: CLI Enforcement
-- [WU-1647 — Split gates.ts into runners, plan resolvers, and utilities](wu/WU-1647.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -647,4 +646,5 @@ sections:
 - [WU-1650 — Extract wu-edit.ts validation and apply operations](wu/WU-1650.yaml)
 - [WU-1662 — Define typed XState wu:done pipeline machine in core](wu/WU-1662.yaml)
 - [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml)
+- [WU-1647 — Split gates.ts into runners, plan resolvers, and utilities](wu/WU-1647.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

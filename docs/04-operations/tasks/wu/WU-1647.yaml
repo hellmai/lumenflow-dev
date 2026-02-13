@@ -2,7 +2,7 @@ id: WU-1647
 title: Split gates.ts into runners, plan resolvers, and utilities
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -45,3 +45,6 @@ session_id: 8c2c9fd6-c157-4f78-bb02-44e3f0af34e8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T22:32:33.314Z
+locked: true
+completed_at: 2026-02-13T22:47:09.230Z
+completed: 2026-02-13
