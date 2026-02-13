@@ -85,6 +85,7 @@ import {
 // WU-1747: Import retry, lock, and checkpoint modules for concurrent load resilience
 import { withRetry, createRetryConfig } from './retry-strategy.js';
 import { withMergeLock } from './merge-lock.js';
+import { withAtomicMerge } from './atomic-merge.js';
 import {} from './wu-checkpoint.js';
 // WU-1749: Import state store constant for append-only file path
 import { WU_EVENTS_FILE_NAME } from './wu-state-store.js';
@@ -272,9 +273,6 @@ export async function executeWorktreeCompletion(context) {
   // WU-1943: Track pre-commit SHA and git commit state for rollback on merge failure
   let preCommitSha = null;
   let gitCommitMade = false;
-  // WU-1577: Track pre-merge main SHA for rollback on push failure
-  let preMainMergeSha: string | null = null;
-  let mainMerged = false;
   // WU-2310: Track snapshot for file rollback on git commit failure
   /** @type {Map<string, string|null>|null} */
   let transactionSnapshot = null;
@@ -577,49 +575,19 @@ export async function executeWorktreeCompletion(context) {
             // Backlog.md is always regenerated from wu-events.jsonl, not parsed/modified
 
             console.log(MERGE.STARTING(laneBranch));
-            // WU-1554: Restore any dirty tracked files on main before ff-only merge.
-            // wu:done's preflight checks (state merge, config reads) may leave metadata
-            // files dirty on main, which causes git merge --ff-only to abort.
-            {
-              const gitMainForClean = createGitForPath(originalCwd);
-              try {
-                const mainStatus = await gitMainForClean.raw(['status', '--porcelain']);
-                if (mainStatus && mainStatus.trim()) {
-                  await gitMainForClean.raw(['checkout', '--', '.']);
-                  console.log(
-                    `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-1554: Restored dirty files on main for clean merge`,
-                  );
-                }
-              } catch {
-                // Non-fatal: if restore fails, the merge will catch it
-              }
-            }
-            // WU-1577: Capture main SHA before merge for rollback on push failure
-            preMainMergeSha = await createGitForPath(originalCwd).getCommitHash('HEAD');
-            // WU-1747: Wrap merge with lock for atomic operation under concurrent load
-            // WU-1749 Bug 2: Pass worktreePath and wuId for auto-rebase on retry
+            // WU-1628: Route merge+push through atomic temp-worktree path.
             await withMergeLock(id, async () => {
-              await mergeLaneBranch(laneBranch, { worktreePath, wuId: id });
+              await withAtomicMerge({
+                id,
+                laneBranch,
+                command: `pnpm wu:done --id ${id}`,
+                logPrefix: LOG_PREFIX.DONE,
+              });
             });
             console.log(MERGE.ATOMIC_SUCCESS);
             merged = true;
-            mainMerged = true;
+            console.log(MERGE.PUSHED(REMOTES.ORIGIN, BRANCHES.MAIN));
           }
-
-          // Sync/rebase before push (handles concurrent main advancement)
-          // WU-1541: Use createGitForPath(originalCwd) for main checkout operations
-          const gitMain = createGitForPath(originalCwd);
-          await gitMain.raw([
-            GIT_COMMANDS.PULL,
-            GIT_FLAGS.REBASE,
-            '--autostash',
-            REMOTES.ORIGIN,
-            BRANCHES.MAIN,
-          ]);
-
-          // Push from main
-          await gitMain.push(REMOTES.ORIGIN, BRANCHES.MAIN);
-          console.log(MERGE.PUSHED(REMOTES.ORIGIN, BRANCHES.MAIN));
         }
       } else {
         // Branch not found - fail loudly (use docForUpdate which has complete lane info)
@@ -732,10 +700,6 @@ export async function executeWorktreeCompletion(context) {
           console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Rollback error: ${rollbackErr.message}`);
         }
       }
-
-      // WU-1577: If merge to main succeeded but push/rebase failed, rollback main
-      // This prevents wu-events.jsonl/backlog/status leaking onto local main
-      await maybeRollbackMain(mainMerged, preMainMergeSha, originalCwd, id);
 
       console.log(`\n${BOX.TOP}`);
       if (fileRollbackSuccess) {
@@ -1523,25 +1487,6 @@ async function ensureMainNotBehindOrigin(mainCheckoutPath: string, wuId: string)
         `Then retry: pnpm wu:done --id ${wuId}`,
       { wuId, commitsBehind: result.commitsBehind },
     );
-  }
-}
-
-/**
- * WU-1577: Conditionally rollback main if merge was done but push failed.
- * Extracted from the catch block to keep cognitive complexity low.
- */
-async function maybeRollbackMain(
-  mainMerged: boolean,
-  preMainMergeSha: string | null,
-  mainCheckoutPath: string,
-  wuId: string,
-): Promise<void> {
-  if (!mainMerged || !preMainMergeSha) return;
-  try {
-    const gitMainForRollback = createGitForPath(mainCheckoutPath);
-    await rollbackMainAfterMergeFailure(gitMainForRollback, preMainMergeSha, wuId);
-  } catch (err) {
-    console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1577: Main rollback error: ${err.message}`);
   }
 }
 
