@@ -2,7 +2,7 @@ id: WU-1661
 title: Reconcile INIT-025 metadata and phase mapping for state-machine execution
 lane: 'Content: Specs Governance'
 type: documentation
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -56,3 +56,6 @@ session_id: f6d07652-6637-4e19-9ac6-c7e65e903182
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T22:09:04.357Z
+locked: true
+completed_at: 2026-02-13T22:12:39.657Z
+completed: 2026-02-13
