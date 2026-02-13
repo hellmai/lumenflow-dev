@@ -8,17 +8,7 @@ Deliver INIT-025 as a state-machine-first hardening initiative: formalize wu:don
 
 ## Scope
 
-**In scope:**
-
-- wu:done pipeline: introduce explicit state machine, consolidate 4 rollback mechanisms to 1, eliminate duplicate gate runs by design
-- Top 10 god files by size: mcp/tools.ts (4081), cli/init.ts (3936), cli/wu-done.ts (3090), cli/wu-claim.ts (2288), core/wu-spawn.ts (2135), cli/gates.ts (1896), cli/wu-spawn.ts (1836), core/wu-done-worktree.ts (1568), core/lumenflow-config-schema.ts (1463), cli/wu-edit.ts (1456)
-- Test coverage for decomposed modules (target: 80%+ on new modules)
-
-**Out of scope:**
-
-- Behavioral changes to wu:done's public API or workflow semantics
-- Changing the worktree-based completion model
-- Files already well-covered: lumenflow-config-schema.ts (91%), lane-checker.ts (85%), wu-state-store.ts (107%), gates-config.ts (102%)
+In scope: Phase 1 reconciliation + wu:done state-machine foundation (WU-1661..WU-1666), followed by the existing mechanical decomposition WUs and final coverage/cleanup. Out of scope: changing the public wu:done CLI contract or broad workflow semantics outside explicitly planned migration guards.
 
 ## Approach
 
