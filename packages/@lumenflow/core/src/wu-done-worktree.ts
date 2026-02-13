@@ -22,6 +22,7 @@
 
 import path from 'node:path';
 import { writeFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
 import {
   generateCommitMessage,
   collectMetadataToTransaction,
@@ -1207,21 +1208,33 @@ export async function checkMergeCommits(branch, options: CheckBranchOptions = {}
  * @param {string} branch - Lane branch name
  */
 export async function checkMergeConflicts(branch) {
-  const gitAdapter = getGitForCwd();
-  try {
-    // Use git's merge semantics instead of output marker matching.
-    // --write-tree exits non-zero on real merge conflicts.
-    await gitAdapter.raw(['merge-tree', '--write-tree', BRANCHES.MAIN, branch]);
-    console.log(PREFLIGHT.NO_CONFLICTS);
-  } catch (e) {
-    const message = e instanceof Error ? e.message : String(e);
-    const isConflict =
-      /conflict/i.test(message) ||
-      /changed in both/i.test(message) ||
-      /added in both/i.test(message) ||
-      /deleted by/i.test(message);
+  const MERGE_TREE_CONFLICT_EXIT_CODE = 1;
 
-    if (isConflict) {
+  try {
+    // Use git exit status for conflict detection (status=1 indicates conflicts).
+    // This avoids brittle parsing of merge-tree output text.
+    const result = spawnSync(
+      GIT_COMMANDS.GIT,
+      [GIT_COMMANDS.MERGE_TREE, GIT_FLAGS.WRITE_TREE, BRANCHES.MAIN, branch],
+      {
+        cwd: process.cwd(),
+        encoding: 'utf-8',
+      },
+    );
+
+    if (result.error) {
+      console.warn(
+        `${LOG_PREFIX.DONE} Warning: Could not check merge conflicts: ${result.error.message}`,
+      );
+      return;
+    }
+
+    if (result.status === 0) {
+      console.log(PREFLIGHT.NO_CONFLICTS);
+      return;
+    }
+
+    if (result.status === MERGE_TREE_CONFLICT_EXIT_CODE) {
       throw createError(
         ErrorCodes.GIT_ERROR,
         PREFLIGHT.CONFLICT_ERROR(REMOTES.ORIGIN, BRANCHES.MAIN),
@@ -1231,6 +1244,14 @@ export async function checkMergeConflicts(branch) {
         },
       );
     }
+
+    const stderr = typeof result.stderr === 'string' ? result.stderr.trim() : '';
+    const detail =
+      stderr || `${GIT_COMMANDS.GIT} ${GIT_COMMANDS.MERGE_TREE} exited with status ${String(result.status)}`;
+    console.warn(`${LOG_PREFIX.DONE} Warning: Could not check merge conflicts: ${detail}`);
+  } catch (e) {
+    if (e.code === ErrorCodes.GIT_ERROR) throw e;
+    const message = e instanceof Error ? e.message : String(e);
     console.warn(`${LOG_PREFIX.DONE} Warning: Could not check merge conflicts: ${message}`);
   }
 }
