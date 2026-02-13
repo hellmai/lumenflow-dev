@@ -5,6 +5,7 @@ _Last updated: 2026-02-13_
 ## In Progress
 
 - [WU-1631 — Add 4 missing subpath exports to @lumenflow/core (active-wu-detector, hardcoded-strings, linter-constants, prompt-linter)](wu/WU-1631.yaml)
+- [WU-1627 — Implement withAtomicMerge core executor with failure-injection tests](wu/WU-1627.yaml)
 
 ## Completed
 

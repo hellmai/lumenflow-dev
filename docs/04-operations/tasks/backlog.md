@@ -31,7 +31,6 @@ sections:
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
 - [WU-1623 — Stabilize core full-suite timeout flake in gates](wu/WU-1623.yaml) — Framework: Core State Recovery
-- [WU-1627 — Implement withAtomicMerge core executor with failure-injection tests](wu/WU-1627.yaml) — Framework: Core Lifecycle
 - [WU-1628 — Integrate withAtomicMerge into wu-done worktree mode](wu/WU-1628.yaml) — Framework: Core Lifecycle
 - [WU-1629 — Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage](wu/WU-1629.yaml) — Framework: Core Lifecycle
 - [WU-1630 — Remove obsolete dirty-main rollback and post-merge recovery paths after burn-in](wu/WU-1630.yaml) — Framework: CLI Orchestration
@@ -39,6 +38,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1631 — Add 4 missing subpath exports to @lumenflow/core (active-wu-detector, hardcoded-strings, linter-constants, prompt-linter)](wu/WU-1631.yaml) — Framework: Core Lifecycle
+- [WU-1627 — Implement withAtomicMerge core executor with failure-injection tests](wu/WU-1627.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
