@@ -34,3 +34,4 @@ labels: []
 lanes:
   - 'Framework: CLI Orchestration'
   - 'Framework: Core Systems'
+related_plan: lumenflow://plans/joyful-dazzling-rossum.md
