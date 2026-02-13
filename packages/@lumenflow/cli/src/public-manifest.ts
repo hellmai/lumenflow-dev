@@ -394,7 +394,7 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     name: 'initiative:edit',
     binName: 'initiative-edit',
     binPath: './dist/initiative-edit.js',
-    description: 'Edit initiative fields',
+    description: 'Edit initiative fields and phase metadata',
     category: COMMAND_CATEGORIES.INITIATIVES,
   },
   {

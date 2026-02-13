@@ -71,7 +71,7 @@ export type InitiativeCreateInput = z.infer<typeof initiativeCreateSchema>;
  *
  * Required: id
  * Optional: status, blocked_by, blocked_reason, unblock, add_lane, remove_lane,
- *           notes, description, add_phase, add_success_metric, phase_id, phase_status,
+ *           notes, description, add_phase, add_success_metric, phase_id, phase_status, phase_title,
  *           created
  */
 export const initiativeEditSchema = z.object({
@@ -91,6 +91,7 @@ export const initiativeEditSchema = z.object({
     .describe('Success metrics to add (repeatable, deduplicated)'),
   phase_id: z.string().optional().describe('Phase ID to update (use with phase_status)'),
   phase_status: phaseStatusEnum.optional().describe('New phase status'),
+  phase_title: z.string().optional().describe('New phase title'),
   created: z.string().optional().describe('Set created date (YYYY-MM-DD format)'),
 });
 

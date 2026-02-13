@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import * as fs from 'node:fs';
 
 import {
+  applyEdits,
   applyArrayEdits,
   buildNoEditsMessage,
   formatRetryExhaustionError,
@@ -14,6 +15,8 @@ import {
 const METRIC_ONE = 'Metric one';
 const METRIC_TWO = 'Metric two';
 const NEW_METRIC = 'New metric';
+const PHASE_ONE_TITLE = 'Phase 1: Mechanical Splits';
+const PHASE_ONE_RENAMED = 'Phase 1: State-Machine Foundation';
 
 describe('initiative:edit requireRemote:false support (WU-1497)', () => {
   it('should not call ensureMainUpToDate directly (micro-worktree handles origin sync)', () => {
@@ -86,6 +89,10 @@ describe('initiative:edit success metric editing', () => {
     expect(buildNoEditsMessage()).toContain('--remove-success-metric <text>');
   });
 
+  it('documents phase-title in no-edits help output', () => {
+    expect(buildNoEditsMessage()).toContain('--phase-id <id> --phase-title <title>');
+  });
+
   it('accepts schema-valid initiative:edit options', () => {
     const result = validateEditArgs({
       id: 'INIT-015',
@@ -106,6 +113,43 @@ describe('initiative:edit success metric editing', () => {
 
     expect(result.valid).toBe(false);
     expect(result.errors.some((error) => error.includes('status'))).toBe(true);
+  });
+
+  it('normalizes phaseTitle to phase_title in shared validator payload', () => {
+    const result = validateEditArgs({
+      id: 'INIT-015',
+      phaseId: '1',
+      phaseTitle: PHASE_ONE_RENAMED,
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.normalized.phase_id).toBe('1');
+    expect(result.normalized.phase_title).toBe(PHASE_ONE_RENAMED);
+  });
+
+  it('treats phase-title as an edit for no-op detection', () => {
+    expect(hasAnyEdits({ phaseId: '1', phaseTitle: PHASE_ONE_RENAMED })).toBe(true);
+  });
+});
+
+describe('initiative:edit phase title updates', () => {
+  it('renames only the targeted phase title', () => {
+    const original = {
+      id: 'INIT-015',
+      phases: [
+        { id: 1, title: PHASE_ONE_TITLE, status: 'in_progress' },
+        { id: 2, title: 'Phase 2: Mechanical Splits', status: 'pending' },
+      ],
+    };
+
+    const updated = applyEdits(original, {
+      phaseId: '1',
+      phaseTitle: PHASE_ONE_RENAMED,
+    });
+
+    expect(updated.phases[0].title).toBe(PHASE_ONE_RENAMED);
+    expect(updated.phases[1].title).toBe('Phase 2: Mechanical Splits');
+    expect(updated.phases[0].status).toBe('in_progress');
   });
 });
 

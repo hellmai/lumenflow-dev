@@ -139,7 +139,7 @@ pnpm initiative:create --id <wuId> --slug <slug> --title <title>
 
 ### initiative:edit
 
-Edit initiative fields
+Edit initiative fields and phase metadata
 
 ```bash
 pnpm initiative:edit
@@ -161,6 +161,7 @@ pnpm initiative:edit
 | `--add-success-metric &lt;text&gt;`    | Append to success_metrics array, avoiding duplicates (repeatable)           | No       |
 | `--remove-success-metric &lt;text&gt;` | Remove exact match from success_metrics array (repeatable)                  | No       |
 | `--phase-id &lt;id&gt;`                | Phase ID to update (use with --phase-status)                                | No       |
+| `--phase-title &lt;title&gt;`          | Update phase title (use with --phase-id)                                    | No       |
 | `--created &lt;date&gt;`               | Set created date (YYYY-MM-DD format)                                        | No       |
 
 ### initiative:list

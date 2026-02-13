@@ -288,12 +288,22 @@ Plans use the `lumenflow://plans/` URI scheme for references:
 | Command                                                       | Description                   |
 | ------------------------------------------------------------- | ----------------------------- |
 | `pnpm initiative:create --id INIT-XXX ...`                    | Create new initiative         |
-| `pnpm initiative:edit --id INIT-XXX ...`                      | Edit initiative fields        |
+| `pnpm initiative:edit --id INIT-XXX ...`                      | Edit initiative fields/phases |
 | `pnpm initiative:list`                                        | List all initiatives          |
 | `pnpm initiative:status --id INIT-XXX`                        | Show initiative status        |
 | `pnpm initiative:add-wu --initiative INIT-XXX --wu WU-XXX`    | Add WU to initiative          |
 | `pnpm initiative:remove-wu --initiative INIT-XXX --wu WU-XXX` | Remove WU from initiative     |
 | `pnpm initiative:bulk-assign --id INIT-XXX`                   | Bulk assign WUs to initiative |
+
+Common phase metadata updates:
+
+```bash
+# Rename a specific phase title
+pnpm initiative:edit --id INIT-025 --phase-id 1 --phase-title "Phase 1: State-Machine Foundation"
+
+# Update a specific phase status
+pnpm initiative:edit --id INIT-025 --phase-id 1 --phase-status in_progress
+```
 
 ---
 

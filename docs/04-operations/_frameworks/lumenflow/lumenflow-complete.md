@@ -1658,6 +1658,18 @@ This sets the `related_plan` field in the initiative YAML:
 related_plan: lumenflow://plans/INIT-001-user-authentication.md
 ```
 
+#### Editing Initiative Phase Metadata
+
+Use `initiative:edit` for phase-level updates without manual YAML edits:
+
+```bash
+# Rename a specific phase title
+pnpm initiative:edit --id INIT-001 --phase-id 1 --phase-title "Phase 1: Foundation"
+
+# Update a specific phase status
+pnpm initiative:edit --id INIT-001 --phase-id 1 --phase-status in_progress
+```
+
 #### Linking Plans to WUs
 
 WUs link to plans via the `spec_refs` field:
