@@ -2,7 +2,7 @@ id: WU-1641
 title: Fix initiative status commands ignoring initiative YAML status/phase state
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -48,3 +48,6 @@ session_id: 35b60fa7-cb13-4add-9398-57f91dfcd280
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T17:07:14.785Z
+locked: true
+completed_at: 2026-02-13T17:12:20.763Z
+completed: 2026-02-13

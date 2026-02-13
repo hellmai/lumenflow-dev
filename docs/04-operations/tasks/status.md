@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1641 — Fix initiative status commands ignoring initiative YAML status/phase state](wu/WU-1641.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -585,3 +585,4 @@ _Last updated: 2026-02-13_
 - [WU-1638 — Remove obsolete dirty-main defensive code after INIT-026 atomic merge](wu/WU-1638.yaml) — 2026-02-13
 - [WU-1639 — Reconcile INIT-025 lifecycle metadata with actual decomposition scope](wu/WU-1639.yaml) — 2026-02-13
 - [WU-1640 — Prevent false initiative done when phases remain pending](wu/WU-1640.yaml) — 2026-02-13
+- [WU-1641 — Fix initiative status commands ignoring initiative YAML status/phase state](wu/WU-1641.yaml) — 2026-02-13

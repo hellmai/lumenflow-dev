@@ -33,7 +33,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1641 — Fix initiative status commands ignoring initiative YAML status/phase state](wu/WU-1641.yaml) — Framework: CLI Orchestration
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -618,4 +618,5 @@ sections:
 - [WU-1638 — Remove obsolete dirty-main defensive code after INIT-026 atomic merge](wu/WU-1638.yaml)
 - [WU-1639 — Reconcile INIT-025 lifecycle metadata with actual decomposition scope](wu/WU-1639.yaml)
 - [WU-1640 — Prevent false initiative done when phases remain pending](wu/WU-1640.yaml)
+- [WU-1641 — Fix initiative status commands ignoring initiative YAML status/phase state](wu/WU-1641.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
