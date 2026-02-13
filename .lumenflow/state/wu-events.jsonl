@@ -1267,13 +1267,7 @@
 {"type":"complete","wuId":"WU-1644","timestamp":"2026-02-13T22:46:26.070Z"}
 {"type":"complete","wuId":"WU-1647","timestamp":"2026-02-13T22:47:11.826Z"}
 {"type":"complete","wuId":"WU-1645","timestamp":"2026-02-13T22:48:13.417Z"}
-<<<<<<< HEAD
 {"type":"claim","wuId":"WU-1664","lane":"Framework: Core Lifecycle","title":"Extract wu:done worktree completion services for state-driven execution","timestamp":"2026-02-13T22:49:53.947Z"}
 {"type":"claim","wuId":"WU-1663","lane":"Framework: CLI WU Commands","title":"Wire wu:done CLI orchestrator to XState pipeline actor","timestamp":"2026-02-13T22:50:25.788Z"}
 {"type":"claim","wuId":"WU-1666","lane":"Framework: CLI WU Commands","title":"Add model-based wu:done pipeline test coverage with @xstate/graph","timestamp":"2026-02-13T22:51:15.609Z"}
-=======
-{"type":"claim","wuId":"WU-1664","timestamp":"2026-02-13T22:49:53.947Z","lane":"Framework: Core Lifecycle","title":"Extract wu:done worktree completion services for state-driven execution"}
-{"type":"claim","wuId":"WU-1663","timestamp":"2026-02-13T22:50:25.788Z","lane":"Framework: CLI WU Commands","title":"Wire wu:done CLI orchestrator to XState pipeline actor"}
-{"type":"claim","wuId":"WU-1666","timestamp":"2026-02-13T22:51:15.609Z","lane":"Framework: CLI WU Commands","title":"Add model-based wu:done pipeline test coverage with @xstate/graph"}
 {"type":"complete","wuId":"WU-1663","timestamp":"2026-02-13T23:02:28.046Z"}
->>>>>>> 6dc1d792 (wu(wu-1663): done - wire wu:done cli orchestrator to xstate pipeline actor)
