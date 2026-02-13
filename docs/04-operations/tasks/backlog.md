@@ -36,7 +36,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1666 — Add model-based wu:done pipeline test coverage with @xstate/graph](wu/WU-1666.yaml) — Framework: CLI WU Commands
 - [WU-1665 — Consolidate wu:done rollback and recovery onto staged state-machine migration](wu/WU-1665.yaml) — Framework: Core State Recovery
 
 ## ⛔ Blocked
@@ -647,4 +646,5 @@ sections:
 - [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml)
 - [WU-1663 — Wire wu:done CLI orchestrator to XState pipeline actor](wu/WU-1663.yaml)
 - [WU-1664 — Extract wu:done worktree completion services for state-driven execution](wu/WU-1664.yaml)
+- [WU-1666 — Add model-based wu:done pipeline test coverage with @xstate/graph](wu/WU-1666.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
