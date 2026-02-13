@@ -200,19 +200,19 @@ For the full worktree lifecycle (parallel execution, bootstrap, isolation guaran
 
 > **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md). Always run `<command> --help` for the authoritative option list.
 
-| Command            | Description                                            |
-| ------------------ | ------------------------------------------------------ |
-| `pnpm wu:create`   | Create new WU spec                                     |
-| `pnpm wu:claim`    | Claim WU, update canonical state, create worktree      |
-| `pnpm wu:prep`     | Run gates in worktree, prep for wu:done                |
-| `pnpm wu:done`     | Complete WU (merge, stamp, cleanup)                    |
-| `pnpm wu:status`   | Show WU status, location, and valid commands           |
-| `pnpm wu:recover`  | Analyze and fix WU state inconsistencies               |
-| `pnpm wu:block`    | Block WU (transitions to blocked, frees lane)          |
-| `pnpm wu:unblock`  | Unblock WU (transitions to in_progress)                |
-| `pnpm wu:release`  | Release orphaned WU (in_progress to ready for reclaim) |
-| `pnpm gates`       | Run quality gates (`--docs-only` for docs WUs)         |
-| `pnpm mem:checkpoint` | Save memory checkpoint                              |
+| Command               | Description                                            |
+| --------------------- | ------------------------------------------------------ |
+| `pnpm wu:create`      | Create new WU spec                                     |
+| `pnpm wu:claim`       | Claim WU, update canonical state, create worktree      |
+| `pnpm wu:prep`        | Run gates in worktree, prep for wu:done                |
+| `pnpm wu:done`        | Complete WU (merge, stamp, cleanup)                    |
+| `pnpm wu:status`      | Show WU status, location, and valid commands           |
+| `pnpm wu:recover`     | Analyze and fix WU state inconsistencies               |
+| `pnpm wu:block`       | Block WU (transitions to blocked, frees lane)          |
+| `pnpm wu:unblock`     | Unblock WU (transitions to in_progress)                |
+| `pnpm wu:release`     | Release orphaned WU (in_progress to ready for reclaim) |
+| `pnpm gates`          | Run quality gates (`--docs-only` for docs WUs)         |
+| `pnpm mem:checkpoint` | Save memory checkpoint                                 |
 
 Commands include **context-aware validation** that checks location, WU status, and git state. When validation fails, commands provide copy-paste ready fix commands. Configure in `.lumenflow.config.yaml` under `experimental.context_validation`.
 

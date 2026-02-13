@@ -69,15 +69,15 @@ For complete CLI command documentation (60+ commands), see [quick-ref-commands.m
 
 **Essential commands:**
 
-| Command              | Description                                   |
-| -------------------- | --------------------------------------------- |
-| `pnpm wu:claim`      | Claim WU and create worktree (or `--cloud`)   |
-| `pnpm wu:prep`       | Run gates in worktree, prep for wu:done       |
-| `pnpm wu:done`       | Complete WU (merge or PR, stamp, cleanup)     |
-| `pnpm wu:status`     | Show WU status, location, valid commands      |
-| `pnpm wu:recover`    | Analyze and fix WU state inconsistencies      |
-| `pnpm gates`         | Run all quality gates (`--docs-only` for docs) |
-| `pnpm mem:checkpoint` | Save progress checkpoint                      |
+| Command               | Description                                    |
+| --------------------- | ---------------------------------------------- |
+| `pnpm wu:claim`       | Claim WU and create worktree (or `--cloud`)    |
+| `pnpm wu:prep`        | Run gates in worktree, prep for wu:done        |
+| `pnpm wu:done`        | Complete WU (merge or PR, stamp, cleanup)      |
+| `pnpm wu:status`      | Show WU status, location, valid commands       |
+| `pnpm wu:recover`     | Analyze and fix WU state inconsistencies       |
+| `pnpm gates`          | Run all quality gates (`--docs-only` for docs) |
+| `pnpm mem:checkpoint` | Save progress checkpoint                       |
 
 **Two-step completion (wu:prep then wu:done):**
 
@@ -124,10 +124,10 @@ This file provides universal guidance for all AI agents. Additional vendor-speci
 | Step         | Location | Command                                                                                                                                                                                |
 | ------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1. Create WU | main     | `pnpm wu:create --id WU-XXX --lane <Lane> --title "Title" --description "..." --acceptance "..." --code-paths "..." --test-paths-unit "..." --exposure backend-only --spec-refs "..."` |
-| 2. Claim     | main     | `pnpm wu:claim --id WU-XXX --lane <Lane>`                                                                                                                                             |
+| 2. Claim     | main     | `pnpm wu:claim --id WU-XXX --lane <Lane>`                                                                                                                                              |
 | 3. Work      | worktree | `cd worktrees/<lane>-wu-xxx`                                                                                                                                                           |
-| 4. Prep      | worktree | `pnpm wu:prep --id WU-XXX` (runs gates)                                                                                                                                               |
-| 5. Complete  | main     | `pnpm wu:done --id WU-XXX` (copy-paste from wu:prep)                                                                                                                                  |
+| 4. Prep      | worktree | `pnpm wu:prep --id WU-XXX` (runs gates)                                                                                                                                                |
+| 5. Complete  | main     | `pnpm wu:done --id WU-XXX` (copy-paste from wu:prep)                                                                                                                                   |
 
 ### Cloud (Branch-PR Mode)
 
