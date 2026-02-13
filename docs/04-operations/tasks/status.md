@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1657 — wu:done stabilize post-push local catch-up and cleanup idempotency](wu/WU-1657.yaml)
 
 ## Completed
 
