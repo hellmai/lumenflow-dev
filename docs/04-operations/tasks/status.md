@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1628 — Integrate withAtomicMerge into wu-done worktree mode](wu/WU-1628.yaml)
 
 ## Completed
 
