@@ -9,10 +9,7 @@ import { getMissingWorktreesFromTracked } from '../orphan-detector.js';
 import { WORKTREE_WARNINGS } from '../wu-constants.js';
 
 // WU-1654: Verify orphan-detector exports are available from @lumenflow/core public API
-import {
-  detectOrphanWorktrees,
-  detectMissingTrackedWorktrees,
-} from '../index.js';
+import { detectOrphanWorktrees, detectMissingTrackedWorktrees } from '../index.js';
 
 describe('orphan-detector missing tracked worktrees (WU-1056)', () => {
   it('returns tracked paths that are missing on disk', () => {
