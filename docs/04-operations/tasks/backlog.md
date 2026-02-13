@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1646 — Extract wu-done.ts into thin orchestrator and helper modules](wu/WU-1646.yaml) — Framework: CLI WU Commands
 - [WU-1645 — Split enforcement-generator hook script builders](wu/WU-1645.yaml) — Framework: CLI Enforcement
 - [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml) — Framework: CLI Enforcement
 - [WU-1643 — Extract init.ts template constants into data module](wu/WU-1643.yaml) — Framework: CLI Enforcement
