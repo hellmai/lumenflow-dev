@@ -1,12 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { readFile } from 'node:fs/promises';
 import { ensureCleanWorktree } from '../wu-done-check.js';
 import {
-  checkPostMergeDirtyState,
   computeBranchOnlyFallback,
-  getLifecycleRestoreTargetsOnFailure,
   getYamlStatusForDisplay,
-  isProtectedMainLikeBranch,
-  shouldAutoCommitLifecycleWrites,
 } from '../wu-done.js';
 import * as gitAdapter from '@lumenflow/core/git-adapter';
 import * as errorHandler from '@lumenflow/core/error-handler';
@@ -18,6 +15,14 @@ vi.mock('@lumenflow/core/git-adapter');
 vi.mock('@lumenflow/core/error-handler');
 
 describe('wu-done', () => {
+  describe('WU-1630: post-merge dirty-main remediation removal', () => {
+    it('does not retain post-merge dirty-state cleanup flow in main execution path', async () => {
+      const source = await readFile(new URL('../wu-done.ts', import.meta.url), 'utf-8');
+      expect(source).not.toContain('const postMergeStatus = await gitMain.getStatus()');
+      expect(source).not.toContain('const postLifecycleStatus = await gitMain.getStatus()');
+    });
+  });
+
   describe('WU-1574: strict status display helper', () => {
     it('returns canonical status when YAML status is valid', () => {
       expect(getYamlStatusForDisplay(WU_STATUS.DONE)).toBe(WU_STATUS.DONE);
@@ -142,186 +147,4 @@ describe('wu-done', () => {
     });
   });
 
-  describe('WU-1515: checkPostMergeDirtyState internal churn handling', () => {
-    it('does not block when only internal lifecycle files are dirty', () => {
-      const status = [' M .lumenflow/flow.log', ' M .lumenflow/skip-gates-audit.log'].join('\n');
-      const result = checkPostMergeDirtyState(status, 'WU-1515');
-      expect(result.isDirty).toBe(false);
-      expect(result.internalOnlyFiles).toEqual([
-        '.lumenflow/flow.log',
-        '.lumenflow/skip-gates-audit.log',
-      ]);
-      expect(result.unrelatedFiles).toEqual([]);
-    });
-
-    it('blocks when unrelated files are dirty, even if internal files are also dirty', () => {
-      const status = [' M .lumenflow/flow.log', ' M packages/@lumenflow/cli/src/wu-done.ts'].join(
-        '\n',
-      );
-      const result = checkPostMergeDirtyState(status, 'WU-1515');
-      expect(result.isDirty).toBe(true);
-      expect(result.unrelatedFiles).toEqual(['packages/@lumenflow/cli/src/wu-done.ts']);
-    });
-  });
-
-  describe('WU-1522: flow.log does not block wu:done post-merge', () => {
-    it('does not block when only flow.log is dirty after merge', () => {
-      const status = ' M .lumenflow/flow.log\n';
-      const result = checkPostMergeDirtyState(status, 'WU-1522');
-      expect(result.isDirty).toBe(false);
-      expect(result.internalOnlyFiles).toContain('.lumenflow/flow.log');
-    });
-
-    it('does not block when flow.log is untracked after merge', () => {
-      const status = '?? .lumenflow/flow.log\n';
-      const result = checkPostMergeDirtyState(status, 'WU-1522');
-      expect(result.isDirty).toBe(false);
-      expect(result.internalOnlyFiles).toContain('.lumenflow/flow.log');
-    });
-
-    it('handles flow.log with skip-cos-gates-audit.log together', () => {
-      const status = [' M .lumenflow/flow.log', ' M .lumenflow/skip-cos-gates-audit.log'].join(
-        '\n',
-      );
-      const result = checkPostMergeDirtyState(status, 'WU-1522');
-      expect(result.isDirty).toBe(false);
-      expect(result.internalOnlyFiles).toHaveLength(2);
-    });
-
-    it('is consistent between pre-merge and post-merge handling', () => {
-      // Both validateDirtyMain (pre-merge) and checkPostMergeDirtyState (post-merge)
-      // must allow flow.log. This test validates the post-merge side.
-      // The pre-merge side is tested in wu-done-dirty-main.test.ts WU-1522 section.
-      const status = ' M .lumenflow/flow.log\n';
-      const result = checkPostMergeDirtyState(status, 'WU-1522');
-      expect(result.isDirty).toBe(false);
-      // flow.log should be classified as internal, not unrelated
-      expect(result.unrelatedFiles).not.toContain('.lumenflow/flow.log');
-    });
-  });
-
-  describe('WU-1554: metadata files do not block wu:done post-merge', () => {
-    const TASK_DIR = 'docs/04-operations/tasks';
-
-    it('classifies .lumenflow/state/ files as metadataFiles', () => {
-      const status = 'M  .lumenflow/state/wu-events.jsonl\n';
-      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
-      expect(result.isDirty).toBe(false);
-      expect(result.metadataFiles).toEqual(['.lumenflow/state/wu-events.jsonl']);
-      expect(result.unrelatedFiles).toEqual([]);
-    });
-
-    it('classifies task directory files as metadataFiles', () => {
-      const status = [
-        ' M docs/04-operations/tasks/backlog.md',
-        ' M docs/04-operations/tasks/status.md',
-        ' M docs/04-operations/tasks/wu/WU-1554.yaml',
-      ].join('\n');
-      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
-      expect(result.isDirty).toBe(false);
-      expect(result.metadataFiles).toEqual([
-        'docs/04-operations/tasks/backlog.md',
-        'docs/04-operations/tasks/status.md',
-        'docs/04-operations/tasks/wu/WU-1554.yaml',
-      ]);
-      expect(result.unrelatedFiles).toEqual([]);
-    });
-
-    it('classifies .lumenflow/stamps/ files as metadataFiles', () => {
-      const status = ' M .lumenflow/stamps/WU-1554.done\n';
-      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
-      expect(result.isDirty).toBe(false);
-      expect(result.metadataFiles).toContain('.lumenflow/stamps/WU-1554.done');
-    });
-
-    it('classifies .lumenflow/archive/ files as metadataFiles', () => {
-      const status = ' M .lumenflow/archive/wu-events-2026-02.jsonl\n';
-      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
-      expect(result.isDirty).toBe(false);
-      expect(result.metadataFiles).toContain('.lumenflow/archive/wu-events-2026-02.jsonl');
-    });
-
-    it('does not block when mixed metadata and internal lifecycle files are dirty', () => {
-      const status = [
-        ' M .lumenflow/flow.log',
-        'M  .lumenflow/state/wu-events.jsonl',
-        ' M docs/04-operations/tasks/status.md',
-      ].join('\n');
-      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
-      expect(result.isDirty).toBe(false);
-      expect(result.internalOnlyFiles).toContain('.lumenflow/flow.log');
-      expect(result.metadataFiles).toContain('.lumenflow/state/wu-events.jsonl');
-      expect(result.metadataFiles).toContain('docs/04-operations/tasks/status.md');
-    });
-
-    it('still blocks when unrelated files are dirty alongside metadata files', () => {
-      const status = [
-        ' M .lumenflow/state/wu-events.jsonl',
-        ' M packages/@lumenflow/cli/src/some-file.ts',
-      ].join('\n');
-      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
-      expect(result.isDirty).toBe(true);
-      expect(result.metadataFiles).toContain('.lumenflow/state/wu-events.jsonl');
-      expect(result.unrelatedFiles).toEqual(['packages/@lumenflow/cli/src/some-file.ts']);
-    });
-
-    it('backward-compatible: works without metadataDir parameter', () => {
-      // Without metadataDir, .lumenflow/ files still classified as metadata
-      // but task dir files are classified as unrelated (backward compat)
-      const status = 'M  .lumenflow/state/wu-events.jsonl\n';
-      const result = checkPostMergeDirtyState(status, 'WU-1554');
-      expect(result.isDirty).toBe(false);
-      expect(result.metadataFiles).toContain('.lumenflow/state/wu-events.jsonl');
-    });
-
-    it('returns empty metadataFiles when no metadata files are dirty', () => {
-      const status = ' M .lumenflow/flow.log\n';
-      const result = checkPostMergeDirtyState(status, 'WU-1554', TASK_DIR);
-      expect(result.metadataFiles).toEqual([]);
-    });
-  });
-
-  describe('WU-1611: protected branch lifecycle write guard', () => {
-    it('treats main and master as protected', () => {
-      expect(isProtectedMainLikeBranch('main')).toBe(true);
-      expect(isProtectedMainLikeBranch('master')).toBe(true);
-    });
-
-    it('does not treat lane branches as protected', () => {
-      expect(isProtectedMainLikeBranch('lane/framework-cli/wu-1611')).toBe(false);
-    });
-
-    it('disables lifecycle auto-commit on protected branches', () => {
-      expect(shouldAutoCommitLifecycleWrites('main')).toBe(false);
-      expect(shouldAutoCommitLifecycleWrites('master')).toBe(false);
-    });
-
-    it('allows lifecycle auto-commit on non-protected branches', () => {
-      expect(shouldAutoCommitLifecycleWrites('lane/framework-cli/wu-1611')).toBe(true);
-    });
-  });
-
-  describe('WU-1624: failure cleanup restore targets', () => {
-    it('combines internal and metadata lifecycle files for restore', () => {
-      const targets = getLifecycleRestoreTargetsOnFailure({
-        internalOnlyFiles: ['.lumenflow/flow.log'],
-        metadataFiles: ['.lumenflow/state/wu-events.jsonl', 'docs/04-operations/tasks/status.md'],
-      });
-
-      expect(targets).toEqual([
-        '.lumenflow/flow.log',
-        '.lumenflow/state/wu-events.jsonl',
-        'docs/04-operations/tasks/status.md',
-      ]);
-    });
-
-    it('deduplicates overlapping file entries', () => {
-      const targets = getLifecycleRestoreTargetsOnFailure({
-        internalOnlyFiles: ['.lumenflow/state/wu-events.jsonl'],
-        metadataFiles: ['.lumenflow/state/wu-events.jsonl'],
-      });
-
-      expect(targets).toEqual(['.lumenflow/state/wu-events.jsonl']);
-    });
-  });
 });
