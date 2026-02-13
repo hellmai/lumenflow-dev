@@ -1203,4 +1203,5 @@
 {"type":"complete","wuId":"WU-1623","timestamp":"2026-02-13T13:25:59.108Z"}
 {"type":"claim","wuId":"WU-1628","timestamp":"2026-02-13T13:26:36.414Z","lane":"Framework: Core Lifecycle","title":"Integrate withAtomicMerge into wu-done worktree mode"}
 {"type":"complete","wuId":"WU-1628","timestamp":"2026-02-13T13:31:45.051Z"}
-{"type":"claim","wuId":"WU-1629","lane":"Framework: Core Lifecycle","title":"Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage","timestamp":"2026-02-13T13:32:19.764Z"}
+{"type":"claim","wuId":"WU-1629","timestamp":"2026-02-13T13:32:19.764Z","lane":"Framework: Core Lifecycle","title":"Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage"}
+{"type":"complete","wuId":"WU-1629","timestamp":"2026-02-13T13:39:10.999Z"}

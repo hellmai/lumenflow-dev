@@ -19,7 +19,7 @@ phases:
     status: done
   - id: 3
     title: Integrate branch-only non-PR mode and idempotent rerun coverage
-    status: pending
+    status: done
   - id: 4
     title: Burn-in and remove obsolete dirty-main rollback code
     status: pending

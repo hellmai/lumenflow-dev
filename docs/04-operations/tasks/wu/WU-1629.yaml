@@ -2,7 +2,7 @@ id: WU-1629
 title: Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -51,3 +51,6 @@ session_id: b44a71de-42e6-42e3-a982-4478acf6998c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T13:32:19.749Z
+locked: true
+completed_at: 2026-02-13T13:39:08.318Z
+completed: 2026-02-13

@@ -34,7 +34,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1629 — Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage](wu/WU-1629.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -610,4 +610,5 @@ sections:
 - [WU-1627 — Implement withAtomicMerge core executor with failure-injection tests](wu/WU-1627.yaml)
 - [WU-1623 — Stabilize core full-suite timeout flake in gates](wu/WU-1623.yaml)
 - [WU-1628 — Integrate withAtomicMerge into wu-done worktree mode](wu/WU-1628.yaml)
+- [WU-1629 — Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage](wu/WU-1629.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

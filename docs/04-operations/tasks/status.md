@@ -4,7 +4,7 @@ _Last updated: 2026-02-13_
 
 ## In Progress
 
-- [WU-1629 — Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage](wu/WU-1629.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -576,3 +576,4 @@ _Last updated: 2026-02-13_
 - [WU-1627 — Implement withAtomicMerge core executor with failure-injection tests](wu/WU-1627.yaml) — 2026-02-13
 - [WU-1623 — Stabilize core full-suite timeout flake in gates](wu/WU-1623.yaml) — 2026-02-13
 - [WU-1628 — Integrate withAtomicMerge into wu-done worktree mode](wu/WU-1628.yaml) — 2026-02-13
+- [WU-1629 — Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage](wu/WU-1629.yaml) — 2026-02-13
