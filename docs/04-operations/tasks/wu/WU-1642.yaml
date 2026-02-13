@@ -1,0 +1,36 @@
+id: WU-1642
+title: Split mcp tools.ts into domain modules
+lane: 'Framework: MCP'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-13
+code_paths:
+  - packages/@lumenflow/mcp/src/tools.ts
+tests:
+  manual:
+    - Run MCP tool listing/smoke flows and verify tool names, schemas, and handlers remain unchanged.
+  unit:
+    - packages/@lumenflow/mcp/src/__tests__/tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1642.done
+dependencies: []
+initiative: INIT-025
+phase: 1
+risks: []
+notes: INIT-025 Phase 1 WU-A1. Mechanical moves only; no new abstractions.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Mechanically decompose packages/@lumenflow/mcp/src/tools.ts into domain-scoped modules with a thin barrel, preserving exports and runtime behavior.
+acceptance:
+  - tools.ts is reduced to barrel/orchestration wiring while tool definitions are moved into domain files.
+  - All moved tool exports remain backward compatible from existing import paths.
+  - No behavioral changes are introduced; tests continue validating existing MCP tool behavior.
