@@ -139,6 +139,7 @@ export * from './backlog-sync-validator.js';
 export * from './worktree-scanner.js';
 export * from './worktree-ownership.js';
 export * from './micro-worktree.js';
+export * from './atomic-merge.js';
 
 // Guards and validators
 // NOTE: Configuration added below
