@@ -2,14 +2,15 @@ id: WU-1651
 title: Extract wu-create.ts validation, content, and readiness builders
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
   - packages/@lumenflow/cli/src/wu-create.ts
 tests:
   manual:
-    - Create WUs with strict and non-strict paths and verify generated YAML/backlog behavior is unchanged.
+    - Create WUs with strict and non-strict paths and verify generated YAML/backlog behavior is
+      unchanged.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
     - packages/@lumenflow/cli/__tests__/wu-create.test.ts
@@ -29,8 +30,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Mechanically decompose packages/@lumenflow/cli/src/wu-create.ts into validation, content generation, and readiness helper modules while preserving creation semantics.
+description: Mechanically decompose packages/@lumenflow/cli/src/wu-create.ts into validation,
+  content generation, and readiness helper modules while preserving creation semantics.
 acceptance:
-  - wu-create.ts delegates to extracted validation/content/readiness helpers and remains orchestrator-focused.
+  - wu-create.ts delegates to extracted validation/content/readiness helpers and remains
+    orchestrator-focused.
   - WU spec/content generation and strict validation behavior remain unchanged.
   - CLI contract for wu:create remains backward compatible.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1651
+claimed_at: 2026-02-13T22:25:42.070Z
+baseline_main_sha: 010e8429ffa3c57c353849325039359b8aca2339
+session_id: c65a9b89-e9f6-422c-844f-523d0e33216b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T22:25:42.075Z

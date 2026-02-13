@@ -34,7 +34,6 @@ sections:
 - [WU-1646 — Extract wu-done.ts into thin orchestrator and helper modules](wu/WU-1646.yaml) — Framework: CLI WU Commands
 - [WU-1647 — Split gates.ts into runners, plan resolvers, and utilities](wu/WU-1647.yaml) — Framework: CLI Enforcement
 - [WU-1650 — Extract wu-edit.ts validation and apply operations](wu/WU-1650.yaml) — Framework: CLI WU Commands
-- [WU-1651 — Extract wu-create.ts validation, content, and readiness builders](wu/WU-1651.yaml) — Framework: CLI WU Commands
 - [WU-1652 — Extract wu-spawn.ts prompt builders and strategy resolver](wu/WU-1652.yaml) — Framework: CLI WU Commands
 - [WU-1663 — Wire wu:done CLI orchestrator to XState pipeline actor](wu/WU-1663.yaml) — Framework: CLI WU Commands
 - [WU-1664 — Extract wu:done worktree completion services for state-driven execution](wu/WU-1664.yaml) — Framework: Core Lifecycle
@@ -46,6 +45,7 @@ sections:
 - [WU-1649 — Extract wu-claim.ts validation and mode handlers](wu/WU-1649.yaml) — Framework: CLI WU Commands
 - [WU-1644 — Extract init.ts scaffolding and detection helpers](wu/WU-1644.yaml) — Framework: CLI Enforcement
 - [WU-1662 — Define typed XState wu:done pipeline machine in core](wu/WU-1662.yaml) — Framework: Core State Recovery
+- [WU-1651 — Extract wu-create.ts validation, content, and readiness builders](wu/WU-1651.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 

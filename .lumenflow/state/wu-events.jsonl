@@ -1254,3 +1254,4 @@
 {"type":"claim","wuId":"WU-1644","timestamp":"2026-02-13T22:22:25.139Z","lane":"Framework: CLI Enforcement","title":"Extract init.ts scaffolding and detection helpers"}
 {"type":"claim","wuId":"WU-1662","timestamp":"2026-02-13T22:23:09.115Z","lane":"Framework: Core State Recovery","title":"Define typed XState wu:done pipeline machine in core"}
 {"type":"complete","wuId":"WU-1642","timestamp":"2026-02-13T22:24:46.607Z"}
+{"type":"claim","wuId":"WU-1651","lane":"Framework: CLI WU Commands","title":"Extract wu-create.ts validation, content, and readiness builders","timestamp":"2026-02-13T22:25:42.094Z"}
