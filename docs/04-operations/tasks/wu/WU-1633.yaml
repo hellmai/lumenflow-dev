@@ -2,7 +2,7 @@ id: WU-1633
 title: Harden CLI bootstrap fallback for lifecycle hotfixes
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -30,8 +30,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Fix lifecycle tooling deadlock when main is broken and fix wu:edit script path for worktrees. Ensure strict lifecycle entries can use existing dist as break-glass fallback when build fails, and route wu:edit through cli-entry for consistent worktree behavior.
+description: Fix lifecycle tooling deadlock when main is broken and fix wu:edit script path for
+  worktrees. Ensure strict lifecycle entries can use existing dist as break-glass fallback when
+  build fails, and route wu:edit through cli-entry for consistent worktree behavior.
 acceptance:
   - wu:edit works from a claimed worktree without requiring local cli dist build
-  - wu:done and wu:claim can proceed using existing dist when strict pre-build fails, with explicit warning
-  - cli-entry unit tests cover fallback and strict-entry failure behavior at 100% for changed branches
+  - wu:done and wu:claim can proceed using existing dist when strict pre-build fails, with explicit
+    warning
+  - cli-entry unit tests cover fallback and strict-entry failure behavior at 100% for changed
+    branches
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1633
+claimed_at: 2026-02-13T12:33:00.627Z
+baseline_main_sha: 88b87279108b1d9786c81d7391b097c25d7f9b01
+session_id: 653f618f-196c-4d37-8889-82e1812de146
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T12:33:00.632Z

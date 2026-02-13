@@ -5,6 +5,7 @@ _Last updated: 2026-02-13_
 ## In Progress
 
 - [WU-1631 — Add 4 missing subpath exports to @lumenflow/core (active-wu-detector, hardcoded-strings, linter-constants, prompt-linter)](wu/WU-1631.yaml)
+- [WU-1633 — Harden CLI bootstrap fallback for lifecycle hotfixes](wu/WU-1633.yaml)
 
 ## Completed
 

@@ -1194,3 +1194,4 @@
 {"type":"complete","wuId":"WU-1626","timestamp":"2026-02-13T12:04:27.366Z"}
 {"type":"claim","wuId":"WU-1632","timestamp":"2026-02-13T12:16:03.540Z","lane":"Framework: Core Lifecycle","title":"Hotfix missing micro-worktree-shared source on main"}
 {"type":"complete","wuId":"WU-1632","timestamp":"2026-02-13T12:21:30.393Z"}
+{"type":"claim","wuId":"WU-1633","lane":"Framework: CLI Enforcement","title":"Harden CLI bootstrap fallback for lifecycle hotfixes","timestamp":"2026-02-13T12:33:00.665Z"}
