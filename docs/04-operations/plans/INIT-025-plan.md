@@ -20,17 +20,7 @@ Phase 1 (state-machine foundation): WU-1661 reconcile initiative metadata; WU-16
 
 ## Risks
 
-**Risk 1: Regression during state machine extraction**
-Mitigation: Write integration tests for all wu:done failure modes FIRST (WU-1658 is already doing this). Only then extract the state machine. Tests must pass before and after.
-
-**Risk 2: Merge conflicts from parallel work**
-Mitigation: Phase 1 (wu:done) touches concentrated files. Claim all 3 Phase 1 WUs sequentially, not in parallel. Phase 2 mechanical splits are independent and can parallelize.
-
-**Risk 3: Barrel re-exports break downstream imports**
-Mitigation: Barrel files maintain exact same export surface. Downstream code (MCP, CLI commands) should not need changes. Validate with full gates after each split.
-
-**Risk 4: Scope creep into behavioral changes**
-Mitigation: Strict rule -- no behavioral changes in this initiative. State machine must produce identical outputs for identical inputs. Any behavioral fix gets a separate WU outside INIT-025.
+- Migration regressions in failure paths: mitigate with staged compatibility guard and failure-mode tests before legacy removal.\n- Lane/WIP contention across Core State Recovery and CLI command lanes: mitigate with explicit dependency ordering (WU-1662 -> WU-1663/WU-1664 -> WU-1665/WU-1666).\n- Tooling drift between initiative metadata and plan text: mitigate with reconciliation WU and linked plan governance checks.
 
 ## Open Questions
 
