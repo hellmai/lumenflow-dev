@@ -30,12 +30,11 @@ sections:
 - [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml) — Framework: Core Lifecycle
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
-- [WU-1629 — Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage](wu/WU-1629.yaml) — Framework: Core Lifecycle
 - [WU-1630 — Remove obsolete dirty-main rollback and post-merge recovery paths after burn-in](wu/WU-1630.yaml) — Framework: CLI Orchestration
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1629 — Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage](wu/WU-1629.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

@@ -2,7 +2,7 @@ id: WU-1629
 title: Integrate withAtomicMerge into branch-only non-PR mode with idempotent rerun coverage
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-13
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__/atomic-merge.test.ts
 tests:
   manual:
-    - Run branch-only non-PR completion with injected failure and rerun; confirm no duplicate metadata and clean main
+    - Run branch-only non-PR completion with injected failure and rerun; confirm no duplicate
+      metadata and clean main
   unit:
     - packages/@lumenflow/core/src/__tests__/atomic-merge.test.ts
   e2e: []
@@ -34,8 +35,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Replace branch-only non-PR live-main merge and metadata-on-main writes with withAtomicMerge using an afterMerge callback in temp worktree. Add idempotent rerun and branch-only integration coverage to prove convergence under origin movement without dirty-main side effects.
+description: Replace branch-only non-PR live-main merge and metadata-on-main writes with
+  withAtomicMerge using an afterMerge callback in temp worktree. Add idempotent rerun and
+  branch-only integration coverage to prove convergence under origin movement without dirty-main
+  side effects.
 acceptance:
   - branch-only non-PR completion path uses withAtomicMerge with afterMerge callback
   - idempotent rerun after injected partial failure succeeds without duplicate metadata/events
   - branch-only integration verifies clean main and retry convergence under origin movement
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1629
+claimed_at: 2026-02-13T13:32:19.746Z
+baseline_main_sha: 721a540ee15b6bd6abd006fba163638669e284fd
+session_id: b44a71de-42e6-42e3-a982-4478acf6998c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-13T13:32:19.749Z
