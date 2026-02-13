@@ -1182,5 +1182,6 @@
 {"type":"claim","wuId":"WU-1621","timestamp":"2026-02-12T20:40:46.328Z","lane":"Framework: CLI Orchestration","title":"Harden initiative metadata writes against origin movement"}
 {"type":"claim","wuId":"WU-1622","timestamp":"2026-02-12T20:49:29.855Z","lane":"Framework: CLI WU Commands","title":"Fix lumenflow:upgrade push failure — missing ALLOWED_WU_TOOLS entry and stale node_modules"}
 {"type":"complete","wuId":"WU-1622","timestamp":"2026-02-12T20:56:06.907Z"}
-{"type":"release","wuId":"WU-1621","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-13T09:15:31.800Z"}
-{"type":"claim","wuId":"WU-1624","lane":"Framework: Core State Recovery","title":"Prevent local state divergence after failed wu:done recovery","timestamp":"2026-02-13T09:22:44.404Z"}
+{"type":"release","wuId":"WU-1621","timestamp":"2026-02-13T09:15:31.800Z","reason":"Reset via wu:recover --action reset"}
+{"type":"claim","wuId":"WU-1624","timestamp":"2026-02-13T09:22:44.404Z","lane":"Framework: Core State Recovery","title":"Prevent local state divergence after failed wu:done recovery"}
+{"type":"complete","wuId":"WU-1624","timestamp":"2026-02-13T09:31:56.286Z"}

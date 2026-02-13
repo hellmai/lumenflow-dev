@@ -2,7 +2,7 @@ id: WU-1624
 title: Prevent local state divergence after failed wu:done recovery
 lane: 'Framework: Core State Recovery'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-13
 code_paths:
@@ -49,3 +49,6 @@ acceptance:
     the same WU again.
   - Regression coverage reproduces the failure path and proves state remains clean/consistent after
     rollback.
+locked: true
+completed_at: 2026-02-13T09:31:53.531Z
+completed: 2026-02-13
