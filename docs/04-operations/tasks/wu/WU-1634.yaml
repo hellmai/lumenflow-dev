@@ -2,7 +2,7 @@ id: WU-1634
 title: Fix wu:done silent mode-execution failure messaging
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-13
 code_paths:
@@ -45,3 +45,6 @@ session_id: bb1d3e14-9fcd-4315-b0e8-7dab4813b628
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-13T14:13:08.161Z
+locked: true
+completed_at: 2026-02-13T14:26:54.379Z
+completed: 2026-02-13
