@@ -1237,4 +1237,5 @@
 {"type":"complete","wuId":"WU-1660","timestamp":"2026-02-13T20:30:37.343Z"}
 {"type":"claim","wuId":"WU-1658","timestamp":"2026-02-13T20:35:33.523Z","lane":"Framework: Core State Recovery","title":"Add regression coverage for wu:done post-push reconciliation and cleanup"}
 {"type":"complete","wuId":"WU-1658","timestamp":"2026-02-13T20:42:28.413Z"}
-{"type":"claim","wuId":"WU-1659","lane":"Framework: CLI WU Commands","title":"wu:done eliminate duplicate full-gates runs and reduce flake amplification","timestamp":"2026-02-13T20:43:02.557Z"}
+{"type":"claim","wuId":"WU-1659","timestamp":"2026-02-13T20:43:02.557Z","lane":"Framework: CLI WU Commands","title":"wu:done eliminate duplicate full-gates runs and reduce flake amplification"}
+{"type":"complete","wuId":"WU-1659","timestamp":"2026-02-13T20:49:35.687Z"}
