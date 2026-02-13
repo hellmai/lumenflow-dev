@@ -30,6 +30,9 @@ import {
   DEFAULTS,
   toKebab,
   FILE_SYSTEM,
+  REMOTES,
+  GIT_FLAGS,
+  getLaneBranch,
 } from '@lumenflow/core/wu-constants';
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
@@ -131,6 +134,35 @@ function getWorktreePath(wuId: string, lane: string): string {
   const laneKebab = toKebab(lane);
   const wuIdLower = wuId.toLowerCase();
   return join(process.cwd(), DEFAULTS.WORKTREES_DIR, `${laneKebab}-${wuIdLower}`);
+}
+
+export function getLaneBranchNameForWU(wuId: string, lane: string): string {
+  return getLaneBranch(lane, wuId);
+}
+
+/**
+ * Remove the lane branch locally and remotely.
+ * Used by reset/nuke to clear branch-based coordination locks for re-claim.
+ */
+export async function deleteLaneBranchArtifacts(wuId: string, lane: string): Promise<void> {
+  if (!lane) return;
+
+  const branchName = getLaneBranchNameForWU(wuId, lane);
+  const git = getGitForCwd();
+
+  try {
+    await git.deleteBranch(branchName, { force: true });
+    console.log(`${LOG_PREFIX} Deleted branch: ${branchName}`);
+  } catch {
+    // Local branch may not exist; continue.
+  }
+
+  try {
+    await git.raw(['push', REMOTES.ORIGIN, GIT_FLAGS.DELETE_REMOTE, branchName]);
+    console.log(`${LOG_PREFIX} Deleted remote branch: ${REMOTES.ORIGIN}/${branchName}`);
+  } catch {
+    // Remote branch may not exist; continue.
+  }
 }
 
 /**
@@ -415,6 +447,12 @@ async function executeReset(wuId: string): Promise<boolean> {
       }
     }
 
+    // WU-1624: Reset should also clear lane branch coordination artifacts.
+    // Otherwise wu:claim can still block on stale origin/lane/... branch existence.
+    if (!branchPrPath && lane) {
+      await deleteLaneBranchArtifacts(wuId, lane);
+    }
+
     console.log(
       `${LOG_PREFIX} ${EMOJI.SUCCESS} Reset completed - ${wuId} is now ready for re-claiming`,
     );
@@ -452,17 +490,8 @@ async function executeNuke(wuId: string): Promise<boolean> {
       console.log(`${LOG_PREFIX} Removed worktree: ${worktreePath}`);
     }
 
-    // Try to delete branch
-    // WU-1097: Use deleteBranch() instead of deprecated run() with shell strings
-    try {
-      const git = getGitForCwd();
-      const laneKebab = toKebab(doc.lane || '');
-      const branchName = `lane/${laneKebab}/${wuId.toLowerCase()}`;
-      await git.deleteBranch(branchName, { force: true });
-      console.log(`${LOG_PREFIX} Deleted branch: ${branchName}`);
-    } catch {
-      // Branch may not exist, that's fine
-    }
+    // WU-1624: Nuke must clear both local and remote branch artifacts.
+    await deleteLaneBranchArtifacts(wuId, doc.lane || '');
   }
 
   console.log(`${LOG_PREFIX} ${EMOJI.SUCCESS} Nuke completed - all artifacts removed for ${wuId}`);
