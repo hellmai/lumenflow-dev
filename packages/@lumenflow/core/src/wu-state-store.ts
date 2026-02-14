@@ -105,7 +105,8 @@ interface BootstrapWUInfo {
 function isCanonicalStateDir(stateDir: string): boolean {
   const stateLeaf = path.basename(LUMENFLOW_PATHS.STATE_DIR);
   return (
-    path.basename(stateDir) === stateLeaf && path.basename(path.dirname(stateDir)) === LUMENFLOW_PATHS.BASE
+    path.basename(stateDir) === stateLeaf &&
+    path.basename(path.dirname(stateDir)) === LUMENFLOW_PATHS.BASE
   );
 }
 
