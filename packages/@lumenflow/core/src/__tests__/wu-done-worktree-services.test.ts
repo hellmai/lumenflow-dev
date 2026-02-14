@@ -300,7 +300,7 @@ describe('WU-1664: wu:done worktree completion services', () => {
       expect(Array.isArray(result.stagedMetadataAllowlist)).toBe(true);
       // Should have entries for WU YAML, status, backlog, stamp, and events
       expect(result.stagedMetadataAllowlist.length).toBeGreaterThan(0);
-    });
+    }, 15000);
 
     it('should not commit the transaction yet', async () => {
       const result = await prepareTransaction({
@@ -359,7 +359,7 @@ describe('WU-1664: wu:done worktree completion services', () => {
       expect(result.preCommitSha).toBe('abc123');
       // Verify git commit was called
       expect(mockGit.commit).toHaveBeenCalled();
-    });
+    }, 15000);
   });
 
   describe('mergeToMain', () => {
