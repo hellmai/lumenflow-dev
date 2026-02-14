@@ -20,7 +20,7 @@
  * WU-1663 wires the CLI orchestrator to this machine.
  */
 
-import { setup, type SnapshotFrom, type ActorRefFrom } from 'xstate';
+import { assign, setup, type SnapshotFrom, type ActorRefFrom } from 'xstate';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -230,10 +230,10 @@ export const wuDoneMachine = setup({
       on: {
         [WU_DONE_EVENTS.START]: {
           target: WU_DONE_STATES.VALIDATING,
-          actions: ({ context, event }) => {
-            context.wuId = (event as StartEvent).wuId;
-            context.worktreePath = (event as StartEvent).worktreePath;
-          },
+          actions: assign({
+            wuId: ({ event }) => event.wuId,
+            worktreePath: ({ event }) => event.worktreePath,
+          }),
         },
       },
     },
@@ -245,10 +245,10 @@ export const wuDoneMachine = setup({
         },
         [WU_DONE_EVENTS.VALIDATION_FAILED]: {
           target: WU_DONE_STATES.FAILED,
-          actions: ({ context, event }) => {
-            context.error = (event as ValidationFailedEvent).error;
-            context.failedAt = WU_DONE_STATES.VALIDATING;
-          },
+          actions: assign({
+            error: ({ event }) => event.error,
+            failedAt: WU_DONE_STATES.VALIDATING,
+          }),
         },
       },
     },
@@ -260,10 +260,10 @@ export const wuDoneMachine = setup({
         },
         [WU_DONE_EVENTS.PREPARATION_FAILED]: {
           target: WU_DONE_STATES.FAILED,
-          actions: ({ context, event }) => {
-            context.error = (event as PreparationFailedEvent).error;
-            context.failedAt = WU_DONE_STATES.PREPARING;
-          },
+          actions: assign({
+            error: ({ event }) => event.error,
+            failedAt: WU_DONE_STATES.PREPARING,
+          }),
         },
       },
     },
@@ -279,10 +279,10 @@ export const wuDoneMachine = setup({
         },
         [WU_DONE_EVENTS.GATES_FAILED]: {
           target: WU_DONE_STATES.FAILED,
-          actions: ({ context, event }) => {
-            context.error = (event as GatesFailedEvent).error;
-            context.failedAt = WU_DONE_STATES.GATING;
-          },
+          actions: assign({
+            error: ({ event }) => event.error,
+            failedAt: WU_DONE_STATES.GATING,
+          }),
         },
       },
     },
@@ -294,10 +294,10 @@ export const wuDoneMachine = setup({
         },
         [WU_DONE_EVENTS.COMMIT_FAILED]: {
           target: WU_DONE_STATES.FAILED,
-          actions: ({ context, event }) => {
-            context.error = (event as CommitFailedEvent).error;
-            context.failedAt = WU_DONE_STATES.COMMITTING;
-          },
+          actions: assign({
+            error: ({ event }) => event.error,
+            failedAt: WU_DONE_STATES.COMMITTING,
+          }),
         },
       },
     },
@@ -309,10 +309,10 @@ export const wuDoneMachine = setup({
         },
         [WU_DONE_EVENTS.MERGE_FAILED]: {
           target: WU_DONE_STATES.FAILED,
-          actions: ({ context, event }) => {
-            context.error = (event as MergeFailedEvent).error;
-            context.failedAt = WU_DONE_STATES.MERGING;
-          },
+          actions: assign({
+            error: ({ event }) => event.error,
+            failedAt: WU_DONE_STATES.MERGING,
+          }),
         },
       },
     },
@@ -324,10 +324,10 @@ export const wuDoneMachine = setup({
         },
         [WU_DONE_EVENTS.PUSH_FAILED]: {
           target: WU_DONE_STATES.FAILED,
-          actions: ({ context, event }) => {
-            context.error = (event as PushFailedEvent).error;
-            context.failedAt = WU_DONE_STATES.PUSHING;
-          },
+          actions: assign({
+            error: ({ event }) => event.error,
+            failedAt: WU_DONE_STATES.PUSHING,
+          }),
         },
       },
     },
@@ -339,10 +339,10 @@ export const wuDoneMachine = setup({
         },
         [WU_DONE_EVENTS.CLEANUP_FAILED]: {
           target: WU_DONE_STATES.FAILED,
-          actions: ({ context, event }) => {
-            context.error = (event as CleanupFailedEvent).error;
-            context.failedAt = WU_DONE_STATES.CLEANING_UP;
-          },
+          actions: assign({
+            error: ({ event }) => event.error,
+            failedAt: WU_DONE_STATES.CLEANING_UP,
+          }),
         },
       },
     },
@@ -355,11 +355,11 @@ export const wuDoneMachine = setup({
       on: {
         [WU_DONE_EVENTS.RETRY]: {
           target: WU_DONE_STATES.VALIDATING,
-          actions: ({ context }) => {
-            context.error = null;
-            context.failedAt = null;
-            context.retryCount += 1;
-          },
+          actions: assign({
+            error: null,
+            failedAt: null,
+            retryCount: ({ context }) => context.retryCount + 1,
+          }),
         },
       },
     },
