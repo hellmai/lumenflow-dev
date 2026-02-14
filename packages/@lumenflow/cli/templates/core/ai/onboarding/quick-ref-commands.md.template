@@ -121,9 +121,12 @@ pnpm exec lumenflow --client all      # All clients
 | `pnpm lint`                       | Run ESLint                       |
 | `pnpm typecheck`                  | Run TypeScript type checking     |
 | `pnpm test`                       | Run all tests (Vitest)           |
-| `pnpm spec:linter`                | Validate WU specs (all)          |
+| `pnpm spec:linter`                | Validate WU specs (all) ¹        |
 | `pnpm lane:health`                | Check lane config health         |
 | `pnpm lane:suggest --paths "..."` | Suggest lane for code paths      |
+
+¹ **Script aliases:** `spec:linter` and `tasks:validate` are pnpm script aliases
+for `wu:validate --all`. They are not standalone CLI commands.
 
 Before rerunning `wu:prep` after docs-heavy edits, format touched docs first:
 `pnpm prettier --write <changed-doc-paths...>`.
@@ -285,12 +288,22 @@ Plans use the `lumenflow://plans/` URI scheme for references:
 | Command                                                       | Description                   |
 | ------------------------------------------------------------- | ----------------------------- |
 | `pnpm initiative:create --id INIT-XXX ...`                    | Create new initiative         |
-| `pnpm initiative:edit --id INIT-XXX ...`                      | Edit initiative fields        |
+| `pnpm initiative:edit --id INIT-XXX ...`                      | Edit initiative fields/phases |
 | `pnpm initiative:list`                                        | List all initiatives          |
 | `pnpm initiative:status --id INIT-XXX`                        | Show initiative status        |
 | `pnpm initiative:add-wu --initiative INIT-XXX --wu WU-XXX`    | Add WU to initiative          |
 | `pnpm initiative:remove-wu --initiative INIT-XXX --wu WU-XXX` | Remove WU from initiative     |
 | `pnpm initiative:bulk-assign --id INIT-XXX`                   | Bulk assign WUs to initiative |
+
+Common phase metadata updates:
+
+```bash
+# Rename a specific phase title
+pnpm initiative:edit --id INIT-025 --phase-id 1 --phase-title "Phase 1: State-Machine Foundation"
+
+# Update a specific phase status
+pnpm initiative:edit --id INIT-025 --phase-id 1 --phase-status in_progress
+```
 
 ---
 
@@ -626,3 +639,15 @@ Hooks provide automatic enforcement at the tool level:
 - **block_outside_worktree**: Blocks Write/Edit to main when worktrees exist
 - **require_wu_for_edits**: Requires a claimed WU for Write/Edit operations
 - **warn_on_stop_without_wu_done**: Warns when session ends with active worktrees
+
+---
+
+## Lifecycle Map and Troubleshooting
+
+For a complete picture of how all WU commands, memory tools, and orchestration tools fit together, and for remediation of common failure modes, see:
+
+- **[Canonical Lifecycle Map](../../lumenflow-complete.md#26-canonical-lifecycle-map-wu-1635)** -- Command-mode matrix (worktree vs cloud/branch-PR), expected locations, and handoff points
+- **[Failure-Mode Runbook](../../lumenflow-complete.md#appendix-a-failure-mode-runbook-wu-1635)** -- Concrete remediation for main-behind-origin, partial-claim state, spawn-provenance enforcement, and wu:recover usage
+- **[Troubleshooting wu:done](./troubleshooting-wu-done.md)** -- Most common agent mistake (two-step wu:prep + wu:done workflow)
+- **[First WU Mistakes](./first-wu-mistakes.md)** -- Common first-time pitfalls and how to avoid them
+- **[WU Sizing Guide](../../wu-sizing-guide.md)** -- Context safety triggers, complexity assessment, and session strategies
