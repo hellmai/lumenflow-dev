@@ -1,0 +1,35 @@
+id: WU-1676
+title: Scope wu:prep test gate to WU tests.unit entries
+lane: 'Framework: CLI WU Commands'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-14
+code_paths:
+  - packages/@lumenflow/cli/src/wu-prep.ts
+  - packages/@lumenflow/cli/src/gates.ts
+tests:
+  manual:
+    - Run wu:prep on a WU with tests.unit entries and verify only those files are tested
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1676.done
+dependencies: []
+risks: []
+notes: 'Incident: WU-1674 wu:prep took 8+ minutes and OOMed/timed out on unrelated tests while the 9 WU-specific test files passed in 6 seconds.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu:prep runs pnpm turbo run test which executes all tests in every affected package (123 files, 2096 tests for @lumenflow/cli alone). Problem: unrelated test failures (OOM in docs-generate.test.ts, timeout in wu-done.test.ts) block wu:prep for WUs whose actual tests pass in seconds. Solution: when WU YAML has tests.unit entries, wu:prep should pass those specific paths to vitest instead of running the full turbo test suite.'
+acceptance:
+  - wu:prep reads tests.unit from WU YAML and passes those paths to vitest run when entries exist
+  - Full turbo test suite remains the fallback when tests.unit is empty
+  - wu:prep --full-tests flag forces the original turbo test behavior
+  - Targeted test run completes in under 30s for typical WUs
