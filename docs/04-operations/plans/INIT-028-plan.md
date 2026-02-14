@@ -4,7 +4,9 @@ Created: 2026-02-14
 
 ## Goal
 
-<!-- What is the primary objective? -->
+Complete a clean-slate rename from `spawn` terminology to `delegation` terminology across live runtime surfaces.
+
+No compatibility aliases or dual-read bridges will be kept. Legacy state transitions via first-run auto-archive plus rebootstrap.
 
 ## Scope
 
