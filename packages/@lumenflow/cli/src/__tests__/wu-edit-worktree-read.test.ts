@@ -86,11 +86,7 @@ describe('validateWUEditable worktree read (WU-1677)', () => {
 
       // Should return the WORKTREE version, not the main version
       expect(result.editMode).toBe('worktree');
-      expect(result.wu.code_paths).toEqual([
-        'new/path/a.ts',
-        'new/path/b.ts',
-        'new/path/c.ts',
-      ]);
+      expect(result.wu.code_paths).toEqual(['new/path/a.ts', 'new/path/b.ts', 'new/path/c.ts']);
       expect(result.wu.acceptance).toEqual(['Updated acceptance']);
     } finally {
       process.chdir(origCwd);
