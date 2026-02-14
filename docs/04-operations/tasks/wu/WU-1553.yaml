@@ -2,7 +2,7 @@ id: WU-1553
 title: Fix commitCleanupChanges to stage archive files alongside state files
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: superseded
 priority: P2
 created: 2026-02-09
 code_paths:
@@ -18,9 +18,18 @@ artifacts:
   - .lumenflow/stamps/WU-1553.done
 dependencies: []
 risks: []
-notes: 'Bug is on line ~205: filter uses STATE_FILE_PREFIX (.lumenflow/state/) but archive files are
-  in .lumenflow/archive/. Fix: add ARCHIVE_FILE_PREFIX or use a broader LUMENFLOW_PREFIX
-  (.lumenflow/) filter. ExampleApp workaround: cleanup.trigger: manual.'
+notes: >-
+  Bug is on line ~205: filter uses STATE_FILE_PREFIX (.lumenflow/state/) but archive files are in
+  .lumenflow/archive/. Fix: add ARCHIVE_FILE_PREFIX or use a broader LUMENFLOW_PREFIX (.lumenflow/)
+  filter. ExampleApp workaround: cleanup.trigger: manual.
+
+
+  Superseded by completed fixes in WU-1533/WU-1542/WU-1540. commitCleanupChanges now stages
+  .lumenflow/state and .lumenflow/archive paths, with explicit WU-1553 test coverage in
+  wu-done-auto-cleanup.test.ts.
+
+
+  [ADMIN-REPAIR 2026-02-14]: status changed from 'ready' to 'superseded'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
