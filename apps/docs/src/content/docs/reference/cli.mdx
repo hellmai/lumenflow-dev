@@ -21,7 +21,7 @@ LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiati
 | Initiatives         | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign`](#initiativebulk-assign), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:remove-wu`](#initiativeremove-wu), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                                                                             |
 | Memory & Sessions   | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:recover`](#memrecover), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage), [`signal:cleanup`](#signalcleanup)                                                                                                                                                                                                                                                           |
 | Metrics & Flow      | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport), [`lumenflow:metrics`](#lumenflowmetrics), [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Orchestration       | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end), [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor), [`spawn:list`](#spawnlist)                                                                                                                                                                                                                                                                                                                                                               |
+| Orchestration       | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end), [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor), [`delegation:list`](#delegationlist)                                                                                                                                                                                                                                                                                                                                                               |
 | Plans               | [`init:plan`](#initplan), [`plan:create`](#plancreate), [`plan:edit`](#planedit), [`plan:link`](#planlink), [`plan:promote`](#planpromote)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Setup & Development | [`backlog:prune`](#backlogprune), [`docs:sync`](#docssync), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`lumenflow`](#lumenflow), [`lumenflow-init`](#lumenflow-init), [`lumenflow:commands`](#lumenflowcommands), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:integrate`](#lumenflowintegrate), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade), [`sync:templates`](#synctemplates) |
 | State Management    | [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -282,7 +282,7 @@ pnpm mem:context --wu <wuId>
 | ---------------------------------------- | -------------------------------------------------------------------- | -------- |
 | `--wu &lt;wuId&gt;`                      | Work Unit ID to link (e.g., WU-123)                                  | Yes      |
 | `-m, --max-size &lt;bytes&gt;`           | Maximum context size in bytes (default: 4096)                        | No       |
-| `--spawn-context-max-size &lt;bytes&gt;` | Alias for --max-size (for config parity with spawn_context_max_size) | No       |
+| `--delegation-context-max-size &lt;bytes&gt;` | Alias for --max-size (for config parity with delegation_context_max_size) | No       |
 | `-l, --lane &lt;lane&gt;`                | Filter project memories by lane (e.g., "Framework: CLI")             | No       |
 | `--max-recent-summaries &lt;count&gt;`   | Maximum number of recent summaries to include (default: 5)           | No       |
 | `--max-project-nodes &lt;count&gt;`      | Maximum number of project nodes to include (default: 10)             | No       |
@@ -631,18 +631,18 @@ pnpm orchestrate:initiative
 
 ### orchestrate:monitor
 
-Monitor spawn/agent activity
+Monitor delegation/agent activity
 
 ```bash
 pnpm orchestrate:monitor
 ```
 
-### spawn:list
+### delegation:list
 
-List active spawned agents
+List active delegation records
 
 ```bash
-pnpm spawn:list
+pnpm delegation:list
 ```
 
 **Options:**
@@ -650,7 +650,7 @@ pnpm spawn:list
 | Flag                          | Description                                           | Required |
 | ----------------------------- | ----------------------------------------------------- | -------- |
 | `--wu &lt;wuId&gt;`           | Work Unit ID to link (e.g., WU-123)                   | No       |
-| `--initiative &lt;initId&gt;` | Initiative ID to show all spawns for (e.g., INIT-001) | No       |
+| `--initiative &lt;initId&gt;` | Initiative ID to show all delegations for (e.g., INIT-001) | No       |
 | `--json`                      | Output as JSON                                        | No       |
 
 ## Plans

@@ -121,20 +121,20 @@ pnpm orchestrate:monitor --initiative INIT-001
 pnpm orchestrate:monitor --json
 ```
 
-## Spawn Tree Visualisation
+## Delegation Tree Visualisation
 
 ```bash
-# View spawn tree for a WU
-pnpm spawn:list --wu WU-XXX
+# View delegation tree for a WU
+pnpm delegation:list --wu WU-XXX
 
-# View all spawns for an initiative
-pnpm spawn:list --initiative INIT-001
+# View all delegations for an initiative
+pnpm delegation:list --initiative INIT-001
 
 # JSON output
-pnpm spawn:list --wu WU-XXX --json
+pnpm delegation:list --wu WU-XXX --json
 ```
 
-**Spawn states:** `pending`, `completed`, `timeout`, `crashed`, `escalated`
+**Delegation states:** `pending`, `completed`, `timeout`, `crashed`, `escalated`
 
 ## Self-Healing Signal Flow
 
@@ -227,7 +227,7 @@ Initiative with multiple WUs?
 
 Agent appears stuck or crashed?
 ├── Run: pnpm orchestrate:monitor
-├── Check spawn tree: pnpm spawn:list --wu WU-XXX
+├── Check delegation tree: pnpm delegation:list --wu WU-XXX
 └── Follow recovery suggestions in output
 ```
 
