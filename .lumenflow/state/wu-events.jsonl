@@ -1285,5 +1285,6 @@
 {"type":"complete","wuId":"WU-1674","timestamp":"2026-02-14T12:16:25.416Z"}
 {"type":"claim","wuId":"WU-1675","timestamp":"2026-02-14T12:26:05.455Z","lane":"Content: Framework Docs","title":"Align docs, parity baselines, and templates to delegation terminology"}
 {"type":"complete","wuId":"WU-1675","timestamp":"2026-02-14T12:38:32.134Z"}
-{"type":"claim","wuId":"WU-1676","lane":"Framework: CLI WU Commands","title":"Scope wu:prep test gate to WU tests.unit entries","timestamp":"2026-02-14T12:44:13.103Z"}
-{"type":"claim","wuId":"WU-1677","lane":"Framework: CLI WU Commands","title":"wu:edit reads YAML from main instead of worktree for in_progress WUs","timestamp":"2026-02-14T12:45:22.543Z"}
+{"type":"claim","wuId":"WU-1676","timestamp":"2026-02-14T12:44:13.103Z","lane":"Framework: CLI WU Commands","title":"Scope wu:prep test gate to WU tests.unit entries"}
+{"type":"claim","wuId":"WU-1677","timestamp":"2026-02-14T12:45:22.543Z","lane":"Framework: CLI WU Commands","title":"wu:edit reads YAML from main instead of worktree for in_progress WUs"}
+{"type":"complete","wuId":"WU-1677","timestamp":"2026-02-14T12:50:12.573Z"}

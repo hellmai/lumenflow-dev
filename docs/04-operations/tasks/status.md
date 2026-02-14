@@ -5,7 +5,6 @@ _Last updated: 2026-02-14_
 ## In Progress
 
 - [WU-1676 — Scope wu:prep test gate to WU tests.unit entries](wu/WU-1676.yaml)
-- [WU-1677 — wu:edit reads YAML from main instead of worktree for in_progress WUs](wu/WU-1677.yaml)
 
 ## Completed
 
@@ -618,3 +617,4 @@ _Last updated: 2026-02-14_
 - [WU-1673 — Prevent wu:done append-only conflict markers from entering wu-events](wu/WU-1673.yaml) — 2026-02-14
 - [WU-1674 — Atomic spawn-to-delegation runtime rename with migration guard](wu/WU-1674.yaml) — 2026-02-14
 - [WU-1675 — Align docs, parity baselines, and templates to delegation terminology](wu/WU-1675.yaml) — 2026-02-14
+- [WU-1677 — wu:edit reads YAML from main instead of worktree for in_progress WUs](wu/WU-1677.yaml) — 2026-02-14
