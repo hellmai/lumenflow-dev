@@ -35,7 +35,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1673 — Prevent wu:done append-only conflict markers from entering wu-events](wu/WU-1673.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -649,4 +649,5 @@ sections:
 - [WU-1665 — Consolidate wu:done rollback and recovery onto staged state-machine migration](wu/WU-1665.yaml)
 - [WU-1672 — Fix push-only micro-worktree stale base branch behavior](wu/WU-1672.yaml)
 - [WU-1671 — Refactor wu-done-machine.ts to use XState assign() actions](wu/WU-1671.yaml)
+- [WU-1673 — Prevent wu:done append-only conflict markers from entering wu-events](wu/WU-1673.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)

@@ -1279,4 +1279,5 @@
 {"type":"claim","wuId":"WU-1671","timestamp":"2026-02-14T08:48:54.208Z","lane":"Framework: Core State Recovery","title":"Refactor wu-done-machine.ts to use XState assign() actions"}
 {"type":"complete","wuId":"WU-1672","timestamp":"2026-02-14T08:49:50.536Z"}
 {"type":"complete","wuId":"WU-1671","timestamp":"2026-02-14T08:54:33.159Z"}
-{"type":"claim","wuId":"WU-1673","lane":"Framework: Core Lifecycle","title":"Prevent wu:done append-only conflict markers from entering wu-events","timestamp":"2026-02-14T09:04:47.614Z"}
+{"type":"claim","wuId":"WU-1673","timestamp":"2026-02-14T09:04:47.614Z","lane":"Framework: Core Lifecycle","title":"Prevent wu:done append-only conflict markers from entering wu-events"}
+{"type":"complete","wuId":"WU-1673","timestamp":"2026-02-14T09:43:07.439Z"}

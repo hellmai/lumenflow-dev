@@ -2,7 +2,7 @@ id: WU-1673
 title: Prevent wu:done append-only conflict markers from entering wu-events
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-14
 code_paths:
@@ -51,3 +51,6 @@ acceptance:
   - wu:done aborts before commit if conflict markers exist in any transaction output file
   - regression tests cover append-only rebase conflict path and marker-detection guard
   - wu:repair --repair-state successfully restores malformed wu-events.jsonl from merge-marker state
+locked: true
+completed_at: 2026-02-14T09:43:04.731Z
+completed: 2026-02-14
