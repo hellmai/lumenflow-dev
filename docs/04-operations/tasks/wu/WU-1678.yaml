@@ -2,7 +2,7 @@ id: WU-1678
 title: Stabilize wu-done.test worker-fork timeout in incremental test gate
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-14
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/gates-runners.ts
 tests:
   manual:
-    - Run pnpm vitest run --changed origin/main in a lane worktree touching CLI and verify no worker-fork timeout
+    - Run pnpm vitest run --changed origin/main in a lane worktree touching CLI and verify no
+      worker-fork timeout
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
     - packages/@lumenflow/cli/src/__tests__/gates-integration-tests.test.ts
@@ -30,8 +31,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1676 completion repeatedly fails at wu:done test gate with Vitest worker-fork teardown timeout in packages/@lumenflow/cli/src/__tests__/wu-done.test.ts while all relevant WU tests pass. Problem: unrelated WUs touching CLI are blocked by intermittent full changed-suite worker failures. Solution: make the affected test/gate runner deterministic under changed-test execution and remove this flake from completion flow.'
+description: 'Context: WU-1676 completion repeatedly fails at wu:done test gate with Vitest
+  worker-fork teardown timeout in packages/@lumenflow/cli/src/__tests__/wu-done.test.ts while all
+  relevant WU tests pass. Problem: unrelated WUs touching CLI are blocked by intermittent full
+  changed-suite worker failures. Solution: make the affected test/gate runner deterministic under
+  changed-test execution and remove this flake from completion flow.'
 acceptance:
-  - wu:done no longer fails due to worker-fork timeout in packages/@lumenflow/cli/src/__tests__/wu-done.test.ts under changed-test gate runs
+  - wu:done no longer fails due to worker-fork timeout in
+    packages/@lumenflow/cli/src/__tests__/wu-done.test.ts under changed-test gate runs
   - A reproducible local command is documented and passes in at least two consecutive runs
   - Targeted and relevant gate tests pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1678
+claimed_at: 2026-02-14T13:30:42.424Z
+baseline_main_sha: d3e0680a74ad48d074f784536f9a9545c555d3dd
+session_id: 731a141c-7e23-4e2b-9123-891f75ecfc2e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-14T13:30:42.432Z
