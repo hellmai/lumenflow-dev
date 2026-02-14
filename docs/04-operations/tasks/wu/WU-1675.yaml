@@ -8,16 +8,29 @@ created: 2026-02-14
 code_paths:
   - apps/docs/src/content/docs/reference/cli.mdx
   - apps/docs/src/content/docs/reference/mcp.mdx
+  - apps/docs/src/content/docs/reference/config.mdx
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
   - .lumenflow/strict-progress-baseline.json
-  - .lumenflow.config.yaml
+  - .lumenflow/templates/manifest.yaml
   - packages/@lumenflow/cli/templates/core/ai/onboarding/quick-ref-commands.md.template
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/agent-invocation-guide.md.template
   - packages/@lumenflow/cli/templates/vendors/claude/.claude/skills/orchestration/SKILL.md.template
+  - .claude/skills/orchestration/SKILL.md
 tests:
   manual:
     - Run pnpm docs:validate and verify command/tool tables reference delegation:list and
       delegation_list
+    - Run pnpm strict:progress and confirm baseline references delegation-era file names/paths.
+    - Run pnpm sync:templates --check-drift and confirm no template drift after updates.
+    - Verify .claude/skills/orchestration/SKILL.md and the orchestration skill template reference
+      delegation:list only.
+    - Run rg -uu -n 'spawn:list|spawn_list|spawn_context_max_size' across
+      apps/docs/src/content/docs/reference
+    - docs/04-operations/_frameworks/lumenflow
+    - packages/@lumenflow/cli/templates
+    - and .claude/skills/orchestration/SKILL.md; confirm no live-surface hits.
   unit: []
   e2e: []
 artifacts:
@@ -33,10 +46,17 @@ risks: []
 notes: INIT-028 WU-B from PLAN-spawn-to-delegation-rename blueprint; execute after WU-1674 runtime
   rename lands.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-14T12:26:05.404Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-1675
+session_id: bab10c6d-2d54-4f31-9c4b-4af8a4f19f76
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-14T12:26:05.412Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -51,11 +71,6 @@ acceptance:
   - CLI and MCP reference docs match actual delegation command/tool names after WU-1674.
   - strict-progress baseline and template references align with renamed files/paths.
   - Docs validation and relevant parity checks pass with no drift.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-1675
-claimed_at: 2026-02-14T12:26:05.404Z
-baseline_main_sha: 3a35c96221325218fdac961b53e646c50efe7d76
-session_id: bab10c6d-2d54-4f31-9c4b-4af8a4f19f76
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-14T12:26:05.412Z
+  - No user-facing docs or onboarding references instruct memory.spawn_context_max_size; live
+    examples use memory.delegation_context_max_size.
+  - Live and templated orchestration skill guidance uses delegation:list, not spawn:list.
