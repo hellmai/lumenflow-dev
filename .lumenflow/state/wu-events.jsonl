@@ -1275,3 +1275,4 @@
 {"type":"claim","wuId":"WU-1665","timestamp":"2026-02-13T23:12:47.105Z","lane":"Framework: Core State Recovery","title":"Consolidate wu:done rollback and recovery onto staged state-machine migration"}
 {"type":"complete","wuId":"WU-1666","timestamp":"2026-02-13T23:15:41.606Z"}
 {"type":"complete","wuId":"WU-1665","timestamp":"2026-02-13T23:21:06.329Z"}
+{"type":"claim","wuId":"WU-1672","lane":"Framework: Core Lifecycle","title":"Fix push-only micro-worktree stale base branch behavior","timestamp":"2026-02-14T08:44:03.144Z"}

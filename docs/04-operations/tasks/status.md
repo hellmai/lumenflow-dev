@@ -1,10 +1,10 @@
 # Work Unit Status
 
-_Last updated: 2026-02-13_
+_Last updated: 2026-02-14_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1672 — Fix push-only micro-worktree stale base branch behavior](wu/WU-1672.yaml)
 
 ## Completed
 

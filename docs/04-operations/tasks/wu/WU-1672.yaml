@@ -2,7 +2,7 @@ id: WU-1672
 title: Fix push-only micro-worktree stale base branch behavior
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-14
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
 tests:
   manual:
-    - From main with local main intentionally stale, run two consecutive push-only commands (e.g. initiative:edit twice); both should complete without requiring manual git pull --ff-only
+    - From main with local main intentionally stale, run two consecutive push-only commands (e.g.
+      initiative:edit twice); both should complete without requiring manual git pull --ff-only
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
   e2e: []
@@ -19,7 +20,8 @@ artifacts:
   - .lumenflow/stamps/WU-1672.done
 dependencies: []
 risks: []
-notes: 'Post-INIT-025 hardening: shared helper fix should cover all pushOnly callers (initiative:*, plan:*, wu:block/unblock/release/recover, state:doctor --fix, claim internals).'
+notes: 'Post-INIT-025 hardening: shared helper fix should cover all pushOnly callers (initiative:*,
+  plan:*, wu:block/unblock/release/recover, state:doctor --fix, claim internals).'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -28,10 +30,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: push-only micro-worktree operations currently skip pre-start origin sync and create temp branches from local main. Problem: when local main is stale (behind/ahead), commands like initiative:edit and other push-only flows can incur avoidable retry churn, race amplification, and incorrect base selection. Solution: in pushOnly mode with remote enabled, fetch origin/main and base temp branches on origin/main while preserving the contract that local main is not modified.'
+description: 'Context: push-only micro-worktree operations currently skip pre-start origin sync and
+  create temp branches from local main. Problem: when local main is stale (behind/ahead), commands
+  like initiative:edit and other push-only flows can incur avoidable retry churn, race
+  amplification, and incorrect base selection. Solution: in pushOnly mode with remote enabled, fetch
+  origin/main and base temp branches on origin/main while preserving the contract that local main is
+  not modified.'
 acceptance:
-  - withMicroWorktree pushOnly mode fetches origin/main before creating the temp branch when remote operations are enabled
+  - withMicroWorktree pushOnly mode fetches origin/main before creating the temp branch when remote
+    operations are enabled
   - pushOnly temp branches are created from origin/main (not local main)
   - pushOnly mode continues to avoid merging/updating local main
   - micro-worktree tests cover pushOnly pre-start fetch ordering and base-ref selection
   - existing push-only retry/rebase behavior remains intact
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1672
+claimed_at: 2026-02-14T08:44:03.105Z
+baseline_main_sha: ccbfdf1434cbc0e7667bd06b3033c7ba60906e91
+session_id: 8f14f057-5225-46de-96c5-c3d127ea7b82
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-14T08:44:03.110Z
