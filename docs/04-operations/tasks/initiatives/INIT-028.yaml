@@ -4,7 +4,7 @@ title: Spawn-to-Delegation Clean-Slate Rename
 description: Full clean-slate rename from spawn terminology to delegation terminology across live
   code, commands, docs, and schemas, with first-run auto-archive plus state rebootstrap for legacy
   state files.
-status: in_progress
+status: done
 priority: P0
 owner: 'Framework: Core/CLI'
 created: 2026-02-14
@@ -15,7 +15,7 @@ phases:
     status: done
   - id: 2
     title: 'Phase 2: Docs / Parity / Contracts / Baselines'
-    status: pending
+    status: done
 success_metrics:
   - No live command/tool/module surface requires spawn-prefixed interfaces.
   - First run with legacy spawn state auto-archives and rebootstrap completes without manual

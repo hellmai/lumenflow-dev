@@ -2,7 +2,7 @@ id: WU-1675
 title: Align docs, parity baselines, and templates to delegation terminology
 lane: 'Content: Framework Docs'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-14
 code_paths:
@@ -60,3 +60,6 @@ acceptance:
   - CLI and MCP reference docs match actual delegation command/tool names after WU-1674.
   - strict-progress baseline and template references align with renamed files/paths.
   - Docs validation and relevant parity checks pass with no drift.
+locked: true
+completed_at: 2026-02-14T12:38:29.310Z
+completed: 2026-02-14

@@ -1283,4 +1283,5 @@
 {"type":"complete","wuId":"WU-1673","timestamp":"2026-02-14T09:43:07.439Z"}
 {"type":"claim","wuId":"WU-1674","timestamp":"2026-02-14T09:58:33.890Z","lane":"Framework: Core Lifecycle","title":"Atomic spawn-to-delegation runtime rename with migration guard"}
 {"type":"complete","wuId":"WU-1674","timestamp":"2026-02-14T12:16:25.416Z"}
-{"type":"claim","wuId":"WU-1675","lane":"Content: Framework Docs","title":"Align docs, parity baselines, and templates to delegation terminology","timestamp":"2026-02-14T12:26:05.455Z"}
+{"type":"claim","wuId":"WU-1675","timestamp":"2026-02-14T12:26:05.455Z","lane":"Content: Framework Docs","title":"Align docs, parity baselines, and templates to delegation terminology"}
+{"type":"complete","wuId":"WU-1675","timestamp":"2026-02-14T12:38:32.134Z"}

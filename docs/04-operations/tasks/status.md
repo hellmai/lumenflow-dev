@@ -4,7 +4,7 @@ _Last updated: 2026-02-14_
 
 ## In Progress
 
-- [WU-1675 — Align docs, parity baselines, and templates to delegation terminology](wu/WU-1675.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -616,3 +616,4 @@ _Last updated: 2026-02-14_
 - [WU-1671 — Refactor wu-done-machine.ts to use XState assign() actions](wu/WU-1671.yaml) — 2026-02-14
 - [WU-1673 — Prevent wu:done append-only conflict markers from entering wu-events](wu/WU-1673.yaml) — 2026-02-14
 - [WU-1674 — Atomic spawn-to-delegation runtime rename with migration guard](wu/WU-1674.yaml) — 2026-02-14
+- [WU-1675 — Align docs, parity baselines, and templates to delegation terminology](wu/WU-1675.yaml) — 2026-02-14
