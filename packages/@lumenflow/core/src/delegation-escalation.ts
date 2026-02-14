@@ -1,5 +1,5 @@
 /**
- * Spawn Escalation Module (WU-1952, WU-1967)
+ * Delegation Escalation Module (WU-1952, WU-1967)
  *
  * WU-1967: Replaced Bug WU creation with memory bus signalling.
  * Signals orchestrator inbox instead of creating human-in-loop Bug WUs.
@@ -7,11 +7,11 @@
  * Escalation Flow:
  * 1. recoverStuckDelegation() returns { recovered: false, action: ESCALATED_STUCK }
  * 2. escalateStuckDelegation() signals orchestrator via memory bus
- * 3. Spawn status updated to ESCALATED (prevents duplicate signals)
+ * 3. Delegation status updated to ESCALATED (prevents duplicate signals)
  * 4. Orchestrator decides: retry (1st), block (2nd), human escalate (3rd+)
  *
- * Library-First Note: This is project-specific spawn escalation code for
- * ExampleApp's custom spawn-registry.jsonl and memory bus patterns.
+ * Library-First Note: This is project-specific delegation escalation code for
+ * ExampleApp's custom delegation-registry.jsonl and memory bus patterns.
  * No external library exists for this domain-specific agent lifecycle management.
  *
  * @see {@link packages/@lumenflow/cli/src/lib/__tests__/delegation-escalation.test.ts} - Tests
@@ -51,7 +51,7 @@ const LOG_PREFIX = '[delegation-escalation]';
 export const DELEGATION_FAILURE_SIGNAL_TYPE = 'delegation_failure';
 
 /**
- * Severity levels for spawn failure signals
+ * Severity levels for delegation failure signals
  */
 export const SignalSeverity = Object.freeze({
   WARNING: 'warning',
@@ -60,7 +60,7 @@ export const SignalSeverity = Object.freeze({
 });
 
 /**
- * Suggested actions for spawn failure signals
+ * Suggested actions for delegation failure signals
  */
 export const SuggestedAction = Object.freeze({
   RETRY: 'retry',
@@ -87,23 +87,23 @@ export const SuggestedAction = Object.freeze({
  * @typedef {Object} EscalationResult
  * @property {string} signalId - Signal ID (e.g., 'sig-abc12345')
  * @property {DelegationFailureSignal} signal - The signal payload
- * @property {string} delegationStatus - Updated spawn status (ESCALATED)
+ * @property {string} delegationStatus - Updated delegation status (ESCALATED)
  */
 
 /**
  * @typedef {Object} AuditLogEntry
  * @property {string} timestamp - ISO timestamp of recovery action
- * @property {string} delegationId - ID of the spawn being recovered
+ * @property {string} delegationId - ID of the delegation being recovered
  * @property {string} action - Recovery action taken
  * @property {string} reason - Explanation of why action was taken
  * @property {Object} context - Additional context
  */
 
 /**
- * Counts existing escalation attempts for a spawn by reading audit logs.
+ * Counts existing escalation attempts for a delegation by reading audit logs.
  *
  * @param {string} baseDir - Base directory
- * @param {string} delegationId - Spawn ID to count attempts for
+ * @param {string} delegationId - Delegation ID to count attempts for
  * @returns {Promise<number>} Number of previous escalation attempts
  */
 async function countEscalationAttempts(baseDir, delegationId) {
@@ -112,8 +112,8 @@ async function countEscalationAttempts(baseDir, delegationId) {
 
   try {
     const files = await fs.readdir(recoveryDir);
-    const spawnFiles = files.filter((f) => f.startsWith(`${delegationId}-`) && f.endsWith('.json'));
-    return spawnFiles.length;
+    const delegationFiles = files.filter((f) => f.startsWith(`${delegationId}-`) && f.endsWith('.json'));
+    return delegationFiles.length;
   } catch (error) {
     if (error.code === 'ENOENT') {
       return 0;
@@ -148,10 +148,10 @@ function determineEscalationLevel(attempts) {
 }
 
 /**
- * Find the most recent escalation audit log for a spawn.
+ * Find the most recent escalation audit log for a delegation.
  *
  * @param {string} baseDir - Base directory
- * @param {string} delegationId - Spawn ID to find audit log for
+ * @param {string} delegationId - Delegation ID to find audit log for
  * @returns {Promise<AuditLogEntry|null>} Audit log entry or null if not found
  */
 async function findEscalationAuditLog(baseDir, delegationId) {
@@ -160,18 +160,18 @@ async function findEscalationAuditLog(baseDir, delegationId) {
 
   try {
     const files = await fs.readdir(recoveryDir);
-    // Filter files for this spawn ID, sorted by name (timestamp-based)
-    const spawnFiles = files
+    // Filter files for this delegation ID, sorted by name (timestamp-based)
+    const delegationFiles = files
       .filter((f) => f.startsWith(`${delegationId}-`) && f.endsWith('.json'))
       .sort()
       .reverse(); // Most recent first
 
-    if (spawnFiles.length === 0) {
+    if (delegationFiles.length === 0) {
       return null;
     }
 
     // Read the most recent audit log
-    const auditPath = path.join(recoveryDir, spawnFiles[0]);
+    const auditPath = path.join(recoveryDir, delegationFiles[0]);
     const content = await fs.readFile(auditPath, 'utf-8');
     return JSON.parse(content);
   } catch (error) {
@@ -183,57 +183,57 @@ async function findEscalationAuditLog(baseDir, delegationId) {
 }
 
 /**
- * Builds a spawn failure signal payload.
+ * Builds a delegation failure signal payload.
  *
- * @param {Object} spawn - Spawn event data
+ * @param {Object} delegation - Delegation event data
  * @param {AuditLogEntry} auditLog - Escalation audit log
  * @param {number} attempts - Number of recovery attempts
  * @returns {DelegationFailureSignal} Signal payload
  */
-function buildDelegationFailureSignal(spawn, auditLog, attempts) {
+function buildDelegationFailureSignal(delegation, auditLog, attempts) {
   const { severity, suggestedAction } = determineEscalationLevel(attempts);
   const lastCheckpoint = auditLog.context.lastCheckpoint || null;
 
   return {
     type: DELEGATION_FAILURE_SIGNAL_TYPE,
     severity,
-    delegation_id: spawn.id,
-    target_wu_id: spawn.targetWuId,
-    parent_wu_id: spawn.parentWuId,
-    lane: spawn.lane,
+    delegation_id: delegation.id,
+    target_wu_id: delegation.targetWuId,
+    parent_wu_id: delegation.parentWuId,
+    lane: delegation.lane,
     recovery_action: auditLog.action,
     recovery_attempts: attempts,
     last_checkpoint: lastCheckpoint,
     suggested_action: suggestedAction,
-    message: `Delegation ${spawn.id} for ${spawn.targetWuId} stuck: ${auditLog.reason}`,
+    message: `Delegation ${delegation.id} for ${delegation.targetWuId} stuck: ${auditLog.reason}`,
   };
 }
 
 /**
- * Escalates a stuck spawn by signalling the orchestrator.
+ * Escalates a stuck delegation by signalling the orchestrator.
  *
  * WU-1967: Replaced Bug WU creation with memory bus signalling.
  * Called when recoverStuckDelegation() returns ESCALATED_STUCK.
- * Signals orchestrator inbox with spawn failure context.
+ * Signals orchestrator inbox with delegation failure context.
  *
  * Escalation levels based on recovery attempts:
  * - 1st attempt: severity=warning, suggested_action=retry
  * - 2nd attempt: severity=error, suggested_action=block
  * - 3rd+ attempt: severity=critical, suggested_action=human_escalate
  *
- * @param {string} delegationId - ID of the stuck spawn
+ * @param {string} delegationId - ID of the stuck delegation
  * @param {Object} options - Options
  * @param {string} options.baseDir - Base directory for .lumenflow/
  * @param {boolean} [options.dryRun=false] - If true, returns signal without sending
  * @returns {Promise<EscalationResult>} Escalation result with signal details
  *
- * @throws {Error} If spawn not found
- * @throws {Error} If spawn already escalated (duplicate prevention)
+ * @throws {Error} If delegation not found
+ * @throws {Error} If delegation already escalated (duplicate prevention)
  * @throws {Error} If no escalation audit log exists
  *
  * @example
  * // After recoverStuckDelegation returns ESCALATED_STUCK
- * const result = await escalateStuckDelegation('spawn-1234', { baseDir: '/path/to/project' });
+ * const result = await escalateStuckDelegation('delegation-1234', { baseDir: '/path/to/project' });
  * console.log(`Signal sent: ${result.signalId}, action: ${result.signal.suggested_action}`);
  */
 export interface EscalateStuckDelegationOptions {
@@ -248,20 +248,20 @@ export async function escalateStuckDelegation(delegationId, options: EscalateStu
   // WU-1421: Use LUMENFLOW_PATHS.STATE_DIR for consistency
   const registryDir = path.join(baseDir, LUMENFLOW_PATHS.STATE_DIR);
 
-  // Load spawn registry
+  // Load delegation registry
   const store = new DelegationRegistryStore(registryDir);
 
   try {
     await store.load();
   } catch {
-    throw new Error(`Spawn ${delegationId} not found: registry unavailable`);
+    throw new Error(`Delegation ${delegationId} not found: registry unavailable`);
   }
 
-  // Find the spawn
-  const spawn = store.getById(delegationId);
+  // Find the delegation
+  const delegation = store.getById(delegationId);
 
-  if (!spawn) {
-    throw new Error(`Spawn ${delegationId} not found in registry`);
+  if (!delegation) {
+    throw new Error(`Delegation ${delegationId} not found in registry`);
   }
 
   // Check if signal module is available
@@ -270,22 +270,22 @@ export async function escalateStuckDelegation(delegationId, options: EscalateStu
   }
 
   // WU-1967: Check if already escalated (prevents duplicate signals)
-  if (spawn.status === DelegationStatus.ESCALATED) {
-    throw new Error(`Spawn ${delegationId} already escalated`);
+  if (delegation.status === DelegationStatus.ESCALATED) {
+    throw new Error(`Delegation ${delegationId} already escalated`);
   }
 
   // Find escalation audit log
   const auditLog = await findEscalationAuditLog(baseDir, delegationId);
 
   if (!auditLog) {
-    throw new Error(`No escalation audit log found for spawn ${delegationId}`);
+    throw new Error(`No escalation audit log found for delegation ${delegationId}`);
   }
 
   // Count previous escalation attempts
   const attempts = await countEscalationAttempts(baseDir, delegationId);
 
   // Build signal payload
-  const signalPayload = buildDelegationFailureSignal(spawn, auditLog, attempts);
+  const signalPayload = buildDelegationFailureSignal(delegation, auditLog, attempts);
 
   if (dryRun) {
     console.log(`${LOG_PREFIX} [dry-run] Would signal orchestrator`);
@@ -300,23 +300,23 @@ export async function escalateStuckDelegation(delegationId, options: EscalateStu
   }
 
   // WU-1967: Send signal to orchestrator inbox
-  console.log(`${LOG_PREFIX} Signalling orchestrator for spawn ${delegationId}`);
-  console.log(`${LOG_PREFIX} Target WU: ${spawn.targetWuId}`);
+  console.log(`${LOG_PREFIX} Signalling orchestrator for delegation ${delegationId}`);
+  console.log(`${LOG_PREFIX} Target WU: ${delegation.targetWuId}`);
   console.log(`${LOG_PREFIX} Severity: ${signalPayload.severity}`);
   console.log(`${LOG_PREFIX} Suggested action: ${signalPayload.suggested_action}`);
 
   // Create signal with structured message (JSON payload in message field)
   const signalResult = await createSignal(baseDir, {
     message: JSON.stringify(signalPayload),
-    wuId: spawn.parentWuId, // Signal targets the orchestrator (parent WU)
-    lane: spawn.lane,
+    wuId: delegation.parentWuId, // Signal targets the orchestrator (parent WU)
+    lane: delegation.lane,
   });
 
-  // Update spawn status to ESCALATED (prevents duplicate signals)
+  // Update delegation status to ESCALATED (prevents duplicate signals)
   await store.updateStatus(delegationId, DelegationStatus.ESCALATED);
 
   console.log(`${LOG_PREFIX} Signal sent: ${signalResult.signal.id}`);
-  console.log(`${LOG_PREFIX} Spawn ${delegationId} status updated to ESCALATED`);
+  console.log(`${LOG_PREFIX} Delegation ${delegationId} status updated to ESCALATED`);
 
   return {
     signalId: signalResult.signal.id,

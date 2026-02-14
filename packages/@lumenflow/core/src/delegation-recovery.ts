@@ -1,23 +1,23 @@
 /**
- * Spawn Recovery Module (WU-1951)
+ * Delegation Recovery Module (WU-1951)
  *
- * Auto-recovery heuristics for stuck spawns and zombie locks.
- * Used by orchestrate:monitor for automatic spawn health management.
+ * Auto-recovery heuristics for stuck delegations and zombie locks.
+ * Used by orchestrate:monitor for automatic delegation health management.
  *
  * Recovery Heuristics:
- * 1. Zombie lock (PID not running) -> auto-release, mark spawn crashed
- * 2. Stale lock (>2h) -> auto-release, mark spawn timeout
+ * 1. Zombie lock (PID not running) -> auto-release, mark delegation crashed
+ * 2. Stale lock (>2h) -> auto-release, mark delegation timeout
  * 3. Active lock + no checkpoint in 1h -> mark stuck, escalate
  *
  * All recovery actions are logged to .lumenflow/recovery/ for audit.
  *
- * Library-First Note: This is project-specific spawn recovery code for
- * ExampleApp's custom spawn-registry.jsonl, lane-lock, and memory-store.
+ * Library-First Note: This is project-specific delegation recovery code for
+ * ExampleApp's custom delegation-registry.jsonl, lane-lock, and memory-store.
  * No external library exists for this domain-specific agent lifecycle management.
  *
  * @see {@link packages/@lumenflow/cli/src/lib/__tests__/delegation-recovery.test.ts} - Tests
  * @see {@link packages/@lumenflow/cli/src/lib/delegation-monitor.ts} - Monitoring logic
- * @see {@link packages/@lumenflow/cli/src/lib/delegation-registry-store.ts} - Spawn state
+ * @see {@link packages/@lumenflow/cli/src/lib/delegation-registry-store.ts} - Delegation state
  */
 
 import fs from 'node:fs/promises';
@@ -57,7 +57,7 @@ export const RecoveryAction = Object.freeze({
   RELEASED_ZOMBIE: 'released_zombie',
   /** Stale lock released (>2h old) */
   RELEASED_STALE: 'released_stale',
-  /** Stuck spawn escalated (active but no checkpoint in 1h) */
+  /** Stuck delegation escalated (active but no checkpoint in 1h) */
   ESCALATED_STUCK: 'escalated_stuck',
 });
 
@@ -86,7 +86,7 @@ const LOG_PREFIX = '[delegation-recovery]';
 /**
  * @typedef {Object} AuditLogEntry
  * @property {string} timestamp - ISO timestamp of recovery action
- * @property {string} delegationId - ID of the spawn being recovered
+ * @property {string} delegationId - ID of the delegation being recovered
  * @property {string} action - Recovery action taken
  * @property {string} reason - Explanation of why action was taken
  * @property {Object} context - Additional context
@@ -196,20 +196,20 @@ function isCheckpointRecent(checkpointTimestamp) {
 }
 
 /**
- * Recovers a stuck spawn by applying appropriate heuristics.
+ * Recovers a stuck delegation by applying appropriate heuristics.
  *
  * Recovery order (first match wins):
  * 1. Zombie lock (PID not running) -> release lock, mark crashed
  * 2. Stale lock (>2h) -> release lock, mark timeout
  * 3. Active lock + no checkpoint in 1h -> escalate (no auto-release)
- * 4. Healthy spawn -> no action
+ * 4. Healthy delegation -> no action
  *
- * @param {string} delegationId - ID of the spawn to recover
+ * @param {string} delegationId - ID of the delegation to recover
  * @param {RecoverStuckDelegationOptions} options - Options
  * @returns {Promise<RecoveryResult>} Recovery result
  *
  * @example
- * const result = await recoverStuckDelegation('spawn-1234', { baseDir: '/path/to/project' });
+ * const result = await recoverStuckDelegation('delegation-1234', { baseDir: '/path/to/project' });
  * if (result.recovered) {
  *   console.log(`Recovered: ${result.action} - ${result.reason}`);
  * }
@@ -223,7 +223,7 @@ export async function recoverStuckDelegation(delegationId, options: RecoverStuck
   const { baseDir = process.cwd() } = options;
   const registryDir = path.join(baseDir, LUMENFLOW_PATHS.STATE_DIR);
 
-  // Load spawn registry
+  // Load delegation registry
   const store = new DelegationRegistryStore(registryDir);
 
   try {
@@ -233,33 +233,33 @@ export async function recoverStuckDelegation(delegationId, options: RecoverStuck
     return {
       recovered: false,
       action: RecoveryAction.NONE,
-      reason: `Spawn ${delegationId} not found: registry unavailable`,
+      reason: `Delegation ${delegationId} not found: registry unavailable`,
     };
   }
 
-  // Find the spawn
-  const spawn = store.getById(delegationId);
+  // Find the delegation
+  const delegation = store.getById(delegationId);
 
-  if (!spawn) {
+  if (!delegation) {
     return {
       recovered: false,
       action: RecoveryAction.NONE,
-      reason: `Spawn ${delegationId} not found in registry`,
+      reason: `Delegation ${delegationId} not found in registry`,
     };
   }
 
   // Check if already completed
-  if (spawn.status !== DelegationStatus.PENDING) {
+  if (delegation.status !== DelegationStatus.PENDING) {
     return {
       recovered: false,
       action: RecoveryAction.NONE,
-      reason: `Spawn ${delegationId} already ${spawn.status}`,
+      reason: `Delegation ${delegationId} already ${delegation.status}`,
     };
   }
 
-  // Get lock for this spawn's lane
-  const _laneKebab = laneToKebab(spawn.lane);
-  const lockPath = getLockFilePath(spawn.lane, baseDir);
+  // Get lock for this delegation's lane
+  const _laneKebab = laneToKebab(delegation.lane);
+  const lockPath = getLockFilePath(delegation.lane, baseDir);
   const lockMetadata = readLockMetadata(lockPath);
 
   // If no lock, nothing to recover
@@ -267,29 +267,29 @@ export async function recoverStuckDelegation(delegationId, options: RecoverStuck
     return {
       recovered: false,
       action: RecoveryAction.NONE,
-      reason: `No lock found for spawn ${delegationId} (lane: ${spawn.lane})`,
+      reason: `No lock found for delegation ${delegationId} (lane: ${delegation.lane})`,
     };
   }
 
   // Check if lock belongs to this WU
-  if (lockMetadata.wuId !== spawn.targetWuId) {
+  if (lockMetadata.wuId !== delegation.targetWuId) {
     return {
       recovered: false,
       action: RecoveryAction.NONE,
-      reason: `Lock belongs to ${lockMetadata.wuId}, not spawn target ${spawn.targetWuId}`,
+      reason: `Lock belongs to ${lockMetadata.wuId}, not delegation target ${delegation.targetWuId}`,
     };
   }
 
   // Get last checkpoint for context
-  const lastCheckpoint = await getLastCheckpoint(baseDir, spawn.targetWuId);
+  const lastCheckpoint = await getLastCheckpoint(baseDir, delegation.targetWuId);
   const lastCheckpointTs = lastCheckpoint?.timestamp ?? null;
 
   // Build common audit context
   const auditContext = {
-    targetWuId: spawn.targetWuId,
-    parentWuId: spawn.parentWuId,
-    lane: spawn.lane,
-    delegatedAt: spawn.delegatedAt,
+    targetWuId: delegation.targetWuId,
+    parentWuId: delegation.parentWuId,
+    lane: delegation.lane,
+    delegatedAt: delegation.delegatedAt,
     lockMetadata,
     lastCheckpoint: lastCheckpointTs,
   };
@@ -301,9 +301,9 @@ export async function recoverStuckDelegation(delegationId, options: RecoverStuck
     );
 
     // Release the lock
-    releaseLaneLock(spawn.lane, { baseDir, force: true });
+    releaseLaneLock(delegation.lane, { baseDir, force: true });
 
-    // Mark spawn as crashed
+    // Mark delegation as crashed
     await store.updateStatus(delegationId, DelegationStatus.CRASHED);
 
     const reason = `Zombie lock detected: PID ${lockMetadata.pid} not running`;
@@ -331,9 +331,9 @@ export async function recoverStuckDelegation(delegationId, options: RecoverStuck
     );
 
     // Release the lock
-    releaseLaneLock(spawn.lane, { baseDir, force: true });
+    releaseLaneLock(delegation.lane, { baseDir, force: true });
 
-    // Mark spawn as timeout
+    // Mark delegation as timeout
     await store.updateStatus(delegationId, DelegationStatus.TIMEOUT);
 
     const reason = `Stale lock detected: acquired ${lockMetadata.timestamp} (>2h threshold)`;
@@ -358,9 +358,9 @@ export async function recoverStuckDelegation(delegationId, options: RecoverStuck
   if (!isCheckpointRecent(lastCheckpointTs)) {
     const reason = lastCheckpointTs
       ? `No checkpoint in last hour (last: ${lastCheckpointTs})`
-      : 'No checkpoints recorded for this spawn';
+      : 'No checkpoints recorded for this delegation';
 
-    console.log(`${LOG_PREFIX} Escalating stuck spawn ${delegationId}: ${reason}`);
+    console.log(`${LOG_PREFIX} Escalating stuck delegation ${delegationId}: ${reason}`);
 
     // Create audit log (escalation, not recovery)
     await createAuditLog(baseDir, {
@@ -374,14 +374,14 @@ export async function recoverStuckDelegation(delegationId, options: RecoverStuck
     return {
       recovered: false, // No auto-recovery, just escalation
       action: RecoveryAction.ESCALATED_STUCK,
-      reason: `Stuck spawn: ${reason}`,
+      reason: `Stuck delegation: ${reason}`,
     };
   }
 
-  // Healthy spawn with recent checkpoint
+  // Healthy delegation with recent checkpoint
   return {
     recovered: false,
     action: RecoveryAction.NONE,
-    reason: `Spawn ${delegationId} healthy (recent checkpoint at ${lastCheckpointTs})`,
+    reason: `Delegation ${delegationId} healthy (recent checkpoint at ${lastCheckpointTs})`,
   };
 }
