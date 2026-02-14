@@ -1,12 +1,26 @@
 id: INIT-028
 slug: spawn-to-delegation-clean-slate-rename
 title: Spawn-to-Delegation Clean-Slate Rename
-description: ''
-status: draft
+description: Full clean-slate rename from spawn terminology to delegation terminology across live
+  code, commands, docs, and schemas, with first-run auto-archive plus state rebootstrap for legacy
+  state files.
+status: open
 priority: P0
 owner: 'Framework: Core/CLI'
 created: 2026-02-14
 target_date: 2026-03-14
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: 'Phase 1: Atomic Core Rename + Migration Guard'
+    status: pending
+  - id: 2
+    title: 'Phase 2: Docs / Parity / Contracts / Baselines'
+    status: pending
+success_metrics:
+  - No live command/tool/module surface requires spawn-prefixed interfaces.
+  - First run with legacy spawn state auto-archives and rebootstrap completes without manual
+    migration.
+  - delegation:list and MCP delegation_list operate successfully; spawn:list and spawn_list are
+    removed from live manifests/docs.
+  - Full pnpm gates passes after rename and docs parity updates.
 labels: []
