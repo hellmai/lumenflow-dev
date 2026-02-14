@@ -8,12 +8,14 @@ created: 2026-02-14
 code_paths:
   - apps/docs/src/content/docs/reference/cli.mdx
   - apps/docs/src/content/docs/reference/mcp.mdx
+  - apps/docs/src/content/docs/reference/config.mdx
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
-  - .lumenflow/strict-progress-baseline.json
-  - .lumenflow.config.yaml
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
   - packages/@lumenflow/cli/templates/core/ai/onboarding/quick-ref-commands.md.template
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/agent-invocation-guide.md.template
   - packages/@lumenflow/cli/templates/vendors/claude/.claude/skills/orchestration/SKILL.md.template
+  - .claude/skills/orchestration/SKILL.md
 tests:
   manual:
     - Run pnpm docs:validate and verify command/tool tables reference delegation:list and
