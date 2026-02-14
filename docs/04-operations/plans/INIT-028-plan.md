@@ -10,7 +10,22 @@ No compatibility aliases or dual-read bridges will be kept. Legacy state transit
 
 ## Scope
 
-<!-- What is in scope and out of scope? -->
+In scope:
+
+- `packages/@lumenflow/{core,cli,initiatives,mcp}/**`
+- Active docs and Starlight references
+- `.lumenflow.config.yaml`, strict baseline, template manifest and prompt directory paths
+
+Out of scope:
+
+- Historical task artifacts (`docs/04-operations/tasks/**`)
+- `.lumenflow/memory/**` and `.lumenflow/stamps/**`
+
+Migration behavior:
+
+- Archive legacy `.lumenflow/state/wu-events.jsonl` and `.lumenflow/state/spawn-registry.jsonl`
+- Reconstruct `wu-events.jsonl` with delegation event semantics
+- Initialize `delegation-registry.jsonl`
 
 ## Approach
 
