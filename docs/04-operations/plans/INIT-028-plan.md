@@ -37,7 +37,10 @@ Execution is ordered: WU-B depends on WU-A.
 
 ## Success Criteria
 
-<!-- How will you know when this is complete? Measurable outcomes? -->
+- No live command/tool/module surface requires spawn-prefixed interface names
+- First run with legacy spawn state auto-archives and rebootstrap completes without manual migration
+- `delegation:list` and MCP `delegation_list` succeed while `spawn:list`/`spawn_list` are removed from active manifests/docs
+- Full `pnpm gates` passes after rename and docs alignment
 
 ## Risks
 
