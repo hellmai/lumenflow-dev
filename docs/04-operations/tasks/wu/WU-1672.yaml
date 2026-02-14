@@ -7,7 +7,6 @@ priority: P1
 created: 2026-02-14
 code_paths:
   - packages/@lumenflow/core/src/micro-worktree.ts
-  - packages/@lumenflow/core/src/micro-worktree-shared.ts
   - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
 tests:
   manual:
@@ -23,10 +22,17 @@ risks: []
 notes: 'Post-INIT-025 hardening: shared helper fix should cover all pushOnly callers (initiative:*,
   plan:*, wu:block/unblock/release/recover, state:doctor --fix, claim internals).'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-14T08:44:03.105Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1672
+session_id: 8f14f057-5225-46de-96c5-c3d127ea7b82
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-14T08:44:03.110Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +49,3 @@ acceptance:
   - pushOnly mode continues to avoid merging/updating local main
   - micro-worktree tests cover pushOnly pre-start fetch ordering and base-ref selection
   - existing push-only retry/rebase behavior remains intact
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1672
-claimed_at: 2026-02-14T08:44:03.105Z
-baseline_main_sha: ccbfdf1434cbc0e7667bd06b3033c7ba60906e91
-session_id: 8f14f057-5225-46de-96c5-c3d127ea7b82
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-14T08:44:03.110Z
