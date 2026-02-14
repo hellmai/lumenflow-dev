@@ -1289,4 +1289,5 @@
 {"type":"claim","wuId":"WU-1677","timestamp":"2026-02-14T12:45:22.543Z","lane":"Framework: CLI WU Commands","title":"wu:edit reads YAML from main instead of worktree for in_progress WUs"}
 {"type":"complete","wuId":"WU-1677","timestamp":"2026-02-14T12:50:12.573Z"}
 {"type":"complete","wuId":"WU-1676","timestamp":"2026-02-14T13:07:23.459Z"}
-{"type":"claim","wuId":"WU-1678","lane":"Framework: CLI WU Commands","title":"Stabilize wu-done.test worker-fork timeout in incremental test gate","timestamp":"2026-02-14T13:30:42.474Z"}
+{"type":"claim","wuId":"WU-1678","timestamp":"2026-02-14T13:30:42.474Z","lane":"Framework: CLI WU Commands","title":"Stabilize wu-done.test worker-fork timeout in incremental test gate"}
+{"type":"complete","wuId":"WU-1678","timestamp":"2026-02-14T13:49:28.456Z"}

@@ -35,7 +35,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1678 — Stabilize wu-done.test worker-fork timeout in incremental test gate](wu/WU-1678.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -654,4 +654,5 @@ sections:
 - [WU-1675 — Align docs, parity baselines, and templates to delegation terminology](wu/WU-1675.yaml)
 - [WU-1677 — wu:edit reads YAML from main instead of worktree for in_progress WUs](wu/WU-1677.yaml)
 - [WU-1676 — Scope wu:prep test gate to WU tests.unit entries](wu/WU-1676.yaml)
+- [WU-1678 — Stabilize wu-done.test worker-fork timeout in incremental test gate](wu/WU-1678.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
