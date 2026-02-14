@@ -236,6 +236,42 @@ export async function runIncrementalLint({
 
 // ── Test gates ─────────────────────────────────────────────────────────
 
+const DEFAULT_INCREMENTAL_BASE_BRANCH = 'origin/main';
+
+export function buildStableVitestIncrementalCommand(
+  baseBranch = DEFAULT_INCREMENTAL_BASE_BRANCH,
+): string {
+  return pnpmCmd('vitest', 'run', ...buildVitestChangedArgs({ baseBranch }));
+}
+
+export function resolveIncrementalTestCommand({
+  testRunner,
+  configuredIncrementalCommand,
+  baseBranch = DEFAULT_INCREMENTAL_BASE_BRANCH,
+}: {
+  testRunner: string;
+  configuredIncrementalCommand?: string;
+  baseBranch?: string;
+}): string | null {
+  const normalizedConfiguredCommand = configuredIncrementalCommand?.trim();
+
+  if (testRunner === 'vitest') {
+    if (!normalizedConfiguredCommand) {
+      return buildStableVitestIncrementalCommand(baseBranch);
+    }
+
+    const isVitestChangedCommand =
+      normalizedConfiguredCommand.includes('vitest') &&
+      normalizedConfiguredCommand.includes('--changed');
+
+    if (isVitestChangedCommand) {
+      return buildStableVitestIncrementalCommand(baseBranch);
+    }
+  }
+
+  return normalizedConfiguredCommand ?? null;
+}
+
 /**
  * Run changed tests using configured test runner's incremental mode.
  * WU-1356: Updated to use configured commands from gates-config.
@@ -338,18 +374,20 @@ export async function runChangedTests({
     // WU-1356: Use configured incremental test command
     logLine(`\n> Running tests (${testRunner} --changed)\n`);
 
-    // If test_incremental is configured, use it directly
-    if (gatesCommands.test_incremental) {
-      const result = run(gatesCommands.test_incremental, { agentLog, cwd });
-      return { ...result, duration: Date.now() - start, isIncremental: true };
-    }
+    const incrementalCommand = resolveIncrementalTestCommand({
+      testRunner,
+      configuredIncrementalCommand: gatesCommands.test_incremental,
+    });
 
-    // Fallback: For vitest, use the built-in changed args helper
-    if (testRunner === 'vitest') {
-      const result = run(
-        pnpmCmd('vitest', 'run', ...buildVitestChangedArgs({ baseBranch: 'origin/main' })),
-        { agentLog, cwd },
-      );
+    if (incrementalCommand) {
+      if (
+        testRunner === 'vitest' &&
+        incrementalCommand !== gatesCommands.test_incremental?.trim()
+      ) {
+        logLine('ℹ️  Using hardened vitest incremental command for worker stability');
+      }
+
+      const result = run(incrementalCommand, { agentLog, cwd });
       return { ...result, duration: Date.now() - start, isIncremental: true };
     }
 
