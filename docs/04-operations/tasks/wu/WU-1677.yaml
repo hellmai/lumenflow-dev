@@ -7,7 +7,7 @@ priority: P1
 created: 2026-02-14
 code_paths:
   - packages/@lumenflow/cli/src/wu-edit-validators.ts
-  - packages/@lumenflow/cli/src/wu-edit.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-edit-worktree-read.test.ts
 tests:
   manual:
     - Run two sequential wu:edit calls on an in_progress worktree WU (--replace-code-paths then
@@ -21,10 +21,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-14T12:45:22.507Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1677
+session_id: d212e063-2846-4b67-8a31-a8abc431a0ec
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-14T12:45:22.513Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +47,3 @@ acceptance:
   - 'Sequential wu:edit calls preserve prior edits (regression test: --replace-code-paths then
     --type)'
   - Existing behavior for ready/done WUs unchanged (reads from main via micro-worktree)
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1677
-claimed_at: 2026-02-14T12:45:22.507Z
-baseline_main_sha: c6e69eb0f8fb1c3cde55dc03a005241f5e15ddd1
-session_id: d212e063-2846-4b67-8a31-a8abc431a0ec
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-14T12:45:22.513Z
