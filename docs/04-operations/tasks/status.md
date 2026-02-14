@@ -5,6 +5,7 @@ _Last updated: 2026-02-14_
 ## In Progress
 
 - [WU-1676 — Scope wu:prep test gate to WU tests.unit entries](wu/WU-1676.yaml)
+- [WU-1677 — wu:edit reads YAML from main instead of worktree for in_progress WUs](wu/WU-1677.yaml)
 
 ## Completed
 
