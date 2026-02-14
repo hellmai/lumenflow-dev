@@ -36,7 +36,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1674 — Atomic spawn-to-delegation runtime rename with migration guard](wu/WU-1674.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -651,4 +651,5 @@ sections:
 - [WU-1672 — Fix push-only micro-worktree stale base branch behavior](wu/WU-1672.yaml)
 - [WU-1671 — Refactor wu-done-machine.ts to use XState assign() actions](wu/WU-1671.yaml)
 - [WU-1673 — Prevent wu:done append-only conflict markers from entering wu-events](wu/WU-1673.yaml)
+- [WU-1674 — Atomic spawn-to-delegation runtime rename with migration guard](wu/WU-1674.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
