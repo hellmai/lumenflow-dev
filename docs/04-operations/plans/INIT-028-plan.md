@@ -29,7 +29,11 @@ Migration behavior:
 
 ## Approach
 
-<!-- How will you achieve the goal? Key phases or milestones? -->
+WU-A (Phase 1): Implement migration guard + state rebootstrap, then perform atomic mechanical rename of runtime modules, commands, schemas, and template paths.
+
+WU-B (Phase 2): Complete docs/parity/baseline updates so references match runtime behavior and command/tool names.
+
+Execution is ordered: WU-B depends on WU-A.
 
 ## Success Criteria
 
