@@ -1,0 +1,35 @@
+id: WU-1671
+title: Refactor wu-done-machine.ts to use XState assign() actions
+lane: 'Framework: Core State Recovery'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-14
+code_paths:
+  - packages/@lumenflow/core/src/wu-done-machine.ts
+tests:
+  manual:
+    - Verify wu:done pipeline state tracking via wu:status after successful and failed runs
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-done-machine.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1671.done
+dependencies: []
+risks: []
+notes: 'INIT-025 code review finding #1 (critical). Converged finding from both Claude and Codex independent reviews.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Replace all 9 direct context mutations in wu-done-machine.ts with XState v5 assign() action creators. Direct mutation is an anti-pattern that breaks snapshot immutability, devtools compatibility, and may be enforced in future XState releases. Also fixes: event type assertions (assign provides automatic narrowing), as-never cast in worktree services, and duplicated rollback scope logic.'
+acceptance:
+  - All context mutations in wu-done-machine.ts use assign() instead of direct mutation
+  - No event-as-X type casts remain in machine action definitions
+  - Existing wu-done-machine.test.ts and wu-done.test.ts (model-based) tests pass unchanged
+  - Snapshot serialization/rehydration tests pass
