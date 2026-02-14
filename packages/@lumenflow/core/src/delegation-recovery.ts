@@ -219,7 +219,10 @@ export interface RecoverStuckDelegationOptions {
   baseDir?: string;
 }
 
-export async function recoverStuckDelegation(delegationId, options: RecoverStuckDelegationOptions = {}) {
+export async function recoverStuckDelegation(
+  delegationId,
+  options: RecoverStuckDelegationOptions = {},
+) {
   const { baseDir = process.cwd() } = options;
   const registryDir = path.join(baseDir, LUMENFLOW_PATHS.STATE_DIR);
 

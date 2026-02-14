@@ -52,7 +52,9 @@ describe('orchestrate:monitor (WU-1241)', () => {
 
         // Delegation 45 minutes old - should be stuck with default threshold
         const oldDelegationTime = new Date(Date.now() - 45 * 60 * 1000).toISOString();
-        const delegations = [createDelegation('dlg-old1', DelegationStatus.PENDING, oldDelegationTime)];
+        const delegations = [
+          createDelegation('dlg-old1', DelegationStatus.PENDING, oldDelegationTime),
+        ];
 
         const stuck = detectStuckDelegations(delegations, 30);
 
@@ -64,7 +66,9 @@ describe('orchestrate:monitor (WU-1241)', () => {
       it('respects custom threshold (e.g., 15 minutes)', () => {
         // Delegation 20 minutes old
         const recentDelegationTime = new Date(Date.now() - 20 * 60 * 1000).toISOString();
-        const delegations = [createDelegation('dlg-cust', DelegationStatus.PENDING, recentDelegationTime)];
+        const delegations = [
+          createDelegation('dlg-cust', DelegationStatus.PENDING, recentDelegationTime),
+        ];
 
         // Not stuck with 30min threshold
         expect(detectStuckDelegations(delegations, 30).length).toBe(0);
@@ -241,7 +245,9 @@ describe('orchestrate:monitor (WU-1241)', () => {
     it('uses default 30 minute threshold', () => {
       // Delegation at 20 minutes ago - should NOT be stuck
       const recentDelegationTime = new Date(Date.now() - 20 * 60 * 1000).toISOString();
-      const delegations = [createDelegation('dlg-rec1', DelegationStatus.PENDING, recentDelegationTime)];
+      const delegations = [
+        createDelegation('dlg-rec1', DelegationStatus.PENDING, recentDelegationTime),
+      ];
 
       const stuck = detectStuckDelegations(delegations); // Uses default 30 min
 
@@ -251,7 +257,9 @@ describe('orchestrate:monitor (WU-1241)', () => {
     it('respects custom threshold', () => {
       // Delegation at 20 minutes old
       const recentDelegationTime = new Date(Date.now() - 20 * 60 * 1000).toISOString();
-      const delegations = [createDelegation('dlg-cust', DelegationStatus.PENDING, recentDelegationTime)];
+      const delegations = [
+        createDelegation('dlg-cust', DelegationStatus.PENDING, recentDelegationTime),
+      ];
 
       // Not stuck with default 30min threshold
       expect(detectStuckDelegations(delegations, 30).length).toBe(0);

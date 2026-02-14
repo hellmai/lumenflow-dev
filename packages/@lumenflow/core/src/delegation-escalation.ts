@@ -112,7 +112,9 @@ async function countEscalationAttempts(baseDir, delegationId) {
 
   try {
     const files = await fs.readdir(recoveryDir);
-    const delegationFiles = files.filter((f) => f.startsWith(`${delegationId}-`) && f.endsWith('.json'));
+    const delegationFiles = files.filter(
+      (f) => f.startsWith(`${delegationId}-`) && f.endsWith('.json'),
+    );
     return delegationFiles.length;
   } catch (error) {
     if (error.code === 'ENOENT') {
@@ -243,7 +245,10 @@ export interface EscalateStuckDelegationOptions {
   dryRun?: boolean;
 }
 
-export async function escalateStuckDelegation(delegationId, options: EscalateStuckDelegationOptions = {}) {
+export async function escalateStuckDelegation(
+  delegationId,
+  options: EscalateStuckDelegationOptions = {},
+) {
   const { baseDir = process.cwd(), dryRun = false } = options;
   // WU-1421: Use LUMENFLOW_PATHS.STATE_DIR for consistency
   const registryDir = path.join(baseDir, LUMENFLOW_PATHS.STATE_DIR);

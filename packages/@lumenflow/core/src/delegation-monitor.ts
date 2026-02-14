@@ -606,7 +606,8 @@ function determineResponseAction(payload) {
  * @returns {Object} Bug WU specification
  */
 function generateBugWuSpec(payload) {
-  const { delegation_id, target_wu_id, lane, recovery_attempts, message, last_checkpoint } = payload;
+  const { delegation_id, target_wu_id, lane, recovery_attempts, message, last_checkpoint } =
+    payload;
 
   const checkpointInfo = last_checkpoint
     ? `Last checkpoint: ${last_checkpoint}`

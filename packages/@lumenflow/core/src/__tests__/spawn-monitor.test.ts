@@ -92,9 +92,21 @@ describe('delegation-monitor core APIs (WU-1241)', () => {
 
     it('sorts stuck delegations by age descending (oldest first)', () => {
       const delegations = [
-        createDelegation('dlg-a114', 'pending', new Date(Date.now() - 35 * 60 * 1000).toISOString()),
-        createDelegation('dlg-a115', 'pending', new Date(Date.now() - 65 * 60 * 1000).toISOString()),
-        createDelegation('dlg-a116', 'pending', new Date(Date.now() - 50 * 60 * 1000).toISOString()),
+        createDelegation(
+          'dlg-a114',
+          'pending',
+          new Date(Date.now() - 35 * 60 * 1000).toISOString(),
+        ),
+        createDelegation(
+          'dlg-a115',
+          'pending',
+          new Date(Date.now() - 65 * 60 * 1000).toISOString(),
+        ),
+        createDelegation(
+          'dlg-a116',
+          'pending',
+          new Date(Date.now() - 50 * 60 * 1000).toISOString(),
+        ),
       ];
 
       const stuck = detectStuckDelegations(delegations, 30);
