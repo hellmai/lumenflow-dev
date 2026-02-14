@@ -4,7 +4,7 @@ _Last updated: 2026-02-14_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1673 — Prevent wu:done append-only conflict markers from entering wu-events](wu/WU-1673.yaml)
 
 ## Completed
 
