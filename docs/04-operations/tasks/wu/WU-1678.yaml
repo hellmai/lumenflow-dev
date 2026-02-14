@@ -1,0 +1,37 @@
+id: WU-1678
+title: Stabilize wu-done.test worker-fork timeout in incremental test gate
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-14
+code_paths:
+  - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+  - packages/@lumenflow/cli/src/gates-runners.ts
+tests:
+  manual:
+    - Run pnpm vitest run --changed origin/main in a lane worktree touching CLI and verify no worker-fork timeout
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+    - packages/@lumenflow/cli/src/__tests__/gates-integration-tests.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1678.done
+dependencies: []
+spec_refs:
+  - docs/04-operations/tasks/wu/WU-1676.yaml
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: WU-1676 completion repeatedly fails at wu:done test gate with Vitest worker-fork teardown timeout in packages/@lumenflow/cli/src/__tests__/wu-done.test.ts while all relevant WU tests pass. Problem: unrelated WUs touching CLI are blocked by intermittent full changed-suite worker failures. Solution: make the affected test/gate runner deterministic under changed-test execution and remove this flake from completion flow.'
+acceptance:
+  - wu:done no longer fails due to worker-fork timeout in packages/@lumenflow/cli/src/__tests__/wu-done.test.ts under changed-test gate runs
+  - A reproducible local command is documented and passes in at least two consecutive runs
+  - Targeted and relevant gate tests pass
