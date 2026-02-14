@@ -8,8 +8,6 @@ created: 2026-02-14
 code_paths:
   - packages/@lumenflow/cli/src/wu-prep.ts
   - packages/@lumenflow/cli/src/gates.ts
-  - packages/@lumenflow/cli/src/wu-prep.ts
-  - packages/@lumenflow/cli/src/gates.ts
   - packages/@lumenflow/cli/src/wu-create.ts
   - packages/@lumenflow/cli/src/wu-validate.ts
 tests:
