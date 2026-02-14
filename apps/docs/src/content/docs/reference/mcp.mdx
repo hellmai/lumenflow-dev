@@ -53,7 +53,7 @@ The MCP server exposes **99 tools** organized into 12 categories:
 | Memory Operations             | 14    | Session tracking and agent coordination    |
 | Agent Operations              | 4     | Agent session management and issue logging |
 | Orchestration Operations      | 3     | Initiative execution and monitoring        |
-| Spawn Operations              | 1     | Sub-agent spawn tree management            |
+| Delegation Operations         | 1     | Sub-agent delegation tree management       |
 | Flow/Metrics Operations       | 3     | DORA metrics and flow analysis             |
 | Validation Operations         | 5     | WU and configuration validation            |
 | Setup Operations              | 8     | LumenFlow initialization and configuration |
@@ -742,7 +742,7 @@ Show compact initiative progress status including WUs and lane availability.
 
 ### orchestrate_monitor
 
-Monitor spawned agent progress and spawn health (stuck detection, zombie locks).
+Monitor delegated agent progress and delegation health (stuck detection, zombie locks).
 
 **Input:**
 | Parameter | Type | Required | Description |
@@ -756,17 +756,17 @@ Monitor spawned agent progress and spawn health (stuck detection, zombie locks).
 
 ---
 
-## Spawn Operations
+## Delegation Operations
 
-### spawn_list
+### delegation_list
 
-Display spawn trees for WUs or initiatives.
+Display delegation trees for WUs or initiatives.
 
 **Input:**
 | Parameter | Type | Required | Description |
 | ------------ | ------- | -------- | ---------------------------------------- |
-| `wu` | string | No | WU ID to show spawns for (e.g., WU-1234) |
-| `initiative` | string | No | Initiative ID to show all spawns for |
+| `wu` | string | No | WU ID to show delegations for (e.g., WU-1234) |
+| `initiative` | string | No | Initiative ID to show all delegations for |
 | `json` | boolean | No | Output as JSON |
 
 <Aside type="note">Either `wu` or `initiative` is required.</Aside>
@@ -1069,7 +1069,7 @@ interface ToolResult {
 | `WU_PRUNE_ERROR`                 | Failed to prune worktrees            |
 | `WU_DELETE_ERROR`                | Failed to delete WU                  |
 | `WU_CLEANUP_ERROR`               | Failed to cleanup WU                 |
-| `WU_SPAWN_ERROR`                 | Failed to spawn WU                   |
+| `WU_DELEGATE_ERROR`              | Failed to delegate WU                |
 | `WU_VALIDATE_ERROR`              | Failed to validate WU                |
 | `WU_INFER_LANE_ERROR`            | Failed to infer lane                 |
 | `WU_UNLOCK_LANE_ERROR`           | Failed to unlock lane                |
@@ -1101,8 +1101,8 @@ interface ToolResult {
 | `AGENT_ISSUES_QUERY_ERROR`       | Failed to query issues               |
 | `ORCHESTRATE_INITIATIVE_ERROR`   | Failed to orchestrate initiative     |
 | `ORCHESTRATE_INIT_STATUS_ERROR`  | Failed to get initiative status      |
-| `ORCHESTRATE_MONITOR_ERROR`      | Failed to monitor spawns             |
-| `SPAWN_LIST_ERROR`               | Failed to list spawns                |
+| `ORCHESTRATE_MONITOR_ERROR`      | Failed to monitor delegations        |
+| `DELEGATION_LIST_ERROR`          | Failed to list delegations           |
 | `FLOW_BOTTLENECKS_ERROR`         | Failed to analyze bottlenecks        |
 | `FLOW_REPORT_ERROR`              | Failed to generate flow report       |
 | `METRICS_SNAPSHOT_ERROR`         | Failed to capture metrics            |
@@ -1197,8 +1197,8 @@ MCP Server (@lumenflow/mcp)
 │   │   ├── orchestrate_init_status → CLI: orchestrate:init-status
 │   │   └── orchestrate_monitor → CLI: orchestrate:monitor
 │   │
-│   ├── Spawn Operations (1)
-│   │   └── spawn_list → CLI: spawn:list
+│   ├── Delegation Operations (1)
+│   │   └── delegation_list → CLI: delegation:list
 │   │
 │   ├── Flow/Metrics Operations (3)
 │   │   ├── flow_bottlenecks → CLI: flow:bottlenecks
