@@ -2,7 +2,7 @@ id: WU-1676
 title: Scope wu:prep test gate to WU tests.unit entries
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-14
 code_paths:
@@ -54,3 +54,6 @@ acceptance:
     SAFETY_CRITICAL_TEST and other gates remain unchanged
   - Full incremental test suite remains available via wu:prep --full-tests flag
   - Targeted test run completes in under 30s for typical WUs
+locked: true
+completed_at: 2026-02-14T13:07:20.728Z
+completed: 2026-02-14

@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1678 — Stabilize wu-done.test worker-fork timeout in incremental test gate](wu/WU-1678.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1581 — CLI strict wave 1A: high-impact WU command hotspots](wu/WU-1581.yaml) — Framework: CLI WU Commands
@@ -33,10 +32,11 @@ sections:
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml) — Framework: Core Validation
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml) — Framework: CLI Enforcement
+- [WU-1678 — Stabilize wu-done.test worker-fork timeout in incremental test gate](wu/WU-1678.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-- [WU-1676 — Scope wu:prep test gate to WU tests.unit entries](wu/WU-1676.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -654,4 +654,5 @@ sections:
 - [WU-1674 — Atomic spawn-to-delegation runtime rename with migration guard](wu/WU-1674.yaml)
 - [WU-1675 — Align docs, parity baselines, and templates to delegation terminology](wu/WU-1675.yaml)
 - [WU-1677 — wu:edit reads YAML from main instead of worktree for in_progress WUs](wu/WU-1677.yaml)
+- [WU-1676 — Scope wu:prep test gate to WU tests.unit entries](wu/WU-1676.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
