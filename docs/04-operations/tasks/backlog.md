@@ -36,7 +36,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1676 — Scope wu:prep test gate to WU tests.unit entries](wu/WU-1676.yaml) — Framework: CLI WU Commands
-- [WU-1677 — wu:edit reads YAML from main instead of worktree for in_progress WUs](wu/WU-1677.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -653,4 +652,5 @@ sections:
 - [WU-1673 — Prevent wu:done append-only conflict markers from entering wu-events](wu/WU-1673.yaml)
 - [WU-1674 — Atomic spawn-to-delegation runtime rename with migration guard](wu/WU-1674.yaml)
 - [WU-1675 — Align docs, parity baselines, and templates to delegation terminology](wu/WU-1675.yaml)
+- [WU-1677 — wu:edit reads YAML from main instead of worktree for in_progress WUs](wu/WU-1677.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
