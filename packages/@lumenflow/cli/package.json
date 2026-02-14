@@ -89,7 +89,7 @@
     "orchestrate-initiative": "./dist/orchestrate-initiative.js",
     "orchestrate-init-status": "./dist/orchestrate-init-status.js",
     "orchestrate-monitor": "./dist/orchestrate-monitor.js",
-    "spawn-list": "./dist/spawn-list.js",
+    "delegation-list": "./dist/delegation-list.js",
     "flow-report": "./dist/flow-report.js",
     "flow-bottlenecks": "./dist/flow-bottlenecks.js",
     "metrics-snapshot": "./dist/metrics-snapshot.js",

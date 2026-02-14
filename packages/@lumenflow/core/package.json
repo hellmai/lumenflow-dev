@@ -37,6 +37,8 @@
     "./spawn-registry-store": "./dist/spawn-registry-store.js",
     "./spawn-registry-schema": "./dist/spawn-registry-schema.js",
     "./spawn-tree": "./dist/spawn-tree.js",
+    "./delegation-registry-schema": "./dist/delegation-registry-schema.js",
+    "./delegation-tree": "./dist/delegation-tree.js",
     "./spawn-recovery": "./dist/spawn-recovery.js",
     "./spawn-monitor": "./dist/spawn-monitor.js",
     "./spawn-escalation": "./dist/spawn-escalation.js",

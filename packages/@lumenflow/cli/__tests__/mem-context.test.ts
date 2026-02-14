@@ -453,8 +453,8 @@ describe('mem:context CLI (WU-1234)', () => {
       });
     });
 
-    describe('--spawn-context-max-size option', () => {
-      it('accepts --spawn-context-max-size as alias for --max-size', async () => {
+    describe('--delegation-context-max-size option', () => {
+      it('accepts --delegation-context-max-size as alias for --max-size', async () => {
         // Arrange
         const node = {
           id: 'mem-test',
@@ -466,11 +466,18 @@ describe('mem:context CLI (WU-1234)', () => {
         };
         await writeMemoryNode(node);
 
-        // Act - use spawn-context-max-size instead of max-size
-        const result = runCli(['--wu', 'WU-1234', '--spawn-context-max-size', '8192']);
+        // Act - use delegation-context-max-size instead of max-size
+        const result = runCli(['--wu', 'WU-1234', '--delegation-context-max-size', '8192']);
 
         // Assert
         expect(result.exitCode).toBe(0);
+      });
+
+      it('rejects deprecated --spawn-context-max-size with explicit guidance', () => {
+        const result = runCli(['--wu', 'WU-1234', '--spawn-context-max-size', '8192']);
+
+        expect(result.exitCode).not.toBe(0);
+        expect(result.stderr).toMatch(/delegation-context-max-size/i);
       });
     });
 
@@ -497,7 +504,7 @@ describe('mem:context CLI (WU-1234)', () => {
           '3',
           '--max-project-nodes',
           '5',
-          '--spawn-context-max-size',
+          '--delegation-context-max-size',
           '4096',
         ]);
 

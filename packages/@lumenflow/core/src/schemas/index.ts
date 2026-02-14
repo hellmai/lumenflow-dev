@@ -9,7 +9,7 @@
  * - Zod schemas for 13 memory commands (WU-1456)
  * - Zod schemas for 4 flow/metrics commands (WU-1457)
  * - Zod schemas for 5 validation commands (WU-1457)
- * - Zod schemas for 18 setup/agent/orchestration/spawn commands (WU-1457)
+ * - Zod schemas for 18 setup/agent/orchestration/delegation commands (WU-1457)
  * - MCP inputSchema generation utilities
  * - CLI option generation utilities
  * - CLI argument validators
@@ -278,7 +278,7 @@ export {
   validateValidateSkillsSpecArgs,
 } from './validation-arg-validators.js';
 
-// Setup + Agent + Orchestration + Spawn schemas (WU-1457: 18 commands)
+// Setup + Agent + Orchestration + Delegation schemas (WU-1457: 18 commands)
 export {
   // Setup schemas
   lumenflowInitSchema,
@@ -298,8 +298,8 @@ export {
   orchestrateInitiativeSchema,
   orchestrateInitStatusSchema,
   orchestrateMonitorSchema,
-  // Spawn schemas
-  spawnListSchema,
+  // Delegation schemas
+  delegationListSchema,
   // Coordination schemas
   sessionCoordinatorSchema,
   rotateProgressSchema,
@@ -319,7 +319,7 @@ export {
   type OrchestrateInitiativeInput,
   type OrchestrateInitStatusInput,
   type OrchestrateMonitorInput,
-  type SpawnListInput,
+  type DelegationListInput,
   type SessionCoordinatorInput,
   type RotateProgressInput,
   // Registry
@@ -327,7 +327,7 @@ export {
   type SetupCommandName,
 } from './setup-schemas.js';
 
-// Setup + Agent + Orchestration + Spawn argument validators (WU-1457: 18 commands)
+// Setup + Agent + Orchestration + Delegation argument validators (WU-1457: 18 commands)
 export {
   validateLumenflowInitArgs,
   validateLumenflowDoctorArgs,
@@ -344,7 +344,7 @@ export {
   validateOrchestrateInitiativeArgs,
   validateOrchestrateInitStatusArgs,
   validateOrchestrateMonitorArgs,
-  validateSpawnListArgs,
+  validateDelegationListArgs,
   validateSessionCoordinatorArgs,
   validateRotateProgressArgs,
 } from './setup-arg-validators.js';

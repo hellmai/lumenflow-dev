@@ -1,11 +1,11 @@
 /**
  * @file coordination-tools.test.ts
- * @description Tests for Agent, Orchestration, and Spawn MCP tool implementations
+ * @description Tests for Agent, Orchestration, and Delegation MCP tool implementations
  *
  * WU-1425: MCP tools for agent coordination and orchestration:
  * - Agent (4): agent_session, agent_session_end, agent_log_issue, agent_issues_query
  * - Orchestration (3): orchestrate_initiative, orchestrate_init_status, orchestrate_monitor
- * - Spawn (1): spawn_list
+ * - Delegation (1): delegation_list
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -17,7 +17,7 @@ import {
   orchestrateInitiativeTool,
   orchestrateInitStatusTool,
   orchestrateMonitorTool,
-  spawnListTool,
+  delegationListTool,
 } from '../tools.js';
 import * as cliRunner from '../cli-runner.js';
 
@@ -571,7 +571,7 @@ describe('Orchestration MCP tools (WU-1425)', () => {
   });
 });
 
-describe('Spawn MCP tools (WU-1425)', () => {
+describe('Delegation MCP tools (WU-1425)', () => {
   const mockRunCliCommand = vi.mocked(cliRunner.runCliCommand);
 
   beforeEach(() => {
@@ -582,8 +582,8 @@ describe('Spawn MCP tools (WU-1425)', () => {
     vi.restoreAllMocks();
   });
 
-  describe('spawn_list', () => {
-    it('should list spawns for WU via CLI shell-out', async () => {
+  describe('delegation_list', () => {
+    it('should list delegations for WU via CLI shell-out', async () => {
       mockRunCliCommand.mockResolvedValue({
         success: true,
         stdout: 'Spawn tree displayed',
@@ -591,17 +591,17 @@ describe('Spawn MCP tools (WU-1425)', () => {
         exitCode: 0,
       });
 
-      const result = await spawnListTool.execute({ wu: 'WU-1425' });
+      const result = await delegationListTool.execute({ wu: 'WU-1425' });
 
       expect(result.success).toBe(true);
       expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'spawn:list',
+        'delegation:list',
         expect.arrayContaining(['--wu', 'WU-1425']),
         expect.any(Object),
       );
     });
 
-    it('should list spawns for initiative via CLI shell-out', async () => {
+    it('should list delegations for initiative via CLI shell-out', async () => {
       mockRunCliCommand.mockResolvedValue({
         success: true,
         stdout: 'Initiative spawns displayed',
@@ -609,37 +609,37 @@ describe('Spawn MCP tools (WU-1425)', () => {
         exitCode: 0,
       });
 
-      const result = await spawnListTool.execute({ initiative: 'INIT-001' });
+      const result = await delegationListTool.execute({ initiative: 'INIT-001' });
 
       expect(result.success).toBe(true);
       expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'spawn:list',
+        'delegation:list',
         expect.arrayContaining(['--initiative', 'INIT-001']),
         expect.any(Object),
       );
     });
 
     it('should require either wu or initiative parameter', async () => {
-      const result = await spawnListTool.execute({});
+      const result = await delegationListTool.execute({});
 
       expect(result.success).toBe(false);
       expect(result.error?.message).toMatch(/wu|initiative/i);
     });
 
     it('should support json output', async () => {
-      const mockSpawns = [{ id: 'spawn-1', targetWuId: 'WU-1426', status: 'pending' }];
+      const mockDelegations = [{ id: 'dlg-1', targetWuId: 'WU-1426', status: 'pending' }];
       mockRunCliCommand.mockResolvedValue({
         success: true,
-        stdout: JSON.stringify(mockSpawns),
+        stdout: JSON.stringify(mockDelegations),
         stderr: '',
         exitCode: 0,
       });
 
-      const result = await spawnListTool.execute({ wu: 'WU-1425', json: true });
+      const result = await delegationListTool.execute({ wu: 'WU-1425', json: true });
 
       expect(result.success).toBe(true);
       expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'spawn:list',
+        'delegation:list',
         expect.arrayContaining(['--wu', 'WU-1425', '--json']),
         expect.any(Object),
       );

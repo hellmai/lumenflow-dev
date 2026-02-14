@@ -18,7 +18,7 @@ import { z } from 'zod';
  * - unblock: WU unblocked (transitions back to in_progress)
  * - complete: WU completed (transitions to done)
  * - checkpoint: Progress checkpoint (WU-1748: cross-agent visibility)
- * - spawn: WU spawned from parent (WU-1947: parent-child relationships)
+ * - delegation: WU delegated from parent (WU-1947: parent-child relationships)
  * - release: WU released (WU-1080: transitions from in_progress to ready for orphan recovery)
  */
 export const WU_EVENT_TYPES = [
@@ -28,7 +28,7 @@ export const WU_EVENT_TYPES = [
   'unblock',
   'complete',
   'checkpoint',
-  'spawn',
+  'delegation',
   'release',
 ] as const;
 
@@ -136,17 +136,17 @@ export const CheckpointEventSchema = BaseEventSchema.extend({
 });
 
 /**
- * Spawn event schema (WU-1947: parent-child relationships)
- * Records WU spawn relationships for tracking parent-child WUs
+ * Delegation event schema (WU-1947: parent-child relationships)
+ * Records WU delegation relationships for tracking parent-child WUs
  */
-export const SpawnEventSchema = BaseEventSchema.extend({
-  type: z.literal('spawn'),
-  /** Parent WU ID that spawned this WU */
+export const DelegationEventSchema = BaseEventSchema.extend({
+  type: z.literal('delegation'),
+  /** Parent WU ID that delegated this WU */
   parentWuId: z
     .string()
     .regex(WU_PATTERNS.WU_ID, { message: 'Parent WU ID must match pattern WU-XXX' }),
-  /** Unique spawn identifier */
-  spawnId: z.string().min(1, { message: 'Spawn ID is required' }),
+  /** Unique delegation identifier */
+  delegationId: z.string().min(1, { message: 'Delegation ID is required' }),
 });
 
 /**
@@ -170,7 +170,7 @@ export const WUEventSchema = z.discriminatedUnion('type', [
   UnblockEventSchema,
   CompleteEventSchema,
   CheckpointEventSchema,
-  SpawnEventSchema,
+  DelegationEventSchema,
   ReleaseEventSchema,
 ]);
 
@@ -183,7 +183,7 @@ export type BlockEvent = z.infer<typeof BlockEventSchema>;
 export type UnblockEvent = z.infer<typeof UnblockEventSchema>;
 export type CompleteEvent = z.infer<typeof CompleteEventSchema>;
 export type CheckpointEvent = z.infer<typeof CheckpointEventSchema>;
-export type SpawnEvent = z.infer<typeof SpawnEventSchema>;
+export type DelegationEvent = z.infer<typeof DelegationEventSchema>;
 export type ReleaseEvent = z.infer<typeof ReleaseEventSchema>;
 export type WUEvent = z.infer<typeof WUEventSchema>;
 

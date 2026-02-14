@@ -39,6 +39,11 @@ const MEMORY_PATHS = {
   MEMORY_FILE: 'memory.jsonl',
 } as const;
 
+const MEMORY_CONTEXT_ERRORS = {
+  DEPRECATED_SPAWN_CONTEXT_MAX_SIZE:
+    'memory.spawn_context_max_size is no longer supported. Use memory.delegation_context_max_size instead.',
+} as const;
+
 /**
  * Section header for memory context in spawn prompts
  */
@@ -92,14 +97,24 @@ export async function checkMemoryLayerInitialized(baseDir: string): Promise<bool
 /**
  * Gets the maximum context size from config or returns default.
  *
- * Reads from config.memory.spawn_context_max_size, defaulting to 4KB.
+ * Reads from config.memory.delegation_context_max_size, defaulting to 4KB.
  *
  * @param config - LumenFlow configuration object
  * @returns Maximum context size in bytes
  */
 export function getMemoryContextMaxSize(config: Partial<LumenFlowConfig>): number {
-  const memoryConfig = config as { memory?: { spawn_context_max_size?: number } };
-  return memoryConfig?.memory?.spawn_context_max_size ?? DEFAULT_MAX_SIZE;
+  const memoryConfig = config as {
+    memory?: {
+      delegation_context_max_size?: number;
+      spawn_context_max_size?: unknown;
+    };
+  };
+
+  if (memoryConfig?.memory?.spawn_context_max_size !== undefined) {
+    throw new Error(MEMORY_CONTEXT_ERRORS.DEPRECATED_SPAWN_CONTEXT_MAX_SIZE);
+  }
+
+  return memoryConfig?.memory?.delegation_context_max_size ?? DEFAULT_MAX_SIZE;
 }
 
 /**

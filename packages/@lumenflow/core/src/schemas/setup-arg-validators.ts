@@ -1,10 +1,10 @@
 /**
  * @file setup-arg-validators.ts
- * @description CLI argument validators for setup, agent, orchestration, spawn, and coordination
+ * @description CLI argument validators for setup, agent, orchestration, delegation, and coordination
  * commands using shared schemas (WU-1457)
  *
  * These validators use the shared Zod schemas to validate CLI arguments for the
- * 18 setup/agent/orchestration/spawn/coordination commands. They follow the same
+ * 18 setup/agent/orchestration/delegation/coordination commands. They follow the same
  * pattern as memory-arg-validators.ts (WU-1456).
  */
 
@@ -24,7 +24,7 @@ import {
   orchestrateInitiativeSchema,
   orchestrateInitStatusSchema,
   orchestrateMonitorSchema,
-  spawnListSchema,
+  delegationListSchema,
   sessionCoordinatorSchema,
   rotateProgressSchema,
   type LumenflowInitInput,
@@ -42,7 +42,7 @@ import {
   type OrchestrateInitiativeInput,
   type OrchestrateInitStatusInput,
   type OrchestrateMonitorInput,
-  type SpawnListInput,
+  type DelegationListInput,
   type SessionCoordinatorInput,
   type RotateProgressInput,
 } from './setup-schemas.js';
@@ -188,11 +188,12 @@ export const validateOrchestrateMonitorArgs =
   createValidator<OrchestrateMonitorInput>(orchestrateMonitorSchema);
 
 // =============================================================================
-// Spawn Validators
+// Delegation Validators
 // =============================================================================
 
-/** Validate spawn:list arguments */
-export const validateSpawnListArgs = createValidator<SpawnListInput>(spawnListSchema);
+/** Validate delegation:list arguments */
+export const validateDelegationListArgs =
+  createValidator<DelegationListInput>(delegationListSchema);
 
 // =============================================================================
 // Coordination Validators

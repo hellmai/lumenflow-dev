@@ -29,7 +29,7 @@ export * from './git-adapter.js';
 // State machine
 export * from './state-machine.js';
 
-// WU State Schema (explicit exports to avoid SpawnEvent conflict with spawn-registry)
+// WU State Schema (explicit exports to avoid DelegationEvent conflict with delegation-registry)
 export {
   WU_EVENT_TYPES,
   WU_STATUSES,
@@ -43,7 +43,7 @@ export {
   WUEventSchema,
   validateWUEvent,
   // Rename conflicting exports
-  SpawnEventSchema as WUSpawnEventSchema,
+  DelegationEventSchema as WUDelegationEventSchema,
   type CreateEvent,
   type ClaimEvent,
   type BlockEvent,
@@ -51,7 +51,7 @@ export {
   type CompleteEvent,
   type CheckpointEvent,
   type WUEvent,
-  type SpawnEvent as WUSpawnEvent,
+  type DelegationEvent as WUDelegationEvent,
 } from './wu-state-schema.js';
 
 // WU State Store (explicit exports to avoid isLockStale conflict)
@@ -113,6 +113,9 @@ export * from './spawn-tree.js';
 export * from './spawn-recovery.js';
 export * from './spawn-monitor.js';
 export * from './spawn-escalation.js';
+// Delegation surface aliases (WU-1674)
+export * from './delegation-registry-schema.js';
+export * from './delegation-tree.js';
 
 // WU-1142: Spawn prompt schema for truncation-resistant prompts
 // Explicit exports to avoid ValidationResult conflict with validation/index.js

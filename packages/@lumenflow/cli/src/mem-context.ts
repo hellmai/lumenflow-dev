@@ -3,7 +3,7 @@
 /**
  * Memory Context CLI (WU-1234, WU-1292)
  *
- * Generate deterministic, formatted context injection blocks for wu:spawn prompts.
+ * Generate deterministic, formatted context injection blocks for delegation prompts.
  * Outputs structured markdown with sections for project profile, summaries,
  * WU context, and discoveries.
  *
@@ -12,7 +12,8 @@
  *
  * Options:
  *   --max-size <bytes>            Maximum context size in bytes (default: 4096)
- *   --spawn-context-max-size <bytes>  Alias for --max-size (for config parity)
+ *   --delegation-context-max-size <bytes>  Alias for --max-size (for config parity)
+ *   --spawn-context-max-size <bytes>  Deprecated: hard-fails with migration guidance
  *   --lane <lane>                 Filter project memories by lane (WU-1292)
  *   --max-recent-summaries <n>    Limit recent summaries included (WU-1292)
  *   --max-project-nodes <n>       Limit project nodes included (WU-1292)
@@ -56,6 +57,11 @@ const LOG_PREFIX = '[mem:context]';
  */
 const TOOL_NAME = 'mem:context';
 
+const MEM_CONTEXT_ERRORS = {
+  DEPRECATED_SPAWN_CONTEXT_FLAG:
+    'Deprecated flag --spawn-context-max-size is not supported. Use --delegation-context-max-size instead.',
+} as const;
+
 /**
  * Valid output formats
  */
@@ -71,10 +77,15 @@ const CLI_OPTIONS = {
     flags: '-m, --max-size <bytes>',
     description: 'Maximum context size in bytes (default: 4096)',
   },
-  spawnContextMaxSize: {
+  delegationContextMaxSize: {
+    name: 'delegationContextMaxSize',
+    flags: '--delegation-context-max-size <bytes>',
+    description: 'Alias for --max-size (for config parity with delegation_context_max_size)',
+  },
+  deprecatedSpawnContextMaxSize: {
     name: 'spawnContextMaxSize',
     flags: '--spawn-context-max-size <bytes>',
-    description: 'Alias for --max-size (for config parity with spawn_context_max_size)',
+    description: '(Deprecated) Use --delegation-context-max-size instead',
   },
   lane: {
     name: 'lane',
@@ -243,11 +254,12 @@ function printJsonFormat(result: GenerateContextResult, wuId: string): void {
 async function main(): Promise<void> {
   const args = createWUParser({
     name: 'mem-context',
-    description: 'Generate context injection block for wu:spawn prompts',
+    description: 'Generate context injection block for delegation prompts',
     options: [
       WU_OPTIONS.wu,
       CLI_OPTIONS.maxSize,
-      CLI_OPTIONS.spawnContextMaxSize,
+      CLI_OPTIONS.delegationContextMaxSize,
+      CLI_OPTIONS.deprecatedSpawnContextMaxSize,
       CLI_OPTIONS.lane,
       CLI_OPTIONS.maxRecentSummaries,
       CLI_OPTIONS.maxProjectNodes,
@@ -269,9 +281,13 @@ async function main(): Promise<void> {
 
   // Validate arguments
   try {
-    // WU-1292: --spawn-context-max-size is an alias for --max-size (for config parity)
-    // If both are provided, --spawn-context-max-size takes precedence
-    const maxSizeArg = args.spawnContextMaxSize || args.maxSize;
+    if (args.spawnContextMaxSize) {
+      throw new Error(MEM_CONTEXT_ERRORS.DEPRECATED_SPAWN_CONTEXT_FLAG);
+    }
+
+    // --delegation-context-max-size is an alias for --max-size (for config parity)
+    // If both are provided, --delegation-context-max-size takes precedence.
+    const maxSizeArg = args.delegationContextMaxSize || args.maxSize;
     maxSize = parsePositiveInt(maxSizeArg, '--max-size');
     lane = validateLane(args.lane);
     maxRecentSummaries = parsePositiveInt(args.maxRecentSummaries, '--max-recent-summaries');

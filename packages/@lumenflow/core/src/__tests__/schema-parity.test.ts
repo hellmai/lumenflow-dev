@@ -1143,7 +1143,7 @@ import {
   orchestrateInitiativeSchema,
   orchestrateInitStatusSchema,
   orchestrateMonitorSchema,
-  spawnListSchema,
+  delegationListSchema,
   sessionCoordinatorSchema,
   rotateProgressSchema,
   setupCommandSchemas,
@@ -1156,7 +1156,7 @@ import {
   type OrchestrateInitiativeInput,
   type OrchestrateInitStatusInput,
   type OrchestrateMonitorInput,
-  type SpawnListInput,
+  type DelegationListInput,
   type SessionCoordinatorInput,
   type RotateProgressInput,
   type SetupCommandName,
@@ -1179,7 +1179,7 @@ import {
   validateOrchestrateInitiativeArgs,
   validateOrchestrateInitStatusArgs,
   validateOrchestrateMonitorArgs,
-  validateSpawnListArgs,
+  validateDelegationListArgs,
   validateSessionCoordinatorArgs,
   validateRotateProgressArgs,
 } from '../schemas/setup-arg-validators.js';
@@ -1478,8 +1478,8 @@ describe('Setup/Agent/Orchestration/Spawn Command Schemas (WU-1457)', () => {
       expect(commandNames).toContain('orchestrate:initiative');
       expect(commandNames).toContain('orchestrate:init-status');
       expect(commandNames).toContain('orchestrate:monitor');
-      // Spawn commands
-      expect(commandNames).toContain('spawn:list');
+      // Delegation commands
+      expect(commandNames).toContain('delegation:list');
       // Coordination commands
       expect(commandNames).toContain('session:coordinator');
       expect(commandNames).toContain('rotate:progress');
@@ -1698,15 +1698,15 @@ describe('Setup/Agent/Orchestration/Spawn Command Schemas (WU-1457)', () => {
     });
   });
 
-  describe('spawnListSchema', () => {
+  describe('delegationListSchema', () => {
     it('should accept empty input (no required fields)', () => {
-      const result = spawnListSchema.safeParse({});
+      const result = delegationListSchema.safeParse({});
       expect(result.success).toBe(true);
     });
 
     it('should accept optional wu and initiative', () => {
-      const input: SpawnListInput = { wu: 'WU-1234', json: true };
-      const result = spawnListSchema.safeParse(input);
+      const input: DelegationListInput = { wu: 'WU-1234', json: true };
+      const result = delegationListSchema.safeParse(input);
       expect(result.success).toBe(true);
     });
   });
@@ -1892,8 +1892,8 @@ describe('Setup/Agent/Orchestration/Spawn Command Schemas (WU-1457)', () => {
       expect(result.valid).toBe(true);
     });
 
-    it('should validate spawn:list args', () => {
-      const result = validateSpawnListArgs({});
+    it('should validate delegation:list args', () => {
+      const result = validateDelegationListArgs({});
       expect(result.valid).toBe(true);
     });
 

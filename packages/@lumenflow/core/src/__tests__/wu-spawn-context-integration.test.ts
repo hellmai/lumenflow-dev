@@ -289,7 +289,7 @@ describe('WU-1240: Integrate mem:context into wu:spawn prompts', () => {
       // Arrange
       const config = {
         memory: {
-          spawn_context_max_size: 8192,
+          delegation_context_max_size: 8192,
         },
       };
 

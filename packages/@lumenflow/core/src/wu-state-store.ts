@@ -22,6 +22,9 @@ import {
   readFileSync,
   writeFileSync,
   mkdirSync,
+  copyFileSync,
+  readdirSync,
+  statSync,
   renameSync,
   unlinkSync,
   openSync,
@@ -30,8 +33,9 @@ import {
 } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { parse as parseYaml } from 'yaml';
 import { validateWUEvent, type WUEvent } from './wu-state-schema.js';
-import { WU_STATUS } from './wu-constants.js';
+import { LUMENFLOW_PATHS, PATTERNS, WU_STATUS } from './wu-constants.js';
 
 /**
  * Lock timeout in milliseconds (5 minutes)
@@ -48,6 +52,324 @@ const LOCK_MAX_RETRIES = 100; // 5 seconds total
  * WU events file name constant
  */
 export const WU_EVENTS_FILE_NAME = 'wu-events.jsonl';
+
+/**
+ * Delegation cutover constants (WU-1674)
+ */
+const DELEGATION_CUTOVER = Object.freeze({
+  MARKER_FILE: '.delegation-cutover-done',
+  ARCHIVE_DIR: 'archive',
+  ARCHIVE_PREFIX: 'delegation-cutover-',
+  LEGACY_REGISTRY_FILE: 'spawn-registry.jsonl',
+  DELEGATION_REGISTRY_FILE: 'delegation-registry.jsonl',
+  LEGACY_EVENT_TYPE: 'spawn',
+  RELATIONSHIP_EVENT_TYPE: 'delegation',
+  DONE_STAMP_SUFFIX: '.done',
+  WU_FILE_PREFIX: 'WU-',
+});
+
+const DELEGATION_CUTOVER_PATHS = Object.freeze({
+  WU_DOCS_SEGMENTS: ['docs', '04-operations', 'tasks', 'wu'],
+  STAMP_SEGMENTS: [LUMENFLOW_PATHS.BASE, 'stamps'],
+});
+
+const BOOTSTRAP_STATUSES = Object.freeze({
+  READY: 'ready',
+  BACKLOG: 'backlog',
+  TODO: 'todo',
+  BLOCKED: 'blocked',
+  DONE: 'done',
+  COMPLETED: 'completed',
+});
+
+const BOOTSTRAP_REASON = Object.freeze({
+  BLOCKED: 'Bootstrapped from WU YAML (original reason unknown)',
+});
+
+type BootstrapEvent = Extract<WUEvent, { type: 'claim' | 'block' | 'complete' }>;
+
+interface BootstrapWUInfo {
+  id: string;
+  status: string;
+  lane: string;
+  title: string;
+  created?: string;
+  claimed_at?: string;
+  completed_at?: string;
+}
+
+/**
+ * Returns true when the state dir matches the canonical project location:
+ * <repo>/.lumenflow/state
+ */
+function isCanonicalStateDir(stateDir: string): boolean {
+  const stateLeaf = path.basename(LUMENFLOW_PATHS.STATE_DIR);
+  return (
+    path.basename(stateDir) === stateLeaf && path.basename(path.dirname(stateDir)) === LUMENFLOW_PATHS.BASE
+  );
+}
+
+function sanitizeTimestamp(timestamp: string): string {
+  return timestamp.replace(/[:.]/g, '-');
+}
+
+function toIsoTimestamp(raw: string | undefined, fallback?: string): string {
+  const candidate = raw ?? fallback;
+  if (!candidate) {
+    return new Date().toISOString();
+  }
+
+  if (candidate.includes('T')) {
+    const parsed = new Date(candidate);
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed.toISOString();
+    }
+  }
+
+  const parsed = new Date(candidate);
+  if (Number.isNaN(parsed.getTime())) {
+    return new Date().toISOString();
+  }
+  return parsed.toISOString();
+}
+
+function readLegacyEventType(eventPath: string): Set<string> {
+  const eventTypes = new Set<string>();
+  if (!existsSync(eventPath)) {
+    return eventTypes;
+  }
+
+  const lines = readFileSync(eventPath, 'utf-8').split('\n');
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) {
+      continue;
+    }
+
+    try {
+      const parsed = JSON.parse(line) as { type?: unknown };
+      if (typeof parsed.type === 'string') {
+        eventTypes.add(parsed.type);
+      }
+    } catch {
+      // Corrupt legacy line: treat as legacy to force archival/rebootstrap.
+      eventTypes.add(DELEGATION_CUTOVER.LEGACY_EVENT_TYPE);
+      break;
+    }
+  }
+
+  return eventTypes;
+}
+
+function isLegacyCutoverRequired(stateDir: string, eventsPath: string): boolean {
+  const legacyRegistryPath = path.join(stateDir, DELEGATION_CUTOVER.LEGACY_REGISTRY_FILE);
+  if (existsSync(legacyRegistryPath)) {
+    return true;
+  }
+
+  const eventTypes = readLegacyEventType(eventsPath);
+  return eventTypes.has(DELEGATION_CUTOVER.LEGACY_EVENT_TYPE);
+}
+
+function resolveProjectRoot(stateDir: string): string {
+  let current = stateDir;
+  for (let depth = 0; depth < 6; depth++) {
+    const wuDir = path.join(current, ...DELEGATION_CUTOVER_PATHS.WU_DOCS_SEGMENTS);
+    if (existsSync(wuDir)) {
+      return current;
+    }
+
+    const parent = path.dirname(current);
+    if (parent === current) {
+      break;
+    }
+    current = parent;
+  }
+
+  if (isCanonicalStateDir(stateDir)) {
+    return path.dirname(path.dirname(stateDir));
+  }
+
+  return path.dirname(stateDir);
+}
+
+function moveFileToArchive(sourcePath: string, archivePath: string): void {
+  if (!existsSync(sourcePath)) {
+    return;
+  }
+
+  mkdirSync(path.dirname(archivePath), { recursive: true });
+  try {
+    renameSync(sourcePath, archivePath);
+  } catch (error) {
+    const nodeError = error as NodeJS.ErrnoException;
+    if (nodeError.code === 'EXDEV') {
+      copyFileSync(sourcePath, archivePath);
+      unlinkSync(sourcePath);
+      return;
+    }
+    throw error;
+  }
+}
+
+function loadWuBootstrapInfo(filePath: string): BootstrapWUInfo | null {
+  try {
+    const content = readFileSync(filePath, 'utf-8');
+    const parsed = parseYaml(content) as Record<string, unknown>;
+    if (!parsed || typeof parsed !== 'object') {
+      return null;
+    }
+
+    const id = typeof parsed.id === 'string' ? parsed.id : undefined;
+    if (!id || !PATTERNS.WU_ID.test(id)) {
+      return null;
+    }
+
+    return {
+      id,
+      status: typeof parsed.status === 'string' ? parsed.status : BOOTSTRAP_STATUSES.READY,
+      lane: typeof parsed.lane === 'string' ? parsed.lane : 'Unknown',
+      title: typeof parsed.title === 'string' ? parsed.title : 'Untitled',
+      created: typeof parsed.created === 'string' ? parsed.created : undefined,
+      claimed_at: typeof parsed.claimed_at === 'string' ? parsed.claimed_at : undefined,
+      completed_at: typeof parsed.completed_at === 'string' ? parsed.completed_at : undefined,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function readBootstrapWUs(projectRoot: string): BootstrapWUInfo[] {
+  const wuDir = path.join(projectRoot, ...DELEGATION_CUTOVER_PATHS.WU_DOCS_SEGMENTS);
+  if (!existsSync(wuDir)) {
+    return [];
+  }
+
+  const results: BootstrapWUInfo[] = [];
+  const entries = readdirSync(wuDir, { withFileTypes: true });
+  for (const entry of entries) {
+    if (!entry.isFile()) {
+      continue;
+    }
+    if (!entry.name.startsWith(DELEGATION_CUTOVER.WU_FILE_PREFIX)) {
+      continue;
+    }
+    if (!entry.name.endsWith('.yaml')) {
+      continue;
+    }
+
+    const info = loadWuBootstrapInfo(path.join(wuDir, entry.name));
+    if (info) {
+      results.push(info);
+    }
+  }
+
+  return results;
+}
+
+function readDoneStampTimes(projectRoot: string): Map<string, string> {
+  const stampDir = path.join(projectRoot, ...DELEGATION_CUTOVER_PATHS.STAMP_SEGMENTS);
+  const doneStamps = new Map<string, string>();
+
+  if (!existsSync(stampDir)) {
+    return doneStamps;
+  }
+
+  const entries = readdirSync(stampDir, { withFileTypes: true });
+  for (const entry of entries) {
+    if (!entry.isFile() || !entry.name.endsWith(DELEGATION_CUTOVER.DONE_STAMP_SUFFIX)) {
+      continue;
+    }
+
+    const wuId = entry.name.slice(0, -DELEGATION_CUTOVER.DONE_STAMP_SUFFIX.length);
+    if (!PATTERNS.WU_ID.test(wuId)) {
+      continue;
+    }
+
+    try {
+      const stampPath = path.join(stampDir, entry.name);
+      doneStamps.set(wuId, statSync(stampPath).mtime.toISOString());
+    } catch {
+      // Ignore unreadable stamp files during bootstrap.
+    }
+  }
+
+  return doneStamps;
+}
+
+function buildBootstrapEvents(
+  wus: BootstrapWUInfo[],
+  doneStampTimes: Map<string, string>,
+): BootstrapEvent[] {
+  const events: BootstrapEvent[] = [];
+
+  for (const wu of wus) {
+    const normalizedStatus = wu.status.toLowerCase();
+    const stampCompletedAt = doneStampTimes.get(wu.id);
+    const isDone =
+      normalizedStatus === BOOTSTRAP_STATUSES.DONE ||
+      normalizedStatus === BOOTSTRAP_STATUSES.COMPLETED ||
+      stampCompletedAt !== undefined;
+
+    const isReadyLike =
+      normalizedStatus === BOOTSTRAP_STATUSES.READY ||
+      normalizedStatus === BOOTSTRAP_STATUSES.BACKLOG ||
+      normalizedStatus === BOOTSTRAP_STATUSES.TODO;
+
+    if (isReadyLike && !isDone) {
+      continue;
+    }
+
+    const claimTimestamp = toIsoTimestamp(wu.claimed_at, wu.created ?? stampCompletedAt);
+    events.push({
+      type: 'claim',
+      wuId: wu.id,
+      lane: wu.lane,
+      title: wu.title,
+      timestamp: claimTimestamp,
+    });
+
+    if (normalizedStatus === BOOTSTRAP_STATUSES.BLOCKED && !isDone) {
+      const blockedAt = new Date(claimTimestamp);
+      blockedAt.setSeconds(blockedAt.getSeconds() + 1);
+      events.push({
+        type: 'block',
+        wuId: wu.id,
+        reason: BOOTSTRAP_REASON.BLOCKED,
+        timestamp: blockedAt.toISOString(),
+      });
+      continue;
+    }
+
+    if (isDone) {
+      const completedAt = toIsoTimestamp(wu.completed_at, stampCompletedAt ?? claimTimestamp);
+      events.push({
+        type: 'complete',
+        wuId: wu.id,
+        timestamp: completedAt,
+      });
+    }
+  }
+
+  return events.sort((left, right) => {
+    return new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime();
+  });
+}
+
+function writeBootstrappedEvents(eventsPath: string, events: BootstrapEvent[]): void {
+  mkdirSync(path.dirname(eventsPath), { recursive: true });
+
+  const lines = events.map((event) => {
+    const validation = validateWUEvent(event);
+    if (!validation.success) {
+      throw new Error('Generated bootstrap event failed validation');
+    }
+    return JSON.stringify(validation.data);
+  });
+
+  const content = lines.length > 0 ? `${lines.join('\n')}\n` : '';
+  writeFileSync(eventsPath, content, 'utf-8');
+}
 
 /**
  * WU state entry in the in-memory store
@@ -116,6 +438,61 @@ export class WUStateStore {
   }
 
   /**
+   * WU-1674: On first run, archive spawn-era state files and rebuild wu-events.jsonl
+   * using delegation-era semantics. This migration only runs for canonical state dirs
+   * (<repo>/.lumenflow/state) and is guarded by a one-time marker file.
+   */
+  private async _runDelegationCutoverIfNeeded(): Promise<void> {
+    if (!isCanonicalStateDir(this.baseDir)) {
+      return;
+    }
+
+    const markerPath = path.join(this.baseDir, DELEGATION_CUTOVER.MARKER_FILE);
+    if (existsSync(markerPath)) {
+      return;
+    }
+
+    if (!isLegacyCutoverRequired(this.baseDir, this.eventsFilePath)) {
+      return;
+    }
+
+    const archiveDir = path.join(
+      this.baseDir,
+      DELEGATION_CUTOVER.ARCHIVE_DIR,
+      `${DELEGATION_CUTOVER.ARCHIVE_PREFIX}${sanitizeTimestamp(new Date().toISOString())}`,
+    );
+    mkdirSync(archiveDir, { recursive: true });
+
+    const legacyRegistryPath = path.join(this.baseDir, DELEGATION_CUTOVER.LEGACY_REGISTRY_FILE);
+    moveFileToArchive(this.eventsFilePath, path.join(archiveDir, WU_EVENTS_FILE_NAME));
+    moveFileToArchive(
+      legacyRegistryPath,
+      path.join(archiveDir, DELEGATION_CUTOVER.LEGACY_REGISTRY_FILE),
+    );
+
+    const projectRoot = resolveProjectRoot(this.baseDir);
+    const wus = readBootstrapWUs(projectRoot);
+    const doneStampTimes = readDoneStampTimes(projectRoot);
+    const bootstrapEvents = buildBootstrapEvents(wus, doneStampTimes);
+    writeBootstrappedEvents(this.eventsFilePath, bootstrapEvents);
+
+    const delegationRegistryPath = path.join(
+      this.baseDir,
+      DELEGATION_CUTOVER.DELEGATION_REGISTRY_FILE,
+    );
+    if (!existsSync(delegationRegistryPath)) {
+      writeFileSync(delegationRegistryPath, '', 'utf-8');
+    }
+
+    const markerPayload = {
+      migratedAt: new Date().toISOString(),
+      archiveDir,
+      bootstrapEvents: bootstrapEvents.length,
+    };
+    writeFileSync(markerPath, `${JSON.stringify(markerPayload, null, 2)}\n`, 'utf-8');
+  }
+
+  /**
    * Loads and replays events from JSONL file into current state.
    *
    * Handles:
@@ -138,6 +515,8 @@ export class WUStateStore {
     this.byStatus.clear();
     this.byLane.clear();
     this.byParent.clear();
+
+    await this._runDelegationCutoverIfNeeded();
 
     // Check if file exists
     let content: string;
@@ -237,9 +616,9 @@ export class WUStateStore {
       return;
     }
 
-    if (type === 'spawn') {
-      const spawnEvent = event as WUEvent & { parentWuId: string };
-      const { parentWuId } = spawnEvent;
+    if (type === DELEGATION_CUTOVER.RELATIONSHIP_EVENT_TYPE) {
+      const delegationEvent = event as WUEvent & { parentWuId: string };
+      const { parentWuId } = delegationEvent;
       if (!this.byParent.has(parentWuId)) {
         this.byParent.set(parentWuId, new Set());
       }
@@ -524,7 +903,7 @@ export class WUStateStore {
   }
 
   /**
-   * Gets child WU IDs spawned from a parent WU (O(1) lookup).
+   * Gets child WU IDs delegated from a parent WU (O(1) lookup).
    * WU-1947: Parent-child relationship tracking.
    *
    * @example
@@ -538,18 +917,18 @@ export class WUStateStore {
   }
 
   /**
-   * Records a spawn relationship between parent and child WUs.
+   * Records a delegation relationship between parent and child WUs.
    * WU-1947: Parent-child relationship tracking.
    *
    * @example
-   * await store.spawn('WU-200', 'WU-100', 'spawn-abc123');
+   * await store.delegate('WU-200', 'WU-100', 'dlg-abc123');
    */
-  async spawn(childWuId: string, parentWuId: string, spawnId: string): Promise<void> {
+  async delegate(childWuId: string, parentWuId: string, delegationId: string): Promise<void> {
     const event = {
-      type: 'spawn' as const,
+      type: DELEGATION_CUTOVER.RELATIONSHIP_EVENT_TYPE,
       wuId: childWuId,
       parentWuId,
-      spawnId,
+      delegationId,
       timestamp: new Date().toISOString(),
     };
 

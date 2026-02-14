@@ -268,8 +268,8 @@ export const LUMENFLOW_PATHS = {
   /** Templates directory (WU-1430) */
   TEMPLATES_DIR: '.lumenflow/templates',
 
-  /** Spawn prompt templates (WU-1430) */
-  SPAWN_PROMPT_DIR: '.lumenflow/templates/spawn-prompt',
+  /** Delegation prompt templates (WU-1674) */
+  DELEGATION_PROMPT_DIR: '.lumenflow/templates/delegation-prompt',
 
   /** Template manifest file (WU-1430) */
   TEMPLATE_MANIFEST: '.lumenflow/templates/manifest.yaml',
@@ -280,7 +280,7 @@ export const LUMENFLOW_PATHS = {
   /** Agents directory for agent definitions (WU-1430) */
   AGENTS_DIR: '.lumenflow/agents',
 
-  /** Methodology log for spawn telemetry (WU-1430) */
+  /** Methodology log for delegation telemetry (WU-1430) */
   METHODOLOGY_LOG: '.lumenflow/telemetry/methodology.ndjson',
 
   /** Prompt metrics cache (WU-1430) */

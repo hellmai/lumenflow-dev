@@ -709,6 +709,11 @@ export const MemoryDecayConfigSchema = z.object({
 /** WU-1474: TypeScript type for memory decay config */
 export type MemoryDecayConfig = z.infer<typeof MemoryDecayConfigSchema>;
 
+const MEMORY_CONFIG_ERRORS = {
+  DEPRECATED_SPAWN_CONTEXT_MAX_SIZE:
+    'memory.spawn_context_max_size is no longer supported. Use memory.delegation_context_max_size instead.',
+} as const;
+
 /**
  * Memory layer configuration
  */
@@ -746,12 +751,23 @@ export const MemoryConfigSchema = z.object({
   signalCleanup: SignalCleanupConfigSchema.default(() => SignalCleanupConfigSchema.parse({})),
 
   /**
-   * WU-1289: Maximum size in bytes for spawn memory context.
-   * Controls the maximum size of memory context injected into wu:spawn prompts.
+   * WU-1674: Maximum size in bytes for delegation memory context.
+   * Controls the maximum size of memory context injected into delegation prompts.
    * Larger values include more context but increase token usage.
    * @default 4096 (4KB)
    */
-  spawn_context_max_size: z.number().int().positive().default(4096),
+  delegation_context_max_size: z.number().int().positive().default(4096),
+
+  /**
+   * Deprecated key hard-fail for clean-slate cutover.
+   * Keep this as an explicit validator so users get a direct migration message.
+   */
+  spawn_context_max_size: z
+    .unknown()
+    .optional()
+    .refine((value) => value === undefined, {
+      message: MEMORY_CONFIG_ERRORS.DEPRECATED_SPAWN_CONTEXT_MAX_SIZE,
+    }),
 
   /**
    * WU-1471: Memory enforcement configuration.

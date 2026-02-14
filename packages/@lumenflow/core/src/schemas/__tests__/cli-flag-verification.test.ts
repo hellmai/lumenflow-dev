@@ -268,7 +268,7 @@ describe('CLI Flag Verification (WU-1458)', () => {
       'orchestrate:initiative': 4,
       'orchestrate:init-status': 1,
       'orchestrate:monitor': 6,
-      'spawn:list': 3,
+      'delegation:list': 3,
       'session:coordinator': 4,
       'rotate:progress': 2,
     };

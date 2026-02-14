@@ -83,7 +83,7 @@
     "orchestrate:initiative": "node packages/@lumenflow/cli/dist/orchestrate-initiative.js",
     "orchestrate:init-status": "node packages/@lumenflow/cli/dist/orchestrate-init-status.js",
     "orchestrate:monitor": "node packages/@lumenflow/cli/dist/orchestrate-monitor.js",
-    "spawn:list": "node packages/@lumenflow/cli/dist/spawn-list.js",
+    "delegation:list": "node packages/@lumenflow/cli/dist/delegation-list.js",
     "flow:report": "node packages/@lumenflow/cli/dist/flow-report.js",
     "strict:progress": "node packages/@lumenflow/cli/dist/strict-progress.js",
     "flow:bottlenecks": "node packages/@lumenflow/cli/dist/flow-bottlenecks.js",

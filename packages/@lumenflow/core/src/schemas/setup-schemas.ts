@@ -1,6 +1,6 @@
 /**
  * @file setup-schemas.ts
- * @description Shared Zod schemas for Setup, Agent, Orchestration, Spawn, and Coordination commands (WU-1457)
+ * @description Shared Zod schemas for Setup, Agent, Orchestration, Delegation, and Coordination commands (WU-1457)
  *
  * These schemas are the single source of truth for command validation.
  * Both CLI argument parsing and MCP inputSchema derivation use these schemas.
@@ -10,7 +10,7 @@
  * - 8 setup/lumenflow commands
  * - 4 agent commands
  * - 3 orchestration commands
- * - 1 spawn command
+ * - 1 delegation command
  * - 2 coordination commands
  *
  * Design decisions:
@@ -225,25 +225,25 @@ export const orchestrateMonitorSchema = z.object({
 export type OrchestrateMonitorInput = z.infer<typeof orchestrateMonitorSchema>;
 
 // =============================================================================
-// Spawn Commands
+// Delegation Commands
 // =============================================================================
 
 /**
- * Schema for spawn:list command
+ * Schema for delegation:list command
  *
  * No required fields
  * Optional: wu, initiative, json
  */
-export const spawnListSchema = z.object({
-  wu: z.string().optional().describe('WU ID to show spawns for (e.g., WU-1234)'),
+export const delegationListSchema = z.object({
+  wu: z.string().optional().describe('WU ID to show delegations for (e.g., WU-1234)'),
   initiative: z
     .string()
     .optional()
-    .describe('Initiative ID to show all spawns for (e.g., INIT-001)'),
+    .describe('Initiative ID to show all delegations for (e.g., INIT-001)'),
   json: z.boolean().optional().describe('Output as JSON'),
 });
 
-export type SpawnListInput = z.infer<typeof spawnListSchema>;
+export type DelegationListInput = z.infer<typeof delegationListSchema>;
 
 // =============================================================================
 // Coordination Commands
@@ -285,7 +285,7 @@ export type RotateProgressInput = z.infer<typeof rotateProgressSchema>;
 // =============================================================================
 
 /**
- * Registry of all setup, agent, orchestration, spawn, and coordination command
+ * Registry of all setup, agent, orchestration, delegation, and coordination command
  * schemas for validation and parity checking.
  * These complement the schemas in command-schemas.ts (WU-1431),
  * wu-lifecycle-schemas.ts (WU-1454), initiative-schemas.ts (WU-1455),
@@ -311,8 +311,8 @@ export const setupCommandSchemas = {
   'orchestrate:initiative': orchestrateInitiativeSchema,
   'orchestrate:init-status': orchestrateInitStatusSchema,
   'orchestrate:monitor': orchestrateMonitorSchema,
-  // Spawn commands
-  'spawn:list': spawnListSchema,
+  // Delegation commands
+  'delegation:list': delegationListSchema,
   // Coordination commands
   'session:coordinator': sessionCoordinatorSchema,
   'rotate:progress': rotateProgressSchema,

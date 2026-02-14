@@ -504,10 +504,10 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     category: COMMAND_CATEGORIES.ORCHESTRATION,
   },
   {
-    name: 'spawn:list',
-    binName: 'spawn-list',
-    binPath: './dist/spawn-list.js',
-    description: 'List active spawned agents',
+    name: 'delegation:list',
+    binName: 'delegation-list',
+    binPath: './dist/delegation-list.js',
+    description: 'List active delegation records',
     category: COMMAND_CATEGORIES.ORCHESTRATION,
   },
   {

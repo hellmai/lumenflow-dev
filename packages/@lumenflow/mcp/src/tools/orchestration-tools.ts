@@ -1,17 +1,17 @@
 /**
  * @file orchestration-tools.ts
- * @description Orchestration and spawn tool implementations
+ * @description Orchestration and delegation tool implementations
  *
  * WU-1642: Extracted from tools.ts during domain decomposition.
- * WU-1425: Orchestration tools + spawn tools
- * WU-1457: All orchestration/spawn commands use shared schemas
+ * WU-1425: Orchestration tools + delegation tools
+ * WU-1457: All orchestration/delegation commands use shared schemas
  */
 
 import {
   orchestrateInitiativeSchema,
   orchestrateInitStatusSchema,
   orchestrateMonitorSchema,
-  spawnListSchema,
+  delegationListSchema,
 } from '@lumenflow/core';
 import {
   type ToolDefinition,
@@ -41,16 +41,16 @@ const OrchestrationErrorMessages = {
 } as const;
 
 /**
- * Error codes for spawn tools
+ * Error codes for delegation tools
  */
-const SpawnErrorCodes = {
-  SPAWN_LIST_ERROR: 'SPAWN_LIST_ERROR',
+const DelegationErrorCodes = {
+  DELEGATION_LIST_ERROR: 'DELEGATION_LIST_ERROR',
 } as const;
 
 /**
- * Error messages for spawn tools
+ * Error messages for delegation tools
  */
-const SpawnErrorMessages = {
+const DelegationErrorMessages = {
   WU_OR_INITIATIVE_REQUIRED: 'Either wu or initiative is required',
 } as const;
 
@@ -119,11 +119,12 @@ export const orchestrateInitStatusTool: ToolDefinition = {
 };
 
 /**
- * orchestrate_monitor - Monitor spawned agent progress and spawn health
+ * orchestrate_monitor - Monitor delegated agent progress and delegation health
  */
 export const orchestrateMonitorTool: ToolDefinition = {
   name: 'orchestrate_monitor',
-  description: 'Monitor spawned agent progress and spawn health (stuck detection, zombie locks)',
+  description:
+    'Monitor delegated agent progress and delegation health (stuck detection, zombie locks)',
   inputSchema: orchestrateMonitorSchema,
 
   async execute(input, options) {
@@ -153,16 +154,16 @@ export const orchestrateMonitorTool: ToolDefinition = {
 };
 
 /**
- * spawn_list - Display spawn trees for WUs or initiatives
+ * delegation_list - Display delegation trees for WUs or initiatives
  */
-export const spawnListTool: ToolDefinition = {
-  name: 'spawn_list',
-  description: 'Display spawn trees for WUs or initiatives',
-  inputSchema: spawnListSchema,
+export const delegationListTool: ToolDefinition = {
+  name: 'delegation_list',
+  description: 'Display delegation trees for WUs or initiatives',
+  inputSchema: delegationListSchema,
 
   async execute(input, options) {
     if (!input.wu && !input.initiative) {
-      return error(SpawnErrorMessages.WU_OR_INITIATIVE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+      return error(DelegationErrorMessages.WU_OR_INITIATIVE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
     const args: string[] = [];
@@ -171,19 +172,19 @@ export const spawnListTool: ToolDefinition = {
     if (input.json) args.push('--json');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('spawn:list', args, cliOptions);
+    const result = await runCliCommand('delegation:list', args, cliOptions);
 
     if (result.success) {
       try {
         const data = JSON.parse(result.stdout);
         return success(data);
       } catch {
-        return success({ message: result.stdout || 'Spawn list displayed' });
+        return success({ message: result.stdout || 'Delegation list displayed' });
       }
     } else {
       return error(
-        result.stderr || result.error?.message || 'spawn:list failed',
-        SpawnErrorCodes.SPAWN_LIST_ERROR,
+        result.stderr || result.error?.message || 'delegation:list failed',
+        DelegationErrorCodes.DELEGATION_LIST_ERROR,
       );
     }
   },

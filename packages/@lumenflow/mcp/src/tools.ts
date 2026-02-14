@@ -98,12 +98,12 @@ export {
   agentIssuesQueryTool,
 } from './tools/agent-tools.js';
 
-// Re-export domain tools -- orchestration + spawn
+// Re-export domain tools -- orchestration + delegation
 export {
   orchestrateInitiativeTool,
   orchestrateInitStatusTool,
   orchestrateMonitorTool,
-  spawnListTool,
+  delegationListTool,
 } from './tools/orchestration-tools.js';
 
 // Re-export domain tools -- flow/metrics
@@ -231,7 +231,7 @@ import {
   orchestrateInitiativeTool,
   orchestrateInitStatusTool,
   orchestrateMonitorTool,
-  spawnListTool,
+  delegationListTool,
 } from './tools/orchestration-tools.js';
 import {
   flowBottlenecksTool,
@@ -440,8 +440,8 @@ export const allTools: ToolDefinition[] = [
   orchestrateInitiativeTool,
   orchestrateInitStatusTool,
   orchestrateMonitorTool,
-  // WU-1425: Spawn tools
-  spawnListTool,
+  // WU-1425: Delegation tools
+  delegationListTool,
   // WU-1426: Flow/Metrics tools
   flowBottlenecksTool,
   flowReportTool,
