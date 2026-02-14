@@ -1,9 +1,7 @@
 id: INIT-028
 slug: spawn-to-delegation-clean-slate-rename
 title: Spawn-to-Delegation Clean-Slate Rename
-description: Full clean-slate rename from spawn terminology to delegation terminology across live
-  code, commands, docs, and schemas, with first-run auto-archive plus state rebootstrap for legacy
-  state files.
+description: Full clean-slate rename from spawn terminology to delegation terminology across live code, commands, docs, and schemas, with first-run auto-archive plus state rebootstrap for legacy state files.
 status: open
 priority: P0
 owner: 'Framework: Core/CLI'
@@ -18,9 +16,8 @@ phases:
     status: pending
 success_metrics:
   - No live command/tool/module surface requires spawn-prefixed interfaces.
-  - First run with legacy spawn state auto-archives and rebootstrap completes without manual
-    migration.
-  - delegation:list and MCP delegation_list operate successfully; spawn:list and spawn_list are
-    removed from live manifests/docs.
+  - First run with legacy spawn state auto-archives and rebootstrap completes without manual migration.
+  - delegation:list and MCP delegation_list operate successfully; spawn:list and spawn_list are removed from live manifests/docs.
   - Full pnpm gates passes after rename and docs parity updates.
 labels: []
+related_plan: lumenflow://plans/INIT-028-plan.md
