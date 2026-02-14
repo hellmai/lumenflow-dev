@@ -4,7 +4,7 @@ _Last updated: 2026-02-14_
 
 ## In Progress
 
-- [WU-1678 — Stabilize wu-done.test worker-fork timeout in incremental test gate](wu/WU-1678.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -619,3 +619,4 @@ _Last updated: 2026-02-14_
 - [WU-1675 — Align docs, parity baselines, and templates to delegation terminology](wu/WU-1675.yaml) — 2026-02-14
 - [WU-1677 — wu:edit reads YAML from main instead of worktree for in_progress WUs](wu/WU-1677.yaml) — 2026-02-14
 - [WU-1676 — Scope wu:prep test gate to WU tests.unit entries](wu/WU-1676.yaml) — 2026-02-14
+- [WU-1678 — Stabilize wu-done.test worker-fork timeout in incremental test gate](wu/WU-1678.yaml) — 2026-02-14
