@@ -2,7 +2,7 @@ id: WU-1678
 title: Stabilize wu-done.test worker-fork timeout in incremental test gate
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-14
 code_paths:
@@ -49,3 +49,6 @@ session_id: 731a141c-7e23-4e2b-9123-891f75ecfc2e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-14T13:30:42.432Z
+locked: true
+completed_at: 2026-02-14T13:49:25.796Z
+completed: 2026-02-14
