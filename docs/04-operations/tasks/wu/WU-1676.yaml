@@ -8,6 +8,10 @@ created: 2026-02-14
 code_paths:
   - packages/@lumenflow/cli/src/wu-prep.ts
   - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/cli/src/wu-prep.ts
+  - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-validate.ts
 tests:
   manual:
     - Run wu:prep on a WU with tests.unit entries and verify only those files are tested
@@ -18,7 +22,9 @@ artifacts:
   - .lumenflow/stamps/WU-1676.done
 dependencies: []
 risks: []
-notes: 'Incident: WU-1674 wu:prep took 8+ minutes and OOMed/timed out on unrelated tests while the 9 WU-specific test files passed in 6 seconds.'
+notes: 'Incident: WU-1674 wu:prep took 8+ minutes and OOMed/timed out on unrelated tests while the 9
+  WU-specific test files passed in 6 seconds. Root cause: tests.unit was optional so wu:prep had no
+  scoping information.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -27,9 +33,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:prep runs pnpm turbo run test which executes all tests in every affected package (123 files, 2096 tests for @lumenflow/cli alone). Problem: unrelated test failures (OOM in docs-generate.test.ts, timeout in wu-done.test.ts) block wu:prep for WUs whose actual tests pass in seconds. Solution: when WU YAML has tests.unit entries, wu:prep should pass those specific paths to vitest instead of running the full turbo test suite.'
+description: 'Context: wu:prep runs pnpm turbo run test which executes all tests in every affected
+  package (123 files, 2096 tests for @lumenflow/cli alone). Problem: WU specs can omit tests.unit,
+  causing wu:prep to run the full suite where unrelated tests (OOM, timeout) block completion of WUs
+  whose actual tests pass in seconds. Solution: (1) spec linter requires tests.unit for
+  non-documentation WUs with code_paths, (2) wu:prep passes tests.unit paths to vitest instead of
+  running full turbo test suite.'
 acceptance:
-  - wu:prep reads tests.unit from WU YAML and passes those paths to vitest run when entries exist
-  - Full turbo test suite remains the fallback when tests.unit is empty
-  - wu:prep --full-tests flag forces the original turbo test behavior
+  - Spec linter fails when tests.unit is empty for non-documentation WUs that have code_paths
+  - wu:create enforces at least one --test-paths-unit entry for non-documentation WUs with code_paths
+  - wu:prep reads tests.unit from WU YAML and passes those paths to vitest run
+  - Full turbo test suite remains available via wu:prep --full-tests flag
   - Targeted test run completes in under 30s for typical WUs
