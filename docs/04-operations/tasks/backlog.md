@@ -20,8 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1675 — Align docs, parity baselines, and templates to delegation terminology](wu/WU-1675.yaml) — Content: Framework Docs
-- [WU-1674 — Atomic spawn-to-delegation runtime rename with migration guard](wu/WU-1674.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1581 — CLI strict wave 1A: high-impact WU command hotspots](wu/WU-1581.yaml) — Framework: CLI WU Commands
@@ -34,10 +32,11 @@ sections:
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml) — Framework: Core Validation
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml) — Framework: CLI Enforcement
+- [WU-1675 — Align docs, parity baselines, and templates to delegation terminology](wu/WU-1675.yaml) — Content: Framework Docs
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1674 — Atomic spawn-to-delegation runtime rename with migration guard](wu/WU-1674.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
