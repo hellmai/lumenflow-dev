@@ -194,16 +194,18 @@ describe('WU-1541: No process.chdir in normal execution paths', () => {
 
       expect(result.success).toBe(true);
       expect(mockGitAdapter.raw).toHaveBeenCalledWith(['rebase', '--continue']);
-      expect(writeFile).toHaveBeenCalledWith(expectedWorktreeEventsPath, expect.any(String), 'utf-8');
+      expect(writeFile).toHaveBeenCalledWith(
+        expectedWorktreeEventsPath,
+        expect.any(String),
+        'utf-8',
+      );
     });
 
     it('should abort auto-rebase when git detects staged conflict artifacts', async () => {
       const eventsRelativePath = '.lumenflow/state/wu-events.jsonl';
       const writeFile = vi.fn().mockResolvedValue(undefined);
       let hasUnmergedConflict = true;
-      const conflictArtifactError = new Error(
-        `${eventsRelativePath}:3: leftover conflict marker`,
-      );
+      const conflictArtifactError = new Error(`${eventsRelativePath}:3: leftover conflict marker`);
 
       const mockGitAdapter = {
         fetch: vi.fn().mockResolvedValue(undefined),

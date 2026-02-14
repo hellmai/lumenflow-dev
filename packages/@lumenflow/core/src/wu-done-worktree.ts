@@ -801,7 +801,14 @@ const REBASE_CONFLICT_GIT = {
   DIFF_UNMERGED_ARGS: [GIT_COMMANDS.DIFF, '--name-only', '--diff-filter=U'] as const,
   // Keep whitespace checking disabled intentionally: we only want structural conflict artifacts
   // (leftover merge markers), not generic whitespace findings in this safety check.
-  DIFF_CHECK_ARGS: ['-c', 'core.whitespace=', GIT_COMMANDS.DIFF, '--check', '--cached', '--'] as const,
+  DIFF_CHECK_ARGS: [
+    '-c',
+    'core.whitespace=',
+    GIT_COMMANDS.DIFF,
+    '--check',
+    '--cached',
+    '--',
+  ] as const,
   SHOW_OURS: (filePath: string): string[] => ['show', `:2:${filePath}`],
   SHOW_THEIRS: (filePath: string): string[] => ['show', `:3:${filePath}`],
   CHECKOUT_THEIRS: (filePath: string): string[] => ['checkout', '--theirs', filePath],
