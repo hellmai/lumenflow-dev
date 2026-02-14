@@ -8,7 +8,8 @@
 import { die } from '@lumenflow/core/error-handler';
 import { existsSync, readFileSync } from 'node:fs';
 import { parseYAML } from '@lumenflow/core/wu-yaml';
-import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { defaultWorktreeFrom, WU_PATHS } from '@lumenflow/core/wu-paths';
+import { resolve, join } from 'node:path';
 import { createGitForPath } from '@lumenflow/core/git-adapter';
 import { FILE_SYSTEM, WU_STATUS, WU_EXPOSURE_VALUES } from '@lumenflow/core/wu-constants';
 import { INIT_PATTERNS } from '@lumenflow/initiatives/constants';
@@ -177,6 +178,22 @@ export function validateWUEditable(id: string): {
 
     if (editMode === EDIT_MODE.BRANCH_PR) {
       return { wu, editMode: EDIT_MODE.BRANCH_PR, isDone: false };
+    }
+
+    // WU-1677: For worktree-mode WUs, re-read YAML from the worktree.
+    // The worktree copy is authoritative (it may have prior wu:edit commits
+    // that haven't been merged to main yet). Reading from main causes
+    // sequential wu:edit calls to silently overwrite each other.
+    const worktreeRelPath = defaultWorktreeFrom(wu as { lane?: string; id?: string });
+    if (worktreeRelPath) {
+      const worktreeWuPath = join(resolve(worktreeRelPath), WU_PATHS.WU(id));
+      if (existsSync(worktreeWuPath)) {
+        const worktreeContent = readFileSync(worktreeWuPath, {
+          encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
+        });
+        const worktreeWu = parseYAML(worktreeContent);
+        return { wu: worktreeWu, editMode: EDIT_MODE.WORKTREE, isDone: false };
+      }
     }
 
     return { wu, editMode: EDIT_MODE.WORKTREE, isDone: false };
