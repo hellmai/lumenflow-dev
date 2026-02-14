@@ -32,11 +32,11 @@ sections:
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml) — Framework: Core Validation
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml) — Framework: CLI Enforcement
-- [WU-1671 — Refactor wu-done-machine.ts to use XState assign() actions](wu/WU-1671.yaml) — Framework: Core State Recovery
 
 ## 🔧 In progress
 
 - [WU-1672 — Fix push-only micro-worktree stale base branch behavior](wu/WU-1672.yaml) — Framework: Core Lifecycle
+- [WU-1671 — Refactor wu-done-machine.ts to use XState assign() actions](wu/WU-1671.yaml) — Framework: Core State Recovery
 
 ## ⛔ Blocked
 

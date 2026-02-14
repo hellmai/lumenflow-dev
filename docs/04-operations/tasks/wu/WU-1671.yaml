@@ -2,7 +2,7 @@ id: WU-1671
 title: Refactor wu-done-machine.ts to use XState assign() actions
 lane: 'Framework: Core State Recovery'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-14
 code_paths:
@@ -18,7 +18,8 @@ artifacts:
   - .lumenflow/stamps/WU-1671.done
 dependencies: []
 risks: []
-notes: 'INIT-025 code review finding #1 (critical). Converged finding from both Claude and Codex independent reviews.'
+notes: 'INIT-025 code review finding #1 (critical). Converged finding from both Claude and Codex
+  independent reviews.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -27,9 +28,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Replace all 9 direct context mutations in wu-done-machine.ts with XState v5 assign() action creators. Direct mutation is an anti-pattern that breaks snapshot immutability, devtools compatibility, and may be enforced in future XState releases. Also fixes: event type assertions (assign provides automatic narrowing), as-never cast in worktree services, and duplicated rollback scope logic.'
+description: 'Replace all 9 direct context mutations in wu-done-machine.ts with XState v5 assign()
+  action creators. Direct mutation is an anti-pattern that breaks snapshot immutability, devtools
+  compatibility, and may be enforced in future XState releases. Also fixes: event type assertions
+  (assign provides automatic narrowing), as-never cast in worktree services, and duplicated rollback
+  scope logic.'
 acceptance:
   - All context mutations in wu-done-machine.ts use assign() instead of direct mutation
   - No event-as-X type casts remain in machine action definitions
   - Existing wu-done-machine.test.ts and wu-done.test.ts (model-based) tests pass unchanged
   - Snapshot serialization/rehydration tests pass
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-state-recovery-wu-1671
+claimed_at: 2026-02-14T08:48:54.186Z
+baseline_main_sha: 373cd9c8e5bd97e94835e418f605715f279e6544
+session_id: 8f14f057-5225-46de-96c5-c3d127ea7b82
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-14T08:48:54.192Z

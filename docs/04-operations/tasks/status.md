@@ -5,6 +5,7 @@ _Last updated: 2026-02-14_
 ## In Progress
 
 - [WU-1672 — Fix push-only micro-worktree stale base branch behavior](wu/WU-1672.yaml)
+- [WU-1671 — Refactor wu-done-machine.ts to use XState assign() actions](wu/WU-1671.yaml)
 
 ## Completed
 
