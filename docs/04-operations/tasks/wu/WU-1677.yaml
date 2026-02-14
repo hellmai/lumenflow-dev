@@ -2,7 +2,7 @@ id: WU-1677
 title: wu:edit reads YAML from main instead of worktree for in_progress WUs
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-14
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-edit.ts
 tests:
   manual:
-    - Run two sequential wu:edit calls on an in_progress worktree WU (--replace-code-paths then --type) and verify both mutations persist
+    - Run two sequential wu:edit calls on an in_progress worktree WU (--replace-code-paths then
+      --type) and verify both mutations persist
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-edit-worktree-read.test.ts
   e2e: []
@@ -27,8 +28,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: wu:edit validateWUEditable() reads WU YAML from main checkout via WU_PATHS.WU(id) resolved against cwd. Problem: for in_progress worktree WUs, the worktree has the authoritative YAML (with any prior wu:edit commits), but validateWUEditable reads the stale main copy. When an agent runs two sequential wu:edit calls (e.g. --replace-code-paths then --type), the second call reads main's copy (missing the first edit) and silently overwrites the worktree YAML. Solution: when WU status is in_progress and claimed_mode is worktree, validateWUEditable should resolve the YAML path from the worktree, not main."
+description: "Context: wu:edit validateWUEditable() reads WU YAML from main checkout via
+  WU_PATHS.WU(id) resolved against cwd. Problem: for in_progress worktree WUs, the worktree has the
+  authoritative YAML (with any prior wu:edit commits), but validateWUEditable reads the stale main
+  copy. When an agent runs two sequential wu:edit calls (e.g. --replace-code-paths then --type), the
+  second call reads main's copy (missing the first edit) and silently overwrites the worktree YAML.
+  Solution: when WU status is in_progress and claimed_mode is worktree, validateWUEditable should
+  resolve the YAML path from the worktree, not main."
 acceptance:
   - validateWUEditable reads YAML from worktree when WU is in_progress with claimed_mode=worktree
-  - 'Sequential wu:edit calls preserve prior edits (regression test: --replace-code-paths then --type)'
+  - 'Sequential wu:edit calls preserve prior edits (regression test: --replace-code-paths then
+    --type)'
   - Existing behavior for ready/done WUs unchanged (reads from main via micro-worktree)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1677
+claimed_at: 2026-02-14T12:45:22.507Z
+baseline_main_sha: c6e69eb0f8fb1c3cde55dc03a005241f5e15ddd1
+session_id: d212e063-2846-4b67-8a31-a8abc431a0ec
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-14T12:45:22.513Z
