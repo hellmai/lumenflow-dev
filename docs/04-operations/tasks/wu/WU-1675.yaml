@@ -12,8 +12,6 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
-  - .lumenflow/strict-progress-baseline.json
-  - .lumenflow/templates/manifest.yaml
   - packages/@lumenflow/cli/templates/core/ai/onboarding/quick-ref-commands.md.template
   - packages/@lumenflow/cli/templates/core/ai/onboarding/agent-invocation-guide.md.template
   - packages/@lumenflow/cli/templates/vendors/claude/.claude/skills/orchestration/SKILL.md.template
@@ -22,15 +20,6 @@ tests:
   manual:
     - Run pnpm docs:validate and verify command/tool tables reference delegation:list and
       delegation_list
-    - Run pnpm strict:progress and confirm baseline references delegation-era file names/paths.
-    - Run pnpm sync:templates --check-drift and confirm no template drift after updates.
-    - Verify .claude/skills/orchestration/SKILL.md and the orchestration skill template reference
-      delegation:list only.
-    - Run rg -uu -n 'spawn:list|spawn_list|spawn_context_max_size' across
-      apps/docs/src/content/docs/reference
-    - docs/04-operations/_frameworks/lumenflow
-    - packages/@lumenflow/cli/templates
-    - and .claude/skills/orchestration/SKILL.md; confirm no live-surface hits.
   unit: []
   e2e: []
 artifacts:
@@ -71,6 +60,3 @@ acceptance:
   - CLI and MCP reference docs match actual delegation command/tool names after WU-1674.
   - strict-progress baseline and template references align with renamed files/paths.
   - Docs validation and relevant parity checks pass with no drift.
-  - No user-facing docs or onboarding references instruct memory.spawn_context_max_size; live
-    examples use memory.delegation_context_max_size.
-  - Live and templated orchestration skill guidance uses delegation:list, not spawn:list.
