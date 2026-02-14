@@ -2,7 +2,7 @@ id: WU-1672
 title: Fix push-only micro-worktree stale base branch behavior
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-14
 code_paths:
@@ -49,3 +49,6 @@ acceptance:
   - pushOnly mode continues to avoid merging/updating local main
   - micro-worktree tests cover pushOnly pre-start fetch ordering and base-ref selection
   - existing push-only retry/rebase behavior remains intact
+locked: true
+completed_at: 2026-02-14T08:49:47.607Z
+completed: 2026-02-14
