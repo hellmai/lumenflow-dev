@@ -29,6 +29,7 @@ import {
   shouldPersistClaimMetadataOnBranch,
 } from '../wu-claim.js';
 import { CLAIMED_MODES, WU_STATUS } from '@lumenflow/core/wu-constants';
+import { DELEGATION_REGISTRY_FILE_NAME } from '@lumenflow/core/delegation-registry-store';
 import { resolveBranchClaimExecution } from '../wu-claim-cloud.js';
 
 describe('wu-claim mode resolution (WU-1491)', () => {
@@ -426,16 +427,16 @@ describe('WU-1605: claim-time pickup evidence handshake', () => {
 
   it('records pickup evidence when delegation intent exists for target WU', async () => {
     const baseDir = createTempStateDir();
-    const registryPath = join(baseDir, '.lumenflow', 'state', 'spawn-registry.jsonl');
+    const registryPath = join(baseDir, '.lumenflow', 'state', DELEGATION_REGISTRY_FILE_NAME);
     writeFileSync(
       registryPath,
       JSON.stringify({
-        id: 'spawn-a1b2',
+        id: 'dlg-a1b2',
         parentWuId: 'WU-1000',
         targetWuId: 'WU-1605',
         lane: 'Framework: CLI WU Commands',
         intent: 'delegation',
-        spawnedAt: '2026-02-12T00:00:00.000Z',
+        delegatedAt: '2026-02-12T00:00:00.000Z',
         status: 'pending',
         completedAt: null,
       }) + '\n',
@@ -457,7 +458,7 @@ describe('WU-1605: claim-time pickup evidence handshake', () => {
         .split('\n')
         .map((line) => JSON.parse(line));
       const last = lines[lines.length - 1];
-      expect(last.id).toBe('spawn-a1b2');
+      expect(last.id).toBe('dlg-a1b2');
       expect(last.targetWuId).toBe('WU-1605');
       expect(last.pickedUpBy).toBe('agent@test.com');
       expect(typeof last.pickedUpAt).toBe('string');
@@ -486,16 +487,16 @@ describe('WU-1605: claim-time pickup evidence handshake', () => {
 
   it('does not append duplicate pickup evidence when already recorded', async () => {
     const baseDir = createTempStateDir();
-    const registryPath = join(baseDir, '.lumenflow', 'state', 'spawn-registry.jsonl');
+    const registryPath = join(baseDir, '.lumenflow', 'state', DELEGATION_REGISTRY_FILE_NAME);
     writeFileSync(
       registryPath,
       JSON.stringify({
-        id: 'spawn-a1b2',
+        id: 'dlg-a1b2',
         parentWuId: 'WU-1000',
         targetWuId: 'WU-1605',
         lane: 'Framework: CLI WU Commands',
         intent: 'delegation',
-        spawnedAt: '2026-02-12T00:00:00.000Z',
+        delegatedAt: '2026-02-12T00:00:00.000Z',
         pickedUpAt: '2026-02-12T00:05:00.000Z',
         pickedUpBy: 'agent@test.com',
         status: 'pending',

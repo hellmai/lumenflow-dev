@@ -19,6 +19,7 @@ import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { stringifyYAML, parseYAML } from '@lumenflow/core/wu-yaml';
 import { WU_STATUS } from '@lumenflow/core/wu-constants';
+import { DELEGATION_REGISTRY_FILE_NAME } from '@lumenflow/core/delegation-registry-store';
 import {
   generateTaskInvocation,
   generateActionSection,
@@ -439,15 +440,17 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
       it('should record spawn events', async () => {
         // Arrange
         process.chdir(tempDir);
-        const registryPath = join(tempDir, '.lumenflow/state/spawn-registry.jsonl');
+        const registryPath = join(tempDir, '.lumenflow/state', DELEGATION_REGISTRY_FILE_NAME);
 
         // Act - Record spawn event directly
         const spawnEvent = {
-          id: 'spawn-12345',
+          id: 'dlg-a1b2',
           parentWuId: 'WU-1363',
           targetWuId: TEST_WU_ID,
           lane: TEST_LANE,
-          spawnedAt: new Date().toISOString(),
+          delegatedAt: new Date().toISOString(),
+          status: 'pending',
+          completedAt: null,
         };
         writeFileSync(registryPath, JSON.stringify(spawnEvent) + '\n');
 
@@ -461,13 +464,37 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
       it('should track multiple spawn events', async () => {
         // Arrange
         process.chdir(tempDir);
-        const registryPath = join(tempDir, '.lumenflow/state/spawn-registry.jsonl');
+        const registryPath = join(tempDir, '.lumenflow/state', DELEGATION_REGISTRY_FILE_NAME);
 
         // Act - Record multiple spawn events
         const events = [
-          { id: 'spawn-1', targetWuId: 'WU-001', lane: 'Framework: CLI' },
-          { id: 'spawn-2', targetWuId: 'WU-002', lane: 'Framework: Core' },
-          { id: 'spawn-3', targetWuId: 'WU-003', lane: 'Framework: CLI' },
+          {
+            id: 'dlg-a111',
+            parentWuId: 'WU-1363',
+            targetWuId: 'WU-001',
+            lane: 'Framework: CLI',
+            delegatedAt: new Date().toISOString(),
+            status: 'pending',
+            completedAt: null,
+          },
+          {
+            id: 'dlg-b222',
+            parentWuId: 'WU-1363',
+            targetWuId: 'WU-002',
+            lane: 'Framework: Core',
+            delegatedAt: new Date().toISOString(),
+            status: 'pending',
+            completedAt: null,
+          },
+          {
+            id: 'dlg-c333',
+            parentWuId: 'WU-1363',
+            targetWuId: 'WU-003',
+            lane: 'Framework: CLI',
+            delegatedAt: new Date().toISOString(),
+            status: 'pending',
+            completedAt: null,
+          },
         ];
 
         const content = events.map((e) => JSON.stringify(e)).join('\n') + '\n';
@@ -514,16 +541,16 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
 
       it('should enforce pickup evidence when spawn entry is intent-only', async () => {
         process.chdir(tempDir);
-        const registryPath = join(tempDir, '.lumenflow/state/spawn-registry.jsonl');
+        const registryPath = join(tempDir, '.lumenflow/state', DELEGATION_REGISTRY_FILE_NAME);
         writeFileSync(
           registryPath,
           JSON.stringify({
-            id: 'spawn-a1b2',
+            id: 'dlg-a1b2',
             parentWuId: 'WU-1500',
             targetWuId: TEST_WU_ID,
             lane: TEST_LANE,
             intent: 'delegation',
-            spawnedAt: new Date().toISOString(),
+            delegatedAt: new Date().toISOString(),
             status: 'pending',
             completedAt: null,
           }) + '\n',
@@ -541,16 +568,16 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
 
       it('should pass when spawn registry entry includes pickup evidence for initiative-governed WU', async () => {
         process.chdir(tempDir);
-        const registryPath = join(tempDir, '.lumenflow/state/spawn-registry.jsonl');
+        const registryPath = join(tempDir, '.lumenflow/state', DELEGATION_REGISTRY_FILE_NAME);
         writeFileSync(
           registryPath,
           JSON.stringify({
-            id: 'spawn-a1b2',
+            id: 'dlg-a1b2',
             parentWuId: 'WU-1500',
             targetWuId: TEST_WU_ID,
             lane: TEST_LANE,
             intent: 'delegation',
-            spawnedAt: new Date().toISOString(),
+            delegatedAt: new Date().toISOString(),
             pickedUpAt: new Date().toISOString(),
             pickedUpBy: 'agent@test.com',
             status: 'pending',
@@ -610,13 +637,15 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
         expect(invocation).toContain('antml:invoke');
 
         // Step 2: Record spawn event
-        const registryPath = join(tempDir, '.lumenflow/state/spawn-registry.jsonl');
+        const registryPath = join(tempDir, '.lumenflow/state', DELEGATION_REGISTRY_FILE_NAME);
         const spawnEvent = {
-          id: 'spawn-test-001',
+          id: 'dlg-d001',
           parentWuId: 'WU-1363',
           targetWuId: TEST_WU_ID,
           lane: TEST_LANE,
-          spawnedAt: new Date().toISOString(),
+          delegatedAt: new Date().toISOString(),
+          status: 'pending',
+          completedAt: null,
         };
         writeFileSync(registryPath, JSON.stringify(spawnEvent) + '\n');
         expect(existsSync(registryPath)).toBe(true);
