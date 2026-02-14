@@ -2,7 +2,7 @@ id: WU-1676
 title: Scope wu:prep test gate to WU tests.unit entries
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-14
 code_paths:
@@ -48,3 +48,11 @@ acceptance:
     SAFETY_CRITICAL_TEST and other gates remain unchanged
   - Full incremental test suite remains available via wu:prep --full-tests flag
   - Targeted test run completes in under 30s for typical WUs
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1676
+claimed_at: 2026-02-14T12:44:13.056Z
+baseline_main_sha: a326b9c6b4ba37b2d483b15d1bf0b2d858fcbd91
+session_id: d212e063-2846-4b67-8a31-a8abc431a0ec
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-14T12:44:13.061Z

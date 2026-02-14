@@ -4,7 +4,7 @@ _Last updated: 2026-02-14_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1676 — Scope wu:prep test gate to WU tests.unit entries](wu/WU-1676.yaml)
 
 ## Completed
 
