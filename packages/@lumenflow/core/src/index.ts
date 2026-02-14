@@ -106,15 +106,13 @@ export * from './wu-helpers.js';
 export * from './wu-schema.js';
 export * from './wu-validator.js';
 
-// Spawn system
-export * from './spawn-registry-store.js';
-export * from './spawn-registry-schema.js';
-export * from './spawn-recovery.js';
-export * from './spawn-monitor.js';
-export * from './spawn-escalation.js';
-// Delegation surface aliases (WU-1674)
+// Delegation system
+export * from './delegation-registry-store.js';
 export * from './delegation-registry-schema.js';
 export * from './delegation-tree.js';
+export * from './delegation-recovery.js';
+export * from './delegation-monitor.js';
+export * from './delegation-escalation.js';
 
 // WU-1142: Spawn prompt schema for truncation-resistant prompts
 // Explicit exports to avoid ValidationResult conflict with validation/index.js

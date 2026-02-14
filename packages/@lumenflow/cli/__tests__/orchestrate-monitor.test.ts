@@ -1,10 +1,10 @@
 /**
  * Orchestrate Monitor CLI Tests (WU-1241)
  *
- * Tests for the orchestrate:monitor command that wires CLI to spawn-monitor APIs in core.
+ * Tests for the orchestrate:monitor command that wires CLI to delegation-monitor APIs in core.
  *
  * Test categories:
- * 1. API wiring - verifies CLI calls core spawn-monitor APIs
+ * 1. API wiring - verifies CLI calls core delegation-monitor APIs
  * 2. Status formatting - verifies output structure
  * 3. Recovery actions - verifies signal/restart/escalate recovery
  * 4. Dry-run mode - verifies no actions taken in dry-run
@@ -13,13 +13,13 @@
 
 import { describe, it, expect } from 'vitest';
 import {
-  analyzeSpawns,
-  detectStuckSpawns,
+  analyzeDelegations,
+  detectStuckDelegations,
   generateSuggestions,
   formatMonitorOutput,
   DEFAULT_THRESHOLD_MINUTES,
-} from '@lumenflow/core/spawn-monitor';
-import { SpawnStatus, type SpawnEvent } from '@lumenflow/core/spawn-registry-schema';
+} from '@lumenflow/core/delegation-monitor';
+import { DelegationStatus, type DelegationEvent } from '@lumenflow/core/delegation-registry-schema';
 
 // Test constants to avoid duplicate string literals
 const TEST_LANE = 'Framework: CLI';
@@ -31,14 +31,14 @@ const TEST_TARGET_WU = 'WU-1001';
 
 describe('orchestrate:monitor (WU-1241)', () => {
   describe('API wiring verification', () => {
-    describe('analyzeSpawns wiring', () => {
-      it('calls analyzeSpawns with spawn events and returns correct counts', () => {
-        const spawns: SpawnEvent[] = [
-          createSpawn('spawn-a1b2', SpawnStatus.PENDING),
-          createSpawn('spawn-c3d4', SpawnStatus.COMPLETED),
+    describe('analyzeDelegations wiring', () => {
+      it('calls analyzeDelegations with delegation events and returns correct counts', () => {
+        const delegations: DelegationEvent[] = [
+          createDelegation('dlg-a1b2', DelegationStatus.PENDING),
+          createDelegation('dlg-c3d4', DelegationStatus.COMPLETED),
         ];
 
-        const analysis = analyzeSpawns(spawns);
+        const analysis = analyzeDelegations(delegations);
 
         expect(analysis.pending).toBe(1);
         expect(analysis.completed).toBe(1);
@@ -46,45 +46,45 @@ describe('orchestrate:monitor (WU-1241)', () => {
       });
     });
 
-    describe('detectStuckSpawns wiring', () => {
-      it('calls detectStuckSpawns with configurable threshold (default 30min)', () => {
+    describe('detectStuckDelegations wiring', () => {
+      it('calls detectStuckDelegations with configurable threshold (default 30min)', () => {
         expect(DEFAULT_THRESHOLD_MINUTES).toBe(30);
 
-        // Spawn 45 minutes old - should be stuck with default threshold
-        const oldSpawnTime = new Date(Date.now() - 45 * 60 * 1000).toISOString();
-        const spawns = [createSpawn('spawn-old1', SpawnStatus.PENDING, oldSpawnTime)];
+        // Delegation 45 minutes old - should be stuck with default threshold
+        const oldDelegationTime = new Date(Date.now() - 45 * 60 * 1000).toISOString();
+        const delegations = [createDelegation('dlg-old1', DelegationStatus.PENDING, oldDelegationTime)];
 
-        const stuck = detectStuckSpawns(spawns, 30);
+        const stuck = detectStuckDelegations(delegations, 30);
 
         expect(stuck.length).toBe(1);
-        expect(stuck[0].spawn.id).toBe('spawn-old1');
+        expect(stuck[0].delegation.id).toBe('dlg-old1');
         expect(stuck[0].ageMinutes).toBeGreaterThanOrEqual(45);
       });
 
       it('respects custom threshold (e.g., 15 minutes)', () => {
-        // Spawn 20 minutes old
-        const recentSpawnTime = new Date(Date.now() - 20 * 60 * 1000).toISOString();
-        const spawns = [createSpawn('spawn-cust', SpawnStatus.PENDING, recentSpawnTime)];
+        // Delegation 20 minutes old
+        const recentDelegationTime = new Date(Date.now() - 20 * 60 * 1000).toISOString();
+        const delegations = [createDelegation('dlg-cust', DelegationStatus.PENDING, recentDelegationTime)];
 
         // Not stuck with 30min threshold
-        expect(detectStuckSpawns(spawns, 30).length).toBe(0);
+        expect(detectStuckDelegations(delegations, 30).length).toBe(0);
 
         // Stuck with 15min threshold
-        expect(detectStuckSpawns(spawns, 15).length).toBe(1);
+        expect(detectStuckDelegations(delegations, 15).length).toBe(1);
       });
     });
 
     describe('generateSuggestions wiring', () => {
-      it('generates wu:block suggestions for stuck spawns', () => {
-        const stuckSpawns = [
+      it('generates wu:block suggestions for stuck delegations', () => {
+        const stuckDelegations = [
           {
-            spawn: createSpawn('spawn-1', SpawnStatus.PENDING),
+            delegation: createDelegation('dlg-0001', DelegationStatus.PENDING),
             ageMinutes: 45,
             lastCheckpoint: null,
           },
         ];
 
-        const suggestions = generateSuggestions(stuckSpawns, []);
+        const suggestions = generateSuggestions(stuckDelegations, []);
 
         expect(suggestions.length).toBe(1);
         expect(suggestions[0].command).toContain('wu:block');
@@ -111,10 +111,10 @@ describe('orchestrate:monitor (WU-1241)', () => {
   });
 
   describe('status output format', () => {
-    it('shows active spawns count in output', () => {
+    it('shows active delegation count in output', () => {
       const result = {
         analysis: { pending: 2, completed: 3, timeout: 0, crashed: 1, total: 6 },
-        stuckSpawns: [],
+        stuckDelegations: [],
         zombieLocks: [],
         suggestions: [],
       };
@@ -126,12 +126,12 @@ describe('orchestrate:monitor (WU-1241)', () => {
       expect(output).toContain('Total:     6');
     });
 
-    it('shows stuck spawns with age in output', () => {
+    it('shows stuck delegations with age in output', () => {
       const result = {
         analysis: { pending: 1, completed: 0, timeout: 0, crashed: 0, total: 1 },
-        stuckSpawns: [
+        stuckDelegations: [
           {
-            spawn: createSpawn('spawn-stk1', SpawnStatus.PENDING),
+            delegation: createDelegation('dlg-stk1', DelegationStatus.PENDING),
             ageMinutes: 60,
             lastCheckpoint: null,
           },
@@ -142,7 +142,7 @@ describe('orchestrate:monitor (WU-1241)', () => {
 
       const output = formatMonitorOutput(result);
 
-      expect(output).toContain('Stuck Spawns');
+      expect(output).toContain('Stuck Delegations');
       expect(output).toContain('WU-1001');
       expect(output).toContain('60 minutes');
     });
@@ -150,7 +150,7 @@ describe('orchestrate:monitor (WU-1241)', () => {
     it('shows zombie locks with PID in output', () => {
       const result = {
         analysis: { pending: 0, completed: 0, timeout: 0, crashed: 0, total: 0 },
-        stuckSpawns: [],
+        stuckDelegations: [],
         zombieLocks: [
           {
             wuId: 'WU-1001',
@@ -171,12 +171,12 @@ describe('orchestrate:monitor (WU-1241)', () => {
     it('shows suggestions section in output', () => {
       const result = {
         analysis: { pending: 0, completed: 0, timeout: 0, crashed: 0, total: 0 },
-        stuckSpawns: [],
+        stuckDelegations: [],
         zombieLocks: [],
         suggestions: [
           {
             command: 'pnpm wu:block --id WU-1001',
-            reason: 'Spawn stuck for 45 minutes',
+            reason: 'Delegation stuck for 45 minutes',
           },
         ],
       };
@@ -190,7 +190,7 @@ describe('orchestrate:monitor (WU-1241)', () => {
     it('shows healthy message when no issues', () => {
       const result = {
         analysis: { pending: 0, completed: 5, timeout: 0, crashed: 0, total: 5 },
-        stuckSpawns: [],
+        stuckDelegations: [],
         zombieLocks: [],
         suggestions: [],
       };
@@ -220,16 +220,16 @@ describe('orchestrate:monitor (WU-1241)', () => {
       expect(suggestions[0].reason).toContain('999999');
     });
 
-    it('generates recovery action for stuck spawns', () => {
-      const stuckSpawns = [
+    it('generates recovery action for stuck delegations', () => {
+      const stuckDelegations = [
         {
-          spawn: createSpawn('spawn-stk2', SpawnStatus.PENDING),
+          delegation: createDelegation('dlg-stk2', DelegationStatus.PENDING),
           ageMinutes: 120,
           lastCheckpoint: null,
         },
       ];
 
-      const suggestions = generateSuggestions(stuckSpawns, []);
+      const suggestions = generateSuggestions(stuckDelegations, []);
 
       expect(suggestions.length).toBeGreaterThan(0);
       expect(suggestions[0].command).toContain('wu:block');
@@ -239,32 +239,32 @@ describe('orchestrate:monitor (WU-1241)', () => {
 
   describe('threshold configuration', () => {
     it('uses default 30 minute threshold', () => {
-      // Spawn at 20 minutes ago - should NOT be stuck
-      const recentSpawnTime = new Date(Date.now() - 20 * 60 * 1000).toISOString();
-      const spawns = [createSpawn('spawn-rec1', SpawnStatus.PENDING, recentSpawnTime)];
+      // Delegation at 20 minutes ago - should NOT be stuck
+      const recentDelegationTime = new Date(Date.now() - 20 * 60 * 1000).toISOString();
+      const delegations = [createDelegation('dlg-rec1', DelegationStatus.PENDING, recentDelegationTime)];
 
-      const stuck = detectStuckSpawns(spawns); // Uses default 30 min
+      const stuck = detectStuckDelegations(delegations); // Uses default 30 min
 
       expect(stuck.length).toBe(0);
     });
 
     it('respects custom threshold', () => {
-      // Spawn at 20 minutes old
-      const recentSpawnTime = new Date(Date.now() - 20 * 60 * 1000).toISOString();
-      const spawns = [createSpawn('spawn-cust', SpawnStatus.PENDING, recentSpawnTime)];
+      // Delegation at 20 minutes old
+      const recentDelegationTime = new Date(Date.now() - 20 * 60 * 1000).toISOString();
+      const delegations = [createDelegation('dlg-cust', DelegationStatus.PENDING, recentDelegationTime)];
 
       // Not stuck with default 30min threshold
-      expect(detectStuckSpawns(spawns, 30).length).toBe(0);
+      expect(detectStuckDelegations(delegations, 30).length).toBe(0);
 
       // Stuck with 15min threshold
-      expect(detectStuckSpawns(spawns, 15).length).toBe(1);
+      expect(detectStuckDelegations(delegations, 15).length).toBe(1);
     });
   });
 
   describe('empty state handling', () => {
-    it('returns healthy status when no spawns exist', () => {
-      const analysis = analyzeSpawns([]);
-      const stuck = detectStuckSpawns([]);
+    it('returns healthy status when no delegations exist', () => {
+      const analysis = analyzeDelegations([]);
+      const stuck = detectStuckDelegations([]);
       const suggestions = generateSuggestions([], []);
 
       expect(analysis.total).toBe(0);
@@ -272,13 +272,13 @@ describe('orchestrate:monitor (WU-1241)', () => {
       expect(suggestions.length).toBe(0);
     });
 
-    it('returns healthy status when all spawns are completed', () => {
-      const spawns = [
-        createSpawn('spawn-cmp1', SpawnStatus.COMPLETED),
-        createSpawn('spawn-cmp2', SpawnStatus.COMPLETED),
+    it('returns healthy status when all delegations are completed', () => {
+      const delegations = [
+        createDelegation('dlg-cmp1', DelegationStatus.COMPLETED),
+        createDelegation('dlg-cmp2', DelegationStatus.COMPLETED),
       ];
 
-      const stuck = detectStuckSpawns(spawns);
+      const stuck = detectStuckDelegations(delegations);
       const suggestions = generateSuggestions([], []);
 
       expect(stuck.length).toBe(0);
@@ -343,7 +343,7 @@ describe('orchestrate:monitor (WU-1241)', () => {
     it('runMonitor should construct state path correctly (integration test)', async () => {
       // Import the actual module to test its path construction
       const { runMonitor } = await import('../src/orchestrate-monitor.js');
-      const { LUMENFLOW_PATHS, SpawnRegistryStore } = await import('@lumenflow/core');
+      const { LUMENFLOW_PATHS, DelegationRegistryStore } = await import('@lumenflow/core');
       const path = await import('node:path');
       const fs = await import('node:fs');
       const os = await import('node:os');
@@ -356,32 +356,32 @@ describe('orchestrate:monitor (WU-1241)', () => {
       const correctStateDir = path.join(testBaseDir, LUMENFLOW_PATHS.STATE_DIR);
       fs.mkdirSync(correctStateDir, { recursive: true });
 
-      // Write a spawn registry file at the correct path
-      const registryPath = path.join(correctStateDir, 'spawn-registry.jsonl');
-      const spawnEvent = {
-        id: 'spawn-a1b2', // Must match pattern spawn-XXXX
+      // Write a delegation registry file at the correct path
+      const registryPath = path.join(correctStateDir, 'delegation-registry.jsonl');
+      const delegationEvent = {
+        id: 'dlg-a1b2',
         parentWuId: 'WU-1000',
         targetWuId: 'WU-1001',
         lane: 'Framework: CLI',
-        spawnedAt: new Date().toISOString(),
+        delegatedAt: new Date().toISOString(),
         status: 'completed',
         completedAt: new Date().toISOString(),
       };
-      fs.writeFileSync(registryPath, JSON.stringify(spawnEvent) + '\n');
+      fs.writeFileSync(registryPath, JSON.stringify(delegationEvent) + '\n');
 
       // First, verify the file exists and can be loaded directly
-      const directStore = new SpawnRegistryStore(correctStateDir);
+      const directStore = new DelegationRegistryStore(correctStateDir);
       await directStore.load();
-      const directSpawns = directStore.getAllSpawns();
-      expect(directSpawns.length).toBe(1);
-      expect(directSpawns[0].status).toBe('completed');
+      const directDelegations = directStore.getAllDelegations();
+      expect(directDelegations.length).toBe(1);
+      expect(directDelegations[0].status).toBe('completed');
 
       try {
         // Run monitor with the test directory
         const result = await runMonitor({ baseDir: testBaseDir });
 
-        // If paths are constructed correctly, the spawn registry should be found
-        // and we should see 1 completed spawn
+        // If paths are constructed correctly, the delegation registry should be found
+        // and we should see 1 completed delegation
         expect(result.analysis.completed).toBe(1);
         expect(result.analysis.total).toBe(1);
       } finally {
@@ -392,15 +392,15 @@ describe('orchestrate:monitor (WU-1241)', () => {
   });
 });
 
-// Helper function to create mock spawn events
-function createSpawn(id: string, status: string, spawnedAt?: string): SpawnEvent {
+// Helper function to create mock delegation events
+function createDelegation(id: string, status: string, delegatedAt?: string): DelegationEvent {
   return {
     id,
     parentWuId: TEST_PARENT_WU,
     targetWuId: TEST_TARGET_WU,
     lane: TEST_LANE,
-    spawnedAt: spawnedAt || new Date().toISOString(),
-    status: status as SpawnEvent['status'],
-    completedAt: status === SpawnStatus.COMPLETED ? new Date().toISOString() : null,
+    delegatedAt: delegatedAt || new Date().toISOString(),
+    status: status as DelegationEvent['status'],
+    completedAt: status === DelegationStatus.COMPLETED ? new Date().toISOString() : null,
   };
 }

@@ -2,31 +2,31 @@
  * Spawn Registry Store (WU-1944)
  *
  * Event-sourced state store for tracking sub-agent spawns.
- * Stores events in .lumenflow/state/spawn-registry.jsonl (append-only, git-friendly).
+ * Stores events in .lumenflow/state/delegation-registry.jsonl (append-only, git-friendly).
  *
  * Features:
  * - Event sourcing with replay for current state
  * - Atomic append operations
  * - O(1) queries by parent WU, target WU, and status
  *
- * @see {@link packages/@lumenflow/cli/src/lib/__tests__/spawn-registry-store.test.ts} - Tests
- * @see {@link packages/@lumenflow/cli/src/lib/spawn-registry-schema.ts} - Schema definitions
+ * @see {@link packages/@lumenflow/cli/src/lib/__tests__/delegation-registry-store.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/delegation-registry-schema.ts} - Schema definitions
  */
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {
-  validateSpawnEvent,
-  generateSpawnId,
-  SpawnStatus,
-  type SpawnEvent,
-  type SpawnIntentValue,
-} from './spawn-registry-schema.js';
+  validateDelegationEvent,
+  generateDelegationId,
+  DelegationStatus,
+  type DelegationEvent,
+  type DelegationIntentValue,
+} from './delegation-registry-schema.js';
 
 /**
  * Spawn registry file name constant
  */
-export const SPAWN_REGISTRY_FILE_NAME = 'spawn-registry.jsonl';
+export const DELEGATION_REGISTRY_FILE_NAME = 'delegation-registry.jsonl';
 
 /**
  * Spawn Registry Store class
@@ -34,10 +34,10 @@ export const SPAWN_REGISTRY_FILE_NAME = 'spawn-registry.jsonl';
  * Manages spawn registry state via event sourcing pattern.
  * Events are appended to JSONL file, state is rebuilt by replaying events.
  */
-export class SpawnRegistryStore {
+export class DelegationRegistryStore {
   private readonly baseDir: string;
   private readonly registryFilePath: string;
-  private readonly spawns: Map<string, SpawnEvent>;
+  private readonly spawns: Map<string, DelegationEvent>;
   private readonly byParent: Map<string, string[]>;
   private readonly byTarget: Map<string, string>;
 
@@ -46,7 +46,7 @@ export class SpawnRegistryStore {
    */
   constructor(baseDir: string) {
     this.baseDir = baseDir;
-    this.registryFilePath = path.join(baseDir, SPAWN_REGISTRY_FILE_NAME);
+    this.registryFilePath = path.join(baseDir, DELEGATION_REGISTRY_FILE_NAME);
 
     // In-memory state (rebuilt from events)
     this.spawns = new Map();
@@ -54,7 +54,7 @@ export class SpawnRegistryStore {
     // Index: parentWuId -> spawnIds[]
     this.byParent = new Map();
 
-    // Index: targetWuId -> spawnId
+    // Index: targetWuId -> delegationId
     this.byTarget = new Map();
   }
 
@@ -72,9 +72,9 @@ export class SpawnRegistryStore {
    * @throws {Error} If file contains malformed JSON or invalid events
    *
    * @example
-   * const store = new SpawnRegistryStore('/path/to/project');
+   * const store = new DelegationRegistryStore('/path/to/project');
    * await store.load();
-   * const pending = store.getPending();
+   * const pending = store.getPendingDelegations();
    */
   async load(): Promise<void> {
     // Reset state
@@ -113,7 +113,7 @@ export class SpawnRegistryStore {
       }
 
       // Validate against schema
-      const validation = validateSpawnEvent(parsed);
+      const validation = validateDelegationEvent(parsed);
       if (!validation.success) {
         const issues = validation.error.issues
           .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
@@ -134,7 +134,7 @@ export class SpawnRegistryStore {
    *
    * @private
    */
-  private _applyEvent(event: SpawnEvent): void {
+  private _applyEvent(event: DelegationEvent): void {
     const { id, parentWuId, targetWuId } = event;
 
     // Update main state map
@@ -163,9 +163,9 @@ export class SpawnRegistryStore {
    * @private
    * @throws {Error} If event fails validation
    */
-  private async _appendEvent(event: SpawnEvent): Promise<void> {
+  private async _appendEvent(event: DelegationEvent): Promise<void> {
     // Validate event before appending
-    const validation = validateSpawnEvent(event);
+    const validation = validateDelegationEvent(event);
     if (!validation.success) {
       const issues = validation.error.issues
         .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
@@ -188,20 +188,20 @@ export class SpawnRegistryStore {
    * @param {string} parentWuId - Parent WU ID (orchestrator)
    * @param {string} targetWuId - Target WU ID (spawned work)
    * @param {string} lane - Lane for the spawned work
-   * @param {SpawnIntentValue} [intent] - Optional intent source (e.g., delegation)
+   * @param {DelegationIntentValue} [intent] - Optional intent source (e.g., delegation)
    * @returns {Promise<string>} The generated spawn ID
    * @throws {Error} If validation fails
    *
    * @example
-   * const spawnId = await store.record('WU-1000', 'WU-1001', 'Operations: Tooling');
+   * const delegationId = await store.record('WU-1000', 'WU-1001', 'Operations: Tooling');
    */
   async record(
     parentWuId: string,
     targetWuId: string,
     lane: string,
-    intent?: SpawnIntentValue,
+    intent?: DelegationIntentValue,
   ): Promise<string> {
-    const id = generateSpawnId(parentWuId, targetWuId);
+    const id = generateDelegationId(parentWuId, targetWuId);
 
     const event = {
       id,
@@ -209,8 +209,8 @@ export class SpawnRegistryStore {
       targetWuId,
       lane,
       ...(intent ? { intent } : {}),
-      spawnedAt: new Date().toISOString(),
-      status: SpawnStatus.PENDING,
+      delegatedAt: new Date().toISOString(),
+      status: DelegationStatus.PENDING,
       completedAt: null,
     };
 
@@ -223,7 +223,7 @@ export class SpawnRegistryStore {
   /**
    * Updates the status of a spawn.
    *
-   * @param {string} spawnId - Spawn ID to update
+   * @param {string} delegationId - Spawn ID to update
    * @param {string} status - New status
    * @returns {Promise<void>}
    * @throws {Error} If spawn ID not found
@@ -231,15 +231,15 @@ export class SpawnRegistryStore {
    * @example
    * await store.updateStatus('spawn-a1b2', 'completed');
    */
-  async updateStatus(spawnId: string, status: string): Promise<void> {
-    const existing = this.spawns.get(spawnId);
+  async updateStatus(delegationId: string, status: string): Promise<void> {
+    const existing = this.spawns.get(delegationId);
     if (!existing) {
-      throw new Error(`Spawn ID ${spawnId} not found`);
+      throw new Error(`Spawn ID ${delegationId} not found`);
     }
 
-    const event: SpawnEvent = {
+    const event: DelegationEvent = {
       ...existing,
-      status: status as SpawnEvent['status'],
+      status: status as DelegationEvent['status'],
       completedAt: new Date().toISOString(),
     };
 
@@ -253,19 +253,19 @@ export class SpawnRegistryStore {
    * WU-1605: This distinguishes intent-only delegation records from
    * delegated work that was actually picked up via wu:claim.
    *
-   * @param {string} spawnId - Spawn ID to update
+   * @param {string} delegationId - Spawn ID to update
    * @param {string} pickedUpBy - Agent identity that claimed the target WU
    * @param {string} [pickedUpAt] - Optional ISO timestamp (defaults to now)
    * @returns {Promise<void>}
    * @throws {Error} If spawn ID not found
    */
-  async recordPickup(spawnId: string, pickedUpBy: string, pickedUpAt?: string): Promise<void> {
-    const existing = this.spawns.get(spawnId);
+  async recordPickup(delegationId: string, pickedUpBy: string, pickedUpAt?: string): Promise<void> {
+    const existing = this.spawns.get(delegationId);
     if (!existing) {
-      throw new Error(`Spawn ID ${spawnId} not found`);
+      throw new Error(`Spawn ID ${delegationId} not found`);
     }
 
-    const event: SpawnEvent = {
+    const event: DelegationEvent = {
       ...existing,
       pickedUpBy,
       pickedUpAt: pickedUpAt ?? new Date().toISOString(),
@@ -279,69 +279,69 @@ export class SpawnRegistryStore {
    * Gets all spawns for a parent WU.
    *
    * @param {string} parentWuId - Parent WU ID
-   * @returns {SpawnEvent[]} Array of spawn events
+   * @returns {DelegationEvent[]} Array of spawn events
    *
    * @example
    * const spawns = store.getByParent('WU-1000');
    */
-  getByParent(parentWuId: string): SpawnEvent[] {
+  getByParent(parentWuId: string): DelegationEvent[] {
     const spawnIds = this.byParent.get(parentWuId) ?? [];
     return spawnIds
       .map((id) => this.spawns.get(id))
-      .filter((event): event is SpawnEvent => event !== undefined);
+      .filter((event): event is DelegationEvent => event !== undefined);
   }
 
   /**
    * Gets spawn for a target WU.
    *
    * @param {string} targetWuId - Target WU ID
-   * @returns {SpawnEvent | null} Spawn event or null
+   * @returns {DelegationEvent | null} Spawn event or null
    *
    * @example
    * const spawn = store.getByTarget('WU-1001');
    */
-  getByTarget(targetWuId: string): SpawnEvent | null {
-    const spawnId = this.byTarget.get(targetWuId);
-    if (!spawnId) {
+  getByTarget(targetWuId: string): DelegationEvent | null {
+    const delegationId = this.byTarget.get(targetWuId);
+    if (!delegationId) {
       return null;
     }
-    return this.spawns.get(spawnId) ?? null;
+    return this.spawns.get(delegationId) ?? null;
   }
 
   /**
    * Gets all pending spawns.
    *
-   * @returns {SpawnEvent[]} Array of pending spawn events
+   * @returns {DelegationEvent[]} Array of pending spawn events
    *
    * @example
-   * const pending = store.getPending();
+   * const pending = store.getPendingDelegations();
    */
-  getPending(): SpawnEvent[] {
-    return Array.from(this.spawns.values()).filter((spawn) => spawn.status === SpawnStatus.PENDING);
+  getPendingDelegations(): DelegationEvent[] {
+    return Array.from(this.spawns.values()).filter((spawn) => spawn.status === DelegationStatus.PENDING);
   }
 
   /**
    * Gets all spawns as an array.
    *
-   * @returns {SpawnEvent[]} Array of all spawn events
+   * @returns {DelegationEvent[]} Array of all spawn events
    *
    * @example
-   * const allSpawns = store.getAllSpawns();
+   * const allSpawns = store.getAllDelegations();
    */
-  getAllSpawns(): SpawnEvent[] {
+  getAllDelegations(): DelegationEvent[] {
     return Array.from(this.spawns.values());
   }
 
   /**
    * Gets spawn by ID.
    *
-   * @param {string} spawnId - Spawn ID
-   * @returns {SpawnEvent | null} Spawn event or null
+   * @param {string} delegationId - Spawn ID
+   * @returns {DelegationEvent | null} Spawn event or null
    *
    * @example
    * const spawn = store.getById('spawn-a1b2');
    */
-  getById(spawnId: string): SpawnEvent | null {
-    return this.spawns.get(spawnId) ?? null;
+  getById(delegationId: string): DelegationEvent | null {
+    return this.spawns.get(delegationId) ?? null;
   }
 }

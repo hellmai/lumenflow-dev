@@ -15,15 +15,15 @@
  * ExampleApp's custom spawn-registry.jsonl, lane-lock, and memory-store.
  * No external library exists for this domain-specific agent lifecycle management.
  *
- * @see {@link packages/@lumenflow/cli/src/lib/__tests__/spawn-recovery.test.ts} - Tests
- * @see {@link packages/@lumenflow/cli/src/lib/spawn-monitor.ts} - Monitoring logic
- * @see {@link packages/@lumenflow/cli/src/lib/spawn-registry-store.ts} - Spawn state
+ * @see {@link packages/@lumenflow/cli/src/lib/__tests__/delegation-recovery.test.ts} - Tests
+ * @see {@link packages/@lumenflow/cli/src/lib/delegation-monitor.ts} - Monitoring logic
+ * @see {@link packages/@lumenflow/cli/src/lib/delegation-registry-store.ts} - Spawn state
  */
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { SpawnRegistryStore } from './spawn-registry-store.js';
-import { SpawnStatus } from './spawn-registry-schema.js';
+import { DelegationRegistryStore } from './delegation-registry-store.js';
+import { DelegationStatus } from './delegation-registry-schema.js';
 import {
   isZombieLock,
   isLockStale,
@@ -72,9 +72,9 @@ export const RECOVERY_DIR_NAME = 'recovery';
 export const NO_CHECKPOINT_THRESHOLD_MS = 60 * 60 * 1000;
 
 /**
- * Log prefix for spawn-recovery messages
+ * Log prefix for delegation-recovery messages
  */
-const LOG_PREFIX = '[spawn-recovery]';
+const LOG_PREFIX = '[delegation-recovery]';
 
 /**
  * @typedef {Object} RecoveryResult
@@ -86,7 +86,7 @@ const LOG_PREFIX = '[spawn-recovery]';
 /**
  * @typedef {Object} AuditLogEntry
  * @property {string} timestamp - ISO timestamp of recovery action
- * @property {string} spawnId - ID of the spawn being recovered
+ * @property {string} delegationId - ID of the spawn being recovered
  * @property {string} action - Recovery action taken
  * @property {string} reason - Explanation of why action was taken
  * @property {Object} context - Additional context
@@ -128,7 +128,7 @@ async function createAuditLog(baseDir, entry) {
   await fs.mkdir(recoveryDir, { recursive: true });
 
   const timestamp = entry.timestamp.replace(/[:.]/g, '-');
-  const fileName = `${entry.spawnId}-${timestamp}.json`;
+  const fileName = `${entry.delegationId}-${timestamp}.json`;
   const filePath = path.join(recoveryDir, fileName);
 
   await fs.writeFile(filePath, JSON.stringify(entry, null, 2), 'utf-8');
@@ -204,27 +204,27 @@ function isCheckpointRecent(checkpointTimestamp) {
  * 3. Active lock + no checkpoint in 1h -> escalate (no auto-release)
  * 4. Healthy spawn -> no action
  *
- * @param {string} spawnId - ID of the spawn to recover
- * @param {RecoverStuckSpawnOptions} options - Options
+ * @param {string} delegationId - ID of the spawn to recover
+ * @param {RecoverStuckDelegationOptions} options - Options
  * @returns {Promise<RecoveryResult>} Recovery result
  *
  * @example
- * const result = await recoverStuckSpawn('spawn-1234', { baseDir: '/path/to/project' });
+ * const result = await recoverStuckDelegation('spawn-1234', { baseDir: '/path/to/project' });
  * if (result.recovered) {
  *   console.log(`Recovered: ${result.action} - ${result.reason}`);
  * }
  */
-export interface RecoverStuckSpawnOptions {
+export interface RecoverStuckDelegationOptions {
   /** Base directory for .lumenflow/ */
   baseDir?: string;
 }
 
-export async function recoverStuckSpawn(spawnId, options: RecoverStuckSpawnOptions = {}) {
+export async function recoverStuckDelegation(delegationId, options: RecoverStuckDelegationOptions = {}) {
   const { baseDir = process.cwd() } = options;
   const registryDir = path.join(baseDir, LUMENFLOW_PATHS.STATE_DIR);
 
   // Load spawn registry
-  const store = new SpawnRegistryStore(registryDir);
+  const store = new DelegationRegistryStore(registryDir);
 
   try {
     await store.load();
@@ -233,27 +233,27 @@ export async function recoverStuckSpawn(spawnId, options: RecoverStuckSpawnOptio
     return {
       recovered: false,
       action: RecoveryAction.NONE,
-      reason: `Spawn ${spawnId} not found: registry unavailable`,
+      reason: `Spawn ${delegationId} not found: registry unavailable`,
     };
   }
 
   // Find the spawn
-  const spawn = store.getById(spawnId);
+  const spawn = store.getById(delegationId);
 
   if (!spawn) {
     return {
       recovered: false,
       action: RecoveryAction.NONE,
-      reason: `Spawn ${spawnId} not found in registry`,
+      reason: `Spawn ${delegationId} not found in registry`,
     };
   }
 
   // Check if already completed
-  if (spawn.status !== SpawnStatus.PENDING) {
+  if (spawn.status !== DelegationStatus.PENDING) {
     return {
       recovered: false,
       action: RecoveryAction.NONE,
-      reason: `Spawn ${spawnId} already ${spawn.status}`,
+      reason: `Spawn ${delegationId} already ${spawn.status}`,
     };
   }
 
@@ -267,7 +267,7 @@ export async function recoverStuckSpawn(spawnId, options: RecoverStuckSpawnOptio
     return {
       recovered: false,
       action: RecoveryAction.NONE,
-      reason: `No lock found for spawn ${spawnId} (lane: ${spawn.lane})`,
+      reason: `No lock found for spawn ${delegationId} (lane: ${spawn.lane})`,
     };
   }
 
@@ -289,7 +289,7 @@ export async function recoverStuckSpawn(spawnId, options: RecoverStuckSpawnOptio
     targetWuId: spawn.targetWuId,
     parentWuId: spawn.parentWuId,
     lane: spawn.lane,
-    spawnedAt: spawn.spawnedAt,
+    delegatedAt: spawn.delegatedAt,
     lockMetadata,
     lastCheckpoint: lastCheckpointTs,
   };
@@ -297,21 +297,21 @@ export async function recoverStuckSpawn(spawnId, options: RecoverStuckSpawnOptio
   // Heuristic 1: Zombie lock (PID not running)
   if (isZombieLock(lockMetadata)) {
     console.log(
-      `${LOG_PREFIX} Detected zombie lock for ${spawnId} (PID ${lockMetadata.pid} not running)`,
+      `${LOG_PREFIX} Detected zombie lock for ${delegationId} (PID ${lockMetadata.pid} not running)`,
     );
 
     // Release the lock
     releaseLaneLock(spawn.lane, { baseDir, force: true });
 
     // Mark spawn as crashed
-    await store.updateStatus(spawnId, SpawnStatus.CRASHED);
+    await store.updateStatus(delegationId, DelegationStatus.CRASHED);
 
     const reason = `Zombie lock detected: PID ${lockMetadata.pid} not running`;
 
     // Create audit log
     await createAuditLog(baseDir, {
       timestamp: new Date().toISOString(),
-      spawnId,
+      delegationId,
       action: RecoveryAction.RELEASED_ZOMBIE,
       reason,
       context: auditContext,
@@ -327,21 +327,21 @@ export async function recoverStuckSpawn(spawnId, options: RecoverStuckSpawnOptio
   // Heuristic 2: Stale lock (>2h old)
   if (isLockStale(lockMetadata)) {
     console.log(
-      `${LOG_PREFIX} Detected stale lock for ${spawnId} (acquired ${lockMetadata.timestamp})`,
+      `${LOG_PREFIX} Detected stale lock for ${delegationId} (acquired ${lockMetadata.timestamp})`,
     );
 
     // Release the lock
     releaseLaneLock(spawn.lane, { baseDir, force: true });
 
     // Mark spawn as timeout
-    await store.updateStatus(spawnId, SpawnStatus.TIMEOUT);
+    await store.updateStatus(delegationId, DelegationStatus.TIMEOUT);
 
     const reason = `Stale lock detected: acquired ${lockMetadata.timestamp} (>2h threshold)`;
 
     // Create audit log
     await createAuditLog(baseDir, {
       timestamp: new Date().toISOString(),
-      spawnId,
+      delegationId,
       action: RecoveryAction.RELEASED_STALE,
       reason,
       context: auditContext,
@@ -360,12 +360,12 @@ export async function recoverStuckSpawn(spawnId, options: RecoverStuckSpawnOptio
       ? `No checkpoint in last hour (last: ${lastCheckpointTs})`
       : 'No checkpoints recorded for this spawn';
 
-    console.log(`${LOG_PREFIX} Escalating stuck spawn ${spawnId}: ${reason}`);
+    console.log(`${LOG_PREFIX} Escalating stuck spawn ${delegationId}: ${reason}`);
 
     // Create audit log (escalation, not recovery)
     await createAuditLog(baseDir, {
       timestamp: new Date().toISOString(),
-      spawnId,
+      delegationId,
       action: RecoveryAction.ESCALATED_STUCK,
       reason,
       context: auditContext,
@@ -382,6 +382,6 @@ export async function recoverStuckSpawn(spawnId, options: RecoverStuckSpawnOptio
   return {
     recovered: false,
     action: RecoveryAction.NONE,
-    reason: `Spawn ${spawnId} healthy (recent checkpoint at ${lastCheckpointTs})`,
+    reason: `Spawn ${delegationId} healthy (recent checkpoint at ${lastCheckpointTs})`,
   };
 }
