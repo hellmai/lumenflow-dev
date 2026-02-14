@@ -4,7 +4,7 @@ _Last updated: 2026-02-14_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1675 — Align docs, parity baselines, and templates to delegation terminology](wu/WU-1675.yaml)
 
 ## Completed
 
