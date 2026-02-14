@@ -82,7 +82,7 @@ Configure max context size in `.lumenflow.config.yaml`:
 
 ```yaml
 memory:
-  spawn_context_max_size: 4096 # Default: 4KB
+  delegation_context_max_size: 4096 # Default: 4KB
 ```
 
 **Skip context injection:**

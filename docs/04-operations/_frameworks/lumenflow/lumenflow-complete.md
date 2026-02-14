@@ -2585,7 +2585,7 @@ pnpm wu:release --id WU-XXX
 
 ```bash
 # Check current delegation records
-pnpm spawn:list
+pnpm delegation:list
 
 # Check unread signals for agent launches
 pnpm mem:inbox --wu WU-XXX

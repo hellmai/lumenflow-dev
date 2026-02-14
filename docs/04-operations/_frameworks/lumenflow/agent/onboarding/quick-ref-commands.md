@@ -314,7 +314,7 @@ pnpm initiative:edit --id INIT-025 --phase-id 1 --phase-status in_progress
 | `pnpm orchestrate:initiative --id INIT-XXX`  | Orchestrate initiative execution  |
 | `pnpm orchestrate:init-status --id INIT-XXX` | Compact initiative progress view  |
 | `pnpm orchestrate:monitor`                   | Monitor delegation/agent activity |
-| `pnpm spawn:list`                            | List active delegation records    |
+| `pnpm delegation:list`                       | List active delegation records    |
 
 ---
 
