@@ -409,6 +409,73 @@ describe('micro-worktree', () => {
         expect(fetchCallOrder).toBeLessThan(createBranchCallOrder);
       }
     });
+
+    it('should fetch origin/main and branch from origin/main in pushOnly mode', async () => {
+      const mockFetch = vi.fn().mockResolvedValue(undefined);
+      const mockMerge = vi.fn().mockResolvedValue(undefined);
+      const mockCreateBranchNoCheckout = vi.fn().mockResolvedValue(undefined);
+      const mockWorktreeAddExisting = vi.fn().mockResolvedValue(undefined);
+      const mockWorktreeList = vi.fn().mockResolvedValue('');
+      const mockBranchExists = vi.fn().mockResolvedValue(false);
+      const mockWorktreeRemove = vi.fn().mockResolvedValue(undefined);
+      const mockDeleteBranch = vi.fn().mockResolvedValue(undefined);
+      const mockAddWithDeletions = vi.fn().mockResolvedValue(undefined);
+      const mockCommit = vi.fn().mockResolvedValue(undefined);
+      const mockRebase = vi.fn().mockResolvedValue(undefined);
+
+      const mainGitMock = {
+        fetch: mockFetch,
+        merge: mockMerge,
+        createBranchNoCheckout: mockCreateBranchNoCheckout,
+        worktreeAddExisting: mockWorktreeAddExisting,
+        worktreeList: mockWorktreeList,
+        branchExists: mockBranchExists,
+        worktreeRemove: mockWorktreeRemove,
+        deleteBranch: mockDeleteBranch,
+      };
+      const worktreeGitMock = {
+        addWithDeletions: mockAddWithDeletions,
+        commit: mockCommit,
+        rebase: mockRebase,
+      };
+
+      const createMainGit = (): typeof mainGitMock => mainGitMock;
+      const createWorktreeGit = (): typeof worktreeGitMock => worktreeGitMock;
+      vi.doMock('../git-adapter.js', () => ({
+        getGitForCwd: vi.fn(createMainGit),
+        createGitForPath: vi.fn(createWorktreeGit),
+      }));
+
+      const { withMicroWorktree } = await import('../micro-worktree.js');
+
+      const mockExecute = vi.fn().mockResolvedValue({
+        commitMessage: 'test commit',
+        files: ['test.txt'],
+      });
+
+      try {
+        await withMicroWorktree({
+          operation: 'test-op',
+          id: 'WU-TEST',
+          logPrefix: TEST_LOG_PREFIX,
+          pushOnly: true,
+          execute: mockExecute,
+        });
+      } catch {
+        // Partial mocking is expected to fail in push phase.
+      }
+
+      expect(mockFetch).toHaveBeenCalledWith(TEST_REMOTE, TEST_BRANCH);
+      expect(mockMerge).not.toHaveBeenCalledWith(ORIGIN_MAIN_REF, FF_ONLY_OPTION);
+      const expectedTempBranch = 'tmp/test-op/wu-test';
+      expect(mockCreateBranchNoCheckout).toHaveBeenCalledWith(expectedTempBranch, ORIGIN_MAIN_REF);
+
+      const fetchCallOrder = mockFetch.mock.invocationCallOrder[0];
+      const createBranchCallOrder = mockCreateBranchNoCheckout.mock.invocationCallOrder[0];
+      if (createBranchCallOrder !== undefined && fetchCallOrder !== undefined) {
+        expect(fetchCallOrder).toBeLessThan(createBranchCallOrder);
+      }
+    });
   });
 
   /**

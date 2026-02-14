@@ -552,33 +552,40 @@ export async function withMicroWorktree(
   // This makes the operation idempotent - a retry after crash/timeout will succeed
   await cleanupOrphanedMicroWorktree(operation, id, mainGit, logPrefix);
 
-  // WU-1179: Fetch origin/main before starting to minimize race condition window
-  // This ensures we start from the latest origin state, reducing push failures
-  // WU-1308: Skip when git.requireRemote=false (local-only mode)
-  if (!pushOnly && !skipRemote) {
+  // WU-1179/WU-1672: Fetch origin/main before starting to minimize race condition window.
+  // In pushOnly mode, fetch updates origin/main tracking ref without touching local main.
+  // WU-1308: Skip when git.requireRemote=false (local-only mode).
+  if (!skipRemote) {
     console.log(`${logPrefix} Fetching ${REMOTES.ORIGIN}/${BRANCHES.MAIN} before starting...`);
     await mainGit.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
-    // Update local main to match origin/main
-    await mainGit.merge(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`, { ffOnly: true });
-    console.log(`${logPrefix} ✅ Local main synced with ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
+    if (pushOnly) {
+      console.log(
+        `${logPrefix} ✅ Push-only mode will base from ${REMOTES.ORIGIN}/${BRANCHES.MAIN}; local main unchanged (WU-1672)`,
+      );
+    } else {
+      // Update local main to match origin/main for standard mode.
+      await mainGit.merge(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`, { ffOnly: true });
+      console.log(`${logPrefix} ✅ Local main synced with ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
+    }
   } else if (skipRemote) {
     console.log(`${logPrefix} Local-only mode (git.requireRemote=false): skipping origin sync`);
   }
 
   const tempBranchName = getTempBranchName(operation, id);
+  const baseRef = pushOnly && !skipRemote ? `${REMOTES.ORIGIN}/${BRANCHES.MAIN}` : BRANCHES.MAIN;
   const microWorktreePath = createMicroWorktreeDir(`${operation}-`);
 
   console.log(`${logPrefix} Using micro-worktree isolation (WU-1262)`);
   console.log(`${logPrefix} Temp branch: ${tempBranchName}`);
   console.log(`${logPrefix} Micro-worktree: ${microWorktreePath}`);
   if (pushOnly) {
-    console.log(`${logPrefix} Push-only mode: local main will not be modified (WU-1435)`);
+    console.log(`${logPrefix} Push-only mode: local main will not be modified (WU-1435/WU-1672)`);
   }
 
   try {
     // Step 1: Create temp branch without switching
     console.log(`${logPrefix} Creating temp branch...`);
-    await mainGit.createBranchNoCheckout(tempBranchName, BRANCHES.MAIN);
+    await mainGit.createBranchNoCheckout(tempBranchName, baseRef);
 
     // Step 2: Create micro-worktree pointing to temp branch
     console.log(`${logPrefix} Creating micro-worktree...`);
