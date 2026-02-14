@@ -1281,4 +1281,5 @@
 {"type":"complete","wuId":"WU-1671","timestamp":"2026-02-14T08:54:33.159Z"}
 {"type":"claim","wuId":"WU-1673","timestamp":"2026-02-14T09:04:47.614Z","lane":"Framework: Core Lifecycle","title":"Prevent wu:done append-only conflict markers from entering wu-events"}
 {"type":"complete","wuId":"WU-1673","timestamp":"2026-02-14T09:43:07.439Z"}
-{"type":"claim","wuId":"WU-1674","lane":"Framework: Core Lifecycle","title":"Atomic spawn-to-delegation runtime rename with migration guard","timestamp":"2026-02-14T09:58:33.890Z"}
+{"type":"claim","wuId":"WU-1674","timestamp":"2026-02-14T09:58:33.890Z","lane":"Framework: Core Lifecycle","title":"Atomic spawn-to-delegation runtime rename with migration guard"}
+{"type":"complete","wuId":"WU-1674","timestamp":"2026-02-14T12:16:25.416Z"}

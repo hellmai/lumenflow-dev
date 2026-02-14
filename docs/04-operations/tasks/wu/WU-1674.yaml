@@ -2,7 +2,7 @@ id: WU-1674
 title: Atomic spawn-to-delegation runtime rename with migration guard
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-14
 code_paths:
@@ -80,3 +80,6 @@ acceptance:
   - Old config key memory.spawn_context_max_size and old CLI flag --spawn-context-max-size hard-fail
     with explicit guidance.
   - Typecheck and targeted parity suites pass after rename migration.
+locked: true
+completed_at: 2026-02-14T12:16:22.355Z
+completed: 2026-02-14
