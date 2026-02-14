@@ -250,6 +250,7 @@ export async function runGates(
     docsOnly?: boolean;
     fullLint?: boolean;
     fullTests?: boolean;
+    scopedTestPaths?: string[];
     fullCoverage?: boolean;
     coverageMode?: string;
     verbose?: boolean;
@@ -276,6 +277,7 @@ async function executeGates(opts: {
   docsOnly?: boolean;
   fullLint?: boolean;
   fullTests?: boolean;
+  scopedTestPaths?: string[];
   fullCoverage?: boolean;
   coverageMode?: string;
   verbose?: boolean;
@@ -502,7 +504,11 @@ async function executeGates(opts: {
       result = await runSafetyCriticalTests({ agentLog, cwd });
     } else if (gate.cmd === GATE_COMMANDS.INCREMENTAL_TEST) {
       // WU-1920: Special handling for changed tests
-      result = await runChangedTests({ agentLog, cwd });
+      result = await runChangedTests({
+        agentLog,
+        cwd,
+        scopedTestPaths: opts.scopedTestPaths,
+      });
       lastTestResult = result;
     } else if (gate.cmd === GATE_COMMANDS.TIERED_TEST) {
       // WU-2062: Integration tests for high-risk changes

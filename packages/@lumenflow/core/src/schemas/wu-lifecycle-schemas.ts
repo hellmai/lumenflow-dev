@@ -164,11 +164,15 @@ export type WuDepsInput = z.infer<typeof wuDepsSchema>;
  * Schema for wu:prep command
  *
  * Required: id
- * Optional: docs_only
+ * Optional: docs_only, full_tests
  */
 export const wuPrepSchema = z.object({
   id: z.string().describe('WU ID to prepare'),
   docs_only: z.boolean().optional().describe('Run docs-only gates'),
+  full_tests: z
+    .boolean()
+    .optional()
+    .describe('Run full incremental test suite instead of tests.unit scoped execution'),
 });
 
 export type WuPrepInput = z.infer<typeof wuPrepSchema>;

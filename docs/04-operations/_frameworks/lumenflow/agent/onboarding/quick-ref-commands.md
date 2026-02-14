@@ -77,21 +77,21 @@ pnpm exec lumenflow --client all      # All clients
 
 ## WU Lifecycle
 
-| Command                                        | Description                                      |
-| ---------------------------------------------- | ------------------------------------------------ |
-| `pnpm wu:create --id WU-XXX --lane <Lane> ..`  | Create new WU spec (see required fields below)   |
-| `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree (default)           |
-| `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree)   |
-| `pnpm wu:prep --id WU-XXX`                     | Run gates, prep for wu:done                      |
-| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, stamp, cleanup)        |
-| `pnpm wu:edit --id WU-XXX --description "..."` | Edit WU spec fields (run --help for all flags)   |
-| `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                             |
-| `pnpm wu:unblock --id WU-XXX`                  | Unblock WU                                       |
-| `pnpm wu:release --id WU-XXX`                  | Release orphaned WU (in_progress to ready)       |
-| `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands         |
-| `pnpm wu:brief --id WU-XXX --client <client>`  | Generate handoff prompt (does not execute)       |
-| `pnpm wu:brief --id WU-XXX --no-context`       | Generate prompt without memory context injection |
-| `pnpm wu:delegate --id WU-XXX --parent-wu <P>` | Generate prompt and record delegation lineage    |
+| Command                                        | Description                                                  |
+| ---------------------------------------------- | ------------------------------------------------------------ |
+| `pnpm wu:create --id WU-XXX --lane <Lane> ..`  | Create new WU spec (see required fields below)               |
+| `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree (default)                       |
+| `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree)               |
+| `pnpm wu:prep --id WU-XXX [--full-tests]`      | Run gates, prep for wu:done (`tests.unit` scoped by default) |
+| `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, stamp, cleanup)                    |
+| `pnpm wu:edit --id WU-XXX --description "..."` | Edit WU spec fields (run --help for all flags)               |
+| `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                                         |
+| `pnpm wu:unblock --id WU-XXX`                  | Unblock WU                                                   |
+| `pnpm wu:release --id WU-XXX`                  | Release orphaned WU (in_progress to ready)                   |
+| `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands                     |
+| `pnpm wu:brief --id WU-XXX --client <client>`  | Generate handoff prompt (does not execute)                   |
+| `pnpm wu:brief --id WU-XXX --no-context`       | Generate prompt without memory context injection             |
+| `pnpm wu:delegate --id WU-XXX --parent-wu <P>` | Generate prompt and record delegation lineage                |
 
 ### WU Maintenance
 

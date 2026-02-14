@@ -186,6 +186,11 @@ describe('WU Lifecycle CLI Argument Validation (WU-1454)', () => {
       const result = validateWuPrepArgs({ id: 'WU-1234' });
       expect(result.valid).toBe(true);
     });
+
+    it('should accept full_tests flag', () => {
+      const result = validateWuPrepArgs({ id: 'WU-1234', full_tests: true });
+      expect(result.valid).toBe(true);
+    });
   });
 
   // ==========================================================================

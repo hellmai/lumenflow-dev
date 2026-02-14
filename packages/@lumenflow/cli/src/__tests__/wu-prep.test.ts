@@ -362,3 +362,52 @@ describe('wu-prep code_paths coverage preflight (WU-1531)', () => {
     });
   });
 });
+
+describe('wu-prep test scoping (WU-1676)', () => {
+  it('returns scoped unit test paths when full-tests is not requested', async () => {
+    const { resolveScopedUnitTestsForPrep } = await import('../wu-prep.js');
+    const scoped = resolveScopedUnitTestsForPrep({
+      fullTests: false,
+      tests: {
+        unit: [
+          'packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts',
+          'packages/@lumenflow/cli/src/__tests__/wu-create-required-fields.test.ts',
+        ],
+      },
+    });
+
+    expect(scoped).toEqual([
+      'packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts',
+      'packages/@lumenflow/cli/src/__tests__/wu-create-required-fields.test.ts',
+    ]);
+  });
+
+  it('returns empty scoped list when --full-tests is requested', async () => {
+    const { resolveScopedUnitTestsForPrep } = await import('../wu-prep.js');
+    const scoped = resolveScopedUnitTestsForPrep({
+      fullTests: true,
+      tests: {
+        unit: ['packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts'],
+      },
+    });
+
+    expect(scoped).toEqual([]);
+  });
+
+  it('filters blank and non-string test entries', async () => {
+    const { resolveScopedUnitTestsForPrep } = await import('../wu-prep.js');
+    const scoped = resolveScopedUnitTestsForPrep({
+      fullTests: false,
+      tests: {
+        unit: [
+          'packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts',
+          '',
+          '   ',
+          123 as unknown as string,
+        ],
+      },
+    });
+
+    expect(scoped).toEqual(['packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts']);
+  });
+});

@@ -82,7 +82,7 @@ pnpm exec lumenflow --client all      # All clients
 | `pnpm wu:create --id WU-XXX --lane <Lane> ..`  | Create new WU spec (see required fields below)   |
 | `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree (default)           |
 | `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree)   |
-| `pnpm wu:prep --id WU-XXX`                     | Run gates, prep for wu:done                      |
+| `pnpm wu:prep --id WU-XXX [--full-tests]`      | Run gates, prep for wu:done (`tests.unit` scoped by default) |
 | `pnpm wu:done --id WU-XXX`                     | Complete WU (merge or PR, stamp, cleanup)        |
 | `pnpm wu:edit --id WU-XXX --description "..."` | Edit WU spec fields (run --help for all flags)   |
 | `pnpm wu:block --id WU-XXX --reason "..."`     | Block WU with reason                             |

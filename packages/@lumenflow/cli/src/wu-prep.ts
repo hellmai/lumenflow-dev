@@ -25,7 +25,7 @@
  * 6. On success, print mode-appropriate next steps
  *
  * Usage:
- *   pnpm wu:prep --id WU-XXX [--docs-only]
+ *   pnpm wu:prep --id WU-XXX [--docs-only] [--full-tests]
  *
  * @module
  */
@@ -69,7 +69,31 @@ const PREP_OPTIONS = {
     flags: '--docs-only',
     description: 'Run docs-only gates (format, spec-linter)',
   },
+  fullTests: {
+    name: 'fullTests',
+    flags: '--full-tests',
+    description: 'Run full incremental test suite (disable tests.unit scoped execution)',
+  },
 };
+
+export function resolveScopedUnitTestsForPrep(options: {
+  fullTests?: boolean;
+  tests?: { unit?: unknown };
+}): string[] {
+  if (options.fullTests) {
+    return [];
+  }
+
+  const unitTestsRaw = options.tests?.unit;
+  if (!Array.isArray(unitTestsRaw)) {
+    return [];
+  }
+
+  return unitTestsRaw
+    .filter((entry): entry is string => typeof entry === 'string')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
 
 const BASIC_GLOB_CHAR_PATTERN = /[*?[\]{}]/;
 const EXTGLOB_PATTERN = /[@!+*?]\(/;
@@ -563,7 +587,7 @@ async function main(): Promise<void> {
   const args = createWUParser({
     name: 'wu-prep',
     description: 'Prepare WU for completion (run gates in worktree)',
-    options: [WU_OPTIONS.id, PREP_OPTIONS.docsOnly],
+    options: [WU_OPTIONS.id, PREP_OPTIONS.docsOnly, PREP_OPTIONS.fullTests],
     required: ['id'],
     allowPositionalId: true,
   });
@@ -741,11 +765,27 @@ async function main(): Promise<void> {
 
   console.log('');
 
+  const scopedUnitTests = resolveScopedUnitTestsForPrep({
+    fullTests: args.fullTests,
+    tests: doc.tests,
+  });
+  if (args.fullTests) {
+    console.log(
+      `${PREP_PREFIX} --full-tests enabled; using default incremental/full test gate flow.`,
+    );
+  } else if (scopedUnitTests.length > 0) {
+    console.log(
+      `${PREP_PREFIX} Using scoped tests from tests.unit (${scopedUnitTests.length} path${scopedUnitTests.length === 1 ? '' : 's'}).`,
+    );
+  }
+
   // Run gates
   console.log(`${PREP_PREFIX} Running gates...`);
   const gatesResult = await runGates({
     cwd: location.cwd,
     docsOnly: args.docsOnly,
+    fullTests: args.fullTests,
+    scopedTestPaths: scopedUnitTests,
   });
 
   if (!gatesResult) {

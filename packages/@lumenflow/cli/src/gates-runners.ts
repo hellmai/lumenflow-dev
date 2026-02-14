@@ -39,6 +39,7 @@ import {
   pnpmRun,
   run,
   makeGateLogger,
+  quoteShellArgs,
   filterExistingFiles,
   getChangedFilesForIncremental,
   detectCurrentWUForCwd,
@@ -242,9 +243,11 @@ export async function runIncrementalLint({
 export async function runChangedTests({
   agentLog,
   cwd,
+  scopedTestPaths = [],
 }: {
   agentLog?: { logFd: number; logPath: string } | null;
   cwd: string;
+  scopedTestPaths?: string[];
 }) {
   const start = Date.now();
   // eslint-disable-next-line sonarjs/no-identical-functions -- Pre-existing: logLine helper duplicated across gate runners
@@ -259,8 +262,25 @@ export async function runChangedTests({
   // WU-1356: Get configured commands
   const gatesCommands = resolveGatesCommands(cwd);
   const testRunner = resolveTestRunner(cwd);
+  const normalizedScopedTestPaths = scopedTestPaths
+    .filter((testPath): testPath is string => typeof testPath === 'string')
+    .map((testPath) => testPath.trim())
+    .filter(Boolean);
 
   try {
+    if (normalizedScopedTestPaths.length > 0) {
+      const testPathsArg = quoteShellArgs(normalizedScopedTestPaths);
+      logLine(
+        `\n> Running scoped tests from WU tests.unit (${normalizedScopedTestPaths.length})\n`,
+      );
+
+      const result = run(pnpmCmd('vitest', 'run', testPathsArg, '--passWithNoTests'), {
+        agentLog,
+        cwd,
+      });
+      return { ...result, duration: Date.now() - start, isIncremental: true };
+    }
+
     const git = createGitForPath(cwd);
     const currentBranch = await git.getCurrentBranch();
     const isMainBranch = currentBranch === BRANCHES.MAIN || currentBranch === BRANCHES.MASTER;

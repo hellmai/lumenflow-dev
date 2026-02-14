@@ -11,6 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   validateRegistrationParity,
+  lintWUSpec,
   WU_LINT_ERROR_TYPES,
   REGISTRATION_SURFACES,
   CLI_COMMAND_PATTERNS,
@@ -320,5 +321,61 @@ describe('validateRegistrationParity (WU-1504)', () => {
       expect(Array.isArray(CLI_COMMAND_PATTERNS)).toBe(true);
       expect(CLI_COMMAND_PATTERNS.length).toBeGreaterThan(0);
     });
+  });
+});
+
+describe('lintWUSpec tests.unit requirement (WU-1676)', () => {
+  it('flags non-documentation WUs with code_paths and empty tests.unit', () => {
+    const result = lintWUSpec({
+      id: 'WU-1676-TEST',
+      type: 'refactor',
+      status: 'ready',
+      code_paths: ['packages/@lumenflow/cli/src/wu-prep.ts'],
+      tests: {
+        manual: ['Verify behavior manually'],
+        unit: [],
+        e2e: [],
+      },
+      acceptance: ['Update prep test execution'],
+    });
+
+    expect(result.valid).toBe(false);
+    expect(
+      result.errors.some((error) => error.type === WU_LINT_ERROR_TYPES.UNIT_TESTS_REQUIRED),
+    ).toBe(true);
+  });
+
+  it('passes when non-documentation WU provides tests.unit entries', () => {
+    const result = lintWUSpec({
+      id: 'WU-1676-TEST',
+      type: 'refactor',
+      status: 'ready',
+      code_paths: ['packages/@lumenflow/cli/src/wu-prep.ts'],
+      tests: {
+        manual: ['Verify behavior manually'],
+        unit: ['packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts'],
+        e2e: [],
+      },
+      acceptance: ['Update prep test execution'],
+    });
+
+    expect(result.valid).toBe(true);
+  });
+
+  it('does not require tests.unit for documentation WUs', () => {
+    const result = lintWUSpec({
+      id: 'WU-1676-TEST',
+      type: 'documentation',
+      status: 'ready',
+      code_paths: ['docs/04-operations/tasks/backlog.md'],
+      tests: {
+        manual: ['Review docs'],
+        unit: [],
+        e2e: [],
+      },
+      acceptance: ['Update docs'],
+    });
+
+    expect(result.valid).toBe(true);
   });
 });

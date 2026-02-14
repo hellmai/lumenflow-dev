@@ -464,6 +464,24 @@ describe('WU MCP tools (WU-1422)', () => {
         expect.any(Object),
       );
     });
+
+    it('should support full-tests flag', async () => {
+      mockRunCliCommand.mockResolvedValue({
+        success: true,
+        stdout: 'Full tests run',
+        stderr: '',
+        exitCode: 0,
+      });
+
+      const result = await wuPrepTool.execute({ id: 'WU-1422', full_tests: true });
+
+      expect(result.success).toBe(true);
+      expect(mockRunCliCommand).toHaveBeenCalledWith(
+        'wu:prep',
+        expect.arrayContaining(['--id', 'WU-1422', '--full-tests']),
+        expect.any(Object),
+      );
+    });
   });
 
   describe('wu_preflight', () => {

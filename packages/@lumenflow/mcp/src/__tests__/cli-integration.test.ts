@@ -220,7 +220,7 @@ describe('CLI integration (no mocks)', { timeout: CLI_INTEGRATION_TEST_TIMEOUT_M
   });
 
   describe('wu:prep flag validation', () => {
-    it('should accept --help and list --id and --docs-only flags', async () => {
+    it('should accept --help and list --id, --docs-only, and --full-tests flags', async () => {
       const result = await runCliCommand('wu:prep', ['--help'], {
         projectRoot: PROJECT_ROOT,
         timeout: HELP_TIMEOUT_MS,
@@ -229,6 +229,7 @@ describe('CLI integration (no mocks)', { timeout: CLI_INTEGRATION_TEST_TIMEOUT_M
       expectSuccess(result, 'wu:prep --help');
       expect(result.stdout).toContain('--id');
       expect(result.stdout).toContain('--docs-only');
+      expect(result.stdout).toContain('--full-tests');
     });
   });
 

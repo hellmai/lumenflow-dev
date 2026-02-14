@@ -537,6 +537,7 @@ export const wuPrepTool: ToolDefinition = {
 
     const args = ['--id', input.id as string];
     if (input.docs_only) args.push(CliArgs.DOCS_ONLY);
+    if (input.full_tests) args.push('--full-tests');
 
     const cliOptions: CliRunnerOptions = {
       projectRoot: options?.projectRoot,

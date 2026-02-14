@@ -1092,15 +1092,16 @@ pnpm wu:edit --id <wuId>
 Run gates in worktree, prep for wu:done
 
 ```bash
-pnpm wu:prep --id <wuId>
+pnpm wu:prep --id <wuId> [--docs-only] [--full-tests]
 ```
 
 **Options:**
 
 | Flag                    | Description                                                                      | Required |
 | ----------------------- | -------------------------------------------------------------------------------- | -------- |
-| `-i, --id &lt;wuId&gt;` | Work Unit ID (e.g., WU-123). If not provided, auto-generates next sequential ID. | Yes      |
+| `-i, --id &lt;wuId&gt;` | Work Unit ID to prepare (e.g., WU-123)                                           | Yes      |
 | `--docs-only`           | Run docs-only gates (format, spec-linter)                                        | No       |
+| `--full-tests`          | Disable `tests.unit` scoping and run default incremental/full test gate behavior | No       |
 
 ### wu:recover
 
