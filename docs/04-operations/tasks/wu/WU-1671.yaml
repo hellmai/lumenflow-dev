@@ -2,7 +2,7 @@ id: WU-1671
 title: Refactor wu-done-machine.ts to use XState assign() actions
 lane: 'Framework: Core State Recovery'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-14
 code_paths:
@@ -46,3 +46,6 @@ session_id: 8f14f057-5225-46de-96c5-c3d127ea7b82
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-14T08:48:54.192Z
+locked: true
+completed_at: 2026-02-14T08:54:30.329Z
+completed: 2026-02-14

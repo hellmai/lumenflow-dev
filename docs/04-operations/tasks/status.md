@@ -4,7 +4,7 @@ _Last updated: 2026-02-14_
 
 ## In Progress
 
-- [WU-1671 — Refactor wu-done-machine.ts to use XState assign() actions](wu/WU-1671.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -613,3 +613,4 @@ _Last updated: 2026-02-14_
 - [WU-1666 — Add model-based wu:done pipeline test coverage with @xstate/graph](wu/WU-1666.yaml) — 2026-02-13
 - [WU-1665 — Consolidate wu:done rollback and recovery onto staged state-machine migration](wu/WU-1665.yaml) — 2026-02-13
 - [WU-1672 — Fix push-only micro-worktree stale base branch behavior](wu/WU-1672.yaml) — 2026-02-14
+- [WU-1671 — Refactor wu-done-machine.ts to use XState assign() actions](wu/WU-1671.yaml) — 2026-02-14
