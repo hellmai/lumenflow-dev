@@ -1,0 +1,51 @@
+id: WU-1674
+title: Atomic spawn-to-delegation runtime rename with migration guard
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P0
+created: 2026-02-14
+code_paths:
+  - packages/@lumenflow/core/src/wu-state-store.ts
+  - packages/@lumenflow/core/src/wu-state-schema.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/core/src/schemas/setup-schemas.ts
+  - packages/@lumenflow/core/src/schemas/setup-arg-validators.ts
+  - packages/@lumenflow/core/src/template-loader.ts
+  - packages/@lumenflow/cli/src/wu-spawn.ts
+  - packages/@lumenflow/cli/src/spawn-list.ts
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/mcp/src/tools/orchestration-tools.ts
+tests:
+  manual:
+    - Simulate first-run with legacy state files and verify archive + rebootstrap complete without manual intervention
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-state-store.test.ts
+    - packages/@lumenflow/core/src/__tests__/schema-parity.test.ts
+    - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/coordination-tools.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1674.done
+dependencies: []
+initiative: INIT-028
+phase: 1
+spec_refs:
+  - docs/04-operations/plans/INIT-028-plan.md
+risks: []
+notes: INIT-028 WU-A from PLAN-spawn-to-delegation-rename blueprint; includes migration guard + mechanical runtime rename.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: live runtime still exposes spawn-prefixed commands, modules, schemas, and state artifacts. Problem: terminology drift and mixed semantics create governance and operational risk. Solution: deliver a clean-slate rename to delegation surfaces with first-run legacy state auto-archive and state rebootstrap.'
+acceptance:
+  - No live command/tool/module runtime path requires spawn-prefixed interfaces.
+  - First run with legacy state auto-archives spawn-era files and reboots state successfully.
+  - delegation:list and delegation_list succeed while spawn:list/spawn_list are removed from active registries.
+  - Old config key memory.spawn_context_max_size and old CLI flag --spawn-context-max-size hard-fail with explicit guidance.
+  - Typecheck and targeted parity suites pass after rename migration.
