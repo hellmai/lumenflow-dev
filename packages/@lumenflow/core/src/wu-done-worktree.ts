@@ -497,6 +497,7 @@ export async function executeWorktreeCompletion(context) {
       branch: laneBranch ?? undefined,
       worktreePath,
     });
+    await assertNoConflictArtifactsInIndex(worktreeGit);
     // WU-1943: Capture pre-commit SHA for rollback on merge failure
     preCommitSha = await worktreeGit.getCommitHash('HEAD');
     await worktreeGit.commit(msg);
@@ -795,6 +796,40 @@ const APPEND_ONLY_FILES = [
 
 // WU-1430: Use centralized constant
 const WU_EVENTS_PATH = path.join(LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME);
+const WU_EVENTS_PATH_POSIX = WU_EVENTS_PATH.split(path.sep).join('/');
+const REBASE_CONFLICT_GIT = {
+  DIFF_UNMERGED_ARGS: [GIT_COMMANDS.DIFF, '--name-only', '--diff-filter=U'] as const,
+  // Keep whitespace checking disabled intentionally: we only want structural conflict artifacts
+  // (leftover merge markers), not generic whitespace findings in this safety check.
+  DIFF_CHECK_ARGS: ['-c', 'core.whitespace=', GIT_COMMANDS.DIFF, '--check', '--cached', '--'] as const,
+  SHOW_OURS: (filePath: string): string[] => ['show', `:2:${filePath}`],
+  SHOW_THEIRS: (filePath: string): string[] => ['show', `:3:${filePath}`],
+  CHECKOUT_THEIRS: (filePath: string): string[] => ['checkout', '--theirs', filePath],
+};
+const REBASE_CONFLICT_MESSAGES = {
+  UNMERGED_FILES_REMAIN: (files: string): string =>
+    `Unmerged files remain in index:\n  ${files}\nResolve conflicts before continuing.`,
+  STAGED_ARTIFACTS_OR_CHECK_FAILURE: (details: string): string =>
+    `git diff --check reported conflict artifacts or failed to run cleanly. Resolve conflicts before continuing.\n${details}`,
+} as const;
+const REBASE_CONFLICT_LIMITS = {
+  MAX_CONTINUE_ATTEMPTS: 6,
+} as const;
+
+function toPosixPath(filePath: string): string {
+  return filePath.split(path.sep).join('/');
+}
+
+function isAppendOnlyConflictFile(filePath: string): boolean {
+  const normalizedFilePath = toPosixPath(filePath);
+  return APPEND_ONLY_FILES.some((appendFile) => {
+    const normalizedAppendFile = toPosixPath(appendFile);
+    return (
+      normalizedFilePath === normalizedAppendFile ||
+      normalizedFilePath.endsWith(`/${normalizedAppendFile}`)
+    );
+  });
+}
 
 function normalizeEventForKey(event) {
   const normalized = {};
@@ -834,9 +869,9 @@ function parseWuEventsJsonl(content, sourceLabel) {
   });
 }
 
-async function resolveWuEventsJsonlConflict(gitCwd, filePath) {
-  const ours = await gitCwd.raw(['show', `:2:${filePath}`]);
-  const theirs = await gitCwd.raw(['show', `:3:${filePath}`]);
+async function resolveWuEventsJsonlConflict(gitCwd, filePath, worktreePath: string) {
+  const ours = await gitCwd.raw(REBASE_CONFLICT_GIT.SHOW_OURS(filePath));
+  const theirs = await gitCwd.raw(REBASE_CONFLICT_GIT.SHOW_THEIRS(filePath));
 
   const theirsEvents = parseWuEventsJsonl(theirs, 'theirs');
   const oursEvents = parseWuEventsJsonl(ours, 'ours');
@@ -858,8 +893,43 @@ async function resolveWuEventsJsonlConflict(gitCwd, filePath) {
     mergedLines.push(line);
   }
 
-  await writeFile(filePath, mergedLines.join('\n') + '\n', 'utf-8');
+  const resolvedPath = path.isAbsolute(filePath) ? filePath : path.join(worktreePath, filePath);
+  await writeFile(resolvedPath, mergedLines.join('\n') + '\n', 'utf-8');
   await gitCwd.add(filePath);
+}
+
+async function assertNoConflictArtifactsInIndex(
+  gitCwd,
+  files?: string[],
+  options: { checkStaged?: boolean } = {},
+): Promise<void> {
+  const unresolvedFilesOutput = await gitCwd.raw([...REBASE_CONFLICT_GIT.DIFF_UNMERGED_ARGS]);
+  const unresolvedFiles = unresolvedFilesOutput
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (unresolvedFiles.length > 0) {
+    throw new Error(REBASE_CONFLICT_MESSAGES.UNMERGED_FILES_REMAIN(unresolvedFiles.join('\n  ')));
+  }
+
+  if (options.checkStaged === false) {
+    return;
+  }
+
+  const checkArgs = [...REBASE_CONFLICT_GIT.DIFF_CHECK_ARGS];
+  if (files && files.length > 0) {
+    checkArgs.push(...files);
+  }
+
+  try {
+    const checkOutput = await gitCwd.raw(checkArgs);
+    if (checkOutput.trim().length > 0) {
+      throw new Error(checkOutput.trim());
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(REBASE_CONFLICT_MESSAGES.STAGED_ARTIFACTS_OR_CHECK_FAILURE(message));
+  }
 }
 
 /**
@@ -869,34 +939,33 @@ async function resolveWuEventsJsonlConflict(gitCwd, filePath) {
  * @param {object} gitCwd - Git adapter instance
  * @returns {Promise<{resolved: boolean, files: string[]}>} Resolution result
  */
-async function autoResolveAppendOnlyConflicts(gitCwd) {
+async function autoResolveAppendOnlyConflicts(gitCwd, worktreePath: string) {
   const resolvedFiles = [];
 
   try {
-    // Get list of conflicted files
-    const status = await gitCwd.getStatus();
-    const conflictLines = status.split('\n').filter((line) => line.startsWith('UU '));
+    // Use git's unmerged index view so AA/AU/UA/etc are all handled (not only UU).
+    const unmergedOutput = await gitCwd.raw([...REBASE_CONFLICT_GIT.DIFF_UNMERGED_ARGS]);
+    const conflictFiles = unmergedOutput
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
 
-    for (const line of conflictLines) {
-      const filePath = line.substring(3).trim();
-
+    for (const filePath of conflictFiles) {
       // Check if this is an append-only file
-      const isAppendOnly = APPEND_ONLY_FILES.some(
-        (appendFile) => filePath.endsWith(appendFile) || filePath.includes(appendFile),
-      );
+      const isAppendOnly = isAppendOnlyConflictFile(filePath);
 
       if (isAppendOnly) {
         console.log(
           `${LOG_PREFIX.DONE} ${EMOJI.INFO} Auto-resolving append-only conflict: ${filePath}`,
         );
 
-        if (filePath.endsWith(WU_EVENTS_PATH) || filePath.includes(WU_EVENTS_PATH)) {
+        if (toPosixPath(filePath).endsWith(WU_EVENTS_PATH_POSIX)) {
           // For the event log we must keep BOTH sides (loss breaks state machine).
           // Merge strategy: union by event identity (validated), prefer theirs ordering then ours additions.
-          await resolveWuEventsJsonlConflict(gitCwd, filePath);
+          await resolveWuEventsJsonlConflict(gitCwd, filePath, worktreePath);
         } else {
           // Backlog/status are derived; prefer main's version during rebase and regenerate later.
-          await gitCwd.raw(['checkout', '--theirs', filePath]);
+          await gitCwd.raw(REBASE_CONFLICT_GIT.CHECKOUT_THEIRS(filePath));
           await gitCwd.add(filePath);
         }
         resolvedFiles.push(filePath);
@@ -944,25 +1013,33 @@ export async function autoRebaseBranch(branch, worktreePath, wuId) {
         `${LOG_PREFIX.DONE} ${EMOJI.INFO} Rebase hit conflicts, checking for auto-resolvable...`,
       );
 
-      const resolution = await autoResolveAppendOnlyConflicts(gitWorktree);
+      const resolution = await autoResolveAppendOnlyConflicts(gitWorktree, worktreePath);
 
       if (resolution.resolved) {
         console.log(
           `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Auto-resolved ${resolution.files.length} append-only conflict(s)`,
         );
+        await assertNoConflictArtifactsInIndex(gitWorktree, resolution.files);
 
         // Continue the rebase after resolving conflicts
-        try {
-          await gitWorktree.raw(['rebase', '--continue']);
-        } catch (continueError) {
-          // May need multiple rounds of conflict resolution
-          // For simplicity, we'll try once more
-          const secondResolution = await autoResolveAppendOnlyConflicts(gitWorktree);
-          if (secondResolution.resolved) {
+        let continueAttempts = 0;
+        while (true) {
+          try {
             await gitWorktree.raw(['rebase', '--continue']);
-          } else {
-            // Still have non-auto-resolvable conflicts
-            throw continueError;
+            break;
+          } catch (continueError) {
+            continueAttempts += 1;
+            if (continueAttempts >= REBASE_CONFLICT_LIMITS.MAX_CONTINUE_ATTEMPTS) {
+              throw continueError;
+            }
+
+            const nextResolution = await autoResolveAppendOnlyConflicts(gitWorktree, worktreePath);
+            if (!nextResolution.resolved) {
+              // Still have non-auto-resolvable conflicts
+              throw continueError;
+            }
+
+            await assertNoConflictArtifactsInIndex(gitWorktree, nextResolution.files);
           }
         }
       } else {
