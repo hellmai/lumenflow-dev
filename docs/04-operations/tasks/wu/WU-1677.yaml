@@ -2,7 +2,7 @@ id: WU-1677
 title: wu:edit reads YAML from main instead of worktree for in_progress WUs
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-14
 code_paths:
@@ -47,3 +47,6 @@ acceptance:
   - 'Sequential wu:edit calls preserve prior edits (regression test: --replace-code-paths then
     --type)'
   - Existing behavior for ready/done WUs unchanged (reads from main via micro-worktree)
+locked: true
+completed_at: 2026-02-14T12:50:09.898Z
+completed: 2026-02-14
