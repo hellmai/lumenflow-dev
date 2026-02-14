@@ -24,6 +24,8 @@ export const WU_LINT_ERROR_TYPES = {
   ACCEPTANCE_CONFLICTS_INVARIANT: 'acceptance_conflicts_invariant',
   /** WU-1504: CLI command registration parity missing */
   REGISTRATION_PARITY_MISSING: 'registration_parity_missing',
+  /** WU-1676: Non-documentation WUs with code_paths must define tests.unit */
+  UNIT_TESTS_REQUIRED: 'unit_tests_required',
 };
 
 /**
@@ -267,6 +269,67 @@ const TERMINAL_STATUSES = new Set([
   WU_STATUS.SUPERSEDED,
 ]);
 
+function normalizeNonEmptyStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((item): item is string => typeof item === 'string')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+/**
+ * WU-1676: Validate that non-documentation/process WUs with code_paths provide tests.unit.
+ *
+ * Terminal WUs are skipped to avoid retroactive lint failures on historical specs.
+ */
+export function validateUnitTestsRequirement(wu: {
+  id: string;
+  type?: string;
+  status?: string;
+  code_paths?: string[];
+  tests?: { unit?: string[] };
+}): {
+  valid: boolean;
+  errors: Array<{ type: string; wuId: string; message: string; suggestion: string }>;
+} {
+  const { id, type, status, code_paths = [], tests } = wu;
+  const errors: Array<{ type: string; wuId: string; message: string; suggestion: string }> = [];
+
+  if (status && TERMINAL_STATUSES.has(status)) {
+    return { valid: true, errors };
+  }
+
+  if (type === 'documentation' || type === 'process') {
+    return { valid: true, errors };
+  }
+
+  const scopedCodePaths = normalizeNonEmptyStringArray(code_paths);
+  if (scopedCodePaths.length === 0) {
+    return { valid: true, errors };
+  }
+
+  const scopedUnitTests = normalizeNonEmptyStringArray(tests?.unit);
+  if (scopedUnitTests.length > 0) {
+    return { valid: true, errors };
+  }
+
+  errors.push({
+    type: WU_LINT_ERROR_TYPES.UNIT_TESTS_REQUIRED,
+    wuId: id,
+    message: `${id} must define tests.unit when code_paths are present for non-documentation work`,
+    suggestion:
+      'Add at least one tests.unit entry (or create as documentation/process if code tests are not required)',
+  });
+
+  return {
+    valid: false,
+    errors,
+  };
+}
+
 /**
  * WU-1504: Validate CLI command registration parity.
  *
@@ -372,7 +435,11 @@ export function lintWUSpec(wu, options: LintWUSpecOptions = {}) {
     allErrors.push(...invariantsResult.errors);
   }
 
-  // 4. WU-1504: Validate CLI command registration parity
+  // 4. WU-1676: Validate tests.unit requirement for non-documentation WUs
+  const unitTestsResult = validateUnitTestsRequirement(wu);
+  allErrors.push(...unitTestsResult.errors);
+
+  // 5. WU-1504: Validate CLI command registration parity
   const parityResult = validateRegistrationParity(wu);
   allErrors.push(...parityResult.errors);
 

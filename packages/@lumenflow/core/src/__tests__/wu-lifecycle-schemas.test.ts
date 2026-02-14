@@ -364,6 +364,15 @@ describe('WU Lifecycle Schemas (WU-1454)', () => {
       const result = wuPrepSchema.safeParse(input);
       expect(result.success).toBe(true);
     });
+
+    it('should accept optional full_tests', () => {
+      const input: WuPrepInput = {
+        id: 'WU-1234',
+        full_tests: true,
+      };
+      const result = wuPrepSchema.safeParse(input);
+      expect(result.success).toBe(true);
+    });
   });
 
   // =============================================================================

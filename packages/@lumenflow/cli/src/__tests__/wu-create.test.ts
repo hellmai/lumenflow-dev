@@ -80,7 +80,7 @@ describe('wu:create helpers (WU-1429)', () => {
     expect(wu.notes).toBe('Implementation notes for test');
   });
 
-  it('should allow creating a plan-first WU without explicit test flags when code_paths are non-code', () => {
+  it('should require test-paths-unit even when code_paths are non-code', () => {
     const validation = validateCreateSpec({
       id: 'WU-2000',
       lane: 'Framework: CLI',
@@ -94,32 +94,14 @@ describe('wu:create helpers (WU-1429)', () => {
         exposure: 'backend-only',
         // Non-code file path: manual-only tests are acceptable.
         codePaths: ['docs/README.md'],
-        // No testPathsManual/unit/e2e provided - should auto-default manual stub.
+        // No testPathsManual/unit/e2e provided.
         specRefs: ['lumenflow://plans/WU-2000-plan.md'],
         strict: false,
       },
     });
 
-    expect(validation.valid).toBe(true);
-
-    const wu = buildWUContent({
-      id: 'WU-2000',
-      lane: 'Framework: CLI',
-      title: 'Plan-only spec creation',
-      priority: 'P2',
-      type: 'feature',
-      created: '2026-02-05',
-      opts: {
-        description:
-          'Context: test context.\nProblem: test problem.\nSolution: test solution that exceeds minimum.',
-        acceptance: ['Acceptance criterion'],
-        exposure: 'backend-only',
-        codePaths: ['docs/README.md'],
-        specRefs: ['lumenflow://plans/WU-2000-plan.md'],
-      },
-    });
-
-    expect(wu.tests?.manual?.length).toBeGreaterThan(0);
+    expect(validation.valid).toBe(false);
+    expect(validation.errors.some((error) => error.includes('--test-paths-unit'))).toBe(true);
   });
 
   it('should warn when initiative has phases but no --phase is provided', () => {

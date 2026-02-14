@@ -111,6 +111,7 @@ export function validateCreateSpec({
     hasAnyItems(opts.testPathsUnit) ||
     hasAnyItems(opts.testPathsE2e);
   const hasManualTestPaths = hasManualTests({ manual: opts.testPathsManual });
+  const hasUnitTestPaths = hasAnyItems(opts.testPathsUnit);
 
   if (!isDocsOrProcessType(effectiveType)) {
     const codePaths = opts.codePaths ?? [];
@@ -130,6 +131,10 @@ export function validateCreateSpec({
 
     if (!hasManualTestPaths && !canAutoAddManualTests) {
       errors.push('--test-paths-manual is required for non-documentation WUs');
+    }
+
+    if (codePaths.length > 0 && !hasUnitTestPaths) {
+      errors.push('--test-paths-unit is required for non-documentation WUs with --code-paths');
     }
   }
 

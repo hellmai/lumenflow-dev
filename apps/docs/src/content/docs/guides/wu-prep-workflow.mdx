@@ -58,13 +58,16 @@ This ensures gates validate your actual changes, not stale main code.
 Prepares a WU for completion by running gates in the worktree.
 
 ```bash
-pnpm wu:prep --id WU-123 [--docs-only]
+pnpm wu:prep --id WU-123 [--docs-only] [--full-tests]
 ```
 
-| Flag          | Description                               |
-| ------------- | ----------------------------------------- |
-| `--id`        | WU ID (required)                          |
-| `--docs-only` | Run docs-only gates (format, spec-linter) |
+| Flag           | Description                                                                          |
+| -------------- | ------------------------------------------------------------------------------------ |
+| `--id`         | WU ID (required)                                                                     |
+| `--docs-only`  | Run docs-only gates (format, spec-linter)                                            |
+| `--full-tests` | Disable `tests.unit` scoping and run the default incremental/full test gate behavior |
+
+By default, `wu:prep` uses the current WU's `tests.unit` entries to scope the test gate.
 
 **Must be run from worktree** - errors if run from main.
 
