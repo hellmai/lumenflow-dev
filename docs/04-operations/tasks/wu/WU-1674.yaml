@@ -22,6 +22,14 @@ code_paths:
   - packages/@lumenflow/cli/src/public-manifest.ts
   - packages/@lumenflow/mcp/src/tools/orchestration-tools.ts
   - packages/@lumenflow/mcp/src/tools.ts
+  - packages/@lumenflow/core/src/delegation-registry-store.ts
+  - packages/@lumenflow/core/src/delegation-monitor.ts
+  - packages/@lumenflow/core/src/delegation-recovery.ts
+  - packages/@lumenflow/core/src/delegation-escalation.ts
+  - packages/@lumenflow/cli/src/orchestrate-monitor.ts
+  - packages/@lumenflow/cli/src/wu-claim-state.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/core/src/wu-spawn-helpers.ts
 tests:
   manual:
     - Simulate first-run with legacy state files and verify archive + rebootstrap complete without
@@ -31,6 +39,9 @@ tests:
     - packages/@lumenflow/core/src/__tests__/schema-parity.test.ts
     - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
     - packages/@lumenflow/mcp/src/__tests__/coordination-tools.test.ts
+    - packages/@lumenflow/core/src/__tests__/spawn-monitor.test.ts
+    - packages/@lumenflow/cli/__tests__/orchestrate-monitor.test.ts
+    - packages/@lumenflow/cli/__tests__/orchestrate-monitor-watch.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1674.done
