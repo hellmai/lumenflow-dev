@@ -4,7 +4,7 @@ _Last updated: 2026-02-14_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1674 — Atomic spawn-to-delegation runtime rename with migration guard](wu/WU-1674.yaml)
 
 ## Completed
 
