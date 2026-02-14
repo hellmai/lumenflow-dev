@@ -60,5 +60,6 @@ Mitigations:
 
 ## References
 
-- ID: INIT-028
-- Created: 2026-02-14
+- Linked initiative: `INIT-028`
+- External source plan: `~/.lumenflow/plans/PLAN-spawn-to-delegation-rename.md`
+- Related completed foundation work: `INIT-024`, `INIT-025`
