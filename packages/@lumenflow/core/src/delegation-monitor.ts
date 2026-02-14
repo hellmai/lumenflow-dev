@@ -1,36 +1,36 @@
 /**
- * Spawn Monitor Library (WU-1948, WU-1968)
+ * Delegation Monitor Library (WU-1948, WU-1968)
  *
- * Core monitoring logic for detecting stuck spawns and zombie locks.
+ * Core monitoring logic for detecting stuck delegations and zombie locks.
  * Used by orchestrate:monitor CLI command.
  *
  * Features:
- * - Analyzes spawn registry for status counts
- * - Detects pending spawns older than threshold (stuck)
+ * - Analyzes delegation registry for status counts
+ * - Detects pending delegations older than threshold (stuck)
  * - Checks lane locks for zombie PIDs
  * - Generates recovery suggestions
- * - WU-1968: Processes spawn_failure signals from memory bus
+ * - WU-1968: Processes delegation_failure signals from memory bus
  *
  * Library-First Note: This is project-specific monitoring code for
- * ExampleApp's spawn-registry.jsonl and lane-lock files. No external
+ * ExampleApp's delegation-registry.jsonl and lane-lock files. No external
  * library exists for this custom format.
  *
  * @see {@link packages/@lumenflow/cli/src/__tests__/orchestrate-monitor.test.ts} - Tests
- * @see {@link packages/@lumenflow/cli/src/lib/__tests__/spawn-monitor.test.ts} - Signal handler tests
+ * @see {@link packages/@lumenflow/cli/src/lib/__tests__/delegation-monitor.test.ts} - Signal handler tests
  * @see {@link packages/@lumenflow/cli/src/orchestrate-monitor.ts} - CLI entry point
- * @see {@link packages/@lumenflow/cli/src/lib/spawn-registry-store.ts} - Registry storage
+ * @see {@link packages/@lumenflow/cli/src/lib/delegation-registry-store.ts} - Registry storage
  */
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { SpawnStatus } from './spawn-registry-schema.js';
+import { DelegationStatus } from './delegation-registry-schema.js';
 import { isZombieLock, readLockMetadata } from './lane-lock.js';
-import { recoverStuckSpawn, RecoveryAction } from './spawn-recovery.js';
+import { recoverStuckDelegation, RecoveryAction } from './delegation-recovery.js';
 import {
-  escalateStuckSpawn,
-  SPAWN_FAILURE_SIGNAL_TYPE,
+  escalateStuckDelegation,
+  DELEGATION_FAILURE_SIGNAL_TYPE,
   SuggestedAction,
-} from './spawn-escalation.js';
+} from './delegation-escalation.js';
 import { LUMENFLOW_PATHS } from './wu-constants.js';
 
 // Optional import from @lumenflow/memory
@@ -48,28 +48,28 @@ try {
 }
 
 /**
- * Default threshold for stuck spawn detection (in minutes)
+ * Default threshold for stuck delegation detection (in minutes)
  */
 export const DEFAULT_THRESHOLD_MINUTES = 30;
 
 /**
- * Log prefix for spawn-monitor messages
+ * Log prefix for delegation-monitor messages
  */
-export const LOG_PREFIX = '[spawn-monitor]';
+export const LOG_PREFIX = '[delegation-monitor]';
 
 /**
  * @typedef {Object} SpawnAnalysis
- * @property {number} pending - Count of pending spawns
- * @property {number} completed - Count of completed spawns
- * @property {number} timeout - Count of timed out spawns
- * @property {number} crashed - Count of crashed spawns
- * @property {number} total - Total spawn count
+ * @property {number} pending - Count of pending delegations
+ * @property {number} completed - Count of completed delegations
+ * @property {number} timeout - Count of timed out delegations
+ * @property {number} crashed - Count of crashed delegations
+ * @property {number} total - Total delegation count
  */
 
 /**
  * @typedef {Object} StuckSpawnInfo
- * @property {import('./spawn-registry-schema.js').SpawnEvent} spawn - The stuck spawn event
- * @property {number} ageMinutes - Age of spawn in minutes
+ * @property {import('./delegation-registry-schema.js').DelegationEvent} delegation - The stuck delegation event
+ * @property {number} ageMinutes - Age of delegation in minutes
  * @property {string|null} lastCheckpoint - Last checkpoint timestamp (if available from memory layer)
  */
 
@@ -89,16 +89,16 @@ export const LOG_PREFIX = '[spawn-monitor]';
 
 /**
  * @typedef {Object} MonitorResult
- * @property {SpawnAnalysis} analysis - Spawn status counts
- * @property {StuckSpawnInfo[]} stuckSpawns - List of stuck spawns
+ * @property {SpawnAnalysis} analysis - Delegation status counts
+ * @property {StuckSpawnInfo[]} stuckDelegations - List of stuck delegations
  * @property {ZombieLockInfo[]} zombieLocks - List of zombie locks
  * @property {Suggestion[]} suggestions - Recovery suggestions
  */
 
 /**
  * @typedef {Object} RecoveryResultInfo
- * @property {string} spawnId - ID of the spawn that was processed
- * @property {string} targetWuId - Target WU ID for the spawn
+ * @property {string} delegationId - ID of the delegation that was processed
+ * @property {string} targetWuId - Target WU ID for the delegation
  * @property {string} action - Recovery action taken (from RecoveryAction)
  * @property {boolean} recovered - Whether auto-recovery was successful
  * @property {string} reason - Human-readable explanation
@@ -108,36 +108,36 @@ export const LOG_PREFIX = '[spawn-monitor]';
  */
 
 /**
- * Analyzes spawn events and returns status counts.
+ * Analyzes delegation events and returns status counts.
  *
- * @param {import('./spawn-registry-schema.js').SpawnEvent[]} spawns - Array of spawn events
+ * @param {import('./delegation-registry-schema.js').DelegationEvent[]} delegations - Array of delegation events
  * @returns {SpawnAnalysis} Status counts
  *
  * @example
- * const analysis = analyzeSpawns(spawns);
+ * const analysis = analyzeDelegations(delegations);
  * console.log(`Pending: ${analysis.pending}, Completed: ${analysis.completed}`);
  */
-export function analyzeSpawns(spawns) {
+export function analyzeDelegations(delegations) {
   const counts = {
     pending: 0,
     completed: 0,
     timeout: 0,
     crashed: 0,
-    total: spawns.length,
+    total: delegations.length,
   };
 
-  for (const spawn of spawns) {
-    switch (spawn.status) {
-      case SpawnStatus.PENDING:
+  for (const delegation of delegations) {
+    switch (delegation.status) {
+      case DelegationStatus.PENDING:
         counts.pending++;
         break;
-      case SpawnStatus.COMPLETED:
+      case DelegationStatus.COMPLETED:
         counts.completed++;
         break;
-      case SpawnStatus.TIMEOUT:
+      case DelegationStatus.TIMEOUT:
         counts.timeout++;
         break;
-      case SpawnStatus.CRASHED:
+      case DelegationStatus.CRASHED:
         counts.crashed++;
         break;
     }
@@ -147,38 +147,38 @@ export function analyzeSpawns(spawns) {
 }
 
 /**
- * Detects pending spawns that have been running longer than the threshold.
+ * Detects pending delegations that have been running longer than the threshold.
  *
- * @param {import('./spawn-registry-schema.js').SpawnEvent[]} spawns - Array of spawn events
+ * @param {import('./delegation-registry-schema.js').DelegationEvent[]} delegations - Array of delegation events
  * @param {number} [thresholdMinutes=DEFAULT_THRESHOLD_MINUTES] - Threshold in minutes
- * @returns {StuckSpawnInfo[]} Array of stuck spawn info
+ * @returns {StuckSpawnInfo[]} Array of stuck delegation info
  *
  * @example
- * const stuck = detectStuckSpawns(spawns, 30);
+ * const stuck = detectStuckDelegations(delegations, 30);
  * for (const info of stuck) {
- *   console.log(`${info.spawn.targetWuId} stuck for ${info.ageMinutes} minutes`);
+ *   console.log(`${info.delegation.targetWuId} stuck for ${info.ageMinutes} minutes`);
  * }
  */
-export function detectStuckSpawns(spawns, thresholdMinutes = DEFAULT_THRESHOLD_MINUTES) {
+export function detectStuckDelegations(delegations, thresholdMinutes = DEFAULT_THRESHOLD_MINUTES) {
   const now = Date.now();
   const thresholdMs = thresholdMinutes * 60 * 1000;
   const stuck = [];
 
-  for (const spawn of spawns) {
-    // Only check pending spawns
-    if (spawn.status !== SpawnStatus.PENDING) {
+  for (const delegation of delegations) {
+    // Only check pending delegations
+    if (delegation.status !== DelegationStatus.PENDING) {
       continue;
     }
 
-    const spawnedAt = new Date(spawn.spawnedAt).getTime();
-    const ageMs = now - spawnedAt;
+    const delegatedAt = new Date(delegation.delegatedAt).getTime();
+    const ageMs = now - delegatedAt;
     const ageMinutes = Math.floor(ageMs / (60 * 1000));
 
     if (ageMs > thresholdMs) {
       stuck.push({
-        spawn,
+        delegation,
         ageMinutes,
-        lastCheckpoint: spawn.lastCheckpoint ?? null,
+        lastCheckpoint: delegation.lastCheckpoint ?? null,
       });
     }
   }
@@ -248,29 +248,29 @@ export async function checkZombieLocks(options: SpawnMonitorBaseDirOptions = {})
 }
 
 /**
- * Generates recovery suggestions for stuck spawns and zombie locks.
+ * Generates recovery suggestions for stuck delegations and zombie locks.
  *
- * @param {StuckSpawnInfo[]} stuckSpawns - Array of stuck spawn info
+ * @param {StuckSpawnInfo[]} stuckDelegations - Array of stuck delegation info
  * @param {ZombieLockInfo[]} zombieLocks - Array of zombie lock info
  * @returns {Suggestion[]} Array of suggestions
  *
  * @example
- * const suggestions = generateSuggestions(stuckSpawns, zombieLocks);
+ * const suggestions = generateSuggestions(stuckDelegations, zombieLocks);
  * for (const s of suggestions) {
  *   console.log(`${s.reason}\n  ${s.command}`);
  * }
  */
-export function generateSuggestions(stuckSpawns, zombieLocks) {
+export function generateSuggestions(stuckDelegations, zombieLocks) {
   const suggestions = [];
 
-  // Suggestions for stuck spawns
-  for (const info of stuckSpawns) {
-    const wuId = info.spawn.targetWuId;
+  // Suggestions for stuck delegations
+  for (const info of stuckDelegations) {
+    const wuId = info.delegation.targetWuId;
     const age = info.ageMinutes;
 
     suggestions.push({
-      command: `pnpm wu:block --id ${wuId} --reason "Spawn stuck for ${age} minutes"`,
-      reason: `Spawn for ${wuId} has been pending for ${age} minutes (threshold exceeded)`,
+      command: `pnpm wu:block --id ${wuId} --reason "Delegation stuck for ${age} minutes"`,
+      reason: `Delegation for ${wuId} has been pending for ${age} minutes (threshold exceeded)`,
     });
   }
 
@@ -296,11 +296,11 @@ export function generateSuggestions(stuckSpawns, zombieLocks) {
  * console.log(output);
  */
 export function formatMonitorOutput(result) {
-  const { analysis, stuckSpawns, zombieLocks, suggestions } = result;
+  const { analysis, stuckDelegations, zombieLocks, suggestions } = result;
   const lines = [];
 
   // Header
-  lines.push('=== Spawn Status Summary ===');
+  lines.push('=== Delegation Status Summary ===');
   lines.push('');
 
   // Status counts table
@@ -312,16 +312,16 @@ export function formatMonitorOutput(result) {
   lines.push(`  Total:     ${analysis.total}`);
   lines.push('');
 
-  // Stuck spawns section
-  if (stuckSpawns.length > 0) {
-    lines.push('=== Stuck Spawns ===');
+  // Stuck delegations section
+  if (stuckDelegations.length > 0) {
+    lines.push('=== Stuck Delegations ===');
     lines.push('');
 
-    for (const info of stuckSpawns) {
-      lines.push(`  ${info.spawn.targetWuId}`);
-      lines.push(`    Lane: ${info.spawn.lane}`);
+    for (const info of stuckDelegations) {
+      lines.push(`  ${info.delegation.targetWuId}`);
+      lines.push(`    Lane: ${info.delegation.lane}`);
       lines.push(`    Age: ${info.ageMinutes} minutes`);
-      lines.push(`    Parent: ${info.spawn.parentWuId}`);
+      lines.push(`    Parent: ${info.delegation.parentWuId}`);
       if (info.lastCheckpoint) {
         lines.push(`    Last Checkpoint: ${info.lastCheckpoint}`);
       }
@@ -356,25 +356,25 @@ export function formatMonitorOutput(result) {
   }
 
   // Health status
-  if (stuckSpawns.length === 0 && zombieLocks.length === 0) {
-    lines.push('No issues detected. All spawns healthy.');
+  if (stuckDelegations.length === 0 && zombieLocks.length === 0) {
+    lines.push('No issues detected. All delegations healthy.');
   }
 
   return lines.join('\n');
 }
 
 /**
- * Runs recovery for stuck spawns by calling recoverStuckSpawn for each.
- * When a spawn is escalated (action=ESCALATED_STUCK), chains to escalateStuckSpawn.
+ * Runs recovery for stuck delegations by calling recoverStuckDelegation for each.
+ * When a delegation is escalated (action=ESCALATED_STUCK), chains to escalateStuckDelegation.
  *
- * @param {StuckSpawnInfo[]} stuckSpawns - Array of stuck spawn info
+ * @param {StuckSpawnInfo[]} stuckDelegations - Array of stuck delegation info
  * @param {RunRecoveryOptions} [options] - Options
  * @returns {Promise<RecoveryResultInfo[]>} Array of recovery results
  *
  * @example
- * const results = await runRecovery(stuckSpawns, { baseDir: '/path/to/project' });
+ * const results = await runRecovery(stuckDelegations, { baseDir: '/path/to/project' });
  * for (const result of results) {
- *   console.log(`${result.spawnId}: ${result.action}`);
+ *   console.log(`${result.delegationId}: ${result.action}`);
  * }
  */
 interface RunRecoveryOptions extends SpawnMonitorBaseDirOptions {
@@ -382,23 +382,23 @@ interface RunRecoveryOptions extends SpawnMonitorBaseDirOptions {
   dryRun?: boolean;
 }
 
-export async function runRecovery(stuckSpawns, options: RunRecoveryOptions = {}) {
+export async function runRecovery(stuckDelegations, options: RunRecoveryOptions = {}) {
   const { baseDir = process.cwd(), dryRun = false } = options;
   const results = [];
 
-  for (const { spawn } of stuckSpawns) {
-    const recoveryResult = await recoverStuckSpawn(spawn.id, { baseDir });
+  for (const { delegation } of stuckDelegations) {
+    const recoveryResult = await recoverStuckDelegation(delegation.id, { baseDir });
 
     const resultInfo: {
-      spawnId: string;
+      delegationId: string;
       targetWuId: string;
       action: string;
       recovered: boolean;
       reason: string;
       escalation?: { bugWuId: string; title: string };
     } = {
-      spawnId: spawn.id,
-      targetWuId: spawn.targetWuId,
+      delegationId: delegation.id,
+      targetWuId: delegation.targetWuId,
       action: recoveryResult.action,
       recovered: recoveryResult.recovered,
       reason: recoveryResult.reason,
@@ -407,17 +407,17 @@ export async function runRecovery(stuckSpawns, options: RunRecoveryOptions = {})
     // Chain to escalation if action is ESCALATED_STUCK
     if (recoveryResult.action === RecoveryAction.ESCALATED_STUCK) {
       try {
-        const escalationResult = await escalateStuckSpawn(spawn.id, { baseDir, dryRun });
-        // escalationResult contains signalId, signal payload, and spawnStatus
+        const escalationResult = await escalateStuckDelegation(delegation.id, { baseDir, dryRun });
+        // escalationResult contains signalId, signal payload, and delegationStatus
         // The signal payload has target_wu_id which represents the stuck WU
         resultInfo.escalation = {
           bugWuId: escalationResult.signalId,
-          title: `Escalation signal for ${spawn.targetWuId}`,
+          title: `Escalation signal for ${delegation.targetWuId}`,
         };
       } catch (error) {
         // Escalation failed, but we still want to report the recovery result
         const message = error instanceof Error ? error.message : String(error);
-        console.log(`${LOG_PREFIX} Escalation failed for ${spawn.id}: ${message}`);
+        console.log(`${LOG_PREFIX} Escalation failed for ${delegation.id}: ${message}`);
       }
     }
 
@@ -465,7 +465,7 @@ export function formatRecoveryResults(results) {
 
   // Individual results
   for (const result of results) {
-    lines.push(`  ${result.targetWuId} (${result.spawnId})`);
+    lines.push(`  ${result.targetWuId} (${result.delegationId})`);
     lines.push(`    Action: ${result.action}`);
     lines.push(`    Status: ${result.recovered ? 'Recovered' : 'Not auto-recovered'}`);
     lines.push(`    Reason: ${result.reason}`);
@@ -490,16 +490,16 @@ export function formatRecoveryResults(results) {
 }
 
 // ============================================================================
-// WU-1968: Spawn Failure Signal Handler
+// WU-1968: Delegation Failure Signal Handler
 // ============================================================================
 
 /**
  * Log prefix for signal handler messages
  */
-export const SIGNAL_HANDLER_LOG_PREFIX = '[spawn-signal-handler]';
+export const SIGNAL_HANDLER_LOG_PREFIX = '[delegation-signal-handler]';
 
 /**
- * Response actions for spawn failure signals
+ * Response actions for delegation failure signals
  */
 export const SignalResponseAction = Object.freeze({
   RETRY: 'retry',
@@ -511,7 +511,7 @@ export const SignalResponseAction = Object.freeze({
 /**
  * @typedef {Object} SignalResponse
  * @property {string} signalId - Signal ID that was processed
- * @property {string} spawnId - Spawn ID from the signal
+ * @property {string} delegationId - Delegation ID from the signal
  * @property {string} targetWuId - Target WU ID from the signal
  * @property {string} action - Response action taken
  * @property {string} reason - Human-readable reason for the action
@@ -525,27 +525,27 @@ export const SignalResponseAction = Object.freeze({
 /**
  * @typedef {Object} SignalProcessingResult
  * @property {SignalResponse[]} processed - Array of processed signal responses
- * @property {number} signalCount - Total number of spawn_failure signals found
+ * @property {number} signalCount - Total number of delegation_failure signals found
  * @property {number} retryCount - Number of retry actions
  * @property {number} blockCount - Number of block actions
  * @property {number} bugWuCount - Number of Bug WU creations
  */
 
 /**
- * Parses a signal message to extract spawn_failure payload.
+ * Parses a signal message to extract delegation_failure payload.
  *
  * @param {string} message - Signal message (may be JSON or plain text)
- * @returns {Object|null} Parsed payload or null if not a spawn_failure signal
+ * @returns {Object|null} Parsed payload or null if not a delegation_failure signal
  */
-function parseSpawnFailurePayload(message) {
+function parseDelegationFailurePayload(message) {
   try {
     const parsed = JSON.parse(message);
-    if (parsed.type === SPAWN_FAILURE_SIGNAL_TYPE) {
+    if (parsed.type === DELEGATION_FAILURE_SIGNAL_TYPE) {
       return parsed;
     }
     return null;
   } catch {
-    // Not JSON or invalid JSON - not a spawn_failure signal
+    // Not JSON or invalid JSON - not a delegation_failure signal
     return null;
   }
 }
@@ -558,7 +558,7 @@ function parseSpawnFailurePayload(message) {
  * - Second failure (severity=error, suggested_action=block): BLOCK
  * - Third+ failure (severity=critical, suggested_action=human_escalate): BUG_WU
  *
- * @param {Object} payload - Spawn failure signal payload
+ * @param {Object} payload - Delegation failure signal payload
  * @returns {{ action: string, reason: string }}
  */
 function determineResponseAction(payload) {
@@ -567,7 +567,7 @@ function determineResponseAction(payload) {
   if (suggested_action === SuggestedAction.RETRY) {
     return {
       action: SignalResponseAction.RETRY,
-      reason: `First failure (attempt ${recovery_attempts}): suggest retry spawn`,
+      reason: `First failure (attempt ${recovery_attempts}): suggest retry delegation`,
     };
   }
 
@@ -602,26 +602,26 @@ function determineResponseAction(payload) {
 /**
  * Generates a Bug WU spec for critical failures.
  *
- * @param {Object} payload - Spawn failure signal payload
+ * @param {Object} payload - Delegation failure signal payload
  * @returns {Object} Bug WU specification
  */
 function generateBugWuSpec(payload) {
-  const { spawn_id, target_wu_id, lane, recovery_attempts, message, last_checkpoint } = payload;
+  const { delegation_id, target_wu_id, lane, recovery_attempts, message, last_checkpoint } = payload;
 
   const checkpointInfo = last_checkpoint
     ? `Last checkpoint: ${last_checkpoint}`
     : 'No checkpoint recorded';
 
   return {
-    title: `Bug: Stuck spawn for ${target_wu_id} (${spawn_id}) after ${recovery_attempts} attempts`,
+    title: `Bug: Stuck delegation for ${target_wu_id} (${delegation_id}) after ${recovery_attempts} attempts`,
     lane,
     description: [
-      `Context: Spawn ${spawn_id} for WU ${target_wu_id} has failed ${recovery_attempts} times.`,
+      `Context: Delegation ${delegation_id} for WU ${target_wu_id} has failed ${recovery_attempts} times.`,
       ``,
       `Problem: ${message}`,
       `${checkpointInfo}`,
       ``,
-      `Solution: Investigate root cause of repeated spawn failures.`,
+      `Solution: Investigate root cause of repeated delegation failures.`,
       `Consider: prompt issues, tool availability, WU spec clarity, or external dependencies.`,
     ].join('\n'),
     type: 'bug',
@@ -632,18 +632,18 @@ function generateBugWuSpec(payload) {
 /**
  * Generates a block reason for second failure.
  *
- * @param {Object} payload - Spawn failure signal payload
+ * @param {Object} payload - Delegation failure signal payload
  * @returns {string} Block reason
  */
 function generateBlockReason(payload) {
-  const { spawn_id, target_wu_id, recovery_attempts, message } = payload;
-  return `Spawn ${spawn_id} for ${target_wu_id} failed ${recovery_attempts} times: ${message}`;
+  const { delegation_id, target_wu_id, recovery_attempts, message } = payload;
+  return `Delegation ${delegation_id} for ${target_wu_id} failed ${recovery_attempts} times: ${message}`;
 }
 
 /**
- * Processes spawn_failure signals from the memory bus.
+ * Processes delegation_failure signals from the memory bus.
  *
- * WU-1968: Orchestrator signal handler for spawn_failure signals.
+ * WU-1968: Orchestrator signal handler for delegation_failure signals.
  *
  * Response logic:
  * - First failure (suggested_action=retry): logs warning, suggests retry
@@ -654,13 +654,13 @@ function generateBlockReason(payload) {
  * @returns {Promise<SignalProcessingResult>} Processing result
  *
  * @example
- * const result = await processSpawnFailureSignals({ baseDir: '/path/to/project' });
+ * const result = await processDelegationFailureSignals({ baseDir: '/path/to/project' });
  * console.log(`Processed ${result.signalCount} signals`);
  * for (const response of result.processed) {
  *   console.log(`${response.targetWuId}: ${response.action}`);
  * }
  */
-export async function processSpawnFailureSignals(options: RunRecoveryOptions = {}) {
+export async function processDelegationFailureSignals(options: RunRecoveryOptions = {}) {
   const { baseDir = process.cwd(), dryRun = false } = options;
 
   // Check if signal module is available
@@ -677,12 +677,12 @@ export async function processSpawnFailureSignals(options: RunRecoveryOptions = {
   // Load unread signals
   const signals = await loadSignals(baseDir, { unreadOnly: true });
 
-  // Filter for spawn_failure signals
-  const spawnFailureSignals = [];
+  // Filter for delegation_failure signals
+  const delegationFailureSignals = [];
   for (const signal of signals) {
-    const payload = parseSpawnFailurePayload(signal.message);
+    const payload = parseDelegationFailurePayload(signal.message);
     if (payload) {
-      spawnFailureSignals.push({ signal, payload });
+      delegationFailureSignals.push({ signal, payload });
     }
   }
 
@@ -691,12 +691,12 @@ export async function processSpawnFailureSignals(options: RunRecoveryOptions = {
   let blockCount = 0;
   let bugWuCount = 0;
 
-  for (const { signal, payload } of spawnFailureSignals) {
+  for (const { signal, payload } of delegationFailureSignals) {
     const { action, reason } = determineResponseAction(payload);
 
     const response: {
       signalId: string;
-      spawnId: string;
+      delegationId: string;
       targetWuId: string;
       action: string;
       reason: string;
@@ -707,7 +707,7 @@ export async function processSpawnFailureSignals(options: RunRecoveryOptions = {
       bugWuSpec?: { title: string; description: string };
     } = {
       signalId: signal.id,
-      spawnId: payload.spawn_id,
+      delegationId: payload.delegation_id,
       targetWuId: payload.target_wu_id,
       action,
       reason,
@@ -722,7 +722,7 @@ export async function processSpawnFailureSignals(options: RunRecoveryOptions = {
         retryCount++;
         // Log warning only - no state change
         console.log(`${SIGNAL_HANDLER_LOG_PREFIX} [WARNING] ${reason}`);
-        console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Spawn: ${payload.spawn_id}`);
+        console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Delegation: ${payload.delegation_id}`);
         console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Target: ${payload.target_wu_id}`);
         console.log(
           `${SIGNAL_HANDLER_LOG_PREFIX}   Suggestion: Re-generate with pnpm wu:brief --id ${payload.target_wu_id} --client claude-code`,
@@ -733,7 +733,7 @@ export async function processSpawnFailureSignals(options: RunRecoveryOptions = {
         blockCount++;
         response.blockReason = generateBlockReason(payload);
         console.log(`${SIGNAL_HANDLER_LOG_PREFIX} [BLOCK] ${reason}`);
-        console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Spawn: ${payload.spawn_id}`);
+        console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Delegation: ${payload.delegation_id}`);
         console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Target: ${payload.target_wu_id}`);
         console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Reason: ${response.blockReason}`);
 
@@ -748,7 +748,7 @@ export async function processSpawnFailureSignals(options: RunRecoveryOptions = {
         bugWuCount++;
         response.bugWuSpec = generateBugWuSpec(payload);
         console.log(`${SIGNAL_HANDLER_LOG_PREFIX} [BUG WU] ${reason}`);
-        console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Spawn: ${payload.spawn_id}`);
+        console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Delegation: ${payload.delegation_id}`);
         console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Target: ${payload.target_wu_id}`);
         console.log(`${SIGNAL_HANDLER_LOG_PREFIX}   Bug WU title: ${response.bugWuSpec.title}`);
 
@@ -768,14 +768,14 @@ export async function processSpawnFailureSignals(options: RunRecoveryOptions = {
   }
 
   // Mark processed signals as read (unless dry-run)
-  if (!dryRun && spawnFailureSignals.length > 0 && markSignalsAsRead) {
-    const signalIds = spawnFailureSignals.map((s) => s.signal.id);
+  if (!dryRun && delegationFailureSignals.length > 0 && markSignalsAsRead) {
+    const signalIds = delegationFailureSignals.map((s) => s.signal.id);
     await markSignalsAsRead(baseDir, signalIds);
   }
 
   return {
     processed,
-    signalCount: spawnFailureSignals.length,
+    signalCount: delegationFailureSignals.length,
     retryCount,
     blockCount,
     bugWuCount,
@@ -797,15 +797,15 @@ export function formatSignalHandlerOutput(result) {
   const lines = [];
 
   if (signalCount === 0) {
-    lines.push(`${SIGNAL_HANDLER_LOG_PREFIX} No spawn_failure signals in inbox.`);
+    lines.push(`${SIGNAL_HANDLER_LOG_PREFIX} No delegation_failure signals in inbox.`);
     return lines.join('\n');
   }
 
-  lines.push(`${SIGNAL_HANDLER_LOG_PREFIX} Processed ${signalCount} spawn_failure signal(s):`);
+  lines.push(`${SIGNAL_HANDLER_LOG_PREFIX} Processed ${signalCount} delegation_failure signal(s):`);
   lines.push('');
 
   for (const response of processed) {
-    lines.push(`  ${response.targetWuId} (${response.spawnId})`);
+    lines.push(`  ${response.targetWuId} (${response.delegationId})`);
     lines.push(`    Action: ${response.action}`);
     lines.push(`    Severity: ${response.severity}`);
     lines.push(`    Reason: ${response.reason}`);

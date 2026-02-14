@@ -3,18 +3,18 @@
 /**
  * Orchestrate Monitor CLI (WU-1241)
  *
- * Monitors spawned agent progress and spawn health.
- * Wires CLI to spawn-monitor APIs in @lumenflow/core.
+ * Monitors delegated agent progress and delegation health.
+ * Wires CLI to delegation-monitor APIs in @lumenflow/core.
  * WU-1604: Registry entries can come from explicit delegation intent.
  *
  * Features:
- * - Stuck detection: identifies pending spawns older than threshold
+ * - Stuck detection: identifies pending delegations older than threshold
  * - Zombie lock detection: identifies abandoned WU locks (dead PIDs)
- * - Recovery actions: signal agent, restart spawn, escalate to human
- * - Status reporting: active spawns, stuck spawns, zombie locks, suggestions
+ * - Recovery actions: signal agent, restart delegation, escalate to human
+ * - Status reporting: active delegations, stuck delegations, zombie locks, suggestions
  *
  * Usage:
- *   pnpm orchestrate:monitor                    # Show spawn status
+ *   pnpm orchestrate:monitor                    # Show delegation status
  *   pnpm orchestrate:monitor --threshold 15    # Custom threshold (15 min)
  *   pnpm orchestrate:monitor --recover          # Run recovery actions
  *   pnpm orchestrate:monitor --recover --dry-run # Show what would be done
@@ -27,15 +27,15 @@ import { join } from 'node:path';
 import {
   EXIT_CODES,
   LUMENFLOW_PATHS,
-  SpawnRegistryStore,
-  analyzeSpawns,
-  detectStuckSpawns,
+  DelegationRegistryStore,
+  analyzeDelegations,
+  detectStuckDelegations,
   checkZombieLocks,
   generateSuggestions,
   formatMonitorOutput,
   formatRecoveryResults,
   runRecovery,
-  processSpawnFailureSignals,
+  processDelegationFailureSignals,
   formatSignalHandlerOutput,
   DEFAULT_THRESHOLD_MINUTES,
   calculateBackoff,
@@ -86,7 +86,7 @@ export interface MonitorOptions {
  * Monitor result containing analysis data
  */
 export interface MonitorResult {
-  /** Spawn status counts */
+  /** Delegation status counts */
   analysis: {
     pending: number;
     completed: number;
@@ -94,9 +94,9 @@ export interface MonitorResult {
     crashed: number;
     total: number;
   };
-  /** Spawns detected as stuck */
-  stuckSpawns: Array<{
-    spawn: { id: string; targetWuId: string; lane: string; parentWuId: string };
+  /** Delegations detected as stuck */
+  stuckDelegations: Array<{
+    delegation: { id: string; targetWuId: string; lane: string; parentWuId: string };
     ageMinutes: number;
     lastCheckpoint: string | null;
   }>;
@@ -114,7 +114,7 @@ export interface MonitorResult {
   }>;
   /** Recovery results (if recover=true) */
   recoveryResults?: Array<{
-    spawnId: string;
+    delegationId: string;
     targetWuId: string;
     action: string;
     recovered: boolean;
@@ -126,7 +126,7 @@ export interface MonitorResult {
 }
 
 /**
- * Runs the spawn monitor.
+ * Runs the delegation monitor.
  *
  * @param options - Monitor options
  * @returns MonitorResult with analysis data
@@ -139,28 +139,28 @@ export async function runMonitor(options: MonitorOptions = {}): Promise<MonitorR
     dryRun = false,
   } = options;
 
-  // Load spawn registry
+  // Load delegation registry
   // WU-1278: Use full LUMENFLOW_PATHS.STATE_DIR without stripping .lumenflow/ prefix
   const stateDir = join(baseDir, LUMENFLOW_PATHS.STATE_DIR);
-  const store = new SpawnRegistryStore(stateDir);
+  const store = new DelegationRegistryStore(stateDir);
 
-  let spawns: ReturnType<typeof store.getAllSpawns> = [];
+  let delegations: ReturnType<typeof store.getAllDelegations> = [];
   try {
     await store.load();
-    spawns = store.getAllSpawns();
+    delegations = store.getAllDelegations();
   } catch {
-    // Registry doesn't exist or is invalid - continue with empty spawns
+    // Registry doesn't exist or is invalid - continue with empty delegations
   }
 
   // Run core analysis
-  const analysis = analyzeSpawns(spawns);
-  const stuckSpawns = detectStuckSpawns(spawns, thresholdMinutes);
+  const analysis = analyzeDelegations(delegations);
+  const stuckDelegations = detectStuckDelegations(delegations, thresholdMinutes);
   const zombieLocks = await checkZombieLocks({ baseDir });
-  const suggestions = generateSuggestions(stuckSpawns, zombieLocks);
+  const suggestions = generateSuggestions(stuckDelegations, zombieLocks);
 
   const result: MonitorResult = {
     analysis,
-    stuckSpawns,
+    stuckDelegations,
     zombieLocks,
     suggestions,
     dryRun,
@@ -168,7 +168,7 @@ export async function runMonitor(options: MonitorOptions = {}): Promise<MonitorR
 
   // Run recovery if requested
   if (recover) {
-    const recoveryResults = await runRecovery(stuckSpawns, { baseDir, dryRun });
+    const recoveryResults = await runRecovery(stuckDelegations, { baseDir, dryRun });
     result.recoveryResults = recoveryResults;
   }
 
@@ -301,9 +301,9 @@ async function displaySignals(opts: { since: string; wu?: string }): Promise<voi
 }
 
 /**
- * Run main spawn monitoring mode
+ * Run main delegation monitoring mode
  */
-async function runSpawnMonitoring(opts: {
+async function runDelegationMonitoring(opts: {
   threshold: string;
   recover: boolean;
   dryRun: boolean;
@@ -316,7 +316,7 @@ async function runSpawnMonitoring(opts: {
     process.exit(EXIT_CODES.FAILURE);
   }
 
-  console.log(chalk.cyan(`${LOG_PREFIX} Analyzing spawn health...`));
+  console.log(chalk.cyan(`${LOG_PREFIX} Analyzing delegation health...`));
   console.log(chalk.gray(`  Threshold: ${thresholdMinutes} minutes`));
   console.log(chalk.gray(`  Recovery: ${opts.recover ? 'enabled' : 'disabled'}`));
   console.log(chalk.gray(`  Dry-run: ${opts.dryRun ? 'yes' : 'no'}`));
@@ -333,12 +333,12 @@ async function runSpawnMonitoring(opts: {
 
   if (opts.recover) {
     console.log('');
-    console.log(chalk.cyan(`${LOG_PREFIX} Processing spawn failure signals...`));
-    const signalResult = await processSpawnFailureSignals({ baseDir, dryRun: opts.dryRun });
+    console.log(chalk.cyan(`${LOG_PREFIX} Processing delegation failure signals...`));
+    const signalResult = await processDelegationFailureSignals({ baseDir, dryRun: opts.dryRun });
     console.log(formatSignalHandlerOutput(signalResult));
   }
 
-  if (result.stuckSpawns.length > 0 || result.zombieLocks.length > 0) {
+  if (result.stuckDelegations.length > 0 || result.zombieLocks.length > 0) {
     process.exit(EXIT_CODES.ERROR);
   }
 }
@@ -390,7 +390,7 @@ export function parseWatchOptions(opts: { interval?: string }): WatchModeOptions
  * Options for creating a watch mode runner
  */
 export interface CreateWatchModeRunnerOptions {
-  /** Function to check spawn health */
+  /** Function to check delegation health */
   checkFn: () => Promise<MonitorResult>;
   /** Patrol interval in milliseconds */
   intervalMs: number;
@@ -399,7 +399,7 @@ export interface CreateWatchModeRunnerOptions {
 }
 
 /**
- * Watch mode runner for continuous spawn monitoring
+ * Watch mode runner for continuous delegation monitoring
  */
 export interface WatchModeRunner {
   /** Start the patrol loop */
@@ -435,26 +435,26 @@ export function formatWatchCycleOutput(
   lines.push('');
 
   // Quick summary
-  const { analysis, stuckSpawns, zombieLocks } = result;
+  const { analysis, stuckDelegations, zombieLocks } = result;
   const statusLine = [
     `Pending: ${analysis.pending}`,
     `Completed: ${analysis.completed}`,
-    `Stuck: ${stuckSpawns.length}`,
+    `Stuck: ${stuckDelegations.length}`,
     `Zombies: ${zombieLocks.length}`,
   ].join(' | ');
 
-  if (stuckSpawns.length === 0 && zombieLocks.length === 0) {
+  if (stuckDelegations.length === 0 && zombieLocks.length === 0) {
     lines.push(chalk.green(`  ${statusLine}`));
-    lines.push(chalk.green('  All spawns healthy.'));
+    lines.push(chalk.green('  All delegations healthy.'));
   } else {
     lines.push(chalk.yellow(`  ${statusLine}`));
 
-    // Show stuck spawns
-    if (stuckSpawns.length > 0) {
+    // Show stuck delegations
+    if (stuckDelegations.length > 0) {
       lines.push('');
-      lines.push(chalk.yellow('  Stuck spawns:'));
-      for (const info of stuckSpawns) {
-        lines.push(chalk.yellow(`    - ${info.spawn.targetWuId} (${info.ageMinutes}min)`));
+      lines.push(chalk.yellow('  Stuck delegations:'));
+      for (const info of stuckDelegations) {
+        lines.push(chalk.yellow(`    - ${info.delegation.targetWuId} (${info.ageMinutes}min)`));
       }
     }
 
@@ -473,7 +473,7 @@ export function formatWatchCycleOutput(
 }
 
 /**
- * Creates a watch mode runner for continuous spawn monitoring.
+ * Creates a watch mode runner for continuous delegation monitoring.
  *
  * @param options - Configuration options
  * @returns WatchModeRunner instance
@@ -626,13 +626,13 @@ async function runWatchMode(opts: {
 // CLI program
 const program = new Command()
   .name('orchestrate:monitor')
-  .description('Monitor spawned agent progress and spawn health (WU-1241, WU-1242)')
+  .description('Monitor delegated agent progress and delegation health (WU-1241, WU-1242)')
   .option('--threshold <minutes>', 'Stuck detection threshold in minutes (default: 30)', '30')
-  .option('--recover', 'Run recovery actions for stuck spawns', false)
+  .option('--recover', 'Run recovery actions for stuck delegations', false)
   .option('--dry-run', 'Show what would be done without taking action', false)
   .option('--since <time>', 'Show signals since (e.g., 30m, 1h)', '30m')
   .option('--wu <id>', 'Filter by WU ID')
-  .option('--signals-only', 'Only show signals (skip spawn analysis)', false)
+  .option('--signals-only', 'Only show signals (skip delegation analysis)', false)
   .option('--watch', 'Continuous patrol mode (WU-1242)', false)
   .option('--interval <time>', 'Patrol interval for watch mode (e.g., 5m, 10m, 1h)', '5m')
   .action(async (opts) => {
@@ -645,7 +645,7 @@ const program = new Command()
         await runWatchMode(opts);
         return;
       }
-      await runSpawnMonitoring(opts);
+      await runDelegationMonitoring(opts);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       console.error(chalk.red(`${LOG_PREFIX} Error: ${message}`));

@@ -40,7 +40,7 @@ describe('orchestrate:monitor --watch (WU-1242)', () => {
 
       const mockCheckFn = vi.fn().mockResolvedValue({
         analysis: { pending: 1, completed: 2, timeout: 0, crashed: 0, total: 3 },
-        stuckSpawns: [],
+        stuckDelegations: [],
         zombieLocks: [],
         suggestions: [],
       });
@@ -121,9 +121,9 @@ describe('orchestrate:monitor --watch (WU-1242)', () => {
 
       const mockCheckFn = vi.fn().mockResolvedValue({
         analysis: { pending: 2, completed: 5, timeout: 1, crashed: 0, total: 8 },
-        stuckSpawns: [
+        stuckDelegations: [
           {
-            spawn: { id: 'spawn-1', targetWuId: 'WU-1001', lane: 'Framework: CLI' },
+            delegation: { id: 'dlg-0001', targetWuId: 'WU-1001', lane: 'Framework: CLI' },
             ageMinutes: 45,
             lastCheckpoint: null,
           },
@@ -159,7 +159,7 @@ describe('orchestrate:monitor --watch (WU-1242)', () => {
 
       const mockCheckFn = vi.fn().mockResolvedValue({
         analysis: { pending: 0, completed: 0, timeout: 0, crashed: 0, total: 0 },
-        stuckSpawns: [],
+        stuckDelegations: [],
         zombieLocks: [],
         suggestions: [],
       });
@@ -194,7 +194,7 @@ describe('orchestrate:monitor --watch (WU-1242)', () => {
 
       const mockCheckFn = vi.fn().mockResolvedValue({
         analysis: { pending: 0, completed: 0, timeout: 0, crashed: 0, total: 0 },
-        stuckSpawns: [],
+        stuckDelegations: [],
         zombieLocks: [],
         suggestions: [],
       });
@@ -278,7 +278,7 @@ describe('orchestrate:monitor --watch (WU-1242)', () => {
         .mockRejectedValueOnce(new Error('fail 2'))
         .mockResolvedValueOnce({
           analysis: { pending: 0, completed: 0, timeout: 0, crashed: 0, total: 0 },
-          stuckSpawns: [],
+          stuckDelegations: [],
           zombieLocks: [],
           suggestions: [],
         });
@@ -315,7 +315,7 @@ describe('orchestrate:monitor --watch (WU-1242)', () => {
 
       const mockCheckFn = vi.fn().mockResolvedValue({
         analysis: { pending: 0, completed: 0, timeout: 0, crashed: 0, total: 0 },
-        stuckSpawns: [],
+        stuckDelegations: [],
         zombieLocks: [],
         suggestions: [],
       });
@@ -345,7 +345,7 @@ describe('orchestrate:monitor --watch (WU-1242)', () => {
       const runner = createWatchModeRunner({
         checkFn: vi.fn().mockResolvedValue({
           analysis: { pending: 0, completed: 0, timeout: 0, crashed: 0, total: 0 },
-          stuckSpawns: [],
+          stuckDelegations: [],
           zombieLocks: [],
           suggestions: [],
         }),

@@ -12,7 +12,7 @@
  */
 
 import { Command } from 'commander';
-import { SpawnRegistryStore } from './spawn-registry-store.js';
+import { DelegationRegistryStore } from './delegation-registry-store.js';
 import { ProcessExitError } from './error-handler.js';
 import { EXIT_CODES, LUMENFLOW_PATHS } from './wu-constants.js';
 
@@ -252,7 +252,7 @@ export async function recordSpawnToRegistry(options) {
   const { parentWuId, targetWuId, lane, baseDir = LUMENFLOW_PATHS.STATE_DIR } = options;
 
   try {
-    const store = new SpawnRegistryStore(baseDir);
+    const store = new DelegationRegistryStore(baseDir);
     await store.load();
 
     const spawnId = await store.record(parentWuId, targetWuId, lane);
