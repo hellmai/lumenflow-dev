@@ -4,7 +4,7 @@ title: God File Decomposition Initiative
 description: Deliver enterprise-grade decomposition with state-machine-first hardening of wu:done
   (explicit XState pipeline, staged rollback consolidation, and gate dedup baseline), followed by
   mechanical god-file splits and cleanup coverage work.
-status: in_progress
+status: done
 priority: P1
 owner: Framework Team
 created: 2026-02-12
@@ -54,6 +54,9 @@ notes:
     explicitly documented in initiative metadata and plan.'
   - '2026-02-13 Phase 2 complete: all mechanical decomposition WUs (WU-1642..1652) delivered.
     WU-1646 deleted as superseded by Phase 1 state-machine WUs.'
+  - '2026-02-13 INIT-025 COMPLETE: 21/21 WUs delivered. All 3 phases done. Code review passed (1
+    critical follow-up: assign() refactor for wu-done-machine.ts). Typecheck passed, targeted suites
+    passed, no regressions.'
 related_plan: lumenflow://plans/INIT-025-plan.md
 lanes:
   - 'Content: Specs Governance'
