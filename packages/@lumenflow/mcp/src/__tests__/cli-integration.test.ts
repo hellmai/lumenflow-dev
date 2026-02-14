@@ -37,6 +37,11 @@ const HELP_TIMEOUT_MS = 15000;
 const READ_TIMEOUT_MS = 30000;
 
 /**
+ * Test-level timeout for integration tests that execute real CLI processes.
+ */
+const CLI_INTEGRATION_TEST_TIMEOUT_MS = 45000;
+
+/**
  * Assert that a CLI result succeeded (exit code 0).
  */
 function expectSuccess(result: CliRunnerResult, context: string): void {
@@ -70,7 +75,7 @@ function extractJson<T>(stdout: string): T {
   return JSON.parse(stdout.substring(jsonStart)) as T;
 }
 
-describe('CLI integration (no mocks)', () => {
+describe('CLI integration (no mocks)', { timeout: CLI_INTEGRATION_TEST_TIMEOUT_MS }, () => {
   describe('wu:status flags', () => {
     it('should accept --id and --json flags (as MCP wuStatusTool passes them)', async () => {
       // MCP tools.ts builds: ['--id', wuId, '--json']

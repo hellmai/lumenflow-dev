@@ -7,7 +7,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { parse as parseYAML } from 'yaml';
-import { SpawnRegistryStore } from './spawn-registry-store.js';
+import { DelegationRegistryStore } from './delegation-registry-store.js';
 import { DelegationStatus } from './delegation-registry-schema.js';
 
 interface RegistryRecord {
@@ -16,7 +16,7 @@ interface RegistryRecord {
   targetWuId: string;
   lane: string;
   status: string;
-  spawnedAt: string;
+  delegatedAt: string;
   completedAt: string | null;
   pickedUpAt?: string;
   pickedUpBy?: string;
@@ -68,7 +68,7 @@ function toDelegationRecord(record: RegistryRecord): DelegationRecord {
     targetWuId: record.targetWuId,
     lane: record.lane,
     status: record.status,
-    delegatedAt: record.spawnedAt,
+    delegatedAt: record.delegatedAt,
     completedAt: record.completedAt,
     pickedUpAt: record.pickedUpAt,
     pickedUpBy: record.pickedUpBy,
@@ -158,7 +158,7 @@ export async function getDelegationsByWU(
   wuId: string,
   baseDir: string,
 ): Promise<DelegationRecord[]> {
-  const store = new SpawnRegistryStore(baseDir);
+  const store = new DelegationRegistryStore(baseDir);
 
   try {
     await store.load();
@@ -169,7 +169,7 @@ export async function getDelegationsByWU(
     throw error;
   }
 
-  const allRecords = store.getAllSpawns();
+  const allRecords = store.getAllDelegations();
   if (allRecords.length === 0) {
     return [];
   }
@@ -212,7 +212,7 @@ export async function getDelegationsByInitiative(
     return [];
   }
 
-  const store = new SpawnRegistryStore(registryDir);
+  const store = new DelegationRegistryStore(registryDir);
   try {
     await store.load();
   } catch (error) {
@@ -222,7 +222,7 @@ export async function getDelegationsByInitiative(
     throw error;
   }
 
-  return (store.getAllSpawns() as RegistryRecord[])
+  return (store.getAllDelegations() as RegistryRecord[])
     .filter((record) => initiativeWuIds.has(record.parentWuId))
     .map(toDelegationRecord);
 }

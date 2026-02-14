@@ -149,8 +149,8 @@ import {
   clearCheckpoint,
 } from '@lumenflow/core/wu-checkpoint';
 // WU-1946: Spawn registry for tracking sub-agent spawns
-import { SpawnRegistryStore } from '@lumenflow/core/spawn-registry-store';
-import { SpawnStatus } from '@lumenflow/core/spawn-registry-schema';
+import { DelegationRegistryStore } from '@lumenflow/core/delegation-registry-store';
+import { DelegationStatus } from '@lumenflow/core/delegation-registry-schema';
 // WU-1999: Exposure validation for UI pairing
 // WU-2022: Feature accessibility validation (blocking)
 import { validateExposure, validateFeatureAccessibility } from '@lumenflow/core/wu-validation';
@@ -657,7 +657,7 @@ export async function enforceSpawnProvenanceForDone(
   const initiativeId = doc.initiative.trim();
   const baseDir = options.baseDir ?? process.cwd();
   const force = options.force === true;
-  const store = new SpawnRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
+  const store = new DelegationRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
   await store.load();
 
   const spawnEntry = store.getByTarget(id);
@@ -706,7 +706,7 @@ export async function enforceSpawnProvenanceForDone(
  */
 export async function updateSpawnRegistryOnCompletion(id, baseDir = process.cwd()) {
   try {
-    const store = new SpawnRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
+    const store = new DelegationRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
     await store.load();
 
     const spawnEntry = store.getByTarget(id);
@@ -720,7 +720,7 @@ export async function updateSpawnRegistryOnCompletion(id, baseDir = process.cwd(
     }
 
     // Update status to completed with completedAt timestamp
-    await store.updateStatus(spawnEntry.id, SpawnStatus.COMPLETED);
+    await store.updateStatus(spawnEntry.id, DelegationStatus.COMPLETED);
     console.log(
       `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Spawn registry updated: ${id} marked as completed`,
     );

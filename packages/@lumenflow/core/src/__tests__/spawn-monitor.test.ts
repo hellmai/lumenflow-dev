@@ -1,42 +1,42 @@
 /**
- * Spawn Monitor Core API Tests (WU-1241)
+ * Delegation Monitor Core API Tests (WU-1241)
  *
- * Tests for the spawn-monitor library in @lumenflow/core.
+ * Tests for the delegation-monitor library in @lumenflow/core.
  * These tests verify the core monitoring logic used by orchestrate:monitor CLI.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import {
-  analyzeSpawns,
-  detectStuckSpawns,
+  analyzeDelegations,
+  detectStuckDelegations,
   generateSuggestions,
   formatMonitorOutput,
   formatRecoveryResults,
   checkZombieLocks,
   DEFAULT_THRESHOLD_MINUTES,
   LOG_PREFIX,
-} from '../spawn-monitor.js';
+} from '../delegation-monitor.js';
 import { LUMENFLOW_PATHS } from '../wu-constants.js';
-import { type SpawnEvent } from '../spawn-registry-schema.js';
+import { type DelegationEvent } from '../delegation-registry-schema.js';
 
 // Test constants to avoid duplicate string literals
 const TEST_LANE = 'Framework: CLI';
 const TEST_PARENT_WU = 'WU-1000';
 const TEST_TARGET_WU = 'WU-1001';
 
-describe('spawn-monitor core APIs (WU-1241)', () => {
-  describe('analyzeSpawns', () => {
-    it('counts spawns by status correctly', () => {
-      const spawns: SpawnEvent[] = [
-        createSpawn('spawn-a', 'pending'),
-        createSpawn('spawn-b', 'pending'),
-        createSpawn('spawn-c', 'completed'),
-        createSpawn('spawn-d', 'timeout'),
-        createSpawn('spawn-e', 'crashed'),
+describe('delegation-monitor core APIs (WU-1241)', () => {
+  describe('analyzeDelegations', () => {
+    it('counts delegations by status correctly', () => {
+      const delegations: DelegationEvent[] = [
+        createDelegation('dlg-a001', 'pending'),
+        createDelegation('dlg-b002', 'pending'),
+        createDelegation('dlg-c003', 'completed'),
+        createDelegation('dlg-d004', 'timeout'),
+        createDelegation('dlg-e005', 'crashed'),
       ];
 
-      const analysis = analyzeSpawns(spawns);
+      const analysis = analyzeDelegations(delegations);
 
       expect(analysis.pending).toBe(2);
       expect(analysis.completed).toBe(1);
@@ -46,7 +46,7 @@ describe('spawn-monitor core APIs (WU-1241)', () => {
     });
 
     it('returns zero counts for empty array', () => {
-      const analysis = analyzeSpawns([]);
+      const analysis = analyzeDelegations([]);
 
       expect(analysis.pending).toBe(0);
       expect(analysis.completed).toBe(0);
@@ -56,78 +56,78 @@ describe('spawn-monitor core APIs (WU-1241)', () => {
     });
   });
 
-  describe('detectStuckSpawns', () => {
+  describe('detectStuckDelegations', () => {
     it('uses default threshold of 30 minutes', () => {
       expect(DEFAULT_THRESHOLD_MINUTES).toBe(30);
     });
 
-    it('detects pending spawns older than threshold', () => {
-      const oldSpawnTime = new Date(Date.now() - 45 * 60 * 1000).toISOString();
-      const spawns = [createSpawn('spawn-old', 'pending', oldSpawnTime)];
+    it('detects pending delegations older than threshold', () => {
+      const oldDelegationTime = new Date(Date.now() - 45 * 60 * 1000).toISOString();
+      const delegations = [createDelegation('dlg-a111', 'pending', oldDelegationTime)];
 
-      const stuck = detectStuckSpawns(spawns, 30);
+      const stuck = detectStuckDelegations(delegations, 30);
 
       expect(stuck.length).toBe(1);
-      expect(stuck[0].spawn.id).toBe('spawn-old');
+      expect(stuck[0].delegation.id).toBe('dlg-a111');
       expect(stuck[0].ageMinutes).toBeGreaterThanOrEqual(45);
     });
 
-    it('ignores pending spawns within threshold', () => {
-      const recentSpawnTime = new Date(Date.now() - 15 * 60 * 1000).toISOString();
-      const spawns = [createSpawn('spawn-recent', 'pending', recentSpawnTime)];
+    it('ignores pending delegations within threshold', () => {
+      const recentDelegationTime = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+      const delegations = [createDelegation('dlg-a112', 'pending', recentDelegationTime)];
 
-      const stuck = detectStuckSpawns(spawns, 30);
-
-      expect(stuck.length).toBe(0);
-    });
-
-    it('ignores completed spawns regardless of age', () => {
-      const oldSpawnTime = new Date(Date.now() - 120 * 60 * 1000).toISOString();
-      const spawns = [createSpawn('spawn-done', 'completed', oldSpawnTime)];
-
-      const stuck = detectStuckSpawns(spawns, 30);
+      const stuck = detectStuckDelegations(delegations, 30);
 
       expect(stuck.length).toBe(0);
     });
 
-    it('sorts stuck spawns by age descending (oldest first)', () => {
-      const spawns = [
-        createSpawn('spawn-30', 'pending', new Date(Date.now() - 35 * 60 * 1000).toISOString()),
-        createSpawn('spawn-60', 'pending', new Date(Date.now() - 65 * 60 * 1000).toISOString()),
-        createSpawn('spawn-45', 'pending', new Date(Date.now() - 50 * 60 * 1000).toISOString()),
+    it('ignores completed delegations regardless of age', () => {
+      const oldDelegationTime = new Date(Date.now() - 120 * 60 * 1000).toISOString();
+      const delegations = [createDelegation('dlg-a113', 'completed', oldDelegationTime)];
+
+      const stuck = detectStuckDelegations(delegations, 30);
+
+      expect(stuck.length).toBe(0);
+    });
+
+    it('sorts stuck delegations by age descending (oldest first)', () => {
+      const delegations = [
+        createDelegation('dlg-a114', 'pending', new Date(Date.now() - 35 * 60 * 1000).toISOString()),
+        createDelegation('dlg-a115', 'pending', new Date(Date.now() - 65 * 60 * 1000).toISOString()),
+        createDelegation('dlg-a116', 'pending', new Date(Date.now() - 50 * 60 * 1000).toISOString()),
       ];
 
-      const stuck = detectStuckSpawns(spawns, 30);
+      const stuck = detectStuckDelegations(delegations, 30);
 
       expect(stuck.length).toBe(3);
-      expect(stuck[0].spawn.id).toBe('spawn-60'); // Oldest first
-      expect(stuck[1].spawn.id).toBe('spawn-45');
-      expect(stuck[2].spawn.id).toBe('spawn-30');
+      expect(stuck[0].delegation.id).toBe('dlg-a115'); // Oldest first
+      expect(stuck[1].delegation.id).toBe('dlg-a116');
+      expect(stuck[2].delegation.id).toBe('dlg-a114');
     });
 
     it('respects custom threshold', () => {
-      const spawnTime = new Date(Date.now() - 20 * 60 * 1000).toISOString();
-      const spawns = [createSpawn('spawn-custom', 'pending', spawnTime)];
+      const delegationTime = new Date(Date.now() - 20 * 60 * 1000).toISOString();
+      const delegations = [createDelegation('dlg-a117', 'pending', delegationTime)];
 
       // With 30min threshold, not stuck
-      expect(detectStuckSpawns(spawns, 30).length).toBe(0);
+      expect(detectStuckDelegations(delegations, 30).length).toBe(0);
 
       // With 15min threshold, stuck
-      expect(detectStuckSpawns(spawns, 15).length).toBe(1);
+      expect(detectStuckDelegations(delegations, 15).length).toBe(1);
     });
   });
 
   describe('generateSuggestions', () => {
-    it('generates wu:block suggestions for stuck spawns', () => {
-      const stuckSpawns = [
+    it('generates wu:block suggestions for stuck delegations', () => {
+      const stuckDelegations = [
         {
-          spawn: createSpawn('spawn-1', 'pending'),
+          delegation: createDelegation('dlg-a118', 'pending'),
           ageMinutes: 45,
           lastCheckpoint: null,
         },
       ];
 
-      const suggestions = generateSuggestions(stuckSpawns, []);
+      const suggestions = generateSuggestions(stuckDelegations, []);
 
       expect(suggestions.length).toBe(1);
       expect(suggestions[0].command).toContain('wu:block');
@@ -161,29 +161,29 @@ describe('spawn-monitor core APIs (WU-1241)', () => {
   });
 
   describe('formatMonitorOutput', () => {
-    it('includes spawn status summary section', () => {
+    it('includes delegation status summary section', () => {
       const result = {
         analysis: { pending: 2, completed: 3, timeout: 0, crashed: 1, total: 6 },
-        stuckSpawns: [],
+        stuckDelegations: [],
         zombieLocks: [],
         suggestions: [],
       };
 
       const output = formatMonitorOutput(result);
 
-      expect(output).toContain('Spawn Status Summary');
+      expect(output).toContain('Delegation Status Summary');
       expect(output).toContain('Pending:   2');
       expect(output).toContain('Completed: 3');
       expect(output).toContain('Crashed:   1');
       expect(output).toContain('Total:     6');
     });
 
-    it('includes stuck spawns section when present', () => {
+    it('includes stuck delegations section when present', () => {
       const result = {
         analysis: { pending: 1, completed: 0, timeout: 0, crashed: 0, total: 1 },
-        stuckSpawns: [
+        stuckDelegations: [
           {
-            spawn: createSpawn('spawn-s1', 'pending'),
+            delegation: createDelegation('dlg-a119', 'pending'),
             ageMinutes: 60,
             lastCheckpoint: null,
           },
@@ -194,7 +194,7 @@ describe('spawn-monitor core APIs (WU-1241)', () => {
 
       const output = formatMonitorOutput(result);
 
-      expect(output).toContain('Stuck Spawns');
+      expect(output).toContain('Stuck Delegations');
       expect(output).toContain('WU-1001');
       expect(output).toContain('60 minutes');
     });
@@ -202,7 +202,7 @@ describe('spawn-monitor core APIs (WU-1241)', () => {
     it('includes zombie locks section when present', () => {
       const result = {
         analysis: { pending: 0, completed: 0, timeout: 0, crashed: 0, total: 0 },
-        stuckSpawns: [],
+        stuckDelegations: [],
         zombieLocks: [
           {
             wuId: 'WU-1001',
@@ -224,12 +224,12 @@ describe('spawn-monitor core APIs (WU-1241)', () => {
     it('includes suggestions section when present', () => {
       const result = {
         analysis: { pending: 0, completed: 0, timeout: 0, crashed: 0, total: 0 },
-        stuckSpawns: [],
+        stuckDelegations: [],
         zombieLocks: [],
         suggestions: [
           {
             command: 'pnpm wu:block --id WU-1001',
-            reason: 'Spawn stuck for 45 minutes',
+            reason: 'Delegation stuck for 45 minutes',
           },
         ],
       };
@@ -243,7 +243,7 @@ describe('spawn-monitor core APIs (WU-1241)', () => {
     it('shows healthy message when no issues', () => {
       const result = {
         analysis: { pending: 0, completed: 5, timeout: 0, crashed: 0, total: 5 },
-        stuckSpawns: [],
+        stuckDelegations: [],
         zombieLocks: [],
         suggestions: [],
       };
@@ -265,14 +265,14 @@ describe('spawn-monitor core APIs (WU-1241)', () => {
     it('formats recovery results with counts', () => {
       const results = [
         {
-          spawnId: 'spawn-1',
+          delegationId: 'dlg-a120',
           targetWuId: 'WU-1001',
           action: 'released_zombie',
           recovered: true,
           reason: 'Zombie lock detected',
         },
         {
-          spawnId: 'spawn-2',
+          delegationId: 'dlg-a121',
           targetWuId: 'WU-1002',
           action: 'escalated_stuck',
           recovered: false,
@@ -292,7 +292,7 @@ describe('spawn-monitor core APIs (WU-1241)', () => {
 
   describe('LOG_PREFIX constant', () => {
     it('exports log prefix for consistent logging', () => {
-      expect(LOG_PREFIX).toBe('[spawn-monitor]');
+      expect(LOG_PREFIX).toBe('[delegation-monitor]');
     });
   });
 
@@ -331,15 +331,15 @@ describe('spawn-monitor core APIs (WU-1241)', () => {
   });
 });
 
-// Helper function to create mock spawn events
-function createSpawn(id: string, status: string, spawnedAt?: string): SpawnEvent {
+// Helper function to create mock delegation events
+function createDelegation(id: string, status: string, delegatedAt?: string): DelegationEvent {
   return {
     id,
     parentWuId: TEST_PARENT_WU,
     targetWuId: TEST_TARGET_WU,
     lane: TEST_LANE,
-    spawnedAt: spawnedAt || new Date().toISOString(),
-    status: status as SpawnEvent['status'],
+    delegatedAt: delegatedAt || new Date().toISOString(),
+    status: status as DelegationEvent['status'],
     completedAt: status === 'completed' ? new Date().toISOString() : null,
   };
 }

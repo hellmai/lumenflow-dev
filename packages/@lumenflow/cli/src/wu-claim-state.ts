@@ -30,7 +30,7 @@ import { WU_PATHS, getStateStoreDirFromBacklog } from '@lumenflow/core/wu-paths'
 import { withMicroWorktree, shouldSkipRemoteOperations } from '@lumenflow/core/micro-worktree';
 import { generateAutoApproval } from '@lumenflow/core/wu-schema';
 import { WUStateStore } from '@lumenflow/core/wu-state-store';
-import { SpawnRegistryStore } from '@lumenflow/core/spawn-registry-store';
+import { DelegationRegistryStore } from '@lumenflow/core/delegation-registry-store';
 import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generator';
 import { getConfig } from '@lumenflow/core/config';
 import { autoFixWUYaml } from '@lumenflow/core/wu-yaml-fixer';
@@ -162,7 +162,7 @@ export async function recordClaimPickupEvidence(
       ? options.claimedBy.trim()
       : 'unknown';
 
-  const store = new SpawnRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
+  const store = new DelegationRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
   await store.load();
 
   const spawnEntry = store.getByTarget(id);
