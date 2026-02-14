@@ -8,6 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { join } from 'node:path';
 import { createGitForPath, getGitForCwd } from '../git-adapter.js';
 
 // Test constants to avoid sonarjs/no-duplicate-string
@@ -134,6 +135,131 @@ describe('WU-1541: No process.chdir in normal execution paths', () => {
       },
       FULL_SUITE_TEST_TIMEOUT_MS,
     );
+
+    it('should auto-resolve unmerged append-only events conflicts from worktree-local paths', async () => {
+      const writeFile = vi.fn().mockResolvedValue(undefined);
+      const eventsRelativePath = '.lumenflow/state/wu-events.jsonl';
+      const expectedWorktreeEventsPath = join(FAKE_WORKTREE_PATH, eventsRelativePath);
+      let hasUnmergedConflict = true;
+      const oursEvent = JSON.stringify({
+        type: 'claim',
+        wuId: 'WU-1673',
+        lane: 'Framework: Core Lifecycle',
+        title: 'Fix append-only conflict resolution',
+        timestamp: '2026-02-14T12:00:00.000Z',
+      });
+      const theirsEvent = JSON.stringify({
+        type: 'complete',
+        wuId: 'WU-1672',
+        timestamp: '2026-02-14T11:59:00.000Z',
+      });
+
+      const mockGitAdapter = {
+        fetch: vi.fn().mockResolvedValue(undefined),
+        rebase: vi.fn().mockRejectedValue(new Error('rebase conflict')),
+        add: vi.fn().mockImplementation(async () => {
+          hasUnmergedConflict = false;
+        }),
+        commit: vi.fn().mockResolvedValue(undefined),
+        push: vi.fn().mockResolvedValue(undefined),
+        getStatus: vi.fn().mockResolvedValue(`AA ${eventsRelativePath}`),
+        raw: vi.fn(async (args: string[]) => {
+          if (args[0] === 'diff' && args[1] === '--name-only' && args[2] === '--diff-filter=U') {
+            return hasUnmergedConflict ? `${eventsRelativePath}\n` : '';
+          }
+          if (args[0] === 'show' && args[1] === `:2:${eventsRelativePath}`) {
+            return `${oursEvent}\n`;
+          }
+          if (args[0] === 'show' && args[1] === `:3:${eventsRelativePath}`) {
+            return `${theirsEvent}\n`;
+          }
+          return '';
+        }),
+      };
+
+      vi.doMock('node:fs/promises', async () => {
+        const actual = await vi.importActual<typeof import('node:fs/promises')>('node:fs/promises');
+        return {
+          ...actual,
+          writeFile,
+        };
+      });
+      vi.doMock('../git-adapter.js', () => ({
+        getGitForCwd: vi.fn(() => mockGitAdapter),
+        createGitForPath: vi.fn(() => mockGitAdapter),
+      }));
+
+      const { autoRebaseBranch } = await import('../wu-done-worktree.js');
+      const result = await autoRebaseBranch(TEST_BRANCH, FAKE_WORKTREE_PATH);
+
+      expect(result.success).toBe(true);
+      expect(mockGitAdapter.raw).toHaveBeenCalledWith(['rebase', '--continue']);
+      expect(writeFile).toHaveBeenCalledWith(expectedWorktreeEventsPath, expect.any(String), 'utf-8');
+    });
+
+    it('should abort auto-rebase when git detects staged conflict artifacts', async () => {
+      const eventsRelativePath = '.lumenflow/state/wu-events.jsonl';
+      const writeFile = vi.fn().mockResolvedValue(undefined);
+      let hasUnmergedConflict = true;
+      const conflictArtifactError = new Error(
+        `${eventsRelativePath}:3: leftover conflict marker`,
+      );
+
+      const mockGitAdapter = {
+        fetch: vi.fn().mockResolvedValue(undefined),
+        rebase: vi.fn().mockRejectedValue(new Error('rebase conflict')),
+        add: vi.fn().mockImplementation(async () => {
+          hasUnmergedConflict = false;
+        }),
+        commit: vi.fn().mockResolvedValue(undefined),
+        push: vi.fn().mockResolvedValue(undefined),
+        getStatus: vi.fn().mockResolvedValue(`AA ${eventsRelativePath}`),
+        raw: vi.fn(async (args: string[]) => {
+          if (args[0] === 'diff' && args[1] === '--name-only' && args[2] === '--diff-filter=U') {
+            return hasUnmergedConflict ? `${eventsRelativePath}\n` : '';
+          }
+          if (args[0] === 'show' && args[1] === `:2:${eventsRelativePath}`) {
+            return `${JSON.stringify({
+              type: 'claim',
+              wuId: 'WU-1673',
+              lane: 'Framework: Core Lifecycle',
+              title: 'Fix append-only conflict resolution',
+              timestamp: '2026-02-14T12:00:00.000Z',
+            })}\n`;
+          }
+          if (args[0] === 'show' && args[1] === `:3:${eventsRelativePath}`) {
+            return `${JSON.stringify({
+              type: 'complete',
+              wuId: 'WU-1672',
+              timestamp: '2026-02-14T11:59:00.000Z',
+            })}\n`;
+          }
+          if (args[0] === '-c' && args[2] === 'diff' && args.includes('--check')) {
+            throw conflictArtifactError;
+          }
+          return '';
+        }),
+      };
+
+      vi.doMock('node:fs/promises', async () => {
+        const actual = await vi.importActual<typeof import('node:fs/promises')>('node:fs/promises');
+        return {
+          ...actual,
+          writeFile,
+        };
+      });
+      vi.doMock('../git-adapter.js', () => ({
+        getGitForCwd: vi.fn(() => mockGitAdapter),
+        createGitForPath: vi.fn(() => mockGitAdapter),
+      }));
+
+      const { autoRebaseBranch } = await import('../wu-done-worktree.js');
+      const result = await autoRebaseBranch(TEST_BRANCH, FAKE_WORKTREE_PATH);
+
+      expect(result.success).toBe(false);
+      expect(mockGitAdapter.raw).toHaveBeenCalledWith(['rebase', '--abort']);
+      expect(writeFile).toHaveBeenCalled();
+    });
 
     it('should not treat literal marker text as a merge conflict', async () => {
       const openMarker = `${'<'.repeat(7)} HEAD`;

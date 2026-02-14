@@ -871,6 +871,41 @@ describe('Lock utilities (WU-1102)', () => {
       expect(result.linesKept).toBe(0);
       expect(result.linesRemoved).toBe(0);
     });
+
+    it('should remove git conflict marker lines and keep valid events', async () => {
+      const filePath = path.join(tempDir, 'conflicted-wu-events.jsonl');
+      const validClaim = JSON.stringify({
+        type: 'claim',
+        wuId: 'WU-1673',
+        lane: 'Framework: Core Lifecycle',
+        title: 'Repair conflicted state log',
+        timestamp: '2026-02-14T12:00:00.000Z',
+      });
+      const validComplete = JSON.stringify({
+        type: 'complete',
+        wuId: 'WU-1672',
+        timestamp: '2026-02-14T11:59:00.000Z',
+      });
+      const conflictedContent = [
+        validClaim,
+        '<<<<<<< HEAD',
+        validComplete,
+        '=======',
+        validClaim,
+        '>>>>>>> origin/main',
+      ].join('\n');
+      await writeFile(filePath, conflictedContent);
+
+      const result = await repairStateFile(filePath);
+      const repaired = await readFile(filePath, 'utf-8');
+
+      expect(result.success).toBe(true);
+      expect(result.linesKept).toBe(3);
+      expect(result.linesRemoved).toBe(3);
+      expect(repaired).not.toContain('<<<<<<<');
+      expect(repaired).not.toContain('=======');
+      expect(repaired).not.toContain('>>>>>>>');
+    });
   });
 });
 

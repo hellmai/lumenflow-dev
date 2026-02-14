@@ -260,4 +260,4 @@ if (import.meta.main) {
 }
 
 // Export for testing
-export { normaliseWUId, isValidWUId };
+export { normaliseWUId, isValidWUId, runStateRepairMode };
