@@ -15,7 +15,7 @@ phases:
     status: done
   - id: 2
     title: 'Phase 2: Mechanical Decomposition'
-    status: in_progress
+    status: done
   - id: 3
     title: 'Phase 3: Coverage Hardening + Cleanup'
     status: done
@@ -52,6 +52,8 @@ notes:
   - '2026-02-13 WU-1661 reconciliation: phase titles, execution ordering, WU-1659 gate dedup
     baseline, @xstate/test deprecation decision, and WU-1646 supersession guidance are now
     explicitly documented in initiative metadata and plan.'
+  - '2026-02-13 Phase 2 complete: all mechanical decomposition WUs (WU-1642..1652) delivered.
+    WU-1646 deleted as superseded by Phase 1 state-machine WUs.'
 related_plan: lumenflow://plans/INIT-025-plan.md
 lanes:
   - 'Content: Specs Governance'
