@@ -109,7 +109,6 @@ export * from './wu-validator.js';
 // Spawn system
 export * from './spawn-registry-store.js';
 export * from './spawn-registry-schema.js';
-export * from './spawn-tree.js';
 export * from './spawn-recovery.js';
 export * from './spawn-monitor.js';
 export * from './spawn-escalation.js';

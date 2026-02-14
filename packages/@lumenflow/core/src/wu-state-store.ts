@@ -74,12 +74,12 @@ const DELEGATION_CUTOVER_PATHS = Object.freeze({
 });
 
 const BOOTSTRAP_STATUSES = Object.freeze({
-  READY: 'ready',
-  BACKLOG: 'backlog',
-  TODO: 'todo',
-  BLOCKED: 'blocked',
-  DONE: 'done',
-  COMPLETED: 'completed',
+  READY: WU_STATUS.READY,
+  BACKLOG: WU_STATUS.BACKLOG,
+  TODO: WU_STATUS.TODO,
+  BLOCKED: WU_STATUS.BLOCKED,
+  DONE: WU_STATUS.DONE,
+  COMPLETED: WU_STATUS.COMPLETED,
 });
 
 const BOOTSTRAP_REASON = Object.freeze({
