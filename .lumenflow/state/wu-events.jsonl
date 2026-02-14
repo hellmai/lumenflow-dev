@@ -1275,12 +1275,6 @@
 {"type":"claim","wuId":"WU-1665","timestamp":"2026-02-13T23:12:47.105Z","lane":"Framework: Core State Recovery","title":"Consolidate wu:done rollback and recovery onto staged state-machine migration"}
 {"type":"complete","wuId":"WU-1666","timestamp":"2026-02-13T23:15:41.606Z"}
 {"type":"complete","wuId":"WU-1665","timestamp":"2026-02-13T23:21:06.329Z"}
-<<<<<<< HEAD
-{"type":"claim","wuId":"WU-1672","lane":"Framework: Core Lifecycle","title":"Fix push-only micro-worktree stale base branch behavior","timestamp":"2026-02-14T08:44:03.144Z"}
-{"type":"claim","wuId":"WU-1671","lane":"Framework: Core State Recovery","title":"Refactor wu-done-machine.ts to use XState assign() actions","timestamp":"2026-02-14T08:48:54.208Z"}
-=======
 {"type":"claim","wuId":"WU-1672","timestamp":"2026-02-14T08:44:03.144Z","lane":"Framework: Core Lifecycle","title":"Fix push-only micro-worktree stale base branch behavior"}
 {"type":"claim","wuId":"WU-1671","timestamp":"2026-02-14T08:48:54.208Z","lane":"Framework: Core State Recovery","title":"Refactor wu-done-machine.ts to use XState assign() actions"}
 {"type":"complete","wuId":"WU-1672","timestamp":"2026-02-14T08:49:50.536Z"}
->>>>>>> 08697520 (wu(wu-1672): done - fix push-only micro-worktree stale base branch behavior)
-{"type":"claim","wuId":"WU-1671","lane":"Framework: Core State Recovery","title":"Refactor wu-done-machine.ts to use XState assign() actions","timestamp":"2026-02-14T08:52:39.974Z"}
