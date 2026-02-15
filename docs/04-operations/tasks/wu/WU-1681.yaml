@@ -2,7 +2,7 @@ id: WU-1681
 title: Fix wu:brief client flag UX to avoid Claude-biased defaults
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -16,7 +16,8 @@ code_paths:
 tests:
   manual:
     - Run 'pnpm wu:brief --help' and verify client examples are neutral and include codex-cli.
-    - Run 'pnpm wu:brief --id <WU-ID> --client codex-cli --codex' and verify deprecation/normalization messaging is clear and non-blocking.
+    - Run 'pnpm wu:brief --id <WU-ID> --client codex-cli --codex' and verify
+      deprecation/normalization messaging is clear and non-blocking.
   unit:
     - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
     - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
@@ -36,9 +37,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:brief usage in a Codex session still nudges claude-code via help text/defaults/examples. Problem: operators can unintentionally use wrong client flag because guidance is ambiguous and Claude-centric. Solution: make wu:brief client guidance explicit and neutral, prefer codex-compatible examples where relevant, and reduce ambiguity between codex/codex-cli/deprecated --codex.'
+description: 'Context: wu:brief usage in a Codex session still nudges claude-code via help
+  text/defaults/examples. Problem: operators can unintentionally use wrong client flag because
+  guidance is ambiguous and Claude-centric. Solution: make wu:brief client guidance explicit and
+  neutral, prefer codex-compatible examples where relevant, and reduce ambiguity between
+  codex/codex-cli/deprecated --codex.'
 acceptance:
   - wu:brief --help explicitly lists codex-cli as a supported client example alongside other clients.
-  - When running in a Codex-context workflow, generated guidance and docs no longer default to claude-code examples for wu:brief/wu:delegate.
-  - Deprecated --codex path remains backward compatible but messaging clearly points to canonical --client value(s).
+  - When running in a Codex-context workflow, generated guidance and docs no longer default to
+    claude-code examples for wu:brief/wu:delegate.
+  - Deprecated --codex path remains backward compatible but messaging clearly points to canonical
+    --client value(s).
   - Docs and tests are updated to prevent regression in client-name guidance.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1681
+claimed_at: 2026-02-15T10:13:50.851Z
+baseline_main_sha: a14186e7bbed7baf3825b0e08a15942204487185
+session_id: 5fa86655-0561-4e7d-8628-dace82f7fa35
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T10:13:50.854Z
