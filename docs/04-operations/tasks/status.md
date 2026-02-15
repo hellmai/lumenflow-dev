@@ -1,10 +1,10 @@
 # Work Unit Status
 
-_Last updated: 2026-02-14_
+_Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1679 — Update repo references from hellmai/os to hellmai/lumenflow](wu/WU-1679.yaml)
 
 ## Completed
 
