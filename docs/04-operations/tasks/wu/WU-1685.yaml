@@ -9,10 +9,6 @@ code_paths:
   - packages/@lumenflow/core/src/wu-rules-engine.ts
   - packages/@lumenflow/core/src/wu-lint.ts
   - packages/@lumenflow/core/src/wu-preflight-validators.ts
-  - packages/@lumenflow/core/src/wu-done-preflight.ts
-  - packages/@lumenflow/cli/src/wu-create-validation.ts
-  - packages/@lumenflow/cli/src/wu-edit.ts
-  - packages/@lumenflow/cli/src/wu-validate.ts
   - packages/@lumenflow/cli/src/wu-prep.ts
   - packages/@lumenflow/cli/src/wu-done.ts
 tests:
@@ -31,10 +27,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-15T12:15:50.897Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1685
+session_id: 7345f13b-48b8-4746-83fb-8c414371bd24
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T12:15:50.903Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -49,11 +52,3 @@ acceptance:
   - CLI consumers (create/edit/validate/prep/done) read normalized warning/error output without
     duplicate mapping blocks.
   - Regression tests confirm backward-compatible command output while reducing adapter duplication.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1685
-claimed_at: 2026-02-15T12:15:50.897Z
-baseline_main_sha: e93dfb0ceda62571d1642ca835a0b432dd682f28
-session_id: 7345f13b-48b8-4746-83fb-8c414371bd24
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-15T12:15:50.903Z
