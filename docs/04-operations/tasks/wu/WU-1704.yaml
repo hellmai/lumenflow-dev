@@ -2,7 +2,7 @@ id: WU-1704
 title: 'Strict debt slice: eliminate TS7006 in core wu-preflight-validators'
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -49,3 +49,6 @@ session_id: f1251690-120b-45a6-b5ee-1d637afeffd7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T23:12:18.009Z
+locked: true
+completed_at: 2026-02-15T23:17:50.416Z
+completed: 2026-02-15
