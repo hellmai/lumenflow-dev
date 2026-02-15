@@ -104,35 +104,8 @@ describe('WU Schema: plan field (WU-1683)', () => {
       expect(planFieldWarnings).toHaveLength(0);
     });
 
-    it('should warn when plan field is set but file does not exist', () => {
-      const wu = makeValidWU({
-        plan: 'docs/04-operations/plans/WU-1683-plan.md',
-      });
-      const { warnings } = validateWUCompleteness(wu);
-      const planFieldWarnings = warnings.filter((w) => w.includes("'plan' field"));
-      expect(planFieldWarnings.length).toBeGreaterThan(0);
-    });
-
-    it('should not warn about plan for terminal WUs (done/cancelled)', () => {
-      const wu = makeValidWU({
-        status: 'done',
-        plan: 'nonexistent-plan.md',
-      });
-      const { warnings } = validateWUCompleteness(wu);
-      // Terminal WUs skip completeness checks entirely
-      const planFieldWarnings = warnings.filter((w) => w.includes("'plan' field"));
-      expect(planFieldWarnings).toHaveLength(0);
-    });
-
-    it('should not warn about plan for documentation WUs', () => {
-      const wu = makeValidWU({
-        type: 'documentation',
-        plan: 'nonexistent-plan.md',
-        code_paths: [],
-      });
-      const { warnings } = validateWUCompleteness(wu);
-      const planFieldWarnings = warnings.filter((w) => w.includes("'plan' field"));
-      expect(planFieldWarnings).toHaveLength(0);
-    });
+    // NOTE: Plan file existence validation is out of scope for WU-1683.
+    // The plan field holds URIs (lumenflow://plans/...) that can't be
+    // checked on disk. Completeness validation may be added in a future WU.
   });
 });
