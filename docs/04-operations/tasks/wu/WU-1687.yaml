@@ -2,7 +2,7 @@ id: WU-1687
 title: Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: in_progress
+status: blocked
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -49,6 +49,9 @@ notes: >-
   allowances, Windows enforcement honesty).
 
   Unblocked (2026-02-15): Temporary metadata update: adding WU-1688 to blocked_by.
+
+  Blocked (2026-02-15): Blocked pending WU-1688 backend fixes (Linux ro-bind, macOS Seatbelt
+  allowances, Windows enforcement honesty).
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

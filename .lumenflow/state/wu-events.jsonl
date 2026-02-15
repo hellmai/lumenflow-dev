@@ -1312,3 +1312,4 @@
 {"type":"claim","wuId":"WU-1689","lane":"Framework: CLI WU Commands","title":"Fix missing shebangs in CLI dist bin scripts","timestamp":"2026-02-15T15:16:23.107Z"}
 {"type":"block","wuId":"WU-1687","reason":"Blocked pending WU-1688 backend fixes (Linux ro-bind, macOS Seatbelt allowances, Windows enforcement honesty).","timestamp":"2026-02-15T15:18:52.640Z"}
 {"type":"unblock","wuId":"WU-1687","timestamp":"2026-02-15T15:20:06.369Z"}
+{"type":"block","wuId":"WU-1687","reason":"Blocked pending WU-1688 backend fixes (Linux ro-bind, macOS Seatbelt allowances, Windows enforcement honesty).","timestamp":"2026-02-15T15:20:27.660Z"}
