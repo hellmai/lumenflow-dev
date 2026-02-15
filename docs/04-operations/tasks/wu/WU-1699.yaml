@@ -8,7 +8,8 @@ created: 2026-02-15
 code_paths:
   - packages/@lumenflow/core/src/backlog-editor.ts
 tests:
-  manual: []
+  manual:
+    - pnpm --filter @lumenflow/core exec vitest run src/__tests__/backlog-generator.test.ts
   unit:
     - packages/@lumenflow/core/src/__tests__/backlog-generator.test.ts
   e2e: []
@@ -29,8 +30,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: strict probes show packages/@lumenflow/core/src/backlog-editor.ts as a top implicit-any hotspot. Problem: untyped helper parameters in backlog editing primitives block strict debt burn-down and reduce confidence. Solution: add focused unit coverage for boundary cases, then annotate helper signatures and intermediate values without changing runtime behavior.'
+description: 'Context: strict probes show packages/@lumenflow/core/src/backlog-editor.ts as a top
+  implicit-any hotspot. Problem: untyped helper parameters in backlog editing primitives block
+  strict debt burn-down and reduce confidence. Solution: add focused unit coverage for boundary
+  cases, then annotate helper signatures and intermediate values without changing runtime behavior.'
 acceptance:
-  - Strict probe with strictNullChecks/noImplicitAny reports no TS7006/TS7031 diagnostics for packages/@lumenflow/core/src/backlog-editor.ts
+  - Strict probe with strictNullChecks/noImplicitAny reports no TS7006/TS7031 diagnostics for
+    packages/@lumenflow/core/src/backlog-editor.ts
   - Backlog editor unit tests pass for section detection and bullet move operations
   - pnpm --filter @lumenflow/core typecheck passes
