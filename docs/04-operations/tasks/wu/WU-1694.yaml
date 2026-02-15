@@ -2,7 +2,7 @@ id: WU-1694
 title: 'Strict debt slice: eliminate TS7006 in wu-claim-state/validation'
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -46,3 +46,11 @@ acceptance:
   - wu-claim command unit tests continue to pass
   - No functional behavior change in claim status/validation logic (covered by added or updated
     tests)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1694
+claimed_at: 2026-02-15T20:09:33.374Z
+baseline_main_sha: 96c24e2b931d369decda6848e78dfb46b65e271e
+session_id: 8fa6fece-41a4-402b-b544-5dd474fff202
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T20:09:33.382Z

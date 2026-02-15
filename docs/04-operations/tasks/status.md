@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1694 — Strict debt slice: eliminate TS7006 in wu-claim-state/validation](wu/WU-1694.yaml)
 
 ## Completed
 
