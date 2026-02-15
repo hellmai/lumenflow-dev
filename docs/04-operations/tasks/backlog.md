@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1685 — Validator V2 follow-up: normalize issue shaping and adapter boundaries](wu/WU-1685.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1581 — CLI strict wave 1A: high-impact WU command hotspots](wu/WU-1581.yaml) — Framework: CLI WU Commands
@@ -32,6 +31,7 @@ sections:
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
 - [WU-1684 — Add vendor-agnostic wu:sandbox command for kernel-enforced worktree isolation](wu/WU-1684.yaml) — Framework: Core Lifecycle
+- [WU-1685 — Validator V2 follow-up: normalize issue shaping and adapter boundaries](wu/WU-1685.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 

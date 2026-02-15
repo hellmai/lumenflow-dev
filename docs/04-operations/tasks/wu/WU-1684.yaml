@@ -1,6 +1,6 @@
 id: WU-1684
 title: Add vendor-agnostic wu:sandbox command for kernel-enforced worktree isolation
-lane: 'Framework: Core Lifecycle'
+lane: 'Framework: CLI Enforcement'
 type: feature
 status: ready
 priority: P2
@@ -21,6 +21,14 @@ tests:
     - From inside sandbox, read main checkout files and verify reads work normally
     - From inside sandbox, run git commit in worktree and verify git operations work
     - With bwrap uninstalled, run wu:sandbox and verify graceful degradation warning
+    - From inside sandbox
+    - attempt write via ../ traversal outside worktree and verify deny (EPERM/EACCES).
+    - From inside sandbox
+    - create symlink in worktree to main checkout and verify writes through symlink are denied.
+    - Without bwrap and without explicit override
+    - run wu:sandbox and verify fail-closed non-zero exit.
+    - With explicit unsandboxed override enabled
+    - verify warning is emitted and command runs unsandboxed.
   unit:
     - packages/@lumenflow/core/src/__tests__/sandbox-profile.test.ts
     - packages/@lumenflow/core/src/__tests__/sandbox-allowlist.test.ts
@@ -33,7 +41,18 @@ dependencies: []
 spec_refs:
   - LUMENFLOW.md
 risks: []
-notes: 'Design references: Anthropic sandbox-runtime (github.com/anthropic-experimental/sandbox-runtime) uses bwrap on Linux with asymmetric defaults (read=allow, write=deny). Codex issue #7071 shows that making .git read-only via chmod breaks git entirely — must use process-level namespaces instead. This is Layer 1 in a defense-in-depth model: (L1) kernel sandbox via bwrap, (L2) git pre-commit hooks, (L3) client-specific hooks, (L4) prompt instructions. Future: wu:claim could auto-detect bwrap and offer --sandbox by default. macOS support via sandbox-exec is a follow-up WU.'
+notes: >-
+  Design references: Anthropic sandbox-runtime (github.com/anthropic-experimental/sandbox-runtime)
+  uses bwrap on Linux with asymmetric defaults (read=allow, write=deny). Codex issue #7071 shows
+  that making .git read-only via chmod breaks git entirely — must use process-level namespaces
+  instead. This is Layer 1 in a defense-in-depth model: (L1) kernel sandbox via bwrap, (L2) git
+  pre-commit hooks, (L3) client-specific hooks, (L4) prompt instructions. Future: wu:claim could
+  auto-detect bwrap and offer --sandbox by default. macOS support via sandbox-exec is a follow-up
+  WU.
+
+
+  2026-02-15 refinement: prioritize fail-closed defaults and explicit override semantics; add
+  escape-path validation coverage (traversal + symlink).
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -42,15 +61,39 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: LumenFlow uses git worktrees to isolate agent work, but enforcement that agents stay inside their worktree is currently client-specific (Claude Code hooks in .claude/settings.json). Other agent clients (Codex, Cursor, Gemini CLI) only get git pre-commit hooks at commit time — too late, the agent has already written to the wrong place. Problem: No vendor-agnostic mechanism prevents agents from writing to the main checkout at file-write time. The current defense layers are: (1) git pre-commit hooks (vendor-agnostic but fire at commit time, not write time), (2) Claude PreToolUse hooks (fire at write time but Claude-only), (3) prompt instructions/skills (unreliable). The gap is a kernel-enforced, vendor-agnostic write barrier that works for ANY agent process. Solution: Add a wu:sandbox CLI command that wraps agent processes in Linux bubblewrap (bwrap) with write access restricted to the claimed worktree. Uses the same asymmetric model as Anthropic sandbox-runtime: reads allowed everywhere (deny-listed), writes denied everywhere (allow-listed). The sandbox resolves the worktree path from the WU ID and constructs bwrap arguments automatically. Key design: .git/ stays readable (shared objects), worktree gets write access, /tmp allowed, .lumenflow/state/ allowed for event logging, WU YAML path allowed for status updates. Falls back gracefully when bwrap is not installed (warn + continue).'
+description: 'Context: LumenFlow uses git worktrees to isolate agent work, but enforcement that
+  agents stay inside their worktree is currently client-specific (Claude Code hooks in
+  .claude/settings.json). Other agent clients (Codex, Cursor, Gemini CLI) only get git pre-commit
+  hooks at commit time — too late, the agent has already written to the wrong place. Problem: No
+  vendor-agnostic mechanism prevents agents from writing to the main checkout at file-write time.
+  The current defense layers are: (1) git pre-commit hooks (vendor-agnostic but fire at commit time,
+  not write time), (2) Claude PreToolUse hooks (fire at write time but Claude-only), (3) prompt
+  instructions/skills (unreliable). The gap is a kernel-enforced, vendor-agnostic write barrier that
+  works for ANY agent process. Solution: Add a wu:sandbox CLI command that wraps agent processes in
+  Linux bubblewrap (bwrap) with write access restricted to the claimed worktree. Uses the same
+  asymmetric model as Anthropic sandbox-runtime: reads allowed everywhere (deny-listed), writes
+  denied everywhere (allow-listed). The sandbox resolves the worktree path from the WU ID and
+  constructs bwrap arguments automatically. Key design: .git/ stays readable (shared objects),
+  worktree gets write access, /tmp allowed, .lumenflow/state/ allowed for event logging, WU YAML
+  path allowed for status updates. Falls back gracefully when bwrap is not installed (warn +
+  continue).'
 acceptance:
-  - wu:sandbox --id WU-XXXX -- <command> wraps the given command in a bubblewrap sandbox with write access restricted to the WU worktree
-  - Write attempts to main checkout source files from inside the sandbox fail with EPERM (kernel-enforced)
+  - wu:sandbox --id WU-XXXX -- <command> wraps the given command in a bubblewrap sandbox with write
+    access restricted to the WU worktree
+  - Write attempts to main checkout source files from inside the sandbox fail with EPERM
+    (kernel-enforced)
   - Read access to main checkout, .git/, node_modules/ works normally from inside the sandbox
   - Git operations (commit, add, status) work correctly inside the sandboxed worktree
   - pnpm/node operations work inside the sandbox (node_modules readable, /tmp writable)
-  - 'Sandbox allow-list includes: worktree dir, /tmp, .lumenflow/state/, WU YAML path, /proc, /dev (for node)'
+  - 'Sandbox allow-list includes: worktree dir, /tmp, .lumenflow/state/, WU YAML path, /proc, /dev
+    (for node)'
   - .lumenflow.config.yaml gets a new sandbox section for configuring allow/deny paths
-  - When bwrap is not installed, command prints a warning and runs the agent unsandboxed (graceful degradation)
+  - When bwrap is not installed, command prints a warning and runs the agent unsandboxed (graceful
+    degradation)
   - wu:claim --sandbox flag auto-wraps the agent session in the sandbox after worktree creation
-  - Integration test proves that a sandboxed process cannot write to main but can write to its worktree
+  - Integration test proves that a sandboxed process cannot write to main but can write to its
+    worktree
+  - 'Fail-closed policy is available and documented: if bwrap is unavailable, wu:sandbox exits
+    non-zero unless explicit unsandboxed override is set.'
+  - Sandbox denies path-escape writes via ../ traversal and symlink traversal outside the claimed
+    worktree.
