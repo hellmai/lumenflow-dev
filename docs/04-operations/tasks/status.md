@@ -5,6 +5,7 @@ _Last updated: 2026-02-15_
 ## In Progress
 
 - [WU-1687 — Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine](wu/WU-1687.yaml)
+- [WU-1690 — Publish bare lumenflow npm package for npx lumenflow init](wu/WU-1690.yaml)
 
 ## Completed
 

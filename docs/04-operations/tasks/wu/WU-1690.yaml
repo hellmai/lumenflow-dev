@@ -2,7 +2,7 @@ id: WU-1690
 title: Publish bare lumenflow npm package for npx lumenflow init
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -27,7 +27,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: npx lumenflow init fails with 404 because only @lumenflow/cli exists on npm. The Medium launch article tells users to run npx lumenflow init. Need a bare 'lumenflow' wrapper package that re-exports the CLI bins so npx resolution works.
+description: npx lumenflow init fails with 404 because only @lumenflow/cli exists on npm. The Medium
+  launch article tells users to run npx lumenflow init. Need a bare 'lumenflow' wrapper package that
+  re-exports the CLI bins so npx resolution works.
 acceptance:
   - npx lumenflow init resolves and delegates to @lumenflow/cli
   - Package is minimal wrapper with @lumenflow/cli as dependency
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1690
+claimed_at: 2026-02-15T15:52:41.836Z
+baseline_main_sha: a17eba4da3912c795ebe7572e28944bebc8664f4
+session_id: 8962eb57-43d1-4cc3-a4fb-2eca191a8cbd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T15:52:41.844Z
