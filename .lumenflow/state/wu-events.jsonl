@@ -1303,4 +1303,5 @@
 {"type":"claim","wuId":"WU-1685","timestamp":"2026-02-15T12:15:50.921Z","lane":"Framework: CLI WU Commands","title":"Validator V2 follow-up: normalize issue shaping and adapter boundaries"}
 {"type":"complete","wuId":"WU-1685","timestamp":"2026-02-15T12:23:36.514Z"}
 {"type":"complete","wuId":"WU-1683","timestamp":"2026-02-15T12:35:13.560Z"}
-{"type":"claim","wuId":"WU-1686","lane":"Content: Site Comms","title":"Reframe article as agent orchestration layer + Medium optimisations","timestamp":"2026-02-15T12:51:10.512Z"}
+{"type":"claim","wuId":"WU-1686","timestamp":"2026-02-15T12:51:10.512Z","lane":"Content: Site Comms","title":"Reframe article as agent orchestration layer + Medium optimisations"}
+{"type":"complete","wuId":"WU-1686","timestamp":"2026-02-15T12:51:27.524Z"}
