@@ -1293,3 +1293,4 @@
 {"type":"complete","wuId":"WU-1678","timestamp":"2026-02-14T13:49:28.456Z"}
 {"type":"claim","wuId":"WU-1679","lane":"Operations: Tooling","title":"Update repo references from hellmai/os to hellmai/lumenflow","timestamp":"2026-02-15T09:00:04.565Z"}
 {"type":"claim","wuId":"WU-1680","lane":"Framework: CLI WU Commands","title":"Validator Layer V2: unify phase-aware rules and adapters","timestamp":"2026-02-15T09:45:06.089Z"}
+{"type":"claim","wuId":"WU-1681","lane":"Framework: CLI WU Commands","title":"Fix wu:brief client flag UX to avoid Claude-biased defaults","timestamp":"2026-02-15T10:13:50.871Z"}
