@@ -2,7 +2,7 @@ id: WU-1698
 title: 'Strict debt slice: eliminate TS7006 in core backlog-generator'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -32,8 +32,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: strict probes show packages/@lumenflow/core/src/backlog-generator.ts as the top remaining implicit-any hotspot (~22 TS7006/TS7031 diagnostics). Problem: untyped helper parameters in backlog generation logic reduce confidence and block strict debt burn-down. Solution: add/expand unit tests first, then annotate parameter and helper types in backlog-generator.ts without behavior changes.'
+description: 'Context: strict probes show packages/@lumenflow/core/src/backlog-generator.ts as the
+  top remaining implicit-any hotspot (~22 TS7006/TS7031 diagnostics). Problem: untyped helper
+  parameters in backlog generation logic reduce confidence and block strict debt burn-down.
+  Solution: add/expand unit tests first, then annotate parameter and helper types in
+  backlog-generator.ts without behavior changes.'
 acceptance:
-  - Strict probe with strictNullChecks/noImplicitAny/useUnknownInCatchVariables reports no TS7006/TS7031 diagnostics for packages/@lumenflow/core/src/backlog-generator.ts
+  - Strict probe with strictNullChecks/noImplicitAny/useUnknownInCatchVariables reports no
+    TS7006/TS7031 diagnostics for packages/@lumenflow/core/src/backlog-generator.ts
   - packages/@lumenflow/core/src/__tests__/backlog-generator.test.ts passes
   - pnpm --filter @lumenflow/core typecheck passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-1698
+claimed_at: 2026-02-15T21:13:14.299Z
+baseline_main_sha: b029a9bb02d9454f4798c017d24419685c053002
+session_id: 05c9777d-ac69-489a-909e-25c8e5599ffa
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T21:13:14.304Z
