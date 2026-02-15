@@ -117,7 +117,7 @@ export type UserChoiceOption = (typeof USER_CHOICE_OPTIONS)[number];
  * Mandatory agent names (subset of AGENT_NAMES)
  *
  * Note: For LumenFlow framework development, mandatory agents are not currently
- * enforced since this is a workflow framework, not an application with PHI/auth concerns.
+ * enforced since this is a workflow framework, not an application with domain-specific concerns.
  * Projects using LumenFlow can define their own mandatory agents in their config.
  *
  * The test-engineer and code-reviewer agents are suggested but not mandatory.
@@ -132,7 +132,7 @@ export type MandatoryAgentName = (typeof MANDATORY_AGENT_NAMES)[number];
  * Uses minimatch patterns (NOT regex) for file path matching.
  *
  * Note: For LumenFlow framework development, this is empty since we don't have
- * application-specific concerns like PHI, auth, or RLS. Projects using LumenFlow
+ * application-specific concerns. Projects using LumenFlow
  * should configure their own triggers based on their domain requirements.
  *
  * Example application-specific triggers (configure in your project):

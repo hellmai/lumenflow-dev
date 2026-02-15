@@ -190,7 +190,7 @@ describe('generateFlowReport', () => {
         {
           timestamp: '2026-01-02T11:00:00Z',
           eventType: 'llm.classification.complete',
-          classificationType: 'phi_detection',
+          classificationType: 'sensitive_data_detection',
           durationMs: 200,
           tokensUsed: 100,
           estimatedCostUsd: 0.002,
@@ -201,9 +201,9 @@ describe('generateFlowReport', () => {
 
       const result = generateFlowReport({ ...baseInput, llmEvents });
       expect(result.llm.byType['mode_detection']).toBeDefined();
-      expect(result.llm.byType['phi_detection']).toBeDefined();
+      expect(result.llm.byType['sensitive_data_detection']).toBeDefined();
       expect(result.llm.byType['mode_detection']!.count).toBe(1);
-      expect(result.llm.byType['phi_detection']!.fallbackRate).toBe('100.0');
+      expect(result.llm.byType['sensitive_data_detection']!.fallbackRate).toBe('100.0');
     });
 
     it('sums tokens and costs', () => {

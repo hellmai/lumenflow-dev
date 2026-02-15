@@ -18,7 +18,6 @@ import { resolveGatesCommands, resolveTestRunner } from '@lumenflow/core/gates-c
 import type { LaneHealthMode } from '@lumenflow/core/gates-config';
 import { validateBacklogSync } from '@lumenflow/core/validators/backlog-sync';
 import { runSupabaseDocsLinter } from '@lumenflow/core/validators/supabase-docs-linter';
-import { runSystemMapValidation } from '@lumenflow/core/system-map-validator';
 import {
   BRANCHES,
   PACKAGES,
@@ -612,31 +611,6 @@ export async function runSupabaseDocsGate({ agentLog, useAgentMode, cwd }: GateL
   return { ok: result.ok, duration: Date.now() - start };
 }
 
-// ── System map gate ────────────────────────────────────────────────────
-
-export async function runSystemMapGate({ agentLog, useAgentMode, cwd }: GateLogContext) {
-  const start = Date.now();
-  const logLine = makeGateLogger({ agentLog, useAgentMode });
-  logLine('\n> System map validation\n');
-
-  const result = await runSystemMapValidation({
-    cwd,
-    logger: { log: logLine, warn: logLine, error: logLine },
-  });
-
-  if (!result.valid) {
-    logLine('\u274C System map validation failed');
-    (result.pathErrors ?? []).forEach((error) => logLine(`  - ${error}`));
-    (result.orphanDocs ?? []).forEach((error) => logLine(`  - ${error}`));
-    (result.audienceErrors ?? []).forEach((error) => logLine(`  - ${error}`));
-    (result.queryErrors ?? []).forEach((error) => logLine(`  - ${error}`));
-    (result.classificationErrors ?? []).forEach((error) => logLine(`  - ${error}`));
-  } else {
-    logLine('System map validation passed.');
-  }
-
-  return { ok: result.valid, duration: Date.now() - start };
-}
 
 // ── Lane health gate ───────────────────────────────────────────────────
 

@@ -122,8 +122,6 @@ export const GATE_NAMES = {
   SAFETY_CRITICAL_TEST: 'safety-critical-test',
   /** WU-2062: Integration tests (for high-risk changes) */
   INTEGRATION_TEST: 'integration-test',
-  /** WU-2315: System map validation (warn-only until orphan docs are indexed) */
-  SYSTEM_MAP_VALIDATE: 'system-map:validate',
   /** WU-1191: Lane health check (overlap detection) */
   LANE_HEALTH: 'lane-health',
   /** WU-1315: Onboarding smoke test (init + wu:create validation) */

@@ -78,8 +78,6 @@ const ALLOWED_FILES_STATUS = [
   'section-headings.ts', // Document type parameter ('backlog'/'status')
   'core/tool.constants.ts', // Tool execution statuses (cancelled/timeout)
   'wu-done-machine.ts', // WU-1662: XState pipeline states (distinct from WU lifecycle statuses)
-  'compliance-parser.ts', // Dead code (export removed) -- pending full file cleanup
-  'risk-detector.ts', // Dead code (export removed) -- pending full file cleanup
 ];
 
 /**

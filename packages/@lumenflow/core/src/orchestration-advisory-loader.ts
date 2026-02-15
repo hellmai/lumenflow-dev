@@ -17,7 +17,7 @@ import picocolors from 'picocolors';
  * Mirrors MANDATORY_TRIGGERS from orchestration.constants.ts.
  *
  * Note: For LumenFlow framework development, this is empty since we don't have
- * application-specific concerns like PHI, auth, or RLS. Projects using LumenFlow
+ * application-specific concerns. Projects using LumenFlow
  * should configure their own triggers based on their domain requirements.
  */
 const MANDATORY_TRIGGERS: Record<string, readonly string[]> = {

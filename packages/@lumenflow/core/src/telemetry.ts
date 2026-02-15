@@ -113,7 +113,7 @@ export function getCurrentLane() {
 /**
  * Emit LLM classification start event
  * @param {object} data - Classification start data
- * @param {string} data.classification_type - Type of classification (e.g., 'mode_detection', 'red_flag', 'phi_detection')
+ * @param {string} data.classification_type - Type of classification (e.g., 'mode_detection', 'red_flag', 'sensitive_data_detection')
  * @param {boolean} [data.has_context] - Whether conversation context was provided
  * @param {string} [data.wu_id] - Work Unit ID
  * @param {string} [data.lane] - Lane name

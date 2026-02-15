@@ -72,11 +72,6 @@ export function registerDocsOnlyGates(registry: GateRegistry, options: DocsOnlyG
     name: GATE_NAMES.BACKLOG_SYNC,
   } as GateDefinition);
 
-  // WU-2315: System map validation (warn-only until orphan docs are indexed)
-  registry.register({
-    name: GATE_NAMES.SYSTEM_MAP_VALIDATE,
-    warnOnly: true,
-  } as GateDefinition);
 
   // WU-1191: Lane health check (configurable: warn/error/off)
   registry.register({
@@ -156,11 +151,6 @@ export function registerCodeGates(registry: GateRegistry, options: CodeGateOptio
     name: GATE_NAMES.SUPABASE_DOCS_LINTER,
   } as GateDefinition);
 
-  // WU-2315: System map validation (warn-only)
-  registry.register({
-    name: GATE_NAMES.SYSTEM_MAP_VALIDATE,
-    warnOnly: true,
-  } as GateDefinition);
 
   // WU-1191: Lane health check
   registry.register({

@@ -106,7 +106,6 @@ import {
   runSpecLinterGate,
   runBacklogSyncGate,
   runSupabaseDocsGate,
-  runSystemMapGate,
   runLaneHealthGate,
   runDocsOnlyFilteredTests,
 } from './gates-runners.js';
@@ -369,7 +368,6 @@ async function executeGates(opts: {
     [GATE_NAMES.SPEC_LINTER]: runSpecLinterGate,
     [GATE_NAMES.BACKLOG_SYNC]: runBacklogSyncGate,
     [GATE_NAMES.SUPABASE_DOCS_LINTER]: runSupabaseDocsGate,
-    [GATE_NAMES.SYSTEM_MAP_VALIDATE]: runSystemMapGate,
     [GATE_NAMES.LANE_HEALTH]: (ctx: GateLogContext) =>
       runLaneHealthGate({ ...ctx, mode: laneHealthMode }),
   };
