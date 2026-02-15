@@ -379,7 +379,7 @@ Generate handoff prompt for sub-agent WU execution.
 | Parameter | Type | Required | Description |
 | ----------- | ------- | -------- | ----------------------------------------- |
 | `id` | string | Yes | WU ID to brief |
-| `client` | string | No | Client name (claude-code, gemini-cli, etc) |
+| `client` | string | No | Target client (e.g. claude-code, codex-cli, gemini-cli) |
 | `thinking` | boolean | No | Enable extended thinking |
 | `budget` | number | No | Token budget for extended thinking |
 | `no_context`| boolean | No | Skip memory context injection |
@@ -393,7 +393,7 @@ Generate delegation prompt and record explicit lineage intent.
 | ----------- | ------- | -------- | ----------------------------------------- |
 | `id` | string | Yes | WU ID to delegate |
 | `parent_wu` | string | Yes | Parent WU ID for delegation lineage |
-| `client` | string | No | Client name (claude-code, gemini-cli, etc) |
+| `client` | string | No | Target client (e.g. claude-code, codex-cli, gemini-cli) |
 | `thinking` | boolean | No | Enable extended thinking |
 | `budget` | number | No | Token budget for extended thinking |
 | `no_context`| boolean | No | Skip memory context injection |
@@ -680,7 +680,7 @@ Start an agent session for tracking WU execution.
 | ------------ | ------ | -------- | --------------------------------- |
 | `wu` | string | Yes | WU ID to work on (e.g., WU-1234) |
 | `tier` | number | Yes | Context tier (1, 2, or 3) |
-| `agent_type` | string | No | Agent type (default: claude-code) |
+| `agent_type` | string | No | Agent type (e.g. claude-code, codex-cli, gemini-cli) |
 
 ### agent_session_end
 
@@ -868,12 +868,12 @@ Diagnose LumenFlow configuration and safety components.
 
 ### lumenflow_integrate
 
-Generate enforcement hooks for a specific client (e.g., claude-code).
+Generate enforcement hooks for a specific client.
 
 **Input:**
 | Parameter | Type | Required | Description |
 | --------- | ------ | -------- | --------------------------------- |
-| `client` | string | Yes | Client name (claude-code, cursor, etc.) |
+| `client` | string | Yes | Target client (e.g. claude-code, codex-cli, cursor, gemini-cli) |
 
 ### lumenflow_upgrade
 
