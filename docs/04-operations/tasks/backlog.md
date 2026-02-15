@@ -30,12 +30,11 @@ sections:
 - [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml) — Framework: Core Lifecycle
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
+- [WU-1683 — Add first-class plan field to WU schema for plan-to-WU linking](wu/WU-1683.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
 - [WU-1680 — Validator Layer V2: unify phase-aware rules and adapters](wu/WU-1680.yaml) — Framework: CLI WU Commands
-- [WU-1681 — Fix wu:brief client flag UX to avoid Claude-biased defaults](wu/WU-1681.yaml) — Framework: CLI WU Commands
-- [WU-1683 — Add first-class plan field to WU schema for plan-to-WU linking](wu/WU-1683.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -657,6 +656,7 @@ sections:
 - [WU-1678 — Stabilize wu-done.test worker-fork timeout in incremental test gate](wu/WU-1678.yaml)
 - [WU-1682 — Update Medium article for LumenFlow open-source launch](wu/WU-1682.yaml)
 - [WU-1679 — Update repo references from hellmai/os to hellmai/lumenflow](wu/WU-1679.yaml)
+- [WU-1681 — Fix wu:brief client flag UX to avoid Claude-biased defaults](wu/WU-1681.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

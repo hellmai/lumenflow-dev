@@ -2,7 +2,7 @@ id: WU-1681
 title: Fix wu:brief client flag UX to avoid Claude-biased defaults
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -80,3 +80,6 @@ acceptance:
   - Deprecated --codex path remains backward compatible but messaging clearly points to canonical
     --client value(s).
   - Docs and tests are updated to prevent regression in client-name guidance.
+locked: true
+completed_at: 2026-02-15T11:05:48.469Z
+completed: 2026-02-15

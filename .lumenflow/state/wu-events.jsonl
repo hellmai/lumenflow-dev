@@ -1297,4 +1297,5 @@
 {"type":"claim","wuId":"WU-1682","timestamp":"2026-02-15T10:14:23.035Z","lane":"Content: Site Comms","title":"Update Medium article for LumenFlow open-source launch"}
 {"type":"complete","wuId":"WU-1682","timestamp":"2026-02-15T10:18:09.162Z"}
 {"type":"complete","wuId":"WU-1679","timestamp":"2026-02-15T10:18:25.714Z"}
+{"type":"complete","wuId":"WU-1681","timestamp":"2026-02-15T11:05:51.169Z"}
 {"type":"claim","wuId":"WU-1683","lane":"Framework: CLI WU Commands","title":"Add first-class plan field to WU schema for plan-to-WU linking","timestamp":"2026-02-15T11:05:52.075Z"}
