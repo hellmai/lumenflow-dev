@@ -1,0 +1,35 @@
+id: WU-1712
+title: 'Strict debt slice: type wu-done-paths'
+lane: 'Framework: Core Validation'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-15
+code_paths:
+  - packages/@lumenflow/core/src/wu-done-paths.ts
+tests:
+  manual:
+    - Run strict tsc for @lumenflow/core and confirm no errors from src/wu-done-paths.ts
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-done-paths.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1712.done
+dependencies: []
+initiative: INIT-022
+spec_refs:
+  - docs/04-operations/tasks/wu/WU-1711.yaml
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Eliminate strict typing errors in wu-done-paths path resolver helpers without behavior changes.
+acceptance:
+  - No strict errors remain in packages/@lumenflow/core/src/wu-done-paths.ts under --strictNullChecks --noImplicitAny
+  - wu-done-paths tests pass
