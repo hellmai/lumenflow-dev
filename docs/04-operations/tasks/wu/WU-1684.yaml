@@ -18,24 +18,30 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/wu-sandbox.test.ts
   - packages/@lumenflow/core/src/wu-claim-helpers.ts
   - .lumenflow.config.yaml
+  - packages/@lumenflow/core/src/sandbox-backend-windows.ts
+  - packages/@lumenflow/core/src/__tests__/sandbox-backend-windows.test.ts
 tests:
   manual:
-    - Run wu:sandbox --id WU-XXXX -- bash and verify agent process starts inside sandbox
-    - From inside sandbox, attempt to write to main checkout source file and verify EPERM
-    - From inside sandbox, read main checkout files and verify reads work normally
-    - From inside sandbox, run git commit in worktree and verify git operations work
-    - With bwrap uninstalled, run wu:sandbox and verify graceful degradation warning
-    - From inside sandbox, attempt write via ../ traversal outside worktree and verify deny
+    - Run wu:sandbox --id WU-XXXX -- <command> and verify sandboxed process start on the current OS.
+    - From inside sandbox, attempt to write to main checkout source file and verify deny
       (EPERM/EACCES).
+    - From inside sandbox, read main checkout and .git data and verify reads work normally.
+    - From inside sandbox, run git commit in worktree and verify git operations work.
+    - From inside sandbox, attempt write via ../ traversal outside worktree and verify deny.
     - From inside sandbox, create symlink in worktree to main checkout and verify writes through
       symlink are denied.
-    - Without bwrap and without explicit override, run wu:sandbox and verify fail-closed non-zero
-      exit.
+    - Without an available sandbox backend and without explicit override, run wu:sandbox and verify
+      fail-closed non-zero exit.
     - With explicit unsandboxed override enabled, verify warning is emitted and command runs
       unsandboxed.
+    - On Linux, macOS, and Windows environments, verify backend selection is platform-appropriate
+      and enforcement behavior is consistent.
   unit:
     - packages/@lumenflow/core/src/__tests__/sandbox-profile.test.ts
     - packages/@lumenflow/core/src/__tests__/sandbox-allowlist.test.ts
+    - packages/@lumenflow/core/src/__tests__/sandbox-backend-linux.test.ts
+    - packages/@lumenflow/core/src/__tests__/sandbox-backend-macos.test.ts
+    - packages/@lumenflow/core/src/__tests__/sandbox-backend-windows.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-sandbox.test.ts
   e2e:
     - packages/@lumenflow/cli/e2e/wu-sandbox.test.ts
@@ -45,22 +51,13 @@ dependencies: []
 spec_refs:
   - LUMENFLOW.md
 risks: []
-notes: 'Design references: Anthropic sandbox-runtime
-  (github.com/anthropic-experimental/sandbox-runtime) uses bwrap on Linux, sandbox-exec on macOS —
-  same asymmetric model (read=allow, write=deny) with OS-specific backends. Codex issue #7071 shows
-  that making .git read-only via chmod breaks git entirely — must use process-level namespaces.
-  Architecture: sandbox-profile.ts generates an abstract SandboxProfile (allow/deny path sets), then
-  OS-specific backends translate to native tooling: Linux=bubblewrap (bwrap), macOS=sandbox-exec
-  with Seatbelt profiles. The CLI auto-detects platform via process.platform. This is Layer 1 in a
-  defense-in-depth model: (L1) kernel sandbox, (L2) git pre-commit hooks, (L3) client-specific
-  hooks, (L4) prompt instructions. | 2026-02-15 refinement: fail-closed defaults, explicit override
-  semantics, escape-path validation (traversal + symlink). OS-agnostic by design, not Linux-first
-  with macOS follow-up. | Defense layer analysis: sandbox is ADDITIVE, not replacive. Existing
-  layers protect against distinct concerns: (1) deny rules = destructive git ops — sandbox cannot
-  cover since .git must stay writable, (2) bash-blocker = tool hygiene — orthogonal, (3) pre-commit
-  YAML validation = data integrity — orthogonal. Simplification opportunity:
-  validate-worktree-path.sh (256 lines) could reduce to ~40-line audit-only stub once sandbox is
-  standard.'
+notes: 'Design references: Anthropic sandbox-runtime demonstrates process-level sandboxing patterns;
+  apply similar asymmetric model with repository-specific allow-listing. Key constraint: chmod-based
+  .git lockdown breaks git operations; enforcement must be process-level, not filesystem permission
+  mutation. This layer is additive to existing safety controls (git hooks, client hooks, workflow
+  checks), not a replacement. Cross-platform requirement is mandatory: Linux bwrap is one backend,
+  not the architecture. 2026-02-15 refinement: fail-closed default + explicit override +
+  traversal/symlink escape coverage.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -69,39 +66,30 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: LumenFlow uses git worktrees to isolate agent work, but enforcement that
-  agents stay inside their worktree is currently client-specific (Claude Code hooks in
-  .claude/settings.json). Other agent clients (Codex, Cursor, Gemini CLI) only get git pre-commit
-  hooks at commit time — too late, the agent has already written to the wrong place. Problem: No
-  vendor-agnostic mechanism prevents agents from writing to the main checkout at file-write time.
-  The current defense layers are: (1) git pre-commit hooks (vendor-agnostic but fire at commit time,
-  not write time), (2) Claude PreToolUse hooks (fire at write time but Claude-only), (3) prompt
-  instructions/skills (unreliable). The gap is a kernel-enforced, vendor-agnostic write barrier that
-  works for ANY agent process. Solution: Add a wu:sandbox CLI command that wraps agent processes in
-  Linux bubblewrap (bwrap) with write access restricted to the claimed worktree. Uses the same
-  asymmetric model as Anthropic sandbox-runtime: reads allowed everywhere (deny-listed), writes
-  denied everywhere (allow-listed). The sandbox resolves the worktree path from the WU ID and
-  constructs bwrap arguments automatically. Key design: .git/ stays readable (shared objects),
-  worktree gets write access, /tmp allowed, .lumenflow/state/ allowed for event logging, WU YAML
-  path allowed for status updates. Falls back gracefully when bwrap is not installed (warn +
-  continue).'
+description: 'Context: LumenFlow uses git worktrees to isolate agent work, but write-time
+  enforcement is currently client-specific. Problem: non-Claude clients can still write to the wrong
+  checkout before commit-time hooks run. Solution: add a vendor-agnostic wu:sandbox command with a
+  shared SandboxProfile and OS-specific backend adapters. Backends are platform-selected (Linux,
+  macOS, Windows) and enforce write restrictions to the claimed worktree while preserving required
+  read access (.git, node_modules, source tree). Security default is fail-closed: if no hardened
+  backend is available, wu:sandbox exits non-zero unless an explicit unsandboxed override is
+  provided.'
 acceptance:
-  - wu:sandbox --id WU-XXXX -- <command> wraps the given command in an OS-native sandbox with write
-    access restricted to the WU worktree
-  - Write attempts to main checkout source files from inside the sandbox fail with EPERM
-    (kernel-enforced)
-  - Read access to main checkout, .git/, node_modules/ works normally from inside the sandbox
-  - Git operations (commit, add, status) work correctly inside the sandboxed worktree
-  - pnpm/node operations work inside the sandbox (node_modules readable, /tmp writable)
-  - 'Sandbox allow-list includes: worktree dir, /tmp, .lumenflow/state/, WU YAML path, /proc, /dev
-    (for node)'
-  - .lumenflow.config.yaml gets a new sandbox section for configuring allow/deny paths
-  - 'Fail-closed default: when no sandbox backend is available, wu:sandbox exits non-zero unless
-    explicit LUMENFLOW_SANDBOX_ALLOW_UNSANDBOXED=1 override is set (warns and runs unsandboxed)'
-  - wu:claim --sandbox flag auto-wraps the agent session in the sandbox after worktree creation
-  - Integration test proves that a sandboxed process cannot write to main but can write to its
-    worktree
-  - Sandbox denies path-escape writes via ../ traversal and symlink traversal outside the claimed
-    worktree
-  - 'Platform-agnostic architecture: abstract SandboxProfile with OS-specific backends — bubblewrap
-    (Linux) and sandbox-exec/Seatbelt (macOS). Backend auto-detected via process.platform.'
+  - wu:sandbox --id WU-XXXX -- <command> wraps the command using an OS-native sandbox backend with
+    write access restricted to the WU worktree.
+  - 'Support matrix is explicit: Linux, macOS, and Windows are supported via platform-specific
+    backends behind a shared contract.'
+  - Write attempts to main checkout source files from inside sandbox fail with EPERM/EACCES.
+  - Read access to main checkout, .git/, and node_modules works normally from inside sandbox.
+  - Git operations (add/status/commit) work in the sandboxed worktree.
+  - Sandbox allow-list includes worktree dir, /tmp (or platform equivalent), .lumenflow/state/, and
+    WU YAML path required for lifecycle writes.
+  - .lumenflow.config.yaml includes sandbox configuration for allow/deny paths and override policy.
+  - Fail-closed default is enforced when no backend is available; unsandboxed execution requires
+    explicit override (LUMENFLOW_SANDBOX_ALLOW_UNSANDBOXED=1) and emits a warning.
+  - Path-escape attempts via ../ traversal and symlink traversal outside the claimed worktree are
+    denied.
+  - Architecture uses abstract SandboxProfile + backend adapters (linux, macos, windows), avoiding
+    platform-specific branching in command logic.
+  - Automated tests cover backend selection matrix and fail-closed/override behavior across
+    supported platforms.
