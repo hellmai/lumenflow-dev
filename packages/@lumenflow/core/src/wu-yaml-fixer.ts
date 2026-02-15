@@ -32,7 +32,24 @@ const TYPE_ALIASES = {
   tools: 'tooling',
   ref: 'refactor',
   proc: 'process',
-};
+} as const;
+
+interface WUYamlDoc {
+  created?: string | Date;
+  assigned_to?: string;
+  type?: string;
+  phase?: string | number | null;
+  priority?: string;
+  [key: string]: unknown;
+}
+
+interface FixableIssue {
+  type: string;
+  field: string;
+  current: unknown;
+  suggested: unknown;
+  description: string;
+}
 
 /**
  * Default email domain for username -> email conversion
@@ -56,7 +73,7 @@ export const FIXABLE_ISSUES = {
  * @param {object} doc - Parsed WU YAML data
  * @returns {object|null} Issue object or null
  */
-function checkCreatedField(doc) {
+function checkCreatedField(doc: WUYamlDoc): FixableIssue | null {
   if (!doc.created) return null;
 
   const createdStr = String(doc.created);
@@ -90,7 +107,7 @@ function checkCreatedField(doc) {
  * @param {object} doc - Parsed WU YAML data
  * @returns {object|null} Issue object or null
  */
-function checkAssignedToField(doc) {
+function checkAssignedToField(doc: WUYamlDoc): FixableIssue | null {
   if (!doc.assigned_to || typeof doc.assigned_to !== 'string') return null;
 
   const assignee = doc.assigned_to.trim();
@@ -112,17 +129,18 @@ function checkAssignedToField(doc) {
  * @param {object} doc - Parsed WU YAML data
  * @returns {object|null} Issue object or null
  */
-function checkTypeField(doc) {
+function checkTypeField(doc: WUYamlDoc): FixableIssue | null {
   if (!doc.type || typeof doc.type !== 'string') return null;
 
   const typeLower = doc.type.toLowerCase();
-  if (TYPE_ALIASES[typeLower]) {
+  const alias = TYPE_ALIASES[typeLower as keyof typeof TYPE_ALIASES];
+  if (alias) {
     return {
       type: FIXABLE_ISSUES.TYPE_ALIAS,
       field: 'type',
       current: doc.type,
-      suggested: TYPE_ALIASES[typeLower],
-      description: `Type alias should use canonical form: ${doc.type} → ${TYPE_ALIASES[typeLower]}`,
+      suggested: alias,
+      description: `Type alias should use canonical form: ${doc.type} → ${alias}`,
     };
   }
   // Check for invalid type not in aliases - try fuzzy match
@@ -148,7 +166,7 @@ function checkTypeField(doc) {
  * @param {object} doc - Parsed WU YAML data
  * @returns {object|null} Issue object or null
  */
-function checkPhaseField(doc) {
+function checkPhaseField(doc: WUYamlDoc): FixableIssue | null {
   if (doc.phase == null || typeof doc.phase !== 'string') return null;
 
   const num = parseInt(doc.phase, 10);
@@ -169,7 +187,7 @@ function checkPhaseField(doc) {
  * @param {object} doc - Parsed WU YAML data
  * @returns {object|null} Issue object or null
  */
-function checkPriorityField(doc) {
+function checkPriorityField(doc: WUYamlDoc): FixableIssue | null {
   if (!doc.priority || typeof doc.priority !== 'string') return null;
 
   const upper = doc.priority.toUpperCase();
@@ -191,7 +209,7 @@ function checkPriorityField(doc) {
  * @param {object} doc - Parsed WU YAML data
  * @returns {Array<{type: string, field: string, current: unknown, suggested: unknown, description: string}>}
  */
-export function detectFixableIssues(doc) {
+export function detectFixableIssues(doc: WUYamlDoc): FixableIssue[] {
   const checks = [
     checkCreatedField,
     checkAssignedToField,
@@ -200,7 +218,7 @@ export function detectFixableIssues(doc) {
     checkPriorityField,
   ];
 
-  return checks.map((check) => check(doc)).filter((issue) => issue !== null);
+  return checks.map((check) => check(doc)).filter((issue): issue is FixableIssue => issue !== null);
 }
 
 /**
@@ -210,7 +228,7 @@ export function detectFixableIssues(doc) {
  * @param {Array<{type: string, field: string, suggested: unknown}>} issues - Issues to fix
  * @returns {number} Number of fixes applied
  */
-export function applyFixes(doc, issues) {
+export function applyFixes(doc: Record<string, unknown>, issues: FixableIssue[]): number {
   let fixed = 0;
 
   for (const issue of issues) {
@@ -262,12 +280,15 @@ export interface AutoFixWUYamlOptions {
  * @param {AutoFixWUYamlOptions} options - Options
  * @returns {{fixed: number, issues: Array, backupPath?: string}}
  */
-export function autoFixWUYaml(wuPath, options: AutoFixWUYamlOptions = {}) {
+export function autoFixWUYaml(
+  wuPath: string,
+  options: AutoFixWUYamlOptions = {},
+): { fixed: number; issues: FixableIssue[]; wouldFix?: number; backupPath?: string } {
   const { dryRun = false, backup = true } = options;
 
   // Read and parse
   const text = readFileSync(wuPath, { encoding: 'utf-8' });
-  const doc = parseYAML(text);
+  const doc = parseYAML(text) as WUYamlDoc;
 
   // Detect issues
   const issues = detectFixableIssues(doc);
@@ -281,7 +302,7 @@ export function autoFixWUYaml(wuPath, options: AutoFixWUYamlOptions = {}) {
   }
 
   // Create backup if requested
-  let backupPath;
+  let backupPath: string | undefined;
   if (backup) {
     backupPath = `${wuPath}.bak`;
     copyFileSync(wuPath, backupPath);
@@ -303,6 +324,8 @@ export function autoFixWUYaml(wuPath, options: AutoFixWUYamlOptions = {}) {
  * @param {Array<{field: string, description: string}>} issues
  * @returns {string}
  */
-export function formatIssues(issues) {
-  return issues.map((i) => `  - ${i.field}: ${i.description}`).join(STRING_LITERALS.NEWLINE);
+export function formatIssues(issues: Array<{ field: string; description: string }>): string {
+  return issues
+    .map((issue) => `  - ${issue.field}: ${issue.description}`)
+    .join(STRING_LITERALS.NEWLINE);
 }
