@@ -16,6 +16,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { LOG_PREFIX } from './wu-constants.js';
+import { getErrorMessage } from './error-handler.js';
 
 /**
  * Relative path from worktree to main repo's node_modules
@@ -69,6 +70,36 @@ export const NESTED_PACKAGE_PATHS = [
   'apps/docs',
 ];
 
+interface WorktreePathSymlinkCheck {
+  isWorktreePath: boolean;
+  absoluteTarget: string;
+  isBroken: boolean;
+}
+
+interface WorktreePathSymlinkResult {
+  hasWorktreeSymlinks: boolean;
+  brokenSymlinks: string[];
+}
+
+interface LoggerLike {
+  info?: (message: string) => void;
+  warn?: (message: string) => void;
+}
+
+interface SymlinkResult {
+  created: boolean;
+  skipped: boolean;
+  refused?: boolean;
+  reason?: string;
+  error?: Error;
+}
+
+interface NestedSymlinkResult {
+  created: number;
+  skipped: number;
+  errors: Error[];
+}
+
 /**
  * Check if a symlink target points into a worktrees directory
  *
@@ -76,7 +107,7 @@ export const NESTED_PACKAGE_PATHS = [
  * @param {string} basePath - Base path to resolve relative targets against
  * @returns {{isWorktreePath: boolean, absoluteTarget: string, isBroken: boolean}}
  */
-function checkSymlinkTarget(linkTarget, basePath) {
+function checkSymlinkTarget(linkTarget: string, basePath: string): WorktreePathSymlinkCheck {
   const absoluteTarget = path.isAbsolute(linkTarget)
     ? linkTarget
     : path.resolve(basePath, linkTarget);
@@ -95,7 +126,11 @@ function checkSymlinkTarget(linkTarget, basePath) {
  * @param {string} basePath - Base path to resolve relative targets
  * @param {{hasWorktreeSymlinks: boolean, brokenSymlinks: string[]}} result - Result object to mutate
  */
-function processSymlinkEntry(entryPath, basePath, result) {
+function processSymlinkEntry(
+  entryPath: string,
+  basePath: string,
+  result: WorktreePathSymlinkResult,
+): void {
   const linkTarget = fs.readlinkSync(entryPath);
   const check = checkSymlinkTarget(linkTarget, basePath);
 
@@ -114,8 +149,8 @@ function processSymlinkEntry(entryPath, basePath, result) {
  * @param {string} pnpmPath - Absolute path to node_modules/.pnpm directory
  * @returns {{hasWorktreeSymlinks: boolean, brokenSymlinks: string[]}}
  */
-function scanPnpmForWorktreeSymlinks(pnpmPath) {
-  const result = { hasWorktreeSymlinks: false, brokenSymlinks: [] };
+function scanPnpmForWorktreeSymlinks(pnpmPath: string): WorktreePathSymlinkResult {
+  const result: WorktreePathSymlinkResult = { hasWorktreeSymlinks: false, brokenSymlinks: [] };
 
   const entries = fs.readdirSync(pnpmPath, { withFileTypes: true });
 
@@ -139,8 +174,8 @@ function scanPnpmForWorktreeSymlinks(pnpmPath) {
  * @param {string} nodeModulesPath - Absolute path to node_modules directory
  * @returns {{hasWorktreeSymlinks: boolean, brokenSymlinks: string[]}}
  */
-export function hasWorktreePathSymlinks(nodeModulesPath) {
-  const result = { hasWorktreeSymlinks: false, brokenSymlinks: [] };
+export function hasWorktreePathSymlinks(nodeModulesPath: string): WorktreePathSymlinkResult {
+  const result: WorktreePathSymlinkResult = { hasWorktreeSymlinks: false, brokenSymlinks: [] };
 
   if (!fs.existsSync(nodeModulesPath)) {
     return result;
@@ -171,7 +206,7 @@ export function hasWorktreePathSymlinks(nodeModulesPath) {
  * @param {string} targetPath - Path to check
  * @returns {boolean} True if exists (should skip)
  */
-function nodeModulesExists(targetPath) {
+function nodeModulesExists(targetPath: string): boolean {
   try {
     fs.lstatSync(targetPath);
     return true;
@@ -187,7 +222,10 @@ function nodeModulesExists(targetPath) {
  * @param {object} logger - Logger with warn method
  * @returns {{refused: boolean, reason?: string}}
  */
-function checkMainNodeModulesHealth(mainRepoPath, logger) {
+function checkMainNodeModulesHealth(
+  mainRepoPath: string,
+  logger: LoggerLike,
+): { refused: boolean; reason?: string } {
   const mainNodeModulesPath = path.join(mainRepoPath, NODE_MODULES_DIR);
   const check = hasWorktreePathSymlinks(mainNodeModulesPath);
 
@@ -229,7 +267,11 @@ function checkMainNodeModulesHealth(mainRepoPath, logger) {
  * // In wu-claim.ts after worktree creation:
  * symlinkNodeModules('/path/to/worktrees/operations-tooling-wu-1443');
  */
-export function symlinkNodeModules(worktreePath, logger = console, mainRepoPath = null) {
+export function symlinkNodeModules(
+  worktreePath: string,
+  logger: LoggerLike = console,
+  mainRepoPath: string | null = null,
+): SymlinkResult {
   const targetPath = path.join(worktreePath, NODE_MODULES_DIR);
 
   // Check if node_modules already exists (idempotent)
@@ -255,11 +297,14 @@ export function symlinkNodeModules(worktreePath, logger = console, mainRepoPath 
     }
 
     return { created: true, skipped: false };
-  } catch (error) {
+  } catch (error: unknown) {
+    const normalizedError = error instanceof Error ? error : new Error(String(error));
     if (logger.warn) {
-      logger.warn(`${LOG_PREFIX.CLAIM} Failed to create node_modules symlink: ${error.message}`);
+      logger.warn(
+        `${LOG_PREFIX.CLAIM} Failed to create node_modules symlink: ${getErrorMessage(error)}`,
+      );
     }
-    return { created: false, skipped: false, error };
+    return { created: false, skipped: false, error: normalizedError };
   }
 }
 
@@ -270,7 +315,7 @@ export function symlinkNodeModules(worktreePath, logger = console, mainRepoPath 
  * @param {string} sourceNodeModules - Source node_modules path
  * @returns {boolean} True if should skip
  */
-function shouldSkipNestedPackage(targetDir, sourceNodeModules) {
+function shouldSkipNestedPackage(targetDir: string, sourceNodeModules: string): boolean {
   if (!fs.existsSync(targetDir)) {
     return true;
   }
@@ -290,7 +335,12 @@ function shouldSkipNestedPackage(targetDir, sourceNodeModules) {
  * @param {Error[]} errors - Errors array to mutate
  * @returns {'skip'|'replace'|'create'} Action to take
  */
-function handleExistingNestedNodeModules(targetNodeModules, pkgPath, logger, errors) {
+function handleExistingNestedNodeModules(
+  targetNodeModules: string,
+  pkgPath: string,
+  logger: LoggerLike | null,
+  errors: Error[],
+): 'skip' | 'replace' | 'create' {
   let targetStat;
   try {
     targetStat = fs.lstatSync(targetNodeModules);
@@ -323,11 +373,12 @@ function handleExistingNestedNodeModules(targetNodeModules, pkgPath, logger, err
   try {
     fs.rmSync(targetNodeModules, { recursive: true, force: true });
     return 'replace';
-  } catch (rmError) {
-    errors.push(rmError);
+  } catch (rmError: unknown) {
+    const normalizedError = rmError instanceof Error ? rmError : new Error(String(rmError));
+    errors.push(normalizedError);
     if (logger?.warn) {
       logger.warn(
-        `${LOG_PREFIX.CLAIM} Failed to remove stale ${pkgPath}/node_modules: ${rmError.message}`,
+        `${LOG_PREFIX.CLAIM} Failed to remove stale ${pkgPath}/node_modules: ${getErrorMessage(rmError)}`,
       );
     }
     return 'skip';
@@ -353,10 +404,14 @@ function handleExistingNestedNodeModules(targetNodeModules, pkgPath, logger, err
  *   '/path/to/main-repo'
  * );
  */
-export function symlinkNestedNodeModules(worktreePath, mainRepoPath, logger = null) {
+export function symlinkNestedNodeModules(
+  worktreePath: string,
+  mainRepoPath: string,
+  logger: LoggerLike | null = null,
+): NestedSymlinkResult {
   let created = 0;
   let skipped = 0;
-  const errors = [];
+  const errors: Error[] = [];
 
   for (const pkgPath of NESTED_PACKAGE_PATHS) {
     const targetDir = path.join(worktreePath, pkgPath);
@@ -383,11 +438,12 @@ export function symlinkNestedNodeModules(worktreePath, mainRepoPath, logger = nu
       if (logger?.info) {
         logger.info(`${LOG_PREFIX.CLAIM} ${pkgPath}/node_modules symlink created`);
       }
-    } catch (error) {
-      errors.push(error);
+    } catch (error: unknown) {
+      const normalizedError = error instanceof Error ? error : new Error(String(error));
+      errors.push(normalizedError);
       if (logger?.warn) {
         logger.warn(
-          `${LOG_PREFIX.CLAIM} Failed to create ${pkgPath}/node_modules symlink: ${error.message}`,
+          `${LOG_PREFIX.CLAIM} Failed to create ${pkgPath}/node_modules symlink: ${getErrorMessage(error)}`,
         );
       }
     }

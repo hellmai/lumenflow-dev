@@ -26,6 +26,7 @@ import { globSync } from 'glob';
 import { parseYAML } from './wu-yaml.js';
 // WU-2333: Import automated tests invariant check
 import { checkAutomatedTestsInvariant } from './invariants/check-automated-tests.js';
+import { getErrorMessage } from './error-handler.js';
 
 /**
  * Invariant type constants
@@ -46,6 +47,35 @@ export const INVARIANT_TYPES = {
  * Directories to exclude from pattern scanning
  */
 const EXCLUDED_DIRS = ['node_modules', 'worktrees', '.next', 'dist', '.git'];
+
+interface InvariantDefinition {
+  id: string;
+  type: string;
+  description: string;
+  message?: string;
+  path?: string;
+  paths?: string[];
+  pattern?: string;
+  scope?: string[];
+  from?: string;
+  cannot_import?: string[];
+  valid?: boolean;
+  existingPaths?: string[];
+  matchingFiles?: string[];
+  patternNotFound?: boolean;
+  violatingFiles?: string[];
+  violatingImports?: Record<string, number>;
+  wuViolations?: Array<{
+    wuId: string;
+    codeFiles?: string[];
+  }>;
+  [key: string]: unknown;
+}
+
+interface InvariantValidationResult {
+  valid: boolean;
+  violations: InvariantDefinition[];
+}
 
 /**
  * Custom error class for invariant violations
@@ -72,18 +102,18 @@ export class InvariantError extends Error {
  * @returns {Array<object>} Array of invariant definitions
  * @throws {Error} If file doesn't exist or has invalid YAML
  */
-export function loadInvariants(filePath) {
+export function loadInvariants(filePath: string): InvariantDefinition[] {
   if (!existsSync(filePath)) {
     throw new Error(`Invariants file not found: ${filePath}`);
   }
 
   const content = readFileSync(filePath, 'utf-8');
 
-  let doc;
+  let doc: { invariants?: InvariantDefinition[] } | null;
   try {
-    doc = parseYAML(content);
-  } catch (e) {
-    throw new Error(`Invalid YAML in ${filePath}: ${e.message}`);
+    doc = parseYAML(content) as { invariants?: InvariantDefinition[] } | null;
+  } catch (e: unknown) {
+    throw new Error(`Invalid YAML in ${filePath}: ${getErrorMessage(e)}`);
   }
 
   if (!doc || !Array.isArray(doc.invariants)) {
@@ -100,7 +130,10 @@ export function loadInvariants(filePath) {
  * @param {string} baseDir - Base directory for path resolution
  * @returns {object|null} Violation object if invalid, null if valid
  */
-function validateRequiredFile(invariant, baseDir) {
+function validateRequiredFile(
+  invariant: InvariantDefinition,
+  baseDir: string,
+): InvariantDefinition | null {
   const fullPath = path.join(baseDir, invariant.path);
 
   if (!existsSync(fullPath)) {
@@ -121,7 +154,10 @@ function validateRequiredFile(invariant, baseDir) {
  * @param {string} baseDir - Base directory for path resolution
  * @returns {object|null} Violation object if invalid, null if valid
  */
-function validateForbiddenFile(invariant, baseDir) {
+function validateForbiddenFile(
+  invariant: InvariantDefinition,
+  baseDir: string,
+): InvariantDefinition | null {
   const fullPath = path.join(baseDir, invariant.path);
 
   if (existsSync(fullPath)) {
@@ -142,8 +178,12 @@ function validateForbiddenFile(invariant, baseDir) {
  * @param {string} baseDir - Base directory for path resolution
  * @returns {object|null} Violation object if invalid, null if valid
  */
-function validateMutualExclusivity(invariant, baseDir) {
-  const existingPaths = invariant.paths.filter((p) => {
+function validateMutualExclusivity(
+  invariant: InvariantDefinition,
+  baseDir: string,
+): InvariantDefinition | null {
+  const paths = Array.isArray(invariant.paths) ? invariant.paths : [];
+  const existingPaths = paths.filter((p: string) => {
     const fullPath = path.join(baseDir, p);
     return existsSync(fullPath);
   });
@@ -166,7 +206,10 @@ function validateMutualExclusivity(invariant, baseDir) {
  * @param {string} baseDir - Base directory for path resolution
  * @returns {object|null} Violation object if invalid, null if valid
  */
-function validateForbiddenPattern(invariant, baseDir) {
+function validateForbiddenPattern(
+  invariant: InvariantDefinition,
+  baseDir: string,
+): InvariantDefinition | null {
   const { pattern, scope } = invariant;
 
   if (!pattern || !scope || !Array.isArray(scope)) {
@@ -177,7 +220,7 @@ function validateForbiddenPattern(invariant, baseDir) {
   const ignorePatterns = EXCLUDED_DIRS.map((dir) => `**/${dir}/**`);
 
   // Find all files matching the scope
-  const matchingFiles = [];
+  const matchingFiles: string[] = [];
 
   for (const scopePattern of scope) {
     const files = globSync(scopePattern, {
@@ -225,7 +268,10 @@ function validateForbiddenPattern(invariant, baseDir) {
  * @param {string} baseDir - Base directory for path resolution
  * @returns {object|null} Violation object if pattern NOT found, null if found
  */
-function validateRequiredPattern(invariant, baseDir) {
+function validateRequiredPattern(
+  invariant: InvariantDefinition,
+  baseDir: string,
+): InvariantDefinition | null {
   const { pattern, scope } = invariant;
 
   if (!pattern || !scope || !Array.isArray(scope)) {
@@ -283,7 +329,10 @@ function validateRequiredPattern(invariant, baseDir) {
  * @param {string} baseDir - Base directory for path resolution
  * @returns {object|null} Violation object if forbidden imports found, null otherwise
  */
-function validateForbiddenImport(invariant, baseDir) {
+function validateForbiddenImport(
+  invariant: InvariantDefinition,
+  baseDir: string,
+): InvariantDefinition | null {
   const { from, cannot_import } = invariant;
 
   if (!from || !cannot_import || !Array.isArray(cannot_import)) {
@@ -300,12 +349,12 @@ function validateForbiddenImport(invariant, baseDir) {
     nodir: true,
   });
 
-  const violatingFiles = [];
-  const violatingImports = {};
+  const violatingFiles: string[] = [];
+  const violatingImports: Record<string, number> = {};
 
   // Build regex patterns for detecting imports of forbidden modules
   // We escape special regex characters in module names
-  const forbiddenModulePatterns = cannot_import.map((mod) => {
+  const forbiddenModulePatterns = cannot_import.map((mod: string) => {
     const escapedMod = mod.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     // Match:
     // - import ... from 'module' or "module"
@@ -332,7 +381,7 @@ function validateForbiddenImport(invariant, baseDir) {
       // Check each forbidden module pattern
       for (let i = 0; i < forbiddenModulePatterns.length; i++) {
         const pattern = forbiddenModulePatterns[i];
-        const moduleName = cannot_import[i];
+        const moduleName = cannot_import[i] ?? 'unknown-module';
 
         if (pattern.test(content)) {
           if (!violatingFiles.includes(file)) {
@@ -378,10 +427,10 @@ interface ValidateWUAutomatedTestsContext {
 }
 
 function validateWUAutomatedTests(
-  invariant,
-  baseDir,
+  invariant: InvariantDefinition,
+  baseDir: string,
   context: ValidateWUAutomatedTestsContext = {},
-) {
+): InvariantDefinition | null {
   const { wuId } = context;
   const result = checkAutomatedTestsInvariant({ baseDir, wuId });
 
@@ -414,9 +463,12 @@ export interface ValidateInvariantsOptions {
   wuId?: string;
 }
 
-export function validateInvariants(invariants, options: ValidateInvariantsOptions = {}) {
+export function validateInvariants(
+  invariants: InvariantDefinition[],
+  options: ValidateInvariantsOptions = {},
+): InvariantValidationResult {
   const { baseDir = process.cwd(), wuId } = options;
-  const violations = [];
+  const violations: InvariantDefinition[] = [];
 
   for (const invariant of invariants) {
     let violation = null;
@@ -474,8 +526,8 @@ export function validateInvariants(invariants, options: ValidateInvariantsOption
  * @param {object} violation - Violation object
  * @returns {string[]} Formatted lines
  */
-function formatFileViolationDetails(violation) {
-  const lines = [];
+function formatFileViolationDetails(violation: InvariantDefinition): string[] {
+  const lines: string[] = [];
   if (violation.path) {
     lines.push(`Path: ${violation.path}`);
   }
@@ -493,8 +545,8 @@ function formatFileViolationDetails(violation) {
  * @param {object} violation - Violation object
  * @returns {string[]} Formatted lines
  */
-function formatImportViolationDetails(violation) {
-  const lines = [];
+function formatImportViolationDetails(violation: InvariantDefinition): string[] {
+  const lines: string[] = [];
   if (violation.from) {
     lines.push(`From: ${violation.from}`);
   }
@@ -518,8 +570,8 @@ function formatImportViolationDetails(violation) {
  * @param {object} violation - Violation object
  * @returns {string[]} Formatted lines
  */
-function formatPatternViolationDetails(violation) {
-  const lines = [];
+function formatPatternViolationDetails(violation: InvariantDefinition): string[] {
+  const lines: string[] = [];
   if (violation.patternNotFound) {
     lines.push(`Required pattern not found: ${violation.pattern}`);
     if (violation.scope) {
@@ -534,8 +586,8 @@ function formatPatternViolationDetails(violation) {
  * @param {object} violation - Violation object
  * @returns {string[]} Formatted lines
  */
-function formatWUAutomatedTestsViolationDetails(violation) {
-  const lines = [];
+function formatWUAutomatedTestsViolationDetails(violation: InvariantDefinition): string[] {
+  const lines: string[] = [];
   if (violation.wuViolations) {
     lines.push(`WUs missing automated tests:`);
     for (const wuViolation of violation.wuViolations) {
@@ -555,7 +607,7 @@ function formatWUAutomatedTestsViolationDetails(violation) {
  * @param {object} violation - Violation object
  * @returns {string[]} Array of formatted detail lines
  */
-function formatViolationDetails(violation) {
+function formatViolationDetails(violation: InvariantDefinition): string[] {
   return [
     ...formatFileViolationDetails(violation),
     ...formatImportViolationDetails(violation),
@@ -570,7 +622,7 @@ function formatViolationDetails(violation) {
  * @param {object} violation - Violation object from validateInvariants
  * @returns {string} Formatted error message
  */
-export function formatInvariantError(violation) {
+export function formatInvariantError(violation: InvariantDefinition): string {
   const lines = [
     `INVARIANT VIOLATION: ${violation.id}`,
     `Type: ${violation.type}`,
@@ -607,7 +659,11 @@ export interface RunInvariantsOptions {
   wuId?: string;
 }
 
-export function runInvariants(options: RunInvariantsOptions = {}) {
+export function runInvariants(options: RunInvariantsOptions = {}): {
+  success: boolean;
+  violations: InvariantDefinition[];
+  formatted: string;
+} {
   const {
     configPath = 'tools/invariants.yml',
     baseDir = process.cwd(),
@@ -659,8 +715,8 @@ export function runInvariants(options: RunInvariantsOptions = {}) {
       violations: result.violations,
       formatted,
     };
-  } catch (e) {
-    const error = `[invariants] Error: ${e.message}`;
+  } catch (e: unknown) {
+    const error = `[invariants] Error: ${getErrorMessage(e)}`;
     if (!silent) {
       console.error(error);
     }
