@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1582 — CLI strict wave 1B: initiative and gates command fixes](wu/WU-1582.yaml)
 
 ## Completed
 
