@@ -1329,3 +1329,4 @@
 {"type":"complete","wuId":"WU-1693","timestamp":"2026-02-15T17:59:01.042Z"}
 {"type":"claim","wuId":"WU-1581","timestamp":"2026-02-15T18:00:20.245Z","lane":"Framework: CLI WU Commands","title":"CLI strict wave 1A: high-impact WU command hotspots"}
 {"type":"complete","wuId":"WU-1581","timestamp":"2026-02-15T18:18:54.902Z"}
+{"type":"claim","wuId":"WU-1582","lane":"Framework: CLI Orchestration","title":"CLI strict wave 1B: initiative and gates command fixes","timestamp":"2026-02-15T18:19:16.185Z"}

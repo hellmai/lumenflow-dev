@@ -2,7 +2,7 @@ id: WU-1582
 title: 'CLI strict wave 1B: initiative and gates command fixes'
 lane: 'Framework: CLI Orchestration'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/cli/src/gates.ts
 tests:
   manual:
-    - pnpm --filter @lumenflow/cli typecheck and validate initiative/gates command behavior in dry-run invocations
+    - pnpm --filter @lumenflow/cli typecheck and validate initiative/gates command behavior in
+      dry-run invocations
   unit:
     - packages/@lumenflow/cli/src/__tests__/initiative-edit.test.ts
     - packages/@lumenflow/cli/src/__tests__/initiative-add-wu.test.ts
@@ -35,10 +36,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: initiative and gates command paths still carry concentrated strict debt in CLI orchestration flow. Problem: these code paths are central to orchestration safety and need strict-safe typing before final strict enablement. Solution: remediate implicit any and unknown handling in initiative and gates command implementations while preserving contract behavior and diagnostics.'
+description: 'Context: initiative and gates command paths still carry concentrated strict debt in
+  CLI orchestration flow. Problem: these code paths are central to orchestration safety and need
+  strict-safe typing before final strict enablement. Solution: remediate implicit any and unknown
+  handling in initiative and gates command implementations while preserving contract behavior and
+  diagnostics.'
 acceptance:
   - Strict errors are removed from targeted initiative and gates command files
   - Command behavior and output contracts remain unchanged under existing tests
   - No net increase in as any usage in touched files
   - Relevant CLI orchestration and enforcement tests pass
   - Progress baseline reflects reduced strict debt for this cluster
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1582
+claimed_at: 2026-02-15T18:19:16.141Z
+baseline_main_sha: cc5a94488cce6b967d9bf30b17fc30a21ba6b7f2
+session_id: 852dd2db-7ffb-4ed5-b95c-e2ccdb25dd76
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T18:19:16.146Z
