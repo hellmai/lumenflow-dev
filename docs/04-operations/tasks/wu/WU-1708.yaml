@@ -2,7 +2,7 @@ id: WU-1708
 title: 'Strict debt slice: type token-counter'
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -38,3 +38,6 @@ session_id: 029aea03-ebcc-43b5-b76e-51ca7c99fd41
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T23:34:48.853Z
+locked: true
+completed_at: 2026-02-15T23:37:59.875Z
+completed: 2026-02-15
