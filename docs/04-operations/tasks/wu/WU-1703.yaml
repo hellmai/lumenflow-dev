@@ -29,7 +29,8 @@ tests:
   manual:
     - Verify no PII/PHI references remain in docs and templates
     - Grep for PHI, HIPAA, patient, clinical in docs confirms zero matches
-  unit: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1703.done
