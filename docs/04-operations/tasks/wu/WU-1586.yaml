@@ -2,7 +2,7 @@ id: WU-1586
 title: 'Core strict wave 2C: backlog and compliance strict fixes'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -34,10 +34,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: strict debt in backlog/compliance flows sits in parser and collection modules that feed planning and governance outputs. Problem: these paths are cross-cutting and can leak weak typing into many downstream commands. Solution: remediate strict errors in compliance parsing, transaction collectors, and dependency graph modules with explicit data contracts and guardrails.'
+description: 'Context: strict debt in backlog/compliance flows sits in parser and collection modules
+  that feed planning and governance outputs. Problem: these paths are cross-cutting and can leak
+  weak typing into many downstream commands. Solution: remediate strict errors in compliance
+  parsing, transaction collectors, and dependency graph modules with explicit data contracts and
+  guardrails.'
 acceptance:
   - Strict errors are removed from targeted backlog/compliance files
   - Compliance and dependency behavior remains stable under existing tests
   - No net increase in as any usage in touched core files
   - Backlog/compliance related core tests pass
   - Core strict progress baseline reflects reduced debt for this wave
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1586
+claimed_at: 2026-02-15T18:56:26.677Z
+baseline_main_sha: 1c20c97baa722826e541b745f4cd781aa34f0d21
+session_id: f6727e57-b9cf-419b-86cd-ce730e98dd47
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T18:56:26.682Z

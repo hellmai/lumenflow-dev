@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml)
 
 ## Completed
 
