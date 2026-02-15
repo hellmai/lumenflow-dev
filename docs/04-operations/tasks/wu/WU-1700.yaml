@@ -2,7 +2,7 @@ id: WU-1700
 title: 'Strict debt slice: eliminate TS7006 in cli initiative-status'
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -31,8 +31,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: strict probes show packages/@lumenflow/cli/src/initiative-status.ts as the top CLI strict hotspot. Problem: implicit-any parameters and untyped status grouping logic block strict debt burn-down. Solution: add focused lifecycle-status unit tests first, then annotate initiative-status.ts helper and render-path types without behavior changes.'
+description: 'Context: strict probes show packages/@lumenflow/cli/src/initiative-status.ts as the
+  top CLI strict hotspot. Problem: implicit-any parameters and untyped status grouping logic block
+  strict debt burn-down. Solution: add focused lifecycle-status unit tests first, then annotate
+  initiative-status.ts helper and render-path types without behavior changes.'
 acceptance:
-  - Strict probe with strictNullChecks/noImplicitAny reports no TS7006/TS7031 diagnostics for packages/@lumenflow/cli/src/initiative-status.ts
+  - Strict probe with strictNullChecks/noImplicitAny reports no TS7006/TS7031 diagnostics for
+    packages/@lumenflow/cli/src/initiative-status.ts
   - packages/@lumenflow/cli/src/__tests__/initiative-status.test.ts passes
   - pnpm --filter @lumenflow/cli typecheck passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1700
+claimed_at: 2026-02-15T21:37:12.249Z
+baseline_main_sha: 4ba2fa9a5c917e249aa60b8b7400d3bfae2ed5b3
+session_id: b5397afb-f26f-4b9f-90a9-3ef3622b6d9a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T21:37:12.253Z

@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1700 — Strict debt slice: eliminate TS7006 in cli initiative-status](wu/WU-1700.yaml)
 
 ## Completed
 
