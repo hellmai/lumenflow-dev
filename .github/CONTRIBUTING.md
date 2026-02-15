@@ -1,43 +1,99 @@
 # Contributing to LumenFlow
 
-Thanks for your interest in contributing.
+Thanks for your interest in contributing! This guide covers two workflows:
 
-## Before You Start
+- **External contributors** (you, probably) -- fork + PR
+- **Maintainers** -- trunk-based WU workflow
 
-- Read the project overview in `README.md`.
-- Review `AGENTS.md` and `LUMENFLOW.md` for workflow expectations.
-- Follow the Code of Conduct in `.github/CODE_OF_CONDUCT.md`.
+## External Contributors
 
-## Contribution Workflow
+### Getting Started
 
-LumenFlow uses Work Units (WUs) for all tracked work.
+1. Fork the repo on GitHub
+2. Clone your fork and install dependencies:
 
-1. Create or pick a WU in `docs/04-operations/tasks/wu/`.
-2. Claim it:
-   `pnpm wu:claim --id WU-XXXX --lane "<Lane>"`
-3. Work only in the claimed worktree.
-4. Run validation:
-   - `pnpm docs:validate` (for docs changes)
-   - `pnpm gates`
-5. Complete the WU lifecycle:
-   - `pnpm wu:prep --id WU-XXXX`
-   - `cd <repo-root> && pnpm wu:done --id WU-XXXX`
+```bash
+git clone https://github.com/<your-username>/lumenflow.git
+cd lumenflow
+pnpm install
+pnpm build
+```
 
-## Pull Requests
+### Making Changes
 
-Use `.github/pull_request_template.md` and include:
+1. Create a branch from `main`:
 
-- Linked WU ID(s)
-- Validation evidence (commands and outcomes)
-- Docs and risk notes
+```bash
+git checkout -b fix/describe-your-change
+```
 
-## Reporting Bugs and Requesting Features
+2. Make your changes
+3. Run quality checks locally:
 
-- Use `.github/ISSUE_TEMPLATE/bug_report.md` for defects.
-- Use `.github/ISSUE_TEMPLATE/feature_request.md` for enhancements.
+```bash
+pnpm lint        # ESLint
+pnpm typecheck   # TypeScript
+pnpm test        # Vitest
+```
 
-## Security Reports
+4. Commit and push:
 
-Do not file public issues for vulnerabilities.
+```bash
+git add <files>
+git commit -m "fix: describe what you changed"
+git push origin fix/describe-your-change
+```
 
-See `.github/SECURITY.md` for responsible disclosure steps.
+5. Open a pull request on GitHub against `main`
+
+### PR Requirements
+
+- One maintainer approval required
+- All CI checks must pass
+- Clear description of what changed and why
+
+### What Makes a Good PR
+
+- **Small and focused** -- one logical change per PR
+- **Tests included** -- new features need tests, bug fixes need regression tests
+- **Passes gates** -- `pnpm lint && pnpm typecheck && pnpm test` all green
+
+## Maintainers (Trunk-Based Workflow)
+
+Maintainers have direct push access to `main` through the LumenFlow WU workflow. We dogfood LumenFlow to build LumenFlow.
+
+```bash
+# Create a work unit
+pnpm wu:create --lane "Framework: Core" --title "Your change"
+
+# Claim it (creates an isolated git worktree)
+pnpm wu:claim --id WU-XXXX
+
+# Work in the worktree
+cd worktrees/<lane>-wu-xxxx
+
+# Validate and complete
+pnpm wu:prep --id WU-XXXX
+cd /path/to/repo && pnpm wu:done --id WU-XXXX
+```
+
+This pushes directly to `main` -- no PR needed. The WU lifecycle enforces quality gates, worktree isolation, and atomic merges.
+
+See [LUMENFLOW.md](../LUMENFLOW.md) for the full workflow reference.
+
+## Reporting Issues
+
+- **Bugs**: Open a GitHub issue with steps to reproduce
+- **Features**: Open a GitHub issue describing the use case
+- **Security**: Do NOT file public issues. Email security@hellm.ai
+
+## Code Style
+
+- TypeScript with strict mode
+- Prettier for formatting (auto-checked by gates)
+- ESLint 9 flat config
+- Vitest for testing
+
+## License
+
+By contributing, you agree that your contributions will be licensed under [Apache-2.0](../LICENSE).

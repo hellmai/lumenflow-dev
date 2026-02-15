@@ -158,24 +158,24 @@ Run LumenFlow gates in CI with language-specific presets:
 
 ## Contributing
 
-We use LumenFlow to build LumenFlow. To contribute:
+We use LumenFlow to build LumenFlow -- but you don't need to know the internal workflow to contribute.
 
-1. Fork the repo
-2. `pnpm install && pnpm build`
-3. Create a WU: `pnpm wu:create --lane "Framework: Core" --title "Your change"`
-4. Work in the worktree, pass gates, submit via `wu:done`
+**External contributors** fork the repo, make changes on a branch, and open a pull request. One maintainer review is required before merge.
 
-Project governance and contributor guidance:
+```bash
+# Fork on GitHub, then:
+git clone https://github.com/<you>/lumenflow.git
+cd lumenflow && pnpm install && pnpm build
+git checkout -b my-fix
+# make changes, then:
+pnpm lint && pnpm typecheck && pnpm test
+git push origin my-fix
+# open PR on GitHub
+```
 
-- [Contributing Guide](.github/CONTRIBUTING.md)
-- [Code of Conduct](.github/CODE_OF_CONDUCT.md)
-- [Security Policy](.github/SECURITY.md)
+**Maintainers** use LumenFlow's trunk-based WU workflow (`wu:create` -> `wu:claim` -> `wu:prep` -> `wu:done`) which pushes directly to main. This is how the codebase is developed day-to-day.
 
-Use the GitHub templates for submissions:
-
-- [Bug Report Template](.github/ISSUE_TEMPLATE/bug_report.md)
-- [Feature Request Template](.github/ISSUE_TEMPLATE/feature_request.md)
-- [Pull Request Template](.github/pull_request_template.md)
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for full details.
 
 ## License
 
