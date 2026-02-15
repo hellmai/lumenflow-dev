@@ -2,7 +2,7 @@ id: WU-1584
 title: 'Core strict wave 2A: lifecycle strict hotspots'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -53,3 +53,6 @@ session_id: a4f240a2-f6b8-4691-ab56-77f2152c66a7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T18:36:19.690Z
+locked: true
+completed_at: 2026-02-15T18:47:38.330Z
+completed: 2026-02-15
