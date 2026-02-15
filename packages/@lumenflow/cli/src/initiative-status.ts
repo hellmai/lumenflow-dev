@@ -43,7 +43,9 @@ function asString(value: unknown): string {
 }
 
 function asStringArray(value: unknown): string[] {
-  return Array.isArray(value) ? value.filter((entry): entry is string => typeof entry === 'string') : [];
+  return Array.isArray(value)
+    ? value.filter((entry): entry is string => typeof entry === 'string')
+    : [];
 }
 
 function normalizeLifecycleStatus(value: unknown): string {
@@ -66,7 +68,10 @@ function hasIncompletePhase(phases: InitiativePhaseDoc[]): boolean {
   });
 }
 
-export function deriveInitiativeLifecycleStatus(status: unknown, phases: InitiativePhaseDoc[]): string {
+export function deriveInitiativeLifecycleStatus(
+  status: unknown,
+  phases: InitiativePhaseDoc[],
+): string {
   const normalizedStatus = normalizeLifecycleStatus(status);
   if (normalizedStatus === WU_STATUS.DONE && hasIncompletePhase(phases)) {
     return WU_STATUS.IN_PROGRESS;
