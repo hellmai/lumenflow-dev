@@ -2,7 +2,7 @@ id: WU-1686
 title: Reframe article as agent orchestration layer + Medium optimisations
 lane: 'Content: Site Comms'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-15
 code_paths:
