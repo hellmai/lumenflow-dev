@@ -20,42 +20,72 @@ import { createError, ErrorCodes } from './error-handler.js';
 import { WEIGHTS, CONFIDENCE } from './wu-validation-constants.js';
 import { findProjectRoot } from './lumenflow-config.js';
 
+interface SubLaneConfig {
+  code_paths?: string[];
+  keywords?: string[];
+}
+
+type LaneInferenceConfig = Record<string, Record<string, SubLaneConfig>>;
+
+interface LaneScore {
+  lane: string;
+  confidence: number;
+  parent: string;
+  subLane: string;
+}
+
+interface LaneInferenceResult {
+  lane: string;
+  confidence: number;
+}
+
 /**
  * Load lane inference config from project root
  * @param {string|null} configPath - Optional path to config file (defaults to project root)
  * @returns {object} Parsed config object
  * @throws {Error} If config file not found or YAML parsing fails
  */
-function loadConfig(configPath = null) {
-  if (!configPath) {
+function loadConfig(configPath: string | null = null): LaneInferenceConfig {
+  let resolvedConfigPath = configPath;
+  if (!resolvedConfigPath) {
     // Use findProjectRoot() to locate config from cwd
     const projectRoot = findProjectRoot();
-    configPath = path.join(projectRoot, '.lumenflow.lane-inference.yaml');
+    resolvedConfigPath = path.join(projectRoot, '.lumenflow.lane-inference.yaml');
   }
 
-  if (!existsSync(configPath)) {
+  if (!existsSync(resolvedConfigPath)) {
     throw createError(
       ErrorCodes.FILE_NOT_FOUND,
-      `Lane inference config not found: ${configPath}\n\n` +
+      `Lane inference config not found: ${resolvedConfigPath}\n\n` +
         `This file defines the lane taxonomy for sub-lane validation.\n\n` +
         `To fix this:\n` +
         `  1. Generate a lane taxonomy from your codebase:\n` +
         `     pnpm lane:suggest --output .lumenflow.lane-inference.yaml\n\n` +
         `  2. Or copy from an example project and customize.\n\n` +
         `See: LUMENFLOW.md "Setup Notes" section for details.`,
-      { path: configPath },
+      { path: resolvedConfigPath },
     );
   }
 
   try {
-    const configContent = readFileSync(configPath, { encoding: 'utf-8' });
-    return YAML.parse(configContent);
+    const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
+    const parsed = YAML.parse(configContent) as unknown;
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      throw createError(
+        ErrorCodes.YAML_PARSE_ERROR,
+        `Failed to parse lane inference config: ${resolvedConfigPath}\n\n` +
+          `Config must be a mapping of parent lanes to sub-lane config objects.`,
+        { path: resolvedConfigPath },
+      );
+    }
+    return parsed as LaneInferenceConfig;
   } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
     throw createError(
       ErrorCodes.YAML_PARSE_ERROR,
-      `Failed to parse lane inference config: ${configPath}\n\n${err.message}\n\n` +
+      `Failed to parse lane inference config: ${resolvedConfigPath}\n\n${message}\n\n` +
         `Ensure config is valid YAML.`,
-      { path: configPath, originalError: err.message },
+      { path: resolvedConfigPath, originalError: message },
     );
   }
 }
@@ -66,7 +96,7 @@ function loadConfig(configPath = null) {
  * @param {string} pattern - Glob pattern from config (e.g., "tools/**", "*.ts")
  * @returns {boolean} True if path matches pattern
  */
-function matchesPattern(codePath, pattern) {
+function matchesPattern(codePath: string, pattern: string): boolean {
   // Use micromatch for robust, fast glob matching (industry standard)
   // 28x faster than minimatch, used by webpack/babel/jest
   return micromatch.isMatch(codePath, pattern, { nocase: true });
@@ -78,7 +108,7 @@ function matchesPattern(codePath, pattern) {
  * @param {string} keyword - Keyword to search for
  * @returns {boolean} True if keyword found in description
  */
-function containsKeyword(description, keyword) {
+function containsKeyword(description: string, keyword: string): boolean {
   const normalizedDesc = description.toLowerCase().trim();
   const normalizedKeyword = keyword.toLowerCase().trim();
 
@@ -101,7 +131,11 @@ function containsKeyword(description, keyword) {
  * @param {object} subLaneConfig - Sub-lane config (code_paths, keywords)
  * @returns {number} Confidence score (raw score, higher = better match)
  */
-function calculateConfidence(codePaths, description, subLaneConfig) {
+function calculateConfidence(
+  codePaths: string[],
+  description: string,
+  subLaneConfig: SubLaneConfig,
+): number {
   let score = 0;
 
   // Score code path matches
@@ -132,7 +166,11 @@ function calculateConfidence(codePaths, description, subLaneConfig) {
  * @returns {{ lane: string, confidence: number }} Suggested sub-lane and confidence (0-100)
  * @throws {Error} If config cannot be loaded
  */
-export function inferSubLane(codePaths, description, configPath = null) {
+export function inferSubLane(
+  codePaths: string[],
+  description: string,
+  configPath: string | null = null,
+): LaneInferenceResult {
   // Validate inputs
   if (!Array.isArray(codePaths)) {
     throw createError(ErrorCodes.VALIDATION_ERROR, 'codePaths must be an array of strings', {
@@ -151,7 +189,7 @@ export function inferSubLane(codePaths, description, configPath = null) {
   const config = loadConfig(configPath);
 
   // Score all sub-lanes
-  const scores = [];
+  const scores: LaneScore[] = [];
   for (const [parentLane, subLanes] of Object.entries(config)) {
     for (const [subLane, subLaneConfig] of Object.entries(subLanes)) {
       const confidence = calculateConfidence(codePaths, description, subLaneConfig);
@@ -192,9 +230,9 @@ export function inferSubLane(codePaths, description, configPath = null) {
  * @param {string|null} configPath - Optional path to config file
  * @returns {string[]} Array of all sub-lane names (format: "Parent: Subdomain")
  */
-export function getAllSubLanes(configPath = null) {
+export function getAllSubLanes(configPath: string | null = null): string[] {
   const config = loadConfig(configPath);
-  const subLanes = [];
+  const subLanes: string[] = [];
 
   for (const [parentLane, subLaneConfigs] of Object.entries(config)) {
     for (const subLane of Object.keys(subLaneConfigs)) {
@@ -211,7 +249,7 @@ export function getAllSubLanes(configPath = null) {
  * @param {string|null} configPath - Optional path to config file
  * @returns {string[]} Array of sub-lane names for that parent (e.g., ["Tooling", "CI/CD", ...])
  */
-export function getSubLanesForParent(parent, configPath = null) {
+export function getSubLanesForParent(parent: string, configPath: string | null = null): string[] {
   const config = loadConfig(configPath);
 
   // Find parent key (case-insensitive)
