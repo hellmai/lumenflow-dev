@@ -189,10 +189,7 @@ export function parseYAML(text: string): any {
  * @param {object} [options] - Additional stringify options (merged with YAML_STRINGIFY_OPTIONS)
  * @returns {string} YAML string
  */
-export function stringifyYAML(
-  doc: any,
-  options: Record<string, unknown> = {},
-): string {
+export function stringifyYAML(doc: any, options: Record<string, unknown> = {}): string {
   return stringify(doc, { ...YAML_STRINGIFY_OPTIONS, ...options });
 }
 
