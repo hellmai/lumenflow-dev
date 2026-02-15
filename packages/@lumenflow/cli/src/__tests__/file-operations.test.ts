@@ -4,7 +4,6 @@
  *
  * File operations provide audited file access with:
  * - Scope checking against WU code_paths
- * - PHI scanning for sensitive data detection
  * - Worktree guard for write operations
  *
  * TDD: RED phase - these tests define expected behavior before implementation
@@ -390,24 +389,6 @@ describe('file-write CLI', () => {
       expect(result.auditLog?.path).toBe(testFile);
     });
 
-    it('should handle PHI scanning option gracefully', async () => {
-      const testFile = join(tempDir, 'phi.txt');
-      // Use a valid NHS number for testing (this is a test number)
-      const content = 'Patient NHS number: 2983396339';
-
-      const result = await writeFileWithAudit({
-        path: testFile,
-        content,
-        scanPHI: true,
-      });
-
-      // Should succeed regardless of PHI scanning availability
-      expect(result.success).toBe(true);
-      // PHI scanning may be disabled or unavailable, so we just check result structure
-      // If PHI scanning was enabled and found PHI, warnings would be present
-      // If PHI scanning is disabled or core is not available, warnings would be undefined
-      expect(result.auditLog).toBeDefined();
-    });
   });
 });
 
@@ -1069,19 +1050,6 @@ describe('file operations edge cases', () => {
         '1024',
       ]);
       expect(args.maxFileSizeBytes).toBe(1024);
-    });
-
-    it('parseFileWriteArgs should parse --scan-phi flag', () => {
-      const args = parseFileWriteArgs([
-        'node',
-        'file-write',
-        '--path',
-        'f.txt',
-        '--content',
-        'x',
-        '--scan-phi',
-      ]);
-      expect(args.scanPHI).toBe(true);
     });
 
     it('parseFileEditArgs should handle short options', () => {

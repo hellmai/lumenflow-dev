@@ -406,10 +406,6 @@ export async function runChangedTests({
  * Safety-critical test file patterns (relative to apps/web).
  */
 export const SAFETY_CRITICAL_TEST_FILES = [
-  // PHI protection tests
-  'src/components/ui/__tests__/PHIGuard.test.tsx',
-  'src/components/ui/__tests__/WidgetPHIConsentDialog.test.tsx',
-  'src/components/ui/__tests__/Composer.phi.test.tsx',
   // Privacy detection tests
   'src/lib/llm/__tests__/privacyDetector.test.ts',
   // Escalation trigger tests

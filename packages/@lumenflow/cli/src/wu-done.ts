@@ -57,8 +57,6 @@ import { existsSync, readFileSync, mkdirSync, appendFileSync, unlinkSync, statSy
 import path from 'node:path';
 // WU-1825: Import from unified code-path-validator (consolidates 3 validators)
 import { validateWUCodePaths } from '@lumenflow/core/code-path-validator';
-// WU-1983: Migration deployment utilities
-import { discoverLocalMigrations, hasMigrationChanges } from '@lumenflow/core/migration-deployer';
 import { validateDocsOnly, getAllowedPathsDescription } from '@lumenflow/core/docs-path-validator';
 import { scanLogForViolations, rotateLog } from '@lumenflow/core/commands-logger';
 import { rollbackFiles } from '@lumenflow/core/rollback-utils';
@@ -3243,10 +3241,6 @@ async function main() {
     printDocValidationNudge(id, changedDocs);
   }
 
-  // WU-1983: Migration deployment nudge - only if supabase paths in code_paths
-  const codePaths = docMain.code_paths || [];
-  await printMigrationDeploymentNudge(codePaths, mainCheckoutPath);
-
   const currentBranch = (await getGitForCwd().getCurrentBranch()).trim();
   const shouldRunCleanupMutations =
     currentBranch.length > 0 &&
@@ -3264,50 +3258,6 @@ async function main() {
   } else {
     console.log(
       `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-1611: Skipping auto-cleanup mutations on protected branch ${currentBranch}`,
-    );
-  }
-}
-
-/**
- * WU-1983: Print migration deployment nudge when WU includes supabase changes.
- * Notifies agent to deploy new migrations to production via MCP tools.
- * Conditional output - only prints when migrations are in scope and new migrations exist.
- *
- * @param {string[]} codePaths - WU code_paths array
- * @param {string} baseDir - Base directory for migration discovery
- * @returns {Promise<void>}
- */
-export async function printMigrationDeploymentNudge(
-  codePaths: string[],
-  baseDir: string,
-): Promise<void> {
-  // Only check if WU includes supabase paths
-  if (!hasMigrationChanges(codePaths)) {
-    return;
-  }
-
-  try {
-    const { files: migrations, errors } = discoverLocalMigrations(baseDir);
-
-    if (errors.length > 0) {
-      console.warn(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Migration discovery errors: ${errors.join(', ')}`,
-      );
-    }
-
-    if (migrations.length > 0) {
-      console.log(`\n${LOG_PREFIX.DONE} ${EMOJI.INFO} WU includes supabase migrations.`);
-      console.log(`${LOG_PREFIX.DONE} ${migrations.length} local migration(s) detected.`);
-      console.log(`${LOG_PREFIX.DONE} To sync with production:`);
-      console.log(`   1. mcp__supabase__list_migrations (check production state)`);
-      console.log(`   2. pnpm db:sync --production-file <output.json> (detect drift)`);
-      console.log(`   3. mcp__supabase__apply_migration (deploy new migrations)`);
-      console.log(`   See: docs/02-technical/database/migration-workflow.md\n`);
-    }
-  } catch (err) {
-    // Non-blocking: migration check failure should not block wu:done
-    console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not check migrations: ${getErrorMessage(err)}`,
     );
   }
 }

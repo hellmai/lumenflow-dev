@@ -98,7 +98,6 @@ const fileWriteSchema = z.object({
   content: z.string().optional(),
   encoding: z.string().optional(),
   no_create_dirs: z.boolean().optional(),
-  scan_phi: z.boolean().optional(),
 });
 
 const fileEditSchema = z.object({
@@ -587,7 +586,7 @@ export const fileReadTool: ToolDefinition = {
  */
 export const fileWriteTool: ToolDefinition = {
   name: 'file_write',
-  description: 'Write content to a file with optional PHI scan',
+  description: 'Write content to a file with audit trail',
   inputSchema: fileWriteSchema,
 
   async execute(input, options) {
@@ -601,7 +600,6 @@ export const fileWriteTool: ToolDefinition = {
     const args: string[] = ['--path', input.path as string, '--content', input.content as string];
     if (input.encoding) args.push(CliArgs.ENCODING, input.encoding as string);
     if (input.no_create_dirs) args.push('--no-create-dirs');
-    if (input.scan_phi) args.push('--scan-phi');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
     const result = await runCliCommand('file:write', args, cliOptions);
