@@ -1,0 +1,41 @@
+id: WU-1686
+title: Reframe article as agent orchestration layer + Medium optimisations
+lane: 'Content: Site Comms'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-15
+code_paths:
+  - docs/05-business/content/medium-lumenflow-introduction.md
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1686.done
+dependencies: []
+spec_refs:
+  - /home/tom/.claude/plans/lucky-toasting-aurora.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Two changes in one pass to the Medium article (medium-lumenflow-introduction.md): (1) Replace 'operating system' identity claims with 'agent orchestration layer' — keep OS as a simile only. (2) Apply Medium-optimisation research: cut to ~1,800 words, merge overlapping sections, move CTA earlier, add pull quotes, simplify vocabulary in key places."
+acceptance:
+  - "OS identity claims replaced: 'operating system' used only as simile (line 21), never as identity"
+  - Subtitle updated from 'operating layer' to 'orchestration layer'
+  - "Punchline (line 33) reframed: 'agent orchestration layer' not 'operating system'"
+  - "Initiatives section: 'process groups / threads / CPU cores' paragraph removed"
+  - Article cut to ~1,800 words (from 3,139) — target 7-8 min read
+  - Initiatives and Orchestrating Multiple Agents sections merged into one
+  - DORA metrics folded into What the Numbers Mean section
+  - CTA (npm install + GitHub link) appears right after core loop demo, not just at end
+  - At least one pull quote added (blockquote for visual break)
+  - Vocabulary simplified in 2-3 places (e.g. coordination primitive -> coordination signal)
+  - Tone consistent with voice guide in linked plan
