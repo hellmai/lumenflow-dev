@@ -1,0 +1,36 @@
+id: WU-1679
+title: Update repo references from hellmai/os to hellmai/lumenflow
+lane: 'Operations: Tooling'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-15
+code_paths:
+  - packages/*/package.json
+  - CHANGELOG.md
+  - apps/docs/
+tests:
+  manual:
+    - grep -r hellmai/os confirms no remaining references in source files
+  unit:
+    - N/A - metadata-only changes, no unit tests needed
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1679.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: GitHub repo renamed from os to lumenflow. Update all source file references (package.json, READMEs, templates, docs, changelog). Skip WU YAMLs and state files as they are historical.
+acceptance:
+  - All package.json files reference hellmai/lumenflow
+  - All README and doc files reference hellmai/lumenflow
+  - CLI templates reference hellmai/lumenflow
+  - CHANGELOG.md compare links updated
