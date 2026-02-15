@@ -1320,3 +1320,4 @@
 {"type":"claim","wuId":"WU-1687","timestamp":"2026-02-15T15:47:00.882Z","lane":"Framework: CLI Enforcement","title":"Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine"}
 {"type":"claim","wuId":"WU-1690","timestamp":"2026-02-15T15:52:41.886Z","lane":"Framework: CLI WU Commands","title":"Publish bare lumenflow npm package for npx lumenflow init"}
 {"type":"complete","wuId":"WU-1690","timestamp":"2026-02-15T15:59:37.112Z"}
+{"type":"complete","wuId":"WU-1687","timestamp":"2026-02-15T16:20:27.033Z"}
