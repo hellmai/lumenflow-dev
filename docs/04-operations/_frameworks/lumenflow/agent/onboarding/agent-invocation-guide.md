@@ -52,7 +52,7 @@ The handoff prompt is the bridge between sessions. `wu:brief` generates this pro
 pnpm mem:checkpoint "Progress: completed X, next: Y" --wu WU-XXX
 git add -A && git commit -m "checkpoint: progress on X"
 git push origin lane/<lane>/wu-xxx
-pnpm wu:brief --id WU-XXX --client claude-code
+pnpm wu:brief --id WU-XXX --client <client>
 # Copy generated prompt into Task tool to start the next agent session.
 # Exit current session; start fresh in the new session.
 ```
@@ -90,7 +90,7 @@ memory:
 Use `--no-context` when you want a clean prompt without memory context:
 
 ```bash
-pnpm wu:brief --id WU-XXX --client claude-code --no-context
+pnpm wu:brief --id WU-XXX --client <client> --no-context
 ```
 
 This is useful when:

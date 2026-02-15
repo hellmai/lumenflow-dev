@@ -44,6 +44,7 @@ artifacts:
 dependencies: []
 spec_refs:
   - LUMENFLOW.md
+  - .claude/plans/mighty-painting-castle.md
 risks: []
 notes: >-
   (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.

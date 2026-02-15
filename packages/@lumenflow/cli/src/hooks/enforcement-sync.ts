@@ -60,17 +60,19 @@ interface ClaudeSettings {
 /**
  * LumenFlow config structure (partial, for enforcement reading)
  */
+interface EnforcementConfig {
+  hooks?: boolean;
+  block_outside_worktree?: boolean;
+  require_wu_for_edits?: boolean;
+  warn_on_stop_without_wu_done?: boolean;
+}
+
 interface LumenFlowConfig {
   agents?: {
     clients?: {
-      'claude-code'?: {
-        enforcement?: {
-          hooks?: boolean;
-          block_outside_worktree?: boolean;
-          require_wu_for_edits?: boolean;
-          warn_on_stop_without_wu_done?: boolean;
-        };
-      };
+      [client: string]: {
+        enforcement?: EnforcementConfig;
+      } | undefined;
     };
   };
   /** WU-1471: Memory enforcement configuration */
@@ -123,7 +125,11 @@ function getEnforcementConfig(config: LumenFlowConfig | null): {
     interval_tool_calls: number;
   };
 } | null {
-  const enforcement = config?.agents?.clients?.['claude-code']?.enforcement;
+  // WU-1681: Find enforcement config from any configured client (not just claude-code)
+  const clients = config?.agents?.clients;
+  const enforcement = clients
+    ? Object.values(clients).find((c) => c?.enforcement?.hooks)?.enforcement
+    : undefined;
 
   if (!enforcement || !enforcement.hooks) {
     return null;

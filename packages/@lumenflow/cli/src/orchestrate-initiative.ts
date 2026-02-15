@@ -149,9 +149,9 @@ const program = new Command()
         console.log('    Best for: Small initiatives (<4 WUs), quick execution');
         console.log('');
         console.log(chalk.cyan('  Option 3: Manual briefing/delegation per WU'));
-        console.log('    pnpm wu:brief --id <WU-ID> --client claude-code');
+        console.log('    pnpm wu:brief --id <WU-ID> --client <client>');
         console.log(
-          '    pnpm wu:delegate --id <WU-ID> --parent-wu <PARENT-WU-ID> --client claude-code',
+          '    pnpm wu:delegate --id <WU-ID> --parent-wu <PARENT-WU-ID> --client <client>',
         );
         console.log('    Best for: Testing, debugging, explicit lineage tracking');
         console.log('');

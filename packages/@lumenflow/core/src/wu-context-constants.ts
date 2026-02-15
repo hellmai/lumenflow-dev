@@ -227,6 +227,10 @@ export const HOOK_MESSAGES = {
  */
 export const LUMENFLOW_CLIENT_IDS = {
   CLAUDE_CODE: 'claude-code',
+  CODEX_CLI: 'codex-cli',
+  CURSOR: 'cursor',
+  GEMINI_CLI: 'gemini-cli',
+  WINDSURF: 'windsurf',
 } as const;
 
 /** Type for supported client IDs with integration support */

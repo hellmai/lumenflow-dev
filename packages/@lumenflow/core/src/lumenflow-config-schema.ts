@@ -950,7 +950,7 @@ export const ClientConfigSchema = z.object({
  * Agents configuration
  */
 export const AgentsConfigSchema = z.object({
-  /** Default client to use if not specified (default: 'claude-code') */
+  /** Default client to use if not specified (configure per project; bootstrap default: 'claude-code') */
   defaultClient: z.string().default(LUMENFLOW_CLIENT_IDS.CLAUDE_CODE),
 
   /** Client-specific configurations */

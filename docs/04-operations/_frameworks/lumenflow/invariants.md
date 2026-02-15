@@ -206,7 +206,7 @@ Invariants run as the first gate. If they fail, subsequent gates are skipped.
 
 ### wu:brief Context Injection
 
-When generating handoff prompts via `pnpm wu:brief --id WU-XXX --client claude-code`, the system:
+When generating handoff prompts via `pnpm wu:brief --id WU-XXX --client <client>`, the system:
 
 1. Loads `tools/invariants.yml`
 2. Matches invariants against the WU's `code_paths`

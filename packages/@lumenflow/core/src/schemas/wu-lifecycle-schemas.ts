@@ -256,7 +256,7 @@ export type WuCleanupInput = z.infer<typeof wuCleanupSchema>;
  */
 export const wuSpawnSchema = z.object({
   id: z.string().describe('WU ID to spawn'),
-  client: z.string().optional().describe('Client name (claude-code, gemini-cli, etc)'),
+  client: z.string().optional().describe('Target client (e.g. claude-code, codex-cli, gemini-cli)'),
   thinking: z.boolean().optional().describe('Enable extended thinking'),
   budget: z.number().optional().describe('Token budget for extended thinking'),
   parent_wu: z.string().optional().describe('Parent WU ID for orchestrator context'),
