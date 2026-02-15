@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1585 — Core strict wave 2B: WU management strict fixes](wu/WU-1585.yaml)
 
 ## Completed
 

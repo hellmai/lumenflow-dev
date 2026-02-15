@@ -1335,3 +1335,4 @@
 {"type":"complete","wuId":"WU-1583","timestamp":"2026-02-15T18:35:53.666Z"}
 {"type":"claim","wuId":"WU-1584","timestamp":"2026-02-15T18:36:19.726Z","lane":"Framework: Core Lifecycle","title":"Core strict wave 2A: lifecycle strict hotspots"}
 {"type":"complete","wuId":"WU-1584","timestamp":"2026-02-15T18:47:39.895Z"}
+{"type":"claim","wuId":"WU-1585","lane":"Framework: Core Validation","title":"Core strict wave 2B: WU management strict fixes","timestamp":"2026-02-15T18:48:14.921Z"}
