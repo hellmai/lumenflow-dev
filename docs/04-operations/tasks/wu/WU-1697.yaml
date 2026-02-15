@@ -2,7 +2,7 @@ id: WU-1697
 title: 'Strict debt slice: eliminate TS7006 in core wu-done-metadata'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -32,8 +32,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: after WU-1696, the top remaining core TS7006/TS7031 hotspot is packages/@lumenflow/core/src/wu-done-metadata.ts (~23 errors). Problem: implicit-any signatures and destructured params weaken type safety in completion metadata paths. Solution: apply typed parameter annotations and small helper typing hardening in wu-done-metadata with tests-first coverage to keep behavior stable.'
+description: 'Context: after WU-1696, the top remaining core TS7006/TS7031 hotspot is
+  packages/@lumenflow/core/src/wu-done-metadata.ts (~23 errors). Problem: implicit-any signatures
+  and destructured params weaken type safety in completion metadata paths. Solution: apply typed
+  parameter annotations and small helper typing hardening in wu-done-metadata with tests-first
+  coverage to keep behavior stable.'
 acceptance:
-  - Strict probe with strictNullChecks/noImplicitAny/useUnknownInCatchVariables reports no TS7006/TS7031 diagnostics for packages/@lumenflow/core/src/wu-done-metadata.ts
+  - Strict probe with strictNullChecks/noImplicitAny/useUnknownInCatchVariables reports no
+    TS7006/TS7031 diagnostics for packages/@lumenflow/core/src/wu-done-metadata.ts
   - packages/@lumenflow/core/src/__tests__/wu-done-metadata.test.ts passes
   - pnpm --filter @lumenflow/core typecheck passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1697
+claimed_at: 2026-02-15T20:49:24.612Z
+baseline_main_sha: f2e851b8f3fca7592be3a7ccac3a7611f7897fa8
+session_id: 4afd8296-48e4-4ecc-b890-391c812b290f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T20:49:24.619Z
