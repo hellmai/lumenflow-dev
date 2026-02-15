@@ -81,13 +81,11 @@ describe('WU-1535: Strict TypeScript build configuration', () => {
       'packages/@lumenflow/initiatives/tsconfig.json',
       'packages/@lumenflow/agent/tsconfig.json',
       'packages/@lumenflow/mcp/tsconfig.json',
+      'packages/@lumenflow/cli/tsconfig.json',
     ];
 
     // Packages with explicit temporary exceptions (documented justification required)
-    const exceptedPackages = [
-      'packages/@lumenflow/core/tsconfig.json',
-      'packages/@lumenflow/cli/tsconfig.json',
-    ];
+    const exceptedPackages = ['packages/@lumenflow/core/tsconfig.json'];
 
     for (const path of strictPackages) {
       const pkgName = path.split('/')[1] + '/' + path.split('/')[2];

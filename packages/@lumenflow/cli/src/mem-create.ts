@@ -17,7 +17,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { createMemoryNode } from '@lumenflow/memory/create';
+import { createMemoryNode, type CreateMemoryNodeResult } from '@lumenflow/memory/create';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { MEMORY_NODE_TYPES } from '@lumenflow/memory/schema';
@@ -32,6 +32,21 @@ const LOG_PREFIX = '[mem:create]';
  * Tool name for audit logging
  */
 const TOOL_NAME = 'mem:create';
+
+type AuditLogEntry = Record<string, unknown>;
+type NodeMetadata = Record<string, unknown>;
+
+interface MemCreateArgs {
+  title?: string;
+  type?: string;
+  discoveredFrom?: string;
+  wu?: string;
+  session?: string;
+  tags?: string;
+  priority?: string;
+  baseDir?: string;
+  quiet?: boolean;
+}
 
 /**
  * CLI argument options specific to mem:create
@@ -85,7 +100,7 @@ const CLI_OPTIONS = {
  * @param {string} baseDir - Base directory
  * @param {object} entry - Audit log entry
  */
-async function writeAuditLog(baseDir, entry) {
+async function writeAuditLog(baseDir: string, entry: AuditLogEntry): Promise<void> {
   try {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
@@ -105,7 +120,7 @@ async function writeAuditLog(baseDir, entry) {
  *
  * @returns {{args: object, title: string|undefined}} Parsed args and title
  */
-function parseArguments() {
+function parseArguments(): { args: MemCreateArgs; title: string | undefined } {
   const args = createWUParser({
     name: 'mem-create',
     description: 'Create a memory node with optional provenance tracking',
@@ -122,7 +137,7 @@ function parseArguments() {
     ],
     required: [],
     allowPositionalId: true,
-  });
+  }) as MemCreateArgs;
 
   let title = args.title;
   if (!title && process.argv.length > 2) {
@@ -140,7 +155,7 @@ function parseArguments() {
  *
  * @param {object} result - Creation result with node and optional relationship
  */
-function printNodeDetails(result) {
+function printNodeDetails(result: CreateMemoryNodeResult): void {
   const { node, relationship } = result;
 
   console.log(`${LOG_PREFIX} Node created (${node.id})`);
@@ -187,11 +202,12 @@ function printNodeDetails(result) {
  *
  * @param {object} metadata - Node metadata
  */
-function printMetadata(metadata) {
+function printMetadata(metadata: NodeMetadata): void {
   console.log('');
   console.log('Metadata:');
-  if (metadata.priority) {
-    console.log(`  Priority: ${metadata.priority}`);
+  const priority = metadata.priority;
+  if (typeof priority === 'string' && priority.length > 0) {
+    console.log(`  Priority: ${priority}`);
   }
 }
 
@@ -225,10 +241,10 @@ async function main() {
   const startTime = Date.now();
 
   // Parse tags if provided
-  const tags = args.tags ? args.tags.split(',').map((t) => t.trim()) : undefined;
+  const tags = args.tags ? args.tags.split(',').map((tag) => tag.trim()) : undefined;
 
-  let result;
-  let error = null;
+  let result: CreateMemoryNodeResult | undefined;
+  let error: string | null = null;
 
   try {
     result = await createMemoryNode(baseDir, {
@@ -240,8 +256,8 @@ async function main() {
       tags,
       priority: args.priority,
     });
-  } catch (err) {
-    error = err.message;
+  } catch (err: unknown) {
+    error = err instanceof Error ? err.message : String(err);
   }
 
   const durationMs = Date.now() - startTime;
@@ -275,6 +291,11 @@ async function main() {
 
   if (error) {
     console.error(`${LOG_PREFIX} Error: ${error}`);
+    process.exit(EXIT_CODES.ERROR);
+  }
+
+  if (!result) {
+    console.error(`${LOG_PREFIX} Error: Failed to create memory node`);
     process.exit(EXIT_CODES.ERROR);
   }
 
