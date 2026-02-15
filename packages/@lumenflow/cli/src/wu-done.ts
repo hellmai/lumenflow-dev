@@ -578,7 +578,11 @@ async function createPreGatesCheckpoint(
  * @param {string} baseDir - Base directory for memory layer
  * @returns {Promise<void>}
  */
-async function broadcastCompletionSignal(id: string, title: string, baseDir: string = process.cwd()) {
+async function broadcastCompletionSignal(
+  id: string,
+  title: string,
+  baseDir: string = process.cwd(),
+) {
   try {
     const result = await createSignal(baseDir, {
       message: `${MEMORY_SIGNAL_TYPES.WU_COMPLETION}: ${id} - ${title}`,
@@ -780,10 +784,7 @@ export async function enforceSpawnProvenanceForDone(
  * @param {string} baseDir - Base directory containing .lumenflow/state/
  * @returns {Promise<void>}
  */
-export async function updateSpawnRegistryOnCompletion(
-  id: string,
-  baseDir: string = process.cwd(),
-) {
+export async function updateSpawnRegistryOnCompletion(id: string, baseDir: string = process.cwd()) {
   try {
     const store = new DelegationRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
     await store.load();
@@ -3017,8 +3018,11 @@ async function main() {
         const worktreeContext = {
           ...baseContext,
           worktreePath,
-          validateStagedFiles: (wuId: string, docsOnly: boolean, options?: { metadataAllowlist?: string[] }) =>
-            validateStagedFiles(wuId, docsOnly, worktreeGitForValidation, options),
+          validateStagedFiles: (
+            wuId: string,
+            docsOnly: boolean,
+            options?: { metadataAllowlist?: string[] },
+          ) => validateStagedFiles(wuId, docsOnly, worktreeGitForValidation, options),
         };
         completionResult = await executeWorktreeCompletion(worktreeContext);
       }
