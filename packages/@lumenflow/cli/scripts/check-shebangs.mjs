@@ -31,9 +31,7 @@ if (missing.length > 0) {
     `\n[check-shebangs] ERROR: ${missing.length} bin entries missing #!/usr/bin/env node shebang:\n`,
   );
   console.error(missing.join('\n'));
-  console.error(
-    '\nFix: Add #!/usr/bin/env node as the first line of each source .ts file.\n',
-  );
+  console.error('\nFix: Add #!/usr/bin/env node as the first line of each source .ts file.\n');
   process.exit(1);
 }
 
