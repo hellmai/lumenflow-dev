@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-- [WU-1684 — Build vendor-agnostic core sandbox engine contract and OS backends](wu/WU-1684.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -627,3 +627,4 @@ _Last updated: 2026-02-15_
 - [WU-1685 — Validator V2 follow-up: normalize issue shaping and adapter boundaries](wu/WU-1685.yaml) — 2026-02-15
 - [WU-1683 — Add first-class plan field to WU schema for plan-to-WU linking](wu/WU-1683.yaml) — 2026-02-15
 - [WU-1686 — Reframe article as agent orchestration layer + Medium optimisations](wu/WU-1686.yaml) — 2026-02-15
+- [WU-1684 — Build vendor-agnostic core sandbox engine contract and OS backends](wu/WU-1684.yaml) — 2026-02-15
