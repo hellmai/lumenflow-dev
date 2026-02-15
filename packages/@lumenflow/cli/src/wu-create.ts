@@ -493,7 +493,7 @@ async function main() {
     },
   });
   const invariantsPath = join(process.cwd(), 'tools/invariants.yml');
-  const preflightLint = lintWUSpec(preflightWU, { invariantsPath });
+  const preflightLint = lintWUSpec(preflightWU, { invariantsPath, phase: 'intent' });
   if (!preflightLint.valid) {
     const formatted = formatLintErrors(preflightLint.errors);
     die(

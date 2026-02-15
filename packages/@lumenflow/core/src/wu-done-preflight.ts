@@ -53,6 +53,10 @@ where husky pre-push would block all further operations.
 export interface ExecutePreflightCodePathValidationOptions {
   /** Override validatePreflight for testing */
   validatePreflightFn?: typeof validatePreflight;
+  /** Optional base ref for reality-phase diff checks */
+  baseRef?: string;
+  /** Optional head ref for reality-phase diff checks */
+  headRef?: string;
 }
 
 export async function executePreflightCodePathValidation(
@@ -68,6 +72,9 @@ export async function executePreflightCodePathValidation(
   const result = await validatePreflightFn(id, {
     rootDir: paths.rootDir,
     worktreePath: paths.worktreePath,
+    phase: 'reality',
+    baseRef: options.baseRef,
+    headRef: options.headRef,
   });
 
   if (result.valid) {
@@ -75,7 +82,9 @@ export async function executePreflightCodePathValidation(
     return {
       valid: true,
       errors: [],
+      warnings: result.warnings || [],
       missingCodePaths: [],
+      missingCoverageCodePaths: [],
       missingTestPaths: [],
       abortedBeforeGates: false,
     };
@@ -86,7 +95,9 @@ export async function executePreflightCodePathValidation(
   return {
     valid: false,
     errors: result.errors,
+    warnings: result.warnings || [],
     missingCodePaths: result.missingCodePaths || [],
+    missingCoverageCodePaths: result.missingCoverageCodePaths || [],
     missingTestPaths: result.missingTestPaths || [],
     suggestedTestPaths: result.suggestedTestPaths || {},
     abortedBeforeGates: true,
@@ -100,6 +111,7 @@ export function buildPreflightCodePathErrorMessage(id, result) {
   const {
     errors,
     missingCodePaths = [],
+    missingCoverageCodePaths = [],
     missingTestPaths = [],
     suggestedTestPaths = {} as Record<string, string[]>,
   } = result as { suggestedTestPaths?: Record<string, string[]> } & typeof result;
@@ -121,6 +133,16 @@ Fix options for missing code_paths:
   1. Create the missing files in your worktree
   2. Update code_paths in ${id}.yaml using: pnpm wu:edit --id ${id} --code-paths "<corrected-paths>"
   3. Remove paths that were intentionally not created
+
+`;
+  }
+
+  if (missingCoverageCodePaths.length > 0) {
+    message += `
+Fix options for code_paths coverage (branch diff):
+  1. Commit changes that touch each missing scoped code_path
+  2. Update code_paths in ${id}.yaml to match actual branch scope
+  3. Re-run: pnpm wu:prep --id ${id} (or wu:done when ready)
 
 `;
   }

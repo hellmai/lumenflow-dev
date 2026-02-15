@@ -115,7 +115,7 @@ function validateSingleWU(wuPath, { strict = true } = {}) {
   // WU-2253: Run WU spec lint validation
   // Reports errors as warnings by default, errors in --strict mode
   const invariantsPath = path.join(process.cwd(), 'tools/invariants.yml');
-  const lintResult = lintWUSpec(schemaResult.data, { invariantsPath });
+  const lintResult = lintWUSpec(schemaResult.data, { invariantsPath, phase: 'structural' });
   if (!lintResult.valid) {
     for (const lintError of lintResult.errors) {
       warnings.push(`[LINT] ${lintError.message}`);

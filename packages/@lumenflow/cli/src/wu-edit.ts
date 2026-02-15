@@ -52,11 +52,6 @@ import { defaultWorktreeFrom, detectCurrentWorktree } from '@lumenflow/core/wu-d
 import { normalizeWUSchema } from '@lumenflow/core/wu-schema-normalization';
 // WU-2253: Import WU spec linter for acceptance/code_paths validation
 import { lintWUSpec, formatLintErrors } from '@lumenflow/core/wu-lint';
-// WU-1329: Import path existence validators for strict validation
-import {
-  validateCodePathsExistence,
-  validateTestPathsExistence,
-} from '@lumenflow/core/wu-preflight-validators';
 import { validateLaneFormat } from '@lumenflow/core/lane-checker';
 import { runCLI } from './cli-entry-point.js';
 
@@ -78,7 +73,6 @@ import {
   regenerateBacklogFromState,
   normalizeWUDates,
   updateInitiativeWusArrays,
-  enforceInProgressCodePathCoverage,
   displayReadinessSummary,
 } from './wu-edit-operations.js';
 
@@ -264,7 +258,7 @@ function parseArgs() {
         EDIT_OPTIONS.replaceDependencies,
         // WU-1039: Add exposure for done WU metadata updates
         WU_OPTIONS.exposure,
-        // WU-1329: Strict validation is default, --no-strict bypasses
+        // Compatibility flag: reality checks now run in wu:prep/wu:done
         WU_OPTIONS.noStrict,
       ],
       required: ['id'],
@@ -400,7 +394,7 @@ async function main() {
   // This blocks WU edits if acceptance references paths not in code_paths
   // or if code_paths conflicts with tools/invariants.yml
   const invariantsPath = join(process.cwd(), 'tools/invariants.yml');
-  const lintResult = lintWUSpec(normalizedForValidation, { invariantsPath });
+  const lintResult = lintWUSpec(normalizedForValidation, { invariantsPath, phase: 'intent' });
   if (!lintResult.valid) {
     const formatted = formatLintErrors(lintResult.errors);
     die(
@@ -413,44 +407,11 @@ async function main() {
   // This ensures embedded newlines are normalized before YAML output
   const normalizedWU = validationResult.data;
 
-  // WU-1329: Strict validation of path existence (default behavior)
-  // --no-strict bypasses these checks
-  const strict = !opts.noStrict;
-  if (!strict) {
+  if (opts.noStrict) {
     console.warn(
-      `${PREFIX} WARNING: strict validation bypassed (--no-strict). Path existence checks skipped.`,
+      `${PREFIX} WARNING: --no-strict is accepted for compatibility; ` +
+        `reality checks run in wu:prep/wu:done.`,
     );
-  }
-
-  if (strict) {
-    const rootDir = process.cwd();
-    const strictErrors: string[] = [];
-
-    // Validate code_paths exist
-    if (normalizedWU.code_paths && normalizedWU.code_paths.length > 0) {
-      const codePathsResult = validateCodePathsExistence(normalizedWU.code_paths, rootDir);
-      if (!codePathsResult.valid) {
-        strictErrors.push(...codePathsResult.errors);
-      }
-    }
-
-    // Validate test_paths exist (unit, e2e - not manual)
-    if (normalizedWU.tests) {
-      const testPathsResult = validateTestPathsExistence(normalizedWU.tests, rootDir);
-      if (!testPathsResult.valid) {
-        strictErrors.push(...testPathsResult.errors);
-      }
-    }
-
-    if (strictErrors.length > 0) {
-      const errorList = strictErrors.map((e) => `  - ${e}`).join('\n');
-      die(
-        `${PREFIX} Strict validation failed:\n\n${errorList}\n\n` +
-          `Options:\n` +
-          `  1. Fix the paths in the WU spec to match actual files\n` +
-          `  2. Use --no-strict to bypass path existence checks (not recommended)`,
-      );
-    }
   }
 
   // Validate lane format if present (WU-923: block parent-only lanes with taxonomy)
@@ -494,12 +455,6 @@ async function main() {
     }
 
     await ensureCleanWorkingTree();
-    enforceInProgressCodePathCoverage({
-      id,
-      editOpts: opts,
-      codePaths: normalizedWU.code_paths,
-      cwd: process.cwd(),
-    });
     await applyEditsInWorktree({
       worktreePath: process.cwd(),
       id,
@@ -561,13 +516,6 @@ async function main() {
     // Calculate expected branch and validate
     const expectedBranch = getLaneBranch(originalWU.lane as string, id);
     await validateWorktreeBranch(absoluteWorktreePath, expectedBranch, id);
-    enforceInProgressCodePathCoverage({
-      id,
-      editOpts: opts,
-      codePaths: normalizedWU.code_paths,
-      cwd: absoluteWorktreePath,
-    });
-
     // Apply edits in the worktree (WU-1750: use normalized data)
     await applyEditsInWorktree({
       worktreePath: absoluteWorktreePath,

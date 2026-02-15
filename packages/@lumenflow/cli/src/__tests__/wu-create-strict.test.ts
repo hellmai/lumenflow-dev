@@ -2,11 +2,11 @@
  * @file wu-create-strict.test.ts
  * Test suite for wu:create strict validation behavior (WU-1329)
  *
- * WU-1329: Make wu:create run strict validation by default
+ * WU-1329/WU-1680: create phase is intent-only; reality checks run at prep/done.
  *
  * Tests:
- * - Strict validation runs by default (validates code_paths/test_paths exist)
- * - --no-strict flag bypasses strict validation
+ * - create validation is intent/structural and does not require existing files on disk
+ * - --no-strict remains accepted for compatibility and emits advisory log
  * - --no-strict usage is logged
  */
 
@@ -52,8 +52,7 @@ describe('wu:create strict validation (WU-1329)', () => {
       expect(result.errors).toHaveLength(0);
     });
 
-    // WU-1329: This test verifies that strict validation is the default
-    it('should validate code_paths existence by default (strict=true)', () => {
+    it('does not require code_paths existence during create validation', () => {
       const result = validateCreateSpec({
         ...baseOpts,
         opts: {
@@ -63,15 +62,10 @@ describe('wu:create strict validation (WU-1329)', () => {
         },
       });
 
-      // In strict mode, non-existent paths should be caught
-      expect(result.valid).toBe(false);
-      expect(result.errors.some((e) => e.includes('code_paths') || e.includes('not found'))).toBe(
-        true,
-      );
+      expect(result.valid).toBe(true);
     });
 
-    // WU-1329: This test verifies --no-strict bypasses path validation
-    it('should skip code_paths existence check when strict=false', () => {
+    it('also passes with strict=false (compatibility mode)', () => {
       const result = validateCreateSpec({
         ...baseOpts,
         opts: {
@@ -81,15 +75,10 @@ describe('wu:create strict validation (WU-1329)', () => {
         },
       });
 
-      // In non-strict mode, non-existent paths should not fail validation
-      // (other schema validation may still fail)
-      expect(
-        result.errors.every((e) => !e.includes('not found') && !e.includes('does not exist')),
-      ).toBe(true);
+      expect(result.valid).toBe(true);
     });
 
-    // WU-1329: This test verifies test_paths validation in strict mode
-    it('should validate test_paths existence by default (strict=true)', () => {
+    it('does not require automated test path existence during create validation', () => {
       const result = validateCreateSpec({
         ...baseOpts,
         opts: {
@@ -98,9 +87,7 @@ describe('wu:create strict validation (WU-1329)', () => {
         },
       });
 
-      // In strict mode, non-existent test paths should be caught
-      expect(result.valid).toBe(false);
-      expect(result.errors.some((e) => e.includes('test') || e.includes('not found'))).toBe(true);
+      expect(result.valid).toBe(true);
     });
   });
 

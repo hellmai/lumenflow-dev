@@ -70,7 +70,7 @@ describe('wu:validate registration parity integration (WU-1504)', () => {
       code_paths: ['packages/@lumenflow/cli/package.json'],
     };
 
-    const result = validateRegistrationParity(wu);
+    const result = validateRegistrationParity(wu, { binChanged: true });
 
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBe(2);
@@ -90,7 +90,7 @@ describe('wu:validate registration parity integration (WU-1504)', () => {
       ],
     };
 
-    const result = validateRegistrationParity(wu);
+    const result = validateRegistrationParity(wu, { binChanged: true });
 
     expect(result.valid).toBe(true);
     expect(result.errors).toEqual([]);
@@ -103,7 +103,7 @@ describe('wu:validate registration parity integration (WU-1504)', () => {
       id: 'WU-STRICT',
       code_paths: ['packages/@lumenflow/cli/package.json'],
     };
-    const parityResult = validateRegistrationParity(wu);
+    const parityResult = validateRegistrationParity(wu, { binChanged: true });
     const warnings = parityResult.errors.map((e) => `[LINT] ${e.message}`);
 
     // In strict mode, warnings become blocking errors
@@ -123,7 +123,7 @@ describe('wu:validate registration parity integration (WU-1504)', () => {
       id: 'WU-NONSTRICT',
       code_paths: ['packages/@lumenflow/cli/package.json'],
     };
-    const parityResult = validateRegistrationParity(wu);
+    const parityResult = validateRegistrationParity(wu, { binChanged: true });
     const warnings = parityResult.errors.map((e) => `[LINT] ${e.message}`);
 
     const strict = false;
@@ -135,5 +135,18 @@ describe('wu:validate registration parity integration (WU-1504)', () => {
     // Non-strict: warnings stay as warnings, no errors
     expect(errors.length).toBe(0);
     expect(warnings.length).toBeGreaterThan(0);
+  });
+
+  it('returns advisory warning when bin change context is unavailable', () => {
+    const wu = {
+      id: 'WU-NO-DIFF',
+      code_paths: ['packages/@lumenflow/cli/package.json'],
+    };
+
+    const parityResult = validateRegistrationParity(wu);
+
+    expect(parityResult.valid).toBe(true);
+    expect(parityResult.errors).toEqual([]);
+    expect((parityResult.warnings || []).length).toBeGreaterThan(0);
   });
 });

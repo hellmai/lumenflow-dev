@@ -30,12 +30,10 @@ import { INIT_PATHS } from '@lumenflow/initiatives/paths';
 import { readInitiative, writeInitiative } from '@lumenflow/initiatives/yaml';
 import { validateSpecCompleteness } from '@lumenflow/core/wu-done-validators';
 import { execSync } from 'node:child_process';
-import { checkCodePathCoverageBeforeGates, formatCodePathCoverageFailure } from './wu-prep.js';
 import {
   validateInitiativeFormat,
   validateInitiativeExists,
   validateExposureValue,
-  hasScopeRelevantBranchChanges,
 } from './wu-edit-validators.js';
 
 const PREFIX = LOG_PREFIX.EDIT;
@@ -416,56 +414,6 @@ export async function applyEditsInWorktree({ worktreePath, id, updatedWU }) {
         `You may need to commit manually in the worktree.`,
     );
   }
-}
-
-/**
- * WU-1618: Enforce code path coverage for in-progress WUs during spec edits.
- */
-export function enforceInProgressCodePathCoverage(options: {
-  id: string;
-  editOpts: Record<string, unknown>;
-  codePaths: string[] | undefined;
-  cwd: string;
-}): void {
-  const { id, editOpts, codePaths = [], cwd } = options;
-  const hasCodePathEdit = Array.isArray(editOpts.codePaths)
-    ? editOpts.codePaths.length > 0
-    : Boolean(editOpts.codePaths);
-
-  if (!hasCodePathEdit) {
-    return;
-  }
-
-  if (!Array.isArray(codePaths) || codePaths.length === 0) {
-    return;
-  }
-
-  const coverage = checkCodePathCoverageBeforeGates({
-    wuId: id,
-    codePaths,
-    cwd,
-  });
-
-  if (coverage.valid) {
-    return;
-  }
-
-  if (!hasScopeRelevantBranchChanges(coverage.changedFiles)) {
-    console.warn(
-      `${PREFIX} code_paths coverage check deferred (no scope-relevant branch changes yet).`,
-    );
-    return;
-  }
-
-  die(
-    `${formatCodePathCoverageFailure({
-      wuId: id,
-      missingCodePaths: coverage.missingCodePaths,
-      changedFiles: coverage.changedFiles,
-      error: coverage.error,
-    })}\n\n` +
-      `${PREFIX} Tip: if you're still defining scope before code changes, run wu:edit again after your first scope-relevant commit.`,
-  );
 }
 
 /**

@@ -65,13 +65,28 @@ describe('wu:create validation aggregation (WU-1302)', () => {
       expect(result.errors.some((err) => err.includes('--code-paths'))).toBe(true);
     });
 
-    it('lists missing test paths in errors for non-docs WUs', () => {
+    it('does not require test intent when --code-paths is missing', () => {
       const result = validateCreateSpec({
         ...minimalArgs,
         opts: {},
       });
 
-      expect(result.errors.some((err) => err.includes('test'))).toBe(true);
+      expect(result.errors.some((err) => err.includes('At least one test entry'))).toBe(false);
+    });
+
+    it('requires minimum test intent when code_paths are provided for non-docs WUs', () => {
+      const result = validateCreateSpec({
+        ...minimalArgs,
+        opts: {
+          description: 'A valid description for aggregate validation behavior checks.',
+          acceptance: ['A valid acceptance criterion.'],
+          exposure: 'backend-only',
+          codePaths: ['packages/@lumenflow/core/src/wu-rules-engine.ts'],
+          specRefs: ['lumenflow://plans/WU-9999-plan.md'],
+        },
+      });
+
+      expect(result.errors.some((err) => err.includes('At least one test entry'))).toBe(true);
     });
 
     it('lists missing --spec-refs in errors for feature WUs', () => {
@@ -92,8 +107,7 @@ describe('wu:create validation aggregation (WU-1302)', () => {
       // 2. --acceptance
       // 3. --exposure
       // 4. --code-paths
-      // 5. test paths
-      // 6. --spec-refs
+      // 5. --spec-refs
       const result = validateCreateSpec({
         ...minimalArgs,
         type: 'feature',

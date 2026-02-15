@@ -11,13 +11,10 @@ import { hasSpecRefs } from '@lumenflow/core/wu-create-validators';
 import { WU_TYPES } from '@lumenflow/core/wu-constants';
 import { validateWU } from '@lumenflow/core/wu-schema';
 import { validateSpecCompleteness } from '@lumenflow/core/wu-done-validators';
-import {
-  validateCodePathsExistence,
-  validateTestPathsExistence,
-} from '@lumenflow/core/wu-preflight-validators';
+import { validateWURulesSync } from '@lumenflow/core/wu-rules-engine';
 import { validateNoPlaceholders, buildPlaceholderErrorMessage } from '@lumenflow/core/wu-validator';
 import { isCodeFile } from '@lumenflow/core/manual-test-validator';
-import { isDocsOrProcessType, hasManualTests } from '@lumenflow/core/wu-type-helpers';
+import { isDocsOrProcessType } from '@lumenflow/core/wu-type-helpers';
 import { buildWUContent } from './wu-create-content.js';
 
 /** Log prefix for console output */
@@ -51,7 +48,7 @@ export interface CreateWUOptions {
 
 export function containsCodeFiles(codePaths: string[] | undefined): boolean {
   if (!codePaths || codePaths.length === 0) return false;
-  return codePaths.some((p) => isCodeFile(p));
+  return codePaths.some((filePath) => isCodeFile(filePath));
 }
 
 export function hasAnyItems(value: unknown): boolean {
@@ -84,13 +81,15 @@ export function validateCreateSpec({
 }) {
   const errors = [];
   const effectiveType = type || DEFAULT_TYPE;
-  // WU-1329: Strict mode is the default
+  // WU-1329: Strict mode flag retained for backwards compatibility in CLI UX.
+  // Reality checks now run in wu:prep/wu:done; create/edit enforce intent only.
   const strict = opts.strict !== false;
 
-  // WU-1329: Log when strict validation is bypassed
+  // Keep advisory log for callers that explicitly opt out.
   if (!strict) {
     console.warn(
-      `${LOG_PREFIX} WARNING: strict validation bypassed (--no-strict). Path existence checks skipped.`,
+      `${LOG_PREFIX} WARNING: strict validation bypassed (--no-strict). ` +
+        `Reality-phase checks run at wu:prep/wu:done.`,
     );
   }
 
@@ -106,35 +105,10 @@ export function validateCreateSpec({
     errors.push('--exposure is required');
   }
 
-  const hasTestPaths =
-    hasAnyItems(opts.testPathsManual) ||
-    hasAnyItems(opts.testPathsUnit) ||
-    hasAnyItems(opts.testPathsE2e);
-  const hasManualTestPaths = hasManualTests({ manual: opts.testPathsManual });
-  const hasUnitTestPaths = hasAnyItems(opts.testPathsUnit);
-
   if (!isDocsOrProcessType(effectiveType)) {
     const codePaths = opts.codePaths ?? [];
     if (codePaths.length === 0) {
       errors.push('--code-paths is required for non-documentation WUs');
-    }
-
-    // WU-1443: Plan-first WUs may not know tests yet.
-    // Allow auto-manual stub ONLY when code_paths does not include code files.
-    const canAutoAddManualTests =
-      !hasTestPaths && codePaths.length > 0 && !containsCodeFiles(codePaths);
-    if (!hasTestPaths && !canAutoAddManualTests) {
-      errors.push(
-        'At least one test path flag is required (--test-paths-manual, --test-paths-unit, or --test-paths-e2e)',
-      );
-    }
-
-    if (!hasManualTestPaths && !canAutoAddManualTests) {
-      errors.push('--test-paths-manual is required for non-documentation WUs');
-    }
-
-    if (codePaths.length > 0 && !hasUnitTestPaths) {
-      errors.push('--test-paths-unit is required for non-documentation WUs with --code-paths');
     }
   }
 
@@ -187,30 +161,21 @@ export function validateCreateSpec({
 
   // Only run completeness if schema passed (it depends on well-formed data)
   if (schemaResult.success) {
+    const intentRules = validateWURulesSync(
+      {
+        id,
+        type: effectiveType,
+        status: 'ready',
+        code_paths: wuContent.code_paths,
+        tests: wuContent.tests,
+      },
+      { phase: 'intent' },
+    );
+    errors.push(...intentRules.errors.map((issue) => issue.message));
+
     const completeness = validateSpecCompleteness(wuContent, id);
     if (!completeness.valid) {
       errors.push(...completeness.errors);
-    }
-  }
-
-  // Stage 2e: Strict mode validates path existence
-  if (strict) {
-    const rootDir = process.cwd();
-
-    if (opts.codePaths && opts.codePaths.length > 0) {
-      const codePathsResult = validateCodePathsExistence(opts.codePaths, rootDir);
-      if (!codePathsResult.valid) {
-        errors.push(...codePathsResult.errors);
-      }
-    }
-
-    const testsObj = {
-      unit: opts.testPathsUnit || [],
-      e2e: opts.testPathsE2e || [],
-    };
-    const testPathsResult = validateTestPathsExistence(testsObj, rootDir);
-    if (!testPathsResult.valid) {
-      errors.push(...testPathsResult.errors);
     }
   }
 

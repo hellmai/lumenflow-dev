@@ -135,6 +135,7 @@
     "./wu-helpers": "./dist/wu-helpers.js",
     "./wu-id-generator": "./dist/wu-id-generator.js",
     "./wu-lint": "./dist/wu-lint.js",
+    "./wu-rules-engine": "./dist/wu-rules-engine.js",
     "./wu-paths": "./dist/wu-paths.js",
     "./wu-preflight-validators": "./dist/wu-preflight-validators.js",
     "./wu-repair-core": "./dist/wu-repair-core.js",

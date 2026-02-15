@@ -80,7 +80,7 @@ describe('wu:create helpers (WU-1429)', () => {
     expect(wu.notes).toBe('Implementation notes for test');
   });
 
-  it('should require test-paths-unit even when code_paths are non-code', () => {
+  it('auto-injects manual test intent for non-code plan-first scopes', () => {
     const validation = validateCreateSpec({
       id: 'WU-2000',
       lane: 'Framework: CLI',
@@ -100,8 +100,8 @@ describe('wu:create helpers (WU-1429)', () => {
       },
     });
 
-    expect(validation.valid).toBe(false);
-    expect(validation.errors.some((error) => error.includes('--test-paths-unit'))).toBe(true);
+    expect(validation.valid).toBe(true);
+    expect(validation.errors).toEqual([]);
   });
 
   it('should warn when initiative has phases but no --phase is provided', () => {

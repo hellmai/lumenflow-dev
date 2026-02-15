@@ -34,12 +34,12 @@ import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { minimatch } from 'minimatch';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { die } from '@lumenflow/core/error-handler';
 import { resolveLocation } from '@lumenflow/core/context/location-resolver';
 import { readWU } from '@lumenflow/core/wu-yaml';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { validatePreflight, formatPreflightResult } from '@lumenflow/core/wu-preflight-validators';
 import {
   CONTEXT_VALIDATION,
   PATTERNS,
@@ -51,6 +51,14 @@ import {
 import { defaultBranchFrom } from '@lumenflow/core/wu-done-paths';
 import { getCurrentBranch } from '@lumenflow/core/wu-helpers';
 import { runGates } from './gates.js';
+export {
+  isCodePathCoveredByChanges,
+  findMissingCodePathCoverage,
+  type GitDiffSpawnFn,
+  type CodePathCoverageResult,
+  checkCodePathCoverageBeforeGates,
+  formatCodePathCoverageFailure,
+} from './wu-code-path-coverage.js';
 
 const { LOCATION_TYPES } = CONTEXT_VALIDATION;
 
@@ -93,189 +101,6 @@ export function resolveScopedUnitTestsForPrep(options: {
     .filter((entry): entry is string => typeof entry === 'string')
     .map((entry) => entry.trim())
     .filter(Boolean);
-}
-
-const BASIC_GLOB_CHAR_PATTERN = /[*?[\]{}]/;
-const EXTGLOB_PATTERN = /[@!+*?]\(/;
-
-function normalizePathForCoverage(pathValue: string): string {
-  return pathValue
-    .trim()
-    .replace(/\\/g, '/')
-    .replace(/^\.\//, '')
-    .replace(/\/{2,}/g, '/')
-    .replace(/\/$/, '');
-}
-
-function isDirectoryLikeCodePath(codePath: string): boolean {
-  if (codePath.endsWith('/')) {
-    return true;
-  }
-  const fileName = path.posix.basename(codePath);
-  return !fileName.includes('.');
-}
-
-function hasGlobPattern(codePath: string): boolean {
-  return BASIC_GLOB_CHAR_PATTERN.test(codePath) || EXTGLOB_PATTERN.test(codePath);
-}
-
-export function isCodePathCoveredByChanges(options: {
-  codePath: string;
-  changedFiles: string[];
-}): boolean {
-  const normalizedCodePath = normalizePathForCoverage(options.codePath);
-  if (!normalizedCodePath) {
-    return false;
-  }
-
-  const isGlobPattern = hasGlobPattern(normalizedCodePath);
-  const directoryLike = isDirectoryLikeCodePath(options.codePath);
-
-  return options.changedFiles.some((changedFile) => {
-    const normalizedChangedFile = normalizePathForCoverage(changedFile);
-    if (!normalizedChangedFile) {
-      return false;
-    }
-
-    if (normalizedChangedFile === normalizedCodePath) {
-      return true;
-    }
-
-    if (isGlobPattern) {
-      return minimatch(normalizedChangedFile, normalizedCodePath, { dot: true });
-    }
-
-    if (directoryLike) {
-      return normalizedChangedFile.startsWith(`${normalizedCodePath}/`);
-    }
-
-    return false;
-  });
-}
-
-export function findMissingCodePathCoverage(options: {
-  codePaths: string[];
-  changedFiles: string[];
-}): string[] {
-  const { codePaths, changedFiles } = options;
-  return codePaths.filter((codePath) => !isCodePathCoveredByChanges({ codePath, changedFiles }));
-}
-
-export type GitDiffSpawnFn = (
-  command: string,
-  args: string[],
-  options: {
-    cwd: string;
-    encoding: 'utf-8';
-    stdio: ['pipe', 'pipe', 'pipe'];
-  },
-) => {
-  status: number | null;
-  stdout?: string | Buffer | null;
-  stderr?: string | Buffer | null;
-  error?: unknown;
-};
-
-export type CodePathCoverageResult = {
-  valid: boolean;
-  missingCodePaths: string[];
-  changedFiles: string[];
-  error?: string;
-};
-
-export function checkCodePathCoverageBeforeGates(options: {
-  wuId: string;
-  codePaths?: string[];
-  cwd: string;
-  baseRef?: string;
-  headRef?: string;
-  spawnSyncFn?: GitDiffSpawnFn;
-}): CodePathCoverageResult {
-  const {
-    codePaths = [],
-    cwd,
-    baseRef = 'main',
-    headRef = 'HEAD',
-    spawnSyncFn = spawnSync as GitDiffSpawnFn,
-  } = options;
-
-  const scopedCodePaths = codePaths
-    .filter((codePath): codePath is string => typeof codePath === 'string')
-    .map((codePath) => codePath.trim())
-    .filter(Boolean);
-
-  if (scopedCodePaths.length === 0) {
-    return {
-      valid: true,
-      missingCodePaths: [],
-      changedFiles: [],
-    };
-  }
-
-  const range = `${baseRef}...${headRef}`;
-  const diffResult = spawnSyncFn('git', ['diff', '--name-only', range], {
-    cwd,
-    encoding: 'utf-8',
-    stdio: ['pipe', 'pipe', 'pipe'],
-  });
-
-  if ((diffResult.status ?? EXIT_CODES.ERROR) !== EXIT_CODES.SUCCESS) {
-    const stderrText = String(diffResult.stderr ?? '').trim();
-    const errorText =
-      stderrText || (diffResult.error instanceof Error ? diffResult.error.message : '');
-    return {
-      valid: false,
-      missingCodePaths: scopedCodePaths,
-      changedFiles: [],
-      error: errorText || `git diff --name-only ${range} failed`,
-    };
-  }
-
-  const changedFiles = String(diffResult.stdout ?? '')
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean);
-
-  const missingCodePaths = findMissingCodePathCoverage({
-    codePaths: scopedCodePaths,
-    changedFiles,
-  });
-
-  return {
-    valid: missingCodePaths.length === 0,
-    missingCodePaths,
-    changedFiles,
-  };
-}
-
-export function formatCodePathCoverageFailure(options: {
-  wuId: string;
-  missingCodePaths: string[];
-  changedFiles: string[];
-  error?: string;
-}): string {
-  const { wuId, missingCodePaths, changedFiles, error } = options;
-  const missingSection = missingCodePaths.map((filePath) => `  - ${filePath}`).join('\n');
-  const changedSection =
-    changedFiles.length > 0
-      ? changedFiles.map((filePath) => `  - ${filePath}`).join('\n')
-      : '  - (none)';
-
-  const diffErrorSection = error ? `\nUnable to evaluate branch diff:\n  ${error}\n` : '';
-
-  return (
-    `${EMOJI.FAILURE} code_paths preflight failed for ${wuId}.\n` +
-    `${diffErrorSection}\n` +
-    `The following code_paths are not modified on this branch (vs main):\n` +
-    `${missingSection}\n\n` +
-    `Changed files detected on branch:\n` +
-    `${changedSection}\n\n` +
-    `Fix options:\n` +
-    `  1. Commit changes that touch each missing code_path\n` +
-    `  2. Update WU scope to match actual branch work:\n` +
-    `     pnpm wu:edit --id ${wuId} --replace-code-paths --code-paths "<path1>" --code-paths "<path2>"\n` +
-    `  3. Re-run: pnpm wu:prep --id ${wuId}`
-  );
 }
 
 /**
@@ -693,29 +518,20 @@ async function main(): Promise<void> {
     );
   }
 
-  const codePathsForCoverage = Array.isArray(doc.code_paths)
-    ? doc.code_paths.filter((codePath): codePath is string => typeof codePath === 'string')
-    : [];
-  if (codePathsForCoverage.length > 0) {
-    console.log(`${PREP_PREFIX} Checking code_paths coverage against branch changes...`);
-    const coverage = checkCodePathCoverageBeforeGates({
-      wuId: id,
-      codePaths: codePathsForCoverage,
-      cwd: location.cwd,
-    });
-    if (!coverage.valid) {
-      die(
-        formatCodePathCoverageFailure({
-          wuId: id,
-          missingCodePaths: coverage.missingCodePaths,
-          changedFiles: coverage.changedFiles,
-          error: coverage.error,
-        }),
-      );
+  console.log(`${PREP_PREFIX} Running reality preflight checks...`);
+  const realityPreflight = await validatePreflight(id, {
+    rootDir: location.cwd,
+    worktreePath: location.cwd,
+    phase: 'reality',
+  });
+  if (!realityPreflight.valid) {
+    die(formatPreflightResult(id, realityPreflight));
+  }
+  if (Array.isArray(realityPreflight.warnings) && realityPreflight.warnings.length > 0) {
+    console.log(`${PREP_PREFIX} ${EMOJI.WARNING} Reality preflight warnings:`);
+    for (const warning of realityPreflight.warnings) {
+      console.log(`${PREP_PREFIX}   - ${warning}`);
     }
-    console.log(
-      `${PREP_PREFIX} ${EMOJI.SUCCESS} code_paths coverage verified against branch changes.`,
-    );
   }
 
   // WU-1344: Check for pre-existing spec:linter failures on main BEFORE running gates.

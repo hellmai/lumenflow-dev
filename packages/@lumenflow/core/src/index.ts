@@ -105,6 +105,7 @@ export * from './wu-done-concurrent-merge.js';
 export * from './wu-helpers.js';
 export * from './wu-schema.js';
 export * from './wu-validator.js';
+export * from './wu-rules-engine.js';
 
 // Delegation system
 export * from './delegation-registry-store.js';

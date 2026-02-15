@@ -1958,6 +1958,12 @@ async function executePreFlightChecks({
     const errorMessage = buildPreflightCodePathErrorMessage(id, preflightResult);
     die(errorMessage);
   }
+  if (Array.isArray(preflightResult.warnings) && preflightResult.warnings.length > 0) {
+    console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Reality preflight warnings:`);
+    for (const warning of preflightResult.warnings) {
+      console.log(`${LOG_PREFIX.DONE}   - ${warning}`);
+    }
+  }
 
   // WU-2310: Preflight type vs code_paths validation
   // Run BEFORE transaction to prevent documentation WUs with code paths from failing at git commit
