@@ -20,11 +20,48 @@ import { WUStateStore } from './wu-state-store.js';
 import { generateBacklog } from './backlog-generator.js';
 import { writeFile } from 'node:fs/promises';
 // backlog-parser imports removed (dead code after WU-1574 state store refactor)
-import { createError, ErrorCodes } from './error-handler.js';
+import { createError, ErrorCodes, getErrorMessage } from './error-handler.js';
 import { todayISO } from './date-utils.js';
 import { getStateStoreDirFromBacklog, WU_PATHS } from './wu-paths.js';
 import { readWU, writeWU, appendNote } from './wu-yaml.js';
 import { toKebab, REMOTES, BRANCHES, WU_STATUS, STRING_LITERALS } from './wu-constants.js';
+
+type TransitionDirection = 'block' | 'unblock';
+
+interface TransitionOptions {
+  id: string;
+  direction: TransitionDirection;
+  reason?: string;
+  worktreeOverride?: string;
+  removeWorktree?: boolean;
+  createWorktree?: boolean;
+  gitAdapter?: StatusTransitionGitAdapter;
+}
+
+interface TransitionResult {
+  id: string;
+  fromStatus: string;
+  toStatus: string;
+}
+
+interface TransitionPaths {
+  wu: string;
+  status: string;
+  backlog: string;
+}
+
+interface WUDoc {
+  id?: string;
+  lane?: string;
+  title?: string;
+  status?: string;
+  [key: string]: unknown;
+}
+
+interface StatusTransitionGitAdapter {
+  run(command: string): unknown;
+  removeWorktree(path: string): unknown;
+}
 
 /**
  * Direction type for status transitions
@@ -72,7 +109,7 @@ export async function transitionWUStatus({
   removeWorktree = false,
   createWorktree = false,
   gitAdapter,
-}) {
+}: TransitionOptions): Promise<TransitionResult> {
   // Validate inputs
   if (!id) {
     throw createError(ErrorCodes.VALIDATION_ERROR, 'WU ID is required');
@@ -85,7 +122,7 @@ export async function transitionWUStatus({
   }
 
   // Resolve paths
-  const paths = {
+  const paths: TransitionPaths = {
     wu: WU_PATHS.WU(id),
     status: WU_PATHS.STATUS(),
     backlog: WU_PATHS.BACKLOG(),
@@ -110,9 +147,9 @@ export async function transitionWUStatus({
   }
 
   // Read WU document
-  const doc = readWU(paths.wu, id);
-  const title = doc.title || '';
-  const currentStatus = doc.status || WU_STATUS.IN_PROGRESS;
+  const doc = readWU(paths.wu, id) as WUDoc;
+  const title = typeof doc.title === 'string' ? doc.title : '';
+  const currentStatus = typeof doc.status === 'string' ? doc.status : WU_STATUS.IN_PROGRESS;
 
   // Determine target status
   const toStatus = direction === 'block' ? WU_STATUS.BLOCKED : WU_STATUS.IN_PROGRESS;
@@ -120,7 +157,8 @@ export async function transitionWUStatus({
   // Validate state transition (may throw if invalid)
   try {
     assertTransition(currentStatus, toStatus, id);
-  } catch (error) {
+  } catch (error: unknown) {
+    const originalError = getErrorMessage(error);
     // If already in target state, make operation idempotent (don't throw)
     if (currentStatus === toStatus) {
       console.warn(
@@ -131,8 +169,8 @@ export async function transitionWUStatus({
     // Re-throw validation errors
     throw createError(
       ErrorCodes.STATE_ERROR,
-      `State transition validation failed: ${error.message}`,
-      { id, fromStatus: currentStatus, toStatus, originalError: error.message },
+      `State transition validation failed: ${originalError}`,
+      { id, fromStatus: currentStatus, toStatus, originalError },
     );
   }
 
@@ -169,7 +207,7 @@ export async function transitionWUStatus({
  * @param {string} [reason] - Transition reason
  * @returns {string} Note text
  */
-function createNoteEntry(direction, reason) {
+function createNoteEntry(direction: TransitionDirection, reason?: string): string {
   const action = direction === 'block' ? 'Blocked' : 'Unblocked';
   const date = todayISO();
   return reason ? `${action} (${date}): ${reason}` : `${action} (${date})`;
@@ -188,7 +226,15 @@ function createNoteEntry(direction, reason) {
  * @param {string} [reason] - Transition reason
  */
 // WU-1574: Made async for generateBacklog
-async function updateBacklogAndStatus(paths, id, title, fromStatus, toStatus, direction, reason) {
+async function updateBacklogAndStatus(
+  paths: TransitionPaths,
+  id: string,
+  title: string,
+  fromStatus: string,
+  toStatus: string,
+  direction: TransitionDirection,
+  reason?: string,
+): Promise<void> {
   // WU-1574: Section variables removed - backlog is now fully regenerated from state store
 
   // WU-1574: Regenerate backlog.md from state store (replaces BacklogManager)
@@ -212,11 +258,18 @@ async function updateBacklogAndStatus(paths, id, title, fromStatus, toStatus, di
  * @param {TransitionDirection} direction - Transition direction
  * @param {string} [reason] - Transition reason
  */
-function updateStatusFile(statusPath, id, title, direction, reason) {
+function updateStatusFile(
+  statusPath: string,
+  id: string,
+  title: string,
+  direction: TransitionDirection,
+  reason?: string,
+): void {
   const rel = `wu/${id}.yaml`;
   const lines = readFileSync(statusPath, { encoding: 'utf-8' }).split(/\r?\n/);
 
-  const findHeader = (h) => lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
+  const findHeader = (h: string): number =>
+    lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
   const inProgIdx = findHeader('## in progress');
   const blockedIdx = findHeader('## blocked');
 
@@ -276,7 +329,7 @@ function updateStatusFile(statusPath, id, title, direction, reason) {
  * @param {string} rel - Relative WU path
  * @param {string} id - WU ID
  */
-function removeFromSection(lines, sectionIdx, rel, id) {
+function removeFromSection(lines: string[], sectionIdx: number, rel: string, id: string): void {
   if (sectionIdx === -1) return;
 
   let i = sectionIdx + 1;
@@ -298,14 +351,18 @@ function removeFromSection(lines, sectionIdx, rel, id) {
  * @param {string} [worktreeOverride] - Custom worktree path
  * @param {object} gitAdapter - Git adapter
  */
-function handleWorktreeRemoval(doc, worktreeOverride, gitAdapter) {
+function handleWorktreeRemoval(
+  doc: WUDoc,
+  worktreeOverride: string | undefined,
+  gitAdapter: StatusTransitionGitAdapter,
+): void {
   const wt = worktreeOverride || defaultWorktreeFrom(doc);
 
   if (wt && existsSync(wt)) {
     try {
       gitAdapter.removeWorktree(wt);
-    } catch (e) {
-      console.warn(`[wu-status-transition] Could not remove worktree ${wt}: ${e.message}`);
+    } catch (e: unknown) {
+      console.warn(`[wu-status-transition] Could not remove worktree ${wt}: ${getErrorMessage(e)}`);
     }
   } else if (wt) {
     console.warn('[wu-status-transition] Worktree path not found; skipping removal');
@@ -322,7 +379,11 @@ function handleWorktreeRemoval(doc, worktreeOverride, gitAdapter) {
  * @param {string} [worktreeOverride] - Custom worktree path
  * @param {object} gitAdapter - Git adapter
  */
-function handleWorktreeCreation(doc, worktreeOverride, gitAdapter) {
+function handleWorktreeCreation(
+  doc: WUDoc,
+  worktreeOverride: string | undefined,
+  gitAdapter: StatusTransitionGitAdapter,
+): void {
   const worktreePath = worktreeOverride || defaultWorktreeFrom(doc);
   const branchName = defaultBranchFrom(doc);
 
@@ -363,7 +424,7 @@ function handleWorktreeCreation(doc, worktreeOverride, gitAdapter) {
  * @param {object} doc - WU document
  * @returns {string | null} Worktree path
  */
-function defaultWorktreeFrom(doc) {
+function defaultWorktreeFrom(doc: WUDoc): string | null {
   const lane = (doc.lane || '').toString();
   const laneK = lane
     .trim()
@@ -382,7 +443,7 @@ function defaultWorktreeFrom(doc) {
  * @param {object} doc - WU document
  * @returns {string | null} Branch name
  */
-function defaultBranchFrom(doc) {
+function defaultBranchFrom(doc: WUDoc): string | null {
   const lane = (doc.lane || '').toString();
   const laneK = toKebab(lane);
   const idK = (doc.id || '').toLowerCase();
@@ -398,7 +459,7 @@ function defaultBranchFrom(doc) {
  * @param {object} gitAdapter - Git adapter
  * @returns {boolean} True if branch exists
  */
-function branchExists(branch, gitAdapter) {
+function branchExists(branch: string, gitAdapter: StatusTransitionGitAdapter): boolean {
   try {
     gitAdapter.run(`git rev-parse --verify ${JSON.stringify(branch)}`);
     return true;

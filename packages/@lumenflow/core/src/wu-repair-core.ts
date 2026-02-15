@@ -27,7 +27,7 @@ import { WU_PATHS } from './wu-paths.js';
 import { WUStateStore, WU_EVENTS_FILE_NAME } from './wu-state-store.js';
 import { getGitForCwd, createGitForPath } from './git-adapter.js';
 import { EXIT_CODES, LOG_PREFIX, EMOJI, WU_STATUS, LUMENFLOW_PATHS } from './wu-constants.js';
-import { die } from './error-handler.js';
+import { die, getErrorMessage } from './error-handler.js';
 import { ensureOnMain, ensureMainUpToDate, validateWUIDFormat } from './wu-helpers.js';
 import { withMicroWorktree } from './micro-worktree.js';
 import { validateLaneFormat } from './lane-checker.js';
@@ -51,6 +51,78 @@ export {
 
 const PREFIX = LOG_PREFIX.REPAIR;
 
+interface WUDoc extends Record<string, unknown> {
+  id?: string;
+  lane?: string;
+  title?: string;
+  status?: string;
+  notes?: string;
+  initiative?: string;
+  locked?: boolean;
+  claimed_mode?: string;
+  claimed_branch?: string;
+  created?: unknown;
+  completed?: unknown;
+  completed_at?: unknown;
+}
+
+interface ClaimMetadataCheckResult {
+  valid: boolean;
+  errors: string[];
+  yamlStatus: string | null;
+  stateStoreHasClaim: boolean;
+}
+
+interface ClaimRepairResult {
+  success: boolean;
+  repaired: string[];
+  errors: string[];
+}
+
+interface ClaimRepairOptions {
+  id: string;
+  check?: boolean;
+  worktree?: string;
+}
+
+interface AdminRepairOptions {
+  id: string;
+  lane?: string;
+  status?: string;
+  notes?: string;
+  initiative?: string;
+}
+
+interface RepairModeResult {
+  success: boolean;
+  exitCode: number;
+}
+
+interface ConsistencyError {
+  type: string;
+  description: string;
+}
+
+interface ConsistencyReport {
+  valid: boolean;
+  id?: string;
+  checked?: number;
+  errors: ConsistencyError[];
+}
+
+interface ConsistencyRepairResult {
+  success: boolean;
+  repaired: number;
+  failed: number;
+}
+
+interface ConsistencyModeOptions {
+  id?: string;
+  all?: boolean;
+  check?: boolean;
+  dryRun?: boolean;
+}
+
 // ============================================================================
 // CLAIM REPAIR MODE
 // ============================================================================
@@ -61,7 +133,7 @@ const PREFIX = LOG_PREFIX.REPAIR;
  * @param {string} id - WU ID (e.g., 'WU-1804')
  * @returns {Promise<string|null>} Worktree path or null if not found
  */
-export async function findWorktreePathForWU(id) {
+export async function findWorktreePathForWU(id: string): Promise<string | null> {
   try {
     const git = getGitForCwd();
     const worktreeOutput = await git.worktreeList();
@@ -104,8 +176,11 @@ export async function findWorktreePathForWU(id) {
  * @param {string} worktreePath - Path to the worktree
  * @returns {Promise<{valid: boolean, errors: string[], yamlStatus: string|null, stateStoreHasClaim: boolean}>}
  */
-export async function checkClaimMetadata(id, worktreePath) {
-  const errors = [];
+export async function checkClaimMetadata(
+  id: string,
+  worktreePath: string,
+): Promise<ClaimMetadataCheckResult> {
+  const errors: string[] = [];
   let yamlStatus = null;
   let stateStoreHasClaim = false;
 
@@ -118,8 +193,8 @@ export async function checkClaimMetadata(id, worktreePath) {
       if (yamlStatus !== WU_STATUS.IN_PROGRESS) {
         errors.push(`WU YAML status is '${yamlStatus}', expected '${WU_STATUS.IN_PROGRESS}'`);
       }
-    } catch (err) {
-      errors.push(`Failed to read WU YAML: ${err.message}`);
+    } catch (err: unknown) {
+      errors.push(`Failed to read WU YAML: ${getErrorMessage(err)}`);
     }
   } else {
     errors.push(`WU YAML not found at: ${wuPath}`);
@@ -137,8 +212,8 @@ export async function checkClaimMetadata(id, worktreePath) {
       if (!stateStoreHasClaim) {
         errors.push(`State store does not show ${id} as in_progress`);
       }
-    } catch (err) {
-      errors.push(`Failed to read state store: ${err.message}`);
+    } catch (err: unknown) {
+      errors.push(`Failed to read state store: ${getErrorMessage(err)}`);
     }
   } else {
     errors.push(`State store not found at: ${eventsPath}`);
@@ -162,25 +237,29 @@ export async function checkClaimMetadata(id, worktreePath) {
  * @param {object} checkResult - Result from checkClaimMetadata
  * @returns {Promise<{success: boolean, repaired: string[], errors: string[]}>}
  */
-export async function repairClaimMetadata(id, worktreePath, checkResult) {
-  const repaired = [];
-  const errors = [];
+export async function repairClaimMetadata(
+  id: string,
+  worktreePath: string,
+  checkResult: ClaimMetadataCheckResult,
+): Promise<ClaimRepairResult> {
+  const repaired: string[] = [];
+  const errors: string[] = [];
 
   // Read current WU YAML to get lane and title
   const wuPath = path.join(worktreePath, WU_PATHS.WU(id));
-  let doc;
+  let doc: WUDoc;
   try {
-    doc = readWU(wuPath, id);
-  } catch (err) {
+    doc = readWU(wuPath, id) as WUDoc;
+  } catch (err: unknown) {
     return {
       success: false,
       repaired: [],
-      errors: [`Cannot read WU YAML to repair: ${err.message}`],
+      errors: [`Cannot read WU YAML to repair: ${getErrorMessage(err)}`],
     };
   }
 
-  const lane = doc.lane || '';
-  const title = doc.title || `WU ${id}`;
+  const lane = typeof doc.lane === 'string' ? doc.lane : '';
+  const title = typeof doc.title === 'string' ? doc.title : `WU ${id}`;
 
   // Repair 1: Fix YAML status if needed
   if (checkResult.yamlStatus !== WU_STATUS.IN_PROGRESS) {
@@ -191,8 +270,8 @@ export async function repairClaimMetadata(id, worktreePath, checkResult) {
       delete doc.completed_at;
       writeWU(wuPath, doc);
       repaired.push(`WU YAML status set to '${WU_STATUS.IN_PROGRESS}'`);
-    } catch (err) {
-      errors.push(`Failed to update WU YAML status: ${err.message}`);
+    } catch (err: unknown) {
+      errors.push(`Failed to update WU YAML status: ${getErrorMessage(err)}`);
     }
   }
 
@@ -218,8 +297,8 @@ export async function repairClaimMetadata(id, worktreePath, checkResult) {
       const line = `${JSON.stringify(claimEvent)}\n`;
       appendFileSync(eventsPath, line, 'utf-8');
       repaired.push(`Claim event added to state store`);
-    } catch (err) {
-      errors.push(`Failed to add claim event to state store: ${err.message}`);
+    } catch (err: unknown) {
+      errors.push(`Failed to add claim event to state store: ${getErrorMessage(err)}`);
     }
   }
 
@@ -229,7 +308,7 @@ export async function repairClaimMetadata(id, worktreePath, checkResult) {
       const gitWorktree = createGitForPath(worktreePath);
 
       // Stage repaired files
-      const filesToStage = [wuPath];
+      const filesToStage: string[] = [wuPath];
       const stateDir = path.join(worktreePath, LUMENFLOW_PATHS.STATE_DIR);
       const eventsPath = path.join(stateDir, WU_EVENTS_FILE_NAME);
       if (existsSync(eventsPath)) {
@@ -247,9 +326,11 @@ export async function repairClaimMetadata(id, worktreePath, checkResult) {
       const currentBranch = await gitWorktree.getCurrentBranch();
       await gitWorktree.push('origin', currentBranch);
       repaired.push(`Pushed to origin/${currentBranch}`);
-    } catch (err) {
+    } catch (err: unknown) {
       // Don't fail the entire repair if commit/push fails
-      errors.push(`Git operations failed: ${err.message}. Manual commit may be required.`);
+      errors.push(
+        `Git operations failed: ${getErrorMessage(err)}. Manual commit may be required.`,
+      );
     }
   }
 
@@ -269,7 +350,7 @@ export async function repairClaimMetadata(id, worktreePath, checkResult) {
  * @param {string} [options.worktree] - Override worktree path
  * @returns {Promise<{success: boolean, exitCode: number}>}
  */
-export async function runClaimRepairMode(options) {
+export async function runClaimRepairMode(options: ClaimRepairOptions): Promise<RepairModeResult> {
   const { id, check, worktree } = options;
 
   console.log(`${PREFIX} Checking claim metadata for ${id}...`);
@@ -358,7 +439,7 @@ const VALID_STATUSES = Object.values(WU_STATUS);
  *
  * @param {string} status - Status value to validate
  */
-function validateStatus(status) {
+function validateStatus(status: string): void {
   if (!VALID_STATUSES.includes(status)) {
     die(`Invalid status: '${status}'\n\n` + `Valid statuses: ${VALID_STATUSES.join(', ')}`);
   }
@@ -370,14 +451,14 @@ function validateStatus(status) {
  * @param {string} id - WU ID
  * @returns {object} WU object
  */
-function validateWUExists(id) {
+function validateWUExists(id: string): WUDoc {
   const wuPath = WU_PATHS.WU(id);
   if (!existsSync(wuPath)) {
     die(`WU ${id} not found at ${wuPath}\n\nEnsure the WU exists and you're in the repo root.`);
   }
 
   const content = readFileSync(wuPath, { encoding: 'utf-8' });
-  const wu = parseYAML(content);
+  const wu = parseYAML(content) as WUDoc;
 
   // Admin repair ALLOWS editing done WUs (key difference from wu:edit)
   return wu;
@@ -405,7 +486,7 @@ async function ensureCleanWorkingTree() {
  * @param {string[]} changes - List of changes made
  * @returns {string} Audit trail entry
  */
-function generateAuditEntry(changes) {
+function generateAuditEntry(changes: string[]): string {
   const date = new Date().toISOString().split('T')[0];
   return `\n\n[ADMIN-REPAIR ${date}]: ${changes.join('; ')}`;
 }
@@ -416,7 +497,7 @@ function generateAuditEntry(changes) {
  * @param {object} wu - WU object from yaml.load()
  * @returns {object} WU object with normalized date fields
  */
-function normalizeWUDates(wu) {
+function normalizeWUDates(wu: WUDoc): WUDoc {
   if (wu.created !== undefined) {
     wu.created = normalizeToDateString(wu.created);
   }
@@ -429,7 +510,12 @@ function normalizeWUDates(wu) {
 /**
  * Apply lane repair and return changes
  */
-function applyLaneRepair(wu, updated, opts, changes) {
+function applyLaneRepair(
+  wu: WUDoc,
+  updated: WUDoc,
+  opts: AdminRepairOptions,
+  changes: string[],
+): void {
   if (!opts.lane) return;
   validateLaneFormat(opts.lane);
   if (wu.lane === opts.lane) return;
@@ -440,7 +526,12 @@ function applyLaneRepair(wu, updated, opts, changes) {
 /**
  * Apply status repair and return changes
  */
-function applyStatusRepair(wu, updated, opts, changes) {
+function applyStatusRepair(
+  wu: WUDoc,
+  updated: WUDoc,
+  opts: AdminRepairOptions,
+  changes: string[],
+): void {
   if (!opts.status) return;
   validateStatus(opts.status);
   if (wu.status === opts.status) return;
@@ -461,7 +552,12 @@ function applyStatusRepair(wu, updated, opts, changes) {
 /**
  * Apply initiative repair and return changes
  */
-function applyInitiativeRepair(wu, updated, opts, changes) {
+function applyInitiativeRepair(
+  wu: WUDoc,
+  updated: WUDoc,
+  opts: AdminRepairOptions,
+  changes: string[],
+): void {
   if (!opts.initiative || wu.initiative === opts.initiative) return;
   const oldVal = wu.initiative || '(none)';
   changes.push(`initiative changed from '${oldVal}' to '${opts.initiative}'`);
@@ -471,7 +567,12 @@ function applyInitiativeRepair(wu, updated, opts, changes) {
 /**
  * Apply notes update and return changes
  */
-function applyNotesUpdate(wu, updated, opts, changes) {
+function applyNotesUpdate(
+  wu: WUDoc,
+  updated: WUDoc,
+  opts: AdminRepairOptions,
+  changes: string[],
+): void {
   if (!opts.notes) return;
   const existingNotes = wu.notes || '';
   changes.push(`notes updated`);
@@ -481,12 +582,12 @@ function applyNotesUpdate(wu, updated, opts, changes) {
 /**
  * Append audit trail to notes based on changes made
  */
-function appendAuditTrail(updated, opts, changes) {
+function appendAuditTrail(updated: WUDoc, opts: AdminRepairOptions, changes: string[]): void {
   if (changes.length === 0) return;
 
   if (opts.notes) {
     // If notes were explicitly provided, add audit for non-notes changes only
-    const nonNotesChanges = changes.filter((c) => c !== 'notes updated');
+    const nonNotesChanges = changes.filter((c: string) => c !== 'notes updated');
     if (nonNotesChanges.length > 0) {
       updated.notes = `${updated.notes}${generateAuditEntry(nonNotesChanges)}`;
     }
@@ -504,9 +605,12 @@ function appendAuditTrail(updated, opts, changes) {
  * @param {object} opts - CLI options
  * @returns {{ updated: object, changes: string[] }} Updated WU and list of changes
  */
-export function applyAdminRepairs(wu, opts) {
+export function applyAdminRepairs(
+  wu: WUDoc,
+  opts: AdminRepairOptions,
+): { updated: WUDoc; changes: string[] } {
   const updated = { ...wu };
-  const changes = [];
+  const changes: string[] = [];
 
   applyLaneRepair(wu, updated, opts, changes);
   applyStatusRepair(wu, updated, opts, changes);
@@ -524,9 +628,9 @@ export function applyAdminRepairs(wu, opts) {
  * @param {string[]} changes - List of changes made
  * @returns {string} Commit message
  */
-function generateAdminCommitMessage(id, changes) {
+function generateAdminCommitMessage(id: string, changes: string[]): string {
   // Extract field names from changes
-  const fields = changes.map((c) => c.split(' ')[0]).filter((f) => f !== 'notes');
+  const fields = changes.map((c: string) => c.split(' ')[0]).filter((f: string) => f !== 'notes');
   const uniqueFields = [...new Set(fields)];
   const fieldSummary = uniqueFields.length > 0 ? uniqueFields.join(', ') : 'notes';
   return `fix(${id.toLowerCase()}): admin-repair ${fieldSummary}`;
@@ -543,7 +647,7 @@ function generateAdminCommitMessage(id, changes) {
  * @param {string} [options.initiative] - New initiative reference
  * @returns {Promise<{success: boolean, exitCode: number}>}
  */
-export async function runAdminRepairMode(options) {
+export async function runAdminRepairMode(options: AdminRepairOptions): Promise<RepairModeResult> {
   const { id } = options;
 
   console.log(`${ADMIN_PREFIX} Starting admin repair for ${id}`);
@@ -646,8 +750,8 @@ export async function runAdminRepairMode(options) {
     }
     console.log(`${ADMIN_PREFIX} Audit trail logged to WU notes`);
     return { success: true, exitCode: EXIT_CODES.SUCCESS };
-  } catch (err) {
-    console.error(`${ADMIN_PREFIX} ${EMOJI.FAILURE} ${err.message}`);
+  } catch (err: unknown) {
+    console.error(`${ADMIN_PREFIX} ${EMOJI.FAILURE} ${getErrorMessage(err)}`);
     return { success: false, exitCode: EXIT_CODES.ERROR };
   }
 }
@@ -661,7 +765,7 @@ export async function runAdminRepairMode(options) {
  * @param {object} error - Error object
  * @returns {string} Formatted error string
  */
-function formatError(error) {
+function formatError(error: ConsistencyError): string {
   return `  - ${error.type}: ${error.description}`;
 }
 
@@ -669,7 +773,7 @@ function formatError(error) {
  * Print consistency report
  * @param {object} report - Consistency report
  */
-function printReport(report) {
+function printReport(report: ConsistencyReport): void {
   if (report.valid) {
     console.log(`${PREFIX} ${report.id}: No inconsistencies detected`);
     return;
@@ -688,9 +792,12 @@ function printReport(report) {
  * @param {object} options - CLI options
  * @returns {Promise<{success: boolean, repaired: number, failed: number}>}
  */
-export async function repairSingleWU(id, options) {
+export async function repairSingleWU(
+  id: string,
+  options: Pick<ConsistencyModeOptions, 'check'>,
+): Promise<ConsistencyRepairResult> {
   console.log(`${PREFIX} Checking ${id}...`);
-  const report = await checkWUConsistency(id);
+  const report = (await checkWUConsistency(id)) as ConsistencyReport;
 
   if (report.valid) {
     console.log(`${PREFIX} ${id}: No inconsistencies detected`);
@@ -704,7 +811,7 @@ export async function repairSingleWU(id, options) {
   }
 
   console.log(`${PREFIX} Repairing ${id}...`);
-  const result = await repairWUInconsistency(report);
+  const result = await repairWUInconsistency(report as Parameters<typeof repairWUInconsistency>[0]);
 
   if (result.failed > 0) {
     console.error(
@@ -726,7 +833,7 @@ export async function repairSingleWU(id, options) {
 export async function repairAllWUs(options: { dryRun?: boolean; check?: boolean } = {}) {
   const dryRun = options.dryRun === true || options.check === true;
   console.log(`${PREFIX} Checking all WUs...`);
-  const report = await checkAllWUConsistency();
+  const report = (await checkAllWUConsistency()) as ConsistencyReport;
 
   if (report.valid) {
     console.log(`${PREFIX} All ${report.checked} WUs are consistent`);
@@ -750,7 +857,7 @@ export async function repairAllWUs(options: { dryRun?: boolean; check?: boolean 
 
   // Repair the inconsistencies
   console.log(`${PREFIX} Repairing inconsistencies...`);
-  const result = await repairWUInconsistency(report);
+  const result = await repairWUInconsistency(report as Parameters<typeof repairWUInconsistency>[0]);
 
   if (result.failed > 0) {
     console.error(
@@ -774,8 +881,10 @@ export async function repairAllWUs(options: { dryRun?: boolean; check?: boolean 
  * @param {boolean} [options.check] - Audit only, no changes
  * @returns {Promise<{success: boolean, exitCode: number}>}
  */
-export async function runConsistencyRepairMode(options) {
-  let result;
+export async function runConsistencyRepairMode(
+  options: ConsistencyModeOptions,
+): Promise<RepairModeResult> {
+  let result: ConsistencyRepairResult;
   try {
     if (options.all) {
       result = await repairAllWUs({
@@ -785,8 +894,8 @@ export async function runConsistencyRepairMode(options) {
     } else {
       result = await repairSingleWU(options.id, options);
     }
-  } catch (error) {
-    console.error(`${PREFIX} Fatal error: ${error.message}`);
+  } catch (error: unknown) {
+    console.error(`${PREFIX} Fatal error: ${getErrorMessage(error)}`);
     return { success: false, exitCode: EXIT_CODES.FAILURE };
   }
 

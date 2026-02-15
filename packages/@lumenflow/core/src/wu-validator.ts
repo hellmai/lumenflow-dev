@@ -17,12 +17,58 @@ import { execSync } from 'node:child_process';
 import { STDIO } from './wu-constants.js';
 import { PLACEHOLDER_SENTINEL } from './wu-schema.js';
 
+export interface TodoMatch {
+  line: number;
+  text: string;
+  pattern: string;
+}
+
+export interface TodoScanResult {
+  found: boolean;
+  matches: TodoMatch[];
+}
+
+interface ActionableMarkerResult {
+  found: boolean;
+  pattern: string | null;
+}
+
+export interface MockMatch {
+  line: number;
+  text: string;
+  type: string;
+}
+
+export interface MockScanResult {
+  found: boolean;
+  matches: MockMatch[];
+}
+
+interface MockPattern {
+  name: string;
+  regex: RegExp;
+}
+
+interface TodoFinding extends TodoScanResult {
+  path: string;
+}
+
+interface MockFinding extends MockScanResult {
+  path: string;
+}
+
+interface ValidateWUCodePathsResult {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+}
+
 /**
  * Check if a file path is a test file
  * @param {string} filePath - Path to check
  * @returns {boolean} True if file is a test file
  */
-export function isTestFile(filePath) {
+export function isTestFile(filePath: string): boolean {
   const normalized = filePath.replace(/\\/g, '/');
 
   // Test file patterns
@@ -42,7 +88,7 @@ export function isTestFile(filePath) {
  * @param {string} filePath - Path to check
  * @returns {boolean} True if file is a markdown file
  */
-export function isMarkdownFile(filePath) {
+export function isMarkdownFile(filePath: string): boolean {
   const normalized = filePath.replace(/\\/g, '/');
   return /\.md$/i.test(normalized);
 }
@@ -52,7 +98,7 @@ export function isMarkdownFile(filePath) {
  * @param {string} filePath - Path to file to scan
  * @returns {{found: boolean, matches: Array<{line: number, text: string, pattern: string}>}}
  */
-export function scanFileForTODOs(filePath) {
+export function scanFileForTODOs(filePath: string): TodoScanResult {
   if (!existsSync(filePath)) {
     return { found: false, matches: [] };
   }
@@ -70,7 +116,7 @@ export function scanFileForTODOs(filePath) {
   try {
     const content = readFileSync(filePath, { encoding: 'utf-8' });
     const lines = content.split(/\r?\n/);
-    const matches = [];
+    const matches: TodoMatch[] = [];
 
     // Match TODO/FIXME/HACK/XXX as actionable markers in comments
     // Covers: // TODO:, /* TODO */, * TODO, <!-- TODO -->, # TODO, @todo, etc.
@@ -91,7 +137,7 @@ export function scanFileForTODOs(filePath) {
      * @param {string} line - Line to check
      * @returns {{found: boolean, pattern: string|null}} Match result
      */
-    const checkForActionableMarker = (line) => {
+    const checkForActionableMarker = (line: string): ActionableMarkerResult => {
       const trimmed = line.trim();
 
       // Skip lines that are documentation about the patterns themselves
@@ -163,7 +209,7 @@ export function scanFileForTODOs(filePath) {
       return { found: false, pattern: null };
     };
 
-    lines.forEach((line, index) => {
+    lines.forEach((line: string, index: number) => {
       const lineNumber = index + 1;
       const trimmed = line.trim();
 
@@ -173,7 +219,7 @@ export function scanFileForTODOs(filePath) {
 
       if (isComment) {
         const result = checkForActionableMarker(line);
-        if (result.found) {
+        if (result.found && result.pattern !== null) {
           matches.push({
             line: lineNumber,
             text: trimmed,
@@ -198,7 +244,7 @@ export function scanFileForTODOs(filePath) {
  * @param {string} filePath - Path to file to scan
  * @returns {{found: boolean, matches: Array<{line: number, text: string, type: string}>}}
  */
-export function scanFileForMocks(filePath) {
+export function scanFileForMocks(filePath: string): MockScanResult {
   if (!existsSync(filePath)) {
     return { found: false, matches: [] };
   }
@@ -211,10 +257,10 @@ export function scanFileForMocks(filePath) {
   try {
     const content = readFileSync(filePath, { encoding: 'utf-8' });
     const lines = content.split(/\r?\n/);
-    const matches = [];
+    const matches: MockMatch[] = [];
 
     // Match Mock/Stub/Fake/Placeholder in class/function/const names
-    const mockPatterns = [
+    const mockPatterns: MockPattern[] = [
       // Classes: class MockService, export class StubAdapter
       { name: 'Mock', regex: /\b(class|export\s+class)\s+(\w*Mock\w*)/i },
       { name: 'Stub', regex: /\b(class|export\s+class)\s+(\w*Stub\w*)/i },
@@ -227,10 +273,10 @@ export function scanFileForMocks(filePath) {
       { name: 'Placeholder', regex: /\b(function|const|let|var)\s+(\w*placeholder\w*)/i },
     ];
 
-    lines.forEach((line, index) => {
+    lines.forEach((line: string, index: number) => {
       const lineNumber = index + 1;
 
-      mockPatterns.forEach(({ name, regex }) => {
+      mockPatterns.forEach(({ name, regex }: MockPattern) => {
         const match = regex.exec(line);
         if (match) {
           matches.push({
@@ -284,18 +330,21 @@ export interface ValidateWUCodePathsOptions {
  * @param {ValidateWUCodePathsOptions} options - Validation options
  * @returns {{valid: boolean, errors: Array<string>, warnings: Array<string>}}
  */
-export function validateWUCodePaths(codePaths, options: ValidateWUCodePathsOptions = {}) {
+export function validateWUCodePaths(
+  codePaths: string[] | null | undefined,
+  options: ValidateWUCodePathsOptions = {},
+): ValidateWUCodePathsResult {
   const { allowTodos = false, worktreePath = null } = options;
-  const errors = [];
-  const warnings = [];
+  const errors: string[] = [];
+  const warnings: string[] = [];
   const repoRoot = worktreePath || getRepoRoot();
 
   if (!codePaths || codePaths.length === 0) {
     return { valid: true, errors, warnings };
   }
 
-  const todoFindings = [];
-  const mockFindings = [];
+  const todoFindings: TodoFinding[] = [];
+  const mockFindings: MockFinding[] = [];
 
   // Scan each code path
   for (const codePath of codePaths) {
@@ -350,12 +399,12 @@ export function validateWUCodePaths(codePaths, options: ValidateWUCodePathsOptio
  * @param {Array} findings - TODO findings
  * @returns {string} Formatted message
  */
-function formatTODOFindings(findings) {
+function formatTODOFindings(findings: TodoFinding[]): string {
   let msg = '\n❌ TODO/FIXME/HACK/XXX comments found in production code:\n';
 
-  findings.forEach(({ path, matches }) => {
+  findings.forEach(({ path, matches }: TodoFinding) => {
     msg += `\n  ${path}:\n`;
-    matches.forEach(({ line, text }) => {
+    matches.forEach(({ line, text }: TodoMatch) => {
       msg += `    Line ${line}: ${text}\n`;
     });
   });
@@ -371,12 +420,12 @@ function formatTODOFindings(findings) {
  * @param {Array} findings - Mock findings
  * @returns {string} Formatted message
  */
-function formatMockFindings(findings) {
+function formatMockFindings(findings: MockFinding[]): string {
   let msg = '\n⚠️  Mock/Stub/Fake/Placeholder classes found in production code:\n';
 
-  findings.forEach(({ path, matches }) => {
+  findings.forEach(({ path, matches }: MockFinding) => {
     msg += `\n  ${path}:\n`;
-    matches.forEach(({ line, text }) => {
+    matches.forEach(({ line, text }: MockMatch) => {
       msg += `    Line ${line}: ${text}\n`;
     });
   });
