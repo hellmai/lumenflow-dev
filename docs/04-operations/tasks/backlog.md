@@ -23,10 +23,11 @@ sections:
 - [WU-1695 — Fix pre-existing @lumenflow/mcp typecheck failures blocking gates](wu/WU-1695.yaml) — Framework: MCP
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
+- [WU-1695 — Fix pre-existing @lumenflow/mcp typecheck failures blocking gates](wu/WU-1695.yaml) — Framework: MCP
 
 ## 🔧 In progress
 
-- [WU-1694 — Strict debt slice: eliminate TS7006 in wu-claim-state/validation](wu/WU-1694.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -669,6 +670,7 @@ sections:
 - [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml)
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml)
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml)
+- [WU-1694 — Strict debt slice: eliminate TS7006 in wu-claim-state/validation](wu/WU-1694.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

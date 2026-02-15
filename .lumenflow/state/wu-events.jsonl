@@ -1343,4 +1343,5 @@
 {"type":"complete","wuId":"WU-1587","timestamp":"2026-02-15T19:07:06.525Z"}
 {"type":"claim","wuId":"WU-1588","timestamp":"2026-02-15T19:07:41.919Z","lane":"Framework: Core Validation","title":"Core strict wave 2E: remaining fixes and strict enablement"}
 {"type":"complete","wuId":"WU-1588","timestamp":"2026-02-15T19:13:32.945Z"}
-{"type":"claim","wuId":"WU-1694","lane":"Framework: CLI WU Commands","title":"Strict debt slice: eliminate TS7006 in wu-claim-state/validation","timestamp":"2026-02-15T20:09:33.423Z"}
+{"type":"claim","wuId":"WU-1694","timestamp":"2026-02-15T20:09:33.423Z","lane":"Framework: CLI WU Commands","title":"Strict debt slice: eliminate TS7006 in wu-claim-state/validation"}
+{"type":"complete","wuId":"WU-1694","timestamp":"2026-02-15T20:27:46.279Z"}
