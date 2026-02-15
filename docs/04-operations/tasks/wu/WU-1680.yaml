@@ -1,6 +1,6 @@
 id: WU-1680
 title: 'Validator Layer V2: unify phase-aware rules and adapters'
-lane: 'Operations: Tooling'
+lane: 'Framework: CLI WU Commands'
 type: refactor
 status: ready
 priority: P1
@@ -16,7 +16,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-done-preflight.ts
 tests:
   manual:
-    - Run wu:create/wu:edit/wu:validate/wu:prep/wu:done scenarios and confirm phase-specific validation behavior.
+    - Run wu:create/wu:edit/wu:validate/wu:prep/wu:done scenarios and confirm phase-specific
+      validation behavior.
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-lint-parity.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-preflight-validators.test.ts
@@ -29,7 +30,8 @@ artifacts:
   - .lumenflow/stamps/WU-1680.done
 dependencies: []
 risks: []
-notes: 'Sizing per wu-sizing-guide: Medium. Estimated 10-18 files, 50-100 tool calls, context target <50%. Use checkpoint if triggers are hit.'
+notes: 'Sizing per wu-sizing-guide: Medium. Estimated 10-18 files, 50-100 tool calls, context target
+  <50%. Use checkpoint if triggers are hit.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -38,10 +40,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: validators for lint, preflight, create/edit, prep, and done evolved independently. Problem: contradictory enforcement creates catch-22 failures (parity heuristic vs code_paths coverage, glob mismatch in existence checks, tests.unit prose treated as paths). Solution: implement a shared phase-aware rules engine in core and route existing validators through adapters so create/edit/validate use intent/structural checks while prep/done enforce reality checks.'
+description: 'Context: validators for lint, preflight, create/edit, prep, and done evolved
+  independently. Problem: contradictory enforcement creates catch-22 failures (parity heuristic vs
+  code_paths coverage, glob mismatch in existence checks, tests.unit prose treated as paths).
+  Solution: implement a shared phase-aware rules engine in core and route existing validators
+  through adapters so create/edit/validate use intent/structural checks while prep/done enforce
+  reality checks.'
 acceptance:
-  - Shared rules engine provides intent, structural, and reality profiles with reusable context and issue model.
-  - Registration parity checks only when CLI package bin changes; metadata-only package.json edits do not block completion.
-  - code_paths glob behavior is consistent across existence and coverage checks, with any-match-per-glob coverage semantics.
-  - Create/edit require minimum test intent without forcing fake tests.unit paths; prep/done enforce automated test path classification and existence.
-  - Adapters preserve existing command interfaces and test contracts while removing contradictory duplicated logic.
+  - Shared rules engine provides intent, structural, and reality profiles with reusable context and
+    issue model.
+  - Registration parity checks only when CLI package bin changes; metadata-only package.json edits
+    do not block completion.
+  - code_paths glob behavior is consistent across existence and coverage checks, with
+    any-match-per-glob coverage semantics.
+  - Create/edit require minimum test intent without forcing fake tests.unit paths; prep/done enforce
+    automated test path classification and existence.
+  - Adapters preserve existing command interfaces and test contracts while removing contradictory
+    duplicated logic.
