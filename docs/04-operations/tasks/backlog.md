@@ -33,7 +33,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1679 — Update repo references from hellmai/os to hellmai/lumenflow](wu/WU-1679.yaml) — Operations: Tooling
 - [WU-1680 — Validator Layer V2: unify phase-aware rules and adapters](wu/WU-1680.yaml) — Framework: CLI WU Commands
 - [WU-1681 — Fix wu:brief client flag UX to avoid Claude-biased defaults](wu/WU-1681.yaml) — Framework: CLI WU Commands
 
@@ -656,6 +655,7 @@ sections:
 - [WU-1676 — Scope wu:prep test gate to WU tests.unit entries](wu/WU-1676.yaml)
 - [WU-1678 — Stabilize wu-done.test worker-fork timeout in incremental test gate](wu/WU-1678.yaml)
 - [WU-1682 — Update Medium article for LumenFlow open-source launch](wu/WU-1682.yaml)
+- [WU-1679 — Update repo references from hellmai/os to hellmai/lumenflow](wu/WU-1679.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

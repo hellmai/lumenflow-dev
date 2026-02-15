@@ -1296,3 +1296,4 @@
 {"type":"claim","wuId":"WU-1681","timestamp":"2026-02-15T10:13:50.871Z","lane":"Framework: CLI WU Commands","title":"Fix wu:brief client flag UX to avoid Claude-biased defaults"}
 {"type":"claim","wuId":"WU-1682","timestamp":"2026-02-15T10:14:23.035Z","lane":"Content: Site Comms","title":"Update Medium article for LumenFlow open-source launch"}
 {"type":"complete","wuId":"WU-1682","timestamp":"2026-02-15T10:18:09.162Z"}
+{"type":"complete","wuId":"WU-1679","timestamp":"2026-02-15T10:18:25.714Z"}

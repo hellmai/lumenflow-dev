@@ -2,7 +2,7 @@ id: WU-1679
 title: Update repo references from hellmai/os to hellmai/lumenflow
 lane: 'Operations: Tooling'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -56,3 +56,6 @@ acceptance:
   - All README and doc files reference hellmai/lumenflow
   - CLI templates reference hellmai/lumenflow
   - CHANGELOG.md compare links updated
+locked: true
+completed_at: 2026-02-15T10:18:23.014Z
+completed: 2026-02-15
