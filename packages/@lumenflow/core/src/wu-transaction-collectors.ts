@@ -37,6 +37,36 @@ import {
   computeWUEventsContentWithMainMerge,
 } from './wu-done-concurrent-merge.js';
 
+interface WUDoc extends Record<string, unknown> {
+  status?: string;
+  locked?: boolean;
+  completed_at?: string;
+  completed?: unknown;
+}
+
+interface CollectMetadataParams {
+  doc: WUDoc;
+  id: string;
+  title: string;
+  wuPath: string;
+  statusPath: string;
+  backlogPath: string;
+  stampPath: string;
+}
+
+interface MetadataUpdate {
+  path: string;
+  content: string;
+  description: string;
+}
+
+export interface CollectedMetadataUpdates {
+  wuYAML: MetadataUpdate;
+  status: MetadataUpdate;
+  backlog: MetadataUpdate;
+  stamp: MetadataUpdate;
+}
+
 /**
  * Compute WU YAML content for done state
  *
@@ -46,7 +76,7 @@ import {
  * @param {object} doc - WU YAML document (will be mutated)
  * @returns {string} YAML content string
  */
-export function computeWUYAMLContent(doc) {
+export function computeWUYAMLContent(doc: WUDoc): string {
   // Apply done state updates
   doc.status = WU_STATUS.DONE;
   doc.locked = true;
@@ -65,7 +95,7 @@ export function computeWUYAMLContent(doc) {
  * @param {string} heading - Section heading to find
  * @returns {number} Index of section, or -1 if not found
  */
-function findSection(lines, heading) {
+function findSection(lines: string[], heading: string): number {
   return lines.findIndex((l) => l.trim() === heading);
 }
 
@@ -75,7 +105,7 @@ function findSection(lines, heading) {
  * @param {number} startIdx - Start index of section
  * @returns {number} End index of section
  */
-function findSectionEnd(lines, startIdx) {
+function findSectionEnd(lines: string[], startIdx: number): number {
   const nextHeadingIdx = lines.slice(startIdx + 1).findIndex((l) => l.startsWith('## '));
   return nextHeadingIdx === -1 ? lines.length : startIdx + 1 + nextHeadingIdx;
 }
@@ -89,7 +119,13 @@ function findSectionEnd(lines, startIdx) {
  * @param {string} id - WU ID
  * @returns {{ removed: boolean, newEndIdx: number }}
  */
-function removeWUFromSection(lines, startIdx, endIdx, rel, id) {
+function removeWUFromSection(
+  lines: string[],
+  startIdx: number,
+  endIdx: number,
+  rel: string,
+  id: string,
+): { removed: boolean; newEndIdx: number } {
   let removed = false;
   let newEndIdx = endIdx;
 
@@ -113,7 +149,13 @@ function removeWUFromSection(lines, startIdx, endIdx, rel, id) {
  * @param {string} id - WU ID
  * @param {number} sectionEndIdx - End index of Completed section
  */
-function insertIntoCompleted(lines, completedIdx, entry, id, sectionEndIdx) {
+function insertIntoCompleted(
+  lines: string[],
+  completedIdx: number,
+  entry: string,
+  id: string,
+  sectionEndIdx: number,
+): void {
   const completedSection = lines.slice(completedIdx, sectionEndIdx).join(STRING_LITERALS.NEWLINE);
   if (completedSection.includes(`[${id}`)) {
     return; // Already present (idempotent)
@@ -138,7 +180,7 @@ function insertIntoCompleted(lines, completedIdx, entry, id, sectionEndIdx) {
  * @returns {string} New status.md content
  * @throws {Error} If file not found or section not found
  */
-export function computeStatusContent(statusPath, id, title) {
+export function computeStatusContent(statusPath: string, id: string, title: string): string {
   if (!existsSync(statusPath)) {
     throw createError(ErrorCodes.FILE_NOT_FOUND, `Status file not found: ${statusPath}`, {
       path: statusPath,
@@ -214,7 +256,10 @@ export function computeStatusContent(statusPath, id, title) {
  * @param {string} wuId - WU ID being completed
  * @returns {Promise<{eventsPath: string, content: string} | null>}
  */
-export async function computeWUEventsContentAfterComplete(backlogPath, wuId) {
+export async function computeWUEventsContentAfterComplete(
+  backlogPath: string,
+  wuId: string,
+): Promise<{ eventsPath: string; content: string } | null> {
   // WU-1145: Use merged state to preserve concurrent changes
   return computeWUEventsContentWithMainMerge(backlogPath, wuId);
 }
@@ -230,7 +275,11 @@ export async function computeWUEventsContentAfterComplete(backlogPath, wuId) {
  * @param {string} _title - WU title (unused - state store has it)
  * @returns {Promise<string>} New backlog.md content
  */
-export async function computeBacklogContent(backlogPath, id, _title) {
+export async function computeBacklogContent(
+  backlogPath: string,
+  id: string,
+  _title: string,
+): Promise<string> {
   // WU-1145: Use merged state to preserve concurrent changes
   return computeBacklogContentWithMainMerge(backlogPath, id);
 }
@@ -246,7 +295,10 @@ export async function computeBacklogContent(backlogPath, id, _title) {
  * @param {string} id - WU ID to mark complete
  * @returns {Promise<string>} New status.md content
  */
-export async function computeStatusContentFromMergedState(backlogPath, id) {
+export async function computeStatusContentFromMergedState(
+  backlogPath: string,
+  id: string,
+): Promise<string> {
   // WU-1319: Use merged state to preserve concurrent changes
   return computeStatusContentWithMainMerge(backlogPath, id);
 }
@@ -258,7 +310,7 @@ export async function computeStatusContentFromMergedState(backlogPath, id) {
  * @param {string} title - WU title
  * @returns {string} Stamp content
  */
-export function computeStampContent(id, title) {
+export function computeStampContent(id: string, title: string): string {
   const timestamp = todayISO();
   return `WU ${id} — ${title}\nCompleted: ${timestamp}\n`;
 }
@@ -289,7 +341,7 @@ export async function collectMetadataUpdates({
   statusPath,
   backlogPath,
   stampPath,
-}) {
+}: CollectMetadataParams): Promise<CollectedMetadataUpdates> {
   return {
     wuYAML: {
       path: wuPath,

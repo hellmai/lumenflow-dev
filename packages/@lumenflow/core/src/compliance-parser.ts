@@ -7,109 +7,145 @@
  * @module tools/lib/compliance-parser
  */
 
-/** @typedef {'ISO27001' | 'NHS_DTAC' | 'NHS_DSPT' | 'GDPR' | 'FDA'} ComplianceFramework */
-/** @typedef {'not_started' | 'in_progress' | 'completed' | 'blocked'} GapStatus */
-/** @typedef {'critical' | 'high' | 'medium' | 'low'} GapPriority */
-/** @typedef {'exists' | 'partial' | 'missing'} EvidenceStatus */
-/** @typedef {'phase_1_critical_blockers' | 'phase_2_nhs_procurement_ready' | 'phase_3_enterprise_ready'} CompliancePhase */
+export type ComplianceFramework = 'ISO27001' | 'NHS_DTAC' | 'NHS_DSPT' | 'GDPR' | 'FDA';
+export type GapStatus = 'not_started' | 'in_progress' | 'completed' | 'blocked';
+export type GapPriority = 'critical' | 'high' | 'medium' | 'low';
+export type EvidenceStatus = 'exists' | 'partial' | 'missing';
+export type CompliancePhase =
+  | 'phase_1_critical_blockers'
+  | 'phase_2_nhs_procurement_ready'
+  | 'phase_3_enterprise_ready';
 
-/**
- * @typedef {Object} ActionItem
- * @property {string} id
- * @property {string} description
- * @property {string} owner
- * @property {string|null} dueDate
- * @property {GapStatus} status
- */
+export interface ActionItem {
+  id: string;
+  description: string;
+  owner: string | null;
+  dueDate: string | null;
+  status: GapStatus;
+}
 
-/**
- * @typedef {Object} GapItem
- * @property {string} gapId
- * @property {string} title
- * @property {string} domain
- * @property {GapPriority} priority
- * @property {GapStatus} status
- * @property {CompliancePhase} phase
- * @property {string} owner
- * @property {string|null} targetDate
- * @property {ActionItem[]} actionItems
- * @property {string[]} blockers
- * @property {string[]} dependsOn
- */
+export interface GapItem {
+  gapId: string;
+  title: string;
+  domain: string;
+  priority: GapPriority;
+  status: GapStatus;
+  phase: CompliancePhase;
+  owner: string;
+  targetDate: string | null;
+  actionItems: ActionItem[];
+  blockers: string[];
+  dependsOn: string[];
+}
 
-/**
- * @typedef {Object} EvidenceItem
- * @property {string} evidenceId
- * @property {string} section
- * @property {string} title
- * @property {string} requirement
- * @property {EvidenceStatus} status
- * @property {string|null} location
- * @property {string[]} auditNotes
- * @property {string[]} relatedGaps
- */
+export interface EvidenceItem {
+  evidenceId: string;
+  section: string;
+  title: string;
+  requirement: string;
+  status: EvidenceStatus;
+  location: string | null;
+  auditNotes: string[];
+  relatedGaps: string[];
+}
 
-/**
- * @typedef {Object} FrameworkMetrics
- * @property {ComplianceFramework} framework
- * @property {number} totalRequirements
- * @property {number} evidenceExists
- * @property {number} evidencePartial
- * @property {number} evidenceMissing
- * @property {number} completionPercentage
- */
+export interface FrameworkMetrics {
+  framework: ComplianceFramework;
+  totalRequirements: number;
+  evidenceExists: number;
+  evidencePartial: number;
+  evidenceMissing: number;
+  completionPercentage: number;
+}
 
-/**
- * @typedef {Object} PhaseMetrics
- * @property {CompliancePhase} phase
- * @property {number} totalGaps
- * @property {number} notStarted
- * @property {number} inProgress
- * @property {number} completed
- * @property {number} blocked
- * @property {number} completionPercentage
- * @property {string|null} targetDate
- */
+export interface PhaseMetrics {
+  phase: CompliancePhase;
+  totalGaps: number;
+  notStarted: number;
+  inProgress: number;
+  completed: number;
+  blocked: number;
+  completionPercentage: number;
+  targetDate: string | null;
+}
 
-export const COMPLIANCE_FRAMEWORKS = ['ISO27001', 'NHS_DTAC', 'NHS_DSPT', 'GDPR', 'FDA'];
-export const GAP_STATUSES = ['not_started', 'in_progress', 'completed', 'blocked'];
-export const GAP_PRIORITIES = ['critical', 'high', 'medium', 'low'];
-export const EVIDENCE_STATUSES = ['exists', 'partial', 'missing'];
-export const COMPLIANCE_PHASES = [
+type PartialGapItem = Partial<GapItem> & {
+  gapId: string;
+  title: string;
+  phase: CompliancePhase;
+  actionItems: ActionItem[];
+  blockers: string[];
+  dependsOn: string[];
+};
+
+type PartialEvidenceItem = Partial<EvidenceItem> & {
+  evidenceId: string;
+  title: string;
+  section: string;
+  auditNotes: string[];
+  relatedGaps: string[];
+};
+
+interface FrameworkCount {
+  total: number;
+  exists: number;
+  partial: number;
+  missing: number;
+}
+
+interface PhaseCount {
+  total: number;
+  notStarted: number;
+  inProgress: number;
+  completed: number;
+  blocked: number;
+}
+
+export const COMPLIANCE_FRAMEWORKS: ComplianceFramework[] = [
+  'ISO27001',
+  'NHS_DTAC',
+  'NHS_DSPT',
+  'GDPR',
+  'FDA',
+];
+export const GAP_STATUSES: GapStatus[] = ['not_started', 'in_progress', 'completed', 'blocked'];
+export const GAP_PRIORITIES: GapPriority[] = ['critical', 'high', 'medium', 'low'];
+export const EVIDENCE_STATUSES: EvidenceStatus[] = ['exists', 'partial', 'missing'];
+export const COMPLIANCE_PHASES: CompliancePhase[] = [
   'phase_1_critical_blockers',
   'phase_2_nhs_procurement_ready',
   'phase_3_enterprise_ready',
 ];
 
 // Status emoji mappings
-const STATUS_EMOJI_MAP = {
+const STATUS_EMOJI_MAP: Record<string, GapStatus> = {
   'Not Started': 'not_started',
   'In Progress': 'in_progress',
   Completed: 'completed',
   Blocked: 'blocked',
 };
 
-const PRIORITY_EMOJI_MAP = {
+const PRIORITY_EMOJI_MAP: Record<string, GapPriority> = {
   CRITICAL: 'critical',
   HIGH: 'high',
   MEDIUM: 'medium',
   LOW: 'low',
 };
 
-const EVIDENCE_STATUS_MAP = {
+const EVIDENCE_STATUS_MAP: Record<string, EvidenceStatus> = {
   'Evidence exists': 'exists',
   'Partial evidence': 'partial',
   'No evidence': 'missing',
 };
 
-const PHASE_HEADER_MAP = {
+const PHASE_HEADER_MAP: Record<string, CompliancePhase> = {
   'Phase 1': 'phase_1_critical_blockers',
   'Phase 2': 'phase_2_nhs_procurement_ready',
   'Phase 3': 'phase_3_enterprise_ready',
 };
 
 // Framework keyword mappings for evidence parsing
-const FRAMEWORK_KEYWORDS = {
+const FRAMEWORK_KEYWORDS: Record<ComplianceFramework, string[]> = {
   ISO27001: ['ISO 27001', 'ISO27001', 'SOC 2', 'SOC2'],
   NHS_DTAC: ['compliance framework', 'DTAC'],
   NHS_DSPT: ['NHS DSPT', 'DSPT'],
@@ -123,15 +159,15 @@ export class ComplianceParser {
    * @param {string} markdown
    * @returns {GapItem[]}
    */
-  parseGapAnalysis(markdown) {
-    const gaps = [];
+  parseGapAnalysis(markdown: string): GapItem[] {
+    const gaps: GapItem[] = [];
     const lines = markdown.split('\n');
 
-    let currentPhase = 'phase_1_critical_blockers';
-    let currentGap = null;
+    let currentPhase: CompliancePhase = 'phase_1_critical_blockers';
+    let currentGap: PartialGapItem | null = null;
     let inActionItems = false;
     let inBlockers = false;
-    let currentActionItem = null;
+    let currentActionItem: ActionItem | null = null;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -265,12 +301,12 @@ export class ComplianceParser {
    * @param {string} markdown
    * @returns {EvidenceItem[]}
    */
-  parseEvidenceRegistry(markdown) {
-    const evidence = [];
+  parseEvidenceRegistry(markdown: string): EvidenceItem[] {
+    const evidence: EvidenceItem[] = [];
     const lines = markdown.split('\n');
 
     let currentSection = '';
-    let currentEvidence = null;
+    let currentEvidence: PartialEvidenceItem | null = null;
     let inAuditNotes = false;
 
     for (let i = 0; i < lines.length; i++) {
@@ -360,8 +396,8 @@ export class ComplianceParser {
    * @param {EvidenceItem[]} evidence
    * @returns {FrameworkMetrics[]}
    */
-  calculateFrameworkMetrics(evidence) {
-    const frameworkCounts = {};
+  calculateFrameworkMetrics(evidence: EvidenceItem[]): FrameworkMetrics[] {
+    const frameworkCounts = {} as Record<ComplianceFramework, FrameworkCount>;
 
     // Initialize all frameworks
     for (const framework of COMPLIANCE_FRAMEWORKS) {
@@ -408,8 +444,8 @@ export class ComplianceParser {
    * @param {GapItem[]} gaps
    * @returns {PhaseMetrics[]}
    */
-  calculatePhaseMetrics(gaps) {
-    const phaseCounts = {};
+  calculatePhaseMetrics(gaps: GapItem[]): PhaseMetrics[] {
+    const phaseCounts = {} as Record<CompliancePhase, PhaseCount>;
 
     // Initialize all phases
     for (const phase of COMPLIANCE_PHASES) {
@@ -457,7 +493,7 @@ export class ComplianceParser {
 
   // Helper methods
   /** @private */
-  _parseStatus(text) {
+  _parseStatus(text: string): GapStatus {
     for (const [key, value] of Object.entries(STATUS_EMOJI_MAP)) {
       if (text.includes(key)) {
         return value;
@@ -467,7 +503,7 @@ export class ComplianceParser {
   }
 
   /** @private */
-  _parsePriority(text) {
+  _parsePriority(text: string): GapPriority {
     for (const [key, value] of Object.entries(PRIORITY_EMOJI_MAP)) {
       if (text.toUpperCase().includes(key)) {
         return value;
@@ -477,7 +513,7 @@ export class ComplianceParser {
   }
 
   /** @private */
-  _parseEvidenceStatus(text) {
+  _parseEvidenceStatus(text: string): EvidenceStatus {
     for (const [key, value] of Object.entries(EVIDENCE_STATUS_MAP)) {
       if (text.includes(key)) {
         return value;
@@ -487,15 +523,16 @@ export class ComplianceParser {
   }
 
   /** @private */
-  _extractGapReferences(text) {
+  _extractGapReferences(text: string): string[] {
     const matches = text.match(/GAP-\d+/g);
     return matches ? [...new Set(matches)] : [];
   }
 
   /** @private */
-  _detectFrameworks(requirement) {
-    const frameworks = [];
-    for (const [framework, keywords] of Object.entries(FRAMEWORK_KEYWORDS)) {
+  _detectFrameworks(requirement: string): ComplianceFramework[] {
+    const frameworks: ComplianceFramework[] = [];
+    for (const framework of COMPLIANCE_FRAMEWORKS) {
+      const keywords = FRAMEWORK_KEYWORDS[framework];
       for (const keyword of keywords) {
         if (requirement.includes(keyword)) {
           frameworks.push(framework);
@@ -507,7 +544,7 @@ export class ComplianceParser {
   }
 
   /** @private */
-  _finalizeGap(partial, phase) {
+  _finalizeGap(partial: PartialGapItem, phase: CompliancePhase): GapItem {
     return {
       gapId: partial.gapId || 'UNKNOWN',
       title: partial.title || 'Untitled',
@@ -524,7 +561,7 @@ export class ComplianceParser {
   }
 
   /** @private */
-  _finalizeEvidence(partial, section) {
+  _finalizeEvidence(partial: PartialEvidenceItem, section: string): EvidenceItem {
     return {
       evidenceId: partial.evidenceId || 'UNKNOWN',
       section: partial.section || section,
@@ -538,7 +575,7 @@ export class ComplianceParser {
   }
 
   /** @private */
-  _getPhaseTargetDate(phase) {
+  _getPhaseTargetDate(phase: CompliancePhase): string | null {
     switch (phase) {
       case 'phase_1_critical_blockers':
         return 'Month 3';
