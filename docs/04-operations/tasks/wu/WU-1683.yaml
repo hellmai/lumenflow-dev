@@ -1,0 +1,39 @@
+id: WU-1683
+title: Add first-class plan field to WU schema for plan-to-WU linking
+lane: 'Framework: CLI WU Commands'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-15
+code_paths:
+  - packages/@lumenflow/core/src/wu-schema.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-status.ts
+tests:
+  manual:
+    - Run wu:create with --plan flag and verify plan field is populated in YAML
+    - Run wu:status and verify plan path is displayed
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-schema.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1683.done
+dependencies: []
+spec_refs:
+  - docs/04-operations/plans/WU-1683-plan.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: Plans (Claude Code .claude/plans/, LumenFlow docs/04-operations/plans/) are created for WUs but have no formal link back to the WU YAML. Problem: spec_refs is a generic bag of links — it doesn't distinguish 'this is THE plan' from 'a reference doc'. Sub-agents spawned via wu:brief never see the plan. Solution: Add a first-class 'plan' field to the WU schema that links to the plan file, similar to how initiatives have plan files."
+acceptance:
+  - WU schema supports an optional 'plan' field (path to plan file)
+  - wu:create/wu:claim auto-populates plan field when a plan file is detected
+  - wu:status surfaces the linked plan file path
+  - Spec completeness validator checks plan file exists when field is set
