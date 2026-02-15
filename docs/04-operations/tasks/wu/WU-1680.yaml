@@ -32,6 +32,9 @@ code_paths:
   - packages/@lumenflow/core/src/wu-rules-core.ts
   - packages/@lumenflow/core/src/wu-rules-engine.ts
   - packages/@lumenflow/core/src/wu-rules-resolvers.ts
+  - packages/@lumenflow/cli/__tests__/docs-generate.test.ts
+  - packages/@lumenflow/cli/__tests__/orchestrate-initiative.test.ts
+  - packages/@lumenflow/cli/e2e/claude-enforcement.test.ts
 tests:
   manual:
     - Run wu:create/wu:edit/wu:validate/wu:prep/wu:done scenarios and confirm phase-specific
