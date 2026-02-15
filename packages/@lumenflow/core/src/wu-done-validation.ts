@@ -30,7 +30,32 @@ interface ExposureDefaultResult {
   exposure?: string;
 }
 
-export function applyExposureDefaults(doc): ExposureDefaultResult {
+interface WUDoneValidationDoc {
+  id?: string;
+  lane?: string;
+  type?: string;
+  exposure?: string;
+  status?: string;
+  locked?: boolean;
+  completed?: string;
+  completed_at?: string;
+  description?: string;
+  acceptance?: unknown;
+  code_paths?: unknown;
+  tests?: unknown;
+  test_paths?: unknown;
+}
+
+interface ValidatePostMutationInput {
+  id: string;
+  wuPath: string;
+  stampPath: string;
+  eventsPath?: string | null;
+}
+
+export function applyExposureDefaults(
+  doc: WUDoneValidationDoc | null | undefined,
+): ExposureDefaultResult {
   if (!doc || typeof doc !== 'object') {
     return { applied: false };
   }
@@ -65,11 +90,17 @@ export interface ValidateCodePathsExistOptions {
   worktreePath?: string | null;
 }
 
-export async function validateCodePathsExist(doc, id, options: ValidateCodePathsExistOptions = {}) {
+export async function validateCodePathsExist(
+  doc: WUDoneValidationDoc,
+  id: string,
+  options: ValidateCodePathsExistOptions = {},
+) {
   const { targetBranch = BRANCHES.MAIN, worktreePath = null } = options;
-  const errors = [];
-  const missing = [];
-  const codePaths = doc.code_paths || [];
+  const errors: string[] = [];
+  const missing: string[] = [];
+  const codePaths = Array.isArray(doc.code_paths)
+    ? doc.code_paths.filter((entry): entry is string => typeof entry === 'string')
+    : [];
 
   // Skip validation for WUs without code_paths (docs-only, process WUs)
   if (codePaths.length === 0) {
@@ -134,9 +165,8 @@ export async function validateCodePathsExist(doc, id, options: ValidateCodePaths
       }
     } catch (err) {
       // Non-fatal: warn but don't block if git command fails
-      console.warn(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not validate code_paths: ${err.message}`,
-      );
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not validate code_paths: ${message}`);
       return { valid: true, errors: [], missing: [] };
     }
   }
@@ -155,8 +185,8 @@ export async function validateCodePathsExist(doc, id, options: ValidateCodePaths
  * Ensures WU specifications are complete before allowing wu:done to proceed.
  * Prevents placeholder WUs from being marked as done.
  */
-export function validateSpecCompleteness(doc, _id) {
-  const errors = [];
+export function validateSpecCompleteness(doc: WUDoneValidationDoc, _id: string) {
+  const errors: string[] = [];
 
   // Check for placeholder text in description
   if (doc.description && doc.description.includes(PLACEHOLDER_SENTINEL)) {
@@ -165,7 +195,7 @@ export function validateSpecCompleteness(doc, _id) {
 
   // Handle both array and object formats for acceptance criteria
   if (doc.acceptance) {
-    const hasPlaceholder = (value) => {
+    const hasPlaceholder = (value: unknown): boolean => {
       if (typeof value === 'string') {
         return value.includes(PLACEHOLDER_SENTINEL);
       }
@@ -192,16 +222,22 @@ export function validateSpecCompleteness(doc, _id) {
 
   // Check code_paths for non-documentation WUs
   if (doc.type !== WU_TYPES.DOCUMENTATION && doc.type !== WU_TYPES.PROCESS) {
-    if (!doc.code_paths || doc.code_paths.length === 0) {
+    const codePaths = Array.isArray(doc.code_paths) ? doc.code_paths : [];
+    if (codePaths.length === 0) {
       errors.push('Code paths required for non-documentation WUs');
     }
 
     // WU-1280: Check tests array for non-documentation WUs
     // Support both tests: (current) and test_paths: (legacy)
-    const testObj = doc.tests || doc.test_paths || {};
+    const testObj =
+      doc.tests && typeof doc.tests === 'object'
+        ? (doc.tests as Record<string, unknown>)
+        : doc.test_paths && typeof doc.test_paths === 'object'
+          ? (doc.test_paths as Record<string, unknown>)
+          : {};
 
     // Helper to check if array has items
-    const hasItems = (arr) => Array.isArray(arr) && arr.length > 0;
+    const hasItems = (arr: unknown): boolean => Array.isArray(arr) && arr.length > 0;
 
     const hasUnitTests = hasItems(testObj[TEST_TYPES.UNIT]);
     const hasE2ETests = hasItems(testObj[TEST_TYPES.E2E]);
@@ -270,8 +306,13 @@ function deriveStatusFromEventsContent(
  * 3. Stamp file exists
  * 4. State store derives to done (when eventsPath is provided)
  */
-export function validatePostMutation({ id, wuPath, stampPath, eventsPath = null }) {
-  const errors = [];
+export function validatePostMutation({
+  id,
+  wuPath,
+  stampPath,
+  eventsPath = null,
+}: ValidatePostMutationInput) {
+  const errors: string[] = [];
 
   // Check stamp file exists
   if (!existsSync(stampPath)) {
@@ -324,8 +365,9 @@ export function validatePostMutation({ id, wuPath, stampPath, eventsPath = null 
         `Invalid status in ${id}.yaml (expected: '${WU_STATUS.DONE}', got: '${doc.status}')`,
       );
     }
-  } catch (err) {
-    errors.push(`Failed to parse WU YAML after mutation: ${err.message}`);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    errors.push(`Failed to parse WU YAML after mutation: ${message}`);
   }
 
   if (eventsPath) {
@@ -342,8 +384,9 @@ export function validatePostMutation({ id, wuPath, stampPath, eventsPath = null 
             `WU ${id} state store is '${derivedStatus ?? 'missing'}' after mutation (expected: '${WU_STATUS.DONE}')`,
           );
         }
-      } catch (err) {
-        errors.push(`Failed to parse state store after mutation: ${err.message}`);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        errors.push(`Failed to parse state store after mutation: ${message}`);
       }
     }
   }
@@ -357,29 +400,33 @@ export function validatePostMutation({ id, wuPath, stampPath, eventsPath = null 
  * Enforces that WUs with code changes (non-documentation types with code_paths
  * that contain actual code) have at least one test path specified.
  */
-export function validateTestPathsRequired(wu) {
+export function validateTestPathsRequired(wu: WUDoneValidationDoc) {
+  const wuId = typeof wu.id === 'string' ? wu.id : 'WU-unknown';
   // Skip validation for documentation and process WUs
   if (wu.type === WU_TYPES.DOCUMENTATION || wu.type === WU_TYPES.PROCESS) {
     return { valid: true };
   }
 
   // Skip if code_paths is empty or undefined
-  const codePaths = wu.code_paths || [];
+  const codePaths = Array.isArray(wu.code_paths)
+    ? wu.code_paths.filter((entry): entry is string => typeof entry === 'string')
+    : [];
   if (codePaths.length === 0) {
     return { valid: true };
   }
 
   // Skip if all code_paths are documentation paths
-  const hasCodeChanges = codePaths.some((p) => !isDocumentationPath(p));
+  const hasCodeChanges = codePaths.some((codePath) => !isDocumentationPath(codePath));
   if (!hasCodeChanges) {
     return { valid: true };
   }
 
   // Check if tests object exists and has at least one test
-  const testObj = wu.tests || {};
+  const testObj =
+    wu.tests && typeof wu.tests === 'object' ? (wu.tests as Record<string, unknown>) : {};
 
   // Helper to check if array has items
-  const hasItems = (arr) => Array.isArray(arr) && arr.length > 0;
+  const hasItems = (arr: unknown): boolean => Array.isArray(arr) && arr.length > 0;
 
   const hasUnitTests = hasItems(testObj[TEST_TYPES.UNIT]);
   const hasE2ETests = hasItems(testObj[TEST_TYPES.E2E]);
@@ -390,7 +437,7 @@ export function validateTestPathsRequired(wu) {
   if (!(hasUnitTests || hasE2ETests || hasManualTests || hasIntegrationTests)) {
     return {
       valid: false,
-      error: `${wu.id} requires test_paths: WU has code_paths but no tests specified. Add unit, e2e, integration, or manual tests.`,
+      error: `${wuId} requires test_paths: WU has code_paths but no tests specified. Add unit, e2e, integration, or manual tests.`,
     };
   }
 
@@ -403,7 +450,7 @@ export function validateTestPathsRequired(wu) {
       automatedTestResult.errors[0]?.split('\n')[0] || 'Automated tests required';
     return {
       valid: false,
-      error: `${wu.id}: ${errorSummary}`,
+      error: `${wuId}: ${errorSummary}`,
     };
   }
 
@@ -434,7 +481,7 @@ const DOCS_ONLY_ALLOWED_PATTERNS = [
  * @param {string} filePath - File path to check
  * @returns {boolean} True if path is allowed for docs WUs
  */
-function isAllowedDocsPath(filePath) {
+function isAllowedDocsPath(filePath: string): boolean {
   if (!filePath || typeof filePath !== 'string') return false;
   return DOCS_ONLY_ALLOWED_PATTERNS.some((pattern) => pattern.test(filePath));
 }
@@ -442,9 +489,10 @@ function isAllowedDocsPath(filePath) {
 /**
  * WU-2310: Validate type vs code_paths at preflight (before transaction starts).
  */
-export function validateTypeVsCodePathsPreflight(wu) {
-  const errors = [];
-  const blockedPaths = [];
+export function validateTypeVsCodePathsPreflight(wu: WUDoneValidationDoc) {
+  const errors: string[] = [];
+  const blockedPaths: string[] = [];
+  const wuId = typeof wu.id === 'string' ? wu.id : 'WU-unknown';
 
   // Only validate documentation WUs
   if (wu.type !== WU_TYPES.DOCUMENTATION) {
@@ -467,7 +515,7 @@ export function validateTypeVsCodePathsPreflight(wu) {
   if (blockedPaths.length > 0) {
     const pathsList = blockedPaths.map((p) => `  - ${p}`).join('\n');
     errors.push(
-      `Documentation WU ${wu.id} has code_paths that would fail pre-commit hook:\n${pathsList}`,
+      `Documentation WU ${wuId} has code_paths that would fail pre-commit hook:\n${pathsList}`,
     );
     return { valid: false, errors, blockedPaths, abortedBeforeTransaction: true };
   }
@@ -478,7 +526,7 @@ export function validateTypeVsCodePathsPreflight(wu) {
 /**
  * WU-2310: Build error message for type vs code_paths preflight failure.
  */
-export function buildTypeVsCodePathsErrorMessage(id, blockedPaths) {
+export function buildTypeVsCodePathsErrorMessage(id: string, blockedPaths: string[]): string {
   return `
 PREFLIGHT VALIDATION FAILED (WU-2310)
 
@@ -553,7 +601,7 @@ export async function validateCodePathsCommittedBeforeDone(
       // where X = staged, Y = working tree
       // We care about any file that's not in a clean state
       const match = line.match(/^.{2}\s+(.+)$/);
-      if (match) {
+      if (match && match[1]) {
         const filePath = match[1];
         uncommittedFiles.add(filePath);
       }
