@@ -2,7 +2,7 @@ id: WU-1696
 title: 'Strict debt slice: type-hardening core wu-recovery helpers'
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -12,10 +12,9 @@ tests:
   manual:
     - pnpm --filter @lumenflow/core exec vitest run src/__tests__/wu-recovery.test.ts
     - pnpm --filter @lumenflow/core typecheck
-    - >-
-      pnpm --filter @lumenflow/core exec tsc --noEmit --strictNullChecks true --noImplicitAny
-      true --useUnknownInCatchVariables true --pretty false 2>&1 | rg '^src/wu-recovery.ts'
-      and confirm no diagnostics
+    - pnpm --filter @lumenflow/core exec tsc --noEmit --strictNullChecks true --noImplicitAny true
+      --useUnknownInCatchVariables true --pretty false 2>&1 | rg '^src/wu-recovery.ts' and confirm
+      no diagnostics
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-recovery.test.ts
   e2e: []
@@ -27,10 +26,9 @@ phase: 10
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-022.yaml
 risks: []
-notes: >-
-  Initial strict-config flip attempt revealed large package-level debt still hidden by tsconfig
-  flag overrides. Scope was narrowed to a high-impact strict hotspot in core/wu-recovery to
-  preserve forward progress.
+notes: Initial strict-config flip attempt revealed large package-level debt still hidden by tsconfig
+  flag overrides. Scope was narrowed to a high-impact strict hotspot in core/wu-recovery to preserve
+  forward progress.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -46,8 +44,7 @@ description: 'Context: strict debt remains concentrated in core helper modules, 
   coverage for recovery helpers and type-hardening annotations to eliminate strict diagnostics in
   this file without behavior regressions.'
 acceptance:
-  - >-
-    Strict probe with strictNullChecks/noImplicitAny/useUnknownInCatchVariables reports no
+  - Strict probe with strictNullChecks/noImplicitAny/useUnknownInCatchVariables reports no
     diagnostics for packages/@lumenflow/core/src/wu-recovery.ts
   - packages/@lumenflow/core/src/__tests__/wu-recovery.test.ts passes
   - pnpm --filter @lumenflow/core typecheck passes
@@ -59,3 +56,6 @@ session_id: 384c1e93-9b87-426d-8d8d-738be02754a9
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T20:40:19.678Z
+locked: true
+completed_at: 2026-02-15T20:48:25.884Z
+completed: 2026-02-15

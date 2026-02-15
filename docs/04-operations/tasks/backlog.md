@@ -25,7 +25,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1696 — Strict config completion: remove core/cli false overrides](wu/WU-1696.yaml) — Framework: Core Validation
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -670,6 +670,7 @@ sections:
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml)
 - [WU-1694 — Strict debt slice: eliminate TS7006 in wu-claim-state/validation](wu/WU-1694.yaml)
 - [WU-1695 — Fix pre-existing @lumenflow/mcp typecheck failures blocking gates](wu/WU-1695.yaml)
+- [WU-1696 — Strict config completion: remove core/cli false overrides](wu/WU-1696.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
