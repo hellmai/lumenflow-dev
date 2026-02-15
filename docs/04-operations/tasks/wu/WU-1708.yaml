@@ -2,7 +2,7 @@ id: WU-1708
 title: 'Strict debt slice: type token-counter'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -30,3 +30,11 @@ description: Eliminate noImplicitAny strict errors in token-counter.ts while pre
 acceptance:
   - No strictNullChecks/noImplicitAny errors in packages/@lumenflow/core/src/token-counter.ts
   - Existing token-counter tests pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1708
+claimed_at: 2026-02-15T23:34:48.848Z
+baseline_main_sha: 3137ca00c47514175c3b1950499bbef1e461743c
+session_id: 029aea03-ebcc-43b5-b76e-51ca7c99fd41
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T23:34:48.853Z
