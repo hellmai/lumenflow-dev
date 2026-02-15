@@ -2,7 +2,7 @@ id: WU-1583
 title: 'CLI strict wave 1C: remaining fixes and strict enablement'
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -13,7 +13,8 @@ code_paths:
   - tools/__tests__/tsconfig-strict.test.ts
 tests:
   manual:
-    - pnpm --filter @lumenflow/cli typecheck and pnpm vitest run tools/__tests__/tsconfig-strict.test.ts
+    - pnpm --filter @lumenflow/cli typecheck and pnpm vitest run
+      tools/__tests__/tsconfig-strict.test.ts
   unit:
     - packages/@lumenflow/cli/src/__tests__/hooks/enforcement.test.ts
     - packages/@lumenflow/cli/src/__tests__/strict-progress.test.ts
@@ -37,10 +38,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: after hotspot remediation, CLI still has distributed strict debt across memory/enforcement paths and tsconfig exception wiring. Problem: strict cannot be enabled safely until remaining files are cleaned and strict exception metadata is removed. Solution: fix remaining CLI strict issues in scoped clusters, enable strict in CLI tsconfig, and update strict-exception tests/tooling accordingly.'
+description: 'Context: after hotspot remediation, CLI still has distributed strict debt across
+  memory/enforcement paths and tsconfig exception wiring. Problem: strict cannot be enabled safely
+  until remaining files are cleaned and strict exception metadata is removed. Solution: fix
+  remaining CLI strict issues in scoped clusters, enable strict in CLI tsconfig, and update
+  strict-exception tests/tooling accordingly.'
 acceptance:
   - Remaining targeted CLI files are strict-clean with explicit types and narrowed unknown handling
   - packages/@lumenflow/cli/tsconfig.json sets strict=true and removes strict exception metadata
   - tools strict-mode tests are updated to reflect CLI strict enablement
   - pnpm --filter @lumenflow/cli typecheck passes with strict enabled
   - No net increase in as any usage in CLI
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1583
+claimed_at: 2026-02-15T18:26:03.427Z
+baseline_main_sha: 8856baab88803d557c92de367ba2cbfa96b767d3
+session_id: 3932d745-2189-424e-97ca-0ff9d1c0e123
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T18:26:03.435Z

@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1583 — CLI strict wave 1C: remaining fixes and strict enablement](wu/WU-1583.yaml)
 
 ## Completed
 

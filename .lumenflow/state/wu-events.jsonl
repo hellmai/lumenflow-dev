@@ -1331,3 +1331,4 @@
 {"type":"complete","wuId":"WU-1581","timestamp":"2026-02-15T18:18:54.902Z"}
 {"type":"claim","wuId":"WU-1582","timestamp":"2026-02-15T18:19:16.185Z","lane":"Framework: CLI Orchestration","title":"CLI strict wave 1B: initiative and gates command fixes"}
 {"type":"complete","wuId":"WU-1582","timestamp":"2026-02-15T18:24:54.062Z"}
+{"type":"claim","wuId":"WU-1583","lane":"Framework: CLI Enforcement","title":"CLI strict wave 1C: remaining fixes and strict enablement","timestamp":"2026-02-15T18:26:03.476Z"}
