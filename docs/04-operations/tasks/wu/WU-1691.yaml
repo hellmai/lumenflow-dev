@@ -8,6 +8,7 @@ created: 2026-02-15
 code_paths:
   - packages/@lumenflow/cli/src/release.ts
   - packages/lumenflow/package.json
+  - README.md
 tests:
   manual:
     - Run pnpm release --dry-run and verify packages/lumenflow appears in bump list
@@ -20,10 +21,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-15T17:36:38.317Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1691
+session_id: 6aa36458-394f-4bbe-b6a9-3fd2676c1722
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T17:36:38.325Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -34,11 +42,3 @@ acceptance:
   - findPackageJsonPaths includes packages/lumenflow/package.json
   - publishConfig.dependencies uses workspace:^ for auto-resolution
   - Release script bumps all packages atomically including the wrapper
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1691
-claimed_at: 2026-02-15T17:36:38.317Z
-baseline_main_sha: fc0986a4c6e0822a48a5dac6e1500a08be01050a
-session_id: 6aa36458-394f-4bbe-b6a9-3fd2676c1722
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-15T17:36:38.325Z
