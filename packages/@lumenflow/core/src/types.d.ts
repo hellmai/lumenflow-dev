@@ -38,12 +38,3 @@ declare module '@lumenflow/initiatives' {
   };
 }
 
-// External dependencies that may need type declarations
-declare module 'nhs-number-validator' {
-  export function validate(nhsNumber: string): boolean;
-}
-
-declare module 'postcode' {
-  export function isValid(postcode: string): boolean;
-  export function parse(postcode: string): { valid: boolean; postcode: string } | null;
-}

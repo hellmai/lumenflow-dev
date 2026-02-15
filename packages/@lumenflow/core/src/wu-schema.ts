@@ -521,16 +521,15 @@ const sharedFields = {
    *
    * Agent-first model: agents auto-approve by default.
    * Human escalation only when these triggers are detected:
-   * - phi_pii: Changes to PHI/PII data handling
+   * - sensitive_data: Changes to sensitive data handling
    * - security_p0: P0 security incident or vulnerability
    * - budget: Budget/resource allocation above threshold
-   * - external_compliance: External regulatory submission
    * - cross_lane_arch: Cross-lane architectural decision
    *
    * Empty array = no escalation needed, agent proceeds autonomously.
    */
   escalation_triggers: z
-    .array(z.enum(['phi_pii', 'security_p0', 'budget', 'external_compliance', 'cross_lane_arch']))
+    .array(z.enum(['sensitive_data', 'security_p0', 'budget', 'cross_lane_arch']))
     .optional()
     .default([]),
 
@@ -740,10 +739,9 @@ const ESCALATION_EMAIL = 'tom@hellm.ai';
  * Everything else is auto-approved by agents.
  */
 export const ESCALATION_TRIGGER_TYPES = [
-  'phi_pii', // PHI/PII data handling changes
+  'sensitive_data', // Sensitive data handling changes
   'security_p0', // P0 security incident
   'budget', // Budget/resource above threshold
-  'external_compliance', // External regulatory submission
   'cross_lane_arch', // Cross-lane architectural decision
 ];
 
@@ -811,35 +809,18 @@ export function detectEscalationTriggers(wu) {
   const lane = (wu.lane || '').toLowerCase();
   const codePaths = wu.code_paths || [];
 
-  // PHI/PII: Changes to patient data, auth, or medical records
-  const phiPatterns = [
-    'phi',
-    'pii',
-    'patient',
-    'medical',
-    'health',
-    'hipaa',
-    'supabase/migrations',
-  ];
-  const touchesPhi = codePaths.some((p) =>
-    phiPatterns.some((pat) => p.toLowerCase().includes(pat)),
+  // Sensitive data: Changes to user data or auth
+  const sensitivePatterns = ['pii', 'user-data', 'auth', 'credentials'];
+  const touchesSensitive = codePaths.some((p) =>
+    sensitivePatterns.some((pat) => p.toLowerCase().includes(pat)),
   );
-  if (touchesPhi || lane.includes('phi') || lane.includes('pii')) {
-    triggers.push('phi_pii');
+  if (touchesSensitive || lane.includes('pii')) {
+    triggers.push('sensitive_data');
   }
 
   // Security P0: Explicit security lane or auth changes
   if (wu.priority === 'P0' && lane.includes('security')) {
     triggers.push('security_p0');
-  }
-
-  // External compliance: Regulatory submissions
-  const compliancePatterns = ['fda', 'mhra', 'ce-mark', 'regulatory', 'submission'];
-  const touchesCompliance = codePaths.some((p) =>
-    compliancePatterns.some((pat) => p.toLowerCase().includes(pat)),
-  );
-  if (touchesCompliance || lane.includes('compliance')) {
-    triggers.push('external_compliance');
   }
 
   return triggers;
@@ -874,7 +855,7 @@ export function generateAutoApproval(wu, agentEmail) {
 export function determineRequiredApprovals(wu) {
   const triggers = detectEscalationTriggers(wu);
   return {
-    requires_cso_approval: triggers.includes('security_p0') || triggers.includes('phi_pii'),
+    requires_cso_approval: triggers.includes('security_p0') || triggers.includes('sensitive_data'),
     requires_cto_approval: triggers.includes('cross_lane_arch'),
     requires_design_approval: false, // Design no longer requires human escalation
   };

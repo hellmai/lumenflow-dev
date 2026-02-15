@@ -8,7 +8,7 @@
  * Domain modules:
  * - wu-statuses.ts: WU status values, groups, exposure types, claimed modes
  * - wu-git-constants.ts: Git branch names, remotes, refs, flags, commands
- * - wu-paths-constants.ts: LumenFlow paths, file system, PHI config
+ * - wu-paths-constants.ts: LumenFlow paths, file system, file tools
  * - wu-cli-constants.ts: CLI flags, gates, tooling, process constants
  * - wu-ui-constants.ts: Display, formatting, UI, box drawing
  * - wu-domain-constants.ts: Patterns, commit formats, defaults, safety tests
@@ -66,8 +66,6 @@ export {
   LOCK_DIR_NAME,
   LUMENFLOW_PATHS,
   FILE_TOOLS,
-  PHI_ERRORS,
-  PHI_CONFIG,
   type NodeFsError,
 } from './wu-paths-constants.js';
 

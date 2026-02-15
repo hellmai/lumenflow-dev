@@ -90,8 +90,6 @@ describe('AC-1: wu-constants decomposition', () => {
     expect(barrel.CONFIG_FILES).toBeDefined();
     expect(barrel.FILE_SYSTEM).toBeDefined();
     expect(barrel.FILE_TOOLS).toBeDefined();
-    expect(barrel.PHI_ERRORS).toBeDefined();
-    expect(barrel.PHI_CONFIG).toBeDefined();
     expect(barrel.PATH_PATTERNS).toBeDefined();
     expect(barrel.PATH_LITERALS).toBeDefined();
     expect(barrel.PATH_SLICE_LENGTHS).toBeDefined();

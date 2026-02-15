@@ -238,13 +238,9 @@ export type {
   IWuPaths,
 } from './ports/wu-helpers.ports.js';
 
-// WU-1103: Port interfaces for git adapter and PHI scanner (hexagonal architecture)
+// WU-1103: Port interfaces for git adapter (hexagonal architecture)
 export type {
   IGitAdapter,
-  IPhiScanner,
-  PHIMatch,
-  PHIScanResult,
-  PHIScanOptions,
   MergeOptions,
   MergeResult,
   PushOptions,
