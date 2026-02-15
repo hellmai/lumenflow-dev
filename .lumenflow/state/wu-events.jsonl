@@ -1376,3 +1376,4 @@
 {"type":"complete","wuId":"WU-1709","timestamp":"2026-02-15T23:43:56.377Z"}
 {"type":"claim","wuId":"WU-1710","timestamp":"2026-02-15T23:45:10.710Z","lane":"Framework: Core Validation","title":"Strict debt slice: type stamp-utils"}
 {"type":"complete","wuId":"WU-1710","timestamp":"2026-02-15T23:48:00.515Z"}
+{"type":"claim","wuId":"WU-1711","lane":"Framework: Core Validation","title":"Strict debt slice: type lane-inference","timestamp":"2026-02-15T23:49:21.804Z"}
