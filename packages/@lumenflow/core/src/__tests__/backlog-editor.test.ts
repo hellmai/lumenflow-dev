@@ -34,7 +34,6 @@ function createFixture(): { backlogPath: string; cleanup: () => void } {
 }
 
 describe('backlog-editor', () => {
-
   it('finds section bounds case-insensitively', () => {
     const fixture = createFixture();
     try {
