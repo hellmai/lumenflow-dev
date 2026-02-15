@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml)
 
 ## Completed
 

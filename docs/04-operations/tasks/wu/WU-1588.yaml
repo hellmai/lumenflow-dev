@@ -2,7 +2,7 @@ id: WU-1588
 title: 'Core strict wave 2E: remaining fixes and strict enablement'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
   - tools/__tests__/tsconfig-strict.test.ts
 tests:
   manual:
-    - pnpm --filter @lumenflow/core typecheck and pnpm vitest run tools/__tests__/tsconfig-strict.test.ts
+    - pnpm --filter @lumenflow/core typecheck and pnpm vitest run
+      tools/__tests__/tsconfig-strict.test.ts
   unit:
     - packages/@lumenflow/core/src/__tests__/validators/system-map-validator.test.ts
     - packages/@lumenflow/core/src/__tests__/adapters/context-adapters.test.ts
@@ -35,10 +36,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: final strict debt in core is distributed across remaining low-error modules and strict exception config. Problem: strict cannot be enabled until tail-end files are remediated and strict exception metadata is removed. Solution: finish remaining strict fixes, flip strict=true for core, and update strict exception tests/tooling to enforce the new baseline.'
+description: 'Context: final strict debt in core is distributed across remaining low-error modules
+  and strict exception config. Problem: strict cannot be enabled until tail-end files are remediated
+  and strict exception metadata is removed. Solution: finish remaining strict fixes, flip
+  strict=true for core, and update strict exception tests/tooling to enforce the new baseline.'
 acceptance:
   - Remaining targeted core files are strict-clean with explicit types and safe narrowing
   - packages/@lumenflow/core/tsconfig.json sets strict=true and removes strict exception metadata
   - tools strict-mode tests are updated to reflect core strict enablement
   - pnpm --filter @lumenflow/core typecheck passes with strict enabled
   - No net increase in as any usage in core
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1588
+claimed_at: 2026-02-15T19:07:41.876Z
+baseline_main_sha: d9482c15daf572eff50c516e25b555b5cbaf282f
+session_id: d04a0333-32f5-46d5-8354-4ea55bfe4f87
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T19:07:41.881Z
