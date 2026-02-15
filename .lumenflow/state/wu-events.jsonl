@@ -1323,4 +1323,5 @@
 {"type":"complete","wuId":"WU-1687","timestamp":"2026-02-15T16:20:27.033Z"}
 {"type":"claim","wuId":"WU-1691","timestamp":"2026-02-15T17:36:38.354Z","lane":"Framework: CLI WU Commands","title":"Include bare lumenflow wrapper in release script version bumps"}
 {"type":"complete","wuId":"WU-1691","timestamp":"2026-02-15T17:45:15.847Z"}
-{"type":"claim","wuId":"WU-1692","lane":"Operations: Automation","title":"Add OSS governance docs and GitHub community templates","timestamp":"2026-02-15T17:52:09.014Z"}
+{"type":"claim","wuId":"WU-1692","timestamp":"2026-02-15T17:52:09.014Z","lane":"Operations: Automation","title":"Add OSS governance docs and GitHub community templates"}
+{"type":"complete","wuId":"WU-1692","timestamp":"2026-02-15T17:56:51.903Z"}
