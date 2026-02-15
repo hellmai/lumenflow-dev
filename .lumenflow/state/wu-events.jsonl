@@ -1341,3 +1341,4 @@
 {"type":"complete","wuId":"WU-1586","timestamp":"2026-02-15T19:01:10.195Z"}
 {"type":"claim","wuId":"WU-1587","timestamp":"2026-02-15T19:01:35.102Z","lane":"Framework: Core State Recovery","title":"Core strict wave 2D: infrastructure strict fixes"}
 {"type":"complete","wuId":"WU-1587","timestamp":"2026-02-15T19:07:06.525Z"}
+{"type":"claim","wuId":"WU-1588","lane":"Framework: Core Validation","title":"Core strict wave 2E: remaining fixes and strict enablement","timestamp":"2026-02-15T19:07:41.919Z"}
