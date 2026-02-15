@@ -48,7 +48,7 @@ approved_by:
 approved_at: 2026-01-29T14:16:44.319Z
 escalation_resolved_by: tom@hellm.ai
 escalation_resolved_at: 2026-01-29T15:40:00.000Z
-escalation_resolution_notes: WU is for lane configuration health checking CLI command - no PHI/PII
+escalation_resolution_notes: WU is for lane configuration health checking CLI command - no PII
   involved. Trigger was incorrectly set.
 locked: true
 completed_at: 2026-01-29T15:45:47.423Z

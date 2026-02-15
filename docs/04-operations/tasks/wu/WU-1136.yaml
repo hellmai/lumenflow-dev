@@ -39,7 +39,7 @@ description: Update memory docs to reflect .lumenflow/memory, add missing agent-
   referenced by skills/playbook, and document optional pre-clear checkpoint hook guidance for
   context safety.
 acceptance:
-  - execution-memory skill references .lumenflow/memory paths and no longer claims .beacon/memory
+  - execution-memory skill references .lumenflow/memory paths and no longer claims .lumenflow/memory
     storage
   - agent-invocation-guide.md exists at docs/04-operations/_frameworks/lumenflow/agent/onboarding/
     with context-loading and spawn-prompt guidance

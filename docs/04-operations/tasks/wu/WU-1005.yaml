@@ -42,7 +42,7 @@ description: |
   1. .lumenflow.yaml - project configuration
   2. CLAUDE.md - development guide template
   3. AGENTS.md - agent context template
-  4. .beacon/ - stamps directory
+  4. .lumenflow/ - stamps directory
   5. docs/04-operations/tasks/wu/ - WU storage directory
 
   Usage:
@@ -55,7 +55,7 @@ acceptance:
   - lumenflow init creates .lumenflow.yaml with sensible defaults
   - lumenflow init creates CLAUDE.md template
   - lumenflow init creates AGENTS.md template
-  - lumenflow init creates .beacon/ directory
+  - lumenflow init creates .lumenflow/ directory
   - lumenflow init creates docs/ structure for WUs
   - lumenflow init --force overwrites existing files
   - pnpm format, lint, typecheck → PASS

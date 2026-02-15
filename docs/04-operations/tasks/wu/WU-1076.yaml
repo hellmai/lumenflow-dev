@@ -13,7 +13,7 @@ tests:
   unit: []
   e2e: []
 artifacts:
-  - .beacon/stamps/WU-1076.done
+  - .lumenflow/stamps/WU-1076.done
 dependencies: []
 spec_refs:
   - https://block.github.io/goose/blog/2025/12/10/stop-ai-agent-unwanted-changes/

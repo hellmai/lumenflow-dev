@@ -25,8 +25,8 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1701 — Emergency cleanup: remove healthcare/PHI code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1702 — Emergency: remove healthcare/PHI code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
+- [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
@@ -99,7 +99,6 @@ sections:
 - [WU-1071 — Fix CLI entry guard for pnpm symlink resolution](wu/WU-1071.yaml)
 - [WU-1072 — Fix wu:done staging whitelist for auto-generated docs + document wu:cleanup PR-only behavior](wu/WU-1072.yaml)
 - [WU-1074 — Add release command for npm publishing](wu/WU-1074.yaml)
-- [WU-1075 — Rename legacy config to .lumenflow - remove ExampleApp branding](wu/WU-1075.yaml)
 - [WU-1076 — Block direct main branch commits for agents](wu/WU-1076.yaml)
 - [WU-1079 — Migrate stamps to .lumenflow](wu/WU-1079.yaml)
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml)
@@ -395,9 +394,6 @@ sections:
 - [WU-1419 — wu:recover reset action should emit release event to state store](wu/WU-1419.yaml)
 - [WU-1420 — state:doctor should detect and fix YAML vs state store status mismatches](wu/WU-1420.yaml)
 - [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml)
-- [WU-1421 — Rename legacy config to .lumenflow (complete ExampleApp migration)](wu/WU-1421.yaml)
-- [WU-1423 — Complete legacy→lumenflow migration: rename config schema and all references](wu/WU-1423.yaml)
-- [WU-1428 — Remove all legacy references: delete migration utility and purge codebase](wu/WU-1428.yaml)
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml)
 - [WU-1429 — wu:create: tighten spec_refs + add notes flag + contextual warnings](wu/WU-1429.yaml)
 - [WU-1430 — Audit and centralize hardcoded path strings into constants](wu/WU-1430.yaml)
@@ -424,9 +420,7 @@ sections:
 - [WU-1445 — Add Visual Overview page to Starlight and remove internal architecture docs](wu/WU-1445.yaml)
 - [WU-1446 — Refactor CLI WU type/test policy checks to core helpers (typed, DRY)](wu/WU-1446.yaml)
 - [WU-1448 — Add D2 diagram support and convert Mermaid diagrams](wu/WU-1448.yaml)
-- [WU-1447 — Purge legacy paths/docs; use .lumenflow only](wu/WU-1447.yaml)
 - [WU-1449 — Fix flaky orchestrate-initiative-wu1251 test timeout](wu/WU-1449.yaml)
-- [WU-1450 — Remove remaining legacy mentions from onboarding/public docs](wu/WU-1450.yaml)
 - [WU-1451 — Fix astro-d2 configuration for D2 diagram rendering](wu/WU-1451.yaml)
 - [WU-1459 — Fix initiative:add-wu orphaned temp worktree cleanup](wu/WU-1459.yaml)
 - [WU-1460 — Batch initiative:add-wu to reduce push-only contention](wu/WU-1460.yaml)
@@ -503,7 +497,6 @@ sections:
 - [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml)
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml)
 - [WU-1527 — Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces](wu/WU-1527.yaml)
-- [WU-1529 — Purge remaining live legacy references from hooks and agent overlays](wu/WU-1529.yaml)
 - [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml)
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml)
 - [WU-1531 — Reduce code_paths false positives in parity + prep](wu/WU-1531.yaml)
@@ -672,7 +665,7 @@ sections:
 - [WU-1698 — Strict debt slice: eliminate TS7006 in core backlog-generator](wu/WU-1698.yaml)
 - [WU-1699 — Strict debt slice: eliminate TS7006 in core backlog-editor](wu/WU-1699.yaml)
 - [WU-1700 — Strict debt slice: eliminate TS7006 in cli initiative-status](wu/WU-1700.yaml)
-- [WU-1703 — Emergency PII/PHI cleanup across templates and docs](wu/WU-1703.yaml)
+- [WU-1703 — Emergency cleanup across templates and docs](wu/WU-1703.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

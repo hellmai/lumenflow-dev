@@ -29,7 +29,7 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Beacon->LumenFlow rename caused wide churn because core code hardcoded path
+description: 'Context: LumenFlow->LumenFlow rename caused wide churn because core code hardcoded path
   strings. Problem: .lumenflow and docs/04-operations literals are scattered across @lumenflow/core,
   making renames costly and error-prone. Solution: centralize these literals in core path constants
   and update core package to use them; add a regression guard to prevent reintroducing literals in

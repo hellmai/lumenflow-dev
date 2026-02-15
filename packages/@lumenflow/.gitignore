@@ -1,2 +1,2 @@
-# Ignore beacon directories (runtime artifacts)
-.beacon/
+# Ignore legacy directories (runtime artifacts)
+.lumenflow/

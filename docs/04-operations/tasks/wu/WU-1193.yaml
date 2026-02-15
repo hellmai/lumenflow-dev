@@ -36,7 +36,7 @@ notes: |-
   ### 2. MANDATORY_TRIGGERS (obsolete ExampleApp paths)
   Current triggers reference non-existent paths:
   - security-auditor: supabase/migrations/**, **/auth/**, **/rls/**
-  - beacon-guardian: **/prompts/**, **/classification/**, **/detector/**
+  - lumenflow-guardian: **/prompts/**, **/classification/**, **/detector/**
 
   Options: Update with LumenFlow paths OR remove if mandatory agents not used.
   Check orchestration-advisory.ts to see if triggers are actually used.

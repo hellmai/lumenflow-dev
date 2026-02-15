@@ -1,5 +1,5 @@
 id: WU-1703
-title: Emergency PII/PHI cleanup across templates and docs
+title: Emergency PII cleanup across templates and docs
 lane: 'Content: Framework Docs'
 type: refactor
 status: done
@@ -27,8 +27,8 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/wu-overview.md
 tests:
   manual:
-    - Verify no PII/PHI references remain in docs and templates
-    - Grep for PHI, HIPAA, patient, clinical in docs confirms zero matches
+    - Verify no PII references remain in docs and templates
+    - Grep for PII, HIPAA in docs confirms zero matches
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
   e2e: []
@@ -36,7 +36,7 @@ artifacts:
   - .lumenflow/stamps/WU-1703.done
 dependencies: []
 risks: []
-notes: 'Emergency cleanup: replace all PII/PHI with PII, remove healthcare-specific content'
+notes: 'Emergency cleanup: replace all PII with PII, remove domain-specific content'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -45,12 +45,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Templates and documentation contain PII/PHI references that should just be
-  PII. Problem: Healthcare-specific content needs removal. Solution: Replace PII/PHI with PII across
+description: 'Context: Templates and documentation contain PII references that should just be
+  PII. Problem: Domain-specific content needs removal. Solution: Replace PII with PII across
   all affected files.'
 acceptance:
-  - All PII/PHI references replaced with PII
-  - Healthcare-specific content removed from templates
+  - All PII references replaced with PII
+  - Domain-specific content removed from templates
 claimed_mode: worktree
 worktree_path: /home/USER/source/hellmai/os/worktrees/content-framework-docs-wu-1703
 claimed_at: 2026-02-15T22:14:23.081Z

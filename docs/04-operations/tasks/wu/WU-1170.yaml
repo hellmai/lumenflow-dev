@@ -36,7 +36,7 @@ notes: |
   - Secret scanning blocks commits with AWS/GitHub/OpenAI keys
   - Lockfile sync blocks dependency changes without pnpm-lock.yaml update
   - Worktree discipline blocks main commits when worktrees exist
-  - Audit logging writes to .beacon/safety-blocks.log
+  - Audit logging writes to .lumenflow/safety-blocks.log
   - Internal docs updated: LUMENFLOW.md documents safety hooks
   - Agent safety card updated with new hooks information
   - Starlight public docs updated: agent-onboarding.mdx, ai-agents.mdx

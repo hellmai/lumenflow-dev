@@ -16,7 +16,7 @@ tests:
   manual:
     - Set LUMENFLOW_FORCE=1 and commit; verify audit log entry created
     - Set LUMENFLOW_FORCE=1 without LUMENFLOW_FORCE_REASON; verify warning logged
-    - Verify .beacon/force-bypasses.log contains timestamp, user, reason, hook name
+    - Verify .lumenflow/force-bypasses.log contains timestamp, user, reason, hook name
   unit:
     - packages/@lumenflow/core/src/__tests__/force-bypass-audit.test.ts
   e2e: []
@@ -44,16 +44,16 @@ description: |
   This undermines the entire LumenFlow enforcement model.
 
   Solution: Add audit logging and soft guarding:
-  1. All hooks log bypass usage to .beacon/force-bypasses.log (git-tracked for accountability)
+  1. All hooks log bypass usage to .lumenflow/force-bypasses.log (git-tracked for accountability)
   2. Require LUMENFLOW_FORCE_REASON env var (warn if missing, don't block)
   3. Add constraint to .lumenflow/constraints.md that agents must not use without user approval
   4. Log includes: timestamp, hook name, git user, reason, branch, working directory
 acceptance:
-  - All 4 husky hooks log to .beacon/force-bypasses.log when LUMENFLOW_FORCE=1
+  - All 4 husky hooks log to .lumenflow/force-bypasses.log when LUMENFLOW_FORCE=1
   - 'Log format: ISO timestamp | hook name | git user.name | branch | reason | cwd'
   - LUMENFLOW_FORCE_REASON env var documented and logged (warn to stderr if missing)
   - Shared audit function in packages/@lumenflow/core/src/force-bypass-audit.ts
-  - .beacon/force-bypasses.log is git-tracked (NOT in .gitignore)
+  - .lumenflow/force-bypasses.log is git-tracked (NOT in .gitignore)
   - .lumenflow/constraints.md updated with rule against agent LUMENFLOW_FORCE usage
   - Agent constraint includes escalation path (ask user, get explicit approval)
   - Audit logging is fail-open (if logging fails, bypass still works)

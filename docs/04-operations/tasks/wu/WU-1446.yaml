@@ -25,7 +25,7 @@ risks: []
 notes: Refactor wu:done docs-only policy to eliminate raw type/exposure string comparisons and lock
   the behavior in with a guardrail test. Also fix safe-git LUMENFLOW_FORCE audit logging to write to
   .lumenflow/force-bypasses.log (matching core constants/tests), while continuing to write to
-  .beacon/* only when that legacy directory already exists.
+  .lumenflow/* only when that legacy directory already exists.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -39,7 +39,7 @@ description: 'Context: WU-1444 centralized WU type helper predicates in @lumenfl
   validation, increasing drift risk and reducing type-safety. (2) safe-git LUMENFLOW_FORCE bypass
   logging wrote to a legacy location, causing drift vs core constants and failing tests. Solution:
   refactor wu:done to use core helpers/constants for documentation checks with a guardrail unit
-  test, and align safe-git bypass logging to .lumenflow (with legacy dual-write when .beacon
+  test, and align safe-git bypass logging to .lumenflow (with legacy dual-write when .lumenflow
   exists).'
 acceptance:
   - wu:done docs-only validation uses core helper(s)/constants for documentation type/exposure
