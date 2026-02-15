@@ -5,7 +5,6 @@ _Last updated: 2026-02-15_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove healthcare/PHI code from core package](wu/WU-1701.yaml)
-- [WU-1711 — Strict debt slice: type lane-inference](wu/WU-1711.yaml)
 
 ## Blocked
 
@@ -663,3 +662,4 @@ _Last updated: 2026-02-15_
 - [WU-1708 — Strict debt slice: type token-counter](wu/WU-1708.yaml) — 2026-02-15
 - [WU-1709 — Strict debt slice: type generate-traceability](wu/WU-1709.yaml) — 2026-02-15
 - [WU-1710 — Strict debt slice: type stamp-utils](wu/WU-1710.yaml) — 2026-02-15
+- [WU-1711 — Strict debt slice: type lane-inference](wu/WU-1711.yaml) — 2026-02-15
