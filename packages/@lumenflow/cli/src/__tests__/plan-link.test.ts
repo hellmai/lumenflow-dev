@@ -1,7 +1,7 @@
 /**
  * Tests for plan:link command (WU-1313)
  *
- * The plan:link command links existing plan files to WUs (via spec_refs)
+ * The plan:link command links existing plan files to WUs (via plan field, WU-1683)
  * or initiatives (via related_plan). This replaces the initiative:plan command.
  *
  * TDD: These tests are written BEFORE the implementation.
@@ -66,7 +66,7 @@ describe('plan:link command', () => {
   });
 
   describe('linkPlanToWU', () => {
-    it('should add spec_refs field to WU YAML', async () => {
+    it('should set plan field on WU YAML (WU-1683)', async () => {
       const { linkPlanToWU } = await import('../plan-link.js');
 
       // Setup mock WU file
@@ -87,15 +87,15 @@ describe('plan:link command', () => {
 
       expect(changed).toBe(true);
 
-      // Verify the file was updated
+      // Verify the file was updated with plan field (not spec_refs)
       const updated = parseYAML(readFileSync(wuPath, 'utf-8'));
-      expect(updated.spec_refs).toContain(TEST_WU_PLAN_URI);
+      expect(updated.plan).toBe(TEST_WU_PLAN_URI);
     });
 
-    it('should append to existing spec_refs', async () => {
+    it('should replace existing plan and not touch spec_refs (WU-1683)', async () => {
       const { linkPlanToWU } = await import('../plan-link.js');
 
-      // Setup mock WU file with existing spec_refs
+      // Setup mock WU file with existing spec_refs and old plan
       const wuDir = join(tempDir, ...TEST_WU_DIR.split('/'));
       mkdirSync(wuDir, { recursive: true });
       const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
@@ -105,25 +105,26 @@ describe('plan:link command', () => {
         lane: TEST_LANE,
         status: 'ready',
         type: 'feature',
+        plan: 'lumenflow://plans/old-plan.md',
         spec_refs: ['lumenflow://plans/existing-plan.md'],
       };
       writeFileSync(wuPath, stringifyYAML(wuDoc));
 
-      // Link additional plan
+      // Link new plan
       const changed = linkPlanToWU(tempDir, TEST_WU_ID, TEST_WU_PLAN_URI);
 
       expect(changed).toBe(true);
 
-      // Verify both refs are present
+      // Verify plan was replaced and spec_refs untouched
       const updated = parseYAML(readFileSync(wuPath, 'utf-8'));
+      expect(updated.plan).toBe(TEST_WU_PLAN_URI);
       expect(updated.spec_refs).toContain('lumenflow://plans/existing-plan.md');
-      expect(updated.spec_refs).toContain(TEST_WU_PLAN_URI);
     });
 
-    it('should be idempotent if plan already linked', async () => {
+    it('should be idempotent if plan already linked (WU-1683)', async () => {
       const { linkPlanToWU } = await import('../plan-link.js');
 
-      // Setup mock WU file with plan already linked
+      // Setup mock WU file with plan already linked via plan field
       const wuDir = join(tempDir, ...TEST_WU_DIR.split('/'));
       mkdirSync(wuDir, { recursive: true });
       const wuPath = join(wuDir, `${TEST_WU_ID}.yaml`);
@@ -133,7 +134,7 @@ describe('plan:link command', () => {
         lane: TEST_LANE,
         status: 'ready',
         type: 'feature',
-        spec_refs: [TEST_WU_PLAN_URI],
+        plan: TEST_WU_PLAN_URI,
       };
       writeFileSync(wuPath, stringifyYAML(wuDoc));
 
@@ -149,7 +150,7 @@ describe('plan:link command', () => {
       expect(() => linkPlanToWU(tempDir, 'WU-9999', 'lumenflow://plans/plan.md')).toThrow();
     });
 
-    it('should fail with clear error when spec_refs has invalid type', async () => {
+    it('should set plan field even when spec_refs has invalid type (WU-1683)', async () => {
       const { linkPlanToWU } = await import('../plan-link.js');
 
       const wuDir = join(tempDir, ...TEST_WU_DIR.split('/'));
@@ -168,9 +169,12 @@ describe('plan:link command', () => {
         ].join('\n'),
       );
 
-      expect(() => linkPlanToWU(tempDir, TEST_WU_ID, TEST_WU_PLAN_URI)).toThrow(
-        /spec_refs.*array/i,
-      );
+      // WU-1683: linkPlanToWU no longer touches spec_refs, only sets plan field
+      const changed = linkPlanToWU(tempDir, TEST_WU_ID, TEST_WU_PLAN_URI);
+      expect(changed).toBe(true);
+
+      const updated = parseYAML(readFileSync(wuPath, 'utf-8'));
+      expect(updated.plan).toBe(TEST_WU_PLAN_URI);
     });
   });
 
