@@ -1364,3 +1364,4 @@
 {"type":"block","wuId":"WU-1702","timestamp":"2026-02-15T23:11:41.480Z","reason":"Stale emergency WU; unblock wu:claim overlap scanner symlink-loop"}
 {"type":"claim","wuId":"WU-1704","timestamp":"2026-02-15T23:12:18.027Z","lane":"Framework: Core Validation","title":"Strict debt slice: eliminate TS7006 in core wu-preflight-validators"}
 {"type":"complete","wuId":"WU-1704","timestamp":"2026-02-15T23:17:54.992Z"}
+{"type":"claim","wuId":"WU-1705","lane":"Framework: Core Validation","title":"Strict debt slice: type wu-consistency-checker","timestamp":"2026-02-15T23:20:48.143Z"}
