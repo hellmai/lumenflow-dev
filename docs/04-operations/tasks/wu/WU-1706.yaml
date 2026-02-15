@@ -2,14 +2,15 @@ id: WU-1706
 title: 'Strict debt slice: type wu-done-validation'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-15
 code_paths:
   - packages/@lumenflow/core/src/wu-done-validation.ts
 tests:
   manual:
-    - 'Run: pnpm --filter @lumenflow/core exec vitest run src/__tests__/wu-done-validation-post-mutation.test.ts'
+    - 'Run: pnpm --filter @lumenflow/core exec vitest run
+      src/__tests__/wu-done-validation-post-mutation.test.ts'
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-validation-post-mutation.test.ts
   e2e: []
@@ -26,7 +27,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Eliminate strict noImplicitAny/null-safety errors in wu-done-validation.ts while preserving wu:done validation behavior.
+description: Eliminate strict noImplicitAny/null-safety errors in wu-done-validation.ts while
+  preserving wu:done validation behavior.
 acceptance:
   - No strictNullChecks/noImplicitAny errors in packages/@lumenflow/core/src/wu-done-validation.ts
   - Existing wu-done validation tests pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1706
+claimed_at: 2026-02-15T23:24:48.191Z
+baseline_main_sha: d17e143b9d2352d0889665325c6494074b2dad58
+session_id: badd1ef4-6f45-4297-93f8-f145990fc895
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T23:24:48.198Z
