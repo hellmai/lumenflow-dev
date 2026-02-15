@@ -6,8 +6,9 @@ status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
-  - packages/@lumenflow/cli/tsconfig.json
   - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/scripts/check-shebangs.mjs
 tests:
   manual:
     - Run npx -p @lumenflow/cli lumenflow init in /tmp fresh dir
@@ -20,10 +21,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-15T15:16:23.058Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1689
+session_id: fbfcfaca-eac1-4615-91ae-b249623b310c
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T15:16:23.065Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -35,11 +43,3 @@ acceptance:
   - All bin entry scripts in package.json have shebang in dist output
   - npx -p @lumenflow/cli lumenflow init works in a fresh directory
   - Build pipeline ensures shebangs are added to all bin scripts going forward
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1689
-claimed_at: 2026-02-15T15:16:23.058Z
-baseline_main_sha: 37eafd62bf5fa0d1c62c9a1b7687d2ed4aa2c019
-session_id: fbfcfaca-eac1-4615-91ae-b249623b310c
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-15T15:16:23.065Z
