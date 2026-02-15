@@ -17,14 +17,44 @@ import {
   getInitiativeWUs,
   getInitiativePhases,
 } from '@lumenflow/initiatives/yaml';
+import type { InitiativeDoc, InitiativeEntry, WUDoc, WUEntry } from '@lumenflow/initiatives/yaml';
 import { OUTPUT_FORMATS } from '@lumenflow/initiatives/constants';
 import { WU_STATUS } from '@lumenflow/core/wu-constants';
 
-function normalizeLifecycleStatus(value) {
+type InitiativeProgress = ReturnType<typeof getInitiativeProgress>;
+type InitiativePhaseGroups = ReturnType<typeof getInitiativePhases>;
+
+interface InitiativePhaseDoc {
+  id: number;
+  title?: string;
+  status?: string;
+}
+
+interface GroupedWUs {
+  [WU_STATUS.DONE]: WUEntry[];
+  [WU_STATUS.IN_PROGRESS]: WUEntry[];
+  [WU_STATUS.READY]: WUEntry[];
+  [WU_STATUS.BLOCKED]: WUEntry[];
+  other: WUEntry[];
+}
+
+function asString(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+function asStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((entry): entry is string => typeof entry === 'string') : [];
+}
+
+function normalizeLifecycleStatus(value: unknown): string {
   return typeof value === 'string' ? value.trim().toLowerCase() : '';
 }
 
-function hasIncompletePhase(phases) {
+function toInitiativePhases(doc: InitiativeDoc): InitiativePhaseDoc[] {
+  return Array.isArray(doc.phases) ? (doc.phases as InitiativePhaseDoc[]) : [];
+}
+
+function hasIncompletePhase(phases: InitiativePhaseDoc[]): boolean {
   if (!Array.isArray(phases) || phases.length === 0) {
     return false;
   }
@@ -36,7 +66,7 @@ function hasIncompletePhase(phases) {
   });
 }
 
-export function deriveInitiativeLifecycleStatus(status, phases) {
+export function deriveInitiativeLifecycleStatus(status: unknown, phases: InitiativePhaseDoc[]): string {
   const normalizedStatus = normalizeLifecycleStatus(status);
   if (normalizedStatus === WU_STATUS.DONE && hasIncompletePhase(phases)) {
     return WU_STATUS.IN_PROGRESS;
@@ -44,41 +74,49 @@ export function deriveInitiativeLifecycleStatus(status, phases) {
   return normalizedStatus || WU_STATUS.IN_PROGRESS;
 }
 
-function getWUBlockers(doc) {
-  return doc.blocked_by || doc.dependencies || [];
+function getWUBlockers(doc: WUDoc): string[] {
+  const blockedBy = asStringArray(doc.blocked_by);
+  if (blockedBy.length > 0) {
+    return blockedBy;
+  }
+  return asStringArray(doc.dependencies);
 }
 
-function priorityRank(priority) {
+function priorityRank(priority: unknown): number {
   const p = String(priority || '').toUpperCase();
-  const map = { P0: 0, P1: 1, P2: 2, P3: 3 };
-  return map[p] ?? 9;
+  const map: Record<'P0' | 'P1' | 'P2' | 'P3', number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  return p in map ? map[p as keyof typeof map] : 9;
 }
 
-function isRunnableReady(wu, wuById) {
-  if (wu.doc.status !== WU_STATUS.READY) return false;
+function isRunnableReady(wu: WUEntry, wuById: Map<string, WUEntry>): boolean {
+  if (normalizeLifecycleStatus(wu.doc.status) !== WU_STATUS.READY) return false;
   const blockers = getWUBlockers(wu.doc);
   return blockers.every((blockerId) => {
     const blocker = wuById.get(blockerId);
-    return !blocker || blocker.doc.status === WU_STATUS.DONE;
+    return !blocker || normalizeLifecycleStatus(blocker.doc.status) === WU_STATUS.DONE;
   });
 }
 
-function renderDetailed(initiative, useColor) {
+function renderDetailed(initiative: InitiativeEntry, useColor: boolean): void {
   const { id, doc } = initiative;
-  const progress = getInitiativeProgress(id);
-  const wus = getInitiativeWUs(id);
+  const progress: InitiativeProgress = getInitiativeProgress(id);
+  const wus: WUEntry[] = getInitiativeWUs(id);
   const wuById = new Map(wus.map((wu) => [wu.id, wu]));
-  const phaseGroups = getInitiativePhases(id);
-  const status = deriveInitiativeLifecycleStatus(doc.status, doc.phases);
+  const phaseGroups: InitiativePhaseGroups = getInitiativePhases(id);
+  const phases = toInitiativePhases(doc);
+  const status = deriveInitiativeLifecycleStatus(doc.status, phases);
+  const docTitle = asString(doc.title);
+  const rawStatus = asString(doc.status);
+  const normalizedRawStatus = normalizeLifecycleStatus(rawStatus);
 
   // Header
-  console.log(`\n${id}: ${doc.title}`);
+  console.log(`\n${id}: ${docTitle || '(untitled)'}`);
   console.log(
     `Status: ${status} | Progress: ${progress.percentage}% (${progress.done}/${progress.total} WUs)`,
   );
-  if (status !== normalizeLifecycleStatus(doc.status)) {
+  if (status !== normalizedRawStatus) {
     console.log(
-      `Lifecycle mismatch: metadata status '${doc.status}' is inconsistent with phase state; reporting '${status}'.`,
+      `Lifecycle mismatch: metadata status '${rawStatus}' is inconsistent with phase state; reporting '${status}'.`,
     );
   }
 
@@ -98,8 +136,12 @@ function renderDetailed(initiative, useColor) {
 
   if (runnableReady.length > 0) {
     const next = runnableReady[0];
-    console.log(`  2) Start next WU: pnpm wu:claim --id ${next.id} --lane "${next.doc.lane}"`);
-    console.log(`     Then cd into the created worktree (shown by wu:claim output)`);
+    if (next) {
+      console.log(
+        `  2) Start next WU: pnpm wu:claim --id ${next.id} --lane "${asString(next.doc.lane)}"`,
+      );
+      console.log(`     Then cd into the created worktree (shown by wu:claim output)`);
+    }
   } else if (progress.inProgress > 0) {
     console.log(
       `  2) Continue: ${progress.inProgress} WU(s) already in progress (finish those first)`,
@@ -110,26 +152,30 @@ function renderDetailed(initiative, useColor) {
     console.log('  2) No runnable ready WUs found (check dependencies/blocked_by)');
   }
 
-  if (doc.description) {
-    console.log(`\nDescription: ${doc.description}`);
+  const description = asString(doc.description);
+  if (description) {
+    console.log(`\nDescription: ${description}`);
   }
 
-  if (doc.owner) {
-    console.log(`Owner: ${doc.owner}`);
+  const owner = asString(doc.owner);
+  if (owner) {
+    console.log(`Owner: ${owner}`);
   }
 
-  if (doc.target_date) {
-    console.log(`Target: ${doc.target_date}`);
+  const targetDate = asString(doc.target_date);
+  if (targetDate) {
+    console.log(`Target: ${targetDate}`);
   }
 
   // Phases
-  if (doc.phases && doc.phases.length > 0) {
+  if (phases.length > 0) {
     console.log('\nPhases:');
-    for (const phase of doc.phases) {
+    for (const phase of phases) {
       const phaseWUs = phaseGroups.get(phase.id) || [];
-      const phaseStatus = formatStatus(phase.status, useColor);
+      const phaseStatus = formatStatus(normalizeLifecycleStatus(phase.status), useColor);
+      const phaseTitle = asString(phase.title) || `Phase ${phase.id}`;
       console.log(
-        `  ${phase.id}. ${phase.title.padEnd(30)} [${phaseStatus}] ${phaseWUs.length} WUs`,
+        `  ${phase.id}. ${phaseTitle.padEnd(30)} [${phaseStatus}] ${phaseWUs.length} WUs`,
       );
     }
 
@@ -148,7 +194,7 @@ function renderDetailed(initiative, useColor) {
     if (statusWUs.length > 0) {
       console.log(`  ${capitalizeFirst(status)} (${statusWUs.length}):`);
       for (const wu of statusWUs.slice(0, 5)) {
-        console.log(`    - ${wu.id}: ${truncate(wu.doc.title, 50)}`);
+        console.log(`    - ${wu.id}: ${truncate(asString(wu.doc.title), 50)}`);
       }
       if (statusWUs.length > 5) {
         console.log(`    ... and ${statusWUs.length - 5} more`);
@@ -157,9 +203,10 @@ function renderDetailed(initiative, useColor) {
   }
 
   // Success metrics
-  if (doc.success_metrics && doc.success_metrics.length > 0) {
+  const successMetrics = asStringArray(doc.success_metrics);
+  if (successMetrics.length > 0) {
     console.log('\nSuccess Metrics:');
-    for (const metric of doc.success_metrics) {
+    for (const metric of successMetrics) {
       console.log(`  - ${metric}`);
     }
   }
@@ -167,24 +214,25 @@ function renderDetailed(initiative, useColor) {
   console.log('');
 }
 
-function renderJSON(initiative) {
+function renderJSON(initiative: InitiativeEntry): void {
   const { id, doc } = initiative;
-  const progress = getInitiativeProgress(id);
-  const wus = getInitiativeWUs(id);
-  const phaseGroups = getInitiativePhases(id);
-  const status = deriveInitiativeLifecycleStatus(doc.status, doc.phases);
+  const progress: InitiativeProgress = getInitiativeProgress(id);
+  const wus: WUEntry[] = getInitiativeWUs(id);
+  const phaseGroups: InitiativePhaseGroups = getInitiativePhases(id);
+  const phases = toInitiativePhases(doc);
+  const status = deriveInitiativeLifecycleStatus(doc.status, phases);
 
   const output = {
     id,
-    slug: doc.slug,
-    title: doc.title,
-    description: doc.description,
+    slug: asString(doc.slug),
+    title: asString(doc.title),
+    description: asString(doc.description),
     status,
-    rawStatus: doc.status,
-    priority: doc.priority,
-    owner: doc.owner,
-    created: doc.created,
-    targetDate: doc.target_date,
+    rawStatus: asString(doc.status),
+    priority: asString(doc.priority),
+    owner: asString(doc.owner),
+    created: asString(doc.created),
+    targetDate: asString(doc.target_date),
     progress: {
       percentage: progress.percentage,
       done: progress.done,
@@ -193,31 +241,35 @@ function renderJSON(initiative) {
       blocked: progress.blocked,
       total: progress.total,
     },
-    phases: (doc.phases || []).map((phase) => {
+    phases: phases.map((phase) => {
       const phaseWUs = phaseGroups.get(phase.id) || [];
       return {
         id: phase.id,
-        title: phase.title,
-        status: phase.status,
+        title: asString(phase.title),
+        status: normalizeLifecycleStatus(phase.status),
         wuCount: phaseWUs.length,
-        wus: phaseWUs.map((w) => ({ id: w.id, title: w.doc.title, status: w.doc.status })),
+        wus: phaseWUs.map((w) => ({
+          id: w.id,
+          title: asString(w.doc.title),
+          status: normalizeLifecycleStatus(w.doc.status),
+        })),
       };
     }),
     workUnits: wus.map((w) => ({
       id: w.id,
-      title: w.doc.title,
-      status: w.doc.status,
-      phase: w.doc.phase,
+      title: asString(w.doc.title),
+      status: normalizeLifecycleStatus(w.doc.status),
+      phase: w.doc.phase ?? null,
     })),
-    successMetrics: doc.success_metrics || [],
-    labels: doc.labels || [],
+    successMetrics: asStringArray(doc.success_metrics),
+    labels: asStringArray(doc.labels),
   };
 
   console.log(JSON.stringify(output, null, 2));
 }
 
-function groupWUsByStatus(wus) {
-  const groups = {
+function groupWUsByStatus(wus: WUEntry[]): GroupedWUs {
+  const groups: GroupedWUs = {
     [WU_STATUS.DONE]: [],
     [WU_STATUS.IN_PROGRESS]: [],
     [WU_STATUS.READY]: [],
@@ -226,29 +278,41 @@ function groupWUsByStatus(wus) {
   };
 
   for (const wu of wus) {
-    const status = wu.doc.status;
-    if (groups[status]) {
-      groups[status].push(wu);
-    } else {
-      groups.other.push(wu);
+    const status = normalizeLifecycleStatus(wu.doc.status);
+    switch (status) {
+      case WU_STATUS.DONE:
+        groups[WU_STATUS.DONE].push(wu);
+        break;
+      case WU_STATUS.IN_PROGRESS:
+        groups[WU_STATUS.IN_PROGRESS].push(wu);
+        break;
+      case WU_STATUS.READY:
+        groups[WU_STATUS.READY].push(wu);
+        break;
+      case WU_STATUS.BLOCKED:
+        groups[WU_STATUS.BLOCKED].push(wu);
+        break;
+      default:
+        groups.other.push(wu);
+        break;
     }
   }
 
   return groups;
 }
 
-function formatStatus(status, useColor) {
+function formatStatus(status: string, useColor: boolean): string {
   if (!useColor) return status;
   // Color support is opt-in, but we keep it simple for now
   return status;
 }
 
-function truncate(str, maxLen) {
+function truncate(str: string, maxLen: number): string {
   if (!str) return '';
   return str.length > maxLen ? `${str.substring(0, maxLen - 3)}...` : str;
 }
 
-function capitalizeFirst(str) {
+function capitalizeFirst(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1).replace(/_/g, ' ');
 }
 
@@ -259,7 +323,7 @@ async function main() {
     options: [WU_OPTIONS.id, WU_OPTIONS.format, WU_OPTIONS.color],
     required: [],
     allowPositionalId: true,
-  });
+  }) as { id?: string; format?: string; color?: boolean };
 
   const initRef = args.id;
 
@@ -283,7 +347,7 @@ async function main() {
       renderJSON(initiative);
       break;
     default:
-      renderDetailed(initiative, args.color);
+      renderDetailed(initiative, Boolean(args.color));
       break;
   }
 }
