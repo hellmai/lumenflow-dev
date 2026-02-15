@@ -37,7 +37,7 @@ import { parseYAML } from './wu-yaml.js';
 import { die } from './error-handler.js';
 import { WU_STATUS, PATTERNS, EMOJI, LUMENFLOW_PATHS } from './wu-constants.js';
 // WU-1603: Check lane lock status before spawning
-import { checkLaneLock } from './lane-lock.js';
+import { checkLaneLock, type LockMetadata } from './lane-lock.js';
 import { minimatch } from 'minimatch';
 import { SpawnStrategyFactory } from './spawn-strategy.js';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Type is used in JSDoc comments
@@ -105,6 +105,55 @@ const MANDATORY_TRIGGERS: Record<string, readonly string[]> = {
 };
 
 const LOG_PREFIX = '[wu:spawn]';
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+interface WUDoc {
+  id?: string;
+  title?: string;
+  lane?: string;
+  type?: string;
+  status?: string;
+  description?: string;
+  worktree_path?: string;
+  acceptance?: string[];
+  code_paths?: string[];
+  spec_refs?: string[];
+  notes?: string;
+  risks?: string[];
+  claimed_at?: string;
+  tests?: {
+    manual?: string[];
+  };
+  [key: string]: unknown;
+}
+
+interface InvariantDefinition {
+  id: string;
+  type: string;
+  description: string;
+  message?: string;
+  path?: string;
+  paths?: string[];
+  scope?: string[];
+  from?: string;
+  cannot_import?: string[];
+  pattern?: string;
+}
+
+interface SpawnCliArgs {
+  id: string;
+  codex?: boolean;
+  thinking?: boolean;
+  noThinking?: boolean;
+  budget?: string;
+  parentWu?: string;
+  client?: string;
+  vendor?: string;
+  noContext?: boolean;
+}
 
 /**
  * WU-1192: Truncation prevention constants (consolidated from CLI)
@@ -677,12 +726,12 @@ git add . && git commit -m "your message"
  * @param {string[]} codePaths - Array of file paths
  * @returns {string[]} Array of mandatory agent names
  */
-function detectMandatoryAgents(codePaths) {
+function detectMandatoryAgents(codePaths: string[] | undefined): string[] {
   if (!codePaths || codePaths.length === 0) {
     return [];
   }
 
-  const triggeredAgents = new Set();
+  const triggeredAgents = new Set<string>();
 
   for (const [agentName, patterns] of Object.entries(MANDATORY_TRIGGERS)) {
     const isTriggered = codePaths.some((filePath) =>
@@ -703,7 +752,7 @@ function detectMandatoryAgents(codePaths) {
  * @param {string[]|undefined} acceptance - Acceptance criteria array
  * @returns {string} Formatted acceptance criteria
  */
-function formatAcceptance(acceptance) {
+function formatAcceptance(acceptance: string[] | undefined): string {
   if (!acceptance || acceptance.length === 0) {
     return '- No acceptance criteria defined';
   }
@@ -719,7 +768,7 @@ function formatAcceptance(acceptance) {
  * @param {string[]|undefined} specRefs - Spec references array
  * @returns {string} Formatted references or empty string if none
  */
-function formatSpecRefs(specRefs) {
+function formatSpecRefs(specRefs: string[] | undefined): string {
   if (!specRefs || specRefs.length === 0) {
     return '';
   }
@@ -746,7 +795,7 @@ function formatSpecRefs(specRefs) {
  * @param {string[]|undefined} risks - Risks array
  * @returns {string} Formatted risks or empty string if none
  */
-function formatRisks(risks) {
+function formatRisks(risks: string[] | undefined): string {
   if (!risks || risks.length === 0) {
     return '';
   }
@@ -759,7 +808,7 @@ function formatRisks(risks) {
  * @param {string[]|undefined} manualTests - Manual test steps
  * @returns {string} Formatted tests or empty string if none
  */
-function formatManualTests(manualTests) {
+function formatManualTests(manualTests: string[] | undefined): string {
   if (!manualTests || manualTests.length === 0) {
     return '';
   }
@@ -775,8 +824,8 @@ function formatManualTests(manualTests) {
  * @param {object} doc - WU YAML document
  * @returns {string} Implementation context section or empty string
  */
-function generateImplementationContext(doc) {
-  const sections = [];
+function generateImplementationContext(doc: WUDoc): string {
+  const sections: string[] = [];
 
   // References (spec_refs)
   const refs = formatSpecRefs(doc.spec_refs);
@@ -815,7 +864,10 @@ function generateImplementationContext(doc) {
  * @param {string[]} codePaths - Array of code paths
  * @returns {boolean} True if code paths match the invariant
  */
-function codePathMatchesInvariant(invariant, codePaths) {
+function codePathMatchesInvariant(
+  invariant: InvariantDefinition,
+  codePaths: string[],
+): boolean {
   switch (invariant.type) {
     case INVARIANT_TYPES.FORBIDDEN_FILE:
     case INVARIANT_TYPES.REQUIRED_FILE:
@@ -851,7 +903,7 @@ function codePathMatchesInvariant(invariant, codePaths) {
  * @param {object} inv - Invariant definition
  * @returns {string[]} Lines of formatted output
  */
-function formatInvariantForOutput(inv) {
+function formatInvariantForOutput(inv: InvariantDefinition): string[] {
   const lines = [`### ${inv.id} (${inv.type})`, '', inv.description, ''];
 
   if (inv.message) {
@@ -904,7 +956,7 @@ function formatInvariantForOutput(inv) {
  * @param {string[]} codePaths - Array of code paths from the WU
  * @returns {string} Invariants/prior-art section or empty string if none relevant
  */
-function generateInvariantsPriorArtSection(codePaths) {
+function generateInvariantsPriorArtSection(codePaths: string[]): string {
   if (!codePaths || codePaths.length === 0) {
     return '';
   }
@@ -915,7 +967,7 @@ function generateInvariantsPriorArtSection(codePaths) {
     return '';
   }
 
-  let invariants;
+  let invariants: InvariantDefinition[];
   try {
     invariants = loadInvariants(invariantsPath);
   } catch {
@@ -967,7 +1019,7 @@ function generateInvariantsPriorArtSection(codePaths) {
  * @param {import('./spawn-strategy.js').SpawnStrategy} strategy - Client strategy
  * @returns {string} Context loading preamble
  */
-function generatePreamble(id, strategy) {
+function generatePreamble(id: string, strategy: SpawnStrategy): string {
   return strategy.getPreamble(id);
 }
 
@@ -980,7 +1032,7 @@ function generatePreamble(id, strategy) {
  * @param {string} id - WU ID
  * @returns {string} Constraints block
  */
-function generateConstraints(id) {
+function generateConstraints(id: string): string {
   return `---
 
 <constraints>
@@ -1042,7 +1094,7 @@ CRITICAL RULES - ENFORCE BEFORE EVERY ACTION:
 ${SPAWN_END_SENTINEL}`;
 }
 
-function generateCodexConstraints(id) {
+function generateCodexConstraints(id: string): string {
   return `## Constraints (Critical)
 
 1. **TDD checkpoint**: tests BEFORE implementation; never skip RED
@@ -1061,7 +1113,7 @@ function generateCodexConstraints(id) {
  * @param {string} _id - WU ID (reserved for future use)
  * @returns {string} Mandatory agent section or empty string
  */
-function generateMandatoryAgentSection(mandatoryAgents, _id) {
+function generateMandatoryAgentSection(mandatoryAgents: string[], _id: string): string {
   if (mandatoryAgents.length === 0) {
     return '';
   }
@@ -1151,7 +1203,7 @@ Avoid: Jumping directly to specific file edits without understanding context.`;
  * @param {string} id - WU ID
  * @returns {string} Token budget section
  */
-export function generateTokenBudgetAwareness(id) {
+export function generateTokenBudgetAwareness(id: string): string {
   return `## Token Budget Awareness
 
 Context limit is ~200K tokens. Monitor your usage:
@@ -1169,7 +1221,7 @@ If approaching limits, summarize progress and spawn continuation agent.`;
  * @param {string} id - WU ID
  * @returns {string} Completion format section
  */
-export function generateCompletionFormat(_id) {
+export function generateCompletionFormat(_id: string): string {
   return `## Completion Report Format
 
 When finishing, provide structured output:
@@ -1395,7 +1447,7 @@ pnpm wu:infer-lane --paths "tools/**" --desc "CLI improvements"
  * @param {string|undefined} worktreePath - Worktree path from WU YAML
  * @returns {string} Worktree path guidance section
  */
-export function generateWorktreePathGuidance(worktreePath) {
+export function generateWorktreePathGuidance(worktreePath: string | undefined): string {
   if (!worktreePath) {
     return '';
   }
@@ -1452,7 +1504,7 @@ touch "$WORKTREE_ROOT/.lumenflow/agent-runs/code-reviewer.stamp"
  * @param {string} id - WU ID
  * @returns {string} Bug Discovery section
  */
-function generateBugDiscoverySection(id) {
+function generateBugDiscoverySection(id: string): string {
   return `## Bug Discovery (Mid-WU Issue Capture)
 
 If you discover a bug or issue **outside the scope of this WU**:
@@ -1499,12 +1551,12 @@ See: https://lumenflow.dev/reference/agent-invocation-guide/ §Bug Discovery`;
  * @param {string} lane - Lane name
  * @returns {string} Lane-specific guidance or empty string
  */
-function generateLaneGuidance(lane) {
+function generateLaneGuidance(lane: string | undefined): string {
   if (!lane) return '';
 
   const laneParent = lane.split(':')[0].trim();
 
-  const guidance = {
+  const guidance: Record<string, string> = {
     Operations: `## Lane-Specific: Tooling
 
 - Update tool documentation in tools/README.md or relevant docs if adding new CLI commands`,
@@ -1537,7 +1589,7 @@ function generateLaneGuidance(lane) {
  * @param {string} id - WU ID
  * @returns {string} Action section content
  */
-export function generateActionSection(doc, id) {
+export function generateActionSection(doc: WUDoc, id: string): string {
   const isAlreadyClaimed = doc.claimed_at && doc.worktree_path;
 
   if (isAlreadyClaimed) {
@@ -1588,7 +1640,7 @@ interface SpawnOptions {
   memoryContextContent?: string;
 }
 
-function generateClientBlocksSection(clientContext) {
+function generateClientBlocksSection(clientContext: ClientContext | undefined): string {
   if (!clientContext?.config?.blocks?.length) return '';
   const blocks = clientContext.config.blocks
     .map((block) => `### ${block.title}\n\n${block.content}`)
@@ -1608,7 +1660,12 @@ function generateClientBlocksSection(clientContext) {
  * @param {string} [options.budget] - Token budget for thinking
  * @returns {string} Complete Task tool invocation
  */
-export function generateTaskInvocation(doc, id, strategy, options: SpawnOptions = {}) {
+export function generateTaskInvocation(
+  doc: WUDoc,
+  id: string,
+  strategy: SpawnStrategy,
+  options: SpawnOptions = {},
+): string {
   const codePaths = doc.code_paths || [];
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
@@ -1786,7 +1843,12 @@ ${constraints}`;
   return invocation;
 }
 
-export function generateCodexPrompt(doc, id, strategy, options: SpawnOptions = {}) {
+export function generateCodexPrompt(
+  doc: WUDoc,
+  id: string,
+  strategy: SpawnStrategy,
+  options: SpawnOptions = {},
+): string {
   const codePaths = doc.code_paths || [];
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
@@ -1897,7 +1959,7 @@ ${laneGuidance}${laneGuidance ? '\n\n---\n\n' : ''}${constraints}
  * @param {string} lane - Lane name (e.g., "Operations: Tooling")
  * @returns {import('./lib/lane-lock.js').LockMetadata|null} Lock metadata if occupied, null otherwise
  */
-export function checkLaneOccupation(lane) {
+export function checkLaneOccupation(lane: string): LockMetadata | null {
   const lockStatus = checkLaneLock(lane);
   if (lockStatus.locked && lockStatus.metadata) {
     return lockStatus.metadata;
@@ -1922,10 +1984,10 @@ interface LaneOccupationWarningOptions {
  * @returns {string} Warning message
  */
 export function generateLaneOccupationWarning(
-  lockMetadata,
-  targetWuId,
+  lockMetadata: LockMetadata,
+  targetWuId: string,
   options: LaneOccupationWarningOptions = {},
-) {
+): string {
   const { isStale = false } = options;
 
   let warning = `⚠️  Lane "${lockMetadata.lane}" is occupied by ${lockMetadata.wuId}\n`;
@@ -1975,13 +2037,13 @@ async function main() {
     ],
     required: ['id'],
     allowPositionalId: true,
-  });
+  }) as SpawnCliArgs;
 
   // Validate thinking mode options
   try {
     validateSpawnArgs(args);
-  } catch (e) {
-    die(e.message);
+  } catch (e: unknown) {
+    die(getErrorMessage(e));
   }
 
   const id = args.id.toUpperCase();
@@ -2007,10 +2069,10 @@ async function main() {
   let text;
   try {
     text = readFileSync(WU_PATH, { encoding: 'utf-8' });
-  } catch (e) {
+  } catch (e: unknown) {
     die(
       `Failed to read WU file: ${WU_PATH}\n\n` +
-        `Error: ${e.message}\n\n` +
+        `Error: ${getErrorMessage(e)}\n\n` +
         `Options:\n` +
         `  1. Check file permissions: ls -la ${WU_PATH}\n` +
         `  2. Ensure the file exists and is readable`,
@@ -2018,10 +2080,10 @@ async function main() {
   }
   try {
     doc = parseYAML(text);
-  } catch (e) {
+  } catch (e: unknown) {
     die(
       `Failed to parse WU YAML ${WU_PATH}\n\n` +
-        `Error: ${e.message}\n\n` +
+        `Error: ${getErrorMessage(e)}\n\n` +
         `Options:\n` +
         `  1. Validate YAML syntax: pnpm wu:validate --id ${id}\n` +
         `  2. Fix YAML errors manually and retry`,
