@@ -208,7 +208,10 @@ function recordRecoveryState(paths: RecoveryFilePaths): RecoveryTransactionState
  * @param {object} state - Transaction state from recordRecoveryState
  * @param {object} paths - Object containing file paths
  */
-function rollbackRecoveryTransaction(state: RecoveryTransactionState, paths: RecoveryFilePaths): void {
+function rollbackRecoveryTransaction(
+  state: RecoveryTransactionState,
+  paths: RecoveryFilePaths,
+): void {
   const { wuPath, statusPath, backlogPath, stampPath } = paths;
 
   console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Rolling back recovery transaction...`);
