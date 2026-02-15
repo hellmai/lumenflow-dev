@@ -61,6 +61,44 @@ import { validateInitiativeEditCliArgs } from './shared-validators.js';
 
 const PREFIX = INIT_LOG_PREFIX.EDIT;
 
+interface InitiativePhase extends Record<string, unknown> {
+  id: number;
+  title: string;
+  status: string;
+}
+
+interface InitiativeDoc extends Record<string, unknown> {
+  id: string;
+  status?: string;
+  blocked_by?: string;
+  blocked_reason?: string;
+  lanes?: string[];
+  notes?: string[];
+  description?: string;
+  phases?: InitiativePhase[];
+  success_metrics?: string[];
+  created?: string;
+}
+
+interface InitiativeEditOpts extends Record<string, unknown> {
+  id: string;
+  status?: string;
+  blockedBy?: string;
+  blockedReason?: string;
+  unblock?: boolean;
+  addLane?: string[];
+  removeLane?: string[];
+  notes?: string;
+  description?: string;
+  addPhase?: string[];
+  addSuccessMetric?: string[];
+  removeSuccessMetric?: string[];
+  phaseId?: string;
+  phaseStatus?: string;
+  phaseTitle?: string;
+  created?: string;
+}
+
 /**
  * WU-1621: operation-level push retry override for initiative:edit.
  *
@@ -186,7 +224,7 @@ const EDIT_OPTIONS = {
 /**
  * Parse command line arguments
  */
-function parseArgs() {
+function parseArgs(): InitiativeEditOpts {
   const opts = createWUParser({
     name: 'initiative-edit',
     description: 'Edit Initiative YAML files with micro-worktree isolation',
@@ -225,17 +263,17 @@ function parseArgs() {
     );
   }
 
-  return opts;
+  return opts as InitiativeEditOpts;
 }
 
-export function validateEditArgs(opts) {
+export function validateEditArgs(opts: InitiativeEditOpts) {
   return validateInitiativeEditCliArgs(opts);
 }
 
 /**
  * Validate Initiative ID format
  */
-function validateInitIdFormat(id) {
+function validateInitIdFormat(id: string): void {
   if (!INIT_PATTERNS.INIT_ID.test(id)) {
     die(
       `Invalid Initiative ID format: "${id}"\n\n` +
@@ -247,8 +285,8 @@ function validateInitIdFormat(id) {
 /**
  * Validate status is a valid enum value
  */
-function validateStatus(status) {
-  if (!INIT_STATUSES.includes(status)) {
+function validateStatus(status: string): void {
+  if (!INIT_STATUSES.includes(status as (typeof INIT_STATUSES)[number])) {
     die(`Invalid status: "${status}"\n\n` + `Valid statuses: ${INIT_STATUSES.join(', ')}`);
   }
 }
@@ -256,8 +294,8 @@ function validateStatus(status) {
 /**
  * Validate phase status is a valid enum value (WU-1836)
  */
-function validatePhaseStatus(status) {
-  if (!PHASE_STATUSES.includes(status)) {
+function validatePhaseStatus(status: string): void {
+  if (!PHASE_STATUSES.includes(status as (typeof PHASE_STATUSES)[number])) {
     die(
       `Invalid phase status: "${status}"\n\n` +
         `Valid phase statuses: ${PHASE_STATUSES.join(', ')}`,
@@ -268,7 +306,7 @@ function validatePhaseStatus(status) {
 /**
  * Validate phase ID exists in initiative (WU-1836)
  */
-function validatePhaseExists(initiative, phaseId) {
+function validatePhaseExists(initiative: InitiativeDoc, phaseId: string | number): number {
   const numericId = Number(phaseId);
   if (Number.isNaN(numericId)) {
     die(`Invalid phase ID: "${phaseId}"\n\nPhase ID must be a number.`);
@@ -290,7 +328,7 @@ function validatePhaseExists(initiative, phaseId) {
  *
  * @param {string} date - Date string to validate
  */
-function validateCreatedDate(date) {
+function validateCreatedDate(date: string): void {
   if (!INIT_PATTERNS.DATE.test(date)) {
     die(`Invalid date format: "${date}"\n\n` + `Expected format: YYYY-MM-DD (e.g., 2026-01-14)`);
   }
@@ -302,7 +340,7 @@ function validateCreatedDate(date) {
  * @param {string} id - Initiative ID
  * @returns {object} Initiative object
  */
-function loadInitiative(id) {
+function loadInitiative(id: string): InitiativeDoc {
   const initPath = INIT_PATHS.INITIATIVE(id);
 
   if (!existsSync(initPath)) {
@@ -326,7 +364,7 @@ function loadInitiative(id) {
     die(`Initiative YAML id mismatch. Expected ${id}, found ${String(doc.id)}`);
   }
 
-  return doc;
+  return doc as InitiativeDoc;
 }
 
 /**
@@ -346,7 +384,7 @@ async function ensureCleanWorkingTree() {
 /**
  * Apply blocking edits to Initiative
  */
-function applyBlockingEdits(updated, opts) {
+function applyBlockingEdits(updated: InitiativeDoc, opts: InitiativeEditOpts): void {
   if (opts.blockedBy) {
     if (!opts.blockedReason) {
       die(
@@ -373,7 +411,7 @@ function applyBlockingEdits(updated, opts) {
  * Apply lane edits (add and remove)
  * Adds first, then removes (WU-2276)
  */
-export function applyLaneEdits(updated, opts) {
+export function applyLaneEdits(updated: InitiativeDoc, opts: InitiativeEditOpts): void {
   if (opts.addLane && opts.addLane.length > 0) {
     updated.lanes = updated.lanes || [];
     for (const lane of opts.addLane) {
@@ -391,7 +429,7 @@ export function applyLaneEdits(updated, opts) {
 /**
  * Apply array append edits (notes, success metrics)
  */
-export function applyArrayEdits(updated, opts) {
+export function applyArrayEdits(updated: InitiativeDoc, opts: InitiativeEditOpts): void {
   applyLaneEdits(updated, opts);
   if (opts.notes) {
     updated.notes = updated.notes || [];
@@ -416,7 +454,7 @@ export function applyArrayEdits(updated, opts) {
 /**
  * Apply phase edits with auto-incremented IDs
  */
-function applyPhaseEdits(updated, opts) {
+function applyPhaseEdits(updated: InitiativeDoc, opts: InitiativeEditOpts): void {
   if (!opts.addPhase || opts.addPhase.length === 0) {
     return;
   }
@@ -435,7 +473,11 @@ function applyPhaseEdits(updated, opts) {
 /**
  * Apply phase status update (WU-1836)
  */
-function applyPhaseStatusEdit(updated, phaseId, phaseStatus) {
+function applyPhaseStatusEdit(
+  updated: InitiativeDoc,
+  phaseId: string | number,
+  phaseStatus: string,
+): void {
   const numericId = Number(phaseId);
   const phase = updated.phases.find((p) => p.id === numericId);
   if (phase) {
@@ -446,7 +488,11 @@ function applyPhaseStatusEdit(updated, phaseId, phaseStatus) {
 /**
  * Apply phase title update
  */
-function applyPhaseTitleEdit(updated, phaseId, phaseTitle) {
+function applyPhaseTitleEdit(
+  updated: InitiativeDoc,
+  phaseId: string | number,
+  phaseTitle: string,
+): void {
   const numericId = Number(phaseId);
   const phase = updated.phases.find((p) => p.id === numericId);
   if (phase) {
@@ -458,7 +504,7 @@ function applyPhaseTitleEdit(updated, phaseId, phaseTitle) {
  * Apply edits to Initiative YAML
  * Returns the updated Initiative object
  */
-export function applyEdits(initiative, opts) {
+export function applyEdits(initiative: InitiativeDoc, opts: InitiativeEditOpts): InitiativeDoc {
   const updated = { ...initiative };
 
   if (opts.status) {
@@ -496,21 +542,21 @@ export function applyEdits(initiative, opts) {
 /**
  * Check if the command has at least one edit operation
  */
-export function hasAnyEdits(opts) {
-  return (
+export function hasAnyEdits(opts: InitiativeEditOpts): boolean {
+  return Boolean(
     opts.status ||
-    opts.blockedBy ||
-    opts.unblock ||
-    (opts.addLane && opts.addLane.length > 0) ||
-    (opts.removeLane && opts.removeLane.length > 0) ||
-    opts.notes ||
-    opts.description ||
-    (opts.addPhase && opts.addPhase.length > 0) ||
-    (opts.addSuccessMetric && opts.addSuccessMetric.length > 0) ||
-    (opts.removeSuccessMetric && opts.removeSuccessMetric.length > 0) ||
-    Boolean(opts.phaseTitle) ||
-    (opts.phaseId && opts.phaseStatus) ||
-    opts.created
+      opts.blockedBy ||
+      opts.unblock ||
+      (opts.addLane && opts.addLane.length > 0) ||
+      (opts.removeLane && opts.removeLane.length > 0) ||
+      opts.notes ||
+      opts.description ||
+      (opts.addPhase && opts.addPhase.length > 0) ||
+      (opts.addSuccessMetric && opts.addSuccessMetric.length > 0) ||
+      (opts.removeSuccessMetric && opts.removeSuccessMetric.length > 0) ||
+      Boolean(opts.phaseTitle) ||
+      (opts.phaseId && opts.phaseStatus) ||
+      opts.created,
   );
 }
 
@@ -614,7 +660,7 @@ async function main() {
       logPrefix: PREFIX,
       pushOnly: true, // WU-1435: Push directly to origin/main without touching local main
       pushRetryOverride: INITIATIVE_EDIT_PUSH_RETRY_OVERRIDE,
-      execute: async ({ worktreePath }) => {
+      execute: async ({ worktreePath }: { worktreePath: string }) => {
         // Write updated Initiative to micro-worktree
         const initPath = join(worktreePath, INIT_PATHS.INITIATIVE(id));
         const yamlContent = stringifyYAML(updatedInit);

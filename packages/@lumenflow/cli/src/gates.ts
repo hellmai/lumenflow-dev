@@ -48,7 +48,7 @@
 
 import { writeSync } from 'node:fs';
 import { emitGateEvent, getCurrentWU, getCurrentLane } from '@lumenflow/core/telemetry';
-import { die } from '@lumenflow/core/error-handler';
+import { die, getErrorMessage } from '@lumenflow/core/error-handler';
 import {
   shouldUseGatesAgentMode,
   updateGatesLatestSymlink,
@@ -333,8 +333,8 @@ async function executeGates(opts: {
       riskTier = detectRiskTier({ changedFiles });
 
       const logLine = useAgentMode
-        ? (line) => writeSync(agentLog.logFd, `${line}\n`)
-        : (line) => console.log(line);
+        ? (line: string) => writeSync(agentLog.logFd, `${line}\n`)
+        : (line: string) => console.log(line);
 
       logLine(`\n\uD83C\uDFAF Risk tier detected: ${riskTier.tier}`);
       if (riskTier.highRiskPaths.length > 0) {
@@ -346,7 +346,7 @@ async function executeGates(opts: {
     } catch (error) {
       console.error(
         '\u26A0\uFE0F  Risk detection failed, defaulting to standard tier:',
-        error.message,
+        getErrorMessage(error),
       );
       riskTier = {
         tier: RISK_TIERS.STANDARD,
@@ -436,11 +436,21 @@ async function executeGates(opts: {
 
   // Run all gates sequentially
   // WU-1920: Track last test result to skip coverage gate on changed tests
-  let lastTestResult = null;
+  let lastTestResult: {
+    ok: boolean;
+    duration: number;
+    filesChecked?: string[];
+    isIncremental?: boolean;
+  } | null = null;
   let lastFormatCheckFiles: string[] | null = null;
 
   for (const gate of gates) {
-    let result: { ok: boolean; duration: number; filesChecked?: string[] };
+    let result: {
+      ok: boolean;
+      duration: number;
+      filesChecked?: string[];
+      isIncremental?: boolean;
+    };
 
     // WU-1520: Check if the gate's underlying script exists in package.json
     const gateScriptName = (gate as { scriptName?: string }).scriptName ?? null;
@@ -481,8 +491,8 @@ async function executeGates(opts: {
     } else if (gate.cmd === GATE_COMMANDS.INVARIANTS) {
       // WU-2252: Invariants check runs first (non-bypassable)
       const logLine = useAgentMode
-        ? (line) => writeSync(agentLog.logFd, `${line}\n`)
-        : (line) => console.log(line);
+        ? (line: string) => writeSync(agentLog.logFd, `${line}\n`)
+        : (line: string) => console.log(line);
 
       logLine('\n> Invariants check\n');
 

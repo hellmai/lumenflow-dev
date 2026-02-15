@@ -51,6 +51,21 @@ const LOG_PREFIX = INIT_LOG_PREFIX.ADD_WU;
 /** Micro-worktree operation name */
 const OPERATION_NAME = 'initiative-add-wu';
 
+interface WUDocLike extends Record<string, unknown> {
+  id: string;
+  initiative?: string;
+}
+
+interface InitiativeDocLike extends Record<string, unknown> {
+  id: string;
+  wus?: string[];
+}
+
+interface InitiativeAddWuArgs extends Record<string, unknown> {
+  initiative: string;
+  wu?: string | string[];
+}
+
 /**
  * WU-1459: operation-level push retry override for initiative:add-wu.
  *
@@ -204,7 +219,7 @@ export function formatValidationErrors(wuId: string, errors: string[]): string {
  * @returns {object} WU document if validation passes
  * @throws {Error} If WU doesn't exist or validation fails
  */
-export function checkWUExistsAndValidate(wuId: string) {
+export function checkWUExistsAndValidate(wuId: string): WUDocLike {
   const wuPath = WU_PATHS.WU(wuId);
 
   // Check existence
@@ -219,14 +234,14 @@ export function checkWUExistsAndValidate(wuId: string) {
   }
 
   // Return the document if validation passes
-  return readWU(wuPath, wuId);
+  return readWU(wuPath, wuId) as WUDocLike;
 }
 
 /**
  * Validate Initiative ID format
  * @param {string} id - Initiative ID to validate
  */
-function validateInitIdFormat(id) {
+function validateInitIdFormat(id: string): void {
   if (!INIT_PATTERNS.INIT_ID.test(id)) {
     die(
       `Invalid Initiative ID format: "${id}"\n\n` +
@@ -239,7 +254,7 @@ function validateInitIdFormat(id) {
  * Validate WU ID format
  * @param {string} id - WU ID to validate
  */
-function validateWuIdFormat(id) {
+function validateWuIdFormat(id: string): void {
   if (!PATTERNS.WU_ID.test(id)) {
     die(`Invalid WU ID format: "${id}"\n\nExpected format: WU-<number> (e.g., WU-123)`);
   }
@@ -250,12 +265,12 @@ function validateWuIdFormat(id) {
  * @param {string} initId - Initiative ID to check
  * @returns {object} Initiative document
  */
-function checkInitiativeExists(initId) {
+function checkInitiativeExists(initId: string): InitiativeDocLike {
   const initPath = INIT_PATHS.INITIATIVE(initId);
   if (!existsSync(initPath)) {
     die(`Initiative not found: ${initId}\n\nFile does not exist: ${initPath}`);
   }
-  return readInitiative(initPath, initId);
+  return readInitiative(initPath, initId) as InitiativeDocLike;
 }
 
 /**
@@ -263,7 +278,7 @@ function checkInitiativeExists(initId) {
  * @param {object} wuDoc - WU document
  * @param {string} targetInitId - Target initiative ID
  */
-function checkConflictingLink(wuDoc, targetInitId) {
+function checkConflictingLink(wuDoc: WUDocLike, targetInitId: string): void {
   const currentInit = wuDoc.initiative;
   if (currentInit && currentInit !== targetInitId) {
     die(
@@ -304,7 +319,7 @@ export function normalizeWuIds(wuArg: string | string[] | undefined): string[] {
  * @param {Array<object>} wuDocs - WU docs to validate
  * @param {string} targetInitId - Initiative being linked
  */
-export function validateNoConflictingLinks(wuDocs, targetInitId): void {
+export function validateNoConflictingLinks(wuDocs: WUDocLike[], targetInitId: string): void {
   for (const wuDoc of wuDocs) {
     checkConflictingLink(wuDoc, targetInitId);
   }
@@ -318,7 +333,12 @@ export function validateNoConflictingLinks(wuDocs, targetInitId): void {
  * @param {string} initId - Initiative ID
  * @returns {boolean} True if link already exists
  */
-function isAlreadyLinked(wuDoc, initDoc, wuId, initId) {
+function isAlreadyLinked(
+  wuDoc: WUDocLike,
+  initDoc: InitiativeDocLike,
+  wuId: string,
+  initId: string,
+): boolean {
   const wuHasInit = wuDoc.initiative === initId;
   const initHasWu = Array.isArray(initDoc.wus) && initDoc.wus.includes(wuId);
   return wuHasInit && initHasWu;
@@ -331,7 +351,7 @@ function isAlreadyLinked(wuDoc, initDoc, wuId, initId) {
  * @param {string} initId - Initiative ID
  * @returns {boolean} True if changes were made
  */
-function updateWUInWorktree(worktreePath, wuId, initId) {
+function updateWUInWorktree(worktreePath: string, wuId: string, initId: string): boolean {
   const wuRelPath = WU_PATHS.WU(wuId);
   const wuAbsPath = join(worktreePath, wuRelPath);
 
@@ -357,7 +377,7 @@ function updateWUInWorktree(worktreePath, wuId, initId) {
  * @param {string} wuId - WU ID to add
  * @returns {boolean} True if changes were made
  */
-function updateInitiativeInWorktree(worktreePath, initId, wuIds) {
+function updateInitiativeInWorktree(worktreePath: string, initId: string, wuIds: string[]): string[] {
   const initRelPath = INIT_PATHS.INITIATIVE(initId);
   const initAbsPath = join(worktreePath, initRelPath);
 
@@ -401,7 +421,10 @@ function updateInitiativeInWorktree(worktreePath, initId, wuIds) {
  * @param {string} initId - Initiative ID
  * @returns {object} withMicroWorktree options
  */
-export function buildAddWuMicroWorktreeOptions(wuArg, initId) {
+export function buildAddWuMicroWorktreeOptions(
+  wuArg: string | string[] | undefined,
+  initId: string,
+) {
   const wuIds = normalizeWuIds(wuArg);
   if (wuIds.length === 0) {
     die(
@@ -417,7 +440,7 @@ export function buildAddWuMicroWorktreeOptions(wuArg, initId) {
     logPrefix: LOG_PREFIX,
     pushOnly: true,
     pushRetryOverride: INITIATIVE_ADD_WU_PUSH_RETRY_OVERRIDE,
-    execute: async ({ worktreePath }) => {
+    execute: async ({ worktreePath }: { worktreePath: string }) => {
       const files = [];
 
       // Update WU YAML
@@ -465,7 +488,7 @@ async function main() {
     options: [WU_OPTIONS.initiative, REPEATABLE_WU_OPTION],
     required: ['initiative'],
     allowPositionalId: false,
-  });
+  }) as InitiativeAddWuArgs;
 
   // Normalize args
   const wuIds = normalizeWuIds(args.wu);
