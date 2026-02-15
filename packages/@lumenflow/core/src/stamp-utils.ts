@@ -70,7 +70,19 @@ const isValidDate = isValidDateString;
  * Stamp file body template (eliminates magic string)
  * Single source of truth for stamp format
  */
-const STAMP_TEMPLATE = (id, title, timestamp) => `WU ${id} — ${title}\nCompleted: ${timestamp}\n`;
+const STAMP_TEMPLATE = (id: string, title: string, timestamp: string): string =>
+  `WU ${id} — ${title}\nCompleted: ${timestamp}\n`;
+
+interface CreateStampParams {
+  id: string;
+  title: string;
+}
+
+interface CreateStampResult {
+  created: boolean;
+  path: string;
+  reason?: 'already_exists';
+}
 
 /**
  * Create stamp file (idempotent - safe to call multiple times)
@@ -80,7 +92,7 @@ const STAMP_TEMPLATE = (id, title, timestamp) => `WU ${id} — ${title}\nComplet
  * @param {string} params.title - WU title
  * @returns {object} Result { created: boolean, path: string, reason?: string }
  */
-export function createStamp({ id, title }) {
+export function createStamp({ id, title }: CreateStampParams): CreateStampResult {
   const stampsDir = WU_PATHS.STAMPS_DIR();
   const stampPath = WU_PATHS.STAMP(id);
 
@@ -107,7 +119,7 @@ export function createStamp({ id, title }) {
  * @param {string} stampPath - Path to stamp file
  * @returns {boolean} True if stamp exists
  */
-export function validateStamp(stampPath) {
+export function validateStamp(stampPath: string): boolean {
   return existsSync(stampPath);
 }
 
@@ -117,7 +129,7 @@ export function validateStamp(stampPath) {
  * @param {string} id - WU ID
  * @returns {string} Absolute path to stamp file
  */
-export function getStampPath(id) {
+export function getStampPath(id: string): string {
   return WU_PATHS.STAMP(id);
 }
 
@@ -128,8 +140,8 @@ export function getStampPath(id) {
  * @param {string} expectedWuId - Expected WU ID
  * @returns {string|null} Error type or null if valid
  */
-function validateWuLine(lines, expectedWuId) {
-  const wuLine = lines.find((line) => line.startsWith('WU '));
+function validateWuLine(lines: string[], expectedWuId: string): string | null {
+  const wuLine = lines.find((line: string) => line.startsWith('WU '));
   if (!wuLine) {
     return STAMP_FORMAT_ERRORS.MISSING_WU_LINE;
   }
@@ -138,8 +150,12 @@ function validateWuLine(lines, expectedWuId) {
   if (!wuIdMatch) {
     return STAMP_FORMAT_ERRORS.MISSING_WU_LINE;
   }
+  const wuId = wuIdMatch[1];
+  if (!wuId) {
+    return STAMP_FORMAT_ERRORS.MISSING_WU_LINE;
+  }
 
-  if (wuIdMatch[1] !== expectedWuId) {
+  if (wuId !== expectedWuId) {
     return STAMP_FORMAT_ERRORS.WU_ID_MISMATCH;
   }
 
@@ -151,8 +167,8 @@ function validateWuLine(lines, expectedWuId) {
  * @param {string[]} lines - Stamp file lines
  * @returns {string|null} Error type or null if valid
  */
-function validateCompletedLine(lines) {
-  const completedLine = lines.find((line) => line.startsWith('Completed:'));
+function validateCompletedLine(lines: string[]): string | null {
+  const completedLine = lines.find((line: string) => line.startsWith('Completed:'));
   if (!completedLine) {
     return STAMP_FORMAT_ERRORS.MISSING_COMPLETED_LINE;
   }
@@ -162,7 +178,10 @@ function validateCompletedLine(lines) {
     return STAMP_FORMAT_ERRORS.MISSING_COMPLETED_LINE;
   }
 
-  const dateStr = dateMatch[1].trim();
+  const dateStr = dateMatch[1]?.trim();
+  if (!dateStr) {
+    return STAMP_FORMAT_ERRORS.MISSING_COMPLETED_LINE;
+  }
   if (!isValidDate(dateStr)) {
     return STAMP_FORMAT_ERRORS.INVALID_DATE_FORMAT;
   }
@@ -183,7 +202,10 @@ function validateCompletedLine(lines) {
  * @param {string} [projectRoot=process.cwd()] - Project root directory
  * @returns {Promise<{valid: boolean, errors: string[], missing?: boolean}>}
  */
-export async function validateStampFormat(wuId, projectRoot = process.cwd()) {
+export async function validateStampFormat(
+  wuId: string,
+  projectRoot = process.cwd(),
+): Promise<{ valid: boolean; errors: string[]; missing?: boolean }> {
   const stampPath = path.join(projectRoot, WU_PATHS.STAMP(wuId));
 
   // Check if stamp file exists
@@ -194,7 +216,7 @@ export async function validateStampFormat(wuId, projectRoot = process.cwd()) {
   }
 
   // Read stamp content
-  let content;
+  let content: string;
   try {
     content = await readFile(stampPath, { encoding: 'utf-8' });
   } catch (err) {
@@ -208,7 +230,7 @@ export async function validateStampFormat(wuId, projectRoot = process.cwd()) {
   }
 
   const lines = content.split('\n');
-  const errors = [];
+  const errors: string[] = [];
 
   // Validate WU line
   const wuLineError = validateWuLine(lines, wuId);
@@ -249,8 +271,14 @@ export function parseStampContent(content: string): StampMetadata {
   if (wuLine) {
     const match = wuLine.match(/^WU (WU-\d+)\s*[—-]\s*(.+)/);
     if (match) {
-      result.wuId = match[1];
-      result.title = match[2].trim();
+      const wuId = match[1];
+      const title = match[2];
+      if (wuId) {
+        result.wuId = wuId;
+      }
+      if (title) {
+        result.title = title.trim();
+      }
     }
   }
 
@@ -259,7 +287,10 @@ export function parseStampContent(content: string): StampMetadata {
   if (completedLine) {
     const match = completedLine.match(/^Completed:\s*(.+)/);
     if (match) {
-      result.completedDate = match[1].trim();
+      const completedDate = match[1];
+      if (completedDate) {
+        result.completedDate = completedDate.trim();
+      }
     }
   }
 
