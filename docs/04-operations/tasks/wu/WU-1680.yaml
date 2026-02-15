@@ -2,7 +2,7 @@ id: WU-1680
 title: 'Validator Layer V2: unify phase-aware rules and adapters'
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -57,3 +57,11 @@ acceptance:
     automated test path classification and existence.
   - Adapters preserve existing command interfaces and test contracts while removing contradictory
     duplicated logic.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1680
+claimed_at: 2026-02-15T09:45:06.046Z
+baseline_main_sha: 1a1ab5f1bdd4fc1e39c5053f25e359adfa0ea356
+session_id: 5fa86655-0561-4e7d-8628-dace82f7fa35
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T09:45:06.052Z
