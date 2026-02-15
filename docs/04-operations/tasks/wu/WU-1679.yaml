@@ -22,10 +22,7 @@ code_paths:
   - README.md
   - apps/docs/src/content/docs/
   - docs/
-  - tools/generate-cli-docs.ts
-  - packages/@lumenflow/cli/src/sync-templates.ts
   - packages/@lumenflow/cli/templates/
-  - packages/linters/
 tests:
   manual:
     - grep -r hellmai/os confirms no remaining references in source files
