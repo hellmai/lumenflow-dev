@@ -1339,4 +1339,5 @@
 {"type":"complete","wuId":"WU-1585","timestamp":"2026-02-15T18:55:50.272Z"}
 {"type":"claim","wuId":"WU-1586","timestamp":"2026-02-15T18:56:26.721Z","lane":"Framework: Core Lifecycle","title":"Core strict wave 2C: backlog and compliance strict fixes"}
 {"type":"complete","wuId":"WU-1586","timestamp":"2026-02-15T19:01:10.195Z"}
-{"type":"claim","wuId":"WU-1587","lane":"Framework: Core State Recovery","title":"Core strict wave 2D: infrastructure strict fixes","timestamp":"2026-02-15T19:01:35.102Z"}
+{"type":"claim","wuId":"WU-1587","timestamp":"2026-02-15T19:01:35.102Z","lane":"Framework: Core State Recovery","title":"Core strict wave 2D: infrastructure strict fixes"}
+{"type":"complete","wuId":"WU-1587","timestamp":"2026-02-15T19:07:06.525Z"}
