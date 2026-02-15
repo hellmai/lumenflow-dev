@@ -2,7 +2,7 @@ id: WU-1689
 title: Fix missing shebangs in CLI dist bin scripts
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -27,8 +27,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Several bin entry scripts in @lumenflow/cli are missing the shebang line (init.js, doctor.js, commands.js, docs-sync.js, sync-templates.js). This causes npx execution to fail because the OS tries to interpret JavaScript as bash. The Medium launch article tells users to run npx lumenflow init which hits this bug.
+description: Several bin entry scripts in @lumenflow/cli are missing the shebang line (init.js,
+  doctor.js, commands.js, docs-sync.js, sync-templates.js). This causes npx execution to fail
+  because the OS tries to interpret JavaScript as bash. The Medium launch article tells users to run
+  npx lumenflow init which hits this bug.
 acceptance:
   - All bin entry scripts in package.json have shebang in dist output
   - npx -p @lumenflow/cli lumenflow init works in a fresh directory
   - Build pipeline ensures shebangs are added to all bin scripts going forward
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1689
+claimed_at: 2026-02-15T15:16:23.058Z
+baseline_main_sha: 37eafd62bf5fa0d1c62c9a1b7687d2ed4aa2c019
+session_id: fbfcfaca-eac1-4615-91ae-b249623b310c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T15:16:23.065Z

@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1689 — Fix missing shebangs in CLI dist bin scripts](wu/WU-1689.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1581 — CLI strict wave 1A: high-impact WU command hotspots](wu/WU-1581.yaml) — Framework: CLI WU Commands
@@ -36,6 +35,7 @@ sections:
 
 - [WU-1687 — Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine](wu/WU-1687.yaml) — Framework: CLI Enforcement
 - [WU-1688 — Fix sandbox backend invocation correctness: ro-bind, Seatbelt policy, Windows honesty](wu/WU-1688.yaml) — Framework: Core Validation
+- [WU-1689 — Fix missing shebangs in CLI dist bin scripts](wu/WU-1689.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
