@@ -23,6 +23,7 @@ import path from 'node:path';
 import { readWURaw } from './wu-yaml.js';
 import { WU_STATUS, WU_STATUS_GROUPS } from './wu-constants.js';
 import { createWuPaths, resolveFromProjectRoot } from './wu-paths.js';
+import type { WUStateEntry } from './wu-state-store.js';
 
 const WU_FILENAME_PATTERN = /^WU-\d+\.yaml$/;
 
@@ -31,19 +32,61 @@ interface BacklogYamlOptions {
   projectRoot?: string;
 }
 
-function normalizeYamlScalar(value) {
+interface BacklogEntry {
+  title: string;
+  lane: string;
+}
+
+interface YamlBacklogEntry extends BacklogEntry {
+  status: string;
+}
+
+interface BacklogStore {
+  getByStatus(status: string): Set<string>;
+  getWUState(wuId: string): WUStateEntry | undefined;
+}
+
+interface BacklogValidationResult {
+  valid: boolean;
+  errors: string[];
+}
+
+const STORE_STATUS_CANDIDATES: readonly string[] = Object.values(WU_STATUS);
+
+function collectStoreEntries(store: BacklogStore): Array<[string, WUStateEntry]> {
+  const seenIds = new Set<string>();
+  const entries: Array<[string, WUStateEntry]> = [];
+
+  for (const status of STORE_STATUS_CANDIDATES) {
+    for (const wuId of store.getByStatus(status)) {
+      if (seenIds.has(wuId)) {
+        continue;
+      }
+
+      seenIds.add(wuId);
+      const state = store.getWUState(wuId);
+      if (state) {
+        entries.push([wuId, state]);
+      }
+    }
+  }
+
+  return entries;
+}
+
+function normalizeYamlScalar(value: unknown): string {
   if (value === undefined || value === null) {
     return '';
   }
   return typeof value === 'string' ? value : String(value);
 }
 
-function normalizeYamlStatus(value) {
+function normalizeYamlStatus(value: unknown): string {
   const normalized = normalizeYamlScalar(value).trim().toLowerCase();
   return normalized === '' ? WU_STATUS.READY : normalized;
 }
 
-function mapYamlStatusToSection(status) {
+function mapYamlStatusToSection(status: string): string {
   if (WU_STATUS_GROUPS.UNCLAIMED.includes(status)) {
     return WU_STATUS.READY;
   }
@@ -59,7 +102,7 @@ function mapYamlStatusToSection(status) {
   return WU_STATUS.READY;
 }
 
-function compareWuIds(a, b) {
+function compareWuIds(a: string, b: string): number {
   const numA = Number.parseInt(a.replace(/^WU-/, ''), 10);
   const numB = Number.parseInt(b.replace(/^WU-/, ''), 10);
   if (!Number.isNaN(numA) && !Number.isNaN(numB) && numA !== numB) {
@@ -72,12 +115,12 @@ function isAsciiAlphaNumeric(char: string) {
   return /[A-Za-z0-9]/.test(char);
 }
 
-function escapeMarkdownText(value) {
+function escapeMarkdownText(value: unknown): string {
   const normalized = normalizeYamlScalar(value);
   let escaped = '';
 
   for (let index = 0; index < normalized.length; index += 1) {
-    const char = normalized[index];
+    const char = normalized[index] ?? '';
 
     if (char === '\\') {
       escaped += '\\\\';
@@ -85,8 +128,8 @@ function escapeMarkdownText(value) {
     }
 
     if (char === '_') {
-      const previous = index > 0 ? normalized[index - 1] : '';
-      const next = index < normalized.length - 1 ? normalized[index + 1] : '';
+      const previous = index > 0 ? (normalized[index - 1] ?? '') : '';
+      const next = index < normalized.length - 1 ? (normalized[index + 1] ?? '') : '';
       const isIdentifierUnderscore = isAsciiAlphaNumeric(previous) && isAsciiAlphaNumeric(next);
       escaped += isIdentifierUnderscore ? '_' : '\\_';
       continue;
@@ -103,43 +146,48 @@ function escapeMarkdownText(value) {
   return escaped;
 }
 
-function resolveWuDir(options: BacklogYamlOptions = {}) {
+function resolveWuDir(options: BacklogYamlOptions = {}): string {
   const paths = createWuPaths({ projectRoot: options.projectRoot });
   const configured = options.wuDir || paths.WU_DIR();
   return path.isAbsolute(configured) ? configured : resolveFromProjectRoot(configured);
 }
 
-function loadYamlWuEntries(wuDir) {
+function loadYamlWuEntries(wuDir: string): Map<string, YamlBacklogEntry> {
   if (!existsSync(wuDir)) {
-    return new Map();
+    return new Map<string, YamlBacklogEntry>();
   }
 
   const files = readdirSync(wuDir).filter((file) => WU_FILENAME_PATTERN.test(file));
   files.sort((a, b) => compareWuIds(a.replace(/\.yaml$/, ''), b.replace(/\.yaml$/, '')));
 
-  const entries = new Map();
+  const entries = new Map<string, YamlBacklogEntry>();
 
   for (const file of files) {
     const wuId = file.replace(/\.yaml$/, '');
-    const doc = readWURaw(path.join(wuDir, file));
+    const doc = readWURaw(path.join(wuDir, file)) as unknown;
 
     if (!doc || typeof doc !== 'object') {
       continue;
     }
 
+    const parsedDoc = doc as Record<string, unknown>;
+
     entries.set(wuId, {
-      status: normalizeYamlStatus(doc.status),
-      title: normalizeYamlScalar(doc.title),
-      lane: normalizeYamlScalar(doc.lane),
+      status: normalizeYamlStatus(parsedDoc.status),
+      title: normalizeYamlScalar(parsedDoc.title),
+      lane: normalizeYamlScalar(parsedDoc.lane),
     });
   }
 
   return entries;
 }
 
-function getMergedBacklogEntry(store, yamlEntries, wuId) {
-  const state =
-    typeof store.getWUState === 'function' ? store.getWUState(wuId) : store.wuState.get(wuId);
+function getMergedBacklogEntry(
+  store: BacklogStore,
+  yamlEntries: Map<string, YamlBacklogEntry>,
+  wuId: string,
+): BacklogEntry | null {
+  const state = store.getWUState(wuId);
   if (state) {
     return { title: state.title, lane: state.lane };
   }
@@ -174,7 +222,7 @@ function getMergedBacklogEntry(store, yamlEntries, wuId) {
  * await fs.writeFile('backlog.md', markdown, 'utf-8');
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
-export async function generateBacklog(store, options: BacklogYamlOptions = {}) {
+export async function generateBacklog(store: BacklogStore, options: BacklogYamlOptions = {}) {
   // Start with frontmatter
   const frontmatter = `---
 sections:
@@ -207,10 +255,10 @@ sections:
 
   const storeIds = new Set([...storeReady, ...storeInProgress, ...storeBlocked, ...storeDone]);
 
-  const yamlReady = [];
-  const yamlInProgress = [];
-  const yamlBlocked = [];
-  const yamlDone = [];
+  const yamlReady: string[] = [];
+  const yamlInProgress: string[] = [];
+  const yamlBlocked: string[] = [];
+  const yamlDone: string[] = [];
 
   for (const [wuId, entry] of yamlEntries.entries()) {
     if (storeIds.has(wuId)) {
@@ -241,7 +289,7 @@ sections:
   const done = [...storeDone, ...yamlDone];
 
   // Generate sections
-  const sections = [];
+  const sections: string[] = [];
 
   // Ready section (WUs with status: ready)
   sections.push('## 🚀 Ready (pull from here)');
@@ -310,7 +358,7 @@ sections:
 
   return `${frontmatter}${sections.join('\n')}\n`;
 }
-export async function generateStatus(store) {
+export async function generateStatus(store: BacklogStore): Promise<string> {
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
   // Header
@@ -319,7 +367,7 @@ export async function generateStatus(store) {
 _Last updated: ${today}_
 `;
 
-  const sections = [];
+  const sections: string[] = [];
 
   // In Progress section
   sections.push('');
@@ -330,7 +378,7 @@ _Last updated: ${today}_
     sections.push('(No items currently in progress)');
   } else {
     for (const wuId of inProgress) {
-      const state = store.wuState.get(wuId);
+      const state = store.getWUState(wuId);
       if (state) {
         sections.push(`- [${wuId} — ${escapeMarkdownText(state.title)}](wu/${wuId}.yaml)`);
       }
@@ -344,7 +392,7 @@ _Last updated: ${today}_
     sections.push('## Blocked');
     sections.push('');
     for (const wuId of blocked) {
-      const state = store.wuState.get(wuId);
+      const state = store.getWUState(wuId);
       if (state) {
         sections.push(`- [${wuId} — ${escapeMarkdownText(state.title)}](wu/${wuId}.yaml)`);
       }
@@ -360,7 +408,7 @@ _Last updated: ${today}_
     sections.push('(No completed items)');
   } else {
     for (const wuId of done) {
-      const state = store.wuState.get(wuId);
+      const state = store.getWUState(wuId);
       if (state) {
         // WU-2244: Use completedAt from event, fall back to today if not available
         const completionDate = getCompletionDate(store, wuId);
@@ -388,14 +436,18 @@ _Last updated: ${today}_
  * const date = getCompletionDate(store, 'WU-100');
  * // Returns '2025-01-15' if completedAt is set, or today's date otherwise
  */
-export function getCompletionDate(store, wuId) {
-  const state = store.wuState.get(wuId);
-  if (state && state.completedAt) {
+export function getCompletionDate(store: BacklogStore, wuId: string): string {
+  const state = store.getWUState(wuId);
+  if (state?.completedAt) {
     // Extract date portion from ISO timestamp
-    return state.completedAt.split('T')[0];
+    const [completedDate] = state.completedAt.split('T');
+    if (completedDate) {
+      return completedDate;
+    }
   }
   // Fallback to current date for legacy data
-  return new Date().toISOString().split('T')[0];
+  const [today] = new Date().toISOString().split('T');
+  return today ?? '';
 }
 
 /**
@@ -417,11 +469,11 @@ export function getCompletionDate(store, wuId) {
  * const checksum = computeStoreChecksum(store);
  * // Returns '3f4d5a6b...' (64 char hex string)
  */
-export function computeStoreChecksum(store) {
+export function computeStoreChecksum(store: BacklogStore): string {
   // Build deterministic state representation
-  const stateEntries = [];
+  const stateEntries: Array<{ wuId: string; status: string; title: string; lane: string }> = [];
 
-  for (const [wuId, state] of store.wuState.entries()) {
+  for (const [wuId, state] of collectStoreEntries(store)) {
     stateEntries.push({
       wuId,
       status: state.status,
@@ -440,7 +492,7 @@ export function computeStoreChecksum(store) {
 }
 
 /** @type {Record<string, string>} Section heading to status mapping */
-const SECTION_STATUS_MAP = {
+const SECTION_STATUS_MAP: Record<string, string> = {
   '## 🚀 Ready (pull from here)': WU_STATUS.READY,
   '## 🔧 In progress': WU_STATUS.IN_PROGRESS,
   '## ⛔ Blocked': WU_STATUS.BLOCKED,
@@ -452,7 +504,7 @@ const SECTION_STATUS_MAP = {
  * @param {string} markdown - Markdown with potential frontmatter
  * @returns {string} Content without frontmatter
  */
-function stripFrontmatter(markdown) {
+function stripFrontmatter(markdown: string): string {
   if (!markdown.startsWith('---')) {
     return markdown;
   }
@@ -465,12 +517,15 @@ function stripFrontmatter(markdown) {
  * @param {string} content - Markdown content
  * @returns {Map<string, number>} WU ID to count mapping
  */
-function countWUReferences(content) {
-  const foundWUs = new Map();
+function countWUReferences(content: string): Map<string, number> {
+  const foundWUs = new Map<string, number>();
   const matches = content.matchAll(/WU-\d+/g);
   for (const match of matches) {
     const wuId = match[0];
-    foundWUs.set(wuId, (foundWUs.get(wuId) || 0) + 1);
+    if (!wuId) {
+      continue;
+    }
+    foundWUs.set(wuId, (foundWUs.get(wuId) ?? 0) + 1);
   }
   return foundWUs;
 }
@@ -480,9 +535,9 @@ function countWUReferences(content) {
  * @param {string} content - Markdown content
  * @returns {Map<string, string[]>} Status to WU IDs mapping
  */
-function parseMarkdownSections(content) {
-  const sections = new Map();
-  let currentSection = null;
+function parseMarkdownSections(content: string): Map<string, string[]> {
+  const sections = new Map<string, string[]>();
+  let currentSection: string | null = null;
 
   for (const line of content.split('\n')) {
     // Check for section headings
@@ -497,8 +552,14 @@ function parseMarkdownSections(content) {
     // Extract WU IDs from lines in current section
     if (currentSection && line.includes('[WU-')) {
       const wuMatch = line.match(/WU-\d+/);
-      if (wuMatch) {
-        sections.get(currentSection).push(wuMatch[0]);
+      const wuId = wuMatch?.[0];
+      if (wuId) {
+        const existing = sections.get(currentSection);
+        if (existing) {
+          existing.push(wuId);
+        } else {
+          sections.set(currentSection, [wuId]);
+        }
       }
     }
   }
@@ -512,7 +573,7 @@ function parseMarkdownSections(content) {
  * @param {string} wuId - WU ID to find
  * @returns {string|null} Section status or null if not found
  */
-function findWUSection(sections, wuId) {
+function findWUSection(sections: Map<string, string[]>, wuId: string): string | null {
   for (const [section, wus] of sections.entries()) {
     if (wus.includes(wuId)) {
       return section;
@@ -537,8 +598,11 @@ function findWUSection(sections, wuId) {
  *   console.error('Backlog inconsistencies:', result.errors);
  * }
  */
-export async function validateBacklogConsistency(store, markdown) {
-  const errors = [];
+export async function validateBacklogConsistency(
+  store: BacklogStore,
+  markdown: string,
+): Promise<BacklogValidationResult> {
+  const errors: string[] = [];
   const content = stripFrontmatter(markdown);
   const foundWUs = countWUReferences(content);
 
@@ -552,9 +616,9 @@ export async function validateBacklogConsistency(store, markdown) {
   const sections = parseMarkdownSections(content);
 
   // Check each WU in store is in correct section
-  for (const [wuId, state] of store.wuState.entries()) {
+  for (const [wuId, state] of collectStoreEntries(store)) {
     const expectedSection = state.status;
-    const sectionWUs = sections.get(expectedSection) || [];
+    const sectionWUs = sections.get(expectedSection) ?? [];
 
     if (!sectionWUs.includes(wuId)) {
       const foundInSection = findWUSection(sections, wuId);
