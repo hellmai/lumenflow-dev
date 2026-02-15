@@ -45,6 +45,22 @@ describe('sandbox-profile', () => {
     expect(resolveSandboxBackendForPlatform('freebsd').id).toBe(SANDBOX_BACKEND_IDS.UNSUPPORTED);
   });
 
+  it('adds extra writable roots to the sandbox allowlist', () => {
+    const repoRoot = '/repo/root';
+    const relativeExtraRoot = 'scratch/agent-cache';
+    const absoluteExtraRoot = '/var/tmp/lumenflow-cache';
+    const profile = buildSandboxProfile({
+      projectRoot: repoRoot,
+      worktreePath: 'worktrees/framework-core-validation-wu-1684',
+      wuId: 'WU-1684',
+      extraWritableRoots: [relativeExtraRoot, absoluteExtraRoot],
+    });
+
+    const writableRoots = profile.allowlist.writableRoots.map((entry) => entry.normalizedPath);
+    expect(writableRoots).toContain(path.resolve(repoRoot, relativeExtraRoot));
+    expect(writableRoots).toContain(path.resolve(absoluteExtraRoot));
+  });
+
   it('exports sandbox profile contract from core barrel', () => {
     expect(buildSandboxProfileFromCore).toBeTypeOf('function');
     expect(resolveSandboxBackendFromCore('darwin').id).toBe(SANDBOX_BACKEND_IDS.MACOS);

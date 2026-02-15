@@ -31,6 +31,10 @@ function buildPolicy(profile: SandboxExecutionRequest['profile']): string {
     '(deny default)',
     '(allow process*)',
     '(allow file-read*)',
+    '(allow sysctl-read)',
+    '(allow mach-lookup)',
+    '(allow network*)',
+    '(allow signal)',
     ...writableRules,
   ].join(' ');
 }

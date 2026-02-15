@@ -48,6 +48,9 @@ function buildInvocation(request: SandboxExecutionRequest) {
     args: [
       '--die-with-parent',
       '--new-session',
+      '--ro-bind',
+      '/',
+      '/',
       ...writableBinds,
       '--proc',
       '/proc',

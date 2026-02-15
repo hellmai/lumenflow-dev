@@ -24,6 +24,13 @@ describe('sandbox-backend-linux', () => {
     expect(plan.enforced).toBe(true);
     expect(plan.failClosed).toBe(false);
     expect(plan.invocation?.command).toBe('bwrap');
+    const args = plan.invocation?.args || [];
+    const roBindIndex = args.indexOf('--ro-bind');
+    const firstWritableBindIndex = args.indexOf('--bind');
+
+    expect(roBindIndex).toBeGreaterThanOrEqual(0);
+    expect(args.slice(roBindIndex, roBindIndex + 3)).toEqual(['--ro-bind', '/', '/']);
+    expect(firstWritableBindIndex).toBeGreaterThan(roBindIndex);
     expect(plan.invocation?.args).toContain('--');
   });
 

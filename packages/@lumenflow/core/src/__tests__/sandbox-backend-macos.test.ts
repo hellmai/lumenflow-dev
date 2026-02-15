@@ -25,6 +25,13 @@ describe('sandbox-backend-macos', () => {
     expect(plan.failClosed).toBe(false);
     expect(plan.invocation?.command).toBe('sandbox-exec');
     expect(plan.invocation?.args).toContain('-p');
+    const policyFlagIndex = plan.invocation?.args.indexOf('-p') ?? -1;
+    const policy = policyFlagIndex >= 0 ? plan.invocation?.args[policyFlagIndex + 1] || '' : '';
+
+    expect(policy).toContain('(allow sysctl-read)');
+    expect(policy).toContain('(allow mach-lookup)');
+    expect(policy).toContain('(allow network*)');
+    expect(policy).toContain('(allow signal)');
   });
 
   it('fails closed when sandbox-exec is unavailable and override is disabled', () => {

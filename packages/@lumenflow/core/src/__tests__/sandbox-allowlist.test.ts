@@ -19,6 +19,20 @@ afterEach(() => {
 });
 
 describe('sandbox-allowlist', () => {
+  it('resolves canonical writable roots for existing paths', () => {
+    const repoRoot = makeTempDir('lumenflow-sandbox-canonical-');
+    const worktree = path.join(repoRoot, 'worktrees/framework-core-validation-wu-1684');
+    fs.mkdirSync(worktree, { recursive: true });
+
+    const allowlist = buildSandboxAllowlist({
+      projectRoot: repoRoot,
+      writableRoots: [worktree],
+    });
+
+    expect(allowlist.writableRoots).toHaveLength(1);
+    expect(allowlist.writableRoots[0].canonicalPath).toBe(worktree);
+  });
+
   it('allows writes inside normalized writable roots', () => {
     const repoRoot = makeTempDir('lumenflow-sandbox-allowlist-');
     const worktree = path.join(repoRoot, 'worktrees/framework-core-validation-wu-1684');

@@ -9,7 +9,7 @@ const profile = buildSandboxProfile({
 });
 
 describe('sandbox-backend-windows', () => {
-  it('builds enforced invocation when powershell is available', () => {
+  it('fails closed until Windows write enforcement is implemented', () => {
     const backend = createWindowsSandboxBackend({
       commandExists: (binary) => binary.toLowerCase() === 'powershell.exe',
     });
@@ -21,13 +21,13 @@ describe('sandbox-backend-windows', () => {
     });
 
     expect(plan.backendId).toBe('windows');
-    expect(plan.enforced).toBe(true);
-    expect(plan.failClosed).toBe(false);
-    expect(plan.invocation?.command).toBe('powershell.exe');
-    expect(plan.invocation?.args).toContain('-NoProfile');
+    expect(plan.enforced).toBe(false);
+    expect(plan.failClosed).toBe(true);
+    expect(plan.reason).toContain('write enforcement is not yet available on Windows');
+    expect(plan.invocation).toBeUndefined();
   });
 
-  it('fails closed when powershell is unavailable and override is disabled', () => {
+  it('fails closed when fallback is disabled', () => {
     const backend = createWindowsSandboxBackend({
       commandExists: () => false,
     });
@@ -40,7 +40,7 @@ describe('sandbox-backend-windows', () => {
 
     expect(plan.enforced).toBe(false);
     expect(plan.failClosed).toBe(true);
-    expect(plan.reason).toContain('powershell');
+    expect(plan.reason).toContain('write enforcement is not yet available on Windows');
   });
 
   it('allows explicit unsandboxed fallback when override is enabled', () => {
@@ -56,6 +56,6 @@ describe('sandbox-backend-windows', () => {
 
     expect(plan.enforced).toBe(false);
     expect(plan.failClosed).toBe(false);
-    expect(plan.warning).toContain('unsandboxed');
+    expect(plan.warning).toContain('write enforcement is not yet available on Windows');
   });
 });

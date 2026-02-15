@@ -107,6 +107,9 @@ export function isWritePathAllowed(allowlist: SandboxAllowlist, targetPath: stri
     const normalizedMatch = isWithinRoot(normalizedTargetPath, entry.normalizedPath);
     const canonicalMatch = isWithinRoot(canonicalTargetPath, entry.canonicalPath);
 
+    // Require both checks:
+    // - normalized path guards lexical traversal tricks (../)
+    // - canonical path guards symlink escapes to outside the allowed root
     return normalizedMatch && canonicalMatch;
   });
 }
