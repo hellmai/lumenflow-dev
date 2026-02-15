@@ -2,7 +2,7 @@ id: WU-1680
 title: 'Validator Layer V2: unify phase-aware rules and adapters'
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -85,3 +85,6 @@ acceptance:
     automated test path classification and existence.
   - Adapters preserve existing command interfaces and test contracts while removing contradictory
     duplicated logic.
+locked: true
+completed_at: 2026-02-15T11:45:11.937Z
+completed: 2026-02-15

@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-- [WU-1680 — Validator Layer V2: unify phase-aware rules and adapters](wu/WU-1680.yaml)
+- [WU-1683 — Add first-class plan field to WU schema for plan-to-WU linking](wu/WU-1683.yaml)
 
 ## Completed
 
@@ -623,3 +623,4 @@ _Last updated: 2026-02-15_
 - [WU-1682 — Update Medium article for LumenFlow open-source launch](wu/WU-1682.yaml) — 2026-02-15
 - [WU-1679 — Update repo references from hellmai/os to hellmai/lumenflow](wu/WU-1679.yaml) — 2026-02-15
 - [WU-1681 — Fix wu:brief client flag UX to avoid Claude-biased defaults](wu/WU-1681.yaml) — 2026-02-15
+- [WU-1680 — Validator Layer V2: unify phase-aware rules and adapters](wu/WU-1680.yaml) — 2026-02-15
