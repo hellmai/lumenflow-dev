@@ -6,18 +6,32 @@ status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
+  - packages/@lumenflow/cli/__tests__/wu-create-validation-aggregate.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-create-required-fields.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-create-strict.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-validate.test.ts
+  - packages/@lumenflow/cli/src/wu-code-path-coverage.ts
+  - packages/@lumenflow/cli/src/wu-create-content.ts
+  - packages/@lumenflow/cli/src/wu-create-validation.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-edit-operations.ts
+  - packages/@lumenflow/cli/src/wu-edit.ts
+  - packages/@lumenflow/cli/src/wu-prep.ts
+  - packages/@lumenflow/cli/src/wu-validate.ts
+  - packages/@lumenflow/core/package.json
+  - packages/@lumenflow/core/src/__tests__/wu-lint-parity.test.ts
+  - packages/@lumenflow/core/src/__tests__/wu-preflight-validators-reality.test.ts
+  - packages/@lumenflow/core/src/__tests__/wu-rules-core.test.ts
+  - packages/@lumenflow/core/src/__tests__/wu-rules-engine.test.ts
+  - packages/@lumenflow/core/src/index.ts
+  - packages/@lumenflow/core/src/wu-done-preflight.ts
   - packages/@lumenflow/core/src/wu-lint.ts
   - packages/@lumenflow/core/src/wu-preflight-validators.ts
-  - packages/@lumenflow/core/src/wu-done-preflight.ts
   - packages/@lumenflow/core/src/wu-rules-core.ts
   - packages/@lumenflow/core/src/wu-rules-engine.ts
   - packages/@lumenflow/core/src/wu-rules-resolvers.ts
-  - packages/@lumenflow/core/src/index.ts
-  - packages/@lumenflow/core/package.json
-  - packages/@lumenflow/core/src/__tests__/wu-*.test.ts
-  - packages/@lumenflow/cli/src/wu-*.ts
-  - packages/@lumenflow/cli/src/__tests__/wu-*.test.ts
-  - packages/@lumenflow/cli/__tests__/wu-*.test.ts
 tests:
   manual:
     - Run wu:create/wu:edit/wu:validate/wu:prep/wu:done scenarios and confirm phase-specific
