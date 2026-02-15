@@ -2,7 +2,7 @@ id: WU-1712
 title: 'Strict debt slice: type wu-done-paths'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -31,5 +31,14 @@ requires_cto_approval: false
 requires_design_approval: false
 description: Eliminate strict typing errors in wu-done-paths path resolver helpers without behavior changes.
 acceptance:
-  - No strict errors remain in packages/@lumenflow/core/src/wu-done-paths.ts under --strictNullChecks --noImplicitAny
+  - No strict errors remain in packages/@lumenflow/core/src/wu-done-paths.ts under
+    --strictNullChecks --noImplicitAny
   - wu-done-paths tests pass
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-1712
+claimed_at: 2026-02-15T23:52:41.817Z
+baseline_main_sha: 53c6b83548da0a1720fa3971b4b3a30c142e8b56
+session_id: d7637a4d-8c07-4aab-adfc-f4de700d7b65
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T23:52:41.822Z
