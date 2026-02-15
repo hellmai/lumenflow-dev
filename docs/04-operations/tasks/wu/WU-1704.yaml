@@ -2,7 +2,7 @@ id: WU-1704
 title: 'Strict debt slice: eliminate TS7006 in core wu-preflight-validators'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -31,8 +31,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: strict probes show packages/@lumenflow/core/src/wu-preflight-validators.ts as a top remaining strict hotspot. Problem: implicit-any parameters and untyped accumulator objects introduce TS7006/TS7031/TS7053/TS2322 errors and reduce confidence in preflight diagnostics. Solution: add focused unit coverage for preflight result shaping and test-path suggestions, then annotate function signatures and result metadata types without behavior changes.'
+description: 'Context: strict probes show packages/@lumenflow/core/src/wu-preflight-validators.ts as
+  a top remaining strict hotspot. Problem: implicit-any parameters and untyped accumulator objects
+  introduce TS7006/TS7031/TS7053/TS2322 errors and reduce confidence in preflight diagnostics.
+  Solution: add focused unit coverage for preflight result shaping and test-path suggestions, then
+  annotate function signatures and result metadata types without behavior changes.'
 acceptance:
-  - Strict probe with strictNullChecks/noImplicitAny reports no TS7006/TS7031 diagnostics for packages/@lumenflow/core/src/wu-preflight-validators.ts
+  - Strict probe with strictNullChecks/noImplicitAny reports no TS7006/TS7031 diagnostics for
+    packages/@lumenflow/core/src/wu-preflight-validators.ts
   - packages/@lumenflow/core/src/__tests__/wu-preflight-validators.test.ts passes
   - pnpm --filter @lumenflow/core typecheck passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1704
+claimed_at: 2026-02-15T23:12:18.006Z
+baseline_main_sha: 46309f59796603facb03d76949a6be57cf6782dc
+session_id: f1251690-120b-45a6-b5ee-1d637afeffd7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T23:12:18.009Z

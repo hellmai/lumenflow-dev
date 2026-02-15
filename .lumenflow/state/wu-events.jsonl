@@ -1362,3 +1362,4 @@
 {"type":"claim","wuId":"WU-1702","timestamp":"2026-02-15T22:19:32.630Z","lane":"Framework: CLI Enforcement","title":"Emergency: remove healthcare/PHI code from CLI and MCP packages"}
 {"type":"complete","wuId":"WU-1703","timestamp":"2026-02-15T22:25:36.780Z"}
 {"type":"block","wuId":"WU-1702","reason":"Stale emergency WU; unblock wu:claim overlap scanner symlink-loop","timestamp":"2026-02-15T23:11:41.480Z"}
+{"type":"claim","wuId":"WU-1704","lane":"Framework: Core Validation","title":"Strict debt slice: eliminate TS7006 in core wu-preflight-validators","timestamp":"2026-02-15T23:12:18.027Z"}
