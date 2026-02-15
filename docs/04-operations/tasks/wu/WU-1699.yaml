@@ -2,7 +2,7 @@ id: WU-1699
 title: 'Strict debt slice: eliminate TS7006 in core backlog-editor'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
     packages/@lumenflow/core/src/backlog-editor.ts
   - Backlog editor unit tests pass for section detection and bullet move operations
   - pnpm --filter @lumenflow/core typecheck passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1699
+claimed_at: 2026-02-15T21:24:47.319Z
+baseline_main_sha: e856a5347c637fedd8faa7d8fc73bd6b28d3eb1c
+session_id: 27f26497-80b9-4947-b140-44ad6c5aa275
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T21:24:47.325Z
