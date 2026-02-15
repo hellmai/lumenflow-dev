@@ -153,7 +153,10 @@ export function generateCommitMessage(
  * @param {string} params.backlogPath - Path to backlog.md file
  * @throws {WUError} If any required file is missing
  */
-export function validateMetadataFilesExist({ statusPath, backlogPath }: ValidateMetadataFilesParams): void {
+export function validateMetadataFilesExist({
+  statusPath,
+  backlogPath,
+}: ValidateMetadataFilesParams): void {
   const missing: string[] = [];
 
   if (!existsSync(statusPath)) {
@@ -207,8 +210,7 @@ export async function updateMetadataFiles({
   doc.status = WU_STATUS.DONE;
   doc.locked = true;
   doc.completed_at = completedAt;
-  doc.completed =
-    normalizeToDateString(doc.completed ?? completedAt) ?? completedAt.slice(0, 10);
+  doc.completed = normalizeToDateString(doc.completed ?? completedAt) ?? completedAt.slice(0, 10);
   writeWU(wuPath, doc);
 
   // Update status.md (remove from In Progress, add to Completed)
