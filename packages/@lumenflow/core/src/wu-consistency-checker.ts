@@ -48,7 +48,7 @@ interface CheckWUConsistencyOptions {
  * @returns {Promise<object>} Consistency report with valid, errors, and stats
  */
 export async function checkWUConsistency(
-  id,
+  id: string,
   projectRoot = process.cwd(),
   options: CheckWUConsistencyOptions = {},
 ) {
@@ -263,7 +263,11 @@ export async function checkAllWUConsistency(projectRoot = process.cwd()) {
  * @param {string} [projectRoot=process.cwd()] - Project root directory
  * @returns {Promise<object>} Result with valid, orphans list, and reports
  */
-export async function checkLaneForOrphanDoneWU(lane, excludeId, projectRoot = process.cwd()) {
+export async function checkLaneForOrphanDoneWU(
+  lane: string,
+  excludeId: string,
+  projectRoot = process.cwd(),
+) {
   const paths = createWuPaths({ projectRoot });
   const wuDir = path.join(projectRoot, paths.WU_DIR());
   const trackedStampIds = await listTrackedWUStampIds({
@@ -608,6 +612,9 @@ async function repairGitOnlyError(
 ): Promise<RepairResult> {
   switch (error.type) {
     case CONSISTENCY_TYPES.ORPHAN_WORKTREE_DONE:
+      if (!error.lane) {
+        return { skipped: true, reason: 'Missing lane metadata for orphan worktree cleanup' };
+      }
       return await removeOrphanWorktree(error.wuId, error.lane, projectRoot);
 
     default:
@@ -932,13 +939,14 @@ async function removeWUFromSectionInWorktree(
 
   // Find section boundaries
   for (let i = 0; i < lines.length; i++) {
-    const normalizedLine = lines[i].toLowerCase().trim();
+    const currentLine = lines[i] ?? '';
+    const normalizedLine = currentLine.toLowerCase().trim();
     if (normalizedLine === normalizedHeading || normalizedLine.startsWith(normalizedHeading)) {
       inTargetSection = true;
       sectionStartIdx = i;
       continue;
     }
-    if (inTargetSection && lines[i].trim().startsWith('## ')) {
+    if (inTargetSection && currentLine.trim().startsWith('## ')) {
       nextSectionIdx = i;
       break;
     }
@@ -952,11 +960,12 @@ async function removeWUFromSectionInWorktree(
   const newLines = [];
   let modified = false;
   for (let i = 0; i < lines.length; i++) {
-    if (i > sectionStartIdx && i < endIdx && lines[i].includes(id)) {
+    const currentLine = lines[i] ?? '';
+    if (i > sectionStartIdx && i < endIdx && currentLine.includes(id)) {
       modified = true;
       continue; // Skip this line
     }
-    newLines.push(lines[i]);
+    newLines.push(currentLine);
   }
 
   if (!modified) return [];
@@ -1001,13 +1010,14 @@ async function _removeWUFromSection(filePath: string, id: string, sectionHeading
 
   // Find section boundaries
   for (let i = 0; i < lines.length; i++) {
-    const normalizedLine = lines[i].toLowerCase().trim();
+    const currentLine = lines[i] ?? '';
+    const normalizedLine = currentLine.toLowerCase().trim();
     if (normalizedLine === normalizedHeading || normalizedLine.startsWith(normalizedHeading)) {
       inTargetSection = true;
       sectionStartIdx = i;
       continue;
     }
-    if (inTargetSection && lines[i].trim().startsWith('## ')) {
+    if (inTargetSection && currentLine.trim().startsWith('## ')) {
       nextSectionIdx = i;
       break;
     }
@@ -1020,10 +1030,11 @@ async function _removeWUFromSection(filePath: string, id: string, sectionHeading
   // Filter out lines containing the WU ID in the target section
   const newLines = [];
   for (let i = 0; i < lines.length; i++) {
-    if (i > sectionStartIdx && i < endIdx && lines[i].includes(id)) {
+    const currentLine = lines[i] ?? '';
+    if (i > sectionStartIdx && i < endIdx && currentLine.includes(id)) {
       continue; // Skip this line
     }
-    newLines.push(lines[i]);
+    newLines.push(currentLine);
   }
 
   await writeFile(filePath, newLines.join(STRING_LITERALS.NEWLINE));
@@ -1040,7 +1051,7 @@ async function _removeWUFromSection(filePath: string, id: string, sectionHeading
  * @param {string} projectRoot - Project root directory
  * @returns {Promise<object>} Result with success, skipped, and reason
  */
-async function removeOrphanWorktree(id, lane, projectRoot) {
+async function removeOrphanWorktree(id: string, lane: string, projectRoot: string) {
   // Find worktree path
   const laneKebab = toKebab(lane);
   const worktreeName = `${laneKebab}-${id.toLowerCase()}`;
@@ -1111,7 +1122,7 @@ async function removeOrphanWorktree(id, lane, projectRoot) {
  * @param {string} id - WU ID to search for
  * @returns {object} Object with inDone and inProgress booleans
  */
-function parseBacklogSections(content, id) {
+function parseBacklogSections(content: string, id: string) {
   const lines = content.split(/\r?\n/);
   let inDone = false;
   let inProgress = false;
@@ -1150,7 +1161,7 @@ function parseBacklogSections(content, id) {
  * @param {string} id - WU ID to search for
  * @returns {object} Object with inProgress boolean
  */
-function parseStatusSections(content, id) {
+function parseStatusSections(content: string, id: string) {
   const lines = content.split(/\r?\n/);
   let inProgress = false;
   let currentSection = null;
@@ -1186,7 +1197,7 @@ function parseStatusSections(content, id) {
  * @param {string} projectRoot - Project root directory
  * @returns {Promise<boolean>} True if worktree exists
  */
-async function checkWorktreeExists(id, projectRoot) {
+async function checkWorktreeExists(id: string, projectRoot: string) {
   try {
     const git = createGitForPath(projectRoot);
     const output = await git.worktreeList();
@@ -1207,7 +1218,7 @@ async function checkWorktreeExists(id, projectRoot) {
  * - Set of normalized WU IDs (e.g. WU-1234) when query succeeds
  * - null when git worktree listing is unavailable (caller should fall back)
  */
-async function listActiveWorktreeIds(projectRoot): Promise<Set<string> | null> {
+async function listActiveWorktreeIds(projectRoot: string): Promise<Set<string> | null> {
   try {
     const git = createGitForPath(projectRoot);
     const output = await git.worktreeList();
@@ -1228,7 +1239,7 @@ async function listActiveWorktreeIds(projectRoot): Promise<Set<string> | null> {
  * @param {string} worktreePath - Worktree path from WU YAML
  * @returns {Promise<boolean>} True if path exists
  */
-async function checkWorktreePathExists(worktreePath) {
+async function checkWorktreePathExists(worktreePath: string): Promise<boolean> {
   if (!worktreePath) {
     return false;
   }
