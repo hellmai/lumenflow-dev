@@ -2,7 +2,7 @@ id: WU-1692
 title: Add OSS governance docs and GitHub community templates
 lane: 'Operations: Automation'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -59,3 +59,6 @@ session_id: 39e25768-555a-43c5-b272-05f15ca1de64
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T17:52:08.975Z
+locked: true
+completed_at: 2026-02-15T17:56:50.355Z
+completed: 2026-02-15
