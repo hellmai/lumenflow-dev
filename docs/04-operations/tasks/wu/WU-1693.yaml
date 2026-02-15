@@ -2,7 +2,7 @@ id: WU-1693
 title: 'Clarify contributing workflows: trunk-based vs PR-based'
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -25,7 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'README contributing section needs to explain both workflows: maintainers use trunk-based wu:done, external contributors use fork+PR.'
+description: 'README contributing section needs to explain both workflows: maintainers use
+  trunk-based wu:done, external contributors use fork+PR.'
 acceptance:
   - README contributing section explains both internal (wu:done) and external (fork+PR) workflows
   - CONTRIBUTING.md created with detailed contributor guide
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-1693
+claimed_at: 2026-02-15T17:57:02.692Z
+baseline_main_sha: 7270a568094d52ed1e6ec42d8728d5137ed9ec0b
+session_id: 39e25768-555a-43c5-b272-05f15ca1de64
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T17:57:02.700Z

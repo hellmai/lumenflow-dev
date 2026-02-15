@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1693 — Clarify contributing workflows: trunk-based vs PR-based](wu/WU-1693.yaml)
 
 ## Completed
 

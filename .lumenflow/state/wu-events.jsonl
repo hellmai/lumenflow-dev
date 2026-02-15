@@ -1325,3 +1325,4 @@
 {"type":"complete","wuId":"WU-1691","timestamp":"2026-02-15T17:45:15.847Z"}
 {"type":"claim","wuId":"WU-1692","timestamp":"2026-02-15T17:52:09.014Z","lane":"Operations: Automation","title":"Add OSS governance docs and GitHub community templates"}
 {"type":"complete","wuId":"WU-1692","timestamp":"2026-02-15T17:56:51.903Z"}
+{"type":"claim","wuId":"WU-1693","lane":"Content: Framework Docs","title":"Clarify contributing workflows: trunk-based vs PR-based","timestamp":"2026-02-15T17:57:02.739Z"}
