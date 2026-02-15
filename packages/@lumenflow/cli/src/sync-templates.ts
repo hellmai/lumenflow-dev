@@ -6,7 +6,7 @@
  * 1. --check-drift flag now is truly read-only (compares without writing)
  * 2. sync:templates uses micro-worktree isolation for safe atomic commits
  *
- * This script syncs source docs from the hellmai/os repo to the templates
+ * This script syncs source docs from the hellmai/lumenflow repo to the templates
  * directory, applying template variable substitutions:
  * - Onboarding docs -> templates/core/ai/onboarding/
  * - Claude skills -> templates/vendors/claude/.claude/skills/

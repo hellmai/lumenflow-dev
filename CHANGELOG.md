@@ -164,10 +164,10 @@ See the [Migration Guide](https://lumenflow.dev/guides/migration) for detailed i
 
 ---
 
-[Unreleased]: https://github.com/hellmai/os/compare/v2.2.0...HEAD
-[2.2.0]: https://github.com/hellmai/os/compare/v2.1.2...v2.2.0
-[2.1.2]: https://github.com/hellmai/os/compare/v2.0.0...v2.1.2
-[2.0.0]: https://github.com/hellmai/os/compare/v1.6.0...v2.0.0
-[1.6.0]: https://github.com/hellmai/os/compare/v1.5.0...v1.6.0
-[1.5.0]: https://github.com/hellmai/os/compare/v1.0.0...v1.5.0
-[1.0.0]: https://github.com/hellmai/os/releases/tag/v1.0.0
+[Unreleased]: https://github.com/hellmai/lumenflow/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/hellmai/lumenflow/compare/v2.1.2...v2.2.0
+[2.1.2]: https://github.com/hellmai/lumenflow/compare/v2.0.0...v2.1.2
+[2.0.0]: https://github.com/hellmai/lumenflow/compare/v1.6.0...v2.0.0
+[1.6.0]: https://github.com/hellmai/lumenflow/compare/v1.5.0...v1.6.0
+[1.5.0]: https://github.com/hellmai/lumenflow/compare/v1.0.0...v1.5.0
+[1.0.0]: https://github.com/hellmai/lumenflow/releases/tag/v1.0.0

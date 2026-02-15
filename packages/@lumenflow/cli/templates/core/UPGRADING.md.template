@@ -37,7 +37,7 @@ pnpm list @lumenflow/*
 
 Before upgrading, review the changelog for breaking changes:
 
-- [GitHub Releases](https://github.com/hellmai/os/releases)
+- [GitHub Releases](https://github.com/hellmai/lumenflow/releases)
 - [lumenflow.dev/changelog](https://lumenflow.dev/changelog)
 
 ### 3. Update Packages
@@ -117,5 +117,5 @@ For major version upgrades, see version-specific migration guides:
 
 ## Getting Help
 
-- [GitHub Issues](https://github.com/hellmai/os/issues)
+- [GitHub Issues](https://github.com/hellmai/lumenflow/issues)
 - [lumenflow.dev/docs](https://lumenflow.dev/docs)

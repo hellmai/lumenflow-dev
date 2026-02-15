@@ -1,4 +1,4 @@
-# hellmai/os
+# hellmai/lumenflow
 
 HellmAI Operating System: LumenFlow workflow framework.
 

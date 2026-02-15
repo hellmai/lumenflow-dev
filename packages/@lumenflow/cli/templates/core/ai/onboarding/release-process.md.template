@@ -250,7 +250,7 @@ vercel --prod
 
 ### Important Notes
 
-- **No private repo links**: Starlight docs are public; never link to `github.com/hellmai/os`
+- **No private repo links**: Starlight docs are public; never link to `github.com/hellmai/lumenflow`
 - **Link to GitHub App**: Use <https://github.com/apps/lumenflow-by-hellmai> for GitHub links
 - **Link to npm**: Use <https://www.npmjs.com/org/lumenflow> for package links
 

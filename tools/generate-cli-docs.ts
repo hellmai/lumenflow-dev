@@ -949,7 +949,7 @@ function generateReadmeMd(commands: CommandMetadata[]): string {
     '[![npm downloads](https://img.shields.io/npm/dm/@lumenflow/cli.svg)](https://www.npmjs.com/package/@lumenflow/cli)',
   );
   lines.push(
-    '[![license](https://img.shields.io/npm/l/@lumenflow/cli.svg)](https://github.com/hellmai/os/blob/main/LICENSE)',
+    '[![license](https://img.shields.io/npm/l/@lumenflow/cli.svg)](https://github.com/hellmai/lumenflow/blob/main/LICENSE)',
   );
   lines.push('[![node](https://img.shields.io/node/v/@lumenflow/cli.svg)](https://nodejs.org)');
   lines.push('');

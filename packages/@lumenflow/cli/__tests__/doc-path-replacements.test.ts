@@ -3,7 +3,7 @@
  * Test suite for WU-1163: Replace internal doc paths with lumenflow.dev URLs
  *
  * Tests that error messages in public packages reference lumenflow.dev URLs
- * instead of internal docs/04-operations paths that only exist in hellmai/os.
+ * instead of internal docs/04-operations paths that only exist in hellmai/lumenflow.
  */
 
 import { describe, it, expect } from 'vitest';

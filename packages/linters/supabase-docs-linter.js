@@ -3,7 +3,7 @@
  * Supabase docs linter stub for LumenFlow dogfooding.
  *
  * This validates that Supabase tables are documented.
- * Stub passes since hellmai/os has no Supabase.
+ * Stub passes since hellmai/lumenflow has no Supabase.
  */
 
 export function runSupabaseDocsLinter({ logger = console } = {}) {

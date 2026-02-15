@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/@lumenflow/cli.svg)](https://www.npmjs.com/package/@lumenflow/cli)
 [![npm downloads](https://img.shields.io/npm/dm/@lumenflow/cli.svg)](https://www.npmjs.com/package/@lumenflow/cli)
-[![license](https://img.shields.io/npm/l/@lumenflow/cli.svg)](https://github.com/hellmai/os/blob/main/LICENSE)
+[![license](https://img.shields.io/npm/l/@lumenflow/cli.svg)](https://github.com/hellmai/lumenflow/blob/main/LICENSE)
 [![node](https://img.shields.io/node/v/@lumenflow/cli.svg)](https://nodejs.org)
 
 > Command-line interface for LumenFlow workflow framework

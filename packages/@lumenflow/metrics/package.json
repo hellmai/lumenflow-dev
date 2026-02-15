@@ -11,10 +11,10 @@
     "analytics",
     "workflow"
   ],
-  "homepage": "https://github.com/hellmai/os",
+  "homepage": "https://github.com/hellmai/lumenflow",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hellmai/os.git",
+    "url": "https://github.com/hellmai/lumenflow.git",
     "directory": "packages/@lumenflow/metrics"
   },
   "license": "Apache-2.0",
