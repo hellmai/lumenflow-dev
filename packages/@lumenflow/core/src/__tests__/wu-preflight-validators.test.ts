@@ -1,8 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { findSuggestedTestPaths, formatPreflightWarnings } from '../wu-preflight-validators.js';
+import {
+  createPreflightResult,
+  findSuggestedTestPaths,
+  formatPreflightWarnings,
+  validatePreflight,
+} from '../wu-preflight-validators.js';
+import { readWURaw } from '../wu-yaml.js';
 import fg from 'fast-glob';
 
 vi.mock('fast-glob');
+vi.mock('../wu-yaml.js', () => ({
+  readWURaw: vi.fn(),
+}));
 
 describe('findSuggestedTestPaths', () => {
   beforeEach(() => {
@@ -60,5 +69,35 @@ describe('formatPreflightWarnings', () => {
       '  - first warning',
       '  - second warning',
     ]);
+  });
+});
+
+describe('createPreflightResult', () => {
+  it('returns typed defaults for optional arrays and maps', () => {
+    const result = createPreflightResult({ valid: true });
+
+    expect(result).toEqual({
+      valid: true,
+      errors: [],
+      warnings: [],
+      missingCodePaths: [],
+      missingCoverageCodePaths: [],
+      missingTestPaths: [],
+      changedFiles: [],
+      suggestedTestPaths: {},
+    });
+  });
+});
+
+describe('validatePreflight', () => {
+  it('handles non-Error throw values from readWURaw', async () => {
+    vi.mocked(readWURaw).mockImplementationOnce(() => {
+      throw 'read failure';
+    });
+
+    const result = await validatePreflight('WU-9999', { worktreePath: '/tmp' });
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toEqual(['Failed to read WU YAML: read failure']);
   });
 });

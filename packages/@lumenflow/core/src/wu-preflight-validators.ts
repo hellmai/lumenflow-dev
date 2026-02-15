@@ -20,9 +20,56 @@ import {
   pathReferenceExistsSync,
   validationIssueToDisplayLines,
   type ValidationPhase,
+  type WUValidationContextInput,
   validateWURules,
   validateWURulesSync,
 } from './wu-rules-engine.js';
+
+interface PreflightResultData {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+  missingCodePaths: string[];
+  missingCoverageCodePaths: string[];
+  missingTestPaths: string[];
+  changedFiles: string[];
+  suggestedTestPaths: Record<string, string[]>;
+}
+
+interface CreatePreflightResultInput {
+  valid: boolean;
+  errors?: string[];
+  warnings?: string[];
+  missingCodePaths?: string[];
+  missingCoverageCodePaths?: string[];
+  missingTestPaths?: string[];
+  changedFiles?: string[];
+  suggestedTestPaths?: Record<string, string[]>;
+}
+
+interface PreflightWUDoc {
+  id?: string;
+  type?: string;
+  status?: string;
+  code_paths?: unknown;
+  tests?: unknown;
+  test_paths?: unknown;
+  [key: string]: unknown;
+}
+
+interface PathValidationResult {
+  valid: boolean;
+  errors: string[];
+  missing: string[];
+}
+
+function getUnknownErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return String(error);
+}
 
 /**
  * Create a PreflightResult object
@@ -36,7 +83,7 @@ export function createPreflightResult({
   missingTestPaths = [],
   changedFiles = [],
   suggestedTestPaths = {},
-}) {
+}: CreatePreflightResultInput): PreflightResultData {
   return {
     valid,
     errors,
@@ -49,8 +96,8 @@ export function createPreflightResult({
   };
 }
 
-function validateSchema(doc, id) {
-  const errors = [];
+function validateSchema(doc: PreflightWUDoc, id: string): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
 
   if (doc.id !== id) {
     errors.push(`WU ID mismatch: expected ${id}, found ${doc.id}`);
@@ -90,12 +137,12 @@ function validateSchema(doc, id) {
 /**
  * Validate code_paths files/globs exist on disk.
  */
-export function validateCodePathsExistence(codePaths, rootDir) {
+export function validateCodePathsExistence(codePaths: unknown, rootDir: string): PathValidationResult {
   if (!codePaths || !Array.isArray(codePaths) || codePaths.length === 0) {
     return { valid: true, errors: [], missing: [] };
   }
 
-  const missing = [];
+  const missing: string[] = [];
 
   for (const filePath of codePaths) {
     if (!filePath || typeof filePath !== 'string') continue;
@@ -122,16 +169,17 @@ export function validateCodePathsExistence(codePaths, rootDir) {
  * Non-path-like prose entries are ignored here; they are classified by
  * reality-phase rule R-007.
  */
-export function validateTestPathsExistence(tests, rootDir) {
+export function validateTestPathsExistence(tests: unknown, rootDir: string): PathValidationResult {
   if (!tests || typeof tests !== 'object') {
     return { valid: true, errors: [], missing: [] };
   }
 
-  const missing = [];
+  const normalizedTests = tests as Record<string, unknown>;
+  const missing: string[] = [];
   const fileTestTypes = [TEST_TYPES.UNIT, TEST_TYPES.E2E, TEST_TYPES.INTEGRATION];
 
   for (const testType of fileTestTypes) {
-    const paths = tests[testType];
+    const paths = normalizedTests[testType];
     if (!paths || !Array.isArray(paths)) continue;
 
     for (const filePath of paths) {
@@ -168,7 +216,10 @@ export interface ValidatePreflightOptions {
   headRef?: string;
 }
 
-export async function validatePreflight(id, options: ValidatePreflightOptions = {}) {
+export async function validatePreflight(
+  id: string,
+  options: ValidatePreflightOptions = {},
+): Promise<PreflightResultData> {
   const rootDir = options.rootDir || process.cwd();
   const worktreePath = options.worktreePath || rootDir;
   const phase = options.phase || 'reality';
@@ -182,13 +233,13 @@ export async function validatePreflight(id, options: ValidatePreflightOptions = 
 
   const wuPath = path.join(worktreePath, WU_PATHS.WU(id));
 
-  let doc;
+  let doc: PreflightWUDoc;
   try {
-    doc = readWURaw(wuPath);
-  } catch (err) {
+    doc = readWURaw(wuPath) as PreflightWUDoc;
+  } catch (err: unknown) {
     return createPreflightResult({
       valid: false,
-      errors: [`Failed to read WU YAML: ${err.message}`],
+      errors: [`Failed to read WU YAML: ${getUnknownErrorMessage(err)}`],
     });
   }
 
@@ -197,7 +248,7 @@ export async function validatePreflight(id, options: ValidatePreflightOptions = 
     allErrors.push(...schemaResult.errors);
   }
 
-  const rulesContext = {
+  const rulesContext: WUValidationContextInput = {
     id,
     type: doc.type,
     status: doc.status,
@@ -226,14 +277,14 @@ export async function validatePreflight(id, options: ValidatePreflightOptions = 
   missingTestPaths.push(...rulesResult.metadata.missingTestPaths);
   changedFiles.push(...rulesResult.metadata.changedFiles);
 
-  let suggestedTestPaths = {};
+  let suggestedTestPaths: Record<string, string[]> = {};
   if (missingTestPaths.length > 0) {
     const searchRoot = worktreePath || rootDir;
     try {
       suggestedTestPaths = await findSuggestedTestPaths(missingTestPaths, searchRoot);
-    } catch (err) {
+    } catch (err: unknown) {
       if (process.env.DEBUG) {
-        console.log(`[wu-preflight] Failed to find suggestions: ${err.message}`);
+        console.log(`[wu-preflight] Failed to find suggestions: ${getUnknownErrorMessage(err)}`);
       }
     }
   }
@@ -250,7 +301,7 @@ export async function validatePreflight(id, options: ValidatePreflightOptions = 
   });
 }
 
-export function formatPreflightResult(id, result) {
+export function formatPreflightResult(id: string, result: PreflightResultData): string {
   if (result.valid) {
     const lines = [
       `${LOG_PREFIX.PREFLIGHT} ${EMOJI.SUCCESS} Preflight validation passed for ${id}`,
@@ -317,8 +368,11 @@ export function formatPreflightWarnings(
 
 export const PreflightResult = {};
 
-export async function findSuggestedTestPaths(missingPaths, rootDir) {
-  const suggestions = {};
+export async function findSuggestedTestPaths(
+  missingPaths: string[],
+  rootDir: string,
+): Promise<Record<string, string[]>> {
+  const suggestions: Record<string, string[]> = {};
 
   if (missingPaths.length === 0) return suggestions;
 
@@ -345,7 +399,7 @@ export async function findSuggestedTestPaths(missingPaths, rootDir) {
     }
 
     if (matches.length > 0) {
-      suggestions[missingPath] = matches.filter((m) => m !== missingPath);
+      suggestions[missingPath] = matches.filter((matchPath) => matchPath !== missingPath);
     }
   }
 
