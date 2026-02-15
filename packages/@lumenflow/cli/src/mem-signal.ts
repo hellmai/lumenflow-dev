@@ -18,7 +18,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { createSignal } from '@lumenflow/memory/signal';
+import { createSignal, type CreateSignalResult } from '@lumenflow/memory/signal';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 // WU-1456: Import shared validator for CLI/MCP parity
@@ -34,6 +34,15 @@ const LOG_PREFIX = '[mem:signal]';
  * Tool name for audit logging
  */
 const TOOL_NAME = 'mem:signal';
+
+type AuditLogEntry = Record<string, unknown>;
+
+interface MemSignalArgs {
+  message?: string;
+  wu?: string;
+  lane?: string;
+  quiet?: boolean;
+}
 
 /**
  * CLI argument options specific to mem:signal
@@ -57,7 +66,7 @@ const CLI_OPTIONS = {
  * @param {string} baseDir - Base directory
  * @param {object} entry - Audit log entry
  */
-async function writeAuditLog(baseDir, entry) {
+async function writeAuditLog(baseDir: string, entry: AuditLogEntry): Promise<void> {
   try {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
@@ -83,7 +92,7 @@ const FLAGS_WITH_VALUES = new Set(['-m', '--message', '--wu', '-l', '--lane']);
  * @returns {string[]} Positional arguments
  */
 function extractPositionalArgs() {
-  const positionalArgs = [];
+  const positionalArgs: string[] = [];
   let skipNext = false;
 
   for (let i = 2; i < process.argv.length; i++) {
@@ -110,14 +119,14 @@ function extractPositionalArgs() {
  *
  * @returns {{args: object, message: string|undefined}} Parsed args and message
  */
-function parseArguments() {
+function parseArguments(): { args: MemSignalArgs; message: string | undefined } {
   const args = createWUParser({
     name: 'mem-signal',
     description: 'Send a coordination signal to other agents',
     options: [CLI_OPTIONS.message, WU_OPTIONS.wu, WU_OPTIONS.lane, CLI_OPTIONS.quiet],
     required: [],
     allowPositionalId: true,
-  });
+  }) as MemSignalArgs;
 
   let message = args.message;
   if (!message && process.argv.length > 2) {
@@ -135,7 +144,7 @@ function parseArguments() {
  *
  * @param {object} result - Creation result with signal
  */
-function printSignalDetails(result) {
+function printSignalDetails(result: CreateSignalResult): void {
   const { signal } = result;
 
   console.log(`${LOG_PREFIX} Signal sent (${signal.id})`);
@@ -185,8 +194,8 @@ async function main() {
   const startedAt = new Date().toISOString();
   const startTime = Date.now();
 
-  let result;
-  let error = null;
+  let result: CreateSignalResult | undefined;
+  let error: string | null = null;
 
   try {
     result = await createSignal(baseDir, {
@@ -194,8 +203,8 @@ async function main() {
       wuId: args.wu,
       lane: args.lane,
     });
-  } catch (err) {
-    error = err.message;
+  } catch (err: unknown) {
+    error = err instanceof Error ? err.message : String(err);
   }
 
   const durationMs = Date.now() - startTime;
@@ -224,6 +233,11 @@ async function main() {
 
   if (error) {
     console.error(`${LOG_PREFIX} Error: ${error}`);
+    process.exit(EXIT_CODES.ERROR);
+  }
+
+  if (!result) {
+    console.error(`${LOG_PREFIX} Error: Failed to create signal`);
     process.exit(EXIT_CODES.ERROR);
   }
 
