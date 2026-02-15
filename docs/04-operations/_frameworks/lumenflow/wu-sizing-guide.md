@@ -289,7 +289,7 @@ git add -A && git commit -m "checkpoint: progress on X"
 git push origin lane/<lane>/wu-xxx
 
 # 3. Generate fresh agent prompt
-pnpm wu:brief --id WU-XXX --client claude-code
+pnpm wu:brief --id WU-XXX --client <client>
 
 # 4. EXIT current session (do NOT continue after compaction)
 

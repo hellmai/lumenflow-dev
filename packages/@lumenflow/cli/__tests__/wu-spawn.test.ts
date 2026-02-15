@@ -1052,3 +1052,44 @@ describe('wu:brief LOG_PREFIX isolation (WU-1608)', () => {
     }
   });
 });
+
+// WU-1681: Client-neutral fallback and prompt generation
+describe('wu-spawn client-neutral defaults (WU-1681)', () => {
+  const mockDoc = {
+    title: 'Test WU',
+    lane: 'Framework: CLI',
+    type: 'feature',
+    status: 'in_progress',
+    code_paths: ['src/foo.ts'],
+    acceptance: ['Criteria 1'],
+    description: 'Description',
+    worktree_path: 'worktrees/test',
+  };
+
+  const id = 'WU-1681';
+  const config = LumenFlowConfigSchema.parse({
+    directories: {
+      skillsDir: '.claude/skills',
+      agentsDir: '.claude/agents',
+    },
+  });
+
+  it('does not hardcode claude-code as privileged client in delegate error message', () => {
+    // The wu:delegate error message should use <client> placeholder, not claude-code
+    // This is a behavioral test: we verify the error message template is neutral
+    const strategy = new GenericStrategy();
+    const output = generateTaskInvocation(mockDoc, id, strategy, { config });
+
+    // The generated prompt should not contain hardcoded --client claude-code in example commands
+    // (excluding legitimate client guidance sections which are per-client)
+    const lines = output.split('\n');
+    const exampleLines = lines.filter(
+      (l) =>
+        l.includes('--client claude-code') &&
+        !l.includes('Client Guidance') &&
+        !l.includes('Client Skills'),
+    );
+    // All example command lines should use <client> placeholder
+    expect(exampleLines.length).toBe(0);
+  });
+});

@@ -277,8 +277,10 @@ Pre-configured agent definitions in `.claude/agents/`:
 | `code-reviewer`   | Quality checks             |
 | `bug-triage`      | Bug classification         |
 
-Generate handoff prompts (prompt-only, execution is a separate step): `pnpm wu:brief --id WU-XXX --client claude-code`
-Record explicit delegation lineage when needed: `pnpm wu:delegate --id WU-XXX --parent-wu WU-YYY --client claude-code`
+Generate handoff prompts (prompt-only, execution is a separate step): `pnpm wu:brief --id WU-XXX --client <client>`
+Record explicit delegation lineage when needed: `pnpm wu:delegate --id WU-XXX --parent-wu WU-YYY --client <client>`
+
+Supported clients: `claude-code`, `codex-cli`, `cursor`, `gemini-cli`, `windsurf`
 
 ---
 

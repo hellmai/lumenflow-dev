@@ -1035,6 +1035,7 @@ export function generateTaskInvocation(
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
   // WU-1253: Try loading templates (shadow mode - falls back to hardcoded if unavailable)
+  // WU-1681: Use resolved client from caller; fall back for template loading only
   const clientName = options.client?.name || 'claude-code';
   const templateContext = buildSpawnTemplateContext(doc, id);
   const templates = tryLoadTemplates(clientName, templateContext);

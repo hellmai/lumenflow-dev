@@ -104,7 +104,7 @@ You are resuming work after context compaction. Your previous context was lost.
 **WU:** \${WU_ID}
 
 ## Next Action
-Run \\\`pnpm wu:brief --id \${WU_ID} --client claude-code\\\` to generate a fresh handoff prompt.
+Run \\\`pnpm wu:brief --id \${WU_ID} --client \${LUMENFLOW_CLIENT:-claude-code}\\\` to generate a fresh handoff prompt.
 EOF
   }
 
@@ -113,7 +113,7 @@ EOF
   echo "═══════════════════════════════════════════════════════" >&2
   echo "⚠️  COMPACTION: Checkpoint saved for \${WU_ID}" >&2
   echo "Recovery context: \${RECOVERY_FILE}" >&2
-  echo "Next: pnpm wu:brief --id \${WU_ID} --client claude-code" >&2
+  echo "Next: pnpm wu:brief --id \${WU_ID} --client \${LUMENFLOW_CLIENT:-claude-code}" >&2
   echo "═══════════════════════════════════════════════════════" >&2
 else
   # WU-1473: Non-worktree orchestrator context recovery

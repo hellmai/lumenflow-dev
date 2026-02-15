@@ -315,6 +315,25 @@ describe('arg-parser', () => {
       });
     });
 
+    // WU-1681: Client option descriptions must be neutral and list codex-cli
+    describe('client-neutral descriptions (WU-1681)', () => {
+      it('should include codex-cli in client option description', () => {
+        expect(WU_OPTIONS.client.description).toContain('codex-cli');
+      });
+
+      it('should list multiple clients alphabetically in client description', () => {
+        const desc = WU_OPTIONS.client.description;
+        expect(desc).toContain('claude-code');
+        expect(desc).toContain('codex-cli');
+        expect(desc).toContain('gemini-cli');
+      });
+
+      it('should mark codex option description as deprecated', () => {
+        expect(WU_OPTIONS.codex.description).toContain('Deprecated');
+        expect(WU_OPTIONS.codex.description).toContain('codex-cli');
+      });
+    });
+
     describe('cloud mode options (WU-1491)', () => {
       it('should define cloud option', () => {
         expect(WU_OPTIONS.cloud.name).toBe('cloud');

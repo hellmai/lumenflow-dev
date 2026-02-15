@@ -59,7 +59,7 @@ export type LumenflowDoctorInput = z.infer<typeof lumenflowDoctorSchema>;
  * Required: client
  */
 export const lumenflowIntegrateSchema = z.object({
-  client: z.string().describe('Client name (claude-code, cursor, etc.)'),
+  client: z.string().describe('Target client (e.g. claude-code, codex-cli, cursor, gemini-cli)'),
 });
 
 export type LumenflowIntegrateInput = z.infer<typeof lumenflowIntegrateSchema>;

@@ -255,7 +255,14 @@ function resolveClientName(
     clientName = 'codex-cli';
   }
 
-  return clientName || config.agents.defaultClient || 'claude-code';
+  const resolved = clientName || config.agents.defaultClient || 'claude-code';
+  if (!clientName && !config.agents.defaultClient) {
+    console.warn(
+      `${logPrefix} Warning: No --client specified. Falling back to 'claude-code'. ` +
+        `Available clients: claude-code, codex-cli, cursor, gemini-cli, windsurf`,
+    );
+  }
+  return resolved;
 }
 
 /**
@@ -386,7 +393,7 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
     die(
       'wu:delegate requires --parent-wu to record delegation lineage intent.\n\n' +
         'Example:\n' +
-        '  pnpm wu:delegate --id WU-123 --parent-wu WU-100 --client claude-code',
+        '  pnpm wu:delegate --id WU-123 --parent-wu WU-100 --client <client>',
     );
   }
 

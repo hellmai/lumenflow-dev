@@ -102,7 +102,7 @@ export class GenericStrategy extends BaseSpawnStrategy {
 
 /**
  * Create a strategy for the given client
- * @param clientName - Client name (e.g. 'claude-code', 'gemini-cli')
+ * @param clientName - Client name (e.g. 'claude-code', 'codex-cli', 'gemini-cli')
  */
 export function createSpawnStrategy(clientName: string): SpawnStrategy {
   switch (clientName.toLowerCase()) {

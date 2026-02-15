@@ -53,7 +53,7 @@ export const WU_OPTIONS: Record<string, WUOption> = {
   client: {
     name: 'client',
     flags: '--client <client>',
-    description: 'Client name (claude-code, gemini-cli, etc)',
+    description: 'Target client (e.g. claude-code, codex-cli, gemini-cli)',
   },
   vendor: {
     name: 'vendor',
@@ -454,7 +454,7 @@ export const WU_OPTIONS: Record<string, WUOption> = {
   codex: {
     name: 'codex',
     flags: '--codex',
-    description: 'Output a Codex/GPT-friendly Markdown prompt (instead of Claude Task antml)',
+    description: 'Deprecated: use --client codex-cli. Outputs Markdown prompt format.',
   },
 
   // WU-1945: Parent WU for spawn registry tracking
