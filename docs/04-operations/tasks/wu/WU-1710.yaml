@@ -2,7 +2,7 @@ id: WU-1710
 title: 'Strict debt slice: type stamp-utils'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -29,7 +29,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Eliminate strict typing errors in stamp-utils and add unit tests for stamp format parsing/validation helpers.
+description: Eliminate strict typing errors in stamp-utils and add unit tests for stamp format
+  parsing/validation helpers.
 acceptance:
-  - No strict errors remain in packages/@lumenflow/core/src/stamp-utils.ts under --strictNullChecks --noImplicitAny
+  - No strict errors remain in packages/@lumenflow/core/src/stamp-utils.ts under --strictNullChecks
+    --noImplicitAny
   - Stamp utility unit tests pass
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-1710
+claimed_at: 2026-02-15T23:45:10.663Z
+baseline_main_sha: 983931a48c890a1510828b3efcfaebefdfb2bf68
+session_id: 491e2ade-73ac-49b6-8e5b-765bbc9a2403
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T23:45:10.670Z
