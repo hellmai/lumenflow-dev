@@ -5,7 +5,10 @@ _Last updated: 2026-02-15_
 ## In Progress
 
 - [WU-1688 — Fix sandbox backend invocation correctness: ro-bind, Seatbelt policy, Windows honesty](wu/WU-1688.yaml)
-- [WU-1689 — Fix missing shebangs in CLI dist bin scripts](wu/WU-1689.yaml)
+
+## Blocked
+
+- [WU-1687 — Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine](wu/WU-1687.yaml)
 
 ## Blocked
 
@@ -633,3 +636,4 @@ _Last updated: 2026-02-15_
 - [WU-1683 — Add first-class plan field to WU schema for plan-to-WU linking](wu/WU-1683.yaml) — 2026-02-15
 - [WU-1686 — Reframe article as agent orchestration layer + Medium optimisations](wu/WU-1686.yaml) — 2026-02-15
 - [WU-1684 — Build vendor-agnostic core sandbox engine contract and OS backends](wu/WU-1684.yaml) — 2026-02-15
+- [WU-1689 — Fix missing shebangs in CLI dist bin scripts](wu/WU-1689.yaml) — 2026-02-15
