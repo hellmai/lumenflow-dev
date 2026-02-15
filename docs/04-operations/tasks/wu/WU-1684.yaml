@@ -53,6 +53,10 @@ notes: >-
 
   2026-02-15 refinement: prioritize fail-closed defaults and explicit override semantics; add
   escape-path validation coverage (traversal + symlink).
+
+
+  2026-02-15 cross-platform refinement: wu:sandbox must be OS-agnostic at command surface with
+  pluggable backend adapters; Linux bwrap is one backend, not the architecture.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -97,3 +101,10 @@ acceptance:
     non-zero unless explicit unsandboxed override is set.'
   - Sandbox denies path-escape writes via ../ traversal and symlink traversal outside the claimed
     worktree.
+  - wu:sandbox command is supported on Linux, macOS, and Windows with platform-aware backend
+    selection.
+  - Platform backend contract is adapter-based (e.g., linux-bwrap, macos, windows) so enforcement
+    logic is not hardcoded to one OS.
+  - If no hardened backend is available on the current OS, default behavior is fail-closed unless
+    explicit unsandboxed override is provided.
+  - Automated tests cover backend selection matrix and expected fail-closed/override behavior per OS.
