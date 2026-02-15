@@ -11,6 +11,34 @@ import { parseYAML, readWU } from './wu-yaml.js';
 import { CLAIMED_MODES, EMOJI, LOG_PREFIX, STRING_LITERALS, toKebab } from './wu-constants.js';
 import { detectDocsOnlyByPaths } from './wu-done-docs-only.js';
 
+interface WUDocLike {
+  id?: string;
+  lane?: string;
+  type?: string;
+  code_paths?: string[];
+  claimed_mode?: string;
+  claimed_branch?: string;
+  worktree_path?: string;
+}
+
+interface DonePathArgs {
+  worktree?: string | null;
+}
+
+interface DetectModeAndPathsResult {
+  WU_PATH: string;
+  STATUS_PATH: string;
+  BACKLOG_PATH: string;
+  STAMPS_DIR: string;
+  docMain: WUDocLike;
+  workspaceMode: string;
+  isBranchOnly: boolean;
+  isBranchPR: boolean;
+  derivedWorktree: string | null;
+  docForValidation: WUDocLike;
+  isDocsOnly: boolean;
+}
+
 /**
  * Read WU YAML preferring worktree version over main version
  *
@@ -23,13 +51,17 @@ import { detectDocsOnlyByPaths } from './wu-done-docs-only.js';
  * @param {string} mainWUPath - Path to WU YAML in main checkout
  * @returns {object} Parsed WU document
  */
-export function readWUPreferWorktree(id, worktreePath, mainWUPath) {
+export function readWUPreferWorktree(
+  id: string,
+  worktreePath: string | null,
+  mainWUPath: string,
+): WUDocLike {
   if (worktreePath) {
     const wtWUPath = path.join(worktreePath, WU_PATHS.WU(id));
     if (existsSync(wtWUPath)) {
       try {
         const text = readFileSync(wtWUPath, { encoding: 'utf-8' });
-        const doc = parseYAML(text);
+        const doc = parseYAML(text) as WUDocLike | null;
         if (doc && doc.id === id) {
           // WU-1584: Log source file for validation debugging
           console.log(
@@ -47,8 +79,9 @@ export function readWUPreferWorktree(id, worktreePath, mainWUPath) {
           `${LOG_PREFIX.DONE} Warning: Worktree YAML ID mismatch (expected ${id}, got ${doc?.id})`,
         );
       } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
         // Log parse errors for debugging
-        console.warn(`${LOG_PREFIX.DONE} Warning: Failed to read worktree YAML: ${err.message}`);
+        console.warn(`${LOG_PREFIX.DONE} Warning: Failed to read worktree YAML: ${message}`);
       }
     } else {
       // Log missing worktree YAML for debugging
@@ -57,7 +90,7 @@ export function readWUPreferWorktree(id, worktreePath, mainWUPath) {
   }
   // WU-1584: Log when falling back to main checkout YAML
   console.log(`${LOG_PREFIX.DONE} ${EMOJI.INFO} Reading WU YAML from main: ${mainWUPath}`);
-  const doc = readWU(mainWUPath, id);
+  const doc = readWU(mainWUPath, id) as WUDocLike;
   if (doc.code_paths && doc.code_paths.length > 0) {
     console.log(
       `${LOG_PREFIX.DONE}   code_paths source: main checkout (${doc.code_paths.length} path(s))`,
@@ -71,7 +104,7 @@ export function readWUPreferWorktree(id, worktreePath, mainWUPath) {
  * Checks for .git file (not directory) which indicates a worktree
  * @returns {string|null} Current directory path if inside worktree, null otherwise
  */
-export function detectCurrentWorktree() {
+export function detectCurrentWorktree(): string | null {
   const cwd = process.cwd();
   const gitPath = path.join(cwd, '.git');
 
@@ -84,7 +117,8 @@ export function detectCurrentWorktree() {
       // Parse .git file to verify it points to main repo's worktrees
       const gitContent = readFileSync(gitPath, { encoding: 'utf-8' });
       const match = gitContent.match(/^gitdir:\s*(.+)$/m);
-      if (match && match[1].includes('.git/worktrees/')) {
+      const gitDir = match?.[1];
+      if (gitDir && gitDir.includes('.git/worktrees/')) {
         console.log(
           `${LOG_PREFIX.DONE} ${EMOJI.TARGET} Auto-detected worktree from process.cwd(): ${cwd}`,
         );
@@ -92,8 +126,9 @@ export function detectCurrentWorktree() {
       }
     }
   } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
     // Ignore errors, fall back to calculated path
-    console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Failed to detect worktree: ${err.message}`);
+    console.log(`${LOG_PREFIX.DONE} ${EMOJI.WARNING} Failed to detect worktree: ${message}`);
   }
 
   return null;
@@ -109,7 +144,7 @@ export function detectCurrentWorktree() {
  * @param {object} doc - WU YAML document
  * @returns {Promise<string|null>} - Worktree path or null if not found
  */
-export async function defaultWorktreeFrom(doc) {
+export async function defaultWorktreeFrom(doc: WUDocLike): Promise<string | null> {
   // Priority 1 - use recorded worktree_path if available
   if (doc.worktree_path) {
     return doc.worktree_path;
@@ -138,11 +173,13 @@ export async function defaultWorktreeFrom(doc) {
       const branch = `lane/${laneK}/${idK}`;
 
       for (let i = 0; i < lines.length; i++) {
-        if (lines[i].startsWith('branch ') && lines[i].includes(branch)) {
+        const line = lines[i];
+        if (line && line.startsWith('branch ') && line.includes(branch)) {
           // Found the branch, now get the worktree path from previous line
           for (let j = i - 1; j >= 0; j--) {
-            if (lines[j].startsWith('worktree ')) {
-              const fullPath = lines[j].substring('worktree '.length);
+            const candidateLine = lines[j];
+            if (candidateLine && candidateLine.startsWith('worktree ')) {
+              const fullPath = candidateLine.substring('worktree '.length);
               // Convert absolute path to relative path from repo root
               const repoRoot = process.cwd();
               const relativePath = path.relative(repoRoot, fullPath);
@@ -158,7 +195,8 @@ export async function defaultWorktreeFrom(doc) {
         }
       }
     } catch (e) {
-      console.warn(`${LOG_PREFIX.DONE} Could not query git worktree list: ${e.message}`);
+      const message = e instanceof Error ? e.message : String(e);
+      console.warn(`${LOG_PREFIX.DONE} Could not query git worktree list: ${message}`);
     }
   }
 
@@ -170,7 +208,7 @@ export async function defaultWorktreeFrom(doc) {
  * @param {object} doc - WU YAML document
  * @returns {'worktree' | 'branch-only' | 'branch-pr'}
  */
-export function detectWorkspaceMode(doc) {
+export function detectWorkspaceMode(doc: WUDocLike): string {
   // Explicit mode field takes precedence
   if (doc.claimed_mode === CLAIMED_MODES.BRANCH_ONLY) return CLAIMED_MODES.BRANCH_ONLY;
   if (doc.claimed_mode === CLAIMED_MODES.BRANCH_PR) return CLAIMED_MODES.BRANCH_PR;
@@ -191,7 +229,7 @@ export function detectWorkspaceMode(doc) {
  * @param {object} doc - WU YAML document
  * @returns {string|null} Branch name or null if neither source available
  */
-export function defaultBranchFrom(doc) {
+export function defaultBranchFrom(doc: WUDocLike): string | null {
   // Priority 1: Use claimed_branch if present (WU-1589)
   if (typeof doc.claimed_branch === 'string' && doc.claimed_branch.trim()) {
     return doc.claimed_branch;
@@ -210,7 +248,7 @@ export function defaultBranchFrom(doc) {
  * @param {string} branch - Branch name to check
  * @returns {Promise<boolean>} True if branch exists
  */
-export async function branchExists(branch) {
+export async function branchExists(branch: string): Promise<boolean> {
   return await getGitForCwd().branchExists(branch);
 }
 
@@ -220,14 +258,17 @@ export async function branchExists(branch) {
  * @param {object} args - Parsed command-line arguments
  * @returns {Promise<object>} Object containing paths, mode info, and WU document
  */
-export async function detectModeAndPaths(id, args) {
+export async function detectModeAndPaths(
+  id: string,
+  args: DonePathArgs,
+): Promise<DetectModeAndPathsResult> {
   const WU_PATH = WU_PATHS.WU(id);
   const STATUS_PATH = WU_PATHS.STATUS();
   const BACKLOG_PATH = WU_PATHS.BACKLOG();
   const STAMPS_DIR = WU_PATHS.STAMPS_DIR();
 
   // Read WU YAML to detect workspace mode
-  const docMain = readWU(WU_PATH, id);
+  const docMain = readWU(WU_PATH, id) as WUDocLike;
   const workspaceMode = detectWorkspaceMode(docMain);
   const isBranchOnly = workspaceMode === CLAIMED_MODES.BRANCH_ONLY;
   // WU-1492: branch-pr mode has no worktree (like branch-only) but creates PR instead of merging
@@ -239,7 +280,7 @@ export async function detectModeAndPaths(id, args) {
   // Determine candidate worktree path early (only relevant for Worktree mode)
   // Priority: 1) Auto-detect from cwd 2) Explicit --worktree arg 3) Calculate from YAML
   const detectedWorktree = detectCurrentWorktree();
-  const worktreePathGuess = args.worktree || null;
+  const worktreePathGuess = args.worktree ?? null;
 
   // For Worktree mode: prefer auto-detected worktree, then explicit arg, then calculated path
   // For Branch-Only / Branch-PR mode: use main checkout version (no worktree exists)
@@ -261,7 +302,7 @@ export async function detectModeAndPaths(id, args) {
   // WU-1234: Detect docs-only by type OR by code_paths
   // Auto-detect if all code_paths are under docs/, ai/, .claude/, or are README/CLAUDE files
   const isDocsOnlyByType = docForValidation.type === 'documentation';
-  const isDocsOnlyByPaths = detectDocsOnlyByPaths(docForValidation.code_paths);
+  const isDocsOnlyByPaths = detectDocsOnlyByPaths(docForValidation.code_paths ?? []);
   const isDocsOnly = isDocsOnlyByType || isDocsOnlyByPaths;
 
   if (isDocsOnlyByPaths && !isDocsOnlyByType) {
