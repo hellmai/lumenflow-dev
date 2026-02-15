@@ -1349,4 +1349,5 @@
 {"type":"complete","wuId":"WU-1695","timestamp":"2026-02-15T20:37:18.579Z"}
 {"type":"claim","wuId":"WU-1696","timestamp":"2026-02-15T20:40:19.718Z","lane":"Framework: Core Validation","title":"Strict config completion: remove core/cli false overrides"}
 {"type":"complete","wuId":"WU-1696","timestamp":"2026-02-15T20:48:27.581Z"}
-{"type":"claim","wuId":"WU-1697","lane":"Framework: Core Validation","title":"Strict debt slice: eliminate TS7006 in core wu-done-metadata","timestamp":"2026-02-15T20:49:24.656Z"}
+{"type":"claim","wuId":"WU-1697","timestamp":"2026-02-15T20:49:24.656Z","lane":"Framework: Core Validation","title":"Strict debt slice: eliminate TS7006 in core wu-done-metadata"}
+{"type":"complete","wuId":"WU-1697","timestamp":"2026-02-15T20:53:56.507Z"}
