@@ -94,8 +94,31 @@ export {
 
 const PREFIX = LOG_PREFIX.EDIT;
 
-interface WuEditArgs extends Record<string, any> {
+interface WuEditArgs extends Record<string, unknown> {
   id: string;
+  specFile?: string;
+  description?: string;
+  acceptance?: string[];
+  notes?: string;
+  replaceNotes?: boolean;
+  replaceAcceptance?: boolean;
+  codePaths?: string[];
+  replaceCodePaths?: boolean;
+  risks?: string[];
+  replaceRisks?: boolean;
+  testPathsManual?: string[];
+  testPathsUnit?: string[];
+  testPathsE2e?: string[];
+  lane?: string;
+  type?: string;
+  priority?: string;
+  initiative?: string;
+  phase?: number | string;
+  blockedBy?: string;
+  addDep?: string;
+  exposure?: string;
+  plan?: string;
+  noStrict?: boolean;
 }
 
 /**

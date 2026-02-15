@@ -219,9 +219,24 @@ interface OwnershipCheckResult {
   auditEntry: Record<string, unknown> | null;
 }
 
+interface WuDoneArgsLike {
+  skipGates?: boolean;
+  reason?: string;
+  fixWu?: string;
+  force?: boolean;
+  overrideOwner?: boolean;
+  skipCosGates?: boolean;
+  skipExposureCheck?: boolean;
+  skipAccessibilityCheck?: boolean;
+  allowTodo?: boolean;
+  noAutoRebase?: boolean;
+  docsOnly?: boolean;
+  [key: string]: unknown;
+}
+
 interface PreFlightParams {
   id: string;
-  args: Record<string, any>;
+  args: WuDoneArgsLike;
   isBranchOnly: boolean;
   isDocsOnly: boolean;
   docMain: WUDocLike;
@@ -1611,9 +1626,11 @@ function recordTransactionState(
   backlogPath: string,
   statusPath: string,
 ): TransactionState {
+  // eslint-disable-next-line sonarjs/no-os-command-from-path -- Git is a required local tool in the CLI runtime.
   const mainSHA = execSync('git rev-parse HEAD', {
     encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
   }).trim();
+  // eslint-disable-next-line sonarjs/no-os-command-from-path -- Git is a required local tool in the CLI runtime.
   const laneBranch = execSync('git rev-parse --abbrev-ref HEAD', {
     encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
   }).trim();
