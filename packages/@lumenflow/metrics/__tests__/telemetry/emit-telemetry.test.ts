@@ -173,7 +173,7 @@ describe('createTelemetryEmitter', () => {
         classificationType: 'mode_detection',
         errorType: 'validation',
         errorMessage: 'Invalid input',
-        inputTextPreview: 'Patient John Doe SSN 123-45-6789',
+        inputTextPreview: 'User John Doe ID 123-45-6789',
       });
 
       const [, event] = emitFn.mock.calls[0]!;
