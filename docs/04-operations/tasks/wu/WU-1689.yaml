@@ -13,7 +13,8 @@ tests:
   manual:
     - Run npx -p @lumenflow/cli lumenflow init in /tmp fresh dir
     - Verify all bin entries listed in package.json have shebang in dist
-  unit: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/check-shebangs.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1689.done
