@@ -545,18 +545,18 @@ export function applyEdits(initiative: InitiativeDoc, opts: InitiativeEditOpts):
 export function hasAnyEdits(opts: InitiativeEditOpts): boolean {
   return Boolean(
     opts.status ||
-      opts.blockedBy ||
-      opts.unblock ||
-      (opts.addLane && opts.addLane.length > 0) ||
-      (opts.removeLane && opts.removeLane.length > 0) ||
-      opts.notes ||
-      opts.description ||
-      (opts.addPhase && opts.addPhase.length > 0) ||
-      (opts.addSuccessMetric && opts.addSuccessMetric.length > 0) ||
-      (opts.removeSuccessMetric && opts.removeSuccessMetric.length > 0) ||
-      Boolean(opts.phaseTitle) ||
-      (opts.phaseId && opts.phaseStatus) ||
-      opts.created,
+    opts.blockedBy ||
+    opts.unblock ||
+    (opts.addLane && opts.addLane.length > 0) ||
+    (opts.removeLane && opts.removeLane.length > 0) ||
+    opts.notes ||
+    opts.description ||
+    (opts.addPhase && opts.addPhase.length > 0) ||
+    (opts.addSuccessMetric && opts.addSuccessMetric.length > 0) ||
+    (opts.removeSuccessMetric && opts.removeSuccessMetric.length > 0) ||
+    Boolean(opts.phaseTitle) ||
+    (opts.phaseId && opts.phaseStatus) ||
+    opts.created,
   );
 }
 

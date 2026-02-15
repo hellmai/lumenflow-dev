@@ -377,7 +377,11 @@ function updateWUInWorktree(worktreePath: string, wuId: string, initId: string):
  * @param {string} wuId - WU ID to add
  * @returns {boolean} True if changes were made
  */
-function updateInitiativeInWorktree(worktreePath: string, initId: string, wuIds: string[]): string[] {
+function updateInitiativeInWorktree(
+  worktreePath: string,
+  initId: string,
+  wuIds: string[],
+): string[] {
   const initRelPath = INIT_PATHS.INITIATIVE(initId);
   const initAbsPath = join(worktreePath, initRelPath);
 
