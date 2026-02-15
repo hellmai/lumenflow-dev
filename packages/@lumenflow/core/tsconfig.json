@@ -1,13 +1,14 @@
 {
   "extends": "../../../tsconfig.json",
-  "_strictException": "WU-1535: 1396 implicit-any and strict-null errors remain. Tracked for incremental fix in INIT-020 Phase 2.",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
     "noEmit": false,
     "declaration": true,
-    "strict": false,
+    "strict": true,
     "strictNullChecks": false,
+    "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "allowJs": false,

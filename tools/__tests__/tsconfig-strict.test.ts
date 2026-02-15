@@ -44,21 +44,6 @@ interface TsConfig {
   [key: string]: unknown;
 }
 
-function parseStrictExceptionCount(raw: unknown): number | null {
-  if (typeof raw !== 'string') {
-    return null;
-  }
-
-  const numbers = raw.match(/\d[\d,]*/g);
-  if (!numbers || numbers.length === 0) {
-    return null;
-  }
-
-  const first = numbers[0].replace(/,/g, '');
-  const parsed = Number.parseInt(first, 10);
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
 describe('WU-1535: Strict TypeScript build configuration', () => {
   describe('AC1: tsconfig.build.json enforces strict: true and noEmitOnError: true', () => {
     it('should have strict: true in tsconfig.build.json', () => {
@@ -75,6 +60,7 @@ describe('WU-1535: Strict TypeScript build configuration', () => {
   describe('AC2: Per-package tsconfigs align with strict baseline', () => {
     // Packages that should fully inherit strict from root (no strict: false override)
     const strictPackages = [
+      'packages/@lumenflow/core/tsconfig.json',
       'packages/@lumenflow/metrics/tsconfig.json',
       'packages/@lumenflow/shims/tsconfig.json',
       'packages/@lumenflow/memory/tsconfig.json',
@@ -83,9 +69,6 @@ describe('WU-1535: Strict TypeScript build configuration', () => {
       'packages/@lumenflow/mcp/tsconfig.json',
       'packages/@lumenflow/cli/tsconfig.json',
     ];
-
-    // Packages with explicit temporary exceptions (documented justification required)
-    const exceptedPackages = ['packages/@lumenflow/core/tsconfig.json'];
 
     for (const path of strictPackages) {
       const pkgName = path.split('/')[1] + '/' + path.split('/')[2];
@@ -101,37 +84,10 @@ describe('WU-1535: Strict TypeScript build configuration', () => {
         const config = readJson(path) as TsConfig;
         expect(config.compilerOptions?.noEmitOnError).not.toBe(false);
       });
-    }
 
-    for (const path of exceptedPackages) {
-      const pkgName = path.split('/')[1] + '/' + path.split('/')[2];
-
-      it(`${pkgName} has documented temporary exception for strict mode`, () => {
+      it(`${pkgName} should not declare _strictException metadata`, () => {
         const config = readJson(path) as TsConfig;
-        // Excepted packages may have strict: false BUT must have a
-        // _strictException top-level field documenting the justification.
-        // (Cannot use compilerOptions because TypeScript rejects unknown keys there.)
-        if (config.compilerOptions?.strict === false) {
-          // Check for _strictException metadata at tsconfig root level
-          expect(config._strictException).toBeTruthy();
-        }
-        // If strict is not false, that's even better (they've been fixed)
-      });
-
-      it(`${pkgName} should have noEmitOnError: true even with strict exception`, () => {
-        const config = readJson(path) as TsConfig;
-        expect(config.compilerOptions?.noEmitOnError).toBe(true);
-      });
-
-      it(`${pkgName} exposes strict backlog posture when strict is disabled`, () => {
-        const config = readJson(path) as TsConfig;
-
-        if (config.compilerOptions?.strict === false) {
-          const count = parseStrictExceptionCount(config._strictException);
-          expect(typeof count).toBe('number');
-        } else {
-          expect(config.compilerOptions?.strict).toBe(true);
-        }
+        expect(config._strictException).toBeUndefined();
       });
     }
   });
