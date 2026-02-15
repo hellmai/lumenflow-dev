@@ -70,9 +70,11 @@ interface EnforcementConfig {
 interface LumenFlowConfig {
   agents?: {
     clients?: {
-      [client: string]: {
-        enforcement?: EnforcementConfig;
-      } | undefined;
+      [client: string]:
+        | {
+            enforcement?: EnforcementConfig;
+          }
+        | undefined;
     };
   };
   /** WU-1471: Memory enforcement configuration */

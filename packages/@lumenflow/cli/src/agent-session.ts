@@ -18,7 +18,11 @@ const program = new Command()
   .description('Start an agent session')
   .requiredOption('--wu <id>', 'WU ID to work on (e.g., WU-1234)')
   .requiredOption('--tier <tier>', 'Context tier (1, 2, or 3)')
-  .option('--agent-type <type>', 'Agent type (e.g. claude-code, codex-cli, gemini-cli)', 'claude-code')
+  .option(
+    '--agent-type <type>',
+    'Agent type (e.g. claude-code, codex-cli, gemini-cli)',
+    'claude-code',
+  )
   .action(async (opts) => {
     try {
       // Check for existing session
