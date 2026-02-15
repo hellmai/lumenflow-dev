@@ -33,9 +33,9 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1687 — Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine](wu/WU-1687.yaml) — Framework: CLI Enforcement
 - [WU-1688 — Fix sandbox backend invocation correctness: ro-bind, Seatbelt policy, Windows honesty](wu/WU-1688.yaml) — Framework: Core Validation
 - [WU-1689 — Fix missing shebangs in CLI dist bin scripts](wu/WU-1689.yaml) — Framework: CLI WU Commands
+- [WU-1687 — Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine](wu/WU-1687.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
