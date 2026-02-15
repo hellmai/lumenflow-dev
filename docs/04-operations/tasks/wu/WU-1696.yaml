@@ -2,7 +2,7 @@ id: WU-1696
 title: 'Strict config completion: remove core/cli false overrides'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -33,10 +33,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: strict compilation for @lumenflow/core and @lumenflow/cli currently succeeds under --strict, but both package tsconfigs still explicitly override strictNullChecks/noImplicitAny to false. Problem: policy and config remain inconsistent with full strict-mode completion. Solution: remove the false overrides, tighten policy tests first, and verify strict compilation remains green.'
+description: 'Context: strict compilation for @lumenflow/core and @lumenflow/cli currently succeeds
+  under --strict, but both package tsconfigs still explicitly override
+  strictNullChecks/noImplicitAny to false. Problem: policy and config remain inconsistent with full
+  strict-mode completion. Solution: remove the false overrides, tighten policy tests first, and
+  verify strict compilation remains green.'
 acceptance:
-  - 'packages/@lumenflow/core/tsconfig.json no longer sets strictNullChecks: false or noImplicitAny: false'
-  - 'packages/@lumenflow/cli/tsconfig.json no longer sets strictNullChecks: false or noImplicitAny: false'
-  - packages/@lumenflow/core/__tests__/tsconfig-inheritance.test.ts enforces non-deferral for core/cli strictNullChecks
+  - 'packages/@lumenflow/core/tsconfig.json no longer sets strictNullChecks: false or noImplicitAny:
+    false'
+  - 'packages/@lumenflow/cli/tsconfig.json no longer sets strictNullChecks: false or noImplicitAny:
+    false'
+  - packages/@lumenflow/core/__tests__/tsconfig-inheritance.test.ts enforces non-deferral for
+    core/cli strictNullChecks
   - pnpm --filter @lumenflow/core exec tsc --noEmit --strict --pretty false passes
   - pnpm --filter @lumenflow/cli exec tsc --noEmit --strict --pretty false passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1696
+claimed_at: 2026-02-15T20:40:19.670Z
+baseline_main_sha: c0edf90a462809e5db1416a1e0b70528d28dd363
+session_id: 384c1e93-9b87-426d-8d8d-738be02754a9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T20:40:19.678Z
