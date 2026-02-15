@@ -451,7 +451,7 @@ CRITICAL RULES - ENFORCE BEFORE EVERY ACTION:
 
 3. STOP-AND-ASK TRIGGERS (LumenFlow §7.2 - narrow scope)
    - Policy changes, auth/permissions modifications
-   - PII/PHI/safety issues, cloud spend, secrets, backups
+   - PII/safety issues, cloud spend, secrets, backups
    - Same error repeats 3x
    - For ordinary errors: fix and retry autonomously (up to 3 attempts)
 

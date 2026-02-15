@@ -10,7 +10,7 @@ Quick reference for AI agents working in LumenFlow projects.
 
 - Same error repeats 3 times
 - Auth or permissions changes needed
-- PII/PHI/secrets involved
+- PII/secrets involved
 - Cloud spend decisions
 - Policy changes required
 - Anything feels irreversible

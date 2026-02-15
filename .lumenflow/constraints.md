@@ -272,6 +272,6 @@ Stop and ask a human when:
 
 - Same error repeats 3 times
 - Auth or permissions changes required
-- PII/PHI/safety issues discovered
+- PII/safety issues discovered
 - Cloud spend or secrets involved
 - Policy changes needed

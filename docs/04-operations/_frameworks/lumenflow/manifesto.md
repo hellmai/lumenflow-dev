@@ -63,7 +63,7 @@ LumenFlow used itself to implement 8 major enhancements: automated validation (W
 
 - Rules transformed from documentation to enforcement
 - DORA metrics for continuous improvement
-- Healthcare compliance-ready traceability
+- Compliance-ready traceability
 - Intelligence lane testing rigor
 
 **Grade evolution:** A- → A+

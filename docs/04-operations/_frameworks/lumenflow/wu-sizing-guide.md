@@ -196,7 +196,7 @@ When a WU is Oversized or Complex (Non-Atomic), split it using one of these appr
 - **WU-1 (Core Systems):** API endpoints, database schema, backend logic.
 - **WU-2 (Experience):** Frontend components, UI state, integration with API.
 
-**Example:** New patient dashboard widget
+**Example:** New analytics dashboard widget
 
 - WU-A (Core Systems lane): `/api/dashboard/summary` endpoint + DB queries + API tests
 - WU-B (Experience lane): `DashboardSummaryCard` component + state management + E2E tests

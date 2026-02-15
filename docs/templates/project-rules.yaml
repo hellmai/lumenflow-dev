@@ -4,7 +4,7 @@
 # Company-wide rules (TRUTH-01, UPAIN-01, FAIR-01, CASH-03, GOV-WEEKLY) are inherited.
 #
 # Guidelines for adding project rules:
-# - Use PROJECT-NN naming convention (e.g., PATIENT-01, ACME-01)
+# - Use PROJECT-NN naming convention (e.g., PROJECT-01, ACME-01)
 # - Add rules when enforcement is needed (not for guidance)
 # - Start with minimal evidence, add metrics later (phased rollout)
 # - Document the "why" in notes (business context, regulatory, risk mitigation)
@@ -12,10 +12,10 @@
 extends: '_frameworks/cos/rules/hellmai-core-rules.yaml'
 
 rules:
-  # Example 1: Healthcare-specific compliance rule
+  # Example 1: Compliance rule
   - id: PROJECT-01
     kind: guardrail
-    statement: 'All patient-facing features require GDPR privacy impact assessment'
+    statement: 'All user-facing features require GDPR privacy impact assessment'
     evidence:
       required:
         - 'link:pia_doc' # Privacy Impact Assessment document
@@ -91,7 +91,7 @@ rules:
       No gate enforcement (calendar-based).
 
 # Template instructions:
-# 1. Replace PROJECT with your project name (e.g., PATIENT for ExampleApp)
+# 1. Replace PROJECT with your project name (e.g., MYAPP for your project)
 # 2. Remove or modify example rules above based on your needs
 # 3. Add rules when you need enforcement, not guidance
 # 4. Use phased rollout (minimal evidence now, metrics later)
