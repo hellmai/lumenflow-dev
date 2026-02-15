@@ -25,7 +25,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1703 — Emergency PII/PHI cleanup across templates and docs](wu/WU-1703.yaml) — Content: Framework Docs
 - [WU-1701 — Emergency cleanup: remove healthcare/PHI code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1702 — Emergency: remove healthcare/PHI code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 
@@ -677,6 +676,7 @@ sections:
 - [WU-1698 — Strict debt slice: eliminate TS7006 in core backlog-generator](wu/WU-1698.yaml)
 - [WU-1699 — Strict debt slice: eliminate TS7006 in core backlog-editor](wu/WU-1699.yaml)
 - [WU-1700 — Strict debt slice: eliminate TS7006 in cli initiative-status](wu/WU-1700.yaml)
+- [WU-1703 — Emergency PII/PHI cleanup across templates and docs](wu/WU-1703.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
