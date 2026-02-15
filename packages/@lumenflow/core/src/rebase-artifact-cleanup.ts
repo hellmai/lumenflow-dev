@@ -16,7 +16,7 @@
  */
 
 import { readFile, writeFile, unlink, access } from 'node:fs/promises';
-import { existsSync, rmSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import fg from 'fast-glob';
 import { parseYAML, stringifyYAML } from './wu-yaml.js';
@@ -35,16 +35,65 @@ import {
   BUILD_ARTIFACT_IGNORES,
 } from './wu-constants.js';
 import { findSectionBounds, removeBulletFromSection } from './backlog-editor.js';
+import { getErrorMessage } from './error-handler.js';
 
 /** @constant {string} FRONTMATTER_DELIMITER - YAML frontmatter delimiter */
 const FRONTMATTER_DELIMITER = '---';
+
+interface GitAdapterLike {
+  raw(args: string[]): Promise<string>;
+}
+
+interface MarkdownFileContents {
+  frontmatter: string;
+  lines: string[];
+}
+
+interface RebasedArtifactDetectionResult {
+  stamps: string[];
+  yamlStatusDone: boolean;
+  hasArtifacts: boolean;
+}
+
+interface DuplicateDetectionResult {
+  backlogDuplicate: boolean;
+  statusDuplicate: boolean;
+  hasDuplicates: boolean;
+}
+
+interface FileDuplicateCleanupResult {
+  cleaned: boolean;
+  error: string | null;
+}
+
+interface BacklogDeduplicateResult {
+  backlogCleaned: boolean;
+  statusCleaned: boolean;
+  cleaned: boolean;
+  errors: string[];
+}
+
+interface CleanupRebasedArtifactsResult {
+  stampsCleaned: string[];
+  yamlReset: boolean;
+  backlogCleaned: boolean;
+  statusCleaned: boolean;
+  errors: string[];
+  cleaned: boolean;
+}
+
+interface BuildArtifactsCleanupResult {
+  distDirectories: string[];
+  tsbuildinfoFiles: string[];
+  removedCount: number;
+}
 
 /**
  * Check if a file exists (async)
  * @param {string} filePath - Path to check
  * @returns {Promise<boolean>} True if file exists
  */
-async function fileExists(filePath) {
+async function fileExists(filePath: string): Promise<boolean> {
   try {
     await access(filePath);
     return true;
@@ -61,7 +110,7 @@ async function fileExists(filePath) {
  * @param {string} relativePath - Path relative to repo root
  * @returns {Promise<boolean>} True if file exists on origin/main
  */
-async function fileExistsOnMain(gitAdapter, relativePath) {
+async function fileExistsOnMain(gitAdapter: GitAdapterLike, relativePath: string): Promise<boolean> {
   try {
     await gitAdapter.raw(['show', `${REMOTES.ORIGIN}/${BRANCHES.MAIN}:${relativePath}`]);
     return true;
@@ -78,7 +127,7 @@ async function fileExistsOnMain(gitAdapter, relativePath) {
  * @param {string} wuId - WU ID (e.g., 'WU-1817')
  * @returns {Promise<boolean>} True if YAML on main has status=done
  */
-async function yamlIsDoneOnMain(gitAdapter, wuId) {
+async function yamlIsDoneOnMain(gitAdapter: GitAdapterLike, wuId: string): Promise<boolean> {
   try {
     const content = await gitAdapter.raw([
       'show',
@@ -98,8 +147,7 @@ async function yamlIsDoneOnMain(gitAdapter, wuId) {
  * @param {string} filePath - Path to file
  * @returns {{frontmatter: string, lines: string[]}} Frontmatter and content lines
  */
-function readMarkdownFile(filePath) {
-  const { readFileSync } = require('node:fs');
+function readMarkdownFile(filePath: string): MarkdownFileContents {
   const raw = readFileSync(filePath, { encoding: 'utf-8' });
   const allLines = raw.split('\n');
 
@@ -139,8 +187,7 @@ function readMarkdownFile(filePath) {
  * @param {string} frontmatter - Frontmatter text (including --- markers)
  * @param {string[]} lines - Content lines
  */
-function writeMarkdownFile(filePath, frontmatter, lines) {
-  const { writeFileSync } = require('node:fs');
+function writeMarkdownFile(filePath: string, frontmatter: string, lines: string[]): void {
   const content = frontmatter + lines.join('\n');
   writeFileSync(filePath, content, { encoding: 'utf-8' });
 }
@@ -171,8 +218,12 @@ function writeMarkdownFile(filePath, frontmatter, lines) {
  *   console.log('Found rebased artifacts, cleaning up...');
  * }
  */
-export async function detectRebasedArtifacts(worktreePath, wuId, gitAdapter) {
-  const stamps = [];
+export async function detectRebasedArtifacts(
+  worktreePath: string,
+  wuId: string,
+  gitAdapter: GitAdapterLike,
+): Promise<RebasedArtifactDetectionResult> {
+  const stamps: string[] = [];
   let yamlStatusDone = false;
 
   // Check for stamp file in worktree
@@ -241,10 +292,13 @@ export async function detectRebasedArtifacts(worktreePath, wuId, gitAdapter) {
  *   console.log('Cleaned rebased artifacts:', result);
  * }
  */
-export async function cleanupRebasedArtifacts(worktreePath, wuId) {
-  const stampsCleaned = [];
+export async function cleanupRebasedArtifacts(
+  worktreePath: string,
+  wuId: string,
+): Promise<CleanupRebasedArtifactsResult> {
+  const stampsCleaned: string[] = [];
   let yamlReset = false;
-  const errors = [];
+  const errors: string[] = [];
 
   // Clean stamp file
   const stampPath = join(worktreePath, WU_PATHS.STAMP(wuId));
@@ -338,7 +392,10 @@ export async function cleanupRebasedArtifacts(worktreePath, wuId) {
  *   console.log('Found backlog duplicates, cleaning up...');
  * }
  */
-export async function detectBacklogDuplicates(worktreePath, wuId) {
+export async function detectBacklogDuplicates(
+  worktreePath: string,
+  wuId: string,
+): Promise<DuplicateDetectionResult> {
   let backlogDuplicate = false;
   let statusDuplicate = false;
 
@@ -411,13 +468,13 @@ export async function detectBacklogDuplicates(worktreePath, wuId) {
  * @returns {{cleaned: boolean, error: string|null}} Result
  */
 function cleanDuplicatesFromFile(
-  filePath,
-  wuId,
-  inProgressSection,
-  completedSection,
-  fileLabel,
-  completedLabel,
-) {
+  filePath: string,
+  wuId: string,
+  inProgressSection: string,
+  completedSection: string,
+  fileLabel: string,
+  completedLabel: string,
+): FileDuplicateCleanupResult {
   if (!existsSync(filePath)) {
     return { cleaned: false, error: null };
   }
@@ -452,8 +509,8 @@ function cleanDuplicatesFromFile(
     );
 
     return { cleaned: true, error: null };
-  } catch (error) {
-    return { cleaned: false, error: `Failed to clean ${fileLabel}: ${error.message}` };
+  } catch (error: unknown) {
+    return { cleaned: false, error: `Failed to clean ${fileLabel}: ${getErrorMessage(error)}` };
   }
 }
 
@@ -485,8 +542,11 @@ function cleanDuplicatesFromFile(
  *   console.log('Cleaned backlog duplicates:', result);
  * }
  */
-export async function deduplicateBacklogAfterRebase(worktreePath, wuId) {
-  const errors = [];
+export async function deduplicateBacklogAfterRebase(
+  worktreePath: string,
+  wuId: string,
+): Promise<BacklogDeduplicateResult> {
+  const errors: string[] = [];
 
   // Clean backlog.md duplicates
   const backlogPath = join(worktreePath, WU_PATHS.BACKLOG());
@@ -536,7 +596,9 @@ export async function deduplicateBacklogAfterRebase(worktreePath, wuId) {
  * @returns {string[]} result.tsbuildinfoFiles - Removed tsbuildinfo files (relative paths)
  * @returns {number} result.removedCount - Total removed artifacts
  */
-export async function cleanupWorktreeBuildArtifacts(worktreePath) {
+export async function cleanupWorktreeBuildArtifacts(
+  worktreePath: string,
+): Promise<BuildArtifactsCleanupResult> {
   const root = resolve(worktreePath);
   const distDirectories = await fg(BUILD_ARTIFACT_GLOBS.DIST_DIRS, {
     cwd: root,
