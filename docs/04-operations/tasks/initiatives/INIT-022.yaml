@@ -39,7 +39,7 @@ phases:
     status: done
   - id: 9
     title: 'Wave 2D: Core infrastructure strict fixes'
-    status: pending
+    status: done
   - id: 10
     title: 'Wave 2E: Core remaining strict fixes and strict enablement'
     status: pending

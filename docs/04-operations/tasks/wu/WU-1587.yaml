@@ -2,7 +2,7 @@ id: WU-1587
 title: 'Core strict wave 2D: infrastructure strict fixes'
 lane: 'Framework: Core State Recovery'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -53,3 +53,6 @@ session_id: 1246516f-21a7-4425-8e80-f9825594f26c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T19:01:35.054Z
+locked: true
+completed_at: 2026-02-15T19:07:04.955Z
+completed: 2026-02-15
