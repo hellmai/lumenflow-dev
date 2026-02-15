@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * @file doctor.ts
  * LumenFlow health check command (WU-1177)

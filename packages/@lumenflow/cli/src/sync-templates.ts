@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * @file sync-templates.ts
  * Sync internal docs to CLI templates for release-cycle maintenance (WU-1123)

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * @file docs-sync.ts
  * LumenFlow docs:sync command for syncing agent docs to existing projects (WU-1083)
