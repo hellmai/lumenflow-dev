@@ -25,7 +25,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1699 — Strict debt slice: eliminate TS7006 in core backlog-editor](wu/WU-1699.yaml) — Framework: Core Validation
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -673,6 +673,7 @@ sections:
 - [WU-1696 — Strict config completion: remove core/cli false overrides](wu/WU-1696.yaml)
 - [WU-1697 — Strict debt slice: eliminate TS7006 in core wu-done-metadata](wu/WU-1697.yaml)
 - [WU-1698 — Strict debt slice: eliminate TS7006 in core backlog-generator](wu/WU-1698.yaml)
+- [WU-1699 — Strict debt slice: eliminate TS7006 in core backlog-editor](wu/WU-1699.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

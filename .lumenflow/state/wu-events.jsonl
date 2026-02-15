@@ -1353,4 +1353,5 @@
 {"type":"complete","wuId":"WU-1697","timestamp":"2026-02-15T20:53:56.507Z"}
 {"type":"claim","wuId":"WU-1698","timestamp":"2026-02-15T21:13:14.340Z","lane":"Framework: Core Validation","title":"Strict debt slice: eliminate TS7006 in core backlog-generator"}
 {"type":"complete","wuId":"WU-1698","timestamp":"2026-02-15T21:21:46.103Z"}
-{"type":"claim","wuId":"WU-1699","lane":"Framework: Core Validation","title":"Strict debt slice: eliminate TS7006 in core backlog-editor","timestamp":"2026-02-15T21:24:47.341Z"}
+{"type":"claim","wuId":"WU-1699","timestamp":"2026-02-15T21:24:47.341Z","lane":"Framework: Core Validation","title":"Strict debt slice: eliminate TS7006 in core backlog-editor"}
+{"type":"complete","wuId":"WU-1699","timestamp":"2026-02-15T21:32:33.367Z"}
