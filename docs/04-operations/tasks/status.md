@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1691 — Include bare lumenflow wrapper in release script version bumps](wu/WU-1691.yaml)
 
 ## Completed
 
