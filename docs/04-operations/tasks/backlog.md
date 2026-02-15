@@ -31,7 +31,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1582 — CLI strict wave 1B: initiative and gates command fixes](wu/WU-1582.yaml) — Framework: CLI Orchestration
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -667,6 +667,7 @@ sections:
 - [WU-1692 — Add OSS governance docs and GitHub community templates](wu/WU-1692.yaml)
 - [WU-1693 — Clarify contributing workflows: trunk-based vs PR-based](wu/WU-1693.yaml)
 - [WU-1581 — CLI strict wave 1A: high-impact WU command hotspots](wu/WU-1581.yaml)
+- [WU-1582 — CLI strict wave 1B: initiative and gates command fixes](wu/WU-1582.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
