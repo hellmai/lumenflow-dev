@@ -5,6 +5,7 @@ _Last updated: 2026-02-15_
 ## In Progress
 
 - [WU-1679 — Update repo references from hellmai/os to hellmai/lumenflow](wu/WU-1679.yaml)
+- [WU-1680 — Validator Layer V2: unify phase-aware rules and adapters](wu/WU-1680.yaml)
 
 ## Completed
 
