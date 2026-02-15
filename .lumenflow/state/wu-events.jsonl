@@ -1307,9 +1307,10 @@
 {"type":"complete","wuId":"WU-1686","timestamp":"2026-02-15T12:51:27.524Z"}
 {"type":"claim","wuId":"WU-1684","timestamp":"2026-02-15T14:46:16.171Z","lane":"Framework: Core Validation","title":"Build vendor-agnostic core sandbox engine contract and OS backends"}
 {"type":"complete","wuId":"WU-1684","timestamp":"2026-02-15T15:05:21.316Z"}
-{"type":"claim","wuId":"WU-1687","lane":"Framework: CLI Enforcement","title":"Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine","timestamp":"2026-02-15T15:10:03.374Z"}
-{"type":"claim","wuId":"WU-1688","lane":"Framework: Core Validation","title":"Fix sandbox backend invocation correctness: ro-bind, Seatbelt policy, Windows honesty","timestamp":"2026-02-15T15:14:42.295Z"}
-{"type":"claim","wuId":"WU-1689","lane":"Framework: CLI WU Commands","title":"Fix missing shebangs in CLI dist bin scripts","timestamp":"2026-02-15T15:16:23.107Z"}
-{"type":"block","wuId":"WU-1687","reason":"Blocked pending WU-1688 backend fixes (Linux ro-bind, macOS Seatbelt allowances, Windows enforcement honesty).","timestamp":"2026-02-15T15:18:52.640Z"}
+{"type":"claim","wuId":"WU-1687","timestamp":"2026-02-15T15:10:03.374Z","lane":"Framework: CLI Enforcement","title":"Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine"}
+{"type":"claim","wuId":"WU-1688","timestamp":"2026-02-15T15:14:42.295Z","lane":"Framework: Core Validation","title":"Fix sandbox backend invocation correctness: ro-bind, Seatbelt policy, Windows honesty"}
+{"type":"claim","wuId":"WU-1689","timestamp":"2026-02-15T15:16:23.107Z","lane":"Framework: CLI WU Commands","title":"Fix missing shebangs in CLI dist bin scripts"}
+{"type":"block","wuId":"WU-1687","timestamp":"2026-02-15T15:18:52.640Z","reason":"Blocked pending WU-1688 backend fixes (Linux ro-bind, macOS Seatbelt allowances, Windows enforcement honesty)."}
 {"type":"unblock","wuId":"WU-1687","timestamp":"2026-02-15T15:20:06.369Z"}
-{"type":"block","wuId":"WU-1687","reason":"Blocked pending WU-1688 backend fixes (Linux ro-bind, macOS Seatbelt allowances, Windows enforcement honesty).","timestamp":"2026-02-15T15:20:27.660Z"}
+{"type":"block","wuId":"WU-1687","timestamp":"2026-02-15T15:20:27.660Z","reason":"Blocked pending WU-1688 backend fixes (Linux ro-bind, macOS Seatbelt allowances, Windows enforcement honesty)."}
+{"type":"complete","wuId":"WU-1689","timestamp":"2026-02-15T15:26:57.540Z"}

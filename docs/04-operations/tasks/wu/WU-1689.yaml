@@ -2,7 +2,7 @@ id: WU-1689
 title: Fix missing shebangs in CLI dist bin scripts
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -44,3 +44,6 @@ acceptance:
   - All bin entry scripts in package.json have shebang in dist output
   - npx -p @lumenflow/cli lumenflow init works in a fresh directory
   - Build pipeline ensures shebangs are added to all bin scripts going forward
+locked: true
+completed_at: 2026-02-15T15:26:55.876Z
+completed: 2026-02-15
