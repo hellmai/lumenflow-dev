@@ -1,0 +1,36 @@
+{
+  "name": "lumenflow",
+  "version": "2.19.0",
+  "description": "Give your AI agent a workflow it can't break. CLI wrapper for @lumenflow/cli.",
+  "keywords": [
+    "lumenflow",
+    "workflow",
+    "ai-agents",
+    "cli",
+    "developer-tools"
+  ],
+  "homepage": "https://lumenflow.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hellmai/lumenflow.git",
+    "directory": "packages/lumenflow"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "HellmAI",
+    "url": "https://hellm.ai"
+  },
+  "type": "module",
+  "bin": {
+    "lumenflow": "./bin/lumenflow.mjs"
+  },
+  "dependencies": {
+    "@lumenflow/cli": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public",
+    "dependencies": {
+      "@lumenflow/cli": "^2.19.0"
+    }
+  }
+}

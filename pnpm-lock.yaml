@@ -354,6 +354,12 @@ importers:
         specifier: ^4.0.17
         version: 4.0.17(@edge-runtime/vm@3.2.0)(@types/node@22.19.6)(yaml@2.8.2)
 
+  packages/lumenflow:
+    dependencies:
+      '@lumenflow/cli':
+        specifier: workspace:*
+        version: link:../@lumenflow/cli
+
 packages:
 
   '@aria-ui/core@0.0.22':
