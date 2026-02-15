@@ -38,7 +38,9 @@ describe('validateRegistrationParity adapter (WU-1680)', () => {
 
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBe(2);
-    expect(result.errors.every((e) => e.type === WU_LINT_ERROR_TYPES.REGISTRATION_PARITY_MISSING));
+    expect(
+      result.errors.every((e) => e.type === WU_LINT_ERROR_TYPES.REGISTRATION_PARITY_MISSING),
+    ).toBe(true);
   });
 
   it('passes when binChanged=true and both registration surfaces are present', () => {
