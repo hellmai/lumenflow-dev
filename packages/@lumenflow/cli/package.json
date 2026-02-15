@@ -133,8 +133,8 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc",
-    "build:dist": "rm -rf dist && tsc -p tsconfig.build.json",
+    "build": "tsc && node scripts/check-shebangs.mjs",
+    "build:dist": "rm -rf dist && tsc -p tsconfig.build.json && node scripts/check-shebangs.mjs",
     "pack:dist": "pnpm pack",
     "clean": "rm -rf dist *.tgz",
     "test": "vitest run",

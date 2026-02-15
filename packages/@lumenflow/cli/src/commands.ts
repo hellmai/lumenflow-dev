@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * @file commands.ts
  * LumenFlow CLI commands discovery feature (WU-1378)

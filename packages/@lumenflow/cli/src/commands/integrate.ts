@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * @file integrate.ts
  * Integrate LumenFlow with Claude Code (WU-1367)

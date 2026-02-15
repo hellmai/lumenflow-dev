@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * @file init.ts
  * LumenFlow project scaffolding command (WU-1045)
