@@ -1308,3 +1308,4 @@
 {"type":"claim","wuId":"WU-1684","timestamp":"2026-02-15T14:46:16.171Z","lane":"Framework: Core Validation","title":"Build vendor-agnostic core sandbox engine contract and OS backends"}
 {"type":"complete","wuId":"WU-1684","timestamp":"2026-02-15T15:05:21.316Z"}
 {"type":"claim","wuId":"WU-1687","lane":"Framework: CLI Enforcement","title":"Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine","timestamp":"2026-02-15T15:10:03.374Z"}
+{"type":"claim","wuId":"WU-1688","lane":"Framework: Core Validation","title":"Fix sandbox backend invocation correctness: ro-bind, Seatbelt policy, Windows honesty","timestamp":"2026-02-15T15:14:42.295Z"}
