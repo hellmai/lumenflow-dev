@@ -2,7 +2,7 @@ id: WU-1697
 title: 'Strict debt slice: eliminate TS7006 in core wu-done-metadata'
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -54,3 +54,6 @@ acceptance:
     TS7006/TS7031 diagnostics for packages/@lumenflow/core/src/wu-done-metadata.ts
   - packages/@lumenflow/core/src/__tests__/wu-done-metadata.test.ts passes
   - pnpm --filter @lumenflow/core typecheck passes
+locked: true
+completed_at: 2026-02-15T20:53:54.809Z
+completed: 2026-02-15
