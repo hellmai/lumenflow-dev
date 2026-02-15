@@ -1,0 +1,32 @@
+id: WU-1702
+title: 'Emergency: remove healthcare/PHI code from CLI and MCP packages'
+lane: 'Framework: CLI Enforcement'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-15
+code_paths:
+  - packages/@lumenflow/cli/**
+  - packages/@lumenflow/mcp/**
+tests:
+  manual:
+    - packages/@lumenflow/cli/src/__tests__/file-operations.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1702.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Remove all healthcare/PHI-specific code from the @lumenflow/cli and @lumenflow/mcp packages. The repo was open-sourced with healthcare code that does not belong.
+acceptance:
+  - No PHI/PII/healthcare references in CLI or MCP packages
