@@ -16,6 +16,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-edit-operations.ts
   - packages/@lumenflow/cli/src/wu-status.ts
   - packages/@lumenflow/cli/src/plan-link.ts
+  - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
 tests:
   manual:
     - Run wu:create with --plan flag and verify plan field is populated in YAML
