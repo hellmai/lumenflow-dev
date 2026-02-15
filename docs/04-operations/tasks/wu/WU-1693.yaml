@@ -7,7 +7,7 @@ priority: P2
 created: 2026-02-15
 code_paths:
   - README.md
-  - CONTRIBUTING.md
+  - .github/CONTRIBUTING.md
 tests:
   manual: []
   unit: []
@@ -18,10 +18,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-15T17:57:02.692Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-framework-docs-wu-1693
+session_id: 39e25768-555a-43c5-b272-05f15ca1de64
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T17:57:02.700Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -30,11 +37,3 @@ description: 'README contributing section needs to explain both workflows: maint
 acceptance:
   - README contributing section explains both internal (wu:done) and external (fork+PR) workflows
   - CONTRIBUTING.md created with detailed contributor guide
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-framework-docs-wu-1693
-claimed_at: 2026-02-15T17:57:02.692Z
-baseline_main_sha: 7270a568094d52ed1e6ec42d8728d5137ed9ec0b
-session_id: 39e25768-555a-43c5-b272-05f15ca1de64
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-15T17:57:02.700Z
