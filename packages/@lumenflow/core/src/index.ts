@@ -11,6 +11,11 @@ export * from './arg-parser.js';
 export * from './date-utils.js';
 export * from './error-handler.js';
 export * from './retry-strategy.js';
+export * from './sandbox-allowlist.js';
+export * from './sandbox-profile.js';
+export * from './sandbox-backend-linux.js';
+export * from './sandbox-backend-macos.js';
+export * from './sandbox-backend-windows.js';
 
 // Cycle detection (WU-1088 - extracted from initiatives to break circular dependency)
 export * from './cycle-detector.js';

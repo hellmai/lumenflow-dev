@@ -11,6 +11,7 @@ code_paths:
   - packages/@lumenflow/core/src/sandbox-backend-linux.ts
   - packages/@lumenflow/core/src/sandbox-backend-macos.ts
   - packages/@lumenflow/core/src/sandbox-backend-windows.ts
+  - packages/@lumenflow/core/src/index.ts
   - packages/@lumenflow/core/src/__tests__/sandbox-profile.test.ts
   - packages/@lumenflow/core/src/__tests__/sandbox-allowlist.test.ts
   - packages/@lumenflow/core/src/__tests__/sandbox-backend-linux.test.ts
