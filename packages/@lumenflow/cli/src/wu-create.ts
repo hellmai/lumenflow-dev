@@ -396,6 +396,9 @@ async function main() {
   const planSpecRef = args.plan ? getPlanProtocolRef(wuId) : undefined;
   const mergedRefs = mergeSpecRefs(args.specRefs, planSpecRef);
 
+  // WU-1683: Set first-class plan field (symmetric with initiative related_plan)
+  const resolvedPlan = args.plan ? getPlanProtocolRef(wuId) : undefined;
+
   // WU-1443: Apply resilient defaults so a plan-first WU doesn't immediately fail strict validation.
   const effectiveType = args.type || DEFAULT_TYPE;
 
@@ -484,6 +487,7 @@ async function main() {
       userJourney: args.userJourney,
       uiPairingWus: args.uiPairingWus,
       specRefs: mergedRefs,
+      plan: resolvedPlan,
       initiative: args.initiative,
       phase: args.phase,
       blockedBy: args.blockedBy,
@@ -564,6 +568,8 @@ async function main() {
       uiPairingWus: args.uiPairingWus,
       // WU-2320: Spec references
       specRefs: mergedRefs,
+      // WU-1683: First-class plan field
+      plan: resolvedPlan,
     };
 
     if (cloudCtx.skipMicroWorktree) {

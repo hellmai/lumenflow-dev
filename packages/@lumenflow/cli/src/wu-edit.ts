@@ -212,6 +212,12 @@ const EDIT_OPTIONS = {
     flags: '--replace-dependencies',
     description: 'Replace existing dependencies instead of appending',
   },
+  // WU-1683: Plan field (symmetric with initiative related_plan)
+  plan: {
+    name: 'plan',
+    flags: '--plan <uri>',
+    description: 'Plan file URI (lumenflow://plans/... or repo-relative path)',
+  },
 };
 
 /**
@@ -256,6 +262,8 @@ function parseArgs() {
         EDIT_OPTIONS.replaceBlockedBy,
         EDIT_OPTIONS.addDep,
         EDIT_OPTIONS.replaceDependencies,
+        // WU-1683: Plan field
+        EDIT_OPTIONS.plan,
         // WU-1039: Add exposure for done WU metadata updates
         WU_OPTIONS.exposure,
         // Compatibility flag: reality checks now run in wu:prep/wu:done
@@ -347,7 +355,9 @@ async function main() {
     opts.blockedBy ||
     opts.addDep ||
     // WU-1039: Add exposure to hasEdits check
-    opts.exposure;
+    opts.exposure ||
+    // WU-1683: Add plan to hasEdits check
+    opts.plan;
   if (!hasEdits) {
     die(
       'No edits specified.\n\n' +
@@ -368,7 +378,8 @@ async function main() {
         '  --test-paths-e2e <path>   Append e2e test paths (repeatable)\n' +
         '  --blocked-by <wuIds>      Append WU IDs that block this WU (use --replace-blocked-by to overwrite)\n' +
         '  --add-dep <wuIds>         Append WU IDs to dependencies (use --replace-dependencies to overwrite)\n' +
-        '  --exposure <type>         Update exposure level (ui, api, backend-only, documentation)\n\n' +
+        '  --exposure <type>         Update exposure level (ui, api, backend-only, documentation)\n' +
+        '  --plan <uri>              Set plan file URI (lumenflow://plans/... or repo-relative)\n\n' +
         'Note: All array fields now append by default (WU-1225). Use --replace-* flags to overwrite.',
     );
   }

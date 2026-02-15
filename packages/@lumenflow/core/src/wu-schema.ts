@@ -336,6 +336,12 @@ const sharedFields = {
   // === End Initiative System Fields ===
 
   /**
+   * WU-1683: First-class plan field, symmetric with initiative `related_plan`.
+   * Set via wu:create --plan, wu:edit --plan, or plan:link --id WU-XXX.
+   */
+  plan: z.string().optional(),
+
+  /**
    * WU-1833: References to plans, design docs, external specifications
    * WU-1834: Supports both flat string array AND nested object format for backwards compatibility
    *

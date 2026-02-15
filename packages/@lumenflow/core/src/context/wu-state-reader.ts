@@ -28,6 +28,8 @@ export interface WuStateResult {
   title: string;
   /** Absolute path to WU YAML file */
   yamlPath: string;
+  /** WU-1683: Path to linked plan file */
+  plan?: string;
   /** Whether YAML and state store are consistent */
   isConsistent: boolean;
   /** Reason for inconsistency if not consistent */
@@ -82,6 +84,8 @@ export async function readWuState(wuId: string, repoRoot: string): Promise<WuSta
     const status = yaml.status || 'unknown';
     const lane = yaml.lane || '';
     const title = yaml.title || '';
+    // WU-1683: Extract plan field
+    const plan = typeof yaml.plan === 'string' ? yaml.plan : undefined;
 
     // For now, we consider YAML-only reading as consistent
     // Full state store integration would compare with wu-events.jsonl
@@ -95,6 +99,7 @@ export async function readWuState(wuId: string, repoRoot: string): Promise<WuSta
       lane,
       title,
       yamlPath,
+      ...(plan && { plan }),
       isConsistent,
       inconsistencyReason,
     };
