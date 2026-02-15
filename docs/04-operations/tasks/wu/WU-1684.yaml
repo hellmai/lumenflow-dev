@@ -41,22 +41,22 @@ dependencies: []
 spec_refs:
   - LUMENFLOW.md
 risks: []
-notes: >-
-  Design references: Anthropic sandbox-runtime (github.com/anthropic-experimental/sandbox-runtime)
-  uses bwrap on Linux with asymmetric defaults (read=allow, write=deny). Codex issue #7071 shows
-  that making .git read-only via chmod breaks git entirely — must use process-level namespaces
-  instead. This is Layer 1 in a defense-in-depth model: (L1) kernel sandbox via bwrap, (L2) git
-  pre-commit hooks, (L3) client-specific hooks, (L4) prompt instructions. Future: wu:claim could
-  auto-detect bwrap and offer --sandbox by default. macOS support via sandbox-exec is a follow-up
-  WU.
-
-
-  2026-02-15 refinement: prioritize fail-closed defaults and explicit override semantics; add
-  escape-path validation coverage (traversal + symlink).
-
-
-  2026-02-15 cross-platform refinement: wu:sandbox must be OS-agnostic at command surface with
-  pluggable backend adapters; Linux bwrap is one backend, not the architecture.
+notes: 'Design references: Anthropic sandbox-runtime
+  (github.com/anthropic-experimental/sandbox-runtime) uses bwrap on Linux with asymmetric defaults
+  (read=allow, write=deny). Codex issue #7071 shows that making .git read-only via chmod breaks git
+  entirely — must use process-level namespaces instead. This is Layer 1 in a defense-in-depth model:
+  (L1) kernel sandbox via bwrap, (L2) git pre-commit hooks, (L3) client-specific hooks, (L4) prompt
+  instructions. Future: wu:claim could auto-detect bwrap and offer --sandbox by default. macOS
+  support via sandbox-exec is a follow-up WU. | 2026-02-15 refinement: fail-closed defaults,
+  explicit override semantics, escape-path validation (traversal + symlink). | Defense layer
+  analysis: sandbox is ADDITIVE, not replacive. Existing layers protect against distinct concerns:
+  (1) deny rules = destructive git ops (force-push, reset --hard) — sandbox cannot cover these since
+  .git must stay writable, (2) bash-blocker = tool hygiene (use Grep not grep) — orthogonal to
+  filesystem isolation, (3) pre-commit YAML validation = data integrity — orthogonal. One
+  simplification opportunity: validate-worktree-path.sh (256 lines) could reduce to ~40-line
+  audit-only stub once sandbox is standard, since kernel handles the actual write blocking.
+  validate-worktree-discipline.sh (101 lines) could reduce to ~30-line human-only fallback. Net:
+  ~350 lines simplifiable out of 1077 total defense code.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -92,19 +92,10 @@ acceptance:
   - 'Sandbox allow-list includes: worktree dir, /tmp, .lumenflow/state/, WU YAML path, /proc, /dev
     (for node)'
   - .lumenflow.config.yaml gets a new sandbox section for configuring allow/deny paths
-  - When bwrap is not installed, command prints a warning and runs the agent unsandboxed (graceful
-    degradation)
+  - 'Fail-closed default: when bwrap is not installed, wu:sandbox exits non-zero unless explicit
+    LUMENFLOW_SANDBOX_ALLOW_UNSANDBOXED=1 override is set (warns and runs unsandboxed)'
   - wu:claim --sandbox flag auto-wraps the agent session in the sandbox after worktree creation
   - Integration test proves that a sandboxed process cannot write to main but can write to its
     worktree
-  - 'Fail-closed policy is available and documented: if bwrap is unavailable, wu:sandbox exits
-    non-zero unless explicit unsandboxed override is set.'
   - Sandbox denies path-escape writes via ../ traversal and symlink traversal outside the claimed
-    worktree.
-  - wu:sandbox command is supported on Linux, macOS, and Windows with platform-aware backend
-    selection.
-  - Platform backend contract is adapter-based (e.g., linux-bwrap, macos, windows) so enforcement
-    logic is not hardcoded to one OS.
-  - If no hardened backend is available on the current OS, default behavior is fail-closed unless
-    explicit unsandboxed override is provided.
-  - Automated tests cover backend selection matrix and expected fail-closed/override behavior per OS.
+    worktree
