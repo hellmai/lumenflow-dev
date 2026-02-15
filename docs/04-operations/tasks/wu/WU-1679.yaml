@@ -6,9 +6,16 @@ status: in_progress
 priority: P2
 created: 2026-02-15
 code_paths:
-  - packages/*/package.json
+  - packages/@lumenflow/*/package.json
+  - packages/@lumenflow/*/README.md
   - CHANGELOG.md
+  - README.md
   - apps/docs/
+  - docs/
+  - tools/generate-cli-docs.ts
+  - packages/@lumenflow/cli/src/sync-templates.ts
+  - packages/@lumenflow/cli/templates/
+  - packages/linters/
 tests:
   manual:
     - grep -r hellmai/os confirms no remaining references in source files
@@ -21,10 +28,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-15T09:00:04.519Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1679
+session_id: 5fa86655-0561-4e7d-8628-dace82f7fa35
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T09:00:04.524Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -36,11 +50,3 @@ acceptance:
   - All README and doc files reference hellmai/lumenflow
   - CLI templates reference hellmai/lumenflow
   - CHANGELOG.md compare links updated
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1679
-claimed_at: 2026-02-15T09:00:04.519Z
-baseline_main_sha: 1768f20f5c42fc07ba27dffc27507ed3dda48e04
-session_id: 5fa86655-0561-4e7d-8628-dace82f7fa35
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-15T09:00:04.524Z
