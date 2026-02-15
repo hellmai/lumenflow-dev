@@ -2,7 +2,7 @@ id: WU-1683
 title: Add first-class plan field to WU schema for plan-to-WU linking
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -62,3 +62,6 @@ acceptance:
   - plan:link sets wu.plan (not spec_refs) when linking to a WU, symmetric with initiative
     related_plan
   - wu:status surfaces the linked plan file path
+locked: true
+completed_at: 2026-02-15T12:35:10.842Z
+completed: 2026-02-15

@@ -34,7 +34,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1683 — Add first-class plan field to WU schema for plan-to-WU linking](wu/WU-1683.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -659,6 +659,7 @@ sections:
 - [WU-1681 — Fix wu:brief client flag UX to avoid Claude-biased defaults](wu/WU-1681.yaml)
 - [WU-1680 — Validator Layer V2: unify phase-aware rules and adapters](wu/WU-1680.yaml)
 - [WU-1685 — Validator V2 follow-up: normalize issue shaping and adapter boundaries](wu/WU-1685.yaml)
+- [WU-1683 — Add first-class plan field to WU schema for plan-to-WU linking](wu/WU-1683.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
