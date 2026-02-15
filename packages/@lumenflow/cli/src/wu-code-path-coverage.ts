@@ -89,7 +89,8 @@ export function checkCodePathCoverageBeforeGates(options: {
 
   if ((diffResult.status ?? EXIT_CODES.ERROR) !== EXIT_CODES.SUCCESS) {
     const stderrText = String(diffResult.stderr ?? '').trim();
-    const errorText = stderrText || (diffResult.error instanceof Error ? diffResult.error.message : '');
+    const errorText =
+      stderrText || (diffResult.error instanceof Error ? diffResult.error.message : '');
     return {
       valid: false,
       missingCodePaths: scopedCodePaths,
