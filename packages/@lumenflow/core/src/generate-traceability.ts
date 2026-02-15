@@ -14,63 +14,72 @@
 import path from 'node:path';
 import yaml from 'yaml';
 
-/**
- * @typedef {Object} HazardDefinition
- * @property {string} id
- * @property {string} title
- * @property {number} severity
- * @property {number} likelihood
- * @property {number} riskScore
- * @property {ControlDefinition[]} controls
- * @property {number} residualRiskScore
- * @property {string} acceptability
- */
+export interface ControlDefinition {
+  id: string;
+  description: string;
+  type: string;
+  status: string;
+}
 
-/**
- * @typedef {Object} ControlDefinition
- * @property {string} id
- * @property {string} description
- * @property {string} type
- * @property {string} status
- */
+export interface HazardDefinition {
+  id: string;
+  title: string;
+  severity: number;
+  likelihood: number;
+  riskScore: number;
+  controls: ControlDefinition[];
+  residualRiskScore: number;
+  acceptability: string;
+}
 
-/**
- * @typedef {Object} PromptVersion
- * @property {string} filePath
- * @property {string} fileName
- * @property {string} version
- * @property {string} relativePath
- */
+interface PromptInput {
+  path: string;
+  content: string;
+}
 
-/**
- * @typedef {Object} GitCommit
- * @property {string} hash
- * @property {string} date
- * @property {string} author
- * @property {string} message
- * @property {string[]} files
- */
+export interface PromptVersion {
+  filePath: string;
+  fileName: string;
+  version: string;
+  relativePath: string;
+}
 
-/**
- * @typedef {Object} CrossReference
- * @property {string} source
- * @property {string} target
- * @property {'hazard_to_control' | 'control_to_prompt' | 'control_to_test'} type
- * @property {boolean} valid
- * @property {string} [error]
- */
+export interface GitCommit {
+  hash: string;
+  date: string;
+  author: string;
+  message: string;
+  files: string[];
+}
+
+export interface CrossReference {
+  source: string;
+  target: string;
+  type: 'hazard_to_control' | 'control_to_prompt' | 'control_to_test';
+  valid: boolean;
+  error?: string;
+}
+
+interface HazardReferenceInput {
+  id: string;
+  controls: Array<{ id: string }>;
+}
+
+interface GoldenTestReference {
+  file: string;
+  mentionsControls: string[];
+}
 
 /**
  * Parse hazard definitions from hazard-log.md content
  * @param {string} content - Markdown content of hazard log
  * @returns {HazardDefinition[]}
  */
-export function parseHazardLog(content) {
-  const hazards = [];
+export function parseHazardLog(content: string): HazardDefinition[] {
+  const hazards: HazardDefinition[] = [];
   const hazardSections = content.split(/### HAZ-\d{3}:/);
 
-  for (let i = 1; i < hazardSections.length; i++) {
-    const section = hazardSections[i];
+  for (const section of hazardSections.slice(1)) {
     const hazard = parseHazardSection(section);
     if (hazard) {
       hazards.push(hazard);
@@ -85,11 +94,16 @@ export function parseHazardLog(content) {
  * @param {string} section
  * @returns {HazardDefinition | null}
  */
-function parseHazardSection(section) {
+function parseHazardSection(section: string): HazardDefinition | null {
   const idMatch = section.match(/\*\*Hazard ID\*\*\s*\|\s*(HAZ-\d{3})/);
   if (!idMatch) return null;
+  const id = idMatch[1];
+  if (!id) {
+    return null;
+  }
 
-  const titleLine = section.split('\n')[0].trim();
+  const [firstLine = ''] = section.split('\n');
+  const titleLine = firstLine.trim();
 
   // Parse initial risk values
   const severityMatch = section.match(/\*\*Initial Severity\*\*\s*\|\s*(\d)/);
@@ -104,14 +118,14 @@ function parseHazardSection(section) {
   const controls = parseControls(section);
 
   return {
-    id: idMatch[1],
+    id,
     title: titleLine,
-    severity: severityMatch ? parseInt(severityMatch[1], 10) : 0,
-    likelihood: likelihoodMatch ? parseInt(likelihoodMatch[1], 10) : 0,
-    riskScore: riskScoreMatch ? parseInt(riskScoreMatch[1], 10) : 0,
+    severity: severityMatch?.[1] ? parseInt(severityMatch[1], 10) : 0,
+    likelihood: likelihoodMatch?.[1] ? parseInt(likelihoodMatch[1], 10) : 0,
+    riskScore: riskScoreMatch?.[1] ? parseInt(riskScoreMatch[1], 10) : 0,
     controls,
-    residualRiskScore: residualRiskMatch ? parseInt(residualRiskMatch[1], 10) : 0,
-    acceptability: acceptabilityMatch ? acceptabilityMatch[1].trim() : 'Unknown',
+    residualRiskScore: residualRiskMatch?.[1] ? parseInt(residualRiskMatch[1], 10) : 0,
+    acceptability: acceptabilityMatch?.[1]?.trim() ?? 'Unknown',
   };
 }
 
@@ -120,18 +134,22 @@ function parseHazardSection(section) {
  * @param {string} section
  * @returns {ControlDefinition[]}
  */
-function parseControls(section) {
-  const controls = [];
+function parseControls(section: string): ControlDefinition[] {
+  const controls: ControlDefinition[] = [];
   const controlMatches = section.matchAll(
     /\|\s*(C-\d{3}[a-z]?)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g,
   );
 
   for (const match of controlMatches) {
+    const [, id = '', description = '', type = '', status = ''] = match;
+    if (!id) {
+      continue;
+    }
     controls.push({
-      id: match[1].trim(),
-      description: match[2].trim(),
-      type: match[3].trim(),
-      status: match[4].trim(),
+      id: id.trim(),
+      description: description.trim(),
+      type: type.trim(),
+      status: status.trim(),
     });
   }
 
@@ -143,17 +161,21 @@ function parseControls(section) {
  * @param {Array<{path: string, content: string}>} prompts
  * @returns {PromptVersion[]}
  */
-export function extractPromptVersions(prompts) {
-  const versions = [];
+export function extractPromptVersions(prompts: PromptInput[]): PromptVersion[] {
+  const versions: PromptVersion[] = [];
 
   for (const prompt of prompts) {
     try {
-      const parsed = yaml.parse(prompt.content);
-      if (parsed && parsed.version) {
+      const parsed = yaml.parse(prompt.content) as unknown;
+      if (parsed && typeof parsed === 'object' && 'version' in parsed) {
+        const versionValue = (parsed as { version?: unknown }).version;
+        if (versionValue == null) {
+          continue;
+        }
         versions.push({
           filePath: prompt.path,
           fileName: path.basename(prompt.path),
-          version: parsed.version,
+          version: String(versionValue),
           relativePath: prompt.path,
         });
       }
@@ -172,11 +194,15 @@ export function extractPromptVersions(prompts) {
  * @param {Array<{file: string, mentionsControls: string[]}>} goldenTests
  * @returns {CrossReference[]}
  */
-export function buildCrossReferences(hazards, prompts, goldenTests) {
-  const refs = [];
+export function buildCrossReferences(
+  hazards: HazardReferenceInput[],
+  _prompts: PromptVersion[],
+  goldenTests: GoldenTestReference[],
+): CrossReference[] {
+  const refs: CrossReference[] = [];
 
   // Build set of controls covered by tests
-  const coveredControls = new Set();
+  const coveredControls = new Set<string>();
   for (const test of goldenTests) {
     for (const controlId of test.mentionsControls) {
       coveredControls.add(controlId);
@@ -213,8 +239,8 @@ export function buildCrossReferences(hazards, prompts, goldenTests) {
  * @param {GitCommit[]} commits
  * @returns {string}
  */
-export function generateVersionHistory(commits) {
-  const lines = [
+export function generateVersionHistory(commits: GitCommit[]): string {
+  const lines: string[] = [
     '# Prompt Version History',
     '',
     '> Auto-generated by `tools/generate-traceability.ts`',
@@ -251,13 +277,13 @@ export function generateVersionHistory(commits) {
   lines.push('');
 
   // Group by month
-  const byMonth = new Map();
+  const byMonth = new Map<string, GitCommit[]>();
   for (const commit of commits) {
     const month = commit.date.slice(0, 7); // YYYY-MM
     if (!byMonth.has(month)) {
       byMonth.set(month, []);
     }
-    byMonth.get(month).push(commit);
+    byMonth.get(month)?.push(commit);
   }
 
   lines.push('| Month | Total Changes | Safety-Related | Feature |');
@@ -282,8 +308,8 @@ export function generateVersionHistory(commits) {
  * @param {PromptVersion[]} prompts
  * @returns {string}
  */
-export function generatePromptInventory(prompts) {
-  const lines = [
+export function generatePromptInventory(prompts: PromptVersion[]): string {
+  const lines: string[] = [
     '# Prompt Inventory',
     '',
     '> Auto-generated by `tools/generate-traceability.ts`',
@@ -310,9 +336,9 @@ export function generatePromptInventory(prompts) {
   lines.push('');
   lines.push(`- **Total Prompts**: ${prompts.length}`);
 
-  const majorVersions = new Map();
+  const majorVersions = new Map<string, number>();
   for (const prompt of prompts) {
-    const major = prompt.version.split('.')[0];
+    const [major = '0'] = prompt.version.split('.');
     majorVersions.set(major, (majorVersions.get(major) || 0) + 1);
   }
 
@@ -329,8 +355,8 @@ export function generatePromptInventory(prompts) {
  * @param {HazardDefinition[]} hazards
  * @returns {string}
  */
-export function generateHazardMatrix(hazards) {
-  const lines = [
+export function generateHazardMatrix(hazards: HazardDefinition[]): string {
+  const lines: string[] = [
     '# Hazard Traceability Matrix',
     '',
     '> Auto-generated by `tools/generate-traceability.ts`',
@@ -377,7 +403,7 @@ export function generateHazardMatrix(hazards) {
   lines.push('## Risk Distribution');
   lines.push('');
 
-  const riskLevels = {
+  const riskLevels: Record<string, number> = {
     Acceptable: 0,
     Low: 0,
     Medium: 0,
@@ -389,7 +415,7 @@ export function generateHazardMatrix(hazards) {
   for (const hazard of hazards) {
     const level = hazard.acceptability.replace(/\s*\(.*\)/, '');
     if (level in riskLevels) {
-      riskLevels[level]++;
+      riskLevels[level] = (riskLevels[level] ?? 0) + 1;
     }
   }
 
@@ -409,8 +435,8 @@ export function generateHazardMatrix(hazards) {
  * @param {CrossReference[]} crossRefs
  * @returns {string}
  */
-export function generateValidationReport(crossRefs) {
-  const lines = [
+export function generateValidationReport(crossRefs: CrossReference[]): string {
+  const lines: string[] = [
     '# Traceability Validation Report',
     '',
     '> Auto-generated by `tools/generate-traceability.ts`',
@@ -468,9 +494,15 @@ export function generateValidationReport(crossRefs) {
  * @param {CrossReference[]} refs
  * @returns {{valid: boolean, invalidCount: number, errors: string[]}}
  */
-export function validateCrossReferences(refs) {
+export function validateCrossReferences(refs: CrossReference[]): {
+  valid: boolean;
+  invalidCount: number;
+  errors: string[];
+} {
   const invalid = refs.filter((r) => !r.valid);
-  const errors = invalid.map((r) => r.error).filter(Boolean);
+  const errors = invalid
+    .map((r) => r.error)
+    .filter((error): error is string => typeof error === 'string' && error.length > 0);
 
   return {
     valid: invalid.length === 0,
