@@ -165,7 +165,17 @@ We use LumenFlow to build LumenFlow. To contribute:
 3. Create a WU: `pnpm wu:create --lane "Framework: Core" --title "Your change"`
 4. Work in the worktree, pass gates, submit via `wu:done`
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Project governance and contributor guidance:
+
+- [Contributing Guide](.github/CONTRIBUTING.md)
+- [Code of Conduct](.github/CODE_OF_CONDUCT.md)
+- [Security Policy](.github/SECURITY.md)
+
+Use the GitHub templates for submissions:
+
+- [Bug Report Template](.github/ISSUE_TEMPLATE/bug_report.md)
+- [Feature Request Template](.github/ISSUE_TEMPLATE/feature_request.md)
+- [Pull Request Template](.github/pull_request_template.md)
 
 ## License
 
