@@ -2,7 +2,7 @@ id: WU-1688
 title: 'Fix sandbox backend invocation correctness: ro-bind, Seatbelt policy, Windows honesty'
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -85,3 +85,6 @@ session_id: fbfcfaca-eac1-4615-91ae-b249623b310c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T15:14:42.255Z
+locked: true
+completed_at: 2026-02-15T15:45:41.935Z
+completed: 2026-02-15

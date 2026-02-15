@@ -33,7 +33,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1688 — Fix sandbox backend invocation correctness: ro-bind, Seatbelt policy, Windows honesty](wu/WU-1688.yaml) — Framework: Core Validation
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -662,6 +662,7 @@ sections:
 - [WU-1686 — Reframe article as agent orchestration layer + Medium optimisations](wu/WU-1686.yaml)
 - [WU-1684 — Build vendor-agnostic core sandbox engine contract and OS backends](wu/WU-1684.yaml)
 - [WU-1689 — Fix missing shebangs in CLI dist bin scripts](wu/WU-1689.yaml)
+- [WU-1688 — Fix sandbox backend invocation correctness: ro-bind, Seatbelt policy, Windows honesty](wu/WU-1688.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

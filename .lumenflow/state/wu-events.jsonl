@@ -1314,3 +1314,4 @@
 {"type":"unblock","wuId":"WU-1687","timestamp":"2026-02-15T15:20:06.369Z"}
 {"type":"block","wuId":"WU-1687","timestamp":"2026-02-15T15:20:27.660Z","reason":"Blocked pending WU-1688 backend fixes (Linux ro-bind, macOS Seatbelt allowances, Windows enforcement honesty)."}
 {"type":"complete","wuId":"WU-1689","timestamp":"2026-02-15T15:26:57.540Z"}
+{"type":"complete","wuId":"WU-1688","timestamp":"2026-02-15T15:45:43.831Z"}
