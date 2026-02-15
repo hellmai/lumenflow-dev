@@ -2,7 +2,7 @@ id: WU-1687
 title: Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: in_progress
+status: ready
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -78,11 +78,6 @@ acceptance:
   - CLI config includes sandbox policy section for allow/deny paths and override policy controls.
   - Automated CLI tests cover command parsing, backend invocation, fail-closed/override behavior,
     and claim-flag integration.
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1687
-claimed_at: 2026-02-15T15:10:03.330Z
-baseline_main_sha: 1552d659eb607c3cb0f63deb95aaa66800276dff
-session_id: fbfcfaca-eac1-4615-91ae-b249623b310c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T15:10:03.336Z

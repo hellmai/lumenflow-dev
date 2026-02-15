@@ -1316,3 +1316,4 @@
 {"type":"complete","wuId":"WU-1689","timestamp":"2026-02-15T15:26:57.540Z"}
 {"type":"complete","wuId":"WU-1688","timestamp":"2026-02-15T15:45:43.831Z"}
 {"type":"unblock","wuId":"WU-1687","timestamp":"2026-02-15T15:46:13.735Z"}
+{"type":"release","wuId":"WU-1687","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-15T15:46:39.445Z"}
