@@ -2,7 +2,7 @@ id: WU-1692
 title: Add OSS governance docs and GitHub community templates
 lane: 'Operations: Automation'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -15,7 +15,8 @@ code_paths:
   - README.md
 tests:
   manual:
-    - Open GitHub issue creation UI and verify bug + feature templates render with required fields and prompts.
+    - Open GitHub issue creation UI and verify bug + feature templates render with required fields
+      and prompts.
     - Open new PR flow and verify PR template prompts for WU ID, validation, and docs impact.
     - Run pnpm docs:validate and pnpm gates from the claimed worktree.
   unit: []
@@ -36,10 +37,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: the repo is published as open source, but key contributor governance surfaces are missing. Problem: missing CODE_OF_CONDUCT/CONTRIBUTING/SECURITY guidance and issue/PR templates creates friction and unclear support/security intake for external contributors. Solution: add .github-scoped community health docs and templates aligned with current workflow and release model.'
+description: 'Context: the repo is published as open source, but key contributor governance surfaces
+  are missing. Problem: missing CODE_OF_CONDUCT/CONTRIBUTING/SECURITY guidance and issue/PR
+  templates creates friction and unclear support/security intake for external contributors.
+  Solution: add .github-scoped community health docs and templates aligned with current workflow and
+  release model.'
 acceptance:
-  - Add .github/CODE_OF_CONDUCT.md, .github/CONTRIBUTING.md, and .github/SECURITY.md with project-specific contribution, behavior, and disclosure guidance.
-  - Add .github/ISSUE_TEMPLATE/bug_report.md and .github/ISSUE_TEMPLATE/feature_request.md with fields that route reports to actionable reproduction details.
-  - Add .github/pull_request_template.md that requests WU linkage, validation evidence, and docs impact notes.
+  - Add .github/CODE_OF_CONDUCT.md, .github/CONTRIBUTING.md, and .github/SECURITY.md with
+    project-specific contribution, behavior, and disclosure guidance.
+  - Add .github/ISSUE_TEMPLATE/bug_report.md and .github/ISSUE_TEMPLATE/feature_request.md with
+    fields that route reports to actionable reproduction details.
+  - Add .github/pull_request_template.md that requests WU linkage, validation evidence, and docs
+    impact notes.
   - README.md includes a short contributor section linking to the new .github governance docs.
   - Documentation checks and project gates pass without introducing workflow drift.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-automation-wu-1692
+claimed_at: 2026-02-15T17:52:08.967Z
+baseline_main_sha: 693789aa2a12b5c6adb0d82a0cb8f7dafd5a3857
+session_id: 39e25768-555a-43c5-b272-05f15ca1de64
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T17:52:08.975Z

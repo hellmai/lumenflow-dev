@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1692 — Add OSS governance docs and GitHub community templates](wu/WU-1692.yaml)
 
 ## Completed
 
