@@ -8,7 +8,6 @@ created: 2026-02-10
 code_paths:
   - packages/@lumenflow/cli/src/mem-create.ts
   - packages/@lumenflow/cli/src/mem-signal.ts
-  - packages/@lumenflow/cli/src/hooks/enforcement-generator.ts
   - packages/@lumenflow/cli/tsconfig.json
   - tools/__tests__/tsconfig-strict.test.ts
 tests:
@@ -31,10 +30,17 @@ blocked_by:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-15T18:26:03.427Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1583
+session_id: 3932d745-2189-424e-97ca-0ff9d1c0e123
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T18:26:03.435Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -49,11 +55,3 @@ acceptance:
   - tools strict-mode tests are updated to reflect CLI strict enablement
   - pnpm --filter @lumenflow/cli typecheck passes with strict enabled
   - No net increase in as any usage in CLI
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1583
-claimed_at: 2026-02-15T18:26:03.427Z
-baseline_main_sha: 8856baab88803d557c92de367ba2cbfa96b767d3
-session_id: 3932d745-2189-424e-97ca-0ff9d1c0e123
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-15T18:26:03.435Z
