@@ -20,14 +20,14 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1704 — Strict debt slice: eliminate TS7006 in core wu-preflight-validators](wu/WU-1704.yaml) — Framework: Core Validation
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
+- [WU-1704 — Strict debt slice: eliminate TS7006 in core wu-preflight-validators](wu/WU-1704.yaml) — Framework: Core Validation
 
 ## 🔧 In progress
 
-- [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
+- [WU-1701 — Emergency cleanup: remove healthcare/PHI code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1702 — Emergency: remove healthcare/PHI code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
@@ -60,6 +60,7 @@ sections:
 - [WU-1025 — Block wu:create and wu:claim if spec contains PLACEHOLDER markers](wu/WU-1025.yaml)
 - [WU-1026 — Allow agent branches to bypass worktree requirements](wu/WU-1026.yaml)
 - [WU-1027 — Block agents from deleting worktrees](wu/WU-1027.yaml)
+- [WU-1028 — Fix agent wu:done amnesia - docs and distribution](wu/WU-1028.yaml)
 - [WU-1029 — Fix wu:claim fallback to symlink nested node_modules](wu/WU-1029.yaml)
 - [WU-1030 — Fix wu:create/wu:edit pre-push block leaving main ahead](wu/WU-1030.yaml)
 - [WU-1031 — Make wu:done resilient to missing worktree](wu/WU-1031.yaml)
@@ -95,13 +96,15 @@ sections:
 - [WU-1065 — Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring](wu/WU-1065.yaml)
 - [WU-1066 — Add .NET/C# preset to lumenflow-gates GitHub Action](wu/WU-1066.yaml)
 - [WU-1067 — Make gates language-agnostic via config-driven execution](wu/WU-1067.yaml)
+- [WU-1068 — LumenFlow Framework Cleanup - Remove ExampleApp leakage and fix code smells](wu/WU-1068.yaml)
 - [WU-1069 — Validate spec-refs rejects repo-internal plan paths](wu/WU-1069.yaml)
 - [WU-1070 — Add audit logging and guarding for LUMENFLOW_FORCE bypass](wu/WU-1070.yaml)
 - [WU-1071 — Fix CLI entry guard for pnpm symlink resolution](wu/WU-1071.yaml)
 - [WU-1072 — Fix wu:done staging whitelist for auto-generated docs + document wu:cleanup PR-only behavior](wu/WU-1072.yaml)
 - [WU-1074 — Add release command for npm publishing](wu/WU-1074.yaml)
+- [WU-1075 — Rename .beacon to .lumenflow - remove ExampleApp branding](wu/WU-1075.yaml)
 - [WU-1076 — Block direct main branch commits for agents](wu/WU-1076.yaml)
-- [WU-1079 — Migrate stamps to .lumenflow](wu/WU-1079.yaml)
+- [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml)
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml)
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml)
 - [WU-1080 — Add wu:release command to recover orphaned WUs](wu/WU-1080.yaml)
@@ -126,8 +129,10 @@ sections:
 - [WU-1100 — INIT-003 Phase 1: Sync CLI docs to lumenflow.dev](wu/WU-1100.yaml)
 - [WU-1101 — INIT-003 Phase 2a: Migrate tools/lib/core/ to @lumenflow/core](wu/WU-1101.yaml)
 - [WU-1102 — INIT-003 Phase 2b: Migrate WU helpers to @lumenflow/core](wu/WU-1102.yaml)
+- [WU-1103 — INIT-003 Phase 2c: Migrate git & validator modules](wu/WU-1103.yaml)
 - [WU-1106 — INIT-003 Phase 3b: Migrate backlog:prune command](wu/WU-1106.yaml)
 - [WU-1104 — INIT-003 Phase 2d: Migrate utility modules](wu/WU-1104.yaml)
+- [WU-1108 — INIT-003 Phase 4a: Migrate file operations (4 tools)](wu/WU-1108.yaml)
 - [WU-1105 — INIT-003 Phase 3a: Migrate init:plan command](wu/WU-1105.yaml)
 - [WU-1110 — INIT-003 Phase 5a: Migrate metrics commands](wu/WU-1110.yaml)
 - [WU-1129 — Fix pre-existing prettier format failures in apps/docs/\*.mdx](wu/WU-1129.yaml)
@@ -395,6 +400,9 @@ sections:
 - [WU-1419 — wu:recover reset action should emit release event to state store](wu/WU-1419.yaml)
 - [WU-1420 — state:doctor should detect and fix YAML vs state store status mismatches](wu/WU-1420.yaml)
 - [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml)
+- [WU-1421 — Rename .beacon to .lumenflow (complete ExampleApp migration)](wu/WU-1421.yaml)
+- [WU-1423 — Complete beacon→lumenflow migration: rename config schema and all references](wu/WU-1423.yaml)
+- [WU-1428 — Remove all beacon references: delete migration utility and purge codebase](wu/WU-1428.yaml)
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml)
 - [WU-1429 — wu:create: tighten spec_refs + add notes flag + contextual warnings](wu/WU-1429.yaml)
 - [WU-1430 — Audit and centralize hardcoded path strings into constants](wu/WU-1430.yaml)
@@ -421,7 +429,9 @@ sections:
 - [WU-1445 — Add Visual Overview page to Starlight and remove internal architecture docs](wu/WU-1445.yaml)
 - [WU-1446 — Refactor CLI WU type/test policy checks to core helpers (typed, DRY)](wu/WU-1446.yaml)
 - [WU-1448 — Add D2 diagram support and convert Mermaid diagrams](wu/WU-1448.yaml)
+- [WU-1447 — Purge .beacon legacy paths/docs; use .lumenflow only](wu/WU-1447.yaml)
 - [WU-1449 — Fix flaky orchestrate-initiative-wu1251 test timeout](wu/WU-1449.yaml)
+- [WU-1450 — Remove remaining .beacon mentions from onboarding/public docs](wu/WU-1450.yaml)
 - [WU-1451 — Fix astro-d2 configuration for D2 diagram rendering](wu/WU-1451.yaml)
 - [WU-1459 — Fix initiative:add-wu orphaned temp worktree cleanup](wu/WU-1459.yaml)
 - [WU-1460 — Batch initiative:add-wu to reduce push-only contention](wu/WU-1460.yaml)
@@ -498,6 +508,7 @@ sections:
 - [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml)
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml)
 - [WU-1527 — Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces](wu/WU-1527.yaml)
+- [WU-1529 — Purge remaining live .beacon references from hooks and agent overlays](wu/WU-1529.yaml)
 - [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml)
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml)
 - [WU-1531 — Reduce code_paths false positives in parity + prep](wu/WU-1531.yaml)
@@ -666,7 +677,7 @@ sections:
 - [WU-1698 — Strict debt slice: eliminate TS7006 in core backlog-generator](wu/WU-1698.yaml)
 - [WU-1699 — Strict debt slice: eliminate TS7006 in core backlog-editor](wu/WU-1699.yaml)
 - [WU-1700 — Strict debt slice: eliminate TS7006 in cli initiative-status](wu/WU-1700.yaml)
-- [WU-1703 — Emergency cleanup across templates and docs](wu/WU-1703.yaml)
+- [WU-1703 — Emergency PII/PHI cleanup across templates and docs](wu/WU-1703.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

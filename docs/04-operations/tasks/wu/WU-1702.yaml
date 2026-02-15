@@ -2,7 +2,7 @@ id: WU-1702
 title: 'Emergency: remove domain-specific code from CLI and MCP packages'
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: in_progress
+status: blocked
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -18,7 +18,9 @@ artifacts:
   - .lumenflow/stamps/WU-1702.done
 dependencies: []
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: |-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+  Blocked (2026-02-15): Stale emergency WU; unblock wu:claim overlap scanner symlink-loop
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
