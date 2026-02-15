@@ -30,11 +30,11 @@ sections:
 - [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml) — Framework: Core Lifecycle
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
-- [WU-1680 — Validator Layer V2: unify phase-aware rules and adapters](wu/WU-1680.yaml) — Operations: Tooling
 
 ## 🔧 In progress
 
 - [WU-1679 — Update repo references from hellmai/os to hellmai/lumenflow](wu/WU-1679.yaml) — Operations: Tooling
+- [WU-1680 — Validator Layer V2: unify phase-aware rules and adapters](wu/WU-1680.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
