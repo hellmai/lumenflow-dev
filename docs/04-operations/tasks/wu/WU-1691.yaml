@@ -2,7 +2,7 @@ id: WU-1691
 title: Include bare lumenflow wrapper in release script version bumps
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -42,3 +42,6 @@ acceptance:
   - findPackageJsonPaths includes packages/lumenflow/package.json
   - publishConfig.dependencies uses workspace:^ for auto-resolution
   - Release script bumps all packages atomically including the wrapper
+locked: true
+completed_at: 2026-02-15T17:45:14.191Z
+completed: 2026-02-15
