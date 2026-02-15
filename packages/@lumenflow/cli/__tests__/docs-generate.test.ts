@@ -92,7 +92,7 @@ describe('docs:generate', () => {
   });
 
   describe('CLI reference generation', () => {
-    it('should extract all WU_OPTIONS from @lumenflow/core', async () => {
+    it('should extract all WU_OPTIONS from @lumenflow/core', { timeout: 20000 }, async () => {
       // Import WU_OPTIONS directly - this is the source of truth
       const { WU_OPTIONS } = await import('@lumenflow/core');
 

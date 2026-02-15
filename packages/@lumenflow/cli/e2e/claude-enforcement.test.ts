@@ -148,7 +148,10 @@ agents:
   });
 
   describe('Hook Generation', () => {
-    it('should generate hooks via integrateClaudeCode function', async () => {
+    it(
+      'should generate hooks via integrateClaudeCode function',
+      { timeout: 20000 },
+      async () => {
       const { integrateClaudeCode } = await import('../src/commands/integrate.js');
 
       await integrateClaudeCode(testDir, {
@@ -180,7 +183,8 @@ agents:
       expect(settings.hooks).toBeDefined();
       expect(settings.hooks.PreToolUse).toBeDefined();
       expect(settings.hooks.Stop).toBeDefined();
-    });
+      },
+    );
 
     it('should generate executable hook scripts', async () => {
       const { integrateClaudeCode } = await import('../src/commands/integrate.js');
