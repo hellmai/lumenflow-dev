@@ -110,7 +110,10 @@ async function fileExists(filePath: string): Promise<boolean> {
  * @param {string} relativePath - Path relative to repo root
  * @returns {Promise<boolean>} True if file exists on origin/main
  */
-async function fileExistsOnMain(gitAdapter: GitAdapterLike, relativePath: string): Promise<boolean> {
+async function fileExistsOnMain(
+  gitAdapter: GitAdapterLike,
+  relativePath: string,
+): Promise<boolean> {
   try {
     await gitAdapter.raw(['show', `${REMOTES.ORIGIN}/${BRANCHES.MAIN}:${relativePath}`]);
     return true;
