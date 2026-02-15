@@ -4,9 +4,12 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-- [WU-1687 — Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine](wu/WU-1687.yaml)
 - [WU-1688 — Fix sandbox backend invocation correctness: ro-bind, Seatbelt policy, Windows honesty](wu/WU-1688.yaml)
 - [WU-1689 — Fix missing shebangs in CLI dist bin scripts](wu/WU-1689.yaml)
+
+## Blocked
+
+- [WU-1687 — Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine](wu/WU-1687.yaml) — Blocked pending WU-1688 backend fixes (Linux ro-bind, macOS Seatbelt allowances, Windows enforcement honesty).
 
 ## Completed
 

@@ -2,7 +2,7 @@ id: WU-1687
 title: Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: in_progress
+status: blocked
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -41,8 +41,12 @@ spec_refs:
   - LUMENFLOW.md
   - docs/04-operations/tasks/wu/WU-1684.yaml
 risks: []
-notes: Split from original WU-1684 proposal. WU-1684 owns core engine; WU-1687 owns CLI/public
+notes: >-
+  Split from original WU-1684 proposal. WU-1684 owns core engine; WU-1687 owns CLI/public
   registration and claim wiring.
+
+  Blocked (2026-02-15): Blocked pending WU-1688 backend fixes (Linux ro-bind, macOS Seatbelt
+  allowances, Windows enforcement honesty).
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
