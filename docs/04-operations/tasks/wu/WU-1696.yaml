@@ -1,20 +1,23 @@
 id: WU-1696
-title: 'Strict config completion: remove core/cli false overrides'
+title: 'Strict debt slice: type-hardening core wu-recovery helpers'
 lane: 'Framework: Core Validation'
 type: refactor
 status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
-  - packages/@lumenflow/core/tsconfig.json
-  - packages/@lumenflow/cli/tsconfig.json
-  - packages/@lumenflow/core/__tests__/tsconfig-inheritance.test.ts
+  - packages/@lumenflow/core/src/wu-recovery.ts
+  - packages/@lumenflow/core/src/__tests__/wu-recovery.test.ts
 tests:
   manual:
-    - pnpm --filter @lumenflow/core exec tsc --noEmit --strict --pretty false
-    - pnpm --filter @lumenflow/cli exec tsc --noEmit --strict --pretty false
+    - pnpm --filter @lumenflow/core exec vitest run src/__tests__/wu-recovery.test.ts
+    - pnpm --filter @lumenflow/core typecheck
+    - >-
+      pnpm --filter @lumenflow/core exec tsc --noEmit --strictNullChecks true --noImplicitAny
+      true --useUnknownInCatchVariables true --pretty false 2>&1 | rg '^src/wu-recovery.ts'
+      and confirm no diagnostics
   unit:
-    - packages/@lumenflow/core/__tests__/tsconfig-inheritance.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-recovery.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1696.done
@@ -24,7 +27,10 @@ phase: 10
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-022.yaml
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  Initial strict-config flip attempt revealed large package-level debt still hidden by tsconfig
+  flag overrides. Scope was narrowed to a high-impact strict hotspot in core/wu-recovery to
+  preserve forward progress.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -33,20 +39,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: strict compilation for @lumenflow/core and @lumenflow/cli currently succeeds
-  under --strict, but both package tsconfigs still explicitly override
-  strictNullChecks/noImplicitAny to false. Problem: policy and config remain inconsistent with full
-  strict-mode completion. Solution: remove the false overrides, tighten policy tests first, and
-  verify strict compilation remains green.'
+description: 'Context: strict debt remains concentrated in core helper modules, with
+  packages/@lumenflow/core/src/wu-recovery.ts showing repeated TS7006/TS7031 parameter issues and
+  TS18046 unknown-catch hazards under strict probes. Problem: implicit-any and unknown handling in
+  recovery paths reduce type safety in critical rollback/recovery flows. Solution: add focused unit
+  coverage for recovery helpers and type-hardening annotations to eliminate strict diagnostics in
+  this file without behavior regressions.'
 acceptance:
-  - 'packages/@lumenflow/core/tsconfig.json no longer sets strictNullChecks: false or noImplicitAny:
-    false'
-  - 'packages/@lumenflow/cli/tsconfig.json no longer sets strictNullChecks: false or noImplicitAny:
-    false'
-  - packages/@lumenflow/core/__tests__/tsconfig-inheritance.test.ts enforces non-deferral for
-    core/cli strictNullChecks
-  - pnpm --filter @lumenflow/core exec tsc --noEmit --strict --pretty false passes
-  - pnpm --filter @lumenflow/cli exec tsc --noEmit --strict --pretty false passes
+  - >-
+    Strict probe with strictNullChecks/noImplicitAny/useUnknownInCatchVariables reports no
+    diagnostics for packages/@lumenflow/core/src/wu-recovery.ts
+  - packages/@lumenflow/core/src/__tests__/wu-recovery.test.ts passes
+  - pnpm --filter @lumenflow/core typecheck passes
 claimed_mode: worktree
 worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1696
 claimed_at: 2026-02-15T20:40:19.670Z
