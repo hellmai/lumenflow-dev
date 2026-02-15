@@ -2,7 +2,7 @@ id: WU-1688
 title: 'Fix sandbox backend invocation correctness: ro-bind, Seatbelt policy, Windows honesty'
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -17,8 +17,10 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__/sandbox-allowlist.test.ts
 tests:
   manual:
-    - Run Linux backend invocation in an actual bwrap process and verify the sandboxed process can see /usr/bin/node and /usr/bin/git
-    - Run macOS backend invocation in an actual sandbox-exec process and verify Node.js starts without crashing
+    - Run Linux backend invocation in an actual bwrap process and verify the sandboxed process can
+      see /usr/bin/node and /usr/bin/git
+    - Run macOS backend invocation in an actual sandbox-exec process and verify Node.js starts
+      without crashing
     - Run Windows backend and verify it reports enforced:false and exits fail-closed
   unit:
     - packages/@lumenflow/core/src/__tests__/sandbox-backend-linux.test.ts
@@ -33,7 +35,13 @@ dependencies: []
 spec_refs:
   - docs/04-operations/tasks/wu/WU-1684.yaml
 risks: []
-notes: 'Discovered during code review of WU-1684. All three issues are in the backend translation layer — the abstract profile/allowlist architecture is correct. The Linux --ro-bind omission is because bwrap starts with an empty mount namespace (not a copy of the host). The macOS issue is that (deny default) in Seatbelt is extremely restrictive — Node.js needs IPC (mach-lookup) and kernel info (sysctl-read) to even start. The Windows issue is architectural honesty: claiming enforced:true when no enforcement exists breaks the fail-closed contract. WU-1687 (CLI wiring) is blocked until these are fixed.'
+notes: 'Discovered during code review of WU-1684. All three issues are in the backend translation
+  layer — the abstract profile/allowlist architecture is correct. The Linux --ro-bind omission is
+  because bwrap starts with an empty mount namespace (not a copy of the host). The macOS issue is
+  that (deny default) in Seatbelt is extremely restrictive — Node.js needs IPC (mach-lookup) and
+  kernel info (sysctl-read) to even start. The Windows issue is architectural honesty: claiming
+  enforced:true when no enforcement exists breaks the fail-closed contract. WU-1687 (CLI wiring) is
+  blocked until these are fixed.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -42,14 +50,38 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1684 shipped the core sandbox engine with three OS backends. Code review found that none of the backends produce a working sandbox invocation. Problem 1 (critical): Windows backend sets a PowerShell variable with allowed roots but never enforces it — the command runs with full write access while reporting enforced:true. Problem 2 (significant): Linux backend only mounts writable --bind paths but omits --ro-bind / / as the base filesystem mount. Bubblewrap starts with an empty mount namespace, so the sandboxed process cannot see /usr/bin, /lib, node, git, or anything outside the writable roots. Problem 3 (significant): macOS Seatbelt policy uses (deny default) but only allows process* and file-read*. Missing sysctl-read, mach-lookup, network*, and signal — Node.js crashes immediately without these. Solution: Fix all three backends to produce correct, working invocations. Windows should return enforced:false + failClosed:true until real enforcement exists (honest about capabilities). Linux needs --ro-bind / / as base mount. macOS needs additional Seatbelt allow rules for Node.js compatibility.'
+description: 'Context: WU-1684 shipped the core sandbox engine with three OS backends. Code review
+  found that none of the backends produce a working sandbox invocation. Problem 1 (critical):
+  Windows backend sets a PowerShell variable with allowed roots but never enforces it — the command
+  runs with full write access while reporting enforced:true. Problem 2 (significant): Linux backend
+  only mounts writable --bind paths but omits --ro-bind / / as the base filesystem mount. Bubblewrap
+  starts with an empty mount namespace, so the sandboxed process cannot see /usr/bin, /lib, node,
+  git, or anything outside the writable roots. Problem 3 (significant): macOS Seatbelt policy uses
+  (deny default) but only allows process* and file-read*. Missing sysctl-read, mach-lookup,
+  network*, and signal — Node.js crashes immediately without these. Solution: Fix all three backends
+  to produce correct, working invocations. Windows should return enforced:false + failClosed:true
+  until real enforcement exists (honest about capabilities). Linux needs --ro-bind / / as base
+  mount. macOS needs additional Seatbelt allow rules for Node.js compatibility.'
 acceptance:
-  - Linux backend includes --ro-bind / / as base read-only filesystem mount before writable --bind overlays
-  - macOS Seatbelt policy includes (allow sysctl-read) (allow mach-lookup) (allow network*) (allow signal) for Node.js/git compatibility
-  - Windows backend returns enforced:false with failClosed:true (not enforced:true) until real OS-level write restriction is implemented
+  - Linux backend includes --ro-bind / / as base read-only filesystem mount before writable --bind
+    overlays
+  - macOS Seatbelt policy includes (allow sysctl-read) (allow mach-lookup) (allow network*) (allow
+    signal) for Node.js/git compatibility
+  - Windows backend returns enforced:false with failClosed:true (not enforced:true) until real
+    OS-level write restriction is implemented
   - Windows backend warning message explains that write enforcement is not yet available on Windows
   - Existing unit tests updated to assert correct --ro-bind presence in Linux args
-  - Existing unit tests updated to assert Seatbelt policy contains required mach-lookup/sysctl-read/network allows
+  - Existing unit tests updated to assert Seatbelt policy contains required
+    mach-lookup/sysctl-read/network allows
   - Existing Windows test updated to expect enforced:false and failClosed behavior
-  - isWritePathAllowed AND logic in sandbox-allowlist.ts gets a code comment explaining why both normalized and canonical checks are required
+  - isWritePathAllowed AND logic in sandbox-allowlist.ts gets a code comment explaining why both
+    normalized and canonical checks are required
   - New unit test covers extraWritableRoots path in buildSandboxProfile
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-1688
+claimed_at: 2026-02-15T15:14:42.247Z
+baseline_main_sha: 115b0c19bf014c419d59d59a81c0e77e65934069
+session_id: fbfcfaca-eac1-4615-91ae-b249623b310c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T15:14:42.255Z
