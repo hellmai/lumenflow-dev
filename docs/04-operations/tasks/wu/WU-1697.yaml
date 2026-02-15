@@ -23,12 +23,24 @@ phase: 10
 spec_refs:
   - docs/04-operations/tasks/initiatives/INIT-022.yaml
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  TDD-first strict slice: expanded wu-done-metadata unit coverage and eliminated
+  implicit-any/destructuring typing debt in metadata helpers.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-15T20:49:24.612Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1697
+session_id: 4afd8296-48e4-4ecc-b890-391c812b290f
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T20:49:24.619Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +54,3 @@ acceptance:
     TS7006/TS7031 diagnostics for packages/@lumenflow/core/src/wu-done-metadata.ts
   - packages/@lumenflow/core/src/__tests__/wu-done-metadata.test.ts passes
   - pnpm --filter @lumenflow/core typecheck passes
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1697
-claimed_at: 2026-02-15T20:49:24.612Z
-baseline_main_sha: f2e851b8f3fca7592be3a7ccac3a7611f7897fa8
-session_id: 4afd8296-48e4-4ecc-b890-391c812b290f
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-15T20:49:24.619Z
