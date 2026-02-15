@@ -25,12 +25,9 @@
     "lumenflow": "./bin/lumenflow.mjs"
   },
   "dependencies": {
-    "@lumenflow/cli": "workspace:*"
+    "@lumenflow/cli": "workspace:^"
   },
   "publishConfig": {
-    "access": "public",
-    "dependencies": {
-      "@lumenflow/cli": "^2.19.0"
-    }
+    "access": "public"
   }
 }
