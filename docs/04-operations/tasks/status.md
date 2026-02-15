@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml)
 
 ## Completed
 

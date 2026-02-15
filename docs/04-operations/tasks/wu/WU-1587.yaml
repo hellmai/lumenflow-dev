@@ -2,7 +2,7 @@ id: WU-1587
 title: 'Core strict wave 2D: infrastructure strict fixes'
 lane: 'Framework: Core State Recovery'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -35,10 +35,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: infrastructure utilities in core still hold strict debt across cleanup, invariants orchestration, and worktree plumbing. Problem: these modules are low-level dependencies where weak typing can cause broad regressions. Solution: remove strict errors in infrastructure modules with explicit contracts and robust null/unknown narrowing.'
+description: 'Context: infrastructure utilities in core still hold strict debt across cleanup,
+  invariants orchestration, and worktree plumbing. Problem: these modules are low-level dependencies
+  where weak typing can cause broad regressions. Solution: remove strict errors in infrastructure
+  modules with explicit contracts and robust null/unknown narrowing.'
 acceptance:
   - Strict errors are removed from targeted infrastructure files
   - Infrastructure behavior remains stable under existing tests
   - No net increase in as any usage in touched core files
   - Core infrastructure-related tests pass
   - Core strict progress baseline reflects reduced debt for this wave
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-state-recovery-wu-1587
+claimed_at: 2026-02-15T19:01:35.046Z
+baseline_main_sha: 35dfcdea0272ddefe37e87dc06c274cdc733a3c4
+session_id: 1246516f-21a7-4425-8e80-f9825594f26c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T19:01:35.054Z
