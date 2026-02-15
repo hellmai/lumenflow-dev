@@ -3,7 +3,7 @@
  *
  * WU-1549: Extracted from wu-constants.ts for domain-specific modularity.
  * Contains LumenFlow directory paths, file extensions, config files, filesystem
- * constants, build artifacts, PHI configuration, and path manipulation helpers.
+ * constants, build artifacts, and path manipulation helpers.
  *
  * @module wu-paths-constants
  */
@@ -348,44 +348,3 @@ export const FILE_TOOLS = {
   },
 };
 
-/**
- * PHI (Protected Health Information) error codes (WU-1404)
- *
- * Error codes for PHI detection in file tools.
- * Used by file:write and file:edit to block PHI leakage.
- *
- * WU-1068: PHI scanning is healthcare-specific functionality.
- * Enable via PHI_CONFIG.ENABLED flag or .lumenflow.config.yaml phi.enabled: true
- */
-export const PHI_ERRORS = {
-  /** PHI detected in content - write blocked */
-  PHI_DETECTED: 'PHI_DETECTED',
-
-  /** PHI override requested - audit logged */
-  PHI_OVERRIDE_ALLOWED: 'PHI_OVERRIDE_ALLOWED',
-};
-
-/**
- * PHI scanning configuration (WU-1068)
- *
- * Controls whether PHI (Protected Health Information) scanning is enabled.
- * This is healthcare-specific functionality (NHS numbers, UK postcodes)
- * that should only be enabled for healthcare projects.
- *
- * Projects can enable via:
- * 1. Setting PHI_CONFIG.ENABLED = true in code
- * 2. Setting LUMENFLOW_PHI_ENABLED=1 environment variable
- * 3. Adding phi.enabled: true to .lumenflow.config.yaml
- */
-export const PHI_CONFIG = {
-  /**
-   * Whether PHI scanning is enabled
-   * Default: false - projects must explicitly opt-in
-   */
-  ENABLED: process.env.LUMENFLOW_PHI_ENABLED === '1',
-
-  /**
-   * Whether to block on PHI detection (true) or just warn (false)
-   */
-  BLOCKING: process.env.LUMENFLOW_PHI_BLOCKING === '1',
-};

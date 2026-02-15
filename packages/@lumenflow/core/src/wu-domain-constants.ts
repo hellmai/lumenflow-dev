@@ -273,10 +273,6 @@ export const WU_DEFAULTS = {
  * Gates fail if any of these patterns find no matches.
  */
 export const SAFETY_CRITICAL_TEST_GLOBS = Object.freeze([
-  // PHI protection tests
-  'apps/web/src/**/*PHI*.test.{ts,tsx}',
-  'apps/web/src/**/*phi*.test.{ts,tsx}',
-
   // Escalation trigger tests
   'apps/web/src/**/*escalation*.test.{ts,tsx}',
   'apps/web/src/**/*Escalation*.test.{ts,tsx}',
@@ -425,12 +421,11 @@ export async function validateSafetyTestsExist(options: DiscoverSafetyTestsOptio
   const foundTests: string[] = [];
 
   const categories = [
-    { name: 'PHI protection', patterns: SAFETY_CRITICAL_TEST_GLOBS.slice(0, 2) },
-    { name: 'Escalation', patterns: SAFETY_CRITICAL_TEST_GLOBS.slice(2, 4) },
-    { name: 'Privacy detection', patterns: SAFETY_CRITICAL_TEST_GLOBS.slice(4, 6) },
-    { name: 'Constitutional', patterns: SAFETY_CRITICAL_TEST_GLOBS.slice(6, 8) },
-    { name: 'Safe prompt wrapper', patterns: SAFETY_CRITICAL_TEST_GLOBS.slice(8, 10) },
-    { name: 'Crisis handling', patterns: SAFETY_CRITICAL_TEST_GLOBS.slice(10, 12) },
+    { name: 'Escalation', patterns: SAFETY_CRITICAL_TEST_GLOBS.slice(0, 2) },
+    { name: 'Privacy detection', patterns: SAFETY_CRITICAL_TEST_GLOBS.slice(2, 4) },
+    { name: 'Constitutional', patterns: SAFETY_CRITICAL_TEST_GLOBS.slice(4, 6) },
+    { name: 'Safe prompt wrapper', patterns: SAFETY_CRITICAL_TEST_GLOBS.slice(6, 8) },
+    { name: 'Crisis handling', patterns: SAFETY_CRITICAL_TEST_GLOBS.slice(8, 10) },
   ];
 
   for (const category of categories) {

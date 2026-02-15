@@ -74,7 +74,6 @@ const ALLOWED_FILES_STATUS = [
   '__snapshots__/',
   // Files that use status-like strings in non-WU-status contexts:
   'delegation-registry-schema.ts', // Spawn statuses (pending/completed/timeout/crashed/escalated)
-  'compliance-parser.ts', // Compliance gap statuses (not_started/in_progress/completed/blocked)
   'commands-logger.ts', // Command outcome statuses (allowed/blocked/unknown)
   'section-headings.ts', // Document type parameter ('backlog'/'status')
   'core/tool.constants.ts', // Tool execution statuses (cancelled/timeout)
