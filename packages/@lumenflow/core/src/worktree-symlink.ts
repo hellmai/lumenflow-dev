@@ -65,6 +65,7 @@ export const NESTED_PACKAGE_PATHS = [
   'packages/@lumenflow/metrics',
   'packages/@lumenflow/initiatives',
   'packages/@lumenflow/shims',
+  'packages/@lumenflow/mcp',
   // Apps (generic placeholders)
   'apps/web',
   'apps/docs',
