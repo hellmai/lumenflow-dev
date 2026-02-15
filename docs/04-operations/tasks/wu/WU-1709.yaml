@@ -8,7 +8,8 @@ created: 2026-02-15
 code_paths:
   - packages/@lumenflow/core/src/generate-traceability.ts
 tests:
-  manual: []
+  manual:
+    - Run strict tsc for @lumenflow/core and confirm no errors from src/generate-traceability.ts
   unit:
     - packages/@lumenflow/core/src/__tests__/generate-traceability.test.ts
   e2e: []
@@ -28,7 +29,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Eliminate noImplicitAny and strict-null compile errors in generate-traceability utilities without changing runtime behavior.
+description: Eliminate noImplicitAny and strict-null compile errors in generate-traceability
+  utilities without changing runtime behavior.
 acceptance:
-  - No strict errors remain in packages/@lumenflow/core/src/generate-traceability.ts under --strictNullChecks --noImplicitAny
+  - No strict errors remain in packages/@lumenflow/core/src/generate-traceability.ts under
+    --strictNullChecks --noImplicitAny
   - Targeted tests pass for generate-traceability helpers
