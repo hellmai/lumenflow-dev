@@ -4,7 +4,6 @@
  *
  * Provides audited file write operations with:
  * - Scope checking against WU code_paths
- * - PHI scanning (optional)
  * - Directory creation
  * - Audit logging
  *
@@ -39,8 +38,6 @@ export interface FileWriteArgs {
   encoding?: BufferEncoding;
   /** Create parent directories */
   createDirectories?: boolean;
-  /** Scan content for PHI */
-  scanPHI?: boolean;
   /** Show help */
   help?: boolean;
 }
@@ -81,7 +78,7 @@ export interface FileWriteResult {
   success: boolean;
   /** Error message (if failed) */
   error?: string;
-  /** Warnings (e.g., PHI detected) */
+  /** Warnings */
   warnings?: string[];
   /** File metadata */
   metadata?: FileWriteMetadata;
@@ -114,8 +111,6 @@ export function parseFileWriteArgs(argv: string[]): FileWriteArgs {
       args.encoding = cliArgs[++i] as BufferEncoding;
     } else if (arg === '--no-create-dirs') {
       args.createDirectories = false;
-    } else if (arg === '--scan-phi') {
-      args.scanPHI = true;
     } else if (!arg.startsWith('-') && !args.path) {
       // Positional argument for path
       args.path = arg;
@@ -177,22 +172,6 @@ export async function writeFileWithAudit(args: FileWriteArgs): Promise<FileWrite
       }
     }
 
-    // PHI scanning (if enabled and @lumenflow/core is available)
-    if (args.scanPHI) {
-      try {
-        // Dynamic import to avoid hard dependency
-        const { scanForPHI } = await import('@lumenflow/core/validators/phi-scanner');
-        const scanResult = scanForPHI(content);
-        if (scanResult.hasPHI) {
-          warnings.push(
-            `PHI detected: ${scanResult.matches.length} potential match(es). Review before committing.`,
-          );
-        }
-      } catch {
-        // PHI scanner not available - skip silently
-      }
-    }
-
     // Write file
     await writeFile(filePath, content, { encoding });
 
@@ -247,7 +226,6 @@ Options:
   --content <content>   Content to write (required)
   --encoding <enc>      File encoding (default: utf-8)
   --no-create-dirs      Don't create parent directories
-  --scan-phi            Scan content for PHI before writing
   -h, --help            Show this help message
 
 Examples:

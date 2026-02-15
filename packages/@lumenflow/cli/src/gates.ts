@@ -33,9 +33,9 @@
  * - Full test suite maintained via CI workflow and --full-tests flag
  *
  * WU-2062: Tiered test execution for faster wu:done
- * - Safety-critical tests (PHI, escalation, red-flag) ALWAYS run
+ * - Safety-critical tests (escalation, red-flag) ALWAYS run
  * - Docs-only WUs: lint/typecheck only (auto-detected or --docs-only flag)
- * - High-risk WUs (auth, PHI, RLS, migrations): run integration tests
+ * - High-risk WUs (auth, RLS, migrations): run integration tests
  * - Standard WUs: changed tests + safety-critical tests
  *
  * Usage:
@@ -48,13 +48,11 @@
 
 import { writeSync } from 'node:fs';
 import { emitGateEvent, getCurrentWU, getCurrentLane } from '@lumenflow/core/telemetry';
-import { die, getErrorMessage } from '@lumenflow/core/error-handler';
+import { die } from '@lumenflow/core/error-handler';
 import {
   shouldUseGatesAgentMode,
   updateGatesLatestSymlink,
 } from '@lumenflow/core/gates-agent-mode';
-// WU-2062: Import risk detector for tiered test execution
-import { detectRiskTier, RISK_TIERS } from '@lumenflow/core/risk-detector';
 // WU-2252: Import invariants runner for first-check validation
 import { runInvariants } from '@lumenflow/core/invariants-runner';
 import { createWUParser } from '@lumenflow/core/arg-parser';
@@ -90,7 +88,6 @@ import {
   readLogTail,
   createAgentLogContext,
   emitFormatCheckGuidance,
-  getAllChangedFiles,
   loadCurrentWUCodePaths,
 } from './gates-utils.js';
 
@@ -323,38 +320,16 @@ async function executeGates(opts: {
     );
   }
 
-  // WU-2062: Detect risk tier from changed files (unless explicit --docs-only flag)
+  // WU-2062: Risk tier defaults to standard (risk detector removed)
   let riskTier = null;
-  let changedFiles = [];
 
   if (!isDocsOnly) {
-    try {
-      changedFiles = await getAllChangedFiles({ cwd });
-      riskTier = detectRiskTier({ changedFiles });
-
-      const logLine = useAgentMode
-        ? (line: string) => writeSync(agentLog.logFd, `${line}\n`)
-        : (line: string) => console.log(line);
-
-      logLine(`\n\uD83C\uDFAF Risk tier detected: ${riskTier.tier}`);
-      if (riskTier.highRiskPaths.length > 0) {
-        logLine(
-          `   High-risk paths: ${riskTier.highRiskPaths.slice(0, 3).join(', ')}${riskTier.highRiskPaths.length > 3 ? '...' : ''}`,
-        );
-      }
-      logLine('');
-    } catch (error) {
-      console.error(
-        '\u26A0\uFE0F  Risk detection failed, defaulting to standard tier:',
-        getErrorMessage(error),
-      );
-      riskTier = {
-        tier: RISK_TIERS.STANDARD,
-        isDocsOnly: false,
-        shouldRunIntegration: false,
-        highRiskPaths: [],
-      };
-    }
+    riskTier = {
+      tier: 'standard',
+      isDocsOnly: false,
+      shouldRunIntegration: false,
+      highRiskPaths: [],
+    };
   }
 
   // Determine effective docs-only mode (explicit flag OR detected from changed files)
