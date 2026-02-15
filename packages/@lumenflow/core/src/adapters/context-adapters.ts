@@ -29,6 +29,10 @@ import { resolveLocation } from '../context/location-resolver.js';
 import { readGitState } from '../context/git-state-reader.js';
 import { readWuState } from '../context/wu-state-reader.js';
 
+type ResolveLocationFn = (cwd?: string) => Promise<LocationContext>;
+type ReadGitStateFn = (cwd?: string) => Promise<GitState>;
+type ReadWuStateFn = (wuId: string, repoRoot: string) => Promise<WuStateResult | null>;
+
 /**
  * SimpleGitLocationAdapter
  *
@@ -45,6 +49,8 @@ import { readWuState } from '../context/wu-state-reader.js';
  * const resolver: ILocationResolver = new SimpleGitLocationAdapter();
  */
 export class SimpleGitLocationAdapter implements ILocationResolver {
+  constructor(private readonly resolveLocationFn: ResolveLocationFn = resolveLocation) {}
+
   /**
    * Resolve location context for the given working directory.
    *
@@ -52,7 +58,7 @@ export class SimpleGitLocationAdapter implements ILocationResolver {
    * @returns Promise<LocationContext> - Resolved location context
    */
   async resolveLocation(cwd?: string): Promise<LocationContext> {
-    return resolveLocation(cwd);
+    return this.resolveLocationFn(cwd);
   }
 }
 
@@ -72,6 +78,8 @@ export class SimpleGitLocationAdapter implements ILocationResolver {
  * const reader: IGitStateReader = new SimpleGitStateAdapter();
  */
 export class SimpleGitStateAdapter implements IGitStateReader {
+  constructor(private readonly readGitStateFn: ReadGitStateFn = readGitState) {}
+
   /**
    * Read current git state for the given working directory.
    *
@@ -79,7 +87,7 @@ export class SimpleGitStateAdapter implements IGitStateReader {
    * @returns Promise<GitState> - Current git state
    */
   async readGitState(cwd?: string): Promise<GitState> {
-    return readGitState(cwd);
+    return this.readGitStateFn(cwd);
   }
 }
 
@@ -99,6 +107,8 @@ export class SimpleGitStateAdapter implements IGitStateReader {
  * const reader: IWuStateReader = new FileSystemWuStateAdapter();
  */
 export class FileSystemWuStateAdapter implements IWuStateReader {
+  constructor(private readonly readWuStateFn: ReadWuStateFn = readWuState) {}
+
   /**
    * Read WU state from YAML and detect inconsistencies.
    *
@@ -107,6 +117,6 @@ export class FileSystemWuStateAdapter implements IWuStateReader {
    * @returns Promise<WuStateResult | null> - WU state or null if not found
    */
   async readWuState(wuId: string, repoRoot: string): Promise<WuStateResult | null> {
-    return readWuState(wuId, repoRoot);
+    return this.readWuStateFn(wuId, repoRoot);
   }
 }
