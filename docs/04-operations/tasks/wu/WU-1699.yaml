@@ -7,11 +7,12 @@ priority: P1
 created: 2026-02-15
 code_paths:
   - packages/@lumenflow/core/src/backlog-editor.ts
+  - packages/@lumenflow/core/src/__tests__/backlog-editor.test.ts
 tests:
   manual:
-    - pnpm --filter @lumenflow/core exec vitest run src/__tests__/backlog-generator.test.ts
+    - pnpm --filter @lumenflow/core exec vitest run src/__tests__/backlog-editor.test.ts
   unit:
-    - packages/@lumenflow/core/src/__tests__/backlog-generator.test.ts
+    - packages/@lumenflow/core/src/__tests__/backlog-editor.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1699.done

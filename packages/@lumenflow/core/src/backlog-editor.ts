@@ -28,13 +28,30 @@ import { STRING_LITERALS } from './wu-constants.js';
  * });
  */
 
+interface BacklogFileContent {
+  frontmatter: string;
+  lines: string[];
+}
+
+interface SectionBounds {
+  start: number;
+  end: number;
+}
+
+interface MoveBulletOptions {
+  fromSection: string;
+  toSection: string;
+  bulletPattern: string;
+  newBullet: string;
+}
+
 /**
  * Read backlog/status file and separate frontmatter from content.
  *
  * @param {string} filePath - Path to file
  * @returns {{ frontmatter: string, lines: string[] }} Frontmatter and content lines
  */
-export function readBacklogFile(filePath) {
+export function readBacklogFile(filePath: string): BacklogFileContent {
   if (!existsSync(filePath)) {
     throw createError(ErrorCodes.FILE_NOT_FOUND, `File not found: ${filePath}`, { path: filePath });
   }
@@ -59,7 +76,7 @@ export function readBacklogFile(filePath) {
  * @param {string} frontmatter - Frontmatter text (including --- markers)
  * @param {string[]} lines - Content lines
  */
-export function writeBacklogFile(filePath, frontmatter, lines) {
+export function writeBacklogFile(filePath: string, frontmatter: string, lines: string[]): void {
   const content = frontmatter + lines.join(STRING_LITERALS.NEWLINE);
   writeFileSync(filePath, content, { encoding: 'utf-8' });
 }
@@ -74,10 +91,10 @@ export function writeBacklogFile(filePath, frontmatter, lines) {
  * @param {string} heading - Section heading (e.g., '## Ready')
  * @returns {{ start: number, end: number } | null} Section bounds or null if not found
  */
-export function findSectionBounds(lines, heading) {
+export function findSectionBounds(lines: string[], heading: string): SectionBounds | null {
   // Find section header (case-insensitive match)
   const normalizedHeading = heading.trim().toLowerCase();
-  const startIdx = lines.findIndex((l) => l.trim().toLowerCase() === normalizedHeading);
+  const startIdx = lines.findIndex((line) => line.trim().toLowerCase() === normalizedHeading);
 
   if (startIdx === -1) {
     return null; // Section not found
@@ -86,7 +103,7 @@ export function findSectionBounds(lines, heading) {
   // Find next section header (## but not ###)
   let endIdx = lines
     .slice(startIdx + 1)
-    .findIndex((l) => l.startsWith('## ') && !l.startsWith('### '));
+    .findIndex((line) => line.startsWith('## ') && !line.startsWith('### '));
 
   if (endIdx === -1) {
     // No next section, use end of file
@@ -109,9 +126,15 @@ export function findSectionBounds(lines, heading) {
  * @param {number} sectionEnd - Section end index
  * @param {string} bulletPattern - Pattern to match (e.g., 'WU-123' or link path)
  */
-export function removeBulletFromSection(lines, sectionStart, sectionEnd, bulletPattern) {
+export function removeBulletFromSection(
+  lines: string[],
+  sectionStart: number,
+  sectionEnd: number,
+  bulletPattern: string,
+): void {
   for (let i = sectionStart + 1; i < sectionEnd; i++) {
-    if (lines[i] && lines[i].includes(bulletPattern)) {
+    const line = lines[i];
+    if (line?.includes(bulletPattern)) {
       lines.splice(i, 1);
       sectionEnd--; // Adjust end index after removal
       i--; // Re-check current index (next element shifted down)
@@ -129,16 +152,16 @@ export function removeBulletFromSection(lines, sectionStart, sectionEnd, bulletP
  * @param {number} sectionStart - Section start index
  * @param {string} bullet - Bullet text to add (e.g., '- [WU-123 — Title](link)')
  */
-export function addBulletToSection(lines, sectionStart, bullet) {
+export function addBulletToSection(lines: string[], sectionStart: number, bullet: string): void {
   // Insert position: after header + empty line (typically sectionStart + 2)
   // But handle case where there's a "(No items...)" marker
   const nextLineIdx = sectionStart + 1;
   const bulletInsertIdx = nextLineIdx + 1;
+  const insertCandidate = lines[bulletInsertIdx];
 
   // WU-1242: Use string includes instead of regex for "(No items...)" marker check
   const isNoItemsMarker =
-    lines[bulletInsertIdx] &&
-    lines[bulletInsertIdx].toLowerCase().includes('no items currently in progress');
+    insertCandidate?.toLowerCase().includes('no items currently in progress') ?? false;
   if (isNoItemsMarker) {
     // Replace "(No items...)" with bullet
     lines.splice(bulletInsertIdx, 1, bullet);
@@ -162,7 +185,10 @@ export function addBulletToSection(lines, sectionStart, bullet) {
  * @param {string} options.newBullet - Bullet text to add (e.g., '- [WU-123 — Title](link)')
  * @throws {Error} If file not found or sections not found
  */
-export function moveBullet(filePath, { fromSection, toSection, bulletPattern, newBullet }) {
+export function moveBullet(
+  filePath: string,
+  { fromSection, toSection, bulletPattern, newBullet }: MoveBulletOptions,
+): void {
   const { frontmatter, lines } = readBacklogFile(filePath);
 
   // Find source and target sections
