@@ -27,7 +27,7 @@ phases:
     status: done
   - id: 5
     title: 'Wave 1C: CLI remaining strict fixes and strict enablement'
-    status: pending
+    status: done
   - id: 6
     title: 'Wave 2A: Core WU lifecycle strict fixes'
     status: pending

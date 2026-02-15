@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-- [WU-1583 — CLI strict wave 1C: remaining fixes and strict enablement](wu/WU-1583.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -637,3 +637,4 @@ _Last updated: 2026-02-15_
 - [WU-1693 — Clarify contributing workflows: trunk-based vs PR-based](wu/WU-1693.yaml) — 2026-02-15
 - [WU-1581 — CLI strict wave 1A: high-impact WU command hotspots](wu/WU-1581.yaml) — 2026-02-15
 - [WU-1582 — CLI strict wave 1B: initiative and gates command fixes](wu/WU-1582.yaml) — 2026-02-15
+- [WU-1583 — CLI strict wave 1C: remaining fixes and strict enablement](wu/WU-1583.yaml) — 2026-02-15

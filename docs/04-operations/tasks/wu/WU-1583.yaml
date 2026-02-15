@@ -2,7 +2,7 @@ id: WU-1583
 title: 'CLI strict wave 1C: remaining fixes and strict enablement'
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -55,3 +55,6 @@ acceptance:
   - tools strict-mode tests are updated to reflect CLI strict enablement
   - pnpm --filter @lumenflow/cli typecheck passes with strict enabled
   - No net increase in as any usage in CLI
+locked: true
+completed_at: 2026-02-15T18:35:52.133Z
+completed: 2026-02-15
