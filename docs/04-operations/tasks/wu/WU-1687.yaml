@@ -2,7 +2,7 @@ id: WU-1687
 title: Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -89,3 +89,6 @@ worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-
 claimed_at: 2026-02-15T15:47:00.835Z
 baseline_main_sha: 6310f0797a62f182d8c5b44f0b71504b2c6e73df
 session_id: 8962eb57-43d1-4cc3-a4fb-2eca191a8cbd
+locked: true
+completed_at: 2026-02-15T16:20:25.303Z
+completed: 2026-02-15
