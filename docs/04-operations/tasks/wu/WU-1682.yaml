@@ -2,7 +2,7 @@ id: WU-1682
 title: Update Medium article for LumenFlow open-source launch
 lane: 'Content: Site Comms'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -49,3 +49,6 @@ session_id: 5fa86655-0561-4e7d-8628-dace82f7fa35
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T10:14:22.995Z
+locked: true
+completed_at: 2026-02-15T10:18:06.396Z
+completed: 2026-02-15
