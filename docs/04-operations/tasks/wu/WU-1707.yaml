@@ -2,7 +2,7 @@ id: WU-1707
 title: 'Strict debt slice: type wu-yaml'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -26,7 +26,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add explicit parameter typing to wu-yaml.ts to reduce strict noImplicitAny debt without changing YAML behavior.
+description: Add explicit parameter typing to wu-yaml.ts to reduce strict noImplicitAny debt without
+  changing YAML behavior.
 acceptance:
   - No strictNullChecks/noImplicitAny errors in packages/@lumenflow/core/src/wu-yaml.ts
   - Existing wu-yaml tests pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1707
+claimed_at: 2026-02-15T23:28:39.789Z
+baseline_main_sha: 7e5d7b8317b4990bf222d1b2d52a05c43e709860
+session_id: 85c49d31-33f5-49b2-a040-c461c1f1aefd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T23:28:39.794Z
