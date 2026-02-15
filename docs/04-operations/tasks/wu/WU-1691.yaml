@@ -1,0 +1,34 @@
+id: WU-1691
+title: Include bare lumenflow wrapper in release script version bumps
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-15
+code_paths:
+  - packages/@lumenflow/cli/src/release.ts
+  - packages/lumenflow/package.json
+tests:
+  manual:
+    - Run pnpm release --dry-run and verify packages/lumenflow appears in bump list
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/release.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1691.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: The release script (release.ts) only discovers packages under packages/@lumenflow/* via findPackageJsonPaths(). The new bare lumenflow wrapper at packages/lumenflow is excluded, causing version drift between scoped and unscoped packages.
+acceptance:
+  - findPackageJsonPaths includes packages/lumenflow/package.json
+  - publishConfig.dependencies uses workspace:^ for auto-resolution
+  - Release script bumps all packages atomically including the wrapper
