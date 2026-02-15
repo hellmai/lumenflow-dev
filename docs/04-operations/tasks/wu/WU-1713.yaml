@@ -2,7 +2,7 @@ id: WU-1713
 title: 'Strict debt slice: type wu-yaml-fixer'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -29,7 +29,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Eliminate strict typing errors in wu-yaml-fixer and add focused tests for issue detection/apply helpers.
+description: Eliminate strict typing errors in wu-yaml-fixer and add focused tests for issue
+  detection/apply helpers.
 acceptance:
-  - No strict errors remain in packages/@lumenflow/core/src/wu-yaml-fixer.ts under --strictNullChecks --noImplicitAny
+  - No strict errors remain in packages/@lumenflow/core/src/wu-yaml-fixer.ts under
+    --strictNullChecks --noImplicitAny
   - wu-yaml-fixer unit tests pass
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-1713
+claimed_at: 2026-02-15T23:56:06.172Z
+baseline_main_sha: 6ba10bab17763a85e0e2a421166c88793c95952e
+session_id: 436a904b-a717-49a6-997d-e15660b0bfba
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T23:56:06.180Z
