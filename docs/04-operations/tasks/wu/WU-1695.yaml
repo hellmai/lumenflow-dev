@@ -9,22 +9,36 @@ code_paths:
   - packages/@lumenflow/mcp/src/server.ts
   - packages/@lumenflow/mcp/src/tools-shared.ts
   - packages/@lumenflow/mcp/src/tools
+  - packages/@lumenflow/core/src/worktree-symlink.ts
 tests:
   manual:
     - Run pnpm --filter @lumenflow/mcp typecheck and verify success.
   unit:
     - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
+    - packages/@lumenflow/core/src/__tests__/worktree-symlink.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1695.done
 dependencies: []
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  Fix: add @lumenflow/mcp to nested node_modules symlink targets used by wu:claim fallback. This
+  restores mcp module resolution in worktrees without manual symlinking.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-15T20:29:58.529Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-mcp-wu-1695
+session_id: d68b41fb-81f4-43e5-8bb5-6b0b07910144
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T20:29:58.537Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -37,11 +51,3 @@ acceptance:
   - pnpm --filter @lumenflow/mcp typecheck passes from a clean checkout
   - No TS7006 errors remain in packages/@lumenflow/mcp/src/server.ts
   - Module resolution errors for zod/@lumenflow/core in mcp package are resolved
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-mcp-wu-1695
-claimed_at: 2026-02-15T20:29:58.529Z
-baseline_main_sha: 79838e54f1f9d2476fa86558610545d1a58bb7ee
-session_id: d68b41fb-81f4-43e5-8bb5-6b0b07910144
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-15T20:29:58.537Z
