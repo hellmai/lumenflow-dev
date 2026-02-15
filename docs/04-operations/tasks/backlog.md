@@ -28,7 +28,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1585 — Core strict wave 2B: WU management strict fixes](wu/WU-1585.yaml) — Framework: Core Validation
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -667,6 +667,7 @@ sections:
 - [WU-1582 — CLI strict wave 1B: initiative and gates command fixes](wu/WU-1582.yaml)
 - [WU-1583 — CLI strict wave 1C: remaining fixes and strict enablement](wu/WU-1583.yaml)
 - [WU-1584 — Core strict wave 2A: lifecycle strict hotspots](wu/WU-1584.yaml)
+- [WU-1585 — Core strict wave 2B: WU management strict fixes](wu/WU-1585.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

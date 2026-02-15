@@ -2,7 +2,7 @@ id: WU-1585
 title: 'Core strict wave 2B: WU management strict fixes'
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -53,3 +53,6 @@ session_id: 2cfedf51-d766-48c1-8e1f-04bd2b7f72b8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T18:48:14.883Z
+locked: true
+completed_at: 2026-02-15T18:55:48.607Z
+completed: 2026-02-15

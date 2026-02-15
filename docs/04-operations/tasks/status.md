@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-- [WU-1585 — Core strict wave 2B: WU management strict fixes](wu/WU-1585.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -639,3 +639,4 @@ _Last updated: 2026-02-15_
 - [WU-1582 — CLI strict wave 1B: initiative and gates command fixes](wu/WU-1582.yaml) — 2026-02-15
 - [WU-1583 — CLI strict wave 1C: remaining fixes and strict enablement](wu/WU-1583.yaml) — 2026-02-15
 - [WU-1584 — Core strict wave 2A: lifecycle strict hotspots](wu/WU-1584.yaml) — 2026-02-15
+- [WU-1585 — Core strict wave 2B: WU management strict fixes](wu/WU-1585.yaml) — 2026-02-15
