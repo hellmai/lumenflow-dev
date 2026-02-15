@@ -6,13 +6,30 @@ status: in_progress
 priority: P1
 created: 2026-02-15
 code_paths:
+  - packages/@lumenflow/core/src/wu-context-constants.ts
   - packages/@lumenflow/core/src/arg-parser.ts
-  - packages/@lumenflow/cli/src/wu-spawn-strategy-resolver.ts
   - packages/@lumenflow/core/src/spawn-strategy.ts
-  - LUMENFLOW.md
-  - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
+  - packages/@lumenflow/core/src/schemas/setup-schemas.ts
+  - packages/@lumenflow/core/src/schemas/wu-lifecycle-schemas.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/core/src/wu-schema.ts
+  - packages/@lumenflow/cli/src/wu-spawn-strategy-resolver.ts
+  - packages/@lumenflow/cli/src/wu-spawn-prompt-builders.ts
+  - packages/@lumenflow/cli/src/agent-session.ts
+  - packages/@lumenflow/cli/src/orchestrate-initiative.ts
+  - packages/@lumenflow/cli/src/hooks/enforcement-sync.ts
+  - packages/@lumenflow/cli/src/hooks/generators/pre-compact-checkpoint.ts
+  - packages/@lumenflow/cli/src/hooks/generators/session-start-recovery.ts
   - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
   - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
+  - LUMENFLOW.md
+  - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
+  - apps/docs/src/content/docs/reference/config.mdx
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - apps/docs/src/content/docs/reference/templates.mdx
+  - apps/docs/src/content/docs/reference/mcp.mdx
+  - apps/docs/src/content/docs/reference/api.mdx
 tests:
   manual:
     - Run 'pnpm wu:brief --help' and verify client examples are neutral and include codex-cli.
@@ -28,12 +45,25 @@ dependencies: []
 spec_refs:
   - LUMENFLOW.md
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  Shallow multi-file override (wu-sizing-guide s1.2): ~25 files, uniform string replacements <=5
+  lines each. No structural changes. Expands LUMENFLOW_CLIENT_IDS as single source of truth,
+  neutralizes all help text/docs/fallbacks/hooks/Starlight refs.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-15T10:13:50.851Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1681
+session_id: 5fa86655-0561-4e7d-8628-dace82f7fa35
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T10:13:50.854Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -49,11 +79,3 @@ acceptance:
   - Deprecated --codex path remains backward compatible but messaging clearly points to canonical
     --client value(s).
   - Docs and tests are updated to prevent regression in client-name guidance.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1681
-claimed_at: 2026-02-15T10:13:50.851Z
-baseline_main_sha: a14186e7bbed7baf3825b0e08a15942204487185
-session_id: 5fa86655-0561-4e7d-8628-dace82f7fa35
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-15T10:13:50.854Z
