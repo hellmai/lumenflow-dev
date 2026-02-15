@@ -1,14 +1,15 @@
 {
   "extends": "../../../tsconfig.json",
-  "_strictException": "WU-1535: 498 implicit-any and property-access errors remain. Tracked for incremental fix in INIT-020 Phase 2.",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
     "noEmit": false,
     "declaration": false,
     "declarationMap": false,
-    "strict": false,
+    "strict": true,
     "strictNullChecks": false,
+    "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitReturns": false,
