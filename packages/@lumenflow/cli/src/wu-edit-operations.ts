@@ -370,6 +370,11 @@ export function applyEdits(wu, opts) {
     updated.exposure = opts.exposure;
   }
 
+  // WU-1683: Handle --plan flag (simple scalar replacement)
+  if (opts.plan) {
+    updated.plan = opts.plan;
+  }
+
   return updated;
 }
 

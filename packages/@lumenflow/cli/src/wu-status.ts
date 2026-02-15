@@ -92,6 +92,11 @@ function formatWuState(context: WuContext): string[] {
   lines.push(`  Lane: ${wu.lane}`);
   lines.push(`  Status: ${wu.status}`);
 
+  // WU-1683: Surface linked plan file path
+  if (wu.plan) {
+    lines.push(`  Plan: ${wu.plan}`);
+  }
+
   if (!wu.isConsistent) {
     lines.push(`  ${EMOJI.WARNING} State inconsistency: ${wu.inconsistencyReason}`);
   }

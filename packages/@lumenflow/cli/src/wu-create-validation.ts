@@ -42,6 +42,8 @@ export interface CreateWUOptions {
   userJourney?: string;
   uiPairingWus?: string[];
   specRefs?: string[];
+  // WU-1683: First-class plan field
+  plan?: string;
   // WU-1329: Strict validation flag
   strict?: boolean;
 }

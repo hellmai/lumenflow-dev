@@ -27,6 +27,8 @@ export interface WuState {
   title: string;
   /** Path to WU YAML file */
   yamlPath: string;
+  /** WU-1683: Path to linked plan file */
+  plan?: string;
   /** Whether YAML and state store are consistent */
   isConsistent: boolean;
   /** Reason for inconsistency if not consistent */

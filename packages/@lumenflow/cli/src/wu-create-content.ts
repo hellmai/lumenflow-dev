@@ -76,6 +76,7 @@ export function buildWUContent({
     userJourney,
     uiPairingWus,
     specRefs,
+    plan,
   } = opts;
 
   // Arrays come directly from Commander.js repeatable options - no parsing needed
@@ -124,6 +125,8 @@ export function buildWUContent({
     ...(userJourney && { user_journey: userJourney }),
     ...(uiPairingWus?.length && { ui_pairing_wus: uiPairingWus }),
     ...(specRefs?.length && { spec_refs: specRefs }),
+    // WU-1683: First-class plan field
+    ...(plan && { plan }),
   };
 }
 

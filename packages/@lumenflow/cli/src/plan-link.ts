@@ -162,26 +162,19 @@ export function linkPlanToWU(worktreePath: string, wuId: string, planUri: string
     die(`WU YAML id mismatch. Expected ${wuId}, found ${String(doc.id)}`);
   }
 
-  // Check for existing spec_refs
-  const rawSpecRefs = doc.spec_refs;
-  if (rawSpecRefs !== undefined) {
-    const isStringArray =
-      Array.isArray(rawSpecRefs) && rawSpecRefs.every((ref) => typeof ref === 'string');
-    if (!isStringArray) {
-      die(`Invalid spec_refs in ${wuId}: expected array of strings`);
-    }
-  }
-  const specRefs = Array.isArray(rawSpecRefs) ? [...rawSpecRefs] : [];
+  // WU-1683: Set first-class plan field (symmetric with initiative related_plan)
+  const existingPlan = doc.plan as string | undefined;
 
-  // Check if already linked
-  if (specRefs.includes(planUri)) {
+  if (existingPlan === planUri) {
     console.log(`${LOG_PREFIX} Plan already linked to ${wuId} (idempotent)`);
     return false;
   }
 
-  // Add new plan URI
-  specRefs.push(planUri);
-  doc.spec_refs = specRefs;
+  if (existingPlan && existingPlan !== planUri) {
+    console.warn(`${LOG_PREFIX} Replacing existing plan: ${existingPlan} -> ${planUri}`);
+  }
+
+  doc.plan = planUri;
 
   // Write back
   const out = stringifyYAML(doc, { lineWidth: -1 });
