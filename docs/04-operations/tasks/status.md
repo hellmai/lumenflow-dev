@@ -5,6 +5,7 @@ _Last updated: 2026-02-15_
 ## In Progress
 
 - [WU-1703 — Emergency PII/PHI cleanup across templates and docs](wu/WU-1703.yaml)
+- [WU-1701 — Emergency cleanup: remove healthcare/PHI code from core package](wu/WU-1701.yaml)
 
 ## Completed
 

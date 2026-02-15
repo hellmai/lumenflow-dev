@@ -1358,3 +1358,4 @@
 {"type":"claim","wuId":"WU-1700","timestamp":"2026-02-15T21:37:12.277Z","lane":"Framework: CLI WU Commands","title":"Strict debt slice: eliminate TS7006 in cli initiative-status"}
 {"type":"complete","wuId":"WU-1700","timestamp":"2026-02-15T21:41:26.688Z"}
 {"type":"claim","wuId":"WU-1703","lane":"Content: Framework Docs","title":"Emergency PII/PHI cleanup across templates and docs","timestamp":"2026-02-15T22:14:23.128Z"}
+{"type":"claim","wuId":"WU-1701","lane":"Framework: Core Validation","title":"Emergency cleanup: remove healthcare/PHI code from core package","timestamp":"2026-02-15T22:16:26.274Z"}

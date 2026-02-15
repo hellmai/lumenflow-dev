@@ -2,7 +2,7 @@ id: WU-1701
 title: 'Emergency cleanup: remove healthcare/PHI code from core package'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -25,7 +25,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Emergency cleanup to remove healthcare and PHI-specific code that was inadvertently included when the repo was open-sourced. This includes PII scanner types, sensitive data constants, compliance checker exports, and healthcare-specific patterns in escalation detection. The code does not belong in a general-purpose workflow framework.
+description: Emergency cleanup to remove healthcare and PHI-specific code that was inadvertently
+  included when the repo was open-sourced. This includes PII scanner types, sensitive data
+  constants, compliance checker exports, and healthcare-specific patterns in escalation detection.
+  The code does not belong in a general-purpose workflow framework.
 acceptance:
   - All PHI/PII/healthcare constants removed
   - Barrel exports updated
@@ -35,3 +38,11 @@ acceptance:
   - Healthcare type declarations removed from types.d.ts
   - Healthcare export entries and deps removed from package.json
   - Test files updated
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1701
+claimed_at: 2026-02-15T22:16:26.227Z
+baseline_main_sha: fc1c33c6f07eb59b32bef4632e03bd91c0d930bb
+session_id: 2ba85473-6c7a-42d4-b5a0-04dd4a754ae9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T22:16:26.235Z
