@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1696 — Strict config completion: remove core/cli false overrides](wu/WU-1696.yaml)
 
 ## Completed
 
