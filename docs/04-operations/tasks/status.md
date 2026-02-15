@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-- [WU-1698 — Strict debt slice: eliminate TS7006 in core backlog-generator](wu/WU-1698.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -647,3 +647,4 @@ _Last updated: 2026-02-15_
 - [WU-1695 — Fix pre-existing @lumenflow/mcp typecheck failures blocking gates](wu/WU-1695.yaml) — 2026-02-15
 - [WU-1696 — Strict config completion: remove core/cli false overrides](wu/WU-1696.yaml) — 2026-02-15
 - [WU-1697 — Strict debt slice: eliminate TS7006 in core wu-done-metadata](wu/WU-1697.yaml) — 2026-02-15
+- [WU-1698 — Strict debt slice: eliminate TS7006 in core backlog-generator](wu/WU-1698.yaml) — 2026-02-15
