@@ -3,7 +3,90 @@ import path from 'node:path';
 import { readWU, readWUAsync } from './wu-yaml.js';
 import { WU_PATHS } from './wu-paths.js';
 import { STRING_LITERALS, WU_STATUS } from './wu-constants.js';
-import { detectCycles } from './cycle-detector.js';
+import { detectCycles, type WUObject } from './cycle-detector.js';
+
+export interface DependencyNode {
+  id: string;
+  title: string;
+  status: string;
+  blocks: string[];
+  blockedBy: string[];
+}
+
+type WUDoc = {
+  title?: string;
+  status?: string;
+  blocks?: unknown;
+  blocked_by?: unknown;
+};
+
+export type DependencyGraph = Map<string, DependencyNode>;
+
+interface DependencyTraversalEntry {
+  id: string;
+  depth: number;
+  path: string[];
+}
+
+interface MermaidEdge {
+  from: string;
+  to: string;
+}
+
+type GraphStatus = 'done' | 'in_progress' | 'ready' | 'blocked';
+
+interface TopologicalSortCycleWarning {
+  order: string[];
+  warning: string;
+  cycleNodes: string[];
+}
+
+interface CriticalPathResult {
+  path: string[];
+  length: number;
+  warning?: string;
+}
+
+interface BottleneckScore {
+  id: string;
+  score: number;
+  title?: string;
+}
+
+function toStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.filter((entry): entry is string => typeof entry === 'string');
+}
+
+function toDependencyNode(id: string, doc: WUDoc): DependencyNode {
+  return {
+    id,
+    title: typeof doc.title === 'string' ? doc.title : id,
+    status: typeof doc.status === 'string' ? doc.status : 'unknown',
+    blocks: toStringArray(doc.blocks),
+    blockedBy: toStringArray(doc.blocked_by),
+  };
+}
+
+function isGraphStatus(status: string): status is GraphStatus {
+  return (
+    status === 'done' || status === 'in_progress' || status === 'ready' || status === 'blocked'
+  );
+}
+
+function toCycleDetectorGraph(graph: DependencyGraph): Map<string, WUObject> {
+  const normalized = new Map<string, WUObject>();
+  for (const [id, node] of graph.entries()) {
+    normalized.set(id, {
+      id: node.id,
+      blocks: node.blocks,
+      blocked_by: node.blockedBy,
+    });
+  }
+  return normalized;
+}
 
 /**
  * Dependency Graph Module (WU-1247, WU-1568)
@@ -31,29 +114,25 @@ import { detectCycles } from './cycle-detector.js';
  *
  * @returns {Map<string, {id: string, title: string, status: string, blocks: string[], blockedBy: string[]}>}
  */
-export function buildDependencyGraph() {
+export function buildDependencyGraph(): DependencyGraph {
   const wuDir = path.dirname(WU_PATHS.WU('dummy'));
-  const graph = new Map();
+  const graph: DependencyGraph = new Map();
 
   if (!existsSync(wuDir)) {
     return graph;
   }
 
-  const files = readdirSync(wuDir).filter((f) => f.endsWith('.yaml') && f.startsWith('WU-'));
+  const files = readdirSync(wuDir).filter(
+    (f: string) => f.endsWith('.yaml') && f.startsWith('WU-'),
+  );
 
   for (const f of files) {
     const filePath = path.join(wuDir, f);
     const id = f.replace('.yaml', '');
 
     try {
-      const doc = readWU(filePath, id);
-      graph.set(id, {
-        id,
-        title: doc.title || id,
-        status: doc.status || 'unknown',
-        blocks: Array.isArray(doc.blocks) ? doc.blocks : [],
-        blockedBy: Array.isArray(doc.blocked_by) ? doc.blocked_by : [],
-      });
+      const doc = readWU(filePath, id) as WUDoc;
+      graph.set(id, toDependencyNode(id, doc));
     } catch {
       // Skip invalid files
     }
@@ -67,27 +146,21 @@ export function buildDependencyGraph() {
  *
  * @returns {Promise<Map<string, {id: string, title: string, status: string, blocks: string[], blockedBy: string[]}>>}
  */
-export async function buildDependencyGraphAsync() {
+export async function buildDependencyGraphAsync(): Promise<DependencyGraph> {
   const wuDir = path.dirname(WU_PATHS.WU('dummy'));
-  const graph = new Map();
+  const graph: DependencyGraph = new Map();
 
   try {
     const files = await fs.readdir(wuDir);
-    const yamlFiles = files.filter((f) => f.endsWith('.yaml') && f.startsWith('WU-'));
+    const yamlFiles = files.filter((f: string) => f.endsWith('.yaml') && f.startsWith('WU-'));
 
-    const promises = yamlFiles.map(async (f) => {
+    const promises = yamlFiles.map(async (f: string): Promise<DependencyNode | null> => {
       const filePath = path.join(wuDir, f);
       const id = f.replace('.yaml', '');
 
       try {
-        const doc = await readWUAsync(filePath, id);
-        return {
-          id,
-          title: doc.title || id,
-          status: doc.status || 'unknown',
-          blocks: Array.isArray(doc.blocks) ? doc.blocks : [],
-          blockedBy: Array.isArray(doc.blocked_by) ? doc.blocked_by : [],
-        };
+        const doc = (await readWUAsync(filePath, id)) as WUDoc;
+        return toDependencyNode(id, doc);
       } catch {
         // Skip invalid files
         return null;
@@ -116,11 +189,15 @@ export async function buildDependencyGraphAsync() {
  * @param {number} [maxDepth=10] - Maximum traversal depth
  * @returns {Array<{id: string, depth: number, path: string[]}>}
  */
-export function getUpstreamDependencies(graph, wuId, maxDepth = 10) {
-  const visited = new Set();
-  const result = [];
+export function getUpstreamDependencies(
+  graph: DependencyGraph,
+  wuId: string,
+  maxDepth = 10,
+): DependencyTraversalEntry[] {
+  const visited = new Set<string>();
+  const result: DependencyTraversalEntry[] = [];
 
-  function traverse(id, depth, pathSoFar) {
+  function traverse(id: string, depth: number, pathSoFar: string[]): void {
     if (depth > maxDepth || visited.has(id)) return;
     visited.add(id);
 
@@ -147,11 +224,15 @@ export function getUpstreamDependencies(graph, wuId, maxDepth = 10) {
  * @param {number} [maxDepth=10] - Maximum traversal depth
  * @returns {Array<{id: string, depth: number, path: string[]}>}
  */
-export function getDownstreamDependents(graph, wuId, maxDepth = 10) {
-  const visited = new Set();
-  const result = [];
+export function getDownstreamDependents(
+  graph: DependencyGraph,
+  wuId: string,
+  maxDepth = 10,
+): DependencyTraversalEntry[] {
+  const visited = new Set<string>();
+  const result: DependencyTraversalEntry[] = [];
 
-  function traverse(id, depth, pathSoFar) {
+  function traverse(id: string, depth: number, pathSoFar: string[]): void {
     if (depth > maxDepth || visited.has(id)) return;
     visited.add(id);
 
@@ -188,9 +269,13 @@ export interface RenderASCIIOptions {
  * @param {RenderASCIIOptions} [options] - Render options
  * @returns {string} ASCII tree representation
  */
-export function renderASCII(graph, rootId, options: RenderASCIIOptions = {}) {
+export function renderASCII(
+  graph: DependencyGraph,
+  rootId: string,
+  options: RenderASCIIOptions = {},
+): string {
   const { direction = 'both', depth: maxDepth = 3 } = options;
-  const lines = [];
+  const lines: string[] = [];
   const root = graph.get(rootId);
 
   if (!root) {
@@ -234,7 +319,7 @@ export function renderASCII(graph, rootId, options: RenderASCIIOptions = {}) {
   }
 
   // Check for cycles
-  const cycleResult = detectCycles(graph);
+  const cycleResult = detectCycles(toCycleDetectorGraph(graph));
   if (cycleResult.hasCycle) {
     lines.push('⚠️  Circular dependencies detected:');
     for (const cycle of cycleResult.cycles) {
@@ -265,11 +350,11 @@ export interface RenderMermaidOptions {
  * @param {RenderMermaidOptions} [options] - Render options
  * @returns {string} Mermaid diagram syntax
  */
-export function renderMermaid(graph, options: RenderMermaidOptions = {}) {
+export function renderMermaid(graph: DependencyGraph, options: RenderMermaidOptions = {}): string {
   const { rootId, direction = 'TD', depth: maxDepth = 3 } = options;
-  const lines = [];
-  const nodes = new Set();
-  const edges = [];
+  const lines: string[] = [];
+  const nodes = new Set<string>();
+  const edges: MermaidEdge[] = [];
 
   // Collect nodes and edges
   if (rootId) {
@@ -336,10 +421,15 @@ export function renderMermaid(graph, options: RenderMermaidOptions = {}) {
   lines.push('    classDef blocked fill:#fca5a5,stroke:#ef4444');
 
   // Apply classes
-  const statusGroups = { done: [], in_progress: [], ready: [], blocked: [] };
+  const statusGroups: Record<GraphStatus, string[]> = {
+    done: [],
+    in_progress: [],
+    ready: [],
+    blocked: [],
+  };
   for (const nodeId of nodes) {
     const node = graph.get(nodeId);
-    if (node && statusGroups[node.status]) {
+    if (node && isGraphStatus(node.status)) {
       statusGroups[node.status].push(nodeId);
     }
   }
@@ -359,9 +449,13 @@ export function renderMermaid(graph, options: RenderMermaidOptions = {}) {
  * @param {Map} graph - Dependency graph
  * @returns {{hasCycle: boolean, cycles: string[][], orphans: Array<{wuId: string, ref: string}>}}
  */
-export function validateGraph(graph) {
+export function validateGraph(graph: DependencyGraph): {
+  hasCycle: boolean;
+  cycles: string[][];
+  orphans: Array<{ wuId: string; ref: string }>;
+} {
   const allIds = new Set(graph.keys());
-  const orphans = [];
+  const orphans: Array<{ wuId: string; ref: string }> = [];
 
   // Check for orphan references
   for (const [wuId, node] of graph.entries()) {
@@ -374,17 +468,7 @@ export function validateGraph(graph) {
 
   // Transform graph to snake_case for detectCycles compatibility
   // (dependency-graph uses camelCase internally, initiative-validator uses snake_case)
-  const snakeCaseGraph = new Map();
-  for (const [id, node] of graph.entries()) {
-    snakeCaseGraph.set(id, {
-      id: node.id,
-      blocked_by: node.blockedBy || [],
-      blocks: node.blocks || [],
-    });
-  }
-
-  // Check for cycles
-  const cycleResult = detectCycles(snakeCaseGraph);
+  const cycleResult = detectCycles(toCycleDetectorGraph(graph));
 
   return {
     hasCycle: cycleResult.hasCycle,
@@ -403,8 +487,8 @@ export function validateGraph(graph) {
  * @param {Map} graph - Full dependency graph
  * @returns {Map} Graph containing only non-done WUs
  */
-function filterActiveGraph(graph) {
-  const activeGraph = new Map();
+function filterActiveGraph(graph: DependencyGraph): DependencyGraph {
+  const activeGraph: DependencyGraph = new Map();
   for (const [id, node] of graph.entries()) {
     if (node.status !== WU_STATUS.DONE) {
       activeGraph.set(id, node);
@@ -421,7 +505,11 @@ function filterActiveGraph(graph) {
  * @param {object} node - Node to check
  * @returns {boolean} True if all dependencies are satisfied
  */
-function _areDependenciesSatisfied(activeGraph, fullGraph, node) {
+function _areDependenciesSatisfied(
+  activeGraph: DependencyGraph,
+  fullGraph: DependencyGraph,
+  node: DependencyNode,
+): boolean {
   for (const depId of node.blockedBy) {
     // Dependency is satisfied if:
     // 1. It doesn't exist in the graph (orphan reference, treat as satisfied)
@@ -443,7 +531,7 @@ function _areDependenciesSatisfied(activeGraph, fullGraph, node) {
  * @param {Map} graph - Dependency graph
  * @returns {string[]|{order: string[], warning: string, cycleNodes: string[]}} Sorted WU IDs or warning object
  */
-export function topologicalSort(graph) {
+export function topologicalSort(graph: DependencyGraph): string[] | TopologicalSortCycleWarning {
   const activeGraph = filterActiveGraph(graph);
 
   if (activeGraph.size === 0) {
@@ -451,7 +539,7 @@ export function topologicalSort(graph) {
   }
 
   // Build in-degree map (count of unsatisfied dependencies)
-  const inDegree = new Map();
+  const inDegree = new Map<string, number>();
   for (const [id, node] of activeGraph.entries()) {
     // Count only dependencies that are in the active graph
     let count = 0;
@@ -464,17 +552,20 @@ export function topologicalSort(graph) {
   }
 
   // Start with nodes that have no active dependencies
-  const queue = [];
+  const queue: string[] = [];
   for (const [id, degree] of inDegree.entries()) {
     if (degree === 0) {
       queue.push(id);
     }
   }
 
-  const sorted = [];
+  const sorted: string[] = [];
 
   while (queue.length > 0) {
     const current = queue.shift();
+    if (!current) {
+      continue;
+    }
     sorted.push(current);
 
     const node = activeGraph.get(current);
@@ -484,7 +575,7 @@ export function topologicalSort(graph) {
     for (const depId of node.blocks) {
       if (!activeGraph.has(depId)) continue;
 
-      const newDegree = inDegree.get(depId) - 1;
+      const newDegree = (inDegree.get(depId) ?? 0) - 1;
       inDegree.set(depId, newDegree);
 
       if (newDegree === 0) {
@@ -495,7 +586,7 @@ export function topologicalSort(graph) {
 
   // Check for cycles (not all nodes processed)
   if (sorted.length < activeGraph.size) {
-    const cycleNodes = [];
+    const cycleNodes: string[] = [];
     for (const [id, degree] of inDegree.entries()) {
       if (degree > 0) {
         cycleNodes.push(id);
@@ -520,7 +611,7 @@ export function topologicalSort(graph) {
  * @param {Map} graph - Dependency graph
  * @returns {{path: string[], length: number, warning?: string}} Critical path info
  */
-export function criticalPath(graph) {
+export function criticalPath(graph: DependencyGraph): CriticalPathResult {
   const activeGraph = filterActiveGraph(graph);
 
   if (activeGraph.size === 0) {
@@ -540,8 +631,8 @@ export function criticalPath(graph) {
   }
 
   // Distance and predecessor maps for longest path
-  const distance = new Map();
-  const predecessor = new Map();
+  const distance = new Map<string, number>();
+  const predecessor = new Map<string, string | null>();
 
   // Initialise distances
   for (const id of topoResult) {
@@ -558,8 +649,8 @@ export function criticalPath(graph) {
     for (const depId of node.blocks) {
       if (!activeGraph.has(depId)) continue;
 
-      const newDistance = distance.get(current) + 1;
-      if (newDistance > distance.get(depId)) {
+      const newDistance = (distance.get(current) ?? 0) + 1;
+      if (newDistance > (distance.get(depId) ?? 0)) {
         distance.set(depId, newDistance);
         predecessor.set(depId, current);
       }
@@ -568,7 +659,7 @@ export function criticalPath(graph) {
 
   // Find the node with maximum distance
   let maxDistance = 0;
-  let endNode = null;
+  let endNode: string | null = null;
   for (const [id, dist] of distance.entries()) {
     if (dist > maxDistance) {
       maxDistance = dist;
@@ -577,11 +668,11 @@ export function criticalPath(graph) {
   }
 
   // Reconstruct path
-  const path = [];
+  const path: string[] = [];
   let current = endNode;
   while (current !== null) {
     path.unshift(current);
-    current = predecessor.get(current);
+    current = predecessor.get(current) ?? null;
   }
 
   return {
@@ -599,7 +690,7 @@ export function criticalPath(graph) {
  * @param {string} wuId - WU ID to score
  * @returns {number} Count of downstream dependents
  */
-export function impactScore(graph, wuId) {
+export function impactScore(graph: DependencyGraph, wuId: string): number {
   const activeGraph = filterActiveGraph(graph);
 
   if (!activeGraph.has(wuId)) {
@@ -607,12 +698,15 @@ export function impactScore(graph, wuId) {
   }
 
   // BFS to count all downstream dependents
-  const visited = new Set();
-  const queue = [wuId];
+  const visited = new Set<string>();
+  const queue: string[] = [wuId];
   visited.add(wuId);
 
   while (queue.length > 0) {
     const current = queue.shift();
+    if (!current) {
+      continue;
+    }
     const node = activeGraph.get(current);
     if (!node) continue;
 
@@ -637,7 +731,7 @@ export function impactScore(graph, wuId) {
  * @param {number} limit - Maximum number of bottlenecks to return
  * @returns {Array<{id: string, score: number, title?: string}>} Bottlenecks sorted by score descending
  */
-export function bottlenecks(graph, limit) {
+export function bottlenecks(graph: DependencyGraph, limit: number): BottleneckScore[] {
   const activeGraph = filterActiveGraph(graph);
 
   if (activeGraph.size === 0) {
@@ -645,7 +739,7 @@ export function bottlenecks(graph, limit) {
   }
 
   // Calculate impact score for each active WU
-  const scores = [];
+  const scores: BottleneckScore[] = [];
   for (const [id, node] of activeGraph.entries()) {
     const score = impactScore(graph, id);
     scores.push({
@@ -673,7 +767,7 @@ export function bottlenecks(graph, limit) {
  * @param {number} maxLen - Maximum length
  * @returns {string} Truncated string
  */
-function truncate(str, maxLen) {
+function truncate(str: string | undefined, maxLen: number): string {
   if (!str) return '';
   return str.length > maxLen ? `${str.substring(0, maxLen - 3)}...` : str;
 }
