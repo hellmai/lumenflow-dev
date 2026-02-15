@@ -94,6 +94,10 @@ export {
 
 const PREFIX = LOG_PREFIX.EDIT;
 
+interface WuEditArgs extends Record<string, any> {
+  id: string;
+}
+
 /**
  * Custom options for wu-edit (not in shared WU_OPTIONS)
  */
@@ -223,7 +227,7 @@ const EDIT_OPTIONS = {
 /**
  * Parse command line arguments
  */
-function parseArgs() {
+function parseArgs(): WuEditArgs {
   const normalizedArgv = normalizeReplaceCodePathsArgv(process.argv);
   const originalArgv = process.argv;
   process.argv = normalizedArgv;
@@ -271,7 +275,7 @@ function parseArgs() {
       ],
       required: ['id'],
       allowPositionalId: true,
-    });
+    }) as WuEditArgs;
   } finally {
     process.argv = originalArgv;
   }
