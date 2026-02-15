@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1687 — Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine](wu/WU-1687.yaml)
 
 ## Completed
 

@@ -1307,3 +1307,4 @@
 {"type":"complete","wuId":"WU-1686","timestamp":"2026-02-15T12:51:27.524Z"}
 {"type":"claim","wuId":"WU-1684","timestamp":"2026-02-15T14:46:16.171Z","lane":"Framework: Core Validation","title":"Build vendor-agnostic core sandbox engine contract and OS backends"}
 {"type":"complete","wuId":"WU-1684","timestamp":"2026-02-15T15:05:21.316Z"}
+{"type":"claim","wuId":"WU-1687","lane":"Framework: CLI Enforcement","title":"Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine","timestamp":"2026-02-15T15:10:03.374Z"}

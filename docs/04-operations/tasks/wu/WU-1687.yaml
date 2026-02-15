@@ -2,7 +2,7 @@ id: WU-1687
 title: Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -21,9 +21,12 @@ code_paths:
 tests:
   manual:
     - Run pnpm wu:sandbox --id WU-XXXX -- <command> and verify sandboxed process start on current OS.
-    - Without available hardened backend and without explicit override, verify wu:sandbox exits non-zero (fail-closed).
-    - With explicit unsandboxed override enabled, verify warning is emitted and command runs unsandboxed.
-    - Run pnpm wu:claim --id WU-XXXX --lane <Lane> --sandbox and verify agent launch is wrapped in sandbox after claim.
+    - Without available hardened backend and without explicit override, verify wu:sandbox exits
+      non-zero (fail-closed).
+    - With explicit unsandboxed override enabled, verify warning is emitted and command runs
+      unsandboxed.
+    - Run pnpm wu:claim --id WU-XXXX --lane <Lane> --sandbox and verify agent launch is wrapped in
+      sandbox after claim.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-sandbox.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
@@ -38,7 +41,8 @@ spec_refs:
   - LUMENFLOW.md
   - docs/04-operations/tasks/wu/WU-1684.yaml
 risks: []
-notes: Split from original WU-1684 proposal. WU-1684 owns core engine; WU-1687 owns CLI/public registration and claim wiring.
+notes: Split from original WU-1684 proposal. WU-1684 owns core engine; WU-1687 owns CLI/public
+  registration and claim wiring.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -47,13 +51,27 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: vendor-agnostic sandboxing must be callable directly by humans, scripts, CI, and MCP clients. Problem: command-layer wiring and registration parity are separate from core backend logic and need explicit public command support. Solution: add a public wu:sandbox command, wire wu:claim --sandbox to invoke the same engine contract, and register the command across CLI script/bin/manifest/MCP surfaces with fail-closed default and explicit override behavior.'
+description: 'Context: vendor-agnostic sandboxing must be callable directly by humans, scripts, CI,
+  and MCP clients. Problem: command-layer wiring and registration parity are separate from core
+  backend logic and need explicit public command support. Solution: add a public wu:sandbox command,
+  wire wu:claim --sandbox to invoke the same engine contract, and register the command across CLI
+  script/bin/manifest/MCP surfaces with fail-closed default and explicit override behavior.'
 acceptance:
   - pnpm wu:sandbox --id WU-XXXX -- <command> is implemented as a public command entrypoint.
   - Public command registration is complete across script/bin/manifest/MCP surfaces.
-  - wu:sandbox resolves backend/profile via core engine and executes wrapped command on supported OS backends.
+  - wu:sandbox resolves backend/profile via core engine and executes wrapped command on supported OS
+    backends.
   - wu:sandbox enforces fail-closed default when no hardened backend is available.
   - Explicit unsandboxed override requires LUMENFLOW_SANDBOX_ALLOW_UNSANDBOXED=1 and emits warning.
   - pnpm wu:claim --id WU-XXXX --lane <Lane> --sandbox wraps post-claim agent session in sandbox.
   - CLI config includes sandbox policy section for allow/deny paths and override policy controls.
-  - Automated CLI tests cover command parsing, backend invocation, fail-closed/override behavior, and claim-flag integration.
+  - Automated CLI tests cover command parsing, backend invocation, fail-closed/override behavior,
+    and claim-flag integration.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1687
+claimed_at: 2026-02-15T15:10:03.330Z
+baseline_main_sha: 1552d659eb607c3cb0f63deb95aaa66800276dff
+session_id: fbfcfaca-eac1-4615-91ae-b249623b310c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T15:10:03.336Z
