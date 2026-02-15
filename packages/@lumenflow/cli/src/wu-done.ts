@@ -175,6 +175,69 @@ const MEMORY_CHECKPOINT_NOTES = {
 };
 const MEMORY_SIGNAL_WINDOW_MS = 60 * 60 * 1000; // 1 hour for recent signals
 
+type GitAdapter = ReturnType<typeof getGitForCwd>;
+
+interface WUDocLike extends Record<string, unknown> {
+  id?: string;
+  title?: string;
+  initiative?: string;
+  lane?: string;
+  status?: unknown;
+  locked?: boolean;
+  baseline_main_sha?: string;
+  code_paths?: string[];
+  notes?: string | string[];
+  assigned_to?: string | null;
+}
+
+interface SpawnEntryLike {
+  id: string;
+  pickedUpAt?: string;
+  pickedUpBy?: string;
+}
+
+interface ParallelCompletionResult {
+  hasParallelCompletions: boolean;
+  completedWUs: string[];
+  warning: string | null;
+}
+
+interface TransactionState {
+  id: string;
+  timestamp: string;
+  wuYamlContent: string | null;
+  stampExisted: boolean;
+  backlogContent: string | null;
+  statusContent: string | null;
+  mainSHA: string;
+  laneBranch: string;
+}
+
+interface OwnershipCheckResult {
+  valid: boolean;
+  error: string | null;
+  auditEntry: Record<string, unknown> | null;
+}
+
+interface PreFlightParams {
+  id: string;
+  args: Record<string, any>;
+  isBranchOnly: boolean;
+  isDocsOnly: boolean;
+  docMain: WUDocLike;
+  docForValidation: WUDocLike;
+  derivedWorktree: string | null;
+}
+
+interface StateHudParams {
+  id: string;
+  docMain: WUDocLike;
+  isBranchOnly: boolean;
+  isDocsOnly: boolean;
+  derivedWorktree: string | null;
+  STAMPS_DIR: string;
+}
+
 // WU-1539: Use centralized LUMENFLOW_PATHS.WU_EVENTS instead of local constant
 
 /**
@@ -192,7 +255,11 @@ const MEMORY_SIGNAL_WINDOW_MS = 60 * 60 * 1000; // 1 hour for recent signals
  * @param {string} yamlStatus - Current status from worktree YAML
  * @returns {Promise<void>}
  */
-async function validateClaimMetadataBeforeGates(id, worktreePath, yamlStatus) {
+async function validateClaimMetadataBeforeGates(
+  id: string,
+  worktreePath: string,
+  yamlStatus: unknown,
+) {
   const errors = [];
 
   // Check 1: YAML status must be in_progress
@@ -436,7 +503,7 @@ export function buildGatesCommand(options: BuildGatesOptions): string {
   return `${PKG_MANAGER} ${SCRIPTS.GATES}`;
 }
 
-async function _assertWorktreeWUInProgressInStateStore(id, worktreePath) {
+async function _assertWorktreeWUInProgressInStateStore(id: string, worktreePath: string) {
   const resolvedWorktreePath = path.resolve(worktreePath);
   const stateDir = path.join(resolvedWorktreePath, '.lumenflow', 'state');
   const eventsPath = path.join(resolvedWorktreePath, LUMENFLOW_PATHS.WU_EVENTS);
@@ -474,7 +541,11 @@ async function _assertWorktreeWUInProgressInStateStore(id, worktreePath) {
  * @param {string} baseDir - Base directory for memory layer
  * @returns {Promise<void>}
  */
-async function createPreGatesCheckpoint(id, worktreePath, baseDir = process.cwd()) {
+async function createPreGatesCheckpoint(
+  id: string,
+  worktreePath: string | null,
+  baseDir: string = process.cwd(),
+) {
   try {
     const result = await createCheckpoint(baseDir, {
       note: MEMORY_CHECKPOINT_NOTES.PRE_GATES,
@@ -507,7 +578,7 @@ async function createPreGatesCheckpoint(id, worktreePath, baseDir = process.cwd(
  * @param {string} baseDir - Base directory for memory layer
  * @returns {Promise<void>}
  */
-async function broadcastCompletionSignal(id, title, baseDir = process.cwd()) {
+async function broadcastCompletionSignal(id: string, title: string, baseDir: string = process.cwd()) {
   try {
     const result = await createSignal(baseDir, {
       message: `${MEMORY_SIGNAL_TYPES.WU_COMPLETION}: ${id} - ${title}`,
@@ -534,7 +605,7 @@ async function broadcastCompletionSignal(id, title, baseDir = process.cwd()) {
  * @param {string} baseDir - Base directory for memory layer
  * @returns {Promise<void>}
  */
-async function checkInboxForRecentSignals(id, baseDir = process.cwd()) {
+async function checkInboxForRecentSignals(id: string, baseDir: string = process.cwd()) {
   try {
     const since = new Date(Date.now() - MEMORY_SIGNAL_WINDOW_MS);
     const signals = await loadSignals(baseDir, { since, unreadOnly: true });
@@ -566,14 +637,14 @@ async function checkInboxForRecentSignals(id, baseDir = process.cwd()) {
  * Returns true when completion should enforce spawn provenance.
  * Initiative-linked WUs are expected to carry machine-verifiable spawn lineage.
  */
-export function shouldEnforceSpawnProvenance(doc): boolean {
+export function shouldEnforceSpawnProvenance(doc: WUDocLike): boolean {
   return typeof doc?.initiative === 'string' && doc.initiative.trim().length > 0;
 }
 
 /**
  * Build actionable remediation guidance for missing spawn provenance.
  */
-export function buildMissingSpawnProvenanceMessage(id, initiativeId): string {
+export function buildMissingSpawnProvenanceMessage(id: string, initiativeId: string): string {
   return (
     `Missing spawn provenance for initiative-governed WU ${id} (${initiativeId}).\n\n` +
     `This completion path enforces auditable delegation lineage for initiative work.\n\n` +
@@ -589,7 +660,7 @@ export function buildMissingSpawnProvenanceMessage(id, initiativeId): string {
  * Build actionable remediation guidance for intent-only spawn provenance
  * (delegation intent exists but claim-time pickup evidence is missing).
  */
-export function buildMissingSpawnPickupEvidenceMessage(id, initiativeId): string {
+export function buildMissingSpawnPickupEvidenceMessage(id: string, initiativeId: string): string {
   return (
     `Missing pickup evidence for initiative-governed WU ${id} (${initiativeId}).\n\n` +
     `Delegation intent exists, but this WU has no claim-time pickup handshake.\n` +
@@ -604,7 +675,7 @@ export function buildMissingSpawnPickupEvidenceMessage(id, initiativeId): string
 /**
  * Returns true when spawn provenance includes claim-time pickup evidence.
  */
-export function hasSpawnPickupEvidence(spawnEntry): boolean {
+export function hasSpawnPickupEvidence(spawnEntry: SpawnEntryLike | null | undefined): boolean {
   const pickedUpAt =
     typeof spawnEntry?.pickedUpAt === 'string' && spawnEntry.pickedUpAt.trim().length > 0
       ? spawnEntry.pickedUpAt
@@ -619,7 +690,11 @@ export function hasSpawnPickupEvidence(spawnEntry): boolean {
 /**
  * Record forced spawn-provenance bypass in memory signals for auditability.
  */
-async function recordSpawnProvenanceOverride(id, doc, baseDir = process.cwd()): Promise<void> {
+async function recordSpawnProvenanceOverride(
+  id: string,
+  doc: WUDocLike,
+  baseDir: string = process.cwd(),
+): Promise<void> {
   try {
     const initiativeId = typeof doc?.initiative === 'string' ? doc.initiative.trim() : 'unknown';
     const lane = typeof doc?.lane === 'string' ? doc.lane : undefined;
@@ -644,8 +719,8 @@ async function recordSpawnProvenanceOverride(id, doc, baseDir = process.cwd()): 
  * Enforce spawn provenance policy for initiative-governed WUs before completion.
  */
 export async function enforceSpawnProvenanceForDone(
-  id,
-  doc,
+  id: string,
+  doc: WUDocLike,
   options: {
     baseDir?: string;
     force?: boolean;
@@ -661,7 +736,7 @@ export async function enforceSpawnProvenanceForDone(
   const store = new DelegationRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
   await store.load();
 
-  const spawnEntry = store.getByTarget(id);
+  const spawnEntry = store.getByTarget(id) as SpawnEntryLike | null;
   if (!spawnEntry) {
     if (!force) {
       die(buildMissingSpawnProvenanceMessage(id, initiativeId));
@@ -705,7 +780,10 @@ export async function enforceSpawnProvenanceForDone(
  * @param {string} baseDir - Base directory containing .lumenflow/state/
  * @returns {Promise<void>}
  */
-export async function updateSpawnRegistryOnCompletion(id, baseDir = process.cwd()) {
+export async function updateSpawnRegistryOnCompletion(
+  id: string,
+  baseDir: string = process.cwd(),
+) {
   try {
     const store = new DelegationRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
     await store.load();
@@ -748,7 +826,7 @@ const DEFAULT_NO_REASON = '(no reason provided)';
  * @param {string|null|undefined} value - Email address or username
  * @returns {string} Normalized username (lowercase)
  */
-export function normalizeUsername(value) {
+export function normalizeUsername(value: string | null | undefined): string {
   if (!value) return '';
   const str = String(value).trim();
   // Extract username from email: tom@hellm.ai -> tom
@@ -766,7 +844,7 @@ export function normalizeUsername(value) {
  * @param {string} branch - Lane branch name
  * @returns {Promise<boolean>} True if branch is already merged to main
  */
-export async function isBranchAlreadyMerged(branch) {
+export async function isBranchAlreadyMerged(branch: string): Promise<boolean> {
   try {
     const gitAdapter = getGitForCwd();
     const branchTip = (await gitAdapter.getCommitHash(branch)).trim();
@@ -809,7 +887,10 @@ export { shouldSkipWebTests as isDocsOnlyByPaths } from '@lumenflow/core/path-cl
  * @param {string} backlogPath - Path to backlog.md
  * @returns {{ valid: boolean, error: string|null }}
  */
-export function checkBacklogConsistencyForWU(id, backlogPath) {
+export function checkBacklogConsistencyForWU(
+  id: string,
+  backlogPath: string,
+): { valid: boolean; error: string | null } {
   try {
     const result = validateBacklogSync(backlogPath);
 
@@ -903,7 +984,7 @@ async function _ensureCleanWorkingTree() {
  * @param {string} currentId - Current WU ID to exclude
  * @returns {string[]} Array of completed WU IDs
  */
-function extractCompletedWUIds(logOutput, currentId) {
+function extractCompletedWUIds(logOutput: string, currentId: string): string[] {
   const wuPattern = /wu\((wu-\d+)\):/gi;
   const seenIds = new Set();
   const completedWUs = [];
@@ -928,7 +1009,12 @@ function extractCompletedWUIds(logOutput, currentId) {
 /**
  * Build warning message for parallel completions.
  */
-function buildParallelWarning(id, completedWUs, baselineSha, currentSha) {
+function buildParallelWarning(
+  id: string,
+  completedWUs: string[],
+  baselineSha: string,
+  currentSha: string,
+): string {
   const wuList = completedWUs.map((wu) => `  • ${wu}`).join(STRING_LITERALS.NEWLINE);
   return `
 ${EMOJI.WARNING}  PARALLEL COMPLETIONS DETECTED ${EMOJI.WARNING}
@@ -961,8 +1047,15 @@ Current:  ${currentSha.substring(0, 8)}
  * @param {object} doc - WU YAML document (from worktree or main)
  * @returns {Promise<{hasParallelCompletions: boolean, completedWUs: string[], warning: string|null}>}
  */
-async function detectParallelCompletions(id, doc) {
-  const noParallel = { hasParallelCompletions: false, completedWUs: [], warning: null };
+async function detectParallelCompletions(
+  id: string,
+  doc: WUDocLike,
+): Promise<ParallelCompletionResult> {
+  const noParallel: ParallelCompletionResult = {
+    hasParallelCompletions: false,
+    completedWUs: [],
+    warning: null,
+  };
   const baselineSha = doc.baseline_main_sha;
 
   // If no baseline recorded (legacy WU), skip detection
@@ -1154,7 +1247,7 @@ function runTripwireCheck() {
   process.exit(EXIT_CODES.ERROR);
 }
 
-async function listStaged(gitAdapter?) {
+async function listStaged(gitAdapter?: GitAdapter): Promise<string[]> {
   // WU-1541: Use explicit gitAdapter if provided, otherwise fall back to getGitForCwd()
   // WU-1235: getGitForCwd() captures current directory (legacy behavior)
   const gitCwd = gitAdapter ?? getGitForCwd();
@@ -1165,9 +1258,12 @@ async function listStaged(gitAdapter?) {
 // In --no-auto mode, allow a safe no-op: if NONE of the expected files are staged,
 // treat as already-synchronised and continue. If SOME are staged and SOME missing,
 // still fail with guidance.
-async function ensureNoAutoStagedOrNoop(paths) {
+async function ensureNoAutoStagedOrNoop(
+  paths: Array<string | null | undefined>,
+): Promise<{ noop: boolean }> {
   const staged = await listStaged();
-  const isStaged = (p) => staged.some((name) => name === p || name.startsWith(`${p}/`));
+  const isStaged = (p: string): boolean =>
+    staged.some((name: string) => name === p || name.startsWith(`${p}/`));
   const present = paths.filter(Boolean).filter((p) => isStaged(p));
   if (present.length === 0) {
     console.log(
@@ -1182,7 +1278,7 @@ async function ensureNoAutoStagedOrNoop(paths) {
   return { noop: false };
 }
 
-export function emitTelemetry(event) {
+export function emitTelemetry(event: Record<string, unknown>): void {
   const logPath = path.join('.lumenflow', 'flow.log');
   const logDir = path.dirname(logPath);
   if (!existsSync(logDir)) mkdirSync(logDir, { recursive: true });
@@ -1190,7 +1286,12 @@ export function emitTelemetry(event) {
   appendFileSync(logPath, `${line}\n`, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
 }
 
-async function auditSkipGates(id, reason, fixWU, worktreePath) {
+async function auditSkipGates(
+  id: string,
+  reason: unknown,
+  fixWU: unknown,
+  worktreePath: string | null,
+): Promise<void> {
   const auditBaseDir = worktreePath || process.cwd();
   const auditPath = path.join(auditBaseDir, '.lumenflow', 'skip-gates-audit.log');
   const auditDir = path.dirname(auditPath);
@@ -1199,11 +1300,13 @@ async function auditSkipGates(id, reason, fixWU, worktreePath) {
   const userName = await gitAdapter.getConfigValue(GIT_CONFIG_USER_NAME);
   const userEmail = await gitAdapter.getConfigValue(GIT_CONFIG_USER_EMAIL);
   const commitHash = await gitAdapter.getCommitHash();
+  const reasonText = typeof reason === 'string' ? reason : undefined;
+  const fixWUText = typeof fixWU === 'string' ? fixWU : undefined;
   const entry = {
     timestamp: new Date().toISOString(),
     wu_id: id,
-    reason: reason || DEFAULT_NO_REASON,
-    fix_wu: fixWU || '(no fix WU specified)',
+    reason: reasonText || DEFAULT_NO_REASON,
+    fix_wu: fixWUText || '(no fix WU specified)',
     worktree: worktreePath || '(unknown)',
     git_user: `${userName.trim()} <${userEmail.trim()}>`,
     git_commit: commitHash.trim(),
@@ -1218,7 +1321,11 @@ async function auditSkipGates(id, reason, fixWU, worktreePath) {
 /**
  * Audit trail for --skip-cos-gates (COS v1.3 §7)
  */
-async function auditSkipCosGates(id, reason, worktreePath) {
+async function auditSkipCosGates(
+  id: string,
+  reason: unknown,
+  worktreePath: string | null,
+): Promise<void> {
   const auditBaseDir = worktreePath || process.cwd();
   const auditPath = path.join(auditBaseDir, '.lumenflow', 'skip-cos-gates-audit.log');
   const auditDir = path.dirname(auditPath);
@@ -1227,10 +1334,11 @@ async function auditSkipCosGates(id, reason, worktreePath) {
   const userName = await gitAdapter.getConfigValue(GIT_CONFIG_USER_NAME);
   const userEmail = await gitAdapter.getConfigValue(GIT_CONFIG_USER_EMAIL);
   const commitHash = await gitAdapter.getCommitHash();
+  const reasonText = typeof reason === 'string' ? reason : undefined;
   const entry = {
     timestamp: new Date().toISOString(),
     wu_id: id,
-    reason: reason || DEFAULT_NO_REASON,
+    reason: reasonText || DEFAULT_NO_REASON,
     git_user: `${userName.trim()} <${userEmail.trim()}>`,
     git_commit: commitHash.trim(),
   };
@@ -1249,7 +1357,7 @@ async function auditSkipCosGates(id, reason, worktreePath) {
  * This prevents confusing typecheck failures due to missing dependencies.
  * @param {string} worktreePath - Path to worktree
  */
-function checkNodeModulesStaleness(worktreePath) {
+function checkNodeModulesStaleness(worktreePath: string): void {
   try {
     const mainPackageJson = path.resolve('package.json');
     const worktreePackageJson = path.resolve(worktreePath, 'package.json');
@@ -1373,11 +1481,11 @@ async function runGatesInWorktree(
 }
 
 async function validateStagedFiles(
-  id,
+  id: string,
   isDocsOnly = false,
-  gitAdapter?,
+  gitAdapter?: GitAdapter,
   options: { metadataAllowlist?: string[] } = {},
-) {
+): Promise<void> {
   // WU-1541: Accept optional gitAdapter to avoid process.chdir dependency
   const staged = await listStaged(gitAdapter);
 
@@ -1451,7 +1559,9 @@ async function validateStagedFiles(
  * @param {string} laneBranch - Expected lane branch name
  * @returns {{valid: boolean, error: string|null}}
  */
-async function validateBranchOnlyMode(laneBranch) {
+async function validateBranchOnlyMode(
+  laneBranch: string,
+): Promise<{ valid: boolean; error: string | null }> {
   // Check we're on the correct lane branch
   const gitAdapter = getGitForCwd();
   const currentBranch = await gitAdapter.getCurrentBranch();
@@ -1493,8 +1603,19 @@ async function validateBranchOnlyMode(laneBranch) {
  * @param {string} statusPath - Path to status.md (WU-1230)
  * @returns {object} - Transaction state for rollback
  */
-function recordTransactionState(id, wuPath, stampPath, backlogPath, statusPath) {
-  const gitAdapter = getGitForCwd();
+function recordTransactionState(
+  id: string,
+  wuPath: string,
+  stampPath: string,
+  backlogPath: string,
+  statusPath: string,
+): TransactionState {
+  const mainSHA = execSync('git rev-parse HEAD', {
+    encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+  }).trim();
+  const laneBranch = execSync('git rev-parse --abbrev-ref HEAD', {
+    encoding: FILE_SYSTEM.UTF8 as BufferEncoding,
+  }).trim();
   return {
     id,
     timestamp: new Date().toISOString(),
@@ -1508,8 +1629,8 @@ function recordTransactionState(id, wuPath, stampPath, backlogPath, statusPath) 
     statusContent: existsSync(statusPath)
       ? readFileSync(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding })
       : null,
-    mainSHA: gitAdapter.getCommitHash(),
-    laneBranch: gitAdapter.getCurrentBranch(),
+    mainSHA,
+    laneBranch,
   };
 }
 
@@ -1522,7 +1643,13 @@ function recordTransactionState(id, wuPath, stampPath, backlogPath, statusPath) 
  * @param {string} statusPath - Path to status.md (WU-1230)
  */
 
-async function rollbackTransaction(txState, wuPath, stampPath, backlogPath, statusPath) {
+async function rollbackTransaction(
+  txState: TransactionState,
+  wuPath: string,
+  stampPath: string,
+  backlogPath: string,
+  statusPath: string,
+): Promise<void> {
   console.error(
     `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} ROLLING BACK TRANSACTION (WU-755 + WU-1230 + WU-1255 + WU-1280)...`,
   );
@@ -1661,7 +1788,12 @@ async function rollbackTransaction(txState, wuPath, stampPath, backlogPath, stat
  * @param {boolean} allowTodo - Allow incomplete work markers (with warning)
  * @param {string|null} worktreePath - Path to worktree to validate files from
  */
-function runWUValidator(doc, id, allowTodo = false, worktreePath = null) {
+function runWUValidator(
+  doc: WUDocLike,
+  id: string,
+  allowTodo = false,
+  worktreePath: string | null = null,
+): void {
   console.log(`\n${LOG_PREFIX.DONE} Running WU validator for ${id}...`);
 
   // Check if WU has code_paths defined
@@ -1737,7 +1869,13 @@ function runWUValidator(doc, id, allowTodo = false, worktreePath = null) {
  * @returns {{valid: boolean, error: string|null, auditEntry: object|null}}
  */
 
-async function checkOwnership(id, doc, worktreePath, overrideOwner = false, overrideReason = null) {
+async function checkOwnership(
+  id: string,
+  doc: WUDocLike,
+  worktreePath: string | null,
+  overrideOwner = false,
+  overrideReason: string | null = null,
+): Promise<OwnershipCheckResult> {
   // Missing worktree means WU was not claimed properly (unless escape hatch applies)
   if (!worktreePath || !existsSync(worktreePath)) {
     return {
@@ -1874,7 +2012,7 @@ async function checkOwnership(id, doc, worktreePath, overrideOwner = false, over
  * Log ownership override to audit trail
  * @param {object} auditEntry - Audit entry to log
  */
-function auditOwnershipOverride(auditEntry) {
+function auditOwnershipOverride(auditEntry: Record<string, unknown>): void {
   const auditPath = path.join('.lumenflow', 'ownership-override-audit.log');
   const auditDir = path.dirname(auditPath);
   if (!existsSync(auditDir)) mkdirSync(auditDir, { recursive: true });
@@ -1905,7 +2043,7 @@ async function executePreFlightChecks({
   docMain,
   docForValidation,
   derivedWorktree,
-}) {
+}: PreFlightParams): Promise<{ title: string; docForValidation: WUDocLike }> {
   // YAML schema validation
   console.log(`${LOG_PREFIX.DONE} Validating WU YAML structure...`);
   const schemaResult = validateWU(docForValidation);
@@ -2553,7 +2691,14 @@ export function getYamlStatusForDisplay(status: unknown) {
   return getWUStatusDisplay(status);
 }
 
-function printStateHUD({ id, docMain, isBranchOnly, isDocsOnly, derivedWorktree, STAMPS_DIR }) {
+function printStateHUD({
+  id,
+  docMain,
+  isBranchOnly,
+  isDocsOnly,
+  derivedWorktree,
+  STAMPS_DIR,
+}: StateHudParams): void {
   const stampExists = existsSync(path.join(STAMPS_DIR, `${id}.done`)) ? 'yes' : 'no';
   const yamlStatus = getYamlStatusForDisplay(docMain.status);
   const yamlLocked = docMain.locked === true ? 'true' : 'false';
@@ -2872,7 +3017,7 @@ async function main() {
         const worktreeContext = {
           ...baseContext,
           worktreePath,
-          validateStagedFiles: (wuId, docsOnly, options) =>
+          validateStagedFiles: (wuId: string, docsOnly: boolean, options?: { metadataAllowlist?: string[] }) =>
             validateStagedFiles(wuId, docsOnly, worktreeGitForValidation, options),
         };
         completionResult = await executeWorktreeCompletion(worktreeContext);
@@ -2938,7 +3083,14 @@ async function main() {
 
       // WU-1811: Check if cleanup is safe before removing worktree
       // If cleanupSafe is false (or undefined), preserve worktree for recovery
-      if (err.cleanupSafe === false) {
+      const cleanupSafe =
+        typeof err === 'object' &&
+        err !== null &&
+        'cleanupSafe' in err &&
+        typeof (err as { cleanupSafe?: unknown }).cleanupSafe === 'boolean'
+          ? (err as { cleanupSafe?: boolean }).cleanupSafe
+          : undefined;
+      if (cleanupSafe === false) {
         console.log(
           `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1811: Worktree preserved - rerun wu:done to recover`,
         );
@@ -3104,7 +3256,10 @@ async function main() {
  * @param {string} baseDir - Base directory for migration discovery
  * @returns {Promise<void>}
  */
-export async function printMigrationDeploymentNudge(codePaths, baseDir) {
+export async function printMigrationDeploymentNudge(
+  codePaths: string[],
+  baseDir: string,
+): Promise<void> {
   // Only check if WU includes supabase paths
   if (!hasMigrationChanges(codePaths)) {
     return;
@@ -3145,7 +3300,11 @@ export async function printMigrationDeploymentNudge(codePaths, baseDir) {
  * @param {number} discoveryCount - Number of open discoveries for this WU
  * @param {string[]} discoveryIds - List of discovery IDs (limited to 5 in output)
  */
-export function printDiscoveryNudge(id, discoveryCount, discoveryIds) {
+export function printDiscoveryNudge(
+  id: string,
+  discoveryCount: number,
+  discoveryIds: string[],
+): void {
   if (discoveryCount > 0) {
     const displayIds = discoveryIds.slice(0, 5).join(', ');
     const moreText = discoveryCount > 5 ? ` (+${discoveryCount - 5} more)` : '';
@@ -3164,7 +3323,7 @@ export function printDiscoveryNudge(id, discoveryCount, discoveryIds) {
  * @param {string} id - WU ID being completed
  * @param {string[]} changedDocPaths - List of documentation paths that changed
  */
-export function printDocValidationNudge(id, changedDocPaths) {
+export function printDocValidationNudge(id: string, changedDocPaths: string[]): void {
   if (changedDocPaths.length > 0) {
     console.log(`\n${LOG_PREFIX.DONE} 💡 Documentation changed (${changedDocPaths.length} files).`);
     console.log(`   Consider: pnpm validate:context && pnpm docs:linkcheck`);
@@ -3179,7 +3338,10 @@ export function printDocValidationNudge(id, changedDocPaths) {
  * @param {string} wuId - WU ID to load discoveries for
  * @returns {Promise<{count: number, ids: string[]}>} Discovery count and IDs
  */
-async function loadDiscoveriesForWU(baseDir, wuId) {
+async function loadDiscoveriesForWU(
+  baseDir: string,
+  wuId: string,
+): Promise<{ count: number; ids: string[] }> {
   try {
     const memory = await loadMemory(path.join(baseDir, '.lumenflow/memory'));
     const wuNodes = memory.byWu.get(wuId) || [];
@@ -3207,7 +3369,7 @@ async function detectChangedDocPaths(worktreePath: string, baseBranch: string) {
     const git = getGitForCwd();
     // Get files changed in this branch vs base
     const diff = await git.raw(['diff', '--name-only', baseBranch]);
-    const changedFiles = diff.split('\n').filter(Boolean);
+    const changedFiles: string[] = diff.split('\n').filter(Boolean);
     // Filter to docs: docs/04-operations/_frameworks/lumenflow/agent/onboarding/, docs/, CLAUDE.md, README.md, *.md in root
     const docPatterns = [
       /^ai\/onboarding\//,
@@ -3216,7 +3378,7 @@ async function detectChangedDocPaths(worktreePath: string, baseBranch: string) {
       /^CLAUDE\.md$/,
       /^README\.md$/,
     ];
-    return changedFiles.filter((f) => docPatterns.some((p) => p.test(f)));
+    return changedFiles.filter((f: string) => docPatterns.some((p) => p.test(f)));
   } catch {
     // Non-blocking: return empty on errors
     return [];

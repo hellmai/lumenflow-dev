@@ -312,7 +312,7 @@ async function main() {
       );
     }
   }
-  let stagedChanges = [];
+  let stagedChanges: Awaited<ReturnType<typeof getStagedChanges>> = [];
   if (args.noAuto) {
     await ensureCleanOrClaimOnlyWhenNoAuto();
     stagedChanges = await getStagedChanges();
