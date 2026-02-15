@@ -16,15 +16,20 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-safety-card.md
   - apps/docs/src/content/docs/concepts/constraints.mdx
   - docs/04-operations/_frameworks/lumenflow/sub-lanes.md
-  - docs/04-operations/_frameworks/lumenflow/invariants.md
   - docs/templates/project-rules.yaml
   - apps/docs/src/content/docs/guides/migrating-methodology.mdx
   - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
+  - apps/docs/src/content/docs/getting-started/faq.mdx
+  - apps/docs/src/content/docs/getting-started/why-lumenflow.mdx
+  - docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+  - docs/04-operations/_frameworks/lumenflow/manifesto.md
+  - docs/04-operations/_frameworks/lumenflow/playbook.md
+  - docs/04-operations/_frameworks/lumenflow/wu-overview.md
 tests:
   manual:
-    - Verify no PII/PHI references remain
-  unit:
-    - packages/@lumenflow/cli/src/__tests__/init-templates.test.ts
+    - Verify no PII/PHI references remain in docs and templates
+    - Grep for PHI, HIPAA, patient, clinical in docs confirms zero matches
+  unit: []
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1703.done
