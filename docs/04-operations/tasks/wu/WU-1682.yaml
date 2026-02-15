@@ -1,0 +1,38 @@
+id: WU-1682
+title: Update Medium article for LumenFlow open-source launch
+lane: 'Content: Site Comms'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-15
+code_paths:
+  - docs/05-business/content/medium-lumenflow-introduction.md
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1682.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-1682-plan.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Expand the existing Medium introduction article (medium-lumenflow-introduction.md) for the open-source launch. Corrects the narrative from a 23-day sprint to the real 6-month evolution across ExampleApp and the standalone repo. Adds new sections on state machines, initiatives, and invariants. Updates all stats to combined totals (15k+ commits, 1,943 WUs completed). Replaces all private language with open-source install instructions. Tone blends Paul Graham, Stephen Fry, Douglas Adams, Richard Dawkins, and Joel Spolsky.
+acceptance:
+  - Timeline reflects 6+ months of evolution, not 23 days
+  - 'New section: State Machines, Not State Strings (conceptual + ASCII diagrams, no code)'
+  - 'New section: Initiatives (multi-phase orchestration)'
+  - 'New section: Invariants / test ratchet'
+  - All private / if-you-have-access language removed
+  - Stats updated to combined totals from both repos
+  - Open-source CTA with npm install + GitHub link
+  - Tone consistent with voice guide in plan
