@@ -1,0 +1,39 @@
+id: WU-1697
+title: 'Strict debt slice: eliminate TS7006 in core wu-done-metadata'
+lane: 'Framework: Core Validation'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-15
+code_paths:
+  - packages/@lumenflow/core/src/wu-done-metadata.ts
+  - packages/@lumenflow/core/src/__tests__/wu-done-metadata.test.ts
+tests:
+  manual:
+    - pnpm --filter @lumenflow/core exec vitest run src/__tests__/wu-done-metadata.test.ts
+    - pnpm --filter @lumenflow/core typecheck
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-done-metadata.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1697.done
+dependencies: []
+initiative: INIT-022
+phase: 10
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-022.yaml
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: after WU-1696, the top remaining core TS7006/TS7031 hotspot is packages/@lumenflow/core/src/wu-done-metadata.ts (~23 errors). Problem: implicit-any signatures and destructured params weaken type safety in completion metadata paths. Solution: apply typed parameter annotations and small helper typing hardening in wu-done-metadata with tests-first coverage to keep behavior stable.'
+acceptance:
+  - Strict probe with strictNullChecks/noImplicitAny/useUnknownInCatchVariables reports no TS7006/TS7031 diagnostics for packages/@lumenflow/core/src/wu-done-metadata.ts
+  - packages/@lumenflow/core/src/__tests__/wu-done-metadata.test.ts passes
+  - pnpm --filter @lumenflow/core typecheck passes
