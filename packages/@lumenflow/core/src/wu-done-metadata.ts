@@ -8,6 +8,7 @@ import { exec as execCallback } from 'node:child_process';
 import { promisify } from 'node:util';
 
 import { getGitForCwd } from './git-adapter.js';
+import type { WUTransaction } from './wu-transaction.js';
 import { updateStatusRemoveInProgress, addToStatusCompleted } from './wu-status-updater.js';
 import { moveWUToDoneBacklog } from './wu-backlog-updater.js';
 import { createStamp } from './stamp-utils.js';
@@ -35,12 +36,58 @@ import { createFileNotFoundError, createValidationError } from './wu-done-errors
 import { writeWU } from './wu-yaml.js';
 import { normalizeToDateString } from './date-utils.js';
 import { findProjectRoot } from './lumenflow-config.js';
+import { getErrorMessage } from './error-handler.js';
 
 const execAsync = promisify(execCallback);
 
 interface CommitProvenance {
   branch?: string;
   worktreePath?: string;
+}
+
+interface DoneMetadataDoc extends Record<string, unknown> {
+  status?: string;
+  locked?: boolean;
+  completed_at?: string;
+  completed?: string;
+}
+
+interface ValidateMetadataFilesParams {
+  statusPath: string;
+  backlogPath: string;
+}
+
+interface UpdateMetadataFilesParams extends ValidateMetadataFilesParams {
+  id: string;
+  title: string;
+  doc: DoneMetadataDoc;
+  wuPath: string;
+}
+
+interface CollectMetadataToTransactionParams extends ValidateMetadataFilesParams {
+  id: string;
+  title: string;
+  doc: DoneMetadataDoc;
+  wuPath: string;
+  stampPath: string;
+  transaction: WUTransaction;
+  projectRoot?: string | null;
+}
+
+interface GitAddAdapter {
+  add: (filePaths: string[]) => Promise<unknown>;
+  raw: (args: string[]) => Promise<unknown>;
+}
+
+interface StageAndFormatMetadataParams {
+  id: string;
+  wuPath: string;
+  statusPath: string;
+  backlogPath: string;
+  stampsDir: string;
+  initiativePath?: string | null;
+  gitAdapter?: GitAddAdapter | null;
+  repoRoot?: string | null;
 }
 
 /**
@@ -53,11 +100,11 @@ interface CommitProvenance {
  * @throws {Error} If generated message exceeds maxLength
  */
 export function generateCommitMessage(
-  id,
-  title,
+  id: string,
+  title: string,
   maxLength = DEFAULTS.MAX_COMMIT_SUBJECT,
   provenance: CommitProvenance = {},
-) {
+): string {
   const prefix = `wu(${id.toLowerCase()}): done - `;
   const safe = String(title).trim().toLowerCase().replace(/\s+/g, ' ');
   const room = Math.max(0, maxLength - prefix.length);
@@ -106,8 +153,8 @@ export function generateCommitMessage(
  * @param {string} params.backlogPath - Path to backlog.md file
  * @throws {WUError} If any required file is missing
  */
-export function validateMetadataFilesExist({ statusPath, backlogPath }) {
-  const missing = [];
+export function validateMetadataFilesExist({ statusPath, backlogPath }: ValidateMetadataFilesParams): void {
+  const missing: string[] = [];
 
   if (!existsSync(statusPath)) {
     missing.push(`Status: ${statusPath}`);
@@ -137,7 +184,14 @@ export function validateMetadataFilesExist({ statusPath, backlogPath }) {
  * @param {string} params.statusPath - Path to status.md file
  * @param {string} params.backlogPath - Path to backlog.md file
  */
-export async function updateMetadataFiles({ id, title, doc, wuPath, statusPath, backlogPath }) {
+export async function updateMetadataFiles({
+  id,
+  title,
+  doc,
+  wuPath,
+  statusPath,
+  backlogPath,
+}: UpdateMetadataFilesParams): Promise<void> {
   // WU-1275: Fail fast before any mutations
   validateMetadataFilesExist({ statusPath, backlogPath });
 
@@ -149,11 +203,12 @@ export async function updateMetadataFiles({ id, title, doc, wuPath, statusPath, 
   }
 
   // Update WU YAML (mark as done, lock, set completion timestamp)
+  const completedAt = new Date().toISOString();
   doc.status = WU_STATUS.DONE;
   doc.locked = true;
-  doc.completed_at = new Date().toISOString();
+  doc.completed_at = completedAt;
   doc.completed =
-    normalizeToDateString(doc.completed ?? doc.completed_at) ?? doc.completed_at.slice(0, 10);
+    normalizeToDateString(doc.completed ?? completedAt) ?? completedAt.slice(0, 10);
   writeWU(wuPath, doc);
 
   // Update status.md (remove from In Progress, add to Completed)
@@ -206,7 +261,7 @@ export async function collectMetadataToTransaction({
   stampPath,
   transaction,
   projectRoot = null,
-}) {
+}: CollectMetadataToTransactionParams): Promise<void> {
   // WU-1369: Fail fast before any computations
   validateMetadataFilesExist({ statusPath, backlogPath });
 
@@ -281,7 +336,7 @@ export async function stageAndFormatMetadata({
   initiativePath = null,
   gitAdapter = null,
   repoRoot = null,
-}) {
+}: StageAndFormatMetadataParams): Promise<void> {
   // WU-1541: Use explicit gitAdapter if provided, otherwise fall back to getGitForCwd()
   // This eliminates the dependency on process.chdir() having been called beforehand
   const gitCwd = gitAdapter ?? getGitForCwd();
@@ -314,10 +369,11 @@ export async function stageAndFormatMetadata({
     await execAsync(prettierCmd);
     await gitCwd.add(filesToFormat);
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Documentation formatted`);
-  } catch (err) {
-    throw createValidationError(`Failed to format documentation: ${err.message}`, {
+  } catch (err: unknown) {
+    const errorMessage = getErrorMessage(err);
+    throw createValidationError(`Failed to format documentation: ${errorMessage}`, {
       wuId: id,
-      error: err.message,
+      error: errorMessage,
     });
   }
 }
