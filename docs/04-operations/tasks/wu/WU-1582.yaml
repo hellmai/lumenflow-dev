@@ -2,7 +2,7 @@ id: WU-1582
 title: 'CLI strict wave 1B: initiative and gates command fixes'
 lane: 'Framework: CLI Orchestration'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -55,3 +55,6 @@ session_id: 852dd2db-7ffb-4ed5-b95c-e2ccdb25dd76
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T18:19:16.146Z
+locked: true
+completed_at: 2026-02-15T18:24:52.317Z
+completed: 2026-02-15

@@ -24,7 +24,7 @@ phases:
     status: done
   - id: 4
     title: 'Wave 1B: CLI initiative and gates strict fixes'
-    status: pending
+    status: done
   - id: 5
     title: 'Wave 1C: CLI remaining strict fixes and strict enablement'
     status: pending
