@@ -31,7 +31,8 @@ sections:
 - [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml) — Framework: Core Lifecycle
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — Framework: Core State Recovery
 - [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — Framework: Core Validation
-- [WU-1684 — Add vendor-agnostic wu:sandbox command for kernel-enforced worktree isolation](wu/WU-1684.yaml) — Framework: CLI Enforcement
+- [WU-1684 — Build vendor-agnostic core sandbox engine contract and OS backends](wu/WU-1684.yaml) — Framework: Core Validation
+- [WU-1687 — Wire public wu:sandbox command and wu:claim --sandbox to core sandbox engine](wu/WU-1687.yaml) — Framework: CLI Enforcement
 
 ## 🔧 In progress
 
