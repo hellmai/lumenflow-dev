@@ -2,7 +2,7 @@ id: WU-1684
 title: Build vendor-agnostic core sandbox engine contract and OS backends
 lane: 'Framework: Core Validation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -18,8 +18,8 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__/sandbox-backend-windows.test.ts
 tests:
   manual:
-    - Build a SandboxProfile from representative worktree/main paths and verify allow-list paths
-      are normalized and deterministic.
+    - Build a SandboxProfile from representative worktree/main paths and verify allow-list paths are
+      normalized and deterministic.
     - Verify allow-list rejects ../ traversal and symlink escape targets outside the allowed
       workspace envelope.
     - Verify backend resolver selects linux/macos/windows adapters on supported platforms.
@@ -40,9 +40,9 @@ dependencies: []
 spec_refs:
   - LUMENFLOW.md
 risks: []
-notes: 'Split from original WU-1684 proposal into two WUs. This core WU owns only engine-level
+notes: Split from original WU-1684 proposal into two WUs. This core WU owns only engine-level
   contract and backend adapters. CLI command/public registration and wu:claim wiring are delegated
-  to WU-1687 to keep boundaries clean and enable parallel delivery.'
+  to WU-1687 to keep boundaries clean and enable parallel delivery.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -68,3 +68,11 @@ acceptance:
     scope.
   - Unit tests cover profile generation, allow-list normalization, backend selection matrix, and
     fail-closed/override decision behavior.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1684
+claimed_at: 2026-02-15T14:46:16.128Z
+baseline_main_sha: b83f2e5a3ccc9e2004bd00e1a3250af8f504e713
+session_id: f39d2c6f-dcbb-405a-b0ad-f5629e7656e1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-15T14:46:16.134Z

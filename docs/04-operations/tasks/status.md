@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1684 — Build vendor-agnostic core sandbox engine contract and OS backends](wu/WU-1684.yaml)
 
 ## Completed
 
