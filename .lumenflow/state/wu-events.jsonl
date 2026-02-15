@@ -1305,4 +1305,5 @@
 {"type":"complete","wuId":"WU-1683","timestamp":"2026-02-15T12:35:13.560Z"}
 {"type":"claim","wuId":"WU-1686","timestamp":"2026-02-15T12:51:10.512Z","lane":"Content: Site Comms","title":"Reframe article as agent orchestration layer + Medium optimisations"}
 {"type":"complete","wuId":"WU-1686","timestamp":"2026-02-15T12:51:27.524Z"}
-{"type":"claim","wuId":"WU-1684","lane":"Framework: Core Validation","title":"Build vendor-agnostic core sandbox engine contract and OS backends","timestamp":"2026-02-15T14:46:16.171Z"}
+{"type":"claim","wuId":"WU-1684","timestamp":"2026-02-15T14:46:16.171Z","lane":"Framework: Core Validation","title":"Build vendor-agnostic core sandbox engine contract and OS backends"}
+{"type":"complete","wuId":"WU-1684","timestamp":"2026-02-15T15:05:21.316Z"}

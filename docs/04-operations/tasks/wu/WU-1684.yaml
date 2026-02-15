@@ -2,7 +2,7 @@ id: WU-1684
 title: Build vendor-agnostic core sandbox engine contract and OS backends
 lane: 'Framework: Core Validation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-15
 code_paths:
@@ -77,3 +77,6 @@ session_id: f39d2c6f-dcbb-405a-b0ad-f5629e7656e1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T14:46:16.134Z
+locked: true
+completed_at: 2026-02-15T15:05:18.548Z
+completed: 2026-02-15
