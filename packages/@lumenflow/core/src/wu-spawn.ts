@@ -864,10 +864,7 @@ function generateImplementationContext(doc: WUDoc): string {
  * @param {string[]} codePaths - Array of code paths
  * @returns {boolean} True if code paths match the invariant
  */
-function codePathMatchesInvariant(
-  invariant: InvariantDefinition,
-  codePaths: string[],
-): boolean {
+function codePathMatchesInvariant(invariant: InvariantDefinition, codePaths: string[]): boolean {
   switch (invariant.type) {
     case INVARIANT_TYPES.FORBIDDEN_FILE:
     case INVARIANT_TYPES.REQUIRED_FILE:
