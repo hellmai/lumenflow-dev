@@ -68,17 +68,15 @@ function makeGitMock(handlers: {
   });
 
   return {
-    branchExists: vi
-      .fn()
-      .mockImplementation(async (ref: string) => {
-        if (ref === 'origin/main') {
-          return handlers.branchExistsOriginMain ?? true;
-        }
-        if (ref === 'main') {
-          return handlers.branchExistsMain ?? false;
-        }
-        return false;
-      }),
+    branchExists: vi.fn().mockImplementation(async (ref: string) => {
+      if (ref === 'origin/main') {
+        return handlers.branchExistsOriginMain ?? true;
+      }
+      if (ref === 'main') {
+        return handlers.branchExistsMain ?? false;
+      }
+      return false;
+    }),
     raw,
   };
 }
@@ -297,7 +295,9 @@ describe('wu-rules-engine', () => {
       headRef: 'HEAD',
     });
 
-    expect(createGitForPath).toHaveBeenCalledWith('/tmp/worktrees/framework-cli-wu-commands-wu-1680');
+    expect(createGitForPath).toHaveBeenCalledWith(
+      '/tmp/worktrees/framework-cli-wu-commands-wu-1680',
+    );
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.files).toEqual(['packages/@lumenflow/core/src/wu-lint.ts']);

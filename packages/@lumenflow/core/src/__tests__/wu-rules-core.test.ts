@@ -37,7 +37,9 @@ describe('wu-rules-core', () => {
       createResolvers(),
     );
 
-    const parityIssues = result.errors.filter((issue) => issue.code === RULE_CODES.PARITY_MISSING_SURFACE);
+    const parityIssues = result.errors.filter(
+      (issue) => issue.code === RULE_CODES.PARITY_MISSING_SURFACE,
+    );
     expect(parityIssues).toHaveLength(2);
   });
 

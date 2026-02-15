@@ -297,7 +297,10 @@ function validateRule001PathShape(context: NormalizedContext, issues: Validation
   });
 }
 
-function validateRule002MinimumTestIntent(context: NormalizedContext, issues: ValidationIssue[]): void {
+function validateRule002MinimumTestIntent(
+  context: NormalizedContext,
+  issues: ValidationIssue[],
+): void {
   if (isDocsOrProcess(context.type)) {
     return;
   }
@@ -425,8 +428,7 @@ function validateRule007AutomatedTestClassification(
           code: RULE_CODES.TEST_CLASSIFICATION,
           severity: 'error',
           message: `tests.${bucket} entry is not path-like: "${entry}".`,
-          suggestion:
-            `Move descriptive text to tests.manual and keep tests.${bucket} for file paths/globs only.`,
+          suggestion: `Move descriptive text to tests.manual and keep tests.${bucket} for file paths/globs only.`,
           metadata: { bucket, value: entry },
         });
         continue;

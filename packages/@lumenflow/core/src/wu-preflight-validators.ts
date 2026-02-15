@@ -284,7 +284,9 @@ export async function validatePreflight(id, options: ValidatePreflightOptions = 
 
 export function formatPreflightResult(id, result) {
   if (result.valid) {
-    const lines = [`${LOG_PREFIX.PREFLIGHT} ${EMOJI.SUCCESS} Preflight validation passed for ${id}`];
+    const lines = [
+      `${LOG_PREFIX.PREFLIGHT} ${EMOJI.SUCCESS} Preflight validation passed for ${id}`,
+    ];
     if (Array.isArray(result.warnings) && result.warnings.length > 0) {
       lines.push('');
       lines.push(`${LOG_PREFIX.PREFLIGHT} ${EMOJI.WARNING} Warnings:`);
