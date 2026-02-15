@@ -222,15 +222,15 @@ Supported mismatch fixes:
 
 ## Plans
 
-Plans are markdown documents that capture goals, scope, approach, and success criteria before implementation begins. They link to WUs (via `spec_refs`) and initiatives (via `related_plan`).
+Plans are markdown documents that capture goals, scope, approach, and success criteria before implementation begins. They link to WUs (via the `plan` field, WU-1683) and initiatives (via `related_plan`).
 
 ### Plan Storage
 
 Plans are stored in the repo at `docs/04-operations/plans/` by default (configurable via `directories.plansDir` in `.lumenflow.config.yaml`).
 
 If the plan exists only in conversation, use `--plan` on `wu:create` to generate a lightweight
-stub in `$LUMENFLOW_HOME/plans/`, then summarize the conversation there and reference it via
-`spec_refs`. Feature WUs require `spec_refs`; notes do not replace the plan link.
+stub in `$LUMENFLOW_HOME/plans/` and automatically set the WU's `plan` field to the
+`lumenflow://plans/` URI. Feature WUs should have a `plan` field; notes do not replace the plan link.
 
 | Command                                                                  | Description                                                   |
 | ------------------------------------------------------------------------ | ------------------------------------------------------------- |
@@ -263,15 +263,17 @@ pnpm initiative:plan --initiative INIT-001 --create
 pnpm initiative:plan --initiative INIT-001 --plan docs/04-operations/plans/my-plan.md
 ```
 
-**To a WU (via spec_refs):**
+**To a WU (via `plan` field, WU-1683):**
 
 ```bash
-# When creating a WU
-pnpm wu:create --id WU-123 --lane "Framework: Core" --title "Feature" \
-  --spec-refs "lumenflow://plans/WU-123-plan.md"
+# When creating a WU (--plan auto-generates and links)
+pnpm wu:create --id WU-123 --lane "Framework: Core" --title "Feature" --plan
 
-# Or edit an existing WU
-pnpm wu:edit --id WU-123 --spec-refs "lumenflow://plans/WU-123-plan.md"
+# Or edit an existing WU with a specific plan URI
+pnpm wu:edit --id WU-123 --plan "lumenflow://plans/WU-123-plan.md"
+
+# Or use plan:link
+pnpm plan:link --id WU-123 --plan lumenflow://plans/WU-123-plan.md
 ```
 
 ### Plan URI Format
@@ -437,6 +439,7 @@ For code changes, you must include **all** of the following (or wu:create will f
 - `--test-paths-unit` or `--test-paths-e2e` (automated tests required)
 - `--exposure` (ui | api | backend-only | documentation)
 - `--spec-refs` (required for type: feature)
+- `--plan` (optional, auto-generates plan file and sets `plan` field — WU-1683)
 
 Documentation WUs can omit code/test paths but should set `--type documentation` and `--exposure documentation`.
 

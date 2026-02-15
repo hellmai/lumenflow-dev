@@ -1254,9 +1254,11 @@ export class SupabaseExampleService implements ExampleService {
   # Optional: ui_pairing_wus (recommended for api exposure)
   ui_pairing_wus:
     - 'WU-YYY' # UI WU that consumes this API
-  # Optional: spec_refs (links to plan documents)
+  # WU-1683: First-class plan field (symmetric with initiative related_plan)
+  plan: 'lumenflow://plans/WU-XXX-plan.md'
+  # Optional: spec_refs (links to supplementary documents)
   spec_refs:
-    - 'lumenflow://plans/WU-XXX-plan.md'
+    - 'docs/04-operations/specs/WU-XXX-spec.md'
 ```
 
 #### 6.1.1 Exposure Field (WU-1998)
