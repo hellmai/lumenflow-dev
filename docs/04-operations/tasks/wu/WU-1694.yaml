@@ -1,0 +1,37 @@
+id: WU-1694
+title: 'Strict debt slice: eliminate TS7006 in wu-claim-state/validation'
+lane: 'Framework: CLI WU Commands'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-15
+code_paths:
+  - packages/@lumenflow/cli/src/wu-claim-state.ts
+  - packages/@lumenflow/cli/src/wu-claim-validation.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1694.done
+dependencies: []
+initiative: INIT-022
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-022.yaml
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: strict debt remains high (1,315 errors) with TS7006 as the dominant class. Problem: packages/@lumenflow/cli/src/wu-claim-state.ts and wu-claim-validation.ts are top TS7006 hotspots and block noImplicitAny progress. Solution: apply type-safe parameter annotations and small extraction where needed to remove TS7006 in these two files without behavior changes, using tests-first coverage for claim-validation/state behaviors.'
+acceptance:
+  - Targeted strict run reports 0 TS7006 errors in packages/@lumenflow/cli/src/wu-claim-state.ts
+  - Targeted strict run reports 0 TS7006 errors in packages/@lumenflow/cli/src/wu-claim-validation.ts
+  - wu-claim command unit tests continue to pass
+  - No functional behavior change in claim status/validation logic (covered by added or updated tests)
