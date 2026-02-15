@@ -4,7 +4,7 @@ _Last updated: 2026-02-15_
 
 ## In Progress
 
-- [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -642,3 +642,4 @@ _Last updated: 2026-02-15_
 - [WU-1585 — Core strict wave 2B: WU management strict fixes](wu/WU-1585.yaml) — 2026-02-15
 - [WU-1586 — Core strict wave 2C: backlog and compliance strict fixes](wu/WU-1586.yaml) — 2026-02-15
 - [WU-1587 — Core strict wave 2D: infrastructure strict fixes](wu/WU-1587.yaml) — 2026-02-15
+- [WU-1588 — Core strict wave 2E: remaining fixes and strict enablement](wu/WU-1588.yaml) — 2026-02-15

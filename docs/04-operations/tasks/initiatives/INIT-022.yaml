@@ -7,7 +7,7 @@ description: 'Context: @lumenflow/core and @lumenflow/cli currently keep strict:
   risk in lifecycle-critical flows. Solution: ship Wave 0 foundations first (progress tracking +
   type helpers), then execute bounded WUs across CLI and Core with max two concurrent WUs per
   package until strict:true is restored in both packages.'
-status: in_progress
+status: done
 priority: P1
 owner: platform
 created: 2026-02-10
@@ -42,7 +42,7 @@ phases:
     status: done
   - id: 10
     title: 'Wave 2E: Core remaining strict fixes and strict enablement'
-    status: pending
+    status: done
 success_metrics:
   - packages/@lumenflow/cli/tsconfig.json sets compilerOptions.strict=true and removes
     _strictException

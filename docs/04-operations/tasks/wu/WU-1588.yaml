@@ -2,7 +2,7 @@ id: WU-1588
 title: 'Core strict wave 2E: remaining fixes and strict enablement'
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-10
 code_paths:
@@ -54,3 +54,6 @@ session_id: d04a0333-32f5-46d5-8354-4ea55bfe4f87
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T19:07:41.881Z
+locked: true
+completed_at: 2026-02-15T19:13:31.374Z
+completed: 2026-02-15
