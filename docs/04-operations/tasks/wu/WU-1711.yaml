@@ -2,7 +2,7 @@ id: WU-1711
 title: 'Strict debt slice: type lane-inference'
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -44,3 +44,6 @@ session_id: f95d8e27-bbce-4248-b652-ce0b125a1bf5
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-15T23:49:21.764Z
+locked: true
+completed_at: 2026-02-15T23:51:33.960Z
+completed: 2026-02-15
