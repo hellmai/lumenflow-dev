@@ -148,6 +148,51 @@ describe('release command', () => {
       expect(paths).toContain(join(packagesDir, 'memory/package.json'));
     });
 
+    it('should include bare lumenflow wrapper package (WU-1691)', () => {
+      // Create scoped packages
+      const scopedDir = join(testDir, 'packages/@lumenflow');
+      mkdirSync(join(scopedDir, 'core'), { recursive: true });
+      writeFileSync(
+        join(scopedDir, 'core/package.json'),
+        JSON.stringify({ name: '@lumenflow/core', version: '1.0.0' }),
+      );
+
+      // Create bare wrapper package
+      const wrapperDir = join(testDir, 'packages/lumenflow');
+      mkdirSync(wrapperDir, { recursive: true });
+      writeFileSync(
+        join(wrapperDir, 'package.json'),
+        JSON.stringify({ name: 'lumenflow', version: '1.0.0' }),
+      );
+
+      const paths = findPackageJsonPaths(testDir);
+
+      expect(paths).toHaveLength(2);
+      expect(paths).toContain(join(scopedDir, 'core/package.json'));
+      expect(paths).toContain(join(wrapperDir, 'package.json'));
+    });
+
+    it('should not include bare lumenflow wrapper if private: true', () => {
+      const scopedDir = join(testDir, 'packages/@lumenflow');
+      mkdirSync(join(scopedDir, 'core'), { recursive: true });
+      writeFileSync(
+        join(scopedDir, 'core/package.json'),
+        JSON.stringify({ name: '@lumenflow/core', version: '1.0.0' }),
+      );
+
+      const wrapperDir = join(testDir, 'packages/lumenflow');
+      mkdirSync(wrapperDir, { recursive: true });
+      writeFileSync(
+        join(wrapperDir, 'package.json'),
+        JSON.stringify({ name: 'lumenflow', version: '1.0.0', private: true }),
+      );
+
+      const paths = findPackageJsonPaths(testDir);
+
+      expect(paths).toHaveLength(1);
+      expect(paths).toContain(join(scopedDir, 'core/package.json'));
+    });
+
     it('should not include packages with private: true', () => {
       // Create mock package structure with private package
       const packagesDir = join(testDir, 'packages/@lumenflow');
@@ -206,6 +251,30 @@ describe('release command', () => {
       );
       expect(content.version).toBe('1.2.3');
       expect(content.name).toBe('@lumenflow/core'); // Other fields preserved
+    });
+
+    it('should update version in bare lumenflow wrapper (WU-1691)', async () => {
+      const packagePath = join(testDir, 'package.json');
+      writeFileSync(
+        packagePath,
+        JSON.stringify(
+          {
+            name: 'lumenflow',
+            version: '1.0.0',
+            dependencies: { '@lumenflow/cli': 'workspace:^' },
+          },
+          null,
+          2,
+        ),
+      );
+
+      await updatePackageVersions([packagePath], '2.20.0');
+
+      const content = JSON.parse(
+        await import('node:fs/promises').then((fs) => fs.readFile(packagePath, 'utf-8')),
+      );
+      expect(content.version).toBe('2.20.0');
+      expect(content.name).toBe('lumenflow');
     });
 
     it('should preserve JSON formatting', async () => {

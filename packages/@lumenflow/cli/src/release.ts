@@ -45,6 +45,9 @@ const OPERATION_NAME = 'release';
 /** Directory containing @lumenflow packages */
 const LUMENFLOW_PACKAGES_DIR = 'packages/@lumenflow';
 
+/** Path to the bare lumenflow wrapper package (WU-1691) */
+const LUMENFLOW_WRAPPER_PACKAGE = 'packages/lumenflow';
+
 /** Semver regex pattern (strict) */
 // eslint-disable-next-line security/detect-unsafe-regex -- static semver pattern; no backtracking risk
 const SEMVER_REGEX = /^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?$/;
@@ -139,7 +142,9 @@ export function validateSemver(version: string): boolean {
 }
 
 /**
- * Find all public @lumenflow/* package.json paths
+ * Find all public @lumenflow/* package.json paths, plus the bare lumenflow wrapper.
+ *
+ * WU-1691: Also includes packages/lumenflow so the release script bumps its version atomically.
  *
  * @param baseDir - Base directory to search from (defaults to cwd)
  * @returns Array of absolute paths to package.json files
@@ -148,25 +153,34 @@ export function findPackageJsonPaths(baseDir: string = process.cwd()): string[] 
   const packagesDir = join(baseDir, LUMENFLOW_PACKAGES_DIR);
   const paths: string[] = [];
 
-  if (!existsSync(packagesDir)) {
-    return paths;
+  if (existsSync(packagesDir)) {
+    const entries = readdirSync(packagesDir);
+    for (const entry of entries) {
+      const entryPath = join(packagesDir, entry);
+      const packageJsonPath = join(entryPath, 'package.json');
+
+      if (statSync(entryPath).isDirectory() && existsSync(packageJsonPath)) {
+        // Read package.json to check if it's private
+        const content = JSON.parse(
+          readFileSync(packageJsonPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }),
+        );
+
+        // Only include public packages (not marked private)
+        if (!content.private) {
+          paths.push(packageJsonPath);
+        }
+      }
+    }
   }
 
-  const entries = readdirSync(packagesDir);
-  for (const entry of entries) {
-    const entryPath = join(packagesDir, entry);
-    const packageJsonPath = join(entryPath, 'package.json');
-
-    if (statSync(entryPath).isDirectory() && existsSync(packageJsonPath)) {
-      // Read package.json to check if it's private
-      const content = JSON.parse(
-        readFileSync(packageJsonPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }),
-      );
-
-      // Only include public packages (not marked private)
-      if (!content.private) {
-        paths.push(packageJsonPath);
-      }
+  // WU-1691: Include the bare lumenflow wrapper package
+  const wrapperPackageJson = join(baseDir, LUMENFLOW_WRAPPER_PACKAGE, 'package.json');
+  if (existsSync(wrapperPackageJson)) {
+    const content = JSON.parse(
+      readFileSync(wrapperPackageJson, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }),
+    );
+    if (!content.private) {
+      paths.push(wrapperPackageJson);
     }
   }
 
