@@ -2,7 +2,7 @@ id: WU-1751
 title: Fix state:doctor false mismatch for superseded WUs
 lane: 'Framework: Core State Recovery'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/state-doctor.ts
 tests:
   manual:
-    - Run pnpm state:doctor --dry-run in repo containing superseded WUs with historical events; verify no false auto-fix guidance
+    - Run pnpm state:doctor --dry-run in repo containing superseded WUs with historical events;
+      verify no false auto-fix guidance
   unit:
     - packages/@lumenflow/core/src/__tests__/state-doctor-core.test.ts
   e2e: []
@@ -27,8 +28,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1552 and WU-1553 are intentionally status=superseded in YAML, but they still have historical claim/release events in .lumenflow/state/wu-events.jsonl. Problem: state:doctor derives status=ready from events and reports status mismatch as auto-fixable, but --fix cannot reconcile ready->superseded. This creates persistent noise and recurring confusion (looks like random WUs reappearing). Solution: update state-doctor mismatch detection/fixability semantics so non-canonical terminal YAML statuses (e.g., superseded/cancelled) are not flagged as auto-fixable state drift. Ensure messaging reflects true fixability.'
+description: 'Context: WU-1552 and WU-1553 are intentionally status=superseded in YAML, but they
+  still have historical claim/release events in .lumenflow/state/wu-events.jsonl. Problem:
+  state:doctor derives status=ready from events and reports status mismatch as auto-fixable, but
+  --fix cannot reconcile ready->superseded. This creates persistent noise and recurring confusion
+  (looks like random WUs reappearing). Solution: update state-doctor mismatch detection/fixability
+  semantics so non-canonical terminal YAML statuses (e.g., superseded/cancelled) are not flagged as
+  auto-fixable state drift. Ensure messaging reflects true fixability.'
 acceptance:
-  - state:doctor does not report auto-fixable status mismatch for YAML status superseded with derived ready
+  - state:doctor does not report auto-fixable status mismatch for YAML status superseded with
+    derived ready
   - state:doctor output correctly marks non-fixable transitions as non-auto-fixable
   - state-doctor core tests cover superseded/cancelled mismatch behavior
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-state-recovery-wu-1751
+claimed_at: 2026-02-16T18:34:25.405Z
+baseline_main_sha: 1b4be9d2f1a5d4551a5cfd792a8525077f01f29a
+session_id: 11bdfdd6-5209-436c-977d-7d82b97556e1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T18:34:25.410Z
