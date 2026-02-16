@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import { intersectToolScopes } from './scope-intersection.js';
 import {
   ExecutionContextSchema,
@@ -13,7 +13,6 @@ import {
 import { EvidenceStore } from '../evidence/evidence-store.js';
 import { ToolRegistry } from './tool-registry.js';
 import { DefaultSubprocessDispatcher, type SubprocessDispatcher } from './subprocess-dispatcher.js';
-import { canonical_json } from '../canonical-json.js';
 
 const SHA256_HEX_REGEX = /^[a-f0-9]{64}$/;
 const DEFAULT_WORKSPACE_CONFIG_HASH = '0'.repeat(64);
@@ -34,10 +33,6 @@ export interface ToolHostOptions {
   subprocessDispatcher?: SubprocessDispatcher;
   policyHook?: PolicyHook;
   runtimeVersion?: string;
-}
-
-function sha256Hex(content: string): string {
-  return createHash('sha256').update(content).digest('hex');
 }
 
 function resolveMetadata(context: ExecutionContext): Record<string, unknown> {
