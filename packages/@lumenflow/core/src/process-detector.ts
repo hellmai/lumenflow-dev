@@ -193,4 +193,3 @@ export async function runBackgroundProcessCheck(worktreePath: any) {
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} No interfering background processes detected`);
   }
 }
-

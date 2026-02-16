@@ -198,7 +198,11 @@ export interface AgentFriendlyErrorOptions {
  *   }
  * );
  */
-export function createAgentFriendlyError(code: any, message: any, options: AgentFriendlyErrorOptions = {}) {
+export function createAgentFriendlyError(
+  code: any,
+  message: any,
+  options: AgentFriendlyErrorOptions = {},
+) {
   const { tryNext, context = {} } = options;
   const error = createError(code, message, context);
 
@@ -247,4 +251,3 @@ export const ErrorCodes = {
   INVALID_PHASE: 'INVALID_PHASE',
   DEPENDENCY_CYCLE: 'DEPENDENCY_CYCLE',
 };
-

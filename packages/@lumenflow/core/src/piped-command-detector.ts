@@ -69,4 +69,3 @@ export function containsPnpmDependencyCommand(command: any) {
   const pattern = new RegExp(`pnpm\\s+(${DEPENDENCY_COMMANDS.join('|')})\\b`, 'i');
   return pattern.test(command);
 }
-

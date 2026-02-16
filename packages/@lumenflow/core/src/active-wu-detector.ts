@@ -119,4 +119,3 @@ export function extractActiveWuIds(backlogContent: any, statusContent: any, curr
 export function isOrphanWu(wuId: any, activeIds: any) {
   return !activeIds.has(wuId);
 }
-

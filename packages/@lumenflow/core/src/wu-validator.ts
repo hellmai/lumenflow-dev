@@ -155,7 +155,9 @@ export function scanFileForTODOs(filePath: string): TodoScanResult {
       const atTagMatch = trimmed.match(/^\*\s+@(todo|fixme|hack|xxx)\b/i);
       if (atTagMatch) {
         const atTag = atTagMatch[1];
-        return atTag ? { found: true, pattern: atTag.toUpperCase() } : { found: false, pattern: null };
+        return atTag
+          ? { found: true, pattern: atTag.toUpperCase() }
+          : { found: false, pattern: null };
       }
 
       // Pattern 2: Keyword at start of comment content
@@ -170,9 +172,7 @@ export function scanFileForTODOs(filePath: string): TodoScanResult {
           return { found: false, pattern: null };
         }
         // Check it is not followed by / (slash-separated list)
-        const afterKeyword = trimmed.slice(
-          trimmed.indexOf(commentKeyword) + commentKeyword.length,
-        );
+        const afterKeyword = trimmed.slice(trimmed.indexOf(commentKeyword) + commentKeyword.length);
         if (!afterKeyword.startsWith('/')) {
           return { found: true, pattern: commentKeyword.toUpperCase() };
         }

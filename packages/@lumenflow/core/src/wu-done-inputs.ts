@@ -58,4 +58,3 @@ export function validateInputs(argv: any) {
 
   return { args, id };
 }
-

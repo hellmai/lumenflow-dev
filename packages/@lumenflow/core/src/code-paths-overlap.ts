@@ -281,4 +281,3 @@ function concreteFileIntersection(patternA: any, patternB: any) {
     files: intersection,
   };
 }
-

@@ -347,4 +347,3 @@ export const FILE_TOOLS = {
     DOC_REFERENCE: 'CLAUDE.md §2 (Worktree Discipline)',
   },
 };
-

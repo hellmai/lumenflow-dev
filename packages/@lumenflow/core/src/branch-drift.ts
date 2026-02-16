@@ -57,4 +57,3 @@ export function getDriftLevel(commitsBehind: any) {
 
   return DRIFT_LEVELS.OK;
 }
-

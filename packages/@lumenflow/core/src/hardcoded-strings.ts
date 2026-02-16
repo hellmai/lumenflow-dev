@@ -188,7 +188,9 @@ const REMEDIATION_MESSAGES = Object.freeze({
  */
 export function getRemediation(pathType: any) {
   // Validate pathType to prevent object injection
-  const validTypes = Object.values(PATH_TYPES) as Array<(typeof PATH_TYPES)[keyof typeof PATH_TYPES]>;
+  const validTypes = Object.values(PATH_TYPES) as Array<
+    (typeof PATH_TYPES)[keyof typeof PATH_TYPES]
+  >;
   if (validTypes.includes(pathType)) {
     // eslint-disable-next-line security/detect-object-injection -- Safe: pathType validated against known values above
     return REMEDIATION_MESSAGES[pathType as keyof typeof REMEDIATION_MESSAGES];

@@ -42,4 +42,3 @@ export function lowercaseCommitSubject(message: any) {
   // No conventional format - lowercase entire message
   return message.toLowerCase();
 }
-

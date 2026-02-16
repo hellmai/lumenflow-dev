@@ -72,7 +72,6 @@ export function registerDocsOnlyGates(registry: GateRegistry, options: DocsOnlyG
     name: GATE_NAMES.BACKLOG_SYNC,
   } as GateDefinition);
 
-
   // WU-1191: Lane health check (configurable: warn/error/off)
   registry.register({
     name: GATE_NAMES.LANE_HEALTH,
@@ -150,7 +149,6 @@ export function registerCodeGates(registry: GateRegistry, options: CodeGateOptio
   registry.register({
     name: GATE_NAMES.SUPABASE_DOCS_LINTER,
   } as GateDefinition);
-
 
   // WU-1191: Lane health check
   registry.register({

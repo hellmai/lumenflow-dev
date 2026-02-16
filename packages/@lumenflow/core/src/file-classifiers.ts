@@ -117,4 +117,3 @@ export function isDocumentationPath(filePath: any) {
 
 // Export constants for external use
 export { DOCS_ONLY_PREFIXES, DOCS_ONLY_ROOT_FILES, TEST_FILE_PATTERNS };
-

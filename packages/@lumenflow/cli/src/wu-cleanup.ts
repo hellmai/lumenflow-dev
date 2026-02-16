@@ -80,7 +80,10 @@ export function evaluateCleanupGuards({
   prMerged,
 }: CleanupGuardInput): CleanupGuardResult {
   if (hasUncommittedChanges) {
-    return { allowed: false, reason: CLEANUP_GUARD_REASONS.UNCOMMITTED_CHANGES as CleanupGuardReason };
+    return {
+      allowed: false,
+      reason: CLEANUP_GUARD_REASONS.UNCOMMITTED_CHANGES as CleanupGuardReason,
+    };
   }
   if (hasUnpushedCommits) {
     return { allowed: false, reason: CLEANUP_GUARD_REASONS.UNPUSHED_COMMITS as CleanupGuardReason };

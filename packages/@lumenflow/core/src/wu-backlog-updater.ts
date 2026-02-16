@@ -39,4 +39,3 @@ export async function moveWUToDoneBacklog(backlogPath: any, id: any, _title: any
   await writeFile(backlogPath, content, 'utf-8');
   console.log(`${PREFIX} Backlog.md regenerated from state store`);
 }
-

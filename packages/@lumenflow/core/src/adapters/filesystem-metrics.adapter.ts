@@ -121,14 +121,8 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
         const sorted = [...activeWUsList].sort((a, b) => {
           const aStart = getWUStartTime(a);
           const bStart = getWUStartTime(b);
-          const aDuration = differenceInMilliseconds(
-            new Date(),
-            new Date(aStart),
-          );
-          const bDuration = differenceInMilliseconds(
-            new Date(),
-            new Date(bStart),
-          );
+          const aDuration = differenceInMilliseconds(new Date(), new Date(aStart));
+          const bDuration = differenceInMilliseconds(new Date(), new Date(bStart));
           return bDuration - aDuration;
         });
 
@@ -137,10 +131,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
           longestRunning = {
             wuId: longest.id,
             lane: longest.lane as Lane,
-            durationMs: differenceInMilliseconds(
-              new Date(),
-              new Date(getWUStartTime(longest)),
-            ),
+            durationMs: differenceInMilliseconds(new Date(), new Date(getWUStartTime(longest))),
           };
         }
       }

@@ -298,4 +298,3 @@ export function formatSpawnRecordedMessage(spawnId: any, errorMessage = undefine
 
   return `${LOG_PREFIX} Warning: Registry unavailable`;
 }
-

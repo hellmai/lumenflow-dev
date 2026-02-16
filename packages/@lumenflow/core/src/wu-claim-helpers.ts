@@ -68,4 +68,3 @@ export async function getAssignedEmail(gitAdapter: any) {
       '  OR export GIT_AUTHOR_EMAIL="you@example.com"',
   );
 }
-

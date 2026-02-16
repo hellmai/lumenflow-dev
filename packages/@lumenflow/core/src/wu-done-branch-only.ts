@@ -82,7 +82,10 @@ export function parseActualFilesFromDiffOutput(diffOutput: any) {
  * @param {object} [gitAdapter] - Optional git adapter (test injection)
  * @returns {Promise<string[]>} List of changed files
  */
-export async function collectActualFilesForLaneBranch(laneBranch: any, gitAdapter = getGitForCwd()) {
+export async function collectActualFilesForLaneBranch(
+  laneBranch: any,
+  gitAdapter = getGitForCwd(),
+) {
   if (!laneBranch) return [];
   try {
     const diffOutput = await gitAdapter.raw([

@@ -760,9 +760,7 @@ export async function enforceSpawnProvenanceForDone(
   }
 
   const initiativeId =
-    typeof doc.initiative === 'string' && doc.initiative.trim()
-      ? doc.initiative.trim()
-      : 'unknown';
+    typeof doc.initiative === 'string' && doc.initiative.trim() ? doc.initiative.trim() : 'unknown';
   const baseDir = options.baseDir ?? process.cwd();
   const force = options.force === true;
   const store = new DelegationRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
@@ -3178,7 +3176,7 @@ async function main() {
     if (sessionResult.ended) {
       const sessionId = sessionResult.summary?.session_id;
       if (sessionId) {
-      // Emergency fix Session 2: Use SESSION.ID_DISPLAY_LENGTH constant
+        // Emergency fix Session 2: Use SESSION.ID_DISPLAY_LENGTH constant
         console.log(
           `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Agent session ended (${sessionId.slice(0, SESSION.ID_DISPLAY_LENGTH)}...)`,
         );

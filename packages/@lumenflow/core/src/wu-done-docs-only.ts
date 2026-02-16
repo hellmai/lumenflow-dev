@@ -72,4 +72,3 @@ export function detectDocsOnlyByPaths(codePaths: any) {
     return false;
   });
 }
-

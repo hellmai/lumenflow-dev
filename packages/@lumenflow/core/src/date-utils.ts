@@ -153,4 +153,3 @@ export function normalizeISODateTime(value: any) {
   // Convert to ISO 8601 datetime format
   return date.toISOString();
 }
-

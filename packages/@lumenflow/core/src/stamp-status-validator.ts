@@ -149,4 +149,3 @@ export function shouldExemptFromStampStatusCheck(wu: any, stampedIds: any, exemp
 
   return { exempted: false, reason: null };
 }
-

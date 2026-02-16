@@ -223,4 +223,3 @@ export function formatAutomatedTestsViolation(violation: any) {
 
   return lines.join('\n');
 }
-

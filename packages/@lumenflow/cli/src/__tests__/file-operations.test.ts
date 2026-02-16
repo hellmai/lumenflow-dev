@@ -388,7 +388,6 @@ describe('file-write CLI', () => {
       expect(result.auditLog?.operation).toBe('write');
       expect(result.auditLog?.path).toBe(testFile);
     });
-
   });
 });
 

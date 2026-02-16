@@ -232,4 +232,3 @@ export function validateAutomatedTestRequirement(doc: any) {
 
   return { valid: true, errors: [] };
 }
-
