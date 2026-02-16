@@ -49,6 +49,7 @@ import { todayISO } from '@lumenflow/core/date-utils';
 import {
   buildInitiativeCreateLaneLifecycleMessage,
   ensureLaneLifecycleForProject,
+  type LaneLifecycleClassification,
   LANE_LIFECYCLE_STATUS,
 } from './lane-lifecycle-process.js';
 
@@ -151,6 +152,18 @@ function createInitiativeYamlInWorktree(
   return initRelativePath;
 }
 
+/**
+ * Resolve lane lifecycle classification for initiative:create without mutating
+ * .lumenflow.config.yaml.
+ *
+ * WU-1751: initiative:create guidance should be read-only.
+ */
+export function resolveLaneLifecycleForInitiativeCreate(
+  projectRoot: string,
+): LaneLifecycleClassification {
+  return ensureLaneLifecycleForProject(projectRoot, { persist: false });
+}
+
 async function main() {
   const args = createWUParser({
     name: 'initiative-create',
@@ -177,7 +190,7 @@ async function main() {
 
   // WU-1748: initiative:create does not design lanes.
   // It remains allowed pre-lane-lock but emits deterministic guidance.
-  const laneLifecycle = ensureLaneLifecycleForProject(process.cwd(), { persist: true });
+  const laneLifecycle = resolveLaneLifecycleForInitiativeCreate(process.cwd());
   if (laneLifecycle.status !== LANE_LIFECYCLE_STATUS.LOCKED) {
     console.log(`\n${buildInitiativeCreateLaneLifecycleMessage(laneLifecycle.status)}\n`);
   }
