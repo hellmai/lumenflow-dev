@@ -19,16 +19,16 @@ This document defines the tool usage rules for AI agents in LumenFlow workflows.
 
 These commands are blocked in Bash tool calls because dedicated tools exist:
 
-| Command         | Use Instead                     | Why                                              |
-| --------------- | ------------------------------- | ------------------------------------------------ |
-| `grep` / `rg`   | **Grep tool**                   | Better permissions, structured output            |
-| `cat`           | **Read tool**                   | Line numbers, image support, truncation handling |
-| `head` / `tail` | **Read tool** with offset/limit | Proper file reading semantics                    |
-| `find`          | **Glob tool**                   | Faster, returns sorted by modification time      |
-| `sed`           | **Edit tool**                   | Proper diff tracking, undo support               |
-| `awk`           | **Edit tool** or code           | More maintainable transformations                |
-| `echo > file`   | **Write tool**                  | Proper permissions, file tracking                |
-| `cp` / `mv` / `rm` (on `main` with active worktrees) | **Run in claimed worktree** | Prevents bypassing Write/Edit worktree discipline |
+| Command                                              | Use Instead                     | Why                                               |
+| ---------------------------------------------------- | ------------------------------- | ------------------------------------------------- |
+| `grep` / `rg`                                        | **Grep tool**                   | Better permissions, structured output             |
+| `cat`                                                | **Read tool**                   | Line numbers, image support, truncation handling  |
+| `head` / `tail`                                      | **Read tool** with offset/limit | Proper file reading semantics                     |
+| `find`                                               | **Glob tool**                   | Faster, returns sorted by modification time       |
+| `sed`                                                | **Edit tool**                   | Proper diff tracking, undo support                |
+| `awk`                                                | **Edit tool** or code           | More maintainable transformations                 |
+| `echo > file`                                        | **Write tool**                  | Proper permissions, file tracking                 |
+| `cp` / `mv` / `rm` (on `main` with active worktrees) | **Run in claimed worktree**     | Prevents bypassing Write/Edit worktree discipline |
 
 ---
 

@@ -120,7 +120,11 @@ function readConfigDoc(projectRoot: string): ConfigDoc {
 function writeConfigDoc(projectRoot: string, config: ConfigDoc): void {
   const configPath = getConfigPath(projectRoot);
   const nextContent = YAML.stringify(config);
-  writeFileSync(configPath, nextContent || EMPTY_OBJECT + NEWLINE, FILE_SYSTEM.UTF8 as BufferEncoding);
+  writeFileSync(
+    configPath,
+    nextContent || EMPTY_OBJECT + NEWLINE,
+    FILE_SYSTEM.UTF8 as BufferEncoding,
+  );
 }
 
 function getLifecycleStatusFromDoc(config: ConfigDoc): LaneLifecycleStatus | null {
@@ -252,7 +256,11 @@ export function ensureLaneLifecycleForProject(
   }
 
   const config = readConfigDoc(projectRoot);
-  setLifecycleStatusInDoc(config, classification.status, classification.migrationReason ?? undefined);
+  setLifecycleStatusInDoc(
+    config,
+    classification.status,
+    classification.migrationReason ?? undefined,
+  );
   writeConfigDoc(projectRoot, config);
 
   return {
@@ -359,9 +367,7 @@ export function validateLaneArtifacts(projectRoot: string): LaneArtifactsValidat
     );
   }
   if (missingInference) {
-    warnings.push(
-      `Missing or invalid ${CONFIG_FILES.LANE_INFERENCE}. Run: ${LANE_SETUP_COMMAND}`,
-    );
+    warnings.push(`Missing or invalid ${CONFIG_FILES.LANE_INFERENCE}. Run: ${LANE_SETUP_COMMAND}`);
   }
 
   if (!missingDefinitions && !missingInference) {

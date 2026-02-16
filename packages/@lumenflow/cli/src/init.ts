@@ -37,10 +37,7 @@ import { integrateClaudeCode, type IntegrateEnforcementConfig } from './commands
 // WU-1433: Import public manifest to derive scripts (no hardcoded subset)
 import { getPublicManifest } from './public-manifest.js';
 import { runCLI } from './cli-entry-point.js';
-import {
-  buildInitLaneLifecycleMessage,
-  LANE_LIFECYCLE_STATUS,
-} from './lane-lifecycle-process.js';
+import { buildInitLaneLifecycleMessage, LANE_LIFECYCLE_STATUS } from './lane-lifecycle-process.js';
 // WU-1643: Import template constants from dedicated data module
 import {
   AGENTS_MD_TEMPLATE,

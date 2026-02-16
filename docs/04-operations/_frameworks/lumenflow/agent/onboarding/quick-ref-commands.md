@@ -112,21 +112,21 @@ pnpm exec lumenflow --client all      # All clients
 
 ## Gates & Quality
 
-| Command                           | Description                      |
-| --------------------------------- | -------------------------------- |
-| `pnpm gates`                      | Run all quality gates            |
-| `pnpm gates --docs-only`          | Run gates for docs changes       |
-| `pnpm format`                     | Format all files (Prettier)      |
-| `pnpm format:check`               | Check formatting without changes |
-| `pnpm lint`                       | Run ESLint                       |
-| `pnpm typecheck`                  | Run TypeScript type checking     |
-| `pnpm test`                       | Run all tests (Vitest)           |
-| `pnpm spec:linter`                | Validate WU specs (all) ¹        |
-| `pnpm lane:health`                | Check lane config health         |
-| `pnpm lane:suggest --paths "..."` | Suggest lane for code paths      |
-| `pnpm lane:status`                | Show lane lifecycle status       |
-| `pnpm lane:setup`                 | Create/update draft lane config  |
-| `pnpm lane:validate`              | Validate lane draft artifacts    |
+| Command                           | Description                       |
+| --------------------------------- | --------------------------------- |
+| `pnpm gates`                      | Run all quality gates             |
+| `pnpm gates --docs-only`          | Run gates for docs changes        |
+| `pnpm format`                     | Format all files (Prettier)       |
+| `pnpm format:check`               | Check formatting without changes  |
+| `pnpm lint`                       | Run ESLint                        |
+| `pnpm typecheck`                  | Run TypeScript type checking      |
+| `pnpm test`                       | Run all tests (Vitest)            |
+| `pnpm spec:linter`                | Validate WU specs (all) ¹         |
+| `pnpm lane:health`                | Check lane config health          |
+| `pnpm lane:suggest --paths "..."` | Suggest lane for code paths       |
+| `pnpm lane:status`                | Show lane lifecycle status        |
+| `pnpm lane:setup`                 | Create/update draft lane config   |
+| `pnpm lane:validate`              | Validate lane draft artifacts     |
 | `pnpm lane:lock`                  | Lock lane lifecycle for WU create |
 
 ¹ **Script aliases:** `spec:linter` and `tasks:validate` are pnpm script aliases

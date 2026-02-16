@@ -43,7 +43,9 @@ async function main() {
       `  - ${CONFIG_FILES.LANE_INFERENCE}: ${result.createdInference ? 'created draft taxonomy' : 'existing taxonomy preserved'}`,
     );
   } else {
-    console.log(`${LOG_PREFIX} Existing lane artifacts preserved. You can expand/edit lanes safely.`);
+    console.log(
+      `${LOG_PREFIX} Existing lane artifacts preserved. You can expand/edit lanes safely.`,
+    );
   }
 
   console.log(`${LOG_PREFIX} Validate draft: ${LANE_VALIDATE_COMMAND}`);

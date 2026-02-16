@@ -41,7 +41,9 @@ async function main() {
     for (const invalidLane of validation.invalidLanes) {
       console.log(`  - Invalid lane mapping: ${invalidLane}`);
     }
-    console.log(`${LOG_PREFIX} Next step: ${recommendLaneLifecycleNextStep(LANE_LIFECYCLE_STATUS.UNCONFIGURED)}`);
+    console.log(
+      `${LOG_PREFIX} Next step: ${recommendLaneLifecycleNextStep(LANE_LIFECYCLE_STATUS.UNCONFIGURED)}`,
+    );
     process.exitCode = 1;
     return;
   }
@@ -49,7 +51,9 @@ async function main() {
   setLaneLifecycleStatus(projectRoot, LANE_LIFECYCLE_STATUS.DRAFT);
   console.log(`${LOG_PREFIX} ${PASS_SENTINEL}`);
   console.log(`${LOG_PREFIX} Lane lifecycle status: ${LANE_LIFECYCLE_STATUS.DRAFT}`);
-  console.log(`${LOG_PREFIX} Next step: ${recommendLaneLifecycleNextStep(LANE_LIFECYCLE_STATUS.DRAFT)}`);
+  console.log(
+    `${LOG_PREFIX} Next step: ${recommendLaneLifecycleNextStep(LANE_LIFECYCLE_STATUS.DRAFT)}`,
+  );
 }
 
 if (import.meta.main) {
