@@ -1394,3 +1394,4 @@
 {"type":"claim","wuId":"WU-1747","timestamp":"2026-02-16T14:29:38.258Z","lane":"Framework: CLI Enforcement","title":"Stub format:check gate when prettier not installed at init time"}
 {"type":"complete","wuId":"WU-1747","timestamp":"2026-02-16T14:37:47.205Z"}
 {"type":"complete","wuId":"WU-1746","timestamp":"2026-02-16T14:45:11.513Z"}
+{"type":"unblock","wuId":"WU-1702","timestamp":"2026-02-16T15:37:28.953Z"}
