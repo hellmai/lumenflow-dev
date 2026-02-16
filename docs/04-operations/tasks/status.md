@@ -6,6 +6,7 @@ _Last updated: 2026-02-16_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1746 — wu:done resilience when worktree deleted but branch already merged](wu/WU-1746.yaml)
+- [WU-1747 — Stub format:check gate when prettier not installed at init time](wu/WU-1747.yaml)
 
 ## Blocked
 
