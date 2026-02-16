@@ -45,7 +45,11 @@ const TRANSITIONS: Record<WuState, WuState[]> = {
  * @param {string} wuid - Work Unit ID (e.g., 'WU-416') for error messages
  * @throws {Error} If transition is illegal or states are invalid
  */
-export function assertTransition(from: string | null | undefined, to: string | null | undefined, wuid: string) {
+export function assertTransition(
+  from: string | null | undefined,
+  to: string | null | undefined,
+  wuid: string,
+) {
   // Validate states exist and are non-empty
   if (from === null || from === undefined || from === '') {
     throw createError(ErrorCodes.STATE_ERROR, `Invalid state: ${from}`, {

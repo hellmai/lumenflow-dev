@@ -157,4 +157,3 @@ export async function normalizeToEmail(value: any, domain: any) {
   const effectiveDomain = domain || (await inferDefaultDomain());
   return `${str}@${effectiveDomain}`;
 }
-

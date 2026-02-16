@@ -302,4 +302,3 @@ export function rotateLog(logPath = DEFAULT_LOG_PATH, retentionDays = 7) {
     console.error(`[commands-logger] Warning: Failed to rotate log: ${error.message}`);
   }
 }
-

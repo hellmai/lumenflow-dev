@@ -339,7 +339,9 @@ function scanFileForTODOs(filePath: string): {
       const atTagMatch = trimmed.match(/^\*\s+@(todo|fixme|hack|xxx)\b/i);
       if (atTagMatch) {
         const atTag = atTagMatch[1];
-        return atTag ? { found: true, pattern: atTag.toUpperCase() } : { found: false, pattern: null };
+        return atTag
+          ? { found: true, pattern: atTag.toUpperCase() }
+          : { found: false, pattern: null };
       }
 
       // Pattern 2: Keyword at start of comment content
@@ -351,9 +353,7 @@ function scanFileForTODOs(filePath: string): {
         if (!commentKeyword) {
           return { found: false, pattern: null };
         }
-        const afterKeyword = trimmed.slice(
-          trimmed.indexOf(commentKeyword) + commentKeyword.length,
-        );
+        const afterKeyword = trimmed.slice(trimmed.indexOf(commentKeyword) + commentKeyword.length);
         if (!afterKeyword.startsWith('/')) {
           return { found: true, pattern: commentKeyword.toUpperCase() };
         }

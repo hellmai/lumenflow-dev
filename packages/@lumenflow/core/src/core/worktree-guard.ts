@@ -301,4 +301,3 @@ For more information:
   // Pass if on a non-main branch (e.g., feature branch) - allow for flexibility
   // This case is less strict since it's not the main branch
 }
-

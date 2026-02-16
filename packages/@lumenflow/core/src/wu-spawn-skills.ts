@@ -205,4 +205,3 @@ export function generateSkillsSelectionSection(doc: any, config: any, clientName
 
   return `${SECTION.skillsSelection}\n\n${MESSAGES.skillsIntro}\n\n${catalogGuidance}${softPolicySection}${SECTION.additionalSkills}\n\n${ADDITIONAL_SKILLS_TABLE}\n\n${SECTION.gracefulDegradation}\n\nIf the skill catalogue is missing or invalid:\n${MESSAGES.baselineFallback}\n`;
 }
-

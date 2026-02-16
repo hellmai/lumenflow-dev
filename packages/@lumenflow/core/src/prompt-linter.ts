@@ -219,7 +219,13 @@ async function log(level: LogLevel, event: string, data: LogData, output: LogOut
  * @param {{quiet?: boolean, verbose?: boolean}} output - Output mode
  * @returns {Promise<{passed: boolean, tokenCount: number, delta: number, hash: string}>}
  */
-async function lintPromptFile(filePath: any, previousMetrics: any, mode: any, config: any, output: any) {
+async function lintPromptFile(
+  filePath: any,
+  previousMetrics: any,
+  mode: any,
+  config: any,
+  output: any,
+) {
   // Analyze prompt
   const { tokenCount, hash, text } = analyzePrompt(filePath);
 

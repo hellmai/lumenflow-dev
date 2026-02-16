@@ -182,4 +182,3 @@ async function deleteBranchWithCleanup(laneBranch: any) {
     console.warn(`${LOG_PREFIX.DONE} Could not delete branch ${laneBranch}: ${e.message}`);
   }
 }
-

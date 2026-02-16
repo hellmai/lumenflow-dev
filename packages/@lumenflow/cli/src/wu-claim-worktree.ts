@@ -302,4 +302,3 @@ export async function claimWorktreeMode(ctx: any) {
   // Fail-open: surfaceUnreadSignals never throws
   await surfaceUnreadSignalsForDisplay(originalCwd);
 }
-

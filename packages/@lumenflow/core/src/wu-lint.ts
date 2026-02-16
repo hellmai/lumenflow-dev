@@ -441,4 +441,3 @@ export function formatLintErrors(errors: any) {
 
   return lines.join('\n');
 }
-

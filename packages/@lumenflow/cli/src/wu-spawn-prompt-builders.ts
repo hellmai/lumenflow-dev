@@ -1061,7 +1061,8 @@ export function generateTaskInvocation(
   // WU-1288: Use policy-based test guidance that respects methodology.testing config
   // WU-1253: Try template first, fall back to policy-based guidance
   const testGuidance =
-    templates.get('tdd-directive') || generatePolicyBasedTestGuidance(doc.type || 'feature', policy);
+    templates.get('tdd-directive') ||
+    generatePolicyBasedTestGuidance(doc.type || 'feature', policy);
 
   // WU-1288: Generate enforcement summary from resolved policy
   const enforcementSummary = generateEnforcementSummary(policy);

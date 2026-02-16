@@ -324,4 +324,3 @@ export function canSkipGates(wuId: any, options: CanSkipGatesOptions = {}) {
 
   return { canSkip: true, checkpoint };
 }
-

@@ -102,4 +102,3 @@ export function getAllowedPathsDescription() {
   - tools/__tests__/** (test files only)
   - packages/**/__tests__/** (test files only)`;
 }
-

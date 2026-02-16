@@ -340,4 +340,3 @@ export async function withMergeLock<T>(
     releaseMergeLock(result.lockId, options);
   }
 }
-

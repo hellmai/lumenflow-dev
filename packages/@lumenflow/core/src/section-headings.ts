@@ -54,7 +54,10 @@ export function getSectionHeadingsWithDefaults(
 
   return {
     ready: configured.ready || defaults.ready || DEFAULT_SECTION_HEADINGS.backlog.ready,
-    in_progress: configured.in_progress || defaults.in_progress || DEFAULT_SECTION_HEADINGS.backlog.in_progress,
+    in_progress:
+      configured.in_progress ||
+      defaults.in_progress ||
+      DEFAULT_SECTION_HEADINGS.backlog.in_progress,
     blocked: configured.blocked || defaults.blocked || DEFAULT_SECTION_HEADINGS.backlog.blocked,
     done: configured.done || defaults.done || DEFAULT_SECTION_HEADINGS.backlog.done,
     completed:

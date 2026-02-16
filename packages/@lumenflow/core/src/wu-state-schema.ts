@@ -204,4 +204,3 @@ export type WUEvent = z.infer<typeof WUEventSchema>;
 export function validateWUEvent(data: any) {
   return WUEventSchema.safeParse(data);
 }
-

@@ -105,4 +105,3 @@ export async function handleResumeMode(args: any, id: any) {
     `\n${PREFIX} Tip: Run 'pnpm mem:ready --wu ${id}' to check for pending context from previous session.`,
   );
 }
-

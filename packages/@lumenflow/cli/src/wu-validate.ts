@@ -144,9 +144,7 @@ function validateSingleWU(
  * @param {boolean} options.strict - Treat warnings as errors (default: true)
  * @returns {{totalValid: number, totalInvalid: number, totalWarnings: number, results: ValidationResult[]}}
  */
-function validateAllWUs(
-  { strict = true }: { strict?: boolean } = {},
-): {
+function validateAllWUs({ strict = true }: { strict?: boolean } = {}): {
   totalValid: number;
   totalInvalid: number;
   totalWarnings: number;

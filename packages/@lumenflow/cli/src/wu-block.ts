@@ -394,4 +394,3 @@ async function main() {
 if (import.meta.main) {
   void runCLI(main);
 }
-

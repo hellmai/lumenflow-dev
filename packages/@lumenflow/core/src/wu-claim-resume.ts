@@ -301,4 +301,3 @@ export function validateWorktreeForResume(worktreePath: any, _expectedBranch: an
 
   return { valid: true };
 }
-

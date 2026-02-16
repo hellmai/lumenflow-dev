@@ -253,4 +253,3 @@ export function computeRollbackScope(failedAt: string | null): RollbackScope {
     worktreeCleanup: false,
   };
 }
-

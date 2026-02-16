@@ -89,4 +89,3 @@ export function printLifecycleNudge(_id: any) {
     `\n${PREFIX} 💡 Tip: pnpm session:recommend for context tier, mem:ready for pending work, pnpm file:*/git:* for audited wrappers`,
   );
 }
-

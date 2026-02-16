@@ -612,7 +612,6 @@ export async function runSupabaseDocsGate({ agentLog, useAgentMode, cwd }: GateL
   return { ok: result.ok, duration: Date.now() - start };
 }
 
-
 // ── Lane health gate ───────────────────────────────────────────────────
 
 /**

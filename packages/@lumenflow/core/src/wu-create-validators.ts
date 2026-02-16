@@ -129,7 +129,12 @@ function formatWarningMessage(suggestedLane: any, confidence: any, isSubLaneSugg
  * @param {Function} inferSubLane - Lane inference function
  * @returns {{ shouldWarn: boolean, warning: string }} Validation result
  */
-export function validateLaneWithInference(providedLane: any, codePaths: any, description: any, inferSubLane: any) {
+export function validateLaneWithInference(
+  providedLane: any,
+  codePaths: any,
+  description: any,
+  inferSubLane: any,
+) {
   // Skip inference if no code paths provided
   if (!codePaths || codePaths.length === 0) {
     return { shouldWarn: false, warning: '' };
@@ -250,4 +255,3 @@ export function normalizeSpecRefs(specRefs: string[]): string[] {
   }
   return specRefs.map((ref) => normalizeSpecRef(ref));
 }
-

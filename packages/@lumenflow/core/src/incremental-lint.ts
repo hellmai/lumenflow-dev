@@ -165,4 +165,3 @@ export function convertToPackageRelativePaths(repoRelativePaths: any, packagePre
     .filter((filePath: any) => filePath.startsWith(normalizedPrefix))
     .map((filePath: any) => filePath.slice(normalizedPrefix.length));
 }
-

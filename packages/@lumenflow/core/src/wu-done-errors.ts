@@ -26,4 +26,3 @@ export function createFileNotFoundError(message: any, details = {}) {
 export function createRecoveryError(message: any, details = {}) {
   return createError(ErrorCodes.RECOVERY_ERROR, message, details);
 }
-

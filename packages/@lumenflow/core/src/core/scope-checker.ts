@@ -190,4 +190,3 @@ See: CLAUDE.md §2 (Worktree Discipline)
     );
   }
 }
-

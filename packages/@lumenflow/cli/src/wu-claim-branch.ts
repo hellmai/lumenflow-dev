@@ -177,4 +177,3 @@ export async function claimBranchOnlyMode(ctx: any) {
   // Fail-open: surfaceUnreadSignals never throws
   await surfaceUnreadSignalsForDisplay(process.cwd());
 }
-

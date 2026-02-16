@@ -26,4 +26,3 @@ export function isInProgressHeader(line: any) {
     (header) => normalized === header || normalized.startsWith(header),
   );
 }
-
