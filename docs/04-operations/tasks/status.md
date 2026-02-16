@@ -5,6 +5,7 @@ _Last updated: 2026-02-16_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1754 — Upgrade ESLint 9 to 10 with plugin compatibility fixes](wu/WU-1754.yaml)
 
 ## Completed
 

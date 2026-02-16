@@ -2,7 +2,7 @@ id: WU-1754
 title: Upgrade ESLint 9 to 10 with plugin compatibility fixes
 lane: 'Operations: Tooling'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-16
 code_paths:
@@ -34,10 +34,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Upgrade eslint 9→10 and @eslint/js 9→10. Patch eslint-plugin-security for context.getSourceCode removal. Add globals devDep for eslint-plugin-sonarjs phantom dependency. Fix new eslint:recommended rule violations (no-useless-assignment, preserve-caught-error).
+description: Upgrade eslint 9→10 and @eslint/js 9→10. Patch eslint-plugin-security for
+  context.getSourceCode removal. Add globals devDep for eslint-plugin-sonarjs phantom dependency.
+  Fix new eslint:recommended rule violations (no-useless-assignment, preserve-caught-error).
 acceptance:
   - eslint and @eslint/js upgraded to v10
   - eslint-plugin-security patched for ESLint 10 compat
   - eslint-plugin-sonarjs peer dep override in place
   - All new eslint:recommended violations fixed
   - Build and lint pass across all packages
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1754
+claimed_at: 2026-02-16T20:26:43.461Z
+baseline_main_sha: 2c783d14a7bc29a829edd377edfd601ee9307e7f
+session_id: 28c5022b-a2de-4fee-8b8a-ee99993456b4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T20:26:43.465Z
