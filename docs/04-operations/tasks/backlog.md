@@ -26,7 +26,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove healthcare/PHI code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1717 — Strict debt slice: type wu-schema](wu/WU-1717.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 
@@ -690,6 +689,7 @@ sections:
 - [WU-1714 — Strict debt slice: type orchestration-rules](wu/WU-1714.yaml)
 - [WU-1715 — Strict debt slice: type wu-done-preflight](wu/WU-1715.yaml)
 - [WU-1716 — Strict debt slice: type wu-helpers](wu/WU-1716.yaml)
+- [WU-1717 — Strict debt slice: type wu-schema](wu/WU-1717.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
