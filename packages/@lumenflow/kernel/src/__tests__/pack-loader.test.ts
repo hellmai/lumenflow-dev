@@ -140,9 +140,10 @@ describe('pack loader + integrity pinning', () => {
 
       await writeFile(
         join(packRoot, 'tools', 'fs-read.ts'),
-        ['import { readFile } from "node:fs/promises";', 'export const tool = () => readFile;'].join(
-          '\n',
-        ),
+        [
+          'import { readFile } from "node:fs/promises";',
+          'export const tool = () => readFile;',
+        ].join('\n'),
         'utf8',
       );
 

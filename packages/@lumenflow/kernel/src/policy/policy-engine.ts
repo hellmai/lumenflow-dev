@@ -92,7 +92,11 @@ export class PolicyEngine {
         }
         hasInitializedDecision = true;
       } else if (layer.default_decision) {
-        if (effectiveDecision === 'deny' && layer.default_decision === 'allow' && !canLoosen(layer)) {
+        if (
+          effectiveDecision === 'deny' &&
+          layer.default_decision === 'allow' &&
+          !canLoosen(layer)
+        ) {
           warnings.push(
             `Policy layer "${layer.level}" attempted loosening default decision without explicit opt-in.`,
           );
