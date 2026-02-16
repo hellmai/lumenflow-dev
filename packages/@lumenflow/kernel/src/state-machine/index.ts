@@ -176,7 +176,8 @@ export function assertTransition(
   const allowed = ALLOWED_TRANSITIONS[fromState];
 
   if (!allowed.includes(toState)) {
-    const terminalHint = fromState === TASK_LIFECYCLE_STATES.DONE ? ' (done is a terminal state)' : '';
+    const terminalHint =
+      fromState === TASK_LIFECYCLE_STATES.DONE ? ' (done is a terminal state)' : '';
     const allowedNext = allowed.length > 0 ? allowed.join(', ') : '(none)';
     throw new Error(
       `Illegal state transition for ${taskId}: ${fromState} -> ${toState}${terminalHint}. Allowed next states: ${allowedNext}`,
