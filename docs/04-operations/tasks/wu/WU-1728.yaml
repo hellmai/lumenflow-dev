@@ -1,8 +1,8 @@
 id: WU-1728
 title: Kernel ToolCapability schemas + ToolRegistry + scope intersection
-lane: 'Framework: Core Validation'
+lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-16
 code_paths:
@@ -57,3 +57,11 @@ acceptance:
   - Register tool then lookup succeeds; lookup unregistered tool fails gracefully
   - Narrow scope correctly intersects broader scopes in tests
   - Read scopes and write scopes intersect independently
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1728
+claimed_at: 2026-02-16T22:20:17.696Z
+baseline_main_sha: 54d1d51abd3f50f145b8deb2895d6b4e0a8ae245
+session_id: 9506f444-1ac0-408a-82c3-5c0262f407f7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T22:20:17.704Z
