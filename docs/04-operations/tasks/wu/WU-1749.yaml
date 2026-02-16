@@ -2,7 +2,7 @@ id: WU-1749
 title: Upgrade all outdated dependencies (batch)
 lane: 'Operations: Tooling'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-16
 code_paths:
@@ -55,3 +55,6 @@ session_id: 69beab82-4969-45fd-b61a-cda9601efd75
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T16:31:01.897Z
+locked: true
+completed_at: 2026-02-16T16:52:56.821Z
+completed: 2026-02-16

@@ -5,7 +5,6 @@ _Last updated: 2026-02-16_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1749 — Upgrade all outdated dependencies (batch)](wu/WU-1749.yaml)
 
 ## Completed
 
@@ -670,3 +669,4 @@ _Last updated: 2026-02-16_
 - [WU-1746 — wu:done resilience when worktree deleted but branch already merged](wu/WU-1746.yaml) — 2026-02-16
 - [WU-1748 — Implement process-owned deferred lane lifecycle and decouple init](wu/WU-1748.yaml) — 2026-02-16
 - [WU-1750 — Add vendor-agnostic dirty-main mutation guard across completion commands](wu/WU-1750.yaml) — 2026-02-16
+- [WU-1749 — Upgrade all outdated dependencies (batch)](wu/WU-1749.yaml) — 2026-02-16
