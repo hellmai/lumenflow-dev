@@ -32,12 +32,13 @@ phases:
 success_metrics:
   - Zero software delivery concepts in kernel package (grep for git, worktree, code_paths returns 0
     hits)
-  - Every tool execution produces an immutable receipt with honest scope semantics
-    (requested/allowed/enforced)
+  - Every tool execution produces two-phase ToolTraceEntry (started + finished) with honest scope
+    semantics (requested/allowed/enforced) and provenance fields
   - 'Scope intersection enforced at ToolHost level: workspace ∩ lane ∩ task ∩ tool — agent denied on
     out-of-scope writes'
   - CLI and MCP surfaces both call KernelRuntime directly — no MCP→CLI→core circular chain
-  - ESLint boundary rules block fs/child_process imports outside kernel/tool-host and kernel/sandbox
+  - 'ESLint boundary rules block fs/child_process imports outside kernel/tool-host, kernel/sandbox,
+    and packs/**/tool-impl/** (Model B two-layer: kernel infra + pack tool-impl loaded only by worker)'
   - Software delivery pack loads with SHA-256 integrity verification and registers tools+policies
     via DomainPack manifest
 labels: []
