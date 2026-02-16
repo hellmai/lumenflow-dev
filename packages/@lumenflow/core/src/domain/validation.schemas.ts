@@ -116,7 +116,7 @@ export const CommandDefinitionConfigSchema = z.object({
   name: z.string(),
   /** Human-readable description */
   description: z.string(),
-  /** Required location type (null = any location) */
+  /** Required location type (null = UnsafeAny location) */
   requiredLocation: LocationTypeSchema.nullable(),
   /** Required WU status (null = no status requirement) */
   requiredWuStatus: z.string().nullable(),

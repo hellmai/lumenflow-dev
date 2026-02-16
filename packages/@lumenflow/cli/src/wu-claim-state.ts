@@ -348,7 +348,7 @@ export async function updateWUYaml(
   doc.escalation_triggers = autoApproval.escalation_triggers;
   doc.requires_human_escalation = autoApproval.requires_human_escalation;
 
-  // Log escalation triggers if any detected
+  // Log escalation triggers if UnsafeAny detected
   if (autoApproval.requires_human_escalation) {
     console.log(
       `[wu-claim] ⚠️  Escalation triggers detected: ${autoApproval.escalation_triggers.join(', ')}`,
@@ -391,7 +391,7 @@ export async function maybeProgressInitiativeStatus(
       return { updated: false, initPath: null };
     }
 
-    // Get all WUs for this initiative to check if any are in_progress
+    // Get all WUs for this initiative to check if UnsafeAny are in_progress
     const wus = getInitiativeWUs(initiativeRef);
     // Include the WU we're currently claiming as in_progress
     const wusWithCurrent = wus.map((wu) =>

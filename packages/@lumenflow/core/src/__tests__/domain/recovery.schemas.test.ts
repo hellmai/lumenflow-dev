@@ -148,7 +148,7 @@ describe('RecoveryActionSchema', () => {
         description: 'Discard worktree and reset WU to ready',
         command: 'pnpm wu:recover --id WU-1093 --action reset',
         requiresForce: false,
-        warning: 'This will discard any uncommitted work in the worktree',
+        warning: 'This will discard UnsafeAny uncommitted work in the worktree',
       };
 
       const result = RecoveryActionSchema.safeParse(input);

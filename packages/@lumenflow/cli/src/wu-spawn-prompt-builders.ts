@@ -499,7 +499,7 @@ export function generateCodexConstraints(id: string): string {
   return `## Constraints (Critical)
 
 1. **TDD checkpoint**: tests BEFORE implementation; never skip RED
-2. **Stop on errors**: if any command fails, report BLOCKED (never DONE) with the error
+2. **Stop on errors**: if UnsafeAny command fails, report BLOCKED (never DONE) with the error
 3. **Verify before success**: run \`pnpm gates\` in the worktree, then run \`node packages/@lumenflow/agent/dist/agent-verification.js ${id}\` (from the shared checkout)
 4. **No fabrication**: if blockers remain or verification fails, report INCOMPLETE
 5. **Git workflow**: avoid merge commits; let \`pnpm wu:done\` handle completion
@@ -642,7 +642,7 @@ When finishing, provide structured output:
 - Gates: <pass/fail>
 - Tests: <X passing, Y failing>
 
-## Blockers (if any)
+## Blockers (if UnsafeAny)
 - <blocker description>
 
 ## Follow-up (if needed)

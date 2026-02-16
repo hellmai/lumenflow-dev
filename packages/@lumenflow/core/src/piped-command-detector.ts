@@ -31,7 +31,7 @@ const DEPENDENCY_COMMANDS = ['add', 'install', 'i', 'remove', 'rm', 'uninstall',
  * @param {string} command - Shell command to analyze
  * @returns {boolean} True if command is a piped pnpm dependency command
  */
-export function isPipedPnpmCommand(command: any) {
+export function isPipedPnpmCommand(command: UnsafeAny) {
   if (!command || typeof command !== 'string') {
     return false;
   }
@@ -55,12 +55,12 @@ export function isPipedPnpmCommand(command: any) {
 }
 
 /**
- * Check if a command contains any dependency-mutating pnpm subcommand
+ * Check if a command contains UnsafeAny dependency-mutating pnpm subcommand
  *
  * @param {string} command - Shell command to analyze
  * @returns {boolean} True if command contains pnpm dependency mutation
  */
-export function containsPnpmDependencyCommand(command: any) {
+export function containsPnpmDependencyCommand(command: UnsafeAny) {
   if (!command || typeof command !== 'string') {
     return false;
   }

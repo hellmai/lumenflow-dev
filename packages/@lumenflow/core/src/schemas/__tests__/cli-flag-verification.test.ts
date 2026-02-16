@@ -171,7 +171,7 @@ describe('CLI Flag Verification (WU-1458)', () => {
       }
     });
 
-    it('should detect if a fake flag is added to any real schema', () => {
+    it('should detect if a fake flag is added to UnsafeAny real schema', () => {
       // This test verifies the detection mechanism works:
       // If we extend a real schema with an extra field, the field count changes
       const originalGatesFields = getMcpFieldNames(
@@ -306,7 +306,7 @@ describe('CLI Flag Verification (WU-1458)', () => {
       for (const snapshotName of Object.keys(EXPECTED_FIELD_COUNTS)) {
         expect(
           allCommandNames.has(snapshotName),
-          `${snapshotName} exists in EXPECTED_FIELD_COUNTS but not in any schema registry`,
+          `${snapshotName} exists in EXPECTED_FIELD_COUNTS but not in UnsafeAny schema registry`,
         ).toBe(true);
       }
     });

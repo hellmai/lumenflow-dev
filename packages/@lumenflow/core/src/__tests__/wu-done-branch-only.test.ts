@@ -228,7 +228,7 @@ describe('executeBranchOnlyCompletion (atomic non-PR path)', () => {
         id: 'WU-1629',
         laneBranch: 'lane/framework-core/wu-1629',
         operation: 'wu-done-branch-only',
-        afterMerge: expect.any(Function),
+        afterMerge: expect.UnsafeAny(Function),
       }),
     );
     expect(mockGit.checkout).not.toHaveBeenCalled();

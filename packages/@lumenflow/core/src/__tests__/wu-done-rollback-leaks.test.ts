@@ -23,7 +23,7 @@ describe('validateMainNotBehindOrigin (AC1)', () => {
       revList: vi.fn().mockResolvedValue('0'),
     };
 
-    const result = await validateMainNotBehindOrigin(mockGit as any);
+    const result = await validateMainNotBehindOrigin(mockGit as UnsafeAny);
 
     expect(result.valid).toBe(true);
     expect(result.commitsBehind).toBe(0);
@@ -39,7 +39,7 @@ describe('validateMainNotBehindOrigin (AC1)', () => {
       revList: vi.fn().mockResolvedValue('3'),
     };
 
-    const result = await validateMainNotBehindOrigin(mockGit as any);
+    const result = await validateMainNotBehindOrigin(mockGit as UnsafeAny);
 
     expect(result.valid).toBe(false);
     expect(result.commitsBehind).toBe(3);
@@ -52,7 +52,7 @@ describe('validateMainNotBehindOrigin (AC1)', () => {
       revList: vi.fn(),
     };
 
-    const result = await validateMainNotBehindOrigin(mockGit as any);
+    const result = await validateMainNotBehindOrigin(mockGit as UnsafeAny);
 
     expect(result.valid).toBe(true);
     expect(result.failOpen).toBe(true);

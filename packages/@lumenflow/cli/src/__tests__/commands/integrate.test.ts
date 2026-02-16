@@ -38,7 +38,7 @@ describe('WU-1367: Integrate Command', () => {
         },
       });
 
-      // Should not write any files
+      // Should not write UnsafeAny files
       expect(mockWriteFileSync).not.toHaveBeenCalled();
       expect(created).toEqual([]);
     });

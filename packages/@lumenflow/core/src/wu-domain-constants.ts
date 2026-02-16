@@ -270,7 +270,7 @@ export const WU_DEFAULTS = {
  * Safety-critical test glob patterns
  *
  * WU-2242: Centralized list of glob patterns for safety tests that MUST exist.
- * Gates fail if any of these patterns find no matches.
+ * Gates fail if UnsafeAny of these patterns find no matches.
  */
 export const SAFETY_CRITICAL_TEST_GLOBS = Object.freeze([
   // Escalation trigger tests

@@ -65,7 +65,7 @@ export function buildRepoInternalPathError(path: string): string {
  * @param {number} confidence - Confidence score (0-100)
  * @returns {string} Warning message or empty string if lanes match
  */
-export function generateLaneMismatchWarning(providedLane: any, inferredLane: any, confidence: any) {
+export function generateLaneMismatchWarning(providedLane: UnsafeAny, inferredLane: UnsafeAny, confidence: UnsafeAny) {
   // Normalize lanes for comparison (handle parent-only vs sub-lane)
   const normalizedProvided = providedLane.trim();
   const normalizedInferred = inferredLane.trim();
@@ -94,7 +94,7 @@ export function generateLaneMismatchWarning(providedLane: any, inferredLane: any
  * @param {boolean} isSubLaneSuggestion - True if suggesting sub-lane for parent-only input
  * @returns {string} Formatted warning message
  */
-function formatWarningMessage(suggestedLane: any, confidence: any, isSubLaneSuggestion: any) {
+function formatWarningMessage(suggestedLane: UnsafeAny, confidence: UnsafeAny, isSubLaneSuggestion: UnsafeAny) {
   const confidenceStr = `${confidence}%`;
 
   if (confidence < CONFIDENCE_THRESHOLD_LOW) {
@@ -130,10 +130,10 @@ function formatWarningMessage(suggestedLane: any, confidence: any, isSubLaneSugg
  * @returns {{ shouldWarn: boolean, warning: string }} Validation result
  */
 export function validateLaneWithInference(
-  providedLane: any,
-  codePaths: any,
-  description: any,
-  inferSubLane: any,
+  providedLane: UnsafeAny,
+  codePaths: UnsafeAny,
+  description: UnsafeAny,
+  inferSubLane: UnsafeAny,
 ) {
   // Skip inference if no code paths provided
   if (!codePaths || codePaths.length === 0) {
@@ -222,7 +222,7 @@ export function validateSpecRefs(specRefs: string[]): {
  * WU-1062: Check if spec_refs contains external paths
  *
  * @param {string[]} specRefs - Array of spec reference paths
- * @returns {boolean} True if any spec_ref is an external path
+ * @returns {boolean} True if UnsafeAny spec_ref is an external path
  */
 export function hasExternalSpecRefs(specRefs: string[]): boolean {
   if (!specRefs || specRefs.length === 0) {

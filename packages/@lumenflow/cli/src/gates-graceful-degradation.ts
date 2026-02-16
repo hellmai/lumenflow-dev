@@ -5,7 +5,7 @@
  * are missing from package.json, emit a warning and skip instead of failing.
  *
  * Defense in depth: even if scaffold adds scripts, gates should degrade
- * gracefully for any missing script.
+ * gracefully for UnsafeAny missing script.
  *
  * @module gates-graceful-degradation
  */

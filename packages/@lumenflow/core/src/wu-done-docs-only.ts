@@ -34,7 +34,7 @@ const DOCS_ONLY_ROOT_FILES = Object.freeze(['readme', 'claude']);
  * @param {string[]|null|undefined} codePaths - Array of file paths from WU YAML
  * @returns {boolean} True if WU is docs-only (all paths are documentation)
  */
-export function detectDocsOnlyByPaths(codePaths: any) {
+export function detectDocsOnlyByPaths(codePaths: UnsafeAny) {
   if (!codePaths || !Array.isArray(codePaths) || codePaths.length === 0) {
     return false;
   }

@@ -151,7 +151,7 @@ export function validatePlanPath(planPath: string): void {
 /**
  * Format plan path as lumenflow:// URI
  *
- * Extracts the filename (and any subdirectory within plans/) and creates
+ * Extracts the filename (and UnsafeAny subdirectory within plans/) and creates
  * a standardized URI for the plan reference.
  *
  * @param planPath - Path to plan file (can be relative or absolute)
@@ -320,7 +320,7 @@ async function main(): Promise<void> {
   // Validate inputs
   validateInitIdFormat(initId);
 
-  // Check initiative exists first (before any mutations)
+  // Check initiative exists first (before UnsafeAny mutations)
   const initDoc = checkInitiativeExists(initId);
   const initTitle = (initDoc as Record<string, unknown>).title as string;
 

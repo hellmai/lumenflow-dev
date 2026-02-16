@@ -49,7 +49,7 @@ export class RollbackResult {
    * Record a successful file restoration.
    * @param {string} name - File identifier (e.g., 'backlog.md')
    */
-  addSuccess(name: any) {
+  addSuccess(name: UnsafeAny) {
     this.restored.push(name);
   }
 
@@ -59,7 +59,7 @@ export class RollbackResult {
    * @param {string} path - Full file path
    * @param {string} error - Error message
    */
-  addError(name: any, path: any, error: any) {
+  addError(name: UnsafeAny, path: UnsafeAny, error: UnsafeAny) {
     this.errors.push({ name, path, error });
   }
 
@@ -80,7 +80,7 @@ export class RollbackResult {
  * failure scenarios.
  *
  * @param {Array<{name: string, path: string, content: string}>} filesToRestore - Files to restore
- * @returns {RollbackResult} Result with restored files and any errors
+ * @returns {RollbackResult} Result with restored files and UnsafeAny errors
  *
  * @example
  * const result = rollbackFiles([
@@ -92,7 +92,7 @@ export class RollbackResult {
  *   console.error('Rollback had errors:', result.errors);
  * }
  */
-export function rollbackFiles(filesToRestore: any) {
+export function rollbackFiles(filesToRestore: UnsafeAny) {
   const result = new RollbackResult();
 
   for (const file of filesToRestore) {
@@ -112,9 +112,9 @@ export function rollbackFiles(filesToRestore: any) {
  * Delete multiple files with per-file error tracking.
  *
  * @param {Array<{name: string, path: string}>} filesToDelete - Files to delete
- * @returns {RollbackResult} Result with deleted files and any errors
+ * @returns {RollbackResult} Result with deleted files and UnsafeAny errors
  */
-export function deleteFiles(filesToDelete: any) {
+export function deleteFiles(filesToDelete: UnsafeAny) {
   const result = new RollbackResult();
 
   for (const file of filesToDelete) {

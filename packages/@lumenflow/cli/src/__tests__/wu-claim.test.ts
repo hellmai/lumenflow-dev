@@ -190,7 +190,7 @@ describe('wu-claim local-only remote fallback behavior (WU-1655)', () => {
 /**
  * WU-1495: Cloud auto-detection integration with wu:claim
  *
- * Tests that resolveClaimMode correctly handles cloud=true from any detection source.
+ * Tests that resolveClaimMode correctly handles cloud=true from UnsafeAny detection source.
  * AC5: wu:claim --cloud with LUMENFLOW_CLOUD=1 already set does not conflict or double-apply.
  *
  * Note: Full detectCloudMode integration tests are in core/cloud-detect.test.ts.

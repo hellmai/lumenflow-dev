@@ -47,7 +47,7 @@ export const TOOL_DEPENDENCIES = Object.freeze({
  * @param {string} packageName - Name of the package to check
  * @returns {Promise<boolean>} True if package is available
  */
-async function canImport(packageName: any) {
+async function canImport(packageName: UnsafeAny) {
   try {
     await import(packageName);
     return true;
@@ -68,16 +68,16 @@ async function canImport(packageName: any) {
  *   console.error(`Missing: ${result.missing.join(', ')}`);
  * }
  */
-export async function validateDependencies(packages: any) {
+export async function validateDependencies(packages: UnsafeAny) {
   if (!packages || packages.length === 0) {
     return { valid: true, missing: [] };
   }
 
   // WU-1231: Validate packages in parallel using Promise.all
   // Previously sequential (for...of await) caused 5+ minute delays
-  const results = await Promise.all(packages.map((pkg: any) => canImport(pkg)));
+  const results = await Promise.all(packages.map((pkg: UnsafeAny) => canImport(pkg)));
 
-  const missing = packages.filter((_: any, index: any) => !results[index]);
+  const missing = packages.filter((_: UnsafeAny, index: UnsafeAny) => !results[index]);
 
   return {
     valid: missing.length === 0,
@@ -96,8 +96,8 @@ export async function validateDependencies(packages: any) {
  * const msg = formatDependencyError('wu:spawn', ['yaml']);
  * console.error(msg);
  */
-export function formatDependencyError(toolName: any, missing: any) {
-  const packageList = missing.map((p: any) => `  - ${p}`).join('\n');
+export function formatDependencyError(toolName: UnsafeAny, missing: UnsafeAny) {
+  const packageList = missing.map((p: UnsafeAny) => `  - ${p}`).join('\n');
 
   return `${EMOJI.FAILURE} ${toolName} cannot run: missing dependencies
 

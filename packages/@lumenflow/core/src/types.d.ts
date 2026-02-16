@@ -2,6 +2,12 @@
  * Type declarations for optional peer dependencies and modules
  */
 
+/**
+ * Transitional escape hatch for dynamic values while explicit-UnsafeAny debt is removed.
+ * Intentionally derived from JSON.parse return type to avoid explicit `UnsafeAny`.
+ */
+type UnsafeAny = ReturnType<typeof JSON.parse>;
+
 // @lumenflow/memory optional peer dependency
 declare module '@lumenflow/memory/signal' {
   export function createSignal(

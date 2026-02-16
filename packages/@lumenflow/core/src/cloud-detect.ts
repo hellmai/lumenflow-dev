@@ -117,7 +117,7 @@ export interface EffectiveCloudActivationInput {
 export interface EffectiveCloudActivationResult {
   /** Whether cloud mode should be used after branch guard */
   readonly isCloud: boolean;
-  /** Original activation source (if any) */
+  /** Original activation source (if UnsafeAny) */
   readonly source?: CloudActivationSource;
   /** Matched env signal name (when source is env_signal) */
   readonly matchedSignal?: string;

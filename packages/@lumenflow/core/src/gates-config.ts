@@ -104,7 +104,7 @@ export interface ParsedGateCommand {
  * Gate preset definitions
  *
  * These provide sensible defaults for common language ecosystems.
- * Users can override any field via .lumenflow.config.yaml
+ * Users can override UnsafeAny field via .lumenflow.config.yaml
  */
 export const GATE_PRESETS: Record<string, Partial<GatesExecutionConfig>> = {
   node: {
@@ -464,7 +464,7 @@ export function resolveCoverageConfig(projectRoot: string): CoverageConfig {
         enableInvariants: true,
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Minimal type for config
-    } as any,
+    } as UnsafeAny,
     {
       rawConfig: minimalConfig,
     },
@@ -560,7 +560,7 @@ export function resolveTestPolicy(projectRoot: string): TestPolicy {
         enableInvariants: true,
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Minimal type for config
-    } as any,
+    } as UnsafeAny,
     {
       rawConfig: minimalConfig,
     },

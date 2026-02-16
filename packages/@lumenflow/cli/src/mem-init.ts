@@ -36,7 +36,7 @@ const TOOL_NAME = 'mem:init';
  * @param {string} baseDir - Base directory
  * @param {object} entry - Audit log entry
  */
-async function writeAuditLog(baseDir: any, entry: any) {
+async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
   try {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);

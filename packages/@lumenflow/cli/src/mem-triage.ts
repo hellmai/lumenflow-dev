@@ -109,7 +109,7 @@ const CLI_OPTIONS = {
  * @param {string} baseDir - Base directory
  * @param {object} entry - Audit log entry
  */
-async function writeAuditLog(baseDir: any, entry: any) {
+async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
   try {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
@@ -129,7 +129,7 @@ async function writeAuditLog(baseDir: any, entry: any) {
  * @param {object} node - Discovery node
  * @returns {string} Formatted display string
  */
-function formatDiscovery(node: any) {
+function formatDiscovery(node: UnsafeAny) {
   const parts = [];
   parts.push(`  ${node.id}`);
 
@@ -217,7 +217,7 @@ async function handleList(baseDir: string, args: TriageArgs) {
  * @param {string} baseDir - Base directory
  * @param {object} args - CLI arguments
  */
-async function handlePromote(baseDir: any, args: any) {
+async function handlePromote(baseDir: UnsafeAny, args: UnsafeAny) {
   if (!args.lane) {
     console.error(`${LOG_PREFIX} Error: --lane is required for promotion`);
     console.error('');
@@ -272,7 +272,7 @@ async function handlePromote(baseDir: any, args: any) {
  * @param {string} baseDir - Base directory
  * @param {object} args - CLI arguments
  */
-async function handleArchive(baseDir: any, args: any) {
+async function handleArchive(baseDir: UnsafeAny, args: UnsafeAny) {
   if (!args.reason) {
     console.error(`${LOG_PREFIX} Error: --reason is required for archiving`);
     console.error('');

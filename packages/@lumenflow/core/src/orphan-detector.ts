@@ -93,7 +93,7 @@ export function parseWorktreeList(porcelainOutput: string): WorktreeEntry[] {
  * @param {string} [projectRoot] - Project root directory (defaults to cwd)
  * @returns {Promise<Set<string>>} Set of absolute paths tracked by git worktree
  */
-export async function getTrackedWorktreePaths(projectRoot: any) {
+export async function getTrackedWorktreePaths(projectRoot: UnsafeAny) {
   const git = projectRoot ? createGitForPath(projectRoot) : getGitForCwd();
   const output = await git.worktreeList();
   const entries = parseWorktreeList(output);
@@ -107,7 +107,7 @@ export async function getTrackedWorktreePaths(projectRoot: any) {
  * @param {(path: string) => boolean} [existsFn] - Optional fs.existsSync override
  * @returns {string[]} Missing worktree paths
  */
-export function getMissingWorktreesFromTracked(trackedPaths: any, existsFn = existsSync) {
+export function getMissingWorktreesFromTracked(trackedPaths: UnsafeAny, existsFn = existsSync) {
   if (!Array.isArray(trackedPaths)) {
     return [];
   }
@@ -120,7 +120,7 @@ export function getMissingWorktreesFromTracked(trackedPaths: any, existsFn = exi
  * @param {string} [projectRoot] - Project root directory (defaults to cwd)
  * @returns {Promise<string[]>} Missing tracked worktree paths
  */
-export async function detectMissingTrackedWorktrees(projectRoot: any) {
+export async function detectMissingTrackedWorktrees(projectRoot: UnsafeAny) {
   const root = projectRoot || process.cwd();
   const tracked = await getTrackedWorktreePaths(root);
   return getMissingWorktreesFromTracked([...tracked]);
@@ -132,7 +132,7 @@ export async function detectMissingTrackedWorktrees(projectRoot: any) {
  * @param {string} projectRoot - Absolute path to project root
  * @returns {string[]} List of absolute paths to directories in worktrees/
  */
-export function getWorktreeDirectories(projectRoot: any) {
+export function getWorktreeDirectories(projectRoot: UnsafeAny) {
   const worktreesDir = path.join(projectRoot, DEFAULTS.WORKTREES_DIR);
 
   if (!existsSync(worktreesDir)) {
@@ -158,7 +158,7 @@ export function getWorktreeDirectories(projectRoot: any) {
  * @param {string} [projectRoot] - Project root directory (defaults to cwd)
  * @returns {Promise<OrphanDetectionResult>} Detection result with orphans and tracked paths
  */
-export async function detectOrphanWorktrees(projectRoot: any) {
+export async function detectOrphanWorktrees(projectRoot: UnsafeAny) {
   const errors: string[] = [];
   const root = projectRoot || process.cwd();
 
@@ -194,7 +194,7 @@ export async function detectOrphanWorktrees(projectRoot: any) {
  * @param {string} [projectRoot] - Project root directory (defaults to cwd)
  * @returns {Promise<boolean>} True if the path exists but is not tracked by git
  */
-export async function isOrphanWorktree(worktreePath: any, projectRoot: any) {
+export async function isOrphanWorktree(worktreePath: UnsafeAny, projectRoot: UnsafeAny) {
   // If directory doesn't exist, it's not an orphan
   if (!existsSync(worktreePath)) {
     return false;
@@ -224,7 +224,7 @@ export interface RemoveOrphanDirectoryOptions {
  * @returns {Promise<{removed: boolean, path: string, error?: string}>} Result
  */
 export async function removeOrphanDirectory(
-  orphanPath: any,
+  orphanPath: UnsafeAny,
   options: RemoveOrphanDirectoryOptions = {},
 ) {
   const { dryRun = false } = options;
@@ -279,7 +279,7 @@ export async function removeOrphanDirectory(
  * @returns {Promise<{detected: number, removed: number, errors: string[]}>} Summary
  */
 export async function cleanupOrphanDirectories(
-  projectRoot: any,
+  projectRoot: UnsafeAny,
   options: RemoveOrphanDirectoryOptions = {},
 ) {
   const { dryRun = false } = options;

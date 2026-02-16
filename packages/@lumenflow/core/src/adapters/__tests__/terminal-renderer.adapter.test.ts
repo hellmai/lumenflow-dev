@@ -239,7 +239,7 @@ describe('TerminalDashboardRenderer', () => {
 
       // Mock user input (approve)
       const mockPrompt = vi.fn().mockResolvedValue({ choice: 'approve', modifications: undefined });
-      (renderer as any).promptUser = mockPrompt;
+      (renderer as UnsafeAny).promptUser = mockPrompt;
 
       const choice = await renderer.renderPlan(plan);
 
@@ -261,7 +261,7 @@ describe('TerminalDashboardRenderer', () => {
       };
 
       const mockPrompt = vi.fn().mockResolvedValue({ choice: 'reject', modifications: undefined });
-      (renderer as any).promptUser = mockPrompt;
+      (renderer as UnsafeAny).promptUser = mockPrompt;
 
       const choice = await renderer.renderPlan(plan);
 
@@ -279,7 +279,7 @@ describe('TerminalDashboardRenderer', () => {
         choice: 'edit',
         modifications: ['Skip step 1', 'Add step 3'],
       });
-      (renderer as any).promptUser = mockPrompt;
+      (renderer as UnsafeAny).promptUser = mockPrompt;
 
       const choice = await renderer.renderPlan(plan);
 

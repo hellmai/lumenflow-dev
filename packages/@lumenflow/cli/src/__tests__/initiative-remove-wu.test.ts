@@ -515,7 +515,7 @@ describe('initiative:remove-wu retry handling (WU-1333)', () => {
       expect(isRetryExhaustionError(retryError)).toBe(true);
     });
 
-    it('should detect retry exhaustion with any attempt count', async () => {
+    it('should detect retry exhaustion with UnsafeAny attempt count', async () => {
       const { isRetryExhaustionError } = await import('../initiative-remove-wu.js');
 
       // Different attempt counts should still match

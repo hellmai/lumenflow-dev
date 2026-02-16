@@ -122,7 +122,7 @@ export const WU_FIXTURES = {
  */
 export function createWuFixture(
   type: keyof typeof WU_FIXTURES = 'VALID_WU',
-  overrides: Record<string, any> = {},
+  overrides: Record<string, UnsafeAny> = {},
 ) {
   const base = WU_FIXTURES[type];
   if (!base) {

@@ -126,7 +126,7 @@ const FILESYSTEM_PATTERNS = [
  * @param {string} pathStr - The path string to classify
  * @returns {string} One of PATH_TYPES values
  */
-export function classifyPath(pathStr: any) {
+export function classifyPath(pathStr: UnsafeAny) {
   if (!pathStr || pathStr === '/') {
     return PATH_TYPES.UNKNOWN;
   }
@@ -186,7 +186,7 @@ const REMEDIATION_MESSAGES = Object.freeze({
  * @param {string} pathType - One of PATH_TYPES values
  * @returns {string} Remediation message
  */
-export function getRemediation(pathType: any) {
+export function getRemediation(pathType: UnsafeAny) {
   // Validate pathType to prevent object injection
   const validTypes = Object.values(PATH_TYPES) as Array<
     (typeof PATH_TYPES)[keyof typeof PATH_TYPES]
@@ -217,7 +217,7 @@ const PATH_PATTERN = /['"](\/[\w./-]+(?:\?[^'"]*)?)['"]/gi;
  * @param {string} line - The line to check
  * @returns {boolean} True if line defines a constant
  */
-function isConstantDefinition(line: any) {
+function isConstantDefinition(line: UnsafeAny) {
   if (!line.includes('const ')) return false;
   const afterConst = line.split('const ')[1];
   if (!afterConst) return false;
@@ -243,7 +243,7 @@ export interface FindHardcodedPathViolationsOptions {
  * @returns {Array<{line: string, fix: string, pathType: string, path: string}>} Array of violations
  */
 export function findHardcodedPathViolations(
-  line: any,
+  line: UnsafeAny,
   options: FindHardcodedPathViolationsOptions = {},
 ) {
   const { isTestFile = false, isConfigFile = false } = options;

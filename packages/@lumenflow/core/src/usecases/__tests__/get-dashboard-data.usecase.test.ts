@@ -136,7 +136,7 @@ describe('GetDashboardDataUseCase', () => {
   it('should pass a date to getTimeline for last 24 hours', async () => {
     await useCase.execute();
 
-    expect(mockCollector.getTimeline).toHaveBeenCalledWith(expect.any(Date));
+    expect(mockCollector.getTimeline).toHaveBeenCalledWith(expect.UnsafeAny(Date));
 
     const calledDate = (mockCollector.getTimeline as ReturnType<typeof vi.fn>).mock
       .calls[0][0] as Date;

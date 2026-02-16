@@ -32,7 +32,7 @@ function ensureTelemetryDir() {
  * @param {string} filePath - Path to NDJSON file
  * @param {object} event - Event data to emit
  */
-export function emit(filePath: any, event: any) {
+export function emit(filePath: UnsafeAny, event: UnsafeAny) {
   ensureTelemetryDir();
   const line = `${JSON.stringify(event)}${STRING_LITERALS.NEWLINE}`;
   try {
@@ -52,7 +52,7 @@ export function emit(filePath: any, event: any) {
  * @param {boolean} data.passed - Whether gate passed
  * @param {number} data.duration_ms - Execution duration in milliseconds
  */
-export function emitGateEvent(data: any) {
+export function emitGateEvent(data: UnsafeAny) {
   const event = {
     timestamp: new Date().toISOString(),
     wu_id: data.wu_id || null,
@@ -120,7 +120,7 @@ export function getCurrentLane() {
  * @param {string} [data.lane] - Lane name
  * @param {string} [logPath] - Optional log path override (for testing)
  */
-export function emitLLMClassificationStart(data: any, logPath = LLM_CLASSIFICATION_LOG) {
+export function emitLLMClassificationStart(data: UnsafeAny, logPath = LLM_CLASSIFICATION_LOG) {
   const event = {
     timestamp: new Date().toISOString(),
     event_type: 'llm.classification.start',
@@ -146,8 +146,8 @@ export function emitLLMClassificationStart(data: any, logPath = LLM_CLASSIFICATI
  * @param {string} [data.lane] - Lane name
  * @param {string} [logPath] - Optional log path override (for testing)
  */
-export function emitLLMClassificationComplete(data: any, logPath = LLM_CLASSIFICATION_LOG) {
-  // PII Protection: Explicitly exclude any user input fields
+export function emitLLMClassificationComplete(data: UnsafeAny, logPath = LLM_CLASSIFICATION_LOG) {
+  // PII Protection: Explicitly exclude UnsafeAny user input fields
   const event: Record<string, unknown> = {
     timestamp: new Date().toISOString(),
     event_type: 'llm.classification.complete',
@@ -180,7 +180,7 @@ export function emitLLMClassificationComplete(data: any, logPath = LLM_CLASSIFIC
  * @param {string} [data.lane] - Lane name
  * @param {string} [logPath] - Optional log path override (for testing)
  */
-export function emitLLMClassificationError(data: any, logPath = LLM_CLASSIFICATION_LOG) {
+export function emitLLMClassificationError(data: UnsafeAny, logPath = LLM_CLASSIFICATION_LOG) {
   // PII Protection: Never log user input or sensitive data
   const event: Record<string, unknown> = {
     timestamp: new Date().toISOString(),
@@ -196,7 +196,7 @@ export function emitLLMClassificationError(data: any, logPath = LLM_CLASSIFICATI
     event.duration_ms = data.duration_ms;
   }
 
-  // Explicitly redact any input_text_preview to prevent PII leakage
+  // Explicitly redact UnsafeAny input_text_preview to prevent PII leakage
   if (data.input_text_preview) {
     event.input_text_preview = '[REDACTED]';
   }
@@ -213,7 +213,7 @@ export function emitLLMClassificationError(data: any, logPath = LLM_CLASSIFICATI
  * @param {object} event - Event data (script, wu_id, lane, step, etc.)
  * @param {string} [logPath] - Optional log path override (for testing)
  */
-export function emitWUFlowEvent(event: any, logPath = FLOW_LOG) {
+export function emitWUFlowEvent(event: UnsafeAny, logPath = FLOW_LOG) {
   const logDir = path.dirname(logPath);
   if (!existsSync(logDir)) {
     mkdirSync(logDir, { recursive: true });

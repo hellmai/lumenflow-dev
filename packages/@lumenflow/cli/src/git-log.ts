@@ -195,9 +195,9 @@ export async function getGitLog(args: GitLogArgs): Promise<GitLogResult> {
     const errorMessage = error instanceof Error ? error.message : String(error);
     // Handle case of repo with no commits
     if (
-      errorMessage.includes('does not have any commits') ||
+      errorMessage.includes('does not have UnsafeAny commits') ||
       errorMessage.includes('fatal: bad revision') ||
-      errorMessage.includes("fatal: your current branch 'main' does not have any commits")
+      errorMessage.includes("fatal: your current branch 'main' does not have UnsafeAny commits")
     ) {
       return {
         success: true,

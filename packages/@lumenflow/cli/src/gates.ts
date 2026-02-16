@@ -22,7 +22,7 @@
  *
  * WU-1610: Supabase docs linter
  * - Verifies every table in migrations is documented in schema.md
- * - Fails if any table is missing documentation
+ * - Fails if UnsafeAny table is missing documentation
  *
  * For type:documentation WUs:
  * - Run: format:check, spec:linter, backlog-sync
@@ -204,7 +204,7 @@ export function parseGatesOptions(): {
   const filteredArgv = originalArgv.filter((arg, index, arr) => {
     if (arg === '--') {
       const nextArg = arr[index + 1];
-      return nextArg && !nextArg.startsWith('-');
+      return Boolean(nextArg && !nextArg.startsWith('-'));
     }
     return true;
   });

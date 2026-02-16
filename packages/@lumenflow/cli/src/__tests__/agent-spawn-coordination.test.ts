@@ -410,7 +410,7 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
           lane: TEST_LANE,
         });
 
-        // Act - Check lane signals (from any agent in the lane)
+        // Act - Check lane signals (from UnsafeAny agent in the lane)
         const laneSignals = await loadSignals(tempDir, { lane: TEST_LANE });
 
         // Assert

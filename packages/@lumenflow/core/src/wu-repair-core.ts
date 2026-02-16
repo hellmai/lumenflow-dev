@@ -684,7 +684,7 @@ export async function runAdminRepairMode(options: AdminRepairOptions): Promise<R
   // Apply repairs
   const { updated: updatedWU, changes } = applyAdminRepairs(originalWU, options);
 
-  // Check if any actual changes were made
+  // Check if UnsafeAny actual changes were made
   if (changes.length === 0) {
     console.log(`${ADMIN_PREFIX} No changes needed - WU already has specified values`);
     return { success: true, exitCode: EXIT_CODES.SUCCESS };

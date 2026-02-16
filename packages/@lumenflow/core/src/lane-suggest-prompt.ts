@@ -54,7 +54,7 @@ export interface ProjectContext {
     description?: string;
     workspaces?: string[];
   } | null;
-  /** Existing lane definitions if any */
+  /** Existing lane definitions if UnsafeAny */
   existingLanes: string[];
   /** Whether docs directory exists */
   hasDocsDir: boolean;

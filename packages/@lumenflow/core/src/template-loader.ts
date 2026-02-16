@@ -399,9 +399,9 @@ function normalizeContextForConditions(context: TemplateContext): Record<string,
   const normalized: Record<string, unknown> = { ...context };
 
   // Add lowercase aliases for condition evaluation
-  if (context.TYPE !== undefined) normalized.type = context.TYPE;
-  if (context.LANE !== undefined) normalized.lane = context.LANE;
-  if (context.WU_ID !== undefined) normalized.wuId = context.WU_ID;
+  normalized.type = context.TYPE;
+  normalized.lane = context.LANE;
+  normalized.wuId = context.WU_ID;
   if (context.TITLE !== undefined) normalized.title = context.TITLE;
   if (context.DESCRIPTION !== undefined) normalized.description = context.DESCRIPTION;
   if (context.WORKTREE_PATH !== undefined) normalized.worktreePath = context.WORKTREE_PATH;

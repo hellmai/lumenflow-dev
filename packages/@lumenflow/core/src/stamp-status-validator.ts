@@ -37,7 +37,7 @@ export const LEGACY_PARENT_ONLY_LANES = Object.freeze([
  * isLegacyParentOnlyLane('Intelligence') // true
  * isLegacyParentOnlyLane('Operations: Tooling') // false
  */
-export function isLegacyParentOnlyLane(lane: any) {
+export function isLegacyParentOnlyLane(lane: UnsafeAny) {
   if (!lane || typeof lane !== 'string') {
     return false;
   }
@@ -71,7 +71,7 @@ export function isLegacyParentOnlyLane(lane: any) {
  * isLegacyStampedWU({ id: 'WU-100', status: 'done' }, stampedIds) // false (no mismatch)
  * isLegacyStampedWU({ id: 'WU-999', status: 'cancelled' }, stampedIds) // false (no stamp)
  */
-export function isLegacyStampedWU(wu: any, stampedIds: any) {
+export function isLegacyStampedWU(wu: UnsafeAny, stampedIds: UnsafeAny) {
   if (!wu || !wu.id || !stampedIds) {
     return false;
   }
@@ -111,7 +111,7 @@ export function isLegacyStampedWU(wu: any, stampedIds: any) {
  * isExemptedFromStampStatusCheck('WU-307', ['WU-307', 'WU-311']) // true
  * isExemptedFromStampStatusCheck('WU-999', ['WU-307', 'WU-311']) // false
  */
-export function isExemptedFromStampStatusCheck(id: any, exemptions: any) {
+export function isExemptedFromStampStatusCheck(id: UnsafeAny, exemptions: UnsafeAny) {
   if (!id || !exemptions || !Array.isArray(exemptions)) {
     return false;
   }
@@ -131,7 +131,7 @@ export function isExemptedFromStampStatusCheck(id: any, exemptions: any) {
  * @param {string[]} exemptions - List of exempted WU IDs from config
  * @returns {{ exempted: boolean, reason: string|null }} Whether exempted and why
  */
-export function shouldExemptFromStampStatusCheck(wu: any, stampedIds: any, exemptions = []) {
+export function shouldExemptFromStampStatusCheck(wu: UnsafeAny, stampedIds: UnsafeAny, exemptions = []) {
   const id = wu?.id;
 
   // Check config exemption first

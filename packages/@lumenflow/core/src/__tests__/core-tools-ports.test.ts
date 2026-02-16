@@ -717,11 +717,11 @@ describe('ScopeChecker Implementation', () => {
         code_paths: [],
       };
 
-      expect(isPathInScope('any/path/here.ts', scope)).toBe(true);
+      expect(isPathInScope('UnsafeAny/path/here.ts', scope)).toBe(true);
     });
 
     it('should return false for null scope', () => {
-      expect(isPathInScope('any/path.ts', null)).toBe(false);
+      expect(isPathInScope('UnsafeAny/path.ts', null)).toBe(false);
     });
 
     it('should normalize path separators', () => {
@@ -756,7 +756,7 @@ describe('ScopeChecker Implementation', () => {
     });
 
     it('should throw for null scope', () => {
-      expect(() => assertPathInScope('any/path.ts', null)).toThrow(/No active WU/);
+      expect(() => assertPathInScope('UnsafeAny/path.ts', null)).toThrow(/No active WU/);
     });
 
     it('should not throw for empty code_paths', () => {
@@ -765,7 +765,7 @@ describe('ScopeChecker Implementation', () => {
         code_paths: [],
       };
 
-      expect(() => assertPathInScope('any/path.ts', scope)).not.toThrow();
+      expect(() => assertPathInScope('UnsafeAny/path.ts', scope)).not.toThrow();
     });
   });
 });

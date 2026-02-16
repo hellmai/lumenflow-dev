@@ -87,10 +87,10 @@ export function shouldUseBranchPrBlockPath(doc: { claimed_mode?: string }): bool
 /**
  * Remove WU entry from in-progress section of lines array
  */
-function removeFromInProgressSection(lines: any, inProgIdx: any, rel: any, id: any) {
+function removeFromInProgressSection(lines: UnsafeAny, inProgIdx: UnsafeAny, rel: UnsafeAny, id: UnsafeAny) {
   if (inProgIdx === -1) return;
 
-  let endIdx = lines.slice(inProgIdx + 1).findIndex((l: any) => l.startsWith('## '));
+  let endIdx = lines.slice(inProgIdx + 1).findIndex((l: UnsafeAny) => l.startsWith('## '));
   endIdx = endIdx === -1 ? lines.length : inProgIdx + 1 + endIdx;
 
   for (let i = inProgIdx + 1; i < endIdx; i++) {
@@ -101,7 +101,7 @@ function removeFromInProgressSection(lines: any, inProgIdx: any, rel: any, id: a
     }
   }
 
-  const section = lines.slice(inProgIdx + 1, endIdx).filter((l: any) => l.trim() !== '');
+  const section = lines.slice(inProgIdx + 1, endIdx).filter((l: UnsafeAny) => l.trim() !== '');
   if (section.length === 0) lines.splice(endIdx, 0, '', '(No items currently in progress)', '');
 }
 
@@ -133,7 +133,7 @@ function createMissingBlockedSection(lines: string[], inProgIdx: number): number
   return insertPoint + 1;
 }
 
-async function moveFromInProgressToBlocked(statusPath: any, id: any, title: any, reason: any) {
+async function moveFromInProgressToBlocked(statusPath: UnsafeAny, id: UnsafeAny, title: UnsafeAny, reason: UnsafeAny) {
   // Check file exists
   const fileExists = await access(statusPath)
     .then(() => true)
@@ -144,7 +144,7 @@ async function moveFromInProgressToBlocked(statusPath: any, id: any, title: any,
 
   const content = await readFile(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const lines = content.split(/\r?\n/);
-  const findHeader = (h: any) => lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
+  const findHeader = (h: UnsafeAny) => lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
   const inProgIdx = findHeader(STATUS_SECTIONS.IN_PROGRESS);
   let blockedIdx = findHeader(STATUS_SECTIONS.BLOCKED);
 
@@ -170,7 +170,7 @@ async function moveFromInProgressToBlocked(statusPath: any, id: any, title: any,
 }
 
 // WU-1574: Regenerate backlog.md from state store (replaces BacklogManager manipulation)
-async function regenerateBacklogFromState(backlogPath: any) {
+async function regenerateBacklogFromState(backlogPath: UnsafeAny) {
   const stateDir = getStateStoreDirFromBacklog(backlogPath);
 
   const store = new WUStateStore(stateDir);
@@ -182,7 +182,7 @@ async function regenerateBacklogFromState(backlogPath: any) {
 /**
  * Handle worktree removal if requested
  */
-async function handleWorktreeRemoval(args: any, doc: any) {
+async function handleWorktreeRemoval(args: UnsafeAny, doc: UnsafeAny) {
   if (!args.removeWorktree) return;
 
   const wt = args.worktree || defaultWorktreeFrom(doc);

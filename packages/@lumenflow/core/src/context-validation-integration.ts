@@ -36,7 +36,7 @@ export interface ContextValidationResult {
   validation: ValidationResult | null;
   /** Validation mode that was applied */
   mode: ValidationMode;
-  /** Formatted output for display (if any) */
+  /** Formatted output for display (if UnsafeAny) */
   output: string | null;
 }
 
@@ -185,7 +185,7 @@ export async function applyContextValidation(
 ): Promise<WuContext> {
   const result = await runContextValidation(commandName, wuId);
 
-  // Log output if any
+  // Log output if UnsafeAny
   if (result.output) {
     if (result.mode === 'error' && !result.canProceed) {
       console.error(`${logPrefix} Context validation failed:`);

@@ -88,7 +88,7 @@ fi
 
 # Check state file for in_progress WUs
 if [[ -f "\$STATE_FILE" ]]; then
-  # Look for any WU with in_progress status
+  # Look for UnsafeAny WU with in_progress status
   if grep -q '"status":"in_progress"' "\$STATE_FILE" 2>/dev/null; then
     exit 0  # Has in_progress WU
   fi

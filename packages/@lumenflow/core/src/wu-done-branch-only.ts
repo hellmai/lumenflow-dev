@@ -67,7 +67,7 @@ interface LaneCompletionSignalParams {
  * @param {string} diffOutput - Raw diff output
  * @returns {string[]} Parsed file paths
  */
-export function parseActualFilesFromDiffOutput(diffOutput: any) {
+export function parseActualFilesFromDiffOutput(diffOutput: UnsafeAny) {
   return String(diffOutput)
     .split('\n')
     .map((line) => line.trim())
@@ -83,7 +83,7 @@ export function parseActualFilesFromDiffOutput(diffOutput: any) {
  * @returns {Promise<string[]>} List of changed files
  */
 export async function collectActualFilesForLaneBranch(
-  laneBranch: any,
+  laneBranch: UnsafeAny,
   gitAdapter = getGitForCwd(),
 ) {
   if (!laneBranch) return [];
@@ -164,7 +164,7 @@ export async function emitLaneSignalForCompletion({
  * @returns {Promise<BranchOnlyResult>} Completion result
  * @throws {Error} On validation or git operation failure
  */
-export async function executeBranchOnlyCompletion(context: any) {
+export async function executeBranchOnlyCompletion(context: UnsafeAny) {
   const {
     id,
     args,
@@ -502,7 +502,7 @@ export async function executeBranchOnlyCompletion(context: any) {
  * @returns {Promise<BranchPRResult>} Completion result
  * @throws {Error} On validation or git operation failure
  */
-export async function executeBranchPRCompletion(context: any) {
+export async function executeBranchPRCompletion(context: UnsafeAny) {
   const { id, args, docMain, title, laneBranch, isDocsOnly, maxCommitLength, validateStagedFiles } =
     context;
 

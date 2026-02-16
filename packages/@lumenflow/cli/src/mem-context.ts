@@ -299,8 +299,8 @@ async function main(): Promise<void> {
     process.exit(EXIT_CODES.ERROR);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Core returns any type due to loose tsconfig
-  let result: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Core returns UnsafeAny type due to loose tsconfig
+  let result: UnsafeAny;
   let error: string | null = null;
 
   try {

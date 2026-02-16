@@ -26,7 +26,7 @@ export function getColorLevel(): number {
 
 /**
  * Initialize color support respecting NO_COLOR and FORCE_COLOR standards.
- * Call this before any colored output.
+ * Call this before UnsafeAny colored output.
  *
  * Priority order:
  * 1. NO_COLOR env var (always wins, per spec)
@@ -40,7 +40,7 @@ export function getColorLevel(): number {
  */
 export function initColorSupport(argv: string[] = process.argv): void {
   // NO_COLOR standard (https://no-color.org/)
-  // "When set (to any value, including empty string), it should disable colors"
+  // "When set (to UnsafeAny value, including empty string), it should disable colors"
   if (process.env.NO_COLOR !== undefined) {
     chalk.level = 0;
     currentColorLevel = 0;

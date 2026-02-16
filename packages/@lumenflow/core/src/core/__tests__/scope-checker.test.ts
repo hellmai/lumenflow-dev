@@ -134,12 +134,12 @@ describe('scope-checker', () => {
       };
 
       // Empty code_paths = no restrictions (documentation WU)
-      assert.strictEqual(isPathInScope('any/path/here.ts', scope), true);
+      assert.strictEqual(isPathInScope('UnsafeAny/path/here.ts', scope), true);
       assert.strictEqual(isPathInScope('apps/web/src/components/Header.tsx', scope), true);
     });
 
     it('should handle null scope (no active WU)', () => {
-      assert.strictEqual(isPathInScope('any/path/here.ts', null), false);
+      assert.strictEqual(isPathInScope('UnsafeAny/path/here.ts', null), false);
     });
 
     it('should normalize path separators', () => {
@@ -190,7 +190,7 @@ describe('scope-checker', () => {
     it('should throw for null scope', () => {
       assert.throws(
         () => {
-          assertPathInScope('any/path/here.ts', null);
+          assertPathInScope('UnsafeAny/path/here.ts', null);
         },
         (error) => {
           assert.ok(error instanceof Error);
@@ -207,7 +207,7 @@ describe('scope-checker', () => {
       };
 
       assert.doesNotThrow(() => {
-        assertPathInScope('any/path/here.ts', scope);
+        assertPathInScope('UnsafeAny/path/here.ts', scope);
       });
     });
 

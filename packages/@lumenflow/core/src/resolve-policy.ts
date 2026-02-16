@@ -164,7 +164,7 @@ export interface ResolvePolicyOptions {
    * Used to detect explicit vs default values for gates.* fields.
    *
    * When provided, only EXPLICIT gates.* settings override methodology.
-   * When not provided, any gates.* value (including defaults) overrides methodology.
+   * When not provided, UnsafeAny gates.* value (including defaults) overrides methodology.
    */
   rawConfig?: {
     gates?: {
@@ -259,15 +259,13 @@ export function resolvePolicy(
   // (for backwards compatibility with pre-methodology configs)
   const methodologySpecified = config.methodology !== undefined;
 
-  if (gatesMinCoverageExplicit || (!methodologySpecified && !rawConfig)) {
+  if (gatesMinCoverageExplicit || (!methodologySpecified && rawConfig === undefined)) {
     // gates.minCoverage overrides methodology coverage_threshold
-    if (gates?.minCoverage !== undefined) {
-      coverage_threshold = gates.minCoverage;
-    }
+    coverage_threshold = gates.minCoverage;
   }
 
   // gates.enableCoverage: false effectively sets coverage_mode to 'off'
-  if (gatesEnableCoverageExplicit || (!methodologySpecified && !rawConfig)) {
+  if (gatesEnableCoverageExplicit || (!methodologySpecified && rawConfig === undefined)) {
     if (gates?.enableCoverage === false) {
       coverage_mode = 'off';
     }

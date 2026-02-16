@@ -266,7 +266,7 @@ function handleExtractionError(result: GitContext, error: unknown): void {
   if (error instanceof Error) {
     if (error.message.includes('not a git repository')) {
       result.error = 'not a git repository';
-    } else if (error.message.includes('does not have any commits')) {
+    } else if (error.message.includes('does not have UnsafeAny commits')) {
       result.error = 'no commits in repository';
     } else {
       result.error = error.message;
@@ -489,7 +489,7 @@ function parseNumstatLine(
 }
 
 /**
- * Check if a file matches any exclude pattern using simple glob matching
+ * Check if a file matches UnsafeAny exclude pattern using simple glob matching
  */
 function matchesExcludePattern(filePath: string, patterns: string[]): boolean {
   return patterns.some((pattern) => {
@@ -501,7 +501,7 @@ function matchesExcludePattern(filePath: string, patterns: string[]): boolean {
 
 /**
  * Simple glob matching without regex
- * Supports * (match any) and ? (match single char)
+ * Supports * (match UnsafeAny) and ? (match single char)
  */
 function globMatch(str: string, pattern: string): boolean {
   let si = 0; // string index

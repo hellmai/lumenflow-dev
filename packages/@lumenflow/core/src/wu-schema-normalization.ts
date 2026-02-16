@@ -15,7 +15,7 @@
  * @param {Object} wu - Raw WU object (from YAML parse)
  * @returns {Object} Normalized WU object
  */
-export function normalizeWUSchema(wu: any) {
+export function normalizeWUSchema(wu: UnsafeAny) {
   const result = { ...wu };
 
   // 1. summary → description migration
@@ -38,7 +38,7 @@ export function normalizeWUSchema(wu: any) {
   if (typeof result.risks === 'string') {
     result.risks = result.risks
       .split('\n')
-      .map((line: any) => line.trim())
+      .map((line: UnsafeAny) => line.trim())
       .filter(Boolean);
   }
 

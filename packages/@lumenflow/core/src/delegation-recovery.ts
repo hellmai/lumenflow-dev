@@ -102,7 +102,7 @@ const LOG_PREFIX = '[delegation-recovery]';
  * @param {string} lane - Lane name (e.g., "Operations: Tooling")
  * @returns {string} Kebab-case lane name (e.g., "operations-tooling")
  */
-function laneToKebab(lane: any) {
+function laneToKebab(lane: UnsafeAny) {
   return toKebab(lane);
 }
 
@@ -112,7 +112,7 @@ function laneToKebab(lane: any) {
  * @param {string} baseDir - Base directory
  * @returns {string} Path to .lumenflow/recovery/
  */
-function getRecoveryDir(baseDir: any) {
+function getRecoveryDir(baseDir: UnsafeAny) {
   return path.join(baseDir, LUMENFLOW_PATHS.BASE, RECOVERY_DIR_NAME);
 }
 
@@ -123,7 +123,7 @@ function getRecoveryDir(baseDir: any) {
  * @param {AuditLogEntry} entry - Audit log entry
  * @returns {Promise<void>}
  */
-async function createAuditLog(baseDir: any, entry: any) {
+async function createAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
   const recoveryDir = getRecoveryDir(baseDir);
   await fs.mkdir(recoveryDir, { recursive: true });
 
@@ -188,7 +188,7 @@ async function getLastCheckpoint(
  * @param {string|null} checkpointTimestamp - ISO timestamp of last checkpoint
  * @returns {boolean} True if checkpoint is recent (within 1 hour)
  */
-function isCheckpointRecent(checkpointTimestamp: any) {
+function isCheckpointRecent(checkpointTimestamp: UnsafeAny) {
   if (!checkpointTimestamp) {
     return false;
   }
@@ -223,7 +223,7 @@ export interface RecoverStuckDelegationOptions {
 }
 
 export async function recoverStuckDelegation(
-  delegationId: any,
+  delegationId: UnsafeAny,
   options: RecoverStuckDelegationOptions = {},
 ) {
   const { baseDir = process.cwd() } = options;

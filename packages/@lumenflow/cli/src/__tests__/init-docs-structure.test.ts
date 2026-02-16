@@ -55,7 +55,7 @@ describe('docs-structure', () => {
       expect(result).toBe(SIMPLE_DOCS_STRUCTURE);
     });
 
-    it('should detect arc42 with any numbered directory (01-*, 02-*, etc.)', () => {
+    it('should detect arc42 with UnsafeAny numbered directory (01-*, 02-*, etc.)', () => {
       fs.mkdirSync(path.join(tempDir, 'docs', '01-introduction'), { recursive: true });
 
       const result = detectDocsStructure(tempDir);

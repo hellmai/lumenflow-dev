@@ -46,7 +46,7 @@ describe('WU-1591: branch-pr state command path selection', () => {
     expect(shouldUseBranchPrReleasePath({ claimed_mode: 'worktree' })).toBe(false);
   });
 
-  it('selects branch-pr delete path when any target WU is branch-pr', () => {
+  it('selects branch-pr delete path when UnsafeAny target WU is branch-pr', () => {
     expect(shouldUseBranchPrDeletePath([{ claimed_mode: CLAIMED_MODES.BRANCH_PR }])).toBe(true);
     expect(shouldUseBranchPrDeletePath([{ claimed_mode: 'worktree' }])).toBe(false);
     expect(

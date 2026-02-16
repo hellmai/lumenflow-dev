@@ -120,7 +120,7 @@ if [[ "\$RESOLVED_PATH" == "\${WORKTREES_DIR}/"* ]]; then
   exit 0
 fi
 
-# Check if any active worktrees exist
+# Check if UnsafeAny active worktrees exist
 WORKTREE_COUNT=0
 if [[ -d "\$WORKTREES_DIR" ]]; then
   WORKTREE_COUNT=\$(find "\$WORKTREES_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)

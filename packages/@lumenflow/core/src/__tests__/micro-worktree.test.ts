@@ -36,7 +36,7 @@ describe('micro-worktree', () => {
 
     beforeEach(() => {
       vi.resetModules();
-      // Clear any existing LUMENFLOW_FORCE values
+      // Clear UnsafeAny existing LUMENFLOW_FORCE values
       delete process.env.LUMENFLOW_FORCE;
       delete process.env.LUMENFLOW_FORCE_REASON;
     });
@@ -399,7 +399,7 @@ describe('micro-worktree', () => {
         // We expect this to fail due to partial mocking, but we can still verify fetch was called
       }
 
-      // Verify that fetch was called with origin and main BEFORE any other operations
+      // Verify that fetch was called with origin and main BEFORE UnsafeAny other operations
       expect(mockFetch).toHaveBeenCalledWith(TEST_REMOTE, TEST_BRANCH);
 
       // Fetch should be called before createBranchNoCheckout (the first real operation)

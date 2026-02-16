@@ -43,7 +43,7 @@ export function buildPreflightErrorMessage(id: string, errors: string[]): string
 ❌ PREFLIGHT VALIDATION FAILED
 
 wu:validate found errors that would block pre-push hooks.
-Aborting wu:done BEFORE any merge operations to prevent deadlocks.
+Aborting wu:done BEFORE UnsafeAny merge operations to prevent deadlocks.
 
 Errors:
 ${errors.map((error) => `  - ${error}`).join('\n')}
@@ -217,7 +217,7 @@ See: https://lumenflow.dev/reference/troubleshooting-wu-done/ for more recovery 
 }
 
 /**
- * WU-1781: Run wu:validate as preflight check before any git operations
+ * WU-1781: Run wu:validate as preflight check before UnsafeAny git operations
  */
 export function runPreflightTasksValidation(id: string): PreflightTaskValidationResult {
   console.log(`\n${LOG_PREFIX.DONE} 🔍 Preflight: running wu:validate...`);

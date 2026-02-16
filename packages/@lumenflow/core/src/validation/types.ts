@@ -97,7 +97,7 @@ export interface CommandDefinition {
   name: string;
   /** Human-readable description */
   description: string;
-  /** Required location type (null = any location) */
+  /** Required location type (null = UnsafeAny location) */
   requiredLocation: LocationType | null;
   /** Required WU status (null = no status requirement) */
   requiredWuStatus: string | null;

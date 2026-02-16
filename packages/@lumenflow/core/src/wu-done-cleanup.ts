@@ -20,7 +20,7 @@ const execAsync = promisify(execCallback);
  * Run cleanup operations after successful merge
  * Removes worktree and optionally deletes lane branch
  */
-export async function runCleanup(docMain: any, args: any) {
+export async function runCleanup(docMain: UnsafeAny, args: UnsafeAny) {
   const wuId = docMain.id;
   const worktreePath = args.worktree || (await defaultWorktreeFrom(docMain));
 
@@ -49,7 +49,7 @@ export async function runCleanup(docMain: any, args: any) {
 /**
  * Internal cleanup implementation (runs under cleanup lock)
  */
-async function runCleanupInternal(docMain: any, args: any, worktreePath: any) {
+async function runCleanupInternal(docMain: UnsafeAny, args: UnsafeAny, worktreePath: UnsafeAny) {
   // Step 6: Remove worktree (runs even if commit/push failed)
   // Skip removal in PR mode (worktree needed for cleanup after PR merge)
   const claimedMode = docMain.claimed_mode || CLAIMED_MODES.WORKTREE;
@@ -119,7 +119,7 @@ async function runCleanupInternal(docMain: any, args: any, worktreePath: any) {
 /**
  * WU-2241: Delete both local and remote branch with proper error handling
  */
-async function deleteBranchWithCleanup(laneBranch: any) {
+async function deleteBranchWithCleanup(laneBranch: UnsafeAny) {
   const gitAdapter = getGitForCwd();
 
   // WU-1440: Check if branch is merged before deletion

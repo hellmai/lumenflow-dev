@@ -126,7 +126,7 @@ describe('COMMAND_REGISTRY', () => {
   });
 
   describe('wu:status command', () => {
-    it('allows any location', () => {
+    it('allows UnsafeAny location', () => {
       const def = getCommandDefinition(COMMANDS.WU_STATUS);
       expect(def?.requiredLocation).toBeNull();
     });
@@ -143,7 +143,7 @@ describe('COMMAND_REGISTRY', () => {
       expect(def?.requiredLocation).toBe(LOCATION_TYPES.MAIN);
     });
 
-    it('has no WU status requirement (handles any state)', () => {
+    it('has no WU status requirement (handles UnsafeAny state)', () => {
       const def = getCommandDefinition(COMMANDS.WU_RECOVER);
       expect(def?.requiredWuStatus).toBeNull();
     });

@@ -12,7 +12,7 @@ describe('mem:cleanup CLI execution', () => {
       // We run the actual built JS file to catch ESM/CJS compatibility issues
       const { stdout } = await execAsync(`node ${CLI_DIST_PATH} --help`);
       expect(stdout).toContain('Usage: mem-cleanup');
-    } catch (error: any) {
+    } catch (error: UnsafeAny) {
       // If it fails, we want to see why (expecting ReferenceError: require is not defined)
       throw new Error(`Command failed: ${error.message}\nStderr: ${error.stderr}`);
     }

@@ -55,7 +55,7 @@ export interface WuRecoveryAction {
   command: string;
   /** Whether this action requires --force flag */
   requiresForce: boolean;
-  /** Warning message if any */
+  /** Warning message if UnsafeAny */
   warning?: string;
 }
 
@@ -63,7 +63,7 @@ export interface WuRecoveryAction {
  * Result of recovery analysis.
  */
 export interface RecoveryAnalysis {
-  /** Whether any issues were found */
+  /** Whether UnsafeAny issues were found */
   hasIssues: boolean;
   /** List of detected issues */
   issues: RecoveryIssue[];
@@ -135,7 +135,7 @@ export async function analyzeRecovery(context: WuContext): Promise<RecoveryAnaly
       description: 'Discard worktree and reset WU to ready',
       command: `pnpm wu:recover --id ${wu.id} --action reset`,
       requiresForce: false,
-      warning: 'This will discard any uncommitted work in the worktree',
+      warning: 'This will discard UnsafeAny uncommitted work in the worktree',
     });
   }
 

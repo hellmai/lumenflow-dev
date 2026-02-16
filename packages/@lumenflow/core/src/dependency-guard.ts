@@ -49,7 +49,7 @@ export const DEPENDENCY_MUTATING_COMMANDS = [
  * isDependencyMutatingCommand('pnpm run test'); // false
  * isDependencyMutatingCommand('npm install'); // false (not pnpm)
  */
-export function isDependencyMutatingCommand(command: any) {
+export function isDependencyMutatingCommand(command: UnsafeAny) {
   // Handle null/undefined/empty
   if (!command) {
     return false;
@@ -104,7 +104,7 @@ export function isDependencyMutatingCommand(command: any) {
  * const message = buildDependencyBlockMessage('pnpm add react');
  * // Returns multi-line message with guidance
  */
-export function buildDependencyBlockMessage(command: any) {
+export function buildDependencyBlockMessage(command: UnsafeAny) {
   // Extract the pnpm subcommand for targeted guidance
   const parts = command.trim().split(/\s+/);
   let subcommand = '';

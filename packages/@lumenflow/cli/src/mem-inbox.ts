@@ -84,7 +84,7 @@ const CLI_OPTIONS = {
  * @param {string} baseDir - Base directory
  * @param {object} entry - Audit log entry
  */
-async function writeAuditLog(baseDir: any, entry: any) {
+async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
   try {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
@@ -106,7 +106,7 @@ async function writeAuditLog(baseDir: any, entry: any) {
  * @param {number} count - Number of unread signals
  * @returns {string} Formatted count string
  */
-export function formatCount(count: any) {
+export function formatCount(count: UnsafeAny) {
   return `${count} unread signal(s)`;
 }
 
@@ -117,7 +117,7 @@ export function formatCount(count: any) {
  * @param {string} timeStr - Time string like "1h", "30m", "2d", or ISO date
  * @returns {Date} Parsed date
  */
-export function parseTimeString(timeStr: any) {
+export function parseTimeString(timeStr: UnsafeAny) {
   // Try using ms package for relative time parsing (e.g., "1h", "30m", "2d", "1d")
   const msValue = ms(timeStr);
   if (typeof msValue === 'number') {
@@ -138,7 +138,7 @@ export function parseTimeString(timeStr: any) {
  * @param {object} signal - Signal object
  * @returns {string} Formatted signal string
  */
-function formatSignal(signal: any) {
+function formatSignal(signal: UnsafeAny) {
   const timestamp = new Date(signal.created_at).toLocaleString();
   const scope = [];
 
@@ -161,7 +161,7 @@ function formatSignal(signal: any) {
  * @param {object[]} signals - Array of signal objects
  * @param {boolean} quiet - Suppress headers
  */
-function displaySignals(signals: any, quiet: any) {
+function displaySignals(signals: UnsafeAny, quiet: UnsafeAny) {
   if (signals.length === 0) {
     if (!quiet) {
       console.log(`${LOG_PREFIX} No signals found`);
@@ -187,7 +187,7 @@ function displaySignals(signals: any, quiet: any) {
  * @param {boolean} markAsRead - Whether to mark signals as read
  * @returns {Promise<object[]>} Signals found
  */
-async function checkInbox(baseDir: any, options: any, markAsRead: any) {
+async function checkInbox(baseDir: UnsafeAny, options: UnsafeAny, markAsRead: UnsafeAny) {
   const signals = await loadSignals(baseDir, options);
 
   if (markAsRead && signals.length > 0) {
@@ -208,7 +208,7 @@ async function checkInbox(baseDir: any, options: any, markAsRead: any) {
  * @param {boolean} markAsRead - Whether to mark signals as read
  * @param {boolean} quiet - Suppress headers
  */
-async function runWatchMode(baseDir: any, filterOptions: any, markAsRead: any, quiet: any) {
+async function runWatchMode(baseDir: UnsafeAny, filterOptions: UnsafeAny, markAsRead: UnsafeAny, quiet: UnsafeAny) {
   if (!quiet) {
     console.log(`${LOG_PREFIX} Watch mode started (Ctrl+C to exit)\n`);
   }
@@ -354,7 +354,7 @@ function buildFilterOptions(args: ParsedArgs): FilterOptions {
  * @param {object} filterOptions - Filter options
  * @returns {Promise<number>} Signal count
  */
-async function runCountMode(baseDir: any, filterOptions: any) {
+async function runCountMode(baseDir: UnsafeAny, filterOptions: UnsafeAny) {
   const signals = await loadSignals(baseDir, filterOptions);
   const count = signals.length;
   console.log(formatCount(count));
@@ -370,7 +370,7 @@ async function runCountMode(baseDir: any, filterOptions: any) {
  * @param {boolean} quiet - Suppress headers
  * @returns {Promise<number>} Signal count
  */
-async function runStandardMode(baseDir: any, filterOptions: any, markAsRead: any, quiet: any) {
+async function runStandardMode(baseDir: UnsafeAny, filterOptions: UnsafeAny, markAsRead: UnsafeAny, quiet: UnsafeAny) {
   const signals = await checkInbox(baseDir, filterOptions, markAsRead);
   displaySignals(signals, quiet);
   return signals.length;
@@ -380,7 +380,7 @@ async function runStandardMode(baseDir: any, filterOptions: any, markAsRead: any
  * Main CLI entry point
  */
 async function main() {
-  // WU-2202: Validate dependencies BEFORE any other operation
+  // WU-2202: Validate dependencies BEFORE UnsafeAny other operation
   const depResult = await validateInboxDependencies();
   if (!depResult.valid) {
     console.error(formatDependencyError('mem:inbox', depResult.missing));

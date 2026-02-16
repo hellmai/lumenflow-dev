@@ -52,7 +52,7 @@ export const SKIP_TESTS_ROOT_FILES = Object.freeze([
  * isSkipWebTestsPath('tools/wu-done.js') // true
  * isSkipWebTestsPath('apps/web/src/page.tsx') // false
  */
-export function isSkipWebTestsPath(filePath: any) {
+export function isSkipWebTestsPath(filePath: UnsafeAny) {
   if (!filePath || typeof filePath !== 'string') {
     return false;
   }
@@ -93,7 +93,7 @@ export function isSkipWebTestsPath(filePath: any) {
  * shouldSkipWebTests(['docs/README.md', 'tools/wu-done.js']) // true
  * shouldSkipWebTests(['docs/README.md', 'apps/web/src/page.tsx']) // false
  */
-export function shouldSkipWebTests(codePaths: any) {
+export function shouldSkipWebTests(codePaths: UnsafeAny) {
   if (!codePaths || !Array.isArray(codePaths) || codePaths.length === 0) {
     return false;
   }

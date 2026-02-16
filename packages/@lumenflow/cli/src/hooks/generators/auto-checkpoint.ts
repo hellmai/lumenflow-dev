@@ -38,7 +38,7 @@ export function generateAutoCheckpointScript(intervalToolCalls: number): string 
 #   0 = Always (never blocks tool execution)
 #
 
-# Fail-open: any error allows the operation to continue
+# Fail-open: UnsafeAny error allows the operation to continue
 set +e
 
 INTERVAL=${intervalToolCalls}

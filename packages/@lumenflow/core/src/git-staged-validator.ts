@@ -19,7 +19,7 @@ import { die } from './error-handler.js';
  * Supports exact path matching and directory prefix matching.
  *
  * @param {Array<string|null|undefined>} paths - Paths to check (null/undefined values filtered out)
- * @throws {Error} If any required paths are not staged
+ * @throws {Error} If UnsafeAny required paths are not staged
  * @returns {Array<string>} List of all staged files
  *
  * @example

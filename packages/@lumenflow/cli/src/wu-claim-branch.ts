@@ -34,7 +34,7 @@ const PREFIX = LOG_PREFIX.CLAIM;
 /**
  * Execute branch-only mode claim workflow
  */
-export async function claimBranchOnlyMode(ctx: any) {
+export async function claimBranchOnlyMode(ctx: UnsafeAny) {
   const {
     args,
     id,

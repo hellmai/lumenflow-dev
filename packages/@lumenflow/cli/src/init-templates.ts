@@ -622,7 +622,7 @@ Re-run: pnpm gates
 
 ## Quick Checklist
 
-Before starting any WU:
+Before starting UnsafeAny WU:
 
 - [ ] Read the full WU spec
 - [ ] Understand acceptance criteria
@@ -742,7 +742,7 @@ pnpm wu:done --id WU-XXX
 - [ ] Did I run \`pnpm wu:done --id WU-XXX\`?
 - [ ] Did wu:done complete successfully?
 
-If any answer is "no", you're not done yet.
+If UnsafeAny answer is "no", you're not done yet.
 `;
 
 export const AGENT_SAFETY_CARD_TEMPLATE = `# Agent Safety Card
@@ -1080,7 +1080,7 @@ If work spans multiple WUs or multiple days, create an initiative first.
 
 ## Step 1: Read Core Documentation
 
-Before starting any work, read these documents in order:
+Before starting UnsafeAny work, read these documents in order:
 
 1. **[LUMENFLOW.md](../../../../../../LUMENFLOW.md)** - Main workflow documentation
 2. **[constraints.md](../../../../../../.lumenflow/constraints.md)** - Non-negotiable rules
@@ -1525,7 +1525,7 @@ pnpm lane:health
 
 This detects:
 - Overlapping code paths between lanes
-- Code files not covered by any lane
+- Code files not covered by UnsafeAny lane
 `;
 
 // WU-1385: WU sizing guide template for agent onboarding
@@ -1915,7 +1915,7 @@ export const PRE_COMMIT_TEMPLATE = `#!/bin/sh
 # LumenFlow Pre-Commit Hook
 #
 # Enforces worktree discipline by blocking direct commits to main/master.
-# Does NOT assume pnpm test or any other commands exist.
+# Does NOT assume pnpm test or UnsafeAny other commands exist.
 #
 # Rules:
 #   1. BLOCK commits to main/master (use WU workflow instead)

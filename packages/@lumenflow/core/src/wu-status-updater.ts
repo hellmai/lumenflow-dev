@@ -21,7 +21,7 @@ import { STRING_LITERALS } from './wu-constants.js';
  * @param {string} statusPath - Path to status.md
  * @param {string} id - WU ID
  */
-export function updateStatusRemoveInProgress(statusPath: any, id: any) {
+export function updateStatusRemoveInProgress(statusPath: UnsafeAny, id: UnsafeAny) {
   if (!existsSync(statusPath)) {
     throw createError(ErrorCodes.FILE_NOT_FOUND, `Status file not found: ${statusPath}`, {
       path: statusPath,
@@ -87,7 +87,7 @@ export function updateStatusRemoveInProgress(statusPath: any, id: any) {
  * @param {string} id - WU ID
  * @param {string} title - WU title
  */
-export function addToStatusCompleted(statusPath: any, id: any, title: any) {
+export function addToStatusCompleted(statusPath: UnsafeAny, id: UnsafeAny, title: UnsafeAny) {
   if (!existsSync(statusPath)) {
     throw createError(ErrorCodes.FILE_NOT_FOUND, `Status file not found: ${statusPath}`, {
       path: statusPath,

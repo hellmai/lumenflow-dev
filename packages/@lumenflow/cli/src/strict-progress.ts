@@ -92,7 +92,7 @@ export function parseTypeScriptErrors(output: string): StrictErrorSummary {
   let totalErrors = 0;
 
   // Example:
-  // src/file.ts(10,2): error TS7006: Parameter 'x' implicitly has an 'any' type.
+  // src/file.ts(10,2): error TS7006: Parameter 'x' implicitly has an 'UnsafeAny' type.
   const errorLine = /^(.+?)\(\d+,\d+\): error (TS\d+):/;
 
   for (const line of lines) {

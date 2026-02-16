@@ -11,7 +11,7 @@
  * - Coverage mode: block (gates fail if coverage < 90%)
  * - Tests required: true
  *
- * CRITICAL: These tests act as a regression guard. If any of these fail,
+ * CRITICAL: These tests act as a regression guard. If UnsafeAny of these fail,
  * it means the default behavior has changed and existing users would see
  * different output without opting in.
  */
@@ -185,7 +185,7 @@ describe('WU-1267: Default methodology behavior unchanged (regression)', () => {
       const policy = resolvePolicy(config);
 
       // This is the critical regression guard.
-      // If any of these change, backwards compatibility is broken.
+      // If UnsafeAny of these change, backwards compatibility is broken.
       expect(policy).toEqual(PRE_INIT_009_DEFAULTS);
     });
 

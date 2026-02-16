@@ -65,7 +65,7 @@ export const DEFAULT_COVERAGE_PATH = 'coverage/coverage-summary.json';
  * @param {string|null|undefined} filePath - File path to check
  * @returns {boolean} True if file is in hex core layer
  */
-export function isHexCoreFile(filePath: any) {
+export function isHexCoreFile(filePath: UnsafeAny) {
   if (!filePath || typeof filePath !== 'string') {
     return false;
   }
@@ -81,7 +81,7 @@ export function isHexCoreFile(filePath: any) {
  * @param {string} coveragePath - Path to coverage-summary.json
  * @returns {object|null} Parsed coverage data or null if invalid
  */
-export function parseCoverageJson(coveragePath: any) {
+export function parseCoverageJson(coveragePath: UnsafeAny) {
   if (!existsSync(coveragePath)) {
     return null;
   }
@@ -113,7 +113,7 @@ export function parseCoverageJson(coveragePath: any) {
  * @param {number} [threshold] - Coverage threshold to use (defaults to COVERAGE_THRESHOLD)
  * @returns {{ pass: boolean, failures: Array<{ file: string, actual: number, threshold: number, metric: string }> }}
  */
-export function checkCoverageThresholds(coverageData: any, threshold?: number) {
+export function checkCoverageThresholds(coverageData: UnsafeAny, threshold?: number) {
   if (!coverageData || !coverageData.files) {
     return { pass: true, failures: [] };
   }
@@ -152,7 +152,7 @@ export function checkCoverageThresholds(coverageData: any, threshold?: number) {
  * @param {object|null} coverageData - Parsed coverage data
  * @returns {string} Formatted output string
  */
-export function formatCoverageDelta(coverageData: any) {
+export function formatCoverageDelta(coverageData: UnsafeAny) {
   if (!coverageData) {
     return '';
   }

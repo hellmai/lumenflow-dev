@@ -12,7 +12,7 @@
  *
  * This ensures no partial state on validation failure:
  * - If validation fails → no files written
- * - If any write fails → error with cleanup info
+ * - If UnsafeAny write fails → error with cleanup info
  *
  * WU-1665: Adds executeSnapshotRestore for state-machine-driven recovery.
  * The restoreFromSnapshot function is the low-level primitive;
@@ -159,12 +159,6 @@ export class WUTransaction {
     }
 
     for (const [filePath, write] of this.pendingWrites) {
-      // Check content is defined
-      if (write.content === undefined || write.content === null) {
-        errors.push(`${write.description}: Content is undefined`);
-        continue;
-      }
-
       // Check parent directory exists or can be created
       const dir = path.dirname(filePath);
       if (dir && dir !== '.' && !existsSync(dir)) {
@@ -179,7 +173,7 @@ export class WUTransaction {
   /**
    * Commit all pending writes atomically
    *
-   * Writes all files in a single batch. If any write fails,
+   * Writes all files in a single batch. If UnsafeAny write fails,
    * reports which files were written vs failed.
    *
    * @returns {{ success: boolean, written: string[], failed: { path: string, error: string }[] }}
@@ -300,7 +294,7 @@ export function readFileForTransaction(filePath: string): string | null {
 /**
  * Create a transaction state snapshot for rollback
  *
- * Captures current file contents before any modifications.
+ * Captures current file contents before UnsafeAny modifications.
  * Used if git operations fail after transaction commit.
  *
  * @param {string[]} filePaths - Paths to snapshot

@@ -143,7 +143,7 @@ function deleteLockFile(options: BaseDirOptions = {}) {
  * @param {CleanupLockInfo} lockInfo - Lock info to check
  * @returns {boolean} True if lock is stale
  */
-export function isCleanupLockStale(lockInfo: any) {
+export function isCleanupLockStale(lockInfo: UnsafeAny) {
   if (!lockInfo || !lockInfo.createdAt) {
     return true;
   }
@@ -158,7 +158,7 @@ export function isCleanupLockStale(lockInfo: any) {
  * @param {CleanupLockInfo} lockInfo - Lock info to check
  * @returns {boolean} True if lock is a zombie (PID not running)
  */
-export function isCleanupLockZombie(lockInfo: any) {
+export function isCleanupLockZombie(lockInfo: UnsafeAny) {
   if (!lockInfo || typeof lockInfo.pid !== 'number') {
     return true;
   }
@@ -186,7 +186,7 @@ function generateLockId() {
  * @param {number} ms - Milliseconds to sleep
  * @returns {Promise<void>}
  */
-function sleep(ms: any) {
+function sleep(ms: UnsafeAny) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
@@ -227,7 +227,7 @@ export function getCleanupLockInfo(options: BaseDirOptions = {}) {
  * @param {Object} options - Options with baseDir
  * @returns {'acquired' | 'race'} Result of acquisition attempt
  */
-function tryAtomicLockCreate(lockInfo: any, options: any) {
+function tryAtomicLockCreate(lockInfo: UnsafeAny, options: UnsafeAny) {
   const lockPath = getLockPath(options);
   const lockDir = path.dirname(lockPath);
   // WU-1174: Ensure lock directory exists (temp directory, not .lumenflow/)
@@ -257,7 +257,7 @@ function tryAtomicLockCreate(lockInfo: any, options: any) {
  * @param {Object} options - Options with baseDir
  * @returns {'retry' | null} Whether to retry acquisition
  */
-function handleStaleLock(existingLock: any, options: any) {
+function handleStaleLock(existingLock: UnsafeAny, options: UnsafeAny) {
   if (isCleanupLockStale(existingLock)) {
     console.log(
       `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cleaning up stale cleanup lock from ${existingLock.wuId}`,
@@ -298,7 +298,7 @@ export interface AcquireCleanupLockOptions extends BaseDirOptions {
  * @param {AcquireCleanupLockOptions} [options]
  * @returns {Promise<CleanupAcquireResult>} Acquisition result
  */
-export async function acquireCleanupLock(wuId: any, options: AcquireCleanupLockOptions = {}) {
+export async function acquireCleanupLock(wuId: UnsafeAny, options: AcquireCleanupLockOptions = {}) {
   const { baseDir, waitMs = CLEANUP_LOCK_TIMEOUT_MS, worktreePath = null } = options;
   const startTime = Date.now();
 
@@ -364,7 +364,7 @@ export async function acquireCleanupLock(wuId: any, options: AcquireCleanupLockO
  * @param {BaseDirOptions} [options]
  * @returns {boolean} True if lock was released
  */
-export function releaseCleanupLock(lockId: any, options: BaseDirOptions = {}) {
+export function releaseCleanupLock(lockId: UnsafeAny, options: BaseDirOptions = {}) {
   const existingLock = readLockFile(options);
 
   if (!existingLock) {

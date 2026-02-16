@@ -3,7 +3,7 @@ import { WU_STATUS } from '@lumenflow/core/wu-constants';
 import { deriveInitiativeLifecycleStatus } from '../initiative-status.js';
 
 describe('deriveInitiativeLifecycleStatus', () => {
-  it('downgrades done to in_progress when any phase is incomplete', () => {
+  it('downgrades done to in_progress when UnsafeAny phase is incomplete', () => {
     const status = deriveInitiativeLifecycleStatus(WU_STATUS.DONE, [
       { id: 1, status: WU_STATUS.DONE },
       { id: 2, status: WU_STATUS.READY },

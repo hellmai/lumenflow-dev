@@ -423,7 +423,7 @@ describe('wu-events-cleanup', () => {
       });
 
       it('should handle missing events file gracefully', async () => {
-        // Don't write any events file
+        // Don't write UnsafeAny events file
 
         const result = await archiveWuEvents(testDir);
 

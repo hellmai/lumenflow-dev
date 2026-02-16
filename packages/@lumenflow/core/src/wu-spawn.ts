@@ -279,7 +279,7 @@ export function buildTemplateContextWithPolicy(
 
 /**
  * WU types that require TDD (failing test first)
- * Note: Used as documentation reference. TDD is the default for any type not in other categories.
+ * Note: Used as documentation reference. TDD is the default for UnsafeAny type not in other categories.
  */
 const _TDD_REQUIRED_TYPES = ['feature', 'bug', 'tooling', 'enhancement'];
 
@@ -441,7 +441,7 @@ export function generateMandatoryStandards(policy: ResolvedPolicy): string {
       '- **Layered Architecture**: Clear layer separation. Each layer can only depend on layers below it',
     );
   }
-  // For architecture: 'none', we don't add any architecture guidance
+  // For architecture: 'none', we don't add UnsafeAny architecture guidance
 
   // Always include these standards
   lines.push('- **SOLID/DRY/YAGNI/KISS**: No over-engineering, no premature abstraction');
@@ -1091,7 +1091,7 @@ CRITICAL RULES - ENFORCE BEFORE EVERY ACTION:
 
 9. WORKTREE DISCIPLINE (WU-1282)
    - CRITICAL: PreToolUse hooks do not propagate to sub-agents spawned via Task tool
-   - BEFORE any Write/Edit operation, manually verify you are in a worktree:
+   - BEFORE UnsafeAny Write/Edit operation, manually verify you are in a worktree:
    - Run: \`pwd\` and confirm output contains \`worktrees/\`
    - If not in worktree, STOP and navigate: \`cd worktrees/<lane>-wu-xxx\`
    - Use RELATIVE paths only (never full absolute paths starting with root directory)
@@ -1105,12 +1105,12 @@ function generateCodexConstraints(id: string): string {
   return `## Constraints (Critical)
 
 1. **TDD checkpoint**: tests BEFORE implementation; never skip RED
-2. **Stop on errors**: if any command fails, report BLOCKED (never DONE) with the error
+2. **Stop on errors**: if UnsafeAny command fails, report BLOCKED (never DONE) with the error
 3. **Verify before success**: run \`pnpm gates\` in the worktree, then run \`node packages/@lumenflow/agent/verification ${id}\` (from the shared checkout)
 4. **No fabrication**: if blockers remain or verification fails, report INCOMPLETE
 5. **Git workflow**: avoid merge commits; use \`wu:prep\` from worktree, then \`wu:done\` from main
 6. **Scope discipline**: stay within \`code_paths\`; capture out-of-scope issues via \`pnpm mem:create\`
-7. **Worktree discipline (WU-1282)**: BEFORE any Write/Edit, verify \`pwd\` shows \`worktrees/\`; hooks do not propagate to sub-agents`;
+7. **Worktree discipline (WU-1282)**: BEFORE UnsafeAny Write/Edit, verify \`pwd\` shows \`worktrees/\`; hooks do not propagate to sub-agents`;
 }
 
 /**
@@ -1246,7 +1246,7 @@ When finishing, provide structured output:
 - Gates: <pass/fail>
 - Tests: <X passing, Y failing>
 
-## Blockers (if any)
+## Blockers (if UnsafeAny)
 - <blocker description>
 
 ## Follow-up (if needed)
@@ -2017,7 +2017,7 @@ export function generateLaneOccupationWarning(
  * Main entry point
  */
 async function main() {
-  // WU-2202: Validate dependencies BEFORE any other operation
+  // WU-2202: Validate dependencies BEFORE UnsafeAny other operation
   // This prevents false lane occupancy reports when yaml package is missing
   const depResult = await validateSpawnDependencies();
   if (!depResult.valid) {

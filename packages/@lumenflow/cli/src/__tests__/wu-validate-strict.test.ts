@@ -105,7 +105,7 @@ describe('wu:validate strict validation (WU-1329)', () => {
     // The actual validation is done by calling the CLI command
 
     it('should treat warnings as errors by default (strict=true)', () => {
-      // In strict mode, any warnings from completeness validation
+      // In strict mode, UnsafeAny warnings from completeness validation
       // should become errors and cause validation to fail
       const strict = true;
       const warnings = ['Missing recommended field: notes'];

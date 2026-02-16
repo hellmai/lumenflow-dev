@@ -46,7 +46,7 @@ const PREFIX = LOG_PREFIX.CLAIM;
  *
  * @returns {Promise<{finalTitle: string, initPathToCommit: string | null}>}
  */
-async function handleNoPushMetadataUpdate(ctx: any): Promise<{
+async function handleNoPushMetadataUpdate(ctx: UnsafeAny): Promise<{
   finalTitle: string;
   initPathToCommit: string | null;
 }> {
@@ -162,7 +162,7 @@ async function setupWorktreeDependencies(
  * @param {string} mainRepoPath - Main repo path
  * @param {Console} logger - Logger (console-compatible)
  */
-export function applyFallbackSymlinks(worktreePath: any, mainRepoPath: any, logger = console) {
+export function applyFallbackSymlinks(worktreePath: UnsafeAny, mainRepoPath: UnsafeAny, logger = console) {
   const symlinkResult = symlinkNodeModules(worktreePath, logger, mainRepoPath);
   if (symlinkResult.created) {
     logger.log(`${PREFIX} ${EMOJI.SUCCESS} node_modules symlinked as fallback`);
@@ -200,7 +200,7 @@ export function applyFallbackSymlinks(worktreePath: any, mainRepoPath: any, logg
  * - Less network traffic (no push during claim)
  * - Cleaner rollback: delete worktree+branch = claim undone
  */
-export async function claimWorktreeMode(ctx: any) {
+export async function claimWorktreeMode(ctx: UnsafeAny) {
   const { args, id, laneK, title, branch, worktree, WU_PATH, updatedTitle } = ctx;
 
   const originalCwd = process.cwd();

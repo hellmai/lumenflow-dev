@@ -331,7 +331,7 @@ export function resetWorktreeYAMLForRecovery({
  *
  * All operations are idempotent - safe to run multiple times
  *
- * WU-1303: Added atomic rollback - if any operation fails, all files are
+ * WU-1303: Added atomic rollback - if UnsafeAny operation fails, all files are
  * restored to their original state to prevent leaving main checkout dirty.
  *
  * @param {object} params - Recovery parameters
@@ -357,7 +357,7 @@ export async function recoverZombieState({
     docs: { status: null, backlog: null },
   };
 
-  // WU-1303: Record file state BEFORE any modifications for atomic rollback
+  // WU-1303: Record file state BEFORE UnsafeAny modifications for atomic rollback
   const wuPath = WU_PATHS.WU(id);
   const statusPath = WU_PATHS.STATUS();
   const backlogPath = WU_PATHS.BACKLOG();

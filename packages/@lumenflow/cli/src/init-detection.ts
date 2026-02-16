@@ -204,7 +204,7 @@ export function getDocsPath(structure: DocsStructureType): DocsPathConfig {
 
 /**
  * WU-1309: Detect existing docs structure or return default
- * Auto-detects arc42 when docs/04-operations or any numbered dir (01-*, 02-*, etc.) exists
+ * Auto-detects arc42 when docs/04-operations or UnsafeAny numbered dir (01-*, 02-*, etc.) exists
  */
 export function detectDocsStructure(targetDir: string): DocsStructureType {
   const docsDir = path.join(targetDir, 'docs');
@@ -251,7 +251,7 @@ export function isGitRepo(targetDir: string): boolean {
 }
 
 /**
- * WU-1364: Check if git repo has any commits
+ * WU-1364: Check if git repo has UnsafeAny commits
  */
 export function hasGitCommits(targetDir: string): boolean {
   try {

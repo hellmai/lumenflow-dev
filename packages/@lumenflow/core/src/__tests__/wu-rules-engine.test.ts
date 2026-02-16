@@ -103,7 +103,7 @@ describe('wu-rules-engine', () => {
       showBase: '{"bin":{"lumenflow":"dist/index.js"},"homepage":"a"}',
       showHead: '{"bin":{"lumenflow":"dist/index.js"},"homepage":"b"}',
     });
-    vi.mocked(createGitForPath).mockReturnValue(git as any);
+    vi.mocked(createGitForPath).mockReturnValue(git as UnsafeAny);
 
     const result = await validateWURules(
       {
@@ -132,7 +132,7 @@ describe('wu-rules-engine', () => {
       showBase: baseMissing,
       showHead: '{"bin":{"lumenflow":"dist/index.js"}}',
     });
-    vi.mocked(createGitForPath).mockReturnValue(git as any);
+    vi.mocked(createGitForPath).mockReturnValue(git as UnsafeAny);
 
     const result = await validateWURules(
       {
@@ -158,7 +158,7 @@ describe('wu-rules-engine', () => {
       showBase: '{"bin":{"lumenflow":"dist/index.js"}}',
       showHead: new Error('fatal: bad object HEAD'),
     });
-    vi.mocked(createGitForPath).mockReturnValue(git as any);
+    vi.mocked(createGitForPath).mockReturnValue(git as UnsafeAny);
 
     const result = await validateWURules(
       {
@@ -182,7 +182,7 @@ describe('wu-rules-engine', () => {
       branchExistsOriginMain: false,
       branchExistsMain: false,
     });
-    vi.mocked(createGitForPath).mockReturnValue(git as any);
+    vi.mocked(createGitForPath).mockReturnValue(git as UnsafeAny);
 
     const result = await validateWURules(
       {
@@ -205,7 +205,7 @@ describe('wu-rules-engine', () => {
     const git = makeGitMock({
       diffOutput: 'packages/@lumenflow/cli/src/wu-prep.ts\n',
     });
-    vi.mocked(createGitForPath).mockReturnValue(git as any);
+    vi.mocked(createGitForPath).mockReturnValue(git as UnsafeAny);
 
     const result = await validateWURules(
       {
@@ -229,7 +229,7 @@ describe('wu-rules-engine', () => {
     const git = makeGitMock({
       diffOutput: 'packages/@lumenflow/core/src/wu-lint.ts\n',
     });
-    vi.mocked(createGitForPath).mockReturnValue(git as any);
+    vi.mocked(createGitForPath).mockReturnValue(git as UnsafeAny);
 
     const result = await validateWURules(
       {
@@ -289,7 +289,7 @@ describe('wu-rules-engine', () => {
     const git = makeGitMock({
       diffOutput: 'packages/@lumenflow/core/src/wu-lint.ts\n',
     });
-    vi.mocked(createGitForPath).mockReturnValue(git as any);
+    vi.mocked(createGitForPath).mockReturnValue(git as UnsafeAny);
 
     const result = await resolveChangedFiles({
       cwd: '/tmp/worktrees/framework-cli-wu-commands-wu-1680',

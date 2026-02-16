@@ -282,7 +282,7 @@ async function main(): Promise<void> {
 
   const deleteOptions = buildDeleteOptions(args, nodeIds);
 
-  // Check if any filter is provided
+  // Check if UnsafeAny filter is provided
   if (!deleteOptions.nodeIds && !deleteOptions.tag && !deleteOptions.olderThan) {
     printUsageAndExit();
   }

@@ -114,7 +114,7 @@ describe('buildPreflightCodePathErrorMessage (WU-1154)', () => {
           'packages/test/missing.spec.ts',
         ],
       },
-    } as any;
+    } as UnsafeAny;
 
     const message = buildPreflightCodePathErrorMessage('WU-1154', preflightResult);
 
@@ -185,7 +185,7 @@ describe('executePreflightCodePathValidation (WU-1154)', () => {
     const result = await executePreflightCodePathValidation(
       'WU-1154',
       { rootDir: '/tmp', worktreePath: '/tmp/worktree' },
-      { validatePreflightFn: validatePreflightFn as any },
+      { validatePreflightFn: validatePreflightFn as UnsafeAny },
     );
 
     expect(result.valid).toBe(false);

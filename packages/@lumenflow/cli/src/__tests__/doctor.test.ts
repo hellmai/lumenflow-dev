@@ -458,7 +458,7 @@ describe('WU-1387 Edge Cases - runDoctorForInit Accuracy', () => {
 
   describe('AC3: Accurate status reporting', () => {
     it('should report all critical errors in output', async () => {
-      // Create directory without any required files
+      // Create directory without UnsafeAny required files
       mkdirSync(testDir, { recursive: true });
 
       const result = await runDoctorForInit(testDir);

@@ -531,7 +531,7 @@ export function validateNoPlaceholders(spec: {
  * - Nested object: { functional: ["criterion"], technical: ["criterion"] }
  *
  * @param {string[]|object} acceptance - Acceptance criteria
- * @returns {boolean} True if any placeholder found
+ * @returns {boolean} True if UnsafeAny placeholder found
  */
 function checkForPlaceholderInAcceptance(acceptance: string[] | Record<string, string[]>): boolean {
   if (Array.isArray(acceptance)) {
@@ -540,18 +540,12 @@ function checkForPlaceholderInAcceptance(acceptance: string[] | Record<string, s
     );
   }
 
-  if (typeof acceptance === 'object' && acceptance !== null) {
-    return Object.values(acceptance).some((value) => {
-      if (Array.isArray(value)) {
-        return value.some(
-          (item) => typeof item === 'string' && item.includes(PLACEHOLDER_SENTINEL),
-        );
-      }
-      return false;
-    });
-  }
-
-  return false;
+  return Object.values(acceptance).some((value) => {
+    if (Array.isArray(value)) {
+      return value.some((item) => typeof item === 'string' && item.includes(PLACEHOLDER_SENTINEL));
+    }
+    return false;
+  });
 }
 
 /**

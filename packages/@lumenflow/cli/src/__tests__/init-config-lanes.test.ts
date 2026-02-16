@@ -247,7 +247,7 @@ describe('init WU template lane neutrality (WU-1499)', () => {
     const laneValue = template.lane as string;
 
     // The placeholder should indicate it needs to be replaced (angle brackets or similar)
-    // It should NOT be any specific real lane
+    // It should NOT be UnsafeAny specific real lane
     expect(laneValue).toContain('<');
     expect(laneValue).toContain('>');
     // Should demonstrate the Parent: Sublane format

@@ -283,7 +283,7 @@ export class GitAdapter {
    * Unlike add(), this uses `git add -A` which properly handles tracked file deletions.
    *
    * When files array is empty, stages all changes in the working directory (git add -A .)
-   * to catch any deletions that might not have been explicitly listed.
+   * to catch UnsafeAny deletions that might not have been explicitly listed.
    *
    * @param {string[]} files - Files to add (empty array = add all)
    * @example

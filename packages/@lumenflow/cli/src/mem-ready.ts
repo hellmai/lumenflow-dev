@@ -64,7 +64,7 @@ const CLI_OPTIONS = {
  * @param {string} baseDir - Base directory
  * @param {object} entry - Audit log entry
  */
-async function writeAuditLog(baseDir: any, entry: any) {
+async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
   try {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
@@ -86,7 +86,7 @@ async function writeAuditLog(baseDir: any, entry: any) {
  * @param {number} index - Position in list (0-indexed)
  * @returns {string} Formatted output
  */
-function formatNodeHuman(node: any, index: any) {
+function formatNodeHuman(node: UnsafeAny, index: UnsafeAny) {
   const priority = node.metadata?.priority || '-';
   const lines = [
     `${index + 1}. [${node.id}] (${node.type})`,
@@ -116,7 +116,7 @@ function formatNodeHuman(node: any, index: any) {
  * @param {object[]} nodes - Ready nodes
  * @param {object} opts - CLI options
  */
-function printHumanFormat(nodes: any, opts: any) {
+function printHumanFormat(nodes: UnsafeAny, opts: UnsafeAny) {
   if (!opts.quiet) {
     console.log(`${LOG_PREFIX} Ready nodes for ${opts.wu}:`);
     console.log('');
@@ -146,7 +146,7 @@ function printHumanFormat(nodes: any, opts: any) {
  * @param {object[]} nodes - Ready nodes
  * @param {object} opts - CLI options
  */
-function printJsonFormat(nodes: any, opts: any) {
+function printJsonFormat(nodes: UnsafeAny, opts: UnsafeAny) {
   const output = {
     wuId: opts.wu,
     type: opts.type || null,
@@ -223,7 +223,7 @@ async function main() {
     output: nodes
       ? {
           count: nodes.length,
-          nodeIds: nodes.map((n: any) => n.id),
+          nodeIds: nodes.map((n: UnsafeAny) => n.id),
         }
       : null,
     error: error ? { message: error } : null,

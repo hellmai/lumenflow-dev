@@ -429,7 +429,7 @@ function getFileMode(options: ScaffoldOptions): import('./init-scaffolding.js').
 /**
  * WU-1576: Run client-specific integrations (enforcement hooks) based on config.
  *
- * Reads the just-scaffolded .lumenflow.config.yaml and runs integration for any
+ * Reads the just-scaffolded .lumenflow.config.yaml and runs integration for UnsafeAny
  * client that has enforcement.hooks enabled. This is vendor-agnostic: when new
  * clients add enforcement support, register them in CLIENT_INTEGRATIONS.
  *
@@ -525,7 +525,7 @@ function createInitialCommitIfNeeded(targetDir: string): boolean {
  * LumenFlow requires "main" for consistency. This renames the branch automatically
  * so users do not need to run `git branch -m master main` manually.
  *
- * Safe to call at any point: only renames when current branch is exactly "master".
+ * Safe to call at UnsafeAny point: only renames when current branch is exactly "master".
  */
 export function renameMasterToMainIfNeeded(targetDir: string): boolean {
   if (!isGitRepo(targetDir)) {
@@ -1508,7 +1508,7 @@ export async function main(): Promise<void> {
 
   // WU-1359: Show complete lifecycle with auto-ID (no --id flag required)
   // WU-1364: Added initiative-first guidance for product visions
-  // WU-1576: Show enforcement hooks status -- vendor-agnostic (any adapter that produced files)
+  // WU-1576: Show enforcement hooks status -- vendor-agnostic (UnsafeAny adapter that produced files)
   console.log('\n[lumenflow init] Done! Next steps:');
   console.log('  1. Review AGENTS.md and LUMENFLOW.md for workflow documentation');
   console.log(`  2. Edit ${CONFIG_FILE_NAME} to match your project structure`);

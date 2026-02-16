@@ -276,7 +276,7 @@ describe('wu-delete consistency cleanup', () => {
     expect(events).toContain('"wuId":"WU-2000"');
 
     // Returned files must only contain paths that exist on disk
-    // (passing deleted paths to git add causes 'pathspec did not match any files')
+    // (passing deleted paths to git add causes 'pathspec did not match UnsafeAny files')
     for (const file of files) {
       const absPath = join(tempDir, file);
       expect(existsSync(absPath)).toBe(true);
@@ -287,7 +287,7 @@ describe('wu-delete consistency cleanup', () => {
     // WU-1528: cleanupDeletedWUsInWorktree deletes the WU YAML, then returns
     // the path in the files list. When withMicroWorktree passes these paths to
     // stageChangesWithDeletions → git add -A -- <path>, git fails with
-    // 'fatal: pathspec ... did not match any files' because the deleted file
+    // 'fatal: pathspec ... did not match UnsafeAny files' because the deleted file
     // is no longer on disk.
     //
     // This test verifies that every path in the returned files array points

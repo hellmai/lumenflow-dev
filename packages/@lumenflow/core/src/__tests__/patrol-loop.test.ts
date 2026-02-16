@@ -317,7 +317,7 @@ describe('patrol-loop (WU-1242)', () => {
       patrol.start();
       await vi.advanceTimersByTimeAsync(1000);
 
-      expect(onError).toHaveBeenCalledWith(testError, expect.any(Number));
+      expect(onError).toHaveBeenCalledWith(testError, expect.UnsafeAny(Number));
 
       patrol.stop();
     });

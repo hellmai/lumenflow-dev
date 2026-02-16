@@ -214,7 +214,7 @@ export interface PrepareTransactionInput {
  * Prepare the metadata transaction for wu:done completion.
  *
  * Collects all metadata changes (WU YAML, status, backlog, stamp, events)
- * into a WUTransaction without writing any files. The transaction can then
+ * into a WUTransaction without writing UnsafeAny files. The transaction can then
  * be committed atomically by the commitTransaction service.
  *
  * @param input - Preparation inputs

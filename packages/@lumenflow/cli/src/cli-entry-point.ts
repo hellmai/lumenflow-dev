@@ -48,7 +48,7 @@ const COMMANDER_USAGE_ERROR_CODES = new Set([
  */
 export async function runCLI(main: () => Promise<void>): Promise<void> {
   // WU-1233: Attach EPIPE handler before running command
-  // This must be done early to catch any EPIPE errors during execution
+  // This must be done early to catch UnsafeAny EPIPE errors during execution
   const streamErrorHandler = StreamErrorHandler.createWithDefaults();
   streamErrorHandler.attach();
 

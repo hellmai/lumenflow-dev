@@ -128,7 +128,7 @@ export function updateInitiativeWusArrays(
  * When yaml.dump() serializes them back, it outputs ISO timestamps.
  * This function normalizes Date objects back to YYYY-MM-DD strings.
  */
-export function normalizeWUDates(wu: any) {
+export function normalizeWUDates(wu: UnsafeAny) {
   if (wu.created !== undefined) {
     wu.created = normalizeToDateString(wu.created);
   }
@@ -138,7 +138,7 @@ export function normalizeWUDates(wu: any) {
 /**
  * Merge array values: replace by default, append if --append flag is set (WU-1388)
  */
-export function mergeArrayField(existing: any, newValues: any, shouldAppend: any) {
+export function mergeArrayField(existing: UnsafeAny, newValues: UnsafeAny, shouldAppend: UnsafeAny) {
   if (!shouldAppend) {
     return newValues;
   }
@@ -186,7 +186,7 @@ export async function regenerateBacklogFromState(backlogPath: string): Promise<v
 /**
  * Load spec file and merge with original WU (preserving id and status)
  */
-function loadSpecFile(specPath: any, originalWU: any) {
+function loadSpecFile(specPath: UnsafeAny, originalWU: UnsafeAny) {
   const resolvedPath = resolve(specPath);
 
   if (!existsSync(resolvedPath)) {
@@ -211,7 +211,7 @@ function loadSpecFile(specPath: any, originalWU: any) {
  * Returns the updated WU object
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
-export function applyEdits(wu: any, opts: any) {
+export function applyEdits(wu: UnsafeAny, opts: UnsafeAny) {
   // Full spec replacement from file
   if (opts.specFile) {
     return loadSpecFile(opts.specFile, wu);
@@ -282,7 +282,7 @@ export function applyEdits(wu: any, opts: any) {
           .filter(Boolean)
       : rawCodePaths
           .split(',')
-          .map((p: any) => p.trim())
+          .map((p: UnsafeAny) => p.trim())
           .filter(Boolean);
     // WU-1225: Invert logic - append by default, replace with --replace-code-paths
     // Also support legacy --append flag for backwards compatibility
@@ -301,7 +301,7 @@ export function applyEdits(wu: any, opts: any) {
           .filter(Boolean)
       : rawRisks
           .split(',')
-          .map((risk: any) => risk.trim())
+          .map((risk: UnsafeAny) => risk.trim())
           .filter(Boolean);
     // WU-1225: Invert logic - append by default
     const shouldAppend = !opts.replaceRisks || opts.append;
@@ -328,7 +328,7 @@ export function applyEdits(wu: any, opts: any) {
             .filter(Boolean)
         : rawPaths
             .split(',')
-            .map((p: any) => p.trim())
+            .map((p: UnsafeAny) => p.trim())
             .filter(Boolean);
       updated.tests = updated.tests || {};
       // WU-1225: Append by default (no individual replace flags for test paths yet)
@@ -343,7 +343,7 @@ export function applyEdits(wu: any, opts: any) {
     const rawBlockedBy = opts.blockedBy;
     const blockedByIds = rawBlockedBy
       .split(',')
-      .map((id: any) => id.trim())
+      .map((id: UnsafeAny) => id.trim())
       .filter(Boolean);
     const shouldAppend = !opts.replaceBlockedBy || opts.append;
     updated.blocked_by = mergeArrayField(wu.blocked_by, blockedByIds, shouldAppend);
@@ -355,7 +355,7 @@ export function applyEdits(wu: any, opts: any) {
     const rawAddDep = opts.addDep;
     const depIds = rawAddDep
       .split(',')
-      .map((id: any) => id.trim())
+      .map((id: UnsafeAny) => id.trim())
       .filter(Boolean);
     const shouldAppend = !opts.replaceDependencies || opts.append;
     updated.dependencies = mergeArrayField(wu.dependencies, depIds, shouldAppend);

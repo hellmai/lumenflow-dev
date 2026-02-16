@@ -87,7 +87,7 @@ describe('agent-patterns-registry', () => {
         const patterns = await getAgentPatterns({ cacheDir: tempDir });
 
         expect(patterns).toEqual(remotePatterns.patterns);
-        expect(globalThis.fetch).toHaveBeenCalledWith(REGISTRY_URL, expect.any(Object));
+        expect(globalThis.fetch).toHaveBeenCalledWith(REGISTRY_URL, expect.UnsafeAny(Object));
       });
 
       it('should cache fetched patterns locally', async () => {
@@ -341,10 +341,10 @@ describe('agent-patterns-registry', () => {
      * |-----------------|-------------------|-----------------|------------------------|---------------|
      * | false           | undefined         | undefined       | registry               | 'registry'    |
      * | false           | undefined         | ['custom/*']    | registry + config      | 'merged'      |
-     * | false           | ['only/*']        | any             | override only          | 'override'    |
+     * | false           | ['only/*']        | UnsafeAny             | override only          | 'override'    |
      * | true            | undefined         | undefined       | defaults               | 'defaults'    |
      * | true            | undefined         | ['custom/*']    | config only            | 'config'      |
-     * | true            | ['only/*']        | any             | override only          | 'override'    |
+     * | true            | ['only/*']        | UnsafeAny             | override only          | 'override'    |
      */
 
     const mockRegistryPatterns = ['claude/*', 'codex/*', 'copilot/*', 'cursor/*', 'agent/*'];
@@ -531,7 +531,7 @@ describe('agent-patterns-registry', () => {
     });
 
     describe('backwards compatibility', () => {
-      it('should work without any options (uses defaults)', async () => {
+      it('should work without UnsafeAny options (uses defaults)', async () => {
         // When called with no options, should fetch from registry using internal fetcher
         globalThis.fetch = vi.fn().mockResolvedValue({
           ok: true,

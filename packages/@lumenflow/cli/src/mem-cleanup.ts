@@ -104,7 +104,7 @@ const CLI_OPTIONS = {
  * @param {string} baseDir - Base directory
  * @param {object} entry - Audit log entry
  */
-async function writeAuditLog(baseDir: any, entry: any) {
+async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
   try {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
@@ -125,7 +125,7 @@ async function writeAuditLog(baseDir: any, entry: any) {
  * @param {number} bytes - Number of bytes
  * @returns {string} Formatted string (e.g., "1.5 KB")
  */
-function formatBytes(bytes: any) {
+function formatBytes(bytes: UnsafeAny) {
   if (bytes < BYTES_PER_KB) {
     return `${bytes} B`;
   }
@@ -139,7 +139,7 @@ function formatBytes(bytes: any) {
  * @param {number} ratio - Compaction ratio (0-1)
  * @returns {string} Formatted percentage
  */
-function formatRatio(ratio: any) {
+function formatRatio(ratio: UnsafeAny) {
   return `${(ratio * 100).toFixed(1)}%`;
 }
 
@@ -173,7 +173,7 @@ function parseArguments() {
  * @param {boolean} quiet - Suppress verbose output
  * @param {string} [ttl] - TTL string if provided
  */
-function printResult(result: any, quiet: any, ttl: any) {
+function printResult(result: UnsafeAny, quiet: UnsafeAny, ttl: UnsafeAny) {
   if (result.dryRun) {
     console.log(`${LOG_PREFIX} Dry-run: Would remove ${result.removedIds.length} node(s)`);
   } else {
@@ -245,7 +245,7 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
  * @param {object} decayResult - Result from archiveByDecay
  * @param {boolean} quiet - Suppress verbose output
  */
-function printDecayResult(decayResult: any, quiet: any) {
+function printDecayResult(decayResult: UnsafeAny, quiet: UnsafeAny) {
   if (decayResult.dryRun) {
     console.log(
       `${LOG_PREFIX} Dry-run: Would archive ${decayResult.archivedIds.length} node(s) by decay`,
@@ -282,7 +282,7 @@ function printDecayResult(decayResult: any, quiet: any) {
  * @param {boolean} json - Output as JSON
  * @param {boolean} quiet - Suppress verbose output
  */
-async function runDecayMode(baseDir: any, dryRun: any, json: any, quiet: any) {
+async function runDecayMode(baseDir: UnsafeAny, dryRun: UnsafeAny, json: UnsafeAny, quiet: UnsafeAny) {
   const startedAt = new Date().toISOString();
   const startTime = Date.now();
 

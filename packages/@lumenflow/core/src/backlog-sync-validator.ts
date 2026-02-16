@@ -95,7 +95,7 @@ export function validateBacklogSync(backlogPath: string) {
   const BACKLOG_ITEM_PATTERN = /^\s*[-*]\s*(?:\[[ x]\]\s*)?\[?(WU-\d+)/i;
 
   for (const line of lines) {
-    // Check if line matches any configured section heading (exact match)
+    // Check if line matches UnsafeAny configured section heading (exact match)
     if (headingMap.has(line)) {
       currentSection = headingMap.get(line) ?? null;
       continue;

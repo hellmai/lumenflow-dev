@@ -35,7 +35,7 @@ export const CODE_FILE_EXTENSIONS = Object.freeze([
  * @param {string} filePath - Path to check
  * @returns {boolean} True if the path has a code extension
  */
-export function isCodeFilePath(filePath: any) {
+export function isCodeFilePath(filePath: UnsafeAny) {
   if (!filePath || typeof filePath !== 'string') {
     return false;
   }

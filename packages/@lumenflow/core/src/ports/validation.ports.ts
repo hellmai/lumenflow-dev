@@ -59,7 +59,7 @@ export interface ICommandRegistry {
    * Get all commands valid for the current context.
    *
    * A command is valid if:
-   * - Location requirement is satisfied (or null = any)
+   * - Location requirement is satisfied (or null = UnsafeAny)
    * - WU status requirement is satisfied (or null = no WU required)
    * - All error-severity predicates pass
    *

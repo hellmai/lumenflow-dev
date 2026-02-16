@@ -43,7 +43,7 @@ export interface GitDiffResult {
   success: boolean;
   /** Error message (if failed) */
   error?: string;
-  /** Whether there are any differences */
+  /** Whether there are UnsafeAny differences */
   hasDiff?: boolean;
   /** Diff output */
   diff?: string;

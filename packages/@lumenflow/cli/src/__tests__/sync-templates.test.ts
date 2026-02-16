@@ -63,7 +63,7 @@ describe('sync:templates --check-drift', () => {
   });
 
   describe('checkTemplateDrift', () => {
-    it('should NOT write any files when checking drift', async () => {
+    it('should NOT write UnsafeAny files when checking drift', async () => {
       const { checkTemplateDrift } = await import('../sync-templates.js');
 
       // Get initial file mtimes
@@ -225,8 +225,8 @@ describe('sync:templates (sync mode)', () => {
       expect(mockWithMicroWorktree).toHaveBeenCalledWith(
         expect.objectContaining({
           operation: 'sync-templates',
-          id: expect.any(String),
-          execute: expect.any(Function),
+          id: expect.UnsafeAny(String),
+          execute: expect.UnsafeAny(Function),
         }),
       );
     });

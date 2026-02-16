@@ -20,14 +20,14 @@ import { z } from 'zod';
  * for schema introspection purposes.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ZodDef = Record<string, any>;
+type ZodDef = Record<string, UnsafeAny>;
 
 /**
  * Get the internal _def from a Zod type
  */
 function getDef(zodType: z.ZodTypeAny): ZodDef {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
-  return (zodType as any)._def as ZodDef;
+  return (zodType as UnsafeAny)._def as ZodDef;
 }
 
 // =============================================================================
@@ -228,7 +228,7 @@ function getEnumValues(zodType: z.ZodTypeAny): string[] | undefined {
 function getDescription(zodType: z.ZodTypeAny): string | undefined {
   const def = getDef(zodType);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
-  return (def?.description as string | undefined) ?? (zodType as any).description;
+  return (def?.description as string | undefined) ?? (zodType as UnsafeAny).description;
 }
 
 /**

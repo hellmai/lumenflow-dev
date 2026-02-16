@@ -31,7 +31,7 @@ import { WU_PATHS } from '../wu-paths.js';
  * @returns {string} Path with forward slashes
  * @private
  */
-function normalizePath(p: any) {
+function normalizePath(p: UnsafeAny) {
   return p.replace(/\\/g, '/');
 }
 
@@ -45,7 +45,7 @@ function normalizePath(p: any) {
  * @returns {Object} Parsed WU YAML
  * @private
  */
-function loadWUYaml(wuId: any) {
+function loadWUYaml(wuId: UnsafeAny) {
   const wuPath = WU_PATHS.WU(wuId);
   return readWU(wuPath, wuId);
 }
@@ -114,7 +114,7 @@ export async function getActiveScope(options: GetActiveScopeOptions = {}) {
  *   console.log('Path is in scope');
  * }
  */
-export function isPathInScope(filePath: any, scope: any) {
+export function isPathInScope(filePath: UnsafeAny, scope: UnsafeAny) {
   if (!scope) {
     return false;
   }
@@ -152,7 +152,7 @@ export function isPathInScope(filePath: any, scope: any) {
  * assertPathInScope('apps/web/src/Header.tsx', scope, 'file write');
  * // Throws if path not in WU code_paths
  */
-export function assertPathInScope(filePath: any, scope: any, operation = 'this operation') {
+export function assertPathInScope(filePath: UnsafeAny, scope: UnsafeAny, operation = 'this operation') {
   if (!scope) {
     throw new Error(
       `❌ SCOPE VIOLATION: No active WU context.
@@ -177,7 +177,7 @@ WU ID: ${scope.wuId}
 File path: ${normalizedPath}
 
 Allowed code_paths:
-${scope.code_paths.map((p: any) => `  - ${p}`).join('\n')}
+${scope.code_paths.map((p: UnsafeAny) => `  - ${p}`).join('\n')}
 
 This file is not authorized for modification in this WU.
 Either:

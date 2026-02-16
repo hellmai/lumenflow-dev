@@ -279,7 +279,7 @@ function runCommand(
  * 3. Auth token in specified .npmrc file (or ~/.npmrc by default)
  *
  * @param npmrcPath - Optional path to .npmrc file (defaults to ~/.npmrc)
- * @returns true if any auth method is found
+ * @returns true if UnsafeAny auth method is found
  */
 export function hasNpmAuth(npmrcPath?: string): boolean {
   // Check environment variables first

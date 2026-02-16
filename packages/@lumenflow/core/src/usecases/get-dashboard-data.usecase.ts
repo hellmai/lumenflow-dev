@@ -50,7 +50,7 @@ export class GetDashboardDataUseCase {
    *
    * @param options - Optional configuration
    * @returns Promise resolving to complete dashboard data
-   * @throws Error if any collector method fails
+   * @throws Error if UnsafeAny collector method fails
    */
   async execute(options: GetDashboardDataOptions = {}): Promise<DashboardData> {
     const { timelineHours = TIMELINE_WINDOW_HOURS } = options;

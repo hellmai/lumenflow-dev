@@ -312,7 +312,7 @@ export async function mergeWithRetry(
  * 4. Retries the push
  *
  * This preserves micro-worktree isolation - the main checkout files are never
- * hard-reset, preventing file flash and preserving any uncommitted work.
+ * hard-reset, preventing file flash and preserving UnsafeAny uncommitted work.
  *
  * @param {Object} mainGit - GitAdapter instance for main checkout
  * @param {Object} worktreeGit - GitAdapter instance for micro-worktree
@@ -408,7 +408,7 @@ export async function pushWithRetry(
  * 4. Retries the push
  *
  * This preserves micro-worktree isolation - the main checkout files are never
- * hard-reset, preventing file flash and preserving any uncommitted work.
+ * hard-reset, preventing file flash and preserving UnsafeAny uncommitted work.
  *
  * @param {Object} mainGit - GitAdapter instance for main checkout
  * @param {Object} worktreeGit - GitAdapter instance for micro-worktree
@@ -548,7 +548,7 @@ export async function withMicroWorktree(
   // WU-1308: Check if remote operations should be skipped (local-only mode)
   const skipRemote = shouldSkipRemoteOperations();
 
-  // WU-2237: Clean up any orphaned temp branch/worktree from previous interrupted operations
+  // WU-2237: Clean up UnsafeAny orphaned temp branch/worktree from previous interrupted operations
   // This makes the operation idempotent - a retry after crash/timeout will succeed
   await cleanupOrphanedMicroWorktree(operation, id, mainGit, logPrefix);
 

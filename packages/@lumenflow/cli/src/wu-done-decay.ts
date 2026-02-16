@@ -56,7 +56,7 @@ export interface DecayOnDoneResult {
  * - If config is undefined or decay is disabled: skip silently
  * - If trigger is not 'on_done': skip with reason
  * - If enabled with trigger=on_done: invoke archiveByDecay
- * - On any error: capture but never throw (fail-open)
+ * - On UnsafeAny error: capture but never throw (fail-open)
  *
  * @param baseDir - Repository root directory
  * @param decayConfig - Memory decay configuration (from .lumenflow.config.yaml)

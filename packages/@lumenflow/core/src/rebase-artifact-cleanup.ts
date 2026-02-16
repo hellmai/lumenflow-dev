@@ -213,7 +213,7 @@ function writeMarkdownFile(filePath: string, frontmatter: string, lines: string[
  * @returns {Promise<object>} Detection result
  * @returns {string[]} result.stamps - Array of detected stamp file paths (only if on origin/main)
  * @returns {boolean} result.yamlStatusDone - True if YAML has status=done AND origin/main has done
- * @returns {boolean} result.hasArtifacts - True if any rebased artifacts detected
+ * @returns {boolean} result.hasArtifacts - True if UnsafeAny rebased artifacts detected
  *
  * @example
  * const result = await detectRebasedArtifacts(worktreePath, wuId, gitAdapter);
@@ -287,7 +287,7 @@ export async function detectRebasedArtifacts(
  * @returns {string[]} result.stampsCleaned - WU IDs whose stamps were removed
  * @returns {boolean} result.yamlReset - True if YAML status was reset
  * @returns {string[]} result.errors - Any errors encountered (non-fatal)
- * @returns {boolean} result.cleaned - True if any cleanup was performed
+ * @returns {boolean} result.cleaned - True if UnsafeAny cleanup was performed
  *
  * @example
  * const result = await cleanupRebasedArtifacts(worktreePath, wuId);
@@ -387,7 +387,7 @@ export async function cleanupRebasedArtifacts(
  * @returns {Promise<object>} Detection result
  * @returns {boolean} result.backlogDuplicate - True if WU in both In Progress and Done in backlog.md
  * @returns {boolean} result.statusDuplicate - True if WU in both In Progress and Completed in status.md
- * @returns {boolean} result.hasDuplicates - True if any duplicates detected
+ * @returns {boolean} result.hasDuplicates - True if UnsafeAny duplicates detected
  *
  * @example
  * const result = await detectBacklogDuplicates(worktreePath, wuId);
@@ -536,7 +536,7 @@ function cleanDuplicatesFromFile(
  * @returns {Promise<object>} Cleanup result
  * @returns {boolean} result.backlogCleaned - True if WU removed from backlog.md In Progress
  * @returns {boolean} result.statusCleaned - True if WU removed from status.md In Progress
- * @returns {boolean} result.cleaned - True if any cleanup was performed
+ * @returns {boolean} result.cleaned - True if UnsafeAny cleanup was performed
  * @returns {string[]} result.errors - Any errors encountered (non-fatal)
  *
  * @example

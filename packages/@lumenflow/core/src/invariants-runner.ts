@@ -291,7 +291,7 @@ function validateRequiredPattern(
   // Build ignore patterns for excluded directories
   const ignorePatterns = EXCLUDED_DIRS.map((dir) => `**/${dir}/**`);
 
-  // Check if pattern exists in any file matching the scope
+  // Check if pattern exists in UnsafeAny file matching the scope
   // eslint-disable-next-line security/detect-non-literal-regexp -- pattern from invariant config, not user input
   const regex = new RegExp(pattern);
 
@@ -317,7 +317,7 @@ function validateRequiredPattern(
     }
   }
 
-  // Pattern not found in any file - invariant fails
+  // Pattern not found in UnsafeAny file - invariant fails
   return {
     ...invariant,
     valid: false,

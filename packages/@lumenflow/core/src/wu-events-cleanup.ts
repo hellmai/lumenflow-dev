@@ -148,7 +148,7 @@ export function parseArchiveAfter(archiveAfterString: string): number {
 
   const result = ms(trimmed);
 
-  if (result === undefined || result <= 0) {
+  if (result <= 0) {
     throw new Error(`Invalid archiveAfter format: "${archiveAfterString}" is not a valid duration`);
   }
 

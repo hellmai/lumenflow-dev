@@ -69,7 +69,7 @@ export const RETRY_PRESETS = Object.freeze({
     maxDelayMs: 60000,
     multiplier: 2,
     jitter: 0.15, // 15% jitter to spread concurrent retries
-    shouldRetry: (error: any) => {
+    shouldRetry: (error: UnsafeAny) => {
       // Retry fast-forward failures and network errors using defined patterns
       const message = error.message || '';
       return Object.values(RETRYABLE_ERROR_PATTERNS).some((pattern) => message.includes(pattern));
@@ -129,7 +129,7 @@ export const RETRY_PRESETS = Object.freeze({
  * // Customize preset
  * const config = createRetryConfig('wu_done', { maxAttempts: 10 });
  */
-export function createRetryConfig(presetOrOptions: any, options: any) {
+export function createRetryConfig(presetOrOptions: UnsafeAny, options: UnsafeAny) {
   // Determine base config
   let baseConfig;
   let customOptions;
@@ -170,7 +170,7 @@ export function createRetryConfig(presetOrOptions: any, options: any) {
  * @param {RetryConfig} config - Retry configuration
  * @returns {number} Delay in milliseconds
  */
-export function calculateBackoffDelay(attempt: any, config: any) {
+export function calculateBackoffDelay(attempt: UnsafeAny, config: UnsafeAny) {
   const { baseDelayMs, multiplier, maxDelayMs, jitter } = config;
 
   // Exponential backoff: base * multiplier^attempt
@@ -196,7 +196,7 @@ export function calculateBackoffDelay(attempt: any, config: any) {
  * @param {number} ms - Milliseconds to sleep
  * @returns {Promise<void>}
  */
-function sleep(ms: any) {
+function sleep(ms: UnsafeAny) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
@@ -215,7 +215,7 @@ function sleep(ms: any) {
  *   createRetryConfig('wu_done')
  * );
  */
-export async function withRetry(fn: any, config: any = DEFAULT_RETRY_CONFIG) {
+export async function withRetry(fn: UnsafeAny, config: UnsafeAny = DEFAULT_RETRY_CONFIG) {
   const { maxAttempts, shouldRetry, onRetry } = config as {
     maxAttempts: number;
     shouldRetry: (error: unknown) => boolean;
@@ -283,7 +283,7 @@ export async function withRetry(fn: any, config: any = DEFAULT_RETRY_CONFIG) {
  * const retryableMerge = withRetryWrapper(mergeBranch, createRetryConfig('wu_done'));
  * await retryableMerge(branch);
  */
-export function withRetryWrapper(fn: any, config: any = DEFAULT_RETRY_CONFIG) {
+export function withRetryWrapper(fn: UnsafeAny, config: UnsafeAny = DEFAULT_RETRY_CONFIG) {
   return async (...args: unknown[]) => {
     return withRetry(() => fn(...args), config);
   };
@@ -295,7 +295,7 @@ export function withRetryWrapper(fn: any, config: any = DEFAULT_RETRY_CONFIG) {
  * @param {Error} error - Error to check
  * @returns {boolean} True if conflict error
  */
-export function isConflictError(error: any) {
+export function isConflictError(error: UnsafeAny) {
   const message = error.message || '';
   return (
     message.includes('conflict') ||
@@ -311,7 +311,7 @@ export function isConflictError(error: any) {
  * @param {Error} error - Error to check
  * @returns {boolean} True if likely transient
  */
-export function isTransientError(error: any) {
+export function isTransientError(error: UnsafeAny) {
   const message = error.message || '';
   return (
     message.includes('ETIMEDOUT') ||

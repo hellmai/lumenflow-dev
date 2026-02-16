@@ -604,7 +604,7 @@ export class FileSystemMetricsCollector implements IMetricsCollector {
         incidentsLogged: session.incidents_logged ?? 0,
       };
     } catch {
-      // Return null on any read/parse error (file may not exist, corrupted, or mid-write)
+      // Return null on UnsafeAny read/parse error (file may not exist, corrupted, or mid-write)
       return null;
     }
   }

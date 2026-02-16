@@ -44,7 +44,7 @@ const COMPLETION_COMMIT_PATTERN = /wu\(([^)]+)\):\s*done\s*-/i;
  * @param {object} gitAdapter - Git adapter instance
  * @returns {Promise<number>} Number of completion attempt commits found
  */
-export async function countPreviousCompletionAttempts(wuId: any, gitAdapter: any) {
+export async function countPreviousCompletionAttempts(wuId: UnsafeAny, gitAdapter: UnsafeAny) {
   const normalizedId = wuId.toLowerCase();
 
   try {
@@ -98,9 +98,9 @@ export interface SquashCompletionAttemptsOptions {
 }
 
 export async function squashPreviousCompletionAttempts(
-  wuId: any,
-  count: any,
-  gitAdapter: any,
+  wuId: UnsafeAny,
+  count: UnsafeAny,
+  gitAdapter: UnsafeAny,
   options: SquashCompletionAttemptsOptions = {},
 ) {
   const { preserveIndex = true } = options;
@@ -160,13 +160,13 @@ export async function squashPreviousCompletionAttempts(
  * WU-1584 Fix #2: Recovery loop should squash previous attempt commits
  *
  * When recovering from zombie state (status=done but worktree exists),
- * first squash any previous completion attempts to avoid "rebase hell".
+ * first squash UnsafeAny previous completion attempts to avoid "rebase hell".
  *
  * @param {string} wuId - WU ID
  * @param {object} gitAdapter - Git adapter instance
  * @returns {Promise<{ squashedCount: number }>} Result
  */
-export async function prepareRecoveryWithSquash(wuId: any, gitAdapter: any) {
+export async function prepareRecoveryWithSquash(wuId: UnsafeAny, gitAdapter: UnsafeAny) {
   console.log(
     `${LOG_PREFIX.DONE} ${EMOJI.INFO} Checking for previous completion attempts before recovery...`,
   );
@@ -211,9 +211,9 @@ export interface HandleParallelCompletionsOptions {
 }
 
 export async function handleParallelCompletions(
-  wuId: any,
-  doc: any,
-  gitAdapter: any,
+  wuId: UnsafeAny,
+  doc: UnsafeAny,
+  gitAdapter: UnsafeAny,
   options: HandleParallelCompletionsOptions = {},
 ) {
   const { worktreePath, autoRebase = true } = options;
@@ -286,7 +286,7 @@ export async function handleParallelCompletions(
         `Manual resolution required:\n` +
         `1. cd ${worktreePath || 'your-worktree'}\n` +
         `2. git fetch origin && git rebase origin/main\n` +
-        `3. Resolve conflicts if any\n` +
+        `3. Resolve conflicts if UnsafeAny\n` +
         `4. Retry wu:done`,
       { wuId, originalError: error.message },
     );

@@ -105,7 +105,7 @@ export function resolveClaimStatus(status: unknown) {
 }
 
 /**
- * Pre-flight validation: Check WU file exists and is valid BEFORE any git operations
+ * Pre-flight validation: Check WU file exists and is valid BEFORE UnsafeAny git operations
  * Prevents zombie worktrees when WU YAML is missing or malformed
  */
 export function preflightValidateWU(WU_PATH: string, id: string): ClaimWUDoc {

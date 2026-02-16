@@ -8,7 +8,7 @@
  * Flow (WU-1369 Atomic Pattern):
  * 1. cd into worktree
  * 2. Read and validate WU state
- * 3. Run ALL validations FIRST (before any file writes)
+ * 3. Run ALL validations FIRST (before UnsafeAny file writes)
  * 4. Collect all metadata changes into transaction (in memory)
  * 5. Commit transaction (atomic write)
  * 6. Stage and format files
@@ -17,7 +17,7 @@
  * 9. Either merge (default) OR create PR (pr-mode)
  * 10. Push to origin
  *
- * Key guarantee: If any validation fails, NO files are modified.
+ * Key guarantee: If UnsafeAny validation fails, NO files are modified.
  */
 
 import path from 'node:path';
@@ -227,7 +227,7 @@ export function resolveWorktreeMetadataPaths(
 export async function executeWorktreeCompletion(
   context: WorktreeCompletionContext,
 ): Promise<WorktreeCompletionResult> {
-  // Save original cwd for returning after any worktree operations.
+  // Save original cwd for returning after UnsafeAny worktree operations.
   // This must be captured BEFORE zombie recovery, which temporarily chdirs into the worktree.
   const originalCwd = process.cwd();
 
@@ -338,7 +338,7 @@ export async function executeWorktreeCompletion(
   await ensureMainNotBehindOrigin(originalCwd, id);
 
   // WU-1369: Create atomic transaction for metadata updates
-  // This ensures NO files are modified if any validation fails
+  // This ensures NO files are modified if UnsafeAny validation fails
   const transaction = new WUTransaction(id);
   console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Transaction BEGIN - atomic pattern (WU-1369)`);
 
@@ -367,7 +367,7 @@ export async function executeWorktreeCompletion(
     const workingStampPath = worktreeMetadataPaths.stampPath;
 
     // ======================================================================
-    // PHASE 1: RUN ALL VALIDATIONS FIRST (before any file writes)
+    // PHASE 1: RUN ALL VALIDATIONS FIRST (before UnsafeAny file writes)
     // WU-1369: This ensures no partial state on validation failure
     // WU-1811: Validate and normalize YAML before gates/merge
     // ======================================================================
@@ -426,7 +426,7 @@ export async function executeWorktreeCompletion(
 
     // ======================================================================
     // PHASE 2: COLLECT ALL CHANGES TO TRANSACTION (in memory, no writes)
-    // WU-1369: Atomic collection - all changes gathered before any writes
+    // WU-1369: Atomic collection - all changes gathered before UnsafeAny writes
     // ======================================================================
 
     // WU-1574: Now async
@@ -721,7 +721,7 @@ export async function executeWorktreeCompletion(
       console.log(BOX.MID);
       console.log(`${BOX.SIDE}  Error: ${worktreeError.message}`);
       console.log(BOX.SIDE);
-      console.log(`${BOX.SIDE}  WU-1369: Transaction aborted before any writes.`);
+      console.log(`${BOX.SIDE}  WU-1369: Transaction aborted before UnsafeAny writes.`);
       console.log(`${BOX.SIDE}  WU-1811: Worktree preserved for recovery.`);
       console.log(`${BOX.SIDE}  Worktree: ${worktreePath}`);
       console.log(BOX.MID);
@@ -1481,7 +1481,7 @@ export async function checkEmptyMerge(
       ]);
       const modifiedFiles = modifiedFilesRaw.trim().split('\n').filter(Boolean);
 
-      // Check if any code_paths files are in the modified list
+      // Check if UnsafeAny code_paths files are in the modified list
       const missingCodePaths = codePaths.filter(
         (codePath: string) =>
           !modifiedFiles.some(
@@ -1645,7 +1645,7 @@ export async function mergeLaneBranch(
 /**
  * WU-1943: Check if the session has checkpoints for the given WU
  *
- * Used to warn agents when they're completing a WU without any checkpoints,
+ * Used to warn agents when they're completing a WU without UnsafeAny checkpoints,
  * which means no recovery data if the session crashes.
  *
  * @param {string} wuId - WU ID to check
@@ -1763,7 +1763,7 @@ async function ensureMainNotBehindOrigin(mainCheckoutPath: string, wuId: string)
     throw createError(
       ErrorCodes.GIT_ERROR,
       `Local main is ${result.commitsBehind} commit(s) behind origin/main.\n\n` +
-        `wu:done aborted BEFORE any writes to prevent metadata leaks (WU-1577).\n\n` +
+        `wu:done aborted BEFORE UnsafeAny writes to prevent metadata leaks (WU-1577).\n\n` +
         `Fix: git pull origin main\n` +
         `Then retry: pnpm wu:done --id ${wuId}`,
       { wuId, commitsBehind: result.commitsBehind },

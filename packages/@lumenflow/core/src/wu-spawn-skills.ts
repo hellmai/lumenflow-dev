@@ -58,7 +58,7 @@ interface ClientContext {
   config?: ClientConfig;
 }
 
-export function resolveClientConfig(config: any, clientName: any) {
+export function resolveClientConfig(config: UnsafeAny, clientName: UnsafeAny) {
   const clients = config?.agents?.clients || {};
   if (!clientName) return undefined;
   if (clients[clientName]) return clients[clientName];
@@ -80,7 +80,7 @@ function uniqueNonEmpty(values: Array<string | undefined>) {
   return result;
 }
 
-export function resolveSkillsPaths(config: any, clientName: any) {
+export function resolveSkillsPaths(config: UnsafeAny, clientName: UnsafeAny) {
   const clientConfig = resolveClientConfig(config, clientName);
   const configuredSkillsDir = clientConfig?.skillsDir || config?.directories?.skillsDir;
   const configuredAgentsDir = config?.directories?.agentsDir;
@@ -102,7 +102,7 @@ export function resolveSkillsPaths(config: any, clientName: any) {
   };
 }
 
-export function generateSkillsCatalogGuidance(config: any, clientName: any) {
+export function generateSkillsCatalogGuidance(config: UnsafeAny, clientName: UnsafeAny) {
   const resolution = resolveSkillsPaths(config, clientName);
   const lines = [];
 
@@ -172,7 +172,7 @@ export function generateClientSkillsGuidance(
   return `${SECTION.clientSkills} (${clientContext?.name})\n\n${instructions}${recommendedSection}`;
 }
 
-export function generateSkillsSelectionSection(doc: any, config: any, clientName: any) {
+export function generateSkillsSelectionSection(doc: UnsafeAny, config: UnsafeAny, clientName: UnsafeAny) {
   const lane = doc.lane || '';
   const type = doc.type || 'feature';
   const laneParent = lane.split(':')[0].trim();

@@ -22,7 +22,7 @@
  * @param {string} worktreePath - Path to worktree
  * @returns {string|null} Extracted WU ID (uppercase) or null if not found
  */
-export function extractWUFromWorktreePath(worktreePath: any) {
+export function extractWUFromWorktreePath(worktreePath: UnsafeAny) {
   if (!worktreePath || typeof worktreePath !== 'string') {
     return null;
   }

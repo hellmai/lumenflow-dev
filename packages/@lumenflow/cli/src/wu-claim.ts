@@ -401,7 +401,7 @@ async function main() {
     const cloudEffective = preflightCloudEffective;
     const effectiveCloud = cloudEffective.isCloud;
 
-    // WU-1590: Capture current branch for cloud claim metadata (before any branch switching)
+    // WU-1590: Capture current branch for cloud claim metadata (before UnsafeAny branch switching)
     const currentBranchForCloud = effectiveCloud ? currentBranch : undefined;
 
     // WU-1491: Resolve claimed mode from flag combination

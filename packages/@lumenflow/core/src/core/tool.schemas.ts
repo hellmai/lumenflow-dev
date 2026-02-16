@@ -160,7 +160,7 @@ export const ToolDefinitionSchema = z.object({
   /** Tool execution function */
   execute: z.custom<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (input: any, context?: Record<string, unknown>) => Promise<ToolOutput>
+    (input: UnsafeAny, context?: Record<string, unknown>) => Promise<ToolOutput>
   >((val) => typeof val === 'function'),
 });
 

@@ -4,7 +4,7 @@
  *
  * WU-1188: CLI command to diagnose lane configuration issues:
  * - Overlap detection between lane code_paths
- * - Coverage gaps (files not covered by any lane)
+ * - Coverage gaps (files not covered by UnsafeAny lane)
  * - Exit code 0 for healthy, 1 for issues
  *
  * Usage:
@@ -261,7 +261,7 @@ function buildCodeFilesPattern(): string {
 }
 
 /**
- * Detect files not covered by any lane
+ * Detect files not covered by UnsafeAny lane
  */
 export function detectCoverageGaps(
   lanes: LaneDefinition[],
@@ -371,7 +371,7 @@ export function formatLaneHealthReport(report: LaneHealthReport): string {
     lines.push(chalk.yellow.bold('  Coverage Gaps'));
     lines.push('  ' + '-'.repeat(40));
     lines.push('');
-    lines.push(`    ${report.gaps.uncoveredFiles.length} files not covered by any lane:`);
+    lines.push(`    ${report.gaps.uncoveredFiles.length} files not covered by UnsafeAny lane:`);
     lines.push('');
 
     const displayFiles = report.gaps.uncoveredFiles.slice(0, MAX_DISPLAY_GAPS);

@@ -147,7 +147,7 @@ export function promotePlan(planPath: string): boolean {
   const statusLines = `Status: approved\nApproved: ${today}`;
 
   let newText: string;
-  if (createdMatch && createdMatch.index !== undefined) {
+  if (createdMatch) {
     // Insert after Created: line
     const insertPos = createdMatch.index + createdMatch[0].length;
     newText = text.substring(0, insertPos) + '\n' + statusLines + text.substring(insertPos);
@@ -155,7 +155,7 @@ export function promotePlan(planPath: string): boolean {
     // No Created: line found, insert after first heading
     const firstHeadingPattern = /^# .+$/m;
     const firstHeadingMatch = firstHeadingPattern.exec(text);
-    if (firstHeadingMatch && firstHeadingMatch.index !== undefined) {
+    if (firstHeadingMatch) {
       const insertPos = firstHeadingMatch.index + firstHeadingMatch[0].length;
       newText =
         text.substring(0, insertPos) + '\n\n' + statusLines + '\n' + text.substring(insertPos);

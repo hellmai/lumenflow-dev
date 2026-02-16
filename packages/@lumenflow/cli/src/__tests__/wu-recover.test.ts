@@ -13,7 +13,7 @@ describe('wu-recover helpers', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.mocked(gitAdapter.getGitForCwd).mockReturnValue(mockGit as any);
+    vi.mocked(gitAdapter.getGitForCwd).mockReturnValue(mockGit as UnsafeAny);
     mockGit.deleteBranch.mockResolvedValue(undefined);
     mockGit.raw.mockResolvedValue('');
   });

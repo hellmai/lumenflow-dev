@@ -31,7 +31,7 @@ const MANDATORY_TRIGGERS: Record<string, readonly string[]> = {
  * @param {string[]} codePaths - Array of file paths
  * @returns {string[]} Array of mandatory agent names
  */
-function detectMandatoryAgents(codePaths: any) {
+function detectMandatoryAgents(codePaths: UnsafeAny) {
   if (!codePaths || codePaths.length === 0) {
     return [];
   }
@@ -39,7 +39,7 @@ function detectMandatoryAgents(codePaths: any) {
   const triggeredAgents = new Set();
 
   for (const [agentName, patterns] of Object.entries(MANDATORY_TRIGGERS)) {
-    const isTriggered = codePaths.some((filePath: any) =>
+    const isTriggered = codePaths.some((filePath: UnsafeAny) =>
       patterns.some((pattern) => minimatch(filePath, pattern)),
     );
 
@@ -57,7 +57,7 @@ function detectMandatoryAgents(codePaths: any) {
  * @param {string[]} codePaths - Array of file paths
  * @param {string} wuId - Work Unit ID
  */
-export function emitMandatoryAgentAdvisory(codePaths: any, wuId: any) {
+export function emitMandatoryAgentAdvisory(codePaths: UnsafeAny, wuId: UnsafeAny) {
   if (!codePaths || codePaths.length === 0) {
     return;
   }
@@ -96,7 +96,7 @@ export function emitMandatoryAgentAdvisory(codePaths: any, wuId: any) {
  * @param {string} _wuId - Work Unit ID (reserved for future telemetry lookup)
  * @returns {{compliant: boolean, missing: string[]}}
  */
-export function checkMandatoryAgentsCompliance(codePaths: any, _wuId: any) {
+export function checkMandatoryAgentsCompliance(codePaths: UnsafeAny, _wuId: UnsafeAny) {
   if (!codePaths || codePaths.length === 0) {
     return { compliant: true, missing: [] };
   }

@@ -38,7 +38,7 @@ export interface MergeBlockExtraction {
 export interface MergeBlockResult {
   /** The resulting content */
   content: string;
-  /** Whether any update was made */
+  /** Whether UnsafeAny update was made */
   updated: boolean;
   /** Whether block was inserted (vs updated) */
   wasInserted?: boolean;

@@ -203,7 +203,7 @@ const wuRecover: CommandDefinition = {
   name: COMMANDS.WU_RECOVER,
   description: 'Analyze and fix WU state inconsistencies',
   requiredLocation: LOCATION_TYPES.MAIN,
-  requiredWuStatus: null, // Handles any state
+  requiredWuStatus: null, // Handles UnsafeAny state
   predicates: [],
   getNextSteps: () => ['Review recovery actions and confirm to proceed.'],
 };
@@ -236,7 +236,7 @@ export function getCommandDefinition(command: string): CommandDefinition | null 
  * Check if a command's location requirement is satisfied.
  */
 function isLocationValid(def: CommandDefinition, locationType: LocationType): boolean {
-  // null means any location is valid
+  // null means UnsafeAny location is valid
   if (def.requiredLocation === null) return true;
   return def.requiredLocation === locationType;
 }
@@ -264,7 +264,7 @@ function arePredicatesValid(def: CommandDefinition, context: WuContext): boolean
  * Get all commands valid for the current context.
  *
  * A command is valid if:
- * - Location requirement is satisfied (or null = any)
+ * - Location requirement is satisfied (or null = UnsafeAny)
  * - WU status requirement is satisfied (or null = no WU required)
  * - All error-severity predicates pass
  *

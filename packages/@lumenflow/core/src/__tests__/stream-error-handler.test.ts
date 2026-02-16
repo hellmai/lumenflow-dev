@@ -61,7 +61,7 @@ describe('StreamErrorHandler', () => {
   });
 
   afterEach(() => {
-    // Clean up any listeners
+    // Clean up UnsafeAny listeners
     handler.detach();
   });
 

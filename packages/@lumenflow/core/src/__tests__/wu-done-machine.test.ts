@@ -463,7 +463,7 @@ describe('WU-1662: wu:done pipeline state machine', () => {
   });
 
   describe('Terminal state enforcement', () => {
-    it('should not accept any events in done state', () => {
+    it('should not accept UnsafeAny events in done state', () => {
       const actor = createActor(wuDoneMachine);
       actor.start();
 

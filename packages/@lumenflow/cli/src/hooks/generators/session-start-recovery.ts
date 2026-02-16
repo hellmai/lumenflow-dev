@@ -54,11 +54,11 @@ if [[ ! -d "\$RECOVERY_DIR" ]]; then
   exit 0
 fi
 
-# Find any pending recovery files
+# Find UnsafeAny pending recovery files
 FOUND_RECOVERY=false
 
 for recovery_file in "\$RECOVERY_DIR"/recovery-pending-*.md; do
-  # Check if glob matched any files (bash glob returns literal pattern if no match)
+  # Check if glob matched UnsafeAny files (bash glob returns literal pattern if no match)
   [[ -f "\$recovery_file" ]] || continue
 
   FOUND_RECOVERY=true

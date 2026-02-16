@@ -85,7 +85,7 @@ export const YAML_STRINGIFY_OPTIONS = Object.freeze({
  * @returns {object} Parsed YAML document
  * @throws {Error} If file not found, YAML invalid, or ID mismatch
  */
-export function readWU(wuPath: string, expectedId: string): any {
+export function readWU(wuPath: string, expectedId: string): UnsafeAny {
   if (!existsSync(wuPath)) {
     throw createError(ErrorCodes.FILE_NOT_FOUND, `WU file not found: ${wuPath}`, {
       path: wuPath,
@@ -130,7 +130,7 @@ export function readWU(wuPath: string, expectedId: string): any {
  * @returns {Promise<object>} Parsed YAML document
  * @throws {Error} If file not found, YAML invalid, or ID mismatch
  */
-export async function readWUAsync(wuPath: string, expectedId: string): Promise<any> {
+export async function readWUAsync(wuPath: string, expectedId: string): Promise<UnsafeAny> {
   try {
     const text = await fs.readFile(wuPath, { encoding: 'utf-8' });
     let doc;
@@ -177,7 +177,7 @@ export async function readWUAsync(wuPath: string, expectedId: string): Promise<a
  * @returns {object} Parsed object
  * @throws {Error} If YAML is invalid
  */
-export function parseYAML(text: string): any {
+export function parseYAML(text: string): UnsafeAny {
   return parse(text);
 }
 
@@ -189,7 +189,7 @@ export function parseYAML(text: string): any {
  * @param {object} [options] - Additional stringify options (merged with YAML_STRINGIFY_OPTIONS)
  * @returns {string} YAML string
  */
-export function stringifyYAML(doc: any, options: Record<string, unknown> = {}): string {
+export function stringifyYAML(doc: UnsafeAny, options: Record<string, unknown> = {}): string {
   return stringify(doc, { ...YAML_STRINGIFY_OPTIONS, ...options });
 }
 
@@ -201,7 +201,7 @@ export function stringifyYAML(doc: any, options: Record<string, unknown> = {}): 
  * @returns {object} Parsed YAML document
  * @throws {Error} If file not found or YAML invalid
  */
-export function readWURaw(yamlPath: string): any {
+export function readWURaw(yamlPath: string): UnsafeAny {
   if (!existsSync(yamlPath)) {
     throw createError(ErrorCodes.FILE_NOT_FOUND, `YAML file not found: ${yamlPath}`, {
       path: yamlPath,
@@ -232,7 +232,7 @@ export function readWURaw(yamlPath: string): any {
  * @returns {Promise<object>} Parsed YAML document
  * @throws {Error} If file not found or YAML invalid
  */
-export async function readWURawAsync(yamlPath: string): Promise<any> {
+export async function readWURawAsync(yamlPath: string): Promise<UnsafeAny> {
   try {
     const text = await fs.readFile(yamlPath, { encoding: 'utf-8' });
 
@@ -265,7 +265,7 @@ export async function readWURawAsync(yamlPath: string): Promise<any> {
  * @param {string} wuPath - Path to WU YAML file
  * @param {object} doc - YAML document to write
  */
-export function writeWU(wuPath: string, doc: any): void {
+export function writeWU(wuPath: string, doc: UnsafeAny): void {
   const out = stringify(doc, YAML_STRINGIFY_OPTIONS);
   writeFileSync(wuPath, out, { encoding: 'utf-8' });
 }
@@ -283,7 +283,7 @@ export function writeWU(wuPath: string, doc: any): void {
  * @param {object} doc - WU document
  * @param {string} note - Note to append
  */
-export function appendNote(doc: any, note: string): void {
+export function appendNote(doc: UnsafeAny, note: string): void {
   // Do nothing if note is falsy
   if (!note) return;
 
@@ -313,7 +313,7 @@ export function appendNote(doc: any, note: string): void {
  * @param {object} sessionData - Session summary from endSession()
  * @throws {Error} if WU file not found
  */
-export function appendAgentSession(wuId: string, sessionData: any): void {
+export function appendAgentSession(wuId: string, sessionData: UnsafeAny): void {
   const paths = createWuPaths();
   const wuPath = paths.WU(wuId);
 

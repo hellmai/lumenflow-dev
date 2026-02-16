@@ -2,7 +2,7 @@
  * Dashboard Renderer Port
  *
  * Hexagonal Architecture - Output Port
- * Defines the contract for rendering orchestration dashboard data to any UI.
+ * Defines the contract for rendering orchestration dashboard data to UnsafeAny UI.
  * This abstraction allows the application layer to remain independent of
  * specific rendering implementations.
  *
@@ -113,7 +113,7 @@ export interface IDashboardRenderer {
   renderPlan(plan: ExecutionPlan): Promise<UserChoice>;
 
   /**
-   * Clear any previous dashboard output.
+   * Clear UnsafeAny previous dashboard output.
    *
    * Used before re-rendering to prevent stale data display.
    * Implementation depends on output medium (e.g., clear terminal, DOM update).

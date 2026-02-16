@@ -151,7 +151,7 @@ export function generateCommitMessage(
  * @param {object} params - Parameters object
  * @param {string} params.statusPath - Path to status.md file
  * @param {string} params.backlogPath - Path to backlog.md file
- * @throws {WUError} If any required file is missing
+ * @throws {WUError} If UnsafeAny required file is missing
  */
 export function validateMetadataFilesExist({
   statusPath,
@@ -195,7 +195,7 @@ export async function updateMetadataFiles({
   statusPath,
   backlogPath,
 }: UpdateMetadataFilesParams): Promise<void> {
-  // WU-1275: Fail fast before any mutations
+  // WU-1275: Fail fast before UnsafeAny mutations
   validateMetadataFilesExist({ statusPath, backlogPath });
 
   const exposureUpdate = applyExposureDefaults(doc);
@@ -264,7 +264,7 @@ export async function collectMetadataToTransaction({
   transaction,
   projectRoot = null,
 }: CollectMetadataToTransactionParams): Promise<void> {
-  // WU-1369: Fail fast before any computations
+  // WU-1369: Fail fast before UnsafeAny computations
   validateMetadataFilesExist({ statusPath, backlogPath });
 
   const exposureUpdate = applyExposureDefaults(doc);

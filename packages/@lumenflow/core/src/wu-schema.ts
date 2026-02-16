@@ -163,7 +163,7 @@ const _normalizedMultilineString = z.string().transform((s) => s.replace(/\\n/g,
 /**
  * Refinement: File path cannot contain newlines (post-normalization safety check)
  *
- * WU-1750: After normalization, paths should be clean. This catches any edge cases.
+ * WU-1750: After normalization, paths should be clean. This catches UnsafeAny edge cases.
  */
 const filePathItem = z.string().refine((s) => !s.includes('\n') && !s.includes('\\n'), {
   message: 'File path cannot contain newlines - split into separate array items',
@@ -599,7 +599,7 @@ const sharedFields = {
     .transform((val) => normalizeISODateTime(val)),
 
   /**
-   * WU-2080: Human who resolved escalation (if any)
+   * WU-2080: Human who resolved escalation (if UnsafeAny)
    *
    * Only set when requires_human_escalation was true and resolved.
    */
@@ -926,8 +926,8 @@ export function determineRequiredApprovals(wu: EscalationDetectionInput): {
  * Returns:
  * - valid: true if schema validation passes (after normalisations)
  * - normalized: the normalized data (even if validation fails, partial normalization is returned)
- * - errors: validation errors if any
- * - wasNormalized: true if any normalisations were applied
+ * - errors: validation errors if UnsafeAny
+ * - wasNormalized: true if UnsafeAny normalisations were applied
  *
  * @param {unknown} data - Parsed YAML data to validate and normalize
  * @returns {{valid: boolean, normalized: object|null, errors: string[], wasNormalized: boolean}}
@@ -1060,7 +1060,7 @@ export function validateWUCompleteness(wu: WUCompletenessInput): { warnings: str
  *
  * @param {object} original - Original parsed YAML data
  * @param {object} normalized - Schema-normalized data
- * @returns {boolean} True if any normalisations were applied
+ * @returns {boolean} True if UnsafeAny normalisations were applied
  */
 function detectNormalizationChanges(
   original: WUNormalizationInput,

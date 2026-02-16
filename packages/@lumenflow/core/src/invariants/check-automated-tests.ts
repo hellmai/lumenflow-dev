@@ -55,7 +55,7 @@ interface CheckWUFileOptions {
  * @param {CheckWUFileOptions} [options={}] - Options
  * @returns {{ valid: boolean, wuId: string|null, error: string|null }} Check result
  */
-function checkWUFile(filePath: any, options: CheckWUFileOptions = {}) {
+function checkWUFile(filePath: UnsafeAny, options: CheckWUFileOptions = {}) {
   const { skipStatusCheck = false } = options;
 
   try {
@@ -100,7 +100,7 @@ function checkWUFile(filePath: any, options: CheckWUFileOptions = {}) {
  * @param {string[]} codePaths - Array of code paths
  * @returns {string[]} Code files that require automated tests
  */
-function getCodeFilesFromPaths(codePaths: any) {
+function getCodeFilesFromPaths(codePaths: UnsafeAny) {
   if (!codePaths || !Array.isArray(codePaths)) {
     return [];
   }
@@ -110,7 +110,7 @@ function getCodeFilesFromPaths(codePaths: any) {
 /**
  * Run the INV-AUTOMATED-TESTS-FOR-CODE invariant check.
  *
- * Scans WU YAML files and validates that any with code files in code_paths
+ * Scans WU YAML files and validates that UnsafeAny with code files in code_paths
  * have automated tests (unit, e2e, or integration).
  *
  * WU-2425: When wuId is provided, only validates that specific WU instead of
@@ -205,7 +205,7 @@ export function checkAutomatedTestsInvariant(options: CheckAutomatedTestsInvaria
  * @param {object} violation - Violation object
  * @returns {string} Formatted error message
  */
-export function formatAutomatedTestsViolation(violation: any) {
+export function formatAutomatedTestsViolation(violation: UnsafeAny) {
   const lines = [
     `INVARIANT VIOLATION: ${violation.id}`,
     `WU: ${violation.wuId}`,

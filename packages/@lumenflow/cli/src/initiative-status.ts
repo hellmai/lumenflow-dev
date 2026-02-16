@@ -56,15 +56,15 @@ function toInitiativePhases(doc: InitiativeDoc): InitiativePhaseDoc[] {
   return Array.isArray(doc.phases) ? (doc.phases as InitiativePhaseDoc[]) : [];
 }
 
-function hasIncompletePhase(phases: InitiativePhaseDoc[]): boolean {
+function hasIncompletePhase(phases: unknown[]): boolean {
   if (!Array.isArray(phases) || phases.length === 0) {
     return false;
   }
   return phases.some((phase) => {
-    if (phase === null || typeof phase !== 'object') {
+    if (phase == null || typeof phase !== 'object') {
       return true;
     }
-    return normalizeLifecycleStatus(phase.status) !== WU_STATUS.DONE;
+    return normalizeLifecycleStatus((phase as InitiativePhaseDoc).status) !== WU_STATUS.DONE;
   });
 }
 

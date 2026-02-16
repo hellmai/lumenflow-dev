@@ -84,7 +84,7 @@ export function registerDocsOnlyGates(registry: GateRegistry, options: DocsOnlyG
     cmd: GATE_COMMANDS.ONBOARDING_SMOKE_TEST,
   });
 
-  // WU-1299: Filtered tests for packages in code_paths (if any)
+  // WU-1299: Filtered tests for packages in code_paths (if UnsafeAny)
   if (docsOnlyTestPlan && docsOnlyTestPlan.mode === 'filtered') {
     registry.register({
       name: GATE_NAMES.TEST,

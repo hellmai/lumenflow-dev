@@ -40,11 +40,11 @@ const DONE_SECTION_HEADERS = Object.freeze(['## done', '## completed']);
  * Check if a line is a section header we care about
  * @param {string} line - Line to check
  * @param {readonly string[]} headers - Headers to match against
- * @returns {boolean} True if line matches any header
+ * @returns {boolean} True if line matches UnsafeAny header
  */
-function matchesSectionHeader(line: any, headers: any) {
+function matchesSectionHeader(line: UnsafeAny, headers: UnsafeAny) {
   const normalized = line.trim().toLowerCase();
-  return headers.some((header: any) => normalized.startsWith(header));
+  return headers.some((header: UnsafeAny) => normalized.startsWith(header));
 }
 
 /**
@@ -57,7 +57,7 @@ function matchesSectionHeader(line: any, headers: any) {
  * @param {string} [currentWuId] - Optional WU_ID env var to include
  * @returns {Set<string>} Set of active WU IDs
  */
-export function extractActiveWuIds(backlogContent: any, statusContent: any, currentWuId = null) {
+export function extractActiveWuIds(backlogContent: UnsafeAny, statusContent: UnsafeAny, currentWuId = null) {
   const activeIds = new Set();
 
   // Process both backlog and status content
@@ -116,6 +116,6 @@ export function extractActiveWuIds(backlogContent: any, statusContent: any, curr
  * @param {Set<string>} activeIds - Set of active WU IDs
  * @returns {boolean} True if WU is orphan (not in active set)
  */
-export function isOrphanWu(wuId: any, activeIds: any) {
+export function isOrphanWu(wuId: UnsafeAny, activeIds: UnsafeAny) {
   return !activeIds.has(wuId);
 }

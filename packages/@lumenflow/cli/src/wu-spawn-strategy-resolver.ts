@@ -381,7 +381,7 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
   const explicitDelegation = mode === 'delegate';
   const effectiveLogPrefix = explicitDelegation ? DELEGATE_LOG_PREFIX : logPrefix;
 
-  // WU-2202: Validate dependencies BEFORE any other operation
+  // WU-2202: Validate dependencies BEFORE UnsafeAny other operation
   // This prevents false lane occupancy reports when yaml package is missing
   const commandLabel = explicitDelegation ? 'wu:delegate' : 'wu:brief';
   const depResult = await validateSpawnDependencies();

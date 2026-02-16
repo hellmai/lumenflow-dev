@@ -81,7 +81,7 @@ export const EXEMPT_TYPES = Object.freeze([WU_TYPES.DOCUMENTATION]);
  * @param {string} filePath - File path to check
  * @returns {boolean} True if the file is a code file requiring tests
  */
-export function isCodeFile(filePath: any) {
+export function isCodeFile(filePath: UnsafeAny) {
   if (!filePath || typeof filePath !== 'string') {
     return false;
   }
@@ -110,12 +110,12 @@ export function isCodeFile(filePath: any) {
 }
 
 /**
- * Check if code_paths contains any hex core code.
+ * Check if code_paths contains UnsafeAny hex core code.
  *
  * @param {string[]|null|undefined} codePaths - Array of file paths from WU YAML
- * @returns {boolean} True if any path is in hex core layer
+ * @returns {boolean} True if UnsafeAny path is in hex core layer
  */
-export function containsHexCoreCode(codePaths: any) {
+export function containsHexCoreCode(codePaths: UnsafeAny) {
   if (!codePaths || !Array.isArray(codePaths) || codePaths.length === 0) {
     return false;
   }
@@ -136,7 +136,7 @@ export function containsHexCoreCode(codePaths: any) {
  * @param {object} doc - WU YAML document
  * @returns {boolean} True if WU is exempt
  */
-export function isExemptFromAutomatedTests(doc: any) {
+export function isExemptFromAutomatedTests(doc: UnsafeAny) {
   if (!doc) return false;
 
   // Only type: documentation is exempt
@@ -154,10 +154,10 @@ export function isExemptFromAutomatedTests(doc: any) {
  * @param {object} tests - Tests object from WU YAML
  * @returns {boolean} True if has at least one automated test
  */
-function hasAutomatedTest(tests: any) {
+function hasAutomatedTest(tests: UnsafeAny) {
   if (!tests) return false;
 
-  const hasItems = (arr: any) => Array.isArray(arr) && arr.length > 0;
+  const hasItems = (arr: UnsafeAny) => Array.isArray(arr) && arr.length > 0;
 
   return (
     hasItems(tests[TEST_TYPES.UNIT]) ||
@@ -167,12 +167,12 @@ function hasAutomatedTest(tests: any) {
 }
 
 /**
- * Check if any code_paths contain actual code files (not docs/config).
+ * Check if UnsafeAny code_paths contain actual code files (not docs/config).
  *
  * @param {string[]} codePaths - Array of file paths from WU YAML
  * @returns {{ hasCodeFiles: boolean, codeFiles: string[] }} Result with list of code files
  */
-function analyzeCodePaths(codePaths: any) {
+function analyzeCodePaths(codePaths: UnsafeAny) {
   if (!codePaths || !Array.isArray(codePaths) || codePaths.length === 0) {
     return { hasCodeFiles: false, codeFiles: [] };
   }
@@ -195,7 +195,7 @@ function analyzeCodePaths(codePaths: any) {
  * @param {object} doc - WU YAML document
  * @returns {{ valid: boolean, errors: string[] }} Validation result
  */
-export function validateAutomatedTestRequirement(doc: any) {
+export function validateAutomatedTestRequirement(doc: UnsafeAny) {
   const errors = [];
 
   if (!doc) {

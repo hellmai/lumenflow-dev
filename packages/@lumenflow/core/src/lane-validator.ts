@@ -20,7 +20,7 @@ import { LANE_PATH_PATTERNS } from './wu-constants.js';
 
 /**
  * @typedef {object} LaneValidationResult
- * @property {boolean} hasWarnings - True if any code_paths violate lane patterns
+ * @property {boolean} hasWarnings - True if UnsafeAny code_paths violate lane patterns
  * @property {string[]} warnings - Human-readable warning messages
  * @property {string[]} violations - List of violating code_paths
  * @property {boolean} skipped - True if validation was skipped (no patterns or no code_paths)
@@ -29,14 +29,14 @@ import { LANE_PATH_PATTERNS } from './wu-constants.js';
 /**
  * Validate WU code_paths against lane's expected patterns.
  *
- * Checks if any code_paths match the "exclude" patterns for the lane,
+ * Checks if UnsafeAny code_paths match the "exclude" patterns for the lane,
  * unless they also match an "allowExceptions" pattern.
  *
  * @param {object} doc - WU YAML document (parsed)
  * @param {string} lane - Lane name (e.g., "Operations: Tooling")
- * @returns {LaneValidationResult} Validation result with warnings if any
+ * @returns {LaneValidationResult} Validation result with warnings if UnsafeAny
  */
-export function validateLaneCodePaths(doc: any, lane: any) {
+export function validateLaneCodePaths(doc: UnsafeAny, lane: UnsafeAny) {
   const codePaths = doc.code_paths || [];
 
   // Skip validation if no code_paths
@@ -68,15 +68,15 @@ export function validateLaneCodePaths(doc: any, lane: any) {
   const { exclude = [], allowExceptions = [] } = patterns;
 
   // Find violations: paths that match exclude patterns but NOT exception patterns
-  const violations = codePaths.filter((codePath: any) => {
-    // Check if path matches any exclude pattern
+  const violations = codePaths.filter((codePath: UnsafeAny) => {
+    // Check if path matches UnsafeAny exclude pattern
     const matchesExclude = micromatch.isMatch(codePath, exclude, { nocase: true });
 
     if (!matchesExclude) {
-      return false; // Path doesn't match any exclude pattern, not a violation
+      return false; // Path doesn't match UnsafeAny exclude pattern, not a violation
     }
 
-    // Check if path matches any exception pattern
+    // Check if path matches UnsafeAny exception pattern
     if (allowExceptions.length > 0) {
       const matchesException = micromatch.isMatch(codePath, allowExceptions, { nocase: true });
       if (matchesException) {
@@ -97,7 +97,7 @@ export function validateLaneCodePaths(doc: any, lane: any) {
   }
 
   // Build warning messages
-  const warnings = violations.map((path: any) => {
+  const warnings = violations.map((path: UnsafeAny) => {
     return `Lane "${lane}" typically doesn't include "${path}" (expected for different lane)`;
   });
 
@@ -118,7 +118,7 @@ export function validateLaneCodePaths(doc: any, lane: any) {
  * @param {LaneValidationResult} result - Result from validateLaneCodePaths
  * @param {string} logPrefix - Log prefix (e.g., "[wu-claim]")
  */
-export function logLaneValidationWarnings(result: any, logPrefix = '[wu-claim]') {
+export function logLaneValidationWarnings(result: UnsafeAny, logPrefix = '[wu-claim]') {
   if (!result.hasWarnings) {
     return;
   }

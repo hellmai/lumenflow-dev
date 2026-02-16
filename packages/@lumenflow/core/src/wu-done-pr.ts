@@ -50,7 +50,7 @@ export const WU_DONE_COMPLETION_MODES = Object.freeze({
  * @param {Object} args - CLI arguments
  * @returns {boolean} Whether PR mode is enabled
  */
-export function isPRModeEnabled(doc: any, args: any) {
+export function isPRModeEnabled(doc: UnsafeAny, args: UnsafeAny) {
   const claimedMode = doc.claimed_mode || 'worktree';
   const requiresReview = doc.requires_review === true;
   return claimedMode === 'worktree-pr' || args.createPR || requiresReview;
@@ -77,7 +77,7 @@ export function isGhCliAvailable() {
  * @param {PRContext} context - PR context
  * @returns {Promise<PRResult>} PR creation result
  */
-export async function createPR(context: any) {
+export async function createPR(context: UnsafeAny) {
   const { branch, id, title, doc, draft = false } = context;
   console.log(`\n${LOG_PREFIX.DONE} Creating PR for ${branch}...`);
 
@@ -128,7 +128,7 @@ export async function createPR(context: any) {
  * @param {string} id - WU ID
  * @returns {string} PR body markdown
  */
-export function buildPRBody(doc: any, id: any) {
+export function buildPRBody(doc: UnsafeAny, id: UnsafeAny) {
   const paths = createWuPaths();
   const wuPath = paths.WU(id);
   const description = doc.description || doc.problem || '';
@@ -170,7 +170,7 @@ export function buildPRBody(doc: any, id: any) {
  * @param {string} branch - Lane branch name
  * @param {string} id - WU ID
  */
-export function printGhCliMissingMessage(branch: any, id: any) {
+export function printGhCliMissingMessage(branch: UnsafeAny, id: UnsafeAny) {
   console.error();
   console.error('╔═══════════════════════════════════════════════════════════════════╗');
   console.error('║  GH CLI NOT AVAILABLE');
@@ -190,7 +190,7 @@ export function printGhCliMissingMessage(branch: any, id: any) {
  * @param {string} prUrl - URL of created PR
  * @param {string} id - WU ID
  */
-export function printPRCreatedMessage(prUrl: any, id: any) {
+export function printPRCreatedMessage(prUrl: UnsafeAny, id: UnsafeAny) {
   console.log('\n╔═══════════════════════════════════════════════════════════════════╗');
   console.log('║  PR CREATED - NEXT STEPS');
   console.log('╠═══════════════════════════════════════════════════════════════════╣');

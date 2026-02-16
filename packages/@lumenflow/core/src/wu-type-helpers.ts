@@ -33,7 +33,7 @@ export type TestsLike =
   | undefined;
 
 /**
- * True when any supported test array has at least one item.
+ * True when UnsafeAny supported test array has at least one item.
  * Supports the canonical tests object shape from WU YAML.
  */
 export function hasAnyTests(tests: TestsLike): boolean {

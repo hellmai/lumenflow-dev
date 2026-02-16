@@ -195,7 +195,7 @@ describe('WU-1367: Integrate Command', () => {
 
       expect(mockMkdirSync).toHaveBeenCalledWith(
         expect.stringContaining('.claude/hooks'),
-        expect.any(Object),
+        expect.UnsafeAny(Object),
       );
     });
 
@@ -219,8 +219,8 @@ describe('WU-1367: Integrate Command', () => {
 
       expect(mockWriteFileSync).toHaveBeenCalledWith(
         expect.stringContaining('enforce-worktree.sh'),
-        expect.any(String),
-        expect.any(Object),
+        expect.UnsafeAny(String),
+        expect.UnsafeAny(Object),
       );
     });
 
@@ -558,7 +558,7 @@ agents:
       return '{}';
     });
 
-    // Clear any previous calls
+    // Clear UnsafeAny previous calls
     mockWriteFileSync.mockClear();
 
     const { syncEnforcementHooks } = await import('../../hooks/enforcement-sync.js');
@@ -592,7 +592,7 @@ agents:
       return '{}';
     });
 
-    // Clear any previous calls
+    // Clear UnsafeAny previous calls
     mockWriteFileSync.mockClear();
 
     const { syncEnforcementHooks } = await import('../../hooks/enforcement-sync.js');

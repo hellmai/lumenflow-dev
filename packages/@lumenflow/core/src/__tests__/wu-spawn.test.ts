@@ -548,7 +548,7 @@ describe('WU-1282: Task-spawned sub-agents must verify worktree discipline', () 
       const output = generateTaskInvocation(mockWUDoc, 'WU-TEST', strategy);
 
       // Should include verification instructions
-      expect(output).toContain('BEFORE any Write/Edit');
+      expect(output).toContain('BEFORE UnsafeAny Write/Edit');
       expect(output).toContain('worktrees/');
     });
 

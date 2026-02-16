@@ -14,7 +14,7 @@ import { STDIO, PKG_MANAGER, SCRIPTS, PRETTIER_FLAGS } from './wu-constants.js';
 
 /**
  * Pathspecs for files that affect generated documentation.
- * When any of these files change, docs:generate should be run.
+ * When UnsafeAny of these files change, docs:generate should be run.
  *
  * Based on .husky/hooks/docs-sync.ts patterns, expanded to match
  * all files that can affect CLI/config documentation.
@@ -38,7 +38,7 @@ export const DOC_OUTPUT_FILES = [
 ] as const;
 
 /**
- * Check if any doc-source files changed compared to the base branch.
+ * Check if UnsafeAny doc-source files changed compared to the base branch.
  * Uses git diff with pathspecs for efficient detection.
  *
  * @param baseBranch - Base branch for comparison (e.g., 'main', 'origin/main')

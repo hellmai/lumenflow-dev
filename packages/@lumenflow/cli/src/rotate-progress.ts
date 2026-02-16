@@ -127,9 +127,9 @@ export function findCompletedWUs(statusContent: string, wuStatuses: Map<string, 
   // Find the end of In Progress section (next ## heading or end of file)
   const afterInProgress = statusContent.slice(inProgressStart + STATUS_SECTIONS.IN_PROGRESS.length);
   const nextSectionMatch = afterInProgress.match(/\n##/);
-  const inProgressSection = nextSectionMatch
-    ? afterInProgress.slice(0, nextSectionMatch.index)
-    : afterInProgress;
+  const nextSectionIndex = nextSectionMatch?.index ?? -1;
+  const inProgressSection =
+    nextSectionIndex >= 0 ? afterInProgress.slice(0, nextSectionIndex) : afterInProgress;
 
   // Extract WU IDs from In Progress section
   const wuIdMatches = inProgressSection.match(/WU-\d+/g) || [];
@@ -203,7 +203,7 @@ export function buildRotatedContent(statusContent: string, completedWUs: string[
     }
   }
 
-  // Clean up any double newlines
+  // Clean up UnsafeAny double newlines
   content = content.replace(/\n{3,}/g, '\n\n');
 
   return content;

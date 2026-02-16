@@ -44,7 +44,7 @@ const WU_EVENTS_PATH = POSIX.join(LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME
  * @param {string} filePath - The file path to validate
  * @returns {boolean} - True if the path is allowed
  */
-function isAllowedPath(filePath: any) {
+function isAllowedPath(filePath: UnsafeAny) {
   if (!filePath) return false;
 
   if (filePath === WU_EVENTS_PATH) return true;
@@ -73,7 +73,7 @@ function isAllowedPath(filePath: any) {
  * @param {string[]} stagedFiles - Array of file paths
  * @returns {{valid: boolean, violations: string[]}} - Validation result
  */
-export function validateDocsOnly(stagedFiles: any) {
+export function validateDocsOnly(stagedFiles: UnsafeAny) {
   const violations = [];
   for (const file of stagedFiles) {
     if (!isAllowedPath(file)) {

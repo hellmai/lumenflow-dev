@@ -9,8 +9,8 @@ import {
 describe('strict-progress parsing', () => {
   it('parses total errors, code counts, and file counts from tsc output', () => {
     const output = [
-      'src/a.ts(10,2): error TS7006: Parameter "x" implicitly has an "any" type.',
-      'src/a.ts(12,4): error TS7006: Parameter "y" implicitly has an "any" type.',
+      'src/a.ts(10,2): error TS7006: Parameter "x" implicitly has an "UnsafeAny" type.',
+      'src/a.ts(12,4): error TS7006: Parameter "y" implicitly has an "UnsafeAny" type.',
       'src/b.ts(5,1): error TS2339: Property "message" does not exist on type "unknown".',
       'noise line that should be ignored',
     ].join('\n');

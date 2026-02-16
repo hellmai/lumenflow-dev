@@ -120,7 +120,7 @@ export const RecoveryActionSchema = z.object({
   command: z.string(),
   /** Whether this action requires --force flag */
   requiresForce: z.boolean(),
-  /** Warning message if any */
+  /** Warning message if UnsafeAny */
   warning: z.string().optional(),
 });
 
@@ -130,7 +130,7 @@ export const RecoveryActionSchema = z.object({
  * Result of recovery analysis.
  */
 export const RecoveryAnalysisSchema = z.object({
-  /** Whether any issues were found */
+  /** Whether UnsafeAny issues were found */
   hasIssues: z.boolean(),
   /** List of detected issues */
   issues: z.array(RecoveryIssueSchema),

@@ -263,7 +263,7 @@ export async function cleanupDeletedWUsInWorktree({ worktreePath, ids }: Cleanup
   const normalizedIds = new Set(ids.map((id) => id.toUpperCase()));
   // WU-1528: Track existing (modified/created) files separately from deleted files.
   // Only existing files are safe for `git add -A -- <path>` staging; deleted file
-  // paths cause 'fatal: pathspec ... did not match any files' when passed individually.
+  // paths cause 'fatal: pathspec ... did not match UnsafeAny files' when passed individually.
   const existing = new Set<string>();
 
   for (const id of normalizedIds) {
@@ -398,7 +398,7 @@ async function deleteSingleWU(id: string, dryRun: boolean) {
           // WU-1528: Return empty files array so withMicroWorktree uses
           // `git add -A .` to stage all changes atomically (deletions + modifications).
           // Passing specific paths would fail for deleted files with
-          // 'fatal: pathspec ... did not match any files'.
+          // 'fatal: pathspec ... did not match UnsafeAny files'.
           const commitMessage = `docs: delete ${id.toLowerCase()}`;
           return {
             commitMessage,

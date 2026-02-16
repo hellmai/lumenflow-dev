@@ -135,7 +135,7 @@ function hasUIVerificationInAcceptance(acceptance: WUAcceptance): boolean {
   let criteria: string[] = [];
   if (Array.isArray(acceptance)) {
     criteria = acceptance;
-  } else if (typeof acceptance === 'object' && acceptance !== null) {
+  } else {
     // Nested object format: { category: [items] }
     criteria = Object.values(acceptance).flat();
   }
@@ -286,7 +286,7 @@ export const ACCESSIBILITY_ERROR_MESSAGES = {
  * Check if code_paths includes a page file (Next.js page).
  *
  * @param {string[]} codePaths - Array of code paths
- * @returns {boolean} True if any code path matches a page file pattern
+ * @returns {boolean} True if UnsafeAny code path matches a page file pattern
  */
 function hasPageFileInCodePaths(codePaths: string[] | undefined): boolean {
   if (!codePaths || !Array.isArray(codePaths)) {

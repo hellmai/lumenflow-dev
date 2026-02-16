@@ -5,7 +5,7 @@
  * and main branches to prevent loss of concurrent WU completions.
  *
  * Problem: When wu:done regenerates backlog.md, it only uses the worktree's
- * state store, losing any WUs that were completed on main since the worktree
+ * state store, losing UnsafeAny WUs that were completed on main since the worktree
  * was created.
  *
  * Solution: Before regenerating backlog.md, merge events from both state
@@ -113,7 +113,7 @@ function loadEventsFromDir(stateDir: string, label: string): WUEvent[] {
  *
  * The merge strategy:
  * 1. Start with all events from main (the "base" timeline)
- * 2. Add any events from worktree that aren't in main
+ * 2. Add UnsafeAny events from worktree that aren't in main
  *
  * This ensures:
  * - Concurrent completions on main are preserved

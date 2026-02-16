@@ -175,7 +175,7 @@ function getCleanupCommitMessage(): string {
 }
 
 /**
- * WU-1533: Commit and push any dirty state files left by auto-cleanup.
+ * WU-1533: Commit and push UnsafeAny dirty state files left by auto-cleanup.
  *
  * After cleanup runs, tracked files like wu-events.jsonl may be modified.
  * This function detects those changes, commits them with a housekeeping

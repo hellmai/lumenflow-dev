@@ -34,7 +34,7 @@ const PREFIX = LOG_PREFIX.CLAIM;
  * @param {Object} args - CLI arguments
  * @param {string} id - WU ID
  */
-export async function handleResumeMode(args: any, id: any) {
+export async function handleResumeMode(args: UnsafeAny, id: UnsafeAny) {
   const laneK = toKebab(args.lane);
   const idK = id.toLowerCase();
   const worktree = args.worktree || `worktrees/${laneK}-${idK}`;

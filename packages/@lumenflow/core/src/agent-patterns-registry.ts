@@ -290,10 +290,10 @@ export async function getAgentPatterns(options: GetAgentPatternsOptions = {}): P
  * |-----------------|-------------------|-----------------|------------------------|---------------|
  * | false           | undefined         | undefined/[]    | registry               | 'registry'    |
  * | false           | undefined         | ['custom/*']    | config + registry      | 'merged'      |
- * | false           | ['only/*']        | any             | override only          | 'override'    |
+ * | false           | ['only/*']        | UnsafeAny             | override only          | 'override'    |
  * | true            | undefined         | undefined/[]    | defaults               | 'defaults'    |
  * | true            | undefined         | ['custom/*']    | config only            | 'config'      |
- * | true            | ['only/*']        | any             | override only          | 'override'    |
+ * | true            | ['only/*']        | UnsafeAny             | override only          | 'override'    |
  *
  * When registry fetch fails:
  * - Falls back to config patterns if provided, source = 'config'
@@ -376,19 +376,19 @@ export async function resolveAgentPatterns(
   const hasConfigPatterns = configPatterns && configPatterns.length > 0;
 
   // Try to fetch from registry
-  let registryPatterns: string[] | null = null;
+  let registryPatterns: string[] = [];
   let fetchedSuccessfully = false;
 
   try {
     registryPatterns = await registryFetcher({ cacheDir, timeoutMs });
-    fetchedSuccessfully = registryPatterns !== null && registryPatterns.length > 0;
+    fetchedSuccessfully = registryPatterns.length > 0;
   } catch {
     // Fetch failed - will use fallback below
     fetchedSuccessfully = false;
   }
 
   // If registry fetch succeeded
-  if (fetchedSuccessfully && registryPatterns) {
+  if (fetchedSuccessfully) {
     if (hasConfigPatterns) {
       // Scenario 2: Merge mode - config first, then registry (deduplicated)
       const merged = [...configPatterns];

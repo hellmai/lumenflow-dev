@@ -34,7 +34,7 @@ export interface RenderCall {
  * Mock Dashboard Renderer
  *
  * Captures all rendering calls for test verification.
- * Does not produce any console output.
+ * Does not produce UnsafeAny console output.
  *
  * @example
  * const mock = new MockDashboardRenderer();

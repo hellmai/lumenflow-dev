@@ -35,7 +35,7 @@ describe('wu-type-helpers (WU-1444)', () => {
       expect(hasAnyTests({ manual: [], unit: [], e2e: [], integration: [] })).toBe(false);
     });
 
-    it('should return true when any test array has items', () => {
+    it('should return true when UnsafeAny test array has items', () => {
       expect(hasAnyTests({ manual: ['step'], unit: [], e2e: [] })).toBe(true);
       expect(hasAnyTests({ manual: [], unit: ['a.test.ts'], e2e: [] })).toBe(true);
       expect(hasAnyTests({ manual: [], unit: [], e2e: ['spec'] })).toBe(true);

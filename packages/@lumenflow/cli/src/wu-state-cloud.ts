@@ -43,7 +43,7 @@ export function resolveInProgressEditMode(claimedMode?: string): string {
 }
 
 /**
- * Delete should use branch-pr path if any target WU is branch-pr claimed.
+ * Delete should use branch-pr path if UnsafeAny target WU is branch-pr claimed.
  */
 export function shouldUseBranchPrDeletePath(docs: ClaimedModeDoc[]): boolean {
   return docs.some((doc) => shouldUseBranchPrStatePath(doc));

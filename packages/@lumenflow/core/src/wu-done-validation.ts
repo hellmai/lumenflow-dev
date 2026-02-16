@@ -599,7 +599,7 @@ export async function validateCodePathsCommittedBeforeDone(
       // Git status porcelain format:
       // XY PATH
       // where X = staged, Y = working tree
-      // We care about any file that's not in a clean state
+      // We care about UnsafeAny file that's not in a clean state
       const match = line.match(/^.{2}\s+(.+)$/);
       if (match && match[1]) {
         const filePath = match[1];
@@ -614,7 +614,7 @@ export async function validateCodePathsCommittedBeforeDone(
       }
     }
 
-    // If any code_paths are uncommitted, validation fails
+    // If UnsafeAny code_paths are uncommitted, validation fails
     if (uncommittedPaths.length > 0) {
       const count = uncommittedPaths.length;
       const pathList = uncommittedPaths.map((p) => `  - ${p}`).join('\n');

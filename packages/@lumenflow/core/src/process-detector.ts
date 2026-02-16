@@ -35,7 +35,7 @@ export const INTERFERING_PROCESS_NAMES = PROCESS_DETECTION.INTERFERING_NAMES;
  * const processes = await psList();
  * const interfering = filterProcessesForWorktree(processes, '/path/to/worktree');
  */
-export function filterProcessesForWorktree(processes: any, worktreePath: any) {
+export function filterProcessesForWorktree(processes: UnsafeAny, worktreePath: UnsafeAny) {
   // Handle null/undefined worktree path
   if (!worktreePath) {
     return [];
@@ -46,7 +46,7 @@ export function filterProcessesForWorktree(processes: any, worktreePath: any) {
     return [];
   }
 
-  return processes.filter((proc: any) => {
+  return processes.filter((proc: UnsafeAny) => {
     const cmd = proc.cmd || '';
 
     // Include only processes running in the worktree (cmd contains worktree path)
@@ -61,7 +61,7 @@ export function filterProcessesForWorktree(processes: any, worktreePath: any) {
  * @param {Array<{pid: number, name: string, cmd?: string}>} processes - Detected processes
  * @returns {string} Formatted warning message
  */
-export function buildWarningMessage(processes: any) {
+export function buildWarningMessage(processes: UnsafeAny) {
   if (!processes || processes.length === 0) {
     return '';
   }
@@ -69,7 +69,7 @@ export function buildWarningMessage(processes: any) {
   const processCount = processes.length;
   const cmdLimit = PROCESS_DETECTION.CMD_DISPLAY_LIMIT;
   const processList = processes
-    .map((p: any) => {
+    .map((p: UnsafeAny) => {
       const cmd = p.cmd
         ? ` (${p.cmd.slice(0, cmdLimit)}${p.cmd.length > cmdLimit ? '...' : ''})`
         : '';
@@ -77,7 +77,7 @@ export function buildWarningMessage(processes: any) {
     })
     .join(STRING_LITERALS.NEWLINE);
 
-  const killCommands = processes.map((p: any) => `kill ${p.pid}`).join(' && ');
+  const killCommands = processes.map((p: UnsafeAny) => `kill ${p.pid}`).join(' && ');
 
   return `
 ${EMOJI.WARNING} BACKGROUND PROCESSES DETECTED ${EMOJI.WARNING}
@@ -117,7 +117,7 @@ This is a NON-BLOCKING warning. wu:done will continue.
  *   console.warn(result.warnings.join('\n'));
  * }
  */
-export async function detectBackgroundProcesses(worktreePath: any) {
+export async function detectBackgroundProcesses(worktreePath: UnsafeAny) {
   const noProcessesResult = {
     hasProcesses: false,
     processes: [],
@@ -138,7 +138,7 @@ export async function detectBackgroundProcesses(worktreePath: any) {
 
     // Exclude the current process (wu-done itself)
     const currentPid = process.pid;
-    const externalProcesses = interferingProcesses.filter((p: any) => p.pid !== currentPid);
+    const externalProcesses = interferingProcesses.filter((p: UnsafeAny) => p.pid !== currentPid);
 
     if (externalProcesses.length === 0) {
       return noProcessesResult;
@@ -178,7 +178,7 @@ export async function detectBackgroundProcesses(worktreePath: any) {
  * // In wu-done.ts pre-flight checks:
  * await runBackgroundProcessCheck(worktreePath);
  */
-export async function runBackgroundProcessCheck(worktreePath: any) {
+export async function runBackgroundProcessCheck(worktreePath: UnsafeAny) {
   console.log(`${LOG_PREFIX.DONE} Checking for background processes...`);
 
   const result = await detectBackgroundProcesses(worktreePath);

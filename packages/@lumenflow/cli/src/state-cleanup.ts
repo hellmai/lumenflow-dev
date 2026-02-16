@@ -392,7 +392,7 @@ async function main(): Promise<void> {
   if (result) {
     printResult(result, args.quiet ?? false);
 
-    // Exit with error if any cleanups failed
+    // Exit with error if UnsafeAny cleanups failed
     if (!result.success) {
       process.exit(EXIT_CODES.ERROR);
     }

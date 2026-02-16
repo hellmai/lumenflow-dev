@@ -122,7 +122,7 @@ describe('wu-done', () => {
   });
 
   describe('ensureCleanWorktree', () => {
-    let mockGit: any;
+    let mockGit: UnsafeAny;
 
     beforeEach(() => {
       vi.resetAllMocks();

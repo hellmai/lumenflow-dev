@@ -24,7 +24,7 @@ export interface GuardMainBranchArgs {
   baseDir?: string;
   /** Allow agent branches (e.g., claude/session-123) */
   allowAgentBranch?: boolean;
-  /** Strict mode - fail on any protected branch */
+  /** Strict mode - fail on UnsafeAny protected branch */
   strict?: boolean;
   /** Show help */
   help?: boolean;

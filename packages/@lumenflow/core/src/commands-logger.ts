@@ -73,7 +73,7 @@ export interface LogGitCommandOptions {
  * @param {LogGitCommandOptions} options - Additional logging options (WU-1552)
  */
 export function logGitCommand(
-  args: any,
+  args: UnsafeAny,
   logPath = DEFAULT_LOG_PATH,
   options: LogGitCommandOptions = {},
 ) {
@@ -119,7 +119,7 @@ export function logGitCommand(
  * @param {string} line - Log line to parse
  * @returns {{timestamp: string, command: string, branch: string, worktree: string, user: string, outcome: string} | null}
  */
-export function parseLogEntry(line: any) {
+export function parseLogEntry(line: UnsafeAny) {
   if (!line || !line.trim()) {
     return null;
   }
@@ -184,7 +184,7 @@ export function parseLogEntry(line: any) {
  * @param {string} worktree - The worktree it was run in
  * @returns {boolean}
  */
-function isViolation(command: any, branch: any, worktree: any) {
+function isViolation(command: UnsafeAny, branch: UnsafeAny, worktree: UnsafeAny) {
   // Protected context: main branch OR main worktree (.)
   const isProtected = branch === 'main' || worktree === '.';
 
@@ -195,7 +195,7 @@ function isViolation(command: any, branch: any, worktree: any) {
   // Parse command into args
   const args = command.replace(/^git\s+/, '').split(/\s+/);
   const commandName = args[0]?.toLowerCase();
-  const flags = args.slice(1).map((a: any) => a.toLowerCase());
+  const flags = args.slice(1).map((a: UnsafeAny) => a.toLowerCase());
 
   // Check banned flags
   for (const bannedFlag of BANNED_FLAGS) {
@@ -213,7 +213,7 @@ function isViolation(command: any, branch: any, worktree: any) {
       return true;
     }
 
-    // Check if any required flag is present
+    // Check if UnsafeAny required flag is present
     const hasRequiredFlag = pattern.flags.some((reqFlag) => flags.includes(reqFlag));
     if (hasRequiredFlag) {
       return true;

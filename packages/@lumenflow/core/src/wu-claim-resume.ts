@@ -38,7 +38,7 @@ const LOG_PREFIX = '[wu-claim-resume]';
  * @param {number} pid - Process ID to check
  * @returns {boolean} True if process is running, false if not
  */
-export function isProcessRunning(pid: any) {
+export function isProcessRunning(pid: UnsafeAny) {
   if (typeof pid !== 'number' || !Number.isInteger(pid) || pid <= 0) {
     return false;
   }
@@ -73,7 +73,7 @@ export function isProcessRunning(pid: any) {
  * @param {string} [options.agentSession] - New agent session ID
  * @returns {Promise<ResumeResult>} Result of the resume operation
  */
-export async function resumeClaimForHandoff(options: any) {
+export async function resumeClaimForHandoff(options: UnsafeAny) {
   const { wuId, lane, worktreePath, baseDir = null, agentSession = null } = options;
 
   // Step 1: Verify worktree exists
@@ -177,7 +177,7 @@ export async function resumeClaimForHandoff(options: any) {
  * @param {Object} gitAdapter - Git adapter with getStatus method
  * @returns {Promise<string|null>} Summary of uncommitted changes, or null if clean
  */
-export async function getWorktreeUncommittedChanges(gitAdapter: any) {
+export async function getWorktreeUncommittedChanges(gitAdapter: UnsafeAny) {
   const status = await gitAdapter.getStatus();
 
   if (!status || status.trim() === '') {
@@ -193,15 +193,15 @@ export async function getWorktreeUncommittedChanges(gitAdapter: any) {
  * @param {string} status - Raw git status output
  * @returns {string} Formatted summary for display
  */
-export function formatUncommittedChanges(status: any) {
+export function formatUncommittedChanges(status: UnsafeAny) {
   if (!status || status.trim() === '') {
     return 'No uncommitted changes in worktree.';
   }
 
   const lines = status.trim().split('\n');
-  const modified = lines.filter((l: any) => l.startsWith(' M') || l.startsWith('M '));
-  const added = lines.filter((l: any) => l.startsWith('A ') || l.startsWith('??'));
-  const deleted = lines.filter((l: any) => l.startsWith(' D') || l.startsWith('D '));
+  const modified = lines.filter((l: UnsafeAny) => l.startsWith(' M') || l.startsWith('M '));
+  const added = lines.filter((l: UnsafeAny) => l.startsWith('A ') || l.startsWith('??'));
+  const deleted = lines.filter((l: UnsafeAny) => l.startsWith(' D') || l.startsWith('D '));
 
   const parts = [];
   if (modified.length > 0) {
@@ -231,7 +231,7 @@ export function formatUncommittedChanges(status: any) {
  * @param {Object} [options.memoryLayer] - Memory layer interface (for testing)
  * @returns {Promise<{success: boolean, checkpointId?: string, error?: string}>}
  */
-export async function createHandoffCheckpoint(options: any) {
+export async function createHandoffCheckpoint(options: UnsafeAny) {
   const { wuId, previousPid, newPid, previousSession, uncommittedSummary, memoryLayer } = options;
 
   // If no memory layer provided, try to use the default
@@ -282,7 +282,7 @@ export async function createHandoffCheckpoint(options: any) {
  * @param {string} _expectedBranch - Expected branch name (unused, for future validation)
  * @returns {{valid: boolean, error?: string}}
  */
-export function validateWorktreeForResume(worktreePath: any, _expectedBranch: any) {
+export function validateWorktreeForResume(worktreePath: UnsafeAny, _expectedBranch: UnsafeAny) {
   if (!existsSync(worktreePath)) {
     return {
       valid: false,

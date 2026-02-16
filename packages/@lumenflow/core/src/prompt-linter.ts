@@ -118,7 +118,7 @@ async function loadPreviousMetrics() {
  * @param {Object} metrics - Metrics by file path
  * @returns {Promise<void>}
  */
-async function savemetrics(metrics: any) {
+async function savemetrics(metrics: UnsafeAny) {
   try {
     const dir = dirname(METRICS_CACHE_PATH);
     const dirExists = await access(dir)
@@ -220,11 +220,11 @@ async function log(level: LogLevel, event: string, data: LogData, output: LogOut
  * @returns {Promise<{passed: boolean, tokenCount: number, delta: number, hash: string}>}
  */
 async function lintPromptFile(
-  filePath: any,
-  previousMetrics: any,
-  mode: any,
-  config: any,
-  output: any,
+  filePath: UnsafeAny,
+  previousMetrics: UnsafeAny,
+  mode: UnsafeAny,
+  config: UnsafeAny,
+  output: UnsafeAny,
 ) {
   // Analyze prompt
   const { tokenCount, hash, text } = analyzePrompt(filePath);
@@ -341,7 +341,7 @@ export async function lintPrompts(
   const previousMetrics = await loadPreviousMetrics();
 
   // Lint each file
-  const results: any[] = [];
+  const results: UnsafeAny[] = [];
   let allPassed = true;
 
   for (const filePath of filePaths) {

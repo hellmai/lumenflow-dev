@@ -127,7 +127,7 @@ function getEnforcementConfig(config: LumenFlowConfig | null): {
     interval_tool_calls: number;
   };
 } | null {
-  // WU-1681: Find enforcement config from any configured client (not just claude-code)
+  // WU-1681: Find enforcement config from UnsafeAny configured client (not just claude-code)
   const clients = config?.agents?.clients;
   const enforcement = clients
     ? Object.values(clients).find((c) => c?.enforcement?.hooks)?.enforcement

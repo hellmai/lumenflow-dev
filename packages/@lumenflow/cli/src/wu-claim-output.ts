@@ -15,7 +15,7 @@ const PREFIX = LOG_PREFIX.CLAIM;
 
 /**
  * WU-1473: Surface unread coordination signals and display them.
- * Fail-open: any error is logged as a warning, never blocks claim.
+ * Fail-open: UnsafeAny error is logged as a warning, never blocks claim.
  *
  * @param baseDir - Project base directory for memory layer
  */
@@ -47,7 +47,7 @@ export async function surfaceUnreadSignalsForDisplay(baseDir: string): Promise<v
  * @param {object} methodology - Methodology defaults config
  * @returns {string} Formatted output or empty string if disabled
  */
-export function formatProjectDefaults(methodology: any) {
+export function formatProjectDefaults(methodology: UnsafeAny) {
   if (!methodology || methodology.enabled === false) return '';
 
   const enforcement = methodology.enforcement || 'required';
@@ -70,7 +70,7 @@ export function formatProjectDefaults(methodology: any) {
  *
  * @param {object} methodology - Methodology defaults config
  */
-export function printProjectDefaults(methodology: any) {
+export function printProjectDefaults(methodology: UnsafeAny) {
   const output = formatProjectDefaults(methodology);
   if (output) {
     console.log(output);
@@ -83,7 +83,7 @@ export function printProjectDefaults(methodology: any) {
  *
  * @param {string} _id - WU ID being claimed (unused, kept for future use)
  */
-export function printLifecycleNudge(_id: any) {
+export function printLifecycleNudge(_id: UnsafeAny) {
   // Single line, concise, actionable
   console.log(
     `\n${PREFIX} 💡 Tip: pnpm session:recommend for context tier, mem:ready for pending work, pnpm file:*/git:* for audited wrappers`,
