@@ -157,7 +157,10 @@ export async function getChangedLintableFiles(options: GetChangedLintableFilesOp
  * const packageRelative = convertToPackageRelativePaths(repoRelative, 'apps/web/');
  * // Returns: ['src/app.ts', 'src/lib.tsx']
  */
-export function convertToPackageRelativePaths(repoRelativePaths: UnsafeAny, packagePrefix: UnsafeAny) {
+export function convertToPackageRelativePaths(
+  repoRelativePaths: UnsafeAny,
+  packagePrefix: UnsafeAny,
+) {
   // Normalize the prefix to ensure it ends with a slash
   const normalizedPrefix = packagePrefix.endsWith('/') ? packagePrefix : `${packagePrefix}/`;
 

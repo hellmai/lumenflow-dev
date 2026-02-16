@@ -282,7 +282,12 @@ function printDecayResult(decayResult: UnsafeAny, quiet: UnsafeAny) {
  * @param {boolean} json - Output as JSON
  * @param {boolean} quiet - Suppress verbose output
  */
-async function runDecayMode(baseDir: UnsafeAny, dryRun: UnsafeAny, json: UnsafeAny, quiet: UnsafeAny) {
+async function runDecayMode(
+  baseDir: UnsafeAny,
+  dryRun: UnsafeAny,
+  json: UnsafeAny,
+  quiet: UnsafeAny,
+) {
   const startedAt = new Date().toISOString();
   const startTime = Date.now();
 

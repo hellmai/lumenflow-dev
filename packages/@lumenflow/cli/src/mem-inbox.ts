@@ -208,7 +208,12 @@ async function checkInbox(baseDir: UnsafeAny, options: UnsafeAny, markAsRead: Un
  * @param {boolean} markAsRead - Whether to mark signals as read
  * @param {boolean} quiet - Suppress headers
  */
-async function runWatchMode(baseDir: UnsafeAny, filterOptions: UnsafeAny, markAsRead: UnsafeAny, quiet: UnsafeAny) {
+async function runWatchMode(
+  baseDir: UnsafeAny,
+  filterOptions: UnsafeAny,
+  markAsRead: UnsafeAny,
+  quiet: UnsafeAny,
+) {
   if (!quiet) {
     console.log(`${LOG_PREFIX} Watch mode started (Ctrl+C to exit)\n`);
   }
@@ -370,7 +375,12 @@ async function runCountMode(baseDir: UnsafeAny, filterOptions: UnsafeAny) {
  * @param {boolean} quiet - Suppress headers
  * @returns {Promise<number>} Signal count
  */
-async function runStandardMode(baseDir: UnsafeAny, filterOptions: UnsafeAny, markAsRead: UnsafeAny, quiet: UnsafeAny) {
+async function runStandardMode(
+  baseDir: UnsafeAny,
+  filterOptions: UnsafeAny,
+  markAsRead: UnsafeAny,
+  quiet: UnsafeAny,
+) {
   const signals = await checkInbox(baseDir, filterOptions, markAsRead);
   displaySignals(signals, quiet);
   return signals.length;

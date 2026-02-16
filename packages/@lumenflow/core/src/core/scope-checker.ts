@@ -152,7 +152,11 @@ export function isPathInScope(filePath: UnsafeAny, scope: UnsafeAny) {
  * assertPathInScope('apps/web/src/Header.tsx', scope, 'file write');
  * // Throws if path not in WU code_paths
  */
-export function assertPathInScope(filePath: UnsafeAny, scope: UnsafeAny, operation = 'this operation') {
+export function assertPathInScope(
+  filePath: UnsafeAny,
+  scope: UnsafeAny,
+  operation = 'this operation',
+) {
   if (!scope) {
     throw new Error(
       `❌ SCOPE VIOLATION: No active WU context.

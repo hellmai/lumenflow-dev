@@ -22,7 +22,11 @@ import { getStateStoreDirFromBacklog } from './wu-paths.js';
  * @param {string} id - WU ID
  * @param {string} title - WU title (unused - state store has it)
  */
-export async function moveWUToDoneBacklog(backlogPath: UnsafeAny, id: UnsafeAny, _title: UnsafeAny) {
+export async function moveWUToDoneBacklog(
+  backlogPath: UnsafeAny,
+  id: UnsafeAny,
+  _title: UnsafeAny,
+) {
   const PREFIX = LOG_PREFIX.DONE;
   const stateDir = getStateStoreDirFromBacklog(backlogPath);
 

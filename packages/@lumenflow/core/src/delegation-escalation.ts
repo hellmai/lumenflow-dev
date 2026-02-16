@@ -196,7 +196,11 @@ async function findEscalationAuditLog(baseDir: UnsafeAny, delegationId: UnsafeAn
  * @param {number} attempts - Number of recovery attempts
  * @returns {DelegationFailureSignal} Signal payload
  */
-function buildDelegationFailureSignal(delegation: UnsafeAny, auditLog: UnsafeAny, attempts: UnsafeAny) {
+function buildDelegationFailureSignal(
+  delegation: UnsafeAny,
+  auditLog: UnsafeAny,
+  attempts: UnsafeAny,
+) {
   const { severity, suggestedAction } = determineEscalationLevel(attempts);
   const lastCheckpoint = auditLog.context.lastCheckpoint || null;
 

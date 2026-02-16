@@ -172,7 +172,11 @@ export function generateClientSkillsGuidance(
   return `${SECTION.clientSkills} (${clientContext?.name})\n\n${instructions}${recommendedSection}`;
 }
 
-export function generateSkillsSelectionSection(doc: UnsafeAny, config: UnsafeAny, clientName: UnsafeAny) {
+export function generateSkillsSelectionSection(
+  doc: UnsafeAny,
+  config: UnsafeAny,
+  clientName: UnsafeAny,
+) {
   const lane = doc.lane || '';
   const type = doc.type || 'feature';
   const laneParent = lane.split(':')[0].trim();

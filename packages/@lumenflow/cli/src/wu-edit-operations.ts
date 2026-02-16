@@ -138,7 +138,11 @@ export function normalizeWUDates(wu: UnsafeAny) {
 /**
  * Merge array values: replace by default, append if --append flag is set (WU-1388)
  */
-export function mergeArrayField(existing: UnsafeAny, newValues: UnsafeAny, shouldAppend: UnsafeAny) {
+export function mergeArrayField(
+  existing: UnsafeAny,
+  newValues: UnsafeAny,
+  shouldAppend: UnsafeAny,
+) {
   if (!shouldAppend) {
     return newValues;
   }

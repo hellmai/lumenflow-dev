@@ -162,7 +162,11 @@ async function setupWorktreeDependencies(
  * @param {string} mainRepoPath - Main repo path
  * @param {Console} logger - Logger (console-compatible)
  */
-export function applyFallbackSymlinks(worktreePath: UnsafeAny, mainRepoPath: UnsafeAny, logger = console) {
+export function applyFallbackSymlinks(
+  worktreePath: UnsafeAny,
+  mainRepoPath: UnsafeAny,
+  logger = console,
+) {
   const symlinkResult = symlinkNodeModules(worktreePath, logger, mainRepoPath);
   if (symlinkResult.created) {
     logger.log(`${PREFIX} ${EMOJI.SUCCESS} node_modules symlinked as fallback`);

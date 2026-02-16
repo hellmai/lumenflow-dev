@@ -65,7 +65,11 @@ export function buildRepoInternalPathError(path: string): string {
  * @param {number} confidence - Confidence score (0-100)
  * @returns {string} Warning message or empty string if lanes match
  */
-export function generateLaneMismatchWarning(providedLane: UnsafeAny, inferredLane: UnsafeAny, confidence: UnsafeAny) {
+export function generateLaneMismatchWarning(
+  providedLane: UnsafeAny,
+  inferredLane: UnsafeAny,
+  confidence: UnsafeAny,
+) {
   // Normalize lanes for comparison (handle parent-only vs sub-lane)
   const normalizedProvided = providedLane.trim();
   const normalizedInferred = inferredLane.trim();
@@ -94,7 +98,11 @@ export function generateLaneMismatchWarning(providedLane: UnsafeAny, inferredLan
  * @param {boolean} isSubLaneSuggestion - True if suggesting sub-lane for parent-only input
  * @returns {string} Formatted warning message
  */
-function formatWarningMessage(suggestedLane: UnsafeAny, confidence: UnsafeAny, isSubLaneSuggestion: UnsafeAny) {
+function formatWarningMessage(
+  suggestedLane: UnsafeAny,
+  confidence: UnsafeAny,
+  isSubLaneSuggestion: UnsafeAny,
+) {
   const confidenceStr = `${confidence}%`;
 
   if (confidence < CONFIDENCE_THRESHOLD_LOW) {

@@ -131,7 +131,11 @@ export function isExemptedFromStampStatusCheck(id: UnsafeAny, exemptions: Unsafe
  * @param {string[]} exemptions - List of exempted WU IDs from config
  * @returns {{ exempted: boolean, reason: string|null }} Whether exempted and why
  */
-export function shouldExemptFromStampStatusCheck(wu: UnsafeAny, stampedIds: UnsafeAny, exemptions = []) {
+export function shouldExemptFromStampStatusCheck(
+  wu: UnsafeAny,
+  stampedIds: UnsafeAny,
+  exemptions = [],
+) {
   const id = wu?.id;
 
   // Check config exemption first

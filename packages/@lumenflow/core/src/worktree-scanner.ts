@@ -126,7 +126,10 @@ interface WorktreeScannerOptions {
   execAsync?: (cmd: string) => Promise<{ stdout: string; stderr: string }>;
 }
 
-export async function getWorktreeStatus(worktreePath: UnsafeAny, options: WorktreeScannerOptions = {}) {
+export async function getWorktreeStatus(
+  worktreePath: UnsafeAny,
+  options: WorktreeScannerOptions = {},
+) {
   const runCmd = options.execAsync || execAsync;
 
   /** @type {WorktreeStatus} */

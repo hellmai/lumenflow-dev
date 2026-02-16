@@ -98,7 +98,12 @@ function createWorktree(doc: UnsafeAny, worktreePath: UnsafeAny, branchName: Uns
 /**
  * Handle lane occupancy check and enforce WIP=1 policy
  */
-function handleLaneOccupancy(laneCheck: UnsafeAny, lane: UnsafeAny, id: UnsafeAny, force: UnsafeAny) {
+function handleLaneOccupancy(
+  laneCheck: UnsafeAny,
+  lane: UnsafeAny,
+  id: UnsafeAny,
+  force: UnsafeAny,
+) {
   if (laneCheck.free) return;
 
   if (laneCheck.error) {

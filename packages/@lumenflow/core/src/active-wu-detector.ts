@@ -57,7 +57,11 @@ function matchesSectionHeader(line: UnsafeAny, headers: UnsafeAny) {
  * @param {string} [currentWuId] - Optional WU_ID env var to include
  * @returns {Set<string>} Set of active WU IDs
  */
-export function extractActiveWuIds(backlogContent: UnsafeAny, statusContent: UnsafeAny, currentWuId = null) {
+export function extractActiveWuIds(
+  backlogContent: UnsafeAny,
+  statusContent: UnsafeAny,
+  currentWuId = null,
+) {
   const activeIds = new Set();
 
   // Process both backlog and status content

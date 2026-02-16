@@ -675,7 +675,11 @@ describe('integration scenarios', () => {
 
       const deps = createMockDependencies();
 
-      const result = await runTool(fileReadTool, { path: 'UnsafeAny/path.txt' }, { dependencies: deps });
+      const result = await runTool(
+        fileReadTool,
+        { path: 'UnsafeAny/path.txt' },
+        { dependencies: deps },
+      );
 
       // Should NOT check worktree for read
       assert.strictEqual(deps.assertWorktreeRequired.mock.calls.length, 0);

@@ -87,7 +87,12 @@ export function shouldUseBranchPrBlockPath(doc: { claimed_mode?: string }): bool
 /**
  * Remove WU entry from in-progress section of lines array
  */
-function removeFromInProgressSection(lines: UnsafeAny, inProgIdx: UnsafeAny, rel: UnsafeAny, id: UnsafeAny) {
+function removeFromInProgressSection(
+  lines: UnsafeAny,
+  inProgIdx: UnsafeAny,
+  rel: UnsafeAny,
+  id: UnsafeAny,
+) {
   if (inProgIdx === -1) return;
 
   let endIdx = lines.slice(inProgIdx + 1).findIndex((l: UnsafeAny) => l.startsWith('## '));
@@ -133,7 +138,12 @@ function createMissingBlockedSection(lines: string[], inProgIdx: number): number
   return insertPoint + 1;
 }
 
-async function moveFromInProgressToBlocked(statusPath: UnsafeAny, id: UnsafeAny, title: UnsafeAny, reason: UnsafeAny) {
+async function moveFromInProgressToBlocked(
+  statusPath: UnsafeAny,
+  id: UnsafeAny,
+  title: UnsafeAny,
+  reason: UnsafeAny,
+) {
   // Check file exists
   const fileExists = await access(statusPath)
     .then(() => true)
@@ -144,7 +154,8 @@ async function moveFromInProgressToBlocked(statusPath: UnsafeAny, id: UnsafeAny,
 
   const content = await readFile(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const lines = content.split(/\r?\n/);
-  const findHeader = (h: UnsafeAny) => lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
+  const findHeader = (h: UnsafeAny) =>
+    lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
   const inProgIdx = findHeader(STATUS_SECTIONS.IN_PROGRESS);
   let blockedIdx = findHeader(STATUS_SECTIONS.BLOCKED);
 

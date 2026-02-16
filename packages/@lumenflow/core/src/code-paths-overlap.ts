@@ -114,7 +114,11 @@ export function checkOverlap(claimingPaths: UnsafeAny, existingPaths: UnsafeAny)
  * detectConflicts('docs/04-operations/tasks/status.md', ['apps/**'], 'WU-901')
  * // => { conflicts: [{wuid: 'WU-900', overlaps: ['apps/web/foo.ts']}], hasBlocker: true }
  */
-export function detectConflicts(statusPath: UnsafeAny, claimingPaths: UnsafeAny, claimingWU: UnsafeAny) {
+export function detectConflicts(
+  statusPath: UnsafeAny,
+  claimingPaths: UnsafeAny,
+  claimingWU: UnsafeAny,
+) {
   // Handle empty claiming paths
   if (!claimingPaths || claimingPaths.length === 0) {
     return { conflicts: [], hasBlocker: false };
