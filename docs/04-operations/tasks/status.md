@@ -6,6 +6,7 @@ _Last updated: 2026-02-16_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1745 — Validate lane config against inference hierarchy at init time](wu/WU-1745.yaml)
+- [WU-1746 — wu:done resilience when worktree deleted but branch already merged](wu/WU-1746.yaml)
 
 ## Blocked
 

@@ -2,7 +2,7 @@ id: WU-1746
 title: wu:done resilience when worktree deleted but branch already merged
 lane: 'Framework: Core State Recovery'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -29,8 +29,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: wu:done expects an active worktree to exist for the WU being completed. Problem: When a worktree is manually merged to main and then deleted (or nuked by git), wu:done cannot complete — leaving the WU in an orphaned state: no completion stamp, backlog not updated, WU YAML stuck at 'ready' status, wu-events.jsonl shows 'release' instead of 'done'. In Haven test project, WU-1 was manually merged and worktree deleted, resulting in permanent orphaned state that wu:recover also could not fix. Solution: wu:done should detect the 'branch already merged to main, worktree gone' scenario and still stamp/cleanup gracefully. Check if the WU's commits are reachable from HEAD, and if so, proceed with stamping and state updates even without a live worktree."
+description: "Context: wu:done expects an active worktree to exist for the WU being completed.
+  Problem: When a worktree is manually merged to main and then deleted (or nuked by git), wu:done
+  cannot complete — leaving the WU in an orphaned state: no completion stamp, backlog not updated,
+  WU YAML stuck at 'ready' status, wu-events.jsonl shows 'release' instead of 'done'. In Haven test
+  project, WU-1 was manually merged and worktree deleted, resulting in permanent orphaned state that
+  wu:recover also could not fix. Solution: wu:done should detect the 'branch already merged to main,
+  worktree gone' scenario and still stamp/cleanup gracefully. Check if the WU's commits are
+  reachable from HEAD, and if so, proceed with stamping and state updates even without a live
+  worktree."
 acceptance:
   - wu:done detects when WU branch commits are already merged to main
   - wu:done completes stamping and state cleanup even when worktree is gone
   - wu:recover can handle released-but-not-done WUs with merged commits
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-state-recovery-wu-1746
+claimed_at: 2026-02-16T14:20:03.370Z
+baseline_main_sha: ce15af0d1ed3b4bbc93c565edebc1b17c9fb27ad
+session_id: ff3aadb9-b17d-4310-a7f1-885aa6575d8b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T14:20:03.378Z

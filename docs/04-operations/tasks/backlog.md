@@ -39,13 +39,13 @@ sections:
 - [WU-1739 — Runtime daemon — scheduler, sessions, Unix socket transport](wu/WU-1739.yaml) — Framework: Core Lifecycle
 - [WU-1740 — Control Plane SDK — ControlPlaneSyncPort + workspace config + mock adapter](wu/WU-1740.yaml) — Framework: Core Validation
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
-- [WU-1746 — wu:done resilience when worktree deleted but branch already merged](wu/WU-1746.yaml) — Framework: Core State Recovery
 - [WU-1747 — Stub format:check gate when prettier not installed at init time](wu/WU-1747.yaml) — Framework: CLI Enforcement
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1745 — Validate lane config against inference hierarchy at init time](wu/WU-1745.yaml) — Framework: CLI Enforcement
+- [WU-1746 — wu:done resilience when worktree deleted but branch already merged](wu/WU-1746.yaml) — Framework: Core State Recovery
 
 ## ⛔ Blocked
 
