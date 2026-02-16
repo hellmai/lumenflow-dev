@@ -103,7 +103,6 @@ _Last updated: 2026-02-16_
 - [WU-1100 — INIT-003 Phase 1: Sync CLI docs to lumenflow.dev](wu/WU-1100.yaml) — 2026-01-25
 - [WU-1101 — INIT-003 Phase 2a: Migrate tools/lib/core/ to @lumenflow/core](wu/WU-1101.yaml) — 2026-01-25
 - [WU-1102 — INIT-003 Phase 2b: Migrate WU helpers to @lumenflow/core](wu/WU-1102.yaml) — 2026-01-25
-- [WU-1103 — INIT-003 Phase 2c: Migrate git & validator modules](wu/WU-1103.yaml) — 2026-01-25
 - [WU-1106 — INIT-003 Phase 3b: Migrate backlog:prune command](wu/WU-1106.yaml) — 2026-01-25
 - [WU-1104 — INIT-003 Phase 2d: Migrate utility modules](wu/WU-1104.yaml) — 2026-01-25
 - [WU-1108 — INIT-003 Phase 4a: Migrate file operations (4 tools)](wu/WU-1108.yaml) — 2026-01-25
