@@ -2,7 +2,7 @@ id: WU-1731
 title: Kernel built-in tools (fs:read, fs:write, proc:exec) + ESLint boundary rules
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -68,3 +68,6 @@ session_id: cc062777-51e7-464f-9606-1327e54adf1d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T23:03:29.259Z
+locked: true
+completed_at: 2026-02-16T23:08:51.065Z
+completed: 2026-02-16

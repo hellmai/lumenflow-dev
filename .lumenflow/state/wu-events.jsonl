@@ -1423,4 +1423,5 @@
 {"type":"complete","wuId":"WU-1729","timestamp":"2026-02-16T22:51:22.799Z"}
 {"type":"claim","wuId":"WU-1730","timestamp":"2026-02-16T22:52:12.094Z","lane":"Framework: Core Validation","title":"Kernel sandbox integration (bwrap port) + subprocess tool-runner worker"}
 {"type":"complete","wuId":"WU-1730","timestamp":"2026-02-16T23:02:45.761Z"}
-{"type":"claim","wuId":"WU-1731","lane":"Framework: Core Lifecycle","title":"Kernel built-in tools (fs:read, fs:write, proc:exec) + ESLint boundary rules","timestamp":"2026-02-16T23:03:29.282Z"}
+{"type":"claim","wuId":"WU-1731","timestamp":"2026-02-16T23:03:29.282Z","lane":"Framework: Core Lifecycle","title":"Kernel built-in tools (fs:read, fs:write, proc:exec) + ESLint boundary rules"}
+{"type":"complete","wuId":"WU-1731","timestamp":"2026-02-16T23:08:55.710Z"}
