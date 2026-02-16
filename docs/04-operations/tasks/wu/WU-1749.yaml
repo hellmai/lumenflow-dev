@@ -7,7 +7,14 @@ priority: P2
 created: 2026-02-16
 code_paths:
   - package.json
-  - packages/@lumenflow/*/package.json
+  - packages/@lumenflow/agent/package.json
+  - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/core/package.json
+  - packages/@lumenflow/initiatives/package.json
+  - packages/@lumenflow/mcp/package.json
+  - packages/@lumenflow/memory/package.json
+  - packages/@lumenflow/metrics/package.json
+  - packages/@lumenflow/shims/package.json
   - apps/docs/package.json
   - pnpm-lock.yaml
 tests:
