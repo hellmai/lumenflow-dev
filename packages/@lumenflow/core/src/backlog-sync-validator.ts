@@ -12,13 +12,25 @@ import { parseBacklogFrontmatter, getSectionHeadings } from './backlog-parser.js
 import { extractParent } from './lane-checker.js';
 import { CONFIG_FILES, STRING_LITERALS, WU_STATUS, getProjectRoot } from './wu-constants.js';
 
+type BacklogSection = 'ready' | 'in_progress' | 'blocked' | 'done';
+const BACKLOG_SECTIONS: BacklogSection[] = ['ready', 'in_progress', 'blocked', 'done'];
+
+interface SectionTracker {
+  wus: Set<string>;
+  lineNumbers: Map<string, number>;
+}
+
+function getErrorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
+}
+
 /**
  * Check if parent lane has sub-lane taxonomy in .lumenflow.lane-inference.yaml
  * @param {string} parent - Parent lane name
  * @param {string} projectRoot - Path to project root
  * @returns {boolean} True if parent has sub-lanes defined
  */
-function hasSubLaneTaxonomy(parent, projectRoot) {
+function hasSubLaneTaxonomy(parent: string, projectRoot: string): boolean {
   const taxonomyPath = path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
   if (!existsSync(taxonomyPath)) {
     return false;
@@ -36,33 +48,39 @@ function hasSubLaneTaxonomy(parent, projectRoot) {
   }
 }
 
-export function validateBacklogSync(backlogPath) {
+export function validateBacklogSync(backlogPath: string) {
   // Parse frontmatter to get configured section headings
-  let frontmatter, markdown;
+  let frontmatter: unknown;
+  let markdown: string;
   try {
     ({ frontmatter, markdown } = parseBacklogFrontmatter(backlogPath));
-  } catch (err) {
-    return { valid: false, errors: [err.message] };
+  } catch (err: unknown) {
+    return { valid: false, errors: [getErrorMessage(err)] };
   }
 
   // If no frontmatter, fall back to empty sections (backlog without frontmatter is valid)
-  const headings = frontmatter ? getSectionHeadings(frontmatter) : {};
+  const headings = frontmatter
+    ? (getSectionHeadings(frontmatter) as Partial<Record<BacklogSection, string>>)
+    : {};
   const lines = markdown.split(/\r?\n/);
 
   // Parse sections using frontmatter headings
-  const sections = {
-    ready: new Set(),
-    in_progress: new Set(),
-    blocked: new Set(),
-    done: new Set(),
+  const sections: Record<BacklogSection, Set<string>> = {
+    ready: new Set<string>(),
+    in_progress: new Set<string>(),
+    blocked: new Set<string>(),
+    done: new Set<string>(),
   };
 
-  let currentSection = null;
+  let currentSection: BacklogSection | null = null;
 
   // Build heading-to-section map for efficient lookup
-  const headingMap = new Map();
-  for (const [sectionName, heading] of Object.entries(headings)) {
-    headingMap.set(heading, sectionName);
+  const headingMap = new Map<string, BacklogSection>();
+  for (const sectionName of BACKLOG_SECTIONS) {
+    const heading = headings[sectionName];
+    if (heading) {
+      headingMap.set(heading, sectionName);
+    }
   }
 
   // WU-1334: Pattern to match WU IDs only in backlog list items
@@ -79,7 +97,7 @@ export function validateBacklogSync(backlogPath) {
   for (const line of lines) {
     // Check if line matches any configured section heading (exact match)
     if (headingMap.has(line)) {
-      currentSection = headingMap.get(line);
+      currentSection = headingMap.get(line) ?? null;
       continue;
     }
 
@@ -91,14 +109,14 @@ export function validateBacklogSync(backlogPath) {
 
     if (currentSection) {
       const match = line.match(BACKLOG_ITEM_PATTERN);
-      if (match) {
+      if (match?.[1]) {
         sections[currentSection].add(match[1].toUpperCase());
       }
     }
   }
 
   // Detect duplicates
-  const errors = [];
+  const errors: string[] = [];
 
   // Done + Ready
   const doneAndReady = [...sections.done].filter((wu) => sections.ready.has(wu));
@@ -140,7 +158,7 @@ export function validateBacklogSync(backlogPath) {
   // WU-1137: Check for parent-only WUs in Ready section (sub-lane format preferred)
   const projectRoot = getProjectRoot(import.meta.url);
   const wuDir = path.join(path.dirname(backlogPath), 'wu');
-  const parentOnlyWUs = [];
+  const parentOnlyWUs: Array<{ wuId: string; lane: string; parent: string }> = [];
 
   for (const wuId of sections.ready) {
     const wuPath = path.join(wuDir, `${wuId}.yaml`);
@@ -218,34 +236,43 @@ export interface FixBacklogDuplicatesOptions {
  * @param {FixBacklogDuplicatesOptions} options - Fix options
  * @returns {{fixed: boolean, removed: Array<{wu: string, section: string}>, backupPath?: string, content?: string}}
  */
-export function fixBacklogDuplicates(backlogPath, options: FixBacklogDuplicatesOptions = {}) {
+export function fixBacklogDuplicates(
+  backlogPath: string,
+  options: FixBacklogDuplicatesOptions = {},
+) {
   const { dryRun = false, returnContent = false } = options;
 
   // Parse frontmatter to get configured section headings
-  let frontmatter, markdown;
+  let frontmatter: unknown;
+  let markdown: string;
   try {
     ({ frontmatter, markdown } = parseBacklogFrontmatter(backlogPath));
-  } catch (err) {
-    return { fixed: false, removed: [], error: err.message };
+  } catch (err: unknown) {
+    return { fixed: false, removed: [], error: getErrorMessage(err) };
   }
 
-  const headings = frontmatter ? getSectionHeadings(frontmatter) : {};
+  const headings = frontmatter
+    ? (getSectionHeadings(frontmatter) as Partial<Record<BacklogSection, string>>)
+    : {};
   const lines = markdown.split(/\r?\n/);
 
   // Track section boundaries and WU locations
-  const sections = {
-    ready: { wus: new Set(), lineNumbers: new Map() },
-    in_progress: { wus: new Set(), lineNumbers: new Map() },
-    blocked: { wus: new Set(), lineNumbers: new Map() },
-    done: { wus: new Set(), lineNumbers: new Map() },
+  const sections: Record<BacklogSection, SectionTracker> = {
+    ready: { wus: new Set<string>(), lineNumbers: new Map<string, number>() },
+    in_progress: { wus: new Set<string>(), lineNumbers: new Map<string, number>() },
+    blocked: { wus: new Set<string>(), lineNumbers: new Map<string, number>() },
+    done: { wus: new Set<string>(), lineNumbers: new Map<string, number>() },
   };
 
-  let currentSection = null;
+  let currentSection: BacklogSection | null = null;
 
   // Build heading-to-section map
-  const headingMap = new Map();
-  for (const [sectionName, heading] of Object.entries(headings)) {
-    headingMap.set(heading, sectionName);
+  const headingMap = new Map<string, BacklogSection>();
+  for (const sectionName of BACKLOG_SECTIONS) {
+    const heading = headings[sectionName];
+    if (heading) {
+      headingMap.set(heading, sectionName);
+    }
   }
 
   // WU-1334: Same pattern as validateBacklogSync - only match list items
@@ -255,9 +282,12 @@ export function fixBacklogDuplicates(backlogPath, options: FixBacklogDuplicatesO
   // Parse sections and track line numbers for each WU
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    if (line === undefined) {
+      continue;
+    }
 
     if (headingMap.has(line)) {
-      currentSection = headingMap.get(line);
+      currentSection = headingMap.get(line) ?? null;
       continue;
     }
 
@@ -267,9 +297,9 @@ export function fixBacklogDuplicates(backlogPath, options: FixBacklogDuplicatesO
       continue;
     }
 
-    if (currentSection && sections[currentSection]) {
+    if (currentSection) {
       const match = line.match(BACKLOG_ITEM_PATTERN);
-      if (match) {
+      if (match?.[1]) {
         const wuId = match[1].toUpperCase();
         sections[currentSection].wus.add(wuId);
         // Store line number (can have multiple lines per WU, but we just need one to identify the entry)
@@ -282,7 +312,7 @@ export function fixBacklogDuplicates(backlogPath, options: FixBacklogDuplicatesO
 
   // Find duplicates that need removal
   const linesToRemove = new Set();
-  const removed = [];
+  const removed: Array<{ wu: string; section: string }> = [];
 
   // Done + Ready: remove from Ready
   for (const wu of sections.done.wus) {
