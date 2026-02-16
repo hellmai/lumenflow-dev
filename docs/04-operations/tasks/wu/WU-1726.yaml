@@ -37,15 +37,16 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: 'Context: INIT-029 Phase 1 — Kernel Foundation. Depends on WU-1725 (schemas). Problem:
-  The kernel needs an event-sourced state store for task lifecycle events. Current wu-state-store.ts
-  has the right pattern (JSONL append-only, in-memory indexes, replay) but is entangled with
-  WU-specific concerns. Solution: Implement a generic EventStore class with append(event),
-  replay(filter), project(taskId). Events use KernelEvent discriminated union with prefixed kinds
-  (task_, run_, workspace_, spec_) and schema_version:1. JSONL file backend porting patterns from
-  wu-state-store.ts. In-memory indexes (byTask, byKind, byTimestamp). projectTaskState(spec, events)
-  -> TaskState projection function. File locking using atomic wx flag pattern from lane-lock.ts.
-  Spec hash verification: on task load, recompute canonical_json hash and verify against
-  task_created event spec_hash. Reference: wu-state-store.ts, lane-lock.ts. Plan:
+  The kernel needs an event-sourced state store for task lifecycle events with unambiguous
+  projection semantics for blocked/waiting/resumed flows. Current wu-state-store.ts has the right
+  pattern (JSONL append-only, in-memory indexes, replay) but is entangled with WU-specific concerns.
+  Solution: Implement a generic EventStore class with append(event), replay(filter),
+  project(taskId). Events use KernelEvent discriminated union with prefixed kinds (task_, run_,
+  workspace_, spec_) and schema_version:1, including task_waiting/task_resumed lifecycle events.
+  JSONL backend ports wu-state-store.ts patterns. In-memory indexes (byTask, byKind, byTimestamp).
+  projectTaskState(spec, events) -> TaskState projection. File locking via atomic wx flag pattern
+  from lane-lock.ts. Spec hash verification on load via canonical_json against
+  task_created.spec_hash. Reference: wu-state-store.ts, lane-lock.ts. Plan:
   .claude/plans/golden-prancing-cookie.md'
 acceptance:
   - EventStore class implements append(event), replay(filter), project(taskId)
@@ -61,3 +62,7 @@ acceptance:
     schema_version:1
   - 'Spec hash verification: recompute canonical_json() hash on load and verify against task_created
     spec_hash'
+  - KernelEvent lifecycle coverage includes task_waiting and task_resumed transitions for
+    waiting-state projection
+  - Projection correctness test includes waiting/resumed path
+    (create->claim->waiting->resumed->complete)
