@@ -118,8 +118,6 @@
 {"type":"complete","wuId":"WU-1066","timestamp":"2026-01-23T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1067","timestamp":"2026-01-23T00:00:00.000Z","lane":"Operations: CI/CD","title":"Make gates language-agnostic via config-driven execution"}
 {"type":"complete","wuId":"WU-1067","timestamp":"2026-01-23T00:00:00.000Z"}
-{"type":"claim","wuId":"WU-1068","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: Core","title":"LumenFlow Framework Cleanup - Remove legacy leakage and fix code smells"}
-{"type":"complete","wuId":"WU-1068","timestamp":"2026-01-23T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1069","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: CLI","title":"Validate spec-refs rejects repo-internal plan paths"}
 {"type":"complete","wuId":"WU-1069","timestamp":"2026-01-23T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1070","timestamp":"2026-01-23T00:00:00.000Z","lane":"Operations: Infrastructure","title":"Add audit logging and guarding for LUMENFLOW_FORCE bypass"}

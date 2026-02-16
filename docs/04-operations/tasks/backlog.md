@@ -111,7 +111,6 @@ sections:
 - [WU-1065 — Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring](wu/WU-1065.yaml)
 - [WU-1066 — Add .NET/C# preset to lumenflow-gates GitHub Action](wu/WU-1066.yaml)
 - [WU-1067 — Make gates language-agnostic via config-driven execution](wu/WU-1067.yaml)
-- [WU-1068 — LumenFlow Framework Cleanup - Remove legacy leakage and fix code smells](wu/WU-1068.yaml)
 - [WU-1069 — Validate spec-refs rejects repo-internal plan paths](wu/WU-1069.yaml)
 - [WU-1070 — Add audit logging and guarding for LUMENFLOW_FORCE bypass](wu/WU-1070.yaml)
 - [WU-1071 — Fix CLI entry guard for pnpm symlink resolution](wu/WU-1071.yaml)
