@@ -38,24 +38,29 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: 'Context: INIT-029 Phase 2 — ToolHost + Evidence. Depends on WU-1729 (ToolHost).
-  Problem: Subprocess tools need OS-level isolation via bwrap sandbox, and receipts must survive
-  host crashes (crash-gap fix). Solution: Port sandbox-backend-linux.ts bwrap invocation builder
-  into kernel/sandbox/. Implement tool-runner worker that: receives {tool_name, input,
-  scope_enforced, receipt_id} via stdin, writes a started receipt BEFORE execution (crash-gap
-  guarantee), loads tool adapter via handler.entry (pack-provided), executes in sandbox, writes
-  final receipt, returns ToolOutput via stdout. Worker writes receipts inside sandbox so evidence
-  exists even if host dies mid-flight. v1 security stance: write confinement guaranteed (bwrap rw
-  bind), read confinement best-effort (deny overlays for ~/.ssh etc), network binary off/full.
-  Reference: sandbox-backend-linux.ts. Plan: .claude/plans/golden-prancing-cookie.md'
+  Problem: Subprocess tools need OS-level isolation via bwrap and a shared execution worker, but
+  receipt ownership must remain unambiguous to preserve append-only evidence invariants. Solution:
+  Port sandbox-backend-linux.ts bwrap invocation builder into kernel/sandbox and implement the
+  tool-runner worker that receives serialized invocations, loads handler.entry adapters, executes
+  inside sandbox, and returns structured results/errors. Wire this worker into the
+  SubprocessDispatcher port introduced in WU-1729. ToolHost remains the single evidence writer
+  (started/finished entries); worker never writes trace files directly. v1 security stance remains:
+  write confinement guaranteed, read confinement best-effort, network posture off/full. Reference:
+  sandbox-backend-linux.ts. Plan: .claude/plans/golden-prancing-cookie.md'
 acceptance:
   - Bwrap invocation builder ported from sandbox-backend-linux.ts into kernel/sandbox/
   - SandboxProfile type defines ro-bind, writable bind mounts, network posture (off|full), deny
     overlays, env vars
-  - Worker receives {tool_name, input, scope_enforced, receipt_id} via stdin
-  - Worker writes started receipt BEFORE execution (crash-gap guarantee)
-  - Worker loads tool adapter via handler.entry string (not direct import)
-  - Worker writes final receipt (success/failure/denied) with same receipt_id
-  - Worker returns structured ToolOutput via stdout
+  - Worker receives serialized invocation payload (tool_name, input, scope_enforced, receipt_id) via
+    stdin/IPC
+  - Worker loads tool adapter via handler.entry string (not direct import from surfaces/packs)
+  - Worker executes adapter inside bwrap sandbox and returns structured ToolOutput/error metadata
+    via stdout/IPC
+  - SubprocessDispatcher implementation is wired into ToolHost port from WU-1729
+  - Worker does NOT write tool trace files directly; ToolHost remains single writer for
+    tool_call_started/tool_call_finished
+  - Spawn/transport failures propagate structured errors so ToolHost can emit tool_call_finished
+    with failure
   - Subprocess runs inside bwrap with --die-with-parent and --new-session
   - 'Write confinement enforced: only resolved write scope mounted as rw'
   - Deny overlays block ~/.ssh, ~/.aws, ~/.gnupg, .env from sandbox reads
