@@ -38,7 +38,6 @@ const INIT_PREFIX = '[lumenflow init]';
 
 const LANE_SETUP_COMMAND = 'pnpm lane:setup';
 const LANE_LOCK_COMMAND = 'pnpm lane:lock';
-const LANE_VALIDATE_AND_LOCK_COMMAND = 'pnpm lane:validate && pnpm lane:lock';
 const LANE_READY_SENTINEL = 'lanes ready';
 
 const DEFAULT_FRAMEWORK_LANES_TOKEN = '{{FRAMEWORK_LANES}}';
