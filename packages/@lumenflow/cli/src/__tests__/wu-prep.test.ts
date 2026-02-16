@@ -411,3 +411,46 @@ describe('wu-prep test scoping (WU-1676)', () => {
     expect(scoped).toEqual(['packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts']);
   });
 });
+
+describe('wu-prep dirty-main mutation guard (WU-1750)', () => {
+  it('blocks when main checkout has non-allowlisted dirty files in worktree mode', async () => {
+    const { evaluatePrepMainMutationGuard } = await import('../wu-prep.js');
+    const result = evaluatePrepMainMutationGuard({
+      mainCheckout: '/repo',
+      isBranchPr: false,
+      mainStatus:
+        ' M packages/@lumenflow/cli/src/wu-prep.ts\n?? docs/04-operations/tasks/status.md\n',
+    });
+
+    expect(result.blocked).toBe(true);
+    expect(result.blockedPaths).toContain('packages/@lumenflow/cli/src/wu-prep.ts');
+    expect(result.blockedPaths).toContain('docs/04-operations/tasks/status.md');
+    expect(result.message).toContain('wu:prep');
+    expect(result.message).toContain('MCP');
+  });
+
+  it('allows allowlisted main checkout dirty files in worktree mode', async () => {
+    const { evaluatePrepMainMutationGuard } = await import('../wu-prep.js');
+    const result = evaluatePrepMainMutationGuard({
+      mainCheckout: '/repo',
+      isBranchPr: false,
+      mainStatus:
+        ' M .lumenflow/state/wu-events.jsonl\n?? docs/04-operations/tasks/wu/WU-1750.yaml\n',
+    });
+
+    expect(result.blocked).toBe(false);
+    expect(result.blockedPaths).toEqual([]);
+  });
+
+  it('allows branch-pr mode even when non-allowlisted files are dirty on main', async () => {
+    const { evaluatePrepMainMutationGuard } = await import('../wu-prep.js');
+    const result = evaluatePrepMainMutationGuard({
+      mainCheckout: '/repo',
+      isBranchPr: true,
+      mainStatus: ' M packages/@lumenflow/cli/src/wu-prep.ts\n',
+    });
+
+    expect(result.blocked).toBe(false);
+    expect(result.blockedPaths).toEqual([]);
+  });
+});

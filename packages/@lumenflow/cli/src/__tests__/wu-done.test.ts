@@ -648,3 +648,46 @@ describe('wu-done', () => {
     });
   });
 });
+
+describe('wu-done dirty-main mutation guard (WU-1750)', () => {
+  it('blocks when main checkout has non-allowlisted dirty files with active worktree context', async () => {
+    const { evaluateWuDoneMainMutationGuard } = await import('../wu-done.js');
+    const result = evaluateWuDoneMainMutationGuard({
+      mainCheckout: '/repo',
+      isBranchPr: false,
+      hasActiveWorktreeContext: true,
+      mainStatus: ' M packages/@lumenflow/cli/src/wu-done.ts\n',
+    });
+
+    expect(result.blocked).toBe(true);
+    expect(result.blockedPaths).toEqual(['packages/@lumenflow/cli/src/wu-done.ts']);
+    expect(result.message).toContain('wu:done');
+    expect(result.message).toContain('MCP');
+  });
+
+  it('allows branch-pr mode even when main checkout has non-allowlisted dirty files', async () => {
+    const { evaluateWuDoneMainMutationGuard } = await import('../wu-done.js');
+    const result = evaluateWuDoneMainMutationGuard({
+      mainCheckout: '/repo',
+      isBranchPr: true,
+      hasActiveWorktreeContext: true,
+      mainStatus: ' M packages/@lumenflow/cli/src/wu-done.ts\n',
+    });
+
+    expect(result.blocked).toBe(false);
+    expect(result.blockedPaths).toEqual([]);
+  });
+
+  it('allows no-worktree contexts in wu:done', async () => {
+    const { evaluateWuDoneMainMutationGuard } = await import('../wu-done.js');
+    const result = evaluateWuDoneMainMutationGuard({
+      mainCheckout: '/repo',
+      isBranchPr: false,
+      hasActiveWorktreeContext: false,
+      mainStatus: ' M packages/@lumenflow/cli/src/wu-done.ts\n',
+    });
+
+    expect(result.blocked).toBe(false);
+    expect(result.blockedPaths).toEqual([]);
+  });
+});

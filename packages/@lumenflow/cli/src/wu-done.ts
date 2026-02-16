@@ -166,6 +166,7 @@ import { runAutoCleanupAfterDone, commitCleanupChanges } from './wu-done-auto-cl
 import { cleanupHookCounters } from './hooks/auto-checkpoint-utils.js';
 // WU-1473: Mark completed-WU signals as read using receipt-aware behavior
 import { markCompletedWUSignalsAsRead } from './hooks/enforcement-generator.js';
+import { evaluateMainDirtyMutationGuard } from './hooks/enforcement-checks.js';
 // WU-1474: Decay policy invocation during completion lifecycle
 import { runDecayOnDone } from './wu-done-decay.js';
 
@@ -2726,6 +2727,21 @@ export function getYamlStatusForDisplay(status: unknown) {
   return getWUStatusDisplay(status);
 }
 
+export function evaluateWuDoneMainMutationGuard(options: {
+  mainCheckout: string;
+  isBranchPr: boolean;
+  hasActiveWorktreeContext: boolean;
+  mainStatus: string;
+}) {
+  return evaluateMainDirtyMutationGuard({
+    commandName: 'wu:done',
+    mainCheckout: options.mainCheckout,
+    mainStatus: options.mainStatus,
+    hasActiveWorktreeContext: options.hasActiveWorktreeContext,
+    isBranchPrMode: options.isBranchPr,
+  });
+}
+
 function printStateHUD({
   id,
   docMain,
@@ -2843,6 +2859,17 @@ async function main() {
 
   const effectiveDerivedWorktree = effectiveBranchOnly ? null : derivedWorktree;
   const effectiveWorktreePath = effectiveBranchOnly ? null : resolvedWorktreePath;
+
+  const mainStatus = await getGitForCwd().getStatus();
+  const mainMutationGuard = evaluateWuDoneMainMutationGuard({
+    mainCheckout: mainCheckoutPath,
+    isBranchPr: isBranchPR,
+    hasActiveWorktreeContext: Boolean(effectiveWorktreePath && existsSync(effectiveWorktreePath)),
+    mainStatus,
+  });
+  if (mainMutationGuard.blocked) {
+    die(mainMutationGuard.message ?? 'wu:done blocked by dirty-main guard.');
+  }
 
   // WU-1169: Ensure worktree is clean before proceeding
   // This prevents WU-1943 rollback loops if rebase fails due to dirty state

@@ -104,6 +104,7 @@ For detailed troubleshooting, see [troubleshooting-wu-done.md](docs/04-operation
 2. **Worktree Discipline**: After `wu:claim`, work ONLY in the worktree
 3. **Gates Before Done**: Run `pnpm gates` before `wu:done`
 4. **Never Bypass Hooks**: No `--no-verify`
+5. **Vendor-Agnostic Dirty-Main Guard**: `wu:prep` and `wu:done` hard-block when main has non-allowlisted dirty files during worktree WUs (including MCP/tool-originated writes). `branch-pr` mode is exempt.
 
 For the complete set of non-negotiable constraints (git safety, forbidden commands, skip-gates policy, and more), see [.lumenflow/constraints.md](.lumenflow/constraints.md).
 

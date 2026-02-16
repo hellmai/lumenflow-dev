@@ -39,6 +39,7 @@ import { die } from '@lumenflow/core/error-handler';
 import { resolveLocation } from '@lumenflow/core/context/location-resolver';
 import { readWU } from '@lumenflow/core/wu-yaml';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { createGitForPath } from '@lumenflow/core/git-adapter';
 import {
   validatePreflight,
   formatPreflightResult,
@@ -55,6 +56,7 @@ import {
 import { defaultBranchFrom } from '@lumenflow/core/wu-done-paths';
 import { getCurrentBranch } from '@lumenflow/core/wu-helpers';
 import { runGates } from './gates.js';
+import { evaluateMainDirtyMutationGuard } from './hooks/enforcement-checks.js';
 export {
   isCodePathCoveredByChanges,
   findMissingCodePathCoverage,
@@ -393,6 +395,20 @@ export function formatBranchPrSuccessMessage(options: {
   );
 }
 
+export function evaluatePrepMainMutationGuard(options: {
+  mainCheckout: string;
+  isBranchPr: boolean;
+  mainStatus: string;
+}) {
+  return evaluateMainDirtyMutationGuard({
+    commandName: 'wu:prep',
+    mainCheckout: options.mainCheckout,
+    mainStatus: options.mainStatus,
+    hasActiveWorktreeContext: !options.isBranchPr,
+    isBranchPrMode: options.isBranchPr,
+  });
+}
+
 /**
  * Print success message with copy-paste instruction.
  */
@@ -506,6 +522,19 @@ async function main(): Promise<void> {
       `${EMOJI.FAILURE} WU ${id} status is '${doc.status}', expected '${WU_STATUS.IN_PROGRESS}'.\n\n` +
         `wu:prep can only be run on WUs that are in progress.`,
     );
+  }
+
+  if (!branchPr) {
+    const mainStatus = await createGitForPath(location.mainCheckout).getStatus();
+    const mainMutationGuard = evaluatePrepMainMutationGuard({
+      mainCheckout: location.mainCheckout,
+      isBranchPr: branchPr,
+      mainStatus,
+    });
+
+    if (mainMutationGuard.blocked) {
+      die(mainMutationGuard.message ?? `${EMOJI.FAILURE} wu:prep blocked by dirty-main guard.`);
+    }
   }
 
   console.log(`${PREP_PREFIX} Preparing ${id} for completion...`);

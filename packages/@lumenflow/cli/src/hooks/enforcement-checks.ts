@@ -26,6 +26,21 @@ const MAIN_WRITE_ALLOWLIST_PREFIXES = [
   'plan/',
 ] as const;
 
+const GIT_STATUS_PREFIX_LENGTH = 3;
+const GIT_STATUS_RENAME_SEPARATOR = ' -> ';
+const GIT_STATUS_QUOTE = '"';
+const PATH_PREFIX_CURRENT_DIR = './';
+const PATH_SEPARATOR_WINDOWS = '\\';
+const PATH_SEPARATOR_POSIX = '/';
+const MAX_BLOCKED_PATHS_IN_MESSAGE = 10;
+
+const DIRTY_MAIN_GUARD_REASONS = {
+  BRANCH_PR_MODE: 'branch-pr-mode',
+  NO_WORKTREE_CONTEXT: 'no-worktree-context',
+  CLEAN_OR_ALLOWLISTED: 'clean-or-allowlisted',
+  BLOCKED_NON_ALLOWLISTED_DIRTY_MAIN: 'blocked-non-allowlisted-dirty-main',
+} as const;
+
 /**
  * Result of an enforcement check
  */
@@ -44,6 +59,164 @@ export interface EnforcementCheckResult {
 export interface ToolInput {
   file_path: string;
   tool_name: string;
+}
+
+export interface MainDirtyMutationGuardOptions {
+  commandName: string;
+  mainCheckout: string;
+  mainStatus: string;
+  hasActiveWorktreeContext: boolean;
+  isBranchPrMode: boolean;
+}
+
+export interface MainDirtyMutationGuardResult {
+  blocked: boolean;
+  blockedPaths: string[];
+  reason: string;
+  message?: string;
+}
+
+function stripWrappingQuotes(value: string): string {
+  if (value.startsWith(GIT_STATUS_QUOTE) && value.endsWith(GIT_STATUS_QUOTE) && value.length >= 2) {
+    return value.slice(1, -1);
+  }
+  return value;
+}
+
+function normalizeRepoRelativePath(value: string): string {
+  const withoutQuotes = stripWrappingQuotes(value.trim());
+  const normalizedSeparators = withoutQuotes.split(PATH_SEPARATOR_WINDOWS).join(PATH_SEPARATOR_POSIX);
+  if (normalizedSeparators.startsWith(PATH_PREFIX_CURRENT_DIR)) {
+    return normalizedSeparators.slice(PATH_PREFIX_CURRENT_DIR.length);
+  }
+  return normalizedSeparators;
+}
+
+function parsePathFromStatusLine(line: string): string | null {
+  if (line.length < GIT_STATUS_PREFIX_LENGTH) {
+    return null;
+  }
+
+  const pathField = line.slice(GIT_STATUS_PREFIX_LENGTH).trim();
+  if (pathField.length === 0) {
+    return null;
+  }
+
+  // For renames, git status emits "old -> new". We care about the destination path.
+  const renameSegments = pathField.split(GIT_STATUS_RENAME_SEPARATOR);
+  const destinationPath = renameSegments[renameSegments.length - 1];
+  const normalizedPath = normalizeRepoRelativePath(destinationPath);
+  return normalizedPath.length > 0 ? normalizedPath : null;
+}
+
+export function parseDirtyPathsFromStatus(mainStatus: string): string[] {
+  const uniquePaths = new Set<string>();
+
+  for (const line of mainStatus.split('\n')) {
+    const trimmed = line.trimEnd();
+    if (trimmed.length === 0) {
+      continue;
+    }
+
+    const parsed = parsePathFromStatusLine(trimmed);
+    if (parsed) {
+      uniquePaths.add(parsed);
+    }
+  }
+
+  return Array.from(uniquePaths);
+}
+
+export function getNonAllowlistedDirtyPaths(
+  mainStatus: string,
+  allowlistPrefixes: readonly string[] = MAIN_WRITE_ALLOWLIST_PREFIXES,
+): string[] {
+  return parseDirtyPathsFromStatus(mainStatus).filter(
+    (relativePath) => !allowlistPrefixes.some((prefix) => relativePath.startsWith(prefix)),
+  );
+}
+
+function formatBlockedPaths(paths: string[]): string {
+  const displayed = paths.slice(0, MAX_BLOCKED_PATHS_IN_MESSAGE);
+  const lines = displayed.map((dirtyPath) => `  - ${dirtyPath}`);
+  const remainder = paths.length - displayed.length;
+
+  if (remainder > 0) {
+    lines.push(`  - ... and ${remainder} more`);
+  }
+
+  return lines.join('\n');
+}
+
+export function formatMainDirtyMutationGuardMessage(options: {
+  commandName: string;
+  mainCheckout: string;
+  blockedPaths: string[];
+}): string {
+  const { commandName, mainCheckout, blockedPaths } = options;
+  return (
+    `${commandName} blocked: main checkout has non-allowlisted dirty files while a worktree WU is active.\n\n` +
+    `Dirty paths:\n${formatBlockedPaths(blockedPaths)}\n\n` +
+    `Allowed dirty prefixes on main:\n` +
+    `  - docs/04-operations/tasks/wu/\n` +
+    `  - .lumenflow/\n` +
+    `  - .claude/\n` +
+    `  - plan/\n\n` +
+    `How to resolve:\n` +
+    `  1. Move edits into the active worktree (recommended)\n` +
+    `  2. Revert or commit unintended main edits\n` +
+    `  3. If writes came from MCP/tools, rerun them in the worktree path\n` +
+    `  4. Retry ${commandName}\n\n` +
+    `Main checkout: ${mainCheckout}`
+  );
+}
+
+export function evaluateMainDirtyMutationGuard(
+  options: MainDirtyMutationGuardOptions,
+): MainDirtyMutationGuardResult {
+  const {
+    commandName,
+    mainCheckout,
+    mainStatus,
+    hasActiveWorktreeContext,
+    isBranchPrMode,
+  } = options;
+
+  if (isBranchPrMode) {
+    return {
+      blocked: false,
+      blockedPaths: [],
+      reason: DIRTY_MAIN_GUARD_REASONS.BRANCH_PR_MODE,
+    };
+  }
+
+  if (!hasActiveWorktreeContext) {
+    return {
+      blocked: false,
+      blockedPaths: [],
+      reason: DIRTY_MAIN_GUARD_REASONS.NO_WORKTREE_CONTEXT,
+    };
+  }
+
+  const blockedPaths = getNonAllowlistedDirtyPaths(mainStatus);
+  if (blockedPaths.length === 0) {
+    return {
+      blocked: false,
+      blockedPaths: [],
+      reason: DIRTY_MAIN_GUARD_REASONS.CLEAN_OR_ALLOWLISTED,
+    };
+  }
+
+  return {
+    blocked: true,
+    blockedPaths,
+    reason: DIRTY_MAIN_GUARD_REASONS.BLOCKED_NON_ALLOWLISTED_DIRTY_MAIN,
+    message: formatMainDirtyMutationGuardMessage({
+      commandName,
+      mainCheckout,
+      blockedPaths,
+    }),
+  };
 }
 
 /**

@@ -192,6 +192,15 @@ After claiming a WU, immediately `cd worktrees/<lane>-wu-xxx` and work exclusive
 
 For the full worktree lifecycle (parallel execution, bootstrap, isolation guarantees), see [lumenflow-complete.md section 2.4](docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md). For the mandatory pre-write check, see [.lumenflow/constraints.md](.lumenflow/constraints.md).
 
+### Vendor-Agnostic Dirty-Main Guard
+
+`wu:prep` and `wu:done` enforce a runtime guard (not just hooks) across all clients and tools:
+
+- In worktree mode, commands block if main checkout has non-allowlisted dirty files
+- This includes writes from MCP tools or any vendor client that bypasses hook execution
+- Allowed dirty prefixes on main: `docs/04-operations/tasks/wu/`, `.lumenflow/`, `.claude/`, `plan/`
+- `branch-pr` mode is exempt (no local worktree/main split)
+
 ---
 
 ## Definition of Done
