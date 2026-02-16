@@ -41,16 +41,17 @@ requires_cto_approval: false
 requires_design_approval: false
 description: 'Context: INIT-029 Phase 3 — Policies + Packs. Depends on WU-1729 (ToolHost). Problem:
   The kernel needs a pluggable policy system (deny-wins cascade) and a pack loading mechanism with
-  integrity verification. This is where the differentiator locks in — software delivery becomes just
-  the first pack. Solution: PolicyEngine class with cascade evaluation (workspace -> lane -> pack ->
-  task), deny-wins semantics, four trigger points (on_tool_request, on_claim, on_completion,
-  on_evidence_added). DomainPack manifest schema (Zod) defining tools, policies, evidence_types,
-  state_aliases, lane_templates. Pack loader resolves from workspace config using PackPin (id,
-  version, integrity, source). Integrity verification: dev mode logs warning, sha256 mode uses
-  deterministic pack hashing algorithm (sorted file tree, null-byte delimited path+hash pairs).
-  Approvals as typed events with run_id + scope + expiry. Threat model note: packs are trusted code
-  (approved by workspace admin) — the system prevents agents going off-script, not malicious pack
-  authors. Plan: .claude/plans/golden-prancing-cookie.md'
+  integrity verification that is strong enough to detect meaningful pack drift. Solution:
+  PolicyEngine class with cascade evaluation (workspace -> lane -> pack -> task), deny-wins
+  semantics, four trigger points (on_tool_request, on_claim, on_completion, on_evidence_added).
+  DomainPack manifest schema (Zod) defining tools, policies, evidence_types, state_aliases,
+  lane_templates. Pack loader resolves from workspace config using PackPin (id, version, integrity,
+  source). Integrity verification: dev mode logs warning; sha256 mode hashes all files under pack
+  root (with deterministic ordering/exclusions) before registration. Enforce pack import boundaries
+  so pack code cannot import workspace-local modules outside pack root except @lumenflow/kernel and
+  Node built-ins. Approvals as typed events with run_id + scope + expiry. Threat model note: packs
+  are trusted code (approved by workspace admin) — the system prevents agents going off-script, not
+  malicious pack authors. Plan: .claude/plans/golden-prancing-cookie.md'
 acceptance:
   - 'PolicyEngine class with cascade evaluation: workspace -> lane -> pack -> task-specific'
   - 'Deny-wins semantics: deny at any level overrides allow from other levels'
@@ -65,3 +66,7 @@ acceptance:
   - 'Deterministic pack hashing: sorted file paths, per-file SHA-256, null-byte delimited concat,
     final SHA-256'
   - 'Dev mode (integrity: dev) skips verification but logs workspace_warning event'
+  - Deterministic pack hashing covers all files under pack root
+    (packages/@lumenflow/packs/<pack-id>/**) except explicit exclusions
+  - Boundary rules prevent pack imports of workspace-local modules outside pack root (except
+    @lumenflow/kernel and Node built-ins)
