@@ -2,7 +2,7 @@ id: WU-1714
 title: 'Strict debt slice: type orchestration-rules'
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-15
 code_paths:
@@ -43,3 +43,6 @@ session_id: eeaa731f-493d-48b4-a77a-4a3ada35f4f3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T00:00:12.230Z
+locked: true
+completed_at: 2026-02-16T00:02:46.204Z
+completed: 2026-02-16
