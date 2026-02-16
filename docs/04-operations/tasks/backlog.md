@@ -45,7 +45,6 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1749 — Upgrade all outdated dependencies (batch)](wu/WU-1749.yaml) — Operations: Tooling
-- [WU-1750 — Add vendor-agnostic dirty-main mutation guard across completion commands](wu/WU-1750.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
@@ -713,6 +712,7 @@ sections:
 - [WU-1747 — Stub format:check gate when prettier not installed at init time](wu/WU-1747.yaml)
 - [WU-1746 — wu:done resilience when worktree deleted but branch already merged](wu/WU-1746.yaml)
 - [WU-1748 — Implement process-owned deferred lane lifecycle and decouple init](wu/WU-1748.yaml)
+- [WU-1750 — Add vendor-agnostic dirty-main mutation guard across completion commands](wu/WU-1750.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

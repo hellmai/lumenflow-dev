@@ -2,7 +2,7 @@ id: WU-1750
 title: Add vendor-agnostic dirty-main mutation guard across completion commands
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -59,3 +59,6 @@ session_id: 69beab82-4969-45fd-b61a-cda9601efd75
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T16:32:32.130Z
+locked: true
+completed_at: 2026-02-16T16:44:20.124Z
+completed: 2026-02-16

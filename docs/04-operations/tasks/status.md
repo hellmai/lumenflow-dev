@@ -6,7 +6,6 @@ _Last updated: 2026-02-16_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1749 — Upgrade all outdated dependencies (batch)](wu/WU-1749.yaml)
-- [WU-1750 — Add vendor-agnostic dirty-main mutation guard across completion commands](wu/WU-1750.yaml)
 
 ## Completed
 
@@ -670,3 +669,4 @@ _Last updated: 2026-02-16_
 - [WU-1747 — Stub format:check gate when prettier not installed at init time](wu/WU-1747.yaml) — 2026-02-16
 - [WU-1746 — wu:done resilience when worktree deleted but branch already merged](wu/WU-1746.yaml) — 2026-02-16
 - [WU-1748 — Implement process-owned deferred lane lifecycle and decouple init](wu/WU-1748.yaml) — 2026-02-16
+- [WU-1750 — Add vendor-agnostic dirty-main mutation guard across completion commands](wu/WU-1750.yaml) — 2026-02-16
