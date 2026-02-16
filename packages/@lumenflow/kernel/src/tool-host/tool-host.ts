@@ -12,10 +12,7 @@ import {
 } from '../kernel.schemas.js';
 import { EvidenceStore } from '../evidence/evidence-store.js';
 import { ToolRegistry } from './tool-registry.js';
-import {
-  DefaultSubprocessDispatcher,
-  type SubprocessDispatcher,
-} from './subprocess-dispatcher.js';
+import { DefaultSubprocessDispatcher, type SubprocessDispatcher } from './subprocess-dispatcher.js';
 import { canonical_json } from '../canonical-json.js';
 
 const SHA256_HEX_REGEX = /^[a-f0-9]{64}$/;
@@ -82,8 +79,7 @@ export class ToolHost {
   constructor(options: ToolHostOptions) {
     this.registry = options.registry;
     this.evidenceStore = options.evidenceStore;
-    this.subprocessDispatcher =
-      options.subprocessDispatcher ?? new DefaultSubprocessDispatcher();
+    this.subprocessDispatcher = options.subprocessDispatcher ?? new DefaultSubprocessDispatcher();
     this.policyHook = options.policyHook ?? allowAllPolicyHook;
     this.runtimeVersion = options.runtimeVersion ?? DEFAULT_RUNTIME_VERSION;
   }
@@ -104,7 +100,10 @@ export class ToolHost {
     }
 
     const metadata = resolveMetadata(context);
-    const workspaceAllowed = parseScopeList(metadata.workspace_allowed_scopes, context.allowed_scopes);
+    const workspaceAllowed = parseScopeList(
+      metadata.workspace_allowed_scopes,
+      context.allowed_scopes,
+    );
     const laneAllowed = parseScopeList(metadata.lane_allowed_scopes, context.allowed_scopes);
     const taskDeclared = parseScopeList(metadata.task_declared_scopes, context.allowed_scopes);
 
@@ -128,8 +127,7 @@ export class ToolHost {
         ? workspaceConfigHashCandidate
         : DEFAULT_WORKSPACE_CONFIG_HASH;
 
-    const runtimeVersion =
-      parseOptionalString(metadata.runtime_version) ?? this.runtimeVersion;
+    const runtimeVersion = parseOptionalString(metadata.runtime_version) ?? this.runtimeVersion;
     const packVersion = parseOptionalString(metadata.pack_version);
     const packIntegrity = parseOptionalString(metadata.pack_integrity);
     const packId = capability.pack ?? parseOptionalString(metadata.pack_id);
@@ -291,7 +289,8 @@ export class ToolHost {
       }
     }
 
-    const outputRef = output.data === undefined ? undefined : await this.evidenceStore.persistInput(output.data);
+    const outputRef =
+      output.data === undefined ? undefined : await this.evidenceStore.persistInput(output.data);
     const outputHash = outputRef?.inputHash;
     const outputReference = outputRef?.inputRef;
     const result = output.success
@@ -309,7 +308,10 @@ export class ToolHost {
       duration_ms: Date.now() - startedAt,
       output_hash: outputHash,
       output_ref: outputReference,
-      scope_enforcement_note: result === 'success' ? 'Allowed by scope intersection and policy.' : 'Denied or failed during execution.',
+      scope_enforcement_note:
+        result === 'success'
+          ? 'Allowed by scope intersection and policy.'
+          : 'Denied or failed during execution.',
       policy_decisions: policyDecisions,
       artifacts_written:
         Array.isArray(output.metadata?.artifacts_written) &&
