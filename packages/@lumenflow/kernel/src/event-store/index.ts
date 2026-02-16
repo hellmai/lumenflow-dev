@@ -93,10 +93,7 @@ export function verifyTaskSpecHash(taskSpec: TaskSpec, events: KernelEvent[]): v
   }
 }
 
-function reduceRunEvent(
-  event: RunLifecycleEvent,
-  runs: Map<string, Run>,
-): string | undefined {
+function reduceRunEvent(event: RunLifecycleEvent, runs: Map<string, Run>): string | undefined {
   const runId = event.run_id;
   const existing =
     runs.get(runId) ??
