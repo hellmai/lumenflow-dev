@@ -33,7 +33,11 @@ interface MermaidEdge {
   to: string;
 }
 
-type GraphStatus = 'done' | 'in_progress' | 'ready' | 'blocked';
+type GraphStatus =
+  | typeof WU_STATUS.DONE
+  | typeof WU_STATUS.IN_PROGRESS
+  | typeof WU_STATUS.READY
+  | typeof WU_STATUS.BLOCKED;
 
 interface TopologicalSortCycleWarning {
   order: string[];
@@ -72,7 +76,10 @@ function toDependencyNode(id: string, doc: WUDoc): DependencyNode {
 
 function isGraphStatus(status: string): status is GraphStatus {
   return (
-    status === 'done' || status === 'in_progress' || status === 'ready' || status === 'blocked'
+    status === WU_STATUS.DONE ||
+    status === WU_STATUS.IN_PROGRESS ||
+    status === WU_STATUS.READY ||
+    status === WU_STATUS.BLOCKED
   );
 }
 

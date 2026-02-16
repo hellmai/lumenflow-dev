@@ -7,9 +7,12 @@
  * @module filesystem-metrics.adapter.test
  */
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { FileSystemMetricsCollector } from '../filesystem-metrics.adapter';
+import { WU_STATUS } from '../../wu-constants';
 import type {
   GlobalStatus,
   AgentMetric,
@@ -18,12 +21,91 @@ import type {
   Alert,
 } from '../../domain/orchestration.types';
 
+async function createFixtureRepo(baseDir: string): Promise<void> {
+  const tasksDir = join(baseDir, 'docs/04-operations/tasks');
+  const wuDir = join(tasksDir, 'wu');
+  const stampsDir = join(baseDir, '.lumenflow/stamps');
+  const telemetryDir = join(baseDir, '.lumenflow/telemetry');
+
+  await Promise.all([
+    mkdir(wuDir, { recursive: true }),
+    mkdir(stampsDir, { recursive: true }),
+    mkdir(telemetryDir, { recursive: true }),
+  ]);
+
+  const now = new Date();
+  const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString();
+  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
+
+  await Promise.all([
+    writeFile(
+      join(tasksDir, 'status.md'),
+      '## In Progress\n- WU-TEST-001\n\n## Blocked\n- WU-TEST-002\n',
+    ),
+    writeFile(
+      join(wuDir, 'WU-TEST-001.yaml'),
+      `id: WU-TEST-001
+title: Metrics fixture active
+lane: "Operations: Tooling"
+status: ${WU_STATUS.IN_PROGRESS}
+claimed_at: ${twoHoursAgo}
+created: 2026-02-16
+code_paths:
+  - packages/@lumenflow/core/src/adapters/filesystem-metrics.adapter.ts
+`,
+    ),
+    writeFile(
+      join(wuDir, 'WU-TEST-002.yaml'),
+      `id: WU-TEST-002
+title: Metrics fixture blocked
+lane: "Framework: Core"
+status: ${WU_STATUS.BLOCKED}
+claimed_at: ${oneHourAgo}
+blocked_reason: Waiting on dependency
+`,
+    ),
+    writeFile(
+      join(stampsDir, 'WU-TEST-003.done'),
+      `id: WU-TEST-003
+completed_at: ${oneHourAgo}
+`,
+    ),
+    writeFile(
+      join(telemetryDir, 'events.ndjson'),
+      [
+        JSON.stringify({
+          timestamp: oneHourAgo,
+          event: 'agent',
+          wuId: 'WU-TEST-001',
+          detail: 'Agent test-engineer passed',
+          severity: 'info',
+        }),
+        JSON.stringify({
+          timestamp: now.toISOString(),
+          event: 'gates',
+          wuId: 'WU-TEST-001',
+          detail: 'Gates passed',
+          severity: 'info',
+        }),
+      ].join('\n') + '\n',
+    ),
+  ]);
+}
+
 describe('FileSystemMetricsCollector', () => {
-  const fixturesDir = join(__dirname, 'fixtures');
+  let fixturesDir = '';
   let collector: FileSystemMetricsCollector;
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    fixturesDir = await mkdtemp(join(tmpdir(), 'filesystem-metrics-fixtures-'));
+    await createFixtureRepo(fixturesDir);
     collector = new FileSystemMetricsCollector(fixturesDir);
+  });
+
+  afterAll(async () => {
+    if (fixturesDir) {
+      await rm(fixturesDir, { recursive: true, force: true });
+    }
   });
 
   describe('getGlobalStatus', () => {

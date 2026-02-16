@@ -12,8 +12,17 @@ import { parseBacklogFrontmatter, getSectionHeadings } from './backlog-parser.js
 import { extractParent } from './lane-checker.js';
 import { CONFIG_FILES, STRING_LITERALS, WU_STATUS, getProjectRoot } from './wu-constants.js';
 
-type BacklogSection = 'ready' | 'in_progress' | 'blocked' | 'done';
-const BACKLOG_SECTIONS: BacklogSection[] = ['ready', 'in_progress', 'blocked', 'done'];
+type BacklogSection =
+  | typeof WU_STATUS.READY
+  | typeof WU_STATUS.IN_PROGRESS
+  | typeof WU_STATUS.BLOCKED
+  | typeof WU_STATUS.DONE;
+const BACKLOG_SECTIONS: BacklogSection[] = [
+  WU_STATUS.READY,
+  WU_STATUS.IN_PROGRESS,
+  WU_STATUS.BLOCKED,
+  WU_STATUS.DONE,
+];
 
 interface SectionTracker {
   wus: Set<string>;
