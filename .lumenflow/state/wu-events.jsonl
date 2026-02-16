@@ -1408,3 +1408,4 @@
 {"type":"complete","wuId":"WU-1741","timestamp":"2026-02-16T11:43:29.705Z"}
 {"type":"claim","wuId":"WU-1742","timestamp":"2026-02-16T11:51:18.745Z","lane":"Operations: Tooling","title":"Fix pre-existing core test failures blocking gates"}
 {"type":"complete","wuId":"WU-1742","timestamp":"2026-02-16T12:01:13.698Z"}
+{"type":"claim","wuId":"WU-1743","lane":"Operations: Tooling","title":"Add fast strict-progress regression guardrail to CI","timestamp":"2026-02-16T12:24:18.615Z"}
