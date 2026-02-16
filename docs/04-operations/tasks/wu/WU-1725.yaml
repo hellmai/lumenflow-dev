@@ -1,0 +1,48 @@
+id: WU-1725
+title: Kernel package scaffold + core Zod schemas
+lane: 'Framework: Core Validation'
+type: feature
+status: ready
+priority: P0
+created: 2026-02-16
+code_paths:
+  - packages/@lumenflow/kernel/
+tests:
+  manual:
+    - pnpm typecheck passes for kernel package
+    - All schema unit tests pass
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1725.done
+dependencies: []
+initiative: INIT-029
+phase: 1
+labels:
+  - kernel
+  - phase-1
+  - schemas
+spec_refs:
+  - .claude/plans/golden-prancing-cookie.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: INIT-029 Phase 1 — Kernel Foundation. This is the root WU with zero dependencies. Problem: LumenFlow needs a domain-agnostic kernel package (packages/@lumenflow/kernel/) as the foundation for the agent runtime. All subsequent WUs depend on the schemas defined here. Solution: Create the kernel package scaffold (package.json, tsconfig, vitest config) and implement all core Zod schemas: ToolScope, TaskSpec, Run, TaskState, TaskEvent (discriminated union), WorkspaceSpec, LaneSpec, SecurityBaseline, PolicyBaseline. No implementations — contracts only. Reference: existing tool.schemas.ts, tool.constants.ts, wu-schema.ts (for what to extract/redesign). Architecture plan: .claude/plans/golden-prancing-cookie.md'
+acceptance:
+  - packages/@lumenflow/kernel/ package scaffolded with package.json, tsconfig.json, vitest.config.ts
+  - ToolScope Zod schema defined with type (path|uri|network|process), pattern, and access (read|write)
+  - TaskSpec Zod schema defined as immutable intent (id, workspace_id, lane_id, domain, title, description, acceptance, declared_scopes, risk, type, priority)
+  - Run Zod schema defined (run_id, task_id, status, started_at, by, session_id)
+  - 'TaskState Zod schema defined as projection type (status: ready|active|blocked|waiting|done, projected fields)'
+  - TaskEvent discriminated union Zod schema covering all lifecycle + run events
+  - WorkspaceSpec and LaneSpec Zod schemas defined
+  - All schemas compile, zod.parse() accepts valid data and rejects invalid in unit tests
+  - Zero software delivery concepts in any schema (no git, worktree, code_paths)
