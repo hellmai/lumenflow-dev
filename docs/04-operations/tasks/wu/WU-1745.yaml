@@ -2,7 +2,7 @@ id: WU-1745
 title: Validate lane config against inference hierarchy at init time
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -48,3 +48,6 @@ session_id: ff3aadb9-b17d-4310-a7f1-885aa6575d8b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T14:18:41.367Z
+locked: true
+completed_at: 2026-02-16T14:26:19.377Z
+completed: 2026-02-16
