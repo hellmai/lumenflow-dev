@@ -21,6 +21,7 @@ import {
 /** Constants for test files to avoid duplicate string literals */
 const PACKAGE_JSON_FILE = 'package.json';
 const LANE_INFERENCE_FILE = '.lumenflow.lane-inference.yaml';
+const LUMENFLOW_CONFIG_FILE = '.lumenflow.config.yaml';
 const TEST_PROJECT_NAME = 'test-project';
 
 describe('onboarding smoke-test gate (WU-1315)', () => {
@@ -206,7 +207,27 @@ lanes:
       expect(result.errors.some((e) => e.includes('lanes'))).toBe(true);
     });
 
-    it('should fail when lane-inference.yaml does not exist', () => {
+    it('should pass when lane-inference.yaml does not exist but lifecycle is unconfigured', () => {
+      const configContent = `lanes:
+  lifecycle:
+    status: unconfigured
+`;
+      fs.writeFileSync(path.join(tempDir, LUMENFLOW_CONFIG_FILE), configContent);
+
+      const result = validateLaneInferenceFormat({ projectDir: tempDir });
+
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+      expect(result.error).toBeUndefined();
+    });
+
+    it('should fail when lane-inference.yaml does not exist and lifecycle is locked', () => {
+      const configContent = `lanes:
+  lifecycle:
+    status: locked
+`;
+      fs.writeFileSync(path.join(tempDir, LUMENFLOW_CONFIG_FILE), configContent);
+
       const result = validateLaneInferenceFormat({ projectDir: tempDir });
 
       expect(result.valid).toBe(false);

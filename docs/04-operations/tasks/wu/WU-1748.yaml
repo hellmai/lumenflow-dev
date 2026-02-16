@@ -12,6 +12,7 @@ code_paths:
   - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/cli/src/init-templates.ts
   - packages/@lumenflow/cli/src/lane-*.ts
+  - packages/@lumenflow/cli/src/onboarding-smoke-test.ts
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/*.md
   - docs/04-operations/_frameworks/lumenflow/**
@@ -31,6 +32,7 @@ tests:
     - packages/@lumenflow/cli/src/__tests__/init-lane-inference.test.ts
     - packages/@lumenflow/cli/src/__tests__/init-config-lanes.test.ts
     - packages/@lumenflow/cli/src/__tests__/lane-lifecycle-process.test.ts
+    - packages/@lumenflow/cli/src/__tests__/onboarding-smoke-test.test.ts
     - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
   e2e: []
 artifacts:

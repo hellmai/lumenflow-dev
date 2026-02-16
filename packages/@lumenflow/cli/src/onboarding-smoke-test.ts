@@ -51,6 +51,14 @@ export interface LaneInferenceValidationResult {
   error?: string;
 }
 
+interface LaneLifecycleConfigDoc {
+  lanes?: {
+    lifecycle?: {
+      status?: unknown;
+    };
+  };
+}
+
 /**
  * Result from wu:create validation
  */
@@ -212,9 +220,26 @@ export function validateLaneInferenceFormat(options: {
 }): LaneInferenceValidationResult {
   const { projectDir } = options;
   const laneInferencePath = path.join(projectDir, LANE_INFERENCE_FILE);
+  const configPath = path.join(projectDir, LUMENFLOW_CONFIG_FILE);
 
   // Check if file exists
   if (!fs.existsSync(laneInferencePath)) {
+    if (fs.existsSync(configPath)) {
+      try {
+        const configRaw = fs.readFileSync(configPath, 'utf-8');
+        const configParsed = yaml.parse(configRaw) as LaneLifecycleConfigDoc | null;
+        const lifecycleStatus = configParsed?.lanes?.lifecycle?.status;
+        if (lifecycleStatus === 'unconfigured') {
+          return {
+            valid: true,
+            errors: [],
+          };
+        }
+      } catch {
+        // Fall through to error return below; malformed config should not silently pass.
+      }
+    }
+
     return {
       valid: false,
       errors: [],
