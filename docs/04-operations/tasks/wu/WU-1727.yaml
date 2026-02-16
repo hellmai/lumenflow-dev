@@ -2,7 +2,7 @@ id: WU-1727
 title: Kernel XState state machine + integration test
 lane: 'Framework: Core State Recovery'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-16
 code_paths:
@@ -64,3 +64,6 @@ session_id: 8d767585-113e-4103-a7a7-49fea21e692e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T22:10:58.067Z
+locked: true
+completed_at: 2026-02-16T22:19:41.171Z
+completed: 2026-02-16
