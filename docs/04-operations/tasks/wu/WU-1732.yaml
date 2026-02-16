@@ -2,7 +2,7 @@ id: WU-1732
 title: Kernel PolicyEngine + DomainPack manifest/loader + integrity pinning
 lane: 'Framework: Core Validation'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -78,3 +78,6 @@ session_id: cb89c4c8-8a68-4111-8c5d-6889977392f3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T23:09:39.445Z
+locked: true
+completed_at: 2026-02-16T23:21:17.040Z
+completed: 2026-02-16
