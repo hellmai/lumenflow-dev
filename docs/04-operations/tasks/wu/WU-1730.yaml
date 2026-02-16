@@ -37,13 +37,26 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-029 Phase 2 — ToolHost + Evidence. Depends on WU-1729 (ToolHost). Problem: Subprocess tools need OS-level isolation via bwrap sandbox. Current sandbox-backend-linux.ts has a strong bwrap implementation but it is coupled to the old architecture. Solution: Port sandbox-backend-linux.ts bwrap invocation builder into kernel/sandbox/. Implement tool-runner worker process that receives serialized invocations via stdin, loads tool adapter, executes within sandbox, returns ToolOutput via stdout. All subprocess tools flow through: ToolHost -> serialize -> spawn bwrap -> worker -> adapter -> return. Reference: sandbox-backend-linux.ts. Plan: .claude/plans/golden-prancing-cookie.md'
+description: 'Context: INIT-029 Phase 2 — ToolHost + Evidence. Depends on WU-1729 (ToolHost).
+  Problem: Subprocess tools need OS-level isolation via bwrap sandbox, and receipts must survive
+  host crashes (crash-gap fix). Solution: Port sandbox-backend-linux.ts bwrap invocation builder
+  into kernel/sandbox/. Implement tool-runner worker that: receives {tool_name, input,
+  scope_enforced, receipt_id} via stdin, writes a started receipt BEFORE execution (crash-gap
+  guarantee), loads tool adapter via handler.entry (pack-provided), executes in sandbox, writes
+  final receipt, returns ToolOutput via stdout. Worker writes receipts inside sandbox so evidence
+  exists even if host dies mid-flight. v1 security stance: write confinement guaranteed (bwrap rw
+  bind), read confinement best-effort (deny overlays for ~/.ssh etc), network binary off/full.
+  Reference: sandbox-backend-linux.ts. Plan: .claude/plans/golden-prancing-cookie.md'
 acceptance:
   - Bwrap invocation builder ported from sandbox-backend-linux.ts into kernel/sandbox/
-  - SandboxProfile type defines ro-bind, writable bind mounts, network access, env vars
-  - Tool-runner worker process receives serialized {tool_name, input, scope_enforced} via stdin
-  - Worker loads tool adapter (pack-provided function) and executes within sandbox
+  - SandboxProfile type defines ro-bind, writable bind mounts, network posture (off|full), deny
+    overlays, env vars
+  - Worker receives {tool_name, input, scope_enforced, receipt_id} via stdin
+  - Worker writes started receipt BEFORE execution (crash-gap guarantee)
+  - Worker loads tool adapter via handler.entry string (not direct import)
+  - Worker writes final receipt (success/failure/denied) with same receipt_id
   - Worker returns structured ToolOutput via stdout
-  - Subprocess tool runs inside bwrap with --die-with-parent and --new-session
-  - Read-only mounts enforced — worker cannot write outside allowed paths
-  - Worker communication roundtrip test passes (serialize -> spawn -> execute -> return)
+  - Subprocess runs inside bwrap with --die-with-parent and --new-session
+  - 'Write confinement enforced: only resolved write scope mounted as rw'
+  - Deny overlays block ~/.ssh, ~/.aws, ~/.gnupg, .env from sandbox reads
+  - scope_enforcement_note set to read confinement best-effort v1 when applicable
