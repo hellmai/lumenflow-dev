@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1748 — Implement process-owned deferred lane lifecycle and decouple init](wu/WU-1748.yaml) — Framework: CLI Enforcement
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1725 — Kernel package scaffold + core Zod schemas](wu/WU-1725.yaml) — Framework: Core Validation
@@ -40,6 +39,7 @@ sections:
 - [WU-1739 — Runtime daemon — scheduler, sessions, Unix socket transport](wu/WU-1739.yaml) — Framework: Core Lifecycle
 - [WU-1740 — Control Plane SDK — ControlPlaneSyncPort + workspace config + mock adapter](wu/WU-1740.yaml) — Framework: Core Validation
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
+- [WU-1748 — Implement process-owned deferred lane lifecycle and decouple init](wu/WU-1748.yaml) — Framework: CLI Enforcement
 
 ## 🔧 In progress
 
