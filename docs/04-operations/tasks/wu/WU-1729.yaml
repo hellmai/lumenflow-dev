@@ -2,7 +2,7 @@ id: WU-1729
 title: Kernel ToolHost execution + EvidenceStore with CAS and receipts
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-16
 code_paths:
@@ -81,3 +81,6 @@ session_id: d9f9c134-c455-4491-89f9-9b7499296407
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T22:26:38.551Z
+locked: true
+completed_at: 2026-02-16T22:51:18.074Z
+completed: 2026-02-16

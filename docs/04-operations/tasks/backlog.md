@@ -39,7 +39,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1729 — Kernel ToolHost execution + EvidenceStore with CAS and receipts](wu/WU-1729.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -717,6 +716,7 @@ sections:
 - [WU-1726 — Kernel EventStore: JSONL append, indexes, projections](wu/WU-1726.yaml)
 - [WU-1727 — Kernel XState state machine + integration test](wu/WU-1727.yaml)
 - [WU-1728 — Kernel ToolCapability schemas + ToolRegistry + scope intersection](wu/WU-1728.yaml)
+- [WU-1729 — Kernel ToolHost execution + EvidenceStore with CAS and receipts](wu/WU-1729.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

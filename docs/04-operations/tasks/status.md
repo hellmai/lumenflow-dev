@@ -5,7 +5,6 @@ _Last updated: 2026-02-16_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1729 — Kernel ToolHost execution + EvidenceStore with CAS and receipts](wu/WU-1729.yaml)
 
 ## Completed
 
@@ -679,3 +678,4 @@ _Last updated: 2026-02-16_
 - [WU-1726 — Kernel EventStore: JSONL append, indexes, projections](wu/WU-1726.yaml) — 2026-02-16
 - [WU-1727 — Kernel XState state machine + integration test](wu/WU-1727.yaml) — 2026-02-16
 - [WU-1728 — Kernel ToolCapability schemas + ToolRegistry + scope intersection](wu/WU-1728.yaml) — 2026-02-16
+- [WU-1729 — Kernel ToolHost execution + EvidenceStore with CAS and receipts](wu/WU-1729.yaml) — 2026-02-16
