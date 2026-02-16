@@ -18,6 +18,23 @@ import { MANDATORY_TRIGGERS, type MandatoryAgentName } from './domain/orchestrat
  */
 const NEAR_COMPLETION_THRESHOLD = 8;
 
+type SuggestionPriority = 'high' | 'medium' | 'low';
+
+interface WUProgressRecord {
+  wuId: string;
+  dodProgress: number;
+  dodTotal: number;
+  agents: Record<string, string>;
+}
+
+interface OrchestrationSuggestion {
+  id: string;
+  priority: SuggestionPriority;
+  action: string;
+  reason: string;
+  command: string;
+}
+
 /**
  * Detect mandatory agents that should be invoked based on code paths.
  *
@@ -57,12 +74,15 @@ export function detectMandatoryAgents(codePaths: readonly string[]): MandatoryAg
  * @param {object} _agentHistory - Record of agent metrics (reserved for future use)
  * @returns {object[]} Array of prioritised suggestions
  */
-export function generateSuggestions(wuProgress, _agentHistory) {
+export function generateSuggestions(
+  wuProgress: readonly WUProgressRecord[],
+  _agentHistory: Record<string, unknown> = {},
+): OrchestrationSuggestion[] {
   if (wuProgress.length === 0) {
     return [];
   }
 
-  const suggestions = [];
+  const suggestions: OrchestrationSuggestion[] = [];
   let suggestionCounter = 0;
 
   for (const wu of wuProgress) {
@@ -72,7 +92,7 @@ export function generateSuggestions(wuProgress, _agentHistory) {
 
   // Sort by priority: high > medium > low
   return suggestions.sort((a, b) => {
-    const priorityOrder = {
+    const priorityOrder: Record<SuggestionPriority, number> = {
       high: 0,
       medium: 1,
       low: 2,
@@ -88,8 +108,11 @@ export function generateSuggestions(wuProgress, _agentHistory) {
  * @param {function} nextId - Function to generate unique suggestion IDs
  * @returns {object[]} Array of suggestions for this WU
  */
-function generateWUSuggestions(wu, nextId) {
-  const suggestions = [];
+function generateWUSuggestions(
+  wu: WUProgressRecord,
+  nextId: () => number,
+): OrchestrationSuggestion[] {
+  const suggestions: OrchestrationSuggestion[] = [];
 
   // Check for pending mandatory agents (HIGH priority)
   // Note: For LumenFlow framework development, MANDATORY_TRIGGERS is empty.
@@ -164,7 +187,11 @@ const AGENT_TRIGGER_DESCRIPTIONS: Record<string, string> = {
  * @param {readonly string[]} codePaths - Array of file paths that triggered the agents
  * @returns {string} Formatted error message string
  */
-export function buildMandatoryAgentsErrorMessage(wuId, missingAgents, codePaths) {
+export function buildMandatoryAgentsErrorMessage(
+  wuId: string,
+  missingAgents: readonly string[],
+  codePaths: readonly string[],
+): string {
   const lines = [
     '',
     '='.repeat(70),
@@ -216,7 +243,11 @@ export function buildMandatoryAgentsErrorMessage(wuId, missingAgents, codePaths)
  * @param {{ blocking: boolean }} options - Options including blocking mode flag
  * @returns {{ compliant: boolean, blocking: boolean, missing: string[], errorMessage?: string }}
  */
-export function checkMandatoryAgentsComplianceBlocking(codePaths, wuId, options) {
+export function checkMandatoryAgentsComplianceBlocking(
+  codePaths: readonly string[],
+  wuId: string,
+  options: { blocking: boolean },
+): { compliant: boolean; blocking: boolean; missing: string[]; errorMessage?: string } {
   const missingAgents = detectMandatoryAgents(codePaths);
 
   if (missingAgents.length === 0) {
