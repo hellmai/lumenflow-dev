@@ -514,7 +514,6 @@ sections:
 - [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml)
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml)
 - [WU-1527 — Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces](wu/WU-1527.yaml)
-- [WU-1529 — Purge remaining live legacy references from hooks and agent overlays](wu/WU-1529.yaml)
 - [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml)
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml)
 - [WU-1531 — Reduce code_paths false positives in parity + prep](wu/WU-1531.yaml)

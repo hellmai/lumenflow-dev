@@ -967,9 +967,7 @@
 {"type":"complete","wuId":"WU-1526","timestamp":"2026-02-07T18:27:42.205Z"}
 {"type":"claim","wuId":"WU-1527","timestamp":"2026-02-09T09:32:56.331Z","lane":"Framework: CLI WU Commands","title":"Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces"}
 {"type":"complete","wuId":"WU-1527","timestamp":"2026-02-09T09:44:47.201Z"}
-{"type":"claim","wuId":"WU-1529","timestamp":"2026-02-09T09:47:33.897Z","lane":"Framework: CLI Enforcement","title":"Purge remaining live legacy references from hooks and agent overlays"}
 {"type":"claim","wuId":"WU-1528","timestamp":"2026-02-09T09:55:34.046Z","lane":"Framework: CLI WU Commands","title":"Fix wu:delete pathspec failure in micro-worktree staging"}
-{"type":"complete","wuId":"WU-1529","timestamp":"2026-02-09T09:58:10.679Z"}
 {"type":"claim","wuId":"WU-1498","timestamp":"2026-02-09T10:02:26.741Z","lane":"Framework: Core Lifecycle","title":"Add passive lane-signal telemetry and agent lane-fit reasoning"}
 {"type":"claim","wuId":"WU-1530","timestamp":"2026-02-09T10:11:02.614Z","lane":"Framework: CLI WU Commands","title":"Single-pass wu:create validation and mandatory --help rule"}
 {"type":"complete","wuId":"WU-1528","timestamp":"2026-02-09T10:14:05.861Z"}
