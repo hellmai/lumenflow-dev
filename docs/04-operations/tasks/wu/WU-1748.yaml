@@ -2,7 +2,7 @@ id: WU-1748
 title: Implement process-owned deferred lane lifecycle and decouple init
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -89,3 +89,6 @@ session_id: 9b8929cb-0742-4203-9bb2-362090331639
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T15:38:11.643Z
+locked: true
+completed_at: 2026-02-16T16:25:53.179Z
+completed: 2026-02-16

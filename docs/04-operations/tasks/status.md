@@ -5,7 +5,6 @@ _Last updated: 2026-02-16_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1748 — Implement process-owned deferred lane lifecycle and decouple init](wu/WU-1748.yaml)
 
 ## Completed
 
@@ -668,3 +667,4 @@ _Last updated: 2026-02-16_
 - [WU-1745 — Validate lane config against inference hierarchy at init time](wu/WU-1745.yaml) — 2026-02-16
 - [WU-1747 — Stub format:check gate when prettier not installed at init time](wu/WU-1747.yaml) — 2026-02-16
 - [WU-1746 — wu:done resilience when worktree deleted but branch already merged](wu/WU-1746.yaml) — 2026-02-16
+- [WU-1748 — Implement process-owned deferred lane lifecycle and decouple init](wu/WU-1748.yaml) — 2026-02-16
