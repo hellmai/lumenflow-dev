@@ -13,10 +13,17 @@ code_paths:
   - packages/@lumenflow/core/src/lane-checker.ts
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/*.md
+  - docs/04-operations/_frameworks/lumenflow/**
+  - LUMENFLOW.md
+  - AGENTS.md
+  - apps/docs/src/content/docs/**/*.mdx
 tests:
   manual:
     - Run init in fresh repo then complete lane lifecycle setup/lock; verify WU creation guidance is
       deterministic
+    - Run pnpm wu:brief --id WU-1748 --client claude-code and verify prompt reflects deferred lane
+      lifecycle process
+    - Run Starlight docs checks/build and verify updated workflow docs render correctly
   unit:
     - packages/@lumenflow/cli/src/__tests__/init-lane-validation.test.ts
     - packages/@lumenflow/cli/src/__tests__/init-lane-inference.test.ts
@@ -31,7 +38,12 @@ plan: lumenflow://plans/RFC-deferred-lane-lifecycle-process.md
 spec_refs:
   - lumenflow://plans/RFC-deferred-lane-lifecycle-process.md
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  Execution requirement: use wu:brief during implementation/delegation and keep internal + Starlight
+  docs in sync with behavior changes.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -54,3 +66,8 @@ acceptance:
   - lane validation runs at lane lifecycle boundary rather than init boundary
   - wu:create and initiative:create do not perform lane synthesis/design
   - existing repositories migrate to deterministic lane lifecycle status without data loss
+  - wu:brief output for WU-1748 reflects deferred lane lifecycle process and correct command
+    sequencing
+  - Internal LumenFlow docs are updated to describe lane lifecycle ownership and init boundary
+    changes
+  - Starlight docs are updated where workflow/setup guidance mentions lane setup timing
