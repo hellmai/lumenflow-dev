@@ -1,0 +1,32 @@
+id: WU-1741
+title: Burn down pre-existing no-explicit-any lint failures in core and cli
+lane: 'Operations: Tooling'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-16
+code_paths:
+  - packages/@lumenflow/core/src
+  - packages/@lumenflow/cli/src
+tests:
+  manual:
+    - Run pnpm lint and verify no pre-existing no-explicit-any failures remain in the previously flagged core/cli files.
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1741.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: wu:prep for WU-1724 fails on pre-existing lint debt dominated by no-explicit-any in core/cli. Problem: strict TS is green but lifecycle gates still fail due to pre-existing lint violations. Solution: systematically replace unsafe any usage with explicit narrow types and guards in flagged modules so pnpm lint can pass without skip-gates.'
+acceptance:
+  - pnpm lint passes for the repo without relying on --skip-gates for pre-existing no-explicit-any failures in core/cli.
+  - No behavior changes are introduced; added typings preserve runtime semantics and tests remain green.
