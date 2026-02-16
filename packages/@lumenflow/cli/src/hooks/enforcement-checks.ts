@@ -85,7 +85,9 @@ function stripWrappingQuotes(value: string): string {
 
 function normalizeRepoRelativePath(value: string): string {
   const withoutQuotes = stripWrappingQuotes(value.trim());
-  const normalizedSeparators = withoutQuotes.split(PATH_SEPARATOR_WINDOWS).join(PATH_SEPARATOR_POSIX);
+  const normalizedSeparators = withoutQuotes
+    .split(PATH_SEPARATOR_WINDOWS)
+    .join(PATH_SEPARATOR_POSIX);
   if (normalizedSeparators.startsWith(PATH_PREFIX_CURRENT_DIR)) {
     return normalizedSeparators.slice(PATH_PREFIX_CURRENT_DIR.length);
   }
@@ -174,13 +176,8 @@ export function formatMainDirtyMutationGuardMessage(options: {
 export function evaluateMainDirtyMutationGuard(
   options: MainDirtyMutationGuardOptions,
 ): MainDirtyMutationGuardResult {
-  const {
-    commandName,
-    mainCheckout,
-    mainStatus,
-    hasActiveWorktreeContext,
-    isBranchPrMode,
-  } = options;
+  const { commandName, mainCheckout, mainStatus, hasActiveWorktreeContext, isBranchPrMode } =
+    options;
 
   if (isBranchPrMode) {
     return {
