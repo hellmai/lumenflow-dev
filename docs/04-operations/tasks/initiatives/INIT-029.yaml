@@ -43,3 +43,4 @@ success_metrics:
     kernel/sandbox, kernel/event-store, and packs/**/tool-impl/**; direct tool-impl imports allowed
     only from tool-runner worker'
 labels: []
+related_plan: lumenflow://plans/golden-prancing-cookie.md
