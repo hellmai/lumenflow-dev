@@ -42,28 +42,36 @@ requires_cto_approval: false
 requires_design_approval: false
 description: 'Context: INIT-029 Phase 2 — ToolHost + Evidence. Depends on WU-1728 (ToolRegistry) and
   WU-1726 (EventStore). Problem: Tool execution needs a security boundary that validates scopes,
-  enforces policy, and produces immutable receipts with provenance for replay determinism. This is
-  the killer differentiator — agents cannot go off-script. Solution: ToolHost class wrapping
-  ToolRegistry — validates input, resolves scopes (workspace ∩ lane ∩ task ∩ tool, all ToolScope[]),
-  calls policy hook (stub for now), dispatches to handler (in-process or subprocess), emits receipt.
-  EvidenceStore for receipts (append JSONL). CAS store for tool inputs (SHA-256 ->
-  evidence/inputs/{hash}). ToolReceipt with schema_version:1, honest scope semantics
-  (scope_requested/allowed/enforced + scope_enforcement_note), and provenance fields (tool_version,
-  pack_id/version/integrity, workspace_config_hash, runtime_version). Reference: tool-runner.ts.
-  Plan: .claude/plans/golden-prancing-cookie.md'
+  enforces policy, and produces immutable trace entries with provenance for replay determinism. This
+  is the killer differentiator — agents cannot go off-script. Solution: ToolHost class wrapping
+  ToolRegistry — validates input, resolves scopes (workspace intersection lane intersection task
+  intersection tool, all ToolScope[]), calls policy hook (stub for now), dispatches to handler
+  (in-process or subprocess), emits two-phase ToolTraceEntry (tool_call_started before execution,
+  tool_call_finished after, correlated by receipt_id). EvidenceStore for trace entries (append JSONL
+  to evidence/traces/). CAS store for tool inputs (SHA-256 -> evidence/inputs/{hash}).
+  ToolTraceEntry with schema_version:1, honest scope semantics (scope_requested/allowed/enforced +
+  scope_enforcement_note), and provenance fields (tool_version, pack_id/version/integrity,
+  workspace_config_hash, runtime_version). Crash recovery: any started entry without matching
+  finished entry gets synthetic finished with result crashed. Reference: tool-runner.ts. Plan:
+  .claude/plans/golden-prancing-cookie.md'
 acceptance:
   - ToolHost class wraps ToolRegistry with execute(name, input, ctx) method
   - ToolHost validates input against tool schema before execution
-  - 'ToolHost resolves scope intersection: workspace ∩ lane ∩ task ∩ tool (all ToolScope[])'
+  - 'ToolHost resolves scope intersection: workspace, lane, task, tool (all ToolScope[])'
   - 'ToolHost dispatches to handler.kind: in-process calls fn directly, subprocess delegates to
     worker'
   - ToolHost calls policy hook stub (allow-all for now, replaced in Phase 3)
-  - ToolReceipt includes schema_version:1 for stable control plane ingestion
-  - 'ToolReceipt includes honest scope semantics: scope_requested, scope_allowed, scope_enforced,
-    scope_enforcement_note'
-  - 'ToolReceipt includes provenance: tool_version, pack_id, pack_version, pack_integrity,
-    workspace_config_hash, runtime_version'
-  - EvidenceStore appends receipts as JSONL to evidence/traces/
+  - 'Two-phase ToolTraceEntry: tool_call_started written BEFORE execution, tool_call_finished AFTER,
+    correlated by receipt_id'
+  - ToolTraceEntry includes schema_version:1 for stable control plane ingestion
+  - 'ToolTraceEntry started includes honest scope semantics: scope_requested, scope_allowed,
+    scope_enforced'
+  - 'ToolTraceEntry started includes provenance: tool_version, pack_id, pack_version,
+    pack_integrity, workspace_config_hash, runtime_version'
+  - ToolTraceEntry finished includes scope_enforcement_note, policy_decisions, artifacts_written
+  - 'Crash recovery: started entry without matching finished (by receipt_id) gets synthetic finished
+    with result crashed'
+  - EvidenceStore appends trace entries as JSONL to evidence/traces/
   - 'CAS store: tool inputs hashed with SHA-256 and stored in evidence/inputs/{hash}'
-  - Execute within allowed scope produces success receipt with input_ref pointing to CAS
-  - Execute outside allowed scope produces denied receipt — hard boundary not hook
+  - Execute within allowed scope produces success trace with input_ref pointing to CAS
+  - Execute outside allowed scope produces denied trace — hard boundary not hook
