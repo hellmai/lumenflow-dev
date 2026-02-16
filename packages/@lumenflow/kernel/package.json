@@ -24,6 +24,7 @@
     ".": "./dist/index.js",
     "./schemas": "./dist/kernel.schemas.js",
     "./canonical-json": "./dist/canonical-json.js",
+    "./evidence": "./dist/evidence/index.js",
     "./state-machine": "./dist/state-machine/index.js",
     "./tool-host": "./dist/tool-host/index.js"
   },
