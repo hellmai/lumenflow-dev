@@ -37,12 +37,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-029 Phase 5 — Control Plane SDK. Depends on WU-1735 (KernelRuntime). Problem: The hosted control plane needs a well-defined interface for policy sync, telemetry push, evidence export, and identity. Solution: ControlPlaneSyncPort interface with pullPolicies, pullConfig, pushTelemetry, pushEvidence, pushTaskEvents, authenticate, heartbeat methods. Workspace config extension (control_plane section with enabled, endpoint, org_id, sync_interval, policy_mode, local_override). Mock adapter for testing. Policy precedence: authoritative (remote is baseline), tighten-only (local can only add restrictions), dev-override (loosening allowed but logged). Plan: .claude/plans/golden-prancing-cookie.md'
+description: 'Context: INIT-029 Phase 5 — Control Plane SDK. Depends on WU-1735 (KernelRuntime).
+  Problem: The hosted control plane needs a well-defined interface for policy sync, telemetry push,
+  evidence export, and identity. Solution: ControlPlaneSyncPort interface with pullPolicies,
+  pullConfig, pushTelemetry, pushEvidence, pushKernelEvents, authenticate, heartbeat methods.
+  Workspace config extension (control_plane section with enabled, endpoint, org_id, sync_interval,
+  policy_mode, local_override). Mock adapter for testing. Policy precedence: authoritative (remote
+  is baseline), tighten-only (local can only add restrictions), dev-override (loosening allowed but
+  logged). Plan: .claude/plans/golden-prancing-cookie.md'
 acceptance:
-  - 'ControlPlaneSyncPort interface: pullPolicies, pullConfig, pushTelemetry, pushEvidence, pushTaskEvents, authenticate, heartbeat'
+  - 'ControlPlaneSyncPort interface: pullPolicies, pullConfig, pushTelemetry, pushEvidence,
+    pushKernelEvents, authenticate, heartbeat'
   - Workspace config control_plane section with enabled, endpoint, org_id, sync_interval, policy_mode
   - Mock adapter implements ControlPlaneSyncPort for testing
   - tighten-only mode rejects local policy loosening
-  - dev-override mode allows loosening but logs it as events
+  - dev-override mode allows loosening but logs it as KernelEvent
   - SDK compiles and port interface is mockable and testable
   - Telemetry export to mock endpoint works
