@@ -1,19 +1,22 @@
 id: WU-1751
-title: Fix state:doctor false mismatch for superseded WUs
+title: Prevent lane lifecycle migration side-effects in wu:create and initiative:create
 lane: 'Framework: Core State Recovery'
 type: bug
 status: in_progress
 priority: P1
 created: 2026-02-16
 code_paths:
-  - packages/@lumenflow/core/src/state-doctor-core.ts
-  - packages/@lumenflow/cli/src/state-doctor.ts
+  - packages/@lumenflow/cli/src/lane-lifecycle-process.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/initiative-create.ts
 tests:
   manual:
-    - Run pnpm state:doctor --dry-run in repo containing superseded WUs with historical events;
-      verify no false auto-fix guidance
+    - Run wu:create or initiative:create in a repo with lane artifacts but no lanes.lifecycle.status;
+      verify .lumenflow.config.yaml is not rewritten as a side effect.
   unit:
-    - packages/@lumenflow/core/src/__tests__/state-doctor-core.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
+    - packages/@lumenflow/cli/src/__tests__/initiative-create-lifecycle.test.ts
+    - packages/@lumenflow/cli/src/__tests__/lane-lifecycle-process.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1751.done
@@ -28,18 +31,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1552 and WU-1553 are intentionally status=superseded in YAML, but they
-  still have historical claim/release events in .lumenflow/state/wu-events.jsonl. Problem:
-  state:doctor derives status=ready from events and reports status mismatch as auto-fixable, but
-  --fix cannot reconcile ready->superseded. This creates persistent noise and recurring confusion
-  (looks like random WUs reappearing). Solution: update state-doctor mismatch detection/fixability
-  semantics so non-canonical terminal YAML statuses (e.g., superseded/cancelled) are not flagged as
-  auto-fixable state drift. Ensure messaging reflects true fixability.'
+description: 'Context: lane lifecycle migration was introduced with deferred lane process. Problem:
+  wu:create and initiative:create call ensureLaneLifecycleForProject(..., { persist: true }), which
+  rewrites .lumenflow.config.yaml on main for legacy repos missing lanes.lifecycle.status. This
+  strips comments and reformats config unexpectedly, creating dirty-main side effects unrelated to
+  the user command intent. Solution: make these commands read lane lifecycle in non-mutating mode
+  (persist: false) and keep migration writes scoped to explicit lane lifecycle commands only.'
 acceptance:
-  - state:doctor does not report auto-fixable status mismatch for YAML status superseded with
-    derived ready
-  - state:doctor output correctly marks non-fixable transitions as non-auto-fixable
-  - state-doctor core tests cover superseded/cancelled mismatch behavior
+  - wu:create reads lane lifecycle without rewriting .lumenflow.config.yaml on main
+  - initiative:create reads lane lifecycle without rewriting .lumenflow.config.yaml on main
+  - Unit tests cover read-only lane lifecycle resolution for these command entrypoints
 claimed_mode: worktree
 worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-state-recovery-wu-1751
 claimed_at: 2026-02-16T18:34:25.405Z

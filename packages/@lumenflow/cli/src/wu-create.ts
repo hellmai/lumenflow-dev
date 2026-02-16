@@ -59,6 +59,7 @@ import {
 import {
   buildWuCreateLaneLifecycleMessage,
   ensureLaneLifecycleForProject,
+  type LaneLifecycleClassification,
   LANE_LIFECYCLE_STATUS,
 } from './lane-lifecycle-process.js';
 
@@ -172,6 +173,16 @@ export function warnIfBetterLaneExists(
   } catch {
     // Non-blocking - if inference fails, continue silently
   }
+}
+
+/**
+ * Resolve lane lifecycle classification for wu:create without mutating config.
+ *
+ * WU-1751: wu:create must not persist lifecycle migration side effects to
+ * .lumenflow.config.yaml on main.
+ */
+export function resolveLaneLifecycleForWuCreate(projectRoot: string): LaneLifecycleClassification {
+  return ensureLaneLifecycleForProject(projectRoot, { persist: false });
 }
 
 export function collectInitiativeWarnings({
@@ -335,7 +346,7 @@ async function main() {
 
   // WU-1748: Lane lifecycle boundary enforcement
   // wu:create does not synthesize/design lanes; it requires locked lifecycle.
-  const laneLifecycle = ensureLaneLifecycleForProject(process.cwd(), { persist: true });
+  const laneLifecycle = resolveLaneLifecycleForWuCreate(process.cwd());
   if (laneLifecycle.status !== LANE_LIFECYCLE_STATUS.LOCKED) {
     die(buildWuCreateLaneLifecycleMessage(laneLifecycle.status));
   }
