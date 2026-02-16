@@ -16,7 +16,7 @@ target_date: 2026-06-30
 phases:
   - id: 1
     title: Kernel Foundation (Workspace + Task + Events + Projections)
-    status: pending
+    status: in_progress
   - id: 2
     title: ToolHost + ToolRegistry + Evidence (security boundary)
     status: pending

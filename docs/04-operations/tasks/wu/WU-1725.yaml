@@ -2,7 +2,7 @@ id: WU-1725
 title: Kernel package scaffold + core Zod schemas
 lane: 'Framework: Core Validation'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-16
 code_paths:
@@ -78,3 +78,6 @@ session_id: 28c5022b-a2de-4fee-8b8a-ee99993456b4
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T21:00:42.064Z
+locked: true
+completed_at: 2026-02-16T21:55:01.113Z
+completed: 2026-02-16
