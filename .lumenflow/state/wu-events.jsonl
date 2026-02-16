@@ -1413,4 +1413,5 @@
 {"type":"claim","wuId":"WU-1745","timestamp":"2026-02-16T14:18:41.385Z","lane":"Framework: CLI Enforcement","title":"Validate lane config against inference hierarchy at init time"}
 {"type":"claim","wuId":"WU-1746","timestamp":"2026-02-16T14:20:03.421Z","lane":"Framework: Core State Recovery","title":"wu:done resilience when worktree deleted but branch already merged"}
 {"type":"complete","wuId":"WU-1745","timestamp":"2026-02-16T14:26:24.047Z"}
-{"type":"claim","wuId":"WU-1747","lane":"Framework: CLI Enforcement","title":"Stub format:check gate when prettier not installed at init time","timestamp":"2026-02-16T14:29:38.258Z"}
+{"type":"claim","wuId":"WU-1747","timestamp":"2026-02-16T14:29:38.258Z","lane":"Framework: CLI Enforcement","title":"Stub format:check gate when prettier not installed at init time"}
+{"type":"complete","wuId":"WU-1747","timestamp":"2026-02-16T14:37:47.205Z"}

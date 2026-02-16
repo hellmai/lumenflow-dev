@@ -2,7 +2,7 @@ id: WU-1747
 title: Stub format:check gate when prettier not installed at init time
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-16
 code_paths:
@@ -46,3 +46,6 @@ session_id: f3d0f053-c9e9-4ff5-9fe7-f7f2bfe40b15
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T14:29:38.214Z
+locked: true
+completed_at: 2026-02-16T14:37:42.368Z
+completed: 2026-02-16
