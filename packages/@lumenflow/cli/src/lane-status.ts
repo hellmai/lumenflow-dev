@@ -23,11 +23,18 @@ function ensureLumenflowInit(projectRoot: string): void {
   }
 }
 
+/**
+ * Resolve lane lifecycle status for lane:status without mutating config.
+ */
+export function resolveLaneLifecycleForStatus(projectRoot: string) {
+  return ensureLaneLifecycleForProject(projectRoot, { persist: false });
+}
+
 async function main() {
   const projectRoot = findProjectRoot();
   ensureLumenflowInit(projectRoot);
 
-  const classification = ensureLaneLifecycleForProject(projectRoot, { persist: true });
+  const classification = resolveLaneLifecycleForStatus(projectRoot);
   const nextStep = recommendLaneLifecycleNextStep(classification.status);
 
   if (classification.source === 'migration') {
