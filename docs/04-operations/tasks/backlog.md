@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1733 — Software delivery pack — WU extensions + gate policies](wu/WU-1733.yaml) — Framework: Core Lifecycle
 - [WU-1732 — Kernel PolicyEngine + DomainPack manifest/loader + integrity pinning](wu/WU-1732.yaml) — Framework: Core Validation
 - [WU-1731 — Kernel built-in tools (fs:read, fs:write, proc:exec) + ESLint boundary rules](wu/WU-1731.yaml) — Framework: Core Lifecycle
 - [WU-1730 — Kernel sandbox integration (bwrap port) + subprocess tool-runner worker](wu/WU-1730.yaml) — Framework: Core Validation

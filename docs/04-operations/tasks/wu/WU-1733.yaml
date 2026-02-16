@@ -1,0 +1,48 @@
+id: WU-1733
+title: Software delivery pack — WU extensions + gate policies
+lane: 'Framework: Core Lifecycle'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-16
+code_paths:
+  - packages/@lumenflow/packs/software-delivery/
+tests:
+  manual:
+    - pnpm typecheck passes
+  unit:
+    - packages/@lumenflow/packs/software-delivery/__tests__/extensions.test.ts
+    - packages/@lumenflow/packs/software-delivery/__tests__/gate-policies.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1733.done
+dependencies: []
+initiative: INIT-029
+phase: 3
+blocked_by:
+  - WU-1732
+labels:
+  - packs
+  - phase-3
+  - software-delivery
+spec_refs:
+  - .claude/plans/golden-prancing-cookie.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: INIT-029 Phase 3 — Policies + Packs. Depends on WU-1732 (PolicyEngine). Problem: Current LumenFlow domain logic (WU extensions, gate policies) is entangled in core. It needs to become the first DomainPack, proving the pack abstraction works. Solution: Software delivery extension schema (code_paths, tests, exposure, worktree, branch) ported from wu-schema.ts. Gate policies (format, lint, typecheck, test, coverage) as PolicyProvider implementations ported from gates-runners.ts. State alias {active: in_progress} for backward display compat. Pack manifest with SHA-256 integrity. Reference: wu-schema.ts (1035 lines — extract domain fields only), gates-runners.ts (spawnSync pattern). Plan: .claude/plans/golden-prancing-cookie.md'
+acceptance:
+  - 'Software delivery extension Zod schema: code_paths, tests (unit/e2e/manual), exposure, worktree, branch'
+  - Extension schema validates against TaskSpec.extensions opaque record
+  - 'Gate policies as PolicyProvider: format, lint, typecheck, test, coverage'
+  - Gate policies run via PolicyEngine on_completion trigger (not hardcoded gate runner)
+  - 'State alias {active: in_progress} resolves correctly for display'
+  - Software delivery DomainPack manifest registered with integrity hash
+  - Task with domain software-delivery accepts code_paths in extensions and rejects unknown fields
