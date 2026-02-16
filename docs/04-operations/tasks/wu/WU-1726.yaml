@@ -2,7 +2,7 @@ id: WU-1726
 title: 'Kernel EventStore: JSONL append, indexes, projections'
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-16
 code_paths:
@@ -66,3 +66,11 @@ acceptance:
     waiting-state projection
   - Projection correctness test includes waiting/resumed path
     (create->claim->waiting->resumed->complete)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1726
+claimed_at: 2026-02-16T21:59:45.890Z
+baseline_main_sha: 484cdd28ab4417ee871fe7af3ae5d23c861ad4c1
+session_id: 58e7a652-1a2c-48b6-bb30-36e375ea3efb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T21:59:45.896Z

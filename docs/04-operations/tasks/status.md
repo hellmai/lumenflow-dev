@@ -5,6 +5,7 @@ _Last updated: 2026-02-16_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1726 — Kernel EventStore: JSONL append, indexes, projections](wu/WU-1726.yaml)
 
 ## Completed
 
