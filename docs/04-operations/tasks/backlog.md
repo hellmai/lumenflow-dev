@@ -22,6 +22,7 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
+- [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1725 — Kernel package scaffold + core Zod schemas](wu/WU-1725.yaml) — Framework: Core Validation
 - [WU-1726 — Kernel EventStore: JSONL append, indexes, projections](wu/WU-1726.yaml) — Framework: Core Lifecycle
 - [WU-1727 — Kernel XState state machine + integration test](wu/WU-1727.yaml) — Framework: Core State Recovery
@@ -44,7 +45,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
