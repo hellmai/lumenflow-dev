@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1736 — CLI surface — task lifecycle commands (tracer bullet: create, claim, status, complete)](wu/WU-1736.yaml) — Framework: CLI WU Commands
 - [WU-1735 — KernelRuntime facade + initialization](wu/WU-1735.yaml) — Framework: Core Lifecycle
 - [WU-1734 — Software delivery pack — Git tools + worktree + lane locks + delegation](wu/WU-1734.yaml) — Framework: Core State Recovery
 - [WU-1733 — Software delivery pack — WU extensions + gate policies](wu/WU-1733.yaml) — Framework: Core Lifecycle

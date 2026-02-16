@@ -1,0 +1,48 @@
+id: WU-1736
+title: 'CLI surface — task lifecycle commands (tracer bullet: create, claim, status, complete)'
+lane: 'Framework: CLI WU Commands'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-16
+code_paths:
+  - packages/@lumenflow/surfaces/cli/
+tests:
+  manual:
+    - 'Manual: create task, claim, check status, complete via CLI'
+  unit:
+    - packages/@lumenflow/surfaces/cli/__tests__/task-lifecycle.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1736.done
+dependencies: []
+initiative: INIT-029
+phase: 4
+blocked_by:
+  - WU-1735
+labels:
+  - surfaces
+  - phase-4
+  - cli
+  - tracer-bullet
+spec_refs:
+  - .claude/plans/golden-prancing-cookie.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: INIT-029 Phase 4 — Surfaces + Daemon. Depends on WU-1735 (KernelRuntime). TRACER BULLET: Prove KernelRuntime works end-to-end through one surface before rewriting all CLI commands. Problem: Current CLI commands import core directly. They need to become thin wrappers over KernelRuntime. Solution: Rewrite the 4 core task lifecycle commands (task:create, task:claim, task:status, task:complete) as thin CLI wrappers that call KernelRuntime methods. This proves the pattern works for the remaining commands. If create/claim/complete/status work through KernelRuntime, the pattern is proven. Plan: .claude/plans/golden-prancing-cookie.md'
+acceptance:
+  - task:create CLI command calls runtime.createTask() — not core directly
+  - task:claim CLI command calls runtime.claimTask() — not core directly
+  - task:status CLI command calls runtime.inspectTask() — not core directly
+  - task:complete CLI command calls runtime.completeTask() — not core directly
+  - All 4 commands produce identical receipts/events as the old implementation
+  - CLI surface has zero direct imports from @lumenflow/core for these commands
+  - 'End-to-end test: create -> claim -> status shows active -> complete -> status shows done'
