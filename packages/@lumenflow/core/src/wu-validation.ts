@@ -22,12 +22,31 @@ const LANE_PARENTS = {
   OPERATIONS: 'operations',
 };
 
-function getLaneParent(lane) {
-  if (!lane || typeof lane !== 'string') return '';
-  return lane.split(':')[0].trim().toLowerCase();
+interface WUTests {
+  manual?: string[];
+  [key: string]: unknown;
 }
 
-export function resolveExposureDefault(lane) {
+type WUAcceptance = string[] | Record<string, string[]>;
+
+interface ExposureWU {
+  id?: string;
+  lane?: string;
+  exposure?: string;
+  ui_pairing_wus?: string[];
+  user_journey?: string;
+  acceptance?: WUAcceptance;
+  navigation_path?: string;
+  code_paths?: string[];
+  tests?: WUTests;
+}
+
+function getLaneParent(lane: string | null | undefined): string {
+  if (!lane || typeof lane !== 'string') return '';
+  return (lane.split(':')[0] ?? '').trim().toLowerCase();
+}
+
+export function resolveExposureDefault(lane: string | null | undefined): string | undefined {
   const parent = getLaneParent(lane);
   if (parent === LANE_PARENTS.CONTENT) {
     return WU_EXPOSURE.DOCUMENTATION;
@@ -68,7 +87,7 @@ export const EXPOSURE_WARNING_MESSAGES = {
    * @param {string} wuId - The WU identifier
    * @returns {string} Warning message with remediation
    */
-  MISSING_EXPOSURE: (wuId) =>
+  MISSING_EXPOSURE: (wuId: string) =>
     `${wuId}: exposure field is missing. ` +
     `Add 'exposure: ui|api|backend-only|documentation' to the WU YAML. ` +
     `This helps ensure user-facing features have corresponding UI coverage.`,
@@ -78,7 +97,7 @@ export const EXPOSURE_WARNING_MESSAGES = {
    * @param {string} wuId - The WU identifier
    * @returns {string} Warning message with remediation
    */
-  MISSING_UI_PAIRING: (wuId) =>
+  MISSING_UI_PAIRING: (wuId: string) =>
     `${wuId}: exposure=api but ui_pairing_wus not specified. ` +
     `Add 'ui_pairing_wus: [WU-XXX]' listing UI WUs that consume this API, ` +
     `or set exposure to 'backend-only' if no UI is planned.`,
@@ -88,7 +107,7 @@ export const EXPOSURE_WARNING_MESSAGES = {
    * @param {string} wuId - The WU identifier
    * @returns {string} Warning message with remediation
    */
-  MISSING_UI_VERIFICATION: (wuId) =>
+  MISSING_UI_VERIFICATION: (wuId: string) =>
     `${wuId}: exposure=api but acceptance criteria lacks UI verification mention. ` +
     `Consider adding a criterion like 'UI displays the data correctly' to ensure end-to-end coverage.`,
 
@@ -97,7 +116,7 @@ export const EXPOSURE_WARNING_MESSAGES = {
    * @param {string} wuId - The WU identifier
    * @returns {string} Warning message with remediation
    */
-  MISSING_USER_JOURNEY: (wuId) =>
+  MISSING_USER_JOURNEY: (wuId: string) =>
     `${wuId}: exposure=ui but user_journey field not present. ` +
     `Adding 'user_journey: "<description>"' is recommended to document the user flow.`,
 };
@@ -111,9 +130,9 @@ export const EXPOSURE_WARNING_MESSAGES = {
  * @param {string[]|Record<string, string[]>} acceptance - Acceptance criteria
  * @returns {boolean} True if UI verification is mentioned
  */
-function hasUIVerificationInAcceptance(acceptance) {
+function hasUIVerificationInAcceptance(acceptance: WUAcceptance): boolean {
   // Flatten acceptance to array of strings
-  let criteria = [];
+  let criteria: string[] = [];
   if (Array.isArray(acceptance)) {
     criteria = acceptance;
   } else if (typeof acceptance === 'object' && acceptance !== null) {
@@ -155,8 +174,11 @@ interface ValidateExposureOptions {
   skipExposureCheck?: boolean;
 }
 
-export function validateExposure(wu, options: ValidateExposureOptions = {}) {
-  const warnings = [];
+export function validateExposure(
+  wu: ExposureWU,
+  options: ValidateExposureOptions = {},
+): { valid: boolean; warnings: string[] } {
+  const warnings: string[] = [];
 
   // Early return if skip flag is set
   if (options.skipExposureCheck) {
@@ -250,7 +272,7 @@ export const ACCESSIBILITY_ERROR_MESSAGES = {
    * @param {string} wuId - The WU identifier
    * @returns {string} Error message with remediation guidance
    */
-  UI_NOT_ACCESSIBLE: (wuId) =>
+  UI_NOT_ACCESSIBLE: (wuId: string) =>
     `${wuId}: exposure=ui but feature accessibility not verified. ` +
     `Add one of the following:\n` +
     `  1. navigation_path: '/your-route' - specify the route where feature is accessible\n` +
@@ -266,7 +288,7 @@ export const ACCESSIBILITY_ERROR_MESSAGES = {
  * @param {string[]} codePaths - Array of code paths
  * @returns {boolean} True if any code path matches a page file pattern
  */
-function hasPageFileInCodePaths(codePaths) {
+function hasPageFileInCodePaths(codePaths: string[] | undefined): boolean {
   if (!codePaths || !Array.isArray(codePaths)) {
     return false;
   }
@@ -280,7 +302,7 @@ function hasPageFileInCodePaths(codePaths) {
  * @param {object} tests - Tests object from WU YAML
  * @returns {boolean} True if manual tests mention navigation
  */
-function hasNavigationInManualTests(tests) {
+function hasNavigationInManualTests(tests: WUTests | undefined): boolean {
   if (!tests || typeof tests !== 'object') {
     return false;
   }
@@ -326,10 +348,10 @@ interface ValidateFeatureAccessibilityOptions {
 }
 
 export function validateFeatureAccessibility(
-  wu,
+  wu: ExposureWU,
   options: ValidateFeatureAccessibilityOptions = {},
-) {
-  const errors = [];
+): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
 
   // Early return if skip flag is set
   if (options.skipAccessibilityCheck) {
