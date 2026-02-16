@@ -2,7 +2,7 @@ id: WU-1736
 title: 'CLI surface — task lifecycle commands (tracer bullet: create, claim, status, complete)'
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -37,7 +37,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-029 Phase 4 — Surfaces + Daemon. Depends on WU-1735 (KernelRuntime). TRACER BULLET: Prove KernelRuntime works end-to-end through one surface before rewriting all CLI commands. Problem: Current CLI commands import core directly. They need to become thin wrappers over KernelRuntime. Solution: Rewrite the 4 core task lifecycle commands (task:create, task:claim, task:status, task:complete) as thin CLI wrappers that call KernelRuntime methods. This proves the pattern works for the remaining commands. If create/claim/complete/status work through KernelRuntime, the pattern is proven. Plan: .claude/plans/golden-prancing-cookie.md'
+description: 'Context: INIT-029 Phase 4 — Surfaces + Daemon. Depends on WU-1735 (KernelRuntime).
+  TRACER BULLET: Prove KernelRuntime works end-to-end through one surface before rewriting all CLI
+  commands. Problem: Current CLI commands import core directly. They need to become thin wrappers
+  over KernelRuntime. Solution: Rewrite the 4 core task lifecycle commands (task:create, task:claim,
+  task:status, task:complete) as thin CLI wrappers that call KernelRuntime methods. This proves the
+  pattern works for the remaining commands. If create/claim/complete/status work through
+  KernelRuntime, the pattern is proven. Plan: .claude/plans/golden-prancing-cookie.md'
 acceptance:
   - task:create CLI command calls runtime.createTask() — not core directly
   - task:claim CLI command calls runtime.claimTask() — not core directly
@@ -46,3 +52,11 @@ acceptance:
   - All 4 commands produce identical receipts/events as the old implementation
   - CLI surface has zero direct imports from @lumenflow/core for these commands
   - 'End-to-end test: create -> claim -> status shows active -> complete -> status shows done'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1736
+claimed_at: 2026-02-16T23:58:35.377Z
+baseline_main_sha: 6631009188244981c4446b0d9a2fee095b46d8f0
+session_id: a28d4f6e-88f5-46f9-a714-c8dbf5d6312d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T23:58:35.385Z
