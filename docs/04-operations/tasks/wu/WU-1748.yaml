@@ -1,0 +1,36 @@
+id: WU-1748
+title: Defer lane configuration until first wu:create or initiative:create
+lane: 'Framework: CLI Enforcement'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-16
+code_paths:
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/initiative-create.ts
+tests:
+  manual:
+    - Run lumenflow init in empty project, verify no lanes generated, then run wu:create and verify lane setup is prompted
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/init-deferred-lanes.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1748.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: lumenflow init currently generates .lumenflow.config.yaml with lane definitions and .lumenflow.lane-inference.yaml with a full parent/sublane hierarchy. Problem: At init time, nobody knows what the project structure is. The user hasn't shared their plan yet. In Haven test project, init generated generic lanes, then the agent customized them incorrectly (invalid parent names), burning an entire WU to fix config. Lanes are meaningless until there's actual work to organize. Solution: lumenflow init should NOT generate lane config. Instead, defer lane setup to the first wu:create or initiative:create invocation, when context exists (description, code paths, tech stack). At that point, either auto-suggest lanes from the available context or prompt the user to configure them. This eliminates the entire class of 'wrong lanes at init' problems."
+acceptance:
+  - lumenflow init does not generate lane definitions in .lumenflow.config.yaml
+  - lumenflow init does not generate .lumenflow.lane-inference.yaml
+  - First wu:create or initiative:create triggers lane setup with contextual suggestions
+  - Projects without lanes configured can still create WUs (fallback to uncategorized or prompt)
