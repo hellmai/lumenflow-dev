@@ -1,0 +1,35 @@
+id: WU-1743
+title: Add fast strict-progress regression guardrail to CI
+lane: 'Operations: Tooling'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-16
+code_paths:
+  - .github/workflows/ci.yml
+  - tools/pre-release-checks.ts
+  - tools/__tests__/pre-release-checks.test.ts
+tests:
+  manual:
+    - Run pnpm strict:progress and pnpm pre-release:check
+  unit:
+    - tools/__tests__/pre-release-checks.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1743.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: strict TypeScript debt was recently burned down to zero and we need durable guardrails to stop regressions. Problem: strict debt can creep back if no dedicated regression check is enforced in automation. Solution: add a fast CI step that runs strict:progress and add a focused test around pre-release check behavior to keep this contract visible and maintainable without slowing local WU completion loops.'
+acceptance:
+  - CI workflow runs pnpm strict:progress and fails on strict regression.
+  - Guardrail remains fast and does not add strict:progress execution to wu:prep/wu:done local gates.
+  - Pre-release checks include strict progress validation coverage via automated tests.
