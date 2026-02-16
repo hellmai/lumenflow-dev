@@ -4,4 +4,5 @@
  */
 
 export * from './canonical-json.js';
+export * from './event-store/index.js';
 export * from './kernel.schemas.js';
