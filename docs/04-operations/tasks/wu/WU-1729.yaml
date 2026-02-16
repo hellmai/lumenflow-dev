@@ -41,28 +41,26 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: 'Context: INIT-029 Phase 2 — ToolHost + Evidence. Depends on WU-1728 (ToolRegistry) and
-  WU-1726 (EventStore). Problem: Tool execution needs a security boundary that validates scopes,
-  enforces policy, and produces immutable trace entries with provenance for replay determinism. This
-  is the killer differentiator — agents cannot go off-script. Solution: ToolHost class wrapping
-  ToolRegistry — validates input, resolves scopes (workspace intersection lane intersection task
-  intersection tool, all ToolScope[]), calls policy hook (stub for now), dispatches to handler
-  (in-process or subprocess), emits two-phase ToolTraceEntry (tool_call_started before execution,
-  tool_call_finished after, correlated by receipt_id). EvidenceStore for trace entries (append JSONL
-  to evidence/traces/). CAS store for tool inputs (SHA-256 -> evidence/inputs/{hash}).
-  ToolTraceEntry with schema_version:1, honest scope semantics (scope_requested/allowed/enforced +
-  scope_enforcement_note), and provenance fields (tool_version, pack_id/version/integrity,
-  workspace_config_hash, runtime_version). Crash recovery: any started entry without matching
-  finished entry gets synthetic finished with result crashed. Reference: tool-runner.ts. Plan:
-  .claude/plans/golden-prancing-cookie.md'
+  WU-1726 (EventStore). Problem: Tool execution needs a hard security boundary that validates
+  scopes, enforces policy, and emits immutable evidence for replay determinism. Solution: Implement
+  ToolHost as the execution boundary around ToolRegistry with fully working in-process execution.
+  Add a SubprocessDispatcher port abstraction for subprocess execution, but keep worker integration
+  out of scope for this WU (implemented in WU-1730). ToolHost is the single trace writer: writes
+  tool_call_started before any dispatch attempt, writes tool_call_finished on success/failure/deny
+  (including subprocess dispatch failures), and relies on reconciliation for orphaned started
+  entries. Implement EvidenceStore JSONL append + CAS inputs with provenance fields and honest scope
+  semantics. Reference: tool-runner.ts. Plan: .claude/plans/golden-prancing-cookie.md'
 acceptance:
   - ToolHost class wraps ToolRegistry with execute(name, input, ctx) method
   - ToolHost validates input against tool schema before execution
   - 'ToolHost resolves scope intersection: workspace, lane, task, tool (all ToolScope[])'
-  - 'ToolHost dispatches to handler.kind: in-process calls fn directly, subprocess delegates to
-    worker'
   - ToolHost calls policy hook stub (allow-all for now, replaced in Phase 3)
-  - 'Two-phase ToolTraceEntry: tool_call_started written BEFORE execution, tool_call_finished AFTER,
-    correlated by receipt_id'
+  - In-process handlers execute through ToolHost and return validated output
+  - Subprocess execution is abstracted behind a SubprocessDispatcher port interface (worker wiring
+    deferred to WU-1730)
+  - Default SubprocessDispatcher adapter returns explicit not-yet-available error until WU-1730 lands
+  - 'Two-phase ToolTraceEntry: tool_call_started written BEFORE dispatch attempt, tool_call_finished
+    AFTER result, correlated by receipt_id'
   - ToolTraceEntry includes schema_version:1 for stable control plane ingestion
   - 'ToolTraceEntry started includes honest scope semantics: scope_requested, scope_allowed,
     scope_enforced'
@@ -73,5 +71,5 @@ acceptance:
     with result crashed'
   - EvidenceStore appends trace entries as JSONL to evidence/traces/
   - 'CAS store: tool inputs hashed with SHA-256 and stored in evidence/inputs/{hash}'
-  - Execute within allowed scope produces success trace with input_ref pointing to CAS
+  - Execute within allowed scope (in-process) produces success trace with input_ref pointing to CAS
   - Execute outside allowed scope produces denied trace — hard boundary not hook
