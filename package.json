@@ -86,7 +86,7 @@
     "orchestrate:monitor": "node packages/@lumenflow/cli/dist/orchestrate-monitor.js",
     "delegation:list": "node packages/@lumenflow/cli/dist/delegation-list.js",
     "flow:report": "node packages/@lumenflow/cli/dist/flow-report.js",
-    "strict:progress": "node packages/@lumenflow/cli/dist/strict-progress.js",
+    "strict:progress": "node packages/@lumenflow/cli/dist/strict-progress.js --baseline tools/baselines/strict-progress-baseline.json",
     "flow:bottlenecks": "node packages/@lumenflow/cli/dist/flow-bottlenecks.js",
     "metrics:snapshot": "node packages/@lumenflow/cli/dist/metrics-snapshot.js",
     "initiative:bulk-assign": "node packages/@lumenflow/cli/dist/initiative-bulk-assign-wus.js",

@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "generated_at": "2026-02-16T12:31:47.839Z",
+  "totals": {
+    "total_errors": 0
+  },
+  "packages": {
+    "@lumenflow/cli": {
+      "total_errors": 0,
+      "error_codes": {},
+      "file_errors": {}
+    },
+    "@lumenflow/core": {
+      "total_errors": 0,
+      "error_codes": {},
+      "file_errors": {}
+    }
+  }
+}

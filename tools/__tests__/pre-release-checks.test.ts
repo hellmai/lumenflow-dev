@@ -30,6 +30,8 @@ describe('validatePreRelease', () => {
   });
 
   it('should pass if all bin entries are in README', async () => {
+    const runStrictProgress = vi.fn().mockResolvedValue(undefined);
+
     // Mock package.json read
     vi.spyOn(fs, 'readFile').mockImplementation(async (filePath) => {
       if (typeof filePath === 'string' && filePath.endsWith('package.json')) {
@@ -44,10 +46,13 @@ describe('validatePreRelease', () => {
     // Mock stat for templates dir (assuming it doesn't exist for this test)
     vi.spyOn(fs, 'stat').mockRejectedValue(new Error('ENOENT'));
 
-    await expect(validatePreRelease()).resolves.not.toThrow();
+    await expect(validatePreRelease({ runStrictProgress })).resolves.not.toThrow();
+    expect(runStrictProgress).toHaveBeenCalledTimes(1);
   });
 
   it('should fail if a bin entry is missing from README', async () => {
+    const runStrictProgress = vi.fn().mockResolvedValue(undefined);
+
     const readmeMissingB = `
 # Package
 ## Commands
@@ -66,12 +71,14 @@ describe('validatePreRelease', () => {
 
     vi.spyOn(fs, 'stat').mockRejectedValue(new Error('ENOENT'));
 
-    await expect(validatePreRelease()).rejects.toThrow(
+    await expect(validatePreRelease({ runStrictProgress })).rejects.toThrow(
       /Missing documentation for bin entry: cmd-b/,
     );
   });
 
   it('should fail if templates dir exists but is not in files array', async () => {
+    const runStrictProgress = vi.fn().mockResolvedValue(undefined);
+
     const packageJsonNoTemplates = {
       ...mockPackageJson,
       files: ['dist'], // 'templates' missing
@@ -90,10 +97,14 @@ describe('validatePreRelease', () => {
     // Mock stat for templates dir to succeed (it exists)
     vi.spyOn(fs, 'stat').mockResolvedValue({ isDirectory: () => true } as any);
 
-    await expect(validatePreRelease()).rejects.toThrow(/'templates' directory exists/);
+    await expect(validatePreRelease({ runStrictProgress })).rejects.toThrow(
+      /'templates' directory exists/,
+    );
   });
 
   it('should pass if templates dir exists and is in files array', async () => {
+    const runStrictProgress = vi.fn().mockResolvedValue(undefined);
+
     const packageJsonWithTemplates = {
       ...mockPackageJson,
       files: ['dist', 'templates'],
@@ -111,6 +122,27 @@ describe('validatePreRelease', () => {
 
     vi.spyOn(fs, 'stat').mockResolvedValue({ isDirectory: () => true } as any);
 
-    await expect(validatePreRelease()).resolves.not.toThrow();
+    await expect(validatePreRelease({ runStrictProgress })).resolves.not.toThrow();
+    expect(runStrictProgress).toHaveBeenCalledTimes(1);
+  });
+
+  it('should fail when strict progress check fails', async () => {
+    const runStrictProgress = vi.fn().mockRejectedValue(new Error('strict regressions detected'));
+
+    vi.spyOn(fs, 'readFile').mockImplementation(async (filePath) => {
+      if (typeof filePath === 'string' && filePath.endsWith('package.json')) {
+        return JSON.stringify(mockPackageJson);
+      }
+      if (typeof filePath === 'string' && filePath.endsWith('README.md')) {
+        return mockReadme;
+      }
+      throw new Error(`Unexpected file read: ${filePath}`);
+    });
+
+    vi.spyOn(fs, 'stat').mockRejectedValue(new Error('ENOENT'));
+
+    await expect(validatePreRelease({ runStrictProgress })).rejects.toThrow(
+      /strict progress check failed/i,
+    );
   });
 });

@@ -7,8 +7,10 @@ priority: P1
 created: 2026-02-16
 code_paths:
   - .github/workflows/ci.yml
+  - package.json
   - tools/pre-release-checks.ts
   - tools/__tests__/pre-release-checks.test.ts
+  - tools/baselines/strict-progress-baseline.json
 tests:
   manual:
     - Run pnpm strict:progress and pnpm pre-release:check

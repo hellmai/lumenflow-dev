@@ -75,6 +75,9 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Strict progress
+        run: pnpm strict:progress
+
       - name: Validate docs sync
         run: pnpm docs:validate
 
