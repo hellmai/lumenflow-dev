@@ -8,7 +8,6 @@ created: 2026-02-16
 code_paths:
   - packages/@lumenflow/core/src/dependency-graph.ts
   - packages/@lumenflow/core/src/backlog-sync-validator.ts
-  - packages/@lumenflow/core/src/adapters/filesystem-metrics.adapter.ts
   - packages/@lumenflow/core/src/adapters/__tests__/filesystem-metrics.adapter.test.ts
 tests:
   manual:
