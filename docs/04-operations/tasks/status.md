@@ -372,7 +372,6 @@ _Last updated: 2026-02-16_
 - [WU-1419 — wu:recover reset action should emit release event to state store](wu/WU-1419.yaml) — 2026-02-04
 - [WU-1420 — state:doctor should detect and fix YAML vs state store status mismatches](wu/WU-1420.yaml) — 2026-02-04
 - [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml) — 2026-02-04
-- [WU-1428 — Remove all legacy references: delete migration utility and purge codebase](wu/WU-1428.yaml) — 2026-02-04
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml) — 2026-02-04
 - [WU-1429 — wu:create: tighten spec_refs + add notes flag + contextual warnings](wu/WU-1429.yaml) — 2026-02-04
 - [WU-1430 — Audit and centralize hardcoded path strings into constants](wu/WU-1430.yaml) — 2026-02-04
