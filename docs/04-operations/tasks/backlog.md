@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1747 — Stub format:check gate when prettier not installed at init time](wu/WU-1747.yaml) — Framework: CLI Enforcement
 - [WU-1746 — wu:done resilience when worktree deleted but branch already merged](wu/WU-1746.yaml) — Framework: Core State Recovery
 - [WU-1745 — Validate lane config against inference hierarchy at init time](wu/WU-1745.yaml) — Framework: CLI Enforcement
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands

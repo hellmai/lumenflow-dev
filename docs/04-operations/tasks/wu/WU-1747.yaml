@@ -1,0 +1,33 @@
+id: WU-1747
+title: Stub format:check gate when prettier not installed at init time
+lane: 'Framework: CLI Enforcement'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-16
+code_paths:
+  - packages/@lumenflow/cli/src/init.ts
+tests:
+  manual:
+    - Run lumenflow init in empty project, immediately run pnpm gates, verify format:check passes
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/init-format-stub.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1747.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: lumenflow init scaffolds package.json with format and format:check scripts pointing to prettier. Problem: prettier is not installed as part of init. Running pnpm gates immediately after init fails on format:check because prettier binary is missing. In Haven test project, first 2 gate runs failed before the agent figured out it needed pnpm add -D prettier. Other gate stubs (lint, typecheck, cos:gates) correctly exit 0 with guidance messages — format:check should do the same. Solution: Either install prettier as part of lumenflow init, or make format:check a stub (like lint/typecheck) that exits 0 with a message like '[lumenflow] format:check stub -- install prettier to enable this gate'."
+acceptance:
+  - pnpm gates passes immediately after lumenflow init without manual prettier install
+  - format:check either installs prettier or provides a stub like lint/typecheck
+  - Stub message guides user to install prettier
