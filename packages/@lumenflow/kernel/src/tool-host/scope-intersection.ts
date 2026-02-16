@@ -23,7 +23,9 @@ function toNetworkScopes(scopes: ToolScope[]): NetworkScope[] {
 }
 
 function patternContains(containerPattern: string, nestedPattern: string): boolean {
-  const testPath = nestedPattern.replace(/\*\*/g, '__nested__/__path__').replace(/\*/g, '__segment__');
+  const testPath = nestedPattern
+    .replace(/\*\*/g, '__nested__/__path__')
+    .replace(/\*/g, '__segment__');
   return micromatch.isMatch(testPath, containerPattern);
 }
 
@@ -63,7 +65,11 @@ function specificityScore(pattern: string): number {
 }
 
 function selectNarrowestPattern(patterns: string[]): string {
-  return [...patterns].sort((left, right) => specificityScore(right) - specificityScore(left))[0] ?? patterns[0] ?? '';
+  return (
+    [...patterns].sort((left, right) => specificityScore(right) - specificityScore(left))[0] ??
+    patterns[0] ??
+    ''
+  );
 }
 
 function intersectPathScopes(
