@@ -2,7 +2,7 @@ id: WU-1743
 title: Add fast strict-progress regression guardrail to CI
 lane: 'Operations: Tooling'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -28,8 +28,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: strict TypeScript debt was recently burned down to zero and we need durable guardrails to stop regressions. Problem: strict debt can creep back if no dedicated regression check is enforced in automation. Solution: add a fast CI step that runs strict:progress and add a focused test around pre-release check behavior to keep this contract visible and maintainable without slowing local WU completion loops.'
+description: 'Context: strict TypeScript debt was recently burned down to zero and we need durable
+  guardrails to stop regressions. Problem: strict debt can creep back if no dedicated regression
+  check is enforced in automation. Solution: add a fast CI step that runs strict:progress and add a
+  focused test around pre-release check behavior to keep this contract visible and maintainable
+  without slowing local WU completion loops.'
 acceptance:
   - CI workflow runs pnpm strict:progress and fails on strict regression.
   - Guardrail remains fast and does not add strict:progress execution to wu:prep/wu:done local gates.
   - Pre-release checks include strict progress validation coverage via automated tests.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1743
+claimed_at: 2026-02-16T12:24:18.559Z
+baseline_main_sha: 4448d9efb1f74d0fe7fecdd958678124aa0ff721
+session_id: e9bc35a1-4e39-4841-bde2-9883ea94f7a6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T12:24:18.569Z
