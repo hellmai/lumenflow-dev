@@ -7,11 +7,37 @@ import { LOG_PREFIX, EMOJI } from './wu-constants.js';
 import { WU_PATHS } from './wu-paths.js';
 import { validateSingleWU } from './validators/wu-tasks.js';
 
+interface PreflightPaths {
+  rootDir: string;
+  worktreePath?: string | null;
+}
+
+interface PreflightCodePathValidationResult {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+  missingCodePaths: string[];
+  missingCoverageCodePaths: string[];
+  missingTestPaths: string[];
+  suggestedTestPaths?: Record<string, string[]>;
+  abortedBeforeGates: boolean;
+}
+
+interface PreflightTaskValidationResult {
+  valid: boolean;
+  errors: string[];
+  abortedBeforeMerge: boolean;
+  localMainModified: boolean;
+  hasStampStatusError: boolean;
+}
+
 /**
  * WU-1781: Build preflight error message with actionable guidance
  */
-export function buildPreflightErrorMessage(id, errors) {
-  const hasStampStatusError = errors.some((e) => e.includes('stamp but status is not done'));
+export function buildPreflightErrorMessage(id: string, errors: string[]): string {
+  const hasStampStatusError = errors.some((error) =>
+    error.includes('stamp but status is not done'),
+  );
 
   let message = `
 ❌ PREFLIGHT VALIDATION FAILED
@@ -20,7 +46,7 @@ wu:validate found errors that would block pre-push hooks.
 Aborting wu:done BEFORE any merge operations to prevent deadlocks.
 
 Errors:
-${errors.map((e) => `  - ${e}`).join('\n')}
+${errors.map((error) => `  - ${error}`).join('\n')}
 
 Fix options:
 `;
@@ -60,10 +86,10 @@ export interface ExecutePreflightCodePathValidationOptions {
 }
 
 export async function executePreflightCodePathValidation(
-  id,
-  paths,
+  id: string,
+  paths: PreflightPaths,
   options: ExecutePreflightCodePathValidationOptions = {},
-) {
+): Promise<PreflightCodePathValidationResult> {
   // Use injected validator for testability, default to actual implementation
   const validatePreflightFn = options.validatePreflightFn || validatePreflight;
 
@@ -107,7 +133,10 @@ export async function executePreflightCodePathValidation(
 /**
  * WU-1805: Build preflight code_paths error message with actionable guidance
  */
-export function buildPreflightCodePathErrorMessage(id, result) {
+export function buildPreflightCodePathErrorMessage(
+  id: string,
+  result: PreflightCodePathValidationResult,
+): string {
   const {
     errors,
     missingCodePaths = [],
@@ -123,7 +152,7 @@ code_paths/test_paths validation found errors that would cause gates to fail.
 Aborting wu:done BEFORE running gates to save time.
 
 Errors:
-${errors.map((e) => `  ${e}`).join('\n')}
+${errors.map((error) => `  ${error}`).join('\n')}
 
 `;
 
@@ -160,7 +189,7 @@ Fix options for missing test_paths:
   // Add suggested paths if available
   const suggestionsMap = suggestedTestPaths as Record<string, string[]>;
   const hasSuggestions = Object.keys(suggestionsMap).some(
-    (missingPath) => suggestionsMap[missingPath]?.length > 0,
+    (missingPath) => (suggestionsMap[missingPath] ?? []).length > 0,
   );
 
   if (hasSuggestions) {
@@ -190,7 +219,7 @@ See: https://lumenflow.dev/reference/troubleshooting-wu-done/ for more recovery 
 /**
  * WU-1781: Run wu:validate as preflight check before any git operations
  */
-export function runPreflightTasksValidation(id) {
+export function runPreflightTasksValidation(id: string): PreflightTaskValidationResult {
   console.log(`\n${LOG_PREFIX.DONE} 🔍 Preflight: running wu:validate...`);
 
   const wuPath = WU_PATHS.WU(id);
@@ -211,7 +240,7 @@ export function runPreflightTasksValidation(id) {
 
   return {
     valid: false,
-    errors: result.errors,
+    errors: result.errors ?? [],
     abortedBeforeMerge: true,
     localMainModified: false,
     hasStampStatusError: false,
@@ -226,13 +255,13 @@ export interface ValidateAllPreCommitHooksOptions {
 }
 
 export async function validateAllPreCommitHooks(
-  id,
-  worktreePath = null,
+  id: string,
+  worktreePath: string | null = null,
   options: ValidateAllPreCommitHooksOptions = {},
-) {
+): Promise<{ valid: boolean; errors: string[] }> {
   console.log(`\n${LOG_PREFIX.DONE} 🔍 Pre-flight: validating all pre-commit hooks...`);
 
-  const errors = [];
+  const errors: string[] = [];
 
   try {
     // WU-2308: Run from worktree context when provided to ensure audit checks
