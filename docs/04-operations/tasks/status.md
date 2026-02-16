@@ -5,6 +5,7 @@ _Last updated: 2026-02-16_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1752 — Upgrade major-version dependencies (eslint 10, glob 13, p-retry 7, ps-list 9)](wu/WU-1752.yaml)
 
 ## Completed
 

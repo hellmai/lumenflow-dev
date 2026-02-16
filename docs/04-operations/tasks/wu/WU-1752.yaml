@@ -2,7 +2,7 @@ id: WU-1752
 title: Upgrade major-version dependencies (eslint 10, glob 13, p-retry 7, ps-list 9)
 lane: 'Operations: Tooling'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-16
 code_paths:
@@ -29,7 +29,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Upgrade remaining major-version dependencies: eslint 9→10, @eslint/js 9→10, glob 11→13, p-retry 6→7, ps-list 8→9. Hold @types/node at 22 (matches engines.node >= 22).'
+description: 'Upgrade remaining major-version dependencies: eslint 9→10, @eslint/js 9→10, glob
+  11→13, p-retry 6→7, ps-list 8→9. Hold @types/node at 22 (matches engines.node >= 22).'
 acceptance:
   - eslint and @eslint/js upgraded to v10
   - glob upgraded to v13
@@ -38,3 +39,11 @@ acceptance:
   - All ESLint plugins compatible with ESLint 10
   - Build passes across all packages
   - Tests pass (no new regressions)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1752
+claimed_at: 2026-02-16T18:46:17.239Z
+baseline_main_sha: dc27048aba471a653b722ad012f4af00ee4d07b6
+session_id: 282ffcec-924c-4876-93b7-434f7f2c8f75
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T18:46:17.246Z
