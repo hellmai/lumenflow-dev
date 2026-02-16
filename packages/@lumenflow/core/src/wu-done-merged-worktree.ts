@@ -182,7 +182,7 @@ export async function detectAlreadyMergedNoWorktree(
 export async function executeAlreadyMergedCompletion(
   params: AlreadyMergedCompletionParams,
 ): Promise<AlreadyMergedCompletionResult> {
-  const { id, title, lane } = params;
+  const { id, title, lane: _lane } = params;
   const errors: string[] = [];
   let stamped = false;
   let yamlUpdated = false;
@@ -235,7 +235,7 @@ export async function executeAlreadyMergedCompletion(
   // Step 3: Update backlog and status files
   try {
     const backlogPath = WU_PATHS.BACKLOG();
-    moveWUToDoneBacklog(backlogPath, id, title);
+    await moveWUToDoneBacklog(backlogPath, id, title);
 
     const statusPath = WU_PATHS.STATUS();
     updateStatusRemoveInProgress(statusPath, id);
