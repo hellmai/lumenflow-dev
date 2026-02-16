@@ -1398,4 +1398,5 @@
 {"type":"complete","wuId":"WU-1720","timestamp":"2026-02-16T09:32:56.089Z"}
 {"type":"claim","wuId":"WU-1721","timestamp":"2026-02-16T09:34:08.539Z","lane":"Framework: Core Validation","title":"Strict debt slice: type wu-validation"}
 {"type":"complete","wuId":"WU-1721","timestamp":"2026-02-16T09:44:11.153Z"}
-{"type":"claim","wuId":"WU-1722","lane":"Framework: Core Validation","title":"Strict unblock: restore git-validator ports module","timestamp":"2026-02-16T09:46:10.609Z"}
+{"type":"claim","wuId":"WU-1722","timestamp":"2026-02-16T09:46:10.609Z","lane":"Framework: Core Validation","title":"Strict unblock: restore git-validator ports module"}
+{"type":"complete","wuId":"WU-1722","timestamp":"2026-02-16T09:52:50.736Z"}

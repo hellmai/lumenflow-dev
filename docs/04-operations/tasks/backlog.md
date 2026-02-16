@@ -23,11 +23,11 @@ sections:
 - [WU-1723 — Typecheck debt: fix pre-existing CLI doc typing errors](wu/WU-1723.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
+- [WU-1723 — Typecheck debt: fix pre-existing CLI doc typing errors](wu/WU-1723.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove healthcare/PHI code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1722 — Strict unblock: restore git-validator ports module](wu/WU-1722.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 
@@ -696,6 +696,7 @@ sections:
 - [WU-1719 — Strict debt slice: type delegation-monitor](wu/WU-1719.yaml)
 - [WU-1720 — Strict debt slice: type backlog-sync-validator](wu/WU-1720.yaml)
 - [WU-1721 — Strict debt slice: type wu-validation](wu/WU-1721.yaml)
+- [WU-1722 — Strict unblock: restore git-validator ports module](wu/WU-1722.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

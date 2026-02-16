@@ -5,7 +5,6 @@ _Last updated: 2026-02-16_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove healthcare/PHI code from core package](wu/WU-1701.yaml)
-- [WU-1722 — Strict unblock: restore git-validator ports module](wu/WU-1722.yaml)
 
 ## Blocked
 
@@ -674,3 +673,4 @@ _Last updated: 2026-02-16_
 - [WU-1719 — Strict debt slice: type delegation-monitor](wu/WU-1719.yaml) — 2026-02-16
 - [WU-1720 — Strict debt slice: type backlog-sync-validator](wu/WU-1720.yaml) — 2026-02-16
 - [WU-1721 — Strict debt slice: type wu-validation](wu/WU-1721.yaml) — 2026-02-16
+- [WU-1722 — Strict unblock: restore git-validator ports module](wu/WU-1722.yaml) — 2026-02-16
