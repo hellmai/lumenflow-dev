@@ -2,7 +2,7 @@ id: WU-1747
 title: Stub format:check gate when prettier not installed at init time
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-16
 code_paths:
@@ -26,8 +26,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: lumenflow init scaffolds package.json with format and format:check scripts pointing to prettier. Problem: prettier is not installed as part of init. Running pnpm gates immediately after init fails on format:check because prettier binary is missing. In Haven test project, first 2 gate runs failed before the agent figured out it needed pnpm add -D prettier. Other gate stubs (lint, typecheck, cos:gates) correctly exit 0 with guidance messages — format:check should do the same. Solution: Either install prettier as part of lumenflow init, or make format:check a stub (like lint/typecheck) that exits 0 with a message like '[lumenflow] format:check stub -- install prettier to enable this gate'."
+description: "Context: lumenflow init scaffolds package.json with format and format:check scripts
+  pointing to prettier. Problem: prettier is not installed as part of init. Running pnpm gates
+  immediately after init fails on format:check because prettier binary is missing. In Haven test
+  project, first 2 gate runs failed before the agent figured out it needed pnpm add -D prettier.
+  Other gate stubs (lint, typecheck, cos:gates) correctly exit 0 with guidance messages —
+  format:check should do the same. Solution: Either install prettier as part of lumenflow init, or
+  make format:check a stub (like lint/typecheck) that exits 0 with a message like '[lumenflow]
+  format:check stub -- install prettier to enable this gate'."
 acceptance:
   - pnpm gates passes immediately after lumenflow init without manual prettier install
   - format:check either installs prettier or provides a stub like lint/typecheck
   - Stub message guides user to install prettier
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1747
+claimed_at: 2026-02-16T14:29:38.206Z
+baseline_main_sha: ce347347345a5bf68edbdb3813d439ecf3e91fd2
+session_id: f3d0f053-c9e9-4ff5-9fe7-f7f2bfe40b15
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T14:29:38.214Z
