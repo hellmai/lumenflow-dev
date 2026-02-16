@@ -20,27 +20,18 @@
 import { simpleGit, type SimpleGit } from 'simple-git';
 import { existsSync, rmSync } from 'node:fs';
 import { GIT_COMMANDS, GIT_FLAGS, GIT_REFS } from './wu-constants.js';
+import type {
+  DeleteBranchOptions,
+  MergeOptions,
+  MergeResult,
+  PushOptions,
+  WorktreeRemoveOptions,
+} from './ports/git-validator.ports.js';
 
 // Type definitions
 interface GitAdapterOptions {
   git?: SimpleGit;
   baseDir?: string;
-}
-
-interface PushOptions {
-  setUpstream?: boolean;
-}
-
-interface MergeOptions {
-  ffOnly?: boolean;
-}
-
-interface WorktreeRemoveOptions {
-  force?: boolean;
-}
-
-interface DeleteBranchOptions {
-  force?: boolean;
 }
 
 interface ResetOptions {
@@ -424,7 +415,7 @@ export class GitAdapter {
    * await git.merge('feature-branch');
    * await git.merge('feature-branch', { ffOnly: true });
    */
-  async merge(branch: string, options: MergeOptions = {}): Promise<{ success: boolean }> {
+  async merge(branch: string, options: MergeOptions = {}): Promise<MergeResult> {
     assertNonEmptyString(branch, 'branch');
     const args: string[] = [];
     if (options.ffOnly) {
