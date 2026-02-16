@@ -536,9 +536,10 @@ describe('wu-done', () => {
         const childIds = graph.children.map((c) => c.id);
 
         for (const state of ALL_DECLARED_STATES) {
+          const stateName = String(state);
           expect(
-            childIds.some((id) => id.includes(state)),
-            `Graph should have a child node for state "${state}"`,
+            childIds.some((id) => id.includes(stateName)),
+            `Graph should have a child node for state "${stateName}"`,
           ).toBe(true);
         }
       });
