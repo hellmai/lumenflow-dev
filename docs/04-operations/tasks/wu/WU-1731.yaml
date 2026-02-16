@@ -39,12 +39,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-029 Phase 2 — ToolHost + Evidence. Depends on WU-1729 (ToolHost) and WU-1730 (Sandbox). Problem: The kernel needs minimal built-in tools (syscalls) to prove the execution model, plus ESLint rules to enforce the ToolHost boundary. Solution: Implement 3 built-in kernel tools: fs:read (in-process, read permission), fs:write (subprocess, write permission, scoped to declared artifacts), proc:exec (subprocess, write permission, sandbox enforced). Add ESLint no-restricted-imports rules that block fs/fs-promises/child_process/net imports outside kernel/tool-host and kernel/sandbox. This turns the ToolHost boundary from convention into compilation error. Reference: eslint-plugin-boundaries (already installed). Plan: .claude/plans/golden-prancing-cookie.md'
+description: 'Context: INIT-029 Phase 2 — ToolHost + Evidence. Depends on WU-1729 (ToolHost) and
+  WU-1730 (Sandbox). Problem: The kernel needs minimal built-in tools (syscalls) plus ESLint
+  boundary rules (Model B two-layer). proc:exec must be internal/admin-only, not exposed to agents.
+  Solution: Implement 3 built-in kernel tools: fs:read (in-process, read permission), fs:write
+  (subprocess, write permission, scoped to declared_scopes), proc:exec (subprocess, admin
+  permission, internal-only not exposed via MCP/CLI tool listing). Model B ESLint: Layer 1 allows
+  kernel infra (tool-host, sandbox, event-store). Layer 2 allows packs/**/tool-impl/** (loaded ONLY
+  by worker). eslint-plugin-boundaries blocks direct imports of tool-impl/ except from tool-runner
+  worker. Reference: eslint-plugin-boundaries (installed). Plan:
+  .claude/plans/golden-prancing-cookie.md'
 acceptance:
-  - fs:read tool implemented as in-process ToolCapability with read permission
-  - fs:write tool implemented as subprocess ToolCapability, scoped to declared task artifacts
-  - proc:exec tool implemented as subprocess ToolCapability with sandbox enforcement
+  - 'fs:read tool: in-process ToolCapability with read permission and handler.kind=in-process'
+  - 'fs:write tool: subprocess ToolCapability scoped to task declared_scopes with
+    handler.kind=subprocess'
+  - 'proc:exec tool: subprocess, permission=admin, internal-only (not exposed to agents via MCP/CLI)'
+  - proc:exec default-denied by workspace policy; only pack tool-impl uses it inside worker
   - All 3 tools register in ToolRegistry and execute through ToolHost producing receipts
-  - ESLint no-restricted-imports blocks fs/child_process imports outside kernel/tool-host and kernel/sandbox
-  - ESLint override allows fs/child_process in tool-host and sandbox directories
-  - Packs importing fs directly get a lint error — boundary is enforced at build time
+  - 'Model B ESLint: Layer 1 allows kernel/tool-host and kernel/sandbox and kernel/event-store'
+  - 'Model B ESLint: Layer 2 allows packs/**/tool-impl/** (loaded only by tool-runner worker)'
+  - eslint-plugin-boundaries blocks direct tool-impl imports except from tool-runner worker
+  - Packs importing fs directly outside tool-impl get a lint error
