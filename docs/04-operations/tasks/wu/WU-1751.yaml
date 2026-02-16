@@ -6,7 +6,6 @@ status: in_progress
 priority: P1
 created: 2026-02-16
 code_paths:
-  - packages/@lumenflow/cli/src/lane-lifecycle-process.ts
   - packages/@lumenflow/cli/src/wu-create.ts
   - packages/@lumenflow/cli/src/initiative-create.ts
 tests:
