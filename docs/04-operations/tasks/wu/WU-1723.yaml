@@ -6,7 +6,10 @@ status: in_progress
 priority: P2
 created: 2026-02-16
 code_paths:
+  - packages/@lumenflow/cli/src/orchestrate-monitor.ts
+  - packages/@lumenflow/cli/src/wu-claim-validation.ts
   - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-prune.ts
 tests:
   manual:
     - pnpm --filter @lumenflow/cli typecheck
@@ -21,10 +24,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-16T09:54:27.402Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1723
+session_id: 19719cef-062f-4bde-85be-a89547efb987
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T09:54:27.410Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -33,11 +43,3 @@ description: Resolve pre-existing @lumenflow/cli typecheck errors in wu-claim-va
 acceptance:
   - pnpm --filter @lumenflow/cli typecheck passes; relevant lint/prettier checks pass; no behavioral
     changes.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1723
-claimed_at: 2026-02-16T09:54:27.402Z
-baseline_main_sha: 20bd53a81a8db54aa26932f19b1f5a81cdccd7eb
-session_id: 19719cef-062f-4bde-85be-a89547efb987
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-16T09:54:27.410Z
