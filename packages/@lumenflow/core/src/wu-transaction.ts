@@ -158,7 +158,7 @@ export class WUTransaction {
       return { valid: false, errors };
     }
 
-    for (const [filePath, write] of this.pendingWrites) {
+    for (const filePath of this.pendingWrites.keys()) {
       // Check parent directory exists or can be created
       const dir = path.dirname(filePath);
       if (dir && dir !== '.' && !existsSync(dir)) {
