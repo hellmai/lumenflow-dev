@@ -51,6 +51,7 @@
     "./wu-claim-helpers": "./dist/wu-claim-helpers.js",
     "./wu-done-machine": "./dist/wu-done-machine.js",
     "./wu-done-worktree": "./dist/wu-done-worktree.js",
+    "./wu-done-merged-worktree": "./dist/wu-done-merged-worktree.js",
     "./wu-done-validators": "./dist/wu-done-validators.js",
     "./dependency-guard": "./dist/dependency-guard.js",
     "./worktree-scanner": "./dist/worktree-scanner.js",

@@ -439,6 +439,153 @@ describe('analyzeRecovery', () => {
     });
   });
 
+  describe('merged-not-done detection (WU-1746)', () => {
+    it('detects merged-not-done when branch is merged but WU not stamped', async () => {
+      // Arrange - worktree gone, branch merged, status is ready (released)
+      vi.mocked(existsSync).mockReturnValue(false);
+
+      const context: WuContext = {
+        location: {
+          type: LOCATION_TYPES.MAIN,
+          cwd: '/repo',
+          gitRoot: '/repo',
+          mainCheckout: '/repo',
+          worktreeName: null,
+          worktreeWuId: null,
+        },
+        git: {
+          branch: 'main',
+          isDetached: false,
+          isDirty: false,
+          hasStaged: false,
+          ahead: 0,
+          behind: 0,
+          tracking: null,
+          modifiedFiles: [],
+          hasError: false,
+          errorMessage: null,
+        },
+        wu: {
+          id: 'WU-1746',
+          status: WU_STATUS.READY, // Released back to ready
+          lane: 'Framework: Core',
+          title: 'Test WU',
+          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1746.yaml',
+          isConsistent: true,
+          inconsistencyReason: null,
+          branchMergedToMain: true, // Commits are on main
+        },
+        session: { isActive: false, sessionId: null },
+      };
+
+      // Act
+      const result = await analyzeRecovery(context);
+
+      // Assert
+      expect(result.hasIssues).toBe(true);
+      const mergedNotDoneIssue = result.issues.find(
+        (i) => i.code === RECOVERY_ISSUES.MERGED_NOT_DONE,
+      );
+      expect(mergedNotDoneIssue).toBeDefined();
+      expect(mergedNotDoneIssue?.description).toContain('merged to main');
+    });
+
+    it('suggests wu:done command for merged-not-done WU', async () => {
+      // Arrange
+      vi.mocked(existsSync).mockReturnValue(false);
+
+      const context: WuContext = {
+        location: {
+          type: LOCATION_TYPES.MAIN,
+          cwd: '/repo',
+          gitRoot: '/repo',
+          mainCheckout: '/repo',
+          worktreeName: null,
+          worktreeWuId: null,
+        },
+        git: {
+          branch: 'main',
+          isDetached: false,
+          isDirty: false,
+          hasStaged: false,
+          ahead: 0,
+          behind: 0,
+          tracking: null,
+          modifiedFiles: [],
+          hasError: false,
+          errorMessage: null,
+        },
+        wu: {
+          id: 'WU-1746',
+          status: WU_STATUS.READY,
+          lane: 'Framework: Core',
+          title: 'Test WU',
+          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1746.yaml',
+          isConsistent: true,
+          inconsistencyReason: null,
+          branchMergedToMain: true,
+        },
+        session: { isActive: false, sessionId: null },
+      };
+
+      // Act
+      const result = await analyzeRecovery(context);
+
+      // Assert
+      const completeAction = result.actions.find((a) => a.type === RECOVERY_ACTIONS.COMPLETE);
+      expect(completeAction).toBeDefined();
+      expect(completeAction?.command).toBe('pnpm wu:done --id WU-1746');
+    });
+
+    it('does not detect merged-not-done when status is already done', async () => {
+      // Arrange
+      vi.mocked(existsSync).mockReturnValue(false);
+
+      const context: WuContext = {
+        location: {
+          type: LOCATION_TYPES.MAIN,
+          cwd: '/repo',
+          gitRoot: '/repo',
+          mainCheckout: '/repo',
+          worktreeName: null,
+          worktreeWuId: null,
+        },
+        git: {
+          branch: 'main',
+          isDetached: false,
+          isDirty: false,
+          hasStaged: false,
+          ahead: 0,
+          behind: 0,
+          tracking: null,
+          modifiedFiles: [],
+          hasError: false,
+          errorMessage: null,
+        },
+        wu: {
+          id: 'WU-1746',
+          status: WU_STATUS.DONE, // Already done
+          lane: 'Framework: Core',
+          title: 'Test WU',
+          yamlPath: '/repo/docs/04-operations/tasks/wu/WU-1746.yaml',
+          isConsistent: true,
+          inconsistencyReason: null,
+          branchMergedToMain: true,
+        },
+        session: { isActive: false, sessionId: null },
+      };
+
+      // Act
+      const result = await analyzeRecovery(context);
+
+      // Assert
+      const mergedNotDoneIssue = result.issues.find(
+        (i) => i.code === RECOVERY_ISSUES.MERGED_NOT_DONE,
+      );
+      expect(mergedNotDoneIssue).toBeUndefined();
+    });
+  });
+
   describe('healthy state detection', () => {
     it('returns no issues for healthy in_progress state', async () => {
       // Arrange - worktree exists, status is in_progress - all good

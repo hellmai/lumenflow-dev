@@ -64,6 +64,8 @@ export const CONTEXT_VALIDATION = {
     NUKE: 'nuke',
     /** Remove leftover worktree (for done WUs) */
     CLEANUP: 'cleanup',
+    /** Complete a WU that is already merged but not stamped (WU-1746) */
+    COMPLETE: 'complete',
   } as const,
 
   /** Recovery issue codes */
@@ -80,6 +82,8 @@ export const CONTEXT_VALIDATION = {
     STALE_LOCK: 'STALE_LOCK',
     /** WU is done but worktree was not cleaned up */
     LEFTOVER_WORKTREE: 'LEFTOVER_WORKTREE',
+    /** WU branch is merged to main but WU is not stamped as done (WU-1746) */
+    MERGED_NOT_DONE: 'MERGED_NOT_DONE',
   } as const,
 
   /** Predicate severity levels */

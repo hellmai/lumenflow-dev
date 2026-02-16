@@ -33,6 +33,8 @@ export interface WuState {
   isConsistent: boolean;
   /** Reason for inconsistency if not consistent */
   inconsistencyReason: string | null;
+  /** WU-1746: Whether the WU branch commits are reachable from main HEAD (optional, populated by caller) */
+  branchMergedToMain?: boolean;
 }
 
 /**

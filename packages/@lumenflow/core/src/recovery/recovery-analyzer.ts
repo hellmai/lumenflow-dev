@@ -13,6 +13,7 @@
  * - Orphan branch: branch exists but worktree missing
  * - Stale lock: lock file from old session
  * - Leftover worktree: WU is done but worktree exists
+ * - Merged not done: branch merged to main but WU not stamped (WU-1746)
  *
  * @module
  */
@@ -183,6 +184,25 @@ export async function analyzeRecovery(context: WuContext): Promise<RecoveryAnaly
       type: RECOVERY_ACTIONS.RESET,
       description: 'Reconcile YAML and state store',
       command: `pnpm wu:recover --id ${wu.id} --action reset`,
+      requiresForce: false,
+    });
+  }
+
+  // WU-1746: Check for merged-not-done: branch is merged to main but WU is not stamped
+  // This happens when a worktree is manually merged and deleted without running wu:done
+  if (wu.branchMergedToMain && !hasWorktree && wu.status !== WU_STATUS.DONE) {
+    issues.push({
+      code: RECOVERY_ISSUES.MERGED_NOT_DONE,
+      description:
+        `${wu.id} branch commits are merged to main but WU is not marked as done (status: '${wu.status}'). ` +
+        `The worktree was likely manually merged and deleted without running wu:done.`,
+      context: { expectedPath: worktreePath, status: wu.status, branchMergedToMain: true },
+    });
+
+    actions.push({
+      type: RECOVERY_ACTIONS.COMPLETE,
+      description: 'Complete WU stamping and state cleanup (branch already merged)',
+      command: `pnpm wu:done --id ${wu.id}`,
       requiresForce: false,
     });
   }

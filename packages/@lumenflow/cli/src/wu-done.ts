@@ -125,6 +125,11 @@ import {
   executeBranchPRCompletion,
 } from '@lumenflow/core/wu-done-branch-only';
 import { executeWorktreeCompletion, autoRebaseBranch } from '@lumenflow/core/wu-done-worktree';
+// WU-1746: Already-merged worktree resilience
+import {
+  detectAlreadyMergedNoWorktree,
+  executeAlreadyMergedCompletion,
+} from '@lumenflow/core/wu-done-merged-worktree';
 import { checkWUConsistency } from '@lumenflow/core/wu-consistency-checker';
 // WU-1542: Use blocking mode compliance check (replaces non-blocking checkMandatoryAgentsCompliance)
 import { checkMandatoryAgentsComplianceBlocking } from '@lumenflow/core/orchestration-rules';
@@ -3046,19 +3051,47 @@ async function main() {
         // WU-1369: Uses atomic transaction pattern
         // WU-1541: Create worktree-aware validateStagedFiles to avoid process.chdir dependency
         if (!worktreePath) {
-          die(`Missing worktree path for ${id} completion in worktree mode`);
+          // WU-1746: Before dying, check if branch is already merged to main
+          // This handles the case where worktree was manually deleted after branch was merged
+          const laneBranch = defaultBranchFrom(docMain);
+          const mergedDetection = await detectAlreadyMergedNoWorktree({
+            wuId: id,
+            laneBranch: laneBranch || '',
+            worktreePath: resolvedWorktreePath,
+          });
+
+          if (mergedDetection.merged && !mergedDetection.worktreeExists) {
+            console.log(
+              `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-1746: Worktree missing but branch already merged to main`,
+            );
+            const mergedResult = await executeAlreadyMergedCompletion({
+              id,
+              title: title || String(docMain.title || id),
+              lane: String(docMain.lane || ''),
+            });
+            completionResult = {
+              success: mergedResult.success,
+              committed: true,
+              pushed: true,
+              merged: true,
+              cleanupSafe: true,
+            };
+          } else {
+            die(`Missing worktree path for ${id} completion in worktree mode`);
+          }
+        } else {
+          const worktreeGitForValidation = createGitForPath(worktreePath);
+          const worktreeContext = {
+            ...baseContext,
+            worktreePath,
+            validateStagedFiles: (
+              wuId: string,
+              docsOnly: boolean,
+              options?: { metadataAllowlist?: string[] },
+            ) => validateStagedFiles(wuId, docsOnly, worktreeGitForValidation, options),
+          };
+          completionResult = await executeWorktreeCompletion(worktreeContext);
         }
-        const worktreeGitForValidation = createGitForPath(worktreePath);
-        const worktreeContext = {
-          ...baseContext,
-          worktreePath,
-          validateStagedFiles: (
-            wuId: string,
-            docsOnly: boolean,
-            options?: { metadataAllowlist?: string[] },
-          ) => validateStagedFiles(wuId, docsOnly, worktreeGitForValidation, options),
-        };
-        completionResult = await executeWorktreeCompletion(worktreeContext);
       }
 
       // WU-1663: Mode-specific completion succeeded - send pipeline events.
