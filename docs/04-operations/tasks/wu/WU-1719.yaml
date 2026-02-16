@@ -2,14 +2,15 @@ id: WU-1719
 title: 'Strict debt slice: type delegation-monitor'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-16
 code_paths:
   - packages/@lumenflow/core/src/delegation-monitor.ts
 tests:
   manual:
-    - pnpm --filter @lumenflow/core exec tsc --noEmit --strictNullChecks --noImplicitAny --pretty false | rg 'src/delegation-monitor.ts' -n
+    - pnpm --filter @lumenflow/core exec tsc --noEmit --strictNullChecks --noImplicitAny --pretty
+      false | rg 'src/delegation-monitor.ts' -n
   unit:
     - packages/@lumenflow/core/src/__tests__/spawn-monitor.test.ts
   e2e: []
@@ -29,6 +30,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Eliminate noImplicitAny and related strict errors in delegation-monitor with behavior-preserving typings.
+description: Eliminate noImplicitAny and related strict errors in delegation-monitor with
+  behavior-preserving typings.
 acceptance:
-  - delegation-monitor.ts has no strict errors under --strictNullChecks --noImplicitAny; spawn-monitor tests pass; lint/prettier clean.
+  - delegation-monitor.ts has no strict errors under --strictNullChecks --noImplicitAny;
+    spawn-monitor tests pass; lint/prettier clean.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1719
+claimed_at: 2026-02-16T09:26:38.986Z
+baseline_main_sha: 1faf1614ecfd6841aeb35d2c35b66f79ab266ce1
+session_id: dc441728-c77c-4c3d-99cd-d222946ad156
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T09:26:38.990Z

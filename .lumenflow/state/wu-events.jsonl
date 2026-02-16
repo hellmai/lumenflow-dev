@@ -1392,3 +1392,4 @@
 {"type":"complete","wuId":"WU-1717","timestamp":"2026-02-16T09:22:05.881Z"}
 {"type":"claim","wuId":"WU-1718","timestamp":"2026-02-16T09:23:28.759Z","lane":"Framework: Core Validation","title":"Strict debt slice: null-safety in wu-spawn"}
 {"type":"complete","wuId":"WU-1718","timestamp":"2026-02-16T09:25:33.002Z"}
+{"type":"claim","wuId":"WU-1719","lane":"Framework: Core Validation","title":"Strict debt slice: type delegation-monitor","timestamp":"2026-02-16T09:26:39.030Z"}
