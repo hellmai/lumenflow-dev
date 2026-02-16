@@ -1409,3 +1409,4 @@
 {"type":"claim","wuId":"WU-1753","timestamp":"2026-02-16T20:20:22.550Z","lane":"Framework: CLI Enforcement","title":"Make lane:status read-only and prevent config rewrites"}
 {"type":"complete","wuId":"WU-1753","timestamp":"2026-02-16T20:23:37.537Z"}
 {"type":"claim","wuId":"WU-1754","lane":"Operations: Tooling","title":"Upgrade ESLint 9 to 10 with plugin compatibility fixes","timestamp":"2026-02-16T20:26:43.505Z"}
+{"type":"claim","wuId":"WU-1725","lane":"Framework: Core Validation","title":"Kernel package scaffold + core Zod schemas","timestamp":"2026-02-16T21:00:42.102Z"}

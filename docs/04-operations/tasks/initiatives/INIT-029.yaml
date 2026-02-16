@@ -8,7 +8,7 @@ description: 'Evolve LumenFlow from a software delivery CLI into a general-purpo
   governance, and immutable evidence receipts. No external users affected — Patient Path stays on
   current version. Greenfield design, no backwards compat. Architecture plan:
   .claude/plans/golden-prancing-cookie.md'
-status: draft
+status: in_progress
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-16
@@ -43,4 +43,3 @@ success_metrics:
     kernel/sandbox, kernel/event-store, and packs/**/tool-impl/**; direct tool-impl imports allowed
     only from tool-runner worker'
 labels: []
-related_plan: lumenflow://plans/golden-prancing-cookie.md

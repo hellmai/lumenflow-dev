@@ -6,6 +6,7 @@ _Last updated: 2026-02-16_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1754 — Upgrade ESLint 9 to 10 with plugin compatibility fixes](wu/WU-1754.yaml)
+- [WU-1725 — Kernel package scaffold + core Zod schemas](wu/WU-1725.yaml)
 
 ## Completed
 
