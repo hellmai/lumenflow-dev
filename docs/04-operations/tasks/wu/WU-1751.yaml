@@ -2,7 +2,7 @@ id: WU-1751
 title: Prevent lane lifecycle migration side-effects in wu:create and initiative:create
 lane: 'Framework: Core State Recovery'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -10,8 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/initiative-create.ts
 tests:
   manual:
-    - Run wu:create or initiative:create in a repo with lane artifacts but no lanes.lifecycle.status;
-      verify .lumenflow.config.yaml is not rewritten as a side effect.
+    - Run wu:create or initiative:create in a repo with lane artifacts but no
+      lanes.lifecycle.status; verify .lumenflow.config.yaml is not rewritten as a side effect.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-create.test.ts
     - packages/@lumenflow/cli/src/__tests__/initiative-create-lifecycle.test.ts
@@ -48,3 +48,6 @@ session_id: 11bdfdd6-5209-436c-977d-7d82b97556e1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T18:34:25.410Z
+locked: true
+completed_at: 2026-02-16T18:43:13.145Z
+completed: 2026-02-16
