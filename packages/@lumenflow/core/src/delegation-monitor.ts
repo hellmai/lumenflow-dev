@@ -23,7 +23,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { DelegationStatus } from './delegation-registry-schema.js';
+import { DelegationStatus, type DelegationEvent } from './delegation-registry-schema.js';
 import { isZombieLock, readLockMetadata } from './lane-lock.js';
 import { recoverStuckDelegation, RecoveryAction } from './delegation-recovery.js';
 import {
@@ -56,6 +56,92 @@ export const DEFAULT_THRESHOLD_MINUTES = 30;
  * Log prefix for delegation-monitor messages
  */
 export const LOG_PREFIX = '[delegation-monitor]';
+
+interface SpawnAnalysis {
+  pending: number;
+  completed: number;
+  timeout: number;
+  crashed: number;
+  total: number;
+}
+
+interface StuckSpawnInfo {
+  delegation: DelegationEvent;
+  ageMinutes: number;
+  lastCheckpoint: string | null;
+}
+
+interface ZombieLockInfo {
+  wuId: string;
+  lane: string;
+  pid: number;
+  timestamp: string;
+}
+
+interface Suggestion {
+  command: string;
+  reason: string;
+}
+
+interface MonitorResult {
+  analysis: SpawnAnalysis;
+  stuckDelegations: StuckSpawnInfo[];
+  zombieLocks: ZombieLockInfo[];
+  suggestions: Suggestion[];
+}
+
+interface RecoveryResultInfo {
+  delegationId: string;
+  targetWuId: string;
+  action: string;
+  recovered: boolean;
+  reason: string;
+  escalation?: {
+    bugWuId: string;
+    title: string;
+  };
+}
+
+interface DelegationFailurePayload {
+  type: string;
+  delegation_id: string;
+  target_wu_id: string;
+  lane: string;
+  recovery_attempts: number;
+  message: string;
+  severity: string;
+  suggested_action: string;
+  last_checkpoint?: string;
+}
+
+interface BugWuSpec {
+  title: string;
+  lane: string;
+  description: string;
+  type: 'bug';
+  priority: 'P1';
+}
+
+interface SignalResponse {
+  signalId: string;
+  delegationId: string;
+  targetWuId: string;
+  action: string;
+  reason: string;
+  severity: string;
+  wuBlocked: boolean;
+  bugWuCreated: string | null;
+  blockReason?: string;
+  bugWuSpec?: BugWuSpec;
+}
+
+interface SignalProcessingResult {
+  processed: SignalResponse[];
+  signalCount: number;
+  retryCount: number;
+  blockCount: number;
+  bugWuCount: number;
+}
 
 /**
  * @typedef {Object} SpawnAnalysis
@@ -117,7 +203,7 @@ export const LOG_PREFIX = '[delegation-monitor]';
  * const analysis = analyzeDelegations(delegations);
  * console.log(`Pending: ${analysis.pending}, Completed: ${analysis.completed}`);
  */
-export function analyzeDelegations(delegations) {
+export function analyzeDelegations(delegations: DelegationEvent[]): SpawnAnalysis {
   const counts = {
     pending: 0,
     completed: 0,
@@ -159,10 +245,13 @@ export function analyzeDelegations(delegations) {
  *   console.log(`${info.delegation.targetWuId} stuck for ${info.ageMinutes} minutes`);
  * }
  */
-export function detectStuckDelegations(delegations, thresholdMinutes = DEFAULT_THRESHOLD_MINUTES) {
+export function detectStuckDelegations(
+  delegations: DelegationEvent[],
+  thresholdMinutes = DEFAULT_THRESHOLD_MINUTES,
+): StuckSpawnInfo[] {
   const now = Date.now();
   const thresholdMs = thresholdMinutes * 60 * 1000;
-  const stuck = [];
+  const stuck: StuckSpawnInfo[] = [];
 
   for (const delegation of delegations) {
     // Only check pending delegations
@@ -175,10 +264,11 @@ export function detectStuckDelegations(delegations, thresholdMinutes = DEFAULT_T
     const ageMinutes = Math.floor(ageMs / (60 * 1000));
 
     if (ageMs > thresholdMs) {
+      const lastCheckpoint = (delegation as { lastCheckpoint?: string }).lastCheckpoint ?? null;
       stuck.push({
         delegation,
         ageMinutes,
-        lastCheckpoint: delegation.lastCheckpoint ?? null,
+        lastCheckpoint,
       });
     }
   }
@@ -206,11 +296,13 @@ interface SpawnMonitorBaseDirOptions {
   baseDir?: string;
 }
 
-export async function checkZombieLocks(options: SpawnMonitorBaseDirOptions = {}) {
+export async function checkZombieLocks(
+  options: SpawnMonitorBaseDirOptions = {},
+): Promise<ZombieLockInfo[]> {
   const { baseDir = process.cwd() } = options;
   // WU-1421: Use LUMENFLOW_PATHS.LOCKS_DIR (same as lane-lock.ts) for consistency
   const locksDir = path.join(baseDir, LUMENFLOW_PATHS.LOCKS_DIR);
-  const zombies = [];
+  const zombies: ZombieLockInfo[] = [];
 
   try {
     // Check if locks directory exists
@@ -260,8 +352,11 @@ export async function checkZombieLocks(options: SpawnMonitorBaseDirOptions = {})
  *   console.log(`${s.reason}\n  ${s.command}`);
  * }
  */
-export function generateSuggestions(stuckDelegations, zombieLocks) {
-  const suggestions = [];
+export function generateSuggestions(
+  stuckDelegations: StuckSpawnInfo[],
+  zombieLocks: ZombieLockInfo[],
+): Suggestion[] {
+  const suggestions: Suggestion[] = [];
 
   // Suggestions for stuck delegations
   for (const info of stuckDelegations) {
@@ -295,9 +390,9 @@ export function generateSuggestions(stuckDelegations, zombieLocks) {
  * const output = formatMonitorOutput(result);
  * console.log(output);
  */
-export function formatMonitorOutput(result) {
+export function formatMonitorOutput(result: MonitorResult): string {
   const { analysis, stuckDelegations, zombieLocks, suggestions } = result;
-  const lines = [];
+  const lines: string[] = [];
 
   // Header
   lines.push('=== Delegation Status Summary ===');
@@ -382,9 +477,12 @@ interface RunRecoveryOptions extends SpawnMonitorBaseDirOptions {
   dryRun?: boolean;
 }
 
-export async function runRecovery(stuckDelegations, options: RunRecoveryOptions = {}) {
+export async function runRecovery(
+  stuckDelegations: StuckSpawnInfo[],
+  options: RunRecoveryOptions = {},
+): Promise<RecoveryResultInfo[]> {
   const { baseDir = process.cwd(), dryRun = false } = options;
-  const results = [];
+  const results: RecoveryResultInfo[] = [];
 
   for (const { delegation } of stuckDelegations) {
     const recoveryResult = await recoverStuckDelegation(delegation.id, { baseDir });
@@ -437,12 +535,12 @@ export async function runRecovery(stuckDelegations, options: RunRecoveryOptions 
  * const output = formatRecoveryResults(results);
  * console.log(output);
  */
-export function formatRecoveryResults(results) {
+export function formatRecoveryResults(results: RecoveryResultInfo[]): string {
   if (results.length === 0) {
     return 'No recovery actions taken.';
   }
 
-  const lines = [];
+  const lines: string[] = [];
 
   // Header
   lines.push('=== Recovery Results ===');
@@ -537,11 +635,11 @@ export const SignalResponseAction = Object.freeze({
  * @param {string} message - Signal message (may be JSON or plain text)
  * @returns {Object|null} Parsed payload or null if not a delegation_failure signal
  */
-function parseDelegationFailurePayload(message) {
+function parseDelegationFailurePayload(message: string): DelegationFailurePayload | null {
   try {
-    const parsed = JSON.parse(message);
+    const parsed = JSON.parse(message) as Partial<DelegationFailurePayload>;
     if (parsed.type === DELEGATION_FAILURE_SIGNAL_TYPE) {
-      return parsed;
+      return parsed as DelegationFailurePayload;
     }
     return null;
   } catch {
@@ -561,7 +659,10 @@ function parseDelegationFailurePayload(message) {
  * @param {Object} payload - Delegation failure signal payload
  * @returns {{ action: string, reason: string }}
  */
-function determineResponseAction(payload) {
+function determineResponseAction(payload: DelegationFailurePayload): {
+  action: string;
+  reason: string;
+} {
   const { suggested_action, recovery_attempts } = payload;
 
   if (suggested_action === SuggestedAction.RETRY) {
@@ -605,7 +706,7 @@ function determineResponseAction(payload) {
  * @param {Object} payload - Delegation failure signal payload
  * @returns {Object} Bug WU specification
  */
-function generateBugWuSpec(payload) {
+function generateBugWuSpec(payload: DelegationFailurePayload): BugWuSpec {
   const { delegation_id, target_wu_id, lane, recovery_attempts, message, last_checkpoint } =
     payload;
 
@@ -636,7 +737,7 @@ function generateBugWuSpec(payload) {
  * @param {Object} payload - Delegation failure signal payload
  * @returns {string} Block reason
  */
-function generateBlockReason(payload) {
+function generateBlockReason(payload: DelegationFailurePayload): string {
   const { delegation_id, target_wu_id, recovery_attempts, message } = payload;
   return `Delegation ${delegation_id} for ${target_wu_id} failed ${recovery_attempts} times: ${message}`;
 }
@@ -661,7 +762,9 @@ function generateBlockReason(payload) {
  *   console.log(`${response.targetWuId}: ${response.action}`);
  * }
  */
-export async function processDelegationFailureSignals(options: RunRecoveryOptions = {}) {
+export async function processDelegationFailureSignals(
+  options: RunRecoveryOptions = {},
+): Promise<SignalProcessingResult> {
   const { baseDir = process.cwd(), dryRun = false } = options;
 
   // Check if signal module is available
@@ -679,7 +782,7 @@ export async function processDelegationFailureSignals(options: RunRecoveryOption
   const signals = await loadSignals(baseDir, { unreadOnly: true });
 
   // Filter for delegation_failure signals
-  const delegationFailureSignals = [];
+  const delegationFailureSignals: Array<{ signal: Signal; payload: DelegationFailurePayload }> = [];
   for (const signal of signals) {
     const payload = parseDelegationFailurePayload(signal.message);
     if (payload) {
@@ -687,7 +790,7 @@ export async function processDelegationFailureSignals(options: RunRecoveryOption
     }
   }
 
-  const processed = [];
+  const processed: SignalResponse[] = [];
   let retryCount = 0;
   let blockCount = 0;
   let bugWuCount = 0;
@@ -695,18 +798,7 @@ export async function processDelegationFailureSignals(options: RunRecoveryOption
   for (const { signal, payload } of delegationFailureSignals) {
     const { action, reason } = determineResponseAction(payload);
 
-    const response: {
-      signalId: string;
-      delegationId: string;
-      targetWuId: string;
-      action: string;
-      reason: string;
-      severity: string;
-      wuBlocked: boolean;
-      bugWuCreated: string | null;
-      blockReason?: string;
-      bugWuSpec?: { title: string; description: string };
-    } = {
+    const response: SignalResponse = {
       signalId: signal.id,
       delegationId: payload.delegation_id,
       targetWuId: payload.target_wu_id,
@@ -793,9 +885,9 @@ export async function processDelegationFailureSignals(options: RunRecoveryOption
  * const output = formatSignalHandlerOutput(result);
  * console.log(output);
  */
-export function formatSignalHandlerOutput(result) {
+export function formatSignalHandlerOutput(result: SignalProcessingResult): string {
   const { processed, signalCount, retryCount, blockCount, bugWuCount } = result;
-  const lines = [];
+  const lines: string[] = [];
 
   if (signalCount === 0) {
     lines.push(`${SIGNAL_HANDLER_LOG_PREFIX} No delegation_failure signals in inbox.`);
