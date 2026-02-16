@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1740 — Control Plane SDK — ControlPlaneSyncPort + workspace config + mock adapter](wu/WU-1740.yaml) — Framework: Core Validation
 - [WU-1739 — Runtime daemon — scheduler, sessions, Unix socket transport](wu/WU-1739.yaml) — Framework: Core Lifecycle
 - [WU-1738 — MCP surface rewrite — calls KernelRuntime directly, not CLI](wu/WU-1738.yaml) — Framework: MCP
 - [WU-1737 — CLI surface — remaining commands (gates, orchestration, inspect, replay)](wu/WU-1737.yaml) — Framework: CLI Orchestration
