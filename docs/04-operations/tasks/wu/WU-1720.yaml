@@ -2,14 +2,15 @@ id: WU-1720
 title: 'Strict debt slice: type backlog-sync-validator'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-16
 code_paths:
   - packages/@lumenflow/core/src/backlog-sync-validator.ts
 tests:
   manual:
-    - pnpm --filter @lumenflow/core exec tsc --noEmit --strictNullChecks --noImplicitAny --pretty false | rg 'src/backlog-sync-validator.ts' -n
+    - pnpm --filter @lumenflow/core exec tsc --noEmit --strictNullChecks --noImplicitAny --pretty
+      false | rg 'src/backlog-sync-validator.ts' -n
   unit:
     - packages/@lumenflow/core/src/__tests__/validators/backlog-sync.test.ts
   e2e: []
@@ -29,6 +30,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Resolve strict typing and null-safety issues in backlog-sync-validator with behavior-preserving fixes.
+description: Resolve strict typing and null-safety issues in backlog-sync-validator with
+  behavior-preserving fixes.
 acceptance:
-  - backlog-sync-validator.ts has no strict errors under --strictNullChecks --noImplicitAny; backlog-sync validator tests pass; lint/prettier clean.
+  - backlog-sync-validator.ts has no strict errors under --strictNullChecks --noImplicitAny;
+    backlog-sync validator tests pass; lint/prettier clean.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1720
+claimed_at: 2026-02-16T09:30:26.172Z
+baseline_main_sha: f0ce6f1de66a29797b10ee72e654e1c0a0ed38db
+session_id: 4a918662-c692-4651-b3ea-4c32a493aae1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T09:30:26.180Z
