@@ -83,6 +83,44 @@ const WU_ID_FORMAT_MESSAGE = 'Must be WU-XXX format';
  */
 const ACCEPTANCE_REQUIRED_MSG = 'At least one acceptance criterion required';
 
+interface WUDoneValidationInput {
+  type?: string;
+  code_paths?: string[];
+}
+
+interface WUEscalationInput {
+  id: string;
+  lane?: string;
+  code_paths?: string[];
+  priority?: string;
+  escalation_triggers?: string[];
+  requires_human_escalation?: boolean;
+  escalation_resolved_by?: string;
+  escalation_resolved_at?: string;
+  requires_cso_approval?: boolean;
+  requires_cto_approval?: boolean;
+  requires_design_approval?: boolean;
+}
+
+interface WUCompletenessInput {
+  id: string;
+  status?: string;
+  type?: string;
+  notes?: string;
+  tests?: {
+    manual?: string[];
+  };
+  spec_refs?: unknown;
+}
+
+interface WUNormalizationInput {
+  description?: unknown;
+  code_paths?: unknown;
+  acceptance?: unknown;
+}
+
+type EscalationDetectionInput = Pick<WUEscalationInput, 'lane' | 'code_paths' | 'priority'>;
+
 // =============================================================================
 // WU-1750: NORMALIZATION TRANSFORMS (Watertight YAML validation)
 // =============================================================================
@@ -187,12 +225,12 @@ const strictDescriptionField = z
  * Recursive helper: Check all nested values for at least one item
  * Shared between base and strict acceptance schemas
  */
-const hasItems = (value) => {
+const hasItems = (value: unknown): boolean => {
   if (Array.isArray(value)) {
     return value.length > 0;
   }
   if (typeof value === 'object' && value !== null) {
-    return Object.values(value).some(hasItems);
+    return Object.values(value as Record<string, unknown>).some(hasItems);
   }
   return false;
 };
@@ -201,7 +239,7 @@ const hasItems = (value) => {
  * Recursive helper: Check all strings for PLACEHOLDER_SENTINEL
  * Used only by strict acceptance schema
  */
-const checkStringsForPlaceholder = (value) => {
+const checkStringsForPlaceholder = (value: unknown): boolean => {
   if (typeof value === 'string') {
     return !value.includes(PLACEHOLDER_SENTINEL);
   }
@@ -659,7 +697,7 @@ export const WUSchema = z.object({
  *   });
  * }
  */
-export function validateWU(data) {
+export function validateWU(data: unknown) {
   return WUSchema.safeParse(data);
 }
 
@@ -681,7 +719,7 @@ export function validateWU(data) {
  *   die(`WU YAML validation failed:\n\n${errors}`);
  * }
  */
-export function validateReadyWU(data) {
+export function validateReadyWU(data: unknown) {
   return ReadyWUSchema.safeParse(data);
 }
 
@@ -705,8 +743,8 @@ export function validateReadyWU(data) {
  *   }
  * }
  */
-export function validateDoneWU(wu) {
-  const errors = [];
+export function validateDoneWU(wu: WUDoneValidationInput): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
 
   // Check code_paths for non-documentation WUs
   if (wu.type !== 'documentation' && wu.type !== 'process') {
@@ -760,9 +798,13 @@ export const ESCALATION_TRIGGER_TYPES = [
  * @param {object} wu - Validated WU data
  * @returns {{valid: boolean, errors: string[], warnings: string[]}}
  */
-export function validateApprovalGates(wu) {
-  const errors = [];
-  const warnings = [];
+export function validateApprovalGates(wu: WUEscalationInput): {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+} {
+  const errors: string[] = [];
+  const warnings: string[] = [];
 
   // Agent-first: check for unresolved escalation triggers
   const triggers = wu.escalation_triggers || [];
@@ -804,8 +846,8 @@ export function validateApprovalGates(wu) {
  * @param {object} wu - WU data with lane, type, code_paths
  * @returns {string[]} Array of triggered escalation types
  */
-export function detectEscalationTriggers(wu) {
-  const triggers = [];
+export function detectEscalationTriggers(wu: EscalationDetectionInput): string[] {
+  const triggers: string[] = [];
   const lane = (wu.lane || '').toLowerCase();
   const codePaths = wu.code_paths || [];
 
@@ -836,7 +878,15 @@ export function detectEscalationTriggers(wu) {
  * @param {string} agentEmail - Email of claiming agent
  * @returns {{approved_by: string[], approved_at: string, escalation_triggers: string[], requires_human_escalation: boolean}}
  */
-export function generateAutoApproval(wu, agentEmail) {
+export function generateAutoApproval(
+  wu: EscalationDetectionInput,
+  agentEmail: string,
+): {
+  approved_by: string[];
+  approved_at: string;
+  escalation_triggers: string[];
+  requires_human_escalation: boolean;
+} {
   const triggers = detectEscalationTriggers(wu);
   const now = new Date().toISOString();
 
@@ -852,7 +902,11 @@ export function generateAutoApproval(wu, agentEmail) {
  * @deprecated Use detectEscalationTriggers instead
  * WU-2079: Legacy function for backwards compatibility
  */
-export function determineRequiredApprovals(wu) {
+export function determineRequiredApprovals(wu: EscalationDetectionInput): {
+  requires_cso_approval: boolean;
+  requires_cto_approval: boolean;
+  requires_design_approval: boolean;
+} {
   const triggers = detectEscalationTriggers(wu);
   return {
     requires_cso_approval: triggers.includes('security_p0') || triggers.includes('sensitive_data'),
@@ -888,7 +942,12 @@ export function determineRequiredApprovals(wu) {
  *   die(`Validation failed:\n${errors.join('\n')}`);
  * }
  */
-export function validateAndNormalizeWUYAML(data) {
+export function validateAndNormalizeWUYAML(data: unknown): {
+  valid: boolean;
+  normalized: z.infer<typeof WUSchema> | null;
+  errors: string[];
+  wasNormalized: boolean;
+} {
   // First try to parse with schema (which applies normalizations)
   const result = WUSchema.safeParse(data);
 
@@ -905,7 +964,8 @@ export function validateAndNormalizeWUYAML(data) {
 
   // Schema passed - check if data was normalized (compare key fields)
   const normalized = result.data;
-  const wasNormalized = detectNormalizationChanges(data, normalized);
+  const original = typeof data === 'object' && data !== null ? (data as WUNormalizationInput) : {};
+  const wasNormalized = detectNormalizationChanges(original, normalized);
 
   return {
     valid: true,
@@ -939,12 +999,13 @@ export function validateAndNormalizeWUYAML(data) {
  *   }
  * }
  */
-export function validateWUCompleteness(wu) {
-  const warnings = [];
+export function validateWUCompleteness(wu: WUCompletenessInput): { warnings: string[] } {
+  const warnings: string[] = [];
 
   // WU-1384: Skip completeness checks for terminal WUs (done, cancelled, etc.)
   // These are immutable historical records - enforcing completeness is pointless
-  const isTerminal = WU_STATUS_GROUPS.TERMINAL.includes(wu.status);
+  const status = wu.status ?? '';
+  const isTerminal = WU_STATUS_GROUPS.TERMINAL.includes(status);
   if (isTerminal) {
     return { warnings };
   }
@@ -977,7 +1038,8 @@ export function validateWUCompleteness(wu) {
   // WU-1062: Accepts both repo-relative paths (docs/04-operations/plans/) and
   // external paths (~/.lumenflow/plans/, $LUMENFLOW_HOME/plans/, lumenflow://plans/)
   if (type === 'feature') {
-    const hasSpecRefs = wu.spec_refs && wu.spec_refs.length > 0;
+    const specRefs = wu.spec_refs as { length?: number } | undefined;
+    const hasSpecRefs = !!specRefs && (specRefs.length ?? 0) > 0;
     if (!hasSpecRefs) {
       warnings.push(
         `${wu.id}: Missing 'spec_refs' field. Link to plan file (docs/04-operations/plans/, lumenflow://plans/, or ~/.lumenflow/plans/) for traceability.`,
@@ -1000,15 +1062,18 @@ export function validateWUCompleteness(wu) {
  * @param {object} normalized - Schema-normalized data
  * @returns {boolean} True if any normalisations were applied
  */
-function detectNormalizationChanges(original, normalized) {
+function detectNormalizationChanges(
+  original: WUNormalizationInput,
+  normalized: WUNormalizationInput,
+): boolean {
   // Compare description (newline normalization)
   if (original.description !== normalized.description) {
     return true;
   }
 
   // Compare code_paths (array splitting)
-  const origPaths = original.code_paths || [];
-  const normPaths = normalized.code_paths || [];
+  const origPaths = Array.isArray(original.code_paths) ? original.code_paths : [];
+  const normPaths = Array.isArray(normalized.code_paths) ? normalized.code_paths : [];
   if (origPaths.length !== normPaths.length) {
     return true;
   }
