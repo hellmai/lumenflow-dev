@@ -2,7 +2,7 @@ id: WU-1722
 title: 'Strict unblock: restore git-validator ports module'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-16
 code_paths:
@@ -36,3 +36,11 @@ description: Add missing git-validator ports declarations and exports so core st
 acceptance:
   - core typecheck no longer reports missing './ports/git-validator.ports.js' module errors;
     strict:progress shows zero total errors; lint/prettier/tests for touched module pass.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1722
+claimed_at: 2026-02-16T09:46:10.560Z
+baseline_main_sha: e14ea908a8e313fdffd274926c80df2339b55d74
+session_id: 46f891f9-1728-46d8-ab52-4048c93b7d48
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T09:46:10.567Z
