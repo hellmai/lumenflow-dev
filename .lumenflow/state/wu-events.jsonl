@@ -1410,3 +1410,4 @@
 {"type":"complete","wuId":"WU-1742","timestamp":"2026-02-16T12:01:13.698Z"}
 {"type":"claim","wuId":"WU-1743","timestamp":"2026-02-16T12:24:18.615Z","lane":"Operations: Tooling","title":"Add fast strict-progress regression guardrail to CI"}
 {"type":"complete","wuId":"WU-1743","timestamp":"2026-02-16T12:44:13.338Z"}
+{"type":"claim","wuId":"WU-1745","lane":"Framework: CLI Enforcement","title":"Validate lane config against inference hierarchy at init time","timestamp":"2026-02-16T14:18:41.385Z"}

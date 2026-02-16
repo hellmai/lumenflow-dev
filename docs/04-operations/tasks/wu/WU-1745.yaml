@@ -2,7 +2,7 @@ id: WU-1745
 title: Validate lane config against inference hierarchy at init time
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -27,8 +27,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: When lumenflow init runs with --client claude, it generates .lumenflow.config.yaml with lane definitions and .lumenflow.lane-inference.yaml with parent/sublane hierarchy. Problem: There is no validation that lane names in config match valid parents in lane-inference. In Haven test project, agent configured lanes using 'Foundation: Core' parent which doesn't exist in the inference hierarchy — wu:create correctly rejected it, but only at WU creation time. User had to burn an entire WU (WU-1) just to fix config alignment. Solution: Add lane validation to lumenflow init (or a lane:validate command) that cross-checks .lumenflow.config.yaml lane names against .lumenflow.lane-inference.yaml parents at config time, not at wu:create time."
+description: "Context: When lumenflow init runs with --client claude, it generates
+  .lumenflow.config.yaml with lane definitions and .lumenflow.lane-inference.yaml with
+  parent/sublane hierarchy. Problem: There is no validation that lane names in config match valid
+  parents in lane-inference. In Haven test project, agent configured lanes using 'Foundation: Core'
+  parent which doesn't exist in the inference hierarchy — wu:create correctly rejected it, but only
+  at WU creation time. User had to burn an entire WU (WU-1) just to fix config alignment. Solution:
+  Add lane validation to lumenflow init (or a lane:validate command) that cross-checks
+  .lumenflow.config.yaml lane names against .lumenflow.lane-inference.yaml parents at config time,
+  not at wu:create time."
 acceptance:
   - lumenflow init warns/errors when lane definitions use invalid parent names
   - Lane names in .lumenflow.config.yaml are validated against .lumenflow.lane-inference.yaml parents
   - Clear error message shows valid parent lane names when validation fails
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1745
+claimed_at: 2026-02-16T14:18:41.362Z
+baseline_main_sha: 1e20476624ab513af8522f144a1ec9a02925f21f
+session_id: ff3aadb9-b17d-4310-a7f1-885aa6575d8b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T14:18:41.367Z
