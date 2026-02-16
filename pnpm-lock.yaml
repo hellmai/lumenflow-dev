@@ -282,6 +282,9 @@ importers:
 
   packages/@lumenflow/kernel:
     dependencies:
+      xstate:
+        specifier: ^5.28.0
+        version: 5.28.0
       yaml:
         specifier: ^2.8.2
         version: 2.8.2
