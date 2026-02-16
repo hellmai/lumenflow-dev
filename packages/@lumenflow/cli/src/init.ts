@@ -880,24 +880,16 @@ const PRETTIER_VERSION = '^3.8.0';
 /** WU-1517: Prettier package name constant */
 const PRETTIER_PACKAGE_NAME = 'prettier';
 
-/** WU-1517: Format script names */
-const FORMAT_SCRIPT_NAME = 'format';
-const FORMAT_CHECK_SCRIPT_NAME = 'format:check';
-
-/** WU-1517: Format script commands using prettier */
-const FORMAT_SCRIPT_COMMAND = 'prettier --write .';
-const FORMAT_CHECK_SCRIPT_COMMAND = 'prettier --check .';
-
 /**
  * WU-1300: Inject LumenFlow scripts into package.json
- * WU-1517: Also adds prettier devDependency and format/format:check scripts
+ * WU-1517: Also adds prettier devDependency
  * WU-1518: Also adds gate stub scripts (spec:linter, lint, typecheck)
+ * WU-1747: format and format:check are now part of GATE_STUB_SCRIPTS
  * - Creates package.json if it doesn't exist
  * - Preserves existing scripts (doesn't overwrite unless --force)
  * - Adds missing LumenFlow scripts
  * - Adds prettier to devDependencies
- * - Adds format and format:check scripts
- * - Adds gate stub scripts for spec:linter, lint, typecheck
+ * - Adds gate stub scripts for spec:linter, lint, typecheck, format, format:check
  */
 async function injectPackageJsonScripts(
   targetDir: string,
@@ -939,21 +931,9 @@ async function injectPackageJsonScripts(
     }
   }
 
-  // WU-1517: Add format and format:check scripts
-  const formatScripts: Record<string, string> = {
-    [FORMAT_SCRIPT_NAME]: FORMAT_SCRIPT_COMMAND,
-    [FORMAT_CHECK_SCRIPT_NAME]: FORMAT_CHECK_SCRIPT_COMMAND,
-  };
-  for (const [scriptName, scriptCommand] of Object.entries(formatScripts)) {
-    if (options.force || !(scriptName in scripts)) {
-      if (!(scriptName in scripts)) {
-        scripts[scriptName] = scriptCommand;
-        modified = true;
-      }
-    }
-  }
-
-  // WU-1518: Add gate stub scripts (spec:linter, lint, typecheck)
+  // WU-1518: Add gate stub scripts (spec:linter, lint, typecheck, format, format:check)
+  // WU-1747: format and format:check are now part of GATE_STUB_SCRIPTS with
+  // auto-detection of prettier availability, so they pass immediately after init.
   // These stubs let `pnpm gates` pass on a fresh project without manual script additions.
   // Projects replace them with real tooling when ready.
   for (const [scriptName, scriptCommand] of Object.entries(GATE_STUB_SCRIPTS)) {

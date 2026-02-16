@@ -1962,4 +1962,11 @@ export const GATE_STUB_SCRIPTS: Record<string, string> = {
   lint: 'echo "[lumenflow] lint stub -- add ESLint or your preferred linter to enable this gate (e.g. eslint .)" && exit 0',
   typecheck:
     'echo "[lumenflow] typecheck stub -- add TypeScript or your type checker to enable this gate (e.g. tsc --noEmit)" && exit 0',
+  // WU-1747: format and format:check stubs that auto-detect prettier availability.
+  // When prettier is installed (after pnpm install), they run prettier directly.
+  // When prettier is not installed, they exit 0 with guidance -- matching other gate stubs.
+  format:
+    'if command -v prettier >/dev/null 2>&1; then prettier --write .; else echo "[lumenflow] format stub -- install prettier to enable formatting (pnpm install)"; fi',
+  'format:check':
+    'if command -v prettier >/dev/null 2>&1; then prettier --check .; else echo "[lumenflow] format:check stub -- install prettier to enable this gate (pnpm install)"; fi',
 };
