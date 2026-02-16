@@ -399,7 +399,6 @@ _Last updated: 2026-02-16_
 - [WU-1446 — Refactor CLI WU type/test policy checks to core helpers (typed, DRY)](wu/WU-1446.yaml) — 2026-02-05
 - [WU-1448 — Add D2 diagram support and convert Mermaid diagrams](wu/WU-1448.yaml) — 2026-02-05
 - [WU-1449 — Fix flaky orchestrate-initiative-wu1251 test timeout](wu/WU-1449.yaml) — 2026-02-05
-- [WU-1450 — Remove remaining legacy mentions from onboarding/public docs](wu/WU-1450.yaml) — 2026-02-05
 - [WU-1451 — Fix astro-d2 configuration for D2 diagram rendering](wu/WU-1451.yaml) — 2026-02-05
 - [WU-1459 — Fix initiative:add-wu orphaned temp worktree cleanup](wu/WU-1459.yaml) — 2026-02-05
 - [WU-1460 — Batch initiative:add-wu to reduce push-only contention](wu/WU-1460.yaml) — 2026-02-05
