@@ -4,12 +4,11 @@ _Last updated: 2026-02-16_
 
 ## In Progress
 
-- [WU-1701 — Emergency cleanup: remove healthcare/PHI code from core package](wu/WU-1701.yaml)
-- [WU-1723 — Typecheck debt: fix pre-existing CLI doc typing errors](wu/WU-1723.yaml)
+- [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 
 ## Blocked
 
-- [WU-1702 — Emergency: remove healthcare/PHI code from CLI and MCP packages](wu/WU-1702.yaml)
+- [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml)
 
 ## Completed
 
@@ -29,7 +28,7 @@ _Last updated: 2026-02-16_
 - [WU-1015 — Add missing CLI command wrappers](wu/WU-1015.yaml) — 2026-01-18
 - [WU-1016 — Implement configurable WIP limits per lane](wu/WU-1016.yaml) — 2026-01-19
 - [WU-1017 — Add vendor-agnostic git hooks via Husky](wu/WU-1017.yaml) — 2026-01-19
-- [WU-1018 — Migrate missing CLI commands from ExampleApp to @lumenflow/cli](wu/WU-1018.yaml) — 2026-01-19
+- [WU-1018 — Migrate missing CLI commands to @lumenflow/cli](wu/WU-1018.yaml) — 2026-01-19
 - [WU-1019 — Add .lumenflow.lane-inference.yaml for sublane taxonomy](wu/WU-1019.yaml) — 2026-01-19
 - [WU-1020 — Fix TypeScript error in metrics-snapshot.ts for readonly array cast](wu/WU-1020.yaml) — 2026-01-19
 - [WU-1022 — Enforce parent:sublane format for lanes (Framework: CLI not CLI)](wu/WU-1022.yaml) — 2026-01-19
@@ -60,7 +59,7 @@ _Last updated: 2026-02-16_
 - [WU-1049 — Refactor wu-done validators + standardize errors](wu/WU-1049.yaml) — 2026-01-21
 - [WU-1050 — Restore canonical claim state + global visibility for wu:claim (push-only)](wu/WU-1050.yaml) — 2026-01-21
 - [WU-1051 — Make wu:spawn skills guidance config-driven and vendor-agnostic](wu/WU-1051.yaml) — 2026-01-21
-- [WU-1052 — Migrate remaining tests from ExampleApp tools/ to hellmai/os packages](wu/WU-1052.yaml) — 2026-01-22
+- [WU-1052 — Migrate remaining tests to hellmai/os packages](wu/WU-1052.yaml) — 2026-01-22
 - [WU-1053 — Claude Code Full Optimization - Skills, Agents, Docs, Release](wu/WU-1053.yaml) — 2026-01-22
 - [WU-1054 — Fix npm publish and document release process](wu/WU-1054.yaml) — 2026-01-22
 - [WU-1055 — Fix Starlight docs - remove custom CSS, use defaults](wu/WU-1055.yaml) — 2026-01-22
@@ -74,15 +73,15 @@ _Last updated: 2026-02-16_
 - [WU-1065 — Bug: mem:inbox fails with missing ms dependency - breaks agent monitoring](wu/WU-1065.yaml) — 2026-01-22
 - [WU-1066 — Add .NET/C# preset to lumenflow-gates GitHub Action](wu/WU-1066.yaml) — 2026-01-23
 - [WU-1067 — Make gates language-agnostic via config-driven execution](wu/WU-1067.yaml) — 2026-01-23
-- [WU-1068 — LumenFlow Framework Cleanup - Remove ExampleApp leakage and fix code smells](wu/WU-1068.yaml) — 2026-01-23
+- [WU-1068 — LumenFlow Framework Cleanup - Remove legacy leakage and fix code smells](wu/WU-1068.yaml) — 2026-01-23
 - [WU-1069 — Validate spec-refs rejects repo-internal plan paths](wu/WU-1069.yaml) — 2026-01-23
 - [WU-1070 — Add audit logging and guarding for LUMENFLOW_FORCE bypass](wu/WU-1070.yaml) — 2026-01-23
 - [WU-1071 — Fix CLI entry guard for pnpm symlink resolution](wu/WU-1071.yaml) — 2026-01-23
 - [WU-1072 — Fix wu:done staging whitelist for auto-generated docs + document wu:cleanup PR-only behavior](wu/WU-1072.yaml) — 2026-01-23
 - [WU-1074 — Add release command for npm publishing](wu/WU-1074.yaml) — 2026-01-23
-- [WU-1075 — Rename .beacon to .lumenflow - remove ExampleApp branding](wu/WU-1075.yaml) — 2026-01-23
+- [WU-1075 — Rename legacy config to .lumenflow](wu/WU-1075.yaml) — 2026-01-23
 - [WU-1076 — Block direct main branch commits for agents](wu/WU-1076.yaml) — 2026-01-23
-- [WU-1079 — Migrate stamps from .beacon to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
+- [WU-1079 — Migrate stamps to .lumenflow](wu/WU-1079.yaml) — 2026-01-23
 - [WU-1078 — Fix wu:repair to use micro-worktree isolation](wu/WU-1078.yaml) — 2026-01-23
 - [WU-1077 — Fix release script to work entirely in micro-worktree](wu/WU-1077.yaml) — 2026-01-23
 - [WU-1080 — Add wu:release command to recover orphaned WUs](wu/WU-1080.yaml) — 2026-01-23
@@ -378,9 +377,9 @@ _Last updated: 2026-02-16_
 - [WU-1419 — wu:recover reset action should emit release event to state store](wu/WU-1419.yaml) — 2026-02-04
 - [WU-1420 — state:doctor should detect and fix YAML vs state store status mismatches](wu/WU-1420.yaml) — 2026-02-04
 - [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml) — 2026-02-04
-- [WU-1421 — Rename .beacon to .lumenflow (complete ExampleApp migration)](wu/WU-1421.yaml) — 2026-02-04
-- [WU-1423 — Complete beacon→lumenflow migration: rename config schema and all references](wu/WU-1423.yaml) — 2026-02-04
-- [WU-1428 — Remove all beacon references: delete migration utility and purge codebase](wu/WU-1428.yaml) — 2026-02-04
+- [WU-1421 — Rename legacy config to .lumenflow (complete migration)](wu/WU-1421.yaml) — 2026-02-04
+- [WU-1423 — Complete legacy→lumenflow migration: rename config schema and all references](wu/WU-1423.yaml) — 2026-02-04
+- [WU-1428 — Remove all legacy references: delete migration utility and purge codebase](wu/WU-1428.yaml) — 2026-02-04
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml) — 2026-02-04
 - [WU-1429 — wu:create: tighten spec_refs + add notes flag + contextual warnings](wu/WU-1429.yaml) — 2026-02-04
 - [WU-1430 — Audit and centralize hardcoded path strings into constants](wu/WU-1430.yaml) — 2026-02-04
@@ -407,9 +406,9 @@ _Last updated: 2026-02-16_
 - [WU-1445 — Add Visual Overview page to Starlight and remove internal architecture docs](wu/WU-1445.yaml) — 2026-02-05
 - [WU-1446 — Refactor CLI WU type/test policy checks to core helpers (typed, DRY)](wu/WU-1446.yaml) — 2026-02-05
 - [WU-1448 — Add D2 diagram support and convert Mermaid diagrams](wu/WU-1448.yaml) — 2026-02-05
-- [WU-1447 — Purge .beacon legacy paths/docs; use .lumenflow only](wu/WU-1447.yaml) — 2026-02-05
+- [WU-1447 — Purge legacy paths/docs; use .lumenflow only](wu/WU-1447.yaml) — 2026-02-05
 - [WU-1449 — Fix flaky orchestrate-initiative-wu1251 test timeout](wu/WU-1449.yaml) — 2026-02-05
-- [WU-1450 — Remove remaining .beacon mentions from onboarding/public docs](wu/WU-1450.yaml) — 2026-02-05
+- [WU-1450 — Remove remaining legacy mentions from onboarding/public docs](wu/WU-1450.yaml) — 2026-02-05
 - [WU-1451 — Fix astro-d2 configuration for D2 diagram rendering](wu/WU-1451.yaml) — 2026-02-05
 - [WU-1459 — Fix initiative:add-wu orphaned temp worktree cleanup](wu/WU-1459.yaml) — 2026-02-05
 - [WU-1460 — Batch initiative:add-wu to reduce push-only contention](wu/WU-1460.yaml) — 2026-02-05
@@ -486,7 +485,7 @@ _Last updated: 2026-02-16_
 - [WU-1524 — Haven re-test: end-to-end verification of all launch-1 fixes](wu/WU-1524.yaml) — 2026-02-07
 - [WU-1526 — Expand Medium article with CLI examples and usage guide](wu/WU-1526.yaml) — 2026-02-07
 - [WU-1527 — Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces](wu/WU-1527.yaml) — 2026-02-09
-- [WU-1529 — Purge remaining live .beacon references from hooks and agent overlays](wu/WU-1529.yaml) — 2026-02-09
+- [WU-1529 — Purge remaining live legacy references from hooks and agent overlays](wu/WU-1529.yaml) — 2026-02-09
 - [WU-1528 — Fix wu:delete pathspec failure in micro-worktree staging](wu/WU-1528.yaml) — 2026-02-09
 - [WU-1498 — Add passive lane-signal telemetry and agent lane-fit reasoning](wu/WU-1498.yaml) — 2026-02-09
 - [WU-1531 — Reduce code_paths false positives in parity + prep](wu/WU-1531.yaml) — 2026-02-09
@@ -655,7 +654,7 @@ _Last updated: 2026-02-16_
 - [WU-1698 — Strict debt slice: eliminate TS7006 in core backlog-generator](wu/WU-1698.yaml) — 2026-02-15
 - [WU-1699 — Strict debt slice: eliminate TS7006 in core backlog-editor](wu/WU-1699.yaml) — 2026-02-15
 - [WU-1700 — Strict debt slice: eliminate TS7006 in cli initiative-status](wu/WU-1700.yaml) — 2026-02-15
-- [WU-1703 — Emergency PII/PHI cleanup across templates and docs](wu/WU-1703.yaml) — 2026-02-15
+- [WU-1703 — Emergency cleanup across templates and docs](wu/WU-1703.yaml) — 2026-02-15
 - [WU-1704 — Strict debt slice: eliminate TS7006 in core wu-preflight-validators](wu/WU-1704.yaml) — 2026-02-15
 - [WU-1705 — Strict debt slice: type wu-consistency-checker](wu/WU-1705.yaml) — 2026-02-15
 - [WU-1706 — Strict debt slice: type wu-done-validation](wu/WU-1706.yaml) — 2026-02-15
@@ -675,3 +674,4 @@ _Last updated: 2026-02-16_
 - [WU-1720 — Strict debt slice: type backlog-sync-validator](wu/WU-1720.yaml) — 2026-02-16
 - [WU-1721 — Strict debt slice: type wu-validation](wu/WU-1721.yaml) — 2026-02-16
 - [WU-1722 — Strict unblock: restore git-validator ports module](wu/WU-1722.yaml) — 2026-02-16
+- [WU-1723 — Typecheck debt: fix pre-existing CLI doc typing errors](wu/WU-1723.yaml) — 2026-02-16

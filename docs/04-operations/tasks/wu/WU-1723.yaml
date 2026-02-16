@@ -2,7 +2,7 @@ id: WU-1723
 title: 'Typecheck debt: fix pre-existing CLI doc typing errors'
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-16
 code_paths:
@@ -45,3 +45,6 @@ description: Resolve pre-existing @lumenflow/cli typecheck errors in wu-claim-va
 acceptance:
   - pnpm --filter @lumenflow/cli typecheck passes; relevant lint/prettier checks pass; no behavioral
     changes.
+locked: true
+completed_at: 2026-02-16T10:03:50.846Z
+completed: 2026-02-16
