@@ -11,14 +11,20 @@ code_paths:
   - .lumenflow/rules/tool-usage.md
   - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/cli/src/init-templates.ts
-  - packages/@lumenflow/cli/src/lane-*.ts
+  - packages/@lumenflow/cli/src/lane-lifecycle-process.ts
+  - packages/@lumenflow/cli/src/lane-lock.ts
+  - packages/@lumenflow/cli/src/lane-setup.ts
+  - packages/@lumenflow/cli/src/lane-status.ts
+  - packages/@lumenflow/cli/src/lane-validate.ts
   - packages/@lumenflow/cli/src/onboarding-smoke-test.ts
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/*.md
-  - docs/04-operations/_frameworks/lumenflow/**
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
   - LUMENFLOW.md
   - AGENTS.md
-  - apps/docs/src/content/docs/**/*.mdx
+  - apps/docs/src/content/docs/concepts/lanes.mdx
+  - apps/docs/src/content/docs/getting-started/quickstart.mdx
+  - apps/docs/src/content/docs/reference/cli.mdx
 tests:
   manual:
     - Run init in fresh repo then complete lane lifecycle setup/lock; verify WU creation guidance is
