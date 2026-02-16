@@ -2,7 +2,7 @@ id: WU-1719
 title: 'Strict debt slice: type delegation-monitor'
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-16
 code_paths:
@@ -43,3 +43,6 @@ session_id: dc441728-c77c-4c3d-99cd-d222946ad156
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T09:26:38.990Z
+locked: true
+completed_at: 2026-02-16T09:29:10.238Z
+completed: 2026-02-16
