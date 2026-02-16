@@ -2,7 +2,7 @@ id: WU-1731
 title: Kernel built-in tools (fs:read, fs:write, proc:exec) + ESLint boundary rules
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -60,3 +60,11 @@ acceptance:
   - 'Model B ESLint: Layer 2 allows packs/**/tool-impl/** (loaded only by tool-runner worker)'
   - eslint-plugin-boundaries blocks direct tool-impl imports except from tool-runner worker
   - Packs importing fs directly outside tool-impl get a lint error
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1731
+claimed_at: 2026-02-16T23:03:29.255Z
+baseline_main_sha: 248b0e5d41e5fe200611beee4b57f504e1a64ef4
+session_id: cc062777-51e7-464f-9606-1327e54adf1d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T23:03:29.259Z
