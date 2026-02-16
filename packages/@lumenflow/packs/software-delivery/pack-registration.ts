@@ -2,10 +2,7 @@ import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  SOFTWARE_DELIVERY_MANIFEST,
-  type SoftwareDeliveryPackManifest,
-} from './manifest.js';
+import { SOFTWARE_DELIVERY_MANIFEST, type SoftwareDeliveryPackManifest } from './manifest.js';
 
 const NULL_BYTE_BUFFER = Buffer.from([0]);
 const DEFAULT_EXCLUSIONS = ['node_modules/', '.git/', 'dist/', '.DS_Store'];

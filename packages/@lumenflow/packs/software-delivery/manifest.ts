@@ -61,7 +61,9 @@ function isSemver(value: string): boolean {
   if (parts.length !== 3) {
     return false;
   }
-  return parts.every((part) => part.length > 0 && [...part].every((char) => char >= '0' && char <= '9'));
+  return parts.every(
+    (part) => part.length > 0 && [...part].every((char) => char >= '0' && char <= '9'),
+  );
 }
 
 const AllowedPolicyTriggers = new Set([
@@ -87,7 +89,9 @@ function parsePolicy(input: unknown, index: number): SoftwareDeliveryManifestPol
     trigger: trigger as SoftwareDeliveryManifestPolicy['trigger'],
     decision: decision as SoftwareDeliveryManifestPolicy['decision'],
     reason:
-      policy.reason === undefined ? undefined : parseNonEmptyString(policy.reason, `policies[${index}].reason`),
+      policy.reason === undefined
+        ? undefined
+        : parseNonEmptyString(policy.reason, `policies[${index}].reason`),
   };
 }
 

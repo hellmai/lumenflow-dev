@@ -1,10 +1,5 @@
 export const SOFTWARE_DELIVERY_EXTENSION_KEY = 'software_delivery';
-export const SOFTWARE_DELIVERY_EXPOSURES = [
-  'ui',
-  'api',
-  'backend-only',
-  'documentation',
-] as const;
+export const SOFTWARE_DELIVERY_EXPOSURES = ['ui', 'api', 'backend-only', 'documentation'] as const;
 
 interface Parser<T> {
   parse(input: unknown): T;

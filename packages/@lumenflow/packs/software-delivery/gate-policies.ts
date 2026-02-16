@@ -58,14 +58,13 @@ const SOFTWARE_DELIVERY_GATE_COMMANDS: Record<SoftwareDeliveryGateName, string> 
   coverage: 'pnpm vitest run --coverage',
 };
 
-export const SOFTWARE_DELIVERY_GATE_POLICIES: readonly PolicyProvider[] = SOFTWARE_DELIVERY_GATE_NAMES.map(
-  (gate) => ({
+export const SOFTWARE_DELIVERY_GATE_POLICIES: readonly PolicyProvider[] =
+  SOFTWARE_DELIVERY_GATE_NAMES.map((gate) => ({
     id: `software-delivery.gate.${gate}`,
     gate,
     trigger: 'on_completion',
     command: SOFTWARE_DELIVERY_GATE_COMMANDS[gate],
-  }),
-);
+  }));
 
 export const SOFTWARE_DELIVERY_STATE_ALIASES = {
   active: 'in_progress',
