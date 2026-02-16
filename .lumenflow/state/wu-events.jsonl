@@ -749,8 +749,6 @@
 {"type":"claim","wuId":"WU-1420","timestamp":"2026-02-04T16:14:40.483Z","lane":"Framework: Core","title":"state:doctor should detect and fix YAML vs state store status mismatches"}
 {"type":"complete","wuId":"WU-1420","timestamp":"2026-02-04T16:22:59.856Z"}
 {"type":"complete","wuId":"WU-1417","timestamp":"2026-02-04T16:28:00.334Z"}
-{"type":"claim","wuId":"WU-1428","timestamp":"2026-02-04T17:19:16.361Z","lane":"Framework: Core","title":"Remove all legacy references: delete migration utility and purge codebase"}
-{"type":"complete","wuId":"WU-1428","timestamp":"2026-02-04T17:35:54.404Z"}
 {"type":"claim","wuId":"WU-1429","timestamp":"2026-02-04T17:58:48.511Z","lane":"Framework: CLI","title":"wu:create: tighten spec_refs + add notes flag + contextual warnings"}
 {"type":"release","wuId":"WU-1429","timestamp":"2026-02-04T18:00:30.538Z","reason":"Reset via wu:recover --action reset"}
 {"type":"complete","wuId":"WU-1412","timestamp":"2026-02-04T18:05:39.769Z"}
