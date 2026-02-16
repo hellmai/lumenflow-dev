@@ -48,8 +48,6 @@
 {"type":"complete","wuId":"WU-1026","timestamp":"2026-01-19T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1027","timestamp":"2026-01-19T00:00:00.000Z","lane":"Operations: Infrastructure","title":"Block agents from deleting worktrees"}
 {"type":"complete","wuId":"WU-1027","timestamp":"2026-01-19T00:00:00.000Z"}
-{"type":"claim","wuId":"WU-1028","timestamp":"2026-01-19T00:00:00.000Z","lane":"Content: Documentation","title":"Fix agent wu:done amnesia - docs and distribution"}
-{"type":"complete","wuId":"WU-1028","timestamp":"2026-01-19T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1029","timestamp":"2026-01-19T00:00:00.000Z","lane":"Framework: CLI","title":"Fix wu:claim fallback to symlink nested node_modules"}
 {"type":"complete","wuId":"WU-1029","timestamp":"2026-01-19T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1030","timestamp":"2026-01-19T00:00:00.000Z","lane":"Operations: Infrastructure","title":"Fix wu:create/wu:edit pre-push block leaving main ahead"}

@@ -37,7 +37,6 @@ _Last updated: 2026-02-16_
 - [WU-1025 — Block wu:create and wu:claim if spec contains PLACEHOLDER markers](wu/WU-1025.yaml) — 2026-01-19
 - [WU-1026 — Allow agent branches to bypass worktree requirements](wu/WU-1026.yaml) — 2026-01-19
 - [WU-1027 — Block agents from deleting worktrees](wu/WU-1027.yaml) — 2026-01-19
-- [WU-1028 — Fix agent wu:done amnesia - docs and distribution](wu/WU-1028.yaml) — 2026-01-19
 - [WU-1029 — Fix wu:claim fallback to symlink nested node_modules](wu/WU-1029.yaml) — 2026-01-19
 - [WU-1030 — Fix wu:create/wu:edit pre-push block leaving main ahead](wu/WU-1030.yaml) — 2026-01-19
 - [WU-1031 — Make wu:done resilient to missing worktree](wu/WU-1031.yaml) — 2026-01-20
