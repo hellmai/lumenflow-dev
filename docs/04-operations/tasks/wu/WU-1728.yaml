@@ -1,0 +1,48 @@
+id: WU-1728
+title: Kernel ToolCapability schemas + ToolRegistry + scope intersection
+lane: 'Framework: Core Validation'
+type: feature
+status: ready
+priority: P0
+created: 2026-02-16
+code_paths:
+  - packages/@lumenflow/kernel/src/tool-host/
+tests:
+  manual:
+    - pnpm typecheck passes for kernel package
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/tool-registry.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/scope-intersection.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1728.done
+dependencies: []
+initiative: INIT-029
+phase: 2
+blocked_by:
+  - WU-1725
+labels:
+  - kernel
+  - phase-2
+  - tool-host
+spec_refs:
+  - .claude/plans/golden-prancing-cookie.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: INIT-029 Phase 2 — ToolHost + Evidence. Depends on WU-1725 (schemas, specifically ToolScope). Problem: The kernel needs a tool registration and lookup system with type-safe scope intersection. Solution: Implement ToolCapability Zod schema (name, domain, version, input/output schemas, permission, required_scopes, execution_mode). ToolRegistry class (register, lookup, list, validate). Scope intersection logic using micromatch (already installed ^4.0.8) for glob pattern matching. ToolOutput and ExecutionContext types. Reference: tool.schemas.ts, tool.constants.ts, tool-runner.ts. Plan: .claude/plans/golden-prancing-cookie.md'
+acceptance:
+  - ToolCapability Zod schema with name, domain, version, input_schema, output_schema, permission, required_scopes, execution_mode
+  - ToolRegistry class with register(), lookup(), list(), validate() methods
+  - 'Scope intersection logic: workspace ∩ lane ∩ task ∩ tool using micromatch glob matching'
+  - ToolOutput and ExecutionContext types defined
+  - Register tool then lookup succeeds; lookup unregistered tool fails gracefully
+  - 'Scope intersection tests: narrow scope correctly intersects broader scopes'
+  - Read scopes and write scopes intersect independently
