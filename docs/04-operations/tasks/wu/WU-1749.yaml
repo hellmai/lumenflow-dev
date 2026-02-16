@@ -1,0 +1,39 @@
+id: WU-1749
+title: Upgrade all outdated dependencies (batch)
+lane: 'Operations: Tooling'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-16
+code_paths:
+  - package.json
+  - packages/@lumenflow/*/package.json
+  - apps/docs/package.json
+  - pnpm-lock.yaml
+tests:
+  manual:
+    - Run pnpm build and verify success
+    - Run pnpm test and verify all packages pass
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1749.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Upgrade all outdated dependencies across the monorepo. Safe semver-compatible bumps (vitest, zod, commander, simple-git, turbo, typescript-eslint, minimatch, eslint plugins, astro/starlight) plus evaluated major bumps (glob, p-retry, ps-list). Hold ESLint 10 and @types/node 25.
+acceptance:
+  - All semver-compatible deps upgraded to latest
+  - Major bumps (glob, p-retry, ps-list) evaluated and upgraded if safe
+  - ESLint 10 and @types/node 25 held at current majors
+  - pnpm install succeeds with no lockfile drift
+  - Full build passes (pnpm build)
+  - Tests pass across all packages
