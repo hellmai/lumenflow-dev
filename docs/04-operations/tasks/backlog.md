@@ -20,30 +20,28 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1741 — Burn down pre-existing no-explicit-any lint failures in core and cli](wu/WU-1741.yaml) — Operations: Tooling
-- [WU-1740 — Control Plane SDK — ControlPlaneSyncPort + workspace config + mock adapter](wu/WU-1740.yaml) — Framework: Core Validation
-- [WU-1739 — Runtime daemon — scheduler, sessions, Unix socket transport](wu/WU-1739.yaml) — Framework: Core Lifecycle
-- [WU-1738 — MCP surface rewrite — calls KernelRuntime directly, not CLI](wu/WU-1738.yaml) — Framework: MCP
-- [WU-1737 — CLI surface — remaining commands (gates, orchestration, inspect, replay)](wu/WU-1737.yaml) — Framework: CLI Orchestration
-- [WU-1736 — CLI surface — task lifecycle commands (tracer bullet: create, claim, status, complete)](wu/WU-1736.yaml) — Framework: CLI WU Commands
-- [WU-1735 — KernelRuntime facade + initialization](wu/WU-1735.yaml) — Framework: Core Lifecycle
-- [WU-1734 — Software delivery pack — Git tools + worktree + lane locks + delegation](wu/WU-1734.yaml) — Framework: Core State Recovery
-- [WU-1733 — Software delivery pack — WU extensions + gate policies](wu/WU-1733.yaml) — Framework: Core Lifecycle
-- [WU-1732 — Kernel PolicyEngine + DomainPack manifest/loader + integrity pinning](wu/WU-1732.yaml) — Framework: Core Validation
-- [WU-1731 — Kernel built-in tools (fs:read, fs:write, proc:exec) + ESLint boundary rules](wu/WU-1731.yaml) — Framework: Core Lifecycle
-- [WU-1730 — Kernel sandbox integration (bwrap port) + subprocess tool-runner worker](wu/WU-1730.yaml) — Framework: Core Validation
-- [WU-1729 — Kernel ToolHost execution + EvidenceStore with CAS and receipts](wu/WU-1729.yaml) — Framework: Core Lifecycle
-- [WU-1728 — Kernel ToolCapability schemas + ToolRegistry + scope intersection](wu/WU-1728.yaml) — Framework: Core Validation
-- [WU-1727 — Kernel XState state machine + integration test](wu/WU-1727.yaml) — Framework: Core State Recovery
-- [WU-1726 — Kernel EventStore: JSONL append, indexes, projections](wu/WU-1726.yaml) — Framework: Core Lifecycle
-- [WU-1725 — Kernel package scaffold + core Zod schemas](wu/WU-1725.yaml) — Framework: Core Validation
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
+- [WU-1725 — Kernel package scaffold + core Zod schemas](wu/WU-1725.yaml) — Framework: Core Validation
+- [WU-1726 — Kernel EventStore: JSONL append, indexes, projections](wu/WU-1726.yaml) — Framework: Core Lifecycle
+- [WU-1727 — Kernel XState state machine + integration test](wu/WU-1727.yaml) — Framework: Core State Recovery
+- [WU-1728 — Kernel ToolCapability schemas + ToolRegistry + scope intersection](wu/WU-1728.yaml) — Framework: Core Validation
+- [WU-1729 — Kernel ToolHost execution + EvidenceStore with CAS and receipts](wu/WU-1729.yaml) — Framework: Core Lifecycle
+- [WU-1730 — Kernel sandbox integration (bwrap port) + subprocess tool-runner worker](wu/WU-1730.yaml) — Framework: Core Validation
+- [WU-1731 — Kernel built-in tools (fs:read, fs:write, proc:exec) + ESLint boundary rules](wu/WU-1731.yaml) — Framework: Core Lifecycle
+- [WU-1732 — Kernel PolicyEngine + DomainPack manifest/loader + integrity pinning](wu/WU-1732.yaml) — Framework: Core Validation
+- [WU-1733 — Software delivery pack — WU extensions + gate policies](wu/WU-1733.yaml) — Framework: Core Lifecycle
+- [WU-1734 — Software delivery pack — Git tools + worktree + lane locks + delegation](wu/WU-1734.yaml) — Framework: Core State Recovery
+- [WU-1735 — KernelRuntime facade + initialization](wu/WU-1735.yaml) — Framework: Core Lifecycle
+- [WU-1736 — CLI surface — task lifecycle commands (tracer bullet: create, claim, status, complete)](wu/WU-1736.yaml) — Framework: CLI WU Commands
+- [WU-1737 — CLI surface — remaining commands (gates, orchestration, inspect, replay)](wu/WU-1737.yaml) — Framework: CLI Orchestration
+- [WU-1738 — MCP surface rewrite — calls KernelRuntime directly, not CLI](wu/WU-1738.yaml) — Framework: MCP
+- [WU-1739 — Runtime daemon — scheduler, sessions, Unix socket transport](wu/WU-1739.yaml) — Framework: Core Lifecycle
+- [WU-1740 — Control Plane SDK — ControlPlaneSyncPort + workspace config + mock adapter](wu/WU-1740.yaml) — Framework: Core Validation
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1724 — Enable full strict TS by removing strictNullChecks/noImplicitAny overrides](wu/WU-1724.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -714,6 +712,7 @@ sections:
 - [WU-1721 — Strict debt slice: type wu-validation](wu/WU-1721.yaml)
 - [WU-1722 — Strict unblock: restore git-validator ports module](wu/WU-1722.yaml)
 - [WU-1723 — Typecheck debt: fix pre-existing CLI doc typing errors](wu/WU-1723.yaml)
+- [WU-1724 — Enable full strict TS by removing strictNullChecks/noImplicitAny overrides](wu/WU-1724.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

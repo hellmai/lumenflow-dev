@@ -5,7 +5,6 @@ _Last updated: 2026-02-16_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1724 — Enable full strict TS by removing strictNullChecks/noImplicitAny overrides](wu/WU-1724.yaml)
 
 ## Blocked
 
@@ -676,3 +675,4 @@ _Last updated: 2026-02-16_
 - [WU-1721 — Strict debt slice: type wu-validation](wu/WU-1721.yaml) — 2026-02-16
 - [WU-1722 — Strict unblock: restore git-validator ports module](wu/WU-1722.yaml) — 2026-02-16
 - [WU-1723 — Typecheck debt: fix pre-existing CLI doc typing errors](wu/WU-1723.yaml) — 2026-02-16
+- [WU-1724 — Enable full strict TS by removing strictNullChecks/noImplicitAny overrides](wu/WU-1724.yaml) — 2026-02-16

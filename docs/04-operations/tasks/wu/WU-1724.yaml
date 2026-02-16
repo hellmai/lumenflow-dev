@@ -2,7 +2,7 @@ id: WU-1724
 title: Enable full strict TS by removing strictNullChecks/noImplicitAny overrides
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -58,3 +58,6 @@ acceptance:
   - pnpm strict:progress --json reports zero errors for cli/core
   - '@lumenflow/core compiles with noImplicitAny and strictNullChecks enabled'
   - Full workspace pnpm typecheck passes after strict flag flip
+locked: true
+completed_at: 2026-02-16T10:56:01.305Z
+completed: 2026-02-16
