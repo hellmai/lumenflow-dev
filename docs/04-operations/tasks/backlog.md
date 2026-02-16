@@ -42,7 +42,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1742 — Fix pre-existing core test failures blocking gates](wu/WU-1742.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 
@@ -715,6 +714,7 @@ sections:
 - [WU-1723 — Typecheck debt: fix pre-existing CLI doc typing errors](wu/WU-1723.yaml)
 - [WU-1724 — Enable full strict TS by removing strictNullChecks/noImplicitAny overrides](wu/WU-1724.yaml)
 - [WU-1741 — Burn down pre-existing no-explicit-any lint failures in core and cli](wu/WU-1741.yaml)
+- [WU-1742 — Fix pre-existing core test failures blocking gates](wu/WU-1742.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

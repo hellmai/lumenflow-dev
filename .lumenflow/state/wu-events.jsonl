@@ -1406,4 +1406,5 @@
 {"type":"complete","wuId":"WU-1724","timestamp":"2026-02-16T10:56:06.019Z"}
 {"type":"claim","wuId":"WU-1741","timestamp":"2026-02-16T11:08:03.525Z","lane":"Operations: Tooling","title":"Burn down pre-existing no-explicit-any lint failures in core and cli"}
 {"type":"complete","wuId":"WU-1741","timestamp":"2026-02-16T11:43:29.705Z"}
-{"type":"claim","wuId":"WU-1742","lane":"Operations: Tooling","title":"Fix pre-existing core test failures blocking gates","timestamp":"2026-02-16T11:51:18.745Z"}
+{"type":"claim","wuId":"WU-1742","timestamp":"2026-02-16T11:51:18.745Z","lane":"Operations: Tooling","title":"Fix pre-existing core test failures blocking gates"}
+{"type":"complete","wuId":"WU-1742","timestamp":"2026-02-16T12:01:13.698Z"}
