@@ -20,13 +20,13 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1724 — Enable full strict TS by removing strictNullChecks/noImplicitAny overrides](wu/WU-1724.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1724 — Enable full strict TS by removing strictNullChecks/noImplicitAny overrides](wu/WU-1724.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 

@@ -1402,3 +1402,4 @@
 {"type":"complete","wuId":"WU-1722","timestamp":"2026-02-16T09:52:50.736Z"}
 {"type":"claim","wuId":"WU-1723","timestamp":"2026-02-16T09:54:27.450Z","lane":"Framework: CLI WU Commands","title":"Typecheck debt: fix pre-existing CLI doc typing errors"}
 {"type":"complete","wuId":"WU-1723","timestamp":"2026-02-16T10:03:55.518Z"}
+{"type":"claim","wuId":"WU-1724","lane":"Framework: CLI WU Commands","title":"Enable full strict TS by removing strictNullChecks/noImplicitAny overrides","timestamp":"2026-02-16T10:07:11.681Z"}
