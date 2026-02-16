@@ -1,12 +1,43 @@
 id: INIT-029
 slug: agent-runtime-kernel
 title: LumenFlow Agent Runtime + Control Plane
-description: ''
+description: 'Evolve LumenFlow from a software delivery CLI into a general-purpose agent runtime +
+  hosted control plane. Work Units become universal task primitives for any goal-directed task,
+  executed by agents that cannot go off-script. Differentiator vs OpenClaw: deterministic,
+  auditable, safe-by-default execution via capability-scoped tool calls, sandbox enforcement, policy
+  governance, and immutable evidence receipts. No external users affected — Patient Path stays on
+  current version. Greenfield design, no backwards compat. Architecture plan:
+  .claude/plans/golden-prancing-cookie.md'
 status: draft
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-16
 target_date: 2026-06-30
-phases: []
-success_metrics: []
+phases:
+  - id: 1
+    title: Kernel Foundation (Workspace + Task + Events + Projections)
+    status: pending
+  - id: 2
+    title: ToolHost + ToolRegistry + Evidence (security boundary)
+    status: pending
+  - id: 3
+    title: 'Policies + Packs (software delivery as pack #1)'
+    status: pending
+  - id: 4
+    title: Surfaces + Runtime Daemon (CLI/MCP over KernelRuntime)
+    status: pending
+  - id: 5
+    title: Control Plane SDK (hosted service interface)
+    status: pending
+success_metrics:
+  - Zero software delivery concepts in kernel package (grep for git, worktree, code_paths returns 0
+    hits)
+  - Every tool execution produces an immutable receipt with honest scope semantics
+    (requested/allowed/enforced)
+  - 'Scope intersection enforced at ToolHost level: workspace ∩ lane ∩ task ∩ tool — agent denied on
+    out-of-scope writes'
+  - CLI and MCP surfaces both call KernelRuntime directly — no MCP→CLI→core circular chain
+  - ESLint boundary rules block fs/child_process imports outside kernel/tool-host and kernel/sandbox
+  - Software delivery pack loads with SHA-256 integrity verification and registers tools+policies
+    via DomainPack manifest
 labels: []
