@@ -1412,4 +1412,5 @@
 {"type":"claim","wuId":"WU-1725","timestamp":"2026-02-16T21:00:42.102Z","lane":"Framework: Core Validation","title":"Kernel package scaffold + core Zod schemas"}
 {"type":"complete","wuId":"WU-1754","timestamp":"2026-02-16T21:19:02.766Z"}
 {"type":"complete","wuId":"WU-1725","timestamp":"2026-02-16T21:55:05.844Z"}
-{"type":"claim","wuId":"WU-1726","lane":"Framework: Core Lifecycle","title":"Kernel EventStore: JSONL append, indexes, projections","timestamp":"2026-02-16T21:59:45.928Z"}
+{"type":"claim","wuId":"WU-1726","timestamp":"2026-02-16T21:59:45.928Z","lane":"Framework: Core Lifecycle","title":"Kernel EventStore: JSONL append, indexes, projections"}
+{"type":"complete","wuId":"WU-1726","timestamp":"2026-02-16T22:10:22.386Z"}

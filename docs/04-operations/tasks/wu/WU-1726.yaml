@@ -2,7 +2,7 @@ id: WU-1726
 title: 'Kernel EventStore: JSONL append, indexes, projections'
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-16
 code_paths:
@@ -74,3 +74,6 @@ session_id: 58e7a652-1a2c-48b6-bb30-36e375ea3efb
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T21:59:45.896Z
+locked: true
+completed_at: 2026-02-16T22:10:17.734Z
+completed: 2026-02-16

@@ -5,7 +5,6 @@ _Last updated: 2026-02-16_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1726 — Kernel EventStore: JSONL append, indexes, projections](wu/WU-1726.yaml)
 
 ## Completed
 
@@ -676,3 +675,4 @@ _Last updated: 2026-02-16_
 - [WU-1753 — Make lane:status read-only and prevent config rewrites](wu/WU-1753.yaml) — 2026-02-16
 - [WU-1754 — Upgrade ESLint 9 to 10 with plugin compatibility fixes](wu/WU-1754.yaml) — 2026-02-16
 - [WU-1725 — Kernel package scaffold + core Zod schemas](wu/WU-1725.yaml) — 2026-02-16
+- [WU-1726 — Kernel EventStore: JSONL append, indexes, projections](wu/WU-1726.yaml) — 2026-02-16
