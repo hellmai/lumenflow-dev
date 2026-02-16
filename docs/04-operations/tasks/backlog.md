@@ -411,7 +411,6 @@ sections:
 - [WU-1419 — wu:recover reset action should emit release event to state store](wu/WU-1419.yaml)
 - [WU-1420 — state:doctor should detect and fix YAML vs state store status mismatches](wu/WU-1420.yaml)
 - [WU-1417 — Orchestration dry-run guide + docs sync](wu/WU-1417.yaml)
-- [WU-1421 — Rename legacy config to .lumenflow (complete migration)](wu/WU-1421.yaml)
 - [WU-1423 — Complete legacy→lumenflow migration: rename config schema and all references](wu/WU-1423.yaml)
 - [WU-1428 — Remove all legacy references: delete migration utility and purge codebase](wu/WU-1428.yaml)
 - [WU-1412 — Add @lumenflow/mcp stdio server](wu/WU-1412.yaml)

@@ -748,9 +748,7 @@
 {"type":"claim","wuId":"WU-1417","timestamp":"2026-02-04T16:08:47.711Z","lane":"Framework: CLI","title":"Orchestration dry-run guide + docs sync"}
 {"type":"claim","wuId":"WU-1420","timestamp":"2026-02-04T16:14:40.483Z","lane":"Framework: Core","title":"state:doctor should detect and fix YAML vs state store status mismatches"}
 {"type":"complete","wuId":"WU-1420","timestamp":"2026-02-04T16:22:59.856Z"}
-{"type":"claim","wuId":"WU-1421","timestamp":"2026-02-04T16:24:40.203Z","lane":"Framework: Core","title":"Rename legacy config to .lumenflow (complete migration)"}
 {"type":"complete","wuId":"WU-1417","timestamp":"2026-02-04T16:28:00.334Z"}
-{"type":"complete","wuId":"WU-1421","timestamp":"2026-02-04T16:36:00.707Z"}
 {"type":"claim","wuId":"WU-1423","timestamp":"2026-02-04T17:00:06.323Z","lane":"Framework: Core","title":"Complete legacy→lumenflow migration: rename config schema and all references"}
 {"type":"complete","wuId":"WU-1423","timestamp":"2026-02-04T17:14:07.699Z"}
 {"type":"claim","wuId":"WU-1428","timestamp":"2026-02-04T17:19:16.361Z","lane":"Framework: Core","title":"Remove all legacy references: delete migration utility and purge codebase"}
