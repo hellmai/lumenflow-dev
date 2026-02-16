@@ -30,7 +30,7 @@
 {"type":"complete","wuId":"WU-1016","timestamp":"2026-01-19T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1017","timestamp":"2026-01-19T00:00:00.000Z","lane":"Infrastructure","title":"Add vendor-agnostic git hooks via Husky"}
 {"type":"complete","wuId":"WU-1017","timestamp":"2026-01-19T00:00:00.000Z"}
-{"type":"claim","wuId":"WU-1018","timestamp":"2026-01-19T00:00:00.000Z","lane":"CLI","title":"Migrate missing CLI commands from ExampleApp to @lumenflow/cli"}
+{"type":"claim","wuId":"WU-1018","timestamp":"2026-01-19T00:00:00.000Z","lane":"CLI","title":"Migrate missing CLI commands to @lumenflow/cli"}
 {"type":"complete","wuId":"WU-1018","timestamp":"2026-01-19T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1019","timestamp":"2026-01-19T00:00:00.000Z","lane":"Infrastructure","title":"Add .lumenflow.lane-inference.yaml for sublane taxonomy"}
 {"type":"complete","wuId":"WU-1019","timestamp":"2026-01-19T00:00:00.000Z"}
@@ -92,7 +92,7 @@
 {"type":"complete","wuId":"WU-1050","timestamp":"2026-01-21T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1051","timestamp":"2026-01-21T00:00:00.000Z","lane":"Framework: Core","title":"Make wu:spawn skills guidance config-driven and vendor-agnostic"}
 {"type":"complete","wuId":"WU-1051","timestamp":"2026-01-21T00:00:00.000Z"}
-{"type":"claim","wuId":"WU-1052","timestamp":"2026-01-22T00:00:00.000Z","lane":"Framework: Core","title":"Migrate remaining tests from ExampleApp tools/ to hellmai/os packages"}
+{"type":"claim","wuId":"WU-1052","timestamp":"2026-01-22T00:00:00.000Z","lane":"Framework: Core","title":"Migrate remaining tests to hellmai/os packages"}
 {"type":"complete","wuId":"WU-1052","timestamp":"2026-01-22T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1053","timestamp":"2026-01-22T00:00:00.000Z","lane":"Framework: Core","title":"Claude Code Full Optimization - Skills, Agents, Docs, Release"}
 {"type":"complete","wuId":"WU-1053","timestamp":"2026-01-22T00:00:00.000Z"}
@@ -120,7 +120,7 @@
 {"type":"complete","wuId":"WU-1066","timestamp":"2026-01-23T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1067","timestamp":"2026-01-23T00:00:00.000Z","lane":"Operations: CI/CD","title":"Make gates language-agnostic via config-driven execution"}
 {"type":"complete","wuId":"WU-1067","timestamp":"2026-01-23T00:00:00.000Z"}
-{"type":"claim","wuId":"WU-1068","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: Core","title":"LumenFlow Framework Cleanup - Remove ExampleApp leakage and fix code smells"}
+{"type":"claim","wuId":"WU-1068","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: Core","title":"LumenFlow Framework Cleanup - Remove legacy leakage and fix code smells"}
 {"type":"complete","wuId":"WU-1068","timestamp":"2026-01-23T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1069","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: CLI","title":"Validate spec-refs rejects repo-internal plan paths"}
 {"type":"complete","wuId":"WU-1069","timestamp":"2026-01-23T00:00:00.000Z"}
@@ -132,13 +132,13 @@
 {"type":"complete","wuId":"WU-1072","timestamp":"2026-01-23T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1074","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: CLI","title":"Add release command for npm publishing"}
 {"type":"complete","wuId":"WU-1074","timestamp":"2026-01-23T00:00:00.000Z"}
-{"type":"claim","wuId":"WU-1075","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: Core","title":"Rename .beacon to .lumenflow - remove ExampleApp branding"}
+{"type":"claim","wuId":"WU-1075","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: Core","title":"Rename legacy config to .lumenflow"}
 {"type":"complete","wuId":"WU-1075","timestamp":"2026-01-23T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1076","timestamp":"2026-01-23T00:00:00.000Z","lane":"Framework: CLI","title":"Block direct main branch commits for agents"}
 {"type":"complete","wuId":"WU-1076","timestamp":"2026-01-23T00:00:00.000Z"}
 {"type":"claim","wuId":"WU-1077","timestamp":"2026-01-23T14:30:05.484Z","lane":"Framework: CLI","title":"Fix release script to work entirely in micro-worktree"}
 {"type":"claim","wuId":"WU-1078","timestamp":"2026-01-23T14:36:07.067Z","lane":"Framework: CLI","title":"Fix wu:repair to use micro-worktree isolation"}
-{"type":"claim","wuId":"WU-1079","timestamp":"2026-01-23T14:38:11.289Z","lane":"Framework: Core","title":"Migrate stamps from .beacon to .lumenflow"}
+{"type":"claim","wuId":"WU-1079","timestamp":"2026-01-23T14:38:11.289Z","lane":"Framework: Core","title":"Migrate stamps to .lumenflow"}
 {"type":"complete","wuId":"WU-1079","timestamp":"2026-01-23T14:45:05.845Z"}
 {"type":"claim","wuId":"WU-1080","timestamp":"2026-01-23T14:48:09.073Z","lane":"Framework: Core","title":"Add wu:release command to recover orphaned WUs"}
 {"type":"complete","wuId":"WU-1078","timestamp":"2026-01-23T14:51:38.848Z"}
@@ -758,12 +758,12 @@
 {"type":"claim","wuId":"WU-1417","timestamp":"2026-02-04T16:08:47.711Z","lane":"Framework: CLI","title":"Orchestration dry-run guide + docs sync"}
 {"type":"claim","wuId":"WU-1420","timestamp":"2026-02-04T16:14:40.483Z","lane":"Framework: Core","title":"state:doctor should detect and fix YAML vs state store status mismatches"}
 {"type":"complete","wuId":"WU-1420","timestamp":"2026-02-04T16:22:59.856Z"}
-{"type":"claim","wuId":"WU-1421","timestamp":"2026-02-04T16:24:40.203Z","lane":"Framework: Core","title":"Rename .beacon to .lumenflow (complete ExampleApp migration)"}
+{"type":"claim","wuId":"WU-1421","timestamp":"2026-02-04T16:24:40.203Z","lane":"Framework: Core","title":"Rename legacy config to .lumenflow (complete migration)"}
 {"type":"complete","wuId":"WU-1417","timestamp":"2026-02-04T16:28:00.334Z"}
 {"type":"complete","wuId":"WU-1421","timestamp":"2026-02-04T16:36:00.707Z"}
-{"type":"claim","wuId":"WU-1423","timestamp":"2026-02-04T17:00:06.323Z","lane":"Framework: Core","title":"Complete beacon→lumenflow migration: rename config schema and all references"}
+{"type":"claim","wuId":"WU-1423","timestamp":"2026-02-04T17:00:06.323Z","lane":"Framework: Core","title":"Complete legacy→lumenflow migration: rename config schema and all references"}
 {"type":"complete","wuId":"WU-1423","timestamp":"2026-02-04T17:14:07.699Z"}
-{"type":"claim","wuId":"WU-1428","timestamp":"2026-02-04T17:19:16.361Z","lane":"Framework: Core","title":"Remove all beacon references: delete migration utility and purge codebase"}
+{"type":"claim","wuId":"WU-1428","timestamp":"2026-02-04T17:19:16.361Z","lane":"Framework: Core","title":"Remove all legacy references: delete migration utility and purge codebase"}
 {"type":"complete","wuId":"WU-1428","timestamp":"2026-02-04T17:35:54.404Z"}
 {"type":"claim","wuId":"WU-1429","timestamp":"2026-02-04T17:58:48.511Z","lane":"Framework: CLI","title":"wu:create: tighten spec_refs + add notes flag + contextual warnings"}
 {"type":"release","wuId":"WU-1429","timestamp":"2026-02-04T18:00:30.538Z","reason":"Reset via wu:recover --action reset"}
@@ -822,11 +822,11 @@
 {"type":"claim","wuId":"WU-1446","timestamp":"2026-02-05T12:06:56.684Z","lane":"Framework: CLI","title":"Refactor CLI WU type/test policy checks to core helpers (typed, DRY)"}
 {"type":"complete","wuId":"WU-1445","timestamp":"2026-02-05T12:11:18.964Z"}
 {"type":"complete","wuId":"WU-1446","timestamp":"2026-02-05T12:24:47.764Z"}
-{"type":"claim","wuId":"WU-1447","timestamp":"2026-02-05T13:10:56.515Z","lane":"Framework: CLI","title":"Purge .beacon legacy paths/docs; use .lumenflow only"}
+{"type":"claim","wuId":"WU-1447","timestamp":"2026-02-05T13:10:56.515Z","lane":"Framework: CLI","title":"Purge legacy paths/docs; use .lumenflow only"}
 {"type":"claim","wuId":"WU-1448","timestamp":"2026-02-05T13:15:41.411Z","lane":"Content: Documentation","title":"Add D2 diagram support and convert Mermaid diagrams"}
 {"type":"complete","wuId":"WU-1448","timestamp":"2026-02-05T13:23:27.148Z"}
 {"type":"complete","wuId":"WU-1447","timestamp":"2026-02-05T13:28:14.528Z"}
-{"type":"claim","wuId":"WU-1450","timestamp":"2026-02-05T13:29:42.283Z","lane":"Content: Documentation","title":"Remove remaining .beacon mentions from onboarding/public docs"}
+{"type":"claim","wuId":"WU-1450","timestamp":"2026-02-05T13:29:42.283Z","lane":"Content: Documentation","title":"Remove remaining legacy mentions from onboarding/public docs"}
 {"type":"claim","wuId":"WU-1449","timestamp":"2026-02-05T13:31:06.964Z","lane":"Framework: Initiatives","title":"Fix flaky orchestrate-initiative-wu1251 test timeout"}
 {"type":"complete","wuId":"WU-1449","timestamp":"2026-02-05T13:35:21.228Z"}
 {"type":"complete","wuId":"WU-1450","timestamp":"2026-02-05T13:36:32.011Z"}
@@ -987,7 +987,7 @@
 {"type":"complete","wuId":"WU-1526","timestamp":"2026-02-07T18:27:42.205Z"}
 {"type":"claim","wuId":"WU-1527","timestamp":"2026-02-09T09:32:56.331Z","lane":"Framework: CLI WU Commands","title":"Fix lumenflow-upgrade missing -w flag for pnpm monorepo workspaces"}
 {"type":"complete","wuId":"WU-1527","timestamp":"2026-02-09T09:44:47.201Z"}
-{"type":"claim","wuId":"WU-1529","timestamp":"2026-02-09T09:47:33.897Z","lane":"Framework: CLI Enforcement","title":"Purge remaining live .beacon references from hooks and agent overlays"}
+{"type":"claim","wuId":"WU-1529","timestamp":"2026-02-09T09:47:33.897Z","lane":"Framework: CLI Enforcement","title":"Purge remaining live legacy references from hooks and agent overlays"}
 {"type":"claim","wuId":"WU-1528","timestamp":"2026-02-09T09:55:34.046Z","lane":"Framework: CLI WU Commands","title":"Fix wu:delete pathspec failure in micro-worktree staging"}
 {"type":"complete","wuId":"WU-1529","timestamp":"2026-02-09T09:58:10.679Z"}
 {"type":"claim","wuId":"WU-1498","timestamp":"2026-02-09T10:02:26.741Z","lane":"Framework: Core Lifecycle","title":"Add passive lane-signal telemetry and agent lane-fit reasoning"}
@@ -1357,9 +1357,9 @@
 {"type":"complete","wuId":"WU-1699","timestamp":"2026-02-15T21:32:33.367Z"}
 {"type":"claim","wuId":"WU-1700","timestamp":"2026-02-15T21:37:12.277Z","lane":"Framework: CLI WU Commands","title":"Strict debt slice: eliminate TS7006 in cli initiative-status"}
 {"type":"complete","wuId":"WU-1700","timestamp":"2026-02-15T21:41:26.688Z"}
-{"type":"claim","wuId":"WU-1703","timestamp":"2026-02-15T22:14:23.128Z","lane":"Content: Framework Docs","title":"Emergency PII/PHI cleanup across templates and docs"}
-{"type":"claim","wuId":"WU-1701","timestamp":"2026-02-15T22:16:26.274Z","lane":"Framework: Core Validation","title":"Emergency cleanup: remove healthcare/PHI code from core package"}
-{"type":"claim","wuId":"WU-1702","timestamp":"2026-02-15T22:19:32.630Z","lane":"Framework: CLI Enforcement","title":"Emergency: remove healthcare/PHI code from CLI and MCP packages"}
+{"type":"claim","wuId":"WU-1703","timestamp":"2026-02-15T22:14:23.128Z","lane":"Content: Framework Docs","title":"Emergency cleanup across templates and docs"}
+{"type":"claim","wuId":"WU-1701","timestamp":"2026-02-15T22:16:26.274Z","lane":"Framework: Core Validation","title":"Emergency cleanup: remove domain-specific code from core package"}
+{"type":"claim","wuId":"WU-1702","timestamp":"2026-02-15T22:19:32.630Z","lane":"Framework: CLI Enforcement","title":"Emergency: remove domain-specific code from CLI and MCP packages"}
 {"type":"complete","wuId":"WU-1703","timestamp":"2026-02-15T22:25:36.780Z"}
 {"type":"block","wuId":"WU-1702","timestamp":"2026-02-15T23:11:41.480Z","reason":"Stale emergency WU; unblock wu:claim overlap scanner symlink-loop"}
 {"type":"claim","wuId":"WU-1704","timestamp":"2026-02-15T23:12:18.027Z","lane":"Framework: Core Validation","title":"Strict debt slice: eliminate TS7006 in core wu-preflight-validators"}
