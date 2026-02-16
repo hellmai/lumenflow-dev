@@ -8,13 +8,27 @@
  * - .husky/pre-push
  */
 
-import { execSync } from 'node:child_process';
+import { execSync, type ExecSyncOptionsWithStringEncoding } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parse } from 'yaml';
 import { BRANCHES, REMOTES, STDIO, REAL_GIT, PATTERNS } from './wu-constants.js';
 import { die } from './error-handler.js';
 import { isAgentBranchWithDetails } from './branch-check.js';
+import type {
+  IBranchValidationResult,
+  IWuGitAdapter,
+  IWuStatusCheckResult,
+} from './ports/wu-helpers.ports.js';
+
+interface ParsedWUYaml {
+  status?: string;
+  [key: string]: unknown;
+}
+
+type EnsureOnMainGitAdapter = Pick<IWuGitAdapter, 'getCurrentBranch'>;
+type EnsureMainUpToDateGitAdapter = Pick<IWuGitAdapter, 'fetch' | 'getCommitHash'>;
+type RunOptions = Omit<ExecSyncOptionsWithStringEncoding, 'encoding'>;
 
 /**
  * Validate WU ID format
@@ -30,7 +44,7 @@ import { isAgentBranchWithDetails } from './branch-check.js';
  * validateWUIDFormat('wu-123'); // throws Error
  * validateWUIDFormat('TICKET-123'); // throws Error
  */
-export function validateWUIDFormat(id) {
+export function validateWUIDFormat(id: string): void {
   if (!PATTERNS.WU_ID.test(id)) {
     die(`Invalid WU ID format: "${id}"\n\nExpected format: WU-<number> (e.g., WU-706)`);
   }
@@ -42,7 +56,7 @@ export function validateWUIDFormat(id) {
  * @param {object} opts - Execution options
  * @returns {string} Command output
  */
-export function run(cmd, opts = {}) {
+export function run(cmd: string, opts: RunOptions = {}): string {
   try {
     return execSync(cmd, { stdio: STDIO.PIPE, encoding: 'utf-8', ...opts }).trim();
   } catch {
@@ -90,11 +104,11 @@ export function isMainWorktree() {
  * @param {string} branch - Branch name
  * @returns {string|null} WU ID (e.g., 'WU-401') or null
  */
-export function extractWUFromBranch(branch) {
+export function extractWUFromBranch(branch: string | null | undefined): string | null {
   if (!branch) return null;
   // Match lane/<lane>/<wu-id> format
   const match = branch.match(/^lane\/[^/]+\/(wu-\d+)$/i);
-  if (match) {
+  if (match?.[1]) {
     return match[1].toUpperCase();
   }
   return null;
@@ -106,7 +120,7 @@ export function extractWUFromBranch(branch) {
  * @param {string} branch - Branch name to validate
  * @returns {{valid: boolean, lane: string|null, wuid: string|null, error: string|null}}
  */
-export function validateBranchName(branch) {
+export function validateBranchName(branch: string | null | undefined): IBranchValidationResult {
   if (!branch || branch === BRANCHES.MAIN) {
     return { valid: true, lane: null, wuid: null, error: null };
   }
@@ -121,10 +135,12 @@ export function validateBranchName(branch) {
     };
   }
 
+  const lane = match[1] ?? null;
+  const wuid = match[2]?.toUpperCase() ?? null;
   return {
     valid: true,
-    lane: match[1],
-    wuid: match[2].toUpperCase(),
+    lane,
+    wuid,
     error: null,
   };
 }
@@ -135,7 +151,7 @@ export function validateBranchName(branch) {
  * @param {string} wuid - WU ID (e.g., 'WU-401')
  * @returns {object|null} Parsed WU YAML or null if not found
  */
-export function readWUYaml(wuid) {
+export function readWUYaml(wuid: string): ParsedWUYaml | null {
   const repoRoot = run(`${REAL_GIT} rev-parse --show-toplevel`);
   if (!repoRoot) return null;
 
@@ -144,7 +160,7 @@ export function readWUYaml(wuid) {
 
   try {
     const content = readFileSync(wuPath, { encoding: 'utf-8' });
-    return parse(content);
+    return parse(content) as ParsedWUYaml;
   } catch {
     return null;
   }
@@ -156,7 +172,10 @@ export function readWUYaml(wuid) {
  * @param {string[]} allowedStatuses - List of allowed statuses
  * @returns {{allowed: boolean, status: string|null, error: string|null}}
  */
-export function checkWUStatus(wuid, allowedStatuses = ['in_progress', 'waiting']) {
+export function checkWUStatus(
+  wuid: string,
+  allowedStatuses: string[] = ['in_progress', 'waiting'],
+): IWuStatusCheckResult {
   const wu = readWUYaml(wuid);
   if (!wu) {
     return {
@@ -192,7 +211,7 @@ export function checkWUStatus(wuid, allowedStatuses = ['in_progress', 'waiting']
  * @param {string} message - Error message
  * @returns {string} Formatted error message
  */
-export function formatHookError(hookName, message) {
+export function formatHookError(hookName: string, message: string): string {
   return `
 ╔═══════════════════════════════════════════════════════════════════╗
 ║  ${hookName.toUpperCase()} HOOK ERROR
@@ -211,7 +230,7 @@ export function formatHookError(hookName, message) {
  * @param {string} message - Commit message
  * @returns {string|null} WU ID or null
  */
-export function extractWUFromCommitMessage(message) {
+export function extractWUFromCommitMessage(message: string | null | undefined): string | null {
   if (!message) return null;
 
   // Match wu(WU-401) or type(wu-401) patterns
@@ -222,7 +241,7 @@ export function extractWUFromCommitMessage(message) {
 
   for (const pattern of patterns) {
     const match = message.match(pattern);
-    if (match) {
+    if (match?.[1]) {
       return match[1].toUpperCase();
     }
   }
@@ -243,7 +262,7 @@ export function extractWUFromCommitMessage(message) {
  * @param {object} git - Git adapter with async getCurrentBranch() method
  * @throws {Error} If not on main branch and not an agent branch
  */
-export async function ensureOnMain(git) {
+export async function ensureOnMain(git: EnsureOnMainGitAdapter): Promise<void> {
   const branch = await git.getCurrentBranch();
   if (branch !== BRANCHES.MAIN) {
     // WU-1091: Check if this is an agent branch that can bypass the main requirement
@@ -269,7 +288,11 @@ export async function ensureOnMain(git) {
  * @param {boolean} [options.skipRemote=false] - WU-1653: Skip remote check (requireRemote=false)
  * @throws {Error} If main is out of sync with origin
  */
-export async function ensureMainUpToDate(git, _scriptName = 'wu', { skipRemote = false } = {}) {
+export async function ensureMainUpToDate(
+  git: EnsureMainUpToDateGitAdapter,
+  _scriptName = 'wu',
+  { skipRemote = false }: { skipRemote?: boolean } = {},
+): Promise<void> {
   if (skipRemote) return;
   await git.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
   const localMain = await git.getCommitHash(BRANCHES.MAIN);
