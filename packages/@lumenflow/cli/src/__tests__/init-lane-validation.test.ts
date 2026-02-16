@@ -73,9 +73,7 @@ describe('init lane validation against inference hierarchy (WU-1745)', () => {
 
     it('should list valid parent names in warning message', () => {
       // Arrange
-      const configLanes = [
-        { name: 'Foundation: Core', wip_limit: 1, code_paths: ['src/core/**'] },
-      ];
+      const configLanes = [{ name: 'Foundation: Core', wip_limit: 1, code_paths: ['src/core/**'] }];
       const inferenceParents = ['Framework', 'Content', 'Operations'];
 
       // Act
@@ -108,9 +106,7 @@ describe('init lane validation against inference hierarchy (WU-1745)', () => {
 
     it('should handle lanes without colon separator gracefully', () => {
       // Arrange: A lane name without "Parent: Sublane" format
-      const configLanes = [
-        { name: 'Documentation', wip_limit: 1, code_paths: ['docs/**'] },
-      ];
+      const configLanes = [{ name: 'Documentation', wip_limit: 1, code_paths: ['docs/**'] }];
       const inferenceParents = ['Framework', 'Content'];
 
       // Act
@@ -122,9 +118,7 @@ describe('init lane validation against inference hierarchy (WU-1745)', () => {
 
     it('should be case-sensitive for parent name matching', () => {
       // Arrange: "framework" (lowercase) is NOT the same as "Framework"
-      const configLanes = [
-        { name: 'framework: Core', wip_limit: 1, code_paths: ['src/core/**'] },
-      ];
+      const configLanes = [{ name: 'framework: Core', wip_limit: 1, code_paths: ['src/core/**'] }];
       const inferenceParents = ['Framework', 'Content'];
 
       // Act
@@ -158,9 +152,7 @@ describe('init lane validation against inference hierarchy (WU-1745)', () => {
       const configContent = fs.readFileSync(configPath, 'utf-8');
       const config = YAML.parse(configContent) as Record<string, unknown>;
       (config as Record<string, unknown>).lanes = {
-        definitions: [
-          { name: 'Foundation: Core', wip_limit: 1, code_paths: ['src/core/**'] },
-        ],
+        definitions: [{ name: 'Foundation: Core', wip_limit: 1, code_paths: ['src/core/**'] }],
       };
       fs.writeFileSync(configPath, YAML.stringify(config));
 
@@ -171,9 +163,7 @@ describe('init lane validation against inference hierarchy (WU-1745)', () => {
       expect(result2.warnings).toBeDefined();
       // The initial scaffold with defaults should have no lane validation warnings
       // since default lanes all use valid parents
-      const defaultLaneWarnings = (result.warnings ?? []).filter((w) =>
-        w.includes('lane parent'),
-      );
+      const defaultLaneWarnings = (result.warnings ?? []).filter((w) => w.includes('lane parent'));
       expect(defaultLaneWarnings).toHaveLength(0);
     });
 
