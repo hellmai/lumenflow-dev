@@ -35,14 +35,30 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-029 Phase 1 — Kernel Foundation. This is the root WU with zero dependencies. Problem: LumenFlow needs a domain-agnostic kernel package (packages/@lumenflow/kernel/) as the foundation for the agent runtime. All subsequent WUs depend on the schemas defined here. Solution: Create the kernel package scaffold (package.json, tsconfig, vitest config) and implement all core Zod schemas: ToolScope, TaskSpec, Run, TaskState, TaskEvent (discriminated union), WorkspaceSpec, LaneSpec, SecurityBaseline, PolicyBaseline. No implementations — contracts only. Reference: existing tool.schemas.ts, tool.constants.ts, wu-schema.ts (for what to extract/redesign). Architecture plan: .claude/plans/golden-prancing-cookie.md'
+description: 'Context: INIT-029 Phase 1 — Kernel Foundation. Root WU with zero dependencies.
+  Problem: LumenFlow needs a domain-agnostic kernel package (packages/@lumenflow/kernel/) as the
+  foundation for the agent runtime. All subsequent WUs depend on the schemas defined here. Solution:
+  Create the kernel package scaffold (package.json, tsconfig, vitest config) and implement all core
+  Zod schemas: ToolScope (path|network types), TaskSpec, Run, TaskState, TaskEvent (discriminated
+  union with schema_version:1 and spec_hash on created event), WorkspaceSpec (with
+  security.allowed_scopes: ToolScope[]), LaneSpec. ToolHandler discriminated union (in-process fn vs
+  subprocess entry string). No implementations — contracts only. TODO: Validate that
+  zod-to-json-schema or Zod v4 toJsonSchema() produces MCP-compatible JSON Schema. Reference:
+  existing tool.schemas.ts, tool.constants.ts, wu-schema.ts. Architecture plan:
+  .claude/plans/golden-prancing-cookie.md'
 acceptance:
   - packages/@lumenflow/kernel/ package scaffolded with package.json, tsconfig.json, vitest.config.ts
-  - ToolScope Zod schema defined with type (path|uri|network|process), pattern, and access (read|write)
-  - TaskSpec Zod schema defined as immutable intent (id, workspace_id, lane_id, domain, title, description, acceptance, declared_scopes, risk, type, priority)
-  - Run Zod schema defined (run_id, task_id, status, started_at, by, session_id)
-  - 'TaskState Zod schema defined as projection type (status: ready|active|blocked|waiting|done, projected fields)'
-  - TaskEvent discriminated union Zod schema covering all lifecycle + run events
-  - WorkspaceSpec and LaneSpec Zod schemas defined
+  - 'ToolScope Zod schema: path type (pattern, access: read|write) + network type (posture:
+    off|full)'
+  - 'TaskSpec Zod schema with declared_scopes: ToolScope[] (type-pure scope intersection)'
+  - Run Zod schema (run_id, task_id, status, started_at, by, session_id)
+  - 'TaskState Zod schema as projection type (status: ready|active|blocked|waiting|done)'
+  - TaskEvent discriminated union with schema_version:1 field and spec_hash on created event
+  - 'WorkspaceSpec with security.allowed_scopes: ToolScope[] and security.deny_overlays'
+  - 'ToolHandler discriminated union: {kind: in-process, fn} | {kind: subprocess, entry: string}'
+  - 'ToolCapability schema uses handler: ToolHandler (descriptor separated from implementation)'
+  - ToolReceipt schema with schema_version:1, provenance fields (tool_version,
+    pack_id/version/integrity, workspace_config_hash, runtime_version), and scope_enforcement_note
   - All schemas compile, zod.parse() accepts valid data and rejects invalid in unit tests
   - Zero software delivery concepts in any schema (no git, worktree, code_paths)
+  - 'TODO validated: Zod JSON Schema export works for MCP tool definitions (or adapter identified)'
