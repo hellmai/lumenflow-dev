@@ -63,7 +63,7 @@ describe('wu-done docs integration', () => {
 
       expect(result.docsChanged).toBe(true);
       expect(result.regenerated).toBe(true);
-      expect(execSync).toHaveBeenCalledWith('pnpm turbo docs:generate', expect.UnsafeAny(Object));
+      expect(execSync).toHaveBeenCalledWith('pnpm turbo docs:generate', expect.any(Object));
     });
 
     it('should skip regeneration when no doc-source files changed', async () => {
@@ -124,7 +124,7 @@ describe('wu-done docs integration', () => {
 
       expect(execSync).toHaveBeenCalledWith(
         expect.stringContaining('prettier --write'),
-        expect.UnsafeAny(Object),
+        expect.any(Object),
       );
     });
 

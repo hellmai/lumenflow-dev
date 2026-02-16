@@ -225,8 +225,8 @@ describe('sync:templates (sync mode)', () => {
       expect(mockWithMicroWorktree).toHaveBeenCalledWith(
         expect.objectContaining({
           operation: 'sync-templates',
-          id: expect.UnsafeAny(String),
-          execute: expect.UnsafeAny(Function),
+          id: expect.any(String),
+          execute: expect.any(Function),
         }),
       );
     });

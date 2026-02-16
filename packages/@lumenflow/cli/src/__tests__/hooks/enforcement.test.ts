@@ -195,7 +195,7 @@ describe('WU-1367: Integrate Command', () => {
 
       expect(mockMkdirSync).toHaveBeenCalledWith(
         expect.stringContaining('.claude/hooks'),
-        expect.UnsafeAny(Object),
+        expect.any(Object),
       );
     });
 
@@ -219,8 +219,8 @@ describe('WU-1367: Integrate Command', () => {
 
       expect(mockWriteFileSync).toHaveBeenCalledWith(
         expect.stringContaining('enforce-worktree.sh'),
-        expect.UnsafeAny(String),
-        expect.UnsafeAny(Object),
+        expect.any(String),
+        expect.any(Object),
       );
     });
 
