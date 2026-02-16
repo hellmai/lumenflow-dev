@@ -7,8 +7,7 @@ priority: P2
 created: 2026-02-16
 code_paths:
   - packages/@lumenflow/core/src/ports/git-validator.ports.ts
-  - packages/@lumenflow/core/src/index.ts
-  - packages/@lumenflow/core/src/ports/index.ts
+  - packages/@lumenflow/core/src/git-adapter.ts
 tests:
   manual:
     - pnpm --filter @lumenflow/core typecheck
@@ -24,10 +23,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-16T09:46:10.560Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-1722
+session_id: 46f891f9-1728-46d8-ab52-4048c93b7d48
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T09:46:10.567Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -36,11 +42,3 @@ description: Add missing git-validator ports declarations and exports so core st
 acceptance:
   - core typecheck no longer reports missing './ports/git-validator.ports.js' module errors;
     strict:progress shows zero total errors; lint/prettier/tests for touched module pass.
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-1722
-claimed_at: 2026-02-16T09:46:10.560Z
-baseline_main_sha: e14ea908a8e313fdffd274926c80df2339b55d74
-session_id: 46f891f9-1728-46d8-ab52-4048c93b7d48
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-16T09:46:10.567Z
