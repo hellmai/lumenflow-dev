@@ -2,7 +2,7 @@ id: WU-1728
 title: Kernel ToolCapability schemas + ToolRegistry + scope intersection
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-16
 code_paths:
@@ -65,3 +65,6 @@ session_id: 9506f444-1ac0-408a-82c3-5c0262f407f7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T22:20:17.704Z
+locked: true
+completed_at: 2026-02-16T22:25:49.026Z
+completed: 2026-02-16

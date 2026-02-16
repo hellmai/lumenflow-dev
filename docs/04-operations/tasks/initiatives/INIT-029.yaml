@@ -19,7 +19,7 @@ phases:
     status: done
   - id: 2
     title: ToolHost + ToolRegistry + Evidence (security boundary)
-    status: pending
+    status: in_progress
   - id: 3
     title: 'Policies + Packs (software delivery as pack #1)'
     status: pending

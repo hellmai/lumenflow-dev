@@ -5,7 +5,6 @@ _Last updated: 2026-02-16_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1728 — Kernel ToolCapability schemas + ToolRegistry + scope intersection](wu/WU-1728.yaml)
 
 ## Completed
 
@@ -678,3 +677,4 @@ _Last updated: 2026-02-16_
 - [WU-1725 — Kernel package scaffold + core Zod schemas](wu/WU-1725.yaml) — 2026-02-16
 - [WU-1726 — Kernel EventStore: JSONL append, indexes, projections](wu/WU-1726.yaml) — 2026-02-16
 - [WU-1727 — Kernel XState state machine + integration test](wu/WU-1727.yaml) — 2026-02-16
+- [WU-1728 — Kernel ToolCapability schemas + ToolRegistry + scope intersection](wu/WU-1728.yaml) — 2026-02-16
