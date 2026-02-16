@@ -1,0 +1,59 @@
+{
+  "name": "@lumenflow/kernel",
+  "version": "2.21.0",
+  "description": "Domain-agnostic runtime primitives and contracts for LumenFlow",
+  "keywords": [
+    "lumenflow",
+    "kernel",
+    "runtime",
+    "schemas"
+  ],
+  "homepage": "https://github.com/hellmai/lumenflow",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hellmai/lumenflow.git",
+    "directory": "packages/@lumenflow/kernel"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "HellmAI",
+    "url": "https://hellm.ai"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./schemas": "./dist/kernel.schemas.js",
+    "./canonical-json": "./dist/canonical-json.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:dist": "tsc -p tsconfig.build.json",
+    "pack:dist": "pnpm pack",
+    "clean": "rm -rf dist *.tgz",
+    "test": "vitest run",
+    "lint": "eslint src --quiet --rule no-console:off --rule @typescript-eslint/no-unused-vars:off --rule sonarjs/concise-regex:off",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "yaml": "^2.8.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.18",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
