@@ -6,6 +6,7 @@ _Last updated: 2026-02-16_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1749 — Upgrade all outdated dependencies (batch)](wu/WU-1749.yaml)
+- [WU-1750 — Add vendor-agnostic dirty-main mutation guard across completion commands](wu/WU-1750.yaml)
 
 ## Completed
 
