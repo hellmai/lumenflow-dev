@@ -2,7 +2,7 @@ id: WU-1741
 title: Burn down pre-existing no-explicit-any lint failures in core and cli
 lane: 'Operations: Tooling'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src
 tests:
   manual:
-    - Run pnpm lint and verify no pre-existing no-explicit-any failures remain in the previously flagged core/cli files.
+    - Run pnpm lint and verify no pre-existing no-explicit-any failures remain in the previously
+      flagged core/cli files.
   unit: []
   e2e: []
 artifacts:
@@ -26,7 +27,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:prep for WU-1724 fails on pre-existing lint debt dominated by no-explicit-any in core/cli. Problem: strict TS is green but lifecycle gates still fail due to pre-existing lint violations. Solution: systematically replace unsafe any usage with explicit narrow types and guards in flagged modules so pnpm lint can pass without skip-gates.'
+description: 'Context: wu:prep for WU-1724 fails on pre-existing lint debt dominated by
+  no-explicit-any in core/cli. Problem: strict TS is green but lifecycle gates still fail due to
+  pre-existing lint violations. Solution: systematically replace unsafe any usage with explicit
+  narrow types and guards in flagged modules so pnpm lint can pass without skip-gates.'
 acceptance:
-  - pnpm lint passes for the repo without relying on --skip-gates for pre-existing no-explicit-any failures in core/cli.
-  - No behavior changes are introduced; added typings preserve runtime semantics and tests remain green.
+  - pnpm lint passes for the repo without relying on --skip-gates for pre-existing no-explicit-any
+    failures in core/cli.
+  - No behavior changes are introduced; added typings preserve runtime semantics and tests remain
+    green.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1741
+claimed_at: 2026-02-16T11:08:03.480Z
+baseline_main_sha: 9c79e5ee7c05c7178b2ee99a809c328310f9892d
+session_id: be21ca40-6c84-4516-995c-5d480ac8da7d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T11:08:03.485Z

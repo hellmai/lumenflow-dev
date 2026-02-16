@@ -1404,3 +1404,4 @@
 {"type":"complete","wuId":"WU-1723","timestamp":"2026-02-16T10:03:55.518Z"}
 {"type":"claim","wuId":"WU-1724","timestamp":"2026-02-16T10:07:11.681Z","lane":"Framework: CLI WU Commands","title":"Enable full strict TS by removing strictNullChecks/noImplicitAny overrides"}
 {"type":"complete","wuId":"WU-1724","timestamp":"2026-02-16T10:56:06.019Z"}
+{"type":"claim","wuId":"WU-1741","lane":"Operations: Tooling","title":"Burn down pre-existing no-explicit-any lint failures in core and cli","timestamp":"2026-02-16T11:08:03.525Z"}

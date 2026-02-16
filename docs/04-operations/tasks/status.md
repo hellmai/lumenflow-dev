@@ -5,6 +5,7 @@ _Last updated: 2026-02-16_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1741 — Burn down pre-existing no-explicit-any lint failures in core and cli](wu/WU-1741.yaml)
 
 ## Blocked
 

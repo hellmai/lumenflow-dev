@@ -42,6 +42,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1741 — Burn down pre-existing no-explicit-any lint failures in core and cli](wu/WU-1741.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 
