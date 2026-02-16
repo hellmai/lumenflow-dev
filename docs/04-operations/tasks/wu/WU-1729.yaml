@@ -40,14 +40,30 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-029 Phase 2 — ToolHost + Evidence. Depends on WU-1728 (ToolRegistry) and WU-1726 (EventStore). Problem: Tool execution needs a security boundary that validates scopes, enforces policy, and produces immutable receipts. This is the killer differentiator — agents cannot go off-script. Solution: ToolHost class wrapping ToolRegistry — validates input, resolves scopes (workspace ∩ lane ∩ task ∩ tool), calls policy hook (stub for now), executes tool, emits receipt. EvidenceStore for receipts (append JSONL to .lumenflow/evidence/traces/). CAS store for tool inputs (crypto.createHash sha256 -> evidence/inputs/{hash}). ToolReceipt schema with honest scope semantics (scope_requested, scope_allowed, scope_enforced). Reference: tool-runner.ts. Plan: .claude/plans/golden-prancing-cookie.md'
+description: 'Context: INIT-029 Phase 2 — ToolHost + Evidence. Depends on WU-1728 (ToolRegistry) and
+  WU-1726 (EventStore). Problem: Tool execution needs a security boundary that validates scopes,
+  enforces policy, and produces immutable receipts with provenance for replay determinism. This is
+  the killer differentiator — agents cannot go off-script. Solution: ToolHost class wrapping
+  ToolRegistry — validates input, resolves scopes (workspace ∩ lane ∩ task ∩ tool, all ToolScope[]),
+  calls policy hook (stub for now), dispatches to handler (in-process or subprocess), emits receipt.
+  EvidenceStore for receipts (append JSONL). CAS store for tool inputs (SHA-256 ->
+  evidence/inputs/{hash}). ToolReceipt with schema_version:1, honest scope semantics
+  (scope_requested/allowed/enforced + scope_enforcement_note), and provenance fields (tool_version,
+  pack_id/version/integrity, workspace_config_hash, runtime_version). Reference: tool-runner.ts.
+  Plan: .claude/plans/golden-prancing-cookie.md'
 acceptance:
   - ToolHost class wraps ToolRegistry with execute(name, input, ctx) method
   - ToolHost validates input against tool schema before execution
-  - 'ToolHost resolves scope intersection: workspace ∩ lane ∩ task ∩ tool'
+  - 'ToolHost resolves scope intersection: workspace ∩ lane ∩ task ∩ tool (all ToolScope[])'
+  - 'ToolHost dispatches to handler.kind: in-process calls fn directly, subprocess delegates to
+    worker'
   - ToolHost calls policy hook stub (allow-all for now, replaced in Phase 3)
-  - ToolHost emits ToolReceipt with honest scope semantics (scope_requested, scope_allowed, scope_enforced)
+  - ToolReceipt includes schema_version:1 for stable control plane ingestion
+  - 'ToolReceipt includes honest scope semantics: scope_requested, scope_allowed, scope_enforced,
+    scope_enforcement_note'
+  - 'ToolReceipt includes provenance: tool_version, pack_id, pack_version, pack_integrity,
+    workspace_config_hash, runtime_version'
   - EvidenceStore appends receipts as JSONL to evidence/traces/
   - 'CAS store: tool inputs hashed with SHA-256 and stored in evidence/inputs/{hash}'
   - Execute within allowed scope produces success receipt with input_ref pointing to CAS
-  - Execute outside allowed scope produces denied receipt — hard boundary, not hook
+  - Execute outside allowed scope produces denied receipt — hard boundary not hook
