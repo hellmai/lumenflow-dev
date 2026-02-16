@@ -35,7 +35,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1734 — Software delivery pack — Git tools + worktree + lane locks + delegation](wu/WU-1734.yaml) — Framework: Core State Recovery
 
 ## ⛔ Blocked
 
@@ -718,6 +717,7 @@ sections:
 - [WU-1731 — Kernel built-in tools (fs:read, fs:write, proc:exec) + ESLint boundary rules](wu/WU-1731.yaml)
 - [WU-1732 — Kernel PolicyEngine + DomainPack manifest/loader + integrity pinning](wu/WU-1732.yaml)
 - [WU-1733 — Software delivery pack — WU extensions + gate policies](wu/WU-1733.yaml)
+- [WU-1734 — Software delivery pack — Git tools + worktree + lane locks + delegation](wu/WU-1734.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

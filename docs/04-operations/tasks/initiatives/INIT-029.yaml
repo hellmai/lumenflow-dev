@@ -22,7 +22,7 @@ phases:
     status: done
   - id: 3
     title: 'Policies + Packs (software delivery as pack #1)'
-    status: in_progress
+    status: done
   - id: 4
     title: Surfaces + Runtime Daemon (CLI/MCP over KernelRuntime)
     status: pending

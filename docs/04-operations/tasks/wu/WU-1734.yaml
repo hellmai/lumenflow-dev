@@ -2,7 +2,7 @@ id: WU-1734
 title: Software delivery pack — Git tools + worktree + lane locks + delegation
 lane: 'Framework: Core State Recovery'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -70,3 +70,6 @@ session_id: e7af8927-f65c-487a-92c0-d50c22b4b2ba
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T23:36:02.797Z
+locked: true
+completed_at: 2026-02-16T23:44:07.346Z
+completed: 2026-02-16
