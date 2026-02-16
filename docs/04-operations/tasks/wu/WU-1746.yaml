@@ -6,9 +6,10 @@ status: in_progress
 priority: P1
 created: 2026-02-16
 code_paths:
-  - packages/@lumenflow/core/src/wu-state-*.ts
-  - packages/@lumenflow/core/src/stamp-*.ts
-  - packages/@lumenflow/core/src/cleanup-*.ts
+  - packages/@lumenflow/core/src/wu-done-merged-worktree.ts
+  - packages/@lumenflow/core/src/wu-context-constants.ts
+  - packages/@lumenflow/core/src/recovery/recovery-analyzer.ts
+  - packages/@lumenflow/core/src/validation/types.ts
   - packages/@lumenflow/cli/src/wu-done.ts
 tests:
   manual:
@@ -22,10 +23,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-16T14:20:03.370Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-state-recovery-wu-1746
+session_id: ff3aadb9-b17d-4310-a7f1-885aa6575d8b
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T14:20:03.378Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +50,3 @@ acceptance:
   - wu:done detects when WU branch commits are already merged to main
   - wu:done completes stamping and state cleanup even when worktree is gone
   - wu:recover can handle released-but-not-done WUs with merged commits
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-state-recovery-wu-1746
-claimed_at: 2026-02-16T14:20:03.370Z
-baseline_main_sha: ce15af0d1ed3b4bbc93c565edebc1b17c9fb27ad
-session_id: ff3aadb9-b17d-4310-a7f1-885aa6575d8b
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-16T14:20:03.378Z
