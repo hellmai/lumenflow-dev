@@ -10,11 +10,7 @@ function toCanonicalValue(value: unknown): CanonicalValue {
 
   if (value === null) {
     normalized = null;
-  } else if (
-    typeof value === 'boolean' ||
-    typeof value === 'number' ||
-    typeof value === 'string'
-  ) {
+  } else if (typeof value === 'boolean' || typeof value === 'number' || typeof value === 'string') {
     normalized = value;
   } else if (value instanceof Date) {
     normalized = value.toISOString();
