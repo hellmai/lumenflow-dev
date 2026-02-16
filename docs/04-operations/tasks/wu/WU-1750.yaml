@@ -2,7 +2,7 @@ id: WU-1750
 title: Add vendor-agnostic dirty-main mutation guard across completion commands
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -15,7 +15,8 @@ code_paths:
   - AGENTS.md
 tests:
   manual:
-    - Modify a tracked file on main while an in_progress worktree WU exists, then run wu:prep/wu:done and verify hard block + remediation guidance
+    - Modify a tracked file on main while an in_progress worktree WU exists, then run
+      wu:prep/wu:done and verify hard block + remediation guidance
   unit:
     - packages/@lumenflow/cli/src/__tests__/main-dirty-guard.test.ts
   e2e: []
@@ -32,9 +33,26 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: We hit a real workflow breach where file mutations landed on main checkout despite worktree discipline intent. Claude hooks now guard additional Bash mutations, but that remains vendor-specific and hook-dependent. Problem: Any client path that bypasses hook execution (other vendors, MCP write tools, direct local edits) can still contaminate main and only be discovered late. Solution: add a vendor-agnostic guard in core WU command flow (wu:prep/wu:done preflight) that blocks when main checkout has non-allowlisted dirty changes while active worktrees/WUs are in progress (except branch-pr mode). Keep hooks as early UX guardrails, but enforce the invariant in command runtime for all vendors.'
+description: 'Context: We hit a real workflow breach where file mutations landed on main checkout
+  despite worktree discipline intent. Claude hooks now guard additional Bash mutations, but that
+  remains vendor-specific and hook-dependent. Problem: Any client path that bypasses hook execution
+  (other vendors, MCP write tools, direct local edits) can still contaminate main and only be
+  discovered late. Solution: add a vendor-agnostic guard in core WU command flow (wu:prep/wu:done
+  preflight) that blocks when main checkout has non-allowlisted dirty changes while active
+  worktrees/WUs are in progress (except branch-pr mode). Keep hooks as early UX guardrails, but
+  enforce the invariant in command runtime for all vendors.'
 acceptance:
-  - wu:prep blocks with actionable guidance when main checkout has non-allowlisted dirty files and active worktree-based WU context exists
+  - wu:prep blocks with actionable guidance when main checkout has non-allowlisted dirty files and
+    active worktree-based WU context exists
   - wu:done blocks with the same guard regardless of client vendor or hook availability
   - branch-pr mode remains allowed and is not falsely blocked
-  - guard is covered by unit tests and documentation describes vendor-agnostic enforcement model including MCP-originated writes
+  - guard is covered by unit tests and documentation describes vendor-agnostic enforcement model
+    including MCP-originated writes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1750
+claimed_at: 2026-02-16T16:32:32.122Z
+baseline_main_sha: 7b951f97bee40778689b7c33ecb63cc25790ec7c
+session_id: 69beab82-4969-45fd-b61a-cda9601efd75
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T16:32:32.130Z
