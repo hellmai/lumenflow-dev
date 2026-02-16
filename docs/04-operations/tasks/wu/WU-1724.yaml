@@ -9,6 +9,7 @@ code_paths:
   - packages/@lumenflow/cli/tsconfig.json
   - packages/@lumenflow/core/tsconfig.json
   - packages/@lumenflow/cli/src/__tests__/strict-flags-enforcement.test.ts
+  - packages/@lumenflow/core/src
 tests:
   manual:
     - pnpm typecheck
@@ -23,12 +24,24 @@ initiative: INIT-022
 spec_refs:
   - docs/04-operations/tasks/wu
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  Scope expanded after strict-flag flip revealed additional core strict debt
+  (TS7006/null-safety/indexing) requiring remediation across core source.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-16T10:07:11.634Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1724
+session_id: eabc156d-7304-4146-879c-854ba1d90274
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-16T10:07:11.642Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +56,5 @@ acceptance:
   - The regression test passes with the overrides removed
   - pnpm typecheck passes from repo root after the strict flag flip
   - pnpm strict:progress --json reports zero errors for cli/core
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1724
-claimed_at: 2026-02-16T10:07:11.634Z
-baseline_main_sha: 007886411aa6f4fa7817e7263791c7b34db4534c
-session_id: eabc156d-7304-4146-879c-854ba1d90274
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-16T10:07:11.642Z
+  - '@lumenflow/core compiles with noImplicitAny and strictNullChecks enabled'
+  - Full workspace pnpm typecheck passes after strict flag flip
