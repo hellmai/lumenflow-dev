@@ -155,6 +155,8 @@ interface SpawnCliArgs {
   noContext?: boolean;
 }
 
+type SpawnParserOption = NonNullable<(typeof WU_OPTIONS)[keyof typeof WU_OPTIONS]>;
+
 /**
  * WU-1192: Truncation prevention constants (consolidated from CLI)
  *
@@ -867,15 +869,20 @@ function generateImplementationContext(doc: WUDoc): string {
 function codePathMatchesInvariant(invariant: InvariantDefinition, codePaths: string[]): boolean {
   switch (invariant.type) {
     case INVARIANT_TYPES.FORBIDDEN_FILE:
-    case INVARIANT_TYPES.REQUIRED_FILE:
+    case INVARIANT_TYPES.REQUIRED_FILE: {
+      const invariantPath = invariant.path;
+      if (!invariantPath) return false;
       return codePaths.some(
-        (p) => p === invariant.path || minimatch(p, invariant.path) || minimatch(invariant.path, p),
+        (p) => p === invariantPath || minimatch(p, invariantPath) || minimatch(invariantPath, p),
       );
+    }
 
-    case INVARIANT_TYPES.MUTUAL_EXCLUSIVITY:
+    case INVARIANT_TYPES.MUTUAL_EXCLUSIVITY: {
+      const invariantPaths = invariant.paths ?? [];
       return codePaths.some((p) =>
-        invariant.paths.some((invPath) => p === invPath || minimatch(p, invPath)),
+        invariantPaths.some((invPath) => p === invPath || minimatch(p, invPath)),
       );
+    }
 
     case INVARIANT_TYPES.FORBIDDEN_PATTERN:
     case INVARIANT_TYPES.REQUIRED_PATTERN:
@@ -886,8 +893,11 @@ function codePathMatchesInvariant(invariant: InvariantDefinition, codePaths: str
       );
 
     // WU-2254: forbidden-import uses 'from' glob instead of 'scope'
-    case INVARIANT_TYPES.FORBIDDEN_IMPORT:
-      return invariant.from ? codePaths.some((p) => minimatch(p, invariant.from)) : false;
+    case INVARIANT_TYPES.FORBIDDEN_IMPORT: {
+      const fromPattern = invariant.from;
+      if (!fromPattern) return false;
+      return codePaths.some((p) => minimatch(p, fromPattern));
+    }
 
     default:
       return false;
@@ -1551,7 +1561,7 @@ See: https://lumenflow.dev/reference/agent-invocation-guide/ §Bug Discovery`;
 function generateLaneGuidance(lane: string | undefined): string {
   if (!lane) return '';
 
-  const laneParent = lane.split(':')[0].trim();
+  const laneParent = (lane.split(':')[0] ?? '').trim();
 
   const guidance: Record<string, string> = {
     Operations: `## Lane-Specific: Tooling
@@ -2031,7 +2041,7 @@ async function main() {
       WU_OPTIONS.parentWu, // WU-1945: Parent WU for spawn registry tracking
       WU_OPTIONS.client,
       WU_OPTIONS.vendor,
-    ],
+    ].filter((option): option is SpawnParserOption => option !== undefined),
     required: ['id'],
     allowPositionalId: true,
   }) as SpawnCliArgs;
