@@ -96,7 +96,10 @@ function validateImportSpecifier(options: {
   }
 }
 
-async function validatePackImportBoundaries(packRoot: string, hashExclusions?: string[]): Promise<void> {
+async function validatePackImportBoundaries(
+  packRoot: string,
+  hashExclusions?: string[],
+): Promise<void> {
   const files = await listPackFiles(packRoot, hashExclusions);
   const candidateFiles = files.filter((relativePath) =>
     ['.ts', '.tsx', '.mts', '.cts', '.js', '.mjs', '.cjs'].includes(path.extname(relativePath)),
@@ -145,7 +148,9 @@ export class PackLoader {
       throw new Error(`Pack manifest id mismatch: expected ${pin.id}, got ${manifest.id}`);
     }
     if (manifest.version !== pin.version) {
-      throw new Error(`Pack manifest version mismatch: expected ${pin.version}, got ${manifest.version}`);
+      throw new Error(
+        `Pack manifest version mismatch: expected ${pin.version}, got ${manifest.version}`,
+      );
     }
 
     await validatePackImportBoundaries(packRoot, this.hashExclusions);
