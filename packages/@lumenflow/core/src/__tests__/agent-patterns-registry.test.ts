@@ -87,7 +87,7 @@ describe('agent-patterns-registry', () => {
         const patterns = await getAgentPatterns({ cacheDir: tempDir });
 
         expect(patterns).toEqual(remotePatterns.patterns);
-        expect(globalThis.fetch).toHaveBeenCalledWith(REGISTRY_URL, expect.UnsafeAny(Object));
+        expect(globalThis.fetch).toHaveBeenCalledWith(REGISTRY_URL, expect.any(Object));
       });
 
       it('should cache fetched patterns locally', async () => {

@@ -196,7 +196,7 @@ describe('WU-1541: No process.chdir in normal execution paths', () => {
       expect(mockGitAdapter.raw).toHaveBeenCalledWith(['rebase', '--continue']);
       expect(writeFile).toHaveBeenCalledWith(
         expectedWorktreeEventsPath,
-        expect.UnsafeAny(String),
+        expect.any(String),
         'utf-8',
       );
     });
