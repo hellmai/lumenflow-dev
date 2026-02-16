@@ -1421,4 +1421,5 @@
 {"type":"complete","wuId":"WU-1728","timestamp":"2026-02-16T22:25:53.647Z"}
 {"type":"claim","wuId":"WU-1729","timestamp":"2026-02-16T22:26:38.598Z","lane":"Framework: Core Lifecycle","title":"Kernel ToolHost execution + EvidenceStore with CAS and receipts"}
 {"type":"complete","wuId":"WU-1729","timestamp":"2026-02-16T22:51:22.799Z"}
-{"type":"claim","wuId":"WU-1730","lane":"Framework: Core Validation","title":"Kernel sandbox integration (bwrap port) + subprocess tool-runner worker","timestamp":"2026-02-16T22:52:12.094Z"}
+{"type":"claim","wuId":"WU-1730","timestamp":"2026-02-16T22:52:12.094Z","lane":"Framework: Core Validation","title":"Kernel sandbox integration (bwrap port) + subprocess tool-runner worker"}
+{"type":"complete","wuId":"WU-1730","timestamp":"2026-02-16T23:02:45.761Z"}

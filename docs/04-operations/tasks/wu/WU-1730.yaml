@@ -2,7 +2,7 @@ id: WU-1730
 title: Kernel sandbox integration (bwrap port) + subprocess tool-runner worker
 lane: 'Framework: Core Validation'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -73,3 +73,6 @@ session_id: 8ac5acab-dc70-4db2-8ecc-27fd4503b678
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-16T22:52:12.054Z
+locked: true
+completed_at: 2026-02-16T23:02:41.058Z
+completed: 2026-02-16
