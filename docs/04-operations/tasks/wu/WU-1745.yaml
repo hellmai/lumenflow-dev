@@ -1,0 +1,34 @@
+id: WU-1745
+title: Validate lane config against inference hierarchy at init time
+lane: 'Framework: CLI Enforcement'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-16
+code_paths:
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/lane-*.ts
+tests:
+  manual:
+    - Run lumenflow init in empty project, configure lane with invalid parent, verify warning
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/init-lane-validation.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1745.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: When lumenflow init runs with --client claude, it generates .lumenflow.config.yaml with lane definitions and .lumenflow.lane-inference.yaml with parent/sublane hierarchy. Problem: There is no validation that lane names in config match valid parents in lane-inference. In Haven test project, agent configured lanes using 'Foundation: Core' parent which doesn't exist in the inference hierarchy — wu:create correctly rejected it, but only at WU creation time. User had to burn an entire WU (WU-1) just to fix config alignment. Solution: Add lane validation to lumenflow init (or a lane:validate command) that cross-checks .lumenflow.config.yaml lane names against .lumenflow.lane-inference.yaml parents at config time, not at wu:create time."
+acceptance:
+  - lumenflow init warns/errors when lane definitions use invalid parent names
+  - Lane names in .lumenflow.config.yaml are validated against .lumenflow.lane-inference.yaml parents
+  - Clear error message shows valid parent lane names when validation fails
