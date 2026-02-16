@@ -1427,3 +1427,4 @@
 {"type":"complete","wuId":"WU-1731","timestamp":"2026-02-16T23:08:55.710Z"}
 {"type":"claim","wuId":"WU-1732","timestamp":"2026-02-16T23:09:39.487Z","lane":"Framework: Core Validation","title":"Kernel PolicyEngine + DomainPack manifest/loader + integrity pinning"}
 {"type":"complete","wuId":"WU-1732","timestamp":"2026-02-16T23:21:21.736Z"}
+{"type":"claim","wuId":"WU-1733","lane":"Framework: Core Lifecycle","title":"Software delivery pack — WU extensions + gate policies","timestamp":"2026-02-16T23:22:07.241Z"}

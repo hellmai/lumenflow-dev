@@ -23,7 +23,6 @@ sections:
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
-- [WU-1733 — Software delivery pack — WU extensions + gate policies](wu/WU-1733.yaml) — Framework: Core Lifecycle
 - [WU-1734 — Software delivery pack — Git tools + worktree + lane locks + delegation](wu/WU-1734.yaml) — Framework: Core State Recovery
 - [WU-1735 — KernelRuntime facade + initialization](wu/WU-1735.yaml) — Framework: Core Lifecycle
 - [WU-1736 — CLI surface — task lifecycle commands (tracer bullet: create, claim, status, complete)](wu/WU-1736.yaml) — Framework: CLI WU Commands
@@ -36,6 +35,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1733 — Software delivery pack — WU extensions + gate policies](wu/WU-1733.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
