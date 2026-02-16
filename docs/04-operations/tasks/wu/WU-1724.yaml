@@ -1,0 +1,40 @@
+id: WU-1724
+title: Enable full strict TS by removing strictNullChecks/noImplicitAny overrides
+lane: 'Framework: CLI WU Commands'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-16
+code_paths:
+  - packages/@lumenflow/cli/tsconfig.json
+  - packages/@lumenflow/core/tsconfig.json
+  - packages/@lumenflow/cli/src/__tests__/strict-flags-enforcement.test.ts
+tests:
+  manual:
+    - pnpm typecheck
+    - pnpm strict:progress --json
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/strict-flags-enforcement.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1724.done
+dependencies: []
+initiative: INIT-022
+spec_refs:
+  - docs/04-operations/tasks/wu
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: strict progress is at zero but full strict mode is not yet enabled because cli/core still override strictNullChecks and noImplicitAny to false. Problem: this prevents claiming full strict TypeScript and allows implicit-any/null-safety regressions in future changes. Solution: add a regression test that enforces strict flags, then remove the two overrides from cli/core tsconfig so strict: true applies fully, and verify workspace typecheck + strict progress remain green.'
+acceptance:
+  - A regression test fails when cli/core tsconfig override strictNullChecks/noImplicitAny to false
+  - The regression test passes with the overrides removed
+  - pnpm typecheck passes from repo root after the strict flag flip
+  - pnpm strict:progress --json reports zero errors for cli/core
