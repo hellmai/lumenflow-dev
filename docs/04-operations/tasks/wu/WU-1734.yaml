@@ -7,6 +7,7 @@ priority: P1
 created: 2026-02-16
 code_paths:
   - packages/@lumenflow/packs/software-delivery/tools/
+  - packages/@lumenflow/packs/software-delivery/tool-impl/
 tests:
   manual:
     - pnpm typecheck passes
@@ -39,12 +40,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-029 Phase 3 — Policies + Packs. Depends on WU-1732 (PolicyEngine) and WU-1733 (SW delivery extensions). Problem: Current git/worktree/delegation tools are spread across core as standalone modules. They need to become ToolCapability implementations registered through the pack system. Solution: Git tools (commit, push, merge, branch, worktree) as ToolCapability implementations. Lane lock tool ported from lane-lock.ts. Delegation tools ported from delegation-registry-store.ts pattern. Worktree lifecycle tools ported from worktree-*.ts. All tools produce receipts through ToolHost. Reference: git-adapter.ts, lane-lock.ts, delegation-registry-store.ts, worktree-*.ts. Plan: .claude/plans/golden-prancing-cookie.md'
+description: 'Context: INIT-029 Phase 3 — Policies + Packs. Depends on WU-1732 (PolicyEngine) and
+  WU-1733 (SW delivery extensions). Problem: Current git/worktree/delegation tools are spread across
+  core as standalone modules. They need to become ToolCapability descriptors plus tool-impl
+  implementations registered through the pack system. Solution: Capability descriptors in the tools
+  directory export ToolCapability with handler.kind=subprocess and entry string refs (no side-effect
+  imports). Implementations in the tool-impl directory contain actual child_process and simple-git
+  calls (loaded only by tool-runner worker). Git tools, lane lock, delegation tools, worktree
+  lifecycle. All tool-impl files loaded only by worker inside sandbox. Reference: git-adapter.ts,
+  lane-lock.ts, delegation-registry-store.ts. Plan: .claude/plans/golden-prancing-cookie.md'
 acceptance:
-  - Git tools (git:commit, git:push, git:merge, git:branch, git:worktree) as ToolCapability implementations
+  - Git tool descriptors in packs tools directory with handler.kind=subprocess and entry strings
+  - Git tool implementations in packs tool-impl directory with actual child_process and simple-git
+    calls
+  - tool-impl files loaded ONLY by tool-runner worker (ESLint boundary enforced)
   - All git tools produce receipts when executed through ToolHost
-  - Lane lock tool ported from lane-lock.ts with atomic acquire/release
-  - Delegation tools ported from delegation-registry-store.ts with lineage tracking
-  - Worktree lifecycle tools (create, remove, list) ported from worktree-*.ts
-  - git:commit tool execution produces receipt with artifacts_written field
+  - 'Lane lock tool: descriptor in tools dir plus implementation in tool-impl with atomic
+    acquire/release'
+  - 'Delegation tools: descriptor plus implementation with lineage tracking'
+  - 'Worktree lifecycle tools (create, remove, list): descriptor plus implementation'
+  - git:commit execution produces receipt with artifacts_written field
   - Lane lock acquires and releases correctly with staleness detection
+  - No side-effect imports (fs, child_process) in tools directory descriptor files
