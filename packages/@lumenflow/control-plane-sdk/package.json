@@ -1,0 +1,30 @@
+{
+  "name": "@lumenflow/control-plane-sdk",
+  "version": "2.21.0",
+  "description": "Control plane sync contracts and adapters for LumenFlow runtime",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:dist": "tsc -p tsconfig.build.json",
+    "pack:dist": "pnpm pack",
+    "clean": "rm -rf dist *.tgz",
+    "test": "vitest run",
+    "lint": "eslint src __tests__ --quiet --rule no-console:off --rule @typescript-eslint/no-unused-vars:off",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.18",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
