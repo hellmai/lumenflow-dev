@@ -25,3 +25,10 @@ success_metrics:
   - MCP and CLI parity gates remain green for migrated commands
   - Runtime adoption proceeds in old production packages via strangler-fig migration
 labels: []
+wus:
+  - WU-1784
+  - WU-1785
+  - WU-1786
+  - WU-1787
+  - WU-1788
+  - WU-1789
