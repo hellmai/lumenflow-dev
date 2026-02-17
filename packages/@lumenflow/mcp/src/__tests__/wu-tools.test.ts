@@ -58,6 +58,7 @@ import {
   wuProtoTool,
   allTools,
   buildMcpManifestParityReport,
+  registeredTools,
 } from '../tools.js';
 import * as cliRunner from '../cli-runner.js';
 import { PUBLIC_MANIFEST } from '../../../cli/src/public-manifest.js';
@@ -1331,12 +1332,17 @@ describe('Manifest parity truth gate (WU-1481)', () => {
     'lane_setup',
     'lane_status',
     'lane_validate',
-    'task_claim',
   ];
 
   const EXPECTED_ALLOWED_EXTRAS = [
     'context_get',
     'gates_run',
+    'task_block',
+    'task_complete',
+    'task_create',
+    'task_inspect',
+    'task_unblock',
+    'tool_execute',
     'validate_agent_skills',
     'validate_agent_sync',
     'validate_backlog_sync',
@@ -1347,7 +1353,7 @@ describe('Manifest parity truth gate (WU-1481)', () => {
   it('reports deterministic missing and extra command lists', () => {
     const report = buildMcpManifestParityReport(
       PUBLIC_MANIFEST.map((command) => command.name),
-      allTools.map((tool) => tool.name),
+      registeredTools.map((tool) => tool.name),
     );
 
     expect(report.missing).toEqual(EXPECTED_MISSING_COMMANDS);
@@ -1358,7 +1364,7 @@ describe('Manifest parity truth gate (WU-1481)', () => {
   it('requires normalized parity drift to stay within the expected remediation set', () => {
     const report = buildMcpManifestParityReport(
       PUBLIC_MANIFEST.map((command) => command.name),
-      allTools.map((tool) => tool.name),
+      registeredTools.map((tool) => tool.name),
     );
 
     const details =

@@ -217,6 +217,7 @@ import {
   taskToolExecuteTool,
   taskUnblockTool,
 } from './tools/runtime-task-tools.js';
+import { RuntimeTaskToolNames } from './tools/runtime-task-constants.js';
 import {
   initiativeListTool,
   initiativeStatusTool,
@@ -320,6 +321,12 @@ export const MCP_PUBLIC_PARITY_ALLOWED_EXTRA_TOOLS = [
   'context_get',
   'gates_run',
   'initiative_remove_wu',
+  RuntimeTaskToolNames.TASK_BLOCK,
+  RuntimeTaskToolNames.TASK_COMPLETE,
+  RuntimeTaskToolNames.TASK_CREATE,
+  RuntimeTaskToolNames.TASK_INSPECT,
+  RuntimeTaskToolNames.TASK_UNBLOCK,
+  RuntimeTaskToolNames.TOOL_EXECUTE,
   'validate_agent_skills',
   'validate_agent_sync',
   'validate_backlog_sync',
@@ -493,9 +500,11 @@ export const allTools: ToolDefinition[] = [
  * migrate command-by-command without breaking parity gates.
  *
  * NOTE:
- * `allTools` remains the legacy parity baseline for current closure gates,
- * so newly added runtime tools may appear in the expected missing set until
- * parity policy explicitly switches to `registeredTools`.
+ * `allTools` remains the legacy parity baseline for strict CLI parity checks
+ * that intentionally ignore runtime migration deltas.
+ *
+ * Phase-4 closure metrics use `registeredTools` (production registry) so
+ * runtime-migrated tools are measured against the real server surface.
  */
 export const runtimeTaskTools: ToolDefinition[] = [
   taskClaimTool,

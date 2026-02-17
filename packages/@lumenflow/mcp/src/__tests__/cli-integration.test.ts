@@ -15,8 +15,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { runCliCommand, type CliRunnerResult } from '../cli-runner.js';
-import { allTools, buildMcpManifestParityReport } from '../tools.js';
+import { buildMcpManifestParityReport, registeredTools } from '../tools.js';
 import { PUBLIC_MANIFEST } from '../../../cli/src/public-manifest.js';
+import { RuntimeTaskToolNames } from '../tools/runtime-task-constants.js';
 import { resolve } from 'node:path';
 
 /**
@@ -81,7 +82,6 @@ describe('CLI integration (no mocks)', { timeout: CLI_INTEGRATION_TEST_TIMEOUT_M
     'lane_setup',
     'lane_status',
     'lane_validate',
-    'task_claim',
   ];
 
   describe('wu:status flags', () => {
@@ -301,14 +301,29 @@ describe('CLI integration (no mocks)', { timeout: CLI_INTEGRATION_TEST_TIMEOUT_M
   });
 
   describe('manifest parity remediation visibility (WU-1481)', () => {
+    const RUNTIME_MIGRATED_TOOL_NAMES = [
+      RuntimeTaskToolNames.TASK_CLAIM,
+      RuntimeTaskToolNames.TASK_CREATE,
+      RuntimeTaskToolNames.TASK_COMPLETE,
+      RuntimeTaskToolNames.TASK_BLOCK,
+      RuntimeTaskToolNames.TASK_UNBLOCK,
+      RuntimeTaskToolNames.TASK_INSPECT,
+      RuntimeTaskToolNames.TOOL_EXECUTE,
+    ];
+
     it('should expose actionable parity diffs for remediation waves', () => {
       const report = buildMcpManifestParityReport(
         PUBLIC_MANIFEST.map((command) => command.name),
-        allTools.map((tool) => tool.name),
+        registeredTools.map((tool) => tool.name),
       );
 
       expect(report.missing).toEqual(EXPECTED_MISSING_PARITY_TOOLS);
       expect(report.unexpectedExtra).toEqual([]);
+
+      for (const toolName of RUNTIME_MIGRATED_TOOL_NAMES) {
+        expect(report.missing).not.toContain(toolName);
+        expect(report.unexpectedExtra).not.toContain(toolName);
+      }
     });
   });
 });
