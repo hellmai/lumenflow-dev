@@ -9,7 +9,9 @@ code_paths:
   - packages/@lumenflow/kernel/src/event-store/index.ts
   - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
 tests:
-  manual: []
+  manual:
+    - Run EventStore unit tests; manually verify stale lock files are reclaimed and claim/complete
+      transitions append atomically under one lock.
   unit:
     - packages/@lumenflow/kernel/src/__tests__/event-store.test.ts
   e2e: []
@@ -28,7 +30,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: EventStore file lock has no stale-lock detection — process crash permanently bricks the store. claimTask/completeTask emit two events with separate appends — crash between them corrupts task state. Need stale-lock detection (PID+timestamp) and batch appendAll method for atomic multi-event writes.
+description: EventStore file lock has no stale-lock detection — process crash permanently bricks the
+  store. claimTask/completeTask emit two events with separate appends — crash between them corrupts
+  task state. Need stale-lock detection (PID+timestamp) and batch appendAll method for atomic
+  multi-event writes.
 acceptance:
   - File lock writes PID and timestamp into lock file
   - Stale lock detected and recovered when owning process is dead
