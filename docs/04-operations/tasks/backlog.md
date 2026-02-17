@@ -29,7 +29,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1795 — Phase 4 guardrail: enforce non-increasing MCP runCliCommand shell-out budget](wu/WU-1795.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -758,6 +757,7 @@ sections:
 - [WU-1788 — Migrate task:inspect to direct KernelRuntime replay path](wu/WU-1788.yaml)
 - [WU-1789 — Migrate tool:execute path to direct KernelRuntime execution](wu/WU-1789.yaml)
 - [WU-1793 — Phase 4 metric closure: align parity baseline with runtime-registered tools](wu/WU-1793.yaml)
+- [WU-1795 — Phase 4 guardrail: enforce non-increasing MCP runCliCommand shell-out budget](wu/WU-1795.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

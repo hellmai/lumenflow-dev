@@ -5,7 +5,6 @@ _Last updated: 2026-02-17_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1795 — Phase 4 guardrail: enforce non-increasing MCP runCliCommand shell-out budget](wu/WU-1795.yaml)
 
 ## Completed
 
@@ -730,3 +729,4 @@ _Last updated: 2026-02-17_
 - [WU-1788 — Migrate task:inspect to direct KernelRuntime replay path](wu/WU-1788.yaml) — 2026-02-17
 - [WU-1789 — Migrate tool:execute path to direct KernelRuntime execution](wu/WU-1789.yaml) — 2026-02-17
 - [WU-1793 — Phase 4 metric closure: align parity baseline with runtime-registered tools](wu/WU-1793.yaml) — 2026-02-17
+- [WU-1795 — Phase 4 guardrail: enforce non-increasing MCP runCliCommand shell-out budget](wu/WU-1795.yaml) — 2026-02-17
