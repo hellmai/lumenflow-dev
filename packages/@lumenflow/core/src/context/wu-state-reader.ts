@@ -116,18 +116,17 @@ export async function readWuState(wuId: string, repoRoot: string): Promise<WuSta
       if (worktreeBranch) {
         const yamlRelPath = WU_PATHS.WU(normalizedId);
         try {
-          const branchContent = execFileSync(
-            'git',
-            ['show', `${worktreeBranch}:${yamlRelPath}`],
-            { encoding: 'utf-8', cwd: repoRoot, stdio: ['pipe', 'pipe', 'pipe'] },
-          );
+          const branchContent = execFileSync('git', ['show', `${worktreeBranch}:${yamlRelPath}`], {
+            encoding: 'utf-8',
+            cwd: repoRoot,
+            stdio: ['pipe', 'pipe', 'pipe'],
+          });
           const branchYaml = parseYaml(branchContent);
           const branchStatus = branchYaml?.status;
 
           if (branchStatus && branchStatus !== status) {
             isConsistent = false;
-            inconsistencyReason =
-              `Main shows '${status}' but worktree branch (${worktreeBranch}) shows '${branchStatus}'`;
+            inconsistencyReason = `Main shows '${status}' but worktree branch (${worktreeBranch}) shows '${branchStatus}'`;
             effectiveStatus = branchStatus;
           }
         } catch {
