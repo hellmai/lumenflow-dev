@@ -14,7 +14,6 @@ tests:
       require(''./dist/agent-patterns-registry'');
       isAgentBranch(''claude/test-branch'').then(console.log)" from CLI package'
   unit:
-    - packages/@lumenflow/cli/src/__tests__/agent-patterns-registry.test.ts
     - packages/@lumenflow/core/src/__tests__/config-key-normalization.test.ts
   e2e: []
 artifacts:
