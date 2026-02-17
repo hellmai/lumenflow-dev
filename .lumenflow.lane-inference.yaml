@@ -16,6 +16,10 @@ Framework:
   Core Lifecycle:
     description: 'Core lifecycle orchestration: WU flow, lane/worktree orchestration, backlog wiring'
     code_paths:
+      - 'packages/@lumenflow/kernel/**'
+      - 'packages/@lumenflow/runtime/**'
+      - 'packages/@lumenflow/packs/**'
+      - 'packages/@lumenflow/surfaces/**'
       - 'packages/@lumenflow/core/src/wu-*.ts'
       - 'packages/@lumenflow/core/src/lane-*.ts'
       - 'packages/@lumenflow/core/src/worktree-*.ts'
@@ -31,6 +35,9 @@ Framework:
       - 'backlog sync'
       - 'git orchestration'
       - 'lifecycle engine'
+      - 'kernel runtime'
+      - 'domain packs'
+      - 'surfaces runtime'
 
   Core Validation:
     description: 'Core validation and quality gates: validators, schemas, invariants, linting guards'
@@ -116,12 +123,14 @@ Framework:
   CLI Orchestration:
     description: 'CLI orchestration commands: initiative, spawn, orchestration, agent workflows'
     code_paths:
+      - 'packages/@lumenflow/cli/src/task-*.ts'
       - 'packages/@lumenflow/cli/src/initiative-*.ts'
       - 'packages/@lumenflow/cli/src/orchestrate-*.ts'
       - 'packages/@lumenflow/cli/src/spawn-*.ts'
       - 'packages/@lumenflow/cli/src/agent-*.ts'
       - 'packages/@lumenflow/cli/src/flow-*.ts'
       - 'packages/@lumenflow/cli/src/metrics-*.ts'
+      - 'packages/@lumenflow/cli/src/__tests__/task-*.test.ts'
       - 'packages/@lumenflow/cli/src/__tests__/initiative-*.test.ts'
       - 'packages/@lumenflow/cli/src/__tests__/orchestrate-*.test.ts'
       - 'packages/@lumenflow/cli/src/__tests__/spawn-*.test.ts'
@@ -134,6 +143,8 @@ Framework:
       - 'flow report'
       - 'metrics snapshot'
       - 'coordination'
+      - 'task claim'
+      - 'task lifecycle'
 
   CLI Enforcement:
     description: 'CLI enforcement/integration surface: hooks, gates, lane checks, install/bootstrap'
