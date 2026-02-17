@@ -2,7 +2,7 @@ id: WU-1791
 title: Fix MDX comment syntax in cli.mdx
 lane: 'Content: Site Comms'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-17
 code_paths:
@@ -37,3 +37,6 @@ session_id: 5542a205-7df1-4b8d-9a50-1bd7a3e9c2e7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T17:55:39.139Z
+locked: true
+completed_at: 2026-02-17T17:59:19.872Z
+completed: 2026-02-17

@@ -35,7 +35,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1791 — Fix MDX comment syntax in cli.mdx](wu/WU-1791.yaml) — Content: Site Comms
 - [WU-1782 — Bound evidence receipt indexing and improve lane-lock cleanup observability](wu/WU-1782.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
@@ -754,6 +753,7 @@ sections:
 - [WU-1779 — Wire real SandboxSubprocessDispatcher into runtime initialization](wu/WU-1779.yaml)
 - [WU-1780 — Enforce workspace tamper baseline and missing-config handling](wu/WU-1780.yaml)
 - [WU-1781 — Sandbox readonly mount depth and prefix validation](wu/WU-1781.yaml)
+- [WU-1791 — Fix MDX comment syntax in cli.mdx](wu/WU-1791.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

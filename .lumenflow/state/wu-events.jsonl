@@ -1501,4 +1501,5 @@
 {"type":"claim","wuId":"WU-1781","timestamp":"2026-02-17T17:52:42.792Z","lane":"Framework: Core Lifecycle","title":"Sandbox readonly mount depth and prefix validation"}
 {"type":"claim","wuId":"WU-1791","timestamp":"2026-02-17T17:55:39.166Z","lane":"Content: Site Comms","title":"Fix MDX comment syntax in cli.mdx"}
 {"type":"complete","wuId":"WU-1781","timestamp":"2026-02-17T17:56:49.200Z"}
-{"type":"claim","wuId":"WU-1782","lane":"Framework: Core Lifecycle","title":"Bound evidence receipt indexing and improve lane-lock cleanup observability","timestamp":"2026-02-17T17:57:23.762Z"}
+{"type":"claim","wuId":"WU-1782","timestamp":"2026-02-17T17:57:23.762Z","lane":"Framework: Core Lifecycle","title":"Bound evidence receipt indexing and improve lane-lock cleanup observability"}
+{"type":"complete","wuId":"WU-1791","timestamp":"2026-02-17T17:59:24.536Z"}
