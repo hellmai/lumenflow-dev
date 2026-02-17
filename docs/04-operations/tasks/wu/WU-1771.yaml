@@ -2,7 +2,7 @@ id: WU-1771
 title: Tracer bullet MCP task_claim through KernelRuntime
 lane: 'Framework: MCP'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -45,3 +45,11 @@ acceptance:
   - task_claim dispatches through KernelRuntime with no CLI shell-out chain
   - Production MCP startup wiring includes runtime task tool registration path
   - Unit coverage includes runtime task tool module and aggregate MCP tool registry wiring
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1771
+claimed_at: 2026-02-17T13:54:21.778Z
+baseline_main_sha: 434dfd416c09a3562054d3fbb06c6084f7393264
+session_id: 86359ce2-a6d8-487b-a5e1-5014f1881ca6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T13:54:21.783Z
