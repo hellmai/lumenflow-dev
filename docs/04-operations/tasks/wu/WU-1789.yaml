@@ -12,7 +12,9 @@ code_paths:
   - packages/@lumenflow/cli/src/task-claim.ts
   - packages/@lumenflow/cli/src/__tests__/task-claim.test.ts
 tests:
-  manual: []
+  manual:
+    - Invoke migrated tool:execute via MCP runtime path and verify no runCliCommand shell-out occurs
+      while parity gates still pass.
   unit:
     - packages/@lumenflow/mcp/src/__tests__/runtime-task-tools.test.ts
     - packages/@lumenflow/cli/src/__tests__/task-claim.test.ts
@@ -36,7 +38,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Complete first migration wave by routing tool:execute through KernelRuntime in existing MCP/CLI packages, preserving parity behavior while eliminating shell-out routing.
+description: Complete first migration wave by routing tool:execute through KernelRuntime in existing
+  MCP/CLI packages, preserving parity behavior while eliminating shell-out routing.
 acceptance:
   - tool:execute runs through KernelRuntime in MCP and CLI paths without runCliCommand shell-out.
   - Parity/expected-missing gate configuration is updated for migration stage without regressions.
