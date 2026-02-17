@@ -369,4 +369,38 @@ describe('event-store', () => {
     await store.append(makeCreatedEvent('f'.repeat(64)));
     await expect(store.project(taskId)).rejects.toThrow('Spec hash mismatch');
   });
+
+  it('avoids full reloadFromDisk on every append for workloads above 100 events', async () => {
+    const spec = makeTaskSpec();
+    const store = new EventStore({
+      eventsFilePath,
+      lockFilePath,
+    });
+
+    const instrumentedStore = store as EventStore & {
+      reloadFromDisk: () => Promise<void>;
+    };
+    const originalReloadFromDisk = instrumentedStore.reloadFromDisk.bind(store);
+    let reloadCount = 0;
+    instrumentedStore.reloadFromDisk = async () => {
+      reloadCount += 1;
+      await originalReloadFromDisk();
+    };
+
+    await store.append(makeCreatedEvent(canonical_json(spec), '2026-02-16T22:00:00.000Z'));
+
+    const baseTimestampMillis = Date.parse('2026-02-16T22:01:00.000Z');
+    for (let index = 0; index < 120; index += 1) {
+      await store.append({
+        schema_version: 1,
+        kind: 'task_waiting',
+        task_id: taskId,
+        timestamp: new Date(baseTimestampMillis + index * 1000).toISOString(),
+        reason: `wait-${index}`,
+      });
+    }
+
+    expect(reloadCount).toBeLessThanOrEqual(1);
+    expect(store.getByTask(taskId)).toHaveLength(121);
+  });
 });

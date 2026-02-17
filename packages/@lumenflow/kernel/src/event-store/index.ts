@@ -207,6 +207,7 @@ export class EventStore {
   private readonly lockMaxRetries: number;
   private readonly taskSpecLoader?: (taskId: string) => Promise<TaskSpec | null>;
 
+  private indexesHydrated = false;
   private orderedEvents: KernelEvent[] = [];
   private byTask = new Map<string, TaskScopedKernelEvent[]>();
   private byKind = new Map<EventKind, KernelEvent[]>();
@@ -244,7 +245,14 @@ export class EventStore {
       await appendFile(this.eventsFilePath, payload, 'utf8');
     });
 
-    await this.reloadFromDisk();
+    if (!this.indexesHydrated) {
+      await this.reloadFromDisk();
+      return;
+    }
+
+    for (const event of validatedEvents) {
+      this.applyEventToIndexes(event);
+    }
   }
 
   async replay(filter: ReplayFilter = {}): Promise<KernelEvent[]> {
@@ -402,6 +410,7 @@ export class EventStore {
       const nodeError = error as NodeJS.ErrnoException;
       if (nodeError.code === 'ENOENT') {
         this.resetIndexes();
+        this.indexesHydrated = true;
         return;
       }
       throw error;
@@ -434,6 +443,7 @@ export class EventStore {
         throw new Error(`KernelEvent parse failed at line ${index + 1}`, { cause: error });
       }
     }
+    this.indexesHydrated = true;
   }
 
   private resetIndexes(): void {
