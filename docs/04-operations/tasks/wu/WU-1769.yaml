@@ -9,7 +9,9 @@ code_paths:
   - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
   - packages/@lumenflow/kernel/src/evidence/evidence-store.ts
 tests:
-  manual: []
+  manual:
+    - Validate task-scoped evidence reads return expected refs and orphan reconciliation occurs at
+      lifecycle boundaries
   unit:
     - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
     - packages/@lumenflow/kernel/src/__tests__/evidence-store.test.ts
@@ -30,8 +32,8 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: reconcileOrphanedStarts currently runs in hot execution paths and evidence task lookups
-  rely on broad scans. This WU moves orphan handling to lifecycle boundaries and adds indexed evidence
-  reads by task.
+  rely on broad scans. This WU moves orphan handling to lifecycle boundaries and adds indexed
+  evidence reads by task.
 acceptance:
   - Orphan reconciliation runs in startup/shutdown lifecycle hooks rather than per tool execution
   - EvidenceStore supports indexed reads filtered by task ID
