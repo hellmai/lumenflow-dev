@@ -29,6 +29,7 @@ initiative: INIT-029
 phase: 7
 blocked_by:
   - WU-1770
+plan: /home/USER/.claude/plans/zesty-jumping-pixel.md
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
