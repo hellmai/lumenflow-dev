@@ -1520,3 +1520,4 @@
 {"type":"complete","wuId":"WU-1788","timestamp":"2026-02-17T19:07:30.265Z"}
 {"type":"claim","wuId":"WU-1789","timestamp":"2026-02-17T19:08:22.560Z","lane":"Framework: Core Lifecycle","title":"Migrate tool:execute path to direct KernelRuntime execution"}
 {"type":"complete","wuId":"WU-1789","timestamp":"2026-02-17T19:22:20.296Z"}
+{"type":"claim","wuId":"WU-1793","lane":"Framework: Core Lifecycle","title":"Phase 4 metric closure: align parity baseline with runtime-registered tools","timestamp":"2026-02-17T22:53:44.937Z"}
