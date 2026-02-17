@@ -9,6 +9,47 @@ const ISO_DATETIME_SCHEMA = z.string().datetime();
 const SEMVER_REGEX = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z-.]+)?(?:\+[0-9A-Za-z-.]+)?$/;
 const SEMVER_MESSAGE = 'Expected semantic version';
 
+export const RUN_STATUSES = {
+  PLANNED: 'planned',
+  EXECUTING: 'executing',
+  PAUSED: 'paused',
+  FAILED: 'failed',
+  SUCCEEDED: 'succeeded',
+} as const;
+
+export const RUN_STATUS_VALUES = [
+  RUN_STATUSES.PLANNED,
+  RUN_STATUSES.EXECUTING,
+  RUN_STATUSES.PAUSED,
+  RUN_STATUSES.FAILED,
+  RUN_STATUSES.SUCCEEDED,
+] as const;
+
+export type RunStatus = (typeof RUN_STATUS_VALUES)[number];
+
+export const TOOL_HANDLER_KINDS = {
+  IN_PROCESS: 'in-process',
+  SUBPROCESS: 'subprocess',
+} as const;
+
+export const TOOL_HANDLER_KIND_VALUES = [
+  TOOL_HANDLER_KINDS.IN_PROCESS,
+  TOOL_HANDLER_KINDS.SUBPROCESS,
+] as const;
+
+export type ToolHandlerKind = (typeof TOOL_HANDLER_KIND_VALUES)[number];
+
+export const TOOL_ERROR_CODES = {
+  TOOL_NOT_FOUND: 'TOOL_NOT_FOUND',
+  SCOPE_DENIED: 'SCOPE_DENIED',
+  POLICY_DENIED: 'POLICY_DENIED',
+  INVALID_INPUT: 'INVALID_INPUT',
+  INVALID_OUTPUT: 'INVALID_OUTPUT',
+  TOOL_EXECUTION_FAILED: 'TOOL_EXECUTION_FAILED',
+} as const;
+
+export type ToolErrorCode = (typeof TOOL_ERROR_CODES)[keyof typeof TOOL_ERROR_CODES];
+
 export const ToolScopePathSchema = z.object({
   type: z.literal('path'),
   pattern: z.string().min(1),
@@ -57,7 +98,7 @@ export type TaskSpec = z.infer<typeof TaskSpecSchema>;
 export const RunSchema = z.object({
   run_id: z.string().min(1),
   task_id: z.string().min(1),
-  status: z.enum(['planned', 'executing', 'paused', 'failed', 'succeeded']),
+  status: z.enum(RUN_STATUS_VALUES),
   started_at: ISO_DATETIME_SCHEMA,
   completed_at: ISO_DATETIME_SCHEMA.optional(),
   by: z.string().min(1),
@@ -267,7 +308,7 @@ export const ToolCallStartedSchema = z.object({
   session_id: z.string().min(1),
   timestamp: ISO_DATETIME_SCHEMA,
   tool_name: z.string().min(1),
-  execution_mode: z.enum(['in-process', 'subprocess']),
+  execution_mode: z.enum(TOOL_HANDLER_KIND_VALUES),
   scope_requested: z.array(ToolScopeSchema),
   scope_allowed: z.array(ToolScopeSchema),
   scope_enforced: z.array(ToolScopeSchema),
@@ -337,14 +378,14 @@ const ZodSchemaSchema = z.custom<ZodTypeAny>((value) => value instanceof z.ZodTy
 });
 
 export const InProcessToolHandlerSchema = z.object({
-  kind: z.literal('in-process'),
+  kind: z.literal(TOOL_HANDLER_KINDS.IN_PROCESS),
   fn: z.custom<InProcessToolFn>((value) => typeof value === 'function', {
     message: 'Expected an async tool function',
   }),
 });
 
 export const SubprocessToolHandlerSchema = z.object({
-  kind: z.literal('subprocess'),
+  kind: z.literal(TOOL_HANDLER_KINDS.SUBPROCESS),
   entry: z.string().min(1),
 });
 
