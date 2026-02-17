@@ -2,7 +2,7 @@ id: WU-1757
 title: Fix evidence store double-hashing and add trace concurrency protection
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-17
 code_paths:
@@ -24,7 +24,7 @@ phase: 6
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
-assigned_to: noreply@anthropic.com
+assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
@@ -39,3 +39,11 @@ acceptance:
   - CAS inputRef files contain actual serialized input data
   - appendTrace uses file-based locking matching EventStore pattern
   - Existing tests updated and new concurrency tests added
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1757
+claimed_at: 2026-02-17T12:11:49.330Z
+baseline_main_sha: 320cfc888e6cdb3bb887fb4c9f23278e639929dd
+session_id: e99e8aff-6542-4b74-8647-71a7e4321eac
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T12:11:49.335Z
