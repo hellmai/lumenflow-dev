@@ -68,27 +68,18 @@ const SPEC_TAMPERED_ERROR_CODE = 'SPEC_TAMPERED';
 const SPEC_TAMPERED_WORKSPACE_MESSAGE =
   'Workspace configuration hash mismatch detected; execution blocked.';
 
-type RunLifecycleEvent = Extract<
-  KernelEvent,
-  { kind: RunLifecycleEventKind }
->;
+type RunLifecycleEvent = Extract<KernelEvent, { kind: RunLifecycleEventKind }>;
 
 type TaskCreatedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.TASK_CREATED }>;
 type TaskClaimedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.TASK_CLAIMED }>;
 type RunStartedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.RUN_STARTED }>;
 type RunSucceededEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.RUN_SUCCEEDED }>;
-type TaskCompletedEvent = Extract<
-  KernelEvent,
-  { kind: typeof KERNEL_EVENT_KINDS.TASK_COMPLETED }
->;
+type TaskCompletedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.TASK_COMPLETED }>;
 type WorkspaceUpdatedEvent = Extract<
   KernelEvent,
   { kind: typeof KERNEL_EVENT_KINDS.WORKSPACE_UPDATED }
 >;
-type SpecTamperedEvent = Extract<
-  KernelEvent,
-  { kind: typeof KERNEL_EVENT_KINDS.SPEC_TAMPERED }
->;
+type SpecTamperedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.SPEC_TAMPERED }>;
 
 export interface RuntimeToolCapabilityResolverInput {
   workspaceSpec: WorkspaceSpec;

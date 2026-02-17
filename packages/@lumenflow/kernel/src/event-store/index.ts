@@ -27,10 +27,7 @@ const PROCESS_EXISTS_SIGNAL = 0;
 
 type EventKind = KernelEvent['kind'];
 type TaskScopedKernelEvent = Extract<KernelEvent, { task_id: string }>;
-type RunLifecycleEvent = Extract<
-  KernelEvent,
-  { kind: RunLifecycleEventKind }
->;
+type RunLifecycleEvent = Extract<KernelEvent, { kind: RunLifecycleEventKind }>;
 
 export interface ReplayFilter {
   taskId?: string;
