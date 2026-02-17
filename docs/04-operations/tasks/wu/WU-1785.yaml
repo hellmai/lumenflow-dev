@@ -2,7 +2,7 @@ id: WU-1785
 title: Migrate task:create path to direct KernelRuntime calls
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-17
 code_paths:
@@ -53,3 +53,6 @@ session_id: 61011c73-ccb6-49bf-991f-923cc046f12d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T18:14:37.925Z
+locked: true
+completed_at: 2026-02-17T18:30:19.974Z
+completed: 2026-02-17
