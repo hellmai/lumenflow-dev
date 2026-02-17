@@ -8,7 +8,7 @@ created: 2026-02-17
 code_paths:
   - packages/@lumenflow/mcp/src/__tests__/shellout-budget.test.ts
   - packages/@lumenflow/mcp/src/tools
-  - .lumenflow/strict-progress-baseline.json
+  - tools/baselines/strict-progress-baseline.json
 tests:
   manual:
     - Run MCP shell-out budget test and confirm it fails when baseline is intentionally lowered

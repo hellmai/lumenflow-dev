@@ -4,6 +4,9 @@
   "totals": {
     "total_errors": 0
   },
+  "mcp_shellout_budget": {
+    "run_cli_command_call_sites": 100
+  },
   "packages": {
     "@lumenflow/cli": {
       "total_errors": 0,
