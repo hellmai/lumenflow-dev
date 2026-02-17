@@ -44,12 +44,17 @@ import {
   type PolicyEvaluationResult,
   type PolicyLayer,
 } from '../policy/index.js';
+import {
+  SandboxSubprocessDispatcher,
+  type SandboxSubprocessDispatcherOptions,
+} from '../sandbox/index.js';
 import { assertTransition, type TaskStateAliases } from '../state-machine/index.js';
 import {
   createBuiltinPolicyHook,
   registerBuiltinToolCapabilities,
 } from '../tool-host/builtins/index.js';
 import { ToolHost, type PolicyHook } from '../tool-host/tool-host.js';
+import type { SubprocessDispatcher } from '../tool-host/subprocess-dispatcher.js';
 import { ToolRegistry } from '../tool-host/tool-registry.js';
 
 const DEFAULT_RUNTIME_ROOT = path.join('.lumenflow', 'kernel');
@@ -103,6 +108,8 @@ export interface InitializeKernelRuntimeOptions {
   runtimeVersion?: string;
   policyLayers?: PolicyLayer[];
   toolCapabilityResolver?: RuntimeToolCapabilityResolver;
+  subprocessDispatcher?: SubprocessDispatcher;
+  sandboxSubprocessDispatcherOptions?: Omit<SandboxSubprocessDispatcherOptions, 'workspaceRoot'>;
   includeBuiltinTools?: boolean;
   now?: () => Date;
   runIdFactory?: (taskId: string, nextRunNumber: number) => string;
@@ -939,6 +946,12 @@ export async function initializeKernelRuntime(
   const toolHost = new ToolHost({
     registry,
     evidenceStore,
+    subprocessDispatcher:
+      options.subprocessDispatcher ||
+      new SandboxSubprocessDispatcher({
+        workspaceRoot,
+        ...options.sandboxSubprocessDispatcherOptions,
+      }),
     policyHook: createRuntimePolicyHook(policyEngine),
     runtimeVersion: options.runtimeVersion,
   });

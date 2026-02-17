@@ -10,7 +10,8 @@ import { SOFTWARE_DELIVERY_PACK_ID } from '../../../packs/software-delivery/cons
 import { canonical_json } from '../canonical-json.js';
 import type { ExecutionContext, TaskSpec } from '../kernel.schemas.js';
 import { EventStore } from '../event-store/index.js';
-import { initializeKernelRuntime } from '../runtime/index.js';
+import { type SubprocessTransport } from '../sandbox/index.js';
+import { initializeKernelRuntime, type InitializeKernelRuntimeOptions } from '../runtime/index.js';
 import {
   PACK_MANIFEST_FILE_NAME,
   PACKS_DIR_NAME,
@@ -26,7 +27,7 @@ const WORKSPACE_SCOPE = {
 };
 const PACK_ECHO_TOOL_NAME = 'pack:echo';
 const TOOL_NOT_FOUND_ERROR_CODE = 'TOOL_NOT_FOUND';
-const SUBPROCESS_NOT_AVAILABLE_ERROR_CODE = 'SUBPROCESS_NOT_AVAILABLE';
+const SUBPROCESS_SANDBOX_UNAVAILABLE_ERROR_CODE = 'SUBPROCESS_SANDBOX_UNAVAILABLE';
 const SCOPE_DENIED_ERROR_CODE = 'SCOPE_DENIED';
 const TOOL_CALL_STARTED_KIND = 'tool_call_started';
 const TOOL_CALL_FINISHED_KIND = 'tool_call_finished';
@@ -139,7 +140,16 @@ async function writeWorkspaceFixture(root: string): Promise<void> {
 
   await writeFile(
     join(packRoot, 'tools', 'echo.ts'),
-    ['export const marker = true;', 'export default marker;'].join('\n'),
+    [
+      'export default async function echoTool(input) {',
+      '  const value = typeof input?.message === "string" ? input.message : "";',
+      '  return {',
+      '    success: value.length > 0,',
+      '    data: value.length > 0 ? { echo: value } : undefined,',
+      '    error: value.length > 0 ? undefined : { code: "INVALID_INPUT", message: "message required" },',
+      '  };',
+      '}',
+    ].join('\n'),
     UTF8_ENCODING,
   );
 }
@@ -194,7 +204,12 @@ describe('kernel runtime facade', () => {
     });
   }
 
-  async function createRuntimeWithDefaultResolver() {
+  async function createRuntimeWithDefaultResolver(
+    overrides: Pick<
+      InitializeKernelRuntimeOptions,
+      'subprocessDispatcher' | 'sandboxSubprocessDispatcherOptions'
+    > = {},
+  ) {
     return initializeKernelRuntime({
       workspaceRoot: tempRoot,
       packsRoot: join(tempRoot, PACKS_DIR_NAME),
@@ -202,6 +217,7 @@ describe('kernel runtime facade', () => {
       eventsFilePath: join(tempRoot, 'events.jsonl'),
       eventLockFilePath: join(tempRoot, 'events.lock'),
       evidenceRoot: join(tempRoot, 'evidence'),
+      ...overrides,
     });
   }
 
@@ -229,7 +245,11 @@ describe('kernel runtime facade', () => {
   it('registers manifest-declared tools with default resolver when override is omitted', async () => {
     const registerSpy = vi.spyOn(ToolRegistry.prototype, 'register');
     try {
-      const runtime = await createRuntimeWithDefaultResolver();
+      const runtime = await createRuntimeWithDefaultResolver({
+        sandboxSubprocessDispatcherOptions: {
+          commandExists: () => false,
+        },
+      });
       const registeredPackCapability = registerSpy.mock.calls
         .map((call) => call[0])
         .find((capability) => capability.name === PACK_ECHO_TOOL_NAME);
@@ -249,7 +269,7 @@ describe('kernel runtime facade', () => {
       );
 
       expect(output.success).toBe(false);
-      expect(output.error?.code).toBe(SUBPROCESS_NOT_AVAILABLE_ERROR_CODE);
+      expect(output.error?.code).toBe(SUBPROCESS_SANDBOX_UNAVAILABLE_ERROR_CODE);
     } finally {
       registerSpy.mockRestore();
     }
@@ -370,7 +390,35 @@ describe('kernel runtime facade', () => {
   });
 
   it('covers load -> register -> execute -> receipt for manifest-declared runtime tools', async () => {
-    const runtime = await createRuntimeWithDefaultResolver();
+    let transportRequestCommand = '';
+    let transportRequestArgs: string[] = [];
+    let transportRequestStdin = '';
+    const transport: SubprocessTransport = {
+      async execute(request) {
+        transportRequestCommand = request.command;
+        transportRequestArgs = request.args;
+        transportRequestStdin = request.stdin;
+        return {
+          code: 0,
+          stdout: JSON.stringify({
+            output: {
+              success: true,
+              data: {
+                echo: 'receipt-stage',
+              },
+            },
+          }),
+          stderr: '',
+        };
+      },
+    };
+
+    const runtime = await createRuntimeWithDefaultResolver({
+      sandboxSubprocessDispatcherOptions: {
+        commandExists: () => true,
+        transport,
+      },
+    });
     const taskSpec = createTaskSpec('WU-1774-pack-e2e');
     await runtime.createTask(taskSpec);
 
@@ -389,8 +437,21 @@ describe('kernel runtime facade', () => {
     if (execution.error?.code === TOOL_NOT_FOUND_ERROR_CODE) {
       throw new Error(REGISTRATION_STAGE_FAILURE_MESSAGE);
     }
-    expect(execution.success).toBe(false);
-    expect(execution.error?.code).toBe(SUBPROCESS_NOT_AVAILABLE_ERROR_CODE);
+    expect(execution.success).toBe(true);
+    expect(execution.data).toMatchObject({ echo: 'receipt-stage' });
+    expect(transportRequestCommand).toBe('bwrap');
+    expect(transportRequestArgs).toContain('--die-with-parent');
+
+    const workerPayload = JSON.parse(transportRequestStdin) as {
+      tool_name: string;
+      handler_entry: string;
+      input: { message: string };
+      receipt_id: string;
+    };
+    expect(workerPayload.tool_name).toBe(PACK_ECHO_TOOL_NAME);
+    expect(workerPayload.input.message).toBe('receipt-stage');
+    expect(workerPayload.handler_entry.endsWith('/tools/echo.ts')).toBe(true);
+    expect(workerPayload.receipt_id.length).toBeGreaterThan(0);
 
     const inspection = await runtime.inspectTask(taskSpec.id);
     const started = inspection.receipts.find(
@@ -405,7 +466,7 @@ describe('kernel runtime facade', () => {
     );
     expect(finished).toBeDefined();
     if (finished?.kind === TOOL_CALL_FINISHED_KIND) {
-      expect(finished.result).toBe('failure');
+      expect(finished.result).toBe('success');
     }
   });
 

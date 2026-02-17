@@ -20,7 +20,7 @@ export class DefaultSubprocessDispatcher implements SubprocessDispatcher {
       success: false,
       error: {
         code: 'SUBPROCESS_NOT_AVAILABLE',
-        message: 'Subprocess execution is not yet available until WU-1730.',
+        message: 'Subprocess execution unavailable: no subprocess dispatcher was configured.',
       },
     };
   }

@@ -179,7 +179,7 @@ describe('tool host', () => {
     }
   });
 
-  it('uses default subprocess dispatcher with explicit not-yet-available error', async () => {
+  it('uses default subprocess dispatcher with explicit configuration error', async () => {
     const registry = new ToolRegistry();
     registry.register(makeSubprocessCapability());
 
@@ -208,7 +208,7 @@ describe('tool host', () => {
 
     expect(result.success).toBe(false);
     expect(result.error?.code).toBe('SUBPROCESS_NOT_AVAILABLE');
-    expect(result.error?.message).toContain('WU-1730');
+    expect(result.error?.message).toContain('no subprocess dispatcher was configured');
   });
 
   it('rejects reserved .lumenflow write scopes declared by tool capabilities', async () => {
