@@ -46,6 +46,7 @@ artifacts:
 dependencies: []
 initiative: INIT-029
 phase: 7
+plan: lumenflow://plans/zesty-jumping-pixel.md
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
