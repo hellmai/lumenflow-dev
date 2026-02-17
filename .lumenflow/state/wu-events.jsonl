@@ -1435,3 +1435,4 @@
 {"type":"complete","wuId":"WU-1735","timestamp":"2026-02-16T23:57:15.081Z"}
 {"type":"claim","wuId":"WU-1736","timestamp":"2026-02-16T23:58:35.426Z","lane":"Framework: CLI WU Commands","title":"CLI surface — task lifecycle commands (tracer bullet: create, claim, status, complete)"}
 {"type":"complete","wuId":"WU-1736","timestamp":"2026-02-17T00:02:45.048Z"}
+{"type":"claim","wuId":"WU-1737","lane":"Framework: CLI Orchestration","title":"CLI surface — remaining commands (gates, orchestration, inspect, replay)","timestamp":"2026-02-17T00:03:18.827Z"}

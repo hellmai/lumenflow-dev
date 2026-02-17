@@ -2,7 +2,7 @@ id: WU-1737
 title: CLI surface — remaining commands (gates, orchestration, inspect, replay)
 lane: 'Framework: CLI Orchestration'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-16
 code_paths:
@@ -37,7 +37,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-029 Phase 4 — Surfaces + Daemon. Depends on WU-1736 (CLI tracer bullet). Problem: After the tracer bullet proves KernelRuntime works for lifecycle commands, all remaining CLI commands need to be rewritten as thin KernelRuntime wrappers. Solution: Rewrite gates, orchestration, inspect, replay, and remaining CLI commands to call KernelRuntime instead of importing core directly. lumenflow inspect shows full execution trace with receipts and policy decisions. lumenflow replay re-executes from stored CAS inputs. Plan: .claude/plans/golden-prancing-cookie.md'
+description: 'Context: INIT-029 Phase 4 — Surfaces + Daemon. Depends on WU-1736 (CLI tracer bullet).
+  Problem: After the tracer bullet proves KernelRuntime works for lifecycle commands, all remaining
+  CLI commands need to be rewritten as thin KernelRuntime wrappers. Solution: Rewrite gates,
+  orchestration, inspect, replay, and remaining CLI commands to call KernelRuntime instead of
+  importing core directly. lumenflow inspect shows full execution trace with receipts and policy
+  decisions. lumenflow replay re-executes from stored CAS inputs. Plan:
+  .claude/plans/golden-prancing-cookie.md'
 acceptance:
   - Gates command runs gate policies through PolicyEngine (not hardcoded gate runner)
   - Orchestration commands (monitor, init-status) work through KernelRuntime
@@ -45,3 +51,11 @@ acceptance:
   - lumenflow replay can re-execute a run from stored CAS inputs
   - All CLI commands have zero direct imports from @lumenflow/core
   - CLI surface package depends only on @lumenflow/kernel, not @lumenflow/core
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1737
+claimed_at: 2026-02-17T00:03:18.778Z
+baseline_main_sha: 472cf757feb0b0f4b78b7fbd3c733547902d7152
+session_id: 60bd3b16-8fcd-4190-8bd7-79a80f2ab8d5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T00:03:18.786Z
