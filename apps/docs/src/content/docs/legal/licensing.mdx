@@ -1,54 +1,50 @@
 ---
-title: Licensing & Access
-description: Legal licensing and access terms summary for LumenFlow
+title: Licensing
+description: LumenFlow open-source licensing model
 ---
 
 ## Effective Date
 
-This page reflects the LumenFlow licensing position as of **February 7, 2026**.
+This page reflects the LumenFlow licensing position as of **February 17, 2026**.
 
-## Licensing Position
+## Open Source
 
-LumenFlow is currently **private software** and is **not publicly licensed**.
+LumenFlow is open-source software distributed under a dual-license model:
 
-Access to the CLI and MCP packages is controlled through private distribution channels and governed
-by applicable written terms.
+| Component                        | License                                                                              | SPDX Identifier |
+| -------------------------------- | ------------------------------------------------------------------------------------ | --------------- |
+| Kernel, runtime, packs, surfaces | [GNU Affero General Public License v3.0](https://www.gnu.org/licenses/agpl-3.0.html) | `AGPL-3.0-only` |
+| Control Plane SDK                | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)                    | `Apache-2.0`    |
 
-Nothing on this documentation site grants rights to copy, modify, redistribute, or sublicense
-LumenFlow software unless those rights are explicitly granted in writing.
+### Why AGPL v3?
 
-## What Is Public vs Private
+AGPL v3 ensures that anyone who modifies and deploys LumenFlow (including as a network service) must share their changes with the community. This protects the project from proprietary forks while keeping the code free for everyone to use, study, and improve.
 
-- **Public:** Documentation at `lumenflow.dev` (Starlight site), guides, and onboarding material
-- **Private:** `@lumenflow/*` package distribution and MCP access
-- **Case-by-case:** Commercial terms, redistribution rights, and organization-level access
+### Why Apache 2.0 for the SDK?
 
-## Access Model
+The Control Plane SDK (`@lumenflow/control-plane-sdk`) defines the interface for building integrations and custom packs. Apache 2.0 removes friction for developers building on top of LumenFlow — you can use the SDK in proprietary projects without AGPL obligations.
 
-To use private package distribution, your environment must have access to the configured package
-registry and credentials.
+## Commercial Licensing
 
-Typical setup includes:
+Organizations that cannot comply with AGPL v3 (for example, those embedding LumenFlow in proprietary products) can obtain a commercial license from HellmAI.
 
-1. Registry configuration (`.npmrc` / workspace config)
-2. Valid auth token in CI/local environment
-3. Approved package scope access
+Commercial licenses grant:
 
-For MCP usage, your AI client points to the installed `@lumenflow/mcp` package in your project.
+- Permission to use LumenFlow without AGPL obligations
+- Enterprise support and SLA
+- Access to the hosted control plane
+
+Contact [tom@hellm.ai](mailto:tom@hellm.ai) for commercial licensing inquiries.
+
+## Contributor License Agreement (CLA)
+
+All contributions to LumenFlow require signing a [Contributor License Agreement](https://gist.github.com/hellmai/294447585023baafc8c09d2c24617a91). The CLA grants HellmAI the right to distribute contributions under both the AGPL v3 and commercial licenses. Contributors retain copyright of their work.
+
+The CLA is enforced automatically via [CLA Assistant](https://cla-assistant.io) on pull requests.
 
 ## Third-Party Software
 
-LumenFlow depends on third-party libraries. Those components remain under their own
-licenses.
-
-If you require third-party license notices for compliance review, request the current notice bundle
-from the LumenFlow team.
-
-## Contact
-
-For licensing, access, or commercial inquiries:
-
-- [tom@helllm.ai](mailto:tom@helllm.ai)
+LumenFlow depends on third-party libraries that remain under their own licenses. See `package.json` files in each package for dependency details.
 
 ## Related Legal Pages
 

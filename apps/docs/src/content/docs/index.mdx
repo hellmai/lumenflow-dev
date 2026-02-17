@@ -1,74 +1,82 @@
 ---
 title: LumenFlow
-description: AI-native workflow for software teams
+description: The governance layer between AI agents and the world
 template: splash
 hero:
-  tagline: Give your AI agent a workflow it can't break. Share one link and it will set up LumenFlow correctly - lanes, WUs, gates, and guardrails.
+  tagline: The governance layer between AI agents and the world. An open-source runtime kernel that controls what agents can do, proves what they did, and enforces policies they can't bypass.
   image:
     dark: ../../assets/logo-dark.png
     light: ../../assets/logo-light.png
-    alt: LumenFlow - Clarity over chaos
+    alt: LumenFlow - The governance layer between AI agents and the world
   actions:
-    - text: Share Agent Quickstart
+    - text: Get Started
       link: /getting-started/quickstart/
       icon: right-arrow
-    - text: Explore Concepts
-      link: /concepts/work-units/
+    - text: Why LumenFlow?
+      link: /getting-started/why-lumenflow/
       icon: open-book
       variant: minimal
 ---
 
 import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
 
-## Why LumenFlow?
+## Four Guarantees
 
 <CardGrid stagger>
-  <Card title="Clarity over chaos" icon="pencil">
-    Every Work Unit has explicit acceptance criteria. No ambiguity about what "done" means.
+  <Card title="Agents can't go off-script" icon="approve-check">
+    4-level scope intersection: workspace, lane, task, and tool permissions must all agree before
+    execution proceeds.
   </Card>
-  <Card title="AI-first design" icon="rocket">
-    Built for AI agents to understand and execute. Clear specs, automated gates, context recovery.
+  <Card title="Every action is provable" icon="document">
+    Immutable evidence receipts with content-addressed inputs. Cryptographic proof of what was
+    requested, allowed, and enforced.
   </Card>
-  <Card title="Quality by default" icon="approve-check">
-    Gates (format, lint, typecheck, test) run automatically. No "works on my machine."
+  <Card title="Policies are inescapable" icon="warning">
+    Deny-wins cascade evaluated at every tool call. A restrictive policy at any level cannot be
+    loosened by a lower level.
   </Card>
-  <Card title="Flow, not queues" icon="forward-slash">
-    Lane-based WIP limits prevent overload. Finish work before starting new work.
+  <Card title="Isolation is OS-enforced" icon="setting">
+    bwrap sandbox with write confinement and deny overlays on secrets. Enforced by the OS, not by
+    the agent runtime.
   </Card>
 </CardGrid>
 
-## Give your agent one link
+## Quick Start
 
-<Aside type="tip" title="Copy this prompt">
-Paste this into Claude Code, Cursor, Codex, Windsurf, Cline, or any AI coding assistant:
+<Aside type="tip" title="One command">
 
-```text
-Set up LumenFlow for this project: https://lumenflow.dev/getting-started/quickstart/
+```bash
+npx lumenflow init
 ```
 
 </Aside>
 
-Your agent will install LumenFlow, create the first Work Unit, and stop — ready for you to review before implementation begins.
+LumenFlow scaffolds into your existing repo with git hooks, quality gates, work unit templates, and agent onboarding docs.
 
-## Get Started
+## Explore
 
 <CardGrid>
-  <Card title="Agent Quickstart" icon="seti:robot">
-    [Give your agent this link →](/getting-started/quickstart/)
+  <Card title="Getting Started" icon="rocket">
+    [Install and configure LumenFlow →](/getting-started/quickstart/)
   </Card>
   <Card title="Core Concepts" icon="open-book">
-    [Understand WUs, Lanes, Gates →](/concepts/work-units/)
+    [WUs, Lanes, Gates, Worktrees →](/concepts/work-units/)
   </Card>
   <Card title="CLI Reference" icon="seti:shell">
-    [Explore commands →](/reference/cli/)
+    [60+ commands →](/reference/cli/)
+  </Card>
+  <Card title="AI Agent Integration" icon="seti:robot">
+    [Claude, Codex, custom agents →](/guides/ai-agents/)
   </Card>
 </CardGrid>
 
-## Tooling Lifecycle & Troubleshooting
+## Software Delivery Pack
+
+LumenFlow ships with a Software Delivery Pack — the first domain pack that loads git tools, worktree isolation, quality gates, and lane-based work partitioning into the kernel.
 
 <CardGrid>
-  <Card title="WU Completion Workflow" icon="setting">
-    [Learn the wu:prep + wu:done lifecycle →](/guides/wu-prep-workflow/)
+  <Card title="WU Lifecycle" icon="setting">
+    [wu:claim → wu:prep → wu:done →](/guides/wu-prep-workflow/)
   </Card>
   <Card title="Troubleshooting" icon="warning">
     [Fix common issues: gates, worktrees, git →](/guides/troubleshooting/)

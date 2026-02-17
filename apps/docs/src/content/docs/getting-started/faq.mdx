@@ -9,25 +9,23 @@ import { Aside } from '@astrojs/starlight/components';
 
 ### What is LumenFlow?
 
-LumenFlow is an AI-native delivery methodology for software teams. It provides a structured workflow where humans and AI agents collaborate using Work Units (WUs), automated gates, and lane-based flow.
+LumenFlow is an open-source runtime kernel for AI agents. It controls what agents can do, proves what they did, and enforces policies they can't bypass. Like an OS kernel mediates between programs and hardware, LumenFlow mediates between agents and everything they touch — filesystem, git, APIs, databases, cloud services.
 
 ### Is LumenFlow a project management tool?
 
-No. LumenFlow is a methodology with CLI tooling. It integrates with your existing Git workflow and CI/CD pipeline. You can use it alongside tools like Jira, Linear, or GitHub Projects for higher-level planning.
+No. LumenFlow is an agent governance kernel with pluggable domain packs. The Software Delivery Pack (pack #1) adds WU lifecycle, lanes, gates, and worktree isolation for software teams. You can build packs for any domain.
 
 ### Do I need AI agents to use LumenFlow?
 
-No. LumenFlow works for human-only teams too. The workflow (WUs, gates, lanes) benefits any team that wants faster feedback and evidence-based completion. AI integration is a bonus, not a requirement.
+LumenFlow is designed for AI agents, but the Software Delivery Pack works for human-only teams too. The workflow (WUs, gates, lanes) benefits any team that wants faster feedback and evidence-based completion.
 
-### Is LumenFlow publicly licensed?
+### Is LumenFlow open source?
 
-No. LumenFlow is currently private software. See [Licensing & Access](/legal/licensing/) for
-the current model.
+Yes. LumenFlow is licensed under AGPL v3 (kernel, runtime, packs, surfaces) and Apache 2.0 (Control Plane SDK). See [Licensing](/legal/licensing/) for details.
 
 ### Is LumenFlow free?
 
-Documentation is public at `lumenflow.dev`. Package and MCP access are private and depend on your
-access agreement. See [Licensing & Access](/legal/licensing/).
+Yes. LumenFlow is free and open source. Commercial licenses are available for organizations that cannot comply with AGPL v3. A hosted control plane for fleet management is planned. See [Licensing](/legal/licensing/).
 
 ## Work Units (WUs)
 
