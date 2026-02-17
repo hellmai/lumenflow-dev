@@ -2,7 +2,7 @@ id: WU-1758
 title: 'Fix security boundary: fs:read path validation and git:status command injection'
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-17
 code_paths:
@@ -47,3 +47,6 @@ session_id: 2d51e134-0956-481e-b112-14053bb1e7ce
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T12:17:32.689Z
+locked: true
+completed_at: 2026-02-17T12:21:39.310Z
+completed: 2026-02-17

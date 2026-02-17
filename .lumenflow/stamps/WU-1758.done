@@ -1,0 +1,2 @@
+WU WU-1758 — Fix security boundary: fs:read path validation and git:status command injection
+Completed: 2026-02-17
