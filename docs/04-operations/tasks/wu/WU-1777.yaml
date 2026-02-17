@@ -1,0 +1,34 @@
+id: WU-1777
+title: Update README for kernel positioning + fix license badge
+lane: 'Content: Site Comms'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-17
+code_paths:
+  - README.md
+tests:
+  manual:
+    - Verify README renders correctly on GitHub
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1777.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: README still reflects the old workflow framework positioning and Apache 2.0 license. Update to reflect the agent runtime kernel pivot from INIT-029 and the AGPL v3 license change.
+acceptance:
+  - License badge shows AGPL v3 not Apache 2.0
+  - README reflects kernel positioning (agent runtime, not just workflow CLI)
+  - Packages table includes kernel, runtime, packs, surfaces, control-plane-sdk
+  - CONTRIBUTING.md link points to root CONTRIBUTING.md not .github/
+  - License section says AGPL v3 with Apache 2.0 for SDK
