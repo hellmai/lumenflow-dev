@@ -1,0 +1,15 @@
+id: INIT-030
+slug: runtime-adoption-strangler-fig
+title: KernelRuntime Adoption and Command Migration
+description: ''
+status: draft
+priority: P1
+owner: 'Framework: Core'
+created: 2026-02-17
+target_date: 2026-07-31
+phases: []
+success_metrics:
+  - Migrated commands execute through KernelRuntime without runCliCommand shell-out
+  - MCP and CLI parity gates remain green for migrated commands
+  - Runtime adoption proceeds in old production packages via strangler-fig migration
+labels: []
