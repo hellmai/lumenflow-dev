@@ -39,7 +39,12 @@ import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 // WU-1491: Mode resolution for --cloud and flag combinations
 import { resolveClaimMode } from './wu-claim-mode.js';
 // WU-1590: Cloud claim helpers for branch-pr/cloud execution behavior
-import { shouldSkipBranchExistsCheck, resolveBranchClaimExecution } from './wu-claim-cloud.js';
+// WU-1766: shouldSkipEnsureOnMainForClaim added to bypass ensureOnMain in cloud mode
+import {
+  shouldSkipBranchExistsCheck,
+  resolveBranchClaimExecution,
+  shouldSkipEnsureOnMainForClaim,
+} from './wu-claim-cloud.js';
 // WU-1495: Cloud auto-detection from config-driven env signals
 import {
   detectCloudMode,
@@ -255,9 +260,10 @@ async function main() {
   const id = args.id.toUpperCase();
   if (!PATTERNS.WU_ID.test(id)) die(`Invalid WU id '${args.id}'. Expected format WU-123`);
 
-  await ensureOnMain(getGitForCwd());
   // WU-1609: Resolve branch-aware cloud activation at preflight so explicit
   // protected-branch cloud requests fail before lane locking/state mutation.
+  // WU-1766: Cloud detection MUST happen before ensureOnMain so cloud agents
+  // on claude/*/codex/* branches can bypass the main-branch requirement.
   const preflightBranch = await getGitForCwd().getCurrentBranch();
   const preflightCloudEffective = resolveCloudActivationForClaim({
     cloudFlag: Boolean(args.cloud),
@@ -290,6 +296,14 @@ async function main() {
     console.log(
       `${PREFIX} Cloud mode auto-detected (source: ${preflightCloudEffective.source}${preflightCloudEffective.matchedSignal ? `, signal: ${preflightCloudEffective.matchedSignal}` : ''})`,
     );
+  }
+
+  // WU-1766: Skip ensureOnMain in cloud mode — cloud agents operate from
+  // agent branches (claude/*, codex/*) and cannot switch to main.
+  if (!shouldSkipEnsureOnMainForClaim({ isCloud: preflightCloudEffective.isCloud })) {
+    await ensureOnMain(getGitForCwd());
+  } else {
+    console.log(`${PREFIX} Cloud mode: skipping ensureOnMain (agent branch: ${preflightBranch})`);
   }
 
   // WU-2411: Handle --resume flag for agent handoff
