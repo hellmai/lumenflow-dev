@@ -164,8 +164,28 @@ describe('kernel sandbox integration', () => {
     expect(writableTargets).toContain(packagesRoot);
     expect(writableTargets).not.toContain(docsRoot);
     expect(readonlyTargets).toContain(docsRoot);
-    expect(readonlyTargets).toContain(join(workspaceRoot, 'dist'));
+    expect(readonlyTargets).not.toContain(join(workspaceRoot, 'dist'));
     expect(hasMount(invocation.args, '--ro-bind', '/', '/')).toBe(false);
+  });
+
+  it('does not auto-mount deep absolute command ancestors outside profile prefixes', () => {
+    const workspaceRoot = resolve('repo', 'root');
+    const profile = buildSandboxProfileFromScopes(
+      [{ type: 'path', pattern: 'sandbox/**', access: 'write' }],
+      {
+        workspaceRoot,
+        homeDir: resolve('home', 'agent'),
+      },
+    );
+
+    const invocation = buildBwrapInvocation({
+      profile,
+      command: ['/etc/deep/nested/tool', join(workspaceRoot, 'sandbox', 'worker.js')],
+    });
+
+    const readonlyTargets = collectMountTargets(invocation.args, '--ro-bind');
+    expect(readonlyTargets).not.toContain('/etc/deep');
+    expect(readonlyTargets).not.toContain('/etc/deep/nested');
   });
 
   it('includes required deny overlays for sensitive locations', () => {
