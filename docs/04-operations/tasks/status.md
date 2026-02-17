@@ -5,7 +5,6 @@ _Last updated: 2026-02-17_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1766 — Fix wu:claim --cloud: missing cloud-mode bypass before ensureOnMain](wu/WU-1766.yaml)
 
 ## Completed
 
@@ -693,3 +692,4 @@ _Last updated: 2026-02-17_
 - [WU-1740 — Control Plane SDK — ControlPlaneSyncPort + workspace config + mock adapter](wu/WU-1740.yaml) — 2026-02-17
 - [WU-1755 — Fix new-project friction: flawless lumenflow init to first WU](wu/WU-1755.yaml) — 2026-02-17
 - [WU-1765 — Fix resolveAgentPatterns: local config patterns ignored when registry returns results](wu/WU-1765.yaml) — 2026-02-17
+- [WU-1766 — Fix wu:claim --cloud: missing cloud-mode bypass before ensureOnMain](wu/WU-1766.yaml) — 2026-02-17

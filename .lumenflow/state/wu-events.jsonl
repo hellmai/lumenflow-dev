@@ -1447,4 +1447,5 @@
 {"type":"complete","wuId":"WU-1755","timestamp":"2026-02-17T10:09:00.054Z"}
 {"type":"claim","wuId":"WU-1765","timestamp":"2026-02-17T10:14:18.790Z","lane":"Framework: CLI WU Commands","title":"Fix resolveAgentPatterns: local config patterns ignored when registry returns results"}
 {"type":"complete","wuId":"WU-1765","timestamp":"2026-02-17T10:25:19.879Z"}
-{"type":"claim","wuId":"WU-1766","lane":"Framework: CLI WU Commands","title":"Fix wu:claim --cloud: missing cloud-mode bypass before ensureOnMain","timestamp":"2026-02-17T10:26:32.020Z"}
+{"type":"claim","wuId":"WU-1766","timestamp":"2026-02-17T10:26:32.020Z","lane":"Framework: CLI WU Commands","title":"Fix wu:claim --cloud: missing cloud-mode bypass before ensureOnMain"}
+{"type":"complete","wuId":"WU-1766","timestamp":"2026-02-17T10:31:25.340Z"}
