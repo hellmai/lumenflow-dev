@@ -19,6 +19,8 @@ artifacts:
 dependencies: []
 initiative: INIT-030
 phase: 4
+blocked_by:
+  - WU-1793
 spec_refs:
   - /home/USER/.claude/plans/zesty-jumping-pixel.md
 risks: []
@@ -31,8 +33,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-030 runtime adoption is incremental, and MCP still has many legacy shell-out tools. Problem: without a guardrail, new work can accidentally increase shell-out usage and erode migration progress. Solution: add an automated budget/invariant test that fails when runCliCommand call sites in MCP tool modules increase beyond a tracked baseline, with an explicit update mechanism when intentional growth is approved.'
+description: 'Context: INIT-030 runtime adoption is incremental, and MCP still has many legacy
+  shell-out tools. Problem: without a guardrail, new work can accidentally increase shell-out usage
+  and erode migration progress. Solution: add an automated budget/invariant test that fails when
+  runCliCommand call sites in MCP tool modules increase beyond a tracked baseline, with an explicit
+  update mechanism when intentional growth is approved.'
 acceptance:
-  - Automated test or invariant computes current runCliCommand call-site count across MCP tool modules and compares to a committed baseline.
+  - Automated test or invariant computes current runCliCommand call-site count across MCP tool
+    modules and compares to a committed baseline.
   - CI fails when shell-out call sites increase above baseline without an explicit baseline update.
-  - Documentation in test comments explains how to intentionally update baseline during approved migration planning.
+  - Documentation in test comments explains how to intentionally update baseline during approved
+    migration planning.

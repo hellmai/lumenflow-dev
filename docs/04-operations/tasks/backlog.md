@@ -20,13 +20,13 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1795 — Phase 4 guardrail: enforce non-increasing MCP runCliCommand shell-out budget](wu/WU-1795.yaml) — Framework: Core Lifecycle
-- [WU-1794 — Phase 4 governance: publish runCliCommand deprecation timeline and closure criteria](wu/WU-1794.yaml) — Content: Specs Governance
-- [WU-1793 — Phase 4 metric closure: align parity baseline with runtime-registered tools](wu/WU-1793.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
+- [WU-1793 — Phase 4 metric closure: align parity baseline with runtime-registered tools](wu/WU-1793.yaml) — Framework: Core Lifecycle
+- [WU-1794 — Phase 4 governance: publish runCliCommand deprecation timeline and closure criteria](wu/WU-1794.yaml) — Content: Specs Governance
+- [WU-1795 — Phase 4 guardrail: enforce non-increasing MCP runCliCommand shell-out budget](wu/WU-1795.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
