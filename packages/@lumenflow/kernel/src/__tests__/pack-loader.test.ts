@@ -119,6 +119,56 @@ describe('pack loader + integrity pinning', () => {
     }
   });
 
+  it('rejects integrity:dev in production environment by default', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-loader-prod-dev-'));
+    const packRoot = join(tempRoot, 'software-delivery');
+
+    try {
+      await writePackFixture(packRoot);
+
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        runtimeEnvironment: 'production',
+      });
+
+      await expect(
+        loader.load({
+          workspaceSpec: createWorkspaceSpec({ integrity: 'dev' }),
+          packId: 'software-delivery',
+        }),
+      ).rejects.toThrow('integrity: dev is not allowed in production');
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('allows integrity:dev in production only with explicit override flag', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-loader-prod-override-'));
+    const packRoot = join(tempRoot, 'software-delivery');
+
+    try {
+      await writePackFixture(packRoot);
+      const warningEvents: WorkspaceWarningEvent[] = [];
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        runtimeEnvironment: 'production',
+        allowDevIntegrityInProduction: true,
+      });
+
+      const loaded = await loader.load({
+        workspaceSpec: createWorkspaceSpec({ integrity: 'dev' }),
+        packId: 'software-delivery',
+        onWorkspaceWarning: (event) => warningEvents.push(event),
+      });
+
+      expect(loaded.manifest.id).toBe('software-delivery');
+      expect(warningEvents).toHaveLength(1);
+      expect(warningEvents[0]?.message).toContain('verification skipped');
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
   it('computes deterministic hash and rejects tampered packs in sha256 mode', async () => {
     const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-loader-sha-'));
     const packRoot = join(tempRoot, 'software-delivery');

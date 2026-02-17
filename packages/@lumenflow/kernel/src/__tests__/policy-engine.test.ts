@@ -115,6 +115,51 @@ describe('policy engine', () => {
     expect(result.decision).toBe('allow');
   });
 
+  it('does not let allow_loosening override an upstream hard deny rule', async () => {
+    const engine = new PolicyEngine({
+      layers: [
+        {
+          level: 'workspace',
+          rules: [
+            {
+              id: 'workspace.deny.proc',
+              trigger: POLICY_TRIGGERS.ON_TOOL_REQUEST,
+              decision: 'deny',
+              when: (context) => context.tool_name === 'proc:exec',
+            },
+          ],
+        },
+        { level: 'lane', rules: [] },
+        { level: 'pack', rules: [] },
+        {
+          level: 'task',
+          allow_loosening: true,
+          rules: [
+            {
+              id: 'task.allow.proc',
+              trigger: POLICY_TRIGGERS.ON_TOOL_REQUEST,
+              decision: 'allow',
+            },
+          ],
+        },
+      ],
+    });
+
+    const result = await engine.evaluate({
+      trigger: POLICY_TRIGGERS.ON_TOOL_REQUEST,
+      run_id: 'run-1762-hard-deny',
+      tool_name: 'proc:exec',
+    });
+
+    expect(result.decision).toBe('deny');
+    expect(result.decisions.some((decision) => decision.policy_id === 'workspace.deny.proc')).toBe(
+      true,
+    );
+    expect(result.decisions.some((decision) => decision.policy_id === 'task.allow.proc')).toBe(
+      true,
+    );
+  });
+
   it('supports all required trigger points', async () => {
     const engine = new PolicyEngine({
       layers: [

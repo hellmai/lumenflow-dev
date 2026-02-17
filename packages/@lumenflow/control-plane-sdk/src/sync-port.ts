@@ -1,14 +1,10 @@
+import type { KernelEvent } from '@lumenflow/kernel';
+
 export type PolicyDecision = 'allow' | 'deny';
 
 export type ControlPlanePolicyMode = 'authoritative' | 'tighten-only' | 'dev-override';
 
-export interface KernelEvent {
-  schema_version: 1;
-  kind: string;
-  timestamp: string;
-  message?: string;
-  [key: string]: unknown;
-}
+export type { KernelEvent };
 
 export interface ControlPlanePolicyRule {
   id: string;

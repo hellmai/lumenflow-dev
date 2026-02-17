@@ -32,6 +32,13 @@ export interface PolicyRule {
 export interface PolicyLayer {
   level: PolicyLayerLevel;
   default_decision?: PolicyEffect;
+  /**
+   * Opt-in for this layer to relax inherited deny defaults/rules.
+   *
+   * Important boundary: explicit deny rules remain sticky across the full
+   * evaluation. allow_loosening never overrides a hard deny emitted by an
+   * earlier layer.
+   */
   allow_loosening?: boolean;
   rules: PolicyRule[];
 }
@@ -81,6 +88,7 @@ export class PolicyEngine {
   async evaluate(context: PolicyEvaluationContext): Promise<PolicyEvaluationResult> {
     let effectiveDecision: PolicyEffect = 'deny';
     let hasInitializedDecision = false;
+    // Once a deny rule matches, deny-wins is sticky until evaluation completes.
     let hasHardDeny = false;
     const warnings: string[] = [];
     const decisions: PolicyDecision[] = [];

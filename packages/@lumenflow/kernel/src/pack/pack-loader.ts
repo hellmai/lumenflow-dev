@@ -17,6 +17,8 @@ export interface PackLoaderOptions {
   packsRoot: string;
   manifestFileName?: string;
   hashExclusions?: string[];
+  runtimeEnvironment?: string;
+  allowDevIntegrityInProduction?: boolean;
 }
 
 export interface PackLoadInput {
@@ -38,6 +40,14 @@ const IMPORT_SPECIFIER_PATTERNS = [
   /\bexport\s+[^'"]*?\sfrom\s*["']([^"']+)["']/g,
   /\bimport\(\s*["']([^"']+)["']\s*\)/g,
 ] as const;
+
+/**
+ * Best-effort import boundary scanner.
+ *
+ * LIMITATION: regex matching cannot fully parse JavaScript/TypeScript and can miss
+ * dynamic require/template-string patterns. This is an additional guard, not a
+ * replacement for sandboxing/runtime policy enforcement.
+ */
 
 function isWithinRoot(root: string, candidatePath: string): boolean {
   const relative = path.relative(root, candidatePath);
@@ -130,11 +140,15 @@ export class PackLoader {
   private readonly packsRoot: string;
   private readonly manifestFileName: string;
   private readonly hashExclusions?: string[];
+  private readonly runtimeEnvironment: string;
+  private readonly allowDevIntegrityInProduction: boolean;
 
   constructor(options: PackLoaderOptions) {
     this.packsRoot = path.resolve(options.packsRoot);
     this.manifestFileName = options.manifestFileName || 'manifest.yaml';
     this.hashExclusions = options.hashExclusions;
+    this.runtimeEnvironment = options.runtimeEnvironment ?? process.env.NODE_ENV ?? 'development';
+    this.allowDevIntegrityInProduction = options.allowDevIntegrityInProduction ?? false;
   }
 
   async load(input: PackLoadInput): Promise<LoadedDomainPack> {
@@ -161,6 +175,12 @@ export class PackLoader {
     });
 
     if (pin.integrity === 'dev') {
+      if (this.runtimeEnvironment === 'production' && !this.allowDevIntegrityInProduction) {
+        throw new Error(
+          `Pack ${pin.id}@${pin.version} uses integrity: dev is not allowed in production.`,
+        );
+      }
+
       input.onWorkspaceWarning?.({
         schema_version: 1,
         kind: 'workspace_warning',
