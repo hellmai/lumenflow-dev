@@ -9,12 +9,37 @@ code_paths:
   - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
   - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
   - packages/@lumenflow/kernel/src/kernel.schemas.ts
+  - packages/@lumenflow/kernel/src/shared-constants.ts
+  - packages/@lumenflow/kernel/src/canonical-json.ts
+  - packages/@lumenflow/kernel/src/event-store/index.ts
+  - packages/@lumenflow/kernel/src/evidence/evidence-store.ts
+  - packages/@lumenflow/kernel/src/pack/hash.ts
+  - packages/@lumenflow/kernel/src/pack/pack-loader.ts
+  - packages/@lumenflow/kernel/src/sandbox/subprocess-dispatcher.ts
+  - packages/@lumenflow/kernel/src/sandbox/tool-runner-worker.ts
+  - packages/@lumenflow/kernel/src/tool-host/builtins/capabilities.ts
+  - packages/@lumenflow/packs/software-delivery/constants.ts
+  - packages/@lumenflow/packs/software-delivery/index.ts
+  - packages/@lumenflow/packs/software-delivery/extensions.ts
+  - packages/@lumenflow/packs/software-delivery/gate-policies.ts
+  - packages/@lumenflow/packs/software-delivery/manifest.ts
+  - packages/@lumenflow/packs/software-delivery/pack-registration.ts
+  - packages/@lumenflow/packs/software-delivery/tool-impl/worktree-tools.ts
+  - packages/@lumenflow/packs/software-delivery/tool-impl/git-tools.ts
+  - packages/@lumenflow/packs/software-delivery/tool-impl/delegation-tools.ts
+  - packages/@lumenflow/packs/software-delivery/tool-impl/lane-lock.ts
+  - packages/@lumenflow/packs/software-delivery/tools/types.ts
+  - packages/@lumenflow/packs/software-delivery/tools/worktree-tools.ts
+  - packages/@lumenflow/packs/software-delivery/tools/git-tools.ts
+  - packages/@lumenflow/packs/software-delivery/tools/delegation-tools.ts
+  - packages/@lumenflow/packs/software-delivery/tools/lane-lock-tool.ts
 tests:
   manual:
     - Run workspace hash tamper scenario and verify spec_tampered emission plus hard execution fail
   unit:
     - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
     - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/pack-loader.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1773.done
@@ -24,10 +49,17 @@ phase: 7
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-17T13:35:10.038Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1773
+session_id: f9793679-54ec-4cff-ad1a-8f4e45fcfd0c
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T13:35:10.045Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -39,11 +71,3 @@ acceptance:
   - Tool execution verifies workspace_config_hash against current workspace state
   - Hash mismatch emits spec_tampered (spec=workspace) and fails tool execution
   - Tests cover workspace tamper scenario with hard fail and spec_tampered emission
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1773
-claimed_at: 2026-02-17T13:35:10.038Z
-baseline_main_sha: 83d6b26f56e82241366ac5f2d05a92650102f9c2
-session_id: f9793679-54ec-4cff-ad1a-8f4e45fcfd0c
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-17T13:35:10.045Z
