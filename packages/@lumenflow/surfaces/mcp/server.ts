@@ -28,6 +28,79 @@ export interface McpServer {
   handleInvocation(invocation: McpInvocation, context?: ExecutionContext): Promise<unknown>;
 }
 
+const CLAIM_TASK_INPUT_SCHEMA: Record<string, unknown> = {
+  type: 'object',
+  properties: {
+    task_id: { type: 'string' },
+    by: { type: 'string' },
+    session_id: { type: 'string' },
+    timestamp: { type: 'string' },
+    domain_data: { type: 'object' },
+  },
+  required: ['task_id', 'by', 'session_id'],
+};
+
+const COMPLETE_TASK_INPUT_SCHEMA: Record<string, unknown> = {
+  type: 'object',
+  properties: {
+    task_id: { type: 'string' },
+    run_id: { type: 'string' },
+    timestamp: { type: 'string' },
+    evidence_refs: {
+      type: 'array',
+      items: { type: 'string' },
+    },
+  },
+  required: ['task_id'],
+};
+
+function requireObject(args: unknown, message: string): Record<string, unknown> {
+  if (!args || typeof args !== 'object' || Array.isArray(args)) {
+    throw new Error(message);
+  }
+  return args as Record<string, unknown>;
+}
+
+function parseRequiredString(value: unknown, message: string): string {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    throw new Error(message);
+  }
+  return value;
+}
+
+function parseOptionalString(value: unknown, message: string): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    throw new Error(message);
+  }
+  return value;
+}
+
+function parseOptionalDomainData(value: unknown): Record<string, unknown> | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('task:claim requires domain_data to be an object when provided.');
+  }
+  return value as Record<string, unknown>;
+}
+
+function parseOptionalEvidenceRefs(value: unknown): string[] | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (
+    !Array.isArray(value) ||
+    value.some((item) => typeof item !== 'string' || item.length === 0)
+  ) {
+    throw new Error('task:complete requires evidence_refs to be an array of non-empty strings.');
+  }
+  return value;
+}
+
 function parseTaskId(args: unknown): string {
   if (typeof args === 'string' && args.trim().length > 0) {
     return args;
@@ -47,61 +120,32 @@ function parseTaskSpec(args: unknown): TaskSpec {
 }
 
 function parseClaimTaskInput(args: unknown): ClaimTaskInput {
-  if (!args || typeof args !== 'object') {
-    throw new Error('task:claim expects object input.');
-  }
-
-  const task_id = (args as { task_id?: unknown }).task_id;
-  const by = (args as { by?: unknown }).by;
-  const session_id = (args as { session_id?: unknown }).session_id;
-
-  if (typeof task_id !== 'string' || task_id.trim().length === 0) {
-    throw new Error('task:claim requires task_id.');
-  }
-  if (typeof by !== 'string' || by.trim().length === 0) {
-    throw new Error('task:claim requires by.');
-  }
-  if (typeof session_id !== 'string' || session_id.trim().length === 0) {
-    throw new Error('task:claim requires session_id.');
-  }
-
-  const domain_data =
-    'domain_data' in (args as Record<string, unknown>)
-      ? (args as { domain_data?: Record<string, unknown> }).domain_data
-      : undefined;
-
+  const input = requireObject(args, 'task:claim expects object input.');
   return {
-    task_id,
-    by,
-    session_id,
-    domain_data,
+    task_id: parseRequiredString(input.task_id, 'task:claim requires task_id.'),
+    by: parseRequiredString(input.by, 'task:claim requires by.'),
+    session_id: parseRequiredString(input.session_id, 'task:claim requires session_id.'),
+    timestamp: parseOptionalString(
+      input.timestamp,
+      'task:claim requires timestamp to be a string when provided.',
+    ),
+    domain_data: parseOptionalDomainData(input.domain_data),
   };
 }
 
 function parseCompleteTaskInput(args: unknown): CompleteTaskInput {
-  if (!args || typeof args !== 'object') {
-    throw new Error('task:complete expects object input.');
-  }
-
-  const task_id = (args as { task_id?: unknown }).task_id;
-  if (typeof task_id !== 'string' || task_id.trim().length === 0) {
-    throw new Error('task:complete requires task_id.');
-  }
-
-  const run_id =
-    typeof (args as { run_id?: unknown }).run_id === 'string'
-      ? (args as { run_id: string }).run_id
-      : undefined;
-  const evidence_refs = Array.isArray((args as { evidence_refs?: unknown }).evidence_refs)
-    ? ((args as { evidence_refs: unknown[] }).evidence_refs.filter(
-        (item) => typeof item === 'string',
-      ) as string[])
-    : undefined;
-
+  const input = requireObject(args, 'task:complete expects object input.');
   return {
-    task_id,
-    run_id,
-    evidence_refs,
+    task_id: parseRequiredString(input.task_id, 'task:complete requires task_id.'),
+    run_id: parseOptionalString(
+      input.run_id,
+      'task:complete requires run_id to be a string when provided.',
+    ),
+    timestamp: parseOptionalString(
+      input.timestamp,
+      'task:complete requires timestamp to be a string when provided.',
+    ),
+    evidence_refs: parseOptionalEvidenceRefs(input.evidence_refs),
   };
 }
 
@@ -115,12 +159,12 @@ function useCaseToolDefinitions(): McpToolDefinition[] {
     {
       name: 'task:claim',
       description: 'Claim a task using KernelRuntime.claimTask.',
-      input_schema: toMcpJsonSchema(TaskSpecSchema.pick({ id: true })),
+      input_schema: CLAIM_TASK_INPUT_SCHEMA,
     },
     {
       name: 'task:complete',
       description: 'Complete a task using KernelRuntime.completeTask.',
-      input_schema: toMcpJsonSchema(TaskSpecSchema.pick({ id: true })),
+      input_schema: COMPLETE_TASK_INPUT_SCHEMA,
     },
     {
       name: 'task:inspect',

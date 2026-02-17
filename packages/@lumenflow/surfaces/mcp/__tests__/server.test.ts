@@ -142,6 +142,107 @@ describe('surfaces/mcp runtime-backed server', () => {
     expect(inspectTask).toHaveBeenCalledTimes(1);
   });
 
+  it('passes optional claim/complete fields through to runtime handlers', async () => {
+    const createTask = vi.fn(async () => ({ ok: true }));
+    const claimTask = vi.fn(async () => ({ ok: true }));
+    const completeTask = vi.fn(async () => ({ ok: true }));
+    const inspectTask = vi.fn(async () => ({ ok: true }));
+
+    const runtime = {
+      createTask,
+      claimTask,
+      completeTask,
+      inspectTask,
+      executeTool: vi.fn(),
+      getToolHost: vi.fn(),
+      getPolicyEngine: vi.fn(),
+    } as unknown as KernelRuntime;
+
+    const server = createMcpServer(runtime);
+
+    await server.handleInvocation({
+      name: 'task:claim',
+      arguments: {
+        task_id: 'WU-1738-claim-optional',
+        by: 'tom@hellm.ai',
+        session_id: 'session-claim-optional',
+        timestamp: '2026-02-17T10:00:00.000Z',
+        domain_data: {
+          source: 'mcp',
+        },
+      },
+    });
+
+    await server.handleInvocation({
+      name: 'task:complete',
+      arguments: {
+        task_id: 'WU-1738-claim-optional',
+        run_id: 'run-WU-1738-claim-optional-1',
+        timestamp: '2026-02-17T10:05:00.000Z',
+        evidence_refs: ['evidence://run/1'],
+      },
+    });
+
+    expect(claimTask).toHaveBeenCalledWith({
+      task_id: 'WU-1738-claim-optional',
+      by: 'tom@hellm.ai',
+      session_id: 'session-claim-optional',
+      timestamp: '2026-02-17T10:00:00.000Z',
+      domain_data: {
+        source: 'mcp',
+      },
+    });
+
+    expect(completeTask).toHaveBeenCalledWith({
+      task_id: 'WU-1738-claim-optional',
+      run_id: 'run-WU-1738-claim-optional-1',
+      timestamp: '2026-02-17T10:05:00.000Z',
+      evidence_refs: ['evidence://run/1'],
+    });
+  });
+
+  it('rejects invalid claim/complete payload shapes at schema boundaries', async () => {
+    const claimTask = vi.fn(async () => ({ ok: true }));
+    const completeTask = vi.fn(async () => ({ ok: true }));
+
+    const runtime = {
+      createTask: vi.fn(),
+      claimTask,
+      completeTask,
+      inspectTask: vi.fn(),
+      executeTool: vi.fn(),
+      getToolHost: vi.fn(),
+      getPolicyEngine: vi.fn(),
+    } as unknown as KernelRuntime;
+
+    const server = createMcpServer(runtime);
+
+    await expect(
+      server.handleInvocation({
+        name: 'task:claim',
+        arguments: {
+          task_id: 'WU-1738-invalid',
+          by: 'tom@hellm.ai',
+          session_id: 'session-invalid',
+          domain_data: 'not-an-object',
+        },
+      }),
+    ).rejects.toThrow();
+
+    await expect(
+      server.handleInvocation({
+        name: 'task:complete',
+        arguments: {
+          task_id: 'WU-1738-invalid',
+          evidence_refs: ['ok', 42],
+        },
+      }),
+    ).rejects.toThrow();
+
+    expect(claimTask).not.toHaveBeenCalled();
+    expect(completeTask).not.toHaveBeenCalled();
+  });
+
   it('routes non-task names to runtime.executeTool', async () => {
     const executeTool = vi.fn(async () => ({ success: true }));
 
@@ -203,6 +304,20 @@ describe('surfaces/mcp runtime-backed server', () => {
     const createTool = tools.find((tool) => tool.name === 'task:create');
     expect(createTool).toBeDefined();
     expect(createTool?.input_schema.type).toBe('object');
+
+    const claimTool = tools.find((tool) => tool.name === 'task:claim');
+    expect(claimTool).toBeDefined();
+    expect(claimTool?.input_schema.required).toEqual(
+      expect.arrayContaining(['task_id', 'by', 'session_id']),
+    );
+    expect(claimTool?.input_schema.properties?.task_id).toBeDefined();
+    expect(claimTool?.input_schema.properties?.id).toBeUndefined();
+
+    const completeTool = tools.find((tool) => tool.name === 'task:complete');
+    expect(completeTool).toBeDefined();
+    expect(completeTool?.input_schema.required).toEqual(expect.arrayContaining(['task_id']));
+    expect(completeTool?.input_schema.properties?.task_id).toBeDefined();
+    expect(completeTool?.input_schema.properties?.id).toBeUndefined();
   });
 
   it('CLI lifecycle and MCP lifecycle produce identical event sequences', async () => {
