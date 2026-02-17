@@ -21,6 +21,12 @@ describe('software delivery lane lock and delegation tools', () => {
     expect(
       laneLockToolCapabilities.every((tool) => tool.handler.entry.includes('tool-impl/')),
     ).toBe(true);
+    expect(
+      laneLockToolCapabilities.every(
+        (tool) => tool.required_scopes[0]?.pattern === 'runtime/locks/**',
+      ),
+    ).toBe(true);
+    expect(delegationRecordTool.required_scopes[0]?.pattern).toBe('runtime/state/**');
   });
 
   it('acquires and releases lane locks with staleness detection', async () => {
@@ -97,5 +103,63 @@ describe('software delivery lane lock and delegation tools', () => {
     const written = await readFile(registryPath, 'utf8');
     expect(written.includes('"parentWuId":"WU-1733"')).toBe(true);
     expect(written.includes('"lineage":["WU-1732","WU-1733"]')).toBe(true);
+  });
+
+  it('allows only one stale lock contender to win takeover in parallel', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'lumenflow-pack-lock-race-'));
+    const lockDir = path.join(root, 'locks');
+    await mkdir(lockDir, { recursive: true });
+
+    const staleLock = await acquireLaneLockTool({
+      lane: 'Framework: Core State Recovery',
+      wuId: 'WU-1800',
+      owner: 'session-initial',
+      locksDir: lockDir,
+      staleAfterMs: 10_000,
+    });
+
+    await writeFile(
+      staleLock.lock_path,
+      JSON.stringify({
+        lane: 'Framework: Core State Recovery',
+        wuId: 'WU-1799',
+        owner: 'session-old',
+        timestamp: new Date(Date.now() - 10 * 60_000).toISOString(),
+      }),
+      'utf8',
+    );
+
+    const contenders = await Promise.all(
+      Array.from({ length: 6 }, (_, index) =>
+        acquireLaneLockTool({
+          lane: 'Framework: Core State Recovery',
+          wuId: `WU-18${index}`,
+          owner: `session-${index}`,
+          locksDir: lockDir,
+          staleAfterMs: 1,
+        }),
+      ),
+    );
+
+    const winners = contenders.filter((result) => result.acquired);
+    expect(winners).toHaveLength(1);
+    expect(winners[0]?.is_stale).toBe(true);
+  });
+
+  it('migrates legacy .lumenflow/state registry paths to runtime/state', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'lumenflow-pack-delegation-migration-'));
+    const legacyPath = path.join(root, '.lumenflow', 'state', 'delegation-registry.jsonl');
+    const runtimePath = path.join(root, 'runtime', 'state', 'delegation-registry.jsonl');
+
+    const result = await recordDelegationTool({
+      parentWuId: 'WU-1801',
+      targetWuId: 'WU-1802',
+      lane: 'Framework: Core State Recovery',
+      registryPath: legacyPath,
+    });
+
+    expect(result.success).toBe(true);
+    const written = await readFile(runtimePath, 'utf8');
+    expect(written.includes('"parentWuId":"WU-1801"')).toBe(true);
   });
 });

@@ -6,7 +6,7 @@ import {
 
 const ADMIN_SCOPE = {
   type: 'path' as const,
-  pattern: '.lumenflow/locks/**',
+  pattern: 'runtime/locks/**',
   access: 'write' as const,
 };
 

@@ -64,6 +64,25 @@ function isStale(metadata: LaneLockMetadata, staleAfterMs: number): boolean {
   return Number.isFinite(lockTime) && Date.now() - lockTime > staleAfterMs;
 }
 
+function staleTakeoverMarkerPath(lockPath: string): string {
+  return `${lockPath}.takeover`;
+}
+
+async function acquireTakeoverMarker(
+  markerPath: string,
+  metadata: LaneLockMetadata,
+): Promise<boolean> {
+  try {
+    await writeFile(markerPath, JSON.stringify(metadata), { encoding: 'utf8', flag: 'wx' });
+    return true;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
+      return false;
+    }
+    throw error;
+  }
+}
+
 export async function readLaneLockMetadata(lockPath: string): Promise<LaneLockMetadata | null> {
   try {
     const raw = await readFile(lockPath, 'utf8');
@@ -110,12 +129,57 @@ export async function acquireLaneLockTool(
 
     const existing = await readLaneLockMetadata(lockPath);
     if (existing && isStale(existing, staleAfterMs)) {
-      await writeFile(lockPath, JSON.stringify(nextMetadata), { encoding: 'utf8' });
-      return {
-        acquired: true,
-        is_stale: true,
-        lock_path: lockPath,
-      };
+      const takeoverMarkerPath = staleTakeoverMarkerPath(lockPath);
+      const wonTakeoverRace = await acquireTakeoverMarker(takeoverMarkerPath, nextMetadata);
+      if (!wonTakeoverRace) {
+        return {
+          acquired: false,
+          is_stale: false,
+          lock_path: lockPath,
+        };
+      }
+
+      try {
+        const current = await readLaneLockMetadata(lockPath);
+        if (!current || !isStale(current, staleAfterMs)) {
+          return {
+            acquired: false,
+            is_stale: false,
+            lock_path: lockPath,
+          };
+        }
+
+        await unlink(lockPath).catch((unlinkError) => {
+          const nodeError = unlinkError as NodeJS.ErrnoException;
+          if (nodeError.code === 'ENOENT') {
+            return;
+          }
+          throw unlinkError;
+        });
+
+        try {
+          await writeFile(lockPath, JSON.stringify(nextMetadata), { encoding: 'utf8', flag: 'wx' });
+        } catch (writeError) {
+          if ((writeError as NodeJS.ErrnoException).code === 'EEXIST') {
+            return {
+              acquired: false,
+              is_stale: false,
+              lock_path: lockPath,
+            };
+          }
+          throw writeError;
+        }
+
+        return {
+          acquired: true,
+          is_stale: true,
+          lock_path: lockPath,
+        };
+      } finally {
+        await unlink(takeoverMarkerPath).catch(() => {
+          // Best-effort marker cleanup.
+        });
+      }
     }
 
     return {

@@ -6,7 +6,7 @@ import {
 
 const STATE_SCOPE = {
   type: 'path' as const,
-  pattern: '.lumenflow/state/**',
+  pattern: 'runtime/state/**',
   access: 'write' as const,
 };
 
