@@ -7,8 +7,6 @@ priority: P3
 created: 2026-02-17
 code_paths:
   - packages/@lumenflow/kernel/src
-  - packages/@lumenflow/kernel/package.json
-  - packages/@lumenflow/kernel/LICENSE.md
   - docs/04-operations/tasks/wu/WU-1770.yaml
   - docs/04-operations/tasks/wu/WU-1774.yaml
   - docs/04-operations/tasks/initiatives/INIT-029.yaml
@@ -28,10 +26,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-17T18:03:29.967Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-specs-governance-wu-1783
+session_id: 20be24e3-d672-4122-8e25-a5dbc80bedcb
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T18:03:29.973Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +48,3 @@ acceptance:
   - Dangling plan URIs in WU-1770/WU-1774 are removed or resolved to valid references.
   - INIT-029 success metric text is updated to reflect current task:claim runtime adoption and
     phased migration roadmap.
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-specs-governance-wu-1783
-claimed_at: 2026-02-17T18:03:29.967Z
-baseline_main_sha: 85c6d9d10b43f4212be5620f1800b7a48196e593
-session_id: 20be24e3-d672-4122-8e25-a5dbc80bedcb
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-17T18:03:29.973Z
