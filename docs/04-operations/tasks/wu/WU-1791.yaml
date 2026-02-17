@@ -2,7 +2,7 @@ id: WU-1791
 title: Fix MDX comment syntax in cli.mdx
 lane: 'Content: Site Comms'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-17
 code_paths:
@@ -30,3 +30,11 @@ description: Auto-generated cli.mdx has invalid HTML comment syntax on line 1357
 acceptance:
   - apps/docs builds successfully
   - Invalid comment marker removed or converted to valid MDX
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1791
+claimed_at: 2026-02-17T17:55:39.135Z
+baseline_main_sha: cd2370fb5f7df50bafd71178084625b38406dcf0
+session_id: 5542a205-7df1-4b8d-9a50-1bd7a3e9c2e7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T17:55:39.139Z
