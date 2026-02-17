@@ -2,7 +2,7 @@ id: WU-1758
 title: 'Fix security boundary: fs:read path validation and git:status command injection'
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-17
 code_paths:
@@ -24,7 +24,7 @@ phase: 6
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
-assigned_to: noreply@anthropic.com
+assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
@@ -39,3 +39,11 @@ acceptance:
   - git:status commands input removed or restricted to git binary only
   - Path traversal tests added for fs:read
   - Command injection tests added for git:status
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1758
+claimed_at: 2026-02-17T12:17:32.681Z
+baseline_main_sha: cf78f99c10d9a98541051607f621eb2e3f1ec3bc
+session_id: 2d51e134-0956-481e-b112-14053bb1e7ce
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T12:17:32.689Z
