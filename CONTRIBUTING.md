@@ -53,12 +53,14 @@ All source files must include an SPDX license header. Use the appropriate header
 for the package you are modifying:
 
 **AGPL packages** (kernel, packs, surfaces, runtime):
+
 ```typescript
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 ```
 
 **Apache 2.0 packages** (control-plane-sdk):
+
 ```typescript
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: Apache-2.0

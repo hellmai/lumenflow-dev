@@ -31,6 +31,9 @@ node_modules/
 # Patch files (no parser available)
 *.patch
 
+# LICENSE files (no parser available)
+**/LICENSE
+
 # Shell scripts
 *.sh
 .husky/pre-commit

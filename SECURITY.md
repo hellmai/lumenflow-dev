@@ -8,6 +8,7 @@ responsibly. **Do not open a public GitHub issue.**
 Email: security@hellm.ai
 
 Include:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact
@@ -25,10 +26,10 @@ Include:
 
 ## Supported Versions
 
-| Version | Supported |
-|---------|-----------|
-| latest  | Yes       |
-| < latest | No       |
+| Version  | Supported |
+| -------- | --------- |
+| latest   | Yes       |
+| < latest | No        |
 
 We only provide security fixes for the latest release. We recommend always
 running the most recent version.
@@ -44,6 +45,7 @@ The following are in scope for security reports:
 - **Control Plane SDK** — credential leakage, MITM vulnerabilities
 
 Out of scope:
+
 - Vulnerabilities in dependencies (report upstream, but let us know)
 - Social engineering attacks
 - Denial of service via resource exhaustion (unless trivially exploitable)

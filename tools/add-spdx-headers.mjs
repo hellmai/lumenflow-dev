@@ -18,23 +18,22 @@ const AGPL_PACKAGES = [
   'packages/@lumenflow/surfaces',
 ];
 
-const APACHE_PACKAGES = [
-  'packages/@lumenflow/control-plane-sdk',
-];
+const APACHE_PACKAGES = ['packages/@lumenflow/control-plane-sdk'];
 
 function findTsFiles(dir) {
-  const result = execFileSync('git', [
-    'ls-files',
-    `${dir}/**/*.ts`,
-    `${dir}/*.ts`,
-  ], { encoding: 'utf-8' }).trim();
+  const result = execFileSync('git', ['ls-files', `${dir}/**/*.ts`, `${dir}/*.ts`], {
+    encoding: 'utf-8',
+  }).trim();
   if (!result) return [];
-  return result.split('\n').filter(f =>
-    !f.includes('node_modules') &&
-    !f.includes('/dist/') &&
-    !f.endsWith('.d.ts') &&
-    !f.includes('vitest.config')
-  );
+  return result
+    .split('\n')
+    .filter(
+      (f) =>
+        !f.includes('node_modules') &&
+        !f.includes('/dist/') &&
+        !f.endsWith('.d.ts') &&
+        !f.includes('vitest.config'),
+    );
 }
 
 function addHeader(filePath, header) {
