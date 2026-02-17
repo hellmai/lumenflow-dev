@@ -233,9 +233,7 @@ describe('kernel runtime facade', () => {
       'lane_templates: []',
     ]);
 
-    await expect(createRuntimeWithDefaultResolver()).rejects.toThrow(
-      RUNTIME_LOAD_STAGE_ERROR,
-    );
+    await expect(createRuntimeWithDefaultResolver()).rejects.toThrow(RUNTIME_LOAD_STAGE_ERROR);
   });
 
   it('surfaces registration-stage diagnostics when resolver fails', async () => {
