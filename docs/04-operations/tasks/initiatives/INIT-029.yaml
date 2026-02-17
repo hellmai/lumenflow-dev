@@ -5,10 +5,10 @@ description: 'Evolve LumenFlow from a software delivery CLI into a general-purpo
   hosted control plane. Work Units become universal task primitives for any goal-directed task,
   executed by agents that cannot go off-script. Differentiator vs OpenClaw: deterministic,
   auditable, safe-by-default execution via capability-scoped tool calls, sandbox enforcement, policy
-  governance, and immutable evidence receipts. No external users affected — Patient Path stays on
+  governance, and immutable evidence receipts. No external users affected - Patient Path stays on
   current version. Greenfield design, no backwards compat. Architecture plan:
   .claude/plans/golden-prancing-cookie.md'
-status: done
+status: in_progress
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-16
@@ -29,17 +29,48 @@ phases:
   - id: 5
     title: Control Plane SDK (hosted service interface)
     status: done
+  - id: 6
+    title: 'Remediation: code review findings (security, data integrity, performance)'
+    status: pending
+wus:
+  - WU-1725
+  - WU-1726
+  - WU-1727
+  - WU-1728
+  - WU-1729
+  - WU-1730
+  - WU-1731
+  - WU-1732
+  - WU-1733
+  - WU-1734
+  - WU-1735
+  - WU-1736
+  - WU-1737
+  - WU-1738
+  - WU-1739
+  - WU-1740
+  - WU-1756
+  - WU-1757
+  - WU-1758
+  - WU-1759
+  - WU-1760
+  - WU-1761
+  - WU-1762
+  - WU-1763
+  - WU-1764
 success_metrics:
   - Zero software delivery concepts in kernel package (grep for git, worktree, code_paths returns 0
     hits)
   - Every tool execution produces an immutable receipt with honest scope semantics
     (requested/allowed/enforced)
-  - 'Scope intersection enforced at ToolHost level: workspace ∩ lane ∩ task ∩ tool — agent denied on
+  - 'Scope intersection enforced at ToolHost level: workspace intersection lane intersection task intersection tool - agent denied on
     out-of-scope writes'
-  - CLI and MCP surfaces both call KernelRuntime directly — no MCP→CLI→core circular chain
+  - CLI and MCP surfaces both call KernelRuntime directly - no MCP to CLI to core circular chain
   - Software delivery pack loads with SHA-256 integrity verification and registers tools+policies
     via DomainPack manifest
   - 'ESLint Model B boundaries enforced: fs/child_process blocked outside kernel/tool-host,
     kernel/sandbox, kernel/event-store, and packs/**/tool-impl/**; direct tool-impl imports allowed
     only from tool-runner worker'
+notes:
+  - '2026-02-17 code review: 10 Critical + 17 Major issues found. Reopened with Phase 6 (Remediation). P0: evidence store double-hash (WU-1757), security boundary bypass (WU-1758), EventStore reliability (WU-1759), runtime security (WU-1760). P1: sandbox/lock/MCP hardening (WU-1761), policy/SDK hardening (WU-1762). P2: performance (WU-1763), architecture (WU-1764).'
 labels: []
