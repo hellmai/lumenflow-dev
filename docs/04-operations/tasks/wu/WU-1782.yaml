@@ -2,7 +2,7 @@ id: WU-1782
 title: Bound evidence receipt indexing and improve lane-lock cleanup observability
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-17
 code_paths:
@@ -58,3 +58,6 @@ session_id: ac4410f2-b52a-4680-a17d-63d8299c54af
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T17:57:23.732Z
+locked: true
+completed_at: 2026-02-17T18:02:53.105Z
+completed: 2026-02-17

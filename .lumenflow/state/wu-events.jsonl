@@ -1503,3 +1503,4 @@
 {"type":"complete","wuId":"WU-1781","timestamp":"2026-02-17T17:56:49.200Z"}
 {"type":"claim","wuId":"WU-1782","timestamp":"2026-02-17T17:57:23.762Z","lane":"Framework: Core Lifecycle","title":"Bound evidence receipt indexing and improve lane-lock cleanup observability"}
 {"type":"complete","wuId":"WU-1791","timestamp":"2026-02-17T17:59:24.536Z"}
+{"type":"complete","wuId":"WU-1782","timestamp":"2026-02-17T18:02:57.896Z"}

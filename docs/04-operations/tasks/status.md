@@ -5,7 +5,6 @@ _Last updated: 2026-02-17_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1782 — Bound evidence receipt indexing and improve lane-lock cleanup observability](wu/WU-1782.yaml)
 
 ## Completed
 
@@ -720,3 +719,4 @@ _Last updated: 2026-02-17_
 - [WU-1780 — Enforce workspace tamper baseline and missing-config handling](wu/WU-1780.yaml) — 2026-02-17
 - [WU-1781 — Sandbox readonly mount depth and prefix validation](wu/WU-1781.yaml) — 2026-02-17
 - [WU-1791 — Fix MDX comment syntax in cli.mdx](wu/WU-1791.yaml) — 2026-02-17
+- [WU-1782 — Bound evidence receipt indexing and improve lane-lock cleanup observability](wu/WU-1782.yaml) — 2026-02-17
