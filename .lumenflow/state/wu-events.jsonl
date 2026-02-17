@@ -1479,3 +1479,4 @@
 {"type":"complete","wuId":"WU-1774","timestamp":"2026-02-17T13:34:16.336Z"}
 {"type":"claim","wuId":"WU-1773","timestamp":"2026-02-17T13:35:10.085Z","lane":"Framework: Core Lifecycle","title":"Add workspace hash verification and spec_tampered emission"}
 {"type":"complete","wuId":"WU-1773","timestamp":"2026-02-17T13:53:12.692Z"}
+{"type":"claim","wuId":"WU-1771","lane":"Framework: MCP","title":"Tracer bullet MCP task_claim through KernelRuntime","timestamp":"2026-02-17T13:54:21.804Z"}
