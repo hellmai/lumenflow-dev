@@ -1459,3 +1459,4 @@
 {"type":"complete","wuId":"WU-1758","timestamp":"2026-02-17T12:21:44.097Z"}
 {"type":"claim","wuId":"WU-1759","timestamp":"2026-02-17T12:22:13.721Z","lane":"Framework: Core Lifecycle","title":"Fix EventStore reliability: stale lock recovery and atomic batch append"}
 {"type":"complete","wuId":"WU-1759","timestamp":"2026-02-17T12:27:54.589Z"}
+{"type":"claim","wuId":"WU-1760","lane":"Framework: Core Lifecycle","title":"Fix runtime security: Unix socket permissions, JSON validation, daemon params","timestamp":"2026-02-17T12:28:23.493Z"}

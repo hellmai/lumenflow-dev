@@ -2,7 +2,7 @@ id: WU-1760
 title: 'Fix runtime security: Unix socket permissions, JSON validation, daemon params'
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-17
 code_paths:
@@ -28,7 +28,7 @@ phase: 6
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
-assigned_to: noreply@anthropic.com
+assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
@@ -46,3 +46,11 @@ acceptance:
   - Scheduler completion bookkeeping uses explicit activeByTask state instead of heuristic lane
     lookup
   - Malformed request and scheduler regression tests cover the hardened paths
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1760
+claimed_at: 2026-02-17T12:28:23.441Z
+baseline_main_sha: 13a5876d157c8b90cd90433f8d678a71a1d28c03
+session_id: b0f7f4cf-4573-454a-8868-6437c4e9e3d8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T12:28:23.449Z
