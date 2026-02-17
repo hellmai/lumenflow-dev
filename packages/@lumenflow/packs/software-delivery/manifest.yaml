@@ -8,7 +8,7 @@ tools:
     permission: read
     required_scopes:
       - type: path
-        pattern: "**"
+        pattern: '**'
         access: read
 policies:
   - id: software-delivery.gate.format
