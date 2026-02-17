@@ -11,7 +11,10 @@ code_paths:
   - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
   - packages/@lumenflow/kernel/src/sandbox/bwrap-invocation.ts
 tests:
-  manual: []
+  manual:
+    - Execute a manifest-declared subprocess tool through KernelRuntime and verify bwrap-backed
+      dispatch succeeds when available
+    - or returns explicit structured fallback when unavailable.
   unit:
     - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
     - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
@@ -35,10 +38,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Problem: runtime currently uses a stub subprocess dispatcher that always returns SUBPROCESS_NOT_AVAILABLE. Implement and inject a bwrap-backed dispatcher so manifest tools can execute end-to-end with graceful fallback when bwrap is unavailable.'
+description: 'Problem: runtime currently uses a stub subprocess dispatcher that always returns
+  SUBPROCESS_NOT_AVAILABLE. Implement and inject a bwrap-backed dispatcher so manifest tools can
+  execute end-to-end with graceful fallback when bwrap is unavailable.'
 acceptance:
   - SandboxSubprocessDispatcher executes subprocess tools with bwrap sandboxing.
   - initializeKernelRuntime injects real dispatcher when sandbox profile is available.
-  - When bwrap is unavailable, runtime returns a structured fallback error instead of silent stub behavior.
+  - When bwrap is unavailable, runtime returns a structured fallback error instead of silent stub
+    behavior.
   - At least one manifest tool executes end-to-end through runtime and emits receipt evidence.
-  - Runtime and tool-host tests are updated from stub-expectation to real-dispatch behavior (or explicit availability gating).
+  - Runtime and tool-host tests are updated from stub-expectation to real-dispatch behavior (or
+    explicit availability gating).
