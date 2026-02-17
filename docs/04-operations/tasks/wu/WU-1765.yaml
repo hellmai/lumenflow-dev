@@ -6,7 +6,8 @@ status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
-  - packages/@lumenflow/cli/src/agent-patterns-registry.ts
+  - packages/@lumenflow/core/src/normalize-config-keys.ts
+  - packages/@lumenflow/core/src/lumenflow-config.ts
 tests:
   manual:
     - 'Verify claude/* branch detected as agent branch by running: node -e "const {isAgentBranch} =
@@ -14,6 +15,7 @@ tests:
       isAgentBranch(''claude/test-branch'').then(console.log)" from CLI package'
   unit:
     - packages/@lumenflow/cli/src/__tests__/agent-patterns-registry.test.ts
+    - packages/@lumenflow/core/src/__tests__/config-key-normalization.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1765.done
@@ -21,10 +23,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-17T10:14:18.739Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1765
+session_id: 8df4ddde-0938-4e12-bf14-76868a0afbbd
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T10:14:18.746Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -36,11 +45,3 @@ acceptance:
   - Local config agent_branch_patterns merge with registry patterns
   - claude/* and codex/* branches detected as agent branches
   - Test covering local+registry pattern merge
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1765
-claimed_at: 2026-02-17T10:14:18.739Z
-baseline_main_sha: a429ed39780390696cee3aa5caa0be211f6785fb
-session_id: 8df4ddde-0938-4e12-bf14-76868a0afbbd
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-17T10:14:18.746Z
