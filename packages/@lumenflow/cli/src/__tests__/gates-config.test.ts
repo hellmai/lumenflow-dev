@@ -173,7 +173,7 @@ describe('WU-1356: Package manager and script configuration', () => {
   describe('LumenFlowConfigSchema - build_command field', () => {
     it('includes build_command with default for pnpm', () => {
       const config = parseConfig({});
-      expect(config.build_command).toBe('pnpm --filter @lumenflow/cli build');
+      expect(config.build_command).toBe('pnpm build');
     });
 
     it('allows custom build_command', () => {

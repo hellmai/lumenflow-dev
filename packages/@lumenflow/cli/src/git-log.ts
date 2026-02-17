@@ -15,6 +15,8 @@
 
 import { createGitForPath, getGitForCwd } from '@lumenflow/core';
 
+const NO_COMMIT_HISTORY_PATTERNS = [/does not have any commits/i, /fatal: bad revision/i] as const;
+
 /**
  * Arguments for git log operation
  */
@@ -63,6 +65,10 @@ export interface GitLogResult {
   commits: CommitInfo[];
   /** Raw output (for oneline/custom format) */
   output?: string;
+}
+
+function isNoCommitHistoryError(message: string): boolean {
+  return NO_COMMIT_HISTORY_PATTERNS.some((pattern) => pattern.test(message));
 }
 
 /**
@@ -194,11 +200,7 @@ export async function getGitLog(args: GitLogArgs): Promise<GitLogResult> {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     // Handle case of repo with no commits
-    if (
-      errorMessage.includes('does not have UnsafeAny commits') ||
-      errorMessage.includes('fatal: bad revision') ||
-      errorMessage.includes("fatal: your current branch 'main' does not have UnsafeAny commits")
-    ) {
+    if (isNoCommitHistoryError(errorMessage)) {
       return {
         success: true,
         commits: [],
