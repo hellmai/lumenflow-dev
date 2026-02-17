@@ -102,5 +102,5 @@ notes:
     WU-1774 dependency on WU-1770, selected tracer bullet commands task_claim (MCP) and task:claim
     (CLI), and added WU-1775 lane-fit governance coverage.'
   - 2026-02-17 Phase 8 added from post-INIT-029 consolidated review plan
-    (/home/USER/.claude/plans/zesty-jumping-pixel.md).
+    (zesty-jumping-pixel.md).
 labels: []
