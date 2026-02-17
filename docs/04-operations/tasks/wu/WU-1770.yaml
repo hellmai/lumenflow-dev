@@ -2,7 +2,7 @@ id: WU-1770
 title: Wire pack manifest tools into runtime resolver
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -41,3 +41,11 @@ acceptance:
   - Runtime initialization registers manifest-declared tools without requiring test-only resolver
     injection
   - Unit tests cover resolver/loader wiring boundaries; e2e ownership remains with WU-1774
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1770
+claimed_at: 2026-02-17T13:13:22.093Z
+baseline_main_sha: db85da60cfd7db661aaa483850f56d57a14f1470
+session_id: 4c851e15-027a-4531-b95a-7ec7f2590ecc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T13:13:22.100Z

@@ -25,7 +25,6 @@ sections:
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1764 — Kernel architecture: package graph integration, exports, DRY cleanup](wu/WU-1764.yaml) — Framework: Core Lifecycle
-- [WU-1770 — Wire pack manifest tools into runtime resolver](wu/WU-1770.yaml) — Framework: Core Lifecycle
 - [WU-1771 — Tracer bullet MCP task_claim through KernelRuntime](wu/WU-1771.yaml) — Framework: MCP
 - [WU-1772 — Tracer bullet CLI task:claim through KernelRuntime](wu/WU-1772.yaml) — Framework: CLI Orchestration
 - [WU-1773 — Add workspace hash verification and spec_tampered emission](wu/WU-1773.yaml) — Framework: Core Lifecycle
@@ -34,6 +33,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1770 — Wire pack manifest tools into runtime resolver](wu/WU-1770.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
