@@ -2,7 +2,7 @@ id: WU-1760
 title: 'Fix runtime security: Unix socket permissions, JSON validation, daemon params'
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-17
 code_paths:
@@ -54,3 +54,6 @@ session_id: b0f7f4cf-4573-454a-8868-6437c4e9e3d8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T12:28:23.449Z
+locked: true
+completed_at: 2026-02-17T12:36:20.859Z
+completed: 2026-02-17
