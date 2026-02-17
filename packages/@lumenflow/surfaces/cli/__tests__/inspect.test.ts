@@ -1,7 +1,8 @@
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { canonical_json } from '../../../kernel/src/canonical-json.js';
 import { initializeTaskLifecycleCommands } from '../task-lifecycle.js';
 import { createInspectCommands, createReplayCommands } from '../inspect.js';
 
@@ -73,6 +74,11 @@ async function writeWorkspaceFixture(root: string): Promise<void> {
   );
 }
 
+async function readWorkspaceConfigHash(root: string): Promise<string> {
+  const workspaceYaml = await readFile(join(root, 'workspace.yaml'), 'utf8');
+  return canonical_json(workspaceYaml);
+}
+
 describe('surfaces/cli inspect + replay commands', () => {
   let tempRoot: string;
 
@@ -119,6 +125,7 @@ describe('surfaces/cli inspect + replay commands', () => {
 
     const replayInputPath = join(tempRoot, 'replay-input.txt');
     await writeFile(replayInputPath, 'inspect + replay', 'utf8');
+    const workspaceConfigHash = await readWorkspaceConfigHash(tempRoot);
 
     await initialized.runtime.executeTool(
       'fs:read',
@@ -135,7 +142,7 @@ describe('surfaces/cli inspect + replay commands', () => {
           workspace_allowed_scopes: [READ_SCOPE],
           lane_allowed_scopes: [READ_SCOPE],
           task_declared_scopes: [READ_SCOPE],
-          workspace_config_hash: 'a'.repeat(64),
+          workspace_config_hash: workspaceConfigHash,
           runtime_version: '2.21.0',
         },
       },

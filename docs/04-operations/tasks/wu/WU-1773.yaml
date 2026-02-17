@@ -38,6 +38,7 @@ tests:
     - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
     - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
     - packages/@lumenflow/kernel/src/__tests__/pack-loader.test.ts
+    - packages/@lumenflow/surfaces/cli/__tests__/inspect.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1773.done
