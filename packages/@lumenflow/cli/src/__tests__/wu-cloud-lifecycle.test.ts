@@ -61,6 +61,29 @@ describe('wu:create --cloud path (WU-1590 AC1)', () => {
   });
 });
 
+// --- WU-1766: wu:claim --cloud bypasses ensureOnMain ---
+describe('wu:claim --cloud ensureOnMain bypass (WU-1766)', () => {
+  describe('shouldSkipEnsureOnMainForClaim', () => {
+    it('should skip ensureOnMain when cloud mode is active', async () => {
+      const { shouldSkipEnsureOnMainForClaim } = await import('../wu-claim-cloud.js');
+      const result = shouldSkipEnsureOnMainForClaim({ isCloud: true });
+      expect(result).toBe(true);
+    });
+
+    it('should NOT skip ensureOnMain when cloud mode is inactive', async () => {
+      const { shouldSkipEnsureOnMainForClaim } = await import('../wu-claim-cloud.js');
+      const result = shouldSkipEnsureOnMainForClaim({ isCloud: false });
+      expect(result).toBe(false);
+    });
+
+    it('should NOT skip ensureOnMain when isCloud is undefined', async () => {
+      const { shouldSkipEnsureOnMainForClaim } = await import('../wu-claim-cloud.js');
+      const result = shouldSkipEnsureOnMainForClaim({});
+      expect(result).toBe(false);
+    });
+  });
+});
+
 // --- AC2: wu:claim --cloud persists claimed_branch ---
 describe('wu:claim --cloud claimed_branch persistence (WU-1590 AC2)', () => {
   describe('buildCloudClaimMetadata', () => {
