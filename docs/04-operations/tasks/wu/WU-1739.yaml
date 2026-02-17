@@ -2,7 +2,7 @@ id: WU-1739
 title: Runtime daemon — scheduler, sessions, Unix socket transport
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-16
 code_paths:
@@ -37,7 +37,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-029 Phase 4 — Surfaces + Daemon. Depends on WU-1735 (KernelRuntime). Problem: For persistent agent execution, the system needs a runtime daemon (lumenflowd) that manages scheduling, sessions, and shared state. Currently each CLI invocation is standalone with file-based locking for invariants. Solution: Runtime daemon with manual start (lumenflow daemon start). TaskScheduler for priority queue with lane WIP enforcement. SessionManager for persistent agent sessions with checkpoints. Unix socket transport (net.createServer) for IPC. CLI detects daemon via socket: routes through daemon when running, works in-process when not. Plan: .claude/plans/golden-prancing-cookie.md'
+description: 'Context: INIT-029 Phase 4 — Surfaces + Daemon. Depends on WU-1735 (KernelRuntime).
+  Problem: For persistent agent execution, the system needs a runtime daemon (lumenflowd) that
+  manages scheduling, sessions, and shared state. Currently each CLI invocation is standalone with
+  file-based locking for invariants. Solution: Runtime daemon with manual start (lumenflow daemon
+  start). TaskScheduler for priority queue with lane WIP enforcement. SessionManager for persistent
+  agent sessions with checkpoints. Unix socket transport (net.createServer) for IPC. CLI detects
+  daemon via socket: routes through daemon when running, works in-process when not. Plan:
+  .claude/plans/golden-prancing-cookie.md'
 acceptance:
   - lumenflowd daemon starts with lumenflow daemon start and writes PID file
   - TaskScheduler implements priority queue with lane WIP enforcement
@@ -47,3 +54,11 @@ acceptance:
   - 'Without daemon: everything works in-process (file locks ensure invariants)'
   - 'With daemon: single-writer mode, no lock contention between CLI invocations'
   - Daemon graceful shutdown on SIGTERM/SIGINT
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1739
+claimed_at: 2026-02-17T00:14:05.313Z
+baseline_main_sha: 5637df2c8078d98145fbddafe1b19417c6a56ec0
+session_id: 3efb92da-dd6e-4add-a459-b866e3aee82a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T00:14:05.321Z
