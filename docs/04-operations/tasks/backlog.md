@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1766 — Fix wu:claim --cloud: missing cloud-mode bypass before ensureOnMain](wu/WU-1766.yaml) — Framework: CLI WU Commands
 - [WU-1765 — Fix resolveAgentPatterns: local config patterns ignored when registry returns results](wu/WU-1765.yaml) — Framework: CLI WU Commands
 - [WU-1764 — Kernel architecture: package graph integration, exports, DRY cleanup](wu/WU-1764.yaml) — Framework: Core Lifecycle
 - [WU-1763 — Kernel performance: eliminate per-append reload, move orphan reconciliation, add evidence indexing](wu/WU-1763.yaml) — Framework: Core Lifecycle
