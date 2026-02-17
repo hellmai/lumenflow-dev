@@ -2,7 +2,7 @@ id: WU-1778
 title: Manifest least-privilege runtime capability resolver
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: done
+status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -61,6 +61,3 @@ acceptance:
     admin/full-scope defaults.
   - Tools without explicit permission default to read.
   - Pack tool descriptor permissions and manifest permissions are aligned and covered by tests.
-locked: true
-completed_at: 2026-02-17T17:34:10.568Z
-completed: 2026-02-17
