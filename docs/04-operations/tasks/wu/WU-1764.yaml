@@ -16,7 +16,7 @@ code_paths:
   - packages/@lumenflow/kernel/src/evidence/evidence-store.ts
   - packages/@lumenflow/kernel/src/pack/pack-loader.ts
   - packages/@lumenflow/kernel/README.md
-  - packages/@lumenflow/kernel/LICENSE
+  - packages/@lumenflow/kernel/LICENSE.md
 tests:
   manual:
     - 'Run kernel package graph smoke check: pnpm --filter @lumenflow/kernel build and verify kernel
@@ -56,7 +56,7 @@ acceptance:
   - Missing sub-path exports added to barrel and package.json exports map
   - Kernel event kinds and tool trace kinds use shared constants (no duplicated literals in runtime
     paths)
-  - README.md and LICENSE files created for kernel package
+  - README.md and LICENSE.md files created for kernel package
 claimed_mode: worktree
 worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1764
 claimed_at: 2026-02-17T16:01:05.726Z
