@@ -3,7 +3,7 @@ import path from 'node:path';
 import YAML from 'yaml';
 import { z } from 'zod';
 import { canonical_json } from '../canonical-json.js';
-import { PACKS_DIR_NAME, UTF8_ENCODING } from '../shared-constants.js';
+import { PACKS_DIR_NAME, UTF8_ENCODING, WORKSPACE_FILE_NAME } from '../shared-constants.js';
 import {
   EventStore,
   projectTaskState,
@@ -43,7 +43,6 @@ import {
 import { ToolHost, type PolicyHook } from '../tool-host/tool-host.js';
 import { ToolRegistry } from '../tool-host/tool-registry.js';
 
-const DEFAULT_WORKSPACE_FILE_NAME = 'workspace.yaml';
 const DEFAULT_RUNTIME_ROOT = path.join('.lumenflow', 'kernel');
 const DEFAULT_PACKS_ROOT_CANDIDATES = [
   PACKS_DIR_NAME,
@@ -54,6 +53,11 @@ const DEFAULT_PACK_TOOL_INPUT_SCHEMA = z.record(z.string(), z.unknown());
 const DEFAULT_PACK_TOOL_OUTPUT_SCHEMA = z.record(z.string(), z.unknown());
 const RUNTIME_LOAD_STAGE_ERROR_PREFIX = 'Runtime load stage failed for pack';
 const RUNTIME_REGISTRATION_STAGE_ERROR_PREFIX = 'Runtime registration stage failed for tool';
+const WORKSPACE_HASH_REGEX = /^[a-f0-9]{64}$/;
+const WORKSPACE_UPDATED_INIT_SUMMARY = 'Workspace config hash initialized during runtime startup.';
+const SPEC_TAMPERED_ERROR_CODE = 'SPEC_TAMPERED';
+const SPEC_TAMPERED_WORKSPACE_MESSAGE =
+  'Workspace configuration hash mismatch detected; execution blocked.';
 
 type RunLifecycleEvent = Extract<
   KernelEvent,
@@ -65,6 +69,8 @@ type TaskClaimedEvent = Extract<KernelEvent, { kind: 'task_claimed' }>;
 type RunStartedEvent = Extract<KernelEvent, { kind: 'run_started' }>;
 type RunSucceededEvent = Extract<KernelEvent, { kind: 'run_succeeded' }>;
 type TaskCompletedEvent = Extract<KernelEvent, { kind: 'task_completed' }>;
+type WorkspaceUpdatedEvent = Extract<KernelEvent, { kind: 'workspace_updated' }>;
+type SpecTamperedEvent = Extract<KernelEvent, { kind: 'spec_tampered' }>;
 
 export interface RuntimeToolCapabilityResolverInput {
   workspaceSpec: WorkspaceSpec;
@@ -105,6 +111,8 @@ export interface KernelRuntime {
 
 export interface KernelRuntimeOptions {
   workspace_spec: WorkspaceSpec;
+  workspace_file_path: string;
+  workspace_config_hash: string;
   loaded_packs: LoadedDomainPack[];
   task_spec_root: string;
   event_store: EventStore;
@@ -412,17 +420,29 @@ async function writeTaskSpecImmutable(taskSpecRoot: string, task: TaskSpec): Pro
   return taskSpecPath;
 }
 
+interface ResolvedWorkspaceSpec {
+  workspace_file_path: string;
+  workspace_spec: WorkspaceSpec;
+  workspace_config_hash: string;
+}
+
 async function resolveWorkspaceSpec(
   options: InitializeKernelRuntimeOptions,
-): Promise<WorkspaceSpec> {
+): Promise<ResolvedWorkspaceSpec> {
   const workspaceRoot = path.resolve(options.workspaceRoot);
   const workspaceFilePath = path.resolve(
     options.workspaceFilePath ??
-      path.join(workspaceRoot, options.workspaceFileName ?? DEFAULT_WORKSPACE_FILE_NAME),
+      path.join(workspaceRoot, options.workspaceFileName ?? WORKSPACE_FILE_NAME),
   );
 
   const raw = await readFile(workspaceFilePath, UTF8_ENCODING);
-  return WorkspaceSpecSchema.parse(YAML.parse(raw));
+  const workspaceSpec = WorkspaceSpecSchema.parse(YAML.parse(raw));
+
+  return {
+    workspace_file_path: workspaceFilePath,
+    workspace_spec: workspaceSpec,
+    workspace_config_hash: canonical_json(raw),
+  };
 }
 
 function buildDefaultPolicyLayers(loadedPacks: LoadedDomainPack[]): PolicyLayer[] {
@@ -485,8 +505,24 @@ function resolveReplayTaskFilter(taskId: string): ReplayFilter {
   };
 }
 
+function resolveExecutionMetadata(context: ExecutionContext): Record<string, unknown> {
+  if (!context.metadata || typeof context.metadata !== 'object') {
+    return {};
+  }
+  return context.metadata;
+}
+
+function parseWorkspaceConfigHash(candidate: unknown): string | null {
+  if (typeof candidate !== 'string') {
+    return null;
+  }
+  return WORKSPACE_HASH_REGEX.test(candidate) ? candidate : null;
+}
+
 export class DefaultKernelRuntime implements KernelRuntime {
   private readonly workspaceSpec: WorkspaceSpec;
+  private readonly workspaceFilePath: string;
+  private readonly workspaceConfigHash: string;
   private readonly loadedPacks: LoadedDomainPack[];
   private readonly taskSpecRoot: string;
   private readonly eventStore: EventStore;
@@ -499,6 +535,8 @@ export class DefaultKernelRuntime implements KernelRuntime {
 
   constructor(options: KernelRuntimeOptions) {
     this.workspaceSpec = options.workspace_spec;
+    this.workspaceFilePath = options.workspace_file_path;
+    this.workspaceConfigHash = options.workspace_config_hash;
     this.loadedPacks = options.loaded_packs;
     this.taskSpecRoot = options.task_spec_root;
     this.eventStore = options.event_store;
@@ -520,7 +558,46 @@ export class DefaultKernelRuntime implements KernelRuntime {
 
   async executeTool(name: string, input: unknown, ctx: ExecutionContext): Promise<ToolOutput> {
     const context = ExecutionContextSchema.parse(ctx);
-    return this.toolHost.execute(name, input, context);
+    const metadata = resolveExecutionMetadata(context);
+    const expectedHash =
+      parseWorkspaceConfigHash(metadata.workspace_config_hash) ?? this.workspaceConfigHash;
+    const actualHash = await this.computeWorkspaceConfigHash();
+
+    if (actualHash !== expectedHash) {
+      const tamperedEvent: SpecTamperedEvent = {
+        schema_version: 1,
+        kind: 'spec_tampered',
+        spec: 'workspace',
+        id: this.workspaceSpec.id,
+        expected_hash: expectedHash,
+        actual_hash: actualHash,
+        timestamp: normalizeTimestamp(this.now),
+      };
+      await this.eventStore.append(tamperedEvent);
+
+      return {
+        success: false,
+        error: {
+          code: SPEC_TAMPERED_ERROR_CODE,
+          message: SPEC_TAMPERED_WORKSPACE_MESSAGE,
+          details: {
+            workspace_id: this.workspaceSpec.id,
+            expected_hash: expectedHash,
+            actual_hash: actualHash,
+          },
+        },
+      };
+    }
+
+    const runtimeContext = ExecutionContextSchema.parse({
+      ...context,
+      metadata: {
+        ...metadata,
+        workspace_config_hash: actualHash,
+      },
+    });
+
+    return this.toolHost.execute(name, input, runtimeContext);
   }
 
   async createTask(taskSpec: TaskSpec): Promise<CreateTaskResult> {
@@ -738,6 +815,11 @@ export class DefaultKernelRuntime implements KernelRuntime {
     return evaluation.decisions;
   }
 
+  private async computeWorkspaceConfigHash(): Promise<string> {
+    const raw = await readFile(this.workspaceFilePath, UTF8_ENCODING);
+    return canonical_json(raw);
+  }
+
   private async readReceiptsForTask(taskId: string): Promise<ToolTraceEntry[]> {
     const traces = await this.evidenceStore.readTraces();
     const receiptIds = new Set<string>();
@@ -764,8 +846,10 @@ export async function initializeKernelRuntime(
   options: InitializeKernelRuntimeOptions,
 ): Promise<DefaultKernelRuntime> {
   const workspaceRoot = path.resolve(options.workspaceRoot);
-  const workspaceSpec = await resolveWorkspaceSpec(options);
+  const resolvedWorkspace = await resolveWorkspaceSpec(options);
+  const workspaceSpec = resolvedWorkspace.workspace_spec;
   const packsRoot = await resolvePacksRoot(options);
+  const now = options.now ?? (() => new Date());
 
   const taskSpecRoot = path.resolve(
     options.taskSpecRoot ?? path.join(workspaceRoot, DEFAULT_RUNTIME_ROOT, 'tasks'),
@@ -839,6 +923,14 @@ export async function initializeKernelRuntime(
     taskSpecLoader: async (taskId) => readTaskSpecFromDisk(taskSpecRoot, taskId),
   };
   const eventStore = new EventStore(eventStoreOptions);
+  const workspaceUpdatedEvent: WorkspaceUpdatedEvent = {
+    schema_version: 1,
+    kind: 'workspace_updated',
+    timestamp: normalizeTimestamp(now),
+    config_hash: resolvedWorkspace.workspace_config_hash,
+    changes_summary: WORKSPACE_UPDATED_INIT_SUMMARY,
+  };
+  await eventStore.append(workspaceUpdatedEvent);
 
   const toolHost = new ToolHost({
     registry,
@@ -846,9 +938,12 @@ export async function initializeKernelRuntime(
     policyHook: createRuntimePolicyHook(policyEngine),
     runtimeVersion: options.runtimeVersion,
   });
+  await toolHost.onStartup();
 
   return new DefaultKernelRuntime({
     workspace_spec: workspaceSpec,
+    workspace_file_path: resolvedWorkspace.workspace_file_path,
+    workspace_config_hash: resolvedWorkspace.workspace_config_hash,
     loaded_packs: loadedPacks,
     task_spec_root: taskSpecRoot,
     event_store: eventStore,
@@ -856,7 +951,7 @@ export async function initializeKernelRuntime(
     tool_host: toolHost,
     policy_engine: policyEngine,
     state_aliases: mergeStateAliases(loadedPacks),
-    now: options.now,
+    now,
     run_id_factory: options.runIdFactory,
   });
 }

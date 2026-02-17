@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import { SOFTWARE_DELIVERY_PACK_ID } from '../../../packs/software-delivery/constants.js';
+import { canonical_json } from '../canonical-json.js';
 import type { ExecutionContext, TaskSpec } from '../kernel.schemas.js';
 import { EventStore } from '../event-store/index.js';
 import { initializeKernelRuntime } from '../runtime/index.js';
@@ -11,6 +12,7 @@ import {
   PACK_MANIFEST_FILE_NAME,
   PACKS_DIR_NAME,
   UTF8_ENCODING,
+  WORKSPACE_FILE_NAME,
 } from '../shared-constants.js';
 
 const WORKSPACE_SCOPE = {
@@ -23,6 +25,9 @@ const TOOL_NOT_FOUND_ERROR_CODE = 'TOOL_NOT_FOUND';
 const SUBPROCESS_NOT_AVAILABLE_ERROR_CODE = 'SUBPROCESS_NOT_AVAILABLE';
 const TOOL_CALL_STARTED_KIND = 'tool_call_started';
 const TOOL_CALL_FINISHED_KIND = 'tool_call_finished';
+const WORKSPACE_UPDATED_KIND = 'workspace_updated';
+const SPEC_TAMPERED_KIND = 'spec_tampered';
+const SPEC_TAMPERED_ERROR_CODE = 'SPEC_TAMPERED';
 const RUNTIME_LOAD_STAGE_ERROR = `Runtime load stage failed for pack "${SOFTWARE_DELIVERY_PACK_ID}"`;
 const RUNTIME_REGISTRATION_STAGE_ERROR = `Runtime registration stage failed for tool "${PACK_ECHO_TOOL_NAME}" in pack "${SOFTWARE_DELIVERY_PACK_ID}"`;
 const RESOLVER_EXPLODED_MESSAGE = 'resolver exploded';
@@ -46,7 +51,11 @@ function createTaskSpec(taskId: string): TaskSpec {
   };
 }
 
-function createExecutionContext(taskId: string, runId: string): ExecutionContext {
+function createExecutionContext(
+  taskId: string,
+  runId: string,
+  workspaceConfigHash: string,
+): ExecutionContext {
   return {
     run_id: runId,
     task_id: taskId,
@@ -56,7 +65,7 @@ function createExecutionContext(taskId: string, runId: string): ExecutionContext
       workspace_allowed_scopes: [WORKSPACE_SCOPE],
       lane_allowed_scopes: [WORKSPACE_SCOPE],
       task_declared_scopes: [WORKSPACE_SCOPE],
-      workspace_config_hash: 'a'.repeat(64),
+      workspace_config_hash: workspaceConfigHash,
       runtime_version: '2.21.0',
     },
   };
@@ -68,7 +77,7 @@ async function writeWorkspaceFixture(root: string): Promise<void> {
   await mkdir(join(packRoot, 'tools'), { recursive: true });
 
   await writeFile(
-    join(root, 'workspace.yaml'),
+    join(root, WORKSPACE_FILE_NAME),
     [
       'id: workspace-kernel-runtime',
       'name: Kernel Runtime Workspace',
@@ -126,12 +135,19 @@ async function writeWorkspaceFixture(root: string): Promise<void> {
   );
 }
 
+async function readWorkspaceConfigHash(root: string): Promise<string> {
+  const workspaceYaml = await readFile(join(root, WORKSPACE_FILE_NAME), UTF8_ENCODING);
+  return canonical_json(workspaceYaml);
+}
+
 describe('kernel runtime facade', () => {
   let tempRoot: string;
+  let workspaceConfigHash: string;
 
   beforeEach(async () => {
     tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-kernel-runtime-'));
     await writeWorkspaceFixture(tempRoot);
+    workspaceConfigHash = await readWorkspaceConfigHash(tempRoot);
   });
 
   afterEach(async () => {
@@ -194,7 +210,7 @@ describe('kernel runtime facade', () => {
     const output = await runtime.executeTool(
       PACK_ECHO_TOOL_NAME,
       { message: 'hello' },
-      createExecutionContext('WU-1735-runtime-init', 'run-init-1'),
+      createExecutionContext('WU-1735-runtime-init', 'run-init-1', workspaceConfigHash),
     );
 
     expect(output.success).toBe(true);
@@ -207,11 +223,25 @@ describe('kernel runtime facade', () => {
     const output = await runtime.executeTool(
       PACK_ECHO_TOOL_NAME,
       { message: 'hello' },
-      createExecutionContext('WU-1770-default-resolver', 'run-default-resolver-1'),
+      createExecutionContext('WU-1770-default-resolver', 'run-default-resolver-1', workspaceConfigHash),
     );
 
     expect(output.success).toBe(false);
     expect(output.error?.code).toBe(SUBPROCESS_NOT_AVAILABLE_ERROR_CODE);
+  });
+
+  it('emits workspace_updated with the computed workspace hash at runtime initialization', async () => {
+    await createRuntime();
+
+    const eventsRaw = await readFile(join(tempRoot, 'events.jsonl'), UTF8_ENCODING);
+    const events = eventsRaw
+      .split('\n')
+      .filter((line) => line.trim().length > 0)
+      .map((line) => JSON.parse(line) as Record<string, unknown>);
+    const workspaceUpdated = events.find((event) => event.kind === WORKSPACE_UPDATED_KIND);
+
+    expect(workspaceUpdated).toBeDefined();
+    expect(workspaceUpdated?.config_hash).toBe(workspaceConfigHash);
   });
 
   it('surfaces load-stage diagnostics when pack loading fails', async () => {
@@ -266,7 +296,7 @@ describe('kernel runtime facade', () => {
     const execution = await runtime.executeTool(
       PACK_ECHO_TOOL_NAME,
       { message: 'receipt-stage' },
-      createExecutionContext(taskSpec.id, claim.run.run_id),
+      createExecutionContext(taskSpec.id, claim.run.run_id, workspaceConfigHash),
     );
 
     if (execution.error?.code === TOOL_NOT_FOUND_ERROR_CODE) {
@@ -290,6 +320,49 @@ describe('kernel runtime facade', () => {
     if (finished?.kind === TOOL_CALL_FINISHED_KIND) {
       expect(finished.result).toBe('failure');
     }
+  });
+
+  it('fails execution and emits spec_tampered when workspace hash drifts', async () => {
+    const runtime = await createRuntime();
+    const taskSpec = createTaskSpec('WU-1773-workspace-tamper');
+    await runtime.createTask(taskSpec);
+
+    const claim = await runtime.claimTask({
+      task_id: taskSpec.id,
+      by: 'tom@hellm.ai',
+      session_id: 'session-1773-workspace-tamper',
+    });
+
+    const workspacePath = join(tempRoot, WORKSPACE_FILE_NAME);
+    const originalYaml = await readFile(workspacePath, UTF8_ENCODING);
+    const tamperedYaml = originalYaml.replace(
+      'name: Kernel Runtime Workspace',
+      'name: Kernel Runtime Workspace Tampered',
+    );
+    await writeFile(workspacePath, tamperedYaml, UTF8_ENCODING);
+    const tamperedHash = canonical_json(tamperedYaml);
+
+    const output = await runtime.executeTool(
+      PACK_ECHO_TOOL_NAME,
+      { message: 'tamper-detection' },
+      createExecutionContext(taskSpec.id, claim.run.run_id, workspaceConfigHash),
+    );
+
+    expect(output.success).toBe(false);
+    expect(output.error?.code).toBe(SPEC_TAMPERED_ERROR_CODE);
+
+    const eventsRaw = await readFile(join(tempRoot, 'events.jsonl'), UTF8_ENCODING);
+    const events = eventsRaw
+      .split('\n')
+      .filter((line) => line.trim().length > 0)
+      .map((line) => JSON.parse(line) as Record<string, unknown>);
+    const tamperedEvent = events.find((event) => event.kind === SPEC_TAMPERED_KIND);
+
+    expect(tamperedEvent).toBeDefined();
+    expect(tamperedEvent?.spec).toBe('workspace');
+    expect(tamperedEvent?.id).toBe('workspace-kernel-runtime');
+    expect(tamperedEvent?.expected_hash).toBe(workspaceConfigHash);
+    expect(tamperedEvent?.actual_hash).toBe(tamperedHash);
   });
 
   it('createTask writes immutable TaskSpec YAML and emits task_created', async () => {
@@ -396,7 +469,7 @@ describe('kernel runtime facade', () => {
     await runtime.executeTool(
       PACK_ECHO_TOOL_NAME,
       { message: 'policy-receipts' },
-      createExecutionContext(taskSpec.id, claimResult.run.run_id),
+      createExecutionContext(taskSpec.id, claimResult.run.run_id, workspaceConfigHash),
     );
 
     const completion = await runtime.completeTask({
