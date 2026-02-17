@@ -16,6 +16,7 @@ import {
   getDefaultConfig,
   validateConfig,
 } from './lumenflow-config-schema.js';
+import { normalizeConfigKeys } from './normalize-config-keys.js';
 
 /** Default config file name */
 const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
@@ -67,7 +68,8 @@ function loadConfigFile(projectRoot: string): Partial<LumenFlowConfig> | null {
   try {
     const content = fs.readFileSync(configPath, 'utf8');
     const data = yaml.parse(content);
-    return data || {};
+    // WU-1765: Normalize snake_case YAML keys to camelCase before Zod parsing
+    return normalizeConfigKeys(data || {});
   } catch (error) {
     console.warn(`Warning: Failed to parse ${CONFIG_FILE_NAME}:`, error);
     return null;
