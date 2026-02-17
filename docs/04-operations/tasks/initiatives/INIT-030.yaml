@@ -15,7 +15,7 @@ phases:
     status: done
   - id: 2
     title: Command migration in existing MCP/CLI packages
-    status: pending
+    status: in_progress
   - id: 3
     title: Pack workflow expression via runtime
     status: pending
