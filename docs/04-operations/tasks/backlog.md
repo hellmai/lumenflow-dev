@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1789 — Migrate tool:execute path to direct KernelRuntime execution](wu/WU-1789.yaml) — Framework: Core Lifecycle
 - [WU-1788 — Migrate task:inspect to direct KernelRuntime replay path](wu/WU-1788.yaml) — Framework: Core Lifecycle
 - [WU-1787 — Migrate task:block and task:unblock to direct KernelRuntime calls](wu/WU-1787.yaml) — Framework: Core Lifecycle
 - [WU-1786 — Migrate task:complete path to direct KernelRuntime calls](wu/WU-1786.yaml) — Framework: Core Lifecycle

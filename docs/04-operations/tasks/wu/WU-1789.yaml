@@ -1,0 +1,43 @@
+id: WU-1789
+title: Migrate tool:execute path to direct KernelRuntime execution
+lane: 'Framework: Core Lifecycle'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-17
+code_paths:
+  - packages/@lumenflow/mcp/src/tools/runtime-task-tools.ts
+  - packages/@lumenflow/mcp/src/__tests__/runtime-task-tools.test.ts
+  - packages/@lumenflow/cli/src/commands.ts
+  - packages/@lumenflow/cli/src/task-claim.ts
+  - packages/@lumenflow/cli/src/__tests__/task-claim.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/mcp/src/__tests__/runtime-task-tools.test.ts
+    - packages/@lumenflow/cli/src/__tests__/task-claim.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1789.done
+dependencies: []
+initiative: INIT-030
+phase: 2
+blocked_by:
+  - WU-1788
+spec_refs:
+  - /home/tom/.claude/plans/zesty-jumping-pixel.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Complete first migration wave by routing tool:execute through KernelRuntime in existing MCP/CLI packages, preserving parity behavior while eliminating shell-out routing.
+acceptance:
+  - tool:execute runs through KernelRuntime in MCP and CLI paths without runCliCommand shell-out.
+  - Parity/expected-missing gate configuration is updated for migration stage without regressions.
+  - Tests assert no runCliCommand usage on migrated tool:execute routes.
