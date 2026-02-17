@@ -2,7 +2,7 @@ id: WU-1768
 title: Fix MCP input schema parity for task tools
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -35,3 +35,11 @@ acceptance:
   - task:claim and task:complete input schemas match actual runtime handler requirements
   - Invalid payloads are rejected at schema validation boundaries
   - Regression tests cover incomplete claim/complete payload handling
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1768
+claimed_at: 2026-02-17T12:51:32.275Z
+baseline_main_sha: 6ba7585d84e48c581fd83cee493c53594796f1af
+session_id: 409bd52e-961d-472f-8abb-cd75babc5bb0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T12:51:32.282Z
