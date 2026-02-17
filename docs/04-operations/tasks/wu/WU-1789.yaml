@@ -2,7 +2,7 @@ id: WU-1789
 title: Migrate tool:execute path to direct KernelRuntime execution
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-17
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
   - tool:execute runs through KernelRuntime in MCP and CLI paths without runCliCommand shell-out.
   - Parity/expected-missing gate configuration is updated for migration stage without regressions.
   - Tests assert no runCliCommand usage on migrated tool:execute routes.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1789
+claimed_at: 2026-02-17T19:08:22.509Z
+baseline_main_sha: 4f0dc969a26a2935a6e1306e5d830f07d4b4667d
+session_id: 0c193e78-b00c-4e49-9916-dc77f6f88d24
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T19:08:22.518Z
