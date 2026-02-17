@@ -1,0 +1,32 @@
+id: WU-1765
+title: 'Fix resolveAgentPatterns: local config patterns ignored when registry returns results'
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-17
+code_paths:
+  - packages/@lumenflow/cli/src/agent-patterns-registry.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/agent-patterns-registry.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1765.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: resolveAgentPatterns() in agent-patterns-registry.ts fetches from remote registry and returns source:'registry' with only agent/*. Local config patterns (claude/*, codex/*) from .lumenflow.config.yaml are supposed to merge with registry patterns, but registry result wins outright. This breaks all cloud-mode operations for claude/* and codex/* branches.
+acceptance:
+  - Local config agent_branch_patterns merge with registry patterns
+  - claude/* and codex/* branches detected as agent branches
+  - Test covering local+registry pattern merge
