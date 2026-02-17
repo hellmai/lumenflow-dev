@@ -2,7 +2,7 @@ id: WU-1784
 title: Extract remaining runtime string literal constants
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-17
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
     schemas/runtime/event store.
   - Handler kind literals are centralized and reused across runtime/tool-host paths.
   - Repeated error code literals are consolidated into constants where reuse threshold is met.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1784
+claimed_at: 2026-02-17T18:09:09.579Z
+baseline_main_sha: 791944e281a32dd5cc21df3dffad18ed00f09264
+session_id: a164f1dd-ac8e-4972-afb1-c7a22da3961e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T18:09:09.587Z

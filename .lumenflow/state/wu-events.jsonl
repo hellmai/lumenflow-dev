@@ -1506,3 +1506,4 @@
 {"type":"complete","wuId":"WU-1782","timestamp":"2026-02-17T18:02:57.896Z"}
 {"type":"claim","wuId":"WU-1783","timestamp":"2026-02-17T18:03:30.021Z","lane":"Content: Specs Governance","title":"Housekeeping: license consistency, dangling plan URIs, and metric wording"}
 {"type":"complete","wuId":"WU-1783","timestamp":"2026-02-17T18:08:20.183Z"}
+{"type":"claim","wuId":"WU-1784","lane":"Framework: Core Lifecycle","title":"Extract remaining runtime string literal constants","timestamp":"2026-02-17T18:09:09.631Z"}
