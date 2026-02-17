@@ -7,6 +7,7 @@ import {
   type ToolOutput,
   type ToolScope,
 } from '../kernel.schemas.js';
+import { UTF8_ENCODING } from '../shared-constants.js';
 import { resolveScopeEnforcementNote } from './profile.js';
 
 export interface ToolRunnerWorkerContext {
@@ -124,7 +125,7 @@ function selectAdapterExport(candidate: unknown): ToolAdapter | null {
 async function readStreamAsString(stream: NodeJS.ReadableStream): Promise<string> {
   let output = '';
   for await (const chunk of stream) {
-    output += typeof chunk === 'string' ? chunk : chunk.toString('utf8');
+    output += typeof chunk === 'string' ? chunk : chunk.toString(UTF8_ENCODING);
   }
   return output;
 }

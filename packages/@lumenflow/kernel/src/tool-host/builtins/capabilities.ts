@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import micromatch from 'micromatch';
 import { z } from 'zod';
 import type { ToolCapability, ToolOutput, ToolScope } from '../../kernel.schemas.js';
+import { BASE64_ENCODING, UTF8_ENCODING } from '../../shared-constants.js';
 import type { PolicyHook, PolicyHookInput } from '../tool-host.js';
 import { ToolRegistry } from '../tool-registry.js';
 
@@ -24,7 +25,7 @@ const BUILTIN_SUBPROCESS_ENTRIES = {
 const BUILTIN_PACK_ID = 'kernel-builtins';
 const BUILTIN_TOOL_VERSION = '1.0.0';
 
-const TEXT_ENCODINGS = ['utf8', 'base64'] as const;
+const TEXT_ENCODINGS = [UTF8_ENCODING, BASE64_ENCODING] as const;
 
 const FsReadInputSchema = z.object({
   path: z.string().min(1),
@@ -120,7 +121,7 @@ async function runFsRead(input: unknown, scopes: ToolScope[]): Promise<ToolOutpu
     );
   }
 
-  const encoding = parsedInput.data.encoding || 'utf8';
+  const encoding = parsedInput.data.encoding || UTF8_ENCODING;
   try {
     const content = await readFile(resolvedPath, { encoding });
     return {

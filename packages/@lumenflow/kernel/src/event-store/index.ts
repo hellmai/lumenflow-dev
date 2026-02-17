@@ -10,6 +10,7 @@ import {
   type Run,
 } from '../kernel.schemas.js';
 import { canonical_json } from '../canonical-json.js';
+import { UTF8_ENCODING } from '../shared-constants.js';
 
 const DEFAULT_LOCK_RETRY_DELAY_MS = 20;
 const DEFAULT_LOCK_MAX_RETRIES = 250;
@@ -242,7 +243,7 @@ export class EventStore {
 
     await this.withFileLock(async () => {
       await mkdir(dirname(this.eventsFilePath), { recursive: true });
-      await appendFile(this.eventsFilePath, payload, 'utf8');
+      await appendFile(this.eventsFilePath, payload, UTF8_ENCODING);
     });
 
     if (!this.indexesHydrated) {
@@ -366,7 +367,7 @@ export class EventStore {
   private async recoverStaleLockIfNeeded(): Promise<boolean> {
     let metadataRaw: string;
     try {
-      metadataRaw = await readFile(this.lockFilePath, 'utf8');
+      metadataRaw = await readFile(this.lockFilePath, UTF8_ENCODING);
     } catch (error) {
       const nodeError = error as NodeJS.ErrnoException;
       if (nodeError.code === 'ENOENT') {
@@ -405,7 +406,7 @@ export class EventStore {
   private async reloadFromDisk(): Promise<void> {
     let content: string;
     try {
-      content = await readFile(this.eventsFilePath, 'utf8');
+      content = await readFile(this.eventsFilePath, UTF8_ENCODING);
     } catch (error) {
       const nodeError = error as NodeJS.ErrnoException;
       if (nodeError.code === 'ENOENT') {
@@ -478,7 +479,7 @@ export class EventStore {
       let handle: Awaited<ReturnType<typeof open>> | null = null;
       try {
         handle = await open(this.lockFilePath, 'wx');
-        await handle.writeFile(JSON.stringify(this.buildLockMetadata()), 'utf8');
+        await handle.writeFile(JSON.stringify(this.buildLockMetadata()), UTF8_ENCODING);
         const result = await operation();
         await this.cleanupLockHandle(handle);
         return result;

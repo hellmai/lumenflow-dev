@@ -1,3 +1,9 @@
+import {
+  SOFTWARE_DELIVERY_PACK_ID,
+  SOFTWARE_DELIVERY_PACK_VERSION,
+  SOFTWARE_DELIVERY_POLICY_ID_PREFIX,
+} from './constants.js';
+
 interface Parser<T> {
   parse(input: unknown): T;
 }
@@ -166,16 +172,24 @@ export const SoftwareDeliveryManifestSchema: Parser<SoftwareDeliveryPackManifest
 };
 
 export const SOFTWARE_DELIVERY_MANIFEST: SoftwareDeliveryPackManifest = {
-  id: 'software-delivery',
-  version: '0.1.0',
+  id: SOFTWARE_DELIVERY_PACK_ID,
+  version: SOFTWARE_DELIVERY_PACK_VERSION,
   task_types: ['work-unit'],
   tools: [],
   policies: [
-    { id: 'software-delivery.gate.format', trigger: 'on_completion', decision: 'allow' },
-    { id: 'software-delivery.gate.lint', trigger: 'on_completion', decision: 'allow' },
-    { id: 'software-delivery.gate.typecheck', trigger: 'on_completion', decision: 'allow' },
-    { id: 'software-delivery.gate.test', trigger: 'on_completion', decision: 'allow' },
-    { id: 'software-delivery.gate.coverage', trigger: 'on_completion', decision: 'allow' },
+    { id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.format`, trigger: 'on_completion', decision: 'allow' },
+    { id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.lint`, trigger: 'on_completion', decision: 'allow' },
+    {
+      id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.typecheck`,
+      trigger: 'on_completion',
+      decision: 'allow',
+    },
+    { id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.test`, trigger: 'on_completion', decision: 'allow' },
+    {
+      id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.coverage`,
+      trigger: 'on_completion',
+      decision: 'allow',
+    },
   ],
   evidence_types: ['gate-run'],
   state_aliases: { active: 'in_progress' },

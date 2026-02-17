@@ -3,13 +3,13 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
+import { SOFTWARE_DELIVERY_PACK_ID } from '../../../packs/software-delivery/constants.js';
 import type { ExecutionContext, TaskSpec } from '../kernel.schemas.js';
 import { EventStore } from '../event-store/index.js';
 import { initializeKernelRuntime } from '../runtime/index.js';
 import {
   PACK_MANIFEST_FILE_NAME,
   PACKS_DIR_NAME,
-  SOFTWARE_DELIVERY_PACK_ID,
   UTF8_ENCODING,
 } from '../shared-constants.js';
 

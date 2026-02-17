@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { parse as parseYaml } from 'yaml';
+import { SHA256_ALGORITHM, UTF8_ENCODING } from './shared-constants.js';
 
 type CanonicalPrimitive = null | boolean | number | string;
 type CanonicalValue = CanonicalPrimitive | CanonicalValue[] | { [key: string]: CanonicalValue };
@@ -46,5 +47,5 @@ export function canonicalStringify(source: unknown): string {
  */
 export function canonical_json(source: unknown): string {
   const canonical = canonicalStringify(source);
-  return createHash('sha256').update(canonical, 'utf8').digest('hex');
+  return createHash(SHA256_ALGORITHM).update(canonical, UTF8_ENCODING).digest('hex');
 }

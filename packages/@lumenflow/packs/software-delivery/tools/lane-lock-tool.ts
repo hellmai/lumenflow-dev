@@ -1,4 +1,5 @@
 import {
+  SOFTWARE_DELIVERY_DOMAIN,
   SOFTWARE_DELIVERY_PACK_ID,
   SOFTWARE_DELIVERY_PACK_VERSION,
   type ToolDescriptor,
@@ -12,7 +13,7 @@ const ADMIN_SCOPE = {
 
 export const laneLockAcquireTool: ToolDescriptor = {
   name: 'lane-lock:acquire',
-  domain: 'software-delivery',
+  domain: SOFTWARE_DELIVERY_DOMAIN,
   version: SOFTWARE_DELIVERY_PACK_VERSION,
   permission: 'admin',
   required_scopes: [ADMIN_SCOPE],
@@ -26,7 +27,7 @@ export const laneLockAcquireTool: ToolDescriptor = {
 
 export const laneLockReleaseTool: ToolDescriptor = {
   name: 'lane-lock:release',
-  domain: 'software-delivery',
+  domain: SOFTWARE_DELIVERY_DOMAIN,
   version: SOFTWARE_DELIVERY_PACK_VERSION,
   permission: 'admin',
   required_scopes: [ADMIN_SCOPE],

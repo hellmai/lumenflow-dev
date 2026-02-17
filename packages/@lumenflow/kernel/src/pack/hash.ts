@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { SHA256_ALGORITHM, UTF8_ENCODING } from '../shared-constants.js';
 
 const NULL_BYTE_BUFFER = Buffer.from([0]);
 const DEFAULT_EXCLUSIONS = ['node_modules/', '.git/', 'dist/', '.DS_Store'];
@@ -59,14 +60,14 @@ export async function computeDeterministicPackHash(
 
   for (const relativePath of files) {
     const fileContents = await readFile(path.join(absoluteRoot, relativePath));
-    const fileHash = createHash('sha256').update(fileContents).digest('hex');
-    digestChunks.push(Buffer.from(relativePath, 'utf8'));
+    const fileHash = createHash(SHA256_ALGORITHM).update(fileContents).digest('hex');
+    digestChunks.push(Buffer.from(relativePath, UTF8_ENCODING));
     digestChunks.push(NULL_BYTE_BUFFER);
-    digestChunks.push(Buffer.from(fileHash, 'utf8'));
+    digestChunks.push(Buffer.from(fileHash, UTF8_ENCODING));
     digestChunks.push(NULL_BYTE_BUFFER);
   }
 
-  return createHash('sha256')
+  return createHash(SHA256_ALGORITHM)
     .update(digestChunks.length === 0 ? Buffer.alloc(0) : Buffer.concat(digestChunks))
     .digest('hex');
 }

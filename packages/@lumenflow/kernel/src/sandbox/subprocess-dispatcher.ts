@@ -13,6 +13,7 @@ import {
   resolveScopeEnforcementNote,
   type BuildSandboxProfileFromScopesOptions,
 } from './profile.js';
+import { UTF8_ENCODING } from '../shared-constants.js';
 import {
   parseToolRunnerWorkerResponse,
   type ToolRunnerWorkerInvocation,
@@ -101,8 +102,8 @@ export class NodeSubprocessTransport implements SubprocessTransport {
       let stdout = '';
       let stderr = '';
 
-      child.stdout.setEncoding('utf8');
-      child.stderr.setEncoding('utf8');
+      child.stdout.setEncoding(UTF8_ENCODING);
+      child.stderr.setEncoding(UTF8_ENCODING);
 
       child.stdout.on('data', (chunk: string) => {
         stdout += chunk;

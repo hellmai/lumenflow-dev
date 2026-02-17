@@ -1,4 +1,5 @@
 import {
+  SOFTWARE_DELIVERY_DOMAIN,
   SOFTWARE_DELIVERY_PACK_ID,
   SOFTWARE_DELIVERY_PACK_VERSION,
   type ToolDescriptor,
@@ -15,7 +16,6 @@ const READ_SCOPE = {
   pattern: '**',
   access: 'read' as const,
 };
-const SOFTWARE_DELIVERY_DOMAIN = 'software-delivery' as const;
 
 export const gitAddTool: ToolDescriptor = {
   name: 'git:add',

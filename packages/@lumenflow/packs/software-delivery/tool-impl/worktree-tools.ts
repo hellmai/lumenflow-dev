@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { UTF8_ENCODING } from '../constants.js';
 
 interface WorktreeCommandResult {
   success: boolean;
@@ -11,7 +12,7 @@ const GIT_BINARY = '/usr/bin/git';
 function runGit(args: string[], cwd?: string): WorktreeCommandResult {
   const result = spawnSync(GIT_BINARY, args, {
     cwd,
-    encoding: 'utf8',
+    encoding: UTF8_ENCODING,
   });
   return {
     success: result.status === 0,

@@ -1,3 +1,9 @@
+import {
+  SOFTWARE_DELIVERY_DOMAIN,
+  SOFTWARE_DELIVERY_PACK_ID,
+  SOFTWARE_DELIVERY_PACK_VERSION,
+} from '../constants.js';
+
 export interface PathScope {
   type: 'path';
   pattern: string;
@@ -6,8 +12,8 @@ export interface PathScope {
 
 export interface ToolDescriptor {
   name: string;
-  domain: 'software-delivery';
-  version: '0.1.0';
+  domain: typeof SOFTWARE_DELIVERY_DOMAIN;
+  version: typeof SOFTWARE_DELIVERY_PACK_VERSION;
   permission: 'read' | 'write' | 'admin';
   required_scopes: PathScope[];
   handler: {
@@ -15,8 +21,7 @@ export interface ToolDescriptor {
     entry: string;
   };
   description: string;
-  pack: 'software-delivery';
+  pack: typeof SOFTWARE_DELIVERY_PACK_ID;
 }
 
-export const SOFTWARE_DELIVERY_PACK_ID = 'software-delivery';
-export const SOFTWARE_DELIVERY_PACK_VERSION = '0.1.0';
+export { SOFTWARE_DELIVERY_DOMAIN, SOFTWARE_DELIVERY_PACK_ID, SOFTWARE_DELIVERY_PACK_VERSION };

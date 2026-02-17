@@ -2,6 +2,11 @@ import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  SHA256_ALGORITHM,
+  SOFTWARE_DELIVERY_MANIFEST_FILE_NAME,
+  UTF8_ENCODING,
+} from './constants.js';
 import { SOFTWARE_DELIVERY_MANIFEST, type SoftwareDeliveryPackManifest } from './manifest.js';
 
 const NULL_BYTE_BUFFER = Buffer.from([0]);
@@ -58,14 +63,14 @@ export async function computeSoftwareDeliveryPackIntegrity(
 
   for (const relativePath of files) {
     const fileContents = await readFile(path.join(absoluteRoot, relativePath));
-    const fileHash = createHash('sha256').update(fileContents).digest('hex');
-    digestChunks.push(Buffer.from(relativePath, 'utf8'));
+    const fileHash = createHash(SHA256_ALGORITHM).update(fileContents).digest('hex');
+    digestChunks.push(Buffer.from(relativePath, UTF8_ENCODING));
     digestChunks.push(NULL_BYTE_BUFFER);
-    digestChunks.push(Buffer.from(fileHash, 'utf8'));
+    digestChunks.push(Buffer.from(fileHash, UTF8_ENCODING));
     digestChunks.push(NULL_BYTE_BUFFER);
   }
 
-  const combinedDigest = createHash('sha256')
+  const combinedDigest = createHash(SHA256_ALGORITHM)
     .update(digestChunks.length === 0 ? Buffer.alloc(0) : Buffer.concat(digestChunks))
     .digest('hex');
 
@@ -75,8 +80,8 @@ export async function computeSoftwareDeliveryPackIntegrity(
 export async function loadSoftwareDeliveryManifest(
   packRoot = getDefaultPackRoot(),
 ): Promise<SoftwareDeliveryPackManifest> {
-  const manifestPath = path.join(path.resolve(packRoot), 'manifest.yaml');
-  await readFile(manifestPath, 'utf8');
+  const manifestPath = path.join(path.resolve(packRoot), SOFTWARE_DELIVERY_MANIFEST_FILE_NAME);
+  await readFile(manifestPath, UTF8_ENCODING);
   return structuredClone(SOFTWARE_DELIVERY_MANIFEST);
 }
 
@@ -99,7 +104,7 @@ export async function registerSoftwareDeliveryPack(options?: {
   return {
     manifest,
     packRoot,
-    manifestPath: path.join(packRoot, 'manifest.yaml'),
+    manifestPath: path.join(packRoot, SOFTWARE_DELIVERY_MANIFEST_FILE_NAME),
     integrity,
   };
 }

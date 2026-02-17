@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { UTF8_ENCODING } from '../constants.js';
 
 export type GitToolName = 'git:add' | 'git:status' | 'git:commit';
 
@@ -55,7 +56,7 @@ const GIT_BINARY = '/usr/bin/git';
 function runGit(cwd: string, args: string[]): CommandResult {
   const result = spawnSync(GIT_BINARY, args, {
     cwd,
-    encoding: 'utf8',
+    encoding: UTF8_ENCODING,
   });
   return {
     ok: result.status === 0,

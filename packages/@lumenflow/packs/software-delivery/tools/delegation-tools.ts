@@ -1,4 +1,5 @@
 import {
+  SOFTWARE_DELIVERY_DOMAIN,
   SOFTWARE_DELIVERY_PACK_ID,
   SOFTWARE_DELIVERY_PACK_VERSION,
   type ToolDescriptor,
@@ -12,7 +13,7 @@ const STATE_SCOPE = {
 
 export const delegationRecordTool: ToolDescriptor = {
   name: 'delegation:record',
-  domain: 'software-delivery',
+  domain: SOFTWARE_DELIVERY_DOMAIN,
   version: SOFTWARE_DELIVERY_PACK_VERSION,
   permission: 'admin',
   required_scopes: [STATE_SCOPE],

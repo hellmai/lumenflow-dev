@@ -1,6 +1,7 @@
 /* eslint-disable security/detect-non-literal-fs-filename */
 import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { UTF8_ENCODING } from '../constants.js';
 
 export interface LaneLockMetadata {
   lane: string;
@@ -73,7 +74,7 @@ async function acquireTakeoverMarker(
   metadata: LaneLockMetadata,
 ): Promise<boolean> {
   try {
-    await writeFile(markerPath, JSON.stringify(metadata), { encoding: 'utf8', flag: 'wx' });
+    await writeFile(markerPath, JSON.stringify(metadata), { encoding: UTF8_ENCODING, flag: 'wx' });
     return true;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
@@ -85,7 +86,7 @@ async function acquireTakeoverMarker(
 
 export async function readLaneLockMetadata(lockPath: string): Promise<LaneLockMetadata | null> {
   try {
-    const raw = await readFile(lockPath, 'utf8');
+    const raw = await readFile(lockPath, UTF8_ENCODING);
     const parsed = JSON.parse(raw) as LaneLockMetadata;
     if (
       typeof parsed.lane !== 'string' ||
@@ -115,7 +116,10 @@ export async function acquireLaneLockTool(
   };
 
   try {
-    await writeFile(lockPath, JSON.stringify(nextMetadata), { encoding: 'utf8', flag: 'wx' });
+    await writeFile(lockPath, JSON.stringify(nextMetadata), {
+      encoding: UTF8_ENCODING,
+      flag: 'wx',
+    });
     return {
       acquired: true,
       is_stale: false,
@@ -158,7 +162,10 @@ export async function acquireLaneLockTool(
         });
 
         try {
-          await writeFile(lockPath, JSON.stringify(nextMetadata), { encoding: 'utf8', flag: 'wx' });
+          await writeFile(lockPath, JSON.stringify(nextMetadata), {
+            encoding: UTF8_ENCODING,
+            flag: 'wx',
+          });
         } catch (writeError) {
           if ((writeError as NodeJS.ErrnoException).code === 'EEXIST') {
             return {

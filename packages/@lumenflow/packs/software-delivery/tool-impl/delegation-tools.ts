@@ -1,6 +1,7 @@
 /* eslint-disable security/detect-non-literal-fs-filename */
 import { appendFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
+import { UTF8_ENCODING } from '../constants.js';
 
 export interface RecordDelegationInput {
   parentWuId: string;
@@ -53,7 +54,7 @@ export async function recordDelegationTool(
   };
 
   await mkdir(path.dirname(registryPath), { recursive: true });
-  await appendFile(registryPath, `${JSON.stringify(entry)}\n`, 'utf8');
+  await appendFile(registryPath, `${JSON.stringify(entry)}\n`, UTF8_ENCODING);
 
   return {
     success: true,

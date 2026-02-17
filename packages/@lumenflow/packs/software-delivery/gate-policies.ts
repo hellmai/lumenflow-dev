@@ -1,3 +1,5 @@
+import { SOFTWARE_DELIVERY_PACK_ID, SOFTWARE_DELIVERY_POLICY_ID_PREFIX } from './constants.js';
+
 export const SOFTWARE_DELIVERY_GATE_NAMES = [
   'format',
   'lint',
@@ -20,7 +22,7 @@ export interface CompletionPolicyContext {
   run_id: string;
   task_id: string;
   gate: SoftwareDeliveryGateName;
-  pack_id: 'software-delivery';
+  pack_id: typeof SOFTWARE_DELIVERY_PACK_ID;
 }
 
 export interface CompletionPolicyEvaluation {
@@ -60,7 +62,7 @@ const SOFTWARE_DELIVERY_GATE_COMMANDS: Record<SoftwareDeliveryGateName, string> 
 
 export const SOFTWARE_DELIVERY_GATE_POLICIES: readonly PolicyProvider[] =
   SOFTWARE_DELIVERY_GATE_NAMES.map((gate) => ({
-    id: `software-delivery.gate.${gate}`,
+    id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.${gate}`,
     gate,
     trigger: 'on_completion',
     command: SOFTWARE_DELIVERY_GATE_COMMANDS[gate],
@@ -99,7 +101,7 @@ export async function runCompletionGatePolicies(options: {
       run_id: options.runId,
       task_id: options.taskId,
       gate: provider.gate,
-      pack_id: 'software-delivery',
+      pack_id: SOFTWARE_DELIVERY_PACK_ID,
     });
 
     if (evaluation.decision === 'deny') {

@@ -3,6 +3,7 @@ import path from 'node:path';
 import { readFile } from 'node:fs/promises';
 import YAML from 'yaml';
 import type { PackPin, WorkspaceSpec } from '../kernel.schemas.js';
+import { PACK_MANIFEST_FILE_NAME, UTF8_ENCODING } from '../shared-constants.js';
 import { computeDeterministicPackHash, listPackFiles } from './hash.js';
 import { DomainPackManifestSchema, type DomainPackManifest } from './manifest.js';
 
@@ -146,7 +147,7 @@ async function validatePackImportBoundaries(
   );
 
   for (const relativePath of candidateFiles) {
-    const sourceCode = await readFile(path.join(packRoot, relativePath), 'utf8');
+    const sourceCode = await readFile(path.join(packRoot, relativePath), UTF8_ENCODING);
     const importSpecifiers = extractImportSpecifiers(sourceCode);
     for (const specifier of importSpecifiers) {
       validateImportSpecifier({
@@ -175,7 +176,7 @@ export class PackLoader {
 
   constructor(options: PackLoaderOptions) {
     this.packsRoot = path.resolve(options.packsRoot);
-    this.manifestFileName = options.manifestFileName || 'manifest.yaml';
+    this.manifestFileName = options.manifestFileName || PACK_MANIFEST_FILE_NAME;
     this.hashExclusions = options.hashExclusions;
     this.runtimeEnvironment = options.runtimeEnvironment ?? process.env.NODE_ENV ?? 'development';
     this.allowDevIntegrityInProduction = options.allowDevIntegrityInProduction ?? false;
@@ -185,7 +186,7 @@ export class PackLoader {
     const pin = resolvePackPin(input.workspaceSpec, input.packId);
     const packRoot = path.resolve(this.packsRoot, pin.id);
     const manifestPath = path.join(packRoot, this.manifestFileName);
-    const manifestRaw = await readFile(manifestPath, 'utf8');
+    const manifestRaw = await readFile(manifestPath, UTF8_ENCODING);
     const manifest = DomainPackManifestSchema.parse(YAML.parse(manifestRaw));
 
     if (manifest.id !== pin.id) {

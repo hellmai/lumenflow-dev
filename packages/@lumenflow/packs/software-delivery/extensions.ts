@@ -1,3 +1,5 @@
+import { SOFTWARE_DELIVERY_DOMAIN } from './constants.js';
+
 export const SOFTWARE_DELIVERY_EXTENSION_KEY = 'software_delivery';
 export const SOFTWARE_DELIVERY_EXPOSURES = ['ui', 'api', 'backend-only', 'documentation'] as const;
 
@@ -20,7 +22,7 @@ export interface SoftwareDeliveryTaskExtensions {
 }
 
 export interface SoftwareDeliveryTask {
-  domain: 'software-delivery';
+  domain: typeof SOFTWARE_DELIVERY_DOMAIN;
   extensions: Record<string, unknown> & {
     [SOFTWARE_DELIVERY_EXTENSION_KEY]: SoftwareDeliveryTaskExtensions;
   };
@@ -115,8 +117,8 @@ export const SoftwareDeliveryTaskSchema: Parser<SoftwareDeliveryTask> = {
   parse(input: unknown): SoftwareDeliveryTask {
     const task = asRecord(input, 'task');
 
-    if (task.domain !== 'software-delivery') {
-      throw new Error('task.domain must be "software-delivery".');
+    if (task.domain !== SOFTWARE_DELIVERY_DOMAIN) {
+      throw new Error(`task.domain must be "${SOFTWARE_DELIVERY_DOMAIN}".`);
     }
 
     const parsedExtensions = TaskExtensionsOpaqueRecordSchema.parse(task.extensions);
@@ -125,7 +127,7 @@ export const SoftwareDeliveryTaskSchema: Parser<SoftwareDeliveryTask> = {
     );
 
     return {
-      domain: 'software-delivery',
+      domain: SOFTWARE_DELIVERY_DOMAIN,
       extensions: {
         ...parsedExtensions,
         [SOFTWARE_DELIVERY_EXTENSION_KEY]: parsedSoftwareDeliveryExtensions,

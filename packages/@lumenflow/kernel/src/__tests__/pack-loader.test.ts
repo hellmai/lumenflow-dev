@@ -2,10 +2,10 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { SOFTWARE_DELIVERY_PACK_ID } from '../../../packs/software-delivery/constants.js';
 import { WorkspaceSpecSchema } from '../kernel.schemas.js';
 import {
   PACK_MANIFEST_FILE_NAME,
-  SOFTWARE_DELIVERY_PACK_ID,
   UTF8_ENCODING,
 } from '../shared-constants.js';
 import {

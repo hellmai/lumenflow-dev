@@ -7,6 +7,7 @@ import {
   type PolicyDecision,
   type ToolTraceEntry,
 } from '../kernel.schemas.js';
+import { SHA256_ALGORITHM, UTF8_ENCODING } from '../shared-constants.js';
 
 const DEFAULT_LOCK_RETRY_DELAY_MS = 20;
 const DEFAULT_LOCK_MAX_RETRIES = 250;
@@ -23,7 +24,7 @@ export interface PersistInputResult {
 }
 
 function sha256Hex(content: string): string {
-  return createHash('sha256').update(content).digest('hex');
+  return createHash(SHA256_ALGORITHM).update(content).digest('hex');
 }
 
 function sleep(ms: number): Promise<void> {
@@ -57,7 +58,7 @@ export class EvidenceStore {
     const validated = ToolTraceEntrySchema.parse(entry);
     await this.withFileLock(async () => {
       await mkdir(this.tracesDir, { recursive: true });
-      await appendFile(this.tracesFilePath, `${JSON.stringify(validated)}\n`, 'utf8');
+      await appendFile(this.tracesFilePath, `${JSON.stringify(validated)}\n`, UTF8_ENCODING);
     });
 
     if (this.tracesHydrated) {
@@ -82,7 +83,7 @@ export class EvidenceStore {
 
     let content: string;
     try {
-      content = await readFile(this.tracesFilePath, 'utf8');
+      content = await readFile(this.tracesFilePath, UTF8_ENCODING);
     } catch (error) {
       const nodeError = error as NodeJS.ErrnoException;
       if (nodeError.code === 'ENOENT') {
@@ -151,7 +152,7 @@ export class EvidenceStore {
     try {
       const handle = await open(inputRef, 'wx');
       try {
-        await handle.writeFile(serialized, 'utf8');
+        await handle.writeFile(serialized, UTF8_ENCODING);
       } finally {
         await handle.close();
       }
