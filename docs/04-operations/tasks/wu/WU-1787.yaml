@@ -2,7 +2,7 @@ id: WU-1787
 title: Migrate task:block and task:unblock to direct KernelRuntime calls
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-17
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
   - task:block and task:unblock execute through KernelRuntime in MCP and CLI paths.
   - No runCliCommand shell-out is used for migrated block/unblock operations.
   - Parity gate expected-missing/tool registration configuration remains coherent during migration.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1787
+claimed_at: 2026-02-17T18:42:42.168Z
+baseline_main_sha: 9c1a3dae4f01ad88763cd962dac274c0d3126081
+session_id: 4bb7259e-35be-45bc-9d97-27a356f0d12a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T18:42:42.174Z
