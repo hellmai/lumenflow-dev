@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
   - packages/@lumenflow/kernel/src/kernel.schemas.ts
 tests:
-  manual: []
+  manual:
+    - Run workspace hash tamper scenario and verify spec_tampered emission plus hard execution fail
   unit:
     - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
     - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
