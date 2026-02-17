@@ -2,7 +2,7 @@ id: WU-1774
 title: 'Pack integration e2e: load, register, execute, receipt'
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - Integration scenario covers load -> register -> execute -> receipt for a manifest-declared tool
   - Assertions prove registered tools are executable through runtime resolver wiring
   - Failure diagnostics distinguish load, registration, execution, and receipt-stage regressions
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1774
+claimed_at: 2026-02-17T13:21:41.112Z
+baseline_main_sha: 01daa63c8389c985613fff339b64af89357453ca
+session_id: 5af83677-6542-417e-b51e-a6b208e53031
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T13:21:41.118Z
