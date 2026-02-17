@@ -9,9 +9,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   contextGetTool,
   registeredTools,
+  taskBlockTool,
   taskClaimTool,
   taskCompleteTool,
   taskCreateTool,
+  taskUnblockTool,
   wuListTool,
   wuStatusTool,
   wuCreateTool,
@@ -235,6 +237,16 @@ describe('MCP tools', () => {
       expect(taskCompleteTool.description).toBe(RuntimeTaskToolDescriptions.TASK_COMPLETE);
     });
 
+    it(`should export ${RuntimeTaskToolNames.TASK_BLOCK} runtime tool definition`, () => {
+      expect(taskBlockTool.name).toBe(RuntimeTaskToolNames.TASK_BLOCK);
+      expect(taskBlockTool.description).toBe(RuntimeTaskToolDescriptions.TASK_BLOCK);
+    });
+
+    it(`should export ${RuntimeTaskToolNames.TASK_UNBLOCK} runtime tool definition`, () => {
+      expect(taskUnblockTool.name).toBe(RuntimeTaskToolNames.TASK_UNBLOCK);
+      expect(taskUnblockTool.description).toBe(RuntimeTaskToolDescriptions.TASK_UNBLOCK);
+    });
+
     it(`should include ${RuntimeTaskToolNames.TASK_CLAIM} in the production MCP registry aggregate`, () => {
       expect(registeredTools.some((tool) => tool.name === RuntimeTaskToolNames.TASK_CLAIM)).toBe(
         true,
@@ -249,6 +261,18 @@ describe('MCP tools', () => {
 
     it(`should include ${RuntimeTaskToolNames.TASK_COMPLETE} in the production MCP registry aggregate`, () => {
       expect(registeredTools.some((tool) => tool.name === RuntimeTaskToolNames.TASK_COMPLETE)).toBe(
+        true,
+      );
+    });
+
+    it(`should include ${RuntimeTaskToolNames.TASK_BLOCK} in the production MCP registry aggregate`, () => {
+      expect(registeredTools.some((tool) => tool.name === RuntimeTaskToolNames.TASK_BLOCK)).toBe(
+        true,
+      );
+    });
+
+    it(`should include ${RuntimeTaskToolNames.TASK_UNBLOCK} in the production MCP registry aggregate`, () => {
+      expect(registeredTools.some((tool) => tool.name === RuntimeTaskToolNames.TASK_UNBLOCK)).toBe(
         true,
       );
     });

@@ -81,6 +81,8 @@ type RunLifecycleEvent = Extract<KernelEvent, { kind: RunLifecycleEventKind }>;
 
 type TaskCreatedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.TASK_CREATED }>;
 type TaskClaimedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.TASK_CLAIMED }>;
+type TaskBlockedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.TASK_BLOCKED }>;
+type TaskUnblockedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.TASK_UNBLOCKED }>;
 type RunStartedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.RUN_STARTED }>;
 type RunSucceededEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.RUN_SUCCEEDED }>;
 type TaskCompletedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.TASK_COMPLETED }>;
@@ -122,6 +124,8 @@ export interface InitializeKernelRuntimeOptions {
 export interface KernelRuntime {
   createTask(taskSpec: TaskSpec): Promise<CreateTaskResult>;
   claimTask(input: ClaimTaskInput): Promise<ClaimTaskResult>;
+  blockTask(input: BlockTaskInput): Promise<BlockTaskResult>;
+  unblockTask(input: UnblockTaskInput): Promise<UnblockTaskResult>;
   completeTask(input: CompleteTaskInput): Promise<CompleteTaskResult>;
   inspectTask(taskId: string): Promise<TaskInspection>;
   executeTool(name: string, input: unknown, ctx: ExecutionContext): Promise<ToolOutput>;
@@ -170,6 +174,27 @@ export interface CompleteTaskInput {
   run_id?: string;
   timestamp?: string;
   evidence_refs?: string[];
+}
+
+export interface BlockTaskInput {
+  task_id: string;
+  reason: string;
+  timestamp?: string;
+}
+
+export interface BlockTaskResult {
+  task_id: string;
+  event: TaskBlockedEvent;
+}
+
+export interface UnblockTaskInput {
+  task_id: string;
+  timestamp?: string;
+}
+
+export interface UnblockTaskResult {
+  task_id: string;
+  event: TaskUnblockedEvent;
 }
 
 export interface CompleteTaskResult {
@@ -723,6 +748,52 @@ export class DefaultKernelRuntime implements KernelRuntime {
       }),
       events: [claimedEvent, runStartedEvent],
       policy,
+    };
+  }
+
+  async blockTask(input: BlockTaskInput): Promise<BlockTaskResult> {
+    const task = await this.requireTaskSpec(input.task_id);
+    const projected = await this.projectTaskState(task.id);
+
+    assertTransition(projected.status, 'blocked', task.id, this.stateAliases);
+
+    const reason = input.reason.trim();
+    if (reason.length === 0) {
+      throw new Error(`Cannot block ${task.id}: reason is required.`);
+    }
+
+    const blockedEvent: TaskBlockedEvent = {
+      schema_version: 1,
+      kind: KERNEL_EVENT_KINDS.TASK_BLOCKED,
+      task_id: task.id,
+      timestamp: normalizeTimestamp(this.now, input.timestamp),
+      reason,
+    };
+
+    await this.eventStore.append(blockedEvent);
+    return {
+      task_id: task.id,
+      event: blockedEvent,
+    };
+  }
+
+  async unblockTask(input: UnblockTaskInput): Promise<UnblockTaskResult> {
+    const task = await this.requireTaskSpec(input.task_id);
+    const projected = await this.projectTaskState(task.id);
+
+    assertTransition(projected.status, 'active', task.id, this.stateAliases);
+
+    const unblockedEvent: TaskUnblockedEvent = {
+      schema_version: 1,
+      kind: KERNEL_EVENT_KINDS.TASK_UNBLOCKED,
+      task_id: task.id,
+      timestamp: normalizeTimestamp(this.now, input.timestamp),
+    };
+
+    await this.eventStore.append(unblockedEvent);
+    return {
+      task_id: task.id,
+      event: unblockedEvent,
     };
   }
 

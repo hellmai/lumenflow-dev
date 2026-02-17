@@ -3,9 +3,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as cliRunner from '../cli-runner.js';
 import {
   resetRuntimeTaskToolCache,
+  taskBlockTool,
   taskClaimTool,
   taskCompleteTool,
   taskCreateTool,
+  taskUnblockTool,
 } from '../tools/runtime-task-tools.js';
 import * as kernel from '@lumenflow/kernel';
 import { ErrorCodes } from '../tools-shared.js';
@@ -285,5 +287,95 @@ describe('runtime task MCP tools', () => {
     expect(result.error?.code).toBe(ErrorCodes.TASK_COMPLETE_ERROR);
     expect(result.error?.message).toContain('task completion failed');
     expect(mockRunCliCommand).not.toHaveBeenCalled();
+  });
+
+  it(`routes ${RuntimeTaskToolNames.TASK_BLOCK} through KernelRuntime without CLI shell-out`, async () => {
+    const blockResult = {
+      task_id: 'WU-1787',
+      event: {
+        schema_version: 1,
+        kind: 'task_blocked',
+        task_id: 'WU-1787',
+        timestamp: '2026-02-17T00:00:00.000Z',
+        reason: 'waiting on dependency',
+      },
+    };
+    const blockTask = vi.fn().mockResolvedValue(blockResult);
+    mockInitializeKernelRuntime.mockResolvedValue({ blockTask } as unknown as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await taskBlockTool.execute(
+      {
+        task_id: 'WU-1787',
+        reason: 'waiting on dependency',
+      },
+      { projectRoot: '/tmp/lumenflow-mcp-runtime' },
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.data).toEqual(blockResult);
+    expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
+      workspaceRoot: path.resolve('/tmp/lumenflow-mcp-runtime'),
+    });
+    expect(blockTask).toHaveBeenCalledWith({
+      task_id: 'WU-1787',
+      reason: 'waiting on dependency',
+    });
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
+  });
+
+  it(`validates ${RuntimeTaskToolNames.TASK_BLOCK} input before runtime initialization`, async () => {
+    const result = await taskBlockTool.execute(
+      {
+        task_id: 'WU-1787',
+      },
+      { projectRoot: '/tmp/lumenflow-mcp-runtime' },
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe(ErrorCodes.TASK_BLOCK_ERROR);
+    expect(mockInitializeKernelRuntime).not.toHaveBeenCalled();
+  });
+
+  it(`routes ${RuntimeTaskToolNames.TASK_UNBLOCK} through KernelRuntime without CLI shell-out`, async () => {
+    const unblockResult = {
+      task_id: 'WU-1787',
+      event: {
+        schema_version: 1,
+        kind: 'task_unblocked',
+        task_id: 'WU-1787',
+        timestamp: '2026-02-17T00:00:00.000Z',
+      },
+    };
+    const unblockTask = vi.fn().mockResolvedValue(unblockResult);
+    mockInitializeKernelRuntime.mockResolvedValue({ unblockTask } as unknown as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await taskUnblockTool.execute(
+      {
+        task_id: 'WU-1787',
+      },
+      { projectRoot: '/tmp/lumenflow-mcp-runtime' },
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.data).toEqual(unblockResult);
+    expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
+      workspaceRoot: path.resolve('/tmp/lumenflow-mcp-runtime'),
+    });
+    expect(unblockTask).toHaveBeenCalledWith({
+      task_id: 'WU-1787',
+    });
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
+  });
+
+  it(`validates ${RuntimeTaskToolNames.TASK_UNBLOCK} input before runtime initialization`, async () => {
+    const result = await taskUnblockTool.execute({}, { projectRoot: '/tmp/lumenflow-mcp-runtime' });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe(ErrorCodes.TASK_UNBLOCK_ERROR);
+    expect(mockInitializeKernelRuntime).not.toHaveBeenCalled();
   });
 });

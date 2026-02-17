@@ -19,6 +19,15 @@ const taskCompleteInputSchema = z.object({
   timestamp: z.string().optional(),
   evidence_refs: z.array(z.string().min(1)).optional(),
 });
+const taskBlockInputSchema = z.object({
+  task_id: z.string().min(1),
+  reason: z.string().min(1),
+  timestamp: z.string().optional(),
+});
+const taskUnblockInputSchema = z.object({
+  task_id: z.string().min(1),
+  timestamp: z.string().optional(),
+});
 
 type RuntimeInstance = Awaited<ReturnType<typeof initializeKernelRuntime>>;
 
@@ -111,6 +120,52 @@ export const taskCompleteTool: ToolDefinition = {
       return success(completeResult);
     } catch (cause) {
       return error((cause as Error).message, ErrorCodes.TASK_COMPLETE_ERROR);
+    }
+  },
+};
+
+export const taskBlockTool: ToolDefinition = {
+  name: RuntimeTaskToolNames.TASK_BLOCK,
+  description: RuntimeTaskToolDescriptions.TASK_BLOCK,
+  inputSchema: taskBlockInputSchema,
+
+  async execute(input, options) {
+    const parsedInput = taskBlockInputSchema.safeParse(input);
+    if (!parsedInput.success) {
+      return error(parsedInput.error.message, ErrorCodes.TASK_BLOCK_ERROR);
+    }
+
+    const workspaceRoot = options?.projectRoot || process.cwd();
+
+    try {
+      const runtime = await getRuntimeForWorkspace(workspaceRoot);
+      const blockResult = await runtime.blockTask(parsedInput.data);
+      return success(blockResult);
+    } catch (cause) {
+      return error((cause as Error).message, ErrorCodes.TASK_BLOCK_ERROR);
+    }
+  },
+};
+
+export const taskUnblockTool: ToolDefinition = {
+  name: RuntimeTaskToolNames.TASK_UNBLOCK,
+  description: RuntimeTaskToolDescriptions.TASK_UNBLOCK,
+  inputSchema: taskUnblockInputSchema,
+
+  async execute(input, options) {
+    const parsedInput = taskUnblockInputSchema.safeParse(input);
+    if (!parsedInput.success) {
+      return error(parsedInput.error.message, ErrorCodes.TASK_UNBLOCK_ERROR);
+    }
+
+    const workspaceRoot = options?.projectRoot || process.cwd();
+
+    try {
+      const runtime = await getRuntimeForWorkspace(workspaceRoot);
+      const unblockResult = await runtime.unblockTask(parsedInput.data);
+      return success(unblockResult);
+    } catch (cause) {
+      return error((cause as Error).message, ErrorCodes.TASK_UNBLOCK_ERROR);
     }
   },
 };

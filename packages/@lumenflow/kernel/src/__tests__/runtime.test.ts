@@ -646,6 +646,50 @@ describe('kernel runtime facade', () => {
     ).rejects.toThrow('Illegal state transition');
   });
 
+  it('blockTask and unblockTask enforce transitions and emit lifecycle events', async () => {
+    const runtime = await createRuntime();
+    const taskSpec = createTaskSpec('WU-1787-block-unblock');
+    await runtime.createTask(taskSpec);
+
+    await runtime.claimTask({
+      task_id: taskSpec.id,
+      by: 'tom@hellm.ai',
+      session_id: 'session-1787-claim',
+    });
+
+    const blockResult = await runtime.blockTask({
+      task_id: taskSpec.id,
+      reason: 'waiting on dependency',
+    });
+
+    expect(blockResult.event.kind).toBe('task_blocked');
+    expect(blockResult.event.reason).toBe('waiting on dependency');
+
+    const unblockResult = await runtime.unblockTask({
+      task_id: taskSpec.id,
+    });
+
+    expect(unblockResult.event.kind).toBe('task_unblocked');
+
+    const inspection = await runtime.inspectTask(taskSpec.id);
+    const eventKinds = inspection.events.map((event) => event.kind);
+
+    expect(inspection.state.status).toBe('active');
+    expect(eventKinds).toContain('task_blocked');
+    expect(eventKinds).toContain('task_unblocked');
+
+    await runtime.completeTask({
+      task_id: taskSpec.id,
+    });
+
+    await expect(
+      runtime.blockTask({
+        task_id: taskSpec.id,
+        reason: 'should fail after completion',
+      }),
+    ).rejects.toThrow('Illegal state transition');
+  });
+
   it('uses appendAll for atomic claim/complete event pairs', async () => {
     const appendSpy = vi.spyOn(EventStore.prototype, 'append');
     const appendAllSpy = vi.spyOn(EventStore.prototype, 'appendAll');

@@ -5,11 +5,14 @@ import * as kernel from '@lumenflow/kernel';
 import { getPublicManifest } from '../public-manifest.js';
 import {
   parseTaskClaimDomainData,
+  parseTaskBlockReason,
   parseTaskCompleteEvidenceRefs,
   parseTaskCreateSpec,
+  runTaskBlock,
   runTaskClaim,
   runTaskComplete,
   runTaskCreate,
+  runTaskUnblock,
 } from '../task-claim.js';
 
 vi.mock('@lumenflow/kernel', async (importOriginal) => {
@@ -191,6 +194,75 @@ describe('task-claim command', () => {
     expect(result).toEqual(completeResult);
   });
 
+  it('routes task block through KernelRuntime.blockTask', async () => {
+    const blockResult = {
+      task_id: 'WU-1787',
+      event: {
+        schema_version: 1,
+        kind: 'task_blocked',
+        task_id: 'WU-1787',
+        timestamp: '2026-02-17T00:00:00.000Z',
+        reason: 'waiting on dependency',
+      },
+    };
+
+    const blockTask = vi.fn().mockResolvedValue(blockResult);
+    mockInitializeKernelRuntime.mockResolvedValue({ blockTask } as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await runTaskBlock({
+      input: {
+        task_id: 'WU-1787',
+        reason: 'waiting on dependency',
+      },
+      workspaceRoot: '/tmp/lumenflow-task-claim',
+      json: true,
+    });
+
+    expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
+      workspaceRoot: '/tmp/lumenflow-task-claim',
+    });
+    expect(blockTask).toHaveBeenCalledWith({
+      task_id: 'WU-1787',
+      reason: 'waiting on dependency',
+    });
+    expect(result).toEqual(blockResult);
+  });
+
+  it('routes task unblock through KernelRuntime.unblockTask', async () => {
+    const unblockResult = {
+      task_id: 'WU-1787',
+      event: {
+        schema_version: 1,
+        kind: 'task_unblocked',
+        task_id: 'WU-1787',
+        timestamp: '2026-02-17T00:00:00.000Z',
+      },
+    };
+
+    const unblockTask = vi.fn().mockResolvedValue(unblockResult);
+    mockInitializeKernelRuntime.mockResolvedValue({ unblockTask } as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await runTaskUnblock({
+      input: {
+        task_id: 'WU-1787',
+      },
+      workspaceRoot: '/tmp/lumenflow-task-claim',
+      json: true,
+    });
+
+    expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
+      workspaceRoot: '/tmp/lumenflow-task-claim',
+    });
+    expect(unblockTask).toHaveBeenCalledWith({
+      task_id: 'WU-1787',
+    });
+    expect(result).toEqual(unblockResult);
+  });
+
   it('parses valid domain data JSON objects', () => {
     expect(parseTaskClaimDomainData('{"owner":"hellmai"}')).toEqual({ owner: 'hellmai' });
   });
@@ -214,12 +286,20 @@ describe('task-claim command', () => {
     ]);
   });
 
+  it('parses valid task block reasons', () => {
+    expect(parseTaskBlockReason('waiting on dependency')).toBe('waiting on dependency');
+  });
+
   it('returns undefined when evidence refs are omitted', () => {
     expect(parseTaskCompleteEvidenceRefs()).toBeUndefined();
   });
 
   it('throws for invalid evidence refs payloads', () => {
     expect(() => parseTaskCompleteEvidenceRefs('{"receipt":"receipt-1"}')).toThrow();
+  });
+
+  it('throws for invalid task block reason values', () => {
+    expect(() => parseTaskBlockReason('')).toThrow();
   });
 
   it('throws for non-object domain data JSON', () => {

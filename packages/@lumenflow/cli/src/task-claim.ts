@@ -3,6 +3,8 @@
 import { createWUParser } from '@lumenflow/core/arg-parser';
 import { die } from '@lumenflow/core/error-handler';
 import {
+  type BlockTaskInput,
+  type BlockTaskResult,
   type CompleteTaskInput,
   type CompleteTaskResult,
   initializeKernelRuntime,
@@ -11,6 +13,8 @@ import {
   type CreateTaskResult,
   type TaskSpec,
   TaskSpecSchema,
+  type UnblockTaskInput,
+  type UnblockTaskResult,
 } from '@lumenflow/kernel';
 import { runCLI } from './cli-entry-point.js';
 
@@ -26,6 +30,14 @@ const TASK_COMPLETE_COMMAND_NAME = 'task-complete';
 const TASK_COMPLETE_LOG_PREFIX = '[task:complete]';
 const TASK_COMPLETE_DESCRIPTION = 'Complete a task directly through KernelRuntime';
 const TASK_COMPLETE_DEFAULT_WORKSPACE_ROOT = '.';
+const TASK_BLOCK_COMMAND_NAME = 'task-block';
+const TASK_BLOCK_LOG_PREFIX = '[task:block]';
+const TASK_BLOCK_DESCRIPTION = 'Block a task directly through KernelRuntime';
+const TASK_BLOCK_DEFAULT_WORKSPACE_ROOT = '.';
+const TASK_UNBLOCK_COMMAND_NAME = 'task-unblock';
+const TASK_UNBLOCK_LOG_PREFIX = '[task:unblock]';
+const TASK_UNBLOCK_DESCRIPTION = 'Unblock a task directly through KernelRuntime';
+const TASK_UNBLOCK_DEFAULT_WORKSPACE_ROOT = '.';
 
 const TASK_CLAIM_OPTIONS = {
   taskId: {
@@ -128,6 +140,73 @@ const TASK_COMPLETE_OPTIONS = {
   },
 } as const;
 
+const TASK_BLOCK_OPTIONS = {
+  block: {
+    name: 'block',
+    flags: '--block',
+    description: 'Run task block flow',
+    type: 'boolean' as const,
+  },
+  taskId: {
+    name: 'taskId',
+    flags: '--task-id <taskId>',
+    description: 'Task ID to block (e.g., WU-1787)',
+  },
+  reason: {
+    name: 'reason',
+    flags: '--reason <reason>',
+    description: 'Reason for blocking the task',
+  },
+  timestamp: {
+    name: 'timestamp',
+    flags: '--timestamp <iso8601>',
+    description: 'Optional ISO-8601 timestamp override',
+  },
+  workspaceRoot: {
+    name: 'workspaceRoot',
+    flags: '--workspace-root <path>',
+    description: 'Workspace root path (default: current directory)',
+    default: TASK_BLOCK_DEFAULT_WORKSPACE_ROOT,
+  },
+  json: {
+    name: 'json',
+    flags: '--json',
+    description: 'Output block result as JSON',
+    type: 'boolean' as const,
+  },
+} as const;
+
+const TASK_UNBLOCK_OPTIONS = {
+  unblock: {
+    name: 'unblock',
+    flags: '--unblock',
+    description: 'Run task unblock flow',
+    type: 'boolean' as const,
+  },
+  taskId: {
+    name: 'taskId',
+    flags: '--task-id <taskId>',
+    description: 'Task ID to unblock (e.g., WU-1787)',
+  },
+  timestamp: {
+    name: 'timestamp',
+    flags: '--timestamp <iso8601>',
+    description: 'Optional ISO-8601 timestamp override',
+  },
+  workspaceRoot: {
+    name: 'workspaceRoot',
+    flags: '--workspace-root <path>',
+    description: 'Workspace root path (default: current directory)',
+    default: TASK_UNBLOCK_DEFAULT_WORKSPACE_ROOT,
+  },
+  json: {
+    name: 'json',
+    flags: '--json',
+    description: 'Output unblock result as JSON',
+    type: 'boolean' as const,
+  },
+} as const;
+
 export interface TaskClaimCliArgs {
   input: ClaimTaskInput;
   workspaceRoot: string;
@@ -142,6 +221,18 @@ export interface TaskCreateCliArgs {
 
 export interface TaskCompleteCliArgs {
   input: CompleteTaskInput;
+  workspaceRoot: string;
+  json: boolean;
+}
+
+export interface TaskBlockCliArgs {
+  input: BlockTaskInput;
+  workspaceRoot: string;
+  json: boolean;
+}
+
+export interface TaskUnblockCliArgs {
+  input: UnblockTaskInput;
   workspaceRoot: string;
   json: boolean;
 }
@@ -183,6 +274,14 @@ export function parseTaskCreateSpec(raw?: string): TaskSpec {
   }
 
   return validated.data;
+}
+
+export function parseTaskBlockReason(raw?: string): string {
+  const reason = raw?.trim() ?? '';
+  if (reason.length === 0) {
+    die(`${TASK_BLOCK_LOG_PREFIX} --reason is required`);
+  }
+  return reason;
 }
 
 export function parseTaskCompleteEvidenceRefs(raw?: string): string[] | undefined {
@@ -263,6 +362,45 @@ export function parseTaskCompleteArgs(): TaskCompleteCliArgs {
   };
 }
 
+export function parseTaskBlockArgs(): TaskBlockCliArgs {
+  const options = Object.values(TASK_BLOCK_OPTIONS);
+  const parsed = createWUParser({
+    name: TASK_BLOCK_COMMAND_NAME,
+    description: TASK_BLOCK_DESCRIPTION,
+    options,
+    required: ['taskId', 'reason'],
+  });
+
+  return {
+    input: {
+      task_id: parsed.taskId as string,
+      reason: parseTaskBlockReason(parsed.reason as string | undefined),
+      timestamp: parsed.timestamp as string | undefined,
+    },
+    workspaceRoot: (parsed.workspaceRoot as string | undefined) || process.cwd(),
+    json: parsed.json ?? false,
+  };
+}
+
+export function parseTaskUnblockArgs(): TaskUnblockCliArgs {
+  const options = Object.values(TASK_UNBLOCK_OPTIONS);
+  const parsed = createWUParser({
+    name: TASK_UNBLOCK_COMMAND_NAME,
+    description: TASK_UNBLOCK_DESCRIPTION,
+    options,
+    required: ['taskId'],
+  });
+
+  return {
+    input: {
+      task_id: parsed.taskId as string,
+      timestamp: parsed.timestamp as string | undefined,
+    },
+    workspaceRoot: (parsed.workspaceRoot as string | undefined) || process.cwd(),
+    json: parsed.json ?? false,
+  };
+}
+
 export async function runTaskClaim(args: TaskClaimCliArgs): Promise<ClaimTaskResult> {
   const runtime = await initializeKernelRuntime({ workspaceRoot: args.workspaceRoot });
   return runtime.claimTask(args.input);
@@ -276,6 +414,16 @@ export async function runTaskCreate(args: TaskCreateCliArgs): Promise<CreateTask
 export async function runTaskComplete(args: TaskCompleteCliArgs): Promise<CompleteTaskResult> {
   const runtime = await initializeKernelRuntime({ workspaceRoot: args.workspaceRoot });
   return runtime.completeTask(args.input);
+}
+
+export async function runTaskBlock(args: TaskBlockCliArgs): Promise<BlockTaskResult> {
+  const runtime = await initializeKernelRuntime({ workspaceRoot: args.workspaceRoot });
+  return runtime.blockTask(args.input);
+}
+
+export async function runTaskUnblock(args: TaskUnblockCliArgs): Promise<UnblockTaskResult> {
+  const runtime = await initializeKernelRuntime({ workspaceRoot: args.workspaceRoot });
+  return runtime.unblockTask(args.input);
 }
 
 function formatTaskClaimSummary(result: ClaimTaskResult): string {
@@ -304,6 +452,21 @@ function formatTaskCompleteSummary(result: CompleteTaskResult): string {
   ].join('\n');
 }
 
+function formatTaskBlockSummary(result: BlockTaskResult): string {
+  return [
+    `${TASK_BLOCK_LOG_PREFIX} Blocked task ${result.task_id}`,
+    `${TASK_BLOCK_LOG_PREFIX} Event: ${result.event.kind}`,
+    `${TASK_BLOCK_LOG_PREFIX} Reason: ${result.event.reason}`,
+  ].join('\n');
+}
+
+function formatTaskUnblockSummary(result: UnblockTaskResult): string {
+  return [
+    `${TASK_UNBLOCK_LOG_PREFIX} Unblocked task ${result.task_id}`,
+    `${TASK_UNBLOCK_LOG_PREFIX} Event: ${result.event.kind}`,
+  ].join('\n');
+}
+
 export async function main(): Promise<void> {
   if (process.argv.includes('--task-spec')) {
     const args = parseTaskCreateArgs();
@@ -328,6 +491,32 @@ export async function main(): Promise<void> {
     }
 
     console.log(formatTaskCompleteSummary(result));
+    return;
+  }
+
+  if (process.argv.includes('--block')) {
+    const args = parseTaskBlockArgs();
+    const result = await runTaskBlock(args);
+
+    if (args.json) {
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    console.log(formatTaskBlockSummary(result));
+    return;
+  }
+
+  if (process.argv.includes('--unblock')) {
+    const args = parseTaskUnblockArgs();
+    const result = await runTaskUnblock(args);
+
+    if (args.json) {
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    console.log(formatTaskUnblockSummary(result));
     return;
   }
 
