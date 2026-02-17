@@ -8,7 +8,11 @@ created: 2026-02-17
 code_paths:
   - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
 tests:
-  manual: []
+  manual:
+    - Delete workspace.yaml after runtime init; execute a tool and verify structured SPEC_TAMPERED
+      output plus spec_tampered event.
+    - Pass metadata.workspace_config_hash mismatch while baseline hash is unchanged; verify
+      executeTool compares against startup baseline and blocks tamper.
   unit:
     - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
   e2e: []
@@ -29,9 +33,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Problem: executeTool trusts caller-supplied workspace_config_hash and can be bypassed; deleting workspace.yaml after init can throw raw ENOENT. Enforce startup baseline comparison and convert missing-file cases into structured spec_tampered behavior.'
+description: 'Problem: executeTool trusts caller-supplied workspace_config_hash and can be bypassed;
+  deleting workspace.yaml after init can throw raw ENOENT. Enforce startup baseline comparison and
+  convert missing-file cases into structured spec_tampered behavior.'
 acceptance:
-  - executeTool compares against runtime startup baseline hash (this.workspaceConfigHash) for tamper checks.
-  - Caller-supplied metadata hash is ignored for tamper enforcement (or test-only override is explicitly controlled).
-  - Deleting workspace.yaml after init emits spec_tampered with spec=workspace and returns structured failure.
+  - executeTool compares against runtime startup baseline hash (this.workspaceConfigHash) for tamper
+    checks.
+  - Caller-supplied metadata hash is ignored for tamper enforcement (or test-only override is
+    explicitly controlled).
+  - Deleting workspace.yaml after init emits spec_tampered with spec=workspace and returns
+    structured failure.
   - Tests cover fake metadata hash bypass attempt and missing workspace.yaml after init.
