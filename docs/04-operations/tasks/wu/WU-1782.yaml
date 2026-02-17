@@ -2,7 +2,7 @@ id: WU-1782
 title: Bound evidence receipt indexing and improve lane-lock cleanup observability
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-17
 code_paths:
@@ -50,3 +50,11 @@ acceptance:
   - Lane-lock takeover marker cleanup logs I/O failures instead of silent catch blocks.
   - Evidence-store tests validate pruneTask behavior directly and verify bounded receipt map growth
     across many completed tasks.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1782
+claimed_at: 2026-02-17T17:57:23.723Z
+baseline_main_sha: b279dbc6f57c21e237ee734d29841f04359b3aaa
+session_id: ac4410f2-b52a-4680-a17d-63d8299c54af
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T17:57:23.732Z

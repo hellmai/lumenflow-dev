@@ -24,7 +24,6 @@ sections:
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
-- [WU-1782 — Bound evidence receipt indexing and improve lane-lock cleanup observability](wu/WU-1782.yaml) — Framework: Core Lifecycle
 - [WU-1783 — Housekeeping: license consistency, dangling plan URIs, and metric wording](wu/WU-1783.yaml) — Content: Specs Governance
 - [WU-1784 — Extract remaining runtime string literal constants](wu/WU-1784.yaml) — Framework: Core Lifecycle
 - [WU-1785 — Migrate task:create path to direct KernelRuntime calls](wu/WU-1785.yaml) — Framework: Core Lifecycle
@@ -37,6 +36,7 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1791 — Fix MDX comment syntax in cli.mdx](wu/WU-1791.yaml) — Content: Site Comms
+- [WU-1782 — Bound evidence receipt indexing and improve lane-lock cleanup observability](wu/WU-1782.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
