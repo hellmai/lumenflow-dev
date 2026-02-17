@@ -37,7 +37,7 @@ phases:
     status: done
   - id: 8
     title: Runtime Hardening (Post-INIT-029 Review Remediation)
-    status: pending
+    status: in_progress
 wus:
   - WU-1725
   - WU-1726
@@ -101,6 +101,5 @@ notes:
     added WU-1767/WU-1768/WU-1769 plus Phase 7 WUs WU-1770/WU-1771/WU-1772/WU-1773/WU-1774, set
     WU-1774 dependency on WU-1770, selected tracer bullet commands task_claim (MCP) and task:claim
     (CLI), and added WU-1775 lane-fit governance coverage.'
-  - 2026-02-17 Phase 8 added from post-INIT-029 consolidated review plan
-    (zesty-jumping-pixel.md).
+  - 2026-02-17 Phase 8 added from post-INIT-029 consolidated review plan (zesty-jumping-pixel.md).
 labels: []
