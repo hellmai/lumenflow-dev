@@ -54,6 +54,36 @@ function isWithinRoot(root: string, candidatePath: string): boolean {
   return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
 }
 
+function parseToolEntry(entry: string): { modulePath: string; exportName?: string } {
+  const separator = entry.indexOf('#');
+  const modulePath = separator < 0 ? entry : entry.slice(0, separator);
+  const exportName = separator < 0 ? undefined : entry.slice(separator + 1);
+
+  if (modulePath.trim().length === 0) {
+    throw new Error(`Pack tool entry "${entry}" is missing a module path.`);
+  }
+  if (exportName !== undefined && exportName.trim().length === 0) {
+    throw new Error(`Pack tool entry "${entry}" has an empty export fragment.`);
+  }
+
+  return {
+    modulePath,
+    exportName,
+  };
+}
+
+export function resolvePackToolEntryPath(packRoot: string, entry: string): string {
+  const absolutePackRoot = path.resolve(packRoot);
+  const { modulePath, exportName } = parseToolEntry(entry);
+  const absoluteModulePath = path.resolve(absolutePackRoot, modulePath);
+
+  if (!isWithinRoot(absolutePackRoot, absoluteModulePath)) {
+    throw new Error(`Pack tool entry "${entry}" resolves outside pack root.`);
+  }
+
+  return exportName ? `${absoluteModulePath}#${exportName}` : absoluteModulePath;
+}
+
 function extractImportSpecifiers(sourceCode: string): string[] {
   const specifiers = new Set<string>();
   for (const pattern of IMPORT_SPECIFIER_PATTERNS) {
@@ -165,6 +195,10 @@ export class PackLoader {
       throw new Error(
         `Pack manifest version mismatch: expected ${pin.version}, got ${manifest.version}`,
       );
+    }
+
+    for (const tool of manifest.tools) {
+      resolvePackToolEntryPath(packRoot, tool.entry);
     }
 
     await validatePackImportBoundaries(packRoot, this.hashExclusions);

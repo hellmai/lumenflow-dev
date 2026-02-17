@@ -2,7 +2,9 @@ id: software-delivery
 version: 0.1.0
 task_types:
   - work-unit
-tools: []
+tools:
+  - name: git:status
+    entry: tool-impl/git-tools.ts#gitStatusTool
 policies:
   - id: software-delivery.gate.format
     trigger: on_completion
