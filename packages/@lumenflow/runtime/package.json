@@ -1,0 +1,25 @@
+{
+  "name": "@lumenflow/runtime",
+  "version": "2.21.0",
+  "description": "Runtime daemon, scheduler, sessions, and IPC transport for LumenFlow",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:dist": "tsc -p tsconfig.build.json",
+    "pack:dist": "pnpm pack",
+    "clean": "rm -rf dist *.tgz",
+    "test": "vitest run",
+    "lint": "eslint src __tests__ --quiet --rule no-console:off --rule @typescript-eslint/no-unused-vars:off",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
