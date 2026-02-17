@@ -1445,3 +1445,4 @@
 {"type":"complete","wuId":"WU-1740","timestamp":"2026-02-17T00:30:58.294Z"}
 {"type":"claim","wuId":"WU-1755","timestamp":"2026-02-17T09:42:20.568Z","lane":"Framework: CLI WU Commands","title":"Fix new-project friction: flawless lumenflow init to first WU"}
 {"type":"complete","wuId":"WU-1755","timestamp":"2026-02-17T10:09:00.054Z"}
+{"type":"claim","wuId":"WU-1765","lane":"Framework: CLI WU Commands","title":"Fix resolveAgentPatterns: local config patterns ignored when registry returns results","timestamp":"2026-02-17T10:14:18.790Z"}
