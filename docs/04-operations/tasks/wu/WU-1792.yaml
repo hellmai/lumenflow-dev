@@ -2,7 +2,7 @@ id: WU-1792
 title: Add HTML comment guard to MDX doc generator
 lane: 'Content: Site Comms'
 type: bug
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-17
 code_paths:
@@ -39,3 +39,6 @@ session_id: 61011c73-ccb6-49bf-991f-923cc046f12d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T18:30:24.131Z
+locked: true
+completed_at: 2026-02-17T18:39:02.690Z
+completed: 2026-02-17

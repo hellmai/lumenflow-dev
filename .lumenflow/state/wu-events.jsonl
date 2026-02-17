@@ -1509,6 +1509,7 @@
 {"type":"claim","wuId":"WU-1784","timestamp":"2026-02-17T18:09:09.631Z","lane":"Framework: Core Lifecycle","title":"Extract remaining runtime string literal constants"}
 {"type":"complete","wuId":"WU-1784","timestamp":"2026-02-17T18:14:01.418Z"}
 {"type":"claim","wuId":"WU-1785","timestamp":"2026-02-17T18:14:37.970Z","lane":"Framework: Core Lifecycle","title":"Migrate task:create path to direct KernelRuntime calls"}
+{"type":"claim","wuId":"WU-1792","timestamp":"2026-02-17T18:30:24.174Z","lane":"Content: Site Comms","title":"Add HTML comment guard to MDX doc generator"}
 {"type":"complete","wuId":"WU-1785","timestamp":"2026-02-17T18:30:24.623Z"}
-{"type":"claim","wuId":"WU-1792","lane":"Content: Site Comms","title":"Add HTML comment guard to MDX doc generator","timestamp":"2026-02-17T18:30:24.174Z"}
-{"type":"claim","wuId":"WU-1786","lane":"Framework: Core Lifecycle","title":"Migrate task:complete path to direct KernelRuntime calls","timestamp":"2026-02-17T18:30:57.829Z"}
+{"type":"claim","wuId":"WU-1786","timestamp":"2026-02-17T18:30:57.829Z","lane":"Framework: Core Lifecycle","title":"Migrate task:complete path to direct KernelRuntime calls"}
+{"type":"complete","wuId":"WU-1792","timestamp":"2026-02-17T18:39:07.385Z"}
