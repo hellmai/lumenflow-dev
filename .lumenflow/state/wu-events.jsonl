@@ -1490,3 +1490,4 @@
 {"type":"claim","wuId":"WU-1777","timestamp":"2026-02-17T16:37:32.005Z","lane":"Content: Site Comms","title":"Update README for kernel positioning + fix license badge"}
 {"type":"complete","wuId":"WU-1777","timestamp":"2026-02-17T16:40:32.106Z"}
 {"type":"claim","wuId":"WU-1778","lane":"Framework: Core Lifecycle","title":"Manifest least-privilege runtime capability resolver","timestamp":"2026-02-17T17:21:54.509Z"}
+{"type":"claim","wuId":"WU-1790","lane":"Content: Site Comms","title":"Fix stale licensing and positioning on lumenflow.dev","timestamp":"2026-02-17T17:33:03.375Z"}

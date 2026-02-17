@@ -2,7 +2,7 @@ id: WU-1790
 title: Fix stale licensing and positioning on lumenflow.dev
 lane: 'Content: Site Comms'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -29,10 +29,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: lumenflow.dev legal pages still say 'private software, not publicly licensed' — we changed to AGPL v3 + Apache 2.0 today. FAQ and landing page also use stale 'workflow framework' positioning instead of kernel positioning.
+description: lumenflow.dev legal pages still say 'private software, not publicly licensed' — we
+  changed to AGPL v3 + Apache 2.0 today. FAQ and landing page also use stale 'workflow framework'
+  positioning instead of kernel positioning.
 acceptance:
   - licensing.mdx reflects AGPL v3 + Apache 2.0 dual-license model
   - faq.mdx 'Is LumenFlow publicly licensed?' answer updated to yes, AGPL v3
   - faq.mdx 'What is LumenFlow?' reflects kernel positioning
   - index.mdx hero tagline updated for kernel positioning
   - terms.mdx updated to reflect open-source licensing
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1790
+claimed_at: 2026-02-17T17:33:03.321Z
+baseline_main_sha: e47b98191347ca0b6d1856f05cdd869b43e3f686
+session_id: f3bba02b-d430-41ae-a843-679d1353db48
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T17:33:03.329Z

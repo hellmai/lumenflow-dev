@@ -6,6 +6,7 @@ _Last updated: 2026-02-17_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1778 — Manifest least-privilege runtime capability resolver](wu/WU-1778.yaml)
+- [WU-1790 — Fix stale licensing and positioning on lumenflow.dev](wu/WU-1790.yaml)
 
 ## Completed
 
