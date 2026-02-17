@@ -1441,3 +1441,4 @@
 {"type":"complete","wuId":"WU-1738","timestamp":"2026-02-17T00:13:28.688Z"}
 {"type":"claim","wuId":"WU-1739","timestamp":"2026-02-17T00:14:05.364Z","lane":"Framework: Core Lifecycle","title":"Runtime daemon — scheduler, sessions, Unix socket transport"}
 {"type":"complete","wuId":"WU-1739","timestamp":"2026-02-17T00:19:47.643Z"}
+{"type":"claim","wuId":"WU-1740","lane":"Framework: Core Validation","title":"Control Plane SDK — ControlPlaneSyncPort + workspace config + mock adapter","timestamp":"2026-02-17T00:20:53.599Z"}

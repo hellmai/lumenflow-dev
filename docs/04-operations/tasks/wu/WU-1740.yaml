@@ -2,7 +2,7 @@ id: WU-1740
 title: Control Plane SDK — ControlPlaneSyncPort + workspace config + mock adapter
 lane: 'Framework: Core Validation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-16
 code_paths:
@@ -54,3 +54,11 @@ acceptance:
   - dev-override mode allows loosening but logs it as KernelEvent
   - SDK compiles and port interface is mockable and testable
   - Telemetry export to mock endpoint works
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1740
+claimed_at: 2026-02-17T00:20:53.565Z
+baseline_main_sha: 090ef4db74721062ed46dc19d6179d140f9c30d4
+session_id: 600a33d0-9e8a-4868-a910-1aabbdb4d13c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T00:20:53.571Z
