@@ -1,0 +1,36 @@
+id: WU-1757
+title: Fix evidence store double-hashing and add trace concurrency protection
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-17
+code_paths:
+  - packages/@lumenflow/kernel/src/evidence/evidence-store.ts
+  - packages/@lumenflow/kernel/src/canonical-json.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/evidence-store.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1757.done
+dependencies: []
+initiative: INIT-029
+phase: 6
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: noreply@anthropic.com
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: EvidenceStore.persistInput uses canonical_json() which returns a SHA-256 hash, then hashes that hash again. CAS files store hashes not data, making audit trail irrecoverable. Also appendTrace has no file lock, allowing concurrent trace corruption.
+acceptance:
+  - persistInput uses canonicalStringify instead of canonical_json
+  - CAS inputRef files contain actual serialized input data
+  - appendTrace uses file-based locking matching EventStore pattern
+  - Existing tests updated and new concurrency tests added

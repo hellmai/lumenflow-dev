@@ -1,0 +1,37 @@
+id: WU-1758
+title: 'Fix security boundary: fs:read path validation and git:status command injection'
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-17
+code_paths:
+  - packages/@lumenflow/kernel/src/tool-host/builtins/capabilities.ts
+  - packages/@lumenflow/packs/software-delivery/tool-impl/git-tools.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/builtin-tools.test.ts
+    - packages/@lumenflow/packs/software-delivery/__tests__/git-tools.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1758.done
+dependencies: []
+initiative: INIT-029
+phase: 6
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: noreply@anthropic.com
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: fs:read builtin tool does not validate requested paths against enforced scopes — path traversal vulnerability. git:status tool accepts arbitrary commands array passed directly to spawnSync — complete security model bypass. Both undermine the ToolHost scope enforcement.
+acceptance:
+  - fs:read validates path against enforced scopes before reading
+  - git:status commands input removed or restricted to git binary only
+  - Path traversal tests added for fs:read
+  - Command injection tests added for git:status

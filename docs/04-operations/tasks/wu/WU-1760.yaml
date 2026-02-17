@@ -1,0 +1,37 @@
+id: WU-1760
+title: 'Fix runtime security: Unix socket permissions, JSON validation, daemon params'
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-17
+code_paths:
+  - packages/@lumenflow/runtime/src/transport/unix-socket-server.ts
+  - packages/@lumenflow/runtime/src/daemon/runtime-daemon.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/runtime/src/__tests__/unix-socket-server.test.ts
+    - packages/@lumenflow/runtime/src/__tests__/runtime-daemon.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1760.done
+dependencies: []
+initiative: INIT-029
+phase: 6
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: noreply@anthropic.com
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Unix socket created with default 0o777 permissions — any local user can connect. processLine does JSON.parse with unchecked as-cast — no schema validation on daemon requests. Daemon handler uses unchecked as casts for all params — malformed requests corrupt scheduler state.
+acceptance:
+  - Unix socket file set to 0o600 after creation
+  - processLine validates parsed JSON against DaemonRequest schema
+  - Daemon handler validates request.params with Zod before dispatch
+  - Malformed request tests added for all three fixes

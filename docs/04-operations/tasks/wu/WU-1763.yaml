@@ -1,0 +1,38 @@
+id: WU-1763
+title: 'Kernel performance: eliminate per-append reload, move orphan reconciliation, add evidence indexing'
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-17
+code_paths:
+  - packages/@lumenflow/kernel/src/event-store/index.ts
+  - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
+  - packages/@lumenflow/kernel/src/evidence/evidence-store.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/event-store.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/evidence-store.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1763.done
+dependencies: []
+initiative: INIT-029
+phase: 6
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: noreply@anthropic.com
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: EventStore reloads entire file on every append() — O(n) per append, O(n^2) over lifecycle. reconcileOrphanedStarts runs on every tool execution — O(n) full trace scan per call. readReceiptsForTask reads ALL traces then filters client-side. All three are performance bottlenecks that worsen over time.
+acceptance:
+  - EventStore append updates indexes in-memory instead of reloadFromDisk
+  - Orphan reconciliation moved to startup/shutdown lifecycle hook
+  - EvidenceStore supports filtered reads by task ID
+  - Performance regression tests with >100 events

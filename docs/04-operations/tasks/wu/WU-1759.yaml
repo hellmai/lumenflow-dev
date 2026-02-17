@@ -1,0 +1,36 @@
+id: WU-1759
+title: 'Fix EventStore reliability: stale lock recovery and atomic batch append'
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-17
+code_paths:
+  - packages/@lumenflow/kernel/src/event-store/index.ts
+  - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/event-store.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1759.done
+dependencies: []
+initiative: INIT-029
+phase: 6
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: noreply@anthropic.com
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: EventStore file lock has no stale-lock detection — process crash permanently bricks the store. claimTask/completeTask emit two events with separate appends — crash between them corrupts task state. Need stale-lock detection (PID+timestamp) and batch appendAll method for atomic multi-event writes.
+acceptance:
+  - File lock writes PID and timestamp into lock file
+  - Stale lock detected and recovered when owning process is dead
+  - New appendAll method writes multiple events under single lock
+  - claimTask and completeTask use appendAll for atomic writes

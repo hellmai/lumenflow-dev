@@ -1,0 +1,36 @@
+id: WU-1764
+title: 'Kernel architecture: package graph integration, exports, DRY cleanup'
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-17
+code_paths:
+  - packages/@lumenflow/kernel/package.json
+  - packages/@lumenflow/kernel/src/index.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/integration.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1764.done
+dependencies: []
+initiative: INIT-029
+phase: 6
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: noreply@anthropic.com
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Kernel is disconnected from package graph — no existing package declares it as dependency. Missing sub-path exports for pack, policy, sandbox modules. Multiple DRY violations: isRunLifecycleEvent (2x), buildFailureOutput (3x), withScopeNote (2x), SEMVER_REGEX (2x), buildRunHistory (2x). Missing README.md and LICENSE files listed in package.json files array.'
+acceptance:
+  - Kernel wired into package graph with proper dependency declarations
+  - Missing sub-path exports added to barrel and package.json exports map
+  - DRY violations extracted into shared utilities
+  - README.md and LICENSE files created for kernel package
