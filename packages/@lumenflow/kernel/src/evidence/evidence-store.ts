@@ -5,6 +5,7 @@ import { appendFile, mkdir, open, readFile, rm } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { canonicalStringify } from '../canonical-json.js';
+import { TOOL_TRACE_KINDS } from '../event-kinds.js';
 import {
   ToolTraceEntrySchema,
   type PolicyDecision,
@@ -128,7 +129,7 @@ export class EvidenceStore {
   private applyTraceToIndexes(entry: ToolTraceEntry): void {
     this.orderedTraces.push(entry);
 
-    if (entry.kind === 'tool_call_started') {
+    if (entry.kind === TOOL_TRACE_KINDS.TOOL_CALL_STARTED) {
       this.taskIdByReceiptId.set(entry.receipt_id, entry.task_id);
       const bucket = this.tracesByTaskId.get(entry.task_id) ?? [];
       bucket.push(entry);
@@ -178,7 +179,7 @@ export class EvidenceStore {
     const finished = new Set<string>();
 
     for (const trace of traces) {
-      if (trace.kind === 'tool_call_started') {
+      if (trace.kind === TOOL_TRACE_KINDS.TOOL_CALL_STARTED) {
         started.set(trace.receipt_id, trace);
       } else {
         finished.add(trace.receipt_id);
@@ -199,7 +200,7 @@ export class EvidenceStore {
       ];
       await this.appendTrace({
         schema_version: 1,
-        kind: 'tool_call_finished',
+        kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
         receipt_id: receiptId,
         timestamp: new Date().toISOString(),
         result: 'crashed',

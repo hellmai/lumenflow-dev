@@ -4,6 +4,12 @@
 import { appendFile, mkdir, open, readFile, rm } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import {
+  KERNEL_EVENT_KINDS,
+  isRunLifecycleEventKind,
+  isTaskEventKind,
+  type RunLifecycleEventKind,
+} from '../event-kinds.js';
+import {
   KernelEventSchema,
   type KernelEvent,
   type TaskSpec,
@@ -23,7 +29,7 @@ type EventKind = KernelEvent['kind'];
 type TaskScopedKernelEvent = Extract<KernelEvent, { task_id: string }>;
 type RunLifecycleEvent = Extract<
   KernelEvent,
-  { kind: 'run_started' | 'run_paused' | 'run_failed' | 'run_succeeded' }
+  { kind: RunLifecycleEventKind }
 >;
 
 export interface ReplayFilter {
@@ -62,12 +68,7 @@ function hasTaskId(event: KernelEvent): event is TaskScopedKernelEvent {
 }
 
 function isRunLifecycleEvent(event: KernelEvent): event is RunLifecycleEvent {
-  return (
-    event.kind === 'run_started' ||
-    event.kind === 'run_paused' ||
-    event.kind === 'run_failed' ||
-    event.kind === 'run_succeeded'
-  );
+  return isRunLifecycleEventKind(event.kind);
 }
 
 function createSyntheticTaskSpec(taskId: string): TaskSpec {
@@ -88,7 +89,7 @@ function createSyntheticTaskSpec(taskId: string): TaskSpec {
 }
 
 export function verifyTaskSpecHash(taskSpec: TaskSpec, events: KernelEvent[]): void {
-  const created = events.find((event) => event.kind === 'task_created');
+  const created = events.find((event) => event.kind === KERNEL_EVENT_KINDS.TASK_CREATED);
   if (!created) {
     return;
   }
@@ -118,7 +119,7 @@ function reduceRunEvent(event: RunLifecycleEvent, runs: Map<string, Run>): strin
 
   let nextRun: Run = { ...existing };
 
-  if (event.kind === 'run_started') {
+  if (event.kind === KERNEL_EVENT_KINDS.RUN_STARTED) {
     nextRun = RunSchema.parse({
       run_id: runId,
       task_id: event.task_id,
@@ -127,18 +128,18 @@ function reduceRunEvent(event: RunLifecycleEvent, runs: Map<string, Run>): strin
       by: event.by,
       session_id: event.session_id,
     });
-  } else if (event.kind === 'run_paused') {
+  } else if (event.kind === KERNEL_EVENT_KINDS.RUN_PAUSED) {
     nextRun = RunSchema.parse({
       ...existing,
       status: 'paused',
     });
-  } else if (event.kind === 'run_failed') {
+  } else if (event.kind === KERNEL_EVENT_KINDS.RUN_FAILED) {
     nextRun = RunSchema.parse({
       ...existing,
       status: 'failed',
       completed_at: event.timestamp,
     });
-  } else if (event.kind === 'run_succeeded') {
+  } else if (event.kind === KERNEL_EVENT_KINDS.RUN_SUCCEEDED) {
     nextRun = RunSchema.parse({
       ...existing,
       status: 'succeeded',
@@ -164,31 +165,31 @@ export function projectTaskState(taskSpec: TaskSpec, events: KernelEvent[]): Tas
   let currentRunId: string | undefined;
 
   for (const event of sorted) {
-    if (event.kind.startsWith('task_')) {
-      if (event.kind === 'task_created') {
+    if (isTaskEventKind(event.kind)) {
+      if (event.kind === KERNEL_EVENT_KINDS.TASK_CREATED) {
         state.status = 'ready';
-      } else if (event.kind === 'task_claimed') {
+      } else if (event.kind === KERNEL_EVENT_KINDS.TASK_CLAIMED) {
         state.status = 'active';
         state.claimed_at = event.timestamp;
         state.claimed_by = event.by;
         state.session_id = event.session_id;
         state.blocked_reason = undefined;
-      } else if (event.kind === 'task_blocked') {
+      } else if (event.kind === KERNEL_EVENT_KINDS.TASK_BLOCKED) {
         state.status = 'blocked';
         state.blocked_reason = event.reason;
-      } else if (event.kind === 'task_unblocked') {
+      } else if (event.kind === KERNEL_EVENT_KINDS.TASK_UNBLOCKED) {
         state.status = 'active';
         state.blocked_reason = undefined;
-      } else if (event.kind === 'task_waiting') {
+      } else if (event.kind === KERNEL_EVENT_KINDS.TASK_WAITING) {
         state.status = 'waiting';
         state.blocked_reason = event.reason;
-      } else if (event.kind === 'task_resumed') {
+      } else if (event.kind === KERNEL_EVENT_KINDS.TASK_RESUMED) {
         state.status = 'active';
         state.blocked_reason = undefined;
-      } else if (event.kind === 'task_completed') {
+      } else if (event.kind === KERNEL_EVENT_KINDS.TASK_COMPLETED) {
         state.status = 'done';
         state.completed_at = event.timestamp;
-      } else if (event.kind === 'task_released') {
+      } else if (event.kind === KERNEL_EVENT_KINDS.TASK_RELEASED) {
         state.status = 'ready';
         state.session_id = undefined;
       }

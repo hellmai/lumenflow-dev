@@ -5,6 +5,7 @@ import { builtinModules } from 'node:module';
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
 import YAML from 'yaml';
+import { KERNEL_EVENT_KINDS } from '../event-kinds.js';
 import type { PackPin, WorkspaceSpec } from '../kernel.schemas.js';
 import { PACK_MANIFEST_FILE_NAME, UTF8_ENCODING } from '../shared-constants.js';
 import { computeDeterministicPackHash, listPackFiles } from './hash.js';
@@ -12,7 +13,7 @@ import { DomainPackManifestSchema, type DomainPackManifest } from './manifest.js
 
 export interface WorkspaceWarningEvent {
   schema_version: 1;
-  kind: 'workspace_warning';
+  kind: typeof KERNEL_EVENT_KINDS.WORKSPACE_WARNING;
   timestamp: string;
   message: string;
 }
@@ -221,7 +222,7 @@ export class PackLoader {
 
       input.onWorkspaceWarning?.({
         schema_version: 1,
-        kind: 'workspace_warning',
+        kind: KERNEL_EVENT_KINDS.WORKSPACE_WARNING,
         timestamp: new Date().toISOString(),
         message: `Pack ${pin.id}@${pin.version} loaded with integrity: dev (verification skipped).`,
       });

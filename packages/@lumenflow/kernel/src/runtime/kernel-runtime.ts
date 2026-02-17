@@ -6,6 +6,12 @@ import path from 'node:path';
 import YAML from 'yaml';
 import { z } from 'zod';
 import { canonical_json } from '../canonical-json.js';
+import {
+  KERNEL_EVENT_KINDS,
+  TOOL_TRACE_KINDS,
+  isRunLifecycleEventKind,
+  type RunLifecycleEventKind,
+} from '../event-kinds.js';
 import { PACKS_DIR_NAME, UTF8_ENCODING, WORKSPACE_FILE_NAME } from '../shared-constants.js';
 import {
   EventStore,
@@ -64,16 +70,25 @@ const SPEC_TAMPERED_WORKSPACE_MESSAGE =
 
 type RunLifecycleEvent = Extract<
   KernelEvent,
-  { kind: 'run_started' | 'run_paused' | 'run_failed' | 'run_succeeded' }
+  { kind: RunLifecycleEventKind }
 >;
 
-type TaskCreatedEvent = Extract<KernelEvent, { kind: 'task_created' }>;
-type TaskClaimedEvent = Extract<KernelEvent, { kind: 'task_claimed' }>;
-type RunStartedEvent = Extract<KernelEvent, { kind: 'run_started' }>;
-type RunSucceededEvent = Extract<KernelEvent, { kind: 'run_succeeded' }>;
-type TaskCompletedEvent = Extract<KernelEvent, { kind: 'task_completed' }>;
-type WorkspaceUpdatedEvent = Extract<KernelEvent, { kind: 'workspace_updated' }>;
-type SpecTamperedEvent = Extract<KernelEvent, { kind: 'spec_tampered' }>;
+type TaskCreatedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.TASK_CREATED }>;
+type TaskClaimedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.TASK_CLAIMED }>;
+type RunStartedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.RUN_STARTED }>;
+type RunSucceededEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.RUN_SUCCEEDED }>;
+type TaskCompletedEvent = Extract<
+  KernelEvent,
+  { kind: typeof KERNEL_EVENT_KINDS.TASK_COMPLETED }
+>;
+type WorkspaceUpdatedEvent = Extract<
+  KernelEvent,
+  { kind: typeof KERNEL_EVENT_KINDS.WORKSPACE_UPDATED }
+>;
+type SpecTamperedEvent = Extract<
+  KernelEvent,
+  { kind: typeof KERNEL_EVENT_KINDS.SPEC_TAMPERED }
+>;
 
 export interface RuntimeToolCapabilityResolverInput {
   workspaceSpec: WorkspaceSpec;
@@ -181,12 +196,7 @@ function defaultRunIdFactory(taskId: string, nextRunNumber: number): string {
 }
 
 function isRunLifecycleEvent(event: KernelEvent): event is RunLifecycleEvent {
-  return (
-    event.kind === 'run_started' ||
-    event.kind === 'run_paused' ||
-    event.kind === 'run_failed' ||
-    event.kind === 'run_succeeded'
-  );
+  return isRunLifecycleEventKind(event.kind);
 }
 
 function buildRunHistory(events: KernelEvent[]): Run[] {
@@ -201,7 +211,7 @@ function buildRunHistory(events: KernelEvent[]): Run[] {
     }
 
     const existing = byRun.get(event.run_id);
-    if (event.kind === 'run_started') {
+    if (event.kind === KERNEL_EVENT_KINDS.RUN_STARTED) {
       byRun.set(
         event.run_id,
         RunSchema.parse({
@@ -227,7 +237,7 @@ function buildRunHistory(events: KernelEvent[]): Run[] {
         session_id: 'unknown',
       });
 
-    if (event.kind === 'run_paused') {
+    if (event.kind === KERNEL_EVENT_KINDS.RUN_PAUSED) {
       byRun.set(
         event.run_id,
         RunSchema.parse({
@@ -238,7 +248,7 @@ function buildRunHistory(events: KernelEvent[]): Run[] {
       continue;
     }
 
-    if (event.kind === 'run_failed') {
+    if (event.kind === KERNEL_EVENT_KINDS.RUN_FAILED) {
       byRun.set(
         event.run_id,
         RunSchema.parse({
@@ -569,7 +579,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
     if (actualHash !== expectedHash) {
       const tamperedEvent: SpecTamperedEvent = {
         schema_version: 1,
-        kind: 'spec_tampered',
+        kind: KERNEL_EVENT_KINDS.SPEC_TAMPERED,
         spec: 'workspace',
         id: this.workspaceSpec.id,
         expected_hash: expectedHash,
@@ -632,7 +642,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
 
     const createdEvent: TaskCreatedEvent = {
       schema_version: 1,
-      kind: 'task_created',
+      kind: KERNEL_EVENT_KINDS.TASK_CREATED,
       task_id: parsedTask.id,
       timestamp: normalizeTimestamp(this.now),
       spec_hash: canonical_json(parsedTask),
@@ -669,7 +679,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
     const claimedTimestamp = normalizeTimestamp(this.now, input.timestamp);
     const claimedEvent: TaskClaimedEvent = {
       schema_version: 1,
-      kind: 'task_claimed',
+      kind: KERNEL_EVENT_KINDS.TASK_CLAIMED,
       task_id: task.id,
       timestamp: claimedTimestamp,
       by: input.by,
@@ -679,7 +689,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
 
     const runStartedEvent: RunStartedEvent = {
       schema_version: 1,
-      kind: 'run_started',
+      kind: KERNEL_EVENT_KINDS.RUN_STARTED,
       task_id: task.id,
       run_id: runId,
       timestamp: claimedTimestamp,
@@ -731,7 +741,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
 
     const runSucceededEvent: RunSucceededEvent = {
       schema_version: 1,
-      kind: 'run_succeeded',
+      kind: KERNEL_EVENT_KINDS.RUN_SUCCEEDED,
       task_id: task.id,
       run_id: runId,
       timestamp: completedTimestamp,
@@ -740,7 +750,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
 
     const taskCompletedEvent: TaskCompletedEvent = {
       schema_version: 1,
-      kind: 'task_completed',
+      kind: KERNEL_EVENT_KINDS.TASK_COMPLETED,
       task_id: task.id,
       timestamp: completedTimestamp,
       evidence_refs: input.evidence_refs,
@@ -764,7 +774,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
     const receipts = await this.readReceiptsForTask(taskId);
 
     const receiptDecisions = receipts.flatMap((receipt) => {
-      if (receipt.kind === 'tool_call_finished') {
+      if (receipt.kind === TOOL_TRACE_KINDS.TOOL_CALL_FINISHED) {
         return receipt.policy_decisions;
       }
       return [];
@@ -828,7 +838,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
     const receiptIds = new Set<string>();
 
     for (const trace of traces) {
-      if (trace.kind !== 'tool_call_started') {
+      if (trace.kind !== TOOL_TRACE_KINDS.TOOL_CALL_STARTED) {
         continue;
       }
       if (trace.task_id === taskId) {
@@ -837,7 +847,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
     }
 
     return traces.filter((trace) => {
-      if (trace.kind === 'tool_call_started') {
+      if (trace.kind === TOOL_TRACE_KINDS.TOOL_CALL_STARTED) {
         return trace.task_id === taskId;
       }
       return receiptIds.has(trace.receipt_id);
@@ -928,7 +938,7 @@ export async function initializeKernelRuntime(
   const eventStore = new EventStore(eventStoreOptions);
   const workspaceUpdatedEvent: WorkspaceUpdatedEvent = {
     schema_version: 1,
-    kind: 'workspace_updated',
+    kind: KERNEL_EVENT_KINDS.WORKSPACE_UPDATED,
     timestamp: normalizeTimestamp(now),
     config_hash: resolvedWorkspace.workspace_config_hash,
     changes_summary: WORKSPACE_UPDATED_INIT_SUMMARY,

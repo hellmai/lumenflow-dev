@@ -22,9 +22,16 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
+    "./event-kinds": "./dist/event-kinds.js",
     "./schemas": "./dist/kernel.schemas.js",
     "./canonical-json": "./dist/canonical-json.js",
+    "./event-store": "./dist/event-store/index.js",
     "./evidence": "./dist/evidence/index.js",
+    "./pack": "./dist/pack/index.js",
+    "./policy": "./dist/policy/index.js",
+    "./runtime": "./dist/runtime/index.js",
+    "./sandbox": "./dist/sandbox/index.js",
+    "./shared-constants": "./dist/shared-constants.js",
     "./state-machine": "./dist/state-machine/index.js",
     "./tool-host": "./dist/tool-host/index.js"
   },

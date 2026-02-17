@@ -3,6 +3,7 @@
 
 import { randomUUID } from 'node:crypto';
 import { intersectToolScopes } from './scope-intersection.js';
+import { TOOL_TRACE_KINDS } from '../event-kinds.js';
 import {
   ExecutionContextSchema,
   ToolOutputSchema,
@@ -163,7 +164,7 @@ export class ToolHost {
 
     await this.evidenceStore.appendTrace({
       schema_version: 1,
-      kind: 'tool_call_started',
+      kind: TOOL_TRACE_KINDS.TOOL_CALL_STARTED,
       receipt_id: receiptId,
       run_id: context.run_id,
       task_id: context.task_id,
@@ -199,7 +200,7 @@ export class ToolHost {
 
       await this.evidenceStore.appendTrace({
         schema_version: 1,
-        kind: 'tool_call_finished',
+        kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
         receipt_id: receiptId,
         timestamp: new Date().toISOString(),
         result: 'denied',
@@ -234,7 +235,7 @@ export class ToolHost {
 
       await this.evidenceStore.appendTrace({
         schema_version: 1,
-        kind: 'tool_call_finished',
+        kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
         receipt_id: receiptId,
         timestamp: new Date().toISOString(),
         result: 'denied',
@@ -270,7 +271,7 @@ export class ToolHost {
       };
       await this.evidenceStore.appendTrace({
         schema_version: 1,
-        kind: 'tool_call_finished',
+        kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
         receipt_id: receiptId,
         timestamp: new Date().toISOString(),
         result: 'denied',
@@ -293,7 +294,7 @@ export class ToolHost {
       };
       await this.evidenceStore.appendTrace({
         schema_version: 1,
-        kind: 'tool_call_finished',
+        kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
         receipt_id: receiptId,
         timestamp: new Date().toISOString(),
         result: 'failure',
@@ -365,7 +366,7 @@ export class ToolHost {
 
     await this.evidenceStore.appendTrace({
       schema_version: 1,
-      kind: 'tool_call_finished',
+      kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
       receipt_id: receiptId,
       timestamp: new Date().toISOString(),
       result,

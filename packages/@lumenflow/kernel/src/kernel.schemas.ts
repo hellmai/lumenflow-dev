@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 import { z, type ZodTypeAny } from 'zod';
+import { KERNEL_EVENT_KINDS, TOOL_TRACE_KINDS } from './event-kinds.js';
 
 const SHA256_HEX_REGEX = /^[a-f0-9]{64}$/;
 const ISO_DATETIME_SCHEMA = z.string().datetime();
@@ -133,87 +134,87 @@ const RunEventBaseSchema = TaskEventBaseSchema.extend({
 });
 
 const TaskCreatedEventSchema = TaskEventBaseSchema.extend({
-  kind: z.literal('task_created'),
+  kind: z.literal(KERNEL_EVENT_KINDS.TASK_CREATED),
   spec_hash: z.string().regex(SHA256_HEX_REGEX),
 });
 
 const TaskClaimedEventSchema = TaskEventBaseSchema.extend({
-  kind: z.literal('task_claimed'),
+  kind: z.literal(KERNEL_EVENT_KINDS.TASK_CLAIMED),
   by: z.string().min(1),
   session_id: z.string().min(1),
   domain_data: z.record(z.string(), z.unknown()).optional(),
 });
 
 const TaskBlockedEventSchema = TaskEventBaseSchema.extend({
-  kind: z.literal('task_blocked'),
+  kind: z.literal(KERNEL_EVENT_KINDS.TASK_BLOCKED),
   reason: z.string().min(1),
 });
 
 const TaskUnblockedEventSchema = TaskEventBaseSchema.extend({
-  kind: z.literal('task_unblocked'),
+  kind: z.literal(KERNEL_EVENT_KINDS.TASK_UNBLOCKED),
 });
 
 const TaskWaitingEventSchema = TaskEventBaseSchema.extend({
-  kind: z.literal('task_waiting'),
+  kind: z.literal(KERNEL_EVENT_KINDS.TASK_WAITING),
   reason: z.string().min(1),
   wait_for: z.string().min(1).optional(),
 });
 
 const TaskResumedEventSchema = TaskEventBaseSchema.extend({
-  kind: z.literal('task_resumed'),
+  kind: z.literal(KERNEL_EVENT_KINDS.TASK_RESUMED),
 });
 
 const TaskCompletedEventSchema = TaskEventBaseSchema.extend({
-  kind: z.literal('task_completed'),
+  kind: z.literal(KERNEL_EVENT_KINDS.TASK_COMPLETED),
   evidence_refs: z.array(z.string().min(1)).optional(),
 });
 
 const TaskReleasedEventSchema = TaskEventBaseSchema.extend({
-  kind: z.literal('task_released'),
+  kind: z.literal(KERNEL_EVENT_KINDS.TASK_RELEASED),
   reason: z.string().min(1),
 });
 
 const TaskDelegatedEventSchema = TaskEventBaseSchema.extend({
-  kind: z.literal('task_delegated'),
+  kind: z.literal(KERNEL_EVENT_KINDS.TASK_DELEGATED),
   parent_task_id: z.string().min(1),
   delegation_id: z.string().min(1),
 });
 
 const RunStartedEventSchema = RunEventBaseSchema.extend({
-  kind: z.literal('run_started'),
+  kind: z.literal(KERNEL_EVENT_KINDS.RUN_STARTED),
   by: z.string().min(1),
   session_id: z.string().min(1),
 });
 
 const RunPausedEventSchema = RunEventBaseSchema.extend({
-  kind: z.literal('run_paused'),
+  kind: z.literal(KERNEL_EVENT_KINDS.RUN_PAUSED),
   reason: z.string().min(1),
 });
 
 const RunFailedEventSchema = RunEventBaseSchema.extend({
-  kind: z.literal('run_failed'),
+  kind: z.literal(KERNEL_EVENT_KINDS.RUN_FAILED),
   reason: z.string().min(1),
   evidence_refs: z.array(z.string().min(1)).optional(),
 });
 
 const RunSucceededEventSchema = RunEventBaseSchema.extend({
-  kind: z.literal('run_succeeded'),
+  kind: z.literal(KERNEL_EVENT_KINDS.RUN_SUCCEEDED),
   evidence_refs: z.array(z.string().min(1)).optional(),
 });
 
 const WorkspaceUpdatedEventSchema = KernelEventBaseSchema.extend({
-  kind: z.literal('workspace_updated'),
+  kind: z.literal(KERNEL_EVENT_KINDS.WORKSPACE_UPDATED),
   config_hash: z.string().regex(SHA256_HEX_REGEX),
   changes_summary: z.string().min(1),
 });
 
 const WorkspaceWarningEventSchema = KernelEventBaseSchema.extend({
-  kind: z.literal('workspace_warning'),
+  kind: z.literal(KERNEL_EVENT_KINDS.WORKSPACE_WARNING),
   message: z.string().min(1),
 });
 
 const SpecTamperedEventSchema = KernelEventBaseSchema.extend({
-  kind: z.literal('spec_tampered'),
+  kind: z.literal(KERNEL_EVENT_KINDS.SPEC_TAMPERED),
   spec: z.enum(['task', 'workspace']),
   id: z.string().min(1),
   expected_hash: z.string().regex(SHA256_HEX_REGEX),
@@ -221,7 +222,7 @@ const SpecTamperedEventSchema = KernelEventBaseSchema.extend({
 });
 
 const CheckpointEventSchema = TaskEventBaseSchema.extend({
-  kind: z.literal('checkpoint'),
+  kind: z.literal(KERNEL_EVENT_KINDS.CHECKPOINT),
   run_id: z.string().min(1).optional(),
   note: z.string().min(1),
   progress: z.string().min(1).optional(),
@@ -259,7 +260,7 @@ export type PolicyDecision = z.infer<typeof PolicyDecisionSchema>;
 
 export const ToolCallStartedSchema = z.object({
   schema_version: z.literal(1),
-  kind: z.literal('tool_call_started'),
+  kind: z.literal(TOOL_TRACE_KINDS.TOOL_CALL_STARTED),
   receipt_id: z.string().min(1),
   run_id: z.string().min(1),
   task_id: z.string().min(1),
@@ -282,7 +283,7 @@ export const ToolCallStartedSchema = z.object({
 
 export const ToolCallFinishedSchema = z.object({
   schema_version: z.literal(1),
-  kind: z.literal('tool_call_finished'),
+  kind: z.literal(TOOL_TRACE_KINDS.TOOL_CALL_FINISHED),
   receipt_id: z.string().min(1),
   timestamp: ISO_DATETIME_SCHEMA,
   result: z.enum(['success', 'failure', 'denied', 'crashed']),
