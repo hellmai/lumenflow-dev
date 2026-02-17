@@ -10,7 +10,9 @@ code_paths:
   - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
   - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
 tests:
-  manual: []
+  manual:
+    - Run MCP parity report and confirm migrated runtime tools are not listed in expected missing
+      set for closure view.
   unit:
     - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
     - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
@@ -32,8 +34,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-030 Phase 2 migrated task/runtime operations to KernelRuntime in MCP/CLI, and production MCP now serves registeredTools (legacy + runtime). Problem: parity and closure logic still compares against the legacy allTools baseline, which misstates migration progress and keeps migrated runtime commands in expected-missing sets. Solution: update parity closure logic to evaluate migration metrics against the production registry view while preserving explicit allowances for intentional MCP-only tools.'
+description: 'Context: INIT-030 Phase 2 migrated task/runtime operations to KernelRuntime in
+  MCP/CLI, and production MCP now serves registeredTools (legacy + runtime). Problem: parity and
+  closure logic still compares against the legacy allTools baseline, which misstates migration
+  progress and keeps migrated runtime commands in expected-missing sets. Solution: update parity
+  closure logic to evaluate migration metrics against the production registry view while preserving
+  explicit allowances for intentional MCP-only tools.'
 acceptance:
-  - MCP parity report used for closure can evaluate against production registered tool set (or an equivalent normalized runtime-inclusive view).
-  - Expected-missing parity fixtures are updated so migrated runtime commands (task_claim, task_create, task_complete, task_block, task_unblock, task_inspect, tool_execute) are no longer treated as missing.
+  - MCP parity report used for closure can evaluate against production registered tool set (or an
+    equivalent normalized runtime-inclusive view).
+  - Expected-missing parity fixtures are updated so migrated runtime commands (task_claim,
+    task_create, task_complete, task_block, task_unblock, task_inspect, tool_execute) are no longer
+    treated as missing.
   - Unit/integration parity tests pass with no regressions to existing allowed-extra behavior.
