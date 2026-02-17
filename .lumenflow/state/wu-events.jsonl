@@ -1491,7 +1491,8 @@
 {"type":"complete","wuId":"WU-1777","timestamp":"2026-02-17T16:40:32.106Z"}
 {"type":"claim","wuId":"WU-1778","timestamp":"2026-02-17T17:21:54.509Z","lane":"Framework: Core Lifecycle","title":"Manifest least-privilege runtime capability resolver"}
 {"type":"claim","wuId":"WU-1790","timestamp":"2026-02-17T17:33:03.375Z","lane":"Content: Site Comms","title":"Fix stale licensing and positioning on lumenflow.dev"}
+{"type":"complete","wuId":"WU-1778","timestamp":"2026-02-17T17:34:14.979Z"}
 {"type":"complete","wuId":"WU-1790","timestamp":"2026-02-17T17:36:15.705Z"}
 {"type":"complete","wuId":"WU-1778","timestamp":"2026-02-17T17:37:07.528Z"}
-{"type":"complete","wuId":"WU-1778","timestamp":"2026-02-17T17:34:14.979Z"}
-{"type":"claim","wuId":"WU-1779","lane":"Framework: Core Lifecycle","title":"Wire real SandboxSubprocessDispatcher into runtime initialization","timestamp":"2026-02-17T17:38:07.151Z"}
+{"type":"claim","wuId":"WU-1779","timestamp":"2026-02-17T17:38:07.151Z","lane":"Framework: Core Lifecycle","title":"Wire real SandboxSubprocessDispatcher into runtime initialization"}
+{"type":"complete","wuId":"WU-1779","timestamp":"2026-02-17T17:45:23.190Z"}

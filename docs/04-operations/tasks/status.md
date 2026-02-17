@@ -5,7 +5,6 @@ _Last updated: 2026-02-17_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1779 — Wire real SandboxSubprocessDispatcher into runtime initialization](wu/WU-1779.yaml)
 
 ## Completed
 
@@ -716,3 +715,4 @@ _Last updated: 2026-02-17_
 - [WU-1777 — Update README for kernel positioning + fix license badge](wu/WU-1777.yaml) — 2026-02-17
 - [WU-1790 — Fix stale licensing and positioning on lumenflow.dev](wu/WU-1790.yaml) — 2026-02-17
 - [WU-1778 — Manifest least-privilege runtime capability resolver](wu/WU-1778.yaml) — 2026-02-17
+- [WU-1779 — Wire real SandboxSubprocessDispatcher into runtime initialization](wu/WU-1779.yaml) — 2026-02-17
