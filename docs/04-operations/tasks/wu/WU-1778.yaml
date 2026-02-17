@@ -14,7 +14,9 @@ code_paths:
   - packages/@lumenflow/packs/software-delivery/tools/lane-lock-tool.ts
   - packages/@lumenflow/packs/software-delivery/tools/delegation-tools.ts
 tests:
-  manual: []
+  manual:
+    - Run runtime capability resolution for manifest-declared tools and verify default permission
+      resolves to read when unspecified while declared permission/scopes are honored.
   unit:
     - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
     - packages/@lumenflow/kernel/src/__tests__/pack-loader.test.ts
