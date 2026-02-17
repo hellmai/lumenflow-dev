@@ -22,7 +22,9 @@ import {
 import { EvidenceStore } from '../evidence/evidence-store.js';
 import {
   ExecutionContextSchema,
+  RUN_STATUSES,
   RunSchema,
+  TOOL_HANDLER_KINDS,
   TaskSpecSchema,
   WorkspaceSpecSchema,
   type ExecutionContext,
@@ -217,7 +219,7 @@ function buildRunHistory(events: KernelEvent[]): Run[] {
         RunSchema.parse({
           run_id: event.run_id,
           task_id: event.task_id,
-          status: 'executing',
+          status: RUN_STATUSES.EXECUTING,
           started_at: event.timestamp,
           by: event.by,
           session_id: event.session_id,
@@ -231,7 +233,7 @@ function buildRunHistory(events: KernelEvent[]): Run[] {
       RunSchema.parse({
         run_id: event.run_id,
         task_id: event.task_id,
-        status: 'planned',
+        status: RUN_STATUSES.PLANNED,
         started_at: event.timestamp,
         by: 'unknown',
         session_id: 'unknown',
@@ -242,7 +244,7 @@ function buildRunHistory(events: KernelEvent[]): Run[] {
         event.run_id,
         RunSchema.parse({
           ...fallback,
-          status: 'paused',
+          status: RUN_STATUSES.PAUSED,
         }),
       );
       continue;
@@ -253,7 +255,7 @@ function buildRunHistory(events: KernelEvent[]): Run[] {
         event.run_id,
         RunSchema.parse({
           ...fallback,
-          status: 'failed',
+          status: RUN_STATUSES.FAILED,
           completed_at: event.timestamp,
         }),
       );
@@ -264,7 +266,7 @@ function buildRunHistory(events: KernelEvent[]): Run[] {
       event.run_id,
       RunSchema.parse({
         ...fallback,
-        status: 'succeeded',
+        status: RUN_STATUSES.SUCCEEDED,
         completed_at: event.timestamp,
       }),
     );
@@ -356,7 +358,7 @@ async function defaultRuntimeToolCapabilityResolver(
     permission: input.tool.permission,
     required_scopes: input.tool.required_scopes,
     handler: {
-      kind: 'subprocess',
+      kind: TOOL_HANDLER_KINDS.SUBPROCESS,
       entry: resolvedEntry,
     },
     description: buildPackToolDescription(input.tool.name, input.loadedPack.manifest.id),
@@ -714,7 +716,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
       run: RunSchema.parse({
         run_id: runId,
         task_id: task.id,
-        status: 'executing',
+        status: RUN_STATUSES.EXECUTING,
         started_at: runStartedEvent.timestamp,
         by: input.by,
         session_id: input.session_id,

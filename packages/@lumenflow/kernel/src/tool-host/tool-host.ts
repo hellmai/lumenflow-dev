@@ -8,6 +8,8 @@ import {
   ExecutionContextSchema,
   ToolOutputSchema,
   ToolScopeSchema,
+  TOOL_ERROR_CODES,
+  TOOL_HANDLER_KINDS,
   type ExecutionContext,
   type PolicyDecision,
   type ToolCapability,
@@ -122,7 +124,7 @@ export class ToolHost {
       return {
         success: false,
         error: {
-          code: 'TOOL_NOT_FOUND',
+          code: TOOL_ERROR_CODES.TOOL_NOT_FOUND,
           message: `Tool "${name}" is not registered`,
         },
       };
@@ -189,7 +191,7 @@ export class ToolHost {
       const deniedOutput: ToolOutput = {
         success: false,
         error: {
-          code: 'SCOPE_DENIED',
+          code: TOOL_ERROR_CODES.SCOPE_DENIED,
           message:
             'Reserved scope violation: pack/tool write scopes under .lumenflow/** are not allowed.',
           details: {
@@ -224,7 +226,7 @@ export class ToolHost {
       const deniedOutput: ToolOutput = {
         success: false,
         error: {
-          code: 'SCOPE_DENIED',
+          code: TOOL_ERROR_CODES.SCOPE_DENIED,
           message: 'Scope intersection denied: no allowed scopes remain after intersection.',
           details: {
             scope_requested: scopeRequested,
@@ -265,7 +267,7 @@ export class ToolHost {
       const deniedOutput: ToolOutput = {
         success: false,
         error: {
-          code: 'POLICY_DENIED',
+          code: TOOL_ERROR_CODES.POLICY_DENIED,
           message: 'Policy hook denied tool execution.',
         },
       };
@@ -288,7 +290,7 @@ export class ToolHost {
       const invalidInputOutput: ToolOutput = {
         success: false,
         error: {
-          code: 'INVALID_INPUT',
+          code: TOOL_ERROR_CODES.INVALID_INPUT,
           message: parsedInput.error.message,
         },
       };
@@ -308,7 +310,7 @@ export class ToolHost {
 
     let output: ToolOutput;
     try {
-      if (capability.handler.kind === 'in-process') {
+      if (capability.handler.kind === TOOL_HANDLER_KINDS.IN_PROCESS) {
         output = await capability.handler.fn(parsedInput.data, context);
       } else {
         output = await this.subprocessDispatcher.dispatch({
@@ -322,7 +324,7 @@ export class ToolHost {
       output = {
         success: false,
         error: {
-          code: 'TOOL_EXECUTION_FAILED',
+          code: TOOL_ERROR_CODES.TOOL_EXECUTION_FAILED,
           message: (error as Error).message,
         },
       };
@@ -333,7 +335,7 @@ export class ToolHost {
       output = {
         success: false,
         error: {
-          code: 'INVALID_OUTPUT',
+          code: TOOL_ERROR_CODES.INVALID_OUTPUT,
           message: normalizedOutputResult.error.message,
         },
       };
@@ -347,7 +349,7 @@ export class ToolHost {
         output = {
           success: false,
           error: {
-            code: 'INVALID_OUTPUT',
+            code: TOOL_ERROR_CODES.INVALID_OUTPUT,
             message: parsedData.error.message,
           },
         };
@@ -360,7 +362,7 @@ export class ToolHost {
     const outputReference = outputRef?.inputRef;
     const result = output.success
       ? 'success'
-      : output.error?.code === 'SCOPE_DENIED'
+      : output.error?.code === TOOL_ERROR_CODES.SCOPE_DENIED
         ? 'denied'
         : 'failure';
 

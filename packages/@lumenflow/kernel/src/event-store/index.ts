@@ -11,6 +11,7 @@ import {
 } from '../event-kinds.js';
 import {
   KernelEventSchema,
+  RUN_STATUSES,
   type KernelEvent,
   type TaskSpec,
   type TaskState,
@@ -108,7 +109,7 @@ function reduceRunEvent(event: RunLifecycleEvent, runs: Map<string, Run>): strin
     ({
       run_id: runId,
       task_id: event.task_id,
-      status: 'planned',
+      status: RUN_STATUSES.PLANNED,
       started_at: event.timestamp,
       by: 'unknown',
       session_id: 'unknown',
@@ -120,7 +121,7 @@ function reduceRunEvent(event: RunLifecycleEvent, runs: Map<string, Run>): strin
     nextRun = RunSchema.parse({
       run_id: runId,
       task_id: event.task_id,
-      status: 'executing',
+      status: RUN_STATUSES.EXECUTING,
       started_at: event.timestamp,
       by: event.by,
       session_id: event.session_id,
@@ -128,18 +129,18 @@ function reduceRunEvent(event: RunLifecycleEvent, runs: Map<string, Run>): strin
   } else if (event.kind === KERNEL_EVENT_KINDS.RUN_PAUSED) {
     nextRun = RunSchema.parse({
       ...existing,
-      status: 'paused',
+      status: RUN_STATUSES.PAUSED,
     });
   } else if (event.kind === KERNEL_EVENT_KINDS.RUN_FAILED) {
     nextRun = RunSchema.parse({
       ...existing,
-      status: 'failed',
+      status: RUN_STATUSES.FAILED,
       completed_at: event.timestamp,
     });
   } else if (event.kind === KERNEL_EVENT_KINDS.RUN_SUCCEEDED) {
     nextRun = RunSchema.parse({
       ...existing,
-      status: 'succeeded',
+      status: RUN_STATUSES.SUCCEEDED,
       completed_at: event.timestamp,
     });
   }
