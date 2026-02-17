@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { initializeKernelRuntime, TaskSpecSchema } from '@lumenflow/kernel';
+import { ExecutionContextSchema, initializeKernelRuntime, TaskSpecSchema } from '@lumenflow/kernel';
 import { z } from 'zod';
 import { error, success, ErrorCodes, type ToolDefinition } from '../tools-shared.js';
 import { RuntimeTaskToolDescriptions, RuntimeTaskToolNames } from './runtime-task-constants.js';
@@ -30,6 +30,11 @@ const taskUnblockInputSchema = z.object({
 });
 const taskInspectInputSchema = z.object({
   task_id: z.string().min(1),
+});
+const toolExecuteInputSchema = z.object({
+  tool_name: z.string().min(1),
+  tool_input: z.unknown().optional(),
+  context: ExecutionContextSchema,
 });
 
 type RuntimeInstance = Awaited<ReturnType<typeof initializeKernelRuntime>>;
@@ -192,6 +197,33 @@ export const taskInspectTool: ToolDefinition = {
       return success(inspectResult);
     } catch (cause) {
       return error((cause as Error).message, ErrorCodes.TASK_INSPECT_ERROR);
+    }
+  },
+};
+
+export const taskToolExecuteTool: ToolDefinition = {
+  name: RuntimeTaskToolNames.TOOL_EXECUTE,
+  description: RuntimeTaskToolDescriptions.TOOL_EXECUTE,
+  inputSchema: toolExecuteInputSchema,
+
+  async execute(input, options) {
+    const parsedInput = toolExecuteInputSchema.safeParse(input);
+    if (!parsedInput.success) {
+      return error(parsedInput.error.message, ErrorCodes.TOOL_EXECUTE_ERROR);
+    }
+
+    const workspaceRoot = options?.projectRoot || process.cwd();
+
+    try {
+      const runtime = await getRuntimeForWorkspace(workspaceRoot);
+      const toolOutput = await runtime.executeTool(
+        parsedInput.data.tool_name,
+        parsedInput.data.tool_input ?? {},
+        parsedInput.data.context,
+      );
+      return success(toolOutput);
+    } catch (cause) {
+      return error((cause as Error).message, ErrorCodes.TOOL_EXECUTE_ERROR);
     }
   },
 };

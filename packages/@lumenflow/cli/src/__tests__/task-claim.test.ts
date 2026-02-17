@@ -8,11 +8,15 @@ import {
   parseTaskBlockReason,
   parseTaskCompleteEvidenceRefs,
   parseTaskCreateSpec,
+  parseTaskToolExecuteInput,
+  parseTaskToolExecuteMetadata,
+  parseTaskToolExecuteScopes,
   runTaskBlock,
   runTaskClaim,
   runTaskComplete,
   runTaskCreate,
   runTaskInspect,
+  runTaskToolExecute,
   runTaskUnblock,
 } from '../task-claim.js';
 
@@ -297,6 +301,49 @@ describe('task-claim command', () => {
     expect(result).toEqual(inspectResult);
   });
 
+  it('routes tool execution through KernelRuntime.executeTool', async () => {
+    const executeResult = {
+      success: true,
+      data: {
+        receipt_id: 'receipt-1789',
+      },
+    };
+    const executeTool = vi.fn().mockResolvedValue(executeResult);
+    mockInitializeKernelRuntime.mockResolvedValue({ executeTool } as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await runTaskToolExecute({
+      toolName: 'software-delivery.test-tool',
+      toolInput: { action: 'run' },
+      context: {
+        run_id: 'run-WU-1789-1',
+        task_id: 'WU-1789',
+        session_id: 'session-1789',
+        allowed_scopes: [{ type: 'network', posture: 'off' }],
+        metadata: { source: 'cli-test' },
+      },
+      workspaceRoot: '/tmp/lumenflow-task-claim',
+      json: true,
+    });
+
+    expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
+      workspaceRoot: '/tmp/lumenflow-task-claim',
+    });
+    expect(executeTool).toHaveBeenCalledWith(
+      'software-delivery.test-tool',
+      { action: 'run' },
+      {
+        run_id: 'run-WU-1789-1',
+        task_id: 'WU-1789',
+        session_id: 'session-1789',
+        allowed_scopes: [{ type: 'network', posture: 'off' }],
+        metadata: { source: 'cli-test' },
+      },
+    );
+    expect(result).toEqual(executeResult);
+  });
+
   it('parses valid domain data JSON objects', () => {
     expect(parseTaskClaimDomainData('{"owner":"hellmai"}')).toEqual({ owner: 'hellmai' });
   });
@@ -338,6 +385,36 @@ describe('task-claim command', () => {
 
   it('throws for non-object domain data JSON', () => {
     expect(() => parseTaskClaimDomainData('[]')).toThrow();
+  });
+
+  it('parses valid tool execution input payloads', () => {
+    expect(parseTaskToolExecuteInput('{"action":"run"}')).toEqual({ action: 'run' });
+  });
+
+  it('defaults tool execution input payload to empty object', () => {
+    expect(parseTaskToolExecuteInput()).toEqual({});
+  });
+
+  it('parses valid tool execution scope payloads', () => {
+    expect(parseTaskToolExecuteScopes('[{"type":"network","posture":"off"}]')).toEqual([
+      { type: 'network', posture: 'off' },
+    ]);
+  });
+
+  it('defaults tool execution scope payloads to an empty list', () => {
+    expect(parseTaskToolExecuteScopes()).toEqual([]);
+  });
+
+  it('parses valid tool execution metadata payloads', () => {
+    expect(parseTaskToolExecuteMetadata('{"source":"cli"}')).toEqual({ source: 'cli' });
+  });
+
+  it('returns undefined when tool execution metadata payload is omitted', () => {
+    expect(parseTaskToolExecuteMetadata()).toBeUndefined();
+  });
+
+  it('throws for invalid tool execution metadata payloads', () => {
+    expect(() => parseTaskToolExecuteMetadata('[]')).toThrow();
   });
 });
 

@@ -7,12 +7,15 @@ import {
   type BlockTaskResult,
   type CompleteTaskInput,
   type CompleteTaskResult,
+  type ExecutionContext,
+  ExecutionContextSchema,
   initializeKernelRuntime,
   type ClaimTaskInput,
   type ClaimTaskResult,
   type CreateTaskResult,
   type TaskInspection,
   type TaskSpec,
+  type ToolOutput,
   TaskSpecSchema,
   type UnblockTaskInput,
   type UnblockTaskResult,
@@ -43,6 +46,10 @@ const TASK_INSPECT_COMMAND_NAME = 'task-inspect';
 const TASK_INSPECT_LOG_PREFIX = '[task:inspect]';
 const TASK_INSPECT_DESCRIPTION = 'Inspect a task directly through KernelRuntime';
 const TASK_INSPECT_DEFAULT_WORKSPACE_ROOT = '.';
+const TOOL_EXECUTE_COMMAND_NAME = 'tool-execute';
+const TOOL_EXECUTE_LOG_PREFIX = '[tool:execute]';
+const TOOL_EXECUTE_DESCRIPTION = 'Execute a tool directly through KernelRuntime';
+const TOOL_EXECUTE_DEFAULT_WORKSPACE_ROOT = '.';
 
 const TASK_CLAIM_OPTIONS = {
   taskId: {
@@ -238,6 +245,62 @@ const TASK_INSPECT_OPTIONS = {
   },
 } as const;
 
+const TOOL_EXECUTE_OPTIONS = {
+  toolExecute: {
+    name: 'toolExecute',
+    flags: '--tool-execute',
+    description: 'Run tool execution flow',
+    type: 'boolean' as const,
+  },
+  toolName: {
+    name: 'toolName',
+    flags: '--tool-name <toolName>',
+    description: 'Tool capability name to execute',
+  },
+  toolInput: {
+    name: 'toolInput',
+    flags: '--tool-input <json>',
+    description: 'Optional JSON input payload for the tool (default: {})',
+  },
+  taskId: {
+    name: 'taskId',
+    flags: '--task-id <taskId>',
+    description: 'Task ID for execution context',
+  },
+  runId: {
+    name: 'runId',
+    flags: '--run-id <runId>',
+    description: 'Run ID for execution context',
+  },
+  sessionId: {
+    name: 'sessionId',
+    flags: '--session-id <sessionId>',
+    description: 'Session ID for execution context',
+  },
+  allowedScopes: {
+    name: 'allowedScopes',
+    flags: '--allowed-scopes <json>',
+    description: 'Optional JSON array of runtime-allowed tool scopes (default: [])',
+  },
+  metadata: {
+    name: 'metadata',
+    flags: '--metadata <json>',
+    description: 'Optional JSON object metadata for execution context',
+  },
+  workspaceRoot: {
+    name: 'workspaceRoot',
+    flags: '--workspace-root <path>',
+    description: 'Workspace root path (default: current directory)',
+    default: TOOL_EXECUTE_DEFAULT_WORKSPACE_ROOT,
+  },
+  json: {
+    name: 'json',
+    flags: '--json',
+    description: 'Output tool execution result as JSON',
+    type: 'boolean' as const,
+  },
+} as const;
+
 export interface TaskClaimCliArgs {
   input: ClaimTaskInput;
   workspaceRoot: string;
@@ -270,6 +333,14 @@ export interface TaskUnblockCliArgs {
 
 export interface TaskInspectCliArgs {
   taskId: string;
+  workspaceRoot: string;
+  json: boolean;
+}
+
+export interface TaskToolExecuteCliArgs {
+  toolName: string;
+  toolInput: unknown;
+  context: ExecutionContext;
   workspaceRoot: string;
   json: boolean;
 }
@@ -338,6 +409,65 @@ export function parseTaskCompleteEvidenceRefs(raw?: string): string[] | undefine
   }
 
   return parsed;
+}
+
+export function parseTaskToolExecuteInput(raw?: string): unknown {
+  if (!raw) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(raw);
+  } catch {
+    die(`${TOOL_EXECUTE_LOG_PREFIX} --tool-input must be valid JSON`);
+  }
+}
+
+export function parseTaskToolExecuteScopes(raw?: string): ExecutionContext['allowed_scopes'] {
+  if (!raw) {
+    return [];
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    die(`${TOOL_EXECUTE_LOG_PREFIX} --allowed-scopes must be valid JSON`);
+  }
+
+  const validated = ExecutionContextSchema.safeParse({
+    run_id: 'run-placeholder',
+    task_id: 'task-placeholder',
+    session_id: 'session-placeholder',
+    allowed_scopes: parsed,
+  });
+
+  if (!validated.success) {
+    die(
+      `${TOOL_EXECUTE_LOG_PREFIX} --allowed-scopes must be a valid tool scope array: ${validated.error.message}`,
+    );
+  }
+
+  return validated.data.allowed_scopes;
+}
+
+export function parseTaskToolExecuteMetadata(raw?: string): Record<string, unknown> | undefined {
+  if (!raw) {
+    return undefined;
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    die(`${TOOL_EXECUTE_LOG_PREFIX} --metadata must be valid JSON`);
+  }
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    die(`${TOOL_EXECUTE_LOG_PREFIX} --metadata must be a JSON object`);
+  }
+
+  return parsed as Record<string, unknown>;
 }
 
 export function parseTaskClaimArgs(): TaskClaimCliArgs {
@@ -454,6 +584,36 @@ export function parseTaskInspectArgs(): TaskInspectCliArgs {
   };
 }
 
+export function parseTaskToolExecuteArgs(): TaskToolExecuteCliArgs {
+  const options = Object.values(TOOL_EXECUTE_OPTIONS);
+  const parsed = createWUParser({
+    name: TOOL_EXECUTE_COMMAND_NAME,
+    description: TOOL_EXECUTE_DESCRIPTION,
+    options,
+    required: ['toolName', 'taskId', 'runId', 'sessionId'],
+  });
+
+  const parsedContext = ExecutionContextSchema.safeParse({
+    run_id: parsed.runId as string,
+    task_id: parsed.taskId as string,
+    session_id: parsed.sessionId as string,
+    allowed_scopes: parseTaskToolExecuteScopes(parsed.allowedScopes as string | undefined),
+    metadata: parseTaskToolExecuteMetadata(parsed.metadata as string | undefined),
+  });
+
+  if (!parsedContext.success) {
+    die(`${TOOL_EXECUTE_LOG_PREFIX} execution context is invalid: ${parsedContext.error.message}`);
+  }
+
+  return {
+    toolName: parsed.toolName as string,
+    toolInput: parseTaskToolExecuteInput(parsed.toolInput as string | undefined),
+    context: parsedContext.data,
+    workspaceRoot: (parsed.workspaceRoot as string | undefined) || process.cwd(),
+    json: parsed.json ?? false,
+  };
+}
+
 export async function runTaskClaim(args: TaskClaimCliArgs): Promise<ClaimTaskResult> {
   const runtime = await initializeKernelRuntime({ workspaceRoot: args.workspaceRoot });
   return runtime.claimTask(args.input);
@@ -482,6 +642,11 @@ export async function runTaskUnblock(args: TaskUnblockCliArgs): Promise<UnblockT
 export async function runTaskInspect(args: TaskInspectCliArgs): Promise<TaskInspection> {
   const runtime = await initializeKernelRuntime({ workspaceRoot: args.workspaceRoot });
   return runtime.inspectTask(args.taskId);
+}
+
+export async function runTaskToolExecute(args: TaskToolExecuteCliArgs): Promise<ToolOutput> {
+  const runtime = await initializeKernelRuntime({ workspaceRoot: args.workspaceRoot });
+  return runtime.executeTool(args.toolName, args.toolInput, args.context);
 }
 
 function formatTaskClaimSummary(result: ClaimTaskResult): string {
@@ -532,6 +697,22 @@ function formatTaskInspectSummary(result: TaskInspection): string {
     `${TASK_INSPECT_LOG_PREFIX} Runs: ${result.run_history.length}`,
     `${TASK_INSPECT_LOG_PREFIX} Events: ${result.events.length}`,
   ].join('\n');
+}
+
+function formatTaskToolExecuteSummary(toolName: string, result: ToolOutput): string {
+  const receiptId =
+    result.metadata && typeof result.metadata.receipt_id === 'string'
+      ? result.metadata.receipt_id
+      : null;
+  const status = result.success ? 'success' : 'failure';
+
+  return [
+    `${TOOL_EXECUTE_LOG_PREFIX} Executed tool ${toolName}`,
+    `${TOOL_EXECUTE_LOG_PREFIX} Status: ${status}`,
+    receiptId ? `${TOOL_EXECUTE_LOG_PREFIX} Receipt: ${receiptId}` : null,
+  ]
+    .filter((line): line is string => line !== null)
+    .join('\n');
 }
 
 export async function main(): Promise<void> {
@@ -597,6 +778,19 @@ export async function main(): Promise<void> {
     }
 
     console.log(formatTaskInspectSummary(result));
+    return;
+  }
+
+  if (process.argv.includes('--tool-execute')) {
+    const args = parseTaskToolExecuteArgs();
+    const result = await runTaskToolExecute(args);
+
+    if (args.json) {
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    console.log(formatTaskToolExecuteSummary(args.toolName, result));
     return;
   }
 

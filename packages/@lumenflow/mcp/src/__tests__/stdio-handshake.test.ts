@@ -7,6 +7,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createMcpServer, type McpServerConfig } from '../server.js';
+import { RuntimeTaskToolNames } from '../tools/runtime-task-constants.js';
 
 describe('MCP stdio handshake', () => {
   beforeEach(() => {
@@ -93,6 +94,13 @@ describe('MCP stdio handshake', () => {
       const tools = server.listTools();
 
       expect(tools.some((t) => t.name === 'gates_run')).toBe(true);
+    });
+
+    it(`should register ${RuntimeTaskToolNames.TOOL_EXECUTE} runtime tool`, () => {
+      const server = createMcpServer();
+      const tools = server.listTools();
+
+      expect(tools.some((t) => t.name === RuntimeTaskToolNames.TOOL_EXECUTE)).toBe(true);
     });
   });
 

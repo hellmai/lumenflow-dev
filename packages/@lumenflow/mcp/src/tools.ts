@@ -68,6 +68,7 @@ export {
   taskCompleteTool,
   taskCreateTool,
   taskInspectTool,
+  taskToolExecuteTool,
   taskUnblockTool,
 } from './tools/runtime-task-tools.js';
 
@@ -213,6 +214,7 @@ import {
   taskCompleteTool,
   taskCreateTool,
   taskInspectTool,
+  taskToolExecuteTool,
   taskUnblockTool,
 } from './tools/runtime-task-tools.js';
 import {
@@ -502,6 +504,7 @@ export const runtimeTaskTools: ToolDefinition[] = [
   taskBlockTool,
   taskUnblockTool,
   taskInspectTool,
+  taskToolExecuteTool,
 ];
 
 /**

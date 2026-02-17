@@ -8,6 +8,7 @@ import {
   taskCompleteTool,
   taskCreateTool,
   taskInspectTool,
+  taskToolExecuteTool,
   taskUnblockTool,
 } from '../tools/runtime-task-tools.js';
 import * as kernel from '@lumenflow/kernel';
@@ -439,6 +440,93 @@ describe('runtime task MCP tools', () => {
     expect(result.success).toBe(false);
     expect(result.error?.code).toBe(ErrorCodes.TASK_INSPECT_ERROR);
     expect(result.error?.message).toContain('task inspect failed');
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
+  });
+
+  it(`routes ${RuntimeTaskToolNames.TOOL_EXECUTE} through KernelRuntime without CLI shell-out`, async () => {
+    const executionResult = {
+      success: true,
+      data: {
+        ok: true,
+      },
+      metadata: {
+        receipt_id: 'receipt-1789',
+      },
+    };
+    const executeTool = vi.fn().mockResolvedValue(executionResult);
+    mockInitializeKernelRuntime.mockResolvedValue({ executeTool } as unknown as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await taskToolExecuteTool.execute(
+      {
+        tool_name: 'software-delivery.test-tool',
+        tool_input: { action: 'run' },
+        context: {
+          run_id: 'run-WU-1789-1',
+          task_id: 'WU-1789',
+          session_id: 'session-1789',
+          allowed_scopes: [{ type: 'network', posture: 'off' }],
+          metadata: { source: 'mcp-test' },
+        },
+      },
+      { projectRoot: '/tmp/lumenflow-mcp-runtime' },
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.data).toEqual(executionResult);
+    expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
+      workspaceRoot: path.resolve('/tmp/lumenflow-mcp-runtime'),
+    });
+    expect(executeTool).toHaveBeenCalledWith(
+      'software-delivery.test-tool',
+      { action: 'run' },
+      {
+        run_id: 'run-WU-1789-1',
+        task_id: 'WU-1789',
+        session_id: 'session-1789',
+        allowed_scopes: [{ type: 'network', posture: 'off' }],
+        metadata: { source: 'mcp-test' },
+      },
+    );
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
+  });
+
+  it(`validates ${RuntimeTaskToolNames.TOOL_EXECUTE} input before runtime initialization`, async () => {
+    const result = await taskToolExecuteTool.execute(
+      {
+        tool_name: 'software-delivery.test-tool',
+      },
+      { projectRoot: '/tmp/lumenflow-mcp-runtime' },
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe(ErrorCodes.TOOL_EXECUTE_ERROR);
+    expect(mockInitializeKernelRuntime).not.toHaveBeenCalled();
+  });
+
+  it(`returns error when ${RuntimeTaskToolNames.TOOL_EXECUTE} fails`, async () => {
+    const executeTool = vi.fn().mockRejectedValue(new Error('tool execute failed'));
+    mockInitializeKernelRuntime.mockResolvedValue({ executeTool } as unknown as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await taskToolExecuteTool.execute(
+      {
+        tool_name: 'software-delivery.test-tool',
+        context: {
+          run_id: 'run-WU-1789-1',
+          task_id: 'WU-1789',
+          session_id: 'session-1789',
+          allowed_scopes: [{ type: 'network', posture: 'off' }],
+        },
+      },
+      { projectRoot: '/tmp/lumenflow-mcp-runtime' },
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe(ErrorCodes.TOOL_EXECUTE_ERROR);
+    expect(result.error?.message).toContain('tool execute failed');
     expect(mockRunCliCommand).not.toHaveBeenCalled();
   });
 });
