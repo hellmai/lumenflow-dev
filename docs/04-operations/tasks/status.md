@@ -5,7 +5,6 @@ _Last updated: 2026-02-17_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1757 — Fix evidence store double-hashing and add trace concurrency protection](wu/WU-1757.yaml)
 
 ## Completed
 
@@ -696,3 +695,4 @@ _Last updated: 2026-02-17_
 - [WU-1766 — Fix wu:claim --cloud: missing cloud-mode bypass before ensureOnMain](wu/WU-1766.yaml) — 2026-02-17
 - [WU-1756 — INIT-029 remediation: reopen initiative and create fix WUs](wu/WU-1756.yaml) — 2026-02-17
 - [WU-1775 — Align lane inference with INIT-029 package topology](wu/WU-1775.yaml) — 2026-02-17
+- [WU-1757 — Fix evidence store double-hashing and add trace concurrency protection](wu/WU-1757.yaml) — 2026-02-17

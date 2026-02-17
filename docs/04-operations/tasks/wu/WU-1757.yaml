@@ -2,7 +2,7 @@ id: WU-1757
 title: Fix evidence store double-hashing and add trace concurrency protection
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-17
 code_paths:
@@ -45,3 +45,6 @@ acceptance:
   - CAS inputRef files contain actual serialized input data
   - appendTrace uses file-based locking matching EventStore pattern
   - Existing tests updated and new concurrency tests added
+locked: true
+completed_at: 2026-02-17T12:16:03.998Z
+completed: 2026-02-17

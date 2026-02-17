@@ -1453,4 +1453,5 @@
 {"type":"complete","wuId":"WU-1756","timestamp":"2026-02-17T11:43:16.957Z"}
 {"type":"claim","wuId":"WU-1775","timestamp":"2026-02-17T11:44:21.290Z","lane":"Content: Specs Governance","title":"Align lane inference with INIT-029 package topology"}
 {"type":"complete","wuId":"WU-1775","timestamp":"2026-02-17T11:47:38.596Z"}
-{"type":"claim","wuId":"WU-1757","lane":"Framework: Core Lifecycle","title":"Fix evidence store double-hashing and add trace concurrency protection","timestamp":"2026-02-17T12:11:49.374Z"}
+{"type":"claim","wuId":"WU-1757","timestamp":"2026-02-17T12:11:49.374Z","lane":"Framework: Core Lifecycle","title":"Fix evidence store double-hashing and add trace concurrency protection"}
+{"type":"complete","wuId":"WU-1757","timestamp":"2026-02-17T12:16:08.616Z"}
