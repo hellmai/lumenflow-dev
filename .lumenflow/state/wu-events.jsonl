@@ -1518,3 +1518,4 @@
 {"type":"complete","wuId":"WU-1787","timestamp":"2026-02-17T18:56:59.863Z"}
 {"type":"claim","wuId":"WU-1788","timestamp":"2026-02-17T18:57:42.358Z","lane":"Framework: Core Lifecycle","title":"Migrate task:inspect to direct KernelRuntime replay path"}
 {"type":"complete","wuId":"WU-1788","timestamp":"2026-02-17T19:07:30.265Z"}
+{"type":"claim","wuId":"WU-1789","lane":"Framework: Core Lifecycle","title":"Migrate tool:execute path to direct KernelRuntime execution","timestamp":"2026-02-17T19:08:22.560Z"}
