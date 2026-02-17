@@ -2,7 +2,7 @@ id: WU-1777
 title: Update README for kernel positioning + fix license badge
 lane: 'Content: Site Comms'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -41,3 +41,6 @@ session_id: 0f150e41-458c-4a74-a15a-f1f0c2bc35c7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T16:37:31.961Z
+locked: true
+completed_at: 2026-02-17T16:40:27.527Z
+completed: 2026-02-17
