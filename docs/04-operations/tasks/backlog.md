@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1787 — Migrate task:block and task:unblock to direct KernelRuntime calls](wu/WU-1787.yaml) — Framework: Core Lifecycle
 - [WU-1786 — Migrate task:complete path to direct KernelRuntime calls](wu/WU-1786.yaml) — Framework: Core Lifecycle
 - [WU-1785 — Migrate task:create path to direct KernelRuntime calls](wu/WU-1785.yaml) — Framework: Core Lifecycle
 - [WU-1784 — Extract remaining runtime string literal constants](wu/WU-1784.yaml) — Framework: Core Lifecycle
