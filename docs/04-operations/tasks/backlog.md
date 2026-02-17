@@ -37,7 +37,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1768 — Fix MCP input schema parity for task tools](wu/WU-1768.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -738,6 +737,7 @@ sections:
 - [WU-1760 — Fix runtime security: Unix socket permissions, JSON validation, daemon params](wu/WU-1760.yaml)
 - [WU-1767 — Harden lane lock CAS and migrate pack-owned runtime paths](wu/WU-1767.yaml)
 - [WU-1761 — Harden sandbox: allowlist mounts and reserved .lumenflow scope enforcement](wu/WU-1761.yaml)
+- [WU-1768 — Fix MCP input schema parity for task tools](wu/WU-1768.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

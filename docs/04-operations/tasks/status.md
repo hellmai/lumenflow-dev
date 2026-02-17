@@ -5,7 +5,6 @@ _Last updated: 2026-02-17_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1768 — Fix MCP input schema parity for task tools](wu/WU-1768.yaml)
 
 ## Completed
 
@@ -702,3 +701,4 @@ _Last updated: 2026-02-17_
 - [WU-1760 — Fix runtime security: Unix socket permissions, JSON validation, daemon params](wu/WU-1760.yaml) — 2026-02-17
 - [WU-1767 — Harden lane lock CAS and migrate pack-owned runtime paths](wu/WU-1767.yaml) — 2026-02-17
 - [WU-1761 — Harden sandbox: allowlist mounts and reserved .lumenflow scope enforcement](wu/WU-1761.yaml) — 2026-02-17
+- [WU-1768 — Fix MCP input schema parity for task tools](wu/WU-1768.yaml) — 2026-02-17

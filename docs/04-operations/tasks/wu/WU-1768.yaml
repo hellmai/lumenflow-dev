@@ -2,7 +2,7 @@ id: WU-1768
 title: Fix MCP input schema parity for task tools
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -43,3 +43,6 @@ session_id: 409bd52e-961d-472f-8abb-cd75babc5bb0
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T12:51:32.282Z
+locked: true
+completed_at: 2026-02-17T12:54:47.356Z
+completed: 2026-02-17
