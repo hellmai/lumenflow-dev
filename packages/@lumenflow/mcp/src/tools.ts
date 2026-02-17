@@ -475,6 +475,11 @@ export const allTools: ToolDefinition[] = [
  *
  * These are intentionally isolated from legacy CLI-shell tools so we can
  * migrate command-by-command without breaking parity gates.
+ *
+ * NOTE:
+ * `allTools` remains the legacy parity baseline for current closure gates,
+ * so newly added runtime tools may appear in the expected missing set until
+ * parity policy explicitly switches to `registeredTools`.
  */
 export const runtimeTaskTools: ToolDefinition[] = [taskClaimTool];
 
