@@ -11,6 +11,7 @@ code_paths:
   - packages/@lumenflow/cli/package.json
   - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
   - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
+  - packages/@lumenflow/mcp/src/tools.ts
 tests:
   manual:
     - Run cli task:claim in a sample workspace and verify runtime-backed claim event emission with
