@@ -12,7 +12,10 @@ code_paths:
   - packages/@lumenflow/control-plane-sdk/src/index.ts
   - packages/@lumenflow/control-plane-sdk/src/sync-port.ts
 tests:
-  manual: []
+  manual:
+    - Run policy/pack-loader/SDK tests; verify allow_loosening deny override behavior is documented
+    - integrity:dev is blocked in production mode
+    - and SDK KernelEvent type compiles against @lumenflow/kernel.
   unit:
     - packages/@lumenflow/kernel/src/__tests__/policy-engine.test.ts
     - packages/@lumenflow/control-plane-sdk/__tests__/sync-port.test.ts
