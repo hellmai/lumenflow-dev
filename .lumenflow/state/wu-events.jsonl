@@ -1494,3 +1494,4 @@
 {"type":"complete","wuId":"WU-1790","timestamp":"2026-02-17T17:36:15.705Z"}
 {"type":"complete","wuId":"WU-1778","timestamp":"2026-02-17T17:37:07.528Z"}
 {"type":"complete","wuId":"WU-1778","timestamp":"2026-02-17T17:34:14.979Z"}
+{"type":"claim","wuId":"WU-1779","lane":"Framework: Core Lifecycle","title":"Wire real SandboxSubprocessDispatcher into runtime initialization","timestamp":"2026-02-17T17:38:07.151Z"}
