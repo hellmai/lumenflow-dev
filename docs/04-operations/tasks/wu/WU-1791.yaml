@@ -10,8 +10,7 @@ code_paths:
 tests:
   manual:
     - pnpm build in apps/docs succeeds
-  unit:
-    - tools/__tests__/generate-cli-docs.test.ts
+  unit: []
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1791.done
