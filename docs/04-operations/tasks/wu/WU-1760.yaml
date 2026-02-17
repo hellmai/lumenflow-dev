@@ -10,7 +10,11 @@ code_paths:
   - packages/@lumenflow/runtime/src/daemon/runtime-daemon.ts
   - packages/@lumenflow/runtime/src/scheduler/task-scheduler.ts
 tests:
-  manual: []
+  manual:
+    - Run runtime daemon/scheduler/socket unit tests; manually verify socket mode 0600
+    - malformed JSON rejection
+    - daemon-only signal unbind
+    - and task scheduler completion bookkeeping.
   unit:
     - packages/@lumenflow/runtime/src/__tests__/unix-socket-server.test.ts
     - packages/@lumenflow/runtime/src/__tests__/runtime-daemon.test.ts
@@ -39,5 +43,6 @@ acceptance:
   - processLine validates parsed JSON against DaemonRequest schema
   - Daemon handler validates request.params with Zod before dispatch
   - Signal unbind removes only daemon-owned handlers (no removeAllListeners behavior)
-  - Scheduler completion bookkeeping uses explicit activeByTask state instead of heuristic lane lookup
+  - Scheduler completion bookkeeping uses explicit activeByTask state instead of heuristic lane
+    lookup
   - Malformed request and scheduler regression tests cover the hardened paths
