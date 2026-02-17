@@ -1,9 +1,10 @@
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import type { ExecutionContext, TaskSpec } from '../kernel.schemas.js';
+import { EventStore } from '../event-store/index.js';
 import { initializeKernelRuntime } from '../runtime/index.js';
 
 const WORKSPACE_SCOPE = {
@@ -216,6 +217,43 @@ describe('kernel runtime facade', () => {
         session_id: 'session-1735-2',
       }),
     ).rejects.toThrow('Illegal state transition');
+  });
+
+  it('uses appendAll for atomic claim/complete event pairs', async () => {
+    const appendSpy = vi.spyOn(EventStore.prototype, 'append');
+    const appendAllSpy = vi.spyOn(EventStore.prototype, 'appendAll');
+
+    try {
+      const runtime = await createRuntime();
+      const taskSpec = createTaskSpec('WU-1735-atomic-append');
+      await runtime.createTask(taskSpec);
+
+      appendSpy.mockClear();
+      appendAllSpy.mockClear();
+
+      await runtime.claimTask({
+        task_id: taskSpec.id,
+        by: 'tom@hellm.ai',
+        session_id: 'session-1735-atomic',
+      });
+      await runtime.completeTask({
+        task_id: taskSpec.id,
+      });
+
+      expect(appendAllSpy).toHaveBeenCalledTimes(2);
+      expect(appendSpy).not.toHaveBeenCalled();
+      expect(appendAllSpy.mock.calls[0]?.[0].map((event) => event.kind)).toEqual([
+        'task_claimed',
+        'run_started',
+      ]);
+      expect(appendAllSpy.mock.calls[1]?.[0].map((event) => event.kind)).toEqual([
+        'run_succeeded',
+        'task_completed',
+      ]);
+    } finally {
+      appendSpy.mockRestore();
+      appendAllSpy.mockRestore();
+    }
   });
 
   it('completeTask runs on_completion policies and inspectTask includes policy decisions', async () => {

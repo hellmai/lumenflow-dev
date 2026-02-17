@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -90,6 +90,42 @@ describe('event-store', () => {
       'task_created',
       'task_claimed',
       'task_completed',
+    ]);
+  });
+
+  it('appendAll writes multiple events atomically under one append operation', async () => {
+    const spec = makeTaskSpec();
+    const created = makeCreatedEvent(canonical_json(spec), '2026-02-16T22:00:00.000Z');
+    const claimed: KernelEvent = {
+      schema_version: 1,
+      kind: 'task_claimed',
+      task_id: taskId,
+      timestamp: '2026-02-16T22:00:01.000Z',
+      by: 'tom@hellm.ai',
+      session_id: 'session-1',
+    };
+    const runStarted: KernelEvent = {
+      schema_version: 1,
+      kind: 'run_started',
+      task_id: taskId,
+      run_id: 'run-1',
+      timestamp: '2026-02-16T22:00:01.000Z',
+      by: 'tom@hellm.ai',
+      session_id: 'session-1',
+    };
+
+    const store = new EventStore({
+      eventsFilePath,
+      lockFilePath,
+    });
+
+    await store.appendAll([created, claimed, runStarted]);
+
+    const replayed = await store.replay();
+    expect(replayed.map((event) => event.kind)).toEqual([
+      'task_created',
+      'task_claimed',
+      'run_started',
     ]);
   });
 
@@ -251,6 +287,33 @@ describe('event-store', () => {
     for (const line of lines) {
       expect(() => JSON.parse(line)).not.toThrow();
     }
+  });
+
+  it('recovers stale lock files when lock owner PID is no longer alive', async () => {
+    const spec = makeTaskSpec();
+    const created = makeCreatedEvent(canonical_json(spec), '2026-02-16T22:00:00.000Z');
+
+    const store = new EventStore({
+      eventsFilePath,
+      lockFilePath,
+      lockRetryDelayMs: 1,
+      lockMaxRetries: 1,
+    });
+
+    await writeFile(
+      lockFilePath,
+      JSON.stringify({
+        pid: 999999,
+        acquired_at: '2026-02-16T22:00:00.000Z',
+      }),
+      'utf8',
+    );
+
+    await expect(store.append(created)).resolves.toBeUndefined();
+
+    const replayed = await store.replay();
+    expect(replayed).toHaveLength(1);
+    await expect(readFile(lockFilePath, 'utf8')).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
   it('validates kernel event schema_version/prefix rules on append', async () => {

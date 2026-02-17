@@ -564,8 +564,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
       session_id: input.session_id,
     };
 
-    await this.eventStore.append(claimedEvent);
-    await this.eventStore.append(runStartedEvent);
+    await this.eventStore.appendAll([claimedEvent, runStartedEvent]);
 
     return {
       task_id: task.id,
@@ -624,8 +623,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
       evidence_refs: input.evidence_refs,
     };
 
-    await this.eventStore.append(runSucceededEvent);
-    await this.eventStore.append(taskCompletedEvent);
+    await this.eventStore.appendAll([runSucceededEvent, taskCompletedEvent]);
 
     return {
       task_id: task.id,

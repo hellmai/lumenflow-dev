@@ -13,6 +13,7 @@ import { canonical_json } from '../canonical-json.js';
 
 const DEFAULT_LOCK_RETRY_DELAY_MS = 20;
 const DEFAULT_LOCK_MAX_RETRIES = 250;
+const PROCESS_EXISTS_SIGNAL = 0;
 
 type EventKind = KernelEvent['kind'];
 type TaskScopedKernelEvent = Extract<KernelEvent, { task_id: string }>;
@@ -34,6 +35,11 @@ export interface EventStoreOptions {
   lockRetryDelayMs?: number;
   lockMaxRetries?: number;
   taskSpecLoader?: (taskId: string) => Promise<TaskSpec | null>;
+}
+
+interface EventStoreLockMetadata {
+  pid: number;
+  acquired_at: string;
 }
 
 function sleep(ms: number): Promise<void> {
@@ -215,15 +221,27 @@ export class EventStore {
   }
 
   async append(event: KernelEvent): Promise<void> {
-    const parsed = KernelEventSchema.safeParse(event);
-    if (!parsed.success) {
-      throw new Error(`KernelEvent validation failed: ${parsed.error.message}`);
+    await this.appendAll([event]);
+  }
+
+  async appendAll(events: KernelEvent[]): Promise<void> {
+    if (events.length === 0) {
+      return;
     }
-    const validated = parsed.data;
+
+    const validatedEvents = events.map((event) => {
+      const parsed = KernelEventSchema.safeParse(event);
+      if (!parsed.success) {
+        throw new Error(`KernelEvent validation failed: ${parsed.error.message}`);
+      }
+      return parsed.data;
+    });
+
+    const payload = validatedEvents.map((event) => `${JSON.stringify(event)}\n`).join('');
 
     await this.withFileLock(async () => {
       await mkdir(dirname(this.eventsFilePath), { recursive: true });
-      await appendFile(this.eventsFilePath, `${JSON.stringify(validated)}\n`, 'utf8');
+      await appendFile(this.eventsFilePath, payload, 'utf8');
     });
 
     await this.reloadFromDisk();
@@ -287,6 +305,93 @@ export class EventStore {
 
   getByTimestamp(timestamp: string): KernelEvent[] {
     return [...(this.byTimestamp.get(timestamp) ?? [])];
+  }
+
+  private buildLockMetadata(): EventStoreLockMetadata {
+    return {
+      pid: process.pid,
+      acquired_at: new Date().toISOString(),
+    };
+  }
+
+  private parseLockMetadata(raw: string): EventStoreLockMetadata | null {
+    if (!raw.trim()) {
+      return null;
+    }
+
+    try {
+      const parsed = JSON.parse(raw) as Partial<EventStoreLockMetadata>;
+      if (
+        typeof parsed.pid === 'number' &&
+        Number.isInteger(parsed.pid) &&
+        parsed.pid > 0 &&
+        typeof parsed.acquired_at === 'string' &&
+        parsed.acquired_at.length > 0
+      ) {
+        return {
+          pid: parsed.pid,
+          acquired_at: parsed.acquired_at,
+        };
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  private isProcessAlive(pid: number): boolean {
+    try {
+      process.kill(pid, PROCESS_EXISTS_SIGNAL);
+      return true;
+    } catch (error) {
+      const nodeError = error as NodeJS.ErrnoException;
+      if (nodeError.code === 'ESRCH') {
+        return false;
+      }
+      if (nodeError.code === 'EPERM') {
+        return true;
+      }
+      return true;
+    }
+  }
+
+  private async recoverStaleLockIfNeeded(): Promise<boolean> {
+    let metadataRaw: string;
+    try {
+      metadataRaw = await readFile(this.lockFilePath, 'utf8');
+    } catch (error) {
+      const nodeError = error as NodeJS.ErrnoException;
+      if (nodeError.code === 'ENOENT') {
+        return true;
+      }
+      throw error;
+    }
+
+    const metadata = this.parseLockMetadata(metadataRaw);
+    if (!metadata) {
+      return false;
+    }
+
+    if (this.isProcessAlive(metadata.pid)) {
+      return false;
+    }
+
+    await rm(this.lockFilePath, { force: true });
+    return true;
+  }
+
+  private async cleanupLockHandle(handle: Awaited<ReturnType<typeof open>> | null): Promise<void> {
+    if (!handle) {
+      return;
+    }
+
+    try {
+      await handle.close();
+    } catch {
+      // Best-effort cleanup only.
+    }
+
+    await rm(this.lockFilePath, { force: true });
   }
 
   private async reloadFromDisk(): Promise<void> {
@@ -363,16 +468,20 @@ export class EventStore {
       let handle: Awaited<ReturnType<typeof open>> | null = null;
       try {
         handle = await open(this.lockFilePath, 'wx');
+        await handle.writeFile(JSON.stringify(this.buildLockMetadata()), 'utf8');
         const result = await operation();
-        await handle.close();
-        await rm(this.lockFilePath, { force: true });
+        await this.cleanupLockHandle(handle);
+        handle = null;
         return result;
       } catch (error) {
         const nodeError = error as NodeJS.ErrnoException;
-        if (handle) {
-          await handle.close();
-        }
+        await this.cleanupLockHandle(handle);
+        handle = null;
         if (nodeError.code === 'EEXIST' && attempt < this.lockMaxRetries) {
+          const recovered = await this.recoverStaleLockIfNeeded();
+          if (recovered) {
+            continue;
+          }
           await sleep(this.lockRetryDelayMs);
           continue;
         }
