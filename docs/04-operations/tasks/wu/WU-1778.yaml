@@ -7,12 +7,9 @@ priority: P1
 created: 2026-02-17
 code_paths:
   - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
+  - packages/@lumenflow/kernel/src/pack/manifest.ts
   - packages/@lumenflow/packs/software-delivery/manifest.ts
-  - packages/@lumenflow/packs/software-delivery/tools/types.ts
-  - packages/@lumenflow/packs/software-delivery/tools/git-tools.ts
-  - packages/@lumenflow/packs/software-delivery/tools/worktree-tools.ts
-  - packages/@lumenflow/packs/software-delivery/tools/lane-lock-tool.ts
-  - packages/@lumenflow/packs/software-delivery/tools/delegation-tools.ts
+  - packages/@lumenflow/packs/software-delivery/manifest.yaml
 tests:
   manual:
     - Run runtime capability resolution for manifest-declared tools and verify default permission
@@ -35,11 +32,22 @@ notes: >-
 
   2026-02-17 spec tighten: replace barrel path with source-of-truth descriptor files for permission
   alignment.
+
+
+  2026-02-17 implementation narrowed to resolver/schema/manifest alignment and alignment
+  verification tests.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-17T17:21:54.458Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1778
+session_id: f3bba02b-d430-41ae-a843-679d1353db48
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T17:21:54.466Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -53,11 +61,3 @@ acceptance:
     admin/full-scope defaults.
   - Tools without explicit permission default to read.
   - Pack tool descriptor permissions and manifest permissions are aligned and covered by tests.
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1778
-claimed_at: 2026-02-17T17:21:54.458Z
-baseline_main_sha: 8acb733ff8211deffdb8f18fc1adb736445ccccf
-session_id: f3bba02b-d430-41ae-a843-679d1353db48
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-17T17:21:54.466Z
