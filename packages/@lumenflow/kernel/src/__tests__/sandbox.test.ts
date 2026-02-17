@@ -26,6 +26,24 @@ function collectMountTargets(args: string[], flag: '--bind' | '--ro-bind'): stri
   return targets;
 }
 
+function hasMount(
+  args: string[],
+  flag: '--bind' | '--ro-bind',
+  source: string,
+  target: string,
+): boolean {
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] !== flag) {
+      continue;
+    }
+    if (args[index + 1] === source && args[index + 2] === target) {
+      return true;
+    }
+    index += 2;
+  }
+  return false;
+}
+
 function makeSubprocessCapability(entry: string): ToolCapability {
   return {
     name: 'proc:exec',
@@ -143,6 +161,8 @@ describe('kernel sandbox integration', () => {
     expect(writableTargets).toContain(packagesRoot);
     expect(writableTargets).not.toContain(docsRoot);
     expect(readonlyTargets).toContain(docsRoot);
+    expect(readonlyTargets).toContain(join(workspaceRoot, 'dist'));
+    expect(hasMount(invocation.args, '--ro-bind', '/', '/')).toBe(false);
   });
 
   it('includes required deny overlays for sensitive locations', () => {
