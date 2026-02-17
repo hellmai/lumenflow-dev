@@ -4,6 +4,11 @@ import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { WorkspaceSpecSchema } from '../kernel.schemas.js';
 import {
+  PACK_MANIFEST_FILE_NAME,
+  SOFTWARE_DELIVERY_PACK_ID,
+  UTF8_ENCODING,
+} from '../shared-constants.js';
+import {
   DomainPackManifestSchema,
   PackLoader,
   computeDeterministicPackHash,
@@ -21,7 +26,7 @@ function createWorkspaceSpec(input: WorkspacePackInput) {
     name: 'Kernel Workspace',
     packs: [
       {
-        id: 'software-delivery',
+        id: SOFTWARE_DELIVERY_PACK_ID,
         version: '1.0.0',
         integrity: input.integrity,
         source: 'local',
@@ -47,9 +52,9 @@ function createWorkspaceSpec(input: WorkspacePackInput) {
 async function writePackFixture(packRoot: string): Promise<void> {
   await mkdir(join(packRoot, 'tools'), { recursive: true });
   await writeFile(
-    join(packRoot, 'manifest.yaml'),
+    join(packRoot, PACK_MANIFEST_FILE_NAME),
     [
-      'id: software-delivery',
+      `id: ${SOFTWARE_DELIVERY_PACK_ID}`,
       'version: 1.0.0',
       'task_types:',
       '  - wu',
@@ -68,12 +73,12 @@ async function writePackFixture(packRoot: string): Promise<void> {
       '  - id: framework-core',
       '    title: Framework Core',
     ].join('\n'),
-    'utf8',
+    UTF8_ENCODING,
   );
   await writeFile(
     join(packRoot, 'tools', 'fs-read.ts'),
     ['import { readFile } from "node:fs/promises";', 'export const tool = readFile;'].join('\n'),
-    'utf8',
+    UTF8_ENCODING,
   );
 }
 
@@ -91,9 +96,54 @@ describe('pack loader + integrity pinning', () => {
     expect(() => resolvePackToolEntryPath(packRoot, '../escape.ts')).toThrow('outside pack root');
   });
 
+  it('reports offending manifest tool entry when load fails boundary validation', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-loader-tool-entry-'));
+    const packRoot = join(tempRoot, SOFTWARE_DELIVERY_PACK_ID);
+
+    try {
+      await writePackFixture(packRoot);
+      await writeFile(
+        join(packRoot, PACK_MANIFEST_FILE_NAME),
+        [
+          `id: ${SOFTWARE_DELIVERY_PACK_ID}`,
+          'version: 1.0.0',
+          'task_types:',
+          '  - wu',
+          'tools:',
+          '  - name: fs:read',
+          '    entry: ../escape.ts',
+          'policies:',
+          '  - id: workspace.default',
+          '    trigger: on_tool_request',
+          '    decision: allow',
+          'evidence_types:',
+          '  - trace',
+          'state_aliases:',
+          '  active: in_progress',
+          'lane_templates:',
+          '  - id: framework-core',
+          '    title: Framework Core',
+        ].join('\n'),
+        UTF8_ENCODING,
+      );
+
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+      });
+      await expect(
+        loader.load({
+          workspaceSpec: createWorkspaceSpec({ integrity: 'dev' }),
+          packId: SOFTWARE_DELIVERY_PACK_ID,
+        }),
+      ).rejects.toThrow('Pack tool entry "../escape.ts" resolves outside pack root.');
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
   it('validates DomainPack manifest schema fields', () => {
     const manifest = DomainPackManifestSchema.parse({
-      id: 'software-delivery',
+      id: SOFTWARE_DELIVERY_PACK_ID,
       version: '1.0.0',
       task_types: ['wu'],
       tools: [{ name: 'fs:read', entry: 'tools/fs-read.ts' }],
@@ -103,13 +153,13 @@ describe('pack loader + integrity pinning', () => {
       lane_templates: [{ id: 'framework-core', title: 'Framework Core' }],
     });
 
-    expect(manifest.id).toBe('software-delivery');
+    expect(manifest.id).toBe(SOFTWARE_DELIVERY_PACK_ID);
     expect(manifest.state_aliases.active).toBe('in_progress');
   });
 
   it('loads pack in dev mode and emits workspace_warning event', async () => {
     const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-loader-dev-'));
-    const packRoot = join(tempRoot, 'software-delivery');
+    const packRoot = join(tempRoot, SOFTWARE_DELIVERY_PACK_ID);
     const warningEvents: WorkspaceWarningEvent[] = [];
 
     try {
@@ -120,11 +170,11 @@ describe('pack loader + integrity pinning', () => {
       });
       const loaded = await loader.load({
         workspaceSpec: createWorkspaceSpec({ integrity: 'dev' }),
-        packId: 'software-delivery',
+        packId: SOFTWARE_DELIVERY_PACK_ID,
         onWorkspaceWarning: (event) => warningEvents.push(event),
       });
 
-      expect(loaded.manifest.id).toBe('software-delivery');
+      expect(loaded.manifest.id).toBe(SOFTWARE_DELIVERY_PACK_ID);
       expect(warningEvents).toHaveLength(1);
       expect(warningEvents[0]?.kind).toBe('workspace_warning');
       expect(warningEvents[0]?.message).toContain('integrity: dev');
@@ -135,7 +185,7 @@ describe('pack loader + integrity pinning', () => {
 
   it('rejects integrity:dev in production environment by default', async () => {
     const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-loader-prod-dev-'));
-    const packRoot = join(tempRoot, 'software-delivery');
+    const packRoot = join(tempRoot, SOFTWARE_DELIVERY_PACK_ID);
 
     try {
       await writePackFixture(packRoot);
@@ -148,7 +198,7 @@ describe('pack loader + integrity pinning', () => {
       await expect(
         loader.load({
           workspaceSpec: createWorkspaceSpec({ integrity: 'dev' }),
-          packId: 'software-delivery',
+          packId: SOFTWARE_DELIVERY_PACK_ID,
         }),
       ).rejects.toThrow('integrity: dev is not allowed in production');
     } finally {
@@ -158,7 +208,7 @@ describe('pack loader + integrity pinning', () => {
 
   it('allows integrity:dev in production only with explicit override flag', async () => {
     const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-loader-prod-override-'));
-    const packRoot = join(tempRoot, 'software-delivery');
+    const packRoot = join(tempRoot, SOFTWARE_DELIVERY_PACK_ID);
 
     try {
       await writePackFixture(packRoot);
@@ -171,11 +221,11 @@ describe('pack loader + integrity pinning', () => {
 
       const loaded = await loader.load({
         workspaceSpec: createWorkspaceSpec({ integrity: 'dev' }),
-        packId: 'software-delivery',
+        packId: SOFTWARE_DELIVERY_PACK_ID,
         onWorkspaceWarning: (event) => warningEvents.push(event),
       });
 
-      expect(loaded.manifest.id).toBe('software-delivery');
+      expect(loaded.manifest.id).toBe(SOFTWARE_DELIVERY_PACK_ID);
       expect(warningEvents).toHaveLength(1);
       expect(warningEvents[0]?.message).toContain('verification skipped');
     } finally {
@@ -185,7 +235,7 @@ describe('pack loader + integrity pinning', () => {
 
   it('computes deterministic hash and rejects tampered packs in sha256 mode', async () => {
     const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-loader-sha-'));
-    const packRoot = join(tempRoot, 'software-delivery');
+    const packRoot = join(tempRoot, SOFTWARE_DELIVERY_PACK_ID);
 
     try {
       await writePackFixture(packRoot);
@@ -198,7 +248,7 @@ describe('pack loader + integrity pinning', () => {
         workspaceSpec: createWorkspaceSpec({
           integrity: `sha256:${computedHash}`,
         }),
-        packId: 'software-delivery',
+        packId: SOFTWARE_DELIVERY_PACK_ID,
       });
       expect(loaded.integrity).toBe(computedHash);
 
@@ -208,7 +258,7 @@ describe('pack loader + integrity pinning', () => {
           'import { readFile } from "node:fs/promises";',
           'export const tool = () => readFile;',
         ].join('\n'),
-        'utf8',
+        UTF8_ENCODING,
       );
 
       await expect(
@@ -216,7 +266,7 @@ describe('pack loader + integrity pinning', () => {
           workspaceSpec: createWorkspaceSpec({
             integrity: `sha256:${computedHash}`,
           }),
-          packId: 'software-delivery',
+          packId: SOFTWARE_DELIVERY_PACK_ID,
         }),
       ).rejects.toThrow('integrity mismatch');
     } finally {
@@ -226,14 +276,14 @@ describe('pack loader + integrity pinning', () => {
 
   it('rejects pack imports that escape the pack root boundary', async () => {
     const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-loader-boundary-'));
-    const packRoot = join(tempRoot, 'software-delivery');
+    const packRoot = join(tempRoot, SOFTWARE_DELIVERY_PACK_ID);
 
     try {
       await writePackFixture(packRoot);
       await writeFile(
         join(packRoot, 'tools', 'dangerous-import.ts'),
         ['import "../../../../../workspace/secrets.ts";', 'export const danger = true;'].join('\n'),
-        'utf8',
+        UTF8_ENCODING,
       );
 
       const loader = new PackLoader({
@@ -245,11 +295,14 @@ describe('pack loader + integrity pinning', () => {
           workspaceSpec: createWorkspaceSpec({
             integrity: 'dev',
           }),
-          packId: 'software-delivery',
+          packId: SOFTWARE_DELIVERY_PACK_ID,
         }),
       ).rejects.toThrow('outside pack root');
 
-      const fileContents = await readFile(join(packRoot, 'tools', 'dangerous-import.ts'), 'utf8');
+      const fileContents = await readFile(
+        join(packRoot, 'tools', 'dangerous-import.ts'),
+        UTF8_ENCODING,
+      );
       expect(fileContents).toContain('workspace/secrets.ts');
     } finally {
       await rm(tempRoot, { recursive: true, force: true });

@@ -6,19 +6,35 @@ import { z } from 'zod';
 import type { ExecutionContext, TaskSpec } from '../kernel.schemas.js';
 import { EventStore } from '../event-store/index.js';
 import { initializeKernelRuntime } from '../runtime/index.js';
+import {
+  PACK_MANIFEST_FILE_NAME,
+  PACKS_DIR_NAME,
+  SOFTWARE_DELIVERY_PACK_ID,
+  UTF8_ENCODING,
+} from '../shared-constants.js';
 
 const WORKSPACE_SCOPE = {
   type: 'path' as const,
   pattern: '**',
   access: 'read' as const,
 };
+const PACK_ECHO_TOOL_NAME = 'pack:echo';
+const TOOL_NOT_FOUND_ERROR_CODE = 'TOOL_NOT_FOUND';
+const SUBPROCESS_NOT_AVAILABLE_ERROR_CODE = 'SUBPROCESS_NOT_AVAILABLE';
+const TOOL_CALL_STARTED_KIND = 'tool_call_started';
+const TOOL_CALL_FINISHED_KIND = 'tool_call_finished';
+const RUNTIME_LOAD_STAGE_ERROR = `Runtime load stage failed for pack "${SOFTWARE_DELIVERY_PACK_ID}"`;
+const RUNTIME_REGISTRATION_STAGE_ERROR = `Runtime registration stage failed for tool "${PACK_ECHO_TOOL_NAME}" in pack "${SOFTWARE_DELIVERY_PACK_ID}"`;
+const RESOLVER_EXPLODED_MESSAGE = 'resolver exploded';
+const REGISTRATION_STAGE_FAILURE_MESSAGE = `Registration stage failed: ${PACK_ECHO_TOOL_NAME} did not register in runtime.`;
+const RECEIPT_STAGE_FAILURE_MESSAGE = `Receipt stage failed: missing ${TOOL_CALL_STARTED_KIND} receipt for ${PACK_ECHO_TOOL_NAME}.`;
 
 function createTaskSpec(taskId: string): TaskSpec {
   return {
     id: taskId,
     workspace_id: 'workspace-kernel-runtime',
     lane_id: 'framework-core-lifecycle',
-    domain: 'software-delivery',
+    domain: SOFTWARE_DELIVERY_PACK_ID,
     title: `Task ${taskId}`,
     description: `Task for ${taskId}`,
     acceptance: ['runtime behavior is verified'],
@@ -47,8 +63,8 @@ function createExecutionContext(taskId: string, runId: string): ExecutionContext
 }
 
 async function writeWorkspaceFixture(root: string): Promise<void> {
-  const packsRoot = join(root, 'packs');
-  const packRoot = join(packsRoot, 'software-delivery');
+  const packsRoot = join(root, PACKS_DIR_NAME);
+  const packRoot = join(packsRoot, SOFTWARE_DELIVERY_PACK_ID);
   await mkdir(join(packRoot, 'tools'), { recursive: true });
 
   await writeFile(
@@ -57,7 +73,7 @@ async function writeWorkspaceFixture(root: string): Promise<void> {
       'id: workspace-kernel-runtime',
       'name: Kernel Runtime Workspace',
       'packs:',
-      '  - id: software-delivery',
+      `  - id: ${SOFTWARE_DELIVERY_PACK_ID}`,
       '    version: 1.0.0',
       '    integrity: dev',
       '    source: local',
@@ -78,18 +94,18 @@ async function writeWorkspaceFixture(root: string): Promise<void> {
       'memory_namespace: mem',
       'event_namespace: evt',
     ].join('\n'),
-    'utf8',
+    UTF8_ENCODING,
   );
 
   await writeFile(
-    join(packRoot, 'manifest.yaml'),
+    join(packRoot, PACK_MANIFEST_FILE_NAME),
     [
-      'id: software-delivery',
+      `id: ${SOFTWARE_DELIVERY_PACK_ID}`,
       'version: 1.0.0',
       'task_types:',
       '  - work-unit',
       'tools:',
-      '  - name: pack:echo',
+      `  - name: ${PACK_ECHO_TOOL_NAME}`,
       '    entry: tools/echo.ts',
       'policies:',
       '  - id: runtime.completion.allow',
@@ -100,13 +116,13 @@ async function writeWorkspaceFixture(root: string): Promise<void> {
       'evidence_types: []',
       'lane_templates: []',
     ].join('\n'),
-    'utf8',
+    UTF8_ENCODING,
   );
 
   await writeFile(
     join(packRoot, 'tools', 'echo.ts'),
     ['export const marker = true;', 'export default marker;'].join('\n'),
-    'utf8',
+    UTF8_ENCODING,
   );
 }
 
@@ -125,7 +141,7 @@ describe('kernel runtime facade', () => {
   async function createRuntime() {
     return initializeKernelRuntime({
       workspaceRoot: tempRoot,
-      packsRoot: join(tempRoot, 'packs'),
+      packsRoot: join(tempRoot, PACKS_DIR_NAME),
       taskSpecRoot: join(tempRoot, 'tasks'),
       eventsFilePath: join(tempRoot, 'events.jsonl'),
       eventLockFilePath: join(tempRoot, 'events.lock'),
@@ -156,7 +172,7 @@ describe('kernel runtime facade', () => {
   async function createRuntimeWithDefaultResolver() {
     return initializeKernelRuntime({
       workspaceRoot: tempRoot,
-      packsRoot: join(tempRoot, 'packs'),
+      packsRoot: join(tempRoot, PACKS_DIR_NAME),
       taskSpecRoot: join(tempRoot, 'tasks'),
       eventsFilePath: join(tempRoot, 'events.jsonl'),
       eventLockFilePath: join(tempRoot, 'events.lock'),
@@ -164,11 +180,19 @@ describe('kernel runtime facade', () => {
     });
   }
 
+  async function writeManifest(lines: string[]): Promise<void> {
+    await writeFile(
+      join(tempRoot, PACKS_DIR_NAME, SOFTWARE_DELIVERY_PACK_ID, PACK_MANIFEST_FILE_NAME),
+      lines.join('\n'),
+      UTF8_ENCODING,
+    );
+  }
+
   it('loads workspace.yaml, resolves packs, and builds a runnable tool registry', async () => {
     const runtime = await createRuntime();
 
     const output = await runtime.executeTool(
-      'pack:echo',
+      PACK_ECHO_TOOL_NAME,
       { message: 'hello' },
       createExecutionContext('WU-1735-runtime-init', 'run-init-1'),
     );
@@ -181,13 +205,93 @@ describe('kernel runtime facade', () => {
     const runtime = await createRuntimeWithDefaultResolver();
 
     const output = await runtime.executeTool(
-      'pack:echo',
+      PACK_ECHO_TOOL_NAME,
       { message: 'hello' },
       createExecutionContext('WU-1770-default-resolver', 'run-default-resolver-1'),
     );
 
     expect(output.success).toBe(false);
-    expect(output.error?.code).toBe('SUBPROCESS_NOT_AVAILABLE');
+    expect(output.error?.code).toBe(SUBPROCESS_NOT_AVAILABLE_ERROR_CODE);
+  });
+
+  it('surfaces load-stage diagnostics when pack loading fails', async () => {
+    await writeManifest([
+      'id: software-delivery',
+      'version: 1.0.0',
+      'task_types:',
+      '  - work-unit',
+      'tools:',
+      `  - name: ${PACK_ECHO_TOOL_NAME}`,
+      '    entry: ../escape.ts',
+      'policies:',
+      '  - id: runtime.completion.allow',
+      '    trigger: on_completion',
+      '    decision: allow',
+      'state_aliases:',
+      '  active: in_progress',
+      'evidence_types: []',
+      'lane_templates: []',
+    ]);
+
+    await expect(createRuntimeWithDefaultResolver()).rejects.toThrow(
+      RUNTIME_LOAD_STAGE_ERROR,
+    );
+  });
+
+  it('surfaces registration-stage diagnostics when resolver fails', async () => {
+    await expect(
+      initializeKernelRuntime({
+        workspaceRoot: tempRoot,
+        packsRoot: join(tempRoot, PACKS_DIR_NAME),
+        taskSpecRoot: join(tempRoot, 'tasks'),
+        eventsFilePath: join(tempRoot, 'events.jsonl'),
+        eventLockFilePath: join(tempRoot, 'events.lock'),
+        evidenceRoot: join(tempRoot, 'evidence'),
+        toolCapabilityResolver: async () => {
+          throw new Error(RESOLVER_EXPLODED_MESSAGE);
+        },
+      }),
+    ).rejects.toThrow(RUNTIME_REGISTRATION_STAGE_ERROR);
+  });
+
+  it('covers load -> register -> execute -> receipt for manifest-declared runtime tools', async () => {
+    const runtime = await createRuntimeWithDefaultResolver();
+    const taskSpec = createTaskSpec('WU-1774-pack-e2e');
+    await runtime.createTask(taskSpec);
+
+    const claim = await runtime.claimTask({
+      task_id: taskSpec.id,
+      by: 'tom@hellm.ai',
+      session_id: 'session-1774-pack',
+    });
+
+    const execution = await runtime.executeTool(
+      PACK_ECHO_TOOL_NAME,
+      { message: 'receipt-stage' },
+      createExecutionContext(taskSpec.id, claim.run.run_id),
+    );
+
+    if (execution.error?.code === TOOL_NOT_FOUND_ERROR_CODE) {
+      throw new Error(REGISTRATION_STAGE_FAILURE_MESSAGE);
+    }
+    expect(execution.success).toBe(false);
+    expect(execution.error?.code).toBe(SUBPROCESS_NOT_AVAILABLE_ERROR_CODE);
+
+    const inspection = await runtime.inspectTask(taskSpec.id);
+    const started = inspection.receipts.find(
+      (trace) => trace.kind === TOOL_CALL_STARTED_KIND && trace.tool_name === PACK_ECHO_TOOL_NAME,
+    );
+    if (!started || started.kind !== TOOL_CALL_STARTED_KIND) {
+      throw new Error(RECEIPT_STAGE_FAILURE_MESSAGE);
+    }
+
+    const finished = inspection.receipts.find(
+      (trace) => trace.kind === TOOL_CALL_FINISHED_KIND && trace.receipt_id === started.receipt_id,
+    );
+    expect(finished).toBeDefined();
+    if (finished?.kind === TOOL_CALL_FINISHED_KIND) {
+      expect(finished.result).toBe('failure');
+    }
   });
 
   it('createTask writes immutable TaskSpec YAML and emits task_created', async () => {
@@ -195,7 +299,7 @@ describe('kernel runtime facade', () => {
     const taskSpec = createTaskSpec('WU-1735-create');
 
     const created = await runtime.createTask(taskSpec);
-    const yamlText = await readFile(created.task_spec_path, 'utf8');
+    const yamlText = await readFile(created.task_spec_path, UTF8_ENCODING);
 
     expect(yamlText).toContain('id: WU-1735-create');
     await expect(runtime.createTask(taskSpec)).rejects.toThrow('already exists');
@@ -292,7 +396,7 @@ describe('kernel runtime facade', () => {
     });
 
     await runtime.executeTool(
-      'pack:echo',
+      PACK_ECHO_TOOL_NAME,
       { message: 'policy-receipts' },
       createExecutionContext(taskSpec.id, claimResult.run.run_id),
     );

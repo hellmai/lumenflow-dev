@@ -3,6 +3,7 @@ import path from 'node:path';
 import YAML from 'yaml';
 import { z } from 'zod';
 import { canonical_json } from '../canonical-json.js';
+import { PACKS_DIR_NAME, UTF8_ENCODING } from '../shared-constants.js';
 import {
   EventStore,
   projectTaskState,
@@ -44,10 +45,15 @@ import { ToolRegistry } from '../tool-host/tool-registry.js';
 
 const DEFAULT_WORKSPACE_FILE_NAME = 'workspace.yaml';
 const DEFAULT_RUNTIME_ROOT = path.join('.lumenflow', 'kernel');
-const DEFAULT_PACKS_ROOT_CANDIDATES = ['packs', path.join('packages', '@lumenflow', 'packs')];
+const DEFAULT_PACKS_ROOT_CANDIDATES = [
+  PACKS_DIR_NAME,
+  path.join('packages', '@lumenflow', PACKS_DIR_NAME),
+];
 const RUNTIME_POLICY_FALLBACK_ID = 'kernel.policy.runtime-fallback';
 const DEFAULT_PACK_TOOL_INPUT_SCHEMA = z.record(z.string(), z.unknown());
 const DEFAULT_PACK_TOOL_OUTPUT_SCHEMA = z.record(z.string(), z.unknown());
+const RUNTIME_LOAD_STAGE_ERROR_PREFIX = 'Runtime load stage failed for pack';
+const RUNTIME_REGISTRATION_STAGE_ERROR_PREFIX = 'Runtime registration stage failed for tool';
 
 type RunLifecycleEvent = Extract<
   KernelEvent,
@@ -303,6 +309,18 @@ function mergeStateAliases(loadedPacks: LoadedDomainPack[]): TaskStateAliases {
   return aliases;
 }
 
+function formatRuntimeLoadStageError(packId: string): string {
+  return `${RUNTIME_LOAD_STAGE_ERROR_PREFIX} "${packId}"`;
+}
+
+function formatRuntimeRegistrationStageError(toolName: string, packId: string): string {
+  return `${RUNTIME_REGISTRATION_STAGE_ERROR_PREFIX} "${toolName}" in pack "${packId}"`;
+}
+
+function buildPackToolDescription(toolName: string, packId: string): string {
+  return `Pack tool ${toolName} declared by ${packId}`;
+}
+
 async function defaultRuntimeToolCapabilityResolver(
   input: RuntimeToolCapabilityResolverInput,
 ): Promise<ToolCapability | null> {
@@ -320,7 +338,7 @@ async function defaultRuntimeToolCapabilityResolver(
       kind: 'subprocess',
       entry: resolvedEntry,
     },
-    description: `Pack tool ${input.tool.name} declared by ${input.loadedPack.manifest.id}`,
+    description: buildPackToolDescription(input.tool.name, input.loadedPack.manifest.id),
     pack: input.loadedPack.pin.id,
   };
 }
@@ -369,7 +387,7 @@ async function readTaskSpecFromDisk(
   const taskSpecPath = resolveTaskSpecPath(taskSpecRoot, taskId);
 
   try {
-    const yamlText = await readFile(taskSpecPath, 'utf8');
+    const yamlText = await readFile(taskSpecPath, UTF8_ENCODING);
     return TaskSpecSchema.parse(YAML.parse(yamlText));
   } catch (error) {
     const nodeError = error as NodeJS.ErrnoException;
@@ -386,7 +404,7 @@ async function writeTaskSpecImmutable(taskSpecRoot: string, task: TaskSpec): Pro
   const taskSpecPath = resolveTaskSpecPath(taskSpecRoot, task.id);
   const fileHandle = await open(taskSpecPath, 'wx');
   try {
-    await fileHandle.writeFile(YAML.stringify(task), 'utf8');
+    await fileHandle.writeFile(YAML.stringify(task), UTF8_ENCODING);
   } finally {
     await fileHandle.close();
   }
@@ -403,7 +421,7 @@ async function resolveWorkspaceSpec(
       path.join(workspaceRoot, options.workspaceFileName ?? DEFAULT_WORKSPACE_FILE_NAME),
   );
 
-  const raw = await readFile(workspaceFilePath, 'utf8');
+  const raw = await readFile(workspaceFilePath, UTF8_ENCODING);
   return WorkspaceSpecSchema.parse(YAML.parse(raw));
 }
 
@@ -768,10 +786,15 @@ export async function initializeKernelRuntime(
   const loadedPacks: LoadedDomainPack[] = [];
 
   for (const pin of workspaceSpec.packs) {
-    const loadedPack = await packLoader.load({
-      workspaceSpec,
-      packId: pin.id,
-    });
+    let loadedPack: LoadedDomainPack;
+    try {
+      loadedPack = await packLoader.load({
+        workspaceSpec,
+        packId: pin.id,
+      });
+    } catch (error) {
+      throw new Error(formatRuntimeLoadStageError(pin.id), { cause: error });
+    }
     loadedPacks.push(loadedPack);
   }
 
@@ -786,11 +809,19 @@ export async function initializeKernelRuntime(
     options.toolCapabilityResolver ?? defaultRuntimeToolCapabilityResolver;
   for (const loadedPack of loadedPacks) {
     for (const tool of loadedPack.manifest.tools) {
-      const capability = await toolCapabilityResolver({
-        workspaceSpec,
-        loadedPack,
-        tool,
-      });
+      let capability: ToolCapability | null;
+      try {
+        capability = await toolCapabilityResolver({
+          workspaceSpec,
+          loadedPack,
+          tool,
+        });
+      } catch (error) {
+        throw new Error(formatRuntimeRegistrationStageError(tool.name, loadedPack.pin.id), {
+          cause: error,
+        });
+      }
+
       if (capability) {
         registry.register(capability);
       }
