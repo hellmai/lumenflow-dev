@@ -2,7 +2,7 @@ id: WU-1755
 title: 'Fix new-project friction: flawless lumenflow init to first WU'
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-16
 code_paths:
@@ -48,3 +48,6 @@ session_id: 3dbf1721-e88f-4882-9421-36ad92c49c7b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T09:42:20.548Z
+locked: true
+completed_at: 2026-02-17T10:08:55.418Z
+completed: 2026-02-17

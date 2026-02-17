@@ -35,11 +35,21 @@ sections:
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
+- [WU-1756 — INIT-029 remediation: reopen initiative and create fix WUs](wu/WU-1756.yaml) — Framework: Core Lifecycle
+- [WU-1757 — Fix evidence store double-hashing and add trace concurrency protection](wu/WU-1757.yaml) — Framework: Core Lifecycle
+- [WU-1758 — Fix security boundary: fs:read path validation and git:status command injection](wu/WU-1758.yaml) — Framework: Core Lifecycle
+- [WU-1759 — Fix EventStore reliability: stale lock recovery and atomic batch append](wu/WU-1759.yaml) — Framework: Core Lifecycle
+- [WU-1760 — Fix runtime security: Unix socket permissions, JSON validation, daemon params](wu/WU-1760.yaml) — Framework: Core Lifecycle
+- [WU-1761 — Harden sandbox: restrict bwrap root mount, fix lane lock TOCTOU, fix MCP schemas](wu/WU-1761.yaml) — Framework: Core Lifecycle
+- [WU-1762 — Harden policy engine: document loosening semantics, fix integrity dev bypass](wu/WU-1762.yaml) — Framework: Core Lifecycle
+- [WU-1763 — Kernel performance: eliminate per-append reload, move orphan reconciliation, add evidence indexing](wu/WU-1763.yaml) — Framework: Core Lifecycle
+- [WU-1764 — Kernel architecture: package graph integration, exports, DRY cleanup](wu/WU-1764.yaml) — Framework: Core Lifecycle
+- [WU-1765 — Fix resolveAgentPatterns: local config patterns ignored when registry returns results](wu/WU-1765.yaml) — Framework: CLI WU Commands
+- [WU-1766 — Fix wu:claim --cloud: missing cloud-mode bypass before ensureOnMain](wu/WU-1766.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1755 — Fix new-project friction: flawless lumenflow init to first WU](wu/WU-1755.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -729,6 +739,7 @@ sections:
 - [WU-1738 — MCP surface rewrite — calls KernelRuntime directly, not CLI](wu/WU-1738.yaml)
 - [WU-1739 — Runtime daemon — scheduler, sessions, Unix socket transport](wu/WU-1739.yaml)
 - [WU-1740 — Control Plane SDK — ControlPlaneSyncPort + workspace config + mock adapter](wu/WU-1740.yaml)
+- [WU-1755 — Fix new-project friction: flawless lumenflow init to first WU](wu/WU-1755.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
