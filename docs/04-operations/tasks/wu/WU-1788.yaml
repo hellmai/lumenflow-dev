@@ -12,7 +12,9 @@ code_paths:
   - packages/@lumenflow/cli/src/task-claim.ts
   - packages/@lumenflow/cli/src/__tests__/task-claim.test.ts
 tests:
-  manual: []
+  manual:
+    - Invoke migrated task:inspect via MCP runtime path and verify no runCliCommand shell-out occurs
+      while parity gates still pass.
   unit:
     - packages/@lumenflow/mcp/src/__tests__/runtime-task-tools.test.ts
     - packages/@lumenflow/cli/src/__tests__/task-claim.test.ts
@@ -36,7 +38,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Port task:inspect behavior into old MCP/CLI packages using direct KernelRuntime event replay patterns with parity-safe migration controls.
+description: Port task:inspect behavior into old MCP/CLI packages using direct KernelRuntime event
+  replay patterns with parity-safe migration controls.
 acceptance:
   - task:inspect uses KernelRuntime replay/event APIs without runCliCommand shell-out.
   - MCP and CLI outputs are parity-aligned for migrated task:inspect scenarios.
