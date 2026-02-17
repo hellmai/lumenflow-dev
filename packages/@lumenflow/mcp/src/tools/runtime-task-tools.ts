@@ -28,6 +28,9 @@ const taskUnblockInputSchema = z.object({
   task_id: z.string().min(1),
   timestamp: z.string().optional(),
 });
+const taskInspectInputSchema = z.object({
+  task_id: z.string().min(1),
+});
 
 type RuntimeInstance = Awaited<ReturnType<typeof initializeKernelRuntime>>;
 
@@ -166,6 +169,29 @@ export const taskUnblockTool: ToolDefinition = {
       return success(unblockResult);
     } catch (cause) {
       return error((cause as Error).message, ErrorCodes.TASK_UNBLOCK_ERROR);
+    }
+  },
+};
+
+export const taskInspectTool: ToolDefinition = {
+  name: RuntimeTaskToolNames.TASK_INSPECT,
+  description: RuntimeTaskToolDescriptions.TASK_INSPECT,
+  inputSchema: taskInspectInputSchema,
+
+  async execute(input, options) {
+    const parsedInput = taskInspectInputSchema.safeParse(input);
+    if (!parsedInput.success) {
+      return error(parsedInput.error.message, ErrorCodes.TASK_INSPECT_ERROR);
+    }
+
+    const workspaceRoot = options?.projectRoot || process.cwd();
+
+    try {
+      const runtime = await getRuntimeForWorkspace(workspaceRoot);
+      const inspectResult = await runtime.inspectTask(parsedInput.data.task_id);
+      return success(inspectResult);
+    } catch (cause) {
+      return error((cause as Error).message, ErrorCodes.TASK_INSPECT_ERROR);
     }
   },
 };

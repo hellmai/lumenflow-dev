@@ -100,12 +100,16 @@ export function createMcpServer(config: McpServerConfig = {}): McpServer {
   const hasRuntimeTaskUnblockTool = runtimeTaskTools.some(
     (tool) => tool.name === RuntimeTaskToolNames.TASK_UNBLOCK,
   );
+  const hasRuntimeTaskInspectTool = runtimeTaskTools.some(
+    (tool) => tool.name === RuntimeTaskToolNames.TASK_INSPECT,
+  );
   if (
     !hasRuntimeTaskClaimTool ||
     !hasRuntimeTaskCreateTool ||
     !hasRuntimeTaskCompleteTool ||
     !hasRuntimeTaskBlockTool ||
-    !hasRuntimeTaskUnblockTool
+    !hasRuntimeTaskUnblockTool ||
+    !hasRuntimeTaskInspectTool
   ) {
     const missingTools = [
       !hasRuntimeTaskClaimTool ? RuntimeTaskToolNames.TASK_CLAIM : null,
@@ -113,6 +117,7 @@ export function createMcpServer(config: McpServerConfig = {}): McpServer {
       !hasRuntimeTaskCompleteTool ? RuntimeTaskToolNames.TASK_COMPLETE : null,
       !hasRuntimeTaskBlockTool ? RuntimeTaskToolNames.TASK_BLOCK : null,
       !hasRuntimeTaskUnblockTool ? RuntimeTaskToolNames.TASK_UNBLOCK : null,
+      !hasRuntimeTaskInspectTool ? RuntimeTaskToolNames.TASK_INSPECT : null,
     ].filter((toolName): toolName is NonNullable<typeof toolName> => toolName !== null);
     throw new Error(
       `Required runtime MCP tool(s) missing from registry: ${missingTools.join(', ')}`,

@@ -7,6 +7,7 @@ import {
   taskClaimTool,
   taskCompleteTool,
   taskCreateTool,
+  taskInspectTool,
   taskUnblockTool,
 } from '../tools/runtime-task-tools.js';
 import * as kernel from '@lumenflow/kernel';
@@ -377,5 +378,67 @@ describe('runtime task MCP tools', () => {
     expect(result.success).toBe(false);
     expect(result.error?.code).toBe(ErrorCodes.TASK_UNBLOCK_ERROR);
     expect(mockInitializeKernelRuntime).not.toHaveBeenCalled();
+  });
+
+  it(`routes ${RuntimeTaskToolNames.TASK_INSPECT} through KernelRuntime without CLI shell-out`, async () => {
+    const inspectResult = {
+      task_id: 'WU-1788',
+      task: sampleTaskSpec,
+      state: {
+        task_id: 'WU-1788',
+        status: 'active',
+        run_count: 1,
+      },
+      run_history: [],
+      receipts: [],
+      policy_decisions: [],
+      events: [],
+    };
+    const inspectTask = vi.fn().mockResolvedValue(inspectResult);
+    mockInitializeKernelRuntime.mockResolvedValue({ inspectTask } as unknown as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await taskInspectTool.execute(
+      {
+        task_id: 'WU-1788',
+      },
+      { projectRoot: '/tmp/lumenflow-mcp-runtime' },
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.data).toEqual(inspectResult);
+    expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
+      workspaceRoot: path.resolve('/tmp/lumenflow-mcp-runtime'),
+    });
+    expect(inspectTask).toHaveBeenCalledWith('WU-1788');
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
+  });
+
+  it(`validates ${RuntimeTaskToolNames.TASK_INSPECT} input before runtime initialization`, async () => {
+    const result = await taskInspectTool.execute({}, { projectRoot: '/tmp/lumenflow-mcp-runtime' });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe(ErrorCodes.TASK_INSPECT_ERROR);
+    expect(mockInitializeKernelRuntime).not.toHaveBeenCalled();
+  });
+
+  it(`returns error when ${RuntimeTaskToolNames.TASK_INSPECT} fails`, async () => {
+    const inspectTask = vi.fn().mockRejectedValue(new Error('task inspect failed'));
+    mockInitializeKernelRuntime.mockResolvedValue({ inspectTask } as unknown as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await taskInspectTool.execute(
+      {
+        task_id: 'WU-1788',
+      },
+      { projectRoot: '/tmp/lumenflow-mcp-runtime' },
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe(ErrorCodes.TASK_INSPECT_ERROR);
+    expect(result.error?.message).toContain('task inspect failed');
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
   });
 });

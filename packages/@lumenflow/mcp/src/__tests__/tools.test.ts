@@ -13,6 +13,7 @@ import {
   taskClaimTool,
   taskCompleteTool,
   taskCreateTool,
+  taskInspectTool,
   taskUnblockTool,
   wuListTool,
   wuStatusTool,
@@ -247,6 +248,11 @@ describe('MCP tools', () => {
       expect(taskUnblockTool.description).toBe(RuntimeTaskToolDescriptions.TASK_UNBLOCK);
     });
 
+    it(`should export ${RuntimeTaskToolNames.TASK_INSPECT} runtime tool definition`, () => {
+      expect(taskInspectTool.name).toBe(RuntimeTaskToolNames.TASK_INSPECT);
+      expect(taskInspectTool.description).toBe(RuntimeTaskToolDescriptions.TASK_INSPECT);
+    });
+
     it(`should include ${RuntimeTaskToolNames.TASK_CLAIM} in the production MCP registry aggregate`, () => {
       expect(registeredTools.some((tool) => tool.name === RuntimeTaskToolNames.TASK_CLAIM)).toBe(
         true,
@@ -273,6 +279,12 @@ describe('MCP tools', () => {
 
     it(`should include ${RuntimeTaskToolNames.TASK_UNBLOCK} in the production MCP registry aggregate`, () => {
       expect(registeredTools.some((tool) => tool.name === RuntimeTaskToolNames.TASK_UNBLOCK)).toBe(
+        true,
+      );
+    });
+
+    it(`should include ${RuntimeTaskToolNames.TASK_INSPECT} in the production MCP registry aggregate`, () => {
+      expect(registeredTools.some((tool) => tool.name === RuntimeTaskToolNames.TASK_INSPECT)).toBe(
         true,
       );
     });

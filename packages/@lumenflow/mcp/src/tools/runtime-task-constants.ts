@@ -4,6 +4,7 @@ export const RuntimeTaskToolNames = {
   TASK_COMPLETE: 'task_complete',
   TASK_BLOCK: 'task_block',
   TASK_UNBLOCK: 'task_unblock',
+  TASK_INSPECT: 'task_inspect',
 } as const;
 
 export const RuntimeTaskToolDescriptions = {
@@ -12,4 +13,5 @@ export const RuntimeTaskToolDescriptions = {
   TASK_COMPLETE: 'Complete a task directly through KernelRuntime (no CLI shell-out).',
   TASK_BLOCK: 'Block a task directly through KernelRuntime (no CLI shell-out).',
   TASK_UNBLOCK: 'Unblock a task directly through KernelRuntime (no CLI shell-out).',
+  TASK_INSPECT: 'Inspect a task directly through KernelRuntime (no CLI shell-out).',
 } as const;

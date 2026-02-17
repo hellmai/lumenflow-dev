@@ -12,6 +12,7 @@ import {
   runTaskClaim,
   runTaskComplete,
   runTaskCreate,
+  runTaskInspect,
   runTaskUnblock,
 } from '../task-claim.js';
 
@@ -261,6 +262,39 @@ describe('task-claim command', () => {
       task_id: 'WU-1787',
     });
     expect(result).toEqual(unblockResult);
+  });
+
+  it('routes task inspect through KernelRuntime.inspectTask', async () => {
+    const inspectResult = {
+      task_id: 'WU-1788',
+      task: sampleTaskSpec,
+      state: {
+        task_id: 'WU-1788',
+        status: 'active',
+        run_count: 1,
+      },
+      run_history: [],
+      receipts: [],
+      policy_decisions: [],
+      events: [],
+    };
+
+    const inspectTask = vi.fn().mockResolvedValue(inspectResult);
+    mockInitializeKernelRuntime.mockResolvedValue({ inspectTask } as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await runTaskInspect({
+      taskId: 'WU-1788',
+      workspaceRoot: '/tmp/lumenflow-task-claim',
+      json: true,
+    });
+
+    expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
+      workspaceRoot: '/tmp/lumenflow-task-claim',
+    });
+    expect(inspectTask).toHaveBeenCalledWith('WU-1788');
+    expect(result).toEqual(inspectResult);
   });
 
   it('parses valid domain data JSON objects', () => {

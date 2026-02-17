@@ -11,6 +11,7 @@ import {
   type ClaimTaskInput,
   type ClaimTaskResult,
   type CreateTaskResult,
+  type TaskInspection,
   type TaskSpec,
   TaskSpecSchema,
   type UnblockTaskInput,
@@ -38,6 +39,10 @@ const TASK_UNBLOCK_COMMAND_NAME = 'task-unblock';
 const TASK_UNBLOCK_LOG_PREFIX = '[task:unblock]';
 const TASK_UNBLOCK_DESCRIPTION = 'Unblock a task directly through KernelRuntime';
 const TASK_UNBLOCK_DEFAULT_WORKSPACE_ROOT = '.';
+const TASK_INSPECT_COMMAND_NAME = 'task-inspect';
+const TASK_INSPECT_LOG_PREFIX = '[task:inspect]';
+const TASK_INSPECT_DESCRIPTION = 'Inspect a task directly through KernelRuntime';
+const TASK_INSPECT_DEFAULT_WORKSPACE_ROOT = '.';
 
 const TASK_CLAIM_OPTIONS = {
   taskId: {
@@ -207,6 +212,32 @@ const TASK_UNBLOCK_OPTIONS = {
   },
 } as const;
 
+const TASK_INSPECT_OPTIONS = {
+  inspect: {
+    name: 'inspect',
+    flags: '--inspect',
+    description: 'Run task inspect flow',
+    type: 'boolean' as const,
+  },
+  taskId: {
+    name: 'taskId',
+    flags: '--task-id <taskId>',
+    description: 'Task ID to inspect (e.g., WU-1788)',
+  },
+  workspaceRoot: {
+    name: 'workspaceRoot',
+    flags: '--workspace-root <path>',
+    description: 'Workspace root path (default: current directory)',
+    default: TASK_INSPECT_DEFAULT_WORKSPACE_ROOT,
+  },
+  json: {
+    name: 'json',
+    flags: '--json',
+    description: 'Output inspect result as JSON',
+    type: 'boolean' as const,
+  },
+} as const;
+
 export interface TaskClaimCliArgs {
   input: ClaimTaskInput;
   workspaceRoot: string;
@@ -233,6 +264,12 @@ export interface TaskBlockCliArgs {
 
 export interface TaskUnblockCliArgs {
   input: UnblockTaskInput;
+  workspaceRoot: string;
+  json: boolean;
+}
+
+export interface TaskInspectCliArgs {
+  taskId: string;
   workspaceRoot: string;
   json: boolean;
 }
@@ -401,6 +438,22 @@ export function parseTaskUnblockArgs(): TaskUnblockCliArgs {
   };
 }
 
+export function parseTaskInspectArgs(): TaskInspectCliArgs {
+  const options = Object.values(TASK_INSPECT_OPTIONS);
+  const parsed = createWUParser({
+    name: TASK_INSPECT_COMMAND_NAME,
+    description: TASK_INSPECT_DESCRIPTION,
+    options,
+    required: ['taskId'],
+  });
+
+  return {
+    taskId: parsed.taskId as string,
+    workspaceRoot: (parsed.workspaceRoot as string | undefined) || process.cwd(),
+    json: parsed.json ?? false,
+  };
+}
+
 export async function runTaskClaim(args: TaskClaimCliArgs): Promise<ClaimTaskResult> {
   const runtime = await initializeKernelRuntime({ workspaceRoot: args.workspaceRoot });
   return runtime.claimTask(args.input);
@@ -424,6 +477,11 @@ export async function runTaskBlock(args: TaskBlockCliArgs): Promise<BlockTaskRes
 export async function runTaskUnblock(args: TaskUnblockCliArgs): Promise<UnblockTaskResult> {
   const runtime = await initializeKernelRuntime({ workspaceRoot: args.workspaceRoot });
   return runtime.unblockTask(args.input);
+}
+
+export async function runTaskInspect(args: TaskInspectCliArgs): Promise<TaskInspection> {
+  const runtime = await initializeKernelRuntime({ workspaceRoot: args.workspaceRoot });
+  return runtime.inspectTask(args.taskId);
 }
 
 function formatTaskClaimSummary(result: ClaimTaskResult): string {
@@ -464,6 +522,15 @@ function formatTaskUnblockSummary(result: UnblockTaskResult): string {
   return [
     `${TASK_UNBLOCK_LOG_PREFIX} Unblocked task ${result.task_id}`,
     `${TASK_UNBLOCK_LOG_PREFIX} Event: ${result.event.kind}`,
+  ].join('\n');
+}
+
+function formatTaskInspectSummary(result: TaskInspection): string {
+  return [
+    `${TASK_INSPECT_LOG_PREFIX} Inspected task ${result.task_id}`,
+    `${TASK_INSPECT_LOG_PREFIX} State: ${result.state.status}`,
+    `${TASK_INSPECT_LOG_PREFIX} Runs: ${result.run_history.length}`,
+    `${TASK_INSPECT_LOG_PREFIX} Events: ${result.events.length}`,
   ].join('\n');
 }
 
@@ -517,6 +584,19 @@ export async function main(): Promise<void> {
     }
 
     console.log(formatTaskUnblockSummary(result));
+    return;
+  }
+
+  if (process.argv.includes('--inspect')) {
+    const args = parseTaskInspectArgs();
+    const result = await runTaskInspect(args);
+
+    if (args.json) {
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    console.log(formatTaskInspectSummary(result));
     return;
   }
 
