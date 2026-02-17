@@ -10,7 +10,9 @@ code_paths:
   - packages/@lumenflow/cli/src/public-manifest.ts
   - packages/@lumenflow/cli/package.json
 tests:
-  manual: []
+  manual:
+    - Run cli task:claim in a sample workspace and verify runtime-backed claim event emission with
+      no shell-out dependency
   unit:
     - packages/@lumenflow/cli/src/__tests__/task-claim.test.ts
   e2e: []
@@ -18,10 +20,10 @@ artifacts:
   - .lumenflow/stamps/WU-1772.done
 dependencies:
   - WU-1770
-blocked_by:
-  - WU-1770
 initiative: INIT-029
 phase: 7
+blocked_by:
+  - WU-1770
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
