@@ -1,5 +1,6 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { z } from 'zod';
 import { TaskScheduler, type ScheduledTask } from '../scheduler/task-scheduler.js';
 import { SessionManager } from '../session/session-manager.js';
 import {
@@ -7,6 +8,27 @@ import {
   type DaemonRequest,
   type DaemonResponse,
 } from '../transport/unix-socket-server.js';
+
+const SchedulerEnqueueParamsSchema = z.object({
+  task_id: z.string().min(1),
+  lane_id: z.string().min(1),
+  priority: z.enum(['P0', 'P1', 'P2', 'P3']),
+  payload: z.record(z.string(), z.unknown()).optional(),
+});
+const EmptyParamsSchema = z.record(z.string(), z.unknown());
+
+const SessionCreateParamsSchema = z.object({
+  agent_id: z.string().min(1),
+});
+
+const SessionCheckpointParamsSchema = z.object({
+  session_id: z.string().min(1),
+  state: z.record(z.string(), z.unknown()),
+});
+
+const SessionRestoreParamsSchema = z.object({
+  session_id: z.string().min(1),
+});
 
 export interface RuntimeDaemonOptions {
   socketPath: string;
@@ -22,6 +44,8 @@ export class RuntimeDaemon {
   private readonly sessionManager: SessionManager;
   private readonly transport: UnixSocketServer;
   private signalBound = false;
+  private sigtermHandler: (() => void) | null = null;
+  private sigintHandler: (() => void) | null = null;
 
   constructor(options: RuntimeDaemonOptions) {
     this.socketPath = path.resolve(options.socketPath);
@@ -64,8 +88,24 @@ export class RuntimeDaemon {
     await this.stop();
   }
 
+  private invalidParamsResponse(
+    requestId: string,
+    method: string,
+    message: string,
+  ): DaemonResponse {
+    return {
+      id: requestId,
+      ok: false,
+      error: `Invalid params for ${method}: ${message}`,
+    };
+  }
+
   private async handleRequest(request: DaemonRequest): Promise<DaemonResponse> {
     if (request.method === 'ping') {
+      const parsedParams = EmptyParamsSchema.safeParse(request.params);
+      if (!parsedParams.success) {
+        return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
+      }
       return {
         id: request.id,
         ok: true,
@@ -76,7 +116,12 @@ export class RuntimeDaemon {
     }
 
     if (request.method === 'scheduler.enqueue') {
-      this.scheduler.enqueue(request.params as ScheduledTask);
+      const parsedParams = SchedulerEnqueueParamsSchema.safeParse(request.params);
+      if (!parsedParams.success) {
+        return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
+      }
+
+      this.scheduler.enqueue(parsedParams.data as ScheduledTask);
       return {
         id: request.id,
         ok: true,
@@ -87,6 +132,10 @@ export class RuntimeDaemon {
     }
 
     if (request.method === 'scheduler.dequeue') {
+      const parsedParams = EmptyParamsSchema.safeParse(request.params);
+      if (!parsedParams.success) {
+        return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
+      }
       return {
         id: request.id,
         ok: true,
@@ -95,11 +144,12 @@ export class RuntimeDaemon {
     }
 
     if (request.method === 'session.create') {
-      const result = await this.sessionManager.createSession(
-        request.params as {
-          agent_id: string;
-        },
-      );
+      const parsedParams = SessionCreateParamsSchema.safeParse(request.params);
+      if (!parsedParams.success) {
+        return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
+      }
+
+      const result = await this.sessionManager.createSession(parsedParams.data);
       return {
         id: request.id,
         ok: true,
@@ -108,11 +158,15 @@ export class RuntimeDaemon {
     }
 
     if (request.method === 'session.checkpoint') {
-      const params = request.params as {
-        session_id: string;
-        state: Record<string, unknown>;
-      };
-      const result = await this.sessionManager.checkpoint(params.session_id, params.state);
+      const parsedParams = SessionCheckpointParamsSchema.safeParse(request.params);
+      if (!parsedParams.success) {
+        return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
+      }
+
+      const result = await this.sessionManager.checkpoint(
+        parsedParams.data.session_id,
+        parsedParams.data.state,
+      );
       return {
         id: request.id,
         ok: true,
@@ -121,10 +175,12 @@ export class RuntimeDaemon {
     }
 
     if (request.method === 'session.restore') {
-      const params = request.params as {
-        session_id: string;
-      };
-      const result = await this.sessionManager.restore(params.session_id);
+      const parsedParams = SessionRestoreParamsSchema.safeParse(request.params);
+      if (!parsedParams.success) {
+        return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
+      }
+
+      const result = await this.sessionManager.restore(parsedParams.data.session_id);
       return {
         id: request.id,
         ok: true,
@@ -143,25 +199,33 @@ export class RuntimeDaemon {
     if (this.signalBound) {
       return;
     }
-    this.signalBound = true;
-    process.once('SIGTERM', () => {
+    this.sigtermHandler = () => {
       this.handleSignal('SIGTERM').catch(() => {
         // no-op: shutdown best-effort
       });
-    });
-    process.once('SIGINT', () => {
+    };
+    this.sigintHandler = () => {
       this.handleSignal('SIGINT').catch(() => {
         // no-op: shutdown best-effort
       });
-    });
+    };
+    this.signalBound = true;
+    process.once('SIGTERM', this.sigtermHandler);
+    process.once('SIGINT', this.sigintHandler);
   }
 
   private unbindSignals(): void {
     if (!this.signalBound) {
       return;
     }
+    if (this.sigtermHandler) {
+      process.removeListener('SIGTERM', this.sigtermHandler);
+    }
+    if (this.sigintHandler) {
+      process.removeListener('SIGINT', this.sigintHandler);
+    }
+    this.sigtermHandler = null;
+    this.sigintHandler = null;
     this.signalBound = false;
-    process.removeAllListeners('SIGTERM');
-    process.removeAllListeners('SIGINT');
   }
 }

@@ -53,4 +53,34 @@ describe('runtime TaskScheduler', () => {
     scheduler.markCompleted('A-1');
     expect(scheduler.getLaneActiveCount('lane-a')).toBe(0);
   });
+
+  it('does not decrement lane counters for unknown task completions', () => {
+    const scheduler = new TaskScheduler({
+      laneWipLimits: {
+        'lane-a': 2,
+        'lane-b': 2,
+      },
+    });
+
+    scheduler.enqueue({ task_id: 'A-1', lane_id: 'lane-a', priority: 'P1' });
+    scheduler.enqueue({ task_id: 'B-1', lane_id: 'lane-b', priority: 'P1' });
+
+    const first = scheduler.dequeue();
+    const second = scheduler.dequeue();
+
+    if (first) {
+      scheduler.markStarted(first.task_id);
+    }
+    if (second) {
+      scheduler.markStarted(second.task_id);
+    }
+
+    expect(scheduler.getLaneActiveCount('lane-a')).toBe(1);
+    expect(scheduler.getLaneActiveCount('lane-b')).toBe(1);
+
+    scheduler.markCompleted('NOT-ACTIVE-TASK');
+
+    expect(scheduler.getLaneActiveCount('lane-a')).toBe(1);
+    expect(scheduler.getLaneActiveCount('lane-b')).toBe(1);
+  });
 });

@@ -377,7 +377,11 @@ importers:
         specifier: ^4.0.18
         version: 4.0.18(@edge-runtime/vm@3.2.0)(@types/node@22.19.6)(yaml@2.8.2)
 
-  packages/@lumenflow/runtime: {}
+  packages/@lumenflow/runtime:
+    dependencies:
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
 
   packages/@lumenflow/shims:
     dependencies:

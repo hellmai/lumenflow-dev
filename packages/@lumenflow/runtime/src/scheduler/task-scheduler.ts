@@ -27,6 +27,7 @@ export class TaskScheduler {
   private readonly laneWipLimits: Record<string, number>;
   private readonly queue: QueueEntry[];
   private readonly activeByLane: Map<string, number>;
+  private readonly activeByTask: Map<string, string>;
   private readonly dequeuedByTask: Map<string, ScheduledTask>;
   private sequenceCounter: number;
 
@@ -34,6 +35,7 @@ export class TaskScheduler {
     this.laneWipLimits = { ...(options.laneWipLimits ?? {}) };
     this.queue = [];
     this.activeByLane = new Map<string, number>();
+    this.activeByTask = new Map<string, string>();
     this.dequeuedByTask = new Map<string, ScheduledTask>();
     this.sequenceCounter = 0;
   }
@@ -86,22 +88,24 @@ export class TaskScheduler {
 
     const current = this.activeByLane.get(task.lane_id) ?? 0;
     this.activeByLane.set(task.lane_id, current + 1);
+    this.activeByTask.set(task.task_id, task.lane_id);
     this.dequeuedByTask.delete(taskId);
   }
 
   markCompleted(taskId: string): void {
-    const knownActiveTask = this.findActiveLaneForTask(taskId);
-    if (!knownActiveTask) {
+    const laneId = this.activeByTask.get(taskId);
+    if (!laneId) {
       return;
     }
+    this.activeByTask.delete(taskId);
 
-    const activeCount = this.activeByLane.get(knownActiveTask) ?? 0;
+    const activeCount = this.activeByLane.get(laneId) ?? 0;
     const next = Math.max(0, activeCount - 1);
     if (next === 0) {
-      this.activeByLane.delete(knownActiveTask);
+      this.activeByLane.delete(laneId);
       return;
     }
-    this.activeByLane.set(knownActiveTask, next);
+    this.activeByLane.set(laneId, next);
   }
 
   getQueueDepth(): number {
@@ -118,33 +122,5 @@ export class TaskScheduler {
       return true;
     }
     return this.getLaneActiveCount(laneId) < limit;
-  }
-
-  private findActiveLaneForTask(taskId: string): string | null {
-    for (const [laneId] of this.activeByLane.entries()) {
-      if (this.taskBelongsToLane(taskId, laneId)) {
-        return laneId;
-      }
-    }
-    return null;
-  }
-
-  private taskBelongsToLane(taskId: string, laneId: string): boolean {
-    const activeEntry = [...this.dequeuedByTask.values()].find((task) => task.task_id === taskId);
-    if (activeEntry) {
-      return activeEntry.lane_id === laneId;
-    }
-
-    if (taskId.includes(':')) {
-      return taskId.startsWith(`${laneId}:`);
-    }
-
-    for (const queued of this.queue) {
-      if (queued.task.task_id === taskId) {
-        return queued.task.lane_id === laneId;
-      }
-    }
-
-    return true;
   }
 }

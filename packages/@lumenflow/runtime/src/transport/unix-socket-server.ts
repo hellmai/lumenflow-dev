@@ -1,12 +1,14 @@
 import { createServer, type Server, type Socket } from 'node:net';
-import { mkdir, rm } from 'node:fs/promises';
+import { chmod, mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
+import { z } from 'zod';
 
-export interface DaemonRequest {
-  id: string;
-  method: string;
-  params: unknown;
-}
+export const DaemonRequestSchema = z.object({
+  id: z.string().min(1),
+  method: z.string().min(1),
+  params: z.unknown(),
+});
+export type DaemonRequest = z.infer<typeof DaemonRequestSchema>;
 
 export interface DaemonResponse {
   id: string;
@@ -53,6 +55,7 @@ export class UnixSocketServer {
         resolve();
       });
     });
+    await chmod(this.socketPath, 0o600);
   }
 
   async stop(): Promise<void> {
@@ -105,8 +108,41 @@ export class UnixSocketServer {
   }
 
   private async processLine(line: string, socket: Socket): Promise<void> {
-    const request = JSON.parse(line) as DaemonRequest;
-    const response = await this.handler(request);
+    let parsedRequestJson: unknown;
+    try {
+      parsedRequestJson = JSON.parse(line);
+    } catch {
+      socket.write(
+        `${JSON.stringify({
+          id: 'unknown',
+          ok: false,
+          error: 'Invalid JSON payload.',
+        } satisfies DaemonResponse)}\n`,
+      );
+      return;
+    }
+
+    const parsedRequest = DaemonRequestSchema.safeParse(parsedRequestJson);
+    if (!parsedRequest.success) {
+      const requestId =
+        parsedRequestJson &&
+        typeof parsedRequestJson === 'object' &&
+        'id' in parsedRequestJson &&
+        typeof (parsedRequestJson as { id?: unknown }).id === 'string'
+          ? ((parsedRequestJson as { id: string }).id ?? 'unknown')
+          : 'unknown';
+
+      socket.write(
+        `${JSON.stringify({
+          id: requestId,
+          ok: false,
+          error: `Invalid daemon request: ${parsedRequest.error.issues[0]?.message ?? parsedRequest.error.message}`,
+        } satisfies DaemonResponse)}\n`,
+      );
+      return;
+    }
+
+    const response = await this.handler(parsedRequest.data);
     socket.write(`${JSON.stringify(response)}\n`);
   }
 }
