@@ -1461,3 +1461,4 @@
 {"type":"complete","wuId":"WU-1759","timestamp":"2026-02-17T12:27:54.589Z"}
 {"type":"claim","wuId":"WU-1760","timestamp":"2026-02-17T12:28:23.493Z","lane":"Framework: Core Lifecycle","title":"Fix runtime security: Unix socket permissions, JSON validation, daemon params"}
 {"type":"complete","wuId":"WU-1760","timestamp":"2026-02-17T12:36:25.584Z"}
+{"type":"claim","wuId":"WU-1767","lane":"Framework: Core Lifecycle","title":"Harden lane lock CAS and migrate pack-owned runtime paths","timestamp":"2026-02-17T12:37:21.539Z"}

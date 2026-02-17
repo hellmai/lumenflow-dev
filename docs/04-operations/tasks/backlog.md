@@ -28,7 +28,6 @@ sections:
 - [WU-1762 — Harden policy engine: document loosening semantics, fix integrity dev bypass](wu/WU-1762.yaml) — Framework: Core Lifecycle
 - [WU-1763 — Kernel performance: eliminate EventStore per-append reload](wu/WU-1763.yaml) — Framework: Core Lifecycle
 - [WU-1764 — Kernel architecture: package graph integration, exports, DRY cleanup](wu/WU-1764.yaml) — Framework: Core Lifecycle
-- [WU-1767 — Harden lane lock CAS and migrate pack-owned runtime paths](wu/WU-1767.yaml) — Framework: Core Lifecycle
 - [WU-1768 — Fix MCP input schema parity for task tools](wu/WU-1768.yaml) — Framework: Core Lifecycle
 - [WU-1769 — Move orphan reconciliation off hot path and add evidence task indexing](wu/WU-1769.yaml) — Framework: Core Lifecycle
 - [WU-1770 — Wire pack manifest tools into runtime resolver](wu/WU-1770.yaml) — Framework: Core Lifecycle
@@ -40,6 +39,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1767 — Harden lane lock CAS and migrate pack-owned runtime paths](wu/WU-1767.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
