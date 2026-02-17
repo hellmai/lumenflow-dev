@@ -10,7 +10,9 @@ code_paths:
   - packages/@lumenflow/mcp/src/tools
   - .lumenflow/strict-progress-baseline.json
 tests:
-  manual: []
+  manual:
+    - Run MCP shell-out budget test and confirm it fails when baseline is intentionally lowered
+      below current runCliCommand count.
   unit:
     - packages/@lumenflow/mcp/src/__tests__/shellout-budget.test.ts
   e2e: []
