@@ -1439,4 +1439,5 @@
 {"type":"complete","wuId":"WU-1737","timestamp":"2026-02-17T00:08:42.587Z"}
 {"type":"claim","wuId":"WU-1738","timestamp":"2026-02-17T00:09:19.220Z","lane":"Framework: MCP","title":"MCP surface rewrite — calls KernelRuntime directly, not CLI"}
 {"type":"complete","wuId":"WU-1738","timestamp":"2026-02-17T00:13:28.688Z"}
-{"type":"claim","wuId":"WU-1739","lane":"Framework: Core Lifecycle","title":"Runtime daemon — scheduler, sessions, Unix socket transport","timestamp":"2026-02-17T00:14:05.364Z"}
+{"type":"claim","wuId":"WU-1739","timestamp":"2026-02-17T00:14:05.364Z","lane":"Framework: Core Lifecycle","title":"Runtime daemon — scheduler, sessions, Unix socket transport"}
+{"type":"complete","wuId":"WU-1739","timestamp":"2026-02-17T00:19:47.643Z"}

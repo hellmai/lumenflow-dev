@@ -2,7 +2,7 @@ id: WU-1739
 title: Runtime daemon — scheduler, sessions, Unix socket transport
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-16
 code_paths:
@@ -62,3 +62,6 @@ session_id: 3efb92da-dd6e-4add-a459-b866e3aee82a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T00:14:05.321Z
+locked: true
+completed_at: 2026-02-17T00:19:42.922Z
+completed: 2026-02-17

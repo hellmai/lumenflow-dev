@@ -25,7 +25,7 @@ phases:
     status: done
   - id: 4
     title: Surfaces + Runtime Daemon (CLI/MCP over KernelRuntime)
-    status: in_progress
+    status: done
   - id: 5
     title: Control Plane SDK (hosted service interface)
     status: pending
