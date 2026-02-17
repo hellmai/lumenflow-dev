@@ -5,6 +5,7 @@ _Last updated: 2026-02-17_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1783 — Housekeeping: license consistency, dangling plan URIs, and metric wording](wu/WU-1783.yaml)
 
 ## Completed
 

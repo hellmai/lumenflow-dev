@@ -2,7 +2,7 @@ id: WU-1783
 title: 'Housekeeping: license consistency, dangling plan URIs, and metric wording'
 lane: 'Content: Specs Governance'
 type: documentation
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-17
 code_paths:
@@ -14,7 +14,8 @@ code_paths:
   - docs/04-operations/tasks/initiatives/INIT-029.yaml
 tests:
   manual:
-    - Verify license identifiers and initiative metric wording are internally consistent and traceable.
+    - Verify license identifiers and initiative metric wording are internally consistent and
+      traceable.
   unit: []
   e2e: []
 artifacts:
@@ -34,8 +35,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Documentation and metadata cleanup from post-INIT-029 review: reconcile license declarations, remove or resolve stale plan URIs, and update INIT-029 success metric text to match phased runtime migration reality.'
+description: 'Documentation and metadata cleanup from post-INIT-029 review: reconcile license
+  declarations, remove or resolve stale plan URIs, and update INIT-029 success metric text to match
+  phased runtime migration reality.'
 acceptance:
   - Kernel SPDX headers, package.json license, and kernel LICENSE text are reconciled consistently.
   - Dangling plan URIs in WU-1770/WU-1774 are removed or resolved to valid references.
-  - INIT-029 success metric text is updated to reflect current task:claim runtime adoption and phased migration roadmap.
+  - INIT-029 success metric text is updated to reflect current task:claim runtime adoption and
+    phased migration roadmap.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-specs-governance-wu-1783
+claimed_at: 2026-02-17T18:03:29.967Z
+baseline_main_sha: 85c6d9d10b43f4212be5620f1800b7a48196e593
+session_id: 20be24e3-d672-4122-8e25-a5dbc80bedcb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T18:03:29.973Z
