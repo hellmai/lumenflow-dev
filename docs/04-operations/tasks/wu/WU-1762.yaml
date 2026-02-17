@@ -2,7 +2,7 @@ id: WU-1762
 title: 'Harden policy engine: document loosening semantics, fix integrity dev bypass'
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -28,7 +28,7 @@ phase: 6
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
-assigned_to: noreply@anthropic.com
+assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
@@ -44,3 +44,11 @@ acceptance:
   - Environment-aware flag to reject dev integrity in production
   - Control Plane SDK depends on @lumenflow/kernel and uses its KernelEvent type
   - Import boundary limitations documented in pack-loader JSDoc
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1762
+claimed_at: 2026-02-17T12:55:45.898Z
+baseline_main_sha: bdd15c66646b760400f9f38c54c544d8447df84e
+session_id: 5c442e06-f3a0-4b02-b7d3-59b885799206
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T12:55:45.903Z

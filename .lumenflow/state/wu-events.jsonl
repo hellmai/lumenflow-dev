@@ -1467,3 +1467,4 @@
 {"type":"complete","wuId":"WU-1761","timestamp":"2026-02-17T12:50:37.107Z"}
 {"type":"claim","wuId":"WU-1768","timestamp":"2026-02-17T12:51:32.326Z","lane":"Framework: Core Lifecycle","title":"Fix MCP input schema parity for task tools"}
 {"type":"complete","wuId":"WU-1768","timestamp":"2026-02-17T12:54:51.953Z"}
+{"type":"claim","wuId":"WU-1762","lane":"Framework: Core Lifecycle","title":"Harden policy engine: document loosening semantics, fix integrity dev bypass","timestamp":"2026-02-17T12:55:45.951Z"}
