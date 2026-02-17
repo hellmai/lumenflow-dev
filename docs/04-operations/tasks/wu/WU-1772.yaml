@@ -9,12 +9,16 @@ code_paths:
   - packages/@lumenflow/cli/src/task-claim.ts
   - packages/@lumenflow/cli/src/public-manifest.ts
   - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
 tests:
   manual:
     - Run cli task:claim in a sample workspace and verify runtime-backed claim event emission with
       no shell-out dependency
   unit:
     - packages/@lumenflow/cli/src/__tests__/task-claim.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1772.done
@@ -24,13 +28,21 @@ initiative: INIT-029
 phase: 7
 blocked_by:
   - WU-1770
+plan: lumenflow://plans/zesty-jumping-pixel.md
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-17T15:40:32.300Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1772
+session_id: 6452073d-52fd-41ae-8efe-45100254bf4d
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T15:40:32.305Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +54,3 @@ acceptance:
   - task:claim executes through KernelRuntime and emits expected lifecycle events
   - CLI public manifest exposes task:claim for runtime-backed command registration
   - Unit coverage validates task-claim command behavior and registration wiring
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1772
-claimed_at: 2026-02-17T15:40:32.300Z
-baseline_main_sha: 1ee76e69e90963ae15dac93a4dd69ce3bff28e24
-session_id: 6452073d-52fd-41ae-8efe-45100254bf4d
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-17T15:40:32.305Z
