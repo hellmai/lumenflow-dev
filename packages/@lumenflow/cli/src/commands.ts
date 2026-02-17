@@ -63,6 +63,15 @@ const SCRIPT_COMMANDS: CommandCategory[] = [
     ],
   },
   {
+    name: COMMAND_CATEGORIES.ORCHESTRATION,
+    commands: [
+      {
+        name: 'task:create',
+        description: 'Create a task directly through KernelRuntime (--task-spec <json>)',
+      },
+    ],
+  },
+  {
     name: 'Setup & Development',
     commands: [{ name: 'setup', description: 'Install deps and build CLI (first time)' }],
   },

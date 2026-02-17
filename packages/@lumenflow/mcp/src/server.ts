@@ -88,9 +88,16 @@ export function createMcpServer(config: McpServerConfig = {}): McpServer {
   const hasRuntimeTaskClaimTool = runtimeTaskTools.some(
     (tool) => tool.name === RuntimeTaskToolNames.TASK_CLAIM,
   );
-  if (!hasRuntimeTaskClaimTool) {
+  const hasRuntimeTaskCreateTool = runtimeTaskTools.some(
+    (tool) => tool.name === RuntimeTaskToolNames.TASK_CREATE,
+  );
+  if (!hasRuntimeTaskClaimTool || !hasRuntimeTaskCreateTool) {
+    const missingTools = [
+      !hasRuntimeTaskClaimTool ? RuntimeTaskToolNames.TASK_CLAIM : null,
+      !hasRuntimeTaskCreateTool ? RuntimeTaskToolNames.TASK_CREATE : null,
+    ].filter((toolName): toolName is NonNullable<typeof toolName> => toolName !== null);
     throw new Error(
-      `Required runtime MCP tool "${RuntimeTaskToolNames.TASK_CLAIM}" is not registered.`,
+      `Required runtime MCP tool(s) missing from registry: ${missingTools.join(', ')}`,
     );
   }
 

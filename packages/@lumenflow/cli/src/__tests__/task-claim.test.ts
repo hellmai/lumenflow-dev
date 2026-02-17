@@ -3,11 +3,20 @@ import { resolve } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as kernel from '@lumenflow/kernel';
 import { getPublicManifest } from '../public-manifest.js';
-import { parseTaskClaimDomainData, runTaskClaim } from '../task-claim.js';
+import {
+  parseTaskClaimDomainData,
+  parseTaskCreateSpec,
+  runTaskClaim,
+  runTaskCreate,
+} from '../task-claim.js';
 
-vi.mock('@lumenflow/kernel', () => ({
-  initializeKernelRuntime: vi.fn(),
-}));
+vi.mock('@lumenflow/kernel', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@lumenflow/kernel')>();
+  return {
+    ...actual,
+    initializeKernelRuntime: vi.fn(),
+  };
+});
 
 const TASK_CLAIM_COMMAND_NAME = 'task:claim';
 const TASK_CLAIM_BIN_NAME = 'task-claim';
@@ -15,6 +24,20 @@ const TASK_CLAIM_BIN_PATH = './dist/task-claim.js';
 
 describe('task-claim command', () => {
   const mockInitializeKernelRuntime = vi.mocked(kernel.initializeKernelRuntime);
+  const sampleTaskSpec = {
+    id: 'WU-1785',
+    workspace_id: 'workspace-default',
+    lane_id: 'framework-core-lifecycle',
+    domain: 'software-delivery',
+    title: 'Create runtime task',
+    description: 'Route task:create through runtime',
+    acceptance: ['Task created through runtime path'],
+    declared_scopes: [],
+    risk: 'medium',
+    type: 'feature',
+    priority: 'P2',
+    created: '2026-02-17',
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -82,12 +105,51 @@ describe('task-claim command', () => {
     expect(result).toEqual(claimResult);
   });
 
+  it('routes task creation through KernelRuntime.createTask', async () => {
+    const createResult = {
+      task: sampleTaskSpec,
+      task_spec_path: '/tmp/lumenflow-task-claim/.lumenflow/kernel/tasks/WU-1785.yaml',
+      event: {
+        schema_version: 1,
+        kind: 'task_created',
+        task_id: 'WU-1785',
+        timestamp: '2026-02-17T00:00:00.000Z',
+        spec_hash: 'a'.repeat(64),
+      },
+    };
+
+    const createTask = vi.fn().mockResolvedValue(createResult);
+    mockInitializeKernelRuntime.mockResolvedValue({ createTask } as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await runTaskCreate({
+      input: sampleTaskSpec,
+      workspaceRoot: '/tmp/lumenflow-task-claim',
+      json: true,
+    });
+
+    expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
+      workspaceRoot: '/tmp/lumenflow-task-claim',
+    });
+    expect(createTask).toHaveBeenCalledWith(sampleTaskSpec);
+    expect(result).toEqual(createResult);
+  });
+
   it('parses valid domain data JSON objects', () => {
     expect(parseTaskClaimDomainData('{"owner":"hellmai"}')).toEqual({ owner: 'hellmai' });
   });
 
   it('returns undefined when domain data is omitted', () => {
     expect(parseTaskClaimDomainData()).toBeUndefined();
+  });
+
+  it('parses valid task spec JSON payloads', () => {
+    expect(parseTaskCreateSpec(JSON.stringify(sampleTaskSpec))).toEqual(sampleTaskSpec);
+  });
+
+  it('throws for invalid task spec payloads', () => {
+    expect(() => parseTaskCreateSpec('{"id":"WU-1785"}')).toThrow();
   });
 
   it('throws for non-object domain data JSON', () => {

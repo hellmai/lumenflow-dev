@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { initializeKernelRuntime } from '@lumenflow/kernel';
+import { initializeKernelRuntime, TaskSpecSchema } from '@lumenflow/kernel';
 import { z } from 'zod';
 import { error, success, ErrorCodes, type ToolDefinition } from '../tools-shared.js';
 import { RuntimeTaskToolDescriptions, RuntimeTaskToolNames } from './runtime-task-constants.js';
@@ -11,6 +11,8 @@ const taskClaimInputSchema = z.object({
   timestamp: z.string().optional(),
   domain_data: z.record(z.string(), z.unknown()).optional(),
 });
+
+const taskCreateInputSchema = TaskSpecSchema;
 
 type RuntimeInstance = Awaited<ReturnType<typeof initializeKernelRuntime>>;
 
@@ -57,6 +59,29 @@ export const taskClaimTool: ToolDefinition = {
       return success(claimResult);
     } catch (cause) {
       return error((cause as Error).message, ErrorCodes.TASK_CLAIM_ERROR);
+    }
+  },
+};
+
+export const taskCreateTool: ToolDefinition = {
+  name: RuntimeTaskToolNames.TASK_CREATE,
+  description: RuntimeTaskToolDescriptions.TASK_CREATE,
+  inputSchema: taskCreateInputSchema,
+
+  async execute(input, options) {
+    const parsedInput = taskCreateInputSchema.safeParse(input);
+    if (!parsedInput.success) {
+      return error(parsedInput.error.message, ErrorCodes.TASK_CREATE_ERROR);
+    }
+
+    const workspaceRoot = options?.projectRoot || process.cwd();
+
+    try {
+      const runtime = await getRuntimeForWorkspace(workspaceRoot);
+      const createResult = await runtime.createTask(parsedInput.data);
+      return success(createResult);
+    } catch (cause) {
+      return error((cause as Error).message, ErrorCodes.TASK_CREATE_ERROR);
     }
   },
 };
