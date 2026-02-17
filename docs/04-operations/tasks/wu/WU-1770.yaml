@@ -10,7 +10,9 @@ code_paths:
   - packages/@lumenflow/kernel/src/pack/pack-loader.ts
   - packages/@lumenflow/packs/software-delivery/manifest.yaml
 tests:
-  manual: []
+  manual:
+    - Validate runtime initializes manifest-declared tools through default resolver without
+      test-only injection
   unit:
     - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
     - packages/@lumenflow/kernel/src/__tests__/pack-loader.test.ts
@@ -34,6 +36,8 @@ description: Pack tool registration must be wired from DomainPack manifest decla
   resolver paths for production initialization. Scope is manifest-to-runtime resolver wiring only;
   end-to-end integration proof is owned by WU-1774.
 acceptance:
-  - Runtime provides a default resolver path that converts manifest tool declarations into ToolCapability entries
-  - Runtime initialization registers manifest-declared tools without requiring test-only resolver injection
+  - Runtime provides a default resolver path that converts manifest tool declarations into
+    ToolCapability entries
+  - Runtime initialization registers manifest-declared tools without requiring test-only resolver
+    injection
   - Unit tests cover resolver/loader wiring boundaries; e2e ownership remains with WU-1774
