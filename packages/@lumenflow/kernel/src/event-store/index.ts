@@ -471,12 +471,10 @@ export class EventStore {
         await handle.writeFile(JSON.stringify(this.buildLockMetadata()), 'utf8');
         const result = await operation();
         await this.cleanupLockHandle(handle);
-        handle = null;
         return result;
       } catch (error) {
         const nodeError = error as NodeJS.ErrnoException;
         await this.cleanupLockHandle(handle);
-        handle = null;
         if (nodeError.code === 'EEXIST' && attempt < this.lockMaxRetries) {
           const recovered = await this.recoverStaleLockIfNeeded();
           if (recovered) {
