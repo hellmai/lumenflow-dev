@@ -2,7 +2,7 @@ id: WU-1756
 title: 'INIT-029 remediation: reopen initiative and create fix WUs'
 lane: 'Content: Specs Governance'
 type: refactor
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-17
 code_paths:
@@ -35,8 +35,10 @@ description: Code review of INIT-029 found 10 Critical and 17 Major issues acros
 acceptance:
   - INIT-029 status is in_progress with Phase 6 status set to in_progress
   - Phase 7 (Production Surface Adoption + Pack Wiring) exists in INIT-029
-  - Existing remediation WUs are revised per split/narrow/expand decisions (WU-1760, WU-1761, WU-1762, WU-1763, WU-1764)
-  - New WUs WU-1767, WU-1768, WU-1769, WU-1770, WU-1771, WU-1772, WU-1773, WU-1774, and WU-1775 are created and linked
+  - Existing remediation WUs are revised per split/narrow/expand decisions (WU-1760, WU-1761,
+    WU-1762, WU-1763, WU-1764)
+  - New WUs WU-1767, WU-1768, WU-1769, WU-1770, WU-1771, WU-1772, WU-1773, WU-1774, and WU-1775 are
+    created and linked
 claimed_mode: worktree
 worktree_path: /home/USER/source/hellmai/os/worktrees/content-specs-governance-wu-1756
 claimed_at: 2026-02-17T11:26:51.997Z
@@ -45,3 +47,6 @@ session_id: 45f88640-aec1-4e36-989b-d75eae0643a2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T11:26:52.002Z
+locked: true
+completed_at: 2026-02-17T11:43:12.516Z
+completed: 2026-02-17

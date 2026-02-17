@@ -1449,4 +1449,5 @@
 {"type":"complete","wuId":"WU-1765","timestamp":"2026-02-17T10:25:19.879Z"}
 {"type":"claim","wuId":"WU-1766","timestamp":"2026-02-17T10:26:32.020Z","lane":"Framework: CLI WU Commands","title":"Fix wu:claim --cloud: missing cloud-mode bypass before ensureOnMain"}
 {"type":"complete","wuId":"WU-1766","timestamp":"2026-02-17T10:31:25.340Z"}
-{"type":"claim","wuId":"WU-1756","lane":"Content: Specs Governance","title":"INIT-029 remediation: reopen initiative and create fix WUs","timestamp":"2026-02-17T11:26:52.043Z"}
+{"type":"claim","wuId":"WU-1756","timestamp":"2026-02-17T11:26:52.043Z","lane":"Content: Specs Governance","title":"INIT-029 remediation: reopen initiative and create fix WUs"}
+{"type":"complete","wuId":"WU-1756","timestamp":"2026-02-17T11:43:16.957Z"}

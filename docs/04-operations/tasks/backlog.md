@@ -20,15 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1775 — Align lane inference with INIT-029 package topology](wu/WU-1775.yaml) — Content: Specs Governance
-- [WU-1774 — Pack integration e2e: load, register, execute, receipt](wu/WU-1774.yaml) — Framework: Core Lifecycle
-- [WU-1773 — Add workspace hash verification and spec_tampered emission](wu/WU-1773.yaml) — Framework: Core Lifecycle
-- [WU-1772 — Tracer bullet CLI task:claim through KernelRuntime](wu/WU-1772.yaml) — Framework: CLI Orchestration
-- [WU-1771 — Tracer bullet MCP task_claim through KernelRuntime](wu/WU-1771.yaml) — Framework: MCP
-- [WU-1770 — Wire pack manifest tools into runtime resolver](wu/WU-1770.yaml) — Framework: Core Lifecycle
-- [WU-1769 — Move orphan reconciliation off hot path and add evidence task indexing](wu/WU-1769.yaml) — Framework: Core Lifecycle
-- [WU-1768 — Fix MCP input schema parity for task tools](wu/WU-1768.yaml) — Framework: Core Lifecycle
-- [WU-1767 — Harden lane lock CAS and migrate pack-owned runtime paths](wu/WU-1767.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
@@ -37,15 +28,14 @@ sections:
 - [WU-1758 — Fix security boundary: fs:read path validation and git:status command injection](wu/WU-1758.yaml) — Framework: Core Lifecycle
 - [WU-1759 — Fix EventStore reliability: stale lock recovery and atomic batch append](wu/WU-1759.yaml) — Framework: Core Lifecycle
 - [WU-1760 — Fix runtime security: Unix socket permissions, JSON validation, daemon params](wu/WU-1760.yaml) — Framework: Core Lifecycle
-- [WU-1761 — Harden sandbox: allowlist mounts and reserved .lumenflow scope enforcement](wu/WU-1761.yaml) — Framework: Core Lifecycle
+- [WU-1761 — Harden sandbox: restrict bwrap root mount, fix lane lock TOCTOU, fix MCP schemas](wu/WU-1761.yaml) — Framework: Core Lifecycle
 - [WU-1762 — Harden policy engine: document loosening semantics, fix integrity dev bypass](wu/WU-1762.yaml) — Framework: Core Lifecycle
-- [WU-1763 — Kernel performance: eliminate EventStore per-append reload](wu/WU-1763.yaml) — Framework: Core Lifecycle
+- [WU-1763 — Kernel performance: eliminate per-append reload, move orphan reconciliation, add evidence indexing](wu/WU-1763.yaml) — Framework: Core Lifecycle
 - [WU-1764 — Kernel architecture: package graph integration, exports, DRY cleanup](wu/WU-1764.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1756 — INIT-029 remediation: reopen initiative and create fix WUs](wu/WU-1756.yaml) — Content: Specs Governance
 
 ## ⛔ Blocked
 
@@ -738,6 +728,7 @@ sections:
 - [WU-1755 — Fix new-project friction: flawless lumenflow init to first WU](wu/WU-1755.yaml)
 - [WU-1765 — Fix resolveAgentPatterns: local config patterns ignored when registry returns results](wu/WU-1765.yaml)
 - [WU-1766 — Fix wu:claim --cloud: missing cloud-mode bypass before ensureOnMain](wu/WU-1766.yaml)
+- [WU-1756 — INIT-029 remediation: reopen initiative and create fix WUs](wu/WU-1756.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
