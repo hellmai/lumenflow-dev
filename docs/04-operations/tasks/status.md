@@ -5,7 +5,6 @@ _Last updated: 2026-02-17_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1738 — MCP surface rewrite — calls KernelRuntime directly, not CLI](wu/WU-1738.yaml)
 
 ## Completed
 
@@ -688,3 +687,4 @@ _Last updated: 2026-02-17_
 - [WU-1735 — KernelRuntime facade + initialization](wu/WU-1735.yaml) — 2026-02-16
 - [WU-1736 — CLI surface — task lifecycle commands (tracer bullet: create, claim, status, complete)](wu/WU-1736.yaml) — 2026-02-17
 - [WU-1737 — CLI surface — remaining commands (gates, orchestration, inspect, replay)](wu/WU-1737.yaml) — 2026-02-17
+- [WU-1738 — MCP surface rewrite — calls KernelRuntime directly, not CLI](wu/WU-1738.yaml) — 2026-02-17
