@@ -2,7 +2,7 @@ id: WU-1738
 title: MCP surface rewrite — calls KernelRuntime directly, not CLI
 lane: 'Framework: MCP'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -36,7 +36,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-029 Phase 4 — Surfaces + Daemon. Depends on WU-1735 (KernelRuntime). Problem: Current MCP server shells out to CLI for write operations and imports core for reads. This creates a circular chain (MCP -> CLI -> core -> tools). Solution: Rewrite MCP surface to call KernelRuntime directly for both use-cases (create/claim/complete/inspect) and tool execution. Route based on name prefix: use-case names call runtime methods, tool names call runtime.executeTool(). Eliminates the MCP -> CLI -> core circular chain. Reference: cli-runner.ts (current MCP->CLI bridge to replace). Plan: .claude/plans/golden-prancing-cookie.md'
+description: 'Context: INIT-029 Phase 4 — Surfaces + Daemon. Depends on WU-1735 (KernelRuntime).
+  Problem: Current MCP server shells out to CLI for write operations and imports core for reads.
+  This creates a circular chain (MCP -> CLI -> core -> tools). Solution: Rewrite MCP surface to call
+  KernelRuntime directly for both use-cases (create/claim/complete/inspect) and tool execution.
+  Route based on name prefix: use-case names call runtime methods, tool names call
+  runtime.executeTool(). Eliminates the MCP -> CLI -> core circular chain. Reference: cli-runner.ts
+  (current MCP->CLI bridge to replace). Plan: .claude/plans/golden-prancing-cookie.md'
 acceptance:
   - MCP server calls KernelRuntime for all operations — no shell-out to CLI
   - MCP use-case tools (task:create, task:claim, etc.) route to runtime methods
@@ -45,3 +51,11 @@ acceptance:
   - Zero imports from @lumenflow/cli in MCP surface package
   - Zero execFileAsync/spawn calls to CLI binary from MCP
   - MCP tool schemas generated from Zod via JSON Schema export
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1738
+claimed_at: 2026-02-17T00:09:19.167Z
+baseline_main_sha: 3fe0fc0a8e668fa8f1ae2225e527fa1445433a36
+session_id: ea186b32-dfe7-4e05-8385-7c7d28a6a11f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T00:09:19.174Z
