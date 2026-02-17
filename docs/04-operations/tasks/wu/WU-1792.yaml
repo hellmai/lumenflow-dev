@@ -2,7 +2,7 @@ id: WU-1792
 title: Add HTML comment guard to MDX doc generator
 lane: 'Content: Site Comms'
 type: bug
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-17
 code_paths:
@@ -26,7 +26,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The docs generator should reject or convert HTML comments in MDX output. A stray HTML comment broke the Starlight build (WU-1791). Add a post-generation sanitization pass.
+description: The docs generator should reject or convert HTML comments in MDX output. A stray HTML
+  comment broke the Starlight build (WU-1791). Add a post-generation sanitization pass.
 acceptance:
   - Generator converts any HTML comments to JSX comments in MDX output
   - Generator logs a warning when HTML comment conversion occurs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1792
+claimed_at: 2026-02-17T18:30:24.124Z
+baseline_main_sha: 4831c2f795736f4a49adb331f4e81d72a06f1326
+session_id: 61011c73-ccb6-49bf-991f-923cc046f12d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T18:30:24.131Z

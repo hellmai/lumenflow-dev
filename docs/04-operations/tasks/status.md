@@ -6,6 +6,7 @@ _Last updated: 2026-02-17_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1785 — Migrate task:create path to direct KernelRuntime calls](wu/WU-1785.yaml)
+- [WU-1792 — Add HTML comment guard to MDX doc generator](wu/WU-1792.yaml)
 
 ## Completed
 
