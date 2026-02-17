@@ -782,7 +782,8 @@ export async function initializeKernelRuntime(
     });
   }
 
-  const toolCapabilityResolver = options.toolCapabilityResolver ?? defaultRuntimeToolCapabilityResolver;
+  const toolCapabilityResolver =
+    options.toolCapabilityResolver ?? defaultRuntimeToolCapabilityResolver;
   for (const loadedPack of loadedPacks) {
     for (const tool of loadedPack.manifest.tools) {
       const capability = await toolCapabilityResolver({

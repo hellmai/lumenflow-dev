@@ -88,9 +88,7 @@ describe('pack loader + integrity pinning', () => {
       `${join(packRoot, 'tool-impl', 'git-tools.ts')}#gitStatusTool`,
     );
 
-    expect(() => resolvePackToolEntryPath(packRoot, '../escape.ts')).toThrow(
-      'outside pack root',
-    );
+    expect(() => resolvePackToolEntryPath(packRoot, '../escape.ts')).toThrow('outside pack root');
   });
 
   it('validates DomainPack manifest schema fields', () => {
