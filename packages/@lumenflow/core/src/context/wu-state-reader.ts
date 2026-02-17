@@ -96,6 +96,7 @@ export async function readWuState(wuId: string, repoRoot: string): Promise<WuSta
     let effectiveStatus = status;
 
     try {
+      // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; workflow tooling requires git
       const worktreeList = execFileSync('git', ['worktree', 'list', '--porcelain'], {
         encoding: 'utf-8',
         cwd: repoRoot,
@@ -116,6 +117,7 @@ export async function readWuState(wuId: string, repoRoot: string): Promise<WuSta
       if (worktreeBranch) {
         const yamlRelPath = WU_PATHS.WU(normalizedId);
         try {
+          // eslint-disable-next-line sonarjs/no-os-command-from-path -- git resolved from PATH; workflow tooling requires git
           const branchContent = execFileSync('git', ['show', `${worktreeBranch}:${yamlRelPath}`], {
             encoding: 'utf-8',
             cwd: repoRoot,
