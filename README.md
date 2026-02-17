@@ -2,15 +2,15 @@
 
 # LumenFlow
 
-**Give your AI agent a workflow it can't break.**
+**The governance layer between AI agents and the world.**
 
 [![npm version](https://img.shields.io/npm/v/@lumenflow/cli.svg?color=0366d6)](https://www.npmjs.com/package/@lumenflow/cli)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![License: AGPL v3](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-lumenflow.dev-8b5cf6.svg)](https://lumenflow.dev)
 
-LumenFlow is a workflow framework for AI-native software development.<br/>
-It gives coding agents structure they can follow, guardrails they can't bypass,<br/>
-and memory that survives context windows.
+LumenFlow is an open-source runtime kernel for AI agents.<br/>
+It controls what agents can do, proves what they did,<br/>
+and enforces policies they can't bypass.
 
 [Get Started](#quick-start) &bull; [Documentation](https://lumenflow.dev) &bull; [Medium Article](https://medium.com/@hellmai)
 
@@ -20,16 +20,64 @@ and memory that survives context windows.
 
 ## The Problem
 
-AI coding agents are powerful but chaotic. They edit the wrong branch, forget what they were doing after context compaction, skip tests, push broken code, and have no concept of "done." The more autonomous you make them, the more they need structure.
+AI agents today operate in the wild. They call tools with no scoping, leave no audit trail, and the only safety mechanism is "trust the prompt." Every agent framework gives agents tools -- none governs _how_ those tools are used.
+
+The more autonomous agents become, the more they need an execution boundary that's enforced by the system, not hoped for in a system prompt.
 
 ## The Solution
 
-LumenFlow wraps your AI agent's workflow in a state machine. Every task becomes a **Work Unit (WU)** that moves through a defined lifecycle: `ready` -> `in_progress` -> `done`. The framework enforces the rules at every step through git hooks, CLI validation, and quality gates -- so the agent literally _can't_ skip steps.
+LumenFlow is the missing kernel between AI agents and the real world. Like an OS kernel mediates between programs and hardware, LumenFlow mediates between agents and everything they touch -- filesystem, git, APIs, databases, cloud services.
 
 ```
-npx lumenflow init       # scaffold into any repo
-lumenflow doctor         # verify safety is active
+  Programs → OS Kernel → Hardware
+  AI Agents → LumenFlow → The World
 ```
+
+### Four Guarantees
+
+| Guarantee | How |
+|-----------|-----|
+| **Agents can't go off-script** | 4-level scope intersection: workspace > lane > task > tool |
+| **Every action is provable** | Immutable evidence receipts with content-addressed inputs |
+| **Policies are inescapable** | Deny-wins cascade evaluated at every tool call |
+| **Isolation is OS-enforced** | bwrap sandbox with write confinement and secret deny overlays |
+
+## Architecture
+
+```
+┌───────────────────────────────────────────────┐
+│              AI AGENTS                         │
+│     Claude  ·  GPT  ·  Gemini  ·  Custom      │
+└──────────────────────┬────────────────────────┘
+                       │
+              ┌────────▼────────┐
+              │    SURFACES     │
+              │  CLI · MCP · API │
+              └────────┬────────┘
+                       │
+┏━━━━━━━━━━━━━━━━━━━━━━▼━━━━━━━━━━━━━━━━━━━━━━━┓
+┃         LUMENFLOW KERNEL                       ┃
+┃                                                ┃
+┃  TaskEngine · ToolHost · PolicyEngine          ┃
+┃  EvidenceStore · Sandbox · EventStore          ┃
+┃                                                ┃
+┗━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┛
+                       │
+         ┌─────────────┼─────────────┐
+         │             │             │
+  ┌──────▼──────┐ ┌────▼─────┐ ┌────▼─────┐
+  │  SOFTWARE   │ │ CUSTOMER │ │  YOUR    │
+  │  DELIVERY   │ │ SUPPORT  │ │  DOMAIN  │
+  │  PACK       │ │ PACK     │ │  PACK    │
+  └──────┬──────┘ └────┬─────┘ └────┬─────┘
+         │             │             │
+  ┌──────▼─────────────▼─────────────▼──────┐
+  │            THE WORLD                     │
+  │  filesystem · git · APIs · databases     │
+  └─────────────────────────────────────────┘
+```
+
+The kernel is **domain-agnostic**. Software delivery is "pack #1" -- a plugin that loads git tools, worktree isolation, quality gates, and lane-based work partitioning into the kernel. You can build packs for any domain.
 
 ## Quick Start
 
@@ -37,11 +85,11 @@ lumenflow doctor         # verify safety is active
 npx lumenflow init
 ```
 
-That's it. LumenFlow scaffolds into your existing repo with:
+LumenFlow scaffolds into your existing repo with:
 
 - Git hooks that enforce workflow compliance
 - Quality gates (format, lint, typecheck, test)
-- WU templates and state management
+- Work Unit templates and state management
 - Agent onboarding docs that teach your AI the workflow
 
 ### Your First Work Unit
@@ -60,67 +108,70 @@ pnpm wu:done --id WU-42     # merge to main, cleanup
 
 ## Key Features
 
-### Workflow Enforcement
+### Scoped Tool Execution
 
-Git hooks and CLI validation ensure agents can't edit outside their worktree, push without passing gates, or skip the completion ceremony. The rules aren't suggestions -- they're walls.
+Every tool call passes through a 4-level scope intersection: workspace, lane, task, and tool-level permissions must all agree before execution proceeds. An agent can only use tools its current task allows, in the directories its lane permits.
+
+### Immutable Evidence
+
+Every tool execution produces an evidence receipt -- a cryptographic record of what was requested, what was allowed, what was enforced, and the content-addressed inputs. These receipts are append-only and tamper-evident.
+
+### Policy Engine
+
+Policies cascade through four levels (workspace, lane, pack, task) with deny-wins semantics. A restrictive policy at any level cannot be loosened by a lower level. Policies are evaluated at every tool call, not just at task boundaries.
+
+### OS-Level Sandbox
+
+Tool execution runs inside a bwrap sandbox with write confinement. Secrets directories (`~/.ssh`, `~/.aws`, `~/.gnupg`, `.env`) are blocked with deny overlays. The sandbox is enforced by the OS, not by the agent runtime.
 
 ### Worktree Isolation
 
-Every WU gets its own git worktree. Agents work in isolation without polluting `main`. Multiple agents can work in parallel on different WUs without stepping on each other.
+Every task gets its own git worktree. Agents work in isolation without polluting `main`. Multiple agents can work in parallel on different tasks without stepping on each other.
 
 ### Memory & Context Recovery
 
-Sessions get checkpointed automatically. When an AI agent hits context limits and compacts, LumenFlow restores the working context -- what WU they're on, what's left to do, and what happened before.
-
-### Quality Gates
-
-Format, lint, typecheck, and test gates run before any merge to main. Agents can't skip them. Pre-existing failures are distinguished from new ones so agents aren't blocked by tech debt they didn't create.
+Sessions get checkpointed automatically. When an AI agent hits context limits, LumenFlow restores the working context -- what task they're on, what's left to do, and what happened before.
 
 ### Multi-Agent Coordination
 
 Multiple AI agents can work the same codebase simultaneously. Lane-based work partitioning, branch locking, and memory signals prevent conflicts. Agents can delegate sub-tasks to other agents with full context handoff.
 
-### Initiative Orchestration
-
-Large projects spanning multiple WUs are coordinated through Initiatives. Break down an epic into phased WUs, track progress, and maintain dependency ordering across agents.
-
-## How It Works
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                     Your Repository                      │
-│                                                         │
-│  ┌──────────┐   ┌──────────┐   ┌──────────┐           │
-│  │ wu:create │──>│ wu:claim  │──>│ worktree │           │
-│  │ (spec)    │   │ (branch)  │   │ (isolated)│           │
-│  └──────────┘   └──────────┘   └────┬─────┘           │
-│                                      │                   │
-│                                      v                   │
-│  ┌──────────┐   ┌──────────┐   ┌──────────┐           │
-│  │ wu:done   │<──│ wu:prep   │<──│  gates   │           │
-│  │ (merge)   │   │ (validate)│   │ (quality) │           │
-│  └──────────┘   └──────────┘   └──────────┘           │
-│                                                         │
-│  .lumenflow/          hooks/          worktrees/        │
-│  ├── state/           ├── pre-commit  ├── wu-42/        │
-│  ├── stamps/          ├── pre-push    └── wu-43/        │
-│  └── memory/          └── commit-msg                    │
-└─────────────────────────────────────────────────────────┘
-```
-
 ## Packages
 
-| Package                                                     | Description                                                    |
-| ----------------------------------------------------------- | -------------------------------------------------------------- |
-| [`@lumenflow/core`](packages/@lumenflow/core)               | WU state machine, validators, git adapters, spawn management   |
-| [`@lumenflow/cli`](packages/@lumenflow/cli)                 | 60+ CLI commands: wu:claim, wu:done, gates, metrics, and more  |
-| [`@lumenflow/memory`](packages/@lumenflow/memory)           | Session tracking, context recovery, agent coordination signals |
-| [`@lumenflow/agent`](packages/@lumenflow/agent)             | Agent definitions, skill loading, delegation, verification     |
-| [`@lumenflow/initiatives`](packages/@lumenflow/initiatives) | Multi-phase project orchestration across WUs and lanes         |
-| [`@lumenflow/metrics`](packages/@lumenflow/metrics)         | DORA metrics, flow analysis, cycle time tracking               |
-| [`@lumenflow/shims`](packages/@lumenflow/shims)             | Git and pnpm safety shims for hook enforcement                 |
-| [`@lumenflow/mcp`](packages/@lumenflow/mcp)                 | Model Context Protocol server for IDE integration              |
-| [`lumenflow`](packages/lumenflow)                           | Convenience wrapper so `npx lumenflow init` works              |
+### Kernel
+
+| Package | Description |
+|---------|-------------|
+| [`@lumenflow/kernel`](packages/@lumenflow/kernel) | Task engine, tool host, policy engine, evidence store, sandbox |
+| [`@lumenflow/runtime`](packages/@lumenflow/runtime) | Daemon process: scheduler, session manager, Unix socket transport |
+| [`@lumenflow/control-plane-sdk`](packages/@lumenflow/control-plane-sdk) | Interface for remote policy sync and fleet management (Apache 2.0) |
+
+### Packs
+
+| Package | Description |
+|---------|-------------|
+| [`@lumenflow/packs/software-delivery`](packages/@lumenflow/packs/software-delivery) | Git tools, worktree isolation, quality gates, lane locking |
+
+### Surfaces
+
+| Package | Description |
+|---------|-------------|
+| [`@lumenflow/surfaces/cli`](packages/@lumenflow/surfaces/cli) | CLI surface for terminal-based agent interaction |
+| [`@lumenflow/surfaces/mcp`](packages/@lumenflow/surfaces/mcp) | MCP surface for IDE integration |
+
+### Workflow (Software Delivery Pack)
+
+| Package | Description |
+|---------|-------------|
+| [`@lumenflow/core`](packages/@lumenflow/core) | WU state machine, validators, git adapters, spawn management |
+| [`@lumenflow/cli`](packages/@lumenflow/cli) | 60+ CLI commands: wu:claim, wu:done, gates, metrics, and more |
+| [`@lumenflow/memory`](packages/@lumenflow/memory) | Session tracking, context recovery, agent coordination signals |
+| [`@lumenflow/agent`](packages/@lumenflow/agent) | Agent definitions, skill loading, delegation, verification |
+| [`@lumenflow/initiatives`](packages/@lumenflow/initiatives) | Multi-phase project orchestration across WUs and lanes |
+| [`@lumenflow/metrics`](packages/@lumenflow/metrics) | DORA metrics, flow analysis, cycle time tracking |
+| [`@lumenflow/shims`](packages/@lumenflow/shims) | Git and pnpm safety shims for hook enforcement |
+| [`@lumenflow/mcp`](packages/@lumenflow/mcp) | Model Context Protocol server for IDE integration |
+| [`lumenflow`](packages/lumenflow) | Convenience wrapper so `npx lumenflow init` works |
 
 ## Agent Integrations
 
@@ -158,28 +209,14 @@ Run LumenFlow gates in CI with language-specific presets:
 
 ## Contributing
 
-We use LumenFlow to build LumenFlow -- but you don't need to know the internal workflow to contribute.
-
-**External contributors** fork the repo, make changes on a branch, and open a pull request. One maintainer review is required before merge.
-
-```bash
-# Fork on GitHub, then:
-git clone https://github.com/<you>/lumenflow.git
-cd lumenflow && pnpm install && pnpm build
-git checkout -b my-fix
-# make changes, then:
-pnpm lint && pnpm typecheck && pnpm test
-git push origin my-fix
-# open PR on GitHub
-```
-
-**Maintainers** use LumenFlow's trunk-based WU workflow (`wu:create` -> `wu:claim` -> `wu:prep` -> `wu:done`) which pushes directly to main. This is how the codebase is developed day-to-day.
-
-See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for full details.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines, CLA details, and development setup.
 
 ## License
 
-[Apache-2.0](LICENSE)
+LumenFlow uses a dual-license model:
+
+- **Kernel, packs, surfaces, runtime** -- [AGPL-3.0](LICENSE)
+- **Control Plane SDK** -- [Apache-2.0](packages/@lumenflow/control-plane-sdk/LICENSE)
 
 ---
 
