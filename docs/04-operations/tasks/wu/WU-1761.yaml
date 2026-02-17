@@ -2,7 +2,7 @@ id: WU-1761
 title: 'Harden sandbox: allowlist mounts and reserved .lumenflow scope enforcement'
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -27,7 +27,7 @@ blocked_by:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
-assigned_to: noreply@anthropic.com
+assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
@@ -42,3 +42,11 @@ acceptance:
   - bwrap uses allowlist mount strategy instead of deny-overlay on full root mount
   - Kernel scope validation rejects reserved .lumenflow/** path scopes for pack/tool-declared writes
   - Security-focused tests cover sandbox mount isolation and reserved scope enforcement
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1761
+claimed_at: 2026-02-17T12:42:50.724Z
+baseline_main_sha: 544ba5a9e90137273cc01fde8ecb14e17ef1dca9
+session_id: 033f6a24-370f-4de5-a5e8-060ee2531723
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T12:42:50.729Z

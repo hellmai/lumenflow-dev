@@ -1463,3 +1463,4 @@
 {"type":"complete","wuId":"WU-1760","timestamp":"2026-02-17T12:36:25.584Z"}
 {"type":"claim","wuId":"WU-1767","timestamp":"2026-02-17T12:37:21.539Z","lane":"Framework: Core Lifecycle","title":"Harden lane lock CAS and migrate pack-owned runtime paths"}
 {"type":"complete","wuId":"WU-1767","timestamp":"2026-02-17T12:42:00.558Z"}
+{"type":"claim","wuId":"WU-1761","lane":"Framework: Core Lifecycle","title":"Harden sandbox: allowlist mounts and reserved .lumenflow scope enforcement","timestamp":"2026-02-17T12:42:50.769Z"}
