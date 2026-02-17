@@ -20,22 +20,22 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1789 — Migrate tool:execute path to direct KernelRuntime execution](wu/WU-1789.yaml) — Framework: Core Lifecycle
-- [WU-1788 — Migrate task:inspect to direct KernelRuntime replay path](wu/WU-1788.yaml) — Framework: Core Lifecycle
-- [WU-1787 — Migrate task:block and task:unblock to direct KernelRuntime calls](wu/WU-1787.yaml) — Framework: Core Lifecycle
-- [WU-1786 — Migrate task:complete path to direct KernelRuntime calls](wu/WU-1786.yaml) — Framework: Core Lifecycle
-- [WU-1785 — Migrate task:create path to direct KernelRuntime calls](wu/WU-1785.yaml) — Framework: Core Lifecycle
-- [WU-1784 — Extract remaining runtime string literal constants](wu/WU-1784.yaml) — Framework: Core Lifecycle
-- [WU-1783 — Housekeeping: license consistency, dangling plan URIs, and metric wording](wu/WU-1783.yaml) — Content: Specs Governance
-- [WU-1782 — Bound evidence receipt indexing and improve lane-lock cleanup observability](wu/WU-1782.yaml) — Framework: Core Lifecycle
-- [WU-1781 — Sandbox readonly mount depth and prefix validation](wu/WU-1781.yaml) — Framework: Core Lifecycle
-- [WU-1780 — Enforce workspace tamper baseline and missing-config handling](wu/WU-1780.yaml) — Framework: Core Lifecycle
-- [WU-1779 — Wire real SandboxSubprocessDispatcher into runtime initialization](wu/WU-1779.yaml) — Framework: Core Lifecycle
-- [WU-1778 — Manifest least-privilege runtime capability resolver](wu/WU-1778.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
+- [WU-1778 — Manifest least-privilege runtime capability resolver](wu/WU-1778.yaml) — Framework: Core Lifecycle
+- [WU-1779 — Wire real SandboxSubprocessDispatcher into runtime initialization](wu/WU-1779.yaml) — Framework: Core Lifecycle
+- [WU-1780 — Enforce workspace tamper baseline and missing-config handling](wu/WU-1780.yaml) — Framework: Core Lifecycle
+- [WU-1781 — Sandbox readonly mount depth and prefix validation](wu/WU-1781.yaml) — Framework: Core Lifecycle
+- [WU-1782 — Bound evidence receipt indexing and improve lane-lock cleanup observability](wu/WU-1782.yaml) — Framework: Core Lifecycle
+- [WU-1783 — Housekeeping: license consistency, dangling plan URIs, and metric wording](wu/WU-1783.yaml) — Content: Specs Governance
+- [WU-1784 — Extract remaining runtime string literal constants](wu/WU-1784.yaml) — Framework: Core Lifecycle
+- [WU-1785 — Migrate task:create path to direct KernelRuntime calls](wu/WU-1785.yaml) — Framework: Core Lifecycle
+- [WU-1786 — Migrate task:complete path to direct KernelRuntime calls](wu/WU-1786.yaml) — Framework: Core Lifecycle
+- [WU-1787 — Migrate task:block and task:unblock to direct KernelRuntime calls](wu/WU-1787.yaml) — Framework: Core Lifecycle
+- [WU-1788 — Migrate task:inspect to direct KernelRuntime replay path](wu/WU-1788.yaml) — Framework: Core Lifecycle
+- [WU-1789 — Migrate tool:execute path to direct KernelRuntime execution](wu/WU-1789.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
