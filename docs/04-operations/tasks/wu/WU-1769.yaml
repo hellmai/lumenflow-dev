@@ -2,7 +2,7 @@ id: WU-1769
 title: Move orphan reconciliation off hot path and add evidence task indexing
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-17
 code_paths:
@@ -38,3 +38,11 @@ acceptance:
   - Orphan reconciliation runs in startup/shutdown lifecycle hooks rather than per tool execution
   - EvidenceStore supports indexed reads filtered by task ID
   - ToolHost hot path no longer invokes orphan reconciliation for every execution
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1769
+claimed_at: 2026-02-17T13:08:34.418Z
+baseline_main_sha: 5a5f890829bfae4de1d6e8037176b0526bd9b7a3
+session_id: 639767a4-8ca1-411e-86a8-e17e6040da02
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T13:08:34.423Z
