@@ -2,7 +2,7 @@ id: WU-1793
 title: 'Phase 4 metric closure: align parity baseline with runtime-registered tools'
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -55,3 +55,6 @@ session_id: a7370d96-e75d-41a3-a96f-c684cfb98779
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T22:53:44.918Z
+locked: true
+completed_at: 2026-02-17T23:00:41.182Z
+completed: 2026-02-17

@@ -21,7 +21,7 @@ phases:
     status: pending
   - id: 4
     title: Metric closure and runCliCommand deprecation path
-    status: pending
+    status: in_progress
 success_metrics:
   - Migrated commands execute through KernelRuntime without runCliCommand shell-out
   - MCP and CLI parity gates remain green for migrated commands
