@@ -2,7 +2,7 @@ id: WU-1759
 title: 'Fix EventStore reliability: stale lock recovery and atomic batch append'
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-17
 code_paths:
@@ -23,7 +23,7 @@ phase: 6
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
-assigned_to: noreply@anthropic.com
+assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
@@ -39,3 +39,11 @@ acceptance:
   - Stale lock detected and recovered when owning process is dead
   - New appendAll method writes multiple events under single lock
   - claimTask and completeTask use appendAll for atomic writes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1759
+claimed_at: 2026-02-17T12:22:13.677Z
+baseline_main_sha: 0f70adc8c1042bfafe0f24fe1217d0bfee2ed28c
+session_id: b1245ecd-6158-445a-baf5-02e820e341ca
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T12:22:13.682Z

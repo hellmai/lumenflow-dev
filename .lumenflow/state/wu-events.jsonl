@@ -1457,3 +1457,4 @@
 {"type":"complete","wuId":"WU-1757","timestamp":"2026-02-17T12:16:08.616Z"}
 {"type":"claim","wuId":"WU-1758","timestamp":"2026-02-17T12:17:32.737Z","lane":"Framework: Core Lifecycle","title":"Fix security boundary: fs:read path validation and git:status command injection"}
 {"type":"complete","wuId":"WU-1758","timestamp":"2026-02-17T12:21:44.097Z"}
+{"type":"claim","wuId":"WU-1759","lane":"Framework: Core Lifecycle","title":"Fix EventStore reliability: stale lock recovery and atomic batch append","timestamp":"2026-02-17T12:22:13.721Z"}
