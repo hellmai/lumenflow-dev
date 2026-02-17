@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1761 — Harden sandbox: restrict bwrap root mount, fix lane lock TOCTOU, fix MCP schemas](wu/WU-1761.yaml) — Framework: Core Lifecycle
 - [WU-1760 — Fix runtime security: Unix socket permissions, JSON validation, daemon params](wu/WU-1760.yaml) — Framework: Core Lifecycle
 - [WU-1759 — Fix EventStore reliability: stale lock recovery and atomic batch append](wu/WU-1759.yaml) — Framework: Core Lifecycle
 - [WU-1758 — Fix security boundary: fs:read path validation and git:status command injection](wu/WU-1758.yaml) — Framework: Core Lifecycle
