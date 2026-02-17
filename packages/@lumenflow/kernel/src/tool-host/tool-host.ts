@@ -59,7 +59,9 @@ function normalizeScopePattern(pattern: string): string {
   return pattern.replaceAll('\\', '/').replace(/^\.\//, '');
 }
 
-function isReservedFrameworkWriteScope(scope: ToolScope): boolean {
+function isReservedFrameworkWriteScope(
+  scope: ToolScope,
+): scope is Extract<ToolScope, { type: 'path'; access: 'write' }> {
   if (scope.type !== 'path' || scope.access !== 'write') {
     return false;
   }
