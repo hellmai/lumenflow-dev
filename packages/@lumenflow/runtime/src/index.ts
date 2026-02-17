@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 export * from './client/daemon-client.js';
 export * from './daemon/runtime-daemon.js';
 export * from './scheduler/task-scheduler.js';

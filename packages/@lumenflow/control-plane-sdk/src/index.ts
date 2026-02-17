@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: Apache-2.0
+
 import type { KernelEvent as KernelEventFromKernel } from '@lumenflow/kernel';
 import type { KernelEvent as KernelEventFromSdk } from './sync-port.js';
 

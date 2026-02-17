@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import micromatch from 'micromatch';
 import type { ToolScope } from '../kernel.schemas.js';
 

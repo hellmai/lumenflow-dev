@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 export const SOFTWARE_DELIVERY_PACK_ID = 'software-delivery' as const;
 export const SOFTWARE_DELIVERY_PACK_VERSION = '0.1.0' as const;
 export const SOFTWARE_DELIVERY_DOMAIN = SOFTWARE_DELIVERY_PACK_ID;

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { randomUUID } from 'node:crypto';
 import { intersectToolScopes } from './scope-intersection.js';
 import {

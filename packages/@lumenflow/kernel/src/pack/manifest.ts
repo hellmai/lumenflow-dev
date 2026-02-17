@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { z } from 'zod';
 import { POLICY_TRIGGERS } from '../policy/policy-engine.js';
 

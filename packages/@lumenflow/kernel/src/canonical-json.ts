@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { createHash } from 'node:crypto';
 import { parse as parseYaml } from 'yaml';
 import { SHA256_ALGORITHM, UTF8_ENCODING } from './shared-constants.js';
