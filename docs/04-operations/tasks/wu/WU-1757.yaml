@@ -9,7 +9,10 @@ code_paths:
   - packages/@lumenflow/kernel/src/evidence/evidence-store.ts
   - packages/@lumenflow/kernel/src/canonical-json.ts
 tests:
-  manual: []
+  manual:
+    - Run evidence-store unit tests and manually verify persisted input CAS file contains canonical
+      JSON payload (not hash-of-hash) while concurrent appendTrace calls preserve valid NDJSON
+      lines.
   unit:
     - packages/@lumenflow/kernel/src/__tests__/evidence-store.test.ts
   e2e: []
@@ -28,7 +31,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: EvidenceStore.persistInput uses canonical_json() which returns a SHA-256 hash, then hashes that hash again. CAS files store hashes not data, making audit trail irrecoverable. Also appendTrace has no file lock, allowing concurrent trace corruption.
+description: EvidenceStore.persistInput uses canonical_json() which returns a SHA-256 hash, then
+  hashes that hash again. CAS files store hashes not data, making audit trail irrecoverable. Also
+  appendTrace has no file lock, allowing concurrent trace corruption.
 acceptance:
   - persistInput uses canonicalStringify instead of canonical_json
   - CAS inputRef files contain actual serialized input data
