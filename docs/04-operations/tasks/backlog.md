@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1780 — Enforce workspace tamper baseline and missing-config handling](wu/WU-1780.yaml) — Framework: Core Lifecycle
 - [WU-1779 — Wire real SandboxSubprocessDispatcher into runtime initialization](wu/WU-1779.yaml) — Framework: Core Lifecycle
 - [WU-1778 — Manifest least-privilege runtime capability resolver](wu/WU-1778.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
