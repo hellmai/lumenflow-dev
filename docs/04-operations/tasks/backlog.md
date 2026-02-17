@@ -28,14 +28,23 @@ sections:
 - [WU-1758 — Fix security boundary: fs:read path validation and git:status command injection](wu/WU-1758.yaml) — Framework: Core Lifecycle
 - [WU-1759 — Fix EventStore reliability: stale lock recovery and atomic batch append](wu/WU-1759.yaml) — Framework: Core Lifecycle
 - [WU-1760 — Fix runtime security: Unix socket permissions, JSON validation, daemon params](wu/WU-1760.yaml) — Framework: Core Lifecycle
-- [WU-1761 — Harden sandbox: restrict bwrap root mount, fix lane lock TOCTOU, fix MCP schemas](wu/WU-1761.yaml) — Framework: Core Lifecycle
+- [WU-1761 — Harden sandbox: allowlist mounts and reserved .lumenflow scope enforcement](wu/WU-1761.yaml) — Framework: Core Lifecycle
 - [WU-1762 — Harden policy engine: document loosening semantics, fix integrity dev bypass](wu/WU-1762.yaml) — Framework: Core Lifecycle
-- [WU-1763 — Kernel performance: eliminate per-append reload, move orphan reconciliation, add evidence indexing](wu/WU-1763.yaml) — Framework: Core Lifecycle
+- [WU-1763 — Kernel performance: eliminate EventStore per-append reload](wu/WU-1763.yaml) — Framework: Core Lifecycle
 - [WU-1764 — Kernel architecture: package graph integration, exports, DRY cleanup](wu/WU-1764.yaml) — Framework: Core Lifecycle
+- [WU-1767 — Harden lane lock CAS and migrate pack-owned runtime paths](wu/WU-1767.yaml) — Framework: Core Lifecycle
+- [WU-1768 — Fix MCP input schema parity for task tools](wu/WU-1768.yaml) — Framework: Core Lifecycle
+- [WU-1769 — Move orphan reconciliation off hot path and add evidence task indexing](wu/WU-1769.yaml) — Framework: Core Lifecycle
+- [WU-1770 — Wire pack manifest tools into runtime resolver](wu/WU-1770.yaml) — Framework: Core Lifecycle
+- [WU-1771 — Tracer bullet MCP task_claim through KernelRuntime](wu/WU-1771.yaml) — Framework: MCP
+- [WU-1772 — Tracer bullet CLI task:claim through KernelRuntime](wu/WU-1772.yaml) — Framework: CLI Orchestration
+- [WU-1773 — Add workspace hash verification and spec_tampered emission](wu/WU-1773.yaml) — Framework: Core Lifecycle
+- [WU-1774 — Pack integration e2e: load, register, execute, receipt](wu/WU-1774.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1775 — Align lane inference with INIT-029 package topology](wu/WU-1775.yaml) — Content: Specs Governance
 
 ## ⛔ Blocked
 

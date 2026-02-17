@@ -1451,3 +1451,4 @@
 {"type":"complete","wuId":"WU-1766","timestamp":"2026-02-17T10:31:25.340Z"}
 {"type":"claim","wuId":"WU-1756","timestamp":"2026-02-17T11:26:52.043Z","lane":"Content: Specs Governance","title":"INIT-029 remediation: reopen initiative and create fix WUs"}
 {"type":"complete","wuId":"WU-1756","timestamp":"2026-02-17T11:43:16.957Z"}
+{"type":"claim","wuId":"WU-1775","lane":"Content: Specs Governance","title":"Align lane inference with INIT-029 package topology","timestamp":"2026-02-17T11:44:21.290Z"}

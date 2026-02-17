@@ -2,7 +2,7 @@ id: WU-1775
 title: Align lane inference with INIT-029 package topology
 lane: 'Content: Specs Governance'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -10,8 +10,8 @@ code_paths:
   - .lumenflow.lane-inference.yaml
 tests:
   manual:
-    - Run pnpm wu:infer-lane for representative kernel/runtime/packs/surfaces/cli task-* paths
-      and verify expected lane assignment.
+    - Run pnpm wu:infer-lane for representative kernel/runtime/packs/surfaces/cli task-* paths and
+      verify expected lane assignment.
   unit: []
   e2e: []
 artifacts:
@@ -38,3 +38,11 @@ acceptance:
   - Lane mappings explicitly cover packages/@lumenflow/packs/** and packages/@lumenflow/surfaces/**
   - Lane mappings explicitly cover packages/@lumenflow/cli/src/task-*.ts
   - Lane inference outputs expected lanes for representative topology paths
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-specs-governance-wu-1775
+claimed_at: 2026-02-17T11:44:21.238Z
+baseline_main_sha: 90260020e7c7de29e64a45d24c15644dcfbe18e5
+session_id: 0391d572-1361-46dc-9473-205c5157fa70
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T11:44:21.245Z
