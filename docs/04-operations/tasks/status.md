@@ -5,6 +5,7 @@ _Last updated: 2026-02-17_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1768 — Fix MCP input schema parity for task tools](wu/WU-1768.yaml)
 
 ## Completed
 
