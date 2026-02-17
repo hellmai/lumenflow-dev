@@ -12,7 +12,9 @@ code_paths:
   - packages/@lumenflow/cli/src/task-claim.ts
   - packages/@lumenflow/cli/src/__tests__/task-claim.test.ts
 tests:
-  manual: []
+  manual:
+    - Invoke migrated task:complete via MCP runtime path and verify no runCliCommand shell-out
+      occurs while parity gates still pass.
   unit:
     - packages/@lumenflow/mcp/src/__tests__/runtime-task-tools.test.ts
     - packages/@lumenflow/cli/src/__tests__/task-claim.test.ts
@@ -36,8 +38,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Extend runtime command migration in old MCP/CLI packages by routing task:complete through KernelRuntime with parity-safe gating and shell-out elimination checks.
+description: Extend runtime command migration in old MCP/CLI packages by routing task:complete
+  through KernelRuntime with parity-safe gating and shell-out elimination checks.
 acceptance:
-  - task:complete executes through KernelRuntime in MCP and CLI paths without runCliCommand shell-out.
+  - task:complete executes through KernelRuntime in MCP and CLI paths without runCliCommand
+    shell-out.
   - Runtime task tool registration and CLI command wiring follow tracer-bullet parity-safe pattern.
   - Tests assert no runCliCommand usage for migrated task:complete flow.
