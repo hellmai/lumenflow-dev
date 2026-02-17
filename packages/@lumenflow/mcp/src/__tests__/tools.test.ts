@@ -248,9 +248,9 @@ describe('MCP tools', () => {
     });
 
     it(`should include ${RuntimeTaskToolNames.TASK_COMPLETE} in the production MCP registry aggregate`, () => {
-      expect(
-        registeredTools.some((tool) => tool.name === RuntimeTaskToolNames.TASK_COMPLETE),
-      ).toBe(true);
+      expect(registeredTools.some((tool) => tool.name === RuntimeTaskToolNames.TASK_COMPLETE)).toBe(
+        true,
+      );
     });
   });
 
