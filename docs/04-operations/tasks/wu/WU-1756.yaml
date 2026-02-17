@@ -1,15 +1,16 @@
 id: WU-1756
 title: 'INIT-029 remediation: reopen initiative and create fix WUs'
-lane: 'Framework: Core Lifecycle'
+lane: 'Content: Specs Governance'
 type: refactor
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-17
 code_paths:
   - docs/04-operations/tasks/initiatives/INIT-029.yaml
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -20,15 +21,25 @@ phase: 6
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
-assigned_to: noreply@anthropic.com
+assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Code review of INIT-029 found 10 Critical and 17 Major issues across the kernel security boundary, data integrity, and concurrency. This WU reopens the initiative, adds Phase 6 (Remediation), and creates follow-up WUs for all findings.
+description: Code review of INIT-029 found 10 Critical and 17 Major issues across the kernel
+  security boundary, data integrity, and concurrency. This WU reopens the initiative, adds Phase 6
+  (Remediation), and creates follow-up WUs for all findings.
 acceptance:
   - INIT-029 status changed to in_progress
   - Phase 6 added with remediation scope
   - P0/P1/P2 remediation WUs created and linked
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-specs-governance-wu-1756
+claimed_at: 2026-02-17T11:26:51.997Z
+baseline_main_sha: 34afb12659f6cafe83cba1186e95fc1dada4c88d
+session_id: 45f88640-aec1-4e36-989b-d75eae0643a2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T11:26:52.002Z
