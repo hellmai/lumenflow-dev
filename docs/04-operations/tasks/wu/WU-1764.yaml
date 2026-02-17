@@ -2,7 +2,7 @@ id: WU-1764
 title: 'Kernel architecture: package graph integration, exports, DRY cleanup'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-17
 code_paths:
@@ -23,7 +23,7 @@ phase: 6
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
-assigned_to: noreply@anthropic.com
+assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
@@ -39,3 +39,11 @@ acceptance:
   - Missing sub-path exports added to barrel and package.json exports map
   - DRY violations extracted into shared utilities
   - README.md and LICENSE files created for kernel package
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1764
+claimed_at: 2026-02-17T16:01:05.726Z
+baseline_main_sha: 11b3739026dd1dae381e79d0bef466439369aa3d
+session_id: 871ee0f5-6e10-4caf-ae96-53a0d3cff825
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T16:01:05.734Z
