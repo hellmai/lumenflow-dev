@@ -1,7 +1,8 @@
-import { mkdtemp, rm, stat } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, stat, writeFile, mkdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { canonical_json, canonicalStringify } from '../canonical-json.js';
 import { EvidenceStore } from '../evidence/index.js';
 import type { ToolTraceEntry } from '../kernel.schemas.js';
 
@@ -77,11 +78,29 @@ describe('evidence store', () => {
 
     const first = await store.persistInput(input);
     const second = await store.persistInput(input);
+    const canonical = canonicalStringify(input);
 
     expect(first.inputHash).toHaveLength(64);
+    expect(first.inputHash).toBe(canonical_json(input));
     expect(first.inputRef).toBe(second.inputRef);
     expect(first.inputHash).toBe(second.inputHash);
     await expect(stat(first.inputRef)).resolves.toBeTruthy();
+    await expect(readFile(first.inputRef, 'utf8')).resolves.toBe(canonical);
+  });
+
+  it('respects trace lock files when appending traces', async () => {
+    const store = new EvidenceStore({
+      evidenceRoot,
+      lockRetryDelayMs: 1,
+      lockMaxRetries: 1,
+    });
+    const lockPath = join(evidenceRoot, 'traces', 'tool-traces.lock');
+    await mkdir(join(evidenceRoot, 'traces'), { recursive: true });
+    await writeFile(lockPath, 'busy', 'utf8');
+
+    await expect(store.appendTrace(makeStartedEntry('receipt-locked'))).rejects.toThrow(
+      /acquire evidence-store lock/i,
+    );
   });
 
   it('reconciles orphaned started entries with synthetic crashed finished entries', async () => {

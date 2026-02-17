@@ -1,15 +1,20 @@
-import { appendFile, mkdir, open, readFile } from 'node:fs/promises';
+import { appendFile, mkdir, open, readFile, rm } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
-import { canonical_json } from '../canonical-json.js';
+import { canonicalStringify } from '../canonical-json.js';
 import {
   ToolTraceEntrySchema,
   type PolicyDecision,
   type ToolTraceEntry,
 } from '../kernel.schemas.js';
 
+const DEFAULT_LOCK_RETRY_DELAY_MS = 20;
+const DEFAULT_LOCK_MAX_RETRIES = 250;
+
 export interface EvidenceStoreOptions {
   evidenceRoot: string;
+  lockRetryDelayMs?: number;
+  lockMaxRetries?: number;
 }
 
 export interface PersistInputResult {
@@ -21,21 +26,35 @@ function sha256Hex(content: string): string {
   return createHash('sha256').update(content).digest('hex');
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 export class EvidenceStore {
   private readonly tracesDir: string;
   private readonly tracesFilePath: string;
+  private readonly tracesLockFilePath: string;
   private readonly inputsDir: string;
+  private readonly lockRetryDelayMs: number;
+  private readonly lockMaxRetries: number;
 
   constructor(options: EvidenceStoreOptions) {
     this.tracesDir = join(options.evidenceRoot, 'traces');
     this.tracesFilePath = join(this.tracesDir, 'tool-traces.jsonl');
+    this.tracesLockFilePath = join(this.tracesDir, 'tool-traces.lock');
     this.inputsDir = join(options.evidenceRoot, 'inputs');
+    this.lockRetryDelayMs = options.lockRetryDelayMs ?? DEFAULT_LOCK_RETRY_DELAY_MS;
+    this.lockMaxRetries = options.lockMaxRetries ?? DEFAULT_LOCK_MAX_RETRIES;
   }
 
   async appendTrace(entry: ToolTraceEntry): Promise<void> {
     const validated = ToolTraceEntrySchema.parse(entry);
-    await mkdir(this.tracesDir, { recursive: true });
-    await appendFile(this.tracesFilePath, `${JSON.stringify(validated)}\n`, 'utf8');
+    await this.withFileLock(async () => {
+      await mkdir(this.tracesDir, { recursive: true });
+      await appendFile(this.tracesFilePath, `${JSON.stringify(validated)}\n`, 'utf8');
+    });
   }
 
   async readTraces(): Promise<ToolTraceEntry[]> {
@@ -62,7 +81,7 @@ export class EvidenceStore {
   }
 
   async persistInput(input: unknown): Promise<PersistInputResult> {
-    const serialized = canonical_json(input);
+    const serialized = canonicalStringify(input);
     const inputHash = sha256Hex(serialized);
     const inputRef = join(this.inputsDir, inputHash);
     await mkdir(this.inputsDir, { recursive: true });
@@ -127,5 +146,32 @@ export class EvidenceStore {
     }
 
     return reconciled;
+  }
+
+  private async withFileLock<T>(operation: () => Promise<T>): Promise<T> {
+    await mkdir(this.tracesDir, { recursive: true });
+
+    for (let attempt = 0; attempt <= this.lockMaxRetries; attempt += 1) {
+      let handle: Awaited<ReturnType<typeof open>> | null = null;
+      try {
+        handle = await open(this.tracesLockFilePath, 'wx');
+        const result = await operation();
+        await handle.close();
+        await rm(this.tracesLockFilePath, { force: true });
+        return result;
+      } catch (error) {
+        const nodeError = error as NodeJS.ErrnoException;
+        if (handle) {
+          await handle.close();
+        }
+        if (nodeError.code === 'EEXIST' && attempt < this.lockMaxRetries) {
+          await sleep(this.lockRetryDelayMs);
+          continue;
+        }
+        break;
+      }
+    }
+
+    throw new Error(`Failed to acquire evidence-store lock at ${this.tracesLockFilePath}`);
   }
 }
