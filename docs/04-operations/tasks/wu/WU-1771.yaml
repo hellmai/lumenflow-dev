@@ -13,6 +13,7 @@ code_paths:
   - packages/@lumenflow/mcp/src/tools-shared.ts
   - packages/@lumenflow/mcp/src/tools/runtime-task-constants.ts
   - apps/docs/src/content/docs/reference/cli.mdx
+  - packages/@lumenflow/cli/src/git-log.ts
 tests:
   manual:
     - Start MCP server
@@ -23,6 +24,8 @@ tests:
     - packages/@lumenflow/mcp/src/__tests__/tools.test.ts
     - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
     - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
+    - packages/@lumenflow/cli/src/__tests__/gates-config.test.ts
+    - packages/@lumenflow/cli/src/__tests__/git-operations.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1771.done
