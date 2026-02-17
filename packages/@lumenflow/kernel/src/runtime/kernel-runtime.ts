@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { access, mkdir, open, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import YAML from 'yaml';

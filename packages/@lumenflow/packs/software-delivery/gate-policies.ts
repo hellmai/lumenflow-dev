@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { SOFTWARE_DELIVERY_PACK_ID, SOFTWARE_DELIVERY_POLICY_ID_PREFIX } from './constants.js';
 
 export const SOFTWARE_DELIVERY_GATE_NAMES = [

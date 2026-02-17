@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 export type TaskPriority = 'P0' | 'P1' | 'P2' | 'P3';
 
 export interface ScheduledTask {

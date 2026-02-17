@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import type { PolicyDecision } from '../kernel.schemas.js';
 
 export const POLICY_TRIGGERS = {

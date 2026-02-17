@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { builtinModules } from 'node:module';
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';

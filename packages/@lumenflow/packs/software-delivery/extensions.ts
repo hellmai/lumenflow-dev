@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { SOFTWARE_DELIVERY_DOMAIN } from './constants.js';
 
 export const SOFTWARE_DELIVERY_EXTENSION_KEY = 'software_delivery';

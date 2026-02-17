@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { createServer, type Server, type Socket } from 'node:net';
 import { chmod, mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
