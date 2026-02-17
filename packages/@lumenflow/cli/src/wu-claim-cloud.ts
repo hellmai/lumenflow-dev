@@ -78,6 +78,31 @@ export function shouldSkipBranchExistsCheck(input: BranchExistsCheckInput): bool
   return input.isCloud;
 }
 
+/**
+ * Input for ensureOnMain bypass decision
+ */
+export interface EnsureOnMainClaimInput {
+  /** Whether cloud mode is active */
+  isCloud?: boolean;
+}
+
+/**
+ * Determine whether to skip ensureOnMain for wu:claim.
+ *
+ * Cloud agents (claude/*, codex/*) operate from existing feature branches.
+ * ensureOnMain would incorrectly reject their claim attempts because they
+ * are not on main and cannot switch to it (hooks block non-worktree edits).
+ *
+ * WU-1766: Mirrors the pattern from wu-done-cloud.ts shouldSkipEnsureOnMainForDone
+ * and wu-create-cloud.ts skipEnsureOnMain.
+ *
+ * @param input - Cloud mode state
+ * @returns true if ensureOnMain should be skipped
+ */
+export function shouldSkipEnsureOnMainForClaim(input: EnsureOnMainClaimInput): boolean {
+  return input.isCloud === true;
+}
+
 export interface BranchClaimExecutionInput {
   claimedMode: string;
   isCloud: boolean;
