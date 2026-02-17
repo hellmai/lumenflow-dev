@@ -23,6 +23,8 @@ dependencies: []
 initiative: INIT-029
 phase: 7
 plan: lumenflow://plans/init-029-execution-plan-v4
+spec_refs:
+  - lumenflow://plans/init-029-execution-plan-v4
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
