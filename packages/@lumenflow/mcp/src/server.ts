@@ -91,10 +91,14 @@ export function createMcpServer(config: McpServerConfig = {}): McpServer {
   const hasRuntimeTaskCreateTool = runtimeTaskTools.some(
     (tool) => tool.name === RuntimeTaskToolNames.TASK_CREATE,
   );
-  if (!hasRuntimeTaskClaimTool || !hasRuntimeTaskCreateTool) {
+  const hasRuntimeTaskCompleteTool = runtimeTaskTools.some(
+    (tool) => tool.name === RuntimeTaskToolNames.TASK_COMPLETE,
+  );
+  if (!hasRuntimeTaskClaimTool || !hasRuntimeTaskCreateTool || !hasRuntimeTaskCompleteTool) {
     const missingTools = [
       !hasRuntimeTaskClaimTool ? RuntimeTaskToolNames.TASK_CLAIM : null,
       !hasRuntimeTaskCreateTool ? RuntimeTaskToolNames.TASK_CREATE : null,
+      !hasRuntimeTaskCompleteTool ? RuntimeTaskToolNames.TASK_COMPLETE : null,
     ].filter((toolName): toolName is NonNullable<typeof toolName> => toolName !== null);
     throw new Error(
       `Required runtime MCP tool(s) missing from registry: ${missingTools.join(', ')}`,

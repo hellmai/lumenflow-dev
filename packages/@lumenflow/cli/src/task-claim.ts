@@ -3,6 +3,8 @@
 import { createWUParser } from '@lumenflow/core/arg-parser';
 import { die } from '@lumenflow/core/error-handler';
 import {
+  type CompleteTaskInput,
+  type CompleteTaskResult,
   initializeKernelRuntime,
   type ClaimTaskInput,
   type ClaimTaskResult,
@@ -20,6 +22,10 @@ const TASK_CREATE_COMMAND_NAME = 'task-create';
 const TASK_CREATE_LOG_PREFIX = '[task:create]';
 const TASK_CREATE_DESCRIPTION = 'Create a task directly through KernelRuntime';
 const TASK_CREATE_DEFAULT_WORKSPACE_ROOT = '.';
+const TASK_COMPLETE_COMMAND_NAME = 'task-complete';
+const TASK_COMPLETE_LOG_PREFIX = '[task:complete]';
+const TASK_COMPLETE_DESCRIPTION = 'Complete a task directly through KernelRuntime';
+const TASK_COMPLETE_DEFAULT_WORKSPACE_ROOT = '.';
 
 const TASK_CLAIM_OPTIONS = {
   taskId: {
@@ -81,6 +87,47 @@ const TASK_CREATE_OPTIONS = {
   },
 } as const;
 
+const TASK_COMPLETE_OPTIONS = {
+  complete: {
+    name: 'complete',
+    flags: '--complete',
+    description: 'Run task completion flow',
+    type: 'boolean' as const,
+  },
+  taskId: {
+    name: 'taskId',
+    flags: '--task-id <taskId>',
+    description: 'Task ID to complete (e.g., WU-1786)',
+  },
+  runId: {
+    name: 'runId',
+    flags: '--run-id <runId>',
+    description: 'Optional run ID override',
+  },
+  timestamp: {
+    name: 'timestamp',
+    flags: '--timestamp <iso8601>',
+    description: 'Optional ISO-8601 timestamp override',
+  },
+  evidenceRefs: {
+    name: 'evidenceRefs',
+    flags: '--evidence-refs <json>',
+    description: 'Optional JSON array of receipt/evidence references',
+  },
+  workspaceRoot: {
+    name: 'workspaceRoot',
+    flags: '--workspace-root <path>',
+    description: 'Workspace root path (default: current directory)',
+    default: TASK_COMPLETE_DEFAULT_WORKSPACE_ROOT,
+  },
+  json: {
+    name: 'json',
+    flags: '--json',
+    description: 'Output complete result as JSON',
+    type: 'boolean' as const,
+  },
+} as const;
+
 export interface TaskClaimCliArgs {
   input: ClaimTaskInput;
   workspaceRoot: string;
@@ -89,6 +136,12 @@ export interface TaskClaimCliArgs {
 
 export interface TaskCreateCliArgs {
   input: TaskSpec;
+  workspaceRoot: string;
+  json: boolean;
+}
+
+export interface TaskCompleteCliArgs {
+  input: CompleteTaskInput;
   workspaceRoot: string;
   json: boolean;
 }
@@ -132,6 +185,25 @@ export function parseTaskCreateSpec(raw?: string): TaskSpec {
   return validated.data;
 }
 
+export function parseTaskCompleteEvidenceRefs(raw?: string): string[] | undefined {
+  if (!raw) {
+    return undefined;
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    die(`${TASK_COMPLETE_LOG_PREFIX} --evidence-refs must be valid JSON`);
+  }
+
+  if (!Array.isArray(parsed) || !parsed.every((item) => typeof item === 'string')) {
+    die(`${TASK_COMPLETE_LOG_PREFIX} --evidence-refs must be a JSON array of strings`);
+  }
+
+  return parsed;
+}
+
 export function parseTaskClaimArgs(): TaskClaimCliArgs {
   const options = Object.values(TASK_CLAIM_OPTIONS);
   const parsed = createWUParser({
@@ -170,6 +242,27 @@ export function parseTaskCreateArgs(): TaskCreateCliArgs {
   };
 }
 
+export function parseTaskCompleteArgs(): TaskCompleteCliArgs {
+  const options = Object.values(TASK_COMPLETE_OPTIONS);
+  const parsed = createWUParser({
+    name: TASK_COMPLETE_COMMAND_NAME,
+    description: TASK_COMPLETE_DESCRIPTION,
+    options,
+    required: ['taskId'],
+  });
+
+  return {
+    input: {
+      task_id: parsed.taskId as string,
+      run_id: parsed.runId as string | undefined,
+      timestamp: parsed.timestamp as string | undefined,
+      evidence_refs: parseTaskCompleteEvidenceRefs(parsed.evidenceRefs as string | undefined),
+    },
+    workspaceRoot: (parsed.workspaceRoot as string | undefined) || process.cwd(),
+    json: parsed.json ?? false,
+  };
+}
+
 export async function runTaskClaim(args: TaskClaimCliArgs): Promise<ClaimTaskResult> {
   const runtime = await initializeKernelRuntime({ workspaceRoot: args.workspaceRoot });
   return runtime.claimTask(args.input);
@@ -178,6 +271,11 @@ export async function runTaskClaim(args: TaskClaimCliArgs): Promise<ClaimTaskRes
 export async function runTaskCreate(args: TaskCreateCliArgs): Promise<CreateTaskResult> {
   const runtime = await initializeKernelRuntime({ workspaceRoot: args.workspaceRoot });
   return runtime.createTask(args.input);
+}
+
+export async function runTaskComplete(args: TaskCompleteCliArgs): Promise<CompleteTaskResult> {
+  const runtime = await initializeKernelRuntime({ workspaceRoot: args.workspaceRoot });
+  return runtime.completeTask(args.input);
 }
 
 function formatTaskClaimSummary(result: ClaimTaskResult): string {
@@ -197,6 +295,15 @@ function formatTaskCreateSummary(result: CreateTaskResult): string {
   ].join('\n');
 }
 
+function formatTaskCompleteSummary(result: CompleteTaskResult): string {
+  const eventKinds = result.events.map((event) => event.kind).join(', ');
+  return [
+    `${TASK_COMPLETE_LOG_PREFIX} Completed task ${result.task_id}`,
+    `${TASK_COMPLETE_LOG_PREFIX} Run ID: ${result.run_id}`,
+    `${TASK_COMPLETE_LOG_PREFIX} Events: ${eventKinds}`,
+  ].join('\n');
+}
+
 export async function main(): Promise<void> {
   if (process.argv.includes('--task-spec')) {
     const args = parseTaskCreateArgs();
@@ -208,6 +315,19 @@ export async function main(): Promise<void> {
     }
 
     console.log(formatTaskCreateSummary(result));
+    return;
+  }
+
+  if (process.argv.includes('--complete')) {
+    const args = parseTaskCompleteArgs();
+    const result = await runTaskComplete(args);
+
+    if (args.json) {
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    console.log(formatTaskCompleteSummary(result));
     return;
   }
 

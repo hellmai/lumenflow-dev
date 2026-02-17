@@ -43,6 +43,7 @@ export interface CommandCategory {
  * Commands that are pnpm scripts, not CLI binaries
  * These are included in the discovery output but not in the public manifest
  * Runtime task migration commands remain manifest-driven to preserve parity checks.
+ * task:complete now routes through KernelRuntime via dedicated runtime command handlers.
  */
 const SCRIPT_COMMANDS: CommandCategory[] = [
   {

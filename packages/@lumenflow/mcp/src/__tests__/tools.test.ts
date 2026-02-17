@@ -10,6 +10,7 @@ import {
   contextGetTool,
   registeredTools,
   taskClaimTool,
+  taskCompleteTool,
   taskCreateTool,
   wuListTool,
   wuStatusTool,
@@ -229,6 +230,11 @@ describe('MCP tools', () => {
       expect(taskCreateTool.description).toBe(RuntimeTaskToolDescriptions.TASK_CREATE);
     });
 
+    it(`should export ${RuntimeTaskToolNames.TASK_COMPLETE} runtime tool definition`, () => {
+      expect(taskCompleteTool.name).toBe(RuntimeTaskToolNames.TASK_COMPLETE);
+      expect(taskCompleteTool.description).toBe(RuntimeTaskToolDescriptions.TASK_COMPLETE);
+    });
+
     it(`should include ${RuntimeTaskToolNames.TASK_CLAIM} in the production MCP registry aggregate`, () => {
       expect(registeredTools.some((tool) => tool.name === RuntimeTaskToolNames.TASK_CLAIM)).toBe(
         true,
@@ -239,6 +245,12 @@ describe('MCP tools', () => {
       expect(registeredTools.some((tool) => tool.name === RuntimeTaskToolNames.TASK_CREATE)).toBe(
         true,
       );
+    });
+
+    it(`should include ${RuntimeTaskToolNames.TASK_COMPLETE} in the production MCP registry aggregate`, () => {
+      expect(
+        registeredTools.some((tool) => tool.name === RuntimeTaskToolNames.TASK_COMPLETE),
+      ).toBe(true);
     });
   });
 

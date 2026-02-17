@@ -13,6 +13,12 @@ const taskClaimInputSchema = z.object({
 });
 
 const taskCreateInputSchema = TaskSpecSchema;
+const taskCompleteInputSchema = z.object({
+  task_id: z.string().min(1),
+  run_id: z.string().min(1).optional(),
+  timestamp: z.string().optional(),
+  evidence_refs: z.array(z.string().min(1)).optional(),
+});
 
 type RuntimeInstance = Awaited<ReturnType<typeof initializeKernelRuntime>>;
 
@@ -82,6 +88,29 @@ export const taskCreateTool: ToolDefinition = {
       return success(createResult);
     } catch (cause) {
       return error((cause as Error).message, ErrorCodes.TASK_CREATE_ERROR);
+    }
+  },
+};
+
+export const taskCompleteTool: ToolDefinition = {
+  name: RuntimeTaskToolNames.TASK_COMPLETE,
+  description: RuntimeTaskToolDescriptions.TASK_COMPLETE,
+  inputSchema: taskCompleteInputSchema,
+
+  async execute(input, options) {
+    const parsedInput = taskCompleteInputSchema.safeParse(input);
+    if (!parsedInput.success) {
+      return error(parsedInput.error.message, ErrorCodes.TASK_COMPLETE_ERROR);
+    }
+
+    const workspaceRoot = options?.projectRoot || process.cwd();
+
+    try {
+      const runtime = await getRuntimeForWorkspace(workspaceRoot);
+      const completeResult = await runtime.completeTask(parsedInput.data);
+      return success(completeResult);
+    } catch (cause) {
+      return error((cause as Error).message, ErrorCodes.TASK_COMPLETE_ERROR);
     }
   },
 };

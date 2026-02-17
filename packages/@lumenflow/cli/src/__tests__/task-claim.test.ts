@@ -5,8 +5,10 @@ import * as kernel from '@lumenflow/kernel';
 import { getPublicManifest } from '../public-manifest.js';
 import {
   parseTaskClaimDomainData,
+  parseTaskCompleteEvidenceRefs,
   parseTaskCreateSpec,
   runTaskClaim,
+  runTaskComplete,
   runTaskCreate,
 } from '../task-claim.js';
 
@@ -136,6 +138,59 @@ describe('task-claim command', () => {
     expect(result).toEqual(createResult);
   });
 
+  it('routes task completion through KernelRuntime.completeTask', async () => {
+    const completeResult = {
+      task_id: 'WU-1785',
+      run_id: 'run-WU-1785-1',
+      events: [
+        {
+          schema_version: 1,
+          kind: 'run_succeeded',
+          task_id: 'WU-1785',
+          run_id: 'run-WU-1785-1',
+          timestamp: '2026-02-17T00:00:00.000Z',
+          evidence_refs: ['receipt-1'],
+        },
+        {
+          schema_version: 1,
+          kind: 'task_completed',
+          task_id: 'WU-1785',
+          timestamp: '2026-02-17T00:00:00.000Z',
+          evidence_refs: ['receipt-1'],
+        },
+      ],
+      policy: {
+        decision: 'allow',
+        decisions: [],
+      },
+    };
+
+    const completeTask = vi.fn().mockResolvedValue(completeResult);
+    mockInitializeKernelRuntime.mockResolvedValue({ completeTask } as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await runTaskComplete({
+      input: {
+        task_id: 'WU-1785',
+        run_id: 'run-WU-1785-1',
+        evidence_refs: ['receipt-1'],
+      },
+      workspaceRoot: '/tmp/lumenflow-task-claim',
+      json: true,
+    });
+
+    expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
+      workspaceRoot: '/tmp/lumenflow-task-claim',
+    });
+    expect(completeTask).toHaveBeenCalledWith({
+      task_id: 'WU-1785',
+      run_id: 'run-WU-1785-1',
+      evidence_refs: ['receipt-1'],
+    });
+    expect(result).toEqual(completeResult);
+  });
+
   it('parses valid domain data JSON objects', () => {
     expect(parseTaskClaimDomainData('{"owner":"hellmai"}')).toEqual({ owner: 'hellmai' });
   });
@@ -150,6 +205,21 @@ describe('task-claim command', () => {
 
   it('throws for invalid task spec payloads', () => {
     expect(() => parseTaskCreateSpec('{"id":"WU-1785"}')).toThrow();
+  });
+
+  it('parses valid evidence refs payloads', () => {
+    expect(parseTaskCompleteEvidenceRefs('["receipt-1","receipt-2"]')).toEqual([
+      'receipt-1',
+      'receipt-2',
+    ]);
+  });
+
+  it('returns undefined when evidence refs are omitted', () => {
+    expect(parseTaskCompleteEvidenceRefs()).toBeUndefined();
+  });
+
+  it('throws for invalid evidence refs payloads', () => {
+    expect(() => parseTaskCompleteEvidenceRefs('{"receipt":"receipt-1"}')).toThrow();
   });
 
   it('throws for non-object domain data JSON', () => {

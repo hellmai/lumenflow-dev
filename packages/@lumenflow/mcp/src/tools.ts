@@ -62,7 +62,7 @@ export {
 } from './tools/wu-tools.js';
 
 // Re-export runtime tracer-bullet tools
-export { taskClaimTool, taskCreateTool } from './tools/runtime-task-tools.js';
+export { taskClaimTool, taskCompleteTool, taskCreateTool } from './tools/runtime-task-tools.js';
 
 // Re-export domain tools -- initiative
 export {
@@ -200,7 +200,7 @@ import {
   wuInferLaneTool,
   wuUnlockLaneTool,
 } from './tools/wu-tools.js';
-import { taskClaimTool, taskCreateTool } from './tools/runtime-task-tools.js';
+import { taskClaimTool, taskCompleteTool, taskCreateTool } from './tools/runtime-task-tools.js';
 import {
   initiativeListTool,
   initiativeStatusTool,
@@ -481,7 +481,7 @@ export const allTools: ToolDefinition[] = [
  * so newly added runtime tools may appear in the expected missing set until
  * parity policy explicitly switches to `registeredTools`.
  */
-export const runtimeTaskTools: ToolDefinition[] = [taskClaimTool, taskCreateTool];
+export const runtimeTaskTools: ToolDefinition[] = [taskClaimTool, taskCreateTool, taskCompleteTool];
 
 /**
  * Production MCP registry consumed by server startup.

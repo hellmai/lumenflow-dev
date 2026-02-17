@@ -4,6 +4,7 @@ import * as cliRunner from '../cli-runner.js';
 import {
   resetRuntimeTaskToolCache,
   taskClaimTool,
+  taskCompleteTool,
   taskCreateTool,
 } from '../tools/runtime-task-tools.js';
 import * as kernel from '@lumenflow/kernel';
@@ -198,6 +199,91 @@ describe('runtime task MCP tools', () => {
     expect(result.success).toBe(false);
     expect(result.error?.code).toBe(ErrorCodes.TASK_CREATE_ERROR);
     expect(result.error?.message).toContain('task creation failed');
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
+  });
+
+  it(`routes ${RuntimeTaskToolNames.TASK_COMPLETE} through KernelRuntime without CLI shell-out`, async () => {
+    const completeResult = {
+      task_id: 'WU-1785',
+      run_id: 'run-WU-1785-1',
+      events: [
+        {
+          schema_version: 1,
+          kind: 'run_succeeded',
+          task_id: 'WU-1785',
+          run_id: 'run-WU-1785-1',
+          timestamp: '2026-02-17T00:00:00.000Z',
+          evidence_refs: ['receipt-1'],
+        },
+        {
+          schema_version: 1,
+          kind: 'task_completed',
+          task_id: 'WU-1785',
+          timestamp: '2026-02-17T00:00:00.000Z',
+          evidence_refs: ['receipt-1'],
+        },
+      ],
+      policy: {
+        decision: 'allow',
+        decisions: [],
+      },
+    };
+    const completeTask = vi.fn().mockResolvedValue(completeResult);
+    mockInitializeKernelRuntime.mockResolvedValue({ completeTask } as unknown as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await taskCompleteTool.execute(
+      {
+        task_id: 'WU-1785',
+        run_id: 'run-WU-1785-1',
+        evidence_refs: ['receipt-1'],
+      },
+      { projectRoot: '/tmp/lumenflow-mcp-runtime' },
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.data).toEqual(completeResult);
+    expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
+      workspaceRoot: path.resolve('/tmp/lumenflow-mcp-runtime'),
+    });
+    expect(completeTask).toHaveBeenCalledWith({
+      task_id: 'WU-1785',
+      run_id: 'run-WU-1785-1',
+      evidence_refs: ['receipt-1'],
+    });
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
+  });
+
+  it(`validates ${RuntimeTaskToolNames.TASK_COMPLETE} input before runtime initialization`, async () => {
+    const result = await taskCompleteTool.execute(
+      {
+        run_id: 'run-WU-1785-1',
+      },
+      { projectRoot: '/tmp/lumenflow-mcp-runtime' },
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe(ErrorCodes.TASK_COMPLETE_ERROR);
+    expect(mockInitializeKernelRuntime).not.toHaveBeenCalled();
+  });
+
+  it(`returns error when ${RuntimeTaskToolNames.TASK_COMPLETE} fails`, async () => {
+    const completeTask = vi.fn().mockRejectedValue(new Error('task completion failed'));
+    mockInitializeKernelRuntime.mockResolvedValue({ completeTask } as unknown as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    const result = await taskCompleteTool.execute(
+      {
+        task_id: 'WU-1785',
+      },
+      { projectRoot: '/tmp/lumenflow-mcp-runtime' },
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe(ErrorCodes.TASK_COMPLETE_ERROR);
+    expect(result.error?.message).toContain('task completion failed');
     expect(mockRunCliCommand).not.toHaveBeenCalled();
   });
 });
