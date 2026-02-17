@@ -19,13 +19,13 @@ describe('evidence store', () => {
     await rm(tempDir, { recursive: true, force: true });
   });
 
-  function makeStartedEntry(receiptId: string): ToolTraceEntry {
+  function makeStartedEntry(receiptId: string, taskId = 'WU-1729'): ToolTraceEntry {
     return {
       schema_version: 1,
       kind: 'tool_call_started',
       receipt_id: receiptId,
       run_id: 'run-1729',
-      task_id: 'WU-1729',
+      task_id: taskId,
       session_id: 'session-1729',
       timestamp: '2026-02-16T23:00:00.000Z',
       tool_name: 'fs:write',
@@ -130,5 +130,42 @@ describe('evidence store', () => {
     if (orphanFinished?.kind === 'tool_call_finished') {
       expect(orphanFinished.result).toBe('crashed');
     }
+  });
+
+  it('reads task-scoped traces using task index lookups', async () => {
+    const store = new EvidenceStore({ evidenceRoot });
+
+    await store.appendTrace(makeStartedEntry('receipt-a', 'WU-1000'));
+    await store.appendTrace({
+      schema_version: 1,
+      kind: 'tool_call_finished',
+      receipt_id: 'receipt-a',
+      timestamp: '2026-02-16T23:00:02.000Z',
+      result: 'success',
+      duration_ms: 5,
+      policy_decisions: [{ policy_id: 'kernel.policy.allow-all', decision: 'allow' }],
+    });
+
+    await store.appendTrace(makeStartedEntry('receipt-b', 'WU-2000'));
+    await store.appendTrace({
+      schema_version: 1,
+      kind: 'tool_call_finished',
+      receipt_id: 'receipt-b',
+      timestamp: '2026-02-16T23:00:03.000Z',
+      result: 'failure',
+      duration_ms: 7,
+      policy_decisions: [{ policy_id: 'kernel.policy.allow-all', decision: 'allow' }],
+    });
+
+    const task1000 = await store.readTracesByTaskId('WU-1000');
+    const task2000 = await store.readTracesByTaskId('WU-2000');
+    const unknown = await store.readTracesByTaskId('WU-9999');
+
+    expect(task1000).toHaveLength(2);
+    expect(task2000).toHaveLength(2);
+    expect(unknown).toHaveLength(0);
+
+    expect(task1000.map((trace) => trace.receipt_id)).toEqual(['receipt-a', 'receipt-a']);
+    expect(task2000.map((trace) => trace.receipt_id)).toEqual(['receipt-b', 'receipt-b']);
   });
 });

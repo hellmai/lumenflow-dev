@@ -39,6 +39,10 @@ export class EvidenceStore {
   private readonly inputsDir: string;
   private readonly lockRetryDelayMs: number;
   private readonly lockMaxRetries: number;
+  private tracesHydrated = false;
+  private orderedTraces: ToolTraceEntry[] = [];
+  private tracesByTaskId = new Map<string, ToolTraceEntry[]>();
+  private taskIdByReceiptId = new Map<string, string>();
 
   constructor(options: EvidenceStoreOptions) {
     this.tracesDir = join(options.evidenceRoot, 'traces');
@@ -55,29 +59,87 @@ export class EvidenceStore {
       await mkdir(this.tracesDir, { recursive: true });
       await appendFile(this.tracesFilePath, `${JSON.stringify(validated)}\n`, 'utf8');
     });
+
+    if (this.tracesHydrated) {
+      this.applyTraceToIndexes(validated);
+    }
   }
 
   async readTraces(): Promise<ToolTraceEntry[]> {
+    await this.hydrateIndexesIfNeeded();
+    return [...this.orderedTraces];
+  }
+
+  async readTracesByTaskId(taskId: string): Promise<ToolTraceEntry[]> {
+    await this.hydrateIndexesIfNeeded();
+    return [...(this.tracesByTaskId.get(taskId) ?? [])];
+  }
+
+  private async hydrateIndexesIfNeeded(): Promise<void> {
+    if (this.tracesHydrated) {
+      return;
+    }
+
     let content: string;
     try {
       content = await readFile(this.tracesFilePath, 'utf8');
     } catch (error) {
       const nodeError = error as NodeJS.ErrnoException;
       if (nodeError.code === 'ENOENT') {
-        return [];
+        this.resetIndexes();
+        this.tracesHydrated = true;
+        return;
       }
       throw error;
     }
 
+    this.resetIndexes();
     const lines = content
       .split('\n')
       .map((line) => line.trim())
       .filter(Boolean);
-    const traces: ToolTraceEntry[] = [];
-    for (const line of lines) {
-      traces.push(ToolTraceEntrySchema.parse(JSON.parse(line)));
+    for (let index = 0; index < lines.length; index += 1) {
+      const line = lines[index];
+      if (!line) {
+        continue;
+      }
+      const parsed: unknown = (() => {
+        try {
+          return JSON.parse(line);
+        } catch (error) {
+          throw new Error(`Malformed evidence trace JSON at line ${index + 1}`, { cause: error });
+        }
+      })();
+      this.applyTraceToIndexes(ToolTraceEntrySchema.parse(parsed));
     }
-    return traces;
+    this.tracesHydrated = true;
+  }
+
+  private resetIndexes(): void {
+    this.orderedTraces = [];
+    this.tracesByTaskId = new Map<string, ToolTraceEntry[]>();
+    this.taskIdByReceiptId = new Map<string, string>();
+  }
+
+  private applyTraceToIndexes(entry: ToolTraceEntry): void {
+    this.orderedTraces.push(entry);
+
+    if (entry.kind === 'tool_call_started') {
+      this.taskIdByReceiptId.set(entry.receipt_id, entry.task_id);
+      const bucket = this.tracesByTaskId.get(entry.task_id) ?? [];
+      bucket.push(entry);
+      this.tracesByTaskId.set(entry.task_id, bucket);
+      return;
+    }
+
+    const taskId = this.taskIdByReceiptId.get(entry.receipt_id);
+    if (!taskId) {
+      return;
+    }
+
+    const bucket = this.tracesByTaskId.get(taskId) ?? [];
+    bucket.push(entry);
+    this.tracesByTaskId.set(taskId, bucket);
   }
 
   async persistInput(input: unknown): Promise<PersistInputResult> {
