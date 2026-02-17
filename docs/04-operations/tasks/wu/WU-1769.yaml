@@ -1,0 +1,38 @@
+id: WU-1769
+title: Move orphan reconciliation off hot path and add evidence task indexing
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-17
+code_paths:
+  - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
+  - packages/@lumenflow/kernel/src/evidence/evidence-store.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/evidence-store.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1769.done
+dependencies: []
+initiative: INIT-029
+phase: 6
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: reconcileOrphanedStarts currently runs in hot execution paths and evidence task lookups
+  rely on broad scans. This WU moves orphan handling to lifecycle boundaries and adds indexed evidence
+  reads by task.
+acceptance:
+  - Orphan reconciliation runs in startup/shutdown lifecycle hooks rather than per tool execution
+  - EvidenceStore supports indexed reads filtered by task ID
+  - ToolHost hot path no longer invokes orphan reconciliation for every execution

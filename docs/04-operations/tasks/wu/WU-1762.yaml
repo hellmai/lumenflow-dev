@@ -8,6 +8,8 @@ created: 2026-02-17
 code_paths:
   - packages/@lumenflow/kernel/src/policy/policy-engine.ts
   - packages/@lumenflow/kernel/src/pack/pack-loader.ts
+  - packages/@lumenflow/control-plane-sdk/package.json
+  - packages/@lumenflow/control-plane-sdk/src/index.ts
   - packages/@lumenflow/control-plane-sdk/src/sync-port.ts
 tests:
   manual: []
@@ -30,7 +32,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: allow_loosening can override workspace deny — undocumented behavior that enables capability escalation. integrity:dev bypasses all pack integrity checks with no environment-aware flag. Import boundary validation uses regex (bypassable). Control Plane SDK has divergent KernelEvent type and missing kernel dependency.
+description: allow_loosening can override workspace deny — undocumented behavior that enables
+  capability escalation. integrity:dev bypasses all pack integrity checks with no environment-aware
+  flag. Import boundary validation uses regex (bypassable). Control Plane SDK has divergent
+  KernelEvent type and missing kernel dependency.
 acceptance:
   - Policy loosening semantics documented and tested for deny-override scenarios
   - Environment-aware flag to reject dev integrity in production

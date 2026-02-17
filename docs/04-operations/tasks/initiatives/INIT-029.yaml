@@ -6,8 +6,8 @@ description: 'Evolve LumenFlow from a software delivery CLI into a general-purpo
   executed by agents that cannot go off-script. Differentiator vs OpenClaw: deterministic,
   auditable, safe-by-default execution via capability-scoped tool calls, sandbox enforcement, policy
   governance, and immutable evidence receipts. No external users affected - Patient Path stays on
-  current version. Greenfield design, no backwards compat. Architecture plan:
-  .claude/plans/golden-prancing-cookie.md'
+  current version. Greenfield design, no backwards compat. Architecture constraints are tracked in
+  initiative phases and linked WU specs.'
 status: in_progress
 priority: P0
 owner: 'Framework: Core'
@@ -31,6 +31,9 @@ phases:
     status: done
   - id: 6
     title: 'Remediation: code review findings (security, data integrity, performance)'
+    status: in_progress
+  - id: 7
+    title: Production Surface Adoption + Pack Wiring
     status: pending
 wus:
   - WU-1725
@@ -58,6 +61,15 @@ wus:
   - WU-1762
   - WU-1763
   - WU-1764
+  - WU-1767
+  - WU-1768
+  - WU-1769
+  - WU-1770
+  - WU-1771
+  - WU-1772
+  - WU-1773
+  - WU-1774
+  - WU-1775
 success_metrics:
   - Zero software delivery concepts in kernel package (grep for git, worktree, code_paths returns 0
     hits)
@@ -73,4 +85,5 @@ success_metrics:
     only from tool-runner worker'
 notes:
   - '2026-02-17 code review: 10 Critical + 17 Major issues found. Reopened with Phase 6 (Remediation). P0: evidence store double-hash (WU-1757), security boundary bypass (WU-1758), EventStore reliability (WU-1759), runtime security (WU-1760). P1: sandbox/lock/MCP hardening (WU-1761), policy/SDK hardening (WU-1762). P2: performance (WU-1763), architecture (WU-1764).'
+  - '2026-02-17 remediation reshape v4: narrowed WU-1761 and WU-1763, expanded WU-1760 and WU-1762, added WU-1767/WU-1768/WU-1769 plus Phase 7 WUs WU-1770/WU-1771/WU-1772/WU-1773/WU-1774, set WU-1774 dependency on WU-1770, selected tracer bullet commands task_claim (MCP) and task:claim (CLI), and added WU-1775 lane-fit governance coverage.'
 labels: []

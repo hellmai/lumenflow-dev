@@ -1,5 +1,5 @@
 id: WU-1761
-title: 'Harden sandbox: restrict bwrap root mount, fix lane lock TOCTOU, fix MCP schemas'
+title: 'Harden sandbox: allowlist mounts and reserved .lumenflow scope enforcement'
 lane: 'Framework: Core Lifecycle'
 type: bug
 status: ready
@@ -7,17 +7,19 @@ priority: P1
 created: 2026-02-17
 code_paths:
   - packages/@lumenflow/kernel/src/sandbox/bwrap-invocation.ts
-  - packages/@lumenflow/packs/software-delivery/tool-impl/lane-lock.ts
-  - packages/@lumenflow/surfaces/mcp/server.ts
+  - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
 tests:
   manual: []
   unit:
     - packages/@lumenflow/kernel/src/__tests__/sandbox.test.ts
-    - packages/@lumenflow/packs/software-delivery/__tests__/lane-lock.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1761.done
-dependencies: []
+dependencies:
+  - WU-1767
+blocked_by:
+  - WU-1767
 initiative: INIT-029
 phase: 6
 risks: []
@@ -30,9 +32,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: bwrap sandbox mounts entire root FS read-only (--ro-bind / /) with minimal deny overlays — weak isolation. Lane lock stale takeover has TOCTOU race allowing dual acquisition. MCP task:claim/task:complete advertise wrong input schemas (id-only vs actual required fields).
+description: Sandbox bwrap currently relies on broad root read-only mounting with deny overlays.
+  This WU narrows sandbox mount exposure via allowlist strategy and enforces reserved .lumenflow/**
+  scope boundaries in kernel scope validation so pack/tool scopes cannot claim framework-owned paths.
 acceptance:
-  - bwrap uses allowlist mount strategy instead of deny-overlay on full root
-  - Lane lock stale takeover uses atomic compare-and-swap pattern
-  - MCP input_schema matches actual handler requirements for all tools
-  - Security-focused tests for sandbox escape, lock contention, MCP validation
+  - bwrap uses allowlist mount strategy instead of deny-overlay on full root mount
+  - Kernel scope validation rejects reserved .lumenflow/** path scopes for pack/tool-declared writes
+  - Security-focused tests cover sandbox mount isolation and reserved scope enforcement

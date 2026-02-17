@@ -1,5 +1,5 @@
 id: WU-1763
-title: 'Kernel performance: eliminate per-append reload, move orphan reconciliation, add evidence indexing'
+title: 'Kernel performance: eliminate EventStore per-append reload'
 lane: 'Framework: Core Lifecycle'
 type: refactor
 status: ready
@@ -7,13 +7,10 @@ priority: P2
 created: 2026-02-17
 code_paths:
   - packages/@lumenflow/kernel/src/event-store/index.ts
-  - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
-  - packages/@lumenflow/kernel/src/evidence/evidence-store.ts
 tests:
   manual: []
   unit:
     - packages/@lumenflow/kernel/src/__tests__/event-store.test.ts
-    - packages/@lumenflow/kernel/src/__tests__/evidence-store.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1763.done
@@ -30,9 +27,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: EventStore reloads entire file on every append() — O(n) per append, O(n^2) over lifecycle. reconcileOrphanedStarts runs on every tool execution — O(n) full trace scan per call. readReceiptsForTask reads ALL traces then filters client-side. All three are performance bottlenecks that worsen over time.
+description: EventStore currently reloads the full event log on each append, creating O(n) append
+  cost and O(n^2) behavior over longer lifecycles. This WU narrows scope to EventStore append/index
+  performance only.
 acceptance:
-  - EventStore append updates indexes in-memory instead of reloadFromDisk
-  - Orphan reconciliation moved to startup/shutdown lifecycle hook
-  - EvidenceStore supports filtered reads by task ID
-  - Performance regression tests with >100 events
+  - EventStore append updates indexes in-memory instead of reloadFromDisk on every append
+  - append/appendAll preserve event ordering and durability semantics while avoiding full reload
+  - Performance regression coverage includes event append workloads above 100 events
