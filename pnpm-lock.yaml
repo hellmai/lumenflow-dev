@@ -120,6 +120,9 @@ importers:
       '@lumenflow/initiatives':
         specifier: workspace:*
         version: link:../initiatives
+      '@lumenflow/kernel':
+        specifier: workspace:*
+        version: link:../kernel
       '@lumenflow/memory':
         specifier: workspace:*
         version: link:../memory

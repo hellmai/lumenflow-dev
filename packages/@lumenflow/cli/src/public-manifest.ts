@@ -546,6 +546,13 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     category: COMMAND_CATEGORIES.ORCHESTRATION,
   },
   {
+    name: 'task:claim',
+    binName: 'task-claim',
+    binPath: './dist/task-claim.js',
+    description: 'Claim a task directly through KernelRuntime',
+    category: COMMAND_CATEGORIES.ORCHESTRATION,
+  },
+  {
     name: 'agent:session',
     binName: 'agent-session',
     binPath: './dist/agent-session.js',

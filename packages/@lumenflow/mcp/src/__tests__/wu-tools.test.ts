@@ -1326,7 +1326,13 @@ describe('Wave-2 parity MCP tools (WU-1483)', () => {
 });
 
 describe('Manifest parity truth gate (WU-1481)', () => {
-  const EXPECTED_MISSING_COMMANDS = ['lane_lock', 'lane_setup', 'lane_status', 'lane_validate'];
+  const EXPECTED_MISSING_COMMANDS = [
+    'lane_lock',
+    'lane_setup',
+    'lane_status',
+    'lane_validate',
+    'task_claim',
+  ];
 
   const EXPECTED_ALLOWED_EXTRAS = [
     'context_get',
