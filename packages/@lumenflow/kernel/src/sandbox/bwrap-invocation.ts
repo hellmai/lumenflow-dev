@@ -35,7 +35,36 @@ function dedupeMounts(mounts: SandboxBindMount[]): SandboxBindMount[] {
   return [...unique.values()];
 }
 
-function collectCommandReadonlyMounts(command: string[]): SandboxBindMount[] {
+function normalizePrefix(prefix: string): string {
+  const resolved = path.resolve(prefix);
+  if (resolved === path.sep) {
+    return resolved;
+  }
+  return resolved.replace(/[/\\]+$/, '');
+}
+
+function isWithinPrefix(candidate: string, prefix: string): boolean {
+  const normalizedCandidate = normalizePrefix(candidate);
+  const normalizedPrefix = normalizePrefix(prefix);
+  if (normalizedPrefix === path.sep) {
+    return true;
+  }
+  return (
+    normalizedCandidate === normalizedPrefix ||
+    normalizedCandidate.startsWith(`${normalizedPrefix}${path.sep}`)
+  );
+}
+
+function collectCommandMountPrefixes(profile: SandboxProfile): string[] {
+  const prefixes = [
+    ...profile.readonly_bind_mounts.map((mount) => mount.target),
+    ...profile.writable_bind_mounts.map((mount) => mount.target),
+  ];
+  return [...new Set(prefixes.map(normalizePrefix))];
+}
+
+function collectCommandReadonlyMounts(profile: SandboxProfile, command: string[]): SandboxBindMount[] {
+  const mountPrefixes = collectCommandMountPrefixes(profile);
   const mounts: SandboxBindMount[] = [];
 
   for (const segment of command) {
@@ -47,10 +76,13 @@ function collectCommandReadonlyMounts(command: string[]): SandboxBindMount[] {
     const parent = path.dirname(absolute);
     const grandparent = path.dirname(parent);
 
-    if (parent !== '/') {
+    if (parent !== '/' && mountPrefixes.some((prefix) => isWithinPrefix(parent, prefix))) {
       mounts.push({ source: parent, target: parent });
     }
-    if (grandparent !== '/') {
+    if (
+      grandparent !== '/' &&
+      mountPrefixes.some((prefix) => isWithinPrefix(grandparent, prefix))
+    ) {
       mounts.push({ source: grandparent, target: grandparent });
     }
   }
@@ -68,7 +100,7 @@ function collectReadonlyAllowlistMounts(
       source: mountPath,
       target: mountPath,
     })),
-    ...collectCommandReadonlyMounts(command),
+    ...collectCommandReadonlyMounts(profile, command),
     ...profile.readonly_bind_mounts,
   ];
 
