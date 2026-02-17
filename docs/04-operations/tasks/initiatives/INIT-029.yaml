@@ -86,7 +86,8 @@ success_metrics:
     (requested/allowed/enforced)
   - 'Scope intersection enforced at ToolHost level: workspace intersection lane intersection task
     intersection tool - agent denied on out-of-scope writes'
-  - CLI and MCP surfaces both call KernelRuntime directly - no MCP to CLI to core circular chain
+  - task:claim routes through KernelRuntime directly in CLI and MCP; remaining command migrations
+    proceed incrementally under INIT-030 strangler-fig roadmap
   - Software delivery pack loads with SHA-256 integrity verification and registers tools+policies
     via DomainPack manifest
   - 'ESLint Model B boundaries enforced: fs/child_process blocked outside kernel/tool-host,

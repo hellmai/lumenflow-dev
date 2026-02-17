@@ -1,5 +1,5 @@
 // Copyright (c) 2026 Hellmai Ltd
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: Apache-2.0
 
 export const UTF8_ENCODING = 'utf8' as const;
 export const BASE64_ENCODING = 'base64' as const;
