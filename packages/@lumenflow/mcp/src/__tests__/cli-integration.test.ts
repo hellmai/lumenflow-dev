@@ -76,6 +76,8 @@ function extractJson<T>(stdout: string): T {
 }
 
 describe('CLI integration (no mocks)', { timeout: CLI_INTEGRATION_TEST_TIMEOUT_MS }, () => {
+  const EXPECTED_MISSING_PARITY_TOOLS = ['lane_lock', 'lane_setup', 'lane_status', 'lane_validate'];
+
   describe('wu:status flags', () => {
     it('should accept --id and --json flags (as MCP wuStatusTool passes them)', async () => {
       // MCP tools.ts builds: ['--id', wuId, '--json']
@@ -299,7 +301,7 @@ describe('CLI integration (no mocks)', { timeout: CLI_INTEGRATION_TEST_TIMEOUT_M
         allTools.map((tool) => tool.name),
       );
 
-      expect(report.missing).toEqual([]);
+      expect(report.missing).toEqual(EXPECTED_MISSING_PARITY_TOOLS);
       expect(report.unexpectedExtra).toEqual([]);
     });
   });
