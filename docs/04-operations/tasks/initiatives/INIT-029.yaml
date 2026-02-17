@@ -34,7 +34,7 @@ phases:
     status: in_progress
   - id: 7
     title: Production Surface Adoption + Pack Wiring
-    status: pending
+    status: in_progress
 wus:
   - WU-1725
   - WU-1726
@@ -75,8 +75,8 @@ success_metrics:
     hits)
   - Every tool execution produces an immutable receipt with honest scope semantics
     (requested/allowed/enforced)
-  - 'Scope intersection enforced at ToolHost level: workspace intersection lane intersection task intersection tool - agent denied on
-    out-of-scope writes'
+  - 'Scope intersection enforced at ToolHost level: workspace intersection lane intersection task
+    intersection tool - agent denied on out-of-scope writes'
   - CLI and MCP surfaces both call KernelRuntime directly - no MCP to CLI to core circular chain
   - Software delivery pack loads with SHA-256 integrity verification and registers tools+policies
     via DomainPack manifest
@@ -84,6 +84,12 @@ success_metrics:
     kernel/sandbox, kernel/event-store, and packs/**/tool-impl/**; direct tool-impl imports allowed
     only from tool-runner worker'
 notes:
-  - '2026-02-17 code review: 10 Critical + 17 Major issues found. Reopened with Phase 6 (Remediation). P0: evidence store double-hash (WU-1757), security boundary bypass (WU-1758), EventStore reliability (WU-1759), runtime security (WU-1760). P1: sandbox/lock/MCP hardening (WU-1761), policy/SDK hardening (WU-1762). P2: performance (WU-1763), architecture (WU-1764).'
-  - '2026-02-17 remediation reshape v4: narrowed WU-1761 and WU-1763, expanded WU-1760 and WU-1762, added WU-1767/WU-1768/WU-1769 plus Phase 7 WUs WU-1770/WU-1771/WU-1772/WU-1773/WU-1774, set WU-1774 dependency on WU-1770, selected tracer bullet commands task_claim (MCP) and task:claim (CLI), and added WU-1775 lane-fit governance coverage.'
+  - '2026-02-17 code review: 10 Critical + 17 Major issues found. Reopened with Phase 6
+    (Remediation). P0: evidence store double-hash (WU-1757), security boundary bypass (WU-1758),
+    EventStore reliability (WU-1759), runtime security (WU-1760). P1: sandbox/lock/MCP hardening
+    (WU-1761), policy/SDK hardening (WU-1762). P2: performance (WU-1763), architecture (WU-1764).'
+  - '2026-02-17 remediation reshape v4: narrowed WU-1761 and WU-1763, expanded WU-1760 and WU-1762,
+    added WU-1767/WU-1768/WU-1769 plus Phase 7 WUs WU-1770/WU-1771/WU-1772/WU-1773/WU-1774, set
+    WU-1774 dependency on WU-1770, selected tracer bullet commands task_claim (MCP) and task:claim
+    (CLI), and added WU-1775 lane-fit governance coverage.'
 labels: []
