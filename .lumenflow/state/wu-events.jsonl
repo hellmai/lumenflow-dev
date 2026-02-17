@@ -1498,3 +1498,4 @@
 {"type":"complete","wuId":"WU-1779","timestamp":"2026-02-17T17:45:23.190Z"}
 {"type":"claim","wuId":"WU-1780","timestamp":"2026-02-17T17:46:21.035Z","lane":"Framework: Core Lifecycle","title":"Enforce workspace tamper baseline and missing-config handling"}
 {"type":"complete","wuId":"WU-1780","timestamp":"2026-02-17T17:50:32.680Z"}
+{"type":"claim","wuId":"WU-1781","lane":"Framework: Core Lifecycle","title":"Sandbox readonly mount depth and prefix validation","timestamp":"2026-02-17T17:52:42.792Z"}

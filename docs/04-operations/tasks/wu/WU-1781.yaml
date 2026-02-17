@@ -2,7 +2,7 @@ id: WU-1781
 title: Sandbox readonly mount depth and prefix validation
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-17
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - Ancestor mount behavior is depth-limited or allowlist-restricted to prevent broad path exposure.
   - Deep absolute tool paths do not cause /etc-style ancestor leakage.
   - Sandbox tests cover deep path mount safety expectations.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1781
+claimed_at: 2026-02-17T17:52:42.748Z
+baseline_main_sha: b3c9ec26bc299e1529f533c9ff117c44f4f7a41d
+session_id: 5542a205-7df1-4b8d-9a50-1bd7a3e9c2e7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T17:52:42.753Z
