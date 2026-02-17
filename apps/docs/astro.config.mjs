@@ -3,10 +3,14 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightThemeNova from 'starlight-theme-nova';
 import astroD2 from 'astro-d2';
+import remarkComment from 'remark-comment';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://lumenflow.dev',
+  markdown: {
+    remarkPlugins: [remarkComment],
+  },
   integrations: [
     astroD2(),
     starlight({
