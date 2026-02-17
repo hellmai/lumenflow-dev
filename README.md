@@ -35,12 +35,12 @@ LumenFlow is the missing kernel between AI agents and the real world. Like an OS
 
 ### Four Guarantees
 
-| Guarantee | How |
-|-----------|-----|
-| **Agents can't go off-script** | 4-level scope intersection: workspace > lane > task > tool |
-| **Every action is provable** | Immutable evidence receipts with content-addressed inputs |
-| **Policies are inescapable** | Deny-wins cascade evaluated at every tool call |
-| **Isolation is OS-enforced** | bwrap sandbox with write confinement and secret deny overlays |
+| Guarantee                      | How                                                           |
+| ------------------------------ | ------------------------------------------------------------- |
+| **Agents can't go off-script** | 4-level scope intersection: workspace > lane > task > tool    |
+| **Every action is provable**   | Immutable evidence receipts with content-addressed inputs     |
+| **Policies are inescapable**   | Deny-wins cascade evaluated at every tool call                |
+| **Isolation is OS-enforced**   | bwrap sandbox with write confinement and secret deny overlays |
 
 ## Architecture
 
@@ -140,38 +140,38 @@ Multiple AI agents can work the same codebase simultaneously. Lane-based work pa
 
 ### Kernel
 
-| Package | Description |
-|---------|-------------|
-| [`@lumenflow/kernel`](packages/@lumenflow/kernel) | Task engine, tool host, policy engine, evidence store, sandbox |
-| [`@lumenflow/runtime`](packages/@lumenflow/runtime) | Daemon process: scheduler, session manager, Unix socket transport |
+| Package                                                                 | Description                                                        |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| [`@lumenflow/kernel`](packages/@lumenflow/kernel)                       | Task engine, tool host, policy engine, evidence store, sandbox     |
+| [`@lumenflow/runtime`](packages/@lumenflow/runtime)                     | Daemon process: scheduler, session manager, Unix socket transport  |
 | [`@lumenflow/control-plane-sdk`](packages/@lumenflow/control-plane-sdk) | Interface for remote policy sync and fleet management (Apache 2.0) |
 
 ### Packs
 
-| Package | Description |
-|---------|-------------|
+| Package                                                                             | Description                                                |
+| ----------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | [`@lumenflow/packs/software-delivery`](packages/@lumenflow/packs/software-delivery) | Git tools, worktree isolation, quality gates, lane locking |
 
 ### Surfaces
 
-| Package | Description |
-|---------|-------------|
+| Package                                                       | Description                                      |
+| ------------------------------------------------------------- | ------------------------------------------------ |
 | [`@lumenflow/surfaces/cli`](packages/@lumenflow/surfaces/cli) | CLI surface for terminal-based agent interaction |
-| [`@lumenflow/surfaces/mcp`](packages/@lumenflow/surfaces/mcp) | MCP surface for IDE integration |
+| [`@lumenflow/surfaces/mcp`](packages/@lumenflow/surfaces/mcp) | MCP surface for IDE integration                  |
 
 ### Workflow (Software Delivery Pack)
 
-| Package | Description |
-|---------|-------------|
-| [`@lumenflow/core`](packages/@lumenflow/core) | WU state machine, validators, git adapters, spawn management |
-| [`@lumenflow/cli`](packages/@lumenflow/cli) | 60+ CLI commands: wu:claim, wu:done, gates, metrics, and more |
-| [`@lumenflow/memory`](packages/@lumenflow/memory) | Session tracking, context recovery, agent coordination signals |
-| [`@lumenflow/agent`](packages/@lumenflow/agent) | Agent definitions, skill loading, delegation, verification |
-| [`@lumenflow/initiatives`](packages/@lumenflow/initiatives) | Multi-phase project orchestration across WUs and lanes |
-| [`@lumenflow/metrics`](packages/@lumenflow/metrics) | DORA metrics, flow analysis, cycle time tracking |
-| [`@lumenflow/shims`](packages/@lumenflow/shims) | Git and pnpm safety shims for hook enforcement |
-| [`@lumenflow/mcp`](packages/@lumenflow/mcp) | Model Context Protocol server for IDE integration |
-| [`lumenflow`](packages/lumenflow) | Convenience wrapper so `npx lumenflow init` works |
+| Package                                                     | Description                                                    |
+| ----------------------------------------------------------- | -------------------------------------------------------------- |
+| [`@lumenflow/core`](packages/@lumenflow/core)               | WU state machine, validators, git adapters, spawn management   |
+| [`@lumenflow/cli`](packages/@lumenflow/cli)                 | 60+ CLI commands: wu:claim, wu:done, gates, metrics, and more  |
+| [`@lumenflow/memory`](packages/@lumenflow/memory)           | Session tracking, context recovery, agent coordination signals |
+| [`@lumenflow/agent`](packages/@lumenflow/agent)             | Agent definitions, skill loading, delegation, verification     |
+| [`@lumenflow/initiatives`](packages/@lumenflow/initiatives) | Multi-phase project orchestration across WUs and lanes         |
+| [`@lumenflow/metrics`](packages/@lumenflow/metrics)         | DORA metrics, flow analysis, cycle time tracking               |
+| [`@lumenflow/shims`](packages/@lumenflow/shims)             | Git and pnpm safety shims for hook enforcement                 |
+| [`@lumenflow/mcp`](packages/@lumenflow/mcp)                 | Model Context Protocol server for IDE integration              |
+| [`lumenflow`](packages/lumenflow)                           | Convenience wrapper so `npx lumenflow init` works              |
 
 ## Agent Integrations
 
