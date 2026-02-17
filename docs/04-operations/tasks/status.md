@@ -5,7 +5,6 @@ _Last updated: 2026-02-17_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1760 — Fix runtime security: Unix socket permissions, JSON validation, daemon params](wu/WU-1760.yaml)
 
 ## Completed
 
@@ -699,3 +698,4 @@ _Last updated: 2026-02-17_
 - [WU-1757 — Fix evidence store double-hashing and add trace concurrency protection](wu/WU-1757.yaml) — 2026-02-17
 - [WU-1758 — Fix security boundary: fs:read path validation and git:status command injection](wu/WU-1758.yaml) — 2026-02-17
 - [WU-1759 — Fix EventStore reliability: stale lock recovery and atomic batch append](wu/WU-1759.yaml) — 2026-02-17
+- [WU-1760 — Fix runtime security: Unix socket permissions, JSON validation, daemon params](wu/WU-1760.yaml) — 2026-02-17
