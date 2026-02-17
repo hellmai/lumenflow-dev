@@ -37,7 +37,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1780 — Enforce workspace tamper baseline and missing-config handling](wu/WU-1780.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -753,6 +752,7 @@ sections:
 - [WU-1790 — Fix stale licensing and positioning on lumenflow.dev](wu/WU-1790.yaml)
 - [WU-1778 — Manifest least-privilege runtime capability resolver](wu/WU-1778.yaml)
 - [WU-1779 — Wire real SandboxSubprocessDispatcher into runtime initialization](wu/WU-1779.yaml)
+- [WU-1780 — Enforce workspace tamper baseline and missing-config handling](wu/WU-1780.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

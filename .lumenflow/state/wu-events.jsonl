@@ -1496,4 +1496,5 @@
 {"type":"complete","wuId":"WU-1778","timestamp":"2026-02-17T17:37:07.528Z"}
 {"type":"claim","wuId":"WU-1779","timestamp":"2026-02-17T17:38:07.151Z","lane":"Framework: Core Lifecycle","title":"Wire real SandboxSubprocessDispatcher into runtime initialization"}
 {"type":"complete","wuId":"WU-1779","timestamp":"2026-02-17T17:45:23.190Z"}
-{"type":"claim","wuId":"WU-1780","lane":"Framework: Core Lifecycle","title":"Enforce workspace tamper baseline and missing-config handling","timestamp":"2026-02-17T17:46:21.035Z"}
+{"type":"claim","wuId":"WU-1780","timestamp":"2026-02-17T17:46:21.035Z","lane":"Framework: Core Lifecycle","title":"Enforce workspace tamper baseline and missing-config handling"}
+{"type":"complete","wuId":"WU-1780","timestamp":"2026-02-17T17:50:32.680Z"}

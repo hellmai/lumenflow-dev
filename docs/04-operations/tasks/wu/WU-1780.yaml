@@ -2,7 +2,7 @@ id: WU-1780
 title: Enforce workspace tamper baseline and missing-config handling
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -52,3 +52,6 @@ session_id: 95aeb54b-9f9e-4b85-933a-1019ae9d9d40
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T17:46:21.018Z
+locked: true
+completed_at: 2026-02-17T17:50:28.080Z
+completed: 2026-02-17
