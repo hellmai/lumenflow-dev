@@ -1516,4 +1516,5 @@
 {"type":"complete","wuId":"WU-1786","timestamp":"2026-02-17T18:41:39.917Z"}
 {"type":"claim","wuId":"WU-1787","timestamp":"2026-02-17T18:42:42.218Z","lane":"Framework: Core Lifecycle","title":"Migrate task:block and task:unblock to direct KernelRuntime calls"}
 {"type":"complete","wuId":"WU-1787","timestamp":"2026-02-17T18:56:59.863Z"}
-{"type":"claim","wuId":"WU-1788","lane":"Framework: Core Lifecycle","title":"Migrate task:inspect to direct KernelRuntime replay path","timestamp":"2026-02-17T18:57:42.358Z"}
+{"type":"claim","wuId":"WU-1788","timestamp":"2026-02-17T18:57:42.358Z","lane":"Framework: Core Lifecycle","title":"Migrate task:inspect to direct KernelRuntime replay path"}
+{"type":"complete","wuId":"WU-1788","timestamp":"2026-02-17T19:07:30.265Z"}
