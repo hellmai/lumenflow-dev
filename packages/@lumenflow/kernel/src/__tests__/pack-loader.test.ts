@@ -1,12 +1,13 @@
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { WorkspaceSpecSchema } from '../kernel.schemas.js';
 import {
   DomainPackManifestSchema,
   PackLoader,
   computeDeterministicPackHash,
+  resolvePackToolEntryPath,
   type WorkspaceWarningEvent,
 } from '../pack/index.js';
 
@@ -77,6 +78,21 @@ async function writePackFixture(packRoot: string): Promise<void> {
 }
 
 describe('pack loader + integrity pinning', () => {
+  it('resolves manifest tool entries inside pack root and rejects traversal paths', () => {
+    const packRoot = resolve('/tmp/lumenflow-pack-root');
+
+    expect(resolvePackToolEntryPath(packRoot, 'tools/fs-read.ts')).toBe(
+      join(packRoot, 'tools', 'fs-read.ts'),
+    );
+    expect(resolvePackToolEntryPath(packRoot, 'tool-impl/git-tools.ts#gitStatusTool')).toBe(
+      `${join(packRoot, 'tool-impl', 'git-tools.ts')}#gitStatusTool`,
+    );
+
+    expect(() => resolvePackToolEntryPath(packRoot, '../escape.ts')).toThrow(
+      'outside pack root',
+    );
+  });
+
   it('validates DomainPack manifest schema fields', () => {
     const manifest = DomainPackManifestSchema.parse({
       id: 'software-delivery',

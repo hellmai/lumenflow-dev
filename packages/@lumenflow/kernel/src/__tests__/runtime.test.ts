@@ -153,6 +153,17 @@ describe('kernel runtime facade', () => {
     });
   }
 
+  async function createRuntimeWithDefaultResolver() {
+    return initializeKernelRuntime({
+      workspaceRoot: tempRoot,
+      packsRoot: join(tempRoot, 'packs'),
+      taskSpecRoot: join(tempRoot, 'tasks'),
+      eventsFilePath: join(tempRoot, 'events.jsonl'),
+      eventLockFilePath: join(tempRoot, 'events.lock'),
+      evidenceRoot: join(tempRoot, 'evidence'),
+    });
+  }
+
   it('loads workspace.yaml, resolves packs, and builds a runnable tool registry', async () => {
     const runtime = await createRuntime();
 
@@ -164,6 +175,19 @@ describe('kernel runtime facade', () => {
 
     expect(output.success).toBe(true);
     expect(output.data).toMatchObject({ echo: 'hello' });
+  });
+
+  it('registers manifest-declared tools with default resolver when override is omitted', async () => {
+    const runtime = await createRuntimeWithDefaultResolver();
+
+    const output = await runtime.executeTool(
+      'pack:echo',
+      { message: 'hello' },
+      createExecutionContext('WU-1770-default-resolver', 'run-default-resolver-1'),
+    );
+
+    expect(output.success).toBe(false);
+    expect(output.error?.code).toBe('SUBPROCESS_NOT_AVAILABLE');
   });
 
   it('createTask writes immutable TaskSpec YAML and emits task_created', async () => {

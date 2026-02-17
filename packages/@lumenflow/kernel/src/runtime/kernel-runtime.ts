@@ -1,6 +1,7 @@
 import { access, mkdir, open, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import YAML from 'yaml';
+import { z } from 'zod';
 import { canonical_json } from '../canonical-json.js';
 import {
   EventStore,
@@ -25,7 +26,7 @@ import {
   type ToolTraceEntry,
   type WorkspaceSpec,
 } from '../kernel.schemas.js';
-import { PackLoader, type LoadedDomainPack } from '../pack/index.js';
+import { PackLoader, resolvePackToolEntryPath, type LoadedDomainPack } from '../pack/index.js';
 import {
   POLICY_TRIGGERS,
   PolicyEngine,
@@ -45,6 +46,8 @@ const DEFAULT_WORKSPACE_FILE_NAME = 'workspace.yaml';
 const DEFAULT_RUNTIME_ROOT = path.join('.lumenflow', 'kernel');
 const DEFAULT_PACKS_ROOT_CANDIDATES = ['packs', path.join('packages', '@lumenflow', 'packs')];
 const RUNTIME_POLICY_FALLBACK_ID = 'kernel.policy.runtime-fallback';
+const DEFAULT_PACK_TOOL_INPUT_SCHEMA = z.record(z.string(), z.unknown());
+const DEFAULT_PACK_TOOL_OUTPUT_SCHEMA = z.record(z.string(), z.unknown());
 
 type RunLifecycleEvent = Extract<
   KernelEvent,
@@ -298,6 +301,28 @@ function mergeStateAliases(loadedPacks: LoadedDomainPack[]): TaskStateAliases {
   }
 
   return aliases;
+}
+
+async function defaultRuntimeToolCapabilityResolver(
+  input: RuntimeToolCapabilityResolverInput,
+): Promise<ToolCapability | null> {
+  const resolvedEntry = resolvePackToolEntryPath(input.loadedPack.packRoot, input.tool.entry);
+
+  return {
+    name: input.tool.name,
+    domain: input.loadedPack.manifest.id,
+    version: input.loadedPack.manifest.version,
+    input_schema: DEFAULT_PACK_TOOL_INPUT_SCHEMA,
+    output_schema: DEFAULT_PACK_TOOL_OUTPUT_SCHEMA,
+    permission: 'admin',
+    required_scopes: input.workspaceSpec.security.allowed_scopes,
+    handler: {
+      kind: 'subprocess',
+      entry: resolvedEntry,
+    },
+    description: `Pack tool ${input.tool.name} declared by ${input.loadedPack.manifest.id}`,
+    pack: input.loadedPack.pin.id,
+  };
 }
 
 async function fileExists(targetPath: string): Promise<boolean> {
@@ -757,14 +782,10 @@ export async function initializeKernelRuntime(
     });
   }
 
+  const toolCapabilityResolver = options.toolCapabilityResolver ?? defaultRuntimeToolCapabilityResolver;
   for (const loadedPack of loadedPacks) {
     for (const tool of loadedPack.manifest.tools) {
-      if (!options.toolCapabilityResolver) {
-        throw new Error(
-          `Pack ${loadedPack.pin.id} declares tools but no toolCapabilityResolver was provided.`,
-        );
-      }
-      const capability = await options.toolCapabilityResolver({
+      const capability = await toolCapabilityResolver({
         workspaceSpec,
         loadedPack,
         tool,
