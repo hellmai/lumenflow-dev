@@ -9,6 +9,7 @@ code_paths:
   - packages/@lumenflow/runtime/src/transport/unix-socket-server.ts
   - packages/@lumenflow/runtime/src/daemon/runtime-daemon.ts
   - packages/@lumenflow/runtime/src/scheduler/task-scheduler.ts
+  - packages/@lumenflow/runtime/package.json
 tests:
   manual:
     - Run runtime daemon/scheduler/socket unit tests; manually verify socket mode 0600
@@ -16,8 +17,7 @@ tests:
     - daemon-only signal unbind
     - and task scheduler completion bookkeeping.
   unit:
-    - packages/@lumenflow/runtime/src/__tests__/unix-socket-server.test.ts
-    - packages/@lumenflow/runtime/src/__tests__/runtime-daemon.test.ts
+    - packages/@lumenflow/runtime/__tests__/daemon.test.ts
     - packages/@lumenflow/runtime/__tests__/scheduler.test.ts
   e2e: []
 artifacts:
