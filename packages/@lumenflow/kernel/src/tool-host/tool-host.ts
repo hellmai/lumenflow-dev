@@ -17,6 +17,7 @@ import { DefaultSubprocessDispatcher, type SubprocessDispatcher } from './subpro
 const SHA256_HEX_REGEX = /^[a-f0-9]{64}$/;
 const DEFAULT_WORKSPACE_CONFIG_HASH = '0'.repeat(64);
 const DEFAULT_RUNTIME_VERSION = 'kernel-dev';
+const RESERVED_FRAMEWORK_SCOPE_PREFIX = '.lumenflow/';
 
 export interface PolicyHookInput {
   capability: ToolCapability;
@@ -52,6 +53,26 @@ function parseScopeList(candidate: unknown, fallback: ToolScope[]): ToolScope[] 
 
 function parseOptionalString(candidate: unknown): string | undefined {
   return typeof candidate === 'string' && candidate.trim().length > 0 ? candidate : undefined;
+}
+
+function normalizeScopePattern(pattern: string): string {
+  return pattern.replaceAll('\\', '/').replace(/^\.\//, '');
+}
+
+function isReservedFrameworkWriteScope(scope: ToolScope): boolean {
+  if (scope.type !== 'path' || scope.access !== 'write') {
+    return false;
+  }
+
+  const normalized = normalizeScopePattern(scope.pattern);
+  return normalized === '.lumenflow' || normalized.startsWith(RESERVED_FRAMEWORK_SCOPE_PREFIX);
+}
+
+function collectReservedFrameworkWriteScopes(scopes: ToolScope[]): string[] {
+  const blocked = scopes
+    .filter((scope) => isReservedFrameworkWriteScope(scope))
+    .map((scope) => normalizeScopePattern(scope.pattern));
+  return [...new Set(blocked)];
 }
 
 async function allowAllPolicyHook(): Promise<PolicyDecision[]> {
@@ -103,6 +124,7 @@ export class ToolHost {
     const taskDeclared = parseScopeList(metadata.task_declared_scopes, context.allowed_scopes);
 
     const scopeRequested = capability.required_scopes;
+    const reservedFrameworkWriteScopes = collectReservedFrameworkWriteScopes(scopeRequested);
     const scopeAllowed = intersectToolScopes({
       workspaceAllowed,
       laneAllowed,
@@ -149,6 +171,41 @@ export class ToolHost {
       workspace_config_hash: workspaceConfigHash,
       runtime_version: runtimeVersion,
     });
+
+    if (reservedFrameworkWriteScopes.length > 0) {
+      const deniedOutput: ToolOutput = {
+        success: false,
+        error: {
+          code: 'SCOPE_DENIED',
+          message:
+            'Reserved scope violation: pack/tool write scopes under .lumenflow/** are not allowed.',
+          details: {
+            reserved_scopes: reservedFrameworkWriteScopes,
+          },
+        },
+      };
+
+      await this.evidenceStore.appendTrace({
+        schema_version: 1,
+        kind: 'tool_call_finished',
+        receipt_id: receiptId,
+        timestamp: new Date().toISOString(),
+        result: 'denied',
+        duration_ms: Date.now() - startedAt,
+        scope_enforcement_note:
+          'Denied by reserved framework boundary: .lumenflow/** is framework-owned.',
+        policy_decisions: [
+          {
+            policy_id: 'kernel.scope.reserved-path',
+            decision: 'deny',
+            reason: 'Pack/tool declared write scope targets reserved .lumenflow/** namespace',
+          },
+        ],
+        artifacts_written: [],
+      });
+
+      return deniedOutput;
+    }
 
     if (scopeEnforced.length === 0) {
       const deniedOutput: ToolOutput = {

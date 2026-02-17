@@ -1,4 +1,5 @@
-import type { SandboxProfile } from './profile.js';
+import path from 'node:path';
+import type { SandboxBindMount, SandboxProfile } from './profile.js';
 
 export interface SandboxInvocation {
   command: string;
@@ -12,18 +13,71 @@ export interface BuildBwrapInvocationInput {
   sandboxBinary?: string;
 }
 
+const SYSTEM_READONLY_ALLOWLIST = ['/usr', '/bin', '/sbin', '/lib', '/lib64', '/etc'] as const;
+
 function assertCommand(command: string[]): void {
   if (command.length === 0) {
     throw new Error('Sandbox command is required');
   }
 }
 
+function dedupeMounts(mounts: SandboxBindMount[]): SandboxBindMount[] {
+  const unique = new Map<string, SandboxBindMount>();
+  for (const mount of mounts) {
+    const key = `${mount.source}=>${mount.target}`;
+    if (!unique.has(key)) {
+      unique.set(key, mount);
+    }
+  }
+  return [...unique.values()];
+}
+
+function collectCommandReadonlyMounts(command: string[]): SandboxBindMount[] {
+  const mounts: SandboxBindMount[] = [];
+
+  for (const segment of command) {
+    if (!path.isAbsolute(segment)) {
+      continue;
+    }
+
+    const absolute = path.resolve(segment);
+    const parent = path.dirname(absolute);
+    const grandparent = path.dirname(parent);
+
+    if (parent !== '/') {
+      mounts.push({ source: parent, target: parent });
+    }
+    if (grandparent !== '/') {
+      mounts.push({ source: grandparent, target: grandparent });
+    }
+  }
+
+  return dedupeMounts(mounts);
+}
+
+function collectReadonlyAllowlistMounts(
+  profile: SandboxProfile,
+  command: string[],
+): SandboxBindMount[] {
+  const writableTargets = new Set(profile.writable_bind_mounts.map((mount) => mount.target));
+  const readonlyMounts = [
+    ...SYSTEM_READONLY_ALLOWLIST.map((mountPath) => ({
+      source: mountPath,
+      target: mountPath,
+    })),
+    ...collectCommandReadonlyMounts(command),
+    ...profile.readonly_bind_mounts,
+  ];
+
+  return dedupeMounts(readonlyMounts).filter((mount) => !writableTargets.has(mount.target));
+}
+
 export function buildBwrapInvocation(input: BuildBwrapInvocationInput): SandboxInvocation {
   assertCommand(input.command);
 
-  const args: string[] = ['--die-with-parent', '--new-session', '--ro-bind', '/', '/'];
+  const args: string[] = ['--die-with-parent', '--new-session', '--tmpfs', '/'];
 
-  for (const mount of input.profile.readonly_bind_mounts) {
+  for (const mount of collectReadonlyAllowlistMounts(input.profile, input.command)) {
     args.push('--ro-bind', mount.source, mount.target);
   }
 

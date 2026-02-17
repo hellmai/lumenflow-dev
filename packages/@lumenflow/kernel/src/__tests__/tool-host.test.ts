@@ -207,4 +207,55 @@ describe('tool host', () => {
     expect(result.error?.code).toBe('SUBPROCESS_NOT_AVAILABLE');
     expect(result.error?.message).toContain('WU-1730');
   });
+
+  it('rejects reserved .lumenflow write scopes declared by tool capabilities', async () => {
+    const reservedScope: ToolScope = {
+      type: 'path',
+      pattern: '.lumenflow/state/**',
+      access: 'write',
+    };
+
+    const registry = new ToolRegistry();
+    registry.register({
+      ...makeInProcessCapability(),
+      name: 'state:write',
+      required_scopes: [reservedScope],
+    });
+
+    const evidenceStore = new EvidenceStore({ evidenceRoot });
+    const host = new ToolHost({
+      registry,
+      evidenceStore,
+    });
+
+    const result = await host.execute(
+      'state:write',
+      {
+        path: '.lumenflow/state/wu-events.jsonl',
+        content: 'blocked',
+      },
+      makeExecutionContext(
+        {
+          allowed_scopes: [reservedScope],
+        },
+        {
+          workspace_allowed_scopes: [reservedScope],
+          lane_allowed_scopes: [reservedScope],
+          task_declared_scopes: [reservedScope],
+        },
+      ),
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe('SCOPE_DENIED');
+    expect(result.error?.message).toContain('.lumenflow');
+
+    const traces = await evidenceStore.readTraces();
+    const finished = traces.find((trace) => trace.kind === 'tool_call_finished');
+    expect(finished).toBeDefined();
+    if (finished?.kind === 'tool_call_finished') {
+      expect(finished.result).toBe('denied');
+      expect(finished.policy_decisions.some((decision) => decision.policy_id === 'kernel.scope.reserved-path')).toBe(true);
+    }
+  });
 });
