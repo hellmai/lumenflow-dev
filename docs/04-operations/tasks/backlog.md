@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1784 — Extract remaining runtime string literal constants](wu/WU-1784.yaml) — Framework: Core Lifecycle
 - [WU-1783 — Housekeeping: license consistency, dangling plan URIs, and metric wording](wu/WU-1783.yaml) — Content: Specs Governance
 - [WU-1782 — Bound evidence receipt indexing and improve lane-lock cleanup observability](wu/WU-1782.yaml) — Framework: Core Lifecycle
 - [WU-1781 — Sandbox readonly mount depth and prefix validation](wu/WU-1781.yaml) — Framework: Core Lifecycle
