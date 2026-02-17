@@ -6,10 +6,8 @@ status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
-  - packages/@lumenflow/kernel/src/tool-host/subprocess-dispatcher.ts
-  - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
   - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
-  - packages/@lumenflow/kernel/src/sandbox/bwrap-invocation.ts
+  - packages/@lumenflow/kernel/src/tool-host/subprocess-dispatcher.ts
 tests:
   manual:
     - Execute a manifest-declared subprocess tool through KernelRuntime and verify bwrap-backed
@@ -31,10 +29,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-17T17:38:07.103Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1779
+session_id: fe79e282-49f5-4630-9531-c10adaf6004a
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T17:38:07.113Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -49,11 +54,3 @@ acceptance:
   - At least one manifest tool executes end-to-end through runtime and emits receipt evidence.
   - Runtime and tool-host tests are updated from stub-expectation to real-dispatch behavior (or
     explicit availability gating).
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1779
-claimed_at: 2026-02-17T17:38:07.103Z
-baseline_main_sha: 7e7d175846b579a1243a932bc6e8d54d940fbadd
-session_id: fe79e282-49f5-4630-9531-c10adaf6004a
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-17T17:38:07.113Z
