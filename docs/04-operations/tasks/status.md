@@ -6,7 +6,6 @@ _Last updated: 2026-02-17_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1778 — Manifest least-privilege runtime capability resolver](wu/WU-1778.yaml)
-- [WU-1790 — Fix stale licensing and positioning on lumenflow.dev](wu/WU-1790.yaml)
 
 ## Completed
 
@@ -715,3 +714,4 @@ _Last updated: 2026-02-17_
 - [WU-1776 — OSS release prep: community governance files + SDK license](wu/WU-1776.yaml) — 2026-02-17
 - [WU-1764 — Kernel architecture: package graph integration, exports, DRY cleanup](wu/WU-1764.yaml) — 2026-02-17
 - [WU-1777 — Update README for kernel positioning + fix license badge](wu/WU-1777.yaml) — 2026-02-17
+- [WU-1790 — Fix stale licensing and positioning on lumenflow.dev](wu/WU-1790.yaml) — 2026-02-17
