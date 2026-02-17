@@ -11,7 +11,10 @@ code_paths:
   - packages/@lumenflow/mcp/src/server.ts
   - packages/@lumenflow/mcp/package.json
 tests:
-  manual: []
+  manual:
+    - Start MCP server
+    - invoke task_claim
+    - verify runtime-backed claim event pair and no CLI shell-out in logs
   unit:
     - packages/@lumenflow/mcp/src/__tests__/runtime-task-tools.test.ts
     - packages/@lumenflow/mcp/src/__tests__/tools.test.ts
@@ -20,10 +23,10 @@ artifacts:
   - .lumenflow/stamps/WU-1771.done
 dependencies:
   - WU-1770
-blocked_by:
-  - WU-1770
 initiative: INIT-029
 phase: 7
+blocked_by:
+  - WU-1770
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
