@@ -102,9 +102,16 @@ export class ToolHost {
     this.runtimeVersion = options.runtimeVersion ?? DEFAULT_RUNTIME_VERSION;
   }
 
+  async onStartup(): Promise<number> {
+    return this.evidenceStore.reconcileOrphanedStarts();
+  }
+
+  async onShutdown(): Promise<number> {
+    return this.evidenceStore.reconcileOrphanedStarts();
+  }
+
   async execute(name: string, input: unknown, ctx: ExecutionContext): Promise<ToolOutput> {
     const context = ExecutionContextSchema.parse(ctx);
-    await this.evidenceStore.reconcileOrphanedStarts();
 
     const capability = this.registry.lookup(name);
     if (!capability) {

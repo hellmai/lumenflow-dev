@@ -2,7 +2,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { z } from 'zod';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EvidenceStore } from '../evidence/index.js';
 import type { ExecutionContext, ToolCapability, ToolScope } from '../kernel.schemas.js';
 import { ToolHost, ToolRegistry } from '../tool-host/index.js';
@@ -261,5 +261,46 @@ describe('tool host', () => {
         ),
       ).toBe(true);
     }
+  });
+
+  it('does not reconcile orphaned traces on every execute call', async () => {
+    const registry = new ToolRegistry();
+    registry.register(makeInProcessCapability());
+
+    const evidenceStore = new EvidenceStore({ evidenceRoot });
+    const reconcileSpy = vi.spyOn(evidenceStore, 'reconcileOrphanedStarts');
+    const host = new ToolHost({
+      registry,
+      evidenceStore,
+    });
+
+    const result = await host.execute(
+      'fs:write',
+      {
+        path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+        content: 'ok',
+      },
+      makeExecutionContext(),
+    );
+
+    expect(result.success).toBe(true);
+    expect(reconcileSpy).not.toHaveBeenCalled();
+  });
+
+  it('runs orphan reconciliation in startup and shutdown lifecycle hooks', async () => {
+    const registry = new ToolRegistry();
+    registry.register(makeInProcessCapability());
+
+    const evidenceStore = new EvidenceStore({ evidenceRoot });
+    const reconcileSpy = vi.spyOn(evidenceStore, 'reconcileOrphanedStarts');
+    const host = new ToolHost({
+      registry,
+      evidenceStore,
+    });
+
+    await host.onStartup();
+    await host.onShutdown();
+
+    expect(reconcileSpy).toHaveBeenCalledTimes(2);
   });
 });
