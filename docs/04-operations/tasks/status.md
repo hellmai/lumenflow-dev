@@ -5,7 +5,6 @@ _Last updated: 2026-02-17_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1773 — Add workspace hash verification and spec_tampered emission](wu/WU-1773.yaml)
 
 ## Completed
 
@@ -708,3 +707,4 @@ _Last updated: 2026-02-17_
 - [WU-1769 — Move orphan reconciliation off hot path and add evidence task indexing](wu/WU-1769.yaml) — 2026-02-17
 - [WU-1770 — Wire pack manifest tools into runtime resolver](wu/WU-1770.yaml) — 2026-02-17
 - [WU-1774 — Pack integration e2e: load, register, execute, receipt](wu/WU-1774.yaml) — 2026-02-17
+- [WU-1773 — Add workspace hash verification and spec_tampered emission](wu/WU-1773.yaml) — 2026-02-17
