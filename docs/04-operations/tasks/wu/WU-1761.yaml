@@ -9,7 +9,9 @@ code_paths:
   - packages/@lumenflow/kernel/src/sandbox/bwrap-invocation.ts
   - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
 tests:
-  manual: []
+  manual:
+    - Run kernel sandbox and tool-host tests; verify bwrap mounts only allowlisted paths and kernel
+      rejects pack write scopes under reserved .lumenflow/**.
   unit:
     - packages/@lumenflow/kernel/src/__tests__/sandbox.test.ts
     - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
@@ -18,10 +20,10 @@ artifacts:
   - .lumenflow/stamps/WU-1761.done
 dependencies:
   - WU-1767
-blocked_by:
-  - WU-1767
 initiative: INIT-029
 phase: 6
+blocked_by:
+  - WU-1767
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
@@ -34,7 +36,8 @@ requires_cto_approval: false
 requires_design_approval: false
 description: Sandbox bwrap currently relies on broad root read-only mounting with deny overlays.
   This WU narrows sandbox mount exposure via allowlist strategy and enforces reserved .lumenflow/**
-  scope boundaries in kernel scope validation so pack/tool scopes cannot claim framework-owned paths.
+  scope boundaries in kernel scope validation so pack/tool scopes cannot claim framework-owned
+  paths.
 acceptance:
   - bwrap uses allowlist mount strategy instead of deny-overlay on full root mount
   - Kernel scope validation rejects reserved .lumenflow/** path scopes for pack/tool-declared writes
