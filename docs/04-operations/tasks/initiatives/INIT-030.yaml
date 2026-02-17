@@ -21,11 +21,33 @@ phases:
     status: pending
   - id: 4
     title: Metric closure and runCliCommand deprecation path
-    status: in_progress
+    status: done
 success_metrics:
   - Migrated commands execute through KernelRuntime without runCliCommand shell-out
   - MCP and CLI parity gates remain green for migrated commands
   - Runtime adoption proceeds in old production packages via strangler-fig migration
+  - MCP shell-out call sites in `packages/@lumenflow/mcp/src/tools/*.ts` remain non-increasing
+    from baseline 100 and ratchet to timeline checkpoints in the INIT-030 roadmap artifact
+notes: |
+  ## Phase 4 Deprecation Timeline (Auditable)
+  Roadmap artifact: docs/04-operations/plans/INIT-030-runtime-adoption-deprecation-roadmap.md
+
+  Remaining shell-out domains (baseline on 2026-02-17):
+  - parity-tools (27), wu-tools (23), memory-tools (14), initiative-tools (8), setup-tools (8),
+    validation-tools (6), flow-tools (5), orchestration-tools (4), agent-tools (4), context-tools (1)
+  - Total baseline: 100 runCliCommand call sites
+
+  Migration wave checkpoints:
+  - Wave 0 (2026-02-17): baseline + guardrail complete (WU-1793, WU-1795)
+  - Wave 1 (target 2026-03-31): <=90 call sites, migrate high-frequency read/lifecycle shells
+  - Wave 2 (target 2026-04-30): <=70 call sites, migrate initiative/memory/orchestration shells
+  - Wave 3 (target 2026-06-15): <=55 call sites, migrate setup/validation/flow shells
+  - Wave 4 (target 2026-07-31): <=30 call sites and document explicit exemptions for any remaining shells
+
+  Phase 4 closure criteria:
+  - Guardrail test enforces non-increasing budget from committed baseline
+  - Each wave records completion evidence (migrated command list + parity gate status)
+  - Any non-zero remaining shell-outs at Wave 4 include owner, rationale, and removal date
 labels: []
 wus:
   - WU-1784
@@ -34,3 +56,6 @@ wus:
   - WU-1787
   - WU-1788
   - WU-1789
+  - WU-1793
+  - WU-1795
+  - WU-1794
