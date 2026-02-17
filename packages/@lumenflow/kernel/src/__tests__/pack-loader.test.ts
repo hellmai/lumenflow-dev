@@ -3,7 +3,8 @@
 
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import YAML from 'yaml';
 import { SOFTWARE_DELIVERY_PACK_ID } from '../../../packs/software-delivery/constants.js';
@@ -20,6 +21,8 @@ import {
   resolvePackToolEntryPath,
   type WorkspaceWarningEvent,
 } from '../pack/index.js';
+
+const PACK_LOADER_TEST_DIR = dirname(fileURLToPath(import.meta.url));
 
 interface WorkspacePackInput {
   integrity: string;
@@ -190,7 +193,9 @@ describe('pack loader + integrity pinning', () => {
     );
 
     const manifestPath = resolve(
-      process.cwd(),
+      PACK_LOADER_TEST_DIR,
+      '..',
+      '..',
       '..',
       'packs',
       'software-delivery',
