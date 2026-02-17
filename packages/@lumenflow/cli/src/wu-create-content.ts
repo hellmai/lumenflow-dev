@@ -149,7 +149,21 @@ export function mergeSpecRefs(specRefs?: string[], extraRef?: string): string[] 
   return refs;
 }
 
-export function createPlanTemplate(wuId: string, title: string): string {
+/**
+ * WU-1755: Optional context to auto-populate plan template sections.
+ * When provided, Goal and Success Criteria sections are pre-filled
+ * instead of being empty headers that agents must manually edit.
+ */
+interface PlanTemplateContext {
+  description?: string;
+  acceptance?: string[];
+}
+
+export function createPlanTemplate(
+  wuId: string,
+  title: string,
+  context?: PlanTemplateContext,
+): string {
   const plansDir = getPlansDir();
   mkdirSync(plansDir, { recursive: true });
 
@@ -165,10 +179,19 @@ export function createPlanTemplate(wuId: string, title: string): string {
   }
 
   const today = todayISO();
+
+  // WU-1755: Pre-fill Goal from description and Success Criteria from acceptance
+  const goalContent = context?.description ? `\n${context.description}\n` : '';
+  const acceptanceContent =
+    context?.acceptance && context.acceptance.length > 0
+      ? `\n${context.acceptance.map((a) => `- ${a}`).join('\n')}\n`
+      : '';
+
   const content =
     `# ${wuId} Plan — ${title}\n\n` +
     `Created: ${today}\n\n` +
-    `## Goal\n\n` +
+    `## Goal\n${goalContent}\n` +
+    `## Success Criteria\n${acceptanceContent}\n` +
     `## Scope\n\n` +
     `## Approach\n\n` +
     `## Risks\n\n` +

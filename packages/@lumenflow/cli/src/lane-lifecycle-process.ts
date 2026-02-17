@@ -9,7 +9,7 @@
  * finalized through dedicated lane lifecycle commands.
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
 import { CONFIG_FILES, FILE_SYSTEM, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
@@ -308,6 +308,101 @@ export function buildInitLaneLifecycleMessage(status: LaneLifecycleStatus): stri
   ].join(NEWLINE);
 }
 
+/**
+ * WU-1755: Detect workspace structure and generate project-specific lane definitions.
+ * Scans pnpm-workspace.yaml or package.json workspaces to build lanes from actual project layout.
+ * Falls back to DEFAULT_LANE_DEFINITIONS if no workspace config is found.
+ */
+function detectWorkspaceLanes(
+  projectRoot: string,
+): { name: string; wip_limit: number; code_paths: string[] }[] {
+  const lanes: { name: string; wip_limit: number; code_paths: string[] }[] = [];
+
+  // Try pnpm-workspace.yaml first
+  const pnpmWorkspacePath = path.join(projectRoot, 'pnpm-workspace.yaml');
+  let workspacePatterns: string[] = [];
+
+  if (existsSync(pnpmWorkspacePath)) {
+    try {
+      const content = readFileSync(pnpmWorkspacePath, FILE_SYSTEM.ENCODING as BufferEncoding);
+      const parsed = YAML.parse(content) as { packages?: string[] };
+      workspacePatterns = parsed?.packages ?? [];
+    } catch {
+      // Fall through to package.json check
+    }
+  }
+
+  // Fall back to package.json workspaces
+  if (workspacePatterns.length === 0) {
+    const pkgJsonPath = path.join(projectRoot, 'package.json');
+    if (existsSync(pkgJsonPath)) {
+      try {
+        const content = readFileSync(pkgJsonPath, FILE_SYSTEM.ENCODING as BufferEncoding);
+        const parsed = JSON.parse(content) as { workspaces?: string[] | { packages?: string[] } };
+        if (Array.isArray(parsed?.workspaces)) {
+          workspacePatterns = parsed.workspaces;
+        } else if (parsed?.workspaces?.packages) {
+          workspacePatterns = parsed.workspaces.packages;
+        }
+      } catch {
+        // Fall through to defaults
+      }
+    }
+  }
+
+  if (workspacePatterns.length === 0) {
+    return deepCloneDefaultLaneDefinitions() as typeof lanes;
+  }
+
+  // Scan workspace patterns for actual directories
+  for (const pattern of workspacePatterns) {
+    const baseDir = pattern.replace(/\/?\*$/, '');
+    const fullPath = path.join(projectRoot, baseDir);
+    if (!existsSync(fullPath)) continue;
+
+    try {
+      const entries = readdirSync(fullPath, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isDirectory()) continue;
+        const pkgPath = path.join(fullPath, entry.name, 'package.json');
+        if (!existsSync(pkgPath)) continue;
+
+        // Determine lane category from directory structure
+        const isApp = baseDir.includes('app');
+        const category = isApp ? 'Experience' : 'Framework';
+        const displayName = entry.name.replace(/^@[^/]+\//, '');
+        lanes.push({
+          name: `${category}: ${displayName.charAt(0).toUpperCase() + displayName.slice(1)}`,
+          wip_limit: 1,
+          code_paths: [`${baseDir}/${entry.name}/**`],
+        });
+      }
+    } catch {
+      // Skip unreadable directories
+    }
+  }
+
+  // Always include Content: Documentation if docs/ exists
+  if (existsSync(path.join(projectRoot, 'docs'))) {
+    lanes.push({
+      name: 'Content: Documentation',
+      wip_limit: 1,
+      code_paths: ['docs/**', '*.md'],
+    });
+  }
+
+  // Always include Operations: CI/CD if .github/ exists
+  if (existsSync(path.join(projectRoot, '.github'))) {
+    lanes.push({
+      name: 'Operations: CI/CD',
+      wip_limit: 1,
+      code_paths: ['.github/workflows/**', '.github/actions/**'],
+    });
+  }
+
+  return lanes.length > 0 ? lanes : (deepCloneDefaultLaneDefinitions() as typeof lanes);
+}
+
 export function ensureDraftLaneArtifacts(projectRoot: string): {
   createdDefinitions: boolean;
   createdInference: boolean;
@@ -318,7 +413,8 @@ export function ensureDraftLaneArtifacts(projectRoot: string): {
 
   let createdDefinitions = false;
   if (!hasLaneDefinitions(config)) {
-    lanes[LANE_DEFINITIONS_KEY] = deepCloneDefaultLaneDefinitions();
+    // WU-1755: Detect workspace structure for project-specific lanes
+    lanes[LANE_DEFINITIONS_KEY] = detectWorkspaceLanes(projectRoot);
     createdDefinitions = true;
   }
 

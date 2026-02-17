@@ -32,7 +32,7 @@ import { die } from '@lumenflow/core/error-handler';
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { stringifyYAML } from '@lumenflow/core/wu-yaml';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
+import { createWUParser, WU_OPTIONS, INITIATIVE_CREATE_OPTIONS } from '@lumenflow/core/arg-parser';
 import { INIT_PATHS } from '@lumenflow/initiatives/paths';
 import {
   INIT_PATTERNS,
@@ -108,6 +108,9 @@ interface CreateInitiativeOptions {
   priority?: string;
   owner?: string;
   targetDate?: string;
+  initDescription?: string;
+  initPhase?: string[];
+  successMetric?: string[];
 }
 
 function createInitiativeYamlInWorktree(
@@ -129,18 +132,29 @@ function createInitiativeYamlInWorktree(
   // WU-1428: Use todayISO() for consistent YYYY-MM-DD format (library-first)
   const today = todayISO();
 
+  // WU-1755: Populate description, phases, and success_metrics from CLI flags
+  const phases = options.initPhase
+    ? (options.initPhase as string[]).map((phaseTitle: string, idx: number) => ({
+        id: idx + 1,
+        title: phaseTitle,
+        status: 'pending',
+      }))
+    : [];
+
+  const successMetrics = options.successMetric ? (options.successMetric as string[]) : [];
+
   const initContent = {
     id,
     slug,
     title,
-    description: '',
+    description: options.initDescription || '',
     status: INIT_DEFAULTS.STATUS,
     priority: options.priority || INIT_DEFAULTS.PRIORITY,
     ...(options.owner && { owner: options.owner }),
     created: today,
     ...(options.targetDate && { target_date: options.targetDate }),
-    phases: [],
-    success_metrics: [],
+    phases,
+    success_metrics: successMetrics,
     labels: [],
   };
 
@@ -175,6 +189,9 @@ async function main() {
       WU_OPTIONS.priority,
       WU_OPTIONS.owner,
       WU_OPTIONS.targetDate,
+      INITIATIVE_CREATE_OPTIONS.initDescription,
+      INITIATIVE_CREATE_OPTIONS.initPhase,
+      INITIATIVE_CREATE_OPTIONS.successMetric,
     ],
     required: ['id', 'slug', 'title'],
     allowPositionalId: false,
@@ -216,6 +233,9 @@ async function main() {
               priority: args.priority,
               owner: args.owner,
               targetDate: args.targetDate,
+              initDescription: args.initDescription,
+              initPhase: args.initPhase,
+              successMetric: args.successMetric,
             },
           );
 

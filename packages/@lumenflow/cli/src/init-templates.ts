@@ -1836,8 +1836,12 @@ pnpm typecheck            # Check types
 export const GITIGNORE_TEMPLATE = `# Dependencies
 node_modules/
 
-# LumenFlow telemetry (local only, not shared)
+# LumenFlow runtime state (local only, not shared)
 .lumenflow/telemetry/
+.lumenflow/flow.log
+.lumenflow/commands.log
+.lumenflow/sessions/
+.lumenflow/memory/
 
 # Worktrees (isolated parallel work directories)
 worktrees/
@@ -1845,6 +1849,9 @@ worktrees/
 # Build output
 dist/
 *.tsbuildinfo
+
+# Turbo
+.turbo/
 
 # Environment files
 .env
@@ -1871,6 +1878,9 @@ dist/
 
 # Coverage reports
 coverage/
+
+# Turbo
+.turbo/
 
 # LumenFlow state (local only)
 .lumenflow/state/

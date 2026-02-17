@@ -1416,14 +1416,14 @@ export const LumenFlowConfigSchema = z.object({
    * WU-1356: Custom build command for CLI bootstrap
    * Overrides the default build command used in cli-entry.mjs.
    *
-   * @default 'pnpm --filter @lumenflow/cli build'
+   * @default 'pnpm build'
    *
    * @example
    * ```yaml
    * build_command: 'npm run build'
    * ```
    */
-  build_command: z.string().default('pnpm --filter @lumenflow/cli build'),
+  build_command: z.string().default('pnpm build'),
 });
 
 /**

@@ -559,7 +559,11 @@ async function main() {
   }
 
   if (args.plan) {
-    createPlanTemplate(wuId, args.title);
+    // WU-1755: Pass description/acceptance to pre-fill plan template
+    createPlanTemplate(wuId, args.title, {
+      description: args.description,
+      acceptance: args.acceptance,
+    });
   }
 
   // Transaction: micro-worktree isolation (WU-1439) or cloud direct commit (WU-1590)

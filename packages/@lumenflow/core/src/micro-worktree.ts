@@ -166,15 +166,21 @@ export async function stageChangesWithDeletions(
  *
  * @returns {boolean} True if prettier is available, false otherwise
  */
-export function isPrettierAvailable(): boolean {
+export function isPrettierAvailable(cwd?: string): boolean {
   try {
-    // Check if prettier is available by running pnpm prettier --version
-    // Note: This uses execSync with a known-safe command (no user input)
-
-    execSync(`${PKG_MANAGER} ${SCRIPTS.PRETTIER} --version`, {
+    // Check if prettier is available via pnpm prettier --version
+    // No user input in this command - known-safe constant strings only.
+    // WU-1755: Accept optional cwd so prettier resolves from project root,
+    // not from /tmp/ micro-worktrees which have no node_modules.
+    const opts: Record<string, unknown> = {
       encoding: 'utf-8',
       stdio: STDIO_MODES.PIPE,
-    });
+    };
+    if (cwd) {
+      opts.cwd = cwd;
+    }
+
+    execSync(`${PKG_MANAGER} ${SCRIPTS.PRETTIER} --version`, opts);
     return true;
   } catch {
     return false;
