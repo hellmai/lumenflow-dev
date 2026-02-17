@@ -5,7 +5,6 @@ _Last updated: 2026-02-17_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1787 — Migrate task:block and task:unblock to direct KernelRuntime calls](wu/WU-1787.yaml)
 
 ## Completed
 
@@ -726,3 +725,4 @@ _Last updated: 2026-02-17_
 - [WU-1785 — Migrate task:create path to direct KernelRuntime calls](wu/WU-1785.yaml) — 2026-02-17
 - [WU-1792 — Add HTML comment guard to MDX doc generator](wu/WU-1792.yaml) — 2026-02-17
 - [WU-1786 — Migrate task:complete path to direct KernelRuntime calls](wu/WU-1786.yaml) — 2026-02-17
+- [WU-1787 — Migrate task:block and task:unblock to direct KernelRuntime calls](wu/WU-1787.yaml) — 2026-02-17

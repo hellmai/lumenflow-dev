@@ -30,7 +30,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1787 — Migrate task:block and task:unblock to direct KernelRuntime calls](wu/WU-1787.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -755,6 +754,7 @@ sections:
 - [WU-1785 — Migrate task:create path to direct KernelRuntime calls](wu/WU-1785.yaml)
 - [WU-1792 — Add HTML comment guard to MDX doc generator](wu/WU-1792.yaml)
 - [WU-1786 — Migrate task:complete path to direct KernelRuntime calls](wu/WU-1786.yaml)
+- [WU-1787 — Migrate task:block and task:unblock to direct KernelRuntime calls](wu/WU-1787.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

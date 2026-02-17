@@ -1514,4 +1514,5 @@
 {"type":"claim","wuId":"WU-1786","timestamp":"2026-02-17T18:30:57.829Z","lane":"Framework: Core Lifecycle","title":"Migrate task:complete path to direct KernelRuntime calls"}
 {"type":"complete","wuId":"WU-1792","timestamp":"2026-02-17T18:39:07.385Z"}
 {"type":"complete","wuId":"WU-1786","timestamp":"2026-02-17T18:41:39.917Z"}
-{"type":"claim","wuId":"WU-1787","lane":"Framework: Core Lifecycle","title":"Migrate task:block and task:unblock to direct KernelRuntime calls","timestamp":"2026-02-17T18:42:42.218Z"}
+{"type":"claim","wuId":"WU-1787","timestamp":"2026-02-17T18:42:42.218Z","lane":"Framework: Core Lifecycle","title":"Migrate task:block and task:unblock to direct KernelRuntime calls"}
+{"type":"complete","wuId":"WU-1787","timestamp":"2026-02-17T18:56:59.863Z"}
