@@ -2,7 +2,7 @@ id: WU-1738
 title: MCP surface rewrite — calls KernelRuntime directly, not CLI
 lane: 'Framework: MCP'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -59,3 +59,6 @@ session_id: ea186b32-dfe7-4e05-8385-7c7d28a6a11f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T00:09:19.174Z
+locked: true
+completed_at: 2026-02-17T00:13:24.016Z
+completed: 2026-02-17

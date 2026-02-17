@@ -1,0 +1,2 @@
+WU WU-1738 — MCP surface rewrite — calls KernelRuntime directly, not CLI
+Completed: 2026-02-17
