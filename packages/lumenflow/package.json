@@ -1,6 +1,6 @@
 {
   "name": "lumenflow",
-  "version": "2.21.0",
+  "version": "2.21.1",
   "description": "Give your AI agent a workflow it can't break. CLI wrapper for @lumenflow/cli.",
   "keywords": [
     "lumenflow",
