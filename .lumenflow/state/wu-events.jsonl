@@ -1471,4 +1471,5 @@
 {"type":"complete","wuId":"WU-1762","timestamp":"2026-02-17T13:02:39.038Z"}
 {"type":"claim","wuId":"WU-1763","timestamp":"2026-02-17T13:03:36.071Z","lane":"Framework: Core Lifecycle","title":"Kernel performance: eliminate EventStore per-append reload"}
 {"type":"complete","wuId":"WU-1763","timestamp":"2026-02-17T13:07:34.629Z"}
-{"type":"claim","wuId":"WU-1769","lane":"Framework: Core Lifecycle","title":"Move orphan reconciliation off hot path and add evidence task indexing","timestamp":"2026-02-17T13:08:34.467Z"}
+{"type":"claim","wuId":"WU-1769","timestamp":"2026-02-17T13:08:34.467Z","lane":"Framework: Core Lifecycle","title":"Move orphan reconciliation off hot path and add evidence task indexing"}
+{"type":"complete","wuId":"WU-1769","timestamp":"2026-02-17T13:12:32.249Z"}

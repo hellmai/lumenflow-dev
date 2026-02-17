@@ -2,7 +2,7 @@ id: WU-1769
 title: Move orphan reconciliation off hot path and add evidence task indexing
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-17
 code_paths:
@@ -46,3 +46,6 @@ session_id: 639767a4-8ca1-411e-86a8-e17e6040da02
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-17T13:08:34.423Z
+locked: true
+completed_at: 2026-02-17T13:12:27.553Z
+completed: 2026-02-17
