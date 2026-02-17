@@ -24,7 +24,6 @@ sections:
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
-- [WU-1763 — Kernel performance: eliminate EventStore per-append reload](wu/WU-1763.yaml) — Framework: Core Lifecycle
 - [WU-1764 — Kernel architecture: package graph integration, exports, DRY cleanup](wu/WU-1764.yaml) — Framework: Core Lifecycle
 - [WU-1769 — Move orphan reconciliation off hot path and add evidence task indexing](wu/WU-1769.yaml) — Framework: Core Lifecycle
 - [WU-1770 — Wire pack manifest tools into runtime resolver](wu/WU-1770.yaml) — Framework: Core Lifecycle
@@ -36,6 +35,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1763 — Kernel performance: eliminate EventStore per-append reload](wu/WU-1763.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

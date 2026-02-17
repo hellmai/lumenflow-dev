@@ -2,7 +2,7 @@ id: WU-1763
 title: 'Kernel performance: eliminate EventStore per-append reload'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-17
 code_paths:
@@ -22,7 +22,7 @@ phase: 6
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
-assigned_to: noreply@anthropic.com
+assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
@@ -36,3 +36,11 @@ acceptance:
   - EventStore append updates indexes in-memory instead of reloadFromDisk on every append
   - append/appendAll preserve event ordering and durability semantics while avoiding full reload
   - Performance regression coverage includes event append workloads above 100 events
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1763
+claimed_at: 2026-02-17T13:03:36.023Z
+baseline_main_sha: d847f48f2230837534483a8497fcff5d29b92d4a
+session_id: f70fc58b-2d9a-4d4e-83bf-c3477f7711fe
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T13:03:36.028Z
