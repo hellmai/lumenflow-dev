@@ -2,7 +2,7 @@ id: WU-1794
 title: 'Phase 4 governance: publish runCliCommand deprecation timeline and closure criteria'
 lane: 'Content: Specs Governance'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -46,3 +46,11 @@ acceptance:
   - 'Timeline defines measurable checkpoints (for example: shell-out call-site budget targets,
     parity readiness gates, and per-wave completion criteria).'
   - Phase 4 status/notes are updated to reference the roadmap artifact so closure is auditable.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-specs-governance-wu-1794
+claimed_at: 2026-02-17T23:11:36.717Z
+baseline_main_sha: 697c5cc162dd2aab00473a3f8f61b4e1ec56b35b
+session_id: 48f228e9-5f5b-413f-98c1-ed9afb6453a5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T23:11:36.723Z
