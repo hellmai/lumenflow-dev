@@ -29,6 +29,8 @@ phase: 7
 blocked_by:
   - WU-1770
 plan: lumenflow://plans/zesty-jumping-pixel.md
+spec_refs:
+  - lumenflow://plans/zesty-jumping-pixel.md
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
