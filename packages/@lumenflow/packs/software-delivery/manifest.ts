@@ -177,14 +177,26 @@ export const SOFTWARE_DELIVERY_MANIFEST: SoftwareDeliveryPackManifest = {
   task_types: ['work-unit'],
   tools: [],
   policies: [
-    { id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.format`, trigger: 'on_completion', decision: 'allow' },
-    { id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.lint`, trigger: 'on_completion', decision: 'allow' },
+    {
+      id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.format`,
+      trigger: 'on_completion',
+      decision: 'allow',
+    },
+    {
+      id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.lint`,
+      trigger: 'on_completion',
+      decision: 'allow',
+    },
     {
       id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.typecheck`,
       trigger: 'on_completion',
       decision: 'allow',
     },
-    { id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.test`, trigger: 'on_completion', decision: 'allow' },
+    {
+      id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.test`,
+      trigger: 'on_completion',
+      decision: 'allow',
+    },
     {
       id: `${SOFTWARE_DELIVERY_POLICY_ID_PREFIX}.coverage`,
       trigger: 'on_completion',

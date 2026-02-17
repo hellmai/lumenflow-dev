@@ -223,7 +223,11 @@ describe('kernel runtime facade', () => {
     const output = await runtime.executeTool(
       PACK_ECHO_TOOL_NAME,
       { message: 'hello' },
-      createExecutionContext('WU-1770-default-resolver', 'run-default-resolver-1', workspaceConfigHash),
+      createExecutionContext(
+        'WU-1770-default-resolver',
+        'run-default-resolver-1',
+        workspaceConfigHash,
+      ),
     );
 
     expect(output.success).toBe(false);
