@@ -24,7 +24,6 @@ sections:
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
-- [WU-1785 — Migrate task:create path to direct KernelRuntime calls](wu/WU-1785.yaml) — Framework: Core Lifecycle
 - [WU-1786 — Migrate task:complete path to direct KernelRuntime calls](wu/WU-1786.yaml) — Framework: Core Lifecycle
 - [WU-1787 — Migrate task:block and task:unblock to direct KernelRuntime calls](wu/WU-1787.yaml) — Framework: Core Lifecycle
 - [WU-1788 — Migrate task:inspect to direct KernelRuntime replay path](wu/WU-1788.yaml) — Framework: Core Lifecycle
@@ -33,6 +32,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1785 — Migrate task:create path to direct KernelRuntime calls](wu/WU-1785.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
