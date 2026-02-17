@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1791 — Fix MDX comment syntax in cli.mdx](wu/WU-1791.yaml) — Content: Site Comms
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
@@ -38,6 +37,7 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1781 — Sandbox readonly mount depth and prefix validation](wu/WU-1781.yaml) — Framework: Core Lifecycle
+- [WU-1791 — Fix MDX comment syntax in cli.mdx](wu/WU-1791.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 
