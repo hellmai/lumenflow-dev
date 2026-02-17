@@ -10,7 +10,9 @@ code_paths:
   - packages/@lumenflow/packs/software-delivery/tools/lane-lock-tool.ts
   - packages/@lumenflow/packs/software-delivery/tool-impl/delegation-tools.ts
 tests:
-  manual: []
+  manual:
+    - Run lane-lock and delegation unit tests; verify stale lock takeover allows a single winner and
+      runtime/** lock/state paths are used instead of .lumenflow/**.
   unit:
     - packages/@lumenflow/packs/software-delivery/__tests__/lane-lock.test.ts
   e2e: []
@@ -29,7 +31,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Lane lock stale takeover currently uses a read-check-write flow that can race under contention. Pack-owned lock and state artifacts also still target .lumenflow/**, which is reserved framework state in INIT-029 constraints. This WU hardens stale takeover and migrates pack-owned paths to runtime/**.
+description: Lane lock stale takeover currently uses a read-check-write flow that can race under
+  contention. Pack-owned lock and state artifacts also still target .lumenflow/**, which is reserved
+  framework state in INIT-029 constraints. This WU hardens stale takeover and migrates pack-owned
+  paths to runtime/**.
 acceptance:
   - Stale lock takeover uses an atomic compare-and-swap style flow that prevents dual acquisition.
   - Lock required scopes migrate from .lumenflow/locks/** to runtime/locks/**.
