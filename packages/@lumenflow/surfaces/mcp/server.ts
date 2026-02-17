@@ -93,7 +93,9 @@ function parseCompleteTaskInput(args: unknown): CompleteTaskInput {
       ? (args as { run_id: string }).run_id
       : undefined;
   const evidence_refs = Array.isArray((args as { evidence_refs?: unknown }).evidence_refs)
-    ? ((args as { evidence_refs: unknown[] }).evidence_refs.filter((item) => typeof item === 'string') as string[])
+    ? ((args as { evidence_refs: unknown[] }).evidence_refs.filter(
+        (item) => typeof item === 'string',
+      ) as string[])
     : undefined;
 
   return {
@@ -134,7 +136,10 @@ export function createMcpServer(runtime: KernelRuntime): McpServer {
       return useCaseToolDefinitions();
     },
 
-    async handleInvocation(invocation: McpInvocation, context?: ExecutionContext): Promise<unknown> {
+    async handleInvocation(
+      invocation: McpInvocation,
+      context?: ExecutionContext,
+    ): Promise<unknown> {
       if (invocation.name === 'task:create') {
         return runtime.createTask(parseTaskSpec(invocation.arguments));
       }
