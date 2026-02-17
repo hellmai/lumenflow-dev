@@ -8,7 +8,7 @@ description: 'Evolve LumenFlow from a software delivery CLI into a general-purpo
   governance, and immutable evidence receipts. No external users affected - Patient Path stays on
   current version. Greenfield design, no backwards compat. Architecture constraints are tracked in
   initiative phases and linked WU specs.'
-status: in_progress
+status: done
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-16
@@ -31,7 +31,7 @@ phases:
     status: done
   - id: 6
     title: 'Remediation: code review findings (security, data integrity, performance)'
-    status: in_progress
+    status: done
   - id: 7
     title: Production Surface Adoption + Pack Wiring
     status: done
