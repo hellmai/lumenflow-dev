@@ -6,6 +6,7 @@ _Last updated: 2026-02-17_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1771 — Tracer bullet MCP task_claim through KernelRuntime](wu/WU-1771.yaml)
+- [WU-1776 — OSS release prep: community governance files + SDK license](wu/WU-1776.yaml)
 
 ## Completed
 

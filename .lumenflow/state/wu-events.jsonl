@@ -1480,3 +1480,4 @@
 {"type":"claim","wuId":"WU-1773","timestamp":"2026-02-17T13:35:10.085Z","lane":"Framework: Core Lifecycle","title":"Add workspace hash verification and spec_tampered emission"}
 {"type":"complete","wuId":"WU-1773","timestamp":"2026-02-17T13:53:12.692Z"}
 {"type":"claim","wuId":"WU-1771","lane":"Framework: MCP","title":"Tracer bullet MCP task_claim through KernelRuntime","timestamp":"2026-02-17T13:54:21.804Z"}
+{"type":"claim","wuId":"WU-1776","lane":"Operations: Tooling","title":"OSS release prep: community governance files + SDK license","timestamp":"2026-02-17T15:29:42.340Z"}

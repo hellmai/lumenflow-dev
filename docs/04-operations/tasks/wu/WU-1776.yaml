@@ -2,7 +2,7 @@ id: WU-1776
 title: 'OSS release prep: community governance files + SDK license'
 lane: 'Operations: Tooling'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -33,7 +33,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Prepare the repo for public open-source release by adding community governance files and the Apache 2.0 license for control-plane-sdk. Root LICENSE was changed to AGPL v3 in a754382. This WU completes the remaining file-level OSS prep.
+description: Prepare the repo for public open-source release by adding community governance files
+  and the Apache 2.0 license for control-plane-sdk. Root LICENSE was changed to AGPL v3 in a754382.
+  This WU completes the remaining file-level OSS prep.
 acceptance:
   - Apache 2.0 LICENSE file exists in packages/@lumenflow/control-plane-sdk/
   - CONTRIBUTING.md exists at repo root with CLA instructions
@@ -41,3 +43,11 @@ acceptance:
   - SECURITY.md exists at repo root with responsible disclosure policy
   - SPDX license headers added to all kernel source files (AGPL-3.0-only)
   - SPDX license headers added to control-plane-sdk source files (Apache-2.0)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1776
+claimed_at: 2026-02-17T15:29:42.282Z
+baseline_main_sha: 13817bce4c8818b59aa7ef5621c49aa3982f3e73
+session_id: 86359ce2-a6d8-487b-a5e1-5014f1881ca6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T15:29:42.290Z
