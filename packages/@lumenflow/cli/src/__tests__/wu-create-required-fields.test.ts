@@ -197,4 +197,50 @@ describe('wu:create required field aggregation (WU-1366)', () => {
       expect(hasCodePathsError).toBe(false);
     });
   });
+
+  describe('WU-1755: --plan flag satisfies spec-refs for feature WUs (F1)', () => {
+    it('should not produce spec-refs error when --plan flag is set', () => {
+      const result = validateCreateSpec({
+        id: TEST_WU_ID,
+        lane: TEST_LANE,
+        title: 'Test WU',
+        priority: 'P2',
+        type: 'feature',
+        opts: {
+          description: VALID_DESCRIPTION,
+          acceptance: TEST_ACCEPTANCE,
+          exposure: 'backend-only',
+          codePaths: ['packages/@lumenflow/cli/src/wu-create.ts'],
+          testPathsUnit: ['packages/@lumenflow/cli/src/__tests__/wu-create.test.ts'],
+          plan: 'true', // --plan flag set
+          strict: false,
+        },
+      });
+
+      // The --plan flag should prevent the spec-refs error
+      expect(result.errors.some((e) => e.includes('--spec-refs'))).toBe(false);
+    });
+
+    it('should still require spec-refs for feature WU without --plan flag', () => {
+      const result = validateCreateSpec({
+        id: TEST_WU_ID,
+        lane: TEST_LANE,
+        title: 'Test WU',
+        priority: 'P2',
+        type: 'feature',
+        opts: {
+          description: VALID_DESCRIPTION,
+          acceptance: TEST_ACCEPTANCE,
+          exposure: 'backend-only',
+          codePaths: ['packages/@lumenflow/cli/src/wu-create.ts'],
+          testPathsUnit: ['packages/@lumenflow/cli/src/__tests__/wu-create.test.ts'],
+          // No plan, no specRefs
+          strict: false,
+        },
+      });
+
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes('--spec-refs'))).toBe(true);
+    });
+  });
 });

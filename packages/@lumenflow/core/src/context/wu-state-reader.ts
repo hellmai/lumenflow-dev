@@ -11,6 +11,7 @@
 
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { parse as parseYaml } from 'yaml';
 import { WU_PATHS } from '../wu-paths.js';
 
@@ -87,15 +88,59 @@ export async function readWuState(wuId: string, repoRoot: string): Promise<WuSta
     // WU-1683: Extract plan field
     const plan = typeof yaml.plan === 'string' ? yaml.plan : undefined;
 
-    // For now, we consider YAML-only reading as consistent
-    // Full state store integration would compare with wu-events.jsonl
-    // That can be added when the state store is properly integrated
-    const isConsistent = true;
-    const inconsistencyReason = null;
+    // WU-1755: Check worktree for divergent status.
+    // When run from main, the YAML may show 'ready' while the worktree branch
+    // has 'in_progress'. Uses execFileSync for safety (no shell injection).
+    let isConsistent = true;
+    let inconsistencyReason: string | null = null;
+    let effectiveStatus = status;
+
+    try {
+      const worktreeList = execFileSync('git', ['worktree', 'list', '--porcelain'], {
+        encoding: 'utf-8',
+        cwd: repoRoot,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
+
+      const wuIdLower = normalizedId.toLowerCase();
+      const lines = worktreeList.split('\n');
+      let worktreeBranch: string | undefined;
+
+      for (const line of lines) {
+        if (line.startsWith('branch ') && line.toLowerCase().includes(wuIdLower)) {
+          worktreeBranch = line.replace('branch refs/heads/', '').trim();
+          break;
+        }
+      }
+
+      if (worktreeBranch) {
+        const yamlRelPath = WU_PATHS.WU(normalizedId);
+        try {
+          const branchContent = execFileSync(
+            'git',
+            ['show', `${worktreeBranch}:${yamlRelPath}`],
+            { encoding: 'utf-8', cwd: repoRoot, stdio: ['pipe', 'pipe', 'pipe'] },
+          );
+          const branchYaml = parseYaml(branchContent);
+          const branchStatus = branchYaml?.status;
+
+          if (branchStatus && branchStatus !== status) {
+            isConsistent = false;
+            inconsistencyReason =
+              `Main shows '${status}' but worktree branch (${worktreeBranch}) shows '${branchStatus}'`;
+            effectiveStatus = branchStatus;
+          }
+        } catch {
+          // Branch doesn't have the YAML file yet
+        }
+      }
+    } catch {
+      // git worktree list failed — not in a git repo or git not available
+    }
 
     return {
       id: normalizedId,
-      status,
+      status: effectiveStatus,
       lane,
       title,
       yamlPath,

@@ -114,11 +114,13 @@ export function validateCreateSpec({
     }
   }
 
-  if (effectiveType === WU_TYPES.FEATURE && !hasSpecRefs(opts.specRefs)) {
+  // WU-1755: --plan flag auto-generates a spec-ref at wu-create.ts:419 via mergeSpecRefs(),
+  // so skip this validation when --plan is provided (the ref will exist by the time YAML is written).
+  if (effectiveType === WU_TYPES.FEATURE && !hasSpecRefs(opts.specRefs) && !opts.plan) {
     errors.push(
       '--spec-refs is required for type: feature WUs\n' +
-        '    Tip: Create a plan first with: pnpm plan:create --id <WU-ID> --title "..."\n' +
-        '    Then use --plan flag or --spec-refs lumenflow://plans/<WU-ID>-plan.md',
+        '    Tip: Use --plan to auto-create a plan (recommended for greenfield projects)\n' +
+        '    Or: --spec-refs lumenflow://plans/<WU-ID>-plan.md',
     );
   }
 

@@ -9,6 +9,8 @@ import {
   ensureDraftLaneArtifacts,
   LANE_LIFECYCLE_STATUS,
   recommendLaneLifecycleNextStep,
+  validateLaneArtifacts,
+  setLaneLifecycleStatus,
 } from './lane-lifecycle-process.js';
 import { runCLI } from './cli-entry-point.js';
 
@@ -29,8 +31,10 @@ async function main() {
   const projectRoot = findProjectRoot();
   ensureLumenflowInit(projectRoot);
 
+  // WU-1755: Parse --lock flag from argv
+  const lockFlag = process.argv.includes('--lock');
+
   const result = ensureDraftLaneArtifacts(projectRoot);
-  const nextStep = recommendLaneLifecycleNextStep(LANE_LIFECYCLE_STATUS.DRAFT);
 
   console.log(`${LOG_PREFIX} Lane lifecycle status: ${result.status}`);
 
@@ -48,6 +52,23 @@ async function main() {
     );
   }
 
+  // WU-1755: --lock combines setup + validate + lock into a single command
+  if (lockFlag) {
+    const validation = validateLaneArtifacts(projectRoot);
+    if (validation.warnings.length > 0) {
+      for (const warning of validation.warnings) {
+        console.warn(`${LOG_PREFIX} ⚠️  ${warning}`);
+      }
+    }
+    if (validation.missingDefinitions || validation.missingInference) {
+      die(`${LOG_PREFIX} Cannot lock: lane artifacts are incomplete. Fix warnings above.`);
+    }
+    setLaneLifecycleStatus(projectRoot, LANE_LIFECYCLE_STATUS.LOCKED);
+    console.log(`${LOG_PREFIX} ✅ Lane lifecycle locked. Ready for WU creation.`);
+    return;
+  }
+
+  const nextStep = recommendLaneLifecycleNextStep(LANE_LIFECYCLE_STATUS.DRAFT);
   console.log(`${LOG_PREFIX} Validate draft: ${LANE_VALIDATE_COMMAND}`);
   console.log(`${LOG_PREFIX} Lock lifecycle: ${nextStep}`);
 }

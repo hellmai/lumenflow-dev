@@ -306,6 +306,7 @@ function generateLumenflowConfigYaml(
   gatePreset?: GatePresetType,
   gitConfigOverride?: { requireRemote: boolean } | null,
   client?: ClientType,
+  docsPaths?: import('./init-detection.js').DocsPathConfig,
 ): string {
   // WU-1382: Add managed file header to prevent manual edits
   const header = `# ============================================================================
@@ -324,6 +325,17 @@ function generateLumenflowConfigYaml(
 `;
   const config = getDefaultConfig();
   config.directories.agentsDir = LUMENFLOW_AGENTS_DIR;
+
+  // WU-1755: Override directory paths to match detected docs structure.
+  // Without this, schema defaults (arc42 paths) diverge from scaffolded structure (simple paths).
+  if (docsPaths) {
+    config.directories.wuDir = `${docsPaths.tasks}/wu`;
+    config.directories.initiativesDir = `${docsPaths.tasks}/initiatives`;
+    config.directories.backlogPath = `${docsPaths.tasks}/backlog.md`;
+    config.directories.statusPath = `${docsPaths.tasks}/status.md`;
+    config.directories.plansDir = `${docsPaths.operations}/plans`;
+    config.directories.onboardingDir = docsPaths.onboarding;
+  }
 
   // WU-1067: Add gates.execution section with preset if specified
   if (gatePreset && GATE_PRESETS[gatePreset]) {
@@ -623,7 +635,7 @@ export async function scaffoldProject(
 
   await createFile(
     configPath,
-    generateLumenflowConfigYaml(options.gatePreset, gitConfigOverride, client),
+    generateLumenflowConfigYaml(options.gatePreset, gitConfigOverride, client, docsPaths),
     options.force ? 'force' : 'skip',
     result,
     targetDir,

@@ -533,6 +533,30 @@ export const WU_CREATE_OPTIONS: Record<string, WUOption> = {
 };
 
 /**
+ * WU-1755: Additional options for initiative:create command.
+ * These supplement WU_OPTIONS with initiative-specific repeatable fields.
+ */
+export const INITIATIVE_CREATE_OPTIONS: Record<string, WUOption> = {
+  initDescription: {
+    name: 'initDescription',
+    flags: '--description <text>',
+    description: 'Initiative description text',
+  },
+  initPhase: {
+    name: 'initPhase',
+    flags: '--phase <title>',
+    description: 'Phase title (repeatable, e.g., --phase "Phase 1: Foundation")',
+    isRepeatable: true,
+  },
+  successMetric: {
+    name: 'successMetric',
+    flags: '--success-metric <metric>',
+    description: 'Success metric (repeatable)',
+    isRepeatable: true,
+  },
+};
+
+/**
  * Negated options that commander handles specially.
  * --no-foo creates opts.foo = false. We convert to noFoo = true.
  *

@@ -1343,4 +1343,11 @@ describe('WU-1654: DirectoriesSchema safeGitPath', () => {
     const config = getDefaultConfig();
     expect(config.directories.safeGitPath).toBe('scripts/safe-git');
   });
+
+  it('WU-1755: build_command default should be generic pnpm build (F10)', () => {
+    const config = getDefaultConfig();
+    // Should NOT reference @lumenflow/cli (that's source-repo-specific)
+    expect(config.build_command).toBe('pnpm build');
+    expect(config.build_command).not.toContain('@lumenflow/cli');
+  });
 });
