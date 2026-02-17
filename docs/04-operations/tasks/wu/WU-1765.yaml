@@ -8,7 +8,10 @@ created: 2026-02-17
 code_paths:
   - packages/@lumenflow/cli/src/agent-patterns-registry.ts
 tests:
-  manual: []
+  manual:
+    - 'Verify claude/* branch detected as agent branch by running: node -e "const {isAgentBranch} =
+      require(''./dist/agent-patterns-registry'');
+      isAgentBranch(''claude/test-branch'').then(console.log)" from CLI package'
   unit:
     - packages/@lumenflow/cli/src/__tests__/agent-patterns-registry.test.ts
   e2e: []
@@ -25,7 +28,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: resolveAgentPatterns() in agent-patterns-registry.ts fetches from remote registry and returns source:'registry' with only agent/*. Local config patterns (claude/*, codex/*) from .lumenflow.config.yaml are supposed to merge with registry patterns, but registry result wins outright. This breaks all cloud-mode operations for claude/* and codex/* branches.
+description: resolveAgentPatterns() in agent-patterns-registry.ts fetches from remote registry and
+  returns source:'registry' with only agent/*. Local config patterns (claude/*, codex/*) from
+  .lumenflow.config.yaml are supposed to merge with registry patterns, but registry result wins
+  outright. This breaks all cloud-mode operations for claude/* and codex/* branches.
 acceptance:
   - Local config agent_branch_patterns merge with registry patterns
   - claude/* and codex/* branches detected as agent branches
