@@ -2,7 +2,7 @@ id: WU-1766
 title: 'Fix wu:claim --cloud: missing cloud-mode bypass before ensureOnMain'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-17
 code_paths:
@@ -36,3 +36,11 @@ acceptance:
   - wu:claim --cloud bypasses ensureOnMain like wu:create --cloud does
   - wu:claim --cloud works from claude/* and codex/* branches
   - Test covering wu:claim cloud mode from non-main branch
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1766
+claimed_at: 2026-02-17T10:26:31.969Z
+baseline_main_sha: ae61a3000858df741192685d29cfd03516354d52
+session_id: 2f8cbf94-50c0-421d-96fb-b304a59a0ae8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-17T10:26:31.974Z
