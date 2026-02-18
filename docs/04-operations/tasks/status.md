@@ -5,7 +5,6 @@ _Last updated: 2026-02-18_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml)
 - [WU-1827 — Create pack:install CLI command for adding packs to workspace](wu/WU-1827.yaml)
 - [WU-1829 — Add pack catalog page to web dashboard with tool and policy visualization](wu/WU-1829.yaml)
 
@@ -784,3 +783,4 @@ _Last updated: 2026-02-18_
 - [WU-1825 — Create pack:hash CLI command for integrity hash computation](wu/WU-1825.yaml) — 2026-02-18
 - [WU-1822 — Build workspace connection flow with runtime initialization](wu/WU-1822.yaml) — 2026-02-18
 - [WU-1841 — Wire HTTP surface to push kernel events to control plane](wu/WU-1841.yaml) — 2026-02-18
+- [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml) — 2026-02-18
