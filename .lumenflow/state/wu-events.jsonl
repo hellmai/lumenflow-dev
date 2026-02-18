@@ -1683,3 +1683,4 @@
 {"type":"claim","wuId":"WU-1865","timestamp":"2026-02-18T23:20:51.989Z","lane":"Framework: Core Lifecycle","title":"Kernel polish: xstate dead code removal, warning clarity, naming consistency"}
 {"type":"claim","wuId":"WU-1871","timestamp":"2026-02-18T23:21:35.093Z","lane":"Framework: CLI Orchestration","title":"lumenflow workspace:init interactive wizard generating workspace.yaml"}
 {"type":"complete","wuId":"WU-1879","timestamp":"2026-02-18T23:26:17.648Z"}
+{"type":"claim","wuId":"WU-1880","lane":"Framework: MCP","title":"Fix manifest parity drift for pack_search in wu-tools truth gate","timestamp":"2026-02-18T23:26:57.933Z"}

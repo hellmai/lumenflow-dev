@@ -2,7 +2,7 @@ id: WU-1880
 title: Fix manifest parity drift for pack_search in wu-tools truth gate
 lane: 'Framework: MCP'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -29,7 +29,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Global test gate currently fails pre-existing parity checks in packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts with missing pack_search command parity. This blocks unrelated WU completions. Restore manifest/tool parity so truth gate passes.
+description: Global test gate currently fails pre-existing parity checks in
+  packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts with missing pack_search command parity.
+  This blocks unrelated WU completions. Restore manifest/tool parity so truth gate passes.
 acceptance:
   - wu-tools manifest parity truth gate passes with no missing pack_search drift
   - Any parity baseline/allowed extra lists are updated deliberately with test coverage
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-mcp-wu-1880
+claimed_at: 2026-02-18T23:26:57.905Z
+baseline_main_sha: 8bf86d8dd877aee580a151c33df1249c4580acc6
+session_id: 138b37a5-24ad-477d-a1c1-5f6d61272078
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T23:26:57.908Z
