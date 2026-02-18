@@ -10,6 +10,7 @@ _Last updated: 2026-02-18_
 - [WU-1824 — Create pack:validate CLI command for pack integrity checking](wu/WU-1824.yaml)
 - [WU-1837 — Extend PackLoader with registry-based pack resolution](wu/WU-1837.yaml)
 - [WU-1831 — Implement AG-UI state synchronization with StateSnapshot and StateDelta](wu/WU-1831.yaml)
+- [WU-1832 — Create CopilotKit integration example app connected to LumenFlow AG-UI](wu/WU-1832.yaml)
 
 ## Completed
 

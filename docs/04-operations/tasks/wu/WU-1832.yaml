@@ -2,7 +2,7 @@ id: WU-1832
 title: Create CopilotKit integration example app connected to LumenFlow AG-UI
 lane: 'Content: Specs Governance'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -29,9 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Example React app using @copilotkit/react-core connected to LumenFlow AG-UI endpoint. Demonstrates task creation via chat, watching tool execution, policy intervention. Published as examples/copilotkit-demo/ in the repo.
+description: Example React app using @copilotkit/react-core connected to LumenFlow AG-UI endpoint.
+  Demonstrates task creation via chat, watching tool execution, policy intervention. Published as
+  examples/copilotkit-demo/ in the repo.
 acceptance:
   - Example app connects to LumenFlow AG-UI endpoint
   - Task creation works via chat interface
   - Tool execution visible in real-time
   - README with setup instructions
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-specs-governance-wu-1832
+claimed_at: 2026-02-18T19:52:04.829Z
+baseline_main_sha: 12699de666b8fefa3b6d3288082363654df7d6a2
+session_id: 3805a7b7-77c1-40d7-9a2c-158109e9f82e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T19:52:04.833Z
