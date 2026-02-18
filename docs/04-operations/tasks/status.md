@@ -10,6 +10,7 @@ _Last updated: 2026-02-18_
 - [WU-1823 — Create pack:scaffold CLI command for new pack authoring](wu/WU-1823.yaml)
 - [WU-1826 — Extend PackLoader with git-based pack resolution](wu/WU-1826.yaml)
 - [WU-1828 — Write pack authoring guide: Create Your First Pack in 10 Minutes](wu/WU-1828.yaml)
+- [WU-1830 — Implement AG-UI RunAgent HTTP endpoint in HTTP surface](wu/WU-1830.yaml)
 
 ## Completed
 
