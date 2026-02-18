@@ -18,7 +18,7 @@ phases:
     status: in_progress
   - id: 2
     title: Pack Developer Experience
-    status: pending
+    status: in_progress
   - id: 3
     title: AG-UI Integration and GenUI
     status: pending

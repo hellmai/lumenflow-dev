@@ -54,7 +54,6 @@ sections:
 - [WU-1820 — Build live task dashboard page with real-time event streaming](wu/WU-1820.yaml) — Content: Site Comms
 - [WU-1823 — Create pack:scaffold CLI command for new pack authoring](wu/WU-1823.yaml) — Framework: CLI Orchestration
 - [WU-1826 — Extend PackLoader with git-based pack resolution](wu/WU-1826.yaml) — Framework: Core Lifecycle
-- [WU-1828 — Write pack authoring guide: Create Your First Pack in 10 Minutes](wu/WU-1828.yaml) — Content: Specs Governance
 - [WU-1830 — Implement AG-UI RunAgent HTTP endpoint in HTTP surface](wu/WU-1830.yaml) — Framework: MCP
 
 ## ⛔ Blocked
@@ -820,6 +819,7 @@ sections:
 - [WU-1857 — Shore up web frontend infra: React linting, vitest jsdom, turbo TSX, surfaces package](wu/WU-1857.yaml)
 - [WU-1809 — Migrate WU delegation and gates tools to runtime pack execution](wu/WU-1809.yaml)
 - [WU-1810 — Migrate initiative and orchestrate-initiative tools to runtime pack execution](wu/WU-1810.yaml)
+- [WU-1828 — Write pack authoring guide: Create Your First Pack in 10 Minutes](wu/WU-1828.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
