@@ -19,6 +19,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1850.done
 dependencies: []
+initiative: INIT-030
+phase: 3
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
@@ -29,7 +31,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Surfaces package uses relative path imports instead of @lumenflow/kernel package imports, violating hex architecture boundaries. Runtime daemon uses a 90-line if-else chain for request routing instead of a handler registry pattern.
+description: Surfaces package uses relative path imports instead of @lumenflow/kernel package
+  imports, violating hex architecture boundaries. Runtime daemon uses a 90-line if-else chain for
+  request routing instead of a handler registry pattern.
 acceptance:
   - All surfaces/cli/ files import from @lumenflow/kernel not relative paths
   - runtime-daemon handleRequest uses a handler registry Map instead of if-else chain
