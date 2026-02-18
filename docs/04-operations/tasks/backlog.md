@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1807 — Migrate WU state transition tools to runtime pack execution](wu/WU-1807.yaml) — Framework: Core Lifecycle
 - [WU-1806 — Migrate WU creation and claiming tools to runtime pack execution](wu/WU-1806.yaml) — Framework: Core Lifecycle
 - [WU-1805 — Migrate WU read/query tools to runtime pack execution](wu/WU-1805.yaml) — Framework: Core Lifecycle
 - [WU-1804 — Migrate orchestration query tools to runtime pack execution](wu/WU-1804.yaml) — Framework: Core Lifecycle
