@@ -24,7 +24,7 @@ phases:
     status: done
   - id: 5
     title: 'Kernel hardening: security fail-close, durability, governance, fuzz testing'
-    status: pending
+    status: in_progress
 success_metrics:
   - Migrated commands execute through KernelRuntime without runCliCommand shell-out
   - MCP and CLI parity gates remain green for migrated commands
