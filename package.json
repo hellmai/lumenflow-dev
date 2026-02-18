@@ -87,6 +87,7 @@
     "plan:link": "node tools/cli-entry.mjs plan-link",
     "plan:promote": "node tools/cli-entry.mjs plan-promote",
     "pack:scaffold": "node tools/cli-entry.mjs pack-scaffold",
+    "pack:validate": "node tools/cli-entry.mjs pack-validate",
     "orchestrate:initiative": "node packages/@lumenflow/cli/dist/orchestrate-initiative.js",
     "orchestrate:init-status": "node packages/@lumenflow/cli/dist/orchestrate-init-status.js",
     "orchestrate:monitor": "node packages/@lumenflow/cli/dist/orchestrate-monitor.js",

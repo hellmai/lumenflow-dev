@@ -229,7 +229,7 @@ function validateImportSpecifier(options: {
   );
 }
 
-async function validatePackImportBoundaries(
+export async function validatePackImportBoundaries(
   packRoot: string,
   hashExclusions?: string[],
 ): Promise<void> {
