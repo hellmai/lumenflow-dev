@@ -1584,3 +1584,4 @@
 {"type":"release","wuId":"WU-1819","timestamp":"2026-02-18T16:57:43.744Z","reason":"Reset via wu:recover --action reset"}
 {"type":"claim","wuId":"WU-1856","timestamp":"2026-02-18T17:02:14.024Z","lane":"Framework: Core Lifecycle","title":"Tighten WU-1802 handler code: eliminate over-abstraction and fix bugs"}
 {"type":"complete","wuId":"WU-1856","timestamp":"2026-02-18T17:14:14.857Z"}
+{"type":"claim","wuId":"WU-1805","lane":"Framework: Core Lifecycle","title":"Migrate WU read/query tools to runtime pack execution","timestamp":"2026-02-18T17:29:23.021Z"}

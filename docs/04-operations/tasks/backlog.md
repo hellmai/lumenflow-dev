@@ -25,7 +25,6 @@ sections:
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1819 — Scaffold Next.js web app with API routes for HTTP surface](wu/WU-1819.yaml) — Content: Site Comms
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
-- [WU-1805 — Migrate WU read/query tools to runtime pack execution](wu/WU-1805.yaml) — Framework: Core Lifecycle
 - [WU-1806 — Migrate WU creation and claiming tools to runtime pack execution](wu/WU-1806.yaml) — Framework: Core Lifecycle
 - [WU-1807 — Migrate WU state transition tools to runtime pack execution](wu/WU-1807.yaml) — Framework: Core Lifecycle
 - [WU-1808 — Migrate WU completion and cleanup tools to runtime pack execution](wu/WU-1808.yaml) — Framework: Core Lifecycle
@@ -63,6 +62,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1805 — Migrate WU read/query tools to runtime pack execution](wu/WU-1805.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
