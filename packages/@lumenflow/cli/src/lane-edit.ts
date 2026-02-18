@@ -335,9 +335,7 @@ function buildCommitMessage(options: LaneEditOptions): string {
     parts.push(`set wip_limit=${options.wipLimit} on '${options.rename ?? options.name}'`);
   }
   if (options.addPaths) {
-    parts.push(
-      `add path(s) ${options.addPaths.join(', ')} to '${options.rename ?? options.name}'`,
-    );
+    parts.push(`add path(s) ${options.addPaths.join(', ')} to '${options.rename ?? options.name}'`);
   }
   if (options.removePaths) {
     parts.push(
@@ -409,9 +407,7 @@ async function main(): Promise<void> {
           ...validation.warnings.map((w) => `  - ${w}`),
           ...validation.invalidLanes.map((l) => `  - Invalid lane: ${l}`),
         ].join('\n');
-        die(
-          `${LOG_PREFIX} lane:validate failed after edit. Changes NOT committed.\n${issues}`,
-        );
+        die(`${LOG_PREFIX} lane:validate failed after edit. Changes NOT committed.\n${issues}`);
       }
 
       console.log(`${LOG_PREFIX} lane:validate passed after edit.`);
