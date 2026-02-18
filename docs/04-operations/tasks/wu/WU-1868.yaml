@@ -11,7 +11,7 @@ tests:
   manual:
     - Verify inspectTask returns same receipts as before after refactor
   unit:
-    - packages/@lumenflow/kernel/src/__tests__/kernel-runtime.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1868.done
