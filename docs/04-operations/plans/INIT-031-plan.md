@@ -16,7 +16,7 @@ Phase 1 (Weeks 1-3): Watch Your Agent Think. Add EventStore.subscribe() reactive
 
 ## Success Criteria
 
-<!-- How will you know when this is complete? Measurable outcomes? -->
+Web dashboard renders live task events within 2s of EventStore append. AG-UI RunAgent endpoint passes CopilotKit compatibility test. Pack scaffold-to-running-tool achievable in under 10 minutes. Registry serves at least 5 community packs by end of Phase 4. Demo video shared publicly generates measurable interest.
 
 ## Risks
 
