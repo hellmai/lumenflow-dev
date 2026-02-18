@@ -2,7 +2,7 @@ id: WU-1846
 title: Generate manifest tool declarations from compact config instead of 550-line boilerplate
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -27,9 +27,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: INIT-030 code review found software-delivery manifest.ts has 550+ lines of near-identical tool declaration objects. All 80+ entries follow one of two patterns differing only by name and permission. This should be generated from a compact data structure. Additionally, tool descriptor files in tools/ repeat domain/version/pack fields on every entry.
+description: INIT-030 code review found software-delivery manifest.ts has 550+ lines of
+  near-identical tool declaration objects. All 80+ entries follow one of two patterns differing only
+  by name and permission. This should be generated from a compact data structure. Additionally, tool
+  descriptor files in tools/ repeat domain/version/pack fields on every entry.
 acceptance:
   - Tool declarations generated from compact TOOL_PERMISSIONS record instead of hand-written objects
   - manifest.ts reduced from 780 lines to 250 lines
   - createToolDescriptor helper auto-fills domain/version/pack fields
   - Existing pack-loader.test.ts manifest sync test still passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1846
+claimed_at: 2026-02-18T14:31:46.261Z
+baseline_main_sha: 626a71d48379a426a15192a28ff449d2c8d6f674
+session_id: c8dd5cfb-3646-4196-a9bc-8ed0dd459407
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T14:31:46.271Z

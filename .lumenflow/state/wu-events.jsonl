@@ -1566,3 +1566,4 @@
 {"type":"complete","wuId":"WU-1850","timestamp":"2026-02-18T14:24:35.596Z"}
 {"type":"claim","wuId":"WU-1845","timestamp":"2026-02-18T14:25:42.883Z","lane":"Framework: Core Lifecycle","title":"Extract shared git-runner module in software-delivery pack"}
 {"type":"complete","wuId":"WU-1845","timestamp":"2026-02-18T14:31:04.447Z"}
+{"type":"claim","wuId":"WU-1846","lane":"Framework: Core Lifecycle","title":"Generate manifest tool declarations from compact config instead of 550-line boilerplate","timestamp":"2026-02-18T14:31:46.315Z"}
