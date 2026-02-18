@@ -8,7 +8,7 @@ Make LumenFlow visible and exciting. Build user-facing surfaces on top of the ke
 
 ## Scope
 
-<!-- What is in scope and out of scope? -->
+In scope: HTTP surface in surfaces package, Next.js web app (apps/web/), AG-UI protocol adapter, EventStore subscribe mechanism, pack CLI commands (scaffold/validate/hash/install/publish/search), git and registry pack resolution in PackLoader, pack authoring documentation, pack marketplace web page, CopilotKit integration example, GenUI tool renderers, policy decision overlay, human-in-the-loop approval UI, control plane event forwarding, community landing page. Out of scope: mobile apps, voice integration, non-MCP agent runtimes, changes to kernel runtime API.
 
 ## Approach
 
