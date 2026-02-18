@@ -122,15 +122,15 @@ describe('lane:edit (WU-1854)', () => {
     });
 
     it('rejects negative wip-limit', () => {
-      expect(() =>
-        parseLaneEditArgs(['--name', 'Framework: Core', '--wip-limit', '-1']),
-      ).toThrow(/must be a positive integer/);
+      expect(() => parseLaneEditArgs(['--name', 'Framework: Core', '--wip-limit', '-1'])).toThrow(
+        /must be a positive integer/,
+      );
     });
 
     it('rejects zero wip-limit', () => {
-      expect(() =>
-        parseLaneEditArgs(['--name', 'Framework: Core', '--wip-limit', '0']),
-      ).toThrow(/must be a positive integer/);
+      expect(() => parseLaneEditArgs(['--name', 'Framework: Core', '--wip-limit', '0'])).toThrow(
+        /must be a positive integer/,
+      );
     });
   });
 
@@ -150,9 +150,7 @@ describe('lane:edit (WU-1854)', () => {
 
     it('allows when lifecycle is locked', () => {
       writeConfig(
-        makeLockedConfig([
-          { name: 'Framework: Core', wip_limit: 1, code_paths: ['src/core/**'] },
-        ]),
+        makeLockedConfig([{ name: 'Framework: Core', wip_limit: 1, code_paths: ['src/core/**'] }]),
       );
       writeLaneInference(VALID_INFERENCE);
 
@@ -162,9 +160,7 @@ describe('lane:edit (WU-1854)', () => {
 
     it('allows when lifecycle is draft', () => {
       writeConfig(
-        makeDraftConfig([
-          { name: 'Framework: Core', wip_limit: 1, code_paths: ['src/core/**'] },
-        ]),
+        makeDraftConfig([{ name: 'Framework: Core', wip_limit: 1, code_paths: ['src/core/**'] }]),
       );
       writeLaneInference(VALID_INFERENCE);
 
@@ -221,10 +217,7 @@ describe('lane:edit (WU-1854)', () => {
 
       const result = applyLaneEdit(definitions, options);
       expect(result.ok).toBe(true);
-      expect(result.definitions![0].code_paths).toEqual([
-        'packages/domain/**',
-        'packages/events/',
-      ]);
+      expect(result.definitions![0].code_paths).toEqual(['packages/domain/**', 'packages/events/']);
     });
 
     it('removes a code path', () => {
