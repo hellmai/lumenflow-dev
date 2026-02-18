@@ -2,7 +2,7 @@ id: WU-1809
 title: Migrate WU delegation and gates tools to runtime pack execution
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -54,3 +54,6 @@ session_id: 4e9f6366-cdc1-4a4c-ac1d-26b506f98221
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T18:41:30.033Z
+locked: true
+completed_at: 2026-02-18T18:52:51.588Z
+completed: 2026-02-18
