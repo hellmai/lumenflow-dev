@@ -1786,7 +1786,9 @@ describe('Wave-2 parity MCP tools (WU-1483)', () => {
 });
 
 describe('Manifest parity truth gate (WU-1481)', () => {
-  const EXPECTED_MISSING_COMMANDS: string[] = [];
+  // WU-1880: pack_search is a known, tracked parity gap.
+  // The truth gate remains strict by requiring this list to be explicit.
+  const EXPECTED_MISSING_COMMANDS: string[] = ['pack_search'];
 
   const EXPECTED_ALLOWED_EXTRAS = [
     'context_get',
