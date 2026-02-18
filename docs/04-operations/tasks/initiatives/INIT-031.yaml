@@ -1,12 +1,7 @@
 id: INIT-031
 slug: ux-surfaces
 title: UX Surfaces — Web Dashboard, Pack DX, AG-UI, Marketplace
-description: 'User-facing surfaces initiative: real-time web dashboard for agent observability, pack
-  authoring DX with git/registry distribution, AG-UI protocol compatibility for GenUI, and pack
-  marketplace for community adoption. Two personas: (1) software devs using the software delivery
-  pack who want to see agents working and trust the automation, (2) pack authors/consumers who want
-  to teach their AI new domains. Differentiator vs OpenClaw: governance you can see — scope
-  intersection, policy decisions, evidence receipts rendered live in the browser.'
+description: 'User-facing surfaces initiative: real-time web dashboard for agent observability, pack authoring DX with git/registry distribution, AG-UI protocol compatibility for GenUI, and pack marketplace for community adoption. Two personas: (1) software devs using the software delivery pack who want to see agents working and trust the automation, (2) pack authors/consumers who want to teach their AI new domains. Differentiator vs OpenClaw: governance you can see — scope intersection, policy decisions, evidence receipts rendered live in the browser.'
 status: draft
 priority: P0
 owner: 'Framework: Core'
@@ -59,3 +54,4 @@ wus:
   - WU-1840
   - WU-1841
   - WU-1842
+related_plan: lumenflow://plans/INIT-031-plan.md
