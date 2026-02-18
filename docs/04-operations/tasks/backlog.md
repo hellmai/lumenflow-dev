@@ -74,7 +74,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1853 — MCP file_write and file_edit tools bypass enforce-worktree hook](wu/WU-1853.yaml) — Framework: MCP
 - [WU-1849 — Add missing test coverage for INIT-030 phase 2-3 gaps](wu/WU-1849.yaml) — Framework: Core Lifecycle
 - [WU-1854 — Add lane:edit command for safe in-place lane definition editing](wu/WU-1854.yaml) — Framework: CLI WU Commands
 
@@ -818,6 +817,7 @@ sections:
 - [WU-1851 — Centralize MCP surface CLI command/flag/metadata-key governance with guardrail ratchet](wu/WU-1851.yaml)
 - [WU-1855 — Close MCP literal governance blind spots and enforce full constant coverage](wu/WU-1855.yaml)
 - [WU-1852 — Fix first-project bootstrap blockers in lumenflow init](wu/WU-1852.yaml)
+- [WU-1853 — MCP file_write and file_edit tools bypass enforce-worktree hook](wu/WU-1853.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

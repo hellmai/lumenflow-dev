@@ -2,7 +2,7 @@ id: WU-1853
 title: MCP file_write and file_edit tools bypass enforce-worktree hook
 lane: 'Framework: MCP'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -18,14 +18,12 @@ artifacts:
   - .lumenflow/stamps/WU-1853.done
 dependencies: []
 risks: []
-notes: >-
-  Fix is entirely in the MCP server layer. Added worktree-enforcement.ts module that mirrors
-  enforce-worktree.sh logic in TypeScript. The checkWorktreeEnforcement() function is called
-  at the top of fileWriteTool and fileEditTool execute methods, before any file I/O occurs.
-  Graceful degradation ensures the enforcement never blocks legitimate work when config is
-  unreadable or git is unavailable. The shell hook (enforce-worktree.sh) was NOT modified
-  because it correctly handles native Claude Code Write/Edit tools -- the gap was only in the
-  MCP code path.
+notes: Fix is entirely in the MCP server layer. Added worktree-enforcement.ts module that mirrors
+  enforce-worktree.sh logic in TypeScript. The checkWorktreeEnforcement() function is called at the
+  top of fileWriteTool and fileEditTool execute methods, before any file I/O occurs. Graceful
+  degradation ensures the enforcement never blocks legitimate work when config is unreadable or git
+  is unavailable. The shell hook (enforce-worktree.sh) was NOT modified because it correctly handles
+  native Claude Code Write/Edit tools -- the gap was only in the MCP code path.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -63,3 +61,6 @@ session_id: 24947d08-d3f5-4b32-ba05-f304014eb650
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T12:42:20.820Z
+locked: true
+completed_at: 2026-02-18T12:58:43.765Z
+completed: 2026-02-18
