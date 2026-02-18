@@ -53,7 +53,10 @@ export function resolveGitBinary(): string {
 
 export const GIT_BINARY = resolveGitBinary();
 
-export function runGit(args: string[], options: { cwd?: string; gitBinary?: string } = {}): GitCommandResult {
+export function runGit(
+  args: string[],
+  options: { cwd?: string; gitBinary?: string } = {},
+): GitCommandResult {
   const result = spawnSync(options.gitBinary ?? GIT_BINARY, args, {
     cwd: options.cwd,
     encoding: UTF8_ENCODING,
