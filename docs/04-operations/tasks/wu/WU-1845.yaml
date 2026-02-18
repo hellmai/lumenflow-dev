@@ -2,7 +2,7 @@ id: WU-1845
 title: Extract shared git-runner module in software-delivery pack
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -28,9 +28,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: INIT-030 code review found GIT_BINARY defined independently in both git-tools.ts and worktree-tools.ts, each with their own runGit wrapper function. The wrappers differ slightly in signature and return type. The hardcoded /usr/bin/git path also fails on macOS.
+description: INIT-030 code review found GIT_BINARY defined independently in both git-tools.ts and
+  worktree-tools.ts, each with their own runGit wrapper function. The wrappers differ slightly in
+  signature and return type. The hardcoded /usr/bin/git path also fails on macOS.
 acceptance:
   - New shared git-runner module with GIT_BINARY constant and unified runGit function
   - Both git-tools.ts and worktree-tools.ts import from shared module
   - GIT_BINARY uses which/resolve pattern or is configurable for cross-platform
   - Existing git-tools.test.ts and lane-lock.test.ts still pass
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1845
+claimed_at: 2026-02-18T14:25:42.833Z
+baseline_main_sha: 417e35faad59073456aed758f5497ee5b7eb7d53
+session_id: b6813287-d1f1-4725-a5ea-6e07bc6c2d77
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T14:25:42.838Z
