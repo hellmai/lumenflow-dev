@@ -1,8 +1,8 @@
 id: WU-1819
 title: Scaffold Next.js web app with API routes for HTTP surface
-lane: 'Content: Site Comms'
+lane: 'Framework: MCP'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -31,9 +31,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Create apps/web/ using Next.js App Router + Tailwind + TypeScript. Wire into pnpm workspace and turbo build graph. API route /api/events/[taskId] creates HTTP surface and streams SSE. API route /api/tasks/[...slug] delegates to REST handlers. Vercel deployment config matching apps/docs/ pattern.
+description: Create apps/web/ using Next.js App Router + Tailwind + TypeScript. Wire into pnpm
+  workspace and turbo build graph. API route /api/events/[taskId] creates HTTP surface and streams
+  SSE. API route /api/tasks/[...slug] delegates to REST handlers. Vercel deployment config matching
+  apps/docs/ pattern.
 acceptance:
   - apps/web/ exists with Next.js App Router, Tailwind, TypeScript
   - Wired into pnpm-workspace.yaml and turbo build graph
   - API routes delegate to HTTP surface package
   - pnpm turbo run build includes apps/web
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1819
+claimed_at: 2026-02-18T16:53:49.221Z
+baseline_main_sha: 73a92629de02b63a9ffc73e60f797c86829bddbb
+session_id: f49aec0d-442e-4a72-8615-0d88646f892f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T16:53:49.230Z
