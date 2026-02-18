@@ -21,6 +21,7 @@ import {
   buildMetricsArgs,
   executeViaPack,
 } from '../tools-shared.js';
+import { CliCommands } from '../mcp-constants.js';
 
 /**
  * flow_bottlenecks - Identify flow bottlenecks
@@ -33,13 +34,13 @@ export const flowBottlenecksTool: ToolDefinition = {
   async execute(input, options) {
     const args: string[] = [];
     if (input.limit) args.push('--limit', String(input.limit));
-    if (input.format) args.push('--format', input.format as string);
+    if (input.format) args.push(CliArgs.FORMAT, input.format as string);
     if (input.json) args.push(...CliArgs.FORMAT_JSON);
 
-    const result = await executeViaPack('flow:bottlenecks', input, {
+    const result = await executeViaPack(CliCommands.FLOW_BOTTLENECKS, input, {
       projectRoot: options?.projectRoot,
       fallback: {
-        command: 'flow:bottlenecks',
+        command: CliCommands.FLOW_BOTTLENECKS,
         args,
         errorCode: ErrorCodes.FLOW_BOTTLENECKS_ERROR,
       },
@@ -62,13 +63,13 @@ export const flowReportTool: ToolDefinition = {
     if (input.start) args.push('--start', input.start as string);
     if (input.end) args.push('--end', input.end as string);
     if (input.days) args.push('--days', String(input.days));
-    if (input.format) args.push('--format', input.format as string);
+    if (input.format) args.push(CliArgs.FORMAT, input.format as string);
     if (input.json) args.push(...CliArgs.FORMAT_JSON);
 
-    const result = await executeViaPack('flow:report', input, {
+    const result = await executeViaPack(CliCommands.FLOW_REPORT, input, {
       projectRoot: options?.projectRoot,
       fallback: {
-        command: 'flow:report',
+        command: CliCommands.FLOW_REPORT,
         args,
         errorCode: ErrorCodes.FLOW_REPORT_ERROR,
       },
@@ -87,10 +88,10 @@ export const metricsSnapshotTool: ToolDefinition = {
   inputSchema: metricsSnapshotSchema,
 
   async execute(input, options) {
-    const result = await executeViaPack('metrics:snapshot', input, {
+    const result = await executeViaPack(CliCommands.METRICS_SNAPSHOT, input, {
       projectRoot: options?.projectRoot,
       fallback: {
-        command: 'metrics:snapshot',
+        command: CliCommands.METRICS_SNAPSHOT,
         args: [],
         errorCode: ErrorCodes.METRICS_SNAPSHOT_ERROR,
       },
@@ -111,10 +112,10 @@ export const lumenflowMetricsTool: ToolDefinition = {
   async execute(input, options) {
     const args = buildMetricsArgs(input);
 
-    const result = await executeViaPack('lumenflow:metrics', input, {
+    const result = await executeViaPack(CliCommands.LUMENFLOW_METRICS, input, {
       projectRoot: options?.projectRoot,
       fallback: {
-        command: 'metrics',
+        command: CliCommands.METRICS,
         args,
         errorCode: ErrorCodes.LUMENFLOW_METRICS_ERROR,
       },
@@ -135,10 +136,10 @@ export const metricsTool: ToolDefinition = {
   async execute(input, options) {
     const args = buildMetricsArgs(input);
 
-    const result = await executeViaPack('metrics', input, {
+    const result = await executeViaPack(CliCommands.METRICS, input, {
       projectRoot: options?.projectRoot,
       fallback: {
-        command: 'metrics',
+        command: CliCommands.METRICS,
         args,
         errorCode: ErrorCodes.METRICS_ERROR,
       },

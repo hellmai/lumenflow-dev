@@ -17,11 +17,13 @@ import {
 import {
   type ToolDefinition,
   ErrorCodes,
+  CliArgs,
   success,
   error,
   runCliCommand,
   type CliRunnerOptions,
 } from '../tools-shared.js';
+import { CliCommands } from '../mcp-constants.js';
 
 /**
  * validate - Validate WU YAML files
@@ -33,12 +35,12 @@ export const validateTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.id) args.push('--id', input.id as string);
+    if (input.id) args.push(CliArgs.ID, input.id as string);
     if (input.strict) args.push('--strict');
     if (input.done_only) args.push('--done-only');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('validate', args, cliOptions);
+    const result = await runCliCommand(CliCommands.VALIDATE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Validation passed' });
@@ -64,7 +66,7 @@ export const validateAgentSkillsTool: ToolDefinition = {
     if (input.skill) args.push('--skill', input.skill as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('validate:agent-skills', args, cliOptions);
+    const result = await runCliCommand(CliCommands.VALIDATE_AGENT_SKILLS, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'All skills valid' });
@@ -87,7 +89,7 @@ export const validateAgentSyncTool: ToolDefinition = {
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('validate:agent-sync', [], cliOptions);
+    const result = await runCliCommand(CliCommands.VALIDATE_AGENT_SYNC, [], cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Agent sync valid' });
@@ -110,7 +112,7 @@ export const validateBacklogSyncTool: ToolDefinition = {
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('validate:backlog-sync', [], cliOptions);
+    const result = await runCliCommand(CliCommands.VALIDATE_BACKLOG_SYNC, [], cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Backlog sync valid' });
@@ -133,7 +135,7 @@ export const validateSkillsSpecTool: ToolDefinition = {
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('validate:skills-spec', [], cliOptions);
+    const result = await runCliCommand(CliCommands.VALIDATE_SKILLS_SPEC, [], cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Skills spec valid' });
@@ -156,12 +158,12 @@ export const lumenflowValidateTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.id) args.push('--id', input.id as string);
+    if (input.id) args.push(CliArgs.ID, input.id as string);
     if (input.strict) args.push('--strict');
     if (input.done_only) args.push('--done-only');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('validate', args, cliOptions);
+    const result = await runCliCommand(CliCommands.VALIDATE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Validation passed' });

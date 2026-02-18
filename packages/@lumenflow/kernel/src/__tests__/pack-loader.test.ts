@@ -67,19 +67,36 @@ function normalizeToolDomain(toolName: string): string {
 }
 
 async function collectMcpShellOutCommands(): Promise<string[]> {
-  const toolsRoot = resolve(PACK_LOADER_TEST_DIR, '..', '..', '..', 'mcp', 'src', 'tools');
+  const mcpSrcRoot = resolve(PACK_LOADER_TEST_DIR, '..', '..', '..', 'mcp', 'src');
+  const toolsRoot = join(mcpSrcRoot, 'tools');
   const toolFiles = (await readdir(toolsRoot)).filter((entry) => entry.endsWith('.ts'));
-  const commandPattern = /runCliCommand\(\s*['"]([^'"]+)['"]/g;
+
+  // WU-1851: Import CliCommands for constant→value resolution instead of
+  // regex-parsing mcp-constants.ts. Dynamic import lets vitest handle TS
+  // compilation — no brittle regex on constant declarations.
+  const constantsPath = join(mcpSrcRoot, 'mcp-constants.ts');
+  const { CliCommands } = (await import(constantsPath)) as { CliCommands: Record<string, string> };
+
+  // Scan tool files for command usage: both raw strings (legacy) and
+  // CliCommands.XXX constant references (WU-1851 governed pattern).
+  const rawPattern = /runCliCommand\(\s*['"]([^'"]+)['"]/g;
+  const constPattern = /runCliCommand\(\s*CliCommands\.(\w+)/g;
   const commands = new Set<string>();
 
   for (const toolFile of toolFiles) {
     const source = await readFile(join(toolsRoot, toolFile), UTF8_ENCODING);
-    let match = commandPattern.exec(source);
+
+    let match = rawPattern.exec(source);
     while (match) {
-      if (match[1]) {
-        commands.add(match[1]);
-      }
-      match = commandPattern.exec(source);
+      if (match[1]) commands.add(match[1]);
+      match = rawPattern.exec(source);
+    }
+
+    let cRef = constPattern.exec(source);
+    while (cRef) {
+      const resolved = cRef[1] ? CliCommands[cRef[1]] : undefined;
+      if (resolved) commands.add(resolved);
+      cRef = constPattern.exec(source);
     }
   }
 

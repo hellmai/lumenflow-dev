@@ -8,7 +8,8 @@
 
 import { z } from 'zod';
 import { wuStatusEnum } from '@lumenflow/core';
-import { type ToolDefinition, ErrorCodes, executeViaPack } from '../tools-shared.js';
+import { type ToolDefinition, ErrorCodes, CliArgs, executeViaPack } from '../tools-shared.js';
+import { CliCommands } from '../mcp-constants.js';
 
 /**
  * context_get - Get current WU context (location, git state, WU state)
@@ -19,10 +20,10 @@ export const contextGetTool: ToolDefinition = {
   inputSchema: z.object({}).optional(),
 
   async execute(input, options) {
-    const result = await executeViaPack('context:get', input ?? {}, {
+    const result = await executeViaPack(CliCommands.CONTEXT_GET, input ?? {}, {
       projectRoot: options?.projectRoot,
       fallback: {
-        command: 'context:get',
+        command: CliCommands.CONTEXT_GET,
         args: [],
         errorCode: ErrorCodes.CONTEXT_ERROR,
       },
@@ -47,11 +48,11 @@ export const wuListTool: ToolDefinition = {
   }),
 
   async execute(input, options) {
-    const result = await executeViaPack('wu:list', input, {
+    const result = await executeViaPack(CliCommands.WU_LIST, input, {
       projectRoot: options?.projectRoot,
       fallback: {
-        command: 'wu:validate',
-        args: ['--all', '--json'],
+        command: CliCommands.WU_VALIDATE,
+        args: ['--all', CliArgs.JSON],
         errorCode: ErrorCodes.WU_LIST_ERROR,
       },
     });
