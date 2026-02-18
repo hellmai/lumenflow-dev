@@ -1,0 +1,39 @@
+id: WU-1833
+title: Build GenUI tool output renderers for rich tool result visualization
+lane: 'Content: Site Comms'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-18
+code_paths:
+  - apps/web/src/
+tests:
+  manual:
+    - Execute various tools, verify renderers display appropriate visualization
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1833.done
+dependencies: []
+initiative: INIT-031
+phase: 3
+blocked_by:
+  - WU-1820
+spec_refs:
+  - .claude/plans/zazzy-growing-cook.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: ui
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Component system in apps/web/ for rendering tool outputs as rich UI. Default: JSON tree viewer for unknown tool outputs. Git tools: diff viewer component. Gate tools: pass/fail badge grid. File tools: code editor preview. Tool output type detected from tool_name prefix and ToolOutput.data shape. Extensible: packs can register custom renderers via manifest ui_hints.'
+acceptance:
+  - Default JSON tree viewer for unknown tool outputs
+  - Git tool diff viewer renders correctly
+  - Gate tool pass/fail badges display
+  - Tool output type auto-detected from tool_name prefix
