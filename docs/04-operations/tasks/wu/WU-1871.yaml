@@ -1,0 +1,41 @@
+id: WU-1871
+title: lumenflow workspace:init interactive wizard generating workspace.yaml
+lane: 'Framework: CLI Orchestration'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-18
+code_paths:
+  - packages/@lumenflow/cli/src/workspace-init.ts
+  - packages/@lumenflow/cli/src/init-scaffolding.ts
+tests:
+  manual:
+    - Run workspace:init --yes and verify generated workspace.yaml validates
+    - Run workspace:init interactively and verify prompts work correctly
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/workspace-init.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1871.done
+dependencies: []
+initiative: INIT-031
+phase: 5
+spec_refs:
+  - .claude/plans/partitioned-sprouting-nest.md
+risks: []
+notes: 'Sizing: Medium (M). ~12-18 files, ~45 tool calls. Strategy: Single Session. Wave 5a (parallel with 5.1, 5.3). Template + prompts + schema validation + tests. Builds on init-scaffolding.ts (218 lines, WU-1644).'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: No CLI command exists to scaffold a workspace.yaml interactively. Users must hand-write YAML. Problem: Poor onboarding DX — workspace.yaml is complex with project type, lanes, sandbox profiles, denied paths, and cloud settings. Solution: Add workspace:init command with 5 interactive questions (project type, lane names, sandbox profile, denied paths, cloud connect). --yes flag accepts defaults non-interactively. Uses existing init-scaffolding.ts template infrastructure. Generates a commented workspace.yaml valid against WorkspaceSpecSchema.'
+acceptance:
+  - workspace:init command prompts 5 questions interactively (project type, lanes, sandbox profile, denied paths, cloud connect)
+  - --yes flag accepts all defaults non-interactively and generates workspace.yaml without prompts
+  - Generated workspace.yaml validates against WorkspaceSpecSchema
+  - Generated file includes helpful YAML comments explaining each section
+  - Uses existing init-scaffolding.ts template infrastructure (processTemplate, createFile)
