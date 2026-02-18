@@ -46,7 +46,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1797 — Phase 3 pack workflow: expose WU YAML lifecycle as runtime-managed pack tools](wu/WU-1797.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -778,6 +777,7 @@ sections:
 - [WU-1795 — Phase 4 guardrail: enforce non-increasing MCP runCliCommand shell-out budget](wu/WU-1795.yaml)
 - [WU-1794 — Phase 4 governance: publish runCliCommand deprecation timeline and closure criteria](wu/WU-1794.yaml)
 - [WU-1796 — Phase 3 pack workflow: route gate policy evaluation through Kernel PolicyEngine](wu/WU-1796.yaml)
+- [WU-1797 — Phase 3 pack workflow: expose WU YAML lifecycle as runtime-managed pack tools](wu/WU-1797.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

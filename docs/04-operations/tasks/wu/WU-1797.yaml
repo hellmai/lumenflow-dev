@@ -2,7 +2,7 @@ id: WU-1797
 title: 'Phase 3 pack workflow: expose WU YAML lifecycle as runtime-managed pack tools'
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -64,3 +64,6 @@ session_id: 29cc0af1-b3c8-419b-b8cd-85ab8b21d9d5
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T09:03:18.132Z
+locked: true
+completed_at: 2026-02-18T09:11:46.395Z
+completed: 2026-02-18
