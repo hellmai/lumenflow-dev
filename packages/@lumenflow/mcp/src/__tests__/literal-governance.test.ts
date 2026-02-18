@@ -19,6 +19,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
+import { CliCommands, MetadataKeys } from '../mcp-constants.js';
 
 const SRC_DIR = path.resolve(import.meta.dirname, '..');
 
@@ -56,6 +57,9 @@ const GOVERNED_FILES = [
 const COMMAND_CALL_PATTERN =
   /(?:runCliCommand|executeViaPack)\(\s*['"]([a-z][a-z0-9]*(?::[a-z-]+)?)['"]/g;
 const FALLBACK_COMMAND_PATTERN = /command:\s*['"]([a-z][a-z0-9]*(?::[a-z-]+)?)['"]/g;
+const DECLARATION_ASSIGNMENT_PATTERN =
+  /(?:const|let|var)\s+[A-Za-z_$][A-Za-z0-9_$]*\s*=\s*['"]([^'"]+)['"]/g;
+const CONST_MAP_VALUE_PATTERN = /^\s*[A-Z][A-Z0-9_]*:\s*['"]([^'"]+)['"](?:\s*,)?/g;
 
 /**
  * Shared flag tokens governed by the 3+ tool threshold rule.
@@ -94,7 +98,8 @@ const FLAG_PATTERN = buildFlagPattern(GOVERNED_FLAGS);
 /**
  * Metadata key literals that cross module boundaries and must be centralized.
  */
-const GOVERNED_METADATA_KEYS = ['project_root', 'invocation_mode'] as const;
+const GOVERNED_METADATA_KEYS = [MetadataKeys.PROJECT_ROOT, MetadataKeys.INVOCATION_MODE] as const;
+const GOVERNED_COMMANDS = Object.values(CliCommands);
 
 function buildMetadataPattern(keys: readonly string[]): RegExp {
   const escaped = keys.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
@@ -108,11 +113,7 @@ const METADATA_PATTERN = buildMetadataPattern(GOVERNED_METADATA_KEYS);
  * Each entry maps a file path (relative to src/) to an array of allowed literal values.
  * Keep this list minimal — every entry should have a documented justification.
  */
-const ALLOWLIST: Record<string, Set<string>> = {
-  // runtime-tool-resolver.ts defines handler registry keys that ARE the command names
-  // (these are the canonical source-of-truth mapping, not duplicates)
-  'runtime-tool-resolver.ts': new Set([]),
-};
+const ALLOWLIST: Record<string, Record<string, string>> = {};
 
 interface Violation {
   file: string;
@@ -121,10 +122,15 @@ interface Violation {
   family: 'command' | 'flag' | 'metadata-key';
 }
 
-function scanFile(relPath: string, content: string): Violation[] {
+function scanFile(
+  relPath: string,
+  content: string,
+  allowlist: Record<string, Record<string, string>> = ALLOWLIST,
+): Violation[] {
   const violations: Violation[] = [];
   const lines = content.split('\n');
-  const allowedSet = ALLOWLIST[relPath] ?? new Set<string>();
+  const allowedLiterals = allowlist[relPath] ?? {};
+  const isAllowed = (literal: string) => Object.hasOwn(allowedLiterals, literal);
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -144,7 +150,7 @@ function scanFile(relPath: string, content: string): Violation[] {
     // Scan for raw command names in execution calls
     for (const match of line.matchAll(COMMAND_CALL_PATTERN)) {
       const literal = match[1];
-      if (!allowedSet.has(literal)) {
+      if (GOVERNED_COMMANDS.includes(literal) && !isAllowed(literal)) {
         violations.push({ file: relPath, line: lineNum, literal, family: 'command' });
       }
     }
@@ -152,7 +158,23 @@ function scanFile(relPath: string, content: string): Violation[] {
     // Scan for raw command names in fallback.command properties
     for (const match of line.matchAll(FALLBACK_COMMAND_PATTERN)) {
       const literal = match[1];
-      if (!allowedSet.has(literal)) {
+      if (GOVERNED_COMMANDS.includes(literal) && !isAllowed(literal)) {
+        violations.push({ file: relPath, line: lineNum, literal, family: 'command' });
+      }
+    }
+
+    // Scan for raw command names in const declarations
+    for (const match of line.matchAll(DECLARATION_ASSIGNMENT_PATTERN)) {
+      const literal = match[1];
+      if (GOVERNED_COMMANDS.includes(literal) && !isAllowed(literal)) {
+        violations.push({ file: relPath, line: lineNum, literal, family: 'command' });
+      }
+    }
+
+    // Scan for raw command names in uppercase const-map values (e.g., FOO: 'wu:status')
+    for (const match of line.matchAll(CONST_MAP_VALUE_PATTERN)) {
+      const literal = match[1];
+      if (GOVERNED_COMMANDS.includes(literal) && !isAllowed(literal)) {
         violations.push({ file: relPath, line: lineNum, literal, family: 'command' });
       }
     }
@@ -164,7 +186,7 @@ function scanFile(relPath: string, content: string): Violation[] {
       if (line.includes('CliArgs.') || line.includes('CliFlags.')) {
         continue;
       }
-      if (!allowedSet.has(literal)) {
+      if (!isAllowed(literal)) {
         violations.push({ file: relPath, line: lineNum, literal, family: 'flag' });
       }
     }
@@ -173,10 +195,10 @@ function scanFile(relPath: string, content: string): Violation[] {
     for (const match of line.matchAll(METADATA_PATTERN)) {
       const literal = match[0].slice(1, -1);
       // Skip if already using a constant reference
-      if (line.includes('MetadataKeys.') || line.includes('RUNTIME_PROJECT_ROOT')) {
+      if (line.includes('MetadataKeys.')) {
         continue;
       }
-      if (!allowedSet.has(literal)) {
+      if (!isAllowed(literal)) {
         violations.push({ file: relPath, line: lineNum, literal, family: 'metadata-key' });
       }
     }
@@ -186,6 +208,25 @@ function scanFile(relPath: string, content: string): Violation[] {
 }
 
 describe('MCP literal governance', () => {
+  it('detects declaration-level command literal violations', () => {
+    const content = "const TOOL = 'wu:status';\nconst other = 'not-governed';\n";
+    const violations = scanFile('synthetic.ts', content);
+    expect(
+      violations.some((entry) => entry.family === 'command' && entry.literal === 'wu:status'),
+    ).toBe(true);
+  });
+
+  it('respects explicit allowlist exceptions with rationale', () => {
+    const content = "const TOOL = 'wu:status';\n";
+    const allowlist = {
+      'synthetic.ts': {
+        'wu:status': 'Allowed for this test to verify allowlist behavior',
+      },
+    };
+    const violations = scanFile('synthetic.ts', content, allowlist);
+    expect(violations).toEqual([]);
+  });
+
   it('should not contain raw CLI command-name literals in governed tool files', () => {
     const allViolations: Violation[] = [];
 

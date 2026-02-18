@@ -198,9 +198,9 @@ interface RuntimeToolOutputLike {
   data?: unknown;
 }
 
-const GIT_RUNTIME_TOOL_NAME = 'git:status';
+const GIT_RUNTIME_TOOL_NAME = CliCommands.GIT_STATUS;
 const GIT_BINARY = 'git';
-const RUNTIME_PROJECT_ROOT_KEY = 'project_root';
+const RUNTIME_PROJECT_ROOT_KEY = MetadataKeys.PROJECT_ROOT;
 const GIT_COMMAND_RESULT_STDOUT_KEY = 'stdout';
 const GIT_COMMAND_RESULTS_KEY = 'command_results';
 const GIT_OUTPUT_KEY = 'output';

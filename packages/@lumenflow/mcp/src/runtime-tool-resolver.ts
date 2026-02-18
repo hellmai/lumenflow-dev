@@ -22,6 +22,7 @@ import {
   STATE_RUNTIME_EVENT_TYPES,
   STATE_RUNTIME_MESSAGES,
 } from './runtime-tool-resolver.constants.js';
+import { CliCommands, MetadataKeys } from './mcp-constants.js';
 
 const DEFAULT_IN_PROCESS_INPUT_SCHEMA = z.record(z.string(), z.unknown());
 const DEFAULT_IN_PROCESS_OUTPUT_SCHEMA = z.record(z.string(), z.unknown());
@@ -29,21 +30,21 @@ const DEFAULT_IN_PROCESS_OUTPUT_SCHEMA = z.record(z.string(), z.unknown());
 const RUNTIME_TOOL_NOT_MIGRATED_CODE = 'RUNTIME_TOOL_NOT_MIGRATED';
 const RUNTIME_TOOL_NOT_MIGRATED_MESSAGE =
   'Tool is registered for runtime migration but in-process implementation has not landed yet.';
-const RUNTIME_PROJECT_ROOT_METADATA_KEY = 'project_root';
+const RUNTIME_PROJECT_ROOT_METADATA_KEY = MetadataKeys.PROJECT_ROOT;
 const UTF8_ENCODING = 'utf-8';
 const DEFAULT_FILE_READ_MAX_SIZE_BYTES = 10 * 1024 * 1024;
 
 const IN_PROCESS_TOOL_NAMES = {
-  WU_STATUS: 'wu:status',
-  FILE_READ: 'file:read',
-  FILE_WRITE: 'file:write',
-  FILE_EDIT: 'file:edit',
-  FILE_DELETE: 'file:delete',
-  BACKLOG_PRUNE: 'backlog:prune',
-  STATE_BOOTSTRAP: 'state:bootstrap',
-  STATE_CLEANUP: 'state:cleanup',
-  STATE_DOCTOR: 'state:doctor',
-  SIGNAL_CLEANUP: 'signal:cleanup',
+  WU_STATUS: CliCommands.WU_STATUS,
+  FILE_READ: CliCommands.FILE_READ,
+  FILE_WRITE: CliCommands.FILE_WRITE,
+  FILE_EDIT: CliCommands.FILE_EDIT,
+  FILE_DELETE: CliCommands.FILE_DELETE,
+  BACKLOG_PRUNE: CliCommands.BACKLOG_PRUNE,
+  STATE_BOOTSTRAP: CliCommands.STATE_BOOTSTRAP,
+  STATE_CLEANUP: CliCommands.STATE_CLEANUP,
+  STATE_DOCTOR: CliCommands.STATE_DOCTOR,
+  SIGNAL_CLEANUP: CliCommands.SIGNAL_CLEANUP,
 } as const;
 
 const IN_PROCESS_TOOL_DESCRIPTIONS = {
