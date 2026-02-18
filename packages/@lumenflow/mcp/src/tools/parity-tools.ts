@@ -25,6 +25,7 @@ import {
   type CliRunnerOptions,
 } from '../tools-shared.js';
 import { CliCommands, MetadataKeys } from '../mcp-constants.js';
+import { checkWorktreeEnforcement } from '../worktree-enforcement.js';
 
 // WU-1482: Schemas for wave-1 parity commands not yet modeled in @lumenflow/core
 const backlogPruneSchema = z.object({
@@ -763,6 +764,18 @@ export const fileWriteTool: ToolDefinition = {
       return error(ErrorMessages.CONTENT_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
+    // WU-1853: Check worktree enforcement before writing
+    const enforcement = checkWorktreeEnforcement({
+      filePath: input.path as string,
+      projectRoot: options?.projectRoot,
+    });
+    if (!enforcement.allowed) {
+      return error(
+        enforcement.reason ?? 'Write blocked by worktree enforcement',
+        enforcement.errorCode ?? ErrorCodes.WORKTREE_ENFORCEMENT_BLOCKED,
+      );
+    }
+
     const args: string[] = [
       CliArgs.PATH,
       input.path as string,
@@ -820,6 +833,18 @@ export const fileEditTool: ToolDefinition = {
     }
     if (input.new_string === undefined) {
       return error(ErrorMessages.NEW_STRING_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    // WU-1853: Check worktree enforcement before editing
+    const enforcement = checkWorktreeEnforcement({
+      filePath: input.path as string,
+      projectRoot: options?.projectRoot,
+    });
+    if (!enforcement.allowed) {
+      return error(
+        enforcement.reason ?? 'Edit blocked by worktree enforcement',
+        enforcement.errorCode ?? ErrorCodes.WORKTREE_ENFORCEMENT_BLOCKED,
+      );
     }
 
     const args: string[] = [
