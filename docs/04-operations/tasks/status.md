@@ -5,6 +5,7 @@ _Last updated: 2026-02-18_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1853 — MCP file_write and file_edit tools bypass enforce-worktree hook](wu/WU-1853.yaml)
 
 ## Completed
 

@@ -2,7 +2,7 @@ id: WU-1853
 title: MCP file_write and file_edit tools bypass enforce-worktree hook
 lane: 'Framework: MCP'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -49,3 +49,11 @@ acceptance:
     main
   - Enforcement check reads from .lumenflow.config.yaml and gracefully allows if config cannot be
     read
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1853
+claimed_at: 2026-02-18T12:42:20.812Z
+baseline_main_sha: a616240f7f95be1b63b4fac2c94099b109ee7146
+session_id: 24947d08-d3f5-4b32-ba05-f304014eb650
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T12:42:20.820Z
