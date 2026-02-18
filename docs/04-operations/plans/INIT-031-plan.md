@@ -28,5 +28,4 @@ EventStore performance under tailing: current replay() re-reads entire file. Mit
 
 ## References
 
-- ID: INIT-031
-- Created: 2026-02-18
+Initiative: INIT-031 (docs/04-operations/tasks/initiatives/INIT-031.yaml). Depends on: INIT-029 (kernel runtime, done), INIT-030 (runtime adoption, completing). 27 WUs: WU-1816 through WU-1842. Detailed plan: .claude/plans/zazzy-growing-cook.md. Key files: packages/@lumenflow/kernel/src/event-store/index.ts, packages/@lumenflow/surfaces/, packages/@lumenflow/kernel/src/pack/pack-loader.ts, packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts. External references: AG-UI Protocol (docs.ag-ui.com), CopilotKit (copilotkit.ai), Cyera OpenClaw security research.
