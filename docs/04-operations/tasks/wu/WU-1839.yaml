@@ -2,7 +2,7 @@ id: WU-1839
 title: Create pack:search CLI command for registry discovery
 lane: 'Framework: CLI Orchestration'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -44,3 +44,6 @@ session_id: ce5a7451-4d7c-4b4a-9b8a-d878c432df2b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T21:50:06.551Z
+locked: true
+completed_at: 2026-02-18T22:01:00.220Z
+completed: 2026-02-18
