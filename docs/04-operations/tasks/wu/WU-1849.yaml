@@ -6,11 +6,11 @@ status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
-  - packages/@lumenflow/packs/software-delivery/tool-impl/worktree-tools.ts
-  - packages/@lumenflow/kernel/src/tool-host/scope-intersection.ts
-  - packages/@lumenflow/mcp/src/server.ts
-  - packages/@lumenflow/control-plane-sdk/src/workspace-config.ts
-  - packages/@lumenflow/runtime/src/session/session-manager.ts
+  - packages/@lumenflow/packs/software-delivery/__tests__/worktree-tools.test.ts
+  - packages/@lumenflow/kernel/src/__tests__/scope-intersection.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/stdio-handshake.test.ts
+  - packages/@lumenflow/control-plane-sdk/__tests__/workspace-config.test.ts
+  - packages/@lumenflow/runtime/__tests__/session-manager.test.ts
 tests:
   manual:
     - Run targeted coverage for touched modules and verify at least 90% line coverage plus green
