@@ -1640,3 +1640,4 @@
 {"type":"complete","wuId":"WU-1829","timestamp":"2026-02-18T21:26:11.243Z"}
 {"type":"complete","wuId":"WU-1827","timestamp":"2026-02-18T21:27:07.729Z"}
 {"type":"claim","wuId":"WU-1833","lane":"Content: Site Comms","title":"Build GenUI tool output renderers for rich tool result visualization","timestamp":"2026-02-18T21:30:49.203Z"}
+{"type":"claim","wuId":"WU-1838","lane":"Framework: CLI Orchestration","title":"Create pack:publish CLI command for registry upload","timestamp":"2026-02-18T21:32:06.832Z"}

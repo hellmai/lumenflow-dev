@@ -2,7 +2,7 @@ id: WU-1838
 title: Create pack:publish CLI command for registry upload
 lane: 'Framework: CLI Orchestration'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -30,9 +30,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: pnpm pack:publish --id my-pack runs pack:validate, creates tarball, uploads to registry. Requires GitHub OAuth token for authentication. Bumps version if needed, updates integrity hash.
+description: pnpm pack:publish --id my-pack runs pack:validate, creates tarball, uploads to
+  registry. Requires GitHub OAuth token for authentication. Bumps version if needed, updates
+  integrity hash.
 acceptance:
   - Runs pack:validate before publish
   - Creates tarball of pack contents
   - Uploads to registry with authentication
   - Errors if validation fails
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1838
+claimed_at: 2026-02-18T21:32:06.803Z
+baseline_main_sha: 355ab2c3c4604968aa5020bb191dc12f25ce9a8f
+session_id: 22759ca0-3bee-478b-a35f-f3a69351496f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T21:32:06.807Z

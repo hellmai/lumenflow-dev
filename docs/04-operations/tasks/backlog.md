@@ -27,7 +27,6 @@ sections:
 - [WU-1834 — Build policy decision overlay showing governance enforcement visually](wu/WU-1834.yaml) — Content: Site Comms
 - [WU-1835 — Build human-in-the-loop approval UI for policy approval_required decisions](wu/WU-1835.yaml) — Content: Site Comms
 - [WU-1836 — Build pack registry API with Vercel Edge Functions](wu/WU-1836.yaml) — Content: Site Comms
-- [WU-1838 — Create pack:publish CLI command for registry upload](wu/WU-1838.yaml) — Framework: CLI Orchestration
 - [WU-1839 — Create pack:search CLI command for registry discovery](wu/WU-1839.yaml) — Framework: CLI Orchestration
 - [WU-1840 — Build pack marketplace page with browse, search, and install flow](wu/WU-1840.yaml) — Content: Site Comms
 - [WU-1842 — Create community landing page with get-started path and marketplace links](wu/WU-1842.yaml) — Content: Site Comms
@@ -38,6 +37,7 @@ sections:
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1815 — Post-Phase-3 shell-out deprecation recertification and metric closure](wu/WU-1815.yaml) — Framework: Core Lifecycle
 - [WU-1833 — Build GenUI tool output renderers for rich tool result visualization](wu/WU-1833.yaml) — Content: Site Comms
+- [WU-1838 — Create pack:publish CLI command for registry upload](wu/WU-1838.yaml) — Framework: CLI Orchestration
 
 ## ⛔ Blocked
 
