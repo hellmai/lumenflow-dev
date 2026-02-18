@@ -129,8 +129,12 @@ export class RuntimeDaemon {
     ]);
   }
 
+  private isRequestType(method: string): method is RequestType {
+    return REQUEST_TYPE_VALUES.has(method as RequestType);
+  }
+
   private getHandlerForMethod(method: string): HandlerFn | null {
-    if (!REQUEST_TYPE_VALUES.has(method as RequestType)) {
+    if (!this.isRequestType(method)) {
       return null;
     }
     return this.handlerRegistry.get(method) ?? null;
