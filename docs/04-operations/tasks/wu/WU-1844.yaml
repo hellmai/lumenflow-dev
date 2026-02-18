@@ -1,0 +1,35 @@
+id: WU-1844
+title: Consolidate MCP runtime caches and create tool definition factory
+lane: 'Framework: MCP'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-18
+code_paths:
+  - packages/@lumenflow/mcp/src/tools/runtime-task-tools.ts
+  - packages/@lumenflow/mcp/src/tools-shared.ts
+tests:
+  manual:
+    - MCP server starts and task tools respond correctly
+  unit:
+    - packages/@lumenflow/mcp/src/__tests__/runtime-task-tools.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1844.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: INIT-030 code review found two independent runtime caches in the MCP package (runtimeCacheByRoot in runtime-task-tools.ts and runtimeCacheByWorkspaceRoot in tools-shared.ts). Both implement identical normalize-check-create-cache-delete-on-fail logic but hold separate Map instances, risking divergent runtime instances for the same workspace root. Additionally, all 7 tool definitions in runtime-task-tools.ts follow an identical pattern with the workspaceRoot line appearing 7 times verbatim.
+acceptance:
+  - Single shared runtime cache module used by both runtime-task-tools.ts and tools-shared.ts
+  - createRuntimeTool factory function eliminates boilerplate — 7 tool definitions reduced to config objects
+  - Existing runtime-task-tools.test.ts and runtime-tool-resolver.test.ts still pass
+  - No duplicate cache instances for same workspace root
