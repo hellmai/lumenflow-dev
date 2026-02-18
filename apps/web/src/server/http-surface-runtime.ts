@@ -33,6 +33,7 @@ type KernelRuntimeWithEventSubscription = KernelRuntime & {
   ) => Disposable;
 };
 
+let runtimePromise: Promise<KernelRuntimeWithEventSubscription> | null = null;
 let httpSurfacePromise: Promise<HttpSurface> | null = null;
 
 function createRuntimeUnavailableError(): Error {
@@ -95,8 +96,15 @@ async function createRuntimeForWeb(): Promise<KernelRuntimeWithEventSubscription
   }
 }
 
+export async function getKernelRuntimeForWeb(): Promise<KernelRuntimeWithEventSubscription> {
+  if (!runtimePromise) {
+    runtimePromise = createRuntimeForWeb();
+  }
+  return runtimePromise;
+}
+
 async function createWebHttpSurface(): Promise<HttpSurface> {
-  const runtime = await createRuntimeForWeb();
+  const runtime = await getKernelRuntimeForWeb();
   return createHttpSurface(runtime);
 }
 
