@@ -2,7 +2,7 @@ id: WU-1830
 title: Implement AG-UI RunAgent HTTP endpoint in HTTP surface
 lane: 'Framework: MCP'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -32,9 +32,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Implement the standard AG-UI RunAgent HTTP endpoint in the HTTP surface. Accepts AG-UI RunAgentInput (messages, tools, state, context), returns SSE stream of AG-UI events. Maps to kernel: create task from input, claim, execute tools, stream events, complete. This is the standard entry point that CopilotKit and other AG-UI clients expect.'
+description: 'Implement the standard AG-UI RunAgent HTTP endpoint in the HTTP surface. Accepts AG-UI
+  RunAgentInput (messages, tools, state, context), returns SSE stream of AG-UI events. Maps to
+  kernel: create task from input, claim, execute tools, stream events, complete. This is the
+  standard entry point that CopilotKit and other AG-UI clients expect.'
 acceptance:
   - RunAgent endpoint accepts AG-UI RunAgentInput
   - Returns SSE stream of AG-UI events
   - Maps AG-UI input to kernel task lifecycle
   - Compatible with CopilotKit client
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1830
+claimed_at: 2026-02-18T19:11:26.997Z
+baseline_main_sha: d770d34ebf225f765c5df398eff35cab3f6396cf
+session_id: 425f84d9-5410-43ac-b492-7254feecba51
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T19:11:27.008Z
