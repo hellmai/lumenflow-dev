@@ -5,6 +5,8 @@ import {
   deriveStateFromEvents,
   extractToolReceipts,
   extractEvidenceLinks,
+  applyApprovalDecision,
+  extractApprovalRequests,
 } from '../src/hooks/use-task-events';
 import type { DashboardEvent } from '../src/lib/dashboard-types';
 
@@ -194,6 +196,73 @@ describe('extractToolReceipts', () => {
     expect(receipts[0].toolName).toBe('file.read');
     expect(receipts[0].finishedAt).toBeUndefined();
     expect(receipts[0].result).toBeUndefined();
+  });
+});
+
+describe('extractApprovalRequests', () => {
+  it('extracts pending approvals from tool receipts with approval_required policy decisions', () => {
+    const events: DashboardEvent[] = [
+      {
+        id: 'e1',
+        kind: 'tool_call_started',
+        timestamp: '2026-02-18T10:02:00.000Z',
+        taskId: TASK_ID,
+        data: {
+          receipt_id: 'rcpt-approval-1',
+          tool_name: 'git.push',
+          scope_requested: [{ type: 'path', pattern: 'apps/web/**', access: 'write' }],
+          scope_allowed: [{ type: 'path', pattern: 'apps/web/**', access: 'write' }],
+        },
+      },
+      {
+        id: 'e2',
+        kind: 'tool_call_finished',
+        timestamp: '2026-02-18T10:02:05.000Z',
+        taskId: TASK_ID,
+        data: {
+          receipt_id: 'rcpt-approval-1',
+          result: 'denied',
+          duration_ms: 5000,
+          policy_decisions: [
+            {
+              policy_id: 'policy.approval.required',
+              decision: 'approval_required',
+              reason: 'manual gate',
+            },
+          ],
+        },
+      },
+    ];
+
+    const approvals = extractApprovalRequests(extractToolReceipts(events));
+    expect(approvals).toHaveLength(1);
+    expect(approvals[0]?.receiptId).toBe('rcpt-approval-1');
+    expect(approvals[0]?.status).toBe('pending');
+  });
+});
+
+describe('applyApprovalDecision', () => {
+  it('adds a synthetic task_resumed event when an approval is granted', () => {
+    const events: DashboardEvent[] = [
+      {
+        id: 'e1',
+        kind: 'task_waiting',
+        timestamp: '2026-02-18T10:00:00.000Z',
+        taskId: TASK_ID,
+        data: { reason: 'approval required' },
+      },
+    ];
+
+    const nextEvents = applyApprovalDecision({
+      events,
+      taskId: TASK_ID,
+      receiptId: 'rcpt-approval-1',
+      decision: 'approve',
+    });
+
+    const resumedEvent = nextEvents.find((event) => event.kind === 'task_resumed');
+    expect(resumedEvent).toBeDefined();
+    expect(deriveStateFromEvents(nextEvents)).toBe('active');
   });
 });
 

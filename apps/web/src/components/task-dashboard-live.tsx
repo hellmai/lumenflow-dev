@@ -12,7 +12,7 @@ interface TaskDashboardLiveProps {
  * the full task dashboard with live-updating data.
  */
 export function TaskDashboardLive({ taskId }: TaskDashboardLiveProps) {
-  const { state } = useTaskEvents({ taskId });
+  const { state, approvePendingApproval, denyPendingApproval } = useTaskEvents({ taskId });
 
   return (
     <TaskDashboard
@@ -21,6 +21,9 @@ export function TaskDashboardLive({ taskId }: TaskDashboardLiveProps) {
       currentStatus={state.currentStatus}
       events={state.events}
       toolReceipts={state.toolReceipts}
+      approvalRequests={state.approvalRequests}
+      onApprove={approvePendingApproval}
+      onDeny={denyPendingApproval}
       evidenceLinks={state.evidenceLinks}
     />
   );

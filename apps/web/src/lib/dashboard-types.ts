@@ -44,10 +44,18 @@ export interface DashboardEvent {
   readonly data: Record<string, unknown>;
 }
 
+export const POLICY_DECISIONS = {
+  ALLOW: 'allow',
+  DENY: 'deny',
+  APPROVAL_REQUIRED: 'approval_required',
+} as const;
+
+export type PolicyDecisionType = (typeof POLICY_DECISIONS)[keyof typeof POLICY_DECISIONS];
+
 /** Policy decision as rendered in tool receipts. */
 export interface PolicyDecisionView {
   readonly policyId: string;
-  readonly decision: 'allow' | 'deny';
+  readonly decision: PolicyDecisionType;
   readonly reason?: string;
 }
 
@@ -72,6 +80,25 @@ export interface ToolReceiptView {
   readonly policyDecisions: readonly PolicyDecisionView[];
 }
 
+export const APPROVAL_STATUSES = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  DENIED: 'denied',
+} as const;
+
+export type ApprovalStatus = (typeof APPROVAL_STATUSES)[keyof typeof APPROVAL_STATUSES];
+
+export interface ApprovalRequestView {
+  readonly receiptId: string;
+  readonly toolName: string;
+  readonly policyId: string;
+  readonly reason?: string;
+  readonly scopeRequested: readonly ScopeView[];
+  readonly scopeAllowed: readonly ScopeView[];
+  readonly status: ApprovalStatus;
+  readonly decidedAt?: string;
+}
+
 /** An evidence chain link referencing a receipt or event. */
 export interface EvidenceLink {
   readonly id: string;
@@ -88,6 +115,7 @@ export interface DashboardState {
   readonly currentStatus: TaskStatus;
   readonly events: readonly DashboardEvent[];
   readonly toolReceipts: readonly ToolReceiptView[];
+  readonly approvalRequests: readonly ApprovalRequestView[];
   readonly evidenceLinks: readonly EvidenceLink[];
 }
 
@@ -96,6 +124,7 @@ export const INITIAL_DASHBOARD_STATE: Omit<DashboardState, 'taskId'> = {
   currentStatus: TASK_STATES.READY,
   events: [],
   toolReceipts: [],
+  approvalRequests: [],
   evidenceLinks: [],
 };
 

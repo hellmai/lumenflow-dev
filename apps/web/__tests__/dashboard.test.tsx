@@ -1,7 +1,12 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, act, within } from '@testing-library/react';
-import type { DashboardEvent, ToolReceiptView, EvidenceLink } from '../src/lib/dashboard-types';
+import { render, screen, act, within, fireEvent } from '@testing-library/react';
+import type {
+  ApprovalRequestView,
+  DashboardEvent,
+  ToolReceiptView,
+  EvidenceLink,
+} from '../src/lib/dashboard-types';
 
 /* ------------------------------------------------------------------
  * AC1: SSE client connects and displays live events
@@ -69,6 +74,16 @@ const FIXTURE_EVIDENCE: EvidenceLink[] = [
     ref: 'evt-3',
   },
 ];
+
+const FIXTURE_APPROVAL_REQUEST: ApprovalRequestView = {
+  receiptId: 'rcpt-approval-1',
+  toolName: 'git.push',
+  policyId: 'policy.approval.required',
+  reason: 'Push to protected branch requires human approval',
+  scopeRequested: [{ type: 'path', pattern: 'apps/web/**', access: 'write' }],
+  scopeAllowed: [{ type: 'path', pattern: 'apps/web/**', access: 'write' }],
+  status: 'pending',
+};
 
 // --- Tests ---
 
@@ -195,6 +210,7 @@ describe('EvidenceChain component', () => {
 describe('TaskDashboard component', () => {
   it('composes state machine, event log, tool receipts, and evidence chain', async () => {
     const { TaskDashboard } = await import('../src/components/task-dashboard');
+    const noop = vi.fn();
 
     render(
       <TaskDashboard
@@ -204,6 +220,9 @@ describe('TaskDashboard component', () => {
         events={FIXTURE_EVENTS}
         toolReceipts={[FIXTURE_RECEIPT]}
         evidenceLinks={FIXTURE_EVIDENCE}
+        approvalRequests={[]}
+        onApprove={noop}
+        onDeny={noop}
       />,
     );
 
@@ -220,6 +239,7 @@ describe('TaskDashboard component', () => {
 
   it('shows connecting state indicator', async () => {
     const { TaskDashboard } = await import('../src/components/task-dashboard');
+    const noop = vi.fn();
 
     render(
       <TaskDashboard
@@ -229,10 +249,64 @@ describe('TaskDashboard component', () => {
         events={[]}
         toolReceipts={[]}
         evidenceLinks={[]}
+        approvalRequests={[]}
+        onApprove={noop}
+        onDeny={noop}
       />,
     );
 
     const connectionBadge = screen.getByTestId('connection-status');
     expect(connectionBadge.textContent).toContain('connecting');
+  });
+
+  it('renders pending approval card for approval_required decisions', async () => {
+    const { TaskDashboard } = await import('../src/components/task-dashboard');
+    const noop = vi.fn();
+
+    render(
+      <TaskDashboard
+        taskId={TASK_ID}
+        connectionState="connected"
+        currentStatus="waiting"
+        events={FIXTURE_EVENTS}
+        toolReceipts={[FIXTURE_RECEIPT]}
+        evidenceLinks={FIXTURE_EVIDENCE}
+        approvalRequests={[FIXTURE_APPROVAL_REQUEST]}
+        onApprove={noop}
+        onDeny={noop}
+      />,
+    );
+
+    expect(screen.getByText(/pending approvals/i)).toBeDefined();
+    expect(screen.getByText(/git\.push/)).toBeDefined();
+    expect(screen.getByText(/policy\.approval\.required/)).toBeDefined();
+    expect(screen.getByRole('button', { name: /approve/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /deny/i })).toBeDefined();
+  });
+
+  it('invokes approval handlers when Approve or Deny are clicked', async () => {
+    const { TaskDashboard } = await import('../src/components/task-dashboard');
+    const approve = vi.fn();
+    const deny = vi.fn();
+
+    render(
+      <TaskDashboard
+        taskId={TASK_ID}
+        connectionState="connected"
+        currentStatus="waiting"
+        events={FIXTURE_EVENTS}
+        toolReceipts={[FIXTURE_RECEIPT]}
+        evidenceLinks={FIXTURE_EVIDENCE}
+        approvalRequests={[FIXTURE_APPROVAL_REQUEST]}
+        onApprove={approve}
+        onDeny={deny}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /approve/i }));
+    fireEvent.click(screen.getByRole('button', { name: /deny/i }));
+
+    expect(approve).toHaveBeenCalledWith(FIXTURE_APPROVAL_REQUEST.receiptId);
+    expect(deny).toHaveBeenCalledWith(FIXTURE_APPROVAL_REQUEST.receiptId);
   });
 });

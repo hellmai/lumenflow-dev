@@ -1,16 +1,19 @@
 'use client';
 
 import type {
+  ApprovalRequestView,
   DashboardEvent,
   EvidenceLink,
   SseConnectionState,
   TaskStatus,
   ToolReceiptView,
 } from '../lib/dashboard-types';
+import { APPROVAL_STATUSES } from '../lib/dashboard-types';
 import { TaskStateMachine } from './task-state-machine';
 import { EventLog } from './event-log';
 import { ToolReceipt } from './tool-receipt';
 import { EvidenceChain } from './evidence-chain';
+import { ApprovalCard } from './approval-card';
 
 const CONNECTION_BADGE_COLORS = new Map<SseConnectionState, string>([
   ['connecting', 'bg-amber-100 text-amber-700'],
@@ -27,6 +30,9 @@ interface TaskDashboardProps {
   readonly currentStatus: TaskStatus;
   readonly events: readonly DashboardEvent[];
   readonly toolReceipts: readonly ToolReceiptView[];
+  readonly approvalRequests: readonly ApprovalRequestView[];
+  readonly onApprove: (receiptId: string) => void;
+  readonly onDeny: (receiptId: string) => void;
   readonly evidenceLinks: readonly EvidenceLink[];
 }
 
@@ -36,8 +42,15 @@ export function TaskDashboard({
   currentStatus,
   events,
   toolReceipts,
+  approvalRequests,
+  onApprove,
+  onDeny,
   evidenceLinks,
 }: TaskDashboardProps) {
+  const pendingApprovals = approvalRequests.filter(
+    (request) => request.status === APPROVAL_STATUSES.PENDING,
+  );
+
   return (
     <div className="mx-auto max-w-5xl space-y-8 p-6">
       {/* Header */}
@@ -61,6 +74,28 @@ export function TaskDashboard({
           <TaskStateMachine currentStatus={currentStatus} />
         </div>
       </section>
+
+      {/* Human-in-the-loop Approvals */}
+      {pendingApprovals.length > 0 && (
+        <section>
+          <h2 className={SECTION_TITLE_CLASS}>
+            Pending Approvals{' '}
+            <span className="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-xs font-normal text-slate-400">
+              {pendingApprovals.length}
+            </span>
+          </h2>
+          <div className="mt-3 space-y-3">
+            {pendingApprovals.map((request) => (
+              <ApprovalCard
+                key={request.receiptId}
+                request={request}
+                onApprove={onApprove}
+                onDeny={onDeny}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Event Log */}
       <section>

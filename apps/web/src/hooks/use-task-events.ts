@@ -2,12 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  APPROVAL_STATUSES,
   EVENT_KIND_TO_STATE,
+  POLICY_DECISIONS,
   SSE_CONNECTION_STATES,
   TASK_STATES,
+  type ApprovalRequestView,
   type DashboardEvent,
   type DashboardState,
   type EvidenceLink,
+  type PolicyDecisionType,
   type PolicyDecisionView,
   type ScopeView,
   type SseConnectionState,
@@ -19,6 +23,22 @@ import {
 
 const API_EVENTS_PREFIX = '/api/events/';
 const EVENT_ID_PREFIX = 'sse-';
+const APPROVAL_EVENT_ID_PREFIX = 'approval-';
+
+const EVENT_KIND = {
+  TOOL_CALL_STARTED: 'tool_call_started',
+  TOOL_CALL_FINISHED: 'tool_call_finished',
+  TASK_RESUMED: 'task_resumed',
+  TASK_WAITING: 'task_waiting',
+  AG_UI_APPROVAL_RESULT: 'ag_ui_approval_result',
+} as const;
+
+const APPROVAL_ACTION = {
+  APPROVE: 'approve',
+  DENY: 'deny',
+} as const;
+
+type ApprovalAction = (typeof APPROVAL_ACTION)[keyof typeof APPROVAL_ACTION];
 
 // --- Pure helper functions (exported for testing) ---
 
@@ -83,6 +103,16 @@ function toPolicyDecisionViews(decisions: unknown): readonly PolicyDecisionView[
     return [];
   }
 
+  const toPolicyDecisionType = (value: unknown): PolicyDecisionType => {
+    if (value === POLICY_DECISIONS.ALLOW) {
+      return POLICY_DECISIONS.ALLOW;
+    }
+    if (value === POLICY_DECISIONS.APPROVAL_REQUIRED) {
+      return POLICY_DECISIONS.APPROVAL_REQUIRED;
+    }
+    return POLICY_DECISIONS.DENY;
+  };
+
   return decisions
     .filter(
       (decision): decision is Record<string, unknown> =>
@@ -90,7 +120,7 @@ function toPolicyDecisionViews(decisions: unknown): readonly PolicyDecisionView[
     )
     .map((decision) => ({
       policyId: String(decision.policy_id ?? ''),
-      decision: (decision.decision as 'allow' | 'deny') ?? 'deny',
+      decision: toPolicyDecisionType(decision.decision),
       reason: decision.reason != null ? String(decision.reason) : undefined,
     }));
 }
@@ -105,9 +135,9 @@ export function extractToolReceipts(events: readonly DashboardEvent[]): ToolRece
       continue;
     }
 
-    if (event.kind === 'tool_call_started') {
+    if (event.kind === EVENT_KIND.TOOL_CALL_STARTED) {
       startedByReceiptId.set(receiptId, event);
-    } else if (event.kind === 'tool_call_finished') {
+    } else if (event.kind === EVENT_KIND.TOOL_CALL_FINISHED) {
       finishedByReceiptId.set(receiptId, event);
     }
   }
@@ -131,6 +161,99 @@ export function extractToolReceipts(events: readonly DashboardEvent[]): ToolRece
   }
 
   return receipts;
+}
+
+export function extractApprovalRequests(
+  receipts: readonly ToolReceiptView[],
+): readonly ApprovalRequestView[] {
+  return receipts.reduce<ApprovalRequestView[]>((approvals, receipt) => {
+    const approvalDecision = receipt.policyDecisions.find(
+      (decision) => decision.decision === POLICY_DECISIONS.APPROVAL_REQUIRED,
+    );
+
+    if (!approvalDecision) {
+      return approvals;
+    }
+
+    approvals.push({
+      receiptId: receipt.receiptId,
+      toolName: receipt.toolName,
+      policyId: approvalDecision.policyId,
+      reason: approvalDecision.reason,
+      scopeRequested: receipt.scopeRequested,
+      scopeAllowed: receipt.scopeAllowed,
+      status: APPROVAL_STATUSES.PENDING,
+    });
+
+    return approvals;
+  }, []);
+}
+
+interface ApprovalDecisionInput {
+  events: readonly DashboardEvent[];
+  taskId: string;
+  receiptId: string;
+  decision: ApprovalAction;
+}
+
+function createApprovalEvent(
+  taskId: string,
+  kind: string,
+  data: Record<string, unknown>,
+  timestamp: string,
+): DashboardEvent {
+  return {
+    id: `${APPROVAL_EVENT_ID_PREFIX}${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    kind,
+    timestamp,
+    taskId,
+    data,
+  };
+}
+
+export function applyApprovalDecision(input: ApprovalDecisionInput): DashboardEvent[] {
+  const timestamp = new Date().toISOString();
+  const nextEvents: DashboardEvent[] = [...input.events];
+
+  nextEvents.push(
+    createApprovalEvent(
+      input.taskId,
+      EVENT_KIND.AG_UI_APPROVAL_RESULT,
+      {
+        receipt_id: input.receiptId,
+        decision: input.decision,
+      },
+      timestamp,
+    ),
+  );
+
+  if (input.decision === APPROVAL_ACTION.APPROVE) {
+    nextEvents.push(
+      createApprovalEvent(
+        input.taskId,
+        EVENT_KIND.TASK_RESUMED,
+        {
+          reason: POLICY_DECISIONS.APPROVAL_REQUIRED,
+          receipt_id: input.receiptId,
+        },
+        timestamp,
+      ),
+    );
+  } else {
+    nextEvents.push(
+      createApprovalEvent(
+        input.taskId,
+        EVENT_KIND.TASK_WAITING,
+        {
+          reason: POLICY_DECISIONS.APPROVAL_REQUIRED,
+          receipt_id: input.receiptId,
+        },
+        timestamp,
+      ),
+    );
+  }
+
+  return nextEvents;
 }
 
 const EVIDENCE_BEARING_KINDS = new Set(['task_completed', 'run_succeeded', 'run_failed']);
@@ -175,12 +298,17 @@ export interface UseTaskEventsOptions {
 
 export interface UseTaskEventsResult {
   readonly state: DashboardState;
+  readonly approvePendingApproval: (receiptId: string) => void;
+  readonly denyPendingApproval: (receiptId: string) => void;
 }
 
 export function useTaskEvents(options: UseTaskEventsOptions): UseTaskEventsResult {
   const { taskId, enabled = true } = options;
 
   const [events, setEvents] = useState<DashboardEvent[]>([]);
+  const [approvalStatusByReceiptId, setApprovalStatusByReceiptId] = useState<
+    Record<string, { status: ApprovalRequestView['status']; decidedAt: string }>
+  >({});
   const [connectionState, setConnectionState] = useState<SseConnectionState>(
     SSE_CONNECTION_STATES.CONNECTING,
   );
@@ -228,7 +356,45 @@ export function useTaskEvents(options: UseTaskEventsOptions): UseTaskEventsResul
 
   const currentStatus = deriveStateFromEvents(events);
   const toolReceipts = extractToolReceipts(events);
+  const approvalRequests = extractApprovalRequests(toolReceipts).map((request) => {
+    const override = approvalStatusByReceiptId[request.receiptId];
+    if (!override) {
+      return request;
+    }
+
+    return {
+      ...request,
+      status: override.status,
+      decidedAt: override.decidedAt,
+    };
+  });
   const evidenceLinks = extractEvidenceLinks(events);
+
+  const applyDecision = useCallback(
+    (receiptId: string, decision: ApprovalAction): void => {
+      const decidedAt = new Date().toISOString();
+      setApprovalStatusByReceiptId((prev) => ({
+        ...prev,
+        [receiptId]: {
+          status:
+            decision === APPROVAL_ACTION.APPROVE
+              ? APPROVAL_STATUSES.APPROVED
+              : APPROVAL_STATUSES.DENIED,
+          decidedAt,
+        },
+      }));
+
+      setEvents((prev) =>
+        applyApprovalDecision({
+          events: prev,
+          taskId,
+          receiptId,
+          decision,
+        }),
+      );
+    },
+    [taskId],
+  );
 
   return {
     state: {
@@ -237,7 +403,10 @@ export function useTaskEvents(options: UseTaskEventsOptions): UseTaskEventsResul
       currentStatus,
       events,
       toolReceipts,
+      approvalRequests,
       evidenceLinks,
     },
+    approvePendingApproval: (receiptId) => applyDecision(receiptId, APPROVAL_ACTION.APPROVE),
+    denyPendingApproval: (receiptId) => applyDecision(receiptId, APPROVAL_ACTION.DENY),
   };
 }
