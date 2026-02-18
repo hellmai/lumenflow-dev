@@ -1,0 +1,42 @@
+id: WU-1863
+title: 'Policy construction safety: allowAllPolicyHook default and task ID uniqueness'
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-18
+code_paths:
+  - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
+  - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
+tests:
+  manual:
+    - Verify ToolHost construction without policy throws clear error
+    - Verify concurrent task creation produces unique IDs
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1863.done
+dependencies: []
+initiative: INIT-030
+phase: 5
+blocked_by:
+  - WU-1859
+risks: []
+notes: W2 is an API-breaking change — all direct ToolHost constructors must be updated. Grep for 'new ToolHost' across codebase. W4 fix is trivial (monotonic counter) but grouped here because both are construction-time safety in the same files.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'W2+W4: Direct ToolHost construction silently uses allowAllPolicyHook, bypassing all authorization. Any code that instantiates ToolHost without an explicit policy hook gets full write access — a silent privilege escalation. Additionally, task IDs generated within the same millisecond can collide under concurrent load (W4). Fix: (1) Remove default allowAllPolicyHook — require explicit policy at construction or fail with clear error. (2) Add monotonic counter or random suffix to task ID generation for sub-millisecond uniqueness.'
+acceptance:
+  - ToolHost constructor requires explicit policy hook parameter (no silent default)
+  - Constructing ToolHost without policy hook throws descriptive error
+  - Task IDs are unique even when created within same millisecond
+  - All existing ToolHost call sites updated with explicit policy
+  - All kernel tests pass
