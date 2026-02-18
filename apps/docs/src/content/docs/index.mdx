@@ -18,7 +18,7 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
+import { Card, CardGrid, Aside, LinkCard } from '@astrojs/starlight/components';
 
 ## Four Guarantees
 
@@ -41,9 +41,38 @@ import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
   </Card>
 </CardGrid>
 
-## Quick Start
+## Get Started
 
-<Aside type="tip" title="One command">
+Pick the path that matches where you are today.
+
+<CardGrid>
+  <Card title="New to AI Agents?" icon="rocket">
+    Start here. One command scaffolds everything.
+
+    [Quickstart (Agents) →](/getting-started/quickstart/)
+
+  </Card>
+  <Card title="Coming from Jira / Linear / GitHub Issues?" icon="right-arrow">
+    Map your existing tickets to Work Units and keep what works.
+
+    [Migration Guide →](/guides/migration/)
+
+  </Card>
+  <Card title="Solo Developer?" icon="star">
+    Lightweight setup for individual developers using AI assistants.
+
+    [Solo Workflow →](/guides/solo-workflow/)
+
+  </Card>
+  <Card title="Running a Team?" icon="list-format">
+    Lane-based parallel work, WIP limits, and multi-agent coordination.
+
+    [Team Workflow →](/guides/team-workflow/)
+
+  </Card>
+</CardGrid>
+
+<Aside type="tip" title="One command to start">
 
 ```bash
 npx lumenflow init
@@ -53,12 +82,54 @@ npx lumenflow init
 
 LumenFlow scaffolds into your existing repo with git hooks, quality gates, work unit templates, and agent onboarding docs.
 
+## Pack Marketplace
+
+Packs are domain plugins that teach the LumenFlow kernel new capabilities. Install a pack to add tools, policies, and evidence types for any domain.
+
+<CardGrid>
+  <Card title="Software Delivery" icon="setting">
+    **Built-in.** Git tools, worktree isolation, quality gates, lane-based work partitioning.
+
+    [Explore the Software Delivery Pack →](/guides/create-a-pack/)
+
+  </Card>
+  <Card title="Create Your Own Pack" icon="add-document">
+    Build a pack for customer support, data pipelines, infrastructure provisioning, or any domain.
+
+    [Create a Pack in 10 Minutes →](/guides/create-a-pack/)
+
+  </Card>
+</CardGrid>
+
+<Aside type="note" title="Community packs coming soon">
+  The Pack Marketplace will list community-contributed packs as they become available. Want to
+  publish a pack? See the [Create a Pack](/guides/create-a-pack/) guide and join the [GitHub
+  Discussions](https://github.com/hellmai/lumenflow/discussions).
+</Aside>
+
+## LumenFlow vs Alternatives
+
+How does LumenFlow governance compare to other approaches?
+
+| Aspect                   | Scrum / Kanban    | GitHub Actions alone | LangChain / CrewAI   | LumenFlow                                            |
+| ------------------------ | ----------------- | -------------------- | -------------------- | ---------------------------------------------------- |
+| **Agent governance**     | None              | CI-only              | Trust the prompt     | 4-level scope, deny-wins policy engine               |
+| **Evidence of work**     | Ticket status     | Logs                 | None                 | Immutable evidence receipts                          |
+| **Sandbox isolation**    | None              | Container-level      | None                 | OS-level bwrap with secret deny overlays             |
+| **Work partitioning**    | Columns / sprints | Workflows            | Agent roles          | Lanes with WIP limits and worktree isolation         |
+| **Context recovery**     | Human memory      | None                 | Conversation history | Checkpointed memory layer with auto-recovery         |
+| **Quality gates**        | PR review         | CI checks            | None                 | Automated gates: format, lint, typecheck, test       |
+| **Multi-agent safety**   | N/A               | Concurrent jobs      | Shared state         | Lane locking, branch isolation, coordination signals |
+| **Domain extensibility** | Plugins / apps    | Marketplace actions  | Custom tools         | Pack system: manifest, scoped tools, policies        |
+
+<Aside type="tip">
+  LumenFlow can complement existing tools. Use Jira for planning and stakeholder communication,
+  GitHub Actions for CI, and LumenFlow as the governance layer that ties execution together.
+</Aside>
+
 ## Explore
 
 <CardGrid>
-  <Card title="Getting Started" icon="rocket">
-    [Install and configure LumenFlow →](/getting-started/quickstart/)
-  </Card>
   <Card title="Core Concepts" icon="open-book">
     [WUs, Lanes, Gates, Worktrees →](/concepts/work-units/)
   </Card>
@@ -67,16 +138,6 @@ LumenFlow scaffolds into your existing repo with git hooks, quality gates, work 
   </Card>
   <Card title="AI Agent Integration" icon="seti:robot">
     [Claude, Codex, custom agents →](/guides/ai-agents/)
-  </Card>
-</CardGrid>
-
-## Software Delivery Pack
-
-LumenFlow ships with a Software Delivery Pack — the first domain pack that loads git tools, worktree isolation, quality gates, and lane-based work partitioning into the kernel.
-
-<CardGrid>
-  <Card title="WU Lifecycle" icon="setting">
-    [wu:claim → wu:prep → wu:done →](/guides/wu-prep-workflow/)
   </Card>
   <Card title="Troubleshooting" icon="warning">
     [Fix common issues: gates, worktrees, git →](/guides/troubleshooting/)
