@@ -2,7 +2,7 @@ id: WU-1808
 title: Migrate WU completion and cleanup tools to runtime pack execution
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -50,3 +50,6 @@ session_id: 98f2aa28-8d55-418d-92b3-cf1eb49a727e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T18:31:17.264Z
+locked: true
+completed_at: 2026-02-18T18:40:45.627Z
+completed: 2026-02-18

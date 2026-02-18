@@ -59,7 +59,6 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1857 — Shore up web frontend infra: React linting, vitest jsdom, turbo TSX, surfaces package](wu/WU-1857.yaml) — Operations: Tooling
-- [WU-1808 — Migrate WU completion and cleanup tools to runtime pack execution](wu/WU-1808.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -820,6 +819,7 @@ sections:
 - [WU-1805 — Migrate WU read/query tools to runtime pack execution](wu/WU-1805.yaml)
 - [WU-1806 — Migrate WU creation and claiming tools to runtime pack execution](wu/WU-1806.yaml)
 - [WU-1807 — Migrate WU state transition tools to runtime pack execution](wu/WU-1807.yaml)
+- [WU-1808 — Migrate WU completion and cleanup tools to runtime pack execution](wu/WU-1808.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
