@@ -6,12 +6,9 @@ status: in_progress
 priority: P0
 created: 2026-02-18
 code_paths:
-  - packages/@lumenflow/mcp/src/mcp-constants.ts
+  - packages/@lumenflow/mcp/src/__tests__/literal-governance.test.ts
   - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
   - packages/@lumenflow/mcp/src/tools/parity-tools.ts
-  - packages/@lumenflow/mcp/src/__tests__/literal-governance.test.ts
-  - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
-  - packages/@lumenflow/mcp/src/tools-shared.ts
 tests:
   manual:
     - Verify representative MCP tools (wu_status, state_doctor, git_status) still return unchanged
@@ -34,10 +31,17 @@ notes: 'Tightening WU-1851 residuals to 100% governance: close declaration-level
   eliminate hidden duplicates. Keep scope MCP-only; do not expand into unrelated kernel/package
   surfaces.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-18T12:32:50.250Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1855
+session_id: 4bf0fb5f-3b1d-4c44-93f8-77dbf30946d7
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T12:32:50.255Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -67,11 +71,3 @@ acceptance:
     git_status) after constant replacement.
   - No public API changes to @lumenflow/mcp exports; refactor remains internal.
   - pnpm gates passes.
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1855
-claimed_at: 2026-02-18T12:32:50.250Z
-baseline_main_sha: 5d351f0eaf9f2e7559715af732991b40846674d3
-session_id: 4bf0fb5f-3b1d-4c44-93f8-77dbf30946d7
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-18T12:32:50.255Z
