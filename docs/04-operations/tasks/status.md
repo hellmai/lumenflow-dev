@@ -10,6 +10,7 @@ _Last updated: 2026-02-18_
 - [WU-1869 — Vercel Blob-backed PackRegistryStore + PackBlobStore adapters](wu/WU-1869.yaml)
 - [WU-1879 — INIT-030 Review Fix G: evidence store multi-instance replay correctness and lock error propagation](wu/WU-1879.yaml)
 - [WU-1865 — Kernel polish: xstate dead code removal, warning clarity, naming consistency](wu/WU-1865.yaml)
+- [WU-1871 — lumenflow workspace:init interactive wizard generating workspace.yaml](wu/WU-1871.yaml)
 
 ## Completed
 

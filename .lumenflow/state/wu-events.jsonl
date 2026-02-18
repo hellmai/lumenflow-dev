@@ -1681,3 +1681,4 @@
 {"type":"claim","wuId":"WU-1869","lane":"Content: Site Comms","title":"Vercel Blob-backed PackRegistryStore + PackBlobStore adapters","timestamp":"2026-02-18T23:20:26.211Z"}
 {"type":"claim","wuId":"WU-1879","lane":"Framework: Core Lifecycle","title":"INIT-030 Review Fix G: evidence store multi-instance replay correctness and lock error propagation","timestamp":"2026-02-18T23:20:45.497Z"}
 {"type":"claim","wuId":"WU-1865","lane":"Framework: Core Lifecycle","title":"Kernel polish: xstate dead code removal, warning clarity, naming consistency","timestamp":"2026-02-18T23:20:51.989Z"}
+{"type":"claim","wuId":"WU-1871","lane":"Framework: CLI Orchestration","title":"lumenflow workspace:init interactive wizard generating workspace.yaml","timestamp":"2026-02-18T23:21:35.093Z"}
