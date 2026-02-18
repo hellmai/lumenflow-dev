@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1820 — Build live task dashboard page with real-time event streaming](wu/WU-1820.yaml) — Content: Site Comms
 - [WU-1819 — Scaffold Next.js web app with API routes for HTTP surface](wu/WU-1819.yaml) — Content: Site Comms
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance

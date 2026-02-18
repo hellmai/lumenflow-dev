@@ -1,0 +1,40 @@
+id: WU-1820
+title: Build live task dashboard page with real-time event streaming
+lane: 'Content: Site Comms'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-18
+code_paths:
+  - apps/web/src/
+tests:
+  manual:
+    - Run WU lifecycle in terminal then verify events appear in browser within 2s
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1820.done
+dependencies: []
+initiative: INIT-031
+phase: 1
+blocked_by:
+  - WU-1819
+spec_refs:
+  - .claude/plans/zazzy-growing-cook.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: ui
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: React client component connecting to /api/events/:taskId SSE endpoint. Renders task state machine visualization (ready to active to done), live scrolling event log with timestamps, tool execution receipts (name, scopes, policy decisions, duration, pass/fail), and evidence chain visualization. This is the primary demo page.
+acceptance:
+  - SSE client connects and displays live events
+  - Task state machine rendered with visual transitions
+  - Tool execution receipts show scope and policy metadata
+  - Evidence chain links visible
+  - Event log scrolls with timestamps
