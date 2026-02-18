@@ -28,6 +28,8 @@ const DEFAULT_LOCK_MAX_RETRIES = 250;
 const PROCESS_EXISTS_SIGNAL = 0;
 const SUBSCRIPTION_DEBOUNCE_MS = 25;
 const SUBSCRIPTION_MAX_DRAIN_PASSES = 8;
+const DEFAULT_REPLAY_LIMIT = 100;
+const MAX_REPLAY_LIMIT = 500;
 
 type EventKind = KernelEvent['kind'];
 type TaskScopedKernelEvent = Extract<KernelEvent, { task_id: string }>;
@@ -38,6 +40,16 @@ export interface ReplayFilter {
   kind?: EventKind | EventKind[];
   sinceTimestamp?: string;
   untilTimestamp?: string;
+  /** ISO timestamp cursor: exclusive lower bound. Only events after this timestamp are returned. */
+  cursor?: string;
+  /** Maximum number of events to return. Default: 100, max: 500. */
+  limit?: number;
+}
+
+export interface ReplayResult {
+  events: KernelEvent[];
+  /** Timestamp of the last returned event, or null if no more events remain. */
+  nextCursor: string | null;
 }
 
 export interface Disposable {
@@ -319,13 +331,42 @@ export class EventStore {
     }
   }
 
-  async replay(filter: ReplayFilter = {}): Promise<KernelEvent[]> {
+  async replay(filter: ReplayFilter = {}): Promise<ReplayResult> {
     await this.reloadFromDisk();
     const parsedFilter = parseReplayFilter(filter);
+    const cursorMs = filter.cursor ? toTimestampMillis(filter.cursor) : null;
+    const effectiveLimit = Math.min(
+      Math.max(1, filter.limit ?? DEFAULT_REPLAY_LIMIT),
+      MAX_REPLAY_LIMIT,
+    );
 
-    return this.orderedEvents.filter((event) => {
-      return eventMatchesFilter(event, filter, parsedFilter);
-    });
+    const matched: KernelEvent[] = [];
+    let totalMatchingAfterPage = 0;
+
+    for (const event of this.orderedEvents) {
+      if (!eventMatchesFilter(event, filter, parsedFilter)) {
+        continue;
+      }
+
+      // Apply cursor: exclusive lower bound on timestamp
+      if (cursorMs !== null && toTimestampMillis(event.timestamp) <= cursorMs) {
+        continue;
+      }
+
+      if (matched.length < effectiveLimit) {
+        matched.push(event);
+      } else {
+        // At least one more event exists beyond the page
+        totalMatchingAfterPage += 1;
+        break;
+      }
+    }
+
+    const hasMore = totalMatchingAfterPage > 0;
+    const nextCursor =
+      hasMore && matched.length > 0 ? matched[matched.length - 1]!.timestamp : null;
+
+    return { events: matched, nextCursor };
   }
 
   subscribe(filter: ReplayFilter = {}, callback: EventSubscriber): Disposable {

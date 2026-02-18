@@ -109,7 +109,7 @@ describe('event-store', () => {
     await store.append(claimed);
     await store.append(completed);
 
-    const replayed = await store.replay();
+    const { events: replayed } = await store.replay();
     expect(replayed).toHaveLength(3);
     expect(replayed.map((event) => event.kind)).toEqual([
       'task_created',
@@ -146,7 +146,7 @@ describe('event-store', () => {
 
     await store.appendAll([created, claimed, runStarted]);
 
-    const replayed = await store.replay();
+    const { events: replayed } = await store.replay();
     expect(replayed.map((event) => event.kind)).toEqual([
       'task_created',
       'task_claimed',
@@ -336,7 +336,7 @@ describe('event-store', () => {
 
     await expect(store.append(created)).resolves.toBeUndefined();
 
-    const replayed = await store.replay();
+    const { events: replayed } = await store.replay();
     expect(replayed).toHaveLength(1);
     await expect(readFile(lockFilePath, 'utf8')).rejects.toMatchObject({ code: 'ENOENT' });
   });

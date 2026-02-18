@@ -1,3 +1,4 @@
+import { type NextRequest } from 'next/server';
 import { getKernelRuntimeForWeb } from '../../../../src/server/http-surface-runtime';
 
 const HTTP_STATUS = {
@@ -5,24 +6,31 @@ const HTTP_STATUS = {
 } as const;
 
 const CONTENT_TYPE_JSON = 'application/json; charset=utf-8';
-const EMPTY_EVENTS_RESPONSE = '[]';
+
+interface ReplayResult {
+  events: unknown[];
+  nextCursor: string | null;
+}
 
 interface EventStoreReplayCapability {
   eventStore?: {
-    replay(filter?: Record<string, unknown>): Promise<unknown[]>;
+    replay(filter?: Record<string, unknown>): Promise<ReplayResult>;
   };
 }
+
+const EMPTY_REPLAY_RESULT: ReplayResult = { events: [], nextCursor: null };
 
 /**
  * GET /api/events/all
  *
- * Returns all kernel events by replaying the EventStore without a task filter.
+ * Returns kernel events by replaying the EventStore without a task filter.
+ * Supports cursor-based pagination via `cursor` and `limit` query parameters.
  * Used by the workspace overview page to derive task summaries and lane WIP counts.
  *
- * Returns an empty array when the kernel runtime is in preview mode or
- * when the event store is not available.
+ * Returns `{ events: [], nextCursor: null }` when the kernel runtime is in
+ * preview mode or when the event store is not available.
  */
-export async function GET(): Promise<Response> {
+export async function GET(request: NextRequest): Promise<Response> {
   try {
     const runtime = await getKernelRuntimeForWeb();
     const runtimeWithEventStore = runtime as unknown as EventStoreReplayCapability;
@@ -31,20 +39,28 @@ export async function GET(): Promise<Response> {
       !runtimeWithEventStore.eventStore ||
       typeof runtimeWithEventStore.eventStore.replay !== 'function'
     ) {
-      return new Response(EMPTY_EVENTS_RESPONSE, {
+      return new Response(JSON.stringify(EMPTY_REPLAY_RESULT), {
         status: HTTP_STATUS.OK,
         headers: { 'content-type': CONTENT_TYPE_JSON },
       });
     }
 
-    const events = await runtimeWithEventStore.eventStore.replay({});
+    const { searchParams } = request.nextUrl;
+    const cursor = searchParams.get('cursor') ?? undefined;
+    const limitParam = searchParams.get('limit');
+    const limit = limitParam ? Number(limitParam) : undefined;
 
-    return new Response(JSON.stringify(events), {
+    const result = await runtimeWithEventStore.eventStore.replay({
+      ...(cursor !== undefined && { cursor }),
+      ...(limit !== undefined && !Number.isNaN(limit) && { limit }),
+    });
+
+    return new Response(JSON.stringify(result), {
       status: HTTP_STATUS.OK,
       headers: { 'content-type': CONTENT_TYPE_JSON },
     });
   } catch {
-    return new Response(EMPTY_EVENTS_RESPONSE, {
+    return new Response(JSON.stringify(EMPTY_REPLAY_RESULT), {
       status: HTTP_STATUS.OK,
       headers: { 'content-type': CONTENT_TYPE_JSON },
     });

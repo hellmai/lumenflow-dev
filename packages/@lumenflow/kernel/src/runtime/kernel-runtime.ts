@@ -879,7 +879,8 @@ export class DefaultKernelRuntime implements KernelRuntime {
 
   async inspectTask(taskId: string): Promise<TaskInspection> {
     const task = await this.requireTaskSpec(taskId);
-    const events = await this.eventStore.replay(resolveReplayTaskFilter(taskId));
+    const replayResult = await this.eventStore.replay(resolveReplayTaskFilter(taskId));
+    const events = replayResult.events;
     const state = projectTaskState(task, events);
     const runHistory = buildRunHistory(events);
     const receipts = await this.readReceiptsForTask(taskId);
@@ -915,7 +916,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
 
   private async projectTaskState(taskId: string): Promise<TaskState> {
     const task = await this.requireTaskSpec(taskId);
-    const events = await this.eventStore.replay(resolveReplayTaskFilter(taskId));
+    const { events } = await this.eventStore.replay(resolveReplayTaskFilter(taskId));
     return projectTaskState(task, events);
   }
 
