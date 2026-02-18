@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1825 — Create pack:hash CLI command for integrity hash computation](wu/WU-1825.yaml) — Framework: CLI Orchestration
 - [WU-1824 — Create pack:validate CLI command for pack integrity checking](wu/WU-1824.yaml) — Framework: CLI Orchestration
 - [WU-1823 — Create pack:scaffold CLI command for new pack authoring](wu/WU-1823.yaml) — Framework: CLI Orchestration
 - [WU-1822 — Build workspace connection flow with runtime initialization](wu/WU-1822.yaml) — Content: Site Comms
