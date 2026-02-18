@@ -34,7 +34,6 @@ sections:
 - [WU-1824 — Create pack:validate CLI command for pack integrity checking](wu/WU-1824.yaml) — Framework: CLI Orchestration
 - [WU-1825 — Create pack:hash CLI command for integrity hash computation](wu/WU-1825.yaml) — Framework: CLI Orchestration
 - [WU-1827 — Create pack:install CLI command for adding packs to workspace](wu/WU-1827.yaml) — Framework: CLI Orchestration
-- [WU-1828 — Write pack authoring guide: Create Your First Pack in 10 Minutes](wu/WU-1828.yaml) — Content: Specs Governance
 - [WU-1829 — Add pack catalog page to web dashboard with tool and policy visualization](wu/WU-1829.yaml) — Content: Site Comms
 - [WU-1830 — Implement AG-UI RunAgent HTTP endpoint in HTTP surface](wu/WU-1830.yaml) — Framework: MCP
 - [WU-1831 — Implement AG-UI state synchronization with StateSnapshot and StateDelta](wu/WU-1831.yaml) — Framework: MCP
@@ -57,6 +56,7 @@ sections:
 - [WU-1820 — Build live task dashboard page with real-time event streaming](wu/WU-1820.yaml) — Content: Site Comms
 - [WU-1823 — Create pack:scaffold CLI command for new pack authoring](wu/WU-1823.yaml) — Framework: CLI Orchestration
 - [WU-1826 — Extend PackLoader with git-based pack resolution](wu/WU-1826.yaml) — Framework: Core Lifecycle
+- [WU-1828 — Write pack authoring guide: Create Your First Pack in 10 Minutes](wu/WU-1828.yaml) — Content: Specs Governance
 
 ## ⛔ Blocked
 

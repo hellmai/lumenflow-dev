@@ -1602,3 +1602,4 @@
 {"type":"claim","wuId":"WU-1820","lane":"Content: Site Comms","title":"Build live task dashboard page with real-time event streaming","timestamp":"2026-02-18T19:07:57.241Z"}
 {"type":"claim","wuId":"WU-1823","lane":"Framework: CLI Orchestration","title":"Create pack:scaffold CLI command for new pack authoring","timestamp":"2026-02-18T19:08:52.717Z"}
 {"type":"claim","wuId":"WU-1826","lane":"Framework: Core Lifecycle","title":"Extend PackLoader with git-based pack resolution","timestamp":"2026-02-18T19:09:25.944Z"}
+{"type":"claim","wuId":"WU-1828","lane":"Content: Specs Governance","title":"Write pack authoring guide: Create Your First Pack in 10 Minutes","timestamp":"2026-02-18T19:10:14.336Z"}
