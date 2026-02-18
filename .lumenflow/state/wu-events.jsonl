@@ -1671,3 +1671,4 @@
 {"type":"claim","wuId":"WU-1867","timestamp":"2026-02-18T22:53:52.244Z","lane":"Framework: Core Lifecycle","title":"INIT-030 Review Fix E: guard all appendTrace throw paths in ToolHost"}
 {"type":"complete","wuId":"WU-1861","timestamp":"2026-02-18T23:00:07.898Z"}
 {"type":"complete","wuId":"WU-1867","timestamp":"2026-02-18T23:00:43.798Z"}
+{"type":"claim","wuId":"WU-1866","lane":"Framework: MCP","title":"INIT-030 Review Fix D: flip executeViaPack fallback from denylist to allowlist","timestamp":"2026-02-18T23:02:16.241Z"}

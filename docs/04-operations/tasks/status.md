@@ -6,6 +6,7 @@ _Last updated: 2026-02-18_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1863 — Policy construction safety: allowAllPolicyHook default and task ID uniqueness](wu/WU-1863.yaml)
+- [WU-1866 — INIT-030 Review Fix D: flip executeViaPack fallback from denylist to allowlist](wu/WU-1866.yaml)
 
 ## Completed
 
