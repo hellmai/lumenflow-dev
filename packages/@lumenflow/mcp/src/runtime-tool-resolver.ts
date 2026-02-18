@@ -17,6 +17,11 @@ import type {
 } from '@lumenflow/metrics';
 import type { ListWUsOptions } from '@lumenflow/core';
 import { z } from 'zod';
+import {
+  STATE_RUNTIME_CONSTANTS,
+  STATE_RUNTIME_EVENT_TYPES,
+  STATE_RUNTIME_MESSAGES,
+} from './runtime-tool-resolver.constants.js';
 
 const DEFAULT_IN_PROCESS_INPUT_SCHEMA = z.record(z.string(), z.unknown());
 const DEFAULT_IN_PROCESS_OUTPUT_SCHEMA = z.record(z.string(), z.unknown());
@@ -82,20 +87,6 @@ const STATE_TOOL_ERROR_CODES = {
   STATE_CLEANUP_FAILED: 'STATE_CLEANUP_FAILED',
   STATE_DOCTOR_FAILED: 'STATE_DOCTOR_FAILED',
   SIGNAL_CLEANUP_FAILED: 'SIGNAL_CLEANUP_FAILED',
-} as const;
-
-const STATE_TOOL_CONSTANTS = {
-  WU_FILE_PREFIX: 'WU-',
-  YAML_EXTENSION: '.yaml',
-  DONE_STAMP_EXTENSION: '.done',
-  WU_EVENTS_FILE_NAME: 'wu-events.jsonl',
-  STALE_NOTE_TEMPLATE: 'Auto-tagged as stale by backlog:prune',
-  STATE_DOCTOR_FIX_REASON: 'state:doctor --fix',
-  DEFAULT_STALE_DAYS_IN_PROGRESS: 7,
-  DEFAULT_STALE_DAYS_READY: 30,
-  DEFAULT_ARCHIVE_DAYS: 90,
-  ONE_DAY_MS: 24 * 60 * 60 * 1000,
-  BOOTSTRAP_BLOCK_REASON: 'Bootstrapped from WU YAML (original reason unknown)',
 } as const;
 
 const FILE_READ_INPUT_SCHEMA = z.object({
@@ -761,8 +752,13 @@ interface WuLifecycleDocument {
   filePath: string;
 }
 
+type BootstrapLifecycleEventType =
+  | typeof STATE_RUNTIME_EVENT_TYPES.CLAIM
+  | typeof STATE_RUNTIME_EVENT_TYPES.COMPLETE
+  | typeof STATE_RUNTIME_EVENT_TYPES.BLOCK;
+
 interface BootstrapLifecycleEvent {
-  type: 'claim' | 'complete' | 'block';
+  type: BootstrapLifecycleEventType;
   wuId: string;
   timestamp: string;
   lane?: string;
@@ -808,7 +804,7 @@ function calculateDaysSince(dateString?: string): number | null {
   if (Number.isNaN(parsedDate.getTime())) {
     return null;
   }
-  return Math.floor((Date.now() - parsedDate.getTime()) / STATE_TOOL_CONSTANTS.ONE_DAY_MS);
+  return Math.floor((Date.now() - parsedDate.getTime()) / STATE_RUNTIME_CONSTANTS.ONE_DAY_MS);
 }
 
 async function loadWuLifecycleDocuments(core: CoreModule, wuDir: string): Promise<WuLifecycleDocument[]> {
@@ -822,8 +818,8 @@ async function loadWuLifecycleDocuments(core: CoreModule, wuDir: string): Promis
 
   for (const fileName of files) {
     if (
-      !fileName.startsWith(STATE_TOOL_CONSTANTS.WU_FILE_PREFIX) ||
-      !fileName.endsWith(STATE_TOOL_CONSTANTS.YAML_EXTENSION)
+      !fileName.startsWith(STATE_RUNTIME_CONSTANTS.WU_FILE_PREFIX) ||
+      !fileName.endsWith(STATE_RUNTIME_CONSTANTS.YAML_EXTENSION)
     ) {
       continue;
     }
@@ -874,10 +870,10 @@ function inferBootstrapEvents(
   const claimTimestamp = toIsoTimestamp(wu.claimed_at, wu.created);
   const events: BootstrapLifecycleEvent[] = [
     {
-      type: 'claim',
+      type: STATE_RUNTIME_EVENT_TYPES.CLAIM,
       wuId: wu.id,
-      lane: wu.lane ?? 'Unknown',
-      title: wu.title ?? 'Untitled',
+      lane: wu.lane ?? STATE_RUNTIME_CONSTANTS.UNKNOWN_LANE,
+      title: wu.title ?? STATE_RUNTIME_CONSTANTS.UNTITLED_WU,
       timestamp: claimTimestamp,
     },
   ];
@@ -886,17 +882,17 @@ function inferBootstrapEvents(
     const blockedAt = new Date(claimTimestamp);
     blockedAt.setSeconds(blockedAt.getSeconds() + 1);
     events.push({
-      type: 'block',
+      type: STATE_RUNTIME_EVENT_TYPES.BLOCK,
       wuId: wu.id,
       timestamp: blockedAt.toISOString(),
-      reason: STATE_TOOL_CONSTANTS.BOOTSTRAP_BLOCK_REASON,
+      reason: STATE_RUNTIME_CONSTANTS.BOOTSTRAP_BLOCK_REASON,
     });
     return events;
   }
 
   if (doneStatuses.has(normalizedStatus)) {
     events.push({
-      type: 'complete',
+      type: STATE_RUNTIME_EVENT_TYPES.COMPLETE,
       wuId: wu.id,
       timestamp: toIsoTimestamp(wu.completed_at ?? wu.completed, claimTimestamp),
     });
@@ -954,9 +950,9 @@ function buildStateDoctorDeps(core: CoreModule, projectRoot: string) {
       try {
         const files = await readdir(stampsDir);
         return files
-          .filter((file) => file.endsWith(STATE_TOOL_CONSTANTS.DONE_STAMP_EXTENSION))
+          .filter((file) => file.endsWith(STATE_RUNTIME_CONSTANTS.DONE_STAMP_EXTENSION))
           .map((file) =>
-            file.slice(0, -1 * STATE_TOOL_CONSTANTS.DONE_STAMP_EXTENSION.length),
+            file.slice(0, -1 * STATE_RUNTIME_CONSTANTS.DONE_STAMP_EXTENSION.length),
           );
       } catch {
         return [];
@@ -1015,18 +1011,25 @@ function buildStateDoctorDeps(core: CoreModule, projectRoot: string) {
     },
     createStamp: async (wuId: string, title: string) => {
       await mkdir(stampsDir, { recursive: true });
-      const stampPath = path.join(stampsDir, `${wuId}${STATE_TOOL_CONSTANTS.DONE_STAMP_EXTENSION}`);
+      const stampPath = path.join(
+        stampsDir,
+        `${wuId}${STATE_RUNTIME_CONSTANTS.DONE_STAMP_EXTENSION}`,
+      );
       const completedDate = new Date().toISOString().slice(0, 10);
       const stampContent = `WU ${wuId} — ${title}\nCompleted: ${completedDate}\n`;
       await writeFile(stampPath, stampContent, UTF8_ENCODING);
     },
-    emitEvent: async (event: { wuId: string; type: 'release' | 'complete'; reason?: string }) => {
+    emitEvent: async (event: {
+      wuId: string;
+      type: typeof STATE_RUNTIME_EVENT_TYPES.RELEASE | typeof STATE_RUNTIME_EVENT_TYPES.COMPLETE;
+      reason?: string;
+    }) => {
       const stateStore = new core.WUStateStore(stateDir);
       await stateStore.load();
-      if (event.type === 'release') {
+      if (event.type === STATE_RUNTIME_EVENT_TYPES.RELEASE) {
         await stateStore.release(
           event.wuId,
-          event.reason ?? STATE_TOOL_CONSTANTS.STATE_DOCTOR_FIX_REASON,
+          event.reason ?? STATE_RUNTIME_CONSTANTS.STATE_DOCTOR_FIX_REASON,
         );
         return;
       }
@@ -1049,10 +1052,12 @@ const backlogPruneInProcess: InProcessToolFn = async (rawInput, context) => {
     const wuDocuments = await loadWuLifecycleDocuments(core, wuDir);
     const dryRun = normalizeDryRun(parsedInput.data.execute, parsedInput.data.dry_run);
     const staleDaysInProgress =
-      parsedInput.data.stale_days_in_progress ?? STATE_TOOL_CONSTANTS.DEFAULT_STALE_DAYS_IN_PROGRESS;
+      parsedInput.data.stale_days_in_progress ??
+      STATE_RUNTIME_CONSTANTS.DEFAULT_STALE_DAYS_IN_PROGRESS;
     const staleDaysReady =
-      parsedInput.data.stale_days_ready ?? STATE_TOOL_CONSTANTS.DEFAULT_STALE_DAYS_READY;
-    const archiveDays = parsedInput.data.archive_days ?? STATE_TOOL_CONSTANTS.DEFAULT_ARCHIVE_DAYS;
+      parsedInput.data.stale_days_ready ?? STATE_RUNTIME_CONSTANTS.DEFAULT_STALE_DAYS_READY;
+    const archiveDays =
+      parsedInput.data.archive_days ?? STATE_RUNTIME_CONSTANTS.DEFAULT_ARCHIVE_DAYS;
 
     const doneStatuses = new Set([core.WU_STATUS.DONE, core.WU_STATUS.COMPLETED]);
     const staleCandidates: WuLifecycleDocument[] = [];
@@ -1103,7 +1108,7 @@ const backlogPruneInProcess: InProcessToolFn = async (rawInput, context) => {
       for (const staleWu of staleCandidates) {
         try {
           const wuDoc = core.readWURaw(staleWu.filePath);
-          core.appendNote(wuDoc, `[${noteDate}] ${STATE_TOOL_CONSTANTS.STALE_NOTE_TEMPLATE}`);
+          core.appendNote(wuDoc, `[${noteDate}] ${STATE_RUNTIME_CONSTANTS.STALE_NOTE_TEMPLATE}`);
           core.writeWU(staleWu.filePath, wuDoc);
           taggedCount += 1;
         } catch {
@@ -1148,7 +1153,7 @@ const stateBootstrapInProcess: InProcessToolFn = async (rawInput, context) => {
       : path.join(workspaceRoot, config.state.stateDir);
     const dryRun = normalizeDryRun(parsedInput.data.execute, parsedInput.data.dry_run);
     const force = parsedInput.data.force ?? false;
-    const eventsFilePath = path.join(stateDir, STATE_TOOL_CONSTANTS.WU_EVENTS_FILE_NAME);
+    const eventsFilePath = path.join(stateDir, STATE_RUNTIME_CONSTANTS.WU_EVENTS_FILE_NAME);
 
     const wuDocuments = await loadWuLifecycleDocuments(core, wuDir);
     const bootstrapEvents = wuDocuments
@@ -1178,7 +1183,8 @@ const stateBootstrapInProcess: InProcessToolFn = async (rawInput, context) => {
       events_generated: bootstrapEvents.length,
       events_written: dryRun ? 0 : bootstrapEvents.length,
       skipped: 0,
-      warnings: wuDocuments.length === 0 ? ['WU directory not found or empty'] : [],
+      warnings:
+        wuDocuments.length === 0 ? [STATE_RUNTIME_MESSAGES.WU_DIRECTORY_EMPTY_OR_MISSING] : [],
     });
   } catch (cause) {
     return createFailureOutput(
@@ -1202,7 +1208,7 @@ const stateCleanupInProcess: InProcessToolFn = async (rawInput, context) => {
   if (exclusiveFlags.length > 1) {
     return createFailureOutput(
       STATE_TOOL_ERROR_CODES.INVALID_INPUT,
-      '--signals-only, --memory-only, and --events-only are mutually exclusive',
+      STATE_RUNTIME_MESSAGES.MUTUALLY_EXCLUSIVE_CLEANUP_FLAGS,
     );
   }
 
