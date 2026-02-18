@@ -1,8 +1,9 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: Apache-2.0
 
-import { appendFile, mkdir, open, readFile, rm } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import { mkdirSync, watch } from 'node:fs';
+import { appendFile, mkdir, open, readFile, rm, stat } from 'node:fs/promises';
+import { basename, dirname } from 'node:path';
 import {
   KERNEL_EVENT_KINDS,
   isRunLifecycleEventKind,
@@ -25,6 +26,8 @@ import { UTF8_ENCODING } from '../shared-constants.js';
 const DEFAULT_LOCK_RETRY_DELAY_MS = 20;
 const DEFAULT_LOCK_MAX_RETRIES = 250;
 const PROCESS_EXISTS_SIGNAL = 0;
+const SUBSCRIPTION_DEBOUNCE_MS = 25;
+const SUBSCRIPTION_MAX_DRAIN_PASSES = 8;
 
 type EventKind = KernelEvent['kind'];
 type TaskScopedKernelEvent = Extract<KernelEvent, { task_id: string }>;
@@ -35,6 +38,10 @@ export interface ReplayFilter {
   kind?: EventKind | EventKind[];
   sinceTimestamp?: string;
   untilTimestamp?: string;
+}
+
+export interface Disposable {
+  dispose(): void;
 }
 
 export interface EventStoreOptions {
@@ -49,6 +56,20 @@ interface EventStoreLockMetadata {
   pid: number;
   acquired_at: string;
 }
+
+interface ParsedReplayFilter {
+  kinds: Set<EventKind> | null;
+  since: number | null;
+  until: number | null;
+}
+
+interface TailReadResult {
+  text: string;
+  nextOffset: number;
+  didTruncate: boolean;
+}
+
+type EventSubscriber = (event: KernelEvent) => void | Promise<void>;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -67,6 +88,46 @@ function hasTaskId(event: KernelEvent): event is TaskScopedKernelEvent {
 
 function isRunLifecycleEvent(event: KernelEvent): event is RunLifecycleEvent {
   return isRunLifecycleEventKind(event.kind);
+}
+
+function parseReplayFilter(filter: ReplayFilter): ParsedReplayFilter {
+  const kinds = Array.isArray(filter.kind)
+    ? new Set(filter.kind)
+    : filter.kind
+      ? new Set([filter.kind])
+      : null;
+  const since = filter.sinceTimestamp ? toTimestampMillis(filter.sinceTimestamp) : null;
+  const until = filter.untilTimestamp ? toTimestampMillis(filter.untilTimestamp) : null;
+  return { kinds, since, until };
+}
+
+function eventMatchesFilter(
+  event: KernelEvent,
+  filter: ReplayFilter,
+  parsedFilter: ParsedReplayFilter,
+): boolean {
+  if (filter.taskId) {
+    if (!hasTaskId(event)) {
+      return false;
+    }
+    if (event.task_id !== filter.taskId) {
+      return false;
+    }
+  }
+
+  if (parsedFilter.kinds && !parsedFilter.kinds.has(event.kind)) {
+    return false;
+  }
+
+  const ts = toTimestampMillis(event.timestamp);
+  if (parsedFilter.since !== null && ts < parsedFilter.since) {
+    return false;
+  }
+  if (parsedFilter.until !== null && ts > parsedFilter.until) {
+    return false;
+  }
+
+  return true;
 }
 
 function createSyntheticTaskSpec(taskId: string): TaskSpec {
@@ -260,36 +321,141 @@ export class EventStore {
 
   async replay(filter: ReplayFilter = {}): Promise<KernelEvent[]> {
     await this.reloadFromDisk();
-
-    const kinds = Array.isArray(filter.kind)
-      ? new Set(filter.kind)
-      : filter.kind
-        ? new Set([filter.kind])
-        : null;
-    const since = filter.sinceTimestamp ? toTimestampMillis(filter.sinceTimestamp) : null;
-    const until = filter.untilTimestamp ? toTimestampMillis(filter.untilTimestamp) : null;
+    const parsedFilter = parseReplayFilter(filter);
 
     return this.orderedEvents.filter((event) => {
-      if (filter.taskId) {
-        if (!hasTaskId(event)) {
-          return false;
-        }
-        if (event.task_id !== filter.taskId) {
-          return false;
-        }
-      }
-      if (kinds && !kinds.has(event.kind)) {
-        return false;
-      }
-      const ts = toTimestampMillis(event.timestamp);
-      if (since !== null && ts < since) {
-        return false;
-      }
-      if (until !== null && ts > until) {
-        return false;
-      }
-      return true;
+      return eventMatchesFilter(event, filter, parsedFilter);
     });
+  }
+
+  subscribe(filter: ReplayFilter = {}, callback: EventSubscriber): Disposable {
+    const parsedFilter = parseReplayFilter(filter);
+    const watchedDirectory = dirname(this.eventsFilePath);
+    const watchedFileName = basename(this.eventsFilePath);
+    let isDisposed = false;
+    let isDraining = false;
+    let shouldDrainAgain = false;
+    let drainTimer: NodeJS.Timeout | null = null;
+    let initializedOffset = false;
+    let offset = 0;
+    let trailingPartialLine = '';
+    const initialOffsetPromise = this.getCurrentFileSize();
+
+    const safeInvoke = async (event: KernelEvent): Promise<void> => {
+      try {
+        await callback(event);
+      } catch {
+        // Subscriber callback failures must not break the watch loop.
+      }
+    };
+
+    const processTextChunk = async (text: string, didTruncate: boolean): Promise<void> => {
+      if (didTruncate) {
+        trailingPartialLine = '';
+      }
+      const combinedText = trailingPartialLine + text;
+      const lines = combinedText.split('\n');
+      trailingPartialLine = lines.pop() ?? '';
+
+      for (const rawLine of lines) {
+        const line = rawLine.trim();
+        if (!line) {
+          continue;
+        }
+
+        let parsed: unknown;
+        try {
+          parsed = JSON.parse(line);
+        } catch {
+          continue;
+        }
+
+        const eventResult = KernelEventSchema.safeParse(parsed);
+        if (!eventResult.success) {
+          continue;
+        }
+
+        if (eventMatchesFilter(eventResult.data, filter, parsedFilter)) {
+          await safeInvoke(eventResult.data);
+        }
+      }
+    };
+
+    const drain = async (): Promise<void> => {
+      if (isDisposed || isDraining) {
+        return;
+      }
+      isDraining = true;
+      try {
+        if (!initializedOffset) {
+          offset = await initialOffsetPromise;
+          initializedOffset = true;
+        }
+
+        let passes = 0;
+        do {
+          shouldDrainAgain = false;
+          const readResult = await this.readTailFromOffset(offset);
+          offset = readResult.nextOffset;
+
+          if (readResult.text.length > 0 || readResult.didTruncate) {
+            await processTextChunk(readResult.text, readResult.didTruncate);
+          }
+
+          passes += 1;
+          if (readResult.text.length === 0 && !readResult.didTruncate) {
+            break;
+          }
+        } while (!isDisposed && shouldDrainAgain && passes < SUBSCRIPTION_MAX_DRAIN_PASSES);
+      } finally {
+        isDraining = false;
+      }
+    };
+
+    const scheduleDrain = (): void => {
+      if (isDisposed) {
+        return;
+      }
+      shouldDrainAgain = true;
+      if (drainTimer) {
+        return;
+      }
+      drainTimer = setTimeout(() => {
+        drainTimer = null;
+        void drain();
+      }, SUBSCRIPTION_DEBOUNCE_MS);
+    };
+
+    mkdirSync(watchedDirectory, { recursive: true });
+    const watcher = watch(watchedDirectory, { persistent: false }, (eventType, filename) => {
+      if (isDisposed) {
+        return;
+      }
+      if (eventType !== 'change' && eventType !== 'rename') {
+        return;
+      }
+      if (filename && filename.toString() !== watchedFileName) {
+        return;
+      }
+      scheduleDrain();
+    });
+    watcher.on('error', () => {
+      // Keep runtime alive; watch will naturally stop after dispose.
+    });
+
+    return {
+      dispose: () => {
+        if (isDisposed) {
+          return;
+        }
+        isDisposed = true;
+        if (drainTimer) {
+          clearTimeout(drainTimer);
+          drainTimer = null;
+        }
+        watcher.close();
+      },
+    };
   }
 
   async project(taskId: string): Promise<TaskState> {
@@ -447,6 +613,75 @@ export class EventStore {
       }
     }
     this.indexesHydrated = true;
+  }
+
+  private async getCurrentFileSize(): Promise<number> {
+    try {
+      const fileStats = await stat(this.eventsFilePath);
+      return fileStats.size;
+    } catch (error) {
+      const nodeError = error as NodeJS.ErrnoException;
+      if (nodeError.code === 'ENOENT') {
+        return 0;
+      }
+      throw error;
+    }
+  }
+
+  private async readTailFromOffset(offset: number): Promise<TailReadResult> {
+    let handle: Awaited<ReturnType<typeof open>> | null = null;
+    try {
+      handle = await open(this.eventsFilePath, 'r');
+      const fileStats = await handle.stat();
+      const didTruncate = fileStats.size < offset;
+      const startOffset = didTruncate ? 0 : offset;
+      const bytesToRead = Math.max(0, fileStats.size - startOffset);
+
+      if (bytesToRead === 0) {
+        return {
+          text: '',
+          nextOffset: fileStats.size,
+          didTruncate,
+        };
+      }
+
+      const buffer = Buffer.allocUnsafe(bytesToRead);
+      let totalBytesRead = 0;
+      while (totalBytesRead < bytesToRead) {
+        const { bytesRead } = await handle.read(
+          buffer,
+          totalBytesRead,
+          bytesToRead - totalBytesRead,
+          startOffset + totalBytesRead,
+        );
+        if (bytesRead === 0) {
+          break;
+        }
+        totalBytesRead += bytesRead;
+      }
+
+      return {
+        text: buffer.subarray(0, totalBytesRead).toString(UTF8_ENCODING),
+        nextOffset: startOffset + totalBytesRead,
+        didTruncate,
+      };
+    } catch (error) {
+      const nodeError = error as NodeJS.ErrnoException;
+      if (nodeError.code === 'ENOENT') {
+        return {
+          text: '',
+          nextOffset: 0,
+          didTruncate: offset > 0,
+        };
+      }
+      throw error;
+    } finally {
+      if (handle) {
+        await handle.close().catch(() => {
+          // Best-effort cleanup only.
+        });
+      }
+    }
   }
 
   private resetIndexes(): void {

@@ -1,18 +1,19 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: Apache-2.0
 
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { appendFile, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import type { KernelEvent, TaskSpec } from '../kernel.schemas.js';
 import { canonical_json } from '../canonical-json.js';
-import { EventStore } from '../event-store/index.js';
+import { EventStore, type Disposable } from '../event-store/index.js';
 
 describe('event-store', () => {
   let tempDir: string;
   let eventsFilePath: string;
   let lockFilePath: string;
+  let disposables: Disposable[];
 
   const taskId = 'WU-1726';
   const baseTimestamp = '2026-02-16T22:00:00.000Z';
@@ -21,11 +22,32 @@ describe('event-store', () => {
     tempDir = await mkdtemp(join(tmpdir(), 'lumenflow-kernel-event-store-'));
     eventsFilePath = join(tempDir, 'events.jsonl');
     lockFilePath = join(tempDir, 'events.lock');
+    disposables = [];
   });
 
   afterEach(async () => {
+    for (const disposable of disposables) {
+      disposable.dispose();
+    }
     await rm(tempDir, { recursive: true, force: true });
   });
+
+  async function waitForCondition(
+    predicate: () => boolean,
+    timeoutMs: number,
+    pollIntervalMs = 10,
+  ): Promise<void> {
+    const startedAt = Date.now();
+    while (Date.now() - startedAt <= timeoutMs) {
+      if (predicate()) {
+        return;
+      }
+      await new Promise((resolve) => {
+        setTimeout(resolve, pollIntervalMs);
+      });
+    }
+    throw new Error(`Condition not met within ${timeoutMs}ms`);
+  }
 
   function makeTaskSpec(): TaskSpec {
     return {
@@ -405,5 +427,167 @@ describe('event-store', () => {
 
     expect(reloadCount).toBeLessThanOrEqual(1);
     expect(store.getByTask(taskId)).toHaveLength(121);
+  });
+
+  it('subscribe returns Disposable and emits only newly appended events within 500ms', async () => {
+    const spec = makeTaskSpec();
+    const historicalEvent = makeCreatedEvent(canonical_json(spec), '2026-02-16T22:00:00.000Z');
+    const appendedEvent: KernelEvent = {
+      schema_version: 1,
+      kind: 'task_claimed',
+      task_id: taskId,
+      timestamp: '2026-02-16T22:00:01.000Z',
+      by: 'tom@hellm.ai',
+      session_id: 'session-subscribe-1',
+    };
+    const store = new EventStore({
+      eventsFilePath,
+      lockFilePath,
+    });
+    await store.append(historicalEvent);
+
+    const received: KernelEvent[] = [];
+    const subscription = store.subscribe({}, (event) => {
+      received.push(event);
+    });
+    disposables.push(subscription);
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 75);
+    });
+    expect(received).toHaveLength(0);
+
+    const startedAt = Date.now();
+    await store.append(appendedEvent);
+    await waitForCondition(() => received.length === 1, 500);
+    const latencyMs = Date.now() - startedAt;
+
+    expect(latencyMs).toBeLessThanOrEqual(500);
+    expect(received[0]?.kind).toBe('task_claimed');
+    expect(received[0]?.timestamp).toBe(appendedEvent.timestamp);
+  });
+
+  it('subscribe filter applies taskId, kind, and sinceTimestamp matching', async () => {
+    const store = new EventStore({
+      eventsFilePath,
+      lockFilePath,
+    });
+    const received: KernelEvent[] = [];
+    const subscription = store.subscribe(
+      {
+        taskId,
+        kind: 'task_claimed',
+        sinceTimestamp: '2026-02-16T22:00:03.000Z',
+      },
+      (event) => {
+        received.push(event);
+      },
+    );
+    disposables.push(subscription);
+
+    await store.append({
+      schema_version: 1,
+      kind: 'task_claimed',
+      task_id: 'WU-9999',
+      timestamp: '2026-02-16T22:00:04.000Z',
+      by: 'other@hellm.ai',
+      session_id: 'session-subscribe-2',
+    });
+    await store.append({
+      schema_version: 1,
+      kind: 'task_blocked',
+      task_id: taskId,
+      timestamp: '2026-02-16T22:00:04.500Z',
+      reason: 'wrong kind',
+    });
+    await store.append({
+      schema_version: 1,
+      kind: 'task_claimed',
+      task_id: taskId,
+      timestamp: '2026-02-16T22:00:02.500Z',
+      by: 'too-early@hellm.ai',
+      session_id: 'session-subscribe-3',
+    });
+    await store.append({
+      schema_version: 1,
+      kind: 'task_claimed',
+      task_id: taskId,
+      timestamp: '2026-02-16T22:00:04.900Z',
+      by: 'matching@hellm.ai',
+      session_id: 'session-subscribe-4',
+    });
+
+    await waitForCondition(() => received.length === 1, 500);
+    expect(received).toHaveLength(1);
+    expect(received[0]?.task_id).toBe(taskId);
+    expect(received[0]?.kind).toBe('task_claimed');
+    expect(received[0]?.timestamp).toBe('2026-02-16T22:00:04.900Z');
+  });
+
+  it('subscribe tails from current offset and does not replay historical lines', async () => {
+    const historicalEvent: KernelEvent = {
+      schema_version: 1,
+      kind: 'task_waiting',
+      task_id: taskId,
+      timestamp: '2026-02-16T22:00:00.000Z',
+      reason: 'historical',
+    };
+    await writeFile(eventsFilePath, `${JSON.stringify(historicalEvent)}\n`, 'utf8');
+
+    const store = new EventStore({
+      eventsFilePath,
+      lockFilePath,
+    });
+    const received: KernelEvent[] = [];
+    const subscription = store.subscribe({ taskId }, (event) => {
+      received.push(event);
+    });
+    disposables.push(subscription);
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 75);
+    });
+    expect(received).toHaveLength(0);
+
+    const appendedEvent: KernelEvent = {
+      schema_version: 1,
+      kind: 'task_resumed',
+      task_id: taskId,
+      timestamp: '2026-02-16T22:00:01.000Z',
+    };
+    await appendFile(eventsFilePath, `${JSON.stringify(appendedEvent)}\n`, 'utf8');
+
+    await waitForCondition(() => received.length === 1, 500);
+    expect(received).toHaveLength(1);
+    expect(received[0]?.kind).toBe('task_resumed');
+    expect(received[0]?.timestamp).toBe(appendedEvent.timestamp);
+  });
+
+  it('dispose stops delivery and can be called repeatedly', async () => {
+    const store = new EventStore({
+      eventsFilePath,
+      lockFilePath,
+    });
+    const received: KernelEvent[] = [];
+    const subscription = store.subscribe({ taskId }, (event) => {
+      received.push(event);
+    });
+
+    subscription.dispose();
+    subscription.dispose();
+
+    await store.append({
+      schema_version: 1,
+      kind: 'task_claimed',
+      task_id: taskId,
+      timestamp: '2026-02-16T22:00:10.000Z',
+      by: 'tom@hellm.ai',
+      session_id: 'session-subscribe-5',
+    });
+    await new Promise((resolve) => {
+      setTimeout(resolve, 120);
+    });
+
+    expect(received).toHaveLength(0);
   });
 });
