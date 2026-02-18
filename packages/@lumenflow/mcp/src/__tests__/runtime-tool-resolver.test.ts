@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import {
   TOOL_HANDLER_KINDS,
@@ -51,6 +51,12 @@ const WU_LIFECYCLE_INIT_TOOL_NAMES = {
   CREATE: 'wu:create',
   CLAIM: 'wu:claim',
   PROTO: 'wu:proto',
+} as const;
+const WU_LIFECYCLE_STATE_TOOL_NAMES = {
+  BLOCK: 'wu:block',
+  UNBLOCK: 'wu:unblock',
+  EDIT: 'wu:edit',
+  RELEASE: 'wu:release',
 } as const;
 
 function createResolverInput(toolName: string): RuntimeToolCapabilityResolverInput {
@@ -201,6 +207,21 @@ describe('packToolCapabilityResolver', () => {
       WU_LIFECYCLE_INIT_TOOL_NAMES.CREATE,
       WU_LIFECYCLE_INIT_TOOL_NAMES.CLAIM,
       WU_LIFECYCLE_INIT_TOOL_NAMES.PROTO,
+    ];
+
+    for (const toolName of toolNames) {
+      const capability = await packToolCapabilityResolver(createResolverInput(toolName));
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+      expect(isInProcessPackToolRegistered(toolName)).toBe(true);
+    }
+  });
+
+  it('resolves WU lifecycle state transition tools to in-process handlers', async () => {
+    const toolNames = [
+      WU_LIFECYCLE_STATE_TOOL_NAMES.BLOCK,
+      WU_LIFECYCLE_STATE_TOOL_NAMES.UNBLOCK,
+      WU_LIFECYCLE_STATE_TOOL_NAMES.EDIT,
+      WU_LIFECYCLE_STATE_TOOL_NAMES.RELEASE,
     ];
 
     for (const toolName of toolNames) {
@@ -811,5 +832,163 @@ describe('WU-1803: flow/metrics/context tools use executeViaPack (not runCliComm
 
     expect(cliRunner).not.toHaveBeenCalled();
     expect(result.success).toBe(true);
+  });
+});
+
+describe('WU-1807: state transition handlers execute in-process and mutate WU state', () => {
+  const TEST_WU_ID = 'WU-1807';
+  const TEST_WU_LANE = 'Framework: Core Lifecycle';
+  const TEST_WU_TITLE = 'Runtime transition fixture';
+  const TEST_WU_REASON = 'Blocked by dependency';
+  const TEST_RELEASE_REASON = 'Recovered ownership';
+  const TEST_EDIT_DESCRIPTION = 'Updated via runtime handler';
+  const TEST_EDIT_NOTES = 'Runtime edit note';
+  const TEST_ACCEPTANCE_INITIAL = 'Initial acceptance';
+  const TEST_ACCEPTANCE_UPDATED = 'Updated acceptance';
+  const FIXTURE_TIMESTAMP_CREATE = '2026-02-18T00:00:00.000Z';
+  const FIXTURE_TIMESTAMP_CLAIM = '2026-02-18T00:01:00.000Z';
+  const STATE_EVENTS_FILE = '.lumenflow/state/wu-events.jsonl';
+  const WU_FILE = `docs/04-operations/tasks/wu/${TEST_WU_ID}.yaml`;
+  const BACKLOG_FILE = 'docs/04-operations/tasks/backlog.md';
+  const STATUS_FILE = 'docs/04-operations/tasks/status.md';
+  const FALLBACK_ERROR_CODE = 'WU_STATE_RUNTIME_ERROR';
+
+  async function createStateFixture(projectRoot: string): Promise<void> {
+    const wuDir = path.join(projectRoot, 'docs/04-operations/tasks/wu');
+    const stateDir = path.join(projectRoot, '.lumenflow/state');
+
+    await mkdir(wuDir, { recursive: true });
+    await mkdir(stateDir, { recursive: true });
+
+    const wuYaml = [
+      `id: ${TEST_WU_ID}`,
+      `title: ${TEST_WU_TITLE}`,
+      `lane: '${TEST_WU_LANE}'`,
+      'status: in_progress',
+      'description: Initial description',
+      'acceptance:',
+      `  - ${TEST_ACCEPTANCE_INITIAL}`,
+      'code_paths:',
+      '  - packages/@lumenflow/mcp/src/tools/wu-tools.ts',
+      'notes: Initial note',
+      '',
+    ].join('\n');
+
+    const events = [
+      JSON.stringify({
+        type: 'create',
+        wuId: TEST_WU_ID,
+        lane: TEST_WU_LANE,
+        title: TEST_WU_TITLE,
+        timestamp: FIXTURE_TIMESTAMP_CREATE,
+      }),
+      JSON.stringify({
+        type: 'claim',
+        wuId: TEST_WU_ID,
+        lane: TEST_WU_LANE,
+        title: TEST_WU_TITLE,
+        timestamp: FIXTURE_TIMESTAMP_CLAIM,
+      }),
+      '',
+    ].join('\n');
+
+    await writeFile(path.join(projectRoot, WU_FILE), wuYaml, 'utf-8');
+    await writeFile(path.join(projectRoot, BACKLOG_FILE), '# Backlog\n', 'utf-8');
+    await writeFile(path.join(projectRoot, STATUS_FILE), '# Status\n', 'utf-8');
+    await writeFile(path.join(projectRoot, STATE_EVENTS_FILE), events, 'utf-8');
+  }
+
+  async function executeRuntimeStateTool(
+    toolName: string,
+    input: Record<string, unknown>,
+    projectRoot: string,
+  ) {
+    const capability = await packToolCapabilityResolver(createResolverInput(toolName));
+    expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+    if (!capability || capability.handler.kind !== TOOL_HANDLER_KINDS.IN_PROCESS) {
+      throw new Error(`Expected in-process handler for ${toolName}`);
+    }
+
+    return capability.handler.fn(input, {
+      run_id: `run-${toolName.replace(':', '-')}`,
+      task_id: TEST_WU_ID,
+      session_id: `session-${toolName.replace(':', '-')}`,
+      allowed_scopes: [WRITE_SCOPE],
+      metadata: {
+        [RUNTIME_PROJECT_ROOT_KEY]: projectRoot,
+        fallback_error_code: FALLBACK_ERROR_CODE,
+      },
+    });
+  }
+
+  it('applies block -> unblock -> release transitions through runtime handlers', async () => {
+    const projectRoot = await mkdtemp(path.join(tmpdir(), 'lumenflow-runtime-state-tools-'));
+    try {
+      await createStateFixture(projectRoot);
+      const wuPath = path.join(projectRoot, WU_FILE);
+      const eventsPath = path.join(projectRoot, STATE_EVENTS_FILE);
+
+      const blockResult = await executeRuntimeStateTool(
+        WU_LIFECYCLE_STATE_TOOL_NAMES.BLOCK,
+        { id: TEST_WU_ID, reason: TEST_WU_REASON },
+        projectRoot,
+      );
+      expect(blockResult.success).toBe(true);
+      const blockedWu = await readFile(wuPath, 'utf-8');
+      expect(blockedWu).toContain('status: blocked');
+
+      const unblockResult = await executeRuntimeStateTool(
+        WU_LIFECYCLE_STATE_TOOL_NAMES.UNBLOCK,
+        { id: TEST_WU_ID, reason: 'dependency cleared' },
+        projectRoot,
+      );
+      expect(unblockResult.success).toBe(true);
+      const unblockedWu = await readFile(wuPath, 'utf-8');
+      expect(unblockedWu).toContain('status: in_progress');
+
+      const releaseResult = await executeRuntimeStateTool(
+        WU_LIFECYCLE_STATE_TOOL_NAMES.RELEASE,
+        { id: TEST_WU_ID, reason: TEST_RELEASE_REASON },
+        projectRoot,
+      );
+      expect(releaseResult.success).toBe(true);
+      const releasedWu = await readFile(wuPath, 'utf-8');
+      expect(releasedWu).toContain('status: ready');
+
+      const events = await readFile(eventsPath, 'utf-8');
+      expect(events).toContain('"type":"block"');
+      expect(events).toContain('"type":"unblock"');
+      expect(events).toContain('"type":"release"');
+    } finally {
+      await rm(projectRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('updates WU editable fields through runtime wu:edit handler', async () => {
+    const projectRoot = await mkdtemp(path.join(tmpdir(), 'lumenflow-runtime-wu-edit-'));
+    try {
+      await createStateFixture(projectRoot);
+      const wuPath = path.join(projectRoot, WU_FILE);
+
+      const editResult = await executeRuntimeStateTool(
+        WU_LIFECYCLE_STATE_TOOL_NAMES.EDIT,
+        {
+          id: TEST_WU_ID,
+          description: TEST_EDIT_DESCRIPTION,
+          notes: TEST_EDIT_NOTES,
+          acceptance: [TEST_ACCEPTANCE_UPDATED],
+        },
+        projectRoot,
+      );
+
+      expect(editResult.success).toBe(true);
+      const editedWu = await readFile(wuPath, 'utf-8');
+      expect(editedWu).toContain(`description: ${TEST_EDIT_DESCRIPTION}`);
+      expect(editedWu).toContain(`- ${TEST_ACCEPTANCE_INITIAL}`);
+      expect(editedWu).toContain(`- ${TEST_ACCEPTANCE_UPDATED}`);
+      expect(editedWu).toContain(TEST_EDIT_NOTES);
+    } finally {
+      await rm(projectRoot, { recursive: true, force: true });
+    }
   });
 });

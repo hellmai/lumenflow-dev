@@ -304,22 +304,31 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 
   describe('wu_block', () => {
-    it('should block WU via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should block WU via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'WU blocked successfully',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'WU blocked successfully' },
       });
 
       const result = await wuBlockTool.execute({ id: 'WU-1422', reason: 'Waiting for dependency' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:block',
-        expect.arrayContaining(['--id', 'WU-1422', '--reason', 'Waiting for dependency']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422', reason: 'Waiting for dependency' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:block',
+            args: expect.arrayContaining([
+              '--id',
+              'WU-1422',
+              '--reason',
+              'Waiting for dependency',
+            ]),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require id parameter', async () => {
@@ -338,22 +347,26 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 
   describe('wu_unblock', () => {
-    it('should unblock WU via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should unblock WU via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'WU unblocked successfully',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'WU unblocked successfully' },
       });
 
       const result = await wuUnblockTool.execute({ id: 'WU-1422' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:unblock',
-        expect.arrayContaining(['--id', 'WU-1422']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:unblock',
+            args: expect.arrayContaining(['--id', 'WU-1422']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require id parameter', async () => {
@@ -365,12 +378,10 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 
   describe('wu_edit', () => {
-    it('should edit WU via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should edit WU via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'WU edited successfully',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'WU edited successfully' },
       });
 
       const result = await wuEditTool.execute({
@@ -380,11 +391,21 @@ describe('WU MCP tools (WU-1422)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:edit',
-        expect.arrayContaining(['--id', 'WU-1422', '--description', 'Updated description']),
-        expect.any(Object),
+        expect.objectContaining({
+          id: 'WU-1422',
+          description: 'Updated description',
+          acceptance: ['New criterion'],
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:edit',
+            args: expect.arrayContaining(['--id', 'WU-1422', '--description', 'Updated description']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require id parameter', async () => {
@@ -396,22 +417,26 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 
   describe('wu_release', () => {
-    it('should release WU via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should release WU via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'WU released successfully',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'WU released successfully' },
       });
 
       const result = await wuReleaseTool.execute({ id: 'WU-1422', reason: 'Agent crashed' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:release',
-        expect.arrayContaining(['--id', 'WU-1422', '--reason', 'Agent crashed']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422', reason: 'Agent crashed' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:release',
+            args: expect.arrayContaining(['--id', 'WU-1422', '--reason', 'Agent crashed']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require id parameter', async () => {

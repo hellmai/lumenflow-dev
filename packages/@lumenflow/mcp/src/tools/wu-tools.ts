@@ -68,6 +68,17 @@ const WuQueryMessages = {
   INFER_LANE_FAILED: 'wu:infer-lane failed',
 } as const;
 
+const WuStateTransitionMessages = {
+  BLOCK_PASSED: 'WU blocked successfully',
+  BLOCK_FAILED: 'wu:block failed',
+  UNBLOCK_PASSED: 'WU unblocked successfully',
+  UNBLOCK_FAILED: 'wu:unblock failed',
+  EDIT_PASSED: 'WU edited successfully',
+  EDIT_FAILED: 'wu:edit failed',
+  RELEASE_PASSED: 'WU released successfully',
+  RELEASE_FAILED: 'wu:release failed',
+} as const;
+
 const WuQueryFlags = {
   NO_STRICT: '--no-strict',
   WORKTREE: '--worktree',
@@ -397,17 +408,26 @@ export const wuBlockTool: ToolDefinition = {
       args.push('--remove-worktree');
     }
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_BLOCK, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_BLOCK, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_BLOCK,
+        args,
+        errorCode: ErrorCodes.WU_BLOCK_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU blocked successfully' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:block failed',
-        ErrorCodes.WU_BLOCK_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuStateTransitionMessages.BLOCK_PASSED })
+      : error(
+          result.error?.message ?? WuStateTransitionMessages.BLOCK_FAILED,
+          ErrorCodes.WU_BLOCK_ERROR,
+        );
   },
 };
 
@@ -429,17 +449,26 @@ export const wuUnblockTool: ToolDefinition = {
     if (input.reason) args.push(CliArgs.REASON, input.reason as string);
     if (input.create_worktree) args.push('--create-worktree');
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_UNBLOCK, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_UNBLOCK, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_UNBLOCK,
+        args,
+        errorCode: ErrorCodes.WU_UNBLOCK_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU unblocked successfully' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:unblock failed',
-        ErrorCodes.WU_UNBLOCK_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuStateTransitionMessages.UNBLOCK_PASSED })
+      : error(
+          result.error?.message ?? WuStateTransitionMessages.UNBLOCK_FAILED,
+          ErrorCodes.WU_UNBLOCK_ERROR,
+        );
   },
 };
 
@@ -476,17 +505,26 @@ export const wuEditTool: ToolDefinition = {
     if (input.phase) args.push(CliArgs.PHASE, String(input.phase));
     if (input.no_strict) args.push('--no-strict');
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_EDIT, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_EDIT, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_EDIT,
+        args,
+        errorCode: ErrorCodes.WU_EDIT_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU edited successfully' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:edit failed',
-        ErrorCodes.WU_EDIT_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuStateTransitionMessages.EDIT_PASSED })
+      : error(
+          result.error?.message ?? WuStateTransitionMessages.EDIT_FAILED,
+          ErrorCodes.WU_EDIT_ERROR,
+        );
   },
 };
 
@@ -507,17 +545,26 @@ export const wuReleaseTool: ToolDefinition = {
     const args = [CliArgs.ID, input.id as string];
     if (input.reason) args.push(CliArgs.REASON, input.reason as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_RELEASE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_RELEASE, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_RELEASE,
+        args,
+        errorCode: ErrorCodes.WU_RELEASE_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU released successfully' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:release failed',
-        ErrorCodes.WU_RELEASE_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuStateTransitionMessages.RELEASE_PASSED })
+      : error(
+          result.error?.message ?? WuStateTransitionMessages.RELEASE_FAILED,
+          ErrorCodes.WU_RELEASE_ERROR,
+        );
   },
 };
 
