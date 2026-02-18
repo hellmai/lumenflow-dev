@@ -8,12 +8,16 @@ created: 2026-02-18
 code_paths:
   - packages/@lumenflow/mcp/src/tools/initiative-tools.ts
   - packages/@lumenflow/mcp/src/tools/orchestration-tools.ts
+  - packages/@lumenflow/mcp/src/tools/parity-tools.ts
   - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
 tests:
   manual:
     - Initiative YAML correctly modified via runtime path
   unit:
     - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/initiative-tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/coordination-tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1810.done

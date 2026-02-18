@@ -1231,16 +1231,23 @@ export const initPlanTool: ToolDefinition = {
     if (input.plan) args.push('--plan', input.plan as string);
     if (input.create) args.push('--create');
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.INIT_PLAN, args, cliOptions);
+    const execution = await executeViaPack(CliCommands.INIT_PLAN, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.INIT_PLAN,
+        args,
+        errorCode: ErrorCodes.INIT_PLAN_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Plan linked' });
-    }
-    return error(
-      result.stderr || result.error?.message || 'init:plan failed',
-      ErrorCodes.INIT_PLAN_ERROR,
-    );
+    return execution.success
+      ? success(unwrapExecuteViaPackData(execution.data))
+      : error(execution.error?.message ?? 'init:plan failed', ErrorCodes.INIT_PLAN_ERROR);
   },
 };
 

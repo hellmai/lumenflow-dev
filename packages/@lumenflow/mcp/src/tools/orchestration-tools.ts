@@ -21,8 +21,7 @@ import {
   buildExecutionContext,
   success,
   error,
-  runCliCommand,
-  type CliRunnerOptions,
+  executeViaPack,
 } from '../tools-shared.js';
 import { getRuntimeForWorkspace } from '../runtime-cache.js';
 import { packToolCapabilityResolver } from '../runtime-tool-resolver.js';
@@ -58,6 +57,15 @@ const DelegationErrorMessages = {
   WU_OR_INITIATIVE_REQUIRED: 'Either wu or initiative is required',
 } as const;
 
+const OrchestrationRuntimeMessages = {
+  ORCHESTRATION_COMPLETE: 'Orchestration complete',
+  ORCHESTRATE_INITIATIVE_FAILED: 'orchestrate:initiative failed',
+} as const;
+
+const OrchestrationRuntimeConstants = {
+  INITIATIVE_TIMEOUT_MS: 300000,
+} as const;
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
@@ -70,6 +78,19 @@ function toMessagePayload(data: unknown, fallbackMessage: string): { message: st
     return { message: data.message };
   }
   return { message: fallbackMessage };
+}
+
+function unwrapExecuteViaPackData(data: unknown): unknown {
+  if (!isRecord(data) || !('success' in data)) {
+    return data;
+  }
+
+  const successValue = data.success;
+  if (typeof successValue !== 'boolean' || !successValue) {
+    return data;
+  }
+  const outputData = data.data;
+  return outputData ?? {};
 }
 
 async function executeRuntimeTool(
@@ -105,20 +126,34 @@ export const orchestrateInitiativeTool: ToolDefinition = {
     if (input.progress) args.push('--progress');
     if (input.checkpoint_per_wave) args.push('--checkpoint-per-wave');
 
-    const cliOptions: CliRunnerOptions = {
+    const result = await executeViaPack(CliCommands.ORCHESTRATE_INITIATIVE, input, {
       projectRoot: options?.projectRoot,
-      timeout: 300000, // 5 minutes for orchestration
-    };
-    const result = await runCliCommand(CliCommands.ORCHESTRATE_INITIATIVE, args, cliOptions);
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.ORCHESTRATE_INITIATIVE,
+        args,
+        errorCode: OrchestrationErrorCodes.ORCHESTRATE_INITIATIVE_ERROR,
+      },
+      fallbackCliOptions: {
+        timeout: OrchestrationRuntimeConstants.INITIATIVE_TIMEOUT_MS,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Orchestration complete' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'orchestrate:initiative failed',
-        OrchestrationErrorCodes.ORCHESTRATE_INITIATIVE_ERROR,
-      );
-    }
+    return result.success
+      ? success(
+          toMessagePayload(
+            unwrapExecuteViaPackData(result.data),
+            OrchestrationRuntimeMessages.ORCHESTRATION_COMPLETE,
+          ),
+        )
+      : error(
+          result.error?.message ?? OrchestrationRuntimeMessages.ORCHESTRATE_INITIATIVE_FAILED,
+          OrchestrationErrorCodes.ORCHESTRATE_INITIATIVE_ERROR,
+        );
   },
 };
 

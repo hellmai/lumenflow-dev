@@ -1578,6 +1578,7 @@ describe('Wave-2 parity MCP tools (WU-1483)', () => {
   });
 
   it('should validate and map init_plan + plan command args', async () => {
+    mockExecuteViaPack.mockResolvedValue({ success: true, data: { message: 'ok' } });
     mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
 
     const missingInit = await initPlanTool.execute({ initiative: 'INIT-MCP-FULL' });
@@ -1585,11 +1586,20 @@ describe('Wave-2 parity MCP tools (WU-1483)', () => {
     expect(missingInit.error?.message).toContain('plan');
 
     await initPlanTool.execute({ initiative: 'INIT-MCP-FULL', create: true });
-    expect(mockRunCliCommand).toHaveBeenCalledWith(
+    expect(mockExecuteViaPack).toHaveBeenCalledWith(
       'init:plan',
-      expect.arrayContaining(['--initiative', 'INIT-MCP-FULL', '--create']),
-      expect.any(Object),
+      expect.objectContaining({
+        initiative: 'INIT-MCP-FULL',
+        create: true,
+      }),
+      expect.objectContaining({
+        fallback: expect.objectContaining({
+          command: 'init:plan',
+          args: expect.arrayContaining(['--initiative', 'INIT-MCP-FULL', '--create']),
+        }),
+      }),
     );
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
 
     await planCreateTool.execute({ id: 'WU-1483', title: 'MCP wave-2 plan' });
     expect(mockRunCliCommand).toHaveBeenCalledWith(

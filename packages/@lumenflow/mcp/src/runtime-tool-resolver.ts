@@ -46,6 +46,16 @@ const IN_PROCESS_TOOL_NAMES = {
   WU_DELEGATE: CliCommands.WU_DELEGATE,
   WU_UNLOCK_LANE: CliCommands.WU_UNLOCK_LANE,
   GATES: CliCommands.GATES,
+  INITIATIVE_LIST: CliCommands.INITIATIVE_LIST,
+  INITIATIVE_STATUS: CliCommands.INITIATIVE_STATUS,
+  INITIATIVE_CREATE: CliCommands.INITIATIVE_CREATE,
+  INITIATIVE_EDIT: CliCommands.INITIATIVE_EDIT,
+  INITIATIVE_ADD_WU: CliCommands.INITIATIVE_ADD_WU,
+  INITIATIVE_REMOVE_WU: CliCommands.INITIATIVE_REMOVE_WU,
+  INITIATIVE_BULK_ASSIGN: CliCommands.INITIATIVE_BULK_ASSIGN,
+  INITIATIVE_PLAN: CliCommands.INITIATIVE_PLAN,
+  INIT_PLAN: CliCommands.INIT_PLAN,
+  ORCHESTRATE_INITIATIVE: CliCommands.ORCHESTRATE_INITIATIVE,
   WU_BLOCK: CliCommands.WU_BLOCK,
   WU_UNBLOCK: CliCommands.WU_UNBLOCK,
   WU_EDIT: CliCommands.WU_EDIT,
@@ -83,6 +93,18 @@ const IN_PROCESS_TOOL_DESCRIPTIONS = {
   WU_DELEGATE: 'Generate WU delegation prompt via runtime-first handler with CLI fallback',
   WU_UNLOCK_LANE: 'Unlock lane via runtime-first handler with CLI fallback',
   GATES: 'Run gates via runtime-first handler with CLI fallback',
+  INITIATIVE_LIST: 'List initiatives via runtime-first handler with CLI fallback',
+  INITIATIVE_STATUS: 'Show initiative status via runtime-first handler with CLI fallback',
+  INITIATIVE_CREATE: 'Create initiative via runtime-first handler with CLI fallback',
+  INITIATIVE_EDIT: 'Edit initiative via runtime-first handler with CLI fallback',
+  INITIATIVE_ADD_WU: 'Add WU to initiative via runtime-first handler with CLI fallback',
+  INITIATIVE_REMOVE_WU: 'Remove WU from initiative via runtime-first handler with CLI fallback',
+  INITIATIVE_BULK_ASSIGN:
+    'Bulk-assign WUs to initiatives via runtime-first handler with CLI fallback',
+  INITIATIVE_PLAN: 'Link initiative plans via runtime-first handler with CLI fallback',
+  INIT_PLAN: 'Run init:plan alias via runtime-first handler with CLI fallback',
+  ORCHESTRATE_INITIATIVE:
+    'Run initiative orchestration via runtime-first handler with CLI fallback',
   WU_BLOCK: 'Block WU via in-process core state transition handler',
   WU_UNBLOCK: 'Unblock WU via in-process core state transition handler',
   WU_EDIT: 'Edit WU spec fields via in-process core filesystem handler',
@@ -2132,6 +2154,16 @@ const VALIDATION_TOOL_ERROR_CODES = {
   WU_DELEGATE_ERROR: 'WU_DELEGATE_ERROR',
   WU_UNLOCK_LANE_ERROR: 'WU_UNLOCK_LANE_ERROR',
   GATES_ERROR: 'GATES_ERROR',
+  INITIATIVE_LIST_ERROR: 'INITIATIVE_LIST_ERROR',
+  INITIATIVE_STATUS_ERROR: 'INITIATIVE_STATUS_ERROR',
+  INITIATIVE_CREATE_ERROR: 'INITIATIVE_CREATE_ERROR',
+  INITIATIVE_EDIT_ERROR: 'INITIATIVE_EDIT_ERROR',
+  INITIATIVE_ADD_WU_ERROR: 'INITIATIVE_ADD_WU_ERROR',
+  INITIATIVE_REMOVE_WU_ERROR: 'INITIATIVE_REMOVE_WU_ERROR',
+  INITIATIVE_BULK_ASSIGN_ERROR: 'INITIATIVE_BULK_ASSIGN_ERROR',
+  INITIATIVE_PLAN_ERROR: 'INITIATIVE_PLAN_ERROR',
+  INIT_PLAN_ERROR: 'INIT_PLAN_ERROR',
+  ORCHESTRATE_INITIATIVE_ERROR: 'ORCHESTRATE_INITIATIVE_ERROR',
   WU_BLOCK_ERROR: 'WU_BLOCK_ERROR',
   WU_UNBLOCK_ERROR: 'WU_UNBLOCK_ERROR',
   WU_EDIT_ERROR: 'WU_EDIT_ERROR',
@@ -2713,6 +2745,66 @@ const gatesInProcess: InProcessToolFn = async () =>
     WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
   );
 
+const initiativeListInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.INITIATIVE_LIST_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const initiativeStatusInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.INITIATIVE_STATUS_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const initiativeCreateInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.INITIATIVE_CREATE_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const initiativeEditInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.INITIATIVE_EDIT_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const initiativeAddWuInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.INITIATIVE_ADD_WU_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const initiativeRemoveWuInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.INITIATIVE_REMOVE_WU_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const initiativeBulkAssignInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.INITIATIVE_BULK_ASSIGN_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const initiativePlanInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.INITIATIVE_PLAN_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const initPlanInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.INIT_PLAN_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const orchestrateInitiativeInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.ORCHESTRATE_INITIATIVE_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
 const WU_STATE_TRANSITION_NOTE_PREFIX = {
   BLOCK: 'Blocked',
   UNBLOCK: 'Unblocked',
@@ -3272,6 +3364,86 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       description: IN_PROCESS_TOOL_DESCRIPTIONS.GATES,
       inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
       fn: gatesInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.INITIATIVE_LIST,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.INITIATIVE_LIST,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: initiativeListInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.INITIATIVE_STATUS,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.INITIATIVE_STATUS,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: initiativeStatusInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.INITIATIVE_CREATE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.INITIATIVE_CREATE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: initiativeCreateInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.INITIATIVE_EDIT,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.INITIATIVE_EDIT,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: initiativeEditInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.INITIATIVE_ADD_WU,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.INITIATIVE_ADD_WU,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: initiativeAddWuInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.INITIATIVE_REMOVE_WU,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.INITIATIVE_REMOVE_WU,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: initiativeRemoveWuInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.INITIATIVE_BULK_ASSIGN,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.INITIATIVE_BULK_ASSIGN,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: initiativeBulkAssignInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.INITIATIVE_PLAN,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.INITIATIVE_PLAN,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: initiativePlanInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.INIT_PLAN,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.INIT_PLAN,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: initPlanInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.ORCHESTRATE_INITIATIVE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.ORCHESTRATE_INITIATIVE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: orchestrateInitiativeInProcess,
     },
   ],
   [

@@ -21,6 +21,7 @@ import {
 } from '../tools.js';
 import * as cliRunner from '../cli-runner.js';
 import * as runtimeCache from '../runtime-cache.js';
+import * as toolsShared from '../tools-shared.js';
 
 // Mock cli-runner for all operations
 vi.mock('../cli-runner.js', () => ({
@@ -31,6 +32,14 @@ vi.mock('../runtime-cache.js', () => ({
   getRuntimeForWorkspace: vi.fn(),
   resetMcpRuntimeCache: vi.fn(),
 }));
+
+vi.mock('../tools-shared.js', async () => {
+  const actual = await vi.importActual<typeof import('../tools-shared.js')>('../tools-shared.js');
+  return {
+    ...actual,
+    executeViaPack: vi.fn(actual.executeViaPack),
+  };
+});
 
 describe('Agent MCP tools (WU-1425)', () => {
   const mockRunCliCommand = vi.mocked(cliRunner.runCliCommand);
@@ -341,6 +350,7 @@ describe('Agent MCP tools (WU-1425)', () => {
 describe('Orchestration MCP tools (WU-1425)', () => {
   const mockRunCliCommand = vi.mocked(cliRunner.runCliCommand);
   const mockGetRuntimeForWorkspace = vi.mocked(runtimeCache.getRuntimeForWorkspace);
+  const mockExecuteViaPack = vi.mocked(toolsShared.executeViaPack);
 
   function mockRuntimeExecution(result: {
     success: boolean;
@@ -363,22 +373,26 @@ describe('Orchestration MCP tools (WU-1425)', () => {
   });
 
   describe('orchestrate_initiative', () => {
-    it('should orchestrate initiative via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should orchestrate initiative via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Execution plan displayed',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Execution plan displayed' },
       });
 
       const result = await orchestrateInitiativeTool.execute({ initiative: 'INIT-001' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'orchestrate:initiative',
-        expect.arrayContaining(['--initiative', 'INIT-001']),
-        expect.any(Object),
+        expect.objectContaining({ initiative: 'INIT-001' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'orchestrate:initiative',
+            args: expect.arrayContaining(['--initiative', 'INIT-001']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require initiative parameter', async () => {
@@ -389,11 +403,9 @@ describe('Orchestration MCP tools (WU-1425)', () => {
     });
 
     it('should support dry_run flag', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Dry run plan',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Dry run plan' },
       });
 
       const result = await orchestrateInitiativeTool.execute({
@@ -402,19 +414,25 @@ describe('Orchestration MCP tools (WU-1425)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'orchestrate:initiative',
-        expect.arrayContaining(['--initiative', 'INIT-001', '--dry-run']),
-        expect.any(Object),
+        expect.objectContaining({
+          initiative: 'INIT-001',
+          dry_run: true,
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            args: expect.arrayContaining(['--initiative', 'INIT-001', '--dry-run']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should support progress flag', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Progress displayed',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Progress displayed' },
       });
 
       const result = await orchestrateInitiativeTool.execute({
@@ -423,19 +441,25 @@ describe('Orchestration MCP tools (WU-1425)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'orchestrate:initiative',
-        expect.arrayContaining(['--initiative', 'INIT-001', '--progress']),
-        expect.any(Object),
+        expect.objectContaining({
+          initiative: 'INIT-001',
+          progress: true,
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            args: expect.arrayContaining(['--initiative', 'INIT-001', '--progress']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should support checkpoint_per_wave flag', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Checkpoint wave output',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Checkpoint wave output' },
       });
 
       const result = await orchestrateInitiativeTool.execute({
@@ -444,11 +468,19 @@ describe('Orchestration MCP tools (WU-1425)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'orchestrate:initiative',
-        expect.arrayContaining(['--initiative', 'INIT-001', '--checkpoint-per-wave']),
-        expect.any(Object),
+        expect.objectContaining({
+          initiative: 'INIT-001',
+          checkpoint_per_wave: true,
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            args: expect.arrayContaining(['--initiative', 'INIT-001', '--checkpoint-per-wave']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
   });
 

@@ -25,10 +25,9 @@ import {
   SharedErrorMessages,
   success,
   error,
-  runCliCommand,
-  type CliRunnerOptions,
+  executeViaPack,
 } from '../tools-shared.js';
-import { CliCommands } from '../mcp-constants.js';
+import { CliCommands, MetadataKeys } from '../mcp-constants.js';
 
 /**
  * Error codes for initiative tools
@@ -52,6 +51,60 @@ const InitiativeErrorMessages = {
   WU_REQUIRED: SharedErrorMessages.WU_REQUIRED,
 } as const;
 
+const InitiativeResultMessages = {
+  INITIATIVE_LIST_FAILED: 'initiative:list failed',
+  INITIATIVE_STATUS_FAILED: 'initiative:status failed',
+  INITIATIVE_CREATE_PASSED: 'Initiative created successfully',
+  INITIATIVE_CREATE_FAILED: 'initiative:create failed',
+  INITIATIVE_EDIT_PASSED: 'Initiative edited successfully',
+  INITIATIVE_EDIT_FAILED: 'initiative:edit failed',
+  INITIATIVE_ADD_WU_PASSED: 'WU added to initiative',
+  INITIATIVE_ADD_WU_FAILED: 'initiative:add-wu failed',
+  INITIATIVE_REMOVE_WU_PASSED: 'WU removed from initiative',
+  INITIATIVE_REMOVE_WU_FAILED: 'initiative:remove-wu failed',
+  INITIATIVE_BULK_ASSIGN_PASSED: 'Bulk assignment completed',
+  INITIATIVE_BULK_ASSIGN_FAILED: 'initiative:bulk-assign failed',
+  INITIATIVE_PLAN_PASSED: 'Plan linked to initiative',
+  INITIATIVE_PLAN_FAILED: 'initiative:plan failed',
+} as const;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function unwrapExecuteViaPackData(data: unknown): unknown {
+  if (!isRecord(data) || !('success' in data)) {
+    return data;
+  }
+
+  const successValue = data.success;
+  if (typeof successValue !== 'boolean' || !successValue) {
+    return data;
+  }
+  const outputData = data.data;
+  return outputData ?? {};
+}
+
+function parseJsonPayload(value: unknown): unknown {
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return { message: value };
+    }
+  }
+
+  if (isRecord(value) && typeof value.message === 'string') {
+    try {
+      return JSON.parse(value.message);
+    } catch {
+      return value;
+    }
+  }
+
+  return value;
+}
+
 /**
  * initiative_list - List all initiatives
  */
@@ -67,22 +120,26 @@ export const initiativeListTool: ToolDefinition = {
     // WU-1455: Use format field from shared schema
     if (input.format) args.push(CliArgs.FORMAT, input.format as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.INITIATIVE_LIST, args, cliOptions);
+    const result = await executeViaPack(CliCommands.INITIATIVE_LIST, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.INITIATIVE_LIST,
+        args,
+        errorCode: InitiativeErrorCodes.INITIATIVE_LIST_ERROR,
+      },
+    });
 
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout });
-      }
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'initiative:list failed',
-        InitiativeErrorCodes.INITIATIVE_LIST_ERROR,
-      );
-    }
+    return result.success
+      ? success(parseJsonPayload(unwrapExecuteViaPackData(result.data)))
+      : error(
+          result.error?.message ?? InitiativeResultMessages.INITIATIVE_LIST_FAILED,
+          InitiativeErrorCodes.INITIATIVE_LIST_ERROR,
+        );
   },
 };
 
@@ -104,22 +161,26 @@ export const initiativeStatusTool: ToolDefinition = {
     // WU-1455: Use format field from shared schema
     if (input.format) args.push(CliArgs.FORMAT, input.format as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.INITIATIVE_STATUS, args, cliOptions);
+    const result = await executeViaPack(CliCommands.INITIATIVE_STATUS, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.INITIATIVE_STATUS,
+        args,
+        errorCode: InitiativeErrorCodes.INITIATIVE_STATUS_ERROR,
+      },
+    });
 
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout });
-      }
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'initiative:status failed',
-        InitiativeErrorCodes.INITIATIVE_STATUS_ERROR,
-      );
-    }
+    return result.success
+      ? success(parseJsonPayload(unwrapExecuteViaPackData(result.data)))
+      : error(
+          result.error?.message ?? InitiativeResultMessages.INITIATIVE_STATUS_FAILED,
+          InitiativeErrorCodes.INITIATIVE_STATUS_ERROR,
+        );
   },
 };
 
@@ -153,17 +214,30 @@ export const initiativeCreateTool: ToolDefinition = {
     if (input.owner) args.push('--owner', input.owner as string);
     if (input.target_date) args.push('--target-date', input.target_date as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.INITIATIVE_CREATE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.INITIATIVE_CREATE, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.INITIATIVE_CREATE,
+        args,
+        errorCode: InitiativeErrorCodes.INITIATIVE_CREATE_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Initiative created successfully' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'initiative:create failed',
-        InitiativeErrorCodes.INITIATIVE_CREATE_ERROR,
-      );
-    }
+    return result.success
+      ? success(
+          unwrapExecuteViaPackData(result.data) ?? {
+            message: InitiativeResultMessages.INITIATIVE_CREATE_PASSED,
+          },
+        )
+      : error(
+          result.error?.message ?? InitiativeResultMessages.INITIATIVE_CREATE_FAILED,
+          InitiativeErrorCodes.INITIATIVE_CREATE_ERROR,
+        );
   },
 };
 
@@ -213,17 +287,30 @@ export const initiativeEditTool: ToolDefinition = {
       }
     }
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.INITIATIVE_EDIT, args, cliOptions);
+    const result = await executeViaPack(CliCommands.INITIATIVE_EDIT, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.INITIATIVE_EDIT,
+        args,
+        errorCode: InitiativeErrorCodes.INITIATIVE_EDIT_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Initiative edited successfully' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'initiative:edit failed',
-        InitiativeErrorCodes.INITIATIVE_EDIT_ERROR,
-      );
-    }
+    return result.success
+      ? success(
+          unwrapExecuteViaPackData(result.data) ?? {
+            message: InitiativeResultMessages.INITIATIVE_EDIT_PASSED,
+          },
+        )
+      : error(
+          result.error?.message ?? InitiativeResultMessages.INITIATIVE_EDIT_FAILED,
+          InitiativeErrorCodes.INITIATIVE_EDIT_ERROR,
+        );
   },
 };
 
@@ -247,17 +334,30 @@ export const initiativeAddWuTool: ToolDefinition = {
     const args = [CliArgs.INITIATIVE, input.initiative as string, '--wu', input.wu as string];
     if (input.phase !== undefined) args.push(CliArgs.PHASE, String(input.phase));
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.INITIATIVE_ADD_WU, args, cliOptions);
+    const result = await executeViaPack(CliCommands.INITIATIVE_ADD_WU, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.INITIATIVE_ADD_WU,
+        args,
+        errorCode: InitiativeErrorCodes.INITIATIVE_ADD_WU_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU added to initiative' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'initiative:add-wu failed',
-        InitiativeErrorCodes.INITIATIVE_ADD_WU_ERROR,
-      );
-    }
+    return result.success
+      ? success(
+          unwrapExecuteViaPackData(result.data) ?? {
+            message: InitiativeResultMessages.INITIATIVE_ADD_WU_PASSED,
+          },
+        )
+      : error(
+          result.error?.message ?? InitiativeResultMessages.INITIATIVE_ADD_WU_FAILED,
+          InitiativeErrorCodes.INITIATIVE_ADD_WU_ERROR,
+        );
   },
 };
 
@@ -280,17 +380,30 @@ export const initiativeRemoveWuTool: ToolDefinition = {
 
     const args = [CliArgs.INITIATIVE, input.initiative as string, '--wu', input.wu as string];
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.INITIATIVE_REMOVE_WU, args, cliOptions);
+    const result = await executeViaPack(CliCommands.INITIATIVE_REMOVE_WU, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.INITIATIVE_REMOVE_WU,
+        args,
+        errorCode: InitiativeErrorCodes.INITIATIVE_REMOVE_WU_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU removed from initiative' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'initiative:remove-wu failed',
-        InitiativeErrorCodes.INITIATIVE_REMOVE_WU_ERROR,
-      );
-    }
+    return result.success
+      ? success(
+          unwrapExecuteViaPackData(result.data) ?? {
+            message: InitiativeResultMessages.INITIATIVE_REMOVE_WU_PASSED,
+          },
+        )
+      : error(
+          result.error?.message ?? InitiativeResultMessages.INITIATIVE_REMOVE_WU_FAILED,
+          InitiativeErrorCodes.INITIATIVE_REMOVE_WU_ERROR,
+        );
   },
 };
 
@@ -311,17 +424,30 @@ export const initiatiBulkAssignTool: ToolDefinition = {
     if (input.sync_from_initiative)
       args.push('--reconcile-initiative', input.sync_from_initiative as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.INITIATIVE_BULK_ASSIGN, args, cliOptions);
+    const result = await executeViaPack(CliCommands.INITIATIVE_BULK_ASSIGN, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.INITIATIVE_BULK_ASSIGN,
+        args,
+        errorCode: InitiativeErrorCodes.INITIATIVE_BULK_ASSIGN_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Bulk assignment completed' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'initiative:bulk-assign failed',
-        InitiativeErrorCodes.INITIATIVE_BULK_ASSIGN_ERROR,
-      );
-    }
+    return result.success
+      ? success(
+          unwrapExecuteViaPackData(result.data) ?? {
+            message: InitiativeResultMessages.INITIATIVE_BULK_ASSIGN_PASSED,
+          },
+        )
+      : error(
+          result.error?.message ?? InitiativeResultMessages.INITIATIVE_BULK_ASSIGN_FAILED,
+          InitiativeErrorCodes.INITIATIVE_BULK_ASSIGN_ERROR,
+        );
   },
 };
 
@@ -343,16 +469,29 @@ export const initiativePlanTool: ToolDefinition = {
     if (input.plan) args.push('--plan', input.plan as string);
     if (input.create) args.push('--create');
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.INITIATIVE_PLAN, args, cliOptions);
+    const result = await executeViaPack(CliCommands.INITIATIVE_PLAN, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.INITIATIVE_PLAN,
+        args,
+        errorCode: InitiativeErrorCodes.INITIATIVE_PLAN_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Plan linked to initiative' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'initiative:plan failed',
-        InitiativeErrorCodes.INITIATIVE_PLAN_ERROR,
-      );
-    }
+    return result.success
+      ? success(
+          unwrapExecuteViaPackData(result.data) ?? {
+            message: InitiativeResultMessages.INITIATIVE_PLAN_PASSED,
+          },
+        )
+      : error(
+          result.error?.message ?? InitiativeResultMessages.INITIATIVE_PLAN_FAILED,
+          InitiativeErrorCodes.INITIATIVE_PLAN_ERROR,
+        );
   },
 };

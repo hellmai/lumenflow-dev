@@ -72,6 +72,18 @@ const WU_DELEGATION_AND_GATES_TOOL_NAMES = {
   UNLOCK_LANE: 'wu:unlock-lane',
   GATES: 'gates',
 } as const;
+const INITIATIVE_ORCHESTRATION_TOOL_NAMES = {
+  LIST: 'initiative:list',
+  STATUS: 'initiative:status',
+  CREATE: 'initiative:create',
+  EDIT: 'initiative:edit',
+  ADD_WU: 'initiative:add-wu',
+  REMOVE_WU: 'initiative:remove-wu',
+  BULK_ASSIGN: 'initiative:bulk-assign',
+  PLAN: 'initiative:plan',
+  INIT_PLAN: 'init:plan',
+  ORCHESTRATE_INITIATIVE: 'orchestrate:initiative',
+} as const;
 
 function createResolverInput(toolName: string): RuntimeToolCapabilityResolverInput {
   return {
@@ -268,6 +280,27 @@ describe('packToolCapabilityResolver', () => {
       WU_DELEGATION_AND_GATES_TOOL_NAMES.DELEGATE,
       WU_DELEGATION_AND_GATES_TOOL_NAMES.UNLOCK_LANE,
       WU_DELEGATION_AND_GATES_TOOL_NAMES.GATES,
+    ];
+
+    for (const toolName of toolNames) {
+      const capability = await packToolCapabilityResolver(createResolverInput(toolName));
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+      expect(isInProcessPackToolRegistered(toolName)).toBe(true);
+    }
+  });
+
+  it('resolves initiative/orchestration lifecycle tools to in-process handlers', async () => {
+    const toolNames = [
+      INITIATIVE_ORCHESTRATION_TOOL_NAMES.LIST,
+      INITIATIVE_ORCHESTRATION_TOOL_NAMES.STATUS,
+      INITIATIVE_ORCHESTRATION_TOOL_NAMES.CREATE,
+      INITIATIVE_ORCHESTRATION_TOOL_NAMES.EDIT,
+      INITIATIVE_ORCHESTRATION_TOOL_NAMES.ADD_WU,
+      INITIATIVE_ORCHESTRATION_TOOL_NAMES.REMOVE_WU,
+      INITIATIVE_ORCHESTRATION_TOOL_NAMES.BULK_ASSIGN,
+      INITIATIVE_ORCHESTRATION_TOOL_NAMES.PLAN,
+      INITIATIVE_ORCHESTRATION_TOOL_NAMES.INIT_PLAN,
+      INITIATIVE_ORCHESTRATION_TOOL_NAMES.ORCHESTRATE_INITIATIVE,
     ];
 
     for (const toolName of toolNames) {
@@ -1011,6 +1044,143 @@ describe('WU-1809: delegation/gates lifecycle uses runtime path end-to-end', () 
       const result = await executeViaPack(lifecycleCall.toolName, lifecycleCall.input, {
         projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
         context: buildExecutionContext({ taskId: 'WU-1809' }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: lifecycleCall.fallback,
+      });
+
+      expect(result.success).toBe(true);
+    }
+
+    expect(runtimeFactory).toHaveBeenCalledTimes(lifecycleCalls.length);
+    expect(runtimeExecuteTool).toHaveBeenCalledTimes(lifecycleCalls.length);
+    expect(cliRunner).not.toHaveBeenCalled();
+  });
+});
+
+describe('WU-1810: initiative/orchestration lifecycle uses runtime path end-to-end', () => {
+  beforeEach(() => {
+    resetExecuteViaPackRuntimeCache();
+  });
+
+  it('runs initiative and orchestrate tools via runtime without CLI fallback', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { message: 'runtime-success' },
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const lifecycleCalls = [
+      {
+        toolName: 'initiative:list',
+        input: {},
+        fallback: {
+          command: 'initiative:list',
+          args: [],
+          errorCode: 'INITIATIVE_LIST_ERROR',
+        },
+      },
+      {
+        toolName: 'initiative:status',
+        input: { id: 'INIT-030' },
+        fallback: {
+          command: 'initiative:status',
+          args: ['--id', 'INIT-030'],
+          errorCode: 'INITIATIVE_STATUS_ERROR',
+        },
+      },
+      {
+        toolName: 'initiative:create',
+        input: {
+          id: 'INIT-030',
+          slug: 'kernel-runtime-adoption',
+          title: 'KernelRuntime Adoption',
+        },
+        fallback: {
+          command: 'initiative:create',
+          args: [
+            '--id',
+            'INIT-030',
+            '--slug',
+            'kernel-runtime-adoption',
+            '--title',
+            'KernelRuntime Adoption',
+          ],
+          errorCode: 'INITIATIVE_CREATE_ERROR',
+        },
+      },
+      {
+        toolName: 'initiative:edit',
+        input: { id: 'INIT-030', description: 'updated' },
+        fallback: {
+          command: 'initiative:edit',
+          args: ['--id', 'INIT-030', '--description', 'updated'],
+          errorCode: 'INITIATIVE_EDIT_ERROR',
+        },
+      },
+      {
+        toolName: 'initiative:add-wu',
+        input: { initiative: 'INIT-030', wu: 'WU-1810' },
+        fallback: {
+          command: 'initiative:add-wu',
+          args: ['--initiative', 'INIT-030', '--wu', 'WU-1810'],
+          errorCode: 'INITIATIVE_ADD_WU_ERROR',
+        },
+      },
+      {
+        toolName: 'initiative:remove-wu',
+        input: { initiative: 'INIT-030', wu: 'WU-1810' },
+        fallback: {
+          command: 'initiative:remove-wu',
+          args: ['--initiative', 'INIT-030', '--wu', 'WU-1810'],
+          errorCode: 'INITIATIVE_REMOVE_WU_ERROR',
+        },
+      },
+      {
+        toolName: 'initiative:bulk-assign',
+        input: { apply: true },
+        fallback: {
+          command: 'initiative:bulk-assign',
+          args: ['--apply'],
+          errorCode: 'INITIATIVE_BULK_ASSIGN_ERROR',
+        },
+      },
+      {
+        toolName: 'initiative:plan',
+        input: { initiative: 'INIT-030', create: true },
+        fallback: {
+          command: 'initiative:plan',
+          args: ['--initiative', 'INIT-030', '--create'],
+          errorCode: 'INITIATIVE_PLAN_ERROR',
+        },
+      },
+      {
+        toolName: 'init:plan',
+        input: { initiative: 'INIT-030', create: true },
+        fallback: {
+          command: 'init:plan',
+          args: ['--initiative', 'INIT-030', '--create'],
+          errorCode: 'INIT_PLAN_ERROR',
+        },
+      },
+      {
+        toolName: 'orchestrate:initiative',
+        input: { initiative: 'INIT-030', dry_run: true },
+        fallback: {
+          command: 'orchestrate:initiative',
+          args: ['--initiative', 'INIT-030', '--dry-run'],
+          errorCode: 'ORCHESTRATE_INITIATIVE_ERROR',
+        },
+      },
+    ] as const;
+
+    for (const lifecycleCall of lifecycleCalls) {
+      const result = await executeViaPack(lifecycleCall.toolName, lifecycleCall.input, {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({ taskId: 'WU-1810' }),
         runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
         cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
         fallback: lifecycleCall.fallback,

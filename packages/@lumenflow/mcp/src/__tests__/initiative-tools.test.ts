@@ -49,53 +49,58 @@ describe('Initiative MCP tools (WU-1424)', () => {
   });
 
   describe('initiative_list', () => {
-    it('should list initiatives via CLI shell-out', async () => {
+    it('should list initiatives via executeViaPack', async () => {
       const mockInitiatives = [
         { id: 'INIT-001', title: 'MCP Server', status: 'active' },
         { id: 'INIT-002', title: 'Memory Layer', status: 'completed' },
       ];
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: JSON.stringify(mockInitiatives),
-        stderr: '',
-        exitCode: 0,
+        data: mockInitiatives,
       });
 
       const result = await initiativeListTool.execute({});
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockInitiatives);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:list',
-        expect.any(Array),
-        expect.any(Object),
+        expect.objectContaining({}),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'initiative:list',
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should support status filter', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: JSON.stringify([{ id: 'INIT-001', status: 'active' }]),
-        stderr: '',
-        exitCode: 0,
+        data: [{ id: 'INIT-001', status: 'active' }],
       });
 
       const result = await initiativeListTool.execute({ status: 'active' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:list',
-        expect.arrayContaining(['--status', 'active']),
-        expect.any(Object),
+        expect.objectContaining({ status: 'active' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'initiative:list',
+            args: expect.arrayContaining(['--status', 'active']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should handle CLI errors', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: false,
-        stdout: '',
-        stderr: 'Failed to list initiatives',
-        exitCode: 1,
+        error: { message: 'Failed to list initiatives' },
       });
 
       const result = await initiativeListTool.execute({});
@@ -106,16 +111,14 @@ describe('Initiative MCP tools (WU-1424)', () => {
 
     // WU-1455: initiative_list uses format field from shared schema
     it('should use --format json flag for CLI parity (WU-1455)', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: JSON.stringify([]),
-        stderr: '',
-        exitCode: 0,
+        data: [],
       });
 
       await initiativeListTool.execute({ format: 'json' });
 
-      const calledArgs = mockRunCliCommand.mock.calls[0][1] as string[];
+      const calledArgs = mockExecuteViaPack.mock.calls[0]?.[2]?.fallback?.args as string[];
       // Must use --format json
       expect(calledArgs).toContain('--format');
       expect(calledArgs).toContain('json');
@@ -125,7 +128,7 @@ describe('Initiative MCP tools (WU-1424)', () => {
   });
 
   describe('initiative_status', () => {
-    it('should get initiative status via CLI shell-out', async () => {
+    it('should get initiative status via executeViaPack', async () => {
       const mockStatus = {
         id: 'INIT-001',
         title: 'MCP Server',
@@ -133,22 +136,26 @@ describe('Initiative MCP tools (WU-1424)', () => {
         wus: ['WU-1412', 'WU-1424'],
         progress: { done: 1, total: 5 },
       };
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: JSON.stringify(mockStatus),
-        stderr: '',
-        exitCode: 0,
+        data: mockStatus,
       });
 
       const result = await initiativeStatusTool.execute({ id: 'INIT-001' });
 
       expect(result.success).toBe(true);
       expect(result.data).toMatchObject({ id: 'INIT-001' });
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:status',
-        expect.arrayContaining(['--id', 'INIT-001']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'INIT-001' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'initiative:status',
+            args: expect.arrayContaining(['--id', 'INIT-001']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require id parameter', async () => {
@@ -160,16 +167,14 @@ describe('Initiative MCP tools (WU-1424)', () => {
 
     // WU-1455: initiative_status uses format field from shared schema
     it('should use --format json flag for CLI parity (WU-1455)', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: JSON.stringify({ id: 'INIT-001' }),
-        stderr: '',
-        exitCode: 0,
+        data: { id: 'INIT-001' },
       });
 
       await initiativeStatusTool.execute({ id: 'INIT-001', format: 'json' });
 
-      const calledArgs = mockRunCliCommand.mock.calls[0][1] as string[];
+      const calledArgs = mockExecuteViaPack.mock.calls[0]?.[2]?.fallback?.args as string[];
       // Must use --format json
       expect(calledArgs).toContain('--format');
       expect(calledArgs).toContain('json');
@@ -179,12 +184,10 @@ describe('Initiative MCP tools (WU-1424)', () => {
   });
 
   describe('initiative_create', () => {
-    it('should create initiative via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should create initiative via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Created INIT-003',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Created INIT-003' },
       });
 
       // WU-1455: shared schema requires id, slug, title
@@ -195,18 +198,28 @@ describe('Initiative MCP tools (WU-1424)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:create',
-        expect.arrayContaining([
-          '--id',
-          'INIT-003',
-          '--slug',
-          'new-initiative',
-          '--title',
-          'New Initiative',
-        ]),
-        expect.any(Object),
+        expect.objectContaining({
+          id: 'INIT-003',
+          slug: 'new-initiative',
+          title: 'New Initiative',
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'initiative:create',
+            args: expect.arrayContaining([
+              '--id',
+              'INIT-003',
+              '--slug',
+              'new-initiative',
+              '--title',
+              'New Initiative',
+            ]),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require id parameter', async () => {
@@ -230,11 +243,9 @@ describe('Initiative MCP tools (WU-1424)', () => {
     });
 
     it('should support optional fields', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Created INIT-003',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Created INIT-003' },
       });
 
       // WU-1455: shared schema supports priority, owner, target_date
@@ -247,21 +258,27 @@ describe('Initiative MCP tools (WU-1424)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:create',
-        expect.arrayContaining(['--priority', 'P1', '--owner', 'tom@hellm.ai']),
-        expect.any(Object),
+        expect.objectContaining({
+          priority: 'P1',
+          owner: 'tom@hellm.ai',
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            args: expect.arrayContaining(['--priority', 'P1', '--owner', 'tom@hellm.ai']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
   });
 
   describe('initiative_edit', () => {
-    it('should edit initiative via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should edit initiative via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Initiative updated',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Initiative updated' },
       });
 
       // WU-1455: shared schema matches CLI fields (status, description, etc.)
@@ -272,18 +289,28 @@ describe('Initiative MCP tools (WU-1424)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:edit',
-        expect.arrayContaining([
-          '--id',
-          'INIT-001',
-          '--description',
-          'Updated description',
-          '--status',
-          'in_progress',
-        ]),
-        expect.any(Object),
+        expect.objectContaining({
+          id: 'INIT-001',
+          description: 'Updated description',
+          status: 'in_progress',
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'initiative:edit',
+            args: expect.arrayContaining([
+              '--id',
+              'INIT-001',
+              '--description',
+              'Updated description',
+              '--status',
+              'in_progress',
+            ]),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require id parameter', async () => {
@@ -362,12 +389,10 @@ describe('Initiative MCP tools (WU-1424)', () => {
   });
 
   describe('initiative_add_wu', () => {
-    it('should add WU to initiative via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should add WU to initiative via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'WU added to initiative',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'WU added to initiative' },
       });
 
       const result = await initiativeAddWuTool.execute({
@@ -376,11 +401,20 @@ describe('Initiative MCP tools (WU-1424)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:add-wu',
-        expect.arrayContaining(['--initiative', 'INIT-001', '--wu', 'WU-1424']),
-        expect.any(Object),
+        expect.objectContaining({
+          initiative: 'INIT-001',
+          wu: 'WU-1424',
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'initiative:add-wu',
+            args: expect.arrayContaining(['--initiative', 'INIT-001', '--wu', 'WU-1424']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require initiative parameter', async () => {
@@ -398,11 +432,9 @@ describe('Initiative MCP tools (WU-1424)', () => {
     });
 
     it('should support phase parameter', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'WU added to initiative phase 2',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'WU added to initiative phase 2' },
       });
 
       const result = await initiativeAddWuTool.execute({
@@ -412,21 +444,35 @@ describe('Initiative MCP tools (WU-1424)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:add-wu',
-        expect.arrayContaining(['--initiative', 'INIT-001', '--wu', 'WU-1424', '--phase', '2']),
-        expect.any(Object),
+        expect.objectContaining({
+          initiative: 'INIT-001',
+          wu: 'WU-1424',
+          phase: 2,
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            args: expect.arrayContaining([
+              '--initiative',
+              'INIT-001',
+              '--wu',
+              'WU-1424',
+              '--phase',
+              '2',
+            ]),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
   });
 
   describe('initiative_remove_wu', () => {
-    it('should remove WU from initiative via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should remove WU from initiative via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'WU removed from initiative',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'WU removed from initiative' },
       });
 
       const result = await initiativeRemoveWuTool.execute({
@@ -435,11 +481,20 @@ describe('Initiative MCP tools (WU-1424)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:remove-wu',
-        expect.arrayContaining(['--initiative', 'INIT-001', '--wu', 'WU-1424']),
-        expect.any(Object),
+        expect.objectContaining({
+          initiative: 'INIT-001',
+          wu: 'WU-1424',
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'initiative:remove-wu',
+            args: expect.arrayContaining(['--initiative', 'INIT-001', '--wu', 'WU-1424']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require initiative parameter', async () => {
@@ -458,31 +513,32 @@ describe('Initiative MCP tools (WU-1424)', () => {
   });
 
   describe('initiative_bulk_assign', () => {
-    it('should bulk assign WUs to initiative via CLI shell-out (dry-run)', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should bulk assign WUs to initiative via executeViaPack (dry-run)', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: '3 WUs would be assigned',
-        stderr: '',
-        exitCode: 0,
+        data: { message: '3 WUs would be assigned' },
       });
 
       // WU-1455: shared schema has no required fields (defaults to dry-run)
       const result = await initiatiBulkAssignTool.execute({});
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:bulk-assign',
-        expect.any(Array),
-        expect.any(Object),
+        expect.objectContaining({}),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'initiative:bulk-assign',
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should support config and apply parameters', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: '5 WUs assigned',
-        stderr: '',
-        exitCode: 0,
+        data: { message: '5 WUs assigned' },
       });
 
       // WU-1455: shared schema uses config, apply, sync_from_initiative
@@ -492,19 +548,25 @@ describe('Initiative MCP tools (WU-1424)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:bulk-assign',
-        expect.arrayContaining(['--config', 'tools/config/custom.yaml', '--apply']),
-        expect.any(Object),
+        expect.objectContaining({
+          config: 'tools/config/custom.yaml',
+          apply: true,
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            args: expect.arrayContaining(['--config', 'tools/config/custom.yaml', '--apply']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should support sync_from_initiative parameter', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Reconciled WUs',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Reconciled WUs' },
       });
 
       const result = await initiatiBulkAssignTool.execute({
@@ -512,21 +574,26 @@ describe('Initiative MCP tools (WU-1424)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:bulk-assign',
-        expect.arrayContaining(['--reconcile-initiative', 'INIT-001']),
-        expect.any(Object),
+        expect.objectContaining({
+          sync_from_initiative: 'INIT-001',
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            args: expect.arrayContaining(['--reconcile-initiative', 'INIT-001']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
   });
 
   describe('initiative_plan', () => {
-    it('should link plan to initiative via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should link plan to initiative via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Plan linked to initiative',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Plan linked to initiative' },
       });
 
       const result = await initiativePlanTool.execute({
@@ -535,16 +602,25 @@ describe('Initiative MCP tools (WU-1424)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:plan',
-        expect.arrayContaining([
-          '--initiative',
-          'INIT-001',
-          '--plan',
-          'docs/04-operations/plans/init-001-plan.md',
-        ]),
-        expect.any(Object),
+        expect.objectContaining({
+          initiative: 'INIT-001',
+          plan: 'docs/04-operations/plans/init-001-plan.md',
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'initiative:plan',
+            args: expect.arrayContaining([
+              '--initiative',
+              'INIT-001',
+              '--plan',
+              'docs/04-operations/plans/init-001-plan.md',
+            ]),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require initiative parameter', async () => {
@@ -555,11 +631,9 @@ describe('Initiative MCP tools (WU-1424)', () => {
     });
 
     it('should support create flag', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Plan template created and linked',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Plan template created and linked' },
       });
 
       const result = await initiativePlanTool.execute({
@@ -568,11 +642,19 @@ describe('Initiative MCP tools (WU-1424)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'initiative:plan',
-        expect.arrayContaining(['--initiative', 'INIT-001', '--create']),
-        expect.any(Object),
+        expect.objectContaining({
+          initiative: 'INIT-001',
+          create: true,
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            args: expect.arrayContaining(['--initiative', 'INIT-001', '--create']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
   });
 });
