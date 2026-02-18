@@ -14,7 +14,8 @@ code_paths:
   - packages/@lumenflow/mcp/src/tools-shared.ts
 tests:
   manual:
-    - Verify representative MCP tools (wu_status, state_doctor, git_status) still return unchanged success/error shapes and CLI dispatch behavior.
+    - Verify representative MCP tools (wu_status, state_doctor, git_status) still return unchanged
+      success/error shapes and CLI dispatch behavior.
   unit:
     - packages/@lumenflow/mcp/src/__tests__/literal-governance.test.ts
     - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
@@ -29,7 +30,9 @@ spec_refs:
   - /home/USER/.claude/plans/adaptive-finding-adleman.md
   - /home/USER/.claude/plans/zesty-jumping-pixel.md
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: 'Tightening WU-1851 residuals to 100% governance: close declaration-level blind spots and
+  eliminate hidden duplicates. Keep scope MCP-only; do not expand into unrelated kernel/package
+  surfaces.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -38,12 +41,29 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1851 established MCP constant governance, but residual raw governed literals still exist in runtime/parity internals and the ratchet test currently excludes some of those patterns. Problem: the current ratchet can pass while governed drift remains, weakening enterprise-grade contract enforcement. Solution: eliminate remaining governed literal duplicates, tighten the guardrail to detect declaration-level drift (not only call sites), and codify explicit allowlist-only exceptions with auditability.'
+description: 'Context: WU-1851 established MCP constant governance, but residual raw governed
+  literals still exist in runtime/parity internals and the ratchet test currently excludes some of
+  those patterns. Problem: the current ratchet can pass while governed drift remains, weakening
+  enterprise-grade contract enforcement. Solution: eliminate remaining governed literal duplicates,
+  tighten the guardrail to detect declaration-level drift (not only call sites), and codify explicit
+  allowlist-only exceptions with auditability.'
 acceptance:
-  - All remaining governed command-name and metadata-key literals in MCP runtime/parity implementation files are replaced with constants from mcp-constants.ts (or documented allowlisted exceptions).
-  - literal-governance.test.ts scans both execution call sites and declaration-level assignments/maps for governed command names, shared governed flags, and metadata keys.
-  - Guardrail exclusions are explicit allowlist entries with per-entry justification; blanket pattern skips (e.g., RUNTIME_PROJECT_ROOT*) are removed.
-  - The ratchet fails when a new raw governed literal is introduced in governed production files and passes when constants are used.
-  - No behavior/output regressions for runtime-tool-resolver and parity MCP tools after constant replacement.
-  - No public API changes to @lumenflow/mcp exports; refactor is internal.
+  - 'Replace the remaining raw governed literals identified post-WU-1851 in MCP production code:
+    runtime-tool-resolver command map literals and project_root metadata-key aliases in
+    parity/runtime modules, using mcp-constants.ts constants (or explicit file-scoped allowlist with
+    justification).'
+  - literal-governance.test.ts enforces governed literals in both execution call sites and
+    declaration/assignment contexts (const maps, const aliases, fallback.command,
+    executeViaPack/runCliCommand arguments).
+  - Remove blanket skip heuristics from the ratchet (e.g., line-contains RUNTIME_PROJECT_ROOT). Any
+    exception must be declared in an explicit allowlist keyed by file and literal with rationale.
+  - Guardrail includes runtime-tool-resolver.ts and parity-tools.ts and fails when any newly
+    introduced raw governed command-name/metadata-key/shared-flag literal appears in those files.
+  - 'Guardrail remains scoped: only governed families are blocked; tool-local non-governed literals
+    remain allowed.'
+  - Add/adjust unit tests to prove RED→GREEN behavior for the ratchet against at least one
+    declaration-level violation case and one allowed exception case.
+  - No behavior/output regressions for representative MCP tools (wu_status, state_doctor,
+    git_status) after constant replacement.
+  - No public API changes to @lumenflow/mcp exports; refactor remains internal.
   - pnpm gates passes.
