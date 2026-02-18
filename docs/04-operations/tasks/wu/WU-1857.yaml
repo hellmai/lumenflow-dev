@@ -11,7 +11,11 @@ code_paths:
   - apps/web/turbo.json
   - apps/web/package.json
   - apps/web/tsconfig.json
-  - .claude/skills/frontend-design/SKILL.md
+  - apps/web/next.config.ts
+  - apps/web/tailwind.config.ts
+  - apps/web/components.json
+  - apps/web/src/lib/utils.ts
+  - apps/web/app/globals.css
 tests:
   manual:
     - eslint --print-config on a .tsx file shows react-hooks/rules-of-hooks enabled
@@ -41,12 +45,14 @@ description: 'Context: apps/web was scaffolded in WU-1819 with API routes but no
   local frontend-design skill stub shadows Anthropic plugin. Solution: install React ESLint rules,
   configure jsdom vitest, fix turbo inputs, fix surfaces import, remove local skill stub.'
 acceptance:
-  - eslint-plugin-react and eslint-plugin-react-hooks configured in root eslint.config.mjs
+  - '@eslint-react/eslint-plugin configured in root eslint.config.mjs (ESLint 10 compatible)'
   - apps/web has vitest config with jsdom environment and @vitejs/plugin-react
   - Turbo lint/typecheck inputs include .tsx files for apps/web
-  - '@lumenflow/surfaces imported via workspace protocol or tsconfig path alias, not relative'
+  - '@lumenflow/surfaces imported via tsconfig path alias, not relative'
   - Local .claude/skills/frontend-design/ stub removed
   - A simple React component test renders successfully with vitest in apps/web
+  - Next.js upgraded from 15 to 16.1 with --webpack build flag
+  - shadcn/ui installed with Tailwind CSS animate and design tokens
 claimed_mode: worktree
 worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1857
 claimed_at: 2026-02-18T18:12:42.348Z
