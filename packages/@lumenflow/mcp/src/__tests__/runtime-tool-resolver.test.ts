@@ -136,9 +136,10 @@ describe('packToolCapabilityResolver', () => {
       allowed_scopes: [READ_SCOPE],
     };
 
+    // WU-1805: wu:status now has a real handler — missing id returns MISSING_PARAMETER
     const output = await capability?.handler.fn({}, executionContext);
     expect(output?.success).toBe(false);
-    expect(output?.error?.code).toBe('RUNTIME_TOOL_NOT_MIGRATED');
+    expect(output?.error?.code).toBe('MISSING_PARAMETER');
   });
 
   it('lists registered in-process pack tools', () => {

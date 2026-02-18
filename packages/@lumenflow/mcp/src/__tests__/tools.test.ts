@@ -135,29 +135,33 @@ describe('MCP tools', () => {
   });
 
   describe('wu_status', () => {
-    it('should return WU status via CLI shell-out', async () => {
+    it('should return WU status via executeViaPack', async () => {
       const mockWu = {
         id: 'WU-1412',
         title: 'MCP server',
         status: 'in_progress',
         lane: 'Framework: CLI',
       };
-      mockRunCliCommand.mockResolvedValue({
+      const spy = vi.spyOn(toolsShared, 'executeViaPack').mockResolvedValue({
         success: true,
-        stdout: JSON.stringify(mockWu),
-        stderr: '',
-        exitCode: 0,
+        data: mockWu,
       });
 
       const result = await wuStatusTool.execute({ id: 'WU-1412' });
 
       expect(result.success).toBe(true);
       expect(result.data).toMatchObject({ id: 'WU-1412' });
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(spy).toHaveBeenCalledWith(
         'wu:status',
-        expect.arrayContaining(['--id', 'WU-1412', '--json']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1412' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:status',
+            args: expect.arrayContaining(['--id', 'WU-1412', '--json']),
+          }),
+        }),
       );
+      spy.mockRestore();
     });
 
     it('should require id parameter', async () => {

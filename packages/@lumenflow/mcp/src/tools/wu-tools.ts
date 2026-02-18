@@ -45,15 +45,39 @@ import {
   error,
   buildWuPromptArgs,
   runCliCommand,
+  executeViaPack,
   type CliRunnerOptions,
 } from '../tools-shared.js';
 import { CliCommands } from '../mcp-constants.js';
 
 /**
+ * WU-1805: Fallback messages for WU query tools when executeViaPack
+ * returns no structured data.
+ */
+const WuQueryMessages = {
+  STATUS_FAILED: 'wu:status failed',
+  DEPS_FAILED: 'wu:deps failed',
+  PREFLIGHT_PASSED: 'Preflight checks passed',
+  PREFLIGHT_FAILED: 'wu:preflight failed',
+  VALIDATE_PASSED: 'WU is valid',
+  VALIDATE_FAILED: 'wu:validate failed',
+  INFER_LANE_FAILED: 'wu:infer-lane failed',
+} as const;
+
+const WuQueryFlags = {
+  NO_STRICT: '--no-strict',
+  WORKTREE: '--worktree',
+  DEPTH: '--depth',
+  DIRECTION: '--direction',
+  PATHS: '--paths',
+  DESC: '--desc',
+} as const;
+
+/**
  * wu_status - Get status of a specific WU
- * Uses CLI shell-out for consistency
  *
  * WU-1431: Uses shared wuStatusSchema for parity with CLI
+ * WU-1805: Migrated from runCliCommand to executeViaPack (runtime-first)
  * Note: CLI allows id to be optional (auto-detect from worktree), but MCP requires it
  * since there's no "current directory" concept for MCP clients
  */
@@ -71,22 +95,19 @@ export const wuStatusTool: ToolDefinition = {
     }
 
     const args = [CliArgs.ID, input.id as string, CliArgs.JSON];
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_STATUS, args, cliOptions);
 
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout });
-      }
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:status failed',
-        ErrorCodes.WU_STATUS_ERROR,
-      );
-    }
+    const result = await executeViaPack(CliCommands.WU_STATUS, input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: CliCommands.WU_STATUS,
+        args,
+        errorCode: ErrorCodes.WU_STATUS_ERROR,
+      },
+    });
+
+    return result.success
+      ? success(result.data ?? { message: result.data })
+      : error(result.error?.message ?? WuQueryMessages.STATUS_FAILED, ErrorCodes.WU_STATUS_ERROR);
   },
 };
 
@@ -570,25 +591,21 @@ export const wuDepsTool: ToolDefinition = {
 
     const args = [CliArgs.ID, input.id as string];
     if (input.format) args.push(CliArgs.FORMAT, input.format as string);
-    if (input.depth) args.push('--depth', String(input.depth));
-    if (input.direction) args.push('--direction', input.direction as string);
+    if (input.depth) args.push(WuQueryFlags.DEPTH, String(input.depth));
+    if (input.direction) args.push(WuQueryFlags.DIRECTION, input.direction as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_DEPS, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_DEPS, input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: CliCommands.WU_DEPS,
+        args,
+        errorCode: ErrorCodes.WU_DEPS_ERROR,
+      },
+    });
 
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout });
-      }
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:deps failed',
-        ErrorCodes.WU_DEPS_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: result.data })
+      : error(result.error?.message ?? WuQueryMessages.DEPS_FAILED, ErrorCodes.WU_DEPS_ERROR);
   },
 };
 
@@ -643,19 +660,23 @@ export const wuPreflightTool: ToolDefinition = {
     }
 
     const args = [CliArgs.ID, input.id as string];
-    if (input.worktree) args.push('--worktree', input.worktree as string);
+    if (input.worktree) args.push(WuQueryFlags.WORKTREE, input.worktree as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_PREFLIGHT, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_PREFLIGHT, input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: CliCommands.WU_PREFLIGHT,
+        args,
+        errorCode: ErrorCodes.WU_PREFLIGHT_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Preflight checks passed' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:preflight failed',
-        ErrorCodes.WU_PREFLIGHT_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuQueryMessages.PREFLIGHT_PASSED })
+      : error(
+          result.error?.message ?? WuQueryMessages.PREFLIGHT_FAILED,
+          ErrorCodes.WU_PREFLIGHT_ERROR,
+        );
   },
 };
 
@@ -829,19 +850,23 @@ export const wuValidateTool: ToolDefinition = {
     }
 
     const args = [CliArgs.ID, input.id as string];
-    if (input.no_strict) args.push('--no-strict');
+    if (input.no_strict) args.push(WuQueryFlags.NO_STRICT);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_VALIDATE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_VALIDATE, input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: CliCommands.WU_VALIDATE,
+        args,
+        errorCode: ErrorCodes.WU_VALIDATE_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU is valid' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:validate failed',
-        ErrorCodes.WU_VALIDATE_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuQueryMessages.VALIDATE_PASSED })
+      : error(
+          result.error?.message ?? WuQueryMessages.VALIDATE_FAILED,
+          ErrorCodes.WU_VALIDATE_ERROR,
+        );
   },
 };
 
@@ -859,22 +884,26 @@ export const wuInferLaneTool: ToolDefinition = {
     if (input.id) args.push(CliArgs.ID, input.id as string);
     if (input.paths) {
       for (const p of input.paths as string[]) {
-        args.push('--paths', p);
+        args.push(WuQueryFlags.PATHS, p);
       }
     }
-    if (input.desc) args.push('--desc', input.desc as string);
+    if (input.desc) args.push(WuQueryFlags.DESC, input.desc as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_INFER_LANE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_INFER_LANE, input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: CliCommands.WU_INFER_LANE,
+        args,
+        errorCode: ErrorCodes.WU_INFER_LANE_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ lane: result.stdout?.trim() || 'Unknown' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:infer-lane failed',
-        ErrorCodes.WU_INFER_LANE_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { lane: 'Unknown' })
+      : error(
+          result.error?.message ?? WuQueryMessages.INFER_LANE_FAILED,
+          ErrorCodes.WU_INFER_LANE_ERROR,
+        );
   },
 };
 

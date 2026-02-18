@@ -238,6 +238,7 @@ describe('wu_claim cloud mode passthrough (WU-1491)', () => {
 
 describe('WU MCP tools (WU-1422)', () => {
   const mockRunCliCommand = vi.mocked(cliRunner.runCliCommand);
+  const mockExecuteViaPack = vi.mocked(toolsShared.executeViaPack);
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -432,21 +433,24 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 
   describe('wu_deps', () => {
-    it('should show WU dependencies via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should show WU dependencies via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: JSON.stringify({ dependencies: ['WU-1420', 'WU-1421'] }),
-        stderr: '',
-        exitCode: 0,
+        data: { dependencies: ['WU-1420', 'WU-1421'] },
       });
 
       const result = await wuDepsTool.execute({ id: 'WU-1422' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:deps',
-        expect.arrayContaining(['--id', 'WU-1422']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:deps',
+            args: expect.arrayContaining(['--id', 'WU-1422']),
+          }),
+        }),
       );
     });
 
@@ -458,20 +462,23 @@ describe('WU MCP tools (WU-1422)', () => {
     });
 
     it('should support format option', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'WU-1422 -> WU-1420',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'WU-1422 -> WU-1420' },
       });
 
       const result = await wuDepsTool.execute({ id: 'WU-1422', format: 'ascii' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:deps',
-        expect.arrayContaining(['--id', 'WU-1422', '--format', 'ascii']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422', format: 'ascii' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:deps',
+            args: expect.arrayContaining(['--id', 'WU-1422', '--format', 'ascii']),
+          }),
+        }),
       );
     });
   });
@@ -540,21 +547,24 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 
   describe('wu_preflight', () => {
-    it('should run preflight checks via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should run preflight checks via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Preflight checks passed',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Preflight checks passed' },
       });
 
       const result = await wuPreflightTool.execute({ id: 'WU-1422' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:preflight',
-        expect.arrayContaining(['--id', 'WU-1422']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:preflight',
+            args: expect.arrayContaining(['--id', 'WU-1422']),
+          }),
+        }),
       );
     });
 
@@ -764,21 +774,24 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 
   describe('wu_validate', () => {
-    it('should validate WU via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should validate WU via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'WU-1422 is valid',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'WU-1422 is valid' },
       });
 
       const result = await wuValidateTool.execute({ id: 'WU-1422' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:validate',
-        expect.arrayContaining(['--id', 'WU-1422']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:validate',
+            args: expect.arrayContaining(['--id', 'WU-1422']),
+          }),
+        }),
       );
     });
 
@@ -790,49 +803,53 @@ describe('WU MCP tools (WU-1422)', () => {
     });
 
     it('should support no-strict mode', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Validation passed (non-strict)',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Validation passed (non-strict)' },
       });
 
       const result = await wuValidateTool.execute({ id: 'WU-1422', no_strict: true });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:validate',
-        expect.arrayContaining(['--id', 'WU-1422', '--no-strict']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422', no_strict: true }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:validate',
+            args: expect.arrayContaining(['--id', 'WU-1422', '--no-strict']),
+          }),
+        }),
       );
     });
   });
 
   describe('wu_infer_lane', () => {
-    it('should infer lane via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should infer lane via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Framework: CLI',
-        stderr: '',
-        exitCode: 0,
+        data: { lane: 'Framework: CLI' },
       });
 
       const result = await wuInferLaneTool.execute({ id: 'WU-1422' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:infer-lane',
-        expect.arrayContaining(['--id', 'WU-1422']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:infer-lane',
+            args: expect.arrayContaining(['--id', 'WU-1422']),
+          }),
+        }),
       );
     });
 
     it('should support paths and desc parameters', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Content: Documentation',
-        stderr: '',
-        exitCode: 0,
+        data: { lane: 'Content: Documentation' },
       });
 
       const result = await wuInferLaneTool.execute({
@@ -841,10 +858,15 @@ describe('WU MCP tools (WU-1422)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:infer-lane',
-        expect.arrayContaining(['--paths', 'docs/**', '--desc', 'Documentation updates']),
-        expect.any(Object),
+        expect.objectContaining({ paths: ['docs/**'], desc: 'Documentation updates' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:infer-lane',
+            args: expect.arrayContaining(['--paths', 'docs/**', '--desc', 'Documentation updates']),
+          }),
+        }),
       );
     });
   });
