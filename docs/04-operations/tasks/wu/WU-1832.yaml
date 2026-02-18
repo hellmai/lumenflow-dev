@@ -2,7 +2,7 @@ id: WU-1832
 title: Create CopilotKit integration example app connected to LumenFlow AG-UI
 lane: 'Content: Specs Governance'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -44,3 +44,6 @@ acceptance:
   - Task creation works via chat interface
   - Tool execution visible in real-time
   - README with setup instructions
+locked: true
+completed_at: 2026-02-18T19:59:09.991Z
+completed: 2026-02-18
