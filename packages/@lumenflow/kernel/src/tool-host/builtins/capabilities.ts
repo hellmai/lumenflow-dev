@@ -6,13 +6,13 @@ import { resolve } from 'node:path';
 import micromatch from 'micromatch';
 import { z } from 'zod';
 import type { ToolCapability, ToolOutput, ToolScope } from '../../kernel.schemas.js';
-import { BASE64_ENCODING, UTF8_ENCODING } from '../../shared-constants.js';
+import { BASE64_ENCODING, KERNEL_POLICY_IDS, UTF8_ENCODING } from '../../shared-constants.js';
 import type { PolicyHook, PolicyHookInput } from '../tool-host.js';
 import { ToolRegistry } from '../tool-registry.js';
 
 const BUILTIN_POLICY_IDS = {
-  DEFAULT_ALLOW: 'kernel.policy.builtin-default',
-  PROC_EXEC_DEFAULT_DENY: 'kernel.policy.proc-exec-default-deny',
+  DEFAULT_ALLOW: KERNEL_POLICY_IDS.BUILTIN_DEFAULT,
+  PROC_EXEC_DEFAULT_DENY: KERNEL_POLICY_IDS.PROC_EXEC_DEFAULT_DENY,
 } as const;
 
 const BUILTIN_TOOL_NAMES = {

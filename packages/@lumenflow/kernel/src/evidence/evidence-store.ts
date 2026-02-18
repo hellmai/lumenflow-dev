@@ -11,7 +11,7 @@ import {
   type PolicyDecision,
   type ToolTraceEntry,
 } from '../kernel.schemas.js';
-import { SHA256_ALGORITHM, UTF8_ENCODING } from '../shared-constants.js';
+import { KERNEL_POLICY_IDS, SHA256_ALGORITHM, UTF8_ENCODING } from '../shared-constants.js';
 
 const DEFAULT_LOCK_RETRY_DELAY_MS = 20;
 const DEFAULT_LOCK_MAX_RETRIES = 250;
@@ -216,7 +216,7 @@ export class EvidenceStore {
       }
       const policyDecisions: PolicyDecision[] = [
         {
-          policy_id: 'kernel.reconciliation',
+          policy_id: KERNEL_POLICY_IDS.RECONCILIATION,
           decision: 'deny',
           reason: 'Orphaned started trace without matching finished trace',
         },

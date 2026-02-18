@@ -3,8 +3,8 @@
 
 import { z, type ZodTypeAny } from 'zod';
 import { KERNEL_EVENT_KINDS, TOOL_TRACE_KINDS } from './event-kinds.js';
+import { SHA256_HEX_REGEX, SHA256_INTEGRITY_REGEX } from './shared-constants.js';
 
-const SHA256_HEX_REGEX = /^[a-f0-9]{64}$/;
 const ISO_DATETIME_SCHEMA = z.string().datetime();
 const SEMVER_REGEX = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z-.]+)?(?:\+[0-9A-Za-z-.]+)?$/;
 const SEMVER_MESSAGE = 'Expected semantic version';
@@ -127,7 +127,7 @@ export const PackPinSchema = z.object({
   version: z.string().regex(SEMVER_REGEX, SEMVER_MESSAGE),
   integrity: z.union([
     z.literal('dev'),
-    z.string().regex(/^sha256:[a-f0-9]{64}$/, 'Expected dev or sha256:<64-hex>'),
+    z.string().regex(SHA256_INTEGRITY_REGEX, 'Expected dev or sha256:<64-hex>'),
   ]),
   source: z.enum(['local', 'git', 'registry']),
 });

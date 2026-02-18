@@ -16,14 +16,19 @@ import {
   type ToolOutput,
   type ToolScope,
 } from '../kernel.schemas.js';
+import {
+  DEFAULT_KERNEL_RUNTIME_VERSION,
+  DEFAULT_WORKSPACE_CONFIG_HASH,
+  EXECUTION_METADATA_KEYS,
+  KERNEL_POLICY_IDS,
+  RESERVED_FRAMEWORK_SCOPE_GLOB,
+  RESERVED_FRAMEWORK_SCOPE_PREFIX,
+  RESERVED_FRAMEWORK_SCOPE_ROOT,
+  SHA256_HEX_REGEX,
+} from '../shared-constants.js';
 import { EvidenceStore } from '../evidence/evidence-store.js';
 import { ToolRegistry } from './tool-registry.js';
 import { DefaultSubprocessDispatcher, type SubprocessDispatcher } from './subprocess-dispatcher.js';
-
-const SHA256_HEX_REGEX = /^[a-f0-9]{64}$/;
-const DEFAULT_WORKSPACE_CONFIG_HASH = '0'.repeat(64);
-const DEFAULT_RUNTIME_VERSION = 'kernel-dev';
-const RESERVED_FRAMEWORK_SCOPE_PREFIX = '.lumenflow/';
 
 export interface PolicyHookInput {
   capability: ToolCapability;
@@ -73,7 +78,10 @@ function isReservedFrameworkWriteScope(
   }
 
   const normalized = normalizeScopePattern(scope.pattern);
-  return normalized === '.lumenflow' || normalized.startsWith(RESERVED_FRAMEWORK_SCOPE_PREFIX);
+  return (
+    normalized === RESERVED_FRAMEWORK_SCOPE_ROOT ||
+    normalized.startsWith(RESERVED_FRAMEWORK_SCOPE_PREFIX)
+  );
 }
 
 function collectReservedFrameworkWriteScopes(scopes: ToolScope[]): string[] {
@@ -86,7 +94,7 @@ function collectReservedFrameworkWriteScopes(scopes: ToolScope[]): string[] {
 async function allowAllPolicyHook(): Promise<PolicyDecision[]> {
   return [
     {
-      policy_id: 'kernel.policy.allow-all',
+      policy_id: KERNEL_POLICY_IDS.ALLOW_ALL,
       decision: 'allow',
       reason: 'Phase 2 default allow-all policy',
     },
@@ -105,7 +113,7 @@ export class ToolHost {
     this.evidenceStore = options.evidenceStore;
     this.subprocessDispatcher = options.subprocessDispatcher ?? new DefaultSubprocessDispatcher();
     this.policyHook = options.policyHook ?? allowAllPolicyHook;
-    this.runtimeVersion = options.runtimeVersion ?? DEFAULT_RUNTIME_VERSION;
+    this.runtimeVersion = options.runtimeVersion ?? DEFAULT_KERNEL_RUNTIME_VERSION;
   }
 
   async onStartup(): Promise<number> {
@@ -132,11 +140,17 @@ export class ToolHost {
 
     const metadata = resolveMetadata(context);
     const workspaceAllowed = parseScopeList(
-      metadata.workspace_allowed_scopes,
+      metadata[EXECUTION_METADATA_KEYS.WORKSPACE_ALLOWED_SCOPES],
       context.allowed_scopes,
     );
-    const laneAllowed = parseScopeList(metadata.lane_allowed_scopes, context.allowed_scopes);
-    const taskDeclared = parseScopeList(metadata.task_declared_scopes, context.allowed_scopes);
+    const laneAllowed = parseScopeList(
+      metadata[EXECUTION_METADATA_KEYS.LANE_ALLOWED_SCOPES],
+      context.allowed_scopes,
+    );
+    const taskDeclared = parseScopeList(
+      metadata[EXECUTION_METADATA_KEYS.TASK_DECLARED_SCOPES],
+      context.allowed_scopes,
+    );
 
     const scopeRequested = capability.required_scopes;
     const reservedFrameworkWriteScopes = collectReservedFrameworkWriteScopes(scopeRequested);
@@ -153,16 +167,20 @@ export class ToolHost {
     const startedAt = Date.now();
     const timestamp = new Date(startedAt).toISOString();
 
-    const workspaceConfigHashCandidate = parseOptionalString(metadata.workspace_config_hash);
+    const workspaceConfigHashCandidate = parseOptionalString(
+      metadata[EXECUTION_METADATA_KEYS.WORKSPACE_CONFIG_HASH],
+    );
     const workspaceConfigHash =
       workspaceConfigHashCandidate && SHA256_HEX_REGEX.test(workspaceConfigHashCandidate)
         ? workspaceConfigHashCandidate
         : DEFAULT_WORKSPACE_CONFIG_HASH;
 
-    const runtimeVersion = parseOptionalString(metadata.runtime_version) ?? this.runtimeVersion;
-    const packVersion = parseOptionalString(metadata.pack_version);
-    const packIntegrity = parseOptionalString(metadata.pack_integrity);
-    const packId = capability.pack ?? parseOptionalString(metadata.pack_id);
+    const runtimeVersion =
+      parseOptionalString(metadata[EXECUTION_METADATA_KEYS.RUNTIME_VERSION]) ?? this.runtimeVersion;
+    const packVersion = parseOptionalString(metadata[EXECUTION_METADATA_KEYS.PACK_VERSION]);
+    const packIntegrity = parseOptionalString(metadata[EXECUTION_METADATA_KEYS.PACK_INTEGRITY]);
+    const packId =
+      capability.pack ?? parseOptionalString(metadata[EXECUTION_METADATA_KEYS.PACK_ID]);
 
     await this.evidenceStore.appendTrace({
       schema_version: 1,
@@ -192,8 +210,7 @@ export class ToolHost {
         success: false,
         error: {
           code: TOOL_ERROR_CODES.SCOPE_DENIED,
-          message:
-            'Reserved scope violation: pack/tool write scopes under .lumenflow/** are not allowed.',
+          message: `Reserved scope violation: pack/tool write scopes under ${RESERVED_FRAMEWORK_SCOPE_GLOB} are not allowed.`,
           details: {
             reserved_scopes: reservedFrameworkWriteScopes,
           },
@@ -207,13 +224,12 @@ export class ToolHost {
         timestamp: new Date().toISOString(),
         result: 'denied',
         duration_ms: Date.now() - startedAt,
-        scope_enforcement_note:
-          'Denied by reserved framework boundary: .lumenflow/** is framework-owned.',
+        scope_enforcement_note: `Denied by reserved framework boundary: ${RESERVED_FRAMEWORK_SCOPE_GLOB} is framework-owned.`,
         policy_decisions: [
           {
-            policy_id: 'kernel.scope.reserved-path',
+            policy_id: KERNEL_POLICY_IDS.SCOPE_RESERVED_PATH,
             decision: 'deny',
-            reason: 'Pack/tool declared write scope targets reserved .lumenflow/** namespace',
+            reason: `Pack/tool declared write scope targets reserved ${RESERVED_FRAMEWORK_SCOPE_GLOB} namespace`,
           },
         ],
         artifacts_written: [],
@@ -245,7 +261,7 @@ export class ToolHost {
         scope_enforcement_note: 'Denied by hard boundary: empty scope intersection.',
         policy_decisions: [
           {
-            policy_id: 'kernel.scope.boundary',
+            policy_id: KERNEL_POLICY_IDS.SCOPE_BOUNDARY,
             decision: 'deny',
             reason: 'No intersecting scopes after scope resolution',
           },

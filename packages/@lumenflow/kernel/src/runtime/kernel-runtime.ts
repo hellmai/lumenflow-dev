@@ -12,7 +12,23 @@ import {
   isRunLifecycleEventKind,
   type RunLifecycleEventKind,
 } from '../event-kinds.js';
-import { PACKS_DIR_NAME, UTF8_ENCODING, WORKSPACE_FILE_NAME } from '../shared-constants.js';
+import {
+  EXECUTION_METADATA_KEYS,
+  KERNEL_POLICY_IDS,
+  KERNEL_RUNTIME_EVENTS_DIR_NAME,
+  KERNEL_RUNTIME_EVENTS_FILE_NAME,
+  KERNEL_RUNTIME_EVENTS_LOCK_FILE_NAME,
+  KERNEL_RUNTIME_EVIDENCE_DIR_NAME,
+  KERNEL_RUNTIME_ROOT_DIR_NAME,
+  KERNEL_RUNTIME_TASKS_DIR_NAME,
+  LUMENFLOW_DIR_NAME,
+  LUMENFLOW_SCOPE_NAME,
+  PACKAGES_DIR_NAME,
+  PACKS_DIR_NAME,
+  UTF8_ENCODING,
+  WORKSPACE_CONFIG_HASH_CONTEXT_KEYS,
+  WORKSPACE_FILE_NAME,
+} from '../shared-constants.js';
 import {
   EventStore,
   projectTaskState,
@@ -59,12 +75,11 @@ import { ToolHost, type PolicyHook } from '../tool-host/tool-host.js';
 import type { SubprocessDispatcher } from '../tool-host/subprocess-dispatcher.js';
 import { ToolRegistry } from '../tool-host/tool-registry.js';
 
-const DEFAULT_RUNTIME_ROOT = path.join('.lumenflow', 'kernel');
+const DEFAULT_RUNTIME_ROOT = path.join(LUMENFLOW_DIR_NAME, KERNEL_RUNTIME_ROOT_DIR_NAME);
 const DEFAULT_PACKS_ROOT_CANDIDATES = [
   PACKS_DIR_NAME,
-  path.join('packages', '@lumenflow', PACKS_DIR_NAME),
+  path.join(PACKAGES_DIR_NAME, LUMENFLOW_SCOPE_NAME, PACKS_DIR_NAME),
 ];
-const RUNTIME_POLICY_FALLBACK_ID = 'kernel.policy.runtime-fallback';
 const DEFAULT_PACK_TOOL_INPUT_SCHEMA = z.record(z.string(), z.unknown());
 const DEFAULT_PACK_TOOL_OUTPUT_SCHEMA = z.record(z.string(), z.unknown());
 const RUNTIME_LOAD_STAGE_ERROR_PREFIX = 'Runtime load stage failed for pack';
@@ -75,7 +90,6 @@ const SPEC_TAMPERED_WORKSPACE_MESSAGE =
   'Workspace configuration hash mismatch detected; execution blocked.';
 const SPEC_TAMPERED_WORKSPACE_MISSING_MESSAGE =
   'Workspace configuration file is missing; execution blocked.';
-const WORKSPACE_FILE_MISSING_HASH_CONTEXT = 'workspace_file_missing';
 
 type RunLifecycleEvent = Extract<KernelEvent, { kind: RunLifecycleEventKind }>;
 
@@ -317,7 +331,7 @@ function toPolicyHookDecisions(evaluation: PolicyEvaluationResult): PolicyDecisi
   if (evaluation.decisions.length === 0) {
     return [
       {
-        policy_id: RUNTIME_POLICY_FALLBACK_ID,
+        policy_id: KERNEL_POLICY_IDS.RUNTIME_FALLBACK,
         decision: evaluation.decision,
         reason: 'Effective policy decision without explicit matching rules.',
       },
@@ -330,7 +344,7 @@ function toPolicyHookDecisions(evaluation: PolicyEvaluationResult): PolicyDecisi
       return [
         ...evaluation.decisions,
         {
-          policy_id: RUNTIME_POLICY_FALLBACK_ID,
+          policy_id: KERNEL_POLICY_IDS.RUNTIME_FALLBACK,
           decision: 'deny',
           reason: 'Effective policy decision is deny.',
         },
@@ -605,7 +619,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
       }
       missingWorkspaceFile = true;
       actualHash = canonical_json({
-        [WORKSPACE_FILE_MISSING_HASH_CONTEXT]: this.workspaceFilePath,
+        [WORKSPACE_CONFIG_HASH_CONTEXT_KEYS.WORKSPACE_FILE_MISSING]: this.workspaceFilePath,
       });
     }
 
@@ -631,7 +645,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
           details: {
             workspace_id: this.workspaceSpec.id,
             workspace_file_path: this.workspaceFilePath,
-            workspace_file_missing: missingWorkspaceFile,
+            [WORKSPACE_CONFIG_HASH_CONTEXT_KEYS.WORKSPACE_FILE_MISSING]: missingWorkspaceFile,
             expected_hash: expectedHash,
             actual_hash: actualHash,
           },
@@ -643,7 +657,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
       ...context,
       metadata: {
         ...metadata,
-        workspace_config_hash: actualHash,
+        [EXECUTION_METADATA_KEYS.WORKSPACE_CONFIG_HASH]: actualHash,
       },
     });
 
@@ -949,18 +963,30 @@ export async function initializeKernelRuntime(
   const now = options.now ?? (() => new Date());
 
   const taskSpecRoot = path.resolve(
-    options.taskSpecRoot ?? path.join(workspaceRoot, DEFAULT_RUNTIME_ROOT, 'tasks'),
+    options.taskSpecRoot ??
+      path.join(workspaceRoot, DEFAULT_RUNTIME_ROOT, KERNEL_RUNTIME_TASKS_DIR_NAME),
   );
   const eventsFilePath = path.resolve(
     options.eventsFilePath ??
-      path.join(workspaceRoot, DEFAULT_RUNTIME_ROOT, 'events', 'events.jsonl'),
+      path.join(
+        workspaceRoot,
+        DEFAULT_RUNTIME_ROOT,
+        KERNEL_RUNTIME_EVENTS_DIR_NAME,
+        KERNEL_RUNTIME_EVENTS_FILE_NAME,
+      ),
   );
   const eventLockFilePath = path.resolve(
     options.eventLockFilePath ??
-      path.join(workspaceRoot, DEFAULT_RUNTIME_ROOT, 'events', 'events.lock'),
+      path.join(
+        workspaceRoot,
+        DEFAULT_RUNTIME_ROOT,
+        KERNEL_RUNTIME_EVENTS_DIR_NAME,
+        KERNEL_RUNTIME_EVENTS_LOCK_FILE_NAME,
+      ),
   );
   const evidenceRoot = path.resolve(
-    options.evidenceRoot ?? path.join(workspaceRoot, DEFAULT_RUNTIME_ROOT, 'evidence'),
+    options.evidenceRoot ??
+      path.join(workspaceRoot, DEFAULT_RUNTIME_ROOT, KERNEL_RUNTIME_EVIDENCE_DIR_NAME),
   );
 
   const packLoader = new PackLoader({ packsRoot });

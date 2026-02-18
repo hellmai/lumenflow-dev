@@ -7,7 +7,11 @@ import { readFile } from 'node:fs/promises';
 import YAML from 'yaml';
 import { KERNEL_EVENT_KINDS } from '../event-kinds.js';
 import type { PackPin, WorkspaceSpec } from '../kernel.schemas.js';
-import { PACK_MANIFEST_FILE_NAME, UTF8_ENCODING } from '../shared-constants.js';
+import {
+  PACK_MANIFEST_FILE_NAME,
+  SHA256_INTEGRITY_PREFIX,
+  UTF8_ENCODING,
+} from '../shared-constants.js';
 import { computeDeterministicPackHash, listPackFiles } from './hash.js';
 import { DomainPackManifestSchema, type DomainPackManifest } from './manifest.js';
 
@@ -234,7 +238,9 @@ export class PackLoader {
       };
     }
 
-    const expectedIntegrity = pin.integrity.replace(/^sha256:/, '');
+    const expectedIntegrity = pin.integrity.startsWith(SHA256_INTEGRITY_PREFIX)
+      ? pin.integrity.slice(SHA256_INTEGRITY_PREFIX.length)
+      : pin.integrity;
     if (integrity !== expectedIntegrity) {
       throw new Error(
         `Pack integrity mismatch for ${pin.id}: expected ${expectedIntegrity}, got ${integrity}`,
