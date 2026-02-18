@@ -1,0 +1,44 @@
+id: WU-1857
+title: 'Shore up web frontend infra: React linting, vitest jsdom, turbo TSX, surfaces package'
+lane: 'Operations: Tooling'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-18
+code_paths:
+  - eslint.config.mjs
+  - apps/web/vitest.config.ts
+  - apps/web/turbo.json
+  - apps/web/package.json
+  - apps/web/tsconfig.json
+  - .claude/skills/frontend-design/SKILL.md
+tests:
+  manual:
+    - eslint --print-config on a .tsx file shows react-hooks/rules-of-hooks enabled
+    - vitest run in apps/web passes with a jsdom-based React component test
+  unit:
+    - apps/web/__tests__/smoke-component.test.tsx
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1857.done
+dependencies: []
+initiative: INIT-031
+phase: 1
+risks: []
+notes: Unblocks WU-1820, WU-1821, WU-1822 (Phase 1 dashboard pages). Must be done before any React component work.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: apps/web was scaffolded in WU-1819 with API routes but no React component infrastructure. Problem: (1) no eslint-plugin-react/react-hooks, (2) vitest env is node not jsdom, (3) turbo lint/typecheck inputs miss .tsx, (4) @lumenflow/surfaces imported via relative path, (5) local frontend-design skill stub shadows Anthropic plugin. Solution: install React ESLint rules, configure jsdom vitest, fix turbo inputs, fix surfaces import, remove local skill stub.'
+acceptance:
+  - eslint-plugin-react and eslint-plugin-react-hooks configured in root eslint.config.mjs
+  - apps/web has vitest config with jsdom environment and @vitejs/plugin-react
+  - Turbo lint/typecheck inputs include .tsx files for apps/web
+  - '@lumenflow/surfaces imported via workspace protocol or tsconfig path alias, not relative'
+  - Local .claude/skills/frontend-design/ stub removed
+  - A simple React component test renders successfully with vitest in apps/web
