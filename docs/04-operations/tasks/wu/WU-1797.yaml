@@ -2,7 +2,7 @@ id: WU-1797
 title: 'Phase 3 pack workflow: expose WU YAML lifecycle as runtime-managed pack tools'
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -56,3 +56,11 @@ acceptance:
   - getRuntimeForWorkspace() in runtime-task-tools.ts passes custom resolver to
     initializeKernelRuntime()
   - Runtime initializes successfully with custom resolver wired in
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1797
+claimed_at: 2026-02-18T09:03:18.125Z
+baseline_main_sha: 7b789ef26facb916452ed4c98b9c9aebf7be5b66
+session_id: 29cc0af1-b3c8-419b-b8cd-85ab8b21d9d5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T09:03:18.132Z
