@@ -5,7 +5,6 @@ _Last updated: 2026-02-18_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1815 — Post-Phase-3 shell-out deprecation recertification and metric closure](wu/WU-1815.yaml)
 - [WU-1833 — Build GenUI tool output renderers for rich tool result visualization](wu/WU-1833.yaml)
 - [WU-1838 — Create pack:publish CLI command for registry upload](wu/WU-1838.yaml)
 
@@ -787,3 +786,4 @@ _Last updated: 2026-02-18_
 - [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml) — 2026-02-18
 - [WU-1829 — Add pack catalog page to web dashboard with tool and policy visualization](wu/WU-1829.yaml) — 2026-02-18
 - [WU-1827 — Create pack:install CLI command for adding packs to workspace](wu/WU-1827.yaml) — 2026-02-18
+- [WU-1815 — Post-Phase-3 shell-out deprecation recertification and metric closure](wu/WU-1815.yaml) — 2026-02-18

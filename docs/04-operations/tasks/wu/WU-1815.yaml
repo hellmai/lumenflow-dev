@@ -2,7 +2,7 @@ id: WU-1815
 title: Post-Phase-3 shell-out deprecation recertification and metric closure
 lane: 'Framework: Core Lifecycle'
 type: documentation
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -49,3 +49,6 @@ session_id: 54ea85b8-c06f-4294-9170-8ddfc61a9ddb
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T21:24:22.557Z
+locked: true
+completed_at: 2026-02-18T21:33:02.676Z
+completed: 2026-02-18

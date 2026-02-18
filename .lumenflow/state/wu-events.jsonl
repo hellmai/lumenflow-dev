@@ -1639,5 +1639,6 @@
 {"type":"claim","wuId":"WU-1815","timestamp":"2026-02-18T21:24:22.578Z","lane":"Framework: Core Lifecycle","title":"Post-Phase-3 shell-out deprecation recertification and metric closure"}
 {"type":"complete","wuId":"WU-1829","timestamp":"2026-02-18T21:26:11.243Z"}
 {"type":"complete","wuId":"WU-1827","timestamp":"2026-02-18T21:27:07.729Z"}
-{"type":"claim","wuId":"WU-1833","lane":"Content: Site Comms","title":"Build GenUI tool output renderers for rich tool result visualization","timestamp":"2026-02-18T21:30:49.203Z"}
-{"type":"claim","wuId":"WU-1838","lane":"Framework: CLI Orchestration","title":"Create pack:publish CLI command for registry upload","timestamp":"2026-02-18T21:32:06.832Z"}
+{"type":"claim","wuId":"WU-1833","timestamp":"2026-02-18T21:30:49.203Z","lane":"Content: Site Comms","title":"Build GenUI tool output renderers for rich tool result visualization"}
+{"type":"claim","wuId":"WU-1838","timestamp":"2026-02-18T21:32:06.832Z","lane":"Framework: CLI Orchestration","title":"Create pack:publish CLI command for registry upload"}
+{"type":"complete","wuId":"WU-1815","timestamp":"2026-02-18T21:33:07.363Z"}
