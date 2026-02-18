@@ -2,7 +2,7 @@ id: WU-1802
 title: Migrate validation and lane tools to runtime pack execution
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -49,3 +49,6 @@ session_id: b74ac5ee-4501-43a5-911a-3f62fe497dcc
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T15:18:34.525Z
+locked: true
+completed_at: 2026-02-18T16:33:22.744Z
+completed: 2026-02-18
