@@ -91,4 +91,90 @@ describe('scope intersection', () => {
     expect(networkScopes).toHaveLength(0);
     expect(intersection.filter((scope) => scope.type === 'path')).toHaveLength(0);
   });
+
+  it('handles wildcard-vs-wildcard intersections by selecting the narrowest overlap', () => {
+    const wildcardScopes: ToolScope[] = [
+      { type: 'path', pattern: 'packages/**', access: 'read' },
+      { type: 'path', pattern: 'packages/@lumenflow/**', access: 'read' },
+      { type: 'path', pattern: 'packages/@lumenflow/kernel/**', access: 'read' },
+      { type: 'path', pattern: 'packages/@lumenflow/kernel/src/**', access: 'read' },
+    ];
+
+    const intersection = intersectToolScopes({
+      workspaceAllowed: [wildcardScopes[0]],
+      laneAllowed: [wildcardScopes[1]],
+      taskDeclared: [wildcardScopes[2]],
+      toolRequired: [wildcardScopes[3]],
+    });
+
+    expect(intersection).toEqual([
+      {
+        type: 'path',
+        access: 'read',
+        pattern: 'packages/@lumenflow/kernel/src/**',
+      },
+    ]);
+  });
+
+  it('returns an empty intersection when any required scope set is empty', () => {
+    const intersection = intersectToolScopes({
+      workspaceAllowed: [{ type: 'path', pattern: 'packages/**', access: 'read' }],
+      laneAllowed: [],
+      taskDeclared: [{ type: 'path', pattern: 'packages/@lumenflow/**', access: 'read' }],
+      toolRequired: [{ type: 'path', pattern: 'packages/@lumenflow/kernel/**', access: 'read' }],
+    });
+
+    expect(intersection).toEqual([]);
+  });
+
+  it('returns no path scopes for disjoint wildcard patterns', () => {
+    const intersection = intersectToolScopes({
+      workspaceAllowed: [{ type: 'path', pattern: 'docs/**', access: 'read' }],
+      laneAllowed: [{ type: 'path', pattern: 'docs/04-operations/**', access: 'read' }],
+      taskDeclared: [{ type: 'path', pattern: 'docs/04-operations/tasks/**', access: 'read' }],
+      toolRequired: [{ type: 'path', pattern: 'packages/**', access: 'read' }],
+    });
+
+    expect(intersection).toEqual([]);
+  });
+
+  it('skips path candidates that fail lane/task overlap or pairwise overlap checks', () => {
+    const laneMismatch = intersectToolScopes({
+      workspaceAllowed: [{ type: 'path', pattern: 'packages/**', access: 'read' }],
+      laneAllowed: [{ type: 'path', pattern: 'docs/**', access: 'read' }],
+      taskDeclared: [{ type: 'path', pattern: 'packages/@lumenflow/**', access: 'read' }],
+      toolRequired: [{ type: 'path', pattern: 'packages/**', access: 'read' }],
+    });
+
+    expect(laneMismatch).toEqual([]);
+
+    const taskMismatch = intersectToolScopes({
+      workspaceAllowed: [{ type: 'path', pattern: 'packages/**', access: 'read' }],
+      laneAllowed: [{ type: 'path', pattern: 'packages/@lumenflow/**', access: 'read' }],
+      taskDeclared: [{ type: 'path', pattern: 'docs/**', access: 'read' }],
+      toolRequired: [{ type: 'path', pattern: 'packages/**', access: 'read' }],
+    });
+
+    expect(taskMismatch).toEqual([]);
+
+    const pairwiseDisjoint = intersectToolScopes({
+      workspaceAllowed: [{ type: 'path', pattern: 'packages/a/**', access: 'read' }],
+      laneAllowed: [{ type: 'path', pattern: 'packages/*/src/**', access: 'read' }],
+      taskDeclared: [{ type: 'path', pattern: 'packages/b/src/**', access: 'read' }],
+      toolRequired: [{ type: 'path', pattern: 'packages/**', access: 'read' }],
+    });
+
+    expect(pairwiseDisjoint).toEqual([]);
+  });
+
+  it('retains matching network posture when all policy layers allow it', () => {
+    const intersection = intersectToolScopes({
+      workspaceAllowed: [{ type: 'network', posture: 'full' }],
+      laneAllowed: [{ type: 'network', posture: 'full' }],
+      taskDeclared: [{ type: 'network', posture: 'full' }],
+      toolRequired: [{ type: 'network', posture: 'full' }],
+    });
+
+    expect(intersection).toContainEqual({ type: 'network', posture: 'full' });
+  });
 });
