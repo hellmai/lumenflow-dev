@@ -1568,3 +1568,4 @@
 {"type":"complete","wuId":"WU-1845","timestamp":"2026-02-18T14:31:04.447Z"}
 {"type":"claim","wuId":"WU-1846","timestamp":"2026-02-18T14:31:46.315Z","lane":"Framework: Core Lifecycle","title":"Generate manifest tool declarations from compact config instead of 550-line boilerplate"}
 {"type":"complete","wuId":"WU-1846","timestamp":"2026-02-18T14:41:28.299Z"}
+{"type":"claim","wuId":"WU-1804","lane":"Framework: Core Lifecycle","title":"Migrate orchestration query tools to runtime pack execution","timestamp":"2026-02-18T14:42:32.260Z"}
