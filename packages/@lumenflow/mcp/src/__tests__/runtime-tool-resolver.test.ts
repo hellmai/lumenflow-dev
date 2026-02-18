@@ -47,6 +47,11 @@ const ORCHESTRATION_QUERY_TOOL_NAMES = {
   MONITOR: 'orchestrate:monitor',
   DELEGATION_LIST: 'delegation:list',
 } as const;
+const WU_LIFECYCLE_INIT_TOOL_NAMES = {
+  CREATE: 'wu:create',
+  CLAIM: 'wu:claim',
+  PROTO: 'wu:proto',
+} as const;
 
 function createResolverInput(toolName: string): RuntimeToolCapabilityResolverInput {
   return {
@@ -182,6 +187,20 @@ describe('packToolCapabilityResolver', () => {
       ORCHESTRATION_QUERY_TOOL_NAMES.INIT_STATUS,
       ORCHESTRATION_QUERY_TOOL_NAMES.MONITOR,
       ORCHESTRATION_QUERY_TOOL_NAMES.DELEGATION_LIST,
+    ];
+
+    for (const toolName of toolNames) {
+      const capability = await packToolCapabilityResolver(createResolverInput(toolName));
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+      expect(isInProcessPackToolRegistered(toolName)).toBe(true);
+    }
+  });
+
+  it('resolves WU lifecycle initiation tools to in-process handlers', async () => {
+    const toolNames = [
+      WU_LIFECYCLE_INIT_TOOL_NAMES.CREATE,
+      WU_LIFECYCLE_INIT_TOOL_NAMES.CLAIM,
+      WU_LIFECYCLE_INIT_TOOL_NAMES.PROTO,
     ];
 
     for (const toolName of toolNames) {

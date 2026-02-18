@@ -79,6 +79,7 @@ vi.mock('../tools-shared.js', async () => {
 
 describe('wu_claim cloud mode passthrough (WU-1491)', () => {
   const mockRunCliCommand = vi.mocked(cliRunner.runCliCommand);
+  const mockExecuteViaPack = vi.mocked(toolsShared.executeViaPack);
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -96,11 +97,9 @@ describe('wu_claim cloud mode passthrough (WU-1491)', () => {
   });
 
   it('should pass --cloud flag to CLI', async () => {
-    mockRunCliCommand.mockResolvedValue({
+    mockExecuteViaPack.mockResolvedValue({
       success: true,
-      stdout: 'WU claimed in cloud mode',
-      stderr: '',
-      exitCode: 0,
+      data: { message: 'WU claimed in cloud mode' },
     });
 
     const result = await wuClaimTool.execute({
@@ -110,19 +109,27 @@ describe('wu_claim cloud mode passthrough (WU-1491)', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(mockRunCliCommand).toHaveBeenCalledWith(
+    expect(mockExecuteViaPack).toHaveBeenCalledWith(
       'wu:claim',
-      expect.arrayContaining(['--id', 'WU-1491', '--lane', 'Framework: CLI', '--cloud']),
-      expect.any(Object),
+      expect.objectContaining({
+        id: 'WU-1491',
+        lane: 'Framework: CLI',
+        cloud: true,
+      }),
+      expect.objectContaining({
+        fallback: expect.objectContaining({
+          command: 'wu:claim',
+          args: expect.arrayContaining(['--id', 'WU-1491', '--lane', 'Framework: CLI', '--cloud']),
+        }),
+      }),
     );
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
   });
 
   it('should pass --branch-only flag to CLI', async () => {
-    mockRunCliCommand.mockResolvedValue({
+    mockExecuteViaPack.mockResolvedValue({
       success: true,
-      stdout: 'WU claimed in branch-only mode',
-      stderr: '',
-      exitCode: 0,
+      data: { message: 'WU claimed in branch-only mode' },
     });
 
     const result = await wuClaimTool.execute({
@@ -132,19 +139,33 @@ describe('wu_claim cloud mode passthrough (WU-1491)', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(mockRunCliCommand).toHaveBeenCalledWith(
+    expect(mockExecuteViaPack).toHaveBeenCalledWith(
       'wu:claim',
-      expect.arrayContaining(['--id', 'WU-1491', '--lane', 'Framework: CLI', '--branch-only']),
-      expect.any(Object),
+      expect.objectContaining({
+        id: 'WU-1491',
+        lane: 'Framework: CLI',
+        branch_only: true,
+      }),
+      expect.objectContaining({
+        fallback: expect.objectContaining({
+          command: 'wu:claim',
+          args: expect.arrayContaining([
+            '--id',
+            'WU-1491',
+            '--lane',
+            'Framework: CLI',
+            '--branch-only',
+          ]),
+        }),
+      }),
     );
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
   });
 
   it('should pass --pr-mode flag to CLI', async () => {
-    mockRunCliCommand.mockResolvedValue({
+    mockExecuteViaPack.mockResolvedValue({
       success: true,
-      stdout: 'WU claimed in PR mode',
-      stderr: '',
-      exitCode: 0,
+      data: { message: 'WU claimed in PR mode' },
     });
 
     const result = await wuClaimTool.execute({
@@ -154,19 +175,33 @@ describe('wu_claim cloud mode passthrough (WU-1491)', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(mockRunCliCommand).toHaveBeenCalledWith(
+    expect(mockExecuteViaPack).toHaveBeenCalledWith(
       'wu:claim',
-      expect.arrayContaining(['--id', 'WU-1491', '--lane', 'Framework: CLI', '--pr-mode']),
-      expect.any(Object),
+      expect.objectContaining({
+        id: 'WU-1491',
+        lane: 'Framework: CLI',
+        pr_mode: true,
+      }),
+      expect.objectContaining({
+        fallback: expect.objectContaining({
+          command: 'wu:claim',
+          args: expect.arrayContaining([
+            '--id',
+            'WU-1491',
+            '--lane',
+            'Framework: CLI',
+            '--pr-mode',
+          ]),
+        }),
+      }),
     );
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
   });
 
   it('should pass combined --branch-only --pr-mode flags to CLI', async () => {
-    mockRunCliCommand.mockResolvedValue({
+    mockExecuteViaPack.mockResolvedValue({
       success: true,
-      stdout: 'WU claimed in branch-pr mode',
-      stderr: '',
-      exitCode: 0,
+      data: { message: 'WU claimed in branch-pr mode' },
     });
 
     const result = await wuClaimTool.execute({
@@ -177,18 +212,29 @@ describe('wu_claim cloud mode passthrough (WU-1491)', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(mockRunCliCommand).toHaveBeenCalledWith(
+    expect(mockExecuteViaPack).toHaveBeenCalledWith(
       'wu:claim',
-      expect.arrayContaining([
-        '--id',
-        'WU-1491',
-        '--lane',
-        'Framework: CLI',
-        '--branch-only',
-        '--pr-mode',
-      ]),
-      expect.any(Object),
+      expect.objectContaining({
+        id: 'WU-1491',
+        lane: 'Framework: CLI',
+        branch_only: true,
+        pr_mode: true,
+      }),
+      expect.objectContaining({
+        fallback: expect.objectContaining({
+          command: 'wu:claim',
+          args: expect.arrayContaining([
+            '--id',
+            'WU-1491',
+            '--lane',
+            'Framework: CLI',
+            '--branch-only',
+            '--pr-mode',
+          ]),
+        }),
+      }),
     );
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
   });
 
   it('should require sandbox_command when sandbox mode is requested', async () => {
@@ -203,11 +249,9 @@ describe('wu_claim cloud mode passthrough (WU-1491)', () => {
   });
 
   it('should pass sandbox mode and command args through to CLI', async () => {
-    mockRunCliCommand.mockResolvedValue({
+    mockExecuteViaPack.mockResolvedValue({
       success: true,
-      stdout: 'WU claimed with sandbox launch',
-      stderr: '',
-      exitCode: 0,
+      data: { message: 'WU claimed with sandbox launch' },
     });
 
     const result = await wuClaimTool.execute({
@@ -218,21 +262,32 @@ describe('wu_claim cloud mode passthrough (WU-1491)', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(mockRunCliCommand).toHaveBeenCalledWith(
+    expect(mockExecuteViaPack).toHaveBeenCalledWith(
       'wu:claim',
-      expect.arrayContaining([
-        '--id',
-        'WU-1687',
-        '--lane',
-        'Framework: CLI Enforcement',
-        '--sandbox',
-        '--',
-        'node',
-        '-e',
-        'process.exit(0)',
-      ]),
-      expect.any(Object),
+      expect.objectContaining({
+        id: 'WU-1687',
+        lane: 'Framework: CLI Enforcement',
+        sandbox: true,
+        sandbox_command: ['node', '-e', 'process.exit(0)'],
+      }),
+      expect.objectContaining({
+        fallback: expect.objectContaining({
+          command: 'wu:claim',
+          args: expect.arrayContaining([
+            '--id',
+            'WU-1687',
+            '--lane',
+            'Framework: CLI Enforcement',
+            '--sandbox',
+            '--',
+            'node',
+            '-e',
+            'process.exit(0)',
+          ]),
+        }),
+      }),
     );
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
   });
 });
 
@@ -1043,7 +1098,6 @@ describe('Wave-1 parity MCP tools (WU-1482)', () => {
   });
 
   it('should run lumenflow aliases and metrics tool with mapped flags', async () => {
-    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
     mockExecuteViaPack.mockResolvedValue({ success: true, data: { message: 'ok' } });
 
     await lumenflowTool.execute({ client: 'codex', merge: true, full: true, framework: 'arc42' });
@@ -1471,24 +1525,37 @@ describe('Wave-2 parity MCP tools (WU-1483)', () => {
       labels: ['proto', 'mcp'],
       assigned_to: 'tom@hellm.ai',
     });
-    expect(mockRunCliCommand).toHaveBeenCalledWith(
+    expect(mockExecuteViaPack).toHaveBeenLastCalledWith(
       'wu:proto',
-      expect.arrayContaining([
-        '--lane',
-        'Framework: MCP',
-        '--title',
-        'Prototype',
-        '--description',
-        'desc',
-        '--code-paths',
-        'packages/@lumenflow/mcp/src/tools.ts',
-        '--labels',
-        'proto,mcp',
-        '--assigned-to',
-        'tom@hellm.ai',
-      ]),
-      expect.any(Object),
+      expect.objectContaining({
+        lane: 'Framework: MCP',
+        title: 'Prototype',
+        description: 'desc',
+        code_paths: ['packages/@lumenflow/mcp/src/tools.ts'],
+        labels: ['proto', 'mcp'],
+        assigned_to: 'tom@hellm.ai',
+      }),
+      expect.objectContaining({
+        fallback: expect.objectContaining({
+          command: 'wu:proto',
+          args: expect.arrayContaining([
+            '--lane',
+            'Framework: MCP',
+            '--title',
+            'Prototype',
+            '--description',
+            'desc',
+            '--code-paths',
+            'packages/@lumenflow/mcp/src/tools.ts',
+            '--labels',
+            'proto,mcp',
+            '--assigned-to',
+            'tom@hellm.ai',
+          ]),
+        }),
+      }),
     );
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
   });
 });
 

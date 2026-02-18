@@ -1408,15 +1408,24 @@ export const wuProtoTool: ToolDefinition = {
     }
     if (input.assigned_to) args.push('--assigned-to', input.assigned_to as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_PROTO, args, cliOptions);
+    const execution = await executeViaPack(CliCommands.WU_PROTO, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_PROTO,
+        args,
+        errorCode: ErrorCodes.WU_PROTO_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Prototype WU created' });
+    if (!execution.success) {
+      return error(execution.error?.message ?? 'wu:proto failed', ErrorCodes.WU_PROTO_ERROR);
     }
-    return error(
-      result.stderr || result.error?.message || 'wu:proto failed',
-      ErrorCodes.WU_PROTO_ERROR,
-    );
+
+    return success(execution.data ?? { message: 'Prototype WU created' });
   },
 };
