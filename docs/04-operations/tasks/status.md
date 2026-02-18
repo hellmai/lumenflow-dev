@@ -758,3 +758,4 @@ _Last updated: 2026-02-18_
 - [WU-1817 — Create HTTP surface with SSE event streaming and REST task API](wu/WU-1817.yaml) — 2026-02-18
 - [WU-1818 — Create AG-UI event adapter mapping kernel events to AG-UI protocol](wu/WU-1818.yaml) — 2026-02-18
 - [WU-1856 — Tighten WU-1802 handler code: eliminate over-abstraction and fix bugs](wu/WU-1856.yaml) — 2026-02-18
+- [WU-1819 — Scaffold Next.js web app with API routes for HTTP surface](wu/WU-1819.yaml) — 2026-02-18

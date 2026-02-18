@@ -23,7 +23,6 @@ sections:
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
-- [WU-1819 — Scaffold Next.js web app with API routes for HTTP surface](wu/WU-1819.yaml) — Content: Site Comms
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1806 — Migrate WU creation and claiming tools to runtime pack execution](wu/WU-1806.yaml) — Framework: Core Lifecycle
 - [WU-1807 — Migrate WU state transition tools to runtime pack execution](wu/WU-1807.yaml) — Framework: Core Lifecycle
@@ -819,6 +818,7 @@ sections:
 - [WU-1817 — Create HTTP surface with SSE event streaming and REST task API](wu/WU-1817.yaml)
 - [WU-1818 — Create AG-UI event adapter mapping kernel events to AG-UI protocol](wu/WU-1818.yaml)
 - [WU-1856 — Tighten WU-1802 handler code: eliminate over-abstraction and fix bugs](wu/WU-1856.yaml)
+- [WU-1819 — Scaffold Next.js web app with API routes for HTTP surface](wu/WU-1819.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
