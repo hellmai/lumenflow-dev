@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1851 — Centralize MCP surface CLI command/flag/metadata-key governance with guardrail ratchet](wu/WU-1851.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
@@ -72,6 +71,7 @@ sections:
 - [WU-1847 — Decompose tool-host execute method and extract denial trace helper](wu/WU-1847.yaml) — Framework: Core Lifecycle
 - [WU-1849 — Add missing test coverage for INIT-030 phase 2-3 gaps](wu/WU-1849.yaml) — Framework: Core Lifecycle
 - [WU-1850 — Fix surfaces relative imports and extract daemon handler registry](wu/WU-1850.yaml) — Framework: Core Lifecycle
+- [WU-1851 — Centralize MCP surface CLI command/flag/metadata-key governance with guardrail ratchet](wu/WU-1851.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 

@@ -1,13 +1,14 @@
 id: WU-1851
 title: Centralize MCP surface CLI command/flag/metadata-key governance with guardrail ratchet
-lane: 'Framework: Core Lifecycle'
+lane: 'Framework: MCP'
 type: refactor
 status: ready
-priority: P2
+priority: P1
 created: 2026-02-18
 code_paths:
   - packages/@lumenflow/mcp/src/tools-shared.ts
   - packages/@lumenflow/mcp/src/tools/parity-tools.ts
+  - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
   - packages/@lumenflow/mcp/src/tools/wu-tools.ts
   - packages/@lumenflow/mcp/src/tools/setup-tools.ts
   - packages/@lumenflow/mcp/src/tools/validation-tools.ts
@@ -24,6 +25,7 @@ tests:
     - packages/@lumenflow/mcp/src/__tests__/tools.test.ts
     - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
     - packages/@lumenflow/mcp/src/__tests__/literal-governance.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1851.done
@@ -34,8 +36,13 @@ blocked_by:
   - WU-1848
 spec_refs:
   - /home/USER/.claude/plans/adaptive-finding-adleman.md,/home/USER/.claude/plans/zesty-jumping-pixel.md
-risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+risks:
+  - Over-broad centralization can harm readability; limit to governed families only.
+  - Guardrail false positives can block CI; maintain an explicit allowlist and keep patterns narrow.
+  - Parallel edits to parity/domain tool files can create merge churn; sequence by file ownership
+    where possible.
+notes: Scoped to MCP surface governance families only. Keep tool behavior/output parity unchanged
+  while standardizing constants and adding a regression ratchet.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -44,10 +51,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: following WU-1848 (kernel identifier governance), the MCP tool surface still contains 150+ raw string literals across 12 tool modules. Problem: with INIT-030 Phase 3 adding 90 new tool handlers, literal drift will compound. Solution: typed MCP constant modules for governed families and a grep-based guardrail ratchet test.'
+description: 'Context: after kernel-side governance hardening, MCP surface modules still duplicate
+  command tokens, shared flag tokens, and metadata-key literals across parity and domain tool
+  implementations. Problem: INIT-030 Phase 3 migration volume will amplify drift and review noise if
+  governance literals remain scattered. Solution: centralize MCP governance literal families in
+  typed source-of-truth modules and enforce a ratchet test that blocks new duplicate literals in
+  governed families.'
 acceptance:
-  - Introduce mcp-constants.ts with typed constant groups for CLI command names, shared CLI flag tokens (flags in 3+ tool definitions), and cross-boundary metadata keys.
-  - All touched MCP tool files import shared constants for governed families. Flags in fewer than 3 tools remain local.
-  - literal-governance.test.ts implements grep-based guardrail ratchet with allowlist that fails on new duplicate governance literals.
-  - No changes to the public API surface of @lumenflow/mcp exports.
+  - 'Introduce typed MCP constant groups for governed families: CLI command names, shared CLI flag
+    tokens, and cross-boundary metadata/context keys.'
+  - 'CLI flag governance uses an explicit threshold: centralize flags used in 3 or more tool
+    definitions; tool-local flags remain local literals.'
+  - All touched MCP tool files import shared constants for governed families instead of re-declaring
+    raw literals.
+  - Add a grep-based guardrail ratchet test in literal-governance.test.ts with explicit allowlist;
+    fail only on newly introduced duplicate governed literals.
+  - No breaking public API changes to @lumenflow/mcp exports; refactoring remains internal to
+    implementation modules.
+  - Existing MCP behavior/output parity remains unchanged for touched tools.
   - pnpm gates passes.
