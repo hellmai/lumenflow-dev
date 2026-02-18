@@ -7,7 +7,9 @@ priority: P2
 created: 2026-02-18
 code_paths:
   - packages/@lumenflow/cli/src/lane-edit.ts
-  - packages/@lumenflow/cli/src/lane-validate.ts
+  - packages/@lumenflow/cli/src/__tests__/lane-edit.test.ts
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/core/src/wu-cli-constants.ts
 tests:
   manual:
     - Run lane:edit with --rename
@@ -25,10 +27,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-18T12:45:00.778Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1854
+session_id: 24947d08-d3f5-4b32-ba05-f304014eb650
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T12:45:00.785Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -52,11 +61,3 @@ acceptance:
   - lane:validate runs automatically after edit and the command fails without committing if
     validation fails
   - lane:edit is blocked when lanes are not in locked or draft status
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1854
-claimed_at: 2026-02-18T12:45:00.778Z
-baseline_main_sha: 47316926f31dd44e767ce6bbfc6ecf56459f6877
-session_id: 24947d08-d3f5-4b32-ba05-f304014eb650
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-18T12:45:00.785Z
