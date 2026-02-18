@@ -2,7 +2,7 @@ id: WU-1824
 title: Create pack:validate CLI command for pack integrity checking
 lane: 'Framework: CLI Orchestration'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -32,9 +32,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: pnpm pack:validate --id my-pack wraps existing PackLoader manifest validation, import boundary check, and integrity hash computation. Reports pass/fail for each check with actionable error messages. All logic already exists in kernel PackLoader.
+description: pnpm pack:validate --id my-pack wraps existing PackLoader manifest validation, import
+  boundary check, and integrity hash computation. Reports pass/fail for each check with actionable
+  error messages. All logic already exists in kernel PackLoader.
 acceptance:
   - Runs manifest schema validation
   - Runs import boundary check
   - Runs tool entry resolution
   - Reports pass/fail per check with actionable errors
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1824
+claimed_at: 2026-02-18T19:50:00.202Z
+baseline_main_sha: ec9eac55ed4e85dbff5b33e9061475b220e9f910
+session_id: 3805a7b7-77c1-40d7-9a2c-158109e9f82e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T19:50:00.208Z
