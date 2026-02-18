@@ -1,13 +1,30 @@
 id: INIT-031
 slug: ux-surfaces
 title: UX Surfaces — Web Dashboard, Pack DX, AG-UI, Marketplace
-description: ''
+description: 'User-facing surfaces initiative: real-time web dashboard for agent observability, pack
+  authoring DX with git/registry distribution, AG-UI protocol compatibility for GenUI, and pack
+  marketplace for community adoption. Two personas: (1) software devs using the software delivery
+  pack who want to see agents working and trust the automation, (2) pack authors/consumers who want
+  to teach their AI new domains. Differentiator vs OpenClaw: governance you can see — scope
+  intersection, policy decisions, evidence receipts rendered live in the browser.'
 status: draft
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-18
 target_date: 2026-05-09
-phases: []
+phases:
+  - id: 1
+    title: 'Watch Your Agent Think: HTTP Surface + Web Dashboard'
+    status: pending
+  - id: 2
+    title: Pack Developer Experience
+    status: pending
+  - id: 3
+    title: AG-UI Integration and GenUI
+    status: pending
+  - id: 4
+    title: Pack Marketplace and Community
+    status: pending
 success_metrics:
   - Web dashboard renders live task events within 2s of EventStore append
   - AG-UI RunAgent endpoint passes CopilotKit compatibility test
