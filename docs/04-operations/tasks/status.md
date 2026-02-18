@@ -6,6 +6,7 @@ _Last updated: 2026-02-18_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1799 — Migrate file tools (file_read/write/edit/delete) to runtime pack execution](wu/WU-1799.yaml)
+- [WU-1803 — Migrate flow, metrics, and context tools to runtime pack execution](wu/WU-1803.yaml)
 
 ## Completed
 
