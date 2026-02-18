@@ -1551,3 +1551,4 @@
 {"type":"claim","wuId":"WU-1853","lane":"Framework: MCP","title":"MCP file_write and file_edit tools bypass enforce-worktree hook","timestamp":"2026-02-18T12:42:20.838Z"}
 {"type":"claim","wuId":"WU-1852","lane":"Framework: CLI WU Commands","title":"Fix first-project bootstrap blockers in lumenflow init","timestamp":"2026-02-18T12:43:05.600Z"}
 {"type":"claim","wuId":"WU-1849","lane":"Framework: Core Lifecycle","title":"Add missing test coverage for INIT-030 phase 2-3 gaps","timestamp":"2026-02-18T12:44:21.395Z"}
+{"type":"claim","wuId":"WU-1854","lane":"Framework: CLI WU Commands","title":"Add lane:edit command for safe in-place lane definition editing","timestamp":"2026-02-18T12:45:00.832Z"}

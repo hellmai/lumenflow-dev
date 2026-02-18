@@ -2,7 +2,7 @@ id: WU-1854
 title: Add lane:edit command for safe in-place lane definition editing
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -52,3 +52,11 @@ acceptance:
   - lane:validate runs automatically after edit and the command fails without committing if
     validation fails
   - lane:edit is blocked when lanes are not in locked or draft status
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1854
+claimed_at: 2026-02-18T12:45:00.778Z
+baseline_main_sha: 47316926f31dd44e767ce6bbfc6ecf56459f6877
+session_id: 24947d08-d3f5-4b32-ba05-f304014eb650
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T12:45:00.785Z
