@@ -30,7 +30,6 @@ sections:
 - [WU-1825 — Create pack:hash CLI command for integrity hash computation](wu/WU-1825.yaml) — Framework: CLI Orchestration
 - [WU-1827 — Create pack:install CLI command for adding packs to workspace](wu/WU-1827.yaml) — Framework: CLI Orchestration
 - [WU-1829 — Add pack catalog page to web dashboard with tool and policy visualization](wu/WU-1829.yaml) — Content: Site Comms
-- [WU-1831 — Implement AG-UI state synchronization with StateSnapshot and StateDelta](wu/WU-1831.yaml) — Framework: MCP
 - [WU-1832 — Create CopilotKit integration example app connected to LumenFlow AG-UI](wu/WU-1832.yaml) — Content: Specs Governance
 - [WU-1833 — Build GenUI tool output renderers for rich tool result visualization](wu/WU-1833.yaml) — Content: Site Comms
 - [WU-1834 — Build policy decision overlay showing governance enforcement visually](wu/WU-1834.yaml) — Content: Site Comms
@@ -50,6 +49,7 @@ sections:
 - [WU-1821 — Build workspace overview page with task list and lane WIP visualization](wu/WU-1821.yaml) — Content: Site Comms
 - [WU-1824 — Create pack:validate CLI command for pack integrity checking](wu/WU-1824.yaml) — Framework: CLI Orchestration
 - [WU-1837 — Extend PackLoader with registry-based pack resolution](wu/WU-1837.yaml) — Framework: Core Lifecycle
+- [WU-1831 — Implement AG-UI state synchronization with StateSnapshot and StateDelta](wu/WU-1831.yaml) — Framework: MCP
 
 ## ⛔ Blocked
 

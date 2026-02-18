@@ -1618,3 +1618,4 @@
 {"type":"claim","wuId":"WU-1821","lane":"Content: Site Comms","title":"Build workspace overview page with task list and lane WIP visualization","timestamp":"2026-02-18T19:49:23.627Z"}
 {"type":"claim","wuId":"WU-1824","lane":"Framework: CLI Orchestration","title":"Create pack:validate CLI command for pack integrity checking","timestamp":"2026-02-18T19:50:00.226Z"}
 {"type":"claim","wuId":"WU-1837","lane":"Framework: Core Lifecycle","title":"Extend PackLoader with registry-based pack resolution","timestamp":"2026-02-18T19:50:48.647Z"}
+{"type":"claim","wuId":"WU-1831","lane":"Framework: MCP","title":"Implement AG-UI state synchronization with StateSnapshot and StateDelta","timestamp":"2026-02-18T19:51:22.886Z"}

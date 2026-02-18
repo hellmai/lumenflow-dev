@@ -2,7 +2,7 @@ id: WU-1831
 title: Implement AG-UI state synchronization with StateSnapshot and StateDelta
 lane: 'Framework: MCP'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -32,8 +32,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Implement shared state between frontend and agent. StateSnapshot events from TaskState projection. StateDelta events using RFC 6902 JSON Patch when TaskState changes. MessagesSnapshot from checkpoint and event replay. Uses the EventStore subscribe mechanism.
+description: Implement shared state between frontend and agent. StateSnapshot events from TaskState
+  projection. StateDelta events using RFC 6902 JSON Patch when TaskState changes. MessagesSnapshot
+  from checkpoint and event replay. Uses the EventStore subscribe mechanism.
 acceptance:
   - StateSnapshot emitted on initial connection
   - StateDelta emitted as RFC 6902 JSON Patch on state changes
   - MessagesSnapshot built from event replay
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-mcp-wu-1831
+claimed_at: 2026-02-18T19:51:22.836Z
+baseline_main_sha: 2590ef5e3b240a89d3a1e6fe248ceb4a6f7ff158
+session_id: 3805a7b7-77c1-40d7-9a2c-158109e9f82e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T19:51:22.841Z
