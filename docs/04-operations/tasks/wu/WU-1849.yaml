@@ -23,6 +23,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1849.done
 dependencies: []
+initiative: INIT-030
+phase: 3
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
@@ -33,9 +35,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Code review of INIT-030 WUs identified several modules with weak or missing test coverage: worktree-tools has no unit tests, scope-intersection edge cases untested, stdio-handshake tests only check message format not behavioral contracts, workspace-config lacks negative validation tests, session-manager closeSession path untested.'
+description: 'Code review of INIT-030 WUs identified several modules with weak or missing test
+  coverage: worktree-tools has no unit tests, scope-intersection edge cases untested,
+  stdio-handshake tests only check message format not behavioral contracts, workspace-config lacks
+  negative validation tests, session-manager closeSession path untested.'
 acceptance:
-  - worktree-tools.ts has dedicated unit tests covering createWorktree, removeWorktree, and error paths
+  - worktree-tools.ts has dedicated unit tests covering createWorktree, removeWorktree, and error
+    paths
   - scope-intersection tests cover wildcard-vs-wildcard, empty-scope, and disjoint-scope edge cases
   - stdio-handshake tests verify behavioral contracts (timeout, malformed input, version mismatch)
   - workspace-config tests cover invalid YAML, missing required fields, and schema migration
