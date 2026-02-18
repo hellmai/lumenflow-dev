@@ -1,0 +1,38 @@
+id: WU-1867
+title: 'INIT-030 Review Fix E: guard all appendTrace throw paths in ToolHost'
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-18
+code_paths:
+  - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
+tests:
+  manual:
+    - Inject failing EvidenceStore, verify tool execution still returns kernel result (not CLI fallback)
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1867.done
+dependencies: []
+initiative: INIT-030
+phase: 5
+blocked_by:
+  - WU-1860
+risks: []
+notes: 'Codex cross-review finding: WU-1860 branch currently guards only one trace write path. The started and denied paths can still bubble exceptions.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: WU-1859/1860 added try/catch on recordTrace (success path, tool-host.ts:239-249), but appendTrace for started events (line 179) and recordDeniedTrace calls (lines 202-215, 226-232, 314-327, 373-380) still throw uncaught. These propagate through executeViaPack's catch block and fall through to CLI, since thrown errors have no error code in the denylist. A trace infrastructure failure should never trigger a policy-bypassing CLI fallback.
+acceptance:
+  - appendTrace for TOOL_CALL_STARTED (line 179) is wrapped in try/catch that does not suppress the tool execution
+  - recordDeniedTrace calls are wrapped in try/catch — denied output is still returned to caller
+  - No trace infrastructure failure can cause executeViaPack to fall through to CLI
+  - Test coverage for trace-write failure during started/denied paths
