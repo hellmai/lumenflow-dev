@@ -74,6 +74,7 @@ import {
   PRE_COMMIT_TEMPLATE,
   GATE_STUB_SCRIPTS,
   SCRIPT_ARG_OVERRIDES,
+  DEFAULT_LANE_DEFINITIONS,
 } from './init-templates.js';
 // WU-1644: Import detection helpers from dedicated module
 import {
@@ -736,6 +737,17 @@ export async function scaffoldProject(
   if (renamedBranch) {
     result.created.push('Renamed branch master -> main');
   }
+
+  // WU-1852: Display lane naming format requirement and valid parents
+  // so users learn the "Parent: Sublane" format before reaching lane:validate.
+  const uniqueParents = [
+    ...new Set(DEFAULT_LANE_DEFINITIONS.map((lane) => lane.name.split(':')[0].trim())),
+  ];
+  console.log('');
+  console.log(
+    '  Lane naming format: "Parent: Sublane" (e.g., "Framework: Core", "Content: Documentation")',
+  );
+  console.log(`  Valid parent names: ${uniqueParents.join(', ')}`);
 
   return result;
 }

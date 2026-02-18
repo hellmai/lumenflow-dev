@@ -1353,7 +1353,8 @@ async function auditSkipGates(
 }
 
 /**
- * Audit trail for --skip-cos-gates (COS v1.3 §7)
+ * Audit trail for COS gates skip (COS v1.3 S7)
+ * WU-1852: Renamed from skip-cos-gates to avoid referencing non-existent CLI flag
  */
 async function auditSkipCosGates(
   id: string,
@@ -2670,7 +2671,10 @@ async function executeGates({
       console.error('  1. Add required evidence to governance.evidence field in WU YAML');
       console.error('  2. See: https://lumenflow.dev/reference/evidence-format/');
       console.error('\nEmergency bypass (creates audit trail):');
-      console.error(`  pnpm wu:done --id ${id} --skip-cos-gates --reason "explanation"`);
+      // WU-1852: Reference --skip-gates (the actual CLI flag), not the non-existent --skip-cos-gates
+      console.error(
+        `  pnpm wu:done --id ${id} --skip-gates --reason "COS evidence pending" --fix-wu WU-XXXX`,
+      );
       die('Abort: WU not completed. Fix governance evidence and retry pnpm wu:done.');
     }
   } else {
