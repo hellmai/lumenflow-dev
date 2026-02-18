@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as cliRunner from '../cli-runner.js';
+import { packToolCapabilityResolver } from '../runtime-tool-resolver.js';
 import {
   resetRuntimeTaskToolCache,
   taskBlockTool,
@@ -77,6 +78,7 @@ describe('runtime task MCP tools', () => {
     expect(result.data).toEqual(claimResult);
     expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
       workspaceRoot: path.resolve('/tmp/lumenflow-mcp-runtime'),
+      toolCapabilityResolver: packToolCapabilityResolver,
     });
     expect(claimTask).toHaveBeenCalledWith({
       task_id: 'WU-1771',
@@ -172,6 +174,7 @@ describe('runtime task MCP tools', () => {
     expect(result.data).toEqual(createResult);
     expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
       workspaceRoot: path.resolve('/tmp/lumenflow-mcp-runtime'),
+      toolCapabilityResolver: packToolCapabilityResolver,
     });
     expect(createTask).toHaveBeenCalledWith(sampleTaskSpec);
     expect(mockRunCliCommand).not.toHaveBeenCalled();
@@ -250,6 +253,7 @@ describe('runtime task MCP tools', () => {
     expect(result.data).toEqual(completeResult);
     expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
       workspaceRoot: path.resolve('/tmp/lumenflow-mcp-runtime'),
+      toolCapabilityResolver: packToolCapabilityResolver,
     });
     expect(completeTask).toHaveBeenCalledWith({
       task_id: 'WU-1785',
@@ -319,6 +323,7 @@ describe('runtime task MCP tools', () => {
     expect(result.data).toEqual(blockResult);
     expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
       workspaceRoot: path.resolve('/tmp/lumenflow-mcp-runtime'),
+      toolCapabilityResolver: packToolCapabilityResolver,
     });
     expect(blockTask).toHaveBeenCalledWith({
       task_id: 'WU-1787',
@@ -366,6 +371,7 @@ describe('runtime task MCP tools', () => {
     expect(result.data).toEqual(unblockResult);
     expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
       workspaceRoot: path.resolve('/tmp/lumenflow-mcp-runtime'),
+      toolCapabilityResolver: packToolCapabilityResolver,
     });
     expect(unblockTask).toHaveBeenCalledWith({
       task_id: 'WU-1787',
@@ -411,6 +417,7 @@ describe('runtime task MCP tools', () => {
     expect(result.data).toEqual(inspectResult);
     expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
       workspaceRoot: path.resolve('/tmp/lumenflow-mcp-runtime'),
+      toolCapabilityResolver: packToolCapabilityResolver,
     });
     expect(inspectTask).toHaveBeenCalledWith('WU-1788');
     expect(mockRunCliCommand).not.toHaveBeenCalled();
@@ -477,6 +484,7 @@ describe('runtime task MCP tools', () => {
     expect(result.data).toEqual(executionResult);
     expect(mockInitializeKernelRuntime).toHaveBeenCalledWith({
       workspaceRoot: path.resolve('/tmp/lumenflow-mcp-runtime'),
+      toolCapabilityResolver: packToolCapabilityResolver,
     });
     expect(executeTool).toHaveBeenCalledWith(
       'software-delivery.test-tool',

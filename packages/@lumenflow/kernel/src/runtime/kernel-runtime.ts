@@ -369,7 +369,7 @@ function buildPackToolDescription(toolName: string, packId: string): string {
   return `Pack tool ${toolName} declared by ${packId}`;
 }
 
-async function defaultRuntimeToolCapabilityResolver(
+export async function defaultRuntimeToolCapabilityResolver(
   input: RuntimeToolCapabilityResolverInput,
 ): Promise<ToolCapability | null> {
   const resolvedEntry = resolvePackToolEntryPath(input.loadedPack.packRoot, input.tool.entry);
