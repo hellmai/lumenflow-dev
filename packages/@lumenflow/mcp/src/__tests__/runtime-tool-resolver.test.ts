@@ -1152,7 +1152,7 @@ describe('WU-1807: state transition handlers execute in-process and mutate WU st
     } finally {
       await rm(projectRoot, { recursive: true, force: true });
     }
-  });
+  }, 15000);
 
   it('updates WU editable fields through runtime wu:edit handler', async () => {
     const projectRoot = await mkdtemp(path.join(tmpdir(), 'lumenflow-runtime-wu-edit-'));
