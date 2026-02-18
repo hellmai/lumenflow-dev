@@ -2,7 +2,7 @@ id: WU-1811
 title: Migrate memory tools to runtime pack execution
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -49,3 +49,6 @@ session_id: ffdd5874-7c6d-47cc-a723-ab8eb3933b62
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T19:18:38.772Z
+locked: true
+completed_at: 2026-02-18T19:28:23.660Z
+completed: 2026-02-18
