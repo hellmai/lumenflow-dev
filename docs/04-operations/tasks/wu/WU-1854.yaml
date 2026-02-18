@@ -2,7 +2,7 @@ id: WU-1854
 title: Add lane:edit command for safe in-place lane definition editing
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -61,3 +61,6 @@ acceptance:
   - lane:validate runs automatically after edit and the command fails without committing if
     validation fails
   - lane:edit is blocked when lanes are not in locked or draft status
+locked: true
+completed_at: 2026-02-18T13:01:30.346Z
+completed: 2026-02-18
