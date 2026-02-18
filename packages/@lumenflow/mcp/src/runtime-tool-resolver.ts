@@ -42,6 +42,10 @@ const IN_PROCESS_TOOL_NAMES = {
   WU_PRUNE: CliCommands.WU_PRUNE,
   WU_DELETE: CliCommands.WU_DELETE,
   WU_CLEANUP: CliCommands.WU_CLEANUP,
+  WU_BRIEF: CliCommands.WU_BRIEF,
+  WU_DELEGATE: CliCommands.WU_DELEGATE,
+  WU_UNLOCK_LANE: CliCommands.WU_UNLOCK_LANE,
+  GATES: CliCommands.GATES,
   WU_BLOCK: CliCommands.WU_BLOCK,
   WU_UNBLOCK: CliCommands.WU_UNBLOCK,
   WU_EDIT: CliCommands.WU_EDIT,
@@ -75,6 +79,10 @@ const IN_PROCESS_TOOL_DESCRIPTIONS = {
   WU_PRUNE: 'Prune stale WUs via runtime-first handler with CLI fallback',
   WU_DELETE: 'Delete WU via runtime-first handler with CLI fallback',
   WU_CLEANUP: 'Cleanup WU artifacts via runtime-first handler with CLI fallback',
+  WU_BRIEF: 'Generate WU brief prompt via runtime-first handler with CLI fallback',
+  WU_DELEGATE: 'Generate WU delegation prompt via runtime-first handler with CLI fallback',
+  WU_UNLOCK_LANE: 'Unlock lane via runtime-first handler with CLI fallback',
+  GATES: 'Run gates via runtime-first handler with CLI fallback',
   WU_BLOCK: 'Block WU via in-process core state transition handler',
   WU_UNBLOCK: 'Unblock WU via in-process core state transition handler',
   WU_EDIT: 'Edit WU spec fields via in-process core filesystem handler',
@@ -2120,6 +2128,10 @@ const VALIDATION_TOOL_ERROR_CODES = {
   WU_PRUNE_ERROR: 'WU_PRUNE_ERROR',
   WU_DELETE_ERROR: 'WU_DELETE_ERROR',
   WU_CLEANUP_ERROR: 'WU_CLEANUP_ERROR',
+  WU_BRIEF_ERROR: 'WU_BRIEF_ERROR',
+  WU_DELEGATE_ERROR: 'WU_DELEGATE_ERROR',
+  WU_UNLOCK_LANE_ERROR: 'WU_UNLOCK_LANE_ERROR',
+  GATES_ERROR: 'GATES_ERROR',
   WU_BLOCK_ERROR: 'WU_BLOCK_ERROR',
   WU_UNBLOCK_ERROR: 'WU_UNBLOCK_ERROR',
   WU_EDIT_ERROR: 'WU_EDIT_ERROR',
@@ -2677,6 +2689,30 @@ const wuCleanupInProcess: InProcessToolFn = async () =>
     WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
   );
 
+const wuBriefInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.WU_BRIEF_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const wuDelegateInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.WU_DELEGATE_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const wuUnlockLaneInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.WU_UNLOCK_LANE_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const gatesInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.GATES_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
 const WU_STATE_TRANSITION_NOTE_PREFIX = {
   BLOCK: 'Blocked',
   UNBLOCK: 'Unblocked',
@@ -3204,6 +3240,38 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_CLEANUP,
       inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
       fn: wuCleanupInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_BRIEF,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_BRIEF,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuBriefInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_DELEGATE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_DELEGATE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuDelegateInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_UNLOCK_LANE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_UNLOCK_LANE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuUnlockLaneInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.GATES,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.GATES,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: gatesInProcess,
     },
   ],
   [

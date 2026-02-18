@@ -75,6 +75,17 @@ const LaneFlags = {
   INCLUDE_GIT: '--include-git',
 } as const;
 
+const GatesRuntimeMessages = {
+  GATES_FAILED: 'gates failed',
+  GATES_DOCS_PASSED: 'Docs-only gates passed',
+  GATES_DOCS_FAILED: 'gates:docs failed',
+  LUMENFLOW_GATES_FAILED: 'lumenflow-gates failed',
+} as const;
+
+const GatesRuntimeConstants = {
+  FALLBACK_TIMEOUT_MS: 600000,
+} as const;
+
 const stateBootstrapSchema = z.object({
   execute: z.boolean().optional(),
   dry_run: z.boolean().optional(),
@@ -373,19 +384,29 @@ export const gatesTool: ToolDefinition = {
 
   async execute(input, options) {
     const args = buildGatesArgs(input);
-    const cliOptions: CliRunnerOptions = {
+    const result = await executeViaPack(CliCommands.GATES, input, {
       projectRoot: options?.projectRoot,
-      timeout: 600000,
-    };
-    const result = await runCliCommand(CliCommands.GATES, args, cliOptions);
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.GATES,
+        args,
+        errorCode: ErrorCodes.GATES_ALIAS_ERROR,
+      },
+      fallbackCliOptions: {
+        timeout: GatesRuntimeConstants.FALLBACK_TIMEOUT_MS,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || SuccessMessages.ALL_GATES_PASSED });
-    }
-    return error(
-      result.stderr || result.error?.message || 'gates failed',
-      ErrorCodes.GATES_ALIAS_ERROR,
-    );
+    return result.success
+      ? success(result.data ?? { message: SuccessMessages.ALL_GATES_PASSED })
+      : error(
+          result.error?.message ?? GatesRuntimeMessages.GATES_FAILED,
+          ErrorCodes.GATES_ALIAS_ERROR,
+        );
   },
 };
 
@@ -399,19 +420,29 @@ export const gatesDocsTool: ToolDefinition = {
 
   async execute(input, options) {
     const args = buildGatesArgs(input, { forceDocsOnly: true });
-    const cliOptions: CliRunnerOptions = {
+    const result = await executeViaPack(CliCommands.GATES, input, {
       projectRoot: options?.projectRoot,
-      timeout: 600000,
-    };
-    const result = await runCliCommand(CliCommands.GATES, args, cliOptions);
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.GATES,
+        args,
+        errorCode: ErrorCodes.GATES_ALIAS_ERROR,
+      },
+      fallbackCliOptions: {
+        timeout: GatesRuntimeConstants.FALLBACK_TIMEOUT_MS,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Docs-only gates passed' });
-    }
-    return error(
-      result.stderr || result.error?.message || 'gates:docs failed',
-      ErrorCodes.GATES_ALIAS_ERROR,
-    );
+    return result.success
+      ? success(result.data ?? { message: GatesRuntimeMessages.GATES_DOCS_PASSED })
+      : error(
+          result.error?.message ?? GatesRuntimeMessages.GATES_DOCS_FAILED,
+          ErrorCodes.GATES_ALIAS_ERROR,
+        );
   },
 };
 
@@ -517,19 +548,29 @@ export const lumenflowGatesTool: ToolDefinition = {
 
   async execute(input, options) {
     const args = buildGatesArgs(input);
-    const cliOptions: CliRunnerOptions = {
+    const result = await executeViaPack(CliCommands.GATES, input, {
       projectRoot: options?.projectRoot,
-      timeout: 600000,
-    };
-    const result = await runCliCommand(CliCommands.GATES, args, cliOptions);
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.GATES,
+        args,
+        errorCode: ErrorCodes.LUMENFLOW_GATES_ERROR,
+      },
+      fallbackCliOptions: {
+        timeout: GatesRuntimeConstants.FALLBACK_TIMEOUT_MS,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || SuccessMessages.ALL_GATES_PASSED });
-    }
-    return error(
-      result.stderr || result.error?.message || 'lumenflow-gates failed',
-      ErrorCodes.LUMENFLOW_GATES_ERROR,
-    );
+    return result.success
+      ? success(result.data ?? { message: SuccessMessages.ALL_GATES_PASSED })
+      : error(
+          result.error?.message ?? GatesRuntimeMessages.LUMENFLOW_GATES_FAILED,
+          ErrorCodes.LUMENFLOW_GATES_ERROR,
+        );
   },
 };
 

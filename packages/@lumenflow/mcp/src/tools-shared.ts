@@ -308,6 +308,7 @@ export interface ExecuteViaPackOptions {
   context?: ExecutionContext;
   contextInput?: BuildExecutionContextInput;
   fallback: ExecuteViaPackFallback;
+  fallbackCliOptions?: CliRunnerOptions;
   runtimeFactory?: (workspaceRoot: string) => Promise<RuntimeInstance>;
   cliRunner?: (
     command: string,
@@ -348,6 +349,7 @@ export async function executeViaPack(
 
   const fallbackResult = await cliRunner(options.fallback.command, options.fallback.args ?? [], {
     projectRoot,
+    ...(options.fallbackCliOptions ?? {}),
   });
   if (fallbackResult.success) {
     return success({ message: fallbackResult.stdout || `${options.fallback.command} succeeded` });

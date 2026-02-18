@@ -376,54 +376,65 @@ describe('MCP tools', () => {
   });
 
   describe('gates_run', () => {
-    it('should run gates via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should run gates via executeViaPack', async () => {
+      const spy = vi.spyOn(toolsShared, 'executeViaPack').mockResolvedValue({
         success: true,
-        stdout: 'All gates passed',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'All gates passed' },
       });
 
       const result = await gatesRunTool.execute({});
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(spy).toHaveBeenCalledWith(
         'gates',
-        expect.any(Array),
-        expect.any(Object),
+        expect.objectContaining({}),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'gates',
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
+      spy.mockRestore();
     });
 
     it('should support --docs-only flag', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      const spy = vi.spyOn(toolsShared, 'executeViaPack').mockResolvedValue({
         success: true,
-        stdout: 'Docs gates passed',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Docs gates passed' },
       });
 
       const result = await gatesRunTool.execute({ docs_only: true });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(spy).toHaveBeenCalledWith(
         'gates',
-        expect.arrayContaining(['--docs-only']),
-        expect.any(Object),
+        expect.objectContaining({ docs_only: true }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'gates',
+            args: expect.arrayContaining(['--docs-only']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
+      spy.mockRestore();
     });
 
     it('should report gate failures', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      const spy = vi.spyOn(toolsShared, 'executeViaPack').mockResolvedValue({
         success: false,
-        stdout: '',
-        stderr: 'lint failed',
-        exitCode: 1,
+        error: {
+          message: 'lint failed',
+        },
       });
 
       const result = await gatesRunTool.execute({});
 
       expect(result.success).toBe(false);
       expect(result.error?.message).toContain('lint failed');
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
+      spy.mockRestore();
     });
   });
 });

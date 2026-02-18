@@ -9,11 +9,14 @@ code_paths:
   - packages/@lumenflow/mcp/src/tools/wu-tools.ts
   - packages/@lumenflow/mcp/src/tools/parity-tools.ts
   - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
+  - packages/@lumenflow/mcp/src/tools-shared.ts
 tests:
   manual:
     - Gates produce identical pass/fail results via runtime path
   unit:
     - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1809.done

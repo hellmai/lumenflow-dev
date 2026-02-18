@@ -66,6 +66,12 @@ const WU_LIFECYCLE_COMPLETION_TOOL_NAMES = {
   DELETE: 'wu:delete',
   CLEANUP: 'wu:cleanup',
 } as const;
+const WU_DELEGATION_AND_GATES_TOOL_NAMES = {
+  BRIEF: 'wu:brief',
+  DELEGATE: 'wu:delegate',
+  UNLOCK_LANE: 'wu:unlock-lane',
+  GATES: 'gates',
+} as const;
 
 function createResolverInput(toolName: string): RuntimeToolCapabilityResolverInput {
   return {
@@ -247,6 +253,21 @@ describe('packToolCapabilityResolver', () => {
       WU_LIFECYCLE_COMPLETION_TOOL_NAMES.PRUNE,
       WU_LIFECYCLE_COMPLETION_TOOL_NAMES.DELETE,
       WU_LIFECYCLE_COMPLETION_TOOL_NAMES.CLEANUP,
+    ];
+
+    for (const toolName of toolNames) {
+      const capability = await packToolCapabilityResolver(createResolverInput(toolName));
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+      expect(isInProcessPackToolRegistered(toolName)).toBe(true);
+    }
+  });
+
+  it('resolves WU delegation and gates tools to in-process handlers', async () => {
+    const toolNames = [
+      WU_DELEGATION_AND_GATES_TOOL_NAMES.BRIEF,
+      WU_DELEGATION_AND_GATES_TOOL_NAMES.DELEGATE,
+      WU_DELEGATION_AND_GATES_TOOL_NAMES.UNLOCK_LANE,
+      WU_DELEGATION_AND_GATES_TOOL_NAMES.GATES,
     ];
 
     for (const toolName of toolNames) {
@@ -918,6 +939,78 @@ describe('WU-1808: completion/cleanup lifecycle uses runtime path end-to-end', (
       const result = await executeViaPack(lifecycleCall.toolName, lifecycleCall.input, {
         projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
         context: buildExecutionContext({ taskId: 'WU-1808' }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: lifecycleCall.fallback,
+      });
+
+      expect(result.success).toBe(true);
+    }
+
+    expect(runtimeFactory).toHaveBeenCalledTimes(lifecycleCalls.length);
+    expect(runtimeExecuteTool).toHaveBeenCalledTimes(lifecycleCalls.length);
+    expect(cliRunner).not.toHaveBeenCalled();
+  });
+});
+
+describe('WU-1809: delegation/gates lifecycle uses runtime path end-to-end', () => {
+  beforeEach(() => {
+    resetExecuteViaPackRuntimeCache();
+  });
+
+  it('runs brief -> delegate -> unlock-lane -> gates via runtime without CLI fallback', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { message: 'runtime-success' },
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const lifecycleCalls = [
+      {
+        toolName: 'wu:brief',
+        input: { id: 'WU-1809' },
+        fallback: {
+          command: 'wu:brief',
+          args: ['--id', 'WU-1809'],
+          errorCode: 'WU_BRIEF_ERROR',
+        },
+      },
+      {
+        toolName: 'wu:delegate',
+        input: { id: 'WU-1809', parent_wu: 'WU-1808' },
+        fallback: {
+          command: 'wu:delegate',
+          args: ['--id', 'WU-1809', '--parent-wu', 'WU-1808'],
+          errorCode: 'WU_DELEGATE_ERROR',
+        },
+      },
+      {
+        toolName: 'wu:unlock-lane',
+        input: { lane: 'Framework: Core Lifecycle' },
+        fallback: {
+          command: 'wu:unlock-lane',
+          args: ['--lane', 'Framework: Core Lifecycle'],
+          errorCode: 'WU_UNLOCK_LANE_ERROR',
+        },
+      },
+      {
+        toolName: 'gates',
+        input: { docs_only: true },
+        fallback: {
+          command: 'gates',
+          args: ['--docs-only'],
+          errorCode: 'GATES_ERROR',
+        },
+      },
+    ] as const;
+
+    for (const lifecycleCall of lifecycleCalls) {
+      const result = await executeViaPack(lifecycleCall.toolName, lifecycleCall.input, {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({ taskId: 'WU-1809' }),
         runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
         cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
         fallback: lifecycleCall.fallback,

@@ -94,6 +94,20 @@ const WuCompletionLifecycleMessages = {
   CLEANUP_FAILED: 'wu:cleanup failed',
 } as const;
 
+const WuDelegationAndGatesMessages = {
+  GATES_FAILED: 'Gates failed',
+  BRIEF_PASSED: 'Brief prompt generated',
+  BRIEF_FAILED: 'wu:brief failed',
+  DELEGATE_PASSED: 'Delegation prompt generated',
+  DELEGATE_FAILED: 'wu:delegate failed',
+  UNLOCK_PASSED: 'Lane unlocked',
+  UNLOCK_FAILED: 'wu:unlock-lane failed',
+} as const;
+
+const GatesRuntimeConstants = {
+  FALLBACK_TIMEOUT_MS: 600000,
+} as const;
+
 const WuQueryFlags = {
   NO_STRICT: '--no-strict',
   WORKTREE: '--worktree',
@@ -402,20 +416,29 @@ export const gatesRunTool: ToolDefinition = {
       args.push(CliArgs.DOCS_ONLY);
     }
 
-    const cliOptions: CliRunnerOptions = {
+    const result = await executeViaPack(CliCommands.GATES, input, {
       projectRoot: options?.projectRoot,
-      timeout: 600000, // 10 minutes for gates
-    };
-    const result = await runCliCommand(CliCommands.GATES, args, cliOptions);
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.GATES,
+        args,
+        errorCode: ErrorCodes.GATES_ERROR,
+      },
+      fallbackCliOptions: {
+        timeout: GatesRuntimeConstants.FALLBACK_TIMEOUT_MS,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || SuccessMessages.ALL_GATES_PASSED });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'Gates failed',
-        ErrorCodes.GATES_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: SuccessMessages.ALL_GATES_PASSED })
+      : error(
+          result.error?.message ?? WuDelegationAndGatesMessages.GATES_FAILED,
+          ErrorCodes.GATES_ERROR,
+        );
   },
 };
 
@@ -917,18 +940,26 @@ export const wuBriefTool: ToolDefinition = {
     }
 
     const args = buildWuPromptArgs(input);
+    const result = await executeViaPack(CliCommands.WU_BRIEF, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_BRIEF,
+        args,
+        errorCode: ErrorCodes.WU_BRIEF_ERROR,
+      },
+    });
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_BRIEF, args, cliOptions);
-
-    if (result.success) {
-      return success({ message: result.stdout || 'Brief prompt generated' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:brief failed',
-        ErrorCodes.WU_BRIEF_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuDelegationAndGatesMessages.BRIEF_PASSED })
+      : error(
+          result.error?.message ?? WuDelegationAndGatesMessages.BRIEF_FAILED,
+          ErrorCodes.WU_BRIEF_ERROR,
+        );
   },
 };
 
@@ -949,18 +980,26 @@ export const wuDelegateTool: ToolDefinition = {
     }
 
     const args = buildWuPromptArgs(input);
+    const result = await executeViaPack(CliCommands.WU_DELEGATE, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_DELEGATE,
+        args,
+        errorCode: ErrorCodes.WU_DELEGATE_ERROR,
+      },
+    });
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_DELEGATE, args, cliOptions);
-
-    if (result.success) {
-      return success({ message: result.stdout || 'Delegation prompt generated' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:delegate failed',
-        ErrorCodes.WU_DELEGATE_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuDelegationAndGatesMessages.DELEGATE_PASSED })
+      : error(
+          result.error?.message ?? WuDelegationAndGatesMessages.DELEGATE_FAILED,
+          ErrorCodes.WU_DELEGATE_ERROR,
+        );
   },
 };
 
@@ -1058,21 +1097,25 @@ export const wuUnlockLaneTool: ToolDefinition = {
     if (input.list) args.push('--list');
     if (input.status) args.push(CliArgs.STATUS);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_UNLOCK_LANE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_UNLOCK_LANE, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_UNLOCK_LANE,
+        args,
+        errorCode: ErrorCodes.WU_UNLOCK_LANE_ERROR,
+      },
+    });
 
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout || 'Lane unlocked' });
-      }
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:unlock-lane failed',
-        ErrorCodes.WU_UNLOCK_LANE_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuDelegationAndGatesMessages.UNLOCK_PASSED })
+      : error(
+          result.error?.message ?? WuDelegationAndGatesMessages.UNLOCK_FAILED,
+          ErrorCodes.WU_UNLOCK_LANE_ERROR,
+        );
   },
 };

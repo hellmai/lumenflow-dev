@@ -23,6 +23,7 @@ import {
   wuDeleteTool,
   wuCleanupTool,
   wuSandboxTool,
+  wuBriefTool,
   wuDelegateTool,
   wuValidateTool,
   wuInferLaneTool,
@@ -860,12 +861,38 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 
   describe('wu_delegate', () => {
-    it('should generate delegation prompt and record intent via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should generate brief prompt via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Delegation prompt generated',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Brief prompt generated' },
+      });
+
+      const result = await wuBriefTool.execute({
+        id: 'WU-1604',
+        client: 'claude-code',
+      });
+
+      expect(result.success).toBe(true);
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
+        'wu:brief',
+        expect.objectContaining({
+          id: 'WU-1604',
+          client: 'claude-code',
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:brief',
+            args: expect.arrayContaining(['--id', 'WU-1604', '--client', 'claude-code']),
+          }),
+        }),
+      );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
+    });
+
+    it('should generate delegation prompt and record intent via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
+        success: true,
+        data: { message: 'Delegation prompt generated' },
       });
 
       const result = await wuDelegateTool.execute({
@@ -875,18 +902,28 @@ describe('WU MCP tools (WU-1422)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:delegate',
-        expect.arrayContaining([
-          '--id',
-          'WU-1604',
-          '--parent-wu',
-          'WU-1600',
-          '--client',
-          'claude-code',
-        ]),
-        expect.any(Object),
+        expect.objectContaining({
+          id: 'WU-1604',
+          parent_wu: 'WU-1600',
+          client: 'claude-code',
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:delegate',
+            args: expect.arrayContaining([
+              '--id',
+              'WU-1604',
+              '--parent-wu',
+              'WU-1600',
+              '--client',
+              'claude-code',
+            ]),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require parent_wu parameter', async () => {
@@ -996,12 +1033,10 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 
   describe('wu_unlock_lane', () => {
-    it('should unlock lane via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should unlock lane via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Lane unlocked',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Lane unlocked' },
       });
 
       const result = await wuUnlockLaneTool.execute({
@@ -1010,11 +1045,20 @@ describe('WU MCP tools (WU-1422)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:unlock-lane',
-        expect.arrayContaining(['--lane', 'Framework: CLI', '--reason', 'Agent crashed']),
-        expect.any(Object),
+        expect.objectContaining({
+          lane: 'Framework: CLI',
+          reason: 'Agent crashed',
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:unlock-lane',
+            args: expect.arrayContaining(['--lane', 'Framework: CLI', '--reason', 'Agent crashed']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require lane parameter', async () => {
@@ -1025,21 +1069,25 @@ describe('WU MCP tools (WU-1422)', () => {
     });
 
     it('should support list mode', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: JSON.stringify([{ lane: 'Framework: CLI', wu: 'WU-1422' }]),
-        stderr: '',
-        exitCode: 0,
+        data: [{ lane: 'Framework: CLI', wu: 'WU-1422' }],
       });
 
       const result = await wuUnlockLaneTool.execute({ list: true });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:unlock-lane',
-        expect.arrayContaining(['--list']),
-        expect.any(Object),
+        expect.objectContaining({ list: true }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:unlock-lane',
+            args: expect.arrayContaining(['--list']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
   });
 });
@@ -1098,21 +1146,36 @@ describe('Wave-1 parity MCP tools (WU-1482)', () => {
   });
 
   it('should run gates and gates:docs aliases', async () => {
-    mockRunCliCommand.mockResolvedValue({ success: true, stdout: 'ok', stderr: '', exitCode: 0 });
+    mockExecuteViaPack.mockResolvedValue({ success: true, data: { message: 'ok' } });
 
     await gatesTool.execute({ docs_only: false, full_lint: true, coverage_mode: 'block' });
-    expect(mockRunCliCommand).toHaveBeenCalledWith(
+    expect(mockExecuteViaPack).toHaveBeenCalledWith(
       'gates',
-      expect.arrayContaining(['--full-lint', '--coverage-mode', 'block']),
-      expect.any(Object),
+      expect.objectContaining({
+        docs_only: false,
+        full_lint: true,
+        coverage_mode: 'block',
+      }),
+      expect.objectContaining({
+        fallback: expect.objectContaining({
+          command: 'gates',
+          args: expect.arrayContaining(['--full-lint', '--coverage-mode', 'block']),
+        }),
+      }),
     );
 
     await gatesDocsTool.execute({});
-    expect(mockRunCliCommand).toHaveBeenCalledWith(
+    expect(mockExecuteViaPack).toHaveBeenCalledWith(
       'gates',
-      expect.arrayContaining(['--docs-only']),
-      expect.any(Object),
+      expect.objectContaining({}),
+      expect.objectContaining({
+        fallback: expect.objectContaining({
+          command: 'gates',
+          args: expect.arrayContaining(['--docs-only']),
+        }),
+      }),
     );
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
   });
 
   it('should run lane tools with mapped flags via executeViaPack', async () => {
@@ -1177,14 +1240,21 @@ describe('Wave-1 parity MCP tools (WU-1482)', () => {
     );
 
     await lumenflowGatesTool.execute({ docs_only: true });
-    expect(mockRunCliCommand).toHaveBeenCalledWith(
+    expect(mockExecuteViaPack).toHaveBeenNthCalledWith(
+      1,
       'gates',
-      expect.arrayContaining(['--docs-only']),
-      expect.any(Object),
+      expect.objectContaining({ docs_only: true }),
+      expect.objectContaining({
+        fallback: expect.objectContaining({
+          command: 'gates',
+          args: expect.arrayContaining(['--docs-only']),
+        }),
+      }),
     );
 
     await lumenflowValidateTool.execute({});
-    expect(mockExecuteViaPack).toHaveBeenCalledWith(
+    expect(mockExecuteViaPack).toHaveBeenNthCalledWith(
+      2,
       'lumenflow:validate',
       {},
       expect.objectContaining({
@@ -1196,7 +1266,7 @@ describe('Wave-1 parity MCP tools (WU-1482)', () => {
 
     await lumenflowMetricsTool.execute({ subcommand: 'flow', days: 14, format: 'json' });
     expect(mockExecuteViaPack).toHaveBeenNthCalledWith(
-      2,
+      3,
       'lumenflow:metrics',
       expect.objectContaining({
         subcommand: 'flow',
@@ -1212,7 +1282,7 @@ describe('Wave-1 parity MCP tools (WU-1482)', () => {
 
     await metricsTool.execute({ subcommand: 'dora', dry_run: true });
     expect(mockExecuteViaPack).toHaveBeenNthCalledWith(
-      3,
+      4,
       'metrics',
       expect.objectContaining({
         subcommand: 'dora',
