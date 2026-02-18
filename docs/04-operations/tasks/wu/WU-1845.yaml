@@ -2,7 +2,7 @@ id: WU-1845
 title: Extract shared git-runner module in software-delivery pack
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -44,3 +44,6 @@ session_id: b6813287-d1f1-4725-a5ea-6e07bc6c2d77
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T14:25:42.838Z
+locked: true
+completed_at: 2026-02-18T14:30:59.621Z
+completed: 2026-02-18

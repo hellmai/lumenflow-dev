@@ -1564,4 +1564,5 @@
 {"type":"claim","wuId":"WU-1850","timestamp":"2026-02-18T14:11:57.192Z","lane":"Framework: Core Lifecycle","title":"Fix surfaces relative imports and extract daemon handler registry"}
 {"type":"complete","wuId":"WU-1847","timestamp":"2026-02-18T14:13:06.088Z"}
 {"type":"complete","wuId":"WU-1850","timestamp":"2026-02-18T14:24:35.596Z"}
-{"type":"claim","wuId":"WU-1845","lane":"Framework: Core Lifecycle","title":"Extract shared git-runner module in software-delivery pack","timestamp":"2026-02-18T14:25:42.883Z"}
+{"type":"claim","wuId":"WU-1845","timestamp":"2026-02-18T14:25:42.883Z","lane":"Framework: Core Lifecycle","title":"Extract shared git-runner module in software-delivery pack"}
+{"type":"complete","wuId":"WU-1845","timestamp":"2026-02-18T14:31:04.447Z"}
