@@ -35,6 +35,13 @@ const FILE_TOOL_NAMES = {
   EDIT: 'file:edit',
   DELETE: 'file:delete',
 } as const;
+const STATE_SIGNAL_TOOL_NAMES = {
+  BACKLOG_PRUNE: 'backlog:prune',
+  STATE_BOOTSTRAP: 'state:bootstrap',
+  STATE_CLEANUP: 'state:cleanup',
+  STATE_DOCTOR: 'state:doctor',
+  SIGNAL_CLEANUP: 'signal:cleanup',
+} as const;
 
 function createResolverInput(toolName: string): RuntimeToolCapabilityResolverInput {
   return {
@@ -139,6 +146,22 @@ describe('packToolCapabilityResolver', () => {
       FILE_TOOL_NAMES.WRITE,
       FILE_TOOL_NAMES.EDIT,
       FILE_TOOL_NAMES.DELETE,
+    ];
+
+    for (const toolName of toolNames) {
+      const capability = await packToolCapabilityResolver(createResolverInput(toolName));
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+      expect(isInProcessPackToolRegistered(toolName)).toBe(true);
+    }
+  });
+
+  it('resolves state/signal tools to in-process handlers', async () => {
+    const toolNames = [
+      STATE_SIGNAL_TOOL_NAMES.BACKLOG_PRUNE,
+      STATE_SIGNAL_TOOL_NAMES.STATE_BOOTSTRAP,
+      STATE_SIGNAL_TOOL_NAMES.STATE_CLEANUP,
+      STATE_SIGNAL_TOOL_NAMES.STATE_DOCTOR,
+      STATE_SIGNAL_TOOL_NAMES.SIGNAL_CLEANUP,
     ];
 
     for (const toolName of toolNames) {

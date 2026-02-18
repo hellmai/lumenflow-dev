@@ -21,14 +21,24 @@ import {
   stateDoctorTool,
 } from '../tools.js';
 import * as cliRunner from '../cli-runner.js';
+import * as toolsShared from '../tools-shared.js';
 
 // Mock cli-runner for all operations
 vi.mock('../cli-runner.js', () => ({
   runCliCommand: vi.fn(),
 }));
 
+vi.mock('../tools-shared.js', async () => {
+  const actual = await vi.importActual<typeof import('../tools-shared.js')>('../tools-shared.js');
+  return {
+    ...actual,
+    executeViaPack: vi.fn(actual.executeViaPack),
+  };
+});
+
 describe('Initiative MCP tools (WU-1424)', () => {
   const mockRunCliCommand = vi.mocked(cliRunner.runCliCommand);
+  const mockExecuteViaPack = vi.mocked(toolsShared.executeViaPack);
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -286,12 +296,7 @@ describe('Initiative MCP tools (WU-1424)', () => {
 
   describe('wave-1 ops parity mappings (WU-1482)', () => {
     it('should run backlog_prune with thresholds', async () => {
-      mockRunCliCommand.mockResolvedValue({
-        success: true,
-        stdout: 'Backlog pruning complete',
-        stderr: '',
-        exitCode: 0,
-      });
+      mockExecuteViaPack.mockResolvedValue({ success: true, data: { message: 'ok' } });
 
       const result = await backlogPruneTool.execute({
         stale_days_in_progress: 7,
@@ -300,18 +305,20 @@ describe('Initiative MCP tools (WU-1424)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'backlog:prune',
-        expect.arrayContaining([
-          '--stale-days-in-progress',
-          '7',
-          '--stale-days-ready',
-          '30',
-          '--archive-days',
-          '90',
-        ]),
-        expect.any(Object),
+        expect.objectContaining({
+          stale_days_in_progress: 7,
+          stale_days_ready: 30,
+          archive_days: 90,
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'backlog:prune',
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should run docs_sync with force/vendor flags', async () => {
@@ -333,21 +340,24 @@ describe('Initiative MCP tools (WU-1424)', () => {
     });
 
     it('should run state_doctor with fix/dry-run flags', async () => {
-      mockRunCliCommand.mockResolvedValue({
-        success: true,
-        stdout: 'State doctor complete',
-        stderr: '',
-        exitCode: 0,
-      });
+      mockExecuteViaPack.mockResolvedValue({ success: true, data: { message: 'ok' } });
 
       const result = await stateDoctorTool.execute({ fix: true, dry_run: true });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'state:doctor',
-        expect.arrayContaining(['--fix', '--dry-run']),
-        expect.any(Object),
+        expect.objectContaining({
+          fix: true,
+          dry_run: true,
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'state:doctor',
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
   });
 

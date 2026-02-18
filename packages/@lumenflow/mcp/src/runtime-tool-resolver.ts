@@ -34,6 +34,11 @@ const IN_PROCESS_TOOL_NAMES = {
   FILE_WRITE: 'file:write',
   FILE_EDIT: 'file:edit',
   FILE_DELETE: 'file:delete',
+  BACKLOG_PRUNE: 'backlog:prune',
+  STATE_BOOTSTRAP: 'state:bootstrap',
+  STATE_CLEANUP: 'state:cleanup',
+  STATE_DOCTOR: 'state:doctor',
+  SIGNAL_CLEANUP: 'signal:cleanup',
 } as const;
 
 const IN_PROCESS_TOOL_DESCRIPTIONS = {
@@ -42,6 +47,11 @@ const IN_PROCESS_TOOL_DESCRIPTIONS = {
   FILE_WRITE: 'Write file content directly via runtime in-process handler',
   FILE_EDIT: 'Edit file content directly via runtime in-process handler',
   FILE_DELETE: 'Delete file content directly via runtime in-process handler',
+  BACKLOG_PRUNE: 'Prune backlog WUs via in-process filesystem operations',
+  STATE_BOOTSTRAP: 'Bootstrap WU events via in-process filesystem operations',
+  STATE_CLEANUP: 'Cleanup state/memory/signal files via in-process core handlers',
+  STATE_DOCTOR: 'Diagnose state integrity via in-process core handlers',
+  SIGNAL_CLEANUP: 'Cleanup stale signals via in-process memory handlers',
 } as const;
 
 const FILE_TOOL_ERROR_CODES = {
@@ -63,6 +73,29 @@ const FILE_TOOL_MESSAGES = {
   PARENT_DIRECTORY_MISSING: 'Parent directory does not exist',
   DIRECTORY_NOT_EMPTY:
     'Directory is not empty. Use recursive=true to delete non-empty directories.',
+} as const;
+
+const STATE_TOOL_ERROR_CODES = {
+  INVALID_INPUT: 'INVALID_INPUT',
+  BACKLOG_PRUNE_FAILED: 'BACKLOG_PRUNE_FAILED',
+  STATE_BOOTSTRAP_FAILED: 'STATE_BOOTSTRAP_FAILED',
+  STATE_CLEANUP_FAILED: 'STATE_CLEANUP_FAILED',
+  STATE_DOCTOR_FAILED: 'STATE_DOCTOR_FAILED',
+  SIGNAL_CLEANUP_FAILED: 'SIGNAL_CLEANUP_FAILED',
+} as const;
+
+const STATE_TOOL_CONSTANTS = {
+  WU_FILE_PREFIX: 'WU-',
+  YAML_EXTENSION: '.yaml',
+  DONE_STAMP_EXTENSION: '.done',
+  WU_EVENTS_FILE_NAME: 'wu-events.jsonl',
+  STALE_NOTE_TEMPLATE: 'Auto-tagged as stale by backlog:prune',
+  STATE_DOCTOR_FIX_REASON: 'state:doctor --fix',
+  DEFAULT_STALE_DAYS_IN_PROGRESS: 7,
+  DEFAULT_STALE_DAYS_READY: 30,
+  DEFAULT_ARCHIVE_DAYS: 90,
+  ONE_DAY_MS: 24 * 60 * 60 * 1000,
+  BOOTSTRAP_BLOCK_REASON: 'Bootstrapped from WU YAML (original reason unknown)',
 } as const;
 
 const FILE_READ_INPUT_SCHEMA = z.object({
@@ -92,6 +125,50 @@ const FILE_DELETE_INPUT_SCHEMA = z.object({
   path: z.string().min(1),
   recursive: z.boolean().optional(),
   force: z.boolean().optional(),
+});
+
+const BACKLOG_PRUNE_INPUT_SCHEMA = z.object({
+  execute: z.boolean().optional(),
+  dry_run: z.boolean().optional(),
+  stale_days_in_progress: z.number().int().positive().optional(),
+  stale_days_ready: z.number().int().positive().optional(),
+  archive_days: z.number().int().positive().optional(),
+});
+
+const STATE_BOOTSTRAP_INPUT_SCHEMA = z.object({
+  execute: z.boolean().optional(),
+  dry_run: z.boolean().optional(),
+  force: z.boolean().optional(),
+  wu_dir: z.string().optional(),
+  state_dir: z.string().optional(),
+});
+
+const STATE_CLEANUP_INPUT_SCHEMA = z.object({
+  dry_run: z.boolean().optional(),
+  signals_only: z.boolean().optional(),
+  memory_only: z.boolean().optional(),
+  events_only: z.boolean().optional(),
+  json: z.boolean().optional(),
+  quiet: z.boolean().optional(),
+  base_dir: z.string().optional(),
+});
+
+const STATE_DOCTOR_INPUT_SCHEMA = z.object({
+  fix: z.boolean().optional(),
+  dry_run: z.boolean().optional(),
+  json: z.boolean().optional(),
+  quiet: z.boolean().optional(),
+  base_dir: z.string().optional(),
+});
+
+const SIGNAL_CLEANUP_INPUT_SCHEMA = z.object({
+  dry_run: z.boolean().optional(),
+  ttl: z.string().optional(),
+  unread_ttl: z.string().optional(),
+  max_entries: z.number().int().positive().optional(),
+  json: z.boolean().optional(),
+  quiet: z.boolean().optional(),
+  base_dir: z.string().optional(),
 });
 
 const FILE_READ_OUTPUT_SCHEMA = z.object({
@@ -132,6 +209,68 @@ let coreModule: typeof import('@lumenflow/core') | null = null;
 async function getCoreLazy() {
   if (!coreModule) coreModule = await import('@lumenflow/core');
   return coreModule;
+}
+
+type CoreModule = Awaited<ReturnType<typeof getCoreLazy>>;
+
+interface MemorySignalsCleanupResult {
+  success: boolean;
+  removedIds: string[];
+  retainedIds: string[];
+  bytesFreed: number;
+  compactionRatio: number;
+  dryRun?: boolean;
+  breakdown: {
+    ttlExpired: number;
+    unreadTtlExpired: number;
+    countLimitExceeded: number;
+    activeWuProtected: number;
+  };
+}
+
+interface MemoryLifecycleCleanupResult {
+  success: boolean;
+  removedIds: string[];
+  retainedIds: string[];
+  bytesFreed: number;
+  compactionRatio: number;
+  dryRun?: boolean;
+  breakdown: {
+    ephemeral: number;
+    session: number;
+    wu: number;
+    sensitive: number;
+    ttlExpired: number;
+    activeSessionProtected: number;
+  };
+}
+
+interface MemoryModuleLike {
+  cleanupSignals: (
+    baseDir: string,
+    options?: {
+      dryRun?: boolean;
+      ttl?: string;
+      unreadTtl?: string;
+      maxEntries?: number;
+      getActiveWuIds?: () => Promise<Set<string>>;
+    },
+  ) => Promise<MemorySignalsCleanupResult>;
+  cleanupMemory: (
+    baseDir: string,
+    options?: {
+      dryRun?: boolean;
+    },
+  ) => Promise<MemoryLifecycleCleanupResult>;
+}
+
+const MEMORY_MODULE_ID = '@lumenflow/memory';
+let memoryModule: MemoryModuleLike | null = null;
+async function getMemoryLazy(): Promise<MemoryModuleLike> {
+  if (!memoryModule) {
+    memoryModule = (await import(MEMORY_MODULE_ID)) as MemoryModuleLike;
+  }
+  return memoryModule;
 }
 
 /**
@@ -609,6 +748,547 @@ const fileDeleteInProcess: InProcessToolFn = async (rawInput, context) => {
   }
 };
 
+interface WuLifecycleDocument {
+  id: string;
+  status: string;
+  title?: string;
+  lane?: string;
+  created?: string;
+  claimed_at?: string;
+  completed?: string;
+  completed_at?: string;
+  updated?: string;
+  filePath: string;
+}
+
+interface BootstrapLifecycleEvent {
+  type: 'claim' | 'complete' | 'block';
+  wuId: string;
+  timestamp: string;
+  lane?: string;
+  title?: string;
+  reason?: string;
+}
+
+function resolveCommandBaseDir(context: ExecutionContext, baseDir?: string): string {
+  if (!baseDir || baseDir.trim().length === 0) {
+    return resolveWorkspaceRoot(context);
+  }
+  return path.resolve(resolveWorkspaceRoot(context), baseDir);
+}
+
+function normalizeDryRun(execute?: boolean, dryRun?: boolean): boolean {
+  if (dryRun !== undefined) {
+    return dryRun;
+  }
+  return !execute;
+}
+
+function toIsoTimestamp(timestamp?: string, fallback?: string): string {
+  const candidate = timestamp ?? fallback;
+  if (!candidate) {
+    return new Date().toISOString();
+  }
+  if (candidate.includes('T')) {
+    return candidate;
+  }
+
+  const parsed = new Date(candidate);
+  if (Number.isNaN(parsed.getTime())) {
+    return new Date().toISOString();
+  }
+  return parsed.toISOString();
+}
+
+function calculateDaysSince(dateString?: string): number | null {
+  if (!dateString) {
+    return null;
+  }
+  const parsedDate = new Date(dateString);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null;
+  }
+  return Math.floor((Date.now() - parsedDate.getTime()) / STATE_TOOL_CONSTANTS.ONE_DAY_MS);
+}
+
+async function loadWuLifecycleDocuments(core: CoreModule, wuDir: string): Promise<WuLifecycleDocument[]> {
+  const directoryInfo = await getPathInfo(wuDir);
+  if (!directoryInfo.exists || !directoryInfo.isDirectory) {
+    return [];
+  }
+
+  const files = await readdir(wuDir);
+  const documents: WuLifecycleDocument[] = [];
+
+  for (const fileName of files) {
+    if (
+      !fileName.startsWith(STATE_TOOL_CONSTANTS.WU_FILE_PREFIX) ||
+      !fileName.endsWith(STATE_TOOL_CONSTANTS.YAML_EXTENSION)
+    ) {
+      continue;
+    }
+
+    const filePath = path.join(wuDir, fileName);
+    try {
+      const rawDoc = core.readWURaw(filePath) as Record<string, unknown>;
+      if (!rawDoc || typeof rawDoc.id !== 'string' || typeof rawDoc.status !== 'string') {
+        continue;
+      }
+
+      documents.push({
+        id: rawDoc.id,
+        status: rawDoc.status,
+        title: typeof rawDoc.title === 'string' ? rawDoc.title : undefined,
+        lane: typeof rawDoc.lane === 'string' ? rawDoc.lane : undefined,
+        created: typeof rawDoc.created === 'string' ? rawDoc.created : undefined,
+        claimed_at: typeof rawDoc.claimed_at === 'string' ? rawDoc.claimed_at : undefined,
+        completed: typeof rawDoc.completed === 'string' ? rawDoc.completed : undefined,
+        completed_at: typeof rawDoc.completed_at === 'string' ? rawDoc.completed_at : undefined,
+        updated: typeof rawDoc.updated === 'string' ? rawDoc.updated : undefined,
+        filePath,
+      });
+    } catch {
+      continue;
+    }
+  }
+
+  return documents;
+}
+
+function inferBootstrapEvents(
+  core: CoreModule,
+  wu: WuLifecycleDocument,
+): BootstrapLifecycleEvent[] {
+  const readyLikeStatuses = new Set([
+    core.WU_STATUS.READY,
+    core.WU_STATUS.BACKLOG,
+    core.WU_STATUS.TODO,
+  ]);
+  const doneStatuses = new Set([core.WU_STATUS.DONE, core.WU_STATUS.COMPLETED]);
+  const normalizedStatus = wu.status;
+
+  if (readyLikeStatuses.has(normalizedStatus)) {
+    return [];
+  }
+
+  const claimTimestamp = toIsoTimestamp(wu.claimed_at, wu.created);
+  const events: BootstrapLifecycleEvent[] = [
+    {
+      type: 'claim',
+      wuId: wu.id,
+      lane: wu.lane ?? 'Unknown',
+      title: wu.title ?? 'Untitled',
+      timestamp: claimTimestamp,
+    },
+  ];
+
+  if (normalizedStatus === core.WU_STATUS.BLOCKED) {
+    const blockedAt = new Date(claimTimestamp);
+    blockedAt.setSeconds(blockedAt.getSeconds() + 1);
+    events.push({
+      type: 'block',
+      wuId: wu.id,
+      timestamp: blockedAt.toISOString(),
+      reason: STATE_TOOL_CONSTANTS.BOOTSTRAP_BLOCK_REASON,
+    });
+    return events;
+  }
+
+  if (doneStatuses.has(normalizedStatus)) {
+    events.push({
+      type: 'complete',
+      wuId: wu.id,
+      timestamp: toIsoTimestamp(wu.completed_at ?? wu.completed, claimTimestamp),
+    });
+  }
+
+  return events;
+}
+
+async function listActiveWuIds(projectRoot: string): Promise<Set<string>> {
+  const core = await getCoreLazy();
+  const activeStatuses = new Set([core.WU_STATUS.IN_PROGRESS, core.WU_STATUS.BLOCKED]);
+  const wus = await core.listWUs({ projectRoot });
+  return new Set(wus.filter((wu) => activeStatuses.has(wu.status)).map((wu) => wu.id));
+}
+
+async function readNdjsonRecords(filePath: string): Promise<Record<string, unknown>[]> {
+  try {
+    const content = await readFile(filePath, UTF8_ENCODING);
+    return content
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+      .map((line) => {
+        try {
+          return JSON.parse(line) as Record<string, unknown>;
+        } catch {
+          return null;
+        }
+      })
+      .filter((line): line is Record<string, unknown> => line !== null);
+  } catch {
+    return [];
+  }
+}
+
+function buildStateDoctorDeps(core: CoreModule, projectRoot: string) {
+  const config = core.getConfig({ projectRoot });
+  const wuDir = path.join(projectRoot, config.directories.wuDir);
+  const stampsDir = path.join(projectRoot, config.state.stampsDir);
+  const stateDir = path.join(projectRoot, config.state.stateDir);
+  const signalsPath = path.join(projectRoot, core.LUMENFLOW_PATHS.MEMORY_SIGNALS);
+  const eventsPath = path.join(projectRoot, core.LUMENFLOW_PATHS.WU_EVENTS);
+
+  return {
+    listWUs: async () => {
+      const documents = await loadWuLifecycleDocuments(core, wuDir);
+      return documents.map((document) => ({
+        id: document.id,
+        status: document.status,
+        lane: document.lane,
+        title: document.title,
+      }));
+    },
+    listStamps: async () => {
+      try {
+        const files = await readdir(stampsDir);
+        return files
+          .filter((file) => file.endsWith(STATE_TOOL_CONSTANTS.DONE_STAMP_EXTENSION))
+          .map((file) =>
+            file.slice(0, -1 * STATE_TOOL_CONSTANTS.DONE_STAMP_EXTENSION.length),
+          );
+      } catch {
+        return [];
+      }
+    },
+    listSignals: async () => {
+      const signals = await readNdjsonRecords(signalsPath);
+      return signals
+        .filter((signal) => typeof signal.id === 'string')
+        .map((signal) => ({
+          id: String(signal.id),
+          wuId:
+            typeof signal.wuId === 'string'
+              ? signal.wuId
+              : typeof signal.wu_id === 'string'
+                ? signal.wu_id
+                : undefined,
+          timestamp: typeof signal.timestamp === 'string' ? signal.timestamp : undefined,
+          message: typeof signal.message === 'string' ? signal.message : undefined,
+        }));
+    },
+    listEvents: async () => {
+      const events = await readNdjsonRecords(eventsPath);
+      return events
+        .filter(
+          (event) =>
+            (typeof event.wuId === 'string' || typeof event.wu_id === 'string') &&
+            typeof event.type === 'string',
+        )
+        .map((event) => ({
+          wuId:
+            typeof event.wuId === 'string'
+              ? event.wuId
+              : typeof event.wu_id === 'string'
+                ? event.wu_id
+                : '',
+          type: String(event.type),
+          timestamp: typeof event.timestamp === 'string' ? event.timestamp : undefined,
+        }));
+    },
+    removeSignal: async (signalId: string) => {
+      const signals = await readNdjsonRecords(signalsPath);
+      const retainedSignals = signals.filter((signal) => signal.id !== signalId);
+      const payload =
+        retainedSignals.map((signal) => JSON.stringify(signal)).join('\n') +
+        (retainedSignals.length > 0 ? '\n' : '');
+      await writeFile(signalsPath, payload, UTF8_ENCODING);
+    },
+    removeEvent: async (wuId: string) => {
+      const events = await readNdjsonRecords(eventsPath);
+      const retainedEvents = events.filter((event) => event.wuId !== wuId && event.wu_id !== wuId);
+      const payload =
+        retainedEvents.map((event) => JSON.stringify(event)).join('\n') +
+        (retainedEvents.length > 0 ? '\n' : '');
+      await writeFile(eventsPath, payload, UTF8_ENCODING);
+    },
+    createStamp: async (wuId: string, title: string) => {
+      await mkdir(stampsDir, { recursive: true });
+      const stampPath = path.join(stampsDir, `${wuId}${STATE_TOOL_CONSTANTS.DONE_STAMP_EXTENSION}`);
+      const completedDate = new Date().toISOString().slice(0, 10);
+      const stampContent = `WU ${wuId} — ${title}\nCompleted: ${completedDate}\n`;
+      await writeFile(stampPath, stampContent, UTF8_ENCODING);
+    },
+    emitEvent: async (event: { wuId: string; type: 'release' | 'complete'; reason?: string }) => {
+      const stateStore = new core.WUStateStore(stateDir);
+      await stateStore.load();
+      if (event.type === 'release') {
+        await stateStore.release(
+          event.wuId,
+          event.reason ?? STATE_TOOL_CONSTANTS.STATE_DOCTOR_FIX_REASON,
+        );
+        return;
+      }
+      await stateStore.complete(event.wuId);
+    },
+  };
+}
+
+const backlogPruneInProcess: InProcessToolFn = async (rawInput, context) => {
+  const parsedInput = BACKLOG_PRUNE_INPUT_SCHEMA.safeParse(rawInput);
+  if (!parsedInput.success) {
+    return createFailureOutput(STATE_TOOL_ERROR_CODES.INVALID_INPUT, parsedInput.error.message);
+  }
+
+  try {
+    const core = await getCoreLazy();
+    const workspaceRoot = resolveWorkspaceRoot(context);
+    const config = core.getConfig({ projectRoot: workspaceRoot });
+    const wuDir = path.join(workspaceRoot, config.directories.wuDir);
+    const wuDocuments = await loadWuLifecycleDocuments(core, wuDir);
+    const dryRun = normalizeDryRun(parsedInput.data.execute, parsedInput.data.dry_run);
+    const staleDaysInProgress =
+      parsedInput.data.stale_days_in_progress ?? STATE_TOOL_CONSTANTS.DEFAULT_STALE_DAYS_IN_PROGRESS;
+    const staleDaysReady =
+      parsedInput.data.stale_days_ready ?? STATE_TOOL_CONSTANTS.DEFAULT_STALE_DAYS_READY;
+    const archiveDays = parsedInput.data.archive_days ?? STATE_TOOL_CONSTANTS.DEFAULT_ARCHIVE_DAYS;
+
+    const doneStatuses = new Set([core.WU_STATUS.DONE, core.WU_STATUS.COMPLETED]);
+    const staleCandidates: WuLifecycleDocument[] = [];
+    const archivableCandidates: WuLifecycleDocument[] = [];
+    const healthyCandidates: WuLifecycleDocument[] = [];
+
+    for (const wu of wuDocuments) {
+      if (doneStatuses.has(wu.status)) {
+        const completedAge = calculateDaysSince(wu.completed ?? wu.completed_at);
+        if (completedAge !== null && completedAge > archiveDays) {
+          archivableCandidates.push(wu);
+        } else {
+          healthyCandidates.push(wu);
+        }
+        continue;
+      }
+
+      if (wu.status === core.WU_STATUS.BLOCKED) {
+        healthyCandidates.push(wu);
+        continue;
+      }
+
+      const lastActivity = wu.updated ?? wu.created;
+      const daysSinceActivity = calculateDaysSince(lastActivity);
+      if (daysSinceActivity === null) {
+        healthyCandidates.push(wu);
+        continue;
+      }
+
+      const isInProgressStale =
+        wu.status === core.WU_STATUS.IN_PROGRESS && daysSinceActivity > staleDaysInProgress;
+      const isReadyLikeStale =
+        (wu.status === core.WU_STATUS.READY ||
+          wu.status === core.WU_STATUS.BACKLOG ||
+          wu.status === core.WU_STATUS.TODO) &&
+        daysSinceActivity > staleDaysReady;
+
+      if (isInProgressStale || isReadyLikeStale) {
+        staleCandidates.push(wu);
+      } else {
+        healthyCandidates.push(wu);
+      }
+    }
+
+    let taggedCount = 0;
+    if (!dryRun) {
+      const noteDate = new Date().toISOString().slice(0, 10);
+      for (const staleWu of staleCandidates) {
+        try {
+          const wuDoc = core.readWURaw(staleWu.filePath);
+          core.appendNote(wuDoc, `[${noteDate}] ${STATE_TOOL_CONSTANTS.STALE_NOTE_TEMPLATE}`);
+          core.writeWU(staleWu.filePath, wuDoc);
+          taggedCount += 1;
+        } catch {
+          continue;
+        }
+      }
+    }
+
+    return createSuccessOutput({
+      dry_run: dryRun,
+      total_wus: wuDocuments.length,
+      stale_count: staleCandidates.length,
+      stale_ids: staleCandidates.map((wu) => wu.id),
+      archivable_count: archivableCandidates.length,
+      archivable_ids: archivableCandidates.map((wu) => wu.id),
+      healthy_count: healthyCandidates.length,
+      tagged_count: taggedCount,
+    });
+  } catch (cause) {
+    return createFailureOutput(
+      STATE_TOOL_ERROR_CODES.BACKLOG_PRUNE_FAILED,
+      (cause as Error).message,
+    );
+  }
+};
+
+const stateBootstrapInProcess: InProcessToolFn = async (rawInput, context) => {
+  const parsedInput = STATE_BOOTSTRAP_INPUT_SCHEMA.safeParse(rawInput);
+  if (!parsedInput.success) {
+    return createFailureOutput(STATE_TOOL_ERROR_CODES.INVALID_INPUT, parsedInput.error.message);
+  }
+
+  try {
+    const core = await getCoreLazy();
+    const workspaceRoot = resolveWorkspaceRoot(context);
+    const config = core.getConfig({ projectRoot: workspaceRoot });
+    const wuDir = parsedInput.data.wu_dir
+      ? path.resolve(workspaceRoot, parsedInput.data.wu_dir)
+      : path.join(workspaceRoot, config.directories.wuDir);
+    const stateDir = parsedInput.data.state_dir
+      ? path.resolve(workspaceRoot, parsedInput.data.state_dir)
+      : path.join(workspaceRoot, config.state.stateDir);
+    const dryRun = normalizeDryRun(parsedInput.data.execute, parsedInput.data.dry_run);
+    const force = parsedInput.data.force ?? false;
+    const eventsFilePath = path.join(stateDir, STATE_TOOL_CONSTANTS.WU_EVENTS_FILE_NAME);
+
+    const wuDocuments = await loadWuLifecycleDocuments(core, wuDir);
+    const bootstrapEvents = wuDocuments
+      .flatMap((wu) => inferBootstrapEvents(core, wu))
+      .sort((left, right) => {
+        return new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime();
+      });
+
+    if (!dryRun) {
+      const existingStateFile = await getPathInfo(eventsFilePath);
+      if (existingStateFile.exists && !force) {
+        return createFailureOutput(
+          STATE_TOOL_ERROR_CODES.STATE_BOOTSTRAP_FAILED,
+          `State file already exists: ${eventsFilePath}. Use --force to overwrite.`,
+        );
+      }
+
+      await mkdir(stateDir, { recursive: true });
+      const payload =
+        bootstrapEvents.map((event) => JSON.stringify(event)).join('\n') +
+        (bootstrapEvents.length > 0 ? '\n' : '');
+      await writeFile(eventsFilePath, payload, UTF8_ENCODING);
+    }
+
+    return createSuccessOutput({
+      dry_run: dryRun,
+      events_generated: bootstrapEvents.length,
+      events_written: dryRun ? 0 : bootstrapEvents.length,
+      skipped: 0,
+      warnings: wuDocuments.length === 0 ? ['WU directory not found or empty'] : [],
+    });
+  } catch (cause) {
+    return createFailureOutput(
+      STATE_TOOL_ERROR_CODES.STATE_BOOTSTRAP_FAILED,
+      (cause as Error).message,
+    );
+  }
+};
+
+const stateCleanupInProcess: InProcessToolFn = async (rawInput, context) => {
+  const parsedInput = STATE_CLEANUP_INPUT_SCHEMA.safeParse(rawInput);
+  if (!parsedInput.success) {
+    return createFailureOutput(STATE_TOOL_ERROR_CODES.INVALID_INPUT, parsedInput.error.message);
+  }
+
+  const exclusiveFlags = [
+    parsedInput.data.signals_only,
+    parsedInput.data.memory_only,
+    parsedInput.data.events_only,
+  ].filter(Boolean);
+  if (exclusiveFlags.length > 1) {
+    return createFailureOutput(
+      STATE_TOOL_ERROR_CODES.INVALID_INPUT,
+      '--signals-only, --memory-only, and --events-only are mutually exclusive',
+    );
+  }
+
+  try {
+    const core = await getCoreLazy();
+    const memory = await getMemoryLazy();
+    const projectRoot = resolveCommandBaseDir(context, parsedInput.data.base_dir);
+
+    const result = await core.cleanupState(projectRoot, {
+      dryRun: parsedInput.data.dry_run,
+      signalsOnly: parsedInput.data.signals_only,
+      memoryOnly: parsedInput.data.memory_only,
+      eventsOnly: parsedInput.data.events_only,
+      cleanupSignals: async (dir, options) =>
+        memory.cleanupSignals(dir, {
+          dryRun: options.dryRun,
+          getActiveWuIds: () => listActiveWuIds(dir),
+        }),
+      cleanupMemory: async (dir, options) =>
+        memory.cleanupMemory(dir, {
+          dryRun: options.dryRun,
+        }),
+      archiveEvents: async (dir, options) =>
+        core.archiveWuEvents(dir, {
+          dryRun: options.dryRun,
+        }),
+    });
+
+    return createSuccessOutput(result);
+  } catch (cause) {
+    return createFailureOutput(
+      STATE_TOOL_ERROR_CODES.STATE_CLEANUP_FAILED,
+      (cause as Error).message,
+    );
+  }
+};
+
+const stateDoctorInProcess: InProcessToolFn = async (rawInput, context) => {
+  const parsedInput = STATE_DOCTOR_INPUT_SCHEMA.safeParse(rawInput);
+  if (!parsedInput.success) {
+    return createFailureOutput(STATE_TOOL_ERROR_CODES.INVALID_INPUT, parsedInput.error.message);
+  }
+
+  try {
+    const core = await getCoreLazy();
+    const projectRoot = resolveCommandBaseDir(context, parsedInput.data.base_dir);
+    const deps = buildStateDoctorDeps(core, projectRoot);
+    const diagnosis = await core.diagnoseState(projectRoot, deps, {
+      fix: parsedInput.data.fix,
+      dryRun: parsedInput.data.dry_run,
+    });
+    return createSuccessOutput(diagnosis);
+  } catch (cause) {
+    return createFailureOutput(
+      STATE_TOOL_ERROR_CODES.STATE_DOCTOR_FAILED,
+      (cause as Error).message,
+    );
+  }
+};
+
+const signalCleanupInProcess: InProcessToolFn = async (rawInput, context) => {
+  const parsedInput = SIGNAL_CLEANUP_INPUT_SCHEMA.safeParse(rawInput);
+  if (!parsedInput.success) {
+    return createFailureOutput(STATE_TOOL_ERROR_CODES.INVALID_INPUT, parsedInput.error.message);
+  }
+
+  try {
+    const memory = await getMemoryLazy();
+    const projectRoot = resolveCommandBaseDir(context, parsedInput.data.base_dir);
+    const result = await memory.cleanupSignals(projectRoot, {
+      dryRun: parsedInput.data.dry_run,
+      ttl: parsedInput.data.ttl,
+      unreadTtl: parsedInput.data.unread_ttl,
+      maxEntries: parsedInput.data.max_entries,
+      getActiveWuIds: () => listActiveWuIds(projectRoot),
+    });
+
+    return createSuccessOutput(result);
+  } catch (cause) {
+    return createFailureOutput(
+      STATE_TOOL_ERROR_CODES.SIGNAL_CLEANUP_FAILED,
+      (cause as Error).message,
+    );
+  }
+};
+
 const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolHandler>([
   [
     IN_PROCESS_TOOL_NAMES.WU_STATUS,
@@ -659,6 +1339,51 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       inputSchema: FILE_DELETE_INPUT_SCHEMA,
       outputSchema: FILE_DELETE_OUTPUT_SCHEMA,
       fn: fileDeleteInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.BACKLOG_PRUNE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.BACKLOG_PRUNE,
+      inputSchema: BACKLOG_PRUNE_INPUT_SCHEMA,
+      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
+      fn: backlogPruneInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.STATE_BOOTSTRAP,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.STATE_BOOTSTRAP,
+      inputSchema: STATE_BOOTSTRAP_INPUT_SCHEMA,
+      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
+      fn: stateBootstrapInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.STATE_CLEANUP,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.STATE_CLEANUP,
+      inputSchema: STATE_CLEANUP_INPUT_SCHEMA,
+      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
+      fn: stateCleanupInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.STATE_DOCTOR,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.STATE_DOCTOR,
+      inputSchema: STATE_DOCTOR_INPUT_SCHEMA,
+      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
+      fn: stateDoctorInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.SIGNAL_CLEANUP,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.SIGNAL_CLEANUP,
+      inputSchema: SIGNAL_CLEANUP_INPUT_SCHEMA,
+      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
+      fn: signalCleanupInProcess,
     },
   ],
   // WU-1803: Flow/Metrics/Context tool registrations
