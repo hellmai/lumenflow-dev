@@ -4,6 +4,7 @@ import type {
   ApprovalRequestView,
   DashboardEvent,
   EvidenceLink,
+  PolicyDecisionView,
   SseConnectionState,
   TaskStatus,
   ToolReceiptView,
@@ -14,6 +15,7 @@ import { EventLog } from './event-log';
 import { ToolReceipt } from './tool-receipt';
 import { EvidenceChain } from './evidence-chain';
 import { ApprovalCard } from './approval-card';
+import { PolicyAuditTab } from './policy-audit-tab';
 
 const CONNECTION_BADGE_COLORS = new Map<SseConnectionState, string>([
   ['connecting', 'bg-amber-100 text-amber-700'],
@@ -34,6 +36,7 @@ interface TaskDashboardProps {
   readonly onApprove: (receiptId: string) => void;
   readonly onDeny: (receiptId: string) => void;
   readonly evidenceLinks: readonly EvidenceLink[];
+  readonly policyDecisions?: readonly PolicyDecisionView[];
 }
 
 export function TaskDashboard({
@@ -46,6 +49,7 @@ export function TaskDashboard({
   onApprove,
   onDeny,
   evidenceLinks,
+  policyDecisions,
 }: TaskDashboardProps) {
   const pendingApprovals = approvalRequests.filter(
     (request) => request.status === APPROVAL_STATUSES.PENDING,
@@ -126,6 +130,19 @@ export function TaskDashboard({
           </div>
         </section>
       )}
+
+      {/* Policy Audit */}
+      <section>
+        <h2 className={SECTION_TITLE_CLASS}>
+          Policy Audit{' '}
+          <span className="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-xs font-normal text-slate-400">
+            {policyDecisions?.length ?? 0}
+          </span>
+        </h2>
+        <div className="mt-3">
+          <PolicyAuditTab decisions={policyDecisions ?? []} />
+        </div>
+      </section>
 
       {/* Evidence Chain */}
       <section>
