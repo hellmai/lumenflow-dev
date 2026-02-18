@@ -21,6 +21,7 @@ artifacts:
   - .lumenflow/stamps/WU-1860.done
 dependencies: []
 initiative: INIT-030
+phase: 5
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
@@ -31,7 +32,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Code review of INIT-030 found: evidence store lock leak on operation failure, dual now() calls creating clock skew in trace duration, partial write in writeTaskSpecImmutable leaving corrupt spec, non-atomic task creation, and trace recording errors propagating false CLI fallbacks.'
+description: 'Code review of INIT-030 found: evidence store lock leak on operation failure, dual
+  now() calls creating clock skew in trace duration, partial write in writeTaskSpecImmutable leaving
+  corrupt spec, non-atomic task creation, and trace recording errors propagating false CLI
+  fallbacks.'
 acceptance:
   - Evidence store lock file cleaned up when operation fails after lock acquired
   - Trace timestamp and duration_ms computed from single now() call
