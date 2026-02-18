@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1854 — Add lane:edit command for safe in-place lane definition editing](wu/WU-1854.yaml) — Framework: CLI WU Commands
 - [WU-1853 — MCP file_write and file_edit tools bypass enforce-worktree hook](wu/WU-1853.yaml) — Framework: MCP
 - [WU-1852 — Fix first-project bootstrap blockers in lumenflow init](wu/WU-1852.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
