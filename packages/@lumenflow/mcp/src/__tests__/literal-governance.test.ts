@@ -27,9 +27,7 @@ const SRC_DIR = path.resolve(import.meta.dirname, '..');
  * Files excluded from governance scanning.
  * Constants definition files define the governed constants themselves.
  */
-const EXCLUDED_FILES = new Set([
-  'tools/runtime-task-constants.ts',
-]);
+const EXCLUDED_FILES = new Set(['tools/runtime-task-constants.ts']);
 
 /**
  * Auto-discovers MCP tool implementation files subject to governance scanning.
@@ -47,11 +45,7 @@ function discoverGovernedFiles(): string[] {
   // Auto-discover all tool implementation files in tools/
   if (fs.existsSync(toolsDir)) {
     for (const entry of fs.readdirSync(toolsDir)) {
-      if (
-        entry.endsWith('.ts') &&
-        !entry.endsWith('.d.ts') &&
-        !entry.endsWith('.test.ts')
-      ) {
+      if (entry.endsWith('.ts') && !entry.endsWith('.d.ts') && !entry.endsWith('.test.ts')) {
         const relPath = `tools/${entry}`;
         if (!EXCLUDED_FILES.has(relPath)) {
           files.push(relPath);
