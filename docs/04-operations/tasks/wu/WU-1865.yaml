@@ -6,9 +6,8 @@ status: in_progress
 priority: P3
 created: 2026-02-18
 code_paths:
-  - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
-  - packages/@lumenflow/kernel/src/policy/policy-engine.ts
-  - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
+  - packages/@lumenflow/kernel/src/state-machine/index.ts
+  - packages/@lumenflow/kernel/package.json
 tests:
   manual:
     - Verify xstate dependency removed from kernel package.json if dead code deleted
@@ -30,10 +29,17 @@ notes: This is the cleanup pass. Lower priority than security/durability WUs but
   it appears to be based on runtime usage), remove xstate entirely and drop the dependency.
   W7/W8/W11 are individually trivial but collectively improve kernel diagnostic quality.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-18T23:20:51.956Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1865
+session_id: feb6b4e3-57bb-43e2-bda5-c5c36c051d7a
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T23:20:51.963Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -51,11 +57,3 @@ acceptance:
   - Kernel internal API naming follows consistent convention (document which)
   - No dead code remains in kernel packages (verified by ts-prune or similar)
   - All kernel and MCP tests pass
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1865
-claimed_at: 2026-02-18T23:20:51.956Z
-baseline_main_sha: 557e18f78bc0951184908b379208ade0f3c0d129
-session_id: feb6b4e3-57bb-43e2-bda5-c5c36c051d7a
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-18T23:20:51.963Z
