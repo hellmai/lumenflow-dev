@@ -11,7 +11,12 @@ code_paths:
   - packages/@lumenflow/cli/templates/
   - packages/@lumenflow/cli/src/wu-create.ts
 tests:
-  manual: []
+  manual:
+    - Run lumenflow init in temp dir and verify cos:gates script exists in package.json
+    - Run wu:done --help and verify --skip-cos-gates is not mentioned
+    - Run lumenflow init and verify .logs/ is in .gitignore
+    - Run lumenflow init and verify lane naming format is displayed
+    - Run wu:create with multiple invalid fields and verify all errors shown at once
   unit:
     - packages/@lumenflow/cli/src/__tests__/
   e2e: []
@@ -28,10 +33,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: lumenflow init scaffolds a new project with stubs for lint, typecheck, and format scripts but omits cos:gates. wu:done unconditionally runs pnpm cos:gates, so every fresh project fails its first wu:done. Additionally the wu:done error message suggests --skip-cos-gates which does not exist in the CLI; .logs/ is absent from the scaffolded .gitignore causing wu:done to block on untracked gates output; lane naming format and valid parents are not surfaced during init; wu:create reports validation errors one at a time requiring multiple retry cycles. Problem: A fresh project installed via lumenflow init cannot complete its first wu:done without manual workarounds — observed in Haven test project where setup required 12+ extra commits and 6+ failed command attempts to complete one documentation WU. Solution: Add cos:gates no-op stub to init-templates.ts alongside existing stubs; remove or correct --skip-cos-gates reference in wu-done error message; add .logs/ to scaffolded .gitignore template; print Parent: Sublane format requirement in lumenflow init output; collect all wu:create validation errors before throwing.'
+description: 'Context: lumenflow init scaffolds a new project with stubs for lint, typecheck, and
+  format scripts but omits cos:gates. wu:done unconditionally runs pnpm cos:gates, so every fresh
+  project fails its first wu:done. Additionally the wu:done error message suggests --skip-cos-gates
+  which does not exist in the CLI; .logs/ is absent from the scaffolded .gitignore causing wu:done
+  to block on untracked gates output; lane naming format and valid parents are not surfaced during
+  init; wu:create reports validation errors one at a time requiring multiple retry cycles. Problem:
+  A fresh project installed via lumenflow init cannot complete its first wu:done without manual
+  workarounds — observed in Haven test project where setup required 12+ extra commits and 6+ failed
+  command attempts to complete one documentation WU. Solution: Add cos:gates no-op stub to
+  init-templates.ts alongside existing stubs; remove or correct --skip-cos-gates reference in
+  wu-done error message; add .logs/ to scaffolded .gitignore template; print Parent: Sublane format
+  requirement in lumenflow init output; collect all wu:create validation errors before throwing.'
 acceptance:
-  - lumenflow init scaffolds cos:gates as a no-op script in package.json alongside lint, typecheck, and format stubs
-  - wu:done error message for COS failures does not reference --skip-cos-gates or any flag that does not exist in wu:done --help
+  - lumenflow init scaffolds cos:gates as a no-op script in package.json alongside lint, typecheck,
+    and format stubs
+  - wu:done error message for COS failures does not reference --skip-cos-gates or any flag that does
+    not exist in wu:done --help
   - .logs/ is present in the .gitignore template scaffolded by lumenflow init
-  - 'lumenflow init output displays the Parent: Sublane naming requirement and lists valid parent names before the user reaches lane:validate'
-  - wu:create reports all spec validation errors in a single output rather than failing on the first error and requiring retry
+  - 'lumenflow init output displays the Parent: Sublane naming requirement and lists valid parent
+    names before the user reaches lane:validate'
+  - wu:create reports all spec validation errors in a single output rather than failing on the first
+    error and requiring retry
