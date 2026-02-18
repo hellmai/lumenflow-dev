@@ -1639,3 +1639,4 @@
 {"type":"claim","wuId":"WU-1815","timestamp":"2026-02-18T21:24:22.578Z","lane":"Framework: Core Lifecycle","title":"Post-Phase-3 shell-out deprecation recertification and metric closure"}
 {"type":"complete","wuId":"WU-1829","timestamp":"2026-02-18T21:26:11.243Z"}
 {"type":"complete","wuId":"WU-1827","timestamp":"2026-02-18T21:27:07.729Z"}
+{"type":"claim","wuId":"WU-1833","lane":"Content: Site Comms","title":"Build GenUI tool output renderers for rich tool result visualization","timestamp":"2026-02-18T21:30:49.203Z"}

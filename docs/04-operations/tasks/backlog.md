@@ -24,7 +24,6 @@ sections:
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
-- [WU-1833 — Build GenUI tool output renderers for rich tool result visualization](wu/WU-1833.yaml) — Content: Site Comms
 - [WU-1834 — Build policy decision overlay showing governance enforcement visually](wu/WU-1834.yaml) — Content: Site Comms
 - [WU-1835 — Build human-in-the-loop approval UI for policy approval_required decisions](wu/WU-1835.yaml) — Content: Site Comms
 - [WU-1836 — Build pack registry API with Vercel Edge Functions](wu/WU-1836.yaml) — Content: Site Comms
@@ -38,6 +37,7 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1815 — Post-Phase-3 shell-out deprecation recertification and metric closure](wu/WU-1815.yaml) — Framework: Core Lifecycle
+- [WU-1833 — Build GenUI tool output renderers for rich tool result visualization](wu/WU-1833.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 

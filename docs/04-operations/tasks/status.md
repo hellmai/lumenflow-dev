@@ -6,6 +6,7 @@ _Last updated: 2026-02-18_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1815 — Post-Phase-3 shell-out deprecation recertification and metric closure](wu/WU-1815.yaml)
+- [WU-1833 — Build GenUI tool output renderers for rich tool result visualization](wu/WU-1833.yaml)
 
 ## Completed
 
