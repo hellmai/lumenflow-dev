@@ -5,7 +5,6 @@ _Last updated: 2026-02-18_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1855 — Close MCP literal governance blind spots and enforce full constant coverage](wu/WU-1855.yaml)
 
 ## Completed
 
@@ -741,3 +740,4 @@ _Last updated: 2026-02-18_
 - [WU-1801 — Migrate state/signal tools to runtime pack execution](wu/WU-1801.yaml) — 2026-02-18
 - [WU-1848 — Standardize kernel identifier constants with typed source-of-truth modules](wu/WU-1848.yaml) — 2026-02-18
 - [WU-1851 — Centralize MCP surface CLI command/flag/metadata-key governance with guardrail ratchet](wu/WU-1851.yaml) — 2026-02-18
+- [WU-1855 — Close MCP literal governance blind spots and enforce full constant coverage](wu/WU-1855.yaml) — 2026-02-18

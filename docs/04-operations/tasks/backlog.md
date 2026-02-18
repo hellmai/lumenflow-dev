@@ -78,7 +78,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1855 — Close MCP literal governance blind spots and enforce full constant coverage](wu/WU-1855.yaml) — Framework: MCP
 
 ## ⛔ Blocked
 
@@ -818,6 +817,7 @@ sections:
 - [WU-1801 — Migrate state/signal tools to runtime pack execution](wu/WU-1801.yaml)
 - [WU-1848 — Standardize kernel identifier constants with typed source-of-truth modules](wu/WU-1848.yaml)
 - [WU-1851 — Centralize MCP surface CLI command/flag/metadata-key governance with guardrail ratchet](wu/WU-1851.yaml)
+- [WU-1855 — Close MCP literal governance blind spots and enforce full constant coverage](wu/WU-1855.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
