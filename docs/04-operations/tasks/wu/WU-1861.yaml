@@ -2,7 +2,7 @@ id: WU-1861
 title: 'INIT-030 Review Fix C: governance and type safety tightening'
 lane: 'Framework: MCP'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -54,3 +54,6 @@ session_id: 624ebc86-39cd-41e3-9426-f65b61704a11
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T22:35:49.708Z
+locked: true
+completed_at: 2026-02-18T23:00:02.379Z
+completed: 2026-02-18
