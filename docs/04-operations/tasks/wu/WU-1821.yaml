@@ -2,7 +2,7 @@ id: WU-1821
 title: Build workspace overview page with task list and lane WIP visualization
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -31,8 +31,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Lists all tasks by replaying EventStore without task filter. Shows task state summary (count by status), click to navigate to task detail page. Lane WIP visualization and scheduler queue depth (if daemon running).
+description: Lists all tasks by replaying EventStore without task filter. Shows task state summary
+  (count by status), click to navigate to task detail page. Lane WIP visualization and scheduler
+  queue depth (if daemon running).
 acceptance:
   - All tasks listed with status grouping
   - Click navigates to task detail
   - Lane WIP counts displayed
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1821
+claimed_at: 2026-02-18T19:49:23.600Z
+baseline_main_sha: fb4ef3ed69444675a3c83d0c4ba85df2cdc0cf3a
+session_id: 3805a7b7-77c1-40d7-9a2c-158109e9f82e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T19:49:23.605Z

@@ -1615,3 +1615,4 @@
 {"type":"claim","wuId":"WU-1812","timestamp":"2026-02-18T19:29:06.401Z","lane":"Framework: Core Lifecycle","title":"Migrate agent, setup, plan, docs, and sync tools to runtime pack execution"}
 {"type":"complete","wuId":"WU-1812","timestamp":"2026-02-18T19:44:46.716Z"}
 {"type":"claim","wuId":"WU-1813","lane":"Framework: Core Lifecycle","title":"Remove fallback paths and eliminate runCliCommand from MCP tool layer","timestamp":"2026-02-18T19:45:48.883Z"}
+{"type":"claim","wuId":"WU-1821","lane":"Content: Site Comms","title":"Build workspace overview page with task list and lane WIP visualization","timestamp":"2026-02-18T19:49:23.627Z"}
