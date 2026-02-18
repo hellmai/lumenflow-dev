@@ -2,7 +2,7 @@ id: WU-1864
 title: Scope intersection property-based fuzz testing for patternContains glob heuristic
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -20,7 +20,9 @@ dependencies: []
 initiative: INIT-030
 phase: 5
 risks: []
-notes: 'This is a security-critical test WU. The glob heuristic gates tool authorization — if it returns a false positive, tools execute outside their declared scope. fast-check is the standard property-based testing lib for TS. Reference: use micromatch.isMatch as ground truth oracle.'
+notes: 'This is a security-critical test WU. The glob heuristic gates tool authorization — if it
+  returns a false positive, tools execute outside their declared scope. fast-check is the standard
+  property-based testing lib for TS. Reference: use micromatch.isMatch as ground truth oracle.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -29,11 +31,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'W12: The patternContains() glob heuristic in scope intersection uses string-based pattern matching to determine if one glob contains another. Negation patterns, brace expansion, and edge cases (e.g., **/foo vs foo/**, overlapping character classes) are unproven. A malformed scope pattern could cause false containment, leading to unauthorized tool execution or false denials. Add property-based fuzz tests using fast-check to verify the heuristic against a reference implementation (micromatch) across adversarial inputs.'
+description: 'W12: The patternContains() glob heuristic in scope intersection uses string-based
+  pattern matching to determine if one glob contains another. Negation patterns, brace expansion,
+  and edge cases (e.g., **/foo vs foo/**, overlapping character classes) are unproven. A malformed
+  scope pattern could cause false containment, leading to unauthorized tool execution or false
+  denials. Add property-based fuzz tests using fast-check to verify the heuristic against a
+  reference implementation (micromatch) across adversarial inputs.'
 acceptance:
-  - Property-based tests verify patternContains against micromatch reference for 10,000+ random patterns
+  - Property-based tests verify patternContains against micromatch reference for 10,000+ random
+    patterns
   - Negation patterns (!foo) handled correctly or explicitly rejected
   - Brace expansion ({a,b}) handled correctly or explicitly rejected
   - 'Edge cases documented: what patternContains guarantees vs what it approximates'
   - Any discovered bugs in glob heuristic fixed with regression tests
   - All kernel tests pass
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1864
+claimed_at: 2026-02-18T23:17:51.391Z
+baseline_main_sha: f08096360e27492a56a7efc4ba076e3d14c747e2
+session_id: feb6b4e3-57bb-43e2-bda5-c5c36c051d7a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T23:17:51.394Z
