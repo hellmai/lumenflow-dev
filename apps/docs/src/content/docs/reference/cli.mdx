@@ -17,11 +17,11 @@ LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiati
 
 | Category            | Commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Gates & Quality     | [`gates`](#gates), [`gates:docs`](#gatesdocs), [`lane:health`](#lanehealth), [`lane:lock`](#lanelock), [`lane:setup`](#lanesetup), [`lane:status`](#lanestatus), [`lane:suggest`](#lanesuggest), [`lane:validate`](#lanevalidate), [`lumenflow-gates`](#lumenflow-gates), [`lumenflow-validate`](#lumenflow-validate), [`validate`](#validate)                                                                                                                                                                                                                                                                                                                                                                 |
+| Gates & Quality     | [`gates`](#gates), [`gates:docs`](#gatesdocs), [`lane:edit`](#laneedit), [`lane:health`](#lanehealth), [`lane:lock`](#lanelock), [`lane:setup`](#lanesetup), [`lane:status`](#lanestatus), [`lane:suggest`](#lanesuggest), [`lane:validate`](#lanevalidate), [`lumenflow-gates`](#lumenflow-gates), [`lumenflow-validate`](#lumenflow-validate), [`validate`](#validate)                                                                                                                                                                                                                                                                                                                                       |
 | Initiatives         | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign`](#initiativebulk-assign), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:remove-wu`](#initiativeremove-wu), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                                                                             |
 | Memory & Sessions   | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:recover`](#memrecover), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage), [`signal:cleanup`](#signalcleanup)                                                                                                                                                                                                                                                           |
 | Metrics & Flow      | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport), [`lumenflow:metrics`](#lumenflowmetrics), [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Orchestration       | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end), [`delegation:list`](#delegationlist), [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor)                                                                                                                                                                                                                                                                                                                                                     |
+| Orchestration       | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end), [`delegation:list`](#delegationlist), [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor), [`task:claim`](#taskclaim)                                                                                                                                                                                                                                                                                                                         |
 | Plans               | [`init:plan`](#initplan), [`plan:create`](#plancreate), [`plan:edit`](#planedit), [`plan:link`](#planlink), [`plan:promote`](#planpromote)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Setup & Development | [`backlog:prune`](#backlogprune), [`docs:sync`](#docssync), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`lumenflow`](#lumenflow), [`lumenflow-init`](#lumenflow-init), [`lumenflow:commands`](#lumenflowcommands), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:integrate`](#lumenflowintegrate), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade), [`sync:templates`](#synctemplates) |
 | State Management    | [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -44,6 +44,14 @@ Run docs-only quality gates (alias)
 
 ```bash
 pnpm gates:docs
+```
+
+### lane:edit
+
+Edit a lane definition (rename, wip-limit, paths, description)
+
+```bash
+pnpm lane:edit
 ```
 
 ### lane:health
@@ -683,6 +691,14 @@ Monitor spawn/agent activity
 
 ```bash
 pnpm orchestrate:monitor
+```
+
+### task:claim
+
+Claim a task directly through KernelRuntime
+
+```bash
+pnpm task:claim
 ```
 
 ## Plans
@@ -1353,3 +1369,5 @@ pnpm wu:unlock-lane
 
 - [Configuration](/reference/config) – Configure LumenFlow
 - [WU Schema](/reference/wu-schema) – Work Unit YAML structure
+
+<!-- MODIFIED -->
