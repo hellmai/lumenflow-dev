@@ -1,8 +1,7 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import { spawnSync } from 'node:child_process';
-import { UTF8_ENCODING } from '../constants.js';
+import { GIT_BINARY, runGit } from './git-runner.js';
 
 export type GitToolName = 'git:add' | 'git:status' | 'git:commit';
 
@@ -47,34 +46,12 @@ export interface GitToolHostReceipt {
   output: GitToolOutput;
 }
 
-interface CommandResult {
-  ok: boolean;
-  stdout: string;
-  stderr: string;
-  status: number;
-}
-
 interface CommandExecutionResult {
   command: string;
   args: string[];
   stdout: string;
   stderr: string;
   status: number;
-}
-
-const GIT_BINARY = '/usr/bin/git';
-
-function runGit(cwd: string, args: string[]): CommandResult {
-  const result = spawnSync(GIT_BINARY, args, {
-    cwd,
-    encoding: UTF8_ENCODING,
-  });
-  return {
-    ok: result.status === 0,
-    stdout: (result.stdout || '').toString(),
-    stderr: (result.stderr || '').toString(),
-    status: result.status ?? 1,
-  };
 }
 
 function isGitBinaryCommand(command: unknown): boolean {
@@ -99,11 +76,11 @@ async function trySimpleGitStatus(cwd: string): Promise<string | null> {
 }
 
 function ensureRepository(cwd: string): void {
-  const existing = runGit(cwd, ['rev-parse', '--is-inside-work-tree']);
+  const existing = runGit(['rev-parse', '--is-inside-work-tree'], { cwd });
   if (existing.ok) {
     return;
   }
-  const init = runGit(cwd, ['init']);
+  const init = runGit(['init'], { cwd });
   if (!init.ok) {
     throw new Error(`Failed to initialize git repository: ${init.stderr || init.stdout}`);
   }
@@ -149,7 +126,7 @@ export async function gitStatusTool(
       }
 
       const args = commandEntry.slice(1).map((arg) => String(arg));
-      const result = runGit(cwd, args);
+      const result = runGit(args, { cwd });
       if (!result.ok) {
         return {
           success: false,
@@ -190,7 +167,7 @@ export async function gitStatusTool(
     };
   }
 
-  const status = runGit(cwd, ['status', '--short']);
+  const status = runGit(['status', '--short'], { cwd });
   if (!status.ok) {
     return {
       success: false,
@@ -217,7 +194,7 @@ export async function gitAddTool(
   ensureRepository(cwd);
   const files = Array.isArray(input.files) ? input.files.map((file) => String(file)) : [];
   const args = ['add', ...(files.length > 0 ? files : ['-A'])];
-  const result = runGit(cwd, args);
+  const result = runGit(args, { cwd });
   if (!result.ok) {
     return {
       success: false,
@@ -259,7 +236,7 @@ export async function gitCommitTool(
 
   const files = Array.isArray(input.files) ? input.files.map((file) => String(file)) : [];
   if (files.length > 0) {
-    const stage = runGit(cwd, ['add', ...files]);
+    const stage = runGit(['add', ...files], { cwd });
     if (!stage.ok) {
       return {
         success: false,
@@ -271,7 +248,7 @@ export async function gitCommitTool(
     }
   }
 
-  const commit = runGit(cwd, ['commit', '--no-gpg-sign', '-m', message]);
+  const commit = runGit(['commit', '--no-gpg-sign', '-m', message], { cwd });
   if (!commit.ok) {
     return {
       success: false,
@@ -285,7 +262,7 @@ export async function gitCommitTool(
     };
   }
 
-  const hash = runGit(cwd, ['rev-parse', 'HEAD']);
+  const hash = runGit(['rev-parse', 'HEAD'], { cwd });
   return {
     success: true,
     data: {

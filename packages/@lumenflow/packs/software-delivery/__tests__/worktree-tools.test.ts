@@ -8,6 +8,7 @@ import {
   listWorktreesTool,
   removeWorktreeTool,
 } from '../tool-impl/worktree-tools.js';
+import { GIT_BINARY } from '../tool-impl/git-runner.js';
 
 vi.mock('node:child_process', () => ({
   spawnSync: vi.fn(),
@@ -34,7 +35,7 @@ describe('software delivery worktree tools', () => {
     });
 
     expect(spawnSyncMock).toHaveBeenCalledWith(
-      '/usr/bin/git',
+      GIT_BINARY,
       ['worktree', 'add', '/repo/worktrees/wu-1', 'lane/framework/wu-1'],
       { cwd: '/repo', encoding: 'utf8' },
     );
@@ -50,7 +51,7 @@ describe('software delivery worktree tools', () => {
     await removeWorktreeTool({ cwd: '/repo', path: '/repo/worktrees/wu-1', force: true });
 
     expect(spawnSyncMock).toHaveBeenCalledWith(
-      '/usr/bin/git',
+      GIT_BINARY,
       ['worktree', 'remove', '--force', '/repo/worktrees/wu-1'],
       { cwd: '/repo', encoding: 'utf8' },
     );
@@ -60,7 +61,7 @@ describe('software delivery worktree tools', () => {
     await removeWorktreeTool({ cwd: '/repo', path: '/repo/worktrees/wu-2' });
 
     expect(spawnSyncMock).toHaveBeenCalledWith(
-      '/usr/bin/git',
+      GIT_BINARY,
       ['worktree', 'remove', '/repo/worktrees/wu-2'],
       { cwd: '/repo', encoding: 'utf8' },
     );

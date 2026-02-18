@@ -1,8 +1,7 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import { spawnSync } from 'node:child_process';
-import { UTF8_ENCODING } from '../constants.js';
+import { runGit } from './git-runner.js';
 
 interface WorktreeCommandResult {
   success: boolean;
@@ -10,24 +9,19 @@ interface WorktreeCommandResult {
   stderr: string;
 }
 
-const GIT_BINARY = '/usr/bin/git';
-
-function runGit(args: string[], cwd?: string): WorktreeCommandResult {
-  const result = spawnSync(GIT_BINARY, args, {
-    cwd,
-    encoding: UTF8_ENCODING,
-  });
+function runWorktreeGit(args: string[], cwd?: string): WorktreeCommandResult {
+  const result = runGit(args, { cwd });
   return {
-    success: result.status === 0,
-    stdout: (result.stdout || '').toString(),
-    stderr: (result.stderr || '').toString(),
+    success: result.ok,
+    stdout: result.stdout,
+    stderr: result.stderr,
   };
 }
 
 export async function listWorktreesTool(
   input: { cwd?: string } = {},
 ): Promise<WorktreeCommandResult> {
-  return runGit(['worktree', 'list', '--porcelain'], input.cwd);
+  return runWorktreeGit(['worktree', 'list', '--porcelain'], input.cwd);
 }
 
 export async function createWorktreeTool(input: {
@@ -35,7 +29,7 @@ export async function createWorktreeTool(input: {
   path: string;
   branch: string;
 }): Promise<WorktreeCommandResult> {
-  return runGit(['worktree', 'add', input.path, input.branch], input.cwd);
+  return runWorktreeGit(['worktree', 'add', input.path, input.branch], input.cwd);
 }
 
 export async function removeWorktreeTool(input: {
@@ -48,5 +42,5 @@ export async function removeWorktreeTool(input: {
     args.push('--force');
   }
   args.push(input.path);
-  return runGit(args, input.cwd);
+  return runWorktreeGit(args, input.cwd);
 }
