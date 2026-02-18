@@ -1549,3 +1549,4 @@
 {"type":"claim","wuId":"WU-1855","timestamp":"2026-02-18T12:32:50.304Z","lane":"Framework: MCP","title":"Close MCP literal governance blind spots and enforce full constant coverage"}
 {"type":"complete","wuId":"WU-1855","timestamp":"2026-02-18T12:40:28.590Z"}
 {"type":"claim","wuId":"WU-1853","lane":"Framework: MCP","title":"MCP file_write and file_edit tools bypass enforce-worktree hook","timestamp":"2026-02-18T12:42:20.838Z"}
+{"type":"claim","wuId":"WU-1852","lane":"Framework: CLI WU Commands","title":"Fix first-project bootstrap blockers in lumenflow init","timestamp":"2026-02-18T12:43:05.600Z"}
