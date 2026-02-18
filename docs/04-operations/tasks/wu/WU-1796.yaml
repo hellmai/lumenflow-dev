@@ -2,7 +2,7 @@ id: WU-1796
 title: 'Phase 3 pack workflow: route gate policy evaluation through Kernel PolicyEngine'
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -56,3 +56,6 @@ session_id: c1072942-c0b4-4e07-afb0-94938ea00c9c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T08:43:05.303Z
+locked: true
+completed_at: 2026-02-18T09:02:37.302Z
+completed: 2026-02-18
