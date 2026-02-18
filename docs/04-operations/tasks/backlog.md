@@ -35,7 +35,6 @@ sections:
 - [WU-1813 — Remove fallback paths and eliminate runCliCommand from MCP tool layer](wu/WU-1813.yaml) — Framework: Core Lifecycle
 - [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml) — Framework: Core Lifecycle
 - [WU-1815 — Post-Phase-3 shell-out deprecation recertification and metric closure](wu/WU-1815.yaml) — Framework: Core Lifecycle
-- [WU-1818 — Create AG-UI event adapter mapping kernel events to AG-UI protocol](wu/WU-1818.yaml) — Framework: MCP
 - [WU-1819 — Scaffold Next.js web app with API routes for HTTP surface](wu/WU-1819.yaml) — Content: Site Comms
 - [WU-1820 — Build live task dashboard page with real-time event streaming](wu/WU-1820.yaml) — Content: Site Comms
 - [WU-1821 — Build workspace overview page with task list and lane WIP visualization](wu/WU-1821.yaml) — Content: Site Comms
@@ -64,6 +63,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1818 — Create AG-UI event adapter mapping kernel events to AG-UI protocol](wu/WU-1818.yaml) — Framework: MCP
 
 ## ⛔ Blocked
 

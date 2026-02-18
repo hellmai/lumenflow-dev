@@ -2,7 +2,7 @@ id: WU-1818
 title: Create AG-UI event adapter mapping kernel events to AG-UI protocol
 lane: 'Framework: MCP'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -32,9 +32,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Map KernelEvent discriminated union to AG-UI event types. task_created->RunStarted, run_started->StepStarted, ToolTraceEntry->TOOL_CALL_START/END, PolicyDecision->custom governance event, TaskState projection->StateSnapshot/StateDelta. AG-UI TypeScript SDK as dependency. Separate module in surfaces/http/ag-ui-adapter.ts.
+description: Map KernelEvent discriminated union to AG-UI event types. task_created->RunStarted,
+  run_started->StepStarted, ToolTraceEntry->TOOL_CALL_START/END, PolicyDecision->custom governance
+  event, TaskState projection->StateSnapshot/StateDelta. AG-UI TypeScript SDK as dependency.
+  Separate module in surfaces/http/ag-ui-adapter.ts.
 acceptance:
   - All 17 kernel event kinds mapped to AG-UI event types
   - ToolTraceEntry correctly maps to TOOL_CALL_START, TOOL_CALL_END, TOOL_CALL_RESULT
   - PolicyDecision events include governance metadata
   - StateSnapshot emitted on connection, StateDelta on state changes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-mcp-wu-1818
+claimed_at: 2026-02-18T16:39:55.303Z
+baseline_main_sha: 615dbe3658f2fda3000ea0087f066568ecc24990
+session_id: 7c73da6b-edc4-4284-ac15-d7cf6acca54b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T16:39:55.312Z

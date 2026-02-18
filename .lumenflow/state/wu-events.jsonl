@@ -1576,3 +1576,4 @@
 {"type":"claim","wuId":"WU-1817","timestamp":"2026-02-18T16:29:33.716Z","lane":"Framework: MCP","title":"Create HTTP surface with SSE event streaming and REST task API"}
 {"type":"complete","wuId":"WU-1802","timestamp":"2026-02-18T16:33:27.605Z"}
 {"type":"complete","wuId":"WU-1817","timestamp":"2026-02-18T16:39:10.643Z"}
+{"type":"claim","wuId":"WU-1818","lane":"Framework: MCP","title":"Create AG-UI event adapter mapping kernel events to AG-UI protocol","timestamp":"2026-02-18T16:39:55.366Z"}
