@@ -2,7 +2,7 @@ id: WU-1836
 title: Build pack registry API with Vercel Edge Functions
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -54,3 +54,6 @@ acceptance:
   - GET /api/registry/packs/:id returns pack metadata and versions
   - POST publish endpoint stores tarball and updates index
   - GitHub OAuth authentication for publishers
+locked: true
+completed_at: 2026-02-18T22:15:13.069Z
+completed: 2026-02-18

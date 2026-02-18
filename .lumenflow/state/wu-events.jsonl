@@ -1655,5 +1655,6 @@
 {"type":"checkpoint","wuId":"WU-1835","timestamp":"2026-02-18T22:03:23.756Z","note":"WU-1835"}
 {"type":"claim","wuId":"WU-1836","timestamp":"2026-02-18T22:04:36.331Z","lane":"Content: Site Comms","title":"Build pack registry API with Vercel Edge Functions"}
 {"type":"complete","wuId":"WU-1835","timestamp":"2026-02-18T22:05:43.294Z"}
-{"type":"claim","wuId":"WU-1859","lane":"Framework: MCP","title":"INIT-030 Review Fix A: executeViaPack policy bypass security fix","timestamp":"2026-02-18T22:10:10.962Z"}
-{"type":"claim","wuId":"WU-1860","lane":"Framework: Core Lifecycle","title":"INIT-030 Review Fix B: kernel durability bugs (lock leak, clock skew, partial writes)","timestamp":"2026-02-18T22:10:58.326Z"}
+{"type":"claim","wuId":"WU-1859","timestamp":"2026-02-18T22:10:10.962Z","lane":"Framework: MCP","title":"INIT-030 Review Fix A: executeViaPack policy bypass security fix"}
+{"type":"claim","wuId":"WU-1860","timestamp":"2026-02-18T22:10:58.326Z","lane":"Framework: Core Lifecycle","title":"INIT-030 Review Fix B: kernel durability bugs (lock leak, clock skew, partial writes)"}
+{"type":"complete","wuId":"WU-1836","timestamp":"2026-02-18T22:15:17.687Z"}
