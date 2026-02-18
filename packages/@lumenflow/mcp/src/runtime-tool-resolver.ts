@@ -27,15 +27,16 @@ import { CliCommands, MetadataKeys } from './mcp-constants.js';
 const DEFAULT_IN_PROCESS_INPUT_SCHEMA = z.record(z.string(), z.unknown());
 const DEFAULT_IN_PROCESS_OUTPUT_SCHEMA = z.record(z.string(), z.unknown());
 
-const RUNTIME_TOOL_NOT_MIGRATED_CODE = 'RUNTIME_TOOL_NOT_MIGRATED';
-const RUNTIME_TOOL_NOT_MIGRATED_MESSAGE =
-  'Tool is registered for runtime migration but in-process implementation has not landed yet.';
 const RUNTIME_PROJECT_ROOT_METADATA_KEY = MetadataKeys.PROJECT_ROOT;
 const UTF8_ENCODING = 'utf-8';
 const DEFAULT_FILE_READ_MAX_SIZE_BYTES = 10 * 1024 * 1024;
 
 const IN_PROCESS_TOOL_NAMES = {
   WU_STATUS: CliCommands.WU_STATUS,
+  WU_DEPS: CliCommands.WU_DEPS,
+  WU_PREFLIGHT: CliCommands.WU_PREFLIGHT,
+  WU_VALIDATE: CliCommands.WU_VALIDATE,
+  WU_INFER_LANE: CliCommands.WU_INFER_LANE,
   FILE_READ: CliCommands.FILE_READ,
   FILE_WRITE: CliCommands.FILE_WRITE,
   FILE_EDIT: CliCommands.FILE_EDIT,
@@ -51,7 +52,11 @@ const IN_PROCESS_TOOL_NAMES = {
 } as const;
 
 const IN_PROCESS_TOOL_DESCRIPTIONS = {
-  WU_STATUS: 'In-process runtime placeholder for wu:status',
+  WU_STATUS: 'Get WU status via in-process core context computation',
+  WU_DEPS: 'Visualize WU dependency graph via in-process core handler',
+  WU_PREFLIGHT: 'Fast validation of code_paths/test paths via in-process core handler',
+  WU_VALIDATE: 'Validate WU YAML via in-process schema check',
+  WU_INFER_LANE: 'Infer lane from code paths and description via in-process core handler',
   FILE_READ: 'Read file content directly via runtime in-process handler',
   FILE_WRITE: 'Write file content directly via runtime in-process handler',
   FILE_EDIT: 'Edit file content directly via runtime in-process handler',
@@ -2057,6 +2062,12 @@ const VALIDATION_TOOL_ERROR_CODES = {
   LUMENFLOW_VALIDATE_ERROR: 'LUMENFLOW_VALIDATE_ERROR',
   LANE_HEALTH_ERROR: 'LANE_HEALTH_ERROR',
   LANE_SUGGEST_ERROR: 'LANE_SUGGEST_ERROR',
+  WU_STATUS_ERROR: 'WU_STATUS_ERROR',
+  WU_DEPS_ERROR: 'WU_DEPS_ERROR',
+  WU_PREFLIGHT_ERROR: 'WU_PREFLIGHT_ERROR',
+  WU_VALIDATE_ERROR: 'WU_VALIDATE_ERROR',
+  WU_INFER_LANE_ERROR: 'WU_INFER_LANE_ERROR',
+  MISSING_PARAMETER: 'MISSING_PARAMETER',
 } as const;
 
 const VALIDATION_TOOL_MESSAGES = {
@@ -2501,20 +2512,217 @@ const laneSuggestInProcess: InProcessToolFn = async (rawInput, context) => {
   }
 };
 
+/**
+ * WU-1805: WU query in-process handlers
+ */
+const WU_QUERY_MESSAGES = {
+  ID_REQUIRED: 'id parameter is required',
+  STATUS_FAILED: 'wu:status failed',
+  DEPS_FAILED: 'wu:deps failed',
+  PREFLIGHT_PASSED: 'Preflight checks passed',
+  PREFLIGHT_FAILED: 'wu:preflight failed',
+  VALIDATE_PASSED: 'WU is valid',
+  VALIDATE_FAILED: 'wu:validate failed',
+  INFER_LANE_FAILED: 'wu:infer-lane failed',
+} as const;
+
+const wuStatusInProcess: InProcessToolFn = async (rawInput, context) => {
+  const input = (rawInput ?? {}) as Record<string, unknown>;
+  if (typeof input.id !== 'string' || !input.id) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.MISSING_PARAMETER,
+      WU_QUERY_MESSAGES.ID_REQUIRED,
+    );
+  }
+
+  try {
+    const core = await getCoreLazy();
+    const projectRoot = resolveWorkspaceRoot(context);
+    const wuContext = await core.computeWuContext({ wuId: input.id, cwd: projectRoot });
+    return createSuccessOutput(wuContext);
+  } catch (err) {
+    return createFailureOutput(VALIDATION_TOOL_ERROR_CODES.WU_STATUS_ERROR, (err as Error).message);
+  }
+};
+
+const wuDepsInProcess: InProcessToolFn = async (rawInput, _context) => {
+  const input = (rawInput ?? {}) as Record<string, unknown>;
+  if (typeof input.id !== 'string' || !input.id) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.MISSING_PARAMETER,
+      WU_QUERY_MESSAGES.ID_REQUIRED,
+    );
+  }
+
+  try {
+    const { buildDependencyGraphAsync, getUpstreamDependencies, getDownstreamDependents } =
+      await import('@lumenflow/core/dependency-graph');
+    const graph = await buildDependencyGraphAsync();
+    const upstream = getUpstreamDependencies(graph, input.id);
+    const downstream = getDownstreamDependents(graph, input.id);
+
+    return createSuccessOutput({
+      id: input.id,
+      upstream,
+      downstream,
+      total_nodes: graph.size,
+    });
+  } catch (err) {
+    return createFailureOutput(VALIDATION_TOOL_ERROR_CODES.WU_DEPS_ERROR, (err as Error).message);
+  }
+};
+
+const wuPreflightInProcess: InProcessToolFn = async (rawInput, context) => {
+  const input = (rawInput ?? {}) as Record<string, unknown>;
+  if (typeof input.id !== 'string' || !input.id) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.MISSING_PARAMETER,
+      WU_QUERY_MESSAGES.ID_REQUIRED,
+    );
+  }
+
+  try {
+    const { validatePreflight } = await import('@lumenflow/core/wu-preflight-validators');
+    const projectRoot = resolveWorkspaceRoot(context);
+    const worktreePath = typeof input.worktree === 'string' ? input.worktree : projectRoot;
+    const result = await validatePreflight(input.id, { rootDir: projectRoot, worktreePath });
+
+    return result.valid
+      ? createSuccessOutput({ message: WU_QUERY_MESSAGES.PREFLIGHT_PASSED, ...result })
+      : createFailureOutput(
+          VALIDATION_TOOL_ERROR_CODES.WU_PREFLIGHT_ERROR,
+          JSON.stringify(result.errors),
+        );
+  } catch (err) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.WU_PREFLIGHT_ERROR,
+      (err as Error).message,
+    );
+  }
+};
+
+const wuValidateInProcess: InProcessToolFn = async (rawInput, context) => {
+  const input = (rawInput ?? {}) as Record<string, unknown>;
+  if (typeof input.id !== 'string' || !input.id) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.MISSING_PARAMETER,
+      WU_QUERY_MESSAGES.ID_REQUIRED,
+    );
+  }
+
+  try {
+    const core = await getCoreLazy();
+    const projectRoot = resolveWorkspaceRoot(context);
+    const wuDir = path.join(projectRoot, 'docs/04-operations/tasks/wu');
+    const wuFile = path.join(wuDir, `${input.id}.yaml`);
+    const content = await readFile(wuFile, UTF8_ENCODING);
+    const parsed = core.parseYAML(content);
+    const result = core.validateWU(parsed);
+
+    if (result.success) {
+      return createSuccessOutput({
+        message: `${WU_QUERY_MESSAGES.VALIDATE_PASSED}: ${input.id}`,
+        valid: true,
+      });
+    }
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.WU_VALIDATE_ERROR,
+      formatZodIssues(result.error),
+    );
+  } catch (err) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.WU_VALIDATE_ERROR,
+      (err as Error).message,
+    );
+  }
+};
+
+const wuInferLaneInProcess: InProcessToolFn = async (rawInput, context) => {
+  const input = (rawInput ?? {}) as Record<string, unknown>;
+
+  try {
+    const core = await getCoreLazy();
+    const projectRoot = resolveWorkspaceRoot(context);
+
+    let codePaths: string[] = [];
+    let description = '';
+
+    if (Array.isArray(input.paths)) {
+      codePaths = input.paths.filter((p): p is string => typeof p === 'string');
+    }
+    if (typeof input.desc === 'string') {
+      description = input.desc;
+    }
+
+    // If id provided and no explicit paths, read from WU YAML
+    if (typeof input.id === 'string' && codePaths.length === 0) {
+      const wuFile = path.join(projectRoot, 'docs/04-operations/tasks/wu', `${input.id}.yaml`);
+      try {
+        const content = await readFile(wuFile, UTF8_ENCODING);
+        const parsed = core.parseYAML(content);
+        if (parsed && typeof parsed === 'object') {
+          const wuData = parsed as Record<string, unknown>;
+          if (Array.isArray(wuData.code_paths)) {
+            codePaths = wuData.code_paths.filter((p): p is string => typeof p === 'string');
+          }
+          if (!description && typeof wuData.description === 'string') {
+            description = wuData.description;
+          }
+        }
+      } catch {
+        // WU file not found or unreadable — continue with provided inputs
+      }
+    }
+
+    const result = core.inferSubLane(codePaths, description);
+    return createSuccessOutput({ lane: result.lane, confidence: result.confidence });
+  } catch (err) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.WU_INFER_LANE_ERROR,
+      (err as Error).message,
+    );
+  }
+};
+
 const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolHandler>([
   [
     IN_PROCESS_TOOL_NAMES.WU_STATUS,
     {
       description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_STATUS,
       inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
-      fn: async () => ({
-        success: false,
-        error: {
-          code: RUNTIME_TOOL_NOT_MIGRATED_CODE,
-          message: RUNTIME_TOOL_NOT_MIGRATED_MESSAGE,
-        },
-      }),
+      fn: wuStatusInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_DEPS,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_DEPS,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuDepsInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_PREFLIGHT,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_PREFLIGHT,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuPreflightInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_VALIDATE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_VALIDATE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuValidateInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_INFER_LANE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_INFER_LANE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuInferLaneInProcess,
     },
   ],
   [
