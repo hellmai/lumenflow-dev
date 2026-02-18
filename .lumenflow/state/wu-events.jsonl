@@ -1693,3 +1693,4 @@
 {"type":"complete","wuId":"WU-1869","timestamp":"2026-02-18T23:36:42.348Z"}
 {"type":"claim","wuId":"WU-1874","lane":"Framework: Core Lifecycle","title":"infra-ops pack manifest with tools, policies, and task schema","timestamp":"2026-02-18T23:39:40.017Z"}
 {"type":"claim","wuId":"WU-1872","lane":"Content: Site Comms","title":"Evidence viewer page with tool trace timeline at /evidence","timestamp":"2026-02-18T23:40:12.251Z"}
+{"type":"claim","wuId":"WU-1875","lane":"Framework: CLI Orchestration","title":"pack:install --source registry HTTP fetch path","timestamp":"2026-02-18T23:40:40.140Z"}
