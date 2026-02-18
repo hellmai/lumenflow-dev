@@ -1,0 +1,37 @@
+id: WU-1841
+title: Wire HTTP surface to push kernel events to control plane
+lane: 'Framework: Core Lifecycle'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-18
+code_paths:
+  - packages/@lumenflow/surfaces/http/
+tests:
+  manual:
+    - Enable control plane forwarding, verify events pushed to mock control plane
+  unit:
+    - packages/@lumenflow/surfaces/__tests__/control-plane-forwarding.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1841.done
+dependencies: []
+initiative: INIT-031
+phase: 4
+spec_refs:
+  - .claude/plans/zazzy-growing-cook.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Wire the HTTP surface to push kernel events to the control plane via ControlPlaneSyncPort.pushKernelEvents. Enables centralized observability for organizations. Web dashboard can optionally pull from control plane instead of local EventStore.
+acceptance:
+  - HTTP surface pushes events to ControlPlaneSyncPort
+  - pushKernelEvents called with correct event format
+  - Dashboard can optionally read from control plane
