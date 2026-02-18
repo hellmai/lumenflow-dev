@@ -2,7 +2,7 @@ id: WU-1850
 title: Fix surfaces relative imports and extract daemon handler registry
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -43,3 +43,11 @@ acceptance:
   - No relative cross-package imports remain in surfaces or runtime packages
   - All existing tests pass unchanged
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1850
+claimed_at: 2026-02-18T14:11:57.170Z
+baseline_main_sha: 0bc67d328de73e6845e4b11349cd854c7d26280b
+session_id: 9512cd71-0d1d-4071-99aa-cffa23426e41
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T14:11:57.173Z
