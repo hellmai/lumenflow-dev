@@ -3,7 +3,7 @@ title: 'Create Your First Pack in 10 Minutes'
 description: 'Write a LumenFlow domain pack from scratch: manifest, tools, scopes, policies, and integrity.'
 ---
 
-import { Aside, Steps, Tabs, TabItem, Card, CardGrid, FileTree } from '@astrojs/starlight/components';
+import { Aside, Steps, FileTree } from '@astrojs/starlight/components';
 
 A **pack** is a self-contained plugin that teaches the LumenFlow kernel how to
 work in a specific domain. The built-in `software-delivery` pack provides git
@@ -18,6 +18,7 @@ model, policies, and integrity verification.
 
 ## What Is in a Pack?
 
+{/* prettier-ignore */}
 <FileTree>
 - my-pack/
   - manifest.yaml _(declares tools, policies, evidence types)_
@@ -63,16 +64,16 @@ lane_templates: []
 
 ### Schema reference
 
-| Field              | Type                | Required | Description                                         |
-| ------------------ | ------------------- | -------- | --------------------------------------------------- |
-| `id`               | `string`            | Yes      | Unique pack identifier (kebab-case).                |
-| `version`          | `string` (semver)   | Yes      | Pack version. Must be valid semantic versioning.    |
-| `task_types`       | `string[]`          | Yes      | At least one task type the pack handles.            |
-| `tools`            | `Tool[]`            | No       | Tool definitions (see below).                       |
-| `policies`         | `Policy[]`          | No       | Policy rules evaluated by the kernel.               |
-| `evidence_types`   | `string[]`          | No       | Evidence receipt kinds this pack can produce.        |
-| `state_aliases`    | `Record<string, string>` | No  | Map friendly names to kernel state machine states.  |
-| `lane_templates`   | `{ id: string }[]`  | No       | Pre-defined lane configurations.                    |
+| Field            | Type                     | Required | Description                                        |
+| ---------------- | ------------------------ | -------- | -------------------------------------------------- |
+| `id`             | `string`                 | Yes      | Unique pack identifier (kebab-case).               |
+| `version`        | `string` (semver)        | Yes      | Pack version. Must be valid semantic versioning.   |
+| `task_types`     | `string[]`               | Yes      | At least one task type the pack handles.           |
+| `tools`          | `Tool[]`                 | No       | Tool definitions (see below).                      |
+| `policies`       | `Policy[]`               | No       | Policy rules evaluated by the kernel.              |
+| `evidence_types` | `string[]`               | No       | Evidence receipt kinds this pack can produce.      |
+| `state_aliases`  | `Record<string, string>` | No       | Map friendly names to kernel state machine states. |
+| `lane_templates` | `{ id: string }[]`       | No       | Pre-defined lane configurations.                   |
 
 ### Tool entry schema
 
@@ -80,22 +81,22 @@ Each object in the `tools` array describes one tool:
 
 ```yaml
 tools:
-  - name: git:status          # Namespaced tool name
-    entry: tool-impl/git-tools.ts#gitStatusTool  # Module path # export name
-    permission: read           # read | write | admin
+  - name: git:status # Namespaced tool name
+    entry: tool-impl/git-tools.ts#gitStatusTool # Module path # export name
+    permission: read # read | write | admin
     required_scopes:
       - type: path
         pattern: '**'
         access: read
 ```
 
-| Field             | Type       | Required | Description                                          |
-| ----------------- | ---------- | -------- | ---------------------------------------------------- |
-| `name`            | `string`   | Yes      | Tool name, typically `namespace:action`.             |
-| `entry`           | `string`   | Yes      | Relative path to implementation, with optional `#exportName`. |
-| `permission`      | `string`   | Yes      | One of `read`, `write`, or `admin`.                  |
-| `required_scopes` | `Scope[]`  | Yes      | Minimum scopes the tool needs (at least one).        |
-| `internal_only`   | `boolean`  | No       | If `true`, tool is hidden from external callers.     |
+| Field             | Type      | Required | Description                                                   |
+| ----------------- | --------- | -------- | ------------------------------------------------------------- |
+| `name`            | `string`  | Yes      | Tool name, typically `namespace:action`.                      |
+| `entry`           | `string`  | Yes      | Relative path to implementation, with optional `#exportName`. |
+| `permission`      | `string`  | Yes      | One of `read`, `write`, or `admin`.                           |
+| `required_scopes` | `Scope[]` | Yes      | Minimum scopes the tool needs (at least one).                 |
+| `internal_only`   | `boolean` | No       | If `true`, tool is hidden from external callers.              |
 
 ### Scope objects
 
@@ -106,18 +107,18 @@ execution proceeds.
 ```yaml
 # Path scope -- grants filesystem access
 - type: path
-  pattern: '**'       # Glob pattern
-  access: read         # read | write
+  pattern: '**' # Glob pattern
+  access: read # read | write
 
 # Network scope -- grants network access
 - type: network
-  posture: off         # off | full
+  posture: off # off | full
 ```
 
 <Aside type="tip">
-  Use the narrowest scope that works. A read-only tool should never declare
-  `access: write`. The kernel enforces the intersection, so overly broad scopes
-  are capped by the workspace and lane configuration.
+  Use the narrowest scope that works. A read-only tool should never declare `access: write`. The
+  kernel enforces the intersection, so overly broad scopes are capped by the workspace and lane
+  configuration.
 </Aside>
 
 ### Real example: software-delivery manifest (excerpt)
@@ -184,13 +185,13 @@ The `createToolDescriptor` helper stamps the tool with the pack's `domain`,
 // tools/types.ts (simplified)
 export interface ToolDescriptor {
   name: string;
-  domain: string;          // Pack ID
-  version: string;         // Pack version
+  domain: string; // Pack ID
+  version: string; // Pack version
   permission: 'read' | 'write' | 'admin';
   required_scopes: PathScope[];
   handler: { kind: 'subprocess'; entry: string };
   description: string;
-  pack: string;            // Pack ID
+  pack: string; // Pack ID
 }
 
 export function createToolDescriptor(input: ToolDescriptorInput): ToolDescriptor {
@@ -270,8 +271,8 @@ it records what files the tool modified so evidence receipts can reference them.
 ## Step 3: Understand Import Boundaries
 
 <Aside type="danger">
-  The kernel enforces strict import boundaries on pack source files. Violating
-  these boundaries causes pack loading to fail.
+  The kernel enforces strict import boundaries on pack source files. Violating these boundaries
+  causes pack loading to fail.
 </Aside>
 
 When the kernel loads a pack, it scans every runtime source file (`.ts`, `.js`,
@@ -280,23 +281,23 @@ these rules:
 
 ### Allowed imports
 
-| Import type               | Example                              | Allowed? |
-| ------------------------- | ------------------------------------ | -------- |
-| Node built-ins            | `import fs from 'node:fs'`           | Yes      |
-| Node built-ins (bare)     | `import path from 'path'`            | Yes      |
-| `@lumenflow/kernel`       | `import { z } from '@lumenflow/kernel'` | Yes   |
-| Kernel sub-paths          | `import '@lumenflow/kernel/schemas'`  | Yes      |
-| Relative (within pack)    | `import { runGit } from './git-runner.js'` | Yes |
-| Explicitly allow-listed   | `import simpleGit from 'simple-git'`  | Yes      |
+| Import type             | Example                                    | Allowed? |
+| ----------------------- | ------------------------------------------ | -------- |
+| Node built-ins          | `import fs from 'node:fs'`                 | Yes      |
+| Node built-ins (bare)   | `import path from 'path'`                  | Yes      |
+| `@lumenflow/kernel`     | `import { z } from '@lumenflow/kernel'`    | Yes      |
+| Kernel sub-paths        | `import '@lumenflow/kernel/schemas'`       | Yes      |
+| Relative (within pack)  | `import { runGit } from './git-runner.js'` | Yes      |
+| Explicitly allow-listed | `import simpleGit from 'simple-git'`       | Yes      |
 
 ### Blocked imports
 
-| Import type                | Example                                | Blocked? |
-| -------------------------- | -------------------------------------- | -------- |
-| Other `@lumenflow/*`       | `import { ... } from '@lumenflow/cli'` | **Yes**  |
-| Arbitrary npm packages     | `import lodash from 'lodash'`          | **Yes**  |
-| Absolute paths             | `import '/home/user/file.ts'`          | **Yes**  |
-| Relative paths outside root| `import '../../outside/file.js'`       | **Yes**  |
+| Import type                 | Example                                | Blocked? |
+| --------------------------- | -------------------------------------- | -------- |
+| Other `@lumenflow/*`        | `import { ... } from '@lumenflow/cli'` | **Yes**  |
+| Arbitrary npm packages      | `import lodash from 'lodash'`          | **Yes**  |
+| Absolute paths              | `import '/home/user/file.ts'`          | **Yes**  |
+| Relative paths outside root | `import '../../outside/file.js'`       | **Yes**  |
 
 **Why these restrictions exist:** Packs run inside the kernel's sandbox. If a
 pack could import arbitrary packages or reach outside its root directory, it
@@ -304,10 +305,9 @@ could bypass the sandbox's access controls. The import boundary is an
 additional static-analysis guard on top of the runtime sandbox.
 
 <Aside type="note">
-  The import boundary scanner uses regex-based pattern matching and cannot fully
-  parse all JavaScript/TypeScript import forms (e.g., dynamic `require` or
-  template-string imports). It is an additional guard, not a replacement for
-  runtime sandboxing.
+  The import boundary scanner uses regex-based pattern matching and cannot fully parse all
+  JavaScript/TypeScript import forms (e.g., dynamic `require` or template-string imports). It is an
+  additional guard, not a replacement for runtime sandboxing.
 </Aside>
 
 ### Tool entry path resolution
@@ -336,26 +336,26 @@ your manifest's `policies` array.
 ```yaml
 policies:
   - id: my-pack.gate.format
-    trigger: on_completion      # When to evaluate
-    decision: allow             # allow | deny
-    reason: Format gate passed  # Optional explanation
+    trigger: on_completion # When to evaluate
+    decision: allow # allow | deny
+    reason: Format gate passed # Optional explanation
 ```
 
-| Field      | Type     | Required | Description                       |
-| ---------- | -------- | -------- | --------------------------------- |
-| `id`       | `string` | Yes      | Unique policy identifier.         |
-| `trigger`  | `string` | Yes      | One of the trigger types below.   |
-| `decision` | `string` | Yes      | `allow` or `deny`.                |
-| `reason`   | `string` | No       | Human-readable justification.     |
+| Field      | Type     | Required | Description                     |
+| ---------- | -------- | -------- | ------------------------------- |
+| `id`       | `string` | Yes      | Unique policy identifier.       |
+| `trigger`  | `string` | Yes      | One of the trigger types below. |
+| `decision` | `string` | Yes      | `allow` or `deny`.              |
+| `reason`   | `string` | No       | Human-readable justification.   |
 
 ### Policy triggers
 
-| Trigger              | When it fires                              |
-| -------------------- | ------------------------------------------ |
-| `on_tool_request`    | Before every tool call.                    |
-| `on_claim`           | When a task is claimed by an agent.        |
-| `on_completion`      | When a task transitions to done.           |
-| `on_evidence_added`  | When an evidence receipt is appended.       |
+| Trigger             | When it fires                         |
+| ------------------- | ------------------------------------- |
+| `on_tool_request`   | Before every tool call.               |
+| `on_claim`          | When a task is claimed by an agent.   |
+| `on_completion`     | When a task transitions to done.      |
+| `on_evidence_added` | When an evidence receipt is appended. |
 
 ### Deny-wins cascade
 
@@ -404,16 +404,16 @@ specification.
 packs:
   - id: my-pack
     version: 0.1.0
-    integrity: dev           # Use 'dev' during development
-    source: local            # local | git | registry
+    integrity: dev # Use 'dev' during development
+    source: local # local | git | registry
 ```
 
-| Field       | Type     | Description                                        |
-| ----------- | -------- | -------------------------------------------------- |
-| `id`        | `string` | Must match `manifest.yaml` `id`.                  |
-| `version`   | `string` | Must match `manifest.yaml` `version`.             |
-| `integrity` | `string` | `dev` (skip verification) or `sha256:<64-hex>`.   |
-| `source`    | `string` | Where the pack is loaded from.                    |
+| Field       | Type     | Description                                     |
+| ----------- | -------- | ----------------------------------------------- |
+| `id`        | `string` | Must match `manifest.yaml` `id`.                |
+| `version`   | `string` | Must match `manifest.yaml` `version`.           |
+| `integrity` | `string` | `dev` (skip verification) or `sha256:<64-hex>`. |
+| `source`    | `string` | Where the pack is loaded from.                  |
 
 ### Integrity verification
 
@@ -498,6 +498,7 @@ tool.required_scopes:
 
 Here is the complete file structure of a minimal pack with one tool:
 
+{/* prettier-ignore */}
 <FileTree>
 - my-pack/
   - manifest.yaml
