@@ -363,8 +363,8 @@ export class EventStore {
     }
 
     const hasMore = totalMatchingAfterPage > 0;
-    const nextCursor =
-      hasMore && matched.length > 0 ? matched[matched.length - 1]!.timestamp : null;
+    const lastEvent = matched[matched.length - 1];
+    const nextCursor = hasMore && lastEvent ? lastEvent.timestamp : null;
 
     return { events: matched, nextCursor };
   }
