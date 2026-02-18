@@ -1546,3 +1546,4 @@
 {"type":"claim","wuId":"WU-1851","timestamp":"2026-02-18T11:53:48.932Z","lane":"Framework: MCP","title":"Centralize MCP surface CLI command/flag/metadata-key governance with guardrail ratchet"}
 {"type":"complete","wuId":"WU-1848","timestamp":"2026-02-18T12:16:23.748Z"}
 {"type":"complete","wuId":"WU-1851","timestamp":"2026-02-18T12:22:39.115Z"}
+{"type":"claim","wuId":"WU-1855","lane":"Framework: MCP","title":"Close MCP literal governance blind spots and enforce full constant coverage","timestamp":"2026-02-18T12:32:50.304Z"}

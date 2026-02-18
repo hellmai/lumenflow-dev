@@ -2,7 +2,7 @@ id: WU-1855
 title: Close MCP literal governance blind spots and enforce full constant coverage
 lane: 'Framework: MCP'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-18
 code_paths:
@@ -67,3 +67,11 @@ acceptance:
     git_status) after constant replacement.
   - No public API changes to @lumenflow/mcp exports; refactor remains internal.
   - pnpm gates passes.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1855
+claimed_at: 2026-02-18T12:32:50.250Z
+baseline_main_sha: 5d351f0eaf9f2e7559715af732991b40846674d3
+session_id: 4bf0fb5f-3b1d-4c44-93f8-77dbf30946d7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T12:32:50.255Z
