@@ -1580,3 +1580,4 @@
 {"type":"complete","wuId":"WU-1818","timestamp":"2026-02-18T16:44:49.970Z"}
 {"type":"claim","wuId":"WU-1819","lane":"Framework: MCP","title":"Scaffold Next.js web app with API routes for HTTP surface","timestamp":"2026-02-18T16:53:49.272Z"}
 {"type":"release","wuId":"WU-1819","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-18T16:54:26.064Z"}
+{"type":"claim","wuId":"WU-1819","lane":"Content: Site Comms","title":"Scaffold Next.js web app with API routes for HTTP surface","timestamp":"2026-02-18T16:54:53.264Z"}
