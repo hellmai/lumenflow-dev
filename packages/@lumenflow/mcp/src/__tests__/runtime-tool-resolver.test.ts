@@ -457,6 +457,179 @@ describe('WU-1804: orchestration/delegation query tool registration', () => {
 });
 
 /**
+ * WU-1802: Tests for validation/lane tool in-process registration
+ */
+describe('WU-1802: validation/lane tool registration', () => {
+  const VALIDATION_LANE_TOOLS = [
+    'validate',
+    'validate:agent-skills',
+    'validate:agent-sync',
+    'validate:backlog-sync',
+    'validate:skills-spec',
+    'lumenflow:validate',
+    'lane:health',
+    'lane:suggest',
+  ] as const;
+
+  it.each(VALIDATION_LANE_TOOLS)('registers %s as an in-process pack tool', (toolName) => {
+    expect(isInProcessPackToolRegistered(toolName)).toBe(true);
+  });
+
+  it('lists all validation/lane tools in the registry', () => {
+    const registeredTools = listInProcessPackTools();
+    for (const toolName of VALIDATION_LANE_TOOLS) {
+      expect(registeredTools).toContain(toolName);
+    }
+  });
+
+  it.each(VALIDATION_LANE_TOOLS)(
+    'resolves %s to an in-process handler via packToolCapabilityResolver',
+    async (toolName) => {
+      const input = createResolverInput(toolName);
+      const capability = await packToolCapabilityResolver(input);
+
+      expect(capability).toBeDefined();
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+    },
+  );
+});
+
+/**
+ * WU-1802: Tests for validation/lane MCP tools using executeViaPack
+ */
+describe('WU-1802: validation/lane tools use executeViaPack (not runCliCommand)', () => {
+  beforeEach(() => {
+    resetExecuteViaPackRuntimeCache();
+  });
+
+  it('validate routes through executeViaPack runtime path', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { message: 'Validation passed' },
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const result = await executeViaPack(
+      'validate',
+      { strict: true },
+      {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({ taskId: 'WU-1802' }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: {
+          command: 'validate',
+          args: ['--strict'],
+          errorCode: 'VALIDATE_ERROR',
+        },
+      },
+    );
+
+    expect(runtimeFactory).toHaveBeenCalledTimes(1);
+    expect(runtimeExecuteTool).toHaveBeenCalledWith(
+      'validate',
+      { strict: true },
+      expect.objectContaining({ task_id: 'WU-1802' }),
+    );
+    expect(cliRunner).not.toHaveBeenCalled();
+    expect(result.success).toBe(true);
+  });
+
+  it('lane_health routes through executeViaPack runtime path', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { overlaps: [], gaps: [] },
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const result = await executeViaPack(
+      'lane:health',
+      { json: true },
+      {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({ taskId: 'WU-1802' }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: {
+          command: 'lane:health',
+          args: ['--json'],
+          errorCode: 'LANE_HEALTH_ERROR',
+        },
+      },
+    );
+
+    expect(cliRunner).not.toHaveBeenCalled();
+    expect(result.success).toBe(true);
+  });
+
+  it('lane_suggest routes through executeViaPack runtime path', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { suggestions: [] },
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const result = await executeViaPack(
+      'lane:suggest',
+      { no_llm: true },
+      {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({ taskId: 'WU-1802' }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: {
+          command: 'lane:suggest',
+          args: ['--no-llm'],
+          errorCode: 'LANE_SUGGEST_ERROR',
+        },
+      },
+    );
+
+    expect(cliRunner).not.toHaveBeenCalled();
+    expect(result.success).toBe(true);
+  });
+
+  it('validate_backlog_sync routes through executeViaPack runtime path', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { message: 'Backlog sync valid' },
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const result = await executeViaPack(
+      'validate:backlog-sync',
+      {},
+      {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({ taskId: 'WU-1802' }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: {
+          command: 'validate:backlog-sync',
+          args: [],
+          errorCode: 'VALIDATE_BACKLOG_SYNC_ERROR',
+        },
+      },
+    );
+
+    expect(cliRunner).not.toHaveBeenCalled();
+    expect(result.success).toBe(true);
+  });
+});
+
+/**
  * WU-1803: Tests for flow/metrics/context MCP tools using executeViaPack
  */
 describe('WU-1803: flow/metrics/context tools use executeViaPack (not runCliCommand)', () => {

@@ -56,6 +56,25 @@ const laneSuggestSchema = z.object({
   include_git: z.boolean().optional(),
 });
 
+/**
+ * WU-1802: Fallback messages for lane tools migrated to executeViaPack.
+ */
+const LaneMessages = {
+  HEALTH_PASSED: 'Lane health check complete',
+  HEALTH_FAILED: 'lane:health failed',
+  SUGGEST_GENERATED: 'Lane suggestions generated',
+  SUGGEST_FAILED: 'lane:suggest failed',
+} as const;
+
+const LaneFlags = {
+  NO_COVERAGE: '--no-coverage',
+  DRY_RUN: '--dry-run',
+  INTERACTIVE: '--interactive',
+  OUTPUT: '--output',
+  NO_LLM: '--no-llm',
+  INCLUDE_GIT: '--include-git',
+} as const;
+
 const stateBootstrapSchema = z.object({
   execute: z.boolean().optional(),
   dry_run: z.boolean().optional(),
@@ -398,6 +417,7 @@ export const gatesDocsTool: ToolDefinition = {
 
 /**
  * lane_health - Diagnose lane configuration issues
+ * WU-1802: Migrated from runCliCommand to executeViaPack (runtime-first)
  */
 export const laneHealthTool: ToolDefinition = {
   name: 'lane_health',
@@ -408,28 +428,26 @@ export const laneHealthTool: ToolDefinition = {
     const args: string[] = [];
     if (input.json) args.push(CliArgs.JSON);
     if (input.verbose) args.push(CliArgs.VERBOSE);
-    if (input.no_coverage) args.push('--no-coverage');
+    if (input.no_coverage) args.push(LaneFlags.NO_COVERAGE);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.LANE_HEALTH, args, cliOptions);
+    const result = await executeViaPack(CliCommands.LANE_HEALTH, input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: CliCommands.LANE_HEALTH,
+        args,
+        errorCode: ErrorCodes.LANE_HEALTH_ERROR,
+      },
+    });
 
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout || 'Lane health check complete' });
-      }
-    }
-    return error(
-      result.stderr || result.error?.message || 'lane:health failed',
-      ErrorCodes.LANE_HEALTH_ERROR,
-    );
+    return result.success
+      ? success(result.data ?? { message: LaneMessages.HEALTH_PASSED })
+      : error(result.error?.message ?? LaneMessages.HEALTH_FAILED, ErrorCodes.LANE_HEALTH_ERROR);
   },
 };
 
 /**
  * lane_suggest - Suggest lane definitions from project context
+ * WU-1802: Migrated from runCliCommand to executeViaPack (runtime-first)
  */
 export const laneSuggestTool: ToolDefinition = {
   name: 'lane_suggest',
@@ -438,28 +456,25 @@ export const laneSuggestTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.dry_run) args.push('--dry-run');
-    if (input.interactive) args.push('--interactive');
-    if (input.output) args.push('--output', input.output as string);
+    if (input.dry_run) args.push(LaneFlags.DRY_RUN);
+    if (input.interactive) args.push(LaneFlags.INTERACTIVE);
+    if (input.output) args.push(LaneFlags.OUTPUT, input.output as string);
     if (input.json) args.push(CliArgs.JSON);
-    if (input.no_llm) args.push('--no-llm');
-    if (input.include_git) args.push('--include-git');
+    if (input.no_llm) args.push(LaneFlags.NO_LLM);
+    if (input.include_git) args.push(LaneFlags.INCLUDE_GIT);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.LANE_SUGGEST, args, cliOptions);
+    const result = await executeViaPack(CliCommands.LANE_SUGGEST, input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: CliCommands.LANE_SUGGEST,
+        args,
+        errorCode: ErrorCodes.LANE_SUGGEST_ERROR,
+      },
+    });
 
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout || 'Lane suggestions generated' });
-      }
-    }
-    return error(
-      result.stderr || result.error?.message || 'lane:suggest failed',
-      ErrorCodes.LANE_SUGGEST_ERROR,
-    );
+    return result.success
+      ? success(result.data ?? { message: LaneMessages.SUGGEST_GENERATED })
+      : error(result.error?.message ?? LaneMessages.SUGGEST_FAILED, ErrorCodes.LANE_SUGGEST_ERROR);
   },
 };
 
