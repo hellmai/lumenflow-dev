@@ -2,7 +2,7 @@ id: WU-1867
 title: 'INIT-030 Review Fix E: guard all appendTrace throw paths in ToolHost'
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -51,3 +51,6 @@ session_id: 9b0f0ca3-543d-41e0-b82e-ceec0f3a9540
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T22:53:52.216Z
+locked: true
+completed_at: 2026-02-18T23:00:39.066Z
+completed: 2026-02-18
