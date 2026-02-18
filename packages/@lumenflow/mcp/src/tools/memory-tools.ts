@@ -5,6 +5,7 @@
  * WU-1642: Extracted from tools.ts during domain decomposition.
  * WU-1424: Memory tools
  * WU-1456: Memory commands use shared schemas where available
+ * WU-1811: Migrated memory tools from runCliCommand to executeViaPack runtime path
  */
 
 import { z } from 'zod';
@@ -31,10 +32,9 @@ import {
   SharedErrorMessages,
   success,
   error,
-  runCliCommand,
-  type CliRunnerOptions,
+  executeViaPack,
 } from '../tools-shared.js';
-import { CliCommands } from '../mcp-constants.js';
+import { CliCommands, MetadataKeys } from '../mcp-constants.js';
 
 /**
  * Error codes for memory tools
@@ -64,6 +64,33 @@ const MemoryErrorMessages = {
   MESSAGE_REQUIRED: 'message is required',
 } as const;
 
+const MemoryResultMessages = {
+  MEM_INIT_PASSED: 'Memory initialized',
+  MEM_INIT_FAILED: 'mem:init failed',
+  MEM_START_PASSED: 'Session started',
+  MEM_START_FAILED: 'mem:start failed',
+  MEM_READY_FAILED: 'mem:ready failed',
+  MEM_CHECKPOINT_PASSED: 'Checkpoint saved',
+  MEM_CHECKPOINT_FAILED: 'mem:checkpoint failed',
+  MEM_CLEANUP_PASSED: 'Cleanup completed',
+  MEM_CLEANUP_FAILED: 'mem:cleanup failed',
+  MEM_CONTEXT_FAILED: 'mem:context failed',
+  MEM_CREATE_PASSED: 'Memory node created',
+  MEM_CREATE_FAILED: 'mem:create failed',
+  MEM_DELETE_PASSED: 'Memory node deleted',
+  MEM_DELETE_FAILED: 'mem:delete failed',
+  MEM_EXPORT_PASSED: 'Memory exported',
+  MEM_EXPORT_FAILED: 'mem:export failed',
+  MEM_INBOX_FAILED: 'mem:inbox failed',
+  MEM_SIGNAL_PASSED: 'Signal broadcast',
+  MEM_SIGNAL_FAILED: 'mem:signal failed',
+  MEM_SUMMARIZE_PASSED: 'Memory summary generated',
+  MEM_SUMMARIZE_FAILED: 'mem:summarize failed',
+  MEM_TRIAGE_FAILED: 'mem:triage failed',
+  MEM_RECOVER_PASSED: 'Recovery context generated',
+  MEM_RECOVER_FAILED: 'mem:recover failed',
+} as const;
+
 // mem:recover public parity schema (not yet modeled in @lumenflow/core memory schemas)
 const memRecoverSchema = z.object({
   wu: z.string().optional(),
@@ -72,6 +99,71 @@ const memRecoverSchema = z.object({
   quiet: z.boolean().optional(),
   base_dir: z.string().optional(),
 });
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function unwrapExecuteViaPackData(data: unknown): unknown {
+  if (!isRecord(data) || !('success' in data)) {
+    return data;
+  }
+
+  const successValue = data.success;
+  if (typeof successValue !== 'boolean' || !successValue) {
+    return data;
+  }
+
+  const outputData = data.data;
+  return outputData ?? {};
+}
+
+function parseJsonPayload(value: unknown): unknown {
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return { message: value };
+    }
+  }
+
+  if (isRecord(value) && typeof value.message === 'string') {
+    try {
+      return JSON.parse(value.message);
+    } catch {
+      return value;
+    }
+  }
+
+  return value;
+}
+
+function resolveMessage(value: unknown, fallbackMessage: string): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (isRecord(value) && typeof value.message === 'string') {
+    return value.message;
+  }
+
+  return fallbackMessage;
+}
+
+function buildExecutionOptions(
+  projectRoot: string | undefined,
+  fallback: { command: string; args: string[]; errorCode: string },
+): Parameters<typeof executeViaPack>[2] {
+  return {
+    projectRoot,
+    contextInput: {
+      metadata: {
+        [MetadataKeys.PROJECT_ROOT]: projectRoot,
+      },
+    },
+    fallback,
+  };
+}
 
 /**
  * mem_init - Initialize memory for a WU
@@ -86,19 +178,26 @@ export const memInitTool: ToolDefinition = {
       return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--wu', input.wu as string];
+    const args = [CliArgs.WU, input.wu as string];
+    const result = await executeViaPack(CliCommands.MEM_INIT, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_INIT,
+        args,
+        errorCode: MemoryErrorCodes.MEM_INIT_ERROR,
+      }),
+    });
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_INIT, args, cliOptions);
-
-    if (result.success) {
-      return success({ message: result.stdout || 'Memory initialized' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'mem:init failed',
-        MemoryErrorCodes.MEM_INIT_ERROR,
-      );
-    }
+    return result.success
+      ? success({
+          message: resolveMessage(
+            unwrapExecuteViaPackData(result.data),
+            MemoryResultMessages.MEM_INIT_PASSED,
+          ),
+        })
+      : error(
+          result.error?.message ?? MemoryResultMessages.MEM_INIT_FAILED,
+          MemoryErrorCodes.MEM_INIT_ERROR,
+        );
   },
 };
 
@@ -115,20 +214,28 @@ export const memStartTool: ToolDefinition = {
       return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--wu', input.wu as string];
+    const args = [CliArgs.WU, input.wu as string];
     if (input.lane) args.push(CliArgs.LANE, input.lane as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_START, args, cliOptions);
+    const result = await executeViaPack(CliCommands.MEM_START, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_START,
+        args,
+        errorCode: MemoryErrorCodes.MEM_START_ERROR,
+      }),
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Session started' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'mem:start failed',
-        MemoryErrorCodes.MEM_START_ERROR,
-      );
-    }
+    return result.success
+      ? success({
+          message: resolveMessage(
+            unwrapExecuteViaPackData(result.data),
+            MemoryResultMessages.MEM_START_PASSED,
+          ),
+        })
+      : error(
+          result.error?.message ?? MemoryResultMessages.MEM_START_FAILED,
+          MemoryErrorCodes.MEM_START_ERROR,
+        );
   },
 };
 
@@ -145,24 +252,21 @@ export const memReadyTool: ToolDefinition = {
       return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--wu', input.wu as string];
+    const args = [CliArgs.WU, input.wu as string];
+    const result = await executeViaPack(CliCommands.MEM_READY, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_READY,
+        args,
+        errorCode: MemoryErrorCodes.MEM_READY_ERROR,
+      }),
+    });
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_READY, args, cliOptions);
-
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout });
-      }
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'mem:ready failed',
-        MemoryErrorCodes.MEM_READY_ERROR,
-      );
-    }
+    return result.success
+      ? success(parseJsonPayload(unwrapExecuteViaPackData(result.data)))
+      : error(
+          result.error?.message ?? MemoryResultMessages.MEM_READY_FAILED,
+          MemoryErrorCodes.MEM_READY_ERROR,
+        );
   },
 };
 
@@ -179,20 +283,28 @@ export const memCheckpointTool: ToolDefinition = {
       return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--wu', input.wu as string];
+    const args = [CliArgs.WU, input.wu as string];
     if (input.message) args.push('--message', input.message as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_CHECKPOINT, args, cliOptions);
+    const result = await executeViaPack(CliCommands.MEM_CHECKPOINT, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_CHECKPOINT,
+        args,
+        errorCode: MemoryErrorCodes.MEM_CHECKPOINT_ERROR,
+      }),
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Checkpoint saved' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'mem:checkpoint failed',
-        MemoryErrorCodes.MEM_CHECKPOINT_ERROR,
-      );
-    }
+    return result.success
+      ? success({
+          message: resolveMessage(
+            unwrapExecuteViaPackData(result.data),
+            MemoryResultMessages.MEM_CHECKPOINT_PASSED,
+          ),
+        })
+      : error(
+          result.error?.message ?? MemoryResultMessages.MEM_CHECKPOINT_FAILED,
+          MemoryErrorCodes.MEM_CHECKPOINT_ERROR,
+        );
   },
 };
 
@@ -208,17 +320,25 @@ export const memCleanupTool: ToolDefinition = {
     const args: string[] = [];
     if (input.dry_run) args.push(CliArgs.DRY_RUN);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_CLEANUP, args, cliOptions);
+    const result = await executeViaPack(CliCommands.MEM_CLEANUP, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_CLEANUP,
+        args,
+        errorCode: MemoryErrorCodes.MEM_CLEANUP_ERROR,
+      }),
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Cleanup completed' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'mem:cleanup failed',
-        MemoryErrorCodes.MEM_CLEANUP_ERROR,
-      );
-    }
+    return result.success
+      ? success({
+          message: resolveMessage(
+            unwrapExecuteViaPackData(result.data),
+            MemoryResultMessages.MEM_CLEANUP_PASSED,
+          ),
+        })
+      : error(
+          result.error?.message ?? MemoryResultMessages.MEM_CLEANUP_FAILED,
+          MemoryErrorCodes.MEM_CLEANUP_ERROR,
+        );
   },
 };
 
@@ -235,25 +355,23 @@ export const memContextTool: ToolDefinition = {
       return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--wu', input.wu as string];
+    const args = [CliArgs.WU, input.wu as string];
     if (input.lane) args.push(CliArgs.LANE, input.lane as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_CONTEXT, args, cliOptions);
+    const result = await executeViaPack(CliCommands.MEM_CONTEXT, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_CONTEXT,
+        args,
+        errorCode: MemoryErrorCodes.MEM_CONTEXT_ERROR,
+      }),
+    });
 
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout });
-      }
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'mem:context failed',
-        MemoryErrorCodes.MEM_CONTEXT_ERROR,
-      );
-    }
+    return result.success
+      ? success(parseJsonPayload(unwrapExecuteViaPackData(result.data)))
+      : error(
+          result.error?.message ?? MemoryResultMessages.MEM_CONTEXT_FAILED,
+          MemoryErrorCodes.MEM_CONTEXT_ERROR,
+        );
   },
 };
 
@@ -273,21 +391,29 @@ export const memCreateTool: ToolDefinition = {
       return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = [input.message as string, '--wu', input.wu as string];
+    const args = [input.message as string, CliArgs.WU, input.wu as string];
     if (input.type) args.push('--type', input.type as string);
     if (input.tags) args.push('--tags', (input.tags as string[]).join(','));
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_CREATE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.MEM_CREATE, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_CREATE,
+        args,
+        errorCode: MemoryErrorCodes.MEM_CREATE_ERROR,
+      }),
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Memory node created' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'mem:create failed',
-        MemoryErrorCodes.MEM_CREATE_ERROR,
-      );
-    }
+    return result.success
+      ? success({
+          message: resolveMessage(
+            unwrapExecuteViaPackData(result.data),
+            MemoryResultMessages.MEM_CREATE_PASSED,
+          ),
+        })
+      : error(
+          result.error?.message ?? MemoryResultMessages.MEM_CREATE_FAILED,
+          MemoryErrorCodes.MEM_CREATE_ERROR,
+        );
   },
 };
 
@@ -306,17 +432,25 @@ export const memDeleteTool: ToolDefinition = {
 
     const args = [CliArgs.ID, input.id as string];
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_DELETE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.MEM_DELETE, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_DELETE,
+        args,
+        errorCode: MemoryErrorCodes.MEM_DELETE_ERROR,
+      }),
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Memory node deleted' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'mem:delete failed',
-        MemoryErrorCodes.MEM_DELETE_ERROR,
-      );
-    }
+    return result.success
+      ? success({
+          message: resolveMessage(
+            unwrapExecuteViaPackData(result.data),
+            MemoryResultMessages.MEM_DELETE_PASSED,
+          ),
+        })
+      : error(
+          result.error?.message ?? MemoryResultMessages.MEM_DELETE_FAILED,
+          MemoryErrorCodes.MEM_DELETE_ERROR,
+        );
   },
 };
 
@@ -333,20 +467,28 @@ export const memExportTool: ToolDefinition = {
       return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--wu', input.wu as string];
+    const args = [CliArgs.WU, input.wu as string];
     if (input.format) args.push(CliArgs.FORMAT, input.format as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_EXPORT, args, cliOptions);
+    const result = await executeViaPack(CliCommands.MEM_EXPORT, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_EXPORT,
+        args,
+        errorCode: MemoryErrorCodes.MEM_EXPORT_ERROR,
+      }),
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'mem:export failed',
-        MemoryErrorCodes.MEM_EXPORT_ERROR,
-      );
-    }
+    return result.success
+      ? success({
+          message: resolveMessage(
+            unwrapExecuteViaPackData(result.data),
+            MemoryResultMessages.MEM_EXPORT_PASSED,
+          ),
+        })
+      : error(
+          result.error?.message ?? MemoryResultMessages.MEM_EXPORT_FAILED,
+          MemoryErrorCodes.MEM_EXPORT_ERROR,
+        );
   },
 };
 
@@ -364,22 +506,20 @@ export const memInboxTool: ToolDefinition = {
     if (input.wu) args.push(CliArgs.WU, input.wu as string);
     if (input.lane) args.push(CliArgs.LANE, input.lane as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_INBOX, args, cliOptions);
+    const result = await executeViaPack(CliCommands.MEM_INBOX, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_INBOX,
+        args,
+        errorCode: MemoryErrorCodes.MEM_INBOX_ERROR,
+      }),
+    });
 
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout });
-      }
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'mem:inbox failed',
-        MemoryErrorCodes.MEM_INBOX_ERROR,
-      );
-    }
+    return result.success
+      ? success(parseJsonPayload(unwrapExecuteViaPackData(result.data)))
+      : error(
+          result.error?.message ?? MemoryResultMessages.MEM_INBOX_FAILED,
+          MemoryErrorCodes.MEM_INBOX_ERROR,
+        );
   },
 };
 
@@ -399,19 +539,27 @@ export const memSignalTool: ToolDefinition = {
       return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = [input.message as string, '--wu', input.wu as string];
+    const args = [input.message as string, CliArgs.WU, input.wu as string];
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_SIGNAL, args, cliOptions);
+    const result = await executeViaPack(CliCommands.MEM_SIGNAL, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_SIGNAL,
+        args,
+        errorCode: MemoryErrorCodes.MEM_SIGNAL_ERROR,
+      }),
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Signal broadcast' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'mem:signal failed',
-        MemoryErrorCodes.MEM_SIGNAL_ERROR,
-      );
-    }
+    return result.success
+      ? success({
+          message: resolveMessage(
+            unwrapExecuteViaPackData(result.data),
+            MemoryResultMessages.MEM_SIGNAL_PASSED,
+          ),
+        })
+      : error(
+          result.error?.message ?? MemoryResultMessages.MEM_SIGNAL_FAILED,
+          MemoryErrorCodes.MEM_SIGNAL_ERROR,
+        );
   },
 };
 
@@ -428,19 +576,27 @@ export const memSummarizeTool: ToolDefinition = {
       return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--wu', input.wu as string];
+    const args = [CliArgs.WU, input.wu as string];
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_SUMMARIZE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.MEM_SUMMARIZE, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_SUMMARIZE,
+        args,
+        errorCode: MemoryErrorCodes.MEM_SUMMARIZE_ERROR,
+      }),
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'mem:summarize failed',
-        MemoryErrorCodes.MEM_SUMMARIZE_ERROR,
-      );
-    }
+    return result.success
+      ? success({
+          message: resolveMessage(
+            unwrapExecuteViaPackData(result.data),
+            MemoryResultMessages.MEM_SUMMARIZE_PASSED,
+          ),
+        })
+      : error(
+          result.error?.message ?? MemoryResultMessages.MEM_SUMMARIZE_FAILED,
+          MemoryErrorCodes.MEM_SUMMARIZE_ERROR,
+        );
   },
 };
 
@@ -457,26 +613,24 @@ export const memTriageTool: ToolDefinition = {
       return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--wu', input.wu as string];
+    const args = [CliArgs.WU, input.wu as string];
     if (input.promote) args.push('--promote', input.promote as string);
     if (input.lane) args.push(CliArgs.LANE, input.lane as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_TRIAGE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.MEM_TRIAGE, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_TRIAGE,
+        args,
+        errorCode: MemoryErrorCodes.MEM_TRIAGE_ERROR,
+      }),
+    });
 
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout });
-      }
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'mem:triage failed',
-        MemoryErrorCodes.MEM_TRIAGE_ERROR,
-      );
-    }
+    return result.success
+      ? success(parseJsonPayload(unwrapExecuteViaPackData(result.data)))
+      : error(
+          result.error?.message ?? MemoryResultMessages.MEM_TRIAGE_FAILED,
+          MemoryErrorCodes.MEM_TRIAGE_ERROR,
+        );
   },
 };
 
@@ -493,30 +647,34 @@ export const memRecoverTool: ToolDefinition = {
       return error(MemoryErrorMessages.WU_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--wu', input.wu as string];
+    const args = [CliArgs.WU, input.wu as string];
     if (input.max_size !== undefined) args.push('--max-size', String(input.max_size));
     if (input.format) args.push(CliArgs.FORMAT, input.format as string);
     if (input.quiet) args.push(CliArgs.QUIET);
     if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.MEM_RECOVER, args, cliOptions);
+    const result = await executeViaPack(CliCommands.MEM_RECOVER, input, {
+      ...buildExecutionOptions(options?.projectRoot, {
+        command: CliCommands.MEM_RECOVER,
+        args,
+        errorCode: MemoryErrorCodes.MEM_RECOVER_ERROR,
+      }),
+    });
 
-    if (result.success) {
-      if (input.format === 'json') {
-        try {
-          const data = JSON.parse(result.stdout);
-          return success(data);
-        } catch {
-          return success({ message: result.stdout || 'Recovery context generated' });
-        }
-      }
-      return success({ message: result.stdout || 'Recovery context generated' });
-    } else {
+    if (!result.success) {
       return error(
-        result.stderr || result.error?.message || 'mem:recover failed',
+        result.error?.message ?? MemoryResultMessages.MEM_RECOVER_FAILED,
         MemoryErrorCodes.MEM_RECOVER_ERROR,
       );
     }
+
+    const unwrapped = unwrapExecuteViaPackData(result.data);
+    if (input.format === 'json') {
+      return success(parseJsonPayload(unwrapped));
+    }
+
+    return success({
+      message: resolveMessage(unwrapped, MemoryResultMessages.MEM_RECOVER_PASSED),
+    });
   },
 };

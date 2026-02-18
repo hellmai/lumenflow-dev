@@ -12,6 +12,7 @@ tests:
   manual:
     - Memory state correctly managed via runtime path
   unit:
+    - packages/@lumenflow/mcp/src/__tests__/memory-tools.test.ts
     - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
   e2e: []
 artifacts:
