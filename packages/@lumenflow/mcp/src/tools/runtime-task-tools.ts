@@ -2,6 +2,7 @@ import path from 'node:path';
 import { ExecutionContextSchema, initializeKernelRuntime, TaskSpecSchema } from '@lumenflow/kernel';
 import { z } from 'zod';
 import { error, success, ErrorCodes, type ToolDefinition } from '../tools-shared.js';
+import { packToolCapabilityResolver } from '../runtime-tool-resolver.js';
 import { RuntimeTaskToolDescriptions, RuntimeTaskToolNames } from './runtime-task-constants.js';
 
 const taskClaimInputSchema = z.object({
@@ -52,7 +53,10 @@ async function getRuntimeForWorkspace(workspaceRoot: string): Promise<RuntimeIns
     return cached;
   }
 
-  const runtimePromise = initializeKernelRuntime({ workspaceRoot: normalizedRoot });
+  const runtimePromise = initializeKernelRuntime({
+    workspaceRoot: normalizedRoot,
+    toolCapabilityResolver: packToolCapabilityResolver,
+  });
   runtimeCacheByRoot.set(normalizedRoot, runtimePromise);
 
   try {
