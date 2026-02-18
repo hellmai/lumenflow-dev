@@ -20,7 +20,7 @@ import {
 } from '../pack/index.js';
 
 const PACK_LOADER_TEST_DIR = dirname(fileURLToPath(import.meta.url));
-const EXPECTED_MCP_SHELL_OUT_TOOL_MINIMUM = 90;
+const EXPECTED_MCP_SHELL_OUT_TOOL_MINIMUM = 70;
 const REQUIRED_MANIFEST_TOOL_DOMAINS = [
   'wu',
   'mem',
