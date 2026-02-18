@@ -2636,7 +2636,11 @@ interface RuntimeWuPaths {
   stateDir: string;
 }
 
-function resolveRuntimeWuPaths(core: CoreModule, projectRoot: string, wuId: string): RuntimeWuPaths {
+function resolveRuntimeWuPaths(
+  core: CoreModule,
+  projectRoot: string,
+  wuId: string,
+): RuntimeWuPaths {
   const resolvedPaths = core.getResolvedPaths({ projectRoot });
   return {
     wuPath: path.join(resolvedPaths.wuDir, `${wuId}${WU_YAML_FILE_EXTENSION}`),
@@ -2899,7 +2903,10 @@ const wuEditInProcess: InProcessToolFn = async (rawInput, context) => {
     return createSuccessOutput({
       message: VALIDATION_TOOL_MESSAGES.WU_EDIT_PASSED,
       id: parsedInput.data.id,
-      status: typeof wuDocument[WU_DOC_KEYS.STATUS] === 'string' ? wuDocument[WU_DOC_KEYS.STATUS] : STATUS_UNKNOWN,
+      status:
+        typeof wuDocument[WU_DOC_KEYS.STATUS] === 'string'
+          ? wuDocument[WU_DOC_KEYS.STATUS]
+          : STATUS_UNKNOWN,
     });
   } catch (err) {
     return createFailureOutput(VALIDATION_TOOL_ERROR_CODES.WU_EDIT_ERROR, (err as Error).message);
