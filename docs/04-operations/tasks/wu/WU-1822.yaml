@@ -1,0 +1,39 @@
+id: WU-1822
+title: Build workspace connection flow with runtime initialization
+lane: 'Content: Site Comms'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-18
+code_paths:
+  - apps/web/src/
+tests:
+  manual:
+    - Open app, connect to workspace, verify status indicator
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1822.done
+dependencies: []
+initiative: INIT-031
+phase: 1
+blocked_by:
+  - WU-1819
+spec_refs:
+  - .claude/plans/zazzy-growing-cook.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: ui
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: On first load, prompt for workspace root path (or detect from environment). Initialize KernelRuntime from workspace. Store preference in localStorage. Show connection status (workspace name, pack count, event count).
+acceptance:
+  - Workspace root path prompt on first load
+  - KernelRuntime initializes from selected workspace
+  - Connection status shown (workspace name, pack count)
+  - Preference persisted in localStorage
