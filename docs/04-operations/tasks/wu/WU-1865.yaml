@@ -1,0 +1,43 @@
+id: WU-1865
+title: 'Kernel polish: xstate dead code removal, warning clarity, naming consistency'
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P3
+created: 2026-02-18
+code_paths:
+  - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
+  - packages/@lumenflow/kernel/src/policy/policy-engine.ts
+  - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
+tests:
+  manual:
+    - Verify xstate dependency removed from kernel package.json if dead code deleted
+    - Verify policy warnings include triggering rule identifier
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1865.done
+dependencies: []
+initiative: INIT-030
+phase: 5
+blocked_by:
+  - WU-1861
+risks: []
+notes: This is the cleanup pass. Lower priority than security/durability WUs but important for maintainability. The xstate dead code is the biggest item — if the manual map is canonical (which it appears to be based on runtime usage), remove xstate entirely and drop the dependency. W7/W8/W11 are individually trivial but collectively improve kernel diagnostic quality.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'W7-W8+W11+xstate: The kernel state machine is defined twice — once in xstate and once as a manual transition map. One source of truth or delete the other. Additionally, several polish items: (W7) warning messages in policy evaluation are ambiguous about which policy rule triggered the warning, (W8) YAML comment parsing in spec files is fragile with edge cases around multi-line strings, (W11) inconsistent naming between kernel internal APIs (mix of camelCase method names with snake_case event fields). Clean up dead code, improve diagnostic clarity, and establish naming conventions.'
+acceptance:
+  - xstate state machine definition removed if manual map is canonical (or vice versa — one source of truth)
+  - Policy evaluation warnings include the specific rule name/ID that triggered them
+  - Kernel internal API naming follows consistent convention (document which)
+  - No dead code remains in kernel packages (verified by ts-prune or similar)
+  - All kernel and MCP tests pass
