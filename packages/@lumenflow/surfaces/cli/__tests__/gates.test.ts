@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 import { describe, expect, it, vi } from 'vitest';
-import type { KernelRuntime } from '../../../kernel/src/runtime/index.js';
+import type { KernelRuntime } from '@lumenflow/kernel';
 import { createGateCommands, createOrchestrationCommands } from '../gates.js';
 
 describe('surfaces/cli gates + orchestration commands', () => {

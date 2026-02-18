@@ -5,7 +5,7 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { canonical_json } from '../../../kernel/src/canonical-json.js';
+import { canonical_json } from '@lumenflow/kernel';
 import { initializeTaskLifecycleCommands } from '../task-lifecycle.js';
 import { createInspectCommands, createReplayCommands } from '../inspect.js';
 

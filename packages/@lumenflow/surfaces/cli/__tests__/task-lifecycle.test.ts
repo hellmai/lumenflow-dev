@@ -10,9 +10,10 @@ import type {
   CompleteTaskResult,
   CreateTaskResult,
   KernelRuntime,
+  TaskSpec,
   TaskInspection,
-} from '../../../kernel/src/runtime/index.js';
-import type { TaskSpec, ToolOutput } from '../../../kernel/src/kernel.schemas.js';
+  ToolOutput,
+} from '@lumenflow/kernel';
 import { createTaskLifecycleCommands, initializeTaskLifecycleCommands } from '../task-lifecycle.js';
 
 function createTaskSpec(taskId: string): TaskSpec {

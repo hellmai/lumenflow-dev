@@ -4,7 +4,7 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
-import { TaskScheduler, type ScheduledTask } from '../scheduler/task-scheduler.js';
+import { TaskScheduler } from '../scheduler/task-scheduler.js';
 import { SessionManager } from '../session/session-manager.js';
 import {
   UnixSocketServer,
@@ -33,6 +33,19 @@ const SessionRestoreParamsSchema = z.object({
   session_id: z.string().min(1),
 });
 
+const REQUEST_TYPES = {
+  PING: 'ping',
+  SCHEDULER_ENQUEUE: 'scheduler.enqueue',
+  SCHEDULER_DEQUEUE: 'scheduler.dequeue',
+  SESSION_CREATE: 'session.create',
+  SESSION_CHECKPOINT: 'session.checkpoint',
+  SESSION_RESTORE: 'session.restore',
+} as const;
+
+type RequestType = (typeof REQUEST_TYPES)[keyof typeof REQUEST_TYPES];
+type HandlerFn = (request: DaemonRequest) => Promise<DaemonResponse>;
+const REQUEST_TYPE_VALUES = new Set<RequestType>(Object.values(REQUEST_TYPES));
+
 export interface RuntimeDaemonOptions {
   socketPath: string;
   pidFilePath: string;
@@ -45,6 +58,7 @@ export class RuntimeDaemon {
   private readonly pidFilePath: string;
   private readonly scheduler: TaskScheduler;
   private readonly sessionManager: SessionManager;
+  private readonly handlerRegistry: Map<RequestType, HandlerFn>;
   private readonly transport: UnixSocketServer;
   private signalBound = false;
   private sigtermHandler: (() => void) | null = null;
@@ -55,6 +69,7 @@ export class RuntimeDaemon {
     this.pidFilePath = path.resolve(options.pidFilePath);
     this.scheduler = options.scheduler;
     this.sessionManager = options.sessionManager;
+    this.handlerRegistry = this.createHandlerRegistry();
     this.transport = new UnixSocketServer({
       socketPath: this.socketPath,
       handler: async (request) => this.handleRequest(request),
@@ -103,99 +118,122 @@ export class RuntimeDaemon {
     };
   }
 
-  private async handleRequest(request: DaemonRequest): Promise<DaemonResponse> {
-    if (request.method === 'ping') {
-      const parsedParams = EmptyParamsSchema.safeParse(request.params);
-      if (!parsedParams.success) {
-        return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
-      }
-      return {
-        id: request.id,
-        ok: true,
-        result: {
-          status: 'ok',
-        },
-      };
+  private createHandlerRegistry(): Map<RequestType, HandlerFn> {
+    return new Map<RequestType, HandlerFn>([
+      [REQUEST_TYPES.PING, this.handlePing.bind(this)],
+      [REQUEST_TYPES.SCHEDULER_ENQUEUE, this.handleSchedulerEnqueue.bind(this)],
+      [REQUEST_TYPES.SCHEDULER_DEQUEUE, this.handleSchedulerDequeue.bind(this)],
+      [REQUEST_TYPES.SESSION_CREATE, this.handleSessionCreate.bind(this)],
+      [REQUEST_TYPES.SESSION_CHECKPOINT, this.handleSessionCheckpoint.bind(this)],
+      [REQUEST_TYPES.SESSION_RESTORE, this.handleSessionRestore.bind(this)],
+    ]);
+  }
+
+  private getHandlerForMethod(method: string): HandlerFn | null {
+    if (!REQUEST_TYPE_VALUES.has(method as RequestType)) {
+      return null;
     }
+    return this.handlerRegistry.get(method) ?? null;
+  }
 
-    if (request.method === 'scheduler.enqueue') {
-      const parsedParams = SchedulerEnqueueParamsSchema.safeParse(request.params);
-      if (!parsedParams.success) {
-        return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
-      }
-
-      this.scheduler.enqueue(parsedParams.data as ScheduledTask);
-      return {
-        id: request.id,
-        ok: true,
-        result: {
-          enqueued: true,
-        },
-      };
+  private async handlePing(request: DaemonRequest): Promise<DaemonResponse> {
+    const parsedParams = EmptyParamsSchema.safeParse(request.params);
+    if (!parsedParams.success) {
+      return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
     }
-
-    if (request.method === 'scheduler.dequeue') {
-      const parsedParams = EmptyParamsSchema.safeParse(request.params);
-      if (!parsedParams.success) {
-        return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
-      }
-      return {
-        id: request.id,
-        ok: true,
-        result: this.scheduler.dequeue(),
-      };
-    }
-
-    if (request.method === 'session.create') {
-      const parsedParams = SessionCreateParamsSchema.safeParse(request.params);
-      if (!parsedParams.success) {
-        return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
-      }
-
-      const result = await this.sessionManager.createSession(parsedParams.data);
-      return {
-        id: request.id,
-        ok: true,
-        result,
-      };
-    }
-
-    if (request.method === 'session.checkpoint') {
-      const parsedParams = SessionCheckpointParamsSchema.safeParse(request.params);
-      if (!parsedParams.success) {
-        return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
-      }
-
-      const result = await this.sessionManager.checkpoint(
-        parsedParams.data.session_id,
-        parsedParams.data.state,
-      );
-      return {
-        id: request.id,
-        ok: true,
-        result,
-      };
-    }
-
-    if (request.method === 'session.restore') {
-      const parsedParams = SessionRestoreParamsSchema.safeParse(request.params);
-      if (!parsedParams.success) {
-        return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
-      }
-
-      const result = await this.sessionManager.restore(parsedParams.data.session_id);
-      return {
-        id: request.id,
-        ok: true,
-        result,
-      };
-    }
-
     return {
       id: request.id,
-      ok: false,
-      error: `Unknown method: ${request.method}`,
+      ok: true,
+      result: {
+        status: 'ok',
+      },
     };
+  }
+
+  private async handleSchedulerEnqueue(request: DaemonRequest): Promise<DaemonResponse> {
+    const parsedParams = SchedulerEnqueueParamsSchema.safeParse(request.params);
+    if (!parsedParams.success) {
+      return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
+    }
+
+    this.scheduler.enqueue(parsedParams.data);
+    return {
+      id: request.id,
+      ok: true,
+      result: {
+        enqueued: true,
+      },
+    };
+  }
+
+  private async handleSchedulerDequeue(request: DaemonRequest): Promise<DaemonResponse> {
+    const parsedParams = EmptyParamsSchema.safeParse(request.params);
+    if (!parsedParams.success) {
+      return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
+    }
+    return {
+      id: request.id,
+      ok: true,
+      result: this.scheduler.dequeue(),
+    };
+  }
+
+  private async handleSessionCreate(request: DaemonRequest): Promise<DaemonResponse> {
+    const parsedParams = SessionCreateParamsSchema.safeParse(request.params);
+    if (!parsedParams.success) {
+      return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
+    }
+
+    const result = await this.sessionManager.createSession(parsedParams.data);
+    return {
+      id: request.id,
+      ok: true,
+      result,
+    };
+  }
+
+  private async handleSessionCheckpoint(request: DaemonRequest): Promise<DaemonResponse> {
+    const parsedParams = SessionCheckpointParamsSchema.safeParse(request.params);
+    if (!parsedParams.success) {
+      return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
+    }
+
+    const result = await this.sessionManager.checkpoint(
+      parsedParams.data.session_id,
+      parsedParams.data.state,
+    );
+    return {
+      id: request.id,
+      ok: true,
+      result,
+    };
+  }
+
+  private async handleSessionRestore(request: DaemonRequest): Promise<DaemonResponse> {
+    const parsedParams = SessionRestoreParamsSchema.safeParse(request.params);
+    if (!parsedParams.success) {
+      return this.invalidParamsResponse(request.id, request.method, parsedParams.error.message);
+    }
+
+    const result = await this.sessionManager.restore(parsedParams.data.session_id);
+    return {
+      id: request.id,
+      ok: true,
+      result,
+    };
+  }
+
+  private async handleRequest(request: DaemonRequest): Promise<DaemonResponse> {
+    const handler = this.getHandlerForMethod(request.method);
+    if (!handler) {
+      return {
+        id: request.id,
+        ok: false,
+        error: `Unknown method: ${request.method}`,
+      };
+    }
+
+    return handler(request);
   }
 
   private bindSignals(): void {

@@ -6,8 +6,8 @@ import type {
   KernelRuntime,
   TaskInspection,
   TaskInspection as KernelTaskInspection,
-} from '../../kernel/src/runtime/index.js';
-import type { ToolOutput } from '../../kernel/src/kernel.schemas.js';
+  ToolOutput,
+} from '@lumenflow/kernel';
 
 export interface InspectView extends KernelTaskInspection {
   evidence: string[];

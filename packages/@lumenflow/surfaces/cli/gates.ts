@@ -1,8 +1,12 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import { POLICY_TRIGGERS, type PolicyEvaluationResult } from '../../kernel/src/policy/index.js';
-import type { KernelRuntime, TaskInspection } from '../../kernel/src/runtime/index.js';
+import {
+  POLICY_TRIGGERS,
+  type KernelRuntime,
+  type PolicyEvaluationResult,
+  type TaskInspection,
+} from '@lumenflow/kernel';
 
 export interface GateRunInput {
   task_id: string;

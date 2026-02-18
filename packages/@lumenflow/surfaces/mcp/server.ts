@@ -5,15 +5,13 @@ import {
   ExecutionContextSchema,
   TaskSpecSchema,
   toMcpJsonSchema,
+  type ClaimTaskInput,
+  type CompleteTaskInput,
   type ExecutionContext,
+  type KernelRuntime,
+  type TaskInspection,
   type TaskSpec,
-} from '../../kernel/src/kernel.schemas.js';
-import type {
-  ClaimTaskInput,
-  CompleteTaskInput,
-  KernelRuntime,
-  TaskInspection,
-} from '../../kernel/src/runtime/index.js';
+} from '@lumenflow/kernel';
 
 export interface McpInvocation {
   name: string;

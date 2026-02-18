@@ -1,7 +1,6 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import type { TaskSpec } from '../../kernel/src/kernel.schemas.js';
 import {
   initializeKernelRuntime,
   type ClaimTaskInput,
@@ -11,8 +10,9 @@ import {
   type CreateTaskResult,
   type InitializeKernelRuntimeOptions,
   type KernelRuntime,
+  type TaskSpec,
   type TaskInspection,
-} from '../../kernel/src/runtime/index.js';
+} from '@lumenflow/kernel';
 
 export interface TaskLifecycleCommands {
   'task:create': (taskSpec: TaskSpec) => Promise<CreateTaskResult>;

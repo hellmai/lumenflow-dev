@@ -126,6 +126,76 @@ describe('runtime daemon', () => {
     await daemon.stop();
   });
 
+  it('routes scheduler methods and preserves request payloads', async () => {
+    const socketPath = join(tempRoot, 'lumenflowd.sock');
+    const pidFilePath = join(tempRoot, 'lumenflowd.pid');
+
+    const daemon = new RuntimeDaemon({
+      socketPath,
+      pidFilePath,
+      scheduler: new TaskScheduler(),
+      sessionManager: new SessionManager({ checkpointsDir: join(tempRoot, 'checkpoints') }),
+    });
+    await daemon.start();
+
+    const enqueue = await sendDaemonRequest(socketPath, {
+      id: 'scheduler-enqueue-1',
+      method: 'scheduler.enqueue',
+      params: {
+        task_id: 'WU-1850-registry',
+        lane_id: 'framework-core-lifecycle',
+        priority: 'P1',
+        payload: {
+          source: 'daemon-test',
+        },
+      },
+    });
+
+    expect(enqueue.ok).toBe(true);
+    expect(enqueue.result).toEqual({ enqueued: true });
+
+    const dequeue = await sendDaemonRequest(socketPath, {
+      id: 'scheduler-dequeue-1',
+      method: 'scheduler.dequeue',
+      params: {},
+    });
+
+    expect(dequeue.ok).toBe(true);
+    expect(dequeue.result).toEqual({
+      task_id: 'WU-1850-registry',
+      lane_id: 'framework-core-lifecycle',
+      priority: 'P1',
+      payload: {
+        source: 'daemon-test',
+      },
+    });
+
+    await daemon.stop();
+  });
+
+  it('returns unknown method errors for unsupported daemon requests', async () => {
+    const socketPath = join(tempRoot, 'lumenflowd.sock');
+    const pidFilePath = join(tempRoot, 'lumenflowd.pid');
+
+    const daemon = new RuntimeDaemon({
+      socketPath,
+      pidFilePath,
+      scheduler: new TaskScheduler(),
+      sessionManager: new SessionManager({ checkpointsDir: join(tempRoot, 'checkpoints') }),
+    });
+    await daemon.start();
+
+    const unknownMethod = await sendDaemonRequest(socketPath, {
+      id: 'unknown-method-1',
+      method: 'scheduler.peek',
+      params: {},
+    });
+    expect(unknownMethod.ok).toBe(false);
+    expect(unknownMethod.error).toBe('Unknown method: scheduler.peek');
+
+    await daemon.stop();
+  });
+
   it('routes through daemon when available and falls back in-process when unavailable', async () => {
     const socketPath = join(tempRoot, 'lumenflowd.sock');
     const pidFilePath = join(tempRoot, 'lumenflowd.pid');
