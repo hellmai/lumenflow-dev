@@ -133,9 +133,7 @@ describe('EvidenceViewer', () => {
       render(<EvidenceViewer timeline={[SUCCESS_ENTRY]} taskId="task-1" />);
 
       const csvButton = screen.getByTestId('export-csv-button') as HTMLAnchorElement;
-      expect(csvButton.getAttribute('href')).toBe(
-        '/api/tasks/task-1/evidence/export?format=csv',
-      );
+      expect(csvButton.getAttribute('href')).toBe('/api/tasks/task-1/evidence/export?format=csv');
       expect(csvButton.hasAttribute('download')).toBe(true);
     });
 
@@ -143,9 +141,7 @@ describe('EvidenceViewer', () => {
       render(<EvidenceViewer timeline={[SUCCESS_ENTRY]} taskId="task-1" />);
 
       const jsonButton = screen.getByTestId('export-json-button') as HTMLAnchorElement;
-      expect(jsonButton.getAttribute('href')).toBe(
-        '/api/tasks/task-1/evidence/export?format=json',
-      );
+      expect(jsonButton.getAttribute('href')).toBe('/api/tasks/task-1/evidence/export?format=json');
       expect(jsonButton.hasAttribute('download')).toBe(true);
     });
 
