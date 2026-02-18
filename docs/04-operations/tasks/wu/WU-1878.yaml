@@ -15,7 +15,6 @@ tests:
     - Verify Install button triggers POST and installs pack to connected workspace
     - Verify button is disabled with tooltip when no workspace connected
   unit:
-    - apps/web/app/api/registry/packs/[id]/__tests__/install.test.ts
     - apps/web/__tests__/install-pack-route.test.ts
   e2e: []
 artifacts:
