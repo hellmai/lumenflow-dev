@@ -86,6 +86,7 @@
     "plan:edit": "node tools/cli-entry.mjs plan-edit",
     "plan:link": "node tools/cli-entry.mjs plan-link",
     "plan:promote": "node tools/cli-entry.mjs plan-promote",
+    "workspace:init": "node tools/cli-entry.mjs workspace-init",
     "pack:scaffold": "node tools/cli-entry.mjs pack-scaffold",
     "pack:validate": "node tools/cli-entry.mjs pack-validate",
     "pack:hash": "node tools/cli-entry.mjs pack-hash",
