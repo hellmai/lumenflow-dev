@@ -7,7 +7,6 @@ priority: P1
 created: 2026-02-18
 code_paths:
   - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
-  - packages/@lumenflow/packs/software-delivery/manifest.yaml
 tests:
   manual:
     - Run mcp parity tests and verify no missing pack_search command in report
@@ -22,10 +21,17 @@ phase: 5
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-18T23:26:57.905Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-mcp-wu-1880
+session_id: 138b37a5-24ad-477d-a1c1-5f6d61272078
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T23:26:57.908Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -35,11 +41,3 @@ description: Global test gate currently fails pre-existing parity checks in
 acceptance:
   - wu-tools manifest parity truth gate passes with no missing pack_search drift
   - Any parity baseline/allowed extra lists are updated deliberately with test coverage
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-mcp-wu-1880
-claimed_at: 2026-02-18T23:26:57.905Z
-baseline_main_sha: 8bf86d8dd877aee580a151c33df1249c4580acc6
-session_id: 138b37a5-24ad-477d-a1c1-5f6d61272078
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-18T23:26:57.908Z
