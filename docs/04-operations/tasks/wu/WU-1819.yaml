@@ -2,7 +2,7 @@ id: WU-1819
 title: Scaffold Next.js web app with API routes for HTTP surface
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
