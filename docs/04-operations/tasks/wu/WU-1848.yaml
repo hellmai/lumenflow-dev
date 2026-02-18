@@ -32,46 +32,56 @@ artifacts:
 dependencies: []
 initiative: INIT-030
 phase: 3
-blocked_by: []
+blocked_by:
+  - WU-1843
+  - WU-1847
 spec_refs:
   - /home/USER/.claude/plans/adaptive-finding-adleman.md
   - /home/USER/.claude/plans/zesty-jumping-pixel.md
 risks:
-  - Broad literal replacement can regress event parsing if schema/value alignment is incomplete
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+  - Schema/value drift can regress runtime validation if constant-backed literals diverge.
+  - Parallel edits to pack-loader/tool-host (WU-1843
+  - WU-1847) can cause merge churn; sequence integration carefully.
+  - Over-centralization can reduce local readability if governance families are not narrowly scoped.
+notes: Kernel-only scope for WU-1848. MCP surface literal governance (parity-tools
+  command/flag/metadata ratchet) is handled in a separate WU to reduce blast radius and merge
+  conflicts.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-18T11:43:24.315Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1848
+session_id: c0fc26b8-6ca6-440d-b4df-5fece916268d
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
-requires_cso_approval: false
-requires_cto_approval: false
-requires_design_approval: false
-description: 'Context: kernel runtime paths still contain repeated identifier literals (policy IDs,
-  policy triggers, integrity markers, and related error/event identifiers) across schemas, runtime,
-  tool-host, evidence, and pack loader code. Problem: duplicated identifiers are drift-prone and
-  allow typo bugs in security- sensitive paths. Solution: adopt a Linux-style single source of truth
-  pattern with typed constant modules (`as const` objects + exported union types + guard helpers),
-  then consume those constants everywhere in production kernel code.'
-acceptance:
-  - Introduce canonical constant groups for targeted identifier families (policy IDs, policy
-    triggers, integrity prefixes/regex, and repeated kernel/runtime error identifiers) in kernel
-    source modules.
-  - All touched production kernel files import these constants instead of re-declaring raw
-    identifier strings for the targeted families.
-  - Zod schemas in `kernel.schemas.ts` use constant-backed literals/enums for targeted identifiers,
-    preserving runtime validation behavior.
-  - Exported types are derived from constant objects/tuples (single source of truth), with guard
-    helpers where runtime narrowing is needed.
-  - Add or update unit tests to cover constant/type wiring and prevent regression for targeted
-    identifier families.
-  - No duplicate definitions remain for targeted identifier families outside approved constants
-    modules (tests may still assert literal values).
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1848
-claimed_at: 2026-02-18T11:43:24.315Z
-baseline_main_sha: c2c130540fb846d8474ff91526f34e999c1635ae
-session_id: c0fc26b8-6ca6-440d-b4df-5fece916268d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T11:43:24.320Z
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: kernel runtime paths still contain repeated security-sensitive identifier
+  literals (policy IDs, reserved-path boundaries, integrity markers, default sentinels, and path
+  segment constants) across schemas, runtime, tool-host, evidence, and pack loader code. Problem:
+  duplicated identifiers are drift-prone and can introduce typo defects in boundary enforcement
+  paths. Solution: deliver a kernel-only literal governance wave with typed source-of-truth constant
+  modules (as const objects + derived union types + guard helpers) and enforce imports from those
+  modules in touched kernel files.'
+acceptance:
+  - 'Introduce canonical kernel constant groups for targeted families: policy IDs/triggers, reserved
+    framework scope boundaries, integrity prefixes/regex, default sentinel identifiers, and repeated
+    runtime path-segment identifiers.'
+  - Existing centralized families (KERNEL_EVENT_KINDS, TOOL_TRACE_KINDS, TOOL_ERROR_CODES) are
+    treated as import-enforced sources of truth; touched files must import them rather than
+    duplicate inline literals.
+  - Zod schemas in kernel runtime continue to validate with unchanged external behavior while using
+    constant-backed literals/enums for targeted families.
+  - Exported types are derived from constant objects/tuples (single source of truth), with guard
+    helpers where runtime narrowing is needed.
+  - No breaking public API changes to @lumenflow/kernel or @lumenflow/mcp exports; refactoring
+    remains internal to module implementation.
+  - Add or update unit tests covering constant/type wiring and regressions for targeted kernel
+    families.
+  - No duplicate definitions remain for targeted kernel families outside approved constants modules
+    (tests may still assert literal values).
