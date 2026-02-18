@@ -7,7 +7,6 @@ priority: P1
 created: 2026-02-18
 code_paths:
   - packages/@lumenflow/cli/src/workspace-init.ts
-  - packages/@lumenflow/cli/src/init-scaffolding.ts
 tests:
   manual:
     - Run workspace:init --yes and verify generated workspace.yaml validates
@@ -27,10 +26,17 @@ notes: 'Sizing: Medium (M). ~12-18 files, ~45 tool calls. Strategy: Single Sessi
   (parallel with 5.1, 5.3). Template + prompts + schema validation + tests. Builds on
   init-scaffolding.ts (218 lines, WU-1644).'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-18T23:21:35.067Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1871
+session_id: feb6b4e3-57bb-43e2-bda5-c5c36c051d7a
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T23:21:35.071Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -47,11 +53,3 @@ acceptance:
   - Generated workspace.yaml validates against WorkspaceSpecSchema
   - Generated file includes helpful YAML comments explaining each section
   - Uses existing init-scaffolding.ts template infrastructure (processTemplate, createFile)
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1871
-claimed_at: 2026-02-18T23:21:35.067Z
-baseline_main_sha: 9e6b459e3eaf1b5a55e70ceec930e0cff6676f21
-session_id: feb6b4e3-57bb-43e2-bda5-c5c36c051d7a
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-18T23:21:35.071Z
