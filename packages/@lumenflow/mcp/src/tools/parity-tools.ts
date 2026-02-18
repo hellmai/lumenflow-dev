@@ -284,16 +284,35 @@ export const backlogPruneTool: ToolDefinition = {
       args.push('--archive-days', String(input.archive_days));
     }
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('backlog:prune', args, cliOptions);
-
-    if (result.success) {
-      return success({ message: result.stdout || 'Backlog prune complete' });
-    }
-    return error(
-      result.stderr || result.error?.message || 'backlog:prune failed',
-      ErrorCodes.BACKLOG_PRUNE_ERROR,
+    const execution = await executeViaPack(
+      'backlog:prune',
+      {
+        execute: input.execute,
+        dry_run: input.dry_run,
+        stale_days_in_progress: input.stale_days_in_progress,
+        stale_days_ready: input.stale_days_ready,
+        archive_days: input.archive_days,
+      },
+      {
+        projectRoot: options?.projectRoot,
+        contextInput: {
+          metadata: {
+            project_root: options?.projectRoot,
+          },
+        },
+        fallback: {
+          command: 'backlog:prune',
+          args,
+          errorCode: ErrorCodes.BACKLOG_PRUNE_ERROR,
+        },
+      },
     );
+
+    if (!execution.success) {
+      return execution;
+    }
+
+    return success(unwrapExecuteViaPackData(execution.data));
   },
 };
 
@@ -513,16 +532,35 @@ export const stateBootstrapTool: ToolDefinition = {
     if (input.wu_dir) args.push('--wu-dir', input.wu_dir as string);
     if (input.state_dir) args.push('--state-dir', input.state_dir as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('state:bootstrap', args, cliOptions);
-
-    if (result.success) {
-      return success({ message: result.stdout || 'State bootstrap complete' });
-    }
-    return error(
-      result.stderr || result.error?.message || 'state:bootstrap failed',
-      ErrorCodes.STATE_BOOTSTRAP_ERROR,
+    const execution = await executeViaPack(
+      'state:bootstrap',
+      {
+        execute: input.execute,
+        dry_run: input.dry_run,
+        force: input.force,
+        wu_dir: input.wu_dir,
+        state_dir: input.state_dir,
+      },
+      {
+        projectRoot: options?.projectRoot,
+        contextInput: {
+          metadata: {
+            project_root: options?.projectRoot,
+          },
+        },
+        fallback: {
+          command: 'state:bootstrap',
+          args,
+          errorCode: ErrorCodes.STATE_BOOTSTRAP_ERROR,
+        },
+      },
     );
+
+    if (!execution.success) {
+      return execution;
+    }
+
+    return success(unwrapExecuteViaPackData(execution.data));
   },
 };
 
@@ -544,16 +582,37 @@ export const stateCleanupTool: ToolDefinition = {
     if (input.quiet) args.push('--quiet');
     if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('state:cleanup', args, cliOptions);
-
-    if (result.success) {
-      return success({ message: result.stdout || 'State cleanup complete' });
-    }
-    return error(
-      result.stderr || result.error?.message || 'state:cleanup failed',
-      ErrorCodes.STATE_CLEANUP_ERROR,
+    const execution = await executeViaPack(
+      'state:cleanup',
+      {
+        dry_run: input.dry_run,
+        signals_only: input.signals_only,
+        memory_only: input.memory_only,
+        events_only: input.events_only,
+        json: input.json,
+        quiet: input.quiet,
+        base_dir: input.base_dir,
+      },
+      {
+        projectRoot: options?.projectRoot,
+        contextInput: {
+          metadata: {
+            project_root: options?.projectRoot,
+          },
+        },
+        fallback: {
+          command: 'state:cleanup',
+          args,
+          errorCode: ErrorCodes.STATE_CLEANUP_ERROR,
+        },
+      },
     );
+
+    if (!execution.success) {
+      return execution;
+    }
+
+    return success(unwrapExecuteViaPackData(execution.data));
   },
 };
 
@@ -573,16 +632,35 @@ export const stateDoctorTool: ToolDefinition = {
     if (input.quiet) args.push('--quiet');
     if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('state:doctor', args, cliOptions);
-
-    if (result.success) {
-      return success({ message: result.stdout || 'State doctor complete' });
-    }
-    return error(
-      result.stderr || result.error?.message || 'state:doctor failed',
-      ErrorCodes.STATE_DOCTOR_ERROR,
+    const execution = await executeViaPack(
+      'state:doctor',
+      {
+        fix: input.fix,
+        dry_run: input.dry_run,
+        json: input.json,
+        quiet: input.quiet,
+        base_dir: input.base_dir,
+      },
+      {
+        projectRoot: options?.projectRoot,
+        contextInput: {
+          metadata: {
+            project_root: options?.projectRoot,
+          },
+        },
+        fallback: {
+          command: 'state:doctor',
+          args,
+          errorCode: ErrorCodes.STATE_DOCTOR_ERROR,
+        },
+      },
     );
+
+    if (!execution.success) {
+      return execution;
+    }
+
+    return success(unwrapExecuteViaPackData(execution.data));
   },
 };
 
@@ -1222,16 +1300,37 @@ export const signalCleanupTool: ToolDefinition = {
     if (input.quiet) args.push('--quiet');
     if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('signal:cleanup', args, cliOptions);
-
-    if (result.success) {
-      return success({ message: result.stdout || 'Signal cleanup complete' });
-    }
-    return error(
-      result.stderr || result.error?.message || 'signal:cleanup failed',
-      ErrorCodes.SIGNAL_CLEANUP_ERROR,
+    const execution = await executeViaPack(
+      'signal:cleanup',
+      {
+        dry_run: input.dry_run,
+        ttl: input.ttl,
+        unread_ttl: input.unread_ttl,
+        max_entries: input.max_entries,
+        json: input.json,
+        quiet: input.quiet,
+        base_dir: input.base_dir,
+      },
+      {
+        projectRoot: options?.projectRoot,
+        contextInput: {
+          metadata: {
+            project_root: options?.projectRoot,
+          },
+        },
+        fallback: {
+          command: 'signal:cleanup',
+          args,
+          errorCode: ErrorCodes.SIGNAL_CLEANUP_ERROR,
+        },
+      },
     );
+
+    if (!execution.success) {
+      return execution;
+    }
+
+    return success(unwrapExecuteViaPackData(execution.data));
   },
 };
 
