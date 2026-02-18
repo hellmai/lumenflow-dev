@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1815 — Post-Phase-3 shell-out deprecation recertification and metric closure](wu/WU-1815.yaml) — Framework: Core Lifecycle
 - [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml) — Framework: Core Lifecycle
 - [WU-1813 — Remove fallback paths and eliminate runCliCommand from MCP tool layer](wu/WU-1813.yaml) — Framework: Core Lifecycle
 - [WU-1812 — Migrate agent, setup, plan, docs, and sync tools to runtime pack execution](wu/WU-1812.yaml) — Framework: Core Lifecycle
