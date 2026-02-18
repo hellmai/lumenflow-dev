@@ -2,7 +2,7 @@ id: WU-1861
 title: 'INIT-030 Review Fix C: governance and type safety tightening'
 lane: 'Framework: MCP'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -46,3 +46,11 @@ acceptance:
   - Governance test auto-discovers new tool files
   - Shell-out budget counts call sites across full MCP src
   - All kernel and MCP tests pass
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1861
+claimed_at: 2026-02-18T22:35:49.704Z
+baseline_main_sha: bb7dea9c5d1ac588052042bba8e436d510e8f479
+session_id: 624ebc86-39cd-41e3-9426-f65b61704a11
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T22:35:49.708Z

@@ -6,6 +6,7 @@ _Last updated: 2026-02-18_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1862 — Evidence store durability: JSONL compaction and incremental replay](wu/WU-1862.yaml)
+- [WU-1861 — INIT-030 Review Fix C: governance and type safety tightening](wu/WU-1861.yaml)
 
 ## Completed
 
