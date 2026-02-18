@@ -31,6 +31,13 @@ success_metrics:
   - Runtime adoption proceeds in old production packages via strangler-fig migration
   - MCP shell-out call sites in `packages/@lumenflow/mcp/src/tools/*.ts` remain non-increasing from
     baseline 100 and ratchet to timeline checkpoints in the INIT-030 roadmap artifact
+  - All kernel policy denials are fail-closed — no CLI fallback bypass (WU-1859)
+  - Evidence store handles crash recovery with no lock leaks, clock skew, or partial writes (WU-1860)
+  - JSONL trace compaction and O(1) incremental replay at scale (WU-1862)
+  - ToolHost construction requires explicit policy — no silent privilege escalation (WU-1863)
+  - Scope intersection glob heuristic verified by property-based fuzz tests against micromatch
+    oracle (WU-1864)
+  - Zero dead code in kernel packages, single source of truth for state machine (WU-1865)
 labels: []
 wus:
   - WU-1784
