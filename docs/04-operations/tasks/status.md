@@ -7,6 +7,7 @@ _Last updated: 2026-02-18_
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml)
 - [WU-1822 — Build workspace connection flow with runtime initialization](wu/WU-1822.yaml)
+- [WU-1825 — Create pack:hash CLI command for integrity hash computation](wu/WU-1825.yaml)
 
 ## Completed
 

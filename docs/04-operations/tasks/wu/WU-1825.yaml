@@ -2,7 +2,7 @@ id: WU-1825
 title: Create pack:hash CLI command for integrity hash computation
 lane: 'Framework: CLI Orchestration'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -32,8 +32,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: pnpm pack:hash --id my-pack outputs sha256:hex ready for copy-paste into workspace.yaml PackPin. Uses existing computeDeterministicPackHash from kernel.
+description: pnpm pack:hash --id my-pack outputs sha256:hex ready for copy-paste into workspace.yaml
+  PackPin. Uses existing computeDeterministicPackHash from kernel.
 acceptance:
   - Outputs sha256:hex string for pack
   - Hash matches computeDeterministicPackHash output
   - Exits with error for invalid pack-id
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1825
+claimed_at: 2026-02-18T21:04:35.227Z
+baseline_main_sha: 6ddcf3124f3f0484049e4c32a5b5c8c483ac21b9
+session_id: 3807b695-7b2d-49da-9db9-565987b1b531
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T21:04:35.231Z
