@@ -4,7 +4,7 @@ Created: 2026-02-18
 
 ## Goal
 
-<!-- What is the primary objective? -->
+Make LumenFlow visible and exciting. Build user-facing surfaces on top of the kernel runtime (INIT-029) and runtime adoption (INIT-030) so two personas can interact with LumenFlow: (1) software devs using the software delivery pack who want to watch agents work and trust the automation, (2) pack authors and consumers who want to teach their AI new domains by adding packs. Capture displaced OpenClaw community with governance-first alternative.
 
 ## Scope
 
