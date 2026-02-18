@@ -13,10 +13,7 @@
  */
 
 import { resolve } from 'node:path';
-import {
-  computeDeterministicPackHash,
-  SHA256_INTEGRITY_PREFIX,
-} from '@lumenflow/kernel';
+import { computeDeterministicPackHash, SHA256_INTEGRITY_PREFIX } from '@lumenflow/kernel';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core';
 import { runCLI } from './cli-entry-point.js';
 
