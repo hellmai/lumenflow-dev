@@ -3,7 +3,7 @@ title: 'INIT-030 Review Fix G: evidence store multi-instance replay correctness 
   propagation'
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -41,3 +41,11 @@ acceptance:
   - withFileLock preserves and rethrows non-EEXIST operation errors (does not mask as lock
     acquisition failure)
   - Regression tests cover multi-instance compaction replay and non-lock I/O error propagation
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1879
+claimed_at: 2026-02-18T23:20:45.475Z
+baseline_main_sha: a0dc295a68688747fe6b16cab90eca1baa70f1d0
+session_id: feb6b4e3-57bb-43e2-bda5-c5c36c051d7a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T23:20:45.479Z
