@@ -2,7 +2,7 @@ id: WU-1858
 title: Fix ag-ui-adapter typecheck error from tool_call_finished type conflict
 lane: 'Content: Site Comms'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -25,6 +25,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The ag-ui-adapter.ts has a TypeScript type conflict at line 198 where tool_call_finished intersection type reduces to never due to conflicting kind discriminants. Introduced by WU-1826/WU-1830 merge.
+description: The ag-ui-adapter.ts has a TypeScript type conflict at line 198 where
+  tool_call_finished intersection type reduces to never due to conflicting kind discriminants.
+  Introduced by WU-1826/WU-1830 merge.
 acceptance:
   - pnpm --filter @lumenflow/web typecheck passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1858
+claimed_at: 2026-02-18T21:43:34.509Z
+baseline_main_sha: 1827516816f4b67b2016d948ee3f862a4d2c38b9
+session_id: 1d0e5ddc-3f7b-4e4f-b6bc-d8ae051f1e66
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T21:43:34.514Z
