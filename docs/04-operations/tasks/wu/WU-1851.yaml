@@ -2,7 +2,7 @@ id: WU-1851
 title: Centralize MCP surface CLI command/flag/metadata-key governance with guardrail ratchet
 lane: 'Framework: MCP'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -71,3 +71,11 @@ acceptance:
     implementation modules.
   - Existing MCP behavior/output parity remains unchanged for touched tools.
   - pnpm gates passes.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1851
+claimed_at: 2026-02-18T11:53:48.883Z
+baseline_main_sha: 7963fcdf9dbe85b112bb5b298034cf59a89c3252
+session_id: c0fc26b8-6ca6-440d-b4df-5fece916268d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T11:53:48.890Z
