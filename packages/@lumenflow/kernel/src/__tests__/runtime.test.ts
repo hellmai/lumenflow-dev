@@ -890,9 +890,7 @@ describe('kernel runtime facade', () => {
 
     // Inspect task A -- should only see task A's receipts
     const inspectionA = await runtime.inspectTask(taskSpecA.id);
-    const startedA = inspectionA.receipts.filter(
-      (trace) => trace.kind === TOOL_CALL_STARTED_KIND,
-    );
+    const startedA = inspectionA.receipts.filter((trace) => trace.kind === TOOL_CALL_STARTED_KIND);
     const finishedA = inspectionA.receipts.filter(
       (trace) => trace.kind === TOOL_CALL_FINISHED_KIND,
     );
@@ -917,9 +915,7 @@ describe('kernel runtime facade', () => {
 
     // Inspect task B -- should only see task B's receipts
     const inspectionB = await runtime.inspectTask(taskSpecB.id);
-    const startedB = inspectionB.receipts.filter(
-      (trace) => trace.kind === TOOL_CALL_STARTED_KIND,
-    );
+    const startedB = inspectionB.receipts.filter((trace) => trace.kind === TOOL_CALL_STARTED_KIND);
     const finishedB = inspectionB.receipts.filter(
       (trace) => trace.kind === TOOL_CALL_FINISHED_KIND,
     );
