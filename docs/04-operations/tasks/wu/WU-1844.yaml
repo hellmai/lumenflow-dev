@@ -2,7 +2,7 @@ id: WU-1844
 title: Consolidate MCP runtime caches and create tool definition factory
 lane: 'Framework: MCP'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -27,9 +27,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: INIT-030 code review found two independent runtime caches in the MCP package (runtimeCacheByRoot in runtime-task-tools.ts and runtimeCacheByWorkspaceRoot in tools-shared.ts). Both implement identical normalize-check-create-cache-delete-on-fail logic but hold separate Map instances, risking divergent runtime instances for the same workspace root. Additionally, all 7 tool definitions in runtime-task-tools.ts follow an identical pattern with the workspaceRoot line appearing 7 times verbatim.
+description: INIT-030 code review found two independent runtime caches in the MCP package
+  (runtimeCacheByRoot in runtime-task-tools.ts and runtimeCacheByWorkspaceRoot in tools-shared.ts).
+  Both implement identical normalize-check-create-cache-delete-on-fail logic but hold separate Map
+  instances, risking divergent runtime instances for the same workspace root. Additionally, all 7
+  tool definitions in runtime-task-tools.ts follow an identical pattern with the workspaceRoot line
+  appearing 7 times verbatim.
 acceptance:
   - Single shared runtime cache module used by both runtime-task-tools.ts and tools-shared.ts
-  - createRuntimeTool factory function eliminates boilerplate — 7 tool definitions reduced to config objects
+  - createRuntimeTool factory function eliminates boilerplate — 7 tool definitions reduced to config
+    objects
   - Existing runtime-task-tools.test.ts and runtime-tool-resolver.test.ts still pass
   - No duplicate cache instances for same workspace root
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1844
+claimed_at: 2026-02-18T13:54:53.200Z
+baseline_main_sha: b790083cd44095f642fde2f4111d03412179d614
+session_id: d884e605-de25-4fee-8602-45081ea4b84d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T13:54:53.207Z

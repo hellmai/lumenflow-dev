@@ -64,7 +64,6 @@ sections:
 - [WU-1840 — Build pack marketplace page with browse, search, and install flow](wu/WU-1840.yaml) — Content: Site Comms
 - [WU-1841 — Wire HTTP surface to push kernel events to control plane](wu/WU-1841.yaml) — Framework: Core Lifecycle
 - [WU-1842 — Create community landing page with get-started path and marketplace links](wu/WU-1842.yaml) — Content: Site Comms
-- [WU-1844 — Consolidate MCP runtime caches and create tool definition factory](wu/WU-1844.yaml) — Framework: MCP
 - [WU-1845 — Extract shared git-runner module in software-delivery pack](wu/WU-1845.yaml) — Framework: Core Lifecycle
 - [WU-1846 — Generate manifest tool declarations from compact config instead of 550-line boilerplate](wu/WU-1846.yaml) — Framework: Core Lifecycle
 - [WU-1847 — Decompose tool-host execute method and extract denial trace helper](wu/WU-1847.yaml) — Framework: Core Lifecycle
@@ -73,6 +72,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1844 — Consolidate MCP runtime caches and create tool definition factory](wu/WU-1844.yaml) — Framework: MCP
 
 ## ⛔ Blocked
 
