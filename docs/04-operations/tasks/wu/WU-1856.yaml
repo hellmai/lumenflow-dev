@@ -2,7 +2,7 @@ id: WU-1856
 title: 'Tighten WU-1802 handler code: eliminate over-abstraction and fix bugs'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -48,3 +48,6 @@ session_id: f49aec0d-442e-4a72-8615-0d88646f892f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T17:02:13.977Z
+locked: true
+completed_at: 2026-02-18T17:14:10.087Z
+completed: 2026-02-18
