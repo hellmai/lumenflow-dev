@@ -945,6 +945,14 @@ export class DefaultKernelRuntime implements KernelRuntime {
   }
 
   private async readReceiptsForTask(taskId: string): Promise<ToolTraceEntry[]> {
+    const indexed = await this.evidenceStore.readTracesByTaskId(taskId);
+    if (indexed.length > 0) {
+      return indexed;
+    }
+
+    // After pruneTask (called during completeTask), the in-memory index is
+    // cleared but traces remain in orderedTraces.  Fall back to a full scan
+    // so inspectTask still returns receipts for completed tasks.
     const traces = await this.evidenceStore.readTraces();
     const receiptIds = new Set<string>();
 

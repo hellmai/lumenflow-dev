@@ -849,4 +849,90 @@ describe('kernel runtime facade', () => {
     // All 1000 IDs should be unique
     expect(ids.size).toBe(1000);
   });
+
+  it('inspectTask returns correct receipts when multiple tasks exist', async () => {
+    const runtime = await createRuntime();
+
+    // Create two tasks
+    const taskSpecA = createTaskSpec('WU-1868-task-a');
+    const taskSpecB = createTaskSpec('WU-1868-task-b');
+    await runtime.createTask(taskSpecA);
+    await runtime.createTask(taskSpecB);
+
+    // Claim both tasks
+    const claimA = await runtime.claimTask({
+      task_id: taskSpecA.id,
+      by: 'tom@hellm.ai',
+      session_id: 'session-1868-a',
+    });
+    const claimB = await runtime.claimTask({
+      task_id: taskSpecB.id,
+      by: 'tom@hellm.ai',
+      session_id: 'session-1868-b',
+    });
+
+    // Execute tool calls against both tasks
+    await runtime.executeTool(
+      PACK_ECHO_TOOL_NAME,
+      { message: 'task-a-call-1' },
+      createExecutionContext(taskSpecA.id, claimA.run.run_id, workspaceConfigHash),
+    );
+    await runtime.executeTool(
+      PACK_ECHO_TOOL_NAME,
+      { message: 'task-b-call-1' },
+      createExecutionContext(taskSpecB.id, claimB.run.run_id, workspaceConfigHash),
+    );
+    await runtime.executeTool(
+      PACK_ECHO_TOOL_NAME,
+      { message: 'task-a-call-2' },
+      createExecutionContext(taskSpecA.id, claimA.run.run_id, workspaceConfigHash),
+    );
+
+    // Inspect task A -- should only see task A's receipts
+    const inspectionA = await runtime.inspectTask(taskSpecA.id);
+    const startedA = inspectionA.receipts.filter(
+      (trace) => trace.kind === TOOL_CALL_STARTED_KIND,
+    );
+    const finishedA = inspectionA.receipts.filter(
+      (trace) => trace.kind === TOOL_CALL_FINISHED_KIND,
+    );
+
+    // Task A had 2 tool calls: should have 2 started + 2 finished = 4 receipts
+    expect(startedA).toHaveLength(2);
+    expect(finishedA).toHaveLength(2);
+    expect(inspectionA.receipts).toHaveLength(4);
+
+    // Verify all started receipts belong to task A
+    for (const trace of startedA) {
+      if (trace.kind === TOOL_CALL_STARTED_KIND) {
+        expect(trace.task_id).toBe(taskSpecA.id);
+      }
+    }
+
+    // Verify finished receipts are paired with task A's started receipts
+    const startedReceiptIdsA = new Set(startedA.map((trace) => trace.receipt_id));
+    for (const trace of finishedA) {
+      expect(startedReceiptIdsA.has(trace.receipt_id)).toBe(true);
+    }
+
+    // Inspect task B -- should only see task B's receipts
+    const inspectionB = await runtime.inspectTask(taskSpecB.id);
+    const startedB = inspectionB.receipts.filter(
+      (trace) => trace.kind === TOOL_CALL_STARTED_KIND,
+    );
+    const finishedB = inspectionB.receipts.filter(
+      (trace) => trace.kind === TOOL_CALL_FINISHED_KIND,
+    );
+
+    // Task B had 1 tool call: should have 1 started + 1 finished = 2 receipts
+    expect(startedB).toHaveLength(1);
+    expect(finishedB).toHaveLength(1);
+    expect(inspectionB.receipts).toHaveLength(2);
+
+    // Verify task B's receipts don't overlap with task A's
+    const allReceiptIdsA = new Set(inspectionA.receipts.map((trace) => trace.receipt_id));
+    for (const trace of inspectionB.receipts) {
+      expect(allReceiptIdsA.has(trace.receipt_id)).toBe(false);
+    }
+  });
 });
