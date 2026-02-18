@@ -56,6 +56,20 @@ const IN_PROCESS_TOOL_NAMES = {
   INITIATIVE_PLAN: CliCommands.INITIATIVE_PLAN,
   INIT_PLAN: CliCommands.INIT_PLAN,
   ORCHESTRATE_INITIATIVE: CliCommands.ORCHESTRATE_INITIATIVE,
+  MEM_INIT: CliCommands.MEM_INIT,
+  MEM_START: CliCommands.MEM_START,
+  MEM_READY: CliCommands.MEM_READY,
+  MEM_CHECKPOINT: CliCommands.MEM_CHECKPOINT,
+  MEM_CLEANUP: CliCommands.MEM_CLEANUP,
+  MEM_CONTEXT: CliCommands.MEM_CONTEXT,
+  MEM_CREATE: CliCommands.MEM_CREATE,
+  MEM_DELETE: CliCommands.MEM_DELETE,
+  MEM_EXPORT: CliCommands.MEM_EXPORT,
+  MEM_INBOX: CliCommands.MEM_INBOX,
+  MEM_SIGNAL: CliCommands.MEM_SIGNAL,
+  MEM_SUMMARIZE: CliCommands.MEM_SUMMARIZE,
+  MEM_TRIAGE: CliCommands.MEM_TRIAGE,
+  MEM_RECOVER: CliCommands.MEM_RECOVER,
   WU_BLOCK: CliCommands.WU_BLOCK,
   WU_UNBLOCK: CliCommands.WU_UNBLOCK,
   WU_EDIT: CliCommands.WU_EDIT,
@@ -105,6 +119,20 @@ const IN_PROCESS_TOOL_DESCRIPTIONS = {
   INIT_PLAN: 'Run init:plan alias via runtime-first handler with CLI fallback',
   ORCHESTRATE_INITIATIVE:
     'Run initiative orchestration via runtime-first handler with CLI fallback',
+  MEM_INIT: 'Initialize memory via runtime-first handler with CLI fallback',
+  MEM_START: 'Start memory session via runtime-first handler with CLI fallback',
+  MEM_READY: 'Check memory readiness via runtime-first handler with CLI fallback',
+  MEM_CHECKPOINT: 'Create memory checkpoint via runtime-first handler with CLI fallback',
+  MEM_CLEANUP: 'Cleanup memory data via runtime-first handler with CLI fallback',
+  MEM_CONTEXT: 'Fetch memory context via runtime-first handler with CLI fallback',
+  MEM_CREATE: 'Create memory node via runtime-first handler with CLI fallback',
+  MEM_DELETE: 'Delete memory node via runtime-first handler with CLI fallback',
+  MEM_EXPORT: 'Export memory snapshot via runtime-first handler with CLI fallback',
+  MEM_INBOX: 'List memory coordination signals via runtime-first handler with CLI fallback',
+  MEM_SIGNAL: 'Broadcast memory coordination signal via runtime-first handler with CLI fallback',
+  MEM_SUMMARIZE: 'Summarize memory context via runtime-first handler with CLI fallback',
+  MEM_TRIAGE: 'Triage memory discoveries via runtime-first handler with CLI fallback',
+  MEM_RECOVER: 'Recover memory context via runtime-first handler with CLI fallback',
   WU_BLOCK: 'Block WU via in-process core state transition handler',
   WU_UNBLOCK: 'Unblock WU via in-process core state transition handler',
   WU_EDIT: 'Edit WU spec fields via in-process core filesystem handler',
@@ -2164,6 +2192,20 @@ const VALIDATION_TOOL_ERROR_CODES = {
   INITIATIVE_PLAN_ERROR: 'INITIATIVE_PLAN_ERROR',
   INIT_PLAN_ERROR: 'INIT_PLAN_ERROR',
   ORCHESTRATE_INITIATIVE_ERROR: 'ORCHESTRATE_INITIATIVE_ERROR',
+  MEM_INIT_ERROR: 'MEM_INIT_ERROR',
+  MEM_START_ERROR: 'MEM_START_ERROR',
+  MEM_READY_ERROR: 'MEM_READY_ERROR',
+  MEM_CHECKPOINT_ERROR: 'MEM_CHECKPOINT_ERROR',
+  MEM_CLEANUP_ERROR: 'MEM_CLEANUP_ERROR',
+  MEM_CONTEXT_ERROR: 'MEM_CONTEXT_ERROR',
+  MEM_CREATE_ERROR: 'MEM_CREATE_ERROR',
+  MEM_DELETE_ERROR: 'MEM_DELETE_ERROR',
+  MEM_EXPORT_ERROR: 'MEM_EXPORT_ERROR',
+  MEM_INBOX_ERROR: 'MEM_INBOX_ERROR',
+  MEM_SIGNAL_ERROR: 'MEM_SIGNAL_ERROR',
+  MEM_SUMMARIZE_ERROR: 'MEM_SUMMARIZE_ERROR',
+  MEM_TRIAGE_ERROR: 'MEM_TRIAGE_ERROR',
+  MEM_RECOVER_ERROR: 'MEM_RECOVER_ERROR',
   WU_BLOCK_ERROR: 'WU_BLOCK_ERROR',
   WU_UNBLOCK_ERROR: 'WU_UNBLOCK_ERROR',
   WU_EDIT_ERROR: 'WU_EDIT_ERROR',
@@ -2802,6 +2844,90 @@ const initPlanInProcess: InProcessToolFn = async () =>
 const orchestrateInitiativeInProcess: InProcessToolFn = async () =>
   createFailureOutput(
     VALIDATION_TOOL_ERROR_CODES.ORCHESTRATE_INITIATIVE_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memInitInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_INIT_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memStartInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_START_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memReadyInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_READY_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memCheckpointInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_CHECKPOINT_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memCleanupInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_CLEANUP_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memContextInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_CONTEXT_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memCreateInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_CREATE_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memDeleteInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_DELETE_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memExportInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_EXPORT_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memInboxInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_INBOX_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memSignalInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_SIGNAL_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memSummarizeInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_SUMMARIZE_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memTriageInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_TRIAGE_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const memRecoverInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.MEM_RECOVER_ERROR,
     WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
   );
 
@@ -3444,6 +3570,118 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       description: IN_PROCESS_TOOL_DESCRIPTIONS.ORCHESTRATE_INITIATIVE,
       inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
       fn: orchestrateInitiativeInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_INIT,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_INIT,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memInitInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_START,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_START,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memStartInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_READY,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_READY,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memReadyInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_CHECKPOINT,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_CHECKPOINT,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memCheckpointInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_CLEANUP,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_CLEANUP,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memCleanupInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_CONTEXT,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_CONTEXT,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memContextInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_CREATE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_CREATE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memCreateInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_DELETE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_DELETE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memDeleteInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_EXPORT,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_EXPORT,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memExportInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_INBOX,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_INBOX,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memInboxInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_SIGNAL,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_SIGNAL,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memSignalInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_SUMMARIZE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_SUMMARIZE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memSummarizeInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_TRIAGE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_TRIAGE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memTriageInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.MEM_RECOVER,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.MEM_RECOVER,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: memRecoverInProcess,
     },
   ],
   [

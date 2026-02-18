@@ -84,6 +84,22 @@ const INITIATIVE_ORCHESTRATION_TOOL_NAMES = {
   INIT_PLAN: 'init:plan',
   ORCHESTRATE_INITIATIVE: 'orchestrate:initiative',
 } as const;
+const MEMORY_TOOL_NAMES = {
+  INIT: 'mem:init',
+  START: 'mem:start',
+  READY: 'mem:ready',
+  CHECKPOINT: 'mem:checkpoint',
+  CLEANUP: 'mem:cleanup',
+  CONTEXT: 'mem:context',
+  CREATE: 'mem:create',
+  DELETE: 'mem:delete',
+  EXPORT: 'mem:export',
+  INBOX: 'mem:inbox',
+  SIGNAL: 'mem:signal',
+  SUMMARIZE: 'mem:summarize',
+  TRIAGE: 'mem:triage',
+  RECOVER: 'mem:recover',
+} as const;
 
 function createResolverInput(toolName: string): RuntimeToolCapabilityResolverInput {
   return {
@@ -301,6 +317,31 @@ describe('packToolCapabilityResolver', () => {
       INITIATIVE_ORCHESTRATION_TOOL_NAMES.PLAN,
       INITIATIVE_ORCHESTRATION_TOOL_NAMES.INIT_PLAN,
       INITIATIVE_ORCHESTRATION_TOOL_NAMES.ORCHESTRATE_INITIATIVE,
+    ];
+
+    for (const toolName of toolNames) {
+      const capability = await packToolCapabilityResolver(createResolverInput(toolName));
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+      expect(isInProcessPackToolRegistered(toolName)).toBe(true);
+    }
+  });
+
+  it('resolves memory lifecycle tools to in-process handlers', async () => {
+    const toolNames = [
+      MEMORY_TOOL_NAMES.INIT,
+      MEMORY_TOOL_NAMES.START,
+      MEMORY_TOOL_NAMES.READY,
+      MEMORY_TOOL_NAMES.CHECKPOINT,
+      MEMORY_TOOL_NAMES.CLEANUP,
+      MEMORY_TOOL_NAMES.CONTEXT,
+      MEMORY_TOOL_NAMES.CREATE,
+      MEMORY_TOOL_NAMES.DELETE,
+      MEMORY_TOOL_NAMES.EXPORT,
+      MEMORY_TOOL_NAMES.INBOX,
+      MEMORY_TOOL_NAMES.SIGNAL,
+      MEMORY_TOOL_NAMES.SUMMARIZE,
+      MEMORY_TOOL_NAMES.TRIAGE,
+      MEMORY_TOOL_NAMES.RECOVER,
     ];
 
     for (const toolName of toolNames) {
@@ -1181,6 +1222,191 @@ describe('WU-1810: initiative/orchestration lifecycle uses runtime path end-to-e
       const result = await executeViaPack(lifecycleCall.toolName, lifecycleCall.input, {
         projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
         context: buildExecutionContext({ taskId: 'WU-1810' }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: lifecycleCall.fallback,
+      });
+
+      expect(result.success).toBe(true);
+    }
+
+    expect(runtimeFactory).toHaveBeenCalledTimes(lifecycleCalls.length);
+    expect(runtimeExecuteTool).toHaveBeenCalledTimes(lifecycleCalls.length);
+    expect(cliRunner).not.toHaveBeenCalled();
+  });
+});
+
+describe('WU-1811: memory lifecycle uses runtime path end-to-end', () => {
+  beforeEach(() => {
+    resetExecuteViaPackRuntimeCache();
+  });
+
+  it('runs mem_* tools via runtime without CLI fallback', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { message: 'runtime-success' },
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const lifecycleCalls = [
+      {
+        toolName: 'mem:init',
+        input: { wu: 'WU-1811' },
+        fallback: {
+          command: 'mem:init',
+          args: ['--wu', 'WU-1811'],
+          errorCode: 'MEM_INIT_ERROR',
+        },
+      },
+      {
+        toolName: 'mem:start',
+        input: { wu: 'WU-1811', lane: 'Framework: Core Lifecycle' },
+        fallback: {
+          command: 'mem:start',
+          args: ['--wu', 'WU-1811', '--lane', 'Framework: Core Lifecycle'],
+          errorCode: 'MEM_START_ERROR',
+        },
+      },
+      {
+        toolName: 'mem:ready',
+        input: { wu: 'WU-1811' },
+        fallback: {
+          command: 'mem:ready',
+          args: ['--wu', 'WU-1811'],
+          errorCode: 'MEM_READY_ERROR',
+        },
+      },
+      {
+        toolName: 'mem:checkpoint',
+        input: { wu: 'WU-1811', message: 'Checkpoint before gates' },
+        fallback: {
+          command: 'mem:checkpoint',
+          args: ['--wu', 'WU-1811', '--message', 'Checkpoint before gates'],
+          errorCode: 'MEM_CHECKPOINT_ERROR',
+        },
+      },
+      {
+        toolName: 'mem:cleanup',
+        input: { dry_run: true },
+        fallback: {
+          command: 'mem:cleanup',
+          args: ['--dry-run'],
+          errorCode: 'MEM_CLEANUP_ERROR',
+        },
+      },
+      {
+        toolName: 'mem:context',
+        input: { wu: 'WU-1811', lane: 'Framework: Core Lifecycle' },
+        fallback: {
+          command: 'mem:context',
+          args: ['--wu', 'WU-1811', '--lane', 'Framework: Core Lifecycle'],
+          errorCode: 'MEM_CONTEXT_ERROR',
+        },
+      },
+      {
+        toolName: 'mem:create',
+        input: {
+          message: 'Bug: parser drift',
+          wu: 'WU-1811',
+          type: 'discovery',
+          tags: ['bug', 'scope-creep'],
+        },
+        fallback: {
+          command: 'mem:create',
+          args: [
+            'Bug: parser drift',
+            '--wu',
+            'WU-1811',
+            '--type',
+            'discovery',
+            '--tags',
+            'bug,scope-creep',
+          ],
+          errorCode: 'MEM_CREATE_ERROR',
+        },
+      },
+      {
+        toolName: 'mem:delete',
+        input: { id: 'mem-123' },
+        fallback: {
+          command: 'mem:delete',
+          args: ['--id', 'mem-123'],
+          errorCode: 'MEM_DELETE_ERROR',
+        },
+      },
+      {
+        toolName: 'mem:export',
+        input: { wu: 'WU-1811', format: 'json' },
+        fallback: {
+          command: 'mem:export',
+          args: ['--wu', 'WU-1811', '--format', 'json'],
+          errorCode: 'MEM_EXPORT_ERROR',
+        },
+      },
+      {
+        toolName: 'mem:inbox',
+        input: { since: '30m', wu: 'WU-1811', lane: 'Framework: Core Lifecycle' },
+        fallback: {
+          command: 'mem:inbox',
+          args: ['--since', '30m', '--wu', 'WU-1811', '--lane', 'Framework: Core Lifecycle'],
+          errorCode: 'MEM_INBOX_ERROR',
+        },
+      },
+      {
+        toolName: 'mem:signal',
+        input: { message: 'AC complete', wu: 'WU-1811' },
+        fallback: {
+          command: 'mem:signal',
+          args: ['AC complete', '--wu', 'WU-1811'],
+          errorCode: 'MEM_SIGNAL_ERROR',
+        },
+      },
+      {
+        toolName: 'mem:summarize',
+        input: { wu: 'WU-1811' },
+        fallback: {
+          command: 'mem:summarize',
+          args: ['--wu', 'WU-1811'],
+          errorCode: 'MEM_SUMMARIZE_ERROR',
+        },
+      },
+      {
+        toolName: 'mem:triage',
+        input: { wu: 'WU-1811', promote: 'mem-123', lane: 'Framework: Core Lifecycle' },
+        fallback: {
+          command: 'mem:triage',
+          args: ['--wu', 'WU-1811', '--promote', 'mem-123', '--lane', 'Framework: Core Lifecycle'],
+          errorCode: 'MEM_TRIAGE_ERROR',
+        },
+      },
+      {
+        toolName: 'mem:recover',
+        input: { wu: 'WU-1811', max_size: 1024, format: 'json', quiet: true, base_dir: '/tmp' },
+        fallback: {
+          command: 'mem:recover',
+          args: [
+            '--wu',
+            'WU-1811',
+            '--max-size',
+            '1024',
+            '--format',
+            'json',
+            '--quiet',
+            '--base-dir',
+            '/tmp',
+          ],
+          errorCode: 'MEM_RECOVER_ERROR',
+        },
+      },
+    ] as const;
+
+    for (const lifecycleCall of lifecycleCalls) {
+      const result = await executeViaPack(lifecycleCall.toolName, lifecycleCall.input, {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({ taskId: 'WU-1811' }),
         runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
         cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
         fallback: lifecycleCall.fallback,
