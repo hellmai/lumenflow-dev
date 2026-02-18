@@ -2,7 +2,7 @@ id: WU-1829
 title: Add pack catalog page to web dashboard with tool and policy visualization
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -25,8 +25,8 @@ spec_refs:
   - .claude/plans/zazzy-growing-cook.md
 risks: []
 notes: Added /packs page with PackCatalog component showing loaded packs with manifest metadata,
-  tool scope/permission badges, policy display, integrity hash, source type, and trace links to
-  task dashboard. 18 tests covering all 4 acceptance criteria. Pre-existing typecheck failure in
+  tool scope/permission badges, policy display, integrity hash, source type, and trace links to task
+  dashboard. 18 tests covering all 4 acceptance criteria. Pre-existing typecheck failure in
   ag-ui-adapter.ts (unrelated to this WU).
 requires_review: false
 assigned_to: tom@hellm.ai
@@ -52,3 +52,6 @@ session_id: 6df8aa7f-34e5-4edd-b002-7cb8b0f932bd
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T21:19:48.390Z
+locked: true
+completed_at: 2026-02-18T21:26:06.675Z
+completed: 2026-02-18

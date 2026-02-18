@@ -38,7 +38,6 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1827 — Create pack:install CLI command for adding packs to workspace](wu/WU-1827.yaml) — Framework: CLI Orchestration
-- [WU-1829 — Add pack catalog page to web dashboard with tool and policy visualization](wu/WU-1829.yaml) — Content: Site Comms
 - [WU-1815 — Post-Phase-3 shell-out deprecation recertification and metric closure](wu/WU-1815.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
@@ -821,6 +820,7 @@ sections:
 - [WU-1822 — Build workspace connection flow with runtime initialization](wu/WU-1822.yaml)
 - [WU-1841 — Wire HTTP surface to push kernel events to control plane](wu/WU-1841.yaml)
 - [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml)
+- [WU-1829 — Add pack catalog page to web dashboard with tool and policy visualization](wu/WU-1829.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
