@@ -50,7 +50,7 @@ export class VercelBlobPackRegistryStore implements PackRegistryStore {
       return { packs: [] };
     }
 
-    const blob = listing.blobs[0];
+    const blob = listing.blobs[0]!;
     const response = await fetch(blob.url);
     const text = await response.text();
 
@@ -103,7 +103,7 @@ export class VercelBlobPackRegistryStore implements PackRegistryStore {
     let updatedPack: PackRegistryEntry;
 
     if (existingIndex >= 0) {
-      const existing = index.packs[existingIndex];
+      const existing = index.packs[existingIndex]!;
       updatedPack = {
         ...existing,
         description,
@@ -147,7 +147,7 @@ export class VercelBlobPackBlobStore implements PackBlobStore {
   ): Promise<{ url: string; integrity: string }> {
     const path = `${PACKS_BLOB_PREFIX}${packId}/${version}${TARBALL_EXTENSION}`;
 
-    const blob = await put(path, data, {
+    const blob = await put(path, Buffer.from(data), {
       access: BLOB_ACCESS,
       addRandomSuffix: false,
     });

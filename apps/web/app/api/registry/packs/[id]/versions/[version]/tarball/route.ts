@@ -8,10 +8,10 @@
  * WU-1869: Vercel Blob-backed pack registry.
  */
 
-import { getRegistryStore } from '../../../../../../../src/server/pack-registry-config';
-import { createGetTarballRoute } from '../../../../../../../src/server/pack-registry-route-adapters';
-import type { RouteContext } from '../../../../../../../src/server/api-route-paths';
-import { resolveRouteParams } from '../../../../../../../src/server/api-route-paths';
+import { getRegistryStore } from '../../../../../../../../src/server/pack-registry-config';
+import { createGetTarballRoute } from '../../../../../../../../src/server/pack-registry-route-adapters';
+import type { RouteContext } from '../../../../../../../../src/server/api-route-paths';
+import { resolveRouteParams } from '../../../../../../../../src/server/api-route-paths';
 
 const getTarball = createGetTarballRoute({
   registryStore: getRegistryStore(),
