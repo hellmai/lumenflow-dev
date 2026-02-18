@@ -24,7 +24,7 @@ phases:
     status: in_progress
   - id: 4
     title: Pack Marketplace and Community
-    status: pending
+    status: in_progress
 success_metrics:
   - Web dashboard renders live task events within 2s of EventStore append
   - AG-UI RunAgent endpoint passes CopilotKit compatibility test
