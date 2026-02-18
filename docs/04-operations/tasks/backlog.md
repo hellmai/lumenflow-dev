@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1829 — Add pack catalog page to web dashboard with tool and policy visualization](wu/WU-1829.yaml) — Content: Site Comms
 - [WU-1828 — Write pack authoring guide: Create Your First Pack in 10 Minutes](wu/WU-1828.yaml) — Content: Specs Governance
 - [WU-1827 — Create pack:install CLI command for adding packs to workspace](wu/WU-1827.yaml) — Framework: CLI Orchestration
 - [WU-1826 — Extend PackLoader with git-based pack resolution](wu/WU-1826.yaml) — Framework: Core Lifecycle
