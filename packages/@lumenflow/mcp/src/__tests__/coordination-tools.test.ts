@@ -20,10 +20,16 @@ import {
   delegationListTool,
 } from '../tools.js';
 import * as cliRunner from '../cli-runner.js';
+import * as runtimeCache from '../runtime-cache.js';
 
 // Mock cli-runner for all operations
 vi.mock('../cli-runner.js', () => ({
   runCliCommand: vi.fn(),
+}));
+
+vi.mock('../runtime-cache.js', () => ({
+  getRuntimeForWorkspace: vi.fn(),
+  resetMcpRuntimeCache: vi.fn(),
 }));
 
 describe('Agent MCP tools (WU-1425)', () => {
@@ -334,6 +340,15 @@ describe('Agent MCP tools (WU-1425)', () => {
 
 describe('Orchestration MCP tools (WU-1425)', () => {
   const mockRunCliCommand = vi.mocked(cliRunner.runCliCommand);
+  const mockGetRuntimeForWorkspace = vi.mocked(runtimeCache.getRuntimeForWorkspace);
+
+  function mockRuntimeExecution(result: { success: boolean; data?: unknown; error?: { message: string } }) {
+    const executeTool = vi.fn().mockResolvedValue(result);
+    mockGetRuntimeForWorkspace.mockResolvedValue({
+      executeTool,
+    } as unknown as Awaited<ReturnType<typeof runtimeCache.getRuntimeForWorkspace>>);
+    return executeTool;
+  }
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -434,22 +449,21 @@ describe('Orchestration MCP tools (WU-1425)', () => {
   });
 
   describe('orchestrate_init_status', () => {
-    it('should show initiative status via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should show initiative status via runtime pack execution', async () => {
+      const executeTool = mockRuntimeExecution({
         success: true,
-        stdout: 'Initiative status displayed',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Initiative status displayed' },
       });
 
       const result = await orchestrateInitStatusTool.execute({ initiative: 'INIT-001' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(executeTool).toHaveBeenCalledWith(
         'orchestrate:init-status',
-        expect.arrayContaining(['--initiative', 'INIT-001']),
+        { initiative: 'INIT-001' },
         expect.any(Object),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require initiative parameter', async () => {
@@ -461,118 +475,67 @@ describe('Orchestration MCP tools (WU-1425)', () => {
   });
 
   describe('orchestrate_monitor', () => {
-    it('should run monitor via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should run monitor via runtime pack execution', async () => {
+      const executeTool = mockRuntimeExecution({
         success: true,
-        stdout: 'Monitor output',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Monitor output' },
       });
 
       const result = await orchestrateMonitorTool.execute({});
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(executeTool).toHaveBeenCalledWith(
         'orchestrate:monitor',
-        expect.any(Array),
+        {
+          threshold: undefined,
+          recover: undefined,
+          dry_run: undefined,
+          since: undefined,
+          wu: undefined,
+          signals_only: undefined,
+        },
         expect.any(Object),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
-    it('should support threshold option', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it.each([
+      [{ threshold: 15 }, { threshold: 15 }],
+      [{ recover: true }, { recover: true }],
+      [{ dry_run: true }, { dry_run: true }],
+      [{ since: '30m' }, { since: '30m' }],
+      [{ signals_only: true }, { signals_only: true }],
+      [{ wu: 'WU-1425' }, { wu: 'WU-1425' }],
+    ])('passes runtime input through for %o', async (toolInput, expectedPartialInput) => {
+      const executeTool = mockRuntimeExecution({
         success: true,
-        stdout: 'Monitor output',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Monitor output' },
       });
 
-      const result = await orchestrateMonitorTool.execute({ threshold: 15 });
+      const result = await orchestrateMonitorTool.execute(toolInput);
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(executeTool).toHaveBeenCalledWith(
         'orchestrate:monitor',
-        expect.arrayContaining(['--threshold', '15']),
+        expect.objectContaining(expectedPartialInput),
         expect.any(Object),
       );
-    });
-
-    it('should support recover flag', async () => {
-      mockRunCliCommand.mockResolvedValue({
-        success: true,
-        stdout: 'Recovery executed',
-        stderr: '',
-        exitCode: 0,
-      });
-
-      const result = await orchestrateMonitorTool.execute({ recover: true });
-
-      expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'orchestrate:monitor',
-        expect.arrayContaining(['--recover']),
-        expect.any(Object),
-      );
-    });
-
-    it('should support dry_run flag', async () => {
-      mockRunCliCommand.mockResolvedValue({
-        success: true,
-        stdout: 'Dry run output',
-        stderr: '',
-        exitCode: 0,
-      });
-
-      const result = await orchestrateMonitorTool.execute({ dry_run: true });
-
-      expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'orchestrate:monitor',
-        expect.arrayContaining(['--dry-run']),
-        expect.any(Object),
-      );
-    });
-
-    it('should support since option', async () => {
-      mockRunCliCommand.mockResolvedValue({
-        success: true,
-        stdout: 'Signals output',
-        stderr: '',
-        exitCode: 0,
-      });
-
-      const result = await orchestrateMonitorTool.execute({ since: '30m' });
-
-      expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'orchestrate:monitor',
-        expect.arrayContaining(['--since', '30m']),
-        expect.any(Object),
-      );
-    });
-
-    it('should support signals_only flag', async () => {
-      mockRunCliCommand.mockResolvedValue({
-        success: true,
-        stdout: 'Signals only output',
-        stderr: '',
-        exitCode: 0,
-      });
-
-      const result = await orchestrateMonitorTool.execute({ signals_only: true });
-
-      expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
-        'orchestrate:monitor',
-        expect.arrayContaining(['--signals-only']),
-        expect.any(Object),
-      );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
   });
 });
 
 describe('Delegation MCP tools (WU-1425)', () => {
   const mockRunCliCommand = vi.mocked(cliRunner.runCliCommand);
+  const mockGetRuntimeForWorkspace = vi.mocked(runtimeCache.getRuntimeForWorkspace);
+
+  function mockRuntimeExecution(result: { success: boolean; data?: unknown; error?: { message: string } }) {
+    const executeTool = vi.fn().mockResolvedValue(result);
+    mockGetRuntimeForWorkspace.mockResolvedValue({
+      executeTool,
+    } as unknown as Awaited<ReturnType<typeof runtimeCache.getRuntimeForWorkspace>>);
+    return executeTool;
+  }
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -583,40 +546,46 @@ describe('Delegation MCP tools (WU-1425)', () => {
   });
 
   describe('delegation_list', () => {
-    it('should list delegations for WU via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should list delegations for WU via runtime pack execution', async () => {
+      const executeTool = mockRuntimeExecution({
         success: true,
-        stdout: 'Spawn tree displayed',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Spawn tree displayed' },
       });
 
       const result = await delegationListTool.execute({ wu: 'WU-1425' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(executeTool).toHaveBeenCalledWith(
         'delegation:list',
-        expect.arrayContaining(['--wu', 'WU-1425']),
+        {
+          wu: 'WU-1425',
+          initiative: undefined,
+          json: undefined,
+        },
         expect.any(Object),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
-    it('should list delegations for initiative via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should list delegations for initiative via runtime pack execution', async () => {
+      const executeTool = mockRuntimeExecution({
         success: true,
-        stdout: 'Initiative spawns displayed',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Initiative spawns displayed' },
       });
 
       const result = await delegationListTool.execute({ initiative: 'INIT-001' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(executeTool).toHaveBeenCalledWith(
         'delegation:list',
-        expect.arrayContaining(['--initiative', 'INIT-001']),
+        {
+          wu: undefined,
+          initiative: 'INIT-001',
+          json: undefined,
+        },
         expect.any(Object),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require either wu or initiative parameter', async () => {
@@ -628,21 +597,25 @@ describe('Delegation MCP tools (WU-1425)', () => {
 
     it('should support json output', async () => {
       const mockDelegations = [{ id: 'dlg-1', targetWuId: 'WU-1426', status: 'pending' }];
-      mockRunCliCommand.mockResolvedValue({
+      const executeTool = mockRuntimeExecution({
         success: true,
-        stdout: JSON.stringify(mockDelegations),
-        stderr: '',
-        exitCode: 0,
+        data: mockDelegations,
       });
 
       const result = await delegationListTool.execute({ wu: 'WU-1425', json: true });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(result.data).toEqual(mockDelegations);
+      expect(executeTool).toHaveBeenCalledWith(
         'delegation:list',
-        expect.arrayContaining(['--wu', 'WU-1425', '--json']),
+        {
+          wu: 'WU-1425',
+          initiative: undefined,
+          json: true,
+        },
         expect.any(Object),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
   });
 });

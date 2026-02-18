@@ -45,6 +45,9 @@ const IN_PROCESS_TOOL_NAMES = {
   STATE_CLEANUP: CliCommands.STATE_CLEANUP,
   STATE_DOCTOR: CliCommands.STATE_DOCTOR,
   SIGNAL_CLEANUP: CliCommands.SIGNAL_CLEANUP,
+  ORCHESTRATE_INIT_STATUS: CliCommands.ORCHESTRATE_INIT_STATUS,
+  ORCHESTRATE_MONITOR: CliCommands.ORCHESTRATE_MONITOR,
+  DELEGATION_LIST: CliCommands.DELEGATION_LIST,
 } as const;
 
 const IN_PROCESS_TOOL_DESCRIPTIONS = {
@@ -58,7 +61,44 @@ const IN_PROCESS_TOOL_DESCRIPTIONS = {
   STATE_CLEANUP: 'Cleanup state/memory/signal files via in-process core handlers',
   STATE_DOCTOR: 'Diagnose state integrity via in-process core handlers',
   SIGNAL_CLEANUP: 'Cleanup stale signals via in-process memory handlers',
+  ORCHESTRATE_INIT_STATUS: 'Show initiative progress status via in-process handler',
+  ORCHESTRATE_MONITOR: 'Monitor delegation health via in-process core handlers',
+  DELEGATION_LIST: 'Display delegation trees via in-process core handlers',
 } as const;
+
+const ORCHESTRATION_TOOL_ERROR_CODES = {
+  INVALID_INPUT: 'INVALID_INPUT',
+  ORCHESTRATE_INIT_STATUS_ERROR: 'ORCHESTRATE_INIT_STATUS_ERROR',
+  ORCHESTRATE_MONITOR_ERROR: 'ORCHESTRATE_MONITOR_ERROR',
+  DELEGATION_LIST_ERROR: 'DELEGATION_LIST_ERROR',
+} as const;
+
+const ORCHESTRATE_MONITOR_DEFAULT_SINCE = '30m';
+const ORCHESTRATE_MONITOR_TIME_PATTERN = /^(\d+)\s*([smhd])$/i;
+const ORCHESTRATE_MONITOR_TIME_MULTIPLIERS = {
+  s: 1000,
+  m: 60_000,
+  h: 3_600_000,
+  d: 86_400_000,
+} as const;
+const INITIATIVE_FILE_SUFFIX = '.yaml';
+const STATUS_DONE = 'done';
+const STATUS_IN_PROGRESS = 'in_progress';
+const STATUS_BLOCKED = 'blocked';
+const STATUS_READY = 'ready';
+const STATUS_UNKNOWN = 'unknown';
+const LOCK_POLICY_ALL = 'all';
+const LOCK_POLICY_ACTIVE = 'active';
+const LOCK_POLICY_NONE = 'none';
+const DEFAULT_WIP_LIMIT = 1;
+const DELEGATION_LIST_LOG_PREFIX = '[delegation:list]';
+const INIT_STATUS_HEADER = 'Initiative:';
+const INIT_STATUS_PROGRESS_HEADER = 'Progress:';
+const INIT_STATUS_WUS_HEADER = 'WUs:';
+const INIT_STATUS_LANE_HEADER = 'Lane Availability:';
+const LANE_SECTION_KEYS = ['definitions', 'engineering', 'business'] as const;
+const DEFAULT_SIGNAL_TYPE = 'unknown';
+const WU_ID_PATTERN = /^WU-\d+$/;
 
 const FILE_TOOL_ERROR_CODES = {
   INVALID_INPUT: 'INVALID_INPUT',
@@ -161,6 +201,25 @@ const SIGNAL_CLEANUP_INPUT_SCHEMA = z.object({
   json: z.boolean().optional(),
   quiet: z.boolean().optional(),
   base_dir: z.string().optional(),
+});
+
+const ORCHESTRATE_INIT_STATUS_INPUT_SCHEMA = z.object({
+  initiative: z.string().min(1),
+});
+
+const ORCHESTRATE_MONITOR_INPUT_SCHEMA = z.object({
+  threshold: z.number().positive().optional(),
+  recover: z.boolean().optional(),
+  dry_run: z.boolean().optional(),
+  since: z.string().optional(),
+  wu: z.string().optional(),
+  signals_only: z.boolean().optional(),
+});
+
+const DELEGATION_LIST_INPUT_SCHEMA = z.object({
+  wu: z.string().optional(),
+  initiative: z.string().optional(),
+  json: z.boolean().optional(),
 });
 
 const FILE_READ_OUTPUT_SCHEMA = z.object({
@@ -468,6 +527,679 @@ const wuListHandler: InProcessToolFn = async (rawInput) => {
       success: false,
       error: { code: 'WU_LIST_ERROR', message: (err as Error).message },
     };
+  }
+};
+
+interface InitiativeDocLike {
+  id?: string;
+  slug?: string;
+  title?: string;
+  status?: unknown;
+  phases?: unknown;
+  wus?: unknown;
+}
+
+interface InitiativeStatusWUEntry {
+  id: string;
+  title: string;
+  lane: string;
+  status: string;
+}
+
+interface LanePolicyConfig {
+  lockPolicy: typeof LOCK_POLICY_ALL | typeof LOCK_POLICY_ACTIVE | typeof LOCK_POLICY_NONE;
+  wipLimit: number;
+}
+
+interface LaneAvailabilitySummary {
+  available: boolean;
+  policy: typeof LOCK_POLICY_ALL | typeof LOCK_POLICY_ACTIVE | typeof LOCK_POLICY_NONE;
+  occupied_by: string | null;
+  in_progress: number;
+  blocked: number;
+  wip_limit: number;
+}
+
+interface MonitorSignalRecord {
+  timestamp: string;
+  type: string;
+  wuId?: string;
+  message?: string;
+}
+
+interface DelegationRecordLike {
+  parentWuId?: unknown;
+  targetWuId?: unknown;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function normalizeToken(value: unknown): string {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+function normalizeLifecycleStatus(value: unknown): string {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+function hasIncompletePhase(phases: unknown): boolean {
+  if (!Array.isArray(phases) || phases.length === 0) {
+    return false;
+  }
+
+  return phases.some((phase) => {
+    if (!isRecord(phase)) {
+      return true;
+    }
+    return normalizeLifecycleStatus(phase.status) !== STATUS_DONE;
+  });
+}
+
+function deriveInitiativeLifecycleStatus(status: unknown, phases: unknown): string {
+  const normalizedStatus = normalizeLifecycleStatus(status);
+  if (normalizedStatus === STATUS_DONE && hasIncompletePhase(phases)) {
+    return STATUS_IN_PROGRESS;
+  }
+  return normalizedStatus || STATUS_IN_PROGRESS;
+}
+
+function extractInitiativeWuIds(wus: unknown): string[] {
+  if (!Array.isArray(wus)) {
+    return [];
+  }
+
+  const wuIds: string[] = [];
+  for (const entry of wus) {
+    if (typeof entry === 'string' && entry.trim().length > 0) {
+      wuIds.push(entry);
+      continue;
+    }
+    if (isRecord(entry) && typeof entry.id === 'string' && entry.id.trim().length > 0) {
+      wuIds.push(entry.id);
+    }
+  }
+  return wuIds;
+}
+
+function countProgress(entries: InitiativeStatusWUEntry[]): {
+  total: number;
+  done: number;
+  active: number;
+  pending: number;
+  blocked: number;
+  percentage: number;
+} {
+  const progress = {
+    total: entries.length,
+    done: 0,
+    active: 0,
+    pending: 0,
+    blocked: 0,
+    percentage: 0,
+  };
+
+  for (const wu of entries) {
+    if (wu.status === STATUS_DONE) {
+      progress.done += 1;
+    } else if (wu.status === STATUS_IN_PROGRESS) {
+      progress.active += 1;
+    } else if (wu.status === STATUS_BLOCKED) {
+      progress.blocked += 1;
+    } else {
+      progress.pending += 1;
+    }
+  }
+
+  progress.percentage = progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : 0;
+  return progress;
+}
+
+function collectLaneDefinitions(value: unknown, target: Record<string, unknown>[]): void {
+  if (!Array.isArray(value)) {
+    return;
+  }
+  for (const entry of value) {
+    if (isRecord(entry)) {
+      target.push(entry);
+    }
+  }
+}
+
+function resolveLanePolicyConfig(config: unknown): Record<string, LanePolicyConfig> {
+  const laneConfigMap: Record<string, LanePolicyConfig> = {};
+  if (!isRecord(config) || !isRecord(config.lanes)) {
+    return laneConfigMap;
+  }
+
+  const laneDefinitions: Record<string, unknown>[] = [];
+  if (Array.isArray(config.lanes)) {
+    collectLaneDefinitions(config.lanes, laneDefinitions);
+  } else {
+    for (const key of LANE_SECTION_KEYS) {
+      collectLaneDefinitions(config.lanes[key], laneDefinitions);
+    }
+  }
+
+  for (const laneDefinition of laneDefinitions) {
+    if (typeof laneDefinition.name !== 'string' || laneDefinition.name.trim().length === 0) {
+      continue;
+    }
+    const lockPolicy =
+      laneDefinition.lock_policy === LOCK_POLICY_ACTIVE ||
+      laneDefinition.lock_policy === LOCK_POLICY_NONE
+        ? laneDefinition.lock_policy
+        : LOCK_POLICY_ALL;
+    const wipLimit =
+      typeof laneDefinition.wip_limit === 'number' ? laneDefinition.wip_limit : DEFAULT_WIP_LIMIT;
+    laneConfigMap[laneDefinition.name] = { lockPolicy, wipLimit };
+  }
+
+  return laneConfigMap;
+}
+
+function computeLaneAvailability(
+  wus: InitiativeStatusWUEntry[],
+  laneConfigMap: Record<string, LanePolicyConfig>,
+): Record<string, LaneAvailabilitySummary> {
+  const groupedByLane = new Map<string, InitiativeStatusWUEntry[]>();
+  for (const wu of wus) {
+    if (!wu.lane) {
+      continue;
+    }
+    const laneEntries = groupedByLane.get(wu.lane);
+    if (laneEntries) {
+      laneEntries.push(wu);
+    } else {
+      groupedByLane.set(wu.lane, [wu]);
+    }
+  }
+
+  const result: Record<string, LaneAvailabilitySummary> = {};
+  for (const [lane, entries] of groupedByLane) {
+    const laneConfig = laneConfigMap[lane] ?? {
+      lockPolicy: LOCK_POLICY_ALL,
+      wipLimit: DEFAULT_WIP_LIMIT,
+    };
+    const inProgress = entries.filter((wu) => wu.status === STATUS_IN_PROGRESS);
+    const blocked = entries.filter((wu) => wu.status === STATUS_BLOCKED);
+    let available: boolean;
+    let occupiedBy: string | null = null;
+
+    if (laneConfig.lockPolicy === LOCK_POLICY_NONE) {
+      available = true;
+    } else if (laneConfig.lockPolicy === LOCK_POLICY_ACTIVE) {
+      available = inProgress.length === 0;
+      occupiedBy = inProgress[0]?.id ?? null;
+    } else {
+      available = inProgress.length === 0 && blocked.length === 0;
+      occupiedBy = inProgress[0]?.id ?? blocked[0]?.id ?? null;
+    }
+
+    result[lane] = {
+      available,
+      policy: laneConfig.lockPolicy,
+      occupied_by: occupiedBy,
+      in_progress: inProgress.length,
+      blocked: blocked.length,
+      wip_limit: laneConfig.wipLimit,
+    };
+  }
+
+  return result;
+}
+
+function formatInitiativeStatusMessage(input: {
+  initiativeId: string;
+  initiativeTitle: string;
+  lifecycleStatus: string;
+  rawStatus: string;
+  progress: ReturnType<typeof countProgress>;
+  wus: InitiativeStatusWUEntry[];
+  laneAvailability: Record<string, LaneAvailabilitySummary>;
+}): string {
+  const lines: string[] = [];
+  lines.push(`${INIT_STATUS_HEADER} ${input.initiativeId} - ${input.initiativeTitle}`);
+  lines.push(`Lifecycle Status: ${input.lifecycleStatus}`);
+  if (input.rawStatus && input.rawStatus !== input.lifecycleStatus) {
+    lines.push(
+      `Lifecycle mismatch: metadata status '${input.rawStatus}' conflicts with phase state; reporting '${input.lifecycleStatus}'.`,
+    );
+  }
+  lines.push('');
+  lines.push(INIT_STATUS_PROGRESS_HEADER);
+  lines.push(`  Done: ${input.progress.done}/${input.progress.total} (${input.progress.percentage}%)`);
+  lines.push(`  Active: ${input.progress.active}`);
+  lines.push(`  Pending: ${input.progress.pending}`);
+  lines.push(`  Blocked: ${input.progress.blocked}`);
+  lines.push('');
+  lines.push(INIT_STATUS_WUS_HEADER);
+  if (input.wus.length === 0) {
+    lines.push('  (no WUs found for initiative)');
+  } else {
+    for (const wu of input.wus) {
+      lines.push(`  ${wu.id}: ${wu.title} [${wu.status}]`);
+    }
+  }
+  lines.push('');
+  lines.push(INIT_STATUS_LANE_HEADER);
+  const lanes = Object.keys(input.laneAvailability).sort((left, right) => left.localeCompare(right));
+  if (lanes.length === 0) {
+    lines.push('  (no lanes found)');
+  } else {
+    for (const lane of lanes) {
+      const availability = input.laneAvailability[lane];
+      if (!availability) {
+        continue;
+      }
+      const status = availability.available ? 'available' : 'occupied';
+      lines.push(
+        `  ${lane}: ${status} (wip_limit=${availability.wip_limit}, lock_policy=${availability.policy}, in_progress=${availability.in_progress}, blocked=${availability.blocked}, occupied_by=${availability.occupied_by ?? 'none'})`,
+      );
+    }
+  }
+  return lines.join('\n');
+}
+
+async function resolveInitiativeDoc(
+  core: CoreModule,
+  projectRoot: string,
+  initiativeRef: string,
+): Promise<InitiativeDocLike> {
+  const config = core.getConfig({ projectRoot });
+  const initiativesDir = path.join(projectRoot, config.directories.initiativesDir);
+  const initiativeFiles = await readdir(initiativesDir);
+  const normalizedRef = normalizeToken(initiativeRef);
+
+  for (const file of initiativeFiles) {
+    if (!file.endsWith(INITIATIVE_FILE_SUFFIX)) {
+      continue;
+    }
+    const content = await readFile(path.join(initiativesDir, file), UTF8_ENCODING);
+    const parsed = core.parseYAML(content);
+    if (!isRecord(parsed)) {
+      continue;
+    }
+    const id = normalizeToken(parsed.id);
+    const slug = normalizeToken(parsed.slug);
+    if (id === normalizedRef || slug === normalizedRef) {
+      return {
+        id: typeof parsed.id === 'string' ? parsed.id : undefined,
+        slug: typeof parsed.slug === 'string' ? parsed.slug : undefined,
+        title: typeof parsed.title === 'string' ? parsed.title : undefined,
+        status: parsed.status,
+        phases: parsed.phases,
+        wus: parsed.wus,
+      };
+    }
+  }
+
+  throw new Error(`Initiative '${initiativeRef}' not found`);
+}
+
+async function getCompletedWuIdsFromStamps(core: CoreModule, projectRoot: string): Promise<Set<string>> {
+  const completed = new Set<string>();
+  const stampsPath = path.join(projectRoot, core.LUMENFLOW_PATHS.STAMPS_DIR);
+
+  try {
+    const files = await readdir(stampsPath);
+    for (const file of files) {
+      if (file.endsWith('.done')) {
+        completed.add(file.slice(0, -'.done'.length));
+      }
+    }
+  } catch {
+    return completed;
+  }
+
+  return completed;
+}
+
+function parseSinceInputToDate(sinceInput: string): Date {
+  const relativeMatch = ORCHESTRATE_MONITOR_TIME_PATTERN.exec(sinceInput.trim());
+  if (relativeMatch) {
+    const amount = Number.parseInt(relativeMatch[1] ?? '0', 10);
+    const unit = (relativeMatch[2] ?? '').toLowerCase() as keyof typeof ORCHESTRATE_MONITOR_TIME_MULTIPLIERS;
+    const multiplier = ORCHESTRATE_MONITOR_TIME_MULTIPLIERS[unit];
+    if (Number.isFinite(amount) && amount > 0 && multiplier) {
+      return new Date(Date.now() - amount * multiplier);
+    }
+  }
+
+  const absoluteDate = new Date(sinceInput);
+  if (Number.isNaN(absoluteDate.getTime())) {
+    throw new Error(`Invalid time format: ${sinceInput}`);
+  }
+  return absoluteDate;
+}
+
+async function loadRecentSignals(core: CoreModule, projectRoot: string, since: Date) {
+  const signalRecords: MonitorSignalRecord[] = [];
+  const memoryPath = path.join(projectRoot, core.LUMENFLOW_PATHS.MEMORY_DIR);
+
+  let files: string[];
+  try {
+    files = await readdir(memoryPath);
+  } catch {
+    return signalRecords;
+  }
+
+  const ndjsonFiles = files.filter((file) => file.endsWith('.ndjson'));
+  for (const file of ndjsonFiles) {
+    const content = await readFile(path.join(memoryPath, file), UTF8_ENCODING);
+    for (const line of content.split('\n')) {
+      const trimmedLine = line.trim();
+      if (trimmedLine.length === 0) {
+        continue;
+      }
+      try {
+        const parsed = JSON.parse(trimmedLine);
+        if (!isRecord(parsed) || typeof parsed.timestamp !== 'string') {
+          continue;
+        }
+        const timestamp = new Date(parsed.timestamp);
+        if (Number.isNaN(timestamp.getTime()) || timestamp < since) {
+          continue;
+        }
+        signalRecords.push({
+          timestamp: parsed.timestamp,
+          type: typeof parsed.type === 'string' ? parsed.type : DEFAULT_SIGNAL_TYPE,
+          wuId: typeof parsed.wuId === 'string' ? parsed.wuId : undefined,
+          message: typeof parsed.message === 'string' ? parsed.message : undefined,
+        });
+      } catch {
+        continue;
+      }
+    }
+  }
+
+  signalRecords.sort(
+    (left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime(),
+  );
+  return signalRecords;
+}
+
+const orchestrateInitStatusInProcess: InProcessToolFn = async (rawInput, context) => {
+  const parsedInput = ORCHESTRATE_INIT_STATUS_INPUT_SCHEMA.safeParse(rawInput);
+  if (!parsedInput.success) {
+    return createFailureOutput(
+      ORCHESTRATION_TOOL_ERROR_CODES.INVALID_INPUT,
+      parsedInput.error.message,
+    );
+  }
+
+  try {
+    const core = await getCoreLazy();
+    const projectRoot = resolveWorkspaceRoot(context);
+    const initiativeDoc = await resolveInitiativeDoc(core, projectRoot, parsedInput.data.initiative);
+    const initiativeId = initiativeDoc.id ?? parsedInput.data.initiative;
+    const initiativeSlug = initiativeDoc.slug ?? '';
+    const allWUs = await core.listWUs({ projectRoot });
+    const completedWuIds = await getCompletedWuIdsFromStamps(core, projectRoot);
+    const declaredWuIds = extractInitiativeWuIds(initiativeDoc.wus);
+    const declaredWuIdSet = new Set(declaredWuIds);
+    const normalizedInitiativeRefs = new Set([
+      normalizeToken(parsedInput.data.initiative),
+      normalizeToken(initiativeId),
+      normalizeToken(initiativeSlug),
+    ]);
+    const wuById = new Map(allWUs.map((wu) => [wu.id, wu]));
+    const inferredWuIds = allWUs
+      .filter((wu) => normalizedInitiativeRefs.has(normalizeToken(wu.initiative)))
+      .map((wu) => wu.id);
+    const orderedWuIds = declaredWuIds.length > 0 ? declaredWuIds : inferredWuIds;
+    const dedupedWuIds = [...new Set(orderedWuIds)];
+    const statusEntries: InitiativeStatusWUEntry[] = dedupedWuIds.map((wuId) => {
+      const wu = wuById.get(wuId);
+      const fallbackStatus = declaredWuIdSet.has(wuId) ? STATUS_READY : STATUS_UNKNOWN;
+      return {
+        id: wuId,
+        title: wu?.title ?? wuId,
+        lane: wu?.lane ?? '',
+        status: completedWuIds.has(wuId) ? STATUS_DONE : (wu?.status ?? fallbackStatus),
+      };
+    });
+
+    const progress = countProgress(statusEntries);
+    const config = core.getConfig({ projectRoot });
+    const laneConfigMap = resolveLanePolicyConfig(config);
+    const laneAvailability = computeLaneAvailability(statusEntries, laneConfigMap);
+    const lifecycleStatus = deriveInitiativeLifecycleStatus(initiativeDoc.status, initiativeDoc.phases);
+    const rawStatus = normalizeLifecycleStatus(initiativeDoc.status);
+    const message = formatInitiativeStatusMessage({
+      initiativeId,
+      initiativeTitle: initiativeDoc.title ?? initiativeId,
+      lifecycleStatus,
+      rawStatus,
+      progress,
+      wus: statusEntries,
+      laneAvailability,
+    });
+
+    return createSuccessOutput({
+      message,
+      initiative: {
+        id: initiativeId,
+        slug: initiativeSlug || undefined,
+        title: initiativeDoc.title ?? initiativeId,
+        lifecycle_status: lifecycleStatus,
+        raw_status: rawStatus || undefined,
+      },
+      progress,
+      wus: statusEntries,
+      lane_availability: laneAvailability,
+    });
+  } catch (cause) {
+    return createFailureOutput(
+      ORCHESTRATION_TOOL_ERROR_CODES.ORCHESTRATE_INIT_STATUS_ERROR,
+      (cause as Error).message,
+    );
+  }
+};
+
+const orchestrateMonitorInProcess: InProcessToolFn = async (rawInput, context) => {
+  const parsedInput = ORCHESTRATE_MONITOR_INPUT_SCHEMA.safeParse(rawInput);
+  if (!parsedInput.success) {
+    return createFailureOutput(
+      ORCHESTRATION_TOOL_ERROR_CODES.INVALID_INPUT,
+      parsedInput.error.message,
+    );
+  }
+
+  try {
+    const core = await getCoreLazy();
+    const projectRoot = resolveWorkspaceRoot(context);
+
+    if (parsedInput.data.signals_only) {
+      const sinceInput =
+        parsedInput.data.since && parsedInput.data.since.trim().length > 0
+          ? parsedInput.data.since
+          : ORCHESTRATE_MONITOR_DEFAULT_SINCE;
+      const sinceDate = parseSinceInputToDate(sinceInput);
+      const allSignals = await loadRecentSignals(core, projectRoot, sinceDate);
+      const filteredSignals = parsedInput.data.wu
+        ? allSignals.filter((signal) => signal.wuId === parsedInput.data.wu)
+        : allSignals;
+
+      const lines = [
+        `Signals since ${sinceDate.toISOString()}:`,
+        `Count: ${filteredSignals.length}`,
+      ];
+      if (filteredSignals.length > 0) {
+        for (const signal of filteredSignals) {
+          lines.push(
+            `${signal.timestamp} [${signal.wuId ?? 'system'}] ${signal.type}: ${signal.message ?? ''}`,
+          );
+        }
+      } else {
+        lines.push('No signals found.');
+      }
+
+      return createSuccessOutput({
+        message: lines.join('\n'),
+        since: sinceInput,
+        signals: filteredSignals,
+        total: filteredSignals.length,
+      });
+    }
+
+    const thresholdMinutes = parsedInput.data.threshold ?? core.DEFAULT_THRESHOLD_MINUTES;
+    const stateDir = path.join(projectRoot, core.LUMENFLOW_PATHS.STATE_DIR);
+    const registryStore = new core.DelegationRegistryStore(stateDir);
+    let delegations: ReturnType<typeof registryStore.getAllDelegations> = [];
+
+    try {
+      await registryStore.load();
+      delegations = registryStore.getAllDelegations();
+    } catch {
+      delegations = [];
+    }
+
+    const analysis = core.analyzeDelegations(delegations);
+    const stuckDelegations = core.detectStuckDelegations(delegations, thresholdMinutes);
+    const zombieLocks = await core.checkZombieLocks({ baseDir: projectRoot });
+    const suggestions = core.generateSuggestions(stuckDelegations, zombieLocks);
+
+    const monitorResult = {
+      analysis,
+      stuckDelegations,
+      zombieLocks,
+      suggestions,
+      dryRun: parsedInput.data.dry_run ?? false,
+    };
+
+    let recoveryResults: unknown[] | undefined;
+    if (parsedInput.data.recover) {
+      recoveryResults = await core.runRecovery(stuckDelegations, {
+        baseDir: projectRoot,
+        dryRun: parsedInput.data.dry_run ?? false,
+      });
+    }
+
+    let monitorOutput = core.formatMonitorOutput(monitorResult);
+    if (recoveryResults && recoveryResults.length > 0) {
+      monitorOutput = `${monitorOutput}\n\n${core.formatRecoveryResults(
+        recoveryResults as Parameters<typeof core.formatRecoveryResults>[0],
+      )}`;
+    }
+
+    if (stuckDelegations.length > 0 || zombieLocks.length > 0) {
+      return createFailureOutput(
+        ORCHESTRATION_TOOL_ERROR_CODES.ORCHESTRATE_MONITOR_ERROR,
+        monitorOutput,
+      );
+    }
+
+    return createSuccessOutput({
+      message: monitorOutput,
+      ...monitorResult,
+      recoveryResults,
+    });
+  } catch (cause) {
+    return createFailureOutput(
+      ORCHESTRATION_TOOL_ERROR_CODES.ORCHESTRATE_MONITOR_ERROR,
+      (cause as Error).message,
+    );
+  }
+};
+
+const delegationListInProcess: InProcessToolFn = async (rawInput, context) => {
+  const parsedInput = DELEGATION_LIST_INPUT_SCHEMA.safeParse(rawInput);
+  if (!parsedInput.success) {
+    return createFailureOutput(
+      ORCHESTRATION_TOOL_ERROR_CODES.INVALID_INPUT,
+      parsedInput.error.message,
+    );
+  }
+  if (!parsedInput.data.wu && !parsedInput.data.initiative) {
+    return createFailureOutput(
+      ORCHESTRATION_TOOL_ERROR_CODES.INVALID_INPUT,
+      'Either wu or initiative is required',
+    );
+  }
+
+  try {
+    const core = await getCoreLazy();
+    const projectRoot = resolveWorkspaceRoot(context);
+    const config = core.getConfig({ projectRoot });
+    const registryDir = path.join(projectRoot, config.state.stateDir);
+    const wuDir = path.join(projectRoot, config.directories.wuDir);
+
+    if (parsedInput.data.wu) {
+      const wuId = parsedInput.data.wu.toUpperCase();
+      if (!WU_ID_PATTERN.test(wuId)) {
+        return createFailureOutput(
+          ORCHESTRATION_TOOL_ERROR_CODES.INVALID_INPUT,
+          `Invalid WU ID format: ${parsedInput.data.wu}. Expected format: WU-XXX`,
+        );
+      }
+
+      const delegations = await core.getDelegationsByWU(wuId, registryDir);
+      if (parsedInput.data.json) {
+        const tree = core.buildDelegationTree(delegations, wuId);
+        return createSuccessOutput(core.treeToJSON(tree));
+      }
+
+      if (delegations.length === 0) {
+        return createSuccessOutput({
+          message: `${DELEGATION_LIST_LOG_PREFIX} No delegations found for ${wuId}`,
+          delegations,
+        });
+      }
+
+      const tree = core.buildDelegationTree(delegations, wuId);
+      return createSuccessOutput({
+        message: `${DELEGATION_LIST_LOG_PREFIX} Delegation tree for ${wuId}:\n\n${core.formatDelegationTree(tree)}\n\nTotal: ${delegations.length} delegation(s)`,
+        delegations,
+      });
+    }
+
+    const initiativeId = (parsedInput.data.initiative as string).toUpperCase();
+    const delegations = await core.getDelegationsByInitiative(initiativeId, registryDir, wuDir);
+    if (parsedInput.data.json) {
+      return createSuccessOutput(delegations);
+    }
+
+    if (delegations.length === 0) {
+      return createSuccessOutput({
+        message: `${DELEGATION_LIST_LOG_PREFIX} No delegations found for ${initiativeId}`,
+        delegations,
+      });
+    }
+
+    const typedDelegations = delegations as DelegationRecordLike[];
+    const targetWuIds = new Set(
+      typedDelegations
+        .map((record) => record.targetWuId)
+        .filter((wuId): wuId is string => typeof wuId === 'string'),
+    );
+    const rootWuIds = [
+      ...new Set(
+        typedDelegations
+          .map((record) => record.parentWuId)
+          .filter((wuId): wuId is string => typeof wuId === 'string'),
+      ),
+    ].filter((wuId) => !targetWuIds.has(wuId));
+
+    const lines = [`${DELEGATION_LIST_LOG_PREFIX} Delegations for ${initiativeId}:`, ''];
+    for (const rootWuId of rootWuIds) {
+      const tree = core.buildDelegationTree(delegations, rootWuId);
+      lines.push(core.formatDelegationTree(tree));
+      lines.push('');
+    }
+    lines.push(`Total: ${delegations.length} delegation(s) across ${rootWuIds.length} root WU(s)`);
+
+    return createSuccessOutput({
+      message: lines.join('\n'),
+      delegations,
+      root_wu_ids: rootWuIds,
+    });
+  } catch (cause) {
+    return createFailureOutput(
+      ORCHESTRATION_TOOL_ERROR_CODES.DELEGATION_LIST_ERROR,
+      (cause as Error).message,
+    );
   }
 };
 
@@ -1392,6 +2124,33 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       inputSchema: SIGNAL_CLEANUP_INPUT_SCHEMA,
       outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
       fn: signalCleanupInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.ORCHESTRATE_INIT_STATUS,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.ORCHESTRATE_INIT_STATUS,
+      inputSchema: ORCHESTRATE_INIT_STATUS_INPUT_SCHEMA,
+      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
+      fn: orchestrateInitStatusInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.ORCHESTRATE_MONITOR,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.ORCHESTRATE_MONITOR,
+      inputSchema: ORCHESTRATE_MONITOR_INPUT_SCHEMA,
+      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
+      fn: orchestrateMonitorInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.DELEGATION_LIST,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.DELEGATION_LIST,
+      inputSchema: DELEGATION_LIST_INPUT_SCHEMA,
+      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
+      fn: delegationListInProcess,
     },
   ],
   // WU-1803: Flow/Metrics/Context tool registrations

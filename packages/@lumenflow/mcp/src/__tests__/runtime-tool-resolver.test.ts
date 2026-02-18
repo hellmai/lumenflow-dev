@@ -42,6 +42,11 @@ const STATE_SIGNAL_TOOL_NAMES = {
   STATE_DOCTOR: 'state:doctor',
   SIGNAL_CLEANUP: 'signal:cleanup',
 } as const;
+const ORCHESTRATION_QUERY_TOOL_NAMES = {
+  INIT_STATUS: 'orchestrate:init-status',
+  MONITOR: 'orchestrate:monitor',
+  DELEGATION_LIST: 'delegation:list',
+} as const;
 
 function createResolverInput(toolName: string): RuntimeToolCapabilityResolverInput {
   return {
@@ -162,6 +167,20 @@ describe('packToolCapabilityResolver', () => {
       STATE_SIGNAL_TOOL_NAMES.STATE_CLEANUP,
       STATE_SIGNAL_TOOL_NAMES.STATE_DOCTOR,
       STATE_SIGNAL_TOOL_NAMES.SIGNAL_CLEANUP,
+    ];
+
+    for (const toolName of toolNames) {
+      const capability = await packToolCapabilityResolver(createResolverInput(toolName));
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+      expect(isInProcessPackToolRegistered(toolName)).toBe(true);
+    }
+  });
+
+  it('resolves orchestration query tools to in-process handlers', async () => {
+    const toolNames = [
+      ORCHESTRATION_QUERY_TOOL_NAMES.INIT_STATUS,
+      ORCHESTRATION_QUERY_TOOL_NAMES.MONITOR,
+      ORCHESTRATION_QUERY_TOOL_NAMES.DELEGATION_LIST,
     ];
 
     for (const toolName of toolNames) {
@@ -393,6 +412,39 @@ describe('WU-1803: flow/metrics/context tool registration', () => {
   });
 
   it.each(FLOW_METRICS_CONTEXT_TOOLS)(
+    'resolves %s to an in-process handler via packToolCapabilityResolver',
+    async (toolName) => {
+      const input = createResolverInput(toolName);
+      const capability = await packToolCapabilityResolver(input);
+
+      expect(capability).toBeDefined();
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+    },
+  );
+});
+
+/**
+ * WU-1804: Tests for orchestration/delegation query tool in-process registration
+ */
+describe('WU-1804: orchestration/delegation query tool registration', () => {
+  const ORCHESTRATION_QUERY_TOOLS = [
+    ORCHESTRATION_QUERY_TOOL_NAMES.INIT_STATUS,
+    ORCHESTRATION_QUERY_TOOL_NAMES.MONITOR,
+    ORCHESTRATION_QUERY_TOOL_NAMES.DELEGATION_LIST,
+  ] as const;
+
+  it.each(ORCHESTRATION_QUERY_TOOLS)('registers %s as an in-process pack tool', (toolName) => {
+    expect(isInProcessPackToolRegistered(toolName)).toBe(true);
+  });
+
+  it('lists all orchestration/delegation query tools in the registry', () => {
+    const registeredTools = listInProcessPackTools();
+    for (const toolName of ORCHESTRATION_QUERY_TOOLS) {
+      expect(registeredTools).toContain(toolName);
+    }
+  });
+
+  it.each(ORCHESTRATION_QUERY_TOOLS)(
     'resolves %s to an in-process handler via packToolCapabilityResolver',
     async (toolName) => {
       const input = createResolverInput(toolName);

@@ -18,12 +18,15 @@ import {
   ErrorCodes,
   CliArgs,
   SharedErrorMessages,
+  buildExecutionContext,
   success,
   error,
   runCliCommand,
   type CliRunnerOptions,
 } from '../tools-shared.js';
-import { CliCommands } from '../mcp-constants.js';
+import { getRuntimeForWorkspace } from '../runtime-cache.js';
+import { packToolCapabilityResolver } from '../runtime-tool-resolver.js';
+import { CliCommands, MetadataKeys } from '../mcp-constants.js';
 
 /**
  * Error codes for orchestration tools
@@ -54,6 +57,35 @@ const DelegationErrorCodes = {
 const DelegationErrorMessages = {
   WU_OR_INITIATIVE_REQUIRED: 'Either wu or initiative is required',
 } as const;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function toMessagePayload(data: unknown, fallbackMessage: string): { message: string } {
+  if (typeof data === 'string' && data.trim().length > 0) {
+    return { message: data };
+  }
+  if (isRecord(data) && typeof data.message === 'string' && data.message.trim().length > 0) {
+    return { message: data.message };
+  }
+  return { message: fallbackMessage };
+}
+
+async function executeRuntimeTool(
+  toolName: string,
+  input: Record<string, unknown>,
+  options: { projectRoot?: string } | undefined,
+): Promise<{ success: boolean; data?: unknown; error?: { message: string } }> {
+  const projectRoot = options?.projectRoot ?? process.cwd();
+  const runtime = await getRuntimeForWorkspace(projectRoot, packToolCapabilityResolver);
+  const executionContext = buildExecutionContext({
+    metadata: {
+      [MetadataKeys.PROJECT_ROOT]: projectRoot,
+    },
+  });
+  return runtime.executeTool(toolName, input, executionContext);
+}
 
 /**
  * orchestrate_initiative - Orchestrate initiative execution with parallel agent spawning
@@ -103,16 +135,22 @@ export const orchestrateInitStatusTool: ToolDefinition = {
       return error(OrchestrationErrorMessages.INITIATIVE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = [CliArgs.INITIATIVE, input.initiative as string];
-
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.ORCHESTRATE_INIT_STATUS, args, cliOptions);
-
-    if (result.success) {
-      return success({ message: result.stdout || 'Status displayed' });
-    } else {
+    try {
+      const result = await executeRuntimeTool(
+        CliCommands.ORCHESTRATE_INIT_STATUS,
+        { initiative: input.initiative as string },
+        options,
+      );
+      if (!result.success) {
+        return error(
+          result.error?.message || 'orchestrate:init-status failed',
+          OrchestrationErrorCodes.ORCHESTRATE_INIT_STATUS_ERROR,
+        );
+      }
+      return success(toMessagePayload(result.data, 'Status displayed'));
+    } catch (cause) {
       return error(
-        result.stderr || result.error?.message || 'orchestrate:init-status failed',
+        (cause as Error).message || 'orchestrate:init-status failed',
         OrchestrationErrorCodes.ORCHESTRATE_INIT_STATUS_ERROR,
       );
     }
@@ -129,25 +167,29 @@ export const orchestrateMonitorTool: ToolDefinition = {
   inputSchema: orchestrateMonitorSchema,
 
   async execute(input, options) {
-    const args: string[] = [];
-    if (input.threshold) args.push(CliArgs.THRESHOLD, String(input.threshold));
-    if (input.recover) args.push(CliArgs.RECOVER);
-    if (input.dry_run) args.push(CliArgs.DRY_RUN);
-    if (input.since) args.push(CliArgs.SINCE, input.since as string);
-    if (input.wu) args.push(CliArgs.WU, input.wu as string);
-    if (input.signals_only) args.push('--signals-only');
-
-    const cliOptions: CliRunnerOptions = {
-      projectRoot: options?.projectRoot,
-      timeout: 180000, // 3 minutes for monitoring
-    };
-    const result = await runCliCommand(CliCommands.ORCHESTRATE_MONITOR, args, cliOptions);
-
-    if (result.success) {
-      return success({ message: result.stdout || 'Monitor complete' });
-    } else {
+    try {
+      const result = await executeRuntimeTool(
+        CliCommands.ORCHESTRATE_MONITOR,
+        {
+          threshold: input.threshold,
+          recover: input.recover,
+          dry_run: input.dry_run,
+          since: input.since,
+          wu: input.wu,
+          signals_only: input.signals_only,
+        },
+        options,
+      );
+      if (!result.success) {
+        return error(
+          result.error?.message || 'orchestrate:monitor failed',
+          OrchestrationErrorCodes.ORCHESTRATE_MONITOR_ERROR,
+        );
+      }
+      return success(toMessagePayload(result.data, 'Monitor complete'));
+    } catch (cause) {
       return error(
-        result.stderr || result.error?.message || 'orchestrate:monitor failed',
+        (cause as Error).message || 'orchestrate:monitor failed',
         OrchestrationErrorCodes.ORCHESTRATE_MONITOR_ERROR,
       );
     }
@@ -167,24 +209,30 @@ export const delegationListTool: ToolDefinition = {
       return error(DelegationErrorMessages.WU_OR_INITIATIVE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args: string[] = [];
-    if (input.wu) args.push(CliArgs.WU, input.wu as string);
-    if (input.initiative) args.push(CliArgs.INITIATIVE, input.initiative as string);
-    if (input.json) args.push(CliArgs.JSON);
-
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.DELEGATION_LIST, args, cliOptions);
-
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout || 'Delegation list displayed' });
+    try {
+      const result = await executeRuntimeTool(
+        CliCommands.DELEGATION_LIST,
+        {
+          wu: input.wu,
+          initiative: input.initiative,
+          json: input.json,
+        },
+        options,
+      );
+      if (!result.success) {
+        return error(
+          result.error?.message || 'delegation:list failed',
+          DelegationErrorCodes.DELEGATION_LIST_ERROR,
+        );
       }
-    } else {
+      if (input.json) {
+        return success(result.data ?? []);
+      }
+      const messagePayload = toMessagePayload(result.data, 'Delegation list displayed');
+      return success(messagePayload);
+    } catch (cause) {
       return error(
-        result.stderr || result.error?.message || 'delegation:list failed',
+        (cause as Error).message || 'delegation:list failed',
         DelegationErrorCodes.DELEGATION_LIST_ERROR,
       );
     }
