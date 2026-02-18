@@ -155,8 +155,7 @@ export function ChatPanel({ onEvent }: ChatPanelProps) {
               maxWidth: '85%',
               padding: '0.75rem 1rem',
               borderRadius: '0.75rem',
-              background:
-                msg.role === 'user' ? 'var(--color-accent-dim)' : 'var(--color-surface)',
+              background: msg.role === 'user' ? 'var(--color-accent-dim)' : 'var(--color-surface)',
               fontSize: '0.875rem',
               lineHeight: 1.6,
             }}
@@ -218,7 +217,8 @@ export function ChatPanel({ onEvent }: ChatPanelProps) {
             padding: '0.625rem 1.25rem',
             borderRadius: '0.5rem',
             border: 'none',
-            background: isLoading || !input.trim() ? 'var(--color-surface-alt)' : 'var(--color-accent-dim)',
+            background:
+              isLoading || !input.trim() ? 'var(--color-surface-alt)' : 'var(--color-accent-dim)',
             color: 'white',
             fontSize: '0.875rem',
             fontWeight: 600,

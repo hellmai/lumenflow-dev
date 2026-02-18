@@ -92,7 +92,7 @@ The following events stream through the right panel:
 | `TOOL_CALL_END`       | Tool execution completed (result, duration, policy)  |
 | `TOOL_CALL_RESULT`    | Evidence receipt (output hash, CAS reference)        |
 | `StateSnapshot`       | Full task state synchronization                      |
-| `TEXT_MESSAGE_*`       | Streamed text response tokens                        |
+| `TEXT_MESSAGE_*`      | Streamed text response tokens                        |
 | `RUN_COMPLETED`       | Task execution finished                              |
 
 ## Project Structure
@@ -124,9 +124,7 @@ The adapter (`src/lib/ag-ui-adapter.ts`) sends a `POST /ag-ui/v1/run` request wi
 {
   "threadId": "thread-123",
   "runId": "run-456",
-  "messages": [
-    { "id": "msg-1", "role": "user", "content": "Create a task for auth" }
-  ]
+  "messages": [{ "id": "msg-1", "role": "user", "content": "Create a task for auth" }]
 }
 ```
 

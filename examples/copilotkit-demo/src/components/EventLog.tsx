@@ -87,9 +87,7 @@ export function EventLog({ events }: EventLogProps) {
 
   return (
     <div className="event-panel">
-      <div className="panel-header">
-        AG-UI Event Stream ({events.length} events)
-      </div>
+      <div className="panel-header">AG-UI Event Stream ({events.length} events)</div>
       <div className="event-list" ref={listRef}>
         {events.length === 0 && (
           <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>

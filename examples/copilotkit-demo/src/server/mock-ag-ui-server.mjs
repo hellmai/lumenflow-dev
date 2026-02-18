@@ -234,9 +234,7 @@ async function handleRunAgent(req, res) {
 
   if (!input.threadId || !input.runId || !Array.isArray(input.messages)) {
     res.writeHead(400, { 'content-type': 'application/json' });
-    res.end(
-      JSON.stringify({ error: { message: 'threadId, runId, and messages are required.' } }),
-    );
+    res.end(JSON.stringify({ error: { message: 'threadId, runId, and messages are required.' } }));
     return;
   }
 
