@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1832 — Create CopilotKit integration example app connected to LumenFlow AG-UI](wu/WU-1832.yaml) — Content: Specs Governance
 - [WU-1831 — Implement AG-UI state synchronization with StateSnapshot and StateDelta](wu/WU-1831.yaml) — Framework: MCP
 - [WU-1830 — Implement AG-UI RunAgent HTTP endpoint in HTTP surface](wu/WU-1830.yaml) — Framework: MCP
 - [WU-1829 — Add pack catalog page to web dashboard with tool and policy visualization](wu/WU-1829.yaml) — Content: Site Comms
