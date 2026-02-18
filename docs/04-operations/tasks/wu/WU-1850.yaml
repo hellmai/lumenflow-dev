@@ -15,8 +15,6 @@ tests:
     - Run MCP/CLI surface smoke checks and verify daemon handlers resolve through registry without
       import regressions.
   unit:
-    - packages/@lumenflow/surfaces/tests/gates.test.ts
-    - packages/@lumenflow/runtime/tests/runtime-daemon.test.ts
     - packages/@lumenflow/surfaces/cli/__tests__/gates.test.ts
     - packages/@lumenflow/runtime/__tests__/daemon.test.ts
   e2e: []
