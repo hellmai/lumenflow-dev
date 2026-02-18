@@ -5,7 +5,6 @@ _Last updated: 2026-02-18_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1806 — Migrate WU creation and claiming tools to runtime pack execution](wu/WU-1806.yaml)
 
 ## Completed
 
@@ -760,3 +759,4 @@ _Last updated: 2026-02-18_
 - [WU-1856 — Tighten WU-1802 handler code: eliminate over-abstraction and fix bugs](wu/WU-1856.yaml) — 2026-02-18
 - [WU-1819 — Scaffold Next.js web app with API routes for HTTP surface](wu/WU-1819.yaml) — 2026-02-18
 - [WU-1805 — Migrate WU read/query tools to runtime pack execution](wu/WU-1805.yaml) — 2026-02-18
+- [WU-1806 — Migrate WU creation and claiming tools to runtime pack execution](wu/WU-1806.yaml) — 2026-02-18
