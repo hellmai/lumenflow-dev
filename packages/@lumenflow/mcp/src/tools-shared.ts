@@ -5,8 +5,16 @@
  * WU-1642: Extracted from tools.ts during domain decomposition.
  */
 
+import path from 'node:path';
+import {
+  ExecutionContextSchema,
+  initializeKernelRuntime,
+  type ExecutionContext,
+  type ToolScope,
+} from '@lumenflow/kernel';
 import { z } from 'zod';
-import { runCliCommand, type CliRunnerOptions } from './cli-runner.js';
+import { runCliCommand, type CliRunnerOptions, type CliRunnerResult } from './cli-runner.js';
+import { packToolCapabilityResolver } from './runtime-tool-resolver.js';
 
 // Import core functions for context operations only (async to avoid circular deps)
 let coreModule: typeof import('@lumenflow/core') | null = null;
@@ -17,6 +25,20 @@ export async function getCore() {
   }
   return coreModule;
 }
+
+const DEFAULT_MAINTENANCE_SCOPE: ToolScope = {
+  type: 'path',
+  pattern: '**',
+  access: 'write',
+};
+const MAINTENANCE_TASK_PREFIX = 'maintenance';
+const MAINTENANCE_SESSION_PREFIX = 'session-maintenance';
+const MAINTENANCE_CONTEXT_MODE = 'maintenance';
+const TASK_CONTEXT_MODE = 'task';
+const DEFAULT_FALLBACK_ERROR_CODE = 'TOOL_EXECUTE_ERROR';
+
+type RuntimeInstance = Awaited<ReturnType<typeof initializeKernelRuntime>>;
+const runtimeCacheByWorkspaceRoot = new Map<string, Promise<RuntimeInstance>>();
 
 /**
  * Tool result structure matching MCP SDK expectations
@@ -229,6 +251,122 @@ export function buildWuPromptArgs(input: Record<string, unknown>): string[] {
   if (input.parent_wu) args.push('--parent-wu', input.parent_wu as string);
   if (input.no_context) args.push('--no-context');
   return args;
+}
+
+export interface BuildExecutionContextInput {
+  taskId?: string;
+  runId?: string;
+  sessionId?: string;
+  allowedScopes?: ToolScope[];
+  metadata?: Record<string, unknown>;
+  now?: () => Date;
+}
+
+function buildMaintenanceSuffix(timestamp: Date): string {
+  return timestamp.getTime().toString(36);
+}
+
+export function buildExecutionContext(input: BuildExecutionContextInput = {}): ExecutionContext {
+  const now = input.now ?? (() => new Date());
+  const timestamp = now();
+  const maintenanceSuffix = buildMaintenanceSuffix(timestamp);
+  const taskId = input.taskId ?? `${MAINTENANCE_TASK_PREFIX}-${maintenanceSuffix}`;
+  const runId = input.runId ?? `run-${taskId}-${maintenanceSuffix}`;
+  const sessionId = input.sessionId ?? `${MAINTENANCE_SESSION_PREFIX}-${maintenanceSuffix}`;
+  const invocationMode = input.taskId ? TASK_CONTEXT_MODE : MAINTENANCE_CONTEXT_MODE;
+
+  return ExecutionContextSchema.parse({
+    run_id: runId,
+    task_id: taskId,
+    session_id: sessionId,
+    allowed_scopes: input.allowedScopes ?? [DEFAULT_MAINTENANCE_SCOPE],
+    metadata: {
+      invocation_mode: invocationMode,
+      ...(input.metadata ?? {}),
+    },
+  });
+}
+
+export interface ExecuteViaPackFallback {
+  command: string;
+  args?: string[];
+  errorCode?: string;
+}
+
+export interface ExecuteViaPackOptions {
+  projectRoot?: string;
+  context?: ExecutionContext;
+  contextInput?: BuildExecutionContextInput;
+  fallback: ExecuteViaPackFallback;
+  runtimeFactory?: (workspaceRoot: string) => Promise<RuntimeInstance>;
+  cliRunner?: (
+    command: string,
+    args?: string[],
+    options?: CliRunnerOptions,
+  ) => Promise<CliRunnerResult>;
+}
+
+export function resetExecuteViaPackRuntimeCache(): void {
+  runtimeCacheByWorkspaceRoot.clear();
+}
+
+async function getRuntimeForWorkspaceForPack(workspaceRoot: string): Promise<RuntimeInstance> {
+  const normalizedRoot = path.resolve(workspaceRoot);
+  const cachedRuntime = runtimeCacheByWorkspaceRoot.get(normalizedRoot);
+  if (cachedRuntime) {
+    return cachedRuntime;
+  }
+
+  const runtimePromise = initializeKernelRuntime({
+    workspaceRoot: normalizedRoot,
+    toolCapabilityResolver: packToolCapabilityResolver,
+  });
+  runtimeCacheByWorkspaceRoot.set(normalizedRoot, runtimePromise);
+
+  try {
+    return await runtimePromise;
+  } catch (cause) {
+    runtimeCacheByWorkspaceRoot.delete(normalizedRoot);
+    throw cause;
+  }
+}
+
+export async function executeViaPack(
+  toolName: string,
+  toolInput: unknown,
+  options: ExecuteViaPackOptions,
+): Promise<ToolResult> {
+  const projectRoot = options.projectRoot ?? process.cwd();
+  const runtimeFactory = options.runtimeFactory ?? getRuntimeForWorkspaceForPack;
+  const cliRunner = options.cliRunner ?? runCliCommand;
+  const executionContext = options.context ?? buildExecutionContext(options.contextInput);
+  let runtimeFailureMessage: string | undefined;
+
+  try {
+    const runtime = await runtimeFactory(projectRoot);
+    const runtimeResult = await runtime.executeTool(toolName, toolInput, executionContext);
+    if (runtimeResult.success) {
+      return success(runtimeResult);
+    }
+    runtimeFailureMessage = runtimeResult.error?.message;
+  } catch (cause) {
+    runtimeFailureMessage = (cause as Error).message;
+  }
+
+  const fallbackResult = await cliRunner(options.fallback.command, options.fallback.args ?? [], {
+    projectRoot,
+  });
+  if (fallbackResult.success) {
+    return success({ message: fallbackResult.stdout || `${options.fallback.command} succeeded` });
+  }
+
+  return error(
+    fallbackResult.stderr ||
+      fallbackResult.error?.message ||
+      runtimeFailureMessage ||
+      `${options.fallback.command} failed`,
+    options.fallback.errorCode ?? DEFAULT_FALLBACK_ERROR_CODE,
+  );
 }
 
 // Re-export cli-runner types used by domain modules
