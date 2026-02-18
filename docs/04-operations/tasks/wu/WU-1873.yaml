@@ -2,7 +2,7 @@ id: WU-1873
 title: Workspace selector with recent-workspaces history
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -51,3 +51,6 @@ session_id: 7fd8102b-29dd-4c75-aa56-a247e2e6eaa8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T23:35:40.615Z
+locked: true
+completed_at: 2026-02-18T23:47:41.701Z
+completed: 2026-02-18
