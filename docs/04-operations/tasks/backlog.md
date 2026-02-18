@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1803 — Migrate flow, metrics, and context tools to runtime pack execution](wu/WU-1803.yaml) — Framework: Core Lifecycle
 - [WU-1802 — Migrate validation and lane tools to runtime pack execution](wu/WU-1802.yaml) — Framework: Core Lifecycle
 - [WU-1801 — Migrate state/signal tools to runtime pack execution](wu/WU-1801.yaml) — Framework: Core Lifecycle
 - [WU-1800 — Migrate git tools (git_status/diff/log/branch) to runtime pack execution](wu/WU-1800.yaml) — Framework: Core Lifecycle
