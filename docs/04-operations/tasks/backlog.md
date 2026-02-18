@@ -25,7 +25,6 @@ sections:
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1861 — INIT-030 Review Fix C: governance and type safety tightening](wu/WU-1861.yaml) — Framework: MCP
-- [WU-1862 — Evidence store durability: JSONL compaction and incremental replay](wu/WU-1862.yaml) — Framework: Core Lifecycle
 - [WU-1863 — Policy construction safety: allowAllPolicyHook default and task ID uniqueness](wu/WU-1863.yaml) — Framework: Core Lifecycle
 - [WU-1864 — Scope intersection property-based fuzz testing for patternContains glob heuristic](wu/WU-1864.yaml) — Framework: Core Lifecycle
 - [WU-1865 — Kernel polish: xstate dead code removal, warning clarity, naming consistency](wu/WU-1865.yaml) — Framework: Core Lifecycle
@@ -33,6 +32,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1862 — Evidence store durability: JSONL compaction and incremental replay](wu/WU-1862.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
