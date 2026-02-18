@@ -8,12 +8,13 @@ created: 2026-02-18
 code_paths:
   - apps/web/app/api/tasks/[taskId]/evidence/export/route.ts
   - apps/web/src/components/evidence-viewer.tsx
+  - apps/web/src/components/evidence-page-client.tsx
 tests:
   manual:
     - Verify CSV export downloads valid CSV with correct columns
     - Verify JSON export returns well-formed array
   unit:
-    - apps/web/app/api/tasks/[taskId]/evidence/__tests__/export.test.ts
+    - apps/web/__tests__/evidence-export-route.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1876.done
