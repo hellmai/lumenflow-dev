@@ -10,7 +10,10 @@ code_paths:
 tests:
   manual:
     - Publish a pack, search for it, verify metadata returned correctly
-  unit: []
+  unit:
+    - apps/web/__tests__/pack-registry-handlers.test.ts
+    - apps/web/__tests__/pack-registry-routes.test.ts
+    - apps/web/__tests__/pack-registry-store-memory.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1836.done
@@ -20,12 +23,25 @@ phase: 4
 spec_refs:
   - .claude/plans/zazzy-growing-cook.md
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  Implemented hexagonal architecture with ports (PackRegistryStore, PackBlobStore, AuthProvider) and
+  adapters (InMemoryPackRegistryStore, InMemoryBlobStore, GitHubOAuthProvider). 31 tests covering
+  all 4 acceptance criteria. Route adapters create Next.js-compatible handlers.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-18T22:04:36.300Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1836
+session_id: 9eeb2ea0-9733-4ed4-9300-5e1719230871
 exposure: api
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T22:04:36.304Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -38,11 +54,3 @@ acceptance:
   - GET /api/registry/packs/:id returns pack metadata and versions
   - POST publish endpoint stores tarball and updates index
   - GitHub OAuth authentication for publishers
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1836
-claimed_at: 2026-02-18T22:04:36.300Z
-baseline_main_sha: 00da9421694dd133c9b7bba6f354cc09f5353969
-session_id: 9eeb2ea0-9733-4ed4-9300-5e1719230871
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-18T22:04:36.304Z
