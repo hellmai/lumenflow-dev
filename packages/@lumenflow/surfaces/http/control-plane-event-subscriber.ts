@@ -29,7 +29,7 @@ export interface ControlPlaneEventSubscriberOptions {
  * control plane, enabling the same SSE streaming pattern as local mode.
  */
 export function createControlPlaneEventSubscriber(
-  options: ControlPlaneEventSubscriberOptions,
+  _options: ControlPlaneEventSubscriberOptions,
 ): EventSubscriber {
   return {
     subscribe(
