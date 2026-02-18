@@ -27,7 +27,7 @@ assigned_to: tom@hellm.ai
 claimed_at: 2026-02-18T19:52:04.829Z
 worktree_path: /home/USER/source/hellmai/os/worktrees/content-specs-governance-wu-1832
 session_id: 3805a7b7-77c1-40d7-9a2c-158109e9f82e
-exposure: ui
+exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
 approved_by:
