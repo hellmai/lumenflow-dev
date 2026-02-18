@@ -15,6 +15,9 @@ tests:
   unit:
     - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
     - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/state-machine.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/integration.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/policy-engine.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1865.done
