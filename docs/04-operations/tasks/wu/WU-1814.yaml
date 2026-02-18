@@ -1,0 +1,40 @@
+id: WU-1814
+title: Full parity validation and Phase 3 completion evidence
+lane: 'Framework: Core Lifecycle'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-18
+code_paths:
+  - docs/04-operations/tasks/initiatives/INIT-030.yaml
+tests:
+  manual:
+    - pnpm gates green; MCP parity report clean; full WU lifecycle end-to-end
+  unit:
+    - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1814.done
+dependencies: []
+initiative: INIT-030
+phase: 3
+blocked_by:
+  - WU-1813
+spec_refs:
+  - /home/USER/.claude/plans/adaptive-finding-adleman.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: Phase 3 migration is functionally complete after WU-1813. Problem: need formal validation and completion evidence. Solution: run full parity gates, verify all tools through runtime path, update INIT-030 Phase 3 status to done.'
+acceptance:
+  - pnpm gates passes (all quality gates green)
+  - MCP parity report shows 0 missing and 0 unexpected tools
+  - INIT-030 Phase 3 status set to done
+  - Complete WU lifecycle (create to done) verified end-to-end via runtime
