@@ -33,6 +33,9 @@ const DEFAULT_FILE_READ_MAX_SIZE_BYTES = 10 * 1024 * 1024;
 
 const IN_PROCESS_TOOL_NAMES = {
   WU_STATUS: CliCommands.WU_STATUS,
+  WU_CREATE: CliCommands.WU_CREATE,
+  WU_CLAIM: CliCommands.WU_CLAIM,
+  WU_PROTO: CliCommands.WU_PROTO,
   WU_DEPS: CliCommands.WU_DEPS,
   WU_PREFLIGHT: CliCommands.WU_PREFLIGHT,
   WU_VALIDATE: CliCommands.WU_VALIDATE,
@@ -53,6 +56,9 @@ const IN_PROCESS_TOOL_NAMES = {
 
 const IN_PROCESS_TOOL_DESCRIPTIONS = {
   WU_STATUS: 'Get WU status via in-process core context computation',
+  WU_CREATE: 'Create WU via runtime-first handler with CLI fallback',
+  WU_CLAIM: 'Claim WU via runtime-first handler with CLI fallback',
+  WU_PROTO: 'Create prototype WU via runtime-first handler with CLI fallback',
   WU_DEPS: 'Visualize WU dependency graph via in-process core handler',
   WU_PREFLIGHT: 'Fast validation of code_paths/test paths via in-process core handler',
   WU_VALIDATE: 'Validate WU YAML via in-process schema check',
@@ -2063,6 +2069,9 @@ const VALIDATION_TOOL_ERROR_CODES = {
   LANE_HEALTH_ERROR: 'LANE_HEALTH_ERROR',
   LANE_SUGGEST_ERROR: 'LANE_SUGGEST_ERROR',
   WU_STATUS_ERROR: 'WU_STATUS_ERROR',
+  WU_CREATE_ERROR: 'WU_CREATE_ERROR',
+  WU_CLAIM_ERROR: 'WU_CLAIM_ERROR',
+  WU_PROTO_ERROR: 'WU_PROTO_ERROR',
   WU_DEPS_ERROR: 'WU_DEPS_ERROR',
   WU_PREFLIGHT_ERROR: 'WU_PREFLIGHT_ERROR',
   WU_VALIDATE_ERROR: 'WU_VALIDATE_ERROR',
@@ -2517,6 +2526,7 @@ const laneSuggestInProcess: InProcessToolFn = async (rawInput, context) => {
  */
 const WU_QUERY_MESSAGES = {
   ID_REQUIRED: 'id parameter is required',
+  RUNTIME_CLI_FALLBACK: 'Runtime in-process path not available; falling back to CLI',
   STATUS_FAILED: 'wu:status failed',
   DEPS_FAILED: 'wu:deps failed',
   PREFLIGHT_PASSED: 'Preflight checks passed',
@@ -2525,6 +2535,24 @@ const WU_QUERY_MESSAGES = {
   VALIDATE_FAILED: 'wu:validate failed',
   INFER_LANE_FAILED: 'wu:infer-lane failed',
 } as const;
+
+const wuCreateInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.WU_CREATE_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const wuClaimInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.WU_CLAIM_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const wuProtoInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.WU_PROTO_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
 
 const wuStatusInProcess: InProcessToolFn = async (rawInput, context) => {
   const input = (rawInput ?? {}) as Record<string, unknown>;
@@ -2691,6 +2719,30 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_STATUS,
       inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
       fn: wuStatusInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_CREATE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_CREATE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuCreateInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_CLAIM,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_CLAIM,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuClaimInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_PROTO,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_PROTO,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuProtoInProcess,
     },
   ],
   [

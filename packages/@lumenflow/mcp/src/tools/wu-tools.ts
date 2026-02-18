@@ -48,7 +48,7 @@ import {
   executeViaPack,
   type CliRunnerOptions,
 } from '../tools-shared.js';
-import { CliCommands } from '../mcp-constants.js';
+import { CliCommands, MetadataKeys } from '../mcp-constants.js';
 
 /**
  * WU-1805: Fallback messages for WU query tools when executeViaPack
@@ -56,6 +56,10 @@ import { CliCommands } from '../mcp-constants.js';
  */
 const WuQueryMessages = {
   STATUS_FAILED: 'wu:status failed',
+  CREATE_PASSED: 'WU created successfully',
+  CREATE_FAILED: 'wu:create failed',
+  CLAIM_PASSED: 'WU claimed successfully',
+  CLAIM_FAILED: 'wu:claim failed',
   DEPS_FAILED: 'wu:deps failed',
   PREFLIGHT_PASSED: 'Preflight checks passed',
   PREFLIGHT_FAILED: 'wu:preflight failed',
@@ -146,17 +150,23 @@ export const wuCreateTool: ToolDefinition = {
     }
     if (input.exposure) args.push('--exposure', input.exposure as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_CREATE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_CREATE, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_CREATE,
+        args,
+        errorCode: ErrorCodes.WU_CREATE_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU created successfully' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:create failed',
-        ErrorCodes.WU_CREATE_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuQueryMessages.CREATE_PASSED })
+      : error(result.error?.message ?? WuQueryMessages.CREATE_FAILED, ErrorCodes.WU_CREATE_ERROR);
   },
 };
 
@@ -209,17 +219,23 @@ export const wuClaimTool: ToolDefinition = {
       args.push('--sandbox', '--', ...sandboxCommand);
     }
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_CLAIM, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_CLAIM, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_CLAIM,
+        args,
+        errorCode: ErrorCodes.WU_CLAIM_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU claimed successfully' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:claim failed',
-        ErrorCodes.WU_CLAIM_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuQueryMessages.CLAIM_PASSED })
+      : error(result.error?.message ?? WuQueryMessages.CLAIM_FAILED, ErrorCodes.WU_CLAIM_ERROR);
   },
 };
 

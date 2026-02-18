@@ -173,12 +173,10 @@ describe('MCP tools', () => {
   });
 
   describe('wu_create', () => {
-    it('should create WU via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should create WU via executeViaPack', async () => {
+      const spy = vi.spyOn(toolsShared, 'executeViaPack').mockResolvedValue({
         success: true,
-        stdout: 'Created WU-1414',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Created WU-1414' },
       });
 
       const result = await wuCreateTool.execute({
@@ -191,11 +189,21 @@ describe('MCP tools', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(spy).toHaveBeenCalledWith(
         'wu:create',
-        expect.arrayContaining(['--lane', 'Framework: CLI']),
-        expect.any(Object),
+        expect.objectContaining({
+          lane: 'Framework: CLI',
+          title: 'New feature',
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:create',
+            args: expect.arrayContaining(['--lane', 'Framework: CLI', '--title', 'New feature']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
+      spy.mockRestore();
     });
 
     it('should require lane parameter', async () => {
@@ -209,22 +217,27 @@ describe('MCP tools', () => {
   });
 
   describe('wu_claim', () => {
-    it('should claim WU via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should claim WU via executeViaPack', async () => {
+      const spy = vi.spyOn(toolsShared, 'executeViaPack').mockResolvedValue({
         success: true,
-        stdout: 'Worktree created',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Worktree created' },
       });
 
       const result = await wuClaimTool.execute({ id: 'WU-1412', lane: 'Framework: CLI' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(spy).toHaveBeenCalledWith(
         'wu:claim',
-        expect.arrayContaining(['--id', 'WU-1412']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1412', lane: 'Framework: CLI' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:claim',
+            args: expect.arrayContaining(['--id', 'WU-1412', '--lane', 'Framework: CLI']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
+      spy.mockRestore();
     });
 
     it('should require id and lane parameters', async () => {
