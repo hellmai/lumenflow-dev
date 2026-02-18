@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1864 — Scope intersection property-based fuzz testing for patternContains glob heuristic](wu/WU-1864.yaml) — Framework: Core Lifecycle
 - [WU-1863 — Policy construction safety: allowAllPolicyHook default and task ID uniqueness](wu/WU-1863.yaml) — Framework: Core Lifecycle
 - [WU-1862 — Evidence store durability: JSONL compaction and incremental replay](wu/WU-1862.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
