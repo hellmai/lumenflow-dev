@@ -1,33 +1,43 @@
 id: WU-1848
-title: Extract duplicated string literal constants into shared-constants module
+title: Standardize kernel identifier constants with typed source-of-truth modules
 lane: 'Framework: Core Lifecycle'
 type: refactor
 status: ready
-priority: P2
+priority: P1
 created: 2026-02-18
 code_paths:
   - packages/@lumenflow/kernel/src/shared-constants.ts
+  - packages/@lumenflow/kernel/src/event-kinds.ts
   - packages/@lumenflow/kernel/src/kernel.schemas.ts
+  - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
   - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
-  - packages/@lumenflow/kernel/src/event-store
-  - packages/@lumenflow/kernel/src/sandbox/subprocess-dispatcher.ts
-  - packages/@lumenflow/kernel/src/sandbox/tool-runner-worker.ts
+  - packages/@lumenflow/kernel/src/tool-host/builtins/capabilities.ts
+  - packages/@lumenflow/kernel/src/evidence/evidence-store.ts
   - packages/@lumenflow/kernel/src/pack/pack-loader.ts
-  - packages/@lumenflow/mcp/src/tools-shared.ts
-  - packages/@lumenflow/packs/software-delivery/tool-impl/git-tools.ts
-  - packages/@lumenflow/packs/software-delivery/tool-impl/worktree-tools.ts
-  - packages/@lumenflow/cli/src/task-claim.ts
+  - packages/@lumenflow/kernel/src/policy/policy-engine.ts
+  - packages/@lumenflow/kernel/src/index.ts
 tests:
-  manual: []
+  manual:
+    - Verify a full task lifecycle emits the same event/error identifiers before and after refactor
   unit:
-    - packages/@lumenflow/kernel/tests/shared-constants.test.ts
-    - packages/@lumenflow/kernel/tests/tool-host.test.ts
-    - packages/@lumenflow/kernel/tests/pack-loader.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/kernel.schemas.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/tool-host.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/evidence-store.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/pack-loader.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/shared-constants.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1848.done
 dependencies: []
-risks: []
+initiative: INIT-030
+phase: 3
+blocked_by: []
+spec_refs:
+  - /home/tom/.claude/plans/adaptive-finding-adleman.md
+  - /home/tom/.claude/plans/zesty-jumping-pixel.md
+risks:
+  - Broad literal replacement can regress event parsing if schema/value alignment is incomplete
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
 assigned_to: tom@hellm.ai
@@ -37,14 +47,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Multiple packages duplicate the same regex patterns, error code strings, and configuration constants. Extract into a shared-constants module to enforce DRY and prevent drift.
+description: 'Context: kernel runtime paths still contain repeated identifier literals (policy IDs,
+  policy triggers, integrity markers, and related error/event identifiers) across schemas, runtime,
+  tool-host, evidence, and pack loader code. Problem: duplicated identifiers are drift-prone and
+  allow typo bugs in security- sensitive paths. Solution: adopt a Linux-style single source of truth
+  pattern with typed constant modules (`as const` objects + exported union types + guard helpers),
+  then consume those constants everywhere in production kernel code.'
 acceptance:
-  - SEMVER_REGEX defined once in shared-constants.ts and re-exported
-  - SHA256_HEX_REGEX defined once (currently duplicated in kernel.schemas.ts AND tool-host.ts)
-  - KERNEL_POLICY_IDS enum replaces 4+ inline policy-id strings
-  - Event kind strings (tool_call_start etc) use TOOL_TRACE_KINDS constants everywhere
-  - UTF8_ENCODING constant replaces bare utf-8 strings in runtime package
-  - Policy trigger strings (on_tool_call etc) use shared enum
-  - DEFAULT_WORKSPACE_ROOT consolidated from 7 separate declarations in task-claim.ts
-  - No bare string literals for any of the above remain in kernel, mcp, packs, runtime packages
-  - All existing tests pass unchanged
+  - Introduce canonical constant groups for targeted identifier families (policy IDs, policy
+    triggers, integrity prefixes/regex, and repeated kernel/runtime error identifiers) in kernel
+    source modules.
+  - All touched production kernel files import these constants instead of re-declaring raw
+    identifier strings for the targeted families.
+  - Zod schemas in `kernel.schemas.ts` use constant-backed literals/enums for targeted identifiers,
+    preserving runtime validation behavior.
+  - Exported types are derived from constant objects/tuples (single source of truth), with guard
+    helpers where runtime narrowing is needed.
+  - Add or update unit tests to cover constant/type wiring and prevent regression for targeted
+    identifier families.
+  - No duplicate definitions remain for targeted identifier families outside approved constants
+    modules (tests may still assert literal values).
