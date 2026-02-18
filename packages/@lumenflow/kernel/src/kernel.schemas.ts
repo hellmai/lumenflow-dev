@@ -131,6 +131,8 @@ export const PackPinSchema = z.object({
   ]),
   source: z.enum(['local', 'git', 'registry']),
   url: z.string().url().optional(),
+  /** Registry base URL override. When omitted, uses PackLoader's defaultRegistryUrl. */
+  registry_url: z.string().url().optional(),
 });
 
 export type PackPin = z.infer<typeof PackPinSchema>;

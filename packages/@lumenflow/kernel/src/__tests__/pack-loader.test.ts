@@ -17,6 +17,7 @@ import {
   computeDeterministicPackHash,
   resolvePackToolEntryPath,
   type GitClient,
+  type RegistryClient,
   type WorkspaceWarningEvent,
 } from '../pack/index.js';
 
@@ -107,6 +108,7 @@ async function collectMcpShellOutCommands(): Promise<string[]> {
 interface GitWorkspacePackInput extends WorkspacePackInput {
   source?: 'local' | 'git' | 'registry';
   url?: string;
+  registry_url?: string;
 }
 
 function createWorkspaceSpec(input: GitWorkspacePackInput) {
@@ -118,6 +120,9 @@ function createWorkspaceSpec(input: GitWorkspacePackInput) {
   };
   if (input.url) {
     packPin.url = input.url;
+  }
+  if (input.registry_url) {
+    packPin.registry_url = input.registry_url;
   }
   return WorkspaceSpecSchema.parse({
     id: 'workspace-kernel',
@@ -883,6 +888,319 @@ describe('git-based pack resolution', () => {
           packId: SOFTWARE_DELIVERY_PACK_ID,
         }),
       ).rejects.toThrow('integrity mismatch');
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('PackPin schema with registry_url field', () => {
+  it('accepts registry_url field for registry source packs', () => {
+    const pin = PackPinSchema.parse({
+      id: 'my-pack',
+      version: '1.0.0',
+      integrity: 'dev',
+      source: 'registry',
+      registry_url: 'https://custom-registry.example.com',
+    });
+    expect(pin.registry_url).toBe('https://custom-registry.example.com');
+    expect(pin.source).toBe('registry');
+  });
+
+  it('allows omitting registry_url (uses default)', () => {
+    const pin = PackPinSchema.parse({
+      id: 'my-pack',
+      version: '1.0.0',
+      integrity: 'dev',
+      source: 'registry',
+    });
+    expect(pin.registry_url).toBeUndefined();
+  });
+
+  it('includes registry_url in workspace spec round-trip', () => {
+    const spec = createWorkspaceSpec({
+      integrity: 'dev',
+      source: 'registry',
+      registry_url: 'https://custom-registry.example.com',
+    });
+    const registryPack = spec.packs.find((p) => p.source === 'registry');
+    expect(registryPack).toBeDefined();
+    expect(registryPack!.registry_url).toBe('https://custom-registry.example.com');
+  });
+});
+
+describe('registry-based pack resolution', () => {
+  function createMockRegistryClient(extractDir: string): RegistryClient {
+    return {
+      fetchMetadata: vi.fn(async () => ({
+        tarball_url: 'https://registry.lumenflow.dev/packs/software-delivery/1.0.0.tar.gz',
+        integrity: 'sha256:' + '0'.repeat(64),
+      })),
+      downloadTarball: vi.fn(async () => {
+        // Simulate tarball download by writing fixture to extract dir
+        await writePackFixture(extractDir);
+      }),
+    };
+  }
+
+  it('fetches metadata and downloads tarball from registry', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-registry-fetch-'));
+    const cacheDir = join(tempRoot, 'pack-cache');
+    const packCachePath = join(cacheDir, `${SOFTWARE_DELIVERY_PACK_ID}@1.0.0`);
+
+    try {
+      const registryClient = createMockRegistryClient(packCachePath);
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        registryClient,
+      });
+
+      const loaded = await loader.load({
+        workspaceSpec: createWorkspaceSpec({
+          integrity: 'dev',
+          source: 'registry',
+        }),
+        packId: SOFTWARE_DELIVERY_PACK_ID,
+      });
+
+      expect(loaded.manifest.id).toBe(SOFTWARE_DELIVERY_PACK_ID);
+      expect(loaded.packRoot).toBe(packCachePath);
+      expect(registryClient.fetchMetadata).toHaveBeenCalledWith(
+        SOFTWARE_DELIVERY_PACK_ID,
+        '1.0.0',
+        'https://registry.lumenflow.dev',
+      );
+      expect(registryClient.downloadTarball).toHaveBeenCalledWith(
+        'https://registry.lumenflow.dev/packs/software-delivery/1.0.0.tar.gz',
+        packCachePath,
+      );
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('uses custom registry_url from PackPin when provided', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-registry-custom-url-'));
+    const cacheDir = join(tempRoot, 'pack-cache');
+    const packCachePath = join(cacheDir, `${SOFTWARE_DELIVERY_PACK_ID}@1.0.0`);
+
+    try {
+      const registryClient = createMockRegistryClient(packCachePath);
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        registryClient,
+      });
+
+      const loaded = await loader.load({
+        workspaceSpec: createWorkspaceSpec({
+          integrity: 'dev',
+          source: 'registry',
+          registry_url: 'https://custom-registry.example.com',
+        }),
+        packId: SOFTWARE_DELIVERY_PACK_ID,
+      });
+
+      expect(loaded.manifest.id).toBe(SOFTWARE_DELIVERY_PACK_ID);
+      expect(registryClient.fetchMetadata).toHaveBeenCalledWith(
+        SOFTWARE_DELIVERY_PACK_ID,
+        '1.0.0',
+        'https://custom-registry.example.com',
+      );
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('uses default registry URL configured on PackLoader', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-registry-default-url-'));
+    const cacheDir = join(tempRoot, 'pack-cache');
+    const packCachePath = join(cacheDir, `${SOFTWARE_DELIVERY_PACK_ID}@1.0.0`);
+
+    try {
+      const registryClient = createMockRegistryClient(packCachePath);
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        registryClient,
+        defaultRegistryUrl: 'https://my-company-registry.example.com',
+      });
+
+      await loader.load({
+        workspaceSpec: createWorkspaceSpec({
+          integrity: 'dev',
+          source: 'registry',
+        }),
+        packId: SOFTWARE_DELIVERY_PACK_ID,
+      });
+
+      expect(registryClient.fetchMetadata).toHaveBeenCalledWith(
+        SOFTWARE_DELIVERY_PACK_ID,
+        '1.0.0',
+        'https://my-company-registry.example.com',
+      );
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('skips download when pack is already cached', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-registry-cached-'));
+    const cacheDir = join(tempRoot, 'pack-cache');
+    const packCachePath = join(cacheDir, `${SOFTWARE_DELIVERY_PACK_ID}@1.0.0`);
+
+    try {
+      // Pre-populate cache
+      await writePackFixture(packCachePath);
+
+      const registryClient = createMockRegistryClient(packCachePath);
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        registryClient,
+      });
+
+      const loaded = await loader.load({
+        workspaceSpec: createWorkspaceSpec({
+          integrity: 'dev',
+          source: 'registry',
+        }),
+        packId: SOFTWARE_DELIVERY_PACK_ID,
+      });
+
+      expect(loaded.manifest.id).toBe(SOFTWARE_DELIVERY_PACK_ID);
+      expect(registryClient.fetchMetadata).not.toHaveBeenCalled();
+      expect(registryClient.downloadTarball).not.toHaveBeenCalled();
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('runs integrity verification on registry-fetched pack', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-registry-integrity-'));
+    const cacheDir = join(tempRoot, 'pack-cache');
+    const packCachePath = join(cacheDir, `${SOFTWARE_DELIVERY_PACK_ID}@1.0.0`);
+
+    try {
+      const registryClient = createMockRegistryClient(packCachePath);
+      const warningEvents: WorkspaceWarningEvent[] = [];
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        registryClient,
+      });
+
+      // First load with dev to compute correct hash
+      const loaded = await loader.load({
+        workspaceSpec: createWorkspaceSpec({
+          integrity: 'dev',
+          source: 'registry',
+        }),
+        packId: SOFTWARE_DELIVERY_PACK_ID,
+        onWorkspaceWarning: (event) => warningEvents.push(event),
+      });
+      expect(warningEvents).toHaveLength(1);
+
+      // Now verify with correct sha256
+      const correctHash = loaded.integrity;
+      const loader2 = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        registryClient: createMockRegistryClient(packCachePath),
+      });
+
+      const loaded2 = await loader2.load({
+        workspaceSpec: createWorkspaceSpec({
+          integrity: `sha256:${correctHash}`,
+          source: 'registry',
+        }),
+        packId: SOFTWARE_DELIVERY_PACK_ID,
+      });
+
+      expect(loaded2.integrity).toBe(correctHash);
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects integrity mismatch on registry-fetched pack', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-registry-mismatch-'));
+    const cacheDir = join(tempRoot, 'pack-cache');
+    const packCachePath = join(cacheDir, `${SOFTWARE_DELIVERY_PACK_ID}@1.0.0`);
+
+    try {
+      const registryClient = createMockRegistryClient(packCachePath);
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        registryClient,
+      });
+
+      await expect(
+        loader.load({
+          workspaceSpec: createWorkspaceSpec({
+            integrity: 'sha256:' + '0'.repeat(64),
+            source: 'registry',
+          }),
+          packId: SOFTWARE_DELIVERY_PACK_ID,
+        }),
+      ).rejects.toThrow('integrity mismatch');
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects registry source packs when no registryClient is provided', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-registry-no-client-'));
+
+    try {
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+      });
+
+      await expect(
+        loader.load({
+          workspaceSpec: createWorkspaceSpec({
+            integrity: 'dev',
+            source: 'registry',
+          }),
+          packId: SOFTWARE_DELIVERY_PACK_ID,
+        }),
+      ).rejects.toThrow('registryClient');
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('PackPin registry_url takes priority over PackLoader defaultRegistryUrl', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-registry-priority-'));
+    const cacheDir = join(tempRoot, 'pack-cache');
+    const packCachePath = join(cacheDir, `${SOFTWARE_DELIVERY_PACK_ID}@1.0.0`);
+
+    try {
+      const registryClient = createMockRegistryClient(packCachePath);
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        registryClient,
+        defaultRegistryUrl: 'https://default-registry.example.com',
+      });
+
+      await loader.load({
+        workspaceSpec: createWorkspaceSpec({
+          integrity: 'dev',
+          source: 'registry',
+          registry_url: 'https://per-pack-registry.example.com',
+        }),
+        packId: SOFTWARE_DELIVERY_PACK_ID,
+      });
+
+      expect(registryClient.fetchMetadata).toHaveBeenCalledWith(
+        SOFTWARE_DELIVERY_PACK_ID,
+        '1.0.0',
+        'https://per-pack-registry.example.com',
+      );
     } finally {
       await rm(tempRoot, { recursive: true, force: true });
     }

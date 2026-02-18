@@ -3,7 +3,7 @@
 
 import { builtinModules } from 'node:module';
 import path from 'node:path';
-import { mkdir, readFile } from 'node:fs/promises';
+import { access, mkdir, readFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import YAML from 'yaml';
 import { KERNEL_EVENT_KINDS } from '../event-kinds.js';
@@ -34,8 +34,33 @@ export interface GitClient {
   isRepo(dir: string): Promise<boolean>;
 }
 
+/**
+ * Port interface for registry operations used by PackLoader.
+ *
+ * Consumers must provide an implementation (e.g. wrapping fetch/got)
+ * so that PackLoader remains testable without real HTTP operations.
+ */
+export interface RegistryPackMetadata {
+  /** URL to the tarball containing the pack contents. */
+  tarball_url: string;
+  /** Integrity hash of the tarball (informational, actual verification uses pack hash). */
+  integrity: string;
+}
+
+export interface RegistryClient {
+  /** Fetch pack metadata from the registry API. */
+  fetchMetadata(
+    packId: string,
+    version: string,
+    registryUrl: string,
+  ): Promise<RegistryPackMetadata>;
+  /** Download and extract the tarball to the target directory. */
+  downloadTarball(tarballUrl: string, targetDir: string): Promise<void>;
+}
+
 const PACK_CACHE_DIR_NAME = 'pack-cache' as const;
 const VERSION_TAG_PREFIX = 'v' as const;
+const DEFAULT_REGISTRY_URL = 'https://registry.lumenflow.dev' as const;
 
 export interface WorkspaceWarningEvent {
   schema_version: 1;
@@ -54,6 +79,10 @@ export interface PackLoaderOptions {
   packCacheDir?: string;
   /** Git client for resolving packs with source: git. Required when loading git packs. */
   gitClient?: GitClient;
+  /** Registry client for resolving packs with source: registry. Required when loading registry packs. */
+  registryClient?: RegistryClient;
+  /** Default registry URL. Overridden by PackPin.registry_url when set. Defaults to https://registry.lumenflow.dev */
+  defaultRegistryUrl?: string;
 }
 
 export interface PackLoadInput {
@@ -236,6 +265,8 @@ export class PackLoader {
   private readonly allowDevIntegrityInProduction: boolean;
   private readonly packCacheDir: string;
   private readonly gitClient?: GitClient;
+  private readonly registryClient?: RegistryClient;
+  private readonly defaultRegistryUrl: string;
 
   constructor(options: PackLoaderOptions) {
     this.packsRoot = path.resolve(options.packsRoot);
@@ -246,6 +277,8 @@ export class PackLoader {
     this.packCacheDir =
       options.packCacheDir ?? path.join(homedir(), LUMENFLOW_DIR_NAME, PACK_CACHE_DIR_NAME);
     this.gitClient = options.gitClient;
+    this.registryClient = options.registryClient;
+    this.defaultRegistryUrl = options.defaultRegistryUrl ?? DEFAULT_REGISTRY_URL;
   }
 
   async load(input: PackLoadInput): Promise<LoadedDomainPack> {
@@ -258,10 +291,14 @@ export class PackLoader {
    * Resolve the pack root directory based on the pin source.
    * For local packs, resolves relative to packsRoot.
    * For git packs, clones/pulls to the pack cache and checks out the version tag.
+   * For registry packs, fetches metadata and downloads tarball to the pack cache.
    */
   private async resolvePackRoot(pin: PackPin): Promise<string> {
     if (pin.source === 'git') {
       return this.resolveGitPackRoot(pin);
+    }
+    if (pin.source === 'registry') {
+      return this.resolveRegistryPackRoot(pin);
     }
     return path.resolve(this.packsRoot, pin.id);
   }
@@ -299,6 +336,37 @@ export class PackLoader {
 
     const versionTag = `${VERSION_TAG_PREFIX}${pin.version}`;
     await this.gitClient.checkout(packCachePath, versionTag);
+
+    return packCachePath;
+  }
+
+  /**
+   * Resolve a registry-sourced pack by fetching metadata and downloading the tarball
+   * to the pack cache. Skips download if the pack is already cached.
+   */
+  private async resolveRegistryPackRoot(pin: PackPin): Promise<string> {
+    if (!this.registryClient) {
+      throw new Error(
+        `Pack "${pin.id}" has source: registry but no registryClient was provided to PackLoader. ` +
+          'Pass a registryClient in PackLoaderOptions to load registry-sourced packs.',
+      );
+    }
+
+    const packCachePath = path.join(this.packCacheDir, `${pin.id}@${pin.version}`);
+
+    await mkdir(this.packCacheDir, { recursive: true });
+
+    // Skip download if the pack manifest already exists in cache
+    const manifestCachePath = path.join(packCachePath, this.manifestFileName);
+    const alreadyCached = await access(manifestCachePath)
+      .then(() => true)
+      .catch(() => false);
+
+    if (!alreadyCached) {
+      const registryUrl = pin.registry_url ?? this.defaultRegistryUrl;
+      const metadata = await this.registryClient.fetchMetadata(pin.id, pin.version, registryUrl);
+      await this.registryClient.downloadTarball(metadata.tarball_url, packCachePath);
+    }
 
     return packCachePath;
   }
