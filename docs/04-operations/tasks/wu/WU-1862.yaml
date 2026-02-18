@@ -2,7 +2,7 @@ id: WU-1862
 title: 'Evidence store durability: JSONL compaction and incremental replay'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -53,3 +53,6 @@ session_id: 624ebc86-39cd-41e3-9426-f65b61704a11
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T22:34:19.480Z
+locked: true
+completed_at: 2026-02-18T22:51:21.011Z
+completed: 2026-02-18

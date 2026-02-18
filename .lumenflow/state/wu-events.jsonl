@@ -1664,5 +1664,6 @@
 {"type":"complete","wuId":"WU-1842","timestamp":"2026-02-18T22:25:12.923Z"}
 {"type":"complete","wuId":"WU-1840","timestamp":"2026-02-18T22:26:54.083Z"}
 {"type":"complete","wuId":"WU-1860","timestamp":"2026-02-18T22:31:22.963Z"}
-{"type":"claim","wuId":"WU-1862","lane":"Framework: Core Lifecycle","title":"Evidence store durability: JSONL compaction and incremental replay","timestamp":"2026-02-18T22:34:19.509Z"}
-{"type":"claim","wuId":"WU-1861","lane":"Framework: MCP","title":"INIT-030 Review Fix C: governance and type safety tightening","timestamp":"2026-02-18T22:35:49.730Z"}
+{"type":"claim","wuId":"WU-1862","timestamp":"2026-02-18T22:34:19.509Z","lane":"Framework: Core Lifecycle","title":"Evidence store durability: JSONL compaction and incremental replay"}
+{"type":"claim","wuId":"WU-1861","timestamp":"2026-02-18T22:35:49.730Z","lane":"Framework: MCP","title":"INIT-030 Review Fix C: governance and type safety tightening"}
+{"type":"complete","wuId":"WU-1862","timestamp":"2026-02-18T22:51:25.679Z"}
