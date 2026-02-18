@@ -6,6 +6,7 @@ _Last updated: 2026-02-18_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml)
+- [WU-1827 — Create pack:install CLI command for adding packs to workspace](wu/WU-1827.yaml)
 
 ## Completed
 
