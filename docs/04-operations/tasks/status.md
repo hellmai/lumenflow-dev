@@ -6,6 +6,7 @@ _Last updated: 2026-02-18_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1844 — Consolidate MCP runtime caches and create tool definition factory](wu/WU-1844.yaml)
+- [WU-1847 — Decompose tool-host execute method and extract denial trace helper](wu/WU-1847.yaml)
 
 ## Completed
 

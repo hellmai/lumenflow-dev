@@ -2,7 +2,7 @@ id: WU-1847
 title: Decompose tool-host execute method and extract denial trace helper
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -26,9 +26,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: INIT-030 code review found ToolHost.execute is a 272-line method handling capability lookup, scope resolution, input persistence, receipt tracking, reserved-scope denial, empty-scope denial, policy hook evaluation, input validation, handler dispatch, output normalization, output schema validation, output persistence, and trace recording. Three nearly identical denial blocks (reserved scope, empty scope, policy denial) differ only in scope_enforcement_note, policy_decisions, and result. Additionally, new Date().toISOString() is used in 5 places instead of an injectable clock, inconsistent with kernel-runtime.ts which uses an injectable now function.
+description: INIT-030 code review found ToolHost.execute is a 272-line method handling capability
+  lookup, scope resolution, input persistence, receipt tracking, reserved-scope denial, empty-scope
+  denial, policy hook evaluation, input validation, handler dispatch, output normalization, output
+  schema validation, output persistence, and trace recording. Three nearly identical denial blocks
+  (reserved scope, empty scope, policy denial) differ only in scope_enforcement_note,
+  policy_decisions, and result. Additionally, new Date().toISOString() is used in 5 places instead
+  of an injectable clock, inconsistent with kernel-runtime.ts which uses an injectable now function.
 acceptance:
   - 'Execute method decomposed into private methods: resolveScope, authorize, dispatch, recordTrace'
   - recordDeniedTrace helper consolidates 3 denial blocks
   - Injectable clock parameter added to ToolHost constructor
   - Existing tool-host.test.ts still passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1847
+claimed_at: 2026-02-18T14:07:44.183Z
+baseline_main_sha: 8e5bcae920150f28f9779d03f05c63eafbb61e9d
+session_id: d884e605-de25-4fee-8602-45081ea4b84d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T14:07:44.190Z
