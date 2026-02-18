@@ -2,7 +2,7 @@ id: WU-1820
 title: Build live task dashboard page with real-time event streaming
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -31,10 +31,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: React client component connecting to /api/events/:taskId SSE endpoint. Renders task state machine visualization (ready to active to done), live scrolling event log with timestamps, tool execution receipts (name, scopes, policy decisions, duration, pass/fail), and evidence chain visualization. This is the primary demo page.
+description: React client component connecting to /api/events/:taskId SSE endpoint. Renders task
+  state machine visualization (ready to active to done), live scrolling event log with timestamps,
+  tool execution receipts (name, scopes, policy decisions, duration, pass/fail), and evidence chain
+  visualization. This is the primary demo page.
 acceptance:
   - SSE client connects and displays live events
   - Task state machine rendered with visual transitions
   - Tool execution receipts show scope and policy metadata
   - Evidence chain links visible
   - Event log scrolls with timestamps
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1820
+claimed_at: 2026-02-18T19:07:57.215Z
+baseline_main_sha: de1c812f9c081128ec436e691ff67565ad4203b8
+session_id: 425f84d9-5410-43ac-b492-7254feecba51
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T19:07:57.221Z

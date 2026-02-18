@@ -1599,3 +1599,4 @@
 {"type":"complete","wuId":"WU-1857","timestamp":"2026-02-18T18:42:40.341Z"}
 {"type":"complete","wuId":"WU-1809","timestamp":"2026-02-18T18:52:56.495Z"}
 {"type":"claim","wuId":"WU-1810","lane":"Framework: Core Lifecycle","title":"Migrate initiative and orchestrate-initiative tools to runtime pack execution","timestamp":"2026-02-18T18:53:38.266Z"}
+{"type":"claim","wuId":"WU-1820","lane":"Content: Site Comms","title":"Build live task dashboard page with real-time event streaming","timestamp":"2026-02-18T19:07:57.241Z"}

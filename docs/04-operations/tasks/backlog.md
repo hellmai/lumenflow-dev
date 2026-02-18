@@ -29,7 +29,6 @@ sections:
 - [WU-1813 — Remove fallback paths and eliminate runCliCommand from MCP tool layer](wu/WU-1813.yaml) — Framework: Core Lifecycle
 - [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml) — Framework: Core Lifecycle
 - [WU-1815 — Post-Phase-3 shell-out deprecation recertification and metric closure](wu/WU-1815.yaml) — Framework: Core Lifecycle
-- [WU-1820 — Build live task dashboard page with real-time event streaming](wu/WU-1820.yaml) — Content: Site Comms
 - [WU-1821 — Build workspace overview page with task list and lane WIP visualization](wu/WU-1821.yaml) — Content: Site Comms
 - [WU-1822 — Build workspace connection flow with runtime initialization](wu/WU-1822.yaml) — Content: Site Comms
 - [WU-1823 — Create pack:scaffold CLI command for new pack authoring](wu/WU-1823.yaml) — Framework: CLI Orchestration
@@ -57,6 +56,7 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1810 — Migrate initiative and orchestrate-initiative tools to runtime pack execution](wu/WU-1810.yaml) — Framework: Core Lifecycle
+- [WU-1820 — Build live task dashboard page with real-time event streaming](wu/WU-1820.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 
