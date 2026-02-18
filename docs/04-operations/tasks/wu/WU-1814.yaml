@@ -2,7 +2,7 @@ id: WU-1814
 title: Full parity validation and Phase 3 completion evidence
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -32,9 +32,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Phase 3 migration is functionally complete after WU-1813. Problem: need formal validation and completion evidence. Solution: run full parity gates, verify all tools through runtime path, update INIT-030 Phase 3 status to done.'
+description: 'Context: Phase 3 migration is functionally complete after WU-1813. Problem: need
+  formal validation and completion evidence. Solution: run full parity gates, verify all tools
+  through runtime path, update INIT-030 Phase 3 status to done.'
 acceptance:
   - pnpm gates passes (all quality gates green)
   - MCP parity report shows 0 missing and 0 unexpected tools
   - INIT-030 Phase 3 status set to done
   - Complete WU lifecycle (create to done) verified end-to-end via runtime
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1814
+claimed_at: 2026-02-18T19:53:00.129Z
+baseline_main_sha: 01b4c372c7951ef17121aab68b0c31d69bc21d66
+session_id: 6a409c8a-9ff1-4b10-a74c-3dd529571888
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T19:53:00.134Z

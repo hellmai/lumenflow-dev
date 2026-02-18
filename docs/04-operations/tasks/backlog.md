@@ -24,7 +24,6 @@ sections:
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
-- [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml) — Framework: Core Lifecycle
 - [WU-1815 — Post-Phase-3 shell-out deprecation recertification and metric closure](wu/WU-1815.yaml) — Framework: Core Lifecycle
 - [WU-1822 — Build workspace connection flow with runtime initialization](wu/WU-1822.yaml) — Content: Site Comms
 - [WU-1825 — Create pack:hash CLI command for integrity hash computation](wu/WU-1825.yaml) — Framework: CLI Orchestration
@@ -49,6 +48,7 @@ sections:
 - [WU-1837 — Extend PackLoader with registry-based pack resolution](wu/WU-1837.yaml) — Framework: Core Lifecycle
 - [WU-1831 — Implement AG-UI state synchronization with StateSnapshot and StateDelta](wu/WU-1831.yaml) — Framework: MCP
 - [WU-1832 — Create CopilotKit integration example app connected to LumenFlow AG-UI](wu/WU-1832.yaml) — Content: Specs Governance
+- [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
