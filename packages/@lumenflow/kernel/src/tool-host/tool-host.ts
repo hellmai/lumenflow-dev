@@ -176,28 +176,32 @@ export class ToolHost {
     const packId =
       capability.pack ?? parseOptionalString(metadata[EXECUTION_METADATA_KEYS.PACK_ID]);
 
-    await this.evidenceStore.appendTrace({
-      schema_version: 1,
-      kind: TOOL_TRACE_KINDS.TOOL_CALL_STARTED,
-      receipt_id: receiptId,
-      run_id: context.run_id,
-      task_id: context.task_id,
-      session_id: context.session_id,
-      timestamp,
-      tool_name: capability.name,
-      execution_mode: capability.handler.kind,
-      scope_requested: scopeRequested,
-      scope_allowed: scopeAllowed,
-      scope_enforced: scopeEnforced,
-      input_hash: inputHash,
-      input_ref: inputRef,
-      tool_version: capability.version,
-      pack_id: packId,
-      pack_version: packVersion,
-      pack_integrity: packIntegrity,
-      workspace_config_hash: workspaceConfigHash,
-      runtime_version: runtimeVersion,
-    });
+    try {
+      await this.evidenceStore.appendTrace({
+        schema_version: 1,
+        kind: TOOL_TRACE_KINDS.TOOL_CALL_STARTED,
+        receipt_id: receiptId,
+        run_id: context.run_id,
+        task_id: context.task_id,
+        session_id: context.session_id,
+        timestamp,
+        tool_name: capability.name,
+        execution_mode: capability.handler.kind,
+        scope_requested: scopeRequested,
+        scope_allowed: scopeAllowed,
+        scope_enforced: scopeEnforced,
+        input_hash: inputHash,
+        input_ref: inputRef,
+        tool_version: capability.version,
+        pack_id: packId,
+        pack_version: packVersion,
+        pack_integrity: packIntegrity,
+        workspace_config_hash: workspaceConfigHash,
+        runtime_version: runtimeVersion,
+      });
+    } catch {
+      // Started trace failure must not prevent tool execution.
+    }
 
     const authResult = await this.authorize({
       receiptId,
@@ -223,13 +227,17 @@ export class ToolHost {
           message: parsedInput.error.message,
         },
       };
-      await this.recordDeniedTrace({
-        receiptId,
-        startedAt,
-        result: 'failure',
-        scopeEnforcementNote: 'Input validation failed before dispatch.',
-        policyDecisions: authResult.policyDecisions,
-      });
+      try {
+        await this.recordDeniedTrace({
+          receiptId,
+          startedAt,
+          result: 'failure',
+          scopeEnforcementNote: 'Input validation failed before dispatch.',
+          policyDecisions: authResult.policyDecisions,
+        });
+      } catch {
+        // Denied trace failure must not suppress the denial output.
+      }
       return invalidInputOutput;
     }
 
@@ -316,19 +324,23 @@ export class ToolHost {
           },
         },
       };
-      await this.recordDeniedTrace({
-        receiptId,
-        startedAt,
-        result: 'denied',
-        scopeEnforcementNote: `Denied by reserved framework boundary: ${RESERVED_FRAMEWORK_SCOPE_GLOB} is framework-owned.`,
-        policyDecisions: [
-          {
-            policy_id: KERNEL_POLICY_IDS.SCOPE_RESERVED_PATH,
-            decision: 'deny',
-            reason: `Pack/tool declared write scope targets reserved ${RESERVED_FRAMEWORK_SCOPE_GLOB} namespace`,
-          },
-        ],
-      });
+      try {
+        await this.recordDeniedTrace({
+          receiptId,
+          startedAt,
+          result: 'denied',
+          scopeEnforcementNote: `Denied by reserved framework boundary: ${RESERVED_FRAMEWORK_SCOPE_GLOB} is framework-owned.`,
+          policyDecisions: [
+            {
+              policy_id: KERNEL_POLICY_IDS.SCOPE_RESERVED_PATH,
+              decision: 'deny',
+              reason: `Pack/tool declared write scope targets reserved ${RESERVED_FRAMEWORK_SCOPE_GLOB} namespace`,
+            },
+          ],
+        });
+      } catch {
+        // Denied trace failure must not suppress the denial output.
+      }
       return { denied: true, output };
     }
 
@@ -344,19 +356,23 @@ export class ToolHost {
           },
         },
       };
-      await this.recordDeniedTrace({
-        receiptId,
-        startedAt,
-        result: 'denied',
-        scopeEnforcementNote: 'Denied by hard boundary: empty scope intersection.',
-        policyDecisions: [
-          {
-            policy_id: KERNEL_POLICY_IDS.SCOPE_BOUNDARY,
-            decision: 'deny',
-            reason: 'No intersecting scopes after scope resolution',
-          },
-        ],
-      });
+      try {
+        await this.recordDeniedTrace({
+          receiptId,
+          startedAt,
+          result: 'denied',
+          scopeEnforcementNote: 'Denied by hard boundary: empty scope intersection.',
+          policyDecisions: [
+            {
+              policy_id: KERNEL_POLICY_IDS.SCOPE_BOUNDARY,
+              decision: 'deny',
+              reason: 'No intersecting scopes after scope resolution',
+            },
+          ],
+        });
+      } catch {
+        // Denied trace failure must not suppress the denial output.
+      }
       return { denied: true, output };
     }
 
@@ -375,13 +391,17 @@ export class ToolHost {
           message: 'Policy hook denied tool execution.',
         },
       };
-      await this.recordDeniedTrace({
-        receiptId,
-        startedAt,
-        result: 'denied',
-        scopeEnforcementNote: 'Denied by policy hook decision.',
-        policyDecisions,
-      });
+      try {
+        await this.recordDeniedTrace({
+          receiptId,
+          startedAt,
+          result: 'denied',
+          scopeEnforcementNote: 'Denied by policy hook decision.',
+          policyDecisions,
+        });
+      } catch {
+        // Denied trace failure must not suppress the denial output.
+      }
       return { denied: true, output };
     }
 

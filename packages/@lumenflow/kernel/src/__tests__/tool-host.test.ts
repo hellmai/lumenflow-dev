@@ -344,6 +344,210 @@ describe('tool host', () => {
     expect(result.data).toMatchObject({ written: true });
   });
 
+  describe('trace infrastructure resilience', () => {
+    it('continues tool execution when STARTED trace write fails', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+      });
+
+      // Fail on the very first appendTrace call (the STARTED trace)
+      vi.spyOn(evidenceStore, 'appendTrace').mockRejectedValue(
+        new Error('Simulated disk failure during started trace'),
+      );
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'ok',
+        },
+        makeExecutionContext(),
+      );
+
+      // Tool should still execute and return its result
+      expect(result.success).toBe(true);
+      expect(result.data).toMatchObject({ written: true });
+    });
+
+    it('returns denied output when scope-denied trace write fails', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+      });
+
+      // Let started trace succeed, fail on denied trace (second call)
+      let appendCallCount = 0;
+      const originalAppendTrace = evidenceStore.appendTrace.bind(evidenceStore);
+      vi.spyOn(evidenceStore, 'appendTrace').mockImplementation(async (entry) => {
+        appendCallCount++;
+        if (appendCallCount >= 2) {
+          throw new Error('Simulated disk failure during denied trace');
+        }
+        return originalAppendTrace(entry);
+      });
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'blocked',
+        },
+        makeExecutionContext(
+          {},
+          {
+            lane_allowed_scopes: [{ type: 'path', pattern: 'docs/**', access: 'write' }],
+          },
+        ),
+      );
+
+      // The denied output must still be returned to the caller
+      expect(result.success).toBe(false);
+      expect(result.error?.code).toBe('SCOPE_DENIED');
+    });
+
+    it('returns denied output when reserved-scope denied trace write fails', async () => {
+      const reservedScope: ToolScope = {
+        type: 'path',
+        pattern: '.lumenflow/state/**',
+        access: 'write',
+      };
+
+      const registry = new ToolRegistry();
+      registry.register({
+        ...makeInProcessCapability(),
+        name: 'state:write',
+        required_scopes: [reservedScope],
+      });
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+      });
+
+      // Let started trace succeed, fail on denied trace (second call)
+      let appendCallCount = 0;
+      const originalAppendTrace = evidenceStore.appendTrace.bind(evidenceStore);
+      vi.spyOn(evidenceStore, 'appendTrace').mockImplementation(async (entry) => {
+        appendCallCount++;
+        if (appendCallCount >= 2) {
+          throw new Error('Simulated disk failure during reserved-scope denied trace');
+        }
+        return originalAppendTrace(entry);
+      });
+
+      const result = await host.execute(
+        'state:write',
+        {
+          path: '.lumenflow/state/wu-events.jsonl',
+          content: 'blocked',
+        },
+        makeExecutionContext(
+          {
+            allowed_scopes: [reservedScope],
+          },
+          {
+            workspace_allowed_scopes: [reservedScope],
+            lane_allowed_scopes: [reservedScope],
+            task_declared_scopes: [reservedScope],
+          },
+        ),
+      );
+
+      // The denied output must still be returned
+      expect(result.success).toBe(false);
+      expect(result.error?.code).toBe('SCOPE_DENIED');
+      expect(result.error?.message).toContain('.lumenflow');
+    });
+
+    it('returns denied output when policy-denied trace write fails', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        policyHook: async () => [
+          {
+            policy_id: 'test.deny',
+            decision: 'deny' as const,
+            reason: 'Test policy denial',
+          },
+        ],
+      });
+
+      // Let started trace succeed, fail on denied trace (second call)
+      let appendCallCount = 0;
+      const originalAppendTrace = evidenceStore.appendTrace.bind(evidenceStore);
+      vi.spyOn(evidenceStore, 'appendTrace').mockImplementation(async (entry) => {
+        appendCallCount++;
+        if (appendCallCount >= 2) {
+          throw new Error('Simulated disk failure during policy denied trace');
+        }
+        return originalAppendTrace(entry);
+      });
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'denied-by-policy',
+        },
+        makeExecutionContext(),
+      );
+
+      // The policy-denied output must still be returned
+      expect(result.success).toBe(false);
+      expect(result.error?.code).toBe('POLICY_DENIED');
+    });
+
+    it('returns failure output when input-validation denied trace write fails', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+      });
+
+      // Let started trace succeed, fail on denied trace (second call)
+      let appendCallCount = 0;
+      const originalAppendTrace = evidenceStore.appendTrace.bind(evidenceStore);
+      vi.spyOn(evidenceStore, 'appendTrace').mockImplementation(async (entry) => {
+        appendCallCount++;
+        if (appendCallCount >= 2) {
+          throw new Error('Simulated disk failure during input validation denied trace');
+        }
+        return originalAppendTrace(entry);
+      });
+
+      // Pass invalid input (missing 'content' field) to trigger input validation failure
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          // missing 'content' - invalid input
+        },
+        makeExecutionContext(),
+      );
+
+      // The input validation failure output must still be returned
+      expect(result.success).toBe(false);
+      expect(result.error?.code).toBe('INVALID_INPUT');
+    });
+  });
+
   describe('injectable clock', () => {
     const FIXED_DATE = new Date('2026-01-15T12:00:00.000Z');
 
