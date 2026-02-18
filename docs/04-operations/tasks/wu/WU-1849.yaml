@@ -1,0 +1,44 @@
+id: WU-1849
+title: Add missing test coverage for INIT-030 phase 2-3 gaps
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-18
+code_paths:
+  - packages/@lumenflow/packs/software-delivery/tool-impl/worktree-tools.ts
+  - packages/@lumenflow/kernel/src/scope/scope-intersection.ts
+  - packages/@lumenflow/kernel/src/runtime/stdio-handshake.ts
+  - packages/@lumenflow/kernel/src/config/workspace-config.ts
+  - packages/@lumenflow/runtime/src/session/session-manager.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/packs/software-delivery/tests/worktree-tools.test.ts
+    - packages/@lumenflow/kernel/tests/scope-intersection.test.ts
+    - packages/@lumenflow/kernel/tests/stdio-handshake.test.ts
+    - packages/@lumenflow/kernel/tests/workspace-config.test.ts
+    - packages/@lumenflow/runtime/tests/session-manager.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1849.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Code review of INIT-030 WUs identified several modules with weak or missing test coverage: worktree-tools has no unit tests, scope-intersection edge cases untested, stdio-handshake tests only check message format not behavioral contracts, workspace-config lacks negative validation tests, session-manager closeSession path untested.'
+acceptance:
+  - worktree-tools.ts has dedicated unit tests covering createWorktree, removeWorktree, and error paths
+  - scope-intersection tests cover wildcard-vs-wildcard, empty-scope, and disjoint-scope edge cases
+  - stdio-handshake tests verify behavioral contracts (timeout, malformed input, version mismatch)
+  - workspace-config tests cover invalid YAML, missing required fields, and schema migration
+  - session-manager tests cover closeSession cleanup and concurrent session edge cases
+  - All new tests follow existing test patterns (vitest, describe/it blocks)
+  - Coverage for these modules reaches at least 90 percent line coverage
