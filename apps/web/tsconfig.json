@@ -7,7 +7,9 @@
     "moduleResolution": "Bundler",
     "baseUrl": ".",
     "paths": {
-      "@lumenflow/kernel": ["../../packages/@lumenflow/kernel/dist/index.d.ts"]
+      "@/*": ["./src/*"],
+      "@lumenflow/kernel": ["../../packages/@lumenflow/kernel/dist/index.d.ts"],
+      "@lumenflow/surfaces/*": ["../../packages/@lumenflow/surfaces/*"]
     },
     "jsx": "preserve",
     "incremental": true,

@@ -3,7 +3,17 @@
   "extends": ["//"],
   "tasks": {
     "build": {
+      "inputs": ["app/**/*.ts", "app/**/*.tsx", "src/**/*.ts", "src/**/*.tsx", "next.config.ts", "tsconfig.json", "package.json"],
       "outputs": [".next/**"]
+    },
+    "lint": {
+      "inputs": ["app/**/*.ts", "app/**/*.tsx", "src/**/*.ts", "src/**/*.tsx", "eslint.config.mjs", "next.config.ts", "tailwind.config.ts"]
+    },
+    "typecheck": {
+      "inputs": ["app/**/*.ts", "app/**/*.tsx", "src/**/*.ts", "src/**/*.tsx", "tsconfig.json"]
+    },
+    "test": {
+      "inputs": ["app/**/*.ts", "app/**/*.tsx", "src/**/*.ts", "src/**/*.tsx", "__tests__/**/*.ts", "__tests__/**/*.tsx", "vitest.config.ts"]
     }
   }
 }

@@ -4,6 +4,7 @@ import tseslint from 'typescript-eslint';
 import security from 'eslint-plugin-security';
 import boundaries from 'eslint-plugin-boundaries';
 import sonarjs from 'eslint-plugin-sonarjs';
+import eslintReact from '@eslint-react/eslint-plugin';
 
 export default tseslint.config(
   // Global ignores
@@ -141,9 +142,15 @@ export default tseslint.config(
     },
   },
 
-  // Project-specific rules
+  // React linting for apps/web (uses @eslint-react — ESLint 10 compatible)
   {
-    files: ['**/*.ts', '**/*.mts'],
+    files: ['apps/web/**/*.tsx', 'apps/web/**/*.ts'],
+    ...eslintReact.configs['recommended-typescript'],
+  },
+
+  // Project-specific rules (TypeScript — all packages)
+  {
+    files: ['**/*.ts', '**/*.mts', '**/*.tsx'],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -193,7 +200,7 @@ export default tseslint.config(
 
   // Test file overrides - relaxed rules for test patterns
   {
-    files: ['**/__tests__/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
+    files: ['**/__tests__/**/*.ts', '**/__tests__/**/*.tsx', '**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
     rules: {
       // Test files legitimately use any types for mocking
       '@typescript-eslint/no-explicit-any': 'off',

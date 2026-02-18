@@ -5,24 +5,33 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --port 3000",
-    "build": "pnpm --filter @lumenflow/kernel build && next build",
+    "build": "pnpm --filter @lumenflow/kernel build && next build --webpack",
     "start": "next start",
     "lint": "eslint app src __tests__ next.config.ts tailwind.config.ts --max-warnings 0",
-    "typecheck": "pnpm --filter @lumenflow/kernel build && next build --no-lint",
+    "typecheck": "pnpm --filter @lumenflow/kernel build && next build --webpack",
     "test": "vitest run",
     "clean": "rm -rf .next"
   },
   "dependencies": {
     "@lumenflow/kernel": "workspace:^",
-    "next": "^15.5.6",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.574.0",
+    "next": "^16.1.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwind-merge": "^3.4.1",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^22.10.0",
-    "@types/react": "^19.1.16",
-    "@types/react-dom": "^19.1.9",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.4",
     "autoprefixer": "^10.4.21",
+    "jsdom": "^28.1.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17"
   },

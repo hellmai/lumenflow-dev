@@ -6,7 +6,7 @@ import type {
   ReplayFilter,
   TaskSpec,
 } from '@lumenflow/kernel';
-import { createHttpSurface } from '../../../packages/@lumenflow/surfaces/http/server';
+import { createHttpSurface } from '@lumenflow/surfaces/http/server';
 import { forwardToHttpSurface } from '../src/server/http-surface-route-adapter';
 
 const HTTP_METHOD = {

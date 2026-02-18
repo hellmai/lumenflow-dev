@@ -1,7 +1,7 @@
 import { EventEmitter } from 'node:events';
 import type { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'node:http';
 import { PassThrough } from 'node:stream';
-import type { HttpSurface } from '../../../../packages/@lumenflow/surfaces/http/server';
+import type { HttpSurface } from '@lumenflow/surfaces/http/server';
 
 const HTTP_STATUS = {
   OK: 200,

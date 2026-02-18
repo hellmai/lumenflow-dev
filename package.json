@@ -113,6 +113,7 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
+    "@eslint-react/eslint-plugin": "^2.13.0",
     "@eslint/js": "^10.0.1",
     "@types/ms": "^2.1.0",
     "@types/node": "^22.10.0",

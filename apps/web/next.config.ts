@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
     externalDir: true,
   },
   outputFileTracingRoot: REPO_ROOT,
+  // Turbopack doesn't support extensionAlias yet (vercel/next.js#82945).
+  // Until it does, use --webpack for build/typecheck. The webpack callback
+  // lets TypeScript .js-extension imports (Node ESM convention) resolve to .ts.
   webpack(config) {
     config.resolve ??= {};
     config.resolve.extensionAlias = {
