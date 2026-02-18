@@ -2,7 +2,7 @@ id: WU-1870
 title: Cursor-based pagination for EventStore.replay() and /api/events/all
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -53,3 +53,6 @@ session_id: feb6b4e3-57bb-43e2-bda5-c5c36c051d7a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T23:20:18.420Z
+locked: true
+completed_at: 2026-02-18T23:32:51.774Z
+completed: 2026-02-18
