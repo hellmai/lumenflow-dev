@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1880 — Fix manifest parity drift for pack_search in wu-tools truth gate](wu/WU-1880.yaml) — Framework: MCP
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
@@ -32,6 +31,7 @@ sections:
 - [WU-1876 — Evidence export endpoint with CSV and JSON format support](wu/WU-1876.yaml) — Content: Site Comms
 - [WU-1877 — 4 additional community packs published to registry](wu/WU-1877.yaml) — Framework: Core Lifecycle
 - [WU-1878 — Marketplace Install to workspace button](wu/WU-1878.yaml) — Content: Site Comms
+- [WU-1880 — Fix manifest parity drift for pack_search in wu-tools truth gate](wu/WU-1880.yaml) — Framework: MCP
 
 ## 🔧 In progress
 
@@ -39,7 +39,6 @@ sections:
 - [WU-1864 — Scope intersection property-based fuzz testing for patternContains glob heuristic](wu/WU-1864.yaml) — Framework: Core Lifecycle
 - [WU-1870 — Cursor-based pagination for EventStore.replay() and /api/events/all](wu/WU-1870.yaml) — Framework: Core Lifecycle
 - [WU-1869 — Vercel Blob-backed PackRegistryStore + PackBlobStore adapters](wu/WU-1869.yaml) — Content: Site Comms
-- [WU-1879 — INIT-030 Review Fix G: evidence store multi-instance replay correctness and lock error propagation](wu/WU-1879.yaml) — Framework: Core Lifecycle
 - [WU-1865 — Kernel polish: xstate dead code removal, warning clarity, naming consistency](wu/WU-1865.yaml) — Framework: Core Lifecycle
 - [WU-1871 — lumenflow workspace:init interactive wizard generating workspace.yaml](wu/WU-1871.yaml) — Framework: CLI Orchestration
 
@@ -843,6 +842,7 @@ sections:
 - [WU-1863 — Policy construction safety: allowAllPolicyHook default and task ID uniqueness](wu/WU-1863.yaml)
 - [WU-1868 — INIT-030 Review Fix F: use readTracesByTaskId in inspectTask receipts](wu/WU-1868.yaml)
 - [WU-1866 — INIT-030 Review Fix D: flip executeViaPack fallback from denylist to allowlist](wu/WU-1866.yaml)
+- [WU-1879 — INIT-030 Review Fix G: evidence store multi-instance replay correctness and lock error propagation](wu/WU-1879.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

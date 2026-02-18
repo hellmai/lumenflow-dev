@@ -3,7 +3,7 @@ title: 'INIT-030 Review Fix G: evidence store multi-instance replay correctness 
   propagation'
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -49,3 +49,6 @@ session_id: feb6b4e3-57bb-43e2-bda5-c5c36c051d7a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T23:20:45.479Z
+locked: true
+completed_at: 2026-02-18T23:26:12.858Z
+completed: 2026-02-18

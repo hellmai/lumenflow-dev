@@ -1676,9 +1676,10 @@
 {"type":"complete","wuId":"WU-1863","timestamp":"2026-02-18T23:13:01.631Z"}
 {"type":"complete","wuId":"WU-1868","timestamp":"2026-02-18T23:15:42.556Z"}
 {"type":"complete","wuId":"WU-1866","timestamp":"2026-02-18T23:16:20.781Z"}
-{"type":"claim","wuId":"WU-1864","lane":"Framework: Core Lifecycle","title":"Scope intersection property-based fuzz testing for patternContains glob heuristic","timestamp":"2026-02-18T23:17:51.418Z"}
-{"type":"claim","wuId":"WU-1870","lane":"Framework: Core Lifecycle","title":"Cursor-based pagination for EventStore.replay() and /api/events/all","timestamp":"2026-02-18T23:20:18.449Z"}
-{"type":"claim","wuId":"WU-1869","lane":"Content: Site Comms","title":"Vercel Blob-backed PackRegistryStore + PackBlobStore adapters","timestamp":"2026-02-18T23:20:26.211Z"}
-{"type":"claim","wuId":"WU-1879","lane":"Framework: Core Lifecycle","title":"INIT-030 Review Fix G: evidence store multi-instance replay correctness and lock error propagation","timestamp":"2026-02-18T23:20:45.497Z"}
-{"type":"claim","wuId":"WU-1865","lane":"Framework: Core Lifecycle","title":"Kernel polish: xstate dead code removal, warning clarity, naming consistency","timestamp":"2026-02-18T23:20:51.989Z"}
-{"type":"claim","wuId":"WU-1871","lane":"Framework: CLI Orchestration","title":"lumenflow workspace:init interactive wizard generating workspace.yaml","timestamp":"2026-02-18T23:21:35.093Z"}
+{"type":"claim","wuId":"WU-1864","timestamp":"2026-02-18T23:17:51.418Z","lane":"Framework: Core Lifecycle","title":"Scope intersection property-based fuzz testing for patternContains glob heuristic"}
+{"type":"claim","wuId":"WU-1870","timestamp":"2026-02-18T23:20:18.449Z","lane":"Framework: Core Lifecycle","title":"Cursor-based pagination for EventStore.replay() and /api/events/all"}
+{"type":"claim","wuId":"WU-1869","timestamp":"2026-02-18T23:20:26.211Z","lane":"Content: Site Comms","title":"Vercel Blob-backed PackRegistryStore + PackBlobStore adapters"}
+{"type":"claim","wuId":"WU-1879","timestamp":"2026-02-18T23:20:45.497Z","lane":"Framework: Core Lifecycle","title":"INIT-030 Review Fix G: evidence store multi-instance replay correctness and lock error propagation"}
+{"type":"claim","wuId":"WU-1865","timestamp":"2026-02-18T23:20:51.989Z","lane":"Framework: Core Lifecycle","title":"Kernel polish: xstate dead code removal, warning clarity, naming consistency"}
+{"type":"claim","wuId":"WU-1871","timestamp":"2026-02-18T23:21:35.093Z","lane":"Framework: CLI Orchestration","title":"lumenflow workspace:init interactive wizard generating workspace.yaml"}
+{"type":"complete","wuId":"WU-1879","timestamp":"2026-02-18T23:26:17.648Z"}
