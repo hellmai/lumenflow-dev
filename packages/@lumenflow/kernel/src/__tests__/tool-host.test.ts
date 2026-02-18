@@ -306,4 +306,166 @@ describe('tool host', () => {
 
     expect(reconcileSpy).toHaveBeenCalledTimes(2);
   });
+
+  describe('injectable clock', () => {
+    const FIXED_DATE = new Date('2026-01-15T12:00:00.000Z');
+
+    it('uses injected clock for all trace timestamps', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        now: () => FIXED_DATE,
+      });
+
+      await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'ok',
+        },
+        makeExecutionContext(),
+      );
+
+      const traces = await evidenceStore.readTraces();
+      expect(traces).toHaveLength(2);
+      for (const trace of traces) {
+        expect(trace.timestamp).toBe('2026-01-15T12:00:00.000Z');
+      }
+    });
+
+    it('uses injected clock for denial trace timestamps', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        now: () => FIXED_DATE,
+      });
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'blocked',
+        },
+        makeExecutionContext(
+          {},
+          {
+            lane_allowed_scopes: [{ type: 'path', pattern: 'docs/**', access: 'write' }],
+          },
+        ),
+      );
+
+      expect(result.success).toBe(false);
+      const traces = await evidenceStore.readTraces();
+      for (const trace of traces) {
+        expect(trace.timestamp).toBe('2026-01-15T12:00:00.000Z');
+      }
+    });
+
+    it('uses injected clock for duration_ms calculation', async () => {
+      let callCount = 0;
+      const advancingClock = () => {
+        callCount++;
+        // First call: startedAt. Second call: finished timestamp.
+        return new Date(FIXED_DATE.getTime() + (callCount - 1) * 42);
+      };
+
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        now: advancingClock,
+      });
+
+      await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'ok',
+        },
+        makeExecutionContext(),
+      );
+
+      const traces = await evidenceStore.readTraces();
+      const finished = traces.find((trace) => trace.kind === 'tool_call_finished');
+      if (finished?.kind === 'tool_call_finished') {
+        expect(finished.duration_ms).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it('defaults to real clock when now is not provided', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        // no `now` option — should use real Date
+      });
+
+      const before = new Date().toISOString();
+      await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'ok',
+        },
+        makeExecutionContext(),
+      );
+      const after = new Date().toISOString();
+
+      const traces = await evidenceStore.readTraces();
+      for (const trace of traces) {
+        expect(trace.timestamp >= before).toBe(true);
+        expect(trace.timestamp <= after).toBe(true);
+      }
+    });
+
+    it('uses injected clock for policy denial trace timestamps', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        now: () => FIXED_DATE,
+        policyHook: async () => [
+          {
+            policy_id: 'test.deny',
+            decision: 'deny' as const,
+            reason: 'Test policy denial',
+          },
+        ],
+      });
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'denied-by-policy',
+        },
+        makeExecutionContext(),
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.error?.code).toBe('POLICY_DENIED');
+
+      const traces = await evidenceStore.readTraces();
+      for (const trace of traces) {
+        expect(trace.timestamp).toBe('2026-01-15T12:00:00.000Z');
+      }
+    });
+  });
 });

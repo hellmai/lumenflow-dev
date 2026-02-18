@@ -45,7 +45,19 @@ export interface ToolHostOptions {
   subprocessDispatcher?: SubprocessDispatcher;
   policyHook?: PolicyHook;
   runtimeVersion?: string;
+  now?: () => Date;
 }
+
+interface ScopeResolution {
+  scopeRequested: ToolScope[];
+  scopeAllowed: ToolScope[];
+  scopeEnforced: ToolScope[];
+  reservedFrameworkWriteScopes: string[];
+}
+
+type AuthorizeResult =
+  | { denied: true; output: ToolOutput }
+  | { denied: false; policyDecisions: PolicyDecision[] };
 
 function resolveMetadata(context: ExecutionContext): Record<string, unknown> {
   if (!context.metadata || typeof context.metadata !== 'object') {
@@ -107,6 +119,7 @@ export class ToolHost {
   private readonly subprocessDispatcher: SubprocessDispatcher;
   private readonly policyHook: PolicyHook;
   private readonly runtimeVersion: string;
+  private readonly now: () => Date;
 
   constructor(options: ToolHostOptions) {
     this.registry = options.registry;
@@ -114,6 +127,7 @@ export class ToolHost {
     this.subprocessDispatcher = options.subprocessDispatcher ?? new DefaultSubprocessDispatcher();
     this.policyHook = options.policyHook ?? allowAllPolicyHook;
     this.runtimeVersion = options.runtimeVersion ?? DEFAULT_KERNEL_RUNTIME_VERSION;
+    this.now = options.now ?? (() => new Date());
   }
 
   async onStartup(): Promise<number> {
@@ -139,32 +153,12 @@ export class ToolHost {
     }
 
     const metadata = resolveMetadata(context);
-    const workspaceAllowed = parseScopeList(
-      metadata[EXECUTION_METADATA_KEYS.WORKSPACE_ALLOWED_SCOPES],
-      context.allowed_scopes,
-    );
-    const laneAllowed = parseScopeList(
-      metadata[EXECUTION_METADATA_KEYS.LANE_ALLOWED_SCOPES],
-      context.allowed_scopes,
-    );
-    const taskDeclared = parseScopeList(
-      metadata[EXECUTION_METADATA_KEYS.TASK_DECLARED_SCOPES],
-      context.allowed_scopes,
-    );
-
-    const scopeRequested = capability.required_scopes;
-    const reservedFrameworkWriteScopes = collectReservedFrameworkWriteScopes(scopeRequested);
-    const scopeAllowed = intersectToolScopes({
-      workspaceAllowed,
-      laneAllowed,
-      taskDeclared,
-      toolRequired: scopeRequested,
-    });
-    const scopeEnforced = scopeAllowed;
+    const { scopeRequested, scopeAllowed, scopeEnforced, reservedFrameworkWriteScopes } =
+      this.resolveScope(capability, context, metadata);
 
     const { inputHash, inputRef } = await this.evidenceStore.persistInput(input);
     const receiptId = randomUUID();
-    const startedAt = Date.now();
+    const startedAt = this.now().getTime();
     const timestamp = new Date(startedAt).toISOString();
 
     const workspaceConfigHashCandidate = parseOptionalString(
@@ -205,100 +199,19 @@ export class ToolHost {
       runtime_version: runtimeVersion,
     });
 
-    if (reservedFrameworkWriteScopes.length > 0) {
-      const deniedOutput: ToolOutput = {
-        success: false,
-        error: {
-          code: TOOL_ERROR_CODES.SCOPE_DENIED,
-          message: `Reserved scope violation: pack/tool write scopes under ${RESERVED_FRAMEWORK_SCOPE_GLOB} are not allowed.`,
-          details: {
-            reserved_scopes: reservedFrameworkWriteScopes,
-          },
-        },
-      };
-
-      await this.evidenceStore.appendTrace({
-        schema_version: 1,
-        kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
-        receipt_id: receiptId,
-        timestamp: new Date().toISOString(),
-        result: 'denied',
-        duration_ms: Date.now() - startedAt,
-        scope_enforcement_note: `Denied by reserved framework boundary: ${RESERVED_FRAMEWORK_SCOPE_GLOB} is framework-owned.`,
-        policy_decisions: [
-          {
-            policy_id: KERNEL_POLICY_IDS.SCOPE_RESERVED_PATH,
-            decision: 'deny',
-            reason: `Pack/tool declared write scope targets reserved ${RESERVED_FRAMEWORK_SCOPE_GLOB} namespace`,
-          },
-        ],
-        artifacts_written: [],
-      });
-
-      return deniedOutput;
-    }
-
-    if (scopeEnforced.length === 0) {
-      const deniedOutput: ToolOutput = {
-        success: false,
-        error: {
-          code: TOOL_ERROR_CODES.SCOPE_DENIED,
-          message: 'Scope intersection denied: no allowed scopes remain after intersection.',
-          details: {
-            scope_requested: scopeRequested,
-            scope_allowed: scopeAllowed,
-          },
-        },
-      };
-
-      await this.evidenceStore.appendTrace({
-        schema_version: 1,
-        kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
-        receipt_id: receiptId,
-        timestamp: new Date().toISOString(),
-        result: 'denied',
-        duration_ms: Date.now() - startedAt,
-        scope_enforcement_note: 'Denied by hard boundary: empty scope intersection.',
-        policy_decisions: [
-          {
-            policy_id: KERNEL_POLICY_IDS.SCOPE_BOUNDARY,
-            decision: 'deny',
-            reason: 'No intersecting scopes after scope resolution',
-          },
-        ],
-        artifacts_written: [],
-      });
-
-      return deniedOutput;
-    }
-
-    const policyDecisions = await this.policyHook({
+    const authResult = await this.authorize({
+      receiptId,
+      startedAt,
       capability,
       input,
       context,
+      scopeRequested,
+      scopeAllowed,
       scopeEnforced,
+      reservedFrameworkWriteScopes,
     });
-
-    if (policyDecisions.some((decision) => decision.decision === 'deny')) {
-      const deniedOutput: ToolOutput = {
-        success: false,
-        error: {
-          code: TOOL_ERROR_CODES.POLICY_DENIED,
-          message: 'Policy hook denied tool execution.',
-        },
-      };
-      await this.evidenceStore.appendTrace({
-        schema_version: 1,
-        kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
-        receipt_id: receiptId,
-        timestamp: new Date().toISOString(),
-        result: 'denied',
-        duration_ms: Date.now() - startedAt,
-        scope_enforcement_note: 'Denied by policy hook decision.',
-        policy_decisions: policyDecisions,
-        artifacts_written: [],
-      });
-      return deniedOutput;
+    if (authResult.denied) {
+      return authResult.output;
     }
 
     const parsedInput = capability.input_schema.safeParse(input);
@@ -310,34 +223,184 @@ export class ToolHost {
           message: parsedInput.error.message,
         },
       };
-      await this.evidenceStore.appendTrace({
-        schema_version: 1,
-        kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
-        receipt_id: receiptId,
-        timestamp: new Date().toISOString(),
+      await this.recordDeniedTrace({
+        receiptId,
+        startedAt,
         result: 'failure',
-        duration_ms: Date.now() - startedAt,
-        scope_enforcement_note: 'Input validation failed before dispatch.',
-        policy_decisions: policyDecisions,
-        artifacts_written: [],
+        scopeEnforcementNote: 'Input validation failed before dispatch.',
+        policyDecisions: authResult.policyDecisions,
       });
       return invalidInputOutput;
     }
 
-    let output: ToolOutput;
+    let output = await this.dispatch(capability, parsedInput.data, context, scopeEnforced);
+    output = this.normalizeOutput(output, capability);
+
+    await this.recordTrace({
+      receiptId,
+      startedAt,
+      output,
+      policyDecisions: authResult.policyDecisions,
+    });
+
+    return output;
+  }
+
+  private resolveScope(
+    capability: ToolCapability,
+    context: ExecutionContext,
+    metadata: Record<string, unknown>,
+  ): ScopeResolution {
+    const workspaceAllowed = parseScopeList(
+      metadata[EXECUTION_METADATA_KEYS.WORKSPACE_ALLOWED_SCOPES],
+      context.allowed_scopes,
+    );
+    const laneAllowed = parseScopeList(
+      metadata[EXECUTION_METADATA_KEYS.LANE_ALLOWED_SCOPES],
+      context.allowed_scopes,
+    );
+    const taskDeclared = parseScopeList(
+      metadata[EXECUTION_METADATA_KEYS.TASK_DECLARED_SCOPES],
+      context.allowed_scopes,
+    );
+
+    const scopeRequested = capability.required_scopes;
+    const reservedFrameworkWriteScopes = collectReservedFrameworkWriteScopes(scopeRequested);
+    const scopeAllowed = intersectToolScopes({
+      workspaceAllowed,
+      laneAllowed,
+      taskDeclared,
+      toolRequired: scopeRequested,
+    });
+    const scopeEnforced = scopeAllowed;
+
+    return { scopeRequested, scopeAllowed, scopeEnforced, reservedFrameworkWriteScopes };
+  }
+
+  private async authorize(params: {
+    receiptId: string;
+    startedAt: number;
+    capability: ToolCapability;
+    input: unknown;
+    context: ExecutionContext;
+    scopeRequested: ToolScope[];
+    scopeAllowed: ToolScope[];
+    scopeEnforced: ToolScope[];
+    reservedFrameworkWriteScopes: string[];
+  }): Promise<AuthorizeResult> {
+    const {
+      receiptId,
+      startedAt,
+      capability,
+      input,
+      context,
+      scopeRequested,
+      scopeAllowed,
+      scopeEnforced,
+      reservedFrameworkWriteScopes,
+    } = params;
+
+    if (reservedFrameworkWriteScopes.length > 0) {
+      const output: ToolOutput = {
+        success: false,
+        error: {
+          code: TOOL_ERROR_CODES.SCOPE_DENIED,
+          message: `Reserved scope violation: pack/tool write scopes under ${RESERVED_FRAMEWORK_SCOPE_GLOB} are not allowed.`,
+          details: {
+            reserved_scopes: reservedFrameworkWriteScopes,
+          },
+        },
+      };
+      await this.recordDeniedTrace({
+        receiptId,
+        startedAt,
+        result: 'denied',
+        scopeEnforcementNote: `Denied by reserved framework boundary: ${RESERVED_FRAMEWORK_SCOPE_GLOB} is framework-owned.`,
+        policyDecisions: [
+          {
+            policy_id: KERNEL_POLICY_IDS.SCOPE_RESERVED_PATH,
+            decision: 'deny',
+            reason: `Pack/tool declared write scope targets reserved ${RESERVED_FRAMEWORK_SCOPE_GLOB} namespace`,
+          },
+        ],
+      });
+      return { denied: true, output };
+    }
+
+    if (scopeEnforced.length === 0) {
+      const output: ToolOutput = {
+        success: false,
+        error: {
+          code: TOOL_ERROR_CODES.SCOPE_DENIED,
+          message: 'Scope intersection denied: no allowed scopes remain after intersection.',
+          details: {
+            scope_requested: scopeRequested,
+            scope_allowed: scopeAllowed,
+          },
+        },
+      };
+      await this.recordDeniedTrace({
+        receiptId,
+        startedAt,
+        result: 'denied',
+        scopeEnforcementNote: 'Denied by hard boundary: empty scope intersection.',
+        policyDecisions: [
+          {
+            policy_id: KERNEL_POLICY_IDS.SCOPE_BOUNDARY,
+            decision: 'deny',
+            reason: 'No intersecting scopes after scope resolution',
+          },
+        ],
+      });
+      return { denied: true, output };
+    }
+
+    const policyDecisions = await this.policyHook({
+      capability,
+      input,
+      context,
+      scopeEnforced,
+    });
+
+    if (policyDecisions.some((decision) => decision.decision === 'deny')) {
+      const output: ToolOutput = {
+        success: false,
+        error: {
+          code: TOOL_ERROR_CODES.POLICY_DENIED,
+          message: 'Policy hook denied tool execution.',
+        },
+      };
+      await this.recordDeniedTrace({
+        receiptId,
+        startedAt,
+        result: 'denied',
+        scopeEnforcementNote: 'Denied by policy hook decision.',
+        policyDecisions,
+      });
+      return { denied: true, output };
+    }
+
+    return { denied: false, policyDecisions };
+  }
+
+  private async dispatch(
+    capability: ToolCapability,
+    input: unknown,
+    context: ExecutionContext,
+    scopeEnforced: ToolScope[],
+  ): Promise<ToolOutput> {
     try {
       if (capability.handler.kind === TOOL_HANDLER_KINDS.IN_PROCESS) {
-        output = await capability.handler.fn(parsedInput.data, context);
-      } else {
-        output = await this.subprocessDispatcher.dispatch({
-          capability,
-          input: parsedInput.data,
-          context,
-          scopeEnforced,
-        });
+        return await capability.handler.fn(input, context);
       }
+      return await this.subprocessDispatcher.dispatch({
+        capability,
+        input,
+        context,
+        scopeEnforced,
+      });
     } catch (error) {
-      output = {
+      return {
         success: false,
         error: {
           code: TOOL_ERROR_CODES.TOOL_EXECUTION_FAILED,
@@ -345,24 +408,26 @@ export class ToolHost {
         },
       };
     }
+  }
 
+  private normalizeOutput(output: ToolOutput, capability: ToolCapability): ToolOutput {
     const normalizedOutputResult = ToolOutputSchema.safeParse(output);
     if (!normalizedOutputResult.success) {
-      output = {
+      return {
         success: false,
         error: {
           code: TOOL_ERROR_CODES.INVALID_OUTPUT,
           message: normalizedOutputResult.error.message,
         },
       };
-    } else {
-      output = normalizedOutputResult.data;
     }
 
-    if (capability.output_schema && output.success) {
-      const parsedData = capability.output_schema.safeParse(output.data);
+    let normalized = normalizedOutputResult.data;
+
+    if (capability.output_schema && normalized.success) {
+      const parsedData = capability.output_schema.safeParse(normalized.data);
       if (!parsedData.success) {
-        output = {
+        normalized = {
           success: false,
           error: {
             code: TOOL_ERROR_CODES.INVALID_OUTPUT,
@@ -371,6 +436,37 @@ export class ToolHost {
         };
       }
     }
+
+    return normalized;
+  }
+
+  private async recordDeniedTrace(params: {
+    receiptId: string;
+    startedAt: number;
+    result: 'denied' | 'failure';
+    scopeEnforcementNote: string;
+    policyDecisions: PolicyDecision[];
+  }): Promise<void> {
+    await this.evidenceStore.appendTrace({
+      schema_version: 1,
+      kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
+      receipt_id: params.receiptId,
+      timestamp: this.now().toISOString(),
+      result: params.result,
+      duration_ms: this.now().getTime() - params.startedAt,
+      scope_enforcement_note: params.scopeEnforcementNote,
+      policy_decisions: params.policyDecisions,
+      artifacts_written: [],
+    });
+  }
+
+  private async recordTrace(params: {
+    receiptId: string;
+    startedAt: number;
+    output: ToolOutput;
+    policyDecisions: PolicyDecision[];
+  }): Promise<void> {
+    const { receiptId, startedAt, output, policyDecisions } = params;
 
     const outputRef =
       output.data === undefined ? undefined : await this.evidenceStore.persistInput(output.data);
@@ -386,9 +482,9 @@ export class ToolHost {
       schema_version: 1,
       kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
       receipt_id: receiptId,
-      timestamp: new Date().toISOString(),
+      timestamp: this.now().toISOString(),
       result,
-      duration_ms: Date.now() - startedAt,
+      duration_ms: this.now().getTime() - startedAt,
       output_hash: outputHash,
       output_ref: outputReference,
       scope_enforcement_note:
@@ -402,7 +498,5 @@ export class ToolHost {
           ? (output.metadata.artifacts_written as string[])
           : [],
     });
-
-    return output;
   }
 }
