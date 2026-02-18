@@ -5,6 +5,7 @@ _Last updated: 2026-02-18_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1798 — Add execution-context builder and executeViaPack migration helper](wu/WU-1798.yaml)
 
 ## Completed
 

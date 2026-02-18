@@ -1532,3 +1532,4 @@
 {"type":"complete","wuId":"WU-1796","timestamp":"2026-02-18T09:02:41.973Z"}
 {"type":"claim","wuId":"WU-1797","timestamp":"2026-02-18T09:03:18.167Z","lane":"Framework: Core Lifecycle","title":"Phase 3 pack workflow: expose WU YAML lifecycle as runtime-managed pack tools"}
 {"type":"complete","wuId":"WU-1797","timestamp":"2026-02-18T09:11:51.165Z"}
+{"type":"claim","wuId":"WU-1798","lane":"Framework: Core Lifecycle","title":"Add execution-context builder and executeViaPack migration helper","timestamp":"2026-02-18T09:12:32.598Z"}
