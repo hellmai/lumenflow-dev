@@ -33,7 +33,6 @@ sections:
 - [WU-1876 — Evidence export endpoint with CSV and JSON format support](wu/WU-1876.yaml) — Content: Site Comms
 - [WU-1877 — 4 additional community packs published to registry](wu/WU-1877.yaml) — Framework: Core Lifecycle
 - [WU-1878 — Marketplace Install to workspace button](wu/WU-1878.yaml) — Content: Site Comms
-- [WU-1879 — INIT-030 Review Fix G: evidence store multi-instance replay correctness and lock error propagation](wu/WU-1879.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
@@ -41,6 +40,7 @@ sections:
 - [WU-1864 — Scope intersection property-based fuzz testing for patternContains glob heuristic](wu/WU-1864.yaml) — Framework: Core Lifecycle
 - [WU-1870 — Cursor-based pagination for EventStore.replay() and /api/events/all](wu/WU-1870.yaml) — Framework: Core Lifecycle
 - [WU-1869 — Vercel Blob-backed PackRegistryStore + PackBlobStore adapters](wu/WU-1869.yaml) — Content: Site Comms
+- [WU-1879 — INIT-030 Review Fix G: evidence store multi-instance replay correctness and lock error propagation](wu/WU-1879.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
