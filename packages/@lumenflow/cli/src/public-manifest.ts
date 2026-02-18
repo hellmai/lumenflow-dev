@@ -815,6 +815,13 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     description: 'Scaffold a new domain pack',
     category: COMMAND_CATEGORIES.PACKS,
   },
+  {
+    name: 'pack:search',
+    binName: 'pack-search',
+    binPath: './dist/pack-search.js',
+    description: 'Search for domain packs in a registry',
+    category: COMMAND_CATEGORIES.PACKS,
+  },
 ];
 
 // ============================================================================
