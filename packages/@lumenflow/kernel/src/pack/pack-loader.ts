@@ -44,10 +44,11 @@ export interface LoadedDomainPack {
 }
 
 const NODE_BUILTINS = new Set(builtinModules.map((moduleName) => moduleName.replace(/^node:/, '')));
+const ALLOWED_BARE_IMPORT_SPECIFIERS = new Set(['simple-git']);
 const IMPORT_SPECIFIER_PATTERNS = [
-  /\bimport\s+(?:[^'"]*?\sfrom\s*)?["']([^"']+)["']/g,
-  /\bexport\s+[^'"]*?\sfrom\s*["']([^"']+)["']/g,
-  /\bimport\(\s*["']([^"']+)["']\s*\)/g,
+  /\bimport\s+(?:[^'"]*?\sfrom\s*)?["']([^"']+)["']/,
+  /\bexport\s+[^'"]*?\sfrom\s*["']([^"']+)["']/,
+  /\bimport\(\s*["']([^"']+)["']\s*\)/,
 ] as const;
 
 /**
@@ -61,6 +62,21 @@ const IMPORT_SPECIFIER_PATTERNS = [
 function isWithinRoot(root: string, candidatePath: string): boolean {
   const relative = path.relative(root, candidatePath);
   return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
+function isRuntimeSourceFile(relativePath: string): boolean {
+  const normalizedPath = relativePath.replace(/\\/g, '/');
+  const extension = path.extname(normalizedPath);
+  const isCodeFile = ['.ts', '.tsx', '.mts', '.cts', '.js', '.mjs', '.cjs'].includes(extension);
+  if (!isCodeFile) {
+    return false;
+  }
+
+  if (normalizedPath.includes('/__tests__/')) {
+    return false;
+  }
+
+  return !/\.(test|spec)\.[cm]?[jt]sx?$/.test(normalizedPath);
 }
 
 function parseToolEntry(entry: string): { modulePath: string; exportName?: string } {
@@ -96,15 +112,19 @@ export function resolvePackToolEntryPath(packRoot: string, entry: string): strin
 function extractImportSpecifiers(sourceCode: string): string[] {
   const specifiers = new Set<string>();
   for (const pattern of IMPORT_SPECIFIER_PATTERNS) {
-    let match = pattern.exec(sourceCode);
-    while (match) {
+    // Create a fresh global matcher per call to avoid shared RegExp state.
+    const globalPattern = new RegExp(pattern.source, 'g');
+    for (const match of sourceCode.matchAll(globalPattern)) {
       if (match[1]) {
         specifiers.add(match[1]);
       }
-      match = pattern.exec(sourceCode);
     }
   }
   return [...specifiers];
+}
+
+function isAllowedKernelImport(specifier: string): boolean {
+  return specifier === '@lumenflow/kernel' || specifier.startsWith('@lumenflow/kernel/');
 }
 
 function validateImportSpecifier(options: {
@@ -122,7 +142,7 @@ function validateImportSpecifier(options: {
     return;
   }
 
-  if (specifier.startsWith('@lumenflow/kernel')) {
+  if (isAllowedKernelImport(specifier)) {
     return;
   }
 
@@ -142,7 +162,16 @@ function validateImportSpecifier(options: {
     if (!isWithinRoot(packRoot, resolvedImport)) {
       throw new Error(`Import "${specifier}" in ${sourceFilePath} resolves outside pack root.`);
     }
+    return;
   }
+
+  if (ALLOWED_BARE_IMPORT_SPECIFIERS.has(specifier)) {
+    return;
+  }
+
+  throw new Error(
+    `Bare package import "${specifier}" in ${sourceFilePath} is not allowed; only relative imports, @lumenflow/kernel, and Node built-ins are permitted.`,
+  );
 }
 
 async function validatePackImportBoundaries(
@@ -150,9 +179,7 @@ async function validatePackImportBoundaries(
   hashExclusions?: string[],
 ): Promise<void> {
   const files = await listPackFiles(packRoot, hashExclusions);
-  const candidateFiles = files.filter((relativePath) =>
-    ['.ts', '.tsx', '.mts', '.cts', '.js', '.mjs', '.cjs'].includes(path.extname(relativePath)),
-  );
+  const candidateFiles = files.filter((relativePath) => isRuntimeSourceFile(relativePath));
 
   for (const relativePath of candidateFiles) {
     const sourceCode = await readFile(path.join(packRoot, relativePath), UTF8_ENCODING);

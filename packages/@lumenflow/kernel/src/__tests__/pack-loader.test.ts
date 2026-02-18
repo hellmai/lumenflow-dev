@@ -471,4 +471,64 @@ describe('pack loader + integrity pinning', () => {
       await rm(tempRoot, { recursive: true, force: true });
     }
   });
+
+  it('rejects bare npm package imports in pack sources', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-loader-bare-import-'));
+    const packRoot = join(tempRoot, SOFTWARE_DELIVERY_PACK_ID);
+
+    try {
+      await writePackFixture(packRoot);
+      await writeFile(
+        join(packRoot, 'tools', 'bare-import.ts'),
+        ['import lodash from "lodash";', 'export const noop = lodash.noop;'].join('\n'),
+        UTF8_ENCODING,
+      );
+
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+      });
+
+      await expect(
+        loader.load({
+          workspaceSpec: createWorkspaceSpec({
+            integrity: 'dev',
+          }),
+          packId: SOFTWARE_DELIVERY_PACK_ID,
+        }),
+      ).rejects.toThrow('Bare package import');
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects @lumenflow/kernel-prefixed packages that are not @lumenflow/kernel', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-loader-prefix-match-'));
+    const packRoot = join(tempRoot, SOFTWARE_DELIVERY_PACK_ID);
+
+    try {
+      await writePackFixture(packRoot);
+      await writeFile(
+        join(packRoot, 'tools', 'kernel-prefix-import.ts'),
+        ['import { helper } from "@lumenflow/kernel-utils";', 'export const noop = helper;'].join(
+          '\n',
+        ),
+        UTF8_ENCODING,
+      );
+
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+      });
+
+      await expect(
+        loader.load({
+          workspaceSpec: createWorkspaceSpec({
+            integrity: 'dev',
+          }),
+          packId: SOFTWARE_DELIVERY_PACK_ID,
+        }),
+      ).rejects.toThrow('@lumenflow/kernel and Node built-ins are permitted');
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
 });
