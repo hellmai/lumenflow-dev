@@ -2,7 +2,7 @@ id: WU-1856
 title: 'Tighten WU-1802 handler code: eliminate over-abstraction and fix bugs'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -31,10 +31,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1802 validation/lane handlers merged with code quality issues. Problem: PREFIX/SUFFIX constant fragmentation hurts readability, double file read in validateInProcess, laneSuggestInProcess passes empty ProjectContext, pointless CLI flag constants, redundant message constants. Solution: Inline what should be inline, deduplicate, fix the double-read, document the stub.'
+description: 'Context: WU-1802 validation/lane handlers merged with code quality issues. Problem:
+  PREFIX/SUFFIX constant fragmentation hurts readability, double file read in validateInProcess,
+  laneSuggestInProcess passes empty ProjectContext, pointless CLI flag constants, redundant message
+  constants. Solution: Inline what should be inline, deduplicate, fix the double-read, document the
+  stub.'
 acceptance:
   - No PREFIX/SUFFIX fragmented constants — each message is a single constant or inline
   - validateInProcess reads each WU file exactly once
   - LaneFlags and CliFlags removed — standard CLI flags inline
   - No duplicate message values across constant entries
   - laneSuggestInProcess documents its limitations or scans filesystem
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1856
+claimed_at: 2026-02-18T17:02:13.969Z
+baseline_main_sha: 2b0ef948e10dffff0847e599677b68ddd9a6ca35
+session_id: f49aec0d-442e-4a72-8615-0d88646f892f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T17:02:13.977Z

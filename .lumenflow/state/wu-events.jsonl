@@ -1582,3 +1582,4 @@
 {"type":"release","wuId":"WU-1819","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-18T16:54:26.064Z"}
 {"type":"claim","wuId":"WU-1819","lane":"Content: Site Comms","title":"Scaffold Next.js web app with API routes for HTTP surface","timestamp":"2026-02-18T16:54:53.264Z"}
 {"type":"release","wuId":"WU-1819","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-18T16:57:43.744Z"}
+{"type":"claim","wuId":"WU-1856","lane":"Framework: Core Lifecycle","title":"Tighten WU-1802 handler code: eliminate over-abstraction and fix bugs","timestamp":"2026-02-18T17:02:14.024Z"}
