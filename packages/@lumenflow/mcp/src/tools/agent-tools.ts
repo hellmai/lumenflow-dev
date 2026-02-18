@@ -23,6 +23,7 @@ import {
   runCliCommand,
   type CliRunnerOptions,
 } from '../tools-shared.js';
+import { CliCommands } from '../mcp-constants.js';
 
 /**
  * Error codes for agent tools
@@ -66,7 +67,7 @@ export const agentSessionTool: ToolDefinition = {
     if (input.agent_type) args.push('--agent-type', input.agent_type as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('agent:session', args, cliOptions);
+    const result = await runCliCommand(CliCommands.AGENT_SESSION, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Session started' });
@@ -89,7 +90,7 @@ export const agentSessionEndTool: ToolDefinition = {
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('agent:session-end', [], cliOptions);
+    const result = await runCliCommand(CliCommands.AGENT_SESSION_END, [], cliOptions);
 
     if (result.success) {
       try {
@@ -153,7 +154,7 @@ export const agentLogIssueTool: ToolDefinition = {
     }
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('agent:log-issue', args, cliOptions);
+    const result = await runCliCommand(CliCommands.AGENT_LOG_ISSUE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Issue logged' });
@@ -176,12 +177,12 @@ export const agentIssuesQueryTool: ToolDefinition = {
 
   async execute(input, options) {
     const args = ['summary'];
-    if (input.since) args.push('--since', String(input.since));
+    if (input.since) args.push(CliArgs.SINCE, String(input.since));
     if (input.category) args.push('--category', input.category as string);
     if (input.severity) args.push('--severity', input.severity as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('agent:issues-query', args, cliOptions);
+    const result = await runCliCommand(CliCommands.AGENT_ISSUES_QUERY, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Query complete' });

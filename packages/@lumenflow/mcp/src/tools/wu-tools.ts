@@ -47,6 +47,7 @@ import {
   runCliCommand,
   type CliRunnerOptions,
 } from '../tools-shared.js';
+import { CliCommands } from '../mcp-constants.js';
 
 /**
  * wu_status - Get status of a specific WU
@@ -69,9 +70,9 @@ export const wuStatusTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string, '--json'];
+    const args = [CliArgs.ID, input.id as string, CliArgs.JSON];
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:status', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_STATUS, args, cliOptions);
 
     if (result.success) {
       try {
@@ -108,9 +109,9 @@ export const wuCreateTool: ToolDefinition = {
       return error(ErrorMessages.TITLE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args: string[] = ['--lane', input.lane as string, '--title', input.title as string];
+    const args: string[] = [CliArgs.LANE, input.lane as string, '--title', input.title as string];
 
-    if (input.id) args.push('--id', input.id as string);
+    if (input.id) args.push(CliArgs.ID, input.id as string);
     if (input.description) args.push(CliArgs.DESCRIPTION, input.description as string);
     if (input.acceptance) {
       for (const criterion of input.acceptance as string[]) {
@@ -125,7 +126,7 @@ export const wuCreateTool: ToolDefinition = {
     if (input.exposure) args.push('--exposure', input.exposure as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:create', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_CREATE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU created successfully' });
@@ -169,7 +170,7 @@ export const wuClaimTool: ToolDefinition = {
       return error(ErrorMessages.LANE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string, '--lane', input.lane as string];
+    const args = [CliArgs.ID, input.id as string, CliArgs.LANE, input.lane as string];
     // WU-1491: Pass mode flags through to CLI
     if (input.cloud) args.push('--cloud');
     if (input.branch_only) args.push('--branch-only');
@@ -188,7 +189,7 @@ export const wuClaimTool: ToolDefinition = {
     }
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:claim', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_CLAIM, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU claimed successfully' });
@@ -228,14 +229,14 @@ export const wuSandboxTool: ToolDefinition = {
       return error('command is required', ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
+    const args = [CliArgs.ID, input.id as string];
     if (input.worktree) {
       args.push('--worktree', input.worktree as string);
     }
     args.push('--', ...command);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:sandbox', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_SANDBOX, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU sandbox command completed successfully' });
@@ -282,15 +283,15 @@ export const wuDoneTool: ToolDefinition = {
       // If we can't determine context, proceed anyway - CLI will validate
     }
 
-    const args = ['--id', input.id as string];
+    const args = [CliArgs.ID, input.id as string];
     if (input.skip_gates) {
       args.push('--skip-gates');
-      if (input.reason) args.push('--reason', input.reason as string);
+      if (input.reason) args.push(CliArgs.REASON, input.reason as string);
       if (input.fix_wu) args.push('--fix-wu', input.fix_wu as string);
     }
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:done', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_DONE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU completed successfully' });
@@ -324,7 +325,7 @@ export const gatesRunTool: ToolDefinition = {
       projectRoot: options?.projectRoot,
       timeout: 600000, // 10 minutes for gates
     };
-    const result = await runCliCommand('gates', args, cliOptions);
+    const result = await runCliCommand(CliCommands.GATES, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || SuccessMessages.ALL_GATES_PASSED });
@@ -354,13 +355,13 @@ export const wuBlockTool: ToolDefinition = {
       return error(ErrorMessages.REASON_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string, '--reason', input.reason as string];
+    const args = [CliArgs.ID, input.id as string, CliArgs.REASON, input.reason as string];
     if (input.remove_worktree) {
       args.push('--remove-worktree');
     }
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:block', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_BLOCK, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU blocked successfully' });
@@ -387,12 +388,12 @@ export const wuUnblockTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
-    if (input.reason) args.push('--reason', input.reason as string);
+    const args = [CliArgs.ID, input.id as string];
+    if (input.reason) args.push(CliArgs.REASON, input.reason as string);
     if (input.create_worktree) args.push('--create-worktree');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:unblock', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_UNBLOCK, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU unblocked successfully' });
@@ -419,7 +420,7 @@ export const wuEditTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
+    const args = [CliArgs.ID, input.id as string];
     if (input.description) args.push(CliArgs.DESCRIPTION, input.description as string);
     if (input.acceptance) {
       for (const criterion of input.acceptance as string[]) {
@@ -432,14 +433,14 @@ export const wuEditTool: ToolDefinition = {
         args.push(CliArgs.CODE_PATHS, p);
       }
     }
-    if (input.lane) args.push('--lane', input.lane as string);
+    if (input.lane) args.push(CliArgs.LANE, input.lane as string);
     if (input.priority) args.push('--priority', input.priority as string);
     if (input.initiative) args.push(CliArgs.INITIATIVE, input.initiative as string);
     if (input.phase) args.push(CliArgs.PHASE, String(input.phase));
     if (input.no_strict) args.push('--no-strict');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:edit', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_EDIT, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU edited successfully' });
@@ -466,11 +467,11 @@ export const wuReleaseTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
-    if (input.reason) args.push('--reason', input.reason as string);
+    const args = [CliArgs.ID, input.id as string];
+    if (input.reason) args.push(CliArgs.REASON, input.reason as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:release', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_RELEASE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU released successfully' });
@@ -497,13 +498,13 @@ export const wuRecoverTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
+    const args = [CliArgs.ID, input.id as string];
     if (input.action) args.push('--action', input.action as string);
-    if (input.force) args.push('--force');
+    if (input.force) args.push(CliArgs.FORCE);
     if (input.json) args.push(CliArgs.JSON);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:recover', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_RECOVER, args, cliOptions);
 
     if (result.success) {
       try {
@@ -532,7 +533,7 @@ export const wuRepairTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.id) args.push('--id', input.id as string);
+    if (input.id) args.push(CliArgs.ID, input.id as string);
     if (input.check) args.push('--check');
     if (input.all) args.push('--all');
     if (input.claim) args.push('--claim');
@@ -540,7 +541,7 @@ export const wuRepairTool: ToolDefinition = {
     if (input.repair_state) args.push('--repair-state');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:repair', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_REPAIR, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU repair completed' });
@@ -567,13 +568,13 @@ export const wuDepsTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
-    if (input.format) args.push('--format', input.format as string);
+    const args = [CliArgs.ID, input.id as string];
+    if (input.format) args.push(CliArgs.FORMAT, input.format as string);
     if (input.depth) args.push('--depth', String(input.depth));
     if (input.direction) args.push('--direction', input.direction as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:deps', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_DEPS, args, cliOptions);
 
     if (result.success) {
       try {
@@ -605,7 +606,7 @@ export const wuPrepTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
+    const args = [CliArgs.ID, input.id as string];
     if (input.docs_only) args.push(CliArgs.DOCS_ONLY);
     if (input.full_tests) args.push('--full-tests');
 
@@ -613,7 +614,7 @@ export const wuPrepTool: ToolDefinition = {
       projectRoot: options?.projectRoot,
       timeout: 600000, // 10 minutes for gates
     };
-    const result = await runCliCommand('wu:prep', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_PREP, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU prep completed' });
@@ -641,11 +642,11 @@ export const wuPreflightTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
+    const args = [CliArgs.ID, input.id as string];
     if (input.worktree) args.push('--worktree', input.worktree as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:preflight', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_PREFLIGHT, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Preflight checks passed' });
@@ -669,10 +670,10 @@ export const wuPruneTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.execute) args.push('--execute');
+    if (input.execute) args.push(CliArgs.EXECUTE);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:prune', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_PRUNE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Prune completed' });
@@ -700,12 +701,12 @@ export const wuDeleteTool: ToolDefinition = {
     }
 
     const args: string[] = [];
-    if (input.id) args.push('--id', input.id as string);
+    if (input.id) args.push(CliArgs.ID, input.id as string);
     if (input.dry_run) args.push(CliArgs.DRY_RUN);
     if (input.batch) args.push('--batch', input.batch as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:delete', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_DELETE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU deleted' });
@@ -732,11 +733,11 @@ export const wuCleanupTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
+    const args = [CliArgs.ID, input.id as string];
     if (input.artifacts) args.push('--artifacts');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:cleanup', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_CLEANUP, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Cleanup complete' });
@@ -768,7 +769,7 @@ export const wuBriefTool: ToolDefinition = {
     const args = buildWuPromptArgs(input);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:brief', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_BRIEF, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Brief prompt generated' });
@@ -800,7 +801,7 @@ export const wuDelegateTool: ToolDefinition = {
     const args = buildWuPromptArgs(input);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:delegate', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_DELEGATE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Delegation prompt generated' });
@@ -827,11 +828,11 @@ export const wuValidateTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
+    const args = [CliArgs.ID, input.id as string];
     if (input.no_strict) args.push('--no-strict');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:validate', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_VALIDATE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU is valid' });
@@ -855,7 +856,7 @@ export const wuInferLaneTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.id) args.push('--id', input.id as string);
+    if (input.id) args.push(CliArgs.ID, input.id as string);
     if (input.paths) {
       for (const p of input.paths as string[]) {
         args.push('--paths', p);
@@ -864,7 +865,7 @@ export const wuInferLaneTool: ToolDefinition = {
     if (input.desc) args.push('--desc', input.desc as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:infer-lane', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_INFER_LANE, args, cliOptions);
 
     if (result.success) {
       return success({ lane: result.stdout?.trim() || 'Unknown' });
@@ -893,14 +894,14 @@ export const wuUnlockLaneTool: ToolDefinition = {
     }
 
     const args: string[] = [];
-    if (input.lane) args.push('--lane', input.lane as string);
-    if (input.reason) args.push('--reason', input.reason as string);
-    if (input.force) args.push('--force');
+    if (input.lane) args.push(CliArgs.LANE, input.lane as string);
+    if (input.reason) args.push(CliArgs.REASON, input.reason as string);
+    if (input.force) args.push(CliArgs.FORCE);
     if (input.list) args.push('--list');
-    if (input.status) args.push('--status');
+    if (input.status) args.push(CliArgs.STATUS);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:unlock-lane', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_UNLOCK_LANE, args, cliOptions);
 
     if (result.success) {
       try {

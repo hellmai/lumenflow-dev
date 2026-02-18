@@ -27,6 +27,7 @@ import {
   runCliCommand,
   type CliRunnerOptions,
 } from '../tools-shared.js';
+import { CliCommands } from '../mcp-constants.js';
 
 /**
  * lumenflow_init - Initialize LumenFlow in a project
@@ -42,7 +43,7 @@ export const lumenflowInitTool: ToolDefinition = {
     if (input.merge) args.push('--merge');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('lumenflow', args, cliOptions);
+    const result = await runCliCommand(CliCommands.LUMENFLOW, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'LumenFlow initialized' });
@@ -65,7 +66,7 @@ export const lumenflowDoctorTool: ToolDefinition = {
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('lumenflow:doctor', [], cliOptions);
+    const result = await runCliCommand(CliCommands.LUMENFLOW_DOCTOR, [], cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'LumenFlow safety: ACTIVE' });
@@ -94,7 +95,7 @@ export const lumenflowIntegrateTool: ToolDefinition = {
     const args = ['--client', input.client as string];
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('lumenflow:integrate', args, cliOptions);
+    const result = await runCliCommand(CliCommands.LUMENFLOW_INTEGRATE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Hooks generated' });
@@ -117,7 +118,7 @@ export const lumenflowUpgradeTool: ToolDefinition = {
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('lumenflow:upgrade', [], cliOptions);
+    const result = await runCliCommand(CliCommands.LUMENFLOW_UPGRADE, [], cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'LumenFlow upgraded' });
@@ -140,7 +141,7 @@ export const lumenflowCommandsTool: ToolDefinition = {
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('lumenflow', ['commands'], cliOptions);
+    const result = await runCliCommand(CliCommands.LUMENFLOW, ['commands'], cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Commands listed' });
@@ -163,7 +164,7 @@ export const lumenflowDocsSyncTool: ToolDefinition = {
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('docs:sync', [], cliOptions);
+    const result = await runCliCommand(CliCommands.DOCS_SYNC, [], cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Docs synced' });
@@ -189,7 +190,7 @@ export const lumenflowReleaseTool: ToolDefinition = {
     if (input.dry_run) args.push(CliArgs.DRY_RUN);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('lumenflow:release', args, cliOptions);
+    const result = await runCliCommand(CliCommands.LUMENFLOW_RELEASE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Release complete' });
@@ -212,7 +213,7 @@ export const lumenflowSyncTemplatesTool: ToolDefinition = {
 
   async execute(_input, options) {
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('sync:templates', [], cliOptions);
+    const result = await runCliCommand(CliCommands.SYNC_TEMPLATES, [], cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Templates synced' });

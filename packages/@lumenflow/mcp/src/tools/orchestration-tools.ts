@@ -23,6 +23,7 @@ import {
   runCliCommand,
   type CliRunnerOptions,
 } from '../tools-shared.js';
+import { CliCommands } from '../mcp-constants.js';
 
 /**
  * Error codes for orchestration tools
@@ -76,7 +77,7 @@ export const orchestrateInitiativeTool: ToolDefinition = {
       projectRoot: options?.projectRoot,
       timeout: 300000, // 5 minutes for orchestration
     };
-    const result = await runCliCommand('orchestrate:initiative', args, cliOptions);
+    const result = await runCliCommand(CliCommands.ORCHESTRATE_INITIATIVE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Orchestration complete' });
@@ -105,7 +106,7 @@ export const orchestrateInitStatusTool: ToolDefinition = {
     const args = [CliArgs.INITIATIVE, input.initiative as string];
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('orchestrate:init-status', args, cliOptions);
+    const result = await runCliCommand(CliCommands.ORCHESTRATE_INIT_STATUS, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Status displayed' });
@@ -132,7 +133,7 @@ export const orchestrateMonitorTool: ToolDefinition = {
     if (input.threshold) args.push(CliArgs.THRESHOLD, String(input.threshold));
     if (input.recover) args.push(CliArgs.RECOVER);
     if (input.dry_run) args.push(CliArgs.DRY_RUN);
-    if (input.since) args.push('--since', input.since as string);
+    if (input.since) args.push(CliArgs.SINCE, input.since as string);
     if (input.wu) args.push(CliArgs.WU, input.wu as string);
     if (input.signals_only) args.push('--signals-only');
 
@@ -140,7 +141,7 @@ export const orchestrateMonitorTool: ToolDefinition = {
       projectRoot: options?.projectRoot,
       timeout: 180000, // 3 minutes for monitoring
     };
-    const result = await runCliCommand('orchestrate:monitor', args, cliOptions);
+    const result = await runCliCommand(CliCommands.ORCHESTRATE_MONITOR, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Monitor complete' });
@@ -169,10 +170,10 @@ export const delegationListTool: ToolDefinition = {
     const args: string[] = [];
     if (input.wu) args.push(CliArgs.WU, input.wu as string);
     if (input.initiative) args.push(CliArgs.INITIATIVE, input.initiative as string);
-    if (input.json) args.push('--json');
+    if (input.json) args.push(CliArgs.JSON);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('delegation:list', args, cliOptions);
+    const result = await runCliCommand(CliCommands.DELEGATION_LIST, args, cliOptions);
 
     if (result.success) {
       try {

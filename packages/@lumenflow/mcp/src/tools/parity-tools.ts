@@ -24,6 +24,7 @@ import {
   runCliCommand,
   type CliRunnerOptions,
 } from '../tools-shared.js';
+import { CliCommands, MetadataKeys } from '../mcp-constants.js';
 
 // WU-1482: Schemas for wave-1 parity commands not yet modeled in @lumenflow/core
 const backlogPruneSchema = z.object({
@@ -272,7 +273,7 @@ export const backlogPruneTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.execute) args.push('--execute');
+    if (input.execute) args.push(CliArgs.EXECUTE);
     if (input.dry_run) args.push('--dry-run');
     if (input.stale_days_in_progress !== undefined) {
       args.push('--stale-days-in-progress', String(input.stale_days_in_progress));
@@ -285,7 +286,7 @@ export const backlogPruneTool: ToolDefinition = {
     }
 
     const execution = await executeViaPack(
-      'backlog:prune',
+      CliCommands.BACKLOG_PRUNE,
       {
         execute: input.execute,
         dry_run: input.dry_run,
@@ -297,11 +298,11 @@ export const backlogPruneTool: ToolDefinition = {
         projectRoot: options?.projectRoot,
         contextInput: {
           metadata: {
-            project_root: options?.projectRoot,
+            [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
           },
         },
         fallback: {
-          command: 'backlog:prune',
+          command: CliCommands.BACKLOG_PRUNE,
           args,
           errorCode: ErrorCodes.BACKLOG_PRUNE_ERROR,
         },
@@ -327,10 +328,10 @@ export const docsSyncTool: ToolDefinition = {
   async execute(input, options) {
     const args: string[] = [];
     if (input.vendor) args.push('--vendor', input.vendor as string);
-    if (input.force) args.push('--force');
+    if (input.force) args.push(CliArgs.FORCE);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('docs:sync', args, cliOptions);
+    const result = await runCliCommand(CliCommands.DOCS_SYNC, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Docs sync complete' });
@@ -356,7 +357,7 @@ export const gatesTool: ToolDefinition = {
       projectRoot: options?.projectRoot,
       timeout: 600000,
     };
-    const result = await runCliCommand('gates', args, cliOptions);
+    const result = await runCliCommand(CliCommands.GATES, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || SuccessMessages.ALL_GATES_PASSED });
@@ -382,7 +383,7 @@ export const gatesDocsTool: ToolDefinition = {
       projectRoot: options?.projectRoot,
       timeout: 600000,
     };
-    const result = await runCliCommand('gates', args, cliOptions);
+    const result = await runCliCommand(CliCommands.GATES, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Docs-only gates passed' });
@@ -404,12 +405,12 @@ export const laneHealthTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.json) args.push('--json');
-    if (input.verbose) args.push('--verbose');
+    if (input.json) args.push(CliArgs.JSON);
+    if (input.verbose) args.push(CliArgs.VERBOSE);
     if (input.no_coverage) args.push('--no-coverage');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('lane:health', args, cliOptions);
+    const result = await runCliCommand(CliCommands.LANE_HEALTH, args, cliOptions);
 
     if (result.success) {
       try {
@@ -439,12 +440,12 @@ export const laneSuggestTool: ToolDefinition = {
     if (input.dry_run) args.push('--dry-run');
     if (input.interactive) args.push('--interactive');
     if (input.output) args.push('--output', input.output as string);
-    if (input.json) args.push('--json');
+    if (input.json) args.push(CliArgs.JSON);
     if (input.no_llm) args.push('--no-llm');
     if (input.include_git) args.push('--include-git');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('lane:suggest', args, cliOptions);
+    const result = await runCliCommand(CliCommands.LANE_SUGGEST, args, cliOptions);
 
     if (result.success) {
       try {
@@ -478,7 +479,7 @@ export const lumenflowTool: ToolDefinition = {
     if (input.framework) args.push('--framework', input.framework as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('lumenflow', args, cliOptions);
+    const result = await runCliCommand(CliCommands.LUMENFLOW, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'LumenFlow initialized' });
@@ -504,7 +505,7 @@ export const lumenflowGatesTool: ToolDefinition = {
       projectRoot: options?.projectRoot,
       timeout: 600000,
     };
-    const result = await runCliCommand('gates', args, cliOptions);
+    const result = await runCliCommand(CliCommands.GATES, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || SuccessMessages.ALL_GATES_PASSED });
@@ -526,14 +527,14 @@ export const stateBootstrapTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.execute) args.push('--execute');
+    if (input.execute) args.push(CliArgs.EXECUTE);
     if (input.dry_run) args.push('--dry-run');
-    if (input.force) args.push('--force');
+    if (input.force) args.push(CliArgs.FORCE);
     if (input.wu_dir) args.push('--wu-dir', input.wu_dir as string);
     if (input.state_dir) args.push('--state-dir', input.state_dir as string);
 
     const execution = await executeViaPack(
-      'state:bootstrap',
+      CliCommands.STATE_BOOTSTRAP,
       {
         execute: input.execute,
         dry_run: input.dry_run,
@@ -545,11 +546,11 @@ export const stateBootstrapTool: ToolDefinition = {
         projectRoot: options?.projectRoot,
         contextInput: {
           metadata: {
-            project_root: options?.projectRoot,
+            [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
           },
         },
         fallback: {
-          command: 'state:bootstrap',
+          command: CliCommands.STATE_BOOTSTRAP,
           args,
           errorCode: ErrorCodes.STATE_BOOTSTRAP_ERROR,
         },
@@ -578,12 +579,12 @@ export const stateCleanupTool: ToolDefinition = {
     if (input.signals_only) args.push('--signals-only');
     if (input.memory_only) args.push('--memory-only');
     if (input.events_only) args.push('--events-only');
-    if (input.json) args.push('--json');
-    if (input.quiet) args.push('--quiet');
+    if (input.json) args.push(CliArgs.JSON);
+    if (input.quiet) args.push(CliArgs.QUIET);
     if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
 
     const execution = await executeViaPack(
-      'state:cleanup',
+      CliCommands.STATE_CLEANUP,
       {
         dry_run: input.dry_run,
         signals_only: input.signals_only,
@@ -597,11 +598,11 @@ export const stateCleanupTool: ToolDefinition = {
         projectRoot: options?.projectRoot,
         contextInput: {
           metadata: {
-            project_root: options?.projectRoot,
+            [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
           },
         },
         fallback: {
-          command: 'state:cleanup',
+          command: CliCommands.STATE_CLEANUP,
           args,
           errorCode: ErrorCodes.STATE_CLEANUP_ERROR,
         },
@@ -628,12 +629,12 @@ export const stateDoctorTool: ToolDefinition = {
     const args: string[] = [];
     if (input.fix) args.push('--fix');
     if (input.dry_run) args.push('--dry-run');
-    if (input.json) args.push('--json');
-    if (input.quiet) args.push('--quiet');
+    if (input.json) args.push(CliArgs.JSON);
+    if (input.quiet) args.push(CliArgs.QUIET);
     if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
 
     const execution = await executeViaPack(
-      'state:doctor',
+      CliCommands.STATE_DOCTOR,
       {
         fix: input.fix,
         dry_run: input.dry_run,
@@ -645,11 +646,11 @@ export const stateDoctorTool: ToolDefinition = {
         projectRoot: options?.projectRoot,
         contextInput: {
           metadata: {
-            project_root: options?.projectRoot,
+            [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
           },
         },
         fallback: {
-          command: 'state:doctor',
+          command: CliCommands.STATE_DOCTOR,
           args,
           errorCode: ErrorCodes.STATE_DOCTOR_ERROR,
         },
@@ -675,11 +676,11 @@ export const syncTemplatesTool: ToolDefinition = {
   async execute(input, options) {
     const args: string[] = [];
     if (input.dry_run) args.push('--dry-run');
-    if (input.verbose) args.push('--verbose');
+    if (input.verbose) args.push(CliArgs.VERBOSE);
     if (input.check_drift) args.push('--check-drift');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('sync:templates', args, cliOptions);
+    const result = await runCliCommand(CliCommands.SYNC_TEMPLATES, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Template sync complete' });
@@ -708,14 +709,14 @@ export const fileReadTool: ToolDefinition = {
       return error(ErrorMessages.PATH_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args: string[] = ['--path', input.path as string];
+    const args: string[] = [CliArgs.PATH, input.path as string];
     if (input.encoding) args.push(CliArgs.ENCODING, input.encoding as string);
     if (input.start_line !== undefined) args.push('--start-line', String(input.start_line));
     if (input.end_line !== undefined) args.push('--end-line', String(input.end_line));
     if (input.max_size !== undefined) args.push('--max-size', String(input.max_size));
 
     const execution = await executeViaPack(
-      'file:read',
+      CliCommands.FILE_READ,
       {
         path: input.path,
         encoding: input.encoding,
@@ -727,11 +728,11 @@ export const fileReadTool: ToolDefinition = {
         projectRoot: options?.projectRoot,
         contextInput: {
           metadata: {
-            project_root: options?.projectRoot,
+            [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
           },
         },
         fallback: {
-          command: 'file:read',
+          command: CliCommands.FILE_READ,
           args,
           errorCode: ErrorCodes.FILE_READ_ERROR,
         },
@@ -762,12 +763,17 @@ export const fileWriteTool: ToolDefinition = {
       return error(ErrorMessages.CONTENT_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args: string[] = ['--path', input.path as string, '--content', input.content as string];
+    const args: string[] = [
+      CliArgs.PATH,
+      input.path as string,
+      '--content',
+      input.content as string,
+    ];
     if (input.encoding) args.push(CliArgs.ENCODING, input.encoding as string);
     if (input.no_create_dirs) args.push('--no-create-dirs');
 
     const execution = await executeViaPack(
-      'file:write',
+      CliCommands.FILE_WRITE,
       {
         path: input.path,
         content: input.content,
@@ -778,11 +784,11 @@ export const fileWriteTool: ToolDefinition = {
         projectRoot: options?.projectRoot,
         contextInput: {
           metadata: {
-            project_root: options?.projectRoot,
+            [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
           },
         },
         fallback: {
-          command: 'file:write',
+          command: CliCommands.FILE_WRITE,
           args,
           errorCode: ErrorCodes.FILE_WRITE_ERROR,
         },
@@ -817,7 +823,7 @@ export const fileEditTool: ToolDefinition = {
     }
 
     const args: string[] = [
-      '--path',
+      CliArgs.PATH,
       input.path as string,
       '--old-string',
       input.old_string as string,
@@ -828,7 +834,7 @@ export const fileEditTool: ToolDefinition = {
     if (input.replace_all) args.push('--replace-all');
 
     const execution = await executeViaPack(
-      'file:edit',
+      CliCommands.FILE_EDIT,
       {
         path: input.path,
         old_string: input.old_string,
@@ -840,11 +846,11 @@ export const fileEditTool: ToolDefinition = {
         projectRoot: options?.projectRoot,
         contextInput: {
           metadata: {
-            project_root: options?.projectRoot,
+            [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
           },
         },
         fallback: {
-          command: 'file:edit',
+          command: CliCommands.FILE_EDIT,
           args,
           errorCode: ErrorCodes.FILE_EDIT_ERROR,
         },
@@ -872,12 +878,12 @@ export const fileDeleteTool: ToolDefinition = {
       return error(ErrorMessages.PATH_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args: string[] = ['--path', input.path as string];
+    const args: string[] = [CliArgs.PATH, input.path as string];
     if (input.recursive) args.push('--recursive');
-    if (input.force) args.push('--force');
+    if (input.force) args.push(CliArgs.FORCE);
 
     const execution = await executeViaPack(
-      'file:delete',
+      CliCommands.FILE_DELETE,
       {
         path: input.path,
         recursive: input.recursive,
@@ -887,11 +893,11 @@ export const fileDeleteTool: ToolDefinition = {
         projectRoot: options?.projectRoot,
         contextInput: {
           metadata: {
-            project_root: options?.projectRoot,
+            [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
           },
         },
         fallback: {
-          command: 'file:delete',
+          command: CliCommands.FILE_DELETE,
           args,
           errorCode: ErrorCodes.FILE_DELETE_ERROR,
         },
@@ -941,7 +947,7 @@ export const gitStatusTool: ToolDefinition = {
           },
         },
         fallback: {
-          command: 'git:status',
+          command: CliCommands.GIT_STATUS,
           args,
           errorCode: ErrorCodes.GIT_STATUS_ERROR,
         },
@@ -996,7 +1002,7 @@ export const gitDiffTool: ToolDefinition = {
           },
         },
         fallback: {
-          command: 'git:diff',
+          command: CliCommands.GIT_DIFF,
           args,
           errorCode: ErrorCodes.GIT_DIFF_ERROR,
         },
@@ -1027,16 +1033,16 @@ export const gitLogTool: ToolDefinition = {
     if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
     if (input.oneline) args.push('--oneline');
     if (input.max_count !== undefined) args.push('-n', String(input.max_count));
-    if (input.format) args.push('--format', input.format as string);
-    if (input.since) args.push('--since', input.since as string);
+    if (input.format) args.push(CliArgs.FORMAT, input.format as string);
+    if (input.since) args.push(CliArgs.SINCE, input.since as string);
     if (input.author) args.push('--author', input.author as string);
     if (input.ref) args.push(input.ref as string);
 
     const gitCommandArgs = ['log'];
     if (input.oneline) gitCommandArgs.push('--oneline');
     if (input.max_count !== undefined) gitCommandArgs.push('-n', String(input.max_count));
-    if (input.format) gitCommandArgs.push('--format', input.format as string);
-    if (input.since) gitCommandArgs.push('--since', input.since as string);
+    if (input.format) gitCommandArgs.push(CliArgs.FORMAT, input.format as string);
+    if (input.since) gitCommandArgs.push(CliArgs.SINCE, input.since as string);
     if (input.author) gitCommandArgs.push('--author', input.author as string);
     if (input.ref) gitCommandArgs.push(input.ref as string);
 
@@ -1053,7 +1059,7 @@ export const gitLogTool: ToolDefinition = {
           },
         },
         fallback: {
-          command: 'git:log',
+          command: CliCommands.GIT_LOG,
           args,
           errorCode: ErrorCodes.GIT_LOG_ERROR,
         },
@@ -1108,7 +1114,7 @@ export const gitBranchTool: ToolDefinition = {
           },
         },
         fallback: {
-          command: 'git:branch',
+          command: CliCommands.GIT_BRANCH,
           args,
           errorCode: ErrorCodes.GIT_BRANCH_ERROR,
         },
@@ -1145,7 +1151,7 @@ export const initPlanTool: ToolDefinition = {
     if (input.create) args.push('--create');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('init:plan', args, cliOptions);
+    const result = await runCliCommand(CliCommands.INIT_PLAN, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Plan linked' });
@@ -1173,9 +1179,9 @@ export const planCreateTool: ToolDefinition = {
       return error(ErrorMessages.TITLE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string, '--title', input.title as string];
+    const args = [CliArgs.ID, input.id as string, '--title', input.title as string];
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('plan:create', args, cliOptions);
+    const result = await runCliCommand(CliCommands.PLAN_CREATE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Plan created' });
@@ -1206,12 +1212,12 @@ export const planEditTool: ToolDefinition = {
       return error(ErrorMessages.CONTENT_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string, '--section', input.section as string];
+    const args = [CliArgs.ID, input.id as string, '--section', input.section as string];
     if (input.content) args.push('--content', input.content as string);
     if (input.append) args.push('--append', input.append as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('plan:edit', args, cliOptions);
+    const result = await runCliCommand(CliCommands.PLAN_EDIT, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Plan edited' });
@@ -1239,9 +1245,9 @@ export const planLinkTool: ToolDefinition = {
       return error(ErrorMessages.PLAN_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string, '--plan', input.plan as string];
+    const args = [CliArgs.ID, input.id as string, '--plan', input.plan as string];
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('plan:link', args, cliOptions);
+    const result = await runCliCommand(CliCommands.PLAN_LINK, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Plan linked' });
@@ -1266,11 +1272,11 @@ export const planPromoteTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
-    if (input.force) args.push('--force');
+    const args = [CliArgs.ID, input.id as string];
+    if (input.force) args.push(CliArgs.FORCE);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('plan:promote', args, cliOptions);
+    const result = await runCliCommand(CliCommands.PLAN_PROMOTE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Plan promoted' });
@@ -1296,12 +1302,12 @@ export const signalCleanupTool: ToolDefinition = {
     if (input.ttl) args.push('--ttl', input.ttl as string);
     if (input.unread_ttl) args.push('--unread-ttl', input.unread_ttl as string);
     if (input.max_entries !== undefined) args.push('--max-entries', String(input.max_entries));
-    if (input.json) args.push('--json');
-    if (input.quiet) args.push('--quiet');
+    if (input.json) args.push(CliArgs.JSON);
+    if (input.quiet) args.push(CliArgs.QUIET);
     if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
 
     const execution = await executeViaPack(
-      'signal:cleanup',
+      CliCommands.SIGNAL_CLEANUP,
       {
         dry_run: input.dry_run,
         ttl: input.ttl,
@@ -1315,11 +1321,11 @@ export const signalCleanupTool: ToolDefinition = {
         projectRoot: options?.projectRoot,
         contextInput: {
           metadata: {
-            project_root: options?.projectRoot,
+            [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
           },
         },
         fallback: {
-          command: 'signal:cleanup',
+          command: CliCommands.SIGNAL_CLEANUP,
           args,
           errorCode: ErrorCodes.SIGNAL_CLEANUP_ERROR,
         },
@@ -1350,7 +1356,7 @@ export const wuProtoTool: ToolDefinition = {
       return error(ErrorMessages.TITLE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--lane', input.lane as string, '--title', input.title as string];
+    const args = [CliArgs.LANE, input.lane as string, '--title', input.title as string];
     if (input.description) args.push(CliArgs.DESCRIPTION, input.description as string);
     if (Array.isArray(input.code_paths)) {
       for (const codePath of input.code_paths) {
@@ -1363,7 +1369,7 @@ export const wuProtoTool: ToolDefinition = {
     if (input.assigned_to) args.push('--assigned-to', input.assigned_to as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('wu:proto', args, cliOptions);
+    const result = await runCliCommand(CliCommands.WU_PROTO, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Prototype WU created' });

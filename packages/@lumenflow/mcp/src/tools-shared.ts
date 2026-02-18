@@ -188,6 +188,18 @@ export const CliArgs = {
   THRESHOLD: '--threshold',
   RECOVER: '--recover',
   WU: '--wu',
+  // WU-1851: Governed flags (3+ tool threshold)
+  FORCE: '--force',
+  VERBOSE: '--verbose',
+  QUIET: '--quiet',
+  EXECUTE: '--execute',
+  ID: '--id',
+  LANE: '--lane',
+  REASON: '--reason',
+  PATH: '--path',
+  FORMAT: '--format',
+  SINCE: '--since',
+  STATUS: '--status',
 } as const;
 
 /**
@@ -226,7 +238,7 @@ export function buildGatesArgs(
   if (input.full_tests) args.push('--full-tests');
   if (input.full_coverage) args.push('--full-coverage');
   if (input.coverage_mode) args.push('--coverage-mode', input.coverage_mode as string);
-  if (input.verbose) args.push('--verbose');
+  if (input.verbose) args.push(CliArgs.VERBOSE);
   return args;
 }
 

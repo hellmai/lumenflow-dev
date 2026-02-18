@@ -28,6 +28,7 @@ import {
   runCliCommand,
   type CliRunnerOptions,
 } from '../tools-shared.js';
+import { CliCommands } from '../mcp-constants.js';
 
 /**
  * Error codes for initiative tools
@@ -62,12 +63,12 @@ export const initiativeListTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.status) args.push('--status', input.status as string);
+    if (input.status) args.push(CliArgs.STATUS, input.status as string);
     // WU-1455: Use format field from shared schema
-    if (input.format) args.push('--format', input.format as string);
+    if (input.format) args.push(CliArgs.FORMAT, input.format as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('initiative:list', args, cliOptions);
+    const result = await runCliCommand(CliCommands.INITIATIVE_LIST, args, cliOptions);
 
     if (result.success) {
       try {
@@ -99,12 +100,12 @@ export const initiativeStatusTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
+    const args = [CliArgs.ID, input.id as string];
     // WU-1455: Use format field from shared schema
-    if (input.format) args.push('--format', input.format as string);
+    if (input.format) args.push(CliArgs.FORMAT, input.format as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('initiative:status', args, cliOptions);
+    const result = await runCliCommand(CliCommands.INITIATIVE_STATUS, args, cliOptions);
 
     if (result.success) {
       try {
@@ -141,7 +142,7 @@ export const initiativeCreateTool: ToolDefinition = {
 
     // WU-1455: Map shared schema fields to CLI flags
     const args = [
-      '--id',
+      CliArgs.ID,
       input.id as string,
       '--slug',
       input.slug as string,
@@ -153,7 +154,7 @@ export const initiativeCreateTool: ToolDefinition = {
     if (input.target_date) args.push('--target-date', input.target_date as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('initiative:create', args, cliOptions);
+    const result = await runCliCommand(CliCommands.INITIATIVE_CREATE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Initiative created successfully' });
@@ -181,9 +182,9 @@ export const initiativeEditTool: ToolDefinition = {
     }
 
     // WU-1455: Map shared schema fields to CLI flags
-    const args = ['--id', input.id as string];
+    const args = [CliArgs.ID, input.id as string];
     if (input.description) args.push(CliArgs.DESCRIPTION, input.description as string);
-    if (input.status) args.push('--status', input.status as string);
+    if (input.status) args.push(CliArgs.STATUS, input.status as string);
     if (input.blocked_by) args.push('--blocked-by', input.blocked_by as string);
     if (input.blocked_reason) args.push('--blocked-reason', input.blocked_reason as string);
     if (input.unblock) args.push('--unblock');
@@ -213,7 +214,7 @@ export const initiativeEditTool: ToolDefinition = {
     }
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('initiative:edit', args, cliOptions);
+    const result = await runCliCommand(CliCommands.INITIATIVE_EDIT, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Initiative edited successfully' });
@@ -247,7 +248,7 @@ export const initiativeAddWuTool: ToolDefinition = {
     if (input.phase !== undefined) args.push(CliArgs.PHASE, String(input.phase));
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('initiative:add-wu', args, cliOptions);
+    const result = await runCliCommand(CliCommands.INITIATIVE_ADD_WU, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU added to initiative' });
@@ -280,7 +281,7 @@ export const initiativeRemoveWuTool: ToolDefinition = {
     const args = [CliArgs.INITIATIVE, input.initiative as string, '--wu', input.wu as string];
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('initiative:remove-wu', args, cliOptions);
+    const result = await runCliCommand(CliCommands.INITIATIVE_REMOVE_WU, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'WU removed from initiative' });
@@ -311,7 +312,7 @@ export const initiatiBulkAssignTool: ToolDefinition = {
       args.push('--reconcile-initiative', input.sync_from_initiative as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('initiative:bulk-assign', args, cliOptions);
+    const result = await runCliCommand(CliCommands.INITIATIVE_BULK_ASSIGN, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Bulk assignment completed' });
@@ -343,7 +344,7 @@ export const initiativePlanTool: ToolDefinition = {
     if (input.create) args.push('--create');
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('initiative:plan', args, cliOptions);
+    const result = await runCliCommand(CliCommands.INITIATIVE_PLAN, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Plan linked to initiative' });

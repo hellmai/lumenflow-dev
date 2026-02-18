@@ -34,6 +34,7 @@ import {
   runCliCommand,
   type CliRunnerOptions,
 } from '../tools-shared.js';
+import { CliCommands } from '../mcp-constants.js';
 
 /**
  * Error codes for memory tools
@@ -88,7 +89,7 @@ export const memInitTool: ToolDefinition = {
     const args = ['--wu', input.wu as string];
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:init', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_INIT, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Memory initialized' });
@@ -115,10 +116,10 @@ export const memStartTool: ToolDefinition = {
     }
 
     const args = ['--wu', input.wu as string];
-    if (input.lane) args.push('--lane', input.lane as string);
+    if (input.lane) args.push(CliArgs.LANE, input.lane as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:start', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_START, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Session started' });
@@ -147,7 +148,7 @@ export const memReadyTool: ToolDefinition = {
     const args = ['--wu', input.wu as string];
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:ready', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_READY, args, cliOptions);
 
     if (result.success) {
       try {
@@ -182,7 +183,7 @@ export const memCheckpointTool: ToolDefinition = {
     if (input.message) args.push('--message', input.message as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:checkpoint', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_CHECKPOINT, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Checkpoint saved' });
@@ -208,7 +209,7 @@ export const memCleanupTool: ToolDefinition = {
     if (input.dry_run) args.push(CliArgs.DRY_RUN);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:cleanup', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_CLEANUP, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Cleanup completed' });
@@ -235,10 +236,10 @@ export const memContextTool: ToolDefinition = {
     }
 
     const args = ['--wu', input.wu as string];
-    if (input.lane) args.push('--lane', input.lane as string);
+    if (input.lane) args.push(CliArgs.LANE, input.lane as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:context', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_CONTEXT, args, cliOptions);
 
     if (result.success) {
       try {
@@ -277,7 +278,7 @@ export const memCreateTool: ToolDefinition = {
     if (input.tags) args.push('--tags', (input.tags as string[]).join(','));
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:create', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_CREATE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Memory node created' });
@@ -303,10 +304,10 @@ export const memDeleteTool: ToolDefinition = {
       return error(ErrorMessages.ID_REQUIRED, ErrorCodes.MISSING_PARAMETER);
     }
 
-    const args = ['--id', input.id as string];
+    const args = [CliArgs.ID, input.id as string];
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:delete', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_DELETE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Memory node deleted' });
@@ -333,10 +334,10 @@ export const memExportTool: ToolDefinition = {
     }
 
     const args = ['--wu', input.wu as string];
-    if (input.format) args.push('--format', input.format as string);
+    if (input.format) args.push(CliArgs.FORMAT, input.format as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:export', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_EXPORT, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout });
@@ -359,12 +360,12 @@ export const memInboxTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.since) args.push('--since', input.since as string);
+    if (input.since) args.push(CliArgs.SINCE, input.since as string);
     if (input.wu) args.push(CliArgs.WU, input.wu as string);
-    if (input.lane) args.push('--lane', input.lane as string);
+    if (input.lane) args.push(CliArgs.LANE, input.lane as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:inbox', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_INBOX, args, cliOptions);
 
     if (result.success) {
       try {
@@ -401,7 +402,7 @@ export const memSignalTool: ToolDefinition = {
     const args = [input.message as string, '--wu', input.wu as string];
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:signal', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_SIGNAL, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout || 'Signal broadcast' });
@@ -430,7 +431,7 @@ export const memSummarizeTool: ToolDefinition = {
     const args = ['--wu', input.wu as string];
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:summarize', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_SUMMARIZE, args, cliOptions);
 
     if (result.success) {
       return success({ message: result.stdout });
@@ -458,10 +459,10 @@ export const memTriageTool: ToolDefinition = {
 
     const args = ['--wu', input.wu as string];
     if (input.promote) args.push('--promote', input.promote as string);
-    if (input.lane) args.push('--lane', input.lane as string);
+    if (input.lane) args.push(CliArgs.LANE, input.lane as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:triage', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_TRIAGE, args, cliOptions);
 
     if (result.success) {
       try {
@@ -494,12 +495,12 @@ export const memRecoverTool: ToolDefinition = {
 
     const args = ['--wu', input.wu as string];
     if (input.max_size !== undefined) args.push('--max-size', String(input.max_size));
-    if (input.format) args.push('--format', input.format as string);
-    if (input.quiet) args.push('--quiet');
+    if (input.format) args.push(CliArgs.FORMAT, input.format as string);
+    if (input.quiet) args.push(CliArgs.QUIET);
     if (input.base_dir) args.push(CliArgs.BASE_DIR, input.base_dir as string);
 
     const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('mem:recover', args, cliOptions);
+    const result = await runCliCommand(CliCommands.MEM_RECOVER, args, cliOptions);
 
     if (result.success) {
       if (input.format === 'json') {
