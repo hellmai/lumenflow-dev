@@ -18,6 +18,7 @@ artifacts:
   - .lumenflow/stamps/WU-1859.done
 dependencies: []
 initiative: INIT-030
+phase: 5
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
@@ -28,7 +29,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Code review of INIT-030 found that executeViaPack falls back to CLI on policy/scope denials, bypassing the kernel policy enforcement layer. Also fixes workspace hash cascade and wildcard maintenance scope.
+description: Code review of INIT-030 found that executeViaPack falls back to CLI on policy/scope
+  denials, bypassing the kernel policy enforcement layer. Also fixes workspace hash cascade and
+  wildcard maintenance scope.
 acceptance:
   - Policy/scope denials from kernel returned directly, never retried via CLI
   - SPEC_TAMPERED errors returned directly, never retried via CLI
