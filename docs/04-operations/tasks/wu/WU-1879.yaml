@@ -1,0 +1,34 @@
+id: WU-1879
+title: 'INIT-030 Review Fix G: evidence store multi-instance replay correctness and lock error propagation'
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-18
+code_paths:
+  - packages/@lumenflow/kernel/src/evidence/evidence-store.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/evidence-store.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1879.done
+dependencies: []
+initiative: INIT-030
+phase: 5
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: EvidenceStore incremental replay assumes newly rotated segment files always contain entries already indexed by the current process. In multi-instance scenarios this can miss traces. Additionally, withFileLock collapses non-lock operation errors into generic lock acquisition failures, obscuring root causes.
+acceptance:
+  - Incremental hydration reads unseen segment files so cross-process compaction never drops traces
+  - withFileLock preserves and rethrows non-EEXIST operation errors (does not mask as lock acquisition failure)
+  - Regression tests cover multi-instance compaction replay and non-lock I/O error propagation
