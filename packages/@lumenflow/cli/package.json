@@ -134,7 +134,8 @@
     "lumenflow-integrate": "./dist/commands/integrate.js",
     "pack-scaffold": "./dist/pack-scaffold.js",
     "pack-validate": "./dist/pack-validate.js",
-    "pack-hash": "./dist/pack-hash.js"
+    "pack-hash": "./dist/pack-hash.js",
+    "pack-install": "./dist/pack-install.js"
   },
   "files": [
     "dist",
