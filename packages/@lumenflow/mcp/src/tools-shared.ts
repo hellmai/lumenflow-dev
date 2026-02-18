@@ -5,15 +5,14 @@
  * WU-1642: Extracted from tools.ts during domain decomposition.
  */
 
-import path from 'node:path';
-import {
-  ExecutionContextSchema,
-  initializeKernelRuntime,
-  type ExecutionContext,
-  type ToolScope,
-} from '@lumenflow/kernel';
+import { ExecutionContextSchema, type ExecutionContext, type ToolScope } from '@lumenflow/kernel';
 import { z } from 'zod';
 import { runCliCommand, type CliRunnerOptions, type CliRunnerResult } from './cli-runner.js';
+import {
+  getRuntimeForWorkspace,
+  resetMcpRuntimeCache,
+  type RuntimeInstance,
+} from './runtime-cache.js';
 import { packToolCapabilityResolver } from './runtime-tool-resolver.js';
 
 // Import core functions for context operations only (async to avoid circular deps)
@@ -36,9 +35,6 @@ const MAINTENANCE_SESSION_PREFIX = 'session-maintenance';
 const MAINTENANCE_CONTEXT_MODE = 'maintenance';
 const TASK_CONTEXT_MODE = 'task';
 const DEFAULT_FALLBACK_ERROR_CODE = 'TOOL_EXECUTE_ERROR';
-
-type RuntimeInstance = Awaited<ReturnType<typeof initializeKernelRuntime>>;
-const runtimeCacheByWorkspaceRoot = new Map<string, Promise<RuntimeInstance>>();
 
 /**
  * Tool result structure matching MCP SDK expectations
@@ -321,28 +317,11 @@ export interface ExecuteViaPackOptions {
 }
 
 export function resetExecuteViaPackRuntimeCache(): void {
-  runtimeCacheByWorkspaceRoot.clear();
+  resetMcpRuntimeCache();
 }
 
-async function getRuntimeForWorkspaceForPack(workspaceRoot: string): Promise<RuntimeInstance> {
-  const normalizedRoot = path.resolve(workspaceRoot);
-  const cachedRuntime = runtimeCacheByWorkspaceRoot.get(normalizedRoot);
-  if (cachedRuntime) {
-    return cachedRuntime;
-  }
-
-  const runtimePromise = initializeKernelRuntime({
-    workspaceRoot: normalizedRoot,
-    toolCapabilityResolver: packToolCapabilityResolver,
-  });
-  runtimeCacheByWorkspaceRoot.set(normalizedRoot, runtimePromise);
-
-  try {
-    return await runtimePromise;
-  } catch (cause) {
-    runtimeCacheByWorkspaceRoot.delete(normalizedRoot);
-    throw cause;
-  }
+async function runtimeFactoryForPack(workspaceRoot: string): Promise<RuntimeInstance> {
+  return getRuntimeForWorkspace(workspaceRoot, packToolCapabilityResolver);
 }
 
 export async function executeViaPack(
@@ -351,7 +330,7 @@ export async function executeViaPack(
   options: ExecuteViaPackOptions,
 ): Promise<ToolResult> {
   const projectRoot = options.projectRoot ?? process.cwd();
-  const runtimeFactory = options.runtimeFactory ?? getRuntimeForWorkspaceForPack;
+  const runtimeFactory = options.runtimeFactory ?? runtimeFactoryForPack;
   const cliRunner = options.cliRunner ?? runCliCommand;
   const executionContext = options.context ?? buildExecutionContext(options.contextInput);
   let runtimeFailureMessage: string | undefined;

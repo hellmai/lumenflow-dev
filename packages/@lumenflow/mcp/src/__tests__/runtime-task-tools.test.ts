@@ -13,7 +13,12 @@ import {
   taskUnblockTool,
 } from '../tools/runtime-task-tools.js';
 import * as kernel from '@lumenflow/kernel';
-import { ErrorCodes } from '../tools-shared.js';
+import {
+  buildExecutionContext,
+  executeViaPack,
+  ErrorCodes,
+  resetExecuteViaPackRuntimeCache,
+} from '../tools-shared.js';
 import { RuntimeTaskToolNames } from '../tools/runtime-task-constants.js';
 
 vi.mock('@lumenflow/kernel', async (importOriginal) => {
@@ -49,6 +54,7 @@ describe('runtime task MCP tools', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     resetRuntimeTaskToolCache();
+    resetExecuteViaPackRuntimeCache();
   });
 
   it(`routes ${RuntimeTaskToolNames.TASK_CLAIM} through KernelRuntime without CLI shell-out`, async () => {
@@ -147,6 +153,52 @@ describe('runtime task MCP tools', () => {
 
     expect(mockInitializeKernelRuntime).toHaveBeenCalledTimes(1);
     expect(claimTask).toHaveBeenCalledTimes(2);
+  });
+
+  it('shares runtime cache between runtime task tools and executeViaPack for same workspace root', async () => {
+    const claimTask = vi.fn().mockResolvedValue({
+      task_id: 'WU-1771',
+    });
+    const executeTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { task_id: 'WU-1771' },
+    });
+    mockInitializeKernelRuntime.mockResolvedValue({ claimTask, executeTool } as unknown as Awaited<
+      ReturnType<typeof kernel.initializeKernelRuntime>
+    >);
+
+    await taskClaimTool.execute(
+      {
+        task_id: 'WU-1771',
+        by: 'tom@hellm.ai',
+        session_id: 'session-1771',
+      },
+      { projectRoot: '/tmp/lumenflow-mcp-runtime' },
+    );
+
+    const result = await executeViaPack(
+      'wu:status',
+      { id: 'WU-1771' },
+      {
+        projectRoot: '/tmp/lumenflow-mcp-runtime',
+        context: buildExecutionContext({
+          taskId: 'WU-1771',
+          runId: 'run-WU-1771-1',
+          sessionId: 'session-1771',
+        }),
+        fallback: {
+          command: 'wu:status',
+          args: ['--id', 'WU-1771'],
+          errorCode: 'WU_STATUS_ERROR',
+        },
+      },
+    );
+
+    expect(result.success).toBe(true);
+    expect(mockInitializeKernelRuntime).toHaveBeenCalledTimes(1);
+    expect(claimTask).toHaveBeenCalledTimes(1);
+    expect(executeTool).toHaveBeenCalledTimes(1);
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
   });
 
   it(`routes ${RuntimeTaskToolNames.TASK_CREATE} through KernelRuntime without CLI shell-out`, async () => {

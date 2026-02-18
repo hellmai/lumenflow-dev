@@ -1,7 +1,11 @@
-import path from 'node:path';
-import { ExecutionContextSchema, initializeKernelRuntime, TaskSpecSchema } from '@lumenflow/kernel';
+import { ExecutionContextSchema, TaskSpecSchema } from '@lumenflow/kernel';
 import { z } from 'zod';
 import { error, success, ErrorCodes, type ToolDefinition } from '../tools-shared.js';
+import {
+  getRuntimeForWorkspace,
+  resetMcpRuntimeCache,
+  type RuntimeInstance,
+} from '../runtime-cache.js';
 import { packToolCapabilityResolver } from '../runtime-tool-resolver.js';
 import { RuntimeTaskToolDescriptions, RuntimeTaskToolNames } from './runtime-task-constants.js';
 
@@ -38,196 +42,102 @@ const toolExecuteInputSchema = z.object({
   context: ExecutionContextSchema,
 });
 
-type RuntimeInstance = Awaited<ReturnType<typeof initializeKernelRuntime>>;
-
-const runtimeCacheByRoot = new Map<string, Promise<RuntimeInstance>>();
-
 export function resetRuntimeTaskToolCache(): void {
-  runtimeCacheByRoot.clear();
+  resetMcpRuntimeCache();
 }
 
-async function getRuntimeForWorkspace(workspaceRoot: string): Promise<RuntimeInstance> {
-  const normalizedRoot = path.resolve(workspaceRoot);
-  const cached = runtimeCacheByRoot.get(normalizedRoot);
-  if (cached) {
-    return cached;
-  }
-
-  const runtimePromise = initializeKernelRuntime({
-    workspaceRoot: normalizedRoot,
-    toolCapabilityResolver: packToolCapabilityResolver,
-  });
-  runtimeCacheByRoot.set(normalizedRoot, runtimePromise);
-
-  try {
-    return await runtimePromise;
-  } catch (cause) {
-    runtimeCacheByRoot.delete(normalizedRoot);
-    throw cause;
-  }
+function resolveWorkspaceRoot(options?: { projectRoot?: string }): string {
+  return options?.projectRoot ?? process.cwd();
 }
 
-export const taskClaimTool: ToolDefinition = {
+interface RuntimeToolFactoryConfig<TSchema extends z.ZodType> {
+  name: string;
+  description: string;
+  inputSchema: TSchema;
+  errorCode: string;
+  executeWithRuntime: (runtime: RuntimeInstance, parsedInput: z.infer<TSchema>) => Promise<unknown>;
+}
+
+function createRuntimeTool<TSchema extends z.ZodType>(
+  config: RuntimeToolFactoryConfig<TSchema>,
+): ToolDefinition {
+  return {
+    name: config.name,
+    description: config.description,
+    inputSchema: config.inputSchema,
+    async execute(input, options) {
+      const parsedInput = config.inputSchema.safeParse(input);
+      if (!parsedInput.success) {
+        return error(parsedInput.error.message, config.errorCode);
+      }
+
+      try {
+        const runtime = await getRuntimeForWorkspace(
+          resolveWorkspaceRoot(options),
+          packToolCapabilityResolver,
+        );
+        const result = await config.executeWithRuntime(runtime, parsedInput.data);
+        return success(result);
+      } catch (cause) {
+        return error((cause as Error).message, config.errorCode);
+      }
+    },
+  };
+}
+
+export const taskClaimTool = createRuntimeTool({
   name: RuntimeTaskToolNames.TASK_CLAIM,
   description: RuntimeTaskToolDescriptions.TASK_CLAIM,
   inputSchema: taskClaimInputSchema,
+  errorCode: ErrorCodes.TASK_CLAIM_ERROR,
+  executeWithRuntime: (runtime, parsedInput) => runtime.claimTask(parsedInput),
+});
 
-  async execute(input, options) {
-    const parsedInput = taskClaimInputSchema.safeParse(input);
-    if (!parsedInput.success) {
-      return error(parsedInput.error.message, ErrorCodes.TASK_CLAIM_ERROR);
-    }
-
-    const workspaceRoot = options?.projectRoot || process.cwd();
-
-    try {
-      const runtime = await getRuntimeForWorkspace(workspaceRoot);
-      const claimResult = await runtime.claimTask(parsedInput.data);
-      return success(claimResult);
-    } catch (cause) {
-      return error((cause as Error).message, ErrorCodes.TASK_CLAIM_ERROR);
-    }
-  },
-};
-
-export const taskCreateTool: ToolDefinition = {
+export const taskCreateTool = createRuntimeTool({
   name: RuntimeTaskToolNames.TASK_CREATE,
   description: RuntimeTaskToolDescriptions.TASK_CREATE,
   inputSchema: taskCreateInputSchema,
+  errorCode: ErrorCodes.TASK_CREATE_ERROR,
+  executeWithRuntime: (runtime, parsedInput) => runtime.createTask(parsedInput),
+});
 
-  async execute(input, options) {
-    const parsedInput = taskCreateInputSchema.safeParse(input);
-    if (!parsedInput.success) {
-      return error(parsedInput.error.message, ErrorCodes.TASK_CREATE_ERROR);
-    }
-
-    const workspaceRoot = options?.projectRoot || process.cwd();
-
-    try {
-      const runtime = await getRuntimeForWorkspace(workspaceRoot);
-      const createResult = await runtime.createTask(parsedInput.data);
-      return success(createResult);
-    } catch (cause) {
-      return error((cause as Error).message, ErrorCodes.TASK_CREATE_ERROR);
-    }
-  },
-};
-
-export const taskCompleteTool: ToolDefinition = {
+export const taskCompleteTool = createRuntimeTool({
   name: RuntimeTaskToolNames.TASK_COMPLETE,
   description: RuntimeTaskToolDescriptions.TASK_COMPLETE,
   inputSchema: taskCompleteInputSchema,
+  errorCode: ErrorCodes.TASK_COMPLETE_ERROR,
+  executeWithRuntime: (runtime, parsedInput) => runtime.completeTask(parsedInput),
+});
 
-  async execute(input, options) {
-    const parsedInput = taskCompleteInputSchema.safeParse(input);
-    if (!parsedInput.success) {
-      return error(parsedInput.error.message, ErrorCodes.TASK_COMPLETE_ERROR);
-    }
-
-    const workspaceRoot = options?.projectRoot || process.cwd();
-
-    try {
-      const runtime = await getRuntimeForWorkspace(workspaceRoot);
-      const completeResult = await runtime.completeTask(parsedInput.data);
-      return success(completeResult);
-    } catch (cause) {
-      return error((cause as Error).message, ErrorCodes.TASK_COMPLETE_ERROR);
-    }
-  },
-};
-
-export const taskBlockTool: ToolDefinition = {
+export const taskBlockTool = createRuntimeTool({
   name: RuntimeTaskToolNames.TASK_BLOCK,
   description: RuntimeTaskToolDescriptions.TASK_BLOCK,
   inputSchema: taskBlockInputSchema,
+  errorCode: ErrorCodes.TASK_BLOCK_ERROR,
+  executeWithRuntime: (runtime, parsedInput) => runtime.blockTask(parsedInput),
+});
 
-  async execute(input, options) {
-    const parsedInput = taskBlockInputSchema.safeParse(input);
-    if (!parsedInput.success) {
-      return error(parsedInput.error.message, ErrorCodes.TASK_BLOCK_ERROR);
-    }
-
-    const workspaceRoot = options?.projectRoot || process.cwd();
-
-    try {
-      const runtime = await getRuntimeForWorkspace(workspaceRoot);
-      const blockResult = await runtime.blockTask(parsedInput.data);
-      return success(blockResult);
-    } catch (cause) {
-      return error((cause as Error).message, ErrorCodes.TASK_BLOCK_ERROR);
-    }
-  },
-};
-
-export const taskUnblockTool: ToolDefinition = {
+export const taskUnblockTool = createRuntimeTool({
   name: RuntimeTaskToolNames.TASK_UNBLOCK,
   description: RuntimeTaskToolDescriptions.TASK_UNBLOCK,
   inputSchema: taskUnblockInputSchema,
+  errorCode: ErrorCodes.TASK_UNBLOCK_ERROR,
+  executeWithRuntime: (runtime, parsedInput) => runtime.unblockTask(parsedInput),
+});
 
-  async execute(input, options) {
-    const parsedInput = taskUnblockInputSchema.safeParse(input);
-    if (!parsedInput.success) {
-      return error(parsedInput.error.message, ErrorCodes.TASK_UNBLOCK_ERROR);
-    }
-
-    const workspaceRoot = options?.projectRoot || process.cwd();
-
-    try {
-      const runtime = await getRuntimeForWorkspace(workspaceRoot);
-      const unblockResult = await runtime.unblockTask(parsedInput.data);
-      return success(unblockResult);
-    } catch (cause) {
-      return error((cause as Error).message, ErrorCodes.TASK_UNBLOCK_ERROR);
-    }
-  },
-};
-
-export const taskInspectTool: ToolDefinition = {
+export const taskInspectTool = createRuntimeTool({
   name: RuntimeTaskToolNames.TASK_INSPECT,
   description: RuntimeTaskToolDescriptions.TASK_INSPECT,
   inputSchema: taskInspectInputSchema,
+  errorCode: ErrorCodes.TASK_INSPECT_ERROR,
+  executeWithRuntime: (runtime, parsedInput) => runtime.inspectTask(parsedInput.task_id),
+});
 
-  async execute(input, options) {
-    const parsedInput = taskInspectInputSchema.safeParse(input);
-    if (!parsedInput.success) {
-      return error(parsedInput.error.message, ErrorCodes.TASK_INSPECT_ERROR);
-    }
-
-    const workspaceRoot = options?.projectRoot || process.cwd();
-
-    try {
-      const runtime = await getRuntimeForWorkspace(workspaceRoot);
-      const inspectResult = await runtime.inspectTask(parsedInput.data.task_id);
-      return success(inspectResult);
-    } catch (cause) {
-      return error((cause as Error).message, ErrorCodes.TASK_INSPECT_ERROR);
-    }
-  },
-};
-
-export const taskToolExecuteTool: ToolDefinition = {
+export const taskToolExecuteTool = createRuntimeTool({
   name: RuntimeTaskToolNames.TOOL_EXECUTE,
   description: RuntimeTaskToolDescriptions.TOOL_EXECUTE,
   inputSchema: toolExecuteInputSchema,
-
-  async execute(input, options) {
-    const parsedInput = toolExecuteInputSchema.safeParse(input);
-    if (!parsedInput.success) {
-      return error(parsedInput.error.message, ErrorCodes.TOOL_EXECUTE_ERROR);
-    }
-
-    const workspaceRoot = options?.projectRoot || process.cwd();
-
-    try {
-      const runtime = await getRuntimeForWorkspace(workspaceRoot);
-      const toolOutput = await runtime.executeTool(
-        parsedInput.data.tool_name,
-        parsedInput.data.tool_input ?? {},
-        parsedInput.data.context,
-      );
-      return success(toolOutput);
-    } catch (cause) {
-      return error((cause as Error).message, ErrorCodes.TOOL_EXECUTE_ERROR);
-    }
-  },
-};
+  errorCode: ErrorCodes.TOOL_EXECUTE_ERROR,
+  executeWithRuntime: (runtime, parsedInput) =>
+    runtime.executeTool(parsedInput.tool_name, parsedInput.tool_input ?? {}, parsedInput.context),
+});
