@@ -37,13 +37,13 @@ export interface HttpSurfaceOptions {
 }
 
 export interface HttpSurface {
-  handleRequest(
-    request: IncomingMessage,
-    response: ServerResponse<IncomingMessage>,
-  ): Promise<void>;
+  handleRequest(request: IncomingMessage, response: ServerResponse<IncomingMessage>): Promise<void>;
 }
 
-function parseRoute(request: IncomingMessage): { segments: string[]; searchParams: URLSearchParams } {
+function parseRoute(request: IncomingMessage): {
+  segments: string[];
+  searchParams: URLSearchParams;
+} {
   const url = new URL(request.url ?? '/', URL_BASE);
   const segments = url.pathname.split('/').filter((segment) => segment.length > 0);
   return {
@@ -87,7 +87,10 @@ function resolveEventSubscriber(
   return undefined;
 }
 
-export function createHttpSurface(runtime: KernelRuntime, options: HttpSurfaceOptions = {}): HttpSurface {
+export function createHttpSurface(
+  runtime: KernelRuntime,
+  options: HttpSurfaceOptions = {},
+): HttpSurface {
   const taskApiRouter = createTaskApiRouter(runtime);
   const eventStreamRouter = createEventStreamRouter(resolveEventSubscriber(runtime, options));
 

@@ -4,7 +4,13 @@
 import type { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'node:http';
 import { EventEmitter } from 'node:events';
 import { PassThrough } from 'node:stream';
-import type { Disposable, KernelEvent, KernelRuntime, ReplayFilter, TaskSpec } from '@lumenflow/kernel';
+import type {
+  Disposable,
+  KernelEvent,
+  KernelRuntime,
+  ReplayFilter,
+  TaskSpec,
+} from '@lumenflow/kernel';
 import { describe, expect, it, vi } from 'vitest';
 import { createHttpSurface } from '../http/index.js';
 

@@ -63,11 +63,7 @@ function isJsonRecord(value: unknown): value is JsonRecord {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function readRequiredString(
-  payload: JsonRecord,
-  key: string,
-  validationMessage: string,
-): string {
+function readRequiredString(payload: JsonRecord, key: string, validationMessage: string): string {
   const value = payload[key];
   if (typeof value !== 'string' || value.trim().length === 0) {
     throw new HttpSurfaceRequestError(validationMessage);
@@ -166,7 +162,11 @@ function toClaimTaskInput(taskId: string, payload: JsonRecord): ClaimTaskInput {
     task_id: taskId,
     by: readRequiredString(payload, 'by', 'claim requires by.'),
     session_id: readRequiredString(payload, 'session_id', 'claim requires session_id.'),
-    timestamp: readOptionalString(payload, 'timestamp', 'claim timestamp must be a non-empty string.'),
+    timestamp: readOptionalString(
+      payload,
+      'timestamp',
+      'claim timestamp must be a non-empty string.',
+    ),
     domain_data: readOptionalObject(
       payload,
       'domain_data',
