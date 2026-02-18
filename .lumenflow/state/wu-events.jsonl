@@ -1590,3 +1590,4 @@
 {"type":"complete","wuId":"WU-1805","timestamp":"2026-02-18T17:50:11.740Z"}
 {"type":"claim","wuId":"WU-1806","timestamp":"2026-02-18T17:57:09.252Z","lane":"Framework: Core Lifecycle","title":"Migrate WU creation and claiming tools to runtime pack execution"}
 {"type":"complete","wuId":"WU-1806","timestamp":"2026-02-18T18:07:10.035Z"}
+{"type":"claim","wuId":"WU-1807","lane":"Framework: Core Lifecycle","title":"Migrate WU state transition tools to runtime pack execution","timestamp":"2026-02-18T18:07:48.552Z"}
