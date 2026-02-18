@@ -8,12 +8,15 @@ created: 2026-02-18
 code_paths:
   - apps/web/app/api/registry/packs/[id]/install/route.ts
   - apps/web/src/components/marketplace-pack-detail.tsx
+  - apps/web/src/server/pack-registry-route-adapters.ts
+  - apps/web/src/components/marketplace-pack-detail-live.tsx
 tests:
   manual:
     - Verify Install button triggers POST and installs pack to connected workspace
     - Verify button is disabled with tooltip when no workspace connected
   unit:
     - apps/web/app/api/registry/packs/[id]/__tests__/install.test.ts
+    - apps/web/__tests__/install-pack-route.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1878.done
@@ -29,10 +32,17 @@ risks: []
 notes: 'Sizing: Medium (M). ~10-15 files, ~35 tool calls. Strategy: Single Session. Wave 6b (after
   6.1 + 5.5). Final WU — completes browse-to-install flow.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-18T23:52:04.500Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1878
+session_id: c49f6de7-1d22-4acf-88b7-5a1d760b151b
 exposure: ui
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T23:52:04.506Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -47,11 +57,3 @@ acceptance:
   - Install to workspace button on MarketplacePackDetail triggers install API call
   - Button disabled when no workspace is connected with helpful tooltip
   - Success/error feedback shown after install attempt
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1878
-claimed_at: 2026-02-18T23:52:04.500Z
-baseline_main_sha: ddd0ead4f8773de8486b4db08ee37404a76f9536
-session_id: c49f6de7-1d22-4acf-88b7-5a1d760b151b
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-18T23:52:04.506Z
