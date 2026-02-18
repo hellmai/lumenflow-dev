@@ -31,7 +31,6 @@ sections:
 - [WU-1876 — Evidence export endpoint with CSV and JSON format support](wu/WU-1876.yaml) — Content: Site Comms
 - [WU-1877 — 4 additional community packs published to registry](wu/WU-1877.yaml) — Framework: Core Lifecycle
 - [WU-1878 — Marketplace Install to workspace button](wu/WU-1878.yaml) — Content: Site Comms
-- [WU-1880 — Fix manifest parity drift for pack_search in wu-tools truth gate](wu/WU-1880.yaml) — Framework: MCP
 
 ## 🔧 In progress
 
@@ -41,6 +40,7 @@ sections:
 - [WU-1869 — Vercel Blob-backed PackRegistryStore + PackBlobStore adapters](wu/WU-1869.yaml) — Content: Site Comms
 - [WU-1865 — Kernel polish: xstate dead code removal, warning clarity, naming consistency](wu/WU-1865.yaml) — Framework: Core Lifecycle
 - [WU-1871 — lumenflow workspace:init interactive wizard generating workspace.yaml](wu/WU-1871.yaml) — Framework: CLI Orchestration
+- [WU-1880 — Fix manifest parity drift for pack_search in wu-tools truth gate](wu/WU-1880.yaml) — Framework: MCP
 
 ## ⛔ Blocked
 
