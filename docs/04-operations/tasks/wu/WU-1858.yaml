@@ -2,7 +2,7 @@ id: WU-1858
 title: Fix ag-ui-adapter typecheck error from tool_call_finished type conflict
 lane: 'Content: Site Comms'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -18,10 +18,9 @@ artifacts:
   - .lumenflow/stamps/WU-1858.done
 dependencies: []
 risks: []
-notes:
-  Fixed impossible ToolTraceEntry narrowing in ag-ui-adapter tool_call_finished mapping and removed
-  legacy string declared_scopes emission in run-agent by returning schema-compatible TaskSpec scope
-  entries.
+notes: Fixed impossible ToolTraceEntry narrowing in ag-ui-adapter tool_call_finished mapping and
+  removed legacy string declared_scopes emission in run-agent by returning schema-compatible
+  TaskSpec scope entries.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -43,3 +42,6 @@ session_id: 1d0e5ddc-3f7b-4e4f-b6bc-d8ae051f1e66
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T21:43:34.514Z
+locked: true
+completed_at: 2026-02-18T21:51:25.818Z
+completed: 2026-02-18
