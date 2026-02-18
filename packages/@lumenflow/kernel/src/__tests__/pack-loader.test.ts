@@ -5,17 +5,18 @@ import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promis
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import YAML from 'yaml';
 import { SOFTWARE_DELIVERY_PACK_ID } from '../../../packs/software-delivery/constants.js';
 import { SOFTWARE_DELIVERY_MANIFEST } from '../../../packs/software-delivery/manifest.js';
-import { WorkspaceSpecSchema } from '../kernel.schemas.js';
+import { PackPinSchema, WorkspaceSpecSchema } from '../kernel.schemas.js';
 import { PACK_MANIFEST_FILE_NAME, UTF8_ENCODING } from '../shared-constants.js';
 import {
   DomainPackManifestSchema,
   PackLoader,
   computeDeterministicPackHash,
   resolvePackToolEntryPath,
+  type GitClient,
   type WorkspaceWarningEvent,
 } from '../pack/index.js';
 
@@ -103,18 +104,25 @@ async function collectMcpShellOutCommands(): Promise<string[]> {
   return [...commands].sort();
 }
 
-function createWorkspaceSpec(input: WorkspacePackInput) {
+interface GitWorkspacePackInput extends WorkspacePackInput {
+  source?: 'local' | 'git' | 'registry';
+  url?: string;
+}
+
+function createWorkspaceSpec(input: GitWorkspacePackInput) {
+  const packPin: Record<string, unknown> = {
+    id: SOFTWARE_DELIVERY_PACK_ID,
+    version: input.version ?? '1.0.0',
+    integrity: input.integrity,
+    source: input.source ?? 'local',
+  };
+  if (input.url) {
+    packPin.url = input.url;
+  }
   return WorkspaceSpecSchema.parse({
     id: 'workspace-kernel',
     name: 'Kernel Workspace',
-    packs: [
-      {
-        id: SOFTWARE_DELIVERY_PACK_ID,
-        version: input.version ?? '1.0.0',
-        integrity: input.integrity,
-        source: 'local',
-      },
-    ],
+    packs: [packPin],
     lanes: [
       {
         id: 'framework-core',
@@ -527,6 +535,354 @@ describe('pack loader + integrity pinning', () => {
           packId: SOFTWARE_DELIVERY_PACK_ID,
         }),
       ).rejects.toThrow('@lumenflow/kernel and Node built-ins are permitted');
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('PackPin schema with url field', () => {
+  it('accepts url field for git source packs', () => {
+    const pin = PackPinSchema.parse({
+      id: 'my-pack',
+      version: '1.0.0',
+      integrity: 'dev',
+      source: 'git',
+      url: 'https://github.com/example/my-pack.git',
+    });
+    expect(pin.url).toBe('https://github.com/example/my-pack.git');
+    expect(pin.source).toBe('git');
+  });
+
+  it('allows omitting url for local source packs', () => {
+    const pin = PackPinSchema.parse({
+      id: 'my-pack',
+      version: '1.0.0',
+      integrity: 'dev',
+      source: 'local',
+    });
+    expect(pin.url).toBeUndefined();
+  });
+
+  it('includes url in workspace spec round-trip', () => {
+    const spec = createWorkspaceSpec({
+      integrity: 'dev',
+      source: 'git',
+      url: 'https://github.com/example/pack.git',
+    });
+    const gitPack = spec.packs.find((p) => p.source === 'git');
+    expect(gitPack).toBeDefined();
+    expect(gitPack!.url).toBe('https://github.com/example/pack.git');
+  });
+});
+
+describe('git-based pack resolution', () => {
+  function createMockGitClient(packRoot: string): GitClient {
+    return {
+      clone: vi.fn(async () => {
+        await writePackFixture(packRoot);
+      }),
+      pull: vi.fn(async () => {}),
+      checkout: vi.fn(async () => {}),
+      isRepo: vi.fn(async () => false),
+    };
+  }
+
+  function createMockGitClientWithExistingRepo(packRoot: string): GitClient {
+    return {
+      clone: vi.fn(async () => {}),
+      pull: vi.fn(async () => {}),
+      checkout: vi.fn(async () => {}),
+      isRepo: vi.fn(async () => {
+        // Simulate existing repo: write the fixture so loading succeeds
+        await writePackFixture(packRoot);
+        return true;
+      }),
+    };
+  }
+
+  it('clones git repo to pack cache and loads pack', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-git-clone-'));
+    const cacheDir = join(tempRoot, 'pack-cache');
+    const packCachePath = join(cacheDir, `${SOFTWARE_DELIVERY_PACK_ID}@1.0.0`);
+
+    try {
+      const gitClient = createMockGitClient(packCachePath);
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        gitClient,
+      });
+
+      const loaded = await loader.load({
+        workspaceSpec: createWorkspaceSpec({
+          integrity: 'dev',
+          source: 'git',
+          url: 'https://github.com/example/my-pack.git',
+        }),
+        packId: SOFTWARE_DELIVERY_PACK_ID,
+      });
+
+      expect(loaded.manifest.id).toBe(SOFTWARE_DELIVERY_PACK_ID);
+      expect(loaded.packRoot).toBe(packCachePath);
+      expect(gitClient.clone).toHaveBeenCalledWith(
+        'https://github.com/example/my-pack.git',
+        packCachePath,
+      );
+      expect(gitClient.checkout).toHaveBeenCalledWith(packCachePath, 'v1.0.0');
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('pulls existing cached git repo instead of re-cloning', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-git-pull-'));
+    const cacheDir = join(tempRoot, 'pack-cache');
+    const packCachePath = join(cacheDir, `${SOFTWARE_DELIVERY_PACK_ID}@1.0.0`);
+
+    try {
+      const gitClient = createMockGitClientWithExistingRepo(packCachePath);
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        gitClient,
+      });
+
+      const loaded = await loader.load({
+        workspaceSpec: createWorkspaceSpec({
+          integrity: 'dev',
+          source: 'git',
+          url: 'https://github.com/example/my-pack.git',
+        }),
+        packId: SOFTWARE_DELIVERY_PACK_ID,
+      });
+
+      expect(loaded.manifest.id).toBe(SOFTWARE_DELIVERY_PACK_ID);
+      expect(gitClient.clone).not.toHaveBeenCalled();
+      expect(gitClient.pull).toHaveBeenCalledWith(packCachePath);
+      expect(gitClient.checkout).toHaveBeenCalledWith(packCachePath, 'v1.0.0');
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('caches git packs in the configured pack-cache directory', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-git-cache-'));
+    const cacheDir = join(tempRoot, 'custom-cache');
+    const packCachePath = join(cacheDir, `${SOFTWARE_DELIVERY_PACK_ID}@1.0.0`);
+
+    try {
+      const gitClient = createMockGitClient(packCachePath);
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        gitClient,
+      });
+
+      await loader.load({
+        workspaceSpec: createWorkspaceSpec({
+          integrity: 'dev',
+          source: 'git',
+          url: 'https://github.com/example/my-pack.git',
+        }),
+        packId: SOFTWARE_DELIVERY_PACK_ID,
+      });
+
+      expect(gitClient.clone).toHaveBeenCalledWith(
+        'https://github.com/example/my-pack.git',
+        packCachePath,
+      );
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('checks out version tag matching pack pin version', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-git-tag-'));
+    const cacheDir = join(tempRoot, 'pack-cache');
+    const packCachePath = join(cacheDir, `${SOFTWARE_DELIVERY_PACK_ID}@2.3.1`);
+
+    try {
+      const gitClient: GitClient = {
+        clone: vi.fn(async () => {
+          await mkdir(join(packCachePath, 'tools'), { recursive: true });
+          await writeFile(
+            join(packCachePath, PACK_MANIFEST_FILE_NAME),
+            [
+              `id: ${SOFTWARE_DELIVERY_PACK_ID}`,
+              'version: 2.3.1',
+              'task_types:',
+              '  - wu',
+              'tools:',
+              '  - name: fs:read',
+              '    entry: tools/fs-read.ts',
+              '    permission: read',
+              '    required_scopes:',
+              '      - type: path',
+              '        pattern: "**"',
+              '        access: read',
+              'policies:',
+              '  - id: workspace.default',
+              '    trigger: on_tool_request',
+              '    decision: allow',
+              'evidence_types:',
+              '  - trace',
+              'state_aliases:',
+              '  active: in_progress',
+              'lane_templates:',
+              '  - id: framework-core',
+              '    title: Framework Core',
+            ].join('\n'),
+            UTF8_ENCODING,
+          );
+          await writeFile(
+            join(packCachePath, 'tools', 'fs-read.ts'),
+            ['import { readFile } from "node:fs/promises";', 'export const tool = readFile;'].join(
+              '\n',
+            ),
+            UTF8_ENCODING,
+          );
+        }),
+        pull: vi.fn(async () => {}),
+        checkout: vi.fn(async () => {}),
+        isRepo: vi.fn(async () => false),
+      };
+
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        gitClient,
+      });
+
+      const loaded = await loader.load({
+        workspaceSpec: createWorkspaceSpec({
+          integrity: 'dev',
+          version: '2.3.1',
+          source: 'git',
+          url: 'https://github.com/example/my-pack.git',
+        }),
+        packId: SOFTWARE_DELIVERY_PACK_ID,
+      });
+
+      expect(loaded.manifest.version).toBe('2.3.1');
+      expect(gitClient.checkout).toHaveBeenCalledWith(packCachePath, 'v2.3.1');
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('runs integrity verification on git-fetched pack', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-git-integrity-'));
+    const cacheDir = join(tempRoot, 'pack-cache');
+    const packCachePath = join(cacheDir, `${SOFTWARE_DELIVERY_PACK_ID}@1.0.0`);
+
+    try {
+      const gitClient = createMockGitClient(packCachePath);
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        gitClient,
+      });
+
+      // First load to compute the hash
+      const warningEvents: WorkspaceWarningEvent[] = [];
+      const loaded = await loader.load({
+        workspaceSpec: createWorkspaceSpec({
+          integrity: 'dev',
+          source: 'git',
+          url: 'https://github.com/example/my-pack.git',
+        }),
+        packId: SOFTWARE_DELIVERY_PACK_ID,
+        onWorkspaceWarning: (event) => warningEvents.push(event),
+      });
+
+      // Loaded with dev integrity should emit a warning
+      expect(warningEvents).toHaveLength(1);
+      expect(warningEvents[0]?.message).toContain('integrity: dev');
+
+      // Now create a fresh loader and load with sha256 integrity
+      const correctHash = loaded.integrity;
+      const gitClient2: GitClient = {
+        clone: vi.fn(async () => {}),
+        pull: vi.fn(async () => {}),
+        checkout: vi.fn(async () => {}),
+        isRepo: vi.fn(async () => true),
+      };
+      const loader2 = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        gitClient: gitClient2,
+      });
+
+      const loaded2 = await loader2.load({
+        workspaceSpec: createWorkspaceSpec({
+          integrity: `sha256:${correctHash}`,
+          source: 'git',
+          url: 'https://github.com/example/my-pack.git',
+        }),
+        packId: SOFTWARE_DELIVERY_PACK_ID,
+      });
+
+      expect(loaded2.integrity).toBe(correctHash);
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects git source packs without url field', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-git-no-url-'));
+    const cacheDir = join(tempRoot, 'pack-cache');
+
+    try {
+      const gitClient: GitClient = {
+        clone: vi.fn(async () => {}),
+        pull: vi.fn(async () => {}),
+        checkout: vi.fn(async () => {}),
+        isRepo: vi.fn(async () => false),
+      };
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        gitClient,
+      });
+
+      await expect(
+        loader.load({
+          workspaceSpec: createWorkspaceSpec({
+            integrity: 'dev',
+            source: 'git',
+          }),
+          packId: SOFTWARE_DELIVERY_PACK_ID,
+        }),
+      ).rejects.toThrow('url');
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects integrity mismatch on git-fetched pack with sha256 pin', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'lumenflow-pack-git-mismatch-'));
+    const cacheDir = join(tempRoot, 'pack-cache');
+    const packCachePath = join(cacheDir, `${SOFTWARE_DELIVERY_PACK_ID}@1.0.0`);
+
+    try {
+      const gitClient = createMockGitClient(packCachePath);
+      const loader = new PackLoader({
+        packsRoot: tempRoot,
+        packCacheDir: cacheDir,
+        gitClient,
+      });
+
+      await expect(
+        loader.load({
+          workspaceSpec: createWorkspaceSpec({
+            integrity: 'sha256:' + '0'.repeat(64),
+            source: 'git',
+            url: 'https://github.com/example/my-pack.git',
+          }),
+          packId: SOFTWARE_DELIVERY_PACK_ID,
+        }),
+      ).rejects.toThrow('integrity mismatch');
     } finally {
       await rm(tempRoot, { recursive: true, force: true });
     }

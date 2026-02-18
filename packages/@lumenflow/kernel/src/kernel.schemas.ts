@@ -130,6 +130,7 @@ export const PackPinSchema = z.object({
     z.string().regex(SHA256_INTEGRITY_REGEX, 'Expected dev or sha256:<64-hex>'),
   ]),
   source: z.enum(['local', 'git', 'registry']),
+  url: z.string().url().optional(),
 });
 
 export type PackPin = z.infer<typeof PackPinSchema>;

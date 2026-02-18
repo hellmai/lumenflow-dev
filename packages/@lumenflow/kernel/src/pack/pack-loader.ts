@@ -3,17 +3,39 @@
 
 import { builtinModules } from 'node:module';
 import path from 'node:path';
-import { readFile } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
+import { homedir } from 'node:os';
 import YAML from 'yaml';
 import { KERNEL_EVENT_KINDS } from '../event-kinds.js';
 import type { PackPin, WorkspaceSpec } from '../kernel.schemas.js';
 import {
+  LUMENFLOW_DIR_NAME,
   PACK_MANIFEST_FILE_NAME,
   SHA256_INTEGRITY_PREFIX,
   UTF8_ENCODING,
 } from '../shared-constants.js';
 import { computeDeterministicPackHash, listPackFiles } from './hash.js';
 import { DomainPackManifestSchema, type DomainPackManifest } from './manifest.js';
+
+/**
+ * Port interface for git operations used by PackLoader.
+ *
+ * Consumers must provide an implementation (e.g. wrapping simple-git)
+ * so that PackLoader remains testable without real git operations.
+ */
+export interface GitClient {
+  /** Clone a repository to the target directory. */
+  clone(url: string, targetDir: string): Promise<void>;
+  /** Pull latest changes in an existing repository. */
+  pull(repoDir: string): Promise<void>;
+  /** Checkout a specific tag or ref. */
+  checkout(repoDir: string, ref: string): Promise<void>;
+  /** Check whether a directory is an existing git repository. */
+  isRepo(dir: string): Promise<boolean>;
+}
+
+const PACK_CACHE_DIR_NAME = 'pack-cache' as const;
+const VERSION_TAG_PREFIX = 'v' as const;
 
 export interface WorkspaceWarningEvent {
   schema_version: 1;
@@ -28,6 +50,10 @@ export interface PackLoaderOptions {
   hashExclusions?: string[];
   runtimeEnvironment?: string;
   allowDevIntegrityInProduction?: boolean;
+  /** Directory for caching git-sourced packs. Defaults to ~/.lumenflow/pack-cache/ */
+  packCacheDir?: string;
+  /** Git client for resolving packs with source: git. Required when loading git packs. */
+  gitClient?: GitClient;
 }
 
 export interface PackLoadInput {
@@ -208,6 +234,8 @@ export class PackLoader {
   private readonly hashExclusions?: string[];
   private readonly runtimeEnvironment: string;
   private readonly allowDevIntegrityInProduction: boolean;
+  private readonly packCacheDir: string;
+  private readonly gitClient?: GitClient;
 
   constructor(options: PackLoaderOptions) {
     this.packsRoot = path.resolve(options.packsRoot);
@@ -215,11 +243,76 @@ export class PackLoader {
     this.hashExclusions = options.hashExclusions;
     this.runtimeEnvironment = options.runtimeEnvironment ?? process.env.NODE_ENV ?? 'development';
     this.allowDevIntegrityInProduction = options.allowDevIntegrityInProduction ?? false;
+    this.packCacheDir =
+      options.packCacheDir ?? path.join(homedir(), LUMENFLOW_DIR_NAME, PACK_CACHE_DIR_NAME);
+    this.gitClient = options.gitClient;
   }
 
   async load(input: PackLoadInput): Promise<LoadedDomainPack> {
     const pin = resolvePackPin(input.workspaceSpec, input.packId);
-    const packRoot = path.resolve(this.packsRoot, pin.id);
+    const packRoot = await this.resolvePackRoot(pin);
+    return this.loadFromDisk(pin, packRoot, input);
+  }
+
+  /**
+   * Resolve the pack root directory based on the pin source.
+   * For local packs, resolves relative to packsRoot.
+   * For git packs, clones/pulls to the pack cache and checks out the version tag.
+   */
+  private async resolvePackRoot(pin: PackPin): Promise<string> {
+    if (pin.source === 'git') {
+      return this.resolveGitPackRoot(pin);
+    }
+    return path.resolve(this.packsRoot, pin.id);
+  }
+
+  /**
+   * Resolve a git-sourced pack by cloning or pulling to the pack cache,
+   * then checking out the version tag.
+   */
+  private async resolveGitPackRoot(pin: PackPin): Promise<string> {
+    if (!pin.url) {
+      throw new Error(
+        `Pack "${pin.id}" has source: git but no url field. ` +
+          'Add a url field to the PackPin to specify the git repository.',
+      );
+    }
+
+    if (!this.gitClient) {
+      throw new Error(
+        `Pack "${pin.id}" has source: git but no gitClient was provided to PackLoader. ` +
+          'Pass a gitClient in PackLoaderOptions to load git-sourced packs.',
+      );
+    }
+
+    const packCachePath = path.join(this.packCacheDir, `${pin.id}@${pin.version}`);
+
+    await mkdir(this.packCacheDir, { recursive: true });
+
+    const alreadyCached = await this.gitClient.isRepo(packCachePath);
+
+    if (alreadyCached) {
+      await this.gitClient.pull(packCachePath);
+    } else {
+      await this.gitClient.clone(pin.url, packCachePath);
+    }
+
+    const versionTag = `${VERSION_TAG_PREFIX}${pin.version}`;
+    await this.gitClient.checkout(packCachePath, versionTag);
+
+    return packCachePath;
+  }
+
+  /**
+   * Load pack from a resolved on-disk directory.
+   * Handles manifest parsing, tool entry validation, import boundary checks,
+   * integrity verification, and dev-mode warnings.
+   */
+  private async loadFromDisk(
+    pin: PackPin,
+    packRoot: string,
+    input: PackLoadInput,
+  ): Promise<LoadedDomainPack> {
     const manifestPath = path.join(packRoot, this.manifestFileName);
     const manifestRaw = await readFile(manifestPath, UTF8_ENCODING);
     const manifest = DomainPackManifestSchema.parse(YAML.parse(manifestRaw));
