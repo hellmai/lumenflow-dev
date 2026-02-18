@@ -2,7 +2,7 @@ id: WU-1877
 title: 4 additional community packs published to registry
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -62,3 +62,6 @@ session_id: db35c7a8-86af-4bdd-865d-688f746940b3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T23:48:18.107Z
+locked: true
+completed_at: 2026-02-18T23:55:36.679Z
+completed: 2026-02-18

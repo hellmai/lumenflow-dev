@@ -1699,5 +1699,6 @@
 {"type":"complete","wuId":"WU-1873","timestamp":"2026-02-18T23:47:46.304Z"}
 {"type":"claim","wuId":"WU-1877","timestamp":"2026-02-18T23:48:18.132Z","lane":"Framework: Core Lifecycle","title":"4 additional community packs published to registry"}
 {"type":"complete","wuId":"WU-1875","timestamp":"2026-02-18T23:49:07.317Z"}
-{"type":"claim","wuId":"WU-1876","lane":"Content: Site Comms","title":"Evidence export endpoint with CSV and JSON format support","timestamp":"2026-02-18T23:49:21.563Z"}
-{"type":"claim","wuId":"WU-1878","lane":"Content: Site Comms","title":"Marketplace Install to workspace button","timestamp":"2026-02-18T23:52:04.524Z"}
+{"type":"claim","wuId":"WU-1876","timestamp":"2026-02-18T23:49:21.563Z","lane":"Content: Site Comms","title":"Evidence export endpoint with CSV and JSON format support"}
+{"type":"claim","wuId":"WU-1878","timestamp":"2026-02-18T23:52:04.524Z","lane":"Content: Site Comms","title":"Marketplace Install to workspace button"}
+{"type":"complete","wuId":"WU-1877","timestamp":"2026-02-18T23:55:41.385Z"}
