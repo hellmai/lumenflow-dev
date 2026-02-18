@@ -2,7 +2,7 @@ id: WU-1803
 title: Migrate flow, metrics, and context tools to runtime pack execution
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -48,3 +48,6 @@ session_id: 2c8cb666-1ae8-4825-b0f6-9828c47d27e4
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T09:23:26.507Z
+locked: true
+completed_at: 2026-02-18T09:48:54.240Z
+completed: 2026-02-18

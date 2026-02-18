@@ -77,7 +77,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1803 — Migrate flow, metrics, and context tools to runtime pack execution](wu/WU-1803.yaml) — Framework: Core Lifecycle
 - [WU-1800 — Migrate git tools (git_status/diff/log/branch) to runtime pack execution](wu/WU-1800.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
@@ -813,6 +812,7 @@ sections:
 - [WU-1797 — Phase 3 pack workflow: expose WU YAML lifecycle as runtime-managed pack tools](wu/WU-1797.yaml)
 - [WU-1798 — Add execution-context builder and executeViaPack migration helper](wu/WU-1798.yaml)
 - [WU-1799 — Migrate file tools (file_read/write/edit/delete) to runtime pack execution](wu/WU-1799.yaml)
+- [WU-1803 — Migrate flow, metrics, and context tools to runtime pack execution](wu/WU-1803.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
