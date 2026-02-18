@@ -7,8 +7,10 @@ priority: P2
 created: 2026-02-18
 code_paths:
   - apps/web/src/components/workspace-selector.tsx
+navigation_path: /
 tests:
   manual:
+    - Navigate to / and verify workspace selector dropdown is accessible
     - Verify dropdown shows recent workspaces after connecting
   unit:
     - apps/web/__tests__/workspace-selector.test.tsx
