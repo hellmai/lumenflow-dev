@@ -2,7 +2,7 @@ id: WU-1859
 title: 'INIT-030 Review Fix A: executeViaPack policy bypass security fix'
 lane: 'Framework: MCP'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - TOOL_NOT_FOUND still triggers CLI fallback (migration compat)
   - Maintenance scope narrowed from wildcard write
   - New tests cover all 4 fallback/no-fallback scenarios
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1859
+claimed_at: 2026-02-18T22:10:10.925Z
+baseline_main_sha: 1730f7c25b2c8cc3103a6b5b26e55125966307ca
+session_id: 992ec8f4-036f-445c-853c-97fcabb1e7c4
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T22:10:10.929Z

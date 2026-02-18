@@ -1655,3 +1655,4 @@
 {"type":"checkpoint","wuId":"WU-1835","timestamp":"2026-02-18T22:03:23.756Z","note":"WU-1835"}
 {"type":"claim","wuId":"WU-1836","timestamp":"2026-02-18T22:04:36.331Z","lane":"Content: Site Comms","title":"Build pack registry API with Vercel Edge Functions"}
 {"type":"complete","wuId":"WU-1835","timestamp":"2026-02-18T22:05:43.294Z"}
+{"type":"claim","wuId":"WU-1859","lane":"Framework: MCP","title":"INIT-030 Review Fix A: executeViaPack policy bypass security fix","timestamp":"2026-02-18T22:10:10.962Z"}
