@@ -6,6 +6,7 @@ _Last updated: 2026-02-18_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1873 — Workspace selector with recent-workspaces history](wu/WU-1873.yaml)
+- [WU-1874 — infra-ops pack manifest with tools, policies, and task schema](wu/WU-1874.yaml)
 
 ## Completed
 

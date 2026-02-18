@@ -25,7 +25,6 @@ sections:
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1872 — Evidence viewer page with tool trace timeline at /evidence](wu/WU-1872.yaml) — Content: Site Comms
-- [WU-1874 — infra-ops pack manifest with tools, policies, and task schema](wu/WU-1874.yaml) — Framework: Core Lifecycle
 - [WU-1875 — pack:install --source registry HTTP fetch path](wu/WU-1875.yaml) — Framework: CLI Orchestration
 - [WU-1876 — Evidence export endpoint with CSV and JSON format support](wu/WU-1876.yaml) — Content: Site Comms
 - [WU-1877 — 4 additional community packs published to registry](wu/WU-1877.yaml) — Framework: Core Lifecycle
@@ -35,6 +34,7 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1873 — Workspace selector with recent-workspaces history](wu/WU-1873.yaml) — Content: Site Comms
+- [WU-1874 — infra-ops pack manifest with tools, policies, and task schema](wu/WU-1874.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
