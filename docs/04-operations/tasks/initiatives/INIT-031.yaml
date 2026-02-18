@@ -7,7 +7,7 @@ description: 'User-facing surfaces initiative: real-time web dashboard for agent
   pack who want to see agents working and trust the automation, (2) pack authors/consumers who want
   to teach their AI new domains. Differentiator vs OpenClaw: governance you can see — scope
   intersection, policy decisions, evidence receipts rendered live in the browser.'
-status: done
+status: in_progress
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-18
@@ -25,11 +25,17 @@ phases:
   - id: 4
     title: Pack Marketplace and Community
     status: done
+  - id: 5
+    title: 'Production Readiness: Make It Real'
+    status: pending
+  - id: 6
+    title: 'Pack Ecosystem: 5 Real Packs'
+    status: pending
 success_metrics:
   - Web dashboard renders live task events within 2s of EventStore append
   - AG-UI RunAgent endpoint passes CopilotKit compatibility test
   - Pack scaffold-to-running-tool achievable in under 10 minutes
-  - Registry serves at least 5 community packs by end of Phase 4
+  - Registry serves at least 5 community packs by end of Phase 6
 labels: []
 wus:
   - WU-1816
@@ -59,3 +65,8 @@ wus:
   - WU-1840
   - WU-1841
   - WU-1842
+notes:
+  - '2026-02-18: Reopened for Phases 5-6 expansion. target_date extended to 2026-06-30 (needs manual
+    YAML update — initiative:edit lacks --target-date flag). Phase 5 = production readiness (replace
+    stubs with real adapters). Phase 6 = pack ecosystem (5 real community packs). Unlocked by
+    INIT-030 Phase 2 completion (KernelRuntime routing, real evidence).'
