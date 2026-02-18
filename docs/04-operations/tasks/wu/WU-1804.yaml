@@ -1,0 +1,40 @@
+id: WU-1804
+title: Migrate orchestration query tools to runtime pack execution
+lane: 'Framework: Core Lifecycle'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-18
+code_paths:
+  - packages/@lumenflow/mcp/src/tools/orchestration-tools.ts
+  - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
+tests:
+  manual:
+    - Each orchestration query tool produces identical output via runtime vs CLI path
+  unit:
+    - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1804.done
+dependencies: []
+initiative: INIT-030
+phase: 3
+blocked_by:
+  - WU-1798
+spec_refs:
+  - /home/USER/.claude/plans/adaptive-finding-adleman.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: orchestrate_init_status, orchestrate_monitor, delegation_list use runCliCommand. Problem: 3 shell-out call sites for read-only orchestration queries. Solution: register in-process handlers for orchestration state queries.'
+acceptance:
+  - orchestrate_init_status, orchestrate_monitor, delegation_list route through runtime.executeTool()
+  - runCliCommand is NOT called for any of these 3 tools
+  - Output parity verified
