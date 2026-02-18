@@ -8,6 +8,7 @@ _Last updated: 2026-02-18_
 - [WU-1873 — Workspace selector with recent-workspaces history](wu/WU-1873.yaml)
 - [WU-1874 — infra-ops pack manifest with tools, policies, and task schema](wu/WU-1874.yaml)
 - [WU-1872 — Evidence viewer page with tool trace timeline at /evidence](wu/WU-1872.yaml)
+- [WU-1875 — pack:install --source registry HTTP fetch path](wu/WU-1875.yaml)
 
 ## Completed
 
