@@ -2,7 +2,7 @@ id: WU-1818
 title: Create AG-UI event adapter mapping kernel events to AG-UI protocol
 lane: 'Framework: MCP'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -49,3 +49,6 @@ session_id: 7c73da6b-edc4-4284-ac15-d7cf6acca54b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T16:39:55.312Z
+locked: true
+completed_at: 2026-02-18T16:44:45.238Z
+completed: 2026-02-18
