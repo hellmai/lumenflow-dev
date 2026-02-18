@@ -5,7 +5,6 @@ _Last updated: 2026-02-18_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1818 — Create AG-UI event adapter mapping kernel events to AG-UI protocol](wu/WU-1818.yaml)
 
 ## Completed
 
@@ -756,3 +755,4 @@ _Last updated: 2026-02-18_
 - [WU-1816 — Add reactive subscribe mechanism to EventStore](wu/WU-1816.yaml) — 2026-02-18
 - [WU-1802 — Migrate validation and lane tools to runtime pack execution](wu/WU-1802.yaml) — 2026-02-18
 - [WU-1817 — Create HTTP surface with SSE event streaming and REST task API](wu/WU-1817.yaml) — 2026-02-18
+- [WU-1818 — Create AG-UI event adapter mapping kernel events to AG-UI protocol](wu/WU-1818.yaml) — 2026-02-18
