@@ -6,6 +6,7 @@ _Last updated: 2026-02-18_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1802 — Migrate validation and lane tools to runtime pack execution](wu/WU-1802.yaml)
+- [WU-1817 — Create HTTP surface with SSE event streaming and REST task API](wu/WU-1817.yaml)
 
 ## Completed
 

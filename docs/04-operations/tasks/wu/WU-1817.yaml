@@ -2,7 +2,7 @@ id: WU-1817
 title: Create HTTP surface with SSE event streaming and REST task API
 lane: 'Framework: MCP'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -32,9 +32,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Create packages/@lumenflow/surfaces/http/ following the established surfaces pattern. SSE endpoint tails EventStore via subscribe mechanism (WU-1816). REST handlers for GET /tasks/:id (inspect), POST /tasks (create), POST /tasks/:id/claim, POST /tasks/:id/complete. Framework-agnostic Node http handlers. createHttpSurface(runtime: KernelRuntime) entry point.'
+description: 'Create packages/@lumenflow/surfaces/http/ following the established surfaces pattern.
+  SSE endpoint tails EventStore via subscribe mechanism (WU-1816). REST handlers for GET /tasks/:id
+  (inspect), POST /tasks (create), POST /tasks/:id/claim, POST /tasks/:id/complete.
+  Framework-agnostic Node http handlers. createHttpSurface(runtime: KernelRuntime) entry point.'
 acceptance:
   - createHttpSurface(runtime) returns handlers compatible with Node http module
   - SSE endpoint streams KernelEvents as newline-delimited JSON
   - REST endpoints delegate to KernelRuntime methods
   - Follows same adapter pattern as surfaces/mcp/ and surfaces/cli/
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1817
+claimed_at: 2026-02-18T16:29:33.661Z
+baseline_main_sha: d6ec09266a0a35543a0654ce2bc5b78529cbddbf
+session_id: a2d616f0-70e7-426a-857d-7c0aa0b80eee
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T16:29:33.669Z

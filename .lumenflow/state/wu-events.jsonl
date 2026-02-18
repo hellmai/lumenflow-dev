@@ -1573,3 +1573,4 @@
 {"type":"claim","wuId":"WU-1802","timestamp":"2026-02-18T15:18:34.567Z","lane":"Framework: Core Lifecycle","title":"Migrate validation and lane tools to runtime pack execution"}
 {"type":"claim","wuId":"WU-1816","timestamp":"2026-02-18T15:30:00.521Z","lane":"Framework: Core Lifecycle","title":"Add reactive subscribe mechanism to EventStore"}
 {"type":"complete","wuId":"WU-1816","timestamp":"2026-02-18T16:21:46.539Z"}
+{"type":"claim","wuId":"WU-1817","lane":"Framework: MCP","title":"Create HTTP surface with SSE event streaming and REST task API","timestamp":"2026-02-18T16:29:33.716Z"}
