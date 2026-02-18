@@ -2,7 +2,7 @@ id: WU-1813
 title: Remove fallback paths and eliminate runCliCommand from MCP tool layer
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -56,3 +56,6 @@ session_id: 3805a7b7-77c1-40d7-9a2c-158109e9f82e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T19:45:48.856Z
+locked: true
+completed_at: 2026-02-18T19:52:06.489Z
+completed: 2026-02-18
