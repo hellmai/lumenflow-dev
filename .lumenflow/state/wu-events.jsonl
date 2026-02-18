@@ -1540,4 +1540,5 @@
 {"type":"claim","wuId":"WU-1800","timestamp":"2026-02-18T09:43:18.467Z","lane":"Framework: Core Lifecycle","title":"Migrate git tools (git_status/diff/log/branch) to runtime pack execution"}
 {"type":"complete","wuId":"WU-1803","timestamp":"2026-02-18T09:48:58.819Z"}
 {"type":"complete","wuId":"WU-1800","timestamp":"2026-02-18T09:53:17.113Z"}
-{"type":"claim","wuId":"WU-1801","lane":"Framework: Core Lifecycle","title":"Migrate state/signal tools to runtime pack execution","timestamp":"2026-02-18T09:53:52.925Z"}
+{"type":"claim","wuId":"WU-1801","timestamp":"2026-02-18T09:53:52.925Z","lane":"Framework: Core Lifecycle","title":"Migrate state/signal tools to runtime pack execution"}
+{"type":"complete","wuId":"WU-1801","timestamp":"2026-02-18T11:04:56.849Z"}

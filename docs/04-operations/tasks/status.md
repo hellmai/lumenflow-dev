@@ -5,7 +5,6 @@ _Last updated: 2026-02-18_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1801 — Migrate state/signal tools to runtime pack execution](wu/WU-1801.yaml)
 
 ## Completed
 
@@ -738,3 +737,4 @@ _Last updated: 2026-02-18_
 - [WU-1799 — Migrate file tools (file_read/write/edit/delete) to runtime pack execution](wu/WU-1799.yaml) — 2026-02-18
 - [WU-1803 — Migrate flow, metrics, and context tools to runtime pack execution](wu/WU-1803.yaml) — 2026-02-18
 - [WU-1800 — Migrate git tools (git_status/diff/log/branch) to runtime pack execution](wu/WU-1800.yaml) — 2026-02-18
+- [WU-1801 — Migrate state/signal tools to runtime pack execution](wu/WU-1801.yaml) — 2026-02-18
