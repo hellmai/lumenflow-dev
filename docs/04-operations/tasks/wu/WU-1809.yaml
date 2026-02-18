@@ -2,7 +2,7 @@ id: WU-1809
 title: Migrate WU delegation and gates tools to runtime pack execution
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -34,8 +34,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu_brief, wu_delegate, wu_unlock_lane, gates_run, gates, gates_docs, lumenflow_gates use runCliCommand. Problem: 7 shell-out call sites including long-running gate operations. Solution: register in-process handlers; gates tools use subprocess spawn with extended timeouts.'
+description: 'Context: wu_brief, wu_delegate, wu_unlock_lane, gates_run, gates, gates_docs,
+  lumenflow_gates use runCliCommand. Problem: 7 shell-out call sites including long-running gate
+  operations. Solution: register in-process handlers; gates tools use subprocess spawn with extended
+  timeouts.'
 acceptance:
-  - wu_brief, wu_delegate, wu_unlock_lane, gates_run, gates, gates_docs, lumenflow_gates route through runtime.executeTool()
+  - wu_brief, wu_delegate, wu_unlock_lane, gates_run, gates, gates_docs, lumenflow_gates route
+    through runtime.executeTool()
   - runCliCommand is NOT called for any of these 7 tools
   - Gates produce identical pass/fail results via runtime path
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1809
+claimed_at: 2026-02-18T18:41:30.025Z
+baseline_main_sha: 043224a3ce6c370ff8657559dfa98cbd9554ec57
+session_id: 4e9f6366-cdc1-4a4c-ac1d-26b506f98221
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T18:41:30.033Z

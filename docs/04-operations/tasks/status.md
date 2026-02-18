@@ -6,6 +6,7 @@ _Last updated: 2026-02-18_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1857 — Shore up web frontend infra: React linting, vitest jsdom, turbo TSX, surfaces package](wu/WU-1857.yaml)
+- [WU-1809 — Migrate WU delegation and gates tools to runtime pack execution](wu/WU-1809.yaml)
 
 ## Completed
 

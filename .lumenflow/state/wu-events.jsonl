@@ -1595,3 +1595,4 @@
 {"type":"complete","wuId":"WU-1807","timestamp":"2026-02-18T18:23:00.260Z"}
 {"type":"claim","wuId":"WU-1808","timestamp":"2026-02-18T18:31:17.306Z","lane":"Framework: Core Lifecycle","title":"Migrate WU completion and cleanup tools to runtime pack execution"}
 {"type":"complete","wuId":"WU-1808","timestamp":"2026-02-18T18:40:50.474Z"}
+{"type":"claim","wuId":"WU-1809","lane":"Framework: Core Lifecycle","title":"Migrate WU delegation and gates tools to runtime pack execution","timestamp":"2026-02-18T18:41:30.080Z"}
