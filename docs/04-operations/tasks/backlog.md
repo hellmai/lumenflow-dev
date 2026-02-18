@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1809 — Migrate WU delegation and gates tools to runtime pack execution](wu/WU-1809.yaml) — Framework: Core Lifecycle
 - [WU-1808 — Migrate WU completion and cleanup tools to runtime pack execution](wu/WU-1808.yaml) — Framework: Core Lifecycle
 - [WU-1807 — Migrate WU state transition tools to runtime pack execution](wu/WU-1807.yaml) — Framework: Core Lifecycle
 - [WU-1806 — Migrate WU creation and claiming tools to runtime pack execution](wu/WU-1806.yaml) — Framework: Core Lifecycle
