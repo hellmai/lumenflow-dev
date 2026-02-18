@@ -6,7 +6,6 @@ status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
-  - apps/web/src/components/workspace-connector.tsx
   - apps/web/src/components/workspace-selector.tsx
 tests:
   manual:
