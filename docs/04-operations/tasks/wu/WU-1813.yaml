@@ -2,7 +2,7 @@ id: WU-1813
 title: Remove fallback paths and eliminate runCliCommand from MCP tool layer
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -35,8 +35,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: all MCP tools now have runtime-backed handlers registered. Problem: the strangler-fig fallback paths still import and call runCliCommand as safety net. Solution: remove all fallback-to-CLI logic, making the runtime path the only execution path.'
+description: 'Context: all MCP tools now have runtime-backed handlers registered. Problem: the
+  strangler-fig fallback paths still import and call runCliCommand as safety net. Solution: remove
+  all fallback-to-CLI logic, making the runtime path the only execution path.'
 acceptance:
   - Zero calls to runCliCommand from any file in packages/@lumenflow/mcp/src/tools/
   - All tools work without CLI fallback
   - rg runCliCommand packages/@lumenflow/mcp/src/tools/ returns no matches
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1813
+claimed_at: 2026-02-18T19:45:48.849Z
+baseline_main_sha: 051bd48ba06367d3b87792c62a1bda0fd09f469d
+session_id: 3805a7b7-77c1-40d7-9a2c-158109e9f82e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T19:45:48.856Z
