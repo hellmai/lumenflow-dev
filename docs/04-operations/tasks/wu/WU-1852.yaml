@@ -8,8 +8,8 @@ created: 2026-02-18
 code_paths:
   - packages/@lumenflow/cli/src/init-templates.ts
   - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/cli/templates/
-  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/__tests__/
 tests:
   manual:
     - Run lumenflow init in temp dir and verify cos:gates script exists in package.json
@@ -26,10 +26,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-18T12:43:05.575Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1852
+session_id: 24947d08-d3f5-4b32-ba05-f304014eb650
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T12:43:05.580Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -55,11 +62,3 @@ acceptance:
     names before the user reaches lane:validate'
   - wu:create reports all spec validation errors in a single output rather than failing on the first
     error and requiring retry
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1852
-claimed_at: 2026-02-18T12:43:05.575Z
-baseline_main_sha: 5dfc259bef3066be8bac96e9789065fae90cd406
-session_id: 24947d08-d3f5-4b32-ba05-f304014eb650
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-18T12:43:05.580Z
