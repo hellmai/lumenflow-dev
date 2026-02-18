@@ -233,14 +233,7 @@ describe('evidence store', () => {
     await chmod(tracesFilePath, 0o644);
 
     // The lock file should NOT exist after a failed operation
-    let lockExists = false;
-    try {
-      await stat(lockPath);
-      lockExists = true;
-    } catch {
-      lockExists = false;
-    }
-    expect(lockExists).toBe(false);
+    await expect(stat(lockPath)).rejects.toThrow();
   });
 
   it('keeps receipt index bounded when completed tasks are pruned', async () => {
