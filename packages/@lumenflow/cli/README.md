@@ -99,24 +99,25 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### Initiative Orchestration
 
-| Command                      | Description                               |
-| ---------------------------- | ----------------------------------------- |
-| `agent-issues-query`         | Query GitHub issues for agent work        |
-| `agent-log-issue`            | Log issue during agent session            |
-| `agent-session`              | Start agent session                       |
-| `agent-session-end`          | End agent session                         |
-| `delegation-list`            | List active delegation records            |
-| `initiative-add-wu`          | Add WU to initiative                      |
-| `initiative-bulk-assign-wus` | Bulk assign WUs to initiative             |
-| `initiative-create`          | Create new initiative                     |
-| `initiative-edit`            | Edit initiative fields and phase metadata |
-| `initiative-list`            | List all initiatives                      |
-| `initiative-plan`            | Link plan to initiative                   |
-| `initiative-remove-wu`       | Remove WU from initiative                 |
-| `initiative-status`          | Show initiative status                    |
-| `orchestrate-init-status`    | Compact initiative progress view          |
-| `orchestrate-initiative`     | Orchestrate initiative execution          |
-| `orchestrate-monitor`        | Monitor spawn/agent activity              |
+| Command                      | Description                                 |
+| ---------------------------- | ------------------------------------------- |
+| `agent-issues-query`         | Query GitHub issues for agent work          |
+| `agent-log-issue`            | Log issue during agent session              |
+| `agent-session`              | Start agent session                         |
+| `agent-session-end`          | End agent session                           |
+| `delegation-list`            | List active delegation records              |
+| `initiative-add-wu`          | Add WU to initiative                        |
+| `initiative-bulk-assign-wus` | Bulk assign WUs to initiative               |
+| `initiative-create`          | Create new initiative                       |
+| `initiative-edit`            | Edit initiative fields and phase metadata   |
+| `initiative-list`            | List all initiatives                        |
+| `initiative-plan`            | Link plan to initiative                     |
+| `initiative-remove-wu`       | Remove WU from initiative                   |
+| `initiative-status`          | Show initiative status                      |
+| `orchestrate-init-status`    | Compact initiative progress view            |
+| `orchestrate-initiative`     | Orchestrate initiative execution            |
+| `orchestrate-monitor`        | Monitor spawn/agent activity                |
+| `task-claim`                 | Claim a task directly through KernelRuntime |
 
 ### Metrics & Analytics
 
@@ -130,14 +131,15 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### Lane Tooling
 
-| Command         | Description                              |
-| --------------- | ---------------------------------------- |
-| `lane-health`   | Check lane config health                 |
-| `lane-lock`     | Lock lane lifecycle for delivery WUs     |
-| `lane-setup`    | Create/update draft lane artifacts       |
-| `lane-status`   | Show lane lifecycle status and next step |
-| `lane-suggest`  | Suggest lane for code paths              |
-| `lane-validate` | Validate lane artifacts before lock      |
+| Command         | Description                                                    |
+| --------------- | -------------------------------------------------------------- |
+| `lane-edit`     | Edit a lane definition (rename, wip-limit, paths, description) |
+| `lane-health`   | Check lane config health                                       |
+| `lane-lock`     | Lock lane lifecycle for delivery WUs                           |
+| `lane-setup`    | Create/update draft lane artifacts                             |
+| `lane-status`   | Show lane lifecycle status and next step                       |
+| `lane-suggest`  | Suggest lane for code paths                                    |
+| `lane-validate` | Validate lane artifacts before lock                            |
 
 ### Verification & Gates
 
