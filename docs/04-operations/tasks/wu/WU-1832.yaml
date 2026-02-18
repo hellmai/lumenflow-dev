@@ -1,7 +1,7 @@
 id: WU-1832
 title: Create CopilotKit integration example app connected to LumenFlow AG-UI
 lane: 'Content: Specs Governance'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-02-18
@@ -22,10 +22,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-18T19:52:04.829Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-specs-governance-wu-1832
+session_id: 3805a7b7-77c1-40d7-9a2c-158109e9f82e
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T19:52:04.833Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -37,11 +44,3 @@ acceptance:
   - Task creation works via chat interface
   - Tool execution visible in real-time
   - README with setup instructions
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-specs-governance-wu-1832
-claimed_at: 2026-02-18T19:52:04.829Z
-baseline_main_sha: 12699de666b8fefa3b6d3288082363654df7d6a2
-session_id: 3805a7b7-77c1-40d7-9a2c-158109e9f82e
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-18T19:52:04.833Z
