@@ -2,7 +2,7 @@ id: WU-1863
 title: 'Policy construction safety: allowAllPolicyHook default and task ID uniqueness'
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -55,3 +55,6 @@ session_id: 9b0f0ca3-543d-41e0-b82e-ceec0f3a9540
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T22:51:48.148Z
+locked: true
+completed_at: 2026-02-18T23:12:56.955Z
+completed: 2026-02-18

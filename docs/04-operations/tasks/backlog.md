@@ -20,21 +20,20 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1872 — Evidence viewer page with tool trace timeline at /evidence](wu/WU-1872.yaml) — Content: Site Comms
-- [WU-1871 — lumenflow workspace:init interactive wizard generating workspace.yaml](wu/WU-1871.yaml) — Framework: CLI Orchestration
-- [WU-1870 — Cursor-based pagination for EventStore.replay() and /api/events/all](wu/WU-1870.yaml) — Framework: Core Lifecycle
-- [WU-1869 — Vercel Blob-backed PackRegistryStore + PackBlobStore adapters](wu/WU-1869.yaml) — Content: Site Comms
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1864 — Scope intersection property-based fuzz testing for patternContains glob heuristic](wu/WU-1864.yaml) — Framework: Core Lifecycle
 - [WU-1865 — Kernel polish: xstate dead code removal, warning clarity, naming consistency](wu/WU-1865.yaml) — Framework: Core Lifecycle
+- [WU-1869 — Vercel Blob-backed PackRegistryStore + PackBlobStore adapters](wu/WU-1869.yaml) — Content: Site Comms
+- [WU-1870 — Cursor-based pagination for EventStore.replay() and /api/events/all](wu/WU-1870.yaml) — Framework: Core Lifecycle
+- [WU-1871 — lumenflow workspace:init interactive wizard generating workspace.yaml](wu/WU-1871.yaml) — Framework: CLI Orchestration
+- [WU-1872 — Evidence viewer page with tool trace timeline at /evidence](wu/WU-1872.yaml) — Content: Site Comms
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1863 — Policy construction safety: allowAllPolicyHook default and task ID uniqueness](wu/WU-1863.yaml) — Framework: Core Lifecycle
 - [WU-1866 — INIT-030 Review Fix D: flip executeViaPack fallback from denylist to allowlist](wu/WU-1866.yaml) — Framework: MCP
 - [WU-1868 — INIT-030 Review Fix F: use readTracesByTaskId in inspectTask receipts](wu/WU-1868.yaml) — Framework: Core Lifecycle
 
@@ -835,6 +834,7 @@ sections:
 - [WU-1862 — Evidence store durability: JSONL compaction and incremental replay](wu/WU-1862.yaml)
 - [WU-1861 — INIT-030 Review Fix C: governance and type safety tightening](wu/WU-1861.yaml)
 - [WU-1867 — INIT-030 Review Fix E: guard all appendTrace throw paths in ToolHost](wu/WU-1867.yaml)
+- [WU-1863 — Policy construction safety: allowAllPolicyHook default and task ID uniqueness](wu/WU-1863.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
