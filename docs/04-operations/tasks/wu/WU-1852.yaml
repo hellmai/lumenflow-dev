@@ -2,7 +2,7 @@ id: WU-1852
 title: Fix first-project bootstrap blockers in lumenflow init
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -62,3 +62,6 @@ acceptance:
     names before the user reaches lane:validate'
   - wu:create reports all spec validation errors in a single output rather than failing on the first
     error and requiring retry
+locked: true
+completed_at: 2026-02-18T12:52:42.765Z
+completed: 2026-02-18
