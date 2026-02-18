@@ -1685,3 +1685,4 @@
 {"type":"complete","wuId":"WU-1879","timestamp":"2026-02-18T23:26:17.648Z"}
 {"type":"claim","wuId":"WU-1880","timestamp":"2026-02-18T23:26:57.933Z","lane":"Framework: MCP","title":"Fix manifest parity drift for pack_search in wu-tools truth gate"}
 {"type":"complete","wuId":"WU-1880","timestamp":"2026-02-18T23:30:33.420Z"}
+{"type":"complete","wuId":"WU-1865","timestamp":"2026-02-18T23:32:01.004Z"}
