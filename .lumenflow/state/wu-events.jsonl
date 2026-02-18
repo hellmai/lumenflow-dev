@@ -1556,3 +1556,4 @@
 {"type":"complete","wuId":"WU-1853","timestamp":"2026-02-18T12:58:50.238Z"}
 {"type":"complete","wuId":"WU-1854","timestamp":"2026-02-18T13:01:35.161Z"}
 {"type":"complete","wuId":"WU-1849","timestamp":"2026-02-18T13:02:44.285Z"}
+{"type":"claim","wuId":"WU-1843","lane":"Framework: Core Lifecycle","title":"Harden pack-loader import boundary: deny bare specifiers and fix prefix match","timestamp":"2026-02-18T13:49:25.294Z"}

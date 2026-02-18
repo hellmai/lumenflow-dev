@@ -2,7 +2,7 @@ id: WU-1843
 title: 'Harden pack-loader import boundary: deny bare specifiers and fix prefix match'
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-18
 code_paths:
@@ -26,9 +26,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Pack-loader import boundary validation has three security gaps found in INIT-030 code review: (1) Bare npm specifiers (e.g. lodash, axios) silently pass all if-checks in validatePackImportBoundaries without throwing — a pack could import arbitrary npm packages bypassing sandbox isolation. (2) The @lumenflow/kernel check uses startsWith which would also match @lumenflow/kernel-utils or similar. Should be exact match or check for / or end-of-string. (3) IMPORT_SPECIFIER_PATTERNS uses RegExp /g flag on module-level const patterns — shared lastIndex state is a known JavaScript footgun that can skip matches under concurrent use. Should use String.prototype.matchAll or create fresh RegExp per call.'
+description: 'Pack-loader import boundary validation has three security gaps found in INIT-030 code
+  review: (1) Bare npm specifiers (e.g. lodash, axios) silently pass all if-checks in
+  validatePackImportBoundaries without throwing — a pack could import arbitrary npm packages
+  bypassing sandbox isolation. (2) The @lumenflow/kernel check uses startsWith which would also
+  match @lumenflow/kernel-utils or similar. Should be exact match or check for / or end-of-string.
+  (3) IMPORT_SPECIFIER_PATTERNS uses RegExp /g flag on module-level const patterns — shared
+  lastIndex state is a known JavaScript footgun that can skip matches under concurrent use. Should
+  use String.prototype.matchAll or create fresh RegExp per call.'
 acceptance:
   - Bare npm specifiers throw PackBoundaryViolation error
   - startsWith check replaced with exact package name match
   - RegExp /g patterns replaced with matchAll or fresh-per-call instances
-  - Existing pack-loader.test.ts updated with bare specifier rejection test and prefix-match boundary test
+  - Existing pack-loader.test.ts updated with bare specifier rejection test and prefix-match
+    boundary test
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1843
+claimed_at: 2026-02-18T13:49:25.242Z
+baseline_main_sha: 0dba632ccff56f036787c5e8ae97dd2f8e61fdbf
+session_id: 6768e755-cf3f-4d5f-9a2d-f763632004e1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T13:49:25.250Z
