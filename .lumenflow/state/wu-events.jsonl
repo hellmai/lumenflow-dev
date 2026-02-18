@@ -1649,4 +1649,5 @@
 {"type":"claim","wuId":"WU-1834","timestamp":"2026-02-18T21:49:11.055Z","lane":"Content: Site Comms","title":"Build policy decision overlay showing governance enforcement visually"}
 {"type":"claim","wuId":"WU-1839","timestamp":"2026-02-18T21:50:06.606Z","lane":"Framework: CLI Orchestration","title":"Create pack:search CLI command for registry discovery"}
 {"type":"complete","wuId":"WU-1858","timestamp":"2026-02-18T21:51:30.431Z"}
-{"type":"claim","wuId":"WU-1835","lane":"Content: Site Comms","title":"Build human-in-the-loop approval UI for policy approval_required decisions","timestamp":"2026-02-18T21:55:22.819Z"}
+{"type":"claim","wuId":"WU-1835","timestamp":"2026-02-18T21:55:22.819Z","lane":"Content: Site Comms","title":"Build human-in-the-loop approval UI for policy approval_required decisions"}
+{"type":"complete","wuId":"WU-1834","timestamp":"2026-02-18T21:59:04.334Z"}

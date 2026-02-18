@@ -2,7 +2,7 @@ id: WU-1834
 title: Build policy decision overlay showing governance enforcement visually
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -50,3 +50,6 @@ acceptance:
   - Denied tool executions show policy_id and reason
   - Scope intersection visualized (requested vs allowed vs enforced)
   - Visual diff of attempted vs permitted actions
+locked: true
+completed_at: 2026-02-18T21:58:59.594Z
+completed: 2026-02-18
