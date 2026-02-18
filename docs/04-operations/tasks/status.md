@@ -5,7 +5,6 @@ _Last updated: 2026-02-18_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1821 — Build workspace overview page with task list and lane WIP visualization](wu/WU-1821.yaml)
 - [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml)
 
 ## Completed
@@ -779,3 +778,4 @@ _Last updated: 2026-02-18_
 - [WU-1837 — Extend PackLoader with registry-based pack resolution](wu/WU-1837.yaml) — 2026-02-18
 - [WU-1832 — Create CopilotKit integration example app connected to LumenFlow AG-UI](wu/WU-1832.yaml) — 2026-02-18
 - [WU-1824 — Create pack:validate CLI command for pack integrity checking](wu/WU-1824.yaml) — 2026-02-18
+- [WU-1821 — Build workspace overview page with task list and lane WIP visualization](wu/WU-1821.yaml) — 2026-02-18

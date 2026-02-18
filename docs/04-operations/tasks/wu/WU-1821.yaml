@@ -2,7 +2,7 @@ id: WU-1821
 title: Build workspace overview page with task list and lane WIP visualization
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -46,3 +46,6 @@ session_id: 3805a7b7-77c1-40d7-9a2c-158109e9f82e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T19:49:23.605Z
+locked: true
+completed_at: 2026-02-18T20:04:05.578Z
+completed: 2026-02-18

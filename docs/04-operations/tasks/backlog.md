@@ -43,7 +43,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1821 — Build workspace overview page with task list and lane WIP visualization](wu/WU-1821.yaml) — Content: Site Comms
 - [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
@@ -821,6 +820,7 @@ sections:
 - [WU-1837 — Extend PackLoader with registry-based pack resolution](wu/WU-1837.yaml)
 - [WU-1832 — Create CopilotKit integration example app connected to LumenFlow AG-UI](wu/WU-1832.yaml)
 - [WU-1824 — Create pack:validate CLI command for pack integrity checking](wu/WU-1824.yaml)
+- [WU-1821 — Build workspace overview page with task list and lane WIP visualization](wu/WU-1821.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
