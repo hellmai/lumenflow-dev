@@ -4,13 +4,16 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Disposable, KernelEvent, KernelRuntime, ReplayFilter } from '@lumenflow/kernel';
 import { createEventStreamRouter, type EventSubscriber } from './event-stream.js';
+import { createRunAgentRouter } from './run-agent.js';
 import { createTaskApiRouter } from './task-api.js';
 
 const URL_BASE = 'http://localhost';
 const ROUTE_SEGMENT = {
   TASKS: 'tasks',
   EVENTS: 'events',
+  AG_UI: 'ag-ui',
 } as const;
+const AG_UI_RUN_PATH_SEGMENTS = ['ag-ui', 'v1', 'run'] as const;
 const HTTP_STATUS_NOT_FOUND = 404;
 const HEADER_CONTENT_TYPE = 'content-type';
 const CONTENT_TYPE_JSON = 'application/json; charset=utf-8';
@@ -64,6 +67,13 @@ function writeNotFound(response: ServerResponse<IncomingMessage>): void {
   );
 }
 
+function matchesRunAgentRoute(segments: string[]): boolean {
+  if (segments.length !== AG_UI_RUN_PATH_SEGMENTS.length) {
+    return false;
+  }
+  return segments.every((segment, index) => segment === AG_UI_RUN_PATH_SEGMENTS[index]);
+}
+
 function resolveEventSubscriber(
   runtime: KernelRuntime,
   options: HttpSurfaceOptions,
@@ -93,6 +103,7 @@ export function createHttpSurface(
 ): HttpSurface {
   const taskApiRouter = createTaskApiRouter(runtime);
   const eventStreamRouter = createEventStreamRouter(resolveEventSubscriber(runtime, options));
+  const runAgentRouter = createRunAgentRouter(runtime, resolveEventSubscriber(runtime, options));
 
   return {
     async handleRequest(
@@ -115,6 +126,11 @@ export function createHttpSurface(
           nestedSegments,
           route.searchParams,
         );
+        return;
+      }
+
+      if (matchesRunAgentRoute(route.segments)) {
+        await runAgentRouter.handleRequest(request, response);
         return;
       }
 
