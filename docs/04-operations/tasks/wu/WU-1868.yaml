@@ -2,7 +2,7 @@ id: WU-1868
 title: 'INIT-030 Review Fix F: use readTracesByTaskId in inspectTask receipts'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -30,8 +30,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: readReceiptsForTask in kernel-runtime.ts:934-953 calls readTraces() (returns ALL traces) and manually filters by task_id. EvidenceStore already has readTracesByTaskId(taskId) with a pre-built Map index. This is O(n) over entire trace history for every inspection — avoidable when the indexed accessor exists.
+description: readReceiptsForTask in kernel-runtime.ts:934-953 calls readTraces() (returns ALL
+  traces) and manually filters by task_id. EvidenceStore already has readTracesByTaskId(taskId) with
+  a pre-built Map index. This is O(n) over entire trace history for every inspection — avoidable
+  when the indexed accessor exists.
 acceptance:
   - readReceiptsForTask uses evidenceStore.readTracesByTaskId instead of readTraces + filter
   - inspectTask returns identical results (no behavioral change)
   - Test verifies correct receipts returned when multiple tasks exist
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1868
+claimed_at: 2026-02-18T23:06:19.444Z
+baseline_main_sha: bb34eb6499f6732f59d31b4d2e4282931db3fcec
+session_id: ef27dec2-3962-455a-93ee-f72a3aca5305
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T23:06:19.448Z
