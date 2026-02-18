@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1834 — Build policy decision overlay showing governance enforcement visually](wu/WU-1834.yaml) — Content: Site Comms
 - [WU-1833 — Build GenUI tool output renderers for rich tool result visualization](wu/WU-1833.yaml) — Content: Site Comms
 - [WU-1832 — Create CopilotKit integration example app connected to LumenFlow AG-UI](wu/WU-1832.yaml) — Content: Specs Governance
 - [WU-1831 — Implement AG-UI state synchronization with StateSnapshot and StateDelta](wu/WU-1831.yaml) — Framework: MCP
