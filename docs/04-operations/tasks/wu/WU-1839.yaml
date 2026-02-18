@@ -2,7 +2,7 @@ id: WU-1839
 title: Create pack:search CLI command for registry discovery
 lane: 'Framework: CLI Orchestration'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -30,8 +30,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: pnpm pack:search query searches registry, shows results with name, description, version, and install count.
+description: pnpm pack:search query searches registry, shows results with name, description,
+  version, and install count.
 acceptance:
   - Searches registry API with query
   - Displays results with name, description, version
   - Shows install count per pack
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1839
+claimed_at: 2026-02-18T21:50:06.545Z
+baseline_main_sha: 97dc9870e4b017489e93a91f24a8e668ed41ceab
+session_id: ce5a7451-4d7c-4b4a-9b8a-d878c432df2b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T21:50:06.551Z
