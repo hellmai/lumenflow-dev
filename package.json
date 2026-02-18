@@ -90,6 +90,7 @@
     "pack:validate": "node tools/cli-entry.mjs pack-validate",
     "pack:hash": "node tools/cli-entry.mjs pack-hash",
     "pack:install": "node tools/cli-entry.mjs pack-install",
+    "pack:publish": "node tools/cli-entry.mjs pack-publish",
     "orchestrate:initiative": "node packages/@lumenflow/cli/dist/orchestrate-initiative.js",
     "orchestrate:init-status": "node packages/@lumenflow/cli/dist/orchestrate-init-status.js",
     "orchestrate:monitor": "node packages/@lumenflow/cli/dist/orchestrate-monitor.js",

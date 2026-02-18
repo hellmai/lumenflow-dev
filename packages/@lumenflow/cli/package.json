@@ -135,7 +135,8 @@
     "pack-scaffold": "./dist/pack-scaffold.js",
     "pack-validate": "./dist/pack-validate.js",
     "pack-hash": "./dist/pack-hash.js",
-    "pack-install": "./dist/pack-install.js"
+    "pack-install": "./dist/pack-install.js",
+    "pack-publish": "./dist/pack-publish.js"
   },
   "files": [
     "dist",
