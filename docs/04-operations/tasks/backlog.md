@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1818 — Create AG-UI event adapter mapping kernel events to AG-UI protocol](wu/WU-1818.yaml) — Framework: MCP
 - [WU-1817 — Create HTTP surface with SSE event streaming and REST task API](wu/WU-1817.yaml) — Framework: MCP
 - [WU-1816 — Add reactive subscribe mechanism to EventStore](wu/WU-1816.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
