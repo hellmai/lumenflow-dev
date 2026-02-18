@@ -417,7 +417,8 @@ describe('packToolCapabilityResolver', () => {
     expect(context.task_id).toContain('maintenance');
     expect(context.run_id).toContain(context.task_id);
     expect(context.session_id).toContain('session-maintenance');
-    expect(context.allowed_scopes).toEqual([{ type: 'path', pattern: '**', access: 'write' }]);
+    // WU-1859: Maintenance scope narrowed from wildcard write to read-only
+    expect(context.allowed_scopes).toEqual([{ type: 'path', pattern: '**', access: 'read' }]);
     expect(context.metadata?.invocation_mode).toBe('maintenance');
   });
 

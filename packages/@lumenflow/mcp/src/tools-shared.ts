@@ -5,7 +5,12 @@
  * WU-1642: Extracted from tools.ts during domain decomposition.
  */
 
-import { ExecutionContextSchema, type ExecutionContext, type ToolScope } from '@lumenflow/kernel';
+import {
+  ExecutionContextSchema,
+  TOOL_ERROR_CODES,
+  type ExecutionContext,
+  type ToolScope,
+} from '@lumenflow/kernel';
 import { z } from 'zod';
 import { runCliCommand, type CliRunnerOptions, type CliRunnerResult } from './cli-runner.js';
 import {
@@ -25,16 +30,39 @@ export async function getCore() {
   return coreModule;
 }
 
-const DEFAULT_MAINTENANCE_SCOPE: ToolScope = {
+/**
+ * WU-1859: Narrowed from wildcard write (`**` / `write`) to read-only.
+ * Maintenance-mode operations should only need read access by default;
+ * write scopes are declared explicitly per-tool via `contextInput.allowedScopes`.
+ */
+export const DEFAULT_MAINTENANCE_SCOPE: ToolScope = {
   type: 'path',
   pattern: '**',
-  access: 'write',
+  access: 'read',
 };
 const MAINTENANCE_TASK_PREFIX = 'maintenance';
 const MAINTENANCE_SESSION_PREFIX = 'session-maintenance';
 const MAINTENANCE_CONTEXT_MODE = 'maintenance';
 const TASK_CONTEXT_MODE = 'task';
 const DEFAULT_FALLBACK_ERROR_CODE = 'TOOL_EXECUTE_ERROR';
+
+/**
+ * WU-1859: Error codes from the kernel that must NEVER trigger CLI fallback.
+ *
+ * These represent deliberate policy/security enforcement by the kernel.
+ * Retrying via CLI would bypass that enforcement, creating a security hole.
+ *
+ * - POLICY_DENIED: The kernel's PolicyEngine denied the action
+ * - SCOPE_DENIED: The action fell outside allowed tool scopes
+ * - SPEC_TAMPERED: The workspace spec hash changed (integrity violation)
+ */
+const SPEC_TAMPERED_ERROR_CODE = 'SPEC_TAMPERED';
+
+export const NON_FALLBACK_ERROR_CODES: ReadonlySet<string> = new Set([
+  TOOL_ERROR_CODES.POLICY_DENIED,
+  TOOL_ERROR_CODES.SCOPE_DENIED,
+  SPEC_TAMPERED_ERROR_CODE,
+]);
 
 /**
  * Tool result structure matching MCP SDK expectations
@@ -342,6 +370,18 @@ export async function executeViaPack(
     if (runtimeResult.success) {
       return success(runtimeResult);
     }
+
+    // WU-1859: Policy/scope denials and spec-tampered errors are returned
+    // directly. These represent deliberate kernel enforcement -- retrying
+    // via CLI would bypass that enforcement and create a security hole.
+    const errorCode = runtimeResult.error?.code;
+    if (errorCode && NON_FALLBACK_ERROR_CODES.has(errorCode)) {
+      return error(
+        runtimeResult.error?.message ?? `${toolName} denied by kernel`,
+        errorCode,
+      );
+    }
+
     runtimeFailureMessage = runtimeResult.error?.message;
   } catch (cause) {
     runtimeFailureMessage = (cause as Error).message;
