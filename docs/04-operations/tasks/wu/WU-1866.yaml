@@ -2,7 +2,7 @@ id: WU-1866
 title: 'INIT-030 Review Fix D: flip executeViaPack fallback from denylist to allowlist'
 lane: 'Framework: MCP'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-18
 code_paths:
@@ -52,3 +52,6 @@ session_id: ef27dec2-3962-455a-93ee-f72a3aca5305
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T23:02:16.193Z
+locked: true
+completed_at: 2026-02-18T23:16:15.891Z
+completed: 2026-02-18
