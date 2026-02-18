@@ -99,6 +99,37 @@ export const INITIAL_DASHBOARD_STATE: Omit<DashboardState, 'taskId'> = {
   evidenceLinks: [],
 };
 
+// --- Policy Decision Overlay Types (WU-1834) ---
+
+/** Status of an action diff entry: whether it was denied, allowed, or narrowed. */
+export type ActionDiffStatus = 'denied' | 'allowed' | 'narrowed';
+
+/** A single entry in the action diff showing attempted vs permitted values. */
+export interface ActionDiffEntry {
+  readonly field: string;
+  readonly attempted: string;
+  readonly permitted: string | null;
+  readonly status: ActionDiffStatus;
+}
+
+/** Three-column scope intersection: what was requested, allowed, and enforced. */
+export interface ScopeIntersectionView {
+  readonly requested: readonly ScopeView[];
+  readonly allowed: readonly ScopeView[];
+  readonly enforced: readonly ScopeView[];
+}
+
+/** Complete denial view for the policy decision overlay. */
+export interface PolicyDenialView {
+  readonly receiptId: string;
+  readonly toolName: string;
+  readonly policyId: string;
+  readonly reason: string;
+  readonly timestamp: string;
+  readonly scopeIntersection: ScopeIntersectionView;
+  readonly actionDiff: readonly ActionDiffEntry[];
+}
+
 /** Map from kernel event kind to task state for state-machine transitions. */
 export const EVENT_KIND_TO_STATE = new Map<string, TaskStatus>([
   ['task_created', TASK_STATES.READY],
