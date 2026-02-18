@@ -1,5 +1,5 @@
 /**
- * Route adapters for pack registry API (WU-1836).
+ * Route adapters for pack registry API (WU-1836, WU-1869).
  *
  * These create handler functions compatible with Next.js Route Handlers.
  * Each adapter wires port interfaces to the pure handler functions,
@@ -21,6 +21,7 @@ import {
 const HTTP_STATUS = {
   OK: 200,
   CREATED: 201,
+  REDIRECT: 302,
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
   NOT_FOUND: 404,
@@ -35,6 +36,7 @@ const DESCRIPTION_FIELD_NAME = 'description';
 
 const ERROR_TARBALL_REQUIRED = 'tarball field is required in form data';
 const ERROR_INTERNAL = 'Internal server error';
+const ERROR_VERSION_NOT_FOUND = 'Version not found';
 
 /* ------------------------------------------------------------------
  * Helpers
@@ -162,6 +164,50 @@ export function createPublishVersionRoute(
       }
 
       return jsonResponse(result, HTTP_STATUS.CREATED);
+    } catch {
+      return jsonResponse(
+        { success: false, error: ERROR_INTERNAL },
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      );
+    }
+  };
+}
+
+/* ------------------------------------------------------------------
+ * WU-1869: Get tarball route (redirect to blob URL)
+ * ------------------------------------------------------------------ */
+
+interface GetTarballRouteDeps {
+  readonly registryStore: PackRegistryStore;
+}
+
+export function createGetTarballRoute(
+  deps: GetTarballRouteDeps,
+): (packId: string, version: string) => Promise<Response> {
+  return async (packId: string, version: string): Promise<Response> => {
+    try {
+      const result = await handleGetPack({
+        registryStore: deps.registryStore,
+        packId,
+      });
+
+      if (!result.success) {
+        return jsonResponse(result, HTTP_STATUS.NOT_FOUND);
+      }
+
+      const packVersion = result.pack.versions.find((v) => v.version === version);
+
+      if (!packVersion) {
+        return jsonResponse(
+          { success: false, error: `${ERROR_VERSION_NOT_FOUND}: ${packId}@${version}` },
+          HTTP_STATUS.NOT_FOUND,
+        );
+      }
+
+      return new Response(null, {
+        status: HTTP_STATUS.REDIRECT,
+        headers: { Location: packVersion.blobUrl },
+      });
     } catch {
       return jsonResponse(
         { success: false, error: ERROR_INTERNAL },

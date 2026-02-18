@@ -1,9 +1,10 @@
 /**
- * Pack registry dependency configuration (WU-1836).
+ * Pack registry dependency configuration (WU-1836, WU-1869).
  *
  * Creates and provides the concrete adapter instances for the pack
- * registry ports. In production these would be backed by Vercel Blob
- * and GitHub OAuth; for development we use in-memory stores.
+ * registry ports. When BLOB_READ_WRITE_TOKEN is set, uses Vercel Blob
+ * adapters for persistent storage. Otherwise falls back to in-memory
+ * stores for development.
  *
  * This is the composition root for the registry API.
  */
@@ -15,6 +16,16 @@ import type {
   PublisherIdentity,
 } from '../lib/pack-registry-types';
 import { InMemoryPackRegistryStore } from './pack-registry-store-memory';
+import {
+  VercelBlobPackRegistryStore,
+  VercelBlobPackBlobStore,
+} from './pack-registry-store-vercel-blob';
+
+/* ------------------------------------------------------------------
+ * Constants
+ * ------------------------------------------------------------------ */
+
+const BLOB_TOKEN_ENV_VAR = 'BLOB_READ_WRITE_TOKEN';
 
 /* ------------------------------------------------------------------
  * In-memory blob store (development adapter)
@@ -77,6 +88,17 @@ class GitHubOAuthProvider implements AuthProvider {
 }
 
 /* ------------------------------------------------------------------
+ * Environment detection
+ * ------------------------------------------------------------------ */
+
+function hasVercelBlobToken(): boolean {
+  return (
+    typeof process.env[BLOB_TOKEN_ENV_VAR] === 'string' &&
+    process.env[BLOB_TOKEN_ENV_VAR].length > 0
+  );
+}
+
+/* ------------------------------------------------------------------
  * Singleton instances
  * ------------------------------------------------------------------ */
 
@@ -86,14 +108,16 @@ let authProvider: AuthProvider | null = null;
 
 export function getRegistryStore(): PackRegistryStore {
   if (!registryStore) {
-    registryStore = new InMemoryPackRegistryStore();
+    registryStore = hasVercelBlobToken()
+      ? new VercelBlobPackRegistryStore()
+      : new InMemoryPackRegistryStore();
   }
   return registryStore;
 }
 
 export function getBlobStore(): PackBlobStore {
   if (!blobStore) {
-    blobStore = new InMemoryBlobStore();
+    blobStore = hasVercelBlobToken() ? new VercelBlobPackBlobStore() : new InMemoryBlobStore();
   }
   return blobStore;
 }
