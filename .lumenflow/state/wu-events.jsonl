@@ -1652,3 +1652,4 @@
 {"type":"claim","wuId":"WU-1835","timestamp":"2026-02-18T21:55:22.819Z","lane":"Content: Site Comms","title":"Build human-in-the-loop approval UI for policy approval_required decisions"}
 {"type":"complete","wuId":"WU-1834","timestamp":"2026-02-18T21:59:04.334Z"}
 {"type":"complete","wuId":"WU-1839","timestamp":"2026-02-18T22:01:05.297Z"}
+{"type":"claim","wuId":"WU-1836","lane":"Content: Site Comms","title":"Build pack registry API with Vercel Edge Functions","timestamp":"2026-02-18T22:04:36.331Z"}

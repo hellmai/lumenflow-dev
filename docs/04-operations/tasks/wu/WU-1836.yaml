@@ -2,7 +2,7 @@ id: WU-1836
 title: Build pack registry API with Vercel Edge Functions
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -29,9 +29,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Simple registry service: GET /api/registry/packs (list with search), GET /api/registry/packs/:id (metadata, versions, integrity hashes), POST /api/registry/packs/:id/versions (publish new version, authenticated). Pack tarballs stored on Vercel Blob or R2. Registry index is a JSON file updated on publish. Auth via GitHub OAuth.'
+description: 'Simple registry service: GET /api/registry/packs (list with search), GET
+  /api/registry/packs/:id (metadata, versions, integrity hashes), POST
+  /api/registry/packs/:id/versions (publish new version, authenticated). Pack tarballs stored on
+  Vercel Blob or R2. Registry index is a JSON file updated on publish. Auth via GitHub OAuth.'
 acceptance:
   - GET /api/registry/packs returns pack list with search
   - GET /api/registry/packs/:id returns pack metadata and versions
   - POST publish endpoint stores tarball and updates index
   - GitHub OAuth authentication for publishers
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1836
+claimed_at: 2026-02-18T22:04:36.300Z
+baseline_main_sha: 00da9421694dd133c9b7bba6f354cc09f5353969
+session_id: 9eeb2ea0-9733-4ed4-9300-5e1719230871
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T22:04:36.304Z
