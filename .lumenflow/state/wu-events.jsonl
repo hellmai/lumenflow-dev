@@ -1534,5 +1534,6 @@
 {"type":"complete","wuId":"WU-1797","timestamp":"2026-02-18T09:11:51.165Z"}
 {"type":"claim","wuId":"WU-1798","timestamp":"2026-02-18T09:12:32.598Z","lane":"Framework: Core Lifecycle","title":"Add execution-context builder and executeViaPack migration helper"}
 {"type":"complete","wuId":"WU-1798","timestamp":"2026-02-18T09:20:19.211Z"}
-{"type":"claim","wuId":"WU-1799","lane":"Framework: Core Lifecycle","title":"Migrate file tools (file_read/write/edit/delete) to runtime pack execution","timestamp":"2026-02-18T09:22:36.316Z"}
-{"type":"claim","wuId":"WU-1803","lane":"Framework: Core Lifecycle","title":"Migrate flow, metrics, and context tools to runtime pack execution","timestamp":"2026-02-18T09:23:26.553Z"}
+{"type":"claim","wuId":"WU-1799","timestamp":"2026-02-18T09:22:36.316Z","lane":"Framework: Core Lifecycle","title":"Migrate file tools (file_read/write/edit/delete) to runtime pack execution"}
+{"type":"claim","wuId":"WU-1803","timestamp":"2026-02-18T09:23:26.553Z","lane":"Framework: Core Lifecycle","title":"Migrate flow, metrics, and context tools to runtime pack execution"}
+{"type":"complete","wuId":"WU-1799","timestamp":"2026-02-18T09:38:05.216Z"}

@@ -20,30 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1842 — Create community landing page with get-started path and marketplace links](wu/WU-1842.yaml) — Content: Site Comms
-- [WU-1841 — Wire HTTP surface to push kernel events to control plane](wu/WU-1841.yaml) — Framework: Core Lifecycle
-- [WU-1840 — Build pack marketplace page with browse, search, and install flow](wu/WU-1840.yaml) — Content: Site Comms
-- [WU-1839 — Create pack:search CLI command for registry discovery](wu/WU-1839.yaml) — Framework: CLI Orchestration
-- [WU-1838 — Create pack:publish CLI command for registry upload](wu/WU-1838.yaml) — Framework: CLI Orchestration
-- [WU-1837 — Extend PackLoader with registry-based pack resolution](wu/WU-1837.yaml) — Framework: Core Lifecycle
-- [WU-1836 — Build pack registry API with Vercel Edge Functions](wu/WU-1836.yaml) — Content: Site Comms
-- [WU-1835 — Build human-in-the-loop approval UI for policy approval_required decisions](wu/WU-1835.yaml) — Content: Site Comms
-- [WU-1834 — Build policy decision overlay showing governance enforcement visually](wu/WU-1834.yaml) — Content: Site Comms
-- [WU-1833 — Build GenUI tool output renderers for rich tool result visualization](wu/WU-1833.yaml) — Content: Site Comms
-- [WU-1832 — Create CopilotKit integration example app connected to LumenFlow AG-UI](wu/WU-1832.yaml) — Content: Specs Governance
-- [WU-1831 — Implement AG-UI state synchronization with StateSnapshot and StateDelta](wu/WU-1831.yaml) — Framework: MCP
-- [WU-1830 — Implement AG-UI RunAgent HTTP endpoint in HTTP surface](wu/WU-1830.yaml) — Framework: MCP
-- [WU-1829 — Add pack catalog page to web dashboard with tool and policy visualization](wu/WU-1829.yaml) — Content: Site Comms
-- [WU-1828 — Write pack authoring guide: Create Your First Pack in 10 Minutes](wu/WU-1828.yaml) — Content: Specs Governance
-- [WU-1827 — Create pack:install CLI command for adding packs to workspace](wu/WU-1827.yaml) — Framework: CLI Orchestration
-- [WU-1826 — Extend PackLoader with git-based pack resolution](wu/WU-1826.yaml) — Framework: Core Lifecycle
-- [WU-1825 — Create pack:hash CLI command for integrity hash computation](wu/WU-1825.yaml) — Framework: CLI Orchestration
-- [WU-1824 — Create pack:validate CLI command for pack integrity checking](wu/WU-1824.yaml) — Framework: CLI Orchestration
-- [WU-1823 — Create pack:scaffold CLI command for new pack authoring](wu/WU-1823.yaml) — Framework: CLI Orchestration
-- [WU-1822 — Build workspace connection flow with runtime initialization](wu/WU-1822.yaml) — Content: Site Comms
-- [WU-1821 — Build workspace overview page with task list and lane WIP visualization](wu/WU-1821.yaml) — Content: Site Comms
-- [WU-1820 — Build live task dashboard page with real-time event streaming](wu/WU-1820.yaml) — Content: Site Comms
-- [WU-1819 — Scaffold Next.js web app with API routes for HTTP surface](wu/WU-1819.yaml) — Content: Site Comms
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
@@ -66,11 +42,34 @@ sections:
 - [WU-1816 — Add reactive subscribe mechanism to EventStore](wu/WU-1816.yaml) — Framework: Core Lifecycle
 - [WU-1817 — Create HTTP surface with SSE event streaming and REST task API](wu/WU-1817.yaml) — Framework: MCP
 - [WU-1818 — Create AG-UI event adapter mapping kernel events to AG-UI protocol](wu/WU-1818.yaml) — Framework: MCP
+- [WU-1819 — Scaffold Next.js web app with API routes for HTTP surface](wu/WU-1819.yaml) — Content: Site Comms
+- [WU-1820 — Build live task dashboard page with real-time event streaming](wu/WU-1820.yaml) — Content: Site Comms
+- [WU-1821 — Build workspace overview page with task list and lane WIP visualization](wu/WU-1821.yaml) — Content: Site Comms
+- [WU-1822 — Build workspace connection flow with runtime initialization](wu/WU-1822.yaml) — Content: Site Comms
+- [WU-1823 — Create pack:scaffold CLI command for new pack authoring](wu/WU-1823.yaml) — Framework: CLI Orchestration
+- [WU-1824 — Create pack:validate CLI command for pack integrity checking](wu/WU-1824.yaml) — Framework: CLI Orchestration
+- [WU-1825 — Create pack:hash CLI command for integrity hash computation](wu/WU-1825.yaml) — Framework: CLI Orchestration
+- [WU-1826 — Extend PackLoader with git-based pack resolution](wu/WU-1826.yaml) — Framework: Core Lifecycle
+- [WU-1827 — Create pack:install CLI command for adding packs to workspace](wu/WU-1827.yaml) — Framework: CLI Orchestration
+- [WU-1828 — Write pack authoring guide: Create Your First Pack in 10 Minutes](wu/WU-1828.yaml) — Content: Specs Governance
+- [WU-1829 — Add pack catalog page to web dashboard with tool and policy visualization](wu/WU-1829.yaml) — Content: Site Comms
+- [WU-1830 — Implement AG-UI RunAgent HTTP endpoint in HTTP surface](wu/WU-1830.yaml) — Framework: MCP
+- [WU-1831 — Implement AG-UI state synchronization with StateSnapshot and StateDelta](wu/WU-1831.yaml) — Framework: MCP
+- [WU-1832 — Create CopilotKit integration example app connected to LumenFlow AG-UI](wu/WU-1832.yaml) — Content: Specs Governance
+- [WU-1833 — Build GenUI tool output renderers for rich tool result visualization](wu/WU-1833.yaml) — Content: Site Comms
+- [WU-1834 — Build policy decision overlay showing governance enforcement visually](wu/WU-1834.yaml) — Content: Site Comms
+- [WU-1835 — Build human-in-the-loop approval UI for policy approval_required decisions](wu/WU-1835.yaml) — Content: Site Comms
+- [WU-1836 — Build pack registry API with Vercel Edge Functions](wu/WU-1836.yaml) — Content: Site Comms
+- [WU-1837 — Extend PackLoader with registry-based pack resolution](wu/WU-1837.yaml) — Framework: Core Lifecycle
+- [WU-1838 — Create pack:publish CLI command for registry upload](wu/WU-1838.yaml) — Framework: CLI Orchestration
+- [WU-1839 — Create pack:search CLI command for registry discovery](wu/WU-1839.yaml) — Framework: CLI Orchestration
+- [WU-1840 — Build pack marketplace page with browse, search, and install flow](wu/WU-1840.yaml) — Content: Site Comms
+- [WU-1841 — Wire HTTP surface to push kernel events to control plane](wu/WU-1841.yaml) — Framework: Core Lifecycle
+- [WU-1842 — Create community landing page with get-started path and marketplace links](wu/WU-1842.yaml) — Content: Site Comms
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1799 — Migrate file tools (file_read/write/edit/delete) to runtime pack execution](wu/WU-1799.yaml) — Framework: Core Lifecycle
 - [WU-1803 — Migrate flow, metrics, and context tools to runtime pack execution](wu/WU-1803.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
@@ -805,6 +804,7 @@ sections:
 - [WU-1796 — Phase 3 pack workflow: route gate policy evaluation through Kernel PolicyEngine](wu/WU-1796.yaml)
 - [WU-1797 — Phase 3 pack workflow: expose WU YAML lifecycle as runtime-managed pack tools](wu/WU-1797.yaml)
 - [WU-1798 — Add execution-context builder and executeViaPack migration helper](wu/WU-1798.yaml)
+- [WU-1799 — Migrate file tools (file_read/write/edit/delete) to runtime pack execution](wu/WU-1799.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
