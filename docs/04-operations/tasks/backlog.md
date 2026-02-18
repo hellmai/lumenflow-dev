@@ -71,7 +71,7 @@ sections:
 - [WU-1847 — Decompose tool-host execute method and extract denial trace helper](wu/WU-1847.yaml) — Framework: Core Lifecycle
 - [WU-1849 — Add missing test coverage for INIT-030 phase 2-3 gaps](wu/WU-1849.yaml) — Framework: Core Lifecycle
 - [WU-1850 — Fix surfaces relative imports and extract daemon handler registry](wu/WU-1850.yaml) — Framework: Core Lifecycle
-- [WU-1851 — Centralize MCP surface CLI command/flag/metadata-key governance with guardrail ratchet](wu/WU-1851.yaml) — Framework: Core Lifecycle
+- [WU-1851 — Centralize MCP surface CLI command/flag/metadata-key governance with guardrail ratchet](wu/WU-1851.yaml) — Framework: MCP
 
 ## 🔧 In progress
 
