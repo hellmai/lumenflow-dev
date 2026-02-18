@@ -1634,3 +1634,4 @@
 {"type":"complete","wuId":"WU-1822","timestamp":"2026-02-18T21:13:56.155Z"}
 {"type":"complete","wuId":"WU-1841","timestamp":"2026-02-18T21:14:14.622Z"}
 {"type":"claim","wuId":"WU-1827","lane":"Framework: CLI Orchestration","title":"Create pack:install CLI command for adding packs to workspace","timestamp":"2026-02-18T21:19:02.236Z"}
+{"type":"claim","wuId":"WU-1829","lane":"Content: Site Comms","title":"Add pack catalog page to web dashboard with tool and policy visualization","timestamp":"2026-02-18T21:19:48.412Z"}

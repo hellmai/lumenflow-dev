@@ -2,7 +2,7 @@ id: WU-1829
 title: Add pack catalog page to web dashboard with tool and policy visualization
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -31,9 +31,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Pack catalog page in apps/web/ listing loaded packs with manifest metadata. Shows tools per pack with scope and permission badges. Shows policies per pack. Shows integrity hash and source type. Links to individual tool execution traces from task view.
+description: Pack catalog page in apps/web/ listing loaded packs with manifest metadata. Shows tools
+  per pack with scope and permission badges. Shows policies per pack. Shows integrity hash and
+  source type. Links to individual tool execution traces from task view.
 acceptance:
   - Lists loaded packs with manifest metadata
   - Tools per pack shown with scope badges
   - Policies per pack displayed
   - Links to tool execution traces
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1829
+claimed_at: 2026-02-18T21:19:48.383Z
+baseline_main_sha: aa815910400c18735a664605b722079f9cbe79eb
+session_id: 6df8aa7f-34e5-4edd-b002-7cb8b0f932bd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T21:19:48.390Z
