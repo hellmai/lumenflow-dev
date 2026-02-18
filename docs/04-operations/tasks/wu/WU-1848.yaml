@@ -2,7 +2,7 @@ id: WU-1848
 title: Standardize kernel identifier constants with typed source-of-truth modules
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -67,3 +67,11 @@ acceptance:
     identifier families.
   - No duplicate definitions remain for targeted identifier families outside approved constants
     modules (tests may still assert literal values).
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1848
+claimed_at: 2026-02-18T11:43:24.315Z
+baseline_main_sha: c2c130540fb846d8474ff91526f34e999c1635ae
+session_id: c0fc26b8-6ca6-440d-b4df-5fece916268d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T11:43:24.320Z

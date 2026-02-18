@@ -69,13 +69,13 @@ sections:
 - [WU-1845 — Extract shared git-runner module in software-delivery pack](wu/WU-1845.yaml) — Framework: Core Lifecycle
 - [WU-1846 — Generate manifest tool declarations from compact config instead of 550-line boilerplate](wu/WU-1846.yaml) — Framework: Core Lifecycle
 - [WU-1847 — Decompose tool-host execute method and extract denial trace helper](wu/WU-1847.yaml) — Framework: Core Lifecycle
-- [WU-1848 — Extract duplicated string literal constants into shared-constants module](wu/WU-1848.yaml) — Framework: Core Lifecycle
 - [WU-1849 — Add missing test coverage for INIT-030 phase 2-3 gaps](wu/WU-1849.yaml) — Framework: Core Lifecycle
 - [WU-1850 — Fix surfaces relative imports and extract daemon handler registry](wu/WU-1850.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1848 — Standardize kernel identifier constants with typed source-of-truth modules](wu/WU-1848.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
