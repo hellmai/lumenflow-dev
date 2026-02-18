@@ -27,7 +27,7 @@ phases:
     status: done
   - id: 5
     title: 'Production Readiness: Make It Real'
-    status: in_progress
+    status: done
   - id: 6
     title: 'Pack Ecosystem: 5 Real Packs'
     status: in_progress
