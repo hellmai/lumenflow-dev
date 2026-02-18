@@ -25,7 +25,6 @@ sections:
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1865 — Kernel polish: xstate dead code removal, warning clarity, naming consistency](wu/WU-1865.yaml) — Framework: Core Lifecycle
-- [WU-1869 — Vercel Blob-backed PackRegistryStore + PackBlobStore adapters](wu/WU-1869.yaml) — Content: Site Comms
 - [WU-1871 — lumenflow workspace:init interactive wizard generating workspace.yaml](wu/WU-1871.yaml) — Framework: CLI Orchestration
 - [WU-1872 — Evidence viewer page with tool trace timeline at /evidence](wu/WU-1872.yaml) — Content: Site Comms
 - [WU-1873 — Workspace selector with recent-workspaces history](wu/WU-1873.yaml) — Content: Site Comms
@@ -41,6 +40,7 @@ sections:
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1864 — Scope intersection property-based fuzz testing for patternContains glob heuristic](wu/WU-1864.yaml) — Framework: Core Lifecycle
 - [WU-1870 — Cursor-based pagination for EventStore.replay() and /api/events/all](wu/WU-1870.yaml) — Framework: Core Lifecycle
+- [WU-1869 — Vercel Blob-backed PackRegistryStore + PackBlobStore adapters](wu/WU-1869.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 

@@ -1678,3 +1678,4 @@
 {"type":"complete","wuId":"WU-1866","timestamp":"2026-02-18T23:16:20.781Z"}
 {"type":"claim","wuId":"WU-1864","lane":"Framework: Core Lifecycle","title":"Scope intersection property-based fuzz testing for patternContains glob heuristic","timestamp":"2026-02-18T23:17:51.418Z"}
 {"type":"claim","wuId":"WU-1870","lane":"Framework: Core Lifecycle","title":"Cursor-based pagination for EventStore.replay() and /api/events/all","timestamp":"2026-02-18T23:20:18.449Z"}
+{"type":"claim","wuId":"WU-1869","lane":"Content: Site Comms","title":"Vercel Blob-backed PackRegistryStore + PackBlobStore adapters","timestamp":"2026-02-18T23:20:26.211Z"}
