@@ -2,7 +2,7 @@ id: WU-1876
 title: Evidence export endpoint with CSV and JSON format support
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -56,3 +56,6 @@ session_id: db35c7a8-86af-4bdd-865d-688f746940b3
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T23:49:21.507Z
+locked: true
+completed_at: 2026-02-18T23:55:44.174Z
+completed: 2026-02-18

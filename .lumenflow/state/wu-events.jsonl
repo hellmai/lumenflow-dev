@@ -1702,3 +1702,4 @@
 {"type":"claim","wuId":"WU-1876","timestamp":"2026-02-18T23:49:21.563Z","lane":"Content: Site Comms","title":"Evidence export endpoint with CSV and JSON format support"}
 {"type":"claim","wuId":"WU-1878","timestamp":"2026-02-18T23:52:04.524Z","lane":"Content: Site Comms","title":"Marketplace Install to workspace button"}
 {"type":"complete","wuId":"WU-1877","timestamp":"2026-02-18T23:55:41.385Z"}
+{"type":"complete","wuId":"WU-1876","timestamp":"2026-02-18T23:55:48.873Z"}
