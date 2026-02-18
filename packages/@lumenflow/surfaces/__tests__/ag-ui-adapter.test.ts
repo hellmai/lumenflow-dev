@@ -235,6 +235,21 @@ describe('surfaces/http ag-ui adapter', () => {
     expect(allTypes).toContain(AG_UI_EVENT_TYPES.TOOL_CALL_RESULT);
   });
 
+  it('ignores non-schema task/run identifiers on tool_call_finished entries', () => {
+    const finishedWithRuntimeExtras = {
+      ...makeToolTraceFinished(),
+      task_id: TASK.ID,
+      run_id: TASK.RUN_ID,
+    } as ToolTraceEntry & { task_id: string; run_id: string };
+
+    const [endEvent, resultEvent] = mapToolTraceEntryToAgUiEvents(finishedWithRuntimeExtras);
+
+    expect(endEvent?.task_id).toBeUndefined();
+    expect(endEvent?.run_id).toBeUndefined();
+    expect(resultEvent?.task_id).toBeUndefined();
+    expect(resultEvent?.run_id).toBeUndefined();
+  });
+
   it('maps policy decisions into governance events with metadata', () => {
     const decision: PolicyDecision = {
       policy_id: 'runtime.policy.allow',

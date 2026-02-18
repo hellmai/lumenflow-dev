@@ -10,13 +10,18 @@ code_paths:
 tests:
   manual:
     - pnpm --filter @lumenflow/web typecheck passes
-  unit: []
+  unit:
+    - packages/@lumenflow/surfaces/__tests__/ag-ui-adapter.test.ts
+    - packages/@lumenflow/surfaces/__tests__/ag-ui-runagent.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1858.done
 dependencies: []
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes:
+  Fixed impossible ToolTraceEntry narrowing in ag-ui-adapter tool_call_finished mapping and removed
+  legacy string declared_scopes emission in run-agent by returning schema-compatible TaskSpec scope
+  entries.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only

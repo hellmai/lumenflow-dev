@@ -215,11 +215,8 @@ function buildTaskDescription(input: RunAgentInput): string {
   return input.messages.map((msg) => `[${msg.role}] ${msg.content}`).join('\n');
 }
 
-function buildDeclaredScopes(input: RunAgentInput): string[] {
-  if (!input.tools || input.tools.length === 0) {
-    return [];
-  }
-  return input.tools.map((tool) => tool.name);
+function buildDeclaredScopes(_input: RunAgentInput): TaskSpec['declared_scopes'] {
+  return [];
 }
 
 function buildTaskSpec(input: RunAgentInput, taskId: string): TaskSpec {

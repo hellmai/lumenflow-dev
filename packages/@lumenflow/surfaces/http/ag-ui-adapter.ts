@@ -81,12 +81,6 @@ function hasRunId(event: KernelEvent): event is Extract<KernelEvent, { run_id: s
   return 'run_id' in event;
 }
 
-function hasToolRunId(
-  entry: ToolTraceEntry,
-): entry is Extract<ToolTraceEntry, { run_id: string; task_id: string }> {
-  return 'run_id' in entry && 'task_id' in entry;
-}
-
 const KERNEL_KIND_TO_AG_UI_TYPE: Record<KernelEvent['kind'], AgUiEventType> = {
   [KERNEL_EVENT_KINDS.TASK_CREATED]: AG_UI_EVENT_TYPES.RUN_STARTED,
   [KERNEL_EVENT_KINDS.TASK_CLAIMED]: AG_UI_EVENT_TYPES.STEP_STARTED,
@@ -194,13 +188,6 @@ export function mapToolTraceEntryToAgUiEvents(entry: ToolTraceEntry): AgUiEvent[
       source: SOURCE.TOOL_TRACE,
     },
   };
-
-  if (hasToolRunId(entry)) {
-    common.task_id = entry.task_id;
-    common.run_id = entry.run_id;
-    resultEvent.task_id = entry.task_id;
-    resultEvent.run_id = entry.run_id;
-  }
 
   return [common, resultEvent];
 }

@@ -430,6 +430,34 @@ describe('surfaces/http AG-UI RunAgent endpoint', () => {
     expect(Array.isArray(createTaskArg.declared_scopes)).toBe(true);
   });
 
+  it('emits schema-compatible declared_scopes entries (no legacy string scopes)', async () => {
+    const runtime = createRuntimeStub();
+    const eventStub = createEventSubscriberStub();
+    const surface = createHttpSurface(runtime as unknown as KernelRuntime, {
+      eventSubscriber: eventStub.subscriber,
+    });
+
+    const request = createRequest({
+      method: HTTP_METHOD.POST,
+      url: ROUTE.RUN_AGENT,
+      body: createRunAgentInput(),
+    });
+    const response = new MockResponse();
+
+    await surface.handleRequest(
+      request as IncomingMessage,
+      response as unknown as ServerResponse<IncomingMessage>,
+    );
+
+    const createTaskArg = (runtime.createTask as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
+    const declaredScopes = Array.isArray(createTaskArg.declared_scopes)
+      ? createTaskArg.declared_scopes
+      : [];
+
+    const usesLegacyStringScopes = declaredScopes.some((scope) => typeof scope === 'string');
+    expect(usesLegacyStringScopes).toBe(false);
+  });
+
   it('streams events as newline-delimited JSON for CopilotKit compatibility', async () => {
     const runtime = createRuntimeStub();
     const eventStub = createEventSubscriberStub();
