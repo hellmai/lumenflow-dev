@@ -2,7 +2,7 @@ id: WU-1807
 title: Migrate WU state transition tools to runtime pack execution
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -49,3 +49,6 @@ session_id: 96819305-d060-4986-ac82-f994bfd9b75b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T18:07:48.527Z
+locked: true
+completed_at: 2026-02-18T18:22:55.620Z
+completed: 2026-02-18

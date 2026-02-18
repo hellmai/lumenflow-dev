@@ -1590,5 +1590,6 @@
 {"type":"complete","wuId":"WU-1805","timestamp":"2026-02-18T17:50:11.740Z"}
 {"type":"claim","wuId":"WU-1806","timestamp":"2026-02-18T17:57:09.252Z","lane":"Framework: Core Lifecycle","title":"Migrate WU creation and claiming tools to runtime pack execution"}
 {"type":"complete","wuId":"WU-1806","timestamp":"2026-02-18T18:07:10.035Z"}
-{"type":"claim","wuId":"WU-1807","lane":"Framework: Core Lifecycle","title":"Migrate WU state transition tools to runtime pack execution","timestamp":"2026-02-18T18:07:48.552Z"}
-{"type":"claim","wuId":"WU-1857","lane":"Operations: Tooling","title":"Shore up web frontend infra: React linting, vitest jsdom, turbo TSX, surfaces package","timestamp":"2026-02-18T18:12:42.399Z"}
+{"type":"claim","wuId":"WU-1807","timestamp":"2026-02-18T18:07:48.552Z","lane":"Framework: Core Lifecycle","title":"Migrate WU state transition tools to runtime pack execution"}
+{"type":"claim","wuId":"WU-1857","timestamp":"2026-02-18T18:12:42.399Z","lane":"Operations: Tooling","title":"Shore up web frontend infra: React linting, vitest jsdom, turbo TSX, surfaces package"}
+{"type":"complete","wuId":"WU-1807","timestamp":"2026-02-18T18:23:00.260Z"}
