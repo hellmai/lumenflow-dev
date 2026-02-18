@@ -1661,3 +1661,4 @@
 {"type":"claim","wuId":"WU-1840","timestamp":"2026-02-18T22:19:56.159Z","lane":"Content: Site Comms","title":"Build pack marketplace page with browse, search, and install flow"}
 {"type":"claim","wuId":"WU-1842","timestamp":"2026-02-18T22:20:38.025Z","lane":"Content: Site Comms","title":"Create community landing page with get-started path and marketplace links"}
 {"type":"complete","wuId":"WU-1859","timestamp":"2026-02-18T22:23:51.258Z"}
+{"type":"complete","wuId":"WU-1842","timestamp":"2026-02-18T22:25:12.923Z"}
