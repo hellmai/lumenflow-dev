@@ -208,9 +208,7 @@ export function generateWorkspaceYaml(config: WorkspaceSpec): string {
   lines.push('# Security configuration');
   lines.push('security:');
   lines.push('  # Workspace-level scope restrictions');
-  lines.push(
-    `  allowed_scopes: ${YAML.stringify(config.security.allowed_scopes).trim()}`,
-  );
+  lines.push(`  allowed_scopes: ${YAML.stringify(config.security.allowed_scopes).trim()}`);
   lines.push('  # Network access default for sandbox (off = no network, full = unrestricted)');
   lines.push(`  network_default: ${config.security.network_default}`);
   lines.push('  # Paths denied to agent sandbox via deny overlays');
@@ -270,10 +268,7 @@ export async function writeWorkspaceFile(
  * AC2: Run workspace:init in non-interactive mode (--yes flag).
  * Generates workspace.yaml with all defaults, no prompts.
  */
-export async function runNonInteractive(
-  targetDir: string,
-  force = false,
-): Promise<ScaffoldResult> {
+export async function runNonInteractive(targetDir: string, force = false): Promise<ScaffoldResult> {
   const config = getDefaultWorkspaceConfig();
   return writeWorkspaceFile(targetDir, config, force);
 }
@@ -283,10 +278,7 @@ export async function runNonInteractive(
 /**
  * Ask a single question via readline and return the answer.
  */
-function askQuestion(
-  rl: readline.Interface,
-  question: WorkspaceQuestion,
-): Promise<string> {
+function askQuestion(rl: readline.Interface, question: WorkspaceQuestion): Promise<string> {
   return new Promise((resolve) => {
     const prompt = question.defaultValue
       ? `${question.prompt} [${question.defaultValue}]: `
@@ -301,10 +293,7 @@ function askQuestion(
 /**
  * AC1: Run workspace:init interactively, prompting 5 questions.
  */
-export async function runInteractive(
-  targetDir: string,
-  force = false,
-): Promise<ScaffoldResult> {
+export async function runInteractive(targetDir: string, force = false): Promise<ScaffoldResult> {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -328,9 +317,7 @@ export async function runInteractive(
       console.log(`${LOG_PREFIX} Created: ${result.created.join(', ')}`);
     }
     if (result.skipped.length > 0) {
-      console.log(
-        `${LOG_PREFIX} Skipped (already exists): ${result.skipped.join(', ')}`,
-      );
+      console.log(`${LOG_PREFIX} Skipped (already exists): ${result.skipped.join(', ')}`);
     }
 
     return result;
@@ -382,9 +369,7 @@ export async function main(): Promise<void> {
     if (result.created.length > 0) {
       console.log(`${LOG_PREFIX} Created ${WORKSPACE_FILENAME} with default settings`);
     } else if (result.skipped.length > 0) {
-      console.log(
-        `${LOG_PREFIX} ${WORKSPACE_FILENAME} already exists. Use --force to overwrite.`,
-      );
+      console.log(`${LOG_PREFIX} ${WORKSPACE_FILENAME} already exists. Use --force to overwrite.`);
     }
   } else {
     await runInteractive(targetDir, force);

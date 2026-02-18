@@ -55,12 +55,7 @@ describe('workspace:init command', () => {
       expect(config.lanes[0].title).toBe('Default');
       expect(config.security).toBeDefined();
       expect(config.security.network_default).toBe('off');
-      expect(config.security.deny_overlays).toEqual([
-        '~/.ssh',
-        '~/.aws',
-        '~/.gnupg',
-        '.env',
-      ]);
+      expect(config.security.deny_overlays).toEqual(['~/.ssh', '~/.aws', '~/.gnupg', '.env']);
       expect(config.memory_namespace).toBe('default');
       expect(config.event_namespace).toBe('default');
     });
@@ -134,9 +129,8 @@ describe('workspace:init command', () => {
   describe('generateWorkspaceYaml', () => {
     // AC4: Generated file includes helpful YAML comments explaining each section
     it('should generate YAML with comments explaining each section', async () => {
-      const { generateWorkspaceYaml, getDefaultWorkspaceConfig } = await import(
-        '../workspace-init.js'
-      );
+      const { generateWorkspaceYaml, getDefaultWorkspaceConfig } =
+        await import('../workspace-init.js');
 
       const config = getDefaultWorkspaceConfig();
       const yamlContent = generateWorkspaceYaml(config);
@@ -152,9 +146,8 @@ describe('workspace:init command', () => {
     });
 
     it('should produce valid YAML that can be parsed back', async () => {
-      const { generateWorkspaceYaml, getDefaultWorkspaceConfig } = await import(
-        '../workspace-init.js'
-      );
+      const { generateWorkspaceYaml, getDefaultWorkspaceConfig } =
+        await import('../workspace-init.js');
 
       const config = getDefaultWorkspaceConfig();
       const yamlContent = generateWorkspaceYaml(config);
@@ -168,9 +161,7 @@ describe('workspace:init command', () => {
 
     // AC3: Generated workspace.yaml validates against WorkspaceSpecSchema
     it('should generate YAML whose parsed content validates against WorkspaceSpecSchema', async () => {
-      const { generateWorkspaceYaml, buildWorkspaceConfig } = await import(
-        '../workspace-init.js'
-      );
+      const { generateWorkspaceYaml, buildWorkspaceConfig } = await import('../workspace-init.js');
 
       const config = buildWorkspaceConfig({
         projectName: 'validated-project',
@@ -191,9 +182,8 @@ describe('workspace:init command', () => {
   describe('writeWorkspaceFile', () => {
     // AC5: Uses existing init-scaffolding.ts template infrastructure
     it('should write workspace.yaml to the target directory', async () => {
-      const { writeWorkspaceFile, getDefaultWorkspaceConfig } = await import(
-        '../workspace-init.js'
-      );
+      const { writeWorkspaceFile, getDefaultWorkspaceConfig } =
+        await import('../workspace-init.js');
 
       const config = getDefaultWorkspaceConfig();
       const result = await writeWorkspaceFile(tempDir, config);
@@ -204,9 +194,8 @@ describe('workspace:init command', () => {
     });
 
     it('should not overwrite existing workspace.yaml in skip mode', async () => {
-      const { writeWorkspaceFile, getDefaultWorkspaceConfig } = await import(
-        '../workspace-init.js'
-      );
+      const { writeWorkspaceFile, getDefaultWorkspaceConfig } =
+        await import('../workspace-init.js');
       const { writeFileSync } = await import('node:fs');
 
       // Pre-create the file
@@ -226,9 +215,8 @@ describe('workspace:init command', () => {
     });
 
     it('should overwrite existing workspace.yaml in force mode', async () => {
-      const { writeWorkspaceFile, getDefaultWorkspaceConfig } = await import(
-        '../workspace-init.js'
-      );
+      const { writeWorkspaceFile, getDefaultWorkspaceConfig } =
+        await import('../workspace-init.js');
       const { writeFileSync } = await import('node:fs');
 
       // Pre-create the file
@@ -247,9 +235,7 @@ describe('workspace:init command', () => {
     });
 
     it('should write valid YAML that parses against WorkspaceSpecSchema', async () => {
-      const { writeWorkspaceFile, buildWorkspaceConfig } = await import(
-        '../workspace-init.js'
-      );
+      const { writeWorkspaceFile, buildWorkspaceConfig } = await import('../workspace-init.js');
 
       const config = buildWorkspaceConfig({
         projectName: 'schema-test',
