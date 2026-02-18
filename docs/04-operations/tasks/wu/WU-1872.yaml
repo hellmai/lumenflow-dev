@@ -1,0 +1,45 @@
+id: WU-1872
+title: Evidence viewer page with tool trace timeline at /evidence
+lane: 'Content: Site Comms'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-18
+code_paths:
+  - apps/web/app/api/tasks/[taskId]/evidence/route.ts
+  - apps/web/src/components/evidence-viewer.tsx
+  - apps/web/app/evidence/page.tsx
+tests:
+  manual:
+    - Verify /evidence page shows timeline rows after running a task with tool calls
+    - Verify orphaned tool starts show crashed badge
+    - Verify Policy Audit tab lists real policy decisions
+  unit:
+    - apps/web/src/components/__tests__/evidence-viewer.test.tsx
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1872.done
+dependencies: []
+initiative: INIT-031
+phase: 5
+blocked_by:
+  - WU-1869
+spec_refs:
+  - .claude/plans/partitioned-sprouting-nest.md
+risks: []
+notes: "Sizing: Medium (M). ~15-20 files, ~50 tool calls. Strategy: Single Session (upper bound). Plan originally sized L but per wu-sizing-guide.md, L requires 50+ files which this WU won't reach. If scope expands, decompose via Pattern C (UI/Logic Split). Wave 5b (after 5.1 for real registry data)."
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: ui
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: INIT-030 Phase 2 routes all task operations through KernelRuntime, producing real tool traces in EvidenceStore. Problem: No UI exists to view evidence data — only the SSE-based evidence-chain.tsx component exists with limited display. Solution: Create REST endpoint GET /api/tasks/:taskId/evidence wrapping EvidenceStore.readTracesByTaskId(). Build /evidence page rendering TOOL_CALL_STARTED + TOOL_CALL_FINISHED pairs as timeline rows with tool name, duration, result badge (success/denied/crashed), scope columns. Orphaned starts get crashed badge. Add Policy Audit tab to existing TaskDashboard showing PolicyDecision entries.'
+acceptance:
+  - GET /api/tasks/:taskId/evidence REST endpoint returns tool trace pairs from EvidenceStore
+  - /evidence page renders tool traces as timeline rows with name, duration, result badge
+  - Orphaned TOOL_CALL_STARTED events (no matching FINISHED) display crashed badge
+  - Policy Audit tab in TaskDashboard lists PolicyDecision entries from inspectTask()
+  - Timeline supports scope-requested vs scope-enforced column comparison

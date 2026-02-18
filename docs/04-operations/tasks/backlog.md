@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1872 — Evidence viewer page with tool trace timeline at /evidence](wu/WU-1872.yaml) — Content: Site Comms
 - [WU-1871 — lumenflow workspace:init interactive wizard generating workspace.yaml](wu/WU-1871.yaml) — Framework: CLI Orchestration
 - [WU-1870 — Cursor-based pagination for EventStore.replay() and /api/events/all](wu/WU-1870.yaml) — Framework: Core Lifecycle
 - [WU-1869 — Vercel Blob-backed PackRegistryStore + PackBlobStore adapters](wu/WU-1869.yaml) — Content: Site Comms
