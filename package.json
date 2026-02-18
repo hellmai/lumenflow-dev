@@ -91,6 +91,7 @@
     "pack:hash": "node tools/cli-entry.mjs pack-hash",
     "pack:install": "node tools/cli-entry.mjs pack-install",
     "pack:publish": "node tools/cli-entry.mjs pack-publish",
+    "pack:search": "node tools/cli-entry.mjs pack-search",
     "orchestrate:initiative": "node packages/@lumenflow/cli/dist/orchestrate-initiative.js",
     "orchestrate:init-status": "node packages/@lumenflow/cli/dist/orchestrate-init-status.js",
     "orchestrate:monitor": "node packages/@lumenflow/cli/dist/orchestrate-monitor.js",

@@ -136,7 +136,8 @@
     "pack-validate": "./dist/pack-validate.js",
     "pack-hash": "./dist/pack-hash.js",
     "pack-install": "./dist/pack-install.js",
-    "pack-publish": "./dist/pack-publish.js"
+    "pack-publish": "./dist/pack-publish.js",
+    "pack-search": "./dist/pack-search.js"
   },
   "files": [
     "dist",
