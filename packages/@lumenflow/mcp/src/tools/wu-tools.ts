@@ -44,9 +44,7 @@ import {
   success,
   error,
   buildWuPromptArgs,
-  runCliCommand,
   executeViaPack,
-  type CliRunnerOptions,
 } from '../tools-shared.js';
 import { CliCommands, MetadataKeys } from '../mcp-constants.js';
 
@@ -121,7 +119,7 @@ const WuQueryFlags = {
  * wu_status - Get status of a specific WU
  *
  * WU-1431: Uses shared wuStatusSchema for parity with CLI
- * WU-1805: Migrated from runCliCommand to executeViaPack (runtime-first)
+ * WU-1805: Migrated from CLI shell-out to executeViaPack (runtime-first)
  * Note: CLI allows id to be optional (auto-detect from worktree), but MCP requires it
  * since there's no "current directory" concept for MCP clients
  */
@@ -681,17 +679,23 @@ export const wuRepairTool: ToolDefinition = {
     if (input.admin) args.push('--admin');
     if (input.repair_state) args.push('--repair-state');
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_REPAIR, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_REPAIR, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_REPAIR,
+        args,
+        errorCode: ErrorCodes.WU_REPAIR_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU repair completed' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:repair failed',
-        ErrorCodes.WU_REPAIR_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: 'WU repair completed' })
+      : error(result.error?.message ?? 'wu:repair failed', ErrorCodes.WU_REPAIR_ERROR);
   },
 };
 

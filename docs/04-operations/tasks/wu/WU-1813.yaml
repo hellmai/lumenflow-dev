@@ -7,13 +7,19 @@ priority: P1
 created: 2026-02-18
 code_paths:
   - packages/@lumenflow/mcp/src/tools/wu-tools.ts
+  - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
+  - packages/@lumenflow/mcp/src/tools/agent-tools.ts
+  - packages/@lumenflow/mcp/src/tools/context-tools.ts
+  - packages/@lumenflow/mcp/src/tools/flow-tools.ts
+  - packages/@lumenflow/mcp/src/tools/validation-tools.ts
   - packages/@lumenflow/mcp/src/tools/parity-tools.ts
   - packages/@lumenflow/mcp/src/tools/memory-tools.ts
-  - packages/@lumenflow/mcp/src/tools/initiative-tools.ts
+  - packages/@lumenflow/mcp/src/tools/setup-tools.ts
 tests:
   manual:
     - grep for runCliCommand in mcp/src/tools/ returns 0 matches
   unit:
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
     - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
   e2e: []
 artifacts:

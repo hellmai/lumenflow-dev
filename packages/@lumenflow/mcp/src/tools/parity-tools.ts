@@ -462,7 +462,7 @@ export const gatesDocsTool: ToolDefinition = {
 
 /**
  * lane_health - Diagnose lane configuration issues
- * WU-1802: Migrated from runCliCommand to executeViaPack (runtime-first)
+ * WU-1802: Migrated from CLI shell-out to executeViaPack (runtime-first)
  */
 export const laneHealthTool: ToolDefinition = {
   name: 'lane_health',
@@ -492,7 +492,7 @@ export const laneHealthTool: ToolDefinition = {
 
 /**
  * lane_suggest - Suggest lane definitions from project context
- * WU-1802: Migrated from runCliCommand to executeViaPack (runtime-first)
+ * WU-1802: Migrated from CLI shell-out to executeViaPack (runtime-first)
  */
 export const laneSuggestTool: ToolDefinition = {
   name: 'lane_suggest',

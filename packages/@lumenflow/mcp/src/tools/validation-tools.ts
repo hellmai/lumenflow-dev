@@ -5,7 +5,7 @@
  * WU-1642: Extracted from tools.ts during domain decomposition.
  * WU-1426: Validation tools
  * WU-1457: All validation commands use shared schemas
- * WU-1802: Migrated from runCliCommand to executeViaPack (runtime-first)
+ * WU-1802: Migrated from CLI shell-out to executeViaPack (runtime-first)
  * WU-1856: Fix duplicate message constants, tighten constant naming
  */
 

@@ -117,6 +117,7 @@ const SETUP_COORDINATION_PLAN_TOOL_NAMES = {
   PLAN_LINK: 'plan:link',
   PLAN_PROMOTE: 'plan:promote',
   WU_RECOVER: 'wu:recover',
+  WU_REPAIR: 'wu:repair',
 } as const;
 
 function createResolverInput(toolName: string): RuntimeToolCapabilityResolverInput {
@@ -387,6 +388,7 @@ describe('packToolCapabilityResolver', () => {
       SETUP_COORDINATION_PLAN_TOOL_NAMES.PLAN_LINK,
       SETUP_COORDINATION_PLAN_TOOL_NAMES.PLAN_PROMOTE,
       SETUP_COORDINATION_PLAN_TOOL_NAMES.WU_RECOVER,
+      SETUP_COORDINATION_PLAN_TOOL_NAMES.WU_REPAIR,
     ];
 
     for (const toolName of toolNames) {
@@ -1647,6 +1649,15 @@ describe('WU-1812: setup/coordination/plan lifecycle uses runtime path end-to-en
           command: 'wu:recover',
           args: ['--id', 'WU-1812', '--action', 'resume'],
           errorCode: 'WU_RECOVER_ERROR',
+        },
+      },
+      {
+        toolName: 'wu:repair',
+        input: { id: 'WU-1812', check: true, repair_state: true },
+        fallback: {
+          command: 'wu:repair',
+          args: ['--id', 'WU-1812', '--check', '--repair-state'],
+          errorCode: 'WU_REPAIR_ERROR',
         },
       },
     ] as const;

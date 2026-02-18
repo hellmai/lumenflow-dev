@@ -480,40 +480,48 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 
   describe('wu_repair', () => {
-    it('should repair WU via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should repair WU via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'WU repaired successfully',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'WU repaired successfully' },
       });
 
       const result = await wuRepairTool.execute({ id: 'WU-1422' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:repair',
-        expect.arrayContaining(['--id', 'WU-1422']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:repair',
+            args: expect.arrayContaining(['--id', 'WU-1422']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should support check mode', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'No issues found',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'No issues found' },
       });
 
       const result = await wuRepairTool.execute({ id: 'WU-1422', check: true });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:repair',
-        expect.arrayContaining(['--id', 'WU-1422', '--check']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422', check: true }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:repair',
+            args: expect.arrayContaining(['--id', 'WU-1422', '--check']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
   });
 

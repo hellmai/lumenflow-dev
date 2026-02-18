@@ -90,6 +90,7 @@ const IN_PROCESS_TOOL_NAMES = {
   WU_EDIT: CliCommands.WU_EDIT,
   WU_RELEASE: CliCommands.WU_RELEASE,
   WU_RECOVER: CliCommands.WU_RECOVER,
+  WU_REPAIR: CliCommands.WU_REPAIR,
   WU_DEPS: CliCommands.WU_DEPS,
   WU_PREFLIGHT: CliCommands.WU_PREFLIGHT,
   WU_VALIDATE: CliCommands.WU_VALIDATE,
@@ -169,6 +170,7 @@ const IN_PROCESS_TOOL_DESCRIPTIONS = {
   WU_EDIT: 'Edit WU spec fields via in-process core filesystem handler',
   WU_RELEASE: 'Release WU via in-process core state transition handler',
   WU_RECOVER: 'Recover WU via runtime-first handler with CLI fallback',
+  WU_REPAIR: 'Repair WU via runtime-first handler with CLI fallback',
   WU_DEPS: 'Visualize WU dependency graph via in-process core handler',
   WU_PREFLIGHT: 'Fast validation of code_paths/test paths via in-process core handler',
   WU_VALIDATE: 'Validate WU YAML via in-process schema check',
@@ -2258,6 +2260,7 @@ const VALIDATION_TOOL_ERROR_CODES = {
   WU_EDIT_ERROR: 'WU_EDIT_ERROR',
   WU_RELEASE_ERROR: 'WU_RELEASE_ERROR',
   WU_RECOVER_ERROR: 'WU_RECOVER_ERROR',
+  WU_REPAIR_ERROR: 'WU_REPAIR_ERROR',
   WU_DEPS_ERROR: 'WU_DEPS_ERROR',
   WU_PREFLIGHT_ERROR: 'WU_PREFLIGHT_ERROR',
   WU_VALIDATE_ERROR: 'WU_VALIDATE_ERROR',
@@ -3301,6 +3304,12 @@ const wuRecoverInProcess: InProcessToolFn = async () =>
     WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
   );
 
+const wuRepairInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.WU_REPAIR_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
 const wuEditInProcess: InProcessToolFn = async (rawInput, context) => {
   const parsedInput = WU_EDIT_INPUT_SCHEMA.safeParse(rawInput ?? {});
   if (!parsedInput.success) {
@@ -3986,6 +3995,14 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_RECOVER,
       inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
       fn: wuRecoverInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_REPAIR,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_REPAIR,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuRepairInProcess,
     },
   ],
   [

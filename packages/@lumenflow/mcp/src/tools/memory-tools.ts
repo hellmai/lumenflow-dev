@@ -5,7 +5,7 @@
  * WU-1642: Extracted from tools.ts during domain decomposition.
  * WU-1424: Memory tools
  * WU-1456: Memory commands use shared schemas where available
- * WU-1811: Migrated memory tools from runCliCommand to executeViaPack runtime path
+ * WU-1811: Migrated memory tools from CLI shell-out to executeViaPack runtime path
  */
 
 import { z } from 'zod';

@@ -3,7 +3,7 @@
  * @description Context/read operations via @lumenflow/core
  *
  * WU-1642: Extracted from tools.ts during domain decomposition.
- * WU-1803: Migrated from runCliCommand/direct core calls to executeViaPack (runtime pack execution)
+ * WU-1803: Migrated from shell-out/direct core calls to executeViaPack (runtime pack execution)
  */
 
 import { z } from 'zod';
@@ -37,7 +37,7 @@ export const contextGetTool: ToolDefinition = {
  * wu_list - List all WUs with optional status filter
  *
  * WU-1431: Uses shared wuStatusEnum for status filter
- * WU-1803: Migrated from runCliCommand('wu:validate') to executeViaPack('wu:list')
+ * WU-1803: Migrated from CLI validation alias path to executeViaPack('wu:list')
  */
 export const wuListTool: ToolDefinition = {
   name: 'wu_list',

@@ -5,7 +5,7 @@
  * WU-1642: Extracted from tools.ts during domain decomposition.
  * WU-1426: Flow/Metrics tools: flow_bottlenecks, flow_report, metrics_snapshot
  * WU-1457: All flow/metrics commands use shared schemas
- * WU-1803: Migrated from runCliCommand to executeViaPack (runtime pack execution)
+ * WU-1803: Migrated from CLI shell-out to executeViaPack (runtime pack execution)
  */
 
 import {

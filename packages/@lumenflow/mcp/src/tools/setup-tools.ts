@@ -5,7 +5,7 @@
  * WU-1642: Extracted from tools.ts during domain decomposition.
  * WU-1426: Setup tools
  * WU-1457: All setup commands use shared schemas
- * WU-1812: Migrated setup tools from runCliCommand to executeViaPack runtime path
+ * WU-1812: Migrated setup tools from CLI shell-out to executeViaPack runtime path
  */
 
 import {
