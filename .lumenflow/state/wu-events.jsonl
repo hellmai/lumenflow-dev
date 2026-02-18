@@ -1674,3 +1674,4 @@
 {"type":"claim","wuId":"WU-1866","timestamp":"2026-02-18T23:02:16.241Z","lane":"Framework: MCP","title":"INIT-030 Review Fix D: flip executeViaPack fallback from denylist to allowlist"}
 {"type":"claim","wuId":"WU-1868","timestamp":"2026-02-18T23:06:19.483Z","lane":"Framework: Core Lifecycle","title":"INIT-030 Review Fix F: use readTracesByTaskId in inspectTask receipts"}
 {"type":"complete","wuId":"WU-1863","timestamp":"2026-02-18T23:13:01.631Z"}
+{"type":"complete","wuId":"WU-1868","timestamp":"2026-02-18T23:15:42.556Z"}

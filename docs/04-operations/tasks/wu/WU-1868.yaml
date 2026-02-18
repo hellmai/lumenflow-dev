@@ -2,7 +2,7 @@ id: WU-1868
 title: 'INIT-030 Review Fix F: use readTracesByTaskId in inspectTask receipts'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -46,3 +46,6 @@ session_id: ef27dec2-3962-455a-93ee-f72a3aca5305
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T23:06:19.448Z
+locked: true
+completed_at: 2026-02-18T23:15:37.799Z
+completed: 2026-02-18
