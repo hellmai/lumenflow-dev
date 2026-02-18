@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1812 — Migrate agent, setup, plan, docs, and sync tools to runtime pack execution](wu/WU-1812.yaml) — Framework: Core Lifecycle
 - [WU-1811 — Migrate memory tools to runtime pack execution](wu/WU-1811.yaml) — Framework: Core Lifecycle
 - [WU-1810 — Migrate initiative and orchestrate-initiative tools to runtime pack execution](wu/WU-1810.yaml) — Framework: Core Lifecycle
 - [WU-1809 — Migrate WU delegation and gates tools to runtime pack execution](wu/WU-1809.yaml) — Framework: Core Lifecycle
