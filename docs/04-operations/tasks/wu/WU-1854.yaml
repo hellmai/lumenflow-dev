@@ -9,7 +9,10 @@ code_paths:
   - packages/@lumenflow/cli/src/lane-edit.ts
   - packages/@lumenflow/cli/src/lane-validate.ts
 tests:
-  manual: []
+  manual:
+    - Run lane:edit with --rename
+    - --wip-limit
+    - --add-path and verify config file updated correctly
   unit:
     - packages/@lumenflow/cli/src/__tests__/lane-edit.test.ts
   e2e: []
@@ -29,10 +32,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: .lumenflow.config.yaml lane definitions can only be edited by directly writing the file. The enforce-worktree hook blocks Claude Code Write/Edit tools on main. The LumenFlow CLI uses micro-worktrees (WU-1262 pattern) to safely commit changes to main from commands like wu:create. Problem: There is no CLI command to rename a lane, change its wip_limit, update code_paths, or add/remove a description. When users need to change lane definitions after lane:lock, they have no compliant path — the enforce-worktree hook blocks direct edits, and the MCP file_write bypass is a security hole. Observed in Haven test project: the agent had to use MCP file_write to rewrite the entire config file after lane:validate rejected all nine lane names. Solution: Implement lane:edit command using the existing micro-worktree isolation pattern. Command should accept --name (target lane), --rename (new name), --wip-limit, --add-path, --remove-path, --description flags. Write changes via micro-worktree so the edit lands as a proper commit on main with full audit trail. Re-run lane:validate after edit and surface errors before committing.'
+description: 'Context: .lumenflow.config.yaml lane definitions can only be edited by directly
+  writing the file. The enforce-worktree hook blocks Claude Code Write/Edit tools on main. The
+  LumenFlow CLI uses micro-worktrees (WU-1262 pattern) to safely commit changes to main from
+  commands like wu:create. Problem: There is no CLI command to rename a lane, change its wip_limit,
+  update code_paths, or add/remove a description. When users need to change lane definitions after
+  lane:lock, they have no compliant path — the enforce-worktree hook blocks direct edits, and the
+  MCP file_write bypass is a security hole. Observed in Haven test project: the agent had to use MCP
+  file_write to rewrite the entire config file after lane:validate rejected all nine lane names.
+  Solution: Implement lane:edit command using the existing micro-worktree isolation pattern. Command
+  should accept --name (target lane), --rename (new name), --wip-limit, --add-path, --remove-path,
+  --description flags. Write changes via micro-worktree so the edit lands as a proper commit on main
+  with full audit trail. Re-run lane:validate after edit and surface errors before committing.'
 acceptance:
-  - "pnpm lane:edit --name 'Framework: CLI' --rename 'Framework: CLI WU Commands' renames a lane in .lumenflow.config.yaml via micro-worktree commit"
+  - "pnpm lane:edit --name 'Framework: CLI' --rename 'Framework: CLI WU Commands' renames a lane in
+    .lumenflow.config.yaml via micro-worktree commit"
   - "pnpm lane:edit --name 'Feature: API' --wip-limit 3 updates the wip_limit"
   - "pnpm lane:edit --name 'Core: Domain' --add-path 'packages/events/' adds a code path"
-  - lane:validate runs automatically after edit and the command fails without committing if validation fails
+  - lane:validate runs automatically after edit and the command fails without committing if
+    validation fails
   - lane:edit is blocked when lanes are not in locked or draft status
