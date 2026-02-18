@@ -1,0 +1,37 @@
+id: WU-1839
+title: Create pack:search CLI command for registry discovery
+lane: 'Framework: CLI Orchestration'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-18
+code_paths:
+  - packages/@lumenflow/cli/src/
+tests:
+  manual:
+    - Publish a pack then search for it, verify result appears
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/pack-search.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1839.done
+dependencies: []
+initiative: INIT-031
+phase: 4
+spec_refs:
+  - .claude/plans/zazzy-growing-cook.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: pnpm pack:search query searches registry, shows results with name, description, version, and install count.
+acceptance:
+  - Searches registry API with query
+  - Displays results with name, description, version
+  - Shows install count per pack

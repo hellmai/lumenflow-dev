@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1839 — Create pack:search CLI command for registry discovery](wu/WU-1839.yaml) — Framework: CLI Orchestration
 - [WU-1838 — Create pack:publish CLI command for registry upload](wu/WU-1838.yaml) — Framework: CLI Orchestration
 - [WU-1837 — Extend PackLoader with registry-based pack resolution](wu/WU-1837.yaml) — Framework: Core Lifecycle
 - [WU-1836 — Build pack registry API with Vercel Edge Functions](wu/WU-1836.yaml) — Content: Site Comms
