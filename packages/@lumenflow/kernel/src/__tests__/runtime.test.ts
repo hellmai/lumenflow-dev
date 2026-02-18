@@ -12,7 +12,11 @@ import { EvidenceStore } from '../evidence/index.js';
 import type { ExecutionContext, TaskSpec } from '../kernel.schemas.js';
 import { EventStore } from '../event-store/index.js';
 import { type SubprocessTransport } from '../sandbox/index.js';
-import { initializeKernelRuntime, type InitializeKernelRuntimeOptions } from '../runtime/index.js';
+import {
+  initializeKernelRuntime,
+  defaultRunIdFactory,
+  type InitializeKernelRuntimeOptions,
+} from '../runtime/index.js';
 import {
   PACK_MANIFEST_FILE_NAME,
   PACKS_DIR_NAME,
@@ -829,5 +833,20 @@ describe('kernel runtime facade', () => {
     } finally {
       pruneSpy.mockRestore();
     }
+  });
+
+  it('generates unique run IDs even when called within the same millisecond', () => {
+    // defaultRunIdFactory should produce unique IDs for the same taskId and runNumber
+    // by including a monotonic counter or random suffix
+    const taskId = 'WU-1863-uniqueness';
+    const runNumber = 1;
+
+    const ids = new Set<string>();
+    for (let index = 0; index < 1000; index++) {
+      ids.add(defaultRunIdFactory(taskId, runNumber));
+    }
+
+    // All 1000 IDs should be unique
+    expect(ids.size).toBe(1000);
   });
 });

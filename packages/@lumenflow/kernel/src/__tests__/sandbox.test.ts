@@ -15,7 +15,7 @@ import {
   SandboxSubprocessDispatcher,
   type SubprocessTransport,
 } from '../sandbox/index.js';
-import { ToolHost, ToolRegistry } from '../tool-host/index.js';
+import { ToolHost, ToolRegistry, allowAllPolicyHook } from '../tool-host/index.js';
 
 function collectMountTargets(args: string[], flag: '--bind' | '--ro-bind'): string[] {
   const targets: string[] = [];
@@ -239,6 +239,7 @@ describe('kernel sandbox integration', () => {
       registry,
       evidenceStore,
       subprocessDispatcher: dispatcher,
+      policyHook: allowAllPolicyHook,
     });
 
     const result = await host.execute(

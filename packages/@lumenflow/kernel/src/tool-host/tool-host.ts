@@ -43,7 +43,7 @@ export interface ToolHostOptions {
   registry: ToolRegistry;
   evidenceStore: EvidenceStore;
   subprocessDispatcher?: SubprocessDispatcher;
-  policyHook?: PolicyHook;
+  policyHook: PolicyHook;
   runtimeVersion?: string;
   now?: () => Date;
 }
@@ -103,7 +103,7 @@ function collectReservedFrameworkWriteScopes(scopes: ToolScope[]): string[] {
   return [...new Set(blocked)];
 }
 
-async function allowAllPolicyHook(): Promise<PolicyDecision[]> {
+export async function allowAllPolicyHook(): Promise<PolicyDecision[]> {
   return [
     {
       policy_id: KERNEL_POLICY_IDS.ALLOW_ALL,
@@ -122,10 +122,16 @@ export class ToolHost {
   private readonly now: () => Date;
 
   constructor(options: ToolHostOptions) {
+    if (!options.policyHook) {
+      throw new Error(
+        'ToolHost requires an explicit policyHook. ' +
+          'Use allowAllPolicyHook for development or provide a production policy.',
+      );
+    }
     this.registry = options.registry;
     this.evidenceStore = options.evidenceStore;
     this.subprocessDispatcher = options.subprocessDispatcher ?? new DefaultSubprocessDispatcher();
-    this.policyHook = options.policyHook ?? allowAllPolicyHook;
+    this.policyHook = options.policyHook;
     this.runtimeVersion = options.runtimeVersion ?? DEFAULT_KERNEL_RUNTIME_VERSION;
     this.now = options.now ?? (() => new Date());
   }

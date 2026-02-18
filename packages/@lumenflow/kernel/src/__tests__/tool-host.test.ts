@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EvidenceStore } from '../evidence/index.js';
 import type { ExecutionContext, ToolCapability, ToolScope } from '../kernel.schemas.js';
-import { ToolHost, ToolRegistry } from '../tool-host/index.js';
+import { ToolHost, ToolRegistry, allowAllPolicyHook } from '../tool-host/index.js';
 
 describe('tool host', () => {
   let tempDir: string;
@@ -112,6 +112,7 @@ describe('tool host', () => {
     const host = new ToolHost({
       registry,
       evidenceStore,
+      policyHook: allowAllPolicyHook,
     });
 
     const result = await host.execute(
@@ -151,6 +152,7 @@ describe('tool host', () => {
     const host = new ToolHost({
       registry,
       evidenceStore,
+      policyHook: allowAllPolicyHook,
     });
 
     const result = await host.execute(
@@ -187,6 +189,7 @@ describe('tool host', () => {
     const host = new ToolHost({
       registry,
       evidenceStore,
+      policyHook: allowAllPolicyHook,
     });
 
     const result = await host.execute(
@@ -229,6 +232,7 @@ describe('tool host', () => {
     const host = new ToolHost({
       registry,
       evidenceStore,
+      policyHook: allowAllPolicyHook,
     });
 
     const result = await host.execute(
@@ -275,6 +279,7 @@ describe('tool host', () => {
     const host = new ToolHost({
       registry,
       evidenceStore,
+      policyHook: allowAllPolicyHook,
     });
 
     const result = await host.execute(
@@ -299,6 +304,7 @@ describe('tool host', () => {
     const host = new ToolHost({
       registry,
       evidenceStore,
+      policyHook: allowAllPolicyHook,
     });
 
     await host.onStartup();
@@ -315,6 +321,7 @@ describe('tool host', () => {
     const host = new ToolHost({
       registry,
       evidenceStore,
+      policyHook: allowAllPolicyHook,
     });
 
     // Spy on appendTrace to fail only on the FINISHED trace (second call)
@@ -559,6 +566,7 @@ describe('tool host', () => {
       const host = new ToolHost({
         registry,
         evidenceStore,
+        policyHook: allowAllPolicyHook,
         now: () => FIXED_DATE,
       });
 
@@ -586,6 +594,7 @@ describe('tool host', () => {
       const host = new ToolHost({
         registry,
         evidenceStore,
+        policyHook: allowAllPolicyHook,
         now: () => FIXED_DATE,
       });
 
@@ -625,6 +634,7 @@ describe('tool host', () => {
       const host = new ToolHost({
         registry,
         evidenceStore,
+        policyHook: allowAllPolicyHook,
         now: advancingClock,
       });
 
@@ -652,6 +662,7 @@ describe('tool host', () => {
       const host = new ToolHost({
         registry,
         evidenceStore,
+        policyHook: allowAllPolicyHook,
         // no `now` option — should use real Date
       });
 
@@ -691,6 +702,7 @@ describe('tool host', () => {
       const host = new ToolHost({
         registry,
         evidenceStore,
+        policyHook: allowAllPolicyHook,
         now: advancingClock,
       });
 
@@ -734,6 +746,7 @@ describe('tool host', () => {
       const host = new ToolHost({
         registry,
         evidenceStore,
+        policyHook: allowAllPolicyHook,
         now: advancingClock,
       });
 
@@ -798,6 +811,52 @@ describe('tool host', () => {
       for (const trace of traces) {
         expect(trace.timestamp).toBe('2026-01-15T12:00:00.000Z');
       }
+    });
+  });
+
+  describe('policy construction safety', () => {
+    it('throws descriptive error when constructed without explicit policyHook', () => {
+      const registry = new ToolRegistry();
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- testing runtime guard for JS callers
+      expect(() => new ToolHost({ registry, evidenceStore } as any)).toThrow(/policyHook/);
+    });
+
+    it('accepts explicit allowAllPolicyHook without throwing', () => {
+      const registry = new ToolRegistry();
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+
+      expect(
+        () =>
+          new ToolHost({
+            registry,
+            evidenceStore,
+            policyHook: allowAllPolicyHook,
+          }),
+      ).not.toThrow();
+    });
+
+    it('accepts custom policy hook without throwing', () => {
+      const registry = new ToolRegistry();
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+
+      const customPolicy = async () => [
+        {
+          policy_id: 'custom.allow' as const,
+          decision: 'allow' as const,
+          reason: 'Custom policy',
+        },
+      ];
+
+      expect(
+        () =>
+          new ToolHost({
+            registry,
+            evidenceStore,
+            policyHook: customPolicy,
+          }),
+      ).not.toThrow();
     });
   });
 });

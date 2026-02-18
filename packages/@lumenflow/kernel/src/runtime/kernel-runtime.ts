@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: Apache-2.0
 
+import { randomBytes } from 'node:crypto';
 import { access, mkdir, open, readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 import YAML from 'yaml';
@@ -232,8 +233,9 @@ function normalizeTimestamp(now: () => Date, inputTimestamp?: string): string {
   return inputTimestamp ?? now().toISOString();
 }
 
-function defaultRunIdFactory(taskId: string, nextRunNumber: number): string {
-  return `run-${taskId}-${nextRunNumber}`;
+export function defaultRunIdFactory(taskId: string, nextRunNumber: number): string {
+  const suffix = randomBytes(4).toString('hex');
+  return `run-${taskId}-${nextRunNumber}-${suffix}`;
 }
 
 function isRunLifecycleEvent(event: KernelEvent): event is RunLifecycleEvent {
