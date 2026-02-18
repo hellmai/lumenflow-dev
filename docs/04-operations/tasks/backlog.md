@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1861 — INIT-030 Review Fix C: governance and type safety tightening](wu/WU-1861.yaml) — Framework: MCP
 - [WU-1860 — INIT-030 Review Fix B: kernel durability bugs (lock leak, clock skew, partial writes)](wu/WU-1860.yaml) — Framework: Core Lifecycle
 - [WU-1859 — INIT-030 Review Fix A: executeViaPack policy bypass security fix](wu/WU-1859.yaml) — Framework: MCP
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
