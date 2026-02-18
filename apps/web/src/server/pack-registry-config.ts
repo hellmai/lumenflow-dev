@@ -31,8 +31,8 @@ class InMemoryBlobStore implements PackBlobStore {
     const key = `${packId}/${version}.tgz`;
     this.blobs.set(key, data);
 
-    // Compute a simple hash for integrity (in production, use SubtleCrypto)
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    // Compute a simple hash for integrity
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data.buffer as ArrayBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
