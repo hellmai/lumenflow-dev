@@ -1,0 +1,39 @@
+id: WU-1816
+title: Add reactive subscribe mechanism to EventStore
+lane: 'Framework: Core Lifecycle'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-18
+code_paths:
+  - packages/@lumenflow/kernel/src/event-store/
+tests:
+  manual:
+    - Append events to JSONL file, verify subscriber receives only new events
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/event-store.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1816.done
+dependencies: []
+initiative: INIT-031
+phase: 1
+spec_refs:
+  - .claude/plans/zazzy-growing-cook.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: The EventStore currently only supports pull-based replay(filter) which re-reads the entire JSONL file. Add EventStore.subscribe(filter, callback) returning a Disposable that uses fs.watch() + seek-to-last-offset to parse only new lines. This is the reactive primitive that SSE streaming, AG-UI, and control plane forwarding all depend on.
+acceptance:
+  - EventStore.subscribe(filter, cb) returns Disposable
+  - Callback fires within 500ms of new event being appended
+  - Only new lines parsed (seek-to-offset, not full re-read)
+  - Filter works for taskId, kind, and timestamp
+  - Dispose stops delivery and cleans up watcher
