@@ -1561,4 +1561,5 @@
 {"type":"claim","wuId":"WU-1844","timestamp":"2026-02-18T13:54:53.264Z","lane":"Framework: MCP","title":"Consolidate MCP runtime caches and create tool definition factory"}
 {"type":"claim","wuId":"WU-1847","timestamp":"2026-02-18T14:07:44.233Z","lane":"Framework: Core Lifecycle","title":"Decompose tool-host execute method and extract denial trace helper"}
 {"type":"complete","wuId":"WU-1844","timestamp":"2026-02-18T14:10:46.241Z"}
-{"type":"claim","wuId":"WU-1850","lane":"Framework: Core Lifecycle","title":"Fix surfaces relative imports and extract daemon handler registry","timestamp":"2026-02-18T14:11:57.192Z"}
+{"type":"claim","wuId":"WU-1850","timestamp":"2026-02-18T14:11:57.192Z","lane":"Framework: Core Lifecycle","title":"Fix surfaces relative imports and extract daemon handler registry"}
+{"type":"complete","wuId":"WU-1847","timestamp":"2026-02-18T14:13:06.088Z"}
