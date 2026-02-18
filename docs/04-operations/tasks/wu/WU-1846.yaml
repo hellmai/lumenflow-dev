@@ -2,7 +2,7 @@ id: WU-1846
 title: Generate manifest tool declarations from compact config instead of 550-line boilerplate
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -44,3 +44,6 @@ session_id: c8dd5cfb-3646-4196-a9bc-8ed0dd459407
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T14:31:46.271Z
+locked: true
+completed_at: 2026-02-18T14:41:23.599Z
+completed: 2026-02-18
