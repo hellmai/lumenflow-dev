@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1827 — Create pack:install CLI command for adding packs to workspace](wu/WU-1827.yaml) — Framework: CLI Orchestration
 - [WU-1826 — Extend PackLoader with git-based pack resolution](wu/WU-1826.yaml) — Framework: Core Lifecycle
 - [WU-1825 — Create pack:hash CLI command for integrity hash computation](wu/WU-1825.yaml) — Framework: CLI Orchestration
 - [WU-1824 — Create pack:validate CLI command for pack integrity checking](wu/WU-1824.yaml) — Framework: CLI Orchestration
