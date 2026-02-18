@@ -69,7 +69,6 @@ sections:
 - [WU-1845 — Extract shared git-runner module in software-delivery pack](wu/WU-1845.yaml) — Framework: Core Lifecycle
 - [WU-1846 — Generate manifest tool declarations from compact config instead of 550-line boilerplate](wu/WU-1846.yaml) — Framework: Core Lifecycle
 - [WU-1847 — Decompose tool-host execute method and extract denial trace helper](wu/WU-1847.yaml) — Framework: Core Lifecycle
-- [WU-1849 — Add missing test coverage for INIT-030 phase 2-3 gaps](wu/WU-1849.yaml) — Framework: Core Lifecycle
 - [WU-1850 — Fix surfaces relative imports and extract daemon handler registry](wu/WU-1850.yaml) — Framework: Core Lifecycle
 - [WU-1854 — Add lane:edit command for safe in-place lane definition editing](wu/WU-1854.yaml) — Framework: CLI WU Commands
 
@@ -78,6 +77,7 @@ sections:
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1853 — MCP file_write and file_edit tools bypass enforce-worktree hook](wu/WU-1853.yaml) — Framework: MCP
 - [WU-1852 — Fix first-project bootstrap blockers in lumenflow init](wu/WU-1852.yaml) — Framework: CLI WU Commands
+- [WU-1849 — Add missing test coverage for INIT-030 phase 2-3 gaps](wu/WU-1849.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

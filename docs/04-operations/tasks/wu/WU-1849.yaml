@@ -2,7 +2,7 @@ id: WU-1849
 title: Add missing test coverage for INIT-030 phase 2-3 gaps
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -50,3 +50,11 @@ acceptance:
   - session-manager tests cover closeSession cleanup and concurrent session edge cases
   - All new tests follow existing test patterns (vitest, describe/it blocks)
   - Coverage for these modules reaches at least 90 percent line coverage
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1849
+claimed_at: 2026-02-18T12:44:21.342Z
+baseline_main_sha: 4796618b4c20be54b6d24a1af736194ebd28dad2
+session_id: 24947d08-d3f5-4b32-ba05-f304014eb650
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T12:44:21.348Z
