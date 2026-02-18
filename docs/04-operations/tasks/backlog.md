@@ -32,7 +32,6 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1873 — Workspace selector with recent-workspaces history](wu/WU-1873.yaml) — Content: Site Comms
-- [WU-1872 — Evidence viewer page with tool trace timeline at /evidence](wu/WU-1872.yaml) — Content: Site Comms
 - [WU-1875 — pack:install --source registry HTTP fetch path](wu/WU-1875.yaml) — Framework: CLI Orchestration
 
 ## ⛔ Blocked
@@ -843,6 +842,7 @@ sections:
 - [WU-1864 — Scope intersection property-based fuzz testing for patternContains glob heuristic](wu/WU-1864.yaml)
 - [WU-1869 — Vercel Blob-backed PackRegistryStore + PackBlobStore adapters](wu/WU-1869.yaml)
 - [WU-1874 — infra-ops pack manifest with tools, policies, and task schema](wu/WU-1874.yaml)
+- [WU-1872 — Evidence viewer page with tool trace timeline at /evidence](wu/WU-1872.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

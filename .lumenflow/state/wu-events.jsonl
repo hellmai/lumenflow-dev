@@ -1695,3 +1695,4 @@
 {"type":"claim","wuId":"WU-1872","timestamp":"2026-02-18T23:40:12.251Z","lane":"Content: Site Comms","title":"Evidence viewer page with tool trace timeline at /evidence"}
 {"type":"claim","wuId":"WU-1875","timestamp":"2026-02-18T23:40:40.140Z","lane":"Framework: CLI Orchestration","title":"pack:install --source registry HTTP fetch path"}
 {"type":"complete","wuId":"WU-1874","timestamp":"2026-02-18T23:43:41.460Z"}
+{"type":"complete","wuId":"WU-1872","timestamp":"2026-02-18T23:47:12.681Z"}

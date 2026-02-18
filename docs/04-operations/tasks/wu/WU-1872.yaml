@@ -2,7 +2,7 @@ id: WU-1872
 title: Evidence viewer page with tool trace timeline at /evidence
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -65,3 +65,6 @@ session_id: 566d1364-bedf-4178-8dcb-7935bb9ab791
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T23:40:12.225Z
+locked: true
+completed_at: 2026-02-18T23:47:07.915Z
+completed: 2026-02-18
