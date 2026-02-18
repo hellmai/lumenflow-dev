@@ -2,7 +2,7 @@ id: WU-1825
 title: Create pack:hash CLI command for integrity hash computation
 lane: 'Framework: CLI Orchestration'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -46,3 +46,6 @@ session_id: 3807b695-7b2d-49da-9db9-565987b1b531
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T21:04:35.231Z
+locked: true
+completed_at: 2026-02-18T21:09:41.787Z
+completed: 2026-02-18
