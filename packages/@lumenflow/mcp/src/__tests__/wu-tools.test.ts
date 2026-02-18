@@ -319,12 +319,7 @@ describe('WU MCP tools (WU-1422)', () => {
         expect.objectContaining({
           fallback: expect.objectContaining({
             command: 'wu:block',
-            args: expect.arrayContaining([
-              '--id',
-              'WU-1422',
-              '--reason',
-              'Waiting for dependency',
-            ]),
+            args: expect.arrayContaining(['--id', 'WU-1422', '--reason', 'Waiting for dependency']),
           }),
         }),
       );
@@ -401,7 +396,12 @@ describe('WU MCP tools (WU-1422)', () => {
         expect.objectContaining({
           fallback: expect.objectContaining({
             command: 'wu:edit',
-            args: expect.arrayContaining(['--id', 'WU-1422', '--description', 'Updated description']),
+            args: expect.arrayContaining([
+              '--id',
+              'WU-1422',
+              '--description',
+              'Updated description',
+            ]),
           }),
         }),
       );
