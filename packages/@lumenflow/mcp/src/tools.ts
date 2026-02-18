@@ -334,6 +334,21 @@ export const MCP_PUBLIC_PARITY_ALLOWED_EXTRA_TOOLS = [
   'wu_list',
 ] as const;
 
+/**
+ * Public CLI commands intentionally out of MCP scope.
+ *
+ * These normalized command names are excluded from the "missing" parity
+ * calculation so MCP parity reflects the supported public MCP surface.
+ */
+export const MCP_PUBLIC_PARITY_ALLOWED_MISSING_TOOLS = [
+  'lane_edit',
+  'lane_lock',
+  'lane_setup',
+  'lane_status',
+  'lane_validate',
+  'pack_scaffold',
+] as const;
+
 export interface McpManifestParityReport {
   missing: string[];
   allowedExtra: string[];
@@ -363,8 +378,11 @@ export function buildMcpManifestParityReport(
   );
   const mcpToolSet = new Set(mcpToolNames);
   const allowedExtraSet = new Set<string>(MCP_PUBLIC_PARITY_ALLOWED_EXTRA_TOOLS);
+  const allowedMissingSet = new Set<string>(MCP_PUBLIC_PARITY_ALLOWED_MISSING_TOOLS);
 
-  const missing = [...normalizedManifest].filter((name) => !mcpToolSet.has(name)).sort();
+  const missing = [...normalizedManifest]
+    .filter((name) => !mcpToolSet.has(name) && !allowedMissingSet.has(name))
+    .sort();
   const allowedExtra = [...mcpToolSet]
     .filter((name) => !normalizedManifest.has(name) && allowedExtraSet.has(name))
     .sort();

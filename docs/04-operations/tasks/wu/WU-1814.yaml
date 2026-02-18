@@ -6,11 +6,16 @@ status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
+  - packages/@lumenflow/mcp/src/tools.ts
+  - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
   - docs/04-operations/tasks/initiatives/INIT-030.yaml
 tests:
   manual:
     - pnpm gates green; MCP parity report clean; full WU lifecycle end-to-end
   unit:
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
     - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
   e2e: []
 artifacts:
