@@ -5,6 +5,7 @@
  * WU-1642: Extracted from tools.ts during domain decomposition.
  * WU-1426: Validation tools
  * WU-1457: All validation commands use shared schemas
+ * WU-1802: Migrated from runCliCommand to executeViaPack (runtime-first)
  */
 
 import {
@@ -20,10 +21,34 @@ import {
   CliArgs,
   success,
   error,
-  runCliCommand,
-  type CliRunnerOptions,
+  executeViaPack,
 } from '../tools-shared.js';
 import { CliCommands } from '../mcp-constants.js';
+
+/**
+ * Fallback messages when executeViaPack returns no structured data/error.
+ * Every user-facing string is a constant — no magic strings.
+ */
+const ValidationMessages = {
+  VALIDATE_PASSED: 'Validation passed',
+  VALIDATE_FAILED: 'Validation failed',
+  AGENT_SKILLS_VALID: 'All skills valid',
+  AGENT_SKILLS_FAILED: 'validate:agent-skills failed',
+  AGENT_SYNC_VALID: 'Agent sync valid',
+  AGENT_SYNC_FAILED: 'validate:agent-sync failed',
+  BACKLOG_SYNC_VALID: 'Backlog sync valid',
+  BACKLOG_SYNC_FAILED: 'validate:backlog-sync failed',
+  SKILLS_SPEC_VALID: 'Skills spec valid',
+  SKILLS_SPEC_FAILED: 'validate:skills-spec failed',
+  LUMENFLOW_VALIDATE_PASSED: 'Validation passed',
+  LUMENFLOW_VALIDATE_FAILED: 'lumenflow-validate failed',
+} as const;
+
+const CliFlags = {
+  STRICT: '--strict',
+  DONE_ONLY: '--done-only',
+  SKILL: '--skill',
+} as const;
 
 /**
  * validate - Validate WU YAML files
@@ -36,20 +61,24 @@ export const validateTool: ToolDefinition = {
   async execute(input, options) {
     const args: string[] = [];
     if (input.id) args.push(CliArgs.ID, input.id as string);
-    if (input.strict) args.push('--strict');
-    if (input.done_only) args.push('--done-only');
+    if (input.strict) args.push(CliFlags.STRICT);
+    if (input.done_only) args.push(CliFlags.DONE_ONLY);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.VALIDATE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.VALIDATE, input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: CliCommands.VALIDATE,
+        args,
+        errorCode: ErrorCodes.VALIDATE_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Validation passed' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'Validation failed',
-        ErrorCodes.VALIDATE_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: ValidationMessages.VALIDATE_PASSED })
+      : error(
+          result.error?.message ?? ValidationMessages.VALIDATE_FAILED,
+          ErrorCodes.VALIDATE_ERROR,
+        );
   },
 };
 
@@ -63,19 +92,23 @@ export const validateAgentSkillsTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    if (input.skill) args.push('--skill', input.skill as string);
+    if (input.skill) args.push(CliFlags.SKILL, input.skill as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.VALIDATE_AGENT_SKILLS, args, cliOptions);
+    const result = await executeViaPack(CliCommands.VALIDATE_AGENT_SKILLS, input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: CliCommands.VALIDATE_AGENT_SKILLS,
+        args,
+        errorCode: ErrorCodes.VALIDATE_AGENT_SKILLS_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'All skills valid' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'validate:agent-skills failed',
-        ErrorCodes.VALIDATE_AGENT_SKILLS_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: ValidationMessages.AGENT_SKILLS_VALID })
+      : error(
+          result.error?.message ?? ValidationMessages.AGENT_SKILLS_FAILED,
+          ErrorCodes.VALIDATE_AGENT_SKILLS_ERROR,
+        );
   },
 };
 
@@ -88,17 +121,25 @@ export const validateAgentSyncTool: ToolDefinition = {
   inputSchema: validateAgentSyncSchema,
 
   async execute(_input, options) {
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.VALIDATE_AGENT_SYNC, [], cliOptions);
+    const result = await executeViaPack(
+      CliCommands.VALIDATE_AGENT_SYNC,
+      {},
+      {
+        projectRoot: options?.projectRoot,
+        fallback: {
+          command: CliCommands.VALIDATE_AGENT_SYNC,
+          args: [],
+          errorCode: ErrorCodes.VALIDATE_AGENT_SYNC_ERROR,
+        },
+      },
+    );
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Agent sync valid' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'validate:agent-sync failed',
-        ErrorCodes.VALIDATE_AGENT_SYNC_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: ValidationMessages.AGENT_SYNC_VALID })
+      : error(
+          result.error?.message ?? ValidationMessages.AGENT_SYNC_FAILED,
+          ErrorCodes.VALIDATE_AGENT_SYNC_ERROR,
+        );
   },
 };
 
@@ -111,17 +152,25 @@ export const validateBacklogSyncTool: ToolDefinition = {
   inputSchema: validateBacklogSyncSchema,
 
   async execute(_input, options) {
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.VALIDATE_BACKLOG_SYNC, [], cliOptions);
+    const result = await executeViaPack(
+      CliCommands.VALIDATE_BACKLOG_SYNC,
+      {},
+      {
+        projectRoot: options?.projectRoot,
+        fallback: {
+          command: CliCommands.VALIDATE_BACKLOG_SYNC,
+          args: [],
+          errorCode: ErrorCodes.VALIDATE_BACKLOG_SYNC_ERROR,
+        },
+      },
+    );
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Backlog sync valid' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'validate:backlog-sync failed',
-        ErrorCodes.VALIDATE_BACKLOG_SYNC_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: ValidationMessages.BACKLOG_SYNC_VALID })
+      : error(
+          result.error?.message ?? ValidationMessages.BACKLOG_SYNC_FAILED,
+          ErrorCodes.VALIDATE_BACKLOG_SYNC_ERROR,
+        );
   },
 };
 
@@ -134,17 +183,25 @@ export const validateSkillsSpecTool: ToolDefinition = {
   inputSchema: validateSkillsSpecSchema,
 
   async execute(_input, options) {
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.VALIDATE_SKILLS_SPEC, [], cliOptions);
+    const result = await executeViaPack(
+      CliCommands.VALIDATE_SKILLS_SPEC,
+      {},
+      {
+        projectRoot: options?.projectRoot,
+        fallback: {
+          command: CliCommands.VALIDATE_SKILLS_SPEC,
+          args: [],
+          errorCode: ErrorCodes.VALIDATE_SKILLS_SPEC_ERROR,
+        },
+      },
+    );
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Skills spec valid' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'validate:skills-spec failed',
-        ErrorCodes.VALIDATE_SKILLS_SPEC_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: ValidationMessages.SKILLS_SPEC_VALID })
+      : error(
+          result.error?.message ?? ValidationMessages.SKILLS_SPEC_FAILED,
+          ErrorCodes.VALIDATE_SKILLS_SPEC_ERROR,
+        );
   },
 };
 
@@ -159,18 +216,23 @@ export const lumenflowValidateTool: ToolDefinition = {
   async execute(input, options) {
     const args: string[] = [];
     if (input.id) args.push(CliArgs.ID, input.id as string);
-    if (input.strict) args.push('--strict');
-    if (input.done_only) args.push('--done-only');
+    if (input.strict) args.push(CliFlags.STRICT);
+    if (input.done_only) args.push(CliFlags.DONE_ONLY);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.VALIDATE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.LUMENFLOW_VALIDATE, input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: CliCommands.VALIDATE,
+        args,
+        errorCode: ErrorCodes.LUMENFLOW_VALIDATE_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Validation passed' });
-    }
-    return error(
-      result.stderr || result.error?.message || 'lumenflow-validate failed',
-      ErrorCodes.LUMENFLOW_VALIDATE_ERROR,
-    );
+    return result.success
+      ? success(result.data ?? { message: ValidationMessages.LUMENFLOW_VALIDATE_PASSED })
+      : error(
+          result.error?.message ?? ValidationMessages.LUMENFLOW_VALIDATE_FAILED,
+          ErrorCodes.LUMENFLOW_VALIDATE_ERROR,
+        );
   },
 };

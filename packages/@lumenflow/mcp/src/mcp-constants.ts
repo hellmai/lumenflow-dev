@@ -95,6 +95,7 @@ export const CliCommands = {
   LUMENFLOW_RELEASE: 'lumenflow:release',
 
   // -- Validation (validation-tools.ts) --
+  LUMENFLOW_VALIDATE: 'lumenflow:validate',
   VALIDATE: 'validate',
   VALIDATE_AGENT_SKILLS: 'validate:agent-skills',
   VALIDATE_AGENT_SYNC: 'validate:agent-sync',

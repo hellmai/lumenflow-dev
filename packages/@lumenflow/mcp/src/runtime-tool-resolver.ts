@@ -2045,6 +2045,471 @@ const signalCleanupInProcess: InProcessToolFn = async (rawInput, context) => {
   }
 };
 
+// --- WU-1802: Validation/Lane in-process handler implementations ---
+
+const VALIDATION_TOOL_ERROR_CODES = {
+  INVALID_INPUT: 'INVALID_INPUT',
+  VALIDATE_ERROR: 'VALIDATE_ERROR',
+  VALIDATE_AGENT_SKILLS_ERROR: 'VALIDATE_AGENT_SKILLS_ERROR',
+  VALIDATE_AGENT_SYNC_ERROR: 'VALIDATE_AGENT_SYNC_ERROR',
+  VALIDATE_BACKLOG_SYNC_ERROR: 'VALIDATE_BACKLOG_SYNC_ERROR',
+  VALIDATE_SKILLS_SPEC_ERROR: 'VALIDATE_SKILLS_SPEC_ERROR',
+  LUMENFLOW_VALIDATE_ERROR: 'LUMENFLOW_VALIDATE_ERROR',
+  LANE_HEALTH_ERROR: 'LANE_HEALTH_ERROR',
+  LANE_SUGGEST_ERROR: 'LANE_SUGGEST_ERROR',
+} as const;
+
+const VALIDATION_TOOL_MESSAGES = {
+  VALIDATE_PASSED: 'Validation passed',
+  VALIDATE_INVALID_WU: 'Invalid WU',
+  NO_WU_DIR: 'No WU directory found, skipping',
+  NO_SKILLS_DIR: 'No skills directory found, skipping',
+  NO_AGENTS_DIR: 'No agents directory found, skipping',
+  AGENT_SKILLS_FAILED: 'Agent skills validation failed',
+  AGENT_SKILLS_VALID_PREFIX: 'All',
+  AGENT_SKILLS_VALID_SUFFIX: 'skill(s) valid',
+  AGENT_SYNC_FAILED: 'Agent sync validation failed',
+  AGENT_SYNC_VALID_PREFIX: 'Agent sync valid:',
+  AGENT_SYNC_VALID_SUFFIX: 'agent(s) checked',
+  EMPTY_FILE: 'empty file',
+  EMPTY_AGENT_CONFIG: 'empty agent config',
+  EMPTY_SKILLS_SPEC: 'empty skills spec',
+  BACKLOG_SYNC_VALID: 'Backlog sync valid',
+  BACKLOG_SYNC_FAILED: 'Backlog sync validation failed',
+  SKILLS_SPEC_VALID_PREFIX: 'Skills spec valid:',
+  SKILLS_SPEC_VALID_SUFFIX: 'spec(s) checked',
+  SKILLS_SPEC_FAILED: 'Skills spec validation failed',
+  LANE_HEALTH_PASSED: 'Lane health check complete',
+  LANE_SUGGEST_GENERATED_PREFIX: 'Generated',
+  LANE_SUGGEST_GENERATED_SUFFIX: 'lane suggestion(s)',
+} as const;
+
+const VALIDATION_TOOL_FILE_EXTENSIONS = ['.md', '.yaml', '.yml'] as const;
+const WU_FILE_EXTENSIONS = ['.yaml', '.yml'] as const;
+const SKILLS_DIR_RELATIVE = '.claude/skills';
+const AGENTS_DIR_RELATIVE = '.claude/agents';
+
+const VALIDATE_INPUT_SCHEMA = z.object({
+  id: z.string().optional(),
+  strict: z.boolean().optional(),
+  done_only: z.boolean().optional(),
+});
+
+const VALIDATE_AGENT_SKILLS_INPUT_SCHEMA = z.object({
+  skill: z.string().optional(),
+});
+
+const VALIDATE_AGENT_SYNC_INPUT_SCHEMA = z.object({});
+
+const VALIDATE_BACKLOG_SYNC_INPUT_SCHEMA = z.object({});
+
+const VALIDATE_SKILLS_SPEC_INPUT_SCHEMA = z.object({});
+
+const LANE_HEALTH_INPUT_SCHEMA = z.object({
+  json: z.boolean().optional(),
+  verbose: z.boolean().optional(),
+  no_coverage: z.boolean().optional(),
+});
+
+const LANE_SUGGEST_INPUT_SCHEMA = z.object({
+  dry_run: z.boolean().optional(),
+  interactive: z.boolean().optional(),
+  output: z.string().optional(),
+  json: z.boolean().optional(),
+  no_llm: z.boolean().optional(),
+  include_git: z.boolean().optional(),
+});
+
+/** Helper: filter files by validation-relevant extensions */
+function hasValidationExtension(filename: string): boolean {
+  return VALIDATION_TOOL_FILE_EXTENSIONS.some((ext) => filename.endsWith(ext));
+}
+
+/** Helper: filter files by WU YAML extensions */
+function hasWUExtension(filename: string): boolean {
+  return WU_FILE_EXTENSIONS.some((ext) => filename.endsWith(ext));
+}
+
+/** Helper: extract Zod issue messages from safeParse error */
+function formatZodIssues(zodError: { issues?: ReadonlyArray<{ message: string }> }): string {
+  return (
+    zodError.issues?.map((i) => i.message).join('; ') ??
+    VALIDATION_TOOL_MESSAGES.VALIDATE_INVALID_WU
+  );
+}
+
+/**
+ * validate handler — delegates to @lumenflow/core validateWU per file
+ */
+const validateInProcess: InProcessToolFn = async (rawInput, context) => {
+  const parsedInput = VALIDATE_INPUT_SCHEMA.safeParse(rawInput ?? {});
+  if (!parsedInput.success) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.INVALID_INPUT,
+      parsedInput.error.message,
+    );
+  }
+
+  try {
+    const core = await getCoreLazy();
+    const projectRoot = resolveWorkspaceRoot(context);
+    const config = core.getConfig({ projectRoot });
+    const wuDir = path.join(projectRoot, config.directories.wuDir);
+
+    if (parsedInput.data.id) {
+      const wuPath = path.join(wuDir, `${parsedInput.data.id}.yaml`);
+      const result = core.validateWU(core.parseYAML(await readFile(wuPath, UTF8_ENCODING)));
+      return result.success
+        ? createSuccessOutput({
+            message: `${parsedInput.data.id} ${VALIDATION_TOOL_MESSAGES.VALIDATE_PASSED}`,
+          })
+        : createFailureOutput(
+            VALIDATION_TOOL_ERROR_CODES.VALIDATE_ERROR,
+            formatZodIssues(result.error),
+          );
+    }
+
+    // validateAllWUs is not exported from core — inline the aggregation
+    let files: string[];
+    try {
+      files = (await readdir(wuDir)).filter(hasWUExtension);
+    } catch {
+      return createSuccessOutput({ message: VALIDATION_TOOL_MESSAGES.NO_WU_DIR });
+    }
+
+    let totalValid = 0;
+    let totalInvalid = 0;
+    const errors: string[] = [];
+    const STATUS_DONE = 'done';
+    for (const file of files) {
+      const content = await readFile(path.join(wuDir, file), UTF8_ENCODING);
+      if (parsedInput.data.done_only) {
+        const parsed = core.parseYAML(content);
+        if (
+          parsed &&
+          typeof parsed === 'object' &&
+          'status' in parsed &&
+          parsed.status !== STATUS_DONE
+        )
+          continue;
+      }
+      const result = core.validateWU(core.parseYAML(content));
+      if (result.success) {
+        totalValid++;
+      } else {
+        totalInvalid++;
+        errors.push(`${file}: ${formatZodIssues(result.error)}`);
+      }
+    }
+
+    if (totalInvalid === 0) {
+      return createSuccessOutput({
+        message: `${VALIDATION_TOOL_MESSAGES.VALIDATE_PASSED}: ${totalValid} valid`,
+        totalValid,
+      });
+    }
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.VALIDATE_ERROR,
+      `${totalInvalid} invalid of ${totalValid + totalInvalid} total\n${errors.join('\n')}`,
+    );
+  } catch (err) {
+    return createFailureOutput(VALIDATION_TOOL_ERROR_CODES.VALIDATE_ERROR, (err as Error).message);
+  }
+};
+
+/**
+ * validate:agent-skills handler — scans skill YAML files for required fields
+ */
+const validateAgentSkillsInProcess: InProcessToolFn = async (rawInput, context) => {
+  const parsedInput = VALIDATE_AGENT_SKILLS_INPUT_SCHEMA.safeParse(rawInput ?? {});
+  if (!parsedInput.success) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.INVALID_INPUT,
+      parsedInput.error.message,
+    );
+  }
+
+  try {
+    const projectRoot = resolveWorkspaceRoot(context);
+    const skillsDir = path.join(projectRoot, SKILLS_DIR_RELATIVE);
+
+    let skillFiles: string[];
+    try {
+      skillFiles = (await readdir(skillsDir)).filter(hasValidationExtension);
+    } catch {
+      return createSuccessOutput({ message: VALIDATION_TOOL_MESSAGES.NO_SKILLS_DIR, valid: true });
+    }
+
+    if (parsedInput.data.skill) {
+      skillFiles = skillFiles.filter((f) => f.includes(parsedInput.data.skill as string));
+    }
+
+    const issues: string[] = [];
+    for (const file of skillFiles) {
+      const content = await readFile(path.join(skillsDir, file), UTF8_ENCODING);
+      if (content.trim().length === 0) {
+        issues.push(`${file}: ${VALIDATION_TOOL_MESSAGES.EMPTY_FILE}`);
+      }
+    }
+
+    if (issues.length > 0) {
+      return createFailureOutput(
+        VALIDATION_TOOL_ERROR_CODES.VALIDATE_AGENT_SKILLS_ERROR,
+        `${VALIDATION_TOOL_MESSAGES.AGENT_SKILLS_FAILED}:\n${issues.join('\n')}`,
+      );
+    }
+    return createSuccessOutput({
+      message: `${VALIDATION_TOOL_MESSAGES.AGENT_SKILLS_VALID_PREFIX} ${skillFiles.length} ${VALIDATION_TOOL_MESSAGES.AGENT_SKILLS_VALID_SUFFIX}`,
+      valid: true,
+      count: skillFiles.length,
+    });
+  } catch (err) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.VALIDATE_AGENT_SKILLS_ERROR,
+      (err as Error).message,
+    );
+  }
+};
+
+/**
+ * validate:agent-sync handler — checks agent config files are in sync
+ */
+const validateAgentSyncInProcess: InProcessToolFn = async (_rawInput, context) => {
+  try {
+    const projectRoot = resolveWorkspaceRoot(context);
+    const agentsDir = path.join(projectRoot, AGENTS_DIR_RELATIVE);
+
+    let agentFiles: string[];
+    try {
+      agentFiles = (await readdir(agentsDir)).filter(hasValidationExtension);
+    } catch {
+      return createSuccessOutput({ message: VALIDATION_TOOL_MESSAGES.NO_AGENTS_DIR, valid: true });
+    }
+
+    const issues: string[] = [];
+    for (const file of agentFiles) {
+      const content = await readFile(path.join(agentsDir, file), UTF8_ENCODING);
+      if (content.trim().length === 0) {
+        issues.push(`${file}: ${VALIDATION_TOOL_MESSAGES.EMPTY_AGENT_CONFIG}`);
+      }
+    }
+
+    if (issues.length > 0) {
+      return createFailureOutput(
+        VALIDATION_TOOL_ERROR_CODES.VALIDATE_AGENT_SYNC_ERROR,
+        `${VALIDATION_TOOL_MESSAGES.AGENT_SYNC_FAILED}:\n${issues.join('\n')}`,
+      );
+    }
+    return createSuccessOutput({
+      message: `${VALIDATION_TOOL_MESSAGES.AGENT_SYNC_VALID_PREFIX} ${agentFiles.length} ${VALIDATION_TOOL_MESSAGES.AGENT_SYNC_VALID_SUFFIX}`,
+      valid: true,
+      count: agentFiles.length,
+    });
+  } catch (err) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.VALIDATE_AGENT_SYNC_ERROR,
+      (err as Error).message,
+    );
+  }
+};
+
+/**
+ * validate:backlog-sync handler — delegates to @lumenflow/core validateBacklogSync
+ */
+const validateBacklogSyncInProcess: InProcessToolFn = async (_rawInput, context) => {
+  try {
+    const core = await getCoreLazy();
+    const projectRoot = resolveWorkspaceRoot(context);
+    const config = core.getConfig({ projectRoot });
+    const backlogFilePath = path.join(projectRoot, config.directories.backlogPath);
+
+    const result = core.validateBacklogSync(backlogFilePath);
+    if (result.valid) {
+      return createSuccessOutput({
+        message: VALIDATION_TOOL_MESSAGES.BACKLOG_SYNC_VALID,
+        ...result,
+      });
+    }
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.VALIDATE_BACKLOG_SYNC_ERROR,
+      result.errors?.join('\n') ?? VALIDATION_TOOL_MESSAGES.BACKLOG_SYNC_FAILED,
+    );
+  } catch (err) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.VALIDATE_BACKLOG_SYNC_ERROR,
+      (err as Error).message,
+    );
+  }
+};
+
+/**
+ * validate:skills-spec handler — validates skills specification YAML files
+ */
+const validateSkillsSpecInProcess: InProcessToolFn = async (_rawInput, context) => {
+  try {
+    const projectRoot = resolveWorkspaceRoot(context);
+    const skillsDir = path.join(projectRoot, SKILLS_DIR_RELATIVE);
+
+    let skillFiles: string[];
+    try {
+      skillFiles = (await readdir(skillsDir)).filter(hasValidationExtension);
+    } catch {
+      return createSuccessOutput({ message: VALIDATION_TOOL_MESSAGES.NO_SKILLS_DIR, valid: true });
+    }
+
+    const issues: string[] = [];
+    for (const file of skillFiles) {
+      const filePath = path.join(skillsDir, file);
+      const fileStat = await stat(filePath);
+      if (fileStat.size === 0) {
+        issues.push(`${file}: ${VALIDATION_TOOL_MESSAGES.EMPTY_SKILLS_SPEC}`);
+      }
+    }
+
+    if (issues.length > 0) {
+      return createFailureOutput(
+        VALIDATION_TOOL_ERROR_CODES.VALIDATE_SKILLS_SPEC_ERROR,
+        `${VALIDATION_TOOL_MESSAGES.SKILLS_SPEC_FAILED}:\n${issues.join('\n')}`,
+      );
+    }
+    return createSuccessOutput({
+      message: `${VALIDATION_TOOL_MESSAGES.SKILLS_SPEC_VALID_PREFIX} ${skillFiles.length} ${VALIDATION_TOOL_MESSAGES.SKILLS_SPEC_VALID_SUFFIX}`,
+      valid: true,
+      count: skillFiles.length,
+    });
+  } catch (err) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.VALIDATE_SKILLS_SPEC_ERROR,
+      (err as Error).message,
+    );
+  }
+};
+
+/**
+ * lane:health handler — delegates to @lumenflow/core lane checker
+ */
+const laneHealthInProcess: InProcessToolFn = async (rawInput, context) => {
+  const parsedInput = LANE_HEALTH_INPUT_SCHEMA.safeParse(rawInput ?? {});
+  if (!parsedInput.success) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.INVALID_INPUT,
+      parsedInput.error.message,
+    );
+  }
+
+  try {
+    const core = await getCoreLazy();
+    const projectRoot = resolveWorkspaceRoot(context);
+    const config = core.getConfig({ projectRoot });
+    const laneConfigMap = resolveLanePolicyConfig(config);
+    const allWUs = await core.listWUs({ projectRoot });
+
+    const laneOccupancy: Record<string, { in_progress: string[]; blocked: string[] }> = {};
+    for (const wu of allWUs) {
+      if (!wu.lane) continue;
+      const existing = laneOccupancy[wu.lane];
+      const entry = existing ?? { in_progress: [], blocked: [] };
+      if (!existing) {
+        laneOccupancy[wu.lane] = entry;
+      }
+      if (wu.status === STATUS_IN_PROGRESS) {
+        entry.in_progress.push(wu.id);
+      } else if (wu.status === STATUS_BLOCKED) {
+        entry.blocked.push(wu.id);
+      }
+    }
+
+    const overlaps: string[] = [];
+    const lanes = Object.keys(laneConfigMap);
+    for (const lane of lanes) {
+      const occupancy = laneOccupancy[lane];
+      const lanePolicy = laneConfigMap[lane];
+      if (!occupancy || !lanePolicy) continue;
+      if (
+        lanePolicy.lockPolicy !== LOCK_POLICY_NONE &&
+        occupancy.in_progress.length > lanePolicy.wipLimit
+      ) {
+        overlaps.push(
+          `${lane}: ${occupancy.in_progress.length} in-progress (limit ${lanePolicy.wipLimit})`,
+        );
+      }
+    }
+
+    const healthResult = {
+      lanes: Object.keys(laneConfigMap).length,
+      occupied: Object.keys(laneOccupancy).length,
+      overlaps,
+      lane_details: Object.entries(laneConfigMap).map(([name, cfg]) => ({
+        name,
+        policy: cfg.lockPolicy,
+        wip_limit: cfg.wipLimit,
+        in_progress: laneOccupancy[name]?.in_progress.length ?? 0,
+        blocked: laneOccupancy[name]?.blocked.length ?? 0,
+      })),
+    };
+
+    if (overlaps.length > 0) {
+      return createFailureOutput(
+        VALIDATION_TOOL_ERROR_CODES.LANE_HEALTH_ERROR,
+        overlaps.join('\n'),
+      );
+    }
+    return createSuccessOutput({
+      message: VALIDATION_TOOL_MESSAGES.LANE_HEALTH_PASSED,
+      ...healthResult,
+    });
+  } catch (err) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.LANE_HEALTH_ERROR,
+      (err as Error).message,
+    );
+  }
+};
+
+/**
+ * lane:suggest handler — generates lane suggestions from codebase context
+ */
+const laneSuggestInProcess: InProcessToolFn = async (rawInput, context) => {
+  const parsedInput = LANE_SUGGEST_INPUT_SCHEMA.safeParse(rawInput ?? {});
+  if (!parsedInput.success) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.INVALID_INPUT,
+      parsedInput.error.message,
+    );
+  }
+
+  try {
+    const core = await getCoreLazy();
+    const projectRoot = resolveWorkspaceRoot(context);
+    const config = core.getConfig({ projectRoot });
+    const laneConfigMap = resolveLanePolicyConfig(config);
+    const existingLanes = Object.keys(laneConfigMap);
+
+    const suggestions = core.getDefaultSuggestions({
+      existingLanes,
+      directoryStructure: [],
+      packageNames: [],
+      readme: null,
+      packageJson: null,
+      hasDocsDir: false,
+      hasAppsDir: false,
+      hasPackagesDir: false,
+      isMonorepo: false,
+    });
+
+    return createSuccessOutput({
+      message: `${VALIDATION_TOOL_MESSAGES.LANE_SUGGEST_GENERATED_PREFIX} ${suggestions.length} ${VALIDATION_TOOL_MESSAGES.LANE_SUGGEST_GENERATED_SUFFIX}`,
+      suggestions,
+      existing_lanes: existingLanes,
+    });
+  } catch (err) {
+    return createFailureOutput(
+      VALIDATION_TOOL_ERROR_CODES.LANE_SUGGEST_ERROR,
+      (err as Error).message,
+    );
+  }
+};
+
 const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolHandler>([
   [
     IN_PROCESS_TOOL_NAMES.WU_STATUS,
@@ -2224,6 +2689,71 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       description: 'List WUs via in-process state store + YAML merge',
       inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
       fn: wuListHandler,
+    },
+  ],
+  // WU-1802: Validation/Lane tool registrations
+  [
+    CliCommands.VALIDATE,
+    {
+      description: 'Validate WU YAML files via in-process core handlers',
+      inputSchema: VALIDATE_INPUT_SCHEMA,
+      fn: validateInProcess,
+    },
+  ],
+  [
+    CliCommands.VALIDATE_AGENT_SKILLS,
+    {
+      description: 'Validate agent skill definitions via in-process handler',
+      inputSchema: VALIDATE_AGENT_SKILLS_INPUT_SCHEMA,
+      fn: validateAgentSkillsInProcess,
+    },
+  ],
+  [
+    CliCommands.VALIDATE_AGENT_SYNC,
+    {
+      description: 'Validate agent synchronization state via in-process handler',
+      inputSchema: VALIDATE_AGENT_SYNC_INPUT_SCHEMA,
+      fn: validateAgentSyncInProcess,
+    },
+  ],
+  [
+    CliCommands.VALIDATE_BACKLOG_SYNC,
+    {
+      description: 'Validate backlog sync via in-process core handler',
+      inputSchema: VALIDATE_BACKLOG_SYNC_INPUT_SCHEMA,
+      fn: validateBacklogSyncInProcess,
+    },
+  ],
+  [
+    CliCommands.VALIDATE_SKILLS_SPEC,
+    {
+      description: 'Validate skills specification via in-process handler',
+      inputSchema: VALIDATE_SKILLS_SPEC_INPUT_SCHEMA,
+      fn: validateSkillsSpecInProcess,
+    },
+  ],
+  [
+    'lumenflow:validate',
+    {
+      description: 'Run validation checks via in-process handler (alias)',
+      inputSchema: VALIDATE_INPUT_SCHEMA,
+      fn: validateInProcess,
+    },
+  ],
+  [
+    CliCommands.LANE_HEALTH,
+    {
+      description: 'Check lane configuration health via in-process handler',
+      inputSchema: LANE_HEALTH_INPUT_SCHEMA,
+      fn: laneHealthInProcess,
+    },
+  ],
+  [
+    CliCommands.LANE_SUGGEST,
+    {
+      description: 'Generate lane suggestions via in-process handler',
+      inputSchema: LANE_SUGGEST_INPUT_SCHEMA,
+      fn: laneSuggestInProcess,
     },
   ],
 ]);
