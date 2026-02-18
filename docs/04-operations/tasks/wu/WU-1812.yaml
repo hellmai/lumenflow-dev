@@ -2,7 +2,7 @@ id: WU-1812
 title: Migrate agent, setup, plan, docs, and sync tools to runtime pack execution
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -57,3 +57,6 @@ session_id: c9668d19-6ba7-49bd-9bdf-51be19642544
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T19:29:06.359Z
+locked: true
+completed_at: 2026-02-18T19:44:41.928Z
+completed: 2026-02-18

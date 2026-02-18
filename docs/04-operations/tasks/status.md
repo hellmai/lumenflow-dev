@@ -5,7 +5,6 @@ _Last updated: 2026-02-18_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1812 — Migrate agent, setup, plan, docs, and sync tools to runtime pack execution](wu/WU-1812.yaml)
 
 ## Completed
 
@@ -772,3 +771,4 @@ _Last updated: 2026-02-18_
 - [WU-1823 — Create pack:scaffold CLI command for new pack authoring](wu/WU-1823.yaml) — 2026-02-18
 - [WU-1820 — Build live task dashboard page with real-time event streaming](wu/WU-1820.yaml) — 2026-02-18
 - [WU-1811 — Migrate memory tools to runtime pack execution](wu/WU-1811.yaml) — 2026-02-18
+- [WU-1812 — Migrate agent, setup, plan, docs, and sync tools to runtime pack execution](wu/WU-1812.yaml) — 2026-02-18
