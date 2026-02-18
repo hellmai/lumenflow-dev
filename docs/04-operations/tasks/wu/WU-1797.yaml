@@ -6,18 +6,20 @@ status: ready
 priority: P1
 created: 2026-02-18
 code_paths:
-  - packages/@lumenflow/packs/software-delivery/tools/types.ts
-  - packages/@lumenflow/packs/software-delivery/tools/index.ts
-  - packages/@lumenflow/packs/software-delivery/tool-impl/index.ts
-  - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
+  - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
   - packages/@lumenflow/mcp/src/tools/runtime-task-tools.ts
+  - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
 tests:
   manual:
-    - Execute a runtime-managed WU metadata operation and verify tool_call_started/tool_call_finished receipts include scoped capability metadata.
+    - Execute a runtime-managed WU metadata operation and verify
+      tool_call_started/tool_call_finished receipts include scoped capability metadata.
+    - Resolver returns in-process handler for registered tool and subprocess handler for
+      unregistered tool
   unit:
     - packages/@lumenflow/packs/software-delivery/__tests__/extensions.test.ts
     - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
     - packages/@lumenflow/mcp/src/__tests__/runtime-task-tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1797.done
@@ -29,7 +31,8 @@ blocked_by:
 spec_refs:
   - /home/USER/.claude/plans/zesty-jumping-pixel.md
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: 'Rewritten to adaptive plan A2. Spec ref: adaptive-finding-adleman.md. Key:
+  toolCapabilityResolver injection at kernel-runtime.ts:116.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -38,8 +41,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Phase 3 requires software-delivery workflow operations to be expressed as pack-composed runtime tools. Problem: WU YAML lifecycle operations are still handled primarily by imperative CLI pathways rather than runtime-managed pack execution. Solution: add pack tool descriptors and runtime integration for WU metadata lifecycle operations so they execute through ToolHost with receipts and scope enforcement.'
+description: 'Context: Phase 3 uses the pack tool system where tools declared in manifest are loaded
+  by PackLoader and dispatched via ToolHost. Problem: the default toolCapabilityResolver uses
+  subprocess handlers constrained by the import boundary (node: + @lumenflow/kernel only), but tool
+  handlers need access to @lumenflow/core, @lumenflow/memory, etc. Solution: create a custom
+  RuntimeToolCapabilityResolver in @lumenflow/mcp that provides in-process handlers delegating to
+  existing CLI/core logic, injected via the toolCapabilityResolver option on
+  initializeKernelRuntime().'
 acceptance:
-  - Software-delivery pack exposes runtime tool descriptors for WU metadata lifecycle operations with explicit permission and scope requirements.
-  - KernelRuntime can register and execute at least one WU metadata lifecycle operation through pack tool execution with evidence receipts.
-  - At least one production surface command path routes a WU metadata lifecycle operation through the runtime-managed pack tool path.
+  - New runtime-tool-resolver.ts module in packages/@lumenflow/mcp/src/ exports
+    packToolCapabilityResolver
+  - packToolCapabilityResolver returns in-process handlers for registered tools and falls back to
+    defaultRuntimeToolCapabilityResolver for unregistered tools
+  - getRuntimeForWorkspace() in runtime-task-tools.ts passes custom resolver to
+    initializeKernelRuntime()
+  - Runtime initializes successfully with custom resolver wired in
