@@ -7,20 +7,20 @@ priority: P2
 created: 2026-02-18
 code_paths:
   - packages/@lumenflow/packs/software-delivery/tool-impl/worktree-tools.ts
-  - packages/@lumenflow/kernel/src/scope/scope-intersection.ts
-  - packages/@lumenflow/kernel/src/runtime/stdio-handshake.ts
-  - packages/@lumenflow/kernel/src/config/workspace-config.ts
+  - packages/@lumenflow/kernel/src/tool-host/scope-intersection.ts
+  - packages/@lumenflow/mcp/src/server.ts
+  - packages/@lumenflow/control-plane-sdk/src/workspace-config.ts
   - packages/@lumenflow/runtime/src/session/session-manager.ts
 tests:
   manual:
     - Run targeted coverage for touched modules and verify at least 90% line coverage plus green
       unit tests for all added cases.
   unit:
-    - packages/@lumenflow/packs/software-delivery/tests/worktree-tools.test.ts
-    - packages/@lumenflow/kernel/tests/scope-intersection.test.ts
-    - packages/@lumenflow/kernel/tests/stdio-handshake.test.ts
-    - packages/@lumenflow/kernel/tests/workspace-config.test.ts
-    - packages/@lumenflow/runtime/tests/session-manager.test.ts
+    - packages/@lumenflow/packs/software-delivery/__tests__/worktree-tools.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/scope-intersection.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/stdio-handshake.test.ts
+    - packages/@lumenflow/control-plane-sdk/__tests__/workspace-config.test.ts
+    - packages/@lumenflow/runtime/__tests__/session-manager.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1849.done
@@ -30,10 +30,17 @@ phase: 3
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-18T12:44:21.342Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1849
+session_id: 24947d08-d3f5-4b32-ba05-f304014eb650
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T12:44:21.348Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -50,11 +57,3 @@ acceptance:
   - session-manager tests cover closeSession cleanup and concurrent session edge cases
   - All new tests follow existing test patterns (vitest, describe/it blocks)
   - Coverage for these modules reaches at least 90 percent line coverage
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1849
-claimed_at: 2026-02-18T12:44:21.342Z
-baseline_main_sha: 4796618b4c20be54b6d24a1af736194ebd28dad2
-session_id: 24947d08-d3f5-4b32-ba05-f304014eb650
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-18T12:44:21.348Z
