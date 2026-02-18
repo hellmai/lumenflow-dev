@@ -5,7 +5,6 @@ _Last updated: 2026-02-18_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1859 — INIT-030 Review Fix A: executeViaPack policy bypass security fix](wu/WU-1859.yaml)
 - [WU-1860 — INIT-030 Review Fix B: kernel durability bugs (lock leak, clock skew, partial writes)](wu/WU-1860.yaml)
 - [WU-1840 — Build pack marketplace page with browse, search, and install flow](wu/WU-1840.yaml)
 - [WU-1842 — Create community landing page with get-started path and marketplace links](wu/WU-1842.yaml)
@@ -796,3 +795,4 @@ _Last updated: 2026-02-18_
 - [WU-1839 — Create pack:search CLI command for registry discovery](wu/WU-1839.yaml) — 2026-02-18
 - [WU-1835 — Build human-in-the-loop approval UI for policy approval_required decisions](wu/WU-1835.yaml) — 2026-02-18
 - [WU-1836 — Build pack registry API with Vercel Edge Functions](wu/WU-1836.yaml) — 2026-02-18
+- [WU-1859 — INIT-030 Review Fix A: executeViaPack policy bypass security fix](wu/WU-1859.yaml) — 2026-02-18

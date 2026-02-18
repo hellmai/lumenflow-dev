@@ -1658,5 +1658,6 @@
 {"type":"claim","wuId":"WU-1859","timestamp":"2026-02-18T22:10:10.962Z","lane":"Framework: MCP","title":"INIT-030 Review Fix A: executeViaPack policy bypass security fix"}
 {"type":"claim","wuId":"WU-1860","timestamp":"2026-02-18T22:10:58.326Z","lane":"Framework: Core Lifecycle","title":"INIT-030 Review Fix B: kernel durability bugs (lock leak, clock skew, partial writes)"}
 {"type":"complete","wuId":"WU-1836","timestamp":"2026-02-18T22:15:17.687Z"}
-{"type":"claim","wuId":"WU-1840","lane":"Content: Site Comms","title":"Build pack marketplace page with browse, search, and install flow","timestamp":"2026-02-18T22:19:56.159Z"}
-{"type":"claim","wuId":"WU-1842","lane":"Content: Site Comms","title":"Create community landing page with get-started path and marketplace links","timestamp":"2026-02-18T22:20:38.025Z"}
+{"type":"claim","wuId":"WU-1840","timestamp":"2026-02-18T22:19:56.159Z","lane":"Content: Site Comms","title":"Build pack marketplace page with browse, search, and install flow"}
+{"type":"claim","wuId":"WU-1842","timestamp":"2026-02-18T22:20:38.025Z","lane":"Content: Site Comms","title":"Create community landing page with get-started path and marketplace links"}
+{"type":"complete","wuId":"WU-1859","timestamp":"2026-02-18T22:23:51.258Z"}

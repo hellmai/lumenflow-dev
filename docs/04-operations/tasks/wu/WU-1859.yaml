@@ -2,7 +2,7 @@ id: WU-1859
 title: 'INIT-030 Review Fix A: executeViaPack policy bypass security fix'
 lane: 'Framework: MCP'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -19,12 +19,11 @@ dependencies: []
 initiative: INIT-030
 phase: 5
 risks: []
-notes: >-
-  Added NON_FALLBACK_ERROR_CODES set (POLICY_DENIED, SCOPE_DENIED, SPEC_TAMPERED) to
-  executeViaPack. These kernel enforcement errors are returned directly without CLI
-  fallback. TOOL_NOT_FOUND and runtime init failures still trigger fallback for backward
-  compat. DEFAULT_MAINTENANCE_SCOPE narrowed from wildcard write to read-only.
-  runtime-cache.ts did not require changes -- removed from code_paths.
+notes: Added NON_FALLBACK_ERROR_CODES set (POLICY_DENIED, SCOPE_DENIED, SPEC_TAMPERED) to
+  executeViaPack. These kernel enforcement errors are returned directly without CLI fallback.
+  TOOL_NOT_FOUND and runtime init failures still trigger fallback for backward compat.
+  DEFAULT_MAINTENANCE_SCOPE narrowed from wildcard write to read-only. runtime-cache.ts did not
+  require changes -- removed from code_paths.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -51,3 +50,6 @@ session_id: 992ec8f4-036f-445c-853c-97fcabb1e7c4
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T22:10:10.929Z
+locked: true
+completed_at: 2026-02-18T22:23:46.535Z
+completed: 2026-02-18
