@@ -5,7 +5,6 @@ _Last updated: 2026-02-18_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1820 — Build live task dashboard page with real-time event streaming](wu/WU-1820.yaml)
 - [WU-1811 — Migrate memory tools to runtime pack execution](wu/WU-1811.yaml)
 
 ## Completed
@@ -771,3 +770,4 @@ _Last updated: 2026-02-18_
 - [WU-1826 — Extend PackLoader with git-based pack resolution](wu/WU-1826.yaml) — 2026-02-18
 - [WU-1830 — Implement AG-UI RunAgent HTTP endpoint in HTTP surface](wu/WU-1830.yaml) — 2026-02-18
 - [WU-1823 — Create pack:scaffold CLI command for new pack authoring](wu/WU-1823.yaml) — 2026-02-18
+- [WU-1820 — Build live task dashboard page with real-time event streaming](wu/WU-1820.yaml) — 2026-02-18

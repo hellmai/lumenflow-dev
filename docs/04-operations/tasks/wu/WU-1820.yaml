@@ -2,7 +2,7 @@ id: WU-1820
 title: Build live task dashboard page with real-time event streaming
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -50,3 +50,6 @@ session_id: 425f84d9-5410-43ac-b492-7254feecba51
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T19:07:57.221Z
+locked: true
+completed_at: 2026-02-18T19:24:40.117Z
+completed: 2026-02-18

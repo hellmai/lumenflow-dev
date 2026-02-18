@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1858 — Fix ag-ui-adapter typecheck error from tool_call_finished type conflict](wu/WU-1858.yaml) — Content: Site Comms
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
@@ -47,11 +46,11 @@ sections:
 - [WU-1840 — Build pack marketplace page with browse, search, and install flow](wu/WU-1840.yaml) — Content: Site Comms
 - [WU-1841 — Wire HTTP surface to push kernel events to control plane](wu/WU-1841.yaml) — Framework: Core Lifecycle
 - [WU-1842 — Create community landing page with get-started path and marketplace links](wu/WU-1842.yaml) — Content: Site Comms
+- [WU-1858 — Fix ag-ui-adapter typecheck error from tool_call_finished type conflict](wu/WU-1858.yaml) — Content: Site Comms
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1820 — Build live task dashboard page with real-time event streaming](wu/WU-1820.yaml) — Content: Site Comms
 - [WU-1811 — Migrate memory tools to runtime pack execution](wu/WU-1811.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
@@ -821,6 +820,7 @@ sections:
 - [WU-1826 — Extend PackLoader with git-based pack resolution](wu/WU-1826.yaml)
 - [WU-1830 — Implement AG-UI RunAgent HTTP endpoint in HTTP surface](wu/WU-1830.yaml)
 - [WU-1823 — Create pack:scaffold CLI command for new pack authoring](wu/WU-1823.yaml)
+- [WU-1820 — Build live task dashboard page with real-time event streaming](wu/WU-1820.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
