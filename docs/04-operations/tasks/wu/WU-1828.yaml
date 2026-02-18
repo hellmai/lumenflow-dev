@@ -1,0 +1,37 @@
+id: WU-1828
+title: 'Write pack authoring guide: Create Your First Pack in 10 Minutes'
+lane: 'Content: Specs Governance'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-18
+code_paths:
+  - docs/
+tests:
+  manual:
+    - Read guide, follow steps, verify a new pack can be created
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1828.done
+dependencies: []
+initiative: INIT-031
+phase: 2
+spec_refs:
+  - .claude/plans/zazzy-growing-cook.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Documentation page covering manifest schema, tool implementation pattern, import boundaries, scopes and permissions, policies, and integrity. Uses the git:status tool from software-delivery pack as a worked example. Published as Starlight page in apps/docs/.
+acceptance:
+  - Guide covers manifest schema with examples
+  - Guide covers tool implementation pattern
+  - Guide explains import boundary constraints
+  - Worked example using git:status tool
