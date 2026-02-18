@@ -1528,4 +1528,5 @@
 {"type":"complete","wuId":"WU-1795","timestamp":"2026-02-17T23:10:33.441Z"}
 {"type":"claim","wuId":"WU-1794","timestamp":"2026-02-17T23:11:36.742Z","lane":"Content: Specs Governance","title":"Phase 4 governance: publish runCliCommand deprecation timeline and closure criteria"}
 {"type":"complete","wuId":"WU-1794","timestamp":"2026-02-17T23:14:50.633Z"}
-{"type":"claim","wuId":"WU-1796","lane":"Framework: Core Lifecycle","title":"Phase 3 pack workflow: route gate policy evaluation through Kernel PolicyEngine","timestamp":"2026-02-18T08:43:05.347Z"}
+{"type":"claim","wuId":"WU-1796","timestamp":"2026-02-18T08:43:05.347Z","lane":"Framework: Core Lifecycle","title":"Phase 3 pack workflow: route gate policy evaluation through Kernel PolicyEngine"}
+{"type":"complete","wuId":"WU-1796","timestamp":"2026-02-18T09:02:41.973Z"}
