@@ -2,7 +2,7 @@ id: WU-1871
 title: lumenflow workspace:init interactive wizard generating workspace.yaml
 lane: 'Framework: CLI Orchestration'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -53,3 +53,6 @@ acceptance:
   - Generated workspace.yaml validates against WorkspaceSpecSchema
   - Generated file includes helpful YAML comments explaining each section
   - Uses existing init-scaffolding.ts template infrastructure (processTemplate, createFile)
+locked: true
+completed_at: 2026-02-18T23:32:06.919Z
+completed: 2026-02-18
