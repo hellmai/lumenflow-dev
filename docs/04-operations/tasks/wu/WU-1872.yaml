@@ -8,6 +8,9 @@ created: 2026-02-18
 code_paths:
   - apps/web/app/api/tasks/[taskId]/evidence/route.ts
   - apps/web/src/components/evidence-viewer.tsx
+  - apps/web/src/components/evidence-page-client.tsx
+  - apps/web/src/components/policy-audit-tab.tsx
+  - apps/web/src/components/task-dashboard.tsx
   - apps/web/app/evidence/page.tsx
 tests:
   manual:
@@ -15,7 +18,9 @@ tests:
     - Verify orphaned tool starts show crashed badge
     - Verify Policy Audit tab lists real policy decisions
   unit:
-    - apps/web/src/components/__tests__/evidence-viewer.test.tsx
+    - apps/web/__tests__/evidence-viewer.test.tsx
+    - apps/web/__tests__/evidence-api-route.test.ts
+    - apps/web/__tests__/policy-audit-tab.test.tsx
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1872.done
