@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1876 — Evidence export endpoint with CSV and JSON format support](wu/WU-1876.yaml) — Content: Site Comms
 - [WU-1875 — pack:install --source registry HTTP fetch path](wu/WU-1875.yaml) — Framework: CLI Orchestration
 - [WU-1874 — infra-ops pack manifest with tools, policies, and task schema](wu/WU-1874.yaml) — Framework: Core Lifecycle
 - [WU-1873 — Workspace selector with recent-workspaces history](wu/WU-1873.yaml) — Content: Site Comms
