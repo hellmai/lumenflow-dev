@@ -7,15 +7,12 @@ priority: P1
 created: 2026-02-18
 code_paths:
   - packages/@lumenflow/kernel/src/shared-constants.ts
-  - packages/@lumenflow/kernel/src/event-kinds.ts
   - packages/@lumenflow/kernel/src/kernel.schemas.ts
   - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
   - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
   - packages/@lumenflow/kernel/src/tool-host/builtins/capabilities.ts
   - packages/@lumenflow/kernel/src/evidence/evidence-store.ts
   - packages/@lumenflow/kernel/src/pack/pack-loader.ts
-  - packages/@lumenflow/kernel/src/policy/policy-engine.ts
-  - packages/@lumenflow/kernel/src/index.ts
 tests:
   manual:
     - Verify a full task lifecycle emits the same event/error identifiers before and after refactor
