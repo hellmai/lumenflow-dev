@@ -42,6 +42,7 @@ export const AG_UI_EVENT_TYPES = {
   GOVERNANCE_DECISION: 'GOVERNANCE_DECISION',
   STATE_SNAPSHOT: 'StateSnapshot',
   STATE_DELTA: 'StateDelta',
+  MESSAGES_SNAPSHOT: 'MessagesSnapshot',
 } as const;
 
 type AgUiEventType = (typeof AG_UI_EVENT_TYPES)[keyof typeof AG_UI_EVENT_TYPES];
@@ -308,4 +309,37 @@ export function createStateSyncEvents(
   };
 
   return [snapshotEvent, deltaEvent];
+}
+
+function isEventForTask(event: KernelEvent, taskId: string): boolean {
+  if (!hasTaskId(event)) {
+    // Global events (workspace_updated, workspace_warning, spec_tampered) are
+    // included because they affect all tasks.
+    return true;
+  }
+  return event.task_id === taskId;
+}
+
+export function createMessagesSnapshot(
+  taskId: string,
+  kernelEvents: KernelEvent[],
+  timestamp: string,
+): AgUiEvent {
+  const relevantEvents = kernelEvents.filter((event) => isEventForTask(event, taskId));
+
+  const sorted = [...relevantEvents].sort((left, right) => {
+    return left.timestamp < right.timestamp ? -1 : left.timestamp > right.timestamp ? 1 : 0;
+  });
+
+  return {
+    type: AG_UI_EVENT_TYPES.MESSAGES_SNAPSHOT,
+    timestamp,
+    task_id: taskId,
+    payload: {
+      messages: sorted,
+    },
+    metadata: {
+      source: SOURCE.STATE_SYNC,
+    },
+  };
 }
