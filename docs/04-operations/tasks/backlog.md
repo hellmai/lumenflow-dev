@@ -27,7 +27,6 @@ sections:
 - [WU-1800 — Migrate git tools (git_status/diff/log/branch) to runtime pack execution](wu/WU-1800.yaml) — Framework: Core Lifecycle
 - [WU-1801 — Migrate state/signal tools to runtime pack execution](wu/WU-1801.yaml) — Framework: Core Lifecycle
 - [WU-1802 — Migrate validation and lane tools to runtime pack execution](wu/WU-1802.yaml) — Framework: Core Lifecycle
-- [WU-1803 — Migrate flow, metrics, and context tools to runtime pack execution](wu/WU-1803.yaml) — Framework: Core Lifecycle
 - [WU-1804 — Migrate orchestration query tools to runtime pack execution](wu/WU-1804.yaml) — Framework: Core Lifecycle
 - [WU-1805 — Migrate WU read/query tools to runtime pack execution](wu/WU-1805.yaml) — Framework: Core Lifecycle
 - [WU-1806 — Migrate WU creation and claiming tools to runtime pack execution](wu/WU-1806.yaml) — Framework: Core Lifecycle
@@ -48,6 +47,7 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1799 — Migrate file tools (file_read/write/edit/delete) to runtime pack execution](wu/WU-1799.yaml) — Framework: Core Lifecycle
+- [WU-1803 — Migrate flow, metrics, and context tools to runtime pack execution](wu/WU-1803.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
