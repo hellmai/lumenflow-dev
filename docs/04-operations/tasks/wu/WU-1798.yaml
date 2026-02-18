@@ -1,0 +1,40 @@
+id: WU-1798
+title: Add execution-context builder and executeViaPack migration helper
+lane: 'Framework: Core Lifecycle'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-18
+code_paths:
+  - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
+  - packages/@lumenflow/mcp/src/tools-shared.ts
+tests:
+  manual:
+    - Context builder produces valid ExecutionContext; fallback works when runtime unavailable
+  unit:
+    - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1798.done
+dependencies: []
+initiative: INIT-030
+phase: 3
+blocked_by:
+  - WU-1797
+spec_refs:
+  - /home/tom/.claude/plans/adaptive-finding-adleman.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: MCP tools need to call runtime.executeTool() which requires a valid ExecutionContext. Problem: many MCP tools execute outside any task context (e.g., lane_health, validate), so there is no natural run_id/session_id/task_id. Also need a standard migration helper for the strangler-fig pattern. Solution: create an execution context builder that synthesizes maintenance contexts, and an executeViaPack helper that tries the runtime path first with CLI fallback.'
+acceptance:
+  - Execution context builder produces valid ExecutionContext for both task-scoped and maintenance (non-task) invocations
+  - executeViaPack(toolName, input, options) helper tries runtime path first, falls back to runCliCommand on error
+  - Helper is importable from @lumenflow/mcp for use by all domain tool files
