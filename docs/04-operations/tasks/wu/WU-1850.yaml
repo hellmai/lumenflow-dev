@@ -1,0 +1,39 @@
+id: WU-1850
+title: Fix surfaces relative imports and extract daemon handler registry
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-18
+code_paths:
+  - packages/@lumenflow/surfaces/cli/gates.ts
+  - packages/@lumenflow/surfaces/cli/task-lifecycle.ts
+  - packages/@lumenflow/surfaces/cli/inspect.ts
+  - packages/@lumenflow/runtime/src/daemon/runtime-daemon.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/surfaces/tests/gates.test.ts
+    - packages/@lumenflow/runtime/tests/runtime-daemon.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1850.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Surfaces package uses relative path imports instead of @lumenflow/kernel package imports, violating hex architecture boundaries. Runtime daemon uses a 90-line if-else chain for request routing instead of a handler registry pattern.
+acceptance:
+  - All surfaces/cli/ files import from @lumenflow/kernel not relative paths
+  - runtime-daemon handleRequest uses a handler registry Map instead of if-else chain
+  - Handler registry is typed with RequestType to HandlerFn mapping
+  - No relative cross-package imports remain in surfaces or runtime packages
+  - All existing tests pass unchanged
+  - pnpm gates passes
