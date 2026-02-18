@@ -2,7 +2,7 @@ id: WU-1834
 title: Build policy decision overlay showing governance enforcement visually
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -31,8 +31,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: When a tool execution is denied by policy or scope, the web UI shows which policy denied it (policy_id, reason), the scope intersection that failed (requested vs allowed vs enforced), and a visual diff of what the agent wanted vs what governance permitted. This is the governance you can see differentiator.
+description: When a tool execution is denied by policy or scope, the web UI shows which policy
+  denied it (policy_id, reason), the scope intersection that failed (requested vs allowed vs
+  enforced), and a visual diff of what the agent wanted vs what governance permitted. This is the
+  governance you can see differentiator.
 acceptance:
   - Denied tool executions show policy_id and reason
   - Scope intersection visualized (requested vs allowed vs enforced)
   - Visual diff of attempted vs permitted actions
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1834
+claimed_at: 2026-02-18T21:49:11.018Z
+baseline_main_sha: 575bdf8ce22563461b263eb000c65c18688714df
+session_id: ce5a7451-4d7c-4b4a-9b8a-d878c432df2b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T21:49:11.022Z

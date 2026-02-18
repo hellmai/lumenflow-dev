@@ -6,6 +6,7 @@ _Last updated: 2026-02-18_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1858 — Fix ag-ui-adapter typecheck error from tool_call_finished type conflict](wu/WU-1858.yaml)
+- [WU-1834 — Build policy decision overlay showing governance enforcement visually](wu/WU-1834.yaml)
 
 ## Completed
 

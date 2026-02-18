@@ -1645,3 +1645,4 @@
 {"type":"claim","wuId":"WU-1858","timestamp":"2026-02-18T21:43:34.558Z","lane":"Content: Site Comms","title":"Fix ag-ui-adapter typecheck error from tool_call_finished type conflict"}
 {"type":"complete","wuId":"WU-1833","timestamp":"2026-02-18T21:44:53.585Z"}
 {"type":"complete","wuId":"WU-1838","timestamp":"2026-02-18T21:46:11.214Z"}
+{"type":"claim","wuId":"WU-1834","lane":"Content: Site Comms","title":"Build policy decision overlay showing governance enforcement visually","timestamp":"2026-02-18T21:49:11.055Z"}
