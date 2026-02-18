@@ -5,6 +5,7 @@
  * WU-1642: Extracted from tools.ts during domain decomposition.
  * WU-1426: Flow/Metrics tools: flow_bottlenecks, flow_report, metrics_snapshot
  * WU-1457: All flow/metrics commands use shared schemas
+ * WU-1803: Migrated from runCliCommand to executeViaPack (runtime pack execution)
  */
 
 import {
@@ -17,11 +18,8 @@ import {
   type ToolDefinition,
   ErrorCodes,
   CliArgs,
-  success,
-  error,
   buildMetricsArgs,
-  runCliCommand,
-  type CliRunnerOptions,
+  executeViaPack,
 } from '../tools-shared.js';
 
 /**
@@ -34,28 +32,20 @@ export const flowBottlenecksTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    // WU-1457: Use shared schema fields (limit, format match CLI flags)
     if (input.limit) args.push('--limit', String(input.limit));
     if (input.format) args.push('--format', input.format as string);
-    // WU-1452: flow:bottlenecks uses --format json, not --json
     if (input.json) args.push(...CliArgs.FORMAT_JSON);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('flow:bottlenecks', args, cliOptions);
+    const result = await executeViaPack('flow:bottlenecks', input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: 'flow:bottlenecks',
+        args,
+        errorCode: ErrorCodes.FLOW_BOTTLENECKS_ERROR,
+      },
+    });
 
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout || 'Bottleneck analysis complete' });
-      }
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'flow:bottlenecks failed',
-        ErrorCodes.FLOW_BOTTLENECKS_ERROR,
-      );
-    }
+    return result;
   },
 };
 
@@ -69,30 +59,22 @@ export const flowReportTool: ToolDefinition = {
 
   async execute(input, options) {
     const args: string[] = [];
-    // WU-1457: Use shared schema field names (start/end match CLI flags)
     if (input.start) args.push('--start', input.start as string);
     if (input.end) args.push('--end', input.end as string);
     if (input.days) args.push('--days', String(input.days));
-    // WU-1452: flow:report uses --format, not --json
     if (input.format) args.push('--format', input.format as string);
     if (input.json) args.push(...CliArgs.FORMAT_JSON);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('flow:report', args, cliOptions);
+    const result = await executeViaPack('flow:report', input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: 'flow:report',
+        args,
+        errorCode: ErrorCodes.FLOW_REPORT_ERROR,
+      },
+    });
 
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout || 'Flow report generated' });
-      }
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'flow:report failed',
-        ErrorCodes.FLOW_REPORT_ERROR,
-      );
-    }
+    return result;
   },
 };
 
@@ -104,26 +86,17 @@ export const metricsSnapshotTool: ToolDefinition = {
   description: 'Capture a snapshot of current LumenFlow metrics',
   inputSchema: metricsSnapshotSchema,
 
-  async execute(_input, options) {
-    // WU-1452: metrics:snapshot always outputs JSON (writes to file); no --json flag exists
-    const args: string[] = [];
+  async execute(input, options) {
+    const result = await executeViaPack('metrics:snapshot', input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: 'metrics:snapshot',
+        args: [],
+        errorCode: ErrorCodes.METRICS_SNAPSHOT_ERROR,
+      },
+    });
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('metrics:snapshot', args, cliOptions);
-
-    if (result.success) {
-      try {
-        const data = JSON.parse(result.stdout);
-        return success(data);
-      } catch {
-        return success({ message: result.stdout || 'Metrics snapshot captured' });
-      }
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'metrics:snapshot failed',
-        ErrorCodes.METRICS_SNAPSHOT_ERROR,
-      );
-    }
+    return result;
   },
 };
 
@@ -137,16 +110,17 @@ export const lumenflowMetricsTool: ToolDefinition = {
 
   async execute(input, options) {
     const args = buildMetricsArgs(input);
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('metrics', args, cliOptions);
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Metrics generated' });
-    }
-    return error(
-      result.stderr || result.error?.message || 'lumenflow:metrics failed',
-      ErrorCodes.LUMENFLOW_METRICS_ERROR,
-    );
+    const result = await executeViaPack('lumenflow:metrics', input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: 'metrics',
+        args,
+        errorCode: ErrorCodes.LUMENFLOW_METRICS_ERROR,
+      },
+    });
+
+    return result;
   },
 };
 
@@ -160,15 +134,16 @@ export const metricsTool: ToolDefinition = {
 
   async execute(input, options) {
     const args = buildMetricsArgs(input);
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand('metrics', args, cliOptions);
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Metrics generated' });
-    }
-    return error(
-      result.stderr || result.error?.message || 'metrics failed',
-      ErrorCodes.METRICS_ERROR,
-    );
+    const result = await executeViaPack('metrics', input, {
+      projectRoot: options?.projectRoot,
+      fallback: {
+        command: 'metrics',
+        args,
+        errorCode: ErrorCodes.METRICS_ERROR,
+      },
+    });
+
+    return result;
   },
 };

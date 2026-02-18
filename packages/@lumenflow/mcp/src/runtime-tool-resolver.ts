@@ -8,6 +8,14 @@ import {
   type RuntimeToolCapabilityResolver,
   type ToolOutput,
 } from '@lumenflow/kernel';
+import type {
+  DependencyGraph as MetricsDependencyGraph,
+  GateTelemetryEvent,
+  LLMTelemetryEvent,
+  MetricsSnapshotType,
+  WUMetrics,
+} from '@lumenflow/metrics';
+import type { ListWUsOptions } from '@lumenflow/core';
 import { z } from 'zod';
 
 const DEFAULT_IN_PROCESS_INPUT_SCHEMA = z.record(z.string(), z.unknown());
@@ -112,6 +120,225 @@ const FILE_DELETE_OUTPUT_SCHEMA = z.object({
     })
     .optional(),
 });
+
+// WU-1803: Lazy module loaders to avoid eager imports (same pattern as getCore in tools-shared)
+let metricsModule: typeof import('@lumenflow/metrics') | null = null;
+async function getMetrics() {
+  if (!metricsModule) metricsModule = await import('@lumenflow/metrics');
+  return metricsModule;
+}
+
+let coreModule: typeof import('@lumenflow/core') | null = null;
+async function getCoreLazy() {
+  if (!coreModule) coreModule = await import('@lumenflow/core');
+  return coreModule;
+}
+
+/**
+ * Load WU list entries and convert to WUMetrics shape for @lumenflow/metrics functions.
+ */
+async function loadWUMetricsFromCore(projectRoot: string): Promise<WUMetrics[]> {
+  const core = await getCoreLazy();
+  const allWUs = await core.listWUs({ projectRoot });
+  return allWUs.map((wu) => ({
+    id: wu.id,
+    title: wu.title,
+    lane: wu.lane,
+    status: wu.status as WUMetrics['status'],
+  }));
+}
+
+// --- WU-1803: Flow/Metrics/Context in-process handler implementations ---
+
+/**
+ * flow:bottlenecks handler — delegates to @lumenflow/core (graph) + @lumenflow/metrics (analysis)
+ */
+const flowBottlenecksHandler: InProcessToolFn = async (rawInput) => {
+  try {
+    const input = (rawInput ?? {}) as Record<string, unknown>;
+    const limit = typeof input.limit === 'number' ? input.limit : 10;
+
+    const { buildDependencyGraphAsync } = await import('@lumenflow/core/dependency-graph');
+    const metrics = await getMetrics();
+
+    const coreGraph = await buildDependencyGraphAsync();
+    const analysis = metrics.getBottleneckAnalysis(
+      coreGraph as unknown as MetricsDependencyGraph,
+      limit,
+    );
+    return { success: true, data: analysis };
+  } catch (err) {
+    return {
+      success: false,
+      error: { code: 'FLOW_BOTTLENECKS_ERROR', message: (err as Error).message },
+    };
+  }
+};
+
+/**
+ * flow:report handler — delegates to @lumenflow/metrics generateFlowReport
+ */
+const flowReportHandler: InProcessToolFn = async (rawInput) => {
+  try {
+    const input = (rawInput ?? {}) as Record<string, unknown>;
+    const metrics = await getMetrics();
+    const { readFile } = await import('node:fs/promises');
+    const { join } = await import('node:path');
+    const { existsSync } = await import('node:fs');
+
+    const baseDir = process.cwd();
+    const days = typeof input.days === 'number' ? input.days : 30;
+    const end = input.end ? new Date(input.end as string) : new Date();
+    const start = input.start
+      ? new Date(input.start as string)
+      : new Date(end.getTime() - days * 86_400_000);
+
+    const gatesPath = join(baseDir, metrics.TELEMETRY_PATHS.GATES);
+    const llmPath = join(baseDir, metrics.TELEMETRY_PATHS.LLM_CLASSIFICATION);
+
+    const readNDJSON = async <T>(filePath: string): Promise<T[]> => {
+      if (!existsSync(filePath)) return [];
+      const content = await readFile(filePath, 'utf-8');
+      return content
+        .split('\n')
+        .filter((line) => line.trim())
+        .map((line) => {
+          try {
+            return JSON.parse(line) as T;
+          } catch {
+            return null;
+          }
+        })
+        .filter((item): item is T => item !== null);
+    };
+
+    const [gateEvents, llmEvents] = await Promise.all([
+      readNDJSON<GateTelemetryEvent>(gatesPath),
+      readNDJSON<LLMTelemetryEvent>(llmPath),
+    ]);
+
+    const completedWUs = (await loadWUMetricsFromCore(baseDir)).filter(
+      (wu) => wu.status === 'done',
+    );
+
+    const report = metrics.generateFlowReport({
+      gateEvents,
+      llmEvents,
+      completedWUs,
+      dateRange: { start: start.toISOString().slice(0, 10), end: end.toISOString().slice(0, 10) },
+    });
+    return { success: true, data: report };
+  } catch (err) {
+    return {
+      success: false,
+      error: { code: 'FLOW_REPORT_ERROR', message: (err as Error).message },
+    };
+  }
+};
+
+/**
+ * metrics:snapshot handler — delegates to @lumenflow/metrics captureMetricsSnapshot
+ */
+const metricsSnapshotHandler: InProcessToolFn = async () => {
+  try {
+    const metrics = await getMetrics();
+    const wuMetrics = await loadWUMetricsFromCore(process.cwd());
+
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(weekStart.getDate() - 7);
+
+    const snapshot = metrics.captureMetricsSnapshot({
+      commits: [],
+      wuMetrics,
+      skipGatesEntries: [],
+      weekStart,
+      weekEnd: now,
+      type: 'all',
+    });
+    return { success: true, data: snapshot };
+  } catch (err) {
+    return {
+      success: false,
+      error: { code: 'METRICS_SNAPSHOT_ERROR', message: (err as Error).message },
+    };
+  }
+};
+
+/**
+ * metrics handler — delegates to @lumenflow/metrics based on subcommand
+ */
+const metricsHandler: InProcessToolFn = async (rawInput) => {
+  try {
+    const input = (rawInput ?? {}) as Record<string, unknown>;
+    const subcommand = (typeof input.subcommand === 'string' ? input.subcommand : 'all') as string;
+    const days = typeof input.days === 'number' ? input.days : 7;
+
+    const metrics = await getMetrics();
+    const wuMetrics = await loadWUMetricsFromCore(process.cwd());
+
+    if (subcommand === 'flow') {
+      const flowState = metrics.calculateFlowState(wuMetrics);
+      return { success: true, data: flowState };
+    }
+
+    const now = new Date();
+    const weekStart = new Date(now.getTime() - days * 86_400_000);
+
+    const snapshot = metrics.captureMetricsSnapshot({
+      commits: [],
+      wuMetrics,
+      skipGatesEntries: [],
+      weekStart,
+      weekEnd: now,
+      type: subcommand as MetricsSnapshotType,
+    });
+    return { success: true, data: snapshot };
+  } catch (err) {
+    return {
+      success: false,
+      error: { code: 'METRICS_ERROR', message: (err as Error).message },
+    };
+  }
+};
+
+/**
+ * context:get handler — delegates to @lumenflow/core computeWuContext
+ */
+const contextGetHandler: InProcessToolFn = async () => {
+  try {
+    const core = await getCoreLazy();
+    const context = await core.computeWuContext({ cwd: process.cwd() });
+    return { success: true, data: context };
+  } catch (err) {
+    return {
+      success: false,
+      error: { code: 'CONTEXT_ERROR', message: (err as Error).message },
+    };
+  }
+};
+
+/**
+ * wu:list handler — delegates to @lumenflow/core listWUs
+ */
+const wuListHandler: InProcessToolFn = async (rawInput) => {
+  try {
+    const input = (rawInput ?? {}) as Record<string, unknown>;
+    const core = await getCoreLazy();
+
+    const options: ListWUsOptions = { projectRoot: process.cwd() };
+    if (typeof input.status === 'string') options.status = input.status;
+    if (typeof input.lane === 'string') options.lane = input.lane;
+
+    const wus = await core.listWUs(options);
+    return { success: true, data: wus };
+  } catch (err) {
+    return {
+      success: false,
+      error: { code: 'WU_LIST_ERROR', message: (err as Error).message },
+    };
+  }
+};
 
 interface RegisteredInProcessToolHandler {
   description: string;
@@ -432,6 +659,63 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       inputSchema: FILE_DELETE_INPUT_SCHEMA,
       outputSchema: FILE_DELETE_OUTPUT_SCHEMA,
       fn: fileDeleteInProcess,
+    },
+  ],
+  // WU-1803: Flow/Metrics/Context tool registrations
+  [
+    'flow:bottlenecks',
+    {
+      description: 'Identify flow bottlenecks via in-process dependency analysis',
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: flowBottlenecksHandler,
+    },
+  ],
+  [
+    'flow:report',
+    {
+      description: 'Generate flow metrics report via in-process telemetry analysis',
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: flowReportHandler,
+    },
+  ],
+  [
+    'metrics:snapshot',
+    {
+      description: 'Capture metrics snapshot via in-process WU and DORA analysis',
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: metricsSnapshotHandler,
+    },
+  ],
+  [
+    'lumenflow:metrics',
+    {
+      description: 'View workflow metrics via in-process analysis (alias)',
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: metricsHandler,
+    },
+  ],
+  [
+    'metrics',
+    {
+      description: 'View workflow metrics via in-process analysis',
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: metricsHandler,
+    },
+  ],
+  [
+    'context:get',
+    {
+      description: 'Get current LumenFlow context via in-process computation',
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: contextGetHandler,
+    },
+  ],
+  [
+    'wu:list',
+    {
+      description: 'List WUs via in-process state store + YAML merge',
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuListHandler,
     },
   ],
 ]);
