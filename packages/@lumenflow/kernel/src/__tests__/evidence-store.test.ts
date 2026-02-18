@@ -71,7 +71,7 @@ describe('evidence store', () => {
     expect(traces[1]?.kind).toBe('tool_call_finished');
   });
 
-  it('stores CAS inputs by SHA-256 hash and reuses stable refs', async () => {
+  it('stores CAS data by SHA-256 hash and reuses stable refs via persistData', async () => {
     const store = new EvidenceStore({ evidenceRoot });
     const input = {
       tool: 'fs:write',
@@ -79,16 +79,16 @@ describe('evidence store', () => {
       content: 'hello world',
     };
 
-    const first = await store.persistInput(input);
-    const second = await store.persistInput(input);
+    const first = await store.persistData(input);
+    const second = await store.persistData(input);
     const canonical = canonicalStringify(input);
 
-    expect(first.inputHash).toHaveLength(64);
-    expect(first.inputHash).toBe(canonical_json(input));
-    expect(first.inputRef).toBe(second.inputRef);
-    expect(first.inputHash).toBe(second.inputHash);
-    await expect(stat(first.inputRef)).resolves.toBeTruthy();
-    await expect(readFile(first.inputRef, 'utf8')).resolves.toBe(canonical);
+    expect(first.dataHash).toHaveLength(64);
+    expect(first.dataHash).toBe(canonical_json(input));
+    expect(first.dataRef).toBe(second.dataRef);
+    expect(first.dataHash).toBe(second.dataHash);
+    await expect(stat(first.dataRef)).resolves.toBeTruthy();
+    await expect(readFile(first.dataRef, 'utf8')).resolves.toBe(canonical);
   });
 
   it('respects trace lock files when appending traces', async () => {

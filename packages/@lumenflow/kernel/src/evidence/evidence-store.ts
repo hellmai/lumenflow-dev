@@ -27,10 +27,13 @@ export interface EvidenceStoreOptions {
   compactionThresholdBytes?: number;
 }
 
-export interface PersistInputResult {
-  inputHash: string;
-  inputRef: string;
+export interface PersistDataResult {
+  dataHash: string;
+  dataRef: string;
 }
+
+/** @deprecated Use PersistDataResult instead */
+export type PersistInputResult = PersistDataResult;
 
 function sha256Hex(content: string): string {
   return createHash(SHA256_ALGORITHM).update(content).digest('hex');
@@ -396,14 +399,14 @@ export class EvidenceStore {
     this.tracesByTaskId.set(taskId, bucket);
   }
 
-  async persistInput(input: unknown): Promise<PersistInputResult> {
-    const serialized = canonicalStringify(input);
-    const inputHash = sha256Hex(serialized);
-    const inputRef = join(this.inputsDir, inputHash);
+  async persistData(data: unknown): Promise<PersistDataResult> {
+    const serialized = canonicalStringify(data);
+    const dataHash = sha256Hex(serialized);
+    const dataRef = join(this.inputsDir, dataHash);
     await mkdir(this.inputsDir, { recursive: true });
 
     try {
-      const handle = await open(inputRef, 'wx');
+      const handle = await open(dataRef, 'wx');
       try {
         await handle.writeFile(serialized, UTF8_ENCODING);
       } finally {
@@ -417,9 +420,14 @@ export class EvidenceStore {
     }
 
     return {
-      inputHash,
-      inputRef,
+      dataHash,
+      dataRef,
     };
+  }
+
+  /** @deprecated Use persistData instead */
+  async persistInput(input: unknown): Promise<PersistDataResult> {
+    return this.persistData(input);
   }
 
   async reconcileOrphanedStarts(): Promise<number> {

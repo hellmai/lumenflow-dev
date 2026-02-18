@@ -12,7 +12,7 @@ interface ShelloutBudgetBaseline {
 
 const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(TEST_DIR, '../../../../..');
-const MCP_TOOLS_DIR = path.join(REPO_ROOT, 'packages/@lumenflow/mcp/src/tools');
+const MCP_SRC_DIR = path.join(REPO_ROOT, 'packages/@lumenflow/mcp/src');
 const BASELINE_PATH = path.join(REPO_ROOT, 'tools/baselines/strict-progress-baseline.json');
 
 function listTypeScriptFiles(dir: string): string[] {
@@ -22,10 +22,19 @@ function listTypeScriptFiles(dir: string): string[] {
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
+      // Skip test directories to avoid counting test-only call sites
+      if (entry.name === '__tests__' || entry.name === 'node_modules') {
+        continue;
+      }
       files.push(...listTypeScriptFiles(fullPath));
       continue;
     }
-    if (entry.isFile() && entry.name.endsWith('.ts') && !entry.name.endsWith('.test.ts')) {
+    if (
+      entry.isFile() &&
+      entry.name.endsWith('.ts') &&
+      !entry.name.endsWith('.test.ts') &&
+      !entry.name.endsWith('.d.ts')
+    ) {
       files.push(fullPath);
     }
   }
@@ -58,7 +67,7 @@ function countRunCliCommandCallSites(sourceText: string): number {
 }
 
 function getCurrentShelloutCallSiteCount(): number {
-  const files = listTypeScriptFiles(MCP_TOOLS_DIR);
+  const files = listTypeScriptFiles(MCP_SRC_DIR);
   return files.reduce((total, file) => {
     const content = readFileSync(file, 'utf-8');
     return total + countRunCliCommandCallSites(content);

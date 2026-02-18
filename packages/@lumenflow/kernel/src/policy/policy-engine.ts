@@ -21,7 +21,6 @@ export interface PolicyEvaluationContext {
   task_id?: string;
   lane_id?: string;
   pack_id?: string;
-  [key: string]: unknown;
 }
 
 export interface PolicyRule {

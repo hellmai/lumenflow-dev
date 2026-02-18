@@ -24,22 +24,52 @@ import { CliCommands, MetadataKeys } from '../mcp-constants.js';
 const SRC_DIR = path.resolve(import.meta.dirname, '..');
 
 /**
- * MCP tool implementation files subject to governance scanning.
- * Constants definition files are intentionally excluded.
+ * Files excluded from governance scanning.
+ * Constants definition files define the governed constants themselves.
  */
-const GOVERNED_FILES = [
-  'tools/parity-tools.ts',
-  'tools/wu-tools.ts',
-  'tools/setup-tools.ts',
-  'tools/validation-tools.ts',
-  'tools/initiative-tools.ts',
-  'tools/orchestration-tools.ts',
-  'tools/agent-tools.ts',
-  'tools/memory-tools.ts',
-  'tools/context-tools.ts',
-  'tools/flow-tools.ts',
-  'runtime-tool-resolver.ts',
-];
+const EXCLUDED_FILES = new Set([
+  'tools/runtime-task-constants.ts',
+]);
+
+/**
+ * Auto-discovers MCP tool implementation files subject to governance scanning.
+ *
+ * Discovers all .ts files in tools/ (excluding constants, test, and type-only files)
+ * plus the runtime-tool-resolver.ts which contains tool execution logic.
+ *
+ * This replaces the previous static GOVERNED_FILES list so that new tool files
+ * added to tools/ are automatically governed without manual list maintenance.
+ */
+function discoverGovernedFiles(): string[] {
+  const toolsDir = path.join(SRC_DIR, 'tools');
+  const files: string[] = [];
+
+  // Auto-discover all tool implementation files in tools/
+  if (fs.existsSync(toolsDir)) {
+    for (const entry of fs.readdirSync(toolsDir)) {
+      if (
+        entry.endsWith('.ts') &&
+        !entry.endsWith('.d.ts') &&
+        !entry.endsWith('.test.ts')
+      ) {
+        const relPath = `tools/${entry}`;
+        if (!EXCLUDED_FILES.has(relPath)) {
+          files.push(relPath);
+        }
+      }
+    }
+  }
+
+  // Include runtime-tool-resolver.ts (top-level file with tool execution logic)
+  const runtimeResolver = 'runtime-tool-resolver.ts';
+  if (fs.existsSync(path.join(SRC_DIR, runtimeResolver))) {
+    files.push(runtimeResolver);
+  }
+
+  return files.sort();
+}
+
+const GOVERNED_FILES = discoverGovernedFiles();
 
 /**
  * Regex matching raw CLI command-name strings in execution call sites.
@@ -303,5 +333,17 @@ describe('MCP literal governance', () => {
       }
     }
     expect(missing).toEqual([]);
+  });
+
+  it('auto-discovers new tool files without needing a static list update', () => {
+    // Verify that auto-discovery found a reasonable number of files.
+    // The previous static list had 11 files; discovery should find at least that many.
+    expect(GOVERNED_FILES.length).toBeGreaterThanOrEqual(11);
+
+    // Verify all files actually exist
+    for (const relPath of GOVERNED_FILES) {
+      const absPath = path.join(SRC_DIR, relPath);
+      expect(fs.existsSync(absPath)).toBe(true);
+    }
   });
 });

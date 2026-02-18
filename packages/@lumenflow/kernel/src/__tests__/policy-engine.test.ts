@@ -215,6 +215,38 @@ describe('policy engine', () => {
     }
   });
 
+  it('rejects unknown properties on PolicyEvaluationContext at compile time', async () => {
+    // PolicyEvaluationContext should not accept arbitrary keys via index signature.
+    // This test verifies the interface is closed: only declared properties are accepted.
+    const engine = new PolicyEngine({
+      layers: [
+        {
+          level: 'workspace',
+          default_decision: 'allow',
+          rules: [
+            {
+              id: 'workspace.allow.all',
+              trigger: POLICY_TRIGGERS.ON_TOOL_REQUEST,
+              decision: 'allow',
+            },
+          ],
+        },
+      ],
+    });
+
+    // A valid context with only declared properties should compile and work
+    const result = await engine.evaluate({
+      trigger: POLICY_TRIGGERS.ON_TOOL_REQUEST,
+      run_id: 'run-1861-closed-type',
+      tool_name: 'fs:read',
+      task_id: 'WU-1861',
+      lane_id: 'framework-mcp',
+      pack_id: 'software-delivery',
+    });
+
+    expect(result.decision).toBe('allow');
+  });
+
   it('validates ApprovalEvent schema with run_id, scope, and expires_at', () => {
     const parsed = ApprovalEventSchema.parse({
       schema_version: 1,

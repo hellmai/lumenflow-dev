@@ -8,12 +8,22 @@ import { ToolScopeSchema } from '../kernel.schemas.js';
 const SEMVER_REGEX = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z-.]+)?(?:\+[0-9A-Za-z-.]+)?$/;
 const SEMVER_MESSAGE = 'Expected semantic version';
 
+/**
+ * JSON Schema representation for optional tool input/output declarations in pack manifests.
+ * When present, the kernel uses these for validation instead of the default accept-anything schema.
+ */
+const JsonSchemaObjectSchema = z.record(z.string(), z.unknown());
+
 export const DomainPackToolSchema = z.object({
   name: z.string().min(1),
   entry: z.string().min(1),
   permission: z.enum(['read', 'write', 'admin']).default('read'),
   required_scopes: z.array(ToolScopeSchema).min(1),
   internal_only: z.boolean().optional(),
+  /** Optional JSON Schema for tool input validation. */
+  input_schema: JsonSchemaObjectSchema.optional(),
+  /** Optional JSON Schema for tool output validation. */
+  output_schema: JsonSchemaObjectSchema.optional(),
 });
 
 export const DomainPackPolicySchema = z.object({

@@ -270,6 +270,51 @@ describe('pack loader + integrity pinning', () => {
     expect(manifest.state_aliases.active).toBe('in_progress');
   });
 
+  it('accepts optional input_schema and output_schema on pack manifest tools', () => {
+    const manifest = DomainPackManifestSchema.parse({
+      id: SOFTWARE_DELIVERY_PACK_ID,
+      version: '1.0.0',
+      task_types: ['wu'],
+      tools: [
+        {
+          name: 'fs:read',
+          entry: 'tools/fs-read.ts',
+          permission: 'read',
+          required_scopes: [{ type: 'path', pattern: 'src/**', access: 'read' }],
+          input_schema: {
+            type: 'object',
+            properties: { path: { type: 'string' } },
+            required: ['path'],
+          },
+          output_schema: {
+            type: 'object',
+            properties: { content: { type: 'string' } },
+          },
+        },
+        {
+          name: 'fs:write',
+          entry: 'tools/fs-write.ts',
+          permission: 'write',
+          required_scopes: [{ type: 'path', pattern: 'src/**', access: 'write' }],
+          // No schemas - should still be valid
+        },
+      ],
+      policies: [],
+    });
+
+    expect(manifest.tools[0].input_schema).toEqual({
+      type: 'object',
+      properties: { path: { type: 'string' } },
+      required: ['path'],
+    });
+    expect(manifest.tools[0].output_schema).toEqual({
+      type: 'object',
+      properties: { content: { type: 'string' } },
+    });
+    expect(manifest.tools[1].input_schema).toBeUndefined();
+    expect(manifest.tools[1].output_schema).toBeUndefined();
+  });
+
   it('keeps software-delivery manifest.yaml and programmatic manifest in sync', async () => {
     const manifestPath = resolve(
       PACK_LOADER_TEST_DIR,

@@ -156,7 +156,7 @@ export class ToolHost {
     const { scopeRequested, scopeAllowed, scopeEnforced, reservedFrameworkWriteScopes } =
       this.resolveScope(capability, context, metadata);
 
-    const { inputHash, inputRef } = await this.evidenceStore.persistInput(input);
+    const { dataHash: inputHash, dataRef: inputRef } = await this.evidenceStore.persistData(input);
     const receiptId = randomUUID();
     const startedAt = this.now().getTime();
     const timestamp = new Date(startedAt).toISOString();
@@ -475,9 +475,9 @@ export class ToolHost {
     const { receiptId, startedAt, output, policyDecisions } = params;
 
     const outputRef =
-      output.data === undefined ? undefined : await this.evidenceStore.persistInput(output.data);
-    const outputHash = outputRef?.inputHash;
-    const outputReference = outputRef?.inputRef;
+      output.data === undefined ? undefined : await this.evidenceStore.persistData(output.data);
+    const outputHash = outputRef?.dataHash;
+    const outputReference = outputRef?.dataRef;
     const result = output.success
       ? 'success'
       : output.error?.code === TOOL_ERROR_CODES.SCOPE_DENIED
