@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1845 — Extract shared git-runner module in software-delivery pack](wu/WU-1845.yaml) — Framework: Core Lifecycle
 - [WU-1844 — Consolidate MCP runtime caches and create tool definition factory](wu/WU-1844.yaml) — Framework: MCP
 - [WU-1843 — Harden pack-loader import boundary: deny bare specifiers and fix prefix match](wu/WU-1843.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
