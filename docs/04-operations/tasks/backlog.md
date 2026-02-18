@@ -32,7 +32,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1861 — INIT-030 Review Fix C: governance and type safety tightening](wu/WU-1861.yaml) — Framework: MCP
 - [WU-1863 — Policy construction safety: allowAllPolicyHook default and task ID uniqueness](wu/WU-1863.yaml) — Framework: Core Lifecycle
 - [WU-1867 — INIT-030 Review Fix E: guard all appendTrace throw paths in ToolHost](wu/WU-1867.yaml) — Framework: Core Lifecycle
 
@@ -831,6 +830,7 @@ sections:
 - [WU-1840 — Build pack marketplace page with browse, search, and install flow](wu/WU-1840.yaml)
 - [WU-1860 — INIT-030 Review Fix B: kernel durability bugs (lock leak, clock skew, partial writes)](wu/WU-1860.yaml)
 - [WU-1862 — Evidence store durability: JSONL compaction and incremental replay](wu/WU-1862.yaml)
+- [WU-1861 — INIT-030 Review Fix C: governance and type safety tightening](wu/WU-1861.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
