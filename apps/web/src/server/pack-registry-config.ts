@@ -22,12 +22,6 @@ import {
 } from './pack-registry-store-vercel-blob';
 
 /* ------------------------------------------------------------------
- * Constants
- * ------------------------------------------------------------------ */
-
-const BLOB_TOKEN_ENV_VAR = 'BLOB_READ_WRITE_TOKEN';
-
-/* ------------------------------------------------------------------
  * In-memory blob store (development adapter)
  * ------------------------------------------------------------------ */
 
@@ -92,10 +86,8 @@ class GitHubOAuthProvider implements AuthProvider {
  * ------------------------------------------------------------------ */
 
 function hasVercelBlobToken(): boolean {
-  return (
-    typeof process.env[BLOB_TOKEN_ENV_VAR] === 'string' &&
-    process.env[BLOB_TOKEN_ENV_VAR].length > 0
-  );
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  return typeof token === 'string' && token.length > 0;
 }
 
 /* ------------------------------------------------------------------

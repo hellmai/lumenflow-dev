@@ -46,12 +46,12 @@ export class VercelBlobPackRegistryStore implements PackRegistryStore {
   private async loadIndex(): Promise<RegistryIndex> {
     const listing = await list({ prefix: REGISTRY_INDEX_PATH });
 
-    if (listing.blobs.length === 0) {
+    const firstBlob = listing.blobs[0];
+    if (!firstBlob) {
       return { packs: [] };
     }
 
-    const blob = listing.blobs[0]!;
-    const response = await fetch(blob.url);
+    const response = await fetch(firstBlob.url);
     const text = await response.text();
 
     return JSON.parse(text) as RegistryIndex;
@@ -98,12 +98,11 @@ export class VercelBlobPackRegistryStore implements PackRegistryStore {
     const index = await this.loadIndex();
     const now = new Date().toISOString();
 
-    const existingIndex = index.packs.findIndex((pack) => pack.id === packId);
+    const existing = index.packs.find((pack) => pack.id === packId);
 
     let updatedPack: PackRegistryEntry;
 
-    if (existingIndex >= 0) {
-      const existing = index.packs[existingIndex]!;
+    if (existing) {
       updatedPack = {
         ...existing,
         description,
@@ -122,12 +121,9 @@ export class VercelBlobPackRegistryStore implements PackRegistryStore {
       };
     }
 
-    const mutablePacks = [...index.packs];
-    if (existingIndex >= 0) {
-      mutablePacks[existingIndex] = updatedPack;
-    } else {
-      mutablePacks.push(updatedPack);
-    }
+    const mutablePacks = existing
+      ? index.packs.map((pack) => (pack.id === packId ? updatedPack : pack))
+      : [...index.packs, updatedPack];
 
     await this.saveIndex({ packs: mutablePacks });
 
