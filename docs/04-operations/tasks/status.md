@@ -7,6 +7,7 @@ _Last updated: 2026-02-18_
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1859 — INIT-030 Review Fix A: executeViaPack policy bypass security fix](wu/WU-1859.yaml)
 - [WU-1860 — INIT-030 Review Fix B: kernel durability bugs (lock leak, clock skew, partial writes)](wu/WU-1860.yaml)
+- [WU-1840 — Build pack marketplace page with browse, search, and install flow](wu/WU-1840.yaml)
 
 ## Completed
 

@@ -2,7 +2,7 @@ id: WU-1840
 title: Build pack marketplace page with browse, search, and install flow
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -29,9 +29,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Browse page with categories, search, trending. Pack detail page showing description, tools list, policies, install instructions, install count. One-click install generates pack:install command. Create Pack CTA linking to authoring guide.
+description: Browse page with categories, search, trending. Pack detail page showing description,
+  tools list, policies, install instructions, install count. One-click install generates
+  pack:install command. Create Pack CTA linking to authoring guide.
 acceptance:
   - Browse page with search and categories
   - Pack detail page with tools and policies
   - Install instructions generated
   - Create Pack CTA links to guide
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1840
+claimed_at: 2026-02-18T22:19:56.116Z
+baseline_main_sha: 6c7b77d5d5491b2b169ccf26802b518eafcde0c8
+session_id: 9eca9c67-15b9-4c4b-a4eb-a8e3fc8abd34
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T22:19:56.119Z
