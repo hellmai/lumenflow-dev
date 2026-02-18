@@ -114,14 +114,7 @@ describe('AC2: wu:done error message does not reference --skip-cos-gates (WU-185
     // Read the wu-done.ts source and check that console.error output lines
     // do not reference the non-existent --skip-cos-gates flag.
     // Code comments explaining the fix are acceptable.
-    const wuDoneSrc = fs.readFileSync(
-      path.join(
-        __dirname,
-        '..',
-        'wu-done.ts',
-      ),
-      'utf-8',
-    );
+    const wuDoneSrc = fs.readFileSync(path.join(__dirname, '..', 'wu-done.ts'), 'utf-8');
 
     // Extract all console.error lines (user-facing output)
     const consoleErrorLines = wuDoneSrc
@@ -135,14 +128,7 @@ describe('AC2: wu:done error message does not reference --skip-cos-gates (WU-185
   });
 
   it('COS gates failure suggests --skip-gates (the real flag) instead', async () => {
-    const wuDoneSrc = fs.readFileSync(
-      path.join(
-        __dirname,
-        '..',
-        'wu-done.ts',
-      ),
-      'utf-8',
-    );
+    const wuDoneSrc = fs.readFileSync(path.join(__dirname, '..', 'wu-done.ts'), 'utf-8');
 
     // The COS gates error section should reference --skip-gates in its console.error output.
     // The string may span multiple source lines (template literal), so check a window
