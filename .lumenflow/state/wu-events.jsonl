@@ -1636,3 +1636,4 @@
 {"type":"claim","wuId":"WU-1827","timestamp":"2026-02-18T21:19:02.236Z","lane":"Framework: CLI Orchestration","title":"Create pack:install CLI command for adding packs to workspace"}
 {"type":"claim","wuId":"WU-1829","timestamp":"2026-02-18T21:19:48.412Z","lane":"Content: Site Comms","title":"Add pack catalog page to web dashboard with tool and policy visualization"}
 {"type":"complete","wuId":"WU-1814","timestamp":"2026-02-18T21:23:34.572Z"}
+{"type":"claim","wuId":"WU-1815","lane":"Framework: Core Lifecycle","title":"Post-Phase-3 shell-out deprecation recertification and metric closure","timestamp":"2026-02-18T21:24:22.578Z"}

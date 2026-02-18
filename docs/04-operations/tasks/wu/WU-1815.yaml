@@ -2,7 +2,7 @@ id: WU-1815
 title: Post-Phase-3 shell-out deprecation recertification and metric closure
 lane: 'Framework: Core Lifecycle'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -32,9 +32,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Phase 4 wave-0 established the deprecation baseline and guardrail. Phase 3 performed the actual migration. Problem: Phase 4 evidence needs to be updated with post-migration measurements. Solution: recompute shell-out inventory, update wave evidence in roadmap, re-close Phase 4 with post-migration proof.'
+description: 'Context: Phase 4 wave-0 established the deprecation baseline and guardrail. Phase 3
+  performed the actual migration. Problem: Phase 4 evidence needs to be updated with post-migration
+  measurements. Solution: recompute shell-out inventory, update wave evidence in roadmap, re-close
+  Phase 4 with post-migration proof.'
 acceptance:
   - Shell-out inventory recomputed and documented with measured counts
   - Roadmap wave evidence updated with actual migration results and gate outcomes
   - INIT-030 Phase 4 status re-closed with post-migration recertification
   - Any remaining shell-outs have owner, rationale, and removal date documented
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1815
+claimed_at: 2026-02-18T21:24:22.553Z
+baseline_main_sha: 84c75dd7b8853c1395e72f67bfab0f74dab54a2a
+session_id: 54ea85b8-c06f-4294-9170-8ddfc61a9ddb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T21:24:22.557Z

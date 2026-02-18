@@ -7,6 +7,7 @@ _Last updated: 2026-02-18_
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1827 — Create pack:install CLI command for adding packs to workspace](wu/WU-1827.yaml)
 - [WU-1829 — Add pack catalog page to web dashboard with tool and policy visualization](wu/WU-1829.yaml)
+- [WU-1815 — Post-Phase-3 shell-out deprecation recertification and metric closure](wu/WU-1815.yaml)
 
 ## Completed
 
