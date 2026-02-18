@@ -12,7 +12,9 @@ code_paths:
   - packages/@lumenflow/kernel/src/config/workspace-config.ts
   - packages/@lumenflow/runtime/src/session/session-manager.ts
 tests:
-  manual: []
+  manual:
+    - Run targeted coverage for touched modules and verify at least 90% line coverage plus green
+      unit tests for all added cases.
   unit:
     - packages/@lumenflow/packs/software-delivery/tests/worktree-tools.test.ts
     - packages/@lumenflow/kernel/tests/scope-intersection.test.ts
