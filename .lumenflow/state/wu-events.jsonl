@@ -1606,3 +1606,4 @@
 {"type":"claim","wuId":"WU-1830","timestamp":"2026-02-18T19:11:27.057Z","lane":"Framework: MCP","title":"Implement AG-UI RunAgent HTTP endpoint in HTTP surface"}
 {"type":"complete","wuId":"WU-1810","timestamp":"2026-02-18T19:17:49.107Z"}
 {"type":"complete","wuId":"WU-1828","timestamp":"2026-02-18T19:18:18.582Z"}
+{"type":"claim","wuId":"WU-1811","lane":"Framework: Core Lifecycle","title":"Migrate memory tools to runtime pack execution","timestamp":"2026-02-18T19:18:38.819Z"}

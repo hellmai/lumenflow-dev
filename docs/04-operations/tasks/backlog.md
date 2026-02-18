@@ -24,7 +24,6 @@ sections:
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
-- [WU-1811 — Migrate memory tools to runtime pack execution](wu/WU-1811.yaml) — Framework: Core Lifecycle
 - [WU-1812 — Migrate agent, setup, plan, docs, and sync tools to runtime pack execution](wu/WU-1812.yaml) — Framework: Core Lifecycle
 - [WU-1813 — Remove fallback paths and eliminate runCliCommand from MCP tool layer](wu/WU-1813.yaml) — Framework: Core Lifecycle
 - [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml) — Framework: Core Lifecycle
@@ -55,6 +54,7 @@ sections:
 - [WU-1823 — Create pack:scaffold CLI command for new pack authoring](wu/WU-1823.yaml) — Framework: CLI Orchestration
 - [WU-1826 — Extend PackLoader with git-based pack resolution](wu/WU-1826.yaml) — Framework: Core Lifecycle
 - [WU-1830 — Implement AG-UI RunAgent HTTP endpoint in HTTP surface](wu/WU-1830.yaml) — Framework: MCP
+- [WU-1811 — Migrate memory tools to runtime pack execution](wu/WU-1811.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
