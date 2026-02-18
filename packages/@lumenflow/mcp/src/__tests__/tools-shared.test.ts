@@ -2,9 +2,10 @@
  * @file tools-shared.test.ts
  * @description Tests for executeViaPack fallback policy and maintenance scope.
  *
- * WU-1859: Verifies that policy/scope denials and SPEC_TAMPERED errors are
- * returned directly (never retried via CLI), while TOOL_NOT_FOUND and runtime
- * init failures still trigger CLI fallback for backward/migration compat.
+ * WU-1866: Flipped from NON_FALLBACK_ERROR_CODES denylist to
+ * FALLBACK_ALLOWED_ERROR_CODES allowlist. Only TOOL_NOT_FOUND (and runtime
+ * init failures) trigger CLI fallback. All other error codes and thrown
+ * exceptions return directly -- default-deny for fallback.
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -14,7 +15,7 @@ import {
   buildExecutionContext,
   resetExecuteViaPackRuntimeCache,
   type ExecuteViaPackOptions,
-  NON_FALLBACK_ERROR_CODES,
+  FALLBACK_ALLOWED_ERROR_CODES,
   DEFAULT_MAINTENANCE_SCOPE,
 } from '../tools-shared.js';
 import type { RuntimeInstance } from '../runtime-cache.js';
@@ -32,7 +33,7 @@ function cliFailure(stderr = 'cli failed') {
   return { success: false as const, stdout: '', stderr, exitCode: 1, error: undefined };
 }
 
-describe('executeViaPack fallback policy (WU-1859)', () => {
+describe('executeViaPack allowlist fallback policy (WU-1866)', () => {
   const toolName = 'test:tool';
   const toolInput = { id: 'WU-1' };
   const projectRoot = '/tmp/test-project';
@@ -196,10 +197,10 @@ describe('executeViaPack fallback policy (WU-1859)', () => {
   });
 
   // ───────────────────────────────────────────────
-  // Generic runtime failure (unknown error code) falls back to CLI
+  // WU-1866: Unknown/future error codes return directly (allowlist behavior)
   // ───────────────────────────────────────────────
 
-  it('falls back to CLI for generic runtime failures with no recognized error code', async () => {
+  it('returns unknown error codes directly without CLI fallback (default-deny)', async () => {
     const genericFailure: ToolOutput = {
       success: false,
       error: { code: 'UNKNOWN_ERROR', message: 'Something unexpected' },
@@ -214,20 +215,85 @@ describe('executeViaPack fallback policy (WU-1859)', () => {
       runtimeFactory,
     });
 
-    expect(result.success).toBe(true);
-    expect(mockCliRunner).toHaveBeenCalledOnce();
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe('UNKNOWN_ERROR');
+    expect(result.error?.message).toBe('Something unexpected');
+    expect(mockCliRunner).not.toHaveBeenCalled();
+  });
+
+  it('returns INVALID_INPUT directly without CLI fallback', async () => {
+    const invalidInput: ToolOutput = {
+      success: false,
+      error: { code: TOOL_ERROR_CODES.INVALID_INPUT, message: 'Bad input' },
+    };
+    const runtimeFactory = vi
+      .fn()
+      .mockResolvedValue(mockRuntime(vi.fn().mockResolvedValue(invalidInput)));
+    mockCliRunner.mockResolvedValue(cliSuccess('should not reach'));
+
+    const result = await executeViaPack(toolName, toolInput, {
+      ...baseOptions,
+      runtimeFactory,
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe(TOOL_ERROR_CODES.INVALID_INPUT);
+    expect(mockCliRunner).not.toHaveBeenCalled();
+  });
+
+  it('returns TOOL_EXECUTION_FAILED directly without CLI fallback', async () => {
+    const execFailed: ToolOutput = {
+      success: false,
+      error: { code: TOOL_ERROR_CODES.TOOL_EXECUTION_FAILED, message: 'Exec failed' },
+    };
+    const runtimeFactory = vi
+      .fn()
+      .mockResolvedValue(mockRuntime(vi.fn().mockResolvedValue(execFailed)));
+    mockCliRunner.mockResolvedValue(cliSuccess('should not reach'));
+
+    const result = await executeViaPack(toolName, toolInput, {
+      ...baseOptions,
+      runtimeFactory,
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe(TOOL_ERROR_CODES.TOOL_EXECUTION_FAILED);
+    expect(mockCliRunner).not.toHaveBeenCalled();
+  });
+
+  // ───────────────────────────────────────────────
+  // WU-1866: Thrown exceptions from executeTool return directly
+  // ───────────────────────────────────────────────
+
+  it('returns directly when executeTool throws an exception (no CLI fallback)', async () => {
+    const runtimeFactory = vi
+      .fn()
+      .mockResolvedValue(
+        mockRuntime(vi.fn().mockRejectedValue(new Error('executeTool crashed unexpectedly'))),
+      );
+    mockCliRunner.mockResolvedValue(cliSuccess('should not reach'));
+
+    const result = await executeViaPack(toolName, toolInput, {
+      ...baseOptions,
+      runtimeFactory,
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.message).toContain('executeTool crashed unexpectedly');
+    expect(mockCliRunner).not.toHaveBeenCalled();
   });
 });
 
-describe('NON_FALLBACK_ERROR_CODES (WU-1859)', () => {
-  it('includes POLICY_DENIED, SCOPE_DENIED, and SPEC_TAMPERED', () => {
-    expect(NON_FALLBACK_ERROR_CODES).toContain(TOOL_ERROR_CODES.POLICY_DENIED);
-    expect(NON_FALLBACK_ERROR_CODES).toContain(TOOL_ERROR_CODES.SCOPE_DENIED);
-    expect(NON_FALLBACK_ERROR_CODES).toContain('SPEC_TAMPERED');
+describe('FALLBACK_ALLOWED_ERROR_CODES (WU-1866)', () => {
+  it('contains only TOOL_NOT_FOUND', () => {
+    expect(FALLBACK_ALLOWED_ERROR_CODES.has(TOOL_ERROR_CODES.TOOL_NOT_FOUND)).toBe(true);
+    expect(FALLBACK_ALLOWED_ERROR_CODES.size).toBe(1);
   });
 
-  it('does not include TOOL_NOT_FOUND', () => {
-    expect(NON_FALLBACK_ERROR_CODES).not.toContain(TOOL_ERROR_CODES.TOOL_NOT_FOUND);
+  it('does not contain POLICY_DENIED, SCOPE_DENIED, or SPEC_TAMPERED', () => {
+    expect(FALLBACK_ALLOWED_ERROR_CODES.has(TOOL_ERROR_CODES.POLICY_DENIED)).toBe(false);
+    expect(FALLBACK_ALLOWED_ERROR_CODES.has(TOOL_ERROR_CODES.SCOPE_DENIED)).toBe(false);
+    expect(FALLBACK_ALLOWED_ERROR_CODES.has('SPEC_TAMPERED')).toBe(false);
   });
 });
 

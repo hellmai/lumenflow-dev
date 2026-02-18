@@ -47,21 +47,17 @@ const TASK_CONTEXT_MODE = 'task';
 const DEFAULT_FALLBACK_ERROR_CODE = 'TOOL_EXECUTE_ERROR';
 
 /**
- * WU-1859: Error codes from the kernel that must NEVER trigger CLI fallback.
+ * WU-1866: Allowlist of error codes that MAY trigger CLI fallback.
  *
- * These represent deliberate policy/security enforcement by the kernel.
- * Retrying via CLI would bypass that enforcement, creating a security hole.
+ * Default-deny: any error code NOT in this set is returned directly to the
+ * caller without retrying via CLI. This prevents new kernel denial codes
+ * (e.g., future AUTH_DENIED) from silently falling through to CLI fallback.
  *
- * - POLICY_DENIED: The kernel's PolicyEngine denied the action
- * - SCOPE_DENIED: The action fell outside allowed tool scopes
- * - SPEC_TAMPERED: The workspace spec hash changed (integrity violation)
+ * Only TOOL_NOT_FOUND is allowed to fall back, for migration/backward compat
+ * when a tool exists in CLI but hasn't been registered in the kernel yet.
  */
-const SPEC_TAMPERED_ERROR_CODE = 'SPEC_TAMPERED';
-
-export const NON_FALLBACK_ERROR_CODES: ReadonlySet<string> = new Set([
-  TOOL_ERROR_CODES.POLICY_DENIED,
-  TOOL_ERROR_CODES.SCOPE_DENIED,
-  SPEC_TAMPERED_ERROR_CODE,
+export const FALLBACK_ALLOWED_ERROR_CODES: ReadonlySet<string> = new Set([
+  TOOL_ERROR_CODES.TOOL_NOT_FOUND,
 ]);
 
 /**
@@ -364,24 +360,42 @@ export async function executeViaPack(
   const executionContext = options.context ?? buildExecutionContext(options.contextInput);
   let runtimeFailureMessage: string | undefined;
 
+  // Separate runtime init from tool execution so that init failures
+  // (factory throws) still fall back to CLI, while executeTool failures
+  // are handled by the allowlist below.
+  let runtime: RuntimeInstance | undefined;
   try {
-    const runtime = await runtimeFactory(projectRoot);
-    const runtimeResult = await runtime.executeTool(toolName, toolInput, executionContext);
-    if (runtimeResult.success) {
-      return success(runtimeResult);
-    }
-
-    // WU-1859: Policy/scope denials and spec-tampered errors are returned
-    // directly. These represent deliberate kernel enforcement -- retrying
-    // via CLI would bypass that enforcement and create a security hole.
-    const errorCode = runtimeResult.error?.code;
-    if (errorCode && NON_FALLBACK_ERROR_CODES.has(errorCode)) {
-      return error(runtimeResult.error?.message ?? `${toolName} denied by kernel`, errorCode);
-    }
-
-    runtimeFailureMessage = runtimeResult.error?.message;
+    runtime = await runtimeFactory(projectRoot);
   } catch (cause) {
     runtimeFailureMessage = (cause as Error).message;
+  }
+
+  if (runtime) {
+    try {
+      const runtimeResult = await runtime.executeTool(toolName, toolInput, executionContext);
+      if (runtimeResult.success) {
+        return success(runtimeResult);
+      }
+
+      // WU-1866: Allowlist pattern -- only error codes in
+      // FALLBACK_ALLOWED_ERROR_CODES may trigger CLI fallback.
+      // All other codes (including unknown/future codes) are returned
+      // directly. This is default-deny for fallback.
+      const errorCode = runtimeResult.error?.code;
+      if (!errorCode || !FALLBACK_ALLOWED_ERROR_CODES.has(errorCode)) {
+        return error(
+          runtimeResult.error?.message ?? `${toolName} failed`,
+          errorCode ?? DEFAULT_FALLBACK_ERROR_CODE,
+        );
+      }
+
+      runtimeFailureMessage = runtimeResult.error?.message;
+    } catch (cause) {
+      // WU-1866: Thrown exceptions from executeTool are returned directly.
+      // They represent unexpected runtime failures that should not be
+      // silently retried via CLI.
+      return error((cause as Error).message, DEFAULT_FALLBACK_ERROR_CODE);
+    }
   }
 
   const fallbackResult = await cliRunner(options.fallback.command, options.fallback.args ?? [], {
