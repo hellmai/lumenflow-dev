@@ -6,7 +6,6 @@ _Last updated: 2026-02-18_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml)
-- [WU-1841 — Wire HTTP surface to push kernel events to control plane](wu/WU-1841.yaml)
 
 ## Completed
 
@@ -782,3 +781,4 @@ _Last updated: 2026-02-18_
 - [WU-1821 — Build workspace overview page with task list and lane WIP visualization](wu/WU-1821.yaml) — 2026-02-18
 - [WU-1825 — Create pack:hash CLI command for integrity hash computation](wu/WU-1825.yaml) — 2026-02-18
 - [WU-1822 — Build workspace connection flow with runtime initialization](wu/WU-1822.yaml) — 2026-02-18
+- [WU-1841 — Wire HTTP surface to push kernel events to control plane](wu/WU-1841.yaml) — 2026-02-18

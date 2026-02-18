@@ -41,7 +41,6 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1814 — Full parity validation and Phase 3 completion evidence](wu/WU-1814.yaml) — Framework: Core Lifecycle
-- [WU-1841 — Wire HTTP surface to push kernel events to control plane](wu/WU-1841.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -821,6 +820,7 @@ sections:
 - [WU-1821 — Build workspace overview page with task list and lane WIP visualization](wu/WU-1821.yaml)
 - [WU-1825 — Create pack:hash CLI command for integrity hash computation](wu/WU-1825.yaml)
 - [WU-1822 — Build workspace connection flow with runtime initialization](wu/WU-1822.yaml)
+- [WU-1841 — Wire HTTP surface to push kernel events to control plane](wu/WU-1841.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

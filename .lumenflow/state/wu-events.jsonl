@@ -1632,3 +1632,4 @@
 {"type":"claim","wuId":"WU-1841","timestamp":"2026-02-18T21:06:32.181Z","lane":"Framework: Core Lifecycle","title":"Wire HTTP surface to push kernel events to control plane"}
 {"type":"complete","wuId":"WU-1825","timestamp":"2026-02-18T21:09:46.595Z"}
 {"type":"complete","wuId":"WU-1822","timestamp":"2026-02-18T21:13:56.155Z"}
+{"type":"complete","wuId":"WU-1841","timestamp":"2026-02-18T21:14:14.622Z"}

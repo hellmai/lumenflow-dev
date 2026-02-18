@@ -2,7 +2,7 @@ id: WU-1841
 title: Wire HTTP surface to push kernel events to control plane
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-18
 code_paths:
@@ -45,3 +45,6 @@ session_id: 3807b695-7b2d-49da-9db9-565987b1b531
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-18T21:06:32.146Z
+locked: true
+completed_at: 2026-02-18T21:14:09.743Z
+completed: 2026-02-18
