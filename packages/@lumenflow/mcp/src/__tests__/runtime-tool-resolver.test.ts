@@ -343,3 +343,205 @@ describe('packToolCapabilityResolver', () => {
     await expect(stat(path.join(tempRoot, nestedPath))).rejects.toThrow();
   });
 });
+
+/**
+ * WU-1803: Tests for flow, metrics, and context tool in-process handler registration
+ */
+describe('WU-1803: flow/metrics/context tool registration', () => {
+  const FLOW_METRICS_CONTEXT_TOOLS = [
+    'flow:bottlenecks',
+    'flow:report',
+    'metrics:snapshot',
+    'lumenflow:metrics',
+    'metrics',
+    'context:get',
+    'wu:list',
+  ] as const;
+
+  it.each(FLOW_METRICS_CONTEXT_TOOLS)('registers %s as an in-process pack tool', (toolName) => {
+    expect(isInProcessPackToolRegistered(toolName)).toBe(true);
+  });
+
+  it('lists all flow/metrics/context tools in the registry', () => {
+    const registeredTools = listInProcessPackTools();
+    for (const toolName of FLOW_METRICS_CONTEXT_TOOLS) {
+      expect(registeredTools).toContain(toolName);
+    }
+  });
+
+  it.each(FLOW_METRICS_CONTEXT_TOOLS)(
+    'resolves %s to an in-process handler via packToolCapabilityResolver',
+    async (toolName) => {
+      const input = createResolverInput(toolName);
+      const capability = await packToolCapabilityResolver(input);
+
+      expect(capability).toBeDefined();
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+    },
+  );
+});
+
+/**
+ * WU-1803: Tests for flow/metrics/context MCP tools using executeViaPack
+ */
+describe('WU-1803: flow/metrics/context tools use executeViaPack (not runCliCommand)', () => {
+  beforeEach(() => {
+    resetExecuteViaPackRuntimeCache();
+  });
+
+  it('flow_bottlenecks routes through executeViaPack runtime path', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { bottlenecks: [], criticalPath: { path: [], length: 0 } },
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const result = await executeViaPack(
+      'flow:bottlenecks',
+      { limit: 10 },
+      {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({ taskId: 'WU-1803' }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: {
+          command: 'flow:bottlenecks',
+          args: ['--limit', '10'],
+          errorCode: 'FLOW_BOTTLENECKS_ERROR',
+        },
+      },
+    );
+
+    expect(runtimeFactory).toHaveBeenCalledTimes(1);
+    expect(runtimeExecuteTool).toHaveBeenCalledWith(
+      'flow:bottlenecks',
+      { limit: 10 },
+      expect.objectContaining({ task_id: 'WU-1803' }),
+    );
+    expect(cliRunner).not.toHaveBeenCalled();
+    expect(result.success).toBe(true);
+  });
+
+  it('flow_report routes through executeViaPack runtime path', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { range: { start: '2026-01-01', end: '2026-02-01' } },
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const result = await executeViaPack(
+      'flow:report',
+      { days: 30 },
+      {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({ taskId: 'WU-1803' }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: {
+          command: 'flow:report',
+          args: ['--days', '30'],
+          errorCode: 'FLOW_REPORT_ERROR',
+        },
+      },
+    );
+
+    expect(cliRunner).not.toHaveBeenCalled();
+    expect(result.success).toBe(true);
+  });
+
+  it('metrics_snapshot routes through executeViaPack runtime path', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { flow: { ready: 5, inProgress: 2, blocked: 1, waiting: 0, done: 10, totalActive: 8 } },
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const result = await executeViaPack(
+      'metrics:snapshot',
+      {},
+      {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({ taskId: 'WU-1803' }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: {
+          command: 'metrics:snapshot',
+          args: [],
+          errorCode: 'METRICS_SNAPSHOT_ERROR',
+        },
+      },
+    );
+
+    expect(cliRunner).not.toHaveBeenCalled();
+    expect(result.success).toBe(true);
+  });
+
+  it('context_get routes through executeViaPack runtime path', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { location: { type: 'main' } },
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const result = await executeViaPack(
+      'context:get',
+      {},
+      {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({ taskId: 'WU-1803' }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: {
+          command: 'context:get',
+          args: [],
+          errorCode: 'CONTEXT_ERROR',
+        },
+      },
+    );
+
+    expect(cliRunner).not.toHaveBeenCalled();
+    expect(result.success).toBe(true);
+  });
+
+  it('wu_list routes through executeViaPack runtime path', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: [{ id: 'WU-1803', status: 'in_progress' }],
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const result = await executeViaPack(
+      'wu:list',
+      { status: 'in_progress' },
+      {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({ taskId: 'WU-1803' }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: {
+          command: 'wu:validate',
+          args: ['--all', '--json'],
+          errorCode: 'WU_LIST_ERROR',
+        },
+      },
+    );
+
+    expect(cliRunner).not.toHaveBeenCalled();
+    expect(result.success).toBe(true);
+  });
+});

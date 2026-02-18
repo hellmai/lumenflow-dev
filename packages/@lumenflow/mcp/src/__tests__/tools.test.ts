@@ -29,6 +29,7 @@ import {
 } from '../tools/runtime-task-constants.js';
 import * as cliRunner from '../cli-runner.js';
 import * as core from '@lumenflow/core';
+import * as toolsShared from '../tools-shared.js';
 
 // Mock cli-runner for write operations
 vi.mock('../cli-runner.js', () => ({
@@ -59,70 +60,77 @@ describe('MCP tools', () => {
     vi.restoreAllMocks();
   });
 
+  // WU-1803: context_get and wu_list now route through executeViaPack
   describe('context_get', () => {
-    it('should return current WU context via core', async () => {
+    it('should return current WU context via runtime pack execution', async () => {
       const mockContext = {
         location: { type: 'worktree', cwd: '/path/to/worktree' },
         git: { branch: 'lane/framework-cli/wu-1412', isDirty: false },
         wu: { id: 'WU-1412', status: 'in_progress' },
       };
-      mockComputeWuContext.mockResolvedValue(
-        mockContext as unknown as Awaited<ReturnType<typeof core.computeWuContext>>,
-      );
+      const spy = vi.spyOn(toolsShared, 'executeViaPack').mockResolvedValue({
+        success: true,
+        data: mockContext,
+      });
 
       const result = await contextGetTool.execute({});
 
       expect(result.success).toBe(true);
       expect(result.data).toMatchObject(mockContext);
-      expect(mockComputeWuContext).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith(
+        'context:get',
+        expect.anything(),
+        expect.objectContaining({
+          fallback: expect.objectContaining({ command: 'context:get' }),
+        }),
+      );
+      spy.mockRestore();
     });
 
     it('should handle errors gracefully', async () => {
-      mockComputeWuContext.mockRejectedValue(new Error('Git not found'));
+      const spy = vi.spyOn(toolsShared, 'executeViaPack').mockResolvedValue({
+        success: false,
+        error: { message: 'Git not found', code: 'CONTEXT_ERROR' },
+      });
 
       const result = await contextGetTool.execute({});
 
       expect(result.success).toBe(false);
       expect(result.error?.message).toContain('Git not found');
+      spy.mockRestore();
     });
   });
 
   describe('wu_list', () => {
-    it('should list WUs via CLI shell-out', async () => {
+    it('should list WUs via runtime pack execution', async () => {
       const mockWus = [
         { id: 'WU-1412', title: 'MCP server', status: 'in_progress' },
         { id: 'WU-1413', title: 'MCP init', status: 'ready' },
       ];
-      mockRunCliCommand.mockResolvedValue({
+      const spy = vi.spyOn(toolsShared, 'executeViaPack').mockResolvedValue({
         success: true,
-        stdout: JSON.stringify(mockWus),
-        stderr: '',
-        exitCode: 0,
+        data: mockWus,
       });
 
       const result = await wuListTool.execute({});
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockWus);
+      spy.mockRestore();
     });
 
     it('should filter by status when provided', async () => {
-      const mockWus = [
-        { id: 'WU-1412', title: 'MCP server', status: 'in_progress' },
-        { id: 'WU-1413', title: 'MCP init', status: 'ready' },
-      ];
-      mockRunCliCommand.mockResolvedValue({
+      const mockWus = [{ id: 'WU-1412', title: 'MCP server', status: 'in_progress' }];
+      const spy = vi.spyOn(toolsShared, 'executeViaPack').mockResolvedValue({
         success: true,
-        stdout: JSON.stringify(mockWus),
-        stderr: '',
-        exitCode: 0,
+        data: mockWus,
       });
 
       const result = await wuListTool.execute({ status: 'in_progress' });
 
       expect(result.success).toBe(true);
-      // Should filter to only in_progress
       expect((result.data as Array<{ status: string }>).length).toBe(1);
+      spy.mockRestore();
     });
   });
 
