@@ -4,11 +4,17 @@ import {
   type ExecutionContext,
   type RuntimeToolCapabilityResolverInput,
 } from '@lumenflow/kernel';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   isInProcessPackToolRegistered,
+  listInProcessPackTools,
   packToolCapabilityResolver,
 } from '../runtime-tool-resolver.js';
+import {
+  buildExecutionContext,
+  executeViaPack,
+  resetExecuteViaPackRuntimeCache,
+} from '../tools-shared.js';
 
 const READ_SCOPE = {
   type: 'path' as const,
@@ -74,6 +80,10 @@ function createResolverInput(toolName: string): RuntimeToolCapabilityResolverInp
 }
 
 describe('packToolCapabilityResolver', () => {
+  beforeEach(() => {
+    resetExecuteViaPackRuntimeCache();
+  });
+
   it('returns in-process capability for registered tools', async () => {
     const input = createResolverInput('wu:status');
     const capability = await packToolCapabilityResolver(input);
@@ -96,6 +106,10 @@ describe('packToolCapabilityResolver', () => {
     expect(output?.error?.code).toBe('RUNTIME_TOOL_NOT_MIGRATED');
   });
 
+  it('lists registered in-process pack tools', () => {
+    expect(listInProcessPackTools()).toContain('wu:status');
+  });
+
   it('falls back to default subprocess capability for unregistered tools', async () => {
     const input = createResolverInput('tool:unknown');
     const capability = await packToolCapabilityResolver(input);
@@ -105,5 +119,102 @@ describe('packToolCapabilityResolver', () => {
     if (capability?.handler.kind === TOOL_HANDLER_KINDS.SUBPROCESS) {
       expect(capability.handler.entry).toContain('tool-impl/pending-runtime-tools.ts');
     }
+  });
+
+  it('builds a maintenance execution context when task identity is omitted', () => {
+    const context = buildExecutionContext({
+      now: () => new Date('2026-02-18T00:00:00.000Z'),
+    });
+
+    expect(context.task_id).toContain('maintenance');
+    expect(context.run_id).toContain(context.task_id);
+    expect(context.session_id).toContain('session-maintenance');
+    expect(context.allowed_scopes).toEqual([{ type: 'path', pattern: '**', access: 'write' }]);
+    expect(context.metadata?.invocation_mode).toBe('maintenance');
+  });
+
+  it('builds a task-scoped execution context when task identity is provided', () => {
+    const context = buildExecutionContext({
+      taskId: 'WU-1798',
+      runId: 'run-WU-1798-1',
+      sessionId: 'session-WU-1798',
+      allowedScopes: [READ_SCOPE],
+      metadata: { source: 'unit-test' },
+    });
+
+    expect(context.task_id).toBe('WU-1798');
+    expect(context.run_id).toBe('run-WU-1798-1');
+    expect(context.session_id).toBe('session-WU-1798');
+    expect(context.allowed_scopes).toEqual([READ_SCOPE]);
+    expect(context.metadata?.invocation_mode).toBe('task');
+    expect(context.metadata?.source).toBe('unit-test');
+  });
+
+  it('prefers runtime execution in executeViaPack when runtime succeeds', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { via: 'runtime' },
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const result = await executeViaPack(
+      'wu:status',
+      { id: 'WU-1798' },
+      {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({
+          taskId: 'WU-1798',
+          runId: 'run-WU-1798-1',
+          sessionId: 'session-WU-1798',
+          allowedScopes: [READ_SCOPE],
+        }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: {
+          command: 'wu:status',
+          args: ['--id', 'WU-1798'],
+          errorCode: 'WU_STATUS_ERROR',
+        },
+      },
+    );
+
+    expect(runtimeFactory).toHaveBeenCalledTimes(1);
+    expect(runtimeExecuteTool).toHaveBeenCalledTimes(1);
+    expect(cliRunner).not.toHaveBeenCalled();
+    expect(result.success).toBe(true);
+    expect((result.data as { success: boolean }).success).toBe(true);
+  });
+
+  it('falls back to CLI execution in executeViaPack when runtime fails', async () => {
+    const runtimeFactory = vi.fn().mockRejectedValue(new Error('runtime unavailable'));
+    const cliRunner = vi.fn().mockResolvedValue({
+      success: true,
+      stdout: 'fallback path',
+      stderr: '',
+      exitCode: 0,
+    });
+
+    const result = await executeViaPack(
+      'wu:status',
+      { id: 'WU-1798' },
+      {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: {
+          command: 'wu:status',
+          args: ['--id', 'WU-1798'],
+          errorCode: 'WU_STATUS_ERROR',
+        },
+      },
+    );
+
+    expect(runtimeFactory).toHaveBeenCalledTimes(1);
+    expect(cliRunner).toHaveBeenCalledTimes(1);
+    expect(result.success).toBe(true);
+    expect((result.data as { message: string }).message).toContain('fallback path');
   });
 });

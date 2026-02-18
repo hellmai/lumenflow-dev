@@ -41,6 +41,10 @@ export function isInProcessPackToolRegistered(toolName: string): boolean {
   return registeredInProcessToolHandlers.has(toolName);
 }
 
+export function listInProcessPackTools(): string[] {
+  return [...registeredInProcessToolHandlers.keys()].sort();
+}
+
 export const packToolCapabilityResolver: RuntimeToolCapabilityResolver = async (input) => {
   const registeredHandler = registeredInProcessToolHandlers.get(input.tool.name);
   if (!registeredHandler) {
