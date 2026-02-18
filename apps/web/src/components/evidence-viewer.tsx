@@ -57,9 +57,14 @@ function formatDuration(durationMs: number | undefined): string {
 
 interface EvidenceViewerProps {
   readonly timeline: readonly TimelineEntry[];
+  readonly taskId?: string;
 }
 
-export function EvidenceViewer({ timeline }: EvidenceViewerProps) {
+function buildExportUrl(taskId: string, format: 'csv' | 'json'): string {
+  return `/api/tasks/${encodeURIComponent(taskId)}/evidence/export?format=${format}`;
+}
+
+export function EvidenceViewer({ timeline, taskId }: EvidenceViewerProps) {
   if (timeline.length === 0) {
     return (
       <div
@@ -73,6 +78,28 @@ export function EvidenceViewer({ timeline }: EvidenceViewerProps) {
 
   return (
     <div data-testid="evidence-viewer" className="space-y-2">
+      {/* Export buttons */}
+      {taskId && (
+        <div data-testid="export-controls" className="flex justify-end gap-2">
+          <a
+            data-testid="export-csv-button"
+            href={buildExportUrl(taskId, 'csv')}
+            download
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50"
+          >
+            Export CSV
+          </a>
+          <a
+            data-testid="export-json-button"
+            href={buildExportUrl(taskId, 'json')}
+            download
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50"
+          >
+            Export JSON
+          </a>
+        </div>
+      )}
+
       {/* Header row */}
       <div className="grid grid-cols-6 gap-2 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
         <div>Tool</div>

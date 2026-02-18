@@ -105,4 +105,57 @@ describe('EvidenceViewer', () => {
     const row = screen.getByTestId('timeline-row-receipt-orphan');
     expect(within(row).getByText('N/A')).toBeDefined();
   });
+
+  describe('Export button', () => {
+    it('renders export buttons when taskId is provided and timeline has entries', () => {
+      render(<EvidenceViewer timeline={[SUCCESS_ENTRY]} taskId="task-1" />);
+
+      const csvButton = screen.getByTestId('export-csv-button');
+      const jsonButton = screen.getByTestId('export-json-button');
+
+      expect(csvButton).toBeDefined();
+      expect(jsonButton).toBeDefined();
+    });
+
+    it('does not render export buttons when taskId is not provided', () => {
+      render(<EvidenceViewer timeline={[SUCCESS_ENTRY]} />);
+
+      expect(screen.queryByTestId('export-controls')).toBeNull();
+    });
+
+    it('does not render export buttons when timeline is empty', () => {
+      render(<EvidenceViewer timeline={[]} taskId="task-1" />);
+
+      expect(screen.queryByTestId('export-controls')).toBeNull();
+    });
+
+    it('CSV export button links to correct export URL', () => {
+      render(<EvidenceViewer timeline={[SUCCESS_ENTRY]} taskId="task-1" />);
+
+      const csvButton = screen.getByTestId('export-csv-button') as HTMLAnchorElement;
+      expect(csvButton.getAttribute('href')).toBe(
+        '/api/tasks/task-1/evidence/export?format=csv',
+      );
+      expect(csvButton.hasAttribute('download')).toBe(true);
+    });
+
+    it('JSON export button links to correct export URL', () => {
+      render(<EvidenceViewer timeline={[SUCCESS_ENTRY]} taskId="task-1" />);
+
+      const jsonButton = screen.getByTestId('export-json-button') as HTMLAnchorElement;
+      expect(jsonButton.getAttribute('href')).toBe(
+        '/api/tasks/task-1/evidence/export?format=json',
+      );
+      expect(jsonButton.hasAttribute('download')).toBe(true);
+    });
+
+    it('encodes taskId with special characters in export URL', () => {
+      render(<EvidenceViewer timeline={[SUCCESS_ENTRY]} taskId="task/special&id" />);
+
+      const csvButton = screen.getByTestId('export-csv-button') as HTMLAnchorElement;
+      expect(csvButton.getAttribute('href')).toBe(
+        '/api/tasks/task%2Fspecial%26id/evidence/export?format=csv',
+      );
+    });
+  });
 });

@@ -94,7 +94,7 @@ export function EvidencePageClient() {
       )}
 
       {/* Timeline */}
-      {status === FETCH_STATUS.SUCCESS && <EvidenceViewer timeline={timeline} />}
+      {status === FETCH_STATUS.SUCCESS && <EvidenceViewer timeline={timeline} taskId={taskId} />}
     </div>
   );
 }
