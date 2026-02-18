@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { Disposable, KernelEvent, KernelRuntime, ReplayFilter, TaskSpec } from '@lumenflow/kernel';
+import type {
+  Disposable,
+  KernelEvent,
+  KernelRuntime,
+  ReplayFilter,
+  TaskSpec,
+} from '@lumenflow/kernel';
 import { createHttpSurface } from '../../../packages/@lumenflow/surfaces/http/server';
 import { forwardToHttpSurface } from '../src/server/http-surface-route-adapter';
 
@@ -53,7 +59,10 @@ function createRuntimeStub(): KernelRuntime {
       },
     })),
     claimTask: vi.fn(async (input) => ({ task_id: input.task_id })),
-    completeTask: vi.fn(async (input) => ({ task_id: input.task_id, run_id: input.run_id ?? 'run-1' })),
+    completeTask: vi.fn(async (input) => ({
+      task_id: input.task_id,
+      run_id: input.run_id ?? 'run-1',
+    })),
     inspectTask: vi.fn(async (taskId: string) => ({ task_id: taskId })),
     blockTask: vi.fn(),
     unblockTask: vi.fn(),

@@ -29,7 +29,9 @@
   "turbo": {
     "tasks": {
       "build": {
-        "outputs": [".next/**"]
+        "outputs": [
+          ".next/**"
+        ]
       }
     }
   }

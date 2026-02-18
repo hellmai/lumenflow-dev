@@ -12,7 +12,10 @@ interface TasksRouteParams {
 
 type TasksRouteContext = RouteContext<TasksRouteParams>;
 
-async function delegateTaskRequest(request: Request, context: TasksRouteContext): Promise<Response> {
+async function delegateTaskRequest(
+  request: Request,
+  context: TasksRouteContext,
+): Promise<Response> {
   const params = await resolveRouteParams(context);
   const surface = await getHttpSurfaceForWeb();
 

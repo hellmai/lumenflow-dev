@@ -2,7 +2,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { KERNEL_EVENT_KINDS, type Disposable, type KernelEvent, type ReplayFilter } from '@lumenflow/kernel';
+import {
+  KERNEL_EVENT_KINDS,
+  type Disposable,
+  type KernelEvent,
+  type ReplayFilter,
+} from '@lumenflow/kernel';
 
 const HTTP_METHOD = {
   GET: 'GET',
