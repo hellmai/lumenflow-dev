@@ -2,7 +2,7 @@ id: WU-1827
 title: Create pack:install CLI command for adding packs to workspace
 lane: 'Framework: CLI Orchestration'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-18
 code_paths:
@@ -32,9 +32,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: pnpm pack:install --id my-pack --source git --url git-url --version 1.0.0 adds PackPin to workspace.yaml, runs pack:validate on the resolved pack, computes and pins integrity hash.
+description: pnpm pack:install --id my-pack --source git --url git-url --version 1.0.0 adds PackPin
+  to workspace.yaml, runs pack:validate on the resolved pack, computes and pins integrity hash.
 acceptance:
   - Adds PackPin entry to workspace.yaml
   - Runs pack:validate on resolved pack
   - Computes and pins integrity hash
   - Errors if pack fails validation
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1827
+claimed_at: 2026-02-18T21:19:02.210Z
+baseline_main_sha: 4b430c9c7c109131e81d9a0a7b27c6cc11413d64
+session_id: 6df8aa7f-34e5-4edd-b002-7cb8b0f932bd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-18T21:19:02.215Z
