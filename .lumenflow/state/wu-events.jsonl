@@ -1578,3 +1578,4 @@
 {"type":"complete","wuId":"WU-1817","timestamp":"2026-02-18T16:39:10.643Z"}
 {"type":"claim","wuId":"WU-1818","timestamp":"2026-02-18T16:39:55.366Z","lane":"Framework: MCP","title":"Create AG-UI event adapter mapping kernel events to AG-UI protocol"}
 {"type":"complete","wuId":"WU-1818","timestamp":"2026-02-18T16:44:49.970Z"}
+{"type":"claim","wuId":"WU-1819","lane":"Framework: MCP","title":"Scaffold Next.js web app with API routes for HTTP surface","timestamp":"2026-02-18T16:53:49.272Z"}
