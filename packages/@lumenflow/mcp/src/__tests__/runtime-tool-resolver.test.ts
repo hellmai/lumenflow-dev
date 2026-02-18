@@ -58,6 +58,14 @@ const WU_LIFECYCLE_STATE_TOOL_NAMES = {
   EDIT: 'wu:edit',
   RELEASE: 'wu:release',
 } as const;
+const WU_LIFECYCLE_COMPLETION_TOOL_NAMES = {
+  DONE: 'wu:done',
+  PREP: 'wu:prep',
+  SANDBOX: 'wu:sandbox',
+  PRUNE: 'wu:prune',
+  DELETE: 'wu:delete',
+  CLEANUP: 'wu:cleanup',
+} as const;
 
 function createResolverInput(toolName: string): RuntimeToolCapabilityResolverInput {
   return {
@@ -222,6 +230,23 @@ describe('packToolCapabilityResolver', () => {
       WU_LIFECYCLE_STATE_TOOL_NAMES.UNBLOCK,
       WU_LIFECYCLE_STATE_TOOL_NAMES.EDIT,
       WU_LIFECYCLE_STATE_TOOL_NAMES.RELEASE,
+    ];
+
+    for (const toolName of toolNames) {
+      const capability = await packToolCapabilityResolver(createResolverInput(toolName));
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+      expect(isInProcessPackToolRegistered(toolName)).toBe(true);
+    }
+  });
+
+  it('resolves WU lifecycle completion/cleanup tools to in-process handlers', async () => {
+    const toolNames = [
+      WU_LIFECYCLE_COMPLETION_TOOL_NAMES.DONE,
+      WU_LIFECYCLE_COMPLETION_TOOL_NAMES.PREP,
+      WU_LIFECYCLE_COMPLETION_TOOL_NAMES.SANDBOX,
+      WU_LIFECYCLE_COMPLETION_TOOL_NAMES.PRUNE,
+      WU_LIFECYCLE_COMPLETION_TOOL_NAMES.DELETE,
+      WU_LIFECYCLE_COMPLETION_TOOL_NAMES.CLEANUP,
     ];
 
     for (const toolName of toolNames) {
@@ -832,6 +857,78 @@ describe('WU-1803: flow/metrics/context tools use executeViaPack (not runCliComm
 
     expect(cliRunner).not.toHaveBeenCalled();
     expect(result.success).toBe(true);
+  });
+});
+
+describe('WU-1808: completion/cleanup lifecycle uses runtime path end-to-end', () => {
+  beforeEach(() => {
+    resetExecuteViaPackRuntimeCache();
+  });
+
+  it('runs create -> claim -> prep -> done via runtime without CLI fallback', async () => {
+    const runtimeExecuteTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: { message: 'runtime-success' },
+    });
+    const runtimeFactory = vi.fn().mockResolvedValue({
+      executeTool: runtimeExecuteTool,
+    });
+    const cliRunner = vi.fn();
+
+    const lifecycleCalls = [
+      {
+        toolName: 'wu:create',
+        input: { lane: 'Framework: Core Lifecycle', title: 'Lifecycle fixture' },
+        fallback: {
+          command: 'wu:create',
+          args: ['--lane', 'Framework: Core Lifecycle', '--title', 'Lifecycle fixture'],
+          errorCode: 'WU_CREATE_ERROR',
+        },
+      },
+      {
+        toolName: 'wu:claim',
+        input: { id: 'WU-1808', lane: 'Framework: Core Lifecycle' },
+        fallback: {
+          command: 'wu:claim',
+          args: ['--id', 'WU-1808', '--lane', 'Framework: Core Lifecycle'],
+          errorCode: 'WU_CLAIM_ERROR',
+        },
+      },
+      {
+        toolName: 'wu:prep',
+        input: { id: 'WU-1808' },
+        fallback: {
+          command: 'wu:prep',
+          args: ['--id', 'WU-1808'],
+          errorCode: 'WU_PREP_ERROR',
+        },
+      },
+      {
+        toolName: 'wu:done',
+        input: { id: 'WU-1808' },
+        fallback: {
+          command: 'wu:done',
+          args: ['--id', 'WU-1808'],
+          errorCode: 'WU_DONE_ERROR',
+        },
+      },
+    ] as const;
+
+    for (const lifecycleCall of lifecycleCalls) {
+      const result = await executeViaPack(lifecycleCall.toolName, lifecycleCall.input, {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        context: buildExecutionContext({ taskId: 'WU-1808' }),
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: lifecycleCall.fallback,
+      });
+
+      expect(result.success).toBe(true);
+    }
+
+    expect(runtimeFactory).toHaveBeenCalledTimes(lifecycleCalls.length);
+    expect(runtimeExecuteTool).toHaveBeenCalledTimes(lifecycleCalls.length);
+    expect(cliRunner).not.toHaveBeenCalled();
   });
 });
 

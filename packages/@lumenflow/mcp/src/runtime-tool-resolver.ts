@@ -36,6 +36,12 @@ const IN_PROCESS_TOOL_NAMES = {
   WU_CREATE: CliCommands.WU_CREATE,
   WU_CLAIM: CliCommands.WU_CLAIM,
   WU_PROTO: CliCommands.WU_PROTO,
+  WU_DONE: CliCommands.WU_DONE,
+  WU_PREP: CliCommands.WU_PREP,
+  WU_SANDBOX: CliCommands.WU_SANDBOX,
+  WU_PRUNE: CliCommands.WU_PRUNE,
+  WU_DELETE: CliCommands.WU_DELETE,
+  WU_CLEANUP: CliCommands.WU_CLEANUP,
   WU_BLOCK: CliCommands.WU_BLOCK,
   WU_UNBLOCK: CliCommands.WU_UNBLOCK,
   WU_EDIT: CliCommands.WU_EDIT,
@@ -63,6 +69,12 @@ const IN_PROCESS_TOOL_DESCRIPTIONS = {
   WU_CREATE: 'Create WU via runtime-first handler with CLI fallback',
   WU_CLAIM: 'Claim WU via runtime-first handler with CLI fallback',
   WU_PROTO: 'Create prototype WU via runtime-first handler with CLI fallback',
+  WU_DONE: 'Complete WU via runtime-first handler with CLI fallback',
+  WU_PREP: 'Prepare WU via runtime-first handler with CLI fallback',
+  WU_SANDBOX: 'Run sandbox command via runtime-first handler with CLI fallback',
+  WU_PRUNE: 'Prune stale WUs via runtime-first handler with CLI fallback',
+  WU_DELETE: 'Delete WU via runtime-first handler with CLI fallback',
+  WU_CLEANUP: 'Cleanup WU artifacts via runtime-first handler with CLI fallback',
   WU_BLOCK: 'Block WU via in-process core state transition handler',
   WU_UNBLOCK: 'Unblock WU via in-process core state transition handler',
   WU_EDIT: 'Edit WU spec fields via in-process core filesystem handler',
@@ -2102,6 +2114,12 @@ const VALIDATION_TOOL_ERROR_CODES = {
   WU_CREATE_ERROR: 'WU_CREATE_ERROR',
   WU_CLAIM_ERROR: 'WU_CLAIM_ERROR',
   WU_PROTO_ERROR: 'WU_PROTO_ERROR',
+  WU_DONE_ERROR: 'WU_DONE_ERROR',
+  WU_PREP_ERROR: 'WU_PREP_ERROR',
+  WU_SANDBOX_ERROR: 'WU_SANDBOX_ERROR',
+  WU_PRUNE_ERROR: 'WU_PRUNE_ERROR',
+  WU_DELETE_ERROR: 'WU_DELETE_ERROR',
+  WU_CLEANUP_ERROR: 'WU_CLEANUP_ERROR',
   WU_BLOCK_ERROR: 'WU_BLOCK_ERROR',
   WU_UNBLOCK_ERROR: 'WU_UNBLOCK_ERROR',
   WU_EDIT_ERROR: 'WU_EDIT_ERROR',
@@ -2623,6 +2641,42 @@ const wuProtoInProcess: InProcessToolFn = async () =>
     WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
   );
 
+const wuDoneInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.WU_DONE_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const wuPrepInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.WU_PREP_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const wuSandboxInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.WU_SANDBOX_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const wuPruneInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.WU_PRUNE_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const wuDeleteInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.WU_DELETE_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
+const wuCleanupInProcess: InProcessToolFn = async () =>
+  createFailureOutput(
+    VALIDATION_TOOL_ERROR_CODES.WU_CLEANUP_ERROR,
+    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
+  );
+
 const WU_STATE_TRANSITION_NOTE_PREFIX = {
   BLOCK: 'Blocked',
   UNBLOCK: 'Unblocked',
@@ -3102,6 +3156,54 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_PROTO,
       inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
       fn: wuProtoInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_DONE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_DONE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuDoneInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_PREP,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_PREP,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuPrepInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_SANDBOX,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_SANDBOX,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuSandboxInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_PRUNE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_PRUNE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuPruneInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_DELETE,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_DELETE,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuDeleteInProcess,
+    },
+  ],
+  [
+    IN_PROCESS_TOOL_NAMES.WU_CLEANUP,
+    {
+      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_CLEANUP,
+      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
+      fn: wuCleanupInProcess,
     },
   ],
   [

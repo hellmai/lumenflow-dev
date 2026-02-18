@@ -12,6 +12,8 @@ tests:
   manual:
     - Full WU lifecycle end-to-end via runtime path
   unit:
+    - packages/@lumenflow/mcp/src/__tests__/tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
     - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
   e2e: []
 artifacts:

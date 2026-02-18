@@ -328,22 +328,27 @@ describe('MCP tools', () => {
   });
 
   describe('wu_done', () => {
-    it('should complete WU via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should complete WU via executeViaPack', async () => {
+      const spy = vi.spyOn(toolsShared, 'executeViaPack').mockResolvedValue({
         success: true,
-        stdout: 'WU completed',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'WU completed' },
       });
 
       const result = await wuDoneTool.execute({ id: 'WU-1412' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(spy).toHaveBeenCalledWith(
         'wu:done',
-        expect.arrayContaining(['--id', 'WU-1412']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1412' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:done',
+            args: expect.arrayContaining(['--id', 'WU-1412']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
+      spy.mockRestore();
     });
 
     it('should fail fast if not on main checkout', async () => {

@@ -564,22 +564,26 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 
   describe('wu_prep', () => {
-    it('should prep WU via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should prep WU via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Gates passed. Run: cd /main && pnpm wu:done --id WU-1422',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Gates passed. Run: cd /main && pnpm wu:done --id WU-1422' },
       });
 
       const result = await wuPrepTool.execute({ id: 'WU-1422' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:prep',
-        expect.arrayContaining(['--id', 'WU-1422']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:prep',
+            args: expect.arrayContaining(['--id', 'WU-1422']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require id parameter', async () => {
@@ -590,39 +594,47 @@ describe('WU MCP tools (WU-1422)', () => {
     });
 
     it('should support docs-only flag', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Docs gates passed',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Docs gates passed' },
       });
 
       const result = await wuPrepTool.execute({ id: 'WU-1422', docs_only: true });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:prep',
-        expect.arrayContaining(['--id', 'WU-1422', '--docs-only']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422', docs_only: true }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:prep',
+            args: expect.arrayContaining(['--id', 'WU-1422', '--docs-only']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should support full-tests flag', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Full tests run',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Full tests run' },
       });
 
       const result = await wuPrepTool.execute({ id: 'WU-1422', full_tests: true });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:prep',
-        expect.arrayContaining(['--id', 'WU-1422', '--full-tests']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422', full_tests: true }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:prep',
+            args: expect.arrayContaining(['--id', 'WU-1422', '--full-tests']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
   });
 
@@ -657,56 +669,72 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 
   describe('wu_prune', () => {
-    it('should prune worktrees via CLI shell-out (dry-run by default)', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should prune worktrees via executeViaPack (dry-run by default)', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Would remove: worktrees/stale-wu-123',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Would remove: worktrees/stale-wu-123' },
       });
 
       const result = await wuPruneTool.execute({});
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith('wu:prune', [], expect.any(Object));
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
+        'wu:prune',
+        expect.objectContaining({}),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:prune',
+            args: [],
+          }),
+        }),
+      );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should support execute mode', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Pruned 2 stale worktrees',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Pruned 2 stale worktrees' },
       });
 
       const result = await wuPruneTool.execute({ execute: true });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:prune',
-        expect.arrayContaining(['--execute']),
-        expect.any(Object),
+        expect.objectContaining({ execute: true }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:prune',
+            args: expect.arrayContaining(['--execute']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
   });
 
   describe('wu_delete', () => {
-    it('should delete WU via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should delete WU via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'WU-1422 deleted',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'WU-1422 deleted' },
       });
 
       const result = await wuDeleteTool.execute({ id: 'WU-1422' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:delete',
-        expect.arrayContaining(['--id', 'WU-1422']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:delete',
+            args: expect.arrayContaining(['--id', 'WU-1422']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require id parameter', async () => {
@@ -717,41 +745,49 @@ describe('WU MCP tools (WU-1422)', () => {
     });
 
     it('should support dry-run mode', async () => {
-      mockRunCliCommand.mockResolvedValue({
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Would delete: WU-1422',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Would delete: WU-1422' },
       });
 
       const result = await wuDeleteTool.execute({ id: 'WU-1422', dry_run: true });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:delete',
-        expect.arrayContaining(['--id', 'WU-1422', '--dry-run']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422', dry_run: true }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:delete',
+            args: expect.arrayContaining(['--id', 'WU-1422', '--dry-run']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
   });
 
   describe('wu_cleanup', () => {
-    it('should cleanup WU via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should cleanup WU via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Cleanup complete',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Cleanup complete' },
       });
 
       const result = await wuCleanupTool.execute({ id: 'WU-1422' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:cleanup',
-        expect.arrayContaining(['--id', 'WU-1422']),
-        expect.any(Object),
+        expect.objectContaining({ id: 'WU-1422' }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:cleanup',
+            args: expect.arrayContaining(['--id', 'WU-1422']),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require id parameter', async () => {
@@ -763,12 +799,10 @@ describe('WU MCP tools (WU-1422)', () => {
   });
 
   describe('wu_sandbox', () => {
-    it('should run wu:sandbox via CLI shell-out', async () => {
-      mockRunCliCommand.mockResolvedValue({
+    it('should run wu:sandbox via executeViaPack', async () => {
+      mockExecuteViaPack.mockResolvedValue({
         success: true,
-        stdout: 'Sandbox command completed',
-        stderr: '',
-        exitCode: 0,
+        data: { message: 'Sandbox command completed' },
       });
 
       const result = await wuSandboxTool.execute({
@@ -778,20 +812,30 @@ describe('WU MCP tools (WU-1422)', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'wu:sandbox',
-        expect.arrayContaining([
-          '--id',
-          'WU-1687',
-          '--worktree',
-          '/tmp/wu-1687',
-          '--',
-          'node',
-          '-e',
-          'process.exit(0)',
-        ]),
-        expect.any(Object),
+        expect.objectContaining({
+          id: 'WU-1687',
+          worktree: '/tmp/wu-1687',
+          command: ['node', '-e', 'process.exit(0)'],
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'wu:sandbox',
+            args: expect.arrayContaining([
+              '--id',
+              'WU-1687',
+              '--worktree',
+              '/tmp/wu-1687',
+              '--',
+              'node',
+              '-e',
+              'process.exit(0)',
+            ]),
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should require command parameter', async () => {

@@ -79,6 +79,21 @@ const WuStateTransitionMessages = {
   RELEASE_FAILED: 'wu:release failed',
 } as const;
 
+const WuCompletionLifecycleMessages = {
+  SANDBOX_PASSED: 'WU sandbox command completed successfully',
+  SANDBOX_FAILED: 'wu:sandbox failed',
+  DONE_PASSED: 'WU completed successfully',
+  DONE_FAILED: 'wu:done failed',
+  PREP_PASSED: 'WU prep completed',
+  PREP_FAILED: 'wu:prep failed',
+  PRUNE_PASSED: 'Prune completed',
+  PRUNE_FAILED: 'wu:prune failed',
+  DELETE_PASSED: 'WU deleted',
+  DELETE_FAILED: 'wu:delete failed',
+  CLEANUP_PASSED: 'Cleanup complete',
+  CLEANUP_FAILED: 'wu:cleanup failed',
+} as const;
+
 const WuQueryFlags = {
   NO_STRICT: '--no-strict',
   WORKTREE: '--worktree',
@@ -283,17 +298,26 @@ export const wuSandboxTool: ToolDefinition = {
     }
     args.push('--', ...command);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_SANDBOX, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_SANDBOX, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_SANDBOX,
+        args,
+        errorCode: ErrorCodes.WU_CLAIM_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU sandbox command completed successfully' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:sandbox failed',
-        ErrorCodes.WU_CLAIM_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuCompletionLifecycleMessages.SANDBOX_PASSED })
+      : error(
+          result.error?.message ?? WuCompletionLifecycleMessages.SANDBOX_FAILED,
+          ErrorCodes.WU_CLAIM_ERROR,
+        );
   },
 };
 
@@ -338,17 +362,26 @@ export const wuDoneTool: ToolDefinition = {
       if (input.fix_wu) args.push('--fix-wu', input.fix_wu as string);
     }
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_DONE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_DONE, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_DONE,
+        args,
+        errorCode: ErrorCodes.WU_DONE_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU completed successfully' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:done failed',
-        ErrorCodes.WU_DONE_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuCompletionLifecycleMessages.DONE_PASSED })
+      : error(
+          result.error?.message ?? WuCompletionLifecycleMessages.DONE_FAILED,
+          ErrorCodes.WU_DONE_ERROR,
+        );
   },
 };
 
@@ -690,20 +723,26 @@ export const wuPrepTool: ToolDefinition = {
     if (input.docs_only) args.push(CliArgs.DOCS_ONLY);
     if (input.full_tests) args.push('--full-tests');
 
-    const cliOptions: CliRunnerOptions = {
+    const result = await executeViaPack(CliCommands.WU_PREP, input, {
       projectRoot: options?.projectRoot,
-      timeout: 600000, // 10 minutes for gates
-    };
-    const result = await runCliCommand(CliCommands.WU_PREP, args, cliOptions);
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_PREP,
+        args,
+        errorCode: ErrorCodes.WU_PREP_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU prep completed' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:prep failed',
-        ErrorCodes.WU_PREP_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuCompletionLifecycleMessages.PREP_PASSED })
+      : error(
+          result.error?.message ?? WuCompletionLifecycleMessages.PREP_FAILED,
+          ErrorCodes.WU_PREP_ERROR,
+        );
   },
 };
 
@@ -756,17 +795,26 @@ export const wuPruneTool: ToolDefinition = {
     const args: string[] = [];
     if (input.execute) args.push(CliArgs.EXECUTE);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_PRUNE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_PRUNE, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_PRUNE,
+        args,
+        errorCode: ErrorCodes.WU_PRUNE_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Prune completed' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:prune failed',
-        ErrorCodes.WU_PRUNE_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuCompletionLifecycleMessages.PRUNE_PASSED })
+      : error(
+          result.error?.message ?? WuCompletionLifecycleMessages.PRUNE_FAILED,
+          ErrorCodes.WU_PRUNE_ERROR,
+        );
   },
 };
 
@@ -789,17 +837,26 @@ export const wuDeleteTool: ToolDefinition = {
     if (input.dry_run) args.push(CliArgs.DRY_RUN);
     if (input.batch) args.push('--batch', input.batch as string);
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_DELETE, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_DELETE, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_DELETE,
+        args,
+        errorCode: ErrorCodes.WU_DELETE_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'WU deleted' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:delete failed',
-        ErrorCodes.WU_DELETE_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuCompletionLifecycleMessages.DELETE_PASSED })
+      : error(
+          result.error?.message ?? WuCompletionLifecycleMessages.DELETE_FAILED,
+          ErrorCodes.WU_DELETE_ERROR,
+        );
   },
 };
 
@@ -820,17 +877,26 @@ export const wuCleanupTool: ToolDefinition = {
     const args = [CliArgs.ID, input.id as string];
     if (input.artifacts) args.push('--artifacts');
 
-    const cliOptions: CliRunnerOptions = { projectRoot: options?.projectRoot };
-    const result = await runCliCommand(CliCommands.WU_CLEANUP, args, cliOptions);
+    const result = await executeViaPack(CliCommands.WU_CLEANUP, input, {
+      projectRoot: options?.projectRoot,
+      contextInput: {
+        metadata: {
+          [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+        },
+      },
+      fallback: {
+        command: CliCommands.WU_CLEANUP,
+        args,
+        errorCode: ErrorCodes.WU_CLEANUP_ERROR,
+      },
+    });
 
-    if (result.success) {
-      return success({ message: result.stdout || 'Cleanup complete' });
-    } else {
-      return error(
-        result.stderr || result.error?.message || 'wu:cleanup failed',
-        ErrorCodes.WU_CLEANUP_ERROR,
-      );
-    }
+    return result.success
+      ? success(result.data ?? { message: WuCompletionLifecycleMessages.CLEANUP_PASSED })
+      : error(
+          result.error?.message ?? WuCompletionLifecycleMessages.CLEANUP_FAILED,
+          ErrorCodes.WU_CLEANUP_ERROR,
+        );
   },
 };
 
