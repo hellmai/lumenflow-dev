@@ -212,9 +212,7 @@ function toStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) {
     return [];
   }
-  return value
-    .map((item) => toStringValue(item))
-    .filter((item): item is string => item !== null);
+  return value.map((item) => toStringValue(item)).filter((item): item is string => item !== null);
 }
 
 function toIntegerString(value: unknown): string | null {
