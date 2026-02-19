@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1887 — Migrate core WU lifecycle commands to software-delivery pack handlers](wu/WU-1887.yaml) — Framework: Core Lifecycle
 - [WU-1886 — Add executeViaPack migration compat guard and fallback telemetry](wu/WU-1886.yaml) — Framework: Core Lifecycle
 - [WU-1885 — Add software-delivery migration scorecard and CI stub regression gate](wu/WU-1885.yaml) — Framework: Core Lifecycle
 - [WU-1884 — Retarget INIT-031 Phase 6 to software-delivery pack completion](wu/WU-1884.yaml) — Framework: Core Lifecycle
