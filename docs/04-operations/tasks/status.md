@@ -6,6 +6,7 @@ _Last updated: 2026-02-19_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1898 — Fix CLI template condition bypass in wu:brief/wu:spawn prompt assembly](wu/WU-1898.yaml)
+- [WU-1899 — Add signal-based work classifier for code-path-aware UI/backend/docs detection](wu/WU-1899.yaml)
 
 ## Completed
 

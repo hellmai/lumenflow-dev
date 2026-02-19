@@ -2,7 +2,7 @@ id: WU-1899
 title: Add signal-based work classifier for code-path-aware UI/backend/docs detection
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -23,7 +23,9 @@ dependencies: []
 spec_refs:
   - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
 risks: []
-notes: Use minimatch for code_path pattern matching (already a dependency). Confidence = max(matched_signal_weights) not sum. The path-classifiers.ts module already does similar signal-based classification for docs-only detection - follow that pattern.
+notes: Use minimatch for code_path pattern matching (already a dependency). Confidence =
+  max(matched_signal_weights) not sum. The path-classifiers.ts module already does similar
+  signal-based classification for docs-only detection - follow that pattern.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -32,14 +34,31 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'wu:brief skill suggestions and test methodology are hardcoded to lane parent names (laneParent === Experience). This misses UI work in non-Experience lanes. Add a signal-based work classifier to @lumenflow/core that determines work domain (ui/backend/docs/infra/mixed) from multiple weighted signals: code_paths patterns (weight 1.0), lane hints (0.6), type (0.3), description keywords (0.2). Returns abstract capability tags (not client skill names) for vendor-agnostic design. Configurable via methodology.work_classification in .lumenflow.config.yaml with sensible built-in defaults.'
+description: 'wu:brief skill suggestions and test methodology are hardcoded to lane parent names
+  (laneParent === Experience). This misses UI work in non-Experience lanes. Add a signal-based work
+  classifier to @lumenflow/core that determines work domain (ui/backend/docs/infra/mixed) from
+  multiple weighted signals: code_paths patterns (weight 1.0), lane hints (0.6), type (0.3),
+  description keywords (0.2). Returns abstract capability tags (not client skill names) for
+  vendor-agnostic design. Configurable via methodology.work_classification in .lumenflow.config.yaml
+  with sensible built-in defaults.'
 acceptance:
   - classifyWork(doc, config) returns domain, confidence, signals, capabilities, testMethodologyHint
-  - 'Built-in default UI patterns work without config: CSS/SCSS/LESS, components/pages directories, app page/layout files, module CSS, styled components'
-  - Config schema extended with optional methodology.work_classification.ui.code_path_patterns and lane_hints that extend defaults
+  - 'Built-in default UI patterns work without config: CSS/SCSS/LESS, components/pages directories,
+    app page/layout files, module CSS, styled components'
+  - Config schema extended with optional methodology.work_classification.ui.code_path_patterns and
+    lane_hints that extend defaults
   - 'Confidence threshold: domain only assigned when combined signal weight >= 0.3'
   - Returns capabilities array (ui-design-awareness, component-reuse-check) NOT client skill names
   - Returns testMethodologyHint smoke-test when domain is ui with confidence >= 0.5
-  - 'Unit tests cover: pure code_paths detection, pure lane detection, mixed signals, no-match fallback, config overrides, confidence boundaries'
+  - 'Unit tests cover: pure code_paths detection, pure lane detection, mixed signals, no-match
+    fallback, config overrides, confidence boundaries'
   - Internal docs in docs/04-operations describing work classification signals and configuration
   - Starlight reference docs for work classifier API and configuration
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1899
+claimed_at: 2026-02-19T11:56:05.043Z
+baseline_main_sha: 8afb79e4deaab252fc4959ce09f833dfe20e0f38
+session_id: 003574c5-7243-4202-b18c-8c442618b172
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T11:56:05.049Z
