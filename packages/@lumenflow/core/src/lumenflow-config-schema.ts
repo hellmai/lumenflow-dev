@@ -944,6 +944,22 @@ export const ClientConfigSchema = z.object({
    * When enabled, generates hooks that enforce workflow compliance.
    */
   enforcement: ClientEnforcementSchema.optional(),
+
+  /**
+   * WU-1900: Capability-to-skill mapping for classifier-driven skill suggestions.
+   * Maps abstract capability tags from the work classifier to client-specific skill names.
+   *
+   * @example
+   * ```yaml
+   * agents:
+   *   clients:
+   *     claude-code:
+   *       capabilities_map:
+   *         ui-design-awareness: frontend-design
+   *         component-reuse-check: library-first
+   * ```
+   */
+  capabilities_map: z.record(z.string(), z.string()).optional(),
 });
 
 /**

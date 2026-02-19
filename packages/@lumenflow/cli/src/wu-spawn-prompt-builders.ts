@@ -39,6 +39,7 @@ import type { TemplateContext } from '@lumenflow/core/template-loader';
 // WU-1192: Import prompt generation from Core (single source of truth)
 // WU-1203: Import generateAgentCoordinationSection from core for config-driven progress signals
 // WU-1288: Import policy-based test guidance and mandatory standards generators
+// WU-1900: Import generateDesignContextSection for UI-classified work
 import {
   TRUNCATION_WARNING_BANNER,
   SPAWN_END_SENTINEL,
@@ -47,7 +48,11 @@ import {
   generatePolicyBasedTestGuidance,
   generateMandatoryStandards,
   generateEnforcementSummary,
+  generateDesignContextSection,
 } from '@lumenflow/core/wu-spawn';
+
+// WU-1900: Import work classifier for domain-aware prompt generation
+import { classifyWork } from '@lumenflow/core/work-classifier';
 
 // WU-1288: Import resolvePolicy for methodology policy resolution
 import { resolvePolicy } from '@lumenflow/core/resolve-policy';
@@ -441,59 +446,87 @@ export function generatePreamble(id: string, strategy: SpawnStrategy): string {
 }
 
 /**
+ * WU-1900: Options for constraints generation
+ */
+interface ConstraintsOptions {
+  /** Whether to include TDD CHECKPOINT (constraint 1). Default: true */
+  includeTddCheckpoint?: boolean;
+}
+
+/**
  * Generate the constraints block (appended at end per Lost in the Middle research)
  *
  * WU-2247: Aligned with LumenFlow section 7.2 (stop-and-ask) and section 7.3 (anti-loop guard).
  * Includes item 6: MEMORY LAYER COORDINATION (WU-1589).
  *
+ * WU-1900: TDD CHECKPOINT (constraint 1) is now conditional. It is omitted when:
+ * - Work is classified as UI domain (smoke-test methodology)
+ * - Policy methodology is 'none'
+ *
  * @param {string} id - WU ID
+ * @param {ConstraintsOptions} options - Options for conditional constraints
  * @returns {string} Constraints block
  */
-export function generateConstraints(id: string): string {
-  return `---
+export function generateConstraints(id: string, options?: ConstraintsOptions): string {
+  const includeTdd = options?.includeTddCheckpoint !== false;
 
-<constraints>
-CRITICAL RULES - ENFORCE BEFORE EVERY ACTION:
-
+  const tddCheckpointBlock = includeTdd
+    ? `
 1. TDD CHECKPOINT (VERIFY BEFORE IMPLEMENTATION)
    - Did you write tests BEFORE implementation?
    - Is there at least one failing test for each acceptance criterion?
    - Never skip the RED phase — failing tests prove the test works
 
-2. ANTI-LOOP GUARD (LumenFlow §7.3)
+`
+    : '';
+
+  // WU-1900: Renumber constraints based on whether TDD is included
+  const antiLoopNum = includeTdd ? 2 : 1;
+  const stopAskNum = includeTdd ? 3 : 2;
+  const verifyNum = includeTdd ? 4 : 3;
+  const neverFabNum = includeTdd ? 5 : 4;
+  const gitNum = includeTdd ? 6 : 5;
+  const memNum = includeTdd ? 7 : 6;
+  const skipGatesNum = includeTdd ? 8 : 7;
+
+  return `---
+
+<constraints>
+CRITICAL RULES - ENFORCE BEFORE EVERY ACTION:
+${tddCheckpointBlock}${antiLoopNum}. ANTI-LOOP GUARD (LumenFlow §7.3)
    - Max 3 attempts per unique error before escalating
    - If same error repeats 3x, STOP and report with full context
    - Retry with different approach, not same command
 
-3. STOP-AND-ASK TRIGGERS (LumenFlow §7.2 - narrow scope)
+${stopAskNum}. STOP-AND-ASK TRIGGERS (LumenFlow §7.2 - narrow scope)
    - Policy changes, auth/permissions modifications
    - PII/safety issues, cloud spend, secrets, backups
    - Same error repeats 3x
    - For ordinary errors: fix and retry autonomously (up to 3 attempts)
 
-4. VERIFY COMPLETION before reporting success
+${verifyNum}. VERIFY COMPLETION before reporting success
    - Run: node packages/@lumenflow/agent/dist/agent-verification.js ${id} (from shared checkout)
    - Exit 0 = passed, Exit 1 = INCOMPLETE
    - Never report "done" if verification fails
 
-5. NEVER FABRICATE COMPLETION
+${neverFabNum}. NEVER FABRICATE COMPLETION
    - If blockers remain, report INCOMPLETE
    - If verification fails, summarize failures
    - Honesty over false completion
 
-6. GIT WORKFLOW (CRITICAL - GitHub rules reject merge commits)
+${gitNum}. GIT WORKFLOW (CRITICAL - GitHub rules reject merge commits)
    - GitHub REJECTS merge commits on main
    - ALWAYS use \`git rebase origin/main\` before push
    - Push to main via \`git push origin lane/...:main\` (fast-forward only)
    - NEVER use \`git merge\` on main branch
    - Let \`pnpm wu:done\` handle the merge workflow
 
-7. MEMORY LAYER COORDINATION (INIT-007)
+${memNum}. MEMORY LAYER COORDINATION (INIT-007)
    - Use \`pnpm mem:checkpoint --wu ${id}\` to save progress before risky operations
    - Check \`pnpm mem:inbox --wu ${id}\` periodically for parallel signals from other agents
    - Checkpoint triggers (WU-1943): checkpoint after each acceptance criterion completed, checkpoint before gates, checkpoint every 30 tool calls
 
-8. SKIP-GATES AUTONOMY (WU-1142)
+${skipGatesNum}. SKIP-GATES AUTONOMY (WU-1142)
    - If gates fail, first check if failure is pre-existing on main: \`git checkout main && pnpm gates\`
    - If failure exists on main (not your change), use: \`pnpm wu:done --id ${id} --skip-gates --reason "pre-existing on main" --fix-wu WU-XXXX\`
    - Do NOT ask for approval - autonomous skip-gates for pre-existing failures is correct
@@ -1081,6 +1114,18 @@ export function generateTaskInvocation(
   // WU-1898: Moved before template loading so policy is available for condition evaluation
   const policy = resolvePolicy(config);
 
+  // WU-1900: Run work classifier for domain-aware prompt generation
+  const classificationConfig = config?.methodology?.work_classification;
+  const classification = classifyWork(
+    {
+      code_paths: doc.code_paths,
+      lane: doc.lane,
+      type: doc.type,
+      description: doc.description,
+    },
+    classificationConfig,
+  );
+
   // WU-1253: Try loading templates (shadow mode - falls back to hardcoded if unavailable)
   // WU-1681: Use resolved client from caller; fall back for template loading only
   // WU-1898: Pass policy to context for methodology template condition evaluation
@@ -1091,9 +1136,12 @@ export function generateTaskInvocation(
   // WU-1142: Use type-aware test guidance instead of hardcoded TDD directive
   // WU-1288: Use policy-based test guidance that respects methodology.testing config
   // WU-1253: Try template first, fall back to policy-based guidance
+  // WU-1900: Pass classifier hint to test guidance
   const testGuidance =
     templates.get('tdd-directive') ||
-    generatePolicyBasedTestGuidance(doc.type || 'feature', policy);
+    generatePolicyBasedTestGuidance(doc.type || 'feature', policy, {
+      testMethodologyHint: classification.testMethodologyHint,
+    });
 
   // WU-1288: Generate enforcement summary from resolved policy
   const enforcementSummary = generateEnforcementSummary(policy);
@@ -1114,8 +1162,16 @@ export function generateTaskInvocation(
   // WU-1253: Try template for bug-discovery
   const bugDiscoverySection = templates.get('bug-discovery') || generateBugDiscoverySection(id);
   // WU-1253: Try template for constraints
-  const constraints = templates.get('constraints') || generateConstraints(id);
+  // WU-1900: Generate constraints with conditional TDD CHECKPOINT
+  const shouldIncludeTddCheckpoint =
+    classification.domain !== 'ui' && policy.testing !== 'none';
+  const constraints = templates.get('constraints') || generateConstraints(id, {
+    includeTddCheckpoint: shouldIncludeTddCheckpoint,
+  });
   const implementationContext = generateImplementationContext(doc);
+
+  // WU-1900: Generate design context section for UI-classified work
+  const designContextSection = generateDesignContextSection(classification);
 
   // WU-2252: Generate invariants/prior-art section for code_paths
   const invariantsPriorArt = generateInvariantsPriorArtSection(codePaths);
@@ -1209,7 +1265,7 @@ ${mandatoryStandards}
 
 ${enforcementSummary}
 
-${clientBlocks ? `---\n\n${clientBlocks}\n\n` : ''}${worktreeGuidance ? `---\n\n${worktreeGuidance}\n\n` : ''}---
+${designContextSection ? `---\n\n${designContextSection}\n\n` : ''}${clientBlocks ? `---\n\n${clientBlocks}\n\n` : ''}${worktreeGuidance ? `---\n\n${worktreeGuidance}\n\n` : ''}---
 
 ${bugDiscoverySection}
 

@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import type { ClientConfig } from './lumenflow-config-schema.js';
 import { LUMENFLOW_PATHS } from './wu-constants.js';
+import { classifyWork, type WorkClassification } from './work-classifier.js';
 
 /** WU-1430: Compose known skills directories from centralized constants */
 const KNOWN_SKILLS_DIRS = [
@@ -172,6 +173,33 @@ export function generateClientSkillsGuidance(
   return `${SECTION.clientSkills} (${clientContext?.name})\n\n${instructions}${recommendedSection}`;
 }
 
+/**
+ * WU-1900: Resolve capability-to-skill mappings from classifier output and client config.
+ *
+ * Takes the abstract capabilities from classifyWork() and maps them to
+ * client-specific skill names using the capabilities_map in client config.
+ *
+ * @param capabilities - Abstract capability tags from WorkClassification
+ * @param clientConfig - Client config with optional capabilities_map
+ * @returns Array of mapped skill names (may be empty)
+ */
+export function resolveCapabilitySkills(
+  capabilities: string[],
+  clientConfig: ClientConfig | undefined,
+): string[] {
+  const capMap = clientConfig?.capabilities_map;
+  if (!capMap || capabilities.length === 0) return [];
+
+  const skills: string[] = [];
+  for (const capability of capabilities) {
+    const skillName = capMap[capability];
+    if (skillName) {
+      skills.push(skillName);
+    }
+  }
+  return skills;
+}
+
 export function generateSkillsSelectionSection(
   doc: UnsafeAny,
   config: UnsafeAny,
@@ -180,6 +208,18 @@ export function generateSkillsSelectionSection(
   const lane = doc.lane || '';
   const type = doc.type || 'feature';
   const laneParent = lane.split(':')[0].trim();
+
+  // WU-1900: Run work classifier to get domain and capabilities
+  const classificationConfig = config?.methodology?.work_classification;
+  const classification = classifyWork(
+    {
+      code_paths: doc.code_paths,
+      lane: doc.lane,
+      type: doc.type,
+      description: doc.description,
+    },
+    classificationConfig,
+  );
 
   const contextHints = [];
 
@@ -200,11 +240,18 @@ export function generateSkillsSelectionSection(
     contextHints.push(CONTEXT_HINTS.llmCompliance);
     contextHints.push(CONTEXT_HINTS.promptManagement);
   }
-  if (laneParent === 'Experience') {
+
+  // WU-1900: Use classifier domain instead of lane-only check for UI skills
+  if (classification.domain === 'ui' || laneParent === 'Experience') {
     contextHints.push(CONTEXT_HINTS.frontendDesign);
   }
 
-  const softPolicySection = `${SECTION.softPolicy}\n\nBased on WU context, consider loading:\n\n${contextHints.join('\n')}\n\n`;
+  // WU-1900: Map classifier capabilities to client-specific skills
+  const clientConfig = resolveClientConfig(config, clientName);
+  const capabilitySkills = resolveCapabilitySkills(classification.capabilities, clientConfig);
+  const capabilityHints = capabilitySkills.map((skill) => `- \`${skill}\` — Suggested by work classifier (${classification.domain} domain)`);
+
+  const softPolicySection = `${SECTION.softPolicy}\n\nBased on WU context, consider loading:\n\n${contextHints.join('\n')}${capabilityHints.length > 0 ? '\n' + capabilityHints.join('\n') : ''}\n\n`;
   const catalogGuidance = generateSkillsCatalogGuidance(config, clientName);
 
   return `${SECTION.skillsSelection}\n\n${MESSAGES.skillsIntro}\n\n${catalogGuidance}${softPolicySection}${SECTION.additionalSkills}\n\n${ADDITIONAL_SKILLS_TABLE}\n\n${SECTION.gracefulDegradation}\n\nIf the skill catalogue is missing or invalid:\n${MESSAGES.baselineFallback}\n`;

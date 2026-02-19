@@ -194,14 +194,30 @@ Methodology defaults (agent-facing project defaults)
 
 Client configuration (per-client settings)
 
-| Field         | Type     | Default | Description |
-| ------------- | -------- | ------- | ----------- |
-| `preamble`    | unknown  | `-`     |             |
-| `skillsDir`   | string   | `-`     |             |
-| `agentsDir`   | string   | `-`     |             |
-| `blocks`      | object[] | `[]`    |             |
-| `skills`      | object   | `-`     |             |
-| `enforcement` | object   | `-`     |             |
+| Field              | Type                       | Default | Description                                                             |
+| ------------------ | -------------------------- | ------- | ----------------------------------------------------------------------- |
+| `preamble`         | unknown                    | `-`     |                                                                         |
+| `skillsDir`        | string                     | `-`     |                                                                         |
+| `agentsDir`        | string                     | `-`     |                                                                         |
+| `blocks`           | object[]                   | `[]`    |                                                                         |
+| `skills`           | object                     | `-`     |                                                                         |
+| `enforcement`      | object                     | `-`     |                                                                         |
+| `capabilities_map` | Record\<string, string\>   | `-`     | Maps classifier capability tags to client-specific skill names (WU-1900)|
+
+#### capabilities_map
+
+Maps abstract capabilities from the [work classifier](/reference/work-classifier/) to client-specific skill names. When `wu:brief` generates a prompt, it runs the classifier on the WU's `code_paths`, then looks up each returned capability in this map.
+
+```yaml
+agents:
+  clients:
+    claude-code:
+      capabilities_map:
+        ui-design-awareness: frontend-design
+        component-reuse-check: library-first
+```
+
+Matched skills appear in the brief's Soft Policy section as suggestions. Capabilities not found in the map are silently ignored (graceful degradation).
 
 ## Framework Agnostic Configuration
 

@@ -39,6 +39,8 @@ import { WU_STATUS, PATTERNS, EMOJI, LUMENFLOW_PATHS } from './wu-constants.js';
 // WU-1603: Check lane lock status before spawning
 import { checkLaneLock, type LockMetadata } from './lane-lock.js';
 import { minimatch } from 'minimatch';
+// WU-1900: Import work classifier for domain-aware prompt generation
+import { classifyWork, type WorkClassification } from './work-classifier.js';
 import { SpawnStrategyFactory } from './spawn-strategy.js';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Type is used in JSDoc comments
 import type { SpawnStrategy } from './spawn-strategy.js';
@@ -465,20 +467,37 @@ export function generateMandatoryStandards(policy: ResolvedPolicy): string {
 }
 
 /**
- * WU-1261: Generate test guidance based on resolved policy
+ * WU-1900: Options for classifier-aware test guidance
+ */
+export interface TestGuidanceOptions {
+  /** Test methodology hint from work classifier (e.g., 'smoke-test' for UI work) */
+  testMethodologyHint?: string;
+}
+
+/**
+ * WU-1261, WU-1900: Generate test guidance based on resolved policy and classifier hint
  *
  * Selects the appropriate test guidance based on policy.testing value:
  * - 'tdd': Full TDD directive (failing test first)
  * - 'test-after': Implementation first, then tests
  * - 'none': Testing is optional
  *
+ * WU-1900: When the work classifier provides a testMethodologyHint of 'smoke-test'
+ * AND the WU type is 'bug', smoke-test guidance is returned instead of full TDD.
+ * This fixes bug #1: SMOKE_TEST_TYPES was unreachable via normal WU types.
+ *
  * Type overrides still apply (documentation WUs always get docs guidance).
  *
  * @param wuType - WU type from YAML (e.g., 'feature', 'documentation')
  * @param policy - Resolved policy from resolvePolicy()
+ * @param options - Optional classifier-driven test guidance options
  * @returns Test guidance section
  */
-export function generatePolicyBasedTestGuidance(wuType: string, policy: ResolvedPolicy): string {
+export function generatePolicyBasedTestGuidance(
+  wuType: string,
+  policy: ResolvedPolicy,
+  options?: TestGuidanceOptions,
+): string {
   const type = (wuType || 'feature').toLowerCase();
 
   // Type overrides take precedence (documentation never needs TDD)
@@ -497,17 +516,13 @@ export function generatePolicyBasedTestGuidance(wuType: string, policy: Resolved
 
   // Visual/Design WUs - smoke tests + manual QA
   if (SMOKE_TEST_TYPES.includes(type)) {
-    return `## Visual/Design Testing
+    return generateSmokeTestGuidance();
+  }
 
-**Smoke test + manual QA** - Visual WUs require different verification.
-
-### Requirements
-
-1. Create smoke test for component rendering (if applicable)
-2. Verify visual appearance manually
-3. Test responsive behavior across breakpoints
-4. Check accessibility (keyboard navigation, screen reader)
-5. Document manual QA results in completion notes`;
+  // WU-1900: Classifier-driven smoke-test for bug WUs with UI code_paths
+  // This makes SMOKE_TEST_TYPES reachable through classifier signals
+  if (type === 'bug' && options?.testMethodologyHint === 'smoke-test') {
+    return generateSmokeTestGuidance();
   }
 
   // Refactor WUs - existing tests must pass
@@ -534,6 +549,23 @@ export function generatePolicyBasedTestGuidance(wuType: string, policy: Resolved
     default:
       return generateTDDDirective();
   }
+}
+
+/**
+ * WU-1900: Generate smoke-test guidance (extracted from inline)
+ */
+function generateSmokeTestGuidance(): string {
+  return `## Visual/Design Testing
+
+**Smoke test + manual QA** - Visual WUs require different verification.
+
+### Requirements
+
+1. Create smoke test for component rendering (if applicable)
+2. Verify visual appearance manually
+3. Test responsive behavior across breakpoints
+4. Check accessibility (keyboard navigation, screen reader)
+5. Document manual QA results in completion notes`;
 }
 
 /**
@@ -649,6 +681,56 @@ src/
     default:
       return '';
   }
+}
+
+/**
+ * WU-1900: Generate design context section for UI-classified work.
+ *
+ * Provides vendor-agnostic guidance for UI work: pattern checks, viewport
+ * verification, accessibility, and codebase exploration hints.
+ *
+ * This section is intentionally free of client-specific syntax (no /skill commands).
+ * Client skill mapping happens in the skills selection section via capabilities_map.
+ *
+ * @param classification - Work classification result with domain and capabilities
+ * @returns Design context section for UI work, or empty string for non-UI work
+ */
+export function generateDesignContextSection(classification: {
+  domain: string;
+  capabilities: string[];
+}): string {
+  if (classification.domain !== 'ui') {
+    return '';
+  }
+
+  return `## Design Context
+
+This work involves UI components or styling. Follow these guidelines:
+
+### Pattern Check
+
+- Before creating new components, check for existing patterns in the codebase
+- Search for similar components that may already solve the problem
+- Verify design system tokens and variables are used instead of hardcoded values
+
+### Viewport Verification
+
+- Test across common viewport sizes (mobile: 375px, tablet: 768px, desktop: 1280px)
+- Verify responsive behavior at breakpoints
+- Check for overflow, text truncation, and layout shifts
+
+### Accessibility
+
+- Verify keyboard navigation works for interactive elements
+- Ensure sufficient color contrast (WCAG 2.1 AA minimum)
+- Add appropriate ARIA attributes where needed
+- Test with screen reader if applicable
+
+### Codebase Exploration
+
+- Check the project's design system or component library before building custom
+- Look for CSS variables, theme tokens, or shared style utilities
+- Review existing component patterns for consistency`;
 }
 
 /**
@@ -1031,65 +1113,94 @@ function generatePreamble(id: string, strategy: SpawnStrategy): string {
 }
 
 /**
+ * WU-1900: Options for constraints generation
+ */
+interface ConstraintsOptions {
+  /** Whether to include TDD CHECKPOINT (constraint 1). Default: true */
+  includeTddCheckpoint?: boolean;
+}
+
+/**
  * Generate the constraints block (appended at end per Lost in the Middle research)
  *
  * WU-2247: Aligned with LumenFlow §7.2 (stop-and-ask) and §7.3 (anti-loop guard).
  * Includes item 6: MEMORY LAYER COORDINATION (WU-1589).
  *
+ * WU-1900: TDD CHECKPOINT (constraint 1) is now conditional. It is omitted when:
+ * - Work is classified as UI domain (smoke-test methodology)
+ * - Policy methodology is 'none'
+ *
  * @param {string} id - WU ID
+ * @param {ConstraintsOptions} options - Options for conditional constraints
  * @returns {string} Constraints block
  */
-function generateConstraints(id: string): string {
-  return `---
+function generateConstraints(id: string, options?: ConstraintsOptions): string {
+  const includeTdd = options?.includeTddCheckpoint !== false;
 
-<constraints>
-CRITICAL RULES - ENFORCE BEFORE EVERY ACTION:
-
+  const tddCheckpointBlock = includeTdd
+    ? `
 1. TDD CHECKPOINT (VERIFY BEFORE IMPLEMENTATION)
    - Did you write tests BEFORE implementation?
    - Is there at least one failing test for each acceptance criterion?
    - Never skip the RED phase — failing tests prove the test works
 
-2. ANTI-LOOP GUARD (LumenFlow §7.3)
+`
+    : '';
+
+  // Renumber constraints based on whether TDD is included
+  const antiLoopNum = includeTdd ? 2 : 1;
+  const stopAskNum = includeTdd ? 3 : 2;
+  const verifyNum = includeTdd ? 4 : 3;
+  const neverFabNum = includeTdd ? 5 : 4;
+  const gitNum = includeTdd ? 6 : 5;
+  const memNum = includeTdd ? 7 : 6;
+  const skipGatesNum = includeTdd ? 8 : 7;
+  const worktreeNum = includeTdd ? 9 : 8;
+
+  return `---
+
+<constraints>
+CRITICAL RULES - ENFORCE BEFORE EVERY ACTION:
+${tddCheckpointBlock}${antiLoopNum}. ANTI-LOOP GUARD (LumenFlow §7.3)
    - Max 3 attempts per unique error before escalating
    - If same error repeats 3x, STOP and report with full context
    - Retry with different approach, not same command
 
-3. STOP-AND-ASK TRIGGERS (LumenFlow §7.2 - narrow scope)
+${stopAskNum}. STOP-AND-ASK TRIGGERS (LumenFlow §7.2 - narrow scope)
    - Policy changes, auth/permissions modifications
    - PII/safety issues, cloud spend, secrets, backups
    - Same error repeats 3x
    - For ordinary errors: fix and retry autonomously (up to 3 attempts)
 
-4. VERIFY COMPLETION before reporting success
+${verifyNum}. VERIFY COMPLETION before reporting success
    - Run: node packages/@lumenflow/agent/verification ${id} (from shared checkout)
    - Exit 0 = passed, Exit 1 = INCOMPLETE
    - Never report "done" if verification fails
 
-5. NEVER FABRICATE COMPLETION
+${neverFabNum}. NEVER FABRICATE COMPLETION
    - If blockers remain, report INCOMPLETE
    - If verification fails, summarize failures
    - Honesty over false completion
 
-6. GIT WORKFLOW (CRITICAL - GitHub rules reject merge commits)
+${gitNum}. GIT WORKFLOW (CRITICAL - GitHub rules reject merge commits)
    - GitHub REJECTS merge commits on main
    - ALWAYS use \`git rebase origin/main\` before push
    - Push to main via \`git push origin lane/...:main\` (fast-forward only)
    - NEVER use \`git merge\` on main branch
    - Use \`pnpm wu:prep\` from worktree, then \`pnpm wu:done\` from main (WU-1223)
 
-7. MEMORY LAYER COORDINATION (INIT-007)
+${memNum}. MEMORY LAYER COORDINATION (INIT-007)
    - Use \`pnpm mem:checkpoint --wu ${id}\` to save progress before risky operations
    - Check \`pnpm mem:inbox --wu ${id}\` periodically for parallel signals from other agents
    - Checkpoint triggers (WU-1943): checkpoint after each acceptance criterion completed, checkpoint before gates, checkpoint every 30 tool calls
 
-8. SKIP-GATES AUTONOMY (WU-1142)
+${skipGatesNum}. SKIP-GATES AUTONOMY (WU-1142)
    - If gates fail, first check if failure is pre-existing on main: \`git checkout main && pnpm gates\`
    - If failure exists on main (not your change), use: \`pnpm wu:done --id ${id} --skip-gates --reason "pre-existing on main" --fix-wu WU-XXXX\`
    - Do NOT ask for approval - autonomous skip-gates for pre-existing failures is correct
    - This prevents getting stuck on infrastructure debt
 
-9. WORKTREE DISCIPLINE (WU-1282)
+${worktreeNum}. WORKTREE DISCIPLINE (WU-1282)
    - CRITICAL: PreToolUse hooks do not propagate to sub-agents spawned via Task tool
    - BEFORE UnsafeAny Write/Edit operation, manually verify you are in a worktree:
    - Run: \`pwd\` and confirm output contains \`worktrees/\`
@@ -1682,7 +1793,23 @@ export function generateTaskInvocation(
 
   // WU-1279: Resolve policy and use policy-based test guidance
   const policy = resolvePolicy(config);
-  const testGuidance = generatePolicyBasedTestGuidance(doc.type || 'feature', policy);
+
+  // WU-1900: Run work classifier for domain-aware prompt generation
+  const classificationConfig = config?.methodology?.work_classification;
+  const classification = classifyWork(
+    {
+      code_paths: doc.code_paths,
+      lane: doc.lane,
+      type: doc.type,
+      description: doc.description,
+    },
+    classificationConfig,
+  );
+
+  // WU-1900: Pass classifier hint to test guidance
+  const testGuidance = generatePolicyBasedTestGuidance(doc.type || 'feature', policy, {
+    testMethodologyHint: classification.testMethodologyHint,
+  });
 
   // WU-1279: Generate enforcement summary from resolved policy
   const enforcementSummary = generateEnforcementSummary(policy);
@@ -1697,7 +1824,17 @@ export function generateTaskInvocation(
   const mandatorySection = generateMandatoryAgentSection(mandatoryAgents, id);
   const laneGuidance = generateLaneGuidance(doc.lane);
   const bugDiscoverySection = generateBugDiscoverySection(id);
-  const constraints = generateConstraints(id);
+
+  // WU-1900: Generate constraints with conditional TDD CHECKPOINT
+  const shouldIncludeTddCheckpoint =
+    classification.domain !== 'ui' && policy.testing !== 'none';
+  const constraints = generateConstraints(id, {
+    includeTddCheckpoint: shouldIncludeTddCheckpoint,
+  });
+
+  // WU-1900: Generate design context section for UI-classified work
+  const designContextSection = generateDesignContextSection(classification);
+
   const implementationContext = generateImplementationContext(doc);
 
   // WU-2252: Generate invariants/prior-art section for code_paths
@@ -1780,7 +1917,7 @@ ${mandatoryStandards}
 
 ${enforcementSummary}
 
-${clientBlocks ? `---\n\n${clientBlocks}\n\n` : ''}${worktreeGuidance ? `---\n\n${worktreeGuidance}\n\n` : ''}---
+${designContextSection ? `---\n\n${designContextSection}\n\n` : ''}${clientBlocks ? `---\n\n${clientBlocks}\n\n` : ''}${worktreeGuidance ? `---\n\n${worktreeGuidance}\n\n` : ''}---
 
 ${bugDiscoverySection}
 

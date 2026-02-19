@@ -154,6 +154,33 @@ interface WorkClassificationConfig {
 
 When the detected domain is `ui` and confidence >= 0.5, the classifier returns `testMethodologyHint: 'smoke-test'`. This signals to consumers (like `wu:brief`) that visual smoke tests should be recommended alongside unit tests.
 
+## Brief Integration
+
+The work classifier is wired into `wu:brief` generation (WU-1900) at three points:
+
+### Capability-to-Skill Mapping
+
+Capabilities are mapped to client-specific skills via `capabilities_map` in client config:
+
+```yaml
+agents:
+  clients:
+    claude-code:
+      capabilities_map:
+        ui-design-awareness: frontend-design
+        component-reuse-check: library-first
+```
+
+When classifier capabilities match keys in the map, the corresponding skill names appear in the brief's Soft Policy section. This keeps the classifier vendor-agnostic while allowing each client to define its own skill names.
+
+### Design Context Section
+
+A `## Design Context` section is added to the brief for UI-classified work, with guidance on pattern checks, viewport verification, and accessibility. This section contains no `/skill` syntax or client-specific names.
+
+### Conditional Constraints
+
+The constraints block's TDD CHECKPOINT is omitted when work is classified as UI domain or methodology is `none`.
+
 ## Examples
 
 ### CSS in a non-Experience lane

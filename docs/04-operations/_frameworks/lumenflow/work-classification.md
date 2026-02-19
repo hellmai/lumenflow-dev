@@ -129,8 +129,52 @@ const result = classifyWork({
 // result.capabilities === ['ui-design-awareness', 'component-reuse-check']
 ```
 
+## Brief Integration (WU-1900)
+
+The work classifier is wired into `wu:brief` generation at three points:
+
+### 1. Capability-to-Skill Mapping
+
+Abstract capabilities are mapped to client-specific skills via `capabilities_map` in client config:
+
+```yaml
+agents:
+  clients:
+    claude-code:
+      capabilities_map:
+        ui-design-awareness: frontend-design
+        component-reuse-check: library-first
+```
+
+When a WU's `code_paths` trigger the `ui` domain, the classifier returns capabilities like `ui-design-awareness`. These are resolved through the client's `capabilities_map` to produce skill suggestions like `frontend-design` in the brief's Soft Policy section.
+
+This is vendor-agnostic: the classifier returns abstract capabilities; each client maps them to its own skill names.
+
+### 2. Test Guidance
+
+For `bug` type WUs classified as UI domain, `generatePolicyBasedTestGuidance` returns smoke-test guidance instead of full TDD. This fixes the bug where `SMOKE_TEST_TYPES` was unreachable through normal WU types.
+
+### 3. Conditional TDD CHECKPOINT
+
+The constraints block's TDD CHECKPOINT (constraint #1) is omitted when:
+- Work is classified as UI domain (smoke-test methodology)
+- Policy methodology is `none`
+
+Remaining constraints are renumbered dynamically.
+
+### 4. Design Context Section
+
+A new `## Design Context` section is added to the brief for UI-classified work. It includes:
+- Pattern check guidance (check for existing components before creating new ones)
+- Viewport verification guidance (test across breakpoints)
+- Accessibility requirements
+- Codebase exploration hints
+
+This section is vendor-agnostic -- no `/skill` syntax or client-specific skill names.
+
 ## Related
 
 - `packages/@lumenflow/core/src/work-classifier.ts` - Implementation
 - `packages/@lumenflow/core/src/path-classifiers.ts` - Predecessor (docs-only detection)
 - `packages/@lumenflow/core/src/wu-spawn-skills.ts` - Consumer (skill suggestions)
+- `packages/@lumenflow/core/src/wu-spawn.ts` - Consumer (test guidance, design context, constraints)

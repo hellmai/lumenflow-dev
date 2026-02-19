@@ -137,6 +137,7 @@
     "./wu-repair-core": "./dist/wu-repair-core.js",
     "./wu-schema": "./dist/wu-schema.js",
     "./wu-schema-normalization": "./dist/wu-schema-normalization.js",
+    "./work-classifier": "./dist/work-classifier.js",
     "./wu-spawn": "./dist/wu-spawn.js",
     "./wu-spawn-helpers": "./dist/wu-spawn-helpers.js",
     "./wu-spawn-skills": "./dist/wu-spawn-skills.js",

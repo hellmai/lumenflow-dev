@@ -828,3 +828,252 @@ describe('WU-1291: Spawn template system activation', () => {
     });
   });
 });
+
+/**
+ * WU-1900: Wire work classifier into wu:brief generation
+ *
+ * Tests for:
+ * - generatePolicyBasedTestGuidance checks classifier hint - bug WU with CSS
+ *   code_paths gets smoke-test guidance not full TDD
+ * - generateConstraints constraint 1 (TDD CHECKPOINT) is conditional: omitted
+ *   when work classified as UI or methodology is none
+ * - New generateDesignContextSection for UI-classified work
+ * - Design context section is vendor-agnostic
+ * - Integration: bug WU with CSS code_paths gets full treatment
+ */
+import {
+  generateMandatoryStandards,
+  generateDesignContextSection,
+} from '../wu-spawn.js';
+import { classifyWork, WORK_DOMAINS } from '../work-classifier.js';
+
+describe('WU-1900: Wire work classifier into wu:brief generation', () => {
+  describe('AC2: generatePolicyBasedTestGuidance with classifier hint', () => {
+    it('returns smoke-test guidance for bug WU when hint is smoke-test', () => {
+      const policy = resolvePolicy(parseConfig({ methodology: { testing: 'tdd' } }));
+      const result = generatePolicyBasedTestGuidance('bug', policy, {
+        testMethodologyHint: 'smoke-test',
+      });
+
+      // Should contain visual/smoke test guidance
+      expect(result).toContain('Visual');
+      expect(result).toContain('Smoke');
+      // Should NOT contain full TDD directive
+      expect(result).not.toContain('IF YOU WRITE IMPLEMENTATION CODE BEFORE A FAILING TEST');
+    });
+
+    it('returns full TDD for bug WU when no classification hint', () => {
+      const policy = resolvePolicy(parseConfig({ methodology: { testing: 'tdd' } }));
+      const result = generatePolicyBasedTestGuidance('bug', policy);
+
+      expect(result).toContain('TDD');
+    });
+
+    it('returns full TDD for feature WU even with smoke-test hint', () => {
+      const policy = resolvePolicy(parseConfig({ methodology: { testing: 'tdd' } }));
+      // smoke-test hint only applies to bug type
+      const result = generatePolicyBasedTestGuidance('feature', policy, {
+        testMethodologyHint: 'smoke-test',
+      });
+
+      expect(result).toContain('TDD');
+    });
+
+    it('returns docs guidance for documentation type regardless of hint', () => {
+      const policy = resolvePolicy(parseConfig({ methodology: { testing: 'tdd' } }));
+      const result = generatePolicyBasedTestGuidance('documentation', policy, {
+        testMethodologyHint: 'smoke-test',
+      });
+
+      expect(result).toContain('Documentation Standards');
+    });
+
+    it('returns test-after guidance for bug when policy is test-after and no hint', () => {
+      const policy = resolvePolicy(
+        parseConfig({ methodology: { testing: TEST_METHODOLOGY_TEST_AFTER } }),
+      );
+      const result = generatePolicyBasedTestGuidance('bug', policy);
+
+      expect(result).toContain(TEST_AFTER_LABEL);
+    });
+
+    it('returns testing optional for bug when policy is none', () => {
+      const policy = resolvePolicy(
+        parseConfig({ methodology: { testing: TEST_METHODOLOGY_NONE } }),
+      );
+      const result = generatePolicyBasedTestGuidance('bug', policy);
+
+      expect(result).toContain('Testing Optional');
+    });
+  });
+
+  describe('AC4: generateDesignContextSection for UI-classified work', () => {
+    it('returns design context for UI domain', () => {
+      const result = generateDesignContextSection({
+        domain: WORK_DOMAINS.UI,
+        capabilities: ['ui-design-awareness', 'component-reuse-check'],
+      });
+
+      expect(result).toContain('Design Context');
+      expect(result).toContain('pattern');
+      expect(result).toContain('viewport');
+    });
+
+    it('returns empty string for backend domain', () => {
+      const result = generateDesignContextSection({
+        domain: WORK_DOMAINS.BACKEND,
+        capabilities: [],
+      });
+
+      expect(result).toBe('');
+    });
+
+    it('returns empty string for docs domain', () => {
+      const result = generateDesignContextSection({
+        domain: WORK_DOMAINS.DOCS,
+        capabilities: ['documentation-structure'],
+      });
+
+      expect(result).toBe('');
+    });
+
+    it('returns design context for mixed domain with UI capabilities', () => {
+      const result = generateDesignContextSection({
+        domain: WORK_DOMAINS.MIXED,
+        capabilities: ['cross-domain-awareness'],
+      });
+
+      // Mixed domain should not get design context
+      expect(result).toBe('');
+    });
+  });
+
+  describe('AC5: Design context is vendor-agnostic', () => {
+    it('does not contain /skill syntax', () => {
+      const result = generateDesignContextSection({
+        domain: WORK_DOMAINS.UI,
+        capabilities: ['ui-design-awareness'],
+      });
+
+      expect(result).not.toContain('/skill');
+    });
+
+    it('does not contain client-specific skill names', () => {
+      const result = generateDesignContextSection({
+        domain: WORK_DOMAINS.UI,
+        capabilities: ['ui-design-awareness'],
+      });
+
+      expect(result).not.toContain('frontend-design');
+      expect(result).not.toContain('library-first');
+    });
+  });
+
+  describe('AC3: generateConstraints TDD CHECKPOINT is conditional', () => {
+    it('includes TDD CHECKPOINT for backend feature WU', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const config = parseConfig({ methodology: { testing: 'tdd' } });
+      const doc = {
+        title: 'Test WU',
+        lane: TEST_LANE,
+        type: TEST_TYPE_FEATURE,
+        status: 'ready',
+        description: TEST_DESCRIPTION,
+        code_paths: [TEST_CODE_PATH],
+        acceptance: ['AC1'],
+      };
+      const output = generateTaskInvocation(doc, 'WU-TEST', strategy, { config });
+
+      expect(output).toContain('TDD CHECKPOINT');
+    });
+
+    it('omits TDD CHECKPOINT when methodology is none', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const config = parseConfig({ methodology: { testing: TEST_METHODOLOGY_NONE } });
+      const doc = {
+        title: 'Test WU',
+        lane: TEST_LANE,
+        type: TEST_TYPE_FEATURE,
+        status: 'ready',
+        description: TEST_DESCRIPTION,
+        code_paths: [TEST_CODE_PATH],
+        acceptance: ['AC1'],
+      };
+      const output = generateTaskInvocation(doc, 'WU-TEST', strategy, { config });
+
+      expect(output).not.toContain('TDD CHECKPOINT');
+    });
+
+    it('omits TDD CHECKPOINT for UI-classified work with CSS code_paths', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const config = parseConfig({ methodology: { testing: 'tdd' } });
+      const doc = {
+        title: 'Fix CSS',
+        lane: 'Experience: Frontend',
+        type: 'bug',
+        status: 'ready',
+        description: 'Fix CSS overflow',
+        code_paths: ['apps/web/src/styles/main.css'],
+        acceptance: ['AC1'],
+      };
+      const output = generateTaskInvocation(doc, 'WU-TEST', strategy, { config });
+
+      expect(output).not.toContain('TDD CHECKPOINT');
+    });
+  });
+
+  describe('AC6: Existing non-UI brief generation unchanged', () => {
+    it('backend feature WU output is unchanged', () => {
+      const strategy = SpawnStrategyFactory.create(TEST_SPAWN_CLIENT);
+      const config = parseConfig({});
+      const doc = {
+        title: 'Backend Feature',
+        lane: TEST_LANE,
+        type: TEST_TYPE_FEATURE,
+        status: 'ready',
+        description: 'A backend feature',
+        code_paths: [TEST_CODE_PATH],
+        acceptance: ['AC1'],
+      };
+      const output = generateTaskInvocation(doc, 'WU-TEST', strategy, { config });
+
+      // Should contain all standard sections
+      expect(output).toContain('TDD DIRECTIVE');
+      expect(output).toContain('LUMENFLOW_SPAWN_END');
+      expect(output).toContain('Effort Scaling');
+      expect(output).toContain('Bug Discovery');
+      expect(output).toContain('Mandatory Standards');
+      // Should NOT contain design context for backend
+      expect(output).not.toContain('Design Context');
+    });
+  });
+
+  describe('AC7: Integration test - bug WU with CSS code_paths', () => {
+    it('gets frontend-design skill, smoke-test guidance, and design context', () => {
+      // Step 1: Classify
+      const classification = classifyWork({
+        code_paths: ['apps/web/src/styles/button.css'],
+        type: 'bug',
+        lane: TEST_LANE,
+        description: 'Fix CSS button overflow',
+      });
+
+      expect(classification.domain).toBe(WORK_DOMAINS.UI);
+      expect(classification.testMethodologyHint).toBe('smoke-test');
+      expect(classification.capabilities).toContain('ui-design-awareness');
+
+      // Step 2: Test guidance uses classifier hint
+      const policy = resolvePolicy(parseConfig({ methodology: { testing: 'tdd' } }));
+      const testGuidance = generatePolicyBasedTestGuidance('bug', policy, {
+        testMethodologyHint: classification.testMethodologyHint,
+      });
+
+      expect(testGuidance).toContain('Visual');
+      expect(testGuidance).not.toContain('IF YOU WRITE IMPLEMENTATION CODE BEFORE A FAILING TEST');
+
+      // Step 3: Design context section present
+      const designContext = generateDesignContextSection(classification);
+      expect(designContext).toContain('Design Context');
+    });
+  });
+});
