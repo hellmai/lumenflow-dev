@@ -8,7 +8,7 @@ created: 2026-02-19
 code_paths:
   - packages/@lumenflow/cli/src/wu-spawn-prompt-builders.ts
   - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts
-  - docs/04-operations/_frameworks/lumenflow/**
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/agent-invocation-guide.md
   - apps/docs/src/content/docs/reference/templates.mdx
 tests:
   manual:
