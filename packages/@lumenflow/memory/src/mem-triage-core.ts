@@ -333,7 +333,8 @@ export async function archiveDiscovery(
   };
 
   // Append updated node (JSONL append-only model)
-  // Note: This creates a new entry - in production, we'd need deduplication on load
+  // WU-1910: loadMemory now deduplicates by node ID (last-write-wins), so the
+  // archived entry appended here will suppress the original on next load.
   // Cast is safe here because the node came from loadMemory which validates the schema
   await appendNode(memoryDir, archivedNode as unknown as MemoryNode);
 
