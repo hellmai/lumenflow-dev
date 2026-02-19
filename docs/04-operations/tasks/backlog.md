@@ -24,7 +24,6 @@ sections:
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
-- [WU-1884 — Retarget INIT-031 Phase 6 to software-delivery pack completion](wu/WU-1884.yaml) — Framework: Core Lifecycle
 - [WU-1885 — Add software-delivery migration scorecard and CI stub regression gate](wu/WU-1885.yaml) — Framework: Core Lifecycle
 - [WU-1886 — Add executeViaPack migration compat guard and fallback telemetry](wu/WU-1886.yaml) — Framework: Core Lifecycle
 - [WU-1887 — Migrate core WU lifecycle commands to software-delivery pack handlers](wu/WU-1887.yaml) — Framework: Core Lifecycle
@@ -47,6 +46,7 @@ sections:
 - [WU-1899 — Add signal-based work classifier for code-path-aware UI/backend/docs detection](wu/WU-1899.yaml) — Framework: Core Lifecycle
 - [WU-1901 — Fix lane lock zombie detection clearing live persistent locks after wu:claim exits](wu/WU-1901.yaml) — Framework: Core Lifecycle
 - [WU-1902 — Add config:set CLI command for safe .lumenflow.config.yaml modification](wu/WU-1902.yaml) — Framework: CLI Enforcement
+- [WU-1884 — Retarget INIT-031 Phase 6 to software-delivery pack completion](wu/WU-1884.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
