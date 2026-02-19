@@ -1,0 +1,42 @@
+id: WU-1909
+title: Fix checkpoint writing to main wu-events.jsonl — extract state-store concern from createCheckpoint
+lane: 'Framework: Memory'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-19
+code_paths:
+  - packages/@lumenflow/memory/src/mem-checkpoint-core.ts
+  - packages/@lumenflow/cli/src/mem-checkpoint.ts
+  - packages/@lumenflow/cli/src/hooks/generators/pre-compact-checkpoint.ts
+tests:
+  manual:
+    - Run mem:checkpoint --wu WU-XXX from main checkout, verify wu-events.jsonl is NOT modified
+    - Run mem:checkpoint --wu WU-XXX from worktree, verify checkpoint event IS written to wu-events.jsonl
+    - Trigger pre-compact hook from main, verify no dirty state on main
+  unit:
+    - packages/@lumenflow/memory/__tests__/mem-checkpoint-core.test.ts
+    - packages/@lumenflow/cli/src/__tests__/mem-checkpoint.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1909.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "createCheckpoint() in mem-checkpoint-core.ts writes to wu-events.jsonl relative to baseDir (process.cwd()). When mem:checkpoint is invoked from the main checkout (direct call, pre-compact hook, or MCP handler), this dirties main's wu-events.jsonl outside of wu:done's merge flow. Root cause: WU-1748 added a dual-write to wu-events.jsonl as a side-effect inside createCheckpoint, violating SRP. The state-store write should be extracted to the caller, guarded by resolveLocation() using CONTEXT_VALIDATION.LOCATION_TYPES.WORKTREE."
+acceptance:
+  - createCheckpoint only writes to memory store (appendNode), not wu-events.jsonl
+  - State-store propagation extracted to CLI wrapper or integration function
+  - State-store write guarded by resolveLocation() — only in worktrees
+  - Uses CONTEXT_VALIDATION.LOCATION_TYPES constant, no magic strings
+  - ensureMemoryDir deduplicated into shared module
+  - Silent catch replaced with warning log
+  - Existing tests updated, new test for main-checkout guard
