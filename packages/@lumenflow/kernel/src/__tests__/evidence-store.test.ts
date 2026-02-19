@@ -455,6 +455,46 @@ describe('evidence store', () => {
       expect(traces).toHaveLength(1);
       expect(traces[0]?.receipt_id).toBe('receipt-cross-process');
     });
+
+    it('does not produce duplicates when another instance compacts data already read by the reader (WU-1881)', async () => {
+      // Use a large-enough threshold so we control compaction timing precisely.
+      // Reader writes entries to active file, then writer compacts them to a segment.
+      const reader = new EvidenceStore({
+        evidenceRoot,
+        compactionThresholdBytes: 100_000, // high threshold: no auto-compaction
+      });
+      const writer = new EvidenceStore({
+        evidenceRoot,
+        compactionThresholdBytes: 1, // very low: every append triggers compaction
+      });
+
+      // Step 1: Reader appends entries via its own instance (cursor advances, indexes populated)
+      await reader.appendTrace(makeStartedEntry('receipt-dup-1', 'WU-dup'));
+      await reader.appendTrace(makeStartedEntry('receipt-dup-2', 'WU-dup'));
+
+      // Step 2: Reader hydrates — cursor is now > 0, both entries are in orderedTraces
+      const traces1 = await reader.readTraces();
+      expect(traces1).toHaveLength(2);
+
+      // Step 3: Writer appends (triggers compaction — active file is rotated to segment)
+      // This moves the data that reader already indexed from the active file into a segment.
+      await writer.appendTrace(makeStartedEntry('receipt-dup-3', 'WU-dup'));
+
+      // Step 4: Reader calls readTraces() again. incrementalHydrate sees the new segment
+      // and MUST NOT re-index entries that were already read from the active file.
+      const traces2 = await reader.readTraces();
+
+      // Should have exactly 3 unique entries, NOT 5 (which would indicate duplicates)
+      expect(traces2).toHaveLength(3);
+
+      // Verify no duplicate receipt_ids
+      const receiptIds = traces2.map((t) => t.receipt_id);
+      const uniqueReceiptIds = new Set(receiptIds);
+      expect(uniqueReceiptIds.size).toBe(3);
+      expect(uniqueReceiptIds.has('receipt-dup-1')).toBe(true);
+      expect(uniqueReceiptIds.has('receipt-dup-2')).toBe(true);
+      expect(uniqueReceiptIds.has('receipt-dup-3')).toBe(true);
+    });
   });
 
   it('preserves non-lock operation errors instead of masking them as lock acquisition failures', async () => {
