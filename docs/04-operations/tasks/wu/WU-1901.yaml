@@ -1,0 +1,40 @@
+id: WU-1901
+title: Fix lane lock zombie detection clearing live persistent locks after wu:claim exits
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-19
+code_paths:
+  - packages/@lumenflow/core/src/lane-lock.ts
+  - packages/@lumenflow/core/src/__tests__/lane-lock.test.ts
+  - docs/04-operations/_frameworks/lumenflow/**
+tests:
+  manual:
+    - Spawn two wu:claim processes rapidly for same lane and verify second one fails
+  unit:
+    - packages/@lumenflow/core/src/__tests__/lane-lock.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1901.done
+dependencies: []
+risks: []
+notes: 'Minimal fix: change line 321 guard from if (zombie) to if (zombie && stale). This means a lock with a dead PID but recent timestamp (<2h) is treated as a live persistent lock. Only locks that are BOTH old AND from a dead process are auto-cleared.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'acquireLaneLock stores the CLI process PID in the lock file. Since wu:claim is a short-lived process that exits after creating the worktree, the PID immediately becomes invalid. Subsequent wu:claim calls detect the PID as a zombie and auto-clear the lock, allowing concurrent claims on the same lane. This violates WIP=1 enforcement. Root cause: lane-lock.ts line 321 auto-clears when PID is dead, but the PID is from the short-lived wu:claim CLI process, not the long-running agent. Fix: require BOTH stale AND zombie for auto-clear on claim path.'
+acceptance:
+  - acquireLaneLock no longer auto-clears locks based solely on PID status - requires BOTH stale (>2h) AND PID dead
+  - Recent dead-PID lock (less than 2h old) is NOT auto-cleared on subsequent wu:claim
+  - Stale + dead PID lock IS still auto-cleared - preserves existing recovery behavior
+  - Existing zombie detection for genuinely abandoned locks still works
+  - 'Test: two sequential acquireLaneLock calls with different WU IDs - second fails even if first PID is dead'
+  - 'Test: stale + dead PID lock IS auto-cleared'
+  - Internal docs updated describing lock lifecycle and zombie detection semantics
+  - Starlight docs updated for lane lock behavior
