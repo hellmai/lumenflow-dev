@@ -338,14 +338,14 @@ tools:
         access: write
   # flow:*
   - name: flow:bottlenecks
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/flow-metrics-tools.ts#flowBottlenecksTool
     permission: read
     required_scopes:
       - type: path
         pattern: '**'
         access: read
   - name: flow:report
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/flow-metrics-tools.ts#flowReportTool
     permission: read
     required_scopes:
       - type: path
@@ -584,14 +584,14 @@ tools:
         pattern: '**'
         access: write
   - name: metrics
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/flow-metrics-tools.ts#metricsTool
     permission: read
     required_scopes:
       - type: path
         pattern: '**'
         access: read
   - name: metrics:snapshot
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/flow-metrics-tools.ts#metricsSnapshotTool
     permission: read
     required_scopes:
       - type: path

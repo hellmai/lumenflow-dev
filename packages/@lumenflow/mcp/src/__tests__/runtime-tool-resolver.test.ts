@@ -662,31 +662,27 @@ describe('packToolCapabilityResolver', () => {
 });
 
 /**
- * WU-1803: Tests for flow, metrics, and context tool in-process handler registration
+ * WU-1803 / WU-1905: Tests for context tool in-process handler registration.
+ *
+ * WU-1905: flow:bottlenecks, flow:report, metrics:snapshot, lumenflow:metrics,
+ * and metrics have been migrated to software-delivery pack handlers and are no
+ * longer registered as in-process resolver tools.
  */
-describe('WU-1803: flow/metrics/context tool registration', () => {
-  const FLOW_METRICS_CONTEXT_TOOLS = [
-    'flow:bottlenecks',
-    'flow:report',
-    'metrics:snapshot',
-    'lumenflow:metrics',
-    'metrics',
-    'context:get',
-    'wu:list',
-  ] as const;
+describe('WU-1803/WU-1905: context tool registration (flow/metrics migrated to pack)', () => {
+  const REMAINING_CONTEXT_TOOLS = ['context:get', 'wu:list'] as const;
 
-  it.each(FLOW_METRICS_CONTEXT_TOOLS)('registers %s as an in-process pack tool', (toolName) => {
+  it.each(REMAINING_CONTEXT_TOOLS)('registers %s as an in-process pack tool', (toolName) => {
     expect(isInProcessPackToolRegistered(toolName)).toBe(true);
   });
 
-  it('lists all flow/metrics/context tools in the registry', () => {
+  it('lists remaining context tools in the registry', () => {
     const registeredTools = listInProcessPackTools();
-    for (const toolName of FLOW_METRICS_CONTEXT_TOOLS) {
+    for (const toolName of REMAINING_CONTEXT_TOOLS) {
       expect(registeredTools).toContain(toolName);
     }
   });
 
-  it.each(FLOW_METRICS_CONTEXT_TOOLS)(
+  it.each(REMAINING_CONTEXT_TOOLS)(
     'resolves %s to an in-process handler via packToolCapabilityResolver',
     async (toolName) => {
       const input = createResolverInput(toolName);
@@ -694,6 +690,32 @@ describe('WU-1803: flow/metrics/context tool registration', () => {
 
       expect(capability).toBeDefined();
       expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+    },
+  );
+
+  const MIGRATED_FLOW_METRICS_TOOLS = [
+    'flow:bottlenecks',
+    'flow:report',
+    'metrics:snapshot',
+    'lumenflow:metrics',
+    'metrics',
+  ] as const;
+
+  it.each(MIGRATED_FLOW_METRICS_TOOLS)(
+    '%s is no longer registered as in-process (migrated to pack handler)',
+    (toolName) => {
+      expect(isInProcessPackToolRegistered(toolName)).toBe(false);
+    },
+  );
+
+  it.each(MIGRATED_FLOW_METRICS_TOOLS)(
+    '%s falls back to subprocess handler via packToolCapabilityResolver',
+    async (toolName) => {
+      const input = createResolverInput(toolName);
+      const capability = await packToolCapabilityResolver(input);
+
+      expect(capability).toBeDefined();
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.SUBPROCESS);
     },
   );
 });
@@ -905,7 +927,12 @@ describe('WU-1802: validation/lane tools use executeViaPack (not runCliCommand)'
 });
 
 /**
- * WU-1803: Tests for flow/metrics/context MCP tools using executeViaPack
+ * WU-1803: Tests for flow/metrics/context MCP tools using executeViaPack.
+ *
+ * WU-1905: The resolver stubs for flow/metrics tools have been removed, but
+ * these tests remain valid because they test the executeViaPack mechanism with
+ * mock runtimes. The pack handler implementations now live in
+ * packages/@lumenflow/packs/software-delivery/tool-impl/flow-metrics-tools.ts.
  */
 describe('WU-1803: flow/metrics/context tools use executeViaPack (not runCliCommand)', () => {
   beforeEach(() => {

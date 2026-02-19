@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 export * from './delegation-tools.js';
+export * from './flow-metrics-tools.js';
 export * from './git-runner.js';
 export * from './git-tools.js';
 export * from './lane-lock.js';
