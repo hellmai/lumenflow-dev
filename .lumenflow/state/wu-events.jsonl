@@ -1754,3 +1754,4 @@
 {"type":"claim","wuId":"WU-1888","timestamp":"2026-02-19T16:48:27.169Z","lane":"Framework: Core Lifecycle","title":"Migrate WU maintenance and delegation command set to software-delivery handlers"}
 {"type":"complete","wuId":"WU-1888","timestamp":"2026-02-19T16:53:42.540Z"}
 {"type":"claim","wuId":"WU-1889","lane":"Framework: Core Lifecycle","title":"Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers","timestamp":"2026-02-19T16:54:13.584Z"}
+{"type":"release","wuId":"WU-1889","reason":"Executing dependent worker WU-1897 first; umbrella resumed after worker completion","timestamp":"2026-02-19T16:55:40.204Z"}

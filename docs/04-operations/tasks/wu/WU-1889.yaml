@@ -2,7 +2,7 @@ id: WU-1889
 title: Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: ready
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -31,8 +31,12 @@ blocked_by:
   - WU-1897
   - WU-1904
 risks: []
-notes: 'Sizing: Complex non-atomic umbrella decomposed into WU-1896/WU-1897. Strategy: Decomposition
-  (orchestrator-worker). This WU remains as dependency gate and completion rollup.'
+notes: >-
+  Sizing: Complex non-atomic umbrella decomposed into WU-1896/WU-1897. Strategy: Decomposition
+  (orchestrator-worker). This WU remains as dependency gate and completion rollup.
+
+  Released (2026-02-19): Executing dependent worker WU-1897 first; umbrella resumed after worker
+  completion
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -51,7 +55,6 @@ acceptance:
   - Fallback-only resolver stubs are removed for migrated command families
   - Runtime execution for migrated command families succeeds without CLI fallback in bootstrapped
     mode
-claimed_mode: worktree
 worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1889
 claimed_at: 2026-02-19T16:54:13.549Z
 baseline_main_sha: b994891dcd4156eb0adccceddc3e986084a1a4e2
