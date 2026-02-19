@@ -2,7 +2,7 @@ id: WU-1887
 title: Migrate core WU lifecycle commands to software-delivery pack handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-19
 code_paths:
@@ -54,3 +54,6 @@ acceptance:
     runtime mode
   - Manifest entries for migrated lifecycle commands no longer point to pendingRuntimeMigrationTool
   - Runtime path for migrated lifecycle commands completes without invoking CLI fallback
+locked: true
+completed_at: 2026-02-19T14:21:17.213Z
+completed: 2026-02-19
