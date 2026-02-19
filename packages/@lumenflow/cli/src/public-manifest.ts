@@ -676,6 +676,20 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     description: 'Clean stale backlog entries',
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
   },
+  {
+    name: 'config:set',
+    binName: 'config-set',
+    binPath: './dist/config-set.js',
+    description: 'Safely update .lumenflow.config.yaml via micro-worktree',
+    category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+  },
+  {
+    name: 'config:get',
+    binName: 'config-get',
+    binPath: './dist/config-get.js',
+    description: 'Read and display a value from .lumenflow.config.yaml',
+    category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+  },
 
   // ============================================================================
   // Metrics & Flow
