@@ -30,7 +30,7 @@ phases:
     status: done
   - id: 6
     title: 'Pack Ecosystem: 5 Real Packs'
-    status: in_progress
+    status: done
 success_metrics:
   - Web dashboard renders live task events within 2s of EventStore append
   - AG-UI RunAgent endpoint passes CopilotKit compatibility test
