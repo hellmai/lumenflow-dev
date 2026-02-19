@@ -82,7 +82,16 @@ export function formatExecutionPlan(initiative: InitiativeDoc, plan: ExecutionPl
   }
 
   if (plan.waves.length === 0) {
-    lines.push('No pending WUs to execute.');
+    // WU-1906: Distinguish all-done from all-blocked
+    const hasPending = plan.deferred.length > 0 ||
+      (plan.skippedWithReasons && plan.skippedWithReasons.length > 0);
+    if (hasPending) {
+      const pendingCount = plan.deferred.length +
+        (plan.skippedWithReasons ? plan.skippedWithReasons.length : 0);
+      lines.push(`${pendingCount} WU(s) still pending but none are unblocked.`);
+    } else {
+      lines.push('All WUs are complete.');
+    }
     return lines.join(STRING_LITERALS.NEWLINE);
   }
 
@@ -423,7 +432,15 @@ export function formatExecutionPlanWithEmbeddedSpawns(plan: ExecutionPlan): stri
   const lines = [];
 
   if (plan.waves.length === 0) {
-    return 'No pending WUs to execute.';
+    // WU-1906: Distinguish all-done from all-blocked
+    const hasPending = plan.deferred.length > 0 ||
+      (plan.skippedWithReasons && plan.skippedWithReasons.length > 0);
+    if (hasPending) {
+      const pendingCount = plan.deferred.length +
+        (plan.skippedWithReasons ? plan.skippedWithReasons.length : 0);
+      return `${pendingCount} WU(s) still pending but none are unblocked.`;
+    }
+    return 'All WUs are complete.';
   }
 
   for (let waveIndex = 0; waveIndex < plan.waves.length; waveIndex++) {

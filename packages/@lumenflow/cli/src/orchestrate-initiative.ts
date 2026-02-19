@@ -127,7 +127,20 @@ const program = new Command()
       const plan = buildExecutionPlanWithLockPolicy(wus, { laneConfigs });
 
       if (plan.waves.length === 0) {
-        console.log(chalk.green(`${LOG_PREFIX} All WUs are complete! Nothing to execute.`));
+        // WU-1906: Distinguish all-done from all-blocked
+        const hasPending = plan.deferred.length > 0 || plan.skippedWithReasons.length > 0;
+        if (hasPending) {
+          const pendingCount = plan.deferred.length + plan.skippedWithReasons.length;
+          console.log(chalk.yellow(`${LOG_PREFIX} ${pendingCount} WU(s) still pending but none are unblocked.`));
+          if (plan.deferred.length > 0) {
+            console.log(chalk.yellow(`${LOG_PREFIX}   ${plan.deferred.length} deferred (waiting for dependencies)`));
+          }
+          if (plan.skippedWithReasons.length > 0) {
+            console.log(chalk.yellow(`${LOG_PREFIX}   ${plan.skippedWithReasons.length} skipped (non-ready status)`));
+          }
+        } else {
+          console.log(chalk.green(`${LOG_PREFIX} All WUs are complete! Nothing to execute.`));
+        }
         return;
       }
 
