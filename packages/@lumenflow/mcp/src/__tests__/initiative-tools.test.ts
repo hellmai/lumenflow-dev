@@ -349,21 +349,24 @@ describe('Initiative MCP tools (WU-1424)', () => {
     });
 
     it('should run docs_sync with force/vendor flags', async () => {
-      mockRunCliCommand.mockResolvedValue({
-        success: true,
-        stdout: 'Docs synced',
-        stderr: '',
-        exitCode: 0,
-      });
+      mockExecuteViaPack.mockResolvedValue({ success: true, data: { message: 'Docs synced' } });
 
       const result = await docsSyncTool.execute({ force: true, vendor: 'claude' });
 
       expect(result.success).toBe(true);
-      expect(mockRunCliCommand).toHaveBeenCalledWith(
+      expect(mockExecuteViaPack).toHaveBeenCalledWith(
         'docs:sync',
-        expect.arrayContaining(['--vendor', 'claude', '--force']),
-        expect.any(Object),
+        expect.objectContaining({
+          vendor: 'claude',
+          force: true,
+        }),
+        expect.objectContaining({
+          fallback: expect.objectContaining({
+            command: 'docs:sync',
+          }),
+        }),
       );
+      expect(mockRunCliCommand).not.toHaveBeenCalled();
     });
 
     it('should run state_doctor with fix/dry-run flags', async () => {
