@@ -1,0 +1,196 @@
+---
+title: Workspace Spec
+description: Reference for the workspace.yaml kernel configuration file
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+The workspace spec (`workspace.yaml`) is the kernel-level configuration file that defines the runtime environment for a LumenFlow workspace. It declares which [packs](/concepts/packs) are loaded, which [lanes](/concepts/lanes) exist, what security boundaries apply, and where events and memory are stored.
+
+<Aside type="note">
+  `workspace.yaml` is the kernel's configuration file. It is distinct from `.lumenflow.config.yaml`,
+  which configures the CLI and tooling layer. The kernel reads `workspace.yaml` at startup via
+  `initializeKernelRuntime()` and validates it against the `WorkspaceSpecSchema` (Zod).
+</Aside>
+
+## Full Schema
+
+```yaml
+# workspace.yaml
+id: my-workspace
+name: My Project
+
+packs:
+  - id: software-delivery
+    version: '0.1.0'
+    integrity: sha256:a1b2c3d4e5f6...
+    source: local
+    # url: optional — required for git/registry sources
+    # registry_url: optional — override default registry
+
+lanes:
+  - id: framework-core
+    title: 'Framework: Core'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/core/**'
+        access: write
+    wip_limit: 1
+    # policy_overrides: optional
+
+security:
+  allowed_scopes:
+    - type: path
+      pattern: '**'
+      access: write
+    - type: network
+      posture: 'off'
+  network_default: 'off'
+  deny_overlays:
+    - '.lumenflow/**'
+
+memory_namespace: my-workspace
+event_namespace: my-workspace
+```
+
+## Top-Level Fields
+
+| Field              | Type       | Required | Description                                    |
+| ------------------ | ---------- | -------- | ---------------------------------------------- |
+| `id`               | string     | Yes      | Unique workspace identifier                    |
+| `name`             | string     | Yes      | Human-readable workspace name                  |
+| `packs`            | PackPin[]  | Yes      | Array of [pack pins](#pack-pins) to load       |
+| `lanes`            | LaneSpec[] | Yes      | Array of [lane definitions](#lane-definitions) |
+| `security`         | object     | Yes      | Workspace-level [security config](#security)   |
+| `memory_namespace` | string     | Yes      | Namespace for memory layer isolation           |
+| `event_namespace`  | string     | Yes      | Namespace for kernel event stream isolation    |
+| `policies`         | object     | No       | Workspace-level policy overrides               |
+
+## Pack Pins
+
+Each entry in the `packs` array is a **pack pin** — a versioned, integrity-checked reference to a domain pack that the [kernel](/concepts/kernel) loads at startup.
+
+| Field          | Type   | Required | Description                                            |
+| -------------- | ------ | -------- | ------------------------------------------------------ |
+| `id`           | string | Yes      | Pack identifier (e.g., `software-delivery`)            |
+| `version`      | string | Yes      | Semantic version (e.g., `0.1.0`)                       |
+| `integrity`    | string | Yes      | `sha256:<64-hex>` hash or `dev` for local development  |
+| `source`       | string | Yes      | One of `local`, `git`, or `registry`                   |
+| `url`          | string | No       | Source URL (required for `git` and `registry` sources) |
+| `registry_url` | string | No       | Override the default pack registry URL                 |
+
+### Integrity Verification
+
+The `integrity` field ensures packs cannot be tampered with. It uses the same `sha256:<hex>` format as [Subresource Integrity (SRI)](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity):
+
+- **`sha256:<64-char-hex>`** — Production mode. The kernel verifies the pack manifest hash matches before loading.
+- **`dev`** — Development mode. Skips integrity verification for local pack development.
+
+```yaml
+packs:
+  # Production: integrity-verified
+  - id: software-delivery
+    version: '1.0.0'
+    integrity: sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    source: registry
+
+  # Development: skip verification
+  - id: software-delivery
+    version: '0.1.0'
+    integrity: dev
+    source: local
+```
+
+<Aside type="caution">
+  Using `integrity: dev` in production is a security risk. The kernel will load the pack without
+  verifying its contents. Always use a `sha256:` hash for non-local sources.
+</Aside>
+
+## Lane Definitions
+
+Each entry in `lanes` defines a lane at the kernel level (distinct from the `.lumenflow.config.yaml` lane definitions used by the CLI).
+
+| Field              | Type        | Required | Description                                          |
+| ------------------ | ----------- | -------- | ---------------------------------------------------- |
+| `id`               | string      | Yes      | Lane identifier (kebab-case, e.g., `framework-core`) |
+| `title`            | string      | Yes      | Human-readable name (e.g., `Framework: Core`)        |
+| `allowed_scopes`   | ToolScope[] | No       | Scopes this lane grants (defaults to `[]`)           |
+| `wip_limit`        | integer     | No       | Maximum concurrent active tasks                      |
+| `policy_overrides` | object      | No       | Lane-level policy configuration                      |
+
+The lane's `allowed_scopes` are used as the second level of the [scope intersection](/concepts/scope-intersection) algorithm:
+
+```
+effective_scope = workspace ∩ lane ∩ task ∩ tool
+```
+
+## Security
+
+The `security` object defines the workspace-level permission boundary — the outermost layer of the scope intersection.
+
+| Field             | Type        | Required | Description                                    |
+| ----------------- | ----------- | -------- | ---------------------------------------------- |
+| `allowed_scopes`  | ToolScope[] | Yes      | Maximum permissions any tool can receive       |
+| `network_default` | string      | Yes      | Default network posture: `off` or `full`       |
+| `deny_overlays`   | string[]    | Yes      | Glob patterns for unconditionally denied paths |
+
+### Scope Types
+
+Scopes can be **path** or **network** types:
+
+```yaml
+security:
+  allowed_scopes:
+    # Path scope: grant write access to all files
+    - type: path
+      pattern: '**'
+      access: write
+
+    # Network scope: deny all network access
+    - type: network
+      posture: 'off'
+```
+
+### Deny Overlays
+
+Paths in `deny_overlays` are **unconditionally denied** regardless of scope intersection. The kernel checks these before any other authorization step:
+
+```yaml
+security:
+  deny_overlays:
+    - '.lumenflow/**' # Kernel state is tamper-proof
+    - '.git/**' # Git internals are protected
+```
+
+<Aside type="tip">
+  The `.lumenflow/**` deny overlay is what makes the kernel's state tamper-proof — even an agent
+  with full workspace write access cannot modify evidence, events, or kernel configuration.
+</Aside>
+
+## Validation
+
+The kernel validates `workspace.yaml` against `WorkspaceSpecSchema` (defined in `@lumenflow/kernel`) at startup. Invalid specs cause `initializeKernelRuntime()` to throw with a Zod validation error.
+
+```bash
+# The kernel validates automatically during initialization.
+# For manual validation, use the task:inspect command:
+pnpm task:inspect --workspace-root .
+```
+
+## Relationship to .lumenflow.config.yaml
+
+| Concern        | `workspace.yaml`                   | `.lumenflow.config.yaml`            |
+| -------------- | ---------------------------------- | ----------------------------------- |
+| **Audience**   | Kernel runtime                     | CLI and tooling layer               |
+| **Lanes**      | `LaneSpec` (id, scopes, wip)       | Lane definitions (name, code_paths) |
+| **Packs**      | `PackPin` (id, version, integrity) | Not present                         |
+| **Security**   | Scope intersection boundaries      | Git hooks, safe-git wrapper         |
+| **Gates**      | Pack policies (`on_completion`)    | Gate commands (format, lint, test)  |
+| **Validation** | Zod schema at kernel init          | `lumenflow-doctor` CLI command      |
+
+## Next Steps
+
+- [Kernel Runtime](/concepts/kernel) — How the workspace spec is loaded and used
+- [Packs](/concepts/packs) — Domain pack architecture and the Software Delivery Pack
+- [Scope Intersection](/concepts/scope-intersection) — How workspace security becomes effective permissions
+- [Configuration](/reference/config) — The CLI-level `.lumenflow.config.yaml` reference

@@ -85,7 +85,9 @@ export default defineConfig({
           label: 'Reference',
           items: [
             { label: 'CLI Commands', slug: 'reference/cli' },
+            { label: 'MCP Server', slug: 'reference/mcp' },
             { label: 'Configuration', slug: 'reference/config' },
+            { label: 'Workspace Spec', slug: 'reference/workspace-spec' },
             { label: 'WU Schema', slug: 'reference/wu-schema' },
             { label: 'API Documentation', slug: 'reference/api' },
             { label: 'GitHub Action', slug: 'reference/github-action' },

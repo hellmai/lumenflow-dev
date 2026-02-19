@@ -696,11 +696,31 @@ pnpm orchestrate:monitor
 
 ### task:claim
 
-Claim a task directly through KernelRuntime
+Claim a task directly through the [kernel runtime](/concepts/kernel), bypassing the CLI's WU layer.
+
+<Aside type="note" title="Kernel primitive vs CLI command">
+  `task:claim` operates at the kernel level — it claims a **task** (the kernel's unit of work)
+  rather than a **WU** (the Software Delivery Pack's wrapper). Use `wu:claim` for normal workflow;
+  use `task:claim` only when you need direct kernel interaction, such as building custom packs or
+  testing kernel behavior.
+</Aside>
 
 ```bash
-pnpm task:claim
+pnpm task:claim --task-id <taskId> --by <identity> --session-id <sessionId>
 ```
+
+**Options:**
+
+| Flag                             | Description                                        | Required |
+| -------------------------------- | -------------------------------------------------- | -------- |
+| `--task-id &lt;taskId&gt;`       | Task ID to claim (e.g., WU-1772)                   | Yes      |
+| `--by &lt;identity&gt;`          | Actor identity for the claim (e.g., tom@hellm.ai)  | Yes      |
+| `--session-id &lt;sessionId&gt;` | Session ID for runtime event correlation           | Yes      |
+| `--timestamp &lt;iso8601&gt;`    | Optional ISO-8601 timestamp override               | No       |
+| `--domain-data &lt;json&gt;`     | Optional JSON payload for domain-specific metadata | No       |
+| `--workspace-root &lt;path&gt;`  | Workspace root directory (default: `.`)            | No       |
+
+Related kernel commands: `task:create`, `task:complete`, `task:block`, `task:unblock`, `task:inspect`, `tool:execute`.
 
 ## Packs
 
@@ -1418,4 +1438,7 @@ pnpm wu:unlock-lane
 ## Next Steps
 
 - [Configuration](/reference/config) – Configure LumenFlow
+- [Workspace Spec](/reference/workspace-spec) – Kernel-level workspace.yaml reference
+- [MCP Server](/reference/mcp) – MCP protocol reference
 - [WU Schema](/reference/wu-schema) – Work Unit YAML structure
+- [Kernel Runtime](/concepts/kernel) – How `task:*` commands interact with the kernel

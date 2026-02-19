@@ -1122,114 +1122,51 @@ interface ToolResult {
 
 ## Architecture
 
-The MCP server follows a thin wrapper pattern:
-
-- **Read operations** (context_get) use `@lumenflow/core` directly
-- **Write operations** (all others) shell out to CLI commands for consistency and safety
-
-This ensures consistency with CLI behavior and respects all safety hooks.
+The MCP server uses a **pack dispatch** architecture: tools are executed through the [kernel runtime](/concepts/kernel), not by shelling out to CLI commands.
 
 ```
+AI Client (Claude, Cursor, etc.)
+    │
+    ▼
 MCP Server (@lumenflow/mcp)
-├── Tools (68)
-│   ├── Core WU Operations (7)
-│   │   ├── context_get → @lumenflow/core
-│   │   ├── wu_list → CLI: wu:validate
-│   │   ├── wu_status → CLI: wu:status
-│   │   ├── wu_create → CLI: wu:create
-│   │   ├── wu_claim → CLI: wu:claim
-│   │   ├── wu_done → CLI: wu:done
-│   │   └── gates_run → CLI: gates
-│   │
-│   ├── Additional WU Operations (17)
-│   │   ├── wu_block → CLI: wu:block
-│   │   ├── wu_unblock → CLI: wu:unblock
-│   │   ├── wu_edit → CLI: wu:edit
-│   │   ├── wu_release → CLI: wu:release
-│   │   ├── wu_recover → CLI: wu:recover
-│   │   ├── wu_repair → CLI: wu:repair
-│   │   ├── wu_deps → CLI: wu:deps
-│   │   ├── wu_prep → CLI: wu:prep
-│   │   ├── wu_preflight → CLI: wu:preflight
-│   │   ├── wu_prune → CLI: wu:prune
-│   │   ├── wu_delete → CLI: wu:delete
-│   │   ├── wu_cleanup → CLI: wu:cleanup
-│   │   ├── wu_brief → CLI: wu:brief
-│   │   ├── wu_delegate → CLI: wu:delegate
-│   │   ├── wu_validate → CLI: wu:validate
-│   │   ├── wu_infer_lane → CLI: wu:infer-lane
-│   │   └── wu_unlock_lane → CLI: wu:unlock-lane
-│   │
-│   ├── Initiative Operations (8)
-│   │   ├── initiative_list → CLI: initiative:list
-│   │   ├── initiative_status → CLI: initiative:status
-│   │   ├── initiative_create → CLI: initiative:create
-│   │   ├── initiative_edit → CLI: initiative:edit
-│   │   ├── initiative_add_wu → CLI: initiative:add-wu
-│   │   ├── initiative_remove_wu → CLI: initiative:remove-wu
-│   │   ├── initiative_bulk_assign → CLI: initiative:bulk-assign
-│   │   └── initiative_plan → CLI: initiative:plan
-│   │
-│   ├── Memory Operations (14)
-│   │   ├── mem_init → CLI: mem:init
-│   │   ├── mem_start → CLI: mem:start
-│   │   ├── mem_ready → CLI: mem:ready
-│   │   ├── mem_checkpoint → CLI: mem:checkpoint
-│   │   ├── mem_cleanup → CLI: mem:cleanup
-│   │   ├── mem_context → CLI: mem:context
-│   │   ├── mem_create → CLI: mem:create
-│   │   ├── mem_delete → CLI: mem:delete
-│   │   ├── mem_export → CLI: mem:export
-│   │   ├── mem_inbox → CLI: mem:inbox
-│   │   ├── mem_signal → CLI: mem:signal
-│   │   ├── mem_summarize → CLI: mem:summarize
-│   │   ├── mem_triage → CLI: mem:triage
-│   │   └── mem_recover → CLI: mem:recover
-│   │
-│   ├── Agent Operations (4)
-│   │   ├── agent_session → CLI: agent:session
-│   │   ├── agent_session_end → CLI: agent:session-end
-│   │   ├── agent_log_issue → CLI: agent:log-issue
-│   │   └── agent_issues_query → CLI: agent:issues-query
-│   │
-│   ├── Orchestration Operations (3)
-│   │   ├── orchestrate_initiative → CLI: orchestrate:initiative
-│   │   ├── orchestrate_init_status → CLI: orchestrate:init-status
-│   │   └── orchestrate_monitor → CLI: orchestrate:monitor
-│   │
-│   ├── Delegation Operations (1)
-│   │   └── delegation_list → CLI: delegation:list
-│   │
-│   ├── Flow/Metrics Operations (3)
-│   │   ├── flow_bottlenecks → CLI: flow:bottlenecks
-│   │   ├── flow_report → CLI: flow:report
-│   │   └── metrics_snapshot → CLI: metrics:snapshot
-│   │
-│   ├── Validation Operations (5)
-│   │   ├── validate → CLI: validate
-│   │   ├── validate_agent_skills → CLI: validate:agent-skills
-│   │   ├── validate_agent_sync → CLI: validate:agent-sync
-│   │   ├── validate_backlog_sync → CLI: validate:backlog-sync
-│   │   └── validate_skills_spec → CLI: validate:skills-spec
-│   │
-│   └── Setup Operations (8)
-│       ├── lumenflow_init → CLI: lumenflow
-│       ├── lumenflow_doctor → CLI: lumenflow:doctor
-│       ├── lumenflow_integrate → CLI: lumenflow:integrate
-│       ├── lumenflow_upgrade → CLI: lumenflow:upgrade
-│       ├── lumenflow_commands → CLI: lumenflow:commands
-│       ├── lumenflow_docs_sync → CLI: docs:sync
-│       ├── lumenflow_release → CLI: lumenflow:release
-│       └── lumenflow_sync_templates → CLI: sync:templates
-│
-└── Resources (3)
-    ├── lumenflow://context → @lumenflow/core
-    ├── lumenflow://wu/{id} → CLI: wu:status
-    └── lumenflow://backlog → File read
+    │
+    ├─ runtimeFactory() → initializes KernelRuntime
+    │   └─ loads workspace.yaml → resolves pack pins → loads pack manifests
+    │
+    └─ executeViaPack(toolName, input, context)
+        │
+        ▼
+    KernelRuntime.executeTool()
+        │
+        ├─ 1. Tool lookup (pack manifest)
+        ├─ 2. Scope intersection (workspace ∩ lane ∩ task ∩ tool)
+        ├─ 3. Reserved path check (.lumenflow/**)
+        ├─ 4. Input persistence (SHA-256 content-addressed)
+        ├─ 5. Policy evaluation (deny-wins cascade)
+        ├─ 6. Input validation (Zod schema)
+        ├─ 7. Tool dispatch (in-process or subprocess/bwrap)
+        └─ 8. Evidence recording (append-only JSONL)
 ```
+
+Every MCP tool call passes through the kernel's full execution pipeline, including [scope intersection](/concepts/scope-intersection), [policy evaluation](/concepts/policy-engine), and [evidence recording](/concepts/evidence). This means MCP tools receive the same security guarantees as direct kernel API calls.
+
+<Aside type="note" title="Fallback behavior">
+  If the kernel runtime fails to initialize (e.g., missing `workspace.yaml`), the MCP server falls
+  back to CLI shell-out for compatibility. An allowlist controls which error codes trigger fallback
+  — unknown errors are **not** eligible (fail-closed). Fallback events are recorded for telemetry.
+</Aside>
+
+### Execution Flow
+
+1. **`runtimeFactory()`** — Creates a `KernelRuntime` instance for the workspace, loading the [workspace spec](/reference/workspace-spec) and resolving all pack pins
+2. **`executeViaPack()`** — Routes the MCP tool call to the kernel's `executeTool()` method with the appropriate execution context
+3. **Kernel pipeline** — The tool passes through scope, policy, validation, and dispatch stages (see [Kernel Runtime](/concepts/kernel) for details)
+4. **Evidence** — Success or denial is recorded in the [evidence store](/concepts/evidence) — the audit trail has no gaps
 
 ## Next Steps
 
-- [CLI Commands](/reference/cli) - Full CLI command reference
-- [AI Integrations](/guides/ai-integrations) - Configure your AI assistant
-- [MCP Setup Guide](/guides/mcp-setup) - Detailed setup instructions
+- [CLI Commands](/reference/cli) — Full CLI command reference
+- [Workspace Spec](/reference/workspace-spec) — Kernel-level workspace.yaml reference
+- [Kernel Runtime](/concepts/kernel) — How tool calls are authorized and executed
+- [Packs](/concepts/packs) — Domain pack architecture (the Software Delivery Pack)
+- [Evidence Store](/concepts/evidence) — How tool call evidence is recorded

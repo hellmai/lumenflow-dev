@@ -7,6 +7,8 @@ description: LumenFlow configuration file reference
 {/* Run `pnpm docs:generate` to regenerate from source */}
 {/* Includes formatting stabilization (WU-1157) */}
 
+import { Aside } from '@astrojs/starlight/components';
+
 LumenFlow is configured via `.lumenflow.config.yaml` in your project root.
 
 ## Minimal Config
@@ -204,6 +206,23 @@ Client configuration (per-client settings)
 | `enforcement`      | object   | `-`     |             |
 | `capabilities_map` | object   | `-`     |             |
 
+### packs
+
+Pack configuration is defined in the kernel-level [`workspace.yaml`](/reference/workspace-spec), not in `.lumenflow.config.yaml`. However, the CLI layer provides pack management commands that read from both files.
+
+| CLI Command     | Description                    |
+| --------------- | ------------------------------ |
+| `pack:scaffold` | Scaffold a new domain pack     |
+| `pack:search`   | Search for packs in a registry |
+
+For the full pack pin schema (id, version, integrity, source), see the [Workspace Spec](/reference/workspace-spec#pack-pins) reference.
+
+<Aside type="note">
+  The separation is intentional: `.lumenflow.config.yaml` configures CLI behavior (gates, lanes,
+  agents), while `workspace.yaml` configures the [kernel runtime](/concepts/kernel) (packs, security
+  boundaries, scope intersection). See [Packs](/concepts/packs) for the architecture.
+</Aside>
+
 ## Framework Agnostic Configuration
 
 LumenFlow supports different package managers and test runners. Configure these at the top level of your config file:
@@ -289,4 +308,6 @@ pnpm exec lumenflow validate
 ## Next Steps
 
 - [CLI Commands](/reference/cli) – All commands
+- [Workspace Spec](/reference/workspace-spec) – Kernel-level workspace.yaml reference
 - [WU Schema](/reference/wu-schema) – WU YAML structure
+- [Packs](/concepts/packs) – Domain pack architecture
