@@ -2,7 +2,7 @@ id: WU-1889
 title: Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -51,3 +51,11 @@ acceptance:
   - Fallback-only resolver stubs are removed for migrated command families
   - Runtime execution for migrated command families succeeds without CLI fallback in bootstrapped
     mode
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1889
+claimed_at: 2026-02-19T16:54:13.549Z
+baseline_main_sha: b994891dcd4156eb0adccceddc3e986084a1a4e2
+session_id: 1d23196b-1438-4c07-88e2-946cfe16872a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T16:54:13.553Z
