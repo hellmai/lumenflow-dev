@@ -476,6 +476,119 @@ describe('kernel runtime facade', () => {
     }
   });
 
+  it('runs bootstrapped tracer-bullet lifecycle with auditable receipts, scope enforcement, and policy decisions', async () => {
+    let transportRequestCommand = '';
+    let transportRequestArgs: string[] = [];
+    let transportRequestStdin = '';
+    const transport: SubprocessTransport = {
+      async execute(request) {
+        transportRequestCommand = request.command;
+        transportRequestArgs = request.args;
+        transportRequestStdin = request.stdin;
+        return {
+          code: 0,
+          stdout: JSON.stringify({
+            output: {
+              success: true,
+              data: {
+                echo: 'tracer-bullet',
+              },
+            },
+          }),
+          stderr: '',
+        };
+      },
+    };
+
+    const runtime = await createRuntimeWithDefaultResolver({
+      sandboxSubprocessDispatcherOptions: {
+        commandExists: () => true,
+        transport,
+      },
+    });
+    const taskSpec = createTaskSpec('WU-1892-tracer-bullet');
+    const evidenceRef = 'evidence://tracer-bullet/pack-echo';
+
+    const created = await runtime.createTask(taskSpec);
+    expect(created.task.id).toBe(taskSpec.id);
+
+    const claim = await runtime.claimTask({
+      task_id: taskSpec.id,
+      by: 'tom@hellm.ai',
+      session_id: 'session-1892-tracer-bullet',
+    });
+    expect(claim.run.status).toBe('executing');
+
+    const execution = await runtime.executeTool(
+      PACK_ECHO_TOOL_NAME,
+      { message: 'tracer-bullet' },
+      createExecutionContext(taskSpec.id, claim.run.run_id, workspaceConfigHash),
+    );
+    expect(execution.success).toBe(true);
+    expect(execution.data).toMatchObject({ echo: 'tracer-bullet' });
+
+    const completion = await runtime.completeTask({
+      task_id: taskSpec.id,
+      run_id: claim.run.run_id,
+      evidence_refs: [evidenceRef],
+    });
+    expect(completion.policy.decision).toBe('allow');
+    for (const event of completion.events) {
+      const maybeEvidenceRefs = (event as { evidence_refs?: string[] }).evidence_refs;
+      if (Array.isArray(maybeEvidenceRefs)) {
+        expect(maybeEvidenceRefs).toContain(evidenceRef);
+      }
+    }
+
+    expect(transportRequestCommand).toBe('bwrap');
+    expect(transportRequestArgs).toContain('--die-with-parent');
+    const workerPayload = JSON.parse(transportRequestStdin) as {
+      tool_name: string;
+      input: { message: string };
+      receipt_id: string;
+      handler_entry: string;
+    };
+    expect(workerPayload.tool_name).toBe(PACK_ECHO_TOOL_NAME);
+    expect(workerPayload.input.message).toBe('tracer-bullet');
+    expect(workerPayload.handler_entry.endsWith('/tools/echo.ts')).toBe(true);
+    expect(workerPayload.receipt_id.length).toBeGreaterThan(0);
+
+    const inspection = await runtime.inspectTask(taskSpec.id);
+    expect(inspection.state.status).toBe('done');
+
+    const eventKinds = inspection.events.map((event) => event.kind);
+    expect(eventKinds).toContain('task_created');
+    expect(eventKinds).toContain('task_claimed');
+    expect(eventKinds).toContain('run_started');
+    expect(eventKinds).toContain('run_succeeded');
+    expect(eventKinds).toContain('task_completed');
+
+    const started = inspection.receipts.find(
+      (trace) => trace.kind === TOOL_CALL_STARTED_KIND && trace.tool_name === PACK_ECHO_TOOL_NAME,
+    );
+    if (!started || started.kind !== TOOL_CALL_STARTED_KIND) {
+      throw new Error(RECEIPT_STAGE_FAILURE_MESSAGE);
+    }
+
+    expect(started.scope_requested).toEqual([WORKSPACE_SCOPE]);
+    expect(started.scope_allowed).toEqual([WORKSPACE_SCOPE]);
+    expect(started.scope_enforced).toEqual([WORKSPACE_SCOPE]);
+
+    const finished = inspection.receipts.find(
+      (trace) => trace.kind === TOOL_CALL_FINISHED_KIND && trace.receipt_id === started.receipt_id,
+    );
+    expect(finished).toBeDefined();
+    if (finished?.kind === TOOL_CALL_FINISHED_KIND) {
+      expect(finished.result).toBe('success');
+    }
+
+    expect(
+      inspection.policy_decisions.some(
+        (decision) => decision.policy_id === 'runtime.completion.allow' && decision.decision === 'allow',
+      ),
+    ).toBe(true);
+  });
+
   it('fails execution and emits spec_tampered when workspace hash drifts', async () => {
     const runtime = await createRuntime();
     const taskSpec = createTaskSpec('WU-1773-workspace-tamper');
