@@ -19,7 +19,9 @@ vi.mock('@lumenflow/core/context/location-resolver', () => ({
 
 // Mock WUStateStore from @lumenflow/core using function constructor
 vi.mock('@lumenflow/core/wu-state-store', () => ({
-  WUStateStore: vi.fn().mockImplementation(function (this: { checkpoint: typeof mockCheckpointFn }) {
+  WUStateStore: vi.fn().mockImplementation(function (this: {
+    checkpoint: typeof mockCheckpointFn;
+  }) {
     this.checkpoint = mockCheckpointFn;
   }),
   WU_EVENTS_FILE_NAME: 'wu-events.jsonl',
@@ -52,15 +54,16 @@ describe('mem-checkpoint CLI state-store guard (WU-1909)', () => {
       worktreeWuId: 'WU-1909',
     });
 
-    const result = await propagateCheckpointToStateStore('/repo/worktrees/framework-memory-wu-1909', {
-      wuId: 'WU-1909',
-      note: 'Test checkpoint',
-    });
+    const result = await propagateCheckpointToStateStore(
+      '/repo/worktrees/framework-memory-wu-1909',
+      {
+        wuId: 'WU-1909',
+        note: 'Test checkpoint',
+      },
+    );
 
     expect(result.propagated).toBe(true);
-    expect(WUStateStore).toHaveBeenCalledWith(
-      expect.stringContaining('.lumenflow/state'),
-    );
+    expect(WUStateStore).toHaveBeenCalledWith(expect.stringContaining('.lumenflow/state'));
     expect(mockCheckpointFn).toHaveBeenCalledWith(
       'WU-1909',
       'Test checkpoint',
