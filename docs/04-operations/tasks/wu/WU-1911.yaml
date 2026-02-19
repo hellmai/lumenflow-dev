@@ -1,7 +1,7 @@
 id: WU-1911
 title: 'Starlight: new kernel/pack/evidence/policy/scope concept pages + rewrite introduction'
 lane: 'Content: Site Comms'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-02-19
@@ -28,10 +28,17 @@ phase: 7
 risks: []
 notes: 'Sizing: Simple (~10 files, ~45 tool calls). Strategy: Single Session. Wave 1 of 3. Read kernel source for accuracy. create-a-pack.mdx is reference for architecture.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T21:28:37.002Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1911
+session_id: 0bce9fb7-49ae-468a-8ffe-c34ac9427751
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T21:28:37.008Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -45,12 +52,7 @@ acceptance:
   - New scope-intersection.mdx concept page explains 4-level scope model with examples
   - Sidebar updated in astro.config.mjs to include all new concept pages
   - pnpm docs:validate passes with zero errors
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1911
-claimed_at: 2026-02-19T21:28:37.002Z
 baseline_main_sha: b05a3a071028ad1bbdb33100fe101dae70ece066
-session_id: 0bce9fb7-49ae-468a-8ffe-c34ac9427751
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T21:28:37.008Z
 plan: lumenflow://plans/INIT-030-runtime-adoption-deprecation-roadmap.md
+spec_refs:
+  - docs/04-operations/plans/INIT-030-runtime-adoption-deprecation-roadmap.md
