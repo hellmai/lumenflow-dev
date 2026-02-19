@@ -1761,3 +1761,4 @@
 {"type":"complete","wuId":"WU-1897","timestamp":"2026-02-19T17:20:44.046Z"}
 {"type":"claim","wuId":"WU-1889","timestamp":"2026-02-19T17:22:52.088Z","lane":"Framework: Core Lifecycle","title":"Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers"}
 {"type":"complete","wuId":"WU-1889","timestamp":"2026-02-19T17:24:29.231Z"}
+{"type":"claim","wuId":"WU-1890","lane":"Framework: Core Lifecycle","title":"Migrate file/git/state/validation/lane surfaces and clear remaining software-delivery stubs","timestamp":"2026-02-19T17:25:05.956Z"}
