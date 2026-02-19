@@ -77,7 +77,9 @@ function extractJson<T>(stdout: string): T {
 }
 
 describe('CLI integration (no mocks)', { timeout: CLI_INTEGRATION_TEST_TIMEOUT_MS }, () => {
-  const EXPECTED_MISSING_PARITY_TOOLS: string[] = [];
+  // WU-1908: pack_search is a known, tracked parity gap (see WU-1880).
+  // It exists in the CLI public manifest but has no MCP tool yet.
+  const EXPECTED_MISSING_PARITY_TOOLS: string[] = ['pack_search'];
 
   describe('wu:status flags', () => {
     it('should accept --id and --json flags (as MCP wuStatusTool passes them)', async () => {
