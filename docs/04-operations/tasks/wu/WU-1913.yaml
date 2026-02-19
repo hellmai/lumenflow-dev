@@ -2,7 +2,7 @@ id: WU-1913
 title: 'Starlight: reference page updates + sidebar restructure + deploy'
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-19
 code_paths:
@@ -57,3 +57,6 @@ acceptance:
   - Cross-page consistency verified with no conflicting descriptions of LumenFlow
   - pnpm docs:validate passes with zero errors
   - Site builds successfully and is ready for Vercel deploy
+locked: true
+completed_at: 2026-02-19T22:06:39.824Z
+completed: 2026-02-19
