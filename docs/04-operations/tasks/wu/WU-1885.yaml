@@ -6,7 +6,6 @@ status: in_progress
 priority: P1
 created: 2026-02-19
 code_paths:
-  - packages/@lumenflow/packs/software-delivery/manifest.yaml
   - packages/@lumenflow/packs/software-delivery/manifest.ts
   - packages/@lumenflow/packs/software-delivery/__tests__
   - packages/@lumenflow/mcp/src/__tests__
@@ -28,10 +27,17 @@ risks: []
 notes: 'Sizing: Simple (expected 5-10 files, <50 tool calls). Strategy: Single Session. Scope is
   migration scorecard + CI regression gate only.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T13:02:31.839Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1885
+session_id: c42bf4a1-8e68-4a5f-bc11-828339a932a9
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T13:02:31.847Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -44,11 +50,3 @@ acceptance:
     and real handler entries'
   - CI fails if pendingRuntimeMigrationTool usage increases from the established baseline
   - Scorecard output is machine-readable and can be consumed by release/readiness checks
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1885
-claimed_at: 2026-02-19T13:02:31.839Z
-baseline_main_sha: def0740aaf548262aa814e56a32cef4a3ffcc728
-session_id: c42bf4a1-8e68-4a5f-bc11-828339a932a9
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T13:02:31.847Z
