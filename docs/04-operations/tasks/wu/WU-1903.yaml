@@ -2,7 +2,7 @@ id: WU-1903
 title: Migrate agent integration tools to software-delivery pack handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-19
 code_paths:
@@ -45,3 +45,11 @@ acceptance:
   - Resolver fallback stubs are removed for migrated agent integration commands
   - Runtime execution for migrated agent commands succeeds without CLI fallback in strict migration
     mode
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1903
+claimed_at: 2026-02-19T16:37:21.779Z
+baseline_main_sha: 355effc7abd630f5057228a41e2aceb8d8df5d59
+session_id: 9fd72314-76a9-4f56-8871-b3b934bea902
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T16:37:21.787Z
