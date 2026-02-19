@@ -1765,5 +1765,6 @@
 {"type":"claim","wuId":"WU-1909","timestamp":"2026-02-19T18:17:24.458Z","lane":"Framework: Memory","title":"Fix checkpoint writing to main wu-events.jsonl — extract state-store concern from createCheckpoint"}
 {"type":"complete","wuId":"WU-1909","timestamp":"2026-02-19T18:30:33.522Z"}
 {"type":"complete","wuId":"WU-1890","timestamp":"2026-02-19T19:02:58.696Z"}
-{"type":"claim","wuId":"WU-1891","lane":"Framework: Core Lifecycle","title":"Disable migration compat guard by default and remove software-delivery fallback shims","timestamp":"2026-02-19T19:08:25.586Z"}
-{"type":"claim","wuId":"WU-1910","lane":"Framework: Memory","title":"Fix loadMemory deduplication — archived nodes not suppressing originals","timestamp":"2026-02-19T19:15:03.169Z"}
+{"type":"claim","wuId":"WU-1891","timestamp":"2026-02-19T19:08:25.586Z","lane":"Framework: Core Lifecycle","title":"Disable migration compat guard by default and remove software-delivery fallback shims"}
+{"type":"claim","wuId":"WU-1910","timestamp":"2026-02-19T19:15:03.169Z","lane":"Framework: Memory","title":"Fix loadMemory deduplication — archived nodes not suppressing originals"}
+{"type":"complete","wuId":"WU-1910","timestamp":"2026-02-19T19:22:35.989Z"}
