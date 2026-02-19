@@ -1735,3 +1735,4 @@
 {"type":"claim","wuId":"WU-1905","timestamp":"2026-02-19T14:17:07.865Z","lane":"Framework: Core Lifecycle","title":"Migrate flow and metrics tools to software-delivery pack handlers"}
 {"type":"complete","wuId":"WU-1907","timestamp":"2026-02-19T14:20:34.850Z"}
 {"type":"complete","wuId":"WU-1887","timestamp":"2026-02-19T14:21:22.034Z"}
+{"type":"claim","wuId":"WU-1893","lane":"Framework: Core Lifecycle","title":"Migrate WU state-transition maintenance commands to software-delivery handlers","timestamp":"2026-02-19T14:24:21.559Z"}

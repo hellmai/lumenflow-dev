@@ -2,7 +2,7 @@ id: WU-1893
 title: Migrate WU state-transition maintenance commands to software-delivery handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
     handlers in bootstrapped runtime mode
   - Resolver fallback stubs are removed for these state-transition maintenance commands
   - Runtime execution for migrated commands succeeds without CLI fallback in strict migration mode
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1893
+claimed_at: 2026-02-19T14:24:21.526Z
+baseline_main_sha: db97a3392977fd8f8adf9419ccdda1ad119462db
+session_id: 4b117605-d969-4134-b31c-d5a412d4d13b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T14:24:21.533Z

@@ -6,6 +6,7 @@ _Last updated: 2026-02-19_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1905 — Migrate flow and metrics tools to software-delivery pack handlers](wu/WU-1905.yaml)
+- [WU-1893 — Migrate WU state-transition maintenance commands to software-delivery handlers](wu/WU-1893.yaml)
 
 ## Completed
 
