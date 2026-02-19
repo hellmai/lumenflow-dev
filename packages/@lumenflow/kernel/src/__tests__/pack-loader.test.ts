@@ -137,9 +137,7 @@ async function collectMcpShellOutCommands(): Promise<string[]> {
     }
   }
 
-  return [...commands]
-    .filter((commandName) => !IN_PROCESS_MCP_COMMANDS.has(commandName))
-    .sort();
+  return [...commands].filter((commandName) => !IN_PROCESS_MCP_COMMANDS.has(commandName)).sort();
 }
 
 interface GitWorkspacePackInput extends WorkspacePackInput {

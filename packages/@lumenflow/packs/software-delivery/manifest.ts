@@ -100,8 +100,7 @@ const VALIDATE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#validateTool';
 const LUMENFLOW_VALIDATE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#lumenflowValidateTool';
 const VALIDATE_AGENT_SKILLS_TOOL_ENTRY =
   'tool-impl/parity-migration-tools.ts#validateAgentSkillsTool';
-const VALIDATE_AGENT_SYNC_TOOL_ENTRY =
-  'tool-impl/parity-migration-tools.ts#validateAgentSyncTool';
+const VALIDATE_AGENT_SYNC_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#validateAgentSyncTool';
 const VALIDATE_BACKLOG_SYNC_TOOL_ENTRY =
   'tool-impl/parity-migration-tools.ts#validateBacklogSyncTool';
 const VALIDATE_SKILLS_SPEC_TOOL_ENTRY =
