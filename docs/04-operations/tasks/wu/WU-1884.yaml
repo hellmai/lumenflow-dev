@@ -1,18 +1,20 @@
 id: WU-1884
-title: Retarget INIT-031 Phase 6 to software-delivery pack completion
+title: Retarget software-delivery migration stream to INIT-030 Phase 6
 lane: 'Framework: Core Lifecycle'
 type: documentation
 status: in_progress
 priority: P0
 created: 2026-02-19
 code_paths:
+  - docs/04-operations/tasks/initiatives/INIT-030.yaml
   - docs/04-operations/tasks/initiatives/INIT-031.yaml
   - docs/04-operations/tasks/status.md
 tests:
   manual:
-    - Run pnpm initiative:status --id INIT-031 and verify phase 6 scope text reflects
+    - Run pnpm initiative:status --id INIT-030 and verify phase 6 scope text reflects
       software-delivery-first strategy
-    - Run rg on INIT-031.yaml to confirm phase 6 title/notes and linked WUs are updated
+    - Run pnpm initiative:status --id INIT-031 and verify reassignment note is present while
+      WU-1884..WU-1897 are tracked under INIT-030
   unit: []
   e2e: []
 artifacts:
@@ -31,22 +33,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Phase 6 of INIT-031 is currently framed around community-pack breadth, but delivery
-  focus has shifted to proving pack #1 (software-delivery) end-to-end through runtime-native
-  execution. This WU updates initiative framing and success criteria so execution and reporting
-  align with the approved pack-first strategy.'
+description: Consolidate the software-delivery migration stream under INIT-030 Phase 6 and record
+  reassignment context from INIT-031 to avoid dual-ownership confusion in planning, orchestration,
+  and status reporting.
 acceptance:
-  - INIT-031 Phase 6 title and notes explicitly describe software-delivery pack completion as the
-    primary objective
-  - 'Community-pack expansion is explicitly deferred until pack #1 runtime-native completion
-    criteria are met'
-  - INIT-031 Phase 6 WU inventory references the software-delivery migration WU chain
-    (WU-1885..WU-1892)
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1884
-claimed_at: 2026-02-19T11:59:58.114Z
-baseline_main_sha: b6c0fcc6ebf387c126c7c35526bb725d2a784fa5
-session_id: 003574c5-7243-4202-b18c-8c442618b172
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T11:59:58.125Z
+  - INIT-030 Phase 6 title and notes explicitly describe software-delivery pack completion and
+    runtime migration quality as the primary objective
+  - INIT-030 Phase 6 WU inventory references the complete migration chain (WU-1884..WU-1897)
+    including decomposition WUs
+  - INIT-031 retains a reassignment note and does not actively track WU-1884..WU-1897 in its own WU
+    inventory
