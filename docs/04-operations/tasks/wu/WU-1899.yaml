@@ -9,7 +9,10 @@ code_paths:
   - packages/@lumenflow/core/src/work-classifier.ts
   - packages/@lumenflow/core/src/__tests__/work-classifier.test.ts
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
-  - docs/04-operations/_frameworks/lumenflow/**
+  - docs/04-operations/_frameworks/lumenflow/work-classification.md
+  - apps/docs/src/content/docs/reference/work-classifier.mdx
+  - packages/@lumenflow/core/src/resolve-policy.ts
+  - packages/@lumenflow/core/src/index.ts
 tests:
   manual:
     - Verify classifyWork with CSS code_paths returns domain ui regardless of lane name
@@ -27,10 +30,17 @@ notes: Use minimatch for code_path pattern matching (already a dependency). Conf
   max(matched_signal_weights) not sum. The path-classifiers.ts module already does similar
   signal-based classification for docs-only detection - follow that pattern.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T11:56:05.043Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1899
+session_id: 003574c5-7243-4202-b18c-8c442618b172
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T11:56:05.049Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -54,11 +64,3 @@ acceptance:
     fallback, config overrides, confidence boundaries'
   - Internal docs in docs/04-operations describing work classification signals and configuration
   - Starlight reference docs for work classifier API and configuration
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1899
-claimed_at: 2026-02-19T11:56:05.043Z
-baseline_main_sha: 8afb79e4deaab252fc4959ce09f833dfe20e0f38
-session_id: 003574c5-7243-4202-b18c-8c442618b172
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T11:56:05.049Z
