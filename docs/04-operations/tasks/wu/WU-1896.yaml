@@ -2,7 +2,7 @@ id: WU-1896
 title: Migrate memory command surfaces to software-delivery handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -52,3 +52,6 @@ session_id: 5cc1867c-4ee8-467c-ab04-757c84d366b7
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-19T16:22:00.918Z
+locked: true
+completed_at: 2026-02-19T16:34:52.222Z
+completed: 2026-02-19
