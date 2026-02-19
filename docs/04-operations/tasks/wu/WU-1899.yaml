@@ -2,7 +2,7 @@ id: WU-1899
 title: Add signal-based work classifier for code-path-aware UI/backend/docs detection
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -64,3 +64,6 @@ acceptance:
     fallback, config overrides, confidence boundaries'
   - Internal docs in docs/04-operations describing work classification signals and configuration
   - Starlight reference docs for work classifier API and configuration
+locked: true
+completed_at: 2026-02-19T12:13:28.242Z
+completed: 2026-02-19
