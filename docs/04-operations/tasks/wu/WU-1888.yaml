@@ -6,10 +6,7 @@ status: in_progress
 priority: P1
 created: 2026-02-19
 code_paths:
-  - packages/@lumenflow/packs/software-delivery/manifest.yaml
-  - packages/@lumenflow/packs/software-delivery/tool-impl
-  - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
-  - packages/@lumenflow/mcp/src/tools/wu-tools.ts
+  - docs/04-operations/tasks/wu/WU-1888.yaml
 tests:
   manual:
     - Execute state transition and delegation commands through runtime path and verify expected
@@ -28,13 +25,25 @@ blocked_by:
   - WU-1894
   - WU-1895
 risks: []
-notes: 'Sizing: Complex non-atomic umbrella decomposed into WU-1893/WU-1894/WU-1895. Strategy:
-  Decomposition (orchestrator-worker). This WU remains as dependency gate and completion rollup.'
+notes: >-
+  Sizing: Complex non-atomic umbrella decomposed into WU-1893/WU-1894/WU-1895. Strategy:
+  Decomposition (orchestrator-worker). This WU remains as dependency gate and completion rollup.
+
+
+  Umbrella rollup: implementation shipped via WU-1893/WU-1894/WU-1895; this WU performs dependency
+  gate + verification closure.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T16:48:27.110Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1888
+session_id: 8f47720a-ac8c-4d61-bf23-f603b477b39c
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T16:48:27.119Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -46,11 +55,3 @@ acceptance:
     handlers
   - Resolver fallback stubs are removed for migrated maintenance/delegation commands
   - Runtime execution of migrated maintenance/delegation commands succeeds without CLI fallback
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1888
-claimed_at: 2026-02-19T16:48:27.110Z
-baseline_main_sha: 94b750ab8dcba479c033c14d275f12c8e0d5e7bf
-session_id: 8f47720a-ac8c-4d61-bf23-f603b477b39c
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T16:48:27.119Z
