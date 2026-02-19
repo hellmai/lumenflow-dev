@@ -2,7 +2,7 @@ id: WU-1909
 title: Fix checkpoint writing to main wu-events.jsonl — extract state-store concern from createCheckpoint
 lane: 'Framework: Memory'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-19
 code_paths:
@@ -59,3 +59,6 @@ acceptance:
   - ensureMemoryDir deduplicated into shared module
   - Silent catch replaced with warning log
   - Existing tests updated, new test for main-checkout guard
+locked: true
+completed_at: 2026-02-19T18:30:28.530Z
+completed: 2026-02-19

@@ -1761,5 +1761,6 @@
 {"type":"complete","wuId":"WU-1897","timestamp":"2026-02-19T17:20:44.046Z"}
 {"type":"claim","wuId":"WU-1889","timestamp":"2026-02-19T17:22:52.088Z","lane":"Framework: Core Lifecycle","title":"Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers"}
 {"type":"complete","wuId":"WU-1889","timestamp":"2026-02-19T17:24:29.231Z"}
-{"type":"claim","wuId":"WU-1890","lane":"Framework: Core Lifecycle","title":"Migrate file/git/state/validation/lane surfaces and clear remaining software-delivery stubs","timestamp":"2026-02-19T17:25:05.956Z"}
-{"type":"claim","wuId":"WU-1909","lane":"Framework: Memory","title":"Fix checkpoint writing to main wu-events.jsonl — extract state-store concern from createCheckpoint","timestamp":"2026-02-19T18:17:24.458Z"}
+{"type":"claim","wuId":"WU-1890","timestamp":"2026-02-19T17:25:05.956Z","lane":"Framework: Core Lifecycle","title":"Migrate file/git/state/validation/lane surfaces and clear remaining software-delivery stubs"}
+{"type":"claim","wuId":"WU-1909","timestamp":"2026-02-19T18:17:24.458Z","lane":"Framework: Memory","title":"Fix checkpoint writing to main wu-events.jsonl — extract state-store concern from createCheckpoint"}
+{"type":"complete","wuId":"WU-1909","timestamp":"2026-02-19T18:30:33.522Z"}

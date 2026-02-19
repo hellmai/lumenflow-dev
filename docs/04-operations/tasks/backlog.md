@@ -31,7 +31,6 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1890 — Migrate file/git/state/validation/lane surfaces and clear remaining software-delivery stubs](wu/WU-1890.yaml) — Framework: Core Lifecycle
-- [WU-1909 — Fix checkpoint writing to main wu-events.jsonl — extract state-store concern from createCheckpoint](wu/WU-1909.yaml) — Framework: Memory
 
 ## ⛔ Blocked
 
@@ -871,6 +870,7 @@ sections:
 - [WU-1888 — Migrate WU maintenance and delegation command set to software-delivery handlers](wu/WU-1888.yaml)
 - [WU-1897 — Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers](wu/WU-1897.yaml)
 - [WU-1889 — Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers](wu/WU-1889.yaml)
+- [WU-1909 — Fix checkpoint writing to main wu-events.jsonl — extract state-store concern from createCheckpoint](wu/WU-1909.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
