@@ -1722,4 +1722,5 @@
 {"type":"complete","wuId":"WU-1902","timestamp":"2026-02-19T12:24:20.712Z"}
 {"type":"complete","wuId":"WU-1900","timestamp":"2026-02-19T12:37:51.819Z"}
 {"type":"complete","wuId":"WU-1884","timestamp":"2026-02-19T13:01:45.960Z"}
-{"type":"claim","wuId":"WU-1885","lane":"Framework: Core Lifecycle","title":"Add software-delivery migration scorecard and CI stub regression gate","timestamp":"2026-02-19T13:02:31.889Z"}
+{"type":"claim","wuId":"WU-1885","timestamp":"2026-02-19T13:02:31.889Z","lane":"Framework: Core Lifecycle","title":"Add software-delivery migration scorecard and CI stub regression gate"}
+{"type":"complete","wuId":"WU-1885","timestamp":"2026-02-19T13:09:09.034Z"}
