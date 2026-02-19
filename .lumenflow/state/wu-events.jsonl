@@ -1748,3 +1748,4 @@
 {"type":"complete","wuId":"WU-1895","timestamp":"2026-02-19T16:20:56.356Z"}
 {"type":"claim","wuId":"WU-1896","timestamp":"2026-02-19T16:22:00.936Z","lane":"Framework: Core Lifecycle","title":"Migrate memory command surfaces to software-delivery handlers"}
 {"type":"complete","wuId":"WU-1896","timestamp":"2026-02-19T16:34:57.008Z"}
+{"type":"claim","wuId":"WU-1903","lane":"Framework: Core Lifecycle","title":"Migrate agent integration tools to software-delivery pack handlers","timestamp":"2026-02-19T16:37:21.836Z"}
