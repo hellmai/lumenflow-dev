@@ -14,6 +14,7 @@ tests:
   manual:
     - Verify Install button triggers POST and installs pack to connected workspace
     - Verify button is disabled with tooltip when no workspace connected
+    - Navigate to /marketplace/any-pack and verify Install to workspace button is visible
   unit:
     - apps/web/__tests__/install-pack-route.test.ts
   e2e: []
