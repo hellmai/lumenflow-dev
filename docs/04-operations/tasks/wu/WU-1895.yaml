@@ -21,8 +21,8 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1895.done
 dependencies: []
-initiative: INIT-031
-phase: 6
+initiative: INIT-030
+phase: 5
 blocked_by:
   - WU-1887
 risks: []
