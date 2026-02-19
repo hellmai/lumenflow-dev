@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: Apache-2.0
 
-import { appendFile, mkdir, open, readFile, readdir, rename, rm, stat } from 'node:fs/promises';
+import { appendFile, mkdir, open, readdir, rename, rm } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { canonicalStringify } from '../canonical-json.js';
@@ -12,6 +12,7 @@ import {
   type ToolTraceEntry,
 } from '../kernel.schemas.js';
 import { KERNEL_POLICY_IDS, SHA256_ALGORITHM, UTF8_ENCODING } from '../shared-constants.js';
+import { readFileOrEmpty, statOrNull } from './fs-helpers.js';
 
 const DEFAULT_LOCK_RETRY_DELAY_MS = 20;
 const DEFAULT_LOCK_MAX_RETRIES = 250;
@@ -96,13 +97,8 @@ export class EvidenceStore {
       } else {
         // Advance cursor past the bytes we just wrote so incremental hydrate
         // does not re-read them.
-        try {
-          const fileStat = await stat(this.tracesFilePath);
-          this.activeFileCursor = fileStat.size;
-        } catch {
-          // File may not exist if compaction just cleared it; cursor stays at 0
-          this.activeFileCursor = 0;
-        }
+        const fileStat = await statOrNull(this.tracesFilePath);
+        this.activeFileCursor = fileStat?.size ?? 0;
       }
     }
   }
@@ -156,19 +152,8 @@ export class EvidenceStore {
   private async fullHydrate(): Promise<void> {
     this.resetIndexes();
 
-    let dirExists = true;
-    try {
-      await stat(this.tracesDir);
-    } catch (error) {
-      const nodeError = error as NodeJS.ErrnoException;
-      if (nodeError.code === 'ENOENT') {
-        dirExists = false;
-      } else {
-        throw error;
-      }
-    }
-
-    if (!dirExists) {
+    const dirStat = await statOrNull(this.tracesDir);
+    if (!dirStat) {
       this.tracesHydrated = true;
       this.activeFileCursor = 0;
       this.hydratedSegmentCount = 0;
@@ -184,17 +169,7 @@ export class EvidenceStore {
     this.hydratedSegmentCount = segments.length;
 
     // Read active file
-    let activeContent: string;
-    try {
-      activeContent = await readFile(this.tracesFilePath, UTF8_ENCODING);
-    } catch (error) {
-      const nodeError = error as NodeJS.ErrnoException;
-      if (nodeError.code === 'ENOENT') {
-        activeContent = '';
-      } else {
-        throw error;
-      }
-    }
+    const activeContent = await readFileOrEmpty(this.tracesFilePath);
 
     if (activeContent.length > 0) {
       this.parseAndApplyLines(activeContent);
@@ -228,18 +203,8 @@ export class EvidenceStore {
     }
 
     // Read only new bytes from the active file
-    let activeSize: number;
-    try {
-      const fileStat = await stat(this.tracesFilePath);
-      activeSize = fileStat.size;
-    } catch (error) {
-      const nodeError = error as NodeJS.ErrnoException;
-      if (nodeError.code === 'ENOENT') {
-        activeSize = 0;
-      } else {
-        throw error;
-      }
-    }
+    const activeFileStat = await statOrNull(this.tracesFilePath);
+    const activeSize = activeFileStat?.size ?? 0;
 
     if (activeSize <= this.activeFileCursor) {
       return; // No new data
@@ -292,17 +257,7 @@ export class EvidenceStore {
    * Reads an entire file and applies all trace lines to the indexes.
    */
   private async hydrateFromFile(filePath: string): Promise<void> {
-    let content: string;
-    try {
-      content = await readFile(filePath, UTF8_ENCODING);
-    } catch (error) {
-      const nodeError = error as NodeJS.ErrnoException;
-      if (nodeError.code === 'ENOENT') {
-        return;
-      }
-      throw error;
-    }
-
+    const content = await readFileOrEmpty(filePath);
     if (content.trim().length > 0) {
       this.parseAndApplyLines(content);
     }
@@ -339,19 +294,12 @@ export class EvidenceStore {
    * @returns true if compaction (rotation) occurred.
    */
   private async compactIfNeeded(): Promise<boolean> {
-    let fileSize: number;
-    try {
-      const fileStat = await stat(this.tracesFilePath);
-      fileSize = fileStat.size;
-    } catch (error) {
-      const nodeError = error as NodeJS.ErrnoException;
-      if (nodeError.code === 'ENOENT') {
-        return false;
-      }
-      throw error;
+    const fileStat = await statOrNull(this.tracesFilePath);
+    if (!fileStat) {
+      return false;
     }
 
-    if (fileSize < this.compactionThresholdBytes) {
+    if (fileStat.size < this.compactionThresholdBytes) {
       return false;
     }
 

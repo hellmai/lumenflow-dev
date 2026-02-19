@@ -46,6 +46,8 @@ export interface ToolHostOptions {
   policyHook: PolicyHook;
   runtimeVersion?: string;
   now?: () => Date;
+  /** Optional callback invoked when trace recording fails. Provides observability into silent catch blocks. */
+  onTraceError?: (error: Error) => void;
 }
 
 interface ScopeResolution {
@@ -120,6 +122,7 @@ export class ToolHost {
   private readonly policyHook: PolicyHook;
   private readonly runtimeVersion: string;
   private readonly now: () => Date;
+  private readonly onTraceError?: (error: Error) => void;
 
   constructor(options: ToolHostOptions) {
     if (!options.policyHook) {
@@ -134,6 +137,7 @@ export class ToolHost {
     this.policyHook = options.policyHook;
     this.runtimeVersion = options.runtimeVersion ?? DEFAULT_KERNEL_RUNTIME_VERSION;
     this.now = options.now ?? (() => new Date());
+    this.onTraceError = options.onTraceError;
   }
 
   async onStartup(): Promise<number> {
@@ -205,8 +209,9 @@ export class ToolHost {
         workspace_config_hash: workspaceConfigHash,
         runtime_version: runtimeVersion,
       });
-    } catch {
+    } catch (error) {
       // Started trace failure must not prevent tool execution.
+      this.onTraceError?.(error as Error);
     }
 
     const authResult = await this.authorize({
@@ -241,8 +246,9 @@ export class ToolHost {
           scopeEnforcementNote: 'Input validation failed before dispatch.',
           policyDecisions: authResult.policyDecisions,
         });
-      } catch {
+      } catch (error) {
         // Denied trace failure must not suppress the denial output.
+        this.onTraceError?.(error as Error);
       }
       return invalidInputOutput;
     }
@@ -257,9 +263,10 @@ export class ToolHost {
         output,
         policyDecisions: authResult.policyDecisions,
       });
-    } catch {
+    } catch (error) {
       // Trace recording failure must not swallow the tool execution result.
       // The tool output is more important to the caller than the audit trail.
+      this.onTraceError?.(error as Error);
     }
 
     return output;
@@ -344,8 +351,9 @@ export class ToolHost {
             },
           ],
         });
-      } catch {
+      } catch (error) {
         // Denied trace failure must not suppress the denial output.
+        this.onTraceError?.(error as Error);
       }
       return { denied: true, output };
     }
@@ -376,8 +384,9 @@ export class ToolHost {
             },
           ],
         });
-      } catch {
+      } catch (error) {
         // Denied trace failure must not suppress the denial output.
+        this.onTraceError?.(error as Error);
       }
       return { denied: true, output };
     }
@@ -405,8 +414,9 @@ export class ToolHost {
           scopeEnforcementNote: 'Denied by policy hook decision.',
           policyDecisions,
         });
-      } catch {
+      } catch (error) {
         // Denied trace failure must not suppress the denial output.
+        this.onTraceError?.(error as Error);
       }
       return { denied: true, output };
     }

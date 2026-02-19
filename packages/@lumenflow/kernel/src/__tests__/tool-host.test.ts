@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EvidenceStore } from '../evidence/index.js';
 import type { ExecutionContext, ToolCapability, ToolScope } from '../kernel.schemas.js';
-import { ToolHost, ToolRegistry, allowAllPolicyHook } from '../tool-host/index.js';
+import { ToolHost, ToolRegistry, allowAllPolicyHook, type ToolHostOptions } from '../tool-host/index.js';
 
 describe('tool host', () => {
   let tempDir: string;
@@ -861,6 +861,352 @@ describe('tool host', () => {
             policyHook: customPolicy,
           }),
       ).not.toThrow();
+    });
+  });
+
+  describe('onTraceError callback', () => {
+    it('accepts optional onTraceError in ToolHostOptions', () => {
+      const registry = new ToolRegistry();
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+
+      const options: ToolHostOptions = {
+        registry,
+        evidenceStore,
+        policyHook: allowAllPolicyHook,
+        onTraceError: () => {},
+      };
+
+      expect(() => new ToolHost(options)).not.toThrow();
+    });
+
+    it('invokes onTraceError when STARTED trace write fails', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const traceErrors: Error[] = [];
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        policyHook: allowAllPolicyHook,
+        onTraceError: (error: Error) => {
+          traceErrors.push(error);
+        },
+      });
+
+      // Fail only on the first appendTrace call (STARTED trace)
+      let appendCallCount = 0;
+      const originalAppendTrace = evidenceStore.appendTrace.bind(evidenceStore);
+      vi.spyOn(evidenceStore, 'appendTrace').mockImplementation(async (entry) => {
+        appendCallCount++;
+        if (appendCallCount === 1) {
+          throw new Error('Simulated started trace failure');
+        }
+        return originalAppendTrace(entry);
+      });
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'ok',
+        },
+        makeExecutionContext(),
+      );
+
+      // Tool should still succeed
+      expect(result.success).toBe(true);
+      // The callback should have been invoked exactly once for the STARTED trace
+      expect(traceErrors).toHaveLength(1);
+      expect(traceErrors[0]!.message).toBe('Simulated started trace failure');
+    });
+
+    it('invokes onTraceError when FINISHED trace write fails', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const traceErrors: Error[] = [];
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        policyHook: allowAllPolicyHook,
+        onTraceError: (error: Error) => {
+          traceErrors.push(error);
+        },
+      });
+
+      // Let started trace succeed, fail on finished trace
+      let appendCallCount = 0;
+      const originalAppendTrace = evidenceStore.appendTrace.bind(evidenceStore);
+      vi.spyOn(evidenceStore, 'appendTrace').mockImplementation(async (entry) => {
+        appendCallCount++;
+        if (appendCallCount >= 2) {
+          throw new Error('Simulated finished trace failure');
+        }
+        return originalAppendTrace(entry);
+      });
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'ok',
+        },
+        makeExecutionContext(),
+      );
+
+      expect(result.success).toBe(true);
+      expect(traceErrors).toHaveLength(1);
+      expect(traceErrors[0]!.message).toBe('Simulated finished trace failure');
+    });
+
+    it('invokes onTraceError when scope-denied trace write fails', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const traceErrors: Error[] = [];
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        policyHook: allowAllPolicyHook,
+        onTraceError: (error: Error) => {
+          traceErrors.push(error);
+        },
+      });
+
+      // Let started trace succeed, fail on denied trace
+      let appendCallCount = 0;
+      const originalAppendTrace = evidenceStore.appendTrace.bind(evidenceStore);
+      vi.spyOn(evidenceStore, 'appendTrace').mockImplementation(async (entry) => {
+        appendCallCount++;
+        if (appendCallCount >= 2) {
+          throw new Error('Simulated denied trace failure');
+        }
+        return originalAppendTrace(entry);
+      });
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'blocked',
+        },
+        makeExecutionContext(
+          {},
+          {
+            lane_allowed_scopes: [{ type: 'path', pattern: 'docs/**', access: 'write' }],
+          },
+        ),
+      );
+
+      expect(result.success).toBe(false);
+      expect(traceErrors).toHaveLength(1);
+      expect(traceErrors[0]!.message).toBe('Simulated denied trace failure');
+    });
+
+    it('invokes onTraceError when reserved-scope denied trace write fails', async () => {
+      const reservedScope: ToolScope = {
+        type: 'path',
+        pattern: '.lumenflow/state/**',
+        access: 'write',
+      };
+
+      const registry = new ToolRegistry();
+      registry.register({
+        ...makeInProcessCapability(),
+        name: 'state:write',
+        required_scopes: [reservedScope],
+      });
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const traceErrors: Error[] = [];
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        policyHook: allowAllPolicyHook,
+        onTraceError: (error: Error) => {
+          traceErrors.push(error);
+        },
+      });
+
+      // Let started trace succeed, fail on denied trace
+      let appendCallCount = 0;
+      const originalAppendTrace = evidenceStore.appendTrace.bind(evidenceStore);
+      vi.spyOn(evidenceStore, 'appendTrace').mockImplementation(async (entry) => {
+        appendCallCount++;
+        if (appendCallCount >= 2) {
+          throw new Error('Simulated reserved denied trace failure');
+        }
+        return originalAppendTrace(entry);
+      });
+
+      const result = await host.execute(
+        'state:write',
+        {
+          path: '.lumenflow/state/wu-events.jsonl',
+          content: 'blocked',
+        },
+        makeExecutionContext(
+          {
+            allowed_scopes: [reservedScope],
+          },
+          {
+            workspace_allowed_scopes: [reservedScope],
+            lane_allowed_scopes: [reservedScope],
+            task_declared_scopes: [reservedScope],
+          },
+        ),
+      );
+
+      expect(result.success).toBe(false);
+      expect(traceErrors).toHaveLength(1);
+      expect(traceErrors[0]!.message).toBe('Simulated reserved denied trace failure');
+    });
+
+    it('invokes onTraceError when policy-denied trace write fails', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const traceErrors: Error[] = [];
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        policyHook: async () => [
+          {
+            policy_id: 'test.deny',
+            decision: 'deny' as const,
+            reason: 'Test policy denial',
+          },
+        ],
+        onTraceError: (error: Error) => {
+          traceErrors.push(error);
+        },
+      });
+
+      // Let started trace succeed, fail on denied trace
+      let appendCallCount = 0;
+      const originalAppendTrace = evidenceStore.appendTrace.bind(evidenceStore);
+      vi.spyOn(evidenceStore, 'appendTrace').mockImplementation(async (entry) => {
+        appendCallCount++;
+        if (appendCallCount >= 2) {
+          throw new Error('Simulated policy denied trace failure');
+        }
+        return originalAppendTrace(entry);
+      });
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'denied-by-policy',
+        },
+        makeExecutionContext(),
+      );
+
+      expect(result.success).toBe(false);
+      expect(traceErrors).toHaveLength(1);
+      expect(traceErrors[0]!.message).toBe('Simulated policy denied trace failure');
+    });
+
+    it('invokes onTraceError when input-validation denied trace write fails', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const traceErrors: Error[] = [];
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        policyHook: allowAllPolicyHook,
+        onTraceError: (error: Error) => {
+          traceErrors.push(error);
+        },
+      });
+
+      // Let started trace succeed, fail on denied trace
+      let appendCallCount = 0;
+      const originalAppendTrace = evidenceStore.appendTrace.bind(evidenceStore);
+      vi.spyOn(evidenceStore, 'appendTrace').mockImplementation(async (entry) => {
+        appendCallCount++;
+        if (appendCallCount >= 2) {
+          throw new Error('Simulated input validation denied trace failure');
+        }
+        return originalAppendTrace(entry);
+      });
+
+      // Pass invalid input (missing 'content' field)
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+        },
+        makeExecutionContext(),
+      );
+
+      expect(result.success).toBe(false);
+      expect(traceErrors).toHaveLength(1);
+      expect(traceErrors[0]!.message).toBe('Simulated input validation denied trace failure');
+    });
+
+    it('does not invoke onTraceError when traces succeed', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const traceErrors: Error[] = [];
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        policyHook: allowAllPolicyHook,
+        onTraceError: (error: Error) => {
+          traceErrors.push(error);
+        },
+      });
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'ok',
+        },
+        makeExecutionContext(),
+      );
+
+      expect(result.success).toBe(true);
+      expect(traceErrors).toHaveLength(0);
+    });
+
+    it('works without onTraceError (backward compatible)', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        policyHook: allowAllPolicyHook,
+        // No onTraceError - should be backward compatible
+      });
+
+      // Fail on trace writes
+      vi.spyOn(evidenceStore, 'appendTrace').mockRejectedValue(
+        new Error('Simulated failure'),
+      );
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'ok',
+        },
+        makeExecutionContext(),
+      );
+
+      // Should still work without onTraceError
+      expect(result.success).toBe(true);
     });
   });
 });
