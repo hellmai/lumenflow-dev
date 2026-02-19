@@ -7,6 +7,7 @@ _Last updated: 2026-02-19_
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1902 — Add config:set CLI command for safe .lumenflow.config.yaml modification](wu/WU-1902.yaml)
 - [WU-1884 — Retarget INIT-031 Phase 6 to software-delivery pack completion](wu/WU-1884.yaml)
+- [WU-1900 — Wire work classifier into wu:brief generation for skills, test guidance, and constraints](wu/WU-1900.yaml)
 
 ## Completed
 
