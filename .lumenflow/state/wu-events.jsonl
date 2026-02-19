@@ -1728,6 +1728,7 @@
 {"type":"release","wuId":"WU-1886","timestamp":"2026-02-19T13:25:50.001Z","reason":"Not actively in implementation; returning to ready queue per initiative coordination."}
 {"type":"claim","wuId":"WU-1886","timestamp":"2026-02-19T13:35:18.869Z","lane":"Framework: Core Lifecycle","title":"Add executeViaPack migration compat guard and fallback telemetry"}
 {"type":"complete","wuId":"WU-1886","timestamp":"2026-02-19T13:45:59.599Z"}
-{"type":"claim","wuId":"WU-1887","lane":"Framework: Core Lifecycle","title":"Migrate core WU lifecycle commands to software-delivery pack handlers","timestamp":"2026-02-19T13:57:26.485Z"}
-{"type":"claim","wuId":"WU-1906","lane":"Framework: CLI Orchestration","title":"orchestrate:initiative --dry-run false-complete when all WUs blocked","timestamp":"2026-02-19T14:01:15.301Z"}
-{"type":"claim","wuId":"WU-1907","lane":"Content: Framework Docs","title":"Document agent safety architecture, YAML editing policy, and per-client protection gaps","timestamp":"2026-02-19T14:04:32.039Z"}
+{"type":"claim","wuId":"WU-1887","timestamp":"2026-02-19T13:57:26.485Z","lane":"Framework: Core Lifecycle","title":"Migrate core WU lifecycle commands to software-delivery pack handlers"}
+{"type":"claim","wuId":"WU-1906","timestamp":"2026-02-19T14:01:15.301Z","lane":"Framework: CLI Orchestration","title":"orchestrate:initiative --dry-run false-complete when all WUs blocked"}
+{"type":"claim","wuId":"WU-1907","timestamp":"2026-02-19T14:04:32.039Z","lane":"Content: Framework Docs","title":"Document agent safety architecture, YAML editing policy, and per-client protection gaps"}
+{"type":"complete","wuId":"WU-1906","timestamp":"2026-02-19T14:09:10.289Z"}

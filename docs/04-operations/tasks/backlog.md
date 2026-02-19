@@ -42,7 +42,6 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1887 — Migrate core WU lifecycle commands to software-delivery pack handlers](wu/WU-1887.yaml) — Framework: Core Lifecycle
-- [WU-1906 — orchestrate:initiative --dry-run false-complete when all WUs blocked](wu/WU-1906.yaml) — Framework: CLI Orchestration
 - [WU-1907 — Document agent safety architecture, YAML editing policy, and per-client protection gaps](wu/WU-1907.yaml) — Content: Framework Docs
 
 ## ⛔ Blocked
@@ -870,6 +869,7 @@ sections:
 - [WU-1884 — Retarget INIT-031 Phase 6 to software-delivery pack completion](wu/WU-1884.yaml)
 - [WU-1885 — Add software-delivery migration scorecard and CI stub regression gate](wu/WU-1885.yaml)
 - [WU-1886 — Add executeViaPack migration compat guard and fallback telemetry](wu/WU-1886.yaml)
+- [WU-1906 — orchestrate:initiative --dry-run false-complete when all WUs blocked](wu/WU-1906.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

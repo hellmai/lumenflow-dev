@@ -2,7 +2,7 @@ id: WU-1906
 title: orchestrate:initiative --dry-run false-complete when all WUs blocked
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -50,3 +50,6 @@ session_id: 51303731-cfa9-4c54-9a49-a3a653611d28
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-19T14:01:15.250Z
+locked: true
+completed_at: 2026-02-19T14:09:05.474Z
+completed: 2026-02-19
