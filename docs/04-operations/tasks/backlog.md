@@ -41,7 +41,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1902 — Add config:set CLI command for safe .lumenflow.config.yaml modification](wu/WU-1902.yaml) — Framework: CLI Enforcement
 - [WU-1884 — Retarget INIT-031 Phase 6 to software-delivery pack completion](wu/WU-1884.yaml) — Framework: Core Lifecycle
 - [WU-1900 — Wire work classifier into wu:brief generation for skills, test guidance, and constraints](wu/WU-1900.yaml) — Framework: CLI WU Commands
 
@@ -865,6 +864,7 @@ sections:
 - [WU-1901 — Fix lane lock zombie detection clearing live persistent locks after wu:claim exits](wu/WU-1901.yaml)
 - [WU-1898 — Fix CLI template condition bypass in wu:brief/wu:spawn prompt assembly](wu/WU-1898.yaml)
 - [WU-1899 — Add signal-based work classifier for code-path-aware UI/backend/docs detection](wu/WU-1899.yaml)
+- [WU-1902 — Add config:set CLI command for safe .lumenflow.config.yaml modification](wu/WU-1902.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

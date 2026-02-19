@@ -2,7 +2,7 @@ id: WU-1902
 title: Add config:set CLI command for safe .lumenflow.config.yaml modification
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-19
 code_paths:
@@ -72,3 +72,6 @@ session_id: 003574c5-7243-4202-b18c-8c442618b172
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-19T11:57:20.201Z
+locked: true
+completed_at: 2026-02-19T12:24:16.139Z
+completed: 2026-02-19

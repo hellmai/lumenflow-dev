@@ -1718,4 +1718,5 @@
 {"type":"complete","wuId":"WU-1901","timestamp":"2026-02-19T12:11:36.184Z"}
 {"type":"complete","wuId":"WU-1898","timestamp":"2026-02-19T12:12:46.342Z"}
 {"type":"complete","wuId":"WU-1899","timestamp":"2026-02-19T12:13:33.087Z"}
-{"type":"claim","wuId":"WU-1900","lane":"Framework: CLI WU Commands","title":"Wire work classifier into wu:brief generation for skills, test guidance, and constraints","timestamp":"2026-02-19T12:15:44.354Z"}
+{"type":"claim","wuId":"WU-1900","timestamp":"2026-02-19T12:15:44.354Z","lane":"Framework: CLI WU Commands","title":"Wire work classifier into wu:brief generation for skills, test guidance, and constraints"}
+{"type":"complete","wuId":"WU-1902","timestamp":"2026-02-19T12:24:20.712Z"}
