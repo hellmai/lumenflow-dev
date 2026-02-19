@@ -2,7 +2,7 @@ id: WU-1903
 title: Migrate agent integration tools to software-delivery pack handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-19
 code_paths:
@@ -53,3 +53,6 @@ session_id: 9fd72314-76a9-4f56-8871-b3b934bea902
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-19T16:37:21.787Z
+locked: true
+completed_at: 2026-02-19T16:46:05.448Z
+completed: 2026-02-19

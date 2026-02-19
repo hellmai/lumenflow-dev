@@ -5,7 +5,6 @@ _Last updated: 2026-02-19_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1903 — Migrate agent integration tools to software-delivery pack handlers](wu/WU-1903.yaml)
 
 ## Completed
 
@@ -837,3 +836,4 @@ _Last updated: 2026-02-19_
 - [WU-1894 — Migrate WU delegation/context commands to software-delivery handlers](wu/WU-1894.yaml) — 2026-02-19
 - [WU-1895 — Migrate WU cleanup/admin commands to software-delivery handlers](wu/WU-1895.yaml) — 2026-02-19
 - [WU-1896 — Migrate memory command surfaces to software-delivery handlers](wu/WU-1896.yaml) — 2026-02-19
+- [WU-1903 — Migrate agent integration tools to software-delivery pack handlers](wu/WU-1903.yaml) — 2026-02-19
