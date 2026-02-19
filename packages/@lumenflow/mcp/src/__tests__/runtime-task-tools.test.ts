@@ -672,9 +672,7 @@ describe('runtime task MCP tools', () => {
     expect(claimResult.success).toBe(true);
     expect(executeResult.success).toBe(true);
     expect(completeResult.success).toBe(true);
-    expect(
-      (completeResult.data as { policy: { decision: string } }).policy.decision,
-    ).toBe('allow');
+    expect((completeResult.data as { policy: { decision: string } }).policy.decision).toBe('allow');
 
     expect(createTask).toHaveBeenCalledWith({
       ...sampleTaskSpec,

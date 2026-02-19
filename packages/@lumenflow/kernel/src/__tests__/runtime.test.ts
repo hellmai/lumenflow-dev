@@ -584,7 +584,8 @@ describe('kernel runtime facade', () => {
 
     expect(
       inspection.policy_decisions.some(
-        (decision) => decision.policy_id === 'runtime.completion.allow' && decision.decision === 'allow',
+        (decision) =>
+          decision.policy_id === 'runtime.completion.allow' && decision.decision === 'allow',
       ),
     ).toBe(true);
   });
