@@ -23,9 +23,7 @@ phase: 6
 blocked_by:
   - WU-1884
 risks: []
-notes: 'Sizing: Simple (expected 4-8 files, <50 tool calls). Strategy: Single Session with
-  feature-flag discipline and rollback-safe defaults. Classification corrected to feature because it
-  introduces new compatibility guard + telemetry behavior.'
+notes: 'Sizing: Simple (expected 4-8 files, <50 tool calls). Strategy: Single Session with feature-flag discipline and rollback-safe defaults. Classification corrected to feature because it introduces new compatibility guard + telemetry behavior.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -34,13 +32,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Runtime-first routing currently needs a controlled migration mode so partially migrated
-  software-delivery commands can continue operating while handlers are moved from CLI fallback to
-  native pack execution. This WU introduces an explicit compatibility guard and structured telemetry
-  around fallback decisions to make temporary fallback visible, auditable, and easy to disable.
+description: Runtime-first routing currently needs a controlled migration mode so partially migrated software-delivery commands can continue operating while handlers are moved from CLI fallback to native pack execution. This WU introduces an explicit compatibility guard and structured telemetry around fallback decisions to make temporary fallback visible, auditable, and easy to disable.
 acceptance:
-  - A dedicated migration fallback error code is supported only when migration compatibility guard
-    is enabled
-  - Fallback events include structured telemetry fields needed for migration observability (tool
-    name, reason, workspace root)
+  - A dedicated migration fallback error code is supported only when migration compatibility guard is enabled
+  - Fallback events include structured telemetry fields needed for migration observability (tool name, reason, workspace root)
   - Strict mode disables migration fallback path and returns explicit failure for unmigrated handlers
+plan: lumenflow://plans/WU-1886-plan.md
