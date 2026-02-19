@@ -25,7 +25,8 @@ phase: 6
 blocked_by:
   - WU-1890
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: 'Sizing: Simple (expected 4-8 files, <50 tool calls). Strategy: Single Session. Scope is
+  hardening cleanup: default strict mode + shim removal.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -34,7 +35,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Once software-delivery handlers are fully migrated, temporary compatibility behavior must be tightened back to fail-closed defaults. This WU turns migration fallback off by default, removes software-delivery fallback shims, and keeps only intentional escape hatches required for emergency rollback during the stabilization window.
+description: Once software-delivery handlers are fully migrated, temporary compatibility behavior
+  must be tightened back to fail-closed defaults. This WU turns migration fallback off by default,
+  removes software-delivery fallback shims, and keeps only intentional escape hatches required for
+  emergency rollback during the stabilization window.
 acceptance:
   - Migration compatibility guard defaults to strict mode for software-delivery command execution
   - Software-delivery fallback shim handlers are removed from runtime resolver
