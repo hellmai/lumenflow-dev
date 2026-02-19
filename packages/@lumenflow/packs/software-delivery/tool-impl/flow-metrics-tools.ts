@@ -131,8 +131,7 @@ function createSuccessOutput(
   toolName: FlowMetricsToolName,
   execution: CommandExecutionResult,
 ): ToolOutput {
-  const message =
-    execution.stdout.trim().length > 0 ? execution.stdout.trim() : `${toolName} ran`;
+  const message = execution.stdout.trim().length > 0 ? execution.stdout.trim() : `${toolName} ran`;
   return {
     success: true,
     data: {
