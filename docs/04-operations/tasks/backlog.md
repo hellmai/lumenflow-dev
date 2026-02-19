@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1900 — Wire work classifier into wu:brief generation for skills, test guidance, and constraints](wu/WU-1900.yaml) — Framework: CLI WU Commands
 - [WU-1899 — Add signal-based work classifier for code-path-aware UI/backend/docs detection](wu/WU-1899.yaml) — Framework: Core Lifecycle
 - [WU-1898 — Fix CLI template condition bypass in wu:brief/wu:spawn prompt assembly](wu/WU-1898.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
