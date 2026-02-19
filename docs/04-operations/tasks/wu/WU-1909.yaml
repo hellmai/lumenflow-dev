@@ -8,7 +8,10 @@ created: 2026-02-19
 code_paths:
   - packages/@lumenflow/memory/src/mem-checkpoint-core.ts
   - packages/@lumenflow/cli/src/mem-checkpoint.ts
-  - packages/@lumenflow/cli/src/hooks/generators/pre-compact-checkpoint.ts
+  - packages/@lumenflow/memory/src/fs-utils.ts
+  - packages/@lumenflow/memory/src/mem-create-core.ts
+  - packages/@lumenflow/memory/src/mem-start-core.ts
+  - packages/@lumenflow/memory/src/index.ts
 tests:
   manual:
     - Run mem:checkpoint --wu WU-XXX from main checkout, verify wu-events.jsonl is NOT modified
@@ -25,10 +28,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T18:17:24.403Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-memory-wu-1909
+session_id: 8cf6d41d-a919-4b51-92c2-5bf8acfa264d
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T18:17:24.410Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -46,11 +56,3 @@ acceptance:
   - ensureMemoryDir deduplicated into shared module
   - Silent catch replaced with warning log
   - Existing tests updated, new test for main-checkout guard
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-memory-wu-1909
-claimed_at: 2026-02-19T18:17:24.403Z
-baseline_main_sha: 3d16f11af708af292cb989e06099deb51e054d74
-session_id: 8cf6d41d-a919-4b51-92c2-5bf8acfa264d
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T18:17:24.410Z
