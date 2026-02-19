@@ -536,7 +536,10 @@ describe('evidence store', () => {
       const { readdir: readdirLocal } = await import('node:fs/promises');
       const tracesDir = join(evidenceRoot, 'traces');
       const files = await readdirLocal(tracesDir);
-      const segmentFiles = files.filter((f: string) => f.startsWith('tool-traces.') && f.endsWith('.jsonl') && f !== 'tool-traces.jsonl');
+      const segmentFiles = files.filter(
+        (f: string) =>
+          f.startsWith('tool-traces.') && f.endsWith('.jsonl') && f !== 'tool-traces.jsonl',
+      );
 
       expect(segmentFiles).toHaveLength(1);
       expect(segmentFiles[0]).toBe('tool-traces.00000001.jsonl');
