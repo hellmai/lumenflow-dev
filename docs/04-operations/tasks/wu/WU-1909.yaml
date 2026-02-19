@@ -21,6 +21,9 @@ tests:
   unit:
     - packages/@lumenflow/memory/__tests__/mem-checkpoint-core.test.ts
     - packages/@lumenflow/cli/src/__tests__/mem-checkpoint.test.ts
+    - packages/@lumenflow/memory/__tests__/mem-checkpoint-core.test.ts
+    - packages/@lumenflow/memory/__tests__/fs-utils.test.ts
+    - packages/@lumenflow/cli/src/__tests__/mem-checkpoint.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1909.done
