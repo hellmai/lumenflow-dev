@@ -2,7 +2,7 @@ id: WU-1891
 title: Disable migration compat guard by default and remove software-delivery fallback shims
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-19
 code_paths:
@@ -43,3 +43,11 @@ acceptance:
   - Migration compatibility guard defaults to strict mode for software-delivery command execution
   - Software-delivery fallback shim handlers are removed from runtime resolver
   - Regression tests verify migrated software-delivery commands no longer rely on CLI fallback
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1891
+claimed_at: 2026-02-19T19:08:25.529Z
+baseline_main_sha: 6b43657591be6fc5dfb6416be3e6ec27be40a16e
+session_id: 7abc3d14-c171-43ec-b233-a64aac21cc40
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T19:08:25.537Z
