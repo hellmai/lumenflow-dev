@@ -216,7 +216,6 @@ const LANE_SECTION_KEYS = ['definitions', 'engineering', 'business'] as const;
 const DEFAULT_SIGNAL_TYPE = 'unknown';
 const WU_ID_PATTERN = /^WU-\d+$/;
 const WU_YAML_FILE_EXTENSION = '.yaml';
-const WU_STATE_TRANSITION_SEPARATOR = ': ';
 const WU_EDIT_NOTES_SEPARATOR = '\n\n';
 
 const WU_DOC_KEYS = {
@@ -392,8 +391,6 @@ async function getCoreLazy() {
 }
 
 type CoreModule = Awaited<ReturnType<typeof getCoreLazy>>;
-type CoreBacklogStore = Parameters<CoreModule['generateBacklog']>[0];
-type CoreStatusStore = Parameters<CoreModule['generateStatus']>[0];
 type MutableWuDoc = Record<string, unknown>;
 
 interface MemorySignalsCleanupResult {
