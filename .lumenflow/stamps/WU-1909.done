@@ -1,0 +1,2 @@
+WU WU-1909 — Fix checkpoint writing to main wu-events.jsonl — extract state-store concern from createCheckpoint
+Completed: 2026-02-19

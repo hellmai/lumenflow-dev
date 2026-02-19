@@ -6,7 +6,6 @@ _Last updated: 2026-02-19_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1890 — Migrate file/git/state/validation/lane surfaces and clear remaining software-delivery stubs](wu/WU-1890.yaml)
-- [WU-1909 — Fix checkpoint writing to main wu-events.jsonl — extract state-store concern from createCheckpoint](wu/WU-1909.yaml)
 
 ## Completed
 
@@ -842,3 +841,4 @@ _Last updated: 2026-02-19_
 - [WU-1888 — Migrate WU maintenance and delegation command set to software-delivery handlers](wu/WU-1888.yaml) — 2026-02-19
 - [WU-1897 — Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers](wu/WU-1897.yaml) — 2026-02-19
 - [WU-1889 — Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers](wu/WU-1889.yaml) — 2026-02-19
+- [WU-1909 — Fix checkpoint writing to main wu-events.jsonl — extract state-store concern from createCheckpoint](wu/WU-1909.yaml) — 2026-02-19
