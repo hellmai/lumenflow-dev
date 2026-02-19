@@ -36,7 +36,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1896 — Migrate memory command surfaces to software-delivery handlers](wu/WU-1896.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -871,6 +870,7 @@ sections:
 - [WU-1908 — Fix pre-existing test failures in cli-integration and initiative-tools](wu/WU-1908.yaml)
 - [WU-1894 — Migrate WU delegation/context commands to software-delivery handlers](wu/WU-1894.yaml)
 - [WU-1895 — Migrate WU cleanup/admin commands to software-delivery handlers](wu/WU-1895.yaml)
+- [WU-1896 — Migrate memory command surfaces to software-delivery handlers](wu/WU-1896.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
