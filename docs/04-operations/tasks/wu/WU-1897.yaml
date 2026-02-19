@@ -7,10 +7,9 @@ priority: P1
 created: 2026-02-19
 code_paths:
   - packages/@lumenflow/packs/software-delivery/manifest.yaml
+  - packages/@lumenflow/packs/software-delivery/manifest.ts
   - packages/@lumenflow/packs/software-delivery/tool-impl
   - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
-  - packages/@lumenflow/mcp/src/tools/initiative-tools.ts
-  - packages/@lumenflow/mcp/src/tools/parity-tools.ts
 tests:
   manual:
     - Execute representative initiative/plan/setup/orchestration flows through runtime path and
@@ -28,14 +27,26 @@ phase: 6
 blocked_by:
   - WU-1887
 risks: []
-notes: 'Sizing: Medium (expected 20-35 files, 50-100 tool calls). Strategy: Checkpoint-Resume. Split
+notes: >-
+  Sizing: Medium (expected 20-35 files, 50-100 tool calls). Strategy: Checkpoint-Resume. Split
   rationale: separates initiative/plan/setup/orchestration migration from memory-family commands in
-  WU-1889.'
+  WU-1889.
+
+
+  Adjusted scoped code_paths to actual migrated surfaces; initiative/parity tool modules not
+  modified in this split.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T17:15:12.058Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1897
+session_id: 1d23196b-1438-4c07-88e2-946cfe16872a
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T17:15:12.065Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -48,11 +59,3 @@ acceptance:
   - Resolver fallback stubs are removed for migrated initiative/plan/setup/orchestration commands
   - Runtime execution for migrated command families succeeds without CLI fallback in strict
     migration mode
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T17:15:12.065Z
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1897
-claimed_at: 2026-02-19T17:15:12.058Z
-baseline_main_sha: 0e3954993543d0c1507cd9d9433ee8efd71d5512
-session_id: 1d23196b-1438-4c07-88e2-946cfe16872a
