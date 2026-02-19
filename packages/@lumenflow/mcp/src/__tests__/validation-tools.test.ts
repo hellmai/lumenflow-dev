@@ -23,12 +23,20 @@ vi.mock('../cli-runner.js', () => ({
 
 describe('Validation MCP tools (WU-1426)', () => {
   const mockRunCliCommand = vi.mocked(cliRunner.runCliCommand);
+  let previousMigrationMode: string | undefined;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    previousMigrationMode = process.env.LUMENFLOW_MCP_MIGRATION_COMPAT_MODE;
+    process.env.LUMENFLOW_MCP_MIGRATION_COMPAT_MODE = 'compat';
   });
 
   afterEach(() => {
+    if (previousMigrationMode === undefined) {
+      delete process.env.LUMENFLOW_MCP_MIGRATION_COMPAT_MODE;
+    } else {
+      process.env.LUMENFLOW_MCP_MIGRATION_COMPAT_MODE = previousMigrationMode;
+    }
     vi.restoreAllMocks();
   });
 
