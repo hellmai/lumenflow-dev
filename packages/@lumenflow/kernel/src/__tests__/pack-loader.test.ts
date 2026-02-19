@@ -23,6 +23,7 @@ import {
 
 const PACK_LOADER_TEST_DIR = dirname(fileURLToPath(import.meta.url));
 const EXPECTED_MCP_SHELL_OUT_TOOL_MINIMUM = 70;
+const IN_PROCESS_MCP_COMMANDS = new Set(['context:get', 'wu:list']);
 const REQUIRED_MANIFEST_TOOL_DOMAINS = [
   'wu',
   'mem',
@@ -79,30 +80,66 @@ async function collectMcpShellOutCommands(): Promise<string[]> {
   const constantsPath = join(mcpSrcRoot, 'mcp-constants.ts');
   const { CliCommands } = (await import(constantsPath)) as { CliCommands: Record<string, string> };
 
-  // Scan tool files for command usage: both raw strings (legacy) and
-  // CliCommands.XXX constant references (WU-1851 governed pattern).
-  const rawPattern = /runCliCommand\(\s*['"]([^'"]+)['"]/g;
-  const constPattern = /runCliCommand\(\s*CliCommands\.(\w+)/g;
+  // Scan tool files for command usage across both legacy and runtime-first
+  // styles:
+  // 1) runCliCommand(...)
+  // 2) executeViaPack(...)
+  // 3) fallback.command: ...
+  // Resolve CliCommands.XXX references via imported constants to avoid brittle
+  // string matching.
+  const directRawPatterns = [
+    /runCliCommand\(\s*['"]([^'"]+)['"]/g,
+    /executeViaPack\(\s*['"]([^'"]+)['"]/g,
+  ] as const;
+  const directConstPatterns = [
+    /runCliCommand\(\s*CliCommands\.(\w+)/g,
+    /executeViaPack\(\s*CliCommands\.(\w+)/g,
+  ] as const;
+  const fallbackRawPattern = /command:\s*['"]([^'"]+)['"]/g;
+  const fallbackConstPattern = /command:\s*CliCommands\.(\w+)/g;
   const commands = new Set<string>();
 
   for (const toolFile of toolFiles) {
     const source = await readFile(join(toolsRoot, toolFile), UTF8_ENCODING);
 
-    let match = rawPattern.exec(source);
-    while (match) {
-      if (match[1]) commands.add(match[1]);
-      match = rawPattern.exec(source);
+    for (const pattern of directRawPatterns) {
+      pattern.lastIndex = 0;
+      let match = pattern.exec(source);
+      while (match) {
+        if (match[1]) commands.add(match[1]);
+        match = pattern.exec(source);
+      }
     }
 
-    let cRef = constPattern.exec(source);
-    while (cRef) {
-      const resolved = cRef[1] ? CliCommands[cRef[1]] : undefined;
+    for (const pattern of directConstPatterns) {
+      pattern.lastIndex = 0;
+      let cRef = pattern.exec(source);
+      while (cRef) {
+        const resolved = cRef[1] ? CliCommands[cRef[1]] : undefined;
+        if (resolved) commands.add(resolved);
+        cRef = pattern.exec(source);
+      }
+    }
+
+    fallbackRawPattern.lastIndex = 0;
+    let fallbackRaw = fallbackRawPattern.exec(source);
+    while (fallbackRaw) {
+      if (fallbackRaw[1]) commands.add(fallbackRaw[1]);
+      fallbackRaw = fallbackRawPattern.exec(source);
+    }
+
+    fallbackConstPattern.lastIndex = 0;
+    let fallbackConst = fallbackConstPattern.exec(source);
+    while (fallbackConst) {
+      const resolved = fallbackConst[1] ? CliCommands[fallbackConst[1]] : undefined;
       if (resolved) commands.add(resolved);
-      cRef = constPattern.exec(source);
+      fallbackConst = fallbackConstPattern.exec(source);
     }
   }
 
-  return [...commands].sort();
+  return [...commands]
+    .filter((commandName) => !IN_PROCESS_MCP_COMMANDS.has(commandName))
+    .sort();
 }
 
 interface GitWorkspacePackInput extends WorkspacePackInput {

@@ -2734,96 +2734,53 @@ const retiredWu1897InProcessHandlers = [
 ] as const;
 void retiredWu1897InProcessHandlers;
 
+// WU-1890: Remaining file/git/state/validation/lane surfaces are now migrated to
+// software-delivery pack handlers. Keep legacy implementations for reference parity.
+const retiredWu1890InProcessHandlers = [
+  wuInferLaneInProcess,
+  fileReadInProcess,
+  fileWriteInProcess,
+  fileEditInProcess,
+  fileDeleteInProcess,
+  backlogPruneInProcess,
+  stateBootstrapInProcess,
+  stateCleanupInProcess,
+  stateDoctorInProcess,
+  signalCleanupInProcess,
+  validateAgentSkillsInProcess,
+  validateAgentSyncInProcess,
+  validateBacklogSyncInProcess,
+  validateSkillsSpecInProcess,
+  laneHealthInProcess,
+  laneSuggestInProcess,
+] as const;
+void retiredWu1890InProcessHandlers;
+
+const retiredWu1890InProcessSchemas = [
+  DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
+  FILE_READ_INPUT_SCHEMA,
+  FILE_READ_OUTPUT_SCHEMA,
+  FILE_WRITE_INPUT_SCHEMA,
+  FILE_WRITE_OUTPUT_SCHEMA,
+  FILE_EDIT_INPUT_SCHEMA,
+  FILE_EDIT_OUTPUT_SCHEMA,
+  FILE_DELETE_INPUT_SCHEMA,
+  FILE_DELETE_OUTPUT_SCHEMA,
+  BACKLOG_PRUNE_INPUT_SCHEMA,
+  STATE_BOOTSTRAP_INPUT_SCHEMA,
+  STATE_CLEANUP_INPUT_SCHEMA,
+  STATE_DOCTOR_INPUT_SCHEMA,
+  SIGNAL_CLEANUP_INPUT_SCHEMA,
+  VALIDATE_AGENT_SKILLS_INPUT_SCHEMA,
+  VALIDATE_AGENT_SYNC_INPUT_SCHEMA,
+  VALIDATE_BACKLOG_SYNC_INPUT_SCHEMA,
+  VALIDATE_SKILLS_SPEC_INPUT_SCHEMA,
+  LANE_HEALTH_INPUT_SCHEMA,
+  LANE_SUGGEST_INPUT_SCHEMA,
+] as const;
+void retiredWu1890InProcessSchemas;
+
 const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolHandler>([
-  [
-    IN_PROCESS_TOOL_NAMES.WU_INFER_LANE,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_INFER_LANE,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: wuInferLaneInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.FILE_READ,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.FILE_READ,
-      inputSchema: FILE_READ_INPUT_SCHEMA,
-      outputSchema: FILE_READ_OUTPUT_SCHEMA,
-      fn: fileReadInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.FILE_WRITE,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.FILE_WRITE,
-      inputSchema: FILE_WRITE_INPUT_SCHEMA,
-      outputSchema: FILE_WRITE_OUTPUT_SCHEMA,
-      fn: fileWriteInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.FILE_EDIT,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.FILE_EDIT,
-      inputSchema: FILE_EDIT_INPUT_SCHEMA,
-      outputSchema: FILE_EDIT_OUTPUT_SCHEMA,
-      fn: fileEditInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.FILE_DELETE,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.FILE_DELETE,
-      inputSchema: FILE_DELETE_INPUT_SCHEMA,
-      outputSchema: FILE_DELETE_OUTPUT_SCHEMA,
-      fn: fileDeleteInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.BACKLOG_PRUNE,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.BACKLOG_PRUNE,
-      inputSchema: BACKLOG_PRUNE_INPUT_SCHEMA,
-      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
-      fn: backlogPruneInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.STATE_BOOTSTRAP,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.STATE_BOOTSTRAP,
-      inputSchema: STATE_BOOTSTRAP_INPUT_SCHEMA,
-      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
-      fn: stateBootstrapInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.STATE_CLEANUP,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.STATE_CLEANUP,
-      inputSchema: STATE_CLEANUP_INPUT_SCHEMA,
-      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
-      fn: stateCleanupInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.STATE_DOCTOR,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.STATE_DOCTOR,
-      inputSchema: STATE_DOCTOR_INPUT_SCHEMA,
-      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
-      fn: stateDoctorInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.SIGNAL_CLEANUP,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.SIGNAL_CLEANUP,
-      inputSchema: SIGNAL_CLEANUP_INPUT_SCHEMA,
-      outputSchema: DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
-      fn: signalCleanupInProcess,
-    },
-  ],
   // WU-1905: flow:bottlenecks, flow:report, metrics:snapshot, metrics, and lumenflow:metrics
   // have been migrated to software-delivery pack handlers. Their resolver registrations
   // are removed; they now execute through the pack handler path.
@@ -2843,69 +2800,15 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       fn: wuListHandler,
     },
   ],
-  // WU-1802: Validation/Lane tool registrations
-  [
-    CliCommands.VALIDATE,
-    {
-      description: 'Validate WU YAML files via in-process core handlers',
-      inputSchema: VALIDATE_INPUT_SCHEMA,
-      fn: validateInProcess,
-    },
-  ],
-  [
-    CliCommands.VALIDATE_AGENT_SKILLS,
-    {
-      description: 'Validate agent skill definitions via in-process handler',
-      inputSchema: VALIDATE_AGENT_SKILLS_INPUT_SCHEMA,
-      fn: validateAgentSkillsInProcess,
-    },
-  ],
-  [
-    CliCommands.VALIDATE_AGENT_SYNC,
-    {
-      description: 'Validate agent synchronization state via in-process handler',
-      inputSchema: VALIDATE_AGENT_SYNC_INPUT_SCHEMA,
-      fn: validateAgentSyncInProcess,
-    },
-  ],
-  [
-    CliCommands.VALIDATE_BACKLOG_SYNC,
-    {
-      description: 'Validate backlog sync via in-process core handler',
-      inputSchema: VALIDATE_BACKLOG_SYNC_INPUT_SCHEMA,
-      fn: validateBacklogSyncInProcess,
-    },
-  ],
-  [
-    CliCommands.VALIDATE_SKILLS_SPEC,
-    {
-      description: 'Validate skills specification via in-process handler',
-      inputSchema: VALIDATE_SKILLS_SPEC_INPUT_SCHEMA,
-      fn: validateSkillsSpecInProcess,
-    },
-  ],
+  // WU-1890: validation commands are now handled through software-delivery pack
+  // subprocess handlers. Keep lumenflow:validate alias in-process until the alias
+  // command surface is explicitly migrated and declared in manifest.
   [
     'lumenflow:validate',
     {
       description: 'Run validation checks via in-process handler (alias)',
       inputSchema: VALIDATE_INPUT_SCHEMA,
       fn: validateInProcess,
-    },
-  ],
-  [
-    CliCommands.LANE_HEALTH,
-    {
-      description: 'Check lane configuration health via in-process handler',
-      inputSchema: LANE_HEALTH_INPUT_SCHEMA,
-      fn: laneHealthInProcess,
-    },
-  ],
-  [
-    CliCommands.LANE_SUGGEST,
-    {
-      description: 'Generate lane suggestions via in-process handler',
-      inputSchema: LANE_SUGGEST_INPUT_SCHEMA,
-      fn: laneSuggestInProcess,
     },
   ],
 ]);

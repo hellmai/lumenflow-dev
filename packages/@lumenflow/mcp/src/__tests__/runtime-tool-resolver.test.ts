@@ -1,6 +1,4 @@
 import path from 'node:path';
-import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
 import {
   TOOL_HANDLER_KINDS,
   type ExecutionContext,
@@ -24,12 +22,6 @@ const READ_SCOPE = {
   pattern: '**',
   access: 'read' as const,
 };
-const WRITE_SCOPE = {
-  type: 'path' as const,
-  pattern: '**',
-  access: 'write' as const,
-};
-const RUNTIME_PROJECT_ROOT_KEY = 'project_root';
 const FILE_TOOL_NAMES = {
   READ: 'file:read',
   WRITE: 'file:write',
@@ -126,6 +118,28 @@ const SETUP_COORDINATION_PLAN_TOOL_NAMES = {
   PLAN_LINK: 'plan:link',
   PLAN_PROMOTE: 'plan:promote',
 } as const;
+const WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES = {
+  WU_INFER_LANE: 'tool-impl/parity-migration-tools.ts#wuInferLaneTool',
+  LANE_HEALTH: 'tool-impl/parity-migration-tools.ts#laneHealthTool',
+  LANE_SUGGEST: 'tool-impl/parity-migration-tools.ts#laneSuggestTool',
+  FILE_READ: 'tool-impl/parity-migration-tools.ts#fileReadTool',
+  FILE_WRITE: 'tool-impl/parity-migration-tools.ts#fileWriteTool',
+  FILE_EDIT: 'tool-impl/parity-migration-tools.ts#fileEditTool',
+  FILE_DELETE: 'tool-impl/parity-migration-tools.ts#fileDeleteTool',
+  GIT_BRANCH: 'tool-impl/parity-migration-tools.ts#gitBranchTool',
+  GIT_DIFF: 'tool-impl/parity-migration-tools.ts#gitDiffTool',
+  GIT_LOG: 'tool-impl/parity-migration-tools.ts#gitLogTool',
+  STATE_BOOTSTRAP: 'tool-impl/parity-migration-tools.ts#stateBootstrapTool',
+  STATE_CLEANUP: 'tool-impl/parity-migration-tools.ts#stateCleanupTool',
+  STATE_DOCTOR: 'tool-impl/parity-migration-tools.ts#stateDoctorTool',
+  BACKLOG_PRUNE: 'tool-impl/parity-migration-tools.ts#backlogPruneTool',
+  SIGNAL_CLEANUP: 'tool-impl/parity-migration-tools.ts#signalCleanupTool',
+  VALIDATE: 'tool-impl/parity-migration-tools.ts#validateTool',
+  VALIDATE_AGENT_SKILLS: 'tool-impl/parity-migration-tools.ts#validateAgentSkillsTool',
+  VALIDATE_AGENT_SYNC: 'tool-impl/parity-migration-tools.ts#validateAgentSyncTool',
+  VALIDATE_BACKLOG_SYNC: 'tool-impl/parity-migration-tools.ts#validateBacklogSyncTool',
+  VALIDATE_SKILLS_SPEC: 'tool-impl/parity-migration-tools.ts#validateSkillsSpecTool',
+} as const;
 
 function createResolverInput(
   toolName: string,
@@ -188,17 +202,8 @@ function createResolverInput(
 }
 
 describe('packToolCapabilityResolver', () => {
-  let tempRoot = '';
-
   beforeEach(() => {
     resetExecuteViaPackRuntimeCache();
-  });
-
-  afterEach(async () => {
-    if (tempRoot) {
-      await rm(tempRoot, { recursive: true, force: true });
-      tempRoot = '';
-    }
   });
 
   it('returns in-process capability for registered tools', async () => {
@@ -237,34 +242,67 @@ describe('packToolCapabilityResolver', () => {
     );
   });
 
-  it('resolves file tools to in-process handlers', async () => {
-    const toolNames = [
-      FILE_TOOL_NAMES.READ,
-      FILE_TOOL_NAMES.WRITE,
-      FILE_TOOL_NAMES.EDIT,
-      FILE_TOOL_NAMES.DELETE,
-    ];
+  it('resolves WU-1890 file/git/state/backlog/signal tools to subprocess handlers', async () => {
+    const toolEntries = [
+      {
+        name: FILE_TOOL_NAMES.READ,
+        entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.FILE_READ,
+      },
+      {
+        name: FILE_TOOL_NAMES.WRITE,
+        entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.FILE_WRITE,
+      },
+      {
+        name: FILE_TOOL_NAMES.EDIT,
+        entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.FILE_EDIT,
+      },
+      {
+        name: FILE_TOOL_NAMES.DELETE,
+        entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.FILE_DELETE,
+      },
+      {
+        name: 'git:branch',
+        entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.GIT_BRANCH,
+      },
+      {
+        name: 'git:diff',
+        entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.GIT_DIFF,
+      },
+      {
+        name: 'git:log',
+        entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.GIT_LOG,
+      },
+      {
+        name: STATE_SIGNAL_TOOL_NAMES.BACKLOG_PRUNE,
+        entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.BACKLOG_PRUNE,
+      },
+      {
+        name: STATE_SIGNAL_TOOL_NAMES.STATE_BOOTSTRAP,
+        entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.STATE_BOOTSTRAP,
+      },
+      {
+        name: STATE_SIGNAL_TOOL_NAMES.STATE_CLEANUP,
+        entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.STATE_CLEANUP,
+      },
+      {
+        name: STATE_SIGNAL_TOOL_NAMES.STATE_DOCTOR,
+        entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.STATE_DOCTOR,
+      },
+      {
+        name: STATE_SIGNAL_TOOL_NAMES.SIGNAL_CLEANUP,
+        entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.SIGNAL_CLEANUP,
+      },
+    ] as const;
 
-    for (const toolName of toolNames) {
-      const capability = await packToolCapabilityResolver(createResolverInput(toolName));
-      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
-      expect(isInProcessPackToolRegistered(toolName)).toBe(true);
-    }
-  });
-
-  it('resolves state/signal tools to in-process handlers', async () => {
-    const toolNames = [
-      STATE_SIGNAL_TOOL_NAMES.BACKLOG_PRUNE,
-      STATE_SIGNAL_TOOL_NAMES.STATE_BOOTSTRAP,
-      STATE_SIGNAL_TOOL_NAMES.STATE_CLEANUP,
-      STATE_SIGNAL_TOOL_NAMES.STATE_DOCTOR,
-      STATE_SIGNAL_TOOL_NAMES.SIGNAL_CLEANUP,
-    ];
-
-    for (const toolName of toolNames) {
-      const capability = await packToolCapabilityResolver(createResolverInput(toolName));
-      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
-      expect(isInProcessPackToolRegistered(toolName)).toBe(true);
+    for (const toolEntry of toolEntries) {
+      const capability = await packToolCapabilityResolver(
+        createResolverInput(toolEntry.name, toolEntry.entry),
+      );
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.SUBPROCESS);
+      expect(isInProcessPackToolRegistered(toolEntry.name)).toBe(false);
+      if (capability?.handler.kind === TOOL_HANDLER_KINDS.SUBPROCESS) {
+        expect(capability.handler.entry).toContain(toolEntry.entry);
+      }
     }
   });
 
@@ -745,91 +783,11 @@ describe('packToolCapabilityResolver', () => {
     expect((result.data as { message: string }).message).toContain('fallback path');
   });
 
-  it('executes file write/read/edit/delete handlers in-process', async () => {
-    tempRoot = await mkdtemp(path.join(tmpdir(), 'lumenflow-runtime-file-tools-'));
-    const nestedPath = 'nested/file.txt';
-    const context: ExecutionContext = {
-      run_id: 'run-file-tools-1',
-      task_id: 'WU-1799',
-      session_id: 'session-file-tools-1',
-      allowed_scopes: [WRITE_SCOPE],
-      metadata: {
-        [RUNTIME_PROJECT_ROOT_KEY]: tempRoot,
-      },
-    };
-
-    const writeCapability = await packToolCapabilityResolver(
-      createResolverInput(FILE_TOOL_NAMES.WRITE),
-    );
-    const readCapability = await packToolCapabilityResolver(
-      createResolverInput(FILE_TOOL_NAMES.READ),
-    );
-    const editCapability = await packToolCapabilityResolver(
-      createResolverInput(FILE_TOOL_NAMES.EDIT),
-    );
-    const deleteCapability = await packToolCapabilityResolver(
-      createResolverInput(FILE_TOOL_NAMES.DELETE),
-    );
-
-    expect(writeCapability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
-    expect(readCapability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
-    expect(editCapability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
-    expect(deleteCapability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
-
-    if (
-      !writeCapability ||
-      !readCapability ||
-      !editCapability ||
-      !deleteCapability ||
-      writeCapability.handler.kind !== TOOL_HANDLER_KINDS.IN_PROCESS ||
-      readCapability.handler.kind !== TOOL_HANDLER_KINDS.IN_PROCESS ||
-      editCapability.handler.kind !== TOOL_HANDLER_KINDS.IN_PROCESS ||
-      deleteCapability.handler.kind !== TOOL_HANDLER_KINDS.IN_PROCESS
-    ) {
-      throw new Error('Expected all file tools to resolve to in-process handlers');
-    }
-
-    const writeResult = await writeCapability.handler.fn(
-      {
-        path: nestedPath,
-        content: 'hello world',
-      },
-      context,
-    );
-    expect(writeResult.success).toBe(true);
-
-    const readResult = await readCapability.handler.fn(
-      {
-        path: nestedPath,
-      },
-      context,
-    );
-    expect(readResult.success).toBe(true);
-    expect((readResult.data as { content: string }).content).toBe('hello world');
-
-    const editResult = await editCapability.handler.fn(
-      {
-        path: nestedPath,
-        old_string: 'hello',
-        new_string: 'goodbye',
-      },
-      context,
-    );
-    expect(editResult.success).toBe(true);
-
-    const editedContent = await readFile(path.join(tempRoot, nestedPath), 'utf-8');
-    expect(editedContent).toBe('goodbye world');
-
-    const deleteResult = await deleteCapability.handler.fn(
-      {
-        path: nestedPath,
-        force: true,
-      },
-      context,
-    );
-    expect(deleteResult.success).toBe(true);
-
-    await expect(stat(path.join(tempRoot, nestedPath))).rejects.toThrow();
+  it('does not register WU-1890 file tool handlers as in-process', () => {
+    expect(isInProcessPackToolRegistered(FILE_TOOL_NAMES.READ)).toBe(false);
+    expect(isInProcessPackToolRegistered(FILE_TOOL_NAMES.WRITE)).toBe(false);
+    expect(isInProcessPackToolRegistered(FILE_TOOL_NAMES.EDIT)).toBe(false);
+    expect(isInProcessPackToolRegistered(FILE_TOOL_NAMES.DELETE)).toBe(false);
   });
 });
 
@@ -926,39 +884,65 @@ describe('WU-1897: orchestration/delegation query tool migration', () => {
 });
 
 /**
- * WU-1802: Tests for validation/lane tool in-process registration
+ * WU-1890: validation/lane tools migrate off in-process registration
  */
-describe('WU-1802: validation/lane tool registration', () => {
-  const VALIDATION_LANE_TOOLS = [
-    'validate',
-    'validate:agent-skills',
-    'validate:agent-sync',
-    'validate:backlog-sync',
-    'validate:skills-spec',
-    'lumenflow:validate',
-    'lane:health',
-    'lane:suggest',
+describe('WU-1890: validation/lane tool registration', () => {
+  const WU_1890_VALIDATION_LANE_TOOL_ENTRIES = [
+    {
+      name: 'validate',
+      entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.VALIDATE,
+    },
+    {
+      name: 'validate:agent-skills',
+      entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.VALIDATE_AGENT_SKILLS,
+    },
+    {
+      name: 'validate:agent-sync',
+      entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.VALIDATE_AGENT_SYNC,
+    },
+    {
+      name: 'validate:backlog-sync',
+      entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.VALIDATE_BACKLOG_SYNC,
+    },
+    {
+      name: 'validate:skills-spec',
+      entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.VALIDATE_SKILLS_SPEC,
+    },
+    {
+      name: 'lane:health',
+      entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.LANE_HEALTH,
+    },
+    {
+      name: 'lane:suggest',
+      entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.LANE_SUGGEST,
+    },
   ] as const;
 
-  it.each(VALIDATION_LANE_TOOLS)('registers %s as an in-process pack tool', (toolName) => {
-    expect(isInProcessPackToolRegistered(toolName)).toBe(true);
-  });
+  it.each(WU_1890_VALIDATION_LANE_TOOL_ENTRIES)(
+    '%s is no longer registered as an in-process pack tool',
+    ({ name }) => {
+      expect(isInProcessPackToolRegistered(name)).toBe(false);
+    },
+  );
 
-  it('lists all validation/lane tools in the registry', () => {
+  it('does not list migrated validation/lane tools in the in-process registry', () => {
     const registeredTools = listInProcessPackTools();
-    for (const toolName of VALIDATION_LANE_TOOLS) {
-      expect(registeredTools).toContain(toolName);
+    for (const toolEntry of WU_1890_VALIDATION_LANE_TOOL_ENTRIES) {
+      expect(registeredTools).not.toContain(toolEntry.name);
     }
   });
 
-  it.each(VALIDATION_LANE_TOOLS)(
-    'resolves %s to an in-process handler via packToolCapabilityResolver',
-    async (toolName) => {
-      const input = createResolverInput(toolName);
+  it.each(WU_1890_VALIDATION_LANE_TOOL_ENTRIES)(
+    'resolves %s to a subprocess handler via packToolCapabilityResolver',
+    async ({ name, entry }) => {
+      const input = createResolverInput(name, entry);
       const capability = await packToolCapabilityResolver(input);
 
       expect(capability).toBeDefined();
-      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.SUBPROCESS);
+      if (capability?.handler.kind === TOOL_HANDLER_KINDS.SUBPROCESS) {
+        expect(capability.handler.entry).toContain(entry);
+      }
     },
   );
 });

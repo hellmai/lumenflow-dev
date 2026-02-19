@@ -75,7 +75,7 @@ tools:
         pattern: '**'
         access: write
   - name: wu:infer-lane
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#wuInferLaneTool
     permission: read
     required_scopes:
       - type: path
@@ -323,14 +323,14 @@ tools:
         access: read
   # lane:*
   - name: lane:health
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#laneHealthTool
     permission: read
     required_scopes:
       - type: path
         pattern: '**'
         access: read
   - name: lane:suggest
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#laneSuggestTool
     permission: write
     required_scopes:
       - type: path
@@ -361,28 +361,28 @@ tools:
         access: write
   # file:*
   - name: file:delete
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#fileDeleteTool
     permission: write
     required_scopes:
       - type: path
         pattern: '**'
         access: write
   - name: file:edit
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#fileEditTool
     permission: write
     required_scopes:
       - type: path
         pattern: '**'
         access: write
   - name: file:read
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#fileReadTool
     permission: read
     required_scopes:
       - type: path
         pattern: '**'
         access: read
   - name: file:write
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#fileWriteTool
     permission: write
     required_scopes:
       - type: path
@@ -390,21 +390,21 @@ tools:
         access: write
   # git:*
   - name: git:branch
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#gitBranchTool
     permission: write
     required_scopes:
       - type: path
         pattern: '**'
         access: write
   - name: git:diff
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#gitDiffTool
     permission: read
     required_scopes:
       - type: path
         pattern: '**'
         access: read
   - name: git:log
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#gitLogTool
     permission: read
     required_scopes:
       - type: path
@@ -470,21 +470,21 @@ tools:
         access: read
   # state:*
   - name: state:bootstrap
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#stateBootstrapTool
     permission: write
     required_scopes:
       - type: path
         pattern: '**'
         access: write
   - name: state:cleanup
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#stateCleanupTool
     permission: write
     required_scopes:
       - type: path
         pattern: '**'
         access: write
   - name: state:doctor
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#stateDoctorTool
     permission: read
     required_scopes:
       - type: path
@@ -521,7 +521,21 @@ tools:
         access: write
   # setup:*
   - name: backlog:prune
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#backlogPruneTool
+    permission: write
+    required_scopes:
+      - type: path
+        pattern: '**'
+        access: write
+  - name: config:get
+    entry: tool-impl/parity-migration-tools.ts#configGetTool
+    permission: read
+    required_scopes:
+      - type: path
+        pattern: '**'
+        access: read
+  - name: config:set
+    entry: tool-impl/parity-migration-tools.ts#configSetTool
     permission: write
     required_scopes:
       - type: path
@@ -597,8 +611,15 @@ tools:
       - type: path
         pattern: '**'
         access: read
+  - name: lumenflow:metrics
+    entry: tool-impl/parity-migration-tools.ts#lumenflowMetricsTool
+    permission: read
+    required_scopes:
+      - type: path
+        pattern: '**'
+        access: read
   - name: signal:cleanup
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#signalCleanupTool
     permission: write
     required_scopes:
       - type: path
@@ -612,35 +633,42 @@ tools:
         pattern: '**'
         access: write
   - name: validate
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#validateTool
+    permission: read
+    required_scopes:
+      - type: path
+        pattern: '**'
+        access: read
+  - name: lumenflow:validate
+    entry: tool-impl/parity-migration-tools.ts#lumenflowValidateTool
     permission: read
     required_scopes:
       - type: path
         pattern: '**'
         access: read
   - name: validate:agent-skills
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#validateAgentSkillsTool
     permission: read
     required_scopes:
       - type: path
         pattern: '**'
         access: read
   - name: validate:agent-sync
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#validateAgentSyncTool
     permission: read
     required_scopes:
       - type: path
         pattern: '**'
         access: read
   - name: validate:backlog-sync
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#validateBacklogSyncTool
     permission: read
     required_scopes:
       - type: path
         pattern: '**'
         access: read
   - name: validate:skills-spec
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/parity-migration-tools.ts#validateSkillsSpecTool
     permission: read
     required_scopes:
       - type: path

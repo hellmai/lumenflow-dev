@@ -9,6 +9,7 @@ export * from './git-tools.js';
 export * from './initiative-orchestration-tools.js';
 export * from './lane-lock.js';
 export * from './memory-tools.js';
+export * from './parity-migration-tools.js';
 export * from './pending-runtime-tools.js';
 export * from './wu-lifecycle-tools.js';
 export * from './worker-loader.js';

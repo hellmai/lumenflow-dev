@@ -56,6 +56,8 @@ const WU_RELEASE_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuReleaseTool';
 const WU_RECOVER_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuRecoverTool';
 const WU_REPAIR_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuRepairTool';
 const GATES_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#gatesTool';
+const CONFIG_SET_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#configSetTool';
+const CONFIG_GET_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#configGetTool';
 const MEM_INIT_TOOL_ENTRY = 'tool-impl/memory-tools.ts#memInitTool';
 const MEM_START_TOOL_ENTRY = 'tool-impl/memory-tools.ts#memStartTool';
 const MEM_READY_TOOL_ENTRY = 'tool-impl/memory-tools.ts#memReadyTool';
@@ -74,6 +76,36 @@ const AGENT_SESSION_TOOL_ENTRY = 'tool-impl/agent-tools.ts#agentSessionTool';
 const AGENT_SESSION_END_TOOL_ENTRY = 'tool-impl/agent-tools.ts#agentSessionEndTool';
 const AGENT_LOG_ISSUE_TOOL_ENTRY = 'tool-impl/agent-tools.ts#agentLogIssueTool';
 const AGENT_ISSUES_QUERY_TOOL_ENTRY = 'tool-impl/agent-tools.ts#agentIssuesQueryTool';
+const FLOW_BOTTLENECKS_TOOL_ENTRY = 'tool-impl/flow-metrics-tools.ts#flowBottlenecksTool';
+const FLOW_REPORT_TOOL_ENTRY = 'tool-impl/flow-metrics-tools.ts#flowReportTool';
+const METRICS_TOOL_ENTRY = 'tool-impl/flow-metrics-tools.ts#metricsTool';
+const METRICS_SNAPSHOT_TOOL_ENTRY = 'tool-impl/flow-metrics-tools.ts#metricsSnapshotTool';
+const WU_INFER_LANE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#wuInferLaneTool';
+const LANE_HEALTH_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#laneHealthTool';
+const LANE_SUGGEST_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#laneSuggestTool';
+const FILE_READ_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#fileReadTool';
+const FILE_WRITE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#fileWriteTool';
+const FILE_EDIT_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#fileEditTool';
+const FILE_DELETE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#fileDeleteTool';
+const GIT_BRANCH_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#gitBranchTool';
+const GIT_DIFF_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#gitDiffTool';
+const GIT_LOG_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#gitLogTool';
+const STATE_BOOTSTRAP_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#stateBootstrapTool';
+const STATE_CLEANUP_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#stateCleanupTool';
+const STATE_DOCTOR_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#stateDoctorTool';
+const BACKLOG_PRUNE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#backlogPruneTool';
+const SIGNAL_CLEANUP_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#signalCleanupTool';
+const LUMENFLOW_METRICS_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#lumenflowMetricsTool';
+const VALIDATE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#validateTool';
+const LUMENFLOW_VALIDATE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#lumenflowValidateTool';
+const VALIDATE_AGENT_SKILLS_TOOL_ENTRY =
+  'tool-impl/parity-migration-tools.ts#validateAgentSkillsTool';
+const VALIDATE_AGENT_SYNC_TOOL_ENTRY =
+  'tool-impl/parity-migration-tools.ts#validateAgentSyncTool';
+const VALIDATE_BACKLOG_SYNC_TOOL_ENTRY =
+  'tool-impl/parity-migration-tools.ts#validateBacklogSyncTool';
+const VALIDATE_SKILLS_SPEC_TOOL_ENTRY =
+  'tool-impl/parity-migration-tools.ts#validateSkillsSpecTool';
 const INITIATIVE_ADD_WU_TOOL_ENTRY =
   'tool-impl/initiative-orchestration-tools.ts#initiativeAddWuTool';
 const INITIATIVE_BULK_ASSIGN_TOOL_ENTRY =
@@ -185,6 +217,8 @@ const TOOL_PERMISSIONS = {
   'plan:link': 'write',
   'plan:promote': 'write',
   'backlog:prune': 'write',
+  'config:get': 'read',
+  'config:set': 'write',
   'delegation:list': 'read',
   'docs:sync': 'write',
   'init:plan': 'read',
@@ -195,9 +229,11 @@ const TOOL_PERMISSIONS = {
   'lumenflow:upgrade': 'write',
   metrics: 'read',
   'metrics:snapshot': 'read',
+  'lumenflow:metrics': 'read',
   'signal:cleanup': 'write',
   'sync:templates': 'write',
   validate: 'read',
+  'lumenflow:validate': 'read',
   'validate:agent-skills': 'read',
   'validate:agent-sync': 'read',
   'validate:backlog-sync': 'read',
@@ -208,6 +244,9 @@ type ToolName = keyof typeof TOOL_PERMISSIONS;
 
 const TOOL_ENTRY_OVERRIDES: Partial<Record<ToolName, string>> = {
   'git:status': GIT_STATUS_TOOL_ENTRY,
+  'git:branch': GIT_BRANCH_TOOL_ENTRY,
+  'git:diff': GIT_DIFF_TOOL_ENTRY,
+  'git:log': GIT_LOG_TOOL_ENTRY,
   'wu:status': WU_STATUS_TOOL_ENTRY,
   'wu:create': WU_CREATE_TOOL_ENTRY,
   'wu:claim': WU_CLAIM_TOOL_ENTRY,
@@ -230,6 +269,7 @@ const TOOL_ENTRY_OVERRIDES: Partial<Record<ToolName, string>> = {
   'wu:release': WU_RELEASE_TOOL_ENTRY,
   'wu:recover': WU_RECOVER_TOOL_ENTRY,
   'wu:repair': WU_REPAIR_TOOL_ENTRY,
+  'wu:infer-lane': WU_INFER_LANE_TOOL_ENTRY,
   gates: GATES_TOOL_ENTRY,
   'mem:init': MEM_INIT_TOOL_ENTRY,
   'mem:start': MEM_START_TOOL_ENTRY,
@@ -249,6 +289,30 @@ const TOOL_ENTRY_OVERRIDES: Partial<Record<ToolName, string>> = {
   'agent:session-end': AGENT_SESSION_END_TOOL_ENTRY,
   'agent:log-issue': AGENT_LOG_ISSUE_TOOL_ENTRY,
   'agent:issues-query': AGENT_ISSUES_QUERY_TOOL_ENTRY,
+  'flow:bottlenecks': FLOW_BOTTLENECKS_TOOL_ENTRY,
+  'flow:report': FLOW_REPORT_TOOL_ENTRY,
+  metrics: METRICS_TOOL_ENTRY,
+  'metrics:snapshot': METRICS_SNAPSHOT_TOOL_ENTRY,
+  'lumenflow:metrics': LUMENFLOW_METRICS_TOOL_ENTRY,
+  'lane:health': LANE_HEALTH_TOOL_ENTRY,
+  'lane:suggest': LANE_SUGGEST_TOOL_ENTRY,
+  'file:read': FILE_READ_TOOL_ENTRY,
+  'file:write': FILE_WRITE_TOOL_ENTRY,
+  'file:edit': FILE_EDIT_TOOL_ENTRY,
+  'file:delete': FILE_DELETE_TOOL_ENTRY,
+  'state:bootstrap': STATE_BOOTSTRAP_TOOL_ENTRY,
+  'state:cleanup': STATE_CLEANUP_TOOL_ENTRY,
+  'state:doctor': STATE_DOCTOR_TOOL_ENTRY,
+  'backlog:prune': BACKLOG_PRUNE_TOOL_ENTRY,
+  'config:set': CONFIG_SET_TOOL_ENTRY,
+  'config:get': CONFIG_GET_TOOL_ENTRY,
+  'signal:cleanup': SIGNAL_CLEANUP_TOOL_ENTRY,
+  validate: VALIDATE_TOOL_ENTRY,
+  'lumenflow:validate': LUMENFLOW_VALIDATE_TOOL_ENTRY,
+  'validate:agent-skills': VALIDATE_AGENT_SKILLS_TOOL_ENTRY,
+  'validate:agent-sync': VALIDATE_AGENT_SYNC_TOOL_ENTRY,
+  'validate:backlog-sync': VALIDATE_BACKLOG_SYNC_TOOL_ENTRY,
+  'validate:skills-spec': VALIDATE_SKILLS_SPEC_TOOL_ENTRY,
   'initiative:add-wu': INITIATIVE_ADD_WU_TOOL_ENTRY,
   'initiative:bulk-assign': INITIATIVE_BULK_ASSIGN_TOOL_ENTRY,
   'initiative:create': INITIATIVE_CREATE_TOOL_ENTRY,

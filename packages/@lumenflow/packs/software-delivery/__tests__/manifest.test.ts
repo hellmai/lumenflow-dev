@@ -6,7 +6,7 @@ import {
 } from '../manifest.js';
 
 const PENDING_RUNTIME_TOOL_ENTRY = 'tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool';
-const PENDING_RUNTIME_BASELINE = 24;
+const PENDING_RUNTIME_BASELINE = 0;
 
 describe('software-delivery migration scorecard (WU-1885)', () => {
   it('reports declared, pending-runtime, and real-handler totals', () => {
@@ -155,6 +155,44 @@ describe('software-delivery migration scorecard (WU-1885)', () => {
       ['lumenflow:release', 'tool-impl/initiative-orchestration-tools.ts#lumenflowReleaseTool'],
       ['lumenflow:upgrade', 'tool-impl/initiative-orchestration-tools.ts#lumenflowUpgradeTool'],
       ['sync:templates', 'tool-impl/initiative-orchestration-tools.ts#syncTemplatesTool'],
+    ]);
+
+    for (const [toolName, expectedEntry] of expectedEntries.entries()) {
+      const manifestTool = SOFTWARE_DELIVERY_MANIFEST.tools.find((tool) => tool.name === toolName);
+      expect(manifestTool?.entry).toBe(expectedEntry);
+    }
+  });
+
+  it('routes WU-1890 remaining migration surfaces to runtime handlers', () => {
+    const expectedEntries = new Map<string, string>([
+      ['wu:infer-lane', 'tool-impl/parity-migration-tools.ts#wuInferLaneTool'],
+      ['lane:health', 'tool-impl/parity-migration-tools.ts#laneHealthTool'],
+      ['lane:suggest', 'tool-impl/parity-migration-tools.ts#laneSuggestTool'],
+      ['file:read', 'tool-impl/parity-migration-tools.ts#fileReadTool'],
+      ['file:write', 'tool-impl/parity-migration-tools.ts#fileWriteTool'],
+      ['file:edit', 'tool-impl/parity-migration-tools.ts#fileEditTool'],
+      ['file:delete', 'tool-impl/parity-migration-tools.ts#fileDeleteTool'],
+      ['git:branch', 'tool-impl/parity-migration-tools.ts#gitBranchTool'],
+      ['git:diff', 'tool-impl/parity-migration-tools.ts#gitDiffTool'],
+      ['git:log', 'tool-impl/parity-migration-tools.ts#gitLogTool'],
+      ['state:bootstrap', 'tool-impl/parity-migration-tools.ts#stateBootstrapTool'],
+      ['state:cleanup', 'tool-impl/parity-migration-tools.ts#stateCleanupTool'],
+      ['state:doctor', 'tool-impl/parity-migration-tools.ts#stateDoctorTool'],
+      ['backlog:prune', 'tool-impl/parity-migration-tools.ts#backlogPruneTool'],
+      ['config:get', 'tool-impl/parity-migration-tools.ts#configGetTool'],
+      ['config:set', 'tool-impl/parity-migration-tools.ts#configSetTool'],
+      ['signal:cleanup', 'tool-impl/parity-migration-tools.ts#signalCleanupTool'],
+      ['validate', 'tool-impl/parity-migration-tools.ts#validateTool'],
+      ['lumenflow:metrics', 'tool-impl/parity-migration-tools.ts#lumenflowMetricsTool'],
+      ['lumenflow:validate', 'tool-impl/parity-migration-tools.ts#lumenflowValidateTool'],
+      ['validate:agent-skills', 'tool-impl/parity-migration-tools.ts#validateAgentSkillsTool'],
+      ['validate:agent-sync', 'tool-impl/parity-migration-tools.ts#validateAgentSyncTool'],
+      ['validate:backlog-sync', 'tool-impl/parity-migration-tools.ts#validateBacklogSyncTool'],
+      ['validate:skills-spec', 'tool-impl/parity-migration-tools.ts#validateSkillsSpecTool'],
+      ['flow:bottlenecks', 'tool-impl/flow-metrics-tools.ts#flowBottlenecksTool'],
+      ['flow:report', 'tool-impl/flow-metrics-tools.ts#flowReportTool'],
+      ['metrics', 'tool-impl/flow-metrics-tools.ts#metricsTool'],
+      ['metrics:snapshot', 'tool-impl/flow-metrics-tools.ts#metricsSnapshotTool'],
     ]);
 
     for (const [toolName, expectedEntry] of expectedEntries.entries()) {
