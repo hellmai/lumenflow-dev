@@ -12,6 +12,7 @@ import {
   listInProcessPackTools,
   packToolCapabilityResolver,
 } from '../runtime-tool-resolver.js';
+import { getSoftwareDeliveryMigrationScorecard } from '../../../packs/software-delivery/manifest.js';
 import {
   buildExecutionContext,
   executeViaPack,
@@ -216,6 +217,17 @@ describe('packToolCapabilityResolver', () => {
 
   it('lists registered in-process pack tools', () => {
     expect(listInProcessPackTools()).toContain('wu:status');
+  });
+
+  it('reports scorecard totals that are internally consistent', () => {
+    const scorecard = getSoftwareDeliveryMigrationScorecard();
+
+    expect(scorecard.declaredTools).toBeGreaterThan(0);
+    expect(scorecard.pendingRuntimeEntries).toBeGreaterThanOrEqual(0);
+    expect(scorecard.realHandlerEntries).toBeGreaterThanOrEqual(0);
+    expect(scorecard.pendingRuntimeEntries + scorecard.realHandlerEntries).toBe(
+      scorecard.declaredTools,
+    );
   });
 
   it('resolves file tools to in-process handlers', async () => {

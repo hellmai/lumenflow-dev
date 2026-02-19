@@ -133,6 +133,12 @@ const TOOL_ENTRY_OVERRIDES: Partial<Record<ToolName, string>> = {
   'git:status': GIT_STATUS_TOOL_ENTRY,
 };
 
+export interface SoftwareDeliveryMigrationScorecard {
+  declaredTools: number;
+  pendingRuntimeEntries: number;
+  realHandlerEntries: number;
+}
+
 function requiredScopesForPermission(permission: ToolPermission): PathScope[] {
   return [
     {
@@ -156,6 +162,33 @@ function createManifestTools(): SoftwareDeliveryManifestTool[] {
       required_scopes: requiredScopesForPermission(permission),
     };
   });
+}
+
+function countPendingRuntimeEntries(tools: SoftwareDeliveryManifestTool[]): number {
+  return tools.reduce((total, tool) => {
+    if (tool.entry === PENDING_RUNTIME_TOOL_ENTRY) {
+      return total + 1;
+    }
+    return total;
+  }, 0);
+}
+
+export function getSoftwareDeliveryMigrationScorecard(
+  manifest: SoftwareDeliveryPackManifest = SOFTWARE_DELIVERY_MANIFEST,
+): SoftwareDeliveryMigrationScorecard {
+  const declaredTools = manifest.tools.length;
+  const pendingRuntimeEntries = countPendingRuntimeEntries(manifest.tools);
+  return {
+    declaredTools,
+    pendingRuntimeEntries,
+    realHandlerEntries: declaredTools - pendingRuntimeEntries,
+  };
+}
+
+export function renderSoftwareDeliveryMigrationScorecard(
+  manifest: SoftwareDeliveryPackManifest = SOFTWARE_DELIVERY_MANIFEST,
+): string {
+  return JSON.stringify(getSoftwareDeliveryMigrationScorecard(manifest));
 }
 
 const POLICY_SUFFIXES = ['format', 'lint', 'typecheck', 'test', 'coverage'] as const;
