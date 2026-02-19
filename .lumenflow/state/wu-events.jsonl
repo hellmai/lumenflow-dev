@@ -1756,3 +1756,4 @@
 {"type":"claim","wuId":"WU-1889","lane":"Framework: Core Lifecycle","title":"Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers","timestamp":"2026-02-19T16:54:13.584Z"}
 {"type":"release","wuId":"WU-1889","reason":"Executing dependent worker WU-1897 first; umbrella resumed after worker completion","timestamp":"2026-02-19T16:55:40.204Z"}
 {"type":"claim","wuId":"WU-1897","lane":"Framework: Core Lifecycle","title":"Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers","timestamp":"2026-02-19T16:56:26.837Z"}
+{"type":"release","wuId":"WU-1897","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-19T17:14:23.945Z"}
