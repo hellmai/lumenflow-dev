@@ -65,6 +65,15 @@ wus:
   - WU-1840
   - WU-1841
   - WU-1842
+  - WU-1884
+  - WU-1885
+  - WU-1886
+  - WU-1887
+  - WU-1888
+  - WU-1889
+  - WU-1890
+  - WU-1891
+  - WU-1892
 notes:
   - '2026-02-18: Reopened for Phases 5-6 expansion. target_date extended to 2026-06-30 (needs manual
     YAML update — initiative:edit lacks --target-date flag). Phase 5 = production readiness (replace
