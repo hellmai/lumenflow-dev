@@ -25,12 +25,12 @@ sections:
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1881 — Fix multi-instance incremental hydrate duplicate entries in EvidenceStore](wu/WU-1881.yaml) — Framework: Core Lifecycle
-- [WU-1883 — Extract ENOENT/stat helpers and add trace-failure telemetry to ToolHost](wu/WU-1883.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1882 — Fix segment padding overflow at 10,000+ segments in EvidenceStore](wu/WU-1882.yaml) — Framework: Core Lifecycle
+- [WU-1883 — Extract ENOENT/stat helpers and add trace-failure telemetry to ToolHost](wu/WU-1883.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
