@@ -1,0 +1,42 @@
+id: WU-1898
+title: Fix CLI template condition bypass in wu:brief/wu:spawn prompt assembly
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-19
+code_paths:
+  - packages/@lumenflow/cli/src/wu-spawn-prompt-builders.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts
+  - .lumenflow/templates/manifest.yaml
+  - docs/04-operations/_frameworks/lumenflow/**
+tests:
+  manual:
+    - Run pnpm wu:brief on a documentation WU and verify output does NOT contain TDD DIRECTIVE
+    - Run pnpm wu:brief on a feature WU and verify TDD directive IS present
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1898.done
+dependencies: []
+risks: []
+notes: 'Root cause: tryLoadTemplates (line 977) iterates all templates and only stores id->content. The template.condition field from YAML frontmatter is loaded by loadTemplatesWithOverrides but never evaluated. Fix: evaluate conditions in tryLoadTemplates before adding to the map, passing the TemplateContext. The evaluateCondition function already exists in template-loader.ts.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: The CLI prompt builder (wu-spawn-prompt-builders.ts) loads spawn templates via tryLoadTemplates() but strips condition metadata. It then retrieves templates by ID without evaluating manifest conditions. This means a documentation WU still gets the TDD directive because the condition type !== documentation is never checked in the CLI code path. The core path (tryAssembleSpawnTemplates) correctly evaluates conditions via the manifest, but the CLI path bypasses it entirely. P0 because it actively harms agent performance on non-code WUs.
+acceptance:
+  - tryLoadTemplates() evaluates template conditions from frontmatter before including in result map
+  - templates.get tdd-directive returns undefined for documentation/docs/config type WUs
+  - Policy-based methodology templates are condition-gated by policy.testing value
+  - 'Regression test: feature type WU still gets TDD directive'
+  - 'Regression test: documentation type WU gets documentation-directive NOT tdd-directive'
+  - 'Regression test: refactor type WU gets refactor-directive'
+  - Internal docs updated in docs/04-operations describing template condition evaluation
+  - Starlight reference docs updated for wu:brief template system
