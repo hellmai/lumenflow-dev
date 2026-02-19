@@ -7,7 +7,7 @@ description: 'User-facing surfaces initiative: real-time web dashboard for agent
   pack who want to see agents working and trust the automation, (2) pack authors/consumers who want
   to teach their AI new domains. Differentiator vs OpenClaw: governance you can see — scope
   intersection, policy decisions, evidence receipts rendered live in the browser.'
-status: done
+status: in_progress
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-18
@@ -79,3 +79,6 @@ wus:
   - WU-1895
   - WU-1896
   - WU-1897
+notes:
+  - '2026-02-19: Status aligned to in_progress after Phase 6 decomposition into WU-1893..WU-1897 for
+    software-delivery-first migration.'
