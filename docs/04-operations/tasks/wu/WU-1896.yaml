@@ -1,0 +1,41 @@
+id: WU-1896
+title: Migrate memory command surfaces to software-delivery handlers
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-19
+code_paths:
+  - packages/@lumenflow/packs/software-delivery/manifest.yaml
+  - packages/@lumenflow/packs/software-delivery/tool-impl
+  - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
+  - packages/@lumenflow/mcp/src/tools/memory-tools.ts
+tests:
+  manual:
+    - Execute mem:init/mem:checkpoint/mem:recover/mem:inbox flows through runtime path and verify expected memory state mutations
+  unit:
+    - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/memory-tools.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1896.done
+dependencies: []
+initiative: INIT-031
+phase: 6
+blocked_by:
+  - WU-1887
+risks: []
+notes: 'Sizing: Medium (expected 20-35 files, 50-100 tool calls). Strategy: Checkpoint-Resume. Split rationale: separates memory-family migration from other command families in WU-1889.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Split from WU-1889. Migrate memory command surfaces (mem:init, mem:checkpoint, mem:recover, mem:inbox, and related memory ops) from fallback/stub execution to native software-delivery pack handlers with resolver wiring and parity coverage.
+acceptance:
+  - Memory command surfaces execute through software-delivery handlers in bootstrapped runtime mode
+  - Resolver fallback stubs are removed for migrated memory commands
+  - Runtime execution for migrated memory commands succeeds without CLI fallback in strict migration mode
