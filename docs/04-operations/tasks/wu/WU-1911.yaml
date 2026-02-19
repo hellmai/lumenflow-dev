@@ -26,8 +26,7 @@ dependencies: []
 initiative: INIT-030
 phase: 7
 risks: []
-notes: 'Sizing: Simple (~10 files, ~45 tool calls). Strategy: Single Session. Wave 1 of 3. Read
-  kernel source for accuracy. create-a-pack.mdx is reference for architecture.'
+notes: 'Sizing: Simple (~10 files, ~45 tool calls). Strategy: Single Session. Wave 1 of 3. Read kernel source for accuracy. create-a-pack.mdx is reference for architecture.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
@@ -36,10 +35,7 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'INIT-030 delivered a fundamentally new architecture (KernelRuntime, pack dispatch,
-  PolicyEngine, EvidenceStore, scope intersection) but Starlight docs still describe LumenFlow as a
-  delivery methodology. This WU creates the foundation: rewrite introduction.mdx and create 5 new
-  concept pages. Update sidebar.'
+description: 'INIT-030 delivered a fundamentally new architecture (KernelRuntime, pack dispatch, PolicyEngine, EvidenceStore, scope intersection) but Starlight docs still describe LumenFlow as a delivery methodology. This WU creates the foundation: rewrite introduction.mdx and create 5 new concept pages. Update sidebar.'
 acceptance:
   - introduction.mdx reframes LumenFlow as a runtime kernel with pluggable domain packs
   - New kernel.mdx concept page explains KernelRuntime, ToolHost, pack dispatch, 4 guarantees
@@ -57,3 +53,4 @@ session_id: 0bce9fb7-49ae-468a-8ffe-c34ac9427751
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-19T21:28:37.008Z
+plan: lumenflow://plans/INIT-030-runtime-adoption-deprecation-roadmap.md
