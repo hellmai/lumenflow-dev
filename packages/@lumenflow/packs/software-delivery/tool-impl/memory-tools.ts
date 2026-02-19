@@ -135,7 +135,10 @@ function createMissingParameterOutput(message: string): ToolOutput {
   };
 }
 
-function createFailureOutput(toolName: MemoryToolName, execution: CommandExecutionResult): ToolOutput {
+function createFailureOutput(
+  toolName: MemoryToolName,
+  execution: CommandExecutionResult,
+): ToolOutput {
   const stderrMessage = execution.stderr.trim();
   const stdoutMessage = execution.stdout.trim();
   const message =
@@ -171,7 +174,10 @@ function parseJsonOutput(stdout: string): unknown | null {
   }
 }
 
-function createSuccessOutput(toolName: MemoryToolName, execution: CommandExecutionResult): ToolOutput {
+function createSuccessOutput(
+  toolName: MemoryToolName,
+  execution: CommandExecutionResult,
+): ToolOutput {
   const parsedJson = parseJsonOutput(execution.stdout);
   if (parsedJson !== null) {
     return {

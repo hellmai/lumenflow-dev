@@ -27,7 +27,10 @@ import {
   memTriageTool,
 } from '../tool-impl/memory-tools.js';
 
-const MEM_INIT_SCRIPT_PATH = path.resolve(process.cwd(), 'packages/@lumenflow/cli/dist/mem-init.js');
+const MEM_INIT_SCRIPT_PATH = path.resolve(
+  process.cwd(),
+  'packages/@lumenflow/cli/dist/mem-init.js',
+);
 const MEM_START_SCRIPT_PATH = path.resolve(
   process.cwd(),
   'packages/@lumenflow/cli/dist/mem-start.js',
@@ -60,7 +63,10 @@ const MEM_EXPORT_SCRIPT_PATH = path.resolve(
   process.cwd(),
   'packages/@lumenflow/cli/dist/mem-export.js',
 );
-const MEM_INBOX_SCRIPT_PATH = path.resolve(process.cwd(), 'packages/@lumenflow/cli/dist/mem-inbox.js');
+const MEM_INBOX_SCRIPT_PATH = path.resolve(
+  process.cwd(),
+  'packages/@lumenflow/cli/dist/mem-inbox.js',
+);
 const MEM_SIGNAL_SCRIPT_PATH = path.resolve(
   process.cwd(),
   'packages/@lumenflow/cli/dist/mem-signal.js',
@@ -348,7 +354,15 @@ describe('memory tool adapters (WU-1896)', () => {
     expect(output.success).toBe(true);
     expect(spawnSyncMock).toHaveBeenCalledWith(
       process.execPath,
-      [MEM_TRIAGE_SCRIPT_PATH, '--wu', 'WU-1896', '--promote', 'mem-123', '--lane', 'Framework: Core Lifecycle'],
+      [
+        MEM_TRIAGE_SCRIPT_PATH,
+        '--wu',
+        'WU-1896',
+        '--promote',
+        'mem-123',
+        '--lane',
+        'Framework: Core Lifecycle',
+      ],
       expect.any(Object),
     );
   });
