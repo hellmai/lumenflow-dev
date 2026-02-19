@@ -98,17 +98,25 @@ The "review" is automated gates, not human PR review. This unblocks flow while m
 
 ## Evidence, Not Claims
 
-Every WU completion creates:
+LumenFlow provides two levels of completion evidence:
+
+### Kernel-Level Evidence
+
+Every tool call during a WU's execution is recorded in the [evidence store](/concepts/evidence):
+
+- **Content-addressed inputs** — Tool inputs are hashed with SHA-256 and stored as immutable blobs
+- **Tool traces** — `TOOL_CALL_STARTED` and `TOOL_CALL_FINISHED` entries with timing, scope enforcement results, and [policy decisions](/concepts/policy-engine)
+- **Denial records** — Even denied tool calls produce evidence, proving what the agent _attempted_
+
+### WU-Level Evidence
+
+At completion, `wu:done` creates:
 
 1. **Stamp file** in `.lumenflow/stamps/WU-XXX.done`
 2. **Test results** proving acceptance criteria
 3. **Git history** linking to the WU spec
 
-This audit trail is valuable for:
-
-- Compliance reviews
-- Team retrospectives
-- Understanding "why was this built?"
+This audit trail answers: _What was the agent asked to do? Was the action authorized? What actually happened?_ See [Evidence Store](/concepts/evidence) for the full model.
 
 ## Creating WUs
 
@@ -137,6 +145,8 @@ the plan link.
 
 ## Next Steps
 
-- [Lanes](/concepts/lanes) – Organizing work streams
-- [Gates](/concepts/gates) – Quality enforcement
-- [Sizing Guide](/guides/sizing) – How to size WUs properly
+- [Lanes](/concepts/lanes) — Organizing work streams with scope boundaries
+- [Gates](/concepts/gates) — Quality enforcement as kernel policies
+- [Evidence Store](/concepts/evidence) — The immutable audit trail behind every WU
+- [Kernel Runtime](/concepts/kernel) — How WU tasks map to kernel task lifecycle
+- [Sizing Guide](/guides/sizing) — How to size WUs properly

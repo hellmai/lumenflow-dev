@@ -1,9 +1,17 @@
 ---
 title: Gates
-description: Config-driven quality gates for any language
+description: Config-driven quality gates enforced as kernel policies
 ---
 
+import { Aside } from '@astrojs/starlight/components';
+
 Gates are automated quality checks that must pass before a WU can be completed. They replace manual code review with consistent, automated enforcement.
+
+<Aside type="note" title="Gates are kernel-enforced policies">
+  In the [Software Delivery Pack](/concepts/packs), gates are implemented as pack-layer policies
+  with `trigger: on_completion`. The [policy engine](/concepts/policy-engine) evaluates them when a
+  task tries to complete — an agent cannot skip gates by calling `completeTask` directly.
+</Aside>
 
 ## Why Gates?
 
@@ -206,6 +214,19 @@ gates:
     test: 'vendor/bin/phpunit'
 ```
 
+## How Gates Work Under the Hood
+
+Each gate maps to a policy rule in the Software Delivery Pack:
+
+| Gate         | Policy ID                          | Trigger         |
+| ------------ | ---------------------------------- | --------------- |
+| Format check | `software-delivery.gate.format`    | `on_completion` |
+| Lint         | `software-delivery.gate.lint`      | `on_completion` |
+| Type check   | `software-delivery.gate.typecheck` | `on_completion` |
+| Test         | `software-delivery.gate.test`      | `on_completion` |
+
+When `wu:prep` or `wu:done` runs, the [kernel](/concepts/kernel) evaluates these policies. A `deny` from any gate makes the completion decision final — the [deny-wins invariant](/concepts/policy-engine#deny-wins-evaluation) applies. The result is recorded in the [evidence store](/concepts/evidence) for audit.
+
 ## Gate Behavior
 
 ### On Claim
@@ -305,6 +326,7 @@ If no `gates.execution` config is present, LumenFlow falls back to auto-detectin
 
 ## Next Steps
 
-- [Configuration Reference](/reference/config) - Full gates schema
-- [Memory Layer](/concepts/memory) - Context persistence
-- [CLI Reference](/reference/cli) - All gate commands
+- [Policy Engine](/concepts/policy-engine) — How gates are evaluated as deny-wins policies
+- [Evidence Store](/concepts/evidence) — How gate results are recorded for audit
+- [Configuration Reference](/reference/config) — Full gates schema
+- [CLI Reference](/reference/cli) — All gate commands

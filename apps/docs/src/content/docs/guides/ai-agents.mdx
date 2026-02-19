@@ -141,11 +141,32 @@ The agent can:
 
 ## Safety Guardrails
 
-LumenFlow provides multiple layers of safety for AI agents.
+LumenFlow provides defense-in-depth safety for AI agents through the [kernel runtime](/concepts/kernel), not just repository-level hooks.
 
-### Universal Safety (Repository-Level)
+### Kernel-Level Enforcement
 
-These protections work for **all agents** regardless of IDE or AI provider:
+Every tool call passes through the kernel's authorization gate before execution:
+
+1. **[Scope intersection](/concepts/scope-intersection)** — The kernel computes workspace ∩ lane ∩ task ∩ tool permissions. An agent working in lane `Framework: Core` cannot write to `apps/` even if it tries — the intersection is empty, so the call is denied.
+
+2. **[Policy evaluation](/concepts/policy-engine)** — Pack-declared policies use a deny-wins cascade. A `deny` at any layer (workspace, lane, pack, or task) is final and cannot be reversed. Gates, path restrictions, and approval requirements are all policies.
+
+3. **[Evidence recording](/concepts/evidence)** — Every tool call is recorded with content-addressed inputs, scope enforcement results, and policy decisions. Even denied calls produce evidence — the audit trail has no gaps.
+
+4. **Reserved path protection** — Writes to `.lumenflow/**` are denied unconditionally. The kernel's own state is tamper-proof.
+
+<Aside type="tip">
+  These protections are kernel-enforced — they cannot be bypassed by calling tools directly. The
+  agent never interacts with the filesystem without the kernel's authorization gate.
+</Aside>
+
+### Subprocess Isolation
+
+Write operations and anything requiring OS-level isolation run in sandboxed subprocesses. On Linux, the kernel uses `bwrap` (bubblewrap) to create lightweight sandboxes that restrict filesystem access, network access, and system calls. The subprocess can only access paths within the computed scope intersection.
+
+### Repository-Level Safety
+
+Additional protections work for **all agents** regardless of IDE or AI provider:
 
 **Git Safety Wrapper** (`scripts/safe-git`):
 
@@ -163,43 +184,6 @@ These protections work for **all agents** regardless of IDE or AI provider:
 - Absolute path scanning (common home-dir absolute paths; prefer `~` or relative paths)
 - Lockfile sync validation
 - Worktree discipline enforcement
-
-**Audit Logs**:
-
-- `.lumenflow/safety-blocks.log` – Blocked operations
-- `.lumenflow/force-bypasses.log` – Emergency bypasses
-
-<Aside type="tip">
-  Configure agents to use `scripts/safe-git` as their git command for maximum protection.
-</Aside>
-
-### Scope Limits
-
-Define what agents can and cannot do:
-
-```yaml
-# .lumenflow.config.yaml
-agent:
-  allowed_paths:
-    - src/**
-    - tests/**
-  forbidden_paths:
-    - .env*
-    - secrets/**
-  max_file_changes: 10
-```
-
-### Approval Gates
-
-Require human approval for certain actions:
-
-```yaml
-agent:
-  require_approval_for:
-    - delete_files
-    - modify_config
-    - external_api_calls
-```
 
 ### Escalation
 
@@ -437,7 +421,9 @@ pnpm wu:brief --id WU-001 --client <client>
 
 ## Next Steps
 
-- [Agent Onboarding](/guides/agent-onboarding) – First WU mistakes, safety card
-- [Constraints](/concepts/constraints) – The 6 non-negotiable rules
-- [Memory Layer](/concepts/memory) – Context persistence details
-- [CLI Reference](/reference/cli) – Agent-relevant commands
+- [Kernel Runtime](/concepts/kernel) — How every tool call is authorized and audited
+- [Scope Intersection](/concepts/scope-intersection) — The 4-level permission model
+- [Policy Engine](/concepts/policy-engine) — Deny-wins rule evaluation
+- [Evidence Store](/concepts/evidence) — Immutable audit trail
+- [Memory Layer](/concepts/memory) — Context persistence details
+- [CLI Reference](/reference/cli) — Agent-relevant commands

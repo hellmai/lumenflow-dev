@@ -1,9 +1,11 @@
 ---
 title: Lanes
-description: Parallel work streams with WIP limits
+description: Parallel work streams with WIP limits and scope boundaries
 ---
 
-Lanes are parallel work streams that organize work by domain and prevent overload through WIP (Work-in-Progress) limits.
+import { Aside } from '@astrojs/starlight/components';
+
+Lanes are parallel work streams that organize work by domain and prevent overload through WIP (Work-in-Progress) limits. At the kernel level, lanes also define **scope boundaries** — the [scope intersection](/concepts/scope-intersection) algorithm uses lane `code_paths` as one of four permission levels that determine what an agent can access.
 
 ## Why Lanes?
 
@@ -184,6 +186,24 @@ WIP=1 (LumenFlow default):
 → Clean merges
 ```
 
+## Scope Boundaries
+
+Lane `code_paths` serve a dual purpose: they organize work AND enforce security boundaries through [scope intersection](/concepts/scope-intersection).
+
+When a tool call executes, the [kernel](/concepts/kernel) computes:
+
+```
+effective_scope = workspace ∩ lane ∩ task ∩ tool
+```
+
+The lane's `code_paths` act as the second narrowing layer. An agent working in `Framework: Core` (paths: `packages/@lumenflow/core/**`) cannot write to `packages/@lumenflow/cli/**` — the intersection is empty, and the kernel denies the call.
+
+<Aside type="note">
+  This enforcement happens at the kernel level, not through git hooks or file permissions. Even if
+  an agent bypasses the CLI and calls a tool directly via MCP, the kernel's scope intersection still
+  applies. See [Scope Intersection](/concepts/scope-intersection) for the full algorithm.
+</Aside>
+
 ## Lane Selection
 
 When claiming a WU, specify the full `Parent: Sublane` format:
@@ -263,5 +283,7 @@ Note: WU-103 cannot be claimed because Experience: UI lane already has WU-101 in
 
 ## Next Steps
 
-- [Gates](/concepts/gates) – Quality checks per lane
-- [Team Workflow](/guides/team-workflow) – Lane strategies for teams
+- [Scope Intersection](/concepts/scope-intersection) — How lane paths become permission boundaries
+- [Policy Engine](/concepts/policy-engine) — Lane-level policy rules
+- [Gates](/concepts/gates) — Quality checks per lane
+- [Team Workflow](/guides/team-workflow) — Lane strategies for teams

@@ -34,7 +34,9 @@ When an agent calls a tool (e.g., `file:write`), the kernel executes a strict pi
 7. **Dispatch.** The kernel routes the call to the tool's handler — either an in-process function or a sandboxed subprocess.
 
 8. **Evidence recording.** The result (success, failure, denied, or crashed) is appended to the [evidence store](/concepts/evidence) with timing, scope enforcement details, and policy decisions.
-   </Steps>
+
+{/* prettier-ignore */}
+</Steps>
 
 Steps 2–5 are the authorization gate. If any check fails, the tool never executes, but the denial is still recorded as evidence.
 

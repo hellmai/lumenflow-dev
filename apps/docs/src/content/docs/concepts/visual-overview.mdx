@@ -7,6 +7,80 @@ import { Aside } from '@astrojs/starlight/components';
 
 This page provides visual mental models for the core LumenFlow concepts. Use these diagrams as quick references when working with the framework.
 
+## Kernel Dispatch Pipeline
+
+Every tool call — from CLI, MCP, or programmatic API — passes through the [kernel](/concepts/kernel) before anything executes.
+
+```d2
+direction: right
+
+call: Tool Call {
+  style.fill: "#e3f2fd"
+}
+
+lookup: 1. Tool\nLookup {
+  style.fill: "#f5f5f5"
+}
+
+scope: 2. Scope\nIntersection {
+  style.fill: "#fff3e0"
+}
+
+reserved: 3. Reserved\nPath Check {
+  style.fill: "#fff3e0"
+}
+
+persist: 4. Input\nPersistence {
+  style.fill: "#e8f4e8"
+}
+
+policy: 5. Policy\nEvaluation {
+  style.fill: "#ffebee"
+}
+
+validate: 6. Input\nValidation {
+  style.fill: "#f5f5f5"
+}
+
+dispatch: 7. Dispatch\n(pack handler) {
+  style.fill: "#e3f2fd"
+}
+
+evidence: 8. Evidence\nRecording {
+  style.fill: "#e8f4e8"
+  style.stroke: "#2e7d32"
+}
+
+call -> lookup -> scope -> reserved -> persist -> policy -> validate -> dispatch -> evidence
+
+denied: DENIED {
+  style.fill: "#ffebee"
+  style.stroke: "#d32f2f"
+}
+
+scope -> denied: Empty\nintersection {
+  style.stroke: "#d32f2f"
+  style.stroke-dash: 3
+}
+reserved -> denied: .lumenflow/** {
+  style.stroke: "#d32f2f"
+  style.stroke-dash: 3
+}
+policy -> denied: deny-wins {
+  style.stroke: "#d32f2f"
+  style.stroke-dash: 3
+}
+```
+
+**Key points:**
+
+- Steps 2–5 are the authorization gate — denial is still recorded as [evidence](/concepts/evidence)
+- [Scope intersection](/concepts/scope-intersection) computes workspace ∩ lane ∩ task ∩ tool permissions
+- [Policy evaluation](/concepts/policy-engine) uses deny-wins cascade across 4 layers
+- [Packs](/concepts/packs) provide the tool handlers; the kernel is domain-agnostic
+
+---
+
 ## WU Lifecycle
 
 Work Units progress through 5 states with specific transitions.
@@ -222,7 +296,7 @@ create -> claim -> done
 
 ## Gates Pipeline
 
-Quality gates run in sequence before completion.
+Quality gates are [pack policies](/concepts/policy-engine#gates-as-policies) with `trigger: on_completion`, evaluated by the [kernel](/concepts/kernel) before a task can complete.
 
 ```d2
 direction: right
@@ -426,7 +500,9 @@ init.wave1.w1b -> init.wave2.w2a
 
 ## Next Steps
 
-- [Work Units](/concepts/work-units) - Deep dive into WU structure
-- [Lanes](/concepts/lanes) - Lane configuration and policies
-- [Gates](/concepts/gates) - Quality gate configuration
-- [Memory Layer](/concepts/memory) - Memory and coordination details
+- [Kernel Runtime](/concepts/kernel) — The execution engine behind every tool call
+- [Packs](/concepts/packs) — How domain tools are loaded and dispatched
+- [Work Units](/concepts/work-units) — Deep dive into WU structure
+- [Lanes](/concepts/lanes) — Lane configuration and scope boundaries
+- [Gates](/concepts/gates) — Quality gate configuration
+- [Memory Layer](/concepts/memory) — Memory and coordination details
