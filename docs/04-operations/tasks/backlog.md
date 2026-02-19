@@ -34,12 +34,12 @@ sections:
 - [WU-1897 — Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers](wu/WU-1897.yaml) — Framework: Core Lifecycle
 - [WU-1903 — Migrate agent integration tools to software-delivery pack handlers](wu/WU-1903.yaml) — Framework: Core Lifecycle
 - [WU-1904 — Migrate extended memory tools to software-delivery pack handlers](wu/WU-1904.yaml) — Framework: Core Lifecycle
-- [WU-1908 — Fix pre-existing test failures in cli-integration and initiative-tools](wu/WU-1908.yaml) — Framework: MCP
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1894 — Migrate WU delegation/context commands to software-delivery handlers](wu/WU-1894.yaml) — Framework: Core Lifecycle
+- [WU-1908 — Fix pre-existing test failures in cli-integration and initiative-tools](wu/WU-1908.yaml) — Framework: MCP
 
 ## ⛔ Blocked
 

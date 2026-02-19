@@ -1741,3 +1741,4 @@
 {"type":"complete","wuId":"WU-1905","timestamp":"2026-02-19T14:32:53.987Z"}
 {"type":"complete","wuId":"WU-1893","timestamp":"2026-02-19T14:41:33.146Z"}
 {"type":"claim","wuId":"WU-1894","lane":"Framework: Core Lifecycle","title":"Migrate WU delegation/context commands to software-delivery handlers","timestamp":"2026-02-19T15:35:33.601Z"}
+{"type":"claim","wuId":"WU-1908","lane":"Framework: MCP","title":"Fix pre-existing test failures in cli-integration and initiative-tools","timestamp":"2026-02-19T15:39:11.057Z"}

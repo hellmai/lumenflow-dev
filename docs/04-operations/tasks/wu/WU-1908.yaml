@@ -2,7 +2,7 @@ id: WU-1908
 title: Fix pre-existing test failures in cli-integration and initiative-tools
 lane: 'Framework: MCP'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-19
 code_paths:
@@ -36,3 +36,11 @@ description: 'Two tests on main are failing: cli-integration.test.ts pack_search
 acceptance:
   - cli-integration.test.ts parity test passes (pack_search accounted for)
   - initiative-tools.test.ts docs_sync test passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1908
+claimed_at: 2026-02-19T15:39:11.003Z
+baseline_main_sha: f3986dedf8fe36eb0eebd5346077ce9c6022f612
+session_id: 1c5effed-be08-422a-a12f-d6f47eb4f28c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T15:39:11.011Z
