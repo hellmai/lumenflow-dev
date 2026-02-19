@@ -2589,6 +2589,7 @@ const retiredWu1890InProcessHandlers = [
   stateCleanupInProcess,
   stateDoctorInProcess,
   signalCleanupInProcess,
+  validateInProcess,
   validateAgentSkillsInProcess,
   validateAgentSyncInProcess,
   validateBacklogSyncInProcess,
@@ -2600,6 +2601,7 @@ void retiredWu1890InProcessHandlers;
 
 const retiredWu1890InProcessSchemas = [
   DEFAULT_IN_PROCESS_OUTPUT_SCHEMA,
+  VALIDATE_INPUT_SCHEMA,
   FILE_READ_INPUT_SCHEMA,
   FILE_READ_OUTPUT_SCHEMA,
   FILE_WRITE_INPUT_SCHEMA,
@@ -2640,17 +2642,6 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       description: 'List WUs via in-process state store + YAML merge',
       inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
       fn: wuListHandler,
-    },
-  ],
-  // WU-1890: validation commands are now handled through software-delivery pack
-  // subprocess handlers. Keep lumenflow:validate alias in-process until the alias
-  // command surface is explicitly migrated and declared in manifest.
-  [
-    'lumenflow:validate',
-    {
-      description: 'Run validation checks via in-process handler (alias)',
-      inputSchema: VALIDATE_INPUT_SCHEMA,
-      fn: validateInProcess,
     },
   ],
 ]);

@@ -18,6 +18,7 @@ import {
   FALLBACK_ALLOWED_ERROR_CODES,
   DEFAULT_MAINTENANCE_SCOPE,
 } from '../tools-shared.js';
+import { McpEnvironmentVariables } from '../mcp-constants.js';
 import type { RuntimeInstance } from '../runtime-cache.js';
 
 /** Helper: create a mock RuntimeInstance with a controllable executeTool */
@@ -131,6 +132,7 @@ describe('executeViaPack allowlist fallback policy (WU-1866)', () => {
     const result = await executeViaPack(toolName, toolInput, {
       ...baseOptions,
       runtimeFactory,
+      migrationCompatMode: 'compat',
     });
 
     expect(result.success).toBe(true);
@@ -144,6 +146,7 @@ describe('executeViaPack allowlist fallback policy (WU-1866)', () => {
     const result = await executeViaPack(toolName, toolInput, {
       ...baseOptions,
       runtimeFactory,
+      migrationCompatMode: 'compat',
     });
 
     expect(result.success).toBe(false);
@@ -168,6 +171,7 @@ describe('executeViaPack allowlist fallback policy (WU-1866)', () => {
     const result = await executeViaPack(toolName, toolInput, {
       ...baseOptions,
       runtimeFactory,
+      migrationCompatMode: 'compat',
     });
 
     expect(result.success).toBe(true);
@@ -365,6 +369,59 @@ describe('executeViaPack migration compat guard + telemetry (WU-1886)', () => {
     expect(result.error?.code).toBe('MCP_MIGRATION_FALLBACK_DISABLED');
     expect(result.error?.message).toContain('strict mode');
     expect(mockCliRunner).not.toHaveBeenCalled();
+  });
+
+  it('defaults to strict mode when no compat mode or env override is provided', async () => {
+    const toolNotFound: ToolOutput = {
+      success: false,
+      error: { code: TOOL_ERROR_CODES.TOOL_NOT_FOUND, message: 'Tool not registered' },
+    };
+    const runtimeFactory = vi
+      .fn()
+      .mockResolvedValue(mockRuntime(vi.fn().mockResolvedValue(toolNotFound)));
+    mockCliRunner.mockResolvedValue(cliSuccess('unexpected compat fallback'));
+    const previousMode = process.env[McpEnvironmentVariables.MIGRATION_COMPAT_MODE];
+    delete process.env[McpEnvironmentVariables.MIGRATION_COMPAT_MODE];
+
+    try {
+      const result = await executeViaPack(toolName, toolInput, {
+        ...baseOptions,
+        runtimeFactory,
+      } as ExecuteViaPackOptions);
+
+      expect(result.success).toBe(false);
+      expect(result.error?.code).toBe('MCP_MIGRATION_FALLBACK_DISABLED');
+      expect(mockCliRunner).not.toHaveBeenCalled();
+    } finally {
+      if (previousMode === undefined) {
+        delete process.env[McpEnvironmentVariables.MIGRATION_COMPAT_MODE];
+      } else {
+        process.env[McpEnvironmentVariables.MIGRATION_COMPAT_MODE] = previousMode;
+      }
+    }
+  });
+
+  it('allows compat mode fallback via env override for emergency rollback', async () => {
+    const runtimeFactory = vi.fn().mockRejectedValue(new Error('runtime init failed'));
+    const previousMode = process.env[McpEnvironmentVariables.MIGRATION_COMPAT_MODE];
+    process.env[McpEnvironmentVariables.MIGRATION_COMPAT_MODE] = 'compat';
+    mockCliRunner.mockResolvedValue(cliSuccess('fallback succeeded'));
+
+    try {
+      const result = await executeViaPack(toolName, toolInput, {
+        ...baseOptions,
+        runtimeFactory,
+      } as ExecuteViaPackOptions);
+
+      expect(result.success).toBe(true);
+      expect(mockCliRunner).toHaveBeenCalledOnce();
+    } finally {
+      if (previousMode === undefined) {
+        delete process.env[McpEnvironmentVariables.MIGRATION_COMPAT_MODE];
+      } else {
+        process.env[McpEnvironmentVariables.MIGRATION_COMPAT_MODE] = previousMode;
+      }
+    }
   });
 
   it('emits structured fallback telemetry with toolName, reason, and workspaceRoot', async () => {

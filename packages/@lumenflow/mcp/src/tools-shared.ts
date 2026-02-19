@@ -381,9 +381,9 @@ function resolveMigrationCompatMode(mode?: MigrationCompatMode): MigrationCompat
     return mode;
   }
   const envMode = process.env[McpEnvironmentVariables.MIGRATION_COMPAT_MODE]?.trim().toLowerCase();
-  return envMode === MigrationCompatModes.STRICT
-    ? MigrationCompatModes.STRICT
-    : MigrationCompatModes.COMPAT;
+  return envMode === MigrationCompatModes.COMPAT
+    ? MigrationCompatModes.COMPAT
+    : MigrationCompatModes.STRICT;
 }
 
 function buildMigrationFallbackTelemetryEvent(options: {

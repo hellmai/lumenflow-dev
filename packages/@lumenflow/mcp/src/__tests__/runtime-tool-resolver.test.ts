@@ -135,6 +135,7 @@ const WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES = {
   BACKLOG_PRUNE: 'tool-impl/parity-migration-tools.ts#backlogPruneTool',
   SIGNAL_CLEANUP: 'tool-impl/parity-migration-tools.ts#signalCleanupTool',
   VALIDATE: 'tool-impl/parity-migration-tools.ts#validateTool',
+  LUMENFLOW_VALIDATE: 'tool-impl/parity-migration-tools.ts#lumenflowValidateTool',
   VALIDATE_AGENT_SKILLS: 'tool-impl/parity-migration-tools.ts#validateAgentSkillsTool',
   VALIDATE_AGENT_SYNC: 'tool-impl/parity-migration-tools.ts#validateAgentSyncTool',
   VALIDATE_BACKLOG_SYNC: 'tool-impl/parity-migration-tools.ts#validateBacklogSyncTool',
@@ -753,7 +754,7 @@ describe('packToolCapabilityResolver', () => {
     expect((result.data as { success: boolean }).success).toBe(true);
   });
 
-  it('falls back to CLI execution in executeViaPack when runtime fails', async () => {
+  it('does not fall back to CLI execution in executeViaPack when runtime fails in strict mode', async () => {
     const runtimeFactory = vi.fn().mockRejectedValue(new Error('runtime unavailable'));
     const cliRunner = vi.fn().mockResolvedValue({
       success: true,
@@ -769,6 +770,37 @@ describe('packToolCapabilityResolver', () => {
         projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
         runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
         cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        fallback: {
+          command: 'wu:status',
+          args: ['--id', 'WU-1798'],
+          errorCode: 'WU_STATUS_ERROR',
+        },
+      },
+    );
+
+    expect(runtimeFactory).toHaveBeenCalledTimes(1);
+    expect(cliRunner).not.toHaveBeenCalled();
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe('MCP_MIGRATION_FALLBACK_DISABLED');
+  });
+
+  it('supports explicit compat-mode fallback when runtime fails', async () => {
+    const runtimeFactory = vi.fn().mockRejectedValue(new Error('runtime unavailable'));
+    const cliRunner = vi.fn().mockResolvedValue({
+      success: true,
+      stdout: 'fallback path',
+      stderr: '',
+      exitCode: 0,
+    });
+
+    const result = await executeViaPack(
+      'wu:status',
+      { id: 'WU-1798' },
+      {
+        projectRoot: '/tmp/lumenflow-runtime-resolver-tests',
+        runtimeFactory: runtimeFactory as Parameters<typeof executeViaPack>[2]['runtimeFactory'],
+        cliRunner: cliRunner as Parameters<typeof executeViaPack>[2]['cliRunner'],
+        migrationCompatMode: 'compat',
         fallback: {
           command: 'wu:status',
           args: ['--id', 'WU-1798'],
@@ -891,6 +923,10 @@ describe('WU-1890: validation/lane tool registration', () => {
     {
       name: 'validate',
       entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.VALIDATE,
+    },
+    {
+      name: 'lumenflow:validate',
+      entry: WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES.LUMENFLOW_VALIDATE,
     },
     {
       name: 'validate:agent-skills',
