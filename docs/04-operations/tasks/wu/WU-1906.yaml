@@ -1,0 +1,36 @@
+id: WU-1906
+title: orchestrate:initiative --dry-run false-complete when all WUs blocked
+lane: 'Framework: CLI Orchestration'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-19
+code_paths:
+  - packages/@lumenflow/cli/src/orchestrate-initiative.ts
+  - packages/@lumenflow/initiatives/src/orchestrator/formatting.ts
+tests:
+  manual:
+    - Run orchestrate:initiative --dry-run on INIT-030 with blocked WUs and verify it does NOT say all complete
+  unit:
+    - packages/@lumenflow/initiatives/src/orchestrator/__tests__/formatting.test.ts
+    - packages/@lumenflow/cli/src/__tests__/orchestrate-initiative.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1906.done
+dependencies: []
+risks: []
+notes: 'Sizing: Simple (expected 4-6 files, <30 tool calls). Strategy: Single Session. Found by Codex during INIT-030 dry-run audit. The bug exists in 3 locations: orchestrate-initiative.ts:129, formatting.ts:84, formatting.ts:425.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'plan.waves.length === 0 in orchestrate-initiative.ts:129 is treated as All WUs are complete but zero waves can also mean nothing is unblocked right now (all remaining WUs are blocked). An orchestrator trusting this output would skip the entire Phase 6 migration. Classic off-by-one in state machine logic: no waves to execute does not mean everything is done. Must distinguish between (a) all WUs done and (b) all remaining WUs blocked with no unblocked wave.'
+acceptance:
+  - orchestrate:initiative --dry-run correctly reports all complete only when every WU status is done
+  - orchestrate:initiative --dry-run reports blocked N WUs pending but none unblocked when waves is empty but WUs remain
+  - formatting.ts formatExecutionPlan and formatExecutionPlanWithEmbeddedSpawns distinguish zero-waves-all-done from zero-waves-all-blocked
+  - Unit tests cover all-done scenario, all-blocked scenario, and mixed scenario
