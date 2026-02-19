@@ -1770,3 +1770,4 @@
 {"type":"claim","wuId":"WU-1910","timestamp":"2026-02-19T19:15:03.169Z","lane":"Framework: Memory","title":"Fix loadMemory deduplication — archived nodes not suppressing originals"}
 {"type":"complete","wuId":"WU-1910","timestamp":"2026-02-19T19:22:35.989Z"}
 {"type":"complete","wuId":"WU-1891","timestamp":"2026-02-19T19:23:17.681Z"}
+{"type":"claim","wuId":"WU-1892","lane":"Framework: Core Lifecycle","title":"Prove pack #1 tracer-bullet end-to-end in a bootstrapped workspace","timestamp":"2026-02-19T19:24:13.220Z"}
