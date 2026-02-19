@@ -14,7 +14,8 @@ code_paths:
   - packages/@lumenflow/mcp/src/tools/parity-tools.ts
 tests:
   manual:
-    - Execute representative memory/initiative/orchestration flows through runtime path and verify state mutations
+    - Execute representative memory/initiative/orchestration flows through runtime path and verify
+      state mutations
   unit:
     - packages/@lumenflow/mcp/src/__tests__/memory-tools.test.ts
     - packages/@lumenflow/mcp/src/__tests__/initiative-tools.test.ts
@@ -26,9 +27,11 @@ dependencies: []
 initiative: INIT-031
 phase: 6
 blocked_by:
-  - WU-1887
+  - WU-1896
+  - WU-1897
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: 'Sizing: Complex non-atomic umbrella decomposed into WU-1896/WU-1897. Strategy: Decomposition
+  (orchestrator-worker). This WU remains as dependency gate and completion rollup.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -37,8 +40,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Pack #1 completion requires non-WU command families to execute through native software-delivery handlers instead of runtime fallback placeholders. This WU migrates memory, initiative, plan, setup, and orchestration command surfaces and updates resolver/manifest wiring so runtime-native behavior is consistent across the operational command set.'
+description: Umbrella coordination WU for split migration of
+  memory/initiative/plan/setup/orchestration command families. Delivery is completed by WU-1896
+  (memory) and WU-1897 (initiative/plan/setup/orchestration), after which this umbrella WU gates
+  downstream migration phases.
 acceptance:
-  - Memory, initiative, plan, setup, and orchestration command surfaces are backed by software-delivery handlers
+  - Memory, initiative, plan, setup, and orchestration command surfaces are backed by
+    software-delivery handlers
   - Fallback-only resolver stubs are removed for migrated command families
-  - Runtime execution for migrated command families succeeds without CLI fallback in bootstrapped mode
+  - Runtime execution for migrated command families succeeds without CLI fallback in bootstrapped
+    mode
