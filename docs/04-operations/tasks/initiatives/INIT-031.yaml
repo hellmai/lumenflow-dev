@@ -65,7 +65,6 @@ wus:
   - WU-1840
   - WU-1841
   - WU-1842
-  - WU-1884
   - WU-1885
   - WU-1886
   - WU-1887
@@ -79,6 +78,3 @@ wus:
   - WU-1895
   - WU-1896
   - WU-1897
-notes:
-  - '2026-02-19: Status aligned to in_progress after Phase 6 decomposition into WU-1893..WU-1897 for
-    software-delivery-first migration.'

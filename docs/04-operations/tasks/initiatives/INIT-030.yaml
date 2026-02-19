@@ -66,6 +66,4 @@ wus:
   - WU-1866
   - WU-1867
   - WU-1868
-notes:
-  - '2026-02-19: Reopened for software-delivery-first migration stream. WU-1884..WU-1897 reassigned
-    from INIT-031 to INIT-030 under new phase 6.'
+  - WU-1884
