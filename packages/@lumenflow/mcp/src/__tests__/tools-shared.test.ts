@@ -326,3 +326,103 @@ describe('buildExecutionContext', () => {
     expect(ctx.metadata?.invocation_mode).toBe('maintenance');
   });
 });
+
+describe('executeViaPack migration compat guard + telemetry (WU-1886)', () => {
+  const toolName = 'test:tool';
+  const toolInput = { id: 'WU-1' };
+  const projectRoot = '/tmp/test-project';
+
+  let mockCliRunner: ReturnType<typeof vi.fn>;
+  let baseOptions: Omit<ExecuteViaPackOptions, 'runtimeFactory'>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    resetExecuteViaPackRuntimeCache();
+    mockCliRunner = vi.fn();
+    baseOptions = {
+      projectRoot,
+      fallback: { command: 'test:cmd', args: ['--id', 'WU-1'], errorCode: 'TEST_ERROR' },
+      cliRunner: mockCliRunner,
+    };
+  });
+
+  it('disables fallback in strict mode and returns explicit strict error for TOOL_NOT_FOUND', async () => {
+    const toolNotFound: ToolOutput = {
+      success: false,
+      error: { code: TOOL_ERROR_CODES.TOOL_NOT_FOUND, message: 'Tool not registered' },
+    };
+    const runtimeFactory = vi
+      .fn()
+      .mockResolvedValue(mockRuntime(vi.fn().mockResolvedValue(toolNotFound)));
+
+    const result = await executeViaPack(toolName, toolInput, {
+      ...baseOptions,
+      migrationCompatMode: 'strict',
+      onFallbackTelemetry: vi.fn(),
+    } as ExecuteViaPackOptions);
+
+    expect(result.success).toBe(false);
+    expect(result.error?.code).toBe('MCP_MIGRATION_FALLBACK_DISABLED');
+    expect(result.error?.message).toContain('strict mode');
+    expect(mockCliRunner).not.toHaveBeenCalled();
+  });
+
+  it('emits structured fallback telemetry with toolName, reason, and workspaceRoot', async () => {
+    const runtimeFactory = vi.fn().mockRejectedValue(new Error('runtime init failed'));
+    const onFallbackTelemetry = vi.fn();
+    mockCliRunner.mockResolvedValue(cliSuccess('fallback succeeded'));
+
+    const result = await executeViaPack(toolName, toolInput, {
+      ...baseOptions,
+      onFallbackTelemetry,
+      migrationCompatMode: 'compat',
+    } as ExecuteViaPackOptions);
+
+    expect(result.success).toBe(true);
+    expect(onFallbackTelemetry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        toolName,
+        reason: 'runtime_init_failed',
+        workspaceRoot: projectRoot,
+      }),
+    );
+  });
+
+  it('supports dedicated migration fallback error code only when compat guard is enabled', async () => {
+    const dedicatedCode = 'MCP_MIGRATION_FALLBACK_ERROR';
+    const toolNotFound: ToolOutput = {
+      success: false,
+      error: { code: TOOL_ERROR_CODES.TOOL_NOT_FOUND, message: 'Tool not registered' },
+    };
+    const runtimeFactory = vi
+      .fn()
+      .mockResolvedValue(mockRuntime(vi.fn().mockResolvedValue(toolNotFound)));
+
+    mockCliRunner.mockResolvedValue(cliFailure('cli failed'));
+    const compatResult = await executeViaPack(toolName, toolInput, {
+      ...baseOptions,
+      fallback: {
+        ...baseOptions.fallback,
+        migrationErrorCode: dedicatedCode,
+      },
+      migrationCompatMode: 'compat',
+    } as unknown as ExecuteViaPackOptions);
+    expect(compatResult.success).toBe(false);
+    expect(compatResult.error?.code).toBe(dedicatedCode);
+
+    mockCliRunner.mockClear();
+    const strictResult = await executeViaPack(toolName, toolInput, {
+      ...baseOptions,
+      fallback: {
+        ...baseOptions.fallback,
+        migrationErrorCode: dedicatedCode,
+      },
+      migrationCompatMode: 'strict',
+    } as unknown as ExecuteViaPackOptions);
+
+    expect(strictResult.success).toBe(false);
+    expect(strictResult.error?.code).toBe('MCP_MIGRATION_FALLBACK_DISABLED');
+    expect(strictResult.error?.code).not.toBe(dedicatedCode);
+    expect(mockCliRunner).not.toHaveBeenCalled();
+  });
+});

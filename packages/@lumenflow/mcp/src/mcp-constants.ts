@@ -169,3 +169,61 @@ export const MetadataKeys = {
 } as const;
 
 export type MetadataKey = (typeof MetadataKeys)[keyof typeof MetadataKeys];
+
+// ============================================================================
+// Migration Compatibility Guard
+// ============================================================================
+
+/**
+ * Environment variables used by MCP runtime execution policy.
+ */
+export const McpEnvironmentVariables = {
+  MIGRATION_COMPAT_MODE: 'LUMENFLOW_MCP_MIGRATION_COMPAT_MODE',
+} as const;
+
+/**
+ * Compatibility modes for executeViaPack migration fallback behavior.
+ *
+ * - compat: allow temporary CLI fallback for migration-only reasons
+ * - strict: fail closed when runtime cannot serve migration-only tools
+ */
+export const MigrationCompatModes = {
+  COMPAT: 'compat',
+  STRICT: 'strict',
+} as const;
+
+export type MigrationCompatMode = (typeof MigrationCompatModes)[keyof typeof MigrationCompatModes];
+
+/**
+ * Canonical migration fallback error codes used by executeViaPack guardrails.
+ */
+export const MigrationFallbackErrorCodes = {
+  DISABLED: 'MCP_MIGRATION_FALLBACK_DISABLED',
+  EXECUTION_FAILED: 'MCP_MIGRATION_FALLBACK_ERROR',
+} as const;
+
+export type MigrationFallbackErrorCode =
+  (typeof MigrationFallbackErrorCodes)[keyof typeof MigrationFallbackErrorCodes];
+
+/**
+ * Structured reasons for migration fallback attempts.
+ */
+export const MigrationFallbackReasons = {
+  RUNTIME_INIT_FAILED: 'runtime_init_failed',
+  RUNTIME_TOOL_NOT_FOUND: 'runtime_tool_not_found',
+} as const;
+
+export type MigrationFallbackReason =
+  (typeof MigrationFallbackReasons)[keyof typeof MigrationFallbackReasons];
+
+/**
+ * Structured outcomes for migration fallback telemetry events.
+ */
+export const MigrationFallbackOutcomes = {
+  SUCCEEDED: 'succeeded',
+  FAILED: 'failed',
+  BLOCKED: 'blocked',
+} as const;
+
+export type MigrationFallbackOutcome =
+  (typeof MigrationFallbackOutcomes)[keyof typeof MigrationFallbackOutcomes];

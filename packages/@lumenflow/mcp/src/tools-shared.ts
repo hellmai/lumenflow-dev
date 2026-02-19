@@ -19,6 +19,16 @@ import {
   type RuntimeInstance,
 } from './runtime-cache.js';
 import { packToolCapabilityResolver } from './runtime-tool-resolver.js';
+import {
+  McpEnvironmentVariables,
+  MigrationCompatModes,
+  MigrationFallbackErrorCodes,
+  MigrationFallbackOutcomes,
+  MigrationFallbackReasons,
+  type MigrationCompatMode,
+  type MigrationFallbackOutcome,
+  type MigrationFallbackReason,
+} from './mcp-constants.js';
 
 // Import core functions for context operations only (async to avoid circular deps)
 let coreModule: typeof import('@lumenflow/core') | null = null;
@@ -329,6 +339,17 @@ export interface ExecuteViaPackFallback {
   command: string;
   args?: string[];
   errorCode?: string;
+  migrationErrorCode?: string;
+}
+
+export interface MigrationFallbackTelemetryEvent {
+  toolName: string;
+  reason: MigrationFallbackReason;
+  workspaceRoot: string;
+  command: string;
+  args: string[];
+  mode: MigrationCompatMode;
+  outcome: MigrationFallbackOutcome;
 }
 
 export interface ExecuteViaPackOptions {
@@ -337,6 +358,8 @@ export interface ExecuteViaPackOptions {
   contextInput?: BuildExecutionContextInput;
   fallback: ExecuteViaPackFallback;
   fallbackCliOptions?: CliRunnerOptions;
+  migrationCompatMode?: MigrationCompatMode;
+  onFallbackTelemetry?: (event: MigrationFallbackTelemetryEvent) => void;
   runtimeFactory?: (workspaceRoot: string) => Promise<RuntimeInstance>;
   cliRunner?: (
     command: string,
@@ -353,6 +376,36 @@ async function runtimeFactoryForPack(workspaceRoot: string): Promise<RuntimeInst
   return getRuntimeForWorkspace(workspaceRoot, packToolCapabilityResolver);
 }
 
+function resolveMigrationCompatMode(mode?: MigrationCompatMode): MigrationCompatMode {
+  if (mode) {
+    return mode;
+  }
+  const envMode = process.env[McpEnvironmentVariables.MIGRATION_COMPAT_MODE]?.trim().toLowerCase();
+  return envMode === MigrationCompatModes.STRICT
+    ? MigrationCompatModes.STRICT
+    : MigrationCompatModes.COMPAT;
+}
+
+function buildMigrationFallbackTelemetryEvent(options: {
+  toolName: string;
+  reason: MigrationFallbackReason;
+  workspaceRoot: string;
+  command: string;
+  args: string[];
+  mode: MigrationCompatMode;
+  outcome: MigrationFallbackOutcome;
+}): MigrationFallbackTelemetryEvent {
+  return {
+    toolName: options.toolName,
+    reason: options.reason,
+    workspaceRoot: options.workspaceRoot,
+    command: options.command,
+    args: options.args,
+    mode: options.mode,
+    outcome: options.outcome,
+  };
+}
+
 export async function executeViaPack(
   toolName: string,
   toolInput: unknown,
@@ -362,7 +415,9 @@ export async function executeViaPack(
   const runtimeFactory = options.runtimeFactory ?? runtimeFactoryForPack;
   const cliRunner = options.cliRunner ?? runCliCommand;
   const executionContext = options.context ?? buildExecutionContext(options.contextInput);
+  const compatMode = resolveMigrationCompatMode(options.migrationCompatMode);
   let runtimeFailureMessage: string | undefined;
+  let fallbackReason: MigrationFallbackReason | undefined;
 
   // Separate runtime init from tool execution so that init failures
   // (factory throws) still fall back to CLI, while executeTool failures
@@ -372,6 +427,7 @@ export async function executeViaPack(
     runtime = await runtimeFactory(projectRoot);
   } catch (cause) {
     runtimeFailureMessage = (cause as Error).message;
+    fallbackReason = MigrationFallbackReasons.RUNTIME_INIT_FAILED;
   }
 
   if (runtime) {
@@ -394,6 +450,7 @@ export async function executeViaPack(
       }
 
       runtimeFailureMessage = runtimeResult.error?.message;
+      fallbackReason = MigrationFallbackReasons.RUNTIME_TOOL_NOT_FOUND;
     } catch (cause) {
       // WU-1866: Thrown exceptions from executeTool are returned directly.
       // They represent unexpected runtime failures that should not be
@@ -402,20 +459,67 @@ export async function executeViaPack(
     }
   }
 
+  if (fallbackReason && compatMode === MigrationCompatModes.STRICT) {
+    options.onFallbackTelemetry?.(
+      buildMigrationFallbackTelemetryEvent({
+        toolName,
+        reason: fallbackReason,
+        workspaceRoot: projectRoot,
+        command: options.fallback.command,
+        args: options.fallback.args ?? [],
+        mode: compatMode,
+        outcome: MigrationFallbackOutcomes.BLOCKED,
+      }),
+    );
+    const strictMessageDetail =
+      runtimeFailureMessage ??
+      `runtime fallback reason: ${fallbackReason === MigrationFallbackReasons.RUNTIME_INIT_FAILED ? 'runtime initialization failed' : 'runtime reported tool not found'}`;
+    return error(
+      `Migration fallback is disabled in strict mode for ${toolName}: ${strictMessageDetail}`,
+      MigrationFallbackErrorCodes.DISABLED,
+    );
+  }
+
   const fallbackResult = await cliRunner(options.fallback.command, options.fallback.args ?? [], {
     projectRoot,
     ...(options.fallbackCliOptions ?? {}),
   });
-  if (fallbackResult.success) {
-    return success({ message: fallbackResult.stdout || `${options.fallback.command} succeeded` });
+  const fallbackTelemetry = fallbackReason
+    ? buildMigrationFallbackTelemetryEvent({
+        toolName,
+        reason: fallbackReason,
+        workspaceRoot: projectRoot,
+        command: options.fallback.command,
+        args: options.fallback.args ?? [],
+        mode: compatMode,
+        outcome: fallbackResult.success
+          ? MigrationFallbackOutcomes.SUCCEEDED
+          : MigrationFallbackOutcomes.FAILED,
+      })
+    : undefined;
+  if (fallbackTelemetry) {
+    options.onFallbackTelemetry?.(fallbackTelemetry);
   }
+  if (fallbackResult.success) {
+    return success({
+      message: fallbackResult.stdout || `${options.fallback.command} succeeded`,
+      ...(fallbackTelemetry ? { fallbackTelemetry } : {}),
+    });
+  }
+
+  const fallbackErrorCode =
+    fallbackReason && compatMode === MigrationCompatModes.COMPAT
+      ? (options.fallback.migrationErrorCode ??
+        options.fallback.errorCode ??
+        MigrationFallbackErrorCodes.EXECUTION_FAILED)
+      : (options.fallback.errorCode ?? DEFAULT_FALLBACK_ERROR_CODE);
 
   return error(
     fallbackResult.stderr ||
       fallbackResult.error?.message ||
       runtimeFailureMessage ||
       `${options.fallback.command} failed`,
-    options.fallback.errorCode ?? DEFAULT_FALLBACK_ERROR_CODE,
+    fallbackErrorCode,
   );
 }
 
