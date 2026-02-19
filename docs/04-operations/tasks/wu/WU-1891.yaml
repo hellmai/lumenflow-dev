@@ -10,12 +10,16 @@ code_paths:
   - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
   - packages/@lumenflow/mcp/src/__tests__/tools-shared.test.ts
   - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/flow-tools.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/validation-tools.test.ts
 tests:
   manual:
     - Run runtime path in strict mode and verify no fallback telemetry for migrated commands
   unit:
     - packages/@lumenflow/mcp/src/__tests__/tools-shared.test.ts
     - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/flow-tools.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/validation-tools.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1891.done
@@ -28,10 +32,17 @@ risks: []
 notes: 'Sizing: Simple (expected 4-8 files, <50 tool calls). Strategy: Single Session. Scope is
   hardening cleanup: default strict mode + shim removal.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T19:08:25.529Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1891
+session_id: 7abc3d14-c171-43ec-b233-a64aac21cc40
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T19:08:25.537Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +54,3 @@ acceptance:
   - Migration compatibility guard defaults to strict mode for software-delivery command execution
   - Software-delivery fallback shim handlers are removed from runtime resolver
   - Regression tests verify migrated software-delivery commands no longer rely on CLI fallback
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1891
-claimed_at: 2026-02-19T19:08:25.529Z
-baseline_main_sha: 6b43657591be6fc5dfb6416be3e6ec27be40a16e
-session_id: 7abc3d14-c171-43ec-b233-a64aac21cc40
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T19:08:25.537Z
