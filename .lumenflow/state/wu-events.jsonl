@@ -1710,8 +1710,9 @@
 {"type":"complete","wuId":"WU-1881","timestamp":"2026-02-19T09:30:32.743Z"}
 {"type":"complete","wuId":"WU-1882","timestamp":"2026-02-19T09:31:25.531Z"}
 {"type":"complete","wuId":"WU-1883","timestamp":"2026-02-19T09:32:33.113Z"}
-{"type":"claim","wuId":"WU-1898","lane":"Framework: CLI WU Commands","title":"Fix CLI template condition bypass in wu:brief/wu:spawn prompt assembly","timestamp":"2026-02-19T11:52:53.906Z"}
-{"type":"claim","wuId":"WU-1899","lane":"Framework: Core Lifecycle","title":"Add signal-based work classifier for code-path-aware UI/backend/docs detection","timestamp":"2026-02-19T11:56:05.067Z"}
-{"type":"claim","wuId":"WU-1901","lane":"Framework: Core Lifecycle","title":"Fix lane lock zombie detection clearing live persistent locks after wu:claim exits","timestamp":"2026-02-19T11:56:47.432Z"}
-{"type":"claim","wuId":"WU-1902","lane":"Framework: CLI Enforcement","title":"Add config:set CLI command for safe .lumenflow.config.yaml modification","timestamp":"2026-02-19T11:57:20.243Z"}
-{"type":"claim","wuId":"WU-1884","lane":"Framework: Core Lifecycle","title":"Retarget INIT-031 Phase 6 to software-delivery pack completion","timestamp":"2026-02-19T11:59:58.188Z"}
+{"type":"claim","wuId":"WU-1898","timestamp":"2026-02-19T11:52:53.906Z","lane":"Framework: CLI WU Commands","title":"Fix CLI template condition bypass in wu:brief/wu:spawn prompt assembly"}
+{"type":"claim","wuId":"WU-1899","timestamp":"2026-02-19T11:56:05.067Z","lane":"Framework: Core Lifecycle","title":"Add signal-based work classifier for code-path-aware UI/backend/docs detection"}
+{"type":"claim","wuId":"WU-1901","timestamp":"2026-02-19T11:56:47.432Z","lane":"Framework: Core Lifecycle","title":"Fix lane lock zombie detection clearing live persistent locks after wu:claim exits"}
+{"type":"claim","wuId":"WU-1902","timestamp":"2026-02-19T11:57:20.243Z","lane":"Framework: CLI Enforcement","title":"Add config:set CLI command for safe .lumenflow.config.yaml modification"}
+{"type":"claim","wuId":"WU-1884","timestamp":"2026-02-19T11:59:58.188Z","lane":"Framework: Core Lifecycle","title":"Retarget INIT-031 Phase 6 to software-delivery pack completion"}
+{"type":"complete","wuId":"WU-1901","timestamp":"2026-02-19T12:11:36.184Z"}

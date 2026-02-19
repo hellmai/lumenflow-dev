@@ -1,0 +1,2 @@
+WU WU-1901 — Fix lane lock zombie detection clearing live persistent locks after wu:claim exits
+Completed: 2026-02-19
