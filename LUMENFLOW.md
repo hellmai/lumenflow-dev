@@ -243,7 +243,7 @@ For recovery commands, state management, memory coordination, and orchestration 
 
 ## Constraints
 
-See [.lumenflow/constraints.md](.lumenflow/constraints.md) for the 8 non-negotiable rules:
+See [.lumenflow/constraints.md](.lumenflow/constraints.md) for the 9 non-negotiable rules:
 
 1. Worktree discipline and git safety
 2. WUs are specs, not code
@@ -253,6 +253,7 @@ See [.lumenflow/constraints.md](.lumenflow/constraints.md) for the 8 non-negotia
 6. Safety and governance
 7. Test ratchet pattern
 8. Lane-fit reasoning
+9. YAML files must be modified via CLI tooling only
 
 ---
 

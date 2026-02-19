@@ -1,6 +1,6 @@
 # LumenFlow Agent Starting Prompt
 
-**Last updated:** 2026-02-06
+**Last updated:** 2026-02-19
 
 This is the complete onboarding document for AI agents working with LumenFlow. Read this entire document before starting any work.
 
@@ -280,6 +280,55 @@ LUMENFLOW_FORCE=1 LUMENFLOW_FORCE_REASON="backlog corruption recovery" git push
 **Always use with:**
 
 - `LUMENFLOW_FORCE_REASON="explanation"`
+
+---
+
+## Safe Configuration Modification (Constraint 9)
+
+**Never use Write or Edit tools to modify YAML configuration files.** Always use the dedicated CLI commands.
+
+### Modifying .lumenflow.config.yaml
+
+```bash
+# Read a config value
+pnpm config:get --key methodology.testing
+
+# Set a config value (validates against Zod schema, uses atomic commit)
+pnpm config:set --key methodology.testing --value test-after
+
+# Set a boolean
+pnpm config:set --key gates.enableCoverage --value false
+
+# Set a number
+pnpm config:set --key gates.minCoverage --value 85
+
+# Append to an array
+pnpm config:set --key agents.methodology.principles --value Library-First,KISS
+```
+
+### Modifying WU YAML Specs
+
+```bash
+# Edit WU fields (run --help for all available flags)
+pnpm wu:edit --id WU-XXX --description "Updated description"
+
+# Create new WU (never manually Write a YAML file)
+pnpm wu:create --lane "Framework: Core" --title "Add feature" \
+  --description "..." --acceptance "..."
+```
+
+### Why This Matters
+
+Raw-editing YAML files with Write/Edit tools bypasses:
+
+1. **Schema validation** -- `config:set` validates against the Zod schema
+2. **Atomic commits** -- `config:set` uses micro-worktree for safe writes
+3. **Audit trail** -- CLI commands produce structured log entries
+4. **Type coercion** -- Automatic boolean/number/array handling
+
+**Exception:** Reading YAML files with the Read tool is acceptable for inspection.
+
+For the full policy, see [.lumenflow/rules/yaml-editing-policy.md](../../../../../.lumenflow/rules/yaml-editing-policy.md) and Constraint 9 in [.lumenflow/constraints.md](../../../../../.lumenflow/constraints.md).
 
 ---
 
@@ -574,7 +623,7 @@ rm -rf /tmp/nextjs-scaffold
 
 - [LUMENFLOW.md](../../../../../LUMENFLOW.md) - Main workflow documentation
 - [AGENTS.md](../../../../../AGENTS.md) - Universal agent entry point
-- [.lumenflow/constraints.md](../../../../../.lumenflow/constraints.md) - The 8 non-negotiable rules
+- [.lumenflow/constraints.md](../../../../../.lumenflow/constraints.md) - The 9 non-negotiable rules
 - [troubleshooting-wu-done.md](troubleshooting-wu-done.md) - Why agents forget wu:done
 - [first-wu-mistakes.md](first-wu-mistakes.md) - Common mistakes to avoid
 - [quick-ref-commands.md](quick-ref-commands.md) - Command reference

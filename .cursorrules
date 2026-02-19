@@ -36,11 +36,35 @@ Blocked actions are logged to:
 
 `./.lumenflow/safety-blocks.log`
 
+## Safe YAML Modification (Constraint 9)
+
+Never use file-editing tools to modify `.lumenflow.config.yaml` or WU YAML files directly.
+
+Cursor does not have tool-level hooks like Claude Code. Your only enforcement for file writes
+comes from git hooks at commit time (pre-commit, pre-push). YAML config files are in the
+allowlist, so git hooks will not catch raw YAML edits. You must follow the policy voluntarily.
+
+Use these CLI commands instead:
+
+```bash
+# Read config
+pnpm config:get --key methodology.testing
+
+# Set config (validates against Zod schema, uses atomic commit)
+pnpm config:set --key methodology.testing --value test-after
+
+# Edit WU spec fields
+pnpm wu:edit --id WU-XXX --description "Updated description"
+```
+
+For details, see .lumenflow/rules/yaml-editing-policy.md and Constraint 9 in .lumenflow/constraints.md.
+
 ## Key Reminders for Cursor Users
 
 - Always work in the worktree, never main checkout
 - Use relative paths from worktree root
 - Run `pnpm gates` before `pnpm wu:done`
+- Never raw-edit YAML files -- use `pnpm config:set` and `pnpm wu:edit`
 - Reference LUMENFLOW.md for complete workflow documentation
 
 See also: LUMENFLOW.md
