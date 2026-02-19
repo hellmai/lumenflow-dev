@@ -28,7 +28,8 @@ blocked_by:
   - WU-1888
   - WU-1889
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: 'Sizing: Medium (expected 15-25 files, 50-80 tool calls) after upstream decomposition.
+  Strategy: Checkpoint-Resume. Scope is final residual surface migration and stub-zero enforcement.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -37,8 +38,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Final software-delivery migration pass must remove residual pending handlers across file, git, state, validation, and lane surfaces and reconcile manifest/resolver coverage. This WU completes that migration and drives pendingRuntimeMigrationTool usage for software-delivery to zero.
+description: Final software-delivery migration pass must remove residual pending handlers across
+  file, git, state, validation, and lane surfaces and reconcile manifest/resolver coverage. This WU
+  completes that migration and drives pendingRuntimeMigrationTool usage for software-delivery to
+  zero.
 acceptance:
-  - File, git, state, validation, and lane command families are implemented by software-delivery handlers
+  - File, git, state, validation, and lane command families are implemented by software-delivery
+    handlers
   - software-delivery manifest contains no pendingRuntimeMigrationTool entries
   - Resolver does not register fallback-only handler stubs for software-delivery command surfaces
