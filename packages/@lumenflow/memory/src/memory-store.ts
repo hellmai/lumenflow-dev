@@ -231,26 +231,52 @@ function indexNodeByWu(result: IndexedMemory, node: MemoryNode): void {
 }
 
 /**
- * Parses JSONL content and builds indexed memory
+ * Parses JSONL content and builds indexed memory.
+ *
+ * WU-1910: Two-phase approach for correct deduplication:
+ * Phase 1: Parse ALL lines and build byId with last-write-wins (always set, never skip).
+ *          This ensures archived entries overwrite their original non-archived versions.
+ * Phase 2: Build nodes[] and byWu from deduplicated byId values, applying archive filter.
  */
 function parseAndIndexMemory(content: string, includeArchived: boolean): IndexedMemory {
   const result = createEmptyIndexedMemory();
   const lines = content.split('\n');
 
+  // Phase 1: Parse all lines and build byId with last-write-wins deduplication.
+  // Order of insertion is preserved via a separate array to maintain file order
+  // for the final nodes[] output.
+  const allParsed: MemoryNode[] = [];
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]?.trim() ?? '';
     if (!line) continue;
 
     const node = parseAndValidateLine(line, i + 1);
+    allParsed.push(node);
+    // Always overwrite: last-write-wins ensures archived entries suppress originals
+    result.byId.set(node.id, node);
+  }
 
-    // WU-1238: Skip archived nodes unless includeArchived is true
-    if (!includeArchived && isNodeArchived(node)) {
+  // Phase 2: Build nodes[] and byWu from deduplicated byId values.
+  // Only include each node once (the latest version from byId), applying archive filter.
+  const seen = new Set<string>();
+  for (const node of allParsed) {
+    // Skip if we already emitted this ID (only the last-write-wins version matters)
+    if (seen.has(node.id)) continue;
+
+    const latestVersion = result.byId.get(node.id)!;
+    seen.add(node.id);
+
+    // WU-1238: Filter archived nodes unless includeArchived is true
+    if (!includeArchived && isNodeArchived(latestVersion)) {
+      // Remove from byId so callers see a consistent view
+      result.byId.delete(node.id);
       continue;
     }
 
-    result.nodes.push(node);
-    result.byId.set(node.id, node);
-    indexNodeByWu(result, node);
+    result.nodes.push(latestVersion);
+    // Update byId to point at the version we actually emitted (should already match)
+    result.byId.set(node.id, latestVersion);
+    indexNodeByWu(result, latestVersion);
   }
 
   return result;

@@ -429,6 +429,173 @@ describe('memory-store', () => {
     });
   });
 
+  describe('loadMemory() deduplication (WU-1910)', () => {
+    it('should deduplicate by node ID using last-write-wins', async () => {
+      // Same ID appears twice; second version should win
+      const nodeV1 = FIXTURES.createNode({
+        id: 'mem-dp01',
+        content: 'Version 1',
+        created_at: '2025-12-08T10:00:00Z',
+      });
+      const nodeV2 = FIXTURES.createNode({
+        id: 'mem-dp01',
+        content: 'Version 2',
+        created_at: '2025-12-08T11:00:00Z',
+      });
+      await writeJsonlFile(memoryFilePath, [nodeV1, nodeV2]);
+
+      const result = await loadMemory(tempDir);
+
+      // Only one node with that ID should exist
+      expect(result.nodes.length).toBe(1);
+      expect(result.byId.size).toBe(1);
+      expect(result.byId.get('mem-dp01')!.content).toBe('Version 2');
+      expect(result.nodes[0].content).toBe('Version 2');
+    });
+
+    it('should suppress original non-archived version when archived entry exists', async () => {
+      // Original non-archived node
+      const originalNode = FIXTURES.createNode({
+        id: 'mem-ar01',
+        content: 'Original discovery',
+        created_at: '2025-12-08T10:00:00Z',
+      });
+      // Archived version of same node (appended later)
+      const archivedNode = FIXTURES.createNode({
+        id: 'mem-ar01',
+        content: 'Original discovery',
+        created_at: '2025-12-08T10:00:00Z',
+        metadata: {
+          status: 'archived',
+          archive_reason: 'resolved',
+          archived_at: '2025-12-08T12:00:00Z',
+        },
+      });
+      await writeJsonlFile(memoryFilePath, [originalNode, archivedNode]);
+
+      // Default: includeArchived=false
+      const result = await loadMemory(tempDir);
+
+      // The archived version suppresses the original, and since includeArchived=false,
+      // the node should not appear at all
+      expect(result.nodes.length).toBe(0);
+      expect(result.byId.size).toBe(0);
+    });
+
+    it('should include archived version when includeArchived=true after deduplication', async () => {
+      const originalNode = FIXTURES.createNode({
+        id: 'mem-ar02',
+        content: 'Original discovery',
+        created_at: '2025-12-08T10:00:00Z',
+      });
+      const archivedNode = FIXTURES.createNode({
+        id: 'mem-ar02',
+        content: 'Original discovery',
+        created_at: '2025-12-08T10:00:00Z',
+        metadata: {
+          status: 'archived',
+          archive_reason: 'resolved',
+          archived_at: '2025-12-08T12:00:00Z',
+        },
+      });
+      await writeJsonlFile(memoryFilePath, [originalNode, archivedNode]);
+
+      const result = await loadMemory(tempDir, { includeArchived: true });
+
+      // With includeArchived, the latest (archived) version should appear
+      expect(result.nodes.length).toBe(1);
+      expect(result.byId.size).toBe(1);
+      expect(result.byId.get('mem-ar02')!.metadata?.status).toBe('archived');
+    });
+
+    it('should keep byId containing latest version regardless of archive status', async () => {
+      const nodeV1 = FIXTURES.createNode({
+        id: 'mem-lt01',
+        content: 'First version',
+        created_at: '2025-12-08T10:00:00Z',
+      });
+      const nodeV2 = FIXTURES.createNode({
+        id: 'mem-lt01',
+        content: 'Updated version',
+        created_at: '2025-12-08T11:00:00Z',
+        metadata: { status: 'archived' },
+      });
+      const nodeV3 = FIXTURES.createNode({
+        id: 'mem-ot01',
+        content: 'Other node',
+        created_at: '2025-12-08T10:00:00Z',
+      });
+      await writeJsonlFile(memoryFilePath, [nodeV1, nodeV2, nodeV3]);
+
+      // With includeArchived=true, byId should have the latest version
+      const resultAll = await loadMemory(tempDir, { includeArchived: true });
+      expect(resultAll.byId.get('mem-lt01')!.content).toBe('Updated version');
+      expect(resultAll.byId.get('mem-lt01')!.metadata?.status).toBe('archived');
+
+      // With includeArchived=false, archived node should not appear but
+      // other non-archived nodes should still be there
+      const resultFiltered = await loadMemory(tempDir);
+      expect(resultFiltered.byId.has('mem-lt01')).toBe(false);
+      expect(resultFiltered.nodes.length).toBe(1);
+      expect(resultFiltered.nodes[0].id).toBe('mem-ot01');
+    });
+
+    it('should handle archive-then-list round-trip via appendNode + loadMemory', async () => {
+      // Simulate: create a discovery, then archive it, then load
+      const discovery = FIXTURES.createNode({
+        id: 'mem-rt01',
+        type: 'discovery',
+        content: 'Bug found in parser',
+        created_at: '2025-12-08T10:00:00Z',
+      });
+      await writeJsonlFile(memoryFilePath, [discovery]);
+
+      // Archive: append the archived version (same ID)
+      const archivedDiscovery = {
+        ...discovery,
+        metadata: {
+          status: 'archived',
+          archive_reason: 'fixed in WU-999',
+          archived_at: '2025-12-08T12:00:00Z',
+        },
+      };
+      await appendNode(tempDir, archivedDiscovery);
+
+      // List (default: includeArchived=false) should NOT show the node
+      const result = await loadMemory(tempDir);
+      expect(result.nodes.length).toBe(0);
+      expect(result.byId.has('mem-rt01')).toBe(false);
+
+      // With includeArchived=true should show the archived version
+      const resultAll = await loadMemory(tempDir, { includeArchived: true });
+      expect(resultAll.nodes.length).toBe(1);
+      expect(resultAll.byId.get('mem-rt01')!.metadata?.status).toBe('archived');
+    });
+
+    it('should not affect WU index deduplication', async () => {
+      // Two versions of same node under same WU
+      const nodeV1 = FIXTURES.createNode({
+        id: 'mem-wd01',
+        wu_id: 'WU-1463',
+        content: 'Version 1',
+        created_at: '2025-12-08T10:00:00Z',
+      });
+      const nodeV2 = FIXTURES.createNode({
+        id: 'mem-wd01',
+        wu_id: 'WU-1463',
+        content: 'Version 2',
+        created_at: '2025-12-08T11:00:00Z',
+      });
+      await writeJsonlFile(memoryFilePath, [nodeV1, nodeV2]);
+
+      const result = await loadMemory(tempDir);
+
+      // Should only have one node in byWu
+      expect(result.byWu.get('WU-1463')!.length).toBe(1);
+      expect(result.byWu.get('WU-1463')![0].content).toBe('Version 2');
+    });
+  });
+
   describe('queryByWu()', () => {
     it('should return empty array for missing file', async () => {
       const result = await queryByWu(tempDir, 'WU-1463');
