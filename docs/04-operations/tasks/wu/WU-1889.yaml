@@ -29,6 +29,7 @@ phase: 6
 blocked_by:
   - WU-1896
   - WU-1897
+  - WU-1904
 risks: []
 notes: 'Sizing: Complex non-atomic umbrella decomposed into WU-1896/WU-1897. Strategy: Decomposition
   (orchestrator-worker). This WU remains as dependency gate and completion rollup.'
