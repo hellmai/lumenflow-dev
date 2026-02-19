@@ -40,7 +40,7 @@ import { WU_STATUS, PATTERNS, EMOJI, LUMENFLOW_PATHS } from './wu-constants.js';
 import { checkLaneLock, type LockMetadata } from './lane-lock.js';
 import { minimatch } from 'minimatch';
 // WU-1900: Import work classifier for domain-aware prompt generation
-import { classifyWork, type WorkClassification } from './work-classifier.js';
+import { classifyWork } from './work-classifier.js';
 import { SpawnStrategyFactory } from './spawn-strategy.js';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Type is used in JSDoc comments
 import type { SpawnStrategy } from './spawn-strategy.js';

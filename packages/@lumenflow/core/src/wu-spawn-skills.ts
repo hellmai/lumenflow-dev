@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import type { ClientConfig } from './lumenflow-config-schema.js';
 import { LUMENFLOW_PATHS } from './wu-constants.js';
-import { classifyWork, type WorkClassification } from './work-classifier.js';
+import { classifyWork } from './work-classifier.js';
 
 /** WU-1430: Compose known skills directories from centralized constants */
 const KNOWN_SKILLS_DIRS = [
