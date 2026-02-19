@@ -2,7 +2,7 @@ id: WU-1887
 title: Migrate core WU lifecycle commands to software-delivery pack handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-19
 code_paths:
@@ -48,3 +48,11 @@ acceptance:
     runtime mode
   - Manifest entries for migrated lifecycle commands no longer point to pendingRuntimeMigrationTool
   - Runtime path for migrated lifecycle commands completes without invoking CLI fallback
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1887
+claimed_at: 2026-02-19T13:57:26.435Z
+baseline_main_sha: 447cf844267d69e82af1eee51e58d7d33b01e8f9
+session_id: 51303731-cfa9-4c54-9a49-a3a653611d28
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T13:57:26.441Z
