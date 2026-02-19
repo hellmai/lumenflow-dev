@@ -29,6 +29,7 @@ import {
   type MemoryNode,
 } from './memory-schema.js';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
+import { ensureMemoryDir } from './fs-utils.js';
 
 /**
  * Relationships file name
@@ -225,19 +226,6 @@ function isValidWuId(wuId: string | undefined): boolean {
  */
 function isValidMemoryId(memId: string): boolean {
   return MEMORY_PATTERNS.MEMORY_ID.test(memId);
-}
-
-/**
- * Ensures the memory directory exists
- *
- * @param baseDir - Base directory
- * @returns Memory directory path
- */
-async function ensureMemoryDir(baseDir: string): Promise<string> {
-  const memoryDir = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR);
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known directory path
-  await fs.mkdir(memoryDir, { recursive: true });
-  return memoryDir;
 }
 
 /**

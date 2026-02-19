@@ -1,5 +1,5 @@
 /**
- * Memory Checkpoint Core (WU-1467, WU-1748)
+ * Memory Checkpoint Core (WU-1467, WU-1909)
  *
  * Core logic for creating checkpoint nodes for context snapshots.
  * Used before /clear or session handoff to preserve progress state.
@@ -9,20 +9,20 @@
  * - Optional linking to sessions and WUs
  * - Supports handoff trigger detection
  * - Auto-initializes memory layer if not present
- * - WU-1748: Persists to wu-events.jsonl for cross-agent visibility
  *
- * @see {@link packages/@lumenflow/cli/src/mem-checkpoint.ts} - CLI wrapper
+ * WU-1909: State-store propagation (wu-events.jsonl) removed from this module.
+ * The state-store write is now the caller's responsibility (SRP), guarded by
+ * resolveLocation() in the CLI wrapper to prevent dirtying main checkout.
+ *
+ * @see {@link packages/@lumenflow/cli/src/mem-checkpoint.ts} - CLI wrapper (state-store write)
  * @see {@link packages/@lumenflow/cli/src/__tests__/mem-checkpoint.test.ts} - Tests
  * @see {@link packages/@lumenflow/cli/src/lib/memory-schema.ts} - Schema definitions
  */
 
-import fs from 'node:fs/promises';
-import path from 'node:path';
 import { generateMemId } from './mem-id.js';
 import { appendNode } from './memory-store.js';
 import { MEMORY_PATTERNS } from './memory-schema.js';
-import { WUStateStore } from '@lumenflow/core/wu-state-store';
-import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
+import { ensureMemoryDir } from './fs-utils.js';
 
 /**
  * Error messages for validation
@@ -52,19 +52,6 @@ const LIFECYCLE_SESSION = 'session' as const;
 function isValidWuId(wuId: string | undefined): boolean {
   if (!wuId) return true;
   return MEMORY_PATTERNS.WU_ID.test(wuId);
-}
-
-/**
- * Ensures the memory directory exists
- *
- * @param baseDir - Base directory
- * @returns Memory directory path
- */
-async function ensureMemoryDir(baseDir: string): Promise<string> {
-  const memoryDir = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR);
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known directory path
-  await fs.mkdir(memoryDir, { recursive: true });
-  return memoryDir;
 }
 
 /**
@@ -215,24 +202,10 @@ export async function createCheckpoint(
     checkpointNode.metadata = metadata;
   }
 
-  // Persist to memory store
+  // Persist to memory store only (SRP: WU-1909)
+  // State-store propagation (wu-events.jsonl) is handled by the CLI wrapper,
+  // guarded by resolveLocation() to prevent dirtying main checkout.
   await appendNode(memoryDir, checkpointNode);
-
-  // WU-1748: Also persist to wu-events.jsonl for cross-agent visibility
-  if (wuId) {
-    try {
-      const stateDir = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.STATE_DIR);
-      const store = new WUStateStore(stateDir);
-      await store.checkpoint(wuId, note, {
-        sessionId,
-        progress,
-        nextSteps,
-      });
-    } catch {
-      // Non-fatal: if state store write fails, checkpoint is still in memory store
-      // This can happen if the WU hasn't been claimed yet
-    }
-  }
 
   return {
     success: true,

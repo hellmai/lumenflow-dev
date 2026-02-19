@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 /**
- * Memory Checkpoint CLI (WU-1467)
+ * Memory Checkpoint CLI (WU-1467, WU-1909)
  *
  * Create a checkpoint node for context snapshots.
  * Used before /clear or session handoff to preserve progress state.
+ *
+ * WU-1909: State-store propagation (wu-events.jsonl) is now handled here
+ * in the CLI wrapper, guarded by resolveLocation() to only write when
+ * running from a worktree (prevents dirtying main checkout).
  *
  * Includes audit logging to .lumenflow/telemetry/tools.ndjson.
  *
  * Usage:
  *   pnpm mem:checkpoint 'note' [--session <id>] [--wu <id>] [--progress <text>] [--next-steps <text>] [--trigger <type>] [--quiet]
  *
- * @see {@link packages/@lumenflow/cli/src/lib/mem-checkpoint-core.ts} - Core logic
+ * @see {@link packages/@lumenflow/memory/src/mem-checkpoint-core.ts} - Core logic (memory store only)
  * @see {@link packages/@lumenflow/cli/src/__tests__/mem-checkpoint.test.ts} - Tests
  */
 
@@ -18,13 +22,20 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createCheckpoint } from '@lumenflow/memory/checkpoint';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
-import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { EXIT_CODES, LUMENFLOW_PATHS, CONTEXT_VALIDATION } from '@lumenflow/core/wu-constants';
+import { resolveLocation } from '@lumenflow/core/context/location-resolver';
+import { WUStateStore } from '@lumenflow/core/wu-state-store';
 import { runCLI } from './cli-entry-point.js';
 
 /**
  * Log prefix for mem:checkpoint output
  */
 const LOG_PREFIX = '[mem:checkpoint]';
+
+/**
+ * State directory path relative to baseDir
+ */
+const STATE_DIR = '.lumenflow/state';
 
 /**
  * Tool name for audit logging
@@ -71,6 +82,87 @@ const CLI_OPTIONS = {
     description: 'Suppress output except errors',
   },
 };
+
+/**
+ * Options for state-store propagation
+ */
+export interface PropagateOptions {
+  /** Work Unit ID (required for propagation) */
+  wuId?: string;
+  /** Checkpoint note */
+  note: string;
+  /** Session ID */
+  sessionId?: string;
+  /** Progress summary */
+  progress?: string;
+  /** Next steps */
+  nextSteps?: string;
+}
+
+/**
+ * Result of state-store propagation attempt
+ */
+export interface PropagateResult {
+  /** Whether the checkpoint was propagated to wu-events.jsonl */
+  propagated: boolean;
+  /** Reason propagation was skipped or failed */
+  reason?: string;
+}
+
+/**
+ * Propagate checkpoint to wu-events.jsonl state store (WU-1909).
+ *
+ * Only writes when running from a worktree context, preventing dirty
+ * state on main checkout. Uses CONTEXT_VALIDATION.LOCATION_TYPES.WORKTREE
+ * constant (no magic strings).
+ *
+ * @param baseDir - Base directory for state store
+ * @param options - Propagation options
+ * @returns Result indicating whether propagation occurred
+ */
+export async function propagateCheckpointToStateStore(
+  baseDir: string,
+  options: PropagateOptions,
+): Promise<PropagateResult> {
+  const { wuId, note, sessionId, progress, nextSteps } = options;
+
+  // Guard: no WU ID means nothing to propagate
+  if (!wuId) {
+    return { propagated: false, reason: 'no_wu_id' };
+  }
+
+  // Guard: resolve location to determine if we're in a worktree
+  let locationType: string;
+  try {
+    const location = await resolveLocation(baseDir);
+    locationType = location.type;
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`${LOG_PREFIX} Warning: Could not resolve location: ${message}`);
+    return { propagated: false, reason: 'location_resolve_failed' };
+  }
+
+  // Guard: only write to state store from worktree context
+  if (locationType !== CONTEXT_VALIDATION.LOCATION_TYPES.WORKTREE) {
+    return { propagated: false, reason: 'not_in_worktree' };
+  }
+
+  // Propagate to wu-events.jsonl
+  try {
+    const stateDir = path.join(baseDir, STATE_DIR);
+    const store = new WUStateStore(stateDir);
+    await store.checkpoint(wuId, note, {
+      sessionId,
+      progress,
+      nextSteps,
+    });
+    return { propagated: true };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`${LOG_PREFIX} Warning: State store write failed: ${message}`);
+    return { propagated: false, reason: 'write_failed' };
+  }
+}
 
 /**
  * Write audit log entry for tool execution
@@ -206,6 +298,15 @@ async function main() {
       progress: args.progress,
       nextSteps: args.nextSteps,
       trigger: args.trigger,
+    });
+
+    // WU-1909: Propagate to wu-events.jsonl only from worktree context
+    await propagateCheckpointToStateStore(baseDir, {
+      wuId: args.wu,
+      note,
+      sessionId: args.session,
+      progress: args.progress,
+      nextSteps: args.nextSteps,
     });
   } catch (err: unknown) {
     error = err instanceof Error ? err.message : String(err);

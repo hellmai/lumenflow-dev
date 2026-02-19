@@ -3,6 +3,7 @@
  * @module @lumenflow/memory
  */
 
+export * from './fs-utils.js';
 export * from './mem-checkpoint-core.js';
 export * from './mem-context-core.js';
 export * from './mem-cleanup-core.js';
