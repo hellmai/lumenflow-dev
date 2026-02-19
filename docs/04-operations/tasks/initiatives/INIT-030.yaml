@@ -80,5 +80,8 @@ wus:
   - WU-1895
   - WU-1896
   - WU-1897
+  - WU-1903
+  - WU-1904
+  - WU-1905
 notes:
   - '2026-02-19: Phase 6 activated for software-delivery migration stream (WU-1884..WU-1897).'
