@@ -11,7 +11,10 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-spawn-prompt-builders.ts
   - packages/@lumenflow/core/src/__tests__/wu-spawn-skills.test.ts
   - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
-  - docs/04-operations/_frameworks/lumenflow/**
+  - docs/04-operations/_frameworks/lumenflow/work-classification.md
+  - apps/docs/src/content/docs/reference/work-classifier.mdx
+  - apps/docs/src/content/docs/reference/config.mdx
+  - packages/@lumenflow/core/package.json
 tests:
   manual:
     - Run pnpm wu:brief on a WU with CSS code_paths and verify design context section appears
