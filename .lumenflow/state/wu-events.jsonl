@@ -1737,3 +1737,4 @@
 {"type":"complete","wuId":"WU-1887","timestamp":"2026-02-19T14:21:22.034Z"}
 {"type":"claim","wuId":"WU-1893","lane":"Framework: Core Lifecycle","title":"Migrate WU state-transition maintenance commands to software-delivery handlers","timestamp":"2026-02-19T14:24:21.559Z"}
 {"type":"release","wuId":"WU-1893","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-19T14:27:45.405Z"}
+{"type":"claim","wuId":"WU-1893","lane":"Framework: Core Lifecycle","title":"Migrate WU state-transition maintenance commands to software-delivery handlers","timestamp":"2026-02-19T14:28:28.986Z"}
