@@ -38,6 +38,7 @@ claimed_at: 2026-02-18T23:52:04.500Z
 worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1878
 session_id: c49f6de7-1d22-4acf-88b7-5a1d760b151b
 exposure: ui
+navigation_path: '/marketplace/:packId'
 escalation_triggers: []
 requires_human_escalation: false
 approved_by:
