@@ -203,7 +203,16 @@ describe('wu lifecycle tool adapters (WU-1887)', () => {
     expect(output.data).toMatchObject({ id: 'WU-1893', status: 'ready' });
     expect(spawnSyncMock).toHaveBeenCalledWith(
       process.execPath,
-      [CLI_ENTRY_SCRIPT_PATH, 'wu-recover', '--id', 'WU-1893', '--action', 'resume', '--force', '--json'],
+      [
+        CLI_ENTRY_SCRIPT_PATH,
+        'wu-recover',
+        '--id',
+        'WU-1893',
+        '--action',
+        'resume',
+        '--force',
+        '--json',
+      ],
       expect.any(Object),
     );
   });
@@ -226,7 +235,15 @@ describe('wu lifecycle tool adapters (WU-1887)', () => {
     expect(output.success).toBe(true);
     expect(spawnSyncMock).toHaveBeenCalledWith(
       process.execPath,
-      [CLI_ENTRY_SCRIPT_PATH, 'wu-repair', '--id', 'WU-1893', '--check', '--claim', '--repair-state'],
+      [
+        CLI_ENTRY_SCRIPT_PATH,
+        'wu-repair',
+        '--id',
+        'WU-1893',
+        '--check',
+        '--claim',
+        '--repair-state',
+      ],
       expect.any(Object),
     );
   });
