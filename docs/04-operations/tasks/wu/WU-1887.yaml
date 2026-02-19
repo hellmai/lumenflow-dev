@@ -10,7 +10,6 @@ code_paths:
   - packages/@lumenflow/packs/software-delivery/manifest.ts
   - packages/@lumenflow/packs/software-delivery/tool-impl
   - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
-  - packages/@lumenflow/mcp/src/tools/wu-tools.ts
 tests:
   manual:
     - Execute wu:create -> wu:claim -> wu:prep -> wu:done through MCP/runtime path in bootstrapped
@@ -32,10 +31,17 @@ risks: []
 notes: 'Sizing: Medium (expected 20-25 files, 60-80 tool calls). Strategy: Checkpoint-Resume. Scope
   is core WU lifecycle migration in one command family slice.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T13:57:26.435Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1887
+session_id: 51303731-cfa9-4c54-9a49-a3a653611d28
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T13:57:26.441Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -48,11 +54,3 @@ acceptance:
     runtime mode
   - Manifest entries for migrated lifecycle commands no longer point to pendingRuntimeMigrationTool
   - Runtime path for migrated lifecycle commands completes without invoking CLI fallback
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1887
-claimed_at: 2026-02-19T13:57:26.435Z
-baseline_main_sha: 447cf844267d69e82af1eee51e58d7d33b01e8f9
-session_id: 51303731-cfa9-4c54-9a49-a3a653611d28
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T13:57:26.441Z
