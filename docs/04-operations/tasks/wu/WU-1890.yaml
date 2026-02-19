@@ -2,7 +2,7 @@ id: WU-1890
 title: Migrate file/git/state/validation/lane surfaces and clear remaining software-delivery stubs
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -56,3 +56,6 @@ acceptance:
     handlers
   - software-delivery manifest contains no pendingRuntimeMigrationTool entries
   - Resolver does not register fallback-only handler stubs for software-delivery command surfaces
+locked: true
+completed_at: 2026-02-19T19:02:54.002Z
+completed: 2026-02-19
