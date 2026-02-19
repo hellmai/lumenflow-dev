@@ -27,7 +27,7 @@ phases:
     status: done
   - id: 6
     title: Software-delivery pack completion and runtime migration quality
-    status: pending
+    status: in_progress
 success_metrics:
   - Migrated commands execute through KernelRuntime without runCliCommand shell-out
   - MCP and CLI parity gates remain green for migrated commands
@@ -80,3 +80,5 @@ wus:
   - WU-1895
   - WU-1896
   - WU-1897
+notes:
+  - '2026-02-19: Phase 6 activated for software-delivery migration stream (WU-1884..WU-1897).'
