@@ -2,7 +2,7 @@ id: WU-1912
 title: 'Starlight: update existing pages for kernel/pack architecture'
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-19
 code_paths:
@@ -51,3 +51,11 @@ acceptance:
   - lanes.mdx explains lane scopes and their role in scope intersection
   - All updated pages link to new concept pages from WU-1911
   - pnpm docs:validate passes with zero errors
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1912
+claimed_at: 2026-02-19T21:51:06.102Z
+baseline_main_sha: 878e199c22b501d7d932430f8de6b1423d27db19
+session_id: 4cce839b-b197-4efe-a0a4-14f4875b1352
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T21:51:06.109Z

@@ -1777,3 +1777,4 @@
 {"type":"complete","wuId":"WU-1892","timestamp":"2026-02-19T19:37:36.015Z"}
 {"type":"claim","wuId":"WU-1911","timestamp":"2026-02-19T21:28:37.058Z","lane":"Content: Site Comms","title":"Starlight: new kernel/pack/evidence/policy/scope concept pages + rewrite introduction"}
 {"type":"complete","wuId":"WU-1911","timestamp":"2026-02-19T21:49:10.237Z"}
+{"type":"claim","wuId":"WU-1912","lane":"Content: Site Comms","title":"Starlight: update existing pages for kernel/pack architecture","timestamp":"2026-02-19T21:51:06.151Z"}

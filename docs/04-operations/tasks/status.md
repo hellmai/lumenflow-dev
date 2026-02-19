@@ -5,6 +5,7 @@ _Last updated: 2026-02-19_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1912 — Starlight: update existing pages for kernel/pack architecture](wu/WU-1912.yaml)
 
 ## Completed
 
