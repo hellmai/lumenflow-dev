@@ -1,0 +1,204 @@
+---
+title: Agent Safety Architecture
+description: Protection layers, coverage matrix, and per-client enforcement for AI agents working in LumenFlow projects
+---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+LumenFlow enforces agent safety through 8 layered protection mechanisms working in a defense-in-depth model. No single layer provides complete coverage -- understanding which layers apply to your agent client is essential for maintaining workflow integrity.
+
+## Protection Layers
+
+### Layer 1: Tool-Level Bash Blocking (Claude Code)
+
+Intercepts Bash tool calls and blocks file-manipulation commands (`cat >`, `echo >`, `sed -i`, `tee`) that bypass Write/Edit tool validation.
+
+- **Scope:** Claude Code only
+- **Enforcement:** Fail-closed (blocks when uncertain)
+- **File:** `.claude/hooks/block-bash-file-commands.sh`
+
+### Layer 2: Worktree Path Validation (Claude Code)
+
+Intercepts Write and Edit tool calls and validates that target file paths are inside an active worktree or in the allowlist.
+
+- **Scope:** Claude Code only
+- **Enforcement:** Fail-closed
+- **File:** `.claude/hooks/validate-worktree-path.sh`
+
+<Aside type="caution">
+  The allowlist permits writes to WU YAML specs and `.lumenflow/*` files, meaning agents can
+  raw-edit config files without using `config:set` or `wu:edit`. See [Constraint
+  9](#yaml-editing-policy) below.
+</Aside>
+
+### Layer 3: Pre-Commit Hook
+
+Runs before every `git commit`. Enforces format checking, blocks WU commits from main checkout, and validates commit messages.
+
+- **Scope:** All clients (universal, git-level)
+- **Enforcement:** Active
+- **File:** `.husky/pre-commit.mjs`
+
+### Layer 4: Pre-Push Hook
+
+Runs before every `git push`. Validates branch naming, blocks force push to main, and ensures `wu:done` workflow compliance.
+
+- **Scope:** All clients (universal, git-level)
+- **Enforcement:** Active
+- **File:** `.husky/pre-push.mjs`
+
+### Layer 5: Safe-Git Wrapper
+
+Wraps `git` and blocks destructive commands (`reset --hard`, `clean -fd`, `push --force`, `worktree remove/prune`).
+
+- **Scope:** Opt-in (recommended for Cursor)
+- **Enforcement:** Optional
+- **File:** `scripts/safe-git`
+
+### Layer 6: Policy Documents
+
+Workflow rules as markdown documents in `.lumenflow/rules/`.
+
+- **Scope:** Advisory (all clients)
+- **Enforcement:** None (depends on agent compliance)
+
+### Layer 7: Constraints Capsule
+
+Non-negotiable constraints in `.lumenflow/constraints.md`, injected into spawn prompts via `wu:brief` and `wu:delegate`.
+
+- **Scope:** All clients (injected for Claude Code spawns)
+- **Enforcement:** Soft (prompt-based)
+
+### Layer 8: Configuration-Driven Enforcement
+
+Toggles in `.lumenflow.config.yaml` for features like `block_outside_worktree`, `require_wu_for_edits`, and `context_validation`.
+
+- **Scope:** Varies by setting and client
+- **Enforcement:** Active for Claude Code, advisory for others
+
+## Coverage Matrix
+
+| Layer | Mechanism           | Claude Code | Cursor      | Codex     | Windsurf  | Manual    |
+| ----- | ------------------- | ----------- | ----------- | --------- | --------- | --------- |
+| 1     | Bash blocking       | Enforced    | --          | --        | --        | --        |
+| 2     | Path validation     | Enforced    | --          | --        | --        | --        |
+| 3     | Pre-commit hook     | Enforced    | Enforced    | Enforced  | Enforced  | Enforced  |
+| 4     | Pre-push hook       | Enforced    | Enforced    | Enforced  | Enforced  | Enforced  |
+| 5     | Safe-git wrapper    | Available   | Recommended | Available | Available | Available |
+| 6     | Policy documents    | Advisory    | Advisory    | Advisory  | Advisory  | Advisory  |
+| 7     | Constraints capsule | Injected    | Advisory    | Advisory  | Advisory  | Advisory  |
+| 8     | Config enforcement  | Enforced    | Advisory    | Advisory  | Advisory  | N/A       |
+
+**Legend:** **Enforced** = actively blocks non-compliant operations. **Recommended** = configured but opt-in. **Available** = can be used. **Advisory** = documented policy only. **Injected** = included in spawn prompts. **--** = not applicable.
+
+## YAML Editing Policy
+
+<Aside type="danger">
+  YAML configuration files are in the worktree path validation allowlist. Any agent can raw-edit
+  them. This is a known gap. Always use CLI tooling instead.
+</Aside>
+
+**Constraint 9: All YAML configuration files must be modified via CLI tooling only.**
+
+<Tabs>
+  <TabItem label="Config File">
+    ```bash
+    # Read a value
+    pnpm config:get --key methodology.testing
+
+    # Set a value (Zod-validated, atomic commit)
+    pnpm config:set --key methodology.testing --value test-after
+
+    # Set a boolean
+    pnpm config:set --key gates.enableCoverage --value false
+    ```
+
+  </TabItem>
+  <TabItem label="WU Specs">
+    ```bash
+    # Edit WU fields
+    pnpm wu:edit --id WU-XXX --description "Updated description"
+
+    # Create new WU
+    pnpm wu:create --lane "Framework: Core" --title "Add feature" \
+      --description "..." --acceptance "..."
+    ```
+
+  </TabItem>
+</Tabs>
+
+**Why CLI tooling:**
+
+1. **Schema validation** -- `config:set` validates against the Zod schema before writing
+2. **Atomic commits** -- Uses micro-worktree pattern for race-safe writes
+3. **Audit trail** -- CLI commands produce structured log entries
+4. **Type coercion** -- Automatic boolean, number, and array handling
+
+Reading YAML files with Read tools is acceptable for inspection.
+
+## Per-Client Setup
+
+<Tabs>
+  <TabItem label="Claude Code">
+    Claude Code has the strongest protection (Layers 1-8 all active).
+
+    ```bash
+    # Generate enforcement hooks
+    pnpm lumenflow:integrate --client claude-code
+    ```
+
+    Tool-level hooks block unsafe Bash commands and validate worktree paths.
+    Constraints are injected into spawn prompts via `wu:brief`.
+
+  </TabItem>
+  <TabItem label="Cursor">
+    Cursor relies on git hooks (Layers 3-4) and advisory rules.
+
+    ```bash
+    # Initialize Cursor overlay
+    pnpm lumenflow:init --client cursor
+    ```
+
+    **Recommended:** Use the safe-git wrapper (`./scripts/safe-git`) for additional protection.
+    Configure in `.cursorrules`.
+
+  </TabItem>
+  <TabItem label="Codex">
+    Codex operates in cloud/branch-PR mode with git hook enforcement.
+
+    ```bash
+    # Claim in cloud mode
+    pnpm wu:claim --id WU-XXX --lane "Lane" --cloud
+    ```
+
+    Codex uses `agent/*` branch patterns. Git hooks (Layers 3-4) apply at commit/push time.
+
+  </TabItem>
+  <TabItem label="Windsurf">
+    Windsurf has minimal enforcement (git hooks + advisory docs).
+
+    ```bash
+    # Initialize Windsurf overlay
+    pnpm lumenflow:init --client windsurf
+    ```
+
+    Advisory rules in `.windsurf/rules/lumenflow.md`. No tool-level enforcement.
+
+  </TabItem>
+</Tabs>
+
+## Known Gaps
+
+| Gap                  | Risk   | Description                                         | Mitigation                                   |
+| -------------------- | ------ | --------------------------------------------------- | -------------------------------------------- |
+| YAML allowlist       | Medium | Path validation allows raw YAML edits               | Constraint 9 policy; future hook enforcement |
+| Non-Claude clients   | High   | No tool-level enforcement for Cursor/Codex/Windsurf | Git hooks + advisory docs                    |
+| LUMENFLOW_FORCE      | Medium | Bypasses all hooks; logged but not alerted          | Policy requires user approval; audit log     |
+| No branch protection | Medium | All enforcement is local hooks only                 | Future GitHub branch protection rules        |
+| Passive audit logs   | Low    | Violations logged but not monitored                 | Logs are git-tracked; future alerting        |
+
+## References
+
+- [Constraints Capsule](/concepts/constraints) -- The 9 non-negotiable rules
+- [config:set and config:get](/reference/config-commands) -- Safe config modification commands
+- [Configuration Reference](/reference/config) -- All config keys and types

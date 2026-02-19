@@ -1,13 +1,13 @@
 # LumenFlow Constraints Capsule
 
-**Version:** 1.2
-**Last updated:** 2026-02-06
+**Version:** 1.3
+**Last updated:** 2026-02-19
 
-This document contains the 8 non-negotiable constraints that every agent must keep "in working memory" from first plan through `wu:done`.
+This document contains the 9 non-negotiable constraints that every agent must keep "in working memory" from first plan through `wu:done`.
 
 ---
 
-## The 8 Non-Negotiable Constraints
+## The 9 Non-Negotiable Constraints
 
 ### 1. Worktree Discipline and Git Safety
 
@@ -176,6 +176,34 @@ If you see something broken on main (failing gates, format issues, typos, lint e
 - Initiative orchestration reveals a systematic mismatch between WU assignments and lane ownership
 
 **Why:** Lane boundaries define ownership, WIP limits, and parallel execution safety. Misassigned WUs undermine these guarantees and create coordination confusion.
+
+---
+
+### 9. YAML Files Must Be Modified via CLI Tooling Only (WU-1907)
+
+**Rule:** Never use raw Write/Edit tools to modify `.lumenflow.config.yaml` or WU YAML specification files. Always use the dedicated CLI commands.
+
+**Safe commands:**
+
+| File                     | Command                     | Example                                                        |
+| ------------------------ | --------------------------- | -------------------------------------------------------------- |
+| `.lumenflow.config.yaml` | `pnpm config:set`           | `pnpm config:set --key methodology.testing --value test-after` |
+| `.lumenflow.config.yaml` | `pnpm config:get` (read)    | `pnpm config:get --key methodology.testing`                    |
+| WU YAML specs            | `pnpm wu:edit`              | `pnpm wu:edit --id WU-XXX --description "..."`                 |
+| WU YAML specs            | `pnpm wu:create` (creation) | `pnpm wu:create --lane "Framework: Core" --title "..."`        |
+
+**Blocked operations:**
+
+- `Write(.lumenflow.config.yaml, ...)` -- use `pnpm config:set` instead
+- `Edit(.lumenflow.config.yaml, ...)` -- use `pnpm config:set` instead
+- `Write(docs/04-operations/tasks/wu/WU-XXX.yaml, ...)` -- use `pnpm wu:edit` instead
+- `Edit(docs/04-operations/tasks/wu/WU-XXX.yaml, ...)` -- use `pnpm wu:edit` instead
+
+**Exception:** Reading YAML files with the Read tool is acceptable for inspection purposes.
+
+**Why:** CLI tooling provides Zod schema validation, atomic commits via micro-worktree, audit trail, and automatic type coercion. Raw edits bypass all of these safeguards and can produce invalid configurations that break downstream commands.
+
+**Full policy:** See [.lumenflow/rules/yaml-editing-policy.md](rules/yaml-editing-policy.md).
 
 ---
 

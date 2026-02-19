@@ -1,6 +1,6 @@
 # Quick Reference: LumenFlow Commands
 
-**Last updated:** 2026-02-06
+**Last updated:** 2026-02-19
 
 Reference for CLI commands. Organized by category for quick discovery.
 
@@ -33,6 +33,7 @@ Run `--help` first, then run the real command with explicit flags.
 | Metrics & Flow      | `pnpm flow:report --help`             | `pnpm flow:report`                                                       |
 | Documentation       | `pnpm docs:validate --help`           | `pnpm docs:validate`                                                     |
 | Release             | `pnpm pre-release:check --help`       | `pnpm pre-release:check`                                                 |
+| Configuration       | `pnpm config:set --help`              | `pnpm config:set --key methodology.testing --value test-after`           |
 | Agent Utilities     | `pnpm agent:issues-query --help`      | `pnpm agent:issues-query`                                                |
 
 ---
@@ -212,6 +213,30 @@ Supported mismatch fixes:
 
 - YAML=ready, state=in_progress: Emits `release` event
 - YAML=done, state=in_progress: Emits `complete` event
+
+---
+
+## Configuration
+
+| Command                                           | Description                                             |
+| ------------------------------------------------- | ------------------------------------------------------- |
+| `pnpm config:get --key <dotpath>`                 | Read a value from `.lumenflow.config.yaml`              |
+| `pnpm config:set --key <dotpath> --value <value>` | Set a value in `.lumenflow.config.yaml` (Zod-validated) |
+
+`config:set` validates against the Zod schema before writing and uses the micro-worktree
+pattern for atomic commits. Always use these commands instead of raw Write/Edit on
+`.lumenflow.config.yaml`. See [Constraint 9](../../../../../.lumenflow/constraints.md)
+and [YAML editing policy](../../../../../.lumenflow/rules/yaml-editing-policy.md).
+
+**Common dotpaths:**
+
+| Dotpath                           | Type    | Example Values              |
+| --------------------------------- | ------- | --------------------------- |
+| `methodology.testing`             | enum    | `tdd`, `test-after`, `none` |
+| `gates.minCoverage`               | number  | `0`-`100`                   |
+| `gates.enableCoverage`            | boolean | `true`, `false`             |
+| `experimental.context_validation` | boolean | `true`, `false`             |
+| `git.requireRemote`               | boolean | `true`, `false`             |
 
 ---
 

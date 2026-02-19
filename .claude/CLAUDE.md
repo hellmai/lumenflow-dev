@@ -72,6 +72,23 @@ Available agents in `.claude/agents/`:
 - `test-engineer` — TDD, coverage enforcement
 - `code-reviewer` — Quality checks
 
+## Safe YAML Modification (Constraint 9)
+
+**Never use Write or Edit tools to modify `.lumenflow.config.yaml` or WU YAML files.**
+
+Claude Code has tool-level hooks (PreToolUse) that validate worktree paths, but YAML config files are in the allowlist. This means Write/Edit to these files is not blocked by hooks -- you must follow the policy voluntarily.
+
+| File                     | Safe Command                                 | Do NOT Use           |
+| ------------------------ | -------------------------------------------- | -------------------- |
+| `.lumenflow.config.yaml` | `pnpm config:set --key <path> --value <val>` | Write/Edit tools     |
+| `.lumenflow.config.yaml` | `pnpm config:get --key <path>` (read)        | --                   |
+| WU YAML specs            | `pnpm wu:edit --id WU-XXX --field value`     | Write/Edit tools     |
+| WU YAML specs            | `pnpm wu:create ...` (creation)              | Write to create YAML |
+
+**Exception:** Reading YAML files with the Read tool is acceptable.
+
+For details, see the [YAML editing policy](.lumenflow/rules/yaml-editing-policy.md) and [agent safety architecture](docs/04-operations/_frameworks/lumenflow/agent-safety-architecture.md).
+
 ## Quick Reminders
 
 - **Run `<command> --help` before first use of any unfamiliar CLI command.**
@@ -80,3 +97,4 @@ Available agents in `.claude/agents/`:
 - Run `pnpm gates` before `pnpm wu:done`.
 - Complete work with `pnpm wu:done --id WU-XXX` from the main checkout.
 - Load relevant skills before starting complex work.
+- **Never raw-edit YAML files** -- use `pnpm config:set` and `pnpm wu:edit` instead.
