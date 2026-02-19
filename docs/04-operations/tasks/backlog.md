@@ -20,24 +20,24 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1897 — Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers](wu/WU-1897.yaml) — Framework: Core Lifecycle
-- [WU-1896 — Migrate memory command surfaces to software-delivery handlers](wu/WU-1896.yaml) — Framework: Core Lifecycle
-- [WU-1895 — Migrate WU cleanup/admin commands to software-delivery handlers](wu/WU-1895.yaml) — Framework: Core Lifecycle
-- [WU-1894 — Migrate WU delegation/context commands to software-delivery handlers](wu/WU-1894.yaml) — Framework: Core Lifecycle
-- [WU-1893 — Migrate WU state-transition maintenance commands to software-delivery handlers](wu/WU-1893.yaml) — Framework: Core Lifecycle
-- [WU-1892 — Prove pack #1 tracer-bullet end-to-end in a bootstrapped workspace](wu/WU-1892.yaml) — Framework: Core Lifecycle
-- [WU-1891 — Disable migration compat guard by default and remove software-delivery fallback shims](wu/WU-1891.yaml) — Framework: Core Lifecycle
-- [WU-1890 — Migrate file/git/state/validation/lane surfaces and clear remaining software-delivery stubs](wu/WU-1890.yaml) — Framework: Core Lifecycle
-- [WU-1889 — Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers](wu/WU-1889.yaml) — Framework: Core Lifecycle
-- [WU-1888 — Migrate WU maintenance and delegation command set to software-delivery handlers](wu/WU-1888.yaml) — Framework: Core Lifecycle
-- [WU-1887 — Migrate core WU lifecycle commands to software-delivery pack handlers](wu/WU-1887.yaml) — Framework: Core Lifecycle
-- [WU-1886 — Add executeViaPack migration compat guard and fallback telemetry](wu/WU-1886.yaml) — Framework: Core Lifecycle
-- [WU-1885 — Add software-delivery migration scorecard and CI stub regression gate](wu/WU-1885.yaml) — Framework: Core Lifecycle
-- [WU-1884 — Retarget INIT-031 Phase 6 to software-delivery pack completion](wu/WU-1884.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
+- [WU-1884 — Retarget INIT-031 Phase 6 to software-delivery pack completion](wu/WU-1884.yaml) — Framework: Core Lifecycle
+- [WU-1885 — Add software-delivery migration scorecard and CI stub regression gate](wu/WU-1885.yaml) — Framework: Core Lifecycle
+- [WU-1886 — Add executeViaPack migration compat guard and fallback telemetry](wu/WU-1886.yaml) — Framework: Core Lifecycle
+- [WU-1887 — Migrate core WU lifecycle commands to software-delivery pack handlers](wu/WU-1887.yaml) — Framework: Core Lifecycle
+- [WU-1888 — Migrate WU maintenance and delegation command set to software-delivery handlers](wu/WU-1888.yaml) — Framework: Core Lifecycle
+- [WU-1889 — Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers](wu/WU-1889.yaml) — Framework: Core Lifecycle
+- [WU-1890 — Migrate file/git/state/validation/lane surfaces and clear remaining software-delivery stubs](wu/WU-1890.yaml) — Framework: Core Lifecycle
+- [WU-1891 — Disable migration compat guard by default and remove software-delivery fallback shims](wu/WU-1891.yaml) — Framework: Core Lifecycle
+- [WU-1892 — Prove pack #1 tracer-bullet end-to-end in a bootstrapped workspace](wu/WU-1892.yaml) — Framework: Core Lifecycle
+- [WU-1893 — Migrate WU state-transition maintenance commands to software-delivery handlers](wu/WU-1893.yaml) — Framework: Core Lifecycle
+- [WU-1894 — Migrate WU delegation/context commands to software-delivery handlers](wu/WU-1894.yaml) — Framework: Core Lifecycle
+- [WU-1895 — Migrate WU cleanup/admin commands to software-delivery handlers](wu/WU-1895.yaml) — Framework: Core Lifecycle
+- [WU-1896 — Migrate memory command surfaces to software-delivery handlers](wu/WU-1896.yaml) — Framework: Core Lifecycle
+- [WU-1897 — Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers](wu/WU-1897.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
