@@ -5,6 +5,7 @@ _Last updated: 2026-02-19_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1913 — Starlight: reference page updates + sidebar restructure + deploy](wu/WU-1913.yaml)
 
 ## Completed
 

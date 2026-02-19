@@ -1779,3 +1779,4 @@
 {"type":"complete","wuId":"WU-1911","timestamp":"2026-02-19T21:49:10.237Z"}
 {"type":"claim","wuId":"WU-1912","timestamp":"2026-02-19T21:51:06.151Z","lane":"Content: Site Comms","title":"Starlight: update existing pages for kernel/pack architecture"}
 {"type":"complete","wuId":"WU-1912","timestamp":"2026-02-19T21:59:39.667Z"}
+{"type":"claim","wuId":"WU-1913","lane":"Content: Site Comms","title":"Starlight: reference page updates + sidebar restructure + deploy","timestamp":"2026-02-19T22:00:49.528Z"}

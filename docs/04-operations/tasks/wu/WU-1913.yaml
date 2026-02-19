@@ -2,7 +2,7 @@ id: WU-1913
 title: 'Starlight: reference page updates + sidebar restructure + deploy'
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-19
 code_paths:
@@ -48,3 +48,11 @@ acceptance:
   - Cross-page consistency verified with no conflicting descriptions of LumenFlow
   - pnpm docs:validate passes with zero errors
   - Site builds successfully and is ready for Vercel deploy
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1913
+claimed_at: 2026-02-19T22:00:49.475Z
+baseline_main_sha: 9e5a370741d9ff6015ca0ff07826915978208730
+session_id: 07f6f97c-7899-4040-a6e3-ad7c7be7bee8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T22:00:49.482Z
