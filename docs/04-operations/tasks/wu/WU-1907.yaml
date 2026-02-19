@@ -6,10 +6,11 @@ status: in_progress
 priority: P2
 created: 2026-02-19
 code_paths:
-  - docs/04-operations/_frameworks/lumenflow/**
+  - docs/04-operations/_frameworks/lumenflow/agent-safety-architecture.md
   - .lumenflow/constraints.md
   - .lumenflow/rules/yaml-editing-policy.md
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/**
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
   - .claude/CLAUDE.md
   - .cursorrules
   - apps/docs/src/content/docs/reference/agent-safety.mdx
