@@ -2,7 +2,7 @@ id: WU-1892
 title: 'Prove pack #1 tracer-bullet end-to-end in a bootstrapped workspace'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-19
 code_paths:
@@ -55,3 +55,6 @@ acceptance:
   - Policy decisions, enforced scopes, and evidence receipts are produced and auditable for
     tracer-bullet run
   - No software-delivery command in tracer-bullet flow uses CLI fallback path
+locked: true
+completed_at: 2026-02-19T19:37:31.454Z
+completed: 2026-02-19
