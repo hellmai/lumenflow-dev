@@ -2,7 +2,7 @@ id: WU-1888
 title: Migrate WU maintenance and delegation command set to software-delivery handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -46,3 +46,11 @@ acceptance:
     handlers
   - Resolver fallback stubs are removed for migrated maintenance/delegation commands
   - Runtime execution of migrated maintenance/delegation commands succeeds without CLI fallback
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1888
+claimed_at: 2026-02-19T16:48:27.110Z
+baseline_main_sha: 94b750ab8dcba479c033c14d275f12c8e0d5e7bf
+session_id: 8f47720a-ac8c-4d61-bf23-f603b477b39c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T16:48:27.119Z
