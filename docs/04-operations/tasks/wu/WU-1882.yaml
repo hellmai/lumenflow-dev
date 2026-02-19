@@ -2,7 +2,7 @@ id: WU-1882
 title: Fix segment padding overflow at 10,000+ segments in EvidenceStore
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-19
 code_paths:
@@ -44,3 +44,6 @@ session_id: a050e0a4-6ffa-452a-a62b-396ddc6e0a85
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-19T09:21:39.675Z
+locked: true
+completed_at: 2026-02-19T09:31:20.696Z
+completed: 2026-02-19

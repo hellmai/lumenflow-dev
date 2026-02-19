@@ -1708,3 +1708,4 @@
 {"type":"claim","wuId":"WU-1883","timestamp":"2026-02-19T09:21:46.669Z","lane":"Framework: Core Lifecycle","title":"Extract ENOENT/stat helpers and add trace-failure telemetry to ToolHost"}
 {"type":"claim","wuId":"WU-1881","timestamp":"2026-02-19T09:22:51.253Z","lane":"Framework: Core Lifecycle","title":"Fix multi-instance incremental hydrate duplicate entries in EvidenceStore"}
 {"type":"complete","wuId":"WU-1881","timestamp":"2026-02-19T09:30:32.743Z"}
+{"type":"complete","wuId":"WU-1882","timestamp":"2026-02-19T09:31:25.531Z"}

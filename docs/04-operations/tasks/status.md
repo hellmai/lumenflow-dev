@@ -5,7 +5,6 @@ _Last updated: 2026-02-19_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1882 — Fix segment padding overflow at 10,000+ segments in EvidenceStore](wu/WU-1882.yaml)
 - [WU-1883 — Extract ENOENT/stat helpers and add trace-failure telemetry to ToolHost](wu/WU-1883.yaml)
 
 ## Completed
@@ -819,3 +818,4 @@ _Last updated: 2026-02-19_
 - [WU-1876 — Evidence export endpoint with CSV and JSON format support](wu/WU-1876.yaml) — 2026-02-18
 - [WU-1878 — Marketplace Install to workspace button](wu/WU-1878.yaml) — 2026-02-19
 - [WU-1881 — Fix multi-instance incremental hydrate duplicate entries in EvidenceStore](wu/WU-1881.yaml) — 2026-02-19
+- [WU-1882 — Fix segment padding overflow at 10,000+ segments in EvidenceStore](wu/WU-1882.yaml) — 2026-02-19
