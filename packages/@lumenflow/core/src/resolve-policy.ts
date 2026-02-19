@@ -78,6 +78,68 @@ export const MethodologyOverridesSchema = z.object({
 export type MethodologyOverrides = z.infer<typeof MethodologyOverridesSchema>;
 
 /**
+ * WU-1899: Work classification UI pattern configuration
+ *
+ * Allows extending default UI detection patterns with project-specific
+ * code path patterns and lane hints. Custom values EXTEND defaults,
+ * they do not replace them.
+ *
+ * @example
+ * ```yaml
+ * methodology:
+ *   work_classification:
+ *     ui:
+ *       code_path_patterns:
+ *         - 'src/widgets/*.tsx'
+ *       lane_hints:
+ *         - 'Design'
+ * ```
+ */
+export const WorkClassificationUiSchema = z.object({
+  /**
+   * Additional glob patterns for detecting UI work via code paths.
+   * These extend the built-in defaults (CSS, SCSS, LESS, components, pages, etc.).
+   * Uses minimatch glob syntax.
+   */
+  code_path_patterns: z.array(z.string()).optional(),
+
+  /**
+   * Additional lane parent hints for detecting UI work.
+   * These extend the built-in defaults (Experience, Frontend, UI, Design).
+   * Matched case-insensitively against the lane parent (part before the colon).
+   */
+  lane_hints: z.array(z.string()).optional(),
+});
+
+/** WU-1899: TypeScript type for work classification UI config */
+export type WorkClassificationUi = z.infer<typeof WorkClassificationUiSchema>;
+
+/**
+ * WU-1899: Work classification configuration schema
+ *
+ * Controls signal-based work domain detection for code-path-aware
+ * UI/backend/docs/infra classification.
+ *
+ * @example
+ * ```yaml
+ * methodology:
+ *   work_classification:
+ *     ui:
+ *       code_path_patterns:
+ *         - 'src/widgets/*.tsx'
+ *       lane_hints:
+ *         - 'Design'
+ * ```
+ */
+export const WorkClassificationConfigSchema = z.object({
+  /** UI detection pattern overrides (extend defaults) */
+  ui: WorkClassificationUiSchema.optional(),
+});
+
+/** WU-1899: TypeScript type for work classification config */
+export type WorkClassificationSchemaConfig = z.infer<typeof WorkClassificationConfigSchema>;
+
+/**
  * Main methodology configuration schema
  *
  * Config example in .lumenflow.config.yaml:
@@ -88,6 +150,12 @@ export type MethodologyOverrides = z.infer<typeof MethodologyOverridesSchema>;
  *   overrides:
  *     coverage_threshold: 85    # Override TDD's default 90%
  *     coverage_mode: 'warn'     # Override TDD's default 'block'
+ *   work_classification:
+ *     ui:
+ *       code_path_patterns:
+ *         - 'src/widgets/*.tsx'
+ *       lane_hints:
+ *         - 'Design'
  * ```
  */
 export const MethodologyConfigSchema = z.object({
@@ -97,6 +165,12 @@ export const MethodologyConfigSchema = z.object({
   architecture: ArchitectureMethodologySchema.default('hexagonal'),
   /** Optional overrides for template defaults */
   overrides: MethodologyOverridesSchema.optional(),
+  /**
+   * WU-1899: Work classification configuration.
+   * Extends default signal patterns for UI/backend/docs/infra detection.
+   * Custom patterns extend defaults, they do not replace them.
+   */
+  work_classification: WorkClassificationConfigSchema.optional(),
 });
 
 export type MethodologyConfig = z.infer<typeof MethodologyConfigSchema>;

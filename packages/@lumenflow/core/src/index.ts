@@ -368,6 +368,7 @@ export { tryAssembleSpawnTemplates, buildTemplateContext } from './wu-spawn.js';
 export * from './patrol-loop.js';
 
 // WU-1259: Methodology policy resolution
+// WU-1899: Work classification config schemas
 export {
   resolvePolicy,
   getDefaultPolicy,
@@ -376,6 +377,8 @@ export {
   TestingMethodologySchema,
   ArchitectureMethodologySchema,
   CoverageModeSchema,
+  WorkClassificationConfigSchema,
+  WorkClassificationUiSchema,
   TESTING_METHODOLOGY,
   ARCHITECTURE_METHODOLOGY,
   COVERAGE_MODE,
@@ -386,6 +389,8 @@ export {
   type TestingMethodology,
   type ArchitectureMethodology,
   type CoverageMode,
+  type WorkClassificationSchemaConfig,
+  type WorkClassificationUi,
 } from './resolve-policy.js';
 
 // WU-1411: WU list helper for MCP server and other tools
@@ -393,6 +398,19 @@ export { listWUs, type WUListEntry, type ListWUsOptions } from './wu-list.js';
 
 // WU-1431: Shared CLI/MCP command schemas for parity
 export * from './schemas/index.js';
+
+// WU-1899: Signal-based work classifier
+export {
+  classifyWork,
+  WORK_DOMAINS,
+  SIGNAL_WEIGHTS,
+  DEFAULT_UI_CODE_PATH_PATTERNS,
+  DEFAULT_UI_LANE_HINTS,
+  type WorkDomain,
+  type WorkSignal,
+  type WorkClassification,
+  type WorkClassificationConfig,
+} from './work-classifier.js';
 
 // WU-1495: Cloud auto-detection core
 export {

@@ -1463,7 +1463,13 @@ export type LanesConfig = z.infer<typeof LanesConfigSchema>;
 // WU-1356: Package manager, test runner, and gates commands types
 // Note: Types already exported via their schema definitions above
 // WU-1259: Re-export methodology types from resolve-policy
-export type { MethodologyConfig, MethodologyOverrides } from './resolve-policy.js';
+// WU-1899: Also re-export work classification types
+export type {
+  MethodologyConfig,
+  MethodologyOverrides,
+  WorkClassificationUi,
+  WorkClassificationSchemaConfig,
+} from './resolve-policy.js';
 
 /**
  * Validate configuration data

@@ -1,0 +1,195 @@
+---
+title: Work Classifier
+description: Signal-based work domain detection for code-path-aware UI/backend/docs classification.
+---
+
+The work classifier determines the domain of a Work Unit using weighted signals from code paths, lane names, WU type, and description keywords. It returns abstract capability tags and test methodology hints for vendor-agnostic integration.
+
+## API
+
+### `classifyWork(doc, config?)`
+
+Classify the work domain from multiple weighted signals.
+
+**Parameters:**
+
+| Parameter | Type                       | Description                                                  |
+| --------- | -------------------------- | ------------------------------------------------------------ |
+| `doc`     | `object`                   | WU document with `code_paths`, `lane`, `type`, `description` |
+| `config`  | `WorkClassificationConfig` | Optional config to extend default patterns                   |
+
+**Returns:** `WorkClassification`
+
+```typescript
+import { classifyWork, WORK_DOMAINS } from '@lumenflow/core';
+
+const result = classifyWork({
+  code_paths: ['src/components/Button.tsx'],
+  lane: 'Framework: Core',
+});
+// { domain: 'ui', confidence: 1.0, signals: [...], capabilities: [...], testMethodologyHint: 'smoke-test' }
+```
+
+### `WorkClassification`
+
+```typescript
+interface WorkClassification {
+  /** Detected work domain: 'ui' | 'backend' | 'docs' | 'infra' | 'mixed' */
+  domain: WorkDomain;
+  /** Confidence score (max signal weight, 0 if no match) */
+  confidence: number;
+  /** Individual signals that contributed to classification */
+  signals: WorkSignal[];
+  /** Abstract capability tags (NOT client skill names) */
+  capabilities: string[];
+  /** Test methodology hint, e.g. 'smoke-test' for UI work */
+  testMethodologyHint?: string;
+}
+```
+
+### `WorkSignal`
+
+```typescript
+interface WorkSignal {
+  source: string; // 'code_paths' | 'lane' | 'type' | 'description'
+  domain: WorkDomain;
+  weight: number;
+  match: string; // The pattern or keyword that matched
+}
+```
+
+## Signal Weights
+
+| Signal        | Weight | Description                              |
+| ------------- | ------ | ---------------------------------------- |
+| `code_paths`  | 1.0    | Glob pattern matching against file paths |
+| `lane`        | 0.6    | Lane parent/sublane name matching        |
+| `type`        | 0.3    | WU type field (e.g., `documentation`)    |
+| `description` | 0.2    | Keyword matching in description text     |
+
+Confidence = max(matched signal weights), not sum. Domain is assigned only when confidence >= 0.3.
+
+## Constants
+
+### `WORK_DOMAINS`
+
+```typescript
+const WORK_DOMAINS = {
+  UI: 'ui',
+  BACKEND: 'backend',
+  DOCS: 'docs',
+  INFRA: 'infra',
+  MIXED: 'mixed',
+};
+```
+
+### `SIGNAL_WEIGHTS`
+
+```typescript
+const SIGNAL_WEIGHTS = {
+  CODE_PATHS: 1.0,
+  LANE: 0.6,
+  TYPE: 0.3,
+  DESCRIPTION: 0.2,
+};
+```
+
+### `DEFAULT_UI_CODE_PATH_PATTERNS`
+
+Built-in glob patterns for detecting UI work via code paths:
+
+- `**/*.css`, `**/*.scss`, `**/*.less`
+- `**/*.module.css`, `**/*.module.scss`
+- `**/*.styled.ts`, `**/*.styled.tsx`
+- `**/components/**`, `**/pages/**`
+- `**/app/**/page.tsx`, `**/app/**/layout.tsx` (and variants)
+
+### `DEFAULT_UI_LANE_HINTS`
+
+Built-in lane parent hints: `Experience`, `Frontend`, `UI`, `Design`.
+
+## Capabilities
+
+The classifier returns abstract capability tags (not client-specific skill names):
+
+| Domain    | Capabilities                                   |
+| --------- | ---------------------------------------------- |
+| `ui`      | `ui-design-awareness`, `component-reuse-check` |
+| `docs`    | `documentation-structure`, `link-validation`   |
+| `infra`   | `infrastructure-review`, `security-check`      |
+| `mixed`   | `cross-domain-awareness`                       |
+| `backend` | (none)                                         |
+
+## Configuration
+
+Extend default patterns via `methodology.work_classification` in `.lumenflow.config.yaml`.
+Custom values **extend** the built-in defaults; they do not replace them.
+
+```yaml
+methodology:
+  work_classification:
+    ui:
+      code_path_patterns:
+        - 'src/widgets/*.tsx'
+        - 'src/views/**'
+      lane_hints:
+        - 'Design'
+        - 'Visual'
+```
+
+### `WorkClassificationConfig`
+
+```typescript
+interface WorkClassificationConfig {
+  ui?: {
+    /** Additional glob patterns (extend defaults) */
+    code_path_patterns?: string[];
+    /** Additional lane hints (extend defaults) */
+    lane_hints?: string[];
+  };
+}
+```
+
+## Test Methodology Hint
+
+When the detected domain is `ui` and confidence >= 0.5, the classifier returns `testMethodologyHint: 'smoke-test'`. This signals to consumers (like `wu:brief`) that visual smoke tests should be recommended alongside unit tests.
+
+## Examples
+
+### CSS in a non-Experience lane
+
+```typescript
+classifyWork({
+  code_paths: ['apps/web/src/styles/main.css'],
+  lane: 'Framework: Core',
+});
+// domain: 'ui', confidence: 1.0
+```
+
+### Documentation WU
+
+```typescript
+classifyWork({
+  type: 'documentation',
+  code_paths: [],
+});
+// domain: 'docs', confidence: 0.3
+```
+
+### Mixed domains
+
+```typescript
+classifyWork({
+  code_paths: ['src/components/Header.tsx', 'docs/api.md'],
+});
+// domain: 'mixed', confidence: 1.0
+```
+
+### No match (backend fallback)
+
+```typescript
+classifyWork({
+  code_paths: ['packages/core/src/utils.ts'],
+});
+// domain: 'backend', confidence: 0
+```
