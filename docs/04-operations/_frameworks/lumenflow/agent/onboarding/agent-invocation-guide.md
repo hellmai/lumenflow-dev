@@ -123,6 +123,33 @@ Use this structure for sub-agent prompts:
 
 ---
 
+## 3a) Template Condition Evaluation (WU-1898)
+
+Spawn prompt templates support conditional inclusion via the `condition` field in template frontmatter. Conditions are evaluated against the WU context before templates are included in the assembled prompt.
+
+**How it works:**
+
+- Templates with a `condition` field are only included when the condition evaluates to `true`
+- The `type` context variable (from WU YAML) gates type-specific directives
+- The `policy.testing` and `policy.architecture` context variables gate methodology templates
+- Templates without a `condition` field are always included
+
+**Examples of condition gating:**
+
+| Template                  | Condition                                                      | Effect                                          |
+| ------------------------- | -------------------------------------------------------------- | ----------------------------------------------- |
+| `tdd-directive`           | `type !== 'documentation' && type !== 'docs' && type !== 'config'` | Excluded for documentation WUs                  |
+| `documentation-directive` | `type === 'documentation' \|\| type === 'docs' \|\| type === 'config'` | Included only for documentation WUs             |
+| `refactor-directive`      | `type === 'refactor'`                                          | Included only for refactor WUs                  |
+| `methodology-tdd`         | `policy.testing === 'tdd'`                                     | Included only when TDD policy is active         |
+| `methodology-test-after`  | `policy.testing === 'test-after'`                              | Included only when test-after policy is active  |
+
+This ensures documentation WUs do not receive TDD directives, and methodology-specific directives are only included when the project's resolved policy matches.
+
+**Reference:** See the [Template Format reference](https://lumenflow.dev/reference/templates/) for full condition syntax and context variables.
+
+---
+
 ## 4) Append These Constraints at the End (Mandatory)
 
 Paste this block at the end of every multi-agent prompt:

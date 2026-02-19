@@ -28,7 +28,12 @@ import {
   generateSkillsSelectionSection,
 } from '@lumenflow/core/wu-spawn-skills';
 // WU-1253: Template loader for extracted prompt templates
-import { loadTemplatesWithOverrides, replaceTokens } from '@lumenflow/core/template-loader';
+// WU-1898: Import evaluateCondition to gate templates by frontmatter conditions
+import {
+  loadTemplatesWithOverrides,
+  replaceTokens,
+  evaluateCondition,
+} from '@lumenflow/core/template-loader';
 import type { TemplateContext } from '@lumenflow/core/template-loader';
 
 // WU-1192: Import prompt generation from Core (single source of truth)
@@ -46,6 +51,7 @@ import {
 
 // WU-1288: Import resolvePolicy for methodology policy resolution
 import { resolvePolicy } from '@lumenflow/core/resolve-policy';
+import type { ResolvedPolicy } from '@lumenflow/core/resolve-policy';
 
 // WU-1240: Import memory context integration for spawn prompts
 import {
@@ -966,12 +972,17 @@ export function generateClientBlocksSection(clientContext: ClientContext | undef
 
 /**
  * WU-1253: Try to load templates for spawn prompt sections.
+ * WU-1898: Evaluates frontmatter conditions before including templates.
  *
  * Implements shadow mode: tries templates first, returns empty map
  * if templates aren't available (caller uses hardcoded fallback).
  *
+ * Templates with conditions (e.g., "type !== 'documentation'") are
+ * evaluated against the provided context. Templates whose condition
+ * evaluates to false are excluded from the result map.
+ *
  * @param clientName - Client name for overrides (e.g., 'claude-code', 'cursor')
- * @param context - Token values for replacement
+ * @param context - Token values for replacement and condition evaluation
  * @returns Map of template id to processed content, empty if templates unavailable
  */
 export function tryLoadTemplates(
@@ -983,8 +994,12 @@ export function tryLoadTemplates(
     const baseDir = process.cwd();
     const templates = loadTemplatesWithOverrides(baseDir, clientName);
 
-    // Process each template: replace tokens
+    // WU-1898: Evaluate frontmatter conditions before including templates
     for (const [id, template] of templates) {
+      const condition = template.frontmatter.condition;
+      if (!evaluateCondition(condition, context)) {
+        continue;
+      }
       const processed = replaceTokens(template.content, context);
       result.set(id, processed);
     }
@@ -996,17 +1011,23 @@ export function tryLoadTemplates(
 
 /**
  * WU-1253: Build template context from WU document.
+ * WU-1898: Accepts optional policy for condition evaluation of methodology templates.
  *
  * @param doc - WU YAML document
  * @param id - WU ID
- * @returns Context for template token replacement
+ * @param policy - Optional resolved policy for methodology condition evaluation
+ * @returns Context for template token replacement and condition evaluation
  */
-export function buildSpawnTemplateContext(doc: WUDocument, id: string): TemplateContext {
+export function buildSpawnTemplateContext(
+  doc: WUDocument,
+  id: string,
+  policy?: ResolvedPolicy,
+): TemplateContext {
   const lane = doc.lane || '';
   const laneParent = lane.split(':')[0]?.trim() || '';
   const type = (doc.type || 'feature').toLowerCase();
 
-  return {
+  const context: TemplateContext = {
     WU_ID: id,
     LANE: lane,
     TYPE: type,
@@ -1019,6 +1040,14 @@ export function buildSpawnTemplateContext(doc: WUDocument, id: string): Template
     lane,
     worktreePath: doc.worktree_path || '',
   };
+
+  // WU-1898: Add policy fields for methodology template condition evaluation
+  if (policy) {
+    context['policy.testing'] = policy.testing;
+    context['policy.architecture'] = policy.architecture;
+  }
+
+  return context;
 }
 
 // ─── Full Prompt Generators ───
@@ -1044,18 +1073,20 @@ export function generateTaskInvocation(
   const codePaths = doc.code_paths || [];
   const mandatoryAgents = detectMandatoryAgents(codePaths);
 
-  // WU-1253: Try loading templates (shadow mode - falls back to hardcoded if unavailable)
-  // WU-1681: Use resolved client from caller; fall back for template loading only
-  const clientName = options.client?.name || 'claude-code';
-  const templateContext = buildSpawnTemplateContext(doc, id);
-  const templates = tryLoadTemplates(clientName, templateContext);
-
   const preamble = generatePreamble(id, strategy);
   const clientContext = options.client;
   const config = options.config || getConfig();
 
   // WU-1288: Resolve methodology policy from config
+  // WU-1898: Moved before template loading so policy is available for condition evaluation
   const policy = resolvePolicy(config);
+
+  // WU-1253: Try loading templates (shadow mode - falls back to hardcoded if unavailable)
+  // WU-1681: Use resolved client from caller; fall back for template loading only
+  // WU-1898: Pass policy to context for methodology template condition evaluation
+  const clientName = options.client?.name || 'claude-code';
+  const templateContext = buildSpawnTemplateContext(doc, id, policy);
+  const templates = tryLoadTemplates(clientName, templateContext);
 
   // WU-1142: Use type-aware test guidance instead of hardcoded TDD directive
   // WU-1288: Use policy-based test guidance that respects methodology.testing config

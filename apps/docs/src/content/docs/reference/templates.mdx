@@ -208,15 +208,17 @@ Conditions control whether a template is included in the assembled prompt.
 
 Conditions use lowercase aliases of token values:
 
-| Variable       | Maps To           | Example Values                       |
-| -------------- | ----------------- | ------------------------------------ |
-| `type`         | `{TYPE}`          | `feature`, `bug`, `documentation`    |
-| `lane`         | `{LANE}`          | `Framework: Core`                    |
-| `wuId`         | `{WU_ID}`         | `WU-1253`                            |
-| `title`        | `{TITLE}`         | `Add template loader`                |
-| `description`  | `{DESCRIPTION}`   | Full description text                |
-| `worktreePath` | `{WORKTREE_PATH}` | Path or undefined                    |
-| `laneParent`   | Extracted         | `Framework`, `Content`, `Operations` |
+| Variable              | Maps To           | Example Values                       |
+| --------------------- | ----------------- | ------------------------------------ |
+| `type`                | `{TYPE}`          | `feature`, `bug`, `documentation`    |
+| `lane`                | `{LANE}`          | `Framework: Core`                    |
+| `wuId`                | `{WU_ID}`         | `WU-1253`                            |
+| `title`               | `{TITLE}`         | `Add template loader`                |
+| `description`         | `{DESCRIPTION}`   | Full description text                |
+| `worktreePath`        | `{WORKTREE_PATH}` | Path or undefined                    |
+| `laneParent`          | Extracted         | `Framework`, `Content`, `Operations` |
+| `policy.testing`      | Resolved policy   | `tdd`, `test-after`, `none`          |
+| `policy.architecture` | Resolved policy   | `hexagonal`, `layered`, `none`       |
 
 ### Condition Examples
 
@@ -247,6 +249,16 @@ condition: "laneParent === 'Operations' || laneParent === 'Framework'"
 condition: 'worktreePath'
 ```
 
+**Policy-based inclusion:**
+
+```yaml
+# Include only when TDD methodology is active
+condition: "policy.testing === 'tdd'"
+
+# Include for test-after methodology
+condition: "policy.testing === 'test-after'"
+```
+
 **Combined conditions:**
 
 ```yaml
@@ -266,9 +278,17 @@ When `wu:brief` runs, templates are assembled in this order:
 2. **Load templates** from `spawn-prompt/` directory
 3. **Apply client overrides** (e.g., `templates.claude/spawn-prompt/`)
 4. **Sort by order** field (ascending)
-5. **Evaluate conditions** for each template
+5. **Evaluate conditions** for each template against the WU context
 6. **Replace tokens** in included templates
 7. **Concatenate** with double newlines between sections
+
+<Aside type="note" title="Condition evaluation in both code paths (WU-1898)">
+  Template conditions are evaluated in **both** assembly paths:
+  - **Core path** (`tryAssembleSpawnTemplates`): Evaluates conditions from the manifest during ordered assembly.
+  - **CLI path** (`tryLoadTemplates`): Evaluates conditions from template frontmatter before adding templates to the lookup map. Templates whose conditions evaluate to `false` are excluded entirely, so `templates.get('tdd-directive')` returns `undefined` for documentation WUs.
+
+  Policy-based conditions (e.g., `policy.testing === 'tdd'`) require the resolved policy to be included in the template context. The CLI automatically enriches the context with `policy.testing` and `policy.architecture` from `resolvePolicy()`.
+</Aside>
 
 ### Override Resolution
 
