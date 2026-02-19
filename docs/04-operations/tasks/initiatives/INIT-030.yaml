@@ -4,7 +4,7 @@ title: KernelRuntime Adoption and Command Migration
 description: 'Feature-forward runtime adoption plan after INIT-029: complete remaining constant
   extraction, migrate command execution from CLI shell-outs to direct KernelRuntime calls in
   existing MCP/CLI packages, and close adoption metrics using a parity-safe strangler migration.'
-status: in_progress
+status: done
 priority: P1
 owner: 'Framework: Core'
 created: 2026-02-17
