@@ -25,14 +25,23 @@ initiative: INIT-030
 phase: 7
 blocked_by:
   - WU-1912
+spec_refs:
+  - docs/04-operations/plans/INIT-030-runtime-adoption-deprecation-roadmap.md
 risks: []
 notes: 'Sizing: Simple (~8 files, ~35 tool calls). Strategy: Single Session. Wave 3 of 3. Final WU
   includes deploy readiness.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T22:00:49.475Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1913
+session_id: 07f6f97c-7899-4040-a6e3-ad7c7be7bee8
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T22:00:49.482Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -48,11 +57,3 @@ acceptance:
   - Cross-page consistency verified with no conflicting descriptions of LumenFlow
   - pnpm docs:validate passes with zero errors
   - Site builds successfully and is ready for Vercel deploy
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1913
-claimed_at: 2026-02-19T22:00:49.475Z
-baseline_main_sha: 9e5a370741d9ff6015ca0ff07826915978208730
-session_id: 07f6f97c-7899-4040-a6e3-ad7c7be7bee8
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T22:00:49.482Z
