@@ -35,8 +35,15 @@ notes: >-
 
   Umbrella rollup scope: metadata/dependency coordination after worker WUs WU-1896 and WU-1897
   completion.
+
+
+  Rollup checkpoint: worker WUs WU-1896 and WU-1897 completed; umbrella advancing to closeout.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T17:22:52.037Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1889
+session_id: a6a18365-ba0b-43a2-af6d-bf23f42e86cb
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
@@ -56,8 +63,3 @@ acceptance:
   - Fallback-only resolver stubs are removed for migrated command families
   - Runtime execution for migrated command families succeeds without CLI fallback in bootstrapped
     mode
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1889
-claimed_at: 2026-02-19T17:22:52.037Z
-baseline_main_sha: 5c14f580705feb059f73dd53db3af703956383cc
-session_id: a6a18365-ba0b-43a2-af6d-bf23f42e86cb
