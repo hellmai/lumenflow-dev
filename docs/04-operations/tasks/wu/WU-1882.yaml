@@ -2,7 +2,7 @@ id: WU-1882
 title: Fix segment padding overflow at 10,000+ segments in EvidenceStore
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-19
 code_paths:
@@ -18,7 +18,8 @@ artifacts:
 dependencies: []
 initiative: INIT-030
 risks: []
-notes: 'Sizing: Simple (2 files, ~10 tool calls, <30% context). Two-line production fix + one test case. Found during INIT-030 Phase 5 code review.'
+notes: 'Sizing: Simple (2 files, ~10 tool calls, <30% context). Two-line production fix + one test
+  case. Found during INIT-030 Phase 5 code review.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -27,8 +28,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: SEGMENT_FILE_PATTERN uses \d{4} (exactly 4 digits) but padStart(4, '0') produces 5+ digit filenames at segment 10000+. These segments become invisible to reads, causing silent data loss. At 10 MiB default threshold this requires ~100 GB of traces — unlikely but violates no-latent-bugs principle.
+description: SEGMENT_FILE_PATTERN uses \d{4} (exactly 4 digits) but padStart(4, '0') produces 5+
+  digit filenames at segment 10000+. These segments become invisible to reads, causing silent data
+  loss. At 10 MiB default threshold this requires ~100 GB of traces — unlikely but violates
+  no-latent-bugs principle.
 acceptance:
   - SEGMENT_FILE_PATTERN matches variable-width segment numbers (\d+ instead of \d{4})
   - padStart uses 8 digits for future-proofing
   - 'Test: create segment 10000, verify it is readable by a fresh store instance'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1882
+claimed_at: 2026-02-19T09:21:39.670Z
+baseline_main_sha: 51e1e6d3d9c59e550bacab76c64845c6d7596ec1
+session_id: a050e0a4-6ffa-452a-a62b-396ddc6e0a85
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T09:21:39.675Z

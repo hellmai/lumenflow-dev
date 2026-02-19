@@ -5,6 +5,7 @@ _Last updated: 2026-02-19_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1882 — Fix segment padding overflow at 10,000+ segments in EvidenceStore](wu/WU-1882.yaml)
 
 ## Completed
 
