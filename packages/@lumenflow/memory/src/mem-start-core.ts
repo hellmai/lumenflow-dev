@@ -16,12 +16,10 @@
  */
 
 import { randomUUID } from 'node:crypto';
-import fs from 'node:fs/promises';
-import path from 'node:path';
 import { generateMemId } from './mem-id.js';
 import { appendNode } from './memory-store.js';
 import { MEMORY_PATTERNS, type MemoryNode } from './memory-schema.js';
-import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
+import { ensureMemoryDir } from './fs-utils.js';
 
 /**
  * Default values for session metadata
@@ -47,19 +45,6 @@ const ERROR_MESSAGES = {
  */
 function isValidWuId(wuId: string): boolean {
   return MEMORY_PATTERNS.WU_ID.test(wuId);
-}
-
-/**
- * Ensures the memory directory exists
- *
- * @param baseDir - Base directory
- * @returns Memory directory path
- */
-async function ensureMemoryDir(baseDir: string): Promise<string> {
-  const memoryDir = path.join(baseDir, LUMENFLOW_MEMORY_PATHS.MEMORY_DIR);
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known directory path
-  await fs.mkdir(memoryDir, { recursive: true });
-  return memoryDir;
 }
 
 /**
