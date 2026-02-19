@@ -8,8 +8,8 @@ created: 2026-02-19
 code_paths:
   - packages/@lumenflow/cli/src/wu-spawn-prompt-builders.ts
   - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts
-  - .lumenflow/templates/manifest.yaml
   - docs/04-operations/_frameworks/lumenflow/**
+  - apps/docs/src/content/docs/reference/templates.mdx
 tests:
   manual:
     - Run pnpm wu:brief on a documentation WU and verify output does NOT contain TDD DIRECTIVE
