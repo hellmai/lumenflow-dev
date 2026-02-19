@@ -37,13 +37,13 @@ sections:
 - [WU-1895 — Migrate WU cleanup/admin commands to software-delivery handlers](wu/WU-1895.yaml) — Framework: Core Lifecycle
 - [WU-1896 — Migrate memory command surfaces to software-delivery handlers](wu/WU-1896.yaml) — Framework: Core Lifecycle
 - [WU-1897 — Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers](wu/WU-1897.yaml) — Framework: Core Lifecycle
-- [WU-1900 — Wire work classifier into wu:brief generation for skills, test guidance, and constraints](wu/WU-1900.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1902 — Add config:set CLI command for safe .lumenflow.config.yaml modification](wu/WU-1902.yaml) — Framework: CLI Enforcement
 - [WU-1884 — Retarget INIT-031 Phase 6 to software-delivery pack completion](wu/WU-1884.yaml) — Framework: Core Lifecycle
+- [WU-1900 — Wire work classifier into wu:brief generation for skills, test guidance, and constraints](wu/WU-1900.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
