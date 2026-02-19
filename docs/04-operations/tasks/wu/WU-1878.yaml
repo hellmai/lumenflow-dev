@@ -2,7 +2,7 @@ id: WU-1878
 title: Marketplace Install to workspace button
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-18
 code_paths:
@@ -38,7 +38,7 @@ claimed_at: 2026-02-18T23:52:04.500Z
 worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1878
 session_id: c49f6de7-1d22-4acf-88b7-5a1d760b151b
 exposure: ui
-navigation_path: '/marketplace/:packId'
+navigation_path: /marketplace/:packId
 escalation_triggers: []
 requires_human_escalation: false
 approved_by:
@@ -58,3 +58,6 @@ acceptance:
   - Install to workspace button on MarketplacePackDetail triggers install API call
   - Button disabled when no workspace is connected with helpful tooltip
   - Success/error feedback shown after install attempt
+locked: true
+completed_at: 2026-02-19T00:01:28.994Z
+completed: 2026-02-19

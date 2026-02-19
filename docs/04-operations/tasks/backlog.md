@@ -28,7 +28,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1878 — Marketplace Install to workspace button](wu/WU-1878.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 
@@ -843,6 +842,7 @@ sections:
 - [WU-1875 — pack:install --source registry HTTP fetch path](wu/WU-1875.yaml)
 - [WU-1877 — 4 additional community packs published to registry](wu/WU-1877.yaml)
 - [WU-1876 — Evidence export endpoint with CSV and JSON format support](wu/WU-1876.yaml)
+- [WU-1878 — Marketplace Install to workspace button](wu/WU-1878.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
