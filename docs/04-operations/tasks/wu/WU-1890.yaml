@@ -10,7 +10,6 @@ code_paths:
   - packages/@lumenflow/packs/software-delivery/manifest.ts
   - packages/@lumenflow/packs/software-delivery/tool-impl
   - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
-  - packages/@lumenflow/mcp/src/tools/parity-tools.ts
 tests:
   manual:
     - Run scorecard check and confirm pendingRuntimeMigrationTool count is zero
@@ -34,10 +33,17 @@ risks: []
 notes: 'Sizing: Medium (expected 15-25 files, 50-80 tool calls) after upstream decomposition.
   Strategy: Checkpoint-Resume. Scope is final residual surface migration and stub-zero enforcement.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T17:25:05.925Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1890
+session_id: 8cf6d41d-a919-4b51-92c2-5bf8acfa264d
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T17:25:05.932Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -50,11 +56,3 @@ acceptance:
     handlers
   - software-delivery manifest contains no pendingRuntimeMigrationTool entries
   - Resolver does not register fallback-only handler stubs for software-delivery command surfaces
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1890
-claimed_at: 2026-02-19T17:25:05.925Z
-baseline_main_sha: 9a003f5ae663a041cc668a14d1108b1cf1f82916
-session_id: 8cf6d41d-a919-4b51-92c2-5bf8acfa264d
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T17:25:05.932Z
