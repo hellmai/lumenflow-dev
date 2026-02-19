@@ -2,7 +2,7 @@ id: WU-1886
 title: Add executeViaPack migration compat guard and fallback telemetry
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-19
 code_paths:
@@ -47,3 +47,11 @@ acceptance:
   - Fallback events include structured telemetry fields needed for migration observability (tool
     name, reason, workspace root)
   - Strict mode disables migration fallback path and returns explicit failure for unmigrated handlers
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1886
+claimed_at: 2026-02-19T13:10:13.210Z
+baseline_main_sha: 36bd3d76ea94396142177b407e1597a517f0891a
+session_id: af31271c-1bfa-4576-8cbe-b104975da4c5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T13:10:13.215Z

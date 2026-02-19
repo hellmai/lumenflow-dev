@@ -1724,3 +1724,4 @@
 {"type":"complete","wuId":"WU-1884","timestamp":"2026-02-19T13:01:45.960Z"}
 {"type":"claim","wuId":"WU-1885","timestamp":"2026-02-19T13:02:31.889Z","lane":"Framework: Core Lifecycle","title":"Add software-delivery migration scorecard and CI stub regression gate"}
 {"type":"complete","wuId":"WU-1885","timestamp":"2026-02-19T13:09:09.034Z"}
+{"type":"claim","wuId":"WU-1886","lane":"Framework: Core Lifecycle","title":"Add executeViaPack migration compat guard and fallback telemetry","timestamp":"2026-02-19T13:10:13.258Z"}
