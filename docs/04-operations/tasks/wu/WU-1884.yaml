@@ -2,7 +2,7 @@ id: WU-1884
 title: Retarget software-delivery migration stream to INIT-030 Phase 6
 lane: 'Framework: Core Lifecycle'
 type: documentation
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-19
 code_paths:
@@ -41,3 +41,6 @@ acceptance:
     including decomposition WUs
   - INIT-031 retains a reassignment note and does not actively track WU-1884..WU-1897 in its own WU
     inventory
+locked: true
+completed_at: 2026-02-19T13:01:41.123Z
+completed: 2026-02-19
