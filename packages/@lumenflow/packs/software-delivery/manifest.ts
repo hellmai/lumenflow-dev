@@ -70,6 +70,10 @@ const MEM_SIGNAL_TOOL_ENTRY = 'tool-impl/memory-tools.ts#memSignalTool';
 const MEM_SUMMARIZE_TOOL_ENTRY = 'tool-impl/memory-tools.ts#memSummarizeTool';
 const MEM_TRIAGE_TOOL_ENTRY = 'tool-impl/memory-tools.ts#memTriageTool';
 const MEM_RECOVER_TOOL_ENTRY = 'tool-impl/memory-tools.ts#memRecoverTool';
+const AGENT_SESSION_TOOL_ENTRY = 'tool-impl/agent-tools.ts#agentSessionTool';
+const AGENT_SESSION_END_TOOL_ENTRY = 'tool-impl/agent-tools.ts#agentSessionEndTool';
+const AGENT_LOG_ISSUE_TOOL_ENTRY = 'tool-impl/agent-tools.ts#agentLogIssueTool';
+const AGENT_ISSUES_QUERY_TOOL_ENTRY = 'tool-impl/agent-tools.ts#agentIssuesQueryTool';
 
 const TOOL_PERMISSIONS = {
   'wu:block': 'write',
@@ -205,6 +209,10 @@ const TOOL_ENTRY_OVERRIDES: Partial<Record<ToolName, string>> = {
   'mem:summarize': MEM_SUMMARIZE_TOOL_ENTRY,
   'mem:triage': MEM_TRIAGE_TOOL_ENTRY,
   'mem:recover': MEM_RECOVER_TOOL_ENTRY,
+  'agent:session': AGENT_SESSION_TOOL_ENTRY,
+  'agent:session-end': AGENT_SESSION_END_TOOL_ENTRY,
+  'agent:log-issue': AGENT_LOG_ISSUE_TOOL_ENTRY,
+  'agent:issues-query': AGENT_ISSUES_QUERY_TOOL_ENTRY,
 };
 
 export interface SoftwareDeliveryMigrationScorecard {

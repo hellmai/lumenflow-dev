@@ -107,11 +107,13 @@ const MEMORY_TOOL_NAMES = {
   TRIAGE: 'mem:triage',
   RECOVER: 'mem:recover',
 } as const;
-const SETUP_COORDINATION_PLAN_TOOL_NAMES = {
+const WU_1903_AGENT_TOOLS = {
   AGENT_SESSION: 'agent:session',
   AGENT_SESSION_END: 'agent:session-end',
   AGENT_LOG_ISSUE: 'agent:log-issue',
   AGENT_ISSUES_QUERY: 'agent:issues-query',
+} as const;
+const SETUP_COORDINATION_PLAN_TOOL_NAMES = {
   LUMENFLOW: 'lumenflow',
   LUMENFLOW_DOCTOR: 'lumenflow:doctor',
   LUMENFLOW_INTEGRATE: 'lumenflow:integrate',
@@ -493,12 +495,40 @@ describe('packToolCapabilityResolver', () => {
     }
   });
 
+  it('resolves WU-1903 agent tools to subprocess handlers', async () => {
+    const toolEntries = [
+      {
+        name: WU_1903_AGENT_TOOLS.AGENT_SESSION,
+        entry: 'tool-impl/agent-tools.ts#agentSessionTool',
+      },
+      {
+        name: WU_1903_AGENT_TOOLS.AGENT_SESSION_END,
+        entry: 'tool-impl/agent-tools.ts#agentSessionEndTool',
+      },
+      {
+        name: WU_1903_AGENT_TOOLS.AGENT_LOG_ISSUE,
+        entry: 'tool-impl/agent-tools.ts#agentLogIssueTool',
+      },
+      {
+        name: WU_1903_AGENT_TOOLS.AGENT_ISSUES_QUERY,
+        entry: 'tool-impl/agent-tools.ts#agentIssuesQueryTool',
+      },
+    ] as const;
+
+    for (const toolEntry of toolEntries) {
+      const capability = await packToolCapabilityResolver(
+        createResolverInput(toolEntry.name, toolEntry.entry),
+      );
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.SUBPROCESS);
+      expect(isInProcessPackToolRegistered(toolEntry.name)).toBe(false);
+      if (capability?.handler.kind === TOOL_HANDLER_KINDS.SUBPROCESS) {
+        expect(capability.handler.entry).toContain(toolEntry.entry);
+      }
+    }
+  });
+
   it('resolves setup/coordination/plan lifecycle tools to in-process handlers', async () => {
     const toolNames = [
-      SETUP_COORDINATION_PLAN_TOOL_NAMES.AGENT_SESSION,
-      SETUP_COORDINATION_PLAN_TOOL_NAMES.AGENT_SESSION_END,
-      SETUP_COORDINATION_PLAN_TOOL_NAMES.AGENT_LOG_ISSUE,
-      SETUP_COORDINATION_PLAN_TOOL_NAMES.AGENT_ISSUES_QUERY,
       SETUP_COORDINATION_PLAN_TOOL_NAMES.LUMENFLOW,
       SETUP_COORDINATION_PLAN_TOOL_NAMES.LUMENFLOW_DOCTOR,
       SETUP_COORDINATION_PLAN_TOOL_NAMES.LUMENFLOW_INTEGRATE,
@@ -1900,6 +1930,23 @@ describe('WU-1896: memory tools migrate off in-process handlers', () => {
       MEMORY_TOOL_NAMES.SUMMARIZE,
       MEMORY_TOOL_NAMES.TRIAGE,
       MEMORY_TOOL_NAMES.RECOVER,
+    ];
+    const registeredTools = listInProcessPackTools();
+
+    for (const toolName of migratedTools) {
+      expect(isInProcessPackToolRegistered(toolName)).toBe(false);
+      expect(registeredTools).not.toContain(toolName);
+    }
+  });
+});
+
+describe('WU-1903: agent integration tools migrate off in-process handlers', () => {
+  it('does not register migrated agent tools as in-process', () => {
+    const migratedTools = [
+      WU_1903_AGENT_TOOLS.AGENT_SESSION,
+      WU_1903_AGENT_TOOLS.AGENT_SESSION_END,
+      WU_1903_AGENT_TOOLS.AGENT_LOG_ISSUE,
+      WU_1903_AGENT_TOOLS.AGENT_ISSUES_QUERY,
     ];
     const registeredTools = listInProcessPackTools();
 

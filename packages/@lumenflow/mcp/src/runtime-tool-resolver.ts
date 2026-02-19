@@ -2531,30 +2531,6 @@ const WU_QUERY_MESSAGES = {
   INFER_LANE_FAILED: 'wu:infer-lane failed',
 } as const;
 
-const agentSessionInProcess: InProcessToolFn = async () =>
-  createFailureOutput(
-    VALIDATION_TOOL_ERROR_CODES.AGENT_SESSION_ERROR,
-    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
-  );
-
-const agentSessionEndInProcess: InProcessToolFn = async () =>
-  createFailureOutput(
-    VALIDATION_TOOL_ERROR_CODES.AGENT_SESSION_END_ERROR,
-    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
-  );
-
-const agentLogIssueInProcess: InProcessToolFn = async () =>
-  createFailureOutput(
-    VALIDATION_TOOL_ERROR_CODES.AGENT_LOG_ISSUE_ERROR,
-    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
-  );
-
-const agentIssuesQueryInProcess: InProcessToolFn = async () =>
-  createFailureOutput(
-    VALIDATION_TOOL_ERROR_CODES.AGENT_ISSUES_QUERY_ERROR,
-    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
-  );
-
 const lumenflowInProcess: InProcessToolFn = async () =>
   createFailureOutput(
     VALIDATION_TOOL_ERROR_CODES.LUMENFLOW_INIT_ERROR,
@@ -2729,38 +2705,6 @@ const wuInferLaneInProcess: InProcessToolFn = async (rawInput, context) => {
 };
 
 const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolHandler>([
-  [
-    IN_PROCESS_TOOL_NAMES.AGENT_SESSION,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.AGENT_SESSION,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: agentSessionInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.AGENT_SESSION_END,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.AGENT_SESSION_END,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: agentSessionEndInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.AGENT_LOG_ISSUE,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.AGENT_LOG_ISSUE,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: agentLogIssueInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.AGENT_ISSUES_QUERY,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.AGENT_ISSUES_QUERY,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: agentIssuesQueryInProcess,
-    },
-  ],
   [
     IN_PROCESS_TOOL_NAMES.LUMENFLOW,
     {

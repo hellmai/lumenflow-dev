@@ -6,7 +6,7 @@ import {
 } from '../manifest.js';
 
 const PENDING_RUNTIME_TOOL_ENTRY = 'tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool';
-const PENDING_RUNTIME_BASELINE = 52;
+const PENDING_RUNTIME_BASELINE = 48;
 
 describe('software-delivery migration scorecard (WU-1885)', () => {
   it('reports declared, pending-runtime, and real-handler totals', () => {
@@ -95,6 +95,20 @@ describe('software-delivery migration scorecard (WU-1885)', () => {
       ['mem:summarize', 'tool-impl/memory-tools.ts#memSummarizeTool'],
       ['mem:triage', 'tool-impl/memory-tools.ts#memTriageTool'],
       ['mem:recover', 'tool-impl/memory-tools.ts#memRecoverTool'],
+    ]);
+
+    for (const [toolName, expectedEntry] of expectedEntries.entries()) {
+      const manifestTool = SOFTWARE_DELIVERY_MANIFEST.tools.find((tool) => tool.name === toolName);
+      expect(manifestTool?.entry).toBe(expectedEntry);
+    }
+  });
+
+  it('routes WU-1903 agent tools to runtime handlers', () => {
+    const expectedEntries = new Map<string, string>([
+      ['agent:session', 'tool-impl/agent-tools.ts#agentSessionTool'],
+      ['agent:session-end', 'tool-impl/agent-tools.ts#agentSessionEndTool'],
+      ['agent:log-issue', 'tool-impl/agent-tools.ts#agentLogIssueTool'],
+      ['agent:issues-query', 'tool-impl/agent-tools.ts#agentIssuesQueryTool'],
     ]);
 
     for (const [toolName, expectedEntry] of expectedEntries.entries()) {
