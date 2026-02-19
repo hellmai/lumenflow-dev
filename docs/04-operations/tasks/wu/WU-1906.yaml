@@ -14,7 +14,6 @@ tests:
       all complete
   unit:
     - packages/@lumenflow/initiatives/src/orchestrator/__tests__/formatting.test.ts
-    - packages/@lumenflow/cli/src/__tests__/orchestrate-initiative.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1906.done
