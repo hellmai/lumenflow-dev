@@ -9,7 +9,11 @@ code_paths:
   - packages/@lumenflow/cli/src/config-set.ts
   - packages/@lumenflow/cli/src/config-get.ts
   - packages/@lumenflow/cli/src/__tests__/config-set.test.ts
-  - docs/04-operations/_frameworks/lumenflow/**
+  - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/core/package.json
+  - package.json
+  - docs/04-operations/_frameworks/lumenflow/config-set-usage.md
+  - apps/docs/src/content/docs/reference/config-commands.mdx
 tests:
   manual:
     - Run pnpm config:set --key methodology.testing --value test-after and verify config file
