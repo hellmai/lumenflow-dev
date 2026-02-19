@@ -7,9 +7,9 @@ priority: P1
 created: 2026-02-19
 code_paths:
   - packages/@lumenflow/packs/software-delivery/manifest.yaml
+  - packages/@lumenflow/packs/software-delivery/manifest.ts
   - packages/@lumenflow/packs/software-delivery/tool-impl
   - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
-  - packages/@lumenflow/mcp/src/tools/wu-tools.ts
 tests:
   manual:
     - Execute wu:block/wu:unblock/wu:release/wu:recover/wu:repair through runtime path and verify
@@ -29,10 +29,17 @@ risks: []
 notes: 'Sizing: Medium (expected 20-30 files, 50-90 tool calls). Strategy: Checkpoint-Resume. Split
   rationale: decomposes WU-1888 into command-family atomic units to reduce context risk.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T14:28:28.957Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1893
+session_id: 4b117605-d969-4134-b31c-d5a412d4d13b
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T14:28:28.964Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -44,11 +51,3 @@ acceptance:
     handlers in bootstrapped runtime mode
   - Resolver fallback stubs are removed for these state-transition maintenance commands
   - Runtime execution for migrated commands succeeds without CLI fallback in strict migration mode
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T14:28:28.964Z
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1893
-claimed_at: 2026-02-19T14:28:28.957Z
-baseline_main_sha: d90f47fa0105a3feb4adc25fcbb919f62ab02b66
-session_id: 4b117605-d969-4134-b31c-d5a412d4d13b
