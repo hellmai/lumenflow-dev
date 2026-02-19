@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1897 — Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers](wu/WU-1897.yaml) — Framework: Core Lifecycle
 - [WU-1896 — Migrate memory command surfaces to software-delivery handlers](wu/WU-1896.yaml) — Framework: Core Lifecycle
 - [WU-1895 — Migrate WU cleanup/admin commands to software-delivery handlers](wu/WU-1895.yaml) — Framework: Core Lifecycle
 - [WU-1894 — Migrate WU delegation/context commands to software-delivery handlers](wu/WU-1894.yaml) — Framework: Core Lifecycle
