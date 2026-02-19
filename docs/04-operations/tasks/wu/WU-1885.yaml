@@ -1,0 +1,41 @@
+id: WU-1885
+title: Add software-delivery migration scorecard and CI stub regression gate
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-19
+code_paths:
+  - packages/@lumenflow/packs/software-delivery/manifest.yaml
+  - packages/@lumenflow/packs/software-delivery/manifest.ts
+  - packages/@lumenflow/packs/software-delivery/__tests__
+  - packages/@lumenflow/mcp/src/__tests__
+tests:
+  manual:
+    - Run pack migration scorecard command and confirm reported counts match manifest reality
+  unit:
+    - packages/@lumenflow/packs/software-delivery/__tests__/manifest.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1885.done
+dependencies: []
+initiative: INIT-031
+phase: 6
+blocked_by:
+  - WU-1884
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Software-delivery pack migration needs an objective progress signal that can be enforced automatically. This WU adds a machine-readable scorecard and CI guardrail that tracks total software-delivery tools, pendingRuntimeMigrationTool usage, and real handler coverage so stub regression cannot silently re-enter the branch.
+acceptance:
+  - 'A scorecard check reports software-delivery totals: declared tools, pending-runtime entries, and real handler entries'
+  - CI fails if pendingRuntimeMigrationTool usage increases from the established baseline
+  - Scorecard output is machine-readable and can be consumed by release/readiness checks
