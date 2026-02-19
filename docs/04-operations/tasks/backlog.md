@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1882 — Fix segment padding overflow at 10,000+ segments in EvidenceStore](wu/WU-1882.yaml) — Framework: Core Lifecycle
 - [WU-1881 — Fix multi-instance incremental hydrate duplicate entries in EvidenceStore](wu/WU-1881.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
