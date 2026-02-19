@@ -2,7 +2,7 @@ id: WU-1911
 title: 'Starlight: new kernel/pack/evidence/policy/scope concept pages + rewrite introduction'
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-19
 code_paths:
@@ -28,7 +28,8 @@ phase: 7
 spec_refs:
   - docs/04-operations/plans/INIT-030-runtime-adoption-deprecation-roadmap.md
 risks: []
-notes: 'Sizing: Simple (~10 files, ~45 tool calls). Strategy: Single Session. Wave 1 of 3. Read kernel source for accuracy. create-a-pack.mdx is reference for architecture.'
+notes: 'Sizing: Simple (~10 files, ~45 tool calls). Strategy: Single Session. Wave 1 of 3. Read
+  kernel source for accuracy. create-a-pack.mdx is reference for architecture.'
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
@@ -44,7 +45,10 @@ approved_at: 2026-02-19T21:28:37.008Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'INIT-030 delivered a fundamentally new architecture (KernelRuntime, pack dispatch, PolicyEngine, EvidenceStore, scope intersection) but Starlight docs still describe LumenFlow as a delivery methodology. This WU creates the foundation: rewrite introduction.mdx and create 5 new concept pages. Update sidebar.'
+description: 'INIT-030 delivered a fundamentally new architecture (KernelRuntime, pack dispatch,
+  PolicyEngine, EvidenceStore, scope intersection) but Starlight docs still describe LumenFlow as a
+  delivery methodology. This WU creates the foundation: rewrite introduction.mdx and create 5 new
+  concept pages. Update sidebar.'
 acceptance:
   - introduction.mdx reframes LumenFlow as a runtime kernel with pluggable domain packs
   - New kernel.mdx concept page explains KernelRuntime, ToolHost, pack dispatch, 4 guarantees
@@ -56,3 +60,6 @@ acceptance:
   - pnpm docs:validate passes with zero errors
 baseline_main_sha: b05a3a071028ad1bbdb33100fe101dae70ece066
 plan: lumenflow://plans/INIT-030-runtime-adoption-deprecation-roadmap.md
+locked: true
+completed_at: 2026-02-19T21:49:05.579Z
+completed: 2026-02-19

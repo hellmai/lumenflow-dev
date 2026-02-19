@@ -5,7 +5,6 @@ _Last updated: 2026-02-19_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1911 — Starlight: new kernel/pack/evidence/policy/scope concept pages + rewrite introduction](wu/WU-1911.yaml)
 
 ## Completed
 
@@ -846,3 +845,4 @@ _Last updated: 2026-02-19_
 - [WU-1910 — Fix loadMemory deduplication — archived nodes not suppressing originals](wu/WU-1910.yaml) — 2026-02-19
 - [WU-1891 — Disable migration compat guard by default and remove software-delivery fallback shims](wu/WU-1891.yaml) — 2026-02-19
 - [WU-1892 — Prove pack #1 tracer-bullet end-to-end in a bootstrapped workspace](wu/WU-1892.yaml) — 2026-02-19
+- [WU-1911 — Starlight: new kernel/pack/evidence/policy/scope concept pages + rewrite introduction](wu/WU-1911.yaml) — 2026-02-19
