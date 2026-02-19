@@ -138,6 +138,11 @@ const MISSING_PARAMETER_MESSAGES = {
   SANDBOX_COMMAND_REQUIRED: 'sandbox_command is required when sandbox=true',
 } as const;
 
+const LIFECYCLE_FLAGS = {
+  DESCRIPTION: '--description',
+  CODE_PATHS: '--code-paths',
+} as const;
+
 interface CommandExecutionResult {
   ok: boolean;
   status: number;
@@ -334,10 +339,10 @@ export async function wuCreateTool(input: unknown): Promise<ToolOutput> {
   }
   const description = toStringValue(parsed.description);
   if (description) {
-    args.push('--description', description);
+    args.push(LIFECYCLE_FLAGS.DESCRIPTION, description);
   }
   pushRepeatedFlag(args, '--acceptance', toStringArray(parsed.acceptance));
-  pushRepeatedFlag(args, '--code-paths', toStringArray(parsed.code_paths));
+  pushRepeatedFlag(args, LIFECYCLE_FLAGS.CODE_PATHS, toStringArray(parsed.code_paths));
   const exposure = toStringValue(parsed.exposure);
   if (exposure) {
     args.push('--exposure', exposure);
@@ -433,9 +438,9 @@ export async function wuProtoTool(input: unknown): Promise<ToolOutput> {
   const args: string[] = ['--lane', lane, '--title', title];
   const description = toStringValue(parsed.description);
   if (description) {
-    args.push('--description', description);
+    args.push(LIFECYCLE_FLAGS.DESCRIPTION, description);
   }
-  pushRepeatedFlag(args, '--code-paths', toStringArray(parsed.code_paths));
+  pushRepeatedFlag(args, LIFECYCLE_FLAGS.CODE_PATHS, toStringArray(parsed.code_paths));
   const labels = toStringArray(parsed.labels);
   if (labels.length > 0) {
     args.push('--labels', labels.join(','));
@@ -512,14 +517,14 @@ export async function wuEditTool(input: unknown): Promise<ToolOutput> {
   const args: string[] = ['--id', id];
   const description = toStringValue(parsed.description);
   if (description) {
-    args.push('--description', description);
+    args.push(LIFECYCLE_FLAGS.DESCRIPTION, description);
   }
   pushRepeatedFlag(args, '--acceptance', toStringArray(parsed.acceptance));
   const notes = toStringValue(parsed.notes);
   if (notes) {
     args.push('--notes', notes);
   }
-  pushRepeatedFlag(args, '--code-paths', toStringArray(parsed.code_paths));
+  pushRepeatedFlag(args, LIFECYCLE_FLAGS.CODE_PATHS, toStringArray(parsed.code_paths));
   const lane = toStringValue(parsed.lane);
   if (lane) {
     args.push('--lane', lane);
