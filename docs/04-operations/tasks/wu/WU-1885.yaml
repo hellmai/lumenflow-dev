@@ -2,7 +2,7 @@ id: WU-1885
 title: Add software-delivery migration scorecard and CI stub regression gate
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
     and real handler entries'
   - CI fails if pendingRuntimeMigrationTool usage increases from the established baseline
   - Scorecard output is machine-readable and can be consumed by release/readiness checks
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1885
+claimed_at: 2026-02-19T13:02:31.839Z
+baseline_main_sha: def0740aaf548262aa814e56a32cef4a3ffcc728
+session_id: c42bf4a1-8e68-4a5f-bc11-828339a932a9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T13:02:31.847Z
