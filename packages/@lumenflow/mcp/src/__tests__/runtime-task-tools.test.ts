@@ -552,6 +552,160 @@ describe('runtime task MCP tools', () => {
     expect(mockRunCliCommand).not.toHaveBeenCalled();
   });
 
+  it('runs tracer-bullet lifecycle create -> claim -> tool:execute -> complete via KernelRuntime without CLI fallback', async () => {
+    const tracerTaskId = 'WU-1892-tracer-bullet';
+    const tracerRunId = 'run-WU-1892-tracer-bullet-1';
+    const tracerSessionId = 'session-1892-tracer-bullet';
+    const tracerProjectRoot = '/tmp/lumenflow-mcp-runtime-tracer';
+    const tracerEvidenceRef = 'evidence://tracer-bullet/pack-echo';
+
+    const createTask = vi.fn().mockResolvedValue({
+      task: {
+        ...sampleTaskSpec,
+        id: tracerTaskId,
+      },
+      task_spec_path: `/tmp/lumenflow-mcp-runtime/.lumenflow/kernel/tasks/${tracerTaskId}.yaml`,
+      event: {
+        schema_version: 1,
+        kind: 'task_created',
+        task_id: tracerTaskId,
+        timestamp: '2026-02-19T00:00:00.000Z',
+        spec_hash: 'a'.repeat(64),
+      },
+    });
+    const claimTask = vi.fn().mockResolvedValue({
+      task_id: tracerTaskId,
+      run: {
+        run_id: tracerRunId,
+        task_id: tracerTaskId,
+        status: 'executing',
+      },
+    });
+    const executeTool = vi.fn().mockResolvedValue({
+      success: true,
+      data: {
+        echo: 'tracer-bullet',
+      },
+      metadata: {
+        receipt_id: 'receipt-1892',
+      },
+    });
+    const completeTask = vi.fn().mockResolvedValue({
+      task_id: tracerTaskId,
+      run_id: tracerRunId,
+      events: [
+        {
+          schema_version: 1,
+          kind: 'run_succeeded',
+          task_id: tracerTaskId,
+          run_id: tracerRunId,
+          timestamp: '2026-02-19T00:00:00.000Z',
+          evidence_refs: [tracerEvidenceRef],
+        },
+        {
+          schema_version: 1,
+          kind: 'task_completed',
+          task_id: tracerTaskId,
+          timestamp: '2026-02-19T00:00:00.000Z',
+          evidence_refs: [tracerEvidenceRef],
+        },
+      ],
+      policy: {
+        decision: 'allow',
+        decisions: [
+          {
+            policy_id: 'runtime.completion.allow',
+            decision: 'allow',
+          },
+        ],
+      },
+    });
+
+    mockInitializeKernelRuntime.mockResolvedValue({
+      createTask,
+      claimTask,
+      executeTool,
+      completeTask,
+    } as unknown as Awaited<ReturnType<typeof kernel.initializeKernelRuntime>>);
+
+    const createResult = await taskCreateTool.execute(
+      {
+        ...sampleTaskSpec,
+        id: tracerTaskId,
+      },
+      { projectRoot: tracerProjectRoot },
+    );
+    const claimResult = await taskClaimTool.execute(
+      {
+        task_id: tracerTaskId,
+        by: 'tom@hellm.ai',
+        session_id: tracerSessionId,
+      },
+      { projectRoot: tracerProjectRoot },
+    );
+    const executeResult = await taskToolExecuteTool.execute(
+      {
+        tool_name: 'pack:echo',
+        tool_input: {
+          message: 'tracer-bullet',
+        },
+        context: {
+          run_id: tracerRunId,
+          task_id: tracerTaskId,
+          session_id: tracerSessionId,
+          allowed_scopes: [{ type: 'network', posture: 'off' }],
+          metadata: { source: 'wu-1892-tracer-bullet' },
+        },
+      },
+      { projectRoot: tracerProjectRoot },
+    );
+    const completeResult = await taskCompleteTool.execute(
+      {
+        task_id: tracerTaskId,
+        run_id: tracerRunId,
+        evidence_refs: [tracerEvidenceRef],
+      },
+      { projectRoot: tracerProjectRoot },
+    );
+
+    expect(createResult.success).toBe(true);
+    expect(claimResult.success).toBe(true);
+    expect(executeResult.success).toBe(true);
+    expect(completeResult.success).toBe(true);
+    expect(
+      (completeResult.data as { policy: { decision: string } }).policy.decision,
+    ).toBe('allow');
+
+    expect(createTask).toHaveBeenCalledWith({
+      ...sampleTaskSpec,
+      id: tracerTaskId,
+    });
+    expect(claimTask).toHaveBeenCalledWith({
+      task_id: tracerTaskId,
+      by: 'tom@hellm.ai',
+      session_id: tracerSessionId,
+    });
+    expect(executeTool).toHaveBeenCalledWith(
+      'pack:echo',
+      { message: 'tracer-bullet' },
+      {
+        run_id: tracerRunId,
+        task_id: tracerTaskId,
+        session_id: tracerSessionId,
+        allowed_scopes: [{ type: 'network', posture: 'off' }],
+        metadata: { source: 'wu-1892-tracer-bullet' },
+      },
+    );
+    expect(completeTask).toHaveBeenCalledWith({
+      task_id: tracerTaskId,
+      run_id: tracerRunId,
+      evidence_refs: [tracerEvidenceRef],
+    });
+
+    expect(mockInitializeKernelRuntime).toHaveBeenCalledTimes(1);
+    expect(mockRunCliCommand).not.toHaveBeenCalled();
+  });
+
   it(`validates ${RuntimeTaskToolNames.TOOL_EXECUTE} input before runtime initialization`, async () => {
     const result = await taskToolExecuteTool.execute(
       {
