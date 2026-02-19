@@ -26,14 +26,23 @@ initiative: INIT-030
 phase: 7
 blocked_by:
   - WU-1911
+spec_refs:
+  - docs/04-operations/plans/INIT-030-runtime-adoption-deprecation-roadmap.md
 risks: []
 notes: 'Sizing: Simple (~8 files, ~40 tool calls). Strategy: Single Session. Wave 2 of 3. Depends on
   WU-1911 for concept pages to link to.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T21:51:06.102Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1912
+session_id: 4cce839b-b197-4efe-a0a4-14f4875b1352
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T21:51:06.109Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -51,11 +60,3 @@ acceptance:
   - lanes.mdx explains lane scopes and their role in scope intersection
   - All updated pages link to new concept pages from WU-1911
   - pnpm docs:validate passes with zero errors
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1912
-claimed_at: 2026-02-19T21:51:06.102Z
-baseline_main_sha: 878e199c22b501d7d932430f8de6b1423d27db19
-session_id: 4cce839b-b197-4efe-a0a4-14f4875b1352
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T21:51:06.109Z
