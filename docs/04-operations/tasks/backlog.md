@@ -36,13 +36,13 @@ sections:
 - [WU-1897 — Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers](wu/WU-1897.yaml) — Framework: Core Lifecycle
 - [WU-1903 — Migrate agent integration tools to software-delivery pack handlers](wu/WU-1903.yaml) — Framework: Core Lifecycle
 - [WU-1904 — Migrate extended memory tools to software-delivery pack handlers](wu/WU-1904.yaml) — Framework: Core Lifecycle
-- [WU-1905 — Migrate flow and metrics tools to software-delivery pack handlers](wu/WU-1905.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1887 — Migrate core WU lifecycle commands to software-delivery pack handlers](wu/WU-1887.yaml) — Framework: Core Lifecycle
 - [WU-1907 — Document agent safety architecture, YAML editing policy, and per-client protection gaps](wu/WU-1907.yaml) — Content: Framework Docs
+- [WU-1905 — Migrate flow and metrics tools to software-delivery pack handlers](wu/WU-1905.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

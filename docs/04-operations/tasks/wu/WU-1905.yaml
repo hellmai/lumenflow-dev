@@ -2,7 +2,7 @@ id: WU-1905
 title: Migrate flow and metrics tools to software-delivery pack handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-19
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
   - Resolver fallback stubs are removed for migrated flow and metrics commands
   - Runtime execution for migrated flow/metrics commands succeeds without CLI fallback in strict
     migration mode
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1905
+claimed_at: 2026-02-19T14:17:07.843Z
+baseline_main_sha: 1494f1924a454388a3654e0e1f22c938ba3cec92
+session_id: 41b01560-bb92-4487-a726-e5b4a6f21e66
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T14:17:07.846Z
