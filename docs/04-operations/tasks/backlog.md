@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1902 — Add config:set CLI command for safe .lumenflow.config.yaml modification](wu/WU-1902.yaml) — Framework: CLI Enforcement
 - [WU-1901 — Fix lane lock zombie detection clearing live persistent locks after wu:claim exits](wu/WU-1901.yaml) — Framework: Core Lifecycle
 - [WU-1900 — Wire work classifier into wu:brief generation for skills, test guidance, and constraints](wu/WU-1900.yaml) — Framework: CLI WU Commands
 - [WU-1899 — Add signal-based work classifier for code-path-aware UI/backend/docs detection](wu/WU-1899.yaml) — Framework: Core Lifecycle
