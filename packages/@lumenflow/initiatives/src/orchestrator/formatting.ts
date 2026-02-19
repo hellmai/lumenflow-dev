@@ -83,11 +83,11 @@ export function formatExecutionPlan(initiative: InitiativeDoc, plan: ExecutionPl
 
   if (plan.waves.length === 0) {
     // WU-1906: Distinguish all-done from all-blocked
-    const hasPending = plan.deferred.length > 0 ||
-      (plan.skippedWithReasons && plan.skippedWithReasons.length > 0);
+    const hasPending =
+      plan.deferred.length > 0 || (plan.skippedWithReasons && plan.skippedWithReasons.length > 0);
     if (hasPending) {
-      const pendingCount = plan.deferred.length +
-        (plan.skippedWithReasons ? plan.skippedWithReasons.length : 0);
+      const pendingCount =
+        plan.deferred.length + (plan.skippedWithReasons ? plan.skippedWithReasons.length : 0);
       lines.push(`${pendingCount} WU(s) still pending but none are unblocked.`);
     } else {
       lines.push('All WUs are complete.');
@@ -433,11 +433,11 @@ export function formatExecutionPlanWithEmbeddedSpawns(plan: ExecutionPlan): stri
 
   if (plan.waves.length === 0) {
     // WU-1906: Distinguish all-done from all-blocked
-    const hasPending = plan.deferred.length > 0 ||
-      (plan.skippedWithReasons && plan.skippedWithReasons.length > 0);
+    const hasPending =
+      plan.deferred.length > 0 || (plan.skippedWithReasons && plan.skippedWithReasons.length > 0);
     if (hasPending) {
-      const pendingCount = plan.deferred.length +
-        (plan.skippedWithReasons ? plan.skippedWithReasons.length : 0);
+      const pendingCount =
+        plan.deferred.length + (plan.skippedWithReasons ? plan.skippedWithReasons.length : 0);
       return `${pendingCount} WU(s) still pending but none are unblocked.`;
     }
     return 'All WUs are complete.';

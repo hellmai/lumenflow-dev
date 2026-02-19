@@ -131,12 +131,24 @@ const program = new Command()
         const hasPending = plan.deferred.length > 0 || plan.skippedWithReasons.length > 0;
         if (hasPending) {
           const pendingCount = plan.deferred.length + plan.skippedWithReasons.length;
-          console.log(chalk.yellow(`${LOG_PREFIX} ${pendingCount} WU(s) still pending but none are unblocked.`));
+          console.log(
+            chalk.yellow(
+              `${LOG_PREFIX} ${pendingCount} WU(s) still pending but none are unblocked.`,
+            ),
+          );
           if (plan.deferred.length > 0) {
-            console.log(chalk.yellow(`${LOG_PREFIX}   ${plan.deferred.length} deferred (waiting for dependencies)`));
+            console.log(
+              chalk.yellow(
+                `${LOG_PREFIX}   ${plan.deferred.length} deferred (waiting for dependencies)`,
+              ),
+            );
           }
           if (plan.skippedWithReasons.length > 0) {
-            console.log(chalk.yellow(`${LOG_PREFIX}   ${plan.skippedWithReasons.length} skipped (non-ready status)`));
+            console.log(
+              chalk.yellow(
+                `${LOG_PREFIX}   ${plan.skippedWithReasons.length} skipped (non-ready status)`,
+              ),
+            );
           }
         } else {
           console.log(chalk.green(`${LOG_PREFIX} All WUs are complete! Nothing to execute.`));
