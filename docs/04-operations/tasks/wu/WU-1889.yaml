@@ -6,12 +6,7 @@ status: ready
 priority: P1
 created: 2026-02-19
 code_paths:
-  - packages/@lumenflow/packs/software-delivery/manifest.yaml
-  - packages/@lumenflow/packs/software-delivery/tool-impl
-  - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
-  - packages/@lumenflow/mcp/src/tools/memory-tools.ts
-  - packages/@lumenflow/mcp/src/tools/initiative-tools.ts
-  - packages/@lumenflow/mcp/src/tools/parity-tools.ts
+  - docs/04-operations/tasks/wu/WU-1889.yaml
 tests:
   manual:
     - Execute representative memory/initiative/orchestration flows through runtime path and verify
@@ -29,7 +24,6 @@ phase: 6
 blocked_by:
   - WU-1896
   - WU-1897
-  - WU-1904
 risks: []
 notes: >-
   Sizing: Complex non-atomic umbrella decomposed into WU-1896/WU-1897. Strategy: Decomposition
@@ -37,11 +31,21 @@ notes: >-
 
   Released (2026-02-19): Executing dependent worker WU-1897 first; umbrella resumed after worker
   completion
+
+
+  Umbrella rollup scope: metadata/dependency coordination after worker WUs WU-1896 and WU-1897
+  completion.
 requires_review: false
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-19T16:54:13.549Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1889
+session_id: 1d23196b-1438-4c07-88e2-946cfe16872a
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T16:54:13.553Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -55,10 +59,3 @@ acceptance:
   - Fallback-only resolver stubs are removed for migrated command families
   - Runtime execution for migrated command families succeeds without CLI fallback in bootstrapped
     mode
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1889
-claimed_at: 2026-02-19T16:54:13.549Z
-baseline_main_sha: b994891dcd4156eb0adccceddc3e986084a1a4e2
-session_id: 1d23196b-1438-4c07-88e2-946cfe16872a
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-19T16:54:13.553Z
