@@ -1753,8 +1753,9 @@
 {"type":"complete","wuId":"WU-1903","timestamp":"2026-02-19T16:46:10.488Z"}
 {"type":"claim","wuId":"WU-1888","timestamp":"2026-02-19T16:48:27.169Z","lane":"Framework: Core Lifecycle","title":"Migrate WU maintenance and delegation command set to software-delivery handlers"}
 {"type":"complete","wuId":"WU-1888","timestamp":"2026-02-19T16:53:42.540Z"}
-{"type":"claim","wuId":"WU-1889","lane":"Framework: Core Lifecycle","title":"Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers","timestamp":"2026-02-19T16:54:13.584Z"}
-{"type":"release","wuId":"WU-1889","reason":"Executing dependent worker WU-1897 first; umbrella resumed after worker completion","timestamp":"2026-02-19T16:55:40.204Z"}
-{"type":"claim","wuId":"WU-1897","lane":"Framework: Core Lifecycle","title":"Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers","timestamp":"2026-02-19T16:56:26.837Z"}
-{"type":"release","wuId":"WU-1897","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-19T17:14:23.945Z"}
-{"type":"claim","wuId":"WU-1897","lane":"Framework: Core Lifecycle","title":"Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers","timestamp":"2026-02-19T17:15:12.109Z"}
+{"type":"claim","wuId":"WU-1889","timestamp":"2026-02-19T16:54:13.584Z","lane":"Framework: Core Lifecycle","title":"Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers"}
+{"type":"release","wuId":"WU-1889","timestamp":"2026-02-19T16:55:40.204Z","reason":"Executing dependent worker WU-1897 first; umbrella resumed after worker completion"}
+{"type":"claim","wuId":"WU-1897","timestamp":"2026-02-19T16:56:26.837Z","lane":"Framework: Core Lifecycle","title":"Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers"}
+{"type":"release","wuId":"WU-1897","timestamp":"2026-02-19T17:14:23.945Z","reason":"Reset via wu:recover --action reset"}
+{"type":"claim","wuId":"WU-1897","timestamp":"2026-02-19T17:15:12.109Z","lane":"Framework: Core Lifecycle","title":"Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers"}
+{"type":"complete","wuId":"WU-1897","timestamp":"2026-02-19T17:20:44.046Z"}

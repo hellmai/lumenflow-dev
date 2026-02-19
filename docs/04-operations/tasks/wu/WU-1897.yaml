@@ -2,7 +2,7 @@ id: WU-1897
 title: Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -59,3 +59,6 @@ acceptance:
   - Resolver fallback stubs are removed for migrated initiative/plan/setup/orchestration commands
   - Runtime execution for migrated command families succeeds without CLI fallback in strict
     migration mode
+locked: true
+completed_at: 2026-02-19T17:20:38.238Z
+completed: 2026-02-19
