@@ -2,7 +2,7 @@ id: WU-1912
 title: 'Starlight: update existing pages for kernel/pack architecture'
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-19
 code_paths:
@@ -60,3 +60,6 @@ acceptance:
   - lanes.mdx explains lane scopes and their role in scope intersection
   - All updated pages link to new concept pages from WU-1911
   - pnpm docs:validate passes with zero errors
+locked: true
+completed_at: 2026-02-19T21:59:34.830Z
+completed: 2026-02-19
