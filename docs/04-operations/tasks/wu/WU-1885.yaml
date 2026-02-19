@@ -2,7 +2,7 @@ id: WU-1885
 title: Add software-delivery migration scorecard and CI stub regression gate
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -50,3 +50,6 @@ acceptance:
     and real handler entries'
   - CI fails if pendingRuntimeMigrationTool usage increases from the established baseline
   - Scorecard output is machine-readable and can be consumed by release/readiness checks
+locked: true
+completed_at: 2026-02-19T13:09:04.234Z
+completed: 2026-02-19
