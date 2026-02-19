@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1889 — Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers](wu/WU-1889.yaml) — Framework: Core Lifecycle
 - [WU-1888 — Migrate WU maintenance and delegation command set to software-delivery handlers](wu/WU-1888.yaml) — Framework: Core Lifecycle
 - [WU-1887 — Migrate core WU lifecycle commands to software-delivery pack handlers](wu/WU-1887.yaml) — Framework: Core Lifecycle
 - [WU-1886 — Add executeViaPack migration compat guard and fallback telemetry](wu/WU-1886.yaml) — Framework: Core Lifecycle
