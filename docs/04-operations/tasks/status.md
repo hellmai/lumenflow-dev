@@ -5,7 +5,6 @@ _Last updated: 2026-02-19_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1887 — Migrate core WU lifecycle commands to software-delivery pack handlers](wu/WU-1887.yaml)
 - [WU-1905 — Migrate flow and metrics tools to software-delivery pack handlers](wu/WU-1905.yaml)
 
 ## Completed
@@ -831,3 +830,4 @@ _Last updated: 2026-02-19_
 - [WU-1886 — Add executeViaPack migration compat guard and fallback telemetry](wu/WU-1886.yaml) — 2026-02-19
 - [WU-1906 — orchestrate:initiative --dry-run false-complete when all WUs blocked](wu/WU-1906.yaml) — 2026-02-19
 - [WU-1907 — Document agent safety architecture, YAML editing policy, and per-client protection gaps](wu/WU-1907.yaml) — 2026-02-19
+- [WU-1887 — Migrate core WU lifecycle commands to software-delivery pack handlers](wu/WU-1887.yaml) — 2026-02-19
