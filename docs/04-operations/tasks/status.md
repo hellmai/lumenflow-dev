@@ -6,6 +6,7 @@ _Last updated: 2026-02-19_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1890 — Migrate file/git/state/validation/lane surfaces and clear remaining software-delivery stubs](wu/WU-1890.yaml)
+- [WU-1909 — Fix checkpoint writing to main wu-events.jsonl — extract state-store concern from createCheckpoint](wu/WU-1909.yaml)
 
 ## Completed
 
