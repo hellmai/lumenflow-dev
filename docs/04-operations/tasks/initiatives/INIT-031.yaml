@@ -74,8 +74,4 @@ wus:
   - WU-1890
   - WU-1891
   - WU-1892
-notes:
-  - '2026-02-18: Reopened for Phases 5-6 expansion. target_date extended to 2026-06-30 (needs manual
-    YAML update — initiative:edit lacks --target-date flag). Phase 5 = production readiness (replace
-    stubs with real adapters). Phase 6 = pack ecosystem (5 real community packs). Unlocked by
-    INIT-030 Phase 2 completion (KernelRuntime routing, real evidence).'
+  - WU-1893
