@@ -1773,3 +1773,4 @@
 {"type":"claim","wuId":"WU-1892","lane":"Framework: Core Lifecycle","title":"Prove pack #1 tracer-bullet end-to-end in a bootstrapped workspace","timestamp":"2026-02-19T19:24:13.220Z"}
 {"type":"release","wuId":"WU-1892","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-19T19:27:51.931Z"}
 {"type":"claim","wuId":"WU-1892","lane":"Framework: Core Lifecycle","title":"Prove pack #1 tracer-bullet end-to-end in a bootstrapped workspace","timestamp":"2026-02-19T19:28:36.580Z"}
+{"type":"checkpoint","wuId":"WU-1892","note":"Tracer-bullet acceptance tests added and passing","timestamp":"2026-02-19T19:33:11.271Z"}
