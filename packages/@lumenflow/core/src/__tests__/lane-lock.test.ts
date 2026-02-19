@@ -312,22 +312,64 @@ describe('lane-lock', () => {
       expect(result.acquired).toBe(true);
     });
 
-    it('should auto-clear zombie locks', () => {
-      // Create a zombie lock (non-existent PID)
+    it('should NOT auto-clear recent zombie locks (WU-1901)', () => {
+      // Create a zombie lock with a RECENT timestamp (non-existent PID but not stale)
       const lockPath = getLockFilePath(TEST_LANE_FRAMEWORK_CORE, testBaseDir);
       const zombieLock: LockMetadata = {
         wuId: 'WU-OLD',
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString(), // Recent timestamp
         agentSession: null,
-        pid: 999999999, // Non-existent
+        pid: 999999999, // Non-existent PID
         lane: TEST_LANE_FRAMEWORK_CORE,
       };
       writeFileSync(lockPath, JSON.stringify(zombieLock));
 
-      // Attempt to acquire
+      // Attempt to acquire - should FAIL because the lock is recent even though PID is dead
+      const result = acquireLaneLock(TEST_LANE_FRAMEWORK_CORE, 'WU-123', { baseDir: testBaseDir });
+
+      expect(result.acquired).toBe(false);
+      expect(result.error).toContain('WU-OLD');
+      expect(result.existingLock?.wuId).toBe('WU-OLD');
+    });
+
+    it('should auto-clear stale zombie locks (WU-1901)', () => {
+      // Create a zombie lock with a STALE timestamp (>2h old AND dead PID)
+      const lockPath = getLockFilePath(TEST_LANE_FRAMEWORK_CORE, testBaseDir);
+      const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
+      const zombieLock: LockMetadata = {
+        wuId: 'WU-OLD',
+        timestamp: threeHoursAgo, // Stale timestamp
+        agentSession: null,
+        pid: 999999999, // Non-existent PID
+        lane: TEST_LANE_FRAMEWORK_CORE,
+      };
+      writeFileSync(lockPath, JSON.stringify(zombieLock));
+
+      // Attempt to acquire - should SUCCEED because lock is BOTH stale AND zombie
       const result = acquireLaneLock(TEST_LANE_FRAMEWORK_CORE, 'WU-123', { baseDir: testBaseDir });
 
       expect(result.acquired).toBe(true);
+    });
+
+    it('should block second claim when first PID is dead but lock is recent (WU-1901)', () => {
+      // Simulate: first wu:claim acquires lock then exits (PID becomes dead)
+      const lockPath = getLockFilePath(TEST_LANE_FRAMEWORK_CORE, testBaseDir);
+      const recentLock: LockMetadata = {
+        wuId: 'WU-100',
+        timestamp: new Date().toISOString(), // Recent
+        agentSession: null,
+        pid: 999999999, // Non-existent PID (simulates wu:claim process that exited)
+        lane: TEST_LANE_FRAMEWORK_CORE,
+      };
+      writeFileSync(lockPath, JSON.stringify(recentLock));
+
+      // Second wu:claim attempts to acquire same lane with different WU
+      const result = acquireLaneLock(TEST_LANE_FRAMEWORK_CORE, 'WU-200', { baseDir: testBaseDir });
+
+      // Should FAIL - recent dead-PID lock must NOT be auto-cleared
+      expect(result.acquired).toBe(false);
+      expect(result.error).toContain('WU-100');
+      expect(result.existingLock?.wuId).toBe('WU-100');
     });
   });
 

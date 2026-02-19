@@ -316,17 +316,20 @@ export function acquireLaneLock(
           };
         }
 
-        // WU-1808: Auto-clear zombie locks (PID no longer running)
-        // This allows recovery from crashed wu:claim processes
-        if (zombie) {
+        // WU-1901: Auto-clear only when lock is BOTH stale AND zombie.
+        // A dead PID alone is not sufficient because wu:claim is a short-lived
+        // process whose PID immediately becomes invalid after creating the worktree.
+        // Requiring staleness (>2h) prevents clearing live persistent locks that
+        // were legitimately acquired by a now-exited wu:claim process.
+        if (zombie && stale) {
           console.warn(
-            `${LOG_PREFIX} Detected zombie lock for "${lane}" (PID ${existingLock?.pid} not running)`,
+            `${LOG_PREFIX} Detected stale zombie lock for "${lane}" (PID ${existingLock?.pid} not running, lock age > threshold)`,
           );
           console.warn(`${LOG_PREFIX}    Previous owner: ${existingLock?.wuId}`);
           console.warn(`${LOG_PREFIX}    Lock timestamp: ${existingLock?.timestamp}`);
-          console.warn(`${LOG_PREFIX}    Auto-clearing zombie lock...`);
+          console.warn(`${LOG_PREFIX}    Auto-clearing stale zombie lock...`);
 
-          // Remove the zombie lock
+          // Remove the stale zombie lock
           try {
             unlinkSync(lockPath);
           } catch {

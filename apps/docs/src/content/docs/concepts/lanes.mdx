@@ -137,6 +137,37 @@ If `lock_policy: active` causes issues:
 1. Update `.lumenflow.config.yaml`: change `lock_policy: active` to `lock_policy: all`
 2. Run `pnpm wu:unlock-lane --lane "<lane>"` to clear stale locks
 
+## Lane Lock Lifecycle
+
+Lane locks are file-based locks (`.lumenflow/locks/<lane-kebab>.lock`) that enforce WIP=1. The lock lifecycle has three key phases:
+
+### Acquisition
+
+When `wu:claim` runs, it creates a lock file atomically using the `wx` (write-exclusive) flag. The lock file contains metadata including the WU ID, timestamp, agent session, and the PID of the claiming process.
+
+### Persistence
+
+Because `wu:claim` is a short-lived CLI process, the PID stored in the lock becomes invalid as soon as the claim completes. This is expected behavior -- the lock persists on disk regardless of whether the original process is still running. The lock remains valid until explicitly released by `wu:done` or forcibly cleared.
+
+### Release
+
+Locks are released in three ways:
+
+1. **Normal release**: `wu:done` removes the lock after merging
+2. **Stale zombie auto-clear**: If a lock is both stale (older than 2 hours) AND the PID is no longer running, subsequent `wu:claim` calls auto-clear it. This handles genuinely abandoned locks from crashed processes.
+3. **Manual unlock**: `pnpm wu:unlock-lane --lane "<lane>" --reason "<reason>"` with audit logging
+
+### Zombie Detection Semantics
+
+A "zombie lock" is one where the PID that created it is no longer running. However, a dead PID alone does NOT trigger auto-clearing. Since `wu:claim` exits immediately after creating the worktree, every lock will have a dead PID shortly after creation.
+
+Auto-clearing requires BOTH conditions:
+
+- The lock PID is no longer running (zombie)
+- The lock is older than 2 hours (stale)
+
+This prevents a second `wu:claim` from stealing a lane that was legitimately claimed by a recently exited `wu:claim` process.
+
 ### Why WIP=1 Matters
 
 ```

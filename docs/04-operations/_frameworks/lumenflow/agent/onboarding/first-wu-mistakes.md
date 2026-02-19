@@ -271,6 +271,20 @@ Phrases that mean "do this now":
 
 ---
 
+## Lane Lock Lifecycle and Zombie Detection (WU-1901)
+
+Lane locks (`.lumenflow/locks/<lane-kebab>.lock`) enforce WIP=1. Key semantics:
+
+- **Lock acquisition**: `wu:claim` creates a lock file atomically with a PID, timestamp, and WU ID.
+- **PID becomes invalid immediately**: Since `wu:claim` is a short-lived process, the PID in the lock becomes dead as soon as the claim completes. This is expected -- the lock persists on disk.
+- **Zombie detection requires BOTH conditions**: A lock is only auto-cleared if it is BOTH stale (older than 2 hours) AND the PID is dead. A dead PID alone does NOT trigger auto-clearing.
+- **Normal release**: `wu:done` removes the lock after merging.
+- **Manual unlock**: `pnpm wu:unlock-lane --lane "<lane>" --reason "<reason>"` for genuinely abandoned locks.
+
+This means a recently claimed lane (within 2 hours) will NOT be auto-cleared even if the claiming process has exited. To reclaim a lane held by another WU, complete or release the existing WU first.
+
+---
+
 ## Quick Checklist
 
 Before starting any WU:

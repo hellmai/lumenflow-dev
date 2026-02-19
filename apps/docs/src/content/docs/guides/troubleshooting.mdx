@@ -184,6 +184,29 @@ ERROR: Lane "Framework: Core" already has WU-040 in progress
 3. If done, complete it: `pnpm wu:done --id WU-040`
 4. If orphaned, recover: `pnpm wu:recover --id WU-040 --action reset`
 
+### Lane lock not auto-clearing despite dead PID
+
+**Symptom:**
+
+```
+ERROR: Lane "Framework: Core" is locked by WU-040 (since 2026-02-19T10:00:00Z)
+```
+
+The lock holder's process is no longer running, but the lock is not auto-cleared.
+
+**Explanation:** Lane locks persist after the `wu:claim` process exits. A dead PID alone does not trigger auto-clearing -- the lock must also be older than 2 hours (stale). This prevents a second claim from stealing a legitimately held lane.
+
+**Fix:**
+
+1. If the lock is recent (less than 2 hours old), it is likely still valid. Complete or release the existing WU first.
+2. If the lock is genuinely abandoned, unlock manually:
+
+```bash
+pnpm wu:unlock-lane --lane "Framework: Core" --reason "Abandoned lock"
+```
+
+3. Locks older than 2 hours with a dead PID will auto-clear on the next `wu:claim` attempt.
+
 ## Worktree Issues
 
 ### Worktree not found
