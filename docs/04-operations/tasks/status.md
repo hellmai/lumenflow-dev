@@ -5,7 +5,6 @@ _Last updated: 2026-02-19_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1891 — Disable migration compat guard by default and remove software-delivery fallback shims](wu/WU-1891.yaml)
 
 ## Completed
 
@@ -844,3 +843,4 @@ _Last updated: 2026-02-19_
 - [WU-1909 — Fix checkpoint writing to main wu-events.jsonl — extract state-store concern from createCheckpoint](wu/WU-1909.yaml) — 2026-02-19
 - [WU-1890 — Migrate file/git/state/validation/lane surfaces and clear remaining software-delivery stubs](wu/WU-1890.yaml) — 2026-02-19
 - [WU-1910 — Fix loadMemory deduplication — archived nodes not suppressing originals](wu/WU-1910.yaml) — 2026-02-19
+- [WU-1891 — Disable migration compat guard by default and remove software-delivery fallback shims](wu/WU-1891.yaml) — 2026-02-19
