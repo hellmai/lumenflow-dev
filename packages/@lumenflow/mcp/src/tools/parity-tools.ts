@@ -213,6 +213,16 @@ const signalCleanupSchema = z.object({
   base_dir: z.string().optional(),
 });
 
+// WU-1902: Schemas for config:set and config:get commands
+const configSetSchema = z.object({
+  key: z.string().optional(),
+  value: z.string().optional(),
+});
+
+const configGetSchema = z.object({
+  key: z.string().optional(),
+});
+
 const wuProtoSchema = z.object({
   lane: z.string().optional(),
   title: z.string().optional(),
@@ -1532,6 +1542,98 @@ export const signalCleanupTool: ToolDefinition = {
           command: CliCommands.SIGNAL_CLEANUP,
           args,
           errorCode: ErrorCodes.SIGNAL_CLEANUP_ERROR,
+        },
+      },
+    );
+
+    if (!execution.success) {
+      return execution;
+    }
+
+    return success(unwrapExecuteViaPackData(execution.data));
+  },
+};
+
+/**
+ * config_set - Safely update .lumenflow.config.yaml via micro-worktree
+ * WU-1902: config:set MCP parity tool
+ */
+export const configSetTool: ToolDefinition = {
+  name: 'config_set',
+  description: 'Safely update .lumenflow.config.yaml via micro-worktree',
+  inputSchema: configSetSchema,
+
+  async execute(input, options) {
+    if (!input.key) {
+      return error(ErrorMessages.KEY_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+    if (input.value === undefined) {
+      return error(ErrorMessages.VALUE_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args: string[] = ['--key', input.key as string, '--value', input.value as string];
+
+    const execution = await executeViaPack(
+      CliCommands.CONFIG_SET,
+      {
+        key: input.key,
+        value: input.value,
+      },
+      {
+        projectRoot: options?.projectRoot,
+        contextInput: {
+          metadata: {
+            [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+          },
+        },
+        fallback: {
+          command: CliCommands.CONFIG_SET,
+          args,
+          errorCode: ErrorCodes.CONFIG_SET_ERROR,
+        },
+      },
+    );
+
+    if (!execution.success) {
+      return execution;
+    }
+
+    return success(unwrapExecuteViaPackData(execution.data));
+  },
+};
+
+/**
+ * config_get - Read and display a value from .lumenflow.config.yaml
+ * WU-1902: config:get MCP parity tool
+ */
+export const configGetTool: ToolDefinition = {
+  name: 'config_get',
+  description: 'Read and display a value from .lumenflow.config.yaml',
+  inputSchema: configGetSchema,
+
+  async execute(input, options) {
+    if (!input.key) {
+      return error(ErrorMessages.KEY_REQUIRED, ErrorCodes.MISSING_PARAMETER);
+    }
+
+    const args: string[] = ['--key', input.key as string];
+
+    const execution = await executeViaPack(
+      CliCommands.CONFIG_GET,
+      {
+        key: input.key,
+      },
+      {
+        projectRoot: options?.projectRoot,
+        contextInput: {
+          metadata: {
+            [MetadataKeys.PROJECT_ROOT]: options?.projectRoot,
+          },
+        },
+        fallback: {
+          command: CliCommands.CONFIG_GET,
+          args,
+          errorCode: ErrorCodes.CONFIG_GET_ERROR,
         },
       },
     );

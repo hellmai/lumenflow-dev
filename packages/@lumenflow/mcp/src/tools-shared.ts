@@ -152,6 +152,8 @@ export const ErrorCodes = {
   PLAN_LINK_ERROR: 'PLAN_LINK_ERROR',
   PLAN_PROMOTE_ERROR: 'PLAN_PROMOTE_ERROR',
   SIGNAL_CLEANUP_ERROR: 'SIGNAL_CLEANUP_ERROR',
+  CONFIG_SET_ERROR: 'CONFIG_SET_ERROR',
+  CONFIG_GET_ERROR: 'CONFIG_GET_ERROR',
   WU_PROTO_ERROR: 'WU_PROTO_ERROR',
   // WU-1426: Flow/Metrics error codes
   FLOW_BOTTLENECKS_ERROR: 'FLOW_BOTTLENECKS_ERROR',
@@ -190,6 +192,8 @@ export const ErrorMessages = {
   PARENT_WU_REQUIRED: 'parent_wu is required',
   SECTION_REQUIRED: 'section is required',
   PLAN_REQUIRED: 'plan is required',
+  KEY_REQUIRED: 'key is required',
+  VALUE_REQUIRED: 'value is required',
 } as const;
 
 /**

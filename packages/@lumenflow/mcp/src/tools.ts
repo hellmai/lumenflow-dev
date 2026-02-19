@@ -177,6 +177,8 @@ export {
   planLinkTool,
   planPromoteTool,
   signalCleanupTool,
+  configSetTool,
+  configGetTool,
   wuProtoTool,
 } from './tools/parity-tools.js';
 
@@ -308,6 +310,8 @@ import {
   planLinkTool,
   planPromoteTool,
   signalCleanupTool,
+  configSetTool,
+  configGetTool,
   wuProtoTool,
 } from './tools/parity-tools.js';
 
@@ -436,6 +440,9 @@ export const allTools: ToolDefinition[] = [
   planLinkTool,
   planPromoteTool,
   signalCleanupTool,
+  // WU-1902: Config tools
+  configSetTool,
+  configGetTool,
   wuProtoTool,
   // WU-1422: Additional WU tools
   wuBlockTool,

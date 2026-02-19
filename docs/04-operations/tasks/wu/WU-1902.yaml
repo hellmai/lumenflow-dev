@@ -15,6 +15,10 @@ code_paths:
   - docs/04-operations/_frameworks/lumenflow/config-set-usage.md
   - apps/docs/src/content/docs/reference/config-commands.mdx
   - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/mcp/src/tools.ts
+  - packages/@lumenflow/mcp/src/tools/parity-tools.ts
+  - packages/@lumenflow/mcp/src/mcp-constants.ts
+  - packages/@lumenflow/mcp/src/tools-shared.ts
 tests:
   manual:
     - Run pnpm config:set --key methodology.testing --value test-after and verify config file

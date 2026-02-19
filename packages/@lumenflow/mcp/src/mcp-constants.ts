@@ -68,6 +68,8 @@ export const CliCommands = {
   LANE_HEALTH: 'lane:health',
   LANE_SUGGEST: 'lane:suggest',
   SIGNAL_CLEANUP: 'signal:cleanup',
+  CONFIG_SET: 'config:set',
+  CONFIG_GET: 'config:get',
 
   // -- File operations (parity-tools.ts) --
   FILE_READ: 'file:read',
