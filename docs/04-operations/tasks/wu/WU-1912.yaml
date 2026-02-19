@@ -1,0 +1,48 @@
+id: WU-1912
+title: 'Starlight: update existing pages for kernel/pack architecture'
+lane: 'Content: Site Comms'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-19
+code_paths:
+  - apps/docs/src/content/docs/concepts/visual-overview.mdx
+  - apps/docs/src/content/docs/concepts/gates.mdx
+  - apps/docs/src/content/docs/guides/ai-agents.mdx
+  - apps/docs/src/content/docs/getting-started/quickstart.mdx
+  - apps/docs/src/content/docs/concepts/work-units.mdx
+  - apps/docs/src/content/docs/concepts/lanes.mdx
+tests:
+  manual:
+    - Run pnpm docs:validate and verify zero errors
+    - Run cd apps/docs and pnpm build and verify successful build
+    - Verify updated pages render correctly with working cross-links to new concept pages
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1912.done
+dependencies: []
+initiative: INIT-030
+phase: 7
+blocked_by:
+  - WU-1911
+risks: []
+notes: 'Sizing: Simple (~8 files, ~40 tool calls). Strategy: Single Session. Wave 2 of 3. Depends on WU-1911 for concept pages to link to.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Existing Starlight pages describe pre-kernel LumenFlow. visual-overview has no kernel dispatch diagrams. gates.mdx describes raw shell commands not pack policies. ai-agents.mdx safety section is git-hooks-only, missing kernel enforcement and bwrap. quickstart.mdx has no mention of kernel or packs. work-units.mdx evidence section describes stamps not EvidenceStore. lanes.mdx missing scope boundary concept. Update all to reference new concept pages from WU-1911.
+acceptance:
+  - visual-overview.mdx includes kernel dispatch architecture diagram
+  - gates.mdx explains gates as pack policies evaluated by PolicyEngine, not just shell commands
+  - ai-agents.mdx safety section covers kernel enforcement, scope intersection, bwrap isolation
+  - quickstart.mdx mentions kernel and pack architecture in context
+  - work-units.mdx evidence section references EvidenceStore and evidence receipts
+  - lanes.mdx explains lane scopes and their role in scope intersection
+  - All updated pages link to new concept pages from WU-1911
+  - pnpm docs:validate passes with zero errors
