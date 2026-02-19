@@ -2,7 +2,7 @@ id: WU-1896
 title: Migrate memory command surfaces to software-delivery handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
   - Resolver fallback stubs are removed for migrated memory commands
   - Runtime execution for migrated memory commands succeeds without CLI fallback in strict migration
     mode
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1896
+claimed_at: 2026-02-19T16:22:00.912Z
+baseline_main_sha: efdfa7e531a330c9b0193c79b653d2589d4e13b5
+session_id: 5cc1867c-4ee8-467c-ab04-757c84d366b7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T16:22:00.918Z

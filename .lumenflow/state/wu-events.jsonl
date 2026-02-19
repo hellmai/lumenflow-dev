@@ -1746,3 +1746,4 @@
 {"type":"complete","wuId":"WU-1894","timestamp":"2026-02-19T15:51:54.483Z"}
 {"type":"claim","wuId":"WU-1895","timestamp":"2026-02-19T15:52:47.520Z","lane":"Framework: Core Lifecycle","title":"Migrate WU cleanup/admin commands to software-delivery handlers"}
 {"type":"complete","wuId":"WU-1895","timestamp":"2026-02-19T16:20:56.356Z"}
+{"type":"claim","wuId":"WU-1896","lane":"Framework: Core Lifecycle","title":"Migrate memory command surfaces to software-delivery handlers","timestamp":"2026-02-19T16:22:00.936Z"}
