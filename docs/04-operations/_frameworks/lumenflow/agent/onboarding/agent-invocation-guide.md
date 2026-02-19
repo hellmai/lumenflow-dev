@@ -136,13 +136,13 @@ Spawn prompt templates support conditional inclusion via the `condition` field i
 
 **Examples of condition gating:**
 
-| Template                  | Condition                                                      | Effect                                          |
-| ------------------------- | -------------------------------------------------------------- | ----------------------------------------------- |
-| `tdd-directive`           | `type !== 'documentation' && type !== 'docs' && type !== 'config'` | Excluded for documentation WUs                  |
-| `documentation-directive` | `type === 'documentation' \|\| type === 'docs' \|\| type === 'config'` | Included only for documentation WUs             |
-| `refactor-directive`      | `type === 'refactor'`                                          | Included only for refactor WUs                  |
-| `methodology-tdd`         | `policy.testing === 'tdd'`                                     | Included only when TDD policy is active         |
-| `methodology-test-after`  | `policy.testing === 'test-after'`                              | Included only when test-after policy is active  |
+| Template                  | Condition                                                              | Effect                                         |
+| ------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------- |
+| `tdd-directive`           | `type !== 'documentation' && type !== 'docs' && type !== 'config'`     | Excluded for documentation WUs                 |
+| `documentation-directive` | `type === 'documentation' \|\| type === 'docs' \|\| type === 'config'` | Included only for documentation WUs            |
+| `refactor-directive`      | `type === 'refactor'`                                                  | Included only for refactor WUs                 |
+| `methodology-tdd`         | `policy.testing === 'tdd'`                                             | Included only when TDD policy is active        |
+| `methodology-test-after`  | `policy.testing === 'test-after'`                                      | Included only when test-after policy is active |
 
 This ensures documentation WUs do not receive TDD directives, and methodology-specific directives are only included when the project's resolved policy matches.
 

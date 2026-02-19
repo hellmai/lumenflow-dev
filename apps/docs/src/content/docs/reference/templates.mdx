@@ -287,7 +287,8 @@ When `wu:brief` runs, templates are assembled in this order:
   - **Core path** (`tryAssembleSpawnTemplates`): Evaluates conditions from the manifest during ordered assembly.
   - **CLI path** (`tryLoadTemplates`): Evaluates conditions from template frontmatter before adding templates to the lookup map. Templates whose conditions evaluate to `false` are excluded entirely, so `templates.get('tdd-directive')` returns `undefined` for documentation WUs.
 
-  Policy-based conditions (e.g., `policy.testing === 'tdd'`) require the resolved policy to be included in the template context. The CLI automatically enriches the context with `policy.testing` and `policy.architecture` from `resolvePolicy()`.
+Policy-based conditions (e.g., `policy.testing === 'tdd'`) require the resolved policy to be included in the template context. The CLI automatically enriches the context with `policy.testing` and `policy.architecture` from `resolvePolicy()`.
+
 </Aside>
 
 ### Override Resolution

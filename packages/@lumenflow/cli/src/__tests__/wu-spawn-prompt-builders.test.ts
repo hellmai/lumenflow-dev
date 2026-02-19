@@ -68,8 +68,9 @@ describe('WU-1898: tryLoadTemplates condition evaluation', () => {
 
   beforeEach(async () => {
     const templateLoader = await import('@lumenflow/core/template-loader');
-    loadTemplatesWithOverrides =
-      templateLoader.loadTemplatesWithOverrides as ReturnType<typeof vi.fn>;
+    loadTemplatesWithOverrides = templateLoader.loadTemplatesWithOverrides as ReturnType<
+      typeof vi.fn
+    >;
   });
 
   afterEach(() => {
@@ -198,10 +199,7 @@ describe('WU-1898: tryLoadTemplates condition evaluation', () => {
   describe('AC3: Policy-based methodology templates are condition-gated', () => {
     it('should include methodology-tdd when policy.testing is tdd', async () => {
       const templates = new Map<string, LoadedTemplate>();
-      templates.set(
-        'methodology-tdd',
-        makeTemplate('methodology-tdd', "policy.testing === 'tdd'"),
-      );
+      templates.set('methodology-tdd', makeTemplate('methodology-tdd', "policy.testing === 'tdd'"));
 
       loadTemplatesWithOverrides.mockReturnValue(templates);
 
@@ -214,10 +212,7 @@ describe('WU-1898: tryLoadTemplates condition evaluation', () => {
 
     it('should exclude methodology-tdd when policy.testing is not tdd', async () => {
       const templates = new Map<string, LoadedTemplate>();
-      templates.set(
-        'methodology-tdd',
-        makeTemplate('methodology-tdd', "policy.testing === 'tdd'"),
-      );
+      templates.set('methodology-tdd', makeTemplate('methodology-tdd', "policy.testing === 'tdd'"));
 
       loadTemplatesWithOverrides.mockReturnValue(templates);
 
@@ -355,7 +350,12 @@ describe('WU-1898: buildSpawnTemplateContext policy enrichment', () => {
       type: 'feature',
     };
 
-    const policy = { testing: 'tdd', architecture: 'hexagonal', coverage: 90, coverageMode: 'blocking' as const };
+    const policy = {
+      testing: 'tdd',
+      architecture: 'hexagonal',
+      coverage: 90,
+      coverageMode: 'blocking' as const,
+    };
     const context = buildSpawnTemplateContext(doc, TEST_WU_ID, policy);
 
     expect(context['policy.testing']).toBe('tdd');
