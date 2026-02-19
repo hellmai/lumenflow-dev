@@ -1721,3 +1721,4 @@
 {"type":"claim","wuId":"WU-1900","timestamp":"2026-02-19T12:15:44.354Z","lane":"Framework: CLI WU Commands","title":"Wire work classifier into wu:brief generation for skills, test guidance, and constraints"}
 {"type":"complete","wuId":"WU-1902","timestamp":"2026-02-19T12:24:20.712Z"}
 {"type":"complete","wuId":"WU-1900","timestamp":"2026-02-19T12:37:51.819Z"}
+{"type":"complete","wuId":"WU-1884","timestamp":"2026-02-19T13:01:45.960Z"}
