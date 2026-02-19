@@ -1,7 +1,7 @@
 id: WU-1913
 title: 'Starlight: reference page updates + sidebar restructure + deploy'
 lane: 'Content: Site Comms'
-type: documentation
+type: feature
 status: ready
 priority: P2
 created: 2026-02-19
@@ -26,7 +26,8 @@ phase: 7
 blocked_by:
   - WU-1912
 risks: []
-notes: 'Sizing: Simple (~8 files, ~35 tool calls). Strategy: Single Session. Wave 3 of 3. Final WU includes deploy readiness.'
+notes: 'Sizing: Simple (~8 files, ~35 tool calls). Strategy: Single Session. Wave 3 of 3. Final WU
+  includes deploy readiness.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
@@ -35,7 +36,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Reference pages need kernel architecture context. cli.mdx has undocumented task:claim. mcp.mdx describes old thin-wrapper pattern. config.mdx has no packs section. No workspace spec reference page exists. Sidebar needs restructuring.
+description: Reference pages need kernel architecture context. cli.mdx has undocumented task:claim.
+  mcp.mdx describes old thin-wrapper pattern. config.mdx has no packs section. No workspace spec
+  reference page exists. Sidebar needs restructuring.
 acceptance:
   - cli.mdx documents task:claim with usage guidance and kernel context
   - mcp.mdx architecture section updated for pack dispatch model
