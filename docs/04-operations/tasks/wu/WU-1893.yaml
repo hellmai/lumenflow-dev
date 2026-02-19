@@ -2,7 +2,7 @@ id: WU-1893
 title: Migrate WU state-transition maintenance commands to software-delivery handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -51,3 +51,6 @@ acceptance:
     handlers in bootstrapped runtime mode
   - Resolver fallback stubs are removed for these state-transition maintenance commands
   - Runtime execution for migrated commands succeeds without CLI fallback in strict migration mode
+locked: true
+completed_at: 2026-02-19T14:41:28.398Z
+completed: 2026-02-19
