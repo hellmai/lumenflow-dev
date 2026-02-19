@@ -8,7 +8,12 @@ import { z } from 'zod';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EvidenceStore } from '../evidence/index.js';
 import type { ExecutionContext, ToolCapability, ToolScope } from '../kernel.schemas.js';
-import { ToolHost, ToolRegistry, allowAllPolicyHook, type ToolHostOptions } from '../tool-host/index.js';
+import {
+  ToolHost,
+  ToolRegistry,
+  allowAllPolicyHook,
+  type ToolHostOptions,
+} from '../tool-host/index.js';
 
 describe('tool host', () => {
   let tempDir: string;
@@ -1192,9 +1197,7 @@ describe('tool host', () => {
       });
 
       // Fail on trace writes
-      vi.spyOn(evidenceStore, 'appendTrace').mockRejectedValue(
-        new Error('Simulated failure'),
-      );
+      vi.spyOn(evidenceStore, 'appendTrace').mockRejectedValue(new Error('Simulated failure'));
 
       const result = await host.execute(
         'fs:write',
