@@ -1759,3 +1759,4 @@
 {"type":"release","wuId":"WU-1897","timestamp":"2026-02-19T17:14:23.945Z","reason":"Reset via wu:recover --action reset"}
 {"type":"claim","wuId":"WU-1897","timestamp":"2026-02-19T17:15:12.109Z","lane":"Framework: Core Lifecycle","title":"Migrate initiative/plan/setup/orchestration command surfaces to software-delivery handlers"}
 {"type":"complete","wuId":"WU-1897","timestamp":"2026-02-19T17:20:44.046Z"}
+{"type":"claim","wuId":"WU-1889","lane":"Framework: Core Lifecycle","title":"Migrate memory, initiative, plan, setup, and orchestration commands to software-delivery handlers","timestamp":"2026-02-19T17:22:52.088Z"}
