@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1913 — Starlight: reference page updates + sidebar restructure + deploy](wu/WU-1913.yaml) — Content: Site Comms
 - [WU-1912 — Starlight: update existing pages for kernel/pack architecture](wu/WU-1912.yaml) — Content: Site Comms
 - [WU-1911 — Starlight: new kernel/pack/evidence/policy/scope concept pages + rewrite introduction](wu/WU-1911.yaml) — Content: Site Comms
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
