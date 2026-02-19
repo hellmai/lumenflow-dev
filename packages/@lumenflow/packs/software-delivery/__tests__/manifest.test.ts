@@ -6,7 +6,7 @@ import {
 } from '../manifest.js';
 
 const PENDING_RUNTIME_TOOL_ENTRY = 'tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool';
-const PENDING_RUNTIME_BASELINE = 89;
+const PENDING_RUNTIME_BASELINE = 81;
 
 describe('software-delivery migration scorecard (WU-1885)', () => {
   it('reports declared, pending-runtime, and real-handler totals', () => {
@@ -44,5 +44,23 @@ describe('software-delivery migration scorecard (WU-1885)', () => {
         'and document the approval in the WU notes.',
       ].join(' '),
     ).toBeLessThanOrEqual(PENDING_RUNTIME_BASELINE);
+  });
+
+  it('routes WU-1887 core lifecycle tools to runtime handlers', () => {
+    const expectedEntries = new Map<string, string>([
+      ['wu:create', 'tool-impl/wu-lifecycle-tools.ts#wuCreateTool'],
+      ['wu:claim', 'tool-impl/wu-lifecycle-tools.ts#wuClaimTool'],
+      ['wu:prep', 'tool-impl/wu-lifecycle-tools.ts#wuPrepTool'],
+      ['wu:done', 'tool-impl/wu-lifecycle-tools.ts#wuDoneTool'],
+      ['wu:status', 'tool-impl/wu-lifecycle-tools.ts#wuStatusTool'],
+      ['wu:preflight', 'tool-impl/wu-lifecycle-tools.ts#wuPreflightTool'],
+      ['wu:validate', 'tool-impl/wu-lifecycle-tools.ts#wuValidateTool'],
+      ['gates', 'tool-impl/wu-lifecycle-tools.ts#gatesTool'],
+    ]);
+
+    for (const [toolName, expectedEntry] of expectedEntries.entries()) {
+      const manifestTool = SOFTWARE_DELIVERY_MANIFEST.tools.find((tool) => tool.name === toolName);
+      expect(manifestTool?.entry).toBe(expectedEntry);
+    }
   });
 });

@@ -33,6 +33,14 @@ export type {
 const FULL_WORKSPACE_SCOPE_PATTERN = '**';
 const PENDING_RUNTIME_TOOL_ENTRY = 'tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool';
 const GIT_STATUS_TOOL_ENTRY = 'tool-impl/git-tools.ts#gitStatusTool';
+const WU_STATUS_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuStatusTool';
+const WU_CREATE_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuCreateTool';
+const WU_CLAIM_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuClaimTool';
+const WU_DONE_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuDoneTool';
+const WU_PREP_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuPrepTool';
+const WU_PREFLIGHT_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuPreflightTool';
+const WU_VALIDATE_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuValidateTool';
+const GATES_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#gatesTool';
 
 const TOOL_PERMISSIONS = {
   'wu:block': 'write',
@@ -131,6 +139,14 @@ type ToolName = keyof typeof TOOL_PERMISSIONS;
 
 const TOOL_ENTRY_OVERRIDES: Partial<Record<ToolName, string>> = {
   'git:status': GIT_STATUS_TOOL_ENTRY,
+  'wu:status': WU_STATUS_TOOL_ENTRY,
+  'wu:create': WU_CREATE_TOOL_ENTRY,
+  'wu:claim': WU_CLAIM_TOOL_ENTRY,
+  'wu:done': WU_DONE_TOOL_ENTRY,
+  'wu:prep': WU_PREP_TOOL_ENTRY,
+  'wu:preflight': WU_PREFLIGHT_TOOL_ENTRY,
+  'wu:validate': WU_VALIDATE_TOOL_ENTRY,
+  gates: GATES_TOOL_ENTRY,
 };
 
 export interface SoftwareDeliveryMigrationScorecard {

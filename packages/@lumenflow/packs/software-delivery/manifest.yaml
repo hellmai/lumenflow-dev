@@ -19,7 +19,7 @@ tools:
         pattern: '**'
         access: read
   - name: wu:claim
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/wu-lifecycle-tools.ts#wuClaimTool
     permission: write
     required_scopes:
       - type: path
@@ -33,7 +33,7 @@ tools:
         pattern: '**'
         access: write
   - name: wu:create
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/wu-lifecycle-tools.ts#wuCreateTool
     permission: write
     required_scopes:
       - type: path
@@ -61,7 +61,7 @@ tools:
         pattern: '**'
         access: read
   - name: wu:done
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/wu-lifecycle-tools.ts#wuDoneTool
     permission: write
     required_scopes:
       - type: path
@@ -82,14 +82,14 @@ tools:
         pattern: '**'
         access: read
   - name: wu:preflight
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/wu-lifecycle-tools.ts#wuPreflightTool
     permission: read
     required_scopes:
       - type: path
         pattern: '**'
         access: read
   - name: wu:prep
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/wu-lifecycle-tools.ts#wuPrepTool
     permission: write
     required_scopes:
       - type: path
@@ -138,7 +138,7 @@ tools:
         pattern: '**'
         access: write
   - name: wu:status
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/wu-lifecycle-tools.ts#wuStatusTool
     permission: read
     required_scopes:
       - type: path
@@ -159,7 +159,7 @@ tools:
         pattern: '**'
         access: write
   - name: wu:validate
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/wu-lifecycle-tools.ts#wuValidateTool
     permission: read
     required_scopes:
       - type: path
@@ -353,7 +353,7 @@ tools:
         access: read
   # gate:*
   - name: gates
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/wu-lifecycle-tools.ts#gatesTool
     permission: write
     required_scopes:
       - type: path

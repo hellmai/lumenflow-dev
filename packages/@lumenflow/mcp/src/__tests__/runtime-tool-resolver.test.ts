@@ -73,6 +73,16 @@ const WU_DELEGATION_AND_GATES_TOOL_NAMES = {
   UNLOCK_LANE: 'wu:unlock-lane',
   GATES: 'gates',
 } as const;
+const WU_1887_CORE_LIFECYCLE_TOOLS = {
+  STATUS: 'wu:status',
+  CREATE: 'wu:create',
+  CLAIM: 'wu:claim',
+  DONE: 'wu:done',
+  PREP: 'wu:prep',
+  PREFLIGHT: 'wu:preflight',
+  VALIDATE: 'wu:validate',
+  GATES: 'gates',
+} as const;
 const INITIATIVE_ORCHESTRATION_TOOL_NAMES = {
   LIST: 'initiative:list',
   STATUS: 'initiative:status',
@@ -121,7 +131,10 @@ const SETUP_COORDINATION_PLAN_TOOL_NAMES = {
   WU_REPAIR: 'wu:repair',
 } as const;
 
-function createResolverInput(toolName: string): RuntimeToolCapabilityResolverInput {
+function createResolverInput(
+  toolName: string,
+  entry = 'tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool',
+): RuntimeToolCapabilityResolverInput {
   return {
     workspaceSpec: {
       id: 'workspace-runtime-resolver-tests',
@@ -171,7 +184,7 @@ function createResolverInput(toolName: string): RuntimeToolCapabilityResolverInp
     },
     tool: {
       name: toolName,
-      entry: 'tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool',
+      entry,
       permission: 'read',
       required_scopes: [READ_SCOPE],
     },
@@ -193,7 +206,7 @@ describe('packToolCapabilityResolver', () => {
   });
 
   it('returns in-process capability for registered tools', async () => {
-    const input = createResolverInput('wu:status');
+    const input = createResolverInput('wu:block');
     const capability = await packToolCapabilityResolver(input);
 
     expect(capability).toBeDefined();
@@ -209,14 +222,14 @@ describe('packToolCapabilityResolver', () => {
       allowed_scopes: [READ_SCOPE],
     };
 
-    // WU-1805: wu:status now has a real handler — missing id returns MISSING_PARAMETER
+    // WU-1893: wu:block in-process handler validates required input fields.
     const output = await capability?.handler.fn({}, executionContext);
     expect(output?.success).toBe(false);
-    expect(output?.error?.code).toBe('MISSING_PARAMETER');
+    expect(output?.error?.code).toBe('INVALID_INPUT');
   });
 
   it('lists registered in-process pack tools', () => {
-    expect(listInProcessPackTools()).toContain('wu:status');
+    expect(listInProcessPackTools()).toContain('wu:block');
   });
 
   it('reports scorecard totals that are internally consistent', () => {
@@ -276,11 +289,7 @@ describe('packToolCapabilityResolver', () => {
   });
 
   it('resolves WU lifecycle initiation tools to in-process handlers', async () => {
-    const toolNames = [
-      WU_LIFECYCLE_INIT_TOOL_NAMES.CREATE,
-      WU_LIFECYCLE_INIT_TOOL_NAMES.CLAIM,
-      WU_LIFECYCLE_INIT_TOOL_NAMES.PROTO,
-    ];
+    const toolNames = [WU_LIFECYCLE_INIT_TOOL_NAMES.PROTO];
 
     for (const toolName of toolNames) {
       const capability = await packToolCapabilityResolver(createResolverInput(toolName));
@@ -306,8 +315,6 @@ describe('packToolCapabilityResolver', () => {
 
   it('resolves WU lifecycle completion/cleanup tools to in-process handlers', async () => {
     const toolNames = [
-      WU_LIFECYCLE_COMPLETION_TOOL_NAMES.DONE,
-      WU_LIFECYCLE_COMPLETION_TOOL_NAMES.PREP,
       WU_LIFECYCLE_COMPLETION_TOOL_NAMES.SANDBOX,
       WU_LIFECYCLE_COMPLETION_TOOL_NAMES.PRUNE,
       WU_LIFECYCLE_COMPLETION_TOOL_NAMES.DELETE,
@@ -326,13 +333,60 @@ describe('packToolCapabilityResolver', () => {
       WU_DELEGATION_AND_GATES_TOOL_NAMES.BRIEF,
       WU_DELEGATION_AND_GATES_TOOL_NAMES.DELEGATE,
       WU_DELEGATION_AND_GATES_TOOL_NAMES.UNLOCK_LANE,
-      WU_DELEGATION_AND_GATES_TOOL_NAMES.GATES,
     ];
 
     for (const toolName of toolNames) {
       const capability = await packToolCapabilityResolver(createResolverInput(toolName));
       expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.IN_PROCESS);
       expect(isInProcessPackToolRegistered(toolName)).toBe(true);
+    }
+  });
+
+  it('resolves WU-1887 core lifecycle tools to subprocess pack handlers', async () => {
+    const toolEntries = [
+      {
+        name: WU_1887_CORE_LIFECYCLE_TOOLS.STATUS,
+        entry: 'tool-impl/wu-lifecycle-tools.ts#wuStatusTool',
+      },
+      {
+        name: WU_1887_CORE_LIFECYCLE_TOOLS.CREATE,
+        entry: 'tool-impl/wu-lifecycle-tools.ts#wuCreateTool',
+      },
+      {
+        name: WU_1887_CORE_LIFECYCLE_TOOLS.CLAIM,
+        entry: 'tool-impl/wu-lifecycle-tools.ts#wuClaimTool',
+      },
+      {
+        name: WU_1887_CORE_LIFECYCLE_TOOLS.DONE,
+        entry: 'tool-impl/wu-lifecycle-tools.ts#wuDoneTool',
+      },
+      {
+        name: WU_1887_CORE_LIFECYCLE_TOOLS.PREP,
+        entry: 'tool-impl/wu-lifecycle-tools.ts#wuPrepTool',
+      },
+      {
+        name: WU_1887_CORE_LIFECYCLE_TOOLS.PREFLIGHT,
+        entry: 'tool-impl/wu-lifecycle-tools.ts#wuPreflightTool',
+      },
+      {
+        name: WU_1887_CORE_LIFECYCLE_TOOLS.VALIDATE,
+        entry: 'tool-impl/wu-lifecycle-tools.ts#wuValidateTool',
+      },
+      {
+        name: WU_1887_CORE_LIFECYCLE_TOOLS.GATES,
+        entry: 'tool-impl/wu-lifecycle-tools.ts#gatesTool',
+      },
+    ] as const;
+
+    for (const toolEntry of toolEntries) {
+      const capability = await packToolCapabilityResolver(
+        createResolverInput(toolEntry.name, toolEntry.entry),
+      );
+      expect(isInProcessPackToolRegistered(toolEntry.name)).toBe(false);
+      expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.SUBPROCESS);
+      if (capability?.handler.kind === TOOL_HANDLER_KINDS.SUBPROCESS) {
+        expect(capability.handler.entry).toContain(toolEntry.entry);
+      }
     }
   });
 

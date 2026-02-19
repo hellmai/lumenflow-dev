@@ -2760,33 +2760,9 @@ const WU_QUERY_MESSAGES = {
   INFER_LANE_FAILED: 'wu:infer-lane failed',
 } as const;
 
-const wuCreateInProcess: InProcessToolFn = async () =>
-  createFailureOutput(
-    VALIDATION_TOOL_ERROR_CODES.WU_CREATE_ERROR,
-    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
-  );
-
-const wuClaimInProcess: InProcessToolFn = async () =>
-  createFailureOutput(
-    VALIDATION_TOOL_ERROR_CODES.WU_CLAIM_ERROR,
-    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
-  );
-
 const wuProtoInProcess: InProcessToolFn = async () =>
   createFailureOutput(
     VALIDATION_TOOL_ERROR_CODES.WU_PROTO_ERROR,
-    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
-  );
-
-const wuDoneInProcess: InProcessToolFn = async () =>
-  createFailureOutput(
-    VALIDATION_TOOL_ERROR_CODES.WU_DONE_ERROR,
-    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
-  );
-
-const wuPrepInProcess: InProcessToolFn = async () =>
-  createFailureOutput(
-    VALIDATION_TOOL_ERROR_CODES.WU_PREP_ERROR,
     WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
   );
 
@@ -2919,12 +2895,6 @@ const planLinkInProcess: InProcessToolFn = async () =>
 const planPromoteInProcess: InProcessToolFn = async () =>
   createFailureOutput(
     VALIDATION_TOOL_ERROR_CODES.PLAN_PROMOTE_ERROR,
-    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
-  );
-
-const gatesInProcess: InProcessToolFn = async () =>
-  createFailureOutput(
-    VALIDATION_TOOL_ERROR_CODES.GATES_ERROR,
     WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
   );
 
@@ -3374,25 +3344,6 @@ const wuEditInProcess: InProcessToolFn = async (rawInput, context) => {
   }
 };
 
-const wuStatusInProcess: InProcessToolFn = async (rawInput, context) => {
-  const input = (rawInput ?? {}) as Record<string, unknown>;
-  if (typeof input.id !== 'string' || !input.id) {
-    return createFailureOutput(
-      VALIDATION_TOOL_ERROR_CODES.MISSING_PARAMETER,
-      WU_QUERY_MESSAGES.ID_REQUIRED,
-    );
-  }
-
-  try {
-    const core = await getCoreLazy();
-    const projectRoot = resolveWorkspaceRoot(context);
-    const wuContext = await core.computeWuContext({ wuId: input.id, cwd: projectRoot });
-    return createSuccessOutput(wuContext);
-  } catch (err) {
-    return createFailureOutput(VALIDATION_TOOL_ERROR_CODES.WU_STATUS_ERROR, (err as Error).message);
-  }
-};
-
 const wuDepsInProcess: InProcessToolFn = async (rawInput, _context) => {
   const input = (rawInput ?? {}) as Record<string, unknown>;
   if (typeof input.id !== 'string' || !input.id) {
@@ -3417,71 +3368,6 @@ const wuDepsInProcess: InProcessToolFn = async (rawInput, _context) => {
     });
   } catch (err) {
     return createFailureOutput(VALIDATION_TOOL_ERROR_CODES.WU_DEPS_ERROR, (err as Error).message);
-  }
-};
-
-const wuPreflightInProcess: InProcessToolFn = async (rawInput, context) => {
-  const input = (rawInput ?? {}) as Record<string, unknown>;
-  if (typeof input.id !== 'string' || !input.id) {
-    return createFailureOutput(
-      VALIDATION_TOOL_ERROR_CODES.MISSING_PARAMETER,
-      WU_QUERY_MESSAGES.ID_REQUIRED,
-    );
-  }
-
-  try {
-    const { validatePreflight } = await import('@lumenflow/core/wu-preflight-validators');
-    const projectRoot = resolveWorkspaceRoot(context);
-    const worktreePath = typeof input.worktree === 'string' ? input.worktree : projectRoot;
-    const result = await validatePreflight(input.id, { rootDir: projectRoot, worktreePath });
-
-    return result.valid
-      ? createSuccessOutput({ message: WU_QUERY_MESSAGES.PREFLIGHT_PASSED, ...result })
-      : createFailureOutput(
-          VALIDATION_TOOL_ERROR_CODES.WU_PREFLIGHT_ERROR,
-          JSON.stringify(result.errors),
-        );
-  } catch (err) {
-    return createFailureOutput(
-      VALIDATION_TOOL_ERROR_CODES.WU_PREFLIGHT_ERROR,
-      (err as Error).message,
-    );
-  }
-};
-
-const wuValidateInProcess: InProcessToolFn = async (rawInput, context) => {
-  const input = (rawInput ?? {}) as Record<string, unknown>;
-  if (typeof input.id !== 'string' || !input.id) {
-    return createFailureOutput(
-      VALIDATION_TOOL_ERROR_CODES.MISSING_PARAMETER,
-      WU_QUERY_MESSAGES.ID_REQUIRED,
-    );
-  }
-
-  try {
-    const core = await getCoreLazy();
-    const projectRoot = resolveWorkspaceRoot(context);
-    const wuDir = path.join(projectRoot, 'docs/04-operations/tasks/wu');
-    const wuFile = path.join(wuDir, `${input.id}.yaml`);
-    const content = await readFile(wuFile, UTF8_ENCODING);
-    const parsed = core.parseYAML(content);
-    const result = core.validateWU(parsed);
-
-    if (result.success) {
-      return createSuccessOutput({
-        message: `${WU_QUERY_MESSAGES.VALIDATE_PASSED}: ${input.id}`,
-        valid: true,
-      });
-    }
-    return createFailureOutput(
-      VALIDATION_TOOL_ERROR_CODES.WU_VALIDATE_ERROR,
-      formatZodIssues(result.error),
-    );
-  } catch (err) {
-    return createFailureOutput(
-      VALIDATION_TOOL_ERROR_CODES.WU_VALIDATE_ERROR,
-      (err as Error).message,
-    );
   }
 };
 
@@ -3534,51 +3420,11 @@ const wuInferLaneInProcess: InProcessToolFn = async (rawInput, context) => {
 
 const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolHandler>([
   [
-    IN_PROCESS_TOOL_NAMES.WU_STATUS,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_STATUS,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: wuStatusInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.WU_CREATE,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_CREATE,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: wuCreateInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.WU_CLAIM,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_CLAIM,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: wuClaimInProcess,
-    },
-  ],
-  [
     IN_PROCESS_TOOL_NAMES.WU_PROTO,
     {
       description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_PROTO,
       inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
       fn: wuProtoInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.WU_DONE,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_DONE,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: wuDoneInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.WU_PREP,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_PREP,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: wuPrepInProcess,
     },
   ],
   [
@@ -3755,14 +3601,6 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       description: IN_PROCESS_TOOL_DESCRIPTIONS.PLAN_PROMOTE,
       inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
       fn: planPromoteInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.GATES,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.GATES,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: gatesInProcess,
     },
   ],
   [
@@ -4011,22 +3849,6 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
       description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_DEPS,
       inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
       fn: wuDepsInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.WU_PREFLIGHT,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_PREFLIGHT,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: wuPreflightInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.WU_VALIDATE,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_VALIDATE,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: wuValidateInProcess,
     },
   ],
   [
