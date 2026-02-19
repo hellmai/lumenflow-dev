@@ -1714,3 +1714,4 @@
 {"type":"claim","wuId":"WU-1899","lane":"Framework: Core Lifecycle","title":"Add signal-based work classifier for code-path-aware UI/backend/docs detection","timestamp":"2026-02-19T11:56:05.067Z"}
 {"type":"claim","wuId":"WU-1901","lane":"Framework: Core Lifecycle","title":"Fix lane lock zombie detection clearing live persistent locks after wu:claim exits","timestamp":"2026-02-19T11:56:47.432Z"}
 {"type":"claim","wuId":"WU-1902","lane":"Framework: CLI Enforcement","title":"Add config:set CLI command for safe .lumenflow.config.yaml modification","timestamp":"2026-02-19T11:57:20.243Z"}
+{"type":"claim","wuId":"WU-1884","lane":"Framework: Core Lifecycle","title":"Retarget INIT-031 Phase 6 to software-delivery pack completion","timestamp":"2026-02-19T11:59:58.188Z"}

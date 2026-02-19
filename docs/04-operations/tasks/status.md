@@ -9,6 +9,7 @@ _Last updated: 2026-02-19_
 - [WU-1899 — Add signal-based work classifier for code-path-aware UI/backend/docs detection](wu/WU-1899.yaml)
 - [WU-1901 — Fix lane lock zombie detection clearing live persistent locks after wu:claim exits](wu/WU-1901.yaml)
 - [WU-1902 — Add config:set CLI command for safe .lumenflow.config.yaml modification](wu/WU-1902.yaml)
+- [WU-1884 — Retarget INIT-031 Phase 6 to software-delivery pack completion](wu/WU-1884.yaml)
 
 ## Completed
 

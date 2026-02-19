@@ -2,7 +2,7 @@ id: WU-1884
 title: Retarget INIT-031 Phase 6 to software-delivery pack completion
 lane: 'Framework: Core Lifecycle'
 type: documentation
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-19
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
     criteria are met'
   - INIT-031 Phase 6 WU inventory references the software-delivery migration WU chain
     (WU-1885..WU-1892)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1884
+claimed_at: 2026-02-19T11:59:58.114Z
+baseline_main_sha: b6c0fcc6ebf387c126c7c35526bb725d2a784fa5
+session_id: 003574c5-7243-4202-b18c-8c442618b172
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T11:59:58.125Z
