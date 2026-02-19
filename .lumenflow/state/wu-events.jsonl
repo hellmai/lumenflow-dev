@@ -1712,3 +1712,4 @@
 {"type":"complete","wuId":"WU-1883","timestamp":"2026-02-19T09:32:33.113Z"}
 {"type":"claim","wuId":"WU-1898","lane":"Framework: CLI WU Commands","title":"Fix CLI template condition bypass in wu:brief/wu:spawn prompt assembly","timestamp":"2026-02-19T11:52:53.906Z"}
 {"type":"claim","wuId":"WU-1899","lane":"Framework: Core Lifecycle","title":"Add signal-based work classifier for code-path-aware UI/backend/docs detection","timestamp":"2026-02-19T11:56:05.067Z"}
+{"type":"claim","wuId":"WU-1901","lane":"Framework: Core Lifecycle","title":"Fix lane lock zombie detection clearing live persistent locks after wu:claim exits","timestamp":"2026-02-19T11:56:47.432Z"}
