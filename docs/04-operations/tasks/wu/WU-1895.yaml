@@ -2,7 +2,7 @@ id: WU-1895
 title: Migrate WU cleanup/admin commands to software-delivery handlers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-19
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
     software-delivery handlers in bootstrapped runtime mode
   - Resolver fallback stubs are removed for these cleanup/admin commands
   - Runtime execution for migrated commands succeeds without CLI fallback in strict migration mode
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1895
+claimed_at: 2026-02-19T15:52:47.471Z
+baseline_main_sha: 8e460aefe4a363b4b3092a326d15696a1a50cd4a
+session_id: ce39764a-caef-49cf-b4b7-a9115037b051
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-19T15:52:47.477Z
