@@ -1,0 +1,47 @@
+id: WU-1913
+title: 'Starlight: reference page updates + sidebar restructure + deploy'
+lane: 'Content: Site Comms'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-19
+code_paths:
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - apps/docs/src/content/docs/reference/mcp.mdx
+  - apps/docs/src/content/docs/reference/config.mdx
+  - apps/docs/src/content/docs/reference/workspace-spec.mdx
+  - apps/docs/astro.config.mjs
+tests:
+  manual:
+    - Run pnpm docs:validate and verify zero errors
+    - Run cd apps/docs and pnpm build and verify successful build
+    - Verify sidebar structure and all cross-links work
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1913.done
+dependencies: []
+initiative: INIT-030
+phase: 7
+blocked_by:
+  - WU-1912
+risks: []
+notes: 'Sizing: Simple (~8 files, ~35 tool calls). Strategy: Single Session. Wave 3 of 3. Final WU includes deploy readiness.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Reference pages need kernel architecture context. cli.mdx has undocumented task:claim. mcp.mdx describes old thin-wrapper pattern. config.mdx has no packs section. No workspace spec reference page exists. Sidebar needs restructuring.
+acceptance:
+  - cli.mdx documents task:claim with usage guidance and kernel context
+  - mcp.mdx architecture section updated for pack dispatch model
+  - config.mdx includes packs configuration section
+  - New workspace-spec.mdx reference page documents workspace spec with packs array and integrity
+  - astro.config.mjs sidebar restructured with kernel concepts before software-delivery concepts
+  - Cross-page consistency verified with no conflicting descriptions of LumenFlow
+  - pnpm docs:validate passes with zero errors
+  - Site builds successfully and is ready for Vercel deploy
