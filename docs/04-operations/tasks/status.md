@@ -6,6 +6,7 @@ _Last updated: 2026-02-19_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1891 — Disable migration compat guard by default and remove software-delivery fallback shims](wu/WU-1891.yaml)
+- [WU-1910 — Fix loadMemory deduplication — archived nodes not suppressing originals](wu/WU-1910.yaml)
 
 ## Completed
 
