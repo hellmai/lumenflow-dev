@@ -5,7 +5,7 @@ task_types:
 tools:
   # wu:*
   - name: wu:block
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/wu-lifecycle-tools.ts#wuBlockTool
     permission: write
     required_scopes:
       - type: path
@@ -110,21 +110,21 @@ tools:
         pattern: '**'
         access: write
   - name: wu:recover
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/wu-lifecycle-tools.ts#wuRecoverTool
     permission: write
     required_scopes:
       - type: path
         pattern: '**'
         access: write
   - name: wu:release
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/wu-lifecycle-tools.ts#wuReleaseTool
     permission: write
     required_scopes:
       - type: path
         pattern: '**'
         access: write
   - name: wu:repair
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/wu-lifecycle-tools.ts#wuRepairTool
     permission: write
     required_scopes:
       - type: path
@@ -145,7 +145,7 @@ tools:
         pattern: '**'
         access: read
   - name: wu:unblock
-    entry: tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool
+    entry: tool-impl/wu-lifecycle-tools.ts#wuUnblockTool
     permission: write
     required_scopes:
       - type: path

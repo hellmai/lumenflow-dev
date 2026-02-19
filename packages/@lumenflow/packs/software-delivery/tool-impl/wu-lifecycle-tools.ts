@@ -16,6 +16,11 @@ const LIFECYCLE_TOOLS = {
   WU_DONE: 'wu:done',
   WU_PREFLIGHT: 'wu:preflight',
   WU_VALIDATE: 'wu:validate',
+  WU_BLOCK: 'wu:block',
+  WU_UNBLOCK: 'wu:unblock',
+  WU_RELEASE: 'wu:release',
+  WU_RECOVER: 'wu:recover',
+  WU_REPAIR: 'wu:repair',
   GATES: 'gates',
 } as const;
 
@@ -29,6 +34,11 @@ const LIFECYCLE_TOOL_ERROR_CODES: Record<LifecycleToolName, string> = {
   'wu:done': 'WU_DONE_ERROR',
   'wu:preflight': 'WU_PREFLIGHT_ERROR',
   'wu:validate': 'WU_VALIDATE_ERROR',
+  'wu:block': 'WU_BLOCK_ERROR',
+  'wu:unblock': 'WU_UNBLOCK_ERROR',
+  'wu:release': 'WU_RELEASE_ERROR',
+  'wu:recover': 'WU_RECOVER_ERROR',
+  'wu:repair': 'WU_REPAIR_ERROR',
   gates: 'GATES_ERROR',
 };
 
@@ -63,6 +73,26 @@ const LIFECYCLE_TOOL_COMMAND_SPECS: Record<LifecycleToolName, LifecycleToolComma
     scriptPath: CLI_ENTRY_SCRIPT,
     scriptSubcommand: 'wu-validate',
   },
+  'wu:block': {
+    scriptPath: CLI_ENTRY_SCRIPT,
+    scriptSubcommand: 'wu-block',
+  },
+  'wu:unblock': {
+    scriptPath: CLI_ENTRY_SCRIPT,
+    scriptSubcommand: 'wu-unblock',
+  },
+  'wu:release': {
+    scriptPath: CLI_ENTRY_SCRIPT,
+    scriptSubcommand: 'wu-release',
+  },
+  'wu:recover': {
+    scriptPath: CLI_ENTRY_SCRIPT,
+    scriptSubcommand: 'wu-recover',
+  },
+  'wu:repair': {
+    scriptPath: CLI_ENTRY_SCRIPT,
+    scriptSubcommand: 'wu-repair',
+  },
   gates: {
     scriptPath: CLI_ENTRY_SCRIPT,
     scriptSubcommand: 'gates',
@@ -73,6 +103,7 @@ const MISSING_PARAMETER_MESSAGES = {
   ID_REQUIRED: 'id is required',
   LANE_REQUIRED: 'lane is required',
   TITLE_REQUIRED: 'title is required',
+  REASON_REQUIRED: 'reason is required',
   SANDBOX_COMMAND_REQUIRED: 'sandbox_command is required when sandbox=true',
 } as const;
 
@@ -323,6 +354,111 @@ export async function wuDoneTool(input: unknown): Promise<ToolOutput> {
   }
 
   return executeLifecycleTool(LIFECYCLE_TOOLS.WU_DONE, args);
+}
+
+export async function wuBlockTool(input: unknown): Promise<ToolOutput> {
+  const parsed = toRecord(input);
+  const id = toStringValue(parsed.id);
+  const reason = toStringValue(parsed.reason);
+  if (!id) {
+    return createMissingParameterOutput(MISSING_PARAMETER_MESSAGES.ID_REQUIRED);
+  }
+  if (!reason) {
+    return createMissingParameterOutput(MISSING_PARAMETER_MESSAGES.REASON_REQUIRED);
+  }
+
+  const args = ['--id', id, '--reason', reason];
+  if (parsed.remove_worktree === true) {
+    args.push('--remove-worktree');
+  }
+
+  return executeLifecycleTool(LIFECYCLE_TOOLS.WU_BLOCK, args);
+}
+
+export async function wuUnblockTool(input: unknown): Promise<ToolOutput> {
+  const parsed = toRecord(input);
+  const id = toStringValue(parsed.id);
+  if (!id) {
+    return createMissingParameterOutput(MISSING_PARAMETER_MESSAGES.ID_REQUIRED);
+  }
+
+  const args = ['--id', id];
+  const reason = toStringValue(parsed.reason);
+  if (reason) {
+    args.push('--reason', reason);
+  }
+  if (parsed.create_worktree === true) {
+    args.push('--create-worktree');
+  }
+
+  return executeLifecycleTool(LIFECYCLE_TOOLS.WU_UNBLOCK, args);
+}
+
+export async function wuReleaseTool(input: unknown): Promise<ToolOutput> {
+  const parsed = toRecord(input);
+  const id = toStringValue(parsed.id);
+  if (!id) {
+    return createMissingParameterOutput(MISSING_PARAMETER_MESSAGES.ID_REQUIRED);
+  }
+
+  const args = ['--id', id];
+  const reason = toStringValue(parsed.reason);
+  if (reason) {
+    args.push('--reason', reason);
+  }
+
+  return executeLifecycleTool(LIFECYCLE_TOOLS.WU_RELEASE, args);
+}
+
+export async function wuRecoverTool(input: unknown): Promise<ToolOutput> {
+  const parsed = toRecord(input);
+  const id = toStringValue(parsed.id);
+  if (!id) {
+    return createMissingParameterOutput(MISSING_PARAMETER_MESSAGES.ID_REQUIRED);
+  }
+
+  const args = ['--id', id];
+  const action = toStringValue(parsed.action);
+  if (action) {
+    args.push('--action', action);
+  }
+  if (parsed.force === true) {
+    args.push('--force');
+  }
+  if (parsed.json === true) {
+    args.push('--json');
+  }
+
+  return executeLifecycleTool(LIFECYCLE_TOOLS.WU_RECOVER, args, {
+    parseJson: parsed.json === true,
+  });
+}
+
+export async function wuRepairTool(input: unknown): Promise<ToolOutput> {
+  const parsed = toRecord(input);
+
+  const args: string[] = [];
+  const id = toStringValue(parsed.id);
+  if (id) {
+    args.push('--id', id);
+  }
+  if (parsed.check === true) {
+    args.push('--check');
+  }
+  if (parsed.all === true) {
+    args.push('--all');
+  }
+  if (parsed.claim === true) {
+    args.push('--claim');
+  }
+  if (parsed.admin === true) {
+    args.push('--admin');
+  }
+  if (parsed.repair_state === true) {
+    args.push('--repair-state');
+  }
+
+  return executeLifecycleTool(LIFECYCLE_TOOLS.WU_REPAIR, args);
 }
 
 export async function wuStatusTool(input: unknown): Promise<ToolOutput> {

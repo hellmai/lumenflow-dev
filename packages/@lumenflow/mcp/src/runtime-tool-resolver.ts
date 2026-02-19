@@ -2155,18 +2155,6 @@ const LANE_SUGGEST_INPUT_SCHEMA = z.object({
   include_git: z.boolean().optional(),
 });
 
-const WU_BLOCK_INPUT_SCHEMA = z.object({
-  id: z.string().min(1),
-  reason: z.string().min(1),
-  remove_worktree: z.boolean().optional(),
-});
-
-const WU_UNBLOCK_INPUT_SCHEMA = z.object({
-  id: z.string().min(1),
-  reason: z.string().optional(),
-  create_worktree: z.boolean().optional(),
-});
-
 const WU_EDIT_INPUT_SCHEMA = z.object({
   id: z.string().min(1),
   description: z.string().optional(),
@@ -2178,11 +2166,6 @@ const WU_EDIT_INPUT_SCHEMA = z.object({
   initiative: z.string().optional(),
   phase: z.union([z.number(), z.string()]).optional(),
   no_strict: z.boolean().optional(),
-});
-
-const WU_RELEASE_INPUT_SCHEMA = z.object({
-  id: z.string().min(1),
-  reason: z.string().optional(),
 });
 
 /** Helper: filter files by validation-relevant extensions */
@@ -2866,12 +2849,6 @@ const memRecoverInProcess: InProcessToolFn = async () =>
     WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
   );
 
-const WU_STATE_TRANSITION_NOTE_PREFIX = {
-  BLOCK: 'Blocked',
-  UNBLOCK: 'Unblocked',
-  RELEASE: 'Released',
-} as const;
-
 interface RuntimeWuPaths {
   wuPath: string;
   backlogPath: string;
@@ -2891,13 +2868,6 @@ function resolveRuntimeWuPaths(
     statusPath: resolvedPaths.statusPath,
     stateDir: resolvedPaths.stateDir,
   };
-}
-
-function buildTransitionNote(prefix: string, date: string, reason?: string): string {
-  if (reason && reason.trim().length > 0) {
-    return `${prefix} (${date})${WU_STATE_TRANSITION_SEPARATOR}${reason}`;
-  }
-  return `${prefix} (${date})`;
 }
 
 function appendStringArrayField(existingValue: unknown, incomingValues: unknown): string[] {
@@ -2930,179 +2900,6 @@ function parsePhaseValue(value: string | number): number {
   }
   return numericValue;
 }
-
-async function regenerateWuProjectionFiles(
-  core: CoreModule,
-  store: CoreBacklogStore & CoreStatusStore,
-  projectRoot: string,
-  paths: RuntimeWuPaths,
-): Promise<void> {
-  const backlogContent = await core.generateBacklog(store, { projectRoot });
-  await writeFile(paths.backlogPath, backlogContent, UTF8_ENCODING);
-  const statusContent = await core.generateStatus(store);
-  await writeFile(paths.statusPath, statusContent, UTF8_ENCODING);
-}
-
-const wuBlockInProcess: InProcessToolFn = async (rawInput, context) => {
-  const parsedInput = WU_BLOCK_INPUT_SCHEMA.safeParse(rawInput ?? {});
-  if (!parsedInput.success) {
-    return createFailureOutput(
-      VALIDATION_TOOL_ERROR_CODES.INVALID_INPUT,
-      parsedInput.error.message,
-    );
-  }
-
-  try {
-    const core = await getCoreLazy();
-    const projectRoot = resolveWorkspaceRoot(context);
-    const paths = resolveRuntimeWuPaths(core, projectRoot, parsedInput.data.id);
-    const wuDocument = core.readWU(paths.wuPath, parsedInput.data.id) as MutableWuDoc;
-    const stateStore = new core.WUStateStore(paths.stateDir);
-    await stateStore.load();
-    await stateStore.block(parsedInput.data.id, parsedInput.data.reason);
-
-    wuDocument[WU_DOC_KEYS.STATUS] = STATUS_BLOCKED;
-    core.appendNote(
-      wuDocument,
-      buildTransitionNote(
-        WU_STATE_TRANSITION_NOTE_PREFIX.BLOCK,
-        core.todayISO(),
-        parsedInput.data.reason,
-      ),
-    );
-    core.writeWU(paths.wuPath, wuDocument);
-
-    await regenerateWuProjectionFiles(
-      core,
-      stateStore as CoreBacklogStore & CoreStatusStore,
-      projectRoot,
-      paths,
-    );
-
-    return createSuccessOutput({
-      message: VALIDATION_TOOL_MESSAGES.WU_BLOCK_PASSED,
-      id: parsedInput.data.id,
-      status: STATUS_BLOCKED,
-    });
-  } catch (err) {
-    return createFailureOutput(VALIDATION_TOOL_ERROR_CODES.WU_BLOCK_ERROR, (err as Error).message);
-  }
-};
-
-const wuUnblockInProcess: InProcessToolFn = async (rawInput, context) => {
-  const parsedInput = WU_UNBLOCK_INPUT_SCHEMA.safeParse(rawInput ?? {});
-  if (!parsedInput.success) {
-    return createFailureOutput(
-      VALIDATION_TOOL_ERROR_CODES.INVALID_INPUT,
-      parsedInput.error.message,
-    );
-  }
-
-  try {
-    const core = await getCoreLazy();
-    const projectRoot = resolveWorkspaceRoot(context);
-    const paths = resolveRuntimeWuPaths(core, projectRoot, parsedInput.data.id);
-    const wuDocument = core.readWU(paths.wuPath, parsedInput.data.id) as MutableWuDoc;
-    const stateStore = new core.WUStateStore(paths.stateDir);
-    await stateStore.load();
-    await stateStore.unblock(parsedInput.data.id);
-
-    wuDocument[WU_DOC_KEYS.STATUS] = STATUS_IN_PROGRESS;
-    core.appendNote(
-      wuDocument,
-      buildTransitionNote(
-        WU_STATE_TRANSITION_NOTE_PREFIX.UNBLOCK,
-        core.todayISO(),
-        parsedInput.data.reason,
-      ),
-    );
-    core.writeWU(paths.wuPath, wuDocument);
-
-    await regenerateWuProjectionFiles(
-      core,
-      stateStore as CoreBacklogStore & CoreStatusStore,
-      projectRoot,
-      paths,
-    );
-
-    return createSuccessOutput({
-      message: VALIDATION_TOOL_MESSAGES.WU_UNBLOCK_PASSED,
-      id: parsedInput.data.id,
-      status: STATUS_IN_PROGRESS,
-    });
-  } catch (err) {
-    return createFailureOutput(
-      VALIDATION_TOOL_ERROR_CODES.WU_UNBLOCK_ERROR,
-      (err as Error).message,
-    );
-  }
-};
-
-const wuReleaseInProcess: InProcessToolFn = async (rawInput, context) => {
-  const parsedInput = WU_RELEASE_INPUT_SCHEMA.safeParse(rawInput ?? {});
-  if (!parsedInput.success) {
-    return createFailureOutput(
-      VALIDATION_TOOL_ERROR_CODES.INVALID_INPUT,
-      parsedInput.error.message,
-    );
-  }
-
-  try {
-    const core = await getCoreLazy();
-    const projectRoot = resolveWorkspaceRoot(context);
-    const paths = resolveRuntimeWuPaths(core, projectRoot, parsedInput.data.id);
-    const wuDocument = core.readWU(paths.wuPath, parsedInput.data.id) as MutableWuDoc;
-    const stateStore = new core.WUStateStore(paths.stateDir);
-    await stateStore.load();
-
-    const releaseReason = parsedInput.data.reason ?? VALIDATION_TOOL_MESSAGES.WU_RELEASE_NO_REASON;
-    await stateStore.release(parsedInput.data.id, releaseReason);
-
-    wuDocument[WU_DOC_KEYS.STATUS] = STATUS_READY;
-    const releasedDocument = wuDocument as MutableWuDoc & {
-      claimed_mode?: unknown;
-      claimed_branch?: unknown;
-    };
-    delete releasedDocument.claimed_mode;
-    delete releasedDocument.claimed_branch;
-    core.appendNote(
-      wuDocument,
-      buildTransitionNote(WU_STATE_TRANSITION_NOTE_PREFIX.RELEASE, core.todayISO(), releaseReason),
-    );
-    core.writeWU(paths.wuPath, wuDocument);
-
-    await regenerateWuProjectionFiles(
-      core,
-      stateStore as CoreBacklogStore & CoreStatusStore,
-      projectRoot,
-      paths,
-    );
-
-    return createSuccessOutput({
-      message: VALIDATION_TOOL_MESSAGES.WU_RELEASE_PASSED,
-      id: parsedInput.data.id,
-      status: STATUS_READY,
-      reason: releaseReason,
-    });
-  } catch (err) {
-    return createFailureOutput(
-      VALIDATION_TOOL_ERROR_CODES.WU_RELEASE_ERROR,
-      (err as Error).message,
-    );
-  }
-};
-
-const wuRecoverInProcess: InProcessToolFn = async () =>
-  createFailureOutput(
-    VALIDATION_TOOL_ERROR_CODES.WU_RECOVER_ERROR,
-    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
-  );
-
-const wuRepairInProcess: InProcessToolFn = async () =>
-  createFailureOutput(
-    VALIDATION_TOOL_ERROR_CODES.WU_REPAIR_ERROR,
-    WU_QUERY_MESSAGES.RUNTIME_CLI_FALLBACK,
-  );
 
 const wuEditInProcess: InProcessToolFn = async (rawInput, context) => {
   const parsedInput = WU_EDIT_INPUT_SCHEMA.safeParse(rawInput ?? {});
@@ -3620,51 +3417,11 @@ const registeredInProcessToolHandlers = new Map<string, RegisteredInProcessToolH
     },
   ],
   [
-    IN_PROCESS_TOOL_NAMES.WU_BLOCK,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_BLOCK,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: wuBlockInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.WU_UNBLOCK,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_UNBLOCK,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: wuUnblockInProcess,
-    },
-  ],
-  [
     IN_PROCESS_TOOL_NAMES.WU_EDIT,
     {
       description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_EDIT,
       inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
       fn: wuEditInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.WU_RELEASE,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_RELEASE,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: wuReleaseInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.WU_RECOVER,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_RECOVER,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: wuRecoverInProcess,
-    },
-  ],
-  [
-    IN_PROCESS_TOOL_NAMES.WU_REPAIR,
-    {
-      description: IN_PROCESS_TOOL_DESCRIPTIONS.WU_REPAIR,
-      inputSchema: DEFAULT_IN_PROCESS_INPUT_SCHEMA,
-      fn: wuRepairInProcess,
     },
   ],
   [

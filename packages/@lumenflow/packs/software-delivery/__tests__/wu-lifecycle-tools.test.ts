@@ -12,9 +12,14 @@ vi.mock('node:child_process', () => ({
 
 import {
   gatesTool,
+  wuBlockTool,
   wuClaimTool,
   wuDoneTool,
+  wuRecoverTool,
+  wuReleaseTool,
+  wuRepairTool,
   wuStatusTool,
+  wuUnblockTool,
 } from '../tool-impl/wu-lifecycle-tools.js';
 
 const CLI_ENTRY_SCRIPT_PATH = path.resolve(process.cwd(), 'tools/cli-entry.mjs');
@@ -96,6 +101,134 @@ describe('wu lifecycle tool adapters (WU-1887)', () => {
     expect(output.success).toBe(false);
     expect(output.error?.code).toBe('MISSING_PARAMETER');
     expect(spawnSyncMock).not.toHaveBeenCalled();
+  });
+
+  it('maps wu:block options to CLI flags', async () => {
+    spawnSyncMock.mockReturnValue({
+      status: 0,
+      stdout: 'blocked',
+      stderr: '',
+      error: undefined,
+    });
+
+    const output = await wuBlockTool({
+      id: 'WU-1893',
+      reason: 'Blocked by dependency',
+      remove_worktree: true,
+    });
+
+    expect(output.success).toBe(true);
+    expect(spawnSyncMock).toHaveBeenCalledWith(
+      process.execPath,
+      [
+        CLI_ENTRY_SCRIPT_PATH,
+        'wu-block',
+        '--id',
+        'WU-1893',
+        '--reason',
+        'Blocked by dependency',
+        '--remove-worktree',
+      ],
+      expect.any(Object),
+    );
+  });
+
+  it('maps wu:unblock options to CLI flags', async () => {
+    spawnSyncMock.mockReturnValue({
+      status: 0,
+      stdout: 'unblocked',
+      stderr: '',
+      error: undefined,
+    });
+
+    const output = await wuUnblockTool({
+      id: 'WU-1893',
+      reason: 'Dependency cleared',
+      create_worktree: true,
+    });
+
+    expect(output.success).toBe(true);
+    expect(spawnSyncMock).toHaveBeenCalledWith(
+      process.execPath,
+      [
+        CLI_ENTRY_SCRIPT_PATH,
+        'wu-unblock',
+        '--id',
+        'WU-1893',
+        '--reason',
+        'Dependency cleared',
+        '--create-worktree',
+      ],
+      expect.any(Object),
+    );
+  });
+
+  it('maps wu:release options to CLI flags', async () => {
+    spawnSyncMock.mockReturnValue({
+      status: 0,
+      stdout: 'released',
+      stderr: '',
+      error: undefined,
+    });
+
+    const output = await wuReleaseTool({
+      id: 'WU-1893',
+      reason: 'Recovered ownership',
+    });
+
+    expect(output.success).toBe(true);
+    expect(spawnSyncMock).toHaveBeenCalledWith(
+      process.execPath,
+      [CLI_ENTRY_SCRIPT_PATH, 'wu-release', '--id', 'WU-1893', '--reason', 'Recovered ownership'],
+      expect.any(Object),
+    );
+  });
+
+  it('maps wu:recover options to CLI flags and parses json output', async () => {
+    spawnSyncMock.mockReturnValue({
+      status: 0,
+      stdout: '{"id":"WU-1893","status":"ready"}\n',
+      stderr: '',
+      error: undefined,
+    });
+
+    const output = await wuRecoverTool({
+      id: 'WU-1893',
+      action: 'resume',
+      force: true,
+      json: true,
+    });
+
+    expect(output.success).toBe(true);
+    expect(output.data).toMatchObject({ id: 'WU-1893', status: 'ready' });
+    expect(spawnSyncMock).toHaveBeenCalledWith(
+      process.execPath,
+      [CLI_ENTRY_SCRIPT_PATH, 'wu-recover', '--id', 'WU-1893', '--action', 'resume', '--force', '--json'],
+      expect.any(Object),
+    );
+  });
+
+  it('maps wu:repair options to CLI flags', async () => {
+    spawnSyncMock.mockReturnValue({
+      status: 0,
+      stdout: 'repair complete',
+      stderr: '',
+      error: undefined,
+    });
+
+    const output = await wuRepairTool({
+      id: 'WU-1893',
+      check: true,
+      claim: true,
+      repair_state: true,
+    });
+
+    expect(output.success).toBe(true);
+    expect(spawnSyncMock).toHaveBeenCalledWith(
+      process.execPath,
+      [CLI_ENTRY_SCRIPT_PATH, 'wu-repair', '--id', 'WU-1893', '--check', '--claim', '--repair-state'],
+      expect.any(Object),
+    );
   });
 
   it('maps gates options to CLI flags', async () => {

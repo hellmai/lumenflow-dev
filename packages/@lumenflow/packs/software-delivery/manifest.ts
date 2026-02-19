@@ -40,6 +40,11 @@ const WU_DONE_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuDoneTool';
 const WU_PREP_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuPrepTool';
 const WU_PREFLIGHT_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuPreflightTool';
 const WU_VALIDATE_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuValidateTool';
+const WU_BLOCK_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuBlockTool';
+const WU_UNBLOCK_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuUnblockTool';
+const WU_RELEASE_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuReleaseTool';
+const WU_RECOVER_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuRecoverTool';
+const WU_REPAIR_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuRepairTool';
 const GATES_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#gatesTool';
 
 const TOOL_PERMISSIONS = {
@@ -146,6 +151,11 @@ const TOOL_ENTRY_OVERRIDES: Partial<Record<ToolName, string>> = {
   'wu:prep': WU_PREP_TOOL_ENTRY,
   'wu:preflight': WU_PREFLIGHT_TOOL_ENTRY,
   'wu:validate': WU_VALIDATE_TOOL_ENTRY,
+  'wu:block': WU_BLOCK_TOOL_ENTRY,
+  'wu:unblock': WU_UNBLOCK_TOOL_ENTRY,
+  'wu:release': WU_RELEASE_TOOL_ENTRY,
+  'wu:recover': WU_RECOVER_TOOL_ENTRY,
+  'wu:repair': WU_REPAIR_TOOL_ENTRY,
   gates: GATES_TOOL_ENTRY,
 };
 
