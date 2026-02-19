@@ -22,7 +22,7 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-1892.done
 dependencies: []
-initiative: INIT-031
+initiative: INIT-030
 phase: 6
 blocked_by:
   - WU-1891
