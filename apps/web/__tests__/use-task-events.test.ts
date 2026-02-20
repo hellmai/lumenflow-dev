@@ -2,6 +2,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import {
   parseSSELine,
   buildEventsUrl,
+  computeBackoffMs,
   deriveStateFromEvents,
   extractToolReceipts,
   extractEvidenceLinks,
@@ -55,6 +56,116 @@ describe('parseSSELine', () => {
     const sseData = JSON.stringify({ timestamp: '2026-02-18T10:00:00.000Z' });
     const event = parseSSELine(sseData, TASK_ID);
     expect(event).toBeNull();
+  });
+
+  it('parses a StreamEvent envelope with source: kernel', () => {
+    const sseData = JSON.stringify({
+      source: 'kernel',
+      event: {
+        kind: 'task_claimed',
+        timestamp: '2026-02-18T10:01:00.000Z',
+        task_id: TASK_ID,
+        by: 'tom',
+        session_id: 'session-1',
+      },
+    });
+
+    const event = parseSSELine(sseData, TASK_ID);
+    expect(event).not.toBeNull();
+    expect(event!.kind).toBe('task_claimed');
+    expect(event!.taskId).toBe(TASK_ID);
+    expect(event!.timestamp).toBe('2026-02-18T10:01:00.000Z');
+    expect(event!.data).toEqual({ by: 'tom', session_id: 'session-1' });
+  });
+
+  it('parses a StreamEvent envelope with source: evidence', () => {
+    const sseData = JSON.stringify({
+      source: 'evidence',
+      trace: {
+        kind: 'tool_call_started',
+        timestamp: '2026-02-18T10:02:00.000Z',
+        task_id: TASK_ID,
+        receipt_id: 'rcpt-1',
+        tool_name: 'git.commit',
+      },
+    });
+
+    const event = parseSSELine(sseData, TASK_ID);
+    expect(event).not.toBeNull();
+    expect(event!.kind).toBe('tool_call_started');
+    expect(event!.taskId).toBe(TASK_ID);
+    expect(event!.data).toEqual({ receipt_id: 'rcpt-1', tool_name: 'git.commit' });
+  });
+
+  it('falls back to taskId parameter when envelope inner has no task_id', () => {
+    const sseData = JSON.stringify({
+      source: 'kernel',
+      event: {
+        kind: 'task_created',
+        timestamp: '2026-02-18T10:00:00.000Z',
+        spec_hash: 'abc',
+      },
+    });
+
+    const event = parseSSELine(sseData, TASK_ID);
+    expect(event).not.toBeNull();
+    expect(event!.taskId).toBe(TASK_ID);
+  });
+
+  it('returns null for envelope with missing inner kind', () => {
+    const sseData = JSON.stringify({
+      source: 'kernel',
+      event: {
+        timestamp: '2026-02-18T10:00:00.000Z',
+      },
+    });
+
+    const event = parseSSELine(sseData, TASK_ID);
+    expect(event).toBeNull();
+  });
+
+  it('returns null for envelope with unknown source and no inner', () => {
+    const sseData = JSON.stringify({
+      source: 'unknown',
+    });
+
+    const event = parseSSELine(sseData, TASK_ID);
+    expect(event).toBeNull();
+  });
+});
+
+/* ------------------------------------------------------------------
+ * AC5: Reconnection with exponential backoff (pure function)
+ * ------------------------------------------------------------------ */
+
+describe('computeBackoffMs', () => {
+  it('returns a value in [base, base * 1.5] for attempt 0', () => {
+    const BASE_MS = 1000;
+    const JITTER_FACTOR = 0.5;
+    for (let i = 0; i < 20; i++) {
+      const ms = computeBackoffMs(0);
+      expect(ms).toBeGreaterThanOrEqual(BASE_MS);
+      expect(ms).toBeLessThanOrEqual(BASE_MS + BASE_MS * JITTER_FACTOR);
+    }
+  });
+
+  it('doubles the base for each attempt (exponential growth)', () => {
+    // Attempt 3 => base * 2^3 = 8000, range [8000, 12000]
+    for (let i = 0; i < 20; i++) {
+      const ms = computeBackoffMs(3);
+      expect(ms).toBeGreaterThanOrEqual(8000);
+      expect(ms).toBeLessThanOrEqual(12000);
+    }
+  });
+
+  it('caps at BACKOFF_MAX_MS for high attempt numbers', () => {
+    const MAX_MS = 30_000;
+    const JITTER_FACTOR = 0.5;
+    for (let i = 0; i < 20; i++) {
+      const ms = computeBackoffMs(100);
+      expect(ms).toBeGreaterThanOrEqual(MAX_MS);
+      expect(ms).toBeLessThanOrEqual(MAX_MS + MAX_MS * JITTER_FACTOR);
+    }
   });
 });
 

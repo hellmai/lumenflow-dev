@@ -40,16 +40,65 @@ const APPROVAL_ACTION = {
 
 type ApprovalAction = (typeof APPROVAL_ACTION)[keyof typeof APPROVAL_ACTION];
 
+/** Reconnection backoff constants. */
+const BACKOFF_BASE_MS = 1000;
+const BACKOFF_MAX_MS = 30_000;
+const BACKOFF_JITTER_FACTOR = 0.5;
+const MAX_RECONNECT_ATTEMPTS = 10;
+
 // --- Pure helper functions (exported for testing) ---
 
 export function buildEventsUrl(taskId: string): string {
   return `${API_EVENTS_PREFIX}${encodeURIComponent(taskId)}`;
 }
 
+/**
+ * Computes exponential backoff with jitter.
+ * Formula: min(base * 2^attempt, max) + random jitter
+ */
+export function computeBackoffMs(attempt: number): number {
+  const exponential = Math.min(BACKOFF_BASE_MS * Math.pow(2, attempt), BACKOFF_MAX_MS);
+  const jitter = exponential * BACKOFF_JITTER_FACTOR * Math.random();
+  return exponential + jitter;
+}
+
+/**
+ * Parses an SSE data payload. Supports both:
+ * - StreamEvent envelope: `{ source: 'kernel', event: {...} }` or `{ source: 'evidence', trace: {...} }`
+ * - Legacy bare KernelEvent: `{ kind: '...', timestamp: '...', ... }`
+ */
 export function parseSSELine(data: string, taskId: string): DashboardEvent | null {
   try {
     const parsed = JSON.parse(data) as Record<string, unknown>;
 
+    // StreamEvent envelope format (WU-1918)
+    if (typeof parsed.source === 'string') {
+      let inner: Record<string, unknown> | undefined;
+      if (parsed.source === 'kernel' && typeof parsed.event === 'object' && parsed.event !== null) {
+        inner = parsed.event as Record<string, unknown>;
+      } else if (
+        parsed.source === 'evidence' &&
+        typeof parsed.trace === 'object' &&
+        parsed.trace !== null
+      ) {
+        inner = parsed.trace as Record<string, unknown>;
+      }
+
+      if (!inner || typeof inner.kind !== 'string' || typeof inner.timestamp !== 'string') {
+        return null;
+      }
+
+      const { kind, timestamp, task_id, ...rest } = inner;
+      return {
+        id: `${EVENT_ID_PREFIX}${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        kind: kind as string,
+        timestamp: timestamp as string,
+        taskId: (task_id as string) ?? taskId,
+        data: rest as Record<string, unknown>,
+      };
+    }
+
+    // Legacy bare event format (backward compatibility)
     if (typeof parsed.kind !== 'string' || typeof parsed.timestamp !== 'string') {
       return null;
     }
@@ -316,6 +365,8 @@ export function useTaskEvents(options: UseTaskEventsOptions): UseTaskEventsResul
   const eventSourceRef = useRef<EventSource | null>(null);
   const connectionStateRef = useRef(setConnectionState);
   connectionStateRef.current = setConnectionState;
+  const reconnectAttemptRef = useRef(0);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleMessage = useCallback(
     (messageEvent: MessageEvent) => {
@@ -332,25 +383,58 @@ export function useTaskEvents(options: UseTaskEventsOptions): UseTaskEventsResul
       return;
     }
 
-    const updateConnection = connectionStateRef.current;
-    const url = buildEventsUrl(taskId);
-    const eventSource = new EventSource(url);
-    eventSourceRef.current = eventSource;
+    let isCleanedUp = false;
 
-    eventSource.onopen = () => {
-      updateConnection(SSE_CONNECTION_STATES.CONNECTED);
+    const connect = (): void => {
+      if (isCleanedUp) {
+        return;
+      }
+
+      const updateConnection = connectionStateRef.current;
+      const url = buildEventsUrl(taskId);
+      const eventSource = new EventSource(url);
+      eventSourceRef.current = eventSource;
+
+      eventSource.onopen = () => {
+        reconnectAttemptRef.current = 0;
+        updateConnection(SSE_CONNECTION_STATES.CONNECTED);
+      };
+
+      eventSource.onmessage = handleMessage;
+
+      eventSource.onerror = () => {
+        eventSource.close();
+        eventSourceRef.current = null;
+
+        if (isCleanedUp) {
+          return;
+        }
+
+        const attempt = reconnectAttemptRef.current;
+        if (attempt >= MAX_RECONNECT_ATTEMPTS) {
+          updateConnection(SSE_CONNECTION_STATES.ERROR);
+          return;
+        }
+
+        updateConnection(SSE_CONNECTION_STATES.DISCONNECTED);
+        reconnectAttemptRef.current = attempt + 1;
+        const delayMs = computeBackoffMs(attempt);
+        reconnectTimerRef.current = setTimeout(connect, delayMs);
+      };
     };
 
-    eventSource.onmessage = handleMessage;
-
-    eventSource.onerror = () => {
-      updateConnection(SSE_CONNECTION_STATES.ERROR);
-      eventSource.close();
-    };
+    connect();
 
     return () => {
-      eventSource.close();
-      eventSourceRef.current = null;
+      isCleanedUp = true;
+      if (reconnectTimerRef.current !== null) {
+        clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
+      }
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
     };
   }, [taskId, enabled, handleMessage]);
 

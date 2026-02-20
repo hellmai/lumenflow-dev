@@ -7,6 +7,7 @@ import {
   type Disposable,
   type KernelEvent,
   type ReplayFilter,
+  type ToolTraceEntry,
 } from '@lumenflow/kernel';
 
 const HTTP_METHOD = {
@@ -34,7 +35,10 @@ const HEADER_VALUE = {
 
 const JSON_RESPONSE_KEY_ERROR = 'error';
 const JSON_RESPONSE_KEY_MESSAGE = 'message';
-const JSON_LINE_SEPARATOR = '\n';
+const SSE_DATA_PREFIX = 'data: ';
+const SSE_DOUBLE_NEWLINE = '\n\n';
+const SSE_HEARTBEAT_COMMENT = ':heartbeat\n\n';
+const HEARTBEAT_INTERVAL_MS = 15_000;
 const SEARCH_PARAM = {
   KIND: 'kind',
   SINCE_TIMESTAMP: 'sinceTimestamp',
@@ -45,11 +49,29 @@ const REPLAY_KIND_VALUES = new Set<KernelEvent['kind']>(
   Object.values(KERNEL_EVENT_KINDS) as KernelEvent['kind'][],
 );
 
+/**
+ * StreamEvent envelope: discriminated union wrapping either a KernelEvent
+ * (source: 'kernel') or a ToolTraceEntry (source: 'evidence').
+ *
+ * Option B from WU-1918 spec notes.
+ */
+export type StreamEvent =
+  | { source: 'kernel'; event: KernelEvent }
+  | { source: 'evidence'; trace: ToolTraceEntry };
+
 export interface EventSubscriber {
   subscribe(
     filter: ReplayFilter,
     callback: (event: KernelEvent) => void | Promise<void>,
   ): Disposable;
+}
+
+export interface TraceSubscriber {
+  subscribe(taskId: string, callback: (trace: ToolTraceEntry) => void): Disposable;
+}
+
+export interface EventStreamRouterOptions {
+  traceSubscriber?: TraceSubscriber;
 }
 
 export interface EventStreamRouter {
@@ -112,7 +134,15 @@ function writeEventStreamHeaders(response: ServerResponse<IncomingMessage>): voi
   response.setHeader(HEADER.CONNECTION, HEADER_VALUE.CONNECTION);
 }
 
-export function createEventStreamRouter(eventSubscriber?: EventSubscriber): EventStreamRouter {
+function writeStreamEvent(response: ServerResponse<IncomingMessage>, envelope: StreamEvent): void {
+  const payload = `${SSE_DATA_PREFIX}${JSON.stringify(envelope)}${SSE_DOUBLE_NEWLINE}`;
+  response.write(payload);
+}
+
+export function createEventStreamRouter(
+  eventSubscriber?: EventSubscriber,
+  options?: EventStreamRouterOptions,
+): EventStreamRouter {
   return {
     async handleRequest(
       request: IncomingMessage,
@@ -141,20 +171,39 @@ export function createEventStreamRouter(eventSubscriber?: EventSubscriber): Even
       writeEventStreamHeaders(response);
 
       let isDisposed = false;
-      const subscription = eventSubscriber.subscribe(filter, async (event) => {
+
+      const eventSub = eventSubscriber.subscribe(filter, async (event) => {
         if (isDisposed) {
           return;
         }
-        const payload = `${JSON.stringify(event)}${JSON_LINE_SEPARATOR}`;
-        response.write(payload);
+        writeStreamEvent(response, { source: 'kernel', event });
       });
+
+      let traceSub: Disposable | undefined;
+      if (options?.traceSubscriber) {
+        traceSub = options.traceSubscriber.subscribe(taskId, (trace) => {
+          if (isDisposed) {
+            return;
+          }
+          writeStreamEvent(response, { source: 'evidence', trace });
+        });
+      }
+
+      const heartbeatTimer = setInterval(() => {
+        if (isDisposed) {
+          return;
+        }
+        response.write(SSE_HEARTBEAT_COMMENT);
+      }, HEARTBEAT_INTERVAL_MS);
 
       const dispose = (): void => {
         if (isDisposed) {
           return;
         }
         isDisposed = true;
-        subscription.dispose();
+        clearInterval(heartbeatTimer);
+        eventSub.dispose();
+        traceSub?.dispose();
       };
 
       request.on('close', dispose);
