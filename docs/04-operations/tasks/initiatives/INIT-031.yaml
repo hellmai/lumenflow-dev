@@ -7,7 +7,7 @@ description: 'User-facing surfaces initiative: real-time web dashboard for agent
   pack who want to see agents working and trust the automation, (2) pack authors/consumers who want
   to teach their AI new domains. Differentiator vs OpenClaw: governance you can see — scope
   intersection, policy decisions, evidence receipts rendered live in the browser.'
-status: done
+status: in_progress
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-18
@@ -31,6 +31,12 @@ phases:
   - id: 6
     title: 'Pack Ecosystem: 5 Real Packs'
     status: done
+  - id: 7
+    title: 'Make It Actually Work: Bug Fixes and Security'
+    status: pending
+  - id: 8
+    title: Friction-Free DX and Beautiful UX
+    status: pending
 success_metrics:
   - Web dashboard renders live task events within 2s of EventStore append
   - AG-UI RunAgent endpoint passes CopilotKit compatibility test
@@ -65,19 +71,9 @@ wus:
   - WU-1840
   - WU-1841
   - WU-1842
-  - WU-1918
-  - WU-1919
-  - WU-1920
-  - WU-1921
-  - WU-1922
-  - WU-1923
-  - WU-1924
-  - WU-1925
-  - WU-1926
-  - WU-1927
-  - WU-1928
-  - WU-1929
-  - WU-1930
 notes:
   - '2026-02-19: Reclosed after reassigning WU-1884..WU-1897 to INIT-030 Phase 6 software-delivery
     stream.'
+  - '2026-02-20: Reopened with Phases 7-8 after 3 independent code reviews found 12 blockers, 9
+    security vulns, and design gaps. 13 new WUs (WU-1918..WU-1930). WU 7.5 split into 7.5a (WU-1922
+    kernel approval) + 7.5b (WU-1923 RunAgent).'
