@@ -8,29 +8,30 @@ import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
 The **Software Delivery Pack** is the default domain pack shipped with LumenFlow. It provides everything you need for structured software delivery — from work unit lifecycle to quality gates to agent coordination.
 
 <Aside type="note" title="Pack architecture">
-  LumenFlow's [kernel](/architecture/kernel) is domain-agnostic — it provides scope enforcement, policy
-  evaluation, and evidence recording. Packs add domain-specific tools and policies. The Software Delivery
-  Pack is the first production pack; others (compliance-audit, infra-ops, security-ops) are planned.
+  LumenFlow's [kernel](/architecture/kernel) is domain-agnostic — it provides scope enforcement,
+  policy evaluation, and evidence recording. Packs add domain-specific tools and policies. The
+  Software Delivery Pack is the first production pack; others (compliance-audit, infra-ops,
+  security-ops) are planned.
 </Aside>
 
 ## What the Pack Provides
 
 <CardGrid>
   <Card title="Work Units" icon="document">
-    Atomic units of work with YAML specs, worktree isolation, and lifecycle tracking.
-    [Learn more →](/concepts/work-units)
+    Atomic units of work with YAML specs, worktree isolation, and lifecycle tracking. [Learn more
+    →](/concepts/work-units)
   </Card>
   <Card title="Lanes" icon="bars">
-    Scoped work streams with WIP limits, lock policies, and path-based access control.
-    [Learn more →](/concepts/lanes)
+    Scoped work streams with WIP limits, lock policies, and path-based access control. [Learn more
+    →](/concepts/lanes)
   </Card>
   <Card title="Gates" icon="approve-check">
-    Config-driven quality checks (format, lint, typecheck, test) enforced as kernel policies.
-    [Learn more →](/concepts/gates)
+    Config-driven quality checks (format, lint, typecheck, test) enforced as kernel policies. [Learn
+    more →](/concepts/gates)
   </Card>
   <Card title="Memory Layer" icon="puzzle">
-    Session tracking, checkpoints, coordination signals, and context recovery for agents.
-    [Learn more →](/concepts/memory)
+    Session tracking, checkpoints, coordination signals, and context recovery for agents. [Learn
+    more →](/concepts/memory)
   </Card>
 </CardGrid>
 
@@ -38,15 +39,15 @@ The **Software Delivery Pack** is the default domain pack shipped with LumenFlow
 
 The pack registers **100+ CLI commands** across these categories:
 
-| Category | Examples | Count |
-| --- | --- | --- |
-| WU Lifecycle | `wu:create`, `wu:claim`, `wu:prep`, `wu:done` | 20+ |
-| Memory & Sessions | `mem:checkpoint`, `mem:inbox`, `mem:signal` | 14 |
-| Initiatives | `initiative:create`, `initiative:status` | 8 |
-| Gates & Validation | `gates`, `wu:validate`, `lumenflow-doctor` | 6 |
-| Packs | `pack:scaffold`, `pack:validate`, `pack:publish` | 6 |
-| Metrics & Flow | `flow:report`, `flow:bottlenecks`, `metrics` | 5 |
-| Agent & Orchestration | `wu:brief`, `wu:delegate`, `orchestrate:monitor` | 7 |
+| Category              | Examples                                         | Count |
+| --------------------- | ------------------------------------------------ | ----- |
+| WU Lifecycle          | `wu:create`, `wu:claim`, `wu:prep`, `wu:done`    | 20+   |
+| Memory & Sessions     | `mem:checkpoint`, `mem:inbox`, `mem:signal`      | 14    |
+| Initiatives           | `initiative:create`, `initiative:status`         | 8     |
+| Gates & Validation    | `gates`, `wu:validate`, `lumenflow-doctor`       | 6     |
+| Packs                 | `pack:scaffold`, `pack:validate`, `pack:publish` | 6     |
+| Metrics & Flow        | `flow:report`, `flow:bottlenecks`, `metrics`     | 5     |
+| Agent & Orchestration | `wu:brief`, `wu:delegate`, `orchestrate:monitor` | 7     |
 
 See the [CLI Reference](/reference/cli) for the complete command list.
 
