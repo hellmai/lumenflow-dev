@@ -1865,4 +1865,5 @@
 {"type":"complete","wuId":"WU-1950","timestamp":"2026-02-20T21:15:34.234Z"}
 {"type":"claim","wuId":"WU-1953","timestamp":"2026-02-20T21:16:13.156Z","lane":"Operations: Runtime","title":"[WU-J] Pack authoring API route + web wizard"}
 {"type":"complete","wuId":"WU-1953","timestamp":"2026-02-20T21:32:58.349Z"}
-{"type":"claim","wuId":"WU-1954","lane":"Operations: Runtime","title":"[WU-K] Management UI: workspace wizard + task creation + onboarding state","timestamp":"2026-02-20T21:33:41.233Z"}
+{"type":"claim","wuId":"WU-1954","timestamp":"2026-02-20T21:33:41.233Z","lane":"Operations: Runtime","title":"[WU-K] Management UI: workspace wizard + task creation + onboarding state"}
+{"type":"complete","wuId":"WU-1954","timestamp":"2026-02-20T21:52:46.410Z"}
