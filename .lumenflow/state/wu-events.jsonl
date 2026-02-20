@@ -1837,4 +1837,5 @@
 {"type":"complete","wuId":"WU-1941","timestamp":"2026-02-20T15:46:47.088Z"}
 {"type":"claim","wuId":"WU-1942","timestamp":"2026-02-20T16:18:20.542Z","lane":"Operations: Tooling","title":"Replace hero logo with terminal demo GIF"}
 {"type":"complete","wuId":"WU-1942","timestamp":"2026-02-20T16:20:58.611Z"}
-{"type":"claim","wuId":"WU-1943","lane":"Operations: Tooling","title":"Fix MDX build error: unescaped angle brackets in cli.mdx","timestamp":"2026-02-20T16:22:46.546Z"}
+{"type":"claim","wuId":"WU-1943","timestamp":"2026-02-20T16:22:46.546Z","lane":"Operations: Tooling","title":"Fix MDX build error: unescaped angle brackets in cli.mdx"}
+{"type":"complete","wuId":"WU-1943","timestamp":"2026-02-20T16:27:32.217Z"}
