@@ -4,6 +4,7 @@ import path from 'node:path';
 import { PACK_MANIFEST_FILE_NAME, UTF8_ENCODING } from '@lumenflow/kernel';
 import {
   ValidationErrorCode,
+  sanitizeRelativePath,
   sanitizePath,
   validateBodySize,
   validateCsrfOrigin,
@@ -34,8 +35,6 @@ const ERROR_WORKSPACE_ROOT_REQUIRED = 'workspaceRoot is required';
 const ERROR_REQUEST_REQUIRED = 'request payload is required';
 const ERROR_OUTPUT_DIR_INVALID = 'outputDir must be a non-empty string when provided';
 const ERROR_PACK_EXISTS = 'Pack directory already exists. Use force=true to overwrite.';
-const ERROR_GENERATED_PATH_ABSOLUTE = 'Generated file path must be relative';
-const ERROR_GENERATED_PATH_TRAVERSAL = 'Generated file path escapes pack directory';
 
 interface PackAuthorRequestBody {
   readonly workspaceRoot?: unknown;
@@ -66,25 +65,6 @@ function jsonResponse(body: unknown, status: number): Response {
 function getAllowedWorkspaceRoot(): string {
   const configured = process.env.LUMENFLOW_WEB_WORKSPACE_ROOT ?? process.cwd();
   return path.resolve(configured);
-}
-
-function ensureRelativeGeneratedPath(packRoot: string, relativeFilePath: string): string {
-  if (path.isAbsolute(relativeFilePath)) {
-    throw new Error(ERROR_GENERATED_PATH_ABSOLUTE);
-  }
-
-  const absoluteFilePath = path.resolve(packRoot, relativeFilePath);
-  const relativeToPack = path.relative(packRoot, absoluteFilePath);
-  if (
-    relativeToPack.length === 0 ||
-    relativeToPack.startsWith(`..${path.sep}`) ||
-    relativeToPack === '..' ||
-    path.isAbsolute(relativeToPack)
-  ) {
-    throw new Error(ERROR_GENERATED_PATH_TRAVERSAL);
-  }
-
-  return absoluteFilePath;
 }
 
 function parseWorkspaceRoot(value: unknown, allowedRoot: string): ParseResult {
@@ -279,7 +259,7 @@ export async function POST(request: Request): Promise<Response> {
     );
 
     for (const [relativeFilePath, fileContent] of sortedEntries) {
-      const absoluteFilePath = ensureRelativeGeneratedPath(packRoot, relativeFilePath);
+      const absoluteFilePath = sanitizeRelativePath(relativeFilePath, packRoot);
       // eslint-disable-next-line security/detect-non-literal-fs-filename -- generated file path is validated relative to packRoot
       await mkdir(path.dirname(absoluteFilePath), { recursive: true });
       // eslint-disable-next-line security/detect-non-literal-fs-filename -- generated file path is validated relative to packRoot

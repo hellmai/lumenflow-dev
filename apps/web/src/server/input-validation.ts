@@ -213,6 +213,29 @@ export function sanitizePath(userPath: string, allowedRoot: string): string {
 }
 
 /**
+ * Resolves a relative path within an allowed root and rejects:
+ * - absolute paths
+ * - traversal attempts
+ * - empty paths that resolve to the root itself
+ */
+export function sanitizeRelativePath(userPath: string, allowedRoot: string): string {
+  if (path.isAbsolute(userPath)) {
+    throw new Error(`${ValidationErrorCode.PATH_TRAVERSAL}: Path must be relative`);
+  }
+
+  const resolvedRoot = path.resolve(allowedRoot);
+  const sanitized = sanitizePath(userPath, resolvedRoot);
+
+  if (sanitized === resolvedRoot) {
+    throw new Error(
+      `${ValidationErrorCode.PATH_TRAVERSAL}: Path must resolve to a file under the root`,
+    );
+  }
+
+  return sanitized;
+}
+
+/**
  * Maximum number of decode passes for path traversal checks.
  * Handles single and double-encoded payloads without risking unbounded loops.
  */

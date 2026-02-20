@@ -11,6 +11,7 @@ import {
   validateWorkspaceId,
   validatePathWithinRoot,
   sanitizePath,
+  sanitizeRelativePath,
   validateCsrfOrigin,
   validateBodySize,
   ValidationErrorCode,
@@ -214,6 +215,25 @@ describe('sanitizePath', () => {
 
   it('throws on null byte attacks', () => {
     expect(() => sanitizePath('file\0.txt', '/allowed/root')).toThrow(
+      ValidationErrorCode.PATH_TRAVERSAL,
+    );
+  });
+});
+
+describe('sanitizeRelativePath', () => {
+  it('returns resolved path for valid relative paths under root', () => {
+    const result = sanitizeRelativePath('tool-impl/read-notes.ts', '/allowed/root');
+    expect(result).toBe('/allowed/root/tool-impl/read-notes.ts');
+  });
+
+  it('rejects absolute paths', () => {
+    expect(() => sanitizeRelativePath('/etc/passwd', '/allowed/root')).toThrow(
+      ValidationErrorCode.PATH_TRAVERSAL,
+    );
+  });
+
+  it('rejects empty or root-resolving relative paths', () => {
+    expect(() => sanitizeRelativePath('.', '/allowed/root')).toThrow(
       ValidationErrorCode.PATH_TRAVERSAL,
     );
   });
