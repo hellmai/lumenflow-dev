@@ -7,7 +7,7 @@ priority: P0
 created: 2026-02-20
 code_paths:
   - apps/web/app/api/workspace/connect/route.ts
-  - apps/web/app/api/registry/packs/*/install/route.ts
+  - apps/web/app/api/registry/packs/[id]/install/route.ts
 tests:
   manual:
     - Path traversal attempt returns 403
@@ -22,10 +22,17 @@ phase: 7
 risks: []
 notes: 'Sizing: SIMPLE (~20 calls, 7 files). Strategy: Single Session.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-20T11:38:27.993Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1921
+session_id: fb95d414-962e-4580-9ab4-5eb396653033
 exposure: api
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:38:27.999Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -36,11 +43,3 @@ acceptance:
   - Install endpoint validates CWD
   - CSRF origin checking on POST endpoints
   - Request body size limits on task API
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1921
-claimed_at: 2026-02-20T11:38:27.993Z
-baseline_main_sha: fb80cdb274dce470afda0e8c2a67f393beb7e8c2
-session_id: fb95d414-962e-4580-9ab4-5eb396653033
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-20T11:38:27.999Z
