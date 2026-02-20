@@ -14,3 +14,4 @@ success_metrics:
   - Custom pack/tool authoring works without handwritten code via secure templates
   - All write endpoints enforce traversal/CSRF/body-size protections
 labels: []
+related_plan: lumenflow://plans/curious-skipping-robin.md
