@@ -2,7 +2,7 @@ id: WU-1950
 title: '[WU-G] Registry manifest extraction + marketplace trust rendering'
 lane: 'Operations: Runtime'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -53,3 +53,6 @@ session_id: 17aecda4-a677-4a81-a20a-145f774c69be
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T21:03:42.139Z
+locked: true
+completed_at: 2026-02-20T21:15:29.656Z
+completed: 2026-02-20

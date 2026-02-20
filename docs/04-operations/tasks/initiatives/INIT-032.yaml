@@ -15,7 +15,7 @@ phases:
     status: done
   - id: 2
     title: 'Phase 1: Adoption Core'
-    status: in_progress
+    status: done
   - id: 3
     title: 'Phase 2: Secure Custom Tool Authoring'
     status: in_progress
