@@ -2,7 +2,7 @@ id: WU-1915
 title: Restructure Starlight docs hierarchy to reflect kernel/pack architecture
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -30,7 +30,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Reorganize sidebar to separate kernel concepts from Software Delivery Pack features, surface 14 orphaned pages, add pack overview page, and create clear installation path
+description: Reorganize sidebar to separate kernel concepts from Software Delivery Pack features,
+  surface 14 orphaned pages, add pack overview page, and create clear installation path
 acceptance:
   - Sidebar reflects kernel/pack separation
   - All 14 orphaned pages reachable via navigation
@@ -39,3 +40,11 @@ acceptance:
   - AI Agents section consolidates agent content
   - Language Guides includes all 8 languages
   - Site builds without errors
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1915
+claimed_at: 2026-02-20T09:30:06.977Z
+baseline_main_sha: b20051de17172f97c6f0095056f1b5abed58ca7b
+session_id: 17452bdf-b5a4-40fd-946b-b317e79d871a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T09:30:06.982Z
