@@ -2,7 +2,7 @@ id: WU-1916
 title: Rewrite docs content for kernel/pack distinction and dual entry paths
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -50,3 +50,6 @@ session_id: 9e15fcd5-13a9-4009-a417-064c4f05a3e6
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T10:12:53.612Z
+locked: true
+completed_at: 2026-02-20T10:27:05.078Z
+completed: 2026-02-20
