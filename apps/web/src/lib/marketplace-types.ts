@@ -73,7 +73,7 @@ export function generateInstallCommand(packId: string, version?: string): string
  * Constants
  * ------------------------------------------------------------------ */
 
-export const AUTHORING_GUIDE_URL = 'https://lumenflow.dev/guides/authoring-packs/';
+export const AUTHORING_GUIDE_URL = 'https://lumenflow.dev/guides/create-a-pack/';
 export const CREATE_PACK_CTA_LABEL = 'Create a Pack';
 export const MARKETPLACE_PAGE_TITLE = 'Pack Marketplace';
 export const SEARCH_PLACEHOLDER = 'Search packs...';

@@ -38,7 +38,7 @@ export const ECOSYSTEM_DESCRIPTION =
   'that plugs into the LumenFlow kernel.';
 
 export const GETTING_STARTED_HEADING = 'Getting Started';
-export const PACK_AUTHORING_GUIDE_URL = 'https://lumenflow.dev/guides/authoring-packs/';
+export const PACK_AUTHORING_GUIDE_URL = 'https://lumenflow.dev/guides/create-a-pack/';
 export const PACK_AUTHORING_LINK_LABEL = 'Read the Pack Authoring Guide';
 
 export const PACK_SHOWCASE_HEADING = 'Available Packs';

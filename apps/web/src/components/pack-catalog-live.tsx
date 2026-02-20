@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { PackCatalogEntry } from '../lib/pack-catalog-types';
 import { PackCatalog } from './pack-catalog';
 
-const PACKS_API_PATH = '/api/packs';
+const PACKS_API_PATH = '/api/registry/packs';
 const DASHBOARD_BASE_URL = '/dashboard';
 const LOADING_MESSAGE = 'Loading pack catalog...';
 const ERROR_MESSAGE_PREFIX = 'Failed to load pack catalog';
