@@ -9,10 +9,19 @@
  */
 
 import type { WorkspaceInfo } from '../lib/workspace-connection-types';
-import { ValidationErrorCode, validatePathInput } from './input-validation';
+import type { PackCatalogEntry } from '../lib/pack-catalog-types';
+import {
+  ValidationErrorCode,
+  type ValidationErrorCodeType,
+  validatePathInput,
+} from './input-validation';
 
 const ERROR_WORKSPACE_ROOT_REQUIRED = 'workspaceRoot is required and must be a non-empty string.';
+const ERROR_WORKSPACE_ROOT_QUERY_REQUIRED =
+  'workspaceRoot query parameter is required and must be a non-empty string.';
 const ERROR_INITIALIZATION_PREFIX = 'Failed to initialize workspace';
+const ERROR_PACKS_LOAD_PREFIX = 'Failed to load workspace packs';
+const WORKSPACE_ROOT_QUERY_PARAM = 'workspaceRoot';
 
 /* ------------------------------------------------------------------
  * Request parsing
@@ -26,9 +35,27 @@ interface ParseSuccess {
 interface ParseFailure {
   readonly success: false;
   readonly error: string;
+  readonly code?: ValidationErrorCodeType;
 }
 
 export type ParseResult = ParseSuccess | ParseFailure;
+
+function parseWorkspaceRootInput(value: unknown, requiredError: string): ParseResult {
+  if (typeof value !== 'string' || value.length === 0) {
+    return { success: false, error: requiredError };
+  }
+
+  const pathValidation = validatePathInput(value);
+  if (!pathValidation.valid) {
+    return {
+      success: false,
+      code: pathValidation.code,
+      error: `${ValidationErrorCode.PATH_TRAVERSAL}: ${pathValidation.message}`,
+    };
+  }
+
+  return { success: true, workspaceRoot: value };
+}
 
 export function parseWorkspaceConnectRequest(body: unknown): ParseResult {
   if (typeof body !== 'object' || body === null) {
@@ -36,21 +63,50 @@ export function parseWorkspaceConnectRequest(body: unknown): ParseResult {
   }
 
   const record = body as Record<string, unknown>;
-  const workspaceRoot = record.workspaceRoot;
+  return parseWorkspaceRootInput(record.workspaceRoot, ERROR_WORKSPACE_ROOT_REQUIRED);
+}
 
-  if (typeof workspaceRoot !== 'string' || workspaceRoot.length === 0) {
-    return { success: false, error: ERROR_WORKSPACE_ROOT_REQUIRED };
+export function parseWorkspacePacksRequest(searchParams: URLSearchParams): ParseResult {
+  const workspaceRoot = searchParams.get(WORKSPACE_ROOT_QUERY_PARAM);
+  return parseWorkspaceRootInput(workspaceRoot, ERROR_WORKSPACE_ROOT_QUERY_REQUIRED);
+}
+
+/* ------------------------------------------------------------------
+ * Workspace packs handler
+ * ------------------------------------------------------------------ */
+
+interface WorkspacePacksSuccess {
+  readonly success: true;
+  readonly packs: readonly PackCatalogEntry[];
+}
+
+interface WorkspacePacksFailure {
+  readonly success: false;
+  readonly error: string;
+  readonly code?: ValidationErrorCodeType;
+}
+
+export type WorkspacePacksResult = WorkspacePacksSuccess | WorkspacePacksFailure;
+
+export type WorkspacePacksLoader = (workspaceRoot: string) => Promise<readonly PackCatalogEntry[]>;
+
+export async function handleWorkspacePacks(
+  searchParams: URLSearchParams,
+  loadWorkspacePacks: WorkspacePacksLoader,
+): Promise<WorkspacePacksResult> {
+  const parsed = parseWorkspacePacksRequest(searchParams);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error, code: parsed.code };
   }
 
-  const pathValidation = validatePathInput(workspaceRoot);
-  if (!pathValidation.valid) {
-    return {
-      success: false,
-      error: `${ValidationErrorCode.PATH_TRAVERSAL}: ${pathValidation.message}`,
-    };
+  try {
+    const packs = await loadWorkspacePacks(parsed.workspaceRoot);
+    return { success: true, packs };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : `${ERROR_PACKS_LOAD_PREFIX}: unknown error`;
+    return { success: false, error: message };
   }
-
-  return { success: true, workspaceRoot };
 }
 
 /* ------------------------------------------------------------------

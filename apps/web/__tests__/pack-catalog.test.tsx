@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
-import { describe, expect, it } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import type { PackCatalogEntry, PackToolView, PackPolicyView } from '../src/lib/pack-catalog-types';
+import { WORKSPACE_LOCAL_STORAGE_KEY } from '../src/lib/workspace-connection';
 
 /* ------------------------------------------------------------------
  * AC1: Lists loaded packs with manifest metadata
@@ -84,6 +85,11 @@ const FIXTURE_SECOND_PACK: PackCatalogEntry = {
 };
 
 const FIXTURE_PACKS: PackCatalogEntry[] = [FIXTURE_PACK, FIXTURE_SECOND_PACK];
+
+afterEach(() => {
+  localStorage.removeItem(WORKSPACE_LOCAL_STORAGE_KEY);
+  vi.unstubAllGlobals();
+});
 
 // --- Tests ---
 
@@ -283,6 +289,53 @@ describe('PackCatalog component', () => {
 
       const traceLinks = screen.queryAllByTestId(/^tool-trace-link-/);
       expect(traceLinks.length).toBe(0);
+    });
+  });
+});
+
+describe('PackCatalogLive component', () => {
+  it('shows a disconnected empty state when no workspace is connected', async () => {
+    const { PackCatalogLive } = await import('../src/components/pack-catalog-live');
+
+    render(<PackCatalogLive />);
+
+    expect(screen.getByTestId('pack-catalog-disconnected')).toBeDefined();
+    expect(screen.getByText(/connect a workspace/i)).toBeDefined();
+  });
+
+  it('fetches workspace-loaded packs from /api/workspace/packs when connected', async () => {
+    const { PackCatalogLive } = await import('../src/components/pack-catalog-live');
+    localStorage.setItem(WORKSPACE_LOCAL_STORAGE_KEY, '/tmp/workspace');
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      statusText: 'OK',
+      json: async () => ({ success: true, packs: [] }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<PackCatalogLive />);
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/workspace/packs?workspaceRoot=%2Ftmp%2Fworkspace',
+      );
+    });
+  });
+
+  it('renders workspace-loaded packs returned by API', async () => {
+    const { PackCatalogLive } = await import('../src/components/pack-catalog-live');
+    localStorage.setItem(WORKSPACE_LOCAL_STORAGE_KEY, '/tmp/workspace');
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      statusText: 'OK',
+      json: async () => ({ success: true, packs: [FIXTURE_PACK] }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<PackCatalogLive />);
+
+    await waitFor(() => {
+      expect(screen.getByText('software-delivery')).toBeDefined();
     });
   });
 });

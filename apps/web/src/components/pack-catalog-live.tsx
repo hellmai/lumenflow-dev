@@ -2,15 +2,20 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { PackCatalogEntry } from '../lib/pack-catalog-types';
+import { loadPersistedWorkspacePath } from '../lib/workspace-connection';
 import { PackCatalog } from './pack-catalog';
 
-const PACKS_API_PATH = '/api/registry/packs';
+const PACKS_API_PATH = '/api/workspace/packs';
+const WORKSPACE_ROOT_QUERY_PARAM = 'workspaceRoot';
 const DASHBOARD_BASE_URL = '/dashboard';
-const LOADING_MESSAGE = 'Loading pack catalog...';
+const LOADING_MESSAGE = 'Loading workspace packs...';
 const ERROR_MESSAGE_PREFIX = 'Failed to load pack catalog';
+const DISCONNECTED_MESSAGE = 'Connect a workspace to view loaded packs.';
+const DISCONNECTED_HINT =
+  'Connect your workspace in the dashboard first, then return to this page.';
 const RETRY_LABEL = 'Retry';
 
-type FetchState = 'idle' | 'loading' | 'success' | 'error';
+type FetchState = 'idle' | 'loading' | 'success' | 'error' | 'disconnected';
 
 interface UsePackCatalogDataResult {
   readonly state: FetchState;
@@ -40,27 +45,83 @@ function parsePacksResponse(rawPacks: unknown[]): PackCatalogEntry[] {
     }));
 }
 
+function extractRawPacksResponse(json: unknown): unknown[] {
+  if (Array.isArray(json)) {
+    return json;
+  }
+
+  if (typeof json === 'object' && json !== null) {
+    const record = json as Record<string, unknown>;
+    if (Array.isArray(record.packs)) {
+      return record.packs;
+    }
+  }
+
+  return [];
+}
+
+function extractErrorMessage(json: unknown): string | null {
+  if (typeof json !== 'object' || json === null) {
+    return null;
+  }
+
+  const record = json as Record<string, unknown>;
+  if (record.success === false && typeof record.error === 'string') {
+    return record.error;
+  }
+  if (typeof record.error === 'string') {
+    return record.error;
+  }
+  return null;
+}
+
+function buildPacksApiPath(workspaceRoot: string): string {
+  const query = new URLSearchParams({
+    [WORKSPACE_ROOT_QUERY_PARAM]: workspaceRoot,
+  });
+  return `${PACKS_API_PATH}?${query.toString()}`;
+}
+
+function resolvePersistedWorkspaceRoot(): string | null {
+  try {
+    return loadPersistedWorkspacePath(localStorage);
+  } catch {
+    return null;
+  }
+}
+
 function usePackCatalogData(): UsePackCatalogDataResult {
-  const [state, setState] = useState<FetchState>('idle');
+  const workspaceRoot = resolvePersistedWorkspaceRoot();
+  const [state, setState] = useState<FetchState>(workspaceRoot ? 'idle' : 'disconnected');
   const [packs, setPacks] = useState<readonly PackCatalogEntry[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
+    if (!workspaceRoot) {
+      setState('disconnected');
+      setPacks([]);
+      setErrorMessage(null);
+      return;
+    }
+
     setState('loading');
     setErrorMessage(null);
 
     try {
-      const response = await fetch(PACKS_API_PATH);
+      const response = await fetch(buildPacksApiPath(workspaceRoot));
+      const json: unknown = await response.json();
+      const responseError = extractErrorMessage(json);
+
       if (!response.ok) {
-        throw new Error(`${ERROR_MESSAGE_PREFIX}: ${response.statusText}`);
+        const responseErrorMessage = responseError ?? response.statusText ?? 'Request failed';
+        throw new Error(`${ERROR_MESSAGE_PREFIX}: ${responseErrorMessage}`);
       }
 
-      const json: unknown = await response.json();
-      const rawPacks: unknown[] = Array.isArray(json)
-        ? json
-        : Array.isArray((json as Record<string, unknown>)?.packs)
-          ? ((json as Record<string, unknown>).packs as unknown[])
-          : [];
+      if (responseError) {
+        throw new Error(`${ERROR_MESSAGE_PREFIX}: ${responseError}`);
+      }
+
+      const rawPacks = extractRawPacksResponse(json);
       const parsedPacks = parsePacksResponse(rawPacks);
 
       setPacks(parsedPacks);
@@ -77,8 +138,10 @@ function usePackCatalogData(): UsePackCatalogDataResult {
   }, [fetchData]);
 
   useEffect(() => {
-    void fetchData();
-  }, [fetchData]);
+    if (workspaceRoot) {
+      void fetchData();
+    }
+  }, [workspaceRoot, fetchData]);
 
   return { state, packs, errorMessage, refetch };
 }
@@ -89,6 +152,20 @@ function usePackCatalogData(): UsePackCatalogDataResult {
  */
 export function PackCatalogLive() {
   const { state, packs, errorMessage, refetch } = usePackCatalogData();
+
+  if (state === 'disconnected') {
+    return (
+      <div className="mx-auto max-w-5xl p-6">
+        <div
+          data-testid="pack-catalog-disconnected"
+          className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-8 text-center"
+        >
+          <p className="text-sm font-medium text-slate-700">{DISCONNECTED_MESSAGE}</p>
+          <p className="mt-2 text-xs text-slate-500">{DISCONNECTED_HINT}</p>
+        </div>
+      </div>
+    );
+  }
 
   if (state === 'idle' || state === 'loading') {
     return (
