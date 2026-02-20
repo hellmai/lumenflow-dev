@@ -26,7 +26,6 @@ import {
 import {
   validatePackId,
   validateSemver,
-  ValidationErrorCode,
   validatePathInput,
   validateCsrfOrigin,
   validateBodySize,
