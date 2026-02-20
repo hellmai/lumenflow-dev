@@ -33,7 +33,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1953 — \[WU-J\] Pack authoring API route + web wizard](wu/WU-1953.yaml) — Operations: Runtime
 
 ## ⛔ Blocked
 
@@ -922,6 +921,7 @@ sections:
 - [WU-1949 — \[WU-F\] Workspace packs route for loaded-pack visibility](wu/WU-1949.yaml)
 - [WU-1952 — \[WU-I\] pack:author command + security lint hardening](wu/WU-1952.yaml)
 - [WU-1950 — \[WU-G\] Registry manifest extraction + marketplace trust rendering](wu/WU-1950.yaml)
+- [WU-1953 — \[WU-J\] Pack authoring API route + web wizard](wu/WU-1953.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

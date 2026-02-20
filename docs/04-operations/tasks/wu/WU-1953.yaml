@@ -2,7 +2,7 @@ id: WU-1953
 title: '[WU-J] Pack authoring API route + web wizard'
 lane: 'Operations: Runtime'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
 tests:
   manual:
     - Create a pack from web wizard and verify output is created under allowed root only
-    - Navigate to /marketplace, open Create Pack Wizard, and verify pack creation is accessible from UI entry points
+    - Navigate to /marketplace, open Create Pack Wizard, and verify pack creation is accessible from
+      UI entry points
   unit:
     - apps/web/__tests__/install-pack-route.test.ts
     - apps/web/__tests__/workspace-overview.test.tsx
@@ -52,3 +53,6 @@ session_id: 4cc9590f-6f4a-4cc2-9cfb-b01c9e9ed8ff
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T21:16:13.109Z
+locked: true
+completed_at: 2026-02-20T21:32:53.637Z
+completed: 2026-02-20
