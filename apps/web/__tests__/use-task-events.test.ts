@@ -539,7 +539,11 @@ describe('extractPolicyDenials (WU-1924 AC2)', () => {
           result: 'denied',
           duration_ms: 100,
           policy_decisions: [
-            { policy_id: 'workspace-no-secrets', decision: 'deny', reason: 'Write to .env blocked' },
+            {
+              policy_id: 'workspace-no-secrets',
+              decision: 'deny',
+              reason: 'Write to .env blocked',
+            },
           ],
           scope_enforced: [{ type: 'path', pattern: '.env', access: 'deny' }],
         },

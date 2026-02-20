@@ -333,9 +333,7 @@ const FIXTURE_DENIAL: PolicyDenialView = {
       { type: 'path', pattern: '.aws/**', access: 'deny' },
     ],
   },
-  actionDiff: [
-    { field: 'path', attempted: '.env', permitted: null, status: 'denied' },
-  ],
+  actionDiff: [{ field: 'path', attempted: '.env', permitted: null, status: 'denied' }],
 };
 
 describe('TaskDashboard PolicyDecisionOverlay (WU-1924 AC4)', () => {
