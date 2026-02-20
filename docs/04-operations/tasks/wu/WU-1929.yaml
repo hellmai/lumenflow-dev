@@ -13,6 +13,7 @@ tests:
     - All CLI commands show consistent formatted output
     - Run 'npx lumenflow commands' and verify branded header appears with version
     - Run 'npx lumenflow init' and verify branded header appears
+    - Navigate to terminal and run 'npx lumenflow commands' to verify branded header is accessible
   unit:
     - packages/@lumenflow/cli/__tests__/formatters-header.test.ts
   e2e: []
