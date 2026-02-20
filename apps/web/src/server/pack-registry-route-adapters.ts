@@ -1,9 +1,12 @@
 /**
- * Route adapters for pack registry API (WU-1836, WU-1869).
+ * Route adapters for pack registry API (WU-1836, WU-1869, WU-1920).
  *
  * These create handler functions compatible with Next.js Route Handlers.
  * Each adapter wires port interfaces to the pure handler functions,
  * handling HTTP concerns (status codes, headers, request parsing).
+ *
+ * WU-1920: Uses statusCode hint from handler error responses for correct
+ * HTTP status codes (403 ownership, 409 conflict, 429 rate limit).
  */
 
 import type { PackRegistryStore, PackBlobStore, AuthProvider } from '../lib/pack-registry-types';
@@ -24,7 +27,10 @@ const HTTP_STATUS = {
   REDIRECT: 302,
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
   NOT_FOUND: 404,
+  CONFLICT: 409,
+  TOO_MANY_REQUESTS: 429,
   INTERNAL_SERVER_ERROR: 500,
 } as const;
 
@@ -162,7 +168,9 @@ export function createPublishVersionRoute(
       });
 
       if (!result.success) {
-        return jsonResponse(result, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+        // WU-1920: Use statusCode hint from handler for correct HTTP status
+        const httpStatus = result.statusCode ?? HTTP_STATUS.INTERNAL_SERVER_ERROR;
+        return jsonResponse(result, httpStatus);
       }
 
       return jsonResponse(result, HTTP_STATUS.CREATED);

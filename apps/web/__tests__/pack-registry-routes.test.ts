@@ -27,6 +27,7 @@ const FIXTURE_VERSION: PackVersion = {
 const FIXTURE_PACK: PackRegistryEntry = {
   id: 'software-delivery',
   description: 'Git tools, worktree isolation, quality gates',
+  owner: 'testuser',
   latestVersion: '1.0.0',
   versions: [FIXTURE_VERSION],
   createdAt: '2026-02-18T00:00:00Z',
@@ -162,7 +163,7 @@ describe('Pack Registry Route Adapters', () => {
         body: formData,
       });
 
-      const response = await handler(request, 'test', '1.0.0');
+      const response = await handler(request, 'software-delivery', '2.0.0');
 
       expect(response.status).toBe(201);
       const body = await response.json();
@@ -188,7 +189,7 @@ describe('Pack Registry Route Adapters', () => {
         body: formData,
       });
 
-      const response = await handler(request, 'test', '1.0.0');
+      const response = await handler(request, 'software-delivery', '2.0.0');
 
       expect(response.status).toBe(401);
     });
@@ -212,7 +213,7 @@ describe('Pack Registry Route Adapters', () => {
         body: formData,
       });
 
-      const response = await handler(request, 'test', '1.0.0');
+      const response = await handler(request, 'software-delivery', '2.0.0');
 
       expect(response.status).toBe(400);
     });

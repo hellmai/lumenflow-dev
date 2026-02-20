@@ -1,5 +1,5 @@
 /**
- * Types for the pack registry API (WU-1836).
+ * Types for the pack registry API (WU-1836, WU-1920).
  *
  * Domain types for pack metadata, versions, and registry operations.
  * These are decoupled from infrastructure (Vercel Blob, GitHub OAuth)
@@ -27,6 +27,7 @@ export interface PackVersion {
 export interface PackRegistryEntry {
   readonly id: string;
   readonly description: string;
+  readonly owner: string;
   readonly latestVersion: string;
   readonly versions: readonly PackVersion[];
   readonly createdAt: string;
@@ -58,6 +59,8 @@ export interface PackPublishResponse {
 export interface PackRegistryErrorResponse {
   readonly success: false;
   readonly error: string;
+  /** Optional HTTP status code hint for route adapters (WU-1920). */
+  readonly statusCode?: number;
 }
 
 /* ------------------------------------------------------------------
@@ -72,11 +75,12 @@ export interface PackRegistryStore {
   /** Get a single pack by ID. Returns null if not found. */
   getPackById(id: string): Promise<PackRegistryEntry | null>;
 
-  /** Add or update a pack version in the index. */
+  /** Add or update a pack version in the index. May throw ConcurrentModificationError (WU-1920). */
   upsertPackVersion(
     packId: string,
     description: string,
     version: PackVersion,
+    owner: string,
   ): Promise<PackRegistryEntry>;
 }
 

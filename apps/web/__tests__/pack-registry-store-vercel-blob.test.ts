@@ -31,6 +31,7 @@ const FIXTURE_VERSION: PackVersion = {
 const FIXTURE_PACK: PackRegistryEntry = {
   id: 'test-pack',
   description: 'A test pack for unit tests',
+  owner: 'testuser',
   latestVersion: '1.0.0',
   versions: [FIXTURE_VERSION],
   createdAt: '2026-02-18T00:00:00Z',
@@ -85,7 +86,9 @@ describe('VercelBlobPackRegistryStore', () => {
 
       // Mock fetch for downloading the index
       const originalFetch = globalThis.fetch;
-      globalThis.fetch = vi.fn().mockResolvedValue(new Response(indexContent, { status: 200 }));
+      globalThis.fetch = vi
+        .fn()
+        .mockImplementation(() => Promise.resolve(new Response(indexContent, { status: 200 })));
 
       try {
         const { VercelBlobPackRegistryStore } =
@@ -137,7 +140,9 @@ describe('VercelBlobPackRegistryStore', () => {
       });
 
       const originalFetch = globalThis.fetch;
-      globalThis.fetch = vi.fn().mockResolvedValue(new Response(indexContent, { status: 200 }));
+      globalThis.fetch = vi
+        .fn()
+        .mockImplementation(() => Promise.resolve(new Response(indexContent, { status: 200 })));
 
       try {
         const { VercelBlobPackRegistryStore } =
@@ -170,7 +175,9 @@ describe('VercelBlobPackRegistryStore', () => {
       });
 
       const originalFetch = globalThis.fetch;
-      globalThis.fetch = vi.fn().mockResolvedValue(new Response(indexContent, { status: 200 }));
+      globalThis.fetch = vi
+        .fn()
+        .mockImplementation(() => Promise.resolve(new Response(indexContent, { status: 200 })));
 
       try {
         const { VercelBlobPackRegistryStore } =
@@ -202,7 +209,9 @@ describe('VercelBlobPackRegistryStore', () => {
       });
 
       const originalFetch = globalThis.fetch;
-      globalThis.fetch = vi.fn().mockResolvedValue(new Response(indexContent, { status: 200 }));
+      globalThis.fetch = vi
+        .fn()
+        .mockImplementation(() => Promise.resolve(new Response(indexContent, { status: 200 })));
 
       try {
         const { VercelBlobPackRegistryStore } =
@@ -234,7 +243,9 @@ describe('VercelBlobPackRegistryStore', () => {
       });
 
       const originalFetch = globalThis.fetch;
-      globalThis.fetch = vi.fn().mockResolvedValue(new Response(indexContent, { status: 200 }));
+      globalThis.fetch = vi
+        .fn()
+        .mockImplementation(() => Promise.resolve(new Response(indexContent, { status: 200 })));
 
       mockPut.mockResolvedValue(createMockBlobResponse(''));
 
@@ -247,10 +258,12 @@ describe('VercelBlobPackRegistryStore', () => {
           'new-pack',
           'A brand new pack',
           FIXTURE_VERSION,
+          'testuser',
         );
 
         expect(result.id).toBe('new-pack');
         expect(result.description).toBe('A brand new pack');
+        expect(result.owner).toBe('testuser');
         expect(result.latestVersion).toBe('1.0.0');
         expect(result.versions).toHaveLength(1);
 
@@ -280,7 +293,9 @@ describe('VercelBlobPackRegistryStore', () => {
       });
 
       const originalFetch = globalThis.fetch;
-      globalThis.fetch = vi.fn().mockResolvedValue(new Response(indexContent, { status: 200 }));
+      globalThis.fetch = vi
+        .fn()
+        .mockImplementation(() => Promise.resolve(new Response(indexContent, { status: 200 })));
 
       mockPut.mockResolvedValue(createMockBlobResponse(''));
 
@@ -301,6 +316,7 @@ describe('VercelBlobPackRegistryStore', () => {
           'test-pack',
           'Updated description',
           newVersion,
+          'testuser',
         );
 
         expect(result.versions).toHaveLength(2);
@@ -324,7 +340,12 @@ describe('VercelBlobPackRegistryStore', () => {
         await import('../src/server/pack-registry-store-vercel-blob');
       const store = new VercelBlobPackRegistryStore();
 
-      const result = await store.upsertPackVersion('new-pack', 'A new pack', FIXTURE_VERSION);
+      const result = await store.upsertPackVersion(
+        'new-pack',
+        'A new pack',
+        FIXTURE_VERSION,
+        'testuser',
+      );
 
       expect(result.id).toBe('new-pack');
       expect(mockPut).toHaveBeenCalled();

@@ -1,9 +1,14 @@
 /**
- * Vercel Blob-backed pack registry store and blob store (WU-1869).
+ * Vercel Blob-backed pack registry store and blob store (WU-1869, WU-1920).
  *
  * Adapters implementing PackRegistryStore and PackBlobStore ports
  * backed by Vercel Blob storage. The registry index is stored as a
  * single JSON blob; tarballs are stored as individual blobs.
+ *
+ * WU-1920 additions:
+ * - ConcurrentModificationError for optimistic concurrency
+ * - Version-based concurrency control on index writes
+ * - Owner field on pack entries
  *
  * Requires BLOB_READ_WRITE_TOKEN environment variable to be set.
  */
@@ -27,10 +32,27 @@ const BLOB_ACCESS = 'public' as const;
 const SHA256_PREFIX = 'sha256:';
 
 /* ------------------------------------------------------------------
+ * ConcurrentModificationError (WU-1920 S-RACE)
+ * ------------------------------------------------------------------ */
+
+/**
+ * Thrown when a write to the registry index conflicts with a concurrent write.
+ * Callers should retry the operation.
+ */
+export class ConcurrentModificationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ConcurrentModificationError';
+  }
+}
+
+/* ------------------------------------------------------------------
  * Registry index shape (stored as JSON blob)
  * ------------------------------------------------------------------ */
 
 interface RegistryIndex {
+  /** Monotonically increasing version for optimistic concurrency control. */
+  readonly indexVersion: number;
   readonly packs: readonly PackRegistryEntry[];
 }
 
@@ -48,20 +70,40 @@ export class VercelBlobPackRegistryStore implements PackRegistryStore {
 
     const firstBlob = listing.blobs[0];
     if (!firstBlob) {
-      return { packs: [] };
+      return { indexVersion: 0, packs: [] };
     }
 
     const response = await fetch(firstBlob.url);
     const text = await response.text();
 
-    return JSON.parse(text) as RegistryIndex;
+    const parsed = JSON.parse(text) as Partial<RegistryIndex>;
+
+    // Backfill indexVersion for pre-WU-1920 indices
+    return {
+      indexVersion: parsed.indexVersion ?? 0,
+      packs: parsed.packs ?? [],
+    };
   }
 
   /**
-   * Save the registry index to Vercel Blob, overwriting any existing blob.
+   * Save the registry index to Vercel Blob with optimistic concurrency.
+   * Throws ConcurrentModificationError if the index was modified since loading.
    */
-  private async saveIndex(index: RegistryIndex): Promise<void> {
-    const content = JSON.stringify(index, null, 2);
+  private async saveIndex(index: RegistryIndex, expectedVersion: number): Promise<void> {
+    // Re-read the index to check for concurrent modifications
+    const currentIndex = await this.loadIndex();
+    if (currentIndex.indexVersion !== expectedVersion) {
+      throw new ConcurrentModificationError(
+        `Expected index version ${expectedVersion}, but found ${currentIndex.indexVersion}`,
+      );
+    }
+
+    const nextIndex: RegistryIndex = {
+      ...index,
+      indexVersion: expectedVersion + 1,
+    };
+
+    const content = JSON.stringify(nextIndex, null, 2);
     await put(REGISTRY_INDEX_PATH, content, {
       access: BLOB_ACCESS,
       addRandomSuffix: false,
@@ -94,6 +136,7 @@ export class VercelBlobPackRegistryStore implements PackRegistryStore {
     packId: string,
     description: string,
     version: PackVersion,
+    owner: string,
   ): Promise<PackRegistryEntry> {
     const index = await this.loadIndex();
     const now = new Date().toISOString();
@@ -114,6 +157,7 @@ export class VercelBlobPackRegistryStore implements PackRegistryStore {
       updatedPack = {
         id: packId,
         description,
+        owner,
         latestVersion: version.version,
         versions: [version],
         createdAt: now,
@@ -125,7 +169,7 @@ export class VercelBlobPackRegistryStore implements PackRegistryStore {
       ? index.packs.map((pack) => (pack.id === packId ? updatedPack : pack))
       : [...index.packs, updatedPack];
 
-    await this.saveIndex({ packs: mutablePacks });
+    await this.saveIndex({ ...index, packs: mutablePacks }, index.indexVersion);
 
     return updatedPack;
   }

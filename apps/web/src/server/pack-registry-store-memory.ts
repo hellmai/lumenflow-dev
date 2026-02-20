@@ -1,5 +1,5 @@
 /**
- * In-memory pack registry store (WU-1836).
+ * In-memory pack registry store (WU-1836, WU-1920).
  *
  * Adapter implementing the PackRegistryStore port for development
  * and testing. Stores pack metadata in a Map. Not persistent --
@@ -42,6 +42,7 @@ export class InMemoryPackRegistryStore implements PackRegistryStore {
     packId: string,
     description: string,
     version: PackVersion,
+    owner: string,
   ): Promise<PackRegistryEntry> {
     const existing = this.packs.get(packId);
     const now = new Date().toISOString();
@@ -61,6 +62,7 @@ export class InMemoryPackRegistryStore implements PackRegistryStore {
     const newEntry: PackRegistryEntry = {
       id: packId,
       description,
+      owner,
       latestVersion: version.version,
       versions: [version],
       createdAt: now,

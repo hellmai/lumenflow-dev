@@ -28,6 +28,7 @@ const FIXTURE_VERSION: PackVersion = {
 const FIXTURE_PACK: PackRegistryEntry = {
   id: 'test-pack',
   description: 'A test pack',
+  owner: 'testuser',
   latestVersion: '1.0.0',
   versions: [FIXTURE_VERSION],
   createdAt: '2026-02-18T00:00:00Z',

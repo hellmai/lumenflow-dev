@@ -27,6 +27,7 @@ const FIXTURE_VERSION: PackVersion = {
 const FIXTURE_PACK: PackRegistryEntry = {
   id: 'software-delivery',
   description: 'Git tools, worktree isolation, quality gates',
+  owner: 'testuser',
   latestVersion: '1.0.0',
   versions: [FIXTURE_VERSION],
   createdAt: '2026-02-18T00:00:00Z',

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import type {
   PackRegistryStore,
   PackBlobStore,
@@ -9,10 +9,18 @@ import type {
 } from '../src/lib/pack-registry-types';
 
 /* ------------------------------------------------------------------
+ * WU-1836 ACs (existing):
  * AC1: GET /api/registry/packs returns pack list with search
  * AC2: GET /api/registry/packs/:id returns pack metadata and versions
  * AC3: POST publish endpoint stores tarball and updates index
  * AC4: GitHub OAuth authentication for publishers
+ *
+ * WU-1920 ACs (security hardening):
+ * S-OWN: Pack ownership validated on update (publisher = owner)
+ * S-IMMUT: Duplicate version publish returns 409 Conflict
+ * S-TARVAL: Tarball validated on publish (manifest, size, pack ID)
+ * S-RACE: Optimistic concurrency on registry index (etag/version)
+ * S-RATE: Rate limiting on publish endpoint
  * ------------------------------------------------------------------ */
 
 // --- Fixtures ---
@@ -28,6 +36,7 @@ const FIXTURE_VERSION: PackVersion = {
 const FIXTURE_PACK: PackRegistryEntry = {
   id: 'software-delivery',
   description: 'Git tools, worktree isolation, quality gates',
+  owner: 'testuser',
   latestVersion: '1.0.0',
   versions: [FIXTURE_VERSION],
   createdAt: '2026-02-18T00:00:00Z',
@@ -37,6 +46,7 @@ const FIXTURE_PACK: PackRegistryEntry = {
 const FIXTURE_SECOND_PACK: PackRegistryEntry = {
   id: 'customer-support',
   description: 'Ticket management and PII redaction',
+  owner: 'supportdev',
   latestVersion: '2.0.0',
   versions: [
     {
@@ -91,10 +101,14 @@ describe('Pack Registry Handlers', () => {
   let blobStore: PackBlobStore;
   let authProvider: AuthProvider;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     registryStore = createMockRegistryStore();
     blobStore = createMockBlobStore();
     authProvider = createMockAuthProvider();
+
+    // Reset rate limiter state between all tests
+    const { resetRateLimiter } = await import('../src/server/pack-registry-handlers');
+    resetRateLimiter();
   });
 
   describe('AC1: GET /api/registry/packs returns pack list with search', () => {
@@ -237,8 +251,8 @@ describe('Pack Registry Handlers', () => {
       const result = await handlePublishVersion({
         registryStore,
         blobStore: failingBlobStore,
-        packId: 'test-pack',
-        version: '1.0.0',
+        packId: 'software-delivery',
+        version: '3.0.0',
         description: 'Test',
         tarball: new Uint8Array([1]),
         publisher: FIXTURE_PUBLISHER,
@@ -311,6 +325,341 @@ describe('Pack Registry Handlers', () => {
       if (!result.success) {
         expect(result.error).toContain('Invalid');
       }
+    });
+  });
+
+  /* ----------------------------------------------------------------
+   * WU-1920 S-OWN: Pack ownership validated on update
+   * ---------------------------------------------------------------- */
+
+  describe('S-OWN: Pack ownership validation', () => {
+    it('allows owner to publish new version to their pack', async () => {
+      const { handlePublishVersion } = await import('../src/server/pack-registry-handlers');
+
+      // FIXTURE_PACK.owner = 'testuser', publisher.username = 'testuser'
+      const result = await handlePublishVersion({
+        registryStore,
+        blobStore,
+        packId: 'software-delivery',
+        version: '2.0.0',
+        description: 'Updated',
+        tarball: new Uint8Array([1, 2, 3]),
+        publisher: FIXTURE_PUBLISHER,
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('rejects publish when publisher is not pack owner', async () => {
+      const { handlePublishVersion } = await import('../src/server/pack-registry-handlers');
+
+      const otherPublisher: PublisherIdentity = {
+        username: 'attacker',
+        avatarUrl: 'https://github.com/attacker.png',
+      };
+
+      // FIXTURE_PACK.owner = 'testuser', publisher = 'attacker'
+      const result = await handlePublishVersion({
+        registryStore,
+        blobStore,
+        packId: 'software-delivery',
+        version: '2.0.0',
+        description: 'Hijacked',
+        tarball: new Uint8Array([1, 2, 3]),
+        publisher: otherPublisher,
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('ownership');
+      }
+    });
+
+    it('allows first publish by anyone (no existing pack = new owner)', async () => {
+      const newPackStore = createMockRegistryStore({
+        getPackById: vi.fn().mockResolvedValue(null),
+      });
+
+      const { handlePublishVersion } = await import('../src/server/pack-registry-handlers');
+
+      const result = await handlePublishVersion({
+        registryStore: newPackStore,
+        blobStore,
+        packId: 'brand-new-pack',
+        version: '1.0.0',
+        description: 'First publish',
+        tarball: new Uint8Array([1, 2, 3]),
+        publisher: FIXTURE_PUBLISHER,
+      });
+
+      expect(result.success).toBe(true);
+    });
+  });
+
+  /* ----------------------------------------------------------------
+   * WU-1920 S-IMMUT: Duplicate version publish returns 409 Conflict
+   * ---------------------------------------------------------------- */
+
+  describe('S-IMMUT: Version immutability', () => {
+    it('rejects publish of already-existing version', async () => {
+      const { handlePublishVersion } = await import('../src/server/pack-registry-handlers');
+
+      // FIXTURE_PACK already has version '1.0.0'
+      const result = await handlePublishVersion({
+        registryStore,
+        blobStore,
+        packId: 'software-delivery',
+        version: '1.0.0',
+        description: 'Duplicate',
+        tarball: new Uint8Array([1, 2, 3]),
+        publisher: FIXTURE_PUBLISHER,
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('already exists');
+        expect(result.statusCode).toBe(409);
+      }
+    });
+
+    it('allows publish of new version to existing pack', async () => {
+      const { handlePublishVersion } = await import('../src/server/pack-registry-handlers');
+
+      // Version '2.0.0' does not exist on FIXTURE_PACK
+      const result = await handlePublishVersion({
+        registryStore,
+        blobStore,
+        packId: 'software-delivery',
+        version: '2.0.0',
+        description: 'New version',
+        tarball: new Uint8Array([1, 2, 3]),
+        publisher: FIXTURE_PUBLISHER,
+      });
+
+      expect(result.success).toBe(true);
+    });
+  });
+
+  /* ----------------------------------------------------------------
+   * WU-1920 S-TARVAL: Tarball validation on publish
+   * ---------------------------------------------------------------- */
+
+  describe('S-TARVAL: Tarball validation', () => {
+    it('rejects tarball exceeding size limit', async () => {
+      const { handlePublishVersion, TARBALL_MAX_SIZE } =
+        await import('../src/server/pack-registry-handlers');
+
+      // Create a tarball that exceeds the size limit
+      const oversizedTarball = new Uint8Array(TARBALL_MAX_SIZE + 1);
+
+      const newPackStore = createMockRegistryStore({
+        getPackById: vi.fn().mockResolvedValue(null),
+      });
+
+      const result = await handlePublishVersion({
+        registryStore: newPackStore,
+        blobStore,
+        packId: 'test-pack',
+        version: '1.0.0',
+        description: 'Too big',
+        tarball: oversizedTarball,
+        publisher: FIXTURE_PUBLISHER,
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('size');
+      }
+    });
+
+    it('accepts tarball within size limit', async () => {
+      const { handlePublishVersion } = await import('../src/server/pack-registry-handlers');
+
+      const newPackStore = createMockRegistryStore({
+        getPackById: vi.fn().mockResolvedValue(null),
+      });
+
+      const result = await handlePublishVersion({
+        registryStore: newPackStore,
+        blobStore,
+        packId: 'test-pack',
+        version: '1.0.0',
+        description: 'Valid size',
+        tarball: new Uint8Array([1, 2, 3, 4]),
+        publisher: FIXTURE_PUBLISHER,
+      });
+
+      expect(result.success).toBe(true);
+    });
+  });
+
+  /* ----------------------------------------------------------------
+   * WU-1920 S-RACE: Optimistic concurrency on registry index
+   * ---------------------------------------------------------------- */
+
+  describe('S-RACE: Optimistic concurrency', () => {
+    it('retries on ConcurrentModificationError from upsertPackVersion', async () => {
+      const { handlePublishVersion } = await import('../src/server/pack-registry-handlers');
+      const { ConcurrentModificationError } =
+        await import('../src/server/pack-registry-store-vercel-blob');
+
+      // First call throws ConcurrentModificationError, second succeeds
+      const upsertMock = vi
+        .fn()
+        .mockRejectedValueOnce(new ConcurrentModificationError('Conflict'))
+        .mockResolvedValueOnce(FIXTURE_PACK);
+
+      const concurrentStore = createMockRegistryStore({
+        upsertPackVersion: upsertMock,
+      });
+
+      const result = await handlePublishVersion({
+        registryStore: concurrentStore,
+        blobStore,
+        packId: 'software-delivery',
+        version: '2.0.0',
+        description: 'Retry test',
+        tarball: new Uint8Array([1, 2, 3]),
+        publisher: FIXTURE_PUBLISHER,
+      });
+
+      expect(result.success).toBe(true);
+      expect(upsertMock).toHaveBeenCalledTimes(2);
+    });
+
+    it('fails after max retries on persistent ConcurrentModificationError', async () => {
+      const { handlePublishVersion, CONCURRENCY_MAX_RETRIES } =
+        await import('../src/server/pack-registry-handlers');
+      const { ConcurrentModificationError } =
+        await import('../src/server/pack-registry-store-vercel-blob');
+
+      const upsertMock = vi
+        .fn()
+        .mockRejectedValue(new ConcurrentModificationError('Persistent conflict'));
+
+      const concurrentStore = createMockRegistryStore({
+        upsertPackVersion: upsertMock,
+      });
+
+      const result = await handlePublishVersion({
+        registryStore: concurrentStore,
+        blobStore,
+        packId: 'software-delivery',
+        version: '2.0.0',
+        description: 'Retry exhaustion',
+        tarball: new Uint8Array([1, 2, 3]),
+        publisher: FIXTURE_PUBLISHER,
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('concurrent');
+      }
+      expect(upsertMock).toHaveBeenCalledTimes(CONCURRENCY_MAX_RETRIES);
+    });
+  });
+
+  /* ----------------------------------------------------------------
+   * WU-1920 S-RATE: Rate limiting on publish endpoint
+   * ---------------------------------------------------------------- */
+
+  describe('S-RATE: Rate limiting on publish', () => {
+    it('allows publish within rate limit', async () => {
+      const { handlePublishVersion } = await import('../src/server/pack-registry-handlers');
+
+      const newPackStore = createMockRegistryStore({
+        getPackById: vi.fn().mockResolvedValue(null),
+      });
+
+      const result = await handlePublishVersion({
+        registryStore: newPackStore,
+        blobStore,
+        packId: 'rate-test-pack',
+        version: '1.0.0',
+        description: 'Within rate limit',
+        tarball: new Uint8Array([1, 2, 3]),
+        publisher: FIXTURE_PUBLISHER,
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('rejects publish when rate limit is exceeded', async () => {
+      const { handlePublishVersion, RATE_LIMIT_MAX_REQUESTS } =
+        await import('../src/server/pack-registry-handlers');
+
+      const newPackStore = createMockRegistryStore({
+        getPackById: vi.fn().mockResolvedValue(null),
+      });
+
+      // Exhaust the rate limit
+      for (let i = 0; i < RATE_LIMIT_MAX_REQUESTS; i++) {
+        await handlePublishVersion({
+          registryStore: newPackStore,
+          blobStore,
+          packId: `rate-test-pack-${i}`,
+          version: '1.0.0',
+          description: 'Filling rate limit',
+          tarball: new Uint8Array([1, 2, 3]),
+          publisher: FIXTURE_PUBLISHER,
+        });
+      }
+
+      // Next request should be rate limited
+      const result = await handlePublishVersion({
+        registryStore: newPackStore,
+        blobStore,
+        packId: 'rate-test-over-limit',
+        version: '1.0.0',
+        description: 'Over rate limit',
+        tarball: new Uint8Array([1, 2, 3]),
+        publisher: FIXTURE_PUBLISHER,
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('rate limit');
+        expect(result.statusCode).toBe(429);
+      }
+    });
+
+    it('rate limits per publisher, not globally', async () => {
+      const { handlePublishVersion, RATE_LIMIT_MAX_REQUESTS } =
+        await import('../src/server/pack-registry-handlers');
+
+      const newPackStore = createMockRegistryStore({
+        getPackById: vi.fn().mockResolvedValue(null),
+      });
+
+      // Exhaust rate limit for FIXTURE_PUBLISHER
+      for (let i = 0; i < RATE_LIMIT_MAX_REQUESTS; i++) {
+        await handlePublishVersion({
+          registryStore: newPackStore,
+          blobStore,
+          packId: `rate-test-a-${i}`,
+          version: '1.0.0',
+          description: 'User A filling',
+          tarball: new Uint8Array([1, 2, 3]),
+          publisher: FIXTURE_PUBLISHER,
+        });
+      }
+
+      // Different publisher should still succeed
+      const otherPublisher: PublisherIdentity = {
+        username: 'otheruser',
+      };
+
+      const result = await handlePublishVersion({
+        registryStore: newPackStore,
+        blobStore,
+        packId: 'rate-test-b',
+        version: '1.0.0',
+        description: 'User B not limited',
+        tarball: new Uint8Array([1, 2, 3]),
+        publisher: otherPublisher,
+      });
+
+      expect(result.success).toBe(true);
     });
   });
 });

@@ -17,6 +17,7 @@ const FIXTURE_VERSION: PackVersion = {
 const FIXTURE_PACK: PackRegistryEntry = {
   id: 'test-pack',
   description: 'A test pack for unit tests',
+  owner: 'testuser',
   latestVersion: '1.0.0',
   versions: [FIXTURE_VERSION],
   createdAt: '2026-02-18T00:00:00Z',
@@ -121,10 +122,16 @@ describe('InMemoryPackRegistryStore', () => {
         await import('../src/server/pack-registry-store-memory');
       const store = new InMemoryPackRegistryStore();
 
-      const result = await store.upsertPackVersion('new-pack', 'A brand new pack', FIXTURE_VERSION);
+      const result = await store.upsertPackVersion(
+        'new-pack',
+        'A brand new pack',
+        FIXTURE_VERSION,
+        'testuser',
+      );
 
       expect(result.id).toBe('new-pack');
       expect(result.description).toBe('A brand new pack');
+      expect(result.owner).toBe('testuser');
       expect(result.latestVersion).toBe('1.0.0');
       expect(result.versions).toHaveLength(1);
     });
@@ -142,7 +149,12 @@ describe('InMemoryPackRegistryStore', () => {
         blobUrl: 'https://blob.vercel-storage.com/packs/test-pack/2.0.0.tgz',
       };
 
-      const result = await store.upsertPackVersion('test-pack', 'Updated description', newVersion);
+      const result = await store.upsertPackVersion(
+        'test-pack',
+        'Updated description',
+        newVersion,
+        'testuser',
+      );
 
       expect(result.versions).toHaveLength(2);
       expect(result.latestVersion).toBe('2.0.0');
@@ -154,7 +166,7 @@ describe('InMemoryPackRegistryStore', () => {
         await import('../src/server/pack-registry-store-memory');
       const store = new InMemoryPackRegistryStore();
 
-      await store.upsertPackVersion('new-pack', 'A new pack', FIXTURE_VERSION);
+      await store.upsertPackVersion('new-pack', 'A new pack', FIXTURE_VERSION, 'testuser');
 
       const found = await store.getPackById('new-pack');
       expect(found).not.toBeNull();
