@@ -29,7 +29,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1939 — Fix Next.js dev script for Turbopack default in Next 16](wu/WU-1939.yaml) — Operations: Runtime
 
 ## ⛔ Blocked
 
@@ -901,6 +900,7 @@ sections:
 - [WU-1936 — Landing page: promote OSS licensing + aesthetic warmth](wu/WU-1936.yaml)
 - [WU-1937 — Hero tighten: shorter tagline, CTA reorder, code proof block](wu/WU-1937.yaml)
 - [WU-1938 — Remove terminal code block from landing page hero](wu/WU-1938.yaml)
+- [WU-1939 — Fix Next.js dev script for Turbopack default in Next 16](wu/WU-1939.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
