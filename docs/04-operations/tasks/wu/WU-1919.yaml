@@ -2,7 +2,7 @@ id: WU-1919
 title: Pack Publishing Pipeline Fixes
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -49,3 +49,6 @@ session_id: f5427206-b161-4d60-93f1-a6595c11d9f0
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T11:24:47.216Z
+locked: true
+completed_at: 2026-02-20T11:37:49.269Z
+completed: 2026-02-20
