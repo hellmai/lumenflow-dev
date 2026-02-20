@@ -2,7 +2,7 @@ id: WU-1937
 title: 'Hero tighten: shorter tagline, CTA reorder, code proof block'
 lane: 'Content: Site Comms'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -26,9 +26,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The landing page hero tagline is too long — two strong sentences followed by a feature paragraph. Tighten to punchy hook + one-liner, swap CTA order so Get Started is primary, and add a terminal/code block below the hero showing LumenFlow in action (scope check or policy denial).
+description: The landing page hero tagline is too long — two strong sentences followed by a feature
+  paragraph. Tighten to punchy hook + one-liner, swap CTA order so Get Started is primary, and add a
+  terminal/code block below the hero showing LumenFlow in action (scope check or policy denial).
 acceptance:
   - Hero tagline is two lines max — punchy hook + short descriptor
   - Get Started is the primary CTA, Why LumenFlow is secondary
   - Code/terminal block visible below hero showing LumenFlow governance in action
   - Astro build succeeds, Vercel deploy succeeds
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1937
+claimed_at: 2026-02-20T13:04:40.543Z
+baseline_main_sha: dc637887fc7f8783772140b1465835a1f7423048
+session_id: 2919e42e-4015-4b49-bcf6-c660d9f61878
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T13:04:40.552Z
