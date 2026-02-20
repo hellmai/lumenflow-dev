@@ -2,7 +2,7 @@ id: WU-1918
 title: SSE Transport + Trace Bridge
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - ToolHost emits trace to event stream after EvidenceStore append
   - SSE heartbeat every 15s
   - useTaskEvents reconnects with exponential backoff
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1918
+claimed_at: 2026-02-20T11:23:42.408Z
+baseline_main_sha: 23a7c44f4840d05ee7240be020a86c6a16189d3d
+session_id: f5427206-b161-4d60-93f1-a6595c11d9f0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:23:42.412Z
