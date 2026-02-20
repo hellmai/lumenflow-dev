@@ -8,7 +8,6 @@ created: 2026-02-20
 code_paths:
   - apps/web/src/components
   - apps/web/package.json
-  - apps/web/components.json
   - apps/web/__tests__/shadcn-foundation.test.ts
   - pnpm-lock.yaml
 tests:
