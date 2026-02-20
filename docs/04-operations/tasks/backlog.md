@@ -28,7 +28,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1916 — Rewrite docs content for kernel/pack distinction and dual entry paths](wu/WU-1916.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 
@@ -878,6 +877,7 @@ sections:
 - [WU-1913 — Starlight: reference page updates + sidebar restructure + deploy](wu/WU-1913.yaml)
 - [WU-1914 — Full Starlight docs accuracy audit - fix all version, CLI, config, lane, and sidebar inaccuracies](wu/WU-1914.yaml)
 - [WU-1915 — Restructure Starlight docs hierarchy to reflect kernel/pack architecture](wu/WU-1915.yaml)
+- [WU-1916 — Rewrite docs content for kernel/pack distinction and dual entry paths](wu/WU-1916.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
