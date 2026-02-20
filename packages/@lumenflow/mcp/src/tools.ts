@@ -29,6 +29,7 @@
  * WU-1457: All remaining commands use shared schemas
  * WU-1482: Wave-1 public parity tools
  * WU-1483: Wave-2 public parity tools
+ * WU-1952: CLI added pack:author; MCP parity follow-up remains tracked explicitly in INIT-032.
  */
 
 // Re-export shared types and helpers
