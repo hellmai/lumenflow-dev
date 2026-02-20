@@ -2,7 +2,7 @@ id: WU-1928
 title: Community Landing Page
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -36,3 +36,11 @@ acceptance:
   - /community route renders pack ecosystem overview
   - Getting started guide with link to pack authoring docs
   - Showcase of available packs from registry
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1928
+claimed_at: 2026-02-20T11:54:08.399Z
+baseline_main_sha: c438e06b951ffd2d76f0773348c0a0a470492773
+session_id: fe4eb406-cd55-4eac-acd7-27dfbc9bfc68
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:54:08.403Z
