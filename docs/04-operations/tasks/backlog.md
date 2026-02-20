@@ -24,7 +24,6 @@ sections:
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
-- [WU-1934 — Fix pre-existing MCP parity test failures from WU-1927 onboard](wu/WU-1934.yaml) — Framework: MCP
 - [WU-1945 — \[WU-B\] Centralize write-endpoint security validation](wu/WU-1945.yaml) — Operations: Runtime
 - [WU-1946 — \[WU-C\] Install shadcn/ui base components](wu/WU-1946.yaml) — Operations: Runtime
 - [WU-1947 — \[WU-D\] CLI install fix: integrity auto-resolve + real onboard install](wu/WU-1947.yaml) — Framework: CLI Orchestration
@@ -43,6 +42,7 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1958 — Use single latest GIF demo on landing page](wu/WU-1958.yaml) — Operations: Tooling
+- [WU-1934 — Fix pre-existing MCP parity test failures from WU-1927 onboard](wu/WU-1934.yaml) — Framework: MCP
 
 ## ⛔ Blocked
 

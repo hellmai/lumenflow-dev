@@ -1842,3 +1842,4 @@
 {"type":"claim","wuId":"WU-1944","timestamp":"2026-02-20T16:44:57.319Z","lane":"Operations: Tooling","title":"Restore hero logo, add GIF demos in full-width row"}
 {"type":"complete","wuId":"WU-1944","timestamp":"2026-02-20T16:48:39.807Z"}
 {"type":"claim","wuId":"WU-1958","lane":"Operations: Tooling","title":"Use single latest GIF demo on landing page","timestamp":"2026-02-20T18:15:17.800Z"}
+{"type":"claim","wuId":"WU-1934","lane":"Framework: MCP","title":"Fix pre-existing MCP parity test failures from WU-1927 onboard","timestamp":"2026-02-20T18:16:24.891Z"}

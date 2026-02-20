@@ -4,7 +4,7 @@ title: Security-First Adoption + Secure Custom Tool Authoring
 description: 'Security-first adoption initiative for INIT-031 follow-up: fix onboarding/install
   blockers, harden write endpoints, deliver secure no-code pack authoring, and complete management
   UI + MCP parity in phased WUs.'
-status: open
+status: in_progress
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-20
@@ -46,4 +46,3 @@ wus:
   - WU-1955
   - WU-1956
   - WU-1957
-related_plan: lumenflow://plans/curious-skipping-robin.md

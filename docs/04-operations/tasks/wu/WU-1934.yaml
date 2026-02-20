@@ -2,7 +2,7 @@ id: WU-1934
 title: Fix pre-existing MCP parity test failures from WU-1927 onboard
 lane: 'Framework: MCP'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -34,3 +34,11 @@ requires_design_approval: false
 description: WU-1927 added the onboard CLI command but did not update the MCP parity test expected missing list.
 acceptance:
   - MCP parity test passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-mcp-wu-1934
+claimed_at: 2026-02-20T18:16:24.842Z
+baseline_main_sha: 2a77d8767a157b8265321b20d2c84f7d68336ebe
+session_id: bead31ca-5a8c-4955-be4d-8ebd0c53a2d5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T18:16:24.847Z
