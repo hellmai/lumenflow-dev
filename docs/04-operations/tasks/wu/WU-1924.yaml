@@ -2,7 +2,7 @@ id: WU-1924
 title: Mount PolicyDecisionOverlay and Scope Visualization
 lane: 'Content: Site Comms'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -40,3 +40,11 @@ acceptance:
   - PolicyDenialView built from denied tool receipts
   - ScopeIntersectionView constructed from requested/allowed/enforced
   - PolicyDecisionOverlay rendered in TaskDashboard
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1924
+claimed_at: 2026-02-20T11:55:27.503Z
+baseline_main_sha: db56f3df155aa7f148fb8cd666fb3933af4261bd
+session_id: fe4eb406-cd55-4eac-acd7-27dfbc9bfc68
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:55:27.506Z

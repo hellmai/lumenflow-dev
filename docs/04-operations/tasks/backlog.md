@@ -25,7 +25,6 @@ sections:
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1923 — RunAgent Real Execution](wu/WU-1923.yaml) — Framework: Core Lifecycle
-- [WU-1924 — Mount PolicyDecisionOverlay and Scope Visualization](wu/WU-1924.yaml) — Content: Site Comms
 - [WU-1930 — HITL Approval Hardening](wu/WU-1930.yaml) — Content: Site Comms
 
 ## 🔧 In progress
@@ -34,6 +33,7 @@ sections:
 - [WU-1922 — Kernel approval_required Policy Effect](wu/WU-1922.yaml) — Framework: Core Lifecycle
 - [WU-1927 — lumenflow onboard Interactive Setup Wizard](wu/WU-1927.yaml) — Framework: CLI Orchestration
 - [WU-1928 — Community Landing Page](wu/WU-1928.yaml) — Content: Site Comms
+- [WU-1924 — Mount PolicyDecisionOverlay and Scope Visualization](wu/WU-1924.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 
