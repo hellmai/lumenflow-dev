@@ -63,14 +63,17 @@ PATTERN="(/home/|/Users/|/mnt/c/|/C:/|/D:/)"
 
 # Get list of staged files (ignoring documentation and self to avoid false positives)
 # Documentation files may contain example paths for illustration
-# Test files that validate path patterns are also excluded (e.g., consumer-integration.test.ts)
+# Test files use path fixtures that legitimately contain absolute paths
+# lumenflow-home.ts resolves $HOME by design
 FILES=$(git diff --cached --name-only --diff-filter=ACMR \
   | grep -v "scripts/hooks/validate-paths.sh" \
   | grep -v "docs/04-operations/tasks/wu/" \
   | grep -v "apps/docs/" \
   | grep -v "\.md$" \
   | grep -v "\.mdx$" \
-  | grep -v "consumer-integration\.test\.ts$" \
+  | grep -v "__tests__/" \
+  | grep -v "\.test\.ts$" \
+  | grep -v "lumenflow-home\.ts$" \
   | grep -v "^\.claude/settings\.json$")
 
 if [ -z "$FILES" ]; then
