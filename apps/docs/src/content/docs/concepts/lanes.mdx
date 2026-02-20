@@ -7,9 +7,9 @@ import { Aside } from '@astrojs/starlight/components';
 
 <Aside type="note" title="Software Delivery Pack concept">
   Lanes are provided by the [Software Delivery Pack](/pack/overview). At the kernel level, lanes
-  define **scope boundaries** — one of four levels in the
-  [scope intersection](/concepts/scope-intersection) algorithm. Other [packs](/concepts/packs) can
-  define their own scoping mechanisms that feed into the same kernel intersection.
+  define **scope boundaries** — one of four levels in the [scope
+  intersection](/concepts/scope-intersection) algorithm. Other [packs](/concepts/packs) can define
+  their own scoping mechanisms that feed into the same kernel intersection.
 </Aside>
 
 Lanes are parallel work streams that organize work by domain and prevent overload through WIP (Work-in-Progress) limits. At the kernel level, lanes also define **scope boundaries** — the [scope intersection](/concepts/scope-intersection) algorithm uses lane `code_paths` as one of four permission levels that determine what an agent can access.

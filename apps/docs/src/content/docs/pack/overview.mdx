@@ -10,8 +10,8 @@ The **Software Delivery Pack** is the default domain pack shipped with LumenFlow
 <Aside type="note" title="Pack architecture">
   LumenFlow's [kernel](/concepts/kernel) is domain-agnostic — it provides scope enforcement, policy
   evaluation, and evidence recording. Packs add domain-specific tools and policies. The Software
-  Delivery Pack is the first production pack; others (compliance-audit, infra-ops, security-ops)
-  are planned.
+  Delivery Pack is the first production pack; others (compliance-audit, infra-ops, security-ops) are
+  planned.
 </Aside>
 
 ## What the Pack Provides
@@ -42,12 +42,12 @@ The pack registers **100+ CLI commands** across these categories:
 | Category              | Examples                                         | Count |
 | --------------------- | ------------------------------------------------ | ----- |
 | WU Lifecycle          | `wu:create`, `wu:claim`, `wu:prep`, `wu:done`    | 20+   |
-| Memory & Sessions     | `mem:checkpoint`, `mem:inbox`, `mem:signal`       | 14    |
-| Initiatives           | `initiative:create`, `initiative:status`          | 8     |
-| Gates & Validation    | `gates`, `wu:validate`, `lumenflow-doctor`        | 6     |
-| Packs                 | `pack:scaffold`, `pack:validate`, `pack:publish`  | 6     |
-| Metrics & Flow        | `flow:report`, `flow:bottlenecks`, `metrics`      | 5     |
-| Agent & Orchestration | `wu:brief`, `wu:delegate`, `orchestrate:monitor`  | 7     |
+| Memory & Sessions     | `mem:checkpoint`, `mem:inbox`, `mem:signal`      | 14    |
+| Initiatives           | `initiative:create`, `initiative:status`         | 8     |
+| Gates & Validation    | `gates`, `wu:validate`, `lumenflow-doctor`       | 6     |
+| Packs                 | `pack:scaffold`, `pack:validate`, `pack:publish` | 6     |
+| Metrics & Flow        | `flow:report`, `flow:bottlenecks`, `metrics`     | 5     |
+| Agent & Orchestration | `wu:brief`, `wu:delegate`, `orchestrate:monitor` | 7     |
 
 See the [CLI Reference](/reference/cli) for the complete command list.
 
