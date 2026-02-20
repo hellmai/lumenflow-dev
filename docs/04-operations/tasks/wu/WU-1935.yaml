@@ -2,7 +2,7 @@ id: WU-1935
 title: Fix validate-paths hook, add remaining SPDX headers + NOTICE
 lane: 'Operations: Tooling'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -27,8 +27,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Fix validate-paths.sh to exclude __tests__/ dirs (pre-existing path fixtures). Add SPDX headers to 11 remaining files blocked by the hook. Create root NOTICE file for dual-license project.
+description: Fix validate-paths.sh to exclude __tests__/ dirs (pre-existing path fixtures). Add SPDX
+  headers to 11 remaining files blocked by the hook. Create root NOTICE file for dual-license
+  project.
 acceptance:
   - validate-paths.sh excludes __tests__ dirs and lumenflow-home.ts
   - All 11 deferred .ts files have SPDX headers committed
   - Root NOTICE file documents dual-license model
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1935
+claimed_at: 2026-02-20T12:13:02.346Z
+baseline_main_sha: 22a710c232712d73e24b13b37e4b29455ae1c12e
+session_id: fdc65ffa-bca7-45c8-9939-3de4f745ccc1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T12:13:02.350Z
