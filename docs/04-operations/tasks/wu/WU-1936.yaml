@@ -1,0 +1,38 @@
+id: WU-1936
+title: 'Landing page: promote OSS licensing + aesthetic warmth'
+lane: 'Content: Site Comms'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-20
+code_paths:
+  - apps/docs/src/content/docs/index.mdx
+  - apps/docs/src/content/docs/getting-started/why-lumenflow.mdx
+  - apps/docs/src/content/docs/getting-started/faq.mdx
+tests:
+  manual:
+    - 'Visual review: landing page renders with OSS section, badges, warmer tone'
+    - Comparison table shows licensing row
+    - Astro build succeeds without errors
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1936.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: The 7 WUs from INIT-029 established a deliberate AGPL-3.0 + Apache-2.0 dual-license model with SPDX headers on 792 files, NOTICE file, and CLA. But lumenflow.dev barely mentions it — 'open-source' is buried mid-sentence in the hero tagline, and there's no visual callout. The site also reads very dry and technical. This WU adds prominent OSS positioning on the landing page, a licensing row in the comparison table, and injects aesthetic warmth (personality, visual variety, warmer copy) across the key pages.
+acceptance:
+  - Landing page has a visible 'Open Source' section with dual-license callout (AGPL kernel + Apache SDK)
+  - Comparison table includes a 'Licensing' row showing LumenFlow vs competitors
+  - Landing page copy has warmer, less dry tone with personality (not pure technical spec language)
+  - Hero tagline or sub-hero area prominently signals open-source nature
+  - Contribute/community callout visible on landing page
