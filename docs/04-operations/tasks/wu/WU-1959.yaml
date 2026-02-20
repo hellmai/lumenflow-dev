@@ -2,7 +2,7 @@ id: WU-1959
 title: 'Optimize landing page: reduce whitespace, review content'
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -25,8 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Massive whitespace gap between hero and GIF. Tighten spacing and review all landing page content for quality.
+description: Massive whitespace gap between hero and GIF. Tighten spacing and review all landing
+  page content for quality.
 acceptance:
   - Whitespace between hero and GIF visually tight
   - Content reviewed and improved where needed
   - Deployed to lumenflow.dev
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1959
+claimed_at: 2026-02-20T19:38:55.292Z
+baseline_main_sha: 37866ec545c89c8b0cb593c459d3f56d2bf8441f
+session_id: a0305952-44e2-45af-8b22-0c46873e937d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T19:38:55.297Z

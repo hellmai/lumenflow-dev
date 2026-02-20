@@ -34,12 +34,12 @@ sections:
 - [WU-1955 — \[WU-L\] AG-UI run route + preview runtime diagnostics](wu/WU-1955.yaml) — Operations: Runtime
 - [WU-1956 — \[WU-M\] Expand MCP tool surface for pack/workspace parity](wu/WU-1956.yaml) — Framework: MCP
 - [WU-1957 — \[WU-N\] Docs sweep for secure authoring + updated onboarding/install flow](wu/WU-1957.yaml) — Content: Site Comms
-- [WU-1959 — Optimize landing page: reduce whitespace, review content](wu/WU-1959.yaml) — Operations: Tooling
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1947 — \[WU-D\] CLI install fix: integrity auto-resolve + real onboard install](wu/WU-1947.yaml) — Framework: CLI Orchestration
+- [WU-1959 — Optimize landing page: reduce whitespace, review content](wu/WU-1959.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 
