@@ -13,7 +13,8 @@ tests:
     - In preview mode verify actionable runtime error; in runtime mode verify run route streams
       events
   unit:
-    - apps/web/__tests__/install-pack-route.test.ts
+    - apps/web/__tests__/api-routes.test.ts
+    - apps/web/__tests__/http-surface-runtime-health.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1955.done

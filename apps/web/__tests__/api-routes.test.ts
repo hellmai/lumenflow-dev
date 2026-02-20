@@ -30,6 +30,7 @@ vi.mock('../src/server/http-surface-runtime', () => ({
 }));
 
 const HTTP_STATUS = {
+  OK: 200,
   NO_CONTENT: 204,
   FORBIDDEN: 403,
   PAYLOAD_TOO_LARGE: 413,
@@ -140,5 +141,39 @@ describe('apps/web API route delegates', () => {
     expect(body.events[0].kind).toBe('task_created');
     expect(body.events[0].task_id).toBe('WU-test-1');
     expect(body.nextCursor).toBeNull();
+  });
+
+  it('maps /api/ag-ui/v1/run to /ag-ui/v1/run and preserves SSE responses', async () => {
+    const routeModule = await import('../app/api/ag-ui/v1/run/route');
+    const sseResponse = new Response('data: {"type":"started"}\n\n', {
+      status: HTTP_STATUS.OK,
+      headers: {
+        'content-type': 'text/event-stream; charset=utf-8',
+      },
+    });
+    forwardToHttpSurface.mockResolvedValueOnce(sseResponse);
+
+    const response = await routeModule.POST(
+      new Request('http://localhost/api/ag-ui/v1/run', {
+        method: 'POST',
+        headers: {
+          Origin: 'http://localhost:3000',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          threadId: 'thread-1',
+          runId: 'run-1',
+          messages: [{ role: 'user', content: 'hello' }],
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(HTTP_STATUS.OK);
+    expect(response.headers.get('content-type')).toContain('text/event-stream');
+    expect(forwardToHttpSurface).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pathName: '/ag-ui/v1/run',
+      }),
+    );
   });
 });

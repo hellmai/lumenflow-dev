@@ -17,7 +17,8 @@ const ENVIRONMENT_VALUE = {
 } as const;
 
 const ERROR_MESSAGE = {
-  RUNTIME_UNAVAILABLE: 'Kernel runtime unavailable in web app preview mode.',
+  RUNTIME_UNAVAILABLE:
+    'Kernel runtime unavailable in web app preview mode. Set LUMENFLOW_WEB_ENABLE_KERNEL_RUNTIME=1 and LUMENFLOW_WEB_WORKSPACE_ROOT=/absolute/path in .env.local, then restart the web server.',
 } as const;
 
 const NOOP_DISPOSABLE: Disposable = {
@@ -33,6 +34,18 @@ type KernelRuntimeWithEventSubscription = KernelRuntime & {
   ) => Disposable;
 };
 
+type PreviewRuntimeTagged = {
+  readonly __lumenflowPreviewRuntime: true;
+};
+
+export interface KernelRuntimeHealth {
+  readonly mode: 'runtime' | 'preview';
+  readonly enabled: boolean;
+  readonly available: boolean;
+  readonly workspaceRoot: string;
+  readonly message?: string;
+}
+
 let runtimePromise: Promise<KernelRuntimeWithEventSubscription> | null = null;
 let httpSurfacePromise: Promise<HttpSurface> | null = null;
 
@@ -42,6 +55,7 @@ function createRuntimeUnavailableError(): Error {
 
 function createPreviewRuntime(): KernelRuntimeWithEventSubscription {
   return {
+    __lumenflowPreviewRuntime: true,
     createTask: async () => {
       throw createRuntimeUnavailableError();
     },
@@ -73,7 +87,7 @@ function createPreviewRuntime(): KernelRuntimeWithEventSubscription {
       throw createRuntimeUnavailableError();
     },
     subscribeEvents: () => NOOP_DISPOSABLE,
-  } as KernelRuntimeWithEventSubscription;
+  } as KernelRuntimeWithEventSubscription & PreviewRuntimeTagged;
 }
 
 function isRuntimeInitializationEnabled(environment: NodeJS.ProcessEnv): boolean {
@@ -104,6 +118,26 @@ export async function getKernelRuntimeForWeb(): Promise<KernelRuntimeWithEventSu
     runtimePromise = createRuntimeForWeb();
   }
   return runtimePromise;
+}
+
+function isPreviewRuntime(runtime: KernelRuntimeWithEventSubscription): boolean {
+  const runtimeWithMarker = runtime as Partial<PreviewRuntimeTagged>;
+  return runtimeWithMarker.__lumenflowPreviewRuntime === true;
+}
+
+export async function getKernelRuntimeHealth(): Promise<KernelRuntimeHealth> {
+  const enabled = isRuntimeInitializationEnabled(process.env);
+  const workspaceRoot = resolveWorkspaceRoot(process.env);
+  const runtime = await getKernelRuntimeForWeb();
+  const previewMode = isPreviewRuntime(runtime);
+
+  return {
+    mode: previewMode ? 'preview' : 'runtime',
+    enabled,
+    available: !previewMode,
+    workspaceRoot,
+    ...(previewMode ? { message: ERROR_MESSAGE.RUNTIME_UNAVAILABLE } : {}),
+  };
 }
 
 async function createWebHttpSurface(): Promise<HttpSurface> {
