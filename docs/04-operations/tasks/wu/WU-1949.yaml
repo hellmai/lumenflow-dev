@@ -2,7 +2,7 @@ id: WU-1949
 title: '[WU-F] Workspace packs route for loaded-pack visibility'
 lane: 'Operations: Runtime'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -34,8 +34,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add a dedicated workspace packs API so the dashboard shows packs actually loaded in the connected workspace rather than registry browse results.
+description: Add a dedicated workspace packs API so the dashboard shows packs actually loaded in the
+  connected workspace rather than registry browse results.
 acceptance:
   - GET /api/workspace/packs returns currently loaded workspace pack data
   - Packs page consumes workspace-loaded data path and handles empty states clearly
   - Route enforces workspace root validation and rejects invalid path inputs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-runtime-wu-1949
+claimed_at: 2026-02-20T20:19:32.429Z
+baseline_main_sha: 0cf5c7e871c629f04a4e49e8c5df9683e89f4061
+session_id: a18f3f3f-5b80-42e7-b371-af2b2edc3588
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T20:19:32.435Z
