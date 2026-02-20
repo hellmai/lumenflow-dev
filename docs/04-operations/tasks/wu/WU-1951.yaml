@@ -2,7 +2,7 @@ id: WU-1951
 title: '[WU-H] Secure pack authoring template engine'
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -35,8 +35,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Build a template-driven pack authoring engine with strict validation for safe no-code custom tool generation and least-privilege defaults.
+description: Build a template-driven pack authoring engine with strict validation for safe no-code
+  custom tool generation and least-privilege defaults.
 acceptance:
   - Template engine supports v1 templates for file.read_text, file.write_text, and http.get_json
   - Template config validation enforces permission/scope/schema safety constraints
   - Generated pack artifacts are deterministic and rejected when unsafe configuration is provided
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1951
+claimed_at: 2026-02-20T19:53:26.180Z
+baseline_main_sha: 63cd876713b81ffe956d460d0ae636a43882895c
+session_id: 17ad0481-bf62-4c7a-8746-bd6d02c913f2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T19:53:26.186Z

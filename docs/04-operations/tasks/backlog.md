@@ -27,7 +27,6 @@ sections:
 - [WU-1948 — \[WU-E\] Marketplace UX: canonical install command + one-click install](wu/WU-1948.yaml) — Operations: Runtime
 - [WU-1949 — \[WU-F\] Workspace packs route for loaded-pack visibility](wu/WU-1949.yaml) — Operations: Runtime
 - [WU-1950 — \[WU-G\] Registry manifest extraction + marketplace trust rendering](wu/WU-1950.yaml) — Operations: Runtime
-- [WU-1951 — \[WU-H\] Secure pack authoring template engine](wu/WU-1951.yaml) — Framework: Core Lifecycle
 - [WU-1952 — \[WU-I\] pack:author command + security lint hardening](wu/WU-1952.yaml) — Framework: CLI Orchestration
 - [WU-1953 — \[WU-J\] Pack authoring API route + web wizard](wu/WU-1953.yaml) — Operations: Runtime
 - [WU-1954 — \[WU-K\] Management UI: workspace wizard + task creation + onboarding state](wu/WU-1954.yaml) — Operations: Runtime
@@ -38,6 +37,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1951 — \[WU-H\] Secure pack authoring template engine](wu/WU-1951.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

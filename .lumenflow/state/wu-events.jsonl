@@ -1853,3 +1853,4 @@
 {"type":"claim","wuId":"WU-1959","timestamp":"2026-02-20T19:38:55.349Z","lane":"Operations: Tooling","title":"Optimize landing page: reduce whitespace, review content"}
 {"type":"complete","wuId":"WU-1959","timestamp":"2026-02-20T19:45:49.625Z"}
 {"type":"complete","wuId":"WU-1947","timestamp":"2026-02-20T19:52:20.935Z"}
+{"type":"claim","wuId":"WU-1951","lane":"Framework: Core Lifecycle","title":"[WU-H] Secure pack authoring template engine","timestamp":"2026-02-20T19:53:26.238Z"}
