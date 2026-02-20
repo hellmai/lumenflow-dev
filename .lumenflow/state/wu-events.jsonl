@@ -1781,4 +1781,5 @@
 {"type":"complete","wuId":"WU-1912","timestamp":"2026-02-19T21:59:39.667Z"}
 {"type":"claim","wuId":"WU-1913","timestamp":"2026-02-19T22:00:49.528Z","lane":"Content: Site Comms","title":"Starlight: reference page updates + sidebar restructure + deploy"}
 {"type":"complete","wuId":"WU-1913","timestamp":"2026-02-19T22:06:44.565Z"}
-{"type":"claim","wuId":"WU-1914","lane":"Content: Site Comms","title":"Full Starlight docs accuracy audit - fix all version, CLI, config, lane, and sidebar inaccuracies","timestamp":"2026-02-20T00:09:47.441Z"}
+{"type":"claim","wuId":"WU-1914","timestamp":"2026-02-20T00:09:47.441Z","lane":"Content: Site Comms","title":"Full Starlight docs accuracy audit - fix all version, CLI, config, lane, and sidebar inaccuracies"}
+{"type":"complete","wuId":"WU-1914","timestamp":"2026-02-20T00:23:45.610Z"}
