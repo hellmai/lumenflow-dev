@@ -5,7 +5,6 @@ _Last updated: 2026-02-20_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1917 — Homepage conversion redesign + Astro 6 upgrade](wu/WU-1917.yaml)
 
 ## Completed
 
@@ -852,3 +851,4 @@ _Last updated: 2026-02-20_
 - [WU-1914 — Full Starlight docs accuracy audit - fix all version, CLI, config, lane, and sidebar inaccuracies](wu/WU-1914.yaml) — 2026-02-20
 - [WU-1915 — Restructure Starlight docs hierarchy to reflect kernel/pack architecture](wu/WU-1915.yaml) — 2026-02-20
 - [WU-1916 — Rewrite docs content for kernel/pack distinction and dual entry paths](wu/WU-1916.yaml) — 2026-02-20
+- [WU-1917 — Homepage conversion redesign + Astro 6 upgrade](wu/WU-1917.yaml) — 2026-02-20

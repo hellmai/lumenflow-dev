@@ -1787,4 +1787,5 @@
 {"type":"complete","wuId":"WU-1915","timestamp":"2026-02-20T09:34:15.373Z"}
 {"type":"claim","wuId":"WU-1916","timestamp":"2026-02-20T10:12:53.639Z","lane":"Content: Site Comms","title":"Rewrite docs content for kernel/pack distinction and dual entry paths"}
 {"type":"complete","wuId":"WU-1916","timestamp":"2026-02-20T10:27:09.691Z"}
-{"type":"claim","wuId":"WU-1917","lane":"Content: Site Comms","title":"Homepage conversion redesign + Astro 6 upgrade","timestamp":"2026-02-20T10:38:40.817Z"}
+{"type":"claim","wuId":"WU-1917","timestamp":"2026-02-20T10:38:40.817Z","lane":"Content: Site Comms","title":"Homepage conversion redesign + Astro 6 upgrade"}
+{"type":"complete","wuId":"WU-1917","timestamp":"2026-02-20T10:48:12.047Z"}

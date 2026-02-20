@@ -2,7 +2,7 @@ id: WU-1917
 title: Homepage conversion redesign + Astro 6 upgrade
 lane: 'Content: Site Comms'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -41,3 +41,6 @@ acceptance:
   - Primary CTA is learn-first not CLI setup
   - Four Guarantees section appears after problem statement
   - Deployed to production
+locked: true
+completed_at: 2026-02-20T10:48:07.294Z
+completed: 2026-02-20
