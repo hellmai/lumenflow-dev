@@ -2,7 +2,7 @@ id: WU-1915
 title: Restructure Starlight docs hierarchy to reflect kernel/pack architecture
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -48,3 +48,6 @@ session_id: 17452bdf-b5a4-40fd-946b-b317e79d871a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T09:30:06.982Z
+locked: true
+completed_at: 2026-02-20T09:34:10.755Z
+completed: 2026-02-20

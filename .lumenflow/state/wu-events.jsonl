@@ -1783,4 +1783,5 @@
 {"type":"complete","wuId":"WU-1913","timestamp":"2026-02-19T22:06:44.565Z"}
 {"type":"claim","wuId":"WU-1914","timestamp":"2026-02-20T00:09:47.441Z","lane":"Content: Site Comms","title":"Full Starlight docs accuracy audit - fix all version, CLI, config, lane, and sidebar inaccuracies"}
 {"type":"complete","wuId":"WU-1914","timestamp":"2026-02-20T00:23:45.610Z"}
-{"type":"claim","wuId":"WU-1915","lane":"Content: Site Comms","title":"Restructure Starlight docs hierarchy to reflect kernel/pack architecture","timestamp":"2026-02-20T09:30:07.024Z"}
+{"type":"claim","wuId":"WU-1915","timestamp":"2026-02-20T09:30:07.024Z","lane":"Content: Site Comms","title":"Restructure Starlight docs hierarchy to reflect kernel/pack architecture"}
+{"type":"complete","wuId":"WU-1915","timestamp":"2026-02-20T09:34:15.373Z"}
