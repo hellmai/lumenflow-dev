@@ -29,7 +29,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1942 — Replace hero logo with terminal demo GIF](wu/WU-1942.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 
@@ -904,6 +903,7 @@ sections:
 - [WU-1939 — Fix Next.js dev script for Turbopack default in Next 16](wu/WU-1939.yaml)
 - [WU-1940 — Fix events.filter runtime error on Dashboard](wu/WU-1940.yaml)
 - [WU-1941 — Fix Packs page API path and authoring guide link](wu/WU-1941.yaml)
+- [WU-1942 — Replace hero logo with terminal demo GIF](wu/WU-1942.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
