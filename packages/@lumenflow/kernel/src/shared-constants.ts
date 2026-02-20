@@ -52,6 +52,7 @@ export const KERNEL_POLICY_IDS = {
   SCOPE_RESERVED_PATH: 'kernel.scope.reserved-path',
   SCOPE_BOUNDARY: 'kernel.scope.boundary',
   RECONCILIATION: 'kernel.reconciliation',
+  APPROVAL_REQUIRED: 'kernel.policy.approval-required',
 } as const;
 
 export type KernelPolicyId = (typeof KERNEL_POLICY_IDS)[keyof typeof KERNEL_POLICY_IDS];

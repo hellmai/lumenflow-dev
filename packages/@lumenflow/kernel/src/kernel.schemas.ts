@@ -43,6 +43,7 @@ export const TOOL_ERROR_CODES = {
   TOOL_NOT_FOUND: 'TOOL_NOT_FOUND',
   SCOPE_DENIED: 'SCOPE_DENIED',
   POLICY_DENIED: 'POLICY_DENIED',
+  APPROVAL_REQUIRED: 'APPROVAL_REQUIRED',
   INVALID_INPUT: 'INVALID_INPUT',
   INVALID_OUTPUT: 'INVALID_OUTPUT',
   TOOL_EXECUTION_FAILED: 'TOOL_EXECUTION_FAILED',
@@ -296,7 +297,7 @@ export type KernelEvent = z.infer<typeof KernelEventSchema>;
 
 export const PolicyDecisionSchema = z.object({
   policy_id: z.string().min(1),
-  decision: z.enum(['allow', 'deny']),
+  decision: z.enum(['allow', 'deny', 'approval_required']),
   reason: z.string().min(1).optional(),
 });
 

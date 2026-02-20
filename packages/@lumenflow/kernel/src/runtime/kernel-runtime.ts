@@ -41,6 +41,7 @@ import {
   ExecutionContextSchema,
   RUN_STATUSES,
   RunSchema,
+  TOOL_ERROR_CODES,
   TOOL_HANDLER_KINDS,
   TaskSpecSchema,
   WorkspaceSpecSchema,
@@ -105,7 +106,16 @@ type WorkspaceUpdatedEvent = Extract<
   KernelEvent,
   { kind: typeof KERNEL_EVENT_KINDS.WORKSPACE_UPDATED }
 >;
+type TaskWaitingEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.TASK_WAITING }>;
+type TaskResumedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.TASK_RESUMED }>;
 type SpecTamperedEvent = Extract<KernelEvent, { kind: typeof KERNEL_EVENT_KINDS.SPEC_TAMPERED }>;
+
+interface PendingApproval {
+  task_id: string;
+  run_id: string;
+  tool_name: string;
+  requested_at: string;
+}
 
 export interface RuntimeToolCapabilityResolverInput {
   workspaceSpec: WorkspaceSpec;
@@ -136,6 +146,20 @@ export interface InitializeKernelRuntimeOptions {
   runIdFactory?: (taskId: string, nextRunNumber: number) => string;
 }
 
+export interface ResolveApprovalInput {
+  request_id: string;
+  approved: boolean;
+  approved_by: string;
+  reason?: string;
+}
+
+export interface ResolveApprovalResult {
+  request_id: string;
+  approved: boolean;
+  task_id: string;
+  run_id: string;
+}
+
 export interface KernelRuntime {
   createTask(taskSpec: TaskSpec): Promise<CreateTaskResult>;
   claimTask(input: ClaimTaskInput): Promise<ClaimTaskResult>;
@@ -144,6 +168,7 @@ export interface KernelRuntime {
   completeTask(input: CompleteTaskInput): Promise<CompleteTaskResult>;
   inspectTask(taskId: string): Promise<TaskInspection>;
   executeTool(name: string, input: unknown, ctx: ExecutionContext): Promise<ToolOutput>;
+  resolveApproval(input: ResolveApprovalInput): Promise<ResolveApprovalResult>;
   getToolHost(): ToolHost;
   getPolicyEngine(): PolicyEngine;
 }
@@ -338,6 +363,22 @@ function toPolicyHookDecisions(evaluation: PolicyEvaluationResult): PolicyDecisi
         reason: 'Effective policy decision without explicit matching rules.',
       },
     ];
+  }
+
+  if (evaluation.decision === 'approval_required') {
+    const hasApprovalRequired = evaluation.decisions.some(
+      (decision) => decision.decision === 'approval_required',
+    );
+    if (!hasApprovalRequired) {
+      return [
+        ...evaluation.decisions,
+        {
+          policy_id: KERNEL_POLICY_IDS.APPROVAL_REQUIRED,
+          decision: 'approval_required',
+          reason: 'Effective policy decision is approval_required.',
+        },
+      ];
+    }
   }
 
   if (evaluation.decision === 'deny') {
@@ -584,6 +625,7 @@ export class DefaultKernelRuntime implements KernelRuntime {
   private readonly stateAliases: TaskStateAliases;
   private readonly now: () => Date;
   private readonly runIdFactory: (taskId: string, nextRunNumber: number) => string;
+  private readonly pendingApprovals = new Map<string, PendingApproval>();
 
   constructor(options: KernelRuntimeOptions) {
     this.workspaceSpec = options.workspace_spec;
@@ -666,7 +708,32 @@ export class DefaultKernelRuntime implements KernelRuntime {
       },
     });
 
-    return this.toolHost.execute(name, input, runtimeContext);
+    const output = await this.toolHost.execute(name, input, runtimeContext);
+
+    if (output.error?.code === TOOL_ERROR_CODES.APPROVAL_REQUIRED) {
+      const details = output.error.details as Record<string, unknown> | undefined;
+      const requestId = typeof details?.request_id === 'string' ? details.request_id : undefined;
+      if (requestId) {
+        this.pendingApprovals.set(requestId, {
+          task_id: context.task_id,
+          run_id: context.run_id,
+          tool_name: name,
+          requested_at: normalizeTimestamp(this.now),
+        });
+
+        const waitingEvent: TaskWaitingEvent = {
+          schema_version: 1,
+          kind: KERNEL_EVENT_KINDS.TASK_WAITING,
+          task_id: context.task_id,
+          timestamp: normalizeTimestamp(this.now),
+          reason: `Approval required for tool "${name}"`,
+          wait_for: requestId,
+        };
+        await this.eventStore.append(waitingEvent);
+      }
+    }
+
+    return output;
   }
 
   async createTask(taskSpec: TaskSpec): Promise<CreateTaskResult> {
@@ -903,6 +970,30 @@ export class DefaultKernelRuntime implements KernelRuntime {
       receipts,
       policy_decisions: dedupePolicyDecisions([...receiptDecisions, ...completionDecisions]),
       events,
+    };
+  }
+
+  async resolveApproval(input: ResolveApprovalInput): Promise<ResolveApprovalResult> {
+    const pending = this.pendingApprovals.get(input.request_id);
+    if (!pending) {
+      throw new Error(`No pending approval found for request_id "${input.request_id}"`);
+    }
+
+    this.pendingApprovals.delete(input.request_id);
+
+    const resumedEvent: TaskResumedEvent = {
+      schema_version: 1,
+      kind: KERNEL_EVENT_KINDS.TASK_RESUMED,
+      task_id: pending.task_id,
+      timestamp: normalizeTimestamp(this.now),
+    };
+    await this.eventStore.append(resumedEvent);
+
+    return {
+      request_id: input.request_id,
+      approved: input.approved,
+      task_id: pending.task_id,
+      run_id: pending.run_id,
     };
   }
 

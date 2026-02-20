@@ -1045,4 +1045,237 @@ describe('kernel runtime facade', () => {
       expect(allReceiptIdsA.has(trace.receipt_id)).toBe(false);
     }
   });
+
+  it('returns approval_required when policy evaluates to approval_required', async () => {
+    const runtime = await initializeKernelRuntime({
+      workspaceRoot: tempRoot,
+      packsRoot: join(tempRoot, PACKS_DIR_NAME),
+      taskSpecRoot: join(tempRoot, 'tasks'),
+      eventsFilePath: join(tempRoot, 'events.jsonl'),
+      eventLockFilePath: join(tempRoot, 'events.lock'),
+      evidenceRoot: join(tempRoot, 'evidence'),
+      policyLayers: [
+        {
+          level: 'workspace',
+          default_decision: 'allow',
+          allow_loosening: true,
+          rules: [],
+        },
+        {
+          level: 'lane',
+          rules: [
+            {
+              id: 'lane.approval.echo',
+              trigger: 'on_tool_request' as const,
+              decision: 'approval_required' as const,
+              reason: 'Echo tool requires human approval',
+              when: (context: { tool_name?: string }) => context.tool_name === PACK_ECHO_TOOL_NAME,
+            },
+          ],
+        },
+        { level: 'pack', rules: [] },
+        { level: 'task', rules: [] },
+      ],
+      toolCapabilityResolver: async ({ loadedPack, tool }) => ({
+        name: tool.name,
+        domain: loadedPack.manifest.id,
+        version: loadedPack.manifest.version,
+        input_schema: z.object({ message: z.string().min(1) }),
+        output_schema: z.object({ echo: z.string().min(1) }),
+        permission: 'read',
+        required_scopes: [WORKSPACE_SCOPE],
+        handler: {
+          kind: 'in-process',
+          fn: async (input) => ({
+            success: true,
+            data: { echo: (input as { message: string }).message },
+          }),
+        },
+        description: 'Echo tool',
+        pack: loadedPack.pin.id,
+      }),
+    });
+
+    const taskSpec = createTaskSpec('WU-1922-approval-required');
+    await runtime.createTask(taskSpec);
+    const claim = await runtime.claimTask({
+      task_id: taskSpec.id,
+      by: 'tom@hellm.ai',
+      session_id: 'session-1922-approval',
+    });
+
+    const output = await runtime.executeTool(
+      PACK_ECHO_TOOL_NAME,
+      { message: 'needs-approval' },
+      createExecutionContext(taskSpec.id, claim.run.run_id, workspaceConfigHash),
+    );
+
+    expect(output.success).toBe(false);
+    expect(output.error?.code).toBe('APPROVAL_REQUIRED');
+    expect(output.error?.message).toContain('approval');
+  });
+
+  it('resolveApproval resumes a tool blocked by approval_required', async () => {
+    const runtime = await initializeKernelRuntime({
+      workspaceRoot: tempRoot,
+      packsRoot: join(tempRoot, PACKS_DIR_NAME),
+      taskSpecRoot: join(tempRoot, 'tasks'),
+      eventsFilePath: join(tempRoot, 'events.jsonl'),
+      eventLockFilePath: join(tempRoot, 'events.lock'),
+      evidenceRoot: join(tempRoot, 'evidence'),
+      policyLayers: [
+        {
+          level: 'workspace',
+          default_decision: 'allow',
+          allow_loosening: true,
+          rules: [],
+        },
+        {
+          level: 'lane',
+          rules: [
+            {
+              id: 'lane.approval.echo',
+              trigger: 'on_tool_request' as const,
+              decision: 'approval_required' as const,
+              reason: 'Echo tool requires human approval',
+              when: (context: { tool_name?: string }) => context.tool_name === PACK_ECHO_TOOL_NAME,
+            },
+          ],
+        },
+        { level: 'pack', rules: [] },
+        { level: 'task', rules: [] },
+      ],
+      toolCapabilityResolver: async ({ loadedPack, tool }) => ({
+        name: tool.name,
+        domain: loadedPack.manifest.id,
+        version: loadedPack.manifest.version,
+        input_schema: z.object({ message: z.string().min(1) }),
+        output_schema: z.object({ echo: z.string().min(1) }),
+        permission: 'read',
+        required_scopes: [WORKSPACE_SCOPE],
+        handler: {
+          kind: 'in-process',
+          fn: async (input) => ({
+            success: true,
+            data: { echo: (input as { message: string }).message },
+          }),
+        },
+        description: 'Echo tool',
+        pack: loadedPack.pin.id,
+      }),
+    });
+
+    const taskSpec = createTaskSpec('WU-1922-resolve-approval');
+    await runtime.createTask(taskSpec);
+    const claim = await runtime.claimTask({
+      task_id: taskSpec.id,
+      by: 'tom@hellm.ai',
+      session_id: 'session-1922-resolve',
+    });
+
+    // Execute tool -- should return APPROVAL_REQUIRED with a request_id
+    const output = await runtime.executeTool(
+      PACK_ECHO_TOOL_NAME,
+      { message: 'needs-approval' },
+      createExecutionContext(taskSpec.id, claim.run.run_id, workspaceConfigHash),
+    );
+
+    expect(output.success).toBe(false);
+    expect(output.error?.code).toBe('APPROVAL_REQUIRED');
+    const requestId = (output.error?.details as Record<string, unknown>)?.request_id;
+    expect(typeof requestId).toBe('string');
+
+    // Resolve the approval
+    const resolved = await runtime.resolveApproval({
+      request_id: requestId as string,
+      approved: true,
+      approved_by: 'tom@hellm.ai',
+      reason: 'Approved for testing',
+    });
+
+    expect(resolved.approved).toBe(true);
+
+    // Verify approval events were emitted
+    const inspection = await runtime.inspectTask(taskSpec.id);
+    const eventKinds = inspection.events.map((event) => event.kind);
+    expect(eventKinds).toContain('task_waiting');
+    expect(eventKinds).toContain('task_resumed');
+  });
+
+  it('resolveApproval with approved=false rejects the pending request', async () => {
+    const runtime = await initializeKernelRuntime({
+      workspaceRoot: tempRoot,
+      packsRoot: join(tempRoot, PACKS_DIR_NAME),
+      taskSpecRoot: join(tempRoot, 'tasks'),
+      eventsFilePath: join(tempRoot, 'events.jsonl'),
+      eventLockFilePath: join(tempRoot, 'events.lock'),
+      evidenceRoot: join(tempRoot, 'evidence'),
+      policyLayers: [
+        {
+          level: 'workspace',
+          default_decision: 'allow',
+          allow_loosening: true,
+          rules: [],
+        },
+        {
+          level: 'lane',
+          rules: [
+            {
+              id: 'lane.approval.echo',
+              trigger: 'on_tool_request' as const,
+              decision: 'approval_required' as const,
+              reason: 'Echo tool requires human approval',
+              when: (context: { tool_name?: string }) => context.tool_name === PACK_ECHO_TOOL_NAME,
+            },
+          ],
+        },
+        { level: 'pack', rules: [] },
+        { level: 'task', rules: [] },
+      ],
+      toolCapabilityResolver: async ({ loadedPack, tool }) => ({
+        name: tool.name,
+        domain: loadedPack.manifest.id,
+        version: loadedPack.manifest.version,
+        input_schema: z.object({ message: z.string().min(1) }),
+        output_schema: z.object({ echo: z.string().min(1) }),
+        permission: 'read',
+        required_scopes: [WORKSPACE_SCOPE],
+        handler: {
+          kind: 'in-process',
+          fn: async (input) => ({
+            success: true,
+            data: { echo: (input as { message: string }).message },
+          }),
+        },
+        description: 'Echo tool',
+        pack: loadedPack.pin.id,
+      }),
+    });
+
+    const taskSpec = createTaskSpec('WU-1922-reject-approval');
+    await runtime.createTask(taskSpec);
+    const claim = await runtime.claimTask({
+      task_id: taskSpec.id,
+      by: 'tom@hellm.ai',
+      session_id: 'session-1922-reject',
+    });
+
+    const output = await runtime.executeTool(
+      PACK_ECHO_TOOL_NAME,
+      { message: 'will-be-rejected' },
+      createExecutionContext(taskSpec.id, claim.run.run_id, workspaceConfigHash),
+    );
+
+    expect(output.error?.code).toBe('APPROVAL_REQUIRED');
+    const requestId = (output.error?.details as Record<string, unknown>)?.request_id;
+
+    const resolved = await runtime.resolveApproval({
+      request_id: requestId as string,
+      approved: false,
+      approved_by: 'tom@hellm.ai',
+      reason: 'Rejected for testing',
+    });
+
+    expect(resolved.approved).toBe(false);
+  });
 });

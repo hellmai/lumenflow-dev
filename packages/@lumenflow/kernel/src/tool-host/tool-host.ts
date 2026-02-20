@@ -427,6 +427,41 @@ export class ToolHost {
       return { denied: true, output };
     }
 
+    if (policyDecisions.some((decision) => decision.decision === 'approval_required')) {
+      const approvalRequestId = randomUUID();
+      const approvalReasons = policyDecisions
+        .filter((decision) => decision.decision === 'approval_required')
+        .map((decision) => decision.reason ?? decision.policy_id);
+      const output: ToolOutput = {
+        success: false,
+        error: {
+          code: TOOL_ERROR_CODES.APPROVAL_REQUIRED,
+          message: `Tool execution requires human approval: ${approvalReasons.join('; ')}`,
+          details: {
+            request_id: approvalRequestId,
+            tool_name: capability.name,
+            task_id: context.task_id,
+            run_id: context.run_id,
+            policy_decisions: policyDecisions.filter(
+              (decision) => decision.decision === 'approval_required',
+            ),
+          },
+        },
+      };
+      try {
+        await this.recordDeniedTrace({
+          receiptId,
+          startedAt,
+          result: 'denied',
+          scopeEnforcementNote: 'Blocked pending human approval.',
+          policyDecisions,
+        });
+      } catch (error) {
+        this.onTraceError?.(error as Error);
+      }
+      return { denied: true, output };
+    }
+
     return { denied: false, policyDecisions };
   }
 

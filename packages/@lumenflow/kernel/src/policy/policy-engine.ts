@@ -12,7 +12,7 @@ export const POLICY_TRIGGERS = {
 
 export type PolicyTrigger = (typeof POLICY_TRIGGERS)[keyof typeof POLICY_TRIGGERS];
 export type PolicyLayerLevel = 'workspace' | 'lane' | 'pack' | 'task';
-export type PolicyEffect = 'allow' | 'deny';
+export type PolicyEffect = 'allow' | 'deny' | 'approval_required';
 
 export interface PolicyEvaluationContext {
   trigger: PolicyTrigger;
@@ -92,6 +92,8 @@ export class PolicyEngine {
     let hasInitializedDecision = false;
     // Once a deny rule matches, deny-wins is sticky until evaluation completes.
     let hasHardDeny = false;
+    // Once an approval_required rule matches, it is sticky unless overridden by deny.
+    let hasApprovalRequired = false;
     const warnings: string[] = [];
     const decisions: PolicyDecision[] = [];
 
@@ -129,6 +131,15 @@ export class PolicyEngine {
           continue;
         }
 
+        if (rule.decision === 'approval_required') {
+          hasApprovalRequired = true;
+          // approval_required overrides allow but not deny
+          if (effectiveDecision !== 'deny' || canLoosen(layer)) {
+            effectiveDecision = 'approval_required';
+          }
+          continue;
+        }
+
         if (effectiveDecision === 'deny' && !canLoosen(layer)) {
           warnings.push(
             `Policy layer "${layer.level}" attempted loosening via rule "${rule.id}" without explicit opt-in.`,
@@ -139,10 +150,13 @@ export class PolicyEngine {
       }
     }
 
-    return {
-      decision: hasHardDeny ? 'deny' : effectiveDecision,
-      decisions,
-      warnings,
-    };
+    // Precedence: deny > approval_required > allow
+    if (hasHardDeny) {
+      return { decision: 'deny', decisions, warnings };
+    }
+    if (hasApprovalRequired) {
+      return { decision: 'approval_required', decisions, warnings };
+    }
+    return { decision: effectiveDecision, decisions, warnings };
   }
 }

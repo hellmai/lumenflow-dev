@@ -8,6 +8,7 @@ import {
   PolicyEngine,
   type PolicyLayer,
 } from '../policy/index.js';
+import { PolicyDecisionSchema } from '../kernel.schemas.js';
 
 describe('policy engine', () => {
   it('applies workspace -> lane -> pack -> task cascade with deny-wins semantics', async () => {
@@ -325,5 +326,133 @@ describe('policy engine', () => {
 
     expect(parsed.run_id).toBe('run-1732-approval');
     expect(parsed.scope.level).toBe('task');
+  });
+
+  it('returns approval_required when a rule uses approval_required decision', async () => {
+    const engine = new PolicyEngine({
+      layers: [
+        {
+          level: 'workspace',
+          default_decision: 'allow',
+          rules: [],
+        },
+        { level: 'lane', rules: [] },
+        {
+          level: 'pack',
+          rules: [
+            {
+              id: 'pack.approval.dangerous-tool',
+              trigger: POLICY_TRIGGERS.ON_TOOL_REQUEST,
+              decision: 'approval_required',
+              reason: 'Dangerous tool requires human approval',
+              when: (context) => context.tool_name === 'proc:exec',
+            },
+          ],
+        },
+        { level: 'task', rules: [] },
+      ],
+    });
+
+    const result = await engine.evaluate({
+      trigger: POLICY_TRIGGERS.ON_TOOL_REQUEST,
+      run_id: 'run-1922-approval',
+      tool_name: 'proc:exec',
+    });
+
+    expect(result.decision).toBe('approval_required');
+    expect(
+      result.decisions.some(
+        (decision) => decision.policy_id === 'pack.approval.dangerous-tool',
+      ),
+    ).toBe(true);
+  });
+
+  it('treats approval_required as deny-wins over allow but not over deny', async () => {
+    // approval_required should override allow but not override deny
+    const engine = new PolicyEngine({
+      layers: [
+        {
+          level: 'workspace',
+          default_decision: 'allow',
+          rules: [
+            {
+              id: 'workspace.allow.all',
+              trigger: POLICY_TRIGGERS.ON_TOOL_REQUEST,
+              decision: 'allow',
+            },
+          ],
+        },
+        {
+          level: 'lane',
+          rules: [
+            {
+              id: 'lane.approval.sensitive',
+              trigger: POLICY_TRIGGERS.ON_TOOL_REQUEST,
+              decision: 'approval_required',
+              reason: 'Sensitive operation requires approval',
+            },
+          ],
+        },
+        { level: 'pack', rules: [] },
+        { level: 'task', rules: [] },
+      ],
+    });
+
+    const result = await engine.evaluate({
+      trigger: POLICY_TRIGGERS.ON_TOOL_REQUEST,
+      run_id: 'run-1922-approval-over-allow',
+      tool_name: 'fs:write',
+    });
+
+    expect(result.decision).toBe('approval_required');
+  });
+
+  it('deny overrides approval_required', async () => {
+    const engine = new PolicyEngine({
+      layers: [
+        {
+          level: 'workspace',
+          rules: [
+            {
+              id: 'workspace.deny.proc',
+              trigger: POLICY_TRIGGERS.ON_TOOL_REQUEST,
+              decision: 'deny',
+              when: (context) => context.tool_name === 'proc:exec',
+            },
+          ],
+        },
+        {
+          level: 'lane',
+          rules: [
+            {
+              id: 'lane.approval.proc',
+              trigger: POLICY_TRIGGERS.ON_TOOL_REQUEST,
+              decision: 'approval_required',
+              when: (context) => context.tool_name === 'proc:exec',
+            },
+          ],
+        },
+        { level: 'pack', rules: [] },
+        { level: 'task', rules: [] },
+      ],
+    });
+
+    const result = await engine.evaluate({
+      trigger: POLICY_TRIGGERS.ON_TOOL_REQUEST,
+      run_id: 'run-1922-deny-over-approval',
+      tool_name: 'proc:exec',
+    });
+
+    expect(result.decision).toBe('deny');
+  });
+
+  it('PolicyDecisionSchema accepts approval_required decision', () => {
+    const parsed = PolicyDecisionSchema.parse({
+      policy_id: 'test.approval',
+      decision: 'approval_required',
+      reason: 'Requires human sign-off',
+    });
+
+    expect(parsed.decision).toBe('approval_required');
   });
 });
