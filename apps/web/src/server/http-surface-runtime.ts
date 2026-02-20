@@ -63,6 +63,9 @@ function createPreviewRuntime(): KernelRuntimeWithEventSubscription {
     executeTool: async () => {
       throw createRuntimeUnavailableError();
     },
+    resolveApproval: async () => {
+      throw createRuntimeUnavailableError();
+    },
     getToolHost: () => {
       throw createRuntimeUnavailableError();
     },
