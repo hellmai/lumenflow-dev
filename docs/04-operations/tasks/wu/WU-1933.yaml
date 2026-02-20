@@ -2,7 +2,7 @@ id: WU-1933
 title: AGPL SPDX license headers for all source files
 lane: 'Content: Site Comms'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -40,3 +40,6 @@ session_id: 1836723b-5be3-45f0-bac1-a0d222a12b05
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T12:01:12.550Z
+locked: true
+completed_at: 2026-02-20T12:09:54.661Z
+completed: 2026-02-20
