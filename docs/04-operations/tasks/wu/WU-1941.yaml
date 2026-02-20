@@ -2,7 +2,7 @@ id: WU-1941
 title: Fix Packs page API path and authoring guide link
 lane: 'Operations: Runtime'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -28,7 +28,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Packs page fetches /api/packs (404) instead of /api/registry/packs. Authoring guide link points to /guides/authoring-packs/ (404) instead of /guides/create-a-pack/.
+description: Packs page fetches /api/packs (404) instead of /api/registry/packs. Authoring guide
+  link points to /guides/authoring-packs/ (404) instead of /guides/create-a-pack/.
 acceptance:
   - Packs page loads pack data from /api/registry/packs
   - Authoring guide link resolves to correct docs URL
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-runtime-wu-1941
+claimed_at: 2026-02-20T15:41:24.125Z
+baseline_main_sha: 4aa69bae8a4242c656b3d51f9bcb3d23c603507d
+session_id: d757c83d-142e-4a7f-bd84-7a4379fcffb3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T15:41:24.130Z
