@@ -2,7 +2,7 @@ id: WU-1926
 title: Publish lumenflow CLI to npm
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -46,3 +46,6 @@ acceptance:
   - CLI bundles for standalone use via esbuild or tsup
   - npm pack produces installable package with lumenflow bin entry
   - import.meta.main works in Node.js (not Bun-only)
+locked: true
+completed_at: 2026-02-20T11:40:41.971Z
+completed: 2026-02-20

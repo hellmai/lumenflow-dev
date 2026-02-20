@@ -5,7 +5,6 @@ _Last updated: 2026-02-20_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
-- [WU-1926 — Publish lumenflow CLI to npm](wu/WU-1926.yaml)
 - [WU-1918 — SSE Transport + Trace Bridge](wu/WU-1918.yaml)
 - [WU-1921 — Input Validation and Path Safety](wu/WU-1921.yaml)
 - [WU-1925 — App Shell Navigation and Error Boundaries](wu/WU-1925.yaml)
@@ -862,3 +861,4 @@ _Last updated: 2026-02-20_
 - [WU-1932 — Licensing alignment + docs marketing polish](wu/WU-1932.yaml) — 2026-02-20
 - [WU-1920 — Registry Security Hardening](wu/WU-1920.yaml) — 2026-02-20
 - [WU-1919 — Pack Publishing Pipeline Fixes](wu/WU-1919.yaml) — 2026-02-20
+- [WU-1926 — Publish lumenflow CLI to npm](wu/WU-1926.yaml) — 2026-02-20

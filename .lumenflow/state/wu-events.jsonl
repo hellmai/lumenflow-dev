@@ -1799,7 +1799,8 @@
 {"type":"complete","wuId":"WU-1932","timestamp":"2026-02-20T11:26:16.890Z"}
 {"type":"complete","wuId":"WU-1920","timestamp":"2026-02-20T11:35:44.719Z"}
 {"type":"complete","wuId":"WU-1919","timestamp":"2026-02-20T11:37:54.083Z"}
-{"type":"claim","wuId":"WU-1921","lane":"Content: Site Comms","title":"Input Validation and Path Safety","timestamp":"2026-02-20T11:38:28.057Z"}
-{"type":"claim","wuId":"WU-1925","lane":"Content: Site Comms","title":"App Shell Navigation and Error Boundaries","timestamp":"2026-02-20T11:38:34.771Z"}
-{"type":"claim","wuId":"WU-1929","lane":"Framework: CLI Orchestration","title":"Beautiful CLI Output","timestamp":"2026-02-20T11:38:55.062Z"}
-{"type":"claim","wuId":"WU-1922","lane":"Framework: Core Lifecycle","title":"Kernel approval_required Policy Effect","timestamp":"2026-02-20T11:39:33.715Z"}
+{"type":"claim","wuId":"WU-1921","timestamp":"2026-02-20T11:38:28.057Z","lane":"Content: Site Comms","title":"Input Validation and Path Safety"}
+{"type":"claim","wuId":"WU-1925","timestamp":"2026-02-20T11:38:34.771Z","lane":"Content: Site Comms","title":"App Shell Navigation and Error Boundaries"}
+{"type":"claim","wuId":"WU-1929","timestamp":"2026-02-20T11:38:55.062Z","lane":"Framework: CLI Orchestration","title":"Beautiful CLI Output"}
+{"type":"claim","wuId":"WU-1922","timestamp":"2026-02-20T11:39:33.715Z","lane":"Framework: Core Lifecycle","title":"Kernel approval_required Policy Effect"}
+{"type":"complete","wuId":"WU-1926","timestamp":"2026-02-20T11:40:46.847Z"}
