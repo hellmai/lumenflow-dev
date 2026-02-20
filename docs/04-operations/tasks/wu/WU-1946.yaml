@@ -10,6 +10,7 @@ code_paths:
   - apps/web/package.json
   - apps/web/components.json
   - apps/web/__tests__/shadcn-foundation.test.ts
+  - pnpm-lock.yaml
 tests:
   manual:
     - Smoke-check dashboard renders with installed component primitives
