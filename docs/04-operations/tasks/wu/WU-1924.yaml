@@ -8,7 +8,8 @@ created: 2026-02-20
 code_paths:
   - apps/web/src/hooks/use-task-events.ts
   - apps/web/src/components/task-dashboard.tsx
-  - apps/web/src/components/policy-decision-overlay.tsx
+  - apps/web/src/components/task-dashboard-live.tsx
+  - apps/web/src/lib/dashboard-types.ts
 tests:
   manual:
     - Policy denial renders scope intersection with real data
@@ -26,10 +27,17 @@ risks: []
 notes: 'Sizing: SIMPLE-MEDIUM (~24 calls, 7 files). Strategy: Single Session. Blocked by WU-1918
   (SSE + traces).'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-20T11:55:27.503Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1924
+session_id: fe4eb406-cd55-4eac-acd7-27dfbc9bfc68
 exposure: ui
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:55:27.506Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +48,3 @@ acceptance:
   - PolicyDenialView built from denied tool receipts
   - ScopeIntersectionView constructed from requested/allowed/enforced
   - PolicyDecisionOverlay rendered in TaskDashboard
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1924
-claimed_at: 2026-02-20T11:55:27.503Z
-baseline_main_sha: db56f3df155aa7f148fb8cd666fb3933af4261bd
-session_id: fe4eb406-cd55-4eac-acd7-27dfbc9bfc68
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-20T11:55:27.506Z
