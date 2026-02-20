@@ -6,10 +6,14 @@ status: in_progress
 priority: P0
 created: 2026-02-20
 code_paths:
-  - packages/@lumenflow/cli/src
-  - packages/@lumenflow/cli/src/pack-scaffold.ts
-  - packages/@lumenflow/cli/src/pack-install.ts
-  - packages/@lumenflow/cli/src/onboard.ts
+  - package.json
+  - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/cli/src/pack-author.ts
+  - packages/@lumenflow/cli/src/pack-validate.ts
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/cli/src/__tests__/pack-author.test.ts
+  - packages/@lumenflow/cli/src/__tests__/pack-validate.test.ts
+  - packages/@lumenflow/cli/src/__tests__/pack-publish.test.ts
 tests:
   manual:
     - Run pack:author and pack:validate on safe and unsafe template packs
@@ -28,10 +32,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-20T20:32:50.400Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1952
+session_id: c6684aa1-eac6-4129-bde8-64ca88da9d0f
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T20:32:50.404Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +53,3 @@ acceptance:
   - Generated packs pass pack:validate for safe template configurations
   - pack:validate fails unsafe wildcard-write or invalid network scheme configurations with
     actionable errors
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1952
-claimed_at: 2026-02-20T20:32:50.400Z
-baseline_main_sha: f7829913c5ddeaf11e5c230108301bc11a444afb
-session_id: c6684aa1-eac6-4129-bde8-64ca88da9d0f
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-20T20:32:50.404Z
