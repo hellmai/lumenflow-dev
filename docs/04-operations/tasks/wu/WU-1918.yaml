@@ -2,7 +2,7 @@ id: WU-1918
 title: SSE Transport + Trace Bridge
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -47,3 +47,6 @@ session_id: f5427206-b161-4d60-93f1-a6595c11d9f0
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T11:23:42.412Z
+locked: true
+completed_at: 2026-02-20T11:43:50.632Z
+completed: 2026-02-20
