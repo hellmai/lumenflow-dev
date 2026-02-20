@@ -1,0 +1,39 @@
+id: WU-1946
+title: '[WU-C] Install shadcn/ui base components'
+lane: 'Operations: Runtime'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-20
+code_paths:
+  - apps/web/src/components
+  - apps/web/package.json
+  - apps/web/components.json
+tests:
+  manual:
+    - Smoke-check dashboard renders with installed component primitives
+  unit:
+    - apps/web/__tests__/workspace-overview.test.tsx
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1946.done
+dependencies: []
+initiative: INIT-032
+phase: 1
+spec_refs:
+  - /home/tom/.claude/plans/curious-skipping-robin.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: ui
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Install and baseline core shadcn/ui primitives plus form dependencies so downstream UI WUs can build on a stable component foundation.
+acceptance:
+  - Selected shadcn components are generated under apps/web/src/components/ui
+  - react-hook-form and @hookform/resolvers are present and wired for form usage
+  - Web package typecheck/tests remain green after component install

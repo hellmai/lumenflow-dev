@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1946 — [WU-C] Install shadcn/ui base components](wu/WU-1946.yaml) — Operations: Runtime
 - [WU-1945 — [WU-B] Centralize write-endpoint security validation](wu/WU-1945.yaml) — Operations: Runtime
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
