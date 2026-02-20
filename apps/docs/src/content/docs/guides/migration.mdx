@@ -7,6 +7,49 @@ import { Steps, Tabs, TabItem, Aside, Card, CardGrid } from '@astrojs/starlight/
 
 This guide covers migrating from existing project management tools to LumenFlow. You can migrate incrementally or all at once.
 
+## Upgrading from v2.x to v3.0
+
+If you're already on LumenFlow v2.x, see below for what changed in v3.0.0.
+
+### What's New in v3.0
+
+- **Kernel + Pack architecture**: The runtime is now a domain-agnostic kernel that loads pluggable packs. The Software Delivery Pack provides the 90+ tools you already use.
+- **`workspace.yaml`**: New kernel-level config file (distinct from `.lumenflow.config.yaml`). Defines packs, lanes, security boundaries, and namespaces. See [Workspace Spec](/reference/workspace-spec).
+- **5 new packages**: `@lumenflow/kernel`, `@lumenflow/runtime`, `@lumenflow/packs`, `@lumenflow/mcp`, `@lumenflow/control-plane-sdk`.
+- **14 granular lanes**: Framework lanes split from 2 (Core, CLI) into 7 (Core Lifecycle, Core Validation, Core State Recovery, CLI WU Commands, CLI Memory State, CLI Orchestration, CLI Enforcement). Variable WIP limits with `wip_justification`.
+- **Removed deprecated features**: `isAgentBranchSync()`, single-word lane names, config `version: '1.0'`.
+
+### Upgrade Steps
+
+```bash
+# 1. Upgrade all packages
+pnpm lumenflow:upgrade --latest
+
+# 2. Install new packages (if not pulled by upgrade)
+pnpm add -D @lumenflow/kernel @lumenflow/runtime @lumenflow/packs \
+  @lumenflow/mcp @lumenflow/control-plane-sdk
+
+# 3. Create workspace.yaml
+# See the Workspace Spec reference for the full schema
+
+# 4. (Optional) Adopt granular lanes
+# Update .lumenflow.config.yaml lane definitions
+# e.g., "Framework: Core" → "Framework: Core Lifecycle"
+
+# 5. Verify
+pnpm list @lumenflow/cli  # Should show 3.0.0
+pnpm gates                # Ensure gates still pass
+```
+
+<Aside type="tip">
+  Lane granularity is optional. Legacy lane names (`Framework: Core`, `Framework: CLI`, etc.)
+  are supported via compatibility definitions. Adopt granular lanes when ready.
+</Aside>
+
+---
+
+## Migrating from Other Tools
+
 ## Migration Philosophy
 
 <CardGrid>

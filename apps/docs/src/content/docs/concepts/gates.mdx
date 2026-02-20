@@ -89,6 +89,14 @@ pnpm gates
 
 If any gate fails, `wu:prep` fails and you fix issues in the worktree before completion.
 
+### Gate Flags
+
+| Flag | Description |
+| --- | --- |
+| `--docs-only` | Run only docs-related gates (skip format/lint/typecheck/test) |
+| `--full-tests` | Run full test suites instead of scoped tests |
+| `--full-lint` | Run full lint pass instead of scoped lint |
+
 ## Command Options
 
 Commands can be strings or objects with options:

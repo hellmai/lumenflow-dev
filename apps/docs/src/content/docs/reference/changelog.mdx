@@ -17,9 +17,39 @@ LumenFlow packages follow [Semantic Versioning](https://semver.org/):
 
 All `@lumenflow/*` packages are versioned together for simplicity. The `@lumenflow/metrics` package may have independent minor versions.
 
-## v2.3.2
+## v3.0.0
 
 <Badge text="Latest" variant="success" />
+
+**Release Date:** February 19, 2026
+
+### Highlights
+
+- **Kernel + Pack architecture**: Domain-agnostic kernel runtime with pluggable packs. The Software Delivery Pack provides 90+ tools; future packs (compliance-audit, infra-ops, security-ops) are scaffolded.
+- **`workspace.yaml`**: New kernel-level configuration file defining packs, lanes, security boundaries, and namespaces — distinct from `.lumenflow.config.yaml` (CLI/tooling layer).
+- **14 granular lanes**: Framework lanes split into Core Lifecycle, Core Validation, Core State Recovery, CLI WU Commands, CLI Memory State, CLI Orchestration, CLI Enforcement, plus package-specific lanes. Variable WIP limits (1 or 2) with `lock_policy` and `wip_justification` fields.
+- **Runtime API migration complete (INIT-030)**: Zero remaining shell-outs in MCP tools — all tool implementations now use runtime APIs directly.
+- **New packages**: `@lumenflow/kernel`, `@lumenflow/runtime`, `@lumenflow/packs`, `@lumenflow/mcp`, `@lumenflow/control-plane-sdk` join the existing package family.
+
+### Breaking Changes
+
+- **Removed `isAgentBranchSync()`**: Use async `isAgentBranch()` instead.
+- **Removed single-word lane names**: All lanes must use "Parent: Sublane" format.
+- **Removed config `version: '1.0'`**: Config must use `version: '2.0'`.
+
+### Migration
+
+See [Migration Guide](/guides/migration) for upgrading from v2.x.
+
+### Upgrade
+
+```bash
+pnpm lumenflow:upgrade --latest
+```
+
+---
+
+## v2.3.2
 
 **Release Date:** February 2026
 
@@ -270,43 +300,34 @@ See [Migration Guide](/guides/migration) for upgrading from v1.x.
 
 ## Package Versions
 
-Current package versions as of v2.3.2:
+Current package versions as of v3.0.0:
 
-| Package                   | Version | Description                           |
-| ------------------------- | ------- | ------------------------------------- |
-| `@lumenflow/core`         | 2.3.2   | Core WU lifecycle and state machine   |
-| `@lumenflow/cli`          | 2.3.2   | Command-line interface                |
-| `@lumenflow/memory`       | 2.3.2   | Session tracking and context recovery |
-| `@lumenflow/agent`        | 2.3.2   | Agent definitions and skill loading   |
-| `@lumenflow/initiatives`  | 2.3.2   | Multi-phase project orchestration     |
-| `@lumenflow/metrics`      | 2.3.2   | DORA metrics and flow analysis        |
-| `@lumenflow/shims`        | 2.3.2   | Git and pnpm safety shims             |
-| `@lumenflow/gates-action` | 1.0.0   | GitHub Action for CI gates            |
+| Package                        | Version | Description                           |
+| ------------------------------ | ------- | ------------------------------------- |
+| `@lumenflow/core`              | 3.0.0   | Core WU lifecycle and state machine   |
+| `@lumenflow/cli`               | 3.0.0   | Command-line interface                |
+| `@lumenflow/kernel`            | 3.0.0   | Domain-agnostic runtime primitives    |
+| `@lumenflow/runtime`           | 3.0.0   | Runtime daemon, scheduler, sessions   |
+| `@lumenflow/packs`             | 3.0.0   | Pack framework (kernel dispatch)      |
+| `@lumenflow/mcp`               | 3.0.0   | MCP server and tool definitions       |
+| `@lumenflow/memory`            | 3.0.0   | Session tracking and context recovery |
+| `@lumenflow/agent`             | 3.0.0   | Agent definitions and skill loading   |
+| `@lumenflow/initiatives`       | 3.0.0   | Multi-phase project orchestration     |
+| `@lumenflow/metrics`           | 3.0.0   | DORA metrics and flow analysis        |
+| `@lumenflow/shims`             | 3.0.0   | Git and pnpm safety shims             |
+| `@lumenflow/control-plane-sdk` | 3.0.0   | SDK for control plane integration     |
+| `@lumenflow/gates-action`      | 1.0.0   | GitHub Action for CI gates            |
 
 ## Deprecations
 
-### Deprecated in v2.0.0
+### Removed in v3.0.0
 
-- `isAgentBranchSync()` - Use async `isAgentBranch()` instead
-- `.lumenflow/` directory - Project state and audit logs
-- Single-word lane names - Use "Parent: Sublane" format
+- `isAgentBranchSync()` — Use async `isAgentBranch()` instead
+- Single-word lane names — All lanes must use "Parent: Sublane" format
+- Config `version: '1.0'` — Must use `version: '2.0'`
 
 ### Removed in v2.0.0
 
 - Legacy `backlog.yaml` format (use `backlog.md`)
 - `wu:complete` command (renamed to `wu:done`)
 - `--force` flag on wu:done (use `--skip-gates` with `--reason`)
-
-## Roadmap
-
-### v2.3.0 (Planned)
-
-- Skill registry at lumenflow.dev
-- Enhanced metrics dashboard
-- VS Code extension
-
-### v3.0.0 (Future)
-
-- Multi-repo support
-- Enterprise SSO integration
-- Advanced analytics

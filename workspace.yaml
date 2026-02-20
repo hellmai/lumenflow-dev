@@ -1,0 +1,237 @@
+# workspace.yaml — Kernel-level workspace configuration
+# Defines packs, lanes, security boundaries, and namespaces for the kernel runtime.
+# Distinct from .lumenflow.config.yaml (CLI/tooling configuration).
+
+id: lumenflow
+name: LumenFlow
+
+packs:
+  - id: software-delivery
+    version: '3.0.0'
+    integrity: dev
+    source: local
+
+lanes:
+  - id: framework-core-lifecycle
+    title: 'Framework: Core Lifecycle'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/kernel/**'
+        access: write
+      - type: path
+        pattern: 'packages/@lumenflow/runtime/**'
+        access: write
+      - type: path
+        pattern: 'packages/@lumenflow/packs/**'
+        access: write
+      - type: path
+        pattern: 'packages/@lumenflow/surfaces/**'
+        access: write
+      - type: path
+        pattern: 'packages/@lumenflow/core/src/wu-*.ts'
+        access: write
+      - type: path
+        pattern: 'packages/@lumenflow/core/src/lane-*.ts'
+        access: write
+      - type: path
+        pattern: 'packages/@lumenflow/core/src/worktree-*.ts'
+        access: write
+      - type: path
+        pattern: 'packages/@lumenflow/core/src/git-*.ts'
+        access: write
+    wip_limit: 2
+
+  - id: framework-core-validation
+    title: 'Framework: Core Validation'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/core/src/validation/**'
+        access: write
+      - type: path
+        pattern: 'packages/@lumenflow/core/src/validators/**'
+        access: write
+      - type: path
+        pattern: 'packages/@lumenflow/core/src/schemas/**'
+        access: write
+    wip_limit: 2
+
+  - id: framework-core-state-recovery
+    title: 'Framework: Core State Recovery'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/core/src/state-*.ts'
+        access: write
+      - type: path
+        pattern: 'packages/@lumenflow/core/src/*recover*.ts'
+        access: write
+    wip_limit: 1
+
+  - id: framework-cli-wu-commands
+    title: 'Framework: CLI WU Commands'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/cli/src/wu-*.ts'
+        access: write
+    wip_limit: 2
+
+  - id: framework-cli-memory-state
+    title: 'Framework: CLI Memory State'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/cli/src/mem-*.ts'
+        access: write
+      - type: path
+        pattern: 'packages/@lumenflow/cli/src/state-*.ts'
+        access: write
+    wip_limit: 2
+
+  - id: framework-cli-orchestration
+    title: 'Framework: CLI Orchestration'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/cli/src/initiative-*.ts'
+        access: write
+      - type: path
+        pattern: 'packages/@lumenflow/cli/src/orchestrate-*.ts'
+        access: write
+    wip_limit: 2
+
+  - id: framework-cli-enforcement
+    title: 'Framework: CLI Enforcement'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/cli/src/hooks/**'
+        access: write
+      - type: path
+        pattern: 'packages/@lumenflow/cli/src/gates.ts'
+        access: write
+    wip_limit: 1
+
+  - id: framework-mcp
+    title: 'Framework: MCP'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/mcp/**'
+        access: write
+    wip_limit: 1
+
+  - id: framework-memory
+    title: 'Framework: Memory'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/memory/**'
+        access: write
+    wip_limit: 1
+
+  - id: framework-agent
+    title: 'Framework: Agent'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/agent/**'
+        access: write
+    wip_limit: 1
+
+  - id: framework-metrics
+    title: 'Framework: Metrics'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/metrics/**'
+        access: write
+    wip_limit: 1
+
+  - id: framework-initiatives
+    title: 'Framework: Initiatives'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/initiatives/**'
+        access: write
+    wip_limit: 1
+
+  - id: framework-shims
+    title: 'Framework: Shims'
+    allowed_scopes:
+      - type: path
+        pattern: 'packages/@lumenflow/shims/**'
+        access: write
+    wip_limit: 1
+
+  - id: operations-runtime
+    title: 'Operations: Runtime'
+    allowed_scopes:
+      - type: path
+        pattern: 'apps/github-app/**'
+        access: write
+    wip_limit: 1
+
+  - id: operations-tooling
+    title: 'Operations: Tooling'
+    allowed_scopes:
+      - type: path
+        pattern: 'tools/**'
+        access: write
+      - type: path
+        pattern: 'scripts/**'
+        access: write
+    wip_limit: 1
+
+  - id: operations-automation
+    title: 'Operations: Automation'
+    allowed_scopes:
+      - type: path
+        pattern: '.github/**'
+        access: write
+      - type: path
+        pattern: 'actions/**'
+        access: write
+    wip_limit: 1
+
+  - id: content-specs-governance
+    title: 'Content: Specs Governance'
+    allowed_scopes:
+      - type: path
+        pattern: 'docs/04-operations/**'
+        access: write
+      - type: path
+        pattern: '.lumenflow/**'
+        access: write
+    wip_limit: 2
+
+  - id: content-framework-docs
+    title: 'Content: Framework Docs'
+    allowed_scopes:
+      - type: path
+        pattern: 'docs/_frameworks/**'
+        access: write
+      - type: path
+        pattern: 'LUMENFLOW.md'
+        access: write
+      - type: path
+        pattern: 'CLAUDE.md'
+        access: write
+    wip_limit: 2
+
+  - id: content-site-comms
+    title: 'Content: Site Comms'
+    allowed_scopes:
+      - type: path
+        pattern: 'apps/docs/**'
+        access: write
+      - type: path
+        pattern: 'README.md'
+        access: write
+    wip_limit: 2
+
+security:
+  allowed_scopes:
+    - type: path
+      pattern: '**'
+      access: write
+    - type: network
+      posture: 'off'
+  network_default: 'off'
+  deny_overlays:
+    - '.lumenflow/**'
+    - '.git/**'
+
+memory_namespace: lumenflow
+event_namespace: lumenflow

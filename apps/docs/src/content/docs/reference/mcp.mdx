@@ -41,13 +41,13 @@ lumenflow-mcp
 
 ## Tools Overview
 
-The MCP server exposes **99 tools** organized into 12 categories:
+The MCP server exposes **110 tools** organized into 13 categories (103 in the core `allTools` registry plus 7 runtime task tools):
 
 | Category                      | Count | Description                                |
 | ----------------------------- | ----- | ------------------------------------------ |
-| Core WU Operations            | 7     | Basic WU lifecycle and context             |
+| Core WU Operations            | 8     | Basic WU lifecycle and context             |
 | Public Parity Operations (W1) | 15    | Ops/setup parity families from public CLI  |
-| Public Parity Operations (W2) | 15    | File/git/plan/signal parity families       |
+| Public Parity Operations (W2) | 17    | File/git/plan/signal/config parity families |
 | Additional WU Operations      | 17    | Extended WU management                     |
 | Initiative Operations         | 8     | Multi-phase project orchestration          |
 | Memory Operations             | 14    | Session tracking and agent coordination    |
@@ -57,13 +57,13 @@ The MCP server exposes **99 tools** organized into 12 categories:
 | Flow/Metrics Operations       | 3     | DORA metrics and flow analysis             |
 | Validation Operations         | 5     | WU and configuration validation            |
 | Setup Operations              | 8     | LumenFlow initialization and configuration |
+| Runtime Task Tools            | 7     | Kernel runtime task lifecycle              |
 
-Tool inventory source of truth: `packages/@lumenflow/mcp/src/tools.ts` (`allTools`).
+Tool inventory source of truth: `packages/@lumenflow/mcp/src/tools.ts` (`allTools` + `runtimeTaskTools`).
 
 Public CLI parity target is **91 normalized public commands** (`:` and `-` converted to `_`).
-Total MCP tool count is 99 because 8 tools are intentionally MCP-only extras:
-`context_get`, `gates_run`, `initiative_remove_wu`, `validate_agent_skills`,
-`validate_agent_sync`, `validate_backlog_sync`, `validate_skills_spec`, and `wu_list`.
+The `allTools` array contains 103 tools because 12 tools are intentionally MCP-only extras.
+The `runtimeTaskTools` array adds 7 kernel-native task tools for a total of 110 registered tools.
 
 ---
 
@@ -913,6 +913,28 @@ Run LumenFlow release workflow (versioning, npm publish).
 Sync LumenFlow templates to the project.
 
 **Input:** None
+
+---
+
+## Runtime Task Tools
+
+These 7 tools are available when the kernel runtime is active. They are part of the `runtimeTaskTools` registry and are additive to the core `allTools` set.
+
+| Tool                 | Description                                  |
+| -------------------- | -------------------------------------------- |
+| `task_claim`         | Claim a task for execution                   |
+| `task_create`        | Create a new task                            |
+| `task_complete`      | Mark a task as completed                     |
+| `task_block`         | Block a task                                 |
+| `task_unblock`       | Unblock a task                               |
+| `task_inspect`       | Inspect task state                           |
+| `task_tool_execute`  | Execute a tool within a task context         |
+
+<Aside type="note">
+  Runtime task tools are intentionally isolated from the legacy CLI-shell tools in `allTools`. This
+  separation allows command-by-command migration to the kernel runtime without breaking parity gates.
+  The production MCP server registers both arrays via `registeredTools`.
+</Aside>
 
 ---
 

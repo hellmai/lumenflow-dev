@@ -11,15 +11,20 @@ This matrix shows compatibility between LumenFlow package versions, runtime requ
 
 All `@lumenflow/*` packages are versioned together. Use matching versions for best compatibility.
 
-| Package                  | Current | Minimum | Notes                          |
-| ------------------------ | ------- | ------- | ------------------------------ |
-| `@lumenflow/core`        | 2.3.2   | 2.0.0   | Core WU lifecycle              |
-| `@lumenflow/cli`         | 2.3.2   | 2.0.0   | Command-line interface         |
-| `@lumenflow/memory`      | 2.3.2   | 2.0.0   | Session tracking               |
-| `@lumenflow/agent`       | 2.3.2   | 2.0.0   | Agent definitions              |
-| `@lumenflow/initiatives` | 2.3.2   | 2.0.0   | Multi-phase projects           |
-| `@lumenflow/metrics`     | 2.3.2   | 1.4.0   | DORA metrics and flow analysis |
-| `@lumenflow/shims`       | 2.3.2   | 2.0.0   | Safety wrappers                |
+| Package                        | Current | Minimum | Notes                        |
+| ------------------------------ | ------- | ------- | ---------------------------- |
+| `@lumenflow/core`              | 3.0.0   | 2.0.0   | Core WU lifecycle            |
+| `@lumenflow/cli`               | 3.0.0   | 2.0.0   | Command-line interface       |
+| `@lumenflow/kernel`            | 3.0.0   | 3.0.0   | Runtime primitives (new)     |
+| `@lumenflow/runtime`           | 3.0.0   | 3.0.0   | Daemon, scheduler (new)      |
+| `@lumenflow/packs`             | 3.0.0   | 3.0.0   | Pack framework (new)         |
+| `@lumenflow/mcp`               | 3.0.0   | 3.0.0   | MCP server (new)             |
+| `@lumenflow/memory`            | 3.0.0   | 2.0.0   | Session tracking             |
+| `@lumenflow/agent`             | 3.0.0   | 2.0.0   | Agent definitions            |
+| `@lumenflow/initiatives`       | 3.0.0   | 2.0.0   | Multi-phase projects         |
+| `@lumenflow/metrics`           | 3.0.0   | 1.4.0   | DORA metrics and flow        |
+| `@lumenflow/shims`             | 3.0.0   | 2.0.0   | Safety wrappers              |
+| `@lumenflow/control-plane-sdk` | 3.0.0   | 3.0.0   | Control plane SDK (new)      |
 
 <Aside type="tip">
   Run `pnpm lumenflow:upgrade --latest` to update all packages to the latest compatible versions.
@@ -32,8 +37,8 @@ All `@lumenflow/*` packages are versioned together. Use matching versions for be
 
 | LumenFlow Version | Node.js Minimum | Node.js Recommended | Notes                       |
 | ----------------- | --------------- | ------------------- | --------------------------- |
-| 2.3.x             | 22.0.0          | 22.x                | ES modules, native fetch    |
-| 2.0.x - 2.2.x     | 20.0.0          | 22.x                | ES modules, native fetch    |
+| 3.0.x             | 22.0.0          | 22.x                | ES modules, native fetch    |
+| 2.0.x - 2.3.x     | 20.0.0          | 22.x                | ES modules, native fetch    |
 | 1.x               | 18.0.0          | 20.x                | CommonJS fallback available |
 
 ### Package Managers
@@ -202,7 +207,7 @@ lanes:
 
 ## Deprecation Timeline
 
-| Feature                 | Deprecated | Removal | Migration                    |
+| Feature                 | Deprecated | Removed | Migration                    |
 | ----------------------- | ---------- | ------- | ---------------------------- |
 | `isAgentBranchSync()`   | v2.0.0     | v3.0.0  | Use async `isAgentBranch()`  |
 | Single-word lanes       | v2.0.0     | v3.0.0  | Use "Parent: Sublane" format |
@@ -210,6 +215,14 @@ lanes:
 | Config `version: '1.0'` | v2.0.0     | v3.0.0  | Update to `version: '2.0'`   |
 
 ## Upgrade Path
+
+### From v2.x to v3.0
+
+1. Update all package versions to 3.0.0
+2. Install new packages: `@lumenflow/kernel`, `@lumenflow/runtime`, `@lumenflow/packs`, `@lumenflow/mcp`, `@lumenflow/control-plane-sdk`
+3. Create `workspace.yaml` for kernel configuration (see [Workspace Spec](/reference/workspace-spec))
+4. Update lane definitions to granular format (e.g., `Framework: Core` → `Framework: Core Lifecycle`)
+5. Remove any remaining single-word lanes or `isAgentBranchSync()` usage
 
 ### From v1.x to v2.0
 
@@ -237,6 +250,6 @@ pnpm outdated @lumenflow/*
 
 | Version         | Status      | Security Fixes | Bug Fixes     |
 | --------------- | ----------- | -------------- | ------------- |
-| 2.0.x           | Active      | Yes            | Yes           |
-| 1.6.x           | Maintenance | Yes            | Critical only |
-| 1.5.x and below | EOL         | No             | No            |
+| 3.0.x           | Active      | Yes            | Yes           |
+| 2.0.x           | Maintenance | Yes            | Critical only |
+| 1.6.x and below | EOL         | No             | No            |
