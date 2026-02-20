@@ -2,7 +2,7 @@ id: WU-1923
 title: RunAgent Real Execution
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -46,3 +46,6 @@ acceptance:
   - Acceptance criteria non-empty (schema min 1)
   - RunAgent subscribes to task events and streams them
   - RUN_COMPLETED only on real task_completed event
+locked: true
+completed_at: 2026-02-20T12:14:05.517Z
+completed: 2026-02-20

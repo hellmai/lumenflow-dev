@@ -33,7 +33,7 @@ phases:
     status: done
   - id: 7
     title: 'Make It Actually Work: Bug Fixes and Security'
-    status: in_progress
+    status: done
   - id: 8
     title: Friction-Free DX and Beautiful UX
     status: in_progress
