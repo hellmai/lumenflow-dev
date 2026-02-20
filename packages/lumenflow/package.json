@@ -15,7 +15,7 @@
     "url": "https://github.com/hellmai/lumenflow.git",
     "directory": "packages/lumenflow"
   },
-  "license": "Apache-2.0",
+  "license": "AGPL-3.0-only",
   "author": {
     "name": "HellmAI",
     "url": "https://hellm.ai"
