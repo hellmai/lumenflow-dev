@@ -15,6 +15,7 @@ export default defineConfig({
     astroD2(),
     starlight({
       plugins: [starlightThemeNova()],
+      customCss: ['./src/styles/splash.css'],
       title: 'LumenFlow',
       description: 'The governance layer between AI agents and the world',
       social: [],

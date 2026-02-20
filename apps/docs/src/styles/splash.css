@@ -1,0 +1,8 @@
+/* Tighten splash page hero-to-content gap */
+[data-has-hero] .hero {
+  padding-bottom: 0;
+}
+
+[data-has-hero] .content-panel + .content-panel {
+  padding-top: 0;
+}
