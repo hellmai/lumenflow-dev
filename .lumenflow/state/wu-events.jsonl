@@ -1844,3 +1844,4 @@
 {"type":"claim","wuId":"WU-1958","timestamp":"2026-02-20T18:15:17.800Z","lane":"Operations: Tooling","title":"Use single latest GIF demo on landing page"}
 {"type":"claim","wuId":"WU-1934","timestamp":"2026-02-20T18:16:24.891Z","lane":"Framework: MCP","title":"Fix pre-existing MCP parity test failures from WU-1927 onboard"}
 {"type":"complete","wuId":"WU-1958","timestamp":"2026-02-20T18:19:00.245Z"}
+{"type":"complete","wuId":"WU-1934","timestamp":"2026-02-20T18:19:34.811Z"}

@@ -2,7 +2,7 @@ id: WU-1934
 title: Fix pre-existing MCP parity test failures from WU-1927 onboard
 lane: 'Framework: MCP'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -42,3 +42,6 @@ session_id: bead31ca-5a8c-4955-be4d-8ebd0c53a2d5
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T18:16:24.847Z
+locked: true
+completed_at: 2026-02-20T18:19:30.042Z
+completed: 2026-02-20
