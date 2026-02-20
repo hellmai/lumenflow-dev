@@ -1833,4 +1833,5 @@
 {"type":"complete","wuId":"WU-1939","timestamp":"2026-02-20T13:21:49.353Z"}
 {"type":"claim","wuId":"WU-1940","timestamp":"2026-02-20T13:55:02.181Z","lane":"Operations: Runtime","title":"Fix events.filter runtime error on Dashboard"}
 {"type":"complete","wuId":"WU-1940","timestamp":"2026-02-20T14:04:06.738Z"}
-{"type":"claim","wuId":"WU-1941","lane":"Operations: Runtime","title":"Fix Packs page API path and authoring guide link","timestamp":"2026-02-20T15:41:24.178Z"}
+{"type":"claim","wuId":"WU-1941","timestamp":"2026-02-20T15:41:24.178Z","lane":"Operations: Runtime","title":"Fix Packs page API path and authoring guide link"}
+{"type":"complete","wuId":"WU-1941","timestamp":"2026-02-20T15:46:47.088Z"}

@@ -2,7 +2,7 @@ id: WU-1941
 title: Fix Packs page API path and authoring guide link
 lane: 'Operations: Runtime'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -41,3 +41,6 @@ description: Packs page fetches /api/packs (404) instead of /api/registry/packs.
 acceptance:
   - Packs page loads pack data from /api/registry/packs
   - Authoring guide link resolves to correct docs URL
+locked: true
+completed_at: 2026-02-20T15:46:42.503Z
+completed: 2026-02-20
