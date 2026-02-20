@@ -32,7 +32,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Target: lumenflow onboard produces working workspace in 60 seconds. Detect env, choose domain, generate workspace.yaml, install pack, launch dashboard, first task walkthrough. Uses @clack/prompts.'
+description: 'Target: lumenflow onboard produces working workspace in 60 seconds. Detect env, choose
+  domain, generate workspace.yaml, install pack, launch dashboard, first task walkthrough. Uses
+  @clack/prompts.'
 acceptance:
   - Detects Node, git, existing workspace
   - Offers domain choice (software delivery, infra, custom)
