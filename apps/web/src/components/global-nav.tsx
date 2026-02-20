@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { LayoutDashboard, Package, Store, ShieldCheck, Moon, Sun } from 'lucide-react';
 
 const THEME_STORAGE_KEY = 'lumenflow-theme';
@@ -64,17 +64,15 @@ function getInitialDark(): boolean {
   if (typeof window === 'undefined') {
     return false;
   }
-  return localStorage.getItem(THEME_STORAGE_KEY) === 'dark';
+  const isDark = localStorage.getItem(THEME_STORAGE_KEY) === 'dark';
+  if (isDark) {
+    document.documentElement.classList.add('dark');
+  }
+  return isDark;
 }
 
 export function GlobalNav({ currentPath }: GlobalNavProps) {
   const [isDark, setIsDark] = useState(getInitialDark);
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleToggleTheme() {
     const next = !isDark;
