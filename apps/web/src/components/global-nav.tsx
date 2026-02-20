@@ -1,14 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  LayoutDashboard,
-  Package,
-  Store,
-  ShieldCheck,
-  Moon,
-  Sun,
-} from 'lucide-react';
+import { LayoutDashboard, Package, Store, ShieldCheck, Moon, Sun } from 'lucide-react';
 
 const THEME_STORAGE_KEY = 'lumenflow-theme';
 

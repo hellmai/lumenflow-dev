@@ -38,9 +38,7 @@ export class RouteErrorBoundary extends Component<
           <h2 className="text-lg font-semibold text-foreground">
             Something went wrong in {segmentLabel}
           </h2>
-          <p className="max-w-md text-sm text-muted-foreground">
-            {this.state.error.message}
-          </p>
+          <p className="max-w-md text-sm text-muted-foreground">{this.state.error.message}</p>
           <button
             type="button"
             onClick={this.handleReset}
