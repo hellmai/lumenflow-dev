@@ -2,7 +2,7 @@ id: WU-1938
 title: Remove terminal code block from landing page hero
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -25,8 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The lumenflow scope-check terminal output below the hero is meaningless to first-time visitors. Remove it for a clean hero-to-content transition.
+description: The lumenflow scope-check terminal output below the hero is meaningless to first-time
+  visitors. Remove it for a clean hero-to-content transition.
 acceptance:
   - Terminal code block removed from index.mdx
   - Hero flows directly into The Problem Nobody Talks About section
   - Deployed to lumenflow.dev
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1938
+claimed_at: 2026-02-20T13:14:30.195Z
+baseline_main_sha: 15766578d16c2fa325d34a211beb5814be70f84e
+session_id: 27bec1dd-9664-434f-beb2-555699dc5615
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T13:14:30.204Z

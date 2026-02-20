@@ -5,6 +5,7 @@ _Last updated: 2026-02-20_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1938 — Remove terminal code block from landing page hero](wu/WU-1938.yaml)
 
 ## Completed
 
