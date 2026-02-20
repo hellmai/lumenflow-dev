@@ -1,0 +1,16 @@
+id: INIT-032
+slug: security-first-adoption-authoring
+title: Security-First Adoption + Secure Custom Tool Authoring
+description: ''
+status: draft
+priority: P0
+owner: 'Framework: Core'
+created: 2026-02-20
+target_date: 2026-04-30
+phases: []
+success_metrics:
+  - Time to first task under 2 minutes from fresh install
+  - onboard --yes installs and pins registry pack integrity automatically
+  - Custom pack/tool authoring works without handwritten code via secure templates
+  - All write endpoints enforce traversal/CSRF/body-size protections
+labels: []
