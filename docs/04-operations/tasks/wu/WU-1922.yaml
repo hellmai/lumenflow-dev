@@ -2,7 +2,7 @@ id: WU-1922
 title: Kernel approval_required Policy Effect
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -49,3 +49,6 @@ session_id: fb95d414-962e-4580-9ab4-5eb396653033
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T11:39:33.659Z
+locked: true
+completed_at: 2026-02-20T12:03:32.627Z
+completed: 2026-02-20
