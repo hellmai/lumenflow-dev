@@ -32,7 +32,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'S-OWN: No pack ownership. S-IMMUT: No version immutability. S-TARVAL: No tarball validation. S-RACE: Registry index race condition. S-RATE: No rate limiting. S-PUBLIC: All tarballs publicly accessible.'
+description: 'S-OWN: No pack ownership. S-IMMUT: No version immutability. S-TARVAL: No tarball
+  validation. S-RACE: Registry index race condition. S-RATE: No rate limiting. S-PUBLIC: All
+  tarballs publicly accessible.'
 acceptance:
   - Pack ownership validated on update (publisher = owner)
   - Duplicate version publish returns 409 Conflict
