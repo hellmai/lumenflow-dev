@@ -2,7 +2,7 @@ id: WU-1948
 title: '[WU-E] Marketplace UX: canonical install command + one-click install'
 lane: 'Operations: Runtime'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -34,8 +34,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Fix marketplace/community install command generation to canonical CLI flags and add one-click install UX feedback with progress and post-install change summary.
+description: Fix marketplace/community install command generation to canonical CLI flags and add
+  one-click install UX feedback with progress and post-install change summary.
 acceptance:
   - Generated install command uses --id/--source/--version syntax compatible with current CLI
-  - Marketplace detail and browse cards provide one-click install entrypoint with loading/error feedback
+  - Marketplace detail and browse cards provide one-click install entrypoint with loading/error
+    feedback
   - Successful install reports tools/policies/permission scope changes to the user
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-runtime-wu-1948
+claimed_at: 2026-02-20T20:09:50.138Z
+baseline_main_sha: 3f8eed6eefd04770e4b2f95706a2bd6a43ceb828
+session_id: 41795402-f504-414b-b0c4-962e3a8ba621
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T20:09:50.144Z

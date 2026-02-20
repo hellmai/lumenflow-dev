@@ -1855,3 +1855,4 @@
 {"type":"complete","wuId":"WU-1947","timestamp":"2026-02-20T19:52:20.935Z"}
 {"type":"claim","wuId":"WU-1951","timestamp":"2026-02-20T19:53:26.238Z","lane":"Framework: Core Lifecycle","title":"[WU-H] Secure pack authoring template engine"}
 {"type":"complete","wuId":"WU-1951","timestamp":"2026-02-20T20:09:10.668Z"}
+{"type":"claim","wuId":"WU-1948","lane":"Operations: Runtime","title":"[WU-E] Marketplace UX: canonical install command + one-click install","timestamp":"2026-02-20T20:09:50.192Z"}
