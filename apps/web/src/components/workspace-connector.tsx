@@ -6,6 +6,14 @@ import type { WorkspaceConnectionState } from '../lib/workspace-connection-types
 const PATH_INPUT_PLACEHOLDER = 'Enter workspace root path';
 const CONNECT_BUTTON_LABEL = 'Connect';
 const CONNECTING_BUTTON_LABEL = 'Connecting...';
+const CREATE_WORKSPACE_TOGGLE_LABEL = 'Create workspace';
+const CREATE_WORKSPACE_BUTTON_LABEL = 'Create';
+const CREATING_WORKSPACE_BUTTON_LABEL = 'Creating...';
+const PROJECT_NAME_PLACEHOLDER = 'Project name';
+const CREATE_ROUTE_PATH = '/api/workspace/create';
+const ERROR_CREATE_WORKSPACE_PREFIX = 'Failed to create workspace';
+const EXISTING_WORKSPACE_MESSAGE = 'Workspace already exists. Connect to proceed without overwrite.';
+const WORKSPACE_CREATED_MESSAGE = 'Workspace created. Connecting...';
 const DISCONNECT_BUTTON_LABEL = 'Disconnect';
 const PACKS_LABEL = 'packs';
 const LANES_LABEL = 'lanes';
@@ -30,8 +38,40 @@ interface WorkspacePathPromptProps {
   readonly isConnecting: boolean;
 }
 
+interface CreateWorkspaceSuccessResponse {
+  readonly success: true;
+  readonly created: boolean;
+  readonly existing: boolean;
+  readonly workspaceRoot: string;
+}
+
+interface CreateWorkspaceErrorResponse {
+  readonly success: false;
+  readonly error?: string;
+}
+
+type CreateWorkspaceResponse = CreateWorkspaceSuccessResponse | CreateWorkspaceErrorResponse;
+
+function getCreateWorkspaceError(responseBody: unknown): string {
+  if (
+    typeof responseBody === 'object' &&
+    responseBody !== null &&
+    'error' in responseBody &&
+    typeof (responseBody as CreateWorkspaceErrorResponse).error === 'string'
+  ) {
+    return (responseBody as CreateWorkspaceErrorResponse).error as string;
+  }
+
+  return ERROR_CREATE_WORKSPACE_PREFIX;
+}
+
 export function WorkspacePathPrompt({ onConnect, isConnecting }: WorkspacePathPromptProps) {
   const [inputValue, setInputValue] = useState('');
+  const [isCreateWorkspaceVisible, setIsCreateWorkspaceVisible] = useState(false);
+  const [projectName, setProjectName] = useState('');
+  const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
+  const [createWorkspaceInfo, setCreateWorkspaceInfo] = useState<string | null>(null);
+  const [createWorkspaceError, setCreateWorkspaceError] = useState<string | null>(null);
 
   function handleConnect() {
     const trimmed = inputValue.trim();
@@ -41,11 +81,70 @@ export function WorkspacePathPrompt({ onConnect, isConnecting }: WorkspacePathPr
     onConnect(trimmed);
   }
 
+  async function handleCreateWorkspace() {
+    const workspaceRoot = inputValue.trim();
+    const trimmedProjectName = projectName.trim();
+
+    if (workspaceRoot.length === 0) {
+      setCreateWorkspaceError('Workspace path is required');
+      return;
+    }
+
+    if (trimmedProjectName.length === 0) {
+      setCreateWorkspaceError('Project name is required');
+      return;
+    }
+
+    setCreateWorkspaceError(null);
+    setCreateWorkspaceInfo(null);
+    setIsCreatingWorkspace(true);
+
+    try {
+      const response = await fetch(CREATE_ROUTE_PATH, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          workspaceRoot,
+          projectName: trimmedProjectName,
+        }),
+      });
+
+      const body = (await response.json()) as CreateWorkspaceResponse;
+
+      if (!response.ok || !body.success) {
+        setCreateWorkspaceError(getCreateWorkspaceError(body));
+        return;
+      }
+
+      if (body.existing) {
+        setCreateWorkspaceInfo(EXISTING_WORKSPACE_MESSAGE);
+        return;
+      }
+
+      setCreateWorkspaceInfo(WORKSPACE_CREATED_MESSAGE);
+      onConnect(body.workspaceRoot);
+    } catch (error) {
+      setCreateWorkspaceError(error instanceof Error ? error.message : ERROR_CREATE_WORKSPACE_PREFIX);
+    } finally {
+      setIsCreatingWorkspace(false);
+    }
+  }
+
   function handleKeyDown(event: React.KeyboardEvent) {
     if (event.key === 'Enter') {
       handleConnect();
     }
   }
+
+  function toggleCreateWorkspace() {
+    setCreateWorkspaceInfo(null);
+    setCreateWorkspaceError(null);
+    setIsCreateWorkspaceVisible((current) => !current);
+  }
+
+  const controlsDisabled = isConnecting || isCreatingWorkspace;
 
   return (
     <div
@@ -61,19 +160,67 @@ export function WorkspacePathPrompt({ onConnect, isConnecting }: WorkspacePathPr
           onChange={(event) => setInputValue(event.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={PATH_INPUT_PLACEHOLDER}
-          disabled={isConnecting}
+          disabled={controlsDisabled}
           className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
         />
         <button
           data-testid="workspace-connect-button"
           type="button"
           onClick={handleConnect}
-          disabled={isConnecting}
+          disabled={controlsDisabled}
           className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700 disabled:opacity-50"
         >
           {isConnecting ? CONNECTING_BUTTON_LABEL : CONNECT_BUTTON_LABEL}
         </button>
       </div>
+      <div className="mt-3 flex items-center gap-3">
+        <button
+          data-testid="workspace-create-toggle"
+          type="button"
+          onClick={toggleCreateWorkspace}
+          disabled={controlsDisabled}
+          className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:opacity-50"
+        >
+          {CREATE_WORKSPACE_TOGGLE_LABEL}
+        </button>
+      </div>
+      {isCreateWorkspaceVisible && (
+        <div className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3">
+          <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Project name
+          </label>
+          <input
+            data-testid="workspace-project-name-input"
+            type="text"
+            value={projectName}
+            onChange={(event) => setProjectName(event.target.value)}
+            placeholder={PROJECT_NAME_PLACEHOLDER}
+            disabled={controlsDisabled}
+            className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+          />
+          <div className="mt-3 flex items-center gap-3">
+            <button
+              data-testid="workspace-create-button"
+              type="button"
+              onClick={() => {
+                void handleCreateWorkspace();
+              }}
+              disabled={controlsDisabled}
+              className="rounded-md bg-blue-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-500 disabled:opacity-50"
+            >
+              {isCreatingWorkspace ? CREATING_WORKSPACE_BUTTON_LABEL : CREATE_WORKSPACE_BUTTON_LABEL}
+            </button>
+            {createWorkspaceInfo && (
+              <span data-testid="workspace-create-info" className="text-xs text-slate-600">
+                {createWorkspaceInfo}
+              </span>
+            )}
+            {createWorkspaceError && (
+              <span className="text-xs text-red-600">{createWorkspaceError}</span>
+            )}
+          </div>
+        </div>
+      )}
       {isConnecting && (
         <div data-testid="workspace-connecting-indicator" className="mt-3 text-sm text-slate-400">
           Initializing kernel runtime...

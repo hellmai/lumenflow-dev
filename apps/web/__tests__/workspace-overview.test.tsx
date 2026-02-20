@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { describe, expect, it } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { TaskSummary, StatusGroup, LaneWipEntry } from '../src/lib/workspace-types';
 
 /* ------------------------------------------------------------------
@@ -171,5 +171,71 @@ describe('WorkspaceOverview component', () => {
     );
 
     expect(screen.getByTestId('workspace-empty')).toBeDefined();
+  });
+
+  it('renders guided onboarding cards when workspace is not connected', async () => {
+    const { WorkspaceOverview } = await import('../src/components/workspace-overview');
+
+    const emptyGroups: StatusGroup[] = [
+      { status: 'ready', label: 'Ready', tasks: [] },
+      { status: 'active', label: 'Active', tasks: [] },
+      { status: 'blocked', label: 'Blocked', tasks: [] },
+      { status: 'waiting', label: 'Waiting', tasks: [] },
+      { status: 'done', label: 'Done', tasks: [] },
+    ];
+
+    render(
+      <WorkspaceOverview
+        statusGroups={emptyGroups}
+        laneWipEntries={[]}
+        totalCount={0}
+        statusCounts={{ ready: 0, active: 0, blocked: 0, waiting: 0, done: 0 }}
+        workspaceConnected={false}
+      />,
+    );
+
+    expect(screen.getByTestId('onboarding-card-workspace')).toBeDefined();
+    expect(screen.getByTestId('onboarding-card-pack-install')).toBeDefined();
+    expect(screen.getByTestId('onboarding-card-first-task')).toBeDefined();
+  });
+
+  it('submits create-task form from header and calls onCreateTask', async () => {
+    const { WorkspaceOverview } = await import('../src/components/workspace-overview');
+
+    const onCreateTask = async () => undefined;
+    const createTaskSpy = vi.fn(onCreateTask);
+
+    render(
+      <WorkspaceOverview
+        statusGroups={FIXTURE_STATUS_GROUPS}
+        laneWipEntries={FIXTURE_LANE_WIP}
+        totalCount={3}
+        statusCounts={{ ready: 0, active: 1, blocked: 1, waiting: 0, done: 1 }}
+        workspaceConnected={true}
+        onCreateTask={createTaskSpy}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('create-task-button'));
+    fireEvent.change(screen.getByTestId('create-task-title-input'), {
+      target: { value: 'Ship dashboard onboarding flow' },
+    });
+    fireEvent.change(screen.getByTestId('create-task-description-input'), {
+      target: { value: 'Wire active management actions in workspace dashboard' },
+    });
+    fireEvent.change(screen.getByTestId('create-task-lane-input'), {
+      target: { value: 'operations-runtime' },
+    });
+    fireEvent.change(screen.getByTestId('create-task-priority-select'), {
+      target: { value: 'P1' },
+    });
+    fireEvent.change(screen.getByTestId('create-task-risk-select'), {
+      target: { value: 'medium' },
+    });
+    fireEvent.click(screen.getByTestId('submit-create-task-button'));
+
+    await waitFor(() => {
+      expect(createTaskSpy).toHaveBeenCalledTimes(1);
+    });
   });
 });

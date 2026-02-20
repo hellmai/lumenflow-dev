@@ -15,7 +15,10 @@ tests:
   manual:
     - From empty workspace, create workspace then create first task from dashboard
   unit:
+    - apps/web/__tests__/workspace-connector.test.tsx
     - apps/web/__tests__/workspace-overview.test.tsx
+    - apps/web/__tests__/workspace-create-route.test.ts
+    - apps/web/__tests__/workspace-overview-live-actions.test.tsx
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1954.done

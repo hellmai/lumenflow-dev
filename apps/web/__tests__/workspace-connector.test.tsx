@@ -8,7 +8,7 @@
  * AC4: Preference persisted in localStorage
  */
 import { describe, expect, it, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import type {
   WorkspaceConnectionState,
   WorkspaceInfo,
@@ -73,6 +73,83 @@ describe('WorkspacePathPrompt (AC1)', () => {
     render(<WorkspacePathPrompt onConnect={onConnect} isConnecting={true} />);
 
     expect(screen.getByTestId('workspace-connecting-indicator')).toBeDefined();
+  });
+
+  it('creates a workspace from wizard and auto-connects when created', async () => {
+    const { WorkspacePathPrompt } = await import('../src/components/workspace-connector');
+
+    const onConnect = vi.fn();
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: true,
+          created: true,
+          existing: false,
+          workspaceRoot: 'workspaces/new-project',
+        }),
+        {
+          status: 201,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      ),
+    );
+
+    render(<WorkspacePathPrompt onConnect={onConnect} isConnecting={false} />);
+
+    fireEvent.change(screen.getByTestId('workspace-path-input'), {
+      target: { value: 'workspaces/new-project' },
+    });
+    fireEvent.click(screen.getByTestId('workspace-create-toggle'));
+    fireEvent.change(screen.getByTestId('workspace-project-name-input'), {
+      target: { value: 'New Project' },
+    });
+    fireEvent.click(screen.getByTestId('workspace-create-button'));
+
+    await waitFor(() => {
+      expect(onConnect).toHaveBeenCalledWith('workspaces/new-project');
+    });
+
+    fetchMock.mockRestore();
+  });
+
+  it('shows existing-workspace detection message without overwriting', async () => {
+    const { WorkspacePathPrompt } = await import('../src/components/workspace-connector');
+
+    const onConnect = vi.fn();
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: true,
+          created: false,
+          existing: true,
+          workspaceRoot: 'workspaces/existing-project',
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      ),
+    );
+
+    render(<WorkspacePathPrompt onConnect={onConnect} isConnecting={false} />);
+
+    fireEvent.change(screen.getByTestId('workspace-path-input'), {
+      target: { value: 'workspaces/existing-project' },
+    });
+    fireEvent.click(screen.getByTestId('workspace-create-toggle'));
+    fireEvent.change(screen.getByTestId('workspace-project-name-input'), {
+      target: { value: 'Existing Project' },
+    });
+    fireEvent.click(screen.getByTestId('workspace-create-button'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('workspace-create-info').textContent).toContain(
+        'already exists',
+      );
+    });
+    expect(onConnect).not.toHaveBeenCalled();
+
+    fetchMock.mockRestore();
   });
 });
 

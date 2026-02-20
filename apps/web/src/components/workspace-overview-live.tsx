@@ -1,15 +1,27 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import type { TaskSpec } from '@lumenflow/kernel';
 import type { DashboardEvent } from '../lib/dashboard-types';
 import { buildWorkspaceOverview } from '../lib/workspace-data';
 import type { WorkspaceOverviewData } from '../lib/workspace-types';
-import { WorkspaceOverview } from './workspace-overview';
+import { useWorkspaceConnection } from '../hooks/use-workspace-connection';
+import { WorkspaceConnectionStatus, WorkspacePathPrompt } from './workspace-connector';
+import { type CreateTaskInput, WorkspaceOverview } from './workspace-overview';
 
 const EVENTS_API_PATH = '/api/events/all';
+const TASKS_API_PATH = '/api/tasks';
 const LOADING_MESSAGE = 'Loading workspace data...';
 const ERROR_MESSAGE_PREFIX = 'Failed to load workspace data';
+const ERROR_CREATE_TASK_PREFIX = 'Failed to create task';
+const ERROR_CREATE_TASK_NO_WORKSPACE = 'Workspace is not connected';
 const RETRY_LABEL = 'Retry';
+const TASK_ID_PREFIX = 'task-web-';
+const DEFAULT_TASK_DOMAIN = 'software-delivery';
+const DEFAULT_TASK_TYPE = 'feature';
+const ACCEPTANCE_PREFIX = 'Deliver: ';
+const CREATED_DATE_SEPARATOR = 'T';
+const JSON_CONTENT_TYPE = 'application/json';
 
 type FetchState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -20,14 +32,16 @@ interface UseWorkspaceDataResult {
   readonly refetch: () => void;
 }
 
+function isObjectRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
 function parseEventsResponse(events: unknown[]): DashboardEvent[] {
   return events
-    .filter(
-      (event): event is Record<string, unknown> => typeof event === 'object' && event !== null,
-    )
+    .filter((event): event is Record<string, unknown> => isObjectRecord(event))
     .filter((event) => typeof event.kind === 'string' && typeof event.timestamp === 'string')
-    .map((event) => ({
-      id: String(event.id ?? `evt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`),
+    .map((event, index) => ({
+      id: typeof event.id === 'string' && event.id.length > 0 ? event.id : `evt-${index}`,
       kind: String(event.kind),
       timestamp: String(event.timestamp),
       taskId: String(event.task_id ?? ''),
@@ -39,7 +53,7 @@ function parseEventsResponse(events: unknown[]): DashboardEvent[] {
     }));
 }
 
-function useWorkspaceData(): UseWorkspaceDataResult {
+function useWorkspaceData(enabled: boolean): UseWorkspaceDataResult {
   const [state, setState] = useState<FetchState>('idle');
   const [data, setData] = useState<WorkspaceOverviewData | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -73,14 +87,58 @@ function useWorkspaceData(): UseWorkspaceDataResult {
   }, []);
 
   const refetch = useCallback(() => {
+    if (!enabled) {
+      return;
+    }
     void fetchData();
-  }, [fetchData]);
+  }, [enabled, fetchData]);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     void fetchData();
-  }, [fetchData]);
+  }, [enabled, fetchData]);
 
   return { state, data, errorMessage, refetch };
+}
+
+function getTodayDate(): string {
+  return new Date().toISOString().split(CREATED_DATE_SEPARATOR)[0] ?? '';
+}
+
+function buildTaskSpec(input: CreateTaskInput, workspaceId: string): TaskSpec {
+  return {
+    id: `${TASK_ID_PREFIX}${crypto.randomUUID()}`,
+    workspace_id: workspaceId,
+    lane_id: input.laneId,
+    domain: DEFAULT_TASK_DOMAIN,
+    title: input.title,
+    description: input.description,
+    acceptance: [`${ACCEPTANCE_PREFIX}${input.title}`],
+    declared_scopes: [],
+    risk: input.risk,
+    type: DEFAULT_TASK_TYPE,
+    priority: input.priority,
+    created: getTodayDate(),
+  };
+}
+
+async function extractApiError(response: Response, fallbackMessage: string): Promise<string> {
+  try {
+    const body: unknown = await response.json();
+    if (isObjectRecord(body) && typeof body.error === 'string') {
+      return body.error;
+    }
+  } catch {
+    // Non-JSON response body: return fallback message.
+  }
+
+  if (response.statusText.length > 0) {
+    return `${fallbackMessage}: ${response.statusText}`;
+  }
+  return fallbackMessage;
 }
 
 /**
@@ -88,11 +146,62 @@ function useWorkspaceData(): UseWorkspaceDataResult {
  * the workspace overview with task list and lane WIP visualization.
  */
 export function WorkspaceOverviewLive() {
-  const { state, data, errorMessage, refetch } = useWorkspaceData();
+  const {
+    state: workspaceConnectionState,
+    connect,
+    disconnect,
+    isConnecting,
+  } = useWorkspaceConnection();
+  const isConnected = workspaceConnectionState.status === 'connected';
+  const { state, data, errorMessage, refetch } = useWorkspaceData(isConnected);
+
+  const handleConnect = useCallback(
+    (workspacePath: string) => {
+      void connect(workspacePath);
+    },
+    [connect],
+  );
+
+  const handleCreateTask = useCallback(
+    async (input: CreateTaskInput): Promise<void> => {
+      const workspaceInfo = workspaceConnectionState.workspaceInfo;
+      if (!workspaceInfo) {
+        throw new Error(ERROR_CREATE_TASK_NO_WORKSPACE);
+      }
+
+      const taskSpec = buildTaskSpec(input, workspaceInfo.workspaceId);
+      const response = await fetch(TASKS_API_PATH, {
+        method: 'POST',
+        headers: {
+          'Content-Type': JSON_CONTENT_TYPE,
+        },
+        body: JSON.stringify(taskSpec),
+      });
+
+      if (!response.ok) {
+        throw new Error(await extractApiError(response, ERROR_CREATE_TASK_PREFIX));
+      }
+
+      refetch();
+    },
+    [refetch, workspaceConnectionState.workspaceInfo],
+  );
+
+  if (!isConnected) {
+    return (
+      <div className="mx-auto max-w-5xl space-y-4 p-6">
+        <WorkspacePathPrompt onConnect={handleConnect} isConnecting={isConnecting} />
+        {workspaceConnectionState.status !== 'disconnected' && (
+          <WorkspaceConnectionStatus state={workspaceConnectionState} onDisconnect={disconnect} />
+        )}
+      </div>
+    );
+  }
 
   if (state === 'idle' || state === 'loading') {
     return (
-      <div className="mx-auto max-w-5xl p-6">
+      <div className="mx-auto max-w-5xl space-y-4 p-6">
+        <WorkspaceConnectionStatus state={workspaceConnectionState} onDisconnect={disconnect} />
         <div className="animate-pulse rounded-lg bg-slate-100 p-8 text-center text-sm text-slate-400">
           {LOADING_MESSAGE}
         </div>
@@ -102,7 +211,8 @@ export function WorkspaceOverviewLive() {
 
   if (state === 'error' || !data) {
     return (
-      <div className="mx-auto max-w-5xl p-6">
+      <div className="mx-auto max-w-5xl space-y-4 p-6">
+        <WorkspaceConnectionStatus state={workspaceConnectionState} onDisconnect={disconnect} />
         <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center">
           <p className="text-sm text-red-700">{errorMessage ?? ERROR_MESSAGE_PREFIX}</p>
           <button
@@ -118,11 +228,18 @@ export function WorkspaceOverviewLive() {
   }
 
   return (
-    <WorkspaceOverview
-      statusGroups={data.statusGroups}
-      laneWipEntries={data.laneWipEntries}
-      totalCount={data.totalCount}
-      statusCounts={data.statusCounts}
-    />
+    <>
+      <div className="mx-auto max-w-5xl px-6 pt-6">
+        <WorkspaceConnectionStatus state={workspaceConnectionState} onDisconnect={disconnect} />
+      </div>
+      <WorkspaceOverview
+        statusGroups={data.statusGroups}
+        laneWipEntries={data.laneWipEntries}
+        totalCount={data.totalCount}
+        statusCounts={data.statusCounts}
+        workspaceConnected={true}
+        onCreateTask={handleCreateTask}
+      />
+    </>
   );
 }
