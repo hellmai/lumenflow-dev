@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1930 — HITL Approval Hardening](wu/WU-1930.yaml) — Content: Site Comms
 - [WU-1929 — Beautiful CLI Output](wu/WU-1929.yaml) — Framework: CLI Orchestration
 - [WU-1928 — Community Landing Page](wu/WU-1928.yaml) — Content: Site Comms
 - [WU-1927 — lumenflow onboard Interactive Setup Wizard](wu/WU-1927.yaml) — Framework: CLI Orchestration
