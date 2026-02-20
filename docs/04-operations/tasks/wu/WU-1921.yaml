@@ -2,7 +2,7 @@ id: WU-1921
 title: Input Validation and Path Safety
 lane: 'Content: Site Comms'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -43,3 +43,6 @@ acceptance:
   - Install endpoint validates CWD
   - CSRF origin checking on POST endpoints
   - Request body size limits on task API
+locked: true
+completed_at: 2026-02-20T11:51:16.604Z
+completed: 2026-02-20

@@ -32,7 +32,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1921 — Input Validation and Path Safety](wu/WU-1921.yaml) — Content: Site Comms
+- [WU-1925 — App Shell Navigation and Error Boundaries](wu/WU-1925.yaml) — Content: Site Comms
 - [WU-1929 — Beautiful CLI Output](wu/WU-1929.yaml) — Framework: CLI Orchestration
 - [WU-1922 — Kernel approval_required Policy Effect](wu/WU-1922.yaml) — Framework: Core Lifecycle
 - [WU-1927 — lumenflow onboard Interactive Setup Wizard](wu/WU-1927.yaml) — Framework: CLI Orchestration
@@ -893,7 +893,7 @@ sections:
 - [WU-1919 — Pack Publishing Pipeline Fixes](wu/WU-1919.yaml)
 - [WU-1926 — Publish lumenflow CLI to npm](wu/WU-1926.yaml)
 - [WU-1918 — SSE Transport + Trace Bridge](wu/WU-1918.yaml)
-- [WU-1925 — App Shell Navigation and Error Boundaries](wu/WU-1925.yaml)
+- [WU-1921 — Input Validation and Path Safety](wu/WU-1921.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
