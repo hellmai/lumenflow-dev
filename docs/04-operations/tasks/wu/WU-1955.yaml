@@ -2,7 +2,7 @@ id: WU-1955
 title: '[WU-L] AG-UI run route + preview runtime diagnostics'
 lane: 'Operations: Runtime'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -49,3 +49,6 @@ session_id: f67e4026-76fe-49d5-bbb8-8f67bc0b5f50
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T21:53:28.492Z
+locked: true
+completed_at: 2026-02-20T22:02:36.730Z
+completed: 2026-02-20

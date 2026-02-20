@@ -21,7 +21,7 @@ phases:
     status: done
   - id: 4
     title: 'Phase 3: Management UI + AG Route'
-    status: in_progress
+    status: done
   - id: 5
     title: 'Phase 4: Parity + Docs'
     status: pending
