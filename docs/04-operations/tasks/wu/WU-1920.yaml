@@ -2,7 +2,7 @@ id: WU-1920
 title: Registry Security Hardening
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -41,3 +41,11 @@ acceptance:
   - Tarball validated on publish (manifest check, size limit, pack ID match)
   - Optimistic concurrency on registry index (etag/version check)
   - Rate limiting on publish endpoint
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1920
+claimed_at: 2026-02-20T11:22:59.959Z
+baseline_main_sha: fcf6d61bb894b348ec47135cbb0ddd730f545b1e
+session_id: f5427206-b161-4d60-93f1-a6595c11d9f0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:22:59.967Z

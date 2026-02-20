@@ -1792,3 +1792,4 @@
 {"type":"claim","wuId":"WU-1931","timestamp":"2026-02-20T11:01:45.269Z","lane":"Content: Site Comms","title":"Docs polish: v3.0.0 references, lanes, upgrade guide"}
 {"type":"complete","wuId":"WU-1931","timestamp":"2026-02-20T11:07:11.887Z"}
 {"type":"claim","wuId":"WU-1932","lane":"Content: Site Comms","title":"Licensing alignment + docs marketing polish","timestamp":"2026-02-20T11:14:10.482Z"}
+{"type":"claim","wuId":"WU-1920","lane":"Content: Site Comms","title":"Registry Security Hardening","timestamp":"2026-02-20T11:23:00.013Z"}
