@@ -60,16 +60,21 @@ interface GlobalNavProps {
   readonly currentPath: string;
 }
 
+function getInitialDark(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  return localStorage.getItem(THEME_STORAGE_KEY) === 'dark';
+}
+
 export function GlobalNav({ currentPath }: GlobalNavProps) {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(getInitialDark);
 
   useEffect(() => {
-    const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored === 'dark') {
-      setIsDark(true);
+    if (isDark) {
       document.documentElement.classList.add('dark');
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleToggleTheme() {
     const next = !isDark;

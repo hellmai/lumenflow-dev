@@ -12,12 +12,12 @@ function ThrowingChild({ shouldThrow }: Readonly<{ shouldThrow: boolean }>) {
 
 describe('RouteErrorBoundary', () => {
   // Suppress console.error from React error boundary logs during tests
-  const originalError = console.error;
+  const originalError = console.error; // eslint-disable-line no-console
   beforeEach(() => {
-    console.error = vi.fn();
+    console.error = vi.fn(); // eslint-disable-line no-console
   });
   afterEach(() => {
-    console.error = originalError;
+    console.error = originalError; // eslint-disable-line no-console
   });
 
   it('renders children when no error is thrown', () => {

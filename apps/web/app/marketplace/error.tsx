@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 interface ErrorPageProps {
@@ -9,10 +8,6 @@ interface ErrorPageProps {
 }
 
 export default function MarketplaceError({ error, reset }: ErrorPageProps) {
-  useEffect(() => {
-    console.error('Marketplace error boundary caught:', error);
-  }, [error]);
-
   return (
     <main className="flex min-h-[60vh] flex-col items-center justify-center gap-4 p-8 text-center">
       <AlertTriangle className="h-10 w-10 text-destructive" />

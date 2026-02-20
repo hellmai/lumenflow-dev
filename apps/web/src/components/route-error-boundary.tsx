@@ -50,6 +50,6 @@ export class RouteErrorBoundary extends Component<
       );
     }
 
-    return this.props.children;
+    return <>{this.props.children}</>;
   }
 }
