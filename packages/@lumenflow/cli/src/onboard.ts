@@ -22,7 +22,9 @@ import * as path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { createWUParser } from '@lumenflow/core';
 import { WORKSPACE_FILE_NAME } from '@lumenflow/kernel';
+import YAML from 'yaml';
 import { buildWorkspaceConfig, generateWorkspaceYaml } from './workspace-init.js';
+import { DEFAULT_REGISTRY_URL, installPackFromRegistry, type FetchFn } from './pack-install.js';
 import { runCLI } from './cli-entry-point.js';
 
 // --- Constants ---
@@ -31,6 +33,7 @@ export const LOG_PREFIX = '[onboard]';
 
 const NODE_BINARY = 'node';
 const GIT_BINARY = 'git';
+const DEFAULT_DOMAIN_PACK_VERSION = 'latest';
 
 /** Domain pack IDs mapped to human-readable descriptions */
 export const DOMAIN_CHOICES = [
@@ -191,7 +194,6 @@ export async function generateWorkspaceForDomain(
     };
   }
 
-  const packs = getPacksForDomain(options.domain);
   const lanes = getLanesForDomain(options.domain);
   const projectId = toKebabCase(options.projectName);
 
@@ -204,13 +206,9 @@ export async function generateWorkspaceForDomain(
     cloudConnect: false,
   });
 
-  // Overlay packs onto the config
-  config.packs = packs.map((packId) => ({
-    id: packId,
-    version: 'latest',
-    integrity: '',
-    source: 'registry' as const,
-  }));
+  // Installable packs are added in AC4 via installDomainPack.
+  // Keep generated workspace valid and placeholder-free.
+  config.packs = [];
 
   // Update ID and namespace to match project name
   config.id = projectId;
@@ -237,6 +235,8 @@ export async function generateWorkspaceForDomain(
 export interface InstallDomainPackOptions {
   domain: DomainChoice;
   skipInstall?: boolean;
+  registryUrl?: string;
+  fetchFn?: FetchFn;
 }
 
 export interface InstallDomainPackResult {
@@ -244,6 +244,8 @@ export interface InstallDomainPackResult {
   skipped: boolean;
   reason?: string;
   error?: string;
+  version?: string;
+  integrity?: string;
 }
 
 /**
@@ -280,13 +282,47 @@ export async function installDomainPack(
     };
   }
 
-  // In production, this would call installPack from pack-install.ts.
-  // For now, the workspace.yaml already has the pack reference from generateWorkspaceForDomain.
-  // Actual registry resolution requires WU-1926 (npm publish) to be complete.
+  const registryUrl = options.registryUrl ?? DEFAULT_REGISTRY_URL;
+  const installResult = await installPackFromRegistry({
+    workspaceRoot: targetDir,
+    packId,
+    version: DEFAULT_DOMAIN_PACK_VERSION,
+    registryUrl,
+    fetchFn: options.fetchFn ?? globalThis.fetch,
+  });
+
+  if (!installResult.success) {
+    return {
+      packId,
+      skipped: true,
+      error: installResult.error,
+      reason:
+        `Registry install unavailable for "${packId}" (${installResult.error}). ` +
+        `Continue now and retry later with: pnpm pack:install --id ${packId} --source registry --version ${DEFAULT_DOMAIN_PACK_VERSION}`,
+    };
+  }
+
+  // Extract the resolved version/integrity from workspace.yaml after install.
+  let installedVersion: string | undefined;
+  let installedIntegrity: string | undefined;
+  try {
+    const workspacePath = path.join(targetDir, WORKSPACE_FILE_NAME);
+    const workspaceRaw = fs.readFileSync(workspacePath, 'utf-8');
+    const parsed = YAML.parse(workspaceRaw) as {
+      packs?: Array<{ id?: string; version?: string; integrity?: string }>;
+    };
+    const installedPack = (parsed.packs ?? []).find((entry) => entry.id === packId);
+    installedVersion = installedPack?.version;
+    installedIntegrity = installedPack?.integrity;
+  } catch {
+    // Best-effort enrichment only; install already succeeded.
+  }
+
   return {
     packId,
-    skipped: true,
-    reason: `Pack "${packId}" referenced in workspace.yaml. Run "pnpm pack:install --id ${packId} --source registry --version latest" to install from registry.`,
+    skipped: false,
+    version: installedVersion,
+    integrity: installedIntegrity ?? installResult.integrity,
   };
 }
 
@@ -345,6 +381,8 @@ export interface OnboardOptions {
   force?: boolean;
   skipPackInstall?: boolean;
   skipDashboard?: boolean;
+  registryUrl?: string;
+  fetchFn?: FetchFn;
 }
 
 export interface OnboardResult {
@@ -377,6 +415,8 @@ export async function runOnboard(options: OnboardOptions): Promise<OnboardResult
     force = false,
     skipPackInstall = false,
     skipDashboard = false,
+    registryUrl = DEFAULT_REGISTRY_URL,
+    fetchFn = globalThis.fetch,
   } = options;
 
   const errors: string[] = [];
@@ -427,6 +467,8 @@ export async function runOnboard(options: OnboardOptions): Promise<OnboardResult
     const installResult = await installDomainPack(targetDir, {
       domain: selectedDomain,
       skipInstall: skipPackInstall,
+      registryUrl,
+      fetchFn,
     });
     result.packInstalled = !installResult.skipped;
   } else {
@@ -649,6 +691,11 @@ export async function main(): Promise<void> {
 
     console.log(`${LOG_PREFIX} Workspace created at ${targetDir}/${WORKSPACE_FILE_NAME}`);
     console.log(`${LOG_PREFIX} Domain: ${domain}`);
+    if (!skipPackInstall && result.packInstalled === false) {
+      console.warn(
+        `${LOG_PREFIX} Warning: Pack install did not complete. Retry with: pnpm pack:install --id ${domain} --source registry --version ${DEFAULT_DOMAIN_PACK_VERSION}`,
+      );
+    }
     console.log(`${LOG_PREFIX} Next: run "lumenflow init" to scaffold agent config files`);
   } else {
     // Interactive mode with @clack/prompts

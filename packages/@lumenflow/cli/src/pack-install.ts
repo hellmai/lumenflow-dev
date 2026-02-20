@@ -42,7 +42,9 @@ const PACK_SOURCE_VALUES = ['local', 'git', 'registry'] as const;
 type PackSource = (typeof PACK_SOURCE_VALUES)[number];
 
 const UTF8 = 'utf-8' as const;
-const DEFAULT_REGISTRY_URL = 'https://registry.lumenflow.dev';
+export const DEFAULT_REGISTRY_URL = 'https://registry.lumenflow.dev';
+const REGISTRY_PACKS_API_PATH = '/api/registry/packs';
+const SHA256_INTEGRITY_PATTERN = /^sha256:[a-f0-9]{64}$/;
 
 // --- FetchFn port (WU-1875) ---
 
@@ -82,10 +84,27 @@ export interface RegistryInstallOptions {
   version: string;
   /** Registry base URL (e.g., https://registry.lumenflow.dev). */
   registryUrl: string;
-  /** Expected SHA-256 integrity in "sha256:<hex>" format. */
-  integrity: string;
+  /** Expected SHA-256 integrity in "sha256:<hex>" format (optional: auto-resolve from registry). */
+  integrity?: string;
   /** Injectable fetch function for testability. */
   fetchFn: FetchFn;
+}
+
+interface RegistryPackVersion {
+  version: string;
+  integrity: string;
+}
+
+interface ParsedPackDetail {
+  latestVersion?: string;
+  versions: RegistryPackVersion[];
+}
+
+interface ResolveRegistryIntegrityResult {
+  success: boolean;
+  error?: string;
+  resolvedVersion?: string;
+  resolvedIntegrity?: string;
 }
 
 // --- Workspace file I/O ---
@@ -251,7 +270,173 @@ export async function installPack(options: InstallPackOptions): Promise<InstallP
  */
 function buildRegistryTarballUrl(registryUrl: string, packId: string, version: string): string {
   const base = registryUrl.replace(/\/+$/, '');
-  return `${base}/api/registry/packs/${encodeURIComponent(packId)}/versions/${encodeURIComponent(version)}/tarball`;
+  return `${base}${REGISTRY_PACKS_API_PATH}/${encodeURIComponent(packId)}/versions/${encodeURIComponent(version)}/tarball`;
+}
+
+function buildRegistryPackDetailUrl(registryUrl: string, packId: string): string {
+  const base = registryUrl.replace(/\/+$/, '');
+  return `${base}${REGISTRY_PACKS_API_PATH}/${encodeURIComponent(packId)}`;
+}
+
+function isLocalRegistryHost(hostname: string): boolean {
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
+}
+
+export function validateRegistryUrl(registryUrl: string): {
+  valid: boolean;
+  normalizedUrl?: string;
+  error?: string;
+} {
+  let parsed: URL;
+  try {
+    parsed = new URL(registryUrl);
+  } catch {
+    return { valid: false, error: `Invalid --registry-url: "${registryUrl}"` };
+  }
+
+  if (parsed.username || parsed.password) {
+    return {
+      valid: false,
+      error: 'Registry URL must not include username/password credentials',
+    };
+  }
+
+  const usesHttps = parsed.protocol === 'https:';
+  const allowsInsecureLocalhost =
+    parsed.protocol === 'http:' && isLocalRegistryHost(parsed.hostname);
+
+  if (!usesHttps && !allowsInsecureLocalhost) {
+    return {
+      valid: false,
+      error: 'Registry URL must use HTTPS unless host is localhost, 127.0.0.1, or ::1',
+    };
+  }
+
+  return { valid: true, normalizedUrl: parsed.toString().replace(/\/+$/, '') };
+}
+
+function parsePackDetailResponse(data: unknown): ParsedPackDetail | null {
+  if (!data || typeof data !== 'object') {
+    return null;
+  }
+
+  const maybeRecord = data as Record<string, unknown>;
+  const packRaw =
+    'pack' in maybeRecord && maybeRecord.pack && typeof maybeRecord.pack === 'object'
+      ? (maybeRecord.pack as Record<string, unknown>)
+      : maybeRecord;
+
+  const latestVersion =
+    typeof packRaw.latestVersion === 'string' ? packRaw.latestVersion : undefined;
+  const versionsRaw = packRaw.versions;
+
+  if (!Array.isArray(versionsRaw)) {
+    return null;
+  }
+
+  const versions: RegistryPackVersion[] = [];
+  for (const entry of versionsRaw) {
+    if (!entry || typeof entry !== 'object') {
+      continue;
+    }
+    const maybeVersion = (entry as Record<string, unknown>).version;
+    const maybeIntegrity = (entry as Record<string, unknown>).integrity;
+    if (typeof maybeVersion === 'string' && typeof maybeIntegrity === 'string') {
+      versions.push({ version: maybeVersion, integrity: maybeIntegrity });
+    }
+  }
+
+  return { latestVersion, versions };
+}
+
+export async function resolveRegistryIntegrity(options: {
+  packId: string;
+  version: string;
+  registryUrl: string;
+  fetchFn: FetchFn;
+}): Promise<ResolveRegistryIntegrityResult> {
+  const registryValidation = validateRegistryUrl(options.registryUrl);
+  if (!registryValidation.valid || !registryValidation.normalizedUrl) {
+    return {
+      success: false,
+      error: registryValidation.error ?? `Invalid registry URL: ${options.registryUrl}`,
+    };
+  }
+
+  const detailUrl = buildRegistryPackDetailUrl(registryValidation.normalizedUrl, options.packId);
+
+  let detailResponse: Response;
+  try {
+    detailResponse = await options.fetchFn(detailUrl);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return {
+      success: false,
+      error: `Failed to fetch registry metadata for "${options.packId}": ${message}`,
+    };
+  }
+
+  if (!detailResponse.ok) {
+    const body = await detailResponse.text().catch(() => 'No response body');
+    return {
+      success: false,
+      error:
+        `Registry metadata lookup returned ${String(detailResponse.status)} ` +
+        `${detailResponse.statusText} for "${options.packId}": ${body}`,
+    };
+  }
+
+  let detailJson: unknown;
+  try {
+    detailJson = await detailResponse.json();
+  } catch {
+    return {
+      success: false,
+      error: `Failed to parse registry metadata JSON for "${options.packId}"`,
+    };
+  }
+
+  const parsedDetail = parsePackDetailResponse(detailJson);
+  if (!parsedDetail || parsedDetail.versions.length === 0) {
+    return {
+      success: false,
+      error: `Registry metadata for "${options.packId}" did not include any versions`,
+    };
+  }
+
+  const targetVersion =
+    options.version === 'latest'
+      ? (parsedDetail.latestVersion ??
+        parsedDetail.versions[parsedDetail.versions.length - 1]?.version)
+      : options.version;
+
+  if (!targetVersion) {
+    return {
+      success: false,
+      error: `Registry metadata for "${options.packId}" is missing latestVersion`,
+    };
+  }
+
+  const versionEntry = parsedDetail.versions.find((entry) => entry.version === targetVersion);
+  if (!versionEntry) {
+    return {
+      success: false,
+      error: `Version "${targetVersion}" not found for pack "${options.packId}"`,
+    };
+  }
+
+  if (!SHA256_INTEGRITY_PATTERN.test(versionEntry.integrity)) {
+    return {
+      success: false,
+      error: `Registry returned invalid integrity for "${options.packId}@${targetVersion}"`,
+    };
+  }
+
+  return {
+    success: true,
+    resolvedVersion: versionEntry.version,
+    resolvedIntegrity: versionEntry.integrity,
+  };
 }
 
 /**
@@ -304,8 +489,51 @@ export async function installPackFromRegistry(
 ): Promise<InstallPackResult> {
   const { workspaceRoot, packId, version, registryUrl, integrity, fetchFn } = options;
 
+  const registryValidation = validateRegistryUrl(registryUrl);
+  if (!registryValidation.valid || !registryValidation.normalizedUrl) {
+    return {
+      success: false,
+      error: registryValidation.error ?? `Invalid registry URL: ${registryUrl}`,
+    };
+  }
+  const normalizedRegistryUrl = registryValidation.normalizedUrl;
+
+  let resolvedVersion = version;
+  let resolvedIntegrity = integrity?.trim() ?? '';
+
+  if (resolvedIntegrity.length > 0 && !SHA256_INTEGRITY_PATTERN.test(resolvedIntegrity)) {
+    return {
+      success: false,
+      error: `Invalid integrity format for "${packId}@${resolvedVersion}". Expected sha256:<hex>`,
+    };
+  }
+
+  if (resolvedIntegrity.length === 0) {
+    const integrityResult = await resolveRegistryIntegrity({
+      packId,
+      version: resolvedVersion,
+      registryUrl: normalizedRegistryUrl,
+      fetchFn,
+    });
+
+    if (
+      !integrityResult.success ||
+      !integrityResult.resolvedIntegrity ||
+      !integrityResult.resolvedVersion
+    ) {
+      return {
+        success: false,
+        error:
+          integrityResult.error ?? `Failed to resolve integrity for "${packId}@${resolvedVersion}"`,
+      };
+    }
+
+    resolvedVersion = integrityResult.resolvedVersion;
+    resolvedIntegrity = integrityResult.resolvedIntegrity;
+  }
+
   // 1. Fetch tarball from registry
-  const tarballUrl = buildRegistryTarballUrl(registryUrl, packId, version);
+  const tarballUrl = buildRegistryTarballUrl(normalizedRegistryUrl, packId, resolvedVersion);
   let response: Response;
   try {
     response = await fetchFn(tarballUrl);
@@ -313,7 +541,7 @@ export async function installPackFromRegistry(
     const message = err instanceof Error ? err.message : String(err);
     return {
       success: false,
-      error: `Registry fetch failed for "${packId}@${version}": ${message}`,
+      error: `Registry fetch failed for "${packId}@${resolvedVersion}": ${message}`,
     };
   }
 
@@ -321,7 +549,9 @@ export async function installPackFromRegistry(
     const body = await response.text().catch(() => 'No response body');
     return {
       success: false,
-      error: `Registry returned ${String(response.status)} ${response.statusText} for "${packId}@${version}": ${body}`,
+      error:
+        `Registry returned ${String(response.status)} ${response.statusText} ` +
+        `for "${packId}@${resolvedVersion}": ${body}`,
     };
   }
 
@@ -337,19 +567,19 @@ export async function installPackFromRegistry(
     };
   }
 
-  const integrityCheck = verifySha256Integrity(tarballBuffer, integrity);
+  const integrityCheck = verifySha256Integrity(tarballBuffer, resolvedIntegrity);
   if (!integrityCheck.valid) {
     return {
       success: false,
       error:
-        `Integrity mismatch for "${packId}@${version}". ` +
+        `Integrity mismatch for "${packId}@${resolvedVersion}". ` +
         `Expected: ${integrityCheck.expected}, Got: ${integrityCheck.actual}`,
     };
   }
 
   // 3. Extract tarball to temp directory
   const tempBase = join(tmpdir(), `lumenflow-registry-install-${packId}-${Date.now()}`);
-  const tarballPath = join(tempBase, `${packId}-${version}.tar.gz`);
+  const tarballPath = join(tempBase, `${packId}-${resolvedVersion}.tar.gz`);
   const extractDir = join(tempBase, 'pack');
 
   try {
@@ -360,7 +590,7 @@ export async function installPackFromRegistry(
     const message = err instanceof Error ? err.message : String(err);
     return {
       success: false,
-      error: `Failed to extract tarball for "${packId}@${version}": ${message}`,
+      error: `Failed to extract tarball for "${packId}@${resolvedVersion}": ${message}`,
     };
   }
 
@@ -369,8 +599,8 @@ export async function installPackFromRegistry(
     workspaceRoot,
     packId,
     source: 'registry',
-    version,
-    registryUrl,
+    version: resolvedVersion,
+    registryUrl: normalizedRegistryUrl,
     packRoot: extractDir,
   });
 }
@@ -418,8 +648,7 @@ const PACK_INSTALL_OPTIONS = {
   integrity: {
     name: 'integrity',
     flags: '--integrity <hash>',
-    description:
-      'Expected SHA-256 integrity hash in "sha256:<hex>" format (required for source: registry)',
+    description: 'Expected SHA-256 integrity hash in "sha256:<hex>" format (optional)',
   },
 };
 
@@ -491,9 +720,9 @@ export async function main(): Promise<void> {
     // Registry source: fetch tarball from registry API (WU-1875)
     const resolvedRegistryUrl = registryUrl ?? DEFAULT_REGISTRY_URL;
     const integrityFlag = opts.integrity as string | undefined;
-
-    if (!integrityFlag) {
-      console.error(`${LOG_PREFIX} Error: --integrity is required when --source is "registry"`);
+    const registryValidation = validateRegistryUrl(resolvedRegistryUrl);
+    if (!registryValidation.valid || !registryValidation.normalizedUrl) {
+      console.error(`${LOG_PREFIX} Error: ${registryValidation.error}`);
       process.exit(1);
     }
 
@@ -501,7 +730,7 @@ export async function main(): Promise<void> {
       workspaceRoot,
       packId,
       version,
-      registryUrl: resolvedRegistryUrl,
+      registryUrl: registryValidation.normalizedUrl,
       integrity: integrityFlag,
       fetchFn: globalThis.fetch,
     });

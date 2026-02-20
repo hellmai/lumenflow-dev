@@ -154,6 +154,76 @@ describe('pack:install --source registry (WU-1875)', () => {
     return vi.fn().mockRejectedValue(new Error(errorMessage));
   }
 
+  /**
+   * Helper: create a FetchFn that returns pack metadata and tarball for auto-integrity resolution.
+   */
+  function createMetadataAndTarballFetchFn(
+    options: {
+      packId: string;
+      version: string;
+      integrity: string;
+      tarballBuffer: Buffer;
+      registryUrl?: string;
+    } & {
+      detailStatus?: number;
+      detailBody?: unknown;
+    },
+  ): FetchFn {
+    const registryUrl = options.registryUrl ?? 'https://registry.lumenflow.dev';
+    const detailUrl = `${registryUrl}/api/registry/packs/${encodeURIComponent(options.packId)}`;
+    const tarballUrl = `${registryUrl}/api/registry/packs/${encodeURIComponent(options.packId)}/versions/${encodeURIComponent(options.version)}/tarball`;
+
+    const detailBody =
+      options.detailBody ??
+      ({
+        success: true,
+        pack: {
+          id: options.packId,
+          latestVersion: options.version,
+          versions: [{ version: options.version, integrity: options.integrity }],
+        },
+      } as const);
+
+    return vi.fn(async (url: string) => {
+      if (url === detailUrl) {
+        const detailStatus = options.detailStatus ?? 200;
+        return {
+          ok: detailStatus >= 200 && detailStatus < 300,
+          status: detailStatus,
+          statusText: detailStatus === 200 ? 'OK' : 'Error',
+          json: () => Promise.resolve(detailBody),
+          text: () => Promise.resolve(JSON.stringify(detailBody)),
+        } as unknown as Response;
+      }
+
+      if (url === tarballUrl) {
+        return {
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          headers: new Headers({
+            'content-type': 'application/gzip',
+          }),
+          arrayBuffer: () =>
+            Promise.resolve(
+              options.tarballBuffer.buffer.slice(
+                options.tarballBuffer.byteOffset,
+                options.tarballBuffer.byteOffset + options.tarballBuffer.byteLength,
+              ),
+            ),
+          text: () => Promise.resolve('OK'),
+        } as unknown as Response;
+      }
+
+      return {
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+        text: () => Promise.resolve(`Unexpected URL: ${url}`),
+      } as unknown as Response;
+    }) as FetchFn;
+  }
+
   // --- AC1: pack:install --source registry fetches tarball from registry API endpoint ---
 
   describe('AC1: fetches tarball from registry API endpoint', () => {
@@ -309,6 +379,122 @@ describe('pack:install --source registry (WU-1875)', () => {
       const mod = await import('../pack-install.js');
       // installPackFromRegistry should exist
       expect(typeof mod.installPackFromRegistry).toBe('function');
+    });
+  });
+
+  // --- WU-1947: Auto integrity resolution + registry URL validation ---
+
+  describe('WU-1947: registry integrity auto-resolve + URL validation', () => {
+    it('should auto-resolve integrity when --integrity is omitted', async () => {
+      const { installPackFromRegistry } = await import('../pack-install.js');
+
+      const packDir = join(tempDir, 'source-pack');
+      writeValidPack(packDir);
+      writeWorkspaceYaml(tempDir);
+
+      const { buffer, sha256 } = createPackTarball(packDir);
+      const mockFetch = createMetadataAndTarballFetchFn({
+        packId: 'test-pack',
+        version: '1.0.0',
+        integrity: `sha256:${sha256}`,
+        tarballBuffer: buffer,
+      });
+
+      const result = await installPackFromRegistry({
+        workspaceRoot: tempDir,
+        packId: 'test-pack',
+        version: '1.0.0',
+        registryUrl: 'https://registry.lumenflow.dev',
+        fetchFn: mockFetch,
+      });
+
+      expect(result.success).toBe(true);
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+      expect((mockFetch as ReturnType<typeof vi.fn>).mock.calls[0][0]).toContain(
+        '/api/registry/packs/test-pack',
+      );
+      expect((mockFetch as ReturnType<typeof vi.fn>).mock.calls[1][0]).toContain(
+        '/api/registry/packs/test-pack/versions/1.0.0/tarball',
+      );
+    });
+
+    it('should fail with a clear error when requested version is not found in registry metadata', async () => {
+      const { installPackFromRegistry } = await import('../pack-install.js');
+
+      const packDir = join(tempDir, 'source-pack');
+      writeValidPack(packDir);
+      writeWorkspaceYaml(tempDir);
+
+      const { buffer, sha256 } = createPackTarball(packDir);
+      const mockFetch = createMetadataAndTarballFetchFn({
+        packId: 'test-pack',
+        version: '2.0.0',
+        integrity: `sha256:${sha256}`,
+        tarballBuffer: buffer,
+        detailBody: {
+          success: true,
+          pack: {
+            id: 'test-pack',
+            latestVersion: '1.0.0',
+            versions: [{ version: '1.0.0', integrity: `sha256:${sha256}` }],
+          },
+        },
+      });
+
+      const result = await installPackFromRegistry({
+        workspaceRoot: tempDir,
+        packId: 'test-pack',
+        version: '2.0.0',
+        registryUrl: 'https://registry.lumenflow.dev',
+        fetchFn: mockFetch,
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toMatch(/version.*2\.0\.0/i);
+    });
+
+    it('should honor explicit integrity without metadata fetch passthrough', async () => {
+      const { installPackFromRegistry } = await import('../pack-install.js');
+
+      const packDir = join(tempDir, 'source-pack');
+      writeValidPack(packDir);
+      writeWorkspaceYaml(tempDir);
+
+      const { buffer, sha256 } = createPackTarball(packDir);
+      const mockFetch = createMockFetchFn(buffer, sha256);
+
+      const result = await installPackFromRegistry({
+        workspaceRoot: tempDir,
+        packId: 'test-pack',
+        version: '1.0.0',
+        registryUrl: 'https://registry.lumenflow.dev',
+        integrity: `sha256:${sha256}`,
+        fetchFn: mockFetch,
+      });
+
+      expect(result.success).toBe(true);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect((mockFetch as ReturnType<typeof vi.fn>).mock.calls[0][0]).toContain('/tarball');
+    });
+
+    it('should reject non-HTTPS registry URLs unless host is localhost', async () => {
+      const { installPackFromRegistry } = await import('../pack-install.js');
+
+      writeWorkspaceYaml(tempDir);
+
+      const mockFetch = createFailingFetchFn('should not be called');
+      const result = await installPackFromRegistry({
+        workspaceRoot: tempDir,
+        packId: 'test-pack',
+        version: '1.0.0',
+        registryUrl: 'http://registry.evil.example',
+        integrity: 'sha256:' + 'a'.repeat(64),
+        fetchFn: mockFetch,
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toMatch(/https/i);
+      expect(mockFetch).not.toHaveBeenCalled();
     });
   });
 
