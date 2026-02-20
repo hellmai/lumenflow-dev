@@ -9,7 +9,6 @@ code_paths:
   - apps/web/src/components/workspace-connector.tsx
   - apps/web/src/components/workspace-overview.tsx
   - apps/web/src/components/workspace-overview-live.tsx
-  - apps/web/app/layout.tsx
   - apps/web/app/api/workspace
 tests:
   manual:
