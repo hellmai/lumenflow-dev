@@ -7,7 +7,7 @@ description: 'User-facing surfaces initiative: real-time web dashboard for agent
   pack who want to see agents working and trust the automation, (2) pack authors/consumers who want
   to teach their AI new domains. Differentiator vs OpenClaw: governance you can see — scope
   intersection, policy decisions, evidence receipts rendered live in the browser.'
-status: in_progress
+status: done
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-18
@@ -36,7 +36,7 @@ phases:
     status: done
   - id: 8
     title: Friction-Free DX and Beautiful UX
-    status: in_progress
+    status: done
 success_metrics:
   - Web dashboard renders live task events within 2s of EventStore append
   - AG-UI RunAgent endpoint passes CopilotKit compatibility test
