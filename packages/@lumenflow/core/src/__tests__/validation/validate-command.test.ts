@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file validate-command.test.ts
  * @description Tests for command validation with copy-paste fix guidance

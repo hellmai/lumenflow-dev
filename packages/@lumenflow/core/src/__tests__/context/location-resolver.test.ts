@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file location-resolver.test.ts
  * @description Tests for WU location resolution (main vs worktree detection)

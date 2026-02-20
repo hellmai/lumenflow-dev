@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file worktree-guard.test.mjs
  * @description Unit tests for worktree guard (WU-1396)

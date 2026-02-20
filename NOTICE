@@ -1,0 +1,17 @@
+LumenFlow
+Copyright (C) 2026 HellmAI (Hellmai Ltd)
+
+This product uses a dual-license model:
+
+  Kernel, runtime, packs, surfaces, and workflow packages:
+    GNU Affero General Public License v3.0 only (AGPL-3.0-only)
+    See LICENSE in the repository root.
+
+  Control Plane SDK (@lumenflow/control-plane-sdk):
+    Apache License 2.0 (Apache-2.0)
+    See packages/@lumenflow/control-plane-sdk/LICENSE.
+
+Each source file includes an SPDX-License-Identifier header indicating
+which license applies.
+
+For commercial licensing inquiries, contact tom@hellm.ai.

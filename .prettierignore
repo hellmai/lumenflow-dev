@@ -33,8 +33,9 @@ node_modules/
 # Patch files (no parser available)
 *.patch
 
-# LICENSE files (no parser available)
+# LICENSE/NOTICE files (no parser available)
 **/LICENSE
+NOTICE
 
 # Shell scripts
 *.sh

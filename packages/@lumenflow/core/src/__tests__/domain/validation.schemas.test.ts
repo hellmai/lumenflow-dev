@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file validation.schemas.test.ts
  * @description Tests for validation-related Zod schemas
