@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { LayoutDashboard, Package, Store, ShieldCheck, Moon, Sun } from 'lucide-react';
+import { LayoutDashboard, Package, Store, ShieldCheck, Users, Moon, Sun } from 'lucide-react';
 
 const THEME_STORAGE_KEY = 'lumenflow-theme';
 
@@ -31,6 +31,12 @@ const NAV_ITEMS: readonly NavItem[] = [
     href: '/marketplace',
     icon: <Store size={18} />,
     matchPrefixes: ['/marketplace'],
+  },
+  {
+    label: 'Community',
+    href: '/community',
+    icon: <Users size={18} />,
+    matchPrefixes: ['/community'],
   },
   {
     label: 'Evidence',
