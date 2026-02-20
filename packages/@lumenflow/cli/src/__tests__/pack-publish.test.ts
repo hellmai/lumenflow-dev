@@ -13,7 +13,7 @@
  * WU-1919 acceptance criteria:
  * AC1: pack:publish sends POST multipart/form-data to /api/registry/packs
  * AC5: DEFAULT_REGISTRY_URL consistent across all files
- * AC6: All 6 pack CLI commands in public manifest
+ * AC6: All 7 pack CLI commands in public manifest
  *
  * TDD: These tests are written BEFORE the implementation.
  */
@@ -493,11 +493,12 @@ describe('pack:publish command', () => {
 });
 
 describe('public manifest pack commands (WU-1919: AC6)', () => {
-  it('should include all 6 pack CLI commands in the public manifest', async () => {
+  it('should include all 7 pack CLI commands in the public manifest', async () => {
     const { getPublicCommandNames } = await import('../public-manifest.js');
     const names = getPublicCommandNames();
 
     const expectedPackCommands = [
+      'pack:author',
       'pack:scaffold',
       'pack:validate',
       'pack:hash',
@@ -516,9 +517,10 @@ describe('public manifest pack commands (WU-1919: AC6)', () => {
     const manifest = getPublicManifest();
 
     const packCommands = manifest.filter((cmd) => cmd.name.startsWith('pack:'));
-    expect(packCommands.length).toBe(6);
+    expect(packCommands.length).toBe(7);
 
     const expectedBinMap: Record<string, string> = {
+      'pack:author': 'pack-author',
       'pack:scaffold': 'pack-scaffold',
       'pack:validate': 'pack-validate',
       'pack:hash': 'pack-hash',

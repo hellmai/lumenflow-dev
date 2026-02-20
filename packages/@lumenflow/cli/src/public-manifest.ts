@@ -833,6 +833,13 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
   // Packs - Pack authoring and management
   // ============================================================================
   {
+    name: 'pack:author',
+    binName: 'pack-author',
+    binPath: './dist/pack-author.js',
+    description: 'Author a secure domain pack from templates',
+    category: COMMAND_CATEGORIES.PACKS,
+  },
+  {
     name: 'pack:scaffold',
     binName: 'pack-scaffold',
     binPath: './dist/pack-scaffold.js',

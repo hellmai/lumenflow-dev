@@ -84,6 +84,7 @@ describe('pack:validate command', () => {
       expect(result.manifest.status).toBe('pass');
       expect(result.importBoundaries.status).toBe('pass');
       expect(result.toolEntries.status).toBe('pass');
+      expect(result.securityLint.status).toBe('pass');
       expect(result.integrity.status).toBe('pass');
     });
 
@@ -214,6 +215,188 @@ describe('pack:validate command', () => {
       expect(result.integrity.hash).toHaveLength(64);
     });
 
+    it('should fail security lint for wildcard write scope patterns', async () => {
+      const { validatePack } = await import('../pack-validate.js');
+
+      const packDir = join(tempDir, 'unsafe-wildcard-write');
+      mkdirSync(join(packDir, 'tools'), { recursive: true });
+      writeFileSync(
+        join(packDir, 'manifest.yaml'),
+        [
+          'id: unsafe-wildcard-write',
+          'version: 1.0.0',
+          'task_types:',
+          '  - task',
+          'tools:',
+          '  - name: fs:write',
+          '    entry: tools/fs-write.ts',
+          '    permission: write',
+          '    required_scopes:',
+          '      - type: path',
+          '        pattern: "**"',
+          '        access: write',
+          'policies:',
+          '  - id: workspace.default',
+          '    trigger: on_tool_request',
+          '    decision: allow',
+          'evidence_types: []',
+          'state_aliases: {}',
+          'lane_templates: []',
+        ].join('\n'),
+        'utf-8',
+      );
+      writeFileSync(
+        join(packDir, 'tools', 'fs-write.ts'),
+        ['import { writeFile } from "node:fs/promises";', 'export const tool = writeFile;'].join(
+          '\n',
+        ),
+        'utf-8',
+      );
+
+      const result = await validatePack({ packRoot: packDir });
+
+      expect(result.securityLint.status).toBe('fail');
+      expect(result.securityLint.error).toContain('wildcard');
+    });
+
+    it('should fail security lint for read permission tools with write scopes', async () => {
+      const { validatePack } = await import('../pack-validate.js');
+
+      const packDir = join(tempDir, 'permission-scope-mismatch-read');
+      mkdirSync(join(packDir, 'tools'), { recursive: true });
+      writeFileSync(
+        join(packDir, 'manifest.yaml'),
+        [
+          'id: permission-scope-mismatch-read',
+          'version: 1.0.0',
+          'task_types:',
+          '  - task',
+          'tools:',
+          '  - name: fs:read-labeled-write',
+          '    entry: tools/fs-read.ts',
+          '    permission: read',
+          '    required_scopes:',
+          '      - type: path',
+          '        pattern: "docs/**"',
+          '        access: write',
+          'policies:',
+          '  - id: workspace.default',
+          '    trigger: on_tool_request',
+          '    decision: allow',
+          'evidence_types: []',
+          'state_aliases: {}',
+          'lane_templates: []',
+        ].join('\n'),
+        'utf-8',
+      );
+      writeFileSync(
+        join(packDir, 'tools', 'fs-read.ts'),
+        ['import { readFile } from "node:fs/promises";', 'export const tool = readFile;'].join(
+          '\n',
+        ),
+        'utf-8',
+      );
+
+      const result = await validatePack({ packRoot: packDir });
+
+      expect(result.securityLint.status).toBe('fail');
+      expect(result.securityLint.error).toContain('permission/scope mismatch');
+    });
+
+    it('should fail security lint for write permission tools without write scopes', async () => {
+      const { validatePack } = await import('../pack-validate.js');
+
+      const packDir = join(tempDir, 'permission-scope-mismatch-write');
+      mkdirSync(join(packDir, 'tools'), { recursive: true });
+      writeFileSync(
+        join(packDir, 'manifest.yaml'),
+        [
+          'id: permission-scope-mismatch-write',
+          'version: 1.0.0',
+          'task_types:',
+          '  - task',
+          'tools:',
+          '  - name: fs:write-labeled-read',
+          '    entry: tools/fs-write.ts',
+          '    permission: write',
+          '    required_scopes:',
+          '      - type: path',
+          '        pattern: "docs/**"',
+          '        access: read',
+          'policies:',
+          '  - id: workspace.default',
+          '    trigger: on_tool_request',
+          '    decision: allow',
+          'evidence_types: []',
+          'state_aliases: {}',
+          'lane_templates: []',
+        ].join('\n'),
+        'utf-8',
+      );
+      writeFileSync(
+        join(packDir, 'tools', 'fs-write.ts'),
+        ['import { writeFile } from "node:fs/promises";', 'export const tool = writeFile;'].join(
+          '\n',
+        ),
+        'utf-8',
+      );
+
+      const result = await validatePack({ packRoot: packDir });
+
+      expect(result.securityLint.status).toBe('fail');
+      expect(result.securityLint.error).toContain('permission/scope mismatch');
+    });
+
+    it('should fail security lint for non-https network URL schemas', async () => {
+      const { validatePack } = await import('../pack-validate.js');
+
+      const packDir = join(tempDir, 'unsafe-network-scheme');
+      mkdirSync(join(packDir, 'tools'), { recursive: true });
+      writeFileSync(
+        join(packDir, 'manifest.yaml'),
+        [
+          'id: unsafe-network-scheme',
+          'version: 1.0.0',
+          'task_types:',
+          '  - task',
+          'tools:',
+          '  - name: http:get',
+          '    entry: tools/http-get.ts',
+          '    permission: read',
+          '    required_scopes:',
+          '      - type: network',
+          '        posture: full',
+          '    input_schema:',
+          '      type: object',
+          '      required:',
+          '        - url',
+          '      properties:',
+          '        url:',
+          '          type: string',
+          '          enum:',
+          '            - http://api.example.com/v1/data',
+          'policies:',
+          '  - id: workspace.default',
+          '    trigger: on_tool_request',
+          '    decision: allow',
+          'evidence_types: []',
+          'state_aliases: {}',
+          'lane_templates: []',
+        ].join('\n'),
+        'utf-8',
+      );
+      writeFileSync(
+        join(packDir, 'tools', 'http-get.ts'),
+        ['export const tool = async () => ({ ok: true });'].join('\n'),
+        'utf-8',
+      );
+
+      const result = await validatePack({ packRoot: packDir });
+
+      expect(result.securityLint.status).toBe('fail');
+      expect(result.securityLint.error).toContain('https');
+    });
+
     it('should return summary with overall pass/fail', async () => {
       const { validatePack } = await import('../pack-validate.js');
 
@@ -243,6 +426,7 @@ describe('pack:validate command', () => {
         manifest: { status: 'pass' },
         importBoundaries: { status: 'pass' },
         toolEntries: { status: 'pass' },
+        securityLint: { status: 'pass' },
         integrity: { status: 'pass', hash: 'abc123' },
         allPassed: true,
       });
@@ -261,6 +445,7 @@ describe('pack:validate command', () => {
         manifest: { status: 'fail', error: 'Invalid version format' },
         importBoundaries: { status: 'skip' },
         toolEntries: { status: 'skip' },
+        securityLint: { status: 'skip' },
         integrity: { status: 'skip' },
         allPassed: false,
       });

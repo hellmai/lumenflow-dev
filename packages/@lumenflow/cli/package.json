@@ -132,6 +132,7 @@
     "state-cleanup": "./dist/state-cleanup.js",
     "state-doctor": "./dist/state-doctor.js",
     "lumenflow-integrate": "./dist/commands/integrate.js",
+    "pack-author": "./dist/pack-author.js",
     "pack-scaffold": "./dist/pack-scaffold.js",
     "pack-validate": "./dist/pack-validate.js",
     "pack-hash": "./dist/pack-hash.js",
