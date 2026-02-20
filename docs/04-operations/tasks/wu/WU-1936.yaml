@@ -8,7 +8,6 @@ created: 2026-02-20
 code_paths:
   - apps/docs/src/content/docs/index.mdx
   - apps/docs/src/content/docs/getting-started/why-lumenflow.mdx
-  - apps/docs/src/content/docs/getting-started/faq.mdx
 tests:
   manual:
     - 'Visual review: landing page renders with OSS section, badges, warmer tone'
@@ -22,10 +21,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-20T12:46:12.597Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1936
+session_id: 907ca205-974c-4655-a7b5-8ca146dd32cb
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T12:46:12.605Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +48,3 @@ acceptance:
   - Landing page copy has warmer, less dry tone with personality (not pure technical spec language)
   - Hero tagline or sub-hero area prominently signals open-source nature
   - Contribute/community callout visible on landing page
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1936
-claimed_at: 2026-02-20T12:46:12.597Z
-baseline_main_sha: 3cdeb13cde402ef2a6cb48e7b0090972b79358ba
-session_id: 907ca205-974c-4655-a7b5-8ca146dd32cb
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-20T12:46:12.605Z
