@@ -2,7 +2,7 @@ id: WU-1954
 title: '[WU-K] Management UI: workspace wizard + task creation + onboarding state'
 lane: 'Operations: Runtime'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -37,8 +37,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Deliver active management flows in dashboard: create/connect workspace, create tasks, and guided empty-state onboarding instead of passive read-only views.'
+description: 'Deliver active management flows in dashboard: create/connect workspace, create tasks,
+  and guided empty-state onboarding instead of passive read-only views.'
 acceptance:
-  - Workspace wizard creates workspace config and supports non-destructive existing-workspace detection
+  - Workspace wizard creates workspace config and supports non-destructive existing-workspace
+    detection
   - Dashboard header task creation form submits successfully and refreshes overview state
   - Empty-state onboarding guides users through workspace, pack install, and first-task steps
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-runtime-wu-1954
+claimed_at: 2026-02-20T21:33:41.179Z
+baseline_main_sha: f61d03ec4254de3bcd55e74733868ac27176bc55
+session_id: 40dcddbf-4a6b-45a4-8251-b1d007223c4d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T21:33:41.184Z
