@@ -1817,3 +1817,4 @@
 {"type":"complete","wuId":"WU-1922","timestamp":"2026-02-20T12:03:37.268Z"}
 {"type":"complete","wuId":"WU-1924","timestamp":"2026-02-20T12:04:26.169Z"}
 {"type":"claim","wuId":"WU-1923","lane":"Framework: Core Lifecycle","title":"RunAgent Real Execution","timestamp":"2026-02-20T12:06:29.097Z"}
+{"type":"claim","wuId":"WU-1930","lane":"Content: Site Comms","title":"HITL Approval Hardening","timestamp":"2026-02-20T12:07:17.564Z"}

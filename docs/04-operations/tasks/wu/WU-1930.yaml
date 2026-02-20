@@ -2,7 +2,7 @@ id: WU-1930
 title: HITL Approval Hardening
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - Approval queue shows pending count
   - Configurable approval timeout (default 30m)
   - All approval buttons have aria labels
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1930
+claimed_at: 2026-02-20T12:07:17.509Z
+baseline_main_sha: 479830bf68978eafc9433b5fa10ae179f7d94e25
+session_id: b863c8c8-7b48-4c67-8f0b-a5db961b7f3f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T12:07:17.517Z
