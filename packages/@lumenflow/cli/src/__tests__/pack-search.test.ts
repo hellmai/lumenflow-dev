@@ -42,7 +42,9 @@ describe('pack:search command', () => {
       });
 
       expect(calls).toHaveLength(1);
-      expect(calls[0].url).toBe('https://registry.lumenflow.dev/api/registry/packs/search?q=software');
+      expect(calls[0].url).toBe(
+        'https://registry.lumenflow.dev/api/registry/packs/search?q=software',
+      );
     });
 
     it('should URL-encode the query parameter', async () => {
@@ -64,7 +66,9 @@ describe('pack:search command', () => {
         fetchFn: mockFetch,
       });
 
-      expect(calls[0].url).toBe('https://registry.lumenflow.dev/api/registry/packs/search?q=my%20pack');
+      expect(calls[0].url).toBe(
+        'https://registry.lumenflow.dev/api/registry/packs/search?q=my%20pack',
+      );
     });
 
     // AC2: Displays results with name, description, version

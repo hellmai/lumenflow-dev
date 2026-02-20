@@ -393,7 +393,7 @@ describe('pack:publish command', () => {
           contentType:
             init?.headers instanceof Headers
               ? init.headers.get('Content-Type')
-              : (init?.headers as Record<string, string> | undefined)?.['Content-Type'] ?? null,
+              : ((init?.headers as Record<string, string> | undefined)?.['Content-Type'] ?? null),
         });
         return new Response(JSON.stringify({ success: true }), { status: 201 });
       };
