@@ -11,7 +11,10 @@ import { PACK_AUTHORING_TEMPLATE_IDS, type PackAuthoringRequest } from '@lumenfl
 const TEMP_DIR_PREFIX = 'pack-author-test';
 
 function createTempDir(): string {
-  const dir = join(tmpdir(), `${TEMP_DIR_PREFIX}-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  const dir = join(
+    tmpdir(),
+    `${TEMP_DIR_PREFIX}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  );
   mkdirSync(dir, { recursive: true });
   return dir;
 }
