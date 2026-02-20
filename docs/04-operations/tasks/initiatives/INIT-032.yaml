@@ -1,17 +1,33 @@
 id: INIT-032
 slug: security-first-adoption-authoring
 title: Security-First Adoption + Secure Custom Tool Authoring
-description: ''
-status: draft
+description: 'Security-first adoption initiative for INIT-031 follow-up: fix onboarding/install
+  blockers, harden write endpoints, deliver secure no-code pack authoring, and complete management
+  UI + MCP parity in phased WUs.'
+status: open
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-20
 target_date: 2026-04-30
-phases: []
+phases:
+  - id: 1
+    title: 'Phase 0: Foundation'
+    status: pending
+  - id: 2
+    title: 'Phase 1: Adoption Core'
+    status: pending
+  - id: 3
+    title: 'Phase 2: Secure Custom Tool Authoring'
+    status: pending
+  - id: 4
+    title: 'Phase 3: Management UI + AG Route'
+    status: pending
+  - id: 5
+    title: 'Phase 4: Parity + Docs'
+    status: pending
 success_metrics:
   - Time to first task under 2 minutes from fresh install
   - onboard --yes installs and pins registry pack integrity automatically
   - Custom pack/tool authoring works without handwritten code via secure templates
   - All write endpoints enforce traversal/CSRF/body-size protections
 labels: []
-related_plan: lumenflow://plans/curious-skipping-robin.md
