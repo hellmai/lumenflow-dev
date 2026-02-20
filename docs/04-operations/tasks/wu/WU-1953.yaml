@@ -12,6 +12,7 @@ code_paths:
 tests:
   manual:
     - Create a pack from web wizard and verify output is created under allowed root only
+    - Navigate to /marketplace, open Create Pack Wizard, and verify pack creation is accessible from UI entry points
   unit:
     - apps/web/__tests__/install-pack-route.test.ts
     - apps/web/__tests__/workspace-overview.test.tsx
