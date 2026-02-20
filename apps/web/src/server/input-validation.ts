@@ -80,20 +80,52 @@ export function validatePackId(packId: string): ValidationResult {
  * Semver validation
  * ------------------------------------------------------------------ */
 
-/**
- * Basic semver regex: MAJOR.MINOR.PATCH with optional pre-release and build metadata.
- * Matches: 1.0.0, 0.1.0-alpha, 1.2.3-beta.1+build.123
- */
-const SEMVER_REGEX =
-  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+/** Regex for a semver numeric segment: 0 or a non-zero-leading number. */
+const NUMERIC_SEGMENT = /^(0|[1-9]\d*)$/;
 
+/**
+ * Validates a semver version string using a functional approach.
+ *
+ * Supports: MAJOR.MINOR.PATCH, optional pre-release (-alpha.1), optional build (+build.123).
+ * Rejects leading zeros in numeric segments (e.g., 01.0.0).
+ *
+ * Uses string splitting instead of a single complex regex to satisfy
+ * sonarjs/regex-complexity and security/detect-unsafe-regex rules.
+ */
 export function validateSemver(version: string): ValidationResult {
-  if (!SEMVER_REGEX.test(version)) {
+  if (version.length === 0) {
     return {
       valid: false,
       code: ValidationErrorCode.INVALID_SEMVER,
       message: `Version must be valid semver (MAJOR.MINOR.PATCH): "${version}"`,
     };
+  }
+
+  // Split off build metadata (+...)
+  const [versionWithoutBuild] = version.split('+', 2);
+
+  // Split off pre-release (-...)
+  const [coreVersion] = versionWithoutBuild.split('-', 2);
+
+  // Core must be exactly three numeric segments
+  const parts = coreVersion.split('.');
+  if (parts.length !== 3) {
+    return {
+      valid: false,
+      code: ValidationErrorCode.INVALID_SEMVER,
+      message: `Version must be valid semver (MAJOR.MINOR.PATCH): "${version}"`,
+    };
+  }
+
+  // Each segment must be a valid non-leading-zero number
+  for (const part of parts) {
+    if (!NUMERIC_SEGMENT.test(part)) {
+      return {
+        valid: false,
+        code: ValidationErrorCode.INVALID_SEMVER,
+        message: `Version must be valid semver (MAJOR.MINOR.PATCH): "${version}"`,
+      };
+    }
   }
 
   return { valid: true };
