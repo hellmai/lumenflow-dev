@@ -161,6 +161,21 @@ ready → in_progress → done
 | `done`        | Acceptance met, stamped  |
 | `cancelled`   | Dropped/obsolete         |
 
-```
+## Auto-Managed Fields
 
-```
+These fields are set automatically by CLI tooling during the WU lifecycle. Do not set them manually.
+
+| Field                        | Type      | Set By      | Description                        |
+| ---------------------------- | --------- | ----------- | ---------------------------------- |
+| `locked`                     | boolean   | `wu:claim`  | Whether the WU is locked to a worktree |
+| `claimed_mode`               | string    | `wu:claim`  | Claim mode (`worktree` or `branch`) |
+| `worktree_path`              | string    | `wu:claim`  | Path to the worktree directory     |
+| `baseline_main_sha`          | string    | `wu:claim`  | Git SHA of main at time of claim   |
+| `session_id`                 | string    | `wu:claim`  | Agent session identifier           |
+| `approved_by`                | string[]  | `wu:done`   | Approvers list                     |
+| `approved_at`                | datetime  | `wu:done`   | Approval timestamp                 |
+| `requires_human_escalation`  | boolean   | `wu:create` | Whether human approval is required |
+| `requires_cso_approval`      | boolean   | `wu:create` | CSO approval required              |
+| `requires_cto_approval`      | boolean   | `wu:create` | CTO approval required              |
+| `requires_design_approval`   | boolean   | `wu:create` | Design approval required           |
+| `escalation_triggers`        | string[]  | `wu:create` | Conditions that trigger escalation |

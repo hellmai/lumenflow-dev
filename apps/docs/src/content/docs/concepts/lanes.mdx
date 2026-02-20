@@ -55,26 +55,40 @@ lanes:
     allow_custom: false # Only taxonomy lanes allowed
 
   definitions:
-    - name: 'Framework: Core'
-      wip_limit: 1
+    - name: 'Framework: Core Lifecycle'
+      wip_limit: 2
+      wip_justification: 'Lifecycle work can parallelize when code_paths are disjoint'
+      lock_policy: 'none'
       code_paths:
-        - 'packages/@lumenflow/core/**'
+        - 'packages/@lumenflow/kernel/**'
+        - 'packages/@lumenflow/runtime/**'
+        - 'packages/@lumenflow/packs/**'
 
-    - name: 'Framework: CLI'
-      wip_limit: 1
+    - name: 'Framework: Core Validation'
+      wip_limit: 2
+      wip_justification: 'Validators can parallelize across families'
+      lock_policy: 'none'
       code_paths:
-        - 'packages/@lumenflow/cli/**'
+        - 'packages/@lumenflow/core/src/validation/**'
+        - 'packages/@lumenflow/core/src/validators/**'
 
-    - name: 'Operations: Infrastructure'
-      wip_limit: 1
+    - name: 'Framework: CLI WU Commands'
+      wip_limit: 2
+      lock_policy: 'none'
       code_paths:
-        - 'apps/**'
-        - 'actions/**'
+        - 'packages/@lumenflow/cli/src/wu-*.ts'
 
-    - name: 'Content: Documentation'
+    - name: 'Framework: MCP'
       wip_limit: 1
       code_paths:
-        - 'docs/**'
+        - 'packages/@lumenflow/mcp/**'
+
+    - name: 'Content: Site Comms'
+      wip_limit: 2
+      wip_justification: 'Docs site content can parallelize by section'
+      lock_policy: 'none'
+      code_paths:
+        - 'apps/docs/**'
 ```
 
 ### Parent Lane Categories
@@ -88,15 +102,19 @@ lanes:
 
 ## WIP Limits
 
-WIP (Work-in-Progress) limits enforce **one active WU per lane** (WIP=1). This prevents:
+WIP (Work-in-Progress) limits control how many active WUs a lane can have simultaneously. The default is WIP=1, but lanes can be configured with higher limits when work is safely parallelizable.
 
-- Context switching between multiple incomplete tasks
-- Merge conflicts from parallel work in the same domain
-- "Started but not finished" pile-ups
+- **WIP=1** (default): One active WU per lane. Prevents context switching and merge conflicts.
+- **WIP=2+**: Multiple active WUs allowed. Use when code paths are disjoint and non-overlapping. Requires a `wip_justification` explaining why parallelization is safe.
 
-**Current behavior:** WIP=1 is enforced for all lanes. Attempting to claim a WU in an occupied lane will be blocked.
+```yaml
+- name: 'Framework: Core Lifecycle'
+  wip_limit: 2
+  wip_justification: 'Lifecycle work can parallelize when code_paths are disjoint'
+  lock_policy: 'none'
+```
 
-**Parallel work:** Use multiple lanes to work in parallel. Each lane can have one active WU, enabling concurrent work across different domains.
+**Parallel work across lanes:** Each lane operates independently. Even with WIP=1 per lane, you achieve concurrency by working in multiple lanes simultaneously.
 
 ## Lock Policy
 
@@ -141,7 +159,7 @@ If `lock_policy: active` causes issues:
 
 ## Lane Lock Lifecycle
 
-Lane locks are file-based locks (`.lumenflow/locks/<lane-kebab>.lock`) that enforce WIP=1. The lock lifecycle has three key phases:
+Lane locks are file-based locks (`.lumenflow/locks/<lane-kebab>.lock`) that enforce WIP limits. For WIP=1 lanes, a single lock file is used. For WIP=2+ lanes with `lock_policy: none`, lock checking is bypassed entirely. The lock lifecycle has three key phases:
 
 ### Acquisition
 

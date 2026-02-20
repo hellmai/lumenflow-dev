@@ -17,7 +17,7 @@ pnpm lumenflow:upgrade --latest
 
 This command:
 
-- Updates all 7 `@lumenflow/*` packages atomically
+- Updates all `@lumenflow/*` packages atomically
 - Uses micro-worktree isolation (no WU needed)
 - Updates both `package.json` and `pnpm-lock.yaml`
 - Works from your main checkout
@@ -35,18 +35,22 @@ If you prefer manual control or encounter issues with the upgrade command, you c
   <TabItem label="pnpm">
 
 ```bash
-pnpm up @lumenflow/core @lumenflow/cli @lumenflow/memory \
-  @lumenflow/agent @lumenflow/initiatives @lumenflow/shims \
-  @lumenflow/metrics --latest
+pnpm up @lumenflow/core @lumenflow/cli @lumenflow/kernel \
+  @lumenflow/runtime @lumenflow/packs @lumenflow/mcp \
+  @lumenflow/memory @lumenflow/agent @lumenflow/initiatives \
+  @lumenflow/metrics @lumenflow/shims \
+  @lumenflow/control-plane-sdk --latest
 ```
 
   </TabItem>
   <TabItem label="npm">
 
 ```bash
-npm update @lumenflow/core @lumenflow/cli @lumenflow/memory \
-  @lumenflow/agent @lumenflow/initiatives @lumenflow/shims \
-  @lumenflow/metrics
+npm update @lumenflow/core @lumenflow/cli @lumenflow/kernel \
+  @lumenflow/runtime @lumenflow/packs @lumenflow/mcp \
+  @lumenflow/memory @lumenflow/agent @lumenflow/initiatives \
+  @lumenflow/metrics @lumenflow/shims \
+  @lumenflow/control-plane-sdk
 ```
 
   </TabItem>
@@ -81,25 +85,33 @@ After upgrading, sync your agent documentation to get the latest skills and guid
 
 </Steps>
 
-## Upgrading to v2.3.2
+## Upgrading to v3.0.0
 
 <Badge text="Current" variant="success" />
 
-Version 2.3.2 is the current tooling version in this repo. See the [Changelog](/reference/changelog)
-for details and migration notes.
+Version 3.0.0 introduces the kernel/pack architecture, 14 granular lanes, and 5 new packages. See the [Changelog](/reference/changelog) for full details.
 
 ### Upgrade Steps
 
 ```bash
 # 1. Upgrade packages
-pnpm add -D @lumenflow/cli@latest
+pnpm lumenflow:upgrade --latest
 
 # 2. Sync documentation
 npx lumenflow-docs-sync --force
 
-# 3. Verify
-pnpm list @lumenflow/cli  # Should show latest version
+# 3. Create workspace.yaml (new in v3.0)
+# See the Workspace Spec reference for schema details
+
+# 4. Verify
+pnpm list @lumenflow/cli  # Should show 3.0.0
 ```
+
+### Breaking Changes in v3.0.0
+
+- **Removed `isAgentBranchSync()`** — Use async `isAgentBranch()` instead
+- **Removed single-word lane names** — All lanes must use "Parent: Sublane" format
+- **Removed config `version: '1.0'`** — Config must use `version: '2.0'`
 
 ## Upgrading from v1.x to v2.x
 
@@ -113,17 +125,22 @@ Key changes in v2.0:
 
 ## Version Compatibility
 
-All `@lumenflow/*` packages (except metrics) should be at the same version for best compatibility.
+All `@lumenflow/*` packages should be at the same version for best compatibility.
 
-| Package                  | Current |
-| ------------------------ | ------- |
-| `@lumenflow/core`        | 2.3.2   |
-| `@lumenflow/cli`         | 2.3.2   |
-| `@lumenflow/memory`      | 2.3.2   |
-| `@lumenflow/agent`       | 2.3.2   |
-| `@lumenflow/initiatives` | 2.3.2   |
-| `@lumenflow/shims`       | 2.3.2   |
-| `@lumenflow/metrics`     | 2.3.2   |
+| Package                        | Current |
+| ------------------------------ | ------- |
+| `@lumenflow/core`              | 3.0.0   |
+| `@lumenflow/cli`               | 3.0.0   |
+| `@lumenflow/kernel`            | 3.0.0   |
+| `@lumenflow/runtime`           | 3.0.0   |
+| `@lumenflow/packs`             | 3.0.0   |
+| `@lumenflow/mcp`               | 3.0.0   |
+| `@lumenflow/memory`            | 3.0.0   |
+| `@lumenflow/agent`             | 3.0.0   |
+| `@lumenflow/initiatives`       | 3.0.0   |
+| `@lumenflow/metrics`           | 3.0.0   |
+| `@lumenflow/shims`             | 3.0.0   |
+| `@lumenflow/control-plane-sdk` | 3.0.0   |
 
 See the [Compatibility Matrix](/reference/compatibility) for full version details.
 
