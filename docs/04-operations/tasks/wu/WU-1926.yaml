@@ -31,7 +31,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Currently requires clone + pnpm install + turbo build. Target: npm install -g @lumenflow/cli. Bundle with esbuild/tsup, fix import.meta.main for Node.js compat (C9).'
+description: 'Currently requires clone + pnpm install + turbo build. Target: npm install -g
+  @lumenflow/cli. Bundle with esbuild/tsup, fix import.meta.main for Node.js compat (C9).'
 acceptance:
   - CLI bundles for standalone use via esbuild or tsup
   - npm pack produces installable package with lumenflow bin entry
