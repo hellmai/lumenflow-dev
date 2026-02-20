@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-done-merged-worktree.test.ts
  * @description Tests for WU-1746: wu:done resilience when worktree deleted but branch already merged

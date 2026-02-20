@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
 /**
  * WU State Repair Tool (Unified - WU-1826, WU-2240)
  *

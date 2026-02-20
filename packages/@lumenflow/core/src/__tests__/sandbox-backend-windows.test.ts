@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { describe, expect, it } from 'vitest';
 import { createWindowsSandboxBackend } from '../sandbox-backend-windows.js';
 import { buildSandboxProfile } from '../sandbox-profile.js';

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file runtime-tool-resolver.constants.ts
  * @description Canonical literals for in-process runtime tool resolver handlers.

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file recovery-analyzer.test.ts
  * @description Tests for WU recovery analysis (detect issues and suggest actions)

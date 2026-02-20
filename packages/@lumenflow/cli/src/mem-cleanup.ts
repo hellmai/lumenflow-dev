@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
 /**
  * Memory Cleanup CLI (WU-1472, WU-1554, WU-1474)
  *

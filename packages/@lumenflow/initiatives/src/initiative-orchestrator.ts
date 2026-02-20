@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * Initiative Orchestrator (WU-1581, WU-1821, WU-1648)
  *

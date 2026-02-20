@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file no-beacon-references.test.ts
  * Guardrail test: `.beacon` is legacy and must not be referenced in live operational

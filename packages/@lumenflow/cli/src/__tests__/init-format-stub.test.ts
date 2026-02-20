@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file init-format-stub.test.ts
  * WU-1747: Stub format:check gate when prettier not installed at init time

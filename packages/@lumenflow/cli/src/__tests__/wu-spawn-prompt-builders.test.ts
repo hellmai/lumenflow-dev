@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * WU-1898: Tests for template condition evaluation in wu-spawn-prompt-builders.ts
  *

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-spawn-helpers.ts
  * Helper functions for wu:spawn thinking mode and model configuration (WU-1577)

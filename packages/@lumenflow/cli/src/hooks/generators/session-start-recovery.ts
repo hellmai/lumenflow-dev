@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file generators/session-start-recovery.ts
  * Generate the session-start-recovery.sh hook script content (WU-1394).

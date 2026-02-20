@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file schemas/index.ts
  * @description Shared command schemas and utilities for CLI/MCP parity (WU-1431, WU-1454, WU-1455, WU-1456, WU-1457)

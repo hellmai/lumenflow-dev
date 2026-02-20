@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { existsSync } from 'node:fs';
 import type { ClientConfig } from './lumenflow-config-schema.js';
 import { LUMENFLOW_PATHS } from './wu-constants.js';

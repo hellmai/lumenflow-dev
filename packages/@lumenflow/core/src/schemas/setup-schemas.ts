@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file setup-schemas.ts
  * @description Shared Zod schemas for Setup, Agent, Orchestration, Delegation, and Coordination commands (WU-1457)

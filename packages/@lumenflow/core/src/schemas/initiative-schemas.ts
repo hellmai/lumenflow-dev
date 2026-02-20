@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file initiative-schemas.ts
  * @description Shared Zod schemas for Initiative commands (WU-1455)

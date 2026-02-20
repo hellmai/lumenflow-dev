@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file flow-schemas.ts
  * @description Shared Zod schemas for Flow/Metrics commands (WU-1457)

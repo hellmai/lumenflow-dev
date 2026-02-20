@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-create-required-fields.test.ts
  * Test suite for wu:create required field aggregation (WU-1366)

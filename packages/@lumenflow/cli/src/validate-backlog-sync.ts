@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
 /**
  * @file validate-backlog-sync.ts
  * @description Validates backlog.md is in sync with WU YAML files (WU-1111)

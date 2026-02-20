@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { Command, type OptionValues } from 'commander';
 import { createError, ErrorCodes, ProcessExitError } from './error-handler.js';
 import { EXIT_CODES } from './wu-constants.js';

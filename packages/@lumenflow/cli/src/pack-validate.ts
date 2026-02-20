@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
 /**
  * @file pack-validate.ts
  * Validate a LumenFlow domain pack for integrity (WU-1824)

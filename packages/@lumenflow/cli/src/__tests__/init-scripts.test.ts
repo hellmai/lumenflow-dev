@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file init-scripts.test.ts
  * Test: Generated package.json scripts use correct format (wu-create, wu-claim, wu-done, gates)

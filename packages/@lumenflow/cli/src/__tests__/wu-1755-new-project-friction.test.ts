@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-1755-new-project-friction.test.ts
  * Tests for new-project friction fixes (WU-1755)

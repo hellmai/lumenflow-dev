@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file guards-validation.test.ts
  * @description Tests for guard and validation CLI tools (WU-1111)

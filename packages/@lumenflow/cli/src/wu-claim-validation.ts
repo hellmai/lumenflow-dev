@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-claim-validation.ts
  * @description Pre-flight validation, schema validation, lane/spec checks for wu:claim.

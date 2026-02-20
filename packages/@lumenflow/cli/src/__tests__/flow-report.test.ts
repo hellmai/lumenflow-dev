@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file flow-report.test.ts
  * @description Tests for flow-report CLI command (WU-1018)

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file generators/signal-utils.ts
  * Signal surfacing and marking utilities for enforcement hooks (WU-1473).

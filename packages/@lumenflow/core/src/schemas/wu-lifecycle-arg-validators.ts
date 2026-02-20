@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-lifecycle-arg-validators.ts
  * @description CLI argument validators for WU lifecycle commands using shared schemas (WU-1454)

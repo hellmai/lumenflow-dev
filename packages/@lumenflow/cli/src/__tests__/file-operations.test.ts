@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file file-operations.test.ts
  * @description Tests for file operation CLI commands (WU-1108)

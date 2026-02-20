@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { describe, expect, it } from 'vitest';
 import { WU_STATUS } from '@lumenflow/core/wu-constants';
 import { deriveInitiativeLifecycleStatus } from '../initiative-status.js';

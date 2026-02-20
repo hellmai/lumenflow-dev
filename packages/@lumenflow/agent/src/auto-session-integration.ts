@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * Auto-Session Integration for wu:claim and wu:done lifecycle (WU-1438, WU-1466)
  *

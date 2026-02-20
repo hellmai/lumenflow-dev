@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file schema-utils.ts
  * @description Utilities for converting Zod schemas to MCP inputSchema and CLI options (WU-1431)

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-schema-normalization.ts
  * @description Schema normalization for legacy WU YAML formats (WU-2004)

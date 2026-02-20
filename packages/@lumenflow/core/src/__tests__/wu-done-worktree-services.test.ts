@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-done-worktree-services.test.ts
  * @description Tests for extracted wu:done worktree completion services.

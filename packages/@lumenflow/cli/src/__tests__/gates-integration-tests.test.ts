@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file gates-integration-tests.test.ts
  * @description Tests for gates infrastructure fixes (WU-1415)

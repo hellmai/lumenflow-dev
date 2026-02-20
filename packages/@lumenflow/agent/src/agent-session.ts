@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { randomUUID } from 'crypto';
 import { readFile, writeFile, mkdir, unlink, access } from 'node:fs/promises';
 import { join } from 'path';

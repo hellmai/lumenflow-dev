@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file dependency-graph.test.ts
  * @description Tests for dependency graph module (WU-1088)

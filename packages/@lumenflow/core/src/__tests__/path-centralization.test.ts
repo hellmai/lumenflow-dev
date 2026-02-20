@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @fileoverview Tests for WU-1301 and WU-1310: CLI path centralization
  *

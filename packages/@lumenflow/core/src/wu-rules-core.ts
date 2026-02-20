@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import path from 'node:path';
 import { minimatch } from 'minimatch';
 import { TEST_TYPES, WU_TYPES } from './wu-constants.js';

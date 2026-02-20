@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file init-quick-ref.test.ts
  * Tests for quick-ref commands content (WU-1309)

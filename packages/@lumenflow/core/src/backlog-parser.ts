@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * Backlog Parser (WU-1065, WU-1211)
  * Shared module for parsing YAML frontmatter in backlog.md

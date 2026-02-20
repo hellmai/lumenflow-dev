@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file setup-arg-validators.ts
  * @description CLI argument validators for setup, agent, orchestration, delegation, and coordination

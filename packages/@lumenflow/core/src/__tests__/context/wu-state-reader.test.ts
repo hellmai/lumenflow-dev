@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-state-reader.test.ts
  * @description Tests for WU state reading (YAML + state store, inconsistency detection)

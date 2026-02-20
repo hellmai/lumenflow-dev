@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ProcessExitError } from '../error-handler.js';
 import { parseSpawnArgs } from '../wu-spawn-helpers.js';

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file auto-checkpoint-utils.ts
  * Utilities for auto-checkpoint enforcement hooks (WU-1471)

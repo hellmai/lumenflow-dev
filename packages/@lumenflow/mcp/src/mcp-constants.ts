@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file mcp-constants.ts
  * @description Typed source-of-truth constants for MCP governed literal families.

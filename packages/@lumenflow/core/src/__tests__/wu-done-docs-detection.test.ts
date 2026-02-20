@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-done-docs-detection.test.ts
  * @description Tests for doc-source change detection in wu:done

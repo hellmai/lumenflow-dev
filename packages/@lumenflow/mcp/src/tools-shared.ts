@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file tools-shared.ts
  * @description Shared types, constants, error codes, and helpers used across MCP tool domain modules.

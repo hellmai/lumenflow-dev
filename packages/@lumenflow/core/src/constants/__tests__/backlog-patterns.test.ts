@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { describe, it, expect } from 'vitest';
 import { IN_PROGRESS_HEADERS, WU_LINK_PATTERN, isInProgressHeader } from '../backlog-patterns.js';
 

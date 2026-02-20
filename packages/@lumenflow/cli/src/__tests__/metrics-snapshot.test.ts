@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file metrics-snapshot.test.ts
  * @description Tests for metrics-snapshot CLI command (WU-1020)

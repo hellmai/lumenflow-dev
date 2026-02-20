@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { existsSync, readFileSync, writeFileSync, promises as fs } from 'node:fs';
 import { parse, stringify } from 'yaml';

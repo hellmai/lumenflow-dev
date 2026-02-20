@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
 /**
  * @file guard-worktree-commit.ts
  * @description Guard that prevents WU commits from main checkout (WU-1111)

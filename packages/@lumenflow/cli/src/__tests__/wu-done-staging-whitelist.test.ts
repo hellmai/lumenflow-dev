@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file Tests for wu-done staging whitelist patterns
  * @see WU-1072: Fix staging whitelist for auto-generated docs

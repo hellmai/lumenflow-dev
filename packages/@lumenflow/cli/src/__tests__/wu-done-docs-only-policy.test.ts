@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-done-docs-only-policy.test.ts
  * Guardrail test: docs-only eligibility checks must not use raw type/exposure string literals (WU-1446).

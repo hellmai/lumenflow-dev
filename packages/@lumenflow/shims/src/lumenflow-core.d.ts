@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * Type declarations for @lumenflow/core imports used in shims.
  * @lumenflow/core doesn't generate .d.ts files, so we declare the types we need.

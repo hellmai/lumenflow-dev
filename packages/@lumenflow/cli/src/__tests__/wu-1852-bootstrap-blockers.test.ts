@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-1852-bootstrap-blockers.test.ts
  * WU-1852: Fix first-project bootstrap blockers in lumenflow init

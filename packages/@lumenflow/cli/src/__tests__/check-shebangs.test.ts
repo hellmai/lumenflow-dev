@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * Validates that every bin entry in package.json has a #!/usr/bin/env node
  * shebang in the corresponding source file (WU-1689).

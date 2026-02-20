@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file scope-checker.test.mjs
  * @description Tests for scope-checker.mjs (WU-1397)

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { createGitForPath } from '@lumenflow/core/git-adapter';
 import { die } from '@lumenflow/core/error-handler';
 import { LOG_PREFIX } from '@lumenflow/core/wu-constants';

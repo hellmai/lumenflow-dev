@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file cleanup-trigger-config.test.ts
  * Test suite for cleanup.trigger config option (WU-1366)

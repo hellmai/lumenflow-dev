@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
 /**
  * @file docs-sync.ts
  * LumenFlow docs:sync command for syncing agent docs to existing projects (WU-1083)

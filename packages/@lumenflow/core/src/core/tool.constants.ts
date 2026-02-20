@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file tool.constants.ts
  * @description Shared constants for tool abstraction layer (WU-1394)

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file init-greenfield.test.ts
  * Tests for greenfield onboarding with initiative-first workflow (WU-1364)
