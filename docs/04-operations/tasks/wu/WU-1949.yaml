@@ -2,7 +2,7 @@ id: WU-1949
 title: '[WU-F] Workspace packs route for loaded-pack visibility'
 lane: 'Operations: Runtime'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -48,3 +48,6 @@ session_id: a18f3f3f-5b80-42e7-b371-af2b2edc3588
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T20:19:32.435Z
+locked: true
+completed_at: 2026-02-20T20:32:04.032Z
+completed: 2026-02-20
