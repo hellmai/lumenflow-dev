@@ -6,8 +6,10 @@ status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
-  - apps/web/src/components/task-dashboard.tsx
-  - apps/web/src/hooks/use-task-events.ts
+  - apps/web/src/components/workspace-overview-live.tsx
+  - apps/web/src/components/pack-catalog-live.tsx
+  - apps/web/src/components/marketplace-browse-live.tsx
+  - apps/web/__tests__/api-response-guards.test.tsx
 tests:
   manual:
     - 'manual: load Dashboard page at localhost:3000 and verify no errors'
@@ -21,10 +23,17 @@ initiative: INIT-031
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-20T13:55:02.129Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-runtime-wu-1940
+session_id: 27d1141e-8167-4fae-8ea6-c1affdbb4e78
 exposure: ui
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T13:55:02.136Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -33,11 +42,3 @@ description: Dashboard page throws 'events.filter is not a function' at runtime.
 acceptance:
   - Dashboard page loads without runtime errors
   - events data is properly initialized as array before filtering
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/operations-runtime-wu-1940
-claimed_at: 2026-02-20T13:55:02.129Z
-baseline_main_sha: 8c8af07dc8f86567fe068543ee5d3f4b482ff64b
-session_id: 27d1141e-8167-4fae-8ea6-c1affdbb4e78
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-20T13:55:02.136Z
