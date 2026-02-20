@@ -31,7 +31,6 @@ sections:
 - [WU-1923 — RunAgent Real Execution](wu/WU-1923.yaml) — Framework: Core Lifecycle
 - [WU-1924 — Mount PolicyDecisionOverlay and Scope Visualization](wu/WU-1924.yaml) — Content: Site Comms
 - [WU-1925 — App Shell Navigation and Error Boundaries](wu/WU-1925.yaml) — Content: Site Comms
-- [WU-1926 — Publish lumenflow CLI to npm](wu/WU-1926.yaml) — Framework: CLI Enforcement
 - [WU-1927 — lumenflow onboard Interactive Setup Wizard](wu/WU-1927.yaml) — Framework: CLI Orchestration
 - [WU-1928 — Community Landing Page](wu/WU-1928.yaml) — Content: Site Comms
 - [WU-1929 — Beautiful CLI Output](wu/WU-1929.yaml) — Framework: CLI Orchestration
@@ -42,6 +41,7 @@ sections:
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1932 — Licensing alignment + docs marketing polish](wu/WU-1932.yaml) — Content: Site Comms
 - [WU-1920 — Registry Security Hardening](wu/WU-1920.yaml) — Content: Site Comms
+- [WU-1926 — Publish lumenflow CLI to npm](wu/WU-1926.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 

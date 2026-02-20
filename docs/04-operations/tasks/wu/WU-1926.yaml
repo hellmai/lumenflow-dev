@@ -2,7 +2,7 @@ id: WU-1926
 title: Publish lumenflow CLI to npm
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -37,3 +37,11 @@ acceptance:
   - CLI bundles for standalone use via esbuild or tsup
   - npm pack produces installable package with lumenflow bin entry
   - import.meta.main works in Node.js (not Bun-only)
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1926
+claimed_at: 2026-02-20T11:23:37.896Z
+baseline_main_sha: a21a247d616b15425da8229952dc0d08687fb9bf
+session_id: f5427206-b161-4d60-93f1-a6595c11d9f0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:23:37.901Z

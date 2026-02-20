@@ -7,6 +7,7 @@ _Last updated: 2026-02-20_
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1932 — Licensing alignment + docs marketing polish](wu/WU-1932.yaml)
 - [WU-1920 — Registry Security Hardening](wu/WU-1920.yaml)
+- [WU-1926 — Publish lumenflow CLI to npm](wu/WU-1926.yaml)
 
 ## Completed
 
