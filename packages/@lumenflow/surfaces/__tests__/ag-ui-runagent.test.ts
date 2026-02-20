@@ -332,7 +332,7 @@ describe('surfaces/http AG-UI RunAgent endpoint', () => {
     expect(firstEvent.type).toBe(AG_UI_EVENT_TYPES.RUN_STARTED);
   });
 
-  it('emits RUN_COMPLETED AG-UI event at the end of the stream', async () => {
+  it('emits RUN_COMPLETED AG-UI event when task_completed kernel event arrives', async () => {
     const runtime = createRuntimeStub();
     const eventStub = createEventSubscriberStub();
     const surface = createHttpSurface(runtime as unknown as KernelRuntime, {
@@ -351,8 +351,23 @@ describe('surfaces/http AG-UI RunAgent endpoint', () => {
       response as unknown as ServerResponse<IncomingMessage>,
     );
 
-    const lines = response.body.split('\n').filter((line) => line.trim().length > 0);
-    const lastEvent = JSON.parse(lines[lines.length - 1] ?? '{}');
+    // Before task_completed, only RUN_STARTED should be present
+    const linesBefore = response.body.split('\n').filter((line) => line.trim().length > 0);
+    expect(linesBefore.length).toBe(1);
+    const firstEvent = JSON.parse(linesBefore[0] ?? '{}');
+    expect(firstEvent.type).toBe(AG_UI_EVENT_TYPES.RUN_STARTED);
+
+    // Trigger task_completed via subscriber
+    eventStub.triggerEvent({
+      schema_version: 1,
+      kind: 'task_completed',
+      task_id: 'any-task',
+      timestamp: TIMESTAMP.ONE,
+    } as unknown as KernelEvent);
+
+    // Now RUN_COMPLETED should be present
+    const linesAfter = response.body.split('\n').filter((line) => line.trim().length > 0);
+    const lastEvent = JSON.parse(linesAfter[linesAfter.length - 1] ?? '{}');
     expect(lastEvent.type).toBe(AG_UI_EVENT_TYPES.RUN_COMPLETED);
   });
 

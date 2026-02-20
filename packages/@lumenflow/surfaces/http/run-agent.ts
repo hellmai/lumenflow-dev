@@ -2,8 +2,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import type { KernelRuntime, TaskSpec } from '@lumenflow/kernel';
-import { AG_UI_EVENT_TYPES, type AgUiEvent } from './ag-ui-adapter.js';
+import {
+  KERNEL_EVENT_KINDS,
+  type KernelEvent,
+  type KernelRuntime,
+  type TaskSpec,
+} from '@lumenflow/kernel';
+import { AG_UI_EVENT_TYPES, mapKernelEventToAgUiEvent, type AgUiEvent } from './ag-ui-adapter.js';
 import type { EventSubscriber } from './event-stream.js';
 
 const HTTP_METHOD = {
@@ -37,7 +42,6 @@ const UTF8_ENCODING = 'utf8';
 const JSON_BODY_EMPTY = '';
 
 const RUN_AGENT_DEFAULTS = {
-  WORKSPACE_ID: 'ag-ui',
   LANE_ID: 'ag-ui',
   DOMAIN: 'ag-ui',
   RISK: 'low' as const,
@@ -46,6 +50,7 @@ const RUN_AGENT_DEFAULTS = {
   TITLE_PREFIX: 'AG-UI RunAgent: ',
   BY_PREFIX: 'ag-ui-client',
   SESSION_PREFIX: 'ag-ui-session-',
+  ACCEPTANCE_PREFIX: 'Process AG-UI request: ',
 } as const;
 
 interface RunAgentMessage {
@@ -91,6 +96,10 @@ export interface RunAgentRouter {
     request: IncomingMessage,
     response: ServerResponse<IncomingMessage>,
   ): Promise<boolean>;
+}
+
+export interface RunAgentConfig {
+  workspaceId: string;
 }
 
 class RunAgentValidationError extends Error {
@@ -219,15 +228,21 @@ function buildDeclaredScopes(_input: RunAgentInput): TaskSpec['declared_scopes']
   return [];
 }
 
-function buildTaskSpec(input: RunAgentInput, taskId: string): TaskSpec {
+function buildAcceptance(input: RunAgentInput): string[] {
+  const lastMessage = input.messages[input.messages.length - 1];
+  const snippet = lastMessage?.content.slice(0, 120) ?? input.runId;
+  return [`${RUN_AGENT_DEFAULTS.ACCEPTANCE_PREFIX}${snippet}`];
+}
+
+function buildTaskSpec(input: RunAgentInput, taskId: string, config: RunAgentConfig): TaskSpec {
   return {
     id: taskId,
-    workspace_id: RUN_AGENT_DEFAULTS.WORKSPACE_ID,
+    workspace_id: config.workspaceId,
     lane_id: RUN_AGENT_DEFAULTS.LANE_ID,
     domain: RUN_AGENT_DEFAULTS.DOMAIN,
     title: buildTaskTitle(input),
     description: buildTaskDescription(input),
-    acceptance: [],
+    acceptance: buildAcceptance(input),
     declared_scopes: buildDeclaredScopes(input),
     risk: RUN_AGENT_DEFAULTS.RISK,
     type: RUN_AGENT_DEFAULTS.TYPE,
@@ -289,9 +304,14 @@ function createRunAgentEvent(
   };
 }
 
+function isTaskCompletedEvent(event: KernelEvent): boolean {
+  return event.kind === KERNEL_EVENT_KINDS.TASK_COMPLETED;
+}
+
 export function createRunAgentRouter(
   runtime: KernelRuntime,
-  _eventSubscriber?: EventSubscriber,
+  eventSubscriber?: EventSubscriber,
+  config?: RunAgentConfig,
 ): RunAgentRouter {
   return {
     async handleRequest(
@@ -321,8 +341,12 @@ export function createRunAgentRouter(
       try {
         writeEventStreamHeaders(response);
 
+        const resolvedConfig: RunAgentConfig = config ?? {
+          workspaceId: 'ag-ui',
+        };
+
         const taskId = generateTaskId(input);
-        const taskSpec = buildTaskSpec(input, taskId);
+        const taskSpec = buildTaskSpec(input, taskId, resolvedConfig);
 
         const createResult = await runtime.createTask(taskSpec);
         const createdTaskId = createResult.task.id;
@@ -348,15 +372,39 @@ export function createRunAgentRouter(
         );
         writeRunAgentEvent(response, runStartedEvent);
 
-        const runCompletedEvent = createRunAgentEvent(
-          AG_UI_EVENT_TYPES.RUN_COMPLETED,
-          input,
-          createdTaskId,
-          runId,
-        );
-        writeRunAgentEvent(response, runCompletedEvent);
+        if (eventSubscriber) {
+          eventSubscriber.subscribe({ taskId: createdTaskId }, (event: KernelEvent) => {
+            const agUiEvent = mapKernelEventToAgUiEvent(event);
+            const runAgentEvent: RunAgentEvent = {
+              ...agUiEvent,
+              threadId: input.threadId,
+              runId: input.runId,
+            };
+            writeRunAgentEvent(response, runAgentEvent);
 
-        response.end();
+            if (isTaskCompletedEvent(event)) {
+              const runCompletedEvent = createRunAgentEvent(
+                AG_UI_EVENT_TYPES.RUN_COMPLETED,
+                input,
+                createdTaskId,
+                runId,
+              );
+              writeRunAgentEvent(response, runCompletedEvent);
+              response.end();
+            }
+          });
+        } else {
+          // Fallback: no event subscriber available, end immediately
+          const runCompletedEvent = createRunAgentEvent(
+            AG_UI_EVENT_TYPES.RUN_COMPLETED,
+            input,
+            createdTaskId,
+            runId,
+          );
+          writeRunAgentEvent(response, runCompletedEvent);
+          response.end();
+        }
+
         return true;
       } catch (error) {
         const message = error instanceof Error ? error.message : 'RunAgent execution failed.';

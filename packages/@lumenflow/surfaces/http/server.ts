@@ -148,7 +148,12 @@ export function createHttpSurface(
 ): HttpSurface {
   const taskApiRouter = createTaskApiRouter(runtime);
   const eventStreamRouter = createEventStreamRouter(resolveEventSubscriber(runtime, options));
-  const runAgentRouter = createRunAgentRouter(runtime, resolveEventSubscriber(runtime, options));
+  const runAgentConfig = options.workspaceId ? { workspaceId: options.workspaceId } : undefined;
+  const runAgentRouter = createRunAgentRouter(
+    runtime,
+    resolveEventSubscriber(runtime, options),
+    runAgentConfig,
+  );
 
   return {
     async handleRequest(
