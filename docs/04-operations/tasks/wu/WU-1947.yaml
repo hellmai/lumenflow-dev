@@ -2,7 +2,7 @@ id: WU-1947
 title: '[WU-D] CLI install fix: integrity auto-resolve + real onboard install'
 lane: 'Framework: CLI Orchestration'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -53,3 +53,6 @@ session_id: a0305952-44e2-45af-8b22-0c46873e937d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T19:38:50.734Z
+locked: true
+completed_at: 2026-02-20T19:52:16.194Z
+completed: 2026-02-20
