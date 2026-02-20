@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1956 — [WU-M] Expand MCP tool surface for pack/workspace parity](wu/WU-1956.yaml) — Framework: MCP
 - [WU-1955 — [WU-L] AG-UI run route + preview runtime diagnostics](wu/WU-1955.yaml) — Operations: Runtime
 - [WU-1954 — [WU-K] Management UI: workspace wizard + task creation + onboarding state](wu/WU-1954.yaml) — Operations: Runtime
 - [WU-1953 — [WU-J] Pack authoring API route + web wizard](wu/WU-1953.yaml) — Operations: Runtime
