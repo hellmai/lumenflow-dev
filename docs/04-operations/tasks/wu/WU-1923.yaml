@@ -7,7 +7,7 @@ priority: P0
 created: 2026-02-20
 code_paths:
   - packages/@lumenflow/surfaces/http/run-agent.ts
-  - packages/@lumenflow/surfaces/http/task-api.ts
+  - packages/@lumenflow/surfaces/http/server.ts
 tests:
   manual:
     - RunAgent executes tool, streams events to AG-UI client
@@ -25,10 +25,17 @@ risks: []
 notes: 'Sizing: SIMPLE-MEDIUM (~45 calls, 5 files). Strategy: Single Session. Split from original WU
   7.5. Depends on WU-1922 (approval_required effect).'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-20T12:06:29.037Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1923
+session_id: b863c8c8-7b48-4c67-8f0b-a5db961b7f3f
 exposure: api
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T12:06:29.045Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -39,11 +46,3 @@ acceptance:
   - Acceptance criteria non-empty (schema min 1)
   - RunAgent subscribes to task events and streams them
   - RUN_COMPLETED only on real task_completed event
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1923
-claimed_at: 2026-02-20T12:06:29.037Z
-baseline_main_sha: e9fcb5582ea756b8b1b741cd89f38dcb3d3e28de
-session_id: b863c8c8-7b48-4c67-8f0b-a5db961b7f3f
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-20T12:06:29.045Z
