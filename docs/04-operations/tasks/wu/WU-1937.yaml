@@ -2,7 +2,7 @@ id: WU-1937
 title: 'Hero tighten: shorter tagline, CTA reorder, code proof block'
 lane: 'Content: Site Comms'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -42,3 +42,6 @@ session_id: 2919e42e-4015-4b49-bcf6-c660d9f61878
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T13:04:40.552Z
+locked: true
+completed_at: 2026-02-20T13:09:19.210Z
+completed: 2026-02-20
