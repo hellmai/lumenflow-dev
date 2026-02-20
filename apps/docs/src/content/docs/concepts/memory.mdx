@@ -5,6 +5,12 @@ description: Context recovery for long-running sessions
 
 import { Aside, Steps, Card, CardGrid } from '@astrojs/starlight/components';
 
+<Aside type="note" title="Software Delivery Pack feature">
+  The Memory Layer is provided by the [Software Delivery Pack](/pack/overview). Memory tools
+  (`mem:checkpoint`, `mem:signal`, `mem:inbox`) are pack tools that produce evidence through the
+  [kernel](/concepts/kernel).
+</Aside>
+
 The Memory Layer preserves context across sessions, enabling AI agents and humans to resume work without losing track.
 
 ## Why Memory?

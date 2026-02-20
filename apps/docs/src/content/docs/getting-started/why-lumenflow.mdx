@@ -1,171 +1,149 @@
 ---
 title: Why LumenFlow?
-description: How LumenFlow compares to Kanban, Scrum, and Shape Up
+description: Why your AI agents need a governance kernel
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
 
-LumenFlow is not another project management tool. It is a delivery methodology designed for AI-augmented software teams, where both humans and AI agents collaborate on the same codebase.
+AI agents are powerful. They can read files, write code, call APIs, and deploy services. But without governance, they operate in a trust vacuum — no audit trail, no policy enforcement, no scope boundaries. When an agent makes a mistake, there is no proof of what happened and no mechanism to prevent it next time.
 
-## The Problem with Traditional Methodologies
+LumenFlow solves this by inserting a **governance kernel** between agents and the world.
 
-Most software teams use methodologies designed for human-only workflows:
+## The Problem
 
-| Method       | Assumes                              | Breaks When                                   |
-| ------------ | ------------------------------------ | --------------------------------------------- |
-| **Scrum**    | 2-week sprints, ceremonies, velocity | AI can ship 10x faster, sprints feel slow     |
-| **Kanban**   | Visual board, WIP limits, flow       | AI agents overwhelm boards with parallel work |
-| **Shape Up** | 6-week cycles, appetite, betting     | AI makes "betting" obsolete, cycles too long  |
+Today's AI agent workflows rely on one of three approaches, all of which fail at scale:
 
-These methodologies were designed when humans were the only workers. They assume:
+<CardGrid>
+  <Card title="No governance" icon="warning">
+    Agents run with full access. You hope they follow instructions. No audit trail, no rollback, no
+    proof of what happened.
+  </Card>
+  <Card title="Prompt-only trust" icon="document">
+    Frameworks like LangChain and CrewAI define agent roles in prompts. But prompts are suggestions,
+    not enforcement — agents can ignore them.
+  </Card>
+  <Card title="CI-only enforcement" icon="setting">
+    GitHub Actions and CI pipelines catch issues after the fact. By the time a check fails, the
+    agent has already written files, made commits, and potentially caused damage.
+  </Card>
+</CardGrid>
 
-- Work takes days or weeks
-- Context is held in human heads
-- Progress is measured in story points or cycle time
+None of these approaches provide **real-time governance** — enforcement that happens _before_ each action, not after.
 
-AI agents change all of this.
+## Four Kernel Guarantees
 
-## How LumenFlow Is Different
+LumenFlow's kernel provides four guarantees that cannot be bypassed:
 
-### 1. Work Units, Not Stories or Tickets
+### 1. Scope Intersection
 
-Traditional tickets are vague: "Add user authentication"
-
-LumenFlow Work Units are executable specifications:
-
-```yaml
-id: WU-042
-title: Add JWT authentication
-lane: 'Framework: Core'
-type: feature
-acceptance:
-  - Users can authenticate with email/password
-  - JWT tokens issued with 1-hour expiry
-  - Refresh tokens stored in httpOnly cookies
-code_paths:
-  - src/auth/
-test_paths:
-  unit:
-    - src/auth/__tests__/
-```
-
-An AI agent can read this spec and implement it autonomously. A human can verify completion by checking the acceptance criteria.
-
-### 2. Lanes, Not Sprints
-
-Scrum batches work into time-boxed sprints. LumenFlow flows work through parallel lanes.
+Every agent action is checked against a 4-level permission model: workspace, lane, task, and tool scopes must **all agree** before execution proceeds. If any level denies access, the action is blocked.
 
 ```
-Lane: Framework: Core     [WU-042 in_progress] [WU-043 ready] [WU-044 ready]
-Lane: Experience: UI      [WU-045 in_progress] [WU-046 blocked]
-Lane: Operations: Infra   [WU-047 done] [WU-048 ready]
+Agent requests: file:write("src/auth/login.ts")
+  ✓ Workspace scope: src/** allowed
+  ✓ Lane scope: src/auth/** allowed (Framework: Core lane)
+  ✓ Task scope: src/auth/** allowed (WU code_paths)
+  ✓ Tool scope: file:write allowed
+  → PERMITTED
 ```
 
-Each lane has a WIP limit (typically 1 for solo work, 3 for teams). Work flows continuously instead of waiting for sprint boundaries.
+### 2. Deny-Wins Policies
 
-### 3. Gates, Not Reviews
+Policies are evaluated in a layered cascade. A restrictive policy at **any level** cannot be loosened by a lower level. This means:
 
-Code review is a bottleneck. Reviewers are busy. PRs sit for days.
+- A workspace policy that denies `.env` access cannot be overridden by a task
+- A lane policy that blocks `git push --force` applies to every agent in that lane
+- Pack policies (like quality gates) are enforced by the kernel, not by the agent
 
-LumenFlow replaces manual review with automated gates:
+### 3. Evidence Receipts
 
-```bash
-pnpm gates
-# Format check... pass
-# Lint check... pass
-# Type check... pass
-# Tests... pass
-# All gates passed!
-```
+Every tool call produces an **immutable, content-addressed audit record** — what was requested, what scopes were checked, what policies were evaluated, and what the outcome was. Evidence is recorded whether the action succeeds or fails.
 
-If gates pass, work is done. No waiting. No negotiation. No "LGTM" comments.
+This is not logging. It is cryptographic proof of execution that can be independently verified.
 
-<Aside type="note">
-  Gates don't eliminate human oversight. Critical changes (auth, payments, PII) can require human
-  approval via escalation triggers in the WU spec.
+### 4. OS-Enforced Isolation
+
+Agents run inside a **bwrap sandbox** with write confinement and deny overlays on secrets. Isolation is enforced by the operating system kernel, not by the agent runtime — agents cannot escape the sandbox even if they try.
+
+## How It Compares
+
+| Aspect                   | No Governance | Prompt-Only (CrewAI) | CI-Only (GitHub Actions) | LumenFlow Kernel                              |
+| ------------------------ | ------------- | -------------------- | ------------------------ | --------------------------------------------- |
+| **Agent governance**     | None          | Role descriptions    | Post-hoc checks          | 4-level scope intersection, deny-wins         |
+| **Evidence of work**     | None          | Conversation logs    | CI logs                  | Immutable content-addressed receipts          |
+| **Sandbox isolation**    | None          | None                 | Container-level          | OS-level bwrap with secret deny overlays      |
+| **Policy enforcement**   | None          | Prompt suggestions   | Pipeline rules           | Real-time deny-wins cascade                   |
+| **Domain extensibility** | N/A           | Custom tools         | Marketplace actions      | Pack system: manifest, scoped tools, policies |
+
+## Domain Packs
+
+LumenFlow's kernel is **domain-agnostic**. It does not know about software delivery, infrastructure provisioning, or compliance auditing. Domain knowledge comes from **packs** — pluggable extensions that teach the kernel how to work in a specific domain.
+
+<CardGrid>
+  <Card title="Software Delivery Pack" icon="setting">
+    **Built-in.** Work Units, lanes, gates, worktrees, memory, and 100+ CLI commands for structured
+    software development.
+
+    [Explore the Software Delivery Pack →](/pack/overview)
+
+  </Card>
+  <Card title="Create Your Own Pack" icon="add-document">
+    Build a pack for any domain — customer support, data pipelines, infrastructure provisioning,
+    compliance auditing. Packs declare tools, policies, and evidence types.
+
+    [Create a Pack →](/guides/create-a-pack)
+
+  </Card>
+</CardGrid>
+
+<Aside type="tip">
+  Most teams start with the Software Delivery Pack, which ships built-in. If you are a software
+  team, [get started here](/guides/manual-quickstart) — everything works out of the box.
 </Aside>
-
-### 4. Memory, Not Standups
-
-Daily standups exist because humans forget context overnight. AI agents need explicit context recovery.
-
-LumenFlow's memory layer:
-
-```bash
-# Before stopping work
-pnpm mem:checkpoint --wu WU-042
-
-# Next session (human or AI)
-pnpm mem:ready --wu WU-042
-# Shows: last state, pending work, blockers
-```
-
-No need to ask "what was I working on?" or "where did I leave off?"
-
-### 5. Stamps, Not Done Columns
-
-Kanban boards have "Done" columns. Items move there when someone decides they're done.
-
-LumenFlow creates immutable stamps:
-
-```
-.lumenflow/stamps/WU-042.done
-```
-
-A stamp is created only when:
-
-- All acceptance criteria pass
-- All gates pass
-- Work is merged to main
-
-No ambiguity. No "is this really done?" debates.
-
-## Comparison Table
-
-| Aspect      | Scrum              | Kanban      | Shape Up       | LumenFlow       |
-| ----------- | ------------------ | ----------- | -------------- | --------------- |
-| Time unit   | 2-week sprints     | Continuous  | 6-week cycles  | Continuous      |
-| Work item   | User story         | Card        | Pitch          | Work Unit (WU)  |
-| Progress    | Story points       | Cycle time  | Hill charts    | Gates + stamps  |
-| Parallelism | Team velocity      | WIP limits  | Team per pitch | Lane-based WIP  |
-| Reviews     | Sprint review + PR | PR review   | Demo           | Automated gates |
-| AI-ready    | No                 | Partially   | No             | Yes             |
-| Context     | Human memory       | Board state | Write-up       | Memory layer    |
 
 ## When to Use LumenFlow
 
-**LumenFlow is ideal when:**
+**LumenFlow is essential when:**
 
-- You use AI coding assistants (Claude, Cursor, GitHub Copilot)
-- You want faster feedback than code review provides
-- You need multiple streams of work in parallel
-- You value evidence (tests, gates) over process (ceremonies, meetings)
+- AI agents interact with your codebase, infrastructure, or services
+- You need an audit trail of what agents did and why
+- You want policy enforcement that agents cannot bypass
+- You need to prove compliance with security or regulatory requirements
+- Multiple agents work in parallel and need coordination boundaries
 
-**LumenFlow may not fit when:**
+**LumenFlow may not be needed when:**
 
-- Your team relies on manual code review for knowledge sharing
-- You need sprint-based planning for stakeholder communication
-- You prefer visual Kanban boards for work visibility
-
-<Aside type="tip">
-  LumenFlow can complement existing methodologies. Use Scrum for planning and stakeholder
-  communication, but execute the actual work with LumenFlow's WU/gates/stamps flow.
-</Aside>
+- You only use AI for chat-based Q&A (no tool use)
+- Agents operate in fully disposable environments with no persistence
+- Your existing CI/CD pipeline provides sufficient governance for your risk tolerance
 
 ## Philosophy
 
-LumenFlow is built on four beliefs:
+LumenFlow is built on four principles:
 
-1. **Backlog is law** - If a WU is approved, it can be executed autonomously
-2. **Evidence over claims** - Tests and artifacts prove work is done
-3. **Flow over batching** - Continuous delivery beats sprint cycles
-4. **AI as collaborator** - Agents are first-class team members
+1. **Policy as code** — Governance rules are declarative configurations, not verbal agreements
+2. **Evidence over claims** — Immutable receipts prove what happened, not status updates
+3. **Continuous governance** — Every action is governed in real-time, not reviewed after the fact
+4. **Agents as governed participants** — Agents are first-class team members with the same accountability mechanisms as humans
 
 ## Getting Started
 
-Ready to try LumenFlow?
+<CardGrid>
+  <Card title="Humans" icon="rocket">
+    Step-by-step setup guide for developers.
 
-- [Agent Quickstart](/getting-started/quickstart) - Share this link with your AI agent
-- [Manual Quickstart (Humans)](/guides/manual-quickstart) - Run setup yourself
-- [Work Units](/concepts/work-units) - Deep dive on WUs
-- [Gates](/concepts/gates) - How automated quality works
+    [Get Started →](/guides/manual-quickstart)
+
+  </Card>
+  <Card title="AI Agents" icon="seti:robot">
+    Canonical setup guide for AI coding assistants.
+
+    [Agent Quickstart →](/getting-started/quickstart)
+
+  </Card>
+</CardGrid>
+
+- [What is LumenFlow?](/getting-started/introduction) — Architecture overview
+- [Kernel Runtime](/concepts/kernel) — How the kernel dispatches and governs tool calls
+- [Packs](/concepts/packs) — The extension mechanism for domain-specific tooling
+- [Software Delivery Pack](/pack/overview) — The built-in pack for software teams

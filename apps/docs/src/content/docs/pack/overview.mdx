@@ -8,10 +8,10 @@ import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
 The **Software Delivery Pack** is the default domain pack shipped with LumenFlow. It provides everything you need for structured software delivery — from work unit lifecycle to quality gates to agent coordination.
 
 <Aside type="note" title="Pack architecture">
-  LumenFlow's [kernel](/architecture/kernel) is domain-agnostic — it provides scope enforcement,
-  policy evaluation, and evidence recording. Packs add domain-specific tools and policies. The
-  Software Delivery Pack is the first production pack; others (compliance-audit, infra-ops,
-  security-ops) are planned.
+  LumenFlow's [kernel](/concepts/kernel) is domain-agnostic — it provides scope enforcement, policy
+  evaluation, and evidence recording. Packs add domain-specific tools and policies. The Software
+  Delivery Pack is the first production pack; others (compliance-audit, infra-ops, security-ops)
+  are planned.
 </Aside>
 
 ## What the Pack Provides
@@ -42,12 +42,12 @@ The pack registers **100+ CLI commands** across these categories:
 | Category              | Examples                                         | Count |
 | --------------------- | ------------------------------------------------ | ----- |
 | WU Lifecycle          | `wu:create`, `wu:claim`, `wu:prep`, `wu:done`    | 20+   |
-| Memory & Sessions     | `mem:checkpoint`, `mem:inbox`, `mem:signal`      | 14    |
-| Initiatives           | `initiative:create`, `initiative:status`         | 8     |
-| Gates & Validation    | `gates`, `wu:validate`, `lumenflow-doctor`       | 6     |
-| Packs                 | `pack:scaffold`, `pack:validate`, `pack:publish` | 6     |
-| Metrics & Flow        | `flow:report`, `flow:bottlenecks`, `metrics`     | 5     |
-| Agent & Orchestration | `wu:brief`, `wu:delegate`, `orchestrate:monitor` | 7     |
+| Memory & Sessions     | `mem:checkpoint`, `mem:inbox`, `mem:signal`       | 14    |
+| Initiatives           | `initiative:create`, `initiative:status`          | 8     |
+| Gates & Validation    | `gates`, `wu:validate`, `lumenflow-doctor`        | 6     |
+| Packs                 | `pack:scaffold`, `pack:validate`, `pack:publish`  | 6     |
+| Metrics & Flow        | `flow:report`, `flow:bottlenecks`, `metrics`      | 5     |
+| Agent & Orchestration | `wu:brief`, `wu:delegate`, `orchestrate:monitor`  | 7     |
 
 See the [CLI Reference](/reference/cli) for the complete command list.
 
@@ -59,7 +59,48 @@ The Software Delivery Pack ships with policies that the kernel evaluates automat
 - **Scope policies** — Lane-based path restrictions enforced on every tool call
 - **Constraint policies** — Non-negotiable rules like "no edits outside worktrees" and "no force-push"
 
-See the [Policy Engine](/architecture/policy-engine) for how these are evaluated.
+See the [Policy Engine](/concepts/policy-engine) for how these are evaluated.
+
+## Why the Software Delivery Pack?
+
+If you are a software team using AI agents, the Software Delivery Pack replaces ad-hoc methodologies with a structured, evidence-based workflow. Here is how it compares to traditional approaches:
+
+### Work Units, Not Stories
+
+Traditional tickets are vague — "Add user authentication." Work Units are **executable specifications** with acceptance criteria, code paths, and test paths. An AI agent can read a WU spec and implement it autonomously. A human can verify completion by checking the criteria.
+
+### Lanes, Not Sprints
+
+Scrum batches work into time-boxed sprints. The Software Delivery Pack flows work through **parallel lanes** — each with a WIP limit (typically 1 for solo work, 3 for teams). Work flows continuously instead of waiting for sprint boundaries.
+
+### Gates, Not Reviews
+
+Code review is a bottleneck. The Software Delivery Pack replaces manual review with **automated quality gates** — format, lint, typecheck, and test checks that must all pass before work can be completed. Critical changes can still require human approval via escalation triggers.
+
+### Memory, Not Standups
+
+Daily standups exist because humans forget context. The Software Delivery Pack's **memory layer** provides checkpointing and context recovery, so both humans and AI agents can resume exactly where they left off.
+
+### Stamps, Not Done Columns
+
+Kanban boards have "Done" columns. The Software Delivery Pack creates **immutable stamps** — created only when all acceptance criteria pass, all gates pass, and work is merged. No ambiguity.
+
+### Comparison Table
+
+| Aspect      | Scrum              | Kanban      | Shape Up       | Software Delivery Pack |
+| ----------- | ------------------ | ----------- | -------------- | ---------------------- |
+| Time unit   | 2-week sprints     | Continuous  | 6-week cycles  | Continuous             |
+| Work item   | User story         | Card        | Pitch          | Work Unit (WU)         |
+| Progress    | Story points       | Cycle time  | Hill charts    | Gates + stamps         |
+| Parallelism | Team velocity      | WIP limits  | Team per pitch | Lane-based WIP         |
+| Reviews     | Sprint review + PR | PR review   | Demo           | Automated gates        |
+| AI-ready    | No                 | Partially   | No             | Yes                    |
+| Context     | Human memory       | Board state | Write-up       | Memory layer           |
+
+<Aside type="tip">
+  The Software Delivery Pack can complement existing methodologies. Use Scrum for planning and
+  stakeholder communication, but execute actual work with the WU/gates/stamps flow.
+</Aside>
 
 ## Next Steps
 

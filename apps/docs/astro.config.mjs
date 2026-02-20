@@ -24,8 +24,8 @@ export default defineConfig({
           items: [
             { label: 'What is LumenFlow?', slug: 'getting-started/introduction' },
             { label: 'Why LumenFlow?', slug: 'getting-started/why-lumenflow' },
-            { label: 'Installation', slug: 'guides/manual-quickstart' },
-            { label: 'Quickstart (AI Agents)', slug: 'getting-started/quickstart' },
+            { label: 'Get Started (Humans)', slug: 'guides/manual-quickstart' },
+            { label: 'Get Started (Agents)', slug: 'getting-started/quickstart' },
             { label: 'FAQ', slug: 'getting-started/faq' },
           ],
         },
@@ -38,7 +38,6 @@ export default defineConfig({
             { label: 'Scope Intersection', slug: 'concepts/scope-intersection' },
             { label: 'Policy Engine', slug: 'concepts/policy-engine' },
             { label: 'Evidence Store', slug: 'concepts/evidence' },
-            { label: 'Constraints', slug: 'concepts/constraints' },
           ],
         },
         {
@@ -52,6 +51,7 @@ export default defineConfig({
                 { label: 'Lanes', slug: 'concepts/lanes' },
                 { label: 'Gates', slug: 'concepts/gates' },
                 { label: 'Memory Layer', slug: 'concepts/memory' },
+                { label: 'Constraints', slug: 'concepts/constraints' },
               ],
             },
             {
