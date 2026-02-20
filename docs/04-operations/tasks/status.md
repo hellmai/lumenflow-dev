@@ -5,6 +5,7 @@ _Last updated: 2026-02-20_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1955 — \[WU-L\] AG-UI run route + preview runtime diagnostics](wu/WU-1955.yaml)
 
 ## Completed
 
