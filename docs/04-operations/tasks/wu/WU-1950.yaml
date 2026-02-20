@@ -2,7 +2,7 @@ id: WU-1950
 title: '[WU-G] Registry manifest extraction + marketplace trust rendering'
 lane: 'Operations: Runtime'
 type: feature
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -36,8 +36,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Derive manifest summary server-side from uploaded pack tarballs and render that metadata with trust badges in marketplace surfaces to prevent spoofed client metadata and improve operator trust.
+description: Derive manifest summary server-side from uploaded pack tarballs and render that
+  metadata with trust badges in marketplace surfaces to prevent spoofed client metadata and improve
+  operator trust.
 acceptance:
-  - Publish pipeline extracts manifest.yaml from tarball server-side and stores parsed manifest_summary
+  - Publish pipeline extracts manifest.yaml from tarball server-side and stores parsed
+    manifest_summary
   - Client-submitted manifest summary fields are ignored/rejected in favor of server-derived values
-  - Marketplace detail/browse render real tools/policies/categories plus trust badges from manifest_summary
+  - Marketplace detail/browse render real tools/policies/categories plus trust badges from
+    manifest_summary
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-runtime-wu-1950
+claimed_at: 2026-02-20T21:03:42.131Z
+baseline_main_sha: 507bc580b63cb3dda739f771e9ee1e90fe97904d
+session_id: 17aecda4-a677-4a81-a20a-145f774c69be
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T21:03:42.139Z

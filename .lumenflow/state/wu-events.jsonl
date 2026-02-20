@@ -1861,3 +1861,4 @@
 {"type":"complete","wuId":"WU-1949","timestamp":"2026-02-20T20:32:08.921Z"}
 {"type":"claim","wuId":"WU-1952","timestamp":"2026-02-20T20:32:50.428Z","lane":"Framework: CLI Orchestration","title":"[WU-I] pack:author command + security lint hardening"}
 {"type":"complete","wuId":"WU-1952","timestamp":"2026-02-20T21:02:54.525Z"}
+{"type":"claim","wuId":"WU-1950","lane":"Operations: Runtime","title":"[WU-G] Registry manifest extraction + marketplace trust rendering","timestamp":"2026-02-20T21:03:42.189Z"}

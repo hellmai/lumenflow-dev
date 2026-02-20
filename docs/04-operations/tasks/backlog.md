@@ -20,12 +20,10 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1960 — Fix release build:dist invariant drift](wu/WU-1960.yaml) — Framework: CLI Orchestration
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
-- [WU-1950 — \[WU-G\] Registry manifest extraction + marketplace trust rendering](wu/WU-1950.yaml) — Operations: Runtime
 - [WU-1953 — \[WU-J\] Pack authoring API route + web wizard](wu/WU-1953.yaml) — Operations: Runtime
 - [WU-1954 — \[WU-K\] Management UI: workspace wizard + task creation + onboarding state](wu/WU-1954.yaml) — Operations: Runtime
 - [WU-1955 — \[WU-L\] AG-UI run route + preview runtime diagnostics](wu/WU-1955.yaml) — Operations: Runtime
@@ -36,6 +34,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1950 — \[WU-G\] Registry manifest extraction + marketplace trust rendering](wu/WU-1950.yaml) — Operations: Runtime
 
 ## ⛔ Blocked
 
