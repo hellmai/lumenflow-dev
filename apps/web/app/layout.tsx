@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { GlobalNavShell } from '../src/components/global-nav-shell';
 import './globals.css';
 
 const APP_METADATA = {
@@ -14,8 +15,11 @@ export const metadata = APP_METADATA;
 
 export default function RootLayout(props: RootLayoutProps) {
   return (
-    <html lang="en">
-      <body>{props.children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen bg-background text-foreground">
+        <GlobalNavShell />
+        {props.children}
+      </body>
     </html>
   );
 }
