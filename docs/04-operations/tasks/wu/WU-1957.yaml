@@ -2,7 +2,7 @@ id: WU-1957
 title: '[WU-N] Docs sweep for secure authoring + updated onboarding/install flow'
 lane: 'Content: Site Comms'
 type: chore
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -47,3 +47,6 @@ acceptance:
   - CLI/reference docs use canonical pack install syntax and onboarding flow
   - Authoring docs describe secure template-first no-code path and validation expectations
   - Web runtime setup docs include AG-UI run route and preview diagnostics guidance
+locked: true
+completed_at: 2026-02-20T22:14:31.859Z
+completed: 2026-02-20

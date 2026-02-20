@@ -29,7 +29,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1957 — \[WU-N\] Docs sweep for secure authoring + updated onboarding/install flow](wu/WU-1957.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 
@@ -922,6 +921,7 @@ sections:
 - [WU-1954 — \[WU-K\] Management UI: workspace wizard + task creation + onboarding state](wu/WU-1954.yaml)
 - [WU-1955 — \[WU-L\] AG-UI run route + preview runtime diagnostics](wu/WU-1955.yaml)
 - [WU-1956 — \[WU-M\] Expand MCP tool surface for pack/workspace parity](wu/WU-1956.yaml)
+- [WU-1957 — \[WU-N\] Docs sweep for secure authoring + updated onboarding/install flow](wu/WU-1957.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

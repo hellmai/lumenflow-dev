@@ -4,7 +4,7 @@ title: Security-First Adoption + Secure Custom Tool Authoring
 description: 'Security-first adoption initiative for INIT-031 follow-up: fix onboarding/install
   blockers, harden write endpoints, deliver secure no-code pack authoring, and complete management
   UI + MCP parity in phased WUs.'
-status: in_progress
+status: done
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-20
@@ -24,7 +24,7 @@ phases:
     status: done
   - id: 5
     title: 'Phase 4: Parity + Docs'
-    status: in_progress
+    status: done
 success_metrics:
   - Time to first task under 2 minutes from fresh install
   - onboard --yes installs and pins registry pack integrity automatically

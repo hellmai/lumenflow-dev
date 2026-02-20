@@ -1871,4 +1871,5 @@
 {"type":"complete","wuId":"WU-1955","timestamp":"2026-02-20T22:02:41.598Z"}
 {"type":"claim","wuId":"WU-1956","timestamp":"2026-02-20T22:03:22.237Z","lane":"Framework: MCP","title":"[WU-M] Expand MCP tool surface for pack/workspace parity"}
 {"type":"complete","wuId":"WU-1956","timestamp":"2026-02-20T22:08:47.558Z"}
-{"type":"claim","wuId":"WU-1957","lane":"Content: Site Comms","title":"[WU-N] Docs sweep for secure authoring + updated onboarding/install flow","timestamp":"2026-02-20T22:09:26.454Z"}
+{"type":"claim","wuId":"WU-1957","timestamp":"2026-02-20T22:09:26.454Z","lane":"Content: Site Comms","title":"[WU-N] Docs sweep for secure authoring + updated onboarding/install flow"}
+{"type":"complete","wuId":"WU-1957","timestamp":"2026-02-20T22:14:36.572Z"}
