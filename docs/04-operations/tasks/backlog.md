@@ -20,24 +20,24 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1957 — [WU-N] Docs sweep for secure authoring + updated onboarding/install flow](wu/WU-1957.yaml) — Content: Site Comms
-- [WU-1956 — [WU-M] Expand MCP tool surface for pack/workspace parity](wu/WU-1956.yaml) — Framework: MCP
-- [WU-1955 — [WU-L] AG-UI run route + preview runtime diagnostics](wu/WU-1955.yaml) — Operations: Runtime
-- [WU-1954 — [WU-K] Management UI: workspace wizard + task creation + onboarding state](wu/WU-1954.yaml) — Operations: Runtime
-- [WU-1953 — [WU-J] Pack authoring API route + web wizard](wu/WU-1953.yaml) — Operations: Runtime
-- [WU-1951 — [WU-H] Secure pack authoring template engine](wu/WU-1951.yaml) — Framework: Core Lifecycle
-- [WU-1952 — [WU-I] pack:author command + security lint hardening](wu/WU-1952.yaml) — Framework: CLI Orchestration
-- [WU-1950 — [WU-G] Registry manifest extraction + marketplace trust rendering](wu/WU-1950.yaml) — Operations: Runtime
-- [WU-1949 — [WU-F] Workspace packs route for loaded-pack visibility](wu/WU-1949.yaml) — Operations: Runtime
-- [WU-1948 — [WU-E] Marketplace UX: canonical install command + one-click install](wu/WU-1948.yaml) — Operations: Runtime
-- [WU-1947 — [WU-D] CLI install fix: integrity auto-resolve + real onboard install](wu/WU-1947.yaml) — Framework: CLI Orchestration
-- [WU-1946 — [WU-C] Install shadcn/ui base components](wu/WU-1946.yaml) — Operations: Runtime
-- [WU-1945 — [WU-B] Centralize write-endpoint security validation](wu/WU-1945.yaml) — Operations: Runtime
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1934 — Fix pre-existing MCP parity test failures from WU-1927 onboard](wu/WU-1934.yaml) — Framework: MCP
+- [WU-1945 — \[WU-B\] Centralize write-endpoint security validation](wu/WU-1945.yaml) — Operations: Runtime
+- [WU-1946 — \[WU-C\] Install shadcn/ui base components](wu/WU-1946.yaml) — Operations: Runtime
+- [WU-1947 — \[WU-D\] CLI install fix: integrity auto-resolve + real onboard install](wu/WU-1947.yaml) — Framework: CLI Orchestration
+- [WU-1948 — \[WU-E\] Marketplace UX: canonical install command + one-click install](wu/WU-1948.yaml) — Operations: Runtime
+- [WU-1949 — \[WU-F\] Workspace packs route for loaded-pack visibility](wu/WU-1949.yaml) — Operations: Runtime
+- [WU-1950 — \[WU-G\] Registry manifest extraction + marketplace trust rendering](wu/WU-1950.yaml) — Operations: Runtime
+- [WU-1951 — \[WU-H\] Secure pack authoring template engine](wu/WU-1951.yaml) — Framework: Core Lifecycle
+- [WU-1952 — \[WU-I\] pack:author command + security lint hardening](wu/WU-1952.yaml) — Framework: CLI Orchestration
+- [WU-1953 — \[WU-J\] Pack authoring API route + web wizard](wu/WU-1953.yaml) — Operations: Runtime
+- [WU-1954 — \[WU-K\] Management UI: workspace wizard + task creation + onboarding state](wu/WU-1954.yaml) — Operations: Runtime
+- [WU-1955 — \[WU-L\] AG-UI run route + preview runtime diagnostics](wu/WU-1955.yaml) — Operations: Runtime
+- [WU-1956 — \[WU-M\] Expand MCP tool surface for pack/workspace parity](wu/WU-1956.yaml) — Framework: MCP
+- [WU-1957 — \[WU-N\] Docs sweep for secure authoring + updated onboarding/install flow](wu/WU-1957.yaml) — Content: Site Comms
 
 ## 🔧 In progress
 

@@ -31,3 +31,5 @@ success_metrics:
   - Custom pack/tool authoring works without handwritten code via secure templates
   - All write endpoints enforce traversal/CSRF/body-size protections
 labels: []
+wus:
+  - WU-1934
