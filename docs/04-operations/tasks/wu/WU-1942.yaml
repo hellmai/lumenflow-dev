@@ -2,7 +2,7 @@ id: WU-1942
 title: Replace hero logo with terminal demo GIF
 lane: 'Operations: Tooling'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -27,8 +27,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Replace the static logo in the hero with an animated terminal demo GIF showing LumenFlow CLI in action. Also tighten the hero tagline.
+description: Replace the static logo in the hero with an animated terminal demo GIF showing
+  LumenFlow CLI in action. Also tighten the hero tagline.
 acceptance:
   - Hero image shows terminal demo GIF instead of static logo
   - Tagline is shorter and punchier (1-2 lines)
   - Deployed to lumenflow.dev
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1942
+claimed_at: 2026-02-20T16:18:20.493Z
+baseline_main_sha: 54821808eaf4f583177cf498bdc4fad91054a553
+session_id: 5468a71c-1027-46b0-bdca-1f5bd777369c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T16:18:20.497Z
