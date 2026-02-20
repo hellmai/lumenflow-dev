@@ -2,7 +2,7 @@ id: WU-1914
 title: Full Starlight docs accuracy audit - fix all version, CLI, config, lane, and sidebar inaccuracies
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -60,3 +60,6 @@ acceptance:
   - workspace.yaml created in repo root
   - Migration guide has v2→v3 section
   - Site builds without errors
+locked: true
+completed_at: 2026-02-20T00:23:41.001Z
+completed: 2026-02-20
