@@ -30,7 +30,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'H-COMMUN: Phase 4 claimed community landing page but no route exists. Missing INIT-031 deliverable.'
+description: 'H-COMMUN: Phase 4 claimed community landing page but no route exists. Missing INIT-031
+  deliverable.'
 acceptance:
   - /community route renders pack ecosystem overview
   - Getting started guide with link to pack authoring docs
