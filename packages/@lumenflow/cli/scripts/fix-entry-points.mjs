@@ -91,6 +91,4 @@ for (const [name, relPath] of binEntries) {
   fixedCount++;
 }
 
-console.log(
-  `[fix-entry-points] Patched ${fixedCount} entry points with import.meta.main guard.`,
-);
+console.log(`[fix-entry-points] Patched ${fixedCount} entry points with import.meta.main guard.`);
