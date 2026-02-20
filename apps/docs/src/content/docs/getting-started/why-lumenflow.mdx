@@ -5,38 +5,42 @@ description: Why your AI agents need a governance kernel
 
 import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
 
-AI agents are powerful. They can read files, write code, call APIs, and deploy services. But without governance, they operate in a trust vacuum — no audit trail, no policy enforcement, no scope boundaries. When an agent makes a mistake, there is no proof of what happened and no mechanism to prevent it next time.
+AI agents are getting remarkably capable. They read your codebase, write production code, call APIs, deploy services, and manage infrastructure. That's the good news.
 
-LumenFlow solves this by inserting a **governance kernel** between agents and the world.
+The bad news? Nobody is governing them. There's no audit trail, no enforceable policy, and no scope boundary that an agent can't accidentally wander past. When something goes wrong — and it will — you have no proof of what happened and no mechanism to prevent it next time.
+
+LumenFlow changes this. It inserts a **governance kernel** between your agents and everything they touch.
 
 ## The Problem
 
-Today's AI agent workflows rely on one of three approaches, all of which fail at scale:
+Today's AI agent workflows rely on one of three approaches. All three break down as you scale.
 
 <CardGrid>
-  <Card title="No governance" icon="warning">
-    Agents run with full access. You hope they follow instructions. No audit trail, no rollback, no
-    proof of what happened.
+  <Card title="Hope-based governance" icon="warning">
+    Agents run with full access. You hope they follow instructions. There's no audit trail, no
+    rollback, and no proof of what happened when things go sideways.
   </Card>
-  <Card title="Prompt-only trust" icon="document">
-    Frameworks like LangChain and CrewAI define agent roles in prompts. But prompts are suggestions,
-    not enforcement — agents can ignore them.
+  <Card title="Prompt-based trust" icon="document">
+    Frameworks like LangChain and CrewAI define agent roles in prompts. But a prompt is a
+    suggestion, not a wall — agents can (and do) ignore them when they hallucinate or
+    over-optimize.
   </Card>
-  <Card title="CI-only enforcement" icon="setting">
-    GitHub Actions and CI pipelines catch issues after the fact. By the time a check fails, the
-    agent has already written files, made commits, and potentially caused damage.
+  <Card title="After-the-fact enforcement" icon="setting">
+    GitHub Actions and CI pipelines catch problems after they've already happened. By the time
+    a check fails, the agent has written files, made commits, and potentially pushed to
+    production.
   </Card>
 </CardGrid>
 
-None of these approaches provide **real-time governance** — enforcement that happens _before_ each action, not after.
+The common thread? None of these provide **real-time governance** — enforcement that happens _before_ each action, not after the damage is done.
 
 ## Four Kernel Guarantees
 
-LumenFlow's kernel provides four guarantees that cannot be bypassed:
+LumenFlow's kernel provides four guarantees that can't be bypassed, turned off, or worked around:
 
 ### 1. Scope Intersection
 
-Every agent action is checked against a 4-level permission model: workspace, lane, task, and tool scopes must **all agree** before execution proceeds. If any level denies access, the action is blocked.
+Every agent action is checked against a 4-level permission model. Workspace, lane, task, and tool scopes must **all agree** before anything happens. One "no" at any level and the action is blocked — no exceptions.
 
 ```
 Agent requests: file:write("src/auth/login.ts")
@@ -49,47 +53,50 @@ Agent requests: file:write("src/auth/login.ts")
 
 ### 2. Deny-Wins Policies
 
-Policies are evaluated in a layered cascade. A restrictive policy at **any level** cannot be loosened by a lower level. This means:
+Policies are evaluated in a layered cascade where strictness only goes one direction — up.
 
-- A workspace policy that denies `.env` access cannot be overridden by a task
+- A workspace policy that denies `.env` access can't be overridden by a task
 - A lane policy that blocks `git push --force` applies to every agent in that lane
-- Pack policies (like quality gates) are enforced by the kernel, not by the agent
+- Pack policies (like quality gates) are enforced by the kernel, not left to the agent's discretion
+
+Think of it as the principle of least privilege, enforced structurally rather than by convention.
 
 ### 3. Evidence Receipts
 
-Every tool call produces an **immutable, content-addressed audit record** — what was requested, what scopes were checked, what policies were evaluated, and what the outcome was. Evidence is recorded whether the action succeeds or fails.
+Every tool call produces an **immutable, content-addressed audit record** — what was requested, what scopes were checked, what policies were evaluated, and what the outcome was. This happens whether the action succeeds or fails.
 
-This is not logging. It is cryptographic proof of execution that can be independently verified.
+This isn't logging. It's cryptographic proof of execution that can be independently verified months or years later.
 
 ### 4. OS-Enforced Isolation
 
-Agents run inside a **bwrap sandbox** with write confinement and deny overlays on secrets. Isolation is enforced by the operating system kernel, not by the agent runtime — agents cannot escape the sandbox even if they try.
+Agents run inside a **bwrap sandbox** with write confinement and deny overlays on secrets. This is real isolation — enforced by the Linux kernel, not by the agent runtime. Agents can't escape the sandbox even if they try, because the operating system won't let them.
 
 ## How It Compares
 
-| Aspect                   | No Governance | Prompt-Only (CrewAI) | CI-Only (GitHub Actions) | LumenFlow Kernel                              |
-| ------------------------ | ------------- | -------------------- | ------------------------ | --------------------------------------------- |
-| **Agent governance**     | None          | Role descriptions    | Post-hoc checks          | 4-level scope intersection, deny-wins         |
-| **Evidence of work**     | None          | Conversation logs    | CI logs                  | Immutable content-addressed receipts          |
-| **Sandbox isolation**    | None          | None                 | Container-level          | OS-level bwrap with secret deny overlays      |
-| **Policy enforcement**   | None          | Prompt suggestions   | Pipeline rules           | Real-time deny-wins cascade                   |
-| **Domain extensibility** | N/A           | Custom tools         | Marketplace actions      | Pack system: manifest, scoped tools, policies |
+| Aspect | No Governance | Prompt-Only (CrewAI) | CI-Only (GitHub Actions) | **LumenFlow** |
+| --- | --- | --- | --- | --- |
+| **Governance** | None | Role descriptions | Post-hoc checks | 4-level scope, deny-wins |
+| **Evidence** | None | Conversation logs | CI logs | Immutable receipts |
+| **Isolation** | None | None | Container-level | OS-level bwrap sandboxes |
+| **Policy** | None | Prompt suggestions | Pipeline rules | Real-time deny-wins cascade |
+| **Extensibility** | N/A | Custom tools | Marketplace actions | Pack system with scoped policies |
+| **Licensing** | N/A | MIT / Apache | Proprietary | **AGPL v3** + **Apache 2.0** |
 
 ## Domain Packs
 
-LumenFlow's kernel is **domain-agnostic**. It does not know about software delivery, infrastructure provisioning, or compliance auditing. Domain knowledge comes from **packs** — pluggable extensions that teach the kernel how to work in a specific domain.
+The kernel is **domain-agnostic** on purpose. It doesn't know about software delivery, infrastructure provisioning, or compliance auditing. Domain knowledge comes from **packs** — pluggable extensions that teach the kernel how to work in your world.
 
 <CardGrid>
   <Card title="Software Delivery Pack" icon="setting">
-    **Built-in.** Work Units, lanes, gates, worktrees, memory, and 100+ CLI commands for structured
-    software development.
+    **Ships built-in.** Work Units, lanes, gates, worktrees, memory, and 100+ CLI commands. This is
+    what we use to build LumenFlow itself — we eat our own cooking.
 
-    [Explore the Software Delivery Pack →](/pack/overview)
+    [Explore the Pack →](/pack/overview)
 
   </Card>
-  <Card title="Create Your Own Pack" icon="add-document">
-    Build a pack for any domain — customer support, data pipelines, infrastructure provisioning,
-    compliance auditing. Packs declare tools, policies, and evidence types.
+  <Card title="Build Your Own" icon="add-document">
+    Customer support, data pipelines, infrastructure provisioning, compliance auditing — if you
+    can define the rules, you can build a pack.
 
     [Create a Pack →](/guides/create-a-pack)
 
@@ -97,53 +104,55 @@ LumenFlow's kernel is **domain-agnostic**. It does not know about software deliv
 </CardGrid>
 
 <Aside type="tip">
-  Most teams start with the Software Delivery Pack, which ships built-in. If you are a software
+  Most teams start with the Software Delivery Pack, which ships built-in. If you're a software
   team, [get started here](/guides/manual-quickstart) — everything works out of the box.
 </Aside>
 
-## When to Use LumenFlow
+## When You Need LumenFlow
 
-**LumenFlow is essential when:**
+**It's essential when:**
 
-- AI agents interact with your codebase, infrastructure, or services
+- AI agents touch your codebase, infrastructure, or production services
 - You need an audit trail of what agents did and why
-- You want policy enforcement that agents cannot bypass
-- You need to prove compliance with security or regulatory requirements
+- Policy enforcement must be real — not just "please don't"
+- You need to prove compliance to regulators, customers, or your future self
 - Multiple agents work in parallel and need coordination boundaries
 
-**LumenFlow may not be needed when:**
+**You might not need it when:**
 
-- You only use AI for chat-based Q&A (no tool use)
-- Agents operate in fully disposable environments with no persistence
-- Your existing CI/CD pipeline provides sufficient governance for your risk tolerance
+- You only use AI for chat-based Q&A with no tool access
+- Agents operate in fully disposable, throwaway environments
+- Your existing CI/CD pipeline gives you enough governance for your risk tolerance
 
 ## Philosophy
 
-LumenFlow is built on four principles:
+Four principles guide everything we build:
 
-1. **Policy as code** — Governance rules are declarative configurations, not verbal agreements
-2. **Evidence over claims** — Immutable receipts prove what happened, not status updates
-3. **Continuous governance** — Every action is governed in real-time, not reviewed after the fact
-4. **Agents as governed participants** — Agents are first-class team members with the same accountability mechanisms as humans
+1. **Policy as code** — Governance rules are declarative configurations, not verbal agreements or wiki pages
+2. **Evidence over claims** — Immutable receipts prove what happened. Status updates and ticket comments don't.
+3. **Continuous governance** — Every action is governed in real-time, not reviewed after the sprint ends
+4. **Agents as governed participants** — Agents get the same accountability mechanisms as humans. First-class team members, first-class oversight.
 
 ## Getting Started
 
 <CardGrid>
-  <Card title="Humans" icon="rocket">
+  <Card title="For Humans" icon="rocket">
     Step-by-step setup guide for developers.
 
     [Get Started →](/guides/manual-quickstart)
 
   </Card>
-  <Card title="AI Agents" icon="seti:robot">
-    Canonical setup guide for AI coding assistants.
+  <Card title="For AI Agents" icon="seti:robot">
+    Canonical onboarding for AI coding assistants.
 
     [Agent Quickstart →](/getting-started/quickstart)
 
   </Card>
 </CardGrid>
 
+**Keep reading:**
+
 - [What is LumenFlow?](/getting-started/introduction) — Architecture overview
 - [Kernel Runtime](/concepts/kernel) — How the kernel dispatches and governs tool calls
 - [Packs](/concepts/packs) — The extension mechanism for domain-specific tooling
-- [Software Delivery Pack](/pack/overview) — The built-in pack for software teams
+- [Licensing](/legal/licensing) — AGPL v3 + Apache 2.0 dual-license model

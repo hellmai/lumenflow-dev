@@ -3,7 +3,7 @@ title: LumenFlow
 description: The governance layer between AI agents and the world
 template: splash
 hero:
-  tagline: Your AI agents are powerful. Make them governable. An open-source runtime kernel that controls what agents can do, proves what they did, and enforces policies they can't bypass — without slowing them down.
+  tagline: "Your AI agents are powerful. Make them governable. LumenFlow is a free, open-source kernel that controls what agents can do, proves what they did, and enforces policies they can't bypass — without slowing them down."
   image:
     dark: ../../assets/logo-dark.png
     light: ../../assets/logo-light.png
@@ -24,115 +24,178 @@ hero:
 
 import { Card, CardGrid, Aside, LinkCard } from '@astrojs/starlight/components';
 
-## The Problem
+## The Problem Nobody Talks About
 
-AI agents can read files, write code, call APIs, and deploy services. But without governance, they operate in a trust vacuum.
+AI agents are getting really good at writing code, calling APIs, and shipping features. But here's the thing — nobody is watching them.
 
 <CardGrid stagger>
-  <Card title="No audit trail" icon="warning">
-    Your agent writes to production. Six months later, compliance asks "who approved this change?"
-    You have no answer.
+  <Card title="No receipts" icon="warning">
+    Your agent pushes to production on Tuesday. Six months later, compliance knocks on the door:
+    "Who approved this?" You check git blame, Slack threads, PR comments... nothing. The agent
+    didn't leave a trail because nobody asked it to.
   </Card>
-  <Card title="No policy enforcement" icon="error">
-    Your agent instructions say "don't touch .env files." But instructions are suggestions — nothing
-    actually stops the agent.
+  <Card title="No guardrails" icon="error">
+    You tell your agent "don't touch .env files." Great advice. But advice is all it is — a polite
+    suggestion in a system prompt that nothing actually enforces. One hallucination later, your
+    secrets are in a commit message.
   </Card>
-  <Card title="No scope boundaries" icon="close">
-    Agent asked to fix a login bug modifies the payment module instead. No mechanism prevented it.
+  <Card title="No boundaries" icon="close">
+    You ask the agent to fix a login bug. It fixes the bug, refactors the payment module, updates
+    three unrelated tests, and adds a dependency you've never heard of. Nothing stopped it because
+    nothing could.
   </Card>
 </CardGrid>
 
-LumenFlow solves this by inserting a **governance kernel** between agents and the world.
+LumenFlow fixes this. It sits between your agents and everything they touch — a **governance kernel** that enforces rules before actions happen, not after.
 
-## Works With Any AI
-
-LumenFlow is **friction-free for any AI coding assistant**. If your AI can read project files, it can use LumenFlow — just point it at `AGENTS.md`.
-
-| Any AI Tool                                           | Enhanced Integrations                                    |
-| ----------------------------------------------------- | -------------------------------------------------------- |
-| Works out of the box with plain markdown instructions | Claude Code, Cursor, Windsurf, Codex get deeper features |
-| No vendor lock-in — CLI commands work everywhere      | Auto-detection, skills, vendor-specific configs          |
-| Universal entry points: `AGENTS.md`, `LUMENFLOW.md`   | Optional overlays: `.claude/`, `.cursor/`, `.windsurf/`  |
+---
 
 ## Four Guarantees
 
-The kernel provides four guarantees that **cannot be bypassed**:
+These aren't features you can turn off. They're structural properties of the kernel — enforced at runtime, every time, for every agent.
 
 <CardGrid stagger>
-  <Card title="Agents can't go off-script" icon="approve-check">
-    4-level scope intersection: workspace, lane, task, and tool permissions must all agree before
-    execution proceeds.
+  <Card title="Agents stay in their lane" icon="approve-check">
+    A 4-level scope intersection checks workspace, lane, task, and tool permissions before any
+    action proceeds. All four levels must agree. If any level says no, it's no.
   </Card>
-  <Card title="Every action is provable" icon="document">
-    Immutable evidence receipts with content-addressed inputs. Cryptographic proof of what was
-    requested, allowed, and enforced.
+  <Card title="Every action has a receipt" icon="document">
+    Immutable, content-addressed evidence records capture what was requested, what was checked,
+    and what happened. Not logs — cryptographic proof that can be independently verified.
   </Card>
-  <Card title="Policies are inescapable" icon="warning">
-    Deny-wins cascade evaluated at every tool call. A restrictive policy at any level cannot be
-    loosened by a lower level.
+  <Card title="Policies can't be loosened" icon="warning">
+    The deny-wins cascade means a restrictive policy at any level stays restrictive. A lane can't
+    override a workspace rule. A task can't override a lane rule. Strictness only goes one direction.
   </Card>
-  <Card title="Isolation is OS-enforced" icon="setting">
-    bwrap sandbox with write confinement and deny overlays on secrets. Enforced by the OS, not by
-    the agent runtime.
+  <Card title="Isolation is real" icon="setting">
+    Agents run in bwrap sandboxes with write confinement and deny overlays on secrets. This is
+    OS-level isolation — enforced by the Linux kernel, not by the agent runtime. Agents can't
+    escape it even if they try.
   </Card>
 </CardGrid>
+
+---
+
+## Works With Any AI
+
+If your AI assistant can read files and run commands, it can use LumenFlow. No vendor lock-in, no special SDK required. Just point your agent at `AGENTS.md` and go.
+
+| Any AI Tool | Enhanced Integrations |
+| --- | --- |
+| Works out of the box via markdown instructions | Claude Code, Cursor, Windsurf, Codex get deeper features |
+| CLI commands work everywhere — no lock-in | Auto-detection, skills, vendor-specific overlays |
+| Universal entry points: `AGENTS.md`, `LUMENFLOW.md` | Optional: `.claude/`, `.cursor/`, `.windsurf/` configs |
+
+<Aside type="tip">
+  Already using an AI coding tool? LumenFlow doesn't replace it — it governs it. Your agents
+  keep their full capabilities. They just can't color outside the lines anymore.
+</Aside>
+
+---
+
+## Open Source by Design
+
+LumenFlow is **free and open source** under a dual-license model built for trust:
+
+<CardGrid>
+  <Card title="AGPL v3 — Kernel & Packs" icon="approve-check">
+    The kernel, runtime, and all packs are licensed under **AGPL v3**. This means if you modify
+    LumenFlow and deploy it as a service, you share your changes with the community. No proprietary
+    forks. The same copyleft protection that keeps the kernel honest keeps the ecosystem honest too.
+  </Card>
+  <Card title="Apache 2.0 — SDK" icon="open-book">
+    The Control Plane SDK is licensed under **Apache 2.0** — use it in proprietary projects,
+    commercial products, or closed-source integrations with zero AGPL obligations. Build on
+    LumenFlow without strings attached.
+  </Card>
+</CardGrid>
+
+Every source file carries an SPDX license header. Every package has the correct license in `package.json`. A `NOTICE` file documents the full licensing model. We take this seriously because governance software that isn't transparent about its own governance would be a bad joke.
+
+Need a commercial license? [Get in touch](mailto:tom@hellm.ai).
+
+---
 
 ## Get Started
 
 <CardGrid>
-  <Card title="Humans" icon="rocket">
-    Step-by-step setup guide for developers.
+  <Card title="For Humans" icon="rocket">
+    Step-by-step setup for developers who want to govern their AI agents today.
 
     [Get Started →](/guides/manual-quickstart/)
 
   </Card>
-  <Card title="AI Agents" icon="star">
-    Canonical setup guide for AI coding assistants.
+  <Card title="For AI Agents" icon="star">
+    Canonical onboarding guide for AI coding assistants. Hand this to your agent and let it go.
 
     [Agent Quickstart →](/getting-started/quickstart/)
 
   </Card>
 </CardGrid>
 
+---
+
 ## Extensible by Design
 
-Packs are domain plugins that teach the kernel new capabilities. Install a pack to add tools, policies, and evidence types for any domain.
+The kernel is domain-agnostic on purpose. Domain knowledge comes from **packs** — pluggable extensions that add tools, policies, and evidence types for any workflow.
 
 <CardGrid>
   <Card title="Software Delivery Pack" icon="setting">
-    **Built-in.** Work Units, lanes, gates, worktrees, memory, and 100+ CLI commands for structured
-    software delivery.
+    **Ships built-in.** Work Units, lanes, gates, worktrees, memory, flow metrics, and 100+ CLI
+    commands for structured software delivery. This is what we use to build LumenFlow itself.
 
-    [Explore the Software Delivery Pack →](/pack/overview/)
+    [Explore the Pack →](/pack/overview/)
 
   </Card>
-  <Card title="Create Your Own Pack" icon="add-document">
-    Build a pack for customer support, data pipelines, infrastructure provisioning, or any domain.
+  <Card title="Build Your Own" icon="add-document">
+    Customer support, data pipelines, infrastructure provisioning, compliance auditing — if you
+    can define the rules, you can build a pack for it.
 
-    [Create a Pack in 10 Minutes →](/guides/create-a-pack/)
+    [Create a Pack →](/guides/create-a-pack/)
 
   </Card>
 </CardGrid>
 
-## LumenFlow vs Alternatives
+---
 
-How does LumenFlow governance compare to other approaches?
+## How LumenFlow Compares
 
-| Aspect                   | Scrum / Kanban    | GitHub Actions alone | LangChain / CrewAI   | LumenFlow                                            |
-| ------------------------ | ----------------- | -------------------- | -------------------- | ---------------------------------------------------- |
-| **Agent governance**     | None              | CI-only              | Trust the prompt     | 4-level scope, deny-wins policy engine               |
-| **Evidence of work**     | Ticket status     | Logs                 | None                 | Immutable evidence receipts                          |
-| **Sandbox isolation**    | None              | Container-level      | None                 | OS-level bwrap with secret deny overlays             |
-| **Work partitioning**    | Columns / sprints | Workflows            | Agent roles          | Lanes with WIP limits and worktree isolation         |
-| **Context recovery**     | Human memory      | None                 | Conversation history | Checkpointed memory layer with auto-recovery         |
-| **Quality gates**        | PR review         | CI checks            | None                 | Automated gates: format, lint, typecheck, test       |
-| **Multi-agent safety**   | N/A               | Concurrent jobs      | Shared state         | Lane locking, branch isolation, coordination signals |
-| **Domain extensibility** | Plugins / apps    | Marketplace actions  | Custom tools         | Pack system: manifest, scoped tools, policies        |
+| Aspect | Scrum / Kanban | GitHub Actions | LangChain / CrewAI | **LumenFlow** |
+| --- | --- | --- | --- | --- |
+| **Agent governance** | None | CI-only | Trust the prompt | 4-level scope, deny-wins policy engine |
+| **Evidence of work** | Ticket status | Logs | None | Immutable evidence receipts |
+| **Sandbox isolation** | None | Container-level | None | OS-level bwrap with secret deny overlays |
+| **Work partitioning** | Columns / sprints | Workflows | Agent roles | Lanes with WIP limits + worktree isolation |
+| **Quality gates** | PR review | CI checks | None | Automated: format, lint, typecheck, test |
+| **Multi-agent safety** | N/A | Concurrent jobs | Shared state | Lane locking, branch isolation, signals |
+| **Licensing** | N/A (methodology) | Proprietary | MIT / Apache | **AGPL v3** (kernel) + **Apache 2.0** (SDK) |
+| **Extensibility** | Plugins / apps | Marketplace | Custom tools | Pack system with scoped tools + policies |
 
 <Aside type="tip">
-  LumenFlow can complement existing tools. Use Jira for planning and stakeholder communication,
-  GitHub Actions for CI, and LumenFlow as the governance layer that ties execution together.
+  LumenFlow complements your existing stack. Keep Jira for planning, GitHub Actions for CI,
+  and add LumenFlow as the governance layer that ties agent execution together.
 </Aside>
+
+---
+
+## Join the Community
+
+LumenFlow is built in the open. Every feature, every bug fix, every decision goes through the same
+governance workflow we ship to you.
+
+<CardGrid>
+  <Card title="Contribute" icon="heart">
+    Read the [Contributing Guide](https://github.com/hellmai/lumenflow/blob/main/CONTRIBUTING.md),
+    sign the CLA, and pick up a Work Unit. First-time contributors welcome.
+  </Card>
+  <Card title="Discuss" icon="comment">
+    Questions, ideas, or feedback? Start a thread on
+    [GitHub Discussions](https://github.com/hellmai/lumenflow/discussions) or join us on
+    [Discord](https://discord.gg/lumenflow).
+  </Card>
+</CardGrid>
+
+---
 
 ## Explore
 
@@ -143,10 +206,10 @@ How does LumenFlow governance compare to other approaches?
   <Card title="CLI Reference" icon="seti:shell">
     [100+ commands →](/reference/cli/)
   </Card>
-  <Card title="AI Agent Integration" icon="seti:robot">
-    [Claude, Codex, custom agents →](/guides/ai-agents/)
+  <Card title="AI Integration" icon="seti:robot">
+    [Claude, Codex, Cursor, and more →](/guides/ai-agents/)
   </Card>
-  <Card title="Troubleshooting" icon="warning">
-    [Fix common issues: gates, worktrees, git →](/guides/troubleshooting/)
+  <Card title="Licensing" icon="document">
+    [AGPL v3 + Apache 2.0 details →](/legal/licensing/)
   </Card>
 </CardGrid>
