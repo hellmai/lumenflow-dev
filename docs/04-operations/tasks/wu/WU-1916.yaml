@@ -2,7 +2,7 @@ id: WU-1916
 title: Rewrite docs content for kernel/pack distinction and dual entry paths
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -31,7 +31,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Homepage Get Started button points to agent-only quickstart. Why LumenFlow page positions it as a delivery methodology. 14 concept/guide pages present Software Delivery Pack features as core LumenFlow. Fix all content to reflect kernel/pack architecture, provide dual human/agent entry paths.
+description: Homepage Get Started button points to agent-only quickstart. Why LumenFlow page
+  positions it as a delivery methodology. 14 concept/guide pages present Software Delivery Pack
+  features as core LumenFlow. Fix all content to reflect kernel/pack architecture, provide dual
+  human/agent entry paths.
 acceptance:
   - Homepage shows dual Get Started (Humans) and Agent Quickstart CTAs
   - Why LumenFlow page discusses governance kernel not methodology
@@ -39,3 +42,11 @@ acceptance:
   - All pack concept/guide pages have Aside clarifying Software Delivery Pack content
   - Sidebar shows renamed entry labels for human/agent paths
   - Site builds without errors
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1916
+claimed_at: 2026-02-20T10:12:53.606Z
+baseline_main_sha: f003290fab0cab1036a78462ba67c256a5f63eb5
+session_id: 9e15fcd5-13a9-4009-a417-064c4f05a3e6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T10:12:53.612Z

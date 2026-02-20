@@ -1785,3 +1785,4 @@
 {"type":"complete","wuId":"WU-1914","timestamp":"2026-02-20T00:23:45.610Z"}
 {"type":"claim","wuId":"WU-1915","timestamp":"2026-02-20T09:30:07.024Z","lane":"Content: Site Comms","title":"Restructure Starlight docs hierarchy to reflect kernel/pack architecture"}
 {"type":"complete","wuId":"WU-1915","timestamp":"2026-02-20T09:34:15.373Z"}
+{"type":"claim","wuId":"WU-1916","lane":"Content: Site Comms","title":"Rewrite docs content for kernel/pack distinction and dual entry paths","timestamp":"2026-02-20T10:12:53.639Z"}

@@ -5,6 +5,7 @@ _Last updated: 2026-02-20_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1916 — Rewrite docs content for kernel/pack distinction and dual entry paths](wu/WU-1916.yaml)
 
 ## Completed
 
