@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1928 — Community Landing Page](wu/WU-1928.yaml) — Content: Site Comms
 - [WU-1927 — lumenflow onboard Interactive Setup Wizard](wu/WU-1927.yaml) — Framework: CLI Orchestration
 - [WU-1926 — Publish lumenflow CLI to npm](wu/WU-1926.yaml) — Framework: CLI Enforcement
 - [WU-1925 — App Shell Navigation and Error Boundaries](wu/WU-1925.yaml) — Content: Site Comms
