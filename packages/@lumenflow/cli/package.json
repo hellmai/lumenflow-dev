@@ -140,7 +140,9 @@
     "pack-search": "./dist/pack-search.js",
     "workspace-init": "./dist/workspace-init.js",
     "config-set": "./dist/config-set.js",
-    "config-get": "./dist/config-get.js"
+    "config-get": "./dist/config-get.js",
+    "lumenflow-onboard": "./dist/onboard.js",
+    "onboard": "./dist/onboard.js"
   },
   "files": [
     "dist",
@@ -158,6 +160,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@clack/prompts": "^1.0.1",
     "@lumenflow/agent": "workspace:*",
     "@lumenflow/core": "workspace:*",
     "@lumenflow/initiatives": "workspace:*",

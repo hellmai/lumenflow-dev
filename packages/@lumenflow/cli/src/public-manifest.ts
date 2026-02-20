@@ -690,6 +690,13 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     description: 'Read and display a value from .lumenflow.config.yaml',
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
   },
+  {
+    name: 'onboard',
+    binName: 'lumenflow-onboard',
+    binPath: './dist/onboard.js',
+    description: 'Interactive setup wizard for LumenFlow workspace',
+    category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+  },
 
   // ============================================================================
   // Metrics & Flow
