@@ -14,6 +14,7 @@ import {
   CREATE_PACK_CTA_LABEL,
   AUTHORING_GUIDE_URL,
 } from '../lib/marketplace-types';
+import { CreatePackWizard } from './create-pack-wizard';
 
 /* ------------------------------------------------------------------
  * Constants
@@ -379,13 +380,16 @@ export function MarketplacePackDetail({ pack, workspaceRoot = null }: Marketplac
       {/* Create Pack CTA (AC4) */}
       <div className="rounded-lg border border-dashed border-indigo-200 bg-indigo-50 p-6 text-center">
         <p className="text-sm text-slate-600">Want to build your own pack?</p>
-        <a
-          data-testid="detail-create-pack-cta"
-          href={AUTHORING_GUIDE_URL}
-          className="mt-2 inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
-        >
-          {CREATE_PACK_CTA_LABEL}
-        </a>
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+          <CreatePackWizard />
+          <a
+            data-testid="detail-create-pack-cta"
+            href={AUTHORING_GUIDE_URL}
+            className="inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+          >
+            {CREATE_PACK_CTA_LABEL}
+          </a>
+        </div>
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ import {
   AUTHORING_GUIDE_URL,
 } from '../lib/marketplace-types';
 import { loadPersistedWorkspacePath } from '../lib/workspace-connection';
+import { CreatePackWizard } from './create-pack-wizard';
 
 /* ------------------------------------------------------------------
  * Constants
@@ -227,13 +228,16 @@ export function MarketplaceBrowse({ packs, categories }: MarketplaceBrowseProps)
             {packs.length}
           </span>
         </div>
-        <a
-          data-testid="create-pack-cta"
-          href={AUTHORING_GUIDE_URL}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
-        >
-          {CREATE_PACK_CTA_LABEL}
-        </a>
+        <div className="flex items-center gap-2">
+          <CreatePackWizard />
+          <a
+            data-testid="create-pack-cta"
+            href={AUTHORING_GUIDE_URL}
+            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+          >
+            {CREATE_PACK_CTA_LABEL}
+          </a>
+        </div>
       </div>
 
       {/* Search */}
