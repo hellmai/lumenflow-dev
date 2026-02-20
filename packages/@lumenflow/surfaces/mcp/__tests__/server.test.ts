@@ -290,6 +290,122 @@ describe('surfaces/mcp runtime-backed server', () => {
     );
   });
 
+  it('routes pack/workspace parity tools through runtime.executeTool with context enforcement', async () => {
+    const executeTool = vi.fn(async () => ({ success: true }));
+
+    const runtime = {
+      createTask: vi.fn(),
+      claimTask: vi.fn(),
+      completeTask: vi.fn(),
+      inspectTask: vi.fn(),
+      executeTool,
+      getToolHost: vi.fn(),
+      getPolicyEngine: vi.fn(),
+    } as unknown as KernelRuntime;
+
+    const server = createMcpServer(runtime);
+
+    await server.handleInvocation(
+      {
+        name: 'pack:list',
+        arguments: {},
+      },
+      {
+        run_id: 'run-1738-pack-list',
+        task_id: 'WU-1738-pack-list',
+        session_id: 'session-1738-pack-list',
+        allowed_scopes: [READ_SCOPE],
+        metadata: {
+          workspace_allowed_scopes: [READ_SCOPE],
+          lane_allowed_scopes: [READ_SCOPE],
+          task_declared_scopes: [READ_SCOPE],
+          workspace_config_hash: 'a'.repeat(64),
+          runtime_version: '2.21.0',
+        },
+      },
+    );
+
+    await server.handleInvocation(
+      {
+        name: 'pack:install',
+        arguments: {
+          id: 'software-delivery',
+          source: 'registry',
+          version: '1.0.0',
+        },
+      },
+      {
+        run_id: 'run-1738-pack-install',
+        task_id: 'WU-1738-pack-install',
+        session_id: 'session-1738-pack-install',
+        allowed_scopes: [READ_SCOPE],
+        metadata: {
+          workspace_allowed_scopes: [READ_SCOPE],
+          lane_allowed_scopes: [READ_SCOPE],
+          task_declared_scopes: [READ_SCOPE],
+          workspace_config_hash: 'b'.repeat(64),
+          runtime_version: '2.21.0',
+        },
+      },
+    );
+
+    await server.handleInvocation(
+      {
+        name: 'workspace:info',
+        arguments: {},
+      },
+      {
+        run_id: 'run-1738-workspace-info',
+        task_id: 'WU-1738-workspace-info',
+        session_id: 'session-1738-workspace-info',
+        allowed_scopes: [READ_SCOPE],
+        metadata: {
+          workspace_allowed_scopes: [READ_SCOPE],
+          lane_allowed_scopes: [READ_SCOPE],
+          task_declared_scopes: [READ_SCOPE],
+          workspace_config_hash: 'c'.repeat(64),
+          runtime_version: '2.21.0',
+        },
+      },
+    );
+
+    expect(executeTool).toHaveBeenCalledWith(
+      'pack:list',
+      {},
+      expect.objectContaining({
+        run_id: 'run-1738-pack-list',
+        task_id: 'WU-1738-pack-list',
+      }),
+    );
+    expect(executeTool).toHaveBeenCalledWith(
+      'pack:install',
+      {
+        id: 'software-delivery',
+        source: 'registry',
+        version: '1.0.0',
+      },
+      expect.objectContaining({
+        run_id: 'run-1738-pack-install',
+        task_id: 'WU-1738-pack-install',
+      }),
+    );
+    expect(executeTool).toHaveBeenCalledWith(
+      'workspace:info',
+      {},
+      expect.objectContaining({
+        run_id: 'run-1738-workspace-info',
+        task_id: 'WU-1738-workspace-info',
+      }),
+    );
+
+    await expect(
+      server.handleInvocation({
+        name: 'pack:list',
+        arguments: {},
+      }),
+    ).rejects.toThrow('requires execution context');
+  });
+
   it('builds MCP tool schemas from zod via Kernel JSON schema conversion', () => {
     const runtime = {
       createTask: vi.fn(),
@@ -321,6 +437,34 @@ describe('surfaces/mcp runtime-backed server', () => {
     expect(completeTool?.input_schema.required).toEqual(expect.arrayContaining(['task_id']));
     expect(completeTool?.input_schema.properties?.task_id).toBeDefined();
     expect(completeTool?.input_schema.properties?.id).toBeUndefined();
+
+    const packListTool = tools.find((tool) => tool.name === 'pack:list');
+    expect(packListTool).toBeDefined();
+    expect(packListTool?.input_schema).toEqual({
+      type: 'object',
+      properties: {},
+      additionalProperties: false,
+    });
+
+    const packInstallTool = tools.find((tool) => tool.name === 'pack:install');
+    expect(packInstallTool).toBeDefined();
+    expect(packInstallTool?.input_schema.required).toEqual(
+      expect.arrayContaining(['id', 'source', 'version']),
+    );
+    expect(packInstallTool?.input_schema.properties?.id).toEqual({ type: 'string' });
+    expect(packInstallTool?.input_schema.properties?.source).toEqual({
+      type: 'string',
+      enum: ['local', 'git', 'registry'],
+    });
+    expect(packInstallTool?.input_schema.properties?.version).toEqual({ type: 'string' });
+
+    const workspaceInfoTool = tools.find((tool) => tool.name === 'workspace:info');
+    expect(workspaceInfoTool).toBeDefined();
+    expect(workspaceInfoTool?.input_schema).toEqual({
+      type: 'object',
+      properties: {},
+      additionalProperties: false,
+    });
   });
 
   it('CLI lifecycle and MCP lifecycle produce identical event sequences', async () => {

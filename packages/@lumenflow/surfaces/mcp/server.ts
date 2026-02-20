@@ -55,6 +55,28 @@ const COMPLETE_TASK_INPUT_SCHEMA: Record<string, unknown> = {
   required: ['task_id'],
 };
 
+const EMPTY_OBJECT_INPUT_SCHEMA: Record<string, unknown> = {
+  type: 'object',
+  properties: {},
+  additionalProperties: false,
+};
+
+const PACK_SOURCE_VALUES = ['local', 'git', 'registry'] as const;
+
+const PACK_INSTALL_INPUT_SCHEMA: Record<string, unknown> = {
+  type: 'object',
+  properties: {
+    id: { type: 'string' },
+    source: { type: 'string', enum: [...PACK_SOURCE_VALUES] },
+    version: { type: 'string' },
+    integrity: { type: 'string' },
+    url: { type: 'string' },
+    registry_url: { type: 'string' },
+  },
+  required: ['id', 'source', 'version'],
+  additionalProperties: false,
+};
+
 function requireObject(args: unknown, message: string): Record<string, unknown> {
   if (!args || typeof args !== 'object' || Array.isArray(args)) {
     throw new Error(message);
@@ -171,6 +193,21 @@ function useCaseToolDefinitions(): McpToolDefinition[] {
       name: 'task:inspect',
       description: 'Inspect a task using KernelRuntime.inspectTask.',
       input_schema: toMcpJsonSchema(TaskSpecSchema.pick({ id: true })),
+    },
+    {
+      name: 'pack:list',
+      description: 'List currently loaded packs via runtime tool execution.',
+      input_schema: EMPTY_OBJECT_INPUT_SCHEMA,
+    },
+    {
+      name: 'pack:install',
+      description: 'Install a pack via runtime tool execution.',
+      input_schema: PACK_INSTALL_INPUT_SCHEMA,
+    },
+    {
+      name: 'workspace:info',
+      description: 'Inspect workspace metadata via runtime tool execution.',
+      input_schema: EMPTY_OBJECT_INPUT_SCHEMA,
     },
   ];
 }

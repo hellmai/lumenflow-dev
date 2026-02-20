@@ -7,12 +7,12 @@ priority: P1
 created: 2026-02-20
 code_paths:
   - packages/@lumenflow/surfaces/mcp/server.ts
-  - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+  - packages/@lumenflow/surfaces/mcp/__tests__/server.test.ts
 tests:
   manual:
     - Validate new tool names appear in listTools output with expected schemas
   unit:
-    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+    - packages/@lumenflow/surfaces/mcp/__tests__/server.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1956.done
