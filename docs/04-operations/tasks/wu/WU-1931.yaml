@@ -1,7 +1,7 @@
 id: WU-1931
 title: 'Docs polish: v3.0.0 references, lanes, upgrade guide'
 lane: 'Content: Site Comms'
-type: documentation
+type: refactor
 status: in_progress
 priority: P2
 created: 2026-02-20
@@ -18,10 +18,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-20T11:01:45.244Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1931
+session_id: 67fba613-8662-486d-aad6-662bcfa7039a
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:01:45.250Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -34,11 +41,3 @@ acceptance:
   - Upgrade guide reflects v3.0.0
   - Lanes page matches actual .lumenflow.config.yaml structure
   - Docs build with zero errors
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1931
-claimed_at: 2026-02-20T11:01:45.244Z
-baseline_main_sha: 7996f1a2ff415bea1c461624d5c8602d196558d8
-session_id: 67fba613-8662-486d-aad6-662bcfa7039a
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-20T11:01:45.250Z
