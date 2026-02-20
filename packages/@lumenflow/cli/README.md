@@ -164,11 +164,16 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `lumenflow-doctor`         | Diagnose LumenFlow configuration                        |
 | `lumenflow-init`           | Initialize LumenFlow in a project (alias)               |
 | `lumenflow-integrate`      | Generate enforcement hooks for client                   |
+| `lumenflow-onboard`        | Interactive setup wizard for LumenFlow workspace        |
 | `lumenflow-release`        | Run release workflow                                    |
 | `lumenflow-sync-templates` | Sync templates to project                               |
 | `lumenflow-upgrade`        | Upgrade LumenFlow packages                              |
+| `pack-hash`                | Compute integrity hash for a domain pack                |
+| `pack-install`             | Install a domain pack into workspace                    |
+| `pack-publish`             | Publish a domain pack to a registry                     |
 | `pack-scaffold`            | Scaffold a new domain pack                              |
 | `pack-search`              | Search for domain packs in a registry                   |
+| `pack-validate`            | Validate a domain pack for integrity                    |
 | `plan-create`              | Create a new plan                                       |
 | `plan-edit`                | Edit plan content                                       |
 | `plan-link`                | Link plan to WU or initiative                           |

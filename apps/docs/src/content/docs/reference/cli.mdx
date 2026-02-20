@@ -9,25 +9,25 @@ description: Complete CLI reference for LumenFlow
 
 import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
-The LumenFlow CLI provides [Software Delivery Pack](/pack/overview) commands for managing Work Units, memory, initiatives, and more. These commands route through the [kernel](/concepts/kernel) for scope enforcement, policy evaluation, and evidence recording.
+LumenFlow provides a comprehensive CLI for managing Work Units, memory, initiatives, and more.
 
 <Aside type="tip">All commands can be run via `pnpm command` (e.g., `pnpm wu:claim`).</Aside>
 
 ## Commands Overview
 
-| Category            | Commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Gates & Quality     | [`gates`](#gates), [`gates:docs`](#gatesdocs), [`lane:edit`](#laneedit), [`lane:health`](#lanehealth), [`lane:lock`](#lanelock), [`lane:setup`](#lanesetup), [`lane:status`](#lanestatus), [`lane:suggest`](#lanesuggest), [`lane:validate`](#lanevalidate), [`lumenflow-gates`](#lumenflow-gates), [`lumenflow-validate`](#lumenflow-validate), [`validate`](#validate)                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Initiatives         | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign-wus`](#initiativebulk-assign-wus), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:remove-wu`](#initiativeremove-wu), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Memory & Sessions   | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:recover`](#memrecover), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage), [`signal:cleanup`](#signalcleanup)                                                                                                                                                                                                                                                                                                                                                       |
-| Metrics & Flow      | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport), [`lumenflow:metrics`](#lumenflowmetrics), [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| Orchestration       | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end), [`delegation:list`](#delegationlist), [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor), [`task:claim`](#taskclaim)                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Packs               | [`pack:hash`](#packhash), [`pack:install`](#packinstall), [`pack:publish`](#packpublish), [`pack:scaffold`](#packscaffold), [`pack:search`](#packsearch), [`pack:validate`](#packvalidate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Plans               | [`init:plan`](#initplan), [`plan:create`](#plancreate), [`plan:edit`](#planedit), [`plan:link`](#planlink), [`plan:promote`](#planpromote)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Setup & Development | [`backlog:prune`](#backlogprune), [`config:get`](#configget), [`config:set`](#configset), [`docs:sync`](#docssync), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`lumenflow`](#lumenflow), [`lumenflow-init`](#lumenflow-init), [`lumenflow:commands`](#lumenflowcommands), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:integrate`](#lumenflowintegrate), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade), [`sync:templates`](#synctemplates), [`workspace:init`](#workspaceinit) |
-| State Management    | [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| WU Lifecycle        | [`wu:block`](#wublock), [`wu:brief`](#wubrief), [`wu:claim`](#wuclaim), [`wu:create`](#wucreate), [`wu:delegate`](#wudelegate), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:prep`](#wuprep), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:sandbox`](#wusandbox), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:validate`](#wuvalidate)                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| WU Maintenance      | [`wu:cleanup`](#wucleanup), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:infer-lane`](#wuinfer-lane), [`wu:preflight`](#wupreflight), [`wu:proto`](#wuproto), [`wu:prune`](#wuprune), [`wu:repair`](#wurepair), [`wu:unlock-lane`](#wuunlock-lane)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Category            | Commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Gates & Quality     | [`gates`](#gates), [`gates:docs`](#gatesdocs), [`lane:edit`](#laneedit), [`lane:health`](#lanehealth), [`lane:lock`](#lanelock), [`lane:setup`](#lanesetup), [`lane:status`](#lanestatus), [`lane:suggest`](#lanesuggest), [`lane:validate`](#lanevalidate), [`lumenflow-gates`](#lumenflow-gates), [`lumenflow-validate`](#lumenflow-validate), [`validate`](#validate)                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Initiatives         | [`initiative:add-wu`](#initiativeadd-wu), [`initiative:bulk-assign`](#initiativebulk-assign), [`initiative:create`](#initiativecreate), [`initiative:edit`](#initiativeedit), [`initiative:list`](#initiativelist), [`initiative:plan`](#initiativeplan), [`initiative:remove-wu`](#initiativeremove-wu), [`initiative:status`](#initiativestatus)                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Memory & Sessions   | [`mem:checkpoint`](#memcheckpoint), [`mem:cleanup`](#memcleanup), [`mem:context`](#memcontext), [`mem:create`](#memcreate), [`mem:delete`](#memdelete), [`mem:export`](#memexport), [`mem:inbox`](#meminbox), [`mem:init`](#meminit), [`mem:ready`](#memready), [`mem:recover`](#memrecover), [`mem:signal`](#memsignal), [`mem:start`](#memstart), [`mem:summarize`](#memsummarize), [`mem:triage`](#memtriage), [`signal:cleanup`](#signalcleanup)                                                                                                                                                                                                                                                                                                                                          |
+| Metrics & Flow      | [`flow:bottlenecks`](#flowbottlenecks), [`flow:report`](#flowreport), [`lumenflow:metrics`](#lumenflowmetrics), [`metrics`](#metrics), [`metrics:snapshot`](#metricssnapshot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Orchestration       | [`agent:issues-query`](#agentissues-query), [`agent:log-issue`](#agentlog-issue), [`agent:session`](#agentsession), [`agent:session-end`](#agentsession-end), [`delegation:list`](#delegationlist), [`orchestrate:init-status`](#orchestrateinit-status), [`orchestrate:initiative`](#orchestrateinitiative), [`orchestrate:monitor`](#orchestratemonitor), [`task:claim`](#taskclaim)                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Packs               | [`pack:hash`](#packhash), [`pack:install`](#packinstall), [`pack:publish`](#packpublish), [`pack:scaffold`](#packscaffold), [`pack:search`](#packsearch), [`pack:validate`](#packvalidate)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Plans               | [`init:plan`](#initplan), [`plan:create`](#plancreate), [`plan:edit`](#planedit), [`plan:link`](#planlink), [`plan:promote`](#planpromote)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Setup & Development | [`backlog:prune`](#backlogprune), [`config:get`](#configget), [`config:set`](#configset), [`docs:sync`](#docssync), [`file:delete`](#filedelete), [`file:edit`](#fileedit), [`file:read`](#fileread), [`file:write`](#filewrite), [`git:branch`](#gitbranch), [`git:diff`](#gitdiff), [`git:log`](#gitlog), [`git:status`](#gitstatus), [`lumenflow`](#lumenflow), [`lumenflow-init`](#lumenflow-init), [`lumenflow:commands`](#lumenflowcommands), [`lumenflow:docs-sync`](#lumenflowdocs-sync), [`lumenflow:doctor`](#lumenflowdoctor), [`lumenflow:integrate`](#lumenflowintegrate), [`lumenflow:release`](#lumenflowrelease), [`lumenflow:sync-templates`](#lumenflowsync-templates), [`lumenflow:upgrade`](#lumenflowupgrade), [`onboard`](#onboard), [`sync:templates`](#synctemplates) |
+| State Management    | [`state:bootstrap`](#statebootstrap), [`state:cleanup`](#statecleanup), [`state:doctor`](#statedoctor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| WU Lifecycle        | [`wu:block`](#wublock), [`wu:brief`](#wubrief), [`wu:claim`](#wuclaim), [`wu:create`](#wucreate), [`wu:delegate`](#wudelegate), [`wu:done`](#wudone), [`wu:edit`](#wuedit), [`wu:prep`](#wuprep), [`wu:recover`](#wurecover), [`wu:release`](#wurelease), [`wu:sandbox`](#wusandbox), [`wu:status`](#wustatus), [`wu:unblock`](#wuunblock), [`wu:validate`](#wuvalidate)                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| WU Maintenance      | [`wu:cleanup`](#wucleanup), [`wu:delete`](#wudelete), [`wu:deps`](#wudeps), [`wu:infer-lane`](#wuinfer-lane), [`wu:preflight`](#wupreflight), [`wu:proto`](#wuproto), [`wu:prune`](#wuprune), [`wu:repair`](#wurepair), [`wu:unlock-lane`](#wuunlock-lane)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 ## Gates & Quality
 
@@ -42,8 +42,6 @@ pnpm gates
 ### gates:docs
 
 Run docs-only quality gates (alias)
-
-(pnpm script alias for `pnpm gates --docs-only`)
 
 ```bash
 pnpm gates:docs
@@ -145,12 +143,12 @@ pnpm initiative:add-wu --initiative <ref>
 | -------------------------- | ------------------------------------ | -------- |
 | `--initiative &lt;ref&gt;` | Parent initiative (INIT-XXX or slug) | Yes      |
 
-### initiative:bulk-assign-wus
+### initiative:bulk-assign
 
 Bulk assign WUs to initiative
 
 ```bash
-pnpm initiative:bulk-assign-wus
+pnpm initiative:bulk-assign
 ```
 
 **Options:**
@@ -698,57 +696,63 @@ pnpm orchestrate:monitor
 
 ### task:claim
 
-Claim a task directly through the [kernel runtime](/concepts/kernel), bypassing the CLI's WU layer.
-
-<Aside type="note" title="Kernel primitive vs CLI command">
-  `task:claim` operates at the kernel level — it claims a **task** (the kernel's unit of work)
-  rather than a **WU** (the Software Delivery Pack's wrapper). Use `wu:claim` for normal workflow;
-  use `task:claim` only when you need direct kernel interaction, such as building custom packs or
-  testing kernel behavior.
-</Aside>
+Claim a task directly through KernelRuntime
 
 ```bash
-pnpm task:claim --task-id <taskId> --by <identity> --session-id <sessionId>
+pnpm task:claim
 ```
-
-**Options:**
-
-| Flag                             | Description                                        | Required |
-| -------------------------------- | -------------------------------------------------- | -------- |
-| `--task-id &lt;taskId&gt;`       | Task ID to claim (e.g., WU-1772)                   | Yes      |
-| `--by &lt;identity&gt;`          | Actor identity for the claim (e.g., tom@hellm.ai)  | Yes      |
-| `--session-id &lt;sessionId&gt;` | Session ID for runtime event correlation           | Yes      |
-| `--timestamp &lt;iso8601&gt;`    | Optional ISO-8601 timestamp override               | No       |
-| `--domain-data &lt;json&gt;`     | Optional JSON payload for domain-specific metadata | No       |
-| `--workspace-root &lt;path&gt;`  | Workspace root directory (default: `.`)            | No       |
-
-Related kernel commands: `task:create`, `task:complete`, `task:block`, `task:unblock`, `task:inspect`, `tool:execute`.
 
 ## Packs
 
 ### pack:hash
 
-Generate content hash for a pack
+Compute integrity hash for a domain pack
 
 ```bash
 pnpm pack:hash
 ```
 
+**Options:**
+
+| Flag                      | Description                                                     | Required |
+| ------------------------- | --------------------------------------------------------------- | -------- |
+| `-f, --force`             | Force operation                                                 | No       |
+| `--pack-root &lt;dir&gt;` | Direct path to pack directory (overrides --id and --packs-root) | No       |
+
 ### pack:install
 
-Install a domain pack
+Install a domain pack into workspace
 
 ```bash
-pnpm pack:install
+pnpm pack:install --source <source> --version <version>
 ```
+
+**Options:**
+
+| Flag                         | Description                                                                              | Required |
+| ---------------------------- | ---------------------------------------------------------------------------------------- | -------- |
+| `-f, --force`                | Force operation                                                                          | No       |
+| `--source &lt;source&gt;`    | Pack source: local, git, or registry                                                     | Yes      |
+| `--version &lt;version&gt;`  | Pack version in semver format                                                            | Yes      |
+| `--url &lt;url&gt;`          | Git repository URL (required for source: git)                                            | No       |
+| `--registry-url &lt;url&gt;` | Registry base URL (for source: registry)                                                 | No       |
+| `--pack-root &lt;dir&gt;`    | Direct path to resolved pack directory on disk (overrides default resolution)            | No       |
+| `--integrity &lt;hash&gt;`   | Expected SHA-256 integrity hash in "sha256:<hex>" format (required for source: registry) | No       |
 
 ### pack:publish
 
-Publish a domain pack
+Publish a domain pack to a registry
 
 ```bash
 pnpm pack:publish
 ```
+
+**Options:**
+
+| Flag                      | Description                                                     | Required |
+| ------------------------- | --------------------------------------------------------------- | -------- |
+| `-f, --force`             | Force operation                                                 | No       |
+| `--pack-root &lt;dir&gt;` | Direct path to pack directory (overrides --id and --packs-root) | No       |
 
 ### pack:scaffold
 
@@ -783,11 +787,18 @@ pnpm pack:search
 
 ### pack:validate
 
-Validate pack manifest and structure
+Validate a domain pack for integrity
 
 ```bash
 pnpm pack:validate
 ```
+
+**Options:**
+
+| Flag                      | Description                                                     | Required |
+| ------------------------- | --------------------------------------------------------------- | -------- |
+| `-f, --force`             | Force operation                                                 | No       |
+| `--pack-root &lt;dir&gt;` | Direct path to pack directory (overrides --id and --packs-root) | No       |
 
 ## Plans
 
@@ -891,8 +902,6 @@ pnpm config:set
 ### docs:sync
 
 Sync agent docs (for upgrades) (alias)
-
-(pnpm script alias for `pnpm lumenflow:docs-sync`)
 
 ```bash
 pnpm docs:sync
@@ -1034,20 +1043,32 @@ Upgrade LumenFlow packages
 pnpm lumenflow:upgrade
 ```
 
+### onboard
+
+Interactive setup wizard for LumenFlow workspace
+
+```bash
+pnpm onboard
+```
+
+**Options:**
+
+| Flag                          | Description                                            | Required |
+| ----------------------------- | ------------------------------------------------------ | -------- |
+| `--yes, -y`                   | Accept all defaults non-interactively                  | No       |
+| `--domain &lt;domain&gt;`     | Domain pack: software-delivery, infra, or custom       | No       |
+| `--project-name &lt;name&gt;` | Project name (default: directory name or "my-project") | No       |
+| `--output, -o &lt;dir&gt;`    | Output directory (default: current directory)          | No       |
+| `--force, -f`                 | Overwrite existing workspace.yaml                      | No       |
+| `--skip-pack-install`         | Skip pack installation step                            | No       |
+| `--skip-dashboard`            | Skip dashboard launch step                             | No       |
+
 ### sync:templates
 
 Sync templates to project (alias)
 
 ```bash
 pnpm sync:templates
-```
-
-### workspace:init
-
-Initialize workspace configuration
-
-```bash
-pnpm workspace:init
 ```
 
 ## State Management
@@ -1125,13 +1146,6 @@ Generate handoff prompt for sub-agent WU execution
 ```bash
 pnpm wu:brief
 ```
-
-**Options:**
-
-| Flag                | Description                                        |
-| ------------------- | -------------------------------------------------- |
-| `--id <wuId>`       | Work Unit ID                                       |
-| `--client <client>` | Target client (claude-code, codex-cli, gemini-cli) |
 
 ### wu:claim
 
@@ -1216,22 +1230,6 @@ Complete WU (merge, stamp, cleanup) from main
 ```bash
 pnpm wu:done
 ```
-
-**Options:**
-
-| Flag                    | Description                                           |
-| ----------------------- | ----------------------------------------------------- |
-| `--id <wuId>`           | Work Unit ID                                          |
-| `--skip-gates`          | Skip gates check (requires `--reason` and `--fix-wu`) |
-| `--reason <text>`       | Reason for skipping gates                             |
-| `--fix-wu <wuId>`       | WU that will fix skipped gate failures                |
-| `--no-remove`           | Skip worktree removal after merge                     |
-| `--no-merge`            | Skip auto-merge (leave branch)                        |
-| `--delete-branch`       | Delete lane branch after merge                        |
-| `--no-auto`             | Skip auto-updating YAML/backlog                       |
-| `--override-owner`      | Override ownership check (requires `--reason`)        |
-| `--skip-exposure-check` | Skip exposure validation                              |
-| `--allow-todo`          | Allow TODO comments in code                           |
 
 ### wu:edit
 
@@ -1505,7 +1503,6 @@ pnpm wu:unlock-lane
 ## Next Steps
 
 - [Configuration](/reference/config) – Configure LumenFlow
-- [Workspace Spec](/reference/workspace-spec) – Kernel-level workspace.yaml reference
-- [MCP Server](/reference/mcp) – MCP protocol reference
 - [WU Schema](/reference/wu-schema) – Work Unit YAML structure
-- [Kernel Runtime](/concepts/kernel) – How `task:*` commands interact with the kernel
+
+<!-- MODIFIED -->

@@ -7,8 +7,6 @@ description: LumenFlow configuration file reference
 {/* Run `pnpm docs:generate` to regenerate from source */}
 {/* Includes formatting stabilization (WU-1157) */}
 
-import { Aside } from '@astrojs/starlight/components';
-
 LumenFlow is configured via `.lumenflow.config.yaml` in your project root.
 
 ## Minimal Config
@@ -110,17 +108,17 @@ WU (Work Unit) configuration
 
 Quality gates configuration
 
-| Field                       | Type     | Default           | Description                                       |
-| --------------------------- | -------- | ----------------- | ------------------------------------------------- |
-| `maxEslintWarnings`         | integer  | `100`             | Maximum allowed ESLint warnings                   |
-| `enableCoverage`            | boolean  | `true`            | Enable coverage checking                          |
-| `minCoverage`               | number   | `90`              | Minimum coverage percentage                       |
-| `enableSafetyCriticalTests` | boolean  | `true`            | Enable safety-critical test gate                  |
-| `enableInvariants`          | boolean  | `true`            | Enable invariant checks                           |
-| `execution`                 | object   | `-`               | Execution configuration                           |
-| `commands`                  | object   | `[object Object]` | Gate command overrides                            |
-| `ignore_patterns`           | string[] | `-`               | Patterns to ignore during gate checks             |
-| `lane_health`               | string   | `"warn"`          | Lane health mode: `"warn"`, `"error"`, or `"off"` |
+| Field                       | Type     | Default           | Description |
+| --------------------------- | -------- | ----------------- | ----------- | -------- | --- |
+| `maxEslintWarnings`         | integer  | `100`             |             |
+| `enableCoverage`            | boolean  | `true`            |             |
+| `minCoverage`               | number   | `90`              |             |
+| `enableSafetyCriticalTests` | boolean  | `true`            |             |
+| `enableInvariants`          | boolean  | `true`            |             |
+| `execution`                 | object   | `-`               |             |
+| `commands`                  | object   | `[object Object]` |             |
+| `ignore_patterns`           | string[] | `-`               |             |
+| `lane_health`               | "warn"   | "error"           | "off"       | `"warn"` |     |
 
 ### memory
 
@@ -152,36 +150,6 @@ Progress signals configuration for sub-agent coordination (WU-1203)
 | `before_gates`    | boolean | `true`  |             |
 | `on_blocked`      | boolean | `true`  |             |
 | `auto_checkpoint` | boolean | `false` |             |
-
-### memory.signalCleanup
-
-Signal cleanup configuration for automatic cleanup of stale coordination signals
-
-| Field             | Type    | Default | Description                              |
-| ----------------- | ------- | ------- | ---------------------------------------- |
-| `enabled`         | boolean | `true`  | Enable automatic signal cleanup          |
-| `maxAge`          | string  | `"7d"`  | Maximum age before signals are cleaned   |
-| `runOnCheckpoint` | boolean | `true`  | Run cleanup during checkpoint operations |
-
-### memory.enforcement
-
-Memory enforcement policy for ensuring memory hygiene
-
-| Field            | Type    | Default  | Description                                    |
-| ---------------- | ------- | -------- | ---------------------------------------------- |
-| `mode`           | string  | `"warn"` | Enforcement mode: `"off"`, `"warn"`, `"error"` |
-| `requireInit`    | boolean | `true`   | Require memory initialization before use       |
-| `requireCleanup` | boolean | `true`   | Require cleanup on session end                 |
-
-### memory.decay
-
-Memory decay configuration for automatic expiration of memory nodes
-
-| Field          | Type    | Default | Description                               |
-| -------------- | ------- | ------- | ----------------------------------------- |
-| `enabled`      | boolean | `false` | Enable memory decay                       |
-| `halfLife`     | integer | `30`    | Half-life in days for decay calculation   |
-| `minRelevance` | number  | `0.1`   | Minimum relevance score before expiration |
 
 ### ui
 
@@ -215,12 +183,12 @@ Agents configuration
 
 Methodology defaults (agent-facing project defaults)
 
-| Field         | Type     | Default                          | Description                                       |
-| ------------- | -------- | -------------------------------- | ------------------------------------------------- |
-| `enabled`     | boolean  | `true`                           | Whether methodology enforcement is enabled        |
-| `enforcement` | string   | `"required"`                     | Enforcement mode: `"required"` or `"recommended"` |
-| `principles`  | string[] | `["TDD","Hexagonal Architect...` | List of methodology principles                    |
-| `notes`       | string   | `-`                              | Additional methodology notes                      |
+| Field         | Type       | Default                          | Description  |
+| ------------- | ---------- | -------------------------------- | ------------ | --- |
+| `enabled`     | boolean    | `true`                           |              |
+| `enforcement` | "required" | "recommended"                    | `"required"` |     |
+| `principles`  | string[]   | `["TDD","Hexagonal Architect...` |              |
+| `notes`       | string     | `-`                              |              |
 
 ### agents.clients.\*
 
@@ -235,57 +203,6 @@ Client configuration (per-client settings)
 | `skills`           | object   | `-`     |             |
 | `enforcement`      | object   | `-`     |             |
 | `capabilities_map` | object   | `-`     |             |
-
-### packs
-
-Pack configuration is defined in the kernel-level [`workspace.yaml`](/reference/workspace-spec), not in `.lumenflow.config.yaml`. However, the CLI layer provides pack management commands that read from both files.
-
-| CLI Command     | Description                    |
-| --------------- | ------------------------------ |
-| `pack:scaffold` | Scaffold a new domain pack     |
-| `pack:search`   | Search for packs in a registry |
-
-For the full pack pin schema (id, version, integrity, source), see the [Workspace Spec](/reference/workspace-spec#pack-pins) reference.
-
-<Aside type="note">
-  The separation is intentional: `.lumenflow.config.yaml` configures CLI behavior (gates, lanes,
-  agents), while `workspace.yaml` configures the [kernel runtime](/concepts/kernel) (packs, security
-  boundaries, scope intersection). See [Packs](/concepts/packs) for the architecture.
-</Aside>
-
-### cloud
-
-Cloud activation configuration
-
-| Field         | Type    | Default | Description                              |
-| ------------- | ------- | ------- | ---------------------------------------- |
-| `auto_detect` | boolean | `false` | Enable automatic cloud detection         |
-| `env_signals` | array   | `[]`    | Environment signals for runtime identity |
-
-```yaml
-cloud:
-  auto_detect: false
-  env_signals: []
-```
-
-### sandbox
-
-Sandbox policy controls for `wu:sandbox` and `wu:claim --sandbox`
-
-| Field                            | Type     | Default                                 | Description                            |
-| -------------------------------- | -------- | --------------------------------------- | -------------------------------------- |
-| `allow_unsandboxed_fallback_env` | string   | `"LUMENFLOW_SANDBOX_ALLOW_UNSANDBOXED"` | Env var for unsandboxed fallback       |
-| `extra_writable_roots`           | string[] | `[]`                                    | Extra writable paths beyond worktree   |
-| `deny_writable_roots`            | string[] | `[".git"]`                              | Guardrail deny list for writable roots |
-
-```yaml
-sandbox:
-  allow_unsandboxed_fallback_env: 'LUMENFLOW_SANDBOX_ALLOW_UNSANDBOXED'
-  extra_writable_roots:
-    - 'memory-bank'
-  deny_writable_roots:
-    - '.git'
-```
 
 ## Framework Agnostic Configuration
 
@@ -372,6 +289,4 @@ pnpm exec lumenflow validate
 ## Next Steps
 
 - [CLI Commands](/reference/cli) – All commands
-- [Workspace Spec](/reference/workspace-spec) – Kernel-level workspace.yaml reference
 - [WU Schema](/reference/wu-schema) – WU YAML structure
-- [Packs](/concepts/packs) – Domain pack architecture
