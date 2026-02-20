@@ -20,7 +20,7 @@ export const LOG_PREFIX = '[pack:search]';
 // --- Constants ---
 
 const DEFAULT_REGISTRY_URL = 'https://registry.lumenflow.dev';
-const SEARCH_API_PATH = '/api/v1/packs';
+const SEARCH_API_PATH = '/api/registry/packs/search';
 const NO_RESULTS_MESSAGE = 'No packs found matching your query.';
 
 // --- Result types ---
@@ -66,7 +66,7 @@ interface RegistrySearchResponse {
  * Search for packs in the registry.
  *
  * Sends a GET request to the registry search endpoint:
- *   GET {registryUrl}/api/v1/packs?q={query}
+ *   GET {registryUrl}/api/registry/packs/search?q={query}
  *
  * Returns SearchPacksResult with success=false if the request fails.
  */

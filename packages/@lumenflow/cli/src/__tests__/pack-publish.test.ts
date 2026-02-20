@@ -1,11 +1,16 @@
 /**
- * Tests for pack:publish command (WU-1838)
+ * Tests for pack:publish command (WU-1838) and pack pipeline fixes (WU-1919)
  *
- * Acceptance criteria:
+ * WU-1838 acceptance criteria:
  * 1. Runs pack:validate before publish
  * 2. Creates tarball of pack contents
  * 3. Uploads to registry with authentication
  * 4. Errors if validation fails
+ *
+ * WU-1919 acceptance criteria:
+ * AC1: pack:publish sends POST multipart/form-data to /api/registry/packs
+ * AC5: DEFAULT_REGISTRY_URL consistent across all files
+ * AC6: All 6 pack CLI commands in public manifest
  *
  * TDD: These tests are written BEFORE the implementation.
  */
@@ -360,6 +365,102 @@ describe('pack:publish command', () => {
     });
   });
 
+  describe('defaultUploadFn (WU-1919: B-API, B-CTYPE)', () => {
+    it('should send POST to /api/registry/packs/{packId}/versions/{version}', async () => {
+      const { defaultUploadFn } = await import('../pack-publish.js');
+
+      const packDir = join(tempDir, 'packs', 'upload-test');
+      writeValidPack(packDir);
+
+      // Create a small tarball to upload
+      const { createPackTarball } = await import('../pack-publish.js');
+      const outputDir = join(tempDir, 'output');
+      mkdirSync(outputDir, { recursive: true });
+      const tarballPath = await createPackTarball({
+        packRoot: packDir,
+        outputDir,
+        packId: 'upload-test',
+        version: '1.0.0',
+      });
+
+      const calls: { url: string; method: string; contentType: string | null }[] = [];
+      const originalFetch = globalThis.fetch;
+      globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = typeof input === 'string' ? input : input.toString();
+        calls.push({
+          url,
+          method: init?.method ?? 'GET',
+          contentType:
+            init?.headers instanceof Headers
+              ? init.headers.get('Content-Type')
+              : (init?.headers as Record<string, string> | undefined)?.['Content-Type'] ?? null,
+        });
+        return new Response(JSON.stringify({ success: true }), { status: 201 });
+      };
+
+      try {
+        await defaultUploadFn({
+          registryUrl: 'https://registry.lumenflow.dev',
+          packId: 'my-pack',
+          version: '2.0.0',
+          tarballPath,
+          token: 'test-token',
+          integrity: 'sha256:abc123',
+        });
+
+        expect(calls).toHaveLength(1);
+        expect(calls[0].url).toBe(
+          'https://registry.lumenflow.dev/api/registry/packs/my-pack/versions/2.0.0',
+        );
+        expect(calls[0].method).toBe('POST');
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    });
+
+    it('should send multipart/form-data body with tarball field', async () => {
+      const { defaultUploadFn } = await import('../pack-publish.js');
+
+      const packDir = join(tempDir, 'packs', 'multipart-test');
+      writeValidPack(packDir);
+
+      const { createPackTarball } = await import('../pack-publish.js');
+      const outputDir = join(tempDir, 'output');
+      mkdirSync(outputDir, { recursive: true });
+      const tarballPath = await createPackTarball({
+        packRoot: packDir,
+        outputDir,
+        packId: 'multipart-test',
+        version: '1.0.0',
+      });
+
+      let capturedBody: FormData | null = null;
+      const originalFetch = globalThis.fetch;
+      globalThis.fetch = async (_input: RequestInfo | URL, init?: RequestInit) => {
+        if (init?.body instanceof FormData) {
+          capturedBody = init.body;
+        }
+        return new Response(JSON.stringify({ success: true }), { status: 201 });
+      };
+
+      try {
+        await defaultUploadFn({
+          registryUrl: 'https://registry.lumenflow.dev',
+          packId: 'multipart-test',
+          version: '1.0.0',
+          tarballPath,
+          token: 'test-token',
+          integrity: 'sha256:abc123',
+        });
+
+        expect(capturedBody).toBeInstanceOf(FormData);
+        expect(capturedBody!.has('tarball')).toBe(true);
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    });
+  });
+
   describe('pack:publish CLI exports', () => {
     it('should export main function for CLI entry', async () => {
       const mod = await import('../pack-publish.js');
@@ -380,5 +481,62 @@ describe('pack:publish command', () => {
       const mod = await import('../pack-publish.js');
       expect(typeof mod.createPackTarball).toBe('function');
     });
+
+    it('should export defaultUploadFn function', async () => {
+      const mod = await import('../pack-publish.js');
+      expect(typeof mod.defaultUploadFn).toBe('function');
+    });
+  });
+});
+
+describe('public manifest pack commands (WU-1919: AC6)', () => {
+  it('should include all 6 pack CLI commands in the public manifest', async () => {
+    const { getPublicCommandNames } = await import('../public-manifest.js');
+    const names = getPublicCommandNames();
+
+    const expectedPackCommands = [
+      'pack:scaffold',
+      'pack:validate',
+      'pack:hash',
+      'pack:publish',
+      'pack:install',
+      'pack:search',
+    ];
+
+    for (const cmd of expectedPackCommands) {
+      expect(names).toContain(cmd);
+    }
+  });
+
+  it('should have correct bin names for all pack commands', async () => {
+    const { getPublicManifest } = await import('../public-manifest.js');
+    const manifest = getPublicManifest();
+
+    const packCommands = manifest.filter((cmd) => cmd.name.startsWith('pack:'));
+    expect(packCommands.length).toBe(6);
+
+    const expectedBinMap: Record<string, string> = {
+      'pack:scaffold': 'pack-scaffold',
+      'pack:validate': 'pack-validate',
+      'pack:hash': 'pack-hash',
+      'pack:publish': 'pack-publish',
+      'pack:install': 'pack-install',
+      'pack:search': 'pack-search',
+    };
+
+    for (const cmd of packCommands) {
+      expect(expectedBinMap[cmd.name]).toBe(cmd.binName);
+    }
+  });
+
+  it('should categorize all pack commands under Packs category', async () => {
+    const { getPublicManifest, COMMAND_CATEGORIES } = await import('../public-manifest.js');
+    const manifest = getPublicManifest();
+
+    const packCommands = manifest.filter((cmd) => cmd.name.startsWith('pack:'));
+
+    for (const cmd of packCommands) {
+      expect(cmd.category).toBe(COMMAND_CATEGORIES.PACKS);
+    }
   });
 });

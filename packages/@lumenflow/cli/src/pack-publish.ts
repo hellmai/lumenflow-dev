@@ -222,14 +222,15 @@ export async function publishPack(options: PublishPackOptions): Promise<PublishP
  * Default upload function using Node.js built-in fetch.
  *
  * Sends a multipart/form-data POST to the registry's publish endpoint:
- *   POST {registryUrl}/api/v1/packs/{packId}/versions/{version}
+ *   POST {registryUrl}/api/registry/packs/{packId}/versions/{version}
  *
  * Headers:
  *   Authorization: Bearer {token}
  *
- * Body:
- *   tarball: file
- *   integrity: sha256 hash
+ * Body (multipart/form-data):
+ *   tarball: pack tarball file (.tar.gz)
+ *   integrity: sha256 hash string
+ *   version: semver version string
  */
 export async function defaultUploadFn(options: {
   registryUrl: string;
@@ -241,18 +242,26 @@ export async function defaultUploadFn(options: {
 }): Promise<void> {
   const { registryUrl, packId, version, tarballPath, token, integrity } = options;
   const { readFile: readFileFs } = await import('node:fs/promises');
+  const { basename } = await import('node:path');
 
   const tarballBuffer = await readFileFs(tarballPath);
-  const url = `${registryUrl}/api/v1/packs/${packId}/versions/${version}`;
+  const url = `${registryUrl}/api/registry/packs/${packId}/versions/${version}`;
+
+  const formData = new FormData();
+  formData.append(
+    'tarball',
+    new Blob([tarballBuffer], { type: 'application/gzip' }),
+    basename(tarballPath),
+  );
+  formData.append('integrity', integrity);
+  formData.append('version', version);
 
   const response = await fetch(url, {
-    method: 'PUT',
+    method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/gzip',
-      'X-Pack-Integrity': integrity,
     },
-    body: tarballBuffer,
+    body: formData,
   });
 
   if (!response.ok) {
