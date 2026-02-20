@@ -2,7 +2,7 @@ id: WU-1936
 title: 'Landing page: promote OSS licensing + aesthetic warmth'
 lane: 'Content: Site Comms'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -48,3 +48,6 @@ acceptance:
   - Landing page copy has warmer, less dry tone with personality (not pure technical spec language)
   - Hero tagline or sub-hero area prominently signals open-source nature
   - Contribute/community callout visible on landing page
+locked: true
+completed_at: 2026-02-20T12:51:51.803Z
+completed: 2026-02-20
