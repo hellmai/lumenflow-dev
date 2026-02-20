@@ -33,7 +33,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'H-APPREQ: Kernel only has allow/deny policy effects. Add approval_required as third effect. ToolHost branches on it to transition task to waiting state. KernelRuntime gets resolveApproval() method.'
+description: 'H-APPREQ: Kernel only has allow/deny policy effects. Add approval_required as third
+  effect. ToolHost branches on it to transition task to waiting state. KernelRuntime gets
+  resolveApproval() method.'
 acceptance:
   - PolicyEffect union includes approval_required
   - ToolHost transitions to waiting on approval_required
