@@ -5,6 +5,7 @@ _Last updated: 2026-02-20_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1958 — Use single latest GIF demo on landing page](wu/WU-1958.yaml)
 
 ## Completed
 

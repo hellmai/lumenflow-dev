@@ -2,7 +2,7 @@ id: WU-1958
 title: Use single latest GIF demo on landing page
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -29,3 +29,11 @@ description: Remove first GIF, keep only the latest one full-width.
 acceptance:
   - Single GIF displayed full-width below hero
   - Deployed to lumenflow.dev
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1958
+claimed_at: 2026-02-20T18:15:17.744Z
+baseline_main_sha: 73df08d44f1b6dcb214fa23badefa2d194774128
+session_id: bead31ca-5a8c-4955-be4d-8ebd0c53a2d5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T18:15:17.751Z
