@@ -24,7 +24,6 @@ sections:
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
-- [WU-1923 — RunAgent Real Execution](wu/WU-1923.yaml) — Framework: Core Lifecycle
 - [WU-1930 — HITL Approval Hardening](wu/WU-1930.yaml) — Content: Site Comms
 - [WU-1934 — Fix pre-existing MCP parity test failures from WU-1927 onboard](wu/WU-1934.yaml) — Framework: MCP
 
@@ -32,6 +31,7 @@ sections:
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1933 — AGPL SPDX license headers for all source files](wu/WU-1933.yaml) — Content: Site Comms
+- [WU-1923 — RunAgent Real Execution](wu/WU-1923.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
