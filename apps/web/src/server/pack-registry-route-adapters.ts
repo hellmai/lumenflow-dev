@@ -1,5 +1,5 @@
 /**
- * Route adapters for pack registry API (WU-1836, WU-1869, WU-1920).
+ * Route adapters for pack registry API (WU-1836, WU-1869, WU-1920, WU-1921).
  *
  * These create handler functions compatible with Next.js Route Handlers.
  * Each adapter wires port interfaces to the pure handler functions,
@@ -7,6 +7,12 @@
  *
  * WU-1920: Uses statusCode hint from handler error responses for correct
  * HTTP status codes (403 ownership, 409 conflict, 429 rate limit).
+ *
+ * WU-1921: Input validation and path safety:
+ * - Pack ID validated against [a-z0-9-] regex
+ * - Version validated as valid semver
+ * - CWD validated for path traversal in install endpoint
+ * - Error responses include machine-readable error codes
  */
 
 import type { PackRegistryStore, PackBlobStore, AuthProvider } from '../lib/pack-registry-types';
@@ -16,6 +22,7 @@ import {
   handlePublishVersion,
   authenticatePublisher,
 } from './pack-registry-handlers';
+import { validatePackId, validateSemver, ValidationErrorCode } from './input-validation';
 
 /* ------------------------------------------------------------------
  * Constants
@@ -55,6 +62,14 @@ function jsonResponse(body: unknown, status: number): Response {
     status,
     headers: JSON_CONTENT_TYPE,
   });
+}
+
+/** WU-1921: Create a validation error response with machine-readable code. */
+function validationErrorResponse(code: string, message: string): Response {
+  return jsonResponse(
+    { success: false, code, error: message },
+    HTTP_STATUS.BAD_REQUEST,
+  );
 }
 
 /* ------------------------------------------------------------------
@@ -99,6 +114,12 @@ interface GetPackRouteDeps {
 export function createGetPackRoute(deps: GetPackRouteDeps): (packId: string) => Promise<Response> {
   return async (packId: string): Promise<Response> => {
     try {
+      // WU-1921: Validate pack ID format
+      const packIdValidation = validatePackId(packId);
+      if (!packIdValidation.valid) {
+        return validationErrorResponse(packIdValidation.code, packIdValidation.message);
+      }
+
       const result = await handleGetPack({
         registryStore: deps.registryStore,
         packId,
@@ -133,6 +154,18 @@ export function createPublishVersionRoute(
 ): (request: Request, packId: string, version: string) => Promise<Response> {
   return async (request: Request, packId: string, version: string): Promise<Response> => {
     try {
+      // WU-1921: Validate pack ID format
+      const packIdValidation = validatePackId(packId);
+      if (!packIdValidation.valid) {
+        return validationErrorResponse(packIdValidation.code, packIdValidation.message);
+      }
+
+      // WU-1921: Validate version is valid semver
+      const versionValidation = validateSemver(version);
+      if (!versionValidation.valid) {
+        return validationErrorResponse(versionValidation.code, versionValidation.message);
+      }
+
       // Authenticate
       const authResult = await authenticatePublisher({
         authProvider: deps.authProvider,
@@ -229,6 +262,27 @@ export function createInstallPackRoute(
         );
       }
 
+      // WU-1921: Validate CWD (workspaceRoot) for path safety
+      if (body.workspaceRoot.includes('\0')) {
+        return validationErrorResponse(
+          ValidationErrorCode.PATH_TRAVERSAL,
+          'workspaceRoot contains null bytes',
+        );
+      }
+
+      if (body.workspaceRoot.includes('..')) {
+        return validationErrorResponse(
+          ValidationErrorCode.PATH_TRAVERSAL,
+          'workspaceRoot contains path traversal sequences',
+        );
+      }
+
+      // WU-1921: Validate pack ID format
+      const packIdValidation = validatePackId(packId);
+      if (!packIdValidation.valid) {
+        return validationErrorResponse(packIdValidation.code, packIdValidation.message);
+      }
+
       // Look up pack in registry
       const result = await handleGetPack({
         registryStore: deps.registryStore,
@@ -296,6 +350,17 @@ export function createGetTarballRoute(
 ): (packId: string, version: string) => Promise<Response> {
   return async (packId: string, version: string): Promise<Response> => {
     try {
+      // WU-1921: Validate pack ID and version format
+      const packIdValidation = validatePackId(packId);
+      if (!packIdValidation.valid) {
+        return validationErrorResponse(packIdValidation.code, packIdValidation.message);
+      }
+
+      const versionValidation = validateSemver(version);
+      if (!versionValidation.valid) {
+        return validationErrorResponse(versionValidation.code, versionValidation.message);
+      }
+
       const result = await handleGetPack({
         registryStore: deps.registryStore,
         packId,

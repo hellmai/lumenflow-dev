@@ -1,13 +1,19 @@
 /**
- * Server-side handler for workspace connection (WU-1822).
+ * Server-side handler for workspace connection (WU-1822, WU-1921).
  *
  * Pure functions for parsing, validating, and handling workspace
  * connect requests. Decoupled from Next.js route infrastructure.
+ *
+ * WU-1921: Path safety — workspaceRoot is validated to prevent
+ * path traversal (null bytes, ../ sequences).
  */
 
 import type { WorkspaceInfo } from '../lib/workspace-connection-types';
+import { ValidationErrorCode } from './input-validation';
 
 const ERROR_WORKSPACE_ROOT_REQUIRED = 'workspaceRoot is required and must be a non-empty string.';
+const ERROR_PATH_TRAVERSAL = `${ValidationErrorCode.PATH_TRAVERSAL}: workspaceRoot contains path traversal sequences`;
+const ERROR_NULL_BYTES = `${ValidationErrorCode.PATH_TRAVERSAL}: workspaceRoot contains null bytes`;
 const ERROR_INITIALIZATION_PREFIX = 'Failed to initialize workspace';
 
 /* ------------------------------------------------------------------
@@ -36,6 +42,17 @@ export function parseWorkspaceConnectRequest(body: unknown): ParseResult {
 
   if (typeof workspaceRoot !== 'string' || workspaceRoot.length === 0) {
     return { success: false, error: ERROR_WORKSPACE_ROOT_REQUIRED };
+  }
+
+  // WU-1921: Reject null bytes (poison null byte attack)
+  if (workspaceRoot.includes('\0')) {
+    return { success: false, error: ERROR_NULL_BYTES };
+  }
+
+  // WU-1921: Reject path traversal sequences
+  // Normalize and check for .. components that could escape
+  if (workspaceRoot.includes('..')) {
+    return { success: false, error: ERROR_PATH_TRAVERSAL };
   }
 
   return { success: true, workspaceRoot };
@@ -103,6 +120,12 @@ export async function handleWorkspaceConnect(
   const parsed = parseWorkspaceConnectRequest(body);
   if (!parsed.success) {
     return { success: false, error: parsed.error };
+  }
+
+  // WU-1921: Additional path safety check at handler level
+  // Reject null bytes that might have been encoded differently
+  if (parsed.workspaceRoot.includes('\0')) {
+    return { success: false, error: ERROR_NULL_BYTES };
   }
 
   try {
