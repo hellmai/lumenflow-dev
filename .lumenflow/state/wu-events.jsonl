@@ -1795,3 +1795,4 @@
 {"type":"claim","wuId":"WU-1920","lane":"Content: Site Comms","title":"Registry Security Hardening","timestamp":"2026-02-20T11:23:00.013Z"}
 {"type":"claim","wuId":"WU-1926","lane":"Framework: CLI Enforcement","title":"Publish lumenflow CLI to npm","timestamp":"2026-02-20T11:23:37.944Z"}
 {"type":"claim","wuId":"WU-1918","lane":"Framework: Core Lifecycle","title":"SSE Transport + Trace Bridge","timestamp":"2026-02-20T11:23:42.437Z"}
+{"type":"claim","wuId":"WU-1919","lane":"Framework: CLI Orchestration","title":"Pack Publishing Pipeline Fixes","timestamp":"2026-02-20T11:24:47.283Z"}

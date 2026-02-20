@@ -9,6 +9,7 @@ _Last updated: 2026-02-20_
 - [WU-1920 — Registry Security Hardening](wu/WU-1920.yaml)
 - [WU-1926 — Publish lumenflow CLI to npm](wu/WU-1926.yaml)
 - [WU-1918 — SSE Transport + Trace Bridge](wu/WU-1918.yaml)
+- [WU-1919 — Pack Publishing Pipeline Fixes](wu/WU-1919.yaml)
 
 ## Completed
 

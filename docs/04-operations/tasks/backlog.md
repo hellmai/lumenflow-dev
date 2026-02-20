@@ -24,7 +24,6 @@ sections:
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
-- [WU-1919 — Pack Publishing Pipeline Fixes](wu/WU-1919.yaml) — Framework: CLI Orchestration
 - [WU-1921 — Input Validation and Path Safety](wu/WU-1921.yaml) — Content: Site Comms
 - [WU-1922 — Kernel approval_required Policy Effect](wu/WU-1922.yaml) — Framework: Core Lifecycle
 - [WU-1923 — RunAgent Real Execution](wu/WU-1923.yaml) — Framework: Core Lifecycle
@@ -42,6 +41,7 @@ sections:
 - [WU-1920 — Registry Security Hardening](wu/WU-1920.yaml) — Content: Site Comms
 - [WU-1926 — Publish lumenflow CLI to npm](wu/WU-1926.yaml) — Framework: CLI Enforcement
 - [WU-1918 — SSE Transport + Trace Bridge](wu/WU-1918.yaml) — Framework: Core Lifecycle
+- [WU-1919 — Pack Publishing Pipeline Fixes](wu/WU-1919.yaml) — Framework: CLI Orchestration
 
 ## ⛔ Blocked
 

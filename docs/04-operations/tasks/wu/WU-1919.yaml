@@ -2,7 +2,7 @@ id: WU-1919
 title: Pack Publishing Pipeline Fixes
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -41,3 +41,11 @@ acceptance:
   - Pack detail wires tools and policies from manifest
   - DEFAULT_REGISTRY_URL consistent across all files
   - All 6 pack CLI commands in public manifest
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1919
+claimed_at: 2026-02-20T11:24:47.208Z
+baseline_main_sha: 88eacac4a4a8905ba14eab76158cab5262c64d82
+session_id: f5427206-b161-4d60-93f1-a6595c11d9f0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:24:47.216Z
