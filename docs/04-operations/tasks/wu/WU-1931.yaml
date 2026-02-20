@@ -2,7 +2,7 @@ id: WU-1931
 title: 'Docs polish: v3.0.0 references, lanes, upgrade guide'
 lane: 'Content: Site Comms'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -25,10 +25,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Final polish pass on Starlight docs. Update all v2.3.2 references to v3.0.0, add changelog entry, rewrite upgrade guide, update lanes.mdx to reflect actual 14+ lane config, fix workspace-spec.mdx referencing non-existent file.
+description: Final polish pass on Starlight docs. Update all v2.3.2 references to v3.0.0, add
+  changelog entry, rewrite upgrade guide, update lanes.mdx to reflect actual 14+ lane config, fix
+  workspace-spec.mdx referencing non-existent file.
 acceptance:
   - All version references show v3.0.0
   - Changelog has v3.0.0 entry
   - Upgrade guide reflects v3.0.0
   - Lanes page matches actual .lumenflow.config.yaml structure
   - Docs build with zero errors
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1931
+claimed_at: 2026-02-20T11:01:45.244Z
+baseline_main_sha: 7996f1a2ff415bea1c461624d5c8602d196558d8
+session_id: 67fba613-8662-486d-aad6-662bcfa7039a
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:01:45.250Z

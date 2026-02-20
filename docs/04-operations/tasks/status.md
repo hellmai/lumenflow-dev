@@ -5,6 +5,7 @@ _Last updated: 2026-02-20_
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1931 — Docs polish: v3.0.0 references, lanes, upgrade guide](wu/WU-1931.yaml)
 
 ## Completed
 

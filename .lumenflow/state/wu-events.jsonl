@@ -1789,3 +1789,4 @@
 {"type":"complete","wuId":"WU-1916","timestamp":"2026-02-20T10:27:09.691Z"}
 {"type":"claim","wuId":"WU-1917","timestamp":"2026-02-20T10:38:40.817Z","lane":"Content: Site Comms","title":"Homepage conversion redesign + Astro 6 upgrade"}
 {"type":"complete","wuId":"WU-1917","timestamp":"2026-02-20T10:48:12.047Z"}
+{"type":"claim","wuId":"WU-1931","lane":"Content: Site Comms","title":"Docs polish: v3.0.0 references, lanes, upgrade guide","timestamp":"2026-02-20T11:01:45.269Z"}
