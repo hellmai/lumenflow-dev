@@ -2,7 +2,7 @@ id: WU-1923
 title: RunAgent Real Execution
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - Acceptance criteria non-empty (schema min 1)
   - RunAgent subscribes to task events and streams them
   - RUN_COMPLETED only on real task_completed event
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1923
+claimed_at: 2026-02-20T12:06:29.037Z
+baseline_main_sha: e9fcb5582ea756b8b1b741cd89f38dcb3d3e28de
+session_id: b863c8c8-7b48-4c67-8f0b-a5db961b7f3f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T12:06:29.045Z
