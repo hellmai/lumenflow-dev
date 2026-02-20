@@ -3,18 +3,18 @@ title: LumenFlow
 description: The governance layer between AI agents and the world
 template: splash
 hero:
-  tagline: "Your AI agents are powerful. Make them governable. LumenFlow is a free, open-source kernel that controls what agents can do, proves what they did, and enforces policies they can't bypass — without slowing them down."
+  tagline: 'Your AI agents are powerful. Make them governable. The open-source governance kernel for AI agents — control scope, enforce policies, prove compliance.'
   image:
     dark: ../../assets/logo-dark.png
     light: ../../assets/logo-light.png
     alt: LumenFlow - The governance layer between AI agents and the world
   actions:
-    - text: Why LumenFlow?
-      link: /getting-started/why-lumenflow/
-      icon: open-book
     - text: Get Started
       link: /getting-started/introduction/
       icon: right-arrow
+    - text: Why LumenFlow?
+      link: /getting-started/why-lumenflow/
+      icon: open-book
       variant: secondary
     - text: GitHub
       link: https://github.com/hellmai/lumenflow
@@ -23,6 +23,18 @@ hero:
 ---
 
 import { Card, CardGrid, Aside, LinkCard } from '@astrojs/starlight/components';
+
+```
+$ lumenflow scope-check file:write src/payments/checkout.ts
+
+  Workspace   src/**                          ✓ allowed
+  Lane        src/auth/**                     ✗ DENIED (Framework: Auth lane)
+  Task        src/auth/login.ts               — (skipped)
+  Tool        file:write                      — (skipped)
+
+  ✗ BLOCKED — file is outside lane scope
+  Policy: deny-wins (workspace → lane → task → tool)
+```
 
 ## The Problem Nobody Talks About
 
