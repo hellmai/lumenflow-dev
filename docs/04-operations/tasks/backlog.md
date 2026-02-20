@@ -40,7 +40,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1945 — \[WU-B\] Centralize write-endpoint security validation](wu/WU-1945.yaml) — Operations: Runtime
 
 ## ⛔ Blocked
 
@@ -920,6 +919,7 @@ sections:
 - [WU-1944 — Restore hero logo, add GIF demos in full-width row](wu/WU-1944.yaml)
 - [WU-1958 — Use single latest GIF demo on landing page](wu/WU-1958.yaml)
 - [WU-1934 — Fix pre-existing MCP parity test failures from WU-1927 onboard](wu/WU-1934.yaml)
+- [WU-1945 — \[WU-B\] Centralize write-endpoint security validation](wu/WU-1945.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

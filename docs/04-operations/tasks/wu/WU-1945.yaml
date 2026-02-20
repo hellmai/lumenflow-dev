@@ -2,7 +2,7 @@ id: WU-1945
 title: '[WU-B] Centralize write-endpoint security validation'
 lane: 'Operations: Runtime'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-20
 code_paths:
@@ -52,3 +52,6 @@ acceptance:
   - All write endpoints enforce path traversal and null-byte validation using shared validators
   - CSRF and body-size protections are applied consistently on install/create/authoring write routes
   - Security regression tests cover encoded traversal and cross-origin attempts
+locked: true
+completed_at: 2026-02-20T18:29:16.106Z
+completed: 2026-02-20
