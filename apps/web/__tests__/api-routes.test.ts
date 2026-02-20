@@ -1,3 +1,4 @@
+import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const forwardToHttpSurface = vi.fn();
@@ -12,15 +13,18 @@ vi.mock('../src/server/http-surface-runtime', () => ({
   })),
   getKernelRuntimeForWeb: vi.fn(async () => ({
     eventStore: {
-      replay: vi.fn(async () => [
-        {
-          schema_version: 1,
-          kind: 'task_created',
-          task_id: 'WU-test-1',
-          timestamp: '2026-02-18T10:00:00.000Z',
-          spec_hash: 'hash-1',
-        },
-      ]),
+      replay: vi.fn(async () => ({
+        events: [
+          {
+            schema_version: 1,
+            kind: 'task_created',
+            task_id: 'WU-test-1',
+            timestamp: '2026-02-18T10:00:00.000Z',
+            spec_hash: 'hash-1',
+          },
+        ],
+        nextCursor: null,
+      })),
     },
   })),
 }));
@@ -76,13 +80,15 @@ describe('apps/web API route delegates', () => {
   it('GET /api/events/all returns events from EventStore replay', async () => {
     const routeModule = await import('../app/api/events/all/route');
 
-    const response = await routeModule.GET();
+    const response = await routeModule.GET(new NextRequest('http://localhost/api/events/all'));
 
     expect(response.status).toBe(200);
     const body = await response.json();
-    expect(Array.isArray(body)).toBe(true);
-    expect(body).toHaveLength(1);
-    expect(body[0].kind).toBe('task_created');
-    expect(body[0].task_id).toBe('WU-test-1');
+    expect(body.events).toBeDefined();
+    expect(Array.isArray(body.events)).toBe(true);
+    expect(body.events).toHaveLength(1);
+    expect(body.events[0].kind).toBe('task_created');
+    expect(body.events[0].task_id).toBe('WU-test-1');
+    expect(body.nextCursor).toBeNull();
   });
 });
