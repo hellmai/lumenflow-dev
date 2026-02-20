@@ -1,6 +1,6 @@
 id: WU-1939
 title: Fix Next.js dev script for Turbopack default in Next 16
-lane: 'Operations: Tooling'
+lane: 'Operations: Runtime'
 type: bug
 status: ready
 priority: P2
@@ -25,6 +25,7 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Next.js 16 defaults to Turbopack but apps/web dev script lacks --webpack flag. extensionAlias is not supported by Turbopack yet so dev server crashes on startup.
+description: Next.js 16 defaults to Turbopack but apps/web dev script lacks --webpack flag.
+  extensionAlias is not supported by Turbopack yet so dev server crashes on startup.
 acceptance:
   - pnpm --filter @lumenflow/web dev starts without error
