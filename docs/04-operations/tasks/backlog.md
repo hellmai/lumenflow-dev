@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1948 — [WU-E] Marketplace UX: canonical install command + one-click install](wu/WU-1948.yaml) — Operations: Runtime
 - [WU-1947 — [WU-D] CLI install fix: integrity auto-resolve + real onboard install](wu/WU-1947.yaml) — Framework: CLI Orchestration
 - [WU-1946 — [WU-C] Install shadcn/ui base components](wu/WU-1946.yaml) — Operations: Runtime
 - [WU-1945 — [WU-B] Centralize write-endpoint security validation](wu/WU-1945.yaml) — Operations: Runtime

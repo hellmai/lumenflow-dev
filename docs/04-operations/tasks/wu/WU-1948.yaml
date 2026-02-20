@@ -1,0 +1,41 @@
+id: WU-1948
+title: '[WU-E] Marketplace UX: canonical install command + one-click install'
+lane: 'Operations: Runtime'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-20
+code_paths:
+  - apps/web/src/lib/marketplace-types.ts
+  - apps/web/src/lib/community-types.ts
+  - apps/web/src/components/marketplace-pack-detail.tsx
+  - apps/web/src/components/marketplace-browse.tsx
+tests:
+  manual:
+    - Verify install button behavior and success/error toasts from browse and detail views
+  unit:
+    - apps/web/__tests__/marketplace-pack-detail.test.tsx
+    - apps/web/__tests__/marketplace-browse.test.tsx
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1948.done
+dependencies: []
+initiative: INIT-032
+phase: 2
+blocked_by:
+  - WU-1945
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: ui
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Fix marketplace/community install command generation to canonical CLI flags and add one-click install UX feedback with progress and post-install change summary.
+acceptance:
+  - Generated install command uses --id/--source/--version syntax compatible with current CLI
+  - Marketplace detail and browse cards provide one-click install entrypoint with loading/error feedback
+  - Successful install reports tools/policies/permission scope changes to the user
