@@ -625,7 +625,9 @@ function parsePackToolJsonSchema(
     return buildZodSchemaFromJsonSchema(schemaValue, context, 0);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'unknown schema parsing error';
-    throw new Error(`Invalid ${context}: ${message}`);
+    throw new Error(`Invalid ${context}: ${message}`, {
+      cause: error,
+    });
   }
 }
 

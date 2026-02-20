@@ -5,7 +5,7 @@ import YAML from 'yaml';
 import { z } from 'zod';
 
 const PACK_ID_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
-const TOOL_NAME_PATTERN = /^[a-z][a-z0-9]*(?:(?::|-)[a-z][a-z0-9-]*)*$/;
+const TOOL_NAME_PATTERN = /^[a-z][a-z0-9]*(?:[:-][a-z][a-z0-9-]*)*$/;
 const SEMVER_PATTERN = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z-.]+)?(?:\+[0-9A-Za-z-.]+)?$/;
 const SCOPE_TRAVERSAL_PATTERN = /(^|\/)\.\.(\/|$)/;
 const DISALLOWED_SCOPE_PATTERNS = new Set(['*', '**', '**/*', './**', './**/*']);
