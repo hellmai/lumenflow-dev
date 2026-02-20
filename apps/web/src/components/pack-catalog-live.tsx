@@ -59,7 +59,7 @@ function usePackCatalogData(): UsePackCatalogDataResult {
       const rawPacks: unknown[] = Array.isArray(json)
         ? json
         : Array.isArray((json as Record<string, unknown>)?.packs)
-          ? (json as Record<string, unknown>).packs as unknown[]
+          ? ((json as Record<string, unknown>).packs as unknown[])
           : [];
       const parsedPacks = parsePacksResponse(rawPacks);
 

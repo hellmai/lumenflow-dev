@@ -58,7 +58,7 @@ function useWorkspaceData(): UseWorkspaceDataResult {
       const rawEvents: unknown[] = Array.isArray(json)
         ? json
         : Array.isArray((json as Record<string, unknown>)?.events)
-          ? (json as Record<string, unknown>).events as unknown[]
+          ? ((json as Record<string, unknown>).events as unknown[])
           : [];
       const events = parseEventsResponse(rawEvents);
       const overview = buildWorkspaceOverview(events);

@@ -45,9 +45,7 @@ describe('WorkspaceOverviewLive API response handling', () => {
   it('handles wrapped { events: [...] } response without crashing', async () => {
     mockFetchResponse({ events: [], nextCursor: null });
 
-    const { WorkspaceOverviewLive } = await import(
-      '../src/components/workspace-overview-live'
-    );
+    const { WorkspaceOverviewLive } = await import('../src/components/workspace-overview-live');
 
     render(<WorkspaceOverviewLive />);
 
@@ -60,9 +58,7 @@ describe('WorkspaceOverviewLive API response handling', () => {
   it('handles bare array response without crashing', async () => {
     mockFetchResponse([]);
 
-    const { WorkspaceOverviewLive } = await import(
-      '../src/components/workspace-overview-live'
-    );
+    const { WorkspaceOverviewLive } = await import('../src/components/workspace-overview-live');
 
     render(<WorkspaceOverviewLive />);
 
@@ -74,9 +70,7 @@ describe('WorkspaceOverviewLive API response handling', () => {
   it('handles unexpected object shape without crashing', async () => {
     mockFetchResponse({ data: 'unexpected' });
 
-    const { WorkspaceOverviewLive } = await import(
-      '../src/components/workspace-overview-live'
-    );
+    const { WorkspaceOverviewLive } = await import('../src/components/workspace-overview-live');
 
     render(<WorkspaceOverviewLive />);
 
@@ -153,9 +147,7 @@ describe('MarketplaceBrowseLive API response handling', () => {
   it('handles { packs: [...] } response correctly', async () => {
     mockFetchResponse({ packs: [], total: 0 });
 
-    const { MarketplaceBrowseLive } = await import(
-      '../src/components/marketplace-browse-live'
-    );
+    const { MarketplaceBrowseLive } = await import('../src/components/marketplace-browse-live');
 
     render(<MarketplaceBrowseLive />);
 
@@ -167,9 +159,7 @@ describe('MarketplaceBrowseLive API response handling', () => {
   it('handles missing packs field without crashing', async () => {
     mockFetchResponse({ total: 0 });
 
-    const { MarketplaceBrowseLive } = await import(
-      '../src/components/marketplace-browse-live'
-    );
+    const { MarketplaceBrowseLive } = await import('../src/components/marketplace-browse-live');
 
     render(<MarketplaceBrowseLive />);
 
@@ -181,9 +171,7 @@ describe('MarketplaceBrowseLive API response handling', () => {
   it('handles null response body without crashing', async () => {
     mockFetchResponse(null);
 
-    const { MarketplaceBrowseLive } = await import(
-      '../src/components/marketplace-browse-live'
-    );
+    const { MarketplaceBrowseLive } = await import('../src/components/marketplace-browse-live');
 
     render(<MarketplaceBrowseLive />);
 
