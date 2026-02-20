@@ -20,18 +20,17 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1934 — Fix pre-existing MCP parity test failures from WU-1927 onboard](wu/WU-1934.yaml) — Framework: MCP
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1923 — RunAgent Real Execution](wu/WU-1923.yaml) — Framework: Core Lifecycle
 - [WU-1930 — HITL Approval Hardening](wu/WU-1930.yaml) — Content: Site Comms
+- [WU-1934 — Fix pre-existing MCP parity test failures from WU-1927 onboard](wu/WU-1934.yaml) — Framework: MCP
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1922 — Kernel approval_required Policy Effect](wu/WU-1922.yaml) — Framework: Core Lifecycle
 - [WU-1924 — Mount PolicyDecisionOverlay and Scope Visualization](wu/WU-1924.yaml) — Content: Site Comms
 - [WU-1933 — AGPL SPDX license headers for all source files](wu/WU-1933.yaml) — Content: Site Comms
 
@@ -896,6 +895,7 @@ sections:
 - [WU-1929 — Beautiful CLI Output](wu/WU-1929.yaml)
 - [WU-1927 — lumenflow onboard Interactive Setup Wizard](wu/WU-1927.yaml)
 - [WU-1928 — Community Landing Page](wu/WU-1928.yaml)
+- [WU-1922 — Kernel approval_required Policy Effect](wu/WU-1922.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
