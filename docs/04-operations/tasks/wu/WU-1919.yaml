@@ -30,7 +30,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'B-API: CLI uses wrong API paths. B-CTYPE: HTTP method and Content-Type mismatch. B-PKCATALOG: /packs page calls wrong endpoint. B-PKDET: Pack detail hardcodes empty arrays. B-INSTCMD: Wrong install syntax. B-LHOST: Hardcoded localhost. B-MANIF: Pack CLI commands missing from public manifest.'
+description: 'B-API: CLI uses wrong API paths. B-CTYPE: HTTP method and Content-Type mismatch.
+  B-PKCATALOG: /packs page calls wrong endpoint. B-PKDET: Pack detail hardcodes empty arrays.
+  B-INSTCMD: Wrong install syntax. B-LHOST: Hardcoded localhost. B-MANIF: Pack CLI commands missing
+  from public manifest.'
 acceptance:
   - pack:publish sends POST multipart/form-data to /api/registry/packs
   - pack:search queries /api/registry/packs/search
