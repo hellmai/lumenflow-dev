@@ -7,6 +7,8 @@ priority: P2
 created: 2026-02-20
 code_paths:
   - apps/docs/src/content/docs/index.mdx
+  - apps/docs/src/styles/splash.css
+  - apps/docs/astro.config.mjs
 tests:
   manual:
     - Visual check on lumenflow.dev
@@ -18,10 +20,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-20T19:38:55.292Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1959
+session_id: a0305952-44e2-45af-8b22-0c46873e937d
 exposure: ui
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T19:38:55.297Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -31,11 +40,3 @@ acceptance:
   - Whitespace between hero and GIF visually tight
   - Content reviewed and improved where needed
   - Deployed to lumenflow.dev
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1959
-claimed_at: 2026-02-20T19:38:55.292Z
-baseline_main_sha: 37866ec545c89c8b0cb593c459d3f56d2bf8441f
-session_id: a0305952-44e2-45af-8b22-0c46873e937d
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-20T19:38:55.297Z
