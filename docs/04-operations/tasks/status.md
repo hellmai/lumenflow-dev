@@ -9,6 +9,7 @@ _Last updated: 2026-02-20_
 - [WU-1925 — App Shell Navigation and Error Boundaries](wu/WU-1925.yaml)
 - [WU-1929 — Beautiful CLI Output](wu/WU-1929.yaml)
 - [WU-1922 — Kernel approval_required Policy Effect](wu/WU-1922.yaml)
+- [WU-1927 — lumenflow onboard Interactive Setup Wizard](wu/WU-1927.yaml)
 
 ## Completed
 
