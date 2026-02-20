@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1922 — Kernel approval_required Policy Effect](wu/WU-1922.yaml) — Framework: Core Lifecycle
 - [WU-1921 — Input Validation and Path Safety](wu/WU-1921.yaml) — Content: Site Comms
 - [WU-1920 — Registry Security Hardening](wu/WU-1920.yaml) — Content: Site Comms
 - [WU-1919 — Pack Publishing Pipeline Fixes](wu/WU-1919.yaml) — Framework: CLI Orchestration
