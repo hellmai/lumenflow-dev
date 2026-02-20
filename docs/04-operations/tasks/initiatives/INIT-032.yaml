@@ -24,7 +24,7 @@ phases:
     status: done
   - id: 5
     title: 'Phase 4: Parity + Docs'
-    status: pending
+    status: in_progress
 success_metrics:
   - Time to first task under 2 minutes from fresh install
   - onboard --yes installs and pins registry pack integrity automatically

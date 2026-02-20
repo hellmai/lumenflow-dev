@@ -1869,4 +1869,5 @@
 {"type":"complete","wuId":"WU-1954","timestamp":"2026-02-20T21:52:46.410Z"}
 {"type":"claim","wuId":"WU-1955","timestamp":"2026-02-20T21:53:28.517Z","lane":"Operations: Runtime","title":"[WU-L] AG-UI run route + preview runtime diagnostics"}
 {"type":"complete","wuId":"WU-1955","timestamp":"2026-02-20T22:02:41.598Z"}
-{"type":"claim","wuId":"WU-1956","lane":"Framework: MCP","title":"[WU-M] Expand MCP tool surface for pack/workspace parity","timestamp":"2026-02-20T22:03:22.237Z"}
+{"type":"claim","wuId":"WU-1956","timestamp":"2026-02-20T22:03:22.237Z","lane":"Framework: MCP","title":"[WU-M] Expand MCP tool surface for pack/workspace parity"}
+{"type":"complete","wuId":"WU-1956","timestamp":"2026-02-20T22:08:47.558Z"}

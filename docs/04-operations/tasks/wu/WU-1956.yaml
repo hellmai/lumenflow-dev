@@ -2,7 +2,7 @@ id: WU-1956
 title: '[WU-M] Expand MCP tool surface for pack/workspace parity'
 lane: 'Framework: MCP'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -49,3 +49,6 @@ session_id: 00e74531-45ea-459c-a128-69d816996879
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-20T22:03:22.192Z
+locked: true
+completed_at: 2026-02-20T22:08:42.795Z
+completed: 2026-02-20
