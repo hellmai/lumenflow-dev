@@ -1791,8 +1791,9 @@
 {"type":"complete","wuId":"WU-1917","timestamp":"2026-02-20T10:48:12.047Z"}
 {"type":"claim","wuId":"WU-1931","timestamp":"2026-02-20T11:01:45.269Z","lane":"Content: Site Comms","title":"Docs polish: v3.0.0 references, lanes, upgrade guide"}
 {"type":"complete","wuId":"WU-1931","timestamp":"2026-02-20T11:07:11.887Z"}
-{"type":"claim","wuId":"WU-1932","lane":"Content: Site Comms","title":"Licensing alignment + docs marketing polish","timestamp":"2026-02-20T11:14:10.482Z"}
-{"type":"claim","wuId":"WU-1920","lane":"Content: Site Comms","title":"Registry Security Hardening","timestamp":"2026-02-20T11:23:00.013Z"}
-{"type":"claim","wuId":"WU-1926","lane":"Framework: CLI Enforcement","title":"Publish lumenflow CLI to npm","timestamp":"2026-02-20T11:23:37.944Z"}
-{"type":"claim","wuId":"WU-1918","lane":"Framework: Core Lifecycle","title":"SSE Transport + Trace Bridge","timestamp":"2026-02-20T11:23:42.437Z"}
-{"type":"claim","wuId":"WU-1919","lane":"Framework: CLI Orchestration","title":"Pack Publishing Pipeline Fixes","timestamp":"2026-02-20T11:24:47.283Z"}
+{"type":"claim","wuId":"WU-1932","timestamp":"2026-02-20T11:14:10.482Z","lane":"Content: Site Comms","title":"Licensing alignment + docs marketing polish"}
+{"type":"claim","wuId":"WU-1920","timestamp":"2026-02-20T11:23:00.013Z","lane":"Content: Site Comms","title":"Registry Security Hardening"}
+{"type":"claim","wuId":"WU-1926","timestamp":"2026-02-20T11:23:37.944Z","lane":"Framework: CLI Enforcement","title":"Publish lumenflow CLI to npm"}
+{"type":"claim","wuId":"WU-1918","timestamp":"2026-02-20T11:23:42.437Z","lane":"Framework: Core Lifecycle","title":"SSE Transport + Trace Bridge"}
+{"type":"claim","wuId":"WU-1919","timestamp":"2026-02-20T11:24:47.283Z","lane":"Framework: CLI Orchestration","title":"Pack Publishing Pipeline Fixes"}
+{"type":"complete","wuId":"WU-1932","timestamp":"2026-02-20T11:26:16.890Z"}
