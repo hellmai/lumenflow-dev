@@ -11,6 +11,8 @@ code_paths:
 tests:
   manual:
     - All CLI commands show consistent formatted output
+    - Run 'npx lumenflow commands' and verify branded header appears with version
+    - Run 'npx lumenflow init' and verify branded header appears
   unit:
     - packages/@lumenflow/cli/__tests__/formatters-header.test.ts
   e2e: []
@@ -25,10 +27,17 @@ risks: []
 notes: 'Sizing: MEDIUM (~45 calls, 27 files). Strategy: Single Session. Dependencies (chalk,
   cli-table3) already present.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-20T11:38:55.036Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1929
+session_id: fb95d414-962e-4580-9ab4-5eb396653033
 exposure: ui
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:38:55.040Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -39,11 +48,3 @@ acceptance:
   - Colored status indicators for task states
   - Structured tables for list/status output
   - Progress spinners for long operations
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1929
-claimed_at: 2026-02-20T11:38:55.036Z
-baseline_main_sha: eb61d8185a2c15783ca968bca8a0b3f78f9b7171
-session_id: fb95d414-962e-4580-9ab4-5eb396653033
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-20T11:38:55.040Z
