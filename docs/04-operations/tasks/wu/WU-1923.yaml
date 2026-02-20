@@ -1,0 +1,39 @@
+id: WU-1923
+title: RunAgent Real Execution
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-20
+code_paths:
+  - packages/@lumenflow/surfaces/http/run-agent.ts
+  - packages/@lumenflow/surfaces/http/task-api.ts
+tests:
+  manual:
+    - RunAgent executes tool, streams events to AG-UI client
+  unit:
+    - packages/@lumenflow/surfaces/http/__tests__/run-agent.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1923.done
+dependencies: []
+initiative: INIT-031
+phase: 7
+blocked_by:
+  - WU-1922
+risks: []
+notes: 'Sizing: SIMPLE-MEDIUM (~45 calls, 5 files). Strategy: Single Session. Split from original WU 7.5. Depends on WU-1922 (approval_required effect).'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: api
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'B-RUNAG: RunAgent fakes RUN_COMPLETED with no execution. B-WSVAL: Hardcodes workspace_id ag-ui, fails validation. B-ACCEPT: Empty acceptance array fails schema.'
+acceptance:
+  - RunAgent reads workspace_id from runtime config
+  - Acceptance criteria non-empty (schema min 1)
+  - RunAgent subscribes to task events and streams them
+  - RUN_COMPLETED only on real task_completed event
