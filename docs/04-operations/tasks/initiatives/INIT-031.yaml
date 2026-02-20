@@ -33,10 +33,10 @@ phases:
     status: done
   - id: 7
     title: 'Make It Actually Work: Bug Fixes and Security'
-    status: pending
+    status: in_progress
   - id: 8
     title: Friction-Free DX and Beautiful UX
-    status: pending
+    status: in_progress
 success_metrics:
   - Web dashboard renders live task events within 2s of EventStore append
   - AG-UI RunAgent endpoint passes CopilotKit compatibility test

@@ -37,7 +37,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1920 — Registry Security Hardening](wu/WU-1920.yaml) — Content: Site Comms
 - [WU-1926 — Publish lumenflow CLI to npm](wu/WU-1926.yaml) — Framework: CLI Enforcement
 - [WU-1918 — SSE Transport + Trace Bridge](wu/WU-1918.yaml) — Framework: Core Lifecycle
 - [WU-1919 — Pack Publishing Pipeline Fixes](wu/WU-1919.yaml) — Framework: CLI Orchestration
@@ -894,6 +893,7 @@ sections:
 - [WU-1917 — Homepage conversion redesign + Astro 6 upgrade](wu/WU-1917.yaml)
 - [WU-1931 — Docs polish: v3.0.0 references, lanes, upgrade guide](wu/WU-1931.yaml)
 - [WU-1932 — Licensing alignment + docs marketing polish](wu/WU-1932.yaml)
+- [WU-1920 — Registry Security Hardening](wu/WU-1920.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
