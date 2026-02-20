@@ -77,6 +77,7 @@ export interface ToolReceiptView {
   readonly result?: 'success' | 'failure' | 'denied' | 'crashed';
   readonly scopeRequested: readonly ScopeView[];
   readonly scopeAllowed: readonly ScopeView[];
+  readonly scopeEnforced: readonly ScopeView[];
   readonly policyDecisions: readonly PolicyDecisionView[];
 }
 

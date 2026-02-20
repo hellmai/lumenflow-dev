@@ -1,6 +1,6 @@
 'use client';
 
-import { useTaskEvents } from '../hooks/use-task-events';
+import { useTaskEvents, extractPolicyDenials } from '../hooks/use-task-events';
 import { TaskDashboard } from './task-dashboard';
 
 interface TaskDashboardLiveProps {
@@ -13,6 +13,7 @@ interface TaskDashboardLiveProps {
  */
 export function TaskDashboardLive({ taskId }: TaskDashboardLiveProps) {
   const { state, approvePendingApproval, denyPendingApproval } = useTaskEvents({ taskId });
+  const policyDenials = extractPolicyDenials(state.toolReceipts);
 
   return (
     <TaskDashboard
@@ -25,6 +26,7 @@ export function TaskDashboardLive({ taskId }: TaskDashboardLiveProps) {
       onApprove={approvePendingApproval}
       onDeny={denyPendingApproval}
       evidenceLinks={state.evidenceLinks}
+      policyDenials={policyDenials}
     />
   );
 }

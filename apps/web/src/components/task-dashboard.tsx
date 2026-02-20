@@ -5,6 +5,7 @@ import type {
   DashboardEvent,
   EvidenceLink,
   PolicyDecisionView,
+  PolicyDenialView,
   SseConnectionState,
   TaskStatus,
   ToolReceiptView,
@@ -16,6 +17,7 @@ import { ToolReceipt } from './tool-receipt';
 import { EvidenceChain } from './evidence-chain';
 import { ApprovalCard } from './approval-card';
 import { PolicyAuditTab } from './policy-audit-tab';
+import { PolicyDecisionOverlay } from './policy-decision-overlay';
 
 const CONNECTION_BADGE_COLORS = new Map<SseConnectionState, string>([
   ['connecting', 'bg-amber-100 text-amber-700'],
@@ -37,6 +39,7 @@ interface TaskDashboardProps {
   readonly onDeny: (receiptId: string) => void;
   readonly evidenceLinks: readonly EvidenceLink[];
   readonly policyDecisions?: readonly PolicyDecisionView[];
+  readonly policyDenials?: readonly PolicyDenialView[];
 }
 
 export function TaskDashboard({
@@ -50,6 +53,7 @@ export function TaskDashboard({
   onDeny,
   evidenceLinks,
   policyDecisions,
+  policyDenials,
 }: TaskDashboardProps) {
   const pendingApprovals = approvalRequests.filter(
     (request) => request.status === APPROVAL_STATUSES.PENDING,
@@ -96,6 +100,23 @@ export function TaskDashboard({
                 onApprove={onApprove}
                 onDeny={onDeny}
               />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Policy Decision Overlays (WU-1924) */}
+      {policyDenials && policyDenials.length > 0 && (
+        <section>
+          <h2 className={SECTION_TITLE_CLASS}>
+            Policy Denials{' '}
+            <span className="ml-1 rounded bg-red-100 px-1.5 py-0.5 text-xs font-normal text-red-500">
+              {policyDenials.length}
+            </span>
+          </h2>
+          <div className="mt-3 space-y-4">
+            {policyDenials.map((denial) => (
+              <PolicyDecisionOverlay key={denial.receiptId} denial={denial} />
             ))}
           </div>
         </section>

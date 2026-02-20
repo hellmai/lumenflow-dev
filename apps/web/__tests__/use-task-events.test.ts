@@ -8,6 +8,7 @@ import {
   extractEvidenceLinks,
   applyApprovalDecision,
   extractApprovalRequests,
+  extractPolicyDenials,
 } from '../src/hooks/use-task-events';
 import type { DashboardEvent } from '../src/lib/dashboard-types';
 
@@ -423,5 +424,228 @@ describe('extractEvidenceLinks', () => {
 
     const links = extractEvidenceLinks(events);
     expect(links).toHaveLength(0);
+  });
+});
+
+/* ------------------------------------------------------------------
+ * WU-1924: AC1 - extractToolReceipts includes scope_enforced
+ * ------------------------------------------------------------------ */
+
+describe('extractToolReceipts scope_enforced (WU-1924 AC1)', () => {
+  it('includes scopeEnforced from finished event data', () => {
+    const events: DashboardEvent[] = [
+      {
+        id: 'e1',
+        kind: 'tool_call_started',
+        timestamp: '2026-02-18T10:02:00.000Z',
+        taskId: TASK_ID,
+        data: {
+          receipt_id: 'rcpt-enforced-1',
+          tool_name: 'fs.write',
+          scope_requested: [{ type: 'path', pattern: '.env', access: 'write' }],
+          scope_allowed: [{ type: 'path', pattern: 'src/**', access: 'write' }],
+        },
+      },
+      {
+        id: 'e2',
+        kind: 'tool_call_finished',
+        timestamp: '2026-02-18T10:02:05.000Z',
+        taskId: TASK_ID,
+        data: {
+          receipt_id: 'rcpt-enforced-1',
+          result: 'denied',
+          duration_ms: 100,
+          policy_decisions: [
+            { policy_id: 'workspace-no-secrets', decision: 'deny', reason: 'Blocked' },
+          ],
+          scope_enforced: [
+            { type: 'path', pattern: '.env', access: 'deny' },
+            { type: 'path', pattern: '.aws/**', access: 'deny' },
+          ],
+        },
+      },
+    ];
+
+    const receipts = extractToolReceipts(events);
+    expect(receipts).toHaveLength(1);
+    expect(receipts[0].scopeEnforced).toBeDefined();
+    expect(receipts[0].scopeEnforced).toHaveLength(2);
+    expect(receipts[0].scopeEnforced[0].type).toBe('path');
+    expect(receipts[0].scopeEnforced[0].pattern).toBe('.env');
+    expect(receipts[0].scopeEnforced[0].access).toBe('deny');
+  });
+
+  it('returns empty scopeEnforced when finished event has no scope_enforced', () => {
+    const events: DashboardEvent[] = [
+      {
+        id: 'e1',
+        kind: 'tool_call_started',
+        timestamp: '2026-02-18T10:02:00.000Z',
+        taskId: TASK_ID,
+        data: {
+          receipt_id: 'rcpt-no-enforced',
+          tool_name: 'git.commit',
+          scope_requested: [{ type: 'path', pattern: 'src/**', access: 'write' }],
+          scope_allowed: [{ type: 'path', pattern: 'src/**', access: 'write' }],
+        },
+      },
+      {
+        id: 'e2',
+        kind: 'tool_call_finished',
+        timestamp: '2026-02-18T10:02:05.000Z',
+        taskId: TASK_ID,
+        data: {
+          receipt_id: 'rcpt-no-enforced',
+          result: 'success',
+          duration_ms: 5000,
+          policy_decisions: [{ policy_id: 'ws-default', decision: 'allow', reason: 'Allowed' }],
+        },
+      },
+    ];
+
+    const receipts = extractToolReceipts(events);
+    expect(receipts).toHaveLength(1);
+    expect(receipts[0].scopeEnforced).toBeDefined();
+    expect(receipts[0].scopeEnforced).toHaveLength(0);
+  });
+});
+
+/* ------------------------------------------------------------------
+ * WU-1924: AC2 - PolicyDenialView built from denied tool receipts
+ * ------------------------------------------------------------------ */
+
+describe('extractPolicyDenials (WU-1924 AC2)', () => {
+  it('builds PolicyDenialView from denied tool receipts', () => {
+    const events: DashboardEvent[] = [
+      {
+        id: 'e1',
+        kind: 'tool_call_started',
+        timestamp: '2026-02-18T10:02:00.000Z',
+        taskId: TASK_ID,
+        data: {
+          receipt_id: 'rcpt-denied-1',
+          tool_name: 'fs.write',
+          scope_requested: [{ type: 'path', pattern: '.env', access: 'write' }],
+          scope_allowed: [{ type: 'path', pattern: 'src/**', access: 'write' }],
+        },
+      },
+      {
+        id: 'e2',
+        kind: 'tool_call_finished',
+        timestamp: '2026-02-18T10:02:01.000Z',
+        taskId: TASK_ID,
+        data: {
+          receipt_id: 'rcpt-denied-1',
+          result: 'denied',
+          duration_ms: 100,
+          policy_decisions: [
+            { policy_id: 'workspace-no-secrets', decision: 'deny', reason: 'Write to .env blocked' },
+          ],
+          scope_enforced: [{ type: 'path', pattern: '.env', access: 'deny' }],
+        },
+      },
+    ];
+
+    const receipts = extractToolReceipts(events);
+    const denials = extractPolicyDenials(receipts);
+
+    expect(denials).toHaveLength(1);
+    expect(denials[0].receiptId).toBe('rcpt-denied-1');
+    expect(denials[0].toolName).toBe('fs.write');
+    expect(denials[0].policyId).toBe('workspace-no-secrets');
+    expect(denials[0].reason).toBe('Write to .env blocked');
+    expect(denials[0].timestamp).toBe('2026-02-18T10:02:00.000Z');
+  });
+
+  it('returns empty array when no denied receipts exist', () => {
+    const events: DashboardEvent[] = [
+      {
+        id: 'e1',
+        kind: 'tool_call_started',
+        timestamp: '2026-02-18T10:02:00.000Z',
+        taskId: TASK_ID,
+        data: {
+          receipt_id: 'rcpt-ok-1',
+          tool_name: 'git.commit',
+          scope_requested: [{ type: 'path', pattern: 'src/**', access: 'write' }],
+          scope_allowed: [{ type: 'path', pattern: 'src/**', access: 'write' }],
+        },
+      },
+      {
+        id: 'e2',
+        kind: 'tool_call_finished',
+        timestamp: '2026-02-18T10:02:05.000Z',
+        taskId: TASK_ID,
+        data: {
+          receipt_id: 'rcpt-ok-1',
+          result: 'success',
+          duration_ms: 5000,
+          policy_decisions: [{ policy_id: 'ws-default', decision: 'allow', reason: 'Allowed' }],
+        },
+      },
+    ];
+
+    const receipts = extractToolReceipts(events);
+    const denials = extractPolicyDenials(receipts);
+    expect(denials).toHaveLength(0);
+  });
+});
+
+/* ------------------------------------------------------------------
+ * WU-1924: AC3 - ScopeIntersectionView constructed from requested/allowed/enforced
+ * ------------------------------------------------------------------ */
+
+describe('extractPolicyDenials scopeIntersection (WU-1924 AC3)', () => {
+  it('constructs ScopeIntersectionView from receipt scope fields', () => {
+    const events: DashboardEvent[] = [
+      {
+        id: 'e1',
+        kind: 'tool_call_started',
+        timestamp: '2026-02-18T14:30:00.000Z',
+        taskId: TASK_ID,
+        data: {
+          receipt_id: 'rcpt-scope-test',
+          tool_name: 'fs.write',
+          scope_requested: [
+            { type: 'path', pattern: '.env', access: 'write' },
+            { type: 'path', pattern: 'src/**', access: 'write' },
+          ],
+          scope_allowed: [{ type: 'path', pattern: 'src/**', access: 'write' }],
+        },
+      },
+      {
+        id: 'e2',
+        kind: 'tool_call_finished',
+        timestamp: '2026-02-18T14:30:01.000Z',
+        taskId: TASK_ID,
+        data: {
+          receipt_id: 'rcpt-scope-test',
+          result: 'denied',
+          duration_ms: 50,
+          policy_decisions: [
+            { policy_id: 'workspace-no-secrets', decision: 'deny', reason: 'Blocked by policy' },
+          ],
+          scope_enforced: [
+            { type: 'path', pattern: '.env', access: 'deny' },
+            { type: 'path', pattern: '.aws/**', access: 'deny' },
+          ],
+        },
+      },
+    ];
+
+    const receipts = extractToolReceipts(events);
+    const denials = extractPolicyDenials(receipts);
+
+    expect(denials).toHaveLength(1);
+
+    const intersection = denials[0].scopeIntersection;
+    expect(intersection.requested).toHaveLength(2);
+    expect(intersection.allowed).toHaveLength(1);
+    expect(intersection.enforced).toHaveLength(2);
+
+    expect(intersection.requested[0].pattern).toBe('.env');
+    expect(intersection.allowed[0].pattern).toBe('src/**');
+    expect(intersection.enforced[0].pattern).toBe('.env');
+    expect(intersection.enforced[1].pattern).toBe('.aws/**');
   });
 });

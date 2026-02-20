@@ -13,6 +13,7 @@ import {
   type EvidenceLink,
   type PolicyDecisionType,
   type PolicyDecisionView,
+  type PolicyDenialView,
   type ScopeView,
   type SseConnectionState,
   type TaskStatus,
@@ -205,6 +206,7 @@ export function extractToolReceipts(events: readonly DashboardEvent[]): ToolRece
       result: finished?.data.result as ToolReceiptView['result'],
       scopeRequested: toScopeViews(started.data.scope_requested),
       scopeAllowed: toScopeViews(started.data.scope_allowed),
+      scopeEnforced: finished ? toScopeViews(finished.data.scope_enforced) : [],
       policyDecisions: finished ? toPolicyDecisionViews(finished.data.policy_decisions) : [],
     });
   }
@@ -336,6 +338,43 @@ export function extractEvidenceLinks(events: readonly DashboardEvent[]): Evidenc
   }
 
   return links;
+}
+
+/**
+ * Builds PolicyDenialView[] from tool receipts that have a 'deny' policy decision.
+ * Constructs the ScopeIntersectionView from the receipt's requested/allowed/enforced
+ * scope fields and extracts the first deny decision's policyId and reason.
+ */
+export function extractPolicyDenials(
+  receipts: readonly ToolReceiptView[],
+): readonly PolicyDenialView[] {
+  const denials: PolicyDenialView[] = [];
+
+  for (const receipt of receipts) {
+    const denyDecision = receipt.policyDecisions.find(
+      (decision) => decision.decision === POLICY_DECISIONS.DENY,
+    );
+
+    if (!denyDecision) {
+      continue;
+    }
+
+    denials.push({
+      receiptId: receipt.receiptId,
+      toolName: receipt.toolName,
+      policyId: denyDecision.policyId,
+      reason: denyDecision.reason ?? '',
+      timestamp: receipt.startedAt,
+      scopeIntersection: {
+        requested: receipt.scopeRequested,
+        allowed: receipt.scopeAllowed,
+        enforced: receipt.scopeEnforced,
+      },
+      actionDiff: [],
+    });
+  }
+
+  return denials;
 }
 
 // --- React Hook ---

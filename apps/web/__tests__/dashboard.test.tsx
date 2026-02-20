@@ -4,6 +4,7 @@ import { render, screen, act, within, fireEvent } from '@testing-library/react';
 import type {
   ApprovalRequestView,
   DashboardEvent,
+  PolicyDenialView,
   ToolReceiptView,
   EvidenceLink,
 } from '../src/lib/dashboard-types';
@@ -308,5 +309,104 @@ describe('TaskDashboard component', () => {
 
     expect(approve).toHaveBeenCalledWith(FIXTURE_APPROVAL_REQUEST.receiptId);
     expect(deny).toHaveBeenCalledWith(FIXTURE_APPROVAL_REQUEST.receiptId);
+  });
+});
+
+/* ------------------------------------------------------------------
+ * WU-1924 AC4: PolicyDecisionOverlay rendered in TaskDashboard
+ * ------------------------------------------------------------------ */
+
+const FIXTURE_DENIAL: PolicyDenialView = {
+  receiptId: 'rcpt-denied-1',
+  toolName: 'fs.write',
+  policyId: 'workspace-no-secrets',
+  reason: 'Write to .env blocked by workspace secret-deny policy',
+  timestamp: '2026-02-18T14:30:00.000Z',
+  scopeIntersection: {
+    requested: [
+      { type: 'path', pattern: '.env', access: 'write' },
+      { type: 'path', pattern: 'src/**', access: 'write' },
+    ],
+    allowed: [{ type: 'path', pattern: 'src/**', access: 'write' }],
+    enforced: [
+      { type: 'path', pattern: '.env', access: 'deny' },
+      { type: 'path', pattern: '.aws/**', access: 'deny' },
+    ],
+  },
+  actionDiff: [
+    { field: 'path', attempted: '.env', permitted: null, status: 'denied' },
+  ],
+};
+
+describe('TaskDashboard PolicyDecisionOverlay (WU-1924 AC4)', () => {
+  it('renders PolicyDecisionOverlay when policyDenials are provided', async () => {
+    const { TaskDashboard } = await import('../src/components/task-dashboard');
+    const noop = vi.fn();
+
+    render(
+      <TaskDashboard
+        taskId={TASK_ID}
+        connectionState="connected"
+        currentStatus="active"
+        events={FIXTURE_EVENTS}
+        toolReceipts={[FIXTURE_RECEIPT]}
+        evidenceLinks={FIXTURE_EVIDENCE}
+        approvalRequests={[]}
+        onApprove={noop}
+        onDeny={noop}
+        policyDenials={[FIXTURE_DENIAL]}
+      />,
+    );
+
+    // The overlay should be visible
+    expect(screen.getByTestId('policy-decision-overlay')).toBeDefined();
+    // Policy ID and tool name visible
+    expect(screen.getByText('workspace-no-secrets')).toBeDefined();
+    expect(screen.getByText('fs.write')).toBeDefined();
+    // Scope intersection diagram rendered
+    expect(screen.getByTestId('scope-intersection-diagram')).toBeDefined();
+  });
+
+  it('does not render overlay section when policyDenials is empty', async () => {
+    const { TaskDashboard } = await import('../src/components/task-dashboard');
+    const noop = vi.fn();
+
+    render(
+      <TaskDashboard
+        taskId={TASK_ID}
+        connectionState="connected"
+        currentStatus="active"
+        events={FIXTURE_EVENTS}
+        toolReceipts={[FIXTURE_RECEIPT]}
+        evidenceLinks={FIXTURE_EVIDENCE}
+        approvalRequests={[]}
+        onApprove={noop}
+        onDeny={noop}
+        policyDenials={[]}
+      />,
+    );
+
+    expect(screen.queryByTestId('policy-decision-overlay')).toBeNull();
+  });
+
+  it('does not render overlay section when policyDenials is undefined', async () => {
+    const { TaskDashboard } = await import('../src/components/task-dashboard');
+    const noop = vi.fn();
+
+    render(
+      <TaskDashboard
+        taskId={TASK_ID}
+        connectionState="connected"
+        currentStatus="active"
+        events={FIXTURE_EVENTS}
+        toolReceipts={[FIXTURE_RECEIPT]}
+        evidenceLinks={FIXTURE_EVIDENCE}
+        approvalRequests={[]}
+        onApprove={noop}
+        onDeny={noop}
+      />,
+    );
+
+    expect(screen.queryByTestId('policy-decision-overlay')).toBeNull();
   });
 });
