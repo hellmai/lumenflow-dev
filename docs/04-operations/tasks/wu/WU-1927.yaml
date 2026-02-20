@@ -25,10 +25,17 @@ spec_refs:
 risks: []
 notes: 'Sizing: MEDIUM (~31 calls, 23 files). Strategy: Single Session. Depends on WU-1926 (npm publish).'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
-exposure: ui
+claimed_at: 2026-02-20T11:47:01.213Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1927
+session_id: 9b9ba0f8-3c94-4263-ae4a-39d83a580b99
+exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:47:01.221Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -41,11 +48,3 @@ acceptance:
   - Generates workspace.yaml with selected pack
   - Installs pack from registry
   - Launches dashboard
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1927
-claimed_at: 2026-02-20T11:47:01.213Z
-baseline_main_sha: 39555d618f028f500b752855b8985fb454a378e4
-session_id: 9b9ba0f8-3c94-4263-ae4a-39d83a580b99
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-20T11:47:01.221Z
