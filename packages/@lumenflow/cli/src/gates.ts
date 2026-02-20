@@ -73,6 +73,8 @@ import {
   type GateResult,
 } from './gates-graceful-degradation.js';
 import { runCLI } from './cli-entry-point.js';
+// WU-1929: Import chalk for colored gate output
+import chalk from 'chalk';
 // WU-1550: Gate registry for declarative gate registration
 import { GateRegistry, type GateDefinition } from './gate-registry.js';
 import { registerDocsOnlyGates, registerCodeGates } from './gate-defaults.js';
@@ -630,10 +632,13 @@ async function executeGates(opts: {
   const summaryLogLine = makeGateLogger({ agentLog, useAgentMode, cwd });
   summaryLogLine(`\n${formatGateSummary(gateResults)}`);
 
+  // WU-1929: Use colored output for gate results
   if (!useAgentMode) {
-    console.log('\n\u2705 All gates passed!\n');
+    console.log(`\n${chalk.green('\u2705 All gates passed!')}\n`);
   } else {
-    console.log(`\u2705 All gates passed (agent mode). Log: ${agentLog!.logPath}\n`);
+    console.log(
+      `${chalk.green('\u2705 All gates passed')} (agent mode). Log: ${agentLog!.logPath}\n`,
+    );
   }
 
   return true;

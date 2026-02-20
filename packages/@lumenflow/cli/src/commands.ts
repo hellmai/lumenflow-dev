@@ -207,6 +207,7 @@ export async function main(): Promise<void> {
 
 // CLI entry point
 // WU-1071: Use import.meta.main for proper CLI detection with pnpm symlinks
+// WU-1929: Show branded header for discovery command
 if (import.meta.main) {
-  void runCLI(main);
+  void runCLI(main, { showHeader: true });
 }

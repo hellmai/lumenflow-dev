@@ -216,8 +216,8 @@ describe('WU-1071/WU-1181: CLI entry point patterns', () => {
   // Inline main().catch() pattern that should be replaced by runCLI(main) (WU-1537)
   const MAIN_CATCH_PATTERN = /main\(\)\.catch\(/;
 
-  // Correct runCLI(main) pattern (WU-1537)
-  const RUN_CLI_PATTERN = /runCLI\(main\)/;
+  // Correct runCLI(main) or runCLI(main, options) pattern (WU-1537, WU-1929)
+  const RUN_CLI_PATTERN = /runCLI\(main(?:,\s*\{[^}]*\})?\)/;
 
   /**
    * Discovers all CLI files with entry points by scanning the src directory

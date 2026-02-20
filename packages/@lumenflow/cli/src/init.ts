@@ -1499,6 +1499,7 @@ export async function main(): Promise<void> {
 // WU-1297: Use import.meta.main instead of exporting main() without calling it
 // This ensures main() runs when the script is executed as a CLI entry point
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
+// WU-1929: Show branded header for init command
 if (import.meta.main) {
-  void runCLI(main);
+  void runCLI(main, { showHeader: true });
 }

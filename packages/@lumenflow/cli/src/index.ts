@@ -8,4 +8,15 @@
  * @see https://lumenflow.dev/reference/cli
  */
 
-export { runCLI } from './cli-entry-point.js';
+export { runCLI, getCliVersion } from './cli-entry-point.js';
+export type { RunCLIOptions } from './cli-entry-point.js';
+// WU-1929: Export formatters for consistent CLI output
+export {
+  formatHeader,
+  printHeader,
+  statusColor,
+  createStatusTable,
+  createSpinner,
+  STATUS_COLORS,
+} from './formatters.js';
+export type { Spinner } from './formatters.js';

@@ -12,6 +12,8 @@
  *
  * WU-1085: Initializes color support respecting NO_COLOR/FORCE_COLOR/--no-color
  *
+ * WU-1929: Adds branded header support via showHeader option
+ *
  * WU-1233: Adds EPIPE protection for pipe resilience. When CLI output is piped
  * through head/tail, the pipe may close before all output is written. Without
  * this protection, Node.js throws unhandled EPIPE errors crashing the process.
@@ -26,8 +28,12 @@
  * }
  * ```
  */
+import { readFileSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { EXIT_CODES } from '@lumenflow/core/wu-constants';
 import { initColorSupport, StreamErrorHandler, ProcessExitError } from '@lumenflow/core';
+import { printHeader } from './formatters.js';
 
 const HELP_HINT_MESSAGE = 'Hint: Run with --help to see valid options.';
 const COMMANDER_USAGE_ERROR_CODES = new Set([
@@ -38,15 +44,40 @@ const COMMANDER_USAGE_ERROR_CODES = new Set([
 ]);
 
 /**
+ * WU-1929: Read the CLI package version from the nearest package.json.
+ * Returns empty string on failure (no crash for missing file).
+ */
+export function getCliVersion(): string {
+  try {
+    const thisDir = dirname(fileURLToPath(import.meta.url));
+    const pkgPath = join(thisDir, '..', 'package.json');
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8')) as { version?: string };
+    return typeof pkg.version === 'string' ? pkg.version : '';
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Options for runCLI wrapper.
+ */
+export interface RunCLIOptions {
+  /** WU-1929: Print branded header before executing the command */
+  showHeader?: boolean;
+}
+
+/**
  * Wraps an async main function with proper error handling.
  * WU-1085: Also initializes color support based on NO_COLOR/FORCE_COLOR/--no-color
  * WU-1233: Attaches EPIPE handler for graceful pipe closure
  * WU-1538: Catches ProcessExitError from core modules and maps to process.exit
+ * WU-1929: Optionally prints branded header with version
  *
  * @param main - The async main function to execute
+ * @param options - Optional configuration (showHeader, etc.)
  * @returns Promise that resolves when main completes (or after error handling)
  */
-export async function runCLI(main: () => Promise<void>): Promise<void> {
+export async function runCLI(main: () => Promise<void>, options?: RunCLIOptions): Promise<void> {
   // WU-1233: Attach EPIPE handler before running command
   // This must be done early to catch UnsafeAny EPIPE errors during execution
   const streamErrorHandler = StreamErrorHandler.createWithDefaults();
@@ -54,6 +85,11 @@ export async function runCLI(main: () => Promise<void>): Promise<void> {
 
   // WU-1085: Initialize color support before running command
   initColorSupport();
+
+  // WU-1929: Print branded header if requested
+  if (options?.showHeader) {
+    printHeader({ version: getCliVersion() });
+  }
 
   try {
     await main();
