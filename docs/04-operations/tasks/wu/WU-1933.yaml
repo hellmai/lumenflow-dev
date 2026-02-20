@@ -1,0 +1,32 @@
+id: WU-1933
+title: AGPL SPDX license headers for all source files
+lane: 'Content: Site Comms'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-20
+code_paths:
+  - packages/
+tests:
+  manual:
+    - grep for SPDX-License-Identifier across all src .ts files
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1933.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Add missing SPDX license headers to all .ts source files per CONTRIBUTING.md requirements. Kernel, packs, and control-plane-sdk already have headers; core, cli, memory, agent, metrics, initiatives, shims, mcp, and runtime need them.
+acceptance:
+  - Every .ts file in packages/@lumenflow/*/src/ has a 2-line SPDX header
+  - AGPL packages use AGPL-3.0-only identifier
+  - Control-plane-sdk uses Apache-2.0 identifier
