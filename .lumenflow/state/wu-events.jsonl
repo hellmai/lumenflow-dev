@@ -1849,5 +1849,6 @@
 {"type":"complete","wuId":"WU-1945","timestamp":"2026-02-20T18:29:20.849Z"}
 {"type":"claim","wuId":"WU-1946","timestamp":"2026-02-20T18:30:04.465Z","lane":"Operations: Runtime","title":"[WU-C] Install shadcn/ui base components"}
 {"type":"complete","wuId":"WU-1946","timestamp":"2026-02-20T19:38:12.118Z"}
-{"type":"claim","wuId":"WU-1947","lane":"Framework: CLI Orchestration","title":"[WU-D] CLI install fix: integrity auto-resolve + real onboard install","timestamp":"2026-02-20T19:38:50.772Z"}
-{"type":"claim","wuId":"WU-1959","lane":"Operations: Tooling","title":"Optimize landing page: reduce whitespace, review content","timestamp":"2026-02-20T19:38:55.349Z"}
+{"type":"claim","wuId":"WU-1947","timestamp":"2026-02-20T19:38:50.772Z","lane":"Framework: CLI Orchestration","title":"[WU-D] CLI install fix: integrity auto-resolve + real onboard install"}
+{"type":"claim","wuId":"WU-1959","timestamp":"2026-02-20T19:38:55.349Z","lane":"Operations: Tooling","title":"Optimize landing page: reduce whitespace, review content"}
+{"type":"complete","wuId":"WU-1959","timestamp":"2026-02-20T19:45:49.625Z"}
