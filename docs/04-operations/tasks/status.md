@@ -1,10 +1,11 @@
 # Work Unit Status
 
-_Last updated: 2026-02-19_
+_Last updated: 2026-02-20_
 
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1914 — Full Starlight docs accuracy audit - fix all version, CLI, config, lane, and sidebar inaccuracies](wu/WU-1914.yaml)
 
 ## Completed
 
