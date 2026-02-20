@@ -7,6 +7,12 @@ priority: P1
 created: 2026-02-20
 code_paths:
   - apps/web/app/layout.tsx
+  - apps/web/src/components/global-nav.tsx
+  - apps/web/src/components/global-nav-shell.tsx
+  - apps/web/src/components/route-error-boundary.tsx
+  - apps/web/src/components/loading-skeleton.tsx
+  - apps/web/app/error.tsx
+  - apps/web/app/loading.tsx
 tests:
   manual:
     - Navigate between all routes via nav bar
@@ -24,10 +30,17 @@ risks: []
 notes: 'Sizing: MEDIUM (~42 calls, 27 files). Strategy: Single Session. Shallow multi-file
   exception: 12+ error.tsx/loading.tsx are boilerplate pattern.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-20T11:38:34.741Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1925
+session_id: fb95d414-962e-4580-9ab4-5eb396653033
 exposure: ui
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:38:34.745Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -38,11 +51,3 @@ acceptance:
   - Error boundaries at every route segment
   - Loading states with skeletons at every route
   - Dark mode toggle functional
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1925
-claimed_at: 2026-02-20T11:38:34.741Z
-baseline_main_sha: cbe75e12b380d0a721851645a84fef65955ae12b
-session_id: fb95d414-962e-4580-9ab4-5eb396653033
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-20T11:38:34.745Z
