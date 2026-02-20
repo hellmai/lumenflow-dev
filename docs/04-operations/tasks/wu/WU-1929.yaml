@@ -2,7 +2,7 @@ id: WU-1929
 title: Beautiful CLI Output
 lane: 'Framework: CLI Orchestration'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - Colored status indicators for task states
   - Structured tables for list/status output
   - Progress spinners for long operations
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1929
+claimed_at: 2026-02-20T11:38:55.036Z
+baseline_main_sha: eb61d8185a2c15783ca968bca8a0b3f78f9b7171
+session_id: fb95d414-962e-4580-9ab4-5eb396653033
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:38:55.040Z

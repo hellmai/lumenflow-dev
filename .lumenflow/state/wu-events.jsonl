@@ -1801,3 +1801,4 @@
 {"type":"complete","wuId":"WU-1919","timestamp":"2026-02-20T11:37:54.083Z"}
 {"type":"claim","wuId":"WU-1921","lane":"Content: Site Comms","title":"Input Validation and Path Safety","timestamp":"2026-02-20T11:38:28.057Z"}
 {"type":"claim","wuId":"WU-1925","lane":"Content: Site Comms","title":"App Shell Navigation and Error Boundaries","timestamp":"2026-02-20T11:38:34.771Z"}
+{"type":"claim","wuId":"WU-1929","lane":"Framework: CLI Orchestration","title":"Beautiful CLI Output","timestamp":"2026-02-20T11:38:55.062Z"}
