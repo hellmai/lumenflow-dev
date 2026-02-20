@@ -2,7 +2,7 @@ id: WU-1939
 title: Fix Next.js dev script for Turbopack default in Next 16
 lane: 'Operations: Runtime'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-20
 code_paths:
@@ -29,3 +29,11 @@ description: Next.js 16 defaults to Turbopack but apps/web dev script lacks --we
   extensionAlias is not supported by Turbopack yet so dev server crashes on startup.
 acceptance:
   - pnpm --filter @lumenflow/web dev starts without error
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-runtime-wu-1939
+claimed_at: 2026-02-20T13:15:55.929Z
+baseline_main_sha: 7e81e96ba853ee3bf8e310bb3fed51c388df2a31
+session_id: 27bec1dd-9664-434f-beb2-555699dc5615
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T13:15:55.934Z

@@ -6,6 +6,7 @@ _Last updated: 2026-02-20_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1938 — Remove terminal code block from landing page hero](wu/WU-1938.yaml)
+- [WU-1939 — Fix Next.js dev script for Turbopack default in Next 16](wu/WU-1939.yaml)
 
 ## Completed
 

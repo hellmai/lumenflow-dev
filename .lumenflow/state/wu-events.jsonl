@@ -1828,3 +1828,4 @@
 {"type":"claim","wuId":"WU-1937","timestamp":"2026-02-20T13:04:40.594Z","lane":"Content: Site Comms","title":"Hero tighten: shorter tagline, CTA reorder, code proof block"}
 {"type":"complete","wuId":"WU-1937","timestamp":"2026-02-20T13:09:23.969Z"}
 {"type":"claim","wuId":"WU-1938","lane":"Operations: Tooling","title":"Remove terminal code block from landing page hero","timestamp":"2026-02-20T13:14:30.260Z"}
+{"type":"claim","wuId":"WU-1939","lane":"Operations: Runtime","title":"Fix Next.js dev script for Turbopack default in Next 16","timestamp":"2026-02-20T13:15:55.985Z"}

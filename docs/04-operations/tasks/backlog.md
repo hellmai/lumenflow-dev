@@ -25,12 +25,12 @@ sections:
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1934 — Fix pre-existing MCP parity test failures from WU-1927 onboard](wu/WU-1934.yaml) — Framework: MCP
-- [WU-1939 — Fix Next.js dev script for Turbopack default in Next 16](wu/WU-1939.yaml) — Operations: Tooling
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1938 — Remove terminal code block from landing page hero](wu/WU-1938.yaml) — Operations: Tooling
+- [WU-1939 — Fix Next.js dev script for Turbopack default in Next 16](wu/WU-1939.yaml) — Operations: Runtime
 
 ## ⛔ Blocked
 
