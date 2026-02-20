@@ -7,7 +7,6 @@ priority: P2
 created: 2026-02-20
 code_paths:
   - apps/docs/src/content/docs/index.mdx
-  - apps/docs/package.json
 tests:
   manual:
     - pnpm build produces 71 pages with no errors
@@ -19,10 +18,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-20T10:38:40.767Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1917
+session_id: 2215e78a-d779-4408-b10c-2824b63ec87b
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T10:38:40.773Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -35,11 +41,3 @@ acceptance:
   - Primary CTA is learn-first not CLI setup
   - Four Guarantees section appears after problem statement
   - Deployed to production
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1917
-claimed_at: 2026-02-20T10:38:40.767Z
-baseline_main_sha: 4e538a0e8b91b1b680e513443f3a8d61ea6c1de5
-session_id: 2215e78a-d779-4408-b10c-2824b63ec87b
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-20T10:38:40.773Z
