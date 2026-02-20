@@ -77,9 +77,16 @@ function extractJson<T>(stdout: string): T {
 }
 
 describe('CLI integration (no mocks)', { timeout: CLI_INTEGRATION_TEST_TIMEOUT_MS }, () => {
-  // WU-1908: pack_search is a known, tracked parity gap (see WU-1880).
-  // It exists in the CLI public manifest but has no MCP tool yet.
-  const EXPECTED_MISSING_PARITY_TOOLS: string[] = ['pack_search'];
+  // WU-1908: pack commands are known, tracked parity gaps (see WU-1880).
+  // WU-1919: Added pack:validate, pack:hash, pack:publish, pack:install to public manifest.
+  // They exist in the CLI public manifest but have no MCP tools yet.
+  const EXPECTED_MISSING_PARITY_TOOLS: string[] = [
+    'pack_hash',
+    'pack_install',
+    'pack_publish',
+    'pack_search',
+    'pack_validate',
+  ];
 
   describe('wu:status flags', () => {
     it('should accept --id and --json flags (as MCP wuStatusTool passes them)', async () => {

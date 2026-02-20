@@ -1786,9 +1786,16 @@ describe('Wave-2 parity MCP tools (WU-1483)', () => {
 });
 
 describe('Manifest parity truth gate (WU-1481)', () => {
-  // WU-1880: pack_search is a known, tracked parity gap.
+  // WU-1880: pack commands are known, tracked parity gaps.
+  // WU-1919: Added pack:validate, pack:hash, pack:publish, pack:install to public manifest.
   // The truth gate remains strict by requiring this list to be explicit.
-  const EXPECTED_MISSING_COMMANDS: string[] = ['pack_search'];
+  const EXPECTED_MISSING_COMMANDS: string[] = [
+    'pack_hash',
+    'pack_install',
+    'pack_publish',
+    'pack_search',
+    'pack_validate',
+  ];
 
   const EXPECTED_ALLOWED_EXTRAS = [
     'context_get',
