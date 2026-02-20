@@ -2,7 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { MarketplacePackDetail as PackDetailType } from '../lib/marketplace-types';
-import type { PackRegistryEntry, PackVersion, PackManifestSummary } from '../lib/pack-registry-types';
+import type {
+  PackRegistryEntry,
+  PackVersion,
+  PackManifestSummary,
+} from '../lib/pack-registry-types';
 import { loadPersistedWorkspacePath } from '../lib/workspace-connection';
 import { MarketplacePackDetail } from './marketplace-pack-detail';
 

@@ -375,9 +375,8 @@ describe('MarketplacePackDetail component', () => {
 
   describe('WU-1950: MarketplacePackDetailLive manifest summary rendering', () => {
     it('renders manifest-derived tools, policies, categories, and trust badges', async () => {
-      const { MarketplacePackDetailLive } = await import(
-        '../src/components/marketplace-pack-detail-live'
-      );
+      const { MarketplacePackDetailLive } =
+        await import('../src/components/marketplace-pack-detail-live');
 
       const fetchMock = vi.fn().mockResolvedValue({
         ok: true,
