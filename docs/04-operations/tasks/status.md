@@ -8,6 +8,7 @@ _Last updated: 2026-02-20_
 - [WU-1922 — Kernel approval_required Policy Effect](wu/WU-1922.yaml)
 - [WU-1927 — lumenflow onboard Interactive Setup Wizard](wu/WU-1927.yaml)
 - [WU-1928 — Community Landing Page](wu/WU-1928.yaml)
+- [WU-1924 — Mount PolicyDecisionOverlay and Scope Visualization](wu/WU-1924.yaml)
 
 ## Completed
 

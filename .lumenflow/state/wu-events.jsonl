@@ -1810,3 +1810,4 @@
 {"type":"complete","wuId":"WU-1921","timestamp":"2026-02-20T11:51:21.296Z"}
 {"type":"complete","wuId":"WU-1929","timestamp":"2026-02-20T11:53:00.951Z"}
 {"type":"claim","wuId":"WU-1928","lane":"Content: Site Comms","title":"Community Landing Page","timestamp":"2026-02-20T11:54:08.426Z"}
+{"type":"claim","wuId":"WU-1924","lane":"Content: Site Comms","title":"Mount PolicyDecisionOverlay and Scope Visualization","timestamp":"2026-02-20T11:55:27.531Z"}
