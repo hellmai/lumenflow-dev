@@ -13,6 +13,7 @@ code_paths:
 tests:
   manual:
     - Smoke-check dashboard renders with installed component primitives
+    - Navigate to /dashboard/<taskId> and verify shadcn primitives render in workspace UI surfaces
   unit:
     - apps/web/__tests__/workspace-overview.test.tsx
     - apps/web/__tests__/shadcn-foundation.test.ts
