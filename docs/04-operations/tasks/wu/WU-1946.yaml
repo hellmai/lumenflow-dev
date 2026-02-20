@@ -2,7 +2,7 @@ id: WU-1946
 title: '[WU-C] Install shadcn/ui base components'
 lane: 'Operations: Runtime'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -32,8 +32,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Install and baseline core shadcn/ui primitives plus form dependencies so downstream UI WUs can build on a stable component foundation.
+description: Install and baseline core shadcn/ui primitives plus form dependencies so downstream UI
+  WUs can build on a stable component foundation.
 acceptance:
   - Selected shadcn components are generated under apps/web/src/components/ui
   - react-hook-form and @hookform/resolvers are present and wired for form usage
   - Web package typecheck/tests remain green after component install
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-runtime-wu-1946
+claimed_at: 2026-02-20T18:30:04.423Z
+baseline_main_sha: 602bf803e2cd03eae5bcc18c94a6563314c20498
+session_id: c6a2f924-e6c6-4d5f-bd41-0c31c460e1d0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T18:30:04.429Z
