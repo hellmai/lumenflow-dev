@@ -13,6 +13,7 @@ code_paths:
 tests:
   manual:
     - Policy denial renders scope intersection with real data
+    - Navigate to /tasks/:taskId and verify policy denial renders scope intersection with real data
   unit:
     - apps/web/__tests__/policy-decision-overlay.test.tsx
   e2e: []
