@@ -48,6 +48,8 @@ export interface ToolHostOptions {
   now?: () => Date;
   /** Optional callback invoked when trace recording fails. Provides observability into silent catch blocks. */
   onTraceError?: (error: Error) => void;
+  /** Optional callback invoked after a trace entry is successfully appended to the EvidenceStore. Used by the SSE transport to bridge traces into the event stream. */
+  onTraceAppended?: (entry: import('../kernel.schemas.js').ToolTraceEntry) => void;
 }
 
 interface ScopeResolution {
@@ -123,6 +125,7 @@ export class ToolHost {
   private readonly runtimeVersion: string;
   private readonly now: () => Date;
   private readonly onTraceError?: (error: Error) => void;
+  private readonly onTraceAppended?: (entry: import('../kernel.schemas.js').ToolTraceEntry) => void;
 
   constructor(options: ToolHostOptions) {
     if (!options.policyHook) {
@@ -138,6 +141,7 @@ export class ToolHost {
     this.runtimeVersion = options.runtimeVersion ?? DEFAULT_KERNEL_RUNTIME_VERSION;
     this.now = options.now ?? (() => new Date());
     this.onTraceError = options.onTraceError;
+    this.onTraceAppended = options.onTraceAppended;
   }
 
   async onStartup(): Promise<number> {
@@ -186,29 +190,31 @@ export class ToolHost {
     const packId =
       capability.pack ?? parseOptionalString(metadata[EXECUTION_METADATA_KEYS.PACK_ID]);
 
+    const startedEntry = {
+      schema_version: 1 as const,
+      kind: TOOL_TRACE_KINDS.TOOL_CALL_STARTED,
+      receipt_id: receiptId,
+      run_id: context.run_id,
+      task_id: context.task_id,
+      session_id: context.session_id,
+      timestamp,
+      tool_name: capability.name,
+      execution_mode: capability.handler.kind,
+      scope_requested: scopeRequested,
+      scope_allowed: scopeAllowed,
+      scope_enforced: scopeEnforced,
+      input_hash: inputHash,
+      input_ref: inputRef,
+      tool_version: capability.version,
+      pack_id: packId,
+      pack_version: packVersion,
+      pack_integrity: packIntegrity,
+      workspace_config_hash: workspaceConfigHash,
+      runtime_version: runtimeVersion,
+    };
     try {
-      await this.evidenceStore.appendTrace({
-        schema_version: 1,
-        kind: TOOL_TRACE_KINDS.TOOL_CALL_STARTED,
-        receipt_id: receiptId,
-        run_id: context.run_id,
-        task_id: context.task_id,
-        session_id: context.session_id,
-        timestamp,
-        tool_name: capability.name,
-        execution_mode: capability.handler.kind,
-        scope_requested: scopeRequested,
-        scope_allowed: scopeAllowed,
-        scope_enforced: scopeEnforced,
-        input_hash: inputHash,
-        input_ref: inputRef,
-        tool_version: capability.version,
-        pack_id: packId,
-        pack_version: packVersion,
-        pack_integrity: packIntegrity,
-        workspace_config_hash: workspaceConfigHash,
-        runtime_version: runtimeVersion,
-      });
+      await this.evidenceStore.appendTrace(startedEntry);
+      this.onTraceAppended?.(startedEntry);
     } catch (error) {
       // Started trace failure must not prevent tool execution.
       this.onTraceError?.(error as Error);
@@ -489,8 +495,8 @@ export class ToolHost {
     policyDecisions: PolicyDecision[];
   }): Promise<void> {
     const finishedAt = this.now();
-    await this.evidenceStore.appendTrace({
-      schema_version: 1,
+    const entry = {
+      schema_version: 1 as const,
       kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
       receipt_id: params.receiptId,
       timestamp: finishedAt.toISOString(),
@@ -498,8 +504,10 @@ export class ToolHost {
       duration_ms: finishedAt.getTime() - params.startedAt,
       scope_enforcement_note: params.scopeEnforcementNote,
       policy_decisions: params.policyDecisions,
-      artifacts_written: [],
-    });
+      artifacts_written: [] as string[],
+    };
+    await this.evidenceStore.appendTrace(entry);
+    this.onTraceAppended?.(entry);
   }
 
   private async recordTrace(params: {
@@ -514,15 +522,15 @@ export class ToolHost {
       output.data === undefined ? undefined : await this.evidenceStore.persistData(output.data);
     const outputHash = outputRef?.dataHash;
     const outputReference = outputRef?.dataRef;
-    const result = output.success
+    const result: 'success' | 'failure' | 'denied' = output.success
       ? 'success'
       : output.error?.code === TOOL_ERROR_CODES.SCOPE_DENIED
         ? 'denied'
         : 'failure';
 
     const finishedAt = this.now();
-    await this.evidenceStore.appendTrace({
-      schema_version: 1,
+    const entry = {
+      schema_version: 1 as const,
       kind: TOOL_TRACE_KINDS.TOOL_CALL_FINISHED,
       receipt_id: receiptId,
       timestamp: finishedAt.toISOString(),
@@ -540,6 +548,8 @@ export class ToolHost {
         output.metadata?.artifacts_written.every((artifact) => typeof artifact === 'string')
           ? (output.metadata.artifacts_written as string[])
           : [],
-    });
+    };
+    await this.evidenceStore.appendTrace(entry);
+    this.onTraceAppended?.(entry);
   }
 }

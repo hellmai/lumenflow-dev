@@ -1212,4 +1212,92 @@ describe('tool host', () => {
       expect(result.success).toBe(true);
     });
   });
+
+  describe('onTraceAppended callback (WU-1918)', () => {
+    it('invokes onTraceAppended for started and finished traces after successful append', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const appendedTraces: import('../kernel.schemas.js').ToolTraceEntry[] = [];
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        policyHook: allowAllPolicyHook,
+        onTraceAppended: (entry) => {
+          appendedTraces.push(entry);
+        },
+      });
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'ok',
+        },
+        makeExecutionContext(),
+      );
+
+      expect(result.success).toBe(true);
+      expect(appendedTraces).toHaveLength(2);
+      expect(appendedTraces[0]?.kind).toBe('tool_call_started');
+      expect(appendedTraces[1]?.kind).toBe('tool_call_finished');
+    });
+
+    it('does not invoke onTraceAppended when appendTrace fails', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const appendedTraces: import('../kernel.schemas.js').ToolTraceEntry[] = [];
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        policyHook: allowAllPolicyHook,
+        onTraceAppended: (entry) => {
+          appendedTraces.push(entry);
+        },
+      });
+
+      // Fail all appendTrace calls
+      vi.spyOn(evidenceStore, 'appendTrace').mockRejectedValue(new Error('Simulated failure'));
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'ok',
+        },
+        makeExecutionContext(),
+      );
+
+      expect(result.success).toBe(true);
+      // Callback not invoked because append failed
+      expect(appendedTraces).toHaveLength(0);
+    });
+
+    it('works without onTraceAppended (backward compatible)', async () => {
+      const registry = new ToolRegistry();
+      registry.register(makeInProcessCapability());
+
+      const evidenceStore = new EvidenceStore({ evidenceRoot });
+      const host = new ToolHost({
+        registry,
+        evidenceStore,
+        policyHook: allowAllPolicyHook,
+        // No onTraceAppended - should be backward compatible
+      });
+
+      const result = await host.execute(
+        'fs:write',
+        {
+          path: 'packages/@lumenflow/kernel/src/tool-host/index.ts',
+          content: 'ok',
+        },
+        makeExecutionContext(),
+      );
+
+      expect(result.success).toBe(true);
+    });
+  });
 });

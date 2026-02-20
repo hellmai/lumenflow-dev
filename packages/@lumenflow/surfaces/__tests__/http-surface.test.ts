@@ -303,8 +303,9 @@ describe('surfaces/http createHttpSurface', () => {
 
     expect(capturedCallback).not.toBeNull();
     await capturedCallback?.(sampleEvent);
-    const eventLine = `${JSON.stringify(sampleEvent)}\n`;
-    expect(response.body.includes(eventLine)).toBe(true);
+    const envelope = { source: 'kernel', event: sampleEvent };
+    const sseLine = `data: ${JSON.stringify(envelope)}\n\n`;
+    expect(response.body.includes(sseLine)).toBe(true);
 
     request.emit('close');
     expect(dispose).toHaveBeenCalledTimes(1);
