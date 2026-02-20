@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
 /**
  * @file pack-install.ts
  * Install a LumenFlow domain pack into workspace.yaml (WU-1827, WU-1875)

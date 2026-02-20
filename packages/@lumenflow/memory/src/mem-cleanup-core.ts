@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * Memory Cleanup Core (WU-1472, WU-1554, WU-1238)
  *

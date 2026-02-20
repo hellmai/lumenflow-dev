@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as locationResolver from '@lumenflow/core/context/location-resolver';
 import * as errorHandler from '@lumenflow/core/error-handler';

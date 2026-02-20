@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * Tests for pack:publish command (WU-1838) and pack pipeline fixes (WU-1919)
  *

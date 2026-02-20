@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file enforcement.test.ts
  * Tests for Claude Code enforcement hooks (WU-1367)

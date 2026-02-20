@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file tool.schemas.ts
  * @description Zod schemas for tool abstraction layer (WU-1394)

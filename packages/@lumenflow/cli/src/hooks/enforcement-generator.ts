@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file enforcement-generator.ts
  * Generates Claude Code enforcement hooks based on configuration (WU-1367)

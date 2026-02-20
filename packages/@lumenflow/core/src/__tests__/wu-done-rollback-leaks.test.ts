@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * WU-1577: Tests for preventing wu:done rollback leaks on main during merge failure
  *

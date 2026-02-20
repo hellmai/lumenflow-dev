@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file worktree-guard.ts
  * @description WU context validation and main branch protection (WU-1396)

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file generators/require-wu.ts
  * Generate the require-wu.sh hook script content (WU-1367).

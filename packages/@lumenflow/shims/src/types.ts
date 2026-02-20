@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 // @lumenflow/shims - Type definitions (WU-2546)
 import { z } from 'zod';
 

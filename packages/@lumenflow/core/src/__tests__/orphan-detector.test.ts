@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file orphan-detector.test.ts
  * Tests for missing tracked worktree detection (WU-1056)

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file lane-signal-emitter.test.ts
  * @description WU-1498 lane-signal telemetry tests

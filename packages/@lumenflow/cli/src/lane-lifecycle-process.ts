@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file lane-lifecycle-process.ts
  * WU-1748: Process-owned deferred lane lifecycle

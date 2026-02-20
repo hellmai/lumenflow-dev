@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file cli-integration.test.ts
  * @description Integration tests that execute real CLI commands (no mocks).

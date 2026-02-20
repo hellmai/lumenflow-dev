@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-create-strict.test.ts
  * Test suite for wu:create strict validation behavior (WU-1329)

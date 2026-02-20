@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * WU-2241: Cleanup Lock Module
  * WU-1174: Lock files moved to temp directory to avoid polluting main checkout

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file arg-validators.test.ts
  * @description Tests for CLI arg validation using shared schemas (WU-1431)

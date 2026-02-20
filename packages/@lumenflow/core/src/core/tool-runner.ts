@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file tool-runner.ts
  * @description Unified tool execution layer integrating all core components (WU-1398)

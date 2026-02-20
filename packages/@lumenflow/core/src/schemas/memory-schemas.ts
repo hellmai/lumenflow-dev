@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file memory-schemas.ts
  * @description Shared Zod schemas for Memory commands (WU-1456)

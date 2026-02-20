@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @fileoverview Regression guard test for path literal centralization (WU-1430, WU-1539)
  *

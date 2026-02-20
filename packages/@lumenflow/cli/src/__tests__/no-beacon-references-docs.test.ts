@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file no-beacon-references-docs.test.ts
  * Guardrail test: public + onboarding docs must not reference legacy `.beacon` paths

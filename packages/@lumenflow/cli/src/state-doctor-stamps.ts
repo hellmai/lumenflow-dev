@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import path from 'node:path';
 import fg from 'fast-glob';
 import { listTrackedWUStampIds } from '@lumenflow/core/stamp-tracking';

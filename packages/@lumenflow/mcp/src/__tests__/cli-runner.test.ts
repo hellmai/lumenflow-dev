@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file cli-runner.test.ts
  * @description Tests for CLI runner utility that shells out to LumenFlow CLI commands

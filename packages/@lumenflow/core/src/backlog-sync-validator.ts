@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * Backlog Sync Validator (WU-672, WU-1065, WU-1137, WU-1303)
  * Detects WUs present in multiple sections (Done+Ready, Done+InProgress, etc.)

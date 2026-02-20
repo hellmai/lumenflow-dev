@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file config-set.test.ts
  * WU-1902: Tests for config:set and config:get CLI commands

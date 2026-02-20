@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file literal-governance.test.ts
  * @description Guardrail ratchet test: blocks new duplicate governance literals in MCP tool modules.

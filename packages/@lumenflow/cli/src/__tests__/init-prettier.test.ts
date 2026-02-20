@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file init-prettier.test.ts
  * WU-1517: Scaffold prettier + format infrastructure in lumenflow init

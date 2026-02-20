@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file tools.ts
  * @description MCP tool barrel - re-exports all domain tool modules and assembles the allTools registry.

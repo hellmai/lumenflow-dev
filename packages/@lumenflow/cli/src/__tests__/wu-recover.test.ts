@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as gitAdapter from '@lumenflow/core/git-adapter';
 import { GIT_FLAGS, REMOTES } from '@lumenflow/core/wu-constants';

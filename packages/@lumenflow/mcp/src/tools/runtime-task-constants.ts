@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 export const RuntimeTaskToolNames = {
   TASK_CLAIM: 'task_claim',
   TASK_CREATE: 'task_create',

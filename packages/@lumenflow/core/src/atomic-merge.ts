@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { createGitForPath, getGitForCwd } from './git-adapter.js';
 import {
   MAX_MERGE_RETRIES,

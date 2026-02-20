@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file check-automated-tests.test.ts
  * Test suite for INV-AUTOMATED-TESTS-FOR-CODE invariant (WU-2333)

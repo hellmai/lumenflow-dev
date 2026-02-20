@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file schema-parity.test.ts
  * @description Tests for CLI/MCP schema parity (WU-1431, WU-1455, WU-1456, WU-1457)

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * Git Commands Logger
  * Part of WU-630: Detective layer (Layer 3 of 4-layer defense)

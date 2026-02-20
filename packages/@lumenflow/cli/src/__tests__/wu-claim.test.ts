@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-claim.test.ts
  * @description Tests for wu:claim cloud mode and branch-pr mode resolution

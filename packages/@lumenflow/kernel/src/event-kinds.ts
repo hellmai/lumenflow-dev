@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 export const KERNEL_EVENT_KINDS = {
   TASK_CREATED: 'task_created',
   TASK_CLAIMED: 'task_claimed',

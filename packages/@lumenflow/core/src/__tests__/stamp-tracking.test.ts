@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { describe, it, expect, vi } from 'vitest';
 import path from 'node:path';
 import { listTrackedWUStampIds } from '../stamp-tracking.js';

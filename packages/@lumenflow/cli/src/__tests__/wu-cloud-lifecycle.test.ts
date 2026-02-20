@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-cloud-lifecycle.test.ts
  * @description Tests for cloud lifecycle: create, claim, prep, done, cleanup in branch-pr mode

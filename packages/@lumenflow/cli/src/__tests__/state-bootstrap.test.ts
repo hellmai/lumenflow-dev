@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
 /**
  * @file state-bootstrap.test.ts
  * @description Tests for state-bootstrap CLI command (WU-1107)

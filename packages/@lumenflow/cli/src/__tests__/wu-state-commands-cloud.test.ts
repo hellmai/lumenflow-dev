@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { readFileSync } from 'node:fs';
 import { describe, it, expect } from 'vitest';
 import { CLAIMED_MODES } from '@lumenflow/core/wu-constants';

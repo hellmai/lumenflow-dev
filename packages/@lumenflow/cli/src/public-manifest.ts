@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file public-manifest.ts
  * Public CLI Manifest - Source of Truth for Public Commands (WU-1432)

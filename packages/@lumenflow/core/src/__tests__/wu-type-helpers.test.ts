@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-type-helpers.test.ts
  * Unit tests for WU type/test helper predicates (WU-1444)

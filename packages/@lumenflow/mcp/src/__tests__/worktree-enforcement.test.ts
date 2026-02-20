@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file worktree-enforcement.test.ts
  * @description Tests for MCP worktree enforcement guard

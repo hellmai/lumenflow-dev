@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file init-scaffolding.ts
  * File-system scaffolding helpers for LumenFlow init command (WU-1644)

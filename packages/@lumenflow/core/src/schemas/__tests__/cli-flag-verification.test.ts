@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file schemas/__tests__/cli-flag-verification.test.ts
  * @description Verify MCP flags exist in CLI public manifest (WU-1458)

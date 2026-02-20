@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file worktree-enforcement.ts
  * @description Worktree enforcement guard for MCP file_write and file_edit tools.

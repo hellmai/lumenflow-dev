@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-edit-worktree-read.test.ts
  * @description WU-1677: Regression test for validateWUEditable reading from worktree

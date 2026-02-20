@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * WU-1240, WU-1287: Tests for integrating mem:context into wu:spawn prompts
  *

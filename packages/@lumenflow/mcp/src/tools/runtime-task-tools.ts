@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { ExecutionContextSchema, TaskSpecSchema } from '@lumenflow/kernel';
 import { z } from 'zod';
 import { error, success, ErrorCodes, type ToolDefinition } from '../tools-shared.js';

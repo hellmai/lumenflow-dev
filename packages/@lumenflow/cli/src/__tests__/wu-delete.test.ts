@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * Regression tests for wu:delete consistency cleanup (WU-1511, WU-1528)
  */

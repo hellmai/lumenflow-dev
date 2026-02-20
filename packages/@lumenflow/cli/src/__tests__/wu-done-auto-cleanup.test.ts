@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file wu-done-auto-cleanup.test.ts
  * Test suite for wu:done auto cleanup on success (WU-1366, WU-1533)

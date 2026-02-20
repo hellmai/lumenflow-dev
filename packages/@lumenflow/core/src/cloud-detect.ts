@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file cloud-detect.ts
  * @description Cloud mode activation and branch-aware guard logic

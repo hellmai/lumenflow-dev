@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { existsSync, readdirSync, promises as fs } from 'node:fs';
 import path from 'node:path';
 import { readWU, readWUAsync } from './wu-yaml.js';

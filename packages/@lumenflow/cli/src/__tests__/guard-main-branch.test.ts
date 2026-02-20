@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @file guard-main-branch.test.ts
  * @description Tests for guard-main-branch worktree context detection (WU-1130)

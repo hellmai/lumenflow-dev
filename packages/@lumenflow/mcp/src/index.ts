@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @lumenflow/mcp - MCP stdio server for LumenFlow workflow framework
  * @module @lumenflow/mcp

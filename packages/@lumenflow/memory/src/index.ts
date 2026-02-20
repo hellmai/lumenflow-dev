@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Hellmai Ltd
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /**
  * @lumenflow/memory - Session tracking and context recovery
  * @module @lumenflow/memory
