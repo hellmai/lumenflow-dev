@@ -3,28 +3,60 @@ title: LumenFlow
 description: The governance layer between AI agents and the world
 template: splash
 hero:
-  tagline: The governance layer between AI agents and the world. An open-source runtime kernel that controls what agents can do, proves what they did, and enforces policies they can't bypass.
+  tagline: Your AI agents are powerful. Make them governable. An open-source runtime kernel that controls what agents can do, proves what they did, and enforces policies they can't bypass — without slowing them down.
   image:
     dark: ../../assets/logo-dark.png
     light: ../../assets/logo-light.png
     alt: LumenFlow - The governance layer between AI agents and the world
   actions:
-    - text: Get Started
-      link: /guides/manual-quickstart/
-      icon: right-arrow
-    - text: Agent Quickstart
-      link: /getting-started/quickstart/
-      icon: right-arrow
-      variant: secondary
     - text: Why LumenFlow?
       link: /getting-started/why-lumenflow/
       icon: open-book
+    - text: Get Started
+      link: /getting-started/introduction/
+      icon: right-arrow
+      variant: secondary
+    - text: GitHub
+      link: https://github.com/hellmai/lumenflow
+      icon: github
       variant: minimal
 ---
 
 import { Card, CardGrid, Aside, LinkCard } from '@astrojs/starlight/components';
 
+## The Problem
+
+AI agents can read files, write code, call APIs, and deploy services. But without governance, they operate in a trust vacuum.
+
+<CardGrid stagger>
+  <Card title="No audit trail" icon="warning">
+    Your agent writes to production. Six months later, compliance asks "who approved this change?"
+    You have no answer.
+  </Card>
+  <Card title="No policy enforcement" icon="error">
+    Your agent instructions say "don't touch .env files." But instructions are suggestions — nothing
+    actually stops the agent.
+  </Card>
+  <Card title="No scope boundaries" icon="close">
+    Agent asked to fix a login bug modifies the payment module instead. No mechanism prevented it.
+  </Card>
+</CardGrid>
+
+LumenFlow solves this by inserting a **governance kernel** between agents and the world.
+
+## Works With Any AI
+
+LumenFlow is **friction-free for any AI coding assistant**. If your AI can read project files, it can use LumenFlow — just point it at `AGENTS.md`.
+
+| Any AI Tool                                           | Enhanced Integrations                                    |
+| ----------------------------------------------------- | -------------------------------------------------------- |
+| Works out of the box with plain markdown instructions  | Claude Code, Cursor, Windsurf, Codex get deeper features |
+| No vendor lock-in — CLI commands work everywhere       | Auto-detection, skills, vendor-specific configs          |
+| Universal entry points: `AGENTS.md`, `LUMENFLOW.md`   | Optional overlays: `.claude/`, `.cursor/`, `.windsurf/`  |
+
 ## Four Guarantees
+
+The kernel provides four guarantees that **cannot be bypassed**:
 
 <CardGrid stagger>
   <Card title="Agents can't go off-script" icon="approve-check">
@@ -47,52 +79,29 @@ import { Card, CardGrid, Aside, LinkCard } from '@astrojs/starlight/components';
 
 ## Get Started
 
-Pick the path that matches where you are today.
-
 <CardGrid>
-  <Card title="New to AI Agents?" icon="rocket">
-    Start here. One command scaffolds everything.
+  <Card title="Humans" icon="rocket">
+    Step-by-step setup guide for developers.
 
-    [Quickstart (Agents) →](/getting-started/quickstart/)
-
-  </Card>
-  <Card title="Coming from Jira / Linear / GitHub Issues?" icon="right-arrow">
-    Map your existing tickets to Work Units and keep what works.
-
-    [Migration Guide →](/guides/migration/)
+    [Get Started →](/guides/manual-quickstart/)
 
   </Card>
-  <Card title="Solo Developer?" icon="star">
-    Lightweight setup for individual developers using AI assistants.
+  <Card title="AI Agents" icon="star">
+    Canonical setup guide for AI coding assistants.
 
-    [Solo Workflow →](/guides/solo-workflow/)
-
-  </Card>
-  <Card title="Running a Team?" icon="list-format">
-    Lane-based parallel work, WIP limits, and multi-agent coordination.
-
-    [Team Workflow →](/guides/team-workflow/)
+    [Agent Quickstart →](/getting-started/quickstart/)
 
   </Card>
 </CardGrid>
 
-<Aside type="tip" title="One command to start">
+## Extensible by Design
 
-```bash
-npx lumenflow init
-```
-
-</Aside>
-
-LumenFlow scaffolds into your existing repo with git hooks, quality gates, work unit templates, and agent onboarding docs.
-
-## Pack Marketplace
-
-Packs are domain plugins that teach the LumenFlow kernel new capabilities. Install a pack to add tools, policies, and evidence types for any domain.
+Packs are domain plugins that teach the kernel new capabilities. Install a pack to add tools, policies, and evidence types for any domain.
 
 <CardGrid>
-  <Card title="Software Delivery" icon="setting">
-    **Built-in.** Git tools, worktree isolation, quality gates, lane-based work partitioning.
+  <Card title="Software Delivery Pack" icon="setting">
+    **Built-in.** Work Units, lanes, gates, worktrees, memory, and 100+ CLI commands for structured
+    software delivery.
 
     [Explore the Software Delivery Pack →](/pack/overview/)
 
@@ -104,12 +113,6 @@ Packs are domain plugins that teach the LumenFlow kernel new capabilities. Insta
 
   </Card>
 </CardGrid>
-
-<Aside type="note" title="Community packs coming soon">
-  The Pack Marketplace will list community-contributed packs as they become available. Want to
-  publish a pack? See the [Create a Pack](/guides/create-a-pack/) guide and join the [GitHub
-  Discussions](https://github.com/hellmai/lumenflow/discussions).
-</Aside>
 
 ## LumenFlow vs Alternatives
 
@@ -138,7 +141,7 @@ How does LumenFlow governance compare to other approaches?
     [Kernel, Packs, Scope, Policy →](/concepts/kernel/)
   </Card>
   <Card title="CLI Reference" icon="seti:shell">
-    [60+ commands →](/reference/cli/)
+    [100+ commands →](/reference/cli/)
   </Card>
   <Card title="AI Agent Integration" icon="seti:robot">
     [Claude, Codex, custom agents →](/guides/ai-agents/)
