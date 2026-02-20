@@ -1,0 +1,68 @@
+---
+title: Software Delivery Pack
+description: The default pack providing WU lifecycle, lanes, gates, memory, and 100+ CLI commands
+---
+
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
+
+The **Software Delivery Pack** is the default domain pack shipped with LumenFlow. It provides everything you need for structured software delivery — from work unit lifecycle to quality gates to agent coordination.
+
+<Aside type="note" title="Pack architecture">
+  LumenFlow's [kernel](/architecture/kernel) is domain-agnostic — it provides scope enforcement, policy
+  evaluation, and evidence recording. Packs add domain-specific tools and policies. The Software Delivery
+  Pack is the first production pack; others (compliance-audit, infra-ops, security-ops) are planned.
+</Aside>
+
+## What the Pack Provides
+
+<CardGrid>
+  <Card title="Work Units" icon="document">
+    Atomic units of work with YAML specs, worktree isolation, and lifecycle tracking.
+    [Learn more →](/concepts/work-units)
+  </Card>
+  <Card title="Lanes" icon="bars">
+    Scoped work streams with WIP limits, lock policies, and path-based access control.
+    [Learn more →](/concepts/lanes)
+  </Card>
+  <Card title="Gates" icon="approve-check">
+    Config-driven quality checks (format, lint, typecheck, test) enforced as kernel policies.
+    [Learn more →](/concepts/gates)
+  </Card>
+  <Card title="Memory Layer" icon="puzzle">
+    Session tracking, checkpoints, coordination signals, and context recovery for agents.
+    [Learn more →](/concepts/memory)
+  </Card>
+</CardGrid>
+
+## CLI Commands
+
+The pack registers **100+ CLI commands** across these categories:
+
+| Category | Examples | Count |
+| --- | --- | --- |
+| WU Lifecycle | `wu:create`, `wu:claim`, `wu:prep`, `wu:done` | 20+ |
+| Memory & Sessions | `mem:checkpoint`, `mem:inbox`, `mem:signal` | 14 |
+| Initiatives | `initiative:create`, `initiative:status` | 8 |
+| Gates & Validation | `gates`, `wu:validate`, `lumenflow-doctor` | 6 |
+| Packs | `pack:scaffold`, `pack:validate`, `pack:publish` | 6 |
+| Metrics & Flow | `flow:report`, `flow:bottlenecks`, `metrics` | 5 |
+| Agent & Orchestration | `wu:brief`, `wu:delegate`, `orchestrate:monitor` | 7 |
+
+See the [CLI Reference](/reference/cli) for the complete command list.
+
+## Pack Policies
+
+The Software Delivery Pack ships with policies that the kernel evaluates automatically:
+
+- **Gate policies** — Format, lint, typecheck, and test gates run `on_completion` with deny-wins semantics
+- **Scope policies** — Lane-based path restrictions enforced on every tool call
+- **Constraint policies** — Non-negotiable rules like "no edits outside worktrees" and "no force-push"
+
+See the [Policy Engine](/architecture/policy-engine) for how these are evaluated.
+
+## Next Steps
+
+- **Concepts** — [Work Units](/concepts/work-units), [Lanes](/concepts/lanes), [Gates](/concepts/gates), [Memory](/concepts/memory)
+- **Workflows** — [A Day with LumenFlow](/guides/a-day-with-lumenflow), [Solo](/guides/solo-workflow), [Team](/guides/team-workflow)
+- **Advanced** — [Initiatives](/guides/initiatives), [Flow Metrics](/guides/metrics), [Custom Skills](/guides/custom-skills)
+- **Build your own** — [Create a Pack](/guides/create-a-pack)
