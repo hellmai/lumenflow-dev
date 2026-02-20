@@ -1,7 +1,7 @@
 id: WU-1914
 title: Full Starlight docs accuracy audit - fix all version, CLI, config, lane, and sidebar inaccuracies
 lane: 'Content: Site Comms'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-02-20
@@ -21,10 +21,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-20T00:09:47.396Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1914
+session_id: 0fc7bb5b-1d1d-46b2-b538-adfa528af7cd
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T00:09:47.402Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +50,3 @@ acceptance:
   - workspace.yaml created in repo root
   - Migration guide has v2→v3 section
   - Site builds without errors
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-1914
-claimed_at: 2026-02-20T00:09:47.396Z
-baseline_main_sha: 4618d78b35172398d2cfb89510f9499d30c9be30
-session_id: 0fc7bb5b-1d1d-46b2-b538-adfa528af7cd
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-20T00:09:47.402Z
