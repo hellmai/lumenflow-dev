@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --port 3000",
+    "dev": "next dev --port 3000 --webpack",
     "build": "pnpm --filter @lumenflow/kernel build && next build --webpack",
     "start": "next start",
     "lint": "eslint app src __tests__ next.config.ts tailwind.config.ts --max-warnings 0",
