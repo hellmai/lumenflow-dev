@@ -24,7 +24,8 @@ blocked_by:
 spec_refs:
   - docs/04-operations/plans/INIT-031-plan.md
 risks: []
-notes: 'Sizing: MEDIUM (~33 calls, 25 files). Strategy: Single Session. Depends on WU-1922 (approval_required policy effect).'
+notes: 'Sizing: MEDIUM (~33 calls, 25 files). Strategy: Single Session. Depends on WU-1922
+  (approval_required policy effect).'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: ui
@@ -33,7 +34,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'H-HITL: No HITL timeout, queueing, or notification. Add confirmation dialog on deny, approval queue with pending count, configurable timeout (default 30m), accessibility (aria labels), push notification.'
+description: 'H-HITL: No HITL timeout, queueing, or notification. Add confirmation dialog on deny,
+  approval queue with pending count, configurable timeout (default 30m), accessibility (aria
+  labels), push notification.'
 acceptance:
   - Deny action shows confirmation dialog
   - Approval queue shows pending count
