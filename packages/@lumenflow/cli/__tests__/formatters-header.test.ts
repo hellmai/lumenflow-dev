@@ -34,7 +34,7 @@ describe('WU-1929: Beautiful CLI Output', () => {
     it('should include a visual separator line', () => {
       const output = formatHeader({ version: '3.0.0' });
       // Should have some kind of horizontal rule or box drawing
-      expect(output).toMatch(/[─═━\-]{10,}/);
+      expect(output).toMatch(/[-─═━]{10,}/);
     });
 
     it('should be a non-empty multi-line string', () => {
