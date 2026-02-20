@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1953 — [WU-J] Pack authoring API route + web wizard](wu/WU-1953.yaml) — Operations: Runtime
 - [WU-1951 — [WU-H] Secure pack authoring template engine](wu/WU-1951.yaml) — Framework: Core Lifecycle
 - [WU-1952 — [WU-I] pack:author command + security lint hardening](wu/WU-1952.yaml) — Framework: CLI Orchestration
 - [WU-1950 — [WU-G] Registry manifest extraction + marketplace trust rendering](wu/WU-1950.yaml) — Operations: Runtime
