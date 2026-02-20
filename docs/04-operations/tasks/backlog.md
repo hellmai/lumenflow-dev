@@ -31,7 +31,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1924 — Mount PolicyDecisionOverlay and Scope Visualization](wu/WU-1924.yaml) — Content: Site Comms
 - [WU-1933 — AGPL SPDX license headers for all source files](wu/WU-1933.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
@@ -896,6 +895,7 @@ sections:
 - [WU-1927 — lumenflow onboard Interactive Setup Wizard](wu/WU-1927.yaml)
 - [WU-1928 — Community Landing Page](wu/WU-1928.yaml)
 - [WU-1922 — Kernel approval_required Policy Effect](wu/WU-1922.yaml)
+- [WU-1924 — Mount PolicyDecisionOverlay and Scope Visualization](wu/WU-1924.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
