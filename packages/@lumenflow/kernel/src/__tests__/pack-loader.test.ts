@@ -15,7 +15,10 @@ import {
   DomainPackManifestSchema,
   PackLoader,
   computeDeterministicPackHash,
+  hasUnsafeScopePattern,
+  isBroadWildcardScopePattern,
   resolvePackToolEntryPath,
+  validateDomainPackToolSafety,
   type GitClient,
   type RegistryClient,
   type WorkspaceWarningEvent,
@@ -348,6 +351,29 @@ describe('pack loader + integrity pinning', () => {
     });
     expect(manifest.tools[1].input_schema).toBeUndefined();
     expect(manifest.tools[1].output_schema).toBeUndefined();
+  });
+
+  it('reports unsafe wildcard write scopes and non-object schema types via helper', () => {
+    const issues = validateDomainPackToolSafety({
+      name: 'fs:write-anywhere',
+      entry: 'tool-impl/fs-write-anywhere.ts#fsWriteAnywhereTool',
+      permission: 'write',
+      required_scopes: [{ type: 'path', pattern: '**', access: 'write' }],
+      input_schema: { type: 'string' },
+      output_schema: { type: 'array' },
+    });
+
+    expect(issues.length).toBeGreaterThanOrEqual(3);
+    expect(issues.join('\n')).toContain('too broad');
+    expect(issues.join('\n')).toContain('input_schema.type must be "object"');
+    expect(issues.join('\n')).toContain('output_schema.type must be "object"');
+  });
+
+  it('exposes explicit helpers for scope safety checks', () => {
+    expect(hasUnsafeScopePattern('../secrets/**')).toBe(true);
+    expect(hasUnsafeScopePattern('docs/**/*.md')).toBe(false);
+    expect(isBroadWildcardScopePattern('**')).toBe(true);
+    expect(isBroadWildcardScopePattern('reports/**/*.md')).toBe(false);
   });
 
   it('keeps software-delivery manifest.yaml and programmatic manifest in sync', async () => {

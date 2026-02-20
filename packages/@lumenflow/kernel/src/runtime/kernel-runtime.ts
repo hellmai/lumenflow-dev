@@ -84,6 +84,7 @@ const DEFAULT_PACKS_ROOT_CANDIDATES = [
 ];
 const DEFAULT_PACK_TOOL_INPUT_SCHEMA = z.record(z.string(), z.unknown());
 const DEFAULT_PACK_TOOL_OUTPUT_SCHEMA = z.record(z.string(), z.unknown());
+const JSON_SCHEMA_MAX_DEPTH = 12;
 const RUNTIME_LOAD_STAGE_ERROR_PREFIX = 'Runtime load stage failed for pack';
 const RUNTIME_REGISTRATION_STAGE_ERROR_PREFIX = 'Runtime registration stage failed for tool';
 const WORKSPACE_UPDATED_INIT_SUMMARY = 'Workspace config hash initialized during runtime startup.';
@@ -426,17 +427,225 @@ function buildPackToolDescription(toolName: string, packId: string): string {
   return `Pack tool ${toolName} declared by ${packId}`;
 }
 
+function ensureJsonSchemaObject(value: unknown, context: string): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error(`${context} must be a JSON Schema object`);
+  }
+  return value as Record<string, unknown>;
+}
+
+function parseJsonSchemaType(schema: Record<string, unknown>, context: string): string {
+  const schemaType = schema.type;
+  if (typeof schemaType !== 'string') {
+    throw new Error(`${context}.type must be a string`);
+  }
+  return schemaType;
+}
+
+function isJsonLiteral(value: unknown): value is string | number | boolean | null {
+  return (
+    value === null ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  );
+}
+
+function buildEnumSchema(enumValues: unknown[], context: string): z.ZodTypeAny {
+  if (enumValues.length === 0) {
+    throw new Error(`${context}.enum must not be empty`);
+  }
+  if (enumValues.every((value) => typeof value === 'string')) {
+    const [firstValue, ...restValues] = enumValues as string[];
+    if (typeof firstValue !== 'string') {
+      throw new Error(`${context}.enum must include at least one string value`);
+    }
+    return z.enum([firstValue, ...restValues]);
+  }
+  if (enumValues.length === 1) {
+    const singleValue = enumValues[0];
+    if (!isJsonLiteral(singleValue)) {
+      throw new Error(`${context}.enum values must be JSON literal values`);
+    }
+    return z.literal(singleValue);
+  }
+  if (!enumValues.every((value) => isJsonLiteral(value))) {
+    throw new Error(`${context}.enum values must be JSON literal values`);
+  }
+  const literals = enumValues.map((value) => z.literal(value));
+  const [firstLiteral, ...restLiterals] = literals;
+  if (!firstLiteral) {
+    throw new Error(`${context}.enum must include at least one value`);
+  }
+  return z.union([firstLiteral, ...restLiterals]);
+}
+
+function buildStringSchema(schema: Record<string, unknown>, context: string): z.ZodTypeAny {
+  let resolved = z.string();
+  if (typeof schema.minLength === 'number') {
+    resolved = resolved.min(schema.minLength);
+  }
+  if (typeof schema.maxLength === 'number') {
+    resolved = resolved.max(schema.maxLength);
+  }
+  if (typeof schema.pattern === 'string') {
+    try {
+      resolved = resolved.regex(new RegExp(schema.pattern));
+    } catch {
+      throw new Error(`${context}.pattern must be a valid regular expression`);
+    }
+  }
+  return resolved;
+}
+
+function buildNumberSchema(
+  schema: Record<string, unknown>,
+  _context: string,
+  integerOnly: boolean,
+): z.ZodTypeAny {
+  let resolved = integerOnly ? z.number().int() : z.number();
+  if (typeof schema.minimum === 'number') {
+    resolved = resolved.gte(schema.minimum);
+  }
+  if (typeof schema.maximum === 'number') {
+    resolved = resolved.lte(schema.maximum);
+  }
+  if (typeof schema.exclusiveMinimum === 'number') {
+    resolved = resolved.gt(schema.exclusiveMinimum);
+  }
+  if (typeof schema.exclusiveMaximum === 'number') {
+    resolved = resolved.lt(schema.exclusiveMaximum);
+  }
+  return resolved;
+}
+
+function buildObjectSchema(
+  schema: Record<string, unknown>,
+  context: string,
+  depth: number,
+): z.ZodTypeAny {
+  const propertiesValue = schema.properties ?? {};
+  if (!propertiesValue || typeof propertiesValue !== 'object' || Array.isArray(propertiesValue)) {
+    throw new Error(`${context}.properties must be an object when provided`);
+  }
+  const properties = propertiesValue as Record<string, unknown>;
+
+  const requiredValue = schema.required ?? [];
+  if (!Array.isArray(requiredValue)) {
+    throw new Error(`${context}.required must be an array when provided`);
+  }
+  const requiredKeys = new Set(
+    requiredValue.filter((entry): entry is string => typeof entry === 'string'),
+  );
+
+  const shape: Record<string, z.ZodTypeAny> = {};
+  for (const [key, childSchemaValue] of Object.entries(properties)) {
+    const childContext = `${context}.properties.${key}`;
+    const childSchema = buildZodSchemaFromJsonSchema(childSchemaValue, childContext, depth + 1);
+    shape[key] = requiredKeys.has(key) ? childSchema : childSchema.optional();
+  }
+
+  const additionalProperties = schema.additionalProperties;
+  if (additionalProperties === true) {
+    return z.object(shape).passthrough();
+  }
+  return z.object(shape).strict();
+}
+
+function buildArraySchema(
+  schema: Record<string, unknown>,
+  context: string,
+  depth: number,
+): z.ZodTypeAny {
+  if (!('items' in schema)) {
+    throw new Error(`${context}.items is required for array schemas`);
+  }
+  const itemSchema = buildZodSchemaFromJsonSchema(schema.items, `${context}.items`, depth + 1);
+  let resolved = z.array(itemSchema);
+  if (typeof schema.minItems === 'number') {
+    resolved = resolved.min(schema.minItems);
+  }
+  if (typeof schema.maxItems === 'number') {
+    resolved = resolved.max(schema.maxItems);
+  }
+  return resolved;
+}
+
+function buildZodSchemaFromJsonSchema(
+  schemaValue: unknown,
+  context: string,
+  depth: number,
+): z.ZodTypeAny {
+  if (depth > JSON_SCHEMA_MAX_DEPTH) {
+    throw new Error(`${context} exceeded maximum schema depth (${JSON_SCHEMA_MAX_DEPTH})`);
+  }
+
+  const schema = ensureJsonSchemaObject(schemaValue, context);
+
+  if ('const' in schema) {
+    if (!isJsonLiteral(schema.const)) {
+      throw new Error(`${context}.const must be a JSON literal value`);
+    }
+    return z.literal(schema.const);
+  }
+  if (Array.isArray(schema.enum)) {
+    return buildEnumSchema(schema.enum, context);
+  }
+
+  const schemaType = parseJsonSchemaType(schema, context);
+  if (schemaType === 'object') {
+    return buildObjectSchema(schema, context, depth);
+  }
+  if (schemaType === 'array') {
+    return buildArraySchema(schema, context, depth);
+  }
+  if (schemaType === 'string') {
+    return buildStringSchema(schema, context);
+  }
+  if (schemaType === 'number') {
+    return buildNumberSchema(schema, context, false);
+  }
+  if (schemaType === 'integer') {
+    return buildNumberSchema(schema, context, true);
+  }
+  if (schemaType === 'boolean') {
+    return z.boolean();
+  }
+
+  throw new Error(`${context}.type "${schemaType}" is not supported`);
+}
+
+function parsePackToolJsonSchema(
+  schemaValue: unknown,
+  toolName: string,
+  schemaField: 'input_schema' | 'output_schema',
+): z.ZodTypeAny {
+  const context = `${schemaField} for tool "${toolName}"`;
+  try {
+    return buildZodSchemaFromJsonSchema(schemaValue, context, 0);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'unknown schema parsing error';
+    throw new Error(`Invalid ${context}: ${message}`);
+  }
+}
+
 export async function defaultRuntimeToolCapabilityResolver(
   input: RuntimeToolCapabilityResolverInput,
 ): Promise<ToolCapability | null> {
   const resolvedEntry = resolvePackToolEntryPath(input.loadedPack.packRoot, input.tool.entry);
+  const resolvedInputSchema = input.tool.input_schema
+    ? parsePackToolJsonSchema(input.tool.input_schema, input.tool.name, 'input_schema')
+    : DEFAULT_PACK_TOOL_INPUT_SCHEMA;
+  const resolvedOutputSchema = input.tool.output_schema
+    ? parsePackToolJsonSchema(input.tool.output_schema, input.tool.name, 'output_schema')
+    : DEFAULT_PACK_TOOL_OUTPUT_SCHEMA;
 
   return {
     name: input.tool.name,
     domain: input.loadedPack.manifest.id,
     version: input.loadedPack.manifest.version,
-    input_schema: DEFAULT_PACK_TOOL_INPUT_SCHEMA,
-    output_schema: DEFAULT_PACK_TOOL_OUTPUT_SCHEMA,
+    input_schema: resolvedInputSchema,
+    output_schema: resolvedOutputSchema,
     permission: input.tool.permission,
     required_scopes: input.tool.required_scopes,
     handler: {

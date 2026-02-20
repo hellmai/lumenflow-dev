@@ -7,6 +7,9 @@ import { ToolScopeSchema } from '../kernel.schemas.js';
 
 const SEMVER_REGEX = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z-.]+)?(?:\+[0-9A-Za-z-.]+)?$/;
 const SEMVER_MESSAGE = 'Expected semantic version';
+const NULL_BYTE = '\0';
+const SCOPE_TRAVERSAL_PATTERN = /(^|\/)\.\.(\/|$)/;
+const BROAD_WILDCARD_SCOPE_PATTERNS = new Set(['*', '**', '**/*', './**', './**/*']);
 
 /**
  * JSON Schema representation for optional tool input/output declarations in pack manifests.
@@ -25,6 +28,56 @@ export const DomainPackToolSchema = z.object({
   /** Optional JSON Schema for tool output validation. */
   output_schema: JsonSchemaObjectSchema.optional(),
 });
+
+export type DomainPackTool = z.infer<typeof DomainPackToolSchema>;
+
+export function isBroadWildcardScopePattern(pattern: string): boolean {
+  return BROAD_WILDCARD_SCOPE_PATTERNS.has(pattern.trim());
+}
+
+export function hasUnsafeScopePattern(pattern: string): boolean {
+  return pattern.includes(NULL_BYTE) || SCOPE_TRAVERSAL_PATTERN.test(pattern);
+}
+
+export function validateDomainPackToolSafety(tool: DomainPackTool): string[] {
+  const issues: string[] = [];
+
+  for (const scope of tool.required_scopes) {
+    if (scope.type !== 'path') {
+      continue;
+    }
+    if (hasUnsafeScopePattern(scope.pattern)) {
+      issues.push(
+        `scope pattern "${scope.pattern}" contains unsafe traversal or null-byte content`,
+      );
+    }
+    if (
+      (tool.permission === 'write' || tool.permission === 'admin') &&
+      scope.access === 'write' &&
+      isBroadWildcardScopePattern(scope.pattern)
+    ) {
+      issues.push(
+        `scope pattern "${scope.pattern}" is too broad for ${tool.permission} permission and write access`,
+      );
+    }
+  }
+
+  const inputSchemaType = tool.input_schema?.type;
+  if (inputSchemaType && inputSchemaType !== 'object') {
+    issues.push(
+      `input_schema.type must be "object" when provided, got "${String(inputSchemaType)}"`,
+    );
+  }
+
+  const outputSchemaType = tool.output_schema?.type;
+  if (outputSchemaType && outputSchemaType !== 'object') {
+    issues.push(
+      `output_schema.type must be "object" when provided, got "${String(outputSchemaType)}"`,
+    );
+  }
+
+  return issues;
+}
 
 export const DomainPackPolicySchema = z.object({
   id: z.string().min(1),

@@ -319,6 +319,7 @@ export * from './lane-suggest-prompt.js';
 
 // WU-1190: Git context extraction for lane suggestion
 export * from './git-context-extractor.js';
+export * from './pack-authoring-template-engine.js';
 
 // WU-1094: Dependency Injection - Factory functions for wiring
 export {

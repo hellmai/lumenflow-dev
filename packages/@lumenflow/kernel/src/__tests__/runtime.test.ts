@@ -34,6 +34,7 @@ const PACK_ECHO_TOOL_NAME = 'pack:echo';
 const TOOL_NOT_FOUND_ERROR_CODE = 'TOOL_NOT_FOUND';
 const SUBPROCESS_SANDBOX_UNAVAILABLE_ERROR_CODE = 'SUBPROCESS_SANDBOX_UNAVAILABLE';
 const SCOPE_DENIED_ERROR_CODE = 'SCOPE_DENIED';
+const INVALID_INPUT_ERROR_CODE = 'INVALID_INPUT';
 const TOOL_CALL_STARTED_KIND = 'tool_call_started';
 const TOOL_CALL_FINISHED_KIND = 'tool_call_finished';
 const WORKSPACE_UPDATED_KIND = 'workspace_updated';
@@ -279,6 +280,71 @@ describe('kernel runtime facade', () => {
     } finally {
       registerSpy.mockRestore();
     }
+  });
+
+  it('applies manifest-declared input schema in default resolver output', async () => {
+    await writeManifest([
+      'id: software-delivery',
+      'version: 1.0.0',
+      'task_types:',
+      '  - work-unit',
+      'tools:',
+      `  - name: ${PACK_ECHO_TOOL_NAME}`,
+      '    entry: tools/echo.ts',
+      '    permission: read',
+      '    required_scopes:',
+      '      - type: path',
+      '        pattern: "**"',
+      '        access: read',
+      '    input_schema:',
+      '      type: object',
+      '      required:',
+      '        - message',
+      '      properties:',
+      '        message:',
+      '          type: string',
+      '          minLength: 1',
+      'policies:',
+      '  - id: runtime.completion.allow',
+      '    trigger: on_completion',
+      '    decision: allow',
+      'state_aliases:',
+      '  active: in_progress',
+      'evidence_types: []',
+      'lane_templates: []',
+    ]);
+
+    const runtime = await createRuntimeWithDefaultResolver({
+      sandboxSubprocessDispatcherOptions: {
+        commandExists: () => false,
+      },
+    });
+
+    const invalidInputOutput = await runtime.executeTool(
+      PACK_ECHO_TOOL_NAME,
+      { message: 42 },
+      createExecutionContext(
+        'WU-1951-default-resolver-schema',
+        'run-default-resolver-schema-1',
+        workspaceConfigHash,
+      ),
+    );
+
+    expect(invalidInputOutput.success).toBe(false);
+    expect(invalidInputOutput.error?.code).toBe(INVALID_INPUT_ERROR_CODE);
+
+    const validInputOutput = await runtime.executeTool(
+      PACK_ECHO_TOOL_NAME,
+      { message: 'hello' },
+      createExecutionContext(
+        'WU-1951-default-resolver-schema',
+        'run-default-resolver-schema-2',
+        workspaceConfigHash,
+      ),
+    );
+
+    expect(validInputOutput.success).toBe(false);
+    expect(validInputOutput.error?.code).toBe(SUBPROCESS_SANDBOX_UNAVAILABLE_ERROR_CODE);
   });
 
   it('honors manifest-declared permission and required scopes in default resolver output', async () => {
