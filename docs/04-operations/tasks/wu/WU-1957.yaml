@@ -1,0 +1,41 @@
+id: WU-1957
+title: '[WU-N] Docs sweep for secure authoring + updated onboarding/install flow'
+lane: 'Content: Site Comms'
+type: documentation
+status: ready
+priority: P1
+created: 2026-02-20
+code_paths:
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - apps/docs/src/content/docs/guides/create-a-pack.mdx
+  - apps/docs/src/content/docs/guides/agent-onboarding.mdx
+  - apps/docs/src/content/docs/pack/overview.mdx
+tests:
+  manual:
+    - Run docs dev build and verify updated command snippets and links render correctly
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1957.done
+dependencies: []
+initiative: INIT-032
+phase: 5
+blocked_by:
+  - WU-1948
+  - WU-1952
+  - WU-1955
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Update docs to reflect canonical install command syntax, secure template-based authoring path, and web runtime setup guidance for AG-UI/dashboard management flows.
+acceptance:
+  - CLI/reference docs use canonical pack install syntax and onboarding flow
+  - Authoring docs describe secure template-first no-code path and validation expectations
+  - Web runtime setup docs include AG-UI run route and preview diagnostics guidance
