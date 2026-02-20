@@ -1,0 +1,42 @@
+id: WU-1914
+title: Full Starlight docs accuracy audit - fix all version, CLI, config, lane, and sidebar inaccuracies
+lane: 'Content: Site Comms'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-20
+code_paths:
+  - apps/docs/src/content/docs/**
+  - apps/docs/astro.config.mjs
+tests:
+  manual:
+    - pnpm dev builds without errors in apps/docs
+    - All sidebar links resolve (no 404s)
+    - grep -r 2.3.2 apps/docs/src returns no results
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1914.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: All packages were bumped to v3.0.0 but the Starlight docs site still references v2.3.2. Multiple pages have wrong version numbers, missing CLI flags, incorrect lane counts, undocumented commands, orphaned sidebar pages, and missing v2→v3 migration content. This WU fixes every inaccuracy found across 14+ docs pages.
+acceptance:
+  - All version references updated from 2.3.2 to 3.0.0
+  - Changelog has v3.0.0 entry with Latest badge
+  - CLI reference has complete wu:done options, correct command names, all pack commands
+  - Config reference includes sandbox, cloud, and full memory sections
+  - WU schema documents all auto-managed fields
+  - Lanes page shows actual 14-lane config with variable WIP limits
+  - All 5 orphaned reference pages linked in sidebar
+  - workspace.yaml created in repo root
+  - Migration guide has v2→v3 section
+  - Site builds without errors
