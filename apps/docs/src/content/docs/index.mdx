@@ -24,18 +24,6 @@ hero:
 
 import { Card, CardGrid, Aside, LinkCard } from '@astrojs/starlight/components';
 
-```
-$ lumenflow scope-check file:write src/payments/checkout.ts
-
-  Workspace   src/**                          ✓ allowed
-  Lane        src/auth/**                     ✗ DENIED (Framework: Auth lane)
-  Task        src/auth/login.ts               — (skipped)
-  Tool        file:write                      — (skipped)
-
-  ✗ BLOCKED — file is outside lane scope
-  Policy: deny-wins (workspace → lane → task → tool)
-```
-
 ## The Problem Nobody Talks About
 
 AI agents are getting really good at writing code, calling APIs, and shipping features. But here's the thing — nobody is watching them.
