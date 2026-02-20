@@ -27,7 +27,6 @@ sections:
 - [WU-1922 — Kernel approval_required Policy Effect](wu/WU-1922.yaml) — Framework: Core Lifecycle
 - [WU-1923 — RunAgent Real Execution](wu/WU-1923.yaml) — Framework: Core Lifecycle
 - [WU-1924 — Mount PolicyDecisionOverlay and Scope Visualization](wu/WU-1924.yaml) — Content: Site Comms
-- [WU-1925 — App Shell Navigation and Error Boundaries](wu/WU-1925.yaml) — Content: Site Comms
 - [WU-1927 — lumenflow onboard Interactive Setup Wizard](wu/WU-1927.yaml) — Framework: CLI Orchestration
 - [WU-1928 — Community Landing Page](wu/WU-1928.yaml) — Content: Site Comms
 - [WU-1929 — Beautiful CLI Output](wu/WU-1929.yaml) — Framework: CLI Orchestration
@@ -39,6 +38,7 @@ sections:
 - [WU-1926 — Publish lumenflow CLI to npm](wu/WU-1926.yaml) — Framework: CLI Enforcement
 - [WU-1918 — SSE Transport + Trace Bridge](wu/WU-1918.yaml) — Framework: Core Lifecycle
 - [WU-1921 — Input Validation and Path Safety](wu/WU-1921.yaml) — Content: Site Comms
+- [WU-1925 — App Shell Navigation and Error Boundaries](wu/WU-1925.yaml) — Content: Site Comms
 
 ## ⛔ Blocked
 

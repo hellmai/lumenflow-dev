@@ -2,7 +2,7 @@ id: WU-1925
 title: App Shell Navigation and Error Boundaries
 lane: 'Content: Site Comms'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -38,3 +38,11 @@ acceptance:
   - Error boundaries at every route segment
   - Loading states with skeletons at every route
   - Dark mode toggle functional
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1925
+claimed_at: 2026-02-20T11:38:34.741Z
+baseline_main_sha: cbe75e12b380d0a721851645a84fef65955ae12b
+session_id: fb95d414-962e-4580-9ab4-5eb396653033
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-20T11:38:34.745Z
