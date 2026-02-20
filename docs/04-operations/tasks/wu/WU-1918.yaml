@@ -1,0 +1,39 @@
+id: WU-1918
+title: SSE Transport + Trace Bridge
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P0
+created: 2026-02-20
+code_paths:
+  - packages/@lumenflow/surfaces/http/event-stream.ts
+  - packages/@lumenflow/kernel/src/tool-host/tool-host.ts
+  - apps/web/src/hooks/use-task-events.ts
+tests:
+  manual:
+    - Reconnection logic tested with mock EventSource
+  unit:
+    - packages/@lumenflow/surfaces/http/__tests__/event-stream.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1918.done
+dependencies: []
+initiative: INIT-031
+phase: 7
+risks: []
+notes: 'Sizing: MEDIUM (~70 calls, 9 files). Strategy: Checkpoint-Resume. Use Option B envelope: StreamEvent = { source: kernel, event } | { source: evidence, trace }.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: api
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'B-SSE: Server writes NDJSON, client expects SSE data: frames. B-TRACE: Event stream excludes evidence traces. H-HEART: No SSE heartbeat. H-RECONN: No reconnection logic.'
+acceptance:
+  - 'SSE framing uses data: prefix with double newline'
+  - StreamEvent envelope wraps KernelEvent and ToolTraceEntry
+  - ToolHost emits trace to event stream after EvidenceStore append
+  - SSE heartbeat every 15s
+  - useTaskEvents reconnects with exponential backoff
