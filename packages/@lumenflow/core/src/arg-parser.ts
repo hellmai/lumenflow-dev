@@ -609,9 +609,7 @@ function processNegatedOptions(opts: Record<string, unknown>): Record<string, un
 
 function hasCustomVersionOption(options: WUOption[]): boolean {
   return options.some((option) => {
-    const flagTokens = option.flags
-      .split(',')
-      .map((token) => token.trim().split(/\s+/)[0]);
+    const flagTokens = option.flags.split(',').map((token) => token.trim().split(/\s+/)[0]);
     return flagTokens.includes('--version');
   });
 }

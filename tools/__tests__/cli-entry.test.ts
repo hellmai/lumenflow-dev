@@ -70,7 +70,9 @@ describe('cli-entry.mjs fallback behavior (WU-1366)', () => {
         );
 
         const result = resolveCliDistEntry(tempRepo, 'lumenflow-onboard');
-        expect(result).toBe(path.join(tempRepo, 'packages', '@lumenflow', 'cli', 'dist', 'onboard.js'));
+        expect(result).toBe(
+          path.join(tempRepo, 'packages', '@lumenflow', 'cli', 'dist', 'onboard.js'),
+        );
       } finally {
         rmSync(tempRepo, { recursive: true, force: true });
       }
