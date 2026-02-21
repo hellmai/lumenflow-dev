@@ -44,12 +44,16 @@ code_paths:
   - packages/lumenflow/README.md
   - packages/lumenflow/package.json
   - tools/generate-cli-docs.ts
+  - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
 tests:
   manual:
     - 'Run: pnpm docs:validate'
     - 'Run: pnpm pre-release:check'
   unit:
     - packages/@lumenflow/cli/src/__tests__/commands.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1962.done
