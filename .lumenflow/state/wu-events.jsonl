@@ -1910,4 +1910,5 @@
 {"type":"complete","wuId":"WU-1976","timestamp":"2026-02-21T20:19:57.079Z"}
 {"type":"claim","wuId":"WU-1977","timestamp":"2026-02-21T20:20:50.341Z","lane":"Framework: CLI Enforcement","title":"Unify lumenflow npm wrapper with full CLI router"}
 {"type":"complete","wuId":"WU-1977","timestamp":"2026-02-21T20:39:02.468Z"}
-{"type":"claim","wuId":"WU-1978","lane":"Framework: CLI Enforcement","title":"Bootstrap-all default path for npx lumenflow","timestamp":"2026-02-21T20:39:46.041Z"}
+{"type":"claim","wuId":"WU-1978","timestamp":"2026-02-21T20:39:46.041Z","lane":"Framework: CLI Enforcement","title":"Bootstrap-all default path for npx lumenflow"}
+{"type":"complete","wuId":"WU-1978","timestamp":"2026-02-21T20:59:14.627Z"}
