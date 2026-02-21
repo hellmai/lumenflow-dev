@@ -21,6 +21,7 @@ code_paths:
   - packages/@lumenflow/surfaces/cli/__tests__/inspect.test.ts
   - packages/@lumenflow/surfaces/cli/__tests__/task-lifecycle.test.ts
   - packages/@lumenflow/surfaces/mcp/__tests__/server.test.ts
+  - apps/web/app/api/workspace/create/route.ts
 tests:
   manual:
     - pnpm --filter @lumenflow/kernel test -- kernel.schemas
