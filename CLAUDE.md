@@ -25,9 +25,10 @@ See [docs/04-operations/\_frameworks/lumenflow/agent/onboarding/troubleshooting-
 # 1. Setup (first time only)
 pnpm setup
 
-# 2. Create a WU (--id is optional, auto-generates if omitted)
+# 2. Create a WU (ID auto-generated)
 pnpm wu:create --lane <Lane> --title "Title"
-# Or with explicit ID: pnpm wu:create --id WU-XXXX --lane <Lane> --title "Title"
+# Output: Created WU-XXXX at docs/.../wu/WU-XXXX.yaml
+# Note: --id is for migration/re-creation only. Omit it for normal use.
 
 # 3. Edit WU spec with acceptance criteria
 # Then claim:

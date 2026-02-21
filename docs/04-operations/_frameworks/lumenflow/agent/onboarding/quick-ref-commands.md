@@ -80,7 +80,7 @@ pnpm exec lumenflow --client all      # All clients
 
 | Command                                        | Description                                                  |
 | ---------------------------------------------- | ------------------------------------------------------------ |
-| `pnpm wu:create --id WU-XXX --lane <Lane> ..`  | Create new WU spec (see required fields below)               |
+| `pnpm wu:create --lane <Lane> --title "..." ..` | Create new WU spec (ID auto-generated; see fields below)     |
 | `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree (default)                       |
 | `pnpm wu:claim --id WU-XXX --lane <L> --cloud` | Claim WU in cloud/branch-pr mode (no worktree)               |
 | `pnpm wu:prep --id WU-XXX [--full-tests]`      | Run gates, prep for wu:done (`tests.unit` scoped by default) |
@@ -296,7 +296,7 @@ pnpm initiative:plan --initiative INIT-001 --plan docs/04-operations/plans/my-pl
 
 ```bash
 # When creating a WU (--plan auto-generates and links)
-pnpm wu:create --id WU-123 --lane "Framework: Core" --title "Feature" --plan
+pnpm wu:create --lane "Framework: Core" --title "Feature" --plan
 
 # Or edit an existing WU with a specific plan URI
 pnpm wu:edit --id WU-123 --plan "lumenflow://plans/WU-123-plan.md"
@@ -427,18 +427,18 @@ pnpm gates              # Now works
 # 0. Check available options (do this before first use of any command)
 pnpm wu:create --help
 
-# 1. Create WU
-pnpm wu:create --id WU-XXX --lane "Framework: Core" --title "Add feature" \
+# 1. Create WU (ID auto-generated)
+pnpm wu:create --lane "Framework: Core" --title "Add feature" \
   --description "Context: ... Problem: ... Solution: ..." \
   --acceptance "Criterion 1" --acceptance "Criterion 2" \
   --code-paths "src/file.ts" \
   --test-paths-unit "src/__tests__/file.test.ts" \
-  --exposure backend-only \
-  --spec-refs "~/.lumenflow/plans/WU-XXX-plan.md"
+  --exposure backend-only
+# Output: Created WU-1990 at docs/.../wu/WU-1990.yaml
 
-# 2. Claim (creates worktree)
-pnpm wu:claim --id WU-XXX --lane "Framework: Core"
-cd worktrees/framework-core-wu-xxx
+# 2. Claim (creates worktree) -- use the ID from wu:create output
+pnpm wu:claim --id WU-1990 --lane "Framework: Core"
+cd worktrees/framework-core-wu-1990
 
 # 2b. Bootstrap (build CLI for dist-backed commands)
 pnpm bootstrap
@@ -450,10 +450,10 @@ pnpm bootstrap
 git add . && git commit -m "feat: description"
 
 # 5. Prep (runs gates in worktree)
-pnpm wu:prep --id WU-XXX
+pnpm wu:prep --id WU-1990
 
 # 6. Complete (from main - copy from wu:prep output)
-cd /path/to/main && pnpm wu:done --id WU-XXX
+cd /path/to/main && pnpm wu:done --id WU-1990
 ```
 
 ---
@@ -471,6 +471,20 @@ For code changes, you must include **all** of the following (or wu:create will f
 - `--plan` (optional, auto-generates plan file and sets `plan` field — WU-1683)
 
 Documentation WUs can omit code/test paths but should set `--type documentation` and `--exposure documentation`.
+
+**Auto-generated IDs (recommended):** Omit `--id` and let `wu:create` assign the next sequential ID. Capture the output for dependency chaining:
+
+```bash
+# Create first WU (ID auto-generated)
+pnpm wu:create --lane "Framework: Core" --title "First WU" ...
+# Output: Created WU-1990
+
+# Create second WU blocked by the first
+pnpm wu:create --lane "Framework: Core" --title "Second WU" --blocked-by WU-1990 ...
+# Output: Created WU-1991
+```
+
+> **Note:** Use `--id` only when re-creating a specific WU or for migration tooling.
 
 ---
 

@@ -127,7 +127,7 @@ A bug can be fixed in the current WU if **ALL** of these are true:
 
 4. **Document:**
    - Add to current WU notes
-   - If creating Bug WU: `pnpm wu:create --id WU-XXX --lane <lane> --title "Fix: <description>"`
+   - If creating Bug WU: `pnpm wu:create --lane <lane> --title "Fix: <description>" --type bug`
 
 ## Bug WU Template
 

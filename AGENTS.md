@@ -40,8 +40,9 @@ Cloud agents (Codex, Claude web, CI bots) that cannot use local worktrees use th
 **Activation is explicit-only:** cloud mode is enabled only by `--cloud` or `LUMENFLOW_CLOUD=1`. Runtime identity env vars such as `CLAUDECODE`, `CODEX`, or `CI` do not activate cloud mode.
 
 ```bash
-# 1. Create in cloud mode (optional if WU already exists)
-pnpm wu:create --id WU-XXXX --lane <Lane> ... --cloud
+# 1. Create in cloud mode (ID auto-generated; optional if WU already exists)
+pnpm wu:create --lane <Lane> --title "..." ... --cloud
+# Output: Created WU-XXXX
 
 # 2. Claim in cloud mode (creates lane branch, no worktree)
 pnpm wu:claim --id WU-XXXX --lane <Lane> --cloud
@@ -135,7 +136,7 @@ This file provides universal guidance for all AI agents. Additional vendor-speci
 
 | Step         | Location | Command                                                                                                                                                                                |
 | ------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. Create WU | main     | `pnpm wu:create --id WU-XXX --lane <Lane> --title "Title" --description "..." --acceptance "..." --code-paths "..." --test-paths-unit "..." --exposure backend-only --spec-refs "..."` |
+| 1. Create WU | main     | `pnpm wu:create --lane <Lane> --title "Title" --description "..." --acceptance "..." --code-paths "..." --test-paths-unit "..." --exposure backend-only` (ID auto-generated) |
 | 2. Claim     | main     | `pnpm wu:claim --id WU-XXX --lane <Lane>`                                                                                                                                              |
 | 3. Work      | worktree | `cd worktrees/<lane>-wu-xxx`                                                                                                                                                           |
 | 4. Prep      | worktree | `pnpm wu:prep --id WU-XXX` (runs gates)                                                                                                                                                |
@@ -145,7 +146,7 @@ This file provides universal guidance for all AI agents. Additional vendor-speci
 
 | Step         | Location    | Command                                                   |
 | ------------ | ----------- | --------------------------------------------------------- |
-| 1. Create WU | lane branch | `pnpm wu:create --id WU-XXX --lane <Lane> ... --cloud`    |
+| 1. Create WU | lane branch | `pnpm wu:create --lane <Lane> --title "..." ... --cloud` (ID auto-generated) |
 | 2. Claim     | lane branch | `pnpm wu:claim --id WU-XXX --lane <Lane> --cloud`         |
 | 3. Work      | lane branch | Work on `lane/<lane>/wu-xxx` in cloud environment         |
 | 4. Prep      | lane branch | `pnpm wu:prep --id WU-XXX` (validates branch, runs gates) |

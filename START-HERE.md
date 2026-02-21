@@ -55,11 +55,12 @@ pnpm exec lumenflow doctor
 LumenFlow uses a **trunk-based development** workflow with **Work Units (WUs)**:
 
 ```
-1. Create WU spec      ->  pnpm wu:create --id WU-XXX ...
-2. Claim WU            ->  pnpm wu:claim --id WU-XXX --lane <Lane>
-3. Work in worktree    ->  cd worktrees/<lane>-wu-xxx
+1. Create WU spec      ->  pnpm wu:create --lane <Lane> --title "..."
+                            (ID auto-generated, e.g. WU-1990)
+2. Claim WU            ->  pnpm wu:claim --id WU-1990 --lane <Lane>
+3. Work in worktree    ->  cd worktrees/<lane>-wu-1990
 4. Run gates           ->  pnpm gates
-5. Complete WU         ->  pnpm wu:done --id WU-XXX
+5. Complete WU         ->  pnpm wu:done --id WU-1990
 ```
 
 For detailed workflow documentation, see [LUMENFLOW.md](LUMENFLOW.md).

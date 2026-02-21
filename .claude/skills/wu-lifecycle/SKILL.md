@@ -50,10 +50,12 @@ cd /path/to/main && pnpm wu:done --id WU-XXX
 pnpm wu:block --id WU-XXX --reason "..."
 pnpm wu:unblock --id WU-XXX
 
-# Create (full spec)
-pnpm wu:create --id WU-999 --lane "Operations" --title "Add feature" \
+# Create (full spec -- ID auto-generated)
+pnpm wu:create --lane "Operations" --title "Add feature" \
   --description "Context: ... Problem: ... Solution: ..." \
   --acceptance "Feature works" --code-paths "src/a.ts" --validate
+# Output: Created WU-999
+# Note: Use --id only when re-creating a specific WU or for migration tooling.
 
 # Edit spec
 pnpm wu:edit --id WU-XXX --description "..." --acceptance "..."
