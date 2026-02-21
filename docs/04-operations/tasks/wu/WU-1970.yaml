@@ -2,7 +2,7 @@ id: WU-1970
 title: INIT-033 scaffold + plan linkage governance
 lane: 'Content: Specs Governance'
 type: documentation
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -42,3 +42,6 @@ session_id: 2606fafe-8283-42e3-93e3-8fb2bead5372
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-21T18:30:36.892Z
+locked: true
+completed_at: 2026-02-21T18:33:50.406Z
+completed: 2026-02-21
