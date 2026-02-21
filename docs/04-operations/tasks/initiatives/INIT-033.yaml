@@ -11,7 +11,7 @@ target_date: 2026-04-30
 phases:
   - id: 1
     title: 'Phase 1: Workspace Unification'
-    status: in_progress
+    status: done
   - id: 2
     title: 'Phase 2: Bootstrap-All CLI'
     status: pending
@@ -35,3 +35,6 @@ notes:
     lifecycle logic and rewrite .lumenflow.config.yaml via YAML re-serialization.'
   - 'Prereq caveat: state:doctor currently reports persistent superseded-status mismatches on
     WU-1552 and WU-1553 (ready->superseded transition not auto-fixable).'
+  - 'WU-1976 dogfood migration applied to workspace.yaml via config:migrate-workspace. Follow-up
+    tracked as mem-0f76: lane:status still hard-requires .lumenflow.config.yaml when legacy file
+    is removed.'

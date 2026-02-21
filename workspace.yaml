@@ -1,237 +1,626 @@
-# workspace.yaml — Kernel-level workspace configuration
-# Defines packs, lanes, security boundaries, and namespaces for the kernel runtime.
-# Distinct from .lumenflow.config.yaml (CLI/tooling configuration).
-
 id: lumenflow
 name: LumenFlow
-
 packs:
   - id: software-delivery
-    version: '3.0.0'
+    version: 3.0.0
     integrity: dev
     source: local
-
 lanes:
   - id: framework-core-lifecycle
     title: 'Framework: Core Lifecycle'
     allowed_scopes:
       - type: path
-        pattern: 'packages/@lumenflow/kernel/**'
+        pattern: packages/@lumenflow/kernel/**
         access: write
       - type: path
-        pattern: 'packages/@lumenflow/runtime/**'
+        pattern: packages/@lumenflow/runtime/**
         access: write
       - type: path
-        pattern: 'packages/@lumenflow/packs/**'
+        pattern: packages/@lumenflow/packs/**
         access: write
       - type: path
-        pattern: 'packages/@lumenflow/surfaces/**'
+        pattern: packages/@lumenflow/surfaces/**
         access: write
       - type: path
-        pattern: 'packages/@lumenflow/core/src/wu-*.ts'
+        pattern: packages/@lumenflow/core/src/wu-*.ts
         access: write
       - type: path
-        pattern: 'packages/@lumenflow/core/src/lane-*.ts'
+        pattern: packages/@lumenflow/core/src/lane-*.ts
         access: write
       - type: path
-        pattern: 'packages/@lumenflow/core/src/worktree-*.ts'
+        pattern: packages/@lumenflow/core/src/worktree-*.ts
         access: write
       - type: path
-        pattern: 'packages/@lumenflow/core/src/git-*.ts'
+        pattern: packages/@lumenflow/core/src/git-*.ts
         access: write
     wip_limit: 2
-
   - id: framework-core-validation
     title: 'Framework: Core Validation'
     allowed_scopes:
       - type: path
-        pattern: 'packages/@lumenflow/core/src/validation/**'
+        pattern: packages/@lumenflow/core/src/validation/**
         access: write
       - type: path
-        pattern: 'packages/@lumenflow/core/src/validators/**'
+        pattern: packages/@lumenflow/core/src/validators/**
         access: write
       - type: path
-        pattern: 'packages/@lumenflow/core/src/schemas/**'
+        pattern: packages/@lumenflow/core/src/schemas/**
         access: write
     wip_limit: 2
-
   - id: framework-core-state-recovery
     title: 'Framework: Core State Recovery'
     allowed_scopes:
       - type: path
-        pattern: 'packages/@lumenflow/core/src/state-*.ts'
+        pattern: packages/@lumenflow/core/src/state-*.ts
         access: write
       - type: path
-        pattern: 'packages/@lumenflow/core/src/*recover*.ts'
+        pattern: packages/@lumenflow/core/src/*recover*.ts
         access: write
     wip_limit: 1
-
   - id: framework-cli-wu-commands
     title: 'Framework: CLI WU Commands'
     allowed_scopes:
       - type: path
-        pattern: 'packages/@lumenflow/cli/src/wu-*.ts'
+        pattern: packages/@lumenflow/cli/src/wu-*.ts
         access: write
     wip_limit: 2
-
   - id: framework-cli-memory-state
     title: 'Framework: CLI Memory State'
     allowed_scopes:
       - type: path
-        pattern: 'packages/@lumenflow/cli/src/mem-*.ts'
+        pattern: packages/@lumenflow/cli/src/mem-*.ts
         access: write
       - type: path
-        pattern: 'packages/@lumenflow/cli/src/state-*.ts'
+        pattern: packages/@lumenflow/cli/src/state-*.ts
         access: write
     wip_limit: 2
-
   - id: framework-cli-orchestration
     title: 'Framework: CLI Orchestration'
     allowed_scopes:
       - type: path
-        pattern: 'packages/@lumenflow/cli/src/initiative-*.ts'
+        pattern: packages/@lumenflow/cli/src/initiative-*.ts
         access: write
       - type: path
-        pattern: 'packages/@lumenflow/cli/src/orchestrate-*.ts'
+        pattern: packages/@lumenflow/cli/src/orchestrate-*.ts
         access: write
     wip_limit: 2
-
   - id: framework-cli-enforcement
     title: 'Framework: CLI Enforcement'
     allowed_scopes:
       - type: path
-        pattern: 'packages/@lumenflow/cli/src/hooks/**'
+        pattern: packages/@lumenflow/cli/src/hooks/**
         access: write
       - type: path
-        pattern: 'packages/@lumenflow/cli/src/gates.ts'
+        pattern: packages/@lumenflow/cli/src/gates.ts
         access: write
     wip_limit: 1
-
   - id: framework-mcp
     title: 'Framework: MCP'
     allowed_scopes:
       - type: path
-        pattern: 'packages/@lumenflow/mcp/**'
+        pattern: packages/@lumenflow/mcp/**
         access: write
     wip_limit: 1
-
   - id: framework-memory
     title: 'Framework: Memory'
     allowed_scopes:
       - type: path
-        pattern: 'packages/@lumenflow/memory/**'
+        pattern: packages/@lumenflow/memory/**
         access: write
     wip_limit: 1
-
   - id: framework-agent
     title: 'Framework: Agent'
     allowed_scopes:
       - type: path
-        pattern: 'packages/@lumenflow/agent/**'
+        pattern: packages/@lumenflow/agent/**
         access: write
     wip_limit: 1
-
   - id: framework-metrics
     title: 'Framework: Metrics'
     allowed_scopes:
       - type: path
-        pattern: 'packages/@lumenflow/metrics/**'
+        pattern: packages/@lumenflow/metrics/**
         access: write
     wip_limit: 1
-
   - id: framework-initiatives
     title: 'Framework: Initiatives'
     allowed_scopes:
       - type: path
-        pattern: 'packages/@lumenflow/initiatives/**'
+        pattern: packages/@lumenflow/initiatives/**
         access: write
     wip_limit: 1
-
   - id: framework-shims
     title: 'Framework: Shims'
     allowed_scopes:
       - type: path
-        pattern: 'packages/@lumenflow/shims/**'
+        pattern: packages/@lumenflow/shims/**
         access: write
     wip_limit: 1
-
   - id: operations-runtime
     title: 'Operations: Runtime'
     allowed_scopes:
       - type: path
-        pattern: 'apps/github-app/**'
+        pattern: apps/github-app/**
         access: write
     wip_limit: 1
-
   - id: operations-tooling
     title: 'Operations: Tooling'
     allowed_scopes:
       - type: path
-        pattern: 'tools/**'
+        pattern: tools/**
         access: write
       - type: path
-        pattern: 'scripts/**'
+        pattern: scripts/**
         access: write
     wip_limit: 1
-
   - id: operations-automation
     title: 'Operations: Automation'
     allowed_scopes:
       - type: path
-        pattern: '.github/**'
+        pattern: .github/**
         access: write
       - type: path
-        pattern: 'actions/**'
+        pattern: actions/**
         access: write
     wip_limit: 1
-
   - id: content-specs-governance
     title: 'Content: Specs Governance'
     allowed_scopes:
       - type: path
-        pattern: 'docs/04-operations/**'
+        pattern: docs/04-operations/**
         access: write
       - type: path
-        pattern: '.lumenflow/**'
+        pattern: .lumenflow/**
         access: write
     wip_limit: 2
-
   - id: content-framework-docs
     title: 'Content: Framework Docs'
     allowed_scopes:
       - type: path
-        pattern: 'docs/_frameworks/**'
+        pattern: docs/_frameworks/**
         access: write
       - type: path
-        pattern: 'LUMENFLOW.md'
+        pattern: LUMENFLOW.md
         access: write
       - type: path
-        pattern: 'CLAUDE.md'
+        pattern: CLAUDE.md
         access: write
     wip_limit: 2
-
   - id: content-site-comms
     title: 'Content: Site Comms'
     allowed_scopes:
       - type: path
-        pattern: 'apps/docs/**'
+        pattern: apps/docs/**
         access: write
       - type: path
-        pattern: 'README.md'
+        pattern: README.md
         access: write
     wip_limit: 2
-
 security:
   allowed_scopes:
     - type: path
       pattern: '**'
       access: write
     - type: network
-      posture: 'off'
-  network_default: 'off'
+      posture: off
+  network_default: off
   deny_overlays:
-    - '.lumenflow/**'
-    - '.git/**'
-
+    - .lumenflow/**
+    - .git/**
 memory_namespace: lumenflow
 event_namespace: lumenflow
+software_delivery:
+  version: '2.0'
+  directories:
+    appsWeb: apps/web/
+    worktrees: worktrees/
+    ai: ai/
+    claude: .claude/
+    docs: docs/
+    packages: packages/
+    tools: tools/
+    memoryBank: memory-bank/
+    wuDir: docs/04-operations/tasks/wu
+    initiativesDir: docs/04-operations/tasks/initiatives
+    backlogPath: docs/04-operations/tasks/backlog.md
+    statusPath: docs/04-operations/tasks/status.md
+    skillsDir: .claude/skills
+    agentsDir: .claude/agents
+    plansDir: docs/04-operations/plans
+    templatesDir: .lumenflow/templates
+    onboardingDir: docs/04-operations/_frameworks/lumenflow/agent/onboarding
+    safeGitPath: scripts/safe-git
+  state:
+    base: .lumenflow
+    stateDir: .lumenflow/state
+    archiveDir: .lumenflow/archive
+    stampsDir: .lumenflow/stamps
+    mergeLock: .lumenflow/merge.lock
+    telemetry: .lumenflow/telemetry
+    flowLog: .lumenflow/flow.log
+    sessions: .lumenflow/sessions
+    incidents: .lumenflow/incidents
+    commandsLog: .lumenflow/commands.log
+    eventArchival:
+      archiveAfter: 7776000000
+      keepArchives: true
+  git:
+    mainBranch: main
+    defaultRemote: origin
+    laneBranchPrefix: lane/
+    tempBranchPrefix: tmp/
+    realGitPath: /usr/bin/git
+    maxBranchDrift: 20
+    branchDriftWarning: 15
+    branchDriftInfo: 10
+    requireRemote: true
+    agentBranchPatterns:
+      - agent/*
+      - claude/*
+      - codex/*
+    disableAgentPatternRegistry: false
+    push_retry:
+      enabled: true
+      retries: 3
+      min_delay_ms: 100
+      max_delay_ms: 1000
+      jitter: true
+  wu:
+    idPattern: ^WU-\d+$
+    minDescriptionLength: 50
+    maxCommitSubject: 100
+    defaultPriority: P2
+    defaultStatus: ready
+    defaultType: feature
+  gates:
+    maxEslintWarnings: 100
+    enableCoverage: true
+    minCoverage: 90
+    enableSafetyCriticalTests: true
+    enableInvariants: true
+    commands:
+      test_full: pnpm turbo run test
+      test_docs_only: ''
+      test_incremental: pnpm vitest run --changed origin/main
+    lane_health: warn
+  memory:
+    directory: memory-bank/
+    sessionTtl: 604800000
+    checkpointTtl: 2592000000
+    enableAutoCleanup: true
+    signalCleanup:
+      ttl: 604800000
+      unreadTtl: 2592000000
+      maxEntries: 500
+    delegation_context_max_size: 4096
+  ui:
+    errorBoxWidth: 70
+    statusPreviewLines: 5
+    readinessBoxWidth: 50
+  yaml:
+    lineWidth: 100
+  agents:
+    defaultClient: claude-code
+    clients:
+      claude-code:
+        preamble: true
+        skillsDir: .claude/skills
+        agentsDir: .claude/agents
+        blocks:
+          - title: Claude Code Best Practices
+            content: |
+              - Use TodoWrite for multi-step tasks
+              - Run gates before wu:done
+              - Never use --no-verify
+              - Load skills via /skill <name>
+        skills:
+          instructions: 'Load skills based on WU context:'
+          recommended:
+            - wu-lifecycle
+            - worktree-discipline
+          byLane:
+            'Framework: Core Lifecycle':
+              - tdd-workflow
+              - lumenflow-gates
+            'Framework: Core Validation':
+              - tdd-workflow
+              - lumenflow-gates
+            'Framework: Core State Recovery':
+              - tdd-workflow
+              - lumenflow-gates
+            'Framework: CLI WU Commands':
+              - tdd-workflow
+              - lumenflow-gates
+            'Framework: CLI Memory State':
+              - tdd-workflow
+              - lumenflow-gates
+            'Framework: CLI Orchestration':
+              - tdd-workflow
+              - lumenflow-gates
+            'Framework: CLI Enforcement':
+              - tdd-workflow
+              - lumenflow-gates
+            'Framework: MCP':
+              - tdd-workflow
+              - lumenflow-gates
+            'Framework: Core':
+              - tdd-workflow
+              - lumenflow-gates
+            'Framework: CLI':
+              - tdd-workflow
+              - lumenflow-gates
+            'Content: Specs Governance':
+              - worktree-discipline
+            'Content: Framework Docs':
+              - worktree-discipline
+            'Content: Site Comms':
+              - worktree-discipline
+            'Content: Documentation':
+              - worktree-discipline
+            'Operations: Runtime':
+              - orchestration
+            'Operations: Tooling':
+              - orchestration
+            'Operations: Automation':
+              - orchestration
+            'Operations: Infrastructure':
+              - orchestration
+      codex-cli:
+        preamble: true
+        skillsDir: .claude/skills
+        blocks: []
+      gemini-cli:
+        preamble: true
+        skillsDir: .claude/skills
+        blocks: []
+    methodology:
+      enabled: true
+      enforcement: required
+      principles:
+        - TDD
+        - Hexagonal Architecture
+        - SOLID
+        - DRY
+        - YAGNI
+        - KISS
+        - Library-First
+  experimental:
+    context_validation: true
+    validation_mode: warn
+    show_next_steps: true
+    recovery_command: true
+  cleanup:
+    trigger: on_done
+    commit_message: 'chore: lumenflow state cleanup [skip ci]'
+  telemetry:
+    methodology:
+      enabled: false
+  cloud:
+    auto_detect: false
+    env_signals: []
+  lanes:
+    enforcement:
+      require_parent: true
+      allow_custom: false
+    definitions:
+      - name: 'Framework: Core Lifecycle'
+        wip_limit: 2
+        wip_justification: Lifecycle work can parallelize when code_paths are disjoint
+          and non-overlapping
+        lock_policy: none
+        code_paths:
+          - packages/@lumenflow/kernel/**
+          - packages/@lumenflow/runtime/**
+          - packages/@lumenflow/packs/**
+          - packages/@lumenflow/surfaces/**
+          - packages/@lumenflow/core/src/wu-claim-*.ts
+          - packages/@lumenflow/core/src/wu-done-*.ts
+          - packages/@lumenflow/core/src/wu-create-*.ts
+          - packages/@lumenflow/core/src/wu-preflight-*.ts
+          - packages/@lumenflow/core/src/wu-helpers.ts
+          - packages/@lumenflow/core/src/wu-list.ts
+          - packages/@lumenflow/core/src/wu-paths.ts
+          - packages/@lumenflow/core/src/lane-*.ts
+          - packages/@lumenflow/core/src/worktree-*.ts
+          - packages/@lumenflow/core/src/backlog-*.ts
+          - packages/@lumenflow/core/src/dependency-*.ts
+          - packages/@lumenflow/core/src/git-*.ts
+      - name: 'Framework: Core Validation'
+        wip_limit: 2
+        wip_justification: Validation/schema work can parallelize across separate
+          validator families
+        lock_policy: none
+        code_paths:
+          - packages/@lumenflow/core/src/validation/**
+          - packages/@lumenflow/core/src/validators/**
+          - packages/@lumenflow/core/src/schemas/**
+          - packages/@lumenflow/core/src/invariants/**
+          - packages/@lumenflow/core/src/wu-validator.ts
+          - packages/@lumenflow/core/src/wu-validation*.ts
+          - packages/@lumenflow/core/src/manual-test-validator.ts
+          - packages/@lumenflow/core/src/prompt-linter.ts
+          - packages/@lumenflow/core/src/code-path-validator.ts
+          - packages/@lumenflow/core/src/system-map-validator.ts
+          - packages/@lumenflow/core/src/coverage-gate.ts
+      - name: 'Framework: Core State Recovery'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - packages/@lumenflow/core/src/state-*.ts
+          - packages/@lumenflow/core/src/wu-state-*.ts
+          - packages/@lumenflow/core/src/*recover*.ts
+          - packages/@lumenflow/core/src/rollback-*.ts
+          - packages/@lumenflow/core/src/cleanup-*.ts
+          - packages/@lumenflow/core/src/merge-lock.ts
+          - packages/@lumenflow/core/src/cleanup-lock.ts
+          - packages/@lumenflow/core/src/wu-transaction*.ts
+          - packages/@lumenflow/core/src/stamp-*.ts
+          - packages/@lumenflow/core/src/orphan-detector.ts
+      - name: 'Framework: CLI WU Commands'
+        wip_limit: 2
+        wip_justification: WU CLI command families can parallelize on specific command files
+        lock_policy: none
+        code_paths:
+          - packages/@lumenflow/cli/src/wu-*.ts
+          - packages/@lumenflow/cli/src/__tests__/wu-*.test.ts
+      - name: 'Framework: CLI Memory State'
+        wip_limit: 2
+        wip_justification: Memory/state command families can parallelize with narrow code_paths
+        lock_policy: none
+        code_paths:
+          - packages/@lumenflow/cli/src/mem-*.ts
+          - packages/@lumenflow/cli/src/state-*.ts
+          - packages/@lumenflow/cli/src/signal-*.ts
+          - packages/@lumenflow/cli/src/backlog-prune.ts
+          - packages/@lumenflow/cli/src/__tests__/mem-*.test.ts
+          - packages/@lumenflow/cli/src/__tests__/state-*.test.ts
+      - name: 'Framework: CLI Orchestration'
+        wip_limit: 2
+        wip_justification: Initiative/spawn/orchestration commands can run in parallel
+          with disjoint files
+        lock_policy: none
+        code_paths:
+          - packages/@lumenflow/cli/src/task-*.ts
+          - packages/@lumenflow/cli/src/initiative-*.ts
+          - packages/@lumenflow/cli/src/orchestrate-*.ts
+          - packages/@lumenflow/cli/src/spawn-*.ts
+          - packages/@lumenflow/cli/src/agent-*.ts
+          - packages/@lumenflow/cli/src/flow-*.ts
+          - packages/@lumenflow/cli/src/metrics-*.ts
+          - packages/@lumenflow/cli/src/__tests__/task-*.test.ts
+          - packages/@lumenflow/cli/src/__tests__/initiative-*.test.ts
+          - packages/@lumenflow/cli/src/__tests__/orchestrate-*.test.ts
+          - packages/@lumenflow/cli/src/__tests__/spawn-*.test.ts
+      - name: 'Framework: CLI Enforcement'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - packages/@lumenflow/cli/src/hooks/**
+          - packages/@lumenflow/cli/src/gates.ts
+          - packages/@lumenflow/cli/src/validate.ts
+          - packages/@lumenflow/cli/src/lane-*.ts
+          - packages/@lumenflow/cli/src/init.ts
+          - packages/@lumenflow/cli/src/doctor.ts
+          - packages/@lumenflow/cli/src/release.ts
+          - packages/@lumenflow/cli/src/docs-sync.ts
+          - packages/@lumenflow/cli/src/sync-templates.ts
+          - packages/@lumenflow/cli/src/public-manifest.ts
+          - packages/@lumenflow/cli/src/commands/integrate.ts
+          - packages/@lumenflow/cli/src/__tests__/hooks/**
+      - name: 'Framework: MCP'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - packages/@lumenflow/mcp/**
+      - name: 'Framework: Memory'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - packages/@lumenflow/memory/**
+      - name: 'Framework: Agent'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - packages/@lumenflow/agent/**
+      - name: 'Framework: Metrics'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - packages/@lumenflow/metrics/**
+      - name: 'Framework: Initiatives'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - packages/@lumenflow/initiatives/**
+      - name: 'Framework: Shims'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - packages/@lumenflow/shims/**
+      - name: 'Operations: Runtime'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - apps/github-app/**
+      - name: 'Operations: Tooling'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - tools/**
+          - scripts/**
+          - .husky/**
+          - packages/linters/**
+          - benchmark.js
+          - eslint.config.mjs
+          - prettier.config.mjs
+          - vitest.config.ts
+          - vitest.config.ts.timestamp-*.mjs
+          - tsconfig.json
+          - tsconfig.build.json
+          - turbo.json
+          - pnpm-workspace.yaml
+      - name: 'Operations: Automation'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - .github/**
+          - actions/**
+      - name: 'Content: Specs Governance'
+        wip_limit: 2
+        wip_justification: Spec/governance work can parallelize when targeting different
+          docs and config files
+        lock_policy: none
+        code_paths:
+          - docs/04-operations/**
+          - .lumenflow.config.yaml
+          - .lumenflow.lane-inference.yaml
+          - .lumenflow/**
+      - name: 'Content: Framework Docs'
+        wip_limit: 2
+        wip_justification: Framework docs are generally low-conflict and can run in parallel
+        lock_policy: none
+        code_paths:
+          - docs/_frameworks/**
+          - LUMENFLOW.md
+          - START-HERE.md
+          - CLAUDE.md
+          - AGENTS.md
+      - name: 'Content: Site Comms'
+        wip_limit: 2
+        wip_justification: Docs site and comms content can usually parallelize by section
+        lock_policy: none
+        code_paths:
+          - apps/docs/**
+          - docs/posts/**
+          - README.md
+          - CHANGELOG.md
+      - name: 'Framework: Core'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - packages/@lumenflow/core/**
+      - name: 'Framework: CLI'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - packages/@lumenflow/cli/**
+      - name: 'Operations: Infrastructure'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - apps/github-app/**
+          - actions/**
+      - name: 'Operations: CI/CD'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - .github/**
+      - name: 'Content: Documentation'
+        wip_limit: 1
+        lock_policy: all
+        code_paths:
+          - docs/**
+          - apps/docs/**
+  package_manager: pnpm
+  test_runner: vitest
+  build_command: pnpm build
