@@ -114,7 +114,11 @@ import {
   createExecutableScript,
 } from './init-scaffolding.js';
 import type { DomainChoice, OnboardResult } from './onboard.js';
-import { DEFAULT_PROJECT_NAME, WORKSPACE_FILENAME } from './workspace-init.js';
+import {
+  CANONICAL_BOOTSTRAP_COMMAND,
+  DEFAULT_PROJECT_NAME,
+  WORKSPACE_FILENAME,
+} from './workspace-init.js';
 import type { FetchFn } from './pack-install.js';
 // WU-1644: Re-export scaffolding types for backwards compatibility
 export type { FileMode, ScaffoldResult } from './init-scaffolding.js';
@@ -300,6 +304,11 @@ const INIT_SUBCOMMANDS = {
   COMMANDS: 'commands',
   CLOUD: 'cloud',
 } as const;
+const LEGACY_SUBCOMMANDS = {
+  ONBOARD: 'onboard',
+  WORKSPACE_INIT_COLON: 'workspace:init',
+  WORKSPACE_INIT_DASH: 'workspace-init',
+} as const;
 const CLOUD_SUBCOMMANDS = {
   CONNECT: 'connect',
 } as const;
@@ -307,6 +316,9 @@ const CLOUD_CONNECT_BIN = 'cloud-connect';
 const INIT_ERROR_PREFIX = '[lumenflow init]';
 const INIT_CLOUD_CONNECT_HELP =
   'Usage: lumenflow cloud connect --endpoint <url> --org-id <id> --project-id <id> [--token-env <name>]';
+const LEGACY_SUBCOMMAND_ERROR_PREFIX = `${INIT_ERROR_PREFIX} Legacy onboarding subcommand`;
+const LEGACY_SUBCOMMAND_GUIDANCE = `Use "${CANONICAL_BOOTSTRAP_COMMAND}" for bootstrap-all onboarding`;
+const LEGACY_SUBCOMMAND_HELP_HINT = `Run "${CANONICAL_BOOTSTRAP_COMMAND} --help" for supported options`;
 
 const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
 const FRAMEWORK_HINT_FILE = '.lumenflow.framework.yaml';
@@ -1689,6 +1701,16 @@ export async function main(): Promise<void> {
     process.argv.splice(2, 1);
     await commandsMain();
     return;
+  }
+
+  if (
+    subcommand === LEGACY_SUBCOMMANDS.ONBOARD ||
+    subcommand === LEGACY_SUBCOMMANDS.WORKSPACE_INIT_COLON ||
+    subcommand === LEGACY_SUBCOMMANDS.WORKSPACE_INIT_DASH
+  ) {
+    throw new Error(
+      `${LEGACY_SUBCOMMAND_ERROR_PREFIX} "${subcommand}". ${LEGACY_SUBCOMMAND_GUIDANCE}. ${LEGACY_SUBCOMMAND_HELP_HINT}.`,
+    );
   }
 
   if (subcommand === INIT_SUBCOMMANDS.CLOUD) {

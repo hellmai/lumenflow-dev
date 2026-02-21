@@ -18,7 +18,6 @@
 import * as readline from 'node:readline';
 import * as path from 'node:path';
 import YAML from 'yaml';
-import { createWUParser } from '@lumenflow/core';
 import type { WorkspaceSpec } from '@lumenflow/kernel';
 import { createFile, type ScaffoldResult } from './init-scaffolding.js';
 import { runCLI } from './cli-entry-point.js';
@@ -30,7 +29,11 @@ export const DEFAULT_WORKSPACE_ID = 'default';
 export const DEFAULT_WORKSPACE_NAME = 'My Project';
 export const DEFAULT_PROJECT_NAME = 'my-project';
 export const DEFAULT_LANE_TITLE = 'Default';
-export const DEFAULT_NAMESPACE = 'default';
+export const DEFAULT_NAMESPACE = DEFAULT_WORKSPACE_ID;
+export const CANONICAL_BOOTSTRAP_COMMAND = 'npx lumenflow';
+const LEGACY_WORKSPACE_INIT_ENTRYPOINT = 'workspace-init';
+const LEGACY_ENTRYPOINT_MARKER = 'legacy';
+const LEGACY_ENTRYPOINT_MESSAGE_PREFIX = `${LOG_PREFIX} ${LEGACY_ENTRYPOINT_MARKER} entrypoint`;
 export const DEFAULT_DENY_OVERLAYS = ['~/.ssh', '~/.aws', '~/.gnupg', '.env'] as const;
 export const DEFAULT_DENY_OVERLAYS_PROMPT = DEFAULT_DENY_OVERLAYS.join(', ');
 export const SANDBOX_NETWORK_PROFILE = {
@@ -104,6 +107,15 @@ export interface WorkspaceConfigInput {
   sandboxProfile: SandboxNetworkProfile;
   deniedPaths: string[];
   cloudConnect: boolean;
+}
+
+export function buildLegacyWorkspaceInitGuidance(
+  entrypoint = LEGACY_WORKSPACE_INIT_ENTRYPOINT,
+): string {
+  return (
+    `${LEGACY_ENTRYPOINT_MESSAGE_PREFIX} "${entrypoint}" is retired. ` +
+    `Use "${CANONICAL_BOOTSTRAP_COMMAND}" for bootstrap-all onboarding.`
+  );
 }
 
 /**
@@ -365,52 +377,15 @@ export async function runInteractive(targetDir: string, force = false): Promise<
 
 // --- CLI entry point ---
 
-const WORKSPACE_INIT_OPTIONS = {
-  yes: {
-    name: 'yes',
-    flags: '--yes, -y',
-    description: 'Accept all defaults non-interactively',
-  },
-  output: {
-    name: 'output',
-    flags: '--output, -o <dir>',
-    description: 'Output directory (default: current directory)',
-  },
-  force: {
-    name: 'force',
-    flags: '--force, -f',
-    description: 'Overwrite existing workspace.yaml',
-  },
-};
-
 /**
  * CLI main entry point for workspace:init
  */
 export async function main(): Promise<void> {
-  const opts = createWUParser({
-    name: 'workspace-init',
-    description: 'Initialize a LumenFlow workspace configuration (workspace.yaml)',
-    options: [
-      WORKSPACE_INIT_OPTIONS.yes,
-      WORKSPACE_INIT_OPTIONS.output,
-      WORKSPACE_INIT_OPTIONS.force,
-    ],
-  });
-
-  const targetDir = (opts.output as string | undefined) ?? process.cwd();
-  const force = Boolean(opts.force);
-  const useDefaults = Boolean(opts.yes);
-
-  if (useDefaults) {
-    const result = await runNonInteractive(targetDir, force);
-    if (result.created.length > 0) {
-      console.log(`${LOG_PREFIX} Created ${WORKSPACE_FILENAME} with default settings`);
-    } else if (result.skipped.length > 0) {
-      console.log(`${LOG_PREFIX} ${WORKSPACE_FILENAME} already exists. Use --force to overwrite.`);
-    }
-  } else {
-    await runInteractive(targetDir, force);
-  }
+  const invokedEntryPoint = path.basename(
+    process.argv[1] ?? LEGACY_WORKSPACE_INIT_ENTRYPOINT,
+    '.js',
+  );
+  console.warn(buildLegacyWorkspaceInitGuidance(invokedEntryPoint));
 }
 
 // Run if executed directly

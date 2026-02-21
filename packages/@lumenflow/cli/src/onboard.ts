@@ -29,6 +29,7 @@ import {
 import YAML from 'yaml';
 import {
   buildWorkspaceConfig,
+  CANONICAL_BOOTSTRAP_COMMAND,
   DEFAULT_DENY_OVERLAYS,
   DEFAULT_LANE_TITLE,
   DEFAULT_PROJECT_NAME,
@@ -42,6 +43,12 @@ import { runCLI } from './cli-entry-point.js';
 // --- Constants ---
 
 export const LOG_PREFIX = '[onboard]';
+const LEGACY_MARKER = 'legacy';
+const LEGACY_ONBOARD_ENTRYPOINT = 'onboard';
+const LEGACY_ONBOARD_ALIAS = 'lumenflow-onboard';
+const LEGACY_ONBOARD_CONNECT_ENTRYPOINT = `${LEGACY_ONBOARD_ENTRYPOINT} connect`;
+const CANONICAL_CLOUD_CONNECT_COMMAND = 'npx lumenflow cloud connect';
+const LEGACY_ONBOARD_MESSAGE_PREFIX = `${LOG_PREFIX} ${LEGACY_MARKER} entrypoint`;
 
 const NODE_BINARY = 'node';
 const GIT_BINARY = 'git';
@@ -94,6 +101,20 @@ const CLOUD_CONNECT_ENV_NAME_PATTERN = /^[A-Z][A-Z0-9_]*$/;
 const CLOUD_CONNECT_HELP_HINT =
   'Example: npx lumenflow cloud connect --endpoint https://cp.example --org-id org-1 --project-id project-1 --token-env LUMENFLOW_CONTROL_PLANE_TOKEN';
 const YAML_TRAILING_NEWLINE = '\n';
+
+export function buildLegacyOnboardGuidance(entrypoint = LEGACY_ONBOARD_ENTRYPOINT): string {
+  return (
+    `${LEGACY_ONBOARD_MESSAGE_PREFIX} "${entrypoint}" is retired. ` +
+    `Use "${CANONICAL_BOOTSTRAP_COMMAND}" for bootstrap-all onboarding.`
+  );
+}
+
+function buildLegacyCloudConnectGuidance(entrypoint = LEGACY_ONBOARD_CONNECT_ENTRYPOINT): string {
+  return (
+    `${LEGACY_ONBOARD_MESSAGE_PREFIX} "${entrypoint}" is retired. ` +
+    `Use "${CANONICAL_CLOUD_CONNECT_COMMAND}" instead.`
+  );
+}
 
 /** Domain pack IDs mapped to human-readable descriptions */
 export const DOMAIN_CHOICES = [
@@ -923,110 +944,24 @@ async function runInteractiveOnboard(targetDir: string, force: boolean): Promise
 
 // --- CLI entry point ---
 
-const ONBOARD_OPTIONS = {
-  yes: {
-    name: 'yes',
-    flags: '--yes, -y',
-    description: 'Accept all defaults non-interactively',
-  },
-  domain: {
-    name: 'domain',
-    flags: '--domain <domain>',
-    description: 'Domain pack: software-delivery, infra, or custom',
-  },
-  projectName: {
-    name: 'projectName',
-    flags: '--project-name <name>',
-    description: 'Project name (default: directory name or "my-project")',
-  },
-  output: {
-    name: 'output',
-    flags: '--output, -o <dir>',
-    description: 'Output directory (default: current directory)',
-  },
-  force: {
-    name: 'force',
-    flags: '--force, -f',
-    description: 'Overwrite existing workspace.yaml',
-  },
-  skipPackInstall: {
-    name: 'skipPackInstall',
-    flags: '--skip-pack-install',
-    description: 'Skip pack installation step',
-  },
-  skipDashboard: {
-    name: 'skipDashboard',
-    flags: '--skip-dashboard',
-    description: 'Skip dashboard launch step',
-  },
-};
-
 /**
  * CLI main entry point for lumenflow onboard
  */
 export async function main(): Promise<void> {
+  const invokedBinary = path.basename(process.argv[1] ?? LEGACY_ONBOARD_ENTRYPOINT, '.js');
+  const invokedEntrypoint =
+    invokedBinary === LEGACY_ONBOARD_ALIAS ? LEGACY_ONBOARD_ALIAS : LEGACY_ONBOARD_ENTRYPOINT;
   const subcommand = process.argv[2];
   if (subcommand === ONBOARD_SUBCOMMAND_CONNECT) {
+    console.warn(
+      buildLegacyCloudConnectGuidance(`${invokedEntrypoint} ${ONBOARD_SUBCOMMAND_CONNECT}`),
+    );
     process.argv.splice(2, 1);
     await runCloudConnectCli();
     return;
   }
 
-  const opts = createWUParser({
-    name: 'onboard',
-    description: 'Interactive setup wizard for LumenFlow workspace',
-    options: [
-      ONBOARD_OPTIONS.yes,
-      ONBOARD_OPTIONS.domain,
-      ONBOARD_OPTIONS.projectName,
-      ONBOARD_OPTIONS.output,
-      ONBOARD_OPTIONS.force,
-      ONBOARD_OPTIONS.skipPackInstall,
-      ONBOARD_OPTIONS.skipDashboard,
-    ],
-  });
-
-  const targetDir = (opts.output as string | undefined) ?? process.cwd();
-  const force = Boolean(opts.force);
-  const useDefaults = Boolean(opts.yes);
-  const domain = (opts.domain as DomainChoice | undefined) ?? ONBOARD_DEFAULT_DOMAIN;
-  const projectName =
-    (opts.projectName as string | undefined) ?? path.basename(path.resolve(targetDir));
-  const skipPackInstall = Boolean(opts.skipPackInstall);
-  const skipDashboard = Boolean(opts.skipDashboard);
-
-  if (useDefaults) {
-    // Non-interactive mode
-    const result = await runOnboard({
-      targetDir,
-      nonInteractive: true,
-      projectName,
-      domain,
-      force,
-      skipPackInstall,
-      skipDashboard,
-    });
-
-    if (!result.success) {
-      console.error(`${LOG_PREFIX} Onboarding failed:`);
-      for (const error of result.errors) {
-        console.error(`  - ${error}`);
-      }
-      process.exit(1);
-    }
-
-    console.log(`${LOG_PREFIX} Workspace created at ${targetDir}/${WORKSPACE_FILENAME}`);
-    console.log(`${LOG_PREFIX} Domain: ${domain}`);
-    if (!skipPackInstall && result.packInstalled === false) {
-      console.warn(
-        `${LOG_PREFIX} Warning: Pack install did not complete. Retry with: pnpm pack:install --id ${domain} --source registry --version ${DEFAULT_DOMAIN_PACK_VERSION}`,
-      );
-    }
-    console.log(`${LOG_PREFIX} Next: run "lumenflow init" to scaffold agent config files`);
-  } else {
-    // Interactive mode with @clack/prompts
-    await runInteractiveOnboard(targetDir, force);
-  }
+  console.warn(buildLegacyOnboardGuidance(invokedEntrypoint));
 }
 
 // Run if executed directly

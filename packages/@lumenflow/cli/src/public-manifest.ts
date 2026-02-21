@@ -48,6 +48,11 @@ export const COMMAND_CATEGORIES = {
   PACKS: 'Packs',
 } as const;
 
+const CANONICAL_BOOTSTRAP_COMMAND = 'npx lumenflow';
+const LEGACY_COMMAND_PREFIX = 'Legacy entrypoint';
+const LEGACY_ONBOARD_DESCRIPTION = `${LEGACY_COMMAND_PREFIX}; use "${CANONICAL_BOOTSTRAP_COMMAND}" for bootstrap-all onboarding`;
+const LEGACY_WORKSPACE_INIT_DESCRIPTION = LEGACY_ONBOARD_DESCRIPTION;
+
 /**
  * The public CLI manifest - all user-facing commands
  *
@@ -704,21 +709,21 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     name: 'onboard',
     binName: 'onboard',
     binPath: './dist/onboard.js',
-    description: 'Interactive setup wizard for LumenFlow workspace',
+    description: LEGACY_ONBOARD_DESCRIPTION,
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
   },
   {
     name: 'lumenflow-onboard',
     binName: 'lumenflow-onboard',
     binPath: './dist/onboard.js',
-    description: 'Interactive setup wizard for LumenFlow workspace (alias)',
+    description: LEGACY_ONBOARD_DESCRIPTION,
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
   },
   {
     name: 'workspace:init',
     binName: 'workspace-init',
     binPath: './dist/workspace-init.js',
-    description: 'Initialize workspace.yaml from interactive prompts',
+    description: LEGACY_WORKSPACE_INIT_DESCRIPTION,
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
   },
 

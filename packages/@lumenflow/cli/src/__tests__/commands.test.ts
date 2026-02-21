@@ -11,7 +11,7 @@
  * between public-manifest.ts, commands.ts, and package.json bin entries.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { getCommandsRegistry, formatCommandsOutput, type CommandCategory } from '../commands.js';
 import {
   getPublicManifest,
@@ -37,6 +37,9 @@ const SCRIPT_COMMANDS = new Set([
   'setup',
   'strict:progress',
 ]);
+
+const LEGACY_GUIDANCE_PATTERN = /npx lumenflow/i;
+const LEGACY_MARKER = 'legacy';
 
 describe('lumenflow commands', () => {
   describe('getCommandsRegistry', () => {
@@ -120,6 +123,47 @@ describe('lumenflow commands', () => {
       const nonEmptyLines = lines.filter((line) => line.trim().length > 0);
       expect(nonEmptyLines.length).toBeGreaterThan(10);
     });
+  });
+});
+
+describe('bootstrap-all legacy entrypoint guidance (WU-1985)', () => {
+  const originalArgv = process.argv.slice();
+
+  afterEach(() => {
+    process.argv = originalArgv.slice();
+    vi.restoreAllMocks();
+    vi.resetModules();
+  });
+
+  it('marks split onboarding commands as legacy in the public manifest', () => {
+    const manifest = getPublicManifest();
+    const legacyCommands = ['onboard', 'lumenflow-onboard', 'workspace:init'];
+
+    for (const commandName of legacyCommands) {
+      const command = manifest.find((entry) => entry.name === commandName);
+      expect(command, `Expected manifest entry for ${commandName}`).toBeDefined();
+      expect(command?.description.toLowerCase()).toContain(LEGACY_MARKER);
+      expect(command?.description).toMatch(LEGACY_GUIDANCE_PATTERN);
+    }
+  });
+
+  it('emits canonical bootstrap guidance for legacy "lumenflow onboard" invocation', async () => {
+    const { main } = await import('../init.js');
+    process.argv = ['node', 'lumenflow', 'onboard'];
+
+    await expect(main()).rejects.toThrow(LEGACY_GUIDANCE_PATTERN);
+  });
+
+  it('emits canonical bootstrap guidance for legacy "workspace-init" entrypoint', async () => {
+    const { main } = await import('../workspace-init.js');
+    const warningSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    process.argv = ['node', 'workspace-init'];
+    await main();
+
+    const warningOutput = warningSpy.mock.calls.map((args) => args.join(' ')).join('\n');
+    expect(warningOutput.toLowerCase()).toContain(LEGACY_MARKER);
+    expect(warningOutput).toMatch(LEGACY_GUIDANCE_PATTERN);
   });
 });
 
