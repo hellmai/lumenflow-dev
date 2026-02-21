@@ -7,9 +7,11 @@ priority: P3
 created: 2026-02-21
 code_paths:
   - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/init-scaffolding.ts
 tests:
   manual:
-    - Run lumenflow init --client claude on empty dir, verify no file appears in both Created and Skipped
+    - Run lumenflow init --client claude on empty dir, verify no file appears in both Created and
+      Skipped
   unit:
     - packages/@lumenflow/cli/tests/init-scaffold-dedup.test.ts
   e2e: []
@@ -26,9 +28,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: lumenflow init --client claude scaffolds agent onboarding docs twice -- once via scaffoldFullDocs() (full mode is default) and again via scaffoldClientFiles() (added by WU-1083 to ensure Claude always gets docs even without --full). Problem: The second call finds files already created by the first call, so they appear in both Created and Skipped sections of init output. This is confusing for users. Solution: Guard the second call in scaffoldClientFiles() with a check for full mode -- only call scaffoldAgentOnboardingDocs() from scaffoldClientFiles() when NOT in full mode, since scaffoldFullDocs() already handles it.'
+description: 'Context: Testing lumenflow init from scratch on lumenflow-cloud revealed multiple
+  issues. Problem: (1) scaffoldAgentOnboardingDocs() called twice in full+claude mode -- once via
+  scaffoldFullDocs(), again via scaffoldClientFiles() (WU-1083) -- causing files to appear in both
+  Created and Skipped output. (2) Existing .gitignore is skipped entirely instead of merging
+  lumenflow entries (node_modules, .lumenflow/state, etc.), risking accidental commits. (3)
+  Generated .lumenflow.config.yaml defaults to vitest/turbo for gates but these are not installed --
+  gates will fail on projects that use other tooling. (4) README.md from gh repo create is silently
+  deleted with no mention in output. Solution: (1) Guard second scaffoldAgentOnboardingDocs() call
+  with !options.full check. (2) When .gitignore exists and mode is skip, auto-merge missing entries
+  (or default to --merge for .gitignore). (3) Detect installed test runner and build tool from
+  package.json before writing config defaults. (4) If init removes/overwrites a file, list it in
+  output.'
 acceptance:
   - Files appear in exactly one output section (Created OR Skipped, never both)
-  - Running lumenflow init --client claude on an empty dir shows no duplicates
-  - Running lumenflow init --client claude with pre-existing docs shows files only in Skipped
+  - Existing .gitignore gets lumenflow entries merged in (not skipped)
+  - Gate config defaults match installed tooling (no vitest/turbo if not in package.json)
+  - If init deletes or overwrites an existing file, it is reported in output
   - Non-full mode (--minimal) still scaffolds onboarding docs for claude client
