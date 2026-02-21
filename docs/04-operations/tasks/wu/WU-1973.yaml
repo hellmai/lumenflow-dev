@@ -9,6 +9,7 @@ code_paths:
   - packages/@lumenflow/cli/src/config-set.ts
   - packages/@lumenflow/cli/src/config-get.ts
   - packages/@lumenflow/cli/src/__tests__/config-set.test.ts
+  - packages/@lumenflow/cli/vitest.config.ts
 tests:
   manual:
     - pnpm config:get --key software_delivery.methodology.testing returns value from workspace.yaml
@@ -25,10 +26,17 @@ blocked_by:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-21T19:15:25.873Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1973
+session_id: 68376f20-8c09-438e-a138-1f20a584c1f1
 exposure: api
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T19:15:25.881Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -38,11 +46,3 @@ acceptance:
   - config:set modifies workspace.yaml keys with safe micro-worktree flow
   - config:get reads workspace.yaml keys and returns normalized values
   - Existing config-set tests are updated for workspace.yaml contract
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1973
-claimed_at: 2026-02-21T19:15:25.873Z
-baseline_main_sha: 97b707101bf60f92f88c451748150aa7a9fa764a
-session_id: 68376f20-8c09-438e-a138-1f20a584c1f1
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-21T19:15:25.881Z
