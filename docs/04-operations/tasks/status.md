@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1988 — Fix Steps code block indentation vs prettier conflict in upgrade guide](wu/WU-1988.yaml)
 
 ## Completed
 

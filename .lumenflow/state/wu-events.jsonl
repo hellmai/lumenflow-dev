@@ -1928,3 +1928,4 @@
 {"type":"complete","wuId":"WU-1984","timestamp":"2026-02-21T22:38:47.054Z"}
 {"type":"claim","wuId":"WU-1987","timestamp":"2026-02-21T23:51:08.449Z","lane":"Content: Site Comms","title":"Fix MDX angle bracket escaping in upgrade guide"}
 {"type":"complete","wuId":"WU-1987","timestamp":"2026-02-21T23:54:57.743Z"}
+{"type":"claim","wuId":"WU-1988","lane":"Content: Site Comms","title":"Fix Steps code block indentation vs prettier conflict in upgrade guide","timestamp":"2026-02-21T23:57:11.442Z"}
