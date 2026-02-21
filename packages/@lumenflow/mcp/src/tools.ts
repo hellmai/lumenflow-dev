@@ -30,6 +30,8 @@
  * WU-1482: Wave-1 public parity tools
  * WU-1483: Wave-2 public parity tools
  * WU-1952: CLI added pack:author; MCP parity follow-up remains tracked explicitly in INIT-032.
+ * WU-1980: CLI added cloud:connect; MCP parity implementation is intentionally
+ * tracked in WU-1983 (INIT-033 phase sequence).
  */
 
 // Re-export shared types and helpers
