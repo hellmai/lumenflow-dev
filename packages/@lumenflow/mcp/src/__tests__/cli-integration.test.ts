@@ -83,8 +83,10 @@ describe('CLI integration (no mocks)', { timeout: CLI_INTEGRATION_TEST_TIMEOUT_M
   // WU-1908: pack commands are known, tracked parity gaps (see WU-1880).
   // WU-1919: Added pack:validate, pack:hash, pack:publish, pack:install to public manifest.
   // WU-1952: Added pack:author to public manifest.
+  // WU-1962: Added workspace:init and lumenflow-onboard alias to public manifest.
   // They exist in the CLI public manifest but have no MCP tools yet.
   const EXPECTED_MISSING_PARITY_TOOLS: string[] = [
+    'lumenflow_onboard',
     'onboard',
     'pack_author',
     'pack_hash',
@@ -92,6 +94,7 @@ describe('CLI integration (no mocks)', { timeout: CLI_INTEGRATION_TEST_TIMEOUT_M
     'pack_publish',
     'pack_search',
     'pack_validate',
+    'workspace_init',
   ];
 
   describe('wu:status flags', () => {
