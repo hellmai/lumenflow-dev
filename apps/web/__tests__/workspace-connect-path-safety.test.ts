@@ -33,6 +33,7 @@ security:
   allowed_scopes: []
   network_default: off
   deny_overlays: []
+software_delivery: {}
 memory_namespace: test-memory
 event_namespace: test-events
 `;
