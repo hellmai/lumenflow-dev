@@ -2,7 +2,7 @@ id: WU-1968
 title: Fix doctor duplicate output and misleading git version prerequisite warning
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-21
 code_paths:
@@ -28,8 +28,23 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: Testing lumenflow init on lumenflow-cloud revealed two cosmetic bugs in CLI output. Problem: (1) lumenflow doctor prints entire health check output twice -- likely same double-call pattern as the scaffold dedup issue fixed in WU-1965. (2) During init, prerequisite warning says git version 2.43.0 (requires >=2.0.0) which reads like a failure even though the check passes -- the warning prefix and format are misleading for passing checks. Solution: (1) Find and eliminate duplicate doctor invocation. (2) Change prerequisite output to clearly distinguish passing vs failing checks -- passing checks should use a checkmark, only failing ones should use the warning prefix.'
+description: 'Context: Testing lumenflow init on lumenflow-cloud revealed two cosmetic bugs in CLI
+  output. Problem: (1) lumenflow doctor prints entire health check output twice -- likely same
+  double-call pattern as the scaffold dedup issue fixed in WU-1965. (2) During init, prerequisite
+  warning says git version 2.43.0 (requires >=2.0.0) which reads like a failure even though the
+  check passes -- the warning prefix and format are misleading for passing checks. Solution: (1)
+  Find and eliminate duplicate doctor invocation. (2) Change prerequisite output to clearly
+  distinguish passing vs failing checks -- passing checks should use a checkmark, only failing ones
+  should use the warning prefix.'
 acceptance:
   - lumenflow doctor output appears exactly once (no duplicate)
   - Passing prerequisite checks show a checkmark not a warning prefix
   - Failing prerequisite checks still show warning prefix with actionable guidance
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1968
+claimed_at: 2026-02-21T16:50:47.287Z
+baseline_main_sha: d1d2afa26d9095eea42e69cb1a70d31d466837fb
+session_id: 418c1850-1390-4442-93f4-79d34fb3573c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T16:50:47.292Z
