@@ -1873,3 +1873,4 @@
 {"type":"complete","wuId":"WU-1956","timestamp":"2026-02-20T22:08:47.558Z"}
 {"type":"claim","wuId":"WU-1957","timestamp":"2026-02-20T22:09:26.454Z","lane":"Content: Site Comms","title":"[WU-N] Docs sweep for secure authoring + updated onboarding/install flow"}
 {"type":"complete","wuId":"WU-1957","timestamp":"2026-02-20T22:14:36.572Z"}
+{"type":"claim","wuId":"WU-1961","lane":"Framework: CLI WU Commands","title":"Fix onboard cli-entry alias and pack version flag collisions","timestamp":"2026-02-21T12:45:36.454Z"}

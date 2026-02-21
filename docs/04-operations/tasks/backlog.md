@@ -25,11 +25,11 @@ sections:
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1960 — Fix release build:dist invariant drift](wu/WU-1960.yaml) — Framework: CLI Orchestration
-- [WU-1961 — Fix onboard cli-entry alias and pack version flag collisions](wu/WU-1961.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
+- [WU-1961 — Fix onboard cli-entry alias and pack version flag collisions](wu/WU-1961.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 

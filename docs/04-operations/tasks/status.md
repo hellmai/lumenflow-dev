@@ -1,10 +1,11 @@
 # Work Unit Status
 
-_Last updated: 2026-02-20_
+_Last updated: 2026-02-21_
 
 ## In Progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
+- [WU-1961 — Fix onboard cli-entry alias and pack version flag collisions](wu/WU-1961.yaml)
 
 ## Completed
 
