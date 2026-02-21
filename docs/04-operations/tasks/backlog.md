@@ -29,7 +29,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1964 — Fix CLI docs MDX escaping for Starlight deploy](wu/WU-1964.yaml) — Content: Framework Docs
 
 ## ⛔ Blocked
 
@@ -926,6 +925,7 @@ sections:
 - [WU-1961 — Fix onboard cli-entry alias and pack version flag collisions](wu/WU-1961.yaml)
 - [WU-1963 — lumenflow init should scaffold package.json with CLI scripts](wu/WU-1963.yaml)
 - [WU-1962 — Unblock release by restoring workspace-init manifest/docs parity](wu/WU-1962.yaml)
+- [WU-1964 — Fix CLI docs MDX escaping for Starlight deploy](wu/WU-1964.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

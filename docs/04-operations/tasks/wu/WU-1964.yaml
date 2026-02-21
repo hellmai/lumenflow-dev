@@ -2,7 +2,7 @@ id: WU-1964
 title: Fix CLI docs MDX escaping for Starlight deploy
 lane: 'Content: Framework Docs'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -53,3 +53,6 @@ acceptance:
   - apps/docs/src/content/docs/reference/cli.mdx renders without unclosed-tag MDX errors for
     pack:install integrity description
   - pnpm docs:validate passes and vercel deploy --prod succeeds
+locked: true
+completed_at: 2026-02-21T14:58:15.660Z
+completed: 2026-02-21
