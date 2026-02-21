@@ -13,7 +13,9 @@ code_paths:
   - packages/@lumenflow/cli/src/pack-install.ts
   - packages/@lumenflow/cli/src/pack-scaffold.ts
 tests:
-  manual: []
+  manual:
+    - 'Run: pnpm onboard --yes --domain software-delivery --output /tmp/lumenflow-smoke && confirm
+      workspace.yaml created without cli-entry dist error'
   unit:
     - tools/__tests__/cli-entry.test.ts
     - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
@@ -33,8 +35,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Fix two CLI bootstrap blockers discovered in post-initiative verification: (1) cli-entry fails to resolve lumenflow-onboard because dist entry is onboard.js, and (2) pack-install/pack-scaffold crash due to --version option collision with Commander's built-in version flag."
+description: "Fix two CLI bootstrap blockers discovered in post-initiative verification: (1)
+  cli-entry fails to resolve lumenflow-onboard because dist entry is onboard.js, and (2)
+  pack-install/pack-scaffold crash due to --version option collision with Commander's built-in
+  version flag."
 acceptance:
-  - pnpm onboard --yes --domain software-delivery --output <dir> runs through cli-entry without dist resolution failure
-  - pnpm pack:install --help and pnpm pack:scaffold --help return usage output instead of option-collision crash
+  - pnpm onboard --yes --domain software-delivery --output <dir> runs through cli-entry without dist
+    resolution failure
+  - pnpm pack:install --help and pnpm pack:scaffold --help return usage output instead of
+    option-collision crash
   - Parser behavior remains backward-compatible for existing commands that rely on built-in --version
