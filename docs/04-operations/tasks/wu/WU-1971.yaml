@@ -6,9 +6,21 @@ status: in_progress
 priority: P0
 created: 2026-02-21
 code_paths:
-  - packages/@lumenflow/kernel/src/kernel.schemas.ts
+  - packages/@lumenflow/cli/__tests__/onboard-e2e.test.ts
+  - packages/@lumenflow/cli/src/__tests__/pack-install-registry.test.ts
+  - packages/@lumenflow/cli/src/__tests__/pack-install.test.ts
+  - packages/@lumenflow/cli/src/workspace-init.ts
+  - packages/@lumenflow/control-plane-sdk/__tests__/workspace-config.test.ts
   - packages/@lumenflow/control-plane-sdk/src/workspace-config.ts
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/kernel/src/__tests__/kernel.schemas.test.ts
+  - packages/@lumenflow/kernel/src/__tests__/pack-loader.test.ts
+  - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
+  - packages/@lumenflow/kernel/src/kernel.schemas.ts
+  - packages/@lumenflow/mcp/src/__tests__/runtime-tool-resolver.test.ts
+  - packages/@lumenflow/surfaces/cli/__tests__/inspect.test.ts
+  - packages/@lumenflow/surfaces/cli/__tests__/task-lifecycle.test.ts
+  - packages/@lumenflow/surfaces/mcp/__tests__/server.test.ts
 tests:
   manual:
     - pnpm --filter @lumenflow/kernel test -- kernel.schemas
@@ -27,10 +39,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-21T18:34:45.546Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1971
+session_id: c9e42209-5775-48b6-9cc5-3de7eed4209a
 exposure: api
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T18:34:45.553Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +59,3 @@ acceptance:
   - Workspace schema validates software_delivery section required for workflow/gates settings
   - Workspace schema validates control_plane section with strict field constraints
   - Schema tests cover valid and invalid fixtures for both sections
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1971
-claimed_at: 2026-02-21T18:34:45.546Z
-baseline_main_sha: f48ca2b238feccb8bb51aaff9fb617e3a4bc9081
-session_id: c9e42209-5775-48b6-9cc5-3de7eed4209a
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-21T18:34:45.553Z
