@@ -6,7 +6,7 @@ status: in_progress
 priority: P2
 created: 2026-02-21
 code_paths:
-  - packages/@lumenflow/cli/src/commands/init.ts
+  - packages/@lumenflow/cli/src/init.ts
 tests:
   manual:
     - Run lumenflow init in an empty directory and verify pnpm wu:create works
