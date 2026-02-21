@@ -4,14 +4,14 @@
 
 /**
  * @file config-get.ts
- * WU-1902: Safe config:get CLI command for reading .lumenflow.config.yaml values
+ * WU-1902 / WU-1973: Safe config:get CLI command for reading workspace.yaml values
  *
- * Reads and displays current values from the config using dotpath notation.
- * Uses getConfig from @lumenflow/core/config for consistent config loading.
+ * Reads and displays current values from workspace.yaml using dotpath notation.
+ * Canonical keys use the software_delivery prefix.
  *
  * Usage:
- *   pnpm config:get --key methodology.testing
- *   pnpm config:get --key gates.minCoverage
+ *   pnpm config:get --key software_delivery.methodology.testing
+ *   pnpm config:get --key software_delivery.gates.minCoverage
  */
 
 import path from 'node:path';
@@ -19,15 +19,22 @@ import { existsSync, readFileSync } from 'node:fs';
 import YAML from 'yaml';
 import { findProjectRoot } from '@lumenflow/core/config';
 import { die } from '@lumenflow/core/error-handler';
-import { CONFIG_FILES, FILE_SYSTEM } from '@lumenflow/core/wu-constants';
+import { FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
-import { parseConfigGetArgs, getConfigValue } from './config-set.js';
+import {
+  parseConfigGetArgs,
+  getConfigValue,
+  normalizeWorkspaceConfigKey,
+  WORKSPACE_FILE_NAME,
+  WORKSPACE_CONFIG_PREFIX,
+} from './config-set.js';
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
 const LOG_PREFIX = '[config:get]';
+const WORKSPACE_INIT_COMMAND = 'pnpm workspace-init --yes';
 
 // ---------------------------------------------------------------------------
 // Main: config:get
@@ -38,19 +45,27 @@ async function main(): Promise<void> {
   const options = parseConfigGetArgs(userArgs);
 
   const projectRoot = findProjectRoot();
-  const configPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
+  const workspacePath = path.join(projectRoot, WORKSPACE_FILE_NAME);
 
-  if (!existsSync(configPath)) {
-    die(
-      `${LOG_PREFIX} Missing ${CONFIG_FILES.LUMENFLOW_CONFIG}. Run \`pnpm exec lumenflow init\` first.`,
-    );
+  if (!existsSync(workspacePath)) {
+    die(`${LOG_PREFIX} Missing ${WORKSPACE_FILE_NAME}. Run \`${WORKSPACE_INIT_COMMAND}\` first.`);
   }
 
-  // Read raw config (preserving YAML structure, not Zod-parsed)
-  const content = readFileSync(configPath, FILE_SYSTEM.UTF8 as BufferEncoding);
-  const config = (YAML.parse(content) as Record<string, unknown>) ?? {};
+  // Read raw workspace (preserving YAML structure, not Zod-parsed defaults)
+  const content = readFileSync(workspacePath, FILE_SYSTEM.UTF8 as BufferEncoding);
+  const workspace = (YAML.parse(content) as Record<string, unknown>) ?? {};
 
-  const value = getConfigValue(config, options.key);
+  // Canonical read path (full workspace key)
+  let value = getConfigValue(workspace, options.key);
+  if (value === undefined) {
+    // Shorthand compatibility: methodology.testing -> software_delivery.methodology.testing
+    const shorthandKey = normalizeWorkspaceConfigKey(options.key);
+    if (shorthandKey !== options.key) {
+      value = getConfigValue(workspace, `${WORKSPACE_CONFIG_PREFIX}${shorthandKey}`);
+    } else {
+      value = getConfigValue(workspace, `${WORKSPACE_CONFIG_PREFIX}${options.key}`);
+    }
+  }
 
   if (value === undefined) {
     console.log(`${LOG_PREFIX} Key "${options.key}" is not set (undefined)`);

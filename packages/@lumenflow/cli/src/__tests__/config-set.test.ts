@@ -12,6 +12,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import YAML from 'yaml';
+import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 
 // ---------------------------------------------------------------------------
 // Module under test - imported after implementation exists
@@ -23,15 +24,20 @@ import {
   parseConfigGetArgs,
   applyConfigSet,
   getConfigValue,
+  normalizeWorkspaceConfigKey,
+  getSoftwareDeliveryConfigFromWorkspace,
+  setSoftwareDeliveryConfigInWorkspace,
   type ConfigSetOptions,
 } from '../config-set.js';
+
+const SOFTWARE_DELIVERY_ROOT = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
 // ---------------------------------------------------------------------------
 // Test fixtures
 // ---------------------------------------------------------------------------
 
 /** Minimal valid config that passes Zod schema */
-function createMinimalConfig(): Record<string, unknown> {
+function createMinimalSoftwareDeliveryConfig(): Record<string, unknown> {
   return {
     version: '1.0.0',
     methodology: {
@@ -48,6 +54,64 @@ function createMinimalConfig(): Record<string, unknown> {
     },
   };
 }
+
+/** Minimal workspace document containing software_delivery config section */
+function createMinimalWorkspace(): Record<string, unknown> {
+  return {
+    id: 'workspace-id',
+    name: 'Workspace Name',
+    [SOFTWARE_DELIVERY_ROOT]: createMinimalSoftwareDeliveryConfig(),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Workspace key helpers
+// ---------------------------------------------------------------------------
+
+describe('normalizeWorkspaceConfigKey', () => {
+  it('returns empty key for software_delivery root path', () => {
+    const result = normalizeWorkspaceConfigKey(SOFTWARE_DELIVERY_ROOT);
+    expect(result).toBe('');
+  });
+
+  it('strips software_delivery prefix from canonical keys', () => {
+    const result = normalizeWorkspaceConfigKey(`${SOFTWARE_DELIVERY_ROOT}.methodology.testing`);
+    expect(result).toBe('methodology.testing');
+  });
+
+  it('keeps shorthand keys unchanged', () => {
+    const result = normalizeWorkspaceConfigKey('methodology.testing');
+    expect(result).toBe('methodology.testing');
+  });
+});
+
+describe('workspace software_delivery section helpers', () => {
+  it('extracts software_delivery config from workspace document', () => {
+    const workspace = createMinimalWorkspace();
+    const config = getSoftwareDeliveryConfigFromWorkspace(workspace);
+    expect(getConfigValue(config, 'methodology.testing')).toBe('tdd');
+  });
+
+  it('returns empty object when software_delivery is missing', () => {
+    const config = getSoftwareDeliveryConfigFromWorkspace({
+      id: 'workspace-id',
+      name: 'Workspace Name',
+    });
+    expect(config).toEqual({});
+  });
+
+  it('sets software_delivery config in workspace document', () => {
+    const workspace = createMinimalWorkspace();
+    const updated = setSoftwareDeliveryConfigInWorkspace(workspace, {
+      methodology: { testing: 'test-after' },
+    });
+    expect(getConfigValue(updated, `${SOFTWARE_DELIVERY_ROOT}.methodology.testing`)).toBe(
+      'test-after',
+    );
+    expect(getConfigValue(updated, 'id')).toBe('workspace-id');
+    expect(getConfigValue(updated, 'name')).toBe('Workspace Name');
+  });
+});
 
 // ---------------------------------------------------------------------------
 // parseConfigSetArgs
@@ -117,37 +181,37 @@ describe('parseConfigGetArgs', () => {
 
 describe('getConfigValue', () => {
   it('reads a top-level scalar value', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     const result = getConfigValue(config, 'version');
     expect(result).toBe('1.0.0');
   });
 
   it('reads a nested scalar value via dotpath', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     const result = getConfigValue(config, 'methodology.testing');
     expect(result).toBe('tdd');
   });
 
   it('reads a deeply nested value', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     const result = getConfigValue(config, 'gates.minCoverage');
     expect(result).toBe(90);
   });
 
   it('returns undefined for missing key', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     const result = getConfigValue(config, 'nonexistent.path');
     expect(result).toBeUndefined();
   });
 
   it('returns undefined for partially matching path', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     const result = getConfigValue(config, 'methodology.testing.deep');
     expect(result).toBeUndefined();
   });
 
   it('returns an object for intermediate path', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     const result = getConfigValue(config, 'methodology');
     expect(result).toEqual({
       testing: 'tdd',
@@ -162,7 +226,7 @@ describe('getConfigValue', () => {
 
 describe('applyConfigSet', () => {
   it('sets a scalar value at a top-level dotpath', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     const result = applyConfigSet(config, 'methodology.testing', 'test-after');
     expect(result.ok).toBe(true);
     expect(result.config).toBeDefined();
@@ -170,7 +234,7 @@ describe('applyConfigSet', () => {
   });
 
   it('sets a nested scalar value', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     const result = applyConfigSet(config, 'gates.minCoverage', '85');
     expect(result.ok).toBe(true);
     // The value should be coerced to number by the Zod schema
@@ -178,7 +242,7 @@ describe('applyConfigSet', () => {
   });
 
   it('appends comma-separated values to an array field', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     // methodology.principles is an array in the schema defaults
     (config as Record<string, unknown>).agents = {
       methodology: {
@@ -196,7 +260,7 @@ describe('applyConfigSet', () => {
   });
 
   it('rejects invalid value with clear error', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     // methodology.testing only accepts 'tdd' | 'test-after' | 'none'
     const result = applyConfigSet(config, 'methodology.testing', 'invalid-value');
     expect(result.ok).toBe(false);
@@ -205,7 +269,7 @@ describe('applyConfigSet', () => {
   });
 
   it('rejects invalid numeric value', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     // minCoverage must be 0-100
     const result = applyConfigSet(config, 'gates.minCoverage', '150');
     expect(result.ok).toBe(false);
@@ -213,14 +277,14 @@ describe('applyConfigSet', () => {
   });
 
   it('creates intermediate objects for new nested paths', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     const result = applyConfigSet(config, 'experimental.context_validation', 'false');
     expect(result.ok).toBe(true);
     expect(getConfigValue(result.config!, 'experimental.context_validation')).toBe(false);
   });
 
   it('preserves other config values when setting one', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     const result = applyConfigSet(config, 'methodology.testing', 'test-after');
     expect(result.ok).toBe(true);
     // Architecture should be unchanged
@@ -230,7 +294,7 @@ describe('applyConfigSet', () => {
   });
 
   it('handles boolean string conversion', () => {
-    const config = createMinimalConfig();
+    const config = createMinimalSoftwareDeliveryConfig();
     const result = applyConfigSet(config, 'gates.enableCoverage', 'false');
     expect(result.ok).toBe(true);
     expect(getConfigValue(result.config!, 'gates.enableCoverage')).toBe(false);

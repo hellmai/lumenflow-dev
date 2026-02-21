@@ -4,17 +4,17 @@
 
 /**
  * @file config-set.ts
- * WU-1902: Safe config:set CLI command for .lumenflow.config.yaml modification
+ * WU-1902 / WU-1973: Safe config:set CLI command for workspace.yaml modification
  *
- * Accepts dotpath keys (methodology.testing, agents.clients.claude-code.capabilities_map),
- * validates against the Zod schema before writing, uses micro-worktree for safe atomic commits.
+ * Accepts dotpath keys and writes them to workspace.yaml under software_delivery.
+ * Values are validated against the LumenFlow config schema before writing.
  *
  * Follows the lane:edit pattern (WU-1854).
  *
  * Usage:
- *   pnpm config:set --key methodology.testing --value test-after
- *   pnpm config:set --key gates.minCoverage --value 85
- *   pnpm config:set --key agents.methodology.principles --value Library-First,KISS
+ *   pnpm config:set --key software_delivery.methodology.testing --value test-after
+ *   pnpm config:set --key software_delivery.gates.minCoverage --value 85
+ *   pnpm config:set --key software_delivery.agents.methodology.principles --value Library-First,KISS
  */
 
 import path from 'node:path';
@@ -22,9 +22,9 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import YAML from 'yaml';
 import { findProjectRoot } from '@lumenflow/core/config';
 import { die } from '@lumenflow/core/error-handler';
-import { CONFIG_FILES, FILE_SYSTEM } from '@lumenflow/core/wu-constants';
+import { FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
-import { LumenFlowConfigSchema } from '@lumenflow/core/config-schema';
+import { LumenFlowConfigSchema, WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 import { normalizeConfigKeys } from '@lumenflow/core/normalize-config-keys';
 import { runCLI } from './cli-entry-point.js';
 
@@ -40,6 +40,10 @@ const ARG_VALUE = '--value';
 const ARG_HELP = '--help';
 
 const COMMIT_PREFIX = 'chore: config:set';
+const WORKSPACE_INIT_COMMAND = 'pnpm workspace-init --yes';
+export const WORKSPACE_FILE_NAME = 'workspace.yaml';
+export const WORKSPACE_CONFIG_ROOT_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
+export const WORKSPACE_CONFIG_PREFIX = `${WORKSPACE_CONFIG_ROOT_KEY}.`;
 
 // ---------------------------------------------------------------------------
 // Types
@@ -66,29 +70,29 @@ interface ConfigSetResult {
 
 const SET_HELP_TEXT = `Usage: pnpm config:set --key <dotpath> --value <value>
 
-Safely update .lumenflow.config.yaml via micro-worktree commit.
+Safely update workspace.yaml via micro-worktree commit.
 Validates against Zod schema before writing.
 
 Required:
-  ${ARG_KEY} <dotpath>    Config key in dot notation (e.g., methodology.testing)
+  ${ARG_KEY} <dotpath>    Config key in dot notation (e.g., software_delivery.methodology.testing)
   ${ARG_VALUE} <value>    Value to set (comma-separated for arrays)
 
 Examples:
-  pnpm config:set --key methodology.testing --value test-after
-  pnpm config:set --key gates.minCoverage --value 85
-  pnpm config:set --key agents.methodology.principles --value Library-First,KISS
+  pnpm config:set --key software_delivery.methodology.testing --value test-after
+  pnpm config:set --key software_delivery.gates.minCoverage --value 85
+  pnpm config:set --key software_delivery.agents.methodology.principles --value Library-First,KISS
 `;
 
 const GET_HELP_TEXT = `Usage: pnpm config:get --key <dotpath>
 
-Read and display a value from .lumenflow.config.yaml.
+Read and display a value from workspace.yaml.
 
 Required:
-  ${ARG_KEY} <dotpath>    Config key in dot notation (e.g., methodology.testing)
+  ${ARG_KEY} <dotpath>    Config key in dot notation (e.g., software_delivery.methodology.testing)
 
 Examples:
-  pnpm config:get --key methodology.testing
-  pnpm config:get --key gates.minCoverage
+  pnpm config:get --key software_delivery.methodology.testing
+  pnpm config:get --key software_delivery.gates.minCoverage
 `;
 
 // ---------------------------------------------------------------------------
@@ -156,6 +160,26 @@ export function parseConfigGetArgs(argv: string[]): ConfigGetOptions {
   }
 
   return { key };
+}
+
+/**
+ * Normalize a user-provided key to software_delivery-relative dotpath.
+ *
+ * Supported key forms:
+ * - `software_delivery.methodology.testing` (canonical)
+ * - `methodology.testing` (shorthand; automatically scoped)
+ *
+ * @param key - User-provided config key
+ * @returns Dotpath relative to software_delivery
+ */
+export function normalizeWorkspaceConfigKey(key: string): string {
+  if (key === WORKSPACE_CONFIG_ROOT_KEY) {
+    return '';
+  }
+  if (key.startsWith(WORKSPACE_CONFIG_PREFIX)) {
+    return key.slice(WORKSPACE_CONFIG_PREFIX.length);
+  }
+  return key;
 }
 
 // ---------------------------------------------------------------------------
@@ -303,15 +327,60 @@ export function applyConfigSet(
 // Config I/O helpers
 // ---------------------------------------------------------------------------
 
-function readRawConfig(configPath: string): Record<string, unknown> {
-  const content = readFileSync(configPath, FILE_SYSTEM.UTF8 as BufferEncoding);
+/**
+ * Read workspace YAML as object.
+ *
+ * @param workspacePath - Absolute path to workspace.yaml
+ * @returns Parsed workspace object
+ */
+function readRawWorkspace(workspacePath: string): Record<string, unknown> {
+  const content = readFileSync(workspacePath, FILE_SYSTEM.UTF8 as BufferEncoding);
   const parsed = YAML.parse(content) as Record<string, unknown> | null;
   return parsed && typeof parsed === 'object' ? parsed : {};
 }
 
-function writeRawConfig(configPath: string, config: Record<string, unknown>): void {
-  const nextContent = YAML.stringify(config);
-  writeFileSync(configPath, nextContent, FILE_SYSTEM.UTF8 as BufferEncoding);
+/**
+ * Write workspace object back to YAML.
+ *
+ * @param workspacePath - Absolute path to workspace.yaml
+ * @param workspace - Workspace object to persist
+ */
+function writeRawWorkspace(workspacePath: string, workspace: Record<string, unknown>): void {
+  const nextContent = YAML.stringify(workspace);
+  writeFileSync(workspacePath, nextContent, FILE_SYSTEM.UTF8 as BufferEncoding);
+}
+
+/**
+ * Extract software_delivery config section from workspace object.
+ *
+ * @param workspace - Parsed workspace object
+ * @returns software_delivery config object (empty when unset/invalid)
+ */
+export function getSoftwareDeliveryConfigFromWorkspace(
+  workspace: Record<string, unknown>,
+): Record<string, unknown> {
+  const section = workspace[WORKSPACE_CONFIG_ROOT_KEY];
+  if (!section || typeof section !== 'object' || Array.isArray(section)) {
+    return {};
+  }
+  return section as Record<string, unknown>;
+}
+
+/**
+ * Return a new workspace object with updated software_delivery section.
+ *
+ * @param workspace - Existing workspace object
+ * @param config - Updated software_delivery config object
+ * @returns New workspace object with replaced software_delivery section
+ */
+export function setSoftwareDeliveryConfigInWorkspace(
+  workspace: Record<string, unknown>,
+  config: Record<string, unknown>,
+): Record<string, unknown> {
+  return {
+    ...workspace,
+    [WORKSPACE_CONFIG_ROOT_KEY]: config,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -321,18 +390,22 @@ function writeRawConfig(configPath: string, config: Record<string, unknown>): vo
 async function main(): Promise<void> {
   const userArgs = process.argv.slice(2);
   const options = parseConfigSetArgs(userArgs);
-
-  const projectRoot = findProjectRoot();
-  const configPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
-
-  if (!existsSync(configPath)) {
+  const configKey = normalizeWorkspaceConfigKey(options.key);
+  if (!configKey) {
     die(
-      `${LOG_PREFIX} Missing ${CONFIG_FILES.LUMENFLOW_CONFIG}. Run \`pnpm exec lumenflow init\` first.`,
+      `${LOG_PREFIX} Key must target a nested field under ${WORKSPACE_CONFIG_ROOT_KEY} (e.g., ${WORKSPACE_CONFIG_PREFIX}methodology.testing).`,
     );
   }
 
+  const projectRoot = findProjectRoot();
+  const workspacePath = path.join(projectRoot, WORKSPACE_FILE_NAME);
+
+  if (!existsSync(workspacePath)) {
+    die(`${LOG_PREFIX} Missing ${WORKSPACE_FILE_NAME}. Run \`${WORKSPACE_INIT_COMMAND}\` first.`);
+  }
+
   console.log(
-    `${LOG_PREFIX} Setting ${options.key}=${options.value} via micro-worktree isolation (WU-1902)`,
+    `${LOG_PREFIX} Setting ${options.key}=${options.value} in ${WORKSPACE_FILE_NAME} via micro-worktree isolation`,
   );
 
   // Use micro-worktree to make atomic changes
@@ -342,30 +415,32 @@ async function main(): Promise<void> {
     logPrefix: LOG_PREFIX,
     pushOnly: true,
     async execute({ worktreePath }) {
-      const configRelPath = CONFIG_FILES.LUMENFLOW_CONFIG;
-      const mwConfigPath = path.join(worktreePath, configRelPath);
+      const workspaceRelPath = WORKSPACE_FILE_NAME;
+      const mwWorkspacePath = path.join(worktreePath, workspaceRelPath);
 
-      if (!existsSync(mwConfigPath)) {
-        die(`${LOG_PREFIX} Config file not found in micro-worktree: ${configRelPath}`);
+      if (!existsSync(mwWorkspacePath)) {
+        die(`${LOG_PREFIX} Config file not found in micro-worktree: ${workspaceRelPath}`);
       }
 
-      // Read current config
-      const config = readRawConfig(mwConfigPath);
+      // Read workspace and extract software_delivery config section
+      const workspace = readRawWorkspace(mwWorkspacePath);
+      const softwareDeliveryConfig = getSoftwareDeliveryConfigFromWorkspace(workspace);
 
       // Apply set
-      const result = applyConfigSet(config, options.key, options.value);
+      const result = applyConfigSet(softwareDeliveryConfig, configKey, options.value);
       if (!result.ok) {
         die(`${LOG_PREFIX} ${result.error}`);
       }
 
-      // Write updated config
-      writeRawConfig(mwConfigPath, result.config!);
+      // Write updated workspace with replaced software_delivery section
+      const updatedWorkspace = setSoftwareDeliveryConfigInWorkspace(workspace, result.config!);
+      writeRawWorkspace(mwWorkspacePath, updatedWorkspace);
 
       console.log(`${LOG_PREFIX} Config validated and written successfully.`);
 
       return {
         commitMessage: `${COMMIT_PREFIX} ${options.key}=${options.value}`,
-        files: [configRelPath],
+        files: [workspaceRelPath],
       };
     },
   });
