@@ -25,12 +25,12 @@ sections:
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1960 — Fix release build:dist invariant drift](wu/WU-1960.yaml) — Framework: CLI Orchestration
-- [WU-1966 — Fix web runtime preview fallback diagnostics and workspace root separation](wu/WU-1966.yaml) — Operations: Tooling
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1965 — Fix lumenflow init duplicate Created/Skipped output for onboarding docs](wu/WU-1965.yaml) — Framework: CLI Enforcement
+- [WU-1966 — Fix web runtime preview fallback diagnostics and workspace root separation](wu/WU-1966.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 

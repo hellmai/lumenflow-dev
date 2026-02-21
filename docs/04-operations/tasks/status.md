@@ -6,6 +6,7 @@ _Last updated: 2026-02-21_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1965 — Fix lumenflow init duplicate Created/Skipped output for onboarding docs](wu/WU-1965.yaml)
+- [WU-1966 — Fix web runtime preview fallback diagnostics and workspace root separation](wu/WU-1966.yaml)
 
 ## Completed
 

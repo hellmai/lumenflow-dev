@@ -2,7 +2,7 @@ id: WU-1966
 title: Fix web runtime preview fallback diagnostics and workspace root separation
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-21
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - When runtime is enabled but unavailable, /api/health includes initialization failure detail
   - Preview guidance references both runtime workspace and boundary workspace env vars
   - Unit tests cover env precedence and failure diagnostics
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1966
+claimed_at: 2026-02-21T16:07:32.347Z
+baseline_main_sha: caca968e3a031d5cf2c654cb7545d7b1cdf47812
+session_id: 21e6685c-8cd4-4abc-a3a4-2068fab6482d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T16:07:32.353Z
