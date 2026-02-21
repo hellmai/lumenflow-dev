@@ -2,7 +2,7 @@ id: WU-1971
 title: Workspace v2 schema with software_delivery + control_plane
 lane: 'Framework: Core Validation'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -61,3 +61,6 @@ acceptance:
   - Workspace schema validates software_delivery section required for workflow/gates settings
   - Workspace schema validates control_plane section with strict field constraints
   - Schema tests cover valid and invalid fixtures for both sections
+locked: true
+completed_at: 2026-02-21T19:00:58.838Z
+completed: 2026-02-21

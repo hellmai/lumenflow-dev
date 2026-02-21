@@ -1897,3 +1897,4 @@
 {"type":"claim","wuId":"WU-1971","timestamp":"2026-02-21T18:34:45.599Z","lane":"Framework: Core Validation","title":"Workspace v2 schema with software_delivery + control_plane"}
 {"type":"claim","wuId":"WU-1986","timestamp":"2026-02-21T18:36:29.930Z","lane":"Content: Framework Docs","title":"Update docs to prefer auto-generated WU IDs over explicit --id"}
 {"type":"complete","wuId":"WU-1986","timestamp":"2026-02-21T18:42:47.197Z"}
+{"type":"complete","wuId":"WU-1971","timestamp":"2026-02-21T19:01:03.837Z"}
