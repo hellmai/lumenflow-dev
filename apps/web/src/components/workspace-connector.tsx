@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { WorkspaceConnectionState } from '../lib/workspace-connection-types';
 
 const PATH_INPUT_PLACEHOLDER = 'Enter workspace root path';
@@ -11,7 +11,9 @@ const CREATE_WORKSPACE_BUTTON_LABEL = 'Create';
 const CREATING_WORKSPACE_BUTTON_LABEL = 'Creating...';
 const PROJECT_NAME_PLACEHOLDER = 'Project name';
 const CREATE_ROUTE_PATH = '/api/workspace/create';
+const HEALTH_ROUTE_PATH = '/api/health';
 const ERROR_CREATE_WORKSPACE_PREFIX = 'Failed to create workspace';
+const ERROR_LOAD_HEALTH_PREFIX = 'Failed to load runtime diagnostics';
 const EXISTING_WORKSPACE_MESSAGE =
   'Workspace already exists. Connect to proceed without overwrite.';
 const WORKSPACE_CREATED_MESSAGE = 'Workspace created. Connecting...';
@@ -20,6 +22,37 @@ const PACKS_LABEL = 'packs';
 const LANES_LABEL = 'lanes';
 const DISCONNECTED_LABEL = 'Not connected';
 const CONNECTED_LABEL = 'Connected';
+const CONTROL_PLANE_CONNECTED_LABEL = 'Connected';
+const CONTROL_PLANE_DISCONNECTED_LABEL = 'Disconnected';
+const CONTROL_PLANE_STATUS_LABEL = 'Cloud control plane';
+const CONTROL_PLANE_GUIDANCE_LABEL = 'Guidance';
+const CONTROL_PLANE_ENDPOINT_LABEL = 'Endpoint';
+const CONTROL_PLANE_TOKEN_ENV_LABEL = 'Token env';
+const CONTROL_PLANE_STATE = {
+  CONNECTED: 'connected',
+  DISCONNECTED: 'disconnected',
+} as const;
+
+const CONTROL_PLANE_STATUS_BADGE = {
+  [CONTROL_PLANE_STATE.CONNECTED]: 'bg-green-100 text-green-700',
+  [CONTROL_PLANE_STATE.DISCONNECTED]: 'bg-amber-100 text-amber-700',
+} as const;
+
+interface RuntimeControlPlaneDiagnostics {
+  readonly state: (typeof CONTROL_PLANE_STATE)[keyof typeof CONTROL_PLANE_STATE];
+  readonly endpoint?: string;
+  readonly tokenEnv?: string;
+  readonly guidance: readonly string[];
+  readonly message: string;
+}
+
+interface RuntimeHealthResponse {
+  readonly success: boolean;
+  readonly runtime?: {
+    readonly controlPlane?: RuntimeControlPlaneDiagnostics;
+  };
+  readonly error?: string;
+}
 
 const STATUS_DOT_COLORS: Record<string, string> = {
   connected: 'bg-green-500',
@@ -66,6 +99,55 @@ function getCreateWorkspaceError(responseBody: unknown): string {
   return ERROR_CREATE_WORKSPACE_PREFIX;
 }
 
+function isObjectRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function extractControlPlaneDiagnostics(payload: unknown): RuntimeControlPlaneDiagnostics | null {
+  if (!isObjectRecord(payload)) {
+    return null;
+  }
+
+  const runtime = payload.runtime;
+  if (!isObjectRecord(runtime)) {
+    return null;
+  }
+
+  const controlPlane = runtime.controlPlane;
+  if (!isObjectRecord(controlPlane)) {
+    return null;
+  }
+
+  const state = controlPlane.state;
+  if (state !== CONTROL_PLANE_STATE.CONNECTED && state !== CONTROL_PLANE_STATE.DISCONNECTED) {
+    return null;
+  }
+
+  const endpoint =
+    typeof controlPlane.endpoint === 'string' && controlPlane.endpoint.length > 0
+      ? controlPlane.endpoint
+      : undefined;
+  const tokenEnv =
+    typeof controlPlane.tokenEnv === 'string' && controlPlane.tokenEnv.length > 0
+      ? controlPlane.tokenEnv
+      : undefined;
+  const guidance = Array.isArray(controlPlane.guidance)
+    ? controlPlane.guidance.filter((entry): entry is string => typeof entry === 'string')
+    : [];
+  const message =
+    typeof controlPlane.message === 'string' && controlPlane.message.length > 0
+      ? controlPlane.message
+      : '';
+
+  return {
+    state,
+    endpoint,
+    tokenEnv,
+    guidance,
+    message,
+  };
+}
+
 export function WorkspacePathPrompt({ onConnect, isConnecting }: WorkspacePathPromptProps) {
   const [inputValue, setInputValue] = useState('');
   const [isCreateWorkspaceVisible, setIsCreateWorkspaceVisible] = useState(false);
@@ -73,6 +155,51 @@ export function WorkspacePathPrompt({ onConnect, isConnecting }: WorkspacePathPr
   const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
   const [createWorkspaceInfo, setCreateWorkspaceInfo] = useState<string | null>(null);
   const [createWorkspaceError, setCreateWorkspaceError] = useState<string | null>(null);
+  const [controlPlaneDiagnostics, setControlPlaneDiagnostics] =
+    useState<RuntimeControlPlaneDiagnostics | null>(null);
+  const [controlPlaneDiagnosticsError, setControlPlaneDiagnosticsError] = useState<string | null>(
+    null,
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadRuntimeHealth(): Promise<void> {
+      if (typeof globalThis.fetch !== 'function') {
+        return;
+      }
+
+      try {
+        const response = await fetch(HEALTH_ROUTE_PATH);
+        const body = (await response.json()) as RuntimeHealthResponse;
+        if (cancelled) {
+          return;
+        }
+
+        const diagnostics = extractControlPlaneDiagnostics(body);
+        if (response.ok && body.success && diagnostics !== null) {
+          setControlPlaneDiagnostics(diagnostics);
+          setControlPlaneDiagnosticsError(null);
+          return;
+        }
+
+        setControlPlaneDiagnostics(null);
+        setControlPlaneDiagnosticsError(body.error ?? ERROR_LOAD_HEALTH_PREFIX);
+      } catch {
+        if (cancelled) {
+          return;
+        }
+        setControlPlaneDiagnostics(null);
+        setControlPlaneDiagnosticsError(ERROR_LOAD_HEALTH_PREFIX);
+      }
+    }
+
+    void loadRuntimeHealth();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function handleConnect() {
     const trimmed = inputValue.trim();
@@ -229,6 +356,58 @@ export function WorkspacePathPrompt({ onConnect, isConnecting }: WorkspacePathPr
       {isConnecting && (
         <div data-testid="workspace-connecting-indicator" className="mt-3 text-sm text-slate-400">
           Initializing kernel runtime...
+        </div>
+      )}
+      {(controlPlaneDiagnostics || controlPlaneDiagnosticsError) && (
+        <div
+          data-testid="workspace-cloud-diagnostics"
+          className="mt-4 rounded-md border border-slate-200 bg-slate-50 p-3"
+        >
+          {controlPlaneDiagnostics && (
+            <>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  {CONTROL_PLANE_STATUS_LABEL}
+                </span>
+                <span
+                  data-testid="workspace-cloud-status"
+                  className={`rounded px-2 py-0.5 text-xs font-medium ${
+                    CONTROL_PLANE_STATUS_BADGE[controlPlaneDiagnostics.state]
+                  }`}
+                >
+                  {controlPlaneDiagnostics.state === CONTROL_PLANE_STATE.CONNECTED
+                    ? CONTROL_PLANE_CONNECTED_LABEL
+                    : CONTROL_PLANE_DISCONNECTED_LABEL}
+                </span>
+              </div>
+              {controlPlaneDiagnostics.endpoint && (
+                <div data-testid="workspace-cloud-endpoint" className="mt-2 text-xs text-slate-600">
+                  {CONTROL_PLANE_ENDPOINT_LABEL}: {controlPlaneDiagnostics.endpoint}
+                </div>
+              )}
+              {controlPlaneDiagnostics.tokenEnv && (
+                <div
+                  data-testid="workspace-cloud-token-env"
+                  className="mt-1 text-xs text-slate-600"
+                >
+                  {CONTROL_PLANE_TOKEN_ENV_LABEL}: {controlPlaneDiagnostics.tokenEnv}
+                </div>
+              )}
+              {controlPlaneDiagnostics.guidance.length > 0 && (
+                <div data-testid="workspace-cloud-guidance" className="mt-2 text-xs text-amber-700">
+                  {CONTROL_PLANE_GUIDANCE_LABEL}: {controlPlaneDiagnostics.guidance.join(' ')}
+                </div>
+              )}
+            </>
+          )}
+          {controlPlaneDiagnosticsError && (
+            <div
+              data-testid="workspace-cloud-diagnostics-error"
+              className="mt-2 text-xs text-red-600"
+            >
+              {controlPlaneDiagnosticsError}
+            </div>
+          )}
         </div>
       )}
     </div>
