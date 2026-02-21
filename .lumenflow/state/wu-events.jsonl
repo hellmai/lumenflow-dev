@@ -1879,3 +1879,4 @@
 {"type":"claim","wuId":"WU-1962","timestamp":"2026-02-21T14:04:18.522Z","lane":"Framework: CLI Orchestration","title":"Unblock release by restoring workspace-init manifest/docs parity"}
 {"type":"complete","wuId":"WU-1963","timestamp":"2026-02-21T14:11:35.031Z"}
 {"type":"complete","wuId":"WU-1962","timestamp":"2026-02-21T14:26:44.905Z"}
+{"type":"claim","wuId":"WU-1964","lane":"Content: Framework Docs","title":"Fix CLI docs MDX escaping for Starlight deploy","timestamp":"2026-02-21T14:35:30.725Z"}

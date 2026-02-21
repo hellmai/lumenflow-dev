@@ -2,7 +2,7 @@ id: WU-1964
 title: Fix CLI docs MDX escaping for Starlight deploy
 lane: 'Content: Framework Docs'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -28,8 +28,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Vercel production build fails on apps/docs/src/content/docs/reference/cli.mdx because generated option descriptions include raw angle-bracket placeholders like <hex> that MDX parses as HTML tags. Update docs generation to escape description cells and regenerate CLI docs so production docs deploy succeeds.
+description: Vercel production build fails on apps/docs/src/content/docs/reference/cli.mdx because
+  generated option descriptions include raw angle-bracket placeholders like <hex> that MDX parses as
+  HTML tags. Update docs generation to escape description cells and regenerate CLI docs so
+  production docs deploy succeeds.
 acceptance:
   - tools/generate-cli-docs.ts escapes angle brackets in option description cells in CLI table output
-  - apps/docs/src/content/docs/reference/cli.mdx renders without unclosed-tag MDX errors for pack:install integrity description
+  - apps/docs/src/content/docs/reference/cli.mdx renders without unclosed-tag MDX errors for
+    pack:install integrity description
   - pnpm docs:validate passes and vercel deploy --prod succeeds
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-1964
+claimed_at: 2026-02-21T14:35:30.673Z
+baseline_main_sha: 82437bad0eb0be50612081d75b5769ea665de6a6
+session_id: 9621ea30-be59-4a97-83d7-c465e6e0efd3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T14:35:30.681Z
