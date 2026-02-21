@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1980 — Add lumenflow cloud connect command](wu/WU-1980.yaml) — Framework: CLI Enforcement
 - [WU-1979 — Finalize control-plane contract in workspace schema + SDK](wu/WU-1979.yaml) — Framework: Core Validation
 - [WU-1978 — Bootstrap-all default path for npx lumenflow](wu/WU-1978.yaml) — Framework: CLI Enforcement
 - [WU-1977 — Unify lumenflow npm wrapper with full CLI router](wu/WU-1977.yaml) — Framework: CLI Enforcement
