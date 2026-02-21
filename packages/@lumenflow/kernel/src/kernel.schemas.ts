@@ -148,6 +148,23 @@ export const LaneSpecSchema = z.object({
 
 export type LaneSpec = z.infer<typeof LaneSpecSchema>;
 
+export const WorkspaceControlPlanePolicyModeSchema = z.enum([
+  'authoritative',
+  'tighten-only',
+  'dev-override',
+]);
+
+export const WorkspaceControlPlaneConfigSchema = z
+  .object({
+    enabled: z.boolean(),
+    endpoint: z.string().url(),
+    org_id: z.string().min(1),
+    sync_interval: z.number().int().positive(),
+    policy_mode: WorkspaceControlPlanePolicyModeSchema,
+    local_override: z.boolean().default(false),
+  })
+  .strict();
+
 export const WorkspaceSpecSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
@@ -159,11 +176,15 @@ export const WorkspaceSpecSchema = z.object({
     network_default: z.enum(['off', 'full']),
     deny_overlays: z.array(z.string().min(1)),
   }),
+  software_delivery: z.record(z.string(), z.unknown()),
+  control_plane: WorkspaceControlPlaneConfigSchema.optional(),
   memory_namespace: z.string().min(1),
   event_namespace: z.string().min(1),
 });
 
 export type WorkspaceSpec = z.infer<typeof WorkspaceSpecSchema>;
+export type WorkspaceControlPlanePolicyMode = z.infer<typeof WorkspaceControlPlanePolicyModeSchema>;
+export type WorkspaceControlPlaneConfig = z.infer<typeof WorkspaceControlPlaneConfigSchema>;
 
 const KernelEventBaseSchema = z.object({
   schema_version: z.literal(1),

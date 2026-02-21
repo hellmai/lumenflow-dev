@@ -165,7 +165,7 @@ describe('lumenflow onboard (WU-1927)', () => {
       // Create a workspace.yaml in the temp dir
       fs.writeFileSync(
         path.join(tempDir, 'workspace.yaml'),
-        'id: test\nname: Test\npacks: []\nlanes: []\nsecurity:\n  allowed_scopes: []\n  network_default: off\n  deny_overlays: []\nmemory_namespace: test\nevent_namespace: test\n',
+        'id: test\nname: Test\npacks: []\nlanes: []\nsecurity:\n  allowed_scopes: []\n  network_default: off\n  deny_overlays: []\nsoftware_delivery: {}\nmemory_namespace: test\nevent_namespace: test\n',
       );
 
       const { detectEnvironment } = await import('../src/onboard.js');

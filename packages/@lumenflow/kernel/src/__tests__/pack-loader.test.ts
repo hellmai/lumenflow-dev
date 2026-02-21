@@ -178,6 +178,7 @@ function createWorkspaceSpec(input: GitWorkspacePackInput) {
       network_default: 'off',
       deny_overlays: ['.env'],
     },
+    software_delivery: {},
     memory_namespace: 'mem',
     event_namespace: 'evt',
   });

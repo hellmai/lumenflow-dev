@@ -101,6 +101,7 @@ describe('pack:install --source registry (WU-1875)', () => {
         network_default: 'off',
         deny_overlays: [],
       },
+      software_delivery: {},
       memory_namespace: 'test',
       event_namespace: 'test',
     };

@@ -97,6 +97,7 @@ describe('pack:install command', () => {
         network_default: 'off',
         deny_overlays: [],
       },
+      software_delivery: {},
       memory_namespace: 'test',
       event_namespace: 'test',
     };

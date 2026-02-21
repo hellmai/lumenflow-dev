@@ -81,6 +81,16 @@ describe('workspace control-plane config parsing', () => {
     expect(() =>
       ControlPlaneConfigSchema.parse({
         enabled: true,
+        endpoint: 'not-a-url',
+        org_id: 'org-1',
+        sync_interval: 30,
+        policy_mode: 'authoritative',
+      }),
+    ).toThrow('Invalid control_plane.endpoint: expected a valid URL');
+
+    expect(() =>
+      ControlPlaneConfigSchema.parse({
+        enabled: true,
         endpoint: 'https://control-plane.example',
         org_id: 'org-1',
         sync_interval: 0,

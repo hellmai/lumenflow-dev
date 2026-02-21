@@ -19,6 +19,42 @@ import { MethodologyConfigSchema } from './resolve-policy.js';
 import { LUMENFLOW_CLIENT_IDS } from './wu-context-constants.js';
 
 /**
+ * Workspace v2 schema fragments (INIT-033 / WU-1971).
+ *
+ * These exports define the canonical workspace-level contract used by the kernel:
+ * - required `software_delivery` block for workflow/gates/runtime settings
+ * - optional `control_plane` block for cloud sync policy
+ */
+export const WorkspaceControlPlanePolicyModeSchema = z.enum([
+  'authoritative',
+  'tighten-only',
+  'dev-override',
+]);
+
+export const WorkspaceControlPlaneConfigSchema = z
+  .object({
+    enabled: z.boolean(),
+    endpoint: z.string().url(),
+    org_id: z.string().min(1),
+    sync_interval: z.number().int().positive(),
+    policy_mode: WorkspaceControlPlanePolicyModeSchema,
+    local_override: z.boolean().default(false),
+  })
+  .strict();
+
+export const WorkspaceSoftwareDeliverySchema = z.record(z.string(), z.unknown());
+
+export const WorkspaceV2ExtensionsSchema = z.object({
+  software_delivery: WorkspaceSoftwareDeliverySchema,
+  control_plane: WorkspaceControlPlaneConfigSchema.optional(),
+});
+
+export type WorkspaceControlPlanePolicyMode = z.infer<typeof WorkspaceControlPlanePolicyModeSchema>;
+export type WorkspaceControlPlaneConfig = z.infer<typeof WorkspaceControlPlaneConfigSchema>;
+export type WorkspaceSoftwareDeliveryConfig = z.infer<typeof WorkspaceSoftwareDeliverySchema>;
+export type WorkspaceV2Extensions = z.infer<typeof WorkspaceV2ExtensionsSchema>;
+
+/**
  * WU-1356: Package manager options
  *
  * Supported package managers for LumenFlow CLI operations.

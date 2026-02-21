@@ -27,6 +27,18 @@ function asNonEmptyString(value: unknown, field: string): string {
   return value;
 }
 
+function asUrlString(value: unknown, field: string): string {
+  const parsed = asNonEmptyString(value, field);
+
+  try {
+    void new URL(parsed);
+  } catch {
+    throw new Error(`Invalid ${field}: expected a valid URL`);
+  }
+
+  return parsed;
+}
+
 function asPolicyMode(value: unknown): ControlPlanePolicyMode {
   if (value === 'authoritative' || value === 'tighten-only' || value === 'dev-override') {
     return value;
@@ -56,7 +68,7 @@ function parseControlPlaneConfig(input: unknown): WorkspaceControlPlaneConfig {
 
   return {
     enabled: input.enabled,
-    endpoint: asNonEmptyString(input.endpoint, 'control_plane.endpoint'),
+    endpoint: asUrlString(input.endpoint, 'control_plane.endpoint'),
     org_id: asNonEmptyString(input.org_id, 'control_plane.org_id'),
     sync_interval: asPositiveInt(input.sync_interval, 'control_plane.sync_interval'),
     policy_mode: asPolicyMode(input.policy_mode),

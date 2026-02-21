@@ -186,7 +186,7 @@ describe('kernel schemas', () => {
       expect(result.success).toBe(false);
     });
 
-    it('accepts a workspace spec with security.allowed_scopes and packs', () => {
+    it('accepts a workspace spec with security.allowed_scopes, packs, and software_delivery', () => {
       const lane = {
         id: 'framework-core',
         title: 'Framework: Core Validation',
@@ -211,11 +211,118 @@ describe('kernel schemas', () => {
           network_default: 'off',
           deny_overlays: ['~/.ssh/**'],
         },
+        software_delivery: {},
         memory_namespace: 'memory-default',
         event_namespace: 'events-default',
       });
 
       expect(result.success).toBe(true);
+    });
+
+    it('rejects workspace spec when software_delivery is missing', () => {
+      const lane = {
+        id: 'framework-core',
+        title: 'Framework: Core Validation',
+        allowed_scopes: [writeScope],
+      };
+
+      const result = WorkspaceSpecSchema.safeParse({
+        id: 'workspace-default',
+        name: 'LumenFlow OS',
+        packs: [
+          {
+            id: 'software-delivery',
+            version: '1.0.0',
+            integrity: 'dev',
+            source: 'local',
+          },
+        ],
+        lanes: [lane],
+        security: {
+          allowed_scopes: [writeScope, { type: 'network', posture: 'off' }],
+          network_default: 'off',
+          deny_overlays: ['~/.ssh/**'],
+        },
+        memory_namespace: 'memory-default',
+        event_namespace: 'events-default',
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('accepts control_plane when all fields are valid', () => {
+      const parsed = WorkspaceSpecSchema.parse({
+        id: 'workspace-default',
+        name: 'LumenFlow OS',
+        packs: [
+          {
+            id: 'software-delivery',
+            version: '1.0.0',
+            integrity: 'dev',
+            source: 'local',
+          },
+        ],
+        lanes: [],
+        security: {
+          allowed_scopes: [{ type: 'network', posture: 'off' }],
+          network_default: 'off',
+          deny_overlays: [],
+        },
+        software_delivery: {},
+        control_plane: {
+          enabled: true,
+          endpoint: 'https://control-plane.example',
+          org_id: 'org-1',
+          sync_interval: 60,
+          policy_mode: 'tighten-only',
+          local_override: false,
+        },
+        memory_namespace: 'memory-default',
+        event_namespace: 'events-default',
+      });
+
+      expect(parsed.control_plane).toEqual({
+        enabled: true,
+        endpoint: 'https://control-plane.example',
+        org_id: 'org-1',
+        sync_interval: 60,
+        policy_mode: 'tighten-only',
+        local_override: false,
+      });
+    });
+
+    it('rejects invalid control_plane fields when provided', () => {
+      const result = WorkspaceSpecSchema.safeParse({
+        id: 'workspace-default',
+        name: 'LumenFlow OS',
+        packs: [
+          {
+            id: 'software-delivery',
+            version: '1.0.0',
+            integrity: 'dev',
+            source: 'local',
+          },
+        ],
+        lanes: [],
+        security: {
+          allowed_scopes: [{ type: 'network', posture: 'off' }],
+          network_default: 'off',
+          deny_overlays: [],
+        },
+        software_delivery: {},
+        control_plane: {
+          enabled: true,
+          endpoint: 'not-a-url',
+          org_id: 'org-1',
+          sync_interval: 0,
+          policy_mode: 'legacy',
+          local_override: false,
+        },
+        memory_namespace: 'memory-default',
+        event_namespace: 'events-default',
+      });
+
+      expect(result.success).toBe(false);
     });
   });
 

@@ -62,6 +62,7 @@ async function writeWorkspaceFixture(root: string): Promise<void> {
       '      access: read',
       '  network_default: off',
       '  deny_overlays: []',
+      'software_delivery: {}',
       'memory_namespace: mem',
       'event_namespace: evt',
     ].join('\n'),
