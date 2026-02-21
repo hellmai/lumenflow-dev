@@ -1,0 +1,15 @@
+id: INIT-033
+slug: workspace-first-bootstrap-cloud
+title: Workspace-first hard cut + bootstrap-all + cloud connect
+description: ''
+status: draft
+priority: P0
+owner: 'Framework: Core'
+created: 2026-02-21
+target_date: 2026-04-30
+phases: []
+success_metrics:
+  - Single-command bootstrap for new users
+  - No runtime dependency on .lumenflow.config.yaml
+  - Cloud-connected workspace operational
+labels: []
