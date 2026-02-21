@@ -1,0 +1,40 @@
+id: WU-1961
+title: Fix onboard cli-entry alias and pack version flag collisions
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-21
+code_paths:
+  - tools/cli-entry.mjs
+  - tools/__tests__/cli-entry.test.ts
+  - packages/@lumenflow/core/src/arg-parser.ts
+  - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
+  - packages/@lumenflow/cli/src/pack-install.ts
+  - packages/@lumenflow/cli/src/pack-scaffold.ts
+tests:
+  manual: []
+  unit:
+    - tools/__tests__/cli-entry.test.ts
+    - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
+    - packages/@lumenflow/cli/src/__tests__/pack-install.test.ts
+    - packages/@lumenflow/cli/src/__tests__/pack-scaffold.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1961.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Fix two CLI bootstrap blockers discovered in post-initiative verification: (1) cli-entry fails to resolve lumenflow-onboard because dist entry is onboard.js, and (2) pack-install/pack-scaffold crash due to --version option collision with Commander's built-in version flag."
+acceptance:
+  - pnpm onboard --yes --domain software-delivery --output <dir> runs through cli-entry without dist resolution failure
+  - pnpm pack:install --help and pnpm pack:scaffold --help return usage output instead of option-collision crash
+  - Parser behavior remains backward-compatible for existing commands that rely on built-in --version
