@@ -32,6 +32,9 @@ import { runDoctor, runDoctorForInit } from '../doctor.js';
 const HUSKY_DIR = '.husky';
 const SCRIPTS_DIR = 'scripts';
 const DOCS_TASKS_DIR = 'docs/04-operations/tasks';
+const WORKSPACE_CONFIG_FILE_NAME = 'workspace.yaml';
+const LEGACY_CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+const WORKSPACE_CONFIG_CONTENT = 'software_delivery: {}\n';
 
 /**
  * Test directory path
@@ -53,8 +56,8 @@ function setupMinimalProject(baseDir: string): void {
   // Create AGENTS.md
   writeFileSync(join(baseDir, 'AGENTS.md'), '# Agents\n', 'utf-8');
 
-  // Create .lumenflow.config.yaml
-  writeFileSync(join(baseDir, '.lumenflow.config.yaml'), 'lanes: []\n', 'utf-8');
+  // Create canonical workspace.yaml
+  writeFileSync(join(baseDir, WORKSPACE_CONFIG_FILE_NAME), WORKSPACE_CONFIG_CONTENT, 'utf-8');
 }
 
 /**
@@ -83,7 +86,7 @@ describe('doctor CLI (WU-1386) - Agent Friction Checks', () => {
   });
 
   describe('managed-file dirty check', () => {
-    it('should detect uncommitted changes to .lumenflow.config.yaml', async () => {
+    it('should detect uncommitted changes to workspace.yaml', async () => {
       setupMinimalProject(testDir);
       initGit(testDir);
 
@@ -93,8 +96,8 @@ describe('doctor CLI (WU-1386) - Agent Friction Checks', () => {
 
       // Modify managed file
       writeFileSync(
-        join(testDir, '.lumenflow.config.yaml'),
-        'lanes: []\nmodified: true\n',
+        join(testDir, WORKSPACE_CONFIG_FILE_NAME),
+        'software_delivery:\n  modified: true\n',
         'utf-8',
       );
 
@@ -102,7 +105,7 @@ describe('doctor CLI (WU-1386) - Agent Friction Checks', () => {
 
       expect(result.workflowHealth).toBeDefined();
       expect(result.workflowHealth?.managedFilesDirty.passed).toBe(false);
-      expect(result.workflowHealth?.managedFilesDirty.files).toContain('.lumenflow.config.yaml');
+      expect(result.workflowHealth?.managedFilesDirty.files).toContain(WORKSPACE_CONFIG_FILE_NAME);
     });
 
     it('should detect uncommitted changes to docs/04-operations/tasks/**', async () => {
@@ -273,8 +276,8 @@ describe('doctor CLI (WU-1386) - Agent Friction Checks', () => {
 
       // Modify managed file to create warning
       writeFileSync(
-        join(testDir, '.lumenflow.config.yaml'),
-        'lanes: []\nmodified: true\n',
+        join(testDir, WORKSPACE_CONFIG_FILE_NAME),
+        'software_delivery:\n  modified: true\n',
         'utf-8',
       );
 
@@ -288,7 +291,7 @@ describe('doctor CLI (WU-1386) - Agent Friction Checks', () => {
       mkdirSync(join(testDir, SCRIPTS_DIR), { recursive: true });
       writeFileSync(join(testDir, SCRIPTS_DIR, 'safe-git'), '#!/bin/sh\n', 'utf-8');
       writeFileSync(join(testDir, 'AGENTS.md'), '# Agents\n', 'utf-8');
-      writeFileSync(join(testDir, '.lumenflow.config.yaml'), 'lanes: []\n', 'utf-8');
+      writeFileSync(join(testDir, WORKSPACE_CONFIG_FILE_NAME), WORKSPACE_CONFIG_CONTENT, 'utf-8');
 
       const result = await runDoctor(testDir);
 
@@ -306,6 +309,20 @@ describe('doctor CLI (WU-1386) - Agent Friction Checks', () => {
       expect(result.workflowHealth).toBeDefined();
       expect(result.workflowHealth?.managedFilesDirty).toBeDefined();
       expect(result.workflowHealth?.worktreeSanity).toBeDefined();
+    });
+
+    it('should return hard-cut migration guidance for legacy-only config', async () => {
+      setupMinimalProject(testDir);
+      rmSync(join(testDir, WORKSPACE_CONFIG_FILE_NAME), { force: true });
+      writeFileSync(join(testDir, LEGACY_CONFIG_FILE_NAME), 'lanes: []\n', 'utf-8');
+
+      const result = await runDoctor(testDir);
+
+      expect(result.checks.lumenflowConfig.passed).toBe(false);
+      expect(result.checks.lumenflowConfig.message).toContain(LEGACY_CONFIG_FILE_NAME);
+      expect(result.checks.lumenflowConfig.details).toContain('workspace-init');
+      expect(result.checks.lumenflowConfig.details).toContain(WORKSPACE_CONFIG_FILE_NAME);
+      expect(result.exitCode).toBe(2);
     });
   });
 });
@@ -330,7 +347,11 @@ describe('doctor auto-run after init (WU-1386)', () => {
     execFileSync('git', ['commit', '-m', 'initial'], { cwd: testDir, stdio: 'pipe' });
 
     // Modify managed file to create warning
-    writeFileSync(join(testDir, '.lumenflow.config.yaml'), 'lanes: []\nmodified: true\n', 'utf-8');
+    writeFileSync(
+      join(testDir, WORKSPACE_CONFIG_FILE_NAME),
+      'software_delivery:\n  modified: true\n',
+      'utf-8',
+    );
 
     const result = await runDoctorForInit(testDir);
 
@@ -345,6 +366,19 @@ describe('doctor auto-run after init (WU-1386)', () => {
     const result = await runDoctorForInit(testDir);
 
     // Non-blocking mode should always indicate success
+    expect(result.blocked).toBe(false);
+  });
+
+  it('should report legacy-only config as error with migration guidance', async () => {
+    setupMinimalProject(testDir);
+    rmSync(join(testDir, WORKSPACE_CONFIG_FILE_NAME), { force: true });
+    writeFileSync(join(testDir, LEGACY_CONFIG_FILE_NAME), 'lanes: []\n', 'utf-8');
+
+    const result = await runDoctorForInit(testDir);
+
+    expect(result.errors).toBeGreaterThan(0);
+    expect(result.output).toContain(LEGACY_CONFIG_FILE_NAME);
+    expect(result.output).toContain('workspace-init');
     expect(result.blocked).toBe(false);
   });
 });
@@ -482,8 +516,8 @@ describe('WU-1387 Edge Cases - runDoctorForInit Accuracy', () => {
 
       // Modify managed file to create workflow warning
       writeFileSync(
-        join(testDir, '.lumenflow.config.yaml'),
-        'lanes: []\nmodified: true\n',
+        join(testDir, WORKSPACE_CONFIG_FILE_NAME),
+        'software_delivery:\n  modified: true\n',
         'utf-8',
       );
 
@@ -528,8 +562,8 @@ describe('WU-1387 Edge Cases - Managed File Detection', () => {
 
       // Modify managed file at repo root
       writeFileSync(
-        join(testDir, '.lumenflow.config.yaml'),
-        'lanes: []\nmodified: true\n',
+        join(testDir, WORKSPACE_CONFIG_FILE_NAME),
+        'software_delivery:\n  modified: true\n',
         'utf-8',
       );
 
@@ -538,7 +572,7 @@ describe('WU-1387 Edge Cases - Managed File Detection', () => {
 
       // Should still detect the modified managed file at repo root
       expect(result.workflowHealth?.managedFilesDirty.passed).toBe(false);
-      expect(result.workflowHealth?.managedFilesDirty.files).toContain('.lumenflow.config.yaml');
+      expect(result.workflowHealth?.managedFilesDirty.files).toContain(WORKSPACE_CONFIG_FILE_NAME);
     });
 
     it('should use git repo root for all path comparisons', async () => {

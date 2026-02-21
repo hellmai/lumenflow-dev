@@ -25,10 +25,10 @@ import {
 import { normalizeConfigKeys } from './normalize-config-keys.js';
 
 /** Canonical workspace config file name (workspace-first architecture) */
-const WORKSPACE_CONFIG_FILE_NAME = 'workspace.yaml';
+export const WORKSPACE_CONFIG_FILE_NAME = 'workspace.yaml';
 
-/** Legacy config file name retained for transition fallback */
-const LEGACY_CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+/** Legacy config file name retained for compatibility workflows */
+export const LEGACY_CONFIG_FILE_NAME = '.lumenflow.config.yaml';
 
 /** Git sentinel directory used for project-root discovery fallback */
 const GIT_DIRECTORY_NAME = '.git';
@@ -39,6 +39,62 @@ const UTF8_ENCODING = 'utf8';
 /** Warning prefix for config-loading diagnostics */
 const WARNING_PREFIX = '[lumenflow-config]';
 
+/** Actionable command to scaffold canonical workspace config */
+const WORKSPACE_INIT_COMMAND = 'pnpm workspace-init --yes';
+
+/** Canonical workspace section that stores software-delivery config */
+const WORKSPACE_CONFIG_SECTION = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
+
+/**
+ * Presence of canonical and legacy config files in a project root.
+ */
+export interface ConfigFilePresence {
+  workspaceConfigExists: boolean;
+  legacyConfigExists: boolean;
+}
+
+/**
+ * Error raised when strict workspace mode detects a legacy-only project.
+ */
+export class LegacyConfigHardCutError extends Error {
+  readonly code = 'ERR_LEGACY_CONFIG_HARD_CUT';
+
+  constructor(message: string) {
+    super(message);
+    this.name = 'LegacyConfigHardCutError';
+  }
+}
+
+/**
+ * Detect whether workspace and/or legacy config files exist.
+ *
+ * @param projectRoot - Project root directory
+ * @returns File presence booleans for canonical + legacy config files
+ */
+export function getConfigFilePresence(projectRoot: string): ConfigFilePresence {
+  return {
+    workspaceConfigExists: fs.existsSync(path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME)),
+    legacyConfigExists: fs.existsSync(path.join(projectRoot, LEGACY_CONFIG_FILE_NAME)),
+  };
+}
+
+/**
+ * Build actionable guidance for legacy-only projects after hard cut.
+ *
+ * @param projectRoot - Project root directory
+ * @returns Human-readable migration guidance
+ */
+export function buildLegacyConfigHardCutGuidance(projectRoot: string): string {
+  const legacyPath = path.join(projectRoot, LEGACY_CONFIG_FILE_NAME);
+  const workspacePath = path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME);
+  return (
+    `${WARNING_PREFIX} Legacy-only config detected at ${legacyPath}. ` +
+    `Runtime hard cut requires ${WORKSPACE_CONFIG_FILE_NAME}. ` +
+    `Run \`${WORKSPACE_INIT_COMMAND}\`, then migrate your legacy settings into ` +
+    `${workspacePath} under \`${WORKSPACE_CONFIG_SECTION}\`.`
+  );
+}
+
 /**
  * Check whether a legacy config file exists in the provided project root.
  *
@@ -46,7 +102,7 @@ const WARNING_PREFIX = '[lumenflow-config]';
  * @returns True when .lumenflow.config.yaml exists
  */
 function hasLegacyConfig(projectRoot: string): boolean {
-  return fs.existsSync(path.join(projectRoot, LEGACY_CONFIG_FILE_NAME));
+  return getConfigFilePresence(projectRoot).legacyConfigExists;
 }
 
 /** Cached config instance */
@@ -196,15 +252,17 @@ function loadLegacyConfigFile(projectRoot: string): Partial<LumenFlowConfig> | n
  * @param options - Options for loading config
  * @param options.projectRoot - Override project root detection
  * @param options.reload - Force reload from disk (bypass cache)
+ * @param options.strictWorkspace - Enforce workspace.yaml-only mode (hard cut)
  * @returns LumenFlow configuration
  */
 export function getConfig(
   options: {
     projectRoot?: string;
     reload?: boolean;
+    strictWorkspace?: boolean;
   } = {},
 ): LumenFlowConfig {
-  const { projectRoot: overrideRoot, reload = false } = options;
+  const { projectRoot: overrideRoot, reload = false, strictWorkspace = false } = options;
 
   // Use cached config if available and not reloading
   if (cachedConfig && !reload && !overrideRoot) {
@@ -213,10 +271,24 @@ export function getConfig(
 
   // Find or use provided project root
   const projectRoot = overrideRoot || findProjectRoot();
+  const { workspaceConfigExists, legacyConfigExists } = getConfigFilePresence(projectRoot);
+
+  if (strictWorkspace && !workspaceConfigExists && legacyConfigExists) {
+    throw new LegacyConfigHardCutError(buildLegacyConfigHardCutGuidance(projectRoot));
+  }
 
   // Canonical workspace-first load path (INIT-033 hard-cut migration)
   const workspaceConfig = loadWorkspaceSoftwareDeliveryConfig(projectRoot);
-  const legacyConfig = workspaceConfig ? null : loadLegacyConfigFile(projectRoot);
+
+  if (strictWorkspace && workspaceConfigExists && !workspaceConfig) {
+    throw new Error(
+      `${WARNING_PREFIX} ${WORKSPACE_CONFIG_FILE_NAME} exists but is invalid. ` +
+        `Ensure \`${WORKSPACE_CONFIG_SECTION}\` contains valid configuration values.`,
+    );
+  }
+
+  const legacyConfig =
+    workspaceConfig || strictWorkspace ? null : loadLegacyConfigFile(projectRoot);
 
   // Parse with defaults
   const config = parseConfig(workspaceConfig ?? legacyConfig ?? {});
@@ -274,7 +346,9 @@ export function resolvePath(relativePath: string, projectRoot?: string): string 
  * @param options.projectRoot - Override project root
  * @returns Object with absolute paths
  */
-export function getResolvedPaths(options: { projectRoot?: string } = {}): {
+export function getResolvedPaths(
+  options: { projectRoot?: string; strictWorkspace?: boolean } = {},
+): {
   wuDir: string;
   initiativesDir: string;
   backlogPath: string;
@@ -292,7 +366,10 @@ export function getResolvedPaths(options: { projectRoot?: string } = {}): {
   safeGitPath: string;
 } {
   const projectRoot = options.projectRoot || getProjectRoot();
-  const config = getConfig({ projectRoot });
+  const config = getConfig({
+    projectRoot,
+    strictWorkspace: options.strictWorkspace,
+  });
 
   return {
     wuDir: path.join(projectRoot, config.directories.wuDir),

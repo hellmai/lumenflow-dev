@@ -45,7 +45,13 @@ import {
 } from '@lumenflow/core/state-doctor-core';
 import { createWUParser } from '@lumenflow/core/arg-parser';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
-import { getConfig, getResolvedPaths } from '@lumenflow/core/config';
+import {
+  getConfig,
+  getResolvedPaths,
+  getConfigFilePresence,
+  buildLegacyConfigHardCutGuidance,
+  WORKSPACE_CONFIG_FILE_NAME,
+} from '@lumenflow/core/config';
 import { existsSync } from 'node:fs';
 import { createStamp } from '@lumenflow/core/stamp-utils';
 import { createStateDoctorFixDeps } from './state-doctor-fix.js';
@@ -56,6 +62,7 @@ import { resolveStateDoctorStampIds } from './state-doctor-stamps.js';
  * Log prefix for state:doctor output
  */
 const LOG_PREFIX = '[state:doctor]';
+const WORKSPACE_INIT_COMMAND = 'pnpm workspace-init --yes';
 
 // WU-1539/WU-1548: Use centralized LUMENFLOW_PATHS.MEMORY_SIGNALS and LUMENFLOW_PATHS.WU_EVENTS
 
@@ -155,7 +162,7 @@ function parseArguments(): ParsedArgs {
  * Create dependencies for state doctor from filesystem
  */
 async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
-  const config = getConfig({ projectRoot: baseDir });
+  const config = getConfig({ projectRoot: baseDir, strictWorkspace: true });
 
   return {
     /**
@@ -344,6 +351,27 @@ async function createDeps(baseDir: string): Promise<StateDoctorDeps> {
 }
 
 /**
+ * Enforce canonical workspace config before running state-doctor checks.
+ *
+ * @param baseDir - Target repository directory
+ * @throws Error when workspace.yaml is missing or legacy-only config is detected
+ */
+function assertCanonicalWorkspace(baseDir: string): void {
+  const { workspaceConfigExists, legacyConfigExists } = getConfigFilePresence(baseDir);
+  if (workspaceConfigExists) {
+    return;
+  }
+
+  if (legacyConfigExists) {
+    throw new Error(buildLegacyConfigHardCutGuidance(baseDir));
+  }
+
+  throw new Error(
+    `${LOG_PREFIX} Missing ${WORKSPACE_CONFIG_FILE_NAME}. Run \`${WORKSPACE_INIT_COMMAND}\`.`,
+  );
+}
+
+/**
  * Get emoji for issue severity
  */
 function getSeverityEmoji(severity: string): string {
@@ -498,7 +526,7 @@ function buildAuditOutput(result: StateDiagnosis | null): Record<string, unknown
 function warnMissingPaths(baseDir: string, quiet: boolean): void {
   if (quiet) return;
 
-  const paths = getResolvedPaths({ projectRoot: baseDir });
+  const paths = getResolvedPaths({ projectRoot: baseDir, strictWorkspace: true });
   const missing: string[] = [];
 
   if (!existsSync(paths.wuDir)) {
@@ -516,7 +544,9 @@ function warnMissingPaths(baseDir: string, quiet: boolean): void {
     for (const p of missing) {
       console.warn(`  - ${p}`);
     }
-    console.warn('  Tip: Run `pnpm setup` or check .lumenflow.config.yaml');
+    console.warn(
+      `  Tip: Run \`${WORKSPACE_INIT_COMMAND}\` and verify ${WORKSPACE_CONFIG_FILE_NAME}`,
+    );
   }
 }
 
@@ -529,13 +559,16 @@ async function main(): Promise<void> {
   const startedAt = new Date().toISOString();
   const startTime = Date.now();
 
-  // WU-1301: Warn about missing configured paths
-  warnMissingPaths(baseDir, args.quiet ?? false);
-
   let result: StateDiagnosis | null = null;
   let error: string | null = null;
 
   try {
+    // Hard-cut enforcement: do not run against legacy-only configuration.
+    assertCanonicalWorkspace(baseDir);
+
+    // WU-1301: Warn about missing configured paths
+    warnMissingPaths(baseDir, args.quiet ?? false);
+
     // Create base deps for read operations
     const baseDeps = await createDeps(baseDir);
 

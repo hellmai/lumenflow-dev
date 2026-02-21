@@ -17,6 +17,10 @@ import {
   getResolvedPaths,
   detectOrphanWorktrees,
   detectMissingTrackedWorktrees,
+  getConfigFilePresence,
+  buildLegacyConfigHardCutGuidance,
+  WORKSPACE_CONFIG_FILE_NAME,
+  LEGACY_CONFIG_FILE_NAME,
 } from '@lumenflow/core';
 import { loadLaneDefinitions, detectLaneOverlaps } from './lane-health.js';
 import { runCLI } from './cli-entry-point.js';
@@ -143,7 +147,8 @@ export interface DoctorForInitResult {
  * WU-1386: Managed files that should not have uncommitted changes
  */
 const MANAGED_FILE_PATTERNS = [
-  '.lumenflow.config.yaml',
+  WORKSPACE_CONFIG_FILE_NAME,
+  LEGACY_CONFIG_FILE_NAME,
   '.lumenflow.lane-inference.yaml',
   'AGENTS.md',
   'CLAUDE.md',
@@ -232,7 +237,7 @@ function checkSafeGit(projectDir: string): CheckResult {
   // WU-1654: Read safe-git path from config instead of hardcoding
   let safeGitPath: string;
   try {
-    const resolved = getResolvedPaths({ projectRoot: projectDir });
+    const resolved = getResolvedPaths({ projectRoot: projectDir, strictWorkspace: true });
     safeGitPath = resolved.safeGitPath;
   } catch {
     // Graceful fallback if config can't be loaded
@@ -275,22 +280,30 @@ function checkAgentsMd(projectDir: string): CheckResult {
 }
 
 /**
- * Check if .lumenflow.config.yaml exists
+ * Check whether canonical workspace config exists and legacy-only mode is avoided.
  */
 function checkLumenflowConfig(projectDir: string): CheckResult {
-  const configPath = path.join(projectDir, '.lumenflow.config.yaml');
+  const { workspaceConfigExists, legacyConfigExists } = getConfigFilePresence(projectDir);
 
-  if (!fs.existsSync(configPath)) {
+  if (!workspaceConfigExists && legacyConfigExists) {
     return {
       passed: false,
-      message: 'LumenFlow config missing',
-      details: 'Run: lumenflow init to create configuration',
+      message: `Legacy config detected (${LEGACY_CONFIG_FILE_NAME})`,
+      details: buildLegacyConfigHardCutGuidance(projectDir),
+    };
+  }
+
+  if (!workspaceConfigExists) {
+    return {
+      passed: false,
+      message: `${WORKSPACE_CONFIG_FILE_NAME} missing`,
+      details: 'Run: pnpm workspace-init --yes',
     };
   }
 
   return {
     passed: true,
-    message: 'LumenFlow config present (.lumenflow.config.yaml)',
+    message: `Workspace config present (${WORKSPACE_CONFIG_FILE_NAME})`,
   };
 }
 
@@ -741,7 +754,7 @@ export async function runDoctor(
 
   // Determine overall status
   // Note: laneHealth is advisory (not included in critical checks)
-  const criticalChecks = [checks.husky, checks.safeGit, checks.agentsMd];
+  const criticalChecks = [checks.husky, checks.safeGit, checks.agentsMd, checks.lumenflowConfig];
   const allCriticalPassed = criticalChecks.every((check) => check.passed);
 
   // WU-1386: Calculate exit code
@@ -783,7 +796,7 @@ export async function runDoctorForInit(projectDir: string): Promise<DoctorForIni
   let errors = 0;
 
   // Critical checks that count as errors (if they fail, safety is compromised)
-  const criticalCheckKeys = ['husky', 'safeGit', 'agentsMd'] as const;
+  const criticalCheckKeys = ['husky', 'safeGit', 'agentsMd', 'lumenflowConfig'] as const;
 
   for (const [key, check] of Object.entries(result.checks)) {
     if (!check.passed) {
@@ -824,6 +837,12 @@ export async function runDoctorForInit(projectDir: string): Promise<DoctorForIni
     }
     if (!result.checks.agentsMd.passed) {
       lines.push('  Error: AGENTS.md not found');
+    }
+    if (!result.checks.lumenflowConfig.passed) {
+      lines.push(`  Error: ${result.checks.lumenflowConfig.message}`);
+      if (result.checks.lumenflowConfig.details) {
+        lines.push(`    ${result.checks.lumenflowConfig.details}`);
+      }
     }
 
     // WU-1387: Show lane health issues
@@ -974,7 +993,7 @@ export function formatDoctorOutput(result: DoctorResult): string {
     lines.push('');
     lines.push('To fix missing components:');
     lines.push('  pnpm install && pnpm prepare  # Install Husky hooks');
-    lines.push('  lumenflow init                 # Create missing config files');
+    lines.push('  pnpm workspace-init --yes      # Create canonical workspace.yaml');
   }
 
   lines.push('');
