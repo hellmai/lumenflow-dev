@@ -1,7 +1,7 @@
 {
   "name": "lumenflow",
   "version": "3.1.2",
-  "description": "Give your AI agent a workflow it can't break. CLI wrapper for @lumenflow/cli.",
+  "description": "Give your AI agent a workflow it can't break. Full command router wrapper for @lumenflow/cli.",
   "keywords": [
     "lumenflow",
     "workflow",
