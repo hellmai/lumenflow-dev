@@ -9,7 +9,6 @@ code_paths:
   - packages/@lumenflow/cli/src/init.ts
   - packages/@lumenflow/cli/src/onboard.ts
   - packages/@lumenflow/cli/src/workspace-init.ts
-  - packages/@lumenflow/cli/src/commands.ts
   - packages/@lumenflow/cli/src/public-manifest.ts
 tests:
   manual:
@@ -27,10 +26,17 @@ blocked_by:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-21T22:16:35.740Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1985
+session_id: 02adb518-626a-4b6f-9b46-c2173835f55c
 exposure: api
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T22:16:35.745Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -41,11 +47,3 @@ acceptance:
   - Legacy split onboarding commands are removed or explicitly rerouted to bootstrap-all
   - CLI help and command surface no longer present split onboarding as a primary path
   - Regression tests verify legacy command invocations emit canonical bootstrap guidance
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1985
-claimed_at: 2026-02-21T22:16:35.740Z
-baseline_main_sha: 6087d9faf053685cbf3ced1cf51b189e4a5b9160
-session_id: 02adb518-626a-4b6f-9b46-c2173835f55c
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-21T22:16:35.745Z
