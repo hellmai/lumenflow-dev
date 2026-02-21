@@ -588,6 +588,24 @@ describe('docs:generate', () => {
       }
     });
 
+    it(
+      'escapes angle bracket placeholders in option descriptions (e.g. sha256:<hex>)',
+      { timeout: 60000 },
+      () => {
+        execSync(DOCS_GENERATE_CMD, {
+          cwd: ROOT,
+          encoding: 'utf-8',
+          timeout: 30000,
+        });
+
+        const cliPath = join(ROOT, CLI_MDX_PATH);
+        const content = readFileSync(cliPath, 'utf-8');
+
+        expect(content).toContain('sha256:&lt;hex&gt;');
+        expect(content).not.toContain('sha256:<hex>');
+      },
+    );
+
     it('should import WU_OPTIONS directly, not parse source with regex', async () => {
       // The generator should import WU_OPTIONS directly
       // We verify this works by checking the import succeeds

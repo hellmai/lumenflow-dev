@@ -19,6 +19,7 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
 import * as ts from 'typescript';
+import escapeHtml from 'escape-html';
 // Note: Using Zod 4's native .toJSONSchema() instead of zod-to-json-schema library
 // which doesn't support Zod 4
 
@@ -656,6 +657,10 @@ function extractConfigSchema(): ConfigSection[] {
 // ============================================================================
 
 function generateCliMdx(commands: CommandMetadata[]): string {
+  function escapeMdxTableCell(value: string): string {
+    return escapeHtml(value).replace(/\|/g, '\\|');
+  }
+
   const lines: string[] = [
     '---',
     'title: CLI Commands',
@@ -719,9 +724,9 @@ function generateCliMdx(commands: CommandMetadata[]): string {
 
         for (const opt of cmd.options) {
           const isRequired = cmd.required.includes(opt.name) ? 'Yes' : 'No';
-          // Escape angle brackets for MDX
-          const flags = opt.flags.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          lines.push(`| \`${flags}\` | ${opt.description} | ${isRequired} |`);
+          const flags = escapeMdxTableCell(opt.flags);
+          const description = escapeMdxTableCell(opt.description);
+          lines.push(`| \`${flags}\` | ${description} | ${isRequired} |`);
         }
         lines.push('');
       }
