@@ -535,6 +535,36 @@ describe('arg-parser', () => {
       }
     });
 
+    it('should parse custom --version option without Commander flag conflicts', () => {
+      process.argv = [...TEST_ARGV_PREFIX, '--version', '1.2.3'];
+
+      const opts = createWUParser({
+        name: TEST_PARSER_NAME,
+        description: TEST_PARSER_CONFIG_DESC,
+        options: [
+          {
+            name: 'version',
+            flags: '--version <version>',
+            description: 'Custom version input',
+          },
+        ],
+      });
+
+      expect(opts.version).toBe('1.2.3');
+    });
+
+    it('should preserve built-in --version behavior when no custom version option is defined', () => {
+      process.argv = [...TEST_ARGV_PREFIX, '--version'];
+
+      expect(() =>
+        createWUParser({
+          name: TEST_PARSER_NAME,
+          description: TEST_PARSER_CONFIG_DESC,
+          options: [WU_OPTIONS.id],
+        }),
+      ).toThrow(ProcessExitError);
+    });
+
     it('should return empty array for unused repeatable options', () => {
       process.argv = ['node', 'test.js'];
 

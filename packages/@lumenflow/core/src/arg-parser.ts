@@ -607,6 +607,15 @@ function processNegatedOptions(opts: Record<string, unknown>): Record<string, un
   return { ...result, ...keysToAdd };
 }
 
+function hasCustomVersionOption(options: WUOption[]): boolean {
+  return options.some((option) => {
+    const flagTokens = option.flags
+      .split(',')
+      .map((token) => token.trim().split(/\s+/)[0]);
+    return flagTokens.includes('--version');
+  });
+}
+
 /**
  * Create a commander-based CLI parser for a WU script.
  *
@@ -648,13 +657,17 @@ export function createWUParser(config: {
 
   // Filter out pnpm's `--` separator from argv
   const filteredArgv = process.argv.filter((arg) => arg !== '--');
+  const customVersionOptionEnabled = hasCustomVersionOption(options);
 
   const program = new Command()
     .name(name)
     .description(description)
-    .version(version)
     .allowExcessArguments(allowPositionalId) // Allow positional args if needed
     .exitOverride(); // Throw instead of process.exit for testability
+
+  if (!customVersionOptionEnabled) {
+    program.version(version);
+  }
 
   // Register options
   for (const opt of options) {

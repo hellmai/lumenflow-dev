@@ -14,6 +14,7 @@ const PATH_PARTS = {
   PACKAGES: 'packages',
   SCOPE: '@lumenflow',
   CLI: 'cli',
+  PACKAGE_JSON: 'package.json',
   DIST: 'dist',
   WORKTREES: 'worktrees',
 };
@@ -167,14 +168,80 @@ export function resolveMainRepoFromWorktree(cwd) {
   return normalized.slice(0, index);
 }
 
+function readCliBinMap(repoRoot) {
+  const cliPackageJsonPath = path.join(
+    repoRoot,
+    PATH_PARTS.PACKAGES,
+    PATH_PARTS.SCOPE,
+    PATH_PARTS.CLI,
+    PATH_PARTS.PACKAGE_JSON,
+  );
+
+  if (!existsSync(cliPackageJsonPath)) {
+    return null;
+  }
+
+  try {
+    const packageJson = JSON.parse(readFileSync(cliPackageJsonPath, 'utf8'));
+    if (!packageJson || typeof packageJson !== 'object') {
+      return null;
+    }
+    const binMap = packageJson.bin;
+    if (!binMap || typeof binMap !== 'object') {
+      return null;
+    }
+    return binMap;
+  } catch {
+    return null;
+  }
+}
+
+function resolveDistRelativePathFromBinEntry(binEntryPath) {
+  if (typeof binEntryPath !== 'string' || binEntryPath.length === 0) {
+    return null;
+  }
+
+  let normalized = binEntryPath.replace(/\\/g, '/');
+  if (normalized.startsWith('./')) {
+    normalized = normalized.slice(2);
+  }
+
+  const distPrefix = `${PATH_PARTS.DIST}/`;
+  if (!normalized.startsWith(distPrefix)) {
+    return null;
+  }
+
+  const relativePath = normalized.slice(distPrefix.length);
+  if (!relativePath.endsWith('.js')) {
+    return null;
+  }
+
+  const pathSegments = relativePath.split('/');
+  if (
+    pathSegments.length === 0 ||
+    pathSegments.some((segment) => segment.length === 0 || segment === '.' || segment === '..')
+  ) {
+    return null;
+  }
+
+  return path.join(...pathSegments);
+}
+
 export function resolveCliDistEntry(repoRoot, entry) {
+  const binMap = readCliBinMap(repoRoot);
+  const binDistRelativePath =
+    binMap && Object.prototype.hasOwnProperty.call(binMap, entry)
+      ? resolveDistRelativePathFromBinEntry(binMap[entry])
+      : null;
+  const distRelativePath = binDistRelativePath ?? `${entry}.js`;
+
   return path.join(
     repoRoot,
     PATH_PARTS.PACKAGES,
     PATH_PARTS.SCOPE,
     PATH_PARTS.CLI,
     PATH_PARTS.DIST,
-    `${entry}.js`,
+    distRelativePath,
   );
 }
 

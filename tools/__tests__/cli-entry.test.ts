@@ -50,6 +50,60 @@ describe('cli-entry.mjs fallback behavior (WU-1366)', () => {
     });
   });
 
+  describe('resolveCliDistEntry', () => {
+    it('should resolve dist path using CLI bin aliases when available', () => {
+      const tempRepo = mkdtempSync(path.join(tmpdir(), 'cli-entry-alias-'));
+      try {
+        const cliPackageDir = path.join(tempRepo, 'packages', '@lumenflow', 'cli');
+        mkdirSync(cliPackageDir, { recursive: true });
+        writeFileSync(
+          path.join(cliPackageDir, 'package.json'),
+          JSON.stringify(
+            {
+              bin: {
+                'lumenflow-onboard': './dist/onboard.js',
+              },
+            },
+            null,
+            2,
+          ),
+        );
+
+        const result = resolveCliDistEntry(tempRepo, 'lumenflow-onboard');
+        expect(result).toBe(path.join(tempRepo, 'packages', '@lumenflow', 'cli', 'dist', 'onboard.js'));
+      } finally {
+        rmSync(tempRepo, { recursive: true, force: true });
+      }
+    });
+
+    it('should resolve nested dist paths from CLI bin entries', () => {
+      const tempRepo = mkdtempSync(path.join(tmpdir(), 'cli-entry-bin-path-'));
+      try {
+        const cliPackageDir = path.join(tempRepo, 'packages', '@lumenflow', 'cli');
+        mkdirSync(cliPackageDir, { recursive: true });
+        writeFileSync(
+          path.join(cliPackageDir, 'package.json'),
+          JSON.stringify(
+            {
+              bin: {
+                'lumenflow-integrate': './dist/commands/integrate.js',
+              },
+            },
+            null,
+            2,
+          ),
+        );
+
+        const result = resolveCliDistEntry(tempRepo, 'lumenflow-integrate');
+        expect(result).toBe(
+          path.join(tempRepo, 'packages', '@lumenflow', 'cli', 'dist', 'commands', 'integrate.js'),
+        );
+      } finally {
+        rmSync(tempRepo, { recursive: true, force: true });
+      }
+    });
+  });
+
   describe('selectCliEntryPath', () => {
     it('should return primary path when it exists', () => {
       const exists = vi.fn().mockReturnValue(true);
