@@ -20,14 +20,12 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1986 — Update docs to prefer auto-generated WU IDs over explicit --id](wu/WU-1986.yaml) — Content: Framework Docs
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1960 — Fix release build:dist invariant drift](wu/WU-1960.yaml) — Framework: CLI Orchestration
-- [WU-1971 — Workspace v2 schema with software_delivery + control_plane](wu/WU-1971.yaml) — Framework: Core Validation
 - [WU-1972 — Core config provider rewrite to workspace.yaml canonical](wu/WU-1972.yaml) — Framework: Core Lifecycle
 - [WU-1973 — Repoint config:set and config:get to workspace.yaml](wu/WU-1973.yaml) — Framework: CLI Enforcement
 - [WU-1974 — Legacy runtime hard cut for .lumenflow.config.yaml](wu/WU-1974.yaml) — Framework: Core Lifecycle
@@ -46,7 +44,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1971 — Workspace v2 schema with software_delivery + control_plane](wu/WU-1971.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 

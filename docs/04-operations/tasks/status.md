@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1971 — Workspace v2 schema with software_delivery + control_plane](wu/WU-1971.yaml)
 
 ## Completed
 
