@@ -1,7 +1,7 @@
 id: WU-1984
 title: Docs + release readiness for workspace-first v4.0.0
 lane: 'Content: Site Comms'
-type: documentation
+type: chore
 status: in_progress
 priority: P0
 created: 2026-02-21
@@ -28,10 +28,17 @@ blocked_by:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-21T22:29:42.679Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1984
+session_id: e23d6687-c9af-4a5d-ad5e-b33df1a21f6b
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T22:29:42.687Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -41,11 +48,3 @@ acceptance:
   - Docs remove legacy split-onboarding guidance and emphasize bootstrap-all + workspace.yaml
   - CLI/reference docs include cloud connect and config:set/get workspace semantics
   - Release docs/changelog record major bump v4.0.0 and migration guidance
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-1984
-claimed_at: 2026-02-21T22:29:42.679Z
-baseline_main_sha: a31c965459758d2ef6983ce2fdf1e67d582d8ca5
-session_id: e23d6687-c9af-4a5d-ad5e-b33df1a21f6b
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-21T22:29:42.687Z
