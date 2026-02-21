@@ -1876,3 +1876,4 @@
 {"type":"claim","wuId":"WU-1961","timestamp":"2026-02-21T12:45:36.454Z","lane":"Framework: CLI WU Commands","title":"Fix onboard cli-entry alias and pack version flag collisions"}
 {"type":"complete","wuId":"WU-1961","timestamp":"2026-02-21T12:55:45.761Z"}
 {"type":"claim","wuId":"WU-1963","lane":"Framework: CLI WU Commands","title":"lumenflow init should scaffold package.json with CLI scripts","timestamp":"2026-02-21T14:03:18.717Z"}
+{"type":"claim","wuId":"WU-1962","lane":"Framework: CLI Orchestration","title":"Unblock release by restoring workspace-init manifest/docs parity","timestamp":"2026-02-21T14:04:18.522Z"}

@@ -6,6 +6,7 @@ _Last updated: 2026-02-21_
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 - [WU-1963 — lumenflow init should scaffold package.json with CLI scripts](wu/WU-1963.yaml)
+- [WU-1962 — Unblock release by restoring workspace-init manifest/docs parity](wu/WU-1962.yaml)
 
 ## Completed
 

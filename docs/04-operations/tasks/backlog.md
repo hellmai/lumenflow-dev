@@ -25,12 +25,12 @@ sections:
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1960 — Fix release build:dist invariant drift](wu/WU-1960.yaml) — Framework: CLI Orchestration
-- [WU-1962 — Unblock release by restoring workspace-init manifest/docs parity](wu/WU-1962.yaml) — Framework: CLI Orchestration
 
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1963 — lumenflow init should scaffold package.json with CLI scripts](wu/WU-1963.yaml) — Framework: CLI WU Commands
+- [WU-1962 — Unblock release by restoring workspace-init manifest/docs parity](wu/WU-1962.yaml) — Framework: CLI Orchestration
 
 ## ⛔ Blocked
 

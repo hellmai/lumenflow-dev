@@ -2,7 +2,7 @@ id: WU-1962
 title: Unblock release by restoring workspace-init manifest/docs parity
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-21
 code_paths:
@@ -32,8 +32,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: workspace-init exists in CLI bin entries but is missing from the public manifest, causing command-manifest parity test failures, stale generated docs, and pre-release check failures that currently block npm release.
+description: workspace-init exists in CLI bin entries but is missing from the public manifest,
+  causing command-manifest parity test failures, stale generated docs, and pre-release check
+  failures that currently block npm release.
 acceptance:
-  - PUBLIC_MANIFEST includes workspace-init with correct bin path/category/description and manifest alignment tests pass
+  - PUBLIC_MANIFEST includes workspace-init with correct bin path/category/description and manifest
+    alignment tests pass
   - Generated CLI docs include workspace:init and docs:validate passes without drift
   - pre-release:check passes end-to-end
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1962
+claimed_at: 2026-02-21T14:04:18.469Z
+baseline_main_sha: f08874b9a820bed2b572351da8a55a1f10b8cdee
+session_id: 9437017e-172c-42d4-a211-64346d1984bc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T14:04:18.477Z
