@@ -9,10 +9,10 @@
     "wu",
     "work-unit"
   ],
-  "homepage": "https://github.com/hellmai/lumenflow",
+  "homepage": "https://github.com/hellmai/lumenflow-dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hellmai/lumenflow.git",
+    "url": "https://github.com/hellmai/lumenflow-dev.git",
     "directory": "packages/@lumenflow/cli"
   },
   "license": "AGPL-3.0-only",

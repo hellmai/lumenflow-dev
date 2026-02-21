@@ -19,4 +19,4 @@ npm install -D @lumenflow/cli
 ## Documentation
 
 - [lumenflow.dev](https://lumenflow.dev) — Full documentation
-- [GitHub](https://github.com/hellmai/lumenflow) — Source code
+- [GitHub](https://github.com/hellmai/lumenflow-dev) — Source code

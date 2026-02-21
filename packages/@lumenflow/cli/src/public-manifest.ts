@@ -695,9 +695,23 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
   },
   {
     name: 'onboard',
-    binName: 'lumenflow-onboard',
+    binName: 'onboard',
     binPath: './dist/onboard.js',
     description: 'Interactive setup wizard for LumenFlow workspace',
+    category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+  },
+  {
+    name: 'lumenflow-onboard',
+    binName: 'lumenflow-onboard',
+    binPath: './dist/onboard.js',
+    description: 'Interactive setup wizard for LumenFlow workspace (alias)',
+    category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+  },
+  {
+    name: 'workspace:init',
+    binName: 'workspace-init',
+    binPath: './dist/workspace-init.js',
+    description: 'Initialize workspace.yaml from interactive prompts',
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
   },
 

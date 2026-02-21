@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/@lumenflow/cli.svg)](https://www.npmjs.com/package/@lumenflow/cli)
 [![npm downloads](https://img.shields.io/npm/dm/@lumenflow/cli.svg)](https://www.npmjs.com/package/@lumenflow/cli)
-[![license](https://img.shields.io/npm/l/@lumenflow/cli.svg)](https://github.com/hellmai/lumenflow/blob/main/LICENSE)
+[![license](https://img.shields.io/npm/l/@lumenflow/cli.svg)](https://github.com/hellmai/lumenflow-dev/blob/main/LICENSE)
 [![node](https://img.shields.io/node/v/@lumenflow/cli.svg)](https://nodejs.org)
 
 > Command-line interface for LumenFlow workflow framework
@@ -152,37 +152,39 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### System & Setup
 
-| Command                    | Description                                             |
-| -------------------------- | ------------------------------------------------------- |
-| `backlog-prune`            | Clean stale backlog entries                             |
-| `config-get`               | Read and display a value from .lumenflow.config.yaml    |
-| `config-set`               | Safely update .lumenflow.config.yaml via micro-worktree |
-| `init-plan`                | Link plan to initiative (alias)                         |
-| `lumenflow`                | Initialize LumenFlow in a project                       |
-| `lumenflow-commands`       | List all available CLI commands                         |
-| `lumenflow-docs-sync`      | Sync agent docs (for upgrades) (alias)                  |
-| `lumenflow-doctor`         | Diagnose LumenFlow configuration                        |
-| `lumenflow-init`           | Initialize LumenFlow in a project (alias)               |
-| `lumenflow-integrate`      | Generate enforcement hooks for client                   |
-| `lumenflow-onboard`        | Interactive setup wizard for LumenFlow workspace        |
-| `lumenflow-release`        | Run release workflow                                    |
-| `lumenflow-sync-templates` | Sync templates to project                               |
-| `lumenflow-upgrade`        | Upgrade LumenFlow packages                              |
-| `pack-author`              | Author a secure domain pack from templates              |
-| `pack-hash`                | Compute integrity hash for a domain pack                |
-| `pack-install`             | Install a domain pack into workspace                    |
-| `pack-publish`             | Publish a domain pack to a registry                     |
-| `pack-scaffold`            | Scaffold a new domain pack                              |
-| `pack-search`              | Search for domain packs in a registry                   |
-| `pack-validate`            | Validate a domain pack for integrity                    |
-| `plan-create`              | Create a new plan                                       |
-| `plan-edit`                | Edit plan content                                       |
-| `plan-link`                | Link plan to WU or initiative                           |
-| `plan-promote`             | Promote plan to WU                                      |
-| `state-bootstrap`          | Bootstrap state store                                   |
-| `state-cleanup`            | Clean up stale state data                               |
-| `state-doctor`             | Diagnose state store issues                             |
-| `sync-templates`           | Sync templates to project (alias)                       |
+| Command                    | Description                                              |
+| -------------------------- | -------------------------------------------------------- |
+| `backlog-prune`            | Clean stale backlog entries                              |
+| `config-get`               | Read and display a value from .lumenflow.config.yaml     |
+| `config-set`               | Safely update .lumenflow.config.yaml via micro-worktree  |
+| `init-plan`                | Link plan to initiative (alias)                          |
+| `lumenflow`                | Initialize LumenFlow in a project                        |
+| `lumenflow-commands`       | List all available CLI commands                          |
+| `lumenflow-docs-sync`      | Sync agent docs (for upgrades) (alias)                   |
+| `lumenflow-doctor`         | Diagnose LumenFlow configuration                         |
+| `lumenflow-init`           | Initialize LumenFlow in a project (alias)                |
+| `lumenflow-integrate`      | Generate enforcement hooks for client                    |
+| `lumenflow-onboard`        | Interactive setup wizard for LumenFlow workspace (alias) |
+| `lumenflow-release`        | Run release workflow                                     |
+| `lumenflow-sync-templates` | Sync templates to project                                |
+| `lumenflow-upgrade`        | Upgrade LumenFlow packages                               |
+| `onboard`                  | Interactive setup wizard for LumenFlow workspace         |
+| `pack-author`              | Author a secure domain pack from templates               |
+| `pack-hash`                | Compute integrity hash for a domain pack                 |
+| `pack-install`             | Install a domain pack into workspace                     |
+| `pack-publish`             | Publish a domain pack to a registry                      |
+| `pack-scaffold`            | Scaffold a new domain pack                               |
+| `pack-search`              | Search for domain packs in a registry                    |
+| `pack-validate`            | Validate a domain pack for integrity                     |
+| `plan-create`              | Create a new plan                                        |
+| `plan-edit`                | Edit plan content                                        |
+| `plan-link`                | Link plan to WU or initiative                            |
+| `plan-promote`             | Promote plan to WU                                       |
+| `state-bootstrap`          | Bootstrap state store                                    |
+| `state-cleanup`            | Clean up stale state data                                |
+| `state-doctor`             | Diagnose state store issues                              |
+| `sync-templates`           | Sync templates to project (alias)                        |
+| `workspace-init`           | Initialize workspace.yaml from interactive prompts       |
 
 ### File & Git Operations
 

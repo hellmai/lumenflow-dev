@@ -15,4 +15,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 SPDX-License-Identifier: AGPL-3.0-only
 
 For the full license text, see the LICENSE file in the root of the
-LumenFlow repository: https://github.com/hellmai/lumenflow
+LumenFlow repository: https://github.com/hellmai/lumenflow-dev

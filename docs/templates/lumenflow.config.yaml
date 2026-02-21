@@ -7,7 +7,7 @@ project: '{PROJECT_NAME}' # e.g., "ExampleApp", "MyProduct"
 
 # Framework source and versioning
 frameworks:
-  source: 'git@github.com:hellmai/os.git' # Framework repository
+  source: 'git@github.com:hellmai/lumenflow-dev.git' # Framework repository
   version: 'v1.0' # Version tag (e.g., "v1.0", "v1.1", "main")
   local_path: 'docs/04-operations/_frameworks' # Where frameworks are copied
 
