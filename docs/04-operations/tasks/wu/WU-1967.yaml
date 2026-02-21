@@ -2,7 +2,7 @@ id: WU-1967
 title: Replace stale lane table in CLAUDE.md with pointer to config yaml
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-21
 code_paths:
@@ -42,3 +42,6 @@ session_id: 2d41d163-fa99-4583-bd88-935040110f6a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-21T16:21:08.078Z
+locked: true
+completed_at: 2026-02-21T16:25:04.493Z
+completed: 2026-02-21
