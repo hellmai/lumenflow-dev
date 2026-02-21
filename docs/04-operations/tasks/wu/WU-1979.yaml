@@ -2,7 +2,7 @@ id: WU-1979
 title: Finalize control-plane contract in workspace schema + SDK
 lane: 'Framework: Core Validation'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -52,3 +52,6 @@ acceptance:
     policy_mode, and auth contract
   - control-plane-sdk parser validates the same canonical contract
   - Contract tests cover invalid policy mode and missing auth fields
+locked: true
+completed_at: 2026-02-21T21:12:48.287Z
+completed: 2026-02-21
