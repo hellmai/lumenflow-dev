@@ -2,7 +2,7 @@ id: WU-1973
 title: Repoint config:set and config:get to workspace.yaml
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -45,3 +45,6 @@ acceptance:
   - config:set modifies workspace.yaml keys with safe micro-worktree flow
   - config:get reads workspace.yaml keys and returns normalized values
   - Existing config-set tests are updated for workspace.yaml contract
+locked: true
+completed_at: 2026-02-21T19:31:15.128Z
+completed: 2026-02-21
