@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1980 — Add lumenflow cloud connect command](wu/WU-1980.yaml)
 
 ## Completed
 

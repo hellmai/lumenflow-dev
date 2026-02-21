@@ -2,7 +2,7 @@ id: WU-1980
 title: Add lumenflow cloud connect command
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -35,8 +35,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Implement cloud connect CLI flow to validate endpoint/auth, write control_plane config into workspace.yaml, and verify handshake readiness.
+description: Implement cloud connect CLI flow to validate endpoint/auth, write control_plane config
+  into workspace.yaml, and verify handshake readiness.
 acceptance:
   - lumenflow cloud connect writes validated control_plane section to workspace.yaml
   - Command fails with actionable messages for invalid endpoint or missing token env
   - Command supports non-interactive flags for CI/agent automation
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1980
+claimed_at: 2026-02-21T21:13:40.862Z
+baseline_main_sha: 3ebbcb4455747a6f474edd0c998522dbc7cc7c30
+session_id: b25bd9e9-7490-4ed3-949c-88f136f301a9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T21:13:40.867Z

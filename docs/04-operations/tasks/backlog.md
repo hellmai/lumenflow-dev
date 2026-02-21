@@ -26,7 +26,6 @@ sections:
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1960 — Fix release build:dist invariant drift](wu/WU-1960.yaml) — Framework: CLI Orchestration
-- [WU-1980 — Add lumenflow cloud connect command](wu/WU-1980.yaml) — Framework: CLI Enforcement
 - [WU-1981 — Wire runtime control-plane sync lifecycle](wu/WU-1981.yaml) — Framework: Core Lifecycle
 - [WU-1982 — Expose cloud connection diagnostics in web UI](wu/WU-1982.yaml) — Operations: Runtime
 - [WU-1983 — MCP parity for bootstrap and cloud operations](wu/WU-1983.yaml) — Framework: MCP
@@ -35,7 +34,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1980 — Add lumenflow cloud connect command](wu/WU-1980.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
