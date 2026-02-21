@@ -12,6 +12,7 @@ tests:
     - Run lumenflow init in an empty directory and verify pnpm wu:create works
   unit:
     - packages/@lumenflow/cli/src/commands/__tests__/init-package-json.test.ts
+    - packages/@lumenflow/cli/src/__tests__/init-package-json.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1963.done
@@ -19,10 +20,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-21T14:03:18.691Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1963
+session_id: 9437017e-172c-42d4-a211-64346d1984bc
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T14:03:18.697Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -37,11 +45,3 @@ acceptance:
   - lumenflow init in a directory with existing package.json adds scripts without overwriting
     existing content
   - After lumenflow init, pnpm wu:create and pnpm gates work without manual setup
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1963
-claimed_at: 2026-02-21T14:03:18.691Z
-baseline_main_sha: b916b0d8884b3b17456c9373a3af3071db1f297a
-session_id: 9437017e-172c-42d4-a211-64346d1984bc
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-21T14:03:18.697Z
