@@ -1890,4 +1890,5 @@
 {"type":"release","wuId":"WU-1701","timestamp":"2026-02-21T16:41:38.779Z","reason":"State reconciliation: claimed in_progress WU has missing worktree path"}
 {"type":"claim","wuId":"WU-1968","timestamp":"2026-02-21T16:50:47.335Z","lane":"Framework: CLI WU Commands","title":"Fix doctor duplicate output and misleading git version prerequisite warning"}
 {"type":"complete","wuId":"WU-1968","timestamp":"2026-02-21T17:03:02.635Z"}
-{"type":"claim","wuId":"WU-1969","lane":"Framework: CLI Enforcement","title":"Fix gitignore merge path missing runtime state exclusions","timestamp":"2026-02-21T17:07:46.845Z"}
+{"type":"claim","wuId":"WU-1969","timestamp":"2026-02-21T17:07:46.845Z","lane":"Framework: CLI Enforcement","title":"Fix gitignore merge path missing runtime state exclusions"}
+{"type":"complete","wuId":"WU-1969","timestamp":"2026-02-21T17:16:34.367Z"}
