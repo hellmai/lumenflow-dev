@@ -33,7 +33,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1981 — Wire runtime control-plane sync lifecycle](wu/WU-1981.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -948,6 +948,7 @@ sections:
 - [WU-1978 — Bootstrap-all default path for npx lumenflow](wu/WU-1978.yaml)
 - [WU-1979 — Finalize control-plane contract in workspace schema + SDK](wu/WU-1979.yaml)
 - [WU-1980 — Add lumenflow cloud connect command](wu/WU-1980.yaml)
+- [WU-1981 — Wire runtime control-plane sync lifecycle](wu/WU-1981.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

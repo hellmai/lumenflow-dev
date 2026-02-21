@@ -1916,4 +1916,5 @@
 {"type":"complete","wuId":"WU-1979","timestamp":"2026-02-21T21:12:53.125Z"}
 {"type":"claim","wuId":"WU-1980","timestamp":"2026-02-21T21:13:40.914Z","lane":"Framework: CLI Enforcement","title":"Add lumenflow cloud connect command"}
 {"type":"complete","wuId":"WU-1980","timestamp":"2026-02-21T21:38:21.187Z"}
-{"type":"claim","wuId":"WU-1981","lane":"Framework: Core Lifecycle","title":"Wire runtime control-plane sync lifecycle","timestamp":"2026-02-21T21:39:08.233Z"}
+{"type":"claim","wuId":"WU-1981","timestamp":"2026-02-21T21:39:08.233Z","lane":"Framework: Core Lifecycle","title":"Wire runtime control-plane sync lifecycle"}
+{"type":"complete","wuId":"WU-1981","timestamp":"2026-02-21T21:46:04.058Z"}

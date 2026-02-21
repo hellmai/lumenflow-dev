@@ -17,7 +17,7 @@ phases:
     status: in_progress
   - id: 3
     title: 'Phase 3: Cloud Connect'
-    status: in_progress
+    status: done
   - id: 4
     title: 'Phase 4: Surfaces + Release'
     status: pending
