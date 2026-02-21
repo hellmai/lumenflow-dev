@@ -20,28 +20,28 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-1985 — Retire split onboarding path and legacy bootstrap entrypoints](wu/WU-1985.yaml) — Framework: CLI Enforcement
-- [WU-1984 — Docs + release readiness for workspace-first v4.0.0](wu/WU-1984.yaml) — Content: Site Comms
-- [WU-1983 — MCP parity for bootstrap and cloud operations](wu/WU-1983.yaml) — Framework: MCP
-- [WU-1982 — Expose cloud connection diagnostics in web UI](wu/WU-1982.yaml) — Operations: Runtime
-- [WU-1981 — Wire runtime control-plane sync lifecycle](wu/WU-1981.yaml) — Framework: Core Lifecycle
-- [WU-1980 — Add lumenflow cloud connect command](wu/WU-1980.yaml) — Framework: CLI Enforcement
-- [WU-1979 — Finalize control-plane contract in workspace schema + SDK](wu/WU-1979.yaml) — Framework: Core Validation
-- [WU-1978 — Bootstrap-all default path for npx lumenflow](wu/WU-1978.yaml) — Framework: CLI Enforcement
-- [WU-1977 — Unify lumenflow npm wrapper with full CLI router](wu/WU-1977.yaml) — Framework: CLI Enforcement
-- [WU-1976 — Dogfood workspace migration in os repo](wu/WU-1976.yaml) — Content: Specs Governance
-- [WU-1975 — Add config:migrate-workspace command](wu/WU-1975.yaml) — Framework: CLI Enforcement
-- [WU-1974 — Legacy runtime hard cut for .lumenflow.config.yaml](wu/WU-1974.yaml) — Framework: Core Lifecycle
-- [WU-1973 — Repoint config:set and config:get to workspace.yaml](wu/WU-1973.yaml) — Framework: CLI Enforcement
-- [WU-1972 — Core config provider rewrite to workspace.yaml canonical](wu/WU-1972.yaml) — Framework: Core Lifecycle
-- [WU-1971 — Workspace v2 schema with software_delivery + control_plane](wu/WU-1971.yaml) — Framework: Core Validation
-- [WU-1970 — INIT-033 scaffold + plan linkage governance](wu/WU-1970.yaml) — Content: Specs Governance
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — Framework: CLI Enforcement
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1960 — Fix release build:dist invariant drift](wu/WU-1960.yaml) — Framework: CLI Orchestration
+- [WU-1970 — INIT-033 scaffold + plan linkage governance](wu/WU-1970.yaml) — Content: Specs Governance
+- [WU-1971 — Workspace v2 schema with software_delivery + control_plane](wu/WU-1971.yaml) — Framework: Core Validation
+- [WU-1972 — Core config provider rewrite to workspace.yaml canonical](wu/WU-1972.yaml) — Framework: Core Lifecycle
+- [WU-1973 — Repoint config:set and config:get to workspace.yaml](wu/WU-1973.yaml) — Framework: CLI Enforcement
+- [WU-1974 — Legacy runtime hard cut for .lumenflow.config.yaml](wu/WU-1974.yaml) — Framework: Core Lifecycle
+- [WU-1975 — Add config:migrate-workspace command](wu/WU-1975.yaml) — Framework: CLI Enforcement
+- [WU-1976 — Dogfood workspace migration in os repo](wu/WU-1976.yaml) — Content: Specs Governance
+- [WU-1977 — Unify lumenflow npm wrapper with full CLI router](wu/WU-1977.yaml) — Framework: CLI Enforcement
+- [WU-1978 — Bootstrap-all default path for npx lumenflow](wu/WU-1978.yaml) — Framework: CLI Enforcement
+- [WU-1979 — Finalize control-plane contract in workspace schema + SDK](wu/WU-1979.yaml) — Framework: Core Validation
+- [WU-1980 — Add lumenflow cloud connect command](wu/WU-1980.yaml) — Framework: CLI Enforcement
+- [WU-1981 — Wire runtime control-plane sync lifecycle](wu/WU-1981.yaml) — Framework: Core Lifecycle
+- [WU-1982 — Expose cloud connection diagnostics in web UI](wu/WU-1982.yaml) — Operations: Runtime
+- [WU-1983 — MCP parity for bootstrap and cloud operations](wu/WU-1983.yaml) — Framework: MCP
+- [WU-1984 — Docs + release readiness for workspace-first v4.0.0](wu/WU-1984.yaml) — Content: Site Comms
+- [WU-1985 — Retire split onboarding path and legacy bootstrap entrypoints](wu/WU-1985.yaml) — Framework: CLI Enforcement
 
 ## 🔧 In progress
 

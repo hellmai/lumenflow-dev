@@ -24,6 +24,7 @@ blocked_by:
   - WU-1976
   - WU-1982
   - WU-1983
+  - WU-1985
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
@@ -34,7 +35,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Update public and internal docs to workspace-first onboarding/cloud-connect flow and prepare major release assets for v4.0.0 publish.
+description: Update public and internal docs to workspace-first onboarding/cloud-connect flow and
+  prepare major release assets for v4.0.0 publish.
 acceptance:
   - Docs remove legacy split-onboarding guidance and emphasize bootstrap-all + workspace.yaml
   - CLI/reference docs include cloud connect and config:set/get workspace semantics
