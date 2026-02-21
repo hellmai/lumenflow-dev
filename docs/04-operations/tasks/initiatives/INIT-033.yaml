@@ -1,13 +1,26 @@
 id: INIT-033
 slug: workspace-first-bootstrap-cloud
 title: Workspace-first hard cut + bootstrap-all + cloud connect
-description: ''
+description: Hard cut to workspace.yaml as canonical config, default bootstrap-all CLI onboarding,
+  and first-class cloud connect with security-first defaults.
 status: draft
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-21
 target_date: 2026-04-30
-phases: []
+phases:
+  - id: 1
+    title: 'Phase 1: Workspace Unification'
+    status: pending
+  - id: 2
+    title: 'Phase 2: Bootstrap-All CLI'
+    status: pending
+  - id: 3
+    title: 'Phase 3: Cloud Connect'
+    status: pending
+  - id: 4
+    title: 'Phase 4: Surfaces + Release'
+    status: pending
 success_metrics:
   - Single-command bootstrap for new users
   - No runtime dependency on .lumenflow.config.yaml
