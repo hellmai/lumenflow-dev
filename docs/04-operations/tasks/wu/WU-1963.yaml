@@ -1,0 +1,33 @@
+id: WU-1963
+title: lumenflow init should scaffold package.json with CLI scripts
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-21
+code_paths:
+  - packages/@lumenflow/cli/src/commands/init.ts
+tests:
+  manual:
+    - Run lumenflow init in an empty directory and verify pnpm wu:create works
+  unit:
+    - packages/@lumenflow/cli/src/commands/__tests__/init-package-json.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1963.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: lumenflow init generates 35+ config files but does not create or update package.json. Problem: After running lumenflow init in a fresh project, users cannot run any LumenFlow commands (wu:create, wu:claim, gates, etc.) because there is no package.json with @lumenflow/cli dependency or lifecycle scripts. Solution: lumenflow init should either create a package.json with the CLI dependency and standard scripts, or detect an existing package.json and inject the required scripts and dependency.'
+acceptance:
+  - lumenflow init in a fresh directory creates package.json with @lumenflow/cli dependency
+  - lumenflow init in a directory with existing package.json adds scripts without overwriting existing content
+  - After lumenflow init, pnpm wu:create and pnpm gates work without manual setup
