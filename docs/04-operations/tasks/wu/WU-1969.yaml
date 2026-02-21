@@ -2,7 +2,7 @@ id: WU-1969
 title: Fix gitignore merge path missing runtime state exclusions
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-21
 code_paths:
@@ -27,8 +27,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-1965 added auto-merge for .gitignore when the file already exists, but the requiredExclusions array only has 3 entries (node_modules, .lumenflow/telemetry, worktrees). The full GITIGNORE_TEMPLATE has 7 entries including .lumenflow/flow.log, .lumenflow/commands.log, .lumenflow/sessions/, .lumenflow/memory/, and .logs/. Problem: Projects that had a .gitignore before running lumenflow init get an incomplete .gitignore -- runtime state files (.lumenflow/flow.log, sessions, memory) show up as untracked in git status. Discovered testing lumenflow init on lumenflow-cloud. Solution: Sync requiredExclusions array with GITIGNORE_TEMPLATE entries. Extract the exclusion list into a shared constant so the merge path and full template cannot drift.'
+description: 'Context: WU-1965 added auto-merge for .gitignore when the file already exists, but the
+  requiredExclusions array only has 3 entries (node_modules, .lumenflow/telemetry, worktrees). The
+  full GITIGNORE_TEMPLATE has 7 entries including .lumenflow/flow.log, .lumenflow/commands.log,
+  .lumenflow/sessions/, .lumenflow/memory/, and .logs/. Problem: Projects that had a .gitignore
+  before running lumenflow init get an incomplete .gitignore -- runtime state files
+  (.lumenflow/flow.log, sessions, memory) show up as untracked in git status. Discovered testing
+  lumenflow init on lumenflow-cloud. Solution: Sync requiredExclusions array with GITIGNORE_TEMPLATE
+  entries. Extract the exclusion list into a shared constant so the merge path and full template
+  cannot drift.'
 acceptance:
   - requiredExclusions array includes all entries from GITIGNORE_TEMPLATE
   - Running init with existing .gitignore produces same exclusions as fresh init
   - Exclusion list is defined once (shared constant) to prevent future drift
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1969
+claimed_at: 2026-02-21T17:07:46.791Z
+baseline_main_sha: 7f50964797c0d966053a34edcc451bc90c99b291
+session_id: 1cb7dcde-4305-43b5-b15e-0e3355c73719
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T17:07:46.796Z

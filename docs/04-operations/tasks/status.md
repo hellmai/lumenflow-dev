@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1969 — Fix gitignore merge path missing runtime state exclusions](wu/WU-1969.yaml)
 
 ## Completed
 
