@@ -9,6 +9,12 @@ code_paths:
   - packages/@lumenflow/mcp/src/server.ts
   - packages/@lumenflow/mcp/src/__tests__/tools.test.ts
   - packages/@lumenflow/mcp/src/__tests__/runtime-task-tools.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/wu-tools.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
+  - packages/@lumenflow/mcp/src/mcp-constants.ts
+  - packages/@lumenflow/mcp/src/tools-shared.ts
+  - packages/@lumenflow/mcp/src/tools.ts
+  - packages/@lumenflow/mcp/src/tools/parity-tools.ts
 tests:
   manual:
     - Run MCP server and list tools to confirm bootstrap/cloud parity entries
@@ -28,10 +34,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-21T22:01:48.302Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-mcp-wu-1983
+session_id: 3f62bff3-51d9-45e9-9e66-46aa35a93dc1
 exposure: api
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T22:01:48.310Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -41,11 +54,3 @@ acceptance:
   - MCP exposes bootstrap/cloud status and related workspace operations
   - MCP tool contracts mirror CLI semantics and validation messages
   - MCP tests cover success and failure paths for parity operations
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-mcp-wu-1983
-claimed_at: 2026-02-21T22:01:48.302Z
-baseline_main_sha: dbcab41cb36cfafb53f2145d5a833a0e8b092f43
-session_id: 3f62bff3-51d9-45e9-9e66-46aa35a93dc1
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-21T22:01:48.310Z
