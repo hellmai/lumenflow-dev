@@ -694,13 +694,6 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
   },
   {
-    name: 'config:migrate-workspace',
-    binName: 'lumenflow-upgrade',
-    binPath: './dist/lumenflow-upgrade.js',
-    description: 'Migrate legacy config into workspace.yaml v2',
-    category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
-  },
-  {
     name: 'onboard',
     binName: 'onboard',
     binPath: './dist/onboard.js',
