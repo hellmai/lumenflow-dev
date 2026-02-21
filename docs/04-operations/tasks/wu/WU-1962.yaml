@@ -1,0 +1,39 @@
+id: WU-1962
+title: Unblock release by restoring workspace-init manifest/docs parity
+lane: 'Framework: CLI Orchestration'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-21
+code_paths:
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/cli/src/__tests__/commands.test.ts
+  - packages/@lumenflow/cli/README.md
+  - apps/docs/src/content/docs/reference/cli.mdx
+tests:
+  manual:
+    - 'Run: pnpm docs:validate'
+    - 'Run: pnpm pre-release:check'
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/commands.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1962.done
+dependencies: []
+spec_refs:
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/release-process.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: workspace-init exists in CLI bin entries but is missing from the public manifest, causing command-manifest parity test failures, stale generated docs, and pre-release check failures that currently block npm release.
+acceptance:
+  - PUBLIC_MANIFEST includes workspace-init with correct bin path/category/description and manifest alignment tests pass
+  - Generated CLI docs include workspace:init and docs:validate passes without drift
+  - pre-release:check passes end-to-end
