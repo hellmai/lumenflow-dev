@@ -1,5 +1,6 @@
+import os from 'node:os';
 import path from 'node:path';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const ENVIRONMENT_KEY = {
@@ -33,6 +34,26 @@ const CONTROL_PLANE_TEST_PROJECT_ID = 'project-health';
 const CONTROL_PLANE_TEST_SYNC_INTERVAL = 60;
 const CONTROL_PLANE_TEST_POLICY_MODE = 'tighten-only';
 const RUNTIME_ENABLE_GUIDANCE = `${ENVIRONMENT_KEY.ENABLE_RUNTIME}=${ENABLED_FLAG}`;
+const TEST_WORKSPACE_PREFIX = 'lumenflow-web-health-';
+const TEMP_WORKSPACE_SUFFIX = {
+  BOUNDARY_ROOT: 'boundary-root',
+  RUNTIME_ROOT: 'runtime-root',
+  WORKSPACE_HEALTH: 'workspace-health',
+  MISSING_RUNTIME_ROOT: 'missing-runtime-root',
+  CONTROL_PLANE_PREVIEW: 'control-plane-preview',
+  CONTROL_PLANE_RUNTIME: 'control-plane-runtime',
+} as const;
+
+const tempWorkspaceRoots: string[] = [];
+
+async function createTempWorkspaceRoot(
+  suffix: (typeof TEMP_WORKSPACE_SUFFIX)[keyof typeof TEMP_WORKSPACE_SUFFIX],
+): Promise<string> {
+  const tempRootPrefix = path.join(os.tmpdir(), `${TEST_WORKSPACE_PREFIX}${suffix}-`);
+  const workspaceRoot = await mkdtemp(tempRootPrefix);
+  tempWorkspaceRoots.push(workspaceRoot);
+  return workspaceRoot;
+}
 
 async function writeWorkspaceYamlWithControlPlane(workspaceRoot: string): Promise<void> {
   const yamlContent = `
@@ -73,12 +94,20 @@ beforeEach(() => {
   delete process.env.LUMENFLOW_CONTROL_PLANE_TOKEN_TEST;
 });
 
-afterEach(() => {
+afterEach(async () => {
   vi.restoreAllMocks();
   delete process.env.LUMENFLOW_WEB_ENABLE_KERNEL_RUNTIME;
   delete process.env.LUMENFLOW_WEB_RUNTIME_WORKSPACE_ROOT;
   delete process.env.LUMENFLOW_WEB_WORKSPACE_ROOT;
   delete process.env.LUMENFLOW_CONTROL_PLANE_TOKEN_TEST;
+
+  while (tempWorkspaceRoots.length > 0) {
+    const workspaceRoot = tempWorkspaceRoots.pop();
+    if (workspaceRoot === undefined) {
+      continue;
+    }
+    await rm(workspaceRoot, { recursive: true, force: true });
+  }
 });
 
 describe('http-surface runtime diagnostics', () => {
@@ -97,8 +126,8 @@ describe('http-surface runtime diagnostics', () => {
   });
 
   it('runtime workspace root gives precedence to runtime-specific env var', async () => {
-    const workspaceRoot = path.join(process.cwd(), 'tmp-boundary-workspace-root');
-    const runtimeWorkspaceRoot = path.join(process.cwd(), 'tmp-runtime-workspace-root');
+    const workspaceRoot = await createTempWorkspaceRoot(TEMP_WORKSPACE_SUFFIX.BOUNDARY_ROOT);
+    const runtimeWorkspaceRoot = await createTempWorkspaceRoot(TEMP_WORKSPACE_SUFFIX.RUNTIME_ROOT);
     process.env[ENVIRONMENT_KEY.WORKSPACE_ROOT] = workspaceRoot;
     process.env[ENVIRONMENT_KEY.RUNTIME_WORKSPACE_ROOT] = runtimeWorkspaceRoot;
 
@@ -112,7 +141,7 @@ describe('http-surface runtime diagnostics', () => {
   });
 
   it('GET /api/health reports preview mode runtime availability state', async () => {
-    const workspaceRoot = path.join(process.cwd(), 'tmp-workspace-health');
+    const workspaceRoot = await createTempWorkspaceRoot(TEMP_WORKSPACE_SUFFIX.WORKSPACE_HEALTH);
     process.env[ENVIRONMENT_KEY.WORKSPACE_ROOT] = workspaceRoot;
 
     const routeModule = await import('../app/api/health/route');
@@ -129,7 +158,7 @@ describe('http-surface runtime diagnostics', () => {
   });
 
   it('GET /api/health includes initialization error when runtime init fails', async () => {
-    const runtimeRoot = path.join(process.cwd(), 'tmp-missing-runtime-root');
+    const runtimeRoot = await createTempWorkspaceRoot(TEMP_WORKSPACE_SUFFIX.MISSING_RUNTIME_ROOT);
     process.env[ENVIRONMENT_KEY.ENABLE_RUNTIME] = ENABLED_FLAG;
     process.env[ENVIRONMENT_KEY.RUNTIME_WORKSPACE_ROOT] = runtimeRoot;
 
@@ -157,7 +186,9 @@ describe('http-surface runtime diagnostics', () => {
   });
 
   it('GET /api/health reports disconnected cloud diagnostics with endpoint/token guidance in preview mode', async () => {
-    const workspaceRoot = path.join(process.cwd(), 'tmp-control-plane-preview-health');
+    const workspaceRoot = await createTempWorkspaceRoot(
+      TEMP_WORKSPACE_SUFFIX.CONTROL_PLANE_PREVIEW,
+    );
     await writeWorkspaceYamlWithControlPlane(workspaceRoot);
     process.env[ENVIRONMENT_KEY.WORKSPACE_ROOT] = workspaceRoot;
 
@@ -175,7 +206,7 @@ describe('http-surface runtime diagnostics', () => {
   });
 
   it('GET /api/health reports connected cloud diagnostics when runtime and token are available', async () => {
-    const runtimeRoot = path.join(process.cwd(), 'tmp-control-plane-runtime-health');
+    const runtimeRoot = await createTempWorkspaceRoot(TEMP_WORKSPACE_SUFFIX.CONTROL_PLANE_RUNTIME);
     await writeWorkspaceYamlWithControlPlane(runtimeRoot);
     process.env[ENVIRONMENT_KEY.ENABLE_RUNTIME] = ENABLED_FLAG;
     process.env[ENVIRONMENT_KEY.RUNTIME_WORKSPACE_ROOT] = runtimeRoot;
