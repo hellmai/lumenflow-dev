@@ -898,13 +898,25 @@ const PRETTIER_VERSION = '^3.8.0';
 const PRETTIER_PACKAGE_NAME = 'prettier';
 
 /**
+ * WU-1963: @lumenflow/cli version to add to devDependencies.
+ * Uses caret range to allow minor/patch updates within the major version.
+ * This ensures `pnpm wu:create`, `pnpm gates`, etc. resolve after `pnpm install`.
+ */
+const CLI_PACKAGE_VERSION = '^3.0.0';
+
+/** WU-1963: CLI package name constant */
+const CLI_PACKAGE_NAME = '@lumenflow/cli';
+
+/**
  * WU-1300: Inject LumenFlow scripts into package.json
  * WU-1517: Also adds prettier devDependency
  * WU-1518: Also adds gate stub scripts (spec:linter, lint, typecheck)
  * WU-1747: format and format:check are now part of GATE_STUB_SCRIPTS
+ * WU-1963: Also adds @lumenflow/cli devDependency so binary scripts resolve
  * - Creates package.json if it doesn't exist
  * - Preserves existing scripts (doesn't overwrite unless --force)
  * - Adds missing LumenFlow scripts
+ * - Adds @lumenflow/cli to devDependencies (provides wu-create, gates, etc. binaries)
  * - Adds prettier to devDependencies
  * - Adds gate stub scripts for spec:linter, lint, typecheck, format, format:check
  */
@@ -963,11 +975,24 @@ async function injectPackageJsonScripts(
     }
   }
 
-  // WU-1517: Add prettier to devDependencies
+  // Ensure devDependencies object exists
   if (!packageJson.devDependencies || typeof packageJson.devDependencies !== 'object') {
     packageJson.devDependencies = {};
   }
   const devDeps = packageJson.devDependencies as Record<string, string>;
+
+  // WU-1963: Add @lumenflow/cli to devDependencies so binary scripts resolve after pnpm install
+  if (options.force || !(CLI_PACKAGE_NAME in devDeps)) {
+    if (options.force && CLI_PACKAGE_NAME in devDeps) {
+      devDeps[CLI_PACKAGE_NAME] = CLI_PACKAGE_VERSION;
+      modified = true;
+    } else if (!(CLI_PACKAGE_NAME in devDeps)) {
+      devDeps[CLI_PACKAGE_NAME] = CLI_PACKAGE_VERSION;
+      modified = true;
+    }
+  }
+
+  // WU-1517: Add prettier to devDependencies
   if (options.force || !(PRETTIER_PACKAGE_NAME in devDeps)) {
     if (!(PRETTIER_PACKAGE_NAME in devDeps)) {
       devDeps[PRETTIER_PACKAGE_NAME] = PRETTIER_VERSION;
