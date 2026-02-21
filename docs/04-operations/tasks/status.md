@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1972 — Core config provider rewrite to workspace.yaml canonical](wu/WU-1972.yaml)
 
 ## Completed
 

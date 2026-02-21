@@ -2,7 +2,7 @@ id: WU-1972
 title: Core config provider rewrite to workspace.yaml canonical
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -34,8 +34,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Replace core/runtime config loading paths so workflow, gates, directories, and policy inputs resolve from workspace.yaml v2 only.
+description: Replace core/runtime config loading paths so workflow, gates, directories, and policy
+  inputs resolve from workspace.yaml v2 only.
 acceptance:
   - Core config provider reads workflow and gates data from workspace.yaml
   - No runtime execution path requires .lumenflow.config.yaml for config resolution
   - Regression tests verify existing behavior with workspace.yaml inputs
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1972
+claimed_at: 2026-02-21T19:02:02.864Z
+baseline_main_sha: ae355a8f94e04bbe4e2194f3f9e35627e125439f
+session_id: 66bed46a-36c0-4d7d-adb4-a62d898cf6f9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T19:02:02.868Z
