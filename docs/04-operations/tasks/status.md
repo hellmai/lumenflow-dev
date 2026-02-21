@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1968 — Fix doctor duplicate output and misleading git version prerequisite warning](wu/WU-1968.yaml)
 
 ## Completed
 
