@@ -10,7 +10,33 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 
 /** Test constant for config file name to avoid sonarjs/no-duplicate-string */
-const LUMENFLOW_CONFIG_FILE = '.lumenflow.config.yaml';
+const WORKSPACE_CONFIG_FILE_NAME = 'workspace.yaml';
+const LEGACY_CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+const DEFAULT_WORKSPACE_ID = 'default';
+const DEFAULT_WORKSPACE_NAME = 'Test Workspace';
+const DEFAULT_LANE_TITLE = 'Default';
+const DEFAULT_NETWORK_PROFILE = 'off';
+
+function buildWorkspaceConfigYaml(): string {
+  return [
+    `id: ${DEFAULT_WORKSPACE_ID}`,
+    `name: ${DEFAULT_WORKSPACE_NAME}`,
+    'packs: []',
+    'lanes:',
+    `  - id: ${DEFAULT_WORKSPACE_ID}`,
+    `    title: ${DEFAULT_LANE_TITLE}`,
+    '    allowed_scopes: []',
+    'policies: {}',
+    'security:',
+    '  allowed_scopes: []',
+    `  network_default: ${DEFAULT_NETWORK_PROFILE}`,
+    '  deny_overlays: []',
+    'software_delivery: {}',
+    `memory_namespace: ${DEFAULT_WORKSPACE_ID}`,
+    `event_namespace: ${DEFAULT_WORKSPACE_ID}`,
+    '',
+  ].join('\n');
+}
 
 describe('lumenflow doctor command (WU-1177)', () => {
   let tempDir: string;
@@ -38,7 +64,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
     cursorRules?: boolean;
     windsurfRules?: boolean;
     clineRules?: boolean;
-    lumenflowConfig?: boolean;
+    workspaceConfig?: boolean;
   }): void {
     if (options.husky) {
       fs.mkdirSync(path.join(tempDir, '.husky'), { recursive: true });
@@ -78,8 +104,8 @@ describe('lumenflow doctor command (WU-1177)', () => {
       fs.writeFileSync(path.join(tempDir, '.clinerules'), '# Cline LumenFlow Rules\n');
     }
 
-    if (options.lumenflowConfig) {
-      fs.writeFileSync(path.join(tempDir, LUMENFLOW_CONFIG_FILE), 'version: 1.0\n');
+    if (options.workspaceConfig) {
+      fs.writeFileSync(path.join(tempDir, WORKSPACE_CONFIG_FILE_NAME), buildWorkspaceConfigYaml());
     }
   }
 
@@ -91,7 +117,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
         husky: true,
         safeGit: true,
         agentsMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -108,7 +134,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
       setupMockProject({
         safeGit: true,
         agentsMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -124,7 +150,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
       setupMockProject({
         husky: true,
         agentsMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -139,7 +165,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
       setupMockProject({
         husky: true,
         safeGit: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -158,7 +184,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
         safeGit: true,
         agentsMd: true,
         claudeMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -174,7 +200,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
         safeGit: true,
         agentsMd: true,
         cursorRules: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -190,7 +216,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
         safeGit: true,
         agentsMd: true,
         windsurfRules: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -206,7 +232,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
         safeGit: true,
         agentsMd: true,
         clineRules: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -225,7 +251,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
         cursorRules: true,
         windsurfRules: true,
         clineRules: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -245,7 +271,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
         husky: true,
         safeGit: true,
         agentsMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -261,7 +287,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
         husky: true,
         safeGit: true,
         agentsMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -279,7 +305,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
         husky: true,
         safeGit: true,
         agentsMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -295,7 +321,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
         husky: true,
         safeGit: true,
         agentsMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -311,7 +337,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
 
       setupMockProject({
         agentsMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
         // Missing husky and safe-git
       });
 
@@ -330,7 +356,7 @@ describe('lumenflow doctor command (WU-1177)', () => {
         safeGit: true,
         agentsMd: true,
         claudeMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       const result = await runDoctor(tempDir);
@@ -388,12 +414,12 @@ describe('lumenflow doctor command (WU-1177)', () => {
         husky: true,
         safeGit: true,
         agentsMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       // Add lane definitions to config
       fs.writeFileSync(
-        path.join(tempDir, LUMENFLOW_CONFIG_FILE),
+        path.join(tempDir, LEGACY_CONFIG_FILE_NAME),
         `version: '2.0'
 lanes:
   definitions:
@@ -423,12 +449,12 @@ lanes:
         husky: true,
         safeGit: true,
         agentsMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       // Create overlapping lane definitions
       fs.writeFileSync(
-        path.join(tempDir, LUMENFLOW_CONFIG_FILE),
+        path.join(tempDir, LEGACY_CONFIG_FILE_NAME),
         `version: '2.0'
 lanes:
   definitions:
@@ -457,12 +483,12 @@ lanes:
         husky: true,
         safeGit: true,
         agentsMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       // Create non-overlapping lane definitions
       fs.writeFileSync(
-        path.join(tempDir, LUMENFLOW_CONFIG_FILE),
+        path.join(tempDir, LEGACY_CONFIG_FILE_NAME),
         `version: '2.0'
 lanes:
   definitions:
@@ -490,12 +516,12 @@ lanes:
         husky: true,
         safeGit: true,
         agentsMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       // Config without lane definitions
       fs.writeFileSync(
-        path.join(tempDir, LUMENFLOW_CONFIG_FILE),
+        path.join(tempDir, LEGACY_CONFIG_FILE_NAME),
         `version: '2.0'
 project: test
 `,
@@ -516,11 +542,11 @@ project: test
         husky: true,
         safeGit: true,
         agentsMd: true,
-        lumenflowConfig: true,
+        workspaceConfig: true,
       });
 
       fs.writeFileSync(
-        path.join(tempDir, LUMENFLOW_CONFIG_FILE),
+        path.join(tempDir, LEGACY_CONFIG_FILE_NAME),
         `version: '2.0'
 lanes:
   definitions:
