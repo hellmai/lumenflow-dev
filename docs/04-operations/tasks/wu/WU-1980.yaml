@@ -9,11 +9,15 @@ code_paths:
   - packages/@lumenflow/cli/src/onboard.ts
   - packages/@lumenflow/cli/src/public-manifest.ts
   - packages/@lumenflow/cli/src/__tests__/onboarding-smoke-test.test.ts
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/package.json
 tests:
   manual:
     - npx lumenflow cloud connect --help and connect flow validate endpoint/token env
   unit:
     - packages/@lumenflow/cli/src/__tests__/onboarding-smoke-test.test.ts
+    - packages/@lumenflow/cli/src/__tests__/commands.test.ts
+    - packages/@lumenflow/cli/src/__tests__/init-scripts.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1980.done
@@ -28,10 +32,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-21T21:13:40.862Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1980
+session_id: b25bd9e9-7490-4ed3-949c-88f136f301a9
 exposure: api
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T21:13:40.867Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -41,11 +52,3 @@ acceptance:
   - lumenflow cloud connect writes validated control_plane section to workspace.yaml
   - Command fails with actionable messages for invalid endpoint or missing token env
   - Command supports non-interactive flags for CI/agent automation
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1980
-claimed_at: 2026-02-21T21:13:40.862Z
-baseline_main_sha: 3ebbcb4455747a6f474edd0c998522dbc7cc7c30
-session_id: b25bd9e9-7490-4ed3-949c-88f136f301a9
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-21T21:13:40.867Z
