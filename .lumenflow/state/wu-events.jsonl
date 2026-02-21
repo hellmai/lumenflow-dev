@@ -1881,5 +1881,6 @@
 {"type":"complete","wuId":"WU-1962","timestamp":"2026-02-21T14:26:44.905Z"}
 {"type":"claim","wuId":"WU-1964","timestamp":"2026-02-21T14:35:30.725Z","lane":"Content: Framework Docs","title":"Fix CLI docs MDX escaping for Starlight deploy"}
 {"type":"complete","wuId":"WU-1964","timestamp":"2026-02-21T14:58:20.485Z"}
-{"type":"claim","wuId":"WU-1965","lane":"Framework: CLI Enforcement","title":"Fix lumenflow init duplicate Created/Skipped output for onboarding docs","timestamp":"2026-02-21T16:06:23.718Z"}
-{"type":"claim","wuId":"WU-1966","lane":"Operations: Tooling","title":"Fix web runtime preview fallback diagnostics and workspace root separation","timestamp":"2026-02-21T16:07:32.375Z"}
+{"type":"claim","wuId":"WU-1965","timestamp":"2026-02-21T16:06:23.718Z","lane":"Framework: CLI Enforcement","title":"Fix lumenflow init duplicate Created/Skipped output for onboarding docs"}
+{"type":"claim","wuId":"WU-1966","timestamp":"2026-02-21T16:07:32.375Z","lane":"Operations: Tooling","title":"Fix web runtime preview fallback diagnostics and workspace root separation"}
+{"type":"complete","wuId":"WU-1966","timestamp":"2026-02-21T16:11:22.851Z"}

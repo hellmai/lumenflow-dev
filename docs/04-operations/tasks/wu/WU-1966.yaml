@@ -2,7 +2,7 @@ id: WU-1966
 title: Fix web runtime preview fallback diagnostics and workspace root separation
 lane: 'Operations: Tooling'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-21
 code_paths:
@@ -47,3 +47,6 @@ session_id: 21e6685c-8cd4-4abc-a3a4-2068fab6482d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-21T16:07:32.353Z
+locked: true
+completed_at: 2026-02-21T16:11:18.150Z
+completed: 2026-02-21
