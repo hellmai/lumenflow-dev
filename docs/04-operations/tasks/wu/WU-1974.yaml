@@ -10,6 +10,7 @@ code_paths:
   - packages/@lumenflow/cli/src/doctor.ts
   - packages/@lumenflow/cli/src/state-doctor.ts
   - packages/@lumenflow/cli/src/__tests__/doctor.test.ts
+  - packages/@lumenflow/cli/__tests__/doctor.test.ts
 tests:
   manual:
     - pnpm lumenflow doctor reports workspace.yaml canonical guidance
