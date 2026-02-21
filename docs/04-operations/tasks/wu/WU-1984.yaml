@@ -1,0 +1,41 @@
+id: WU-1984
+title: Docs + release readiness for workspace-first v4.0.0
+lane: 'Content: Site Comms'
+type: documentation
+status: ready
+priority: P0
+created: 2026-02-21
+code_paths:
+  - apps/docs/src/content/docs/reference/cli.mdx
+  - apps/docs/src/content/docs/getting-started/quickstart.mdx
+  - apps/docs/src/content/docs/getting-started/upgrade.mdx
+  - CHANGELOG.md
+tests:
+  manual:
+    - pnpm --filter @lumenflow/docs build succeeds and docs reflect v4.0.0 migration messaging
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1984.done
+dependencies: []
+initiative: INIT-033
+phase: 4
+blocked_by:
+  - WU-1976
+  - WU-1982
+  - WU-1983
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Update public and internal docs to workspace-first onboarding/cloud-connect flow and prepare major release assets for v4.0.0 publish.
+acceptance:
+  - Docs remove legacy split-onboarding guidance and emphasize bootstrap-all + workspace.yaml
+  - CLI/reference docs include cloud connect and config:set/get workspace semantics
+  - Release docs/changelog record major bump v4.0.0 and migration guidance
