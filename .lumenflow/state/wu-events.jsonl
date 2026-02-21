@@ -1887,3 +1887,4 @@
 {"type":"complete","wuId":"WU-1965","timestamp":"2026-02-21T16:19:37.336Z"}
 {"type":"claim","wuId":"WU-1967","timestamp":"2026-02-21T16:21:08.108Z","lane":"Content: Framework Docs","title":"Replace stale lane table in CLAUDE.md with pointer to config yaml"}
 {"type":"complete","wuId":"WU-1967","timestamp":"2026-02-21T16:25:09.279Z"}
+{"type":"release","wuId":"WU-1701","reason":"State reconciliation: claimed in_progress WU has missing worktree path","timestamp":"2026-02-21T16:41:38.779Z"}
