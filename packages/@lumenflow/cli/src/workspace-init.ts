@@ -142,6 +142,7 @@ export function getDefaultWorkspaceConfig(): WorkspaceSpec {
       network_default: 'off',
       deny_overlays: ['~/.ssh', '~/.aws', '~/.gnupg', '.env'],
     },
+    software_delivery: {},
     memory_namespace: 'default',
     event_namespace: 'default',
   };
@@ -168,6 +169,7 @@ export function buildWorkspaceConfig(input: WorkspaceConfigInput): WorkspaceSpec
       network_default: input.sandboxProfile,
       deny_overlays: input.deniedPaths,
     },
+    software_delivery: {},
     memory_namespace: toKebabCase(input.projectName),
     event_namespace: toKebabCase(input.projectName),
   };
@@ -221,6 +223,9 @@ export function generateWorkspaceYaml(config: WorkspaceSpec): string {
       lines.push(`    - ${YAML.stringify(overlay).trim()}`);
     }
   }
+  lines.push('');
+  lines.push('# Software delivery config extensions (required workspace v2 block)');
+  lines.push(`software_delivery: ${YAML.stringify(config.software_delivery).trim()}`);
   lines.push('');
   lines.push('# Memory namespace for session tracking and context recovery');
   lines.push(`memory_namespace: ${YAML.stringify(config.memory_namespace).trim()}`);
