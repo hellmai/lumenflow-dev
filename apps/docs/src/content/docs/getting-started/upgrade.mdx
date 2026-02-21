@@ -40,9 +40,9 @@ pnpm cloud:connect
 <Steps>
 1. **Upgrade packages**
 
-```bash
-pnpm lumenflow:upgrade --latest
-```
+   ```bash
+   pnpm lumenflow:upgrade --latest
+   ```
 
 2. **Migrate legacy config into workspace.yaml** (if you still have `.lumenflow.config.yaml`)
 
@@ -90,8 +90,8 @@ pnpm config:set --key software_delivery.gates.minCoverage --value 90
 ```bash
 pnpm cloud:connect \
   --endpoint https://control-plane.example.com \
-  --org-id <org-id> \
-  --project-id <project-id> \
+  --org-id YOUR_ORG_ID \
+  --project-id YOUR_PROJECT_ID \
   --token-env LUMENFLOW_CONTROL_PLANE_TOKEN
 ```
 
