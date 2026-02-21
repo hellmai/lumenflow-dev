@@ -23,6 +23,10 @@
  */
 
 import { execSync } from 'node:child_process';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
+import YAML from 'yaml';
 import {
   STDIO_MODES,
   EXIT_CODES,
@@ -31,16 +35,69 @@ import {
   PKG_FLAGS,
   DEFAULTS,
   BRANCHES,
+  FILE_SYSTEM,
 } from '@lumenflow/core/wu-constants';
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { findProjectRoot } from '@lumenflow/core/config';
+import {
+  parseConfig,
+  WORKSPACE_V2_KEYS,
+  WorkspaceV2ExtensionsSchema,
+} from '@lumenflow/core/config-schema';
+import { normalizeConfigKeys } from '@lumenflow/core/normalize-config-keys';
 import { runCLI } from './cli-entry-point.js';
+import { getDefaultWorkspaceConfig } from './workspace-init.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[lumenflow:upgrade]';
 
 /** Operation name for micro-worktree */
 const OPERATION_NAME = 'lumenflow-upgrade';
+
+/** Subcommand name for migrating legacy config into workspace.yaml */
+export const MIGRATE_WORKSPACE_SUBCOMMAND = 'config:migrate-workspace';
+
+/** Canonical config file names */
+export const LEGACY_CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+export const WORKSPACE_CONFIG_FILE_NAME = 'workspace.yaml';
+
+/** CLI argument names used by migration mode */
+const ARG_HELP = '--help';
+const ARG_HELP_SHORT = '-h';
+const ARG_VERSION = '--version';
+const ARG_VERSION_SHORT = '-v';
+const ARG_LATEST = '--latest';
+const ARG_LATEST_SHORT = '-l';
+const ARG_DRY_RUN = '--dry-run';
+const ARG_DRY_RUN_SHORT = '-n';
+const ARG_LEGACY_PATH = '--legacy';
+const ARG_WORKSPACE_PATH = '--workspace';
+
+/** Workspace keys and migration output constants */
+const WORKSPACE_SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
+const WORKSPACE_CONTROL_PLANE_KEY = WORKSPACE_V2_KEYS.CONTROL_PLANE;
+const WORKSPACE_ID_KEY = 'id';
+const WORKSPACE_NAME_KEY = 'name';
+const WORKSPACE_PACKS_KEY = 'packs';
+const WORKSPACE_LANES_KEY = 'lanes';
+const WORKSPACE_SECURITY_KEY = 'security';
+const WORKSPACE_MEMORY_NAMESPACE_KEY = 'memory_namespace';
+const WORKSPACE_EVENT_NAMESPACE_KEY = 'event_namespace';
+const MIGRATION_LOG_PREFIX = '[config:migrate-workspace]';
+const YES_LABEL = 'yes';
+const NO_LABEL = 'no';
+const YAML_ENCODING = FILE_SYSTEM.UTF8 as BufferEncoding;
+
+/** Deterministic warning strings for migration summary output */
+const WARNING_SOFTWARE_DELIVERY_REPLACED =
+  'Existing workspace software_delivery block will be replaced with migrated legacy config.';
+const WARNING_INVALID_EXISTING_WORKSPACE =
+  'Existing workspace.yaml is invalid for runtime schema; using default workspace skeleton.';
+const WARNING_CONTROL_PLANE_REPLACED =
+  'Existing workspace control_plane block will be replaced with migrated legacy control_plane config.';
+const WARNING_CONTROL_PLANE_INVALID =
+  'Legacy control_plane block is invalid for workspace schema and was skipped.';
 
 /**
  * All @lumenflow/* packages that should be upgraded together
@@ -70,6 +127,12 @@ export interface UpgradeArgs {
   dryRun?: boolean;
   /** Show help */
   help?: boolean;
+  /** Run legacy config -> workspace migration mode */
+  migrateWorkspace?: boolean;
+  /** Optional legacy config path (defaults to .lumenflow.config.yaml in project root) */
+  legacyPath?: string;
+  /** Optional workspace target path (defaults to workspace.yaml in project root) */
+  workspacePath?: string;
 }
 
 /**
@@ -80,6 +143,28 @@ export interface UpgradeResult {
   addCommand: string;
   /** Version specifier used */
   versionSpec: string;
+}
+
+export interface WorkspaceMigrationSummary {
+  sourcePath: string;
+  targetPath: string;
+  workspaceCreated: boolean;
+  softwareDeliveryKeyCount: number;
+  softwareDeliveryKeys: string[];
+  controlPlaneMigrated: boolean;
+  warnings: string[];
+}
+
+export interface WorkspaceMigrationPlan {
+  workspace: Record<string, unknown>;
+  summary: WorkspaceMigrationSummary;
+}
+
+interface WorkspaceMigrationPlanInput {
+  legacyConfig: Record<string, unknown>;
+  existingWorkspace?: Record<string, unknown>;
+  sourcePath?: string;
+  targetPath?: string;
 }
 
 /**
@@ -109,14 +194,20 @@ export function parseUpgradeArgs(argv: string[]): UpgradeArgs {
   for (let i = 0; i < cliArgs.length; i++) {
     const arg = cliArgs[i];
 
-    if (arg === '--help' || arg === '-h') {
+    if (arg === MIGRATE_WORKSPACE_SUBCOMMAND) {
+      args.migrateWorkspace = true;
+    } else if (arg === ARG_HELP || arg === ARG_HELP_SHORT) {
       args.help = true;
-    } else if (arg === '--version' || arg === '-v') {
+    } else if (arg === ARG_VERSION || arg === ARG_VERSION_SHORT) {
       args.version = cliArgs[++i];
-    } else if (arg === '--latest' || arg === '-l') {
+    } else if (arg === ARG_LATEST || arg === ARG_LATEST_SHORT) {
       args.latest = true;
-    } else if (arg === '--dry-run' || arg === '-n') {
+    } else if (arg === ARG_DRY_RUN || arg === ARG_DRY_RUN_SHORT) {
       args.dryRun = true;
+    } else if (arg === ARG_LEGACY_PATH) {
+      args.legacyPath = cliArgs[++i];
+    } else if (arg === ARG_WORKSPACE_PATH) {
+      args.workspacePath = cliArgs[++i];
     }
   }
 
@@ -207,6 +298,239 @@ export async function validateMainCheckout(): Promise<MainCheckoutValidationResu
   return { valid: true };
 }
 
+interface ControlPlaneMigrationResult {
+  controlPlane?: Record<string, unknown>;
+  migrated: boolean;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function hasValidWorkspaceShape(workspace: Record<string, unknown>): boolean {
+  return (
+    typeof workspace[WORKSPACE_ID_KEY] === 'string' &&
+    (workspace[WORKSPACE_ID_KEY] as string).length > 0 &&
+    typeof workspace[WORKSPACE_NAME_KEY] === 'string' &&
+    (workspace[WORKSPACE_NAME_KEY] as string).length > 0 &&
+    Array.isArray(workspace[WORKSPACE_PACKS_KEY]) &&
+    Array.isArray(workspace[WORKSPACE_LANES_KEY]) &&
+    isRecord(workspace[WORKSPACE_SECURITY_KEY]) &&
+    typeof workspace[WORKSPACE_MEMORY_NAMESPACE_KEY] === 'string' &&
+    (workspace[WORKSPACE_MEMORY_NAMESPACE_KEY] as string).length > 0 &&
+    typeof workspace[WORKSPACE_EVENT_NAMESPACE_KEY] === 'string' &&
+    (workspace[WORKSPACE_EVENT_NAMESPACE_KEY] as string).length > 0
+  );
+}
+
+function readYamlRecord(filePath: string, label: string): Record<string, unknown> {
+  const raw = readFileSync(filePath, YAML_ENCODING);
+  const parsed = YAML.parse(raw);
+  if (!isRecord(parsed)) {
+    throw new Error(`${MIGRATION_LOG_PREFIX} ${label} must contain a YAML object root.`);
+  }
+  return parsed;
+}
+
+function resolveBaseWorkspace(
+  existingWorkspace: Record<string, unknown> | undefined,
+  warnings: string[],
+): { workspace: Record<string, unknown>; workspaceCreated: boolean } {
+  if (!existingWorkspace) {
+    return {
+      workspace: getDefaultWorkspaceConfig() as unknown as Record<string, unknown>,
+      workspaceCreated: true,
+    };
+  }
+
+  if (hasValidWorkspaceShape(existingWorkspace)) {
+    return {
+      workspace: existingWorkspace,
+      workspaceCreated: false,
+    };
+  }
+
+  warnings.push(WARNING_INVALID_EXISTING_WORKSPACE);
+  return {
+    workspace: getDefaultWorkspaceConfig() as unknown as Record<string, unknown>,
+    workspaceCreated: true,
+  };
+}
+
+function resolveControlPlaneMigration(
+  legacyConfig: Record<string, unknown>,
+  baseWorkspace: Record<string, unknown>,
+  warnings: string[],
+): ControlPlaneMigrationResult {
+  const existingControlPlaneRaw = baseWorkspace[WORKSPACE_CONTROL_PLANE_KEY];
+  const existingControlPlane = isRecord(existingControlPlaneRaw)
+    ? existingControlPlaneRaw
+    : undefined;
+  const legacyControlPlaneRaw = legacyConfig[WORKSPACE_CONTROL_PLANE_KEY];
+
+  if (legacyControlPlaneRaw === undefined) {
+    return {
+      controlPlane: existingControlPlane,
+      migrated: false,
+    };
+  }
+
+  if (!isRecord(legacyControlPlaneRaw)) {
+    warnings.push(WARNING_CONTROL_PLANE_INVALID);
+    return {
+      controlPlane: existingControlPlane,
+      migrated: false,
+    };
+  }
+
+  const validationResult = WorkspaceV2ExtensionsSchema.safeParse({
+    [WORKSPACE_SOFTWARE_DELIVERY_KEY]: {},
+    [WORKSPACE_CONTROL_PLANE_KEY]: legacyControlPlaneRaw,
+  });
+
+  if (!validationResult.success) {
+    warnings.push(WARNING_CONTROL_PLANE_INVALID);
+    return {
+      controlPlane: existingControlPlane,
+      migrated: false,
+    };
+  }
+
+  const migratedControlPlane = validationResult.data[WORKSPACE_CONTROL_PLANE_KEY] as Record<
+    string,
+    unknown
+  >;
+
+  if (existingControlPlane && !isDeepStrictEqual(existingControlPlane, migratedControlPlane)) {
+    warnings.push(WARNING_CONTROL_PLANE_REPLACED);
+  }
+
+  return {
+    controlPlane: migratedControlPlane,
+    migrated: true,
+  };
+}
+
+export function buildWorkspaceMigrationPlan(
+  input: WorkspaceMigrationPlanInput,
+): WorkspaceMigrationPlan {
+  const {
+    legacyConfig,
+    existingWorkspace,
+    sourcePath = LEGACY_CONFIG_FILE_NAME,
+    targetPath = WORKSPACE_CONFIG_FILE_NAME,
+  } = input;
+
+  if (!isRecord(legacyConfig)) {
+    throw new Error(`${MIGRATION_LOG_PREFIX} Legacy config must be a YAML object.`);
+  }
+
+  const warnings: string[] = [];
+  const normalizedLegacy = normalizeConfigKeys(legacyConfig);
+  const softwareDeliveryConfig = parseConfig(normalizedLegacy) as unknown as Record<
+    string,
+    unknown
+  >;
+
+  const { workspace: baseWorkspace, workspaceCreated } = resolveBaseWorkspace(
+    existingWorkspace,
+    warnings,
+  );
+  const existingSoftwareDelivery = baseWorkspace[WORKSPACE_SOFTWARE_DELIVERY_KEY];
+
+  if (
+    !workspaceCreated &&
+    isRecord(existingSoftwareDelivery) &&
+    !isDeepStrictEqual(existingSoftwareDelivery, softwareDeliveryConfig)
+  ) {
+    warnings.push(WARNING_SOFTWARE_DELIVERY_REPLACED);
+  }
+
+  const controlPlaneMigration = resolveControlPlaneMigration(legacyConfig, baseWorkspace, warnings);
+  const migratedWorkspace: Record<string, unknown> = {
+    ...baseWorkspace,
+    [WORKSPACE_SOFTWARE_DELIVERY_KEY]: softwareDeliveryConfig,
+  };
+
+  if (controlPlaneMigration.controlPlane) {
+    migratedWorkspace[WORKSPACE_CONTROL_PLANE_KEY] = controlPlaneMigration.controlPlane;
+  }
+
+  if (!hasValidWorkspaceShape(migratedWorkspace)) {
+    throw new Error(
+      `${MIGRATION_LOG_PREFIX} Generated workspace is invalid. Ensure required workspace keys exist before retrying migration.`,
+    );
+  }
+  const softwareDeliveryKeys = Object.keys(softwareDeliveryConfig).sort();
+
+  return {
+    workspace: migratedWorkspace,
+    summary: {
+      sourcePath,
+      targetPath,
+      workspaceCreated,
+      softwareDeliveryKeyCount: softwareDeliveryKeys.length,
+      softwareDeliveryKeys,
+      controlPlaneMigrated: controlPlaneMigration.migrated,
+      warnings,
+    },
+  };
+}
+
+export function formatWorkspaceMigrationSummary(summary: WorkspaceMigrationSummary): string {
+  const softwareDeliveryKeySummary =
+    summary.softwareDeliveryKeys.length > 0 ? ` (${summary.softwareDeliveryKeys.join(', ')})` : '';
+  const lines = [
+    `${MIGRATION_LOG_PREFIX} Migration summary`,
+    `  source: ${summary.sourcePath}`,
+    `  target: ${summary.targetPath}`,
+    `  workspace_created: ${summary.workspaceCreated ? YES_LABEL : NO_LABEL}`,
+    `  software_delivery_keys: ${summary.softwareDeliveryKeyCount}${softwareDeliveryKeySummary}`,
+    `  control_plane_migrated: ${summary.controlPlaneMigrated ? YES_LABEL : NO_LABEL}`,
+    `  warnings: ${summary.warnings.length}`,
+  ];
+
+  if (summary.warnings.length > 0) {
+    summary.warnings.forEach((warning, index) => {
+      lines.push(`  warning_${index + 1}: ${warning}`);
+    });
+  }
+
+  return lines.join('\n');
+}
+
+export function executeWorkspaceMigration(args: UpgradeArgs): void {
+  const projectRoot = findProjectRoot();
+  const legacyPath = path.resolve(projectRoot, args.legacyPath ?? LEGACY_CONFIG_FILE_NAME);
+  const workspacePath = path.resolve(projectRoot, args.workspacePath ?? WORKSPACE_CONFIG_FILE_NAME);
+
+  if (!existsSync(legacyPath)) {
+    throw new Error(`${MIGRATION_LOG_PREFIX} Legacy config not found: ${legacyPath}`);
+  }
+
+  const legacyConfig = readYamlRecord(legacyPath, LEGACY_CONFIG_FILE_NAME);
+  const existingWorkspace = existsSync(workspacePath)
+    ? readYamlRecord(workspacePath, WORKSPACE_CONFIG_FILE_NAME)
+    : undefined;
+
+  const migrationPlan = buildWorkspaceMigrationPlan({
+    legacyConfig,
+    existingWorkspace,
+    sourcePath: legacyPath,
+    targetPath: workspacePath,
+  });
+
+  console.log(formatWorkspaceMigrationSummary(migrationPlan.summary));
+
+  if (args.dryRun) {
+    console.log(`${MIGRATION_LOG_PREFIX} DRY RUN - no files written.`);
+    return;
+  }
+
+  writeFileSync(workspacePath, YAML.stringify(migrationPlan.workspace), YAML_ENCODING);
+  console.log(`${MIGRATION_LOG_PREFIX} Wrote migrated workspace config to ${workspacePath}`);
+}
+
 /**
  * WU-1127: Execute the upgrade in a micro-worktree
  *
@@ -280,14 +604,18 @@ export async function executeUpgradeInMicroWorktree(args: UpgradeArgs): Promise<
 function printHelp(): void {
   console.log(`
 Usage: lumenflow-upgrade [options]
+       lumenflow-upgrade ${MIGRATE_WORKSPACE_SUBCOMMAND} [options]
 
-Upgrade all @lumenflow/* packages to a specified version.
-Uses micro-worktree isolation to atomically update packages from main checkout.
+Subcommands:
+  (default)                    Upgrade all @lumenflow/* packages
+  ${MIGRATE_WORKSPACE_SUBCOMMAND}  Migrate legacy config to workspace.yaml v2
 
 Options:
-  -v, --version <ver>   Upgrade to specific version (e.g., 1.5.0)
-  -l, --latest          Upgrade to latest version
-  -n, --dry-run         Show commands without executing
+  -v, --version <ver>        Upgrade to specific version (e.g., 1.5.0)
+  -l, --latest               Upgrade to latest version
+  -n, --dry-run              Show commands without executing
+      --legacy <path>        Legacy config path for migration mode
+      --workspace <path>     Workspace target path for migration mode
   -h, --help            Show this help message
 
 Packages upgraded (all 7):
@@ -297,6 +625,9 @@ Examples:
   lumenflow:upgrade --version 1.5.0    # Upgrade to specific version
   lumenflow:upgrade --latest           # Upgrade to latest
   lumenflow:upgrade --latest --dry-run # Preview upgrade commands
+  lumenflow-upgrade ${MIGRATE_WORKSPACE_SUBCOMMAND}
+  lumenflow-upgrade ${MIGRATE_WORKSPACE_SUBCOMMAND} --dry-run
+  lumenflow-upgrade ${MIGRATE_WORKSPACE_SUBCOMMAND} --legacy legacy.yaml --workspace workspace.yaml
 
 Micro-Worktree Pattern (WU-1127):
   This command uses micro-worktree isolation to atomically update
@@ -318,6 +649,18 @@ async function main(): Promise<void> {
   if (args.help) {
     printHelp();
     process.exit(EXIT_CODES.SUCCESS);
+  }
+
+  if (args.migrateWorkspace) {
+    try {
+      executeWorkspaceMigration(args);
+      process.exit(EXIT_CODES.SUCCESS);
+    } catch (error) {
+      console.error(
+        `${MIGRATION_LOG_PREFIX} ${error instanceof Error ? error.message : String(error)}`,
+      );
+      process.exit(EXIT_CODES.ERROR);
+    }
   }
 
   // Require either --version or --latest
