@@ -10,11 +10,13 @@ code_paths:
   - packages/@lumenflow/cli/src/onboard.ts
   - packages/@lumenflow/cli/src/workspace-init.ts
   - packages/@lumenflow/cli/src/__tests__/wu-1852-bootstrap-blockers.test.ts
+  - packages/@lumenflow/cli/src/__tests__/init-greenfield.test.ts
 tests:
   manual:
     - npx lumenflow --client claude-code --preset node bootstraps governed workspace
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-1852-bootstrap-blockers.test.ts
+    - packages/@lumenflow/cli/src/__tests__/init-greenfield.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1978.done
@@ -28,10 +30,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-21T20:39:45.990Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1978
+session_id: b79a6264-6e58-4c9f-a33d-ccc9ded0d9cc
 exposure: api
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T20:39:45.995Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -41,11 +50,3 @@ acceptance:
   - Running npx lumenflow in a fresh repo performs bootstrap-all flow
   - Software delivery pack pin includes registry integrity metadata
   - Bootstrap flags support non-interactive execution for CI and agents
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1978
-claimed_at: 2026-02-21T20:39:45.990Z
-baseline_main_sha: fe15d05c58dd1d5f255ba1497ad9e549bec26b11
-session_id: b79a6264-6e58-4c9f-a33d-ccc9ded0d9cc
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-21T20:39:45.995Z
