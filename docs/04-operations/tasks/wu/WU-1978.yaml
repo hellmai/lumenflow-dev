@@ -1,0 +1,42 @@
+id: WU-1978
+title: Bootstrap-all default path for npx lumenflow
+lane: 'Framework: CLI Enforcement'
+type: feature
+status: ready
+priority: P0
+created: 2026-02-21
+code_paths:
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/onboard.ts
+  - packages/@lumenflow/cli/src/workspace-init.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-1852-bootstrap-blockers.test.ts
+tests:
+  manual:
+    - npx lumenflow --client claude-code --preset node bootstraps governed workspace
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-1852-bootstrap-blockers.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1978.done
+dependencies: []
+initiative: INIT-033
+phase: 2
+blocked_by:
+  - WU-1977
+spec_refs:
+  - docs/04-operations/plans/INIT-033-workspace-first-hard-cut-boots.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: api
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Implement default bootstrap behavior for npx lumenflow to create workspace.yaml, install software-delivery pack, and scaffold client integration securely.
+acceptance:
+  - Running npx lumenflow in a fresh repo performs bootstrap-all flow
+  - Software delivery pack pin includes registry integrity metadata
+  - Bootstrap flags support non-interactive execution for CI and agents

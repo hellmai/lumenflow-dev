@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1978 — Bootstrap-all default path for npx lumenflow](wu/WU-1978.yaml) — Framework: CLI Enforcement
 - [WU-1977 — Unify lumenflow npm wrapper with full CLI router](wu/WU-1977.yaml) — Framework: CLI Enforcement
 - [WU-1976 — Dogfood workspace migration in os repo](wu/WU-1976.yaml) — Content: Specs Governance
 - [WU-1975 — Add config:migrate-workspace command](wu/WU-1975.yaml) — Framework: CLI Enforcement
