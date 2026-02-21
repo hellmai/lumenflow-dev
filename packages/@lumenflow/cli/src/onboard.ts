@@ -21,9 +21,16 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { createWUParser } from '@lumenflow/core';
-import { WORKSPACE_FILE_NAME } from '@lumenflow/kernel';
 import YAML from 'yaml';
-import { buildWorkspaceConfig, generateWorkspaceYaml } from './workspace-init.js';
+import {
+  buildWorkspaceConfig,
+  DEFAULT_DENY_OVERLAYS,
+  DEFAULT_LANE_TITLE,
+  DEFAULT_PROJECT_NAME,
+  DEFAULT_SANDBOX_NETWORK_PROFILE,
+  WORKSPACE_FILENAME,
+  generateWorkspaceYaml,
+} from './workspace-init.js';
 import { DEFAULT_REGISTRY_URL, installPackFromRegistry, type FetchFn } from './pack-install.js';
 import { runCLI } from './cli-entry-point.js';
 
@@ -34,21 +41,44 @@ export const LOG_PREFIX = '[onboard]';
 const NODE_BINARY = 'node';
 const GIT_BINARY = 'git';
 const DEFAULT_DOMAIN_PACK_VERSION = 'latest';
+const DOMAIN_IDS = {
+  SOFTWARE_DELIVERY: 'software-delivery',
+  INFRA: 'infra',
+  CUSTOM: 'custom',
+} as const;
+const DOMAIN_PACK_IDS = {
+  SOFTWARE_DELIVERY: 'software-delivery',
+  INFRA: 'infra',
+} as const;
+const DEFAULT_ONBOARD_LANE_TITLE = DEFAULT_LANE_TITLE;
+const DOMAIN_DEFAULT_PACKS: Readonly<Record<DomainChoice, readonly string[]>> = {
+  [DOMAIN_IDS.SOFTWARE_DELIVERY]: [DOMAIN_PACK_IDS.SOFTWARE_DELIVERY],
+  [DOMAIN_IDS.INFRA]: [DOMAIN_PACK_IDS.INFRA],
+  [DOMAIN_IDS.CUSTOM]: [],
+} as const;
+const DOMAIN_DEFAULT_LANES: Readonly<Record<DomainChoice, readonly string[]>> = {
+  [DOMAIN_IDS.SOFTWARE_DELIVERY]: ['Backend', 'Frontend', 'DevOps'],
+  [DOMAIN_IDS.INFRA]: ['Provisioning', 'Networking', 'Security'],
+  [DOMAIN_IDS.CUSTOM]: [DEFAULT_ONBOARD_LANE_TITLE],
+} as const;
+const DOMAIN_EMPTY_PACK_ID = 'none';
+const ONBOARD_DEFAULT_DOMAIN = DOMAIN_IDS.SOFTWARE_DELIVERY;
+const ONBOARD_FALLBACK_PROJECT_NAME = DEFAULT_PROJECT_NAME;
 
 /** Domain pack IDs mapped to human-readable descriptions */
 export const DOMAIN_CHOICES = [
   {
-    value: 'software-delivery' as const,
+    value: DOMAIN_IDS.SOFTWARE_DELIVERY,
     label: 'Software Delivery',
     hint: 'Git tools, worktree isolation, quality gates, lane locking',
   },
   {
-    value: 'infra' as const,
+    value: DOMAIN_IDS.INFRA,
     label: 'Infrastructure',
     hint: 'Terraform, Ansible, cloud resource management',
   },
   {
-    value: 'custom' as const,
+    value: DOMAIN_IDS.CUSTOM,
     label: 'Custom (empty)',
     hint: 'Start with an empty workspace and add packs manually',
   },
@@ -99,7 +129,7 @@ export async function detectEnvironment(targetDir: string): Promise<EnvironmentI
   const nodeVersion = getToolVersion(NODE_BINARY, ['--version']);
   const gitVersion = getToolVersion(GIT_BINARY, ['--version']);
 
-  const workspacePath = path.join(targetDir, WORKSPACE_FILE_NAME);
+  const workspacePath = path.join(targetDir, WORKSPACE_FILENAME);
   const existingWorkspace = fs.existsSync(workspacePath);
 
   return {
@@ -136,14 +166,7 @@ export interface GenerateWorkspaceResult {
  * @returns Array of pack IDs to include
  */
 function getPacksForDomain(domain: DomainChoice): string[] {
-  switch (domain) {
-    case 'software-delivery':
-      return ['software-delivery'];
-    case 'infra':
-      return ['infra'];
-    case 'custom':
-      return [];
-  }
+  return [...DOMAIN_DEFAULT_PACKS[domain]];
 }
 
 /**
@@ -153,14 +176,7 @@ function getPacksForDomain(domain: DomainChoice): string[] {
  * @returns Array of lane titles
  */
 function getLanesForDomain(domain: DomainChoice): string[] {
-  switch (domain) {
-    case 'software-delivery':
-      return ['Backend', 'Frontend', 'DevOps'];
-    case 'infra':
-      return ['Provisioning', 'Networking', 'Security'];
-    case 'custom':
-      return ['Default'];
-  }
+  return [...DOMAIN_DEFAULT_LANES[domain]];
 }
 
 /**
@@ -184,13 +200,13 @@ export async function generateWorkspaceForDomain(
   targetDir: string,
   options: GenerateWorkspaceOptions,
 ): Promise<GenerateWorkspaceResult> {
-  const workspacePath = path.join(targetDir, WORKSPACE_FILE_NAME);
+  const workspacePath = path.join(targetDir, WORKSPACE_FILENAME);
 
   // Check for existing file
   if (fs.existsSync(workspacePath) && !options.force) {
     return {
       success: false,
-      error: `${WORKSPACE_FILE_NAME} already exists at ${workspacePath}. Use --force to overwrite.`,
+      error: `${WORKSPACE_FILENAME} already exists at ${workspacePath}. Use --force to overwrite.`,
     };
   }
 
@@ -201,8 +217,8 @@ export async function generateWorkspaceForDomain(
   const config = buildWorkspaceConfig({
     projectName: options.projectName,
     lanes,
-    sandboxProfile: 'off',
-    deniedPaths: ['~/.ssh', '~/.aws', '~/.gnupg', '.env'],
+    sandboxProfile: DEFAULT_SANDBOX_NETWORK_PROFILE,
+    deniedPaths: [...DEFAULT_DENY_OVERLAYS],
     cloudConnect: false,
   });
 
@@ -266,7 +282,7 @@ export async function installDomainPack(
 
   if (packs.length === 0) {
     return {
-      packId: 'none',
+      packId: DOMAIN_EMPTY_PACK_ID,
       skipped: true,
       reason: `No packs to install for custom domain. Add packs manually with: pnpm pack:install --id <pack-id>`,
     };
@@ -306,7 +322,7 @@ export async function installDomainPack(
   let installedVersion: string | undefined;
   let installedIntegrity: string | undefined;
   try {
-    const workspacePath = path.join(targetDir, WORKSPACE_FILE_NAME);
+    const workspacePath = path.join(targetDir, WORKSPACE_FILENAME);
     const workspaceRaw = fs.readFileSync(workspacePath, 'utf-8');
     const parsed = YAML.parse(workspaceRaw) as {
       packs?: Array<{ id?: string; version?: string; integrity?: string }>;
@@ -410,8 +426,8 @@ export interface OnboardResult {
 export async function runOnboard(options: OnboardOptions): Promise<OnboardResult> {
   const {
     targetDir,
-    projectName = 'my-project',
-    domain = 'software-delivery',
+    projectName = ONBOARD_FALLBACK_PROJECT_NAME,
+    domain = ONBOARD_DEFAULT_DOMAIN,
     force = false,
     skipPackInstall = false,
     skipDashboard = false,
@@ -521,8 +537,8 @@ async function runInteractiveOnboard(targetDir: string, force: boolean): Promise
   // Step 2: Project name
   const projectName = await clack.text({
     message: 'Project name',
-    placeholder: 'my-project',
-    defaultValue: 'my-project',
+    placeholder: ONBOARD_FALLBACK_PROJECT_NAME,
+    defaultValue: ONBOARD_FALLBACK_PROJECT_NAME,
     validate: (value: string | undefined) => {
       if (!value?.trim()) return 'Project name is required';
       return undefined;
@@ -567,7 +583,7 @@ async function runInteractiveOnboard(targetDir: string, force: boolean): Promise
   spinner.stop('workspace.yaml created');
 
   // Step 5: Install pack (AC4)
-  if (domain !== 'custom') {
+  if (domain !== DOMAIN_IDS.CUSTOM) {
     spinner.start(`Installing ${domain} pack...`);
 
     const installResult = await installDomainPack(targetDir, {
@@ -587,13 +603,13 @@ async function runInteractiveOnboard(targetDir: string, force: boolean): Promise
   // Final summary
   clack.note(
     [
-      `Workspace: ${WORKSPACE_FILE_NAME}`,
+      `Workspace: ${WORKSPACE_FILENAME}`,
       `Domain: ${domain}`,
       `Dashboard: ${dashResult.instruction}`,
       '',
       'Next steps:',
       '  1. Run "lumenflow init" to scaffold agent config files',
-      '  2. Create your first task: pnpm wu:create --lane "Default" --title "My first task"',
+      `  2. Create your first task: pnpm wu:create --lane "${DEFAULT_LANE_TITLE}" --title "My first task"`,
       '  3. Claim it: pnpm wu:claim --id WU-1',
     ].join('\n'),
     'Setup complete',
@@ -663,7 +679,7 @@ export async function main(): Promise<void> {
   const targetDir = (opts.output as string | undefined) ?? process.cwd();
   const force = Boolean(opts.force);
   const useDefaults = Boolean(opts.yes);
-  const domain = (opts.domain as DomainChoice | undefined) ?? 'software-delivery';
+  const domain = (opts.domain as DomainChoice | undefined) ?? ONBOARD_DEFAULT_DOMAIN;
   const projectName =
     (opts.projectName as string | undefined) ?? path.basename(path.resolve(targetDir));
   const skipPackInstall = Boolean(opts.skipPackInstall);
@@ -689,7 +705,7 @@ export async function main(): Promise<void> {
       process.exit(1);
     }
 
-    console.log(`${LOG_PREFIX} Workspace created at ${targetDir}/${WORKSPACE_FILE_NAME}`);
+    console.log(`${LOG_PREFIX} Workspace created at ${targetDir}/${WORKSPACE_FILENAME}`);
     console.log(`${LOG_PREFIX} Domain: ${domain}`);
     if (!skipPackInstall && result.packInstalled === false) {
       console.warn(

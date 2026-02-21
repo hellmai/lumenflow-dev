@@ -113,6 +113,9 @@ import {
   createDirectory,
   createExecutableScript,
 } from './init-scaffolding.js';
+import type { DomainChoice, OnboardResult } from './onboard.js';
+import { DEFAULT_PROJECT_NAME, WORKSPACE_FILENAME } from './workspace-init.js';
+import type { FetchFn } from './pack-install.js';
 // WU-1644: Re-export scaffolding types for backwards compatibility
 export type { FileMode, ScaffoldResult } from './init-scaffolding.js';
 
@@ -159,8 +162,38 @@ const INIT_OPTIONS = {
     flags: '--preset <preset>',
     description: 'Gate preset for config (node, python, go, rust, dotnet)',
   },
+  bootstrapDomain: {
+    name: 'bootstrapDomain',
+    flags: '--bootstrap-domain <domain>',
+    description: 'Bootstrap domain: software-delivery, infra, or custom',
+  },
+  skipBootstrap: {
+    name: 'skipBootstrap',
+    flags: '--skip-bootstrap',
+    description: 'Skip workspace bootstrap-all flow (workspace.yaml + pack install)',
+  },
+  skipBootstrapPackInstall: {
+    name: 'skipBootstrapPackInstall',
+    flags: '--skip-bootstrap-pack-install',
+    description: 'Skip registry pack install during bootstrap',
+  },
   force: WU_OPTIONS.force,
 };
+
+function parseBootstrapDomain(rawDomain: string | undefined): DomainChoice {
+  if (!rawDomain) {
+    return BOOTSTRAP_DEFAULT_DOMAIN;
+  }
+
+  if (BOOTSTRAP_VALID_DOMAINS.has(rawDomain as DomainChoice)) {
+    return rawDomain as DomainChoice;
+  }
+
+  const validDomains = Array.from(BOOTSTRAP_VALID_DOMAINS).join(', ');
+  throw new Error(
+    `${BOOTSTRAP_ERROR_PREFIX} Invalid --bootstrap-domain "${rawDomain}". Valid values: ${validDomains}`,
+  );
+}
 
 /**
  * WU-1085: Parse init command options using createWUParser
@@ -175,6 +208,9 @@ export function parseInitOptions(): {
   client?: ClientType;
   vendor?: ClientType; // Alias for backwards compatibility
   preset?: GatePresetType;
+  bootstrapDomain: DomainChoice;
+  skipBootstrap: boolean;
+  skipBootstrapPackInstall: boolean;
 } {
   // WU-1378: Description includes subcommand hint
   const opts = createWUParser({
@@ -192,6 +228,7 @@ export function parseInitOptions(): {
   // WU-1286: --full is now the default (true), use --minimal to disable
   // --minimal explicitly sets full to false, otherwise full defaults to true
   const fullMode = opts.minimal ? false : (opts.full ?? true);
+  const bootstrapDomain = parseBootstrapDomain(opts.bootstrapDomain as string | undefined);
 
   return {
     force: opts.force ?? false,
@@ -201,6 +238,9 @@ export function parseInitOptions(): {
     client: clientValue as ClientType | undefined,
     vendor: clientValue as ClientType | undefined,
     preset: opts.preset as GatePresetType | undefined,
+    bootstrapDomain,
+    skipBootstrap: Boolean(opts.skipBootstrap),
+    skipBootstrapPackInstall: Boolean(opts.skipBootstrapPackInstall),
   };
 }
 
@@ -244,6 +284,17 @@ export interface ScaffoldOptions {
 }
 
 const DEFAULT_CLIENT_CLAUDE = LUMENFLOW_CLIENT_IDS.CLAUDE_CODE;
+const BOOTSTRAP_DEFAULT_DOMAIN: DomainChoice = 'software-delivery';
+const BOOTSTRAP_INFRA_DOMAIN: DomainChoice = 'infra';
+const BOOTSTRAP_CUSTOM_DOMAIN: DomainChoice = 'custom';
+const BOOTSTRAP_VALID_DOMAINS = new Set<DomainChoice>([
+  BOOTSTRAP_DEFAULT_DOMAIN,
+  BOOTSTRAP_INFRA_DOMAIN,
+  BOOTSTRAP_CUSTOM_DOMAIN,
+]);
+const BOOTSTRAP_SKIP_REASON_FLAG = '--skip-bootstrap';
+const BOOTSTRAP_SKIP_REASON_EXISTING_WORKSPACE = `${WORKSPACE_FILENAME} already exists`;
+const BOOTSTRAP_ERROR_PREFIX = '[lumenflow bootstrap]';
 
 const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
 const FRAMEWORK_HINT_FILE = '.lumenflow.framework.yaml';
@@ -1522,6 +1573,86 @@ async function scaffoldClientFiles(
   }
 }
 
+interface InitBootstrapOptions {
+  targetDir: string;
+  force: boolean;
+  bootstrapDomain: DomainChoice;
+  skipBootstrap: boolean;
+  skipBootstrapPackInstall: boolean;
+  fetchFn?: FetchFn;
+}
+
+interface InitBootstrapResult {
+  skipped: boolean;
+  reason?: string;
+  workspaceGenerated: boolean;
+  packInstalled: boolean;
+}
+
+function resolveBootstrapProjectName(targetDir: string): string {
+  const basename = path.basename(path.resolve(targetDir)).trim();
+  return basename.length > 0 ? basename : DEFAULT_PROJECT_NAME;
+}
+
+export async function runInitBootstrap(
+  options: InitBootstrapOptions,
+): Promise<InitBootstrapResult> {
+  if (options.skipBootstrap) {
+    return {
+      skipped: true,
+      reason: BOOTSTRAP_SKIP_REASON_FLAG,
+      workspaceGenerated: false,
+      packInstalled: false,
+    };
+  }
+
+  const workspacePath = path.join(options.targetDir, WORKSPACE_FILENAME);
+  const hasExistingWorkspace = fs.existsSync(workspacePath);
+
+  if (hasExistingWorkspace && !options.force) {
+    return {
+      skipped: true,
+      reason: BOOTSTRAP_SKIP_REASON_EXISTING_WORKSPACE,
+      workspaceGenerated: false,
+      packInstalled: false,
+    };
+  }
+
+  const onboardModule = await import('./onboard.js');
+  const onboardResult = (await onboardModule.runOnboard({
+    targetDir: options.targetDir,
+    nonInteractive: true,
+    projectName: resolveBootstrapProjectName(options.targetDir),
+    domain: options.bootstrapDomain,
+    force: options.force,
+    skipPackInstall: options.skipBootstrapPackInstall,
+    skipDashboard: true,
+    fetchFn: options.fetchFn ?? globalThis.fetch,
+  })) as OnboardResult;
+
+  if (!onboardResult.success) {
+    const failureReason = onboardResult.errors.join('; ') || 'unknown onboarding error';
+    throw new Error(`${BOOTSTRAP_ERROR_PREFIX} ${failureReason}`);
+  }
+
+  if (
+    !options.skipBootstrapPackInstall &&
+    options.bootstrapDomain !== BOOTSTRAP_CUSTOM_DOMAIN &&
+    onboardResult.packInstalled !== true
+  ) {
+    throw new Error(
+      `${BOOTSTRAP_ERROR_PREFIX} failed to install ${options.bootstrapDomain} pack with integrity metadata. ` +
+        `Retry after fixing registry access or rerun with --skip-bootstrap-pack-install.`,
+    );
+  }
+
+  return {
+    skipped: false,
+    workspaceGenerated: onboardResult.workspaceGenerated === true,
+    packInstalled: onboardResult.packInstalled === true,
+  };
+}
+
 /**
  * CLI entry point
  * WU-1085: Updated to use parseInitOptions for proper --help support
@@ -1549,10 +1680,30 @@ export async function main(): Promise<void> {
   console.log(`  Framework: ${opts.framework ?? 'none'}`);
   console.log(`  Client: ${opts.client ?? 'auto'}`);
   console.log(`  Gate preset: ${opts.preset ?? 'none (manual config)'}`);
+  console.log(`  Bootstrap domain: ${opts.bootstrapDomain}`);
+  console.log(
+    `  Bootstrap pack install: ${opts.skipBootstrapPackInstall ? 'skipped (--skip-bootstrap-pack-install)' : 'required'}`,
+  );
 
   // WU-1968: Removed separate checkPrerequisites() call here.
   // runDoctorForInit() (called after scaffolding) already checks prerequisites
   // and displays results, avoiding duplicate output.
+
+  const bootstrapResult = await runInitBootstrap({
+    targetDir,
+    force: opts.force,
+    bootstrapDomain: opts.bootstrapDomain,
+    skipBootstrap: opts.skipBootstrap,
+    skipBootstrapPackInstall: opts.skipBootstrapPackInstall,
+  });
+
+  if (bootstrapResult.skipped) {
+    console.log(`  Bootstrap: skipped (${bootstrapResult.reason})`);
+  } else {
+    console.log(
+      `  Bootstrap: workspace=${bootstrapResult.workspaceGenerated ? 'created' : 'unchanged'}, pack=${bootstrapResult.packInstalled ? 'installed' : 'skipped'}`,
+    );
+  }
 
   const result = await scaffoldProject(targetDir, {
     force: opts.force,

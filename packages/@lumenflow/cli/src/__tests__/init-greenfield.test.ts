@@ -363,7 +363,7 @@ describe('greenfield onboarding (WU-1364)', () => {
 
         // Mock process.argv for parseInitOptions
         const originalArgv = process.argv;
-        process.argv = ['node', 'init', '--full'];
+        process.argv = ['node', 'init', '--full', '--skip-bootstrap'];
 
         try {
           await main();
@@ -498,7 +498,7 @@ describe('greenfield onboarding (WU-1364)', () => {
         const originalCwd = process.cwd();
         process.chdir(tempDir);
         const originalArgv = process.argv;
-        process.argv = ['node', 'init', '--full', '--client', 'claude'];
+        process.argv = ['node', 'init', '--full', '--client', 'claude', '--skip-bootstrap'];
 
         try {
           await main();

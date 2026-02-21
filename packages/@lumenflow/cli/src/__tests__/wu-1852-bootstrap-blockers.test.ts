@@ -29,6 +29,10 @@ const PACKAGE_JSON_FILE = 'package.json';
 
 /** Constant for cos:gates script name */
 const COS_GATES_SCRIPT = 'cos:gates';
+const WORKSPACE_FILE = 'workspace.yaml';
+const PACK_ID_SOFTWARE_DELIVERY = 'software-delivery';
+const BOOTSTRAP_DOMAIN_INFRA = 'infra';
+const BOOTSTRAP_DOMAIN_CUSTOM = 'custom';
 
 /** Type for package.json structure */
 interface PackageJson {
@@ -240,5 +244,176 @@ describe('AC5: wu:create reports all validation errors at once (WU-1852)', () =>
     expect(result.valid).toBe(false);
     // Should have at least 4 errors: description, acceptance, exposure, code-paths, spec-refs
     expect(result.errors.length).toBeGreaterThanOrEqual(4);
+  });
+});
+
+// ============================================================================
+// WU-1978: bootstrap-all default path
+// ============================================================================
+describe('WU-1978: bootstrap-all default path', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lumenflow-bootstrap-all-'));
+  });
+
+  afterEach(async () => {
+    const { vi } = await import('vitest');
+    vi.resetModules();
+    vi.unmock('../onboard.js');
+    if (tempDir && fs.existsSync(tempDir)) {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  async function importInitWithMockedOnboard(
+    runOnboardImpl: (args: unknown) => Promise<unknown>,
+  ): Promise<typeof import('../init.js')> {
+    const { vi } = await import('vitest');
+    vi.resetModules();
+    vi.doMock('../onboard.js', () => ({
+      runOnboard: runOnboardImpl,
+    }));
+    return import('../init.js');
+  }
+
+  it('parseInitOptions accepts bootstrap flags for CI/agent non-interactive flow', async () => {
+    const { parseInitOptions } = await importInitWithMockedOnboard(async () => ({
+      success: true,
+      errors: [],
+      workspaceGenerated: true,
+      packInstalled: true,
+    }));
+    const originalArgv = process.argv;
+
+    process.argv = [
+      'node',
+      'init',
+      '--bootstrap-domain',
+      BOOTSTRAP_DOMAIN_INFRA,
+      '--skip-bootstrap',
+      '--skip-bootstrap-pack-install',
+    ];
+
+    try {
+      const parsed = parseInitOptions();
+      expect(parsed.bootstrapDomain).toBe(BOOTSTRAP_DOMAIN_INFRA);
+      expect(parsed.skipBootstrap).toBe(true);
+      expect(parsed.skipBootstrapPackInstall).toBe(true);
+    } finally {
+      process.argv = originalArgv;
+    }
+  });
+
+  it('runInitBootstrap invokes onboard non-interactively for fresh directories', async () => {
+    const calls: unknown[] = [];
+    const { runInitBootstrap } = await importInitWithMockedOnboard(async (args) => {
+      calls.push(args);
+      return {
+        success: true,
+        errors: [],
+        workspaceGenerated: true,
+        packInstalled: true,
+      };
+    });
+
+    const result = await runInitBootstrap({
+      targetDir: tempDir,
+      force: false,
+      bootstrapDomain: PACK_ID_SOFTWARE_DELIVERY,
+      skipBootstrap: false,
+      skipBootstrapPackInstall: false,
+    });
+
+    expect(result.skipped).toBe(false);
+    expect(result.workspaceGenerated).toBe(true);
+    expect(result.packInstalled).toBe(true);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({
+      nonInteractive: true,
+      targetDir: tempDir,
+      skipDashboard: true,
+      skipPackInstall: false,
+      domain: PACK_ID_SOFTWARE_DELIVERY,
+    });
+  });
+
+  it('runInitBootstrap skips when workspace.yaml already exists and force=false', async () => {
+    const { runInitBootstrap } = await importInitWithMockedOnboard(async () => ({
+      success: true,
+      errors: [],
+      workspaceGenerated: true,
+      packInstalled: true,
+    }));
+    fs.writeFileSync(path.join(tempDir, WORKSPACE_FILE), 'id: existing\n', 'utf-8');
+
+    const result = await runInitBootstrap({
+      targetDir: tempDir,
+      force: false,
+      bootstrapDomain: PACK_ID_SOFTWARE_DELIVERY,
+      skipBootstrap: false,
+      skipBootstrapPackInstall: true,
+    });
+
+    expect(result.skipped).toBe(true);
+  });
+
+  it('runInitBootstrap rejects when required pack installation is missing integrity-backed pin', async () => {
+    const { runInitBootstrap } = await importInitWithMockedOnboard(async () => ({
+      success: true,
+      errors: [],
+      workspaceGenerated: true,
+      packInstalled: false,
+    }));
+
+    await expect(
+      runInitBootstrap({
+        targetDir: tempDir,
+        force: false,
+        bootstrapDomain: PACK_ID_SOFTWARE_DELIVERY,
+        skipBootstrap: false,
+        skipBootstrapPackInstall: false,
+      }),
+    ).rejects.toThrow(/integrity metadata/i);
+  });
+
+  it('runInitBootstrap allows custom domain without pack installation', async () => {
+    const { runInitBootstrap } = await importInitWithMockedOnboard(async () => ({
+      success: true,
+      errors: [],
+      workspaceGenerated: true,
+      packInstalled: false,
+    }));
+
+    const result = await runInitBootstrap({
+      targetDir: tempDir,
+      force: false,
+      bootstrapDomain: BOOTSTRAP_DOMAIN_CUSTOM,
+      skipBootstrap: false,
+      skipBootstrapPackInstall: false,
+    });
+
+    expect(result.skipped).toBe(false);
+    expect(result.packInstalled).toBe(false);
+  });
+
+  it('runInitBootstrap bypasses bootstrap flow when --skip-bootstrap is set', async () => {
+    const { runInitBootstrap } = await importInitWithMockedOnboard(async () => ({
+      success: true,
+      errors: [],
+      workspaceGenerated: true,
+      packInstalled: true,
+    }));
+
+    const result = await runInitBootstrap({
+      targetDir: tempDir,
+      force: false,
+      bootstrapDomain: PACK_ID_SOFTWARE_DELIVERY,
+      skipBootstrap: true,
+      skipBootstrapPackInstall: false,
+    });
+
+    expect(result.skipped).toBe(true);
+    expect(result.reason).toContain('--skip-bootstrap');
   });
 });

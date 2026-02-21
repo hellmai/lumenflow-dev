@@ -25,16 +25,36 @@ import { runCLI } from './cli-entry-point.js';
 
 export const LOG_PREFIX = '[workspace:init]';
 
-const WORKSPACE_FILENAME = 'workspace.yaml';
-const DEFAULT_WORKSPACE_ID = 'default';
-const DEFAULT_WORKSPACE_NAME = 'My Project';
-const DEFAULT_PROJECT_NAME = 'my-project';
-const DEFAULT_LANE_TITLE = 'Default';
-const DEFAULT_NAMESPACE = 'default';
-const DEFAULT_DENY_OVERLAYS = ['~/.ssh', '~/.aws', '~/.gnupg', '.env'] as const;
+export const WORKSPACE_FILENAME = 'workspace.yaml';
+export const DEFAULT_WORKSPACE_ID = 'default';
+export const DEFAULT_WORKSPACE_NAME = 'My Project';
+export const DEFAULT_PROJECT_NAME = 'my-project';
+export const DEFAULT_LANE_TITLE = 'Default';
+export const DEFAULT_NAMESPACE = 'default';
+export const DEFAULT_DENY_OVERLAYS = ['~/.ssh', '~/.aws', '~/.gnupg', '.env'] as const;
+export const DEFAULT_DENY_OVERLAYS_PROMPT = DEFAULT_DENY_OVERLAYS.join(', ');
+export const SANDBOX_NETWORK_PROFILE = {
+  OFF: 'off',
+  FULL: 'full',
+} as const;
+export type SandboxNetworkProfile =
+  (typeof SANDBOX_NETWORK_PROFILE)[keyof typeof SANDBOX_NETWORK_PROFILE];
+export const DEFAULT_SANDBOX_NETWORK_PROFILE = SANDBOX_NETWORK_PROFILE.OFF;
+export const CLOUD_CONNECT_RESPONSE = {
+  YES: 'yes',
+  NO: 'no',
+  SHORT_YES: 'y',
+  BOOLEAN_TRUE: 'true',
+} as const;
+const CLOUD_CONNECT_TRUTHY = new Set<string>([
+  CLOUD_CONNECT_RESPONSE.YES,
+  CLOUD_CONNECT_RESPONSE.SHORT_YES,
+  CLOUD_CONNECT_RESPONSE.BOOLEAN_TRUE,
+]);
+const EMPTY_SOFTWARE_DELIVERY_CONFIG: WorkspaceSpec['software_delivery'] = Object.freeze({});
 
 function createEmptySoftwareDeliveryConfig(): WorkspaceSpec['software_delivery'] {
-  return {};
+  return { ...EMPTY_SOFTWARE_DELIVERY_CONFIG };
 }
 
 // --- Question definitions ---
@@ -62,17 +82,17 @@ export const WORKSPACE_QUESTIONS: WorkspaceQuestion[] = [
   {
     name: 'sandboxProfile',
     prompt: 'Sandbox network profile (off | full)',
-    defaultValue: 'off',
+    defaultValue: DEFAULT_SANDBOX_NETWORK_PROFILE,
   },
   {
     name: 'deniedPaths',
     prompt: 'Denied paths (comma-separated, e.g., ~/.ssh, ~/.aws, .env)',
-    defaultValue: '~/.ssh, ~/.aws, ~/.gnupg, .env',
+    defaultValue: DEFAULT_DENY_OVERLAYS_PROMPT,
   },
   {
     name: 'cloudConnect',
     prompt: 'Enable cloud agent support? (yes | no)',
-    defaultValue: 'no',
+    defaultValue: CLOUD_CONNECT_RESPONSE.NO,
   },
 ];
 
@@ -81,7 +101,7 @@ export const WORKSPACE_QUESTIONS: WorkspaceQuestion[] = [
 export interface WorkspaceConfigInput {
   projectName: string;
   lanes: string[];
-  sandboxProfile: 'off' | 'full';
+  sandboxProfile: SandboxNetworkProfile;
   deniedPaths: string[];
   cloudConnect: boolean;
 }
@@ -102,12 +122,12 @@ export function parseAnswers(answers: Record<string, string>): WorkspaceConfigIn
         .filter(Boolean)
     : [];
 
-  const cloudConnect =
-    answers.cloudConnect.toLowerCase() === 'yes' ||
-    answers.cloudConnect.toLowerCase() === 'y' ||
-    answers.cloudConnect.toLowerCase() === 'true';
+  const cloudConnect = CLOUD_CONNECT_TRUTHY.has(answers.cloudConnect.toLowerCase());
 
-  const sandboxProfile = answers.sandboxProfile === 'full' ? 'full' : 'off';
+  const sandboxProfile =
+    answers.sandboxProfile === SANDBOX_NETWORK_PROFILE.FULL
+      ? SANDBOX_NETWORK_PROFILE.FULL
+      : SANDBOX_NETWORK_PROFILE.OFF;
 
   return {
     projectName: answers.projectName,
@@ -149,7 +169,7 @@ export function getDefaultWorkspaceConfig(): WorkspaceSpec {
     policies: {},
     security: {
       allowed_scopes: [],
-      network_default: 'off',
+      network_default: DEFAULT_SANDBOX_NETWORK_PROFILE,
       deny_overlays: [...DEFAULT_DENY_OVERLAYS],
     },
     software_delivery: createEmptySoftwareDeliveryConfig(),
@@ -221,7 +241,9 @@ export function generateWorkspaceYaml(config: WorkspaceSpec): string {
   lines.push('security:');
   lines.push('  # Workspace-level scope restrictions');
   lines.push(`  allowed_scopes: ${YAML.stringify(config.security.allowed_scopes).trim()}`);
-  lines.push('  # Network access default for sandbox (off = no network, full = unrestricted)');
+  lines.push(
+    `  # Network access default for sandbox (${SANDBOX_NETWORK_PROFILE.OFF} = no network, ${SANDBOX_NETWORK_PROFILE.FULL} = unrestricted)`,
+  );
   lines.push(`  network_default: ${config.security.network_default}`);
   lines.push('  # Paths denied to agent sandbox via deny overlays');
   lines.push('  deny_overlays:');
