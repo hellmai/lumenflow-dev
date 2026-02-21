@@ -2,7 +2,7 @@ id: WU-1980
 title: Add lumenflow cloud connect command
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -59,3 +59,6 @@ acceptance:
   - lumenflow cloud connect writes validated control_plane section to workspace.yaml
   - Command fails with actionable messages for invalid endpoint or missing token env
   - Command supports non-interactive flags for CI/agent automation
+locked: true
+completed_at: 2026-02-21T21:38:16.277Z
+completed: 2026-02-21
