@@ -49,6 +49,11 @@ import {
   UpgradeArgs,
   executeUpgradeInMicroWorktree,
   validateMainCheckout,
+  buildWorkspaceMigrationPlan,
+  formatWorkspaceMigrationSummary,
+  MIGRATE_WORKSPACE_SUBCOMMAND,
+  LEGACY_CONFIG_FILE_NAME,
+  WORKSPACE_CONFIG_FILE_NAME,
 } from '../lumenflow-upgrade.js';
 
 // Cast mocks for TypeScript
@@ -117,6 +122,124 @@ describe('lumenflow-upgrade', () => {
     it('should default dryRun to false', () => {
       const args = parseUpgradeArgs(['node', 'lumenflow-upgrade.js']);
       expect(args.dryRun).toBeFalsy();
+    });
+
+    it('should parse config:migrate-workspace subcommand', () => {
+      const args = parseUpgradeArgs(['node', 'lumenflow-upgrade.js', MIGRATE_WORKSPACE_SUBCOMMAND]);
+      expect(args.migrateWorkspace).toBe(true);
+    });
+
+    it('should parse custom migration file paths', () => {
+      const args = parseUpgradeArgs([
+        'node',
+        'lumenflow-upgrade.js',
+        MIGRATE_WORKSPACE_SUBCOMMAND,
+        '--legacy',
+        'legacy.yaml',
+        '--workspace',
+        'workspace.custom.yaml',
+      ]);
+      expect(args.migrateWorkspace).toBe(true);
+      expect(args.legacyPath).toBe('legacy.yaml');
+      expect(args.workspacePath).toBe('workspace.custom.yaml');
+    });
+  });
+
+  describe('buildWorkspaceMigrationPlan', () => {
+    it('should migrate legacy config into workspace software_delivery block', () => {
+      const legacyFixture = {
+        methodology: { testing: 'tdd' },
+        gates: { min_coverage: 90 },
+      };
+
+      const plan = buildWorkspaceMigrationPlan({
+        legacyConfig: legacyFixture,
+      });
+
+      expect(plan.workspace[WORKSPACE_CONFIG_FILE_NAME]).toBeUndefined();
+      expect(plan.workspace.software_delivery).toBeDefined();
+      const methodology = (plan.workspace.software_delivery as Record<string, unknown>)
+        .methodology as Record<string, unknown>;
+      expect(methodology.testing).toBe('tdd');
+      expect((plan.workspace.software_delivery as Record<string, unknown>).gates).toBeDefined();
+      expect(plan.summary.workspaceCreated).toBe(true);
+      expect(plan.summary.controlPlaneMigrated).toBe(false);
+      expect(plan.summary.warnings).toEqual([]);
+    });
+
+    it('should migrate valid control_plane from legacy config', () => {
+      const legacyFixture = {
+        control_plane: {
+          enabled: true,
+          endpoint: 'https://control.lumenflow.dev',
+          org_id: 'org-123',
+          sync_interval: 30,
+          policy_mode: 'tighten-only',
+          local_override: false,
+        },
+      };
+
+      const plan = buildWorkspaceMigrationPlan({
+        legacyConfig: legacyFixture,
+      });
+
+      expect(plan.summary.controlPlaneMigrated).toBe(true);
+      expect(plan.workspace.control_plane).toEqual(legacyFixture.control_plane);
+    });
+
+    it('should report deterministic warnings when overriding existing workspace config', () => {
+      const legacyFixture = {
+        methodology: { testing: 'tdd' },
+      };
+
+      const existingWorkspace = {
+        id: 'repo',
+        name: 'Repo',
+        packs: [],
+        lanes: [{ id: 'repo', title: 'Repo', allowed_scopes: [] }],
+        policies: {},
+        security: {
+          allowed_scopes: [],
+          network_default: 'off',
+          deny_overlays: [],
+        },
+        software_delivery: {
+          methodology: { testing: 'test-after' },
+        },
+        memory_namespace: 'repo',
+        event_namespace: 'repo',
+      };
+
+      const plan = buildWorkspaceMigrationPlan({
+        legacyConfig: legacyFixture,
+        existingWorkspace,
+      });
+
+      expect(plan.summary.workspaceCreated).toBe(false);
+      expect(plan.summary.warnings).toEqual([
+        'Existing workspace software_delivery block will be replaced with migrated legacy config.',
+      ]);
+    });
+  });
+
+  describe('formatWorkspaceMigrationSummary', () => {
+    it('should include deterministic summary fields in stable order', () => {
+      const output = formatWorkspaceMigrationSummary({
+        sourcePath: LEGACY_CONFIG_FILE_NAME,
+        targetPath: WORKSPACE_CONFIG_FILE_NAME,
+        workspaceCreated: true,
+        softwareDeliveryKeyCount: 2,
+        softwareDeliveryKeys: ['gates', 'methodology'],
+        controlPlaneMigrated: false,
+        warnings: ['warning-1'],
+      });
+
+      expect(output).toContain(`source: ${LEGACY_CONFIG_FILE_NAME}`);
+      expect(output).toContain(`target: ${WORKSPACE_CONFIG_FILE_NAME}`);
+      expect(output).toContain('workspace_created: yes');
+      expect(output).toContain('software_delivery_keys: 2 (gates, methodology)');
+      expect(output).toContain('control_plane_migrated: no');
+      expect(output).toContain('warnings: 1');
     });
   });
 

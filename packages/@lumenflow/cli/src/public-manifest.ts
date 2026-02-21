@@ -683,14 +683,21 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     name: 'config:set',
     binName: 'config-set',
     binPath: './dist/config-set.js',
-    description: 'Safely update .lumenflow.config.yaml via micro-worktree',
+    description: 'Safely update workspace.yaml software_delivery via micro-worktree',
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
   },
   {
     name: 'config:get',
     binName: 'config-get',
     binPath: './dist/config-get.js',
-    description: 'Read and display a value from .lumenflow.config.yaml',
+    description: 'Read and display a value from workspace.yaml software_delivery',
+    category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+  },
+  {
+    name: 'config:migrate-workspace',
+    binName: 'lumenflow-upgrade',
+    binPath: './dist/lumenflow-upgrade.js',
+    description: 'Migrate legacy config into workspace.yaml v2',
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
   },
   {
