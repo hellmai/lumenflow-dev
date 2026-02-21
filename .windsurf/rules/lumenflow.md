@@ -59,13 +59,13 @@ pnpm wu:done --id WU-XXX
 
 ## Workflow Summary
 
-| Step         | Command                                   |
-| ------------ | ----------------------------------------- |
+| Step         | Command                                                          |
+| ------------ | ---------------------------------------------------------------- |
 | 1. Create WU | `pnpm wu:create --lane <Lane> --title "..."` (ID auto-generated) |
-| 2. Claim     | `pnpm wu:claim --id WU-XXX --lane <Lane>` |
-| 3. Work      | `cd worktrees/<lane>-wu-xxx`              |
-| 4. Gates     | `pnpm gates`                              |
-| 5. Complete  | `pnpm wu:done --id WU-XXX`                |
+| 2. Claim     | `pnpm wu:claim --id WU-XXX --lane <Lane>`                        |
+| 3. Work      | `cd worktrees/<lane>-wu-xxx`                                     |
+| 4. Gates     | `pnpm gates`                                                     |
+| 5. Complete  | `pnpm wu:done --id WU-XXX`                                       |
 
 ## Safety Reminders
 
