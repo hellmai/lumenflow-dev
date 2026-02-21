@@ -832,7 +832,7 @@ export async function runOnboard(options: OnboardOptions): Promise<OnboardResult
  *
  * This is the main entry point for interactive mode.
  */
-async function runInteractiveOnboard(targetDir: string, force: boolean): Promise<void> {
+async function _runInteractiveOnboard(targetDir: string, force: boolean): Promise<void> {
   // Dynamic import to avoid loading @clack/prompts in non-interactive mode
   const clack = await import('@clack/prompts');
 
