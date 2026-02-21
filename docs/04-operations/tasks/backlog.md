@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1975 — Add config:migrate-workspace command](wu/WU-1975.yaml) — Framework: CLI Enforcement
 - [WU-1974 — Legacy runtime hard cut for .lumenflow.config.yaml](wu/WU-1974.yaml) — Framework: Core Lifecycle
 - [WU-1973 — Repoint config:set and config:get to workspace.yaml](wu/WU-1973.yaml) — Framework: CLI Enforcement
 - [WU-1972 — Core config provider rewrite to workspace.yaml canonical](wu/WU-1972.yaml) — Framework: Core Lifecycle
