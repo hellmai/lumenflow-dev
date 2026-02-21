@@ -6,13 +6,11 @@ import type { Disposable, KernelEvent, KernelRuntime, ReplayFilter } from '@lume
 import { createEventStreamRouter, type EventSubscriber } from './event-stream.js';
 import { createRunAgentRouter } from './run-agent.js';
 import { createTaskApiRouter } from './task-api.js';
-
-interface ControlPlaneSyncPortLike {
-  pushKernelEvents(input: {
-    workspace_id: string;
-    events: KernelEvent[];
-  }): Promise<{ accepted: number }>;
-}
+import {
+  DEFAULT_CONTROL_PLANE_SYNC_INTERVAL_MS,
+  type ControlPlaneSyncPortLike,
+  wrapEventSubscriberWithControlPlaneSync,
+} from './control-plane-event-subscriber.js';
 
 const URL_BASE = 'http://localhost';
 const ROUTE_SEGMENT = {
@@ -46,6 +44,8 @@ export interface HttpSurfaceOptions {
   eventSubscriber?: EventSubscriber;
   controlPlaneSyncPort?: ControlPlaneSyncPortLike;
   workspaceId?: string;
+  controlPlaneSyncIntervalMs?: number;
+  controlPlaneDiagnosticsLogger?: Pick<Console, 'warn'>;
 }
 
 export interface HttpSurface {
@@ -83,32 +83,6 @@ function matchesRunAgentRoute(segments: string[]): boolean {
   return segments.every((segment, index) => segment === AG_UI_RUN_PATH_SEGMENTS[index]);
 }
 
-function wrapWithControlPlaneForwarding(
-  subscriber: EventSubscriber,
-  controlPlane: ControlPlaneSyncPortLike,
-  workspaceId: string,
-): EventSubscriber {
-  return {
-    subscribe(
-      filter: ReplayFilter,
-      callback: (event: KernelEvent) => void | Promise<void>,
-    ): Disposable {
-      const forwardingCallback = async (event: KernelEvent): Promise<void> => {
-        await callback(event);
-        try {
-          await controlPlane.pushKernelEvents({
-            workspace_id: workspaceId,
-            events: [event],
-          });
-        } catch {
-          // Control plane forwarding failures must not disrupt the SSE stream.
-        }
-      };
-      return subscriber.subscribe(filter, forwardingCallback);
-    },
-  };
-}
-
 function resolveEventSubscriber(
   runtime: KernelRuntime,
   options: HttpSurfaceOptions,
@@ -132,11 +106,12 @@ function resolveEventSubscriber(
   }
 
   if (subscriber && options.controlPlaneSyncPort && options.workspaceId) {
-    return wrapWithControlPlaneForwarding(
-      subscriber,
-      options.controlPlaneSyncPort,
-      options.workspaceId,
-    );
+    return wrapEventSubscriberWithControlPlaneSync(subscriber, {
+      controlPlaneSyncPort: options.controlPlaneSyncPort,
+      workspaceId: options.workspaceId,
+      pollIntervalMs: options.controlPlaneSyncIntervalMs ?? DEFAULT_CONTROL_PLANE_SYNC_INTERVAL_MS,
+      logger: options.controlPlaneDiagnosticsLogger,
+    });
   }
 
   return subscriber;
