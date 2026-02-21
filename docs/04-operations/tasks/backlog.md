@@ -38,7 +38,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1976 — Dogfood workspace migration in os repo](wu/WU-1976.yaml) — Content: Specs Governance
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -948,6 +948,7 @@ sections:
 - [WU-1973 — Repoint config:set and config:get to workspace.yaml](wu/WU-1973.yaml)
 - [WU-1974 — Legacy runtime hard cut for .lumenflow.config.yaml](wu/WU-1974.yaml)
 - [WU-1975 — Add config:migrate-workspace command](wu/WU-1975.yaml)
+- [WU-1976 — Dogfood workspace migration in os repo](wu/WU-1976.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

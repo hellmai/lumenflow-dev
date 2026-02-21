@@ -1906,4 +1906,5 @@
 {"type":"complete","wuId":"WU-1974","timestamp":"2026-02-21T19:52:20.435Z"}
 {"type":"claim","wuId":"WU-1975","timestamp":"2026-02-21T19:53:12.750Z","lane":"Framework: CLI Enforcement","title":"Add config:migrate-workspace command"}
 {"type":"complete","wuId":"WU-1975","timestamp":"2026-02-21T20:12:34.651Z"}
-{"type":"claim","wuId":"WU-1976","lane":"Content: Specs Governance","title":"Dogfood workspace migration in os repo","timestamp":"2026-02-21T20:13:15.249Z"}
+{"type":"claim","wuId":"WU-1976","timestamp":"2026-02-21T20:13:15.249Z","lane":"Content: Specs Governance","title":"Dogfood workspace migration in os repo"}
+{"type":"complete","wuId":"WU-1976","timestamp":"2026-02-21T20:19:57.079Z"}

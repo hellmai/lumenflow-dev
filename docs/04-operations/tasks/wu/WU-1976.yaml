@@ -2,7 +2,7 @@ id: WU-1976
 title: Dogfood workspace migration in os repo
 lane: 'Content: Specs Governance'
 type: refactor
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -44,3 +44,6 @@ acceptance:
   - Repository workspace.yaml reflects canonical v2 contract for software_delivery settings
   - Doctor/status commands run using workspace.yaml canonical model
   - No runtime path in this repo requires legacy config file for operation
+locked: true
+completed_at: 2026-02-21T20:19:52.299Z
+completed: 2026-02-21
