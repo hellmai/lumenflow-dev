@@ -10,8 +10,6 @@ code_paths:
   - tools/__tests__/cli-entry.test.ts
   - packages/@lumenflow/core/src/arg-parser.ts
   - packages/@lumenflow/core/src/__tests__/arg-parser.test.ts
-  - packages/@lumenflow/cli/src/pack-install.ts
-  - packages/@lumenflow/cli/src/pack-scaffold.ts
 tests:
   manual:
     - 'Run: pnpm onboard --yes --domain software-delivery --output /tmp/lumenflow-smoke && confirm
@@ -28,10 +26,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-21T12:45:36.393Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1961
+session_id: 1b26ffef-d3eb-4170-b3d7-ff56fb835ebd
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T12:45:36.402Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -45,11 +50,3 @@ acceptance:
   - pnpm pack:install --help and pnpm pack:scaffold --help return usage output instead of
     option-collision crash
   - Parser behavior remains backward-compatible for existing commands that rely on built-in --version
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-1961
-claimed_at: 2026-02-21T12:45:36.393Z
-baseline_main_sha: bc0e76c5453a3dbb1de12f3ae1c7365b74d7ece4
-session_id: 1b26ffef-d3eb-4170-b3d7-ff56fb835ebd
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-21T12:45:36.402Z
