@@ -2,7 +2,7 @@ id: WU-1981
 title: Wire runtime control-plane sync lifecycle
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -34,8 +34,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Wire runtime/surfaces integration for control-plane pull/push operations (policy pull, heartbeat, evidence/event forwarding) via sync port.
+description: Wire runtime/surfaces integration for control-plane pull/push operations (policy pull,
+  heartbeat, evidence/event forwarding) via sync port.
 acceptance:
   - Runtime calls sync port pull and push operations using configured intervals
   - Policy pull can tighten local policy decisions
   - Network/auth failures emit actionable diagnostics without unsafe fallback
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-1981
+claimed_at: 2026-02-21T21:39:08.207Z
+baseline_main_sha: b601fb92aa55597eee03ecaa3ad527842af98a9d
+session_id: aa50ecb6-ce3e-483b-ab96-c71c1aecc7ba
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T21:39:08.213Z

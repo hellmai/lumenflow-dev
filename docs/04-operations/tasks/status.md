@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1981 — Wire runtime control-plane sync lifecycle](wu/WU-1981.yaml)
 
 ## Completed
 
