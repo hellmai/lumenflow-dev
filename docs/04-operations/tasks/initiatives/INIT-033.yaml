@@ -28,5 +28,9 @@ success_metrics:
 labels: []
 related_plan: lumenflow://plans/INIT-033-workspace-first-hard-cut-boots.md
 notes:
+  - 'Execution guardrail: run lane preflight in order (lane:status -> lane:setup/lane:validate/lane:lock
+    only if needed), and require clean git status before first wu:create.'
+  - 'Critical trap: do not use lane:* --help as a safe probe; current lane commands can execute lifecycle
+    logic and rewrite .lumenflow.config.yaml via YAML re-serialization.'
   - 'Prereq caveat: state:doctor currently reports persistent superseded-status mismatches on
     WU-1552 and WU-1553 (ready->superseded transition not auto-fixable).'
