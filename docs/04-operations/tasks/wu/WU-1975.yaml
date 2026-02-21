@@ -2,7 +2,7 @@ id: WU-1975
 title: Add config:migrate-workspace command
 lane: 'Framework: CLI Enforcement'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -48,3 +48,6 @@ session_id: d164f9db-24b3-4d8a-ad8e-71171a304279
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-21T19:53:12.698Z
+locked: true
+completed_at: 2026-02-21T20:12:29.607Z
+completed: 2026-02-21

@@ -1904,4 +1904,5 @@
 {"type":"complete","wuId":"WU-1973","timestamp":"2026-02-21T19:31:19.803Z"}
 {"type":"claim","wuId":"WU-1974","timestamp":"2026-02-21T19:32:24.115Z","lane":"Framework: Core Lifecycle","title":"Legacy runtime hard cut for .lumenflow.config.yaml"}
 {"type":"complete","wuId":"WU-1974","timestamp":"2026-02-21T19:52:20.435Z"}
-{"type":"claim","wuId":"WU-1975","lane":"Framework: CLI Enforcement","title":"Add config:migrate-workspace command","timestamp":"2026-02-21T19:53:12.750Z"}
+{"type":"claim","wuId":"WU-1975","timestamp":"2026-02-21T19:53:12.750Z","lane":"Framework: CLI Enforcement","title":"Add config:migrate-workspace command"}
+{"type":"complete","wuId":"WU-1975","timestamp":"2026-02-21T20:12:34.651Z"}

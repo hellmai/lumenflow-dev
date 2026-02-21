@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-- [WU-1975 — Add config:migrate-workspace command](wu/WU-1975.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -909,3 +909,4 @@ _Last updated: 2026-02-21_
 - [WU-1972 — Core config provider rewrite to workspace.yaml canonical](wu/WU-1972.yaml) — 2026-02-21
 - [WU-1973 — Repoint config:set and config:get to workspace.yaml](wu/WU-1973.yaml) — 2026-02-21
 - [WU-1974 — Legacy runtime hard cut for .lumenflow.config.yaml](wu/WU-1974.yaml) — 2026-02-21
+- [WU-1975 — Add config:migrate-workspace command](wu/WU-1975.yaml) — 2026-02-21
