@@ -26,6 +26,16 @@ import { runCLI } from './cli-entry-point.js';
 export const LOG_PREFIX = '[workspace:init]';
 
 const WORKSPACE_FILENAME = 'workspace.yaml';
+const DEFAULT_WORKSPACE_ID = 'default';
+const DEFAULT_WORKSPACE_NAME = 'My Project';
+const DEFAULT_PROJECT_NAME = 'my-project';
+const DEFAULT_LANE_TITLE = 'Default';
+const DEFAULT_NAMESPACE = 'default';
+const DEFAULT_DENY_OVERLAYS = ['~/.ssh', '~/.aws', '~/.gnupg', '.env'] as const;
+
+function createEmptySoftwareDeliveryConfig(): WorkspaceSpec['software_delivery'] {
+  return {};
+}
 
 // --- Question definitions ---
 
@@ -42,12 +52,12 @@ export const WORKSPACE_QUESTIONS: WorkspaceQuestion[] = [
   {
     name: 'projectName',
     prompt: 'Project name',
-    defaultValue: 'my-project',
+    defaultValue: DEFAULT_PROJECT_NAME,
   },
   {
     name: 'lanes',
     prompt: 'Work lanes (comma-separated, e.g., Backend, Frontend, DevOps)',
-    defaultValue: 'Default',
+    defaultValue: DEFAULT_LANE_TITLE,
   },
   {
     name: 'sandboxProfile',
@@ -126,13 +136,13 @@ function toKebabCase(title: string): string {
  */
 export function getDefaultWorkspaceConfig(): WorkspaceSpec {
   return {
-    id: 'default',
-    name: 'My Project',
+    id: DEFAULT_WORKSPACE_ID,
+    name: DEFAULT_WORKSPACE_NAME,
     packs: [],
     lanes: [
       {
-        id: 'default',
-        title: 'Default',
+        id: DEFAULT_WORKSPACE_ID,
+        title: DEFAULT_LANE_TITLE,
         allowed_scopes: [],
       },
     ],
@@ -140,11 +150,11 @@ export function getDefaultWorkspaceConfig(): WorkspaceSpec {
     security: {
       allowed_scopes: [],
       network_default: 'off',
-      deny_overlays: ['~/.ssh', '~/.aws', '~/.gnupg', '.env'],
+      deny_overlays: [...DEFAULT_DENY_OVERLAYS],
     },
-    software_delivery: {},
-    memory_namespace: 'default',
-    event_namespace: 'default',
+    software_delivery: createEmptySoftwareDeliveryConfig(),
+    memory_namespace: DEFAULT_NAMESPACE,
+    event_namespace: DEFAULT_NAMESPACE,
   };
 }
 
@@ -169,7 +179,7 @@ export function buildWorkspaceConfig(input: WorkspaceConfigInput): WorkspaceSpec
       network_default: input.sandboxProfile,
       deny_overlays: input.deniedPaths,
     },
-    software_delivery: {},
+    software_delivery: createEmptySoftwareDeliveryConfig(),
     memory_namespace: toKebabCase(input.projectName),
     event_namespace: toKebabCase(input.projectName),
   };
