@@ -1,0 +1,41 @@
+id: WU-1979
+title: Finalize control-plane contract in workspace schema + SDK
+lane: 'Framework: Core Validation'
+type: feature
+status: ready
+priority: P0
+created: 2026-02-21
+code_paths:
+  - packages/@lumenflow/control-plane-sdk/src/workspace-config.ts
+  - packages/@lumenflow/control-plane-sdk/src/sync-port.ts
+  - packages/@lumenflow/kernel/src/kernel.schemas.ts
+tests:
+  manual:
+    - pnpm --filter @lumenflow/kernel test -- kernel.schemas
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/kernel.schemas.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1979.done
+dependencies: []
+initiative: INIT-033
+phase: 3
+blocked_by:
+  - WU-1971
+spec_refs:
+  - docs/04-operations/plans/INIT-033-workspace-first-hard-cut-boots.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: api
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Finalize and enforce control_plane schema contract across kernel/core and control-plane-sdk, including project_id, policy_mode, and auth token-env semantics.
+acceptance:
+  - workspace/control_plane schema includes endpoint, org_id, project_id, sync_interval, policy_mode, and auth contract
+  - control-plane-sdk parser validates the same canonical contract
+  - Contract tests cover invalid policy mode and missing auth fields
