@@ -20,7 +20,7 @@ phases:
     status: done
   - id: 4
     title: 'Phase 4: Surfaces + Release'
-    status: pending
+    status: in_progress
 success_metrics:
   - Single-command bootstrap for new users
   - No runtime dependency on .lumenflow.config.yaml

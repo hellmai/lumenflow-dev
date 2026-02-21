@@ -2,7 +2,7 @@ id: WU-1982
 title: Expose cloud connection diagnostics in web UI
 lane: 'Operations: Runtime'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -50,3 +50,6 @@ session_id: fc15ece1-7c6a-481a-b219-d2b7b83ee599
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-21T21:46:46.327Z
+locked: true
+completed_at: 2026-02-21T22:00:36.303Z
+completed: 2026-02-21
