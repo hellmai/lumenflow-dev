@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-- [WU-1970 — INIT-033 scaffold + plan linkage governance](wu/WU-1970.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -903,3 +903,4 @@ _Last updated: 2026-02-21_
 - [WU-1967 — Replace stale lane table in CLAUDE.md with pointer to config yaml](wu/WU-1967.yaml) — 2026-02-21
 - [WU-1968 — Fix doctor duplicate output and misleading git version prerequisite warning](wu/WU-1968.yaml) — 2026-02-21
 - [WU-1969 — Fix gitignore merge path missing runtime state exclusions](wu/WU-1969.yaml) — 2026-02-21
+- [WU-1970 — INIT-033 scaffold + plan linkage governance](wu/WU-1970.yaml) — 2026-02-21

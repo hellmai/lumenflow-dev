@@ -42,10 +42,11 @@ sections:
 - [WU-1983 — MCP parity for bootstrap and cloud operations](wu/WU-1983.yaml) — Framework: MCP
 - [WU-1984 — Docs + release readiness for workspace-first v4.0.0](wu/WU-1984.yaml) — Content: Site Comms
 - [WU-1985 — Retire split onboarding path and legacy bootstrap entrypoints](wu/WU-1985.yaml) — Framework: CLI Enforcement
+- [WU-1986 — Update docs to prefer auto-generated WU IDs over explicit --id](wu/WU-1986.yaml) — Content: Framework Docs
 
 ## 🔧 In progress
 
-- [WU-1970 — INIT-033 scaffold + plan linkage governance](wu/WU-1970.yaml) — Content: Specs Governance
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -948,6 +949,7 @@ sections:
 - [WU-1967 — Replace stale lane table in CLAUDE.md with pointer to config yaml](wu/WU-1967.yaml)
 - [WU-1968 — Fix doctor duplicate output and misleading git version prerequisite warning](wu/WU-1968.yaml)
 - [WU-1969 — Fix gitignore merge path missing runtime state exclusions](wu/WU-1969.yaml)
+- [WU-1970 — INIT-033 scaffold + plan linkage governance](wu/WU-1970.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

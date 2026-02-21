@@ -1892,4 +1892,5 @@
 {"type":"complete","wuId":"WU-1968","timestamp":"2026-02-21T17:03:02.635Z"}
 {"type":"claim","wuId":"WU-1969","timestamp":"2026-02-21T17:07:46.845Z","lane":"Framework: CLI Enforcement","title":"Fix gitignore merge path missing runtime state exclusions"}
 {"type":"complete","wuId":"WU-1969","timestamp":"2026-02-21T17:16:34.367Z"}
-{"type":"claim","wuId":"WU-1970","lane":"Content: Specs Governance","title":"INIT-033 scaffold + plan linkage governance","timestamp":"2026-02-21T18:30:36.937Z"}
+{"type":"claim","wuId":"WU-1970","timestamp":"2026-02-21T18:30:36.937Z","lane":"Content: Specs Governance","title":"INIT-033 scaffold + plan linkage governance"}
+{"type":"complete","wuId":"WU-1970","timestamp":"2026-02-21T18:33:55.683Z"}
