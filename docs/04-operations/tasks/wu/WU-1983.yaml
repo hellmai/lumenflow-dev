@@ -2,7 +2,7 @@ id: WU-1983
 title: MCP parity for bootstrap and cloud operations
 lane: 'Framework: MCP'
 type: feature
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -35,8 +35,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Expand MCP server tool surface to match bootstrap and cloud-connect capabilities available in CLI/HTTP surfaces.
+description: Expand MCP server tool surface to match bootstrap and cloud-connect capabilities
+  available in CLI/HTTP surfaces.
 acceptance:
   - MCP exposes bootstrap/cloud status and related workspace operations
   - MCP tool contracts mirror CLI semantics and validation messages
   - MCP tests cover success and failure paths for parity operations
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-1983
+claimed_at: 2026-02-21T22:01:48.302Z
+baseline_main_sha: dbcab41cb36cfafb53f2145d5a833a0e8b092f43
+session_id: 3f62bff3-51d9-45e9-9e66-46aa35a93dc1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T22:01:48.310Z

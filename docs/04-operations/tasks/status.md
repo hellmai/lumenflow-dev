@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1983 — MCP parity for bootstrap and cloud operations](wu/WU-1983.yaml)
 
 ## Completed
 

@@ -1920,3 +1920,4 @@
 {"type":"complete","wuId":"WU-1981","timestamp":"2026-02-21T21:46:04.058Z"}
 {"type":"claim","wuId":"WU-1982","timestamp":"2026-02-21T21:46:46.373Z","lane":"Operations: Runtime","title":"Expose cloud connection diagnostics in web UI"}
 {"type":"complete","wuId":"WU-1982","timestamp":"2026-02-21T22:00:41.190Z"}
+{"type":"claim","wuId":"WU-1983","lane":"Framework: MCP","title":"MCP parity for bootstrap and cloud operations","timestamp":"2026-02-21T22:01:48.357Z"}
