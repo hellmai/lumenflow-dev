@@ -299,17 +299,79 @@ async function checkBranchGuard(
 }
 
 /**
+ * WU-1965: Detected project tooling from package.json
+ * Used to override config defaults so gates reference actually-installed tools.
+ */
+interface DetectedTooling {
+  testRunner?: 'vitest' | 'jest' | 'mocha';
+  hasTurbo: boolean;
+  packageManager?: 'pnpm' | 'npm' | 'yarn' | 'bun';
+}
+
+/**
+ * WU-1965: Detect installed test runner and build tool from package.json
+ * Reads devDependencies and dependencies to find what's actually installed.
+ * Returns defaults that match the project, not hardcoded vitest/turbo.
+ */
+function detectProjectTooling(targetDir: string): DetectedTooling {
+  const packageJsonPath = path.join(targetDir, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    return { hasTurbo: false };
+  }
+
+  try {
+    const content = fs.readFileSync(packageJsonPath, 'utf-8');
+    const pkg = JSON.parse(content) as Record<string, unknown>;
+    const deps = (pkg.dependencies ?? {}) as Record<string, string>;
+    const devDeps = (pkg.devDependencies ?? {}) as Record<string, string>;
+    const allDeps = { ...deps, ...devDeps };
+
+    // Detect test runner
+    let testRunner: DetectedTooling['testRunner'];
+    if ('vitest' in allDeps) {
+      testRunner = 'vitest';
+    } else if ('jest' in allDeps) {
+      testRunner = 'jest';
+    } else if ('mocha' in allDeps) {
+      testRunner = 'mocha';
+    }
+
+    // Detect turbo
+    const hasTurbo = 'turbo' in allDeps;
+
+    // Detect package manager from packageManager field
+    let packageManager: DetectedTooling['packageManager'];
+    const pkgManager = pkg.packageManager as string | undefined;
+    if (pkgManager?.startsWith('pnpm')) {
+      packageManager = 'pnpm';
+    } else if (pkgManager?.startsWith('yarn')) {
+      packageManager = 'yarn';
+    } else if (pkgManager?.startsWith('bun')) {
+      packageManager = 'bun';
+    } else if (pkgManager?.startsWith('npm')) {
+      packageManager = 'npm';
+    }
+
+    return { testRunner, hasTurbo, packageManager };
+  } catch {
+    return { hasTurbo: false };
+  }
+}
+
+/**
  * Generate YAML configuration with header comment
  * WU-1067: Supports --preset option for config-driven gates
  * WU-1307: Includes default lane definitions for onboarding
  * WU-1364: Supports git config overrides (requireRemote)
  * WU-1383: Adds enforcement hooks config for Claude client by default
+ * WU-1965: Detects installed tooling from package.json for config defaults
  */
 function generateLumenflowConfigYaml(
   gatePreset?: GatePresetType,
   gitConfigOverride?: { requireRemote: boolean } | null,
   client?: ClientType,
   docsPaths?: import('./init-detection.js').DocsPathConfig,
+  targetDir?: string,
 ): string {
   // WU-1382: Add managed file header to prevent manual edits
   const header = `# ============================================================================
@@ -360,6 +422,45 @@ function generateLumenflowConfigYaml(
   if (gitConfigOverride) {
     (config as Record<string, unknown>).git = {
       requireRemote: gitConfigOverride.requireRemote,
+    };
+  }
+
+  // WU-1965: Override config defaults based on detected project tooling.
+  // Prevents generating vitest/turbo references when those tools are not installed.
+  if (targetDir) {
+    const tooling = detectProjectTooling(targetDir);
+
+    // Override test_runner if we detected one (otherwise leave schema default)
+    if (tooling.testRunner) {
+      (config as Record<string, unknown>).test_runner = tooling.testRunner;
+    } else {
+      // No test runner found in package.json -- use a neutral default
+      // that won't fail when gates run. Remove vitest default.
+      (config as Record<string, unknown>).test_runner = 'jest';
+    }
+
+    // Override gates commands based on available tooling
+    const pm = tooling.packageManager ?? 'pnpm';
+    const commands: Record<string, string> = {};
+
+    if (tooling.hasTurbo) {
+      commands.test_full = `${pm} turbo run test`;
+    } else {
+      commands.test_full = `${pm} test`;
+    }
+
+    if (tooling.testRunner === 'vitest') {
+      commands.test_incremental = `${pm} vitest run --changed origin/main`;
+    } else if (tooling.testRunner === 'jest') {
+      commands.test_incremental = `${pm} jest --onlyChanged`;
+    } else {
+      commands.test_incremental = `${pm} test`;
+    }
+
+    // Override gates commands to match detected tooling (always overwrite schema defaults)
+    (config.gates as Record<string, unknown>).commands = {
+      ...config.gates.commands,
+      ...commands,
     };
   }
 
@@ -586,6 +687,7 @@ export async function scaffoldProject(
     skipped: [],
     merged: [],
     warnings: [],
+    overwritten: [],
   };
 
   // WU-1362: Check branch before writing tracked files
@@ -638,7 +740,7 @@ export async function scaffoldProject(
 
   await createFile(
     configPath,
-    generateLumenflowConfigYaml(options.gatePreset, gitConfigOverride, client, docsPaths),
+    generateLumenflowConfigYaml(options.gatePreset, gitConfigOverride, client, docsPaths, targetDir),
     options.force ? 'force' : 'skip',
     result,
     targetDir,
@@ -769,8 +871,11 @@ async function scaffoldGitignore(
   const gitignorePath = path.join(targetDir, GITIGNORE_FILE_NAME);
   const fileMode = getFileMode(options);
 
-  if (fileMode === 'merge' && fs.existsSync(gitignorePath)) {
-    // Merge mode: append LumenFlow exclusions if not already present
+  // WU-1965: Auto-merge lumenflow entries when .gitignore exists, regardless of mode.
+  // Previously only merge mode triggered merging; skip mode would skip the entire file,
+  // risking accidental commits of .lumenflow/telemetry, worktrees, etc.
+  if ((fileMode === 'merge' || fileMode === 'skip') && fs.existsSync(gitignorePath)) {
+    // Merge mode or skip mode with existing file: append LumenFlow exclusions if not already present
     const existingContent = fs.readFileSync(gitignorePath, 'utf-8');
     const linesToAdd: string[] = [];
 
@@ -795,14 +900,15 @@ async function scaffoldGitignore(
 ${linesToAdd.join('\n')}
 `;
       fs.writeFileSync(gitignorePath, existingContent + lumenflowBlock);
-      result.merged?.push(GITIGNORE_FILE_NAME);
+      result.merged = result.merged ?? [];
+      result.merged.push(GITIGNORE_FILE_NAME);
     } else {
       result.skipped.push(GITIGNORE_FILE_NAME);
     }
     return;
   }
 
-  // Skip or force mode
+  // Force mode or file doesn't exist: write full template
   await createFile(gitignorePath, GITIGNORE_TEMPLATE, fileMode, result, targetDir);
 }
 
@@ -1331,7 +1437,12 @@ async function scaffoldClientFiles(
     await scaffoldClaudeSkills(targetDir, options, result, tokens);
 
     // WU-1083: Scaffold agent onboarding docs for Claude vendor (even without --full)
-    await scaffoldAgentOnboardingDocs(targetDir, options, result, tokens);
+    // WU-1965: Guard with !options.full to prevent duplicate scaffolding.
+    // When full=true, scaffoldFullDocs() already called scaffoldAgentOnboardingDocs().
+    // Only call here for non-full (minimal) mode so Claude client still gets onboarding docs.
+    if (!options.full) {
+      await scaffoldAgentOnboardingDocs(targetDir, options, result, tokens);
+    }
   }
 
   // WU-1171: Cursor uses .cursor/rules/lumenflow.md (not .cursor/rules.md)
@@ -1470,6 +1581,12 @@ export async function main(): Promise<void> {
   if (result.merged && result.merged.length > 0) {
     console.log('\nMerged (LumenFlow block inserted/updated):');
     result.merged.forEach((f) => console.log(`  ~ ${f}`));
+  }
+
+  // WU-1965: Report overwritten files when --force replaces existing files
+  if (result.overwritten && result.overwritten.length > 0) {
+    console.log('\nOverwritten (existing file replaced with --force):');
+    result.overwritten.forEach((f) => console.log(`  ! ${f}`));
   }
 
   if (result.skipped.length > 0) {
