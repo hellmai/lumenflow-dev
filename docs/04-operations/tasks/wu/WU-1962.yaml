@@ -6,10 +6,44 @@ status: in_progress
 priority: P1
 created: 2026-02-21
 code_paths:
-  - packages/@lumenflow/cli/src/public-manifest.ts
-  - packages/@lumenflow/cli/src/__tests__/commands.test.ts
-  - packages/@lumenflow/cli/README.md
+  - CHANGELOG.md
+  - apps/docs/src/content/docs/getting-started/faq.mdx
+  - apps/docs/src/content/docs/guides/agent-patterns.mdx
+  - apps/docs/src/content/docs/guides/troubleshooting.mdx
+  - apps/docs/src/content/docs/index.mdx
   - apps/docs/src/content/docs/reference/cli.mdx
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/release-process.md
+  - docs/templates/lumenflow.config.yaml
+  - packages/@lumenflow/agent/LICENSE
+  - packages/@lumenflow/agent/README.md
+  - packages/@lumenflow/agent/package.json
+  - packages/@lumenflow/cli/LICENSE
+  - packages/@lumenflow/cli/README.md
+  - packages/@lumenflow/cli/package.json
+  - packages/@lumenflow/cli/src/public-manifest.ts
+  - packages/@lumenflow/cli/templates/core/UPGRADING.md.template
+  - packages/@lumenflow/cli/templates/core/ai/onboarding/release-process.md.template
+  - packages/@lumenflow/core/LICENSE
+  - packages/@lumenflow/core/package.json
+  - packages/@lumenflow/initiatives/LICENSE
+  - packages/@lumenflow/initiatives/README.md
+  - packages/@lumenflow/initiatives/package.json
+  - packages/@lumenflow/kernel/LICENSE.md
+  - packages/@lumenflow/kernel/package.json
+  - packages/@lumenflow/mcp/LICENSE
+  - packages/@lumenflow/mcp/package.json
+  - packages/@lumenflow/memory/LICENSE
+  - packages/@lumenflow/memory/README.md
+  - packages/@lumenflow/memory/package.json
+  - packages/@lumenflow/metrics/LICENSE
+  - packages/@lumenflow/metrics/package.json
+  - packages/@lumenflow/runtime/LICENSE
+  - packages/@lumenflow/shims/LICENSE
+  - packages/@lumenflow/shims/package.json
+  - packages/lumenflow/LICENSE
+  - packages/lumenflow/README.md
+  - packages/lumenflow/package.json
+  - tools/generate-cli-docs.ts
 tests:
   manual:
     - 'Run: pnpm docs:validate'
@@ -25,10 +59,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-21T14:04:18.469Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1962
+session_id: 9437017e-172c-42d4-a211-64346d1984bc
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T14:04:18.477Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +81,5 @@ acceptance:
     alignment tests pass
   - Generated CLI docs include workspace:init and docs:validate passes without drift
   - pre-release:check passes end-to-end
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1962
-claimed_at: 2026-02-21T14:04:18.469Z
-baseline_main_sha: f08874b9a820bed2b572351da8a55a1f10b8cdee
-session_id: 9437017e-172c-42d4-a211-64346d1984bc
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-21T14:04:18.477Z
+  - Public repo links in package metadata, templates, and Starlight docs are updated from
+    hellmai/lumenflow to hellmai/lumenflow-dev
