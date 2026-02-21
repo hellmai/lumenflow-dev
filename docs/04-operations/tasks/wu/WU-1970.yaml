@@ -1,0 +1,35 @@
+id: WU-1970
+title: INIT-033 scaffold + plan linkage governance
+lane: 'Content: Specs Governance'
+type: documentation
+status: ready
+priority: P0
+created: 2026-02-21
+code_paths:
+  - docs/04-operations/tasks/initiatives/INIT-033.yaml
+  - docs/04-operations/plans/INIT-033-workspace-first-hard-cut-boots.md
+tests:
+  manual:
+    - pnpm initiative:status --id INIT-033 shows phases and related_plan
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1970.done
+dependencies: []
+initiative: INIT-033
+phase: 1
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Create and normalize INIT-033 metadata, phase structure, and linked execution plan with explicit lane preflight guardrails.
+acceptance:
+  - INIT-033 includes description, phases, and success metrics
+  - INIT-033 has related_plan set to the canonical plan file
+  - Execution notes document mandatory lane preflight and lane:* --help side-effect trap
