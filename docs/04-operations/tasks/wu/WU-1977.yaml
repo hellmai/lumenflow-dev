@@ -9,11 +9,13 @@ code_paths:
   - packages/lumenflow/bin/lumenflow.mjs
   - packages/lumenflow/README.md
   - packages/lumenflow/package.json
+  - packages/lumenflow/__tests__/lumenflow-router.test.ts
 tests:
   manual:
     - npx lumenflow --help shows unified command surface
   unit:
     - packages/@lumenflow/cli/src/__tests__/commands.test.ts
+    - packages/lumenflow/__tests__/lumenflow-router.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1977.done
@@ -25,10 +27,17 @@ blocked_by:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-21T20:20:50.289Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1977
+session_id: 3eba7d3a-054d-4a8f-ac54-1519b51b6ffd
 exposure: api
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T20:20:50.297Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -38,11 +47,3 @@ acceptance:
   - npx lumenflow without subcommand reaches CLI router
   - Subcommands continue to resolve through wrapper entrypoint
   - Wrapper tests cover default and explicit command dispatch
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-enforcement-wu-1977
-claimed_at: 2026-02-21T20:20:50.289Z
-baseline_main_sha: 6b1f04fce1a4862d437d699df96eeb83a7bd4440
-session_id: 3eba7d3a-054d-4a8f-ac54-1519b51b6ffd
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-21T20:20:50.297Z
