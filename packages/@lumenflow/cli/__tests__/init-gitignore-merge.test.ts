@@ -53,9 +53,7 @@ describe('WU-1969: gitignore merge path completeness', () => {
       const templates = await import('../src/init-templates.js');
       const { REQUIRED_GITIGNORE_EXCLUSIONS } = templates;
 
-      const patterns = REQUIRED_GITIGNORE_EXCLUSIONS.map(
-        (e: { pattern: string }) => e.pattern,
-      );
+      const patterns = REQUIRED_GITIGNORE_EXCLUSIONS.map((e: { pattern: string }) => e.pattern);
 
       // These were in GITIGNORE_TEMPLATE but missing from the old requiredExclusions
       expect(patterns).toContain('.lumenflow/flow.log');
@@ -69,9 +67,7 @@ describe('WU-1969: gitignore merge path completeness', () => {
       const templates = await import('../src/init-templates.js');
       const { REQUIRED_GITIGNORE_EXCLUSIONS } = templates;
 
-      const patterns = REQUIRED_GITIGNORE_EXCLUSIONS.map(
-        (e: { pattern: string }) => e.pattern,
-      );
+      const patterns = REQUIRED_GITIGNORE_EXCLUSIONS.map((e: { pattern: string }) => e.pattern);
 
       expect(patterns).toContain('node_modules');
       expect(patterns).toContain('.lumenflow/telemetry');
@@ -107,10 +103,7 @@ describe('WU-1969: gitignore merge path completeness', () => {
       const freshDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lumenflow-fresh-'));
       try {
         await scaffoldProject(freshDir, { ...baseOptions });
-        const freshContent = fs.readFileSync(
-          path.join(freshDir, '.gitignore'),
-          'utf-8',
-        );
+        const freshContent = fs.readFileSync(path.join(freshDir, '.gitignore'), 'utf-8');
 
         // Merge init: existing .gitignore
         const gitignorePath = path.join(tempDir, '.gitignore');
@@ -133,10 +126,7 @@ describe('WU-1969: gitignore merge path completeness', () => {
 
       // Pre-existing .gitignore with node_modules already present
       const gitignorePath = path.join(tempDir, '.gitignore');
-      fs.writeFileSync(
-        gitignorePath,
-        '# Dependencies\nnode_modules/\n',
-      );
+      fs.writeFileSync(gitignorePath, '# Dependencies\nnode_modules/\n');
 
       await scaffoldProject(tempDir, { ...baseOptions });
 

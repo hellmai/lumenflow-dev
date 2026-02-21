@@ -129,10 +129,7 @@ describe('WU-1965: Init scaffold dedup and output fixes', () => {
       const allLines = templates.REQUIRED_GITIGNORE_EXCLUSIONS.map(
         (e: { line: string }) => e.line,
       ).join('\n');
-      fs.writeFileSync(
-        gitignorePath,
-        `# My project\n${allLines}\n`,
-      );
+      fs.writeFileSync(gitignorePath, `# My project\n${allLines}\n`);
 
       const { scaffoldProject } = await import('../src/init.js');
       const result = await scaffoldProject(tempDir, {
