@@ -29,6 +29,8 @@ export interface ScaffoldResult {
   warnings?: string[];
   /** WU-1576: Files created by client integration adapters (enforcement hooks etc.) */
   integrationFiles?: string[];
+  /** WU-1965: Files that were overwritten by --force mode */
+  overwritten?: string[];
 }
 
 /**
@@ -165,9 +167,10 @@ export async function createFile(
   // Handle boolean for backwards compatibility (true = force, false = skip)
   const resolvedMode = resolveBooleanToFileMode(mode);
 
-  // Ensure merged/warnings arrays exist
+  // Ensure merged/warnings/overwritten arrays exist
   result.merged = result.merged ?? [];
   result.warnings = result.warnings ?? [];
+  result.overwritten = result.overwritten ?? [];
 
   const fileExists = fs.existsSync(filePath);
 
@@ -179,6 +182,11 @@ export async function createFile(
   if (fileExists && resolvedMode === 'merge') {
     handleMergeMode(filePath, content, result, relativePath);
     return;
+  }
+
+  // WU-1965: Track overwritten files when force mode replaces an existing file
+  if (fileExists && resolvedMode === 'force') {
+    result.overwritten.push(relativePath);
   }
 
   // Force mode or file doesn't exist: write new content
@@ -201,12 +209,18 @@ export async function createExecutableScript(
 
   result.merged = result.merged ?? [];
   result.warnings = result.warnings ?? [];
+  result.overwritten = result.overwritten ?? [];
 
   const fileExists = fs.existsSync(filePath);
 
   if (fileExists && resolvedMode === 'skip') {
     result.skipped.push(relativePath);
     return;
+  }
+
+  // WU-1965: Track overwritten files
+  if (fileExists && (resolvedMode === 'force' || resolvedMode === 'merge')) {
+    result.overwritten.push(relativePath);
   }
 
   // Write file with executable permissions
