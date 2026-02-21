@@ -31,7 +31,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1983 — MCP parity for bootstrap and cloud operations](wu/WU-1983.yaml) — Framework: MCP
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -948,6 +948,7 @@ sections:
 - [WU-1980 — Add lumenflow cloud connect command](wu/WU-1980.yaml)
 - [WU-1981 — Wire runtime control-plane sync lifecycle](wu/WU-1981.yaml)
 - [WU-1982 — Expose cloud connection diagnostics in web UI](wu/WU-1982.yaml)
+- [WU-1983 — MCP parity for bootstrap and cloud operations](wu/WU-1983.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

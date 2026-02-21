@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-- [WU-1983 — MCP parity for bootstrap and cloud operations](wu/WU-1983.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -917,3 +917,4 @@ _Last updated: 2026-02-21_
 - [WU-1980 — Add lumenflow cloud connect command](wu/WU-1980.yaml) — 2026-02-21
 - [WU-1981 — Wire runtime control-plane sync lifecycle](wu/WU-1981.yaml) — 2026-02-21
 - [WU-1982 — Expose cloud connection diagnostics in web UI](wu/WU-1982.yaml) — 2026-02-21
+- [WU-1983 — MCP parity for bootstrap and cloud operations](wu/WU-1983.yaml) — 2026-02-21
