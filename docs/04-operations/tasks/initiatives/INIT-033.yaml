@@ -3,7 +3,7 @@ slug: workspace-first-bootstrap-cloud
 title: Workspace-first hard cut + bootstrap-all + cloud connect
 description: Hard cut to workspace.yaml as canonical config, default bootstrap-all CLI onboarding,
   and first-class cloud connect with security-first defaults.
-status: draft
+status: in_progress
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-21
@@ -27,3 +27,6 @@ success_metrics:
   - Cloud-connected workspace operational
 labels: []
 related_plan: lumenflow://plans/INIT-033-workspace-first-hard-cut-boots.md
+notes:
+  - 'Prereq caveat: state:doctor currently reports persistent superseded-status mismatches on
+    WU-1552 and WU-1553 (ready->superseded transition not auto-fixable).'
