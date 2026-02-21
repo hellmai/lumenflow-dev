@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1978 — Bootstrap-all default path for npx lumenflow](wu/WU-1978.yaml)
 
 ## Completed
 
