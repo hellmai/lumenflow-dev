@@ -2,7 +2,7 @@ id: WU-1963
 title: lumenflow init should scaffold package.json with CLI scripts
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-21
 code_paths:
@@ -47,3 +47,6 @@ acceptance:
   - lumenflow init in a directory with existing package.json adds scripts without overwriting
     existing content
   - After lumenflow init, pnpm wu:create and pnpm gates work without manual setup
+locked: true
+completed_at: 2026-02-21T14:11:30.080Z
+completed: 2026-02-21
