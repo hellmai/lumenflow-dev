@@ -1887,5 +1887,6 @@
 {"type":"complete","wuId":"WU-1965","timestamp":"2026-02-21T16:19:37.336Z"}
 {"type":"claim","wuId":"WU-1967","timestamp":"2026-02-21T16:21:08.108Z","lane":"Content: Framework Docs","title":"Replace stale lane table in CLAUDE.md with pointer to config yaml"}
 {"type":"complete","wuId":"WU-1967","timestamp":"2026-02-21T16:25:09.279Z"}
-{"type":"release","wuId":"WU-1701","reason":"State reconciliation: claimed in_progress WU has missing worktree path","timestamp":"2026-02-21T16:41:38.779Z"}
-{"type":"claim","wuId":"WU-1968","lane":"Framework: CLI WU Commands","title":"Fix doctor duplicate output and misleading git version prerequisite warning","timestamp":"2026-02-21T16:50:47.335Z"}
+{"type":"release","wuId":"WU-1701","timestamp":"2026-02-21T16:41:38.779Z","reason":"State reconciliation: claimed in_progress WU has missing worktree path"}
+{"type":"claim","wuId":"WU-1968","timestamp":"2026-02-21T16:50:47.335Z","lane":"Framework: CLI WU Commands","title":"Fix doctor duplicate output and misleading git version prerequisite warning"}
+{"type":"complete","wuId":"WU-1968","timestamp":"2026-02-21T17:03:02.635Z"}

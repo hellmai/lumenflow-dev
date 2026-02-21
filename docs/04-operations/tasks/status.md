@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-- [WU-1968 — Fix doctor duplicate output and misleading git version prerequisite warning](wu/WU-1968.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -901,3 +901,4 @@ _Last updated: 2026-02-21_
 - [WU-1966 — Fix web runtime preview fallback diagnostics and workspace root separation](wu/WU-1966.yaml) — 2026-02-21
 - [WU-1965 — Fix lumenflow init duplicate Created/Skipped output for onboarding docs](wu/WU-1965.yaml) — 2026-02-21
 - [WU-1967 — Replace stale lane table in CLAUDE.md with pointer to config yaml](wu/WU-1967.yaml) — 2026-02-21
+- [WU-1968 — Fix doctor duplicate output and misleading git version prerequisite warning](wu/WU-1968.yaml) — 2026-02-21

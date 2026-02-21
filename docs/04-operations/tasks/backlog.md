@@ -29,7 +29,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1968 — Fix doctor duplicate output and misleading git version prerequisite warning](wu/WU-1968.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -930,6 +930,7 @@ sections:
 - [WU-1966 — Fix web runtime preview fallback diagnostics and workspace root separation](wu/WU-1966.yaml)
 - [WU-1965 — Fix lumenflow init duplicate Created/Skipped output for onboarding docs](wu/WU-1965.yaml)
 - [WU-1967 — Replace stale lane table in CLAUDE.md with pointer to config yaml](wu/WU-1967.yaml)
+- [WU-1968 — Fix doctor duplicate output and misleading git version prerequisite warning](wu/WU-1968.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

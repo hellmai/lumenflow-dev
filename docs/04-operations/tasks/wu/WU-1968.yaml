@@ -2,7 +2,7 @@ id: WU-1968
 title: Fix doctor duplicate output and misleading git version prerequisite warning
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-21
 code_paths:
@@ -46,3 +46,6 @@ acceptance:
   - lumenflow doctor output appears exactly once (no duplicate)
   - Passing prerequisite checks show a checkmark not a warning prefix
   - Failing prerequisite checks still show warning prefix with actionable guidance
+locked: true
+completed_at: 2026-02-21T17:02:57.767Z
+completed: 2026-02-21
