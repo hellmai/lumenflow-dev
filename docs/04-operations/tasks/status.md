@@ -5,6 +5,7 @@ _Last updated: 2026-02-21_
 ## In Progress
 
 - [WU-1971 — Workspace v2 schema with software_delivery + control_plane](wu/WU-1971.yaml)
+- [WU-1986 — Update docs to prefer auto-generated WU IDs over explicit --id](wu/WU-1986.yaml)
 
 ## Completed
 

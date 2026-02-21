@@ -1895,3 +1895,4 @@
 {"type":"claim","wuId":"WU-1970","timestamp":"2026-02-21T18:30:36.937Z","lane":"Content: Specs Governance","title":"INIT-033 scaffold + plan linkage governance"}
 {"type":"complete","wuId":"WU-1970","timestamp":"2026-02-21T18:33:55.683Z"}
 {"type":"claim","wuId":"WU-1971","lane":"Framework: Core Validation","title":"Workspace v2 schema with software_delivery + control_plane","timestamp":"2026-02-21T18:34:45.599Z"}
+{"type":"claim","wuId":"WU-1986","lane":"Content: Framework Docs","title":"Update docs to prefer auto-generated WU IDs over explicit --id","timestamp":"2026-02-21T18:36:29.930Z"}

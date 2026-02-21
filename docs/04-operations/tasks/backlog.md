@@ -40,11 +40,11 @@ sections:
 - [WU-1983 — MCP parity for bootstrap and cloud operations](wu/WU-1983.yaml) — Framework: MCP
 - [WU-1984 — Docs + release readiness for workspace-first v4.0.0](wu/WU-1984.yaml) — Content: Site Comms
 - [WU-1985 — Retire split onboarding path and legacy bootstrap entrypoints](wu/WU-1985.yaml) — Framework: CLI Enforcement
-- [WU-1986 — Update docs to prefer auto-generated WU IDs over explicit --id](wu/WU-1986.yaml) — Content: Framework Docs
 
 ## 🔧 In progress
 
 - [WU-1971 — Workspace v2 schema with software_delivery + control_plane](wu/WU-1971.yaml) — Framework: Core Validation
+- [WU-1986 — Update docs to prefer auto-generated WU IDs over explicit --id](wu/WU-1986.yaml) — Content: Framework Docs
 
 ## ⛔ Blocked
 
