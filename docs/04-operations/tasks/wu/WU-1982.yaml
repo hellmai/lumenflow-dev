@@ -1,0 +1,42 @@
+id: WU-1982
+title: Expose cloud connection diagnostics in web UI
+lane: 'Operations: Runtime'
+type: feature
+status: ready
+priority: P0
+created: 2026-02-21
+code_paths:
+  - apps/web/src/server/http-surface-runtime.ts
+  - apps/web/src/components/workspace-connector.tsx
+  - apps/web/__tests__/http-surface-runtime-health.test.ts
+tests:
+  manual:
+    - Open / and verify cloud diagnostics surface in workspace connection flow
+  unit:
+    - apps/web/__tests__/http-surface-runtime-health.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1982.done
+dependencies: []
+initiative: INIT-033
+phase: 4
+blocked_by:
+  - WU-1981
+spec_refs:
+  - docs/04-operations/plans/INIT-033-workspace-first-hard-cut-boots.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: ui
+user_journey: Operator opens dashboard, verifies cloud connection health, and follows remediation steps if disconnected
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Add web status and diagnostics for workspace cloud connection state so operators can verify control-plane connectivity and remediation steps.
+acceptance:
+  - Web UI shows connected/disconnected control-plane state
+  - Preview/runtime-disabled states include actionable setup instructions
+  - Diagnostics include endpoint and token-env validation guidance
