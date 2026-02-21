@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-1983 — MCP parity for bootstrap and cloud operations](wu/WU-1983.yaml) — Framework: MCP
 - [WU-1982 — Expose cloud connection diagnostics in web UI](wu/WU-1982.yaml) — Operations: Runtime
 - [WU-1981 — Wire runtime control-plane sync lifecycle](wu/WU-1981.yaml) — Framework: Core Lifecycle
 - [WU-1980 — Add lumenflow cloud connect command](wu/WU-1980.yaml) — Framework: CLI Enforcement
