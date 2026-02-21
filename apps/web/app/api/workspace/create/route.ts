@@ -40,6 +40,10 @@ interface CreateWorkspaceRequestBody {
   readonly projectName?: unknown;
 }
 
+function createEmptySoftwareDeliveryConfig(): WorkspaceSpec['software_delivery'] {
+  return {};
+}
+
 function jsonResponse(body: unknown, status: number): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -81,6 +85,7 @@ function buildWorkspaceSpec(projectName: string): WorkspaceSpec {
       network_default: DEFAULT_NETWORK_PROFILE,
       deny_overlays: [...DEFAULT_DENY_OVERLAYS],
     },
+    software_delivery: createEmptySoftwareDeliveryConfig(),
     memory_namespace: workspaceId,
     event_namespace: workspaceId,
   };
