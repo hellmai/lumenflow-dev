@@ -5,7 +5,8 @@
  * LumenFlow Configuration Schema
  *
  * Zod schemas for LumenFlow configuration.
- * All paths and settings are configurable via .lumenflow.config.yaml
+ * In workspace-first mode, these settings live under workspace.yaml
+ * in the `software_delivery` extension block.
  *
  * @module lumenflow-config-schema
  */
@@ -25,6 +26,11 @@ import { LUMENFLOW_CLIENT_IDS } from './wu-context-constants.js';
  * - required `software_delivery` block for workflow/gates/runtime settings
  * - optional `control_plane` block for cloud sync policy
  */
+export const WORKSPACE_V2_KEYS = {
+  SOFTWARE_DELIVERY: 'software_delivery',
+  CONTROL_PLANE: 'control_plane',
+} as const;
+
 export const WorkspaceControlPlanePolicyModeSchema = z.enum([
   'authoritative',
   'tighten-only',
@@ -45,8 +51,8 @@ export const WorkspaceControlPlaneConfigSchema = z
 export const WorkspaceSoftwareDeliverySchema = z.record(z.string(), z.unknown());
 
 export const WorkspaceV2ExtensionsSchema = z.object({
-  software_delivery: WorkspaceSoftwareDeliverySchema,
-  control_plane: WorkspaceControlPlaneConfigSchema.optional(),
+  [WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY]: WorkspaceSoftwareDeliverySchema,
+  [WORKSPACE_V2_KEYS.CONTROL_PLANE]: WorkspaceControlPlaneConfigSchema.optional(),
 });
 
 export type WorkspaceControlPlanePolicyMode = z.infer<typeof WorkspaceControlPlanePolicyModeSchema>;

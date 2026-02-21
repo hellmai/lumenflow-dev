@@ -4,7 +4,7 @@
 /**
  * WU Paths - Centralized path management for Work Units
  *
- * All paths are configurable via .lumenflow.config.yaml
+ * All paths are configurable via workspace.yaml (`software_delivery`) config.
  *
  * @module wu-paths
  */

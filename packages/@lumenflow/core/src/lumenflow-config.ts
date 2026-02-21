@@ -4,8 +4,9 @@
 /**
  * LumenFlow Configuration Loader
  *
- * Loads and manages LumenFlow configuration from .lumenflow.config.yaml
- * Falls back to sensible defaults if no config file exists.
+ * Loads and manages LumenFlow configuration from workspace.yaml
+ * (`software_delivery` block). Falls back to the legacy
+ * .lumenflow.config.yaml during the transition window.
  *
  * @module lumenflow-config
  */
@@ -18,11 +19,35 @@ import {
   parseConfig,
   getDefaultConfig,
   validateConfig,
+  WorkspaceV2ExtensionsSchema,
+  WORKSPACE_V2_KEYS,
 } from './lumenflow-config-schema.js';
 import { normalizeConfigKeys } from './normalize-config-keys.js';
 
-/** Default config file name */
-const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+/** Canonical workspace config file name (workspace-first architecture) */
+const WORKSPACE_CONFIG_FILE_NAME = 'workspace.yaml';
+
+/** Legacy config file name retained for transition fallback */
+const LEGACY_CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+
+/** Git sentinel directory used for project-root discovery fallback */
+const GIT_DIRECTORY_NAME = '.git';
+
+/** Shared UTF-8 encoding literal for file reads/writes */
+const UTF8_ENCODING = 'utf8';
+
+/** Warning prefix for config-loading diagnostics */
+const WARNING_PREFIX = '[lumenflow-config]';
+
+/**
+ * Check whether a legacy config file exists in the provided project root.
+ *
+ * @param projectRoot - Project root directory
+ * @returns True when .lumenflow.config.yaml exists
+ */
+function hasLegacyConfig(projectRoot: string): boolean {
+  return fs.existsSync(path.join(projectRoot, LEGACY_CONFIG_FILE_NAME));
+}
 
 /** Cached config instance */
 let cachedConfig: LumenFlowConfig | null = null;
@@ -31,24 +56,46 @@ let cachedConfig: LumenFlowConfig | null = null;
 let cachedProjectRoot: string | null = null;
 
 /**
- * Find project root by looking for .lumenflow.config.yaml or .git
+ * Parse YAML content and coerce it to a plain record.
+ *
+ * @param content - Raw YAML text
+ * @returns Parsed object record, or null when parsed content is not an object
+ */
+function parseYamlRecord(content: string): Record<string, unknown> | null {
+  const parsed = yaml.parse(content);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return null;
+  }
+  return parsed as Record<string, unknown>;
+}
+
+/**
+ * Find project root by looking for workspace.yaml, then legacy config, then .git
  *
  * @param startDir - Directory to start searching from
  * @returns Project root path or current working directory
  */
 export function findProjectRoot(startDir: string = process.cwd()): string {
   let currentDir = path.resolve(startDir);
-  const root = path.parse(currentDir).root;
+  const filesystemRoot = path.parse(currentDir).root;
 
-  while (currentDir !== root) {
-    // Check for config file first
-    if (fs.existsSync(path.join(currentDir, CONFIG_FILE_NAME))) {
+  while (true) {
+    if (fs.existsSync(path.join(currentDir, WORKSPACE_CONFIG_FILE_NAME))) {
       return currentDir;
     }
-    // Fall back to .git directory
-    if (fs.existsSync(path.join(currentDir, '.git'))) {
+
+    if (fs.existsSync(path.join(currentDir, LEGACY_CONFIG_FILE_NAME))) {
       return currentDir;
     }
+
+    if (fs.existsSync(path.join(currentDir, GIT_DIRECTORY_NAME))) {
+      return currentDir;
+    }
+
+    if (currentDir === filesystemRoot) {
+      break;
+    }
+
     currentDir = path.dirname(currentDir);
   }
 
@@ -56,25 +103,84 @@ export function findProjectRoot(startDir: string = process.cwd()): string {
 }
 
 /**
- * Load configuration from file
+ * Load config from canonical workspace.yaml `software_delivery` block.
  *
  * @param projectRoot - Project root directory
- * @returns Parsed configuration or null if file doesn't exist
+ * @returns Parsed software-delivery config object, or null when unavailable/invalid
  */
-function loadConfigFile(projectRoot: string): Partial<LumenFlowConfig> | null {
-  const configPath = path.join(projectRoot, CONFIG_FILE_NAME);
-
-  if (!fs.existsSync(configPath)) {
+function loadWorkspaceSoftwareDeliveryConfig(projectRoot: string): Partial<LumenFlowConfig> | null {
+  const workspacePath = path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME);
+  if (!fs.existsSync(workspacePath)) {
     return null;
   }
 
   try {
-    const content = fs.readFileSync(configPath, 'utf8');
-    const data = yaml.parse(content);
-    // WU-1765: Normalize snake_case YAML keys to camelCase before Zod parsing
-    return normalizeConfigKeys(data || {});
+    const content = fs.readFileSync(workspacePath, UTF8_ENCODING);
+    const workspaceData = parseYamlRecord(content);
+    if (!workspaceData) {
+      if (!hasLegacyConfig(projectRoot)) {
+        console.warn(
+          `${WARNING_PREFIX} ${WORKSPACE_CONFIG_FILE_NAME} does not contain a valid object root.`,
+        );
+      }
+      return null;
+    }
+
+    const parsedExtensions = WorkspaceV2ExtensionsSchema.safeParse(workspaceData);
+    if (!parsedExtensions.success) {
+      const hasSoftwareDeliveryError = parsedExtensions.error.issues.some(
+        (issue) => issue.path[0] === WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY,
+      );
+      if (hasSoftwareDeliveryError && !hasLegacyConfig(projectRoot)) {
+        console.warn(
+          `${WARNING_PREFIX} ${WORKSPACE_CONFIG_FILE_NAME} is missing a valid ${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY} block.`,
+        );
+      }
+      return null;
+    }
+
+    // WU-1765: Normalize snake_case YAML keys to camelCase before Zod parsing.
+    return normalizeConfigKeys(parsedExtensions.data[WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY]);
   } catch (error) {
-    console.warn(`Warning: Failed to parse ${CONFIG_FILE_NAME}:`, error);
+    if (!hasLegacyConfig(projectRoot)) {
+      console.warn(
+        `${WARNING_PREFIX} Failed to parse ${WORKSPACE_CONFIG_FILE_NAME}:`,
+        error instanceof Error ? error.message : String(error),
+      );
+    }
+    return null;
+  }
+}
+
+/**
+ * Load config from legacy .lumenflow.config.yaml.
+ *
+ * @param projectRoot - Project root directory
+ * @returns Parsed legacy config object, or null when unavailable/invalid
+ */
+function loadLegacyConfigFile(projectRoot: string): Partial<LumenFlowConfig> | null {
+  const legacyConfigPath = path.join(projectRoot, LEGACY_CONFIG_FILE_NAME);
+  if (!fs.existsSync(legacyConfigPath)) {
+    return null;
+  }
+
+  try {
+    const content = fs.readFileSync(legacyConfigPath, UTF8_ENCODING);
+    const legacyData = parseYamlRecord(content);
+    if (!legacyData) {
+      console.warn(
+        `${WARNING_PREFIX} ${LEGACY_CONFIG_FILE_NAME} does not contain a valid object root.`,
+      );
+      return null;
+    }
+
+    // WU-1765: Normalize snake_case YAML keys to camelCase before Zod parsing.
+    return normalizeConfigKeys(legacyData);
+  } catch (error) {
+    console.warn(
+      `${WARNING_PREFIX} Failed to parse ${LEGACY_CONFIG_FILE_NAME}:`,
+      error instanceof Error ? error.message : String(error),
+    );
     return null;
   }
 }
@@ -82,8 +188,10 @@ function loadConfigFile(projectRoot: string): Partial<LumenFlowConfig> | null {
 /**
  * Get LumenFlow configuration
  *
- * Loads config from .lumenflow.config.yaml if present, otherwise uses defaults.
- * Configuration is cached for performance.
+ * Resolution order:
+ * 1. `workspace.yaml` → `software_delivery` block (canonical)
+ * 2. `.lumenflow.config.yaml` (legacy fallback during migration)
+ * 3. defaults from schema
  *
  * @param options - Options for loading config
  * @param options.projectRoot - Override project root detection
@@ -106,11 +214,12 @@ export function getConfig(
   // Find or use provided project root
   const projectRoot = overrideRoot || findProjectRoot();
 
-  // Load config file if exists
-  const fileConfig = loadConfigFile(projectRoot);
+  // Canonical workspace-first load path (INIT-033 hard-cut migration)
+  const workspaceConfig = loadWorkspaceSoftwareDeliveryConfig(projectRoot);
+  const legacyConfig = workspaceConfig ? null : loadLegacyConfigFile(projectRoot);
 
   // Parse with defaults
-  const config = parseConfig(fileConfig || {});
+  const config = parseConfig(workspaceConfig ?? legacyConfig ?? {});
 
   // Cache if using default project root
   if (!overrideRoot) {
@@ -219,9 +328,30 @@ export function validateConfigFile(configPath: string): {
   }
 
   try {
-    const content = fs.readFileSync(configPath, 'utf8');
-    const data = yaml.parse(content);
-    const result = validateConfig(data);
+    const content = fs.readFileSync(configPath, UTF8_ENCODING);
+    const parsedRecord = parseYamlRecord(content);
+    if (!parsedRecord) {
+      return { valid: false, errors: ['Root YAML value must be an object'] };
+    }
+
+    const isWorkspaceFile = path.basename(configPath) === WORKSPACE_CONFIG_FILE_NAME;
+    let sourceConfig: Record<string, unknown>;
+
+    if (isWorkspaceFile) {
+      const workspaceParse = WorkspaceV2ExtensionsSchema.safeParse(parsedRecord);
+      if (!workspaceParse.success) {
+        const workspaceErrors = workspaceParse.error.issues.map(
+          (issue) => `${issue.path.join('.')}: ${issue.message}`,
+        );
+        return { valid: false, errors: workspaceErrors };
+      }
+
+      sourceConfig = workspaceParse.data[WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY];
+    } else {
+      sourceConfig = parsedRecord;
+    }
+
+    const result = validateConfig(normalizeConfigKeys(sourceConfig));
 
     if (result.success) {
       return { valid: true, errors: [], config: result.data };
@@ -308,7 +438,7 @@ gates:
 `
     : yaml.stringify(defaultConfig);
 
-  fs.writeFileSync(outputPath, configContent, 'utf8');
+  fs.writeFileSync(outputPath, configContent, UTF8_ENCODING);
 }
 
 // Re-export types and utilities from schema

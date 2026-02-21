@@ -37,8 +37,16 @@ import {
   getDefaultConfig,
 } from '../lumenflow-config.js';
 
-/** Config file name constant for test assertions */
-const CONFIG_FILE = '.lumenflow.config.yaml';
+/** Config file names used by config loader precedence rules */
+const WORKSPACE_CONFIG_FILE = 'workspace.yaml';
+const LEGACY_CONFIG_FILE = '.lumenflow.config.yaml';
+
+/** Build a minimal workspace.yaml payload with software_delivery overrides */
+function createWorkspaceConfig(softwareDelivery: Record<string, unknown>): Record<string, unknown> {
+  return {
+    software_delivery: softwareDelivery,
+  };
+}
 
 describe('WU-1301: CLI path centralization', () => {
   let tempDir: string;
@@ -86,7 +94,11 @@ describe('WU-1301: CLI path centralization', () => {
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+      await writeFile(
+        path.join(tempDir, LEGACY_CONFIG_FILE),
+        yaml.stringify(customConfig),
+        'utf-8',
+      );
 
       clearConfigCache();
       const config = getConfig({ projectRoot: tempDir });
@@ -95,6 +107,87 @@ describe('WU-1301: CLI path centralization', () => {
       expect(config.directories.backlogPath).toBe('custom/tasks/backlog.md');
       expect(config.directories.statusPath).toBe('custom/tasks/status.md');
       expect(config.directories.initiativesDir).toBe('custom/tasks/initiatives');
+    });
+
+    it('should read config from workspace.yaml software_delivery block', async () => {
+      const workspaceConfig = createWorkspaceConfig({
+        directories: {
+          wuDir: 'workspace/tasks/wu',
+          backlogPath: 'workspace/tasks/backlog.md',
+          statusPath: 'workspace/tasks/status.md',
+          initiativesDir: 'workspace/tasks/initiatives',
+        },
+      });
+
+      await writeFile(
+        path.join(tempDir, WORKSPACE_CONFIG_FILE),
+        yaml.stringify(workspaceConfig),
+        'utf-8',
+      );
+
+      clearConfigCache();
+      const config = getConfig({ projectRoot: tempDir });
+
+      expect(config.directories.wuDir).toBe('workspace/tasks/wu');
+      expect(config.directories.backlogPath).toBe('workspace/tasks/backlog.md');
+      expect(config.directories.statusPath).toBe('workspace/tasks/status.md');
+      expect(config.directories.initiativesDir).toBe('workspace/tasks/initiatives');
+    });
+
+    it('should prefer workspace.yaml over legacy config when both exist', async () => {
+      const workspaceConfig = createWorkspaceConfig({
+        directories: {
+          wuDir: 'workspace-first/wu',
+        },
+      });
+      const legacyConfig = {
+        directories: {
+          wuDir: 'legacy/wu',
+        },
+      };
+
+      await writeFile(
+        path.join(tempDir, WORKSPACE_CONFIG_FILE),
+        yaml.stringify(workspaceConfig),
+        'utf-8',
+      );
+      await writeFile(
+        path.join(tempDir, LEGACY_CONFIG_FILE),
+        yaml.stringify(legacyConfig),
+        'utf-8',
+      );
+
+      clearConfigCache();
+      const config = getConfig({ projectRoot: tempDir });
+
+      expect(config.directories.wuDir).toBe('workspace-first/wu');
+    });
+
+    it('should fall back to legacy config when workspace.yaml is invalid for software_delivery', async () => {
+      const invalidWorkspaceConfig = {
+        id: 'legacy-only-workspace',
+      };
+      const legacyConfig = {
+        directories: {
+          wuDir: 'legacy-fallback/wu',
+        },
+      };
+
+      await writeFile(
+        path.join(tempDir, WORKSPACE_CONFIG_FILE),
+        yaml.stringify(invalidWorkspaceConfig),
+        'utf-8',
+      );
+      await writeFile(
+        path.join(tempDir, LEGACY_CONFIG_FILE),
+        yaml.stringify(legacyConfig),
+        'utf-8',
+      );
+
+      clearConfigCache();
+      const config = getConfig({ projectRoot: tempDir });
+
+      expect(config.directories.wuDir).toBe('legacy-fallback/wu');
     });
   });
 
@@ -158,7 +251,11 @@ describe('WU-1301: CLI path centralization', () => {
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(simpleConfig), 'utf-8');
+      await writeFile(
+        path.join(tempDir, LEGACY_CONFIG_FILE),
+        yaml.stringify(simpleConfig),
+        'utf-8',
+      );
 
       clearConfigCache();
       const paths = getResolvedPaths({ projectRoot: tempDir });
@@ -180,7 +277,7 @@ describe('WU-1301: CLI path centralization', () => {
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(flatConfig), 'utf-8');
+      await writeFile(path.join(tempDir, LEGACY_CONFIG_FILE), yaml.stringify(flatConfig), 'utf-8');
 
       clearConfigCache();
       const paths = getResolvedPaths({ projectRoot: tempDir });
@@ -258,7 +355,11 @@ describe('WU-1310: Core path centralization', () => {
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(simpleConfig), 'utf-8');
+      await writeFile(
+        path.join(tempDir, LEGACY_CONFIG_FILE),
+        yaml.stringify(simpleConfig),
+        'utf-8',
+      );
 
       clearConfigCache();
       const config = getConfig({ projectRoot: tempDir });
@@ -327,7 +428,11 @@ describe('WU-1310: Core path centralization', () => {
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+      await writeFile(
+        path.join(tempDir, LEGACY_CONFIG_FILE),
+        yaml.stringify(customConfig),
+        'utf-8',
+      );
 
       clearConfigCache();
       const paths = getResolvedPaths({ projectRoot: tempDir });
@@ -343,7 +448,11 @@ describe('WU-1310: Core path centralization', () => {
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+      await writeFile(
+        path.join(tempDir, LEGACY_CONFIG_FILE),
+        yaml.stringify(customConfig),
+        'utf-8',
+      );
 
       clearConfigCache();
       const paths = getResolvedPaths({ projectRoot: tempDir });
@@ -365,7 +474,11 @@ describe('WU-1310: Core path centralization', () => {
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+      await writeFile(
+        path.join(tempDir, LEGACY_CONFIG_FILE),
+        yaml.stringify(customConfig),
+        'utf-8',
+      );
 
       clearConfigCache();
       const paths = getResolvedPaths({ projectRoot: tempDir });
@@ -388,7 +501,11 @@ describe('WU-1310: Core path centralization', () => {
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(partialConfig), 'utf-8');
+      await writeFile(
+        path.join(tempDir, LEGACY_CONFIG_FILE),
+        yaml.stringify(partialConfig),
+        'utf-8',
+      );
 
       clearConfigCache();
       const config = getConfig({ projectRoot: tempDir });
