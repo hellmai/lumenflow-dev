@@ -9,11 +9,15 @@ code_paths:
   - packages/@lumenflow/control-plane-sdk/src/workspace-config.ts
   - packages/@lumenflow/control-plane-sdk/src/sync-port.ts
   - packages/@lumenflow/kernel/src/kernel.schemas.ts
+  - packages/@lumenflow/control-plane-sdk/src/mock/mock-control-plane-sync-port.ts
 tests:
   manual:
     - pnpm --filter @lumenflow/kernel test -- kernel.schemas
   unit:
     - packages/@lumenflow/kernel/src/__tests__/kernel.schemas.test.ts
+    - packages/@lumenflow/control-plane-sdk/__tests__/workspace-config.test.ts
+    - packages/@lumenflow/control-plane-sdk/__tests__/policy-mode.test.ts
+    - packages/@lumenflow/control-plane-sdk/__tests__/sync-port.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1979.done
@@ -27,10 +31,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-21T20:59:58.695Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-1979
+session_id: 120a3255-db82-421e-a545-135dc68038d3
 exposure: api
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-21T20:59:58.700Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -41,11 +52,3 @@ acceptance:
     policy_mode, and auth contract
   - control-plane-sdk parser validates the same canonical contract
   - Contract tests cover invalid policy mode and missing auth fields
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-1979
-claimed_at: 2026-02-21T20:59:58.695Z
-baseline_main_sha: 78aa83111ffa8c274801109b247f383a4ca7d3bf
-session_id: 120a3255-db82-421e-a545-135dc68038d3
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-21T20:59:58.700Z
