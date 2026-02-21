@@ -44,7 +44,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1971 — Workspace v2 schema with software_delivery + control_plane](wu/WU-1971.yaml) — Framework: Core Validation
-- [WU-1986 — Update docs to prefer auto-generated WU IDs over explicit --id](wu/WU-1986.yaml) — Content: Framework Docs
 
 ## ⛔ Blocked
 
@@ -948,6 +947,7 @@ sections:
 - [WU-1968 — Fix doctor duplicate output and misleading git version prerequisite warning](wu/WU-1968.yaml)
 - [WU-1969 — Fix gitignore merge path missing runtime state exclusions](wu/WU-1969.yaml)
 - [WU-1970 — INIT-033 scaffold + plan linkage governance](wu/WU-1970.yaml)
+- [WU-1986 — Update docs to prefer auto-generated WU IDs over explicit --id](wu/WU-1986.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

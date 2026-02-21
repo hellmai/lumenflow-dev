@@ -2,7 +2,7 @@ id: WU-1986
 title: Update docs to prefer auto-generated WU IDs over explicit --id
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-21
 code_paths:
@@ -48,3 +48,6 @@ session_id: c9e42209-5775-48b6-9cc5-3de7eed4209a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-21T18:36:29.877Z
+locked: true
+completed_at: 2026-02-21T18:42:42.592Z
+completed: 2026-02-21
