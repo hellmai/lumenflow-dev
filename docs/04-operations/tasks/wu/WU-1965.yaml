@@ -2,7 +2,7 @@ id: WU-1965
 title: Fix lumenflow init duplicate Created/Skipped output for onboarding docs
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-21
 code_paths:
@@ -46,3 +46,6 @@ acceptance:
   - Gate config defaults match installed tooling (no vitest/turbo if not in package.json)
   - If init deletes or overwrites an existing file, it is reported in output
   - Non-full mode (--minimal) still scaffolds onboarding docs for claude client
+locked: true
+completed_at: 2026-02-21T16:19:32.365Z
+completed: 2026-02-21

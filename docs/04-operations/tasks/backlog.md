@@ -29,7 +29,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
-- [WU-1965 — Fix lumenflow init duplicate Created/Skipped output for onboarding docs](wu/WU-1965.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
@@ -928,6 +927,7 @@ sections:
 - [WU-1962 — Unblock release by restoring workspace-init manifest/docs parity](wu/WU-1962.yaml)
 - [WU-1964 — Fix CLI docs MDX escaping for Starlight deploy](wu/WU-1964.yaml)
 - [WU-1966 — Fix web runtime preview fallback diagnostics and workspace root separation](wu/WU-1966.yaml)
+- [WU-1965 — Fix lumenflow init duplicate Created/Skipped output for onboarding docs](wu/WU-1965.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

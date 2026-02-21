@@ -1884,3 +1884,4 @@
 {"type":"claim","wuId":"WU-1965","timestamp":"2026-02-21T16:06:23.718Z","lane":"Framework: CLI Enforcement","title":"Fix lumenflow init duplicate Created/Skipped output for onboarding docs"}
 {"type":"claim","wuId":"WU-1966","timestamp":"2026-02-21T16:07:32.375Z","lane":"Operations: Tooling","title":"Fix web runtime preview fallback diagnostics and workspace root separation"}
 {"type":"complete","wuId":"WU-1966","timestamp":"2026-02-21T16:11:22.851Z"}
+{"type":"complete","wuId":"WU-1965","timestamp":"2026-02-21T16:19:37.336Z"}
