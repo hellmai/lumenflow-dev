@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-- [WU-1972 — Core config provider rewrite to workspace.yaml canonical](wu/WU-1972.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -906,3 +906,4 @@ _Last updated: 2026-02-21_
 - [WU-1970 — INIT-033 scaffold + plan linkage governance](wu/WU-1970.yaml) — 2026-02-21
 - [WU-1986 — Update docs to prefer auto-generated WU IDs over explicit --id](wu/WU-1986.yaml) — 2026-02-21
 - [WU-1971 — Workspace v2 schema with software_delivery + control_plane](wu/WU-1971.yaml) — 2026-02-21
+- [WU-1972 — Core config provider rewrite to workspace.yaml canonical](wu/WU-1972.yaml) — 2026-02-21

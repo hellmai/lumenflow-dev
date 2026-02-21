@@ -2,7 +2,7 @@ id: WU-1972
 title: Core config provider rewrite to workspace.yaml canonical
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -48,3 +48,6 @@ acceptance:
   - Core config provider reads workflow and gates data from workspace.yaml
   - No runtime execution path requires .lumenflow.config.yaml for config resolution
   - Regression tests verify existing behavior with workspace.yaml inputs
+locked: true
+completed_at: 2026-02-21T19:14:39.993Z
+completed: 2026-02-21
