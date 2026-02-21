@@ -29,7 +29,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1984 — Docs + release readiness for workspace-first v4.0.0](wu/WU-1984.yaml) — Content: Site Comms
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -948,6 +948,7 @@ sections:
 - [WU-1982 — Expose cloud connection diagnostics in web UI](wu/WU-1982.yaml)
 - [WU-1983 — MCP parity for bootstrap and cloud operations](wu/WU-1983.yaml)
 - [WU-1985 — Retire split onboarding path and legacy bootstrap entrypoints](wu/WU-1985.yaml)
+- [WU-1984 — Docs + release readiness for workspace-first v4.0.0](wu/WU-1984.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

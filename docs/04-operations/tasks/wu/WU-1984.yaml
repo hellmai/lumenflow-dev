@@ -2,7 +2,7 @@ id: WU-1984
 title: Docs + release readiness for workspace-first v4.0.0
 lane: 'Content: Site Comms'
 type: chore
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -48,3 +48,6 @@ acceptance:
   - Docs remove legacy split-onboarding guidance and emphasize bootstrap-all + workspace.yaml
   - CLI/reference docs include cloud connect and config:set/get workspace semantics
   - Release docs/changelog record major bump v4.0.0 and migration guidance
+locked: true
+completed_at: 2026-02-21T22:38:42.269Z
+completed: 2026-02-21

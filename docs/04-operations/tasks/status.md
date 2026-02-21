@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-- [WU-1984 — Docs + release readiness for workspace-first v4.0.0](wu/WU-1984.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -919,3 +919,4 @@ _Last updated: 2026-02-21_
 - [WU-1982 — Expose cloud connection diagnostics in web UI](wu/WU-1982.yaml) — 2026-02-21
 - [WU-1983 — MCP parity for bootstrap and cloud operations](wu/WU-1983.yaml) — 2026-02-21
 - [WU-1985 — Retire split onboarding path and legacy bootstrap entrypoints](wu/WU-1985.yaml) — 2026-02-21
+- [WU-1984 — Docs + release readiness for workspace-first v4.0.0](wu/WU-1984.yaml) — 2026-02-21

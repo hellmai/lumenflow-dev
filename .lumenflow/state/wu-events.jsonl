@@ -1924,4 +1924,5 @@
 {"type":"complete","wuId":"WU-1983","timestamp":"2026-02-21T22:15:42.709Z"}
 {"type":"claim","wuId":"WU-1985","timestamp":"2026-02-21T22:16:35.794Z","lane":"Framework: CLI Enforcement","title":"Retire split onboarding path and legacy bootstrap entrypoints"}
 {"type":"complete","wuId":"WU-1985","timestamp":"2026-02-21T22:29:05.935Z"}
-{"type":"claim","wuId":"WU-1984","lane":"Content: Site Comms","title":"Docs + release readiness for workspace-first v4.0.0","timestamp":"2026-02-21T22:29:42.731Z"}
+{"type":"claim","wuId":"WU-1984","timestamp":"2026-02-21T22:29:42.731Z","lane":"Content: Site Comms","title":"Docs + release readiness for workspace-first v4.0.0"}
+{"type":"complete","wuId":"WU-1984","timestamp":"2026-02-21T22:38:47.054Z"}
