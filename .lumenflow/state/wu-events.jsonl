@@ -1900,3 +1900,4 @@
 {"type":"complete","wuId":"WU-1971","timestamp":"2026-02-21T19:01:03.837Z"}
 {"type":"claim","wuId":"WU-1972","timestamp":"2026-02-21T19:02:02.920Z","lane":"Framework: Core Lifecycle","title":"Core config provider rewrite to workspace.yaml canonical"}
 {"type":"complete","wuId":"WU-1972","timestamp":"2026-02-21T19:14:44.798Z"}
+{"type":"claim","wuId":"WU-1973","lane":"Framework: CLI Enforcement","title":"Repoint config:set and config:get to workspace.yaml","timestamp":"2026-02-21T19:15:25.931Z"}

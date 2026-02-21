@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1973 — Repoint config:set and config:get to workspace.yaml](wu/WU-1973.yaml)
 
 ## Completed
 
