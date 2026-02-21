@@ -18,7 +18,10 @@ artifacts:
   - .lumenflow/stamps/WU-1963.done
 dependencies: []
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: Added @lumenflow/cli ^3.0.0 to devDependencies in the injectPackageJsonScripts function of
+  init.ts. Follows the same pattern as the existing prettier dependency injection. New constant
+  CLI_PACKAGE_VERSION and CLI_PACKAGE_NAME. 8 new tests in init-package-json.test.ts covering fresh
+  dir, existing package.json, force mode, and script+dep co-presence.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
