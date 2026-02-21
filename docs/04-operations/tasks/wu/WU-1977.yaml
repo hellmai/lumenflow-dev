@@ -2,7 +2,7 @@ id: WU-1977
 title: Unify lumenflow npm wrapper with full CLI router
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-21
 code_paths:
@@ -47,3 +47,6 @@ acceptance:
   - npx lumenflow without subcommand reaches CLI router
   - Subcommands continue to resolve through wrapper entrypoint
   - Wrapper tests cover default and explicit command dispatch
+locked: true
+completed_at: 2026-02-21T20:38:57.490Z
+completed: 2026-02-21

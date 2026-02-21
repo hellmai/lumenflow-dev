@@ -14,7 +14,7 @@ phases:
     status: done
   - id: 2
     title: 'Phase 2: Bootstrap-All CLI'
-    status: pending
+    status: in_progress
   - id: 3
     title: 'Phase 3: Cloud Connect'
     status: pending
@@ -36,5 +36,5 @@ notes:
   - 'Prereq caveat: state:doctor currently reports persistent superseded-status mismatches on
     WU-1552 and WU-1553 (ready->superseded transition not auto-fixable).'
   - 'WU-1976 dogfood migration applied to workspace.yaml via config:migrate-workspace. Follow-up
-    tracked as mem-0f76: lane:status still hard-requires .lumenflow.config.yaml when legacy file
-    is removed.'
+    tracked as mem-0f76: lane:status still hard-requires .lumenflow.config.yaml when legacy file is
+    removed.'
