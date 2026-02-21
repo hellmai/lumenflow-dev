@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1977 — Unify lumenflow npm wrapper with full CLI router](wu/WU-1977.yaml)
 
 ## Completed
 

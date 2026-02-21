@@ -1908,3 +1908,4 @@
 {"type":"complete","wuId":"WU-1975","timestamp":"2026-02-21T20:12:34.651Z"}
 {"type":"claim","wuId":"WU-1976","timestamp":"2026-02-21T20:13:15.249Z","lane":"Content: Specs Governance","title":"Dogfood workspace migration in os repo"}
 {"type":"complete","wuId":"WU-1976","timestamp":"2026-02-21T20:19:57.079Z"}
+{"type":"claim","wuId":"WU-1977","lane":"Framework: CLI Enforcement","title":"Unify lumenflow npm wrapper with full CLI router","timestamp":"2026-02-21T20:20:50.341Z"}
