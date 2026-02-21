@@ -4,7 +4,7 @@ _Last updated: 2026-02-21_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1982 — Expose cloud connection diagnostics in web UI](wu/WU-1982.yaml)
 
 ## Completed
 

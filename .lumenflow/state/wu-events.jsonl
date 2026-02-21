@@ -1918,3 +1918,4 @@
 {"type":"complete","wuId":"WU-1980","timestamp":"2026-02-21T21:38:21.187Z"}
 {"type":"claim","wuId":"WU-1981","timestamp":"2026-02-21T21:39:08.233Z","lane":"Framework: Core Lifecycle","title":"Wire runtime control-plane sync lifecycle"}
 {"type":"complete","wuId":"WU-1981","timestamp":"2026-02-21T21:46:04.058Z"}
+{"type":"claim","wuId":"WU-1982","lane":"Operations: Runtime","title":"Expose cloud connection diagnostics in web UI","timestamp":"2026-02-21T21:46:46.373Z"}
