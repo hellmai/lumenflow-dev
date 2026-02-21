@@ -740,7 +740,13 @@ export async function scaffoldProject(
 
   await createFile(
     configPath,
-    generateLumenflowConfigYaml(options.gatePreset, gitConfigOverride, client, docsPaths, targetDir),
+    generateLumenflowConfigYaml(
+      options.gatePreset,
+      gitConfigOverride,
+      client,
+      docsPaths,
+      targetDir,
+    ),
     options.force ? 'force' : 'skip',
     result,
     targetDir,
