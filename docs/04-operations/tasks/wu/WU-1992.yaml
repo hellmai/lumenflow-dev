@@ -2,7 +2,7 @@ id: WU-1992
 title: Fix pre-existing spec:linter failures in legacy WU YAMLs
 lane: 'Content: Specs Governance'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -28,8 +28,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Resolve current global spec:linter failures by correcting invalid/missing test metadata and escalation trigger values in legacy WU specs.
+description: Resolve current global spec:linter failures by correcting invalid/missing test metadata
+  and escalation trigger values in legacy WU specs.
 acceptance:
   - pnpm run spec:linter passes
   - WU-1001, WU-1188, WU-1701, and WU-1960 validate with strict schema
   - pnpm gates no longer fails on spec:linter
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-specs-governance-wu-1992
+claimed_at: 2026-02-22T00:37:22.795Z
+baseline_main_sha: 78d865d6270cb037bead46dbf76d145ef13d01ee
+session_id: a4259b35-7a69-4b56-bdc5-633670df6589
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T00:37:22.799Z
