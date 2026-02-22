@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-2001 — Stabilize wu-done XState graph model tests in changed-test gate runs](wu/WU-2001.yaml)
+(No items currently in progress)
 
 ## Completed
 

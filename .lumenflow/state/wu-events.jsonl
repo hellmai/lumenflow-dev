@@ -1963,3 +1963,4 @@
 {"type":"claim","wuId":"WU-2000","timestamp":"2026-02-22T02:51:21.986Z","lane":"Framework: CLI Enforcement","title":"Ignore prettier symlink diagnostics in format guidance output"}
 {"type":"complete","wuId":"WU-2000","timestamp":"2026-02-22T02:57:14.124Z"}
 {"type":"claim","wuId":"WU-2001","lane":"Framework: CLI WU Commands","title":"Stabilize wu-done XState graph model tests in changed-test gate runs","timestamp":"2026-02-22T02:58:05.013Z"}
+{"type":"release","wuId":"WU-2001","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-22T03:06:40.840Z"}

@@ -22,10 +22,11 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
+- [WU-2001 — Stabilize wu-done XState graph model tests in changed-test gate runs](wu/WU-2001.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-- [WU-2001 — Stabilize wu-done XState graph model tests in changed-test gate runs](wu/WU-2001.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 

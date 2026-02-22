@@ -2,7 +2,7 @@ id: WU-2001
 title: Stabilize wu-done XState graph model tests in changed-test gate runs
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: ready
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -35,11 +35,6 @@ acceptance:
   - wu-done model-based graph tests are deterministic under changed-test gate execution
   - wu:done no longer fails on @xstate/graph undefined-values errors for unchanged WUs
   - tests/documentation capture the stabilized behavior
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2001
-claimed_at: 2026-02-22T02:58:04.986Z
-baseline_main_sha: bb5d321f17a90480ea7d9284c0dd655f96d607c5
-session_id: c1c6f16c-54a0-4094-8bc8-9270ccab2ae8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T02:58:04.992Z
