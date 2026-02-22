@@ -4,7 +4,6 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-2037 — Decompose gates-config.ts (856 lines, 9 responsibilities)](wu/WU-2037.yaml)
 - [WU-2016 — Split lumenflow-config-schema.ts into per-section schemas (1564 lines)](wu/WU-2016.yaml)
 - [WU-2042 — Finalize kernel-first parity in tests and docs](wu/WU-2042.yaml)
 
@@ -963,3 +962,4 @@ _Last updated: 2026-02-22_
 - [WU-2040 — Fix pre-existing agent-verification wuDir expectation regression](wu/WU-2040.yaml) — 2026-02-22
 - [WU-2019 — Replace work-classifier domain switch with data map](wu/WU-2019.yaml) — 2026-02-22
 - [WU-2014 — Decompose wu-done-worktree.ts (1777 lines)](wu/WU-2014.yaml) — 2026-02-22
+- [WU-2037 — Decompose gates-config.ts (856 lines, 9 responsibilities)](wu/WU-2037.yaml) — 2026-02-22

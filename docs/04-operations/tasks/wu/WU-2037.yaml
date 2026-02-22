@@ -2,7 +2,7 @@ id: WU-2037
 title: Decompose gates-config.ts (856 lines, 9 responsibilities)
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -53,3 +53,6 @@ acceptance:
   - Each extracted module has single responsibility and under 300 lines
   - All existing gates tests pass without modification
   - pnpm gates end-to-end workflow unchanged
+locked: true
+completed_at: 2026-02-22T15:57:47.246Z
+completed: 2026-02-22

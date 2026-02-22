@@ -2013,4 +2013,5 @@
 {"type":"complete","wuId":"WU-2019","timestamp":"2026-02-22T15:38:47.831Z"}
 {"type":"claim","wuId":"WU-2016","timestamp":"2026-02-22T15:40:46.968Z","lane":"Framework: Core Validation","title":"Split lumenflow-config-schema.ts into per-section schemas (1564 lines)"}
 {"type":"complete","wuId":"WU-2014","timestamp":"2026-02-22T15:41:52.036Z"}
-{"type":"claim","wuId":"WU-2042","lane":"Framework: Core Lifecycle","title":"Finalize kernel-first parity in tests and docs","timestamp":"2026-02-22T15:55:29.514Z"}
+{"type":"claim","wuId":"WU-2042","timestamp":"2026-02-22T15:55:29.514Z","lane":"Framework: Core Lifecycle","title":"Finalize kernel-first parity in tests and docs"}
+{"type":"complete","wuId":"WU-2037","timestamp":"2026-02-22T15:57:52.324Z"}

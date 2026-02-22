@@ -32,7 +32,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2037 — Decompose gates-config.ts (856 lines, 9 responsibilities)](wu/WU-2037.yaml) — Framework: Core Validation
 - [WU-2016 — Split lumenflow-config-schema.ts into per-section schemas (1564 lines)](wu/WU-2016.yaml) — Framework: Core Validation
 - [WU-2042 — Finalize kernel-first parity in tests and docs](wu/WU-2042.yaml) — Framework: Core Lifecycle
 
@@ -995,6 +994,7 @@ sections:
 - [WU-2040 — Fix pre-existing agent-verification wuDir expectation regression](wu/WU-2040.yaml)
 - [WU-2019 — Replace work-classifier domain switch with data map](wu/WU-2019.yaml)
 - [WU-2014 — Decompose wu-done-worktree.ts (1777 lines)](wu/WU-2014.yaml)
+- [WU-2037 — Decompose gates-config.ts (856 lines, 9 responsibilities)](wu/WU-2037.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
