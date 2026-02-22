@@ -2,7 +2,7 @@ id: WU-2051
 title: 'Final cleanup: remove remaining live-surface legacy config references'
 lane: 'Content: Specs Governance'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-22
 code_paths:
@@ -27,8 +27,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: runtime hard cut is complete, but a few live documentation/config surfaces still mention the removed .lumenflow.config.yaml name. Problem: these mentions undermine kernel-first clarity and can confuse new readers. Solution: remove remaining live-surface mentions, keep historical WU records intact, and add a regression guard covering active docs/config surfaces.'
+description: 'Context: runtime hard cut is complete, but a few live documentation/config surfaces
+  still mention the removed .lumenflow.config.yaml name. Problem: these mentions undermine
+  kernel-first clarity and can confuse new readers. Solution: remove remaining live-surface
+  mentions, keep historical WU records intact, and add a regression guard covering active
+  docs/config surfaces.'
 acceptance:
   - workspace.yaml no longer references .lumenflow.config.yaml in lanes or active configuration.
   - Current public-facing docs/config surfaces no longer mention .lumenflow.config.yaml.
-  - A regression test guards active docs/config surfaces against reintroducing the removed filename while excluding historical task records.
+  - A regression test guards active docs/config surfaces against reintroducing the removed filename
+    while excluding historical task records.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-specs-governance-wu-2051
+claimed_at: 2026-02-22T18:20:36.030Z
+baseline_main_sha: fac883c227c481589bfc0a552a303e910ffcd898
+session_id: 51559e66-e48c-4578-b224-1494de950639
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T18:20:36.038Z
