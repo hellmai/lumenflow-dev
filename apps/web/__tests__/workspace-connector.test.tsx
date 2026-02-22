@@ -7,7 +7,7 @@
  * AC3: Connection status shown (workspace name, pack count)
  * AC4: Preference persisted in localStorage
  */
-import { describe, expect, it, beforeEach, vi } from 'vitest';
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import type {
   WorkspaceConnectionState,
@@ -21,6 +21,7 @@ const HTTP_STATUS = {
   SERVICE_UNAVAILABLE: 503,
 } as const;
 const HEALTH_ROUTE_ERROR = 'health diagnostics unavailable during test';
+const NEVER_RESOLVING_PROMISE = new Promise<Response>(() => {});
 
 function createJsonResponse(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), {
@@ -34,6 +35,18 @@ function createJsonResponse(status: number, body: unknown): Response {
  * ------------------------------------------------------------------ */
 
 describe('WorkspacePathPrompt (AC1)', () => {
+  beforeEach(() => {
+    // Keep the health probe pending by default so mount-side effects do not race assertions.
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => NEVER_RESOLVING_PROMISE),
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('renders a path input and connect button', async () => {
     const { WorkspacePathPrompt } = await import('../src/components/workspace-connector');
 

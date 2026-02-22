@@ -300,7 +300,10 @@ describe('MarketplacePackDetail component', () => {
         FIXTURE_PACK_DETAIL.id,
         FIXTURE_PACK_DETAIL.latestVersion,
       );
-      expect(writeTextMock).toHaveBeenCalledWith(expectedCommand);
+      await waitFor(() => {
+        expect(writeTextMock).toHaveBeenCalledWith(expectedCommand);
+        expect(copyButton.textContent).toContain(INSTALL_COPIED_LABEL);
+      });
     });
 
     it('disables workspace install when no workspace is connected', async () => {
