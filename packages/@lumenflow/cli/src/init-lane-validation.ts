@@ -7,7 +7,7 @@
  *
  * WU-1745: Validate lane config against inference hierarchy at init time
  *
- * Cross-checks lane definitions in .lumenflow.config.yaml against
+ * Cross-checks lane definitions in workspace.yaml software_delivery against
  * .lumenflow.lane-inference.yaml parents. Catches invalid parent names
  * (e.g., "Foundation: Core" when "Foundation" is not a valid parent)
  * at init time instead of deferring to wu:create.
@@ -16,11 +16,14 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as yaml from 'yaml';
+import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
+import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 
 /** Separator between parent and sublane in lane names */
 const LANE_NAME_SEPARATOR = ': ';
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
-/** Lane definition from .lumenflow.config.yaml */
+/** Lane definition from workspace.yaml software_delivery */
 interface LaneDefinition {
   name: string;
   wip_limit?: number;
@@ -55,7 +58,7 @@ function extractParentName(laneName: string): string | null {
  * Checks that each lane's parent (the part before ": ") exists as a top-level
  * key in the lane inference hierarchy.
  *
- * @param configLanes - Lane definitions from .lumenflow.config.yaml
+ * @param configLanes - Lane definitions from workspace.yaml software_delivery
  * @param inferenceParents - Valid parent names from .lumenflow.lane-inference.yaml
  * @returns Validation result with warnings and invalid lane names
  */
@@ -129,9 +132,9 @@ export function extractInferenceParents(laneInferencePath: string): string[] {
 }
 
 /**
- * Extract lane definitions from a config YAML file.
+ * Extract lane definitions from a workspace YAML file.
  *
- * @param configPath - Path to .lumenflow.config.yaml
+ * @param configPath - Path to workspace.yaml
  * @returns Array of lane definitions, or empty array if not found
  */
 export function extractConfigLanes(configPath: string): LaneDefinition[] {
@@ -145,7 +148,8 @@ export function extractConfigLanes(configPath: string): LaneDefinition[] {
     if (!parsed || typeof parsed !== 'object') {
       return [];
     }
-    const lanes = parsed.lanes as Record<string, unknown> | undefined;
+    const softwareDelivery = parsed[SOFTWARE_DELIVERY_KEY] as Record<string, unknown> | undefined;
+    const lanes = softwareDelivery?.lanes as Record<string, unknown> | undefined;
     const definitions = lanes?.definitions;
     if (!Array.isArray(definitions)) {
       return [];
@@ -159,14 +163,14 @@ export function extractConfigLanes(configPath: string): LaneDefinition[] {
 /**
  * Run lane validation for a project directory.
  *
- * Reads both .lumenflow.config.yaml and .lumenflow.lane-inference.yaml,
+ * Reads both workspace.yaml and .lumenflow.lane-inference.yaml,
  * then validates that all lane parents exist in the inference hierarchy.
  *
  * @param targetDir - Project root directory
  * @returns Validation result with warnings and invalid lane names
  */
 export function validateLanesForProject(targetDir: string): LaneValidationResult {
-  const configPath = path.join(targetDir, '.lumenflow.config.yaml');
+  const configPath = path.join(targetDir, WORKSPACE_CONFIG_FILE_NAME);
   const inferencePath = path.join(targetDir, '.lumenflow.lane-inference.yaml');
 
   const configLanes = extractConfigLanes(configPath);

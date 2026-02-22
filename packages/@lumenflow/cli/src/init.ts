@@ -26,6 +26,7 @@ import {
   CLAUDE_HOOKS,
   LUMENFLOW_CLIENT_IDS,
 } from '@lumenflow/core';
+import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 // WU-1067: Import GATE_PRESETS for --preset support
 import { GATE_PRESETS } from '@lumenflow/core/gates-config';
 // WU-1362: Import worktree guard utilities for branch checking
@@ -117,6 +118,7 @@ import type { DomainChoice, OnboardResult } from './onboard.js';
 import {
   CANONICAL_BOOTSTRAP_COMMAND,
   DEFAULT_PROJECT_NAME,
+  getDefaultWorkspaceConfig,
   WORKSPACE_FILENAME,
 } from './workspace-init.js';
 import type { FetchFn } from './pack-install.js';
@@ -320,7 +322,13 @@ const LEGACY_SUBCOMMAND_ERROR_PREFIX = `${INIT_ERROR_PREFIX} Legacy onboarding s
 const LEGACY_SUBCOMMAND_GUIDANCE = `Use "${CANONICAL_BOOTSTRAP_COMMAND}" for bootstrap-all onboarding`;
 const LEGACY_SUBCOMMAND_HELP_HINT = `Run "${CANONICAL_BOOTSTRAP_COMMAND} --help" for supported options`;
 
-const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+const CONFIG_FILE_NAME = WORKSPACE_FILENAME;
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
+const SOFTWARE_DELIVERY_CONFIG_KEYS = {
+  AGENTS: 'agents',
+  CLIENTS: 'clients',
+  ENFORCEMENT: 'enforcement',
+} as const;
 const FRAMEWORK_HINT_FILE = '.lumenflow.framework.yaml';
 const LUMENFLOW_DIR = '.lumenflow';
 const LUMENFLOW_AGENTS_DIR = `${LUMENFLOW_DIR}/agents`;
@@ -433,36 +441,108 @@ function detectProjectTooling(targetDir: string): DetectedTooling {
   }
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function mergeConfigDefaults(
+  defaults: Record<string, unknown>,
+  existing: Record<string, unknown>,
+): Record<string, unknown> {
+  const merged: Record<string, unknown> = { ...defaults };
+
+  for (const [key, existingValue] of Object.entries(existing)) {
+    const defaultValue = merged[key];
+    const existingRecord = asRecord(existingValue);
+    const defaultRecord = asRecord(defaultValue);
+    if (defaultRecord && existingRecord) {
+      merged[key] = mergeConfigDefaults(defaultRecord, existingRecord);
+      continue;
+    }
+    merged[key] = existingValue;
+  }
+
+  return merged;
+}
+
+function toWorkspaceId(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function loadWorkspaceDocument(targetDir: string): {
+  exists: boolean;
+  workspace: Record<string, unknown>;
+} {
+  const workspacePath = path.join(targetDir, CONFIG_FILE_NAME);
+  if (!fs.existsSync(workspacePath)) {
+    const projectName = resolveBootstrapProjectName(targetDir);
+    const projectId = toWorkspaceId(projectName);
+    const workspace = {
+      ...getDefaultWorkspaceConfig(),
+      id: projectId,
+      name: projectName,
+      memory_namespace: projectId,
+      event_namespace: projectId,
+    } as Record<string, unknown>;
+    return { exists: false, workspace };
+  }
+
+  const content = fs.readFileSync(workspacePath, 'utf-8');
+  const workspace = asRecord(yaml.parse(content));
+  if (!workspace) {
+    throw new Error(
+      `${INIT_ERROR_PREFIX} ${CONFIG_FILE_NAME} exists but is not a valid YAML object. ` +
+        `Fix ${CONFIG_FILE_NAME} and re-run init.`,
+    );
+  }
+
+  return { exists: true, workspace };
+}
+
+function upsertWorkspaceSoftwareDelivery(
+  targetDir: string,
+  softwareDeliveryConfig: Record<string, unknown>,
+  result: import('./init-scaffolding.js').ScaffoldResult,
+): void {
+  const workspacePath = path.join(targetDir, CONFIG_FILE_NAME);
+  const { exists, workspace } = loadWorkspaceDocument(targetDir);
+  const existingSoftwareDelivery = asRecord(workspace[SOFTWARE_DELIVERY_KEY]) ?? {};
+  workspace[SOFTWARE_DELIVERY_KEY] = mergeConfigDefaults(
+    softwareDeliveryConfig,
+    existingSoftwareDelivery,
+  );
+
+  fs.writeFileSync(workspacePath, yaml.stringify(workspace), 'utf-8');
+  if (exists) {
+    result.overwritten = result.overwritten ?? [];
+    if (!result.overwritten.includes(CONFIG_FILE_NAME)) {
+      result.overwritten.push(CONFIG_FILE_NAME);
+    }
+    return;
+  }
+  result.created.push(CONFIG_FILE_NAME);
+}
+
 /**
- * Generate YAML configuration with header comment
+ * Build software_delivery configuration defaults
  * WU-1067: Supports --preset option for config-driven gates
  * WU-1307: Includes default lane definitions for onboarding
  * WU-1364: Supports git config overrides (requireRemote)
  * WU-1383: Adds enforcement hooks config for Claude client by default
  * WU-1965: Detects installed tooling from package.json for config defaults
  */
-function generateLumenflowConfigYaml(
+function buildSoftwareDeliveryConfig(
   gatePreset?: GatePresetType,
   gitConfigOverride?: { requireRemote: boolean } | null,
   client?: ClientType,
   docsPaths?: import('./init-detection.js').DocsPathConfig,
   targetDir?: string,
-): string {
-  // WU-1382: Add managed file header to prevent manual edits
-  const header = `# ============================================================================
-# LUMENFLOW MANAGED FILE - DO NOT EDIT MANUALLY
-# ============================================================================
-# Generated by: lumenflow init
-# Regenerate with: pnpm exec lumenflow init --force
-#
-# This file is managed by LumenFlow tooling. Manual edits may be overwritten.
-# To customize, use the CLI commands or edit the appropriate source templates.
-# ============================================================================
-
-# LumenFlow Configuration
-# Customize paths based on your project structure
-
-`;
+): Record<string, unknown> {
   const config = getDefaultConfig();
   config.directories.agentsDir = LUMENFLOW_AGENTS_DIR;
 
@@ -556,7 +636,7 @@ function generateLumenflowConfigYaml(
     };
   }
 
-  return header + yaml.stringify(config);
+  return config as Record<string, unknown>;
 }
 
 /**
@@ -622,7 +702,7 @@ function getFileMode(options: ScaffoldOptions): import('./init-scaffolding.js').
 /**
  * WU-1576: Run client-specific integrations (enforcement hooks) based on config.
  *
- * Reads the just-scaffolded .lumenflow.config.yaml and runs integration for UnsafeAny
+ * Reads workspace.yaml software_delivery and runs integration for UnsafeAny
  * client that has enforcement.hooks enabled. This is vendor-agnostic: when new
  * clients add enforcement support, register them in CLIENT_INTEGRATIONS.
  *
@@ -656,21 +736,30 @@ async function runClientIntegrations(
   const configPath = path.join(targetDir, CONFIG_FILE_NAME);
   if (!fs.existsSync(configPath)) return integrationFiles;
 
-  let config: Record<string, unknown> | null;
+  let softwareDeliveryConfig: Record<string, unknown> | null;
   try {
     const content = fs.readFileSync(configPath, 'utf-8');
-    config = yaml.parse(content) as Record<string, unknown> | null;
+    const workspaceConfig = asRecord(yaml.parse(content));
+    softwareDeliveryConfig = workspaceConfig
+      ? asRecord(workspaceConfig[SOFTWARE_DELIVERY_KEY])
+      : null;
   } catch {
     return integrationFiles; // Config unreadable -- skip silently
   }
-  if (!config) return integrationFiles;
+  if (!softwareDeliveryConfig) return integrationFiles;
 
-  const agents = config.agents as Record<string, unknown> | undefined;
-  const clients = agents?.clients as Record<string, Record<string, unknown>> | undefined;
+  const agents = asRecord(softwareDeliveryConfig[SOFTWARE_DELIVERY_CONFIG_KEYS.AGENTS]);
+  const clients = asRecord(agents?.[SOFTWARE_DELIVERY_CONFIG_KEYS.CLIENTS]);
   if (!clients) return integrationFiles;
 
-  for (const [clientKey, clientConfig] of Object.entries(clients)) {
-    const enforcement = clientConfig.enforcement as IntegrateEnforcementConfig | undefined;
+  for (const [clientKey, unsafeClientConfig] of Object.entries(clients)) {
+    const clientConfig = asRecord(unsafeClientConfig);
+    if (!clientConfig) {
+      continue;
+    }
+    const enforcement = asRecord(
+      clientConfig[SOFTWARE_DELIVERY_CONFIG_KEYS.ENFORCEMENT],
+    ) as IntegrateEnforcementConfig | null;
     if (!enforcement?.hooks) continue;
 
     const integration = CLIENT_INTEGRATIONS[clientKey];
@@ -797,34 +886,17 @@ export async function scaffoldProject(
     DOCS_ONBOARDING_PATH: docsPaths.onboarding,
   };
 
-  // Create .lumenflow.config.yaml (WU-1067: includes gate preset if specified)
-  // WU-1364: Includes git config overrides (e.g., requireRemote: false for local-only)
-  // WU-1383: Includes enforcement hooks for Claude client
-  // Note: Config files don't use merge mode (always skip or force)
-  const configPath = path.join(targetDir, CONFIG_FILE_NAME);
-
-  // WU-1383: Warn if config already exists to discourage manual editing
-  if (fs.existsSync(configPath) && !options.force) {
-    result.warnings = result.warnings ?? [];
-    result.warnings.push(
-      `${CONFIG_FILE_NAME} already exists. ` +
-        'To modify configuration, use CLI commands (e.g., pnpm lumenflow:init --force) ' +
-        'instead of manual editing.',
-    );
-  }
-
-  await createFile(
-    configPath,
-    generateLumenflowConfigYaml(
+  // Upsert workspace.yaml software_delivery defaults (WU-2006 hard cut)
+  upsertWorkspaceSoftwareDelivery(
+    targetDir,
+    buildSoftwareDeliveryConfig(
       options.gatePreset,
       gitConfigOverride,
       client,
       docsPaths,
       targetDir,
     ),
-    options.force ? 'force' : 'skip',
     result,
-    targetDir,
   );
 
   // WU-1171: Create AGENTS.md (universal entry point for all agents)
@@ -1813,7 +1885,9 @@ export async function main(): Promise<void> {
   // WU-1576: Show enforcement hooks status -- vendor-agnostic (UnsafeAny adapter that produced files)
   console.log('\n[lumenflow init] Done! Next steps:');
   console.log('  1. Review AGENTS.md and LUMENFLOW.md for workflow documentation');
-  console.log(`  2. Edit ${CONFIG_FILE_NAME} to match your project structure`);
+  console.log(
+    `  2. Review ${CONFIG_FILE_NAME} ${SOFTWARE_DELIVERY_KEY} settings for project defaults`,
+  );
   console.log('');
   console.log(`  ${buildInitLaneLifecycleMessage(LANE_LIFECYCLE_STATUS.UNCONFIGURED)}`);
   if (result.integrationFiles && result.integrationFiles.length > 0) {

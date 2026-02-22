@@ -4,9 +4,8 @@
 
 import path from 'node:path';
 import { existsSync } from 'node:fs';
-import { findProjectRoot } from '@lumenflow/core/config';
+import { findProjectRoot, WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
 import { die } from '@lumenflow/core/error-handler';
-import { CONFIG_FILES } from '@lumenflow/core/wu-constants';
 import {
   ensureLaneLifecycleForProject,
   recommendLaneLifecycleNextStep,
@@ -16,11 +15,11 @@ import { runCLI } from './cli-entry-point.js';
 const LOG_PREFIX = '[lane:status]';
 
 function ensureLumenflowInit(projectRoot: string): void {
-  const configPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
+  const configPath = path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME);
   if (!existsSync(configPath)) {
     die(
-      `${LOG_PREFIX} Missing ${CONFIG_FILES.LUMENFLOW_CONFIG}.\n\n` +
-        'Run `pnpm exec lumenflow init` first, then re-run lane lifecycle commands.',
+      `${LOG_PREFIX} Missing ${WORKSPACE_CONFIG_FILE_NAME}.\n\n` +
+        'Run `pnpm workspace-init --yes` first, then re-run lane lifecycle commands.',
     );
   }
 }

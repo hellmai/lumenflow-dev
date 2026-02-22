@@ -10,19 +10,20 @@ import { resolveLaneLifecycleForStatus } from '../lane-status.js';
 describe('WU-1753: lane:status lifecycle reads are non-mutating', () => {
   it('does not rewrite legacy config when lifecycle status is inferred', () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lane-status-readonly-'));
-    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+    const configPath = path.join(tempDir, 'workspace.yaml');
     const inferencePath = path.join(tempDir, '.lumenflow.lane-inference.yaml');
 
     try {
-      const configWithComments = `version: "2.0"
-project: test
-# keep this comment
-lanes:
-  definitions:
-    - name: "Framework: Core"
-      wip_limit: 1
-      code_paths:
-        - "src/core/**"
+      const configWithComments = `# keep this comment
+software_delivery:
+  lanes:
+    lifecycle:
+      status: "locked"
+    definitions:
+      - name: "Framework: Core"
+        wip_limit: 1
+        code_paths:
+          - "src/core/**"
 `;
 
       fs.writeFileSync(configPath, configWithComments, 'utf-8');

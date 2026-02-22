@@ -8,7 +8,12 @@ import { pathToFileURL } from 'node:url';
 /**
  * WU-1356: Config file name
  */
-const CONFIG_FILE = '.lumenflow.config.yaml';
+const CONFIG_FILE = 'workspace.yaml';
+const WORKSPACE_CONFIG_KEYS = {
+  SOFTWARE_DELIVERY_HEADER: 'software_delivery:',
+  PACKAGE_MANAGER: 'package_manager',
+  BUILD_COMMAND: 'build_command',
+};
 
 const PATH_PARTS = {
   PACKAGES: 'packages',
@@ -95,22 +100,50 @@ function resolveExistingDist({ repoRoot, entry, mainRepoPath, exists }) {
  * WU-1356: Parse simple YAML for package_manager and build_command
  *
  * Minimal YAML parser for bootstrap - avoids requiring yaml package before build.
- * Only extracts top-level package_manager and build_command fields.
+ * Only extracts software_delivery.package_manager and software_delivery.build_command.
  *
  * @param {string} content - YAML content
  * @returns {{ packageManager?: string, buildCommand?: string }}
  */
 export function parseSimpleConfig(content) {
   const result = {};
+  if (!content.includes(WORKSPACE_CONFIG_KEYS.SOFTWARE_DELIVERY_HEADER)) {
+    return result;
+  }
+
+  const blockStart = content.indexOf(WORKSPACE_CONFIG_KEYS.SOFTWARE_DELIVERY_HEADER);
+  if (blockStart === -1) {
+    return result;
+  }
+
+  const blockContent = content.slice(blockStart);
+  const blockLines = blockContent.split('\n');
+  const scopedLines = [];
+  for (let i = 1; i < blockLines.length; i += 1) {
+    const line = blockLines[i];
+    if (line.startsWith('  ') || line.trim().length === 0) {
+      scopedLines.push(line);
+      continue;
+    }
+    break;
+  }
+  const scopedContent = scopedLines.join('\n');
 
   // Extract package_manager: value
-  const pmMatch = content.match(/^package_manager:\s*['"]?(\w+)['"]?/m);
+  const pmMatch = scopedContent.match(
+    new RegExp(`^\\s{2}${WORKSPACE_CONFIG_KEYS.PACKAGE_MANAGER}:\\s*['"]?(\\w+)['"]?`, 'm'),
+  );
   if (pmMatch && ['pnpm', 'npm', 'yarn', 'bun'].includes(pmMatch[1])) {
     result.packageManager = pmMatch[1];
   }
 
   // Extract build_command: value (handles quoted strings)
-  const buildMatch = content.match(/^build_command:\s*['"]?([^'"\n]+)['"]?/m);
+  const buildMatch = scopedContent.match(
+    new RegExp(
+      `^\\s{2}${WORKSPACE_CONFIG_KEYS.BUILD_COMMAND}:\\s*['"]?([^'"\\n]+)['"]?`,
+      'm',
+    ),
+  );
   if (buildMatch) {
     result.buildCommand = buildMatch[1].trim();
   }

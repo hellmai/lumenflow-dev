@@ -3,7 +3,8 @@
  *
  * WU-1067: Config-driven gates execution
  *
- * TypeScript GitHub Action that reads gate commands from .lumenflow.config.yaml
+ * TypeScript GitHub Action that reads gate commands from workspace.yaml
+ * software_delivery
  * instead of hardcoding language presets. Supports skip flags and backwards
  * compatible auto-detection fallback.
  *
@@ -15,6 +16,17 @@ import * as exec from '@actions/exec';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as yaml from 'yaml';
+
+const WORKSPACE_CONFIG_FILE_NAME = 'workspace.yaml';
+const WORKSPACE_V2_KEYS = {
+  SOFTWARE_DELIVERY: 'software_delivery',
+} as const;
+const SOFTWARE_DELIVERY_KEYS = {
+  GATES: 'gates',
+} as const;
+const GATES_KEYS = {
+  EXECUTION: 'execution',
+} as const;
 
 /**
  * Default timeout for gate commands (2 minutes)
@@ -31,7 +43,7 @@ interface GateCommand {
 }
 
 /**
- * Gates execution configuration from .lumenflow.config.yaml
+ * Gates execution configuration from workspace.yaml software_delivery
  */
 interface GatesExecutionConfig {
   preset?: string;
@@ -46,6 +58,12 @@ interface GatesExecutionConfig {
         command: string;
         threshold?: number;
       };
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
 }
 
 /**
@@ -150,36 +168,38 @@ function autoDetectPreset(workingDir: string): string | null {
 }
 
 /**
- * Load gates configuration from .lumenflow.config.yaml
+ * Load gates configuration from workspace.yaml software_delivery.gates.execution
  */
 function loadGatesConfig(workingDir: string): GatesExecutionConfig | null {
-  const configPath = path.join(workingDir, '.lumenflow.config.yaml');
+  const configPath = path.join(workingDir, WORKSPACE_CONFIG_FILE_NAME);
 
   if (!fs.existsSync(configPath)) {
-    core.debug(`No .lumenflow.config.yaml found at ${configPath}`);
+    core.debug(`No ${WORKSPACE_CONFIG_FILE_NAME} found at ${configPath}`);
     return null;
   }
 
   try {
     const content = fs.readFileSync(configPath, 'utf8');
-    const data = yaml.parse(content);
-
-    const executionConfig = data?.gates?.execution;
+    const data = asRecord(yaml.parse(content));
+    const softwareDelivery = data ? asRecord(data[WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY]) : null;
+    const gates = softwareDelivery ? asRecord(softwareDelivery[SOFTWARE_DELIVERY_KEYS.GATES]) : null;
+    const executionConfig = asRecord(gates?.[GATES_KEYS.EXECUTION]);
     if (!executionConfig) {
-      core.debug('No gates.execution section in config');
+      core.debug(`No ${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY}.gates.execution section in config`);
       return null;
     }
+    const typedExecutionConfig = executionConfig as Partial<GatesExecutionConfig>;
 
     // Expand preset and merge with explicit config
-    const presetDefaults = expandPreset(executionConfig.preset);
+    const presetDefaults = expandPreset(typedExecutionConfig.preset);
     const merged: GatesExecutionConfig = {
       ...presetDefaults,
-      ...executionConfig,
+      ...typedExecutionConfig,
     };
 
     return merged;
   } catch (error) {
-    core.warning(`Failed to parse .lumenflow.config.yaml: ${error}`);
+    core.warning(`Failed to parse ${WORKSPACE_CONFIG_FILE_NAME}: ${error}`);
     return null;
   }
 }
@@ -269,7 +289,7 @@ async function run(): Promise<void> {
       } else {
         core.setFailed(
           'Could not detect project type and no gates config found. ' +
-            'Add gates.execution section to .lumenflow.config.yaml',
+            `Add ${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY}.gates.execution section to ${WORKSPACE_CONFIG_FILE_NAME}`,
         );
         return;
       }

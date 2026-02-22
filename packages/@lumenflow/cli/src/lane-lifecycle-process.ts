@@ -15,6 +15,8 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
+import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
+import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 import { CONFIG_FILES, FILE_SYSTEM, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { DEFAULT_LANE_DEFINITIONS, LANE_INFERENCE_TEMPLATE } from './init-templates.js';
 import {
@@ -44,6 +46,7 @@ const LANE_LOCK_COMMAND = 'pnpm lane:lock';
 const LANE_READY_SENTINEL = 'lanes ready';
 
 const DEFAULT_FRAMEWORK_LANES_TOKEN = '{{FRAMEWORK_LANES}}';
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
 export const LANE_LIFECYCLE_STATUS = {
   UNCONFIGURED: 'unconfigured',
@@ -84,6 +87,17 @@ interface ConfigDoc {
   [key: string]: unknown;
 }
 
+interface WorkspaceDoc {
+  [SOFTWARE_DELIVERY_KEY]?: ConfigDoc;
+  [key: string]: unknown;
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
 function toIsoTimestamp(): string {
   return new Date().toISOString();
 }
@@ -97,14 +111,14 @@ function isLaneLifecycleStatus(value: unknown): value is LaneLifecycleStatus {
 }
 
 function getConfigPath(projectRoot: string): string {
-  return path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
+  return path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME);
 }
 
 function getLaneInferencePath(projectRoot: string): string {
   return path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
 }
 
-function readConfigDoc(projectRoot: string): ConfigDoc {
+function readWorkspaceDoc(projectRoot: string): WorkspaceDoc {
   const configPath = getConfigPath(projectRoot);
   if (!existsSync(configPath)) {
     return {};
@@ -112,16 +126,24 @@ function readConfigDoc(projectRoot: string): ConfigDoc {
 
   try {
     const content = readFileSync(configPath, FILE_SYSTEM.UTF8 as BufferEncoding);
-    const parsed = YAML.parse(content) as ConfigDoc | null;
-    return parsed && typeof parsed === 'object' ? parsed : {};
+    const parsed = asRecord(YAML.parse(content)) as WorkspaceDoc | null;
+    return parsed ?? {};
   } catch {
     return {};
   }
 }
 
+function readConfigDoc(projectRoot: string): ConfigDoc {
+  const workspace = readWorkspaceDoc(projectRoot);
+  const softwareDelivery = asRecord(workspace[SOFTWARE_DELIVERY_KEY]);
+  return (softwareDelivery as ConfigDoc | null) ?? {};
+}
+
 function writeConfigDoc(projectRoot: string, config: ConfigDoc): void {
   const configPath = getConfigPath(projectRoot);
-  const nextContent = YAML.stringify(config);
+  const workspace = readWorkspaceDoc(projectRoot);
+  workspace[SOFTWARE_DELIVERY_KEY] = config;
+  const nextContent = YAML.stringify(workspace);
   writeFileSync(
     configPath,
     nextContent || EMPTY_OBJECT + NEWLINE,
@@ -461,7 +483,7 @@ export function validateLaneArtifacts(projectRoot: string): LaneArtifactsValidat
 
   if (missingDefinitions) {
     warnings.push(
-      `No lane definitions found in ${CONFIG_FILES.LUMENFLOW_CONFIG}. Run: ${LANE_SETUP_COMMAND}`,
+      `No lane definitions found in ${WORKSPACE_CONFIG_FILE_NAME} (${SOFTWARE_DELIVERY_KEY}.lanes). Run: ${LANE_SETUP_COMMAND}`,
     );
   }
   if (missingInference) {

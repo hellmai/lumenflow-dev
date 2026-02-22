@@ -13,6 +13,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import YAML from 'yaml';
 
 import { scaffoldProject, type ScaffoldOptions } from '../init.js';
 
@@ -23,6 +24,8 @@ const VENDOR_RULES_FILE = 'lumenflow.md';
 const ONBOARDING_DOCS_PATH = 'docs/04-operations/_frameworks/lumenflow/agent/onboarding';
 const DOCS_OPS_DIR = 'docs/04-operations';
 const PACKAGE_JSON_FILE = 'package.json';
+const WORKSPACE_CONFIG_FILE = 'workspace.yaml';
+const SOFTWARE_DELIVERY_KEY = 'software_delivery';
 
 describe('lumenflow init', () => {
   let tempDir: string;
@@ -34,6 +37,16 @@ describe('lumenflow init', () => {
   afterEach(() => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
+
+  function readWorkspaceConfig(rootDir: string): Record<string, unknown> {
+    const workspaceContent = fs.readFileSync(path.join(rootDir, WORKSPACE_CONFIG_FILE), 'utf-8');
+    return YAML.parse(workspaceContent) as Record<string, unknown>;
+  }
+
+  function readSoftwareDeliveryConfig(rootDir: string): Record<string, unknown> {
+    const workspace = readWorkspaceConfig(rootDir);
+    return (workspace[SOFTWARE_DELIVERY_KEY] as Record<string, unknown>) ?? {};
+  }
 
   describe('AGENTS.md creation', () => {
     it('should create AGENTS.md by default', async () => {
@@ -382,7 +395,7 @@ describe('lumenflow init', () => {
       // Core files should always be created
       expect(fs.existsSync(path.join(tempDir, 'AGENTS.md'))).toBe(true);
       expect(fs.existsSync(path.join(tempDir, LUMENFLOW_MD))).toBe(true);
-      expect(fs.existsSync(path.join(tempDir, '.lumenflow.config.yaml'))).toBe(true);
+      expect(fs.existsSync(path.join(tempDir, WORKSPACE_CONFIG_FILE))).toBe(true);
       expect(fs.existsSync(path.join(tempDir, '.lumenflow', 'constraints.md'))).toBe(true);
     });
   });
@@ -411,7 +424,7 @@ describe('lumenflow init', () => {
 
         await scaffoldProject(tempDir, options);
 
-        const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+        const configPath = path.join(tempDir, WORKSPACE_CONFIG_FILE);
         const content = fs.readFileSync(configPath, 'utf-8');
         expect(content).toContain('status: unconfigured');
       });
@@ -669,8 +682,8 @@ describe('lumenflow init', () => {
       });
     });
 
-    describe('config.yaml managed file header', () => {
-      it('should include managed file header in .lumenflow.config.yaml', async () => {
+    describe('workspace config scaffolding', () => {
+      it('should include software_delivery block in workspace.yaml', async () => {
         const options: ScaffoldOptions = {
           force: false,
           full: false,
@@ -678,13 +691,11 @@ describe('lumenflow init', () => {
 
         await scaffoldProject(tempDir, options);
 
-        const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+        const configPath = path.join(tempDir, WORKSPACE_CONFIG_FILE);
         expect(fs.existsSync(configPath)).toBe(true);
 
-        const content = fs.readFileSync(configPath, 'utf-8');
-        // Should have managed file header
-        expect(content).toMatch(/LUMENFLOW\s+MANAGED\s+FILE/i);
-        expect(content).toMatch(/do\s+not\s+(manually\s+)?edit/i);
+        const workspace = readWorkspaceConfig(tempDir);
+        expect(workspace[SOFTWARE_DELIVERY_KEY]).toBeDefined();
       });
     });
 
@@ -705,7 +716,7 @@ describe('lumenflow init', () => {
 
   // WU-1383: CLI safeguards against manual file editing
   describe('WU-1383: CLI safeguards for Claude client', () => {
-    const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+    const CONFIG_FILE_NAME = WORKSPACE_CONFIG_FILE;
 
     describe('enforcement hooks enabled by default for --client claude', () => {
       it('should add enforcement hooks config when --client claude is used', async () => {
@@ -717,10 +728,7 @@ describe('lumenflow init', () => {
 
         await scaffoldProject(tempDir, options);
 
-        const configPath = path.join(tempDir, CONFIG_FILE_NAME);
-        expect(fs.existsSync(configPath)).toBe(true);
-
-        const content = fs.readFileSync(configPath, 'utf-8');
+        const content = fs.readFileSync(path.join(tempDir, CONFIG_FILE_NAME), 'utf-8');
         // Should have enforcement hooks enabled for claude-code
         expect(content).toContain('claude-code');
         expect(content).toContain('enforcement');
@@ -736,8 +744,7 @@ describe('lumenflow init', () => {
 
         await scaffoldProject(tempDir, options);
 
-        const configPath = path.join(tempDir, CONFIG_FILE_NAME);
-        const content = fs.readFileSync(configPath, 'utf-8');
+        const content = fs.readFileSync(path.join(tempDir, CONFIG_FILE_NAME), 'utf-8');
         expect(content).toContain('block_outside_worktree: true');
       });
 
@@ -750,8 +757,7 @@ describe('lumenflow init', () => {
 
         await scaffoldProject(tempDir, options);
 
-        const configPath = path.join(tempDir, CONFIG_FILE_NAME);
-        const content = fs.readFileSync(configPath, 'utf-8');
+        const content = fs.readFileSync(path.join(tempDir, CONFIG_FILE_NAME), 'utf-8');
         // Should NOT have claude-code enforcement section (check for the nested enforcement block)
         // Note: The default config has agents.defaultClient: claude-code, but no enforcement section
         expect(content).not.toContain('block_outside_worktree');
@@ -759,12 +765,51 @@ describe('lumenflow init', () => {
       });
     });
 
-    describe('warning when config already exists', () => {
-      it('should add warning to result when config yaml already exists', async () => {
-        // Create existing config file
+    describe('existing workspace handling', () => {
+      it('should preserve existing software_delivery keys when workspace already exists', async () => {
         fs.writeFileSync(
           path.join(tempDir, CONFIG_FILE_NAME),
-          '# Existing config\ndirectories:\n  tasksDir: docs/tasks\n',
+          [
+            'id: test',
+            'name: Test',
+            'packs: []',
+            'lanes: []',
+            'policies: {}',
+            'security:',
+            '  allowed_scopes: []',
+            '  network_default: off',
+            '  deny_overlays: []',
+            'software_delivery:',
+            '  directories:',
+            '    tasksDir: docs/tasks',
+            'memory_namespace: test',
+            'event_namespace: test',
+            '',
+          ].join('\n'),
+        );
+
+        const options: ScaffoldOptions = {
+          force: false,
+          full: false,
+        };
+
+        const result = await scaffoldProject(tempDir, options);
+        const softwareDelivery = readSoftwareDeliveryConfig(tempDir);
+        const directories = softwareDelivery.directories as Record<string, unknown> | undefined;
+        expect(directories?.tasksDir).toBe('docs/tasks');
+        expect(result.overwritten).toContain(CONFIG_FILE_NAME);
+      });
+
+      it('should upsert workspace config file when it already exists (not force)', async () => {
+        fs.writeFileSync(
+          path.join(tempDir, CONFIG_FILE_NAME),
+          [
+            'id: test',
+            'name: Test',
+            'software_delivery:',
+            '  custom_key: keep-me',
+            '',
+          ].join('\n'),
         );
 
         const options: ScaffoldOptions = {
@@ -774,18 +819,18 @@ describe('lumenflow init', () => {
 
         const result = await scaffoldProject(tempDir, options);
 
-        // Should have warning about existing config
-        expect(result.warnings).toBeDefined();
-        expect(result.warnings?.some((w) => w.includes('already exists'))).toBe(true);
-        // Warning should suggest CLI commands
-        expect(result.warnings?.some((w) => w.includes('CLI') || w.includes('lumenflow'))).toBe(
-          true,
+        expect(result.overwritten).toContain(CONFIG_FILE_NAME);
+        const softwareDelivery = readSoftwareDeliveryConfig(tempDir);
+        expect(softwareDelivery.custom_key).toBe('keep-me');
+      });
+    });
+
+    describe('post-init warnings', () => {
+      it('should not emit warnings when workspace merge succeeds', async () => {
+        fs.writeFileSync(
+          path.join(tempDir, CONFIG_FILE_NAME),
+          ['id: test', 'name: Test', 'software_delivery: {}', ''].join('\n'),
         );
-      });
-
-      it('should skip config file when it already exists (not force)', async () => {
-        const existingContent = '# My custom config\n';
-        fs.writeFileSync(path.join(tempDir, CONFIG_FILE_NAME), existingContent);
 
         const options: ScaffoldOptions = {
           force: false,
@@ -794,35 +839,16 @@ describe('lumenflow init', () => {
 
         const result = await scaffoldProject(tempDir, options);
 
-        expect(result.skipped).toContain(CONFIG_FILE_NAME);
-        // Content should not be changed
-        const content = fs.readFileSync(path.join(tempDir, CONFIG_FILE_NAME), 'utf-8');
-        expect(content).toBe(existingContent);
+        expect(result.warnings?.length ?? 0).toBe(0);
       });
     });
 
-    describe('post-init output shows CLI commands prominently', () => {
-      // Note: These test the ScaffoldResult which contains info for the CLI output
-      // The main() function uses these to print output
-
-      it('should include CLI usage guidance in warnings when config exists', async () => {
-        fs.writeFileSync(path.join(tempDir, CONFIG_FILE_NAME), '# Existing\n');
-
-        const options: ScaffoldOptions = {
-          force: false,
-          full: false,
-        };
-
-        const result = await scaffoldProject(tempDir, options);
-
-        // Warning should mention CLI commands for editing config
-        expect(result.warnings?.some((w) => /pnpm|lumenflow|CLI/i.test(w))).toBe(true);
-      });
-    });
-
-    describe('warning message suggests CLI commands not manual editing', () => {
-      it('should warn users to use CLI commands instead of manual editing', async () => {
-        fs.writeFileSync(path.join(tempDir, CONFIG_FILE_NAME), '# Existing config\n');
+    describe('warning suppression on successful merge', () => {
+      it('should avoid manual-edit warnings when workspace merge succeeds', async () => {
+        fs.writeFileSync(
+          path.join(tempDir, CONFIG_FILE_NAME),
+          ['id: test', 'name: Test', 'software_delivery: {}', ''].join('\n'),
+        );
 
         const options: ScaffoldOptions = {
           force: false,
@@ -831,12 +857,7 @@ describe('lumenflow init', () => {
 
         const result = await scaffoldProject(tempDir, options);
 
-        // Should have a warning that mentions not to manually edit
-        expect(
-          result.warnings?.some(
-            (w) => w.includes('manual') || w.includes('CLI') || w.includes('lumenflow'),
-          ),
-        ).toBe(true);
+        expect(result.warnings?.length ?? 0).toBe(0);
       });
     });
   });

@@ -16,8 +16,9 @@ import * as os from 'node:os';
 import YAML from 'yaml';
 import { scaffoldProject } from '../init.js';
 
-/** Config file name - extracted to avoid duplicate string lint errors */
-const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+/** Workspace config file name */
+const CONFIG_FILE_NAME = 'workspace.yaml';
+const SOFTWARE_DELIVERY_KEY = 'software_delivery';
 
 describe('init config lane lifecycle bootstrap (WU-1748)', () => {
   let tempDir: string;
@@ -34,14 +35,15 @@ describe('init config lane lifecycle bootstrap (WU-1748)', () => {
     }
   });
 
-  /** Helper to read and parse config from temp directory */
+  /** Helper to read and parse software_delivery config from workspace */
   function readConfig(): Record<string, unknown> {
     const configPath = path.join(tempDir, CONFIG_FILE_NAME);
     const configContent = fs.readFileSync(configPath, 'utf-8');
-    return YAML.parse(configContent) as Record<string, unknown>;
+    const workspace = YAML.parse(configContent) as Record<string, unknown>;
+    return (workspace[SOFTWARE_DELIVERY_KEY] as Record<string, unknown>) ?? {};
   }
 
-  it('should generate .lumenflow.config.yaml with lanes.lifecycle.status', async () => {
+  it('should generate workspace.yaml software_delivery with lanes.lifecycle.status', async () => {
     // Arrange
     const configPath = path.join(tempDir, CONFIG_FILE_NAME);
 
@@ -61,7 +63,7 @@ describe('init config lane lifecycle bootstrap (WU-1748)', () => {
     expect(lifecycle?.status).toBe('unconfigured');
   });
 
-  it('should NOT include finalized lanes.definitions during init', async () => {
+  it('should NOT include finalized software_delivery.lanes.definitions during init', async () => {
     // Act
     await scaffoldProject(tempDir, { force: true, full: true });
 

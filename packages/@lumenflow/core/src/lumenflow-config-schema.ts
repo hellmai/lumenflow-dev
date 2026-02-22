@@ -12,6 +12,7 @@
  */
 
 import { z } from 'zod';
+import { WORKSPACE_V2_KEYS } from './config-contract.js';
 
 // WU-1067: Import gates execution schema from canonical source
 import { GatesExecutionConfigSchema } from './gates-config.js';
@@ -19,17 +20,7 @@ import { GatesExecutionConfigSchema } from './gates-config.js';
 import { MethodologyConfigSchema } from './resolve-policy.js';
 import { LUMENFLOW_CLIENT_IDS } from './wu-context-constants.js';
 
-/**
- * Workspace v2 schema fragments (INIT-033 / WU-1971).
- *
- * These exports define the canonical workspace-level contract used by the kernel:
- * - required `software_delivery` block for workflow/gates/runtime settings
- * - optional `control_plane` block for cloud sync policy
- */
-export const WORKSPACE_V2_KEYS = {
-  SOFTWARE_DELIVERY: 'software_delivery',
-  CONTROL_PLANE: 'control_plane',
-} as const;
+export { WORKSPACE_V2_KEYS };
 
 export const WorkspaceControlPlanePolicyModeSchema = z.enum([
   'authoritative',
