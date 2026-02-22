@@ -54,9 +54,9 @@ describe('filterExistingFiles (WU-2052)', () => {
     const previousCwd = process.cwd();
     process.chdir(paths.mainCwd);
     try {
-      await expect(
-        filterExistingFiles([RELATIVE_FILE_PATH], paths.worktreeCwd),
-      ).resolves.toEqual([RELATIVE_FILE_PATH]);
+      await expect(filterExistingFiles([RELATIVE_FILE_PATH], paths.worktreeCwd)).resolves.toEqual([
+        RELATIVE_FILE_PATH,
+      ]);
     } finally {
       process.chdir(previousCwd);
       rmSync(paths.sandboxRoot, DIRECTORY_PERMISSIONS);
