@@ -96,7 +96,7 @@ const CLI_OPTIONS = {
     name: 'decay',
     flags: '--decay',
     description:
-      'Run decay-based archival (archive stale nodes below threshold). Uses config from .lumenflow.config.yaml or defaults.',
+      'Run decay-based archival (archive stale nodes below threshold). Uses config from workspace.yaml software_delivery or defaults.',
   },
 };
 

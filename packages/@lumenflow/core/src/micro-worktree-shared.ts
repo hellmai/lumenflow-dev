@@ -41,7 +41,7 @@ export const MAX_PUSH_RETRIES = 3;
  * WU-1332: Default push retry configuration
  *
  * Provides sensible defaults for micro-worktree push operations.
- * Can be overridden via .lumenflow.config.yaml git.push_retry section.
+ * Can be overridden via workspace.yaml software_delivery.git.push_retry.
  */
 export const DEFAULT_PUSH_RETRY_CONFIG: PushRetryConfig = {
   enabled: true,
@@ -56,7 +56,7 @@ export const DEFAULT_PUSH_RETRY_CONFIG: PushRetryConfig = {
  *
  * Priority (lowest to highest):
  * 1. DEFAULT_PUSH_RETRY_CONFIG
- * 2. Global config from `.lumenflow.config.yaml` (`git.push_retry`)
+ * 2. Global config from workspace.yaml software_delivery (`git.push_retry`)
  * 3. Operation-specific override from caller
  */
 export function resolvePushRetryConfig(
@@ -172,7 +172,7 @@ export function formatRetryExhaustionError(
     `  1. Wait a few seconds and retry the operation:\n` +
     `     ${command}\n` +
     `  2. If the issue persists, check if another agent is rapidly pushing changes\n` +
-    `  3. Consider increasing git.push_retry.retries in .lumenflow.config.yaml`
+    `  3. Consider increasing git.push_retry.retries in workspace.yaml software_delivery`
   );
 }
 

@@ -18,7 +18,7 @@ vi.mock('node:fs');
 vi.mock('node:child_process');
 
 const TEST_PROJECT_DIR = '/test/project';
-const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+const CONFIG_FILE_NAME = 'workspace.yaml';
 
 describe('WU-1367: Enforcement Hooks Config Schema', () => {
   describe('ClientConfigSchema enforcement block', () => {
@@ -549,12 +549,13 @@ describe('WU-1367: Setup Hook Sync', () => {
       const pathStr = String(p);
       if (pathStr.endsWith(CONFIG_FILE_NAME)) {
         return `
-agents:
-  clients:
-    claude-code:
-      enforcement:
-        hooks: true
-        block_outside_worktree: true
+software_delivery:
+  agents:
+    clients:
+      claude-code:
+        enforcement:
+          hooks: true
+          block_outside_worktree: true
 `;
       }
       // Return empty JSON for settings.json
@@ -585,11 +586,12 @@ agents:
       const pathStr = String(p);
       if (pathStr.endsWith(CONFIG_FILE_NAME)) {
         return `
-agents:
-  clients:
-    claude-code:
-      enforcement:
-        hooks: false
+software_delivery:
+  agents:
+    clients:
+      claude-code:
+        enforcement:
+          hooks: false
 `;
       }
       return '{}';

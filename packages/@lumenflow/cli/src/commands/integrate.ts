@@ -6,7 +6,7 @@
  * Integrate LumenFlow with Claude Code (WU-1367)
  *
  * This command generates enforcement hooks and updates Claude Code
- * configuration based on .lumenflow.config.yaml settings.
+ * configuration based on workspace.yaml software_delivery settings.
  *
  * Usage:
  *   pnpm lumenflow:integrate --client claude-code
@@ -27,6 +27,8 @@ import {
   CLAUDE_HOOKS,
   DIRECTORIES,
   LUMENFLOW_CLIENT_IDS,
+  WORKSPACE_CONFIG_FILE_NAME,
+  WORKSPACE_V2_KEYS,
 } from '@lumenflow/core';
 import {
   generateEnforcementHooks,
@@ -64,6 +66,12 @@ export interface IntegrateEnforcementConfig {
  */
 export interface IntegrateClientConfig {
   enforcement?: IntegrateEnforcementConfig;
+}
+
+interface WorkspaceSoftwareDeliveryConfig {
+  agents?: {
+    clients?: Record<string, IntegrateClientConfig | undefined>;
+  };
 }
 
 /**
@@ -275,10 +283,12 @@ export async function integrateClaudeCode(
 }
 
 /**
- * Read enforcement config from .lumenflow.config.yaml
+ * Read software_delivery config from workspace.yaml.
  */
-function readEnforcementConfig(projectDir: string): IntegrateEnforcementConfig | null {
-  const configPath = path.join(projectDir, '.lumenflow.config.yaml');
+function readWorkspaceSoftwareDeliveryConfig(
+  projectDir: string,
+): WorkspaceSoftwareDeliveryConfig | null {
+  const configPath = path.join(projectDir, WORKSPACE_CONFIG_FILE_NAME);
 
   if (!fs.existsSync(configPath)) {
     return null;
@@ -286,11 +296,28 @@ function readEnforcementConfig(projectDir: string): IntegrateEnforcementConfig |
 
   try {
     const content = fs.readFileSync(configPath, 'utf-8');
-    const config = yaml.parse(content);
-    return config?.agents?.clients?.[LUMENFLOW_CLIENT_IDS.CLAUDE_CODE]?.enforcement ?? null;
+    const workspaceDoc = yaml.parse(content);
+    if (!workspaceDoc || typeof workspaceDoc !== 'object') {
+      return null;
+    }
+
+    const workspace = workspaceDoc as Record<string, unknown>;
+    const softwareDelivery = workspace[WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY];
+    if (!softwareDelivery || typeof softwareDelivery !== 'object') {
+      return null;
+    }
+
+    return softwareDelivery as WorkspaceSoftwareDeliveryConfig;
   } catch {
     return null;
   }
+}
+
+function readEnforcementConfig(projectDir: string): IntegrateEnforcementConfig | null {
+  const softwareDelivery = readWorkspaceSoftwareDeliveryConfig(projectDir);
+  return (
+    softwareDelivery?.agents?.clients?.[LUMENFLOW_CLIENT_IDS.CLAUDE_CODE]?.enforcement ?? null
+  );
 }
 
 /**
@@ -307,21 +334,25 @@ export async function main(): Promise<void> {
 
   const projectDir = process.cwd();
 
-  // Read enforcement config from .lumenflow.config.yaml
+  // Read enforcement config from workspace.yaml software_delivery
   const enforcement = readEnforcementConfig(projectDir);
 
   if (!enforcement) {
-    console.log('[integrate] No enforcement config found in .lumenflow.config.yaml');
-    console.log('[integrate] Add this to your config to enable enforcement hooks:');
+    console.log(
+      `[integrate] No enforcement config found in ${WORKSPACE_CONFIG_FILE_NAME} ` +
+        `${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY}.agents.clients.${LUMENFLOW_CLIENT_IDS.CLAUDE_CODE}`,
+    );
+    console.log('[integrate] Add this to your workspace config to enable enforcement hooks:');
     console.log(`
-agents:
-  clients:
-    ${LUMENFLOW_CLIENT_IDS.CLAUDE_CODE}:
-      enforcement:
-        hooks: true
-        block_outside_worktree: true
-        require_wu_for_edits: true
-        warn_on_stop_without_wu_done: true
+${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY}:
+  agents:
+    clients:
+      ${LUMENFLOW_CLIENT_IDS.CLAUDE_CODE}:
+        enforcement:
+          hooks: true
+          block_outside_worktree: true
+          require_wu_for_edits: true
+          warn_on_stop_without_wu_done: true
 `);
     return;
   }

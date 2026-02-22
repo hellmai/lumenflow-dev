@@ -6,14 +6,16 @@
  *
  * Provides email normalization and domain inference for WU ownership.
  * Converts plain usernames (e.g., "tom") to email format (e.g., "tom@hellm.ai")
- * using domain from git config or .lumenflow.config.yaml.
+ * using domain from git config or workspace.yaml software_delivery.
  *
  * WU-1068: Removed hardcoded exampleapp.co.uk domain. Domain is now inferred
- * from git config user.email or .lumenflow.config.yaml OWNER_EMAIL.
+ * from git config user.email or workspace.yaml software_delivery.owner_email.
  */
 
 import { readFile, access } from 'node:fs/promises';
 import { join } from 'node:path';
+import { parse as parseYaml } from 'yaml';
+import { WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_V2_KEYS } from './config-contract.js';
 import { getGitForCwd } from './git-adapter.js';
 import { DEFAULTS } from './wu-constants.js';
 
@@ -27,6 +29,8 @@ export const DEFAULT_DOMAIN = DEFAULTS.EMAIL_DOMAIN;
  * Minimum length for a valid email local part
  */
 const MIN_LOCAL_PART_LENGTH = 1;
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
+const OWNER_EMAIL_KEYS = ['owner_email', 'ownerEmail'] as const;
 
 /**
  * Check if a value is a valid email address (simple check)
@@ -74,13 +78,36 @@ async function getDomainFromGitConfig() {
 }
 
 /**
- * Try to get domain from .lumenflow.config.yaml OWNER_EMAIL
+ * Cast unknown data to a record when possible.
+ */
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+  return value as Record<string, unknown>;
+}
+
+/**
+ * Try to get owner email from software_delivery config.
+ */
+function readOwnerEmail(softwareDelivery: Record<string, unknown>): string | null {
+  for (const key of OWNER_EMAIL_KEYS) {
+    const value = softwareDelivery[key];
+    if (typeof value === 'string' && value.trim() !== '') {
+      return value.trim();
+    }
+  }
+  return null;
+}
+
+/**
+ * Try to get domain from workspace.yaml software_delivery owner email.
  *
  * @param {string} [cwd] - Working directory to search from
  * @returns {Promise<string|null>} Domain from config or null
  */
-async function getDomainFromLumenflowConfig(cwd = process.cwd()) {
-  const configPath = join(cwd, '.lumenflow.config.yaml');
+async function getDomainFromWorkspaceConfig(cwd = process.cwd()) {
+  const configPath = join(cwd, WORKSPACE_CONFIG_FILE_NAME);
 
   try {
     await access(configPath);
@@ -90,13 +117,18 @@ async function getDomainFromLumenflowConfig(cwd = process.cwd()) {
 
   try {
     const content = await readFile(configPath, { encoding: 'utf-8' });
-    // Simple pattern match for OWNER_EMAIL (avoid full YAML parse for performance)
-    // Looking for: OWNER_EMAIL: "email@domain"
-    const match = content.match(/OWNER_EMAIL:\s*["']?([^"'\s]+)["']?/i);
-    if (match && match[1]) {
-      return extractDomain(match[1]);
+    const workspaceDoc = asRecord(parseYaml(content));
+    if (!workspaceDoc) {
+      return null;
     }
-    return null;
+
+    const softwareDelivery = asRecord(workspaceDoc[SOFTWARE_DELIVERY_KEY]);
+    if (!softwareDelivery) {
+      return null;
+    }
+
+    const ownerEmail = readOwnerEmail(softwareDelivery);
+    return ownerEmail ? extractDomain(ownerEmail) : null;
   } catch {
     return null;
   }
@@ -107,7 +139,7 @@ async function getDomainFromLumenflowConfig(cwd = process.cwd()) {
  *
  * Priority:
  * 1. Git config user.email domain
- * 2. .lumenflow.config.yaml OWNER_EMAIL domain
+ * 2. workspace.yaml software_delivery.owner_email domain
  * 3. DEFAULT_DOMAIN constant
  *
  * @param {string} [cwd] - Working directory for config lookup
@@ -121,7 +153,7 @@ export async function inferDefaultDomain(cwd = process.cwd()) {
   }
 
   // Try lumenflow config
-  const configDomain = await getDomainFromLumenflowConfig(cwd);
+  const configDomain = await getDomainFromWorkspaceConfig(cwd);
   if (configDomain) {
     return configDomain;
   }

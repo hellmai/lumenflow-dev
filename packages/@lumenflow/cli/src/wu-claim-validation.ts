@@ -337,7 +337,7 @@ export function validateLaneFormatWithError(lane: string): void {
         `  - Single colon with EXACTLY one space after (e.g., "Parent: Subdomain")\n` +
         `  - No spaces before colon\n` +
         `  - No multiple colons\n\n` +
-        `See .lumenflow.config.yaml for valid parent lanes.`,
+        `See workspace.yaml software_delivery.lanes.definitions for valid parent lanes.`,
     );
   }
 }
@@ -346,7 +346,7 @@ export function validateLaneFormatWithError(lane: string): void {
  * Handle lane occupancy check and enforce WIP limit policy
  *
  * WU-1016: Updated to support configurable WIP limits per lane.
- * The WIP limit is read from .lumenflow.config.yaml and defaults to 1.
+ * The WIP limit is read from workspace.yaml software_delivery and defaults to 1.
  */
 export function handleLaneOccupancy(
   laneCheck: LaneOccupancyResult,
@@ -381,11 +381,12 @@ export function handleLaneOccupancy(
     `Lane "${lane}" is at WIP limit (${currentCount}/${wipLimit}).\n\n` +
       `In progress: ${inProgressList}\n\n` +
       `LumenFlow enforces WIP limits per lane to maintain focus.\n` +
-      `Current limit for "${lane}": ${wipLimit} (configure in .lumenflow.config.yaml)\n\n` +
+      `Current limit for "${lane}": ${wipLimit} ` +
+      `(configure in workspace.yaml software_delivery.lanes.definitions)\n\n` +
       `Options:\n` +
       `  1. Wait for a WU to complete or block\n` +
       `  2. Choose a different lane\n` +
-      `  3. Increase wip_limit in .lumenflow.config.yaml\n` +
+      `  3. Increase wip_limit in workspace.yaml software_delivery.lanes.definitions\n` +
       `  4. Use --force to override (P0 emergencies only)\n\n` +
       // WU-1311: Use config-based status path
       `To check lane status: grep "${STATUS_SECTIONS.IN_PROGRESS}" ${getConfig().directories.statusPath}`,

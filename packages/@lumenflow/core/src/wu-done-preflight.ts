@@ -58,7 +58,7 @@ Fix options:
     message += `
   For stamp-status mismatch errors:
   1. Fix the WU status to match the stamp (set status: done, locked: true)
-  2. Or add the WU ID to .lumenflow.config.yaml > exemptions > stamp_status_mismatch
+  2. Or add the WU ID to workspace.yaml > software_delivery > exemptions > stamp_status_mismatch
 
 `;
   }

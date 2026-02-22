@@ -181,7 +181,7 @@ export function warnIfBetterLaneExists(
  * Resolve lane lifecycle classification for wu:create without mutating config.
  *
  * WU-1751: wu:create must not persist lifecycle migration side effects to
- * .lumenflow.config.yaml on main.
+ * workspace.yaml on main.
  */
 export function resolveLaneLifecycleForWuCreate(projectRoot: string): LaneLifecycleClassification {
   return ensureLaneLifecycleForProject(projectRoot, { persist: false });
@@ -366,7 +366,7 @@ async function main() {
         `  - Single colon with EXACTLY one space after (e.g., "Parent: Subdomain")\n` +
         `  - No spaces before colon\n` +
         `  - No multiple colons\n\n` +
-        `See .lumenflow.config.yaml for valid parent lanes.`,
+        `See workspace.yaml software_delivery.lanes.definitions for valid parent lanes.`,
     );
   }
 

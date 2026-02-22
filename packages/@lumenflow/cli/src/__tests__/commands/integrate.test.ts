@@ -160,17 +160,21 @@ describe('WU-1367: Integrate Command', () => {
     it('should keep client config lookup keyed by canonical client ID', async () => {
       const mockWriteFileSync = vi.mocked(fs.writeFileSync);
       vi.mocked(fs.existsSync).mockReturnValue(true);
-      vi.mocked(fs.readFileSync).mockReturnValue(
-        JSON.stringify({
-          agents: {
-            clients: {
-              [TEST_CLAUDE_CLIENT_ID]: {
-                enforcement: { hooks: true, block_outside_worktree: true },
-              },
-            },
-          },
-        }),
-      );
+      vi.mocked(fs.readFileSync).mockImplementation((filePath) => {
+        const file = String(filePath);
+        if (file.endsWith('workspace.yaml')) {
+          return `
+software_delivery:
+  agents:
+    clients:
+      ${TEST_CLAUDE_CLIENT_ID}:
+        enforcement:
+          hooks: true
+          block_outside_worktree: true
+`;
+        }
+        return '{}';
+      });
       mockWriteFileSync.mockClear();
 
       const { main } = await import('../../commands/integrate.js');

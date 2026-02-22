@@ -19,7 +19,7 @@ const TEST_FILES = {
   README: 'README.md',
   LUMENFLOW: 'LUMENFLOW.md',
   PACKAGE_JSON: 'package.json',
-  CONFIG_YAML: '.lumenflow.config.yaml',
+  WORKSPACE_CONFIG: 'workspace.yaml',
   CONSTRAINTS: '.lumenflow/constraints.md',
 } as const;
 
@@ -111,11 +111,11 @@ describe('mem-index-core (WU-1235)', () => {
       expect(result.sourcesScanned).toContain(TEST_FILES.PACKAGE_JSON);
     });
 
-    it('scans .lumenflow.config.yaml if present', async () => {
+    it('scans workspace.yaml if present', async () => {
       // Arrange
       await writeFile(
-        TEST_FILES.CONFIG_YAML,
-        'lanes:\n  definitions:\n    - name: Framework: Core\n',
+        TEST_FILES.WORKSPACE_CONFIG,
+        'software_delivery:\n  lanes:\n    definitions:\n      - name: Framework: Core\n',
       );
 
       // Act
@@ -123,7 +123,7 @@ describe('mem-index-core (WU-1235)', () => {
 
       // Assert
       expect(result.success).toBe(true);
-      expect(result.sourcesScanned).toContain(TEST_FILES.CONFIG_YAML);
+      expect(result.sourcesScanned).toContain(TEST_FILES.WORKSPACE_CONFIG);
     });
 
     it('scans .lumenflow/constraints.md if present', async () => {
@@ -426,19 +426,20 @@ describe('mem-index-core (WU-1235)', () => {
       expect((pkgNode as { content: string }).content).toContain('Workspaces');
     });
 
-    it('extracts lane definitions from .lumenflow.config.yaml', async () => {
+    it('extracts lane definitions from workspace.yaml software_delivery', async () => {
       // Arrange
       const configContent = `
-lanes:
-  definitions:
-    - name: "Framework: Core"
-      code_paths:
-        - "packages/@lumenflow/core/**"
-    - name: "Framework: CLI"
-      code_paths:
-        - "packages/@lumenflow/cli/**"
+software_delivery:
+  lanes:
+    definitions:
+      - name: "Framework: Core"
+        code_paths:
+          - "packages/@lumenflow/core/**"
+      - name: "Framework: CLI"
+        code_paths:
+          - "packages/@lumenflow/cli/**"
 `;
-      await writeFile(TEST_FILES.CONFIG_YAML, configContent);
+      await writeFile(TEST_FILES.WORKSPACE_CONFIG, configContent);
 
       // Act
       await indexProject(testDir);
@@ -448,7 +449,7 @@ lanes:
       const configNode = nodes.find(
         (n) =>
           (n as { metadata?: { source_path?: string } }).metadata?.source_path ===
-          TEST_FILES.CONFIG_YAML,
+          TEST_FILES.WORKSPACE_CONFIG,
       );
       expect(configNode).toBeDefined();
       expect((configNode as { tags: string[] }).tags).toContain('index:commands');

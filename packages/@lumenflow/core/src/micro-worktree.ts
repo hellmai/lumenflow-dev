@@ -510,7 +510,7 @@ export async function pushWithRetryConfig(
           `Origin ${branch} may have significant traffic.\n\n` +
           `Suggestions:\n` +
           `  - Wait a few seconds and retry the operation\n` +
-          `  - Increase git.push_retry.retries in .lumenflow.config.yaml\n` +
+          `  - Increase git.push_retry.retries in workspace.yaml software_delivery\n` +
           `  - Check if another agent is rapidly pushing changes`,
       );
     });

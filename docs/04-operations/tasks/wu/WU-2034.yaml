@@ -6,17 +6,20 @@ status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
-  - packages/@lumenflow/cli/src/**,packages/@lumenflow/core/src/**,packages/@lumenflow/memory/src/**,packages/@lumenflow/metrics/src/**
+  - packages/@lumenflow/cli/src/**
+  - packages/@lumenflow/core/src/**
+  - packages/@lumenflow/memory/src/**
+  - packages/@lumenflow/metrics/src/**
 tests:
   manual:
-    - Run rg -n "\.lumenflow\.config\.yaml" packages/@lumenflow/{cli
-    - core
-    - memory
-    - metrics}/src and verify zero runtime hits.
+    - 'Run `rg -n "\.lumenflow\.config\.yaml" packages/@lumenflow/{cli,core,memory,metrics}/src` and verify zero runtime hits.'
     - Run pnpm --filter @lumenflow/cli test -- --runInBand lane-status and verify lane status
       resolves from workspace config without legacy file.
   unit:
-    - packages/@lumenflow/cli/__tests__/**,packages/@lumenflow/cli/src/__tests__/**,packages/@lumenflow/core/src/__tests__/**,packages/@lumenflow/memory/__tests__/**
+    - packages/@lumenflow/cli/__tests__/**
+    - packages/@lumenflow/cli/src/__tests__/**
+    - packages/@lumenflow/core/src/__tests__/**
+    - packages/@lumenflow/memory/__tests__/**
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2034.done

@@ -15,7 +15,7 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import * as yaml from 'yaml';
+import { getConfig } from '@lumenflow/core/config';
 import {
   generateEnforcementHooks,
   generateEnforceWorktreeScript,
@@ -93,21 +93,14 @@ interface LumenFlowConfig {
 }
 
 /**
- * Read LumenFlow configuration from .lumenflow.config.yaml
+ * Read LumenFlow configuration from workspace.yaml software_delivery.
  *
  * @param projectDir - Project directory
  * @returns Parsed configuration or null if not found
  */
 function readLumenFlowConfig(projectDir: string): LumenFlowConfig | null {
-  const configPath = path.join(projectDir, '.lumenflow.config.yaml');
-
-  if (!fs.existsSync(configPath)) {
-    return null;
-  }
-
   try {
-    const content = fs.readFileSync(configPath, 'utf-8');
-    return yaml.parse(content) as LumenFlowConfig;
+    return getConfig({ projectRoot: projectDir, reload: true }) as LumenFlowConfig;
   } catch {
     return null;
   }
@@ -393,7 +386,7 @@ function mergeHooksIntoSettings(
  * Sync enforcement hooks based on LumenFlow configuration.
  *
  * This function:
- * 1. Reads .lumenflow.config.yaml
+ * 1. Reads workspace.yaml software_delivery
  * 2. Checks if enforcement.hooks=true for claude-code
  * 3. Generates and writes hook scripts
  * 4. Updates .claude/settings.json with hook configuration

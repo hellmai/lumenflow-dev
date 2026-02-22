@@ -48,21 +48,22 @@ describe('wu-sandbox policy and parsing (WU-1687)', () => {
     }
   });
 
-  it('reads sandbox policy fields from .lumenflow.config.yaml', async () => {
+  it('reads sandbox policy fields from workspace.yaml software_delivery', async () => {
     const { readSandboxPolicy } = await loadWuSandboxModule();
     const root = mkdtempSync(path.join(os.tmpdir(), 'wu-sandbox-policy-custom-'));
 
     try {
       writeFileSync(
-        path.join(root, '.lumenflow.config.yaml'),
+        path.join(root, 'workspace.yaml'),
         [
-          'sandbox:',
-          '  allow_unsandboxed_fallback_env: CUSTOM_SANDBOX_OVERRIDE',
-          '  extra_writable_roots:',
-          '    - memory-bank',
-          '    - .lumenflow/state',
-          '  deny_writable_roots:',
-          '    - .git',
+          'software_delivery:',
+          '  sandbox:',
+          '    allow_unsandboxed_fallback_env: CUSTOM_SANDBOX_OVERRIDE',
+          '    extra_writable_roots:',
+          '      - memory-bank',
+          '      - .lumenflow/state',
+          '    deny_writable_roots:',
+          '      - .git',
         ].join('\n'),
       );
 

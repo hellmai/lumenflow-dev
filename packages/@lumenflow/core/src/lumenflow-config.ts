@@ -27,7 +27,7 @@ import { normalizeConfigKeys } from './normalize-config-keys.js';
 /** Canonical workspace config file name (workspace-first architecture) */
 export { WORKSPACE_CONFIG_FILE_NAME } from './config-contract.js';
 
-/** Legacy config file name retained for compatibility workflows */
+/** Legacy config file name (unsupported at runtime; retained for migration messaging) */
 export const LEGACY_CONFIG_FILE_NAME = '.lumenflow.config.yaml';
 
 /** Git sentinel directory used for project-root discovery fallback */
@@ -46,7 +46,8 @@ const WORKSPACE_INIT_COMMAND = 'pnpm workspace-init --yes';
 const WORKSPACE_CONFIG_SECTION = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
 /**
- * Presence of canonical and legacy config files in a project root.
+ * Presence of canonical config files in a project root.
+ * Legacy file support is removed; `legacyConfigExists` remains for API compatibility.
  */
 export interface ConfigFilePresence {
   workspaceConfigExists: boolean;
@@ -74,7 +75,7 @@ export class LegacyConfigHardCutError extends Error {
 export function getConfigFilePresence(projectRoot: string): ConfigFilePresence {
   return {
     workspaceConfigExists: fs.existsSync(path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME)),
-    legacyConfigExists: fs.existsSync(path.join(projectRoot, LEGACY_CONFIG_FILE_NAME)),
+    legacyConfigExists: false,
   };
 }
 
@@ -88,10 +89,9 @@ export function buildLegacyConfigHardCutGuidance(projectRoot: string): string {
   const legacyPath = path.join(projectRoot, LEGACY_CONFIG_FILE_NAME);
   const workspacePath = path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME);
   return (
-    `${WARNING_PREFIX} Legacy-only config detected at ${legacyPath}. ` +
-    `Runtime hard cut requires ${WORKSPACE_CONFIG_FILE_NAME}. ` +
-    `Run \`${WORKSPACE_INIT_COMMAND}\`, then migrate your legacy settings into ` +
-    `${workspacePath} under \`${WORKSPACE_CONFIG_SECTION}\`.`
+    `${WARNING_PREFIX} Legacy config (${legacyPath}) is no longer supported at runtime. ` +
+    `Use ${workspacePath} with a \`${WORKSPACE_CONFIG_SECTION}\` block. ` +
+    `If needed, run \`${WORKSPACE_INIT_COMMAND}\` and migrate settings manually.`
   );
 }
 
@@ -116,7 +116,7 @@ function parseYamlRecord(content: string): Record<string, unknown> | null {
 }
 
 /**
- * Find project root by looking for workspace.yaml, then legacy config, then .git
+ * Find project root by looking for workspace.yaml, then .git
  *
  * @param startDir - Directory to start searching from
  * @returns Project root path or current working directory
@@ -127,10 +127,6 @@ export function findProjectRoot(startDir: string = process.cwd()): string {
 
   while (true) {
     if (fs.existsSync(path.join(currentDir, WORKSPACE_CONFIG_FILE_NAME))) {
-      return currentDir;
-    }
-
-    if (fs.existsSync(path.join(currentDir, LEGACY_CONFIG_FILE_NAME))) {
       return currentDir;
     }
 
@@ -223,10 +219,13 @@ export function getConfig(
 
   // Find or use provided project root
   const projectRoot = overrideRoot || findProjectRoot();
-  const { workspaceConfigExists, legacyConfigExists } = getConfigFilePresence(projectRoot);
+  const { workspaceConfigExists } = getConfigFilePresence(projectRoot);
 
-  if (strictWorkspace && !workspaceConfigExists && legacyConfigExists) {
-    throw new LegacyConfigHardCutError(buildLegacyConfigHardCutGuidance(projectRoot));
+  if (strictWorkspace && !workspaceConfigExists) {
+    throw new Error(
+      `${WARNING_PREFIX} Missing ${WORKSPACE_CONFIG_FILE_NAME}. ` +
+        `Run \`${WORKSPACE_INIT_COMMAND}\` to scaffold workspace config.`,
+    );
   }
 
   // Canonical workspace-first load path (INIT-033 hard-cut migration)

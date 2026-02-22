@@ -9,7 +9,7 @@
  * index:commands, index:invariants for agent context awareness.
  *
  * Features:
- * - Scans README.md, LUMENFLOW.md, package.json, .lumenflow.config.yaml
+ * - Scans README.md, LUMENFLOW.md, package.json, workspace.yaml
  * - Creates summary nodes with lifecycle=project
  * - Includes provenance metadata (source_path, source_hash, indexed_at)
  * - Idempotent: re-running updates/skips existing nodes
@@ -21,6 +21,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
 import { generateMemId } from './mem-id.js';
 import { loadMemory, appendNode } from './memory-store.js';
 import type { MemoryNode } from './memory-schema.js';
@@ -58,9 +59,9 @@ const DEFAULT_SOURCES: SourceDefinition[] = [
     description: 'Monorepo structure and dependencies',
   },
   {
-    path: '.lumenflow.config.yaml',
+    path: WORKSPACE_CONFIG_FILE_NAME,
     tags: ['index:commands', 'index:conventions'],
-    description: 'Workflow configuration and lane definitions',
+    description: 'Workspace software delivery configuration and lane definitions',
   },
   {
     path: '.lumenflow/constraints.md',

@@ -296,8 +296,9 @@ function checkLumenflowConfig(projectDir: string): CheckResult {
   if (!workspaceConfigExists) {
     return {
       passed: false,
-      message: `${WORKSPACE_CONFIG_FILE_NAME} missing`,
-      details: 'Run: pnpm workspace-init --yes',
+      message: `${WORKSPACE_CONFIG_FILE_NAME} missing (legacy config ${LEGACY_CONFIG_FILE_NAME} unsupported)`,
+      details:
+        `${buildLegacyConfigHardCutGuidance(projectDir)}\n` + `Run: pnpm workspace-init --yes`,
     };
   }
 

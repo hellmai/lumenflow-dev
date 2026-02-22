@@ -31,7 +31,7 @@ const SECTION = {
 const MESSAGES = {
   skillsIntro: '**IMPORTANT**: Before starting work, select and load relevant skills.',
   catalogMissing:
-    'No skills directories configured or found. Set `directories.skillsDir` or `agents.clients.<client>.skillsDir` in .lumenflow.config.yaml.',
+    'No skills directories configured or found. Set `directories.skillsDir` or `agents.clients.<client>.skillsDir` in workspace.yaml software_delivery.',
   baselineFallback:
     '- Load baseline skills: `/skill wu-lifecycle`, `/skill tdd-workflow` (for features)\n- Continue with implementation using Mandatory Standards below',
 };
@@ -128,7 +128,7 @@ export function generateSkillsCatalogGuidance(config: UnsafeAny, clientName: Uns
   const clientHint = clientName
     ? `agents.clients.${clientName}.skillsDir`
     : 'agents.clients.<client>.skillsDir';
-  return `${SECTION.skillsCatalog}\n\n${configuredHint}No skills directories configured or found. Set \`directories.skillsDir\` or \`${clientHint}\` in .lumenflow.config.yaml.\n`;
+  return `${SECTION.skillsCatalog}\n\n${configuredHint}No skills directories configured or found. Set \`directories.skillsDir\` or \`${clientHint}\` in workspace.yaml software_delivery.\n`;
 }
 
 /**

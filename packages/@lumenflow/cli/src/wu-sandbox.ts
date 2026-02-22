@@ -26,6 +26,8 @@ import {
   type SandboxBackend,
   type SandboxExecutionPlan,
   type SandboxProfile,
+  WORKSPACE_CONFIG_FILE_NAME,
+  WORKSPACE_V2_KEYS,
 } from '@lumenflow/core';
 import { WU_PATHS, defaultWorktreeFrom } from '@lumenflow/core/wu-paths';
 import { die } from '@lumenflow/core/error-handler';
@@ -33,8 +35,8 @@ import { LOG_PREFIX, EXIT_CODES } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 const PREFIX = LOG_PREFIX.CLAIM.replace('wu-claim', 'wu:sandbox');
-const CONFIG_FILE = '.lumenflow.config.yaml';
 const DEFAULT_ALLOW_UNSANDBOXED_ENV_VAR = 'LUMENFLOW_SANDBOX_ALLOW_UNSANDBOXED';
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
 interface SandboxPolicyConfig {
   allow_unsandboxed_fallback_env?: string;
@@ -86,46 +88,59 @@ function parsePolicyConfig(value: unknown): SandboxPolicyConfig {
   return value as SandboxPolicyConfig;
 }
 
-export function readSandboxPolicy(projectRoot: string): ResolvedSandboxPolicy {
-  const configPath = path.join(projectRoot, CONFIG_FILE);
+function readWorkspaceSoftwareDelivery(projectRoot: string): Record<string, unknown> | null {
+  const configPath = path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME);
   if (!existsSync(configPath)) {
-    return {
-      allowUnsandboxedEnvVar: DEFAULT_ALLOW_UNSANDBOXED_ENV_VAR,
-      extraWritableRoots: [],
-      denyWritableRoots: [],
-    };
+    return null;
   }
 
   try {
-    const raw = parseYaml(readFileSync(configPath, 'utf8')) as {
-      sandbox?: SandboxPolicyConfig;
-    };
-    const sandbox = parsePolicyConfig(raw?.sandbox);
-    const allowUnsandboxedEnvVar =
-      typeof sandbox.allow_unsandboxed_fallback_env === 'string' &&
-      sandbox.allow_unsandboxed_fallback_env.trim() !== ''
-        ? sandbox.allow_unsandboxed_fallback_env.trim()
-        : DEFAULT_ALLOW_UNSANDBOXED_ENV_VAR;
+    const parsed = parseYaml(readFileSync(configPath, 'utf8'));
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return null;
+    }
 
-    const extraWritableRoots = Array.isArray(sandbox.extra_writable_roots)
-      ? sandbox.extra_writable_roots.filter((value): value is string => typeof value === 'string')
-      : [];
-    const denyWritableRoots = Array.isArray(sandbox.deny_writable_roots)
-      ? sandbox.deny_writable_roots.filter((value): value is string => typeof value === 'string')
-      : [];
+    const workspace = parsed as Record<string, unknown>;
+    const softwareDelivery = workspace[SOFTWARE_DELIVERY_KEY];
+    if (!softwareDelivery || typeof softwareDelivery !== 'object' || Array.isArray(softwareDelivery)) {
+      return null;
+    }
 
-    return {
-      allowUnsandboxedEnvVar,
-      extraWritableRoots,
-      denyWritableRoots,
-    };
+    return softwareDelivery as Record<string, unknown>;
   } catch {
+    return null;
+  }
+}
+
+export function readSandboxPolicy(projectRoot: string): ResolvedSandboxPolicy {
+  const softwareDelivery = readWorkspaceSoftwareDelivery(projectRoot);
+  if (!softwareDelivery) {
     return {
       allowUnsandboxedEnvVar: DEFAULT_ALLOW_UNSANDBOXED_ENV_VAR,
       extraWritableRoots: [],
       denyWritableRoots: [],
     };
   }
+
+  const sandbox = parsePolicyConfig(softwareDelivery.sandbox);
+  const allowUnsandboxedEnvVar =
+    typeof sandbox.allow_unsandboxed_fallback_env === 'string' &&
+    sandbox.allow_unsandboxed_fallback_env.trim() !== ''
+      ? sandbox.allow_unsandboxed_fallback_env.trim()
+      : DEFAULT_ALLOW_UNSANDBOXED_ENV_VAR;
+
+  const extraWritableRoots = Array.isArray(sandbox.extra_writable_roots)
+    ? sandbox.extra_writable_roots.filter((value): value is string => typeof value === 'string')
+    : [];
+  const denyWritableRoots = Array.isArray(sandbox.deny_writable_roots)
+    ? sandbox.deny_writable_roots.filter((value): value is string => typeof value === 'string')
+    : [];
+
+  return {
+    allowUnsandboxedEnvVar,
+    extraWritableRoots,
+    denyWritableRoots,
+  };
 }
 
 export function extractSandboxCommandFromArgv(argv: string[]): string[] {
