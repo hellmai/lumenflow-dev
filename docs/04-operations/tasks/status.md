@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2008 — Remove remaining direct process.exit usage from core modules](wu/WU-2008.yaml)
 
 ## Completed
 
