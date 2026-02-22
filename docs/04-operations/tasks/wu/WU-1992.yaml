@@ -2,7 +2,7 @@ id: WU-1992
 title: Fix pre-existing spec:linter failures in legacy WU YAMLs
 lane: 'Content: Specs Governance'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -42,3 +42,6 @@ session_id: a4259b35-7a69-4b56-bdc5-633670df6589
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T00:37:22.799Z
+locked: true
+completed_at: 2026-02-22T00:39:46.217Z
+completed: 2026-02-22

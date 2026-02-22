@@ -1936,4 +1936,5 @@
 {"type":"complete","wuId":"WU-1990","timestamp":"2026-02-22T00:20:28.065Z"}
 {"type":"claim","wuId":"WU-1991","timestamp":"2026-02-22T00:24:34.382Z","lane":"Operations: Tooling","title":"Burn down @lumenflow/web lint warnings and restore gates"}
 {"type":"complete","wuId":"WU-1991","timestamp":"2026-02-22T00:34:56.666Z"}
-{"type":"claim","wuId":"WU-1992","lane":"Content: Specs Governance","title":"Fix pre-existing spec:linter failures in legacy WU YAMLs","timestamp":"2026-02-22T00:37:22.845Z"}
+{"type":"claim","wuId":"WU-1992","timestamp":"2026-02-22T00:37:22.845Z","lane":"Content: Specs Governance","title":"Fix pre-existing spec:linter failures in legacy WU YAMLs"}
+{"type":"complete","wuId":"WU-1992","timestamp":"2026-02-22T00:39:51.148Z"}
