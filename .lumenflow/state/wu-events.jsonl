@@ -2000,5 +2000,6 @@
 {"type":"claim","wuId":"WU-2014","timestamp":"2026-02-22T15:11:31.838Z","lane":"Framework: Core Lifecycle","title":"Decompose wu-done-worktree.ts (1777 lines)"}
 {"type":"claim","wuId":"WU-2019","timestamp":"2026-02-22T15:13:04.311Z","lane":"Framework: Core Validation","title":"Replace work-classifier domain switch with data map"}
 {"type":"complete","wuId":"WU-2012","timestamp":"2026-02-22T15:19:10.593Z"}
-{"type":"claim","wuId":"WU-2018","lane":"Framework: Core Lifecycle","title":"Replace consistency repair switch with strategy map","timestamp":"2026-02-22T15:21:34.993Z"}
-{"type":"claim","wuId":"WU-2041","lane":"Framework: Core Lifecycle","title":"Add missing spawn-policy-resolver and spawn-lane-occupation modules","timestamp":"2026-02-22T15:22:38.919Z"}
+{"type":"claim","wuId":"WU-2018","timestamp":"2026-02-22T15:21:34.993Z","lane":"Framework: Core Lifecycle","title":"Replace consistency repair switch with strategy map"}
+{"type":"claim","wuId":"WU-2041","timestamp":"2026-02-22T15:22:38.919Z","lane":"Framework: Core Lifecycle","title":"Add missing spawn-policy-resolver and spawn-lane-occupation modules"}
+{"type":"complete","wuId":"WU-2010","timestamp":"2026-02-22T15:23:12.622Z"}
