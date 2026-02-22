@@ -135,10 +135,7 @@ export function WorkspaceSelector({ onConnect, isConnecting }: WorkspaceSelector
           </button>
         </div>
         {isConnecting && (
-          <div
-            data-testid="workspace-connecting-indicator"
-            className="mt-3 text-sm text-slate-400"
-          >
+          <div data-testid="workspace-connecting-indicator" className="mt-3 text-sm text-slate-400">
             Initializing kernel runtime...
           </div>
         )}

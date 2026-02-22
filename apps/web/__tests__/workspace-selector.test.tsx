@@ -61,8 +61,16 @@ describe('WorkspaceSelector — recent workspaces dropdown (AC1)', () => {
 
   it('shows a dropdown with recent workspaces when they exist in localStorage', async () => {
     const workspaces: RecentWorkspace[] = [
-      makeWorkspace({ path: '/home/user/project-a', name: 'project-a', lastUsed: '2026-02-18T01:00:00Z' }),
-      makeWorkspace({ path: '/home/user/project-b', name: 'project-b', lastUsed: '2026-02-18T02:00:00Z' }),
+      makeWorkspace({
+        path: '/home/user/project-a',
+        name: 'project-a',
+        lastUsed: '2026-02-18T01:00:00Z',
+      }),
+      makeWorkspace({
+        path: '/home/user/project-b',
+        name: 'project-b',
+        lastUsed: '2026-02-18T02:00:00Z',
+      }),
     ];
     seedLocalStorage(workspaces);
 
@@ -74,9 +82,21 @@ describe('WorkspaceSelector — recent workspaces dropdown (AC1)', () => {
 
   it('shows workspaces sorted by lastUsed descending (most recent first)', async () => {
     const workspaces: RecentWorkspace[] = [
-      makeWorkspace({ path: '/home/user/oldest', name: 'oldest', lastUsed: '2026-02-18T01:00:00Z' }),
-      makeWorkspace({ path: '/home/user/newest', name: 'newest', lastUsed: '2026-02-18T03:00:00Z' }),
-      makeWorkspace({ path: '/home/user/middle', name: 'middle', lastUsed: '2026-02-18T02:00:00Z' }),
+      makeWorkspace({
+        path: '/home/user/oldest',
+        name: 'oldest',
+        lastUsed: '2026-02-18T01:00:00Z',
+      }),
+      makeWorkspace({
+        path: '/home/user/newest',
+        name: 'newest',
+        lastUsed: '2026-02-18T03:00:00Z',
+      }),
+      makeWorkspace({
+        path: '/home/user/middle',
+        name: 'middle',
+        lastUsed: '2026-02-18T02:00:00Z',
+      }),
     ];
     seedLocalStorage(workspaces);
 
@@ -118,8 +138,16 @@ describe('WorkspaceSelector — select workspace (AC2)', () => {
 
   it('calls onConnect with the selected workspace path', async () => {
     const workspaces: RecentWorkspace[] = [
-      makeWorkspace({ path: '/home/user/project-a', name: 'project-a', lastUsed: '2026-02-18T02:00:00Z' }),
-      makeWorkspace({ path: '/home/user/project-b', name: 'project-b', lastUsed: '2026-02-18T01:00:00Z' }),
+      makeWorkspace({
+        path: '/home/user/project-a',
+        name: 'project-a',
+        lastUsed: '2026-02-18T02:00:00Z',
+      }),
+      makeWorkspace({
+        path: '/home/user/project-b',
+        name: 'project-b',
+        lastUsed: '2026-02-18T01:00:00Z',
+      }),
     ];
     seedLocalStorage(workspaces);
 
@@ -145,7 +173,11 @@ describe('WorkspaceSelector — add workspace (AC3)', () => {
 
   it('shows an "Add workspace" option in the dropdown', async () => {
     const workspaces: RecentWorkspace[] = [
-      makeWorkspace({ path: '/home/user/project-a', name: 'project-a', lastUsed: '2026-02-18T01:00:00Z' }),
+      makeWorkspace({
+        path: '/home/user/project-a',
+        name: 'project-a',
+        lastUsed: '2026-02-18T01:00:00Z',
+      }),
     ];
     seedLocalStorage(workspaces);
 
@@ -157,7 +189,11 @@ describe('WorkspaceSelector — add workspace (AC3)', () => {
 
   it('switches to text input when "Add workspace" is clicked', async () => {
     const workspaces: RecentWorkspace[] = [
-      makeWorkspace({ path: '/home/user/project-a', name: 'project-a', lastUsed: '2026-02-18T01:00:00Z' }),
+      makeWorkspace({
+        path: '/home/user/project-a',
+        name: 'project-a',
+        lastUsed: '2026-02-18T01:00:00Z',
+      }),
     ];
     seedLocalStorage(workspaces);
 
@@ -202,8 +238,16 @@ describe('WorkspaceSelector — localStorage persistence (AC4)', () => {
 
   it('updates lastUsed for an existing workspace when selected again', async () => {
     const workspaces: RecentWorkspace[] = [
-      makeWorkspace({ path: '/home/user/project-a', name: 'project-a', lastUsed: '2026-02-18T01:00:00Z' }),
-      makeWorkspace({ path: '/home/user/project-b', name: 'project-b', lastUsed: '2026-02-18T02:00:00Z' }),
+      makeWorkspace({
+        path: '/home/user/project-a',
+        name: 'project-a',
+        lastUsed: '2026-02-18T01:00:00Z',
+      }),
+      makeWorkspace({
+        path: '/home/user/project-b',
+        name: 'project-b',
+        lastUsed: '2026-02-18T02:00:00Z',
+      }),
     ];
     seedLocalStorage(workspaces);
 
