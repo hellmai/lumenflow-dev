@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2009 — Add claim-validation gate for absolute acceptance criteria drift](wu/WU-2009.yaml)
 
 ## Completed
 

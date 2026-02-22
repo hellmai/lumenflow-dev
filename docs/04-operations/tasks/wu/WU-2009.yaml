@@ -2,7 +2,7 @@ id: WU-2009
 title: Add claim-validation gate for absolute acceptance criteria drift
 lane: 'Framework: Core Validation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -50,3 +50,11 @@ acceptance:
   - Gate integrates with pnpm gates and outputs file/line evidence plus remediation hints.
   - Tests cover true positives, true negatives, and allowlist/override behavior for documented
     exceptions.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2009
+claimed_at: 2026-02-22T22:52:22.062Z
+baseline_main_sha: a98f26d1f1c02cd434530da00b9d0f30ecc5c4c8
+session_id: c446f0d0-6bcf-4cb6-b310-fbbfb624eb44
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T22:52:22.069Z
