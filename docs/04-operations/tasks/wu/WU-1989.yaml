@@ -9,7 +9,9 @@ code_paths:
   - packages/@lumenflow/core/src/state-doctor-core.ts
   - packages/@lumenflow/core/src/__tests__/state-doctor-core.test.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm state:doctor --dry-run and verify WU-1552/WU-1553 status mismatches are no longer
+      reported
   unit:
     - packages/@lumenflow/core/src/__tests__/state-doctor-core.test.ts
   e2e: []
@@ -26,7 +28,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: state:doctor reports false status mismatches for YAML statuses not representable in wu-events state (e.g., superseded) and marks unsupported transitions as auto-fixable. Tighten mismatch detection and auto-fix eligibility to only event-representable transitions.
+description: state:doctor reports false status mismatches for YAML statuses not representable in
+  wu-events state (e.g., superseded) and marks unsupported transitions as auto-fixable. Tighten
+  mismatch detection and auto-fix eligibility to only event-representable transitions.
 acceptance:
   - state:doctor does not report mismatch for superseded WUs with ready/in_progress derived states
   - status mismatch issues expose canAutoFix=false for unsupported transitions
