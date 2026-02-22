@@ -117,7 +117,7 @@ export async function runFormatCheckGate({ agentLog, useAgentMode, cwd }: GateLo
     return { ...result, duration: Date.now() - start, fileCount: -1 };
   }
 
-  const existingFiles = await filterExistingFiles(plan.files);
+  const existingFiles = await filterExistingFiles(plan.files, effectiveCwd);
   if (existingFiles.length === 0) {
     logLine('\n> format:check (incremental)\n');
     logLine('\u2705 All changed files were deleted - skipping format check');
@@ -183,7 +183,7 @@ export async function runIncrementalLint({
       return { ...result, fileCount: -1 };
     }
 
-    const existingFiles = await filterExistingFiles(plan.files);
+    const existingFiles = await filterExistingFiles(plan.files, cwd);
     if (existingFiles.length === 0) {
       logLine('\n> ESLint (incremental)\n');
       logLine('\u2705 All changed files were deleted - skipping lint');
