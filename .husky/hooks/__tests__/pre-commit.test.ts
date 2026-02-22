@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
@@ -111,8 +111,6 @@ describe('pre-commit hook (WU-1164)', () => {
       const reason = 'test-bypass';
 
       try {
-        writeFileSync(join(workDir, '.lumenflow.config.yaml'), 'test: true\n');
-
         execFileSync('node', [hookPath], {
           cwd: workDir,
           env: {

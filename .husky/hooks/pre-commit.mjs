@@ -17,8 +17,9 @@
 
 import { execFileSync, execSync } from 'node:child_process';
 import { existsSync, readFileSync, appendFileSync, mkdirSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { resolveProjectRoot } from './project-root.mjs';
 
 /**
  * WU-1357: Educational message constants for main branch protection
@@ -349,17 +350,6 @@ function readStagedFile(path) {
   return execFileSync('git', ['show', `:${path}`], { encoding: 'utf8' });
 }
 
-function findProjectRoot() {
-  let projectRoot = process.cwd();
-  for (let i = 0; i < 10; i++) {
-    if (existsSync(join(projectRoot, '.lumenflow.config.yaml'))) break;
-    const parent = dirname(projectRoot);
-    if (parent === projectRoot) break;
-    projectRoot = parent;
-  }
-  return projectRoot;
-}
-
 async function validateStagedWUYamlFiles(projectRoot) {
   let staged;
   try {
@@ -394,7 +384,7 @@ async function validateStagedWUYamlFiles(projectRoot) {
 }
 
 export async function main() {
-  const projectRoot = findProjectRoot();
+  const projectRoot = resolveProjectRoot();
 
   if (process.env.LUMENFLOW_FORCE === '1') {
     logForceBypass('pre-commit', projectRoot);

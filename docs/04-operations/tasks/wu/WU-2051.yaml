@@ -1,18 +1,27 @@
 id: WU-2051
 title: 'Final cleanup: remove remaining live-surface legacy config references'
 lane: 'Content: Specs Governance'
-type: documentation
+type: refactor
 status: in_progress
 priority: P1
 created: 2026-02-22
 code_paths:
   - workspace.yaml
   - CHANGELOG.md
+  - .husky/hooks/project-root.mjs
+  - .husky/hooks/pre-commit.mjs
+  - .husky/hooks/commit-msg.mjs
+  - .husky/hooks/pre-push.mjs
+  - .husky/hooks/prepare-commit-msg.mjs
+  - .husky/hooks/__tests__/pre-commit.test.ts
+  - .husky/hooks/__tests__/project-root.test.ts
 tests:
   manual:
     - rg -n "\.lumenflow\.config\.yaml" workspace.yaml CHANGELOG.md returns no matches
-    - rg -n "\.lumenflow\.config\.yaml" with historical task/plan excludes returns no matches
-  unit: []
+    - rg -n "\.lumenflow\.config\.yaml" .husky/hooks with historical task/plan excludes returns no matches
+    - rg -n "\.lumenflow\.config\.yaml" with historical task/plan/test excludes returns no matches
+  unit:
+    - pnpm vitest .husky/hooks/__tests__/pre-commit.test.ts .husky/hooks/__tests__/project-root.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2051.done
@@ -21,27 +30,28 @@ risks: []
 notes: Remove remaining live-surface `.lumenflow.config.yaml` mentions from active config/docs
   (`workspace.yaml`, `CHANGELOG.md`) while preserving historical task/plan records.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
-exposure: documentation
+claimed_at: 2026-02-22T18:20:36.030Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-specs-governance-wu-2051
+session_id: 51559e66-e48c-4578-b224-1494de950639
+exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
-requires_cso_approval: false
-requires_cto_approval: false
-requires_design_approval: false
-description: 'Context: runtime hard cut is complete, but a few live documentation/config surfaces
-  still mention the removed .lumenflow.config.yaml name. Problem: these mentions undermine
-  kernel-first clarity and can confuse new readers. Solution: remove remaining live-surface
-  mentions while keeping historical WU records intact.'
-acceptance:
-  - workspace.yaml no longer references .lumenflow.config.yaml in lanes or active configuration.
-  - Current public-facing docs/config surfaces no longer mention .lumenflow.config.yaml.
-  - Repository scan shows no remaining .lumenflow.config.yaml mentions outside historical
-    task/plan records.
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-specs-governance-wu-2051
-claimed_at: 2026-02-22T18:20:36.030Z
-baseline_main_sha: fac883c227c481589bfc0a552a303e910ffcd898
-session_id: 51559e66-e48c-4578-b224-1494de950639
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T18:20:36.038Z
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: runtime hard cut is complete, but a few live documentation/config and hook
+  runtime surfaces still assumed the removed .lumenflow.config.yaml path. Problem: these assumptions
+  undermine kernel-first clarity and can break commit hooks after hard cut. Solution: remove remaining
+  live-surface mentions and replace hook root resolution with workspace/kernel-first-safe logic while
+  keeping historical WU records intact.'
+acceptance:
+  - workspace.yaml no longer references .lumenflow.config.yaml in lanes or active configuration.
+  - Current public-facing docs/config surfaces no longer mention .lumenflow.config.yaml.
+  - Husky hooks no longer derive project root by locating .lumenflow.config.yaml.
+  - Repository scan shows no remaining .lumenflow.config.yaml mentions outside historical task/plan
+    records.

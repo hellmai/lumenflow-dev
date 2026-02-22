@@ -17,7 +17,8 @@
 
 import { readFileSync, existsSync, appendFileSync, mkdirSync } from 'node:fs';
 import { execSync } from 'node:child_process';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
+import { resolveProjectRoot } from './project-root.mjs';
 
 // WU-1070: Inline audit logging (fail-open, no external imports for hook reliability)
 function logForceBypass(hookName, projectRoot) {
@@ -55,14 +56,7 @@ function logForceBypass(hookName, projectRoot) {
   }
 }
 
-// Find project root
-let projectRoot = process.cwd();
-for (let i = 0; i < 10; i++) {
-  if (existsSync(join(projectRoot, '.lumenflow.config.yaml'))) break;
-  const parent = dirname(projectRoot);
-  if (parent === projectRoot) break;
-  projectRoot = parent;
-}
+const projectRoot = resolveProjectRoot();
 
 // Escape hatch with audit logging (WU-1070)
 if (process.env.LUMENFLOW_FORCE === '1') {
