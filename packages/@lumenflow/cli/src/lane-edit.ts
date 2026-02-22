@@ -6,7 +6,7 @@
  * @file lane-edit.ts
  * WU-1854: Safe in-place lane definition editing via micro-worktree
  *
- * Enables editing lane definitions in .lumenflow.config.yaml without
+ * Enables editing lane definitions in workspace.yaml without
  * directly writing to main. Uses the micro-worktree isolation pattern
  * (WU-1262) to commit changes atomically.
  *
@@ -21,11 +21,13 @@
 import path from 'node:path';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import YAML from 'yaml';
-import { findProjectRoot } from '@lumenflow/core/config';
+import { findProjectRoot, WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
+import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 import { die } from '@lumenflow/core/error-handler';
-import { CONFIG_FILES, FILE_SYSTEM } from '@lumenflow/core/wu-constants';
+import { FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { runCLI } from './cli-entry-point.js';
+import { asRecord } from './object-guards.js';
 import {
   validateLaneArtifacts,
   classifyLaneLifecycleForProject,
@@ -48,6 +50,7 @@ const ARG_DESCRIPTION = '--description';
 const ARG_HELP = '--help';
 
 const COMMIT_PREFIX = 'chore: lane:edit';
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
 // ---------------------------------------------------------------------------
 // Types
@@ -92,13 +95,18 @@ interface ConfigDoc {
   [key: string]: unknown;
 }
 
+interface WorkspaceDoc {
+  [SOFTWARE_DELIVERY_KEY]?: ConfigDoc;
+  [key: string]: unknown;
+}
+
 // ---------------------------------------------------------------------------
 // Help
 // ---------------------------------------------------------------------------
 
 const HELP_TEXT = `Usage: pnpm lane:edit --name <lane> [options]
 
-Edit a lane definition in .lumenflow.config.yaml via micro-worktree commit.
+Edit a lane definition in workspace.yaml via micro-worktree commit.
 
 Required:
   ${ARG_NAME} <name>          Target lane name (exact match)
@@ -204,11 +212,11 @@ export function parseLaneEditArgs(argv: string[]): LaneEditOptions {
 // ---------------------------------------------------------------------------
 
 export function validateLaneEditPreconditions(projectRoot: string): PreconditionResult {
-  const configPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
+  const configPath = path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME);
   if (!existsSync(configPath)) {
     return {
       ok: false,
-      error: `${LOG_PREFIX} Missing ${CONFIG_FILES.LUMENFLOW_CONFIG}. Run \`pnpm exec lumenflow init\` first.`,
+      error: `${LOG_PREFIX} Missing ${WORKSPACE_CONFIG_FILE_NAME}. Run \`pnpm workspace-init --yes\` first.`,
     };
   }
 
@@ -314,12 +322,18 @@ export function applyLaneEdit(
 
 function readConfigDoc(configPath: string): ConfigDoc {
   const content = readFileSync(configPath, FILE_SYSTEM.UTF8 as BufferEncoding);
-  const parsed = YAML.parse(content) as ConfigDoc | null;
-  return parsed && typeof parsed === 'object' ? parsed : {};
+  const workspace = asRecord(YAML.parse(content)) as WorkspaceDoc | null;
+  if (!workspace) {
+    return {};
+  }
+  return (asRecord(workspace[SOFTWARE_DELIVERY_KEY]) as ConfigDoc | null) ?? {};
 }
 
 function writeConfigDoc(configPath: string, config: ConfigDoc): void {
-  const nextContent = YAML.stringify(config);
+  const content = readFileSync(configPath, FILE_SYSTEM.UTF8 as BufferEncoding);
+  const workspace = (asRecord(YAML.parse(content)) as WorkspaceDoc | null) ?? {};
+  workspace[SOFTWARE_DELIVERY_KEY] = config;
+  const nextContent = YAML.stringify(workspace);
   writeFileSync(configPath, nextContent, FILE_SYSTEM.UTF8 as BufferEncoding);
 }
 
@@ -378,7 +392,7 @@ async function main(): Promise<void> {
     logPrefix: LOG_PREFIX,
     pushOnly: true,
     async execute({ worktreePath }) {
-      const configRelPath = CONFIG_FILES.LUMENFLOW_CONFIG;
+      const configRelPath = WORKSPACE_CONFIG_FILE_NAME;
       const configPath = path.join(worktreePath, configRelPath);
 
       if (!existsSync(configPath)) {

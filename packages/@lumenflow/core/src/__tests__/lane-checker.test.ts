@@ -22,6 +22,7 @@ import {
   getLockPolicyForLane,
   checkLaneFree,
 } from '../lane-checker.js';
+import { WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_V2_KEYS } from '../config-contract.js';
 import { stringifyYAML } from '../wu-yaml.js';
 import { CONFIG_FILES } from '../wu-constants.js';
 
@@ -51,6 +52,19 @@ const MOCK_GIT_CONFIG = {
 /** Error message for expected throw scenarios */
 const EXPECTED_THROW_MESSAGE = 'Should have thrown an error';
 
+/** Canonical workspace key for software-delivery config */
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
+
+/**
+ * Write software-delivery config to workspace.yaml fixture.
+ */
+function writeWorkspaceConfig(configPath: string, config: Record<string, unknown>): void {
+  const workspace = {
+    [SOFTWARE_DELIVERY_KEY]: config,
+  };
+  writeFileSync(configPath, stringifyYAML(workspace));
+}
+
 describe('lane-checker WIP justification', () => {
   let testBaseDir: string;
   let configPath: string;
@@ -69,7 +83,7 @@ describe('lane-checker WIP justification', () => {
     mkdirSync(tasksDir, { recursive: true });
     mkdirSync(join(tasksDir, TEST_WU_DIR_NAME), { recursive: true });
 
-    configPath = join(testBaseDir, CONFIG_FILES.LUMENFLOW_CONFIG);
+    configPath = join(testBaseDir, WORKSPACE_CONFIG_FILE_NAME);
   });
 
   afterEach(() => {
@@ -88,7 +102,7 @@ describe('lane-checker WIP justification', () => {
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1 }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = checkWipJustification(TEST_LANE_FRAMEWORK_CORE, { configPath });
 
@@ -109,7 +123,7 @@ describe('lane-checker WIP justification', () => {
           ],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = checkWipJustification(TEST_LANE_CONTENT_DOCS, { configPath });
 
@@ -125,7 +139,7 @@ describe('lane-checker WIP justification', () => {
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2 }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = checkWipJustification(TEST_LANE_FRAMEWORK_CORE, { configPath });
 
@@ -141,7 +155,7 @@ describe('lane-checker WIP justification', () => {
           definitions: [{ name: TEST_LANE_OPS_INFRA, wip_limit: 3 }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = checkWipJustification(TEST_LANE_OPS_INFRA, { configPath });
 
@@ -156,7 +170,7 @@ describe('lane-checker WIP justification', () => {
           ],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = checkWipJustification(TEST_LANE_FRAMEWORK_CORE, { configPath });
 
@@ -169,7 +183,7 @@ describe('lane-checker WIP justification', () => {
       const config = {
         lanes: [{ name: TEST_LANE_FRAMEWORK, wip_limit: 2 }],
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = checkWipJustification(TEST_LANE_FRAMEWORK, { configPath });
 
@@ -185,7 +199,7 @@ describe('lane-checker WIP justification', () => {
           business: [{ name: TEST_LANE_CONTENT, wip_limit: 1 }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = checkWipJustification(TEST_LANE_FRAMEWORK, { configPath });
 
@@ -210,7 +224,7 @@ describe('lane-checker WIP justification', () => {
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1 }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = checkWipJustification(TEST_LANE_NONEXISTENT, { configPath });
 
@@ -233,7 +247,7 @@ describe('lane-checker WIP justification', () => {
           ],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       // If getWipLimitForLane works, the config was parsed successfully
       const wipLimit = getWipLimitForLane(TEST_LANE_CONTENT_DOCS, { configPath });
@@ -246,7 +260,7 @@ describe('lane-checker WIP justification', () => {
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1 }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const wipLimit = getWipLimitForLane(TEST_LANE_FRAMEWORK_CORE, { configPath });
       expect(wipLimit).toBe(1);
@@ -266,7 +280,7 @@ describe('lane-checker WIP justification', () => {
           ],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       // Both should work without breaking
       const coreLimit = getWipLimitForLane(TEST_LANE_FRAMEWORK_CORE, { configPath });
@@ -315,7 +329,7 @@ describe('lane-checker lock_policy (WU-1325)', () => {
     mkdirSync(tasksDir, { recursive: true });
     mkdirSync(join(tasksDir, TEST_WU_DIR_NAME), { recursive: true });
 
-    configPath = join(testBaseDir, CONFIG_FILES.LUMENFLOW_CONFIG);
+    configPath = join(testBaseDir, WORKSPACE_CONFIG_FILE_NAME);
   });
 
   afterEach(() => {
@@ -334,7 +348,7 @@ describe('lane-checker lock_policy (WU-1325)', () => {
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1 }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = getLockPolicyForLane(TEST_LANE_FRAMEWORK_CORE, { configPath });
 
@@ -347,7 +361,7 @@ describe('lane-checker lock_policy (WU-1325)', () => {
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1, lock_policy: 'all' }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = getLockPolicyForLane(TEST_LANE_FRAMEWORK_CORE, { configPath });
 
@@ -360,7 +374,7 @@ describe('lane-checker lock_policy (WU-1325)', () => {
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1, lock_policy: 'active' }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = getLockPolicyForLane(TEST_LANE_FRAMEWORK_CORE, { configPath });
 
@@ -379,7 +393,7 @@ describe('lane-checker lock_policy (WU-1325)', () => {
           ],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = getLockPolicyForLane(TEST_LANE_CONTENT_DOCS, { configPath });
 
@@ -392,7 +406,7 @@ describe('lane-checker lock_policy (WU-1325)', () => {
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1 }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = getLockPolicyForLane(TEST_LANE_NONEXISTENT, { configPath });
 
@@ -419,7 +433,7 @@ describe('lane-checker lock_policy (WU-1325)', () => {
           ],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = getLockPolicyForLane(TEST_LANE_FRAMEWORK_CORE, { configPath });
 
@@ -430,7 +444,7 @@ describe('lane-checker lock_policy (WU-1325)', () => {
       const config = {
         lanes: [{ name: TEST_LANE_FRAMEWORK, wip_limit: 1, lock_policy: 'none' }],
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = getLockPolicyForLane(TEST_LANE_FRAMEWORK, { configPath });
 
@@ -444,7 +458,7 @@ describe('lane-checker lock_policy (WU-1325)', () => {
           business: [{ name: TEST_LANE_CONTENT, wip_limit: 1 }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const engineeringResult = getLockPolicyForLane(TEST_LANE_FRAMEWORK, { configPath });
       const businessResult = getLockPolicyForLane(TEST_LANE_CONTENT, { configPath });
@@ -465,7 +479,7 @@ describe('lane-checker lock_policy (WU-1325)', () => {
           ],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       const result = getLockPolicyForLane('framework: core', { configPath });
 
@@ -487,7 +501,7 @@ describe('lane-checker lock_policy (WU-1325)', () => {
           ],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       // All three fields should work together
       const wipLimit = getWipLimitForLane(TEST_LANE_CONTENT_DOCS, { configPath });
@@ -535,7 +549,7 @@ describe('lane-checker checkLaneFree with lock_policy (WU-1324)', () => {
     wuDir = join(tasksDir, TEST_WU_DIR_NAME);
     mkdirSync(wuDir, { recursive: true });
 
-    configPath = join(testBaseDir, CONFIG_FILES.LUMENFLOW_CONFIG);
+    configPath = join(testBaseDir, WORKSPACE_CONFIG_FILE_NAME);
     statusPath = join(tasksDir, 'status.md');
   });
 
@@ -598,7 +612,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2, lock_policy: 'all' }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       // Create WU files - one in_progress and one blocked
       createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
@@ -625,7 +639,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2 }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       // Create WU files
       createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
@@ -648,7 +662,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2, lock_policy: 'active' }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       // Create WU files - one in_progress and one blocked
       createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
@@ -672,7 +686,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1, lock_policy: 'active' }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       // One in_progress WU
       createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
@@ -695,7 +709,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1, lock_policy: 'none' }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       // Multiple WUs in the lane
       createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
@@ -716,7 +730,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1, lock_policy: 'none' }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
       createStatusFile([WU_IN_PROGRESS], []);
@@ -737,7 +751,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2, lock_policy: 'all' }],
         },
       };
-      writeFileSync(configPath, stringifyYAML(config));
+      writeWorkspaceConfig(configPath, config);
 
       // Create status.md without Blocked section
       const content = `# Work Unit Status
@@ -784,9 +798,9 @@ describe('lane-checker missing lane-inference file error (WU-1308)', () => {
     );
     mkdirSync(testBaseDir, { recursive: true });
 
-    configFilePath = join(testBaseDir, CONFIG_FILES.LUMENFLOW_CONFIG);
+    configFilePath = join(testBaseDir, WORKSPACE_CONFIG_FILE_NAME);
 
-    // Create .lumenflow.config.yaml with parent lanes defined (via definitions)
+    // Create workspace.yaml with parent lanes defined (via definitions)
     const config = {
       lanes: {
         definitions: [
@@ -795,7 +809,7 @@ describe('lane-checker missing lane-inference file error (WU-1308)', () => {
         ],
       },
     };
-    writeFileSync(configFilePath, stringifyYAML(config));
+    writeWorkspaceConfig(configFilePath, config);
 
     // NOTE: .lumenflow.lane-inference.yaml is intentionally NOT created
   });
@@ -824,6 +838,7 @@ describe('lane-checker missing lane-inference file error (WU-1308)', () => {
         findProjectRoot: vi.fn().mockReturnValue(testBaseDir),
         getProjectRoot: vi.fn().mockReturnValue(testBaseDir),
         getConfig: vi.fn().mockReturnValue(MOCK_GIT_CONFIG),
+        WORKSPACE_CONFIG_FILE_NAME,
       }));
       return import(LANE_CHECKER_MODULE);
     }

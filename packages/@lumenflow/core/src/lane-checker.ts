@@ -16,8 +16,10 @@ import { createError, ErrorCodes } from './error-handler.js';
 import { isInProgressHeader, WU_LINK_PATTERN } from './constants/backlog-patterns.js';
 import { CONFIG_FILES, STRING_LITERALS } from './wu-constants.js';
 import { WU_PATHS } from './wu-paths.js';
-import { findProjectRoot } from './lumenflow-config.js';
+import { findProjectRoot, getConfig, WORKSPACE_CONFIG_FILE_NAME } from './lumenflow-config.js';
+import { WORKSPACE_V2_KEYS } from './config-contract.js';
 import type { LockPolicy } from './lumenflow-config-schema.js';
+import { asRecord } from './object-guards.js';
 
 // Type definitions
 interface ValidateLaneOptions {
@@ -44,13 +46,13 @@ interface CheckLaneFreeResult {
 
 /** WU-1016: Options for checkLaneFree */
 interface CheckLaneFreeOptions {
-  /** Path to .lumenflow.config.yaml (for testing) */
+  /** Optional config path override for testing */
   configPath?: string;
 }
 
 /** WU-1016: Options for getWipLimitForLane */
 interface GetWipLimitOptions {
-  /** Path to .lumenflow.config.yaml (for testing) */
+  /** Optional config path override for testing */
   configPath?: string;
 }
 
@@ -94,6 +96,8 @@ export { getSubLanesForParent };
 
 /** Log prefix for lane-checker messages */
 const PREFIX = '[lane-checker]';
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
+const LANE_DEFINITIONS_HINT = `${WORKSPACE_CONFIG_FILE_NAME} (${SOFTWARE_DELIVERY_KEY}.lanes.definitions)`;
 
 /** Status.md marker for empty In Progress section */
 const NO_ITEMS_MARKER = 'No items currently in progress';
@@ -265,7 +269,7 @@ function validateSubLaneFormat(
   if (!isValidParentLane(parent, configPath)) {
     throw createError(
       ErrorCodes.INVALID_LANE,
-      `Unknown parent lane: "${parent}". Check ${CONFIG_FILES.LUMENFLOW_CONFIG} for valid lanes.`,
+      `Unknown parent lane: "${parent}". Check ${LANE_DEFINITIONS_HINT} for valid lanes.`,
       { parent, lane },
     );
   }
@@ -329,7 +333,7 @@ function validateParentOnlyFormat(
   if (!isValidParentLane(trimmed, configPath)) {
     throw createError(
       ErrorCodes.INVALID_LANE,
-      `Unknown parent lane: "${trimmed}". Check ${CONFIG_FILES.LUMENFLOW_CONFIG} for valid lanes.`,
+      `Unknown parent lane: "${trimmed}". Check ${LANE_DEFINITIONS_HINT} for valid lanes.`,
       { lane: trimmed },
     );
   }
@@ -434,15 +438,54 @@ function extractLanesForParentCheck(config: LumenflowConfig): ExtractedLanesForP
   return { allLanes, parentLanes };
 }
 
-/**
- * WU-1197: Resolve config path, defaulting to project root if not provided
- */
 function resolveConfigPath(configPath: string | null): string {
   if (configPath) {
     return configPath;
   }
   const projectRoot = findProjectRoot();
-  return path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
+  return path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME);
+}
+
+function readConfigFromPath(configPath: string): LumenflowConfig | null {
+  if (!existsSync(configPath)) {
+    return null;
+  }
+
+  try {
+    const configContent = readFileSync(configPath, { encoding: 'utf-8' });
+    const parsed = parseYAML(configContent) as unknown;
+    const workspace = asRecord(parsed);
+    if (!workspace) {
+      return null;
+    }
+
+    const softwareDelivery = asRecord(workspace[SOFTWARE_DELIVERY_KEY]);
+    if (!softwareDelivery) {
+      return null;
+    }
+
+    return softwareDelivery as LumenflowConfig;
+  } catch {
+    return null;
+  }
+}
+
+function readRuntimeConfig(projectRoot: string): LumenflowConfig | null {
+  const workspacePath = path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME);
+  if (!existsSync(workspacePath)) {
+    return null;
+  }
+
+  try {
+    const config = getConfig({
+      projectRoot,
+      reload: true,
+      strictWorkspace: true,
+    });
+    return { lanes: config.lanes as LumenflowConfig['lanes'] };
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -457,16 +500,16 @@ function resolveConfigPath(configPath: string | null): string {
  */
 function isValidParentLane(parent: string, configPath: string | null = null): boolean {
   const resolvedConfigPath = resolveConfigPath(configPath);
+  const config =
+    configPath !== null
+      ? readConfigFromPath(resolvedConfigPath)
+      : readRuntimeConfig(findProjectRoot());
 
-  // Read and parse config
-  if (!existsSync(resolvedConfigPath)) {
+  if (!config) {
     throw createError(ErrorCodes.FILE_NOT_FOUND, `Config file not found: ${resolvedConfigPath}`, {
       path: resolvedConfigPath,
     });
   }
-
-  const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
-  const config = parseYAML(configContent) as LumenflowConfig;
 
   const { allLanes, parentLanes } = extractLanesForParentCheck(config);
   const normalizedParent = parent.toLowerCase().trim();
@@ -486,7 +529,7 @@ const DEFAULT_WIP_LIMIT = 1;
 /**
  * WU-1016: Get WIP limit for a lane from config
  *
- * Reads the wip_limit field from .lumenflow.config.yaml for the specified lane.
+ * Reads the wip_limit field from workspace.yaml software_delivery.lanes.definitions.
  * Returns DEFAULT_WIP_LIMIT (1) if the lane is not found or wip_limit is not specified.
  *
  * @param {string} lane - Lane name (e.g., "Core", "CLI")
@@ -494,61 +537,18 @@ const DEFAULT_WIP_LIMIT = 1;
  * @returns {number} The WIP limit for the lane (default: 1)
  */
 export function getWipLimitForLane(lane: string, options: GetWipLimitOptions = {}): number {
-  // Determine config path
-  let resolvedConfigPath = options.configPath;
-  if (!resolvedConfigPath) {
-    const projectRoot = findProjectRoot();
-    resolvedConfigPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
-  }
-
-  // Check if config file exists
-  if (!existsSync(resolvedConfigPath)) {
+  const config = options.configPath
+    ? readConfigFromPath(options.configPath)
+    : readRuntimeConfig(findProjectRoot());
+  if (!config?.lanes) {
     return DEFAULT_WIP_LIMIT;
   }
 
-  try {
-    const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
-    const config = parseYAML(configContent) as LumenflowConfig;
+  const normalizedLane = lane.toLowerCase().trim();
 
-    if (!config.lanes) {
-      return DEFAULT_WIP_LIMIT;
-    }
-
-    // Normalize lane name for case-insensitive comparison
-    const normalizedLane = lane.toLowerCase().trim();
-
-    // Extract all lanes with their wip_limit
-    let allLanes: LaneConfigWithWip[] = [];
-    if (Array.isArray(config.lanes)) {
-      // Flat array format: lanes: [{name: "Core", wip_limit: 2}, ...]
-      allLanes = config.lanes;
-    } else {
-      // New format with definitions
-      if (config.lanes.definitions) {
-        allLanes.push(...config.lanes.definitions);
-      }
-      // Legacy nested format: lanes: {engineering: [...], business: [...]}
-      if (config.lanes.engineering) {
-        allLanes.push(...config.lanes.engineering);
-      }
-      if (config.lanes.business) {
-        allLanes.push(...config.lanes.business);
-      }
-    }
-
-    // Find matching lane (case-insensitive)
-    const matchingLane = allLanes.find((l) => l.name.toLowerCase().trim() === normalizedLane);
-
-    if (!matchingLane) {
-      return DEFAULT_WIP_LIMIT;
-    }
-
-    // Return wip_limit if specified, otherwise default
-    return matchingLane.wip_limit ?? DEFAULT_WIP_LIMIT;
-  } catch {
-    // If config parsing fails, return default
-    return DEFAULT_WIP_LIMIT;
-  }
+  const allLanes = extractAllLanesFromConfig(config);
+  const matchingLane = allLanes.find((l) => l.name.toLowerCase().trim() === normalizedLane);
+  return matchingLane?.wip_limit ?? DEFAULT_WIP_LIMIT;
 }
 
 /** WU-1325: Default lock policy when not specified in config */
@@ -556,14 +556,14 @@ const DEFAULT_LOCK_POLICY: LockPolicy = 'all';
 
 /** WU-1325: Options for getLockPolicyForLane */
 interface GetLockPolicyOptions {
-  /** Path to .lumenflow.config.yaml (for testing) */
+  /** Optional config path override for testing */
   configPath?: string;
 }
 
 /**
  * WU-1325: Get lock policy for a lane from config
  *
- * Reads the lock_policy field from .lumenflow.config.yaml for the specified lane.
+ * Reads the lock_policy field from workspace.yaml software_delivery.lanes.definitions.
  * Returns DEFAULT_LOCK_POLICY ('all') if the lane is not found or lock_policy is not specified.
  *
  * Lock policies:
@@ -576,65 +576,20 @@ interface GetLockPolicyOptions {
  * @returns {LockPolicy} The lock policy for the lane (default: 'all')
  */
 export function getLockPolicyForLane(lane: string, options: GetLockPolicyOptions = {}): LockPolicy {
-  // Determine config path
-  let resolvedConfigPath = options.configPath;
-  if (!resolvedConfigPath) {
-    const projectRoot = findProjectRoot();
-    resolvedConfigPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
-  }
-
-  // Check if config file exists
-  if (!existsSync(resolvedConfigPath)) {
+  const config = options.configPath
+    ? readConfigFromPath(options.configPath)
+    : readRuntimeConfig(findProjectRoot());
+  if (!config?.lanes) {
     return DEFAULT_LOCK_POLICY;
   }
 
-  try {
-    const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
-    const config = parseYAML(configContent) as LumenflowConfig;
-
-    if (!config.lanes) {
-      return DEFAULT_LOCK_POLICY;
-    }
-
-    // Normalize lane name for case-insensitive comparison
-    const normalizedLane = lane.toLowerCase().trim();
-
-    // Extract all lanes with their lock_policy
-    let allLanes: LaneConfigWithWip[] = [];
-    if (Array.isArray(config.lanes)) {
-      // Flat array format: lanes: [{name: "Core", lock_policy: "none"}, ...]
-      allLanes = config.lanes;
-    } else {
-      // New format with definitions
-      if (config.lanes.definitions) {
-        allLanes.push(...config.lanes.definitions);
-      }
-      // Legacy nested format: lanes: {engineering: [...], business: [...]}
-      if (config.lanes.engineering) {
-        allLanes.push(...config.lanes.engineering);
-      }
-      if (config.lanes.business) {
-        allLanes.push(...config.lanes.business);
-      }
-    }
-
-    // Find matching lane (case-insensitive)
-    const matchingLane = allLanes.find((l) => l.name.toLowerCase().trim() === normalizedLane);
-
-    if (!matchingLane) {
-      return DEFAULT_LOCK_POLICY;
-    }
-
-    // Return lock_policy if specified and valid, otherwise default
-    const policy = matchingLane.lock_policy;
-    if (policy === 'all' || policy === 'active' || policy === 'none') {
-      return policy;
-    }
-    return DEFAULT_LOCK_POLICY;
-  } catch {
-    // If config parsing fails, return default
-    return DEFAULT_LOCK_POLICY;
-  }
+  const normalizedLane = lane.toLowerCase().trim();
+  const allLanes = extractAllLanesFromConfig(config);
+  const matchingLane = allLanes.find((l) => l.name.toLowerCase().trim() === normalizedLane);
+  const policy = matchingLane?.lock_policy;
+  return policy === 'all' || policy === 'active' || policy === 'none'
+    ? policy
+    : DEFAULT_LOCK_POLICY;
 }
 
 /** WU-1197: Section heading marker for H2 headings */
@@ -821,7 +776,7 @@ function extractWUsFromSection(
 /**
  * Check if a lane is free (WU count is below wip_limit)
  *
- * WU-1016: Now respects configurable wip_limit per lane from .lumenflow.config.yaml.
+ * WU-1016: Now respects configurable wip_limit per lane from workspace.yaml.
  * Lane is considered "free" if current WU count < wip_limit.
  * Default wip_limit is 1 if not specified in config (backward compatible).
  *
@@ -905,7 +860,7 @@ export function checkLaneFree(
 
 /** WU-1187: Options for checkWipJustification */
 interface CheckWipJustificationOptions {
-  /** Path to .lumenflow.config.yaml (for testing) */
+  /** Optional config path override for testing */
   configPath?: string;
 }
 
@@ -971,67 +926,48 @@ export function checkWipJustification(
   lane: string,
   options: CheckWipJustificationOptions = {},
 ): CheckWipJustificationResult {
-  // Determine config path
-  let resolvedConfigPath = options.configPath;
-  if (!resolvedConfigPath) {
-    const projectRoot = findProjectRoot();
-    resolvedConfigPath = path.join(projectRoot, CONFIG_FILES.LUMENFLOW_CONFIG);
-  }
-
-  if (!existsSync(resolvedConfigPath)) {
+  const config = options.configPath
+    ? readConfigFromPath(options.configPath)
+    : readRuntimeConfig(findProjectRoot());
+  if (!config) {
     return NO_JUSTIFICATION_REQUIRED;
   }
 
-  try {
-    const configContent = readFileSync(resolvedConfigPath, { encoding: 'utf-8' });
-    const config = parseYAML(configContent) as LumenflowConfig;
-    const allLanes = extractAllLanesFromConfig(config);
+  const allLanes = extractAllLanesFromConfig(config);
+  if (allLanes.length === 0) {
+    return NO_JUSTIFICATION_REQUIRED;
+  }
 
-    if (allLanes.length === 0) {
-      return NO_JUSTIFICATION_REQUIRED;
-    }
+  const normalizedLane = lane.toLowerCase().trim();
+  const matchingLane = allLanes.find((l) => l.name.toLowerCase().trim() === normalizedLane);
 
-    // Find matching lane (case-insensitive)
-    const normalizedLane = lane.toLowerCase().trim();
-    const matchingLane = allLanes.find((l) => l.name.toLowerCase().trim() === normalizedLane);
+  if (!matchingLane) {
+    return NO_JUSTIFICATION_REQUIRED;
+  }
 
-    if (!matchingLane) {
-      return NO_JUSTIFICATION_REQUIRED;
-    }
+  const wipLimit = matchingLane.wip_limit ?? DEFAULT_WIP_LIMIT;
+  if (wipLimit <= 1) {
+    return NO_JUSTIFICATION_REQUIRED;
+  }
 
-    const wipLimit = matchingLane.wip_limit ?? DEFAULT_WIP_LIMIT;
-
-    // WIP <= 1 doesn't need justification
-    if (wipLimit <= 1) {
-      return NO_JUSTIFICATION_REQUIRED;
-    }
-
-    // WIP > 1 - check for justification
-    const justification = matchingLane.wip_justification;
-
-    if (justification && justification.trim().length > 0) {
-      // Has justification - all good
-      return {
-        valid: true,
-        warning: null,
-        requiresJustification: false,
-        justification: justification.trim(),
-      };
-    }
-
-    // WIP > 1 without justification - emit warning
-    const warning =
-      `Lane "${lane}" has WIP limit of ${wipLimit} but no wip_justification. ` +
-      `Philosophy: If you need WIP > 1, you need better lanes, not higher limits. ` +
-      `Add wip_justification to .lumenflow.config.yaml to suppress this warning.`;
-
+  const justification = matchingLane.wip_justification;
+  if (justification && justification.trim().length > 0) {
     return {
-      valid: true, // Soft enforcement - warning only, doesn't block
-      warning,
-      requiresJustification: true,
+      valid: true,
+      warning: null,
+      requiresJustification: false,
+      justification: justification.trim(),
     };
-  } catch {
-    // If config parsing fails, don't block
-    return NO_JUSTIFICATION_REQUIRED;
   }
+
+  const warning =
+    `Lane "${lane}" has WIP limit of ${wipLimit} but no wip_justification. ` +
+    `Philosophy: If you need WIP > 1, you need better lanes, not higher limits. ` +
+    `Add wip_justification under ${LANE_DEFINITIONS_HINT} to suppress this warning.`;
+
+  return {
+    valid: true,
+    warning,
+    requiresJustification: true,
+  };
 }

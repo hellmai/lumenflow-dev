@@ -14,6 +14,8 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
 import YAML from 'yaml';
+import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
+import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 
 import {
   applyLaneEdit,
@@ -23,8 +25,9 @@ import {
   type LaneDefinition,
 } from '../lane-edit.js';
 
-const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+const CONFIG_FILE_NAME = WORKSPACE_CONFIG_FILE_NAME;
 const LANE_INFERENCE_FILE_NAME = '.lumenflow.lane-inference.yaml';
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
 describe('lane:edit (WU-1854)', () => {
   let tempDir: string;
@@ -41,13 +44,10 @@ describe('lane:edit (WU-1854)', () => {
 
   function writeConfig(doc: Record<string, unknown>): void {
     const configPath = path.join(tempDir, CONFIG_FILE_NAME);
-    fs.writeFileSync(configPath, YAML.stringify(doc), 'utf-8');
-  }
-
-  function readConfig(): Record<string, unknown> {
-    const configPath = path.join(tempDir, CONFIG_FILE_NAME);
-    const content = fs.readFileSync(configPath, 'utf-8');
-    return YAML.parse(content) as Record<string, unknown>;
+    const workspace = {
+      [SOFTWARE_DELIVERY_KEY]: doc,
+    };
+    fs.writeFileSync(configPath, YAML.stringify(workspace), 'utf-8');
   }
 
   function writeLaneInference(content: string): void {

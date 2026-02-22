@@ -15,19 +15,17 @@
  *   pnpm lane:health --verbose    # Show all checked files
  */
 
-import { readFileSync, existsSync } from 'node:fs';
-import path from 'node:path';
 import fg from 'fast-glob';
 import { minimatch } from 'minimatch';
-import { parse as parseYAML } from 'yaml';
 import chalk from 'chalk';
 import { createWUParser } from '@lumenflow/core/arg-parser';
-import { findProjectRoot } from '@lumenflow/core/config';
+import { findProjectRoot, getConfig, WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
 import { runCLI } from './cli-entry-point.js';
+import { asRecord } from './object-guards.js';
 
 /** Constants */
 const LOG_PREFIX = '[lane:health]';
-const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+const CONFIG_FILE_NAME = WORKSPACE_CONFIG_FILE_NAME;
 const MAX_DISPLAY_FILES = 5;
 const MAX_DISPLAY_GAPS = 10;
 
@@ -124,10 +122,10 @@ export interface LaneHealthReport {
  * Parse lane definition from raw object
  */
 function parseLaneDefinition(lane: unknown): LaneDefinition | null {
-  if (typeof lane !== 'object' || lane === null) {
+  const laneObj = asRecord(lane);
+  if (!laneObj) {
     return null;
   }
-  const laneObj = lane as Record<string, unknown>;
   if (typeof laneObj.name !== 'string' || !Array.isArray(laneObj.code_paths)) {
     return null;
   }
@@ -139,33 +137,19 @@ function parseLaneDefinition(lane: unknown): LaneDefinition | null {
 }
 
 /**
- * Load lane definitions from .lumenflow.config.yaml
+ * Load lane definitions from workspace.yaml software_delivery.lanes.definitions
  *
  * @param projectRoot - Project root directory
  * @returns Array of lane definitions
  */
 export function loadLaneDefinitions(projectRoot: string): LaneDefinition[] {
-  const configPath = path.join(projectRoot, CONFIG_FILE_NAME);
-
-  if (!existsSync(configPath)) {
-    return [];
-  }
-
   try {
-    const content = readFileSync(configPath, 'utf8');
-    const config = parseYAML(content) as Record<string, unknown>;
-
-    const lanesConfig = config.lanes as Record<string, unknown> | undefined;
-    if (!lanesConfig) {
-      return [];
-    }
-
-    const definitions = (lanesConfig.definitions || lanesConfig) as unknown[];
-    if (!Array.isArray(definitions)) {
-      return [];
-    }
-
-    return definitions
+    const config = getConfig({
+      projectRoot,
+      reload: true,
+      strictWorkspace: true,
+    });
+    return (config.lanes?.definitions ?? [])
       .map(parseLaneDefinition)
       .filter((lane): lane is LaneDefinition => lane !== null);
   } catch {
