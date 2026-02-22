@@ -51,6 +51,26 @@ export const ISSUE_SEVERITY = {
 } as const;
 
 /**
+ * Statuses representable by wu-events transitions.
+ *
+ * WU YAML supports additional metadata statuses (e.g. superseded) that do not
+ * have event transitions in the state store. Those statuses are intentionally
+ * excluded from mismatch comparisons to avoid false positives.
+ */
+const EVENT_REPRESENTABLE_STATUSES = new Set<string>([
+  WU_STATUS.READY,
+  WU_STATUS.IN_PROGRESS,
+  WU_STATUS.BLOCKED,
+  WU_STATUS.DONE,
+]);
+
+const STATUS_MISMATCH_SUGGESTION = {
+  AUTO_FIX: 'Emit corrective event using: pnpm state:doctor --fix',
+  MANUAL_FIX:
+    'Manual reconciliation required: state transition is not representable via corrective events',
+} as const;
+
+/**
  * Issue type (union)
  */
 export type IssueType = (typeof ISSUE_TYPES)[keyof typeof ISSUE_TYPES];
@@ -277,6 +297,12 @@ function detectStatusMismatches(wus: MockWU[], events: MockEvent[]): DiagnosisIs
   }
 
   for (const wu of wus) {
+    if (!EVENT_REPRESENTABLE_STATUSES.has(wu.status)) {
+      // YAML-only lifecycle states (e.g. superseded) are not representable in
+      // wu-events; skip mismatch detection to avoid false positives.
+      continue;
+    }
+
     const wuEvents = eventsByWu.get(wu.id);
     if (!wuEvents || wuEvents.length === 0) {
       // No events for this WU - nothing to compare
@@ -285,13 +311,16 @@ function detectStatusMismatches(wus: MockWU[], events: MockEvent[]): DiagnosisIs
 
     const derivedStatus = deriveStatusFromEvents(wuEvents);
     if (derivedStatus && derivedStatus !== wu.status) {
+      const eventType = getCorrectiveEventType(wu.status, derivedStatus);
       issues.push({
         type: ISSUE_TYPES.STATUS_MISMATCH,
         severity: ISSUE_SEVERITY.WARNING,
         wuId: wu.id,
         description: `WU ${wu.id} YAML status is '${wu.status}' but state store says '${derivedStatus}'`,
-        suggestion: `Emit corrective event using: pnpm state:doctor --fix`,
-        canAutoFix: true,
+        suggestion: eventType
+          ? STATUS_MISMATCH_SUGGESTION.AUTO_FIX
+          : STATUS_MISMATCH_SUGGESTION.MANUAL_FIX,
+        canAutoFix: eventType !== null,
         statusMismatch: {
           yamlStatus: wu.status,
           derivedStatus,
