@@ -1,6 +1,6 @@
 id: WU-2010
 title: Extract magic numbers into named constants (core kernel)
-lane: 'Framework: Core Lifecycle'
+lane: 'Framework: Core Validation'
 type: refactor
 status: ready
 priority: P2
