@@ -245,11 +245,7 @@ export type {
 } from './ports/wu-helpers.ports.js';
 
 // WU-2013: WU state port interfaces (focused decomposition)
-export type {
-  IWuEventLog,
-  IWuLockManager,
-  IWuStateQuery,
-} from './ports/wu-state.ports.js';
+export type { IWuEventLog, IWuLockManager, IWuStateQuery } from './ports/wu-state.ports.js';
 
 // WU-2020: Config port interfaces for DIP-compliant injection
 export type {
