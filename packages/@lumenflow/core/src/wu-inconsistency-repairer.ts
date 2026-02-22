@@ -2,10 +2,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 /**
- * WU Inconsistency Repairer (WU-2015)
+ * WU Inconsistency Repairer (WU-2015, WU-2018)
  *
  * Repair orchestration for WU state inconsistencies. Coordinates micro-worktree
  * isolation for file-based repairs and direct execution for git-only repairs.
+ *
+ * WU-2018: Replaced switch-based dispatch with strategy maps for OCP compliance.
+ * Adding a new repair type requires only a new map entry — no modification to
+ * existing dispatch logic.
  *
  * Extracted from wu-consistency-checker.ts to isolate repair orchestration
  * from detection and file manipulation concerns.
@@ -37,7 +41,97 @@ export interface RepairWUInconsistencyOptions {
 }
 
 /**
- * Categorize errors into file-based repairs (need micro-worktree) and git-only repairs
+ * Strategy for repairing a file-based consistency error inside a worktree.
+ *
+ * Each handler receives the error, the worktree path (where files are written),
+ * and the project root (where source files are read from).
+ *
+ * To add a new file-based repair type:
+ *   1. Add the type constant to CONSISTENCY_TYPES in wu-domain-constants.ts
+ *   2. Add a handler to FILE_REPAIR_STRATEGIES below
+ */
+export type FileRepairStrategy = (
+  error: ConsistencyError,
+  worktreePath: string,
+  projectRoot: string,
+) => Promise<RepairResult>;
+
+/**
+ * Strategy for repairing a git-only consistency error (no micro-worktree needed).
+ *
+ * To add a new git-only repair type:
+ *   1. Add the type constant to CONSISTENCY_TYPES in wu-domain-constants.ts
+ *   2. Add a handler to GIT_REPAIR_STRATEGIES below
+ */
+export type GitRepairStrategy = (
+  error: ConsistencyError,
+  projectRoot: string,
+) => Promise<RepairResult>;
+
+/**
+ * Strategy map for file-based repairs (WU-2018).
+ *
+ * Each entry maps a CONSISTENCY_TYPES value to a handler function.
+ * File-based repairs run inside a micro-worktree for atomic commits.
+ */
+export const FILE_REPAIR_STRATEGIES: Record<string, FileRepairStrategy> = {
+  [CONSISTENCY_TYPES.YAML_DONE_NO_STAMP]: async (error, worktreePath) => {
+    const files = await createStampInWorktree(
+      error.wuId,
+      error.title || `WU ${error.wuId}`,
+      worktreePath,
+    );
+    return { success: true, files };
+  },
+
+  [CONSISTENCY_TYPES.YAML_DONE_STATUS_IN_PROGRESS]: async (error, worktreePath, projectRoot) => {
+    const files = await removeWUFromSectionInWorktree(
+      WU_PATHS.STATUS(),
+      error.wuId,
+      '## In Progress',
+      worktreePath,
+      projectRoot,
+    );
+    return { success: true, files };
+  },
+
+  [CONSISTENCY_TYPES.BACKLOG_DUAL_SECTION]: async (error, worktreePath, projectRoot) => {
+    const files = await removeWUFromSectionInWorktree(
+      WU_PATHS.BACKLOG(),
+      error.wuId,
+      '## \uD83D\uDD27 In progress',
+      worktreePath,
+      projectRoot,
+    );
+    return { success: true, files };
+  },
+
+  [CONSISTENCY_TYPES.STAMP_EXISTS_YAML_NOT_DONE]: async (error, worktreePath, projectRoot) => {
+    const files = await updateYamlToDoneInWorktree(error.wuId, worktreePath, projectRoot);
+    return { success: true, files };
+  },
+};
+
+/**
+ * Strategy map for git-only repairs (WU-2018).
+ *
+ * Each entry maps a CONSISTENCY_TYPES value to a handler function.
+ * Git-only repairs (worktree/branch cleanup) run directly without micro-worktree.
+ */
+export const GIT_REPAIR_STRATEGIES: Record<string, GitRepairStrategy> = {
+  [CONSISTENCY_TYPES.ORPHAN_WORKTREE_DONE]: async (error, projectRoot) => {
+    if (!error.lane) {
+      return { skipped: true, reason: 'Missing lane metadata for orphan worktree cleanup' };
+    }
+    return await removeOrphanWorktree(error.wuId, error.lane, projectRoot);
+  },
+};
+
+/**
+ * Categorize errors into file-based repairs (need micro-worktree) and git-only repairs.
+ *
+ * Uses the strategy maps to determine categorization — an error type present in
+ * GIT_REPAIR_STRATEGIES is git-only, one in FILE_REPAIR_STRATEGIES is file-based.
  */
 function categorizeErrors(errors: ConsistencyError[]): {
   fileRepairs: ConsistencyError[];
@@ -55,7 +149,7 @@ function categorizeErrors(errors: ConsistencyError[]): {
     }
 
     // Git-only repairs: worktree/branch cleanup doesn't need micro-worktree
-    if (error.type === CONSISTENCY_TYPES.ORPHAN_WORKTREE_DONE) {
+    if (error.type in GIT_REPAIR_STRATEGIES) {
       gitOnlyRepairs.push(error);
     } else {
       // All file-based repairs need micro-worktree isolation
@@ -67,10 +161,12 @@ function categorizeErrors(errors: ConsistencyError[]): {
 }
 
 /**
- * Repair a single file-based error inside a micro-worktree (WU-1078)
+ * Repair a single file-based error inside a micro-worktree (WU-1078, WU-2018)
  *
  * This function performs file modifications inside the worktree path,
  * which is then committed and pushed atomically by withMicroWorktree.
+ *
+ * Uses FILE_REPAIR_STRATEGIES map for dispatch — no switch statement.
  *
  * @param {ConsistencyError} error - Error object from checkWUConsistency()
  * @param {string} worktreePath - Path to the micro-worktree
@@ -82,53 +178,20 @@ async function repairSingleErrorInWorktree(
   worktreePath: string,
   projectRoot: string,
 ): Promise<RepairResult> {
-  switch (error.type) {
-    case CONSISTENCY_TYPES.YAML_DONE_NO_STAMP: {
-      const files = await createStampInWorktree(
-        error.wuId,
-        error.title || `WU ${error.wuId}`,
-        worktreePath,
-      );
-      return { success: true, files };
-    }
-
-    case CONSISTENCY_TYPES.YAML_DONE_STATUS_IN_PROGRESS: {
-      const files = await removeWUFromSectionInWorktree(
-        WU_PATHS.STATUS(),
-        error.wuId,
-        '## In Progress',
-        worktreePath,
-        projectRoot,
-      );
-      return { success: true, files };
-    }
-
-    case CONSISTENCY_TYPES.BACKLOG_DUAL_SECTION: {
-      const files = await removeWUFromSectionInWorktree(
-        WU_PATHS.BACKLOG(),
-        error.wuId,
-        '## \uD83D\uDD27 In progress',
-        worktreePath,
-        projectRoot,
-      );
-      return { success: true, files };
-    }
-
-    case CONSISTENCY_TYPES.STAMP_EXISTS_YAML_NOT_DONE: {
-      const files = await updateYamlToDoneInWorktree(error.wuId, worktreePath, projectRoot);
-      return { success: true, files };
-    }
-
-    default:
-      return { skipped: true, reason: `Unknown error type: ${error.type}` };
+  const strategy = FILE_REPAIR_STRATEGIES[error.type];
+  if (!strategy) {
+    return { skipped: true, reason: `Unknown error type: ${error.type}` };
   }
+  return strategy(error, worktreePath, projectRoot);
 }
 
 /**
- * Repair git-only errors (worktree/branch cleanup) without micro-worktree
+ * Repair git-only errors (worktree/branch cleanup) without micro-worktree (WU-2018)
  *
  * These operations don't modify files in the repo, they only manage git worktrees
  * and branches, so they can run directly.
+ *
+ * Uses GIT_REPAIR_STRATEGIES map for dispatch — no switch statement.
  *
  * @param {ConsistencyError} error - Error object
  * @param {string} projectRoot - Project root directory
@@ -138,16 +201,11 @@ async function repairGitOnlyError(
   error: ConsistencyError,
   projectRoot: string,
 ): Promise<RepairResult> {
-  switch (error.type) {
-    case CONSISTENCY_TYPES.ORPHAN_WORKTREE_DONE:
-      if (!error.lane) {
-        return { skipped: true, reason: 'Missing lane metadata for orphan worktree cleanup' };
-      }
-      return await removeOrphanWorktree(error.wuId, error.lane, projectRoot);
-
-    default:
-      return { skipped: true, reason: `Unknown git-only error type: ${error.type}` };
+  const strategy = GIT_REPAIR_STRATEGIES[error.type];
+  if (!strategy) {
+    return { skipped: true, reason: `Unknown git-only error type: ${error.type}` };
   }
+  return strategy(error, projectRoot);
 }
 
 /**

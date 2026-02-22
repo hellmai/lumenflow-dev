@@ -29,9 +29,17 @@ export {
 export type { CheckWUConsistencyOptions, ConsistencyError } from './wu-consistency-detector.js';
 
 // Repair orchestration
-export { repairWUInconsistency } from './wu-inconsistency-repairer.js';
+export {
+  repairWUInconsistency,
+  FILE_REPAIR_STRATEGIES,
+  GIT_REPAIR_STRATEGIES,
+} from './wu-inconsistency-repairer.js';
 
-export type { RepairWUInconsistencyOptions } from './wu-inconsistency-repairer.js';
+export type {
+  RepairWUInconsistencyOptions,
+  FileRepairStrategy,
+  GitRepairStrategy,
+} from './wu-inconsistency-repairer.js';
 
 // File-level repairs (exported for direct use by callers needing fine-grained control)
 export type { RepairResult } from './wu-consistency-file-repairs.js';
