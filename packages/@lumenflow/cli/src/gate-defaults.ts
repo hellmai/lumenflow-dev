@@ -75,6 +75,10 @@ export function registerDocsOnlyGates(registry: GateRegistry, options: DocsOnlyG
     name: GATE_NAMES.BACKLOG_SYNC,
   } as GateDefinition);
 
+  registry.register({
+    name: GATE_NAMES.CLAIM_VALIDATION,
+  } as GateDefinition);
+
   // WU-1191: Lane health check (configurable: warn/error/off)
   registry.register({
     name: GATE_NAMES.LANE_HEALTH,
@@ -147,6 +151,10 @@ export function registerCodeGates(registry: GateRegistry, options: CodeGateOptio
   // WU-1467: prompts:lint removed -- was a stub (exit 0)
   registry.register({
     name: GATE_NAMES.BACKLOG_SYNC,
+  } as GateDefinition);
+
+  registry.register({
+    name: GATE_NAMES.CLAIM_VALIDATION,
   } as GateDefinition);
 
   registry.register({

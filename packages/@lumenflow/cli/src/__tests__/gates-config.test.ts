@@ -30,6 +30,7 @@ import {
   resolveTestRunner,
   getIgnorePatterns,
 } from '@lumenflow/core/gates-config';
+import { GATE_NAMES } from '@lumenflow/core/wu-constants';
 import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
 
 function writeWorkspaceConfig(tempDir: string, config: Record<string, unknown>): void {
@@ -397,5 +398,11 @@ describe('WU-1356: yarn+nx configuration', () => {
     expect(commands.test_full).toBe('yarn nx run-many --target=test --all');
     expect(commands.test_incremental).toBe('yarn nx affected --target=test');
     expect(buildCmd).toBe('yarn nx build @lumenflow/cli');
+  });
+});
+
+describe('WU-2009: claim-validation gate contract', () => {
+  it('GATE_NAMES includes claim-validation as an authoritative gate', () => {
+    expect(GATE_NAMES.CLAIM_VALIDATION).toBe('claim-validation');
   });
 });

@@ -112,6 +112,7 @@
     "./validation/command-registry": "./dist/validation/command-registry.js",
     "./validation/types": "./dist/validation/types.js",
     "./validators/backlog-sync": "./dist/validators/backlog-sync.js",
+    "./validators/claim-validation": "./dist/validators/claim-validation.js",
     "./validators/supabase-docs-linter": "./dist/validators/supabase-docs-linter.js",
     "./validators/wu-tasks": "./dist/validators/wu-tasks.js",
     "./worktree-symlink": "./dist/worktree-symlink.js",

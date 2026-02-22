@@ -44,6 +44,7 @@ describe('WU-1550: Default gate registration', () => {
       expect(names).toContain(GATE_NAMES.FORMAT_CHECK);
       expect(names).toContain(GATE_NAMES.SPEC_LINTER);
       expect(names).toContain(GATE_NAMES.BACKLOG_SYNC);
+      expect(names).toContain(GATE_NAMES.CLAIM_VALIDATION);
       expect(names).toContain(GATE_NAMES.LANE_HEALTH);
       expect(names).toContain(GATE_NAMES.ONBOARDING_SMOKE_TEST);
 
@@ -114,6 +115,7 @@ describe('WU-1550: Default gate registration', () => {
       expect(names).toContain(GATE_NAMES.TYPECHECK);
       expect(names).toContain(GATE_NAMES.SPEC_LINTER);
       expect(names).toContain(GATE_NAMES.BACKLOG_SYNC);
+      expect(names).toContain(GATE_NAMES.CLAIM_VALIDATION);
       expect(names).toContain(GATE_NAMES.SAFETY_CRITICAL_TEST);
       expect(names).toContain(GATE_NAMES.TEST);
       expect(names).toContain(GATE_NAMES.COVERAGE);

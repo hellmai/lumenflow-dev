@@ -7,9 +7,13 @@ priority: P2
 created: 2026-02-22
 code_paths:
   - packages/@lumenflow/core/src/validators
-  - packages/@lumenflow/core/src/gates-config.ts
-  - tools
-  - scripts/hooks
+  - packages/@lumenflow/core/src/wu-cli-constants.ts
+  - packages/@lumenflow/core/package.json
+  - packages/@lumenflow/cli/src/gate-defaults.ts
+  - packages/@lumenflow/cli/src/gates-runners.ts
+  - packages/@lumenflow/cli/src/gates.ts
+  - packages/@lumenflow/cli/src/__tests__/gate-registry-defaults.test.ts
+  - packages/@lumenflow/cli/src/__tests__/gates-config.test.ts
   - docs/04-operations/tasks/wu
 tests:
   manual:
@@ -17,7 +21,8 @@ tests:
       fails with file and line evidence.
     - Remove or allowlist the fixture and rerun gates; verify claim-validation passes.
   unit:
-    - packages/@lumenflow/core/src/__tests__/validators
+    - packages/@lumenflow/core/src/__tests__/validators/claim-validation.test.ts
+    - packages/@lumenflow/cli/src/__tests__/gate-registry-defaults.test.ts
     - packages/@lumenflow/cli/src/__tests__/gates-config.test.ts
   e2e: []
 artifacts:
