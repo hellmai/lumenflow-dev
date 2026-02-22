@@ -139,10 +139,7 @@ export function parseSimpleConfig(content) {
 
   // Extract build_command: value (handles quoted strings)
   const buildMatch = scopedContent.match(
-    new RegExp(
-      `^\\s{2}${WORKSPACE_CONFIG_KEYS.BUILD_COMMAND}:\\s*['"]?([^'"\\n]+)['"]?`,
-      'm',
-    ),
+    new RegExp(`^\\s{2}${WORKSPACE_CONFIG_KEYS.BUILD_COMMAND}:\\s*['"]?([^'"\\n]+)['"]?`, 'm'),
   );
   if (buildMatch) {
     result.buildCommand = buildMatch[1].trim();

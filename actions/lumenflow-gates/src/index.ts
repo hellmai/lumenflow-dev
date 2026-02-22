@@ -182,7 +182,9 @@ function loadGatesConfig(workingDir: string): GatesExecutionConfig | null {
     const content = fs.readFileSync(configPath, 'utf8');
     const data = asRecord(yaml.parse(content));
     const softwareDelivery = data ? asRecord(data[WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY]) : null;
-    const gates = softwareDelivery ? asRecord(softwareDelivery[SOFTWARE_DELIVERY_KEYS.GATES]) : null;
+    const gates = softwareDelivery
+      ? asRecord(softwareDelivery[SOFTWARE_DELIVERY_KEYS.GATES])
+      : null;
     const executionConfig = asRecord(gates?.[GATES_KEYS.EXECUTION]);
     if (!executionConfig) {
       core.debug(`No ${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY}.gates.execution section in config`);

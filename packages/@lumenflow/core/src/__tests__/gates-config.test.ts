@@ -431,7 +431,8 @@ directories:
     });
 
     it('should handle malformed YAML gracefully', () => {
-      const yamlContent = 'software_delivery:\n  gates:\n    execution:\n      format: [invalid: yaml: here\n';
+      const yamlContent =
+        'software_delivery:\n  gates:\n    execution:\n      format: [invalid: yaml: here\n';
       fs.writeFileSync(configPath, yamlContent);
 
       // Suppress console.warn during this test
