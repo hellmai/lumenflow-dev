@@ -6,7 +6,6 @@ status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
-  - packages/@lumenflow/agent/src/agent-verification.ts
   - packages/@lumenflow/agent/__tests__/agent-verification.test.ts
 tests:
   manual:
