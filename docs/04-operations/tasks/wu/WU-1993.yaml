@@ -2,7 +2,7 @@ id: WU-1993
 title: Stabilize workspace connector tests under runtime health fetch side effects
 lane: 'Operations: Tooling'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -40,3 +40,6 @@ session_id: a3f7e794-3637-4818-afa8-2a3e0d6a99ea
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T00:46:28.254Z
+locked: true
+completed_at: 2026-02-22T00:49:37.670Z
+completed: 2026-02-22

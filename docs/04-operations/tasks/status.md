@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-1993 — Stabilize workspace connector tests under runtime health fetch side effects](wu/WU-1993.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -926,3 +926,4 @@ _Last updated: 2026-02-22_
 - [WU-1990 — Format web workspace selector files to restore global format gate](wu/WU-1990.yaml) — 2026-02-22
 - [WU-1991 — Burn down @lumenflow/web lint warnings and restore gates](wu/WU-1991.yaml) — 2026-02-22
 - [WU-1992 — Fix pre-existing spec:linter failures in legacy WU YAMLs](wu/WU-1992.yaml) — 2026-02-22
+- [WU-1993 — Stabilize workspace connector tests under runtime health fetch side effects](wu/WU-1993.yaml) — 2026-02-22

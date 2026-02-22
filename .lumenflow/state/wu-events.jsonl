@@ -1938,4 +1938,5 @@
 {"type":"complete","wuId":"WU-1991","timestamp":"2026-02-22T00:34:56.666Z"}
 {"type":"claim","wuId":"WU-1992","timestamp":"2026-02-22T00:37:22.845Z","lane":"Content: Specs Governance","title":"Fix pre-existing spec:linter failures in legacy WU YAMLs"}
 {"type":"complete","wuId":"WU-1992","timestamp":"2026-02-22T00:39:51.148Z"}
-{"type":"claim","wuId":"WU-1993","lane":"Operations: Tooling","title":"Stabilize workspace connector tests under runtime health fetch side effects","timestamp":"2026-02-22T00:46:28.273Z"}
+{"type":"claim","wuId":"WU-1993","timestamp":"2026-02-22T00:46:28.273Z","lane":"Operations: Tooling","title":"Stabilize workspace connector tests under runtime health fetch side effects"}
+{"type":"complete","wuId":"WU-1993","timestamp":"2026-02-22T00:49:42.394Z"}
