@@ -2,7 +2,7 @@ id: WU-2000
 title: Ignore prettier symlink diagnostics in format guidance output
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/__tests__/gates.test.ts
 tests:
   manual:
-    - Run gates format check with prettier symbolic-link diagnostics and verify guidance only includes real file paths
+    - Run gates format check with prettier symbolic-link diagnostics and verify guidance only
+      includes real file paths
   unit:
     - packages/@lumenflow/cli/__tests__/gates.test.ts
   e2e: []
@@ -27,8 +28,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: When prettier --check is fed symlinked paths, parsePrettierListOutput currently treats diagnostic lines ("... is a symbolic link") as affected files, producing invalid pnpm prettier --write guidance. Filter these diagnostics from parsed file lists.
+description: When prettier --check is fed symlinked paths, parsePrettierListOutput currently treats
+  diagnostic lines ("... is a symbolic link") as affected files, producing invalid pnpm prettier
+  --write guidance. Filter these diagnostics from parsed file lists.
 acceptance:
   - parsePrettierListOutput drops symbolic-link diagnostic lines from prettier output
   - formatFormatCheckGuidance never emits write commands for diagnostic text
   - tests cover symbolic-link diagnostic parsing behavior
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-2000
+claimed_at: 2026-02-22T02:51:21.930Z
+baseline_main_sha: f08cb234fc778e3ba65eec68ca83a81dff48e41d
+session_id: 30579fa9-6d33-4076-a4eb-e65f12d6c216
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T02:51:21.939Z

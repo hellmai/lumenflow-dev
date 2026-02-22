@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2000 — Ignore prettier symlink diagnostics in format guidance output](wu/WU-2000.yaml)
 
 ## Completed
 
