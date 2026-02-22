@@ -8,7 +8,9 @@ created: 2026-02-22
 code_paths:
   - packages/@lumenflow/cli/src/wu-spawn.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm --filter @lumenflow/cli exec vitest run __tests__/wu-spawn.test.ts and verify all
+      tests pass.
   unit:
     - packages/@lumenflow/cli/__tests__/wu-spawn.test.ts
   e2e: []
