@@ -38,4 +38,16 @@ describe('resolveFormatCheckPlan (WU-1999)', () => {
     expect(plan.mode).toBe('full');
     expect(plan.reason).toBe('prettier-config');
   });
+
+  it('excludes nested files inside workspace dist artifacts', () => {
+    const plan = resolveFormatCheckPlan({
+      changedFiles: [
+        'packages/@lumenflow/cli/dist/gates.js',
+        'packages/@lumenflow/cli/src/gates-plan-resolvers.ts',
+      ],
+    });
+
+    expect(plan.mode).toBe('incremental');
+    expect(plan.files).toEqual(['packages/@lumenflow/cli/src/gates-plan-resolvers.ts']);
+  });
 });

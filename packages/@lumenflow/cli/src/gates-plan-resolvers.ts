@@ -62,6 +62,7 @@ const PRETTIER_CONFIG_FILES = new Set([
 
 const WORKSPACE_ARTIFACT_ROOT_PREFIXES = ['packages/', 'apps/', 'tools/'] as const;
 const DIST_ARTIFACT_ROOT_SUFFIX = '/dist';
+const DIST_ARTIFACT_PATH_SEGMENT = '/dist/';
 
 // WU-1356: Extended to support multiple build tools and test runners
 const TEST_CONFIG_BASENAMES = new Set([
@@ -111,7 +112,11 @@ export function isWorkspaceDistArtifactRoot(filePath: string): boolean {
     normalizedPath.startsWith(prefix),
   );
 
-  return hasWorkspacePrefix && normalizedPath.endsWith(DIST_ARTIFACT_ROOT_SUFFIX);
+  const isDistArtifactPath =
+    normalizedPath.endsWith(DIST_ARTIFACT_ROOT_SUFFIX) ||
+    normalizedPath.includes(DIST_ARTIFACT_PATH_SEGMENT);
+
+  return hasWorkspacePrefix && isDistArtifactPath;
 }
 
 export function filterFormatCheckChangedFiles(changedFiles: string[]): string[] {
