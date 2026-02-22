@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-1990 — Format web workspace selector files to restore global format gate](wu/WU-1990.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -923,3 +923,4 @@ _Last updated: 2026-02-22_
 - [WU-1987 — Fix MDX angle bracket escaping in upgrade guide](wu/WU-1987.yaml) — 2026-02-21
 - [WU-1988 — Fix Steps code block indentation vs prettier conflict in upgrade guide](wu/WU-1988.yaml) — 2026-02-22
 - [WU-1989 — State doctor: eliminate non-representable status mismatches and false auto-fix claims](wu/WU-1989.yaml) — 2026-02-22
+- [WU-1990 — Format web workspace selector files to restore global format gate](wu/WU-1990.yaml) — 2026-02-22

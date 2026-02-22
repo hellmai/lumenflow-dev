@@ -29,7 +29,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1990 — Format web workspace selector files to restore global format gate](wu/WU-1990.yaml) — Operations: Tooling
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -952,6 +952,7 @@ sections:
 - [WU-1987 — Fix MDX angle bracket escaping in upgrade guide](wu/WU-1987.yaml)
 - [WU-1988 — Fix Steps code block indentation vs prettier conflict in upgrade guide](wu/WU-1988.yaml)
 - [WU-1989 — State doctor: eliminate non-representable status mismatches and false auto-fix claims](wu/WU-1989.yaml)
+- [WU-1990 — Format web workspace selector files to restore global format gate](wu/WU-1990.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
