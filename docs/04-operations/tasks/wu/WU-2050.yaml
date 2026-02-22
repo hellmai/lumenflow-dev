@@ -20,7 +20,13 @@ dependencies: []
 spec_refs:
   - .claude/plans/vivid-jumping-twilight.md
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  Post WU-2047: software-delivery is now runtime-native (zero CLI spawn bridges). No bundled/domain
+  distinction needed — all packs are equal. This WU is purely about making resolvePacksRoot work
+  outside the monorepo.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -29,7 +35,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add CLI-relative candidate to resolvePacksRoot() so software-delivery pack resolves when installed via npm, not just in the monorepo. CLI build step copies software-delivery into dist/packs/.
+description: Add CLI-relative candidate to resolvePacksRoot() so packs resolve when installed via
+  npm. Currently only checks monorepo paths (packs/ and packages/@lumenflow/packs/). End users need
+  a fallback that resolves relative to the installed @lumenflow/cli package. Also bundle
+  software-delivery pack into CLI dist/packs/ at build time.
 acceptance:
   - resolvePacksRoot falls back to CLI package location when workspace-relative packs dirs dont exist
   - CLI package.json includes packs/ in npm files array
