@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-1998 — Reduce misleading no-checkpoint warnings in wu:done warn mode](wu/WU-1998.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -935,3 +935,4 @@ _Last updated: 2026-02-22_
 - [WU-1995 — Harden code_paths validation for glob patterns and symlink loops](wu/WU-1995.yaml) — 2026-02-22
 - [WU-1996 — Eliminate wu:claim worktree install bin-link ENOENT warnings](wu/WU-1996.yaml) — 2026-02-22
 - [WU-1997 — Remove UnsafeAny placeholder leakage from user-facing wu:done messaging](wu/WU-1997.yaml) — 2026-02-22
+- [WU-1998 — Reduce misleading no-checkpoint warnings in wu:done warn mode](wu/WU-1998.yaml) — 2026-02-22
