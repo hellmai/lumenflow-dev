@@ -3,7 +3,7 @@ slug: workspace-first-bootstrap-cloud
 title: Workspace-first hard cut + bootstrap-all + cloud connect
 description: Hard cut to workspace.yaml as canonical config, default bootstrap-all CLI onboarding,
   and first-class cloud connect with security-first defaults.
-status: done
+status: in_progress
 priority: P0
 owner: 'Framework: Core'
 created: 2026-02-21
@@ -21,6 +21,9 @@ phases:
   - id: 4
     title: 'Phase 4: Surfaces + Release'
     status: done
+  - id: 5
+    title: 'Phase 5: Hard-delete legacy config and close remaining runtime readers'
+    status: pending
 success_metrics:
   - Single-command bootstrap for new users
   - No runtime dependency on .lumenflow.config.yaml
@@ -38,3 +41,5 @@ notes:
   - 'WU-1976 dogfood migration applied to workspace.yaml via config:migrate-workspace. Follow-up
     tracked as mem-0f76: lane:status still hard-requires .lumenflow.config.yaml when legacy file is
     removed.'
+  - '2026-02-22 reopened for delete-first workspace-v2 hard cut: remove .lumenflow.config.yaml
+    contract, then remediate all breakage.'
