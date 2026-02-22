@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2003 — Detect and heal stale initiative status when all WUs are done](wu/WU-2003.yaml)
 
 ## Completed
 

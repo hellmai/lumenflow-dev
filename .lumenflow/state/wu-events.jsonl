@@ -1968,3 +1968,4 @@
 {"type":"complete","wuId":"WU-2001","timestamp":"2026-02-22T03:27:23.028Z"}
 {"type":"claim","wuId":"WU-2002","timestamp":"2026-02-22T03:28:44.343Z","lane":"Framework: Core Validation","title":"Stabilize lane-health test under full CLI test matrix"}
 {"type":"complete","wuId":"WU-2002","timestamp":"2026-02-22T03:41:40.746Z"}
+{"type":"claim","wuId":"WU-2003","lane":"Framework: Core Validation","title":"Detect and heal stale initiative status when all WUs are done","timestamp":"2026-02-22T03:45:46.825Z"}

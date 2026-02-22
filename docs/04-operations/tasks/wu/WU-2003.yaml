@@ -2,7 +2,7 @@ id: WU-2003
 title: Detect and heal stale initiative status when all WUs are done
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -36,3 +36,11 @@ acceptance:
   - state:doctor --dry-run reports stale initiative status mismatches
   - state:doctor --fix updates initiative status to done when all linked WUs are done
   - Regression tests cover detection and fix behavior
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2003
+claimed_at: 2026-02-22T03:45:46.775Z
+baseline_main_sha: 53558dbda79c31c5dc38267c3b3a11c470942d68
+session_id: 2025c8ab-3cbf-431d-a095-78f315e4928c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T03:45:46.781Z
