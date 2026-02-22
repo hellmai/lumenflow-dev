@@ -30,16 +30,9 @@ import {
 import { WU_EVENT_TYPE } from './wu-state-schema.js';
 import { todayISO, normalizeToDateString } from './date-utils.js';
 import { createGitForPath } from './git-adapter.js';
+import type { RepairResult } from './ports/wu-state.ports.js';
 
-/**
- * Repair result type
- */
-export interface RepairResult {
-  success?: boolean;
-  skipped?: boolean;
-  reason?: string;
-  files?: string[];
-}
+export type { RepairResult };
 
 /**
  * Create stamp file inside a micro-worktree (WU-1078)

@@ -13,14 +13,15 @@ code_paths:
   - packages/@lumenflow/core/src/wu-state-indexer.ts
   - packages/@lumenflow/core/src/wu-consistency-detector.ts
   - packages/@lumenflow/core/src/wu-inconsistency-repairer.ts
-  - packages/@lumenflow/core/src/spawn/spawn-lane-occupation.ts
+  - packages/@lumenflow/core/src/wu-consistency-file-repairs.ts
 tests:
   manual:
     - Verify no LOCK_TIMEOUT_MS name collision across packages
     - Verify duplicate types removed, single canonical source exists
   unit:
-    - packages/@lumenflow/core/src/__tests__/wu-lock-manager.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-2049-regression.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-event-sourcer.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-consistency-checker.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2049.done
