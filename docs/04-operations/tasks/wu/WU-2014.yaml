@@ -2,7 +2,7 @@ id: WU-2014
 title: Decompose wu-done-worktree.ts (1777 lines)
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -52,3 +52,6 @@ acceptance:
   - Each extracted module has single responsibility
   - All existing wu-done tests pass without modification
   - wu:done end-to-end workflow unchanged
+locked: true
+completed_at: 2026-02-22T15:41:47.331Z
+completed: 2026-02-22
