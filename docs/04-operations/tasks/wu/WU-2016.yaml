@@ -1,0 +1,38 @@
+id: WU-2016
+title: Split lumenflow-config-schema.ts into per-section schemas (1564 lines)
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-22
+code_paths:
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/core/src/lumenflow-config.ts
+  - packages/@lumenflow/core/src/schemas/
+tests:
+  manual:
+    - Run pnpm gates from worktree — all tests pass
+  unit:
+    - packages/@lumenflow/core/src/__tests__/lumenflow-config-schema.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2016.done
+dependencies: []
+initiative: INIT-034
+phase: 2
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Break lumenflow-config-schema.ts (1564 lines, 40+ config sections in one Zod schema) into per-section schemas: schemas/wu-config.ts, schemas/lanes-config.ts, schemas/gates-config.ts, etc. Compose the full LumenFlowConfig via intersection. This eliminates ISP violation where every consumer couples to the entire config type.'
+acceptance:
+  - lumenflow-config-schema.ts reduced to under 200 lines (composition file)
+  - Each section schema is independently importable
+  - Full LumenFlowConfig type is backward-compatible (intersection of sections)
+  - All existing tests pass without modification
