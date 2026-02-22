@@ -2,7 +2,7 @@ id: WU-1989
 title: 'State doctor: eliminate non-representable status mismatches and false auto-fix claims'
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -35,3 +35,11 @@ acceptance:
   - state:doctor does not report mismatch for superseded WUs with ready/in_progress derived states
   - status mismatch issues expose canAutoFix=false for unsupported transitions
   - state-doctor core tests cover superseded skip and non-fixable transition behavior
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1989
+claimed_at: 2026-02-22T00:06:50.578Z
+baseline_main_sha: 9cbb3e4c07c4dd0a3f56afe14851f1ca67d6bb52
+session_id: 0b075afd-44ac-4965-b8cb-3c32a3b8bee8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T00:06:50.584Z

@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1989 — State doctor: eliminate non-representable status mismatches and false auto-fix claims](wu/WU-1989.yaml)
 
 ## Completed
 
