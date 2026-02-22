@@ -2,10 +2,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 /**
- * Invariants Runner (WU-2252)
+ * Invariants Runner (WU-2252, WU-2017)
  *
  * Validates durable repo invariants from invariants.yml.
  * Runs as the first gate check and also inside wu:done even when --skip-gates is used.
+ *
+ * WU-2017: Refactored from switch/case dispatch to strategy pattern.
+ * Each invariant type implements the InvariantChecker interface and registers
+ * itself in the checker registry. New invariant types can be added without
+ * modifying existing code (OCP).
  *
  * Supported invariant types:
  * - required-file: File must exist
@@ -80,6 +85,405 @@ interface InvariantValidationResult {
   violations: InvariantDefinition[];
 }
 
+// ──────────────────────────────────────────────────────────────
+// WU-2017: InvariantChecker strategy interface and registry
+// ──────────────────────────────────────────────────────────────
+
+/**
+ * Context passed to invariant checkers during validation.
+ * Contains optional fields that specific checkers may require.
+ */
+export interface InvariantCheckerContext {
+  /** Specific WU ID for scoped validation (WU-2425) */
+  wuId?: string;
+}
+
+/**
+ * Strategy interface for invariant type validation (WU-2017).
+ *
+ * Each invariant type implements this interface with a `validate()` method.
+ * New invariant types can be added by implementing this interface and calling
+ * `registerInvariantChecker()` -- no modification to existing code required (OCP).
+ *
+ * @example
+ * class MyCustomChecker implements InvariantChecker {
+ *   validate(invariant, baseDir, context) {
+ *     // Return violation object if invalid, null if valid
+ *     return null;
+ *   }
+ * }
+ * registerInvariantChecker('my-custom-type', new MyCustomChecker());
+ */
+export interface InvariantChecker {
+  /**
+   * Validate an invariant against the current repo state.
+   *
+   * @param invariant - The invariant definition from invariants.yml
+   * @param baseDir - Base directory for path resolution
+   * @param context - Additional context (e.g., wuId for scoped validation)
+   * @returns Violation object if invalid, null if valid
+   */
+  validate(
+    invariant: InvariantDefinition,
+    baseDir: string,
+    context?: InvariantCheckerContext,
+  ): InvariantDefinition | null;
+}
+
+/**
+ * Registry of invariant type checkers (WU-2017).
+ *
+ * Maps invariant type strings to their checker implementations.
+ * Pre-populated with all built-in types; extensible via registerInvariantChecker().
+ */
+const checkerRegistry = new Map<string, InvariantChecker>();
+
+/**
+ * Register a new invariant checker for a given type (WU-2017).
+ *
+ * Adding a new invariant type requires only:
+ * 1. A class implementing InvariantChecker
+ * 2. A call to registerInvariantChecker()
+ * 3. (Optional) An entry in INVARIANT_TYPES for the type constant
+ *
+ * @param type - The invariant type string (e.g., 'required-file')
+ * @param checker - The checker implementation
+ */
+export function registerInvariantChecker(type: string, checker: InvariantChecker): void {
+  checkerRegistry.set(type, checker);
+}
+
+/**
+ * Get the registered checker for an invariant type (WU-2017).
+ *
+ * @param type - The invariant type string
+ * @returns The checker or undefined if not registered
+ */
+export function getInvariantChecker(type: string): InvariantChecker | undefined {
+  return checkerRegistry.get(type);
+}
+
+// ──────────────────────────────────────────────────────────────
+// Built-in InvariantChecker implementations
+// ──────────────────────────────────────────────────────────────
+
+/**
+ * Checker for required-file invariants.
+ * Validates that a specified file exists.
+ */
+class RequiredFileChecker implements InvariantChecker {
+  validate(invariant: InvariantDefinition, baseDir: string): InvariantDefinition | null {
+    if (typeof invariant.path !== 'string') {
+      return {
+        ...invariant,
+        valid: false,
+        path: invariant.path,
+      };
+    }
+    const fullPath = path.join(baseDir, invariant.path);
+
+    if (!existsSync(fullPath)) {
+      return {
+        ...invariant,
+        valid: false,
+        path: invariant.path,
+      };
+    }
+
+    return null;
+  }
+}
+
+/**
+ * Checker for forbidden-file invariants.
+ * Validates that a specified file does NOT exist.
+ */
+class ForbiddenFileChecker implements InvariantChecker {
+  validate(invariant: InvariantDefinition, baseDir: string): InvariantDefinition | null {
+    if (typeof invariant.path !== 'string') {
+      return null;
+    }
+    const fullPath = path.join(baseDir, invariant.path);
+
+    if (existsSync(fullPath)) {
+      return {
+        ...invariant,
+        valid: false,
+        path: invariant.path,
+      };
+    }
+
+    return null;
+  }
+}
+
+/**
+ * Checker for mutual-exclusivity invariants.
+ * Validates that at most one of the listed files exists.
+ */
+class MutualExclusivityChecker implements InvariantChecker {
+  validate(invariant: InvariantDefinition, baseDir: string): InvariantDefinition | null {
+    const paths = Array.isArray(invariant.paths) ? invariant.paths : [];
+    const existingPaths = paths.filter((p: string) => {
+      const fullPath = path.join(baseDir, p);
+      return existsSync(fullPath);
+    });
+
+    if (existingPaths.length > 1) {
+      return {
+        ...invariant,
+        valid: false,
+        existingPaths,
+      };
+    }
+
+    return null;
+  }
+}
+
+/**
+ * Checker for forbidden-pattern invariants.
+ * Validates that a regex pattern does NOT appear in scoped files.
+ */
+class ForbiddenPatternChecker implements InvariantChecker {
+  validate(invariant: InvariantDefinition, baseDir: string): InvariantDefinition | null {
+    const { pattern, scope } = invariant;
+
+    if (!pattern || !scope || !Array.isArray(scope)) {
+      return null; // Skip if misconfigured
+    }
+
+    // Build ignore patterns for excluded directories
+    const ignorePatterns = EXCLUDED_DIRS.map((dir) => `**/${dir}/**`);
+
+    // Find all files matching the scope
+    const matchingFiles: string[] = [];
+
+    for (const scopePattern of scope) {
+      const files = globSync(scopePattern, {
+        cwd: baseDir,
+        ignore: ignorePatterns,
+        nodir: true,
+      });
+
+      // Check each file for the forbidden pattern
+      // eslint-disable-next-line security/detect-non-literal-regexp -- pattern from invariant config, not user input
+      const regex = new RegExp(pattern);
+
+      for (const file of files) {
+        const fullPath = path.join(baseDir, file);
+
+        try {
+          const content = readFileSync(fullPath, 'utf-8');
+          if (regex.test(content)) {
+            matchingFiles.push(file);
+          }
+        } catch {
+          // Skip files that can't be read (e.g., binary files)
+        }
+      }
+    }
+
+    if (matchingFiles.length > 0) {
+      return {
+        ...invariant,
+        valid: false,
+        matchingFiles,
+      };
+    }
+
+    return null;
+  }
+}
+
+/**
+ * WU-2254: Checker for required-pattern invariants.
+ *
+ * Semantics: PASS if the regex matches at least once across the scoped files.
+ * This is the inverse of forbidden-pattern - we WANT to find the pattern.
+ */
+class RequiredPatternChecker implements InvariantChecker {
+  validate(invariant: InvariantDefinition, baseDir: string): InvariantDefinition | null {
+    const { pattern, scope } = invariant;
+
+    if (!pattern || !scope || !Array.isArray(scope)) {
+      return null; // Skip if misconfigured
+    }
+
+    // Build ignore patterns for excluded directories
+    const ignorePatterns = EXCLUDED_DIRS.map((dir) => `**/${dir}/**`);
+
+    // Check if pattern exists in any file matching the scope
+    // eslint-disable-next-line security/detect-non-literal-regexp -- pattern from invariant config, not user input
+    const regex = new RegExp(pattern);
+
+    for (const scopePattern of scope) {
+      const files = globSync(scopePattern, {
+        cwd: baseDir,
+        ignore: ignorePatterns,
+        nodir: true,
+      });
+
+      for (const file of files) {
+        const fullPath = path.join(baseDir, file);
+
+        try {
+          const content = readFileSync(fullPath, 'utf-8');
+          if (regex.test(content)) {
+            // Pattern found - invariant passes
+            return null;
+          }
+        } catch {
+          // Skip files that can't be read (e.g., binary files)
+        }
+      }
+    }
+
+    // Pattern not found in any file - invariant fails
+    return {
+      ...invariant,
+      valid: false,
+      patternNotFound: true,
+    };
+  }
+}
+
+/**
+ * WU-2254: Checker for forbidden-import invariants.
+ *
+ * Detects import/require/re-export statements referencing forbidden modules.
+ * Supports:
+ * - ESM static import: import { x } from 'module'
+ * - ESM dynamic import: await import('module')
+ * - ESM re-export: export { x } from 'module'
+ * - CommonJS require: require('module')
+ */
+class ForbiddenImportChecker implements InvariantChecker {
+  validate(invariant: InvariantDefinition, baseDir: string): InvariantDefinition | null {
+    const { from, cannot_import } = invariant;
+
+    if (!from || !cannot_import || !Array.isArray(cannot_import)) {
+      return null; // Skip if misconfigured
+    }
+
+    // Build ignore patterns for excluded directories
+    const ignorePatterns = EXCLUDED_DIRS.map((dir) => `**/${dir}/**`);
+
+    // Find all files matching the 'from' glob
+    const files = globSync(from, {
+      cwd: baseDir,
+      ignore: ignorePatterns,
+      nodir: true,
+    });
+
+    const violatingFiles: string[] = [];
+    const violatingImports: Record<string, number> = {};
+
+    // Build regex patterns for detecting imports of forbidden modules
+    // We escape special regex characters in module names
+    const forbiddenModulePatterns = cannot_import.map((mod: string) => {
+      const escapedMod = mod.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      // Match:
+      // - import ... from 'module' or "module"
+      // - export ... from 'module' or "module"
+      // - require('module') or require("module")
+      // - import('module') or import("module") for dynamic imports
+      // eslint-disable-next-line security/detect-non-literal-regexp -- module name from invariant config, not user input
+      return new RegExp(
+        `(?:` +
+          `import\\s+[^;]*from\\s*['"]${escapedMod}['"]|` + // static import
+          `export\\s+[^;]*from\\s*['"]${escapedMod}['"]|` + // re-export
+          `require\\s*\\(\\s*['"]${escapedMod}['"]\\s*\\)|` + // require()
+          `import\\s*\\(\\s*['"]${escapedMod}['"]\\s*\\)` + // dynamic import()
+          `)`,
+      );
+    });
+
+    for (const file of files) {
+      const fullPath = path.join(baseDir, file);
+
+      try {
+        const content = readFileSync(fullPath, 'utf-8');
+
+        // Check each forbidden module pattern
+        for (let i = 0; i < forbiddenModulePatterns.length; i++) {
+          const pattern = forbiddenModulePatterns[i];
+          if (!pattern) continue;
+          const moduleName = cannot_import[i] ?? 'unknown-module';
+
+          if (pattern.test(content)) {
+            if (!violatingFiles.includes(file)) {
+              violatingFiles.push(file);
+            }
+            violatingImports[moduleName] = (violatingImports[moduleName] || 0) + 1;
+          }
+        }
+      } catch {
+        // Skip files that can't be read
+      }
+    }
+
+    if (violatingFiles.length > 0) {
+      return {
+        ...invariant,
+        valid: false,
+        violatingFiles,
+        violatingImports,
+      };
+    }
+
+    return null;
+  }
+}
+
+/**
+ * WU-2333: Checker for wu-automated-tests invariants.
+ *
+ * Checks that WUs with code files have automated tests.
+ * Delegates to the check-automated-tests module for the actual validation.
+ *
+ * WU-2425: When wuId is provided via context, only validates that specific WU
+ * instead of all active WUs. This prevents unrelated WUs from blocking wu:done.
+ */
+class WUAutomatedTestsChecker implements InvariantChecker {
+  validate(
+    invariant: InvariantDefinition,
+    baseDir: string,
+    context: InvariantCheckerContext = {},
+  ): InvariantDefinition | null {
+    const { wuId } = context;
+    const result = checkAutomatedTestsInvariant({ baseDir, wuId });
+
+    if (!result.valid && result.violations.length > 0) {
+      // Return first violation with invariant metadata merged in
+      // (checkAutomatedTestsInvariant returns array, we merge with registry invariant)
+      return {
+        ...invariant,
+        valid: false,
+        wuViolations: result.violations,
+      };
+    }
+
+    return null;
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// Register all built-in checkers
+// ──────────────────────────────────────────────────────────────
+
+registerInvariantChecker(INVARIANT_TYPES.REQUIRED_FILE, new RequiredFileChecker());
+registerInvariantChecker(INVARIANT_TYPES.FORBIDDEN_FILE, new ForbiddenFileChecker());
+registerInvariantChecker(INVARIANT_TYPES.MUTUAL_EXCLUSIVITY, new MutualExclusivityChecker());
+registerInvariantChecker(INVARIANT_TYPES.FORBIDDEN_PATTERN, new ForbiddenPatternChecker());
+registerInvariantChecker(INVARIANT_TYPES.REQUIRED_PATTERN, new RequiredPatternChecker());
+registerInvariantChecker(INVARIANT_TYPES.FORBIDDEN_IMPORT, new ForbiddenImportChecker());
+registerInvariantChecker(INVARIANT_TYPES.WU_AUTOMATED_TESTS, new WUAutomatedTestsChecker());
+
+// ──────────────────────────────────────────────────────────────
+// Public API (unchanged signatures)
+// ──────────────────────────────────────────────────────────────
+
 /**
  * Custom error class for invariant violations
  */
@@ -127,342 +531,11 @@ export function loadInvariants(filePath: string): InvariantDefinition[] {
 }
 
 /**
- * Validate a required-file invariant
+ * Validate all invariants against the current repo state (WU-2017).
  *
- * @param {object} invariant - Invariant definition
- * @param {string} baseDir - Base directory for path resolution
- * @returns {object|null} Violation object if invalid, null if valid
- */
-function validateRequiredFile(
-  invariant: InvariantDefinition,
-  baseDir: string,
-): InvariantDefinition | null {
-  if (typeof invariant.path !== 'string') {
-    return {
-      ...invariant,
-      valid: false,
-      path: invariant.path,
-    };
-  }
-  const fullPath = path.join(baseDir, invariant.path);
-
-  if (!existsSync(fullPath)) {
-    return {
-      ...invariant,
-      valid: false,
-      path: invariant.path,
-    };
-  }
-
-  return null;
-}
-
-/**
- * Validate a forbidden-file invariant
- *
- * @param {object} invariant - Invariant definition
- * @param {string} baseDir - Base directory for path resolution
- * @returns {object|null} Violation object if invalid, null if valid
- */
-function validateForbiddenFile(
-  invariant: InvariantDefinition,
-  baseDir: string,
-): InvariantDefinition | null {
-  if (typeof invariant.path !== 'string') {
-    return null;
-  }
-  const fullPath = path.join(baseDir, invariant.path);
-
-  if (existsSync(fullPath)) {
-    return {
-      ...invariant,
-      valid: false,
-      path: invariant.path,
-    };
-  }
-
-  return null;
-}
-
-/**
- * Validate a mutual-exclusivity invariant
- *
- * @param {object} invariant - Invariant definition with paths array
- * @param {string} baseDir - Base directory for path resolution
- * @returns {object|null} Violation object if invalid, null if valid
- */
-function validateMutualExclusivity(
-  invariant: InvariantDefinition,
-  baseDir: string,
-): InvariantDefinition | null {
-  const paths = Array.isArray(invariant.paths) ? invariant.paths : [];
-  const existingPaths = paths.filter((p: string) => {
-    const fullPath = path.join(baseDir, p);
-    return existsSync(fullPath);
-  });
-
-  if (existingPaths.length > 1) {
-    return {
-      ...invariant,
-      valid: false,
-      existingPaths,
-    };
-  }
-
-  return null;
-}
-
-/**
- * Validate a forbidden-pattern invariant
- *
- * @param {object} invariant - Invariant definition with pattern and scope
- * @param {string} baseDir - Base directory for path resolution
- * @returns {object|null} Violation object if invalid, null if valid
- */
-function validateForbiddenPattern(
-  invariant: InvariantDefinition,
-  baseDir: string,
-): InvariantDefinition | null {
-  const { pattern, scope } = invariant;
-
-  if (!pattern || !scope || !Array.isArray(scope)) {
-    return null; // Skip if misconfigured
-  }
-
-  // Build ignore patterns for excluded directories
-  const ignorePatterns = EXCLUDED_DIRS.map((dir) => `**/${dir}/**`);
-
-  // Find all files matching the scope
-  const matchingFiles: string[] = [];
-
-  for (const scopePattern of scope) {
-    const files = globSync(scopePattern, {
-      cwd: baseDir,
-      ignore: ignorePatterns,
-      nodir: true,
-    });
-
-    // Check each file for the forbidden pattern
-    // eslint-disable-next-line security/detect-non-literal-regexp -- pattern from invariant config, not user input
-    const regex = new RegExp(pattern);
-
-    for (const file of files) {
-      const fullPath = path.join(baseDir, file);
-
-      try {
-        const content = readFileSync(fullPath, 'utf-8');
-        if (regex.test(content)) {
-          matchingFiles.push(file);
-        }
-      } catch {
-        // Skip files that can't be read (e.g., binary files)
-      }
-    }
-  }
-
-  if (matchingFiles.length > 0) {
-    return {
-      ...invariant,
-      valid: false,
-      matchingFiles,
-    };
-  }
-
-  return null;
-}
-
-/**
- * WU-2254: Validate a required-pattern invariant
- *
- * Semantics: PASS if the regex matches at least once across the scoped files.
- * This is the inverse of forbidden-pattern - we WANT to find the pattern.
- *
- * @param {object} invariant - Invariant definition with pattern and scope
- * @param {string} baseDir - Base directory for path resolution
- * @returns {object|null} Violation object if pattern NOT found, null if found
- */
-function validateRequiredPattern(
-  invariant: InvariantDefinition,
-  baseDir: string,
-): InvariantDefinition | null {
-  const { pattern, scope } = invariant;
-
-  if (!pattern || !scope || !Array.isArray(scope)) {
-    return null; // Skip if misconfigured
-  }
-
-  // Build ignore patterns for excluded directories
-  const ignorePatterns = EXCLUDED_DIRS.map((dir) => `**/${dir}/**`);
-
-  // Check if pattern exists in UnsafeAny file matching the scope
-  // eslint-disable-next-line security/detect-non-literal-regexp -- pattern from invariant config, not user input
-  const regex = new RegExp(pattern);
-
-  for (const scopePattern of scope) {
-    const files = globSync(scopePattern, {
-      cwd: baseDir,
-      ignore: ignorePatterns,
-      nodir: true,
-    });
-
-    for (const file of files) {
-      const fullPath = path.join(baseDir, file);
-
-      try {
-        const content = readFileSync(fullPath, 'utf-8');
-        if (regex.test(content)) {
-          // Pattern found - invariant passes
-          return null;
-        }
-      } catch {
-        // Skip files that can't be read (e.g., binary files)
-      }
-    }
-  }
-
-  // Pattern not found in UnsafeAny file - invariant fails
-  return {
-    ...invariant,
-    valid: false,
-    patternNotFound: true,
-  };
-}
-
-/**
- * WU-2254: Validate a forbidden-import invariant
- *
- * Detects import/require/re-export statements referencing forbidden modules.
- * Supports:
- * - ESM static import: import { x } from 'module'
- * - ESM dynamic import: await import('module')
- * - ESM re-export: export { x } from 'module'
- * - CommonJS require: require('module')
- *
- * @param {object} invariant - Invariant definition with from glob and cannot_import array
- * @param {string} baseDir - Base directory for path resolution
- * @returns {object|null} Violation object if forbidden imports found, null otherwise
- */
-function validateForbiddenImport(
-  invariant: InvariantDefinition,
-  baseDir: string,
-): InvariantDefinition | null {
-  const { from, cannot_import } = invariant;
-
-  if (!from || !cannot_import || !Array.isArray(cannot_import)) {
-    return null; // Skip if misconfigured
-  }
-
-  // Build ignore patterns for excluded directories
-  const ignorePatterns = EXCLUDED_DIRS.map((dir) => `**/${dir}/**`);
-
-  // Find all files matching the 'from' glob
-  const files = globSync(from, {
-    cwd: baseDir,
-    ignore: ignorePatterns,
-    nodir: true,
-  });
-
-  const violatingFiles: string[] = [];
-  const violatingImports: Record<string, number> = {};
-
-  // Build regex patterns for detecting imports of forbidden modules
-  // We escape special regex characters in module names
-  const forbiddenModulePatterns = cannot_import.map((mod: string) => {
-    const escapedMod = mod.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    // Match:
-    // - import ... from 'module' or "module"
-    // - export ... from 'module' or "module"
-    // - require('module') or require("module")
-    // - import('module') or import("module") for dynamic imports
-    // eslint-disable-next-line security/detect-non-literal-regexp -- module name from invariant config, not user input
-    return new RegExp(
-      `(?:` +
-        `import\\s+[^;]*from\\s*['"]${escapedMod}['"]|` + // static import
-        `export\\s+[^;]*from\\s*['"]${escapedMod}['"]|` + // re-export
-        `require\\s*\\(\\s*['"]${escapedMod}['"]\\s*\\)|` + // require()
-        `import\\s*\\(\\s*['"]${escapedMod}['"]\\s*\\)` + // dynamic import()
-        `)`,
-    );
-  });
-
-  for (const file of files) {
-    const fullPath = path.join(baseDir, file);
-
-    try {
-      const content = readFileSync(fullPath, 'utf-8');
-
-      // Check each forbidden module pattern
-      for (let i = 0; i < forbiddenModulePatterns.length; i++) {
-        const pattern = forbiddenModulePatterns[i];
-        if (!pattern) continue;
-        const moduleName = cannot_import[i] ?? 'unknown-module';
-
-        if (pattern.test(content)) {
-          if (!violatingFiles.includes(file)) {
-            violatingFiles.push(file);
-          }
-          violatingImports[moduleName] = (violatingImports[moduleName] || 0) + 1;
-        }
-      }
-    } catch {
-      // Skip files that can't be read
-    }
-  }
-
-  if (violatingFiles.length > 0) {
-    return {
-      ...invariant,
-      valid: false,
-      violatingFiles,
-      violatingImports,
-    };
-  }
-
-  return null;
-}
-
-/**
- * WU-2333: Validate wu-automated-tests invariant
- *
- * Checks that WUs with code files have automated tests.
- * Delegates to the check-automated-tests module for the actual validation.
- *
- * WU-2425: When wuId is provided, only validates that specific WU instead of
- * all active WUs. This prevents unrelated WUs from blocking wu:done completion.
- *
- * @param {object} invariant - Invariant definition
- * @param {string} baseDir - Base directory for path resolution
- * @param {ValidateWUAutomatedTestsContext} [context={}] - Additional context
- * @returns {object|null} Violation object if violations found, null otherwise
- */
-interface ValidateWUAutomatedTestsContext {
-  /** Specific WU ID to validate (scoped validation) */
-  wuId?: string;
-}
-
-function validateWUAutomatedTests(
-  invariant: InvariantDefinition,
-  baseDir: string,
-  context: ValidateWUAutomatedTestsContext = {},
-): InvariantDefinition | null {
-  const { wuId } = context;
-  const result = checkAutomatedTestsInvariant({ baseDir, wuId });
-
-  if (!result.valid && result.violations.length > 0) {
-    // Return first violation with invariant metadata merged in
-    // (checkAutomatedTestsInvariant returns array, we merge with registry invariant)
-    return {
-      ...invariant,
-      valid: false,
-      wuViolations: result.violations,
-    };
-  }
-
-  return null;
-}
-
-/**
- * Validate all invariants against the current repo state
+ * Uses the checker registry to dispatch validation to the appropriate
+ * InvariantChecker implementation for each invariant type. Unknown types
+ * produce a warning but do not fail validation.
  *
  * WU-2425: When wuId is provided, WU-scoped invariants only validate that specific WU.
  *
@@ -483,49 +556,19 @@ export function validateInvariants(
 ): InvariantValidationResult {
   const { baseDir = process.cwd(), wuId } = options;
   const violations: InvariantDefinition[] = [];
+  const context: InvariantCheckerContext = { wuId };
 
   for (const invariant of invariants) {
-    let violation = null;
+    const checker = checkerRegistry.get(invariant.type);
 
-    switch (invariant.type) {
-      case INVARIANT_TYPES.REQUIRED_FILE:
-        violation = validateRequiredFile(invariant, baseDir);
-        break;
-
-      case INVARIANT_TYPES.FORBIDDEN_FILE:
-        violation = validateForbiddenFile(invariant, baseDir);
-        break;
-
-      case INVARIANT_TYPES.MUTUAL_EXCLUSIVITY:
-        violation = validateMutualExclusivity(invariant, baseDir);
-        break;
-
-      case INVARIANT_TYPES.FORBIDDEN_PATTERN:
-        violation = validateForbiddenPattern(invariant, baseDir);
-        break;
-
-      // WU-2254: New invariant types
-      case INVARIANT_TYPES.REQUIRED_PATTERN:
-        violation = validateRequiredPattern(invariant, baseDir);
-        break;
-
-      case INVARIANT_TYPES.FORBIDDEN_IMPORT:
-        violation = validateForbiddenImport(invariant, baseDir);
-        break;
-
-      // WU-2333: WU automated tests invariant
-      // WU-2425: Pass wuId for scoped validation
-      case INVARIANT_TYPES.WU_AUTOMATED_TESTS:
-        violation = validateWUAutomatedTests(invariant, baseDir, { wuId });
-        break;
-
-      default:
-        // Unknown invariant type - skip with warning
-        console.warn(`[invariants] Unknown invariant type: ${invariant.type} (${invariant.id})`);
-    }
-
-    if (violation) {
-      violations.push(violation);
+    if (checker) {
+      const violation = checker.validate(invariant, baseDir, context);
+      if (violation) {
+        violations.push(violation);
+      }
+    } else {
+      // Unknown invariant type - skip with warning
+      console.warn(`[invariants] Unknown invariant type: ${invariant.type} (${invariant.id})`);
     }
   }
 
@@ -534,6 +577,10 @@ export function validateInvariants(
     violations,
   };
 }
+
+// ──────────────────────────────────────────────────────────────
+// Formatting (unchanged)
+// ──────────────────────────────────────────────────────────────
 
 /**
  * Format file-related violation details.
