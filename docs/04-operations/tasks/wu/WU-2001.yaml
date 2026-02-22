@@ -2,14 +2,15 @@ id: WU-2001
 title: Stabilize wu-done XState graph model tests in changed-test gate runs
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
   - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
 tests:
   manual:
-    - Run pnpm wu:done for an unrelated CLI WU and confirm test gate does not fail on wu-done model graph tests
+    - Run pnpm wu:done for an unrelated CLI WU and confirm test gate does not fail on wu-done model
+      graph tests
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
   e2e: []
@@ -26,8 +27,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: wu:done full gate runs intermittently fail in packages/@lumenflow/cli/src/__tests__/wu-done.test.ts with @xstate/graph toDirectedGraph undefined values errors, even when isolated test runs pass. Stabilize test setup or guard graph traversal to eliminate nondeterministic failures.
+description: wu:done full gate runs intermittently fail in
+  packages/@lumenflow/cli/src/__tests__/wu-done.test.ts with @xstate/graph toDirectedGraph undefined
+  values errors, even when isolated test runs pass. Stabilize test setup or guard graph traversal to
+  eliminate nondeterministic failures.
 acceptance:
   - wu-done model-based graph tests are deterministic under changed-test gate execution
   - wu:done no longer fails on @xstate/graph undefined-values errors for unchanged WUs
   - tests/documentation capture the stabilized behavior
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2001
+claimed_at: 2026-02-22T02:58:04.986Z
+baseline_main_sha: bb5d321f17a90480ea7d9284c0dd655f96d607c5
+session_id: c1c6f16c-54a0-4094-8bc8-9270ccab2ae8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T02:58:04.992Z
