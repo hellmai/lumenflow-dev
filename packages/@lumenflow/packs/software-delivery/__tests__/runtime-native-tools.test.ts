@@ -5,16 +5,22 @@ import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const spawnSyncMock = vi.hoisted(() => vi.fn());
+const runtimeRunMock = vi.hoisted(() => vi.fn());
 const coreModuleMock = vi.hoisted(() => ({
   computeWuContext: vi.fn(),
   listWUs: vi.fn(),
 }));
 
-vi.mock('node:child_process', () => ({
-  spawnSync: spawnSyncMock,
-}));
-
 vi.mock('@lumenflow/core', () => coreModuleMock);
+vi.mock('../tool-impl/runtime-cli-adapter.js', async () => {
+  const actual = await vi.importActual('../tool-impl/runtime-cli-adapter.js');
+  return {
+    ...actual,
+    runtimeCliAdapter: {
+      run: runtimeRunMock,
+    },
+  };
+});
 
 import {
   backlogPruneTool,
@@ -43,7 +49,7 @@ import {
   validateTool,
   wuInferLaneTool,
   wuListTool,
-} from '../tool-impl/parity-migration-tools.js';
+} from '../tool-impl/runtime-native-tools.js';
 
 const SCRIPT_PATHS = {
   WU_INFER_LANE: path.resolve(process.cwd(), 'packages/@lumenflow/cli/dist/wu-infer-lane.js'),
@@ -84,9 +90,10 @@ const SCRIPT_PATHS = {
   ),
 } as const;
 
-describe('parity migration tool adapters (WU-1890)', () => {
+describe('runtime-native tool adapters (WU-1890)', () => {
   beforeEach(() => {
     spawnSyncMock.mockReset();
+    runtimeRunMock.mockReset();
     coreModuleMock.computeWuContext.mockReset();
     coreModuleMock.listWUs.mockReset();
     spawnSyncMock.mockReturnValue({
@@ -94,6 +101,21 @@ describe('parity migration tool adapters (WU-1890)', () => {
       stdout: 'ok',
       stderr: '',
       error: undefined,
+    });
+    runtimeRunMock.mockImplementation(async (command: string, args: string[]) => {
+      const scriptPath = path.resolve(process.cwd(), `packages/@lumenflow/cli/dist/${command}.js`);
+      const result = spawnSyncMock(process.execPath, [scriptPath, ...args], {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+      });
+
+      return {
+        ok: result.status === 0 && !result.error,
+        status: result.status ?? 1,
+        stdout: result.stdout ?? '',
+        stderr: result.stderr ?? '',
+        executionError: result.error?.message,
+      };
     });
   });
 

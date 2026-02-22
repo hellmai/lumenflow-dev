@@ -322,7 +322,7 @@ async function ensureCleanWorkingTree() {
  * Main entry point
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
-async function main() {
+export async function main() {
   const opts = parseArgs();
   const { id } = opts;
 

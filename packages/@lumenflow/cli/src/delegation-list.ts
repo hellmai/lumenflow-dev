@@ -86,7 +86,7 @@ function printLegend() {
 /**
  * Main entry point
  */
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'delegation-list',
     description: 'Display delegation trees for WUs or initiatives',

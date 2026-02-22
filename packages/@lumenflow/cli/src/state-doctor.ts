@@ -787,7 +787,7 @@ function warnMissingPaths(baseDir: string, quiet: boolean): void {
 /**
  * Main CLI entry point
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = parseArguments();
   const baseDir = args.baseDir || process.cwd();
   const startedAt = new Date().toISOString();

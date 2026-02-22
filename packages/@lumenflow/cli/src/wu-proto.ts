@@ -300,7 +300,7 @@ function claimWU(wuId: string, lane: string): string {
   }
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = createWUParser({
     name: 'wu-proto',
     description: 'Create and claim a prototype WU with relaxed validation (rapid prototyping)',

@@ -112,7 +112,7 @@ function showLaneStatus(lane: string) {
   }
 }
 
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'wu-unlock-lane',
     description: 'Safely unlock a lane lock with audit logging',

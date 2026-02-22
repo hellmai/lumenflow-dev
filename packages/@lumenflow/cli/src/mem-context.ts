@@ -253,7 +253,7 @@ function printJsonFormat(result: GenerateContextResult, wuId: string): void {
 /**
  * Main CLI entry point
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = createWUParser({
     name: 'mem-context',
     description: 'Generate context injection block for delegation prompts',

@@ -68,7 +68,7 @@ function validateLifecycle(lifecycle: string): boolean {
   return ['ephemeral', 'session', 'wu', 'project'].includes(lifecycle);
 }
 
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'mem-export',
     description: 'Export memory nodes as markdown or JSON',

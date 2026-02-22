@@ -180,7 +180,7 @@ export function resolveLaneLifecycleForInitiativeCreate(
   return ensureLaneLifecycleForProject(projectRoot, { persist: false });
 }
 
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'initiative-create',
     description: 'Create a new Initiative with micro-worktree isolation (race-safe)',

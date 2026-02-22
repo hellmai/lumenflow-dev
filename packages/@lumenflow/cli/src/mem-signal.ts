@@ -171,7 +171,7 @@ function printSignalDetails(result: CreateSignalResult): void {
 /**
  * Main CLI entry point
  */
-async function main() {
+export async function main() {
   const { args, message } = parseArguments();
 
   if (!message) {

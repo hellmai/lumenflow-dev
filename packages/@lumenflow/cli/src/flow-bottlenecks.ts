@@ -182,7 +182,7 @@ function formatAsMermaid(
 /**
  * Main function
  */
-async function main() {
+export async function main() {
   const opts = parseArgs();
   const limit = parseInt(opts.limit, 10);
 

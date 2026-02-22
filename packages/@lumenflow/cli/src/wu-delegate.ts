@@ -11,7 +11,7 @@
 import { runBriefLogic } from './wu-spawn.js';
 import { runCLI } from './cli-entry-point.js';
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   await runBriefLogic({
     mode: 'delegate',
     parserConfig: {

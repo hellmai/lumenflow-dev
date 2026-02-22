@@ -162,7 +162,7 @@ function printJsonFormat(nodes: UnsafeAny, opts: UnsafeAny) {
 /**
  * Main CLI entry point
  */
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'mem-ready',
     description: 'Query ready nodes for a WU (deterministic ordering)',

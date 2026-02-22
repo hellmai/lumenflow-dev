@@ -429,7 +429,7 @@ function printSuccessMessage(wuId: string, mainCheckout: string): void {
 /**
  * Main entry point.
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   // Parse arguments
   const args = createWUParser({
     name: 'wu-prep',

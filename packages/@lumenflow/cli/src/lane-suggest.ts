@@ -411,7 +411,7 @@ ${gitSummary}
 /**
  * Main entry point
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const opts = parseOptions();
   const projectRoot = findProjectRoot();
 

@@ -487,7 +487,7 @@ export function buildAddWuMicroWorktreeOptions(
   };
 }
 
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'initiative-add-wu',
     description: 'Link one or more WUs to an initiative bidirectionally',

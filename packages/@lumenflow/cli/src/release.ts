@@ -376,7 +376,7 @@ export async function pushTagWithForce(
  * Main release function
  * WU-1085: Renamed --version to --release-version to avoid conflict with CLI --version flag
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const program = new Command()
     .name('lumenflow-release')
     .description('Release @lumenflow/* packages to npm with version bump, tag, and publish')

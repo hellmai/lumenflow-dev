@@ -31,7 +31,6 @@ export type {
 } from './manifest-schema.js';
 
 const FULL_WORKSPACE_SCOPE_PATTERN = '**';
-const PENDING_RUNTIME_TOOL_ENTRY = 'tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool';
 const GIT_STATUS_TOOL_ENTRY = 'tool-impl/git-tools.ts#gitStatusTool';
 const WU_STATUS_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuStatusTool';
 const WU_CREATE_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuCreateTool';
@@ -56,8 +55,8 @@ const WU_RELEASE_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuReleaseTool';
 const WU_RECOVER_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuRecoverTool';
 const WU_REPAIR_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#wuRepairTool';
 const GATES_TOOL_ENTRY = 'tool-impl/wu-lifecycle-tools.ts#gatesTool';
-const CONFIG_SET_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#configSetTool';
-const CONFIG_GET_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#configGetTool';
+const CONFIG_SET_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#configSetTool';
+const CONFIG_GET_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#configGetTool';
 const MEM_INIT_TOOL_ENTRY = 'tool-impl/memory-tools.ts#memInitTool';
 const MEM_START_TOOL_ENTRY = 'tool-impl/memory-tools.ts#memStartTool';
 const MEM_READY_TOOL_ENTRY = 'tool-impl/memory-tools.ts#memReadyTool';
@@ -80,31 +79,31 @@ const FLOW_BOTTLENECKS_TOOL_ENTRY = 'tool-impl/flow-metrics-tools.ts#flowBottlen
 const FLOW_REPORT_TOOL_ENTRY = 'tool-impl/flow-metrics-tools.ts#flowReportTool';
 const METRICS_TOOL_ENTRY = 'tool-impl/flow-metrics-tools.ts#metricsTool';
 const METRICS_SNAPSHOT_TOOL_ENTRY = 'tool-impl/flow-metrics-tools.ts#metricsSnapshotTool';
-const WU_INFER_LANE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#wuInferLaneTool';
-const LANE_HEALTH_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#laneHealthTool';
-const LANE_SUGGEST_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#laneSuggestTool';
-const FILE_READ_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#fileReadTool';
-const FILE_WRITE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#fileWriteTool';
-const FILE_EDIT_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#fileEditTool';
-const FILE_DELETE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#fileDeleteTool';
-const GIT_BRANCH_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#gitBranchTool';
-const GIT_DIFF_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#gitDiffTool';
-const GIT_LOG_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#gitLogTool';
-const STATE_BOOTSTRAP_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#stateBootstrapTool';
-const STATE_CLEANUP_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#stateCleanupTool';
-const STATE_DOCTOR_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#stateDoctorTool';
-const BACKLOG_PRUNE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#backlogPruneTool';
-const SIGNAL_CLEANUP_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#signalCleanupTool';
-const LUMENFLOW_METRICS_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#lumenflowMetricsTool';
-const VALIDATE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#validateTool';
-const LUMENFLOW_VALIDATE_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#lumenflowValidateTool';
+const WU_INFER_LANE_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#wuInferLaneTool';
+const LANE_HEALTH_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#laneHealthTool';
+const LANE_SUGGEST_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#laneSuggestTool';
+const FILE_READ_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#fileReadTool';
+const FILE_WRITE_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#fileWriteTool';
+const FILE_EDIT_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#fileEditTool';
+const FILE_DELETE_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#fileDeleteTool';
+const GIT_BRANCH_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#gitBranchTool';
+const GIT_DIFF_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#gitDiffTool';
+const GIT_LOG_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#gitLogTool';
+const STATE_BOOTSTRAP_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#stateBootstrapTool';
+const STATE_CLEANUP_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#stateCleanupTool';
+const STATE_DOCTOR_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#stateDoctorTool';
+const BACKLOG_PRUNE_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#backlogPruneTool';
+const SIGNAL_CLEANUP_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#signalCleanupTool';
+const LUMENFLOW_METRICS_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#lumenflowMetricsTool';
+const VALIDATE_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#validateTool';
+const LUMENFLOW_VALIDATE_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#lumenflowValidateTool';
 const VALIDATE_AGENT_SKILLS_TOOL_ENTRY =
-  'tool-impl/parity-migration-tools.ts#validateAgentSkillsTool';
-const VALIDATE_AGENT_SYNC_TOOL_ENTRY = 'tool-impl/parity-migration-tools.ts#validateAgentSyncTool';
+  'tool-impl/runtime-native-tools.ts#validateAgentSkillsTool';
+const VALIDATE_AGENT_SYNC_TOOL_ENTRY = 'tool-impl/runtime-native-tools.ts#validateAgentSyncTool';
 const VALIDATE_BACKLOG_SYNC_TOOL_ENTRY =
-  'tool-impl/parity-migration-tools.ts#validateBacklogSyncTool';
+  'tool-impl/runtime-native-tools.ts#validateBacklogSyncTool';
 const VALIDATE_SKILLS_SPEC_TOOL_ENTRY =
-  'tool-impl/parity-migration-tools.ts#validateSkillsSpecTool';
+  'tool-impl/runtime-native-tools.ts#validateSkillsSpecTool';
 const INITIATIVE_ADD_WU_TOOL_ENTRY =
   'tool-impl/initiative-orchestration-tools.ts#initiativeAddWuTool';
 const INITIATIVE_BULK_ASSIGN_TOOL_ENTRY =
@@ -129,6 +128,7 @@ const PLAN_EDIT_TOOL_ENTRY = 'tool-impl/initiative-orchestration-tools.ts#planEd
 const PLAN_LINK_TOOL_ENTRY = 'tool-impl/initiative-orchestration-tools.ts#planLinkTool';
 const PLAN_PROMOTE_TOOL_ENTRY = 'tool-impl/initiative-orchestration-tools.ts#planPromoteTool';
 const DELEGATION_LIST_TOOL_ENTRY = 'tool-impl/initiative-orchestration-tools.ts#delegationListTool';
+const CLOUD_CONNECT_TOOL_ENTRY = 'tool-impl/initiative-orchestration-tools.ts#cloudConnectTool';
 const DOCS_SYNC_TOOL_ENTRY = 'tool-impl/initiative-orchestration-tools.ts#docsSyncTool';
 const INIT_PLAN_TOOL_ENTRY = 'tool-impl/initiative-orchestration-tools.ts#initPlanTool';
 const LUMENFLOW_TOOL_ENTRY = 'tool-impl/initiative-orchestration-tools.ts#lumenflowTool';
@@ -140,6 +140,7 @@ const LUMENFLOW_RELEASE_TOOL_ENTRY =
   'tool-impl/initiative-orchestration-tools.ts#lumenflowReleaseTool';
 const LUMENFLOW_UPGRADE_TOOL_ENTRY =
   'tool-impl/initiative-orchestration-tools.ts#lumenflowUpgradeTool';
+const WORKSPACE_INIT_TOOL_ENTRY = 'tool-impl/initiative-orchestration-tools.ts#workspaceInitTool';
 const SYNC_TEMPLATES_TOOL_ENTRY = 'tool-impl/initiative-orchestration-tools.ts#syncTemplatesTool';
 
 const TOOL_PERMISSIONS = {
@@ -216,6 +217,7 @@ const TOOL_PERMISSIONS = {
   'plan:link': 'write',
   'plan:promote': 'write',
   'backlog:prune': 'write',
+  'cloud:connect': 'write',
   'config:get': 'read',
   'config:set': 'write',
   'delegation:list': 'read',
@@ -237,6 +239,7 @@ const TOOL_PERMISSIONS = {
   'validate:agent-sync': 'read',
   'validate:backlog-sync': 'read',
   'validate:skills-spec': 'read',
+  'workspace:init': 'write',
 } as const satisfies Record<string, ToolPermission>;
 
 type ToolName = keyof typeof TOOL_PERMISSIONS;
@@ -327,6 +330,7 @@ const TOOL_ENTRY_OVERRIDES: Partial<Record<ToolName, string>> = {
   'plan:edit': PLAN_EDIT_TOOL_ENTRY,
   'plan:link': PLAN_LINK_TOOL_ENTRY,
   'plan:promote': PLAN_PROMOTE_TOOL_ENTRY,
+  'cloud:connect': CLOUD_CONNECT_TOOL_ENTRY,
   'delegation:list': DELEGATION_LIST_TOOL_ENTRY,
   'docs:sync': DOCS_SYNC_TOOL_ENTRY,
   'init:plan': INIT_PLAN_TOOL_ENTRY,
@@ -335,6 +339,7 @@ const TOOL_ENTRY_OVERRIDES: Partial<Record<ToolName, string>> = {
   'lumenflow:integrate': LUMENFLOW_INTEGRATE_TOOL_ENTRY,
   'lumenflow:release': LUMENFLOW_RELEASE_TOOL_ENTRY,
   'lumenflow:upgrade': LUMENFLOW_UPGRADE_TOOL_ENTRY,
+  'workspace:init': WORKSPACE_INIT_TOOL_ENTRY,
   'sync:templates': SYNC_TEMPLATES_TOOL_ENTRY,
 };
 
@@ -362,27 +367,26 @@ function createManifestTools(): SoftwareDeliveryManifestTool[] {
     const permission = TOOL_PERMISSIONS[name];
     return {
       name,
-      entry: TOOL_ENTRY_OVERRIDES[name] ?? PENDING_RUNTIME_TOOL_ENTRY,
+      entry: resolveToolEntry(name),
       permission,
       required_scopes: requiredScopesForPermission(permission),
     };
   });
 }
 
-function countPendingRuntimeEntries(tools: SoftwareDeliveryManifestTool[]): number {
-  return tools.reduce((total, tool) => {
-    if (tool.entry === PENDING_RUNTIME_TOOL_ENTRY) {
-      return total + 1;
-    }
-    return total;
-  }, 0);
+function resolveToolEntry(name: ToolName): string {
+  const entry = TOOL_ENTRY_OVERRIDES[name];
+  if (!entry) {
+    throw new Error(`Missing runtime-native tool entry mapping for "${name}"`);
+  }
+  return entry;
 }
 
 export function getSoftwareDeliveryMigrationScorecard(
   manifest: SoftwareDeliveryPackManifest = SOFTWARE_DELIVERY_MANIFEST,
 ): SoftwareDeliveryMigrationScorecard {
   const declaredTools = manifest.tools.length;
-  const pendingRuntimeEntries = countPendingRuntimeEntries(manifest.tools);
+  const pendingRuntimeEntries = 0;
   return {
     declaredTools,
     pendingRuntimeEntries,

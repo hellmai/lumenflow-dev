@@ -335,7 +335,7 @@ function parseArguments() {
 /**
  * Main CLI entry point
  */
-async function main() {
+export async function main() {
   const args = parseArguments();
   const baseDir = process.cwd();
   const startedAt = new Date().toISOString();

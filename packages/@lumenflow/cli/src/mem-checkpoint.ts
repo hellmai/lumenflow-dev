@@ -274,7 +274,7 @@ function printMetadata(metadata: UnsafeAny) {
 /**
  * Main CLI entry point
  */
-async function main() {
+export async function main() {
   const { args, note } = parseArguments();
 
   if (!note) {

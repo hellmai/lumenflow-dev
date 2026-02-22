@@ -575,7 +575,7 @@ export async function executeRecoveryAction(
 /**
  * Main entry point
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = createWUParser({
     name: 'wu-recover',
     description: 'Analyze and fix WU state inconsistencies (WU-1090)',

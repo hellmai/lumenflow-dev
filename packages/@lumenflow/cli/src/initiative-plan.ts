@@ -306,7 +306,7 @@ export function getCommitMessage(initId: string, planUri: string): string {
   return `docs: link plan ${filename} to ${initId.toLowerCase()}`;
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = createWUParser({
     name: 'init-plan',
     description: 'Link a plan file to an initiative',

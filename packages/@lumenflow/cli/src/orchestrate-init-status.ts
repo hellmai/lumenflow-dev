@@ -26,6 +26,7 @@ import {
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { getConfig } from '@lumenflow/core/config';
 import chalk from 'chalk';
+import { runCLI } from './cli-entry-point.js';
 
 const LOG_PREFIX = '[orchestrate:init-status]';
 
@@ -152,7 +153,10 @@ const program = new Command()
     }
   });
 
-// WU-1181 parity: avoid top-level parse when imported in tests
+export async function main(): Promise<void> {
+  await program.parseAsync(process.argv);
+}
+
 if (import.meta.main) {
-  program.parse();
+  void runCLI(main);
 }

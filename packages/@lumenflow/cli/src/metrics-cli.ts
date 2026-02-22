@@ -552,7 +552,7 @@ async function writeOutput(
 /**
  * Main entry point
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const opts = parseCommand(process.argv);
 
   switch (opts.subcommand) {

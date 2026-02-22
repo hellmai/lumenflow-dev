@@ -116,7 +116,7 @@ function loadWuYaml(id: string): WUYamlDoc {
   }
 }
 
-async function main() {
+export async function main() {
   const args = parseArgs(process.argv);
 
   let codePaths = [];

@@ -5,10 +5,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import path from 'node:path';
 
 const spawnSyncMock = vi.hoisted(() => vi.fn());
+const runtimeRunMock = vi.hoisted(() => vi.fn());
 
-vi.mock('node:child_process', () => ({
-  spawnSync: spawnSyncMock,
-}));
+vi.mock('../tool-impl/runtime-cli-adapter.js', async () => {
+  const actual = await vi.importActual('../tool-impl/runtime-cli-adapter.js');
+  return {
+    ...actual,
+    runtimeCliAdapter: {
+      run: runtimeRunMock,
+    },
+  };
+});
 
 import {
   memCheckpointTool,
@@ -87,6 +94,22 @@ const MEM_RECOVER_SCRIPT_PATH = path.resolve(
 describe('memory tool adapters (WU-1896)', () => {
   beforeEach(() => {
     spawnSyncMock.mockReset();
+    runtimeRunMock.mockReset();
+    runtimeRunMock.mockImplementation(async (command: string, args: string[]) => {
+      const scriptPath = path.resolve(process.cwd(), `packages/@lumenflow/cli/dist/${command}.js`);
+      const result = spawnSyncMock(process.execPath, [scriptPath, ...args], {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+      });
+
+      return {
+        ok: result.status === 0 && !result.error,
+        status: result.status ?? 1,
+        stdout: result.stdout ?? '',
+        stderr: result.stderr ?? '',
+        executionError: result.error?.message,
+      };
+    });
   });
 
   it('maps mem:init arguments to CLI flags', async () => {

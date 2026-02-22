@@ -40,7 +40,7 @@ const WORKSPACE_INIT_COMMAND = 'pnpm workspace-init --yes';
 // Main: config:get
 // ---------------------------------------------------------------------------
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const userArgs = process.argv.slice(2);
   const options = parseConfigGetArgs(userArgs);
 

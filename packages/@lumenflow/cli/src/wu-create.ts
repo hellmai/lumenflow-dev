@@ -277,7 +277,7 @@ async function getDefaultAssignedTo() {
   }
 }
 
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'wu-create',
     description: 'Create a new Work Unit with micro-worktree isolation (race-safe)',

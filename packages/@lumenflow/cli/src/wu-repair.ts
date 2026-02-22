@@ -243,7 +243,7 @@ async function routeToRepairMode(options: UnsafeAny) {
   return runConsistencyRepairMode(options);
 }
 
-async function main() {
+export async function main() {
   const options = createProgram();
 
   validateOptions(options);

@@ -198,7 +198,7 @@ Examples:
  * Main entry point
  */
 /* istanbul ignore next -- CLI entry point tested via subprocess */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = parseGitDiffArgs(process.argv);
 
   if (args.help) {

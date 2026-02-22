@@ -387,7 +387,7 @@ export function setSoftwareDeliveryConfigInWorkspace(
 // Main: config:set
 // ---------------------------------------------------------------------------
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const userArgs = process.argv.slice(2);
   const options = parseConfigSetArgs(userArgs);
   const configKey = normalizeWorkspaceConfigKey(options.key);

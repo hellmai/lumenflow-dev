@@ -60,7 +60,7 @@ function detectWorktreePath(id: string): string | null {
 /**
  * Main entry point
  */
-async function main() {
+export async function main() {
   const PREFIX = LOG_PREFIX.PREFLIGHT;
 
   // WU-1180: Use createWUParser for proper Commander help output

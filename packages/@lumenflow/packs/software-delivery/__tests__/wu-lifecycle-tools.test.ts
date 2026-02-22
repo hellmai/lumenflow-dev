@@ -5,10 +5,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import path from 'node:path';
 
 const spawnSyncMock = vi.hoisted(() => vi.fn());
+const runtimeRunMock = vi.hoisted(() => vi.fn());
 
-vi.mock('node:child_process', () => ({
-  spawnSync: spawnSyncMock,
-}));
+vi.mock('../tool-impl/runtime-cli-adapter.js', async () => {
+  const actual = await vi.importActual('../tool-impl/runtime-cli-adapter.js');
+  return {
+    ...actual,
+    runtimeCliAdapter: {
+      run: runtimeRunMock,
+    },
+  };
+});
 
 import {
   gatesTool,
@@ -41,6 +48,50 @@ const WU_STATUS_SCRIPT_PATH = path.resolve(
 describe('wu lifecycle tool adapters (WU-1887)', () => {
   beforeEach(() => {
     spawnSyncMock.mockReset();
+    runtimeRunMock.mockReset();
+    runtimeRunMock.mockImplementation(async (command: string, args: string[]) => {
+      const cliEntryCommands = new Set([
+        'wu-claim',
+        'wu-prep',
+        'wu-done',
+        'wu-sandbox',
+        'wu-prune',
+        'wu-delete',
+        'wu-cleanup',
+        'wu-unlock-lane',
+        'wu-brief',
+        'wu-delegate',
+        'wu-deps',
+        'wu-edit',
+        'wu-proto',
+        'wu-validate',
+        'wu-block',
+        'wu-unblock',
+        'wu-release',
+        'wu-recover',
+        'wu-repair',
+        'gates',
+      ]);
+      const scriptPath = cliEntryCommands.has(command)
+        ? CLI_ENTRY_SCRIPT_PATH
+        : path.resolve(process.cwd(), `packages/@lumenflow/cli/dist/${command}.js`);
+      const nodeArgs = cliEntryCommands.has(command)
+        ? [scriptPath, command, ...args]
+        : [scriptPath, ...args];
+
+      const result = spawnSyncMock(process.execPath, nodeArgs, {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+      });
+
+      return {
+        ok: result.status === 0 && !result.error,
+        status: result.status ?? 1,
+        stdout: result.stdout ?? '',
+        stderr: result.stderr ?? '',
+        executionError: result.error?.message,
+      };
+    });
   });
 
   it('runs wu:status with --json and parses structured output', async () => {

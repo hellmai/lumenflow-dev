@@ -19,6 +19,7 @@ import { Command } from 'commander';
 import { logIncident, getCurrentSession } from '@lumenflow/agent';
 import { EXIT_CODES, INCIDENT_SEVERITY, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import chalk from 'chalk';
+import { runCLI } from './cli-entry-point.js';
 
 /**
  * WU-1182: Collector function for Commander.js repeatable options.
@@ -100,4 +101,10 @@ const program = new Command()
     }
   });
 
-program.parse();
+export async function main(): Promise<void> {
+  await program.parseAsync(process.argv);
+}
+
+if (import.meta.main) {
+  void runCLI(main);
+}

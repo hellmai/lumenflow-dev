@@ -276,7 +276,7 @@ function printUsageAndExit(): never {
 /**
  * Main CLI entry point
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const { args, nodeIds } = parseArguments();
   const baseDir = (args.baseDir as string) || process.cwd();
   const startedAt = new Date().toISOString();

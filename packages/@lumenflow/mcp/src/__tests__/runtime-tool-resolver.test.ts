@@ -122,32 +122,32 @@ const SETUP_COORDINATION_PLAN_TOOL_NAMES = {
   PLAN_PROMOTE: 'plan:promote',
 } as const;
 const WU_1890_REMAINING_MIGRATION_TOOL_ENTRIES = {
-  WU_INFER_LANE: 'tool-impl/parity-migration-tools.ts#wuInferLaneTool',
-  LANE_HEALTH: 'tool-impl/parity-migration-tools.ts#laneHealthTool',
-  LANE_SUGGEST: 'tool-impl/parity-migration-tools.ts#laneSuggestTool',
-  FILE_READ: 'tool-impl/parity-migration-tools.ts#fileReadTool',
-  FILE_WRITE: 'tool-impl/parity-migration-tools.ts#fileWriteTool',
-  FILE_EDIT: 'tool-impl/parity-migration-tools.ts#fileEditTool',
-  FILE_DELETE: 'tool-impl/parity-migration-tools.ts#fileDeleteTool',
-  GIT_BRANCH: 'tool-impl/parity-migration-tools.ts#gitBranchTool',
-  GIT_DIFF: 'tool-impl/parity-migration-tools.ts#gitDiffTool',
-  GIT_LOG: 'tool-impl/parity-migration-tools.ts#gitLogTool',
-  STATE_BOOTSTRAP: 'tool-impl/parity-migration-tools.ts#stateBootstrapTool',
-  STATE_CLEANUP: 'tool-impl/parity-migration-tools.ts#stateCleanupTool',
-  STATE_DOCTOR: 'tool-impl/parity-migration-tools.ts#stateDoctorTool',
-  BACKLOG_PRUNE: 'tool-impl/parity-migration-tools.ts#backlogPruneTool',
-  SIGNAL_CLEANUP: 'tool-impl/parity-migration-tools.ts#signalCleanupTool',
-  VALIDATE: 'tool-impl/parity-migration-tools.ts#validateTool',
-  LUMENFLOW_VALIDATE: 'tool-impl/parity-migration-tools.ts#lumenflowValidateTool',
-  VALIDATE_AGENT_SKILLS: 'tool-impl/parity-migration-tools.ts#validateAgentSkillsTool',
-  VALIDATE_AGENT_SYNC: 'tool-impl/parity-migration-tools.ts#validateAgentSyncTool',
-  VALIDATE_BACKLOG_SYNC: 'tool-impl/parity-migration-tools.ts#validateBacklogSyncTool',
-  VALIDATE_SKILLS_SPEC: 'tool-impl/parity-migration-tools.ts#validateSkillsSpecTool',
+  WU_INFER_LANE: 'tool-impl/runtime-native-tools.ts#wuInferLaneTool',
+  LANE_HEALTH: 'tool-impl/runtime-native-tools.ts#laneHealthTool',
+  LANE_SUGGEST: 'tool-impl/runtime-native-tools.ts#laneSuggestTool',
+  FILE_READ: 'tool-impl/runtime-native-tools.ts#fileReadTool',
+  FILE_WRITE: 'tool-impl/runtime-native-tools.ts#fileWriteTool',
+  FILE_EDIT: 'tool-impl/runtime-native-tools.ts#fileEditTool',
+  FILE_DELETE: 'tool-impl/runtime-native-tools.ts#fileDeleteTool',
+  GIT_BRANCH: 'tool-impl/runtime-native-tools.ts#gitBranchTool',
+  GIT_DIFF: 'tool-impl/runtime-native-tools.ts#gitDiffTool',
+  GIT_LOG: 'tool-impl/runtime-native-tools.ts#gitLogTool',
+  STATE_BOOTSTRAP: 'tool-impl/runtime-native-tools.ts#stateBootstrapTool',
+  STATE_CLEANUP: 'tool-impl/runtime-native-tools.ts#stateCleanupTool',
+  STATE_DOCTOR: 'tool-impl/runtime-native-tools.ts#stateDoctorTool',
+  BACKLOG_PRUNE: 'tool-impl/runtime-native-tools.ts#backlogPruneTool',
+  SIGNAL_CLEANUP: 'tool-impl/runtime-native-tools.ts#signalCleanupTool',
+  VALIDATE: 'tool-impl/runtime-native-tools.ts#validateTool',
+  LUMENFLOW_VALIDATE: 'tool-impl/runtime-native-tools.ts#lumenflowValidateTool',
+  VALIDATE_AGENT_SKILLS: 'tool-impl/runtime-native-tools.ts#validateAgentSkillsTool',
+  VALIDATE_AGENT_SYNC: 'tool-impl/runtime-native-tools.ts#validateAgentSyncTool',
+  VALIDATE_BACKLOG_SYNC: 'tool-impl/runtime-native-tools.ts#validateBacklogSyncTool',
+  VALIDATE_SKILLS_SPEC: 'tool-impl/runtime-native-tools.ts#validateSkillsSpecTool',
 } as const;
 
 function createResolverInput(
   toolName: string,
-  entry = 'tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool',
+  entry = 'tool-impl/runtime-native-tools.ts#unknownTool',
 ): RuntimeToolCapabilityResolverInput {
   return {
     workspaceSpec: {
@@ -686,7 +686,7 @@ describe('packToolCapabilityResolver', () => {
     expect(isInProcessPackToolRegistered(input.tool.name)).toBe(false);
     expect(capability?.handler.kind).toBe(TOOL_HANDLER_KINDS.SUBPROCESS);
     if (capability?.handler.kind === TOOL_HANDLER_KINDS.SUBPROCESS) {
-      expect(capability.handler.entry).toContain('tool-impl/pending-runtime-tools.ts');
+      expect(capability.handler.entry).toContain('tool-impl/runtime-native-tools.ts');
     }
   });
 

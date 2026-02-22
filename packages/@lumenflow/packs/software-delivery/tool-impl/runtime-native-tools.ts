@@ -1,12 +1,10 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import type { ToolOutput } from '@lumenflow/kernel';
-import { UTF8_ENCODING } from '../constants.js';
+import { RUNTIME_CLI_COMMANDS, runtimeCliAdapter } from './runtime-cli-adapter.js';
 
-const PARITY_MIGRATION_TOOLS = {
+const RUNTIME_NATIVE_TOOLS = {
   WU_INFER_LANE: 'wu:infer-lane',
   CONFIG_SET: 'config:set',
   CONFIG_GET: 'config:get',
@@ -33,9 +31,9 @@ const PARITY_MIGRATION_TOOLS = {
   LUMENFLOW_VALIDATE: 'lumenflow:validate',
 } as const;
 
-type ParityMigrationToolName = (typeof PARITY_MIGRATION_TOOLS)[keyof typeof PARITY_MIGRATION_TOOLS];
+type RuntimeNativeToolName = (typeof RUNTIME_NATIVE_TOOLS)[keyof typeof RUNTIME_NATIVE_TOOLS];
 
-const PARITY_MIGRATION_TOOL_ERROR_CODES: Record<ParityMigrationToolName, string> = {
+const RUNTIME_NATIVE_TOOL_ERROR_CODES: Record<RuntimeNativeToolName, string> = {
   'wu:infer-lane': 'WU_INFER_LANE_ERROR',
   'config:set': 'CONFIG_SET_ERROR',
   'config:get': 'CONFIG_GET_ERROR',
@@ -62,31 +60,34 @@ const PARITY_MIGRATION_TOOL_ERROR_CODES: Record<ParityMigrationToolName, string>
   'lumenflow:validate': 'LUMENFLOW_VALIDATE_ERROR',
 };
 
-const PARITY_MIGRATION_TOOL_SCRIPT_PATHS: Record<ParityMigrationToolName, string> = {
-  'wu:infer-lane': 'packages/@lumenflow/cli/dist/wu-infer-lane.js',
-  'config:set': 'packages/@lumenflow/cli/dist/config-set.js',
-  'config:get': 'packages/@lumenflow/cli/dist/config-get.js',
-  'lane:health': 'packages/@lumenflow/cli/dist/lane-health.js',
-  'lane:suggest': 'packages/@lumenflow/cli/dist/lane-suggest.js',
-  'file:read': 'packages/@lumenflow/cli/dist/file-read.js',
-  'file:write': 'packages/@lumenflow/cli/dist/file-write.js',
-  'file:edit': 'packages/@lumenflow/cli/dist/file-edit.js',
-  'file:delete': 'packages/@lumenflow/cli/dist/file-delete.js',
-  'git:branch': 'packages/@lumenflow/cli/dist/git-branch.js',
-  'git:diff': 'packages/@lumenflow/cli/dist/git-diff.js',
-  'git:log': 'packages/@lumenflow/cli/dist/git-log.js',
-  'state:bootstrap': 'packages/@lumenflow/cli/dist/state-bootstrap.js',
-  'state:cleanup': 'packages/@lumenflow/cli/dist/state-cleanup.js',
-  'state:doctor': 'packages/@lumenflow/cli/dist/state-doctor.js',
-  'backlog:prune': 'packages/@lumenflow/cli/dist/backlog-prune.js',
-  'signal:cleanup': 'packages/@lumenflow/cli/dist/signal-cleanup.js',
-  'lumenflow:metrics': 'packages/@lumenflow/cli/dist/metrics-cli.js',
-  validate: 'packages/@lumenflow/cli/dist/validate.js',
-  'validate:agent-skills': 'packages/@lumenflow/cli/dist/validate-agent-skills.js',
-  'validate:agent-sync': 'packages/@lumenflow/cli/dist/validate-agent-sync.js',
-  'validate:backlog-sync': 'packages/@lumenflow/cli/dist/validate-backlog-sync.js',
-  'validate:skills-spec': 'packages/@lumenflow/cli/dist/validate-skills-spec.js',
-  'lumenflow:validate': 'packages/@lumenflow/cli/dist/validate.js',
+const RUNTIME_NATIVE_TOOL_COMMANDS: Record<
+  RuntimeNativeToolName,
+  (typeof RUNTIME_CLI_COMMANDS)[keyof typeof RUNTIME_CLI_COMMANDS]
+> = {
+  'wu:infer-lane': RUNTIME_CLI_COMMANDS.WU_INFER_LANE,
+  'config:set': RUNTIME_CLI_COMMANDS.CONFIG_SET,
+  'config:get': RUNTIME_CLI_COMMANDS.CONFIG_GET,
+  'lane:health': RUNTIME_CLI_COMMANDS.LANE_HEALTH,
+  'lane:suggest': RUNTIME_CLI_COMMANDS.LANE_SUGGEST,
+  'file:read': RUNTIME_CLI_COMMANDS.FILE_READ,
+  'file:write': RUNTIME_CLI_COMMANDS.FILE_WRITE,
+  'file:edit': RUNTIME_CLI_COMMANDS.FILE_EDIT,
+  'file:delete': RUNTIME_CLI_COMMANDS.FILE_DELETE,
+  'git:branch': RUNTIME_CLI_COMMANDS.GIT_BRANCH,
+  'git:diff': RUNTIME_CLI_COMMANDS.GIT_DIFF,
+  'git:log': RUNTIME_CLI_COMMANDS.GIT_LOG,
+  'state:bootstrap': RUNTIME_CLI_COMMANDS.STATE_BOOTSTRAP,
+  'state:cleanup': RUNTIME_CLI_COMMANDS.STATE_CLEANUP,
+  'state:doctor': RUNTIME_CLI_COMMANDS.STATE_DOCTOR,
+  'backlog:prune': RUNTIME_CLI_COMMANDS.BACKLOG_PRUNE,
+  'signal:cleanup': RUNTIME_CLI_COMMANDS.SIGNAL_CLEANUP,
+  'lumenflow:metrics': RUNTIME_CLI_COMMANDS.METRICS,
+  validate: RUNTIME_CLI_COMMANDS.VALIDATE,
+  'validate:agent-skills': RUNTIME_CLI_COMMANDS.VALIDATE_AGENT_SKILLS,
+  'validate:agent-sync': RUNTIME_CLI_COMMANDS.VALIDATE_AGENT_SYNC,
+  'validate:backlog-sync': RUNTIME_CLI_COMMANDS.VALIDATE_BACKLOG_SYNC,
+  'validate:skills-spec': RUNTIME_CLI_COMMANDS.VALIDATE_SKILLS_SPEC,
+  'lumenflow:validate': RUNTIME_CLI_COMMANDS.VALIDATE,
 };
 
 const FLAG_NAMES = {
@@ -158,7 +159,7 @@ const MISSING_PARAMETER_MESSAGES = {
   VALUE_REQUIRED: 'value is required',
 } as const;
 
-const CORE_PARITY_ERROR_CODES = {
+const CORE_RUNTIME_ERROR_CODES = {
   CONTEXT_GET: 'CONTEXT_ERROR',
   WU_LIST: 'WU_LIST_ERROR',
 } as const;
@@ -168,7 +169,7 @@ interface CommandExecutionResult {
   status: number;
   stdout: string;
   stderr: string;
-  spawnError?: string;
+  executionError?: string;
 }
 
 function toRecord(input: unknown): Record<string, unknown> {
@@ -180,7 +181,7 @@ function toRecord(input: unknown): Record<string, unknown> {
 
 interface CoreModuleLike {
   computeWuContext: (options: { cwd: string }) => Promise<unknown>;
-  listWUs: (options: ListWUsOptions) => Promise<unknown>;
+  listWUs: (options: Record<string, unknown>) => Promise<unknown>;
 }
 
 const CORE_MODULE_ID = '@lumenflow/core';
@@ -244,24 +245,11 @@ function appendValueIfPresent(
   }
 }
 
-function runParityMigrationCommand(
-  toolName: ParityMigrationToolName,
+async function runRuntimeNativeCommand(
+  toolName: RuntimeNativeToolName,
   args: string[],
-): CommandExecutionResult {
-  const scriptPath = PARITY_MIGRATION_TOOL_SCRIPT_PATHS[toolName];
-  const absoluteScriptPath = path.resolve(process.cwd(), scriptPath);
-  const result = spawnSync(process.execPath, [absoluteScriptPath, ...args], {
-    cwd: process.cwd(),
-    encoding: UTF8_ENCODING,
-  });
-
-  return {
-    ok: result.status === 0 && !result.error,
-    status: result.status ?? 1,
-    stdout: result.stdout ?? '',
-    stderr: result.stderr ?? '',
-    spawnError: result.error?.message,
-  };
+): Promise<CommandExecutionResult> {
+  return runtimeCliAdapter.run(RUNTIME_NATIVE_TOOL_COMMANDS[toolName], args);
 }
 
 function createMissingParameterOutput(message: string): ToolOutput {
@@ -275,13 +263,13 @@ function createMissingParameterOutput(message: string): ToolOutput {
 }
 
 function createFailureOutput(
-  toolName: ParityMigrationToolName,
+  toolName: RuntimeNativeToolName,
   execution: CommandExecutionResult,
 ): ToolOutput {
   const stderrMessage = execution.stderr.trim();
   const stdoutMessage = execution.stdout.trim();
   const message =
-    execution.spawnError ??
+    execution.executionError ??
     (stderrMessage.length > 0
       ? stderrMessage
       : stdoutMessage.length > 0
@@ -291,7 +279,7 @@ function createFailureOutput(
   return {
     success: false,
     error: {
-      code: PARITY_MIGRATION_TOOL_ERROR_CODES[toolName],
+      code: RUNTIME_NATIVE_TOOL_ERROR_CODES[toolName],
       message,
       details: {
         exit_code: execution.status,
@@ -303,7 +291,7 @@ function createFailureOutput(
 }
 
 function createSuccessOutput(
-  toolName: ParityMigrationToolName,
+  toolName: RuntimeNativeToolName,
   execution: CommandExecutionResult,
 ): ToolOutput {
   const message = execution.stdout.trim().length > 0 ? execution.stdout.trim() : `${toolName} ran`;
@@ -325,8 +313,11 @@ function createCoreFailureOutput(code: string, error: unknown): ToolOutput {
   };
 }
 
-function executeParityMigrationTool(toolName: ParityMigrationToolName, args: string[]): ToolOutput {
-  const execution = runParityMigrationCommand(toolName, args);
+async function executeRuntimeNativeTool(
+  toolName: RuntimeNativeToolName,
+  args: string[],
+): Promise<ToolOutput> {
+  const execution = await runRuntimeNativeCommand(toolName, args);
   if (!execution.ok) {
     return createFailureOutput(toolName, execution);
   }
@@ -343,7 +334,7 @@ export async function wuInferLaneTool(input: unknown): Promise<ToolOutput> {
   }
   appendValueIfPresent(args, FLAG_NAMES.DESC, parsed.desc);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.WU_INFER_LANE, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.WU_INFER_LANE, args);
 }
 
 export async function wuListTool(input: unknown): Promise<ToolOutput> {
@@ -365,7 +356,7 @@ export async function wuListTool(input: unknown): Promise<ToolOutput> {
       data: wus,
     };
   } catch (error) {
-    return createCoreFailureOutput(CORE_PARITY_ERROR_CODES.WU_LIST, error);
+    return createCoreFailureOutput(CORE_RUNTIME_ERROR_CODES.WU_LIST, error);
   }
 }
 
@@ -378,7 +369,7 @@ export async function contextGetTool(_input: unknown): Promise<ToolOutput> {
       data: context,
     };
   } catch (error) {
-    return createCoreFailureOutput(CORE_PARITY_ERROR_CODES.CONTEXT_GET, error);
+    return createCoreFailureOutput(CORE_RUNTIME_ERROR_CODES.CONTEXT_GET, error);
   }
 }
 
@@ -395,7 +386,7 @@ export async function configSetTool(input: unknown): Promise<ToolOutput> {
   const valueString = String(parsed.value);
   const args: string[] = [FLAG_NAMES.KEY, keyValue, FLAG_NAMES.VALUE, valueString];
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.CONFIG_SET, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.CONFIG_SET, args);
 }
 
 export async function configGetTool(input: unknown): Promise<ToolOutput> {
@@ -407,7 +398,7 @@ export async function configGetTool(input: unknown): Promise<ToolOutput> {
 
   const args: string[] = [FLAG_NAMES.KEY, keyValue];
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.CONFIG_GET, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.CONFIG_GET, args);
 }
 
 export async function laneHealthTool(input: unknown): Promise<ToolOutput> {
@@ -418,7 +409,7 @@ export async function laneHealthTool(input: unknown): Promise<ToolOutput> {
   appendFlagIfTrue(args, parsed.verbose, FLAG_NAMES.VERBOSE);
   appendFlagIfTrue(args, parsed.no_coverage, FLAG_NAMES.NO_COVERAGE);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.LANE_HEALTH, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.LANE_HEALTH, args);
 }
 
 export async function laneSuggestTool(input: unknown): Promise<ToolOutput> {
@@ -432,7 +423,7 @@ export async function laneSuggestTool(input: unknown): Promise<ToolOutput> {
   appendFlagIfTrue(args, parsed.no_llm, FLAG_NAMES.NO_LLM);
   appendFlagIfTrue(args, parsed.include_git, FLAG_NAMES.INCLUDE_GIT);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.LANE_SUGGEST, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.LANE_SUGGEST, args);
 }
 
 export async function fileReadTool(input: unknown): Promise<ToolOutput> {
@@ -448,7 +439,7 @@ export async function fileReadTool(input: unknown): Promise<ToolOutput> {
   appendValueIfPresent(args, '--end-line', parsed.end_line, toIntegerString);
   appendValueIfPresent(args, FLAG_NAMES.MAX_SIZE, parsed.max_size, toIntegerString);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.FILE_READ, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.FILE_READ, args);
 }
 
 export async function fileWriteTool(input: unknown): Promise<ToolOutput> {
@@ -466,7 +457,7 @@ export async function fileWriteTool(input: unknown): Promise<ToolOutput> {
   appendValueIfPresent(args, FLAG_NAMES.ENCODING, parsed.encoding);
   appendFlagIfTrue(args, parsed.no_create_dirs, FLAG_NAMES.NO_CREATE_DIRS);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.FILE_WRITE, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.FILE_WRITE, args);
 }
 
 export async function fileEditTool(input: unknown): Promise<ToolOutput> {
@@ -495,7 +486,7 @@ export async function fileEditTool(input: unknown): Promise<ToolOutput> {
   appendValueIfPresent(args, FLAG_NAMES.ENCODING, parsed.encoding);
   appendFlagIfTrue(args, parsed.replace_all, FLAG_NAMES.REPLACE_ALL);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.FILE_EDIT, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.FILE_EDIT, args);
 }
 
 export async function fileDeleteTool(input: unknown): Promise<ToolOutput> {
@@ -509,7 +500,7 @@ export async function fileDeleteTool(input: unknown): Promise<ToolOutput> {
   appendFlagIfTrue(args, parsed.recursive, FLAG_NAMES.RECURSIVE);
   appendFlagIfTrue(args, parsed.force, FLAG_NAMES.FORCE);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.FILE_DELETE, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.FILE_DELETE, args);
 }
 
 export async function gitBranchTool(input: unknown): Promise<ToolOutput> {
@@ -523,7 +514,7 @@ export async function gitBranchTool(input: unknown): Promise<ToolOutput> {
   appendFlagIfTrue(args, parsed.show_current, FLAG_NAMES.SHOW_CURRENT);
   appendValueIfPresent(args, FLAG_NAMES.CONTAINS, parsed.contains);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.GIT_BRANCH, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.GIT_BRANCH, args);
 }
 
 export async function gitDiffTool(input: unknown): Promise<ToolOutput> {
@@ -543,7 +534,7 @@ export async function gitDiffTool(input: unknown): Promise<ToolOutput> {
     args.push('--', pathValue);
   }
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.GIT_DIFF, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.GIT_DIFF, args);
 }
 
 export async function gitLogTool(input: unknown): Promise<ToolOutput> {
@@ -561,7 +552,7 @@ export async function gitLogTool(input: unknown): Promise<ToolOutput> {
     args.push(refValue);
   }
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.GIT_LOG, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.GIT_LOG, args);
 }
 
 export async function stateBootstrapTool(input: unknown): Promise<ToolOutput> {
@@ -574,7 +565,7 @@ export async function stateBootstrapTool(input: unknown): Promise<ToolOutput> {
   appendValueIfPresent(args, FLAG_NAMES.WU_DIR, parsed.wu_dir);
   appendValueIfPresent(args, FLAG_NAMES.STATE_DIR, parsed.state_dir);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.STATE_BOOTSTRAP, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.STATE_BOOTSTRAP, args);
 }
 
 export async function stateCleanupTool(input: unknown): Promise<ToolOutput> {
@@ -589,7 +580,7 @@ export async function stateCleanupTool(input: unknown): Promise<ToolOutput> {
   appendFlagIfTrue(args, parsed.quiet, FLAG_NAMES.QUIET);
   appendValueIfPresent(args, FLAG_NAMES.BASE_DIR, parsed.base_dir);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.STATE_CLEANUP, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.STATE_CLEANUP, args);
 }
 
 export async function stateDoctorTool(input: unknown): Promise<ToolOutput> {
@@ -602,7 +593,7 @@ export async function stateDoctorTool(input: unknown): Promise<ToolOutput> {
   appendFlagIfTrue(args, parsed.quiet, FLAG_NAMES.QUIET);
   appendValueIfPresent(args, FLAG_NAMES.BASE_DIR, parsed.base_dir);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.STATE_DOCTOR, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.STATE_DOCTOR, args);
 }
 
 export async function backlogPruneTool(input: unknown): Promise<ToolOutput> {
@@ -620,7 +611,7 @@ export async function backlogPruneTool(input: unknown): Promise<ToolOutput> {
   appendValueIfPresent(args, FLAG_NAMES.STALE_DAYS_READY, parsed.stale_days_ready, toIntegerString);
   appendValueIfPresent(args, FLAG_NAMES.ARCHIVE_DAYS, parsed.archive_days, toIntegerString);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.BACKLOG_PRUNE, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.BACKLOG_PRUNE, args);
 }
 
 export async function signalCleanupTool(input: unknown): Promise<ToolOutput> {
@@ -635,7 +626,7 @@ export async function signalCleanupTool(input: unknown): Promise<ToolOutput> {
   appendFlagIfTrue(args, parsed.quiet, FLAG_NAMES.QUIET);
   appendValueIfPresent(args, FLAG_NAMES.BASE_DIR, parsed.base_dir);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.SIGNAL_CLEANUP, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.SIGNAL_CLEANUP, args);
 }
 
 export async function lumenflowMetricsTool(input: unknown): Promise<ToolOutput> {
@@ -649,7 +640,7 @@ export async function lumenflowMetricsTool(input: unknown): Promise<ToolOutput> 
   appendValueIfPresent(args, FLAG_NAMES.DAYS, parsed.days, toIntegerString);
   appendValueIfPresent(args, FLAG_NAMES.FORMAT, parsed.format);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.LUMENFLOW_METRICS, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.LUMENFLOW_METRICS, args);
 }
 
 export async function validateTool(input: unknown): Promise<ToolOutput> {
@@ -660,7 +651,7 @@ export async function validateTool(input: unknown): Promise<ToolOutput> {
   appendFlagIfTrue(args, parsed.strict, FLAG_NAMES.STRICT);
   appendFlagIfTrue(args, parsed.done_only, FLAG_NAMES.DONE_ONLY);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.VALIDATE, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.VALIDATE, args);
 }
 
 export async function validateAgentSkillsTool(input: unknown): Promise<ToolOutput> {
@@ -669,19 +660,19 @@ export async function validateAgentSkillsTool(input: unknown): Promise<ToolOutpu
 
   appendValueIfPresent(args, FLAG_NAMES.SKILL, parsed.skill);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.VALIDATE_AGENT_SKILLS, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.VALIDATE_AGENT_SKILLS, args);
 }
 
 export async function validateAgentSyncTool(_input: unknown): Promise<ToolOutput> {
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.VALIDATE_AGENT_SYNC, []);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.VALIDATE_AGENT_SYNC, []);
 }
 
 export async function validateBacklogSyncTool(_input: unknown): Promise<ToolOutput> {
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.VALIDATE_BACKLOG_SYNC, []);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.VALIDATE_BACKLOG_SYNC, []);
 }
 
 export async function validateSkillsSpecTool(_input: unknown): Promise<ToolOutput> {
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.VALIDATE_SKILLS_SPEC, []);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.VALIDATE_SKILLS_SPEC, []);
 }
 
 export async function lumenflowValidateTool(input: unknown): Promise<ToolOutput> {
@@ -692,5 +683,5 @@ export async function lumenflowValidateTool(input: unknown): Promise<ToolOutput>
   appendFlagIfTrue(args, parsed.strict, FLAG_NAMES.STRICT);
   appendFlagIfTrue(args, parsed.done_only, FLAG_NAMES.DONE_ONLY);
 
-  return executeParityMigrationTool(PARITY_MIGRATION_TOOLS.LUMENFLOW_VALIDATE, args);
+  return executeRuntimeNativeTool(RUNTIME_NATIVE_TOOLS.LUMENFLOW_VALIDATE, args);
 }

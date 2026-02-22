@@ -6,15 +6,11 @@
  * @description Software-delivery pack handlers for flow/metrics tools.
  *
  * WU-1905: Migrated from in-process resolver stubs in runtime-tool-resolver.ts
- * to native software-delivery pack handlers. These handlers delegate to CLI
- * dist scripts via spawnSync, following the pattern established in
- * wu-lifecycle-tools.ts (WU-1887).
+ * to native software-delivery pack handlers.
  */
 
-import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import type { ToolOutput } from '@lumenflow/kernel';
-import { UTF8_ENCODING } from '../constants.js';
+import { RUNTIME_CLI_COMMANDS, runtimeCliAdapter } from './runtime-cli-adapter.js';
 
 // --- Tool name constants ---
 
@@ -36,13 +32,14 @@ const FLOW_METRICS_TOOL_ERROR_CODES: Record<FlowMetricsToolName, string> = {
   'metrics:snapshot': 'METRICS_SNAPSHOT_ERROR',
 };
 
-// --- CLI dist script paths ---
-
-const FLOW_METRICS_TOOL_SCRIPT_PATHS: Record<FlowMetricsToolName, string> = {
-  'flow:bottlenecks': 'packages/@lumenflow/cli/dist/flow-bottlenecks.js',
-  'flow:report': 'packages/@lumenflow/cli/dist/flow-report.js',
-  metrics: 'packages/@lumenflow/cli/dist/metrics-cli.js',
-  'metrics:snapshot': 'packages/@lumenflow/cli/dist/metrics-snapshot.js',
+const FLOW_METRICS_TOOL_COMMANDS: Record<
+  FlowMetricsToolName,
+  (typeof RUNTIME_CLI_COMMANDS)[keyof typeof RUNTIME_CLI_COMMANDS]
+> = {
+  'flow:bottlenecks': RUNTIME_CLI_COMMANDS.FLOW_BOTTLENECKS,
+  'flow:report': RUNTIME_CLI_COMMANDS.FLOW_REPORT,
+  metrics: RUNTIME_CLI_COMMANDS.METRICS,
+  'metrics:snapshot': RUNTIME_CLI_COMMANDS.METRICS_SNAPSHOT,
 };
 
 // --- Input helpers ---
@@ -76,28 +73,14 @@ interface CommandExecutionResult {
   status: number;
   stdout: string;
   stderr: string;
-  spawnError?: string;
+  executionError?: string;
 }
 
-function runFlowMetricsCommand(
+async function runFlowMetricsCommand(
   toolName: FlowMetricsToolName,
   args: string[],
-): CommandExecutionResult {
-  const scriptPath = FLOW_METRICS_TOOL_SCRIPT_PATHS[toolName];
-  const absoluteScriptPath = path.resolve(process.cwd(), scriptPath);
-
-  const result = spawnSync(process.execPath, [absoluteScriptPath, ...args], {
-    cwd: process.cwd(),
-    encoding: UTF8_ENCODING,
-  });
-
-  return {
-    ok: result.status === 0 && !result.error,
-    status: result.status ?? 1,
-    stdout: result.stdout ?? '',
-    stderr: result.stderr ?? '',
-    spawnError: result.error?.message,
-  };
+): Promise<CommandExecutionResult> {
+  return runtimeCliAdapter.run(FLOW_METRICS_TOOL_COMMANDS[toolName], args);
 }
 
 function createFailureOutput(
@@ -107,7 +90,7 @@ function createFailureOutput(
   const stderrMessage = execution.stderr.trim();
   const stdoutMessage = execution.stdout.trim();
   const message =
-    execution.spawnError ??
+    execution.executionError ??
     (stderrMessage.length > 0
       ? stderrMessage
       : stdoutMessage.length > 0
@@ -140,8 +123,11 @@ function createSuccessOutput(
   };
 }
 
-function executeFlowMetricsTool(toolName: FlowMetricsToolName, args: string[]): ToolOutput {
-  const execution = runFlowMetricsCommand(toolName, args);
+async function executeFlowMetricsTool(
+  toolName: FlowMetricsToolName,
+  args: string[],
+): Promise<ToolOutput> {
+  const execution = await runFlowMetricsCommand(toolName, args);
   if (!execution.ok) {
     return createFailureOutput(toolName, execution);
   }

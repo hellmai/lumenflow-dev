@@ -240,7 +240,7 @@ function hasStampFile(wuId: string) {
   return existsSync(stampPath);
 }
 
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'wu-cleanup',
     description: 'Clean up worktree and branch after PR merge (PR-based completion workflow)',
