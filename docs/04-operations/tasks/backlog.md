@@ -29,7 +29,6 @@ sections:
 - [WU-2046 — Fix pre-existing wu-spawn.test.ts failures](wu/WU-2046.yaml) — Framework: CLI WU Commands
 - [WU-2049 — INIT-034 follow-up: consolidate duplicates and fix naming collisions](wu/WU-2049.yaml) — Framework: Core Lifecycle
 - [WU-2050 — Bundled pack resolution for end-user bootstrap](wu/WU-2050.yaml) — Framework: Core Lifecycle
-- [WU-2051 — Extract scm-tools reference domain pack](wu/WU-2051.yaml) — Framework: Core Lifecycle
 - [WU-2052 — Delete stub packs and add manifest examples to docs](wu/WU-2052.yaml) — Framework: Core Lifecycle
 - [WU-2053 — Pack architecture documentation](wu/WU-2053.yaml) — Content: Framework Docs
 
