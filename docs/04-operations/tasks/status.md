@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2034 — Complete kernel-first hard cut from legacy config references](wu/WU-2034.yaml)
 
 ## Completed
 

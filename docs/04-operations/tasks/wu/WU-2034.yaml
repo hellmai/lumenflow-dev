@@ -2,7 +2,7 @@ id: WU-2034
 title: Complete kernel-first hard cut from legacy config references
 lane: 'Framework: Core Lifecycle'
 type: tooling
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -41,3 +41,11 @@ acceptance:
   - User-facing guidance in touched CLI templates references workspace.yaml/software_delivery, not
     legacy config
   - Targeted regression tests for migrated modules pass
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2034
+claimed_at: 2026-02-22T12:47:21.160Z
+baseline_main_sha: 597cc63967b57e46e6f39850ba94798eb7a4928b
+session_id: c41ee778-699c-4a79-ae56-e761186b8375
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T12:47:21.166Z

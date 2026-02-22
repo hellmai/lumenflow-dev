@@ -37,11 +37,10 @@ sections:
 - [WU-2019 — Replace work-classifier domain switch with data map](wu/WU-2019.yaml) — Framework: Core Lifecycle
 - [WU-2020 — Inject WUStateStore via interfaces and replace getConfig() calls](wu/WU-2020.yaml) — Framework: Core Lifecycle
 - [WU-2021 — Filter deleted files from incremental format check input](wu/WU-2021.yaml) — Framework: Core Validation
-- [WU-2034 — Complete kernel-first hard cut from legacy config references](wu/WU-2034.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2034 — Complete kernel-first hard cut from legacy config references](wu/WU-2034.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
