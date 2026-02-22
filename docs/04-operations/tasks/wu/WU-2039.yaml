@@ -11,7 +11,9 @@ code_paths:
   - packages/@lumenflow/core/src/config-contract.ts
   - actions/lumenflow-gates/src/index.ts
 tests:
-  manual: []
+  manual:
+    - Run rg over touched runtime files to verify no duplicated workspace key/file-name literals
+      remain and numeric defaults are named constants.
   unit:
     - packages/@lumenflow/core/src/__tests__/gates-config.test.ts
     - packages/@lumenflow/core/src/__tests__/path-centralization.test.ts
@@ -30,9 +32,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: kernel-first hard cut landed, but config readers still carry scattered literal keys/type checks/default values in active runtime surfaces. Problem: this increases drift risk and violates DRY/no-magic guidance. Solution: centralize remaining config literals and numeric defaults in shared constants/helpers for core config and gates readers, then verify with tests and gates.'
+description: 'Context: kernel-first hard cut landed, but config readers still carry scattered
+  literal keys/type checks/default values in active runtime surfaces. Problem: this increases drift
+  risk and violates DRY/no-magic guidance. Solution: centralize remaining config literals and
+  numeric defaults in shared constants/helpers for core config and gates readers, then verify with
+  tests and gates.'
 acceptance:
-  - No direct workspace config key/file-name string literals remain in touched runtime files; use shared constants/helpers.
-  - No magic numeric defaults remain in touched runtime files; replace with named constants sourced from schema/policy defaults where possible.
+  - No direct workspace config key/file-name string literals remain in touched runtime files; use
+    shared constants/helpers.
+  - No magic numeric defaults remain in touched runtime files; replace with named constants sourced
+    from schema/policy defaults where possible.
   - Core tests cover updated helper/constant behavior and pass.
   - Gates pass for touched packages before completion.
