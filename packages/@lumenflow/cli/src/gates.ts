@@ -108,6 +108,7 @@ import {
   runSafetyCriticalTests,
   runIntegrationTests,
   runSpecLinterGate,
+  runClaimValidationGate,
   runBacklogSyncGate,
   runSupabaseDocsGate,
   runLaneHealthGate,
@@ -373,6 +374,7 @@ async function executeGates(opts: {
   const gateRunFunctions: Record<string, GateDefinition['run']> = {
     [GATE_NAMES.FORMAT_CHECK]: runFormatCheckGate,
     [GATE_NAMES.SPEC_LINTER]: runSpecLinterGate,
+    [GATE_NAMES.CLAIM_VALIDATION]: runClaimValidationGate,
     [GATE_NAMES.BACKLOG_SYNC]: runBacklogSyncGate,
     [GATE_NAMES.SUPABASE_DOCS_LINTER]: runSupabaseDocsGate,
     [GATE_NAMES.LANE_HEALTH]: (ctx: GateLogContext) =>

@@ -20,6 +20,7 @@ import { createGitForPath } from '@lumenflow/core/git-adapter';
 import { resolveGatesCommands, resolveTestRunner } from '@lumenflow/core/gates-config';
 import type { LaneHealthMode } from '@lumenflow/core/gates-config';
 import { validateBacklogSync } from '@lumenflow/core/validators/backlog-sync';
+import { validateClaimValidation } from '@lumenflow/core/validators/claim-validation';
 import { runSupabaseDocsLinter } from '@lumenflow/core/validators/supabase-docs-linter';
 import {
   BRANCHES,
@@ -568,6 +569,55 @@ export async function runSpecLinterGate({ agentLog, useAgentMode, cwd }: GateLog
 
   const fallbackResult = run(pnpmRun(SCRIPTS.SPEC_LINTER), { agentLog, cwd });
   return { ok: fallbackResult.ok, duration: Date.now() - start };
+}
+
+// ── Claim validation gate ───────────────────────────────────────────────
+
+export async function runClaimValidationGate({ agentLog, useAgentMode, cwd }: GateLogContext) {
+  const start = Date.now();
+  const effectiveCwd = cwd ?? process.cwd();
+  const logLine = makeGateLogger({ agentLog, useAgentMode });
+  logLine('\n> Claim validation\n');
+
+  const wuId = await detectCurrentWUForCwd(effectiveCwd);
+  if (!wuId) {
+    logLine('\u26A0\uFE0F  Unable to detect current WU; skipping claim validation.');
+    return { ok: true, duration: Date.now() - start };
+  }
+
+  const result = await validateClaimValidation({ cwd: effectiveCwd, wuId });
+
+  if (result.warnings.length > 0) {
+    for (const warning of result.warnings) {
+      logLine(`\u26A0\uFE0F  ${warning}`);
+    }
+  }
+
+  if (result.ok) {
+    logLine(
+      `Claim validation passed (${result.checkedClaims} checked claim${
+        result.checkedClaims === 1 ? '' : 's'
+      }).`,
+    );
+    return { ok: true, duration: Date.now() - start };
+  }
+
+  logLine('\u274C Claim validation mismatches detected:');
+  for (const mismatch of result.mismatches) {
+    const specPath = path
+      .relative(effectiveCwd, mismatch.specReference.filePath)
+      .replaceAll(path.sep, '/');
+    logLine(`  - Claim (${mismatch.claimId}): ${mismatch.claimText}`);
+    logLine(
+      `    Spec: ${specPath}:${mismatch.specReference.line} [${mismatch.specReference.id} ${mismatch.specReference.section}]`,
+    );
+    for (const evidence of mismatch.evidence) {
+      logLine(`    Evidence: ${evidence.filePath}:${evidence.line} ${evidence.lineText}`);
+    }
+    logLine(`    Hint: ${mismatch.remediationHint}`);
+  }
+
+  return { ok: false, duration: Date.now() - start };
 }
 
 // ── Backlog sync gate ──────────────────────────────────────────────────

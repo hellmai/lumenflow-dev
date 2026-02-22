@@ -116,6 +116,8 @@ export const GATE_NAMES = {
   SPEC_LINTER: 'spec:linter',
   /** WU-1467: PROMPTS_LINT removed -- was a stub (exit 0), not an authoritative gate */
   BACKLOG_SYNC: 'backlog-sync',
+  /** WU-2009: Spec-to-code absolute claim drift detector */
+  CLAIM_VALIDATION: 'claim-validation',
   SUPABASE_DOCS_LINTER: 'supabase-docs:linter',
   LINT: 'lint',
   TYPECHECK: 'typecheck',
