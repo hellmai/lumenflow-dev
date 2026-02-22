@@ -64,9 +64,7 @@ export async function handleZombieRecovery(
     console.log(`${BOX.SIDE}  RECOVERY LOOP DETECTED - MANUAL INTERVENTION REQUIRED`);
     console.log(BOX.MID);
     console.log(`${BOX.SIDE}  WU: ${id}`);
-    console.log(
-      `${BOX.SIDE}  Recovery attempts: ${attemptCount} (max: ${MAX_RECOVERY_ATTEMPTS})`,
-    );
+    console.log(`${BOX.SIDE}  Recovery attempts: ${attemptCount} (max: ${MAX_RECOVERY_ATTEMPTS})`);
     console.log(BOX.SIDE);
     console.log(`${BOX.SIDE}  Automatic recovery has failed multiple times.`);
     console.log(`${BOX.SIDE}  Manual steps required:`);
