@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-2003 — Detect and heal stale initiative status when all WUs are done](wu/WU-2003.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -940,3 +940,4 @@ _Last updated: 2026-02-22_
 - [WU-2000 — Ignore prettier symlink diagnostics in format guidance output](wu/WU-2000.yaml) — 2026-02-22
 - [WU-2001 — Stabilize wu-done XState graph model tests in changed-test gate runs](wu/WU-2001.yaml) — 2026-02-22
 - [WU-2002 — Stabilize lane-health test under full CLI test matrix](wu/WU-2002.yaml) — 2026-02-22
+- [WU-2003 — Detect and heal stale initiative status when all WUs are done](wu/WU-2003.yaml) — 2026-02-22

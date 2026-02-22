@@ -2,7 +2,7 @@ id: WU-2003
 title: Detect and heal stale initiative status when all WUs are done
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -44,3 +44,6 @@ session_id: 2025c8ab-3cbf-431d-a095-78f315e4928c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T03:45:46.781Z
+locked: true
+completed_at: 2026-02-22T03:55:38.354Z
+completed: 2026-02-22
