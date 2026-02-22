@@ -30,11 +30,10 @@ sections:
 - [WU-2049 — INIT-034 follow-up: consolidate duplicates and fix naming collisions](wu/WU-2049.yaml) — Framework: Core Lifecycle
 - [WU-2050 — Bundled pack resolution for end-user bootstrap](wu/WU-2050.yaml) — Framework: Core Lifecycle
 - [WU-2052 — Fix filterExistingFiles CWD bug in incremental format check](wu/WU-2052.yaml) — Framework: CLI WU Commands
-- [WU-2053 — P0: fix TS7006 build break on main](wu/WU-2053.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2053 — P0: fix TS7006 build break on main](wu/WU-2053.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
