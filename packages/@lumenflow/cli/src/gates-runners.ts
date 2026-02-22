@@ -96,7 +96,7 @@ export async function runFormatCheckGate({ agentLog, useAgentMode, cwd }: GateLo
     logLine(`\u26A0\uFE0F  Failed to determine changed files for format check: ${error.message}`);
   }
 
-  const plan = resolveFormatCheckPlan({ changedFiles, fileListError });
+  const plan = resolveFormatCheckPlan({ changedFiles, fileListError, cwd: effectiveCwd });
 
   if (plan.mode === 'skip') {
     logLine('\n> format:check (incremental)\n');

@@ -12,6 +12,8 @@
  * @module gates-plan-resolvers
  */
 
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import { isLintableFile } from '@lumenflow/core/incremental-lint';
 import { getBasename, normalizePath, extractPackagesFromCodePaths } from './gates-utils.js';
 
@@ -123,6 +125,13 @@ export function filterFormatCheckChangedFiles(changedFiles: string[]): string[] 
   return changedFiles.filter((filePath) => !isWorkspaceDistArtifactRoot(filePath));
 }
 
+function filterExistingFormatCheckFiles(changedFiles: string[], cwd: string): string[] {
+  return changedFiles.filter((filePath) => {
+    const resolvedPath = path.isAbsolute(filePath) ? filePath : path.resolve(cwd, filePath);
+    return existsSync(resolvedPath);
+  });
+}
+
 export function isTestConfigFile(filePath: string): boolean {
   if (!filePath) return false;
   const basename = getBasename(filePath);
@@ -138,9 +147,11 @@ export function isTestConfigFile(filePath: string): boolean {
 export function resolveFormatCheckPlan({
   changedFiles,
   fileListError = false,
+  cwd,
 }: {
   changedFiles: string[];
   fileListError?: boolean;
+  cwd?: string;
 }): FormatCheckPlan {
   const filteredChangedFiles = filterFormatCheckChangedFiles(changedFiles);
 
@@ -150,10 +161,14 @@ export function resolveFormatCheckPlan({
   if (filteredChangedFiles.some(isPrettierConfigFile)) {
     return { mode: 'full', files: [], reason: 'prettier-config' };
   }
-  if (filteredChangedFiles.length === 0) {
+  const existingChangedFiles = cwd
+    ? filterExistingFormatCheckFiles(filteredChangedFiles, cwd)
+    : filteredChangedFiles;
+
+  if (existingChangedFiles.length === 0) {
     return { mode: 'skip', files: [] };
   }
-  return { mode: 'incremental', files: filteredChangedFiles };
+  return { mode: 'incremental', files: existingChangedFiles };
 }
 
 export function resolveLintPlan({
