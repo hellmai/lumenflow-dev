@@ -5,6 +5,7 @@ _Last updated: 2026-02-22_
 ## In Progress
 
 - [WU-2047 — Hard-cut software-delivery pack to runtime-native handlers (remove CLI spawn bridges)](wu/WU-2047.yaml)
+- [WU-2048 — Final constants DRY sweep: cross-package literals and WUDoc canonicalization](wu/WU-2048.yaml)
 
 ## Completed
 
