@@ -2,7 +2,7 @@ id: WU-2053
 title: 'P0: fix TS7006 build break on main'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-22
 code_paths:
@@ -51,3 +51,6 @@ worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-
 claimed_at: 2026-02-22T19:37:39.227Z
 baseline_main_sha: bad69d2cd1fdd49be3874bb9bfe18fbbaed89dfd
 session_id: 9176d240-25fd-421f-81d7-7390b49ce7ee
+locked: true
+completed_at: 2026-02-22T19:41:39.907Z
+completed: 2026-02-22

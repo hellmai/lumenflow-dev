@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-2053 — P0: fix TS7006 build break on main](wu/WU-2053.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -971,3 +971,4 @@ _Last updated: 2026-02-22_
 - [WU-2047 — Hard-cut software-delivery pack to runtime-native handlers (remove CLI spawn bridges)](wu/WU-2047.yaml) — 2026-02-22
 - [WU-2048 — Final constants DRY sweep: cross-package literals and WUDoc canonicalization](wu/WU-2048.yaml) — 2026-02-22
 - [WU-2051 — Final cleanup: remove remaining live-surface legacy config references](wu/WU-2051.yaml) — 2026-02-22
+- [WU-2053 — P0: fix TS7006 build break on main](wu/WU-2053.yaml) — 2026-02-22
