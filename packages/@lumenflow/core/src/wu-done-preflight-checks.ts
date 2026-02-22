@@ -28,7 +28,6 @@ import {
   GIT_FLAGS,
 } from './wu-constants.js';
 import { PREFLIGHT } from './wu-done-messages.js';
-import { getDriftLevel, DRIFT_LEVELS } from './branch-drift.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { createValidationError } from './wu-done-errors.js';
 import { autoRebaseBranch } from './wu-done-rebase.js';
