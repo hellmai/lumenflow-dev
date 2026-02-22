@@ -2,7 +2,7 @@ id: WU-1997
 title: Remove UnsafeAny placeholder leakage from user-facing wu:done messaging
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -37,3 +37,11 @@ acceptance:
   - wu:done/preflight operator messages no longer contain 'UnsafeAny' placeholder text
   - regression tests assert cleaned wording for affected messages
   - no behavior change beyond output text
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-1997
+claimed_at: 2026-02-22T02:22:10.747Z
+baseline_main_sha: 1c42bed2ae9f1c9697721ad1529c5149db5be807
+session_id: e4ba9794-5446-46f2-9026-505852765935
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T02:22:10.752Z

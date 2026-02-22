@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1997 — Remove UnsafeAny placeholder leakage from user-facing wu:done messaging](wu/WU-1997.yaml)
 
 ## Completed
 
