@@ -118,8 +118,10 @@ function generateClientUUID(): string {
   }
   const bytes = new Uint8Array(UUID_BYTE_LENGTH);
   crypto.getRandomValues(bytes);
-  bytes[UUID_VERSION_INDEX] = (bytes[UUID_VERSION_INDEX] & UUID_VERSION_CLEAR_MASK) | UUID_VERSION_4_MASK;
-  bytes[UUID_VARIANT_INDEX] = (bytes[UUID_VARIANT_INDEX] & UUID_VARIANT_CLEAR_MASK) | UUID_VARIANT_RFC4122_MASK;
+  bytes[UUID_VERSION_INDEX] =
+    (bytes[UUID_VERSION_INDEX] & UUID_VERSION_CLEAR_MASK) | UUID_VERSION_4_MASK;
+  bytes[UUID_VARIANT_INDEX] =
+    (bytes[UUID_VARIANT_INDEX] & UUID_VARIANT_CLEAR_MASK) | UUID_VARIANT_RFC4122_MASK;
   const hex = [...bytes].map((b) => b.toString(16).padStart(HEX_PAD_WIDTH, '0')).join('');
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
