@@ -469,6 +469,7 @@ describe('state-doctor-core', () => {
       expect(result.issues[0].wuId).toBe('WU-100');
       expect(result.issues[0].description).toContain('in_progress');
       expect(result.issues[0].description).toContain('ready');
+      expect(result.issues[0].canAutoFix).toBe(false);
     });
 
     it('should detect when YAML status is in_progress but state store says done', async () => {
@@ -494,6 +495,27 @@ describe('state-doctor-core', () => {
       expect(result.issues[0].wuId).toBe('WU-100');
       expect(result.issues[0].description).toContain('in_progress');
       expect(result.issues[0].description).toContain('done');
+      expect(result.issues[0].canAutoFix).toBe(false);
+    });
+
+    it('should skip mismatch detection for superseded YAML status', async () => {
+      // Event store has no superseded transition, so this comparison is non-representable.
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'superseded', lane: 'Framework: Core', title: 'Legacy WU' },
+          ]),
+        listEvents: vi.fn().mockResolvedValue([
+          { wuId: 'WU-100', type: 'claim', lane: 'Framework: Core', title: 'Legacy WU' },
+          { wuId: 'WU-100', type: 'release', reason: 'superseded by WU-2000' },
+        ]),
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps);
+
+      expect(result.healthy).toBe(true);
+      expect(result.issues).toHaveLength(0);
     });
 
     it('should not flag when YAML status matches state store derived status', async () => {
@@ -657,6 +679,31 @@ describe('state-doctor-core', () => {
       expect(result.fixErrors).toHaveLength(1);
       expect(result.fixErrors[0].wuId).toBe('WU-100');
       expect(result.fixErrors[0].error).toContain('Write failed');
+    });
+
+    it('should not attempt auto-fix for unsupported status transitions', async () => {
+      const emitEvent = vi.fn();
+      const deps = createMockDeps({
+        listWUs: vi
+          .fn()
+          .mockResolvedValue([
+            { id: 'WU-100', status: 'in_progress', lane: 'Framework: Core', title: 'Test WU' },
+          ]),
+        listEvents: vi.fn().mockResolvedValue([
+          { wuId: 'WU-100', type: 'claim', lane: 'Framework: Core', title: 'Test WU' },
+          { wuId: 'WU-100', type: 'release', reason: 'manual recovery' },
+        ]),
+        emitEvent,
+      });
+
+      const result = await diagnoseState(TEST_PROJECT_DIR, deps, { fix: true });
+
+      expect(result.issues).toHaveLength(1);
+      expect(result.issues[0].type).toBe(ISSUE_TYPES.STATUS_MISMATCH);
+      expect(result.issues[0].canAutoFix).toBe(false);
+      expect(emitEvent).not.toHaveBeenCalled();
+      expect(result.fixed).toHaveLength(0);
+      expect(result.fixErrors).toHaveLength(0);
     });
   });
 });
