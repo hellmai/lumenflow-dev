@@ -2,7 +2,7 @@ id: WU-2018
 title: Replace consistency repair switch with strategy map
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -48,3 +48,6 @@ session_id: f85c4fb1-c412-406a-8685-768f75d05944
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T15:21:34.955Z
+locked: true
+completed_at: 2026-02-22T15:26:02.927Z
+completed: 2026-02-22
