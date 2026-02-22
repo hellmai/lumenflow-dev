@@ -29,7 +29,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1988 — Fix Steps code block indentation vs prettier conflict in upgrade guide](wu/WU-1988.yaml) — Content: Site Comms
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -950,6 +950,7 @@ sections:
 - [WU-1985 — Retire split onboarding path and legacy bootstrap entrypoints](wu/WU-1985.yaml)
 - [WU-1984 — Docs + release readiness for workspace-first v4.0.0](wu/WU-1984.yaml)
 - [WU-1987 — Fix MDX angle bracket escaping in upgrade guide](wu/WU-1987.yaml)
+- [WU-1988 — Fix Steps code block indentation vs prettier conflict in upgrade guide](wu/WU-1988.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
