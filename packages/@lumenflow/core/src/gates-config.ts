@@ -2,201 +2,97 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 /**
- * Gates Configuration
+ * Gates Configuration Facade
  *
  * WU-1067: Config-driven gates execution
+ * WU-2037: Decomposed into focused sub-modules
  *
- * Provides a config-driven gates system that allows users to define
- * custom format, lint, test commands in workspace.yaml software_delivery instead
- * of relying on hardcoded language presets.
+ * This module is the public entry point for gates configuration.
+ * It re-exports from the extracted sub-modules and retains the
+ * config-loading, parsing, and lane-health functions that depend
+ * on the shared infrastructure.
+ *
+ * Sub-modules:
+ *  - gates-schemas.ts      Zod schemas, types, interfaces
+ *  - gates-presets.ts       Preset definitions and expansion
+ *  - gates-coverage.ts      Coverage and test policy resolution
+ *  - package-manager-resolver.ts  PM, TR, build, commands, ignore
+ *  - gates-config-internal.ts     Shared helpers and constants
  *
  * @module gates-config
  */
 
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as yaml from 'yaml';
-import { z } from 'zod';
+import { isString } from './object-guards.js';
 import { WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_V2_KEYS } from './config-contract.js';
-import { asRecord, isBoolean, isNumber, isString } from './object-guards.js';
-// WU-1262: Import resolvePolicy for methodology-driven coverage defaults
-// Note: resolvePolicy uses type-only import from lumenflow-config-schema, avoiding circular dependency
 import {
-  resolvePolicy,
-  getDefaultPolicy,
-  MethodologyConfigSchema,
-  type CoverageMode,
-} from './resolve-policy.js';
-const DEFAULT_POLICY = getDefaultPolicy();
+  GatesExecutionConfigSchema,
+  LaneHealthModeSchema,
+  DEFAULT_LANE_HEALTH_MODE,
+} from './gates-schemas.js';
+import type {
+  GateCommandConfig,
+  GatesExecutionConfig,
+  ParsedGateCommand,
+  LaneHealthMode,
+} from './gates-schemas.js';
+import { expandPreset } from './gates-presets.js';
+import {
+  GATES_RUNTIME_DEFAULTS,
+  GATES_FIELDS,
+  getGatesSection,
+} from './gates-config-internal.js';
 
-export const GATES_RUNTIME_DEFAULTS = {
-  COMMAND_TIMEOUT_MS: 120000,
-  MAX_ESLINT_WARNINGS: 100,
-  DEFAULT_MIN_COVERAGE: DEFAULT_POLICY.coverage_threshold,
-  DEFAULT_ENABLE_COVERAGE: true,
-  DEFAULT_PACKAGE_MANAGER: 'pnpm',
-  DEFAULT_TEST_RUNNER: 'vitest',
-} as const;
+// ---------------------------------------------------------------------------
+// Re-exports: schemas, types, and interfaces
+// ---------------------------------------------------------------------------
+
+export type {
+  GateCommandConfig,
+  GatesExecutionConfig,
+  ParsedGateCommand,
+  LaneHealthMode,
+  CoverageConfig,
+  TestPolicy,
+  GatesCommands,
+} from './gates-schemas.js';
+
+export {
+  GateCommandConfigSchema,
+  GatesExecutionConfigSchema,
+  LaneHealthModeSchema,
+  DEFAULT_LANE_HEALTH_MODE,
+} from './gates-schemas.js';
+
+// Re-export presets
+export { GATE_PRESETS, expandPreset } from './gates-presets.js';
+
+// Re-export coverage/test policy resolution
+export { resolveCoverageConfig, resolveTestPolicy } from './gates-coverage.js';
+
+// Re-export package manager / test runner resolution
+export {
+  resolvePackageManager,
+  resolveTestRunner,
+  resolveBuildCommand,
+  resolveGatesCommands,
+  getIgnorePatterns,
+} from './package-manager-resolver.js';
+
+// Re-export shared infrastructure (consumed by child modules and external callers)
+export {
+  GATES_RUNTIME_DEFAULTS,
+  SOFTWARE_DELIVERY_FIELDS,
+  GATES_FIELDS,
+  GATES_COMMAND_FIELDS,
+  loadSoftwareDeliveryConfig,
+  getGatesSection,
+} from './gates-config-internal.js';
+
+// ---------------------------------------------------------------------------
+// Config loading / gate parsing / lane health (facade-owned)
+// ---------------------------------------------------------------------------
 
 const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
-const SOFTWARE_DELIVERY_FIELDS = {
-  GATES: 'gates',
-  METHODOLOGY: 'methodology',
-  PACKAGE_MANAGER: 'package_manager',
-  PACKAGE_MANAGER_CAMEL: 'packageManager',
-  TEST_RUNNER: 'test_runner',
-  TEST_RUNNER_CAMEL: 'testRunner',
-  BUILD_COMMAND: 'build_command',
-  BUILD_COMMAND_CAMEL: 'buildCommand',
-} as const;
-const GATES_FIELDS = {
-  EXECUTION: 'execution',
-  LANE_HEALTH: 'lane_health',
-  LANE_HEALTH_CAMEL: 'laneHealth',
-  MIN_COVERAGE: 'minCoverage',
-  MIN_COVERAGE_SNAKE: 'min_coverage',
-  ENABLE_COVERAGE: 'enableCoverage',
-  ENABLE_COVERAGE_SNAKE: 'enable_coverage',
-  COMMANDS: 'commands',
-} as const;
-const GATES_COMMAND_FIELDS = {
-  TEST_FULL: 'test_full',
-  TEST_DOCS_ONLY: 'test_docs_only',
-  TEST_INCREMENTAL: 'test_incremental',
-  LINT: 'lint',
-  TYPECHECK: 'typecheck',
-  FORMAT: 'format',
-} as const;
-
-const SUPPORTED_PACKAGE_MANAGERS = ['pnpm', 'npm', 'yarn', 'bun'] as const;
-const SUPPORTED_TEST_RUNNERS = ['vitest', 'jest', 'mocha'] as const;
-
-/**
- * Schema for a gate command object with options
- */
-const GateCommandObjectSchema = z.object({
-  /** The shell command to execute */
-  command: z.string(),
-  /** Whether to continue if this gate fails (default: false) */
-  continueOnError: z.boolean().optional(),
-  /** Timeout in milliseconds (default: GATES_RUNTIME_DEFAULTS.COMMAND_TIMEOUT_MS) */
-  timeout: z.number().int().positive().optional(),
-});
-
-/**
- * Schema for a gate command - either a string or an object with options
- */
-export const GateCommandConfigSchema = z.union([z.string(), GateCommandObjectSchema]);
-
-/**
- * Type for parsed gate command configuration
- */
-export type GateCommandConfig = z.infer<typeof GateCommandConfigSchema>;
-
-/**
- * Schema for the gates execution configuration section
- */
-export const GatesExecutionConfigSchema = z.object({
-  /** Preset to use for default commands (node, python, go, rust, dotnet) */
-  preset: z.string().optional(),
-  /** Setup command (e.g., install dependencies) */
-  setup: GateCommandConfigSchema.optional(),
-  /** Format check command */
-  format: GateCommandConfigSchema.optional(),
-  /** Lint command */
-  lint: GateCommandConfigSchema.optional(),
-  /** Type check command */
-  typecheck: GateCommandConfigSchema.optional(),
-  /** Test command */
-  test: GateCommandConfigSchema.optional(),
-  /** Coverage configuration */
-  coverage: z
-    .union([
-      z.string(),
-      z.object({
-        command: z.string(),
-        threshold: z.number().min(0).max(100).optional(),
-      }),
-    ])
-    .optional(),
-});
-
-/**
- * Type for gates execution configuration
- */
-export type GatesExecutionConfig = z.infer<typeof GatesExecutionConfigSchema>;
-
-/**
- * Parsed gate command ready for execution
- */
-export interface ParsedGateCommand {
-  /** The shell command to execute */
-  command: string;
-  /** Whether to continue if this gate fails */
-  continueOnError: boolean;
-  /** Timeout in milliseconds */
-  timeout: number;
-}
-
-/**
- * Gate preset definitions
- *
- * These provide sensible defaults for common language ecosystems.
- * Users can override fields via workspace.yaml software_delivery
- */
-export const GATE_PRESETS: Record<string, Partial<GatesExecutionConfig>> = {
-  node: {
-    setup: 'npm ci || npm install',
-    format: 'npx prettier --check .',
-    lint: 'npx eslint .',
-    typecheck: 'npx tsc --noEmit',
-    test: 'npm test',
-  },
-  python: {
-    setup: 'pip install -e ".[dev]" || pip install -r requirements.txt',
-    format: 'ruff format --check .',
-    lint: 'ruff check .',
-    typecheck: 'mypy .',
-    test: 'pytest',
-  },
-  go: {
-    format: 'gofmt -l . | grep -v "^$" && exit 1 || exit 0',
-    lint: 'golangci-lint run',
-    typecheck: 'go vet ./...',
-    test: 'go test ./...',
-  },
-  rust: {
-    format: 'cargo fmt --check',
-    lint: 'cargo clippy -- -D warnings',
-    typecheck: 'cargo check',
-    test: 'cargo test',
-  },
-  dotnet: {
-    setup: 'dotnet restore',
-    format: 'dotnet format --verify-no-changes',
-    lint: 'dotnet build --no-restore -warnaserror',
-    test: 'dotnet test --no-restore',
-  },
-  // WU-1118: Java/JVM, Ruby, and PHP presets
-  java: {
-    format: 'mvn spotless:check || ./gradlew spotlessCheck',
-    lint: 'mvn checkstyle:check || ./gradlew checkstyleMain',
-    typecheck: 'mvn compile -DskipTests || ./gradlew compileJava',
-    test: 'mvn test || ./gradlew test',
-  },
-  ruby: {
-    setup: 'bundle install',
-    format: 'bundle exec rubocop --format simple --fail-level W',
-    lint: 'bundle exec rubocop',
-    test: 'bundle exec rspec',
-  },
-  php: {
-    setup: 'composer install',
-    format: 'vendor/bin/php-cs-fixer fix --dry-run --diff',
-    lint: 'vendor/bin/phpstan analyse',
-    test: 'vendor/bin/phpunit',
-  },
-};
 
 /**
  * Parse a gate command configuration into executable form
@@ -222,47 +118,6 @@ export function parseGateCommand(config: GateCommandConfig | undefined): ParsedG
     continueOnError: config.continueOnError ?? false,
     timeout: config.timeout ?? GATES_RUNTIME_DEFAULTS.COMMAND_TIMEOUT_MS,
   };
-}
-
-/**
- * Expand a preset name into its default gate commands
- *
- * @param preset - Preset name (node, python, go, rust, dotnet) or undefined
- * @returns Partial gates config with preset defaults, or empty object if unknown
- */
-export function expandPreset(preset: string | undefined): Partial<GatesExecutionConfig> {
-  if (!preset) {
-    return {};
-  }
-
-  return GATE_PRESETS[preset] ?? {};
-}
-
-function loadSoftwareDeliveryConfig(projectRoot: string): Record<string, unknown> | null {
-  const configPath = path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME);
-
-  if (!fs.existsSync(configPath)) {
-    return null;
-  }
-
-  try {
-    const content = fs.readFileSync(configPath, 'utf8');
-    const data = asRecord(yaml.parse(content));
-    if (!data) {
-      return null;
-    }
-    return asRecord(data[SOFTWARE_DELIVERY_KEY]);
-  } catch {
-    return null;
-  }
-}
-
-function getGatesSection(projectRoot: string): Record<string, unknown> | null {
-  const softwareDelivery = loadSoftwareDeliveryConfig(projectRoot);
-  if (!softwareDelivery) {
-    return null;
-  }
-  return asRecord(softwareDelivery[SOFTWARE_DELIVERY_FIELDS.GATES]);
 }
 
 /**
@@ -377,22 +232,6 @@ export function shouldSkipGate(
 }
 
 /**
- * WU-1191: Lane health gate mode
- * Controls how lane health check behaves during gates
- */
-export type LaneHealthMode = 'warn' | 'error' | 'off';
-
-/**
- * Schema for lane health mode validation
- */
-const LaneHealthModeSchema = z.enum(['warn', 'error', 'off']);
-
-/**
- * Default lane health mode (advisory by default)
- */
-const DEFAULT_LANE_HEALTH_MODE: LaneHealthMode = 'warn';
-
-/**
  * WU-1191: Load lane health configuration from workspace.yaml software_delivery
  *
  * Configuration format:
@@ -435,428 +274,4 @@ export function loadLaneHealthConfig(projectRoot: string): LaneHealthMode {
     );
     return DEFAULT_LANE_HEALTH_MODE;
   }
-}
-
-/**
- * WU-1262: Resolved coverage configuration
- * Contains threshold and mode derived from methodology policy
- */
-export interface CoverageConfig {
-  /** Coverage threshold (0-100) */
-  threshold: number;
-  /** Coverage mode (block, warn, or off) */
-  mode: CoverageMode;
-}
-
-function readNumberField(
-  source: Record<string, unknown> | undefined,
-  primaryKey: string,
-  secondaryKey: string,
-): number | undefined {
-  const primary = source?.[primaryKey];
-  if (isNumber(primary)) {
-    return primary;
-  }
-  const secondary = source?.[secondaryKey];
-  return isNumber(secondary) ? secondary : undefined;
-}
-
-function readBooleanField(
-  source: Record<string, unknown> | undefined,
-  primaryKey: string,
-  secondaryKey: string,
-): boolean | undefined {
-  const primary = source?.[primaryKey];
-  if (isBoolean(primary)) {
-    return primary;
-  }
-  const secondary = source?.[secondaryKey];
-  return isBoolean(secondary) ? secondary : undefined;
-}
-
-function readGateMinCoverage(gatesRaw: Record<string, unknown> | undefined): number | undefined {
-  return readNumberField(gatesRaw, GATES_FIELDS.MIN_COVERAGE, GATES_FIELDS.MIN_COVERAGE_SNAKE);
-}
-
-function readGateEnableCoverage(
-  gatesRaw: Record<string, unknown> | undefined,
-): boolean | undefined {
-  return readBooleanField(
-    gatesRaw,
-    GATES_FIELDS.ENABLE_COVERAGE,
-    GATES_FIELDS.ENABLE_COVERAGE_SNAKE,
-  );
-}
-
-/**
- * WU-1262: Resolve coverage configuration from methodology policy
- *
- * Uses resolvePolicy() to determine coverage defaults based on methodology.testing:
- * - tdd: 90% threshold, block mode
- * - test-after: 70% threshold, warn mode
- * - none: 0% threshold, off mode
- *
- * Precedence (highest to lowest):
- * 1. Explicit gates.minCoverage / gates.enableCoverage
- * 2. methodology.overrides.coverage_threshold / coverage_mode
- * 3. methodology.testing template defaults
- *
- * @param projectRoot - Project root directory
- * @returns Resolved coverage configuration
- */
-export function resolveCoverageConfig(projectRoot: string): CoverageConfig {
-  const rawConfig = loadSoftwareDeliveryConfig(projectRoot) ?? {};
-
-  // If no config file, use default policy
-  if (Object.keys(rawConfig).length === 0) {
-    const defaultPolicy = getDefaultPolicy();
-    return {
-      threshold: defaultPolicy.coverage_threshold,
-      mode: defaultPolicy.coverage_mode,
-    };
-  }
-
-  // Parse methodology config manually to avoid circular dependency with lumenflow-config-schema.ts
-  // (lumenflow-config-schema.ts imports GatesExecutionConfigSchema from this file)
-  const methodologyRaw = asRecord(rawConfig[SOFTWARE_DELIVERY_FIELDS.METHODOLOGY]) ?? undefined;
-  const gatesRaw = asRecord(rawConfig[SOFTWARE_DELIVERY_FIELDS.GATES]) ?? undefined;
-  const minCoverage = readGateMinCoverage(gatesRaw);
-  const enableCoverage = readGateEnableCoverage(gatesRaw);
-
-  // Build a minimal config object with only what resolvePolicy needs
-  // Parse methodology with Zod to get defaults
-  const methodology = MethodologyConfigSchema.parse(methodologyRaw ?? {});
-
-  // Build the config structure that resolvePolicy expects
-  const minimalConfig = {
-    methodology: methodologyRaw, // Pass raw methodology for explicit detection
-    gates: {
-      minCoverage,
-      enableCoverage,
-    },
-  };
-
-  // Resolve policy using the methodology configuration
-  // Pass rawConfig to detect explicit gates.* settings vs Zod defaults
-  const policy = resolvePolicy(
-    {
-      methodology,
-      gates: {
-        // Default gates values from schema
-        maxEslintWarnings: GATES_RUNTIME_DEFAULTS.MAX_ESLINT_WARNINGS,
-        enableCoverage: enableCoverage ?? GATES_RUNTIME_DEFAULTS.DEFAULT_ENABLE_COVERAGE,
-        minCoverage: minCoverage ?? GATES_RUNTIME_DEFAULTS.DEFAULT_MIN_COVERAGE,
-        enableSafetyCriticalTests: true,
-        enableInvariants: true,
-      },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Minimal type for config
-    } as UnsafeAny,
-    {
-      rawConfig: minimalConfig,
-    },
-  );
-
-  return {
-    threshold: policy.coverage_threshold,
-    mode: policy.coverage_mode,
-  };
-}
-
-/**
- * WU-1280: Resolved test policy configuration
- * Extends CoverageConfig with tests_required from methodology policy
- */
-export interface TestPolicy extends CoverageConfig {
-  /** Whether tests are required for completion (from methodology.testing) */
-  tests_required: boolean;
-}
-
-/**
- * WU-1280: Resolve test policy from methodology configuration
- *
- * Returns the full test policy including coverage config AND tests_required.
- * This is used by gates to determine whether test failures should block or warn.
- *
- * Methodology mapping:
- * - tdd: 90% threshold, block mode, tests_required=true
- * - test-after: 70% threshold, warn mode, tests_required=true
- * - none: 0% threshold, off mode, tests_required=false
- *
- * When tests_required=false:
- * - Test failures produce WARNINGS instead of FAILURES
- * - Gates continue but log the test failures
- * - Coverage gate is effectively skipped (mode='off')
- *
- * @param projectRoot - Project root directory
- * @returns Resolved test policy including tests_required
- */
-export function resolveTestPolicy(projectRoot: string): TestPolicy {
-  const rawConfig = loadSoftwareDeliveryConfig(projectRoot) ?? {};
-
-  // If no config file, use default policy (TDD)
-  if (Object.keys(rawConfig).length === 0) {
-    const defaultPolicy = getDefaultPolicy();
-    return {
-      threshold: defaultPolicy.coverage_threshold,
-      mode: defaultPolicy.coverage_mode,
-      tests_required: defaultPolicy.tests_required,
-    };
-  }
-
-  // Parse methodology config manually to avoid circular dependency with lumenflow-config-schema.ts
-  const methodologyRaw = asRecord(rawConfig[SOFTWARE_DELIVERY_FIELDS.METHODOLOGY]) ?? undefined;
-  const gatesRaw = asRecord(rawConfig[SOFTWARE_DELIVERY_FIELDS.GATES]) ?? undefined;
-  const minCoverage = readGateMinCoverage(gatesRaw);
-  const enableCoverage = readGateEnableCoverage(gatesRaw);
-
-  // Parse methodology with Zod to get defaults
-  const methodology = MethodologyConfigSchema.parse(methodologyRaw ?? {});
-
-  // Build the config structure that resolvePolicy expects
-  const minimalConfig = {
-    methodology: methodologyRaw, // Pass raw methodology for explicit detection
-    gates: {
-      minCoverage,
-      enableCoverage,
-    },
-  };
-
-  // Resolve policy using the methodology configuration
-  const policy = resolvePolicy(
-    {
-      methodology,
-      gates: {
-        // Default gates values from schema
-        maxEslintWarnings: GATES_RUNTIME_DEFAULTS.MAX_ESLINT_WARNINGS,
-        enableCoverage: enableCoverage ?? GATES_RUNTIME_DEFAULTS.DEFAULT_ENABLE_COVERAGE,
-        minCoverage: minCoverage ?? GATES_RUNTIME_DEFAULTS.DEFAULT_MIN_COVERAGE,
-        enableSafetyCriticalTests: true,
-        enableInvariants: true,
-      },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Minimal type for config
-    } as UnsafeAny,
-    {
-      rawConfig: minimalConfig,
-    },
-  );
-
-  return {
-    threshold: policy.coverage_threshold,
-    mode: policy.coverage_mode,
-    tests_required: policy.tests_required,
-  };
-}
-
-/**
- * WU-1356: Supported package managers type
- * Re-exported from lumenflow-config-schema to avoid circular import
- */
-type PackageManager = (typeof SUPPORTED_PACKAGE_MANAGERS)[number];
-
-/**
- * WU-1356: Supported test runners type
- * Re-exported from lumenflow-config-schema to avoid circular import
- */
-type TestRunner = (typeof SUPPORTED_TEST_RUNNERS)[number];
-
-/**
- * WU-1356: Gates commands configuration type
- */
-export interface GatesCommands {
-  test_full: string;
-  test_docs_only: string;
-  test_incremental: string;
-  lint?: string;
-  typecheck?: string;
-  format?: string;
-}
-
-/**
- * WU-1356: Default gates commands by package manager
- *
- * Provides sensible defaults for different package manager and test runner combinations.
- */
-const DEFAULT_GATES_COMMANDS: Record<PackageManager, GatesCommands> = {
-  pnpm: {
-    test_full: 'pnpm turbo run test',
-    test_docs_only: '',
-    test_incremental: 'pnpm vitest run --changed origin/main',
-    lint: 'pnpm lint',
-    typecheck: 'pnpm typecheck',
-    format: 'pnpm format:check',
-  },
-  npm: {
-    test_full: 'npm test',
-    test_docs_only: '',
-    test_incremental: 'npm test -- --onlyChanged',
-    lint: 'npm run lint',
-    typecheck: 'npm run typecheck',
-    format: 'npm run format:check',
-  },
-  yarn: {
-    test_full: 'yarn test',
-    test_docs_only: '',
-    test_incremental: 'yarn test --onlyChanged',
-    lint: 'yarn lint',
-    typecheck: 'yarn typecheck',
-    format: 'yarn format:check',
-  },
-  bun: {
-    test_full: 'bun test',
-    test_docs_only: '',
-    test_incremental: 'bun test --changed',
-    lint: 'bun run lint',
-    typecheck: 'bun run typecheck',
-    format: 'bun run format:check',
-  },
-};
-
-/**
- * WU-1356: Default build commands by package manager
- */
-const DEFAULT_BUILD_COMMANDS: Record<PackageManager, string> = {
-  pnpm: 'pnpm --filter @lumenflow/cli build',
-  npm: 'npm run build --workspace @lumenflow/cli',
-  yarn: 'yarn workspace @lumenflow/cli build',
-  bun: 'bun run --filter @lumenflow/cli build',
-};
-
-/**
- * WU-1356: Ignore patterns by test runner
- *
- * Different test runners use different cache directories that should be ignored.
- */
-const IGNORE_PATTERNS_BY_RUNNER: Record<TestRunner, string[]> = {
-  vitest: ['.turbo'],
-  jest: ['coverage', '.jest-cache'],
-  mocha: ['coverage', '.nyc_output'],
-};
-
-/**
- * WU-1356: Resolve package manager from configuration
- *
- * Reads the package_manager field from workspace.yaml software_delivery.
- * Returns 'pnpm' as default if not configured.
- *
- * @param projectRoot - Project root directory
- * @returns Resolved package manager ('pnpm', 'npm', 'yarn', or 'bun')
- */
-export function resolvePackageManager(projectRoot: string): PackageManager {
-  const softwareDelivery = loadSoftwareDeliveryConfig(projectRoot);
-  if (!softwareDelivery) {
-    return GATES_RUNTIME_DEFAULTS.DEFAULT_PACKAGE_MANAGER;
-  }
-
-  const pm =
-    softwareDelivery[SOFTWARE_DELIVERY_FIELDS.PACKAGE_MANAGER] ??
-    softwareDelivery[SOFTWARE_DELIVERY_FIELDS.PACKAGE_MANAGER_CAMEL];
-  if (isString(pm) && SUPPORTED_PACKAGE_MANAGERS.includes(pm as PackageManager)) {
-    return pm as PackageManager;
-  }
-  return GATES_RUNTIME_DEFAULTS.DEFAULT_PACKAGE_MANAGER;
-}
-
-/**
- * WU-1356: Resolve test runner from configuration
- *
- * Reads the test_runner field from workspace.yaml software_delivery.
- * Returns 'vitest' as default if not configured.
- *
- * @param projectRoot - Project root directory
- * @returns Resolved test runner ('vitest', 'jest', or 'mocha')
- */
-export function resolveTestRunner(projectRoot: string): TestRunner {
-  const softwareDelivery = loadSoftwareDeliveryConfig(projectRoot);
-  if (!softwareDelivery) {
-    return GATES_RUNTIME_DEFAULTS.DEFAULT_TEST_RUNNER;
-  }
-
-  const runner =
-    softwareDelivery[SOFTWARE_DELIVERY_FIELDS.TEST_RUNNER] ??
-    softwareDelivery[SOFTWARE_DELIVERY_FIELDS.TEST_RUNNER_CAMEL];
-  if (isString(runner) && SUPPORTED_TEST_RUNNERS.includes(runner as TestRunner)) {
-    return runner as TestRunner;
-  }
-  return GATES_RUNTIME_DEFAULTS.DEFAULT_TEST_RUNNER;
-}
-
-/**
- * WU-1356: Resolve build command from configuration
- *
- * Reads the build_command field from workspace.yaml software_delivery.
- * If not configured, uses default based on package_manager.
- *
- * @param projectRoot - Project root directory
- * @returns Resolved build command
- */
-export function resolveBuildCommand(projectRoot: string): string {
-  const defaultPm = resolvePackageManager(projectRoot);
-  const softwareDelivery = loadSoftwareDeliveryConfig(projectRoot);
-  if (!softwareDelivery) {
-    return DEFAULT_BUILD_COMMANDS[defaultPm];
-  }
-
-  const configuredBuildCommand =
-    softwareDelivery[SOFTWARE_DELIVERY_FIELDS.BUILD_COMMAND] ??
-    softwareDelivery[SOFTWARE_DELIVERY_FIELDS.BUILD_COMMAND_CAMEL];
-  if (isString(configuredBuildCommand) && configuredBuildCommand.length > 0) {
-    return configuredBuildCommand;
-  }
-
-  return DEFAULT_BUILD_COMMANDS[defaultPm];
-}
-
-/**
- * WU-1356: Resolve gates commands from configuration
- *
- * Reads gates.commands from workspace.yaml software_delivery.
- * Merges with defaults based on package_manager if not fully specified.
- *
- * @param projectRoot - Project root directory
- * @returns Resolved gates commands configuration
- */
-export function resolveGatesCommands(projectRoot: string): GatesCommands {
-  const pm = resolvePackageManager(projectRoot);
-  const defaults = DEFAULT_GATES_COMMANDS[pm];
-  const gates = getGatesSection(projectRoot);
-  if (!gates) {
-    return defaults;
-  }
-
-  const commands = asRecord(gates[GATES_FIELDS.COMMANDS]);
-  if (!commands) {
-    return defaults;
-  }
-
-  // Merge user config with defaults (user config wins)
-  return {
-    test_full:
-      (commands[GATES_COMMAND_FIELDS.TEST_FULL] as string | undefined) ?? defaults.test_full,
-    test_docs_only:
-      (commands[GATES_COMMAND_FIELDS.TEST_DOCS_ONLY] as string | undefined) ??
-      defaults.test_docs_only,
-    test_incremental:
-      (commands[GATES_COMMAND_FIELDS.TEST_INCREMENTAL] as string | undefined) ??
-      defaults.test_incremental,
-    lint: (commands[GATES_COMMAND_FIELDS.LINT] as string | undefined) ?? defaults.lint,
-    typecheck:
-      (commands[GATES_COMMAND_FIELDS.TYPECHECK] as string | undefined) ?? defaults.typecheck,
-    format: (commands[GATES_COMMAND_FIELDS.FORMAT] as string | undefined) ?? defaults.format,
-  };
-}
-
-/**
- * WU-1356: Get ignore patterns for test runner
- *
- * Returns patterns to ignore when detecting changed tests,
- * based on the test runner configuration.
- *
- * @param testRunner - Test runner type (vitest, jest, mocha)
- * @returns Array of ignore patterns
- */
-export function getIgnorePatterns(testRunner: TestRunner): string[] {
-  return (
-    IGNORE_PATTERNS_BY_RUNNER[testRunner] ??
-    IGNORE_PATTERNS_BY_RUNNER[GATES_RUNTIME_DEFAULTS.DEFAULT_TEST_RUNNER]
-  );
 }
