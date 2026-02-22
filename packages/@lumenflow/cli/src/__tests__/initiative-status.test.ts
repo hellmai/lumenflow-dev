@@ -3,7 +3,10 @@
 
 import { describe, expect, it } from 'vitest';
 import { WU_STATUS } from '@lumenflow/core/wu-constants';
-import { deriveInitiativeLifecycleStatus, deriveInitiativePhaseStatus } from '../initiative-status.js';
+import {
+  deriveInitiativeLifecycleStatus,
+  deriveInitiativePhaseStatus,
+} from '../initiative-status.js';
 
 describe('deriveInitiativeLifecycleStatus', () => {
   it('downgrades done to in_progress when UnsafeAny phase is incomplete', () => {

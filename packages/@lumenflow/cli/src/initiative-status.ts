@@ -235,7 +235,10 @@ function renderDetailed(initiative: InitiativeEntry, useColor: boolean): void {
     console.log('\nPhases:');
     for (const phase of phases) {
       const phaseWUs = phaseGroups.get(phase.id) || [];
-      const phaseStatus = formatStatus(deriveInitiativePhaseStatus(phase.status, phaseWUs), useColor);
+      const phaseStatus = formatStatus(
+        deriveInitiativePhaseStatus(phase.status, phaseWUs),
+        useColor,
+      );
       const phaseTitle = asString(phase.title) || `Phase ${phase.id}`;
       console.log(
         `  ${phase.id}. ${phaseTitle.padEnd(30)} [${phaseStatus}] ${phaseWUs.length} WUs`,
