@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2051 — Extract scm-tools reference domain pack](wu/WU-2051.yaml) — Framework: Core Lifecycle
 - [WU-2050 — Bundled pack resolution for end-user bootstrap](wu/WU-2050.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
