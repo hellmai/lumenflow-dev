@@ -2052,3 +2052,4 @@
 {"type":"complete","wuId":"WU-2009","timestamp":"2026-02-22T23:24:42.391Z"}
 {"type":"claim","wuId":"WU-2049","timestamp":"2026-02-22T23:25:58.784Z","lane":"Framework: Core Lifecycle","title":"INIT-034 follow-up: consolidate duplicates and fix naming collisions"}
 {"type":"complete","wuId":"WU-2049","timestamp":"2026-02-22T23:45:20.121Z"}
+{"type":"claim","wuId":"WU-2050","timestamp":"2026-02-22T23:46:13.554Z","lane":"Framework: Core Lifecycle","title":"Bundled pack resolution for end-user bootstrap"}

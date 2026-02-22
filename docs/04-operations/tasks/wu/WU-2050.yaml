@@ -2,7 +2,7 @@ id: WU-2050
 title: Bundled pack resolution for end-user bootstrap
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -57,3 +57,11 @@ acceptance:
   - Build passes with no broken imports after stub deletion
   - Pack concepts and authoring guide added to docs
   - Docs build passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2050
+claimed_at: 2026-02-22T23:46:13.524Z
+baseline_main_sha: 66db831173af73d38ffcf47ddff674628cacab22
+session_id: f5588973-feae-42e8-8c2f-f3bfd4665103
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T23:46:13.530Z

@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2050 — Bundled pack resolution for end-user bootstrap](wu/WU-2050.yaml)
 
 ## Completed
 
