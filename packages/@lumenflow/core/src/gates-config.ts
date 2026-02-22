@@ -48,6 +48,8 @@ export type {
   ParsedGateCommand,
   LaneHealthMode,
   CoverageConfig,
+  CoveragePolicy,
+  TestRunnerPolicy,
   TestPolicy,
   GatesCommands,
 } from './gates-schemas.js';

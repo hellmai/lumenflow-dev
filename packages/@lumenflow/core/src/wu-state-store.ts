@@ -2,16 +2,24 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 /**
- * WU State Store - Facade (WU-2013)
+ * WU State Store - Facade (WU-2013, WU-2020)
  *
  * Thin facade delegating to: WUEventSourcer, WUStateIndexer,
  * wu-lock-manager, wu-repair-service.
+ *
+ * WU-2020: Implements IWuStateStore port interface for DIP compliance.
+ * Command handlers should depend on IWuStateStore, not this concrete class.
+ * Use createWUStateStore() factory for new instances.
  */
 
 import { validateWUEvent, type WUEvent } from './wu-state-schema.js';
 import { WU_STATUS } from './wu-constants.js';
 import { WUStateIndexer } from './wu-state-indexer.js';
 import { WUEventSourcer } from './wu-event-sourcer.js';
+import type { IWuStateStore } from './ports/wu-state.ports.js';
+
+// Re-export the port interface for DIP-compliant consumers (WU-2020)
+export type { IWuStateStore } from './ports/wu-state.ports.js';
 
 // Re-export from extracted services for backward compatibility
 export { WU_EVENTS_FILE_NAME } from './wu-event-sourcer.js';
@@ -44,8 +52,11 @@ function assertInProgress(indexer: WUStateIndexer, wuId: string): void {
 /**
  * WU State Store - event-sourced WU lifecycle state.
  * Delegates to focused services for each responsibility.
+ *
+ * Implements IWuStateStore port interface (WU-2020) so consumers
+ * can depend on the interface instead of this concrete class.
  */
-export class WUStateStore {
+export class WUStateStore implements IWuStateStore {
   private readonly indexer: WUStateIndexer;
   private readonly sourcer: WUEventSourcer;
 
@@ -56,6 +67,10 @@ export class WUStateStore {
 
   async load(): Promise<void> {
     await this.sourcer.load();
+  }
+
+  async appendAndApply(event: WUEvent): Promise<void> {
+    await this.sourcer.appendAndApply(event);
   }
 
   async claim(wuId: string, lane: string, title: string): Promise<void> {
@@ -174,4 +189,18 @@ export class WUStateStore {
     assertInProgress(this.indexer, wuId);
     return validateOrThrow({ type: 'release', wuId, reason, timestamp });
   }
+}
+
+/**
+ * Factory function to create a WUStateStore instance (WU-2020).
+ *
+ * Command handlers should prefer this factory over direct `new WUStateStore()`
+ * to enable future swapping of implementations and easier testing.
+ * The return type is the IWuStateStore interface, not the concrete class.
+ *
+ * @param baseDir - Base directory for the state store (e.g., `.lumenflow/state`)
+ * @returns An IWuStateStore implementation
+ */
+export function createWUStateStore(baseDir: string): IWuStateStore {
+  return new WUStateStore(baseDir);
 }

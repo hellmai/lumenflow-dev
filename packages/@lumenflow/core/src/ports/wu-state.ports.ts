@@ -139,3 +139,82 @@ export interface IWuStateQuery {
    */
   getChildWUs(parentWuId: string): Set<string>;
 }
+
+// ---------------------------------------------------------------------------
+// Composite interface for command handler injection (WU-2020)
+// ---------------------------------------------------------------------------
+
+/**
+ * WU State Store interface for dependency injection in command handlers.
+ *
+ * Combines event log and state query capabilities into a single injectable
+ * interface. Command handlers should depend on this interface rather than
+ * importing and instantiating WUStateStore directly.
+ *
+ * WU-2020: DIP compliance - high-level modules depend on abstraction,
+ * not on the concrete WUStateStore class.
+ *
+ * @example
+ * ```typescript
+ * // Command handler accepts interface, not concrete class
+ * async function completeWU(store: IWuStateStore, wuId: string) {
+ *   await store.load();
+ *   await store.complete(wuId);
+ * }
+ * ```
+ */
+export interface IWuStateStore extends IWuEventLog, IWuStateQuery {
+  /**
+   * Claim a WU, transitioning it to in_progress status.
+   * @throws Error if WU is already in_progress
+   */
+  claim(wuId: string, lane: string, title: string): Promise<void>;
+
+  /**
+   * Complete a WU, transitioning it to done status.
+   * @throws Error if WU is not in_progress
+   */
+  complete(wuId: string): Promise<void>;
+
+  /**
+   * Block a WU with a reason.
+   * @throws Error if WU is not in_progress
+   */
+  block(wuId: string, reason: string): Promise<void>;
+
+  /**
+   * Unblock a WU, transitioning it back to in_progress.
+   * @throws Error if WU is not blocked
+   */
+  unblock(wuId: string): Promise<void>;
+
+  /**
+   * Record a checkpoint for a WU without changing its status.
+   */
+  checkpoint(wuId: string, note: string, options?: CheckpointOptions): Promise<void>;
+
+  /**
+   * Record a parent-child delegation relationship.
+   */
+  delegate(childWuId: string, parentWuId: string, delegationId: string): Promise<void>;
+
+  /**
+   * Release a WU, transitioning it from in_progress to ready.
+   * @throws Error if WU is not in_progress
+   */
+  release(wuId: string, reason: string): Promise<void>;
+
+  /**
+   * Create a complete event without persisting it.
+   * Useful for transactional flows.
+   * @throws Error if WU is not in_progress
+   */
+  createCompleteEvent(wuId: string, timestamp?: string): WUEvent;
+
+  /**
+   * Create a release event without persisting it.
+   * Useful for transactional flows.
+   * @throws Error if WU is not in_progress
+   */
+  createReleaseEvent(wuId: string, reason: string, timestamp?: string): WUEvent;
+}

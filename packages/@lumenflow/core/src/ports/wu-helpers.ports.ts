@@ -96,70 +96,9 @@ export interface IWuYamlWriter {
   writeWU(wuPath: string, doc: unknown): void;
 }
 
-/**
- * WU state store interface (subset for dependency injection)
- */
-export interface IWuStateStore {
-  /**
-   * Load state from events file
-   */
-  load(): Promise<void>;
-
-  /**
-   * Claim a WU (transition to in_progress)
-   * @param wuId - WU identifier
-   * @param lane - Lane name
-   * @param title - WU title
-   */
-  claim(wuId: string, lane: string, title: string): Promise<void>;
-
-  /**
-   * Complete a WU (transition to done)
-   * @param wuId - WU identifier
-   */
-  complete(wuId: string): Promise<void>;
-
-  /**
-   * Block a WU (transition to blocked)
-   * @param wuId - WU identifier
-   * @param reason - Block reason
-   */
-  block(wuId: string, reason: string): Promise<void>;
-
-  /**
-   * Unblock a WU (transition back to in_progress)
-   * @param wuId - WU identifier
-   */
-  unblock(wuId: string): Promise<void>;
-
-  /**
-   * Release a WU (transition to ready)
-   * @param wuId - WU identifier
-   * @param reason - Release reason
-   */
-  release(wuId: string, reason: string): Promise<void>;
-
-  /**
-   * Get WU state entry
-   * @param wuId - WU identifier
-   * @returns State entry or undefined
-   */
-  getWUState(wuId: string): { status: string; lane: string; title: string } | undefined;
-
-  /**
-   * Get all WU IDs by status
-   * @param status - Status to filter by
-   * @returns Set of WU IDs
-   */
-  getByStatus(status: string): Set<string>;
-
-  /**
-   * Get all WU IDs by lane
-   * @param lane - Lane to filter by
-   * @returns Set of WU IDs
-   */
-  getByLane(lane: string): Set<string>;
-}
+// WU-2020: IWuStateStore is now canonically defined in wu-state.ports.ts
+// Re-export here for backward compatibility with consumers importing from wu-helpers.ports.
+export type { IWuStateStore } from './wu-state.ports.js';
 
 /**
  * WU checkpoint interface

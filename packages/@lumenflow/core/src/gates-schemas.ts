@@ -126,13 +126,34 @@ export interface CoverageConfig {
 }
 
 /**
- * WU-1280: Resolved test policy configuration
- * Extends CoverageConfig with tests_required from methodology policy
+ * WU-2020: Focused coverage policy interface (ISP-compliant).
+ * Single-responsibility: coverage threshold and enforcement mode.
  */
-export interface TestPolicy extends CoverageConfig {
+export interface CoveragePolicy {
+  /** Coverage threshold (0-100) */
+  threshold: number;
+  /** Coverage mode (block, warn, or off) */
+  mode: CoverageMode;
+}
+
+/**
+ * WU-2020: Focused test runner policy interface (ISP-compliant).
+ * Single-responsibility: whether tests are mandatory for completion.
+ */
+export interface TestRunnerPolicy {
   /** Whether tests are required for completion (from methodology.testing) */
   tests_required: boolean;
 }
+
+/**
+ * WU-1280: Resolved test policy configuration
+ * Extends CoverageConfig with tests_required from methodology policy.
+ *
+ * WU-2020: Now defined as the intersection of CoveragePolicy and
+ * TestRunnerPolicy. Consumers that only need coverage or test-runner
+ * semantics should prefer the focused interfaces.
+ */
+export interface TestPolicy extends CoveragePolicy, TestRunnerPolicy {}
 
 // ---------------------------------------------------------------------------
 // Gates commands interface

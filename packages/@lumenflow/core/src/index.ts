@@ -76,6 +76,9 @@ export {
   type RepairResult,
 } from './wu-state-store.js';
 
+// WU-2020: Factory function for DIP-compliant WU state store creation
+export { createWUStateStore } from './wu-state-store.js';
+
 // Lane management
 export * from './lane-checker.js';
 export * from './lane-inference.js';
@@ -240,6 +243,22 @@ export type {
   IWuCheckpointManager,
   IWuPaths,
 } from './ports/wu-helpers.ports.js';
+
+// WU-2013: WU state port interfaces (focused decomposition)
+export type {
+  IWuEventLog,
+  IWuLockManager,
+  IWuStateQuery,
+} from './ports/wu-state.ports.js';
+
+// WU-2020: Config port interfaces for DIP-compliant injection
+export type {
+  IGitConfig,
+  IDirectoriesConfig,
+  IStateConfig,
+  IPathsConfig,
+  IGitOperationConfig,
+} from './ports/config.ports.js';
 
 // WU-1103: Port interfaces for git adapter (hexagonal architecture)
 export type {
