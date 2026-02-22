@@ -2,7 +2,7 @@ id: WU-1989
 title: 'State doctor: eliminate non-representable status mismatches and false auto-fix claims'
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -43,3 +43,6 @@ session_id: 0b075afd-44ac-4965-b8cb-3c32a3b8bee8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T00:06:50.584Z
+locked: true
+completed_at: 2026-02-22T00:10:59.228Z
+completed: 2026-02-22
