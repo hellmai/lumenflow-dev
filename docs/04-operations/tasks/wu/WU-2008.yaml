@@ -10,7 +10,6 @@ code_paths:
   - packages/@lumenflow/core/src/prompt-linter.ts
   - packages/@lumenflow/core/src/cli/is-agent-branch.ts
   - packages/@lumenflow/core/src/stream-error-handler.ts
-  - packages/@lumenflow/core/src/error-handler.ts
 tests:
   manual:
     - Run rg 'process\.exit\(' over the four target core modules and confirm no direct process.exit
@@ -20,6 +19,7 @@ tests:
   unit:
     - packages/@lumenflow/core/src/__tests__/prompt-monitor.test.ts
     - packages/@lumenflow/core/src/__tests__/prompt-linter.test.ts
+    - packages/@lumenflow/core/src/__tests__/is-agent-branch-cli.test.ts
     - packages/@lumenflow/core/src/__tests__/stream-error-handler.test.ts
   e2e: []
 artifacts:
