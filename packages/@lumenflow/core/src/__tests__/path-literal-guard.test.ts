@@ -41,6 +41,7 @@ const ALLOWED_FILES = [
   'wu-constants.ts', // Primary constants barrel (re-exports domain modules)
   'wu-paths-constants.ts', // WU-1549: Path constants source-of-truth (extracted from wu-constants.ts)
   'lumenflow-config-schema.ts', // Zod schema with defaults
+  'schemas/directories-config.ts', // WU-2016: Extracted directories schema defaults
   'lumenflow-config.ts', // Config file name constant
   'lumenflow-home.ts', // Home directory handling (uses LUMENFLOW_PATHS internally but has docstrings)
   'domain/orchestration.constants.ts', // Domain-specific constants (uses LUMENFLOW_PATHS where possible)

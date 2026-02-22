@@ -466,6 +466,7 @@ describe('WU-1548: Status literal regression guard', () => {
       'wu-constants.ts',
       'wu-paths-constants.ts', // WU-1549: DIRECTORIES source-of-truth definitions
       'lumenflow-config-schema.ts',
+      'schemas/directories-config.ts', // WU-2016: Extracted directories schema
       'wu-paths.ts',
       '__tests__/',
     ];
