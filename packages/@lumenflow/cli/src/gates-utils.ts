@@ -268,11 +268,15 @@ export function createAgentLogContext({
 
 // ── File system helpers ────────────────────────────────────────────────
 
-export async function filterExistingFiles(files: string[]): Promise<string[]> {
+export async function filterExistingFiles(
+  files: string[],
+  cwd: string = process.cwd(),
+): Promise<string[]> {
   const existingFiles = await Promise.all(
     files.map(async (file) => {
+      const filePath = path.isAbsolute(file) ? file : path.resolve(cwd, file);
       try {
-        await access(file);
+        await access(filePath);
         return file;
       } catch {
         return null;
