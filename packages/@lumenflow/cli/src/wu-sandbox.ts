@@ -102,7 +102,11 @@ function readWorkspaceSoftwareDelivery(projectRoot: string): Record<string, unkn
 
     const workspace = parsed as Record<string, unknown>;
     const softwareDelivery = workspace[SOFTWARE_DELIVERY_KEY];
-    if (!softwareDelivery || typeof softwareDelivery !== 'object' || Array.isArray(softwareDelivery)) {
+    if (
+      !softwareDelivery ||
+      typeof softwareDelivery !== 'object' ||
+      Array.isArray(softwareDelivery)
+    ) {
       return null;
     }
 

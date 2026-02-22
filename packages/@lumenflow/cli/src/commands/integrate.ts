@@ -315,9 +315,7 @@ function readWorkspaceSoftwareDeliveryConfig(
 
 function readEnforcementConfig(projectDir: string): IntegrateEnforcementConfig | null {
   const softwareDelivery = readWorkspaceSoftwareDeliveryConfig(projectDir);
-  return (
-    softwareDelivery?.agents?.clients?.[LUMENFLOW_CLIENT_IDS.CLAUDE_CODE]?.enforcement ?? null
-  );
+  return softwareDelivery?.agents?.clients?.[LUMENFLOW_CLIENT_IDS.CLAUDE_CODE]?.enforcement ?? null;
 }
 
 /**
