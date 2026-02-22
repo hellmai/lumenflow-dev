@@ -21,13 +21,7 @@ import {
 import { createGitForPath } from './git-adapter.js';
 import { readWU, writeWU } from './wu-yaml.js';
 import { WU_PATHS } from './wu-paths.js';
-import {
-  BRANCHES,
-  LOG_PREFIX,
-  EMOJI,
-  WU_STATUS,
-  LUMENFLOW_PATHS,
-} from './wu-constants.js';
+import { BRANCHES, LOG_PREFIX, EMOJI, WU_STATUS, LUMENFLOW_PATHS } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { createValidationError } from './wu-done-errors.js';
 import { validateDoneWU, validateAndNormalizeWUYAML } from './wu-schema.js';
@@ -62,7 +56,11 @@ export {
   checkEmptyMerge,
 } from './wu-done-preflight-checks.js';
 export type { CheckBranchOptions } from './wu-done-preflight-checks.js';
-export { autoRebaseBranch, assertNoConflictArtifactsInIndex, autoResolveAppendOnlyConflicts } from './wu-done-rebase.js';
+export {
+  autoRebaseBranch,
+  assertNoConflictArtifactsInIndex,
+  autoResolveAppendOnlyConflicts,
+} from './wu-done-rebase.js';
 export { mergeLaneBranch, isMainAncestorOfBranch } from './wu-done-merge.js';
 export type { MergeLaneBranchOptions } from './wu-done-merge.js';
 export { hasSessionCheckpoints, rollbackBranchOnMergeFailure } from './wu-done-utils.js';
@@ -240,11 +238,9 @@ export async function executeWorktreeCompletion(
     }
 
     console.log(`${LOG_PREFIX.DONE} Checking code_paths commit status (WU-1153)...`);
-    const codePathsResult = await validateCodePathsCommittedBeforeDone(
-      normalizedWU,
-      worktreeGit,
-      { abortOnFailure: false },
-    );
+    const codePathsResult = await validateCodePathsCommittedBeforeDone(normalizedWU, worktreeGit, {
+      abortOnFailure: false,
+    });
 
     if (!codePathsResult.valid) {
       const errorMessage = await import('./wu-done-validation.js').then((m) =>
@@ -372,7 +368,13 @@ export async function executeWorktreeCompletion(
 
     // WU-2014: Merge/PR phase delegated to wu-done-merge-phase.ts
     const mergeResult = await executeMergePhase({
-      id, title, laneBranch, docMain, docForUpdate, args, worktreePath,
+      id,
+      title,
+      laneBranch,
+      docMain,
+      docForUpdate,
+      args,
+      worktreePath,
     });
 
     clearRecoveryAttempts(id); // WU-1335: Clear recovery attempts on success

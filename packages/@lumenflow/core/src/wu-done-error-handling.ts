@@ -129,9 +129,7 @@ export async function handleCompletionError(ctx: CompletionErrorContext): Promis
       console.log(BOX.MID);
       console.log(`${BOX.SIDE}  Error: ${worktreeError.message}`);
       console.log(BOX.SIDE);
-      console.log(
-        `${BOX.SIDE}  WU-2310: Transaction files were rolled back to pre-commit state.`,
-      );
+      console.log(`${BOX.SIDE}  WU-2310: Transaction files were rolled back to pre-commit state.`);
       console.log(`${BOX.SIDE}  Worktree is now consistent (status=in_progress, no stamp).`);
     } else {
       console.log(`${BOX.SIDE}  WU:DONE FAILED - PARTIAL STATE (post-transaction)`);
