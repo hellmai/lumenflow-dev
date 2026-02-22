@@ -9,7 +9,6 @@ code_paths:
   - packages/@lumenflow/cli/src/**
   - packages/@lumenflow/core/src/**
   - packages/@lumenflow/memory/src/**
-  - packages/@lumenflow/metrics/src/**
 tests:
   manual:
     - 'Run `rg -n "\.lumenflow\.config\.yaml" packages/@lumenflow/{cli,core,memory,metrics}/src` and verify zero runtime hits.'
