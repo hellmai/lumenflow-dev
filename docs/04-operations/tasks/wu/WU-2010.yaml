@@ -14,6 +14,8 @@ code_paths:
   - packages/@lumenflow/core/src/merge-lock.ts
   - packages/@lumenflow/core/src/cleanup-lock.ts
   - packages/@lumenflow/core/src/adapters/terminal-renderer.adapter.ts
+  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
+  - packages/@lumenflow/core/src/gates-config.ts
 tests:
   manual:
     - Run pnpm gates from worktree — all tests pass
@@ -26,7 +28,14 @@ dependencies: []
 initiative: INIT-034
 phase: 1
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  Re-audit (2026-02-22): WU-2034/2022/2006 landed. New findings: (1) lumenflow-config-schema.ts has
+  5+ duration magic numbers (90*24*60*60*1000 etc), (2) gates-config.ts still hardcodes 90/100
+  thresholds in function bodies despite schema defaults, (3) lane-checker.ts:827 has fragile 4-level
+  path.dirname chain.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -35,9 +44,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Extract all raw numeric and string literals in @lumenflow/core/src into named constants. Includes: confidence threshold (30) duplicated in 3 files, SHA1 hex length (40), pass rate thresholds (90/50), keyword index bounds (10), content length minimums (50/100/20), git timeout (30000). Deduplicate lock timeouts between merge-lock.ts and cleanup-lock.ts into shared constants. Create display constants for truncation lengths and padding widths.'
+description: 'Extract all raw numeric and string literals in @lumenflow/core/src into named
+  constants. Includes: confidence threshold (30) duplicated in 3 files, SHA1 hex length (40), pass
+  rate thresholds (90/50), keyword index bounds (10), content length minimums (50/100/20), git
+  timeout (30000). Deduplicate lock timeouts between merge-lock.ts and cleanup-lock.ts into shared
+  constants. Create display constants for truncation lengths and padding widths.'
 acceptance:
   - No raw numeric literal (except 0, 1, -1, true, false) in business logic of @lumenflow/core/src/
-  - Duplicated constants (confidence threshold 30, lock timeout 30000/500, file size 131072/262144) consolidated to single source of truth
+  - Duplicated constants (confidence threshold 30, lock timeout 30000/500, file size 131072/262144)
+    consolidated to single source of truth
   - Shared lock constants and display constants exist under constants/ directory
   - All existing tests pass without modification
+  - Duration magic numbers in lumenflow-config-schema.ts (90d, 7d, 30d in ms) extracted to shared
+    DURATION_MS constants
+  - Coverage/lint thresholds in gates-config.ts (90 minCoverage, 100 maxEslintWarnings) use named
+    constants from gate-constants.ts
