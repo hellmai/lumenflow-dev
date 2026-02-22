@@ -176,11 +176,7 @@ export const EventArchivalConfigSchema = z.object({
    * Completed WU events older than this are moved to monthly archive files.
    * Active WU events (in_progress/blocked/waiting) are never archived.
    */
-  archiveAfter: z
-    .number()
-    .int()
-    .positive()
-    .default(DURATION_MS.NINETY_DAYS),
+  archiveAfter: z.number().int().positive().default(DURATION_MS.NINETY_DAYS),
 
   /**
    * Whether to keep archive files (default: true).
@@ -595,21 +591,13 @@ export const SignalCleanupConfigSchema = z.object({
    * TTL for read signals in milliseconds (default: 7 days).
    * Read signals older than this are removed during cleanup.
    */
-  ttl: z
-    .number()
-    .int()
-    .positive()
-    .default(DURATION_MS.SEVEN_DAYS),
+  ttl: z.number().int().positive().default(DURATION_MS.SEVEN_DAYS),
 
   /**
    * TTL for unread signals in milliseconds (default: 30 days).
    * Unread signals get a longer TTL to ensure important signals aren't missed.
    */
-  unreadTtl: z
-    .number()
-    .int()
-    .positive()
-    .default(DURATION_MS.THIRTY_DAYS),
+  unreadTtl: z.number().int().positive().default(DURATION_MS.THIRTY_DAYS),
 
   /**
    * Maximum number of signals to retain (default: 500).
@@ -761,18 +749,10 @@ export const MemoryConfigSchema = z.object({
   directory: z.string().default('memory-bank/'),
 
   /** Session TTL in milliseconds (default: 7 days) */
-  sessionTtl: z
-    .number()
-    .int()
-    .positive()
-    .default(DURATION_MS.SEVEN_DAYS),
+  sessionTtl: z.number().int().positive().default(DURATION_MS.SEVEN_DAYS),
 
   /** Checkpoint TTL in milliseconds (default: 30 days) */
-  checkpointTtl: z
-    .number()
-    .int()
-    .positive()
-    .default(DURATION_MS.THIRTY_DAYS),
+  checkpointTtl: z.number().int().positive().default(DURATION_MS.THIRTY_DAYS),
 
   /** Enable auto-cleanup (default: true) */
   enableAutoCleanup: z.boolean().default(true),
