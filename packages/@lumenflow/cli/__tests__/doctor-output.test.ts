@@ -12,10 +12,11 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { CONFIG_FILES } from '@lumenflow/core/wu-constants';
 import type { DoctorResult } from '../src/doctor.js';
 
 /** Test constant for config file name to avoid sonarjs/no-duplicate-string */
-const LUMENFLOW_CONFIG_FILE = '.lumenflow.config.yaml';
+const WORKSPACE_CONFIG_FILE = CONFIG_FILES.WORKSPACE_CONFIG;
 
 /** Test constant for checkmark symbol */
 const CHECKMARK = '\u2713';
@@ -57,7 +58,7 @@ describe('WU-1968: Doctor output dedup and prerequisite formatting', () => {
       fs.writeFileSync(path.join(tempDir, 'AGENTS.md'), '# Universal Agent Instructions\n');
     }
     if (options.lumenflowConfig) {
-      fs.writeFileSync(path.join(tempDir, LUMENFLOW_CONFIG_FILE), 'version: 1.0\n');
+      fs.writeFileSync(path.join(tempDir, WORKSPACE_CONFIG_FILE), 'software_delivery: {}\n');
     }
   }
 

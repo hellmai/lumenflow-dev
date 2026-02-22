@@ -53,13 +53,14 @@ function createMemoryProject(baseDir: string): void {
 
   // Create minimal config
   const configContent = `
-version: 1
-memory:
-  enabled: true
-  decay:
-    enabled: false
+software_delivery:
+  version: 1
+  memory:
+    enabled: true
+    decay:
+      enabled: false
 `;
-  writeFileSync(join(baseDir, '.lumenflow.config.yaml'), configContent);
+  writeFileSync(join(baseDir, 'workspace.yaml'), configContent);
 }
 
 describe('Memory Layer Integration Tests (WU-1363)', () => {

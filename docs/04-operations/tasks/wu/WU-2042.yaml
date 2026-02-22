@@ -9,6 +9,7 @@ code_paths:
   - apps/docs/src/content/docs
   - docs/04-operations/_frameworks/lumenflow
   - packages/@lumenflow/cli/__tests__
+  - packages/@lumenflow/cli/src/__tests__
   - packages/@lumenflow/cli/e2e
   - packages/@lumenflow/core/src/__tests__
 tests:
@@ -19,6 +20,7 @@ tests:
     - pnpm --filter @lumenflow/docs build
   unit:
     - packages/@lumenflow/cli/__tests__/doctor-output.test.ts
+    - packages/@lumenflow/core/src/__tests__/kernel-first-config-parity.test.ts
     - packages/@lumenflow/core/src/__tests__/path-centralization.test.ts
   e2e:
     - packages/@lumenflow/cli/e2e/claude-enforcement.test.ts

@@ -50,23 +50,24 @@ function createInitiativeProject(baseDir: string): void {
 
   // Create config
   const configContent = `
-version: 1
-lanes:
-  definitions:
-    - name: 'Framework: CLI'
-      wip_limit: 1
-      code_paths:
-        - 'packages/@lumenflow/cli/**'
-    - name: 'Framework: Core'
-      wip_limit: 1
-      code_paths:
-        - 'packages/@lumenflow/core/**'
-git:
-  requireRemote: false
-initiatives:
-  enabled: true
+software_delivery:
+  version: 1
+  lanes:
+    definitions:
+      - name: 'Framework: CLI'
+        wip_limit: 1
+        code_paths:
+          - 'packages/@lumenflow/cli/**'
+      - name: 'Framework: Core'
+        wip_limit: 1
+        code_paths:
+          - 'packages/@lumenflow/core/**'
+  git:
+    requireRemote: false
+  initiatives:
+    enabled: true
 `;
-  writeFileSync(join(baseDir, '.lumenflow.config.yaml'), configContent);
+  writeFileSync(join(baseDir, 'workspace.yaml'), configContent);
 
   // Initialize git
   execFileSync('git', ['init'], { cwd: baseDir, stdio: 'pipe' });

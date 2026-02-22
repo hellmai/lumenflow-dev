@@ -22,6 +22,8 @@ import { parse as parseYAML } from 'yaml';
 
 const CLAUDE_CODE_CLIENT = 'claude-code';
 const DOCS_LANE = 'Content: Framework Docs';
+const WORKSPACE_CONFIG_FILE = 'workspace.yaml';
+const WORKSPACE_SOFTWARE_DELIVERY_KEY = 'software_delivery';
 
 interface CommandResult {
   code: number;
@@ -106,21 +108,20 @@ describe('WU-1367: Claude Enforcement E2E', () => {
   });
 
   describe('Config Schema Integration', () => {
-    it('should parse enforcement config from .lumenflow.config.yaml', async () => {
-      const configPath = path.join(testDir, '.lumenflow.config.yaml');
+    it('should parse enforcement config from workspace.yaml', async () => {
+      const configPath = path.join(testDir, WORKSPACE_CONFIG_FILE);
       fs.writeFileSync(
         configPath,
         `
-version: '2.0'
-project: test
-agents:
-  clients:
-    claude-code:
-      enforcement:
-        hooks: true
-        block_outside_worktree: true
-        require_wu_for_edits: false
-        warn_on_stop_without_wu_done: true
+software_delivery:
+  agents:
+    clients:
+      claude-code:
+        enforcement:
+          hooks: true
+          block_outside_worktree: true
+          require_wu_for_edits: false
+          warn_on_stop_without_wu_done: true
 `,
       );
 
@@ -129,8 +130,9 @@ agents:
       const yaml = await import('yaml');
 
       const content = fs.readFileSync(configPath, 'utf-8');
-      const rawConfig = yaml.parse(content);
-      const config = parseConfig(rawConfig);
+      const rawWorkspace = yaml.parse(content) as Record<string, unknown>;
+      const softwareDelivery = rawWorkspace[WORKSPACE_SOFTWARE_DELIVERY_KEY] ?? {};
+      const config = parseConfig(softwareDelivery);
 
       expect(config.agents.clients[CLAUDE_CODE_CLIENT]).toBeDefined();
       expect(config.agents.clients[CLAUDE_CODE_CLIENT].enforcement).toBeDefined();
@@ -208,18 +210,17 @@ agents:
   describe('Hook Sync Integration', () => {
     it('should sync hooks when called via syncEnforcementHooks', async () => {
       // Create config file
-      const configPath = path.join(testDir, '.lumenflow.config.yaml');
+      const configPath = path.join(testDir, WORKSPACE_CONFIG_FILE);
       fs.writeFileSync(
         configPath,
         `
-version: '2.0'
-project: test
-agents:
-  clients:
-    claude-code:
-      enforcement:
-        hooks: true
-        block_outside_worktree: true
+software_delivery:
+  agents:
+    clients:
+      claude-code:
+        enforcement:
+          hooks: true
+          block_outside_worktree: true
 `,
       );
 
@@ -234,17 +235,16 @@ agents:
     });
 
     it('should skip sync when hooks disabled in config', async () => {
-      const configPath = path.join(testDir, '.lumenflow.config.yaml');
+      const configPath = path.join(testDir, WORKSPACE_CONFIG_FILE);
       fs.writeFileSync(
         configPath,
         `
-version: '2.0'
-project: test
-agents:
-  clients:
-    claude-code:
-      enforcement:
-        hooks: false
+software_delivery:
+  agents:
+    clients:
+      claude-code:
+        enforcement:
+          hooks: false
 `,
       );
 

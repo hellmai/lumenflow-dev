@@ -397,7 +397,7 @@ describe('WU-1203: Progress Signals Config Schema', () => {
  * 1. LaneConfigSchema includes lock_policy field with enum validation
  * 2. Default value is 'all' for backward compatibility
  * 3. TypeScript types exported: LockPolicy type
- * 4. Example added to .lumenflow.config.yaml (commented)
+ * 4. Example added to workspace.yaml software_delivery (commented)
  * 5. All existing tests pass (no breaking changes)
  */
 describe('WU-1322: LockPolicy Config Schema', () => {
@@ -505,7 +505,7 @@ describe('WU-1322: LockPolicy Config Schema', () => {
 
   describe('AC5: No breaking changes to existing lane config', () => {
     it('should parse existing lane config without lock_policy', () => {
-      // Simulates existing .lumenflow.config.yaml lanes without lock_policy
+      // Simulates existing workspace.yaml software_delivery lanes without lock_policy
       const existingLaneConfig = {
         name: TEST_LANE_FRAMEWORK_CORE,
         wip_limit: 1,
@@ -710,7 +710,7 @@ describe('WU-1674: delegation_context_max_size Config Schema', () => {
  * Acceptance Criteria:
  * 1. LumenFlowConfigSchema includes lanes field with proper typing
  * 2. resolveLaneConfigsFromConfig receives typed lanes from getConfig()
- * 3. Existing lane config from .lumenflow.config.yaml is correctly parsed
+ * 3. Existing lane config from workspace.yaml software_delivery is correctly parsed
  * 4. Unit tests verify lanes are preserved through Zod parsing
  */
 describe('WU-1345: Lanes field in LumenFlowConfigSchema', () => {
@@ -816,9 +816,9 @@ describe('WU-1345: Lanes field in LumenFlowConfigSchema', () => {
     });
   });
 
-  describe('AC3: Existing lane config from .lumenflow.config.yaml is correctly parsed', () => {
+  describe('AC3: Existing lane config from workspace.yaml software_delivery is correctly parsed', () => {
     it('should parse real-world lanes config structure', () => {
-      // Mirrors the actual .lumenflow.config.yaml structure
+      // Mirrors the actual workspace.yaml software_delivery lane structure
       const realWorldConfig = {
         lanes: {
           enforcement: {

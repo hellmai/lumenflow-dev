@@ -37,7 +37,7 @@ const TEST_SPAWN_CLIENT = 'claude-code';
  * Snapshot of pre-INIT-009 default policy values.
  *
  * These are the values that existing LumenFlow users expect when they
- * have no methodology config in their .lumenflow.config.yaml.
+ * have no methodology config in their workspace.yaml software_delivery block.
  */
 const PRE_INIT_009_DEFAULTS = {
   testing: 'tdd',

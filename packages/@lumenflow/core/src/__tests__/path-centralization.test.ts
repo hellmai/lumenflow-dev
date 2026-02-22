@@ -39,7 +39,6 @@ import {
 
 /** Config file names used by config loader precedence rules */
 const WORKSPACE_CONFIG_FILE = 'workspace.yaml';
-const LEGACY_CONFIG_FILE = '.lumenflow.config.yaml';
 
 /** Build a minimal workspace.yaml payload with software_delivery overrides */
 function createWorkspaceConfig(softwareDelivery: Record<string, unknown>): Record<string, unknown> {
@@ -135,53 +134,14 @@ describe('WU-1301: CLI path centralization', () => {
       expect(config.directories.initiativesDir).toBe('workspace/tasks/initiatives');
     });
 
-    it('should prefer workspace.yaml over legacy config when both exist', async () => {
-      const workspaceConfig = createWorkspaceConfig({
-        directories: {
-          wuDir: 'workspace-first/wu',
-        },
-      });
-      const legacyConfig = {
-        directories: {
-          wuDir: 'legacy/wu',
-        },
-      };
-
-      await writeFile(
-        path.join(tempDir, WORKSPACE_CONFIG_FILE),
-        yaml.stringify(workspaceConfig),
-        'utf-8',
-      );
-      await writeFile(
-        path.join(tempDir, LEGACY_CONFIG_FILE),
-        yaml.stringify(legacyConfig),
-        'utf-8',
-      );
-
-      clearConfigCache();
-      const config = getConfig({ projectRoot: tempDir });
-
-      expect(config.directories.wuDir).toBe('workspace-first/wu');
-    });
-
-    it('should ignore legacy config when workspace.yaml is invalid for software_delivery', async () => {
+    it('should use defaults when workspace.yaml is invalid for software_delivery', async () => {
       const invalidWorkspaceConfig = {
-        id: 'legacy-only-workspace',
-      };
-      const legacyConfig = {
-        directories: {
-          wuDir: 'legacy-fallback/wu',
-        },
+        id: 'invalid-workspace',
       };
 
       await writeFile(
         path.join(tempDir, WORKSPACE_CONFIG_FILE),
         yaml.stringify(invalidWorkspaceConfig),
-        'utf-8',
-      );
-      await writeFile(
-        path.join(tempDir, LEGACY_CONFIG_FILE),
-        yaml.stringify(legacyConfig),
         'utf-8',
       );
 
@@ -191,19 +151,7 @@ describe('WU-1301: CLI path centralization', () => {
       expect(config.directories.wuDir).toBe('docs/04-operations/tasks/wu');
     });
 
-    it('should ignore legacy config when workspace.yaml is missing', async () => {
-      const legacyConfig = {
-        directories: {
-          wuDir: 'legacy-only/wu',
-        },
-      };
-
-      await writeFile(
-        path.join(tempDir, LEGACY_CONFIG_FILE),
-        yaml.stringify(legacyConfig),
-        'utf-8',
-      );
-
+    it('should use defaults when workspace.yaml is missing', async () => {
       clearConfigCache();
       const config = getConfig({ projectRoot: tempDir });
 

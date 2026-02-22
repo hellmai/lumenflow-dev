@@ -7,7 +7,7 @@
  * WU-1067: Config-driven gates execution
  *
  * Tests for the config-driven gates system that allows users to define
- * custom format, lint, test commands in .lumenflow.config.yaml instead
+ * custom format, lint, test commands in workspace.yaml software_delivery instead
  * of relying on hardcoded language presets.
  */
 

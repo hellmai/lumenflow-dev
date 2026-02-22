@@ -8,7 +8,7 @@
  * 1. wu:spawn detects memory.jsonl existence
  * 2. When memory exists, wu:spawn calls mem:context internally
  * 3. Context block embedded in spawn prompt under ## Memory Context section
- * 4. Max context size configurable (default 4KB, from .lumenflow.config.yaml)
+ * 4. Max context size configurable (default 4KB, from workspace.yaml)
  * 5. Graceful skip if memory layer not initialized (no error)
  * 6. --no-context flag allows skipping context injection
  * 7. Unit tests verify integration logic

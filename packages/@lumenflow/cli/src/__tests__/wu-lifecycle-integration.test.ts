@@ -49,21 +49,22 @@ function createTestProject(baseDir: string): void {
     mkdirSync(join(baseDir, dir), { recursive: true });
   }
 
-  // Create minimal .lumenflow.config.yaml
+  // Create minimal workspace.yaml
   const configContent = `
-version: 1
-lanes:
-  definitions:
-    - name: 'Framework: CLI'
-      wip_limit: 1
-      code_paths:
-        - 'packages/@lumenflow/cli/**'
-git:
-  requireRemote: false
-experimental:
-  context_validation: false
+software_delivery:
+  version: 1
+  lanes:
+    definitions:
+      - name: 'Framework: CLI'
+        wip_limit: 1
+        code_paths:
+          - 'packages/@lumenflow/cli/**'
+  git:
+    requireRemote: false
+  experimental:
+    context_validation: false
 `;
-  writeFileSync(join(baseDir, '.lumenflow.config.yaml'), configContent);
+  writeFileSync(join(baseDir, 'workspace.yaml'), configContent);
 
   // Create minimal package.json
   const packageJson = {

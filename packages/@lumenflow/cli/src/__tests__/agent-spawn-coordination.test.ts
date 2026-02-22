@@ -66,23 +66,24 @@ function createSpawnProject(baseDir: string): void {
 
   // Create config with lane definitions
   const configContent = `
-version: 1
-lanes:
-  definitions:
-    - name: 'Framework: CLI'
-      wip_limit: 1
-      code_paths:
-        - 'packages/@lumenflow/cli/**'
-    - name: 'Framework: Core'
-      wip_limit: 1
-      code_paths:
-        - 'packages/@lumenflow/core/**'
-agents:
-  defaultClient: claude-code
-git:
-  requireRemote: false
+software_delivery:
+  version: 1
+  lanes:
+    definitions:
+      - name: 'Framework: CLI'
+        wip_limit: 1
+        code_paths:
+          - 'packages/@lumenflow/cli/**'
+      - name: 'Framework: Core'
+        wip_limit: 1
+        code_paths:
+          - 'packages/@lumenflow/core/**'
+  agents:
+    defaultClient: claude-code
+  git:
+    requireRemote: false
 `;
-  writeFileSync(join(baseDir, '.lumenflow.config.yaml'), configContent);
+  writeFileSync(join(baseDir, 'workspace.yaml'), configContent);
 
   // Initialize git
   execFileSync('git', ['init'], { cwd: baseDir, stdio: 'pipe' });

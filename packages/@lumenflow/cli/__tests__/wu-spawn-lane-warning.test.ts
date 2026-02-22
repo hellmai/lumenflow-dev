@@ -5,7 +5,7 @@ import { generateLaneOccupationWarning } from '../dist/wu-spawn.js';
  * WU-1346: Tests for lane occupation warning generation
  *
  * These tests verify generateLaneOccupationWarning uses injected config values
- * instead of reading from repo-specific .lumenflow.config.yaml.
+ * instead of reading from repo-specific workspace files.
  * This makes tests portable and independent of actual config file content.
  */
 

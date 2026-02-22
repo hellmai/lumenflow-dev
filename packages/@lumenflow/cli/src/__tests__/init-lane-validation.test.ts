@@ -7,7 +7,7 @@
  *
  * WU-1748: Validation moved from init-time to lane lifecycle commands.
  *
- * When .lumenflow.config.yaml defines lanes with "Parent: Sublane" format,
+ * When workspace.yaml software_delivery defines lanes with "Parent: Sublane" format,
  * the parent name must exist in .lumenflow.lane-inference.yaml.
  * Invalid parents (e.g., "Foundation: Core" when "Foundation" is not a parent
  * in the inference hierarchy) should generate warnings at init time,
