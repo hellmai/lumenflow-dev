@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2005 — Derive initiative phase status from phase WU completion](wu/WU-2005.yaml)
 
 ## Completed
 

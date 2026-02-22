@@ -2,7 +2,7 @@ id: WU-2005
 title: Derive initiative phase status from phase WU completion
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -26,8 +26,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: initiative:status currently shows stale phase metadata (for example pending) even when all WUs in a phase are done. Derive displayed phase status from phase WU progress to keep output truthful.
+description: initiative:status currently shows stale phase metadata (for example pending) even when
+  all WUs in a phase are done. Derive displayed phase status from phase WU progress to keep output
+  truthful.
 acceptance:
   - initiative:status shows phase row as done when all WUs in that phase are done
   - stale phase metadata no longer causes misleading pending phase output
   - Regression tests cover derived phase status behavior
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2005
+claimed_at: 2026-02-22T04:01:07.596Z
+baseline_main_sha: b9b703596e0596759975ee948369374ffc56a32d
+session_id: 3393821e-803f-4231-b2e8-60114a7738fe
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T04:01:07.604Z
