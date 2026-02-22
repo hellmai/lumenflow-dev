@@ -2,7 +2,7 @@ id: WU-2049
 title: 'INIT-034 follow-up: consolidate duplicates and fix naming collisions'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -27,7 +27,9 @@ artifacts:
 dependencies: []
 initiative: INIT-034
 risks: []
-notes: 'Single WU per wu-sizing-guide.md Shallow Multi-File Exception: uniform mechanical changes (rename, deduplicate, remove), each file <=5 lines changed, no structural modifications. All 6 code review findings consolidated.'
+notes: 'Single WU per wu-sizing-guide.md Shallow Multi-File Exception: uniform mechanical changes
+  (rename, deduplicate, remove), each file <=5 lines changed, no structural modifications. All 6
+  code review findings consolidated.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -36,7 +38,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Code review of INIT-034 found 6 issues (2 medium, 4 low). All are mechanical cleanup: rename LOCK_TIMEOUT_MS to avoid collision with core constant, consolidate duplicate type definitions (LockData, RepairResult, WUStateEntry, CheckpointOptions) to single canonical locations, remove duplicate getErrorMessage helper, clean up hollow spawn-lane-occupation.ts module, and replace type assertions with proper narrowing. Fits Simple tier (<20 files, <50 tool calls) — uniform mechanical changes across ~10-12 files.'
+description: 'Code review of INIT-034 found 6 issues (2 medium, 4 low). All are mechanical cleanup:
+  rename LOCK_TIMEOUT_MS to avoid collision with core constant, consolidate duplicate type
+  definitions (LockData, RepairResult, WUStateEntry, CheckpointOptions) to single canonical
+  locations, remove duplicate getErrorMessage helper, clean up hollow spawn-lane-occupation.ts
+  module, and replace type assertions with proper narrowing. Fits Simple tier (<20 files, <50 tool
+  calls) — uniform mechanical changes across ~10-12 files.'
 acceptance:
   - LOCK_TIMEOUT_MS in wu-lock-manager.ts renamed to avoid collision with core lock-constants.ts
   - 'Duplicate type definitions consolidated: ports are canonical source, concrete modules re-export'
@@ -44,3 +51,11 @@ acceptance:
   - spawn-lane-occupation.ts either has real logic or is removed (re-exported from parent)
   - Type assertions replaced with proper type guards where feasible
   - All gates green
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2049
+claimed_at: 2026-02-22T23:25:58.725Z
+baseline_main_sha: 6abf18c4bdba69ac11dfb1ef2f7348d0f5c689fe
+session_id: ad4aa240-d1c2-4473-8eae-2450dcf0a3bc
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T23:25:58.733Z
