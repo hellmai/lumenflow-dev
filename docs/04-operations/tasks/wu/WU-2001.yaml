@@ -10,6 +10,7 @@ code_paths:
   - vitest.config.ts
   - tools/testing/workspace-vitest-aliases.ts
   - tools/__tests__/workspace-vitest-aliases.test.ts
+  - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
 tests:
   manual:
     - Run pnpm wu:done for an unrelated CLI WU and confirm test gate does not fail on wu-done model
@@ -17,6 +18,7 @@ tests:
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
     - tools/__tests__/workspace-vitest-aliases.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/cli-integration.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2001.done
