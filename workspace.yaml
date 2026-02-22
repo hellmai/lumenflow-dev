@@ -444,6 +444,14 @@ software_delivery:
           - packages/@lumenflow/core/src/code-path-validator.ts
           - packages/@lumenflow/core/src/system-map-validator.ts
           - packages/@lumenflow/core/src/coverage-gate.ts
+          - packages/@lumenflow/core/src/lumenflow-config*.ts
+          - packages/@lumenflow/core/src/config-*.ts
+          - packages/@lumenflow/core/src/invariants-runner.ts
+          - packages/@lumenflow/core/src/gates-*.ts
+          - packages/@lumenflow/core/src/constants/**
+          - packages/@lumenflow/core/src/work-classifier.ts
+          - packages/@lumenflow/core/src/adapters/**
+          - packages/@lumenflow/core/src/*-constants.ts
       - name: 'Framework: Core State Recovery'
         wip_limit: 1
         lock_policy: all
