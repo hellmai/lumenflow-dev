@@ -18,6 +18,12 @@ import {
 const DEFAULT_HEAD_REF = 'HEAD';
 const BASE_REF_CANDIDATES = ['origin/main', 'main'] as const;
 const BASE_REF_UNAVAILABLE_REASON = `Unable to resolve git base ref (tried ${BASE_REF_CANDIDATES.join(', ')}).`;
+const GLOB_IGNORE_PATTERNS = ['**/node_modules/**'] as const;
+const GLOB_INCLUDE_DOT_ENTRIES = true;
+const GLOB_ONLY_FILES = false;
+const GLOB_FOLLOW_SYMLINKS = false;
+const GLOB_SUPPRESS_ERRORS = true;
+const GLOB_REQUIRE_UNIQUE_MATCHES = true;
 
 const PATH_NOT_FOUND_PATTERNS = [
   /does not exist in/i,
@@ -35,9 +41,12 @@ type JsonRefReadResult =
 function getGlobOptions(cwd: string) {
   return {
     cwd,
-    dot: true,
-    onlyFiles: false,
-    unique: true,
+    dot: GLOB_INCLUDE_DOT_ENTRIES,
+    onlyFiles: GLOB_ONLY_FILES,
+    followSymbolicLinks: GLOB_FOLLOW_SYMLINKS,
+    suppressErrors: GLOB_SUPPRESS_ERRORS,
+    ignore: GLOB_IGNORE_PATTERNS,
+    unique: GLOB_REQUIRE_UNIQUE_MATCHES,
   } as const;
 }
 
@@ -96,8 +105,12 @@ export function pathReferenceExistsSync(reference: string, cwd: string): boolean
   }
 
   if (hasGlobPattern(normalizedReference)) {
-    const matches = fg.sync(normalizedReference, getGlobOptions(cwd));
-    return matches.length > 0;
+    try {
+      const matches = fg.sync(normalizedReference, getGlobOptions(cwd));
+      return matches.length > 0;
+    } catch {
+      return false;
+    }
   }
 
   const fullPath = path.join(cwd, normalizedReference);
@@ -111,8 +124,12 @@ export async function pathReferenceExists(reference: string, cwd: string): Promi
   }
 
   if (hasGlobPattern(normalizedReference)) {
-    const matches = await fg(normalizedReference, getGlobOptions(cwd));
-    return matches.length > 0;
+    try {
+      const matches = await fg(normalizedReference, getGlobOptions(cwd));
+      return matches.length > 0;
+    } catch {
+      return false;
+    }
   }
 
   const fullPath = path.join(cwd, normalizedReference);

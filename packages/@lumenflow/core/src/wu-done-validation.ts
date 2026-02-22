@@ -7,6 +7,7 @@
 
 import path from 'node:path';
 import { existsSync, readFileSync } from 'node:fs';
+import { minimatch } from 'minimatch';
 import { getGitForCwd } from './git-adapter.js';
 import { parseYAML } from './wu-yaml.js';
 import { die } from './error-handler.js';
@@ -23,6 +24,8 @@ import {
   WU_STATUS,
 } from './wu-constants.js';
 import { PLACEHOLDER_SENTINEL } from './wu-schema.js';
+import { hasGlobPattern } from './wu-rules-core.js';
+import { pathReferenceExistsSync } from './wu-rules-resolvers.js';
 import { resolveExposureDefault } from './wu-validation.js';
 import { validateAutomatedTestRequirement } from './manual-test-validator.js';
 import { isDocumentationPath } from './file-classifiers.js';
@@ -55,6 +58,9 @@ interface ValidatePostMutationInput {
   stampPath: string;
   eventsPath?: string | null;
 }
+
+const GIT_TREE_LIST_ARGS = ['-r', '--name-only'] as const;
+const GLOB_MATCH_OPTIONS = { dot: true } as const;
 
 export function applyExposureDefaults(
   doc: WUDoneValidationDoc | null | undefined,
@@ -118,8 +124,11 @@ export async function validateCodePathsExist(
   if (worktreePath && existsSync(worktreePath)) {
     // Worktree mode: validate files exist in worktree
     for (const filePath of codePaths) {
-      const fullPath = path.join(worktreePath, filePath);
-      if (!existsSync(fullPath)) {
+      const existsInWorktree = hasGlobPattern(filePath)
+        ? pathReferenceExistsSync(filePath, worktreePath)
+        : existsSync(path.join(worktreePath, filePath));
+
+      if (!existsInWorktree) {
         missing.push(filePath);
       }
     }
@@ -137,8 +146,29 @@ export async function validateCodePathsExist(
     // Branch-only or post-merge: use git ls-tree to check files on target branch
     try {
       const gitAdapter = getGitForCwd();
+      const branchFileListOutput = await gitAdapter.raw([
+        GIT_COMMANDS.LS_TREE,
+        ...GIT_TREE_LIST_ARGS,
+        targetBranch,
+      ]);
+      const branchFiles = branchFileListOutput
+        .split(STRING_LITERALS.NEWLINE)
+        .map((entry) => entry.trim())
+        .filter(Boolean);
 
       for (const filePath of codePaths) {
+        if (hasGlobPattern(filePath)) {
+          const hasGlobMatch = branchFiles.some((branchFile) =>
+            minimatch(branchFile, filePath, GLOB_MATCH_OPTIONS),
+          );
+
+          if (!hasGlobMatch) {
+            missing.push(filePath);
+          }
+
+          continue;
+        }
+
         try {
           // git ls-tree returns empty for non-existent files
           const result = await gitAdapter.raw([GIT_COMMANDS.LS_TREE, targetBranch, '--', filePath]);

@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -18,6 +18,16 @@ function writeRepoFile(root: string, relativePath: string, content = ''): void {
   const fullPath = path.join(root, relativePath);
   mkdirSync(path.dirname(fullPath), { recursive: true });
   writeFileSync(fullPath, content, 'utf-8');
+}
+
+function writeRepoSymlink(
+  root: string,
+  relativeLinkPath: string,
+  targetRelativePath: string,
+): void {
+  const fullLinkPath = path.join(root, relativeLinkPath);
+  mkdirSync(path.dirname(fullLinkPath), { recursive: true });
+  symlinkSync(targetRelativePath, fullLinkPath, 'dir');
 }
 
 describe('wu-preflight validators (reality adapters)', () => {
@@ -82,5 +92,37 @@ describe('wu-preflight validators (reality adapters)', () => {
 
     expect(result.valid).toBe(false);
     expect(result.missing).toEqual([missingPath]);
+  });
+
+  it('does not throw when glob code_paths encounter cyclic workspace symlinks', () => {
+    const root = createTmpRepo();
+    tempDirs.push(root);
+
+    writeRepoFile(root, 'packages/@lumenflow/cli/src/main.ts', 'export const main = true;');
+    writeRepoSymlink(
+      root,
+      'packages/@lumenflow/cli/node_modules/@lumenflow/agent',
+      '../../../agent',
+    );
+    writeRepoSymlink(
+      root,
+      'packages/@lumenflow/agent/node_modules/@lumenflow/memory',
+      '../../../memory',
+    );
+    writeRepoSymlink(
+      root,
+      'packages/@lumenflow/memory/node_modules/@lumenflow/core',
+      '../../../core',
+    );
+    writeRepoSymlink(
+      root,
+      'packages/@lumenflow/core/node_modules/@lumenflow/memory',
+      '../../../memory',
+    );
+
+    const result = validateCodePathsExistence(['packages/@lumenflow/cli/**'], root);
+
+    expect(result.valid).toBe(true);
+    expect(result.missing).toEqual([]);
   });
 });
