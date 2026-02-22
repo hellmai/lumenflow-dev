@@ -29,7 +29,9 @@ dependencies: []
 initiative: INIT-034
 phase: 3
 risks: []
-notes: 'Audit origin: INIT-034 code review (2026-02-22). P0 items 1 and 2 from audit report. These modules were extracted by WU-2012/2013/2015/2017/2018 but only facade-level tests existed. Each new test file should test the module in isolation, not through the facade.'
+notes: 'Audit origin: INIT-034 code review (2026-02-22). P0 items 1 and 2 from audit report. These
+  modules were extracted by WU-2012/2013/2015/2017/2018 but only facade-level tests existed. Each
+  new test file should test the module in isolation, not through the facade.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -38,12 +40,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: INIT-034 code review found ~3,500 lines of decomposed code with zero direct unit tests. Decomposed sub-modules (WU-2012/2013/2015) are tested only indirectly through facade test files. 6 of 7 InvariantChecker strategy implementations (WU-2017) have no dedicated tests. The strategy registry mechanism (registerInvariantChecker/getInvariantChecker) is untested exported public API. Strategy map completeness (WU-2018 FILE_REPAIR_STRATEGIES/GIT_REPAIR_STRATEGIES) is not validated. This violates the 90% coverage target on new code.
+description: INIT-034 code review found ~3,500 lines of decomposed code with zero direct unit tests.
+  Decomposed sub-modules (WU-2012/2013/2015) are tested only indirectly through facade test files. 6
+  of 7 InvariantChecker strategy implementations (WU-2017) have no dedicated tests. The strategy
+  registry mechanism (registerInvariantChecker/getInvariantChecker) is untested exported public API.
+  Strategy map completeness (WU-2018 FILE_REPAIR_STRATEGIES/GIT_REPAIR_STRATEGIES) is not validated.
+  This violates the 90% coverage target on new code.
 acceptance:
   - wu-event-sourcer.test.ts created with tests for event append, file creation, replay
   - wu-state-indexer.test.ts created with tests for index updates on status transitions
-  - wu-inconsistency-repairer.test.ts created with tests for strategy dispatch, categorization, unknown-type handling
-  - invariants-runner-strategy.test.ts created testing all 7 InvariantChecker implementations individually
+  - wu-inconsistency-repairer.test.ts created with tests for strategy dispatch, categorization,
+    unknown-type handling
+  - invariants-runner-strategy.test.ts created testing all 7 InvariantChecker implementations
+    individually
   - 'Registry mechanism tested: registerInvariantChecker, getInvariantChecker, unknown type fallback'
   - 'Strategy map completeness test: all CONSISTENCY_TYPES with canAutoRepair have handlers'
   - spawn-prompt-helpers.test.ts created covering 9 exported functions
