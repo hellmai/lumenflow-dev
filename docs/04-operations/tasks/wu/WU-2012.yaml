@@ -2,7 +2,7 @@ id: WU-2012
 title: Decompose wu-spawn.ts god object (2342 lines)
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-22
 code_paths:
@@ -52,3 +52,6 @@ acceptance:
   - Each extracted module has a single responsibility and under 500 lines
   - All existing wu-spawn tests pass without modification
   - Public API (index.ts exports) unchanged — zero breaking changes
+locked: true
+completed_at: 2026-02-22T15:19:05.640Z
+completed: 2026-02-22

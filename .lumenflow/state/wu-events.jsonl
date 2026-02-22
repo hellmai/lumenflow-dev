@@ -1997,5 +1997,6 @@
 {"type":"complete","wuId":"WU-2013","timestamp":"2026-02-22T15:00:14.599Z"}
 {"type":"complete","wuId":"WU-2039","timestamp":"2026-02-22T15:01:43.792Z"}
 {"type":"complete","wuId":"WU-2015","timestamp":"2026-02-22T15:09:12.111Z"}
-{"type":"claim","wuId":"WU-2014","lane":"Framework: Core Lifecycle","title":"Decompose wu-done-worktree.ts (1777 lines)","timestamp":"2026-02-22T15:11:31.838Z"}
-{"type":"claim","wuId":"WU-2019","lane":"Framework: Core Validation","title":"Replace work-classifier domain switch with data map","timestamp":"2026-02-22T15:13:04.311Z"}
+{"type":"claim","wuId":"WU-2014","timestamp":"2026-02-22T15:11:31.838Z","lane":"Framework: Core Lifecycle","title":"Decompose wu-done-worktree.ts (1777 lines)"}
+{"type":"claim","wuId":"WU-2019","timestamp":"2026-02-22T15:13:04.311Z","lane":"Framework: Core Validation","title":"Replace work-classifier domain switch with data map"}
+{"type":"complete","wuId":"WU-2012","timestamp":"2026-02-22T15:19:10.593Z"}
