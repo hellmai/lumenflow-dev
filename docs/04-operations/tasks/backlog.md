@@ -32,7 +32,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2052 — Fix filterExistingFiles CWD bug in incremental format check](wu/WU-2052.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1004,6 +1004,7 @@ sections:
 - [WU-2048 — Final constants DRY sweep: cross-package literals and WUDoc canonicalization](wu/WU-2048.yaml)
 - [WU-2051 — Final cleanup: remove remaining live-surface legacy config references](wu/WU-2051.yaml)
 - [WU-2053 — P0: fix TS7006 build break on main](wu/WU-2053.yaml)
+- [WU-2052 — Fix filterExistingFiles CWD bug in incremental format check](wu/WU-2052.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

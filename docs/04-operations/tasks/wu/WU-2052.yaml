@@ -2,7 +2,7 @@ id: WU-2052
 title: Fix filterExistingFiles CWD bug in incremental format check
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -44,3 +44,6 @@ session_id: 39d08687-7889-4dd1-a8c8-05a5c2baedae
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T21:36:28.404Z
+locked: true
+completed_at: 2026-02-22T21:42:24.905Z
+completed: 2026-02-22
