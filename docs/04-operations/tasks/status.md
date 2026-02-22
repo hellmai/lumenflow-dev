@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1993 — Stabilize workspace connector tests under runtime health fetch side effects](wu/WU-1993.yaml)
 
 ## Completed
 

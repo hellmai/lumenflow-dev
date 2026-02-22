@@ -26,11 +26,10 @@ sections:
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — Framework: Core Validation
 - [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — Operations: Tooling
 - [WU-1960 — Fix release build:dist invariant drift](wu/WU-1960.yaml) — Framework: CLI Orchestration
-- [WU-1993 — Stabilize workspace connector tests under runtime health fetch side effects](wu/WU-1993.yaml) — Operations: Tooling
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-1993 — Stabilize workspace connector tests under runtime health fetch side effects](wu/WU-1993.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 
