@@ -6,12 +6,14 @@ status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
-  - apps/web/src/server/http-surface-runtime.ts
-  - apps/web/src/components/marketplace-browse.tsx
+  - apps/web/__tests__/http-surface-runtime-health.test.ts
+  - apps/web/app/api/tasks/[taskId]/evidence/export/route.ts
   - apps/web/src/components/action-diff-viewer.tsx
+  - apps/web/src/components/marketplace-browse.tsx
   - apps/web/src/components/scope-intersection-diagram.tsx
   - apps/web/src/components/tool-output/git-diff-viewer.tsx
-  - apps/web/eslint.config.mjs
+  - apps/web/src/server/http-surface-runtime.ts
+  - eslint.config.mjs
 tests:
   manual:
     - Run pnpm --filter @lumenflow/web lint
@@ -24,10 +26,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-22T00:24:34.333Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1991
+session_id: 62cdc590-db7c-44a8-a5ad-0ed182be2cc1
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T00:24:34.343Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -37,11 +46,3 @@ acceptance:
   - pnpm --filter @lumenflow/web lint passes with zero warnings
   - Security/hook/key warnings resolved in runtime and component code
   - Any rule scoping for generated UI primitives is documented and minimized
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1991
-claimed_at: 2026-02-22T00:24:34.333Z
-baseline_main_sha: 04231a97fa37efb1e684bd059f52c9d7a3e151ce
-session_id: 62cdc590-db7c-44a8-a5ad-0ed182be2cc1
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-22T00:24:34.343Z
