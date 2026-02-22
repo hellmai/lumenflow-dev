@@ -13,6 +13,7 @@
 
 import { existsSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { minimatch } from 'minimatch';
 // WU-2252: Import invariants loader for spawn output injection
 import { loadInvariants, INVARIANT_TYPES } from '@lumenflow/core/invariants-runner';
@@ -24,7 +25,7 @@ import {
 } from '@lumenflow/core/wu-spawn-helpers';
 
 import type { SpawnStrategy } from '@lumenflow/core/spawn-strategy';
-import { getConfig } from '@lumenflow/core/config';
+import { findProjectRoot, getConfig } from '@lumenflow/core/config';
 import type { ClientBlock, ClientConfig } from '@lumenflow/core/config-schema';
 import {
   generateClientSkillsGuidance,
@@ -94,6 +95,9 @@ export { getConfig };
 
 // Re-export policy resolver
 export { resolvePolicy };
+
+const SPAWN_PROMPT_BUILDERS_DIR = path.dirname(fileURLToPath(import.meta.url));
+const DEFAULT_TEMPLATE_BASE_DIR = findProjectRoot(SPAWN_PROMPT_BUILDERS_DIR);
 
 // ─── Mandatory Agent Detection ───
 
@@ -1024,10 +1028,10 @@ export function generateClientBlocksSection(clientContext: ClientContext | undef
 export function tryLoadTemplates(
   clientName: string,
   context: TemplateContext,
+  baseDir = DEFAULT_TEMPLATE_BASE_DIR,
 ): Map<string, string> {
   const result = new Map<string, string>();
   try {
-    const baseDir = process.cwd();
     const templates = loadTemplatesWithOverrides(baseDir, clientName);
 
     // WU-1898: Evaluate frontmatter conditions before including templates
@@ -1134,7 +1138,8 @@ export function generateTaskInvocation(
   // WU-1898: Pass policy to context for methodology template condition evaluation
   const clientName = options.client?.name || 'claude-code';
   const templateContext = buildSpawnTemplateContext(doc, id, policy);
-  const templates = tryLoadTemplates(clientName, templateContext);
+  const templateBaseDir = options.baseDir || DEFAULT_TEMPLATE_BASE_DIR;
+  const templates = tryLoadTemplates(clientName, templateContext, templateBaseDir);
 
   // WU-1142: Use type-aware test guidance instead of hardcoded TDD directive
   // WU-1288: Use policy-based test guidance that respects methodology.testing config

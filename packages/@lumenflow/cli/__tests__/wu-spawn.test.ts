@@ -1,4 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
+import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import {
   generateTaskInvocation,
   generateCodexPrompt,
@@ -719,6 +722,38 @@ describe('wu-spawn methodology policy integration (WU-1288)', () => {
       // Default should be TDD
       expect(output).toContain('TDD DIRECTIVE');
       expect(output).toContain('90%');
+    });
+
+    it('uses policy guidance even when cwd has a tdd-directive template', async () => {
+      const originalCwd = process.cwd();
+      const tempRoot = await mkdtemp(path.join(tmpdir(), 'wu-spawn-cwd-'));
+      const templateDir = path.join(tempRoot, '.lumenflow', 'templates', 'delegation-prompt');
+      const customDirective = 'CUSTOM TEMPLATE: SHOULD NOT OVERRIDE TEST-AFTER';
+      const templateContent = `---
+id: tdd-directive
+name: Test Guidance
+required: false
+order: 10
+---
+${customDirective}
+`;
+
+      await mkdir(templateDir, { recursive: true });
+      await writeFile(path.join(templateDir, 'tdd-directive.md'), templateContent, 'utf-8');
+
+      process.chdir(tempRoot);
+
+      try {
+        const config = createConfig({ testing: TEST_AFTER, architecture: ARCH_HEXAGONAL });
+
+        const strategy = new GenericStrategy();
+        const output = generateTaskInvocation(baseDoc, id, strategy, { config });
+
+        expect(output).toContain(TEST_AFTER_LABEL);
+        expect(output).not.toContain(customDirective);
+      } finally {
+        process.chdir(originalCwd);
+      }
     });
 
     it('uses test-after guidance when methodology.testing is test-after', () => {
