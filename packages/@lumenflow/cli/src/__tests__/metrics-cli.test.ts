@@ -20,6 +20,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const CLI_SOURCE_MODULE_PATH = '../metrics-cli.js';
 
 describe('metrics-cli module', () => {
   it('should have the CLI source file', () => {
@@ -27,9 +28,9 @@ describe('metrics-cli module', () => {
     expect(existsSync(srcPath)).toBe(true);
   });
 
-  it('should be buildable (dist file exists after build)', () => {
-    const distPath = join(__dirname, '../../dist/metrics-cli.js');
-    expect(existsSync(distPath)).toBe(true);
+  it('should load module exports without depending on prebuilt dist artifacts', async () => {
+    const moduleExports = await import(CLI_SOURCE_MODULE_PATH);
+    expect(typeof moduleExports.parseCommand).toBe('function');
   });
 });
 
@@ -51,54 +52,54 @@ describe('metrics-cli subcommands', () => {
 
   describe('parseCommand', () => {
     it('should export parseCommand function', async () => {
-      const { parseCommand } = await import('../metrics-cli.js');
+      const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
       expect(typeof parseCommand).toBe('function');
     });
 
     it('should parse "lanes" subcommand', async () => {
-      const { parseCommand } = await import('../metrics-cli.js');
+      const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
       const result = parseCommand(['node', 'metrics', 'lanes']);
       expect(result.subcommand).toBe('lanes');
     });
 
     it('should parse "dora" subcommand', async () => {
-      const { parseCommand } = await import('../metrics-cli.js');
+      const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
       const result = parseCommand(['node', 'metrics', 'dora']);
       expect(result.subcommand).toBe('dora');
     });
 
     it('should parse "flow" subcommand', async () => {
-      const { parseCommand } = await import('../metrics-cli.js');
+      const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
       const result = parseCommand(['node', 'metrics', 'flow']);
       expect(result.subcommand).toBe('flow');
     });
 
     it('should default to "all" when no subcommand given', async () => {
-      const { parseCommand } = await import('../metrics-cli.js');
+      const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
       const result = parseCommand(['node', 'metrics']);
       expect(result.subcommand).toBe('all');
     });
 
     it('should parse --days option', async () => {
-      const { parseCommand } = await import('../metrics-cli.js');
+      const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
       const result = parseCommand(['node', 'metrics', 'dora', '--days', '30']);
       expect(result.days).toBe(30);
     });
 
     it('should parse --format option', async () => {
-      const { parseCommand } = await import('../metrics-cli.js');
+      const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
       const result = parseCommand(['node', 'metrics', 'lanes', '--format', 'table']);
       expect(result.format).toBe('table');
     });
 
     it('should parse --output option', async () => {
-      const { parseCommand } = await import('../metrics-cli.js');
+      const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
       const result = parseCommand(['node', 'metrics', '--output', 'custom.json']);
       expect(result.output).toBe('custom.json');
     });
 
     it('should parse --dry-run flag', async () => {
-      const { parseCommand } = await import('../metrics-cli.js');
+      const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
       const result = parseCommand(['node', 'metrics', '--dry-run']);
       expect(result.dryRun).toBe(true);
     });
@@ -106,7 +107,7 @@ describe('metrics-cli subcommands', () => {
 
   describe('MetricsCommandResult type', () => {
     it('should have proper subcommand type', async () => {
-      const { parseCommand } = await import('../metrics-cli.js');
+      const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
       const result = parseCommand(['node', 'metrics', 'dora']);
 
       // Type check: subcommand should be one of 'lanes' | 'dora' | 'flow' | 'all'
@@ -116,28 +117,28 @@ describe('metrics-cli subcommands', () => {
 
   describe('runLanesSubcommand', () => {
     it('should export runLanesSubcommand function', async () => {
-      const { runLanesSubcommand } = await import('../metrics-cli.js');
+      const { runLanesSubcommand } = await import(CLI_SOURCE_MODULE_PATH);
       expect(typeof runLanesSubcommand).toBe('function');
     });
   });
 
   describe('runDoraSubcommand', () => {
     it('should export runDoraSubcommand function', async () => {
-      const { runDoraSubcommand } = await import('../metrics-cli.js');
+      const { runDoraSubcommand } = await import(CLI_SOURCE_MODULE_PATH);
       expect(typeof runDoraSubcommand).toBe('function');
     });
   });
 
   describe('runFlowSubcommand', () => {
     it('should export runFlowSubcommand function', async () => {
-      const { runFlowSubcommand } = await import('../metrics-cli.js');
+      const { runFlowSubcommand } = await import(CLI_SOURCE_MODULE_PATH);
       expect(typeof runFlowSubcommand).toBe('function');
     });
   });
 
   describe('runAllSubcommand', () => {
     it('should export runAllSubcommand function', async () => {
-      const { runAllSubcommand } = await import('../metrics-cli.js');
+      const { runAllSubcommand } = await import(CLI_SOURCE_MODULE_PATH);
       expect(typeof runAllSubcommand).toBe('function');
     });
   });
@@ -146,7 +147,7 @@ describe('metrics-cli subcommands', () => {
 describe('metrics-cli integration', () => {
   describe('lanes subcommand', () => {
     it('should calculate lane health from WU data', async () => {
-      const { calculateLaneHealthFromWUs } = await import('../metrics-cli.js');
+      const { calculateLaneHealthFromWUs } = await import(CLI_SOURCE_MODULE_PATH);
 
       const wuMetrics = [
         { id: 'WU-1', title: 'A', lane: 'Framework: Core', status: 'done' as const },
@@ -165,7 +166,7 @@ describe('metrics-cli integration', () => {
 
   describe('dora subcommand', () => {
     it('should calculate DORA metrics from commits and WUs', async () => {
-      const { calculateDoraFromData } = await import('../metrics-cli.js');
+      const { calculateDoraFromData } = await import(CLI_SOURCE_MODULE_PATH);
 
       const commits = [
         { hash: 'a1', timestamp: new Date('2026-01-02'), message: 'feat: add feature' },
@@ -209,7 +210,7 @@ describe('metrics-cli integration', () => {
 
   describe('flow subcommand', () => {
     it('should calculate flow state from WU data', async () => {
-      const { calculateFlowFromWUs } = await import('../metrics-cli.js');
+      const { calculateFlowFromWUs } = await import(CLI_SOURCE_MODULE_PATH);
 
       const wuMetrics = [
         { id: 'WU-1', title: 'A', lane: 'Ops', status: 'ready' as const },
@@ -232,12 +233,12 @@ describe('metrics-cli integration', () => {
 describe('metrics-cli formatters', () => {
   describe('formatLanesOutput', () => {
     it('should export formatLanesOutput function', async () => {
-      const { formatLanesOutput } = await import('../metrics-cli.js');
+      const { formatLanesOutput } = await import(CLI_SOURCE_MODULE_PATH);
       expect(typeof formatLanesOutput).toBe('function');
     });
 
     it('should format lanes as JSON by default', async () => {
-      const { formatLanesOutput } = await import('../metrics-cli.js');
+      const { formatLanesOutput } = await import(CLI_SOURCE_MODULE_PATH);
       const lanes = {
         lanes: [
           {
@@ -260,7 +261,7 @@ describe('metrics-cli formatters', () => {
     });
 
     it('should format lanes as table', async () => {
-      const { formatLanesOutput } = await import('../metrics-cli.js');
+      const { formatLanesOutput } = await import(CLI_SOURCE_MODULE_PATH);
       const lanes = {
         lanes: [
           {
@@ -286,12 +287,12 @@ describe('metrics-cli formatters', () => {
 
   describe('formatDoraOutput', () => {
     it('should export formatDoraOutput function', async () => {
-      const { formatDoraOutput } = await import('../metrics-cli.js');
+      const { formatDoraOutput } = await import(CLI_SOURCE_MODULE_PATH);
       expect(typeof formatDoraOutput).toBe('function');
     });
 
     it('should format DORA as JSON', async () => {
-      const { formatDoraOutput } = await import('../metrics-cli.js');
+      const { formatDoraOutput } = await import(CLI_SOURCE_MODULE_PATH);
       const dora = {
         deploymentFrequency: { deploysPerWeek: 5, status: 'elite' as const },
         leadTimeForChanges: {
@@ -316,7 +317,7 @@ describe('metrics-cli formatters', () => {
     });
 
     it('should format DORA as table', async () => {
-      const { formatDoraOutput } = await import('../metrics-cli.js');
+      const { formatDoraOutput } = await import(CLI_SOURCE_MODULE_PATH);
       const dora = {
         deploymentFrequency: { deploysPerWeek: 5, status: 'elite' as const },
         leadTimeForChanges: {
@@ -345,12 +346,12 @@ describe('metrics-cli formatters', () => {
 
   describe('formatFlowOutput', () => {
     it('should export formatFlowOutput function', async () => {
-      const { formatFlowOutput } = await import('../metrics-cli.js');
+      const { formatFlowOutput } = await import(CLI_SOURCE_MODULE_PATH);
       expect(typeof formatFlowOutput).toBe('function');
     });
 
     it('should format flow as JSON', async () => {
-      const { formatFlowOutput } = await import('../metrics-cli.js');
+      const { formatFlowOutput } = await import(CLI_SOURCE_MODULE_PATH);
       const flow = {
         ready: 5,
         inProgress: 3,
@@ -368,7 +369,7 @@ describe('metrics-cli formatters', () => {
     });
 
     it('should format flow as table', async () => {
-      const { formatFlowOutput } = await import('../metrics-cli.js');
+      const { formatFlowOutput } = await import(CLI_SOURCE_MODULE_PATH);
       const flow = {
         ready: 5,
         inProgress: 3,
@@ -389,7 +390,7 @@ describe('metrics-cli formatters', () => {
 
   describe('formatLanesOutput edge cases', () => {
     it('should handle at-risk status', async () => {
-      const { formatLanesOutput } = await import('../metrics-cli.js');
+      const { formatLanesOutput } = await import(CLI_SOURCE_MODULE_PATH);
       const lanes = {
         lanes: [
           {
@@ -412,7 +413,7 @@ describe('metrics-cli formatters', () => {
     });
 
     it('should handle blocked status', async () => {
-      const { formatLanesOutput } = await import('../metrics-cli.js');
+      const { formatLanesOutput } = await import(CLI_SOURCE_MODULE_PATH);
       const lanes = {
         lanes: [
           {
@@ -435,7 +436,7 @@ describe('metrics-cli formatters', () => {
     });
 
     it('should handle empty lanes array', async () => {
-      const { formatLanesOutput } = await import('../metrics-cli.js');
+      const { formatLanesOutput } = await import(CLI_SOURCE_MODULE_PATH);
       const lanes = {
         lanes: [],
         totalActive: 0,
@@ -452,38 +453,38 @@ describe('metrics-cli formatters', () => {
 
 describe('metrics-cli parseCommand edge cases', () => {
   it('should handle invalid subcommand gracefully', async () => {
-    const { parseCommand } = await import('../metrics-cli.js');
+    const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
     const result = parseCommand(['node', 'metrics', 'invalid']);
     // Invalid subcommand should default to 'all'
     expect(result.subcommand).toBe('all');
   });
 
   it('should handle explicit "all" subcommand', async () => {
-    const { parseCommand } = await import('../metrics-cli.js');
+    const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
     const result = parseCommand(['node', 'metrics', 'all']);
     expect(result.subcommand).toBe('all');
   });
 
   it('should use default days when not specified', async () => {
-    const { parseCommand } = await import('../metrics-cli.js');
+    const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
     const result = parseCommand(['node', 'metrics']);
     expect(result.days).toBe(7);
   });
 
   it('should use default format when not specified', async () => {
-    const { parseCommand } = await import('../metrics-cli.js');
+    const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
     const result = parseCommand(['node', 'metrics']);
     expect(result.format).toBe('json');
   });
 
   it('should use default output path when not specified', async () => {
-    const { parseCommand } = await import('../metrics-cli.js');
+    const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
     const result = parseCommand(['node', 'metrics']);
     expect(result.output).toContain('.lumenflow/snapshots/metrics-latest.json');
   });
 
   it('should handle dryRun false by default', async () => {
-    const { parseCommand } = await import('../metrics-cli.js');
+    const { parseCommand } = await import(CLI_SOURCE_MODULE_PATH);
     const result = parseCommand(['node', 'metrics']);
     expect(result.dryRun).toBe(false);
   });
@@ -492,14 +493,14 @@ describe('metrics-cli parseCommand edge cases', () => {
 describe('metrics-cli calculation functions', () => {
   describe('calculateLaneHealthFromWUs', () => {
     it('should handle empty WU list', async () => {
-      const { calculateLaneHealthFromWUs } = await import('../metrics-cli.js');
+      const { calculateLaneHealthFromWUs } = await import(CLI_SOURCE_MODULE_PATH);
       const result = calculateLaneHealthFromWUs([]);
       expect(result.lanes).toEqual([]);
       expect(result.totalActive).toBe(0);
     });
 
     it('should correctly count ready WUs as active', async () => {
-      const { calculateLaneHealthFromWUs } = await import('../metrics-cli.js');
+      const { calculateLaneHealthFromWUs } = await import(CLI_SOURCE_MODULE_PATH);
       const wuMetrics = [{ id: 'WU-1', title: 'A', lane: 'Test', status: 'ready' as const }];
 
       const result = calculateLaneHealthFromWUs(wuMetrics);
@@ -507,7 +508,7 @@ describe('metrics-cli calculation functions', () => {
     });
 
     it('should correctly count waiting WUs as active', async () => {
-      const { calculateLaneHealthFromWUs } = await import('../metrics-cli.js');
+      const { calculateLaneHealthFromWUs } = await import(CLI_SOURCE_MODULE_PATH);
       const wuMetrics = [{ id: 'WU-1', title: 'A', lane: 'Test', status: 'waiting' as const }];
 
       const result = calculateLaneHealthFromWUs(wuMetrics);
@@ -517,7 +518,7 @@ describe('metrics-cli calculation functions', () => {
 
   describe('calculateDoraFromData', () => {
     it('should handle empty commit list', async () => {
-      const { calculateDoraFromData } = await import('../metrics-cli.js');
+      const { calculateDoraFromData } = await import(CLI_SOURCE_MODULE_PATH);
       const result = calculateDoraFromData({
         commits: [],
         wuMetrics: [],
@@ -530,7 +531,7 @@ describe('metrics-cli calculation functions', () => {
     });
 
     it('should handle skip gates entries', async () => {
-      const { calculateDoraFromData } = await import('../metrics-cli.js');
+      const { calculateDoraFromData } = await import(CLI_SOURCE_MODULE_PATH);
       const commits = [
         { hash: 'a1', timestamp: new Date('2026-01-02'), message: 'feat: a' },
         { hash: 'a2', timestamp: new Date('2026-01-03'), message: 'feat: b' },
@@ -554,7 +555,7 @@ describe('metrics-cli calculation functions', () => {
 
   describe('calculateFlowFromWUs', () => {
     it('should handle all WU statuses', async () => {
-      const { calculateFlowFromWUs } = await import('../metrics-cli.js');
+      const { calculateFlowFromWUs } = await import(CLI_SOURCE_MODULE_PATH);
       const wuMetrics = [
         { id: 'WU-1', title: 'A', lane: 'Ops', status: 'ready' as const },
         { id: 'WU-2', title: 'B', lane: 'Ops', status: 'in_progress' as const },
@@ -573,7 +574,7 @@ describe('metrics-cli calculation functions', () => {
     });
 
     it('should handle empty WU list', async () => {
-      const { calculateFlowFromWUs } = await import('../metrics-cli.js');
+      const { calculateFlowFromWUs } = await import(CLI_SOURCE_MODULE_PATH);
       const result = calculateFlowFromWUs([]);
       expect(result.ready).toBe(0);
       expect(result.totalActive).toBe(0);
@@ -597,7 +598,7 @@ describe('metrics-cli run* subcommand functions', () => {
 
   describe('runLanesSubcommand', () => {
     it('should run lanes subcommand with dry-run', async () => {
-      const { runLanesSubcommand } = await import('../metrics-cli.js');
+      const { runLanesSubcommand } = await import(CLI_SOURCE_MODULE_PATH);
 
       // Run with dry-run to avoid file writes
       await runLanesSubcommand({
@@ -613,7 +614,7 @@ describe('metrics-cli run* subcommand functions', () => {
     });
 
     it('should run lanes subcommand with table format', async () => {
-      const { runLanesSubcommand } = await import('../metrics-cli.js');
+      const { runLanesSubcommand } = await import(CLI_SOURCE_MODULE_PATH);
 
       await runLanesSubcommand({
         subcommand: 'lanes',
@@ -632,7 +633,7 @@ describe('metrics-cli run* subcommand functions', () => {
 
   describe('runDoraSubcommand', () => {
     it('should run dora subcommand with dry-run', async () => {
-      const { runDoraSubcommand } = await import('../metrics-cli.js');
+      const { runDoraSubcommand } = await import(CLI_SOURCE_MODULE_PATH);
 
       await runDoraSubcommand({
         subcommand: 'dora',
@@ -646,7 +647,7 @@ describe('metrics-cli run* subcommand functions', () => {
     });
 
     it('should run dora subcommand with custom days', async () => {
-      const { runDoraSubcommand } = await import('../metrics-cli.js');
+      const { runDoraSubcommand } = await import(CLI_SOURCE_MODULE_PATH);
 
       await runDoraSubcommand({
         subcommand: 'dora',
@@ -665,7 +666,7 @@ describe('metrics-cli run* subcommand functions', () => {
 
   describe('runFlowSubcommand', () => {
     it('should run flow subcommand with dry-run', async () => {
-      const { runFlowSubcommand } = await import('../metrics-cli.js');
+      const { runFlowSubcommand } = await import(CLI_SOURCE_MODULE_PATH);
 
       await runFlowSubcommand({
         subcommand: 'flow',
@@ -679,7 +680,7 @@ describe('metrics-cli run* subcommand functions', () => {
     });
 
     it('should run flow subcommand with table format', async () => {
-      const { runFlowSubcommand } = await import('../metrics-cli.js');
+      const { runFlowSubcommand } = await import(CLI_SOURCE_MODULE_PATH);
 
       await runFlowSubcommand({
         subcommand: 'flow',
@@ -697,7 +698,7 @@ describe('metrics-cli run* subcommand functions', () => {
 
   describe('runAllSubcommand', () => {
     it('should run all subcommand with dry-run', async () => {
-      const { runAllSubcommand } = await import('../metrics-cli.js');
+      const { runAllSubcommand } = await import(CLI_SOURCE_MODULE_PATH);
 
       await runAllSubcommand({
         subcommand: 'all',
@@ -711,7 +712,7 @@ describe('metrics-cli run* subcommand functions', () => {
     });
 
     it('should run all subcommand with table format', async () => {
-      const { runAllSubcommand } = await import('../metrics-cli.js');
+      const { runAllSubcommand } = await import(CLI_SOURCE_MODULE_PATH);
 
       await runAllSubcommand({
         subcommand: 'all',

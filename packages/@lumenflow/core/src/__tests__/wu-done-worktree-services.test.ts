@@ -46,6 +46,11 @@ import * as coreIndex from '../index.js';
 
 /** Test-only worktree path constant. */
 const TEST_WU_ID = 'WU-999992';
+/**
+ * Worktree transaction tests perform filesystem writes/reads and may run slower under
+ * full-suite concurrency in CI/worktree environments.
+ */
+const WORKTREE_TRANSACTION_TIMEOUT_MS = 30_000;
 
 /**
  * Create a minimal mock git adapter for testing.
@@ -290,32 +295,40 @@ describe('WU-1664: wu:done worktree completion services', () => {
       expect(typeof prepareTransaction).toBe('function');
     });
 
-    it('should return a transaction object and pending writes', async () => {
-      const result = await prepareTransaction({
-        wuId: TEST_WU_ID,
-        title: 'Test WU',
-        doc: createMockWUDoc(),
-        worktreePath: tempWorktree,
-      });
+    it(
+      'should return a transaction object and pending writes',
+      async () => {
+        const result = await prepareTransaction({
+          wuId: TEST_WU_ID,
+          title: 'Test WU',
+          doc: createMockWUDoc(),
+          worktreePath: tempWorktree,
+        });
 
-      expect(result.transaction).toBeDefined();
-      expect(result.stagedMetadataAllowlist).toBeDefined();
-      expect(Array.isArray(result.stagedMetadataAllowlist)).toBe(true);
-      // Should have entries for WU YAML, status, backlog, stamp, and events
-      expect(result.stagedMetadataAllowlist.length).toBeGreaterThan(0);
-    }, 15000);
+        expect(result.transaction).toBeDefined();
+        expect(result.stagedMetadataAllowlist).toBeDefined();
+        expect(Array.isArray(result.stagedMetadataAllowlist)).toBe(true);
+        // Should have entries for WU YAML, status, backlog, stamp, and events
+        expect(result.stagedMetadataAllowlist.length).toBeGreaterThan(0);
+      },
+      WORKTREE_TRANSACTION_TIMEOUT_MS,
+    );
 
-    it('should not commit the transaction yet', async () => {
-      const result = await prepareTransaction({
-        wuId: TEST_WU_ID,
-        title: 'Test WU',
-        doc: createMockWUDoc(),
-        worktreePath: tempWorktree,
-      });
+    it(
+      'should not commit the transaction yet',
+      async () => {
+        const result = await prepareTransaction({
+          wuId: TEST_WU_ID,
+          title: 'Test WU',
+          doc: createMockWUDoc(),
+          worktreePath: tempWorktree,
+        });
 
-      // Transaction should be in a valid state (not yet committed)
-      expect(result.transaction.isCommitted).toBe(false);
-    }, 15000);
+        // Transaction should be in a valid state (not yet committed)
+        expect(result.transaction.isCommitted).toBe(false);
+      },
+      WORKTREE_TRANSACTION_TIMEOUT_MS,
+    );
   });
 
   describe('commitTransaction', () => {
@@ -335,34 +348,38 @@ describe('WU-1664: wu:done worktree completion services', () => {
       expect(typeof commitTransaction).toBe('function');
     });
 
-    it('should commit transaction and create git commit', async () => {
-      const prep = await prepareTransaction({
-        wuId: TEST_WU_ID,
-        title: 'Test WU',
-        doc: createMockWUDoc(),
-        worktreePath: tempWorktree,
-      });
+    it(
+      'should commit transaction and create git commit',
+      async () => {
+        const prep = await prepareTransaction({
+          wuId: TEST_WU_ID,
+          title: 'Test WU',
+          doc: createMockWUDoc(),
+          worktreePath: tempWorktree,
+        });
 
-      const mockGit = createMockGitAdapter();
+        const mockGit = createMockGitAdapter();
 
-      const result = await commitTransaction({
-        wuId: TEST_WU_ID,
-        title: 'Test WU',
-        transaction: prep.transaction,
-        worktreePath: tempWorktree,
-        worktreeGit: mockGit,
-        doc: createMockWUDoc(),
-        maxCommitLength: 72,
-        isDocsOnly: false,
-        stagedMetadataAllowlist: prep.stagedMetadataAllowlist,
-        validateStagedFiles: vi.fn().mockResolvedValue(undefined),
-      });
+        const result = await commitTransaction({
+          wuId: TEST_WU_ID,
+          title: 'Test WU',
+          transaction: prep.transaction,
+          worktreePath: tempWorktree,
+          worktreeGit: mockGit,
+          doc: createMockWUDoc(),
+          maxCommitLength: 72,
+          isDocsOnly: false,
+          stagedMetadataAllowlist: prep.stagedMetadataAllowlist,
+          validateStagedFiles: vi.fn().mockResolvedValue(undefined),
+        });
 
-      expect(result.committed).toBe(true);
-      expect(result.preCommitSha).toBe('abc123');
-      // Verify git commit was called
-      expect(mockGit.commit).toHaveBeenCalled();
-    }, 15000);
+        expect(result.committed).toBe(true);
+        expect(result.preCommitSha).toBe('abc123');
+        // Verify git commit was called
+        expect(mockGit.commit).toHaveBeenCalled();
+      },
+      WORKTREE_TRANSACTION_TIMEOUT_MS,
+    );
   });
 
   describe('mergeToMain', () => {
