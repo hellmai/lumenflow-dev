@@ -21,11 +21,27 @@ import path from 'node:path';
 import { validateWUEvent, type WUEvent } from './wu-state-schema.js';
 import type { WUStateIndexer } from './wu-state-indexer.js';
 import { runDelegationCutoverIfNeeded } from './wu-delegation-cutover.js';
+import { getErrorMessage } from './error-handler.js';
 
 /**
  * WU events file name constant
  */
 export const WU_EVENTS_FILE_NAME = 'wu-events.jsonl';
+
+const FILE_NOT_FOUND_ERROR_CODE = 'ENOENT';
+
+function getErrorCode(error: unknown): string | null {
+  if (typeof error !== 'object' || error === null) {
+    return null;
+  }
+
+  if (!('code' in error)) {
+    return null;
+  }
+
+  const { code } = error;
+  return typeof code === 'string' ? code : null;
+}
 
 /**
  * WU Event Sourcer
@@ -71,7 +87,7 @@ export class WUEventSourcer {
     try {
       content = await fs.readFile(this.eventsFilePath, 'utf-8');
     } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      if (getErrorCode(error) === FILE_NOT_FOUND_ERROR_CODE) {
         return;
       }
       throw error;
@@ -93,7 +109,7 @@ export class WUEventSourcer {
       try {
         parsed = JSON.parse(line);
       } catch (error) {
-        throw new Error(`Malformed JSON on line ${i + 1}: ${(error as Error).message}`, {
+        throw new Error(`Malformed JSON on line ${i + 1}: ${getErrorMessage(error)}`, {
           cause: error,
         });
       }

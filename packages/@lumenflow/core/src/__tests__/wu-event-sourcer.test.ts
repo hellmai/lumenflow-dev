@@ -190,6 +190,18 @@ describe('WUEventSourcer', () => {
       await expect(sourcer.load()).rejects.toThrow(/Malformed JSON on line 2/);
     });
 
+    it('should include non-Error parse failure details in malformed JSON errors', async () => {
+      const content = '{"valid": true}\n';
+      vi.mocked(fs.readFile).mockResolvedValue(content);
+      const parseSpy = vi.spyOn(JSON, 'parse').mockImplementationOnce(() => {
+        throw 'parse-failed';
+      });
+
+      await expect(sourcer.load()).rejects.toThrow(/Malformed JSON on line 1: parse-failed/);
+
+      parseSpy.mockRestore();
+    });
+
     it('should throw validation error with line number for invalid events', async () => {
       const event = makeClaimEvent();
       const content = `${JSON.stringify(event)}\n`;

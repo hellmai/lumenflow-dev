@@ -44,6 +44,34 @@ export interface ConsistencyError {
   canAutoRepair: boolean;
 }
 
+interface ParsedWUConsistencyDoc {
+  status?: string;
+  lane?: string;
+  title?: string;
+  worktree_path?: string;
+}
+
+const UNKNOWN_WU_STATUS = 'unknown';
+
+function readOptionalStringField(value: unknown, fieldName: string): string | undefined {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return undefined;
+  }
+
+  const fieldValue = Reflect.get(value, fieldName);
+  return typeof fieldValue === 'string' ? fieldValue : undefined;
+}
+
+function parseWUConsistencyDoc(content: string): ParsedWUConsistencyDoc {
+  const parsed = parseYAML(content);
+  return {
+    status: readOptionalStringField(parsed, 'status'),
+    lane: readOptionalStringField(parsed, 'lane'),
+    title: readOptionalStringField(parsed, 'title'),
+    worktree_path: readOptionalStringField(parsed, 'worktree_path'),
+  };
+}
+
 /**
  * Check a single WU for state inconsistencies
  *
@@ -72,16 +100,11 @@ export async function checkWUConsistency(
   }
 
   const wuContent = await readFile(wuPath, { encoding: 'utf-8' });
-  const wuDoc = parseYAML(wuContent) as {
-    status?: string;
-    lane?: string;
-    title?: string;
-    worktree_path?: string;
-  } | null;
-  const yamlStatus = wuDoc?.status || 'unknown';
-  const lane = wuDoc?.lane || '';
-  const title = wuDoc?.title || '';
-  const worktreePathFromYaml = wuDoc?.worktree_path || '';
+  const wuDoc = parseWUConsistencyDoc(wuContent);
+  const yamlStatus = wuDoc.status || UNKNOWN_WU_STATUS;
+  const lane = wuDoc.lane || '';
+  const title = wuDoc.title || '';
+  const worktreePathFromYaml = wuDoc.worktree_path || '';
 
   // Check stamp existence (guard against untracked local stamp artifacts)
   let hasStampFile: boolean;
