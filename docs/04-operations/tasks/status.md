@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-2006 — Hard-delete legacy .lumenflow.config.yaml and remediate runtime readers to workspace.yaml v2](wu/WU-2006.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -943,3 +943,4 @@ _Last updated: 2026-02-22_
 - [WU-2003 — Detect and heal stale initiative status when all WUs are done](wu/WU-2003.yaml) — 2026-02-22
 - [WU-2004 — Reconcile completed initiatives still marked in_progress](wu/WU-2004.yaml) — 2026-02-22
 - [WU-2005 — Derive initiative phase status from phase WU completion](wu/WU-2005.yaml) — 2026-02-22
+- [WU-2006 — Hard-delete legacy .lumenflow.config.yaml and remediate runtime readers to workspace.yaml v2](wu/WU-2006.yaml) — 2026-02-22

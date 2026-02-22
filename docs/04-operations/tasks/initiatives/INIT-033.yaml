@@ -23,7 +23,7 @@ phases:
     status: done
   - id: 5
     title: 'Phase 5: Hard-delete legacy config and close remaining runtime readers'
-    status: pending
+    status: in_progress
 success_metrics:
   - Single-command bootstrap for new users
   - No runtime dependency on .lumenflow.config.yaml

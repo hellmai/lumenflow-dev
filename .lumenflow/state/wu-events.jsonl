@@ -1974,4 +1974,5 @@
 {"type":"complete","wuId":"WU-2004","timestamp":"2026-02-22T03:59:46.206Z"}
 {"type":"claim","wuId":"WU-2005","timestamp":"2026-02-22T04:01:07.647Z","lane":"Framework: Core Validation","title":"Derive initiative phase status from phase WU completion"}
 {"type":"complete","wuId":"WU-2005","timestamp":"2026-02-22T04:06:52.537Z"}
-{"type":"claim","wuId":"WU-2006","lane":"Framework: Core Lifecycle","title":"Hard-delete legacy .lumenflow.config.yaml and remediate runtime readers to workspace.yaml v2","timestamp":"2026-02-22T08:51:30.944Z"}
+{"type":"claim","wuId":"WU-2006","timestamp":"2026-02-22T08:51:30.944Z","lane":"Framework: Core Lifecycle","title":"Hard-delete legacy .lumenflow.config.yaml and remediate runtime readers to workspace.yaml v2"}
+{"type":"complete","wuId":"WU-2006","timestamp":"2026-02-22T09:36:57.812Z"}

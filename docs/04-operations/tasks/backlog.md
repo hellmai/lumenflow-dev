@@ -20,27 +20,27 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2021 — Filter deleted files from incremental format check input](wu/WU-2021.yaml) — Framework: Core Validation
-- [WU-2020 — Inject WUStateStore via interfaces and replace getConfig() calls](wu/WU-2020.yaml) — Framework: Core Lifecycle
-- [WU-2019 — Replace work-classifier domain switch with data map](wu/WU-2019.yaml) — Framework: Core Lifecycle
-- [WU-2018 — Replace consistency repair switch with strategy map](wu/WU-2018.yaml) — Framework: Core Lifecycle
-- [WU-2017 — Replace invariant type dispatch with strategy pattern](wu/WU-2017.yaml) — Framework: Core Lifecycle
-- [WU-2016 — Split lumenflow-config-schema.ts into per-section schemas (1564 lines)](wu/WU-2016.yaml) — Framework: Core Lifecycle
-- [WU-2015 — Decompose wu-consistency-checker.ts (1255 lines)](wu/WU-2015.yaml) — Framework: Core Lifecycle
-- [WU-2014 — Decompose wu-done-worktree.ts (1777 lines)](wu/WU-2014.yaml) — Framework: Core Lifecycle
-- [WU-2013 — Decompose wu-state-store.ts into focused services (1274 lines)](wu/WU-2013.yaml) — Framework: Core Lifecycle
-- [WU-2012 — Decompose wu-spawn.ts god object (2342 lines)](wu/WU-2012.yaml) — Framework: Core Lifecycle
-- [WU-2011 — Extract magic numbers in CLI package (@lumenflow/cli)](wu/WU-2011.yaml) — Framework: Core Lifecycle
-- [WU-2010 — Extract magic numbers into named constants (core kernel)](wu/WU-2010.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2007 — Complete runCLI(main) entrypoint standardization for orchestration and agent session commands](wu/WU-2007.yaml) — Framework: CLI Orchestration
 - [WU-2008 — Remove remaining direct process.exit usage from core modules](wu/WU-2008.yaml) — Framework: Core Lifecycle
 - [WU-2009 — Add claim-validation gate for absolute acceptance criteria drift](wu/WU-2009.yaml) — Framework: Core Validation
+- [WU-2010 — Extract magic numbers into named constants (core kernel)](wu/WU-2010.yaml) — Framework: Core Lifecycle
+- [WU-2011 — Extract magic numbers in CLI package (@lumenflow/cli)](wu/WU-2011.yaml) — Framework: Core Lifecycle
+- [WU-2012 — Decompose wu-spawn.ts god object (2342 lines)](wu/WU-2012.yaml) — Framework: Core Lifecycle
+- [WU-2013 — Decompose wu-state-store.ts into focused services (1274 lines)](wu/WU-2013.yaml) — Framework: Core Lifecycle
+- [WU-2014 — Decompose wu-done-worktree.ts (1777 lines)](wu/WU-2014.yaml) — Framework: Core Lifecycle
+- [WU-2015 — Decompose wu-consistency-checker.ts (1255 lines)](wu/WU-2015.yaml) — Framework: Core Lifecycle
+- [WU-2016 — Split lumenflow-config-schema.ts into per-section schemas (1564 lines)](wu/WU-2016.yaml) — Framework: Core Lifecycle
+- [WU-2017 — Replace invariant type dispatch with strategy pattern](wu/WU-2017.yaml) — Framework: Core Lifecycle
+- [WU-2018 — Replace consistency repair switch with strategy map](wu/WU-2018.yaml) — Framework: Core Lifecycle
+- [WU-2019 — Replace work-classifier domain switch with data map](wu/WU-2019.yaml) — Framework: Core Lifecycle
+- [WU-2020 — Inject WUStateStore via interfaces and replace getConfig() calls](wu/WU-2020.yaml) — Framework: Core Lifecycle
+- [WU-2021 — Filter deleted files from incremental format check input](wu/WU-2021.yaml) — Framework: Core Validation
 
 ## 🔧 In progress
 
-- [WU-2006 — Hard-delete legacy .lumenflow.config.yaml and remediate runtime readers to workspace.yaml v2](wu/WU-2006.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -983,6 +983,7 @@ sections:
 - [WU-2003 — Detect and heal stale initiative status when all WUs are done](wu/WU-2003.yaml)
 - [WU-2004 — Reconcile completed initiatives still marked in_progress](wu/WU-2004.yaml)
 - [WU-2005 — Derive initiative phase status from phase WU completion](wu/WU-2005.yaml)
+- [WU-2006 — Hard-delete legacy .lumenflow.config.yaml and remediate runtime readers to workspace.yaml v2](wu/WU-2006.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
