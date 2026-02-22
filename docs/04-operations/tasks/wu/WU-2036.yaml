@@ -10,7 +10,6 @@ code_paths:
   - packages/@lumenflow/core/src
   - packages/@lumenflow/mcp/src
   - packages/@lumenflow/metrics/src
-  - packages/@lumenflow/memory/src
   - packages/@lumenflow/cli/README.md
   - packages/@lumenflow/cli/templates
   - packages/@lumenflow/core/README.md
