@@ -5,6 +5,7 @@ _Last updated: 2026-02-22_
 ## In Progress
 
 - [WU-2048 — Final constants DRY sweep: cross-package literals and WUDoc canonicalization](wu/WU-2048.yaml)
+- [WU-2051 — Final cleanup: remove remaining live-surface legacy config references](wu/WU-2051.yaml)
 
 ## Completed
 

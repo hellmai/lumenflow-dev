@@ -2031,3 +2031,4 @@
 {"type":"release","wuId":"WU-2048","timestamp":"2026-02-22T18:01:05.464Z","reason":"Reset via wu:recover --action reset"}
 {"type":"claim","wuId":"WU-2048","timestamp":"2026-02-22T18:02:08.253Z","lane":"Framework: Core Validation","title":"Final constants DRY sweep: cross-package literals and WUDoc canonicalization"}
 {"type":"complete","wuId":"WU-2047","timestamp":"2026-02-22T18:09:40.552Z"}
+{"type":"claim","wuId":"WU-2051","timestamp":"2026-02-22T18:20:36.083Z","lane":"Content: Specs Governance","title":"Final cleanup: remove remaining live-surface legacy config references"}
