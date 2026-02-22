@@ -33,6 +33,7 @@ const DEFAULT_CONFIG_PATH = resolve(ROOT_DIR, 'config/prompts/linter.yml');
 
 // Telemetry cache path (for storing previous metrics) - WU-1430: Use centralized constant
 const METRICS_CACHE_PATH = resolve(ROOT_DIR, LUMENFLOW_PATHS.PROMPT_METRICS);
+export const PROMPT_LINTER_FAILURE_MESSAGE = 'Prompt linter failed:';
 
 /**
  * Load config from YAML file with fallback to defaults
@@ -417,13 +418,36 @@ async function main() {
 // Export main for testability (WU-1538)
 export { main as lintMain };
 
+export interface PromptLinterCliDeps {
+  runMain: () => Promise<void>;
+  setExitCode: (exitCode: number) => void;
+  logError: (...args: unknown[]) => void;
+}
+
+const DEFAULT_PROMPT_LINTER_CLI_DEPS: PromptLinterCliDeps = {
+  runMain: main,
+  setExitCode: (exitCode) => {
+    process.exitCode = exitCode;
+  },
+  logError: console.error,
+};
+
+export async function runPromptLinterCli(
+  deps: PromptLinterCliDeps = DEFAULT_PROMPT_LINTER_CLI_DEPS,
+): Promise<void> {
+  try {
+    await deps.runMain();
+  } catch (error) {
+    if (error instanceof ProcessExitError) {
+      deps.setExitCode(error.exitCode);
+      return;
+    }
+    deps.logError(PROMPT_LINTER_FAILURE_MESSAGE, error);
+    deps.setExitCode(EXIT_CODES.ERROR);
+  }
+}
+
 // Run CLI if executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch((error) => {
-    if (error instanceof ProcessExitError) {
-      process.exit(error.exitCode);
-    }
-    console.error('Prompt linter failed:', error);
-    process.exit(EXIT_CODES.ERROR);
-  });
+  void runPromptLinterCli();
 }

@@ -35,7 +35,7 @@ export interface StreamErrorHandlerDeps {
   stdout: WriteStream;
   /** Standard error stream */
   stderr: WriteStream;
-  /** Exit function (defaults to process.exit) */
+  /** Exit function (defaults to setting process.exitCode) */
   exitFn: (code: number) => void;
 }
 
@@ -44,6 +44,10 @@ export interface StreamErrorHandlerDeps {
  */
 interface NodeSystemError extends Error {
   code?: string;
+}
+
+export function setProcessExitCode(code: number): void {
+  process.exitCode = code;
 }
 
 /**
@@ -63,13 +67,13 @@ export class StreamErrorHandler {
   }
 
   /**
-   * Create a handler with default dependencies (process.stdout, process.stderr, process.exit)
+   * Create a handler with default dependencies (process.stdout, process.stderr, process.exitCode)
    */
   static createWithDefaults(): StreamErrorHandler {
     return new StreamErrorHandler({
       stdout: process.stdout as WriteStream,
       stderr: process.stderr as WriteStream,
-      exitFn: (code: number) => process.exit(code),
+      exitFn: setProcessExitCode,
     });
   }
 

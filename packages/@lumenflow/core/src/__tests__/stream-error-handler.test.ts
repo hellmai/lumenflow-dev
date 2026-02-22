@@ -16,9 +16,14 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { EventEmitter } from 'node:events';
+import { readFile } from 'node:fs/promises';
 import type { WriteStream } from 'node:tty';
 import { STREAM_ERRORS, EXIT_CODES } from '../wu-constants.js';
-import { StreamErrorHandler, type StreamErrorHandlerDeps } from '../stream-error-handler.js';
+import {
+  StreamErrorHandler,
+  setProcessExitCode,
+  type StreamErrorHandlerDeps,
+} from '../stream-error-handler.js';
 
 /**
  * Mock WriteStream that can emit errors
@@ -176,6 +181,29 @@ describe('StreamErrorHandler', () => {
         handlerWithDefaults.attach();
         handlerWithDefaults.detach();
       }).not.toThrow();
+    });
+
+    it('default process exit handler should set process.exitCode without calling process.exit', () => {
+      const originalExitCode = process.exitCode;
+      const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+      setProcessExitCode(EXIT_CODES.SUCCESS);
+
+      expect(process.exitCode).toBe(EXIT_CODES.SUCCESS);
+      expect(processExitSpy).not.toHaveBeenCalled();
+
+      process.exitCode = originalExitCode;
+      processExitSpy.mockRestore();
+    });
+  });
+
+  describe('source contract', () => {
+    it('stream-error-handler source does not call process.exit directly', async () => {
+      const content = await readFile(
+        new URL('../stream-error-handler.ts', import.meta.url),
+        'utf-8',
+      );
+      expect(content).not.toContain('process.exit(');
     });
   });
 });
