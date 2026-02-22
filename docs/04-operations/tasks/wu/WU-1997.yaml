@@ -2,7 +2,7 @@ id: WU-1997
 title: Remove UnsafeAny placeholder leakage from user-facing wu:done messaging
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -50,3 +50,6 @@ session_id: e4ba9794-5446-46f2-9026-505852765935
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T02:22:10.752Z
+locked: true
+completed_at: 2026-02-22T02:28:55.393Z
+completed: 2026-02-22

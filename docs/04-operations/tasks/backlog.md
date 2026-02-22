@@ -25,7 +25,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-1997 — Remove UnsafeAny placeholder leakage from user-facing wu:done messaging](wu/WU-1997.yaml) — Framework: Core Validation
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -959,6 +959,7 @@ sections:
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml)
 - [WU-1995 — Harden code_paths validation for glob patterns and symlink loops](wu/WU-1995.yaml)
 - [WU-1996 — Eliminate wu:claim worktree install bin-link ENOENT warnings](wu/WU-1996.yaml)
+- [WU-1997 — Remove UnsafeAny placeholder leakage from user-facing wu:done messaging](wu/WU-1997.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
