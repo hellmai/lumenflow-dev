@@ -803,13 +803,7 @@ describe('lumenflow init', () => {
       it('should upsert workspace config file when it already exists (not force)', async () => {
         fs.writeFileSync(
           path.join(tempDir, CONFIG_FILE_NAME),
-          [
-            'id: test',
-            'name: Test',
-            'software_delivery:',
-            '  custom_key: keep-me',
-            '',
-          ].join('\n'),
+          ['id: test', 'name: Test', 'software_delivery:', '  custom_key: keep-me', ''].join('\n'),
         );
 
         const options: ScaffoldOptions = {

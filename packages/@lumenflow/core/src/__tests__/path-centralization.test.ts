@@ -198,7 +198,11 @@ describe('WU-1301: CLI path centralization', () => {
         },
       };
 
-      await writeFile(path.join(tempDir, LEGACY_CONFIG_FILE), yaml.stringify(legacyConfig), 'utf-8');
+      await writeFile(
+        path.join(tempDir, LEGACY_CONFIG_FILE),
+        yaml.stringify(legacyConfig),
+        'utf-8',
+      );
 
       clearConfigCache();
       const config = getConfig({ projectRoot: tempDir });
