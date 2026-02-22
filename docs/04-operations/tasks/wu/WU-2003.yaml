@@ -9,7 +9,10 @@ code_paths:
   - packages/@lumenflow/cli/src/state-doctor.ts
   - packages/@lumenflow/cli/src/initiative-status.ts
 tests:
-  manual: []
+  manual:
+    - 'Run: pnpm state:doctor --dry-run and verify stale initiatives are reported when status
+      mismatches completion'
+    - 'Run: pnpm state:doctor --fix and verify stale initiative statuses are set to done'
   unit:
     - packages/@lumenflow/cli/src/__tests__/state-doctor.test.ts
   e2e: []
@@ -26,7 +29,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: state:doctor currently reports healthy even when initiative YAML status remains in_progress despite 100% WU completion. Add reconciliation so stale initiative status is detected and auto-fixable.
+description: state:doctor currently reports healthy even when initiative YAML status remains
+  in_progress despite 100% WU completion. Add reconciliation so stale initiative status is detected
+  and auto-fixable.
 acceptance:
   - state:doctor --dry-run reports stale initiative status mismatches
   - state:doctor --fix updates initiative status to done when all linked WUs are done
