@@ -4,7 +4,7 @@ title: Spawn Integration Hardening
 description: Close remaining integration gaps so spawn prompts consistently reflect methodology
   policy and memory context across CLI and Codex, with a single memory-context implementation and
   documented config.
-status: in_progress
+status: done
 priority: P1
 owner: tom@hellm.ai
 created: 2026-01-31

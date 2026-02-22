@@ -3,7 +3,7 @@ slug: memory-enforcement-rollout
 title: Enforceable Memory Layer Rollout
 description: Rollout configurable, enforceable memory behavior across checkpointing, signal
   integrity, recovery, and decay, with vendor-agnostic policy and client-specific hook wiring.
-status: in_progress
+status: done
 priority: P1
 owner: workflow
 created: 2026-02-06

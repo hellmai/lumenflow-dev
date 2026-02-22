@@ -5,7 +5,7 @@ description: Deliver the missing no-worktree + PR completion path (branch-pr) so
   run LumenFlow lifecycle commands with parity to local flows. Scope includes mode primitives,
   claim/done/prep behavior, parser parity, config-driven cloud auto-detection, MCP claim
   passthrough, and docs/constraints alignment.
-status: in_progress
+status: done
 priority: P1
 owner: workflow
 created: 2026-02-06
