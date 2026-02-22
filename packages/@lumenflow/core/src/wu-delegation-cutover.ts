@@ -189,7 +189,13 @@ function buildBootstrapEvents(
     if (isReadyLike && !isDone) continue;
 
     const claimTs = toIsoTimestamp(wu.claimed_at, wu.created ?? stampAt);
-    events.push({ type: WU_EVENT_TYPE.CLAIM, wuId: wu.id, lane: wu.lane, title: wu.title, timestamp: claimTs });
+    events.push({
+      type: WU_EVENT_TYPE.CLAIM,
+      wuId: wu.id,
+      lane: wu.lane,
+      title: wu.title,
+      timestamp: claimTs,
+    });
 
     if (st === WU_STATUS.BLOCKED && !isDone) {
       const blockedAt = new Date(claimTs);

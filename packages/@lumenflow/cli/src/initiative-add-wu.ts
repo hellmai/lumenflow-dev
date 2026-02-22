@@ -54,7 +54,9 @@ const LOG_PREFIX = INIT_LOG_PREFIX.ADD_WU;
 /** Micro-worktree operation name */
 const OPERATION_NAME = 'initiative-add-wu';
 
-type WUDocLike = Required<Pick<WUDocBase, 'id'>> & Pick<WUDocBase, 'initiative'> & Record<string, unknown>;
+type WUDocLike = Required<Pick<WUDocBase, 'id'>> &
+  Pick<WUDocBase, 'initiative'> &
+  Record<string, unknown>;
 
 interface InitiativeDocLike extends Record<string, unknown> {
   id: string;

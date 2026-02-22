@@ -19,7 +19,13 @@ import path from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { readFileSync } from 'node:fs';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
-import { CLI_FLAGS, EXIT_CODES, EMOJI, STRING_LITERALS, WU_STATUS } from '@lumenflow/core/wu-constants';
+import {
+  CLI_FLAGS,
+  EXIT_CODES,
+  EMOJI,
+  STRING_LITERALS,
+  WU_STATUS,
+} from '@lumenflow/core/wu-constants';
 import { WU_EVENT_TYPE } from '@lumenflow/core/wu-state-schema';
 
 /** Log prefix for consistent output */
@@ -155,7 +161,11 @@ export function inferEventsFromWu(wu: WuBootstrapInfo): BootstrapEvent[] {
   const events: BootstrapEvent[] = [];
 
   // Ready WUs have no events (not yet in the lifecycle)
-  if (wu.status === WU_STATUS.READY || wu.status === WU_STATUS.BACKLOG || wu.status === WU_STATUS.TODO) {
+  if (
+    wu.status === WU_STATUS.READY ||
+    wu.status === WU_STATUS.BACKLOG ||
+    wu.status === WU_STATUS.TODO
+  ) {
     return events;
   }
 
