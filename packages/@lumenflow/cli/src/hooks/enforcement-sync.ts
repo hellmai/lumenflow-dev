@@ -482,9 +482,7 @@ export async function removeEnforcementHooks(projectDir: string): Promise<void> 
   }
 
   // Remove enforcement-related hooks (includes all LumenFlow hook scripts)
-  const enforcementCommands = Object.values(HOOK_SCRIPTS).filter(
-    (command): command is string => typeof command === 'string',
-  );
+  const enforcementCommands = Object.values(HOOK_SCRIPTS) as string[];
 
   if (settings.hooks.PreToolUse) {
     settings.hooks.PreToolUse = settings.hooks.PreToolUse.map((entry) => ({
