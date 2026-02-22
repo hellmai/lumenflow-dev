@@ -31,9 +31,11 @@ import { resolve } from 'node:path';
 const PROJECT_ROOT = resolve(import.meta.dirname, '../../../../..');
 
 /**
- * Short timeout for help commands (they should be near-instant).
+ * Timeout for help commands.
+ * Some commands (for example wu:claim and wu:done) trigger a fresh CLI dist
+ * build before printing help when dist is stale under gate execution.
  */
-const HELP_TIMEOUT_MS = 15000;
+const HELP_TIMEOUT_MS = 30000;
 
 /**
  * Timeout for commands that read from disk (wu:status, etc).
