@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1992 — Fix pre-existing spec:linter failures in legacy WU YAMLs](wu/WU-1992.yaml)
 
 ## Completed
 
