@@ -2,7 +2,7 @@ id: WU-2007
 title: Complete runCLI(main) entrypoint standardization for orchestration and agent session commands
 lane: 'Framework: CLI Orchestration'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -51,3 +51,11 @@ acceptance:
     agent-session-end.ts, and agent-log-issue.ts no longer call top-level program.parse/process.exit
     outside runCLI handling.
   - Entry-point regression test enforces runCLI(main) standard for CLI shebang files.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-2007
+claimed_at: 2026-02-22T21:44:46.874Z
+baseline_main_sha: 85d1b915815a93d9a23e30a730f1f1923d3f03da
+session_id: cefcb24f-c623-49bb-b2e9-9ff7fd5bbb92
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T21:44:46.881Z
