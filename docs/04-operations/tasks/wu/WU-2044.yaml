@@ -2,7 +2,7 @@ id: WU-2044
 title: 'Constants consolidation round 2: DRY violations from INIT-034 audit'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-22
 code_paths:
@@ -57,3 +57,11 @@ acceptance:
   - COVERAGE_THRESHOLD removed from coverage-gate.ts, replaced with import of DEFAULT_MIN_COVERAGE
     from gate-constants.ts
   - All existing tests pass via pnpm gates
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2044
+claimed_at: 2026-02-22T17:02:32.062Z
+baseline_main_sha: c378e037425d1360aa4861d654dbae783b10bafe
+session_id: b54bd1bd-ae41-4314-b471-7c4428298bfa
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T17:02:32.068Z
