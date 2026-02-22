@@ -2,7 +2,7 @@ id: WU-2001
 title: Stabilize wu-done XState graph model tests in changed-test gate runs
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -37,4 +37,9 @@ acceptance:
   - tests/documentation capture the stabilized behavior
 approved_by:
   - tom@hellm.ai
-approved_at: 2026-02-22T02:58:04.992Z
+approved_at: 2026-02-22T03:07:28.584Z
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2001
+claimed_at: 2026-02-22T03:07:28.578Z
+baseline_main_sha: 4b81898d7e8158c75419715b5a6e16305b8de9ca
+session_id: c1c6f16c-54a0-4094-8bc8-9270ccab2ae8
