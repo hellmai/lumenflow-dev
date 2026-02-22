@@ -11,6 +11,7 @@ node_modules/
 
 # Generated
 *.gen.ts
+apps/web/next-env.d.ts
 .astro/
 .vercel/
 **/__snapshots__/*.snap
