@@ -14,7 +14,7 @@
  *   executeMergePhase - Run the merge/PR decision logic after worktree commit
  */
 
-import { BRANCHES, REMOTES, THRESHOLDS, LOG_PREFIX, BOX, EMOJI } from './wu-constants.js';
+import { BRANCHES, REMOTES, THRESHOLDS, LOG_PREFIX, BOX } from './wu-constants.js';
 import { PREFLIGHT, MERGE } from './wu-done-messages.js';
 import { getDriftLevel, DRIFT_LEVELS } from './branch-drift.js';
 import { createError, ErrorCodes } from './error-handler.js';
