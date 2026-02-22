@@ -486,4 +486,4 @@ if (import.meta.main) {
 }
 
 // Export for testing
-export { main, parseOptions, formatSuggestion, interactiveMode, generateLaneInferenceYAML };
+export { parseOptions, formatSuggestion, interactiveMode, generateLaneInferenceYAML };

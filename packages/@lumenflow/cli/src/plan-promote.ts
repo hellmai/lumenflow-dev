@@ -274,6 +274,3 @@ import { runCLI } from './cli-entry-point.js';
 if (import.meta.main) {
   void runCLI(main);
 }
-
-// Export for testing
-export { main };
