@@ -7,7 +7,11 @@ priority: P2
 created: 2026-02-22
 code_paths:
   - packages/@lumenflow/core/src/gates-config.ts
-  - packages/@lumenflow/core/src/constants/gate-constants.ts
+  - packages/@lumenflow/core/src/gates-schemas.ts
+  - packages/@lumenflow/core/src/gates-presets.ts
+  - packages/@lumenflow/core/src/gates-coverage.ts
+  - packages/@lumenflow/core/src/package-manager-resolver.ts
+  - packages/@lumenflow/core/src/gates-config-internal.ts
 tests:
   manual:
     - Run pnpm gates from worktree — all tests pass
@@ -24,10 +28,17 @@ blocked_by:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-22T15:29:52.894Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2037
+session_id: d2d6c38f-3a05-41b3-a3de-4616e7bc472e
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T15:29:52.900Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +53,3 @@ acceptance:
   - Each extracted module has single responsibility and under 300 lines
   - All existing gates tests pass without modification
   - pnpm gates end-to-end workflow unchanged
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2037
-claimed_at: 2026-02-22T15:29:52.894Z
-baseline_main_sha: 29d807ba7d52a86c1a0d1720b024c2685d446236
-session_id: d2d6c38f-3a05-41b3-a3de-4616e7bc472e
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-22T15:29:52.900Z
