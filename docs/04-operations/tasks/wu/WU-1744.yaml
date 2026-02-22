@@ -2,7 +2,7 @@ id: WU-1744
 title: Stabilize flaky full-suite test timeouts
 lane: 'Operations: Tooling'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-16
 code_paths:
@@ -43,3 +43,6 @@ session_id: 0ee4388d-35a5-46e7-9c57-b9e9d4cd8e7d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T00:59:57.382Z
+locked: true
+completed_at: 2026-02-22T01:11:11.303Z
+completed: 2026-02-22

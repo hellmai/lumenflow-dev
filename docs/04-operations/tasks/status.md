@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -928,3 +928,4 @@ _Last updated: 2026-02-22_
 - [WU-1992 — Fix pre-existing spec:linter failures in legacy WU YAMLs](wu/WU-1992.yaml) — 2026-02-22
 - [WU-1993 — Stabilize workspace connector tests under runtime health fetch side effects](wu/WU-1993.yaml) — 2026-02-22
 - [WU-1994 — Eliminate React act warnings in web test suite](wu/WU-1994.yaml) — 2026-02-22
+- [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml) — 2026-02-22
