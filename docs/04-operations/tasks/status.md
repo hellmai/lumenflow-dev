@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1744 — Stabilize flaky full-suite test timeouts](wu/WU-1744.yaml)
 
 ## Completed
 

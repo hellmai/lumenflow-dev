@@ -1942,3 +1942,4 @@
 {"type":"complete","wuId":"WU-1993","timestamp":"2026-02-22T00:49:42.394Z"}
 {"type":"claim","wuId":"WU-1994","timestamp":"2026-02-22T00:55:12.595Z","lane":"Operations: Tooling","title":"Eliminate React act warnings in web test suite"}
 {"type":"complete","wuId":"WU-1994","timestamp":"2026-02-22T00:58:37.541Z"}
+{"type":"claim","wuId":"WU-1744","lane":"Operations: Tooling","title":"Stabilize flaky full-suite test timeouts","timestamp":"2026-02-22T00:59:57.437Z"}
