@@ -39,6 +39,20 @@ const TEST_COMMANDS = {
   DOTNET_TEST: 'dotnet test',
 } as const;
 
+const WORKSPACE_CONFIG_FILE = 'workspace.yaml';
+
+function workspaceConfigFromSoftwareDelivery(softwareDeliveryYaml: string): string {
+  const trimmed = softwareDeliveryYaml.trim();
+  if (!trimmed) {
+    return 'software_delivery: {}\n';
+  }
+  const indented = trimmed
+    .split('\n')
+    .map((line) => `  ${line}`)
+    .join('\n');
+  return `software_delivery:\n${indented}\n`;
+}
+
 describe('gates-config', () => {
   describe('GateCommandConfigSchema', () => {
     it('should accept a string command', () => {
@@ -345,7 +359,7 @@ describe('gates-config', () => {
   describe('loadGatesConfig', () => {
     // Use real temp directory for file system tests
     const testDir = path.join('/tmp', `test-lumenflow-gates-${Date.now()}`);
-    const configPath = path.join(testDir, '.lumenflow.config.yaml');
+    const configPath = path.join(testDir, WORKSPACE_CONFIG_FILE);
 
     beforeEach(() => {
       // Create temp directory
@@ -361,16 +375,15 @@ describe('gates-config', () => {
       }
     });
 
-    it('should load gates config from .lumenflow.config.yaml', () => {
+    it('should load gates config from workspace.yaml software_delivery', () => {
       const yamlContent = `
-version: "2.0"
 gates:
   execution:
     format: "pnpm format:check"
     lint: "pnpm lint"
     test: "pnpm test"
 `;
-      fs.writeFileSync(configPath, yamlContent);
+      fs.writeFileSync(configPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const config = loadGatesConfig(testDir);
 
@@ -382,13 +395,12 @@ gates:
 
     it('should expand preset and merge with overrides', () => {
       const yamlContent = `
-version: "2.0"
 gates:
   execution:
     preset: "node"
     lint: "custom-lint"
 `;
-      fs.writeFileSync(configPath, yamlContent);
+      fs.writeFileSync(configPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const config = loadGatesConfig(testDir);
 
@@ -401,11 +413,10 @@ gates:
 
     it('should return null when no gates config exists', () => {
       const yamlContent = `
-version: "2.0"
 directories:
   wuDir: "docs/tasks/wu"
 `;
-      fs.writeFileSync(configPath, yamlContent);
+      fs.writeFileSync(configPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const config = loadGatesConfig(testDir);
 
@@ -420,11 +431,7 @@ directories:
     });
 
     it('should handle malformed YAML gracefully', () => {
-      const yamlContent = `
-gates:
-  execution:
-    format: [invalid: yaml: here
-`;
+      const yamlContent = 'software_delivery:\n  gates:\n    execution:\n      format: [invalid: yaml: here\n';
       fs.writeFileSync(configPath, yamlContent);
 
       // Suppress console.warn during this test
@@ -470,7 +477,7 @@ gates:
    */
   describe('lane health config (WU-1191)', () => {
     const testDir = path.join('/tmp', `test-lumenflow-lane-health-${Date.now()}`);
-    const configPath = path.join(testDir, '.lumenflow.config.yaml');
+    const configPath = path.join(testDir, WORKSPACE_CONFIG_FILE);
 
     beforeEach(() => {
       fs.mkdirSync(testDir, { recursive: true });
@@ -486,11 +493,10 @@ gates:
 
     it('should parse lane_health config with warn mode', () => {
       const yamlContent = `
-version: "2.0"
 gates:
   lane_health: warn
 `;
-      fs.writeFileSync(configPath, yamlContent);
+      fs.writeFileSync(configPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const config = loadLaneHealthConfig(testDir);
 
@@ -499,11 +505,10 @@ gates:
 
     it('should parse lane_health config with error mode', () => {
       const yamlContent = `
-version: "2.0"
 gates:
   lane_health: error
 `;
-      fs.writeFileSync(configPath, yamlContent);
+      fs.writeFileSync(configPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const config = loadLaneHealthConfig(testDir);
 
@@ -512,11 +517,10 @@ gates:
 
     it('should parse lane_health config with off mode', () => {
       const yamlContent = `
-version: "2.0"
 gates:
   lane_health: off
 `;
-      fs.writeFileSync(configPath, yamlContent);
+      fs.writeFileSync(configPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const config = loadLaneHealthConfig(testDir);
 
@@ -525,12 +529,11 @@ gates:
 
     it('should default to warn when lane_health not configured', () => {
       const yamlContent = `
-version: "2.0"
 gates:
   execution:
     test: "pnpm test"
 `;
-      fs.writeFileSync(configPath, yamlContent);
+      fs.writeFileSync(configPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const config = loadLaneHealthConfig(testDir);
 
@@ -539,10 +542,9 @@ gates:
 
     it('should default to warn when no gates config exists', () => {
       const yamlContent = `
-version: "2.0"
 project: test
 `;
-      fs.writeFileSync(configPath, yamlContent);
+      fs.writeFileSync(configPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const config = loadLaneHealthConfig(testDir);
 
@@ -551,11 +553,10 @@ project: test
 
     it('should reject invalid lane_health values', () => {
       const yamlContent = `
-version: "2.0"
 gates:
   lane_health: invalid
 `;
-      fs.writeFileSync(configPath, yamlContent);
+      fs.writeFileSync(configPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       // Suppress console.warn during this test
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -574,7 +575,7 @@ gates:
    */
   describe('coverage config from methodology policy (WU-1262)', () => {
     const policyTestDir = path.join('/tmp', `test-lumenflow-policy-coverage-${Date.now()}`);
-    const policyConfigPath = path.join(policyTestDir, '.lumenflow.config.yaml');
+    const policyConfigPath = path.join(policyTestDir, WORKSPACE_CONFIG_FILE);
 
     beforeEach(() => {
       fs.mkdirSync(policyTestDir, { recursive: true });
@@ -597,10 +598,7 @@ gates:
 
     it('should return TDD defaults (90%, block) when no config specified', () => {
       // Empty config file - should get TDD defaults
-      const yamlContent = `
-version: "2.0"
-`;
-      fs.writeFileSync(policyConfigPath, yamlContent);
+      fs.writeFileSync(policyConfigPath, workspaceConfigFromSoftwareDelivery(''));
 
       const result = resolveCoverageConfig(policyTestDir);
 
@@ -610,11 +608,10 @@ version: "2.0"
 
     it('should return TDD defaults (90%, block) for methodology.testing: tdd', () => {
       const yamlContent = `
-version: "2.0"
 methodology:
   testing: tdd
 `;
-      fs.writeFileSync(policyConfigPath, yamlContent);
+      fs.writeFileSync(policyConfigPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const result = resolveCoverageConfig(policyTestDir);
 
@@ -624,11 +621,10 @@ methodology:
 
     it('should return test-after defaults (70%, warn) for methodology.testing: test-after', () => {
       const yamlContent = `
-version: "2.0"
 methodology:
   testing: test-after
 `;
-      fs.writeFileSync(policyConfigPath, yamlContent);
+      fs.writeFileSync(policyConfigPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const result = resolveCoverageConfig(policyTestDir);
 
@@ -638,11 +634,10 @@ methodology:
 
     it('should return none defaults (0%, off) for methodology.testing: none', () => {
       const yamlContent = `
-version: "2.0"
 methodology:
   testing: none
 `;
-      fs.writeFileSync(policyConfigPath, yamlContent);
+      fs.writeFileSync(policyConfigPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const result = resolveCoverageConfig(policyTestDir);
 
@@ -652,13 +647,12 @@ methodology:
 
     it('should allow methodology.overrides.coverage_threshold to override template default', () => {
       const yamlContent = `
-version: "2.0"
 methodology:
   testing: tdd
   overrides:
     coverage_threshold: 85
 `;
-      fs.writeFileSync(policyConfigPath, yamlContent);
+      fs.writeFileSync(policyConfigPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const result = resolveCoverageConfig(policyTestDir);
 
@@ -668,13 +662,12 @@ methodology:
 
     it('should allow methodology.overrides.coverage_mode to override template default', () => {
       const yamlContent = `
-version: "2.0"
 methodology:
   testing: tdd
   overrides:
     coverage_mode: warn
 `;
-      fs.writeFileSync(policyConfigPath, yamlContent);
+      fs.writeFileSync(policyConfigPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const result = resolveCoverageConfig(policyTestDir);
 
@@ -685,13 +678,12 @@ methodology:
     it('should prefer explicit gates.minCoverage over methodology defaults', () => {
       // gates.minCoverage explicitly set should win over methodology
       const yamlContent = `
-version: "2.0"
 methodology:
   testing: tdd
 gates:
   minCoverage: 75
 `;
-      fs.writeFileSync(policyConfigPath, yamlContent);
+      fs.writeFileSync(policyConfigPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const result = resolveCoverageConfig(policyTestDir);
 
@@ -702,13 +694,12 @@ gates:
     it('should prefer explicit gates.enableCoverage: false over methodology defaults', () => {
       // gates.enableCoverage: false should set mode to 'off'
       const yamlContent = `
-version: "2.0"
 methodology:
   testing: tdd
 gates:
   enableCoverage: false
 `;
-      fs.writeFileSync(policyConfigPath, yamlContent);
+      fs.writeFileSync(policyConfigPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const result = resolveCoverageConfig(policyTestDir);
 
@@ -719,11 +710,10 @@ gates:
     it('should maintain backwards compatibility - no methodology defaults to TDD', () => {
       // Legacy configs without methodology should still work
       const yamlContent = `
-version: "2.0"
 gates:
   minCoverage: 80
 `;
-      fs.writeFileSync(policyConfigPath, yamlContent);
+      fs.writeFileSync(policyConfigPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const result = resolveCoverageConfig(policyTestDir);
 
@@ -739,7 +729,7 @@ gates:
    */
   describe('tests_required from methodology policy (WU-1280)', () => {
     const testsRequiredTestDir = path.join('/tmp', `test-lumenflow-tests-required-${Date.now()}`);
-    const testsRequiredConfigPath = path.join(testsRequiredTestDir, '.lumenflow.config.yaml');
+    const testsRequiredConfigPath = path.join(testsRequiredTestDir, WORKSPACE_CONFIG_FILE);
 
     beforeEach(() => {
       fs.mkdirSync(testsRequiredTestDir, { recursive: true });
@@ -762,11 +752,10 @@ gates:
 
     it('should return tests_required: true for methodology.testing: tdd', () => {
       const yamlContent = `
-version: "2.0"
 methodology:
   testing: tdd
 `;
-      fs.writeFileSync(testsRequiredConfigPath, yamlContent);
+      fs.writeFileSync(testsRequiredConfigPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const result = resolveTestPolicy(testsRequiredTestDir);
 
@@ -775,11 +764,10 @@ methodology:
 
     it('should return tests_required: true for methodology.testing: test-after', () => {
       const yamlContent = `
-version: "2.0"
 methodology:
   testing: test-after
 `;
-      fs.writeFileSync(testsRequiredConfigPath, yamlContent);
+      fs.writeFileSync(testsRequiredConfigPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const result = resolveTestPolicy(testsRequiredTestDir);
 
@@ -788,11 +776,10 @@ methodology:
 
     it('should return tests_required: false for methodology.testing: none', () => {
       const yamlContent = `
-version: "2.0"
 methodology:
   testing: none
 `;
-      fs.writeFileSync(testsRequiredConfigPath, yamlContent);
+      fs.writeFileSync(testsRequiredConfigPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const result = resolveTestPolicy(testsRequiredTestDir);
 
@@ -800,10 +787,7 @@ methodology:
     });
 
     it('should return tests_required: true when no config specified (TDD default)', () => {
-      const yamlContent = `
-version: "2.0"
-`;
-      fs.writeFileSync(testsRequiredConfigPath, yamlContent);
+      fs.writeFileSync(testsRequiredConfigPath, workspaceConfigFromSoftwareDelivery(''));
 
       const result = resolveTestPolicy(testsRequiredTestDir);
 
@@ -812,11 +796,10 @@ version: "2.0"
 
     it('should include coverage config alongside tests_required', () => {
       const yamlContent = `
-version: "2.0"
 methodology:
   testing: none
 `;
-      fs.writeFileSync(testsRequiredConfigPath, yamlContent);
+      fs.writeFileSync(testsRequiredConfigPath, workspaceConfigFromSoftwareDelivery(yamlContent));
 
       const result = resolveTestPolicy(testsRequiredTestDir);
 

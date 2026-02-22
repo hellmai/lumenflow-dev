@@ -5,8 +5,7 @@
  * LumenFlow Configuration Loader
  *
  * Loads and manages LumenFlow configuration from workspace.yaml
- * (`software_delivery` block). Falls back to the legacy
- * .lumenflow.config.yaml during the transition window.
+ * (`software_delivery` block).
  *
  * @module lumenflow-config
  */
@@ -22,10 +21,11 @@ import {
   WorkspaceV2ExtensionsSchema,
   WORKSPACE_V2_KEYS,
 } from './lumenflow-config-schema.js';
+import { WORKSPACE_CONFIG_FILE_NAME } from './config-contract.js';
 import { normalizeConfigKeys } from './normalize-config-keys.js';
 
 /** Canonical workspace config file name (workspace-first architecture) */
-export const WORKSPACE_CONFIG_FILE_NAME = 'workspace.yaml';
+export { WORKSPACE_CONFIG_FILE_NAME } from './config-contract.js';
 
 /** Legacy config file name retained for compatibility workflows */
 export const LEGACY_CONFIG_FILE_NAME = '.lumenflow.config.yaml';
@@ -93,16 +93,6 @@ export function buildLegacyConfigHardCutGuidance(projectRoot: string): string {
     `Run \`${WORKSPACE_INIT_COMMAND}\`, then migrate your legacy settings into ` +
     `${workspacePath} under \`${WORKSPACE_CONFIG_SECTION}\`.`
   );
-}
-
-/**
- * Check whether a legacy config file exists in the provided project root.
- *
- * @param projectRoot - Project root directory
- * @returns True when .lumenflow.config.yaml exists
- */
-function hasLegacyConfig(projectRoot: string): boolean {
-  return getConfigFilePresence(projectRoot).legacyConfigExists;
 }
 
 /** Cached config instance */
@@ -174,11 +164,9 @@ function loadWorkspaceSoftwareDeliveryConfig(projectRoot: string): Partial<Lumen
     const content = fs.readFileSync(workspacePath, UTF8_ENCODING);
     const workspaceData = parseYamlRecord(content);
     if (!workspaceData) {
-      if (!hasLegacyConfig(projectRoot)) {
-        console.warn(
-          `${WARNING_PREFIX} ${WORKSPACE_CONFIG_FILE_NAME} does not contain a valid object root.`,
-        );
-      }
+      console.warn(
+        `${WARNING_PREFIX} ${WORKSPACE_CONFIG_FILE_NAME} does not contain a valid object root.`,
+      );
       return null;
     }
 
@@ -187,7 +175,7 @@ function loadWorkspaceSoftwareDeliveryConfig(projectRoot: string): Partial<Lumen
       const hasSoftwareDeliveryError = parsedExtensions.error.issues.some(
         (issue) => issue.path[0] === WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY,
       );
-      if (hasSoftwareDeliveryError && !hasLegacyConfig(projectRoot)) {
+      if (hasSoftwareDeliveryError) {
         console.warn(
           `${WARNING_PREFIX} ${WORKSPACE_CONFIG_FILE_NAME} is missing a valid ${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY} block.`,
         );
@@ -198,43 +186,8 @@ function loadWorkspaceSoftwareDeliveryConfig(projectRoot: string): Partial<Lumen
     // WU-1765: Normalize snake_case YAML keys to camelCase before Zod parsing.
     return normalizeConfigKeys(parsedExtensions.data[WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY]);
   } catch (error) {
-    if (!hasLegacyConfig(projectRoot)) {
-      console.warn(
-        `${WARNING_PREFIX} Failed to parse ${WORKSPACE_CONFIG_FILE_NAME}:`,
-        error instanceof Error ? error.message : String(error),
-      );
-    }
-    return null;
-  }
-}
-
-/**
- * Load config from legacy .lumenflow.config.yaml.
- *
- * @param projectRoot - Project root directory
- * @returns Parsed legacy config object, or null when unavailable/invalid
- */
-function loadLegacyConfigFile(projectRoot: string): Partial<LumenFlowConfig> | null {
-  const legacyConfigPath = path.join(projectRoot, LEGACY_CONFIG_FILE_NAME);
-  if (!fs.existsSync(legacyConfigPath)) {
-    return null;
-  }
-
-  try {
-    const content = fs.readFileSync(legacyConfigPath, UTF8_ENCODING);
-    const legacyData = parseYamlRecord(content);
-    if (!legacyData) {
-      console.warn(
-        `${WARNING_PREFIX} ${LEGACY_CONFIG_FILE_NAME} does not contain a valid object root.`,
-      );
-      return null;
-    }
-
-    // WU-1765: Normalize snake_case YAML keys to camelCase before Zod parsing.
-    return normalizeConfigKeys(legacyData);
-  } catch (error) {
     console.warn(
-      `${WARNING_PREFIX} Failed to parse ${LEGACY_CONFIG_FILE_NAME}:`,
+      `${WARNING_PREFIX} Failed to parse ${WORKSPACE_CONFIG_FILE_NAME}:`,
       error instanceof Error ? error.message : String(error),
     );
     return null;
@@ -246,8 +199,7 @@ function loadLegacyConfigFile(projectRoot: string): Partial<LumenFlowConfig> | n
  *
  * Resolution order:
  * 1. `workspace.yaml` → `software_delivery` block (canonical)
- * 2. `.lumenflow.config.yaml` (legacy fallback during migration)
- * 3. defaults from schema
+ * 2. defaults from schema
  *
  * @param options - Options for loading config
  * @param options.projectRoot - Override project root detection
@@ -287,11 +239,8 @@ export function getConfig(
     );
   }
 
-  const legacyConfig =
-    workspaceConfig || strictWorkspace ? null : loadLegacyConfigFile(projectRoot);
-
   // Parse with defaults
-  const config = parseConfig(workspaceConfig ?? legacyConfig ?? {});
+  const config = parseConfig(workspaceConfig ?? {});
 
   // Cache if using default project root
   if (!overrideRoot) {
