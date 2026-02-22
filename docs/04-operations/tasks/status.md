@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2052 — Fix filterExistingFiles CWD bug in incremental format check](wu/WU-2052.yaml)
 
 ## Completed
 
