@@ -2,7 +2,7 @@ id: WU-2051
 title: 'Final cleanup: remove remaining live-surface legacy config references'
 lane: 'Content: Specs Governance'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-22
 code_paths:
@@ -18,7 +18,8 @@ code_paths:
 tests:
   manual:
     - rg -n "\.lumenflow\.config\.yaml" workspace.yaml CHANGELOG.md returns no matches
-    - rg -n "\.lumenflow\.config\.yaml" .husky/hooks with historical task/plan excludes returns no matches
+    - rg -n "\.lumenflow\.config\.yaml" .husky/hooks with historical task/plan excludes returns no
+      matches
     - rg -n "\.lumenflow\.config\.yaml" with historical task/plan/test excludes returns no matches
   unit:
     - .husky/hooks/__tests__/pre-commit.test.ts
@@ -47,12 +48,15 @@ requires_cto_approval: false
 requires_design_approval: false
 description: 'Context: runtime hard cut is complete, but a few live documentation/config and hook
   runtime surfaces still assumed the removed .lumenflow.config.yaml path. Problem: these assumptions
-  undermine kernel-first clarity and can break commit hooks after hard cut. Solution: remove remaining
-  live-surface mentions and replace hook root resolution with workspace/kernel-first-safe logic while
-  keeping historical WU records intact.'
+  undermine kernel-first clarity and can break commit hooks after hard cut. Solution: remove
+  remaining live-surface mentions and replace hook root resolution with workspace/kernel-first-safe
+  logic while keeping historical WU records intact.'
 acceptance:
   - workspace.yaml no longer references .lumenflow.config.yaml in lanes or active configuration.
   - Current public-facing docs/config surfaces no longer mention .lumenflow.config.yaml.
   - Husky hooks no longer derive project root by locating .lumenflow.config.yaml.
   - Repository scan shows no remaining .lumenflow.config.yaml mentions outside historical task/plan
     records.
+locked: true
+completed_at: 2026-02-22T18:40:00.109Z
+completed: 2026-02-22
