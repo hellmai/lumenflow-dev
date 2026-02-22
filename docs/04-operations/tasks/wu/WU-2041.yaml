@@ -2,7 +2,7 @@ id: WU-2041
 title: Add missing spawn-policy-resolver and spawn-lane-occupation modules
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -27,7 +27,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: WU-2012 decomposition left spawn-policy-resolver.ts and spawn-lane-occupation.ts unstaged during merge. wu-spawn.ts references these modules but they do not exist on main, causing build failures.
+description: WU-2012 decomposition left spawn-policy-resolver.ts and spawn-lane-occupation.ts
+  unstaged during merge. wu-spawn.ts references these modules but they do not exist on main, causing
+  build failures.
 acceptance:
   - pnpm turbo run build --filter=@lumenflow/core succeeds
   - All 85 wu-spawn tests pass
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2041
+claimed_at: 2026-02-22T15:22:38.886Z
+baseline_main_sha: 045e64e31968c209f2c0bdb30c521f8af978b947
+session_id: f85c4fb1-c412-406a-8685-768f75d05944
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T15:22:38.894Z

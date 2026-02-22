@@ -9,6 +9,7 @@ _Last updated: 2026-02-22_
 - [WU-2014 — Decompose wu-done-worktree.ts (1777 lines)](wu/WU-2014.yaml)
 - [WU-2019 — Replace work-classifier domain switch with data map](wu/WU-2019.yaml)
 - [WU-2018 — Replace consistency repair switch with strategy map](wu/WU-2018.yaml)
+- [WU-2041 — Add missing spawn-policy-resolver and spawn-lane-occupation modules](wu/WU-2041.yaml)
 
 ## Completed
 
