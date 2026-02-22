@@ -8,12 +8,16 @@ created: 2026-02-22
 code_paths:
   - packages/@lumenflow/cli/src/wu-claim-worktree.ts
   - packages/@lumenflow/core/src/worktree-symlink.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-claim-worktree.test.ts
+  - packages/@lumenflow/core/src/__tests__/worktree-symlink.test.ts
 tests:
   manual:
     - Create a fresh WU and run wu:claim in worktree mode; verify clean setup logs and functional
       wu:prep
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-claim-worktree.test.ts
+    - packages/@lumenflow/core/src/__tests__/worktree-symlink.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1996.done
