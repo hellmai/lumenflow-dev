@@ -2,7 +2,7 @@ id: WU-2022
 title: 'Close workspace-first hard cut: move remaining legacy config readers'
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-22
 code_paths:
@@ -58,3 +58,6 @@ session_id: fcc32d78-973b-47c3-b572-a4e7c66b621f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T10:04:16.467Z
+locked: true
+completed_at: 2026-02-22T10:59:41.041Z
+completed: 2026-02-22

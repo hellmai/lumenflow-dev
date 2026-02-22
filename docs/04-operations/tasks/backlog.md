@@ -40,7 +40,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2022 — Close workspace-first hard cut: move remaining legacy config readers](wu/WU-2022.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -984,6 +984,7 @@ sections:
 - [WU-2004 — Reconcile completed initiatives still marked in_progress](wu/WU-2004.yaml)
 - [WU-2005 — Derive initiative phase status from phase WU completion](wu/WU-2005.yaml)
 - [WU-2006 — Hard-delete legacy .lumenflow.config.yaml and remediate runtime readers to workspace.yaml v2](wu/WU-2006.yaml)
+- [WU-2022 — Close workspace-first hard cut: move remaining legacy config readers](wu/WU-2022.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
