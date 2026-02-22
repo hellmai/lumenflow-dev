@@ -6,13 +6,11 @@ status: in_progress
 priority: P1
 created: 2026-02-22
 code_paths:
-  - packages/@lumenflow/core/src/wu-event-sourcer.ts
-  - packages/@lumenflow/core/src/wu-state-indexer.ts
-  - packages/@lumenflow/core/src/wu-lock-manager.ts
-  - packages/@lumenflow/core/src/wu-inconsistency-repairer.ts
-  - packages/@lumenflow/core/src/invariants-runner.ts
-  - packages/@lumenflow/core/src/spawn-prompt-helpers.ts
-  - packages/@lumenflow/core/src/spawn-guidance-generators.ts
+  - packages/@lumenflow/core/src/__tests__/wu-event-sourcer.test.ts
+  - packages/@lumenflow/core/src/__tests__/wu-state-indexer.test.ts
+  - packages/@lumenflow/core/src/__tests__/wu-inconsistency-repairer.test.ts
+  - packages/@lumenflow/core/src/__tests__/invariants-runner-strategy.test.ts
+  - packages/@lumenflow/core/src/__tests__/spawn-prompt-helpers.test.ts
 tests:
   manual:
     - Run pnpm gates from worktree — all tests pass
@@ -33,10 +31,17 @@ notes: 'Audit origin: INIT-034 code review (2026-02-22). P0 items 1 and 2 from a
   modules were extracted by WU-2012/2013/2015/2017/2018 but only facade-level tests existed. Each
   new test file should test the module in isolation, not through the facade.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-22T16:14:56.654Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2043
+session_id: 81aa5917-ee93-4ea8-9ae0-4a5fc8ffef51
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T16:14:56.662Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -57,11 +62,3 @@ acceptance:
   - 'Strategy map completeness test: all CONSISTENCY_TYPES with canAutoRepair have handlers'
   - spawn-prompt-helpers.test.ts created covering 9 exported functions
   - All new tests pass via pnpm gates
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2043
-claimed_at: 2026-02-22T16:14:56.654Z
-baseline_main_sha: a762883239ec974f1c8a080aa90a0f399cf20085
-session_id: 81aa5917-ee93-4ea8-9ae0-4a5fc8ffef51
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-22T16:14:56.662Z
