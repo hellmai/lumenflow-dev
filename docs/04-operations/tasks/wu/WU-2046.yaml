@@ -2,7 +2,7 @@ id: WU-2046
 title: Fix pre-existing wu-spawn.test.ts failures
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -30,3 +30,11 @@ requires_design_approval: false
 description: '5 wu-spawn tests fail on main: Testing Optional label not found in spawn output'
 acceptance:
   - All wu-spawn.test.ts tests pass
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2046
+claimed_at: 2026-02-22T22:24:59.024Z
+baseline_main_sha: 37681601cb051b5076a2b2366e4f116d7ab914b5
+session_id: a2b5c709-5e7c-4fb0-a7a4-34ed0a10d0f2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T22:24:59.034Z

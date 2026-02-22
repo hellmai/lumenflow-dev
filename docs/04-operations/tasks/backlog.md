@@ -24,13 +24,12 @@ sections:
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2009 — Add claim-validation gate for absolute acceptance criteria drift](wu/WU-2009.yaml) — Framework: Core Validation
 - [WU-2021 — Filter deleted files from incremental format check input](wu/WU-2021.yaml) — Framework: Core Validation
-- [WU-2046 — Fix pre-existing wu-spawn.test.ts failures](wu/WU-2046.yaml) — Framework: CLI WU Commands
 - [WU-2049 — INIT-034 follow-up: consolidate duplicates and fix naming collisions](wu/WU-2049.yaml) — Framework: Core Lifecycle
 - [WU-2050 — Bundled pack resolution for end-user bootstrap](wu/WU-2050.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2046 — Fix pre-existing wu-spawn.test.ts failures](wu/WU-2046.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
