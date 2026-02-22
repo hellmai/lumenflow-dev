@@ -9,6 +9,7 @@ code_paths:
   - apps/web/__tests__/workspace-selector.test.tsx
   - apps/web/src/components/workspace-selector.tsx
   - apps/web/next-env.d.ts
+  - .prettierignore
 tests:
   manual:
     - Run pnpm format:check and confirm no prettier violations
@@ -21,10 +22,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-22T00:13:00.830Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1990
+session_id: 135668fb-a59d-41bc-8872-6786a40dd70e
 exposure: ui
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T00:13:00.835Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -34,11 +42,3 @@ acceptance:
   - apps/web/__tests__/workspace-selector.test.tsx passes prettier
   - apps/web/src/components/workspace-selector.tsx passes prettier
   - pnpm format:check passes on main
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1990
-claimed_at: 2026-02-22T00:13:00.830Z
-baseline_main_sha: aba304b7a7b3e2690336333cce092d32551d1b11
-session_id: 135668fb-a59d-41bc-8872-6786a40dd70e
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-22T00:13:00.835Z
