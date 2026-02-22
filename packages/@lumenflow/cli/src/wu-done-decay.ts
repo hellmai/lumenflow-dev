@@ -15,7 +15,7 @@ import { archiveByDecay } from '@lumenflow/memory/decay/archival';
 
 import type { MemoryDecayConfig } from '@lumenflow/core/config-schema';
 import { LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
-import { MS_PER_DAY } from '@lumenflow/core/constants/duration-constants';
+import { MS_PER_DAY } from './constants.js';
 import path from 'node:path';
 
 /**

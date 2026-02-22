@@ -102,9 +102,19 @@ export const LOG_TAIL_MAX_BYTES = 64 * 1024;
 
 // ── Time Conversion ───────────────────────────────────────────────────
 
-// WU-2044: MS_PER_HOUR consolidated into @lumenflow/core duration-constants.ts
-// Re-export from canonical location for backward compatibility
-export { MS_PER_HOUR } from '@lumenflow/core/constants/duration-constants';
+/**
+ * Milliseconds per hour (1000 ms * 60 s * 60 min)
+ * WU-2044: Canonical source is @lumenflow/core/constants/duration-constants.ts
+ * Kept as local constant to avoid cross-package subpath export dependency.
+ */
+export const MS_PER_HOUR = 1000 * 60 * 60;
+
+/**
+ * Milliseconds per day (1000 ms * 60 s * 60 min * 24 h)
+ * WU-2044: Canonical source is @lumenflow/core/constants/duration-constants.ts
+ * Kept as local constant to avoid cross-package subpath export dependency.
+ */
+export const MS_PER_DAY = 24 * MS_PER_HOUR;
 
 /** Factor for rounding to one decimal place */
 export const ONE_DECIMAL_ROUNDING_FACTOR = 10;
