@@ -37,7 +37,7 @@ sections:
 - [WU-2019 — Replace work-classifier domain switch with data map](wu/WU-2019.yaml) — Framework: Core Validation
 - [WU-2020 — Inject WUStateStore via interfaces and replace getConfig() calls](wu/WU-2020.yaml) — Framework: Core Lifecycle
 - [WU-2021 — Filter deleted files from incremental format check input](wu/WU-2021.yaml) — Framework: Core Validation
-- [WU-2037 — Decompose gates-config.ts (856 lines, 9 responsibilities)](wu/WU-2037.yaml) — Framework: Core Lifecycle
+- [WU-2037 — Decompose gates-config.ts (856 lines, 9 responsibilities)](wu/WU-2037.yaml) — Framework: Core Validation
 
 ## 🔧 In progress
 
