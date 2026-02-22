@@ -49,7 +49,7 @@ export default tseslint.config(
       // wu-done-worktree has complexity 98 - multi-step workflow
       'sonarjs/cognitive-complexity': ['error', 100],
       'sonarjs/no-duplicate-string': ['error', { threshold: 3 }],
-      // TODO and FIXME comments are legitimate code annotations, not lint errors
+      // Comment task markers are legitimate code annotations, not lint errors
       'sonarjs/todo-tag': 'off',
       'sonarjs/fixme-tag': 'off',
       // Slow regex warnings are advisory, not blocking
