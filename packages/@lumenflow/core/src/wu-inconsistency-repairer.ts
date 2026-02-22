@@ -22,7 +22,7 @@ import { CONSISTENCY_TYPES, LOG_PREFIX } from './wu-constants.js';
 import { WU_PATHS } from './wu-paths.js';
 import { withMicroWorktree } from './micro-worktree.js';
 import type { ConsistencyError } from './wu-consistency-detector.js';
-import type { RepairResult } from './wu-consistency-file-repairs.js';
+import type { WUConsistencyRepairResult } from './wu-consistency-file-repairs.js';
 import {
   createStampInWorktree,
   updateYamlToDoneInWorktree,
@@ -54,7 +54,7 @@ export type FileRepairStrategy = (
   error: ConsistencyError,
   worktreePath: string,
   projectRoot: string,
-) => Promise<RepairResult>;
+) => Promise<WUConsistencyRepairResult>;
 
 /**
  * Strategy for repairing a git-only consistency error (no micro-worktree needed).
@@ -66,7 +66,7 @@ export type FileRepairStrategy = (
 export type GitRepairStrategy = (
   error: ConsistencyError,
   projectRoot: string,
-) => Promise<RepairResult>;
+) => Promise<WUConsistencyRepairResult>;
 
 /**
  * Strategy map for file-based repairs (WU-2018).
@@ -177,7 +177,7 @@ async function repairSingleErrorInWorktree(
   error: ConsistencyError,
   worktreePath: string,
   projectRoot: string,
-): Promise<RepairResult> {
+): Promise<WUConsistencyRepairResult> {
   const strategy = FILE_REPAIR_STRATEGIES[error.type];
   if (!strategy) {
     return { skipped: true, reason: `Unknown error type: ${error.type}` };
@@ -200,7 +200,7 @@ async function repairSingleErrorInWorktree(
 async function repairGitOnlyError(
   error: ConsistencyError,
   projectRoot: string,
-): Promise<RepairResult> {
+): Promise<WUConsistencyRepairResult> {
   const strategy = GIT_REPAIR_STRATEGIES[error.type];
   if (!strategy) {
     return { skipped: true, reason: `Unknown git-only error type: ${error.type}` };

@@ -30,9 +30,22 @@ import {
 import { WU_EVENT_TYPE } from './wu-state-schema.js';
 import { todayISO, normalizeToDateString } from './date-utils.js';
 import { createGitForPath } from './git-adapter.js';
-import type { RepairResult } from './ports/wu-state.ports.js';
 
-export type { RepairResult };
+/**
+ * Result type for consistency repair operations.
+ *
+ * This is distinct from wu-state-store RepairResult (line-based corruption repair).
+ * WU consistency repairs are file-oriented and may be skipped intentionally.
+ */
+export interface WUConsistencyRepairResult {
+  success?: boolean;
+  skipped?: boolean;
+  reason?: string;
+  files?: string[];
+}
+
+// Backward-compatible alias for existing imports from this module.
+export type RepairResult = WUConsistencyRepairResult;
 
 /**
  * Create stamp file inside a micro-worktree (WU-1078)
