@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2014 — Decompose wu-done-worktree.ts (1777 lines)](wu/WU-2014.yaml) — Framework: Core Lifecycle
 - [WU-2013 — Decompose wu-state-store.ts into focused services (1274 lines)](wu/WU-2013.yaml) — Framework: Core Lifecycle
 - [WU-2012 — Decompose wu-spawn.ts god object (2342 lines)](wu/WU-2012.yaml) — Framework: Core Lifecycle
 - [WU-2011 — Extract magic numbers in CLI package (@lumenflow/cli)](wu/WU-2011.yaml) — Framework: Core Lifecycle
