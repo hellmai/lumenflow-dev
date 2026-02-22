@@ -9,6 +9,9 @@ code_paths:
   - packages/@lumenflow/core/src/wu-done-worktree.ts
   - packages/@lumenflow/core/src/wu-done-preflight.ts
   - packages/@lumenflow/core/src/wu-done-messages.ts
+  - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
+  - packages/@lumenflow/core/src/__tests__/wu-done-rollback-leaks.test.ts
+  - packages/@lumenflow/core/src/__tests__/wu-done-messages.test.ts
 tests:
   manual:
     - Run pnpm wu:done --id <id> in a test scenario and confirm operator-facing output contains no
@@ -16,6 +19,8 @@ tests:
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-worktree.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-rollback-leaks.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-messages.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-1997.done

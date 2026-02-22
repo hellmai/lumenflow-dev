@@ -165,6 +165,12 @@ describe('WU-1467: Preflight output uses authoritative command names', () => {
     expect(message).not.toContain('tasks:validate');
   });
 
+  it('buildPreflightErrorMessage does not leak internal UnsafeAny placeholder text', () => {
+    const message = buildPreflightErrorMessage('WU-TEST', ['some error']);
+    expect(message).toContain('Aborting wu:done BEFORE merge operations');
+    expect(message).not.toContain('UnsafeAny');
+  });
+
   it('buildPreflightErrorMessage clearly indicates authoritative checks', () => {
     const message = buildPreflightErrorMessage('WU-TEST', ['some error']);
     // Should indicate which check is authoritative

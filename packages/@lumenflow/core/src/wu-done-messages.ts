@@ -141,7 +141,7 @@ export const PREFLIGHT = {
     `REQUIRED: Rebase your branch before completing:\n` +
     `  1. cd into your worktree\n` +
     `  2. Run: git fetch ${remote} ${mainBranch} && git rebase ${remote}/${mainBranch}\n` +
-    `  3. Resolve UnsafeAny conflicts that arise\n` +
+    `  3. Resolve conflicts that arise\n` +
     `  4. Return to main checkout and retry: pnpm wu:done --id <WU-ID>`,
   DIVERGENCE_ERROR: (
     commitCount: number,
@@ -181,7 +181,7 @@ export const PREFLIGHT = {
   EMPTY_MERGE_CHECK: `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Pre-flight: Branch has work commits beyond claim`,
   // WU-1460: code_paths blocker - prevents completing WUs with code_paths defined but files not modified
   CODE_PATHS_NOT_MODIFIED: (missingFiles: string[]): string =>
-    `Cannot complete WU - code_paths files were NOT modified in UnsafeAny commits.\n\n` +
+    `Cannot complete WU - code_paths files were NOT modified in committed changes.\n\n` +
     `This WU defines code_paths that should have been implemented:\n` +
     missingFiles.map((filePath: string) => `  - ${filePath}`).join('\n') +
     `\n\nThis error prevents completing a WU without actually committing the code.\n` +
@@ -222,7 +222,7 @@ export const MERGE = {
     `Pull error: ${formatUnknownError(pullError)}\n\n` +
     `Manual fix required:\n` +
     `  1. git pull ${remote} ${mainBranch}\n` +
-    `  2. Resolve UnsafeAny conflicts\n` +
+    `  2. Resolve conflicts\n` +
     `  3. Switch to your worktree and rebase onto ${mainBranch}\n` +
     `  4. Return to main checkout and retry`,
   FF_DIVERGED_ERROR: (

@@ -67,6 +67,12 @@ describe('legacy rollback helper removal (AC2, AC3)', () => {
     const source = await readFile(new URL('../wu-done-worktree.ts', import.meta.url), 'utf-8');
     expect(source).not.toContain('rollbackMainAfterMergeFailure(');
   });
+
+  it('does not include UnsafeAny placeholder text in behind-main abort messaging', async () => {
+    const source = await readFile(new URL('../wu-done-worktree.ts', import.meta.url), 'utf-8');
+    expect(source).toContain('wu:done aborted BEFORE file writes to prevent metadata leaks');
+    expect(source).not.toContain('wu:done aborted BEFORE UnsafeAny writes');
+  });
 });
 
 // ---------------------------------------------------------------------------
