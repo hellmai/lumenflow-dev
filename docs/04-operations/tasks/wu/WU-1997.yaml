@@ -1,0 +1,35 @@
+id: WU-1997
+title: Remove UnsafeAny placeholder leakage from user-facing wu:done messaging
+lane: 'Framework: Core Validation'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-22
+code_paths:
+  - packages/@lumenflow/core/src/wu-done-worktree.ts
+  - packages/@lumenflow/core/src/wu-done-preflight.ts
+  - packages/@lumenflow/core/src/wu-done-messages.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-done-worktree.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-preflight.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-1997.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Several wu:done and preflight messages shown to operators contain the internal placeholder token 'UnsafeAny'. Replace with clean wording and add regression coverage for command-facing output.
+acceptance:
+  - wu:done/preflight operator messages no longer contain 'UnsafeAny' placeholder text
+  - regression tests assert cleaned wording for affected messages
+  - no behavior change beyond output text
