@@ -12,7 +12,6 @@ code_paths:
   - packages/@lumenflow/cli/src/agent-session.ts
   - packages/@lumenflow/cli/src/agent-session-end.ts
   - packages/@lumenflow/cli/src/agent-log-issue.ts
-  - packages/@lumenflow/cli/src/cli-entry-point.ts
 tests:
   manual:
     - Run rg '.parse\(|process\.exit\(' over the six target CLI files and confirm module entry uses
@@ -21,7 +20,7 @@ tests:
       behavior is unchanged with normal exit handling.
   unit:
     - packages/@lumenflow/cli/src/__tests__/cli-entry-point.test.ts
-    - packages/@lumenflow/cli/src/__tests__/cli-epipe-resilience.test.ts
+    - packages/@lumenflow/cli/__tests__/cli-epipe-resilience.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2007.done
