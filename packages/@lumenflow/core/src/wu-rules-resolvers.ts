@@ -18,7 +18,7 @@ import {
 const DEFAULT_HEAD_REF = 'HEAD';
 const BASE_REF_CANDIDATES = ['origin/main', 'main'] as const;
 const BASE_REF_UNAVAILABLE_REASON = `Unable to resolve git base ref (tried ${BASE_REF_CANDIDATES.join(', ')}).`;
-const GLOB_IGNORE_PATTERNS = ['**/node_modules/**'] as const;
+const GLOB_IGNORE_PATTERNS = ['**/node_modules/**'];
 const GLOB_INCLUDE_DOT_ENTRIES = true;
 const GLOB_ONLY_FILES = false;
 const GLOB_FOLLOW_SYMLINKS = false;
@@ -47,7 +47,7 @@ function getGlobOptions(cwd: string) {
     suppressErrors: GLOB_SUPPRESS_ERRORS,
     ignore: GLOB_IGNORE_PATTERNS,
     unique: GLOB_REQUIRE_UNIQUE_MATCHES,
-  } as const;
+  };
 }
 
 function toErrorMessage(error: unknown): string {
