@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1995 — Harden code_paths validation for glob patterns and symlink loops](wu/WU-1995.yaml)
 
 ## Completed
 

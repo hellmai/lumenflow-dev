@@ -1950,3 +1950,4 @@
 {"type":"complete","wuId":"WU-1701","timestamp":"2026-02-22T01:40:32.496Z"}
 {"type":"claim","wuId":"WU-1702","timestamp":"2026-02-22T01:41:45.260Z","lane":"Framework: CLI Enforcement","title":"Emergency: remove domain-specific code from CLI and MCP packages"}
 {"type":"complete","wuId":"WU-1702","timestamp":"2026-02-22T01:53:58.859Z"}
+{"type":"claim","wuId":"WU-1995","lane":"Framework: Core Validation","title":"Harden code_paths validation for glob patterns and symlink loops","timestamp":"2026-02-22T01:56:29.082Z"}

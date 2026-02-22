@@ -2,7 +2,7 @@ id: WU-1995
 title: Harden code_paths validation for glob patterns and symlink loops
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -36,3 +36,11 @@ acceptance:
   - wu:done accepts glob code_paths when they resolve to at least one path
   - preflight glob checks do not recurse into symlink-loop node_modules trees
   - core tests cover glob validation and symlink-loop-safe behavior
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1995
+claimed_at: 2026-02-22T01:56:29.025Z
+baseline_main_sha: c24040e56f3e46bb75e3ed3b7f8d6b940fa620d7
+session_id: 4a9b0fff-9bea-4fa7-ad63-f980efe1ff00
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T01:56:29.033Z
