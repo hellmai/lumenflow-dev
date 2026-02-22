@@ -33,7 +33,6 @@ sections:
 
 - [WU-2020 — Inject WUStateStore via interfaces and replace getConfig() calls](wu/WU-2020.yaml) — Framework: Core Lifecycle
 - [WU-2043 — Add unit tests for INIT-034 decomposed sub-modules and strategy patterns](wu/WU-2043.yaml) — Framework: Core Validation
-- [WU-2045 — Fix upgrade docs Steps markup build failure](wu/WU-2045.yaml) — Content: Framework Docs
 
 ## ⛔ Blocked
 
@@ -997,6 +996,7 @@ sections:
 - [WU-2037 — Decompose gates-config.ts (856 lines, 9 responsibilities)](wu/WU-2037.yaml)
 - [WU-2042 — Finalize kernel-first parity in tests and docs](wu/WU-2042.yaml)
 - [WU-2016 — Split lumenflow-config-schema.ts into per-section schemas (1564 lines)](wu/WU-2016.yaml)
+- [WU-2045 — Fix upgrade docs Steps markup build failure](wu/WU-2045.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

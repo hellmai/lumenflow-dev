@@ -2,7 +2,7 @@ id: WU-2045
 title: Fix upgrade docs Steps markup build failure
 lane: 'Content: Framework Docs'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-22
 code_paths:
@@ -46,3 +46,6 @@ session_id: 81aa5917-ee93-4ea8-9ae0-4a5fc8ffef51
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T16:29:09.542Z
+locked: true
+completed_at: 2026-02-22T16:34:19.969Z
+completed: 2026-02-22
