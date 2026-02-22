@@ -7,12 +7,12 @@ priority: P2
 created: 2026-02-22
 code_paths:
   - packages/@lumenflow/core/src/invariants-runner.ts
-  - packages/@lumenflow/core/src/ports/
 tests:
   manual:
     - Run pnpm gates from worktree — all tests pass
   unit:
     - packages/@lumenflow/core/src/__tests__/invariants-runner.test.ts
+    - packages/@lumenflow/core/src/invariants/__tests__/check-automated-tests.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2017.done
@@ -22,10 +22,17 @@ phase: 3
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-22T14:56:53.842Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2017
+session_id: 8a8e6f7f-545d-4f3c-b8da-489d51d80cf6
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T14:56:53.879Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +47,3 @@ acceptance:
   - No if-else or switch dispatch on invariant type remains
   - Adding a new invariant type requires only a new class + registry entry
   - All existing invariant tests pass
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2017
-claimed_at: 2026-02-22T14:56:53.842Z
-baseline_main_sha: aed54e9a560236ec9d9b23d3a3225fbea3b2cf0b
-session_id: 8a8e6f7f-545d-4f3c-b8da-489d51d80cf6
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-22T14:56:53.879Z
