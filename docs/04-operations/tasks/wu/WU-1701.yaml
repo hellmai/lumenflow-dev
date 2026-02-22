@@ -2,15 +2,15 @@ id: WU-1701
 title: 'Emergency cleanup: remove domain-specific code from core package'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-15
 code_paths:
   - packages/@lumenflow/core/src/wu-paths-constants.ts
 tests:
   manual:
-    - Run pnpm --filter @lumenflow/core exec vitest run src/__tests__/constants-decomposition.test.ts
-      and confirm the suite passes
+    - Run pnpm --filter @lumenflow/core exec vitest run
+      src/__tests__/constants-decomposition.test.ts and confirm the suite passes
   unit:
     - packages/@lumenflow/core/src/__tests__/constants-decomposition.test.ts
   e2e: []
@@ -43,9 +43,10 @@ acceptance:
   - Domain-specific export entries and deps removed from package.json
   - Test files updated
 worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-1701
-claimed_at: 2026-02-15T22:16:26.227Z
-baseline_main_sha: fc1c33c6f07eb59b32bef4632e03bd91c0d930bb
-session_id: 2ba85473-6c7a-42d4-b5a0-04dd4a754ae9
+claimed_at: 2026-02-22T01:33:28.221Z
+baseline_main_sha: ab969244484579fdbb0c803780b15be04dbcb99f
+session_id: e713a43f-917b-4a0f-a66a-26238988d491
 approved_by:
   - tom@hellm.ai
-approved_at: 2026-02-15T22:16:26.235Z
+approved_at: 2026-02-22T01:33:28.225Z
+claimed_mode: worktree

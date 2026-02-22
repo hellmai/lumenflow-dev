@@ -1946,3 +1946,4 @@
 {"type":"complete","wuId":"WU-1744","timestamp":"2026-02-22T01:11:16.333Z"}
 {"type":"claim","wuId":"WU-1960","timestamp":"2026-02-22T01:11:57.219Z","lane":"Framework: CLI Orchestration","title":"Fix release build:dist invariant drift"}
 {"type":"complete","wuId":"WU-1960","timestamp":"2026-02-22T01:30:24.667Z"}
+{"type":"claim","wuId":"WU-1701","lane":"Framework: Core Validation","title":"Emergency cleanup: remove domain-specific code from core package","timestamp":"2026-02-22T01:33:28.272Z"}

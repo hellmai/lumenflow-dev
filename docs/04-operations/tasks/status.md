@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml)
 
 ## Completed
 
