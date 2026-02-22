@@ -6,29 +6,34 @@ status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
-  - packages/@lumenflow/memory/src/signal-cleanup-core.ts
-  - packages/@lumenflow/memory/src/mem-delete-core.ts
-  - packages/@lumenflow/memory/src/mem-cleanup-core.ts
-  - packages/@lumenflow/memory/src/decay/scoring.ts
   - packages/@lumenflow/agent/src/feedback-review-core.ts
-  - packages/@lumenflow/mcp/src/runtime-tool-resolver.constants.ts
-  - packages/@lumenflow/core/src/wu-repair-core.ts
+  - packages/@lumenflow/cli/src/cli-entry-point.ts
+  - packages/@lumenflow/cli/src/constants.ts
+  - packages/@lumenflow/cli/src/initiative-add-wu.ts
+  - packages/@lumenflow/cli/src/orchestrate-initiative.ts
+  - packages/@lumenflow/cli/src/orchestrate-init-status.ts
+  - packages/@lumenflow/cli/src/state-bootstrap.ts
+  - packages/@lumenflow/core/src/backlog-sync-validator.ts
+  - packages/@lumenflow/core/src/dependency-graph.ts
   - packages/@lumenflow/core/src/wu-consistency-file-repairs.ts
   - packages/@lumenflow/core/src/wu-delegation-cutover.ts
-  - packages/@lumenflow/cli/src/state-bootstrap.ts
-  - packages/@lumenflow/cli/src/constants.ts
-  - packages/@lumenflow/initiatives/src/initiative-yaml.ts
-  - packages/@lumenflow/cli/src/initiative-add-wu.ts
-  - packages/@lumenflow/core/src/dependency-graph.ts
-  - packages/@lumenflow/core/src/constants/lock-constants.ts
+  - packages/@lumenflow/core/src/wu-done-error-handling.ts
+  - packages/@lumenflow/core/src/wu-done-merge.ts
+  - packages/@lumenflow/core/src/wu-done-preflight-checks.ts
+  - packages/@lumenflow/core/src/wu-done-rebase.ts
+  - packages/@lumenflow/core/src/wu-done-utils.ts
+  - packages/@lumenflow/core/src/wu-done-zombie-recovery.ts
   - packages/@lumenflow/core/src/wu-lock-manager.ts
-  - packages/@lumenflow/core/src/ports/wu-state.ports.ts
-  - packages/@lumenflow/core/src/wu-state-store.ts
-  - packages/@lumenflow/core/src/wu-state-indexer.ts
+  - packages/@lumenflow/core/src/wu-repair-core.ts
   - packages/@lumenflow/core/src/wu-repair-service.ts
-  - packages/@lumenflow/core/src/wu-event-sourcer.ts
-  - packages/@lumenflow/core/src/spawn-lane-occupation.ts
-  - packages/@lumenflow/core/src/spawn-task-builder.ts
+  - packages/@lumenflow/core/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/wu-state-indexer.ts
+  - packages/@lumenflow/core/src/wu-state-store.ts
+  - packages/@lumenflow/initiatives/src/initiative-yaml.ts
+  - packages/@lumenflow/mcp/src/runtime-tool-resolver.constants.ts
+  - packages/@lumenflow/memory/src/decay/scoring.ts
+  - packages/@lumenflow/memory/src/mem-delete-core.ts
+  - packages/@lumenflow/memory/src/signal-cleanup-core.ts
 tests:
   manual:
     - Run pnpm gates from worktree — all tests pass
@@ -55,10 +60,17 @@ notes: >-
   collision, duplicate type defs between ports and concrete modules, as WUEvent assertions,
   getErrorMessage duplication, hollow re-export module.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-22T18:02:08.226Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2048
+session_id: 7ca1a89e-4569-45fb-ac10-0d19b7fda2db
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T18:02:08.230Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -87,11 +99,3 @@ acceptance:
   - 3x as WUEvent widening casts in wu-state-indexer.ts eliminated
   - getErrorMessage() duplication across wu-done modules replaced with import from error-handler.ts
   - 'spawn-lane-occupation.ts: implementation moved from spawn-task-builder.ts or module inlined'
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-22T18:02:08.230Z
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2048
-claimed_at: 2026-02-22T18:02:08.226Z
-baseline_main_sha: 36bd4b9c5f44b1cd523d3a12a4acd7d99b60233c
-session_id: 7ca1a89e-4569-45fb-ac10-0d19b7fda2db
