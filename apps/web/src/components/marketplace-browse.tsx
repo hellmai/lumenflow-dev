@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import type { MarketplacePackSummary, MarketplaceCategory } from '../lib/marketplace-types';
 import {
   MARKETPLACE_PAGE_TITLE,
@@ -168,16 +168,17 @@ function PackSummaryCard({ pack, workspaceRoot }: PackSummaryCardProps) {
  * ------------------------------------------------------------------ */
 
 function usePersistedWorkspaceRoot(): string | null {
-  const [workspaceRoot, setWorkspaceRoot] = useState<string | null>(null);
-
-  useEffect(() => {
+  const [workspaceRoot] = useState<string | null>(() => {
+    if (typeof window === 'undefined') {
+      return null;
+    }
     try {
-      setWorkspaceRoot(loadPersistedWorkspacePath(localStorage));
+      return loadPersistedWorkspacePath(window.localStorage);
     } catch {
       // localStorage unavailable in non-browser contexts
+      return null;
     }
-  }, []);
-
+  });
   return workspaceRoot;
 }
 

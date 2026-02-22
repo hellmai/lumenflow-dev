@@ -60,6 +60,30 @@ function ScopeItem({ scope, index, colorClass }: ScopeItemProps) {
   );
 }
 
+interface ScopeRow {
+  readonly scope: ScopeView;
+  readonly key: string;
+  readonly ordinal: number;
+}
+
+function buildScopeRows(scopes: readonly ScopeView[]): readonly ScopeRow[] {
+  const seenBaseKeys = new Map<string, number>();
+  const rows: ScopeRow[] = [];
+
+  for (const scope of scopes) {
+    const baseKey = `${scope.type}::${scope.pattern ?? '*'}::${scope.access ?? '*'}::${scope.posture ?? '*'}`;
+    const occurrence = seenBaseKeys.get(baseKey) ?? 0;
+    seenBaseKeys.set(baseKey, occurrence + 1);
+    rows.push({
+      scope,
+      key: `${baseKey}::${occurrence}`,
+      ordinal: rows.length,
+    });
+  }
+
+  return rows;
+}
+
 interface ScopeIntersectionDiagramProps {
   readonly intersection: ScopeIntersectionView;
 }
@@ -80,6 +104,7 @@ export function ScopeIntersectionDiagram({ intersection }: ScopeIntersectionDiag
     <div data-testid="scope-intersection-diagram" className="grid grid-cols-3 gap-3">
       {COLUMN_CONFIGS.map((column) => {
         const scopes = intersection[column.key];
+        const scopeRows = buildScopeRows(scopes);
         return (
           <div
             key={column.key}
@@ -99,11 +124,11 @@ export function ScopeIntersectionDiagram({ intersection }: ScopeIntersectionDiag
               {scopes.length === 0 ? (
                 <div className="px-2 py-1 text-xs italic text-slate-400">None</div>
               ) : (
-                scopes.map((scope, index) => (
+                scopeRows.map((row) => (
                   <ScopeItem
-                    key={`${column.key}-${scope.type}-${scope.pattern ?? ''}-${index}`}
-                    scope={scope}
-                    index={index}
+                    key={`${column.key}::${row.key}`}
+                    scope={row.scope}
+                    index={row.ordinal}
                     colorClass={column.itemColor}
                   />
                 ))

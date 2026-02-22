@@ -32,7 +32,33 @@ interface GitDiffViewerProps {
   readonly lines: readonly DiffLineData[];
 }
 
+interface DiffLineRow {
+  readonly line: DiffLineData;
+  readonly key: string;
+  readonly ordinal: number;
+}
+
+function buildDiffLineRows(lines: readonly DiffLineData[]): readonly DiffLineRow[] {
+  const seenBaseKeys = new Map<string, number>();
+  const rows: DiffLineRow[] = [];
+
+  for (const line of lines) {
+    const baseKey = `${line.type}::${line.lineNumber ?? ''}::${line.content}`;
+    const occurrence = seenBaseKeys.get(baseKey) ?? 0;
+    seenBaseKeys.set(baseKey, occurrence + 1);
+    rows.push({
+      line,
+      key: `${baseKey}::${occurrence}`,
+      ordinal: rows.length,
+    });
+  }
+
+  return rows;
+}
+
 export function GitDiffViewer({ filePath, lines }: GitDiffViewerProps) {
+  const lineRows = buildDiffLineRows(lines);
+
   return (
     <div
       data-testid="git-diff-viewer"
@@ -45,24 +71,24 @@ export function GitDiffViewer({ filePath, lines }: GitDiffViewerProps) {
 
       {/* Diff lines */}
       <div className="font-mono text-xs leading-relaxed">
-        {lines.map((line, index) => (
+        {lineRows.map((row) => (
           <div
-            key={`${line.type}-${index}`}
-            data-testid={`diff-line-${index}`}
-            data-diff-type={line.type}
-            className={`flex px-4 py-0.5 ${DIFF_LINE_COLORS.get(line.type) ?? DEFAULT_DIFF_LINE_COLOR}`}
+            key={row.key}
+            data-testid={`diff-line-${row.ordinal}`}
+            data-diff-type={row.line.type}
+            className={`flex px-4 py-0.5 ${DIFF_LINE_COLORS.get(row.line.type) ?? DEFAULT_DIFF_LINE_COLOR}`}
           >
-            {line.lineNumber !== undefined && (
+            {row.line.lineNumber !== undefined && (
               <span className="mr-4 w-8 select-none text-right text-slate-400">
-                {line.lineNumber}
+                {row.line.lineNumber}
               </span>
             )}
-            {line.type !== 'header' && (
+            {row.line.type !== 'header' && (
               <span className="mr-2 select-none text-slate-400">
-                {DIFF_LINE_PREFIXES.get(line.type) ?? ' '}
+                {DIFF_LINE_PREFIXES.get(row.line.type) ?? ' '}
               </span>
             )}
-            <span className="flex-1 whitespace-pre">{line.content}</span>
+            <span className="flex-1 whitespace-pre">{row.line.content}</span>
           </div>
         ))}
       </div>
