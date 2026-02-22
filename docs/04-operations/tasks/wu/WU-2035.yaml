@@ -11,14 +11,14 @@ tests:
   manual:
     - Create a task via the web UI over HTTP - no error
   unit:
-    - apps/web/src/components/__tests__/workspace-overview-live.test.ts
     - apps/web/__tests__/generate-client-uuid.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2035.done
 dependencies: []
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: Replaced crypto.randomUUID() with generateClientUUID() fallback using
+  crypto.getRandomValues() for non-secure HTTP contexts.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
