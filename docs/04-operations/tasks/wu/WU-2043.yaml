@@ -2,7 +2,7 @@ id: WU-2043
 title: Add unit tests for INIT-034 decomposed sub-modules and strategy patterns
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-22
 code_paths:
@@ -57,3 +57,11 @@ acceptance:
   - 'Strategy map completeness test: all CONSISTENCY_TYPES with canAutoRepair have handlers'
   - spawn-prompt-helpers.test.ts created covering 9 exported functions
   - All new tests pass via pnpm gates
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2043
+claimed_at: 2026-02-22T16:14:56.654Z
+baseline_main_sha: a762883239ec974f1c8a080aa90a0f399cf20085
+session_id: 81aa5917-ee93-4ea8-9ae0-4a5fc8ffef51
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T16:14:56.662Z
