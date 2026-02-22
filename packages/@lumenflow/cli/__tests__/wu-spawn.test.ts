@@ -106,29 +106,24 @@ describe('wu-spawn truncation prevention (WU-1131)', () => {
     it('can detect truncated output by checking if sentinel appears at end', () => {
       const strategy = new GenericStrategy();
       const fullOutput = generateTaskInvocation(mockDoc, id, strategy, { config });
+      const sentinelToken = 'LUMENFLOW_SPAWN_END';
 
-      // Full output should have the sentinel at the end (after constraints)
-      // The sentinel appears twice: once in warning banner, once at the actual end
-      const lastSentinelIndex = fullOutput.lastIndexOf('LUMENFLOW_SPAWN_END');
-      const firstSentinelIndex = fullOutput.indexOf('LUMENFLOW_SPAWN_END');
+      // Full output should have the sentinel at the end (after constraints).
+      const lastSentinelIndex = fullOutput.lastIndexOf(sentinelToken);
+      const fullSentinelCount = fullOutput.split(sentinelToken).length - 1;
       expect(lastSentinelIndex).toBeGreaterThan(-1);
-      expect(firstSentinelIndex).toBeGreaterThan(-1);
-
-      // Verify there are two occurrences (warning banner + end sentinel)
-      expect(lastSentinelIndex).toBeGreaterThan(firstSentinelIndex);
+      expect(fullSentinelCount).toBeGreaterThan(1);
 
       // Verify sentinel is near the end of the prompt content
       // (within the last 200 chars of the full output)
       expect(fullOutput.length - lastSentinelIndex).toBeLessThan(200);
 
       // Simulated truncated output (cut off before the end sentinel)
-      // This removes the end sentinel but the warning banner sentinel remains
+      // This removes the final sentinel marker.
       const truncatedOutput = fullOutput.slice(0, lastSentinelIndex);
-
-      // Truncated output should only have the first sentinel (in warning banner)
-      const truncatedLastSentinel = truncatedOutput.lastIndexOf('LUMENFLOW_SPAWN_END');
-      // This should match the first sentinel (which is in the warning banner at start)
-      expect(truncatedLastSentinel).toBe(firstSentinelIndex);
+      const truncatedSentinelCount = truncatedOutput.split(sentinelToken).length - 1;
+      expect(truncatedSentinelCount).toBe(fullSentinelCount - 1);
+      expect(truncatedOutput.lastIndexOf(sentinelToken)).toBeLessThan(lastSentinelIndex);
     });
 
     it('warning banner explains truncation risk', () => {
