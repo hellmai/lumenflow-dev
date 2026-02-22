@@ -1,0 +1,39 @@
+id: WU-2012
+title: Decompose wu-spawn.ts god object (2342 lines)
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-22
+code_paths:
+  - packages/@lumenflow/core/src/wu-spawn.ts
+  - packages/@lumenflow/core/src/wu-spawn-helpers.ts
+  - packages/@lumenflow/core/src/wu-spawn-skills.ts
+  - packages/@lumenflow/core/src/index.ts
+tests:
+  manual:
+    - Run pnpm gates from worktree — all tests pass
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-spawn.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2012.done
+dependencies: []
+initiative: INIT-034
+phase: 2
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Break wu-spawn.ts (2342 lines, 20+ exports) into focused modules: spawn-template-assembler.ts (template loading/assembly), spawn-policy-resolver.ts (policy-based generation), spawn-guidance-generators.ts (test/architecture/design sections), spawn-constraints-generator.ts (constraint block generation), spawn-task-builder.ts (task invocation building). Partial decomposition already exists (wu-spawn-helpers.ts, wu-spawn-skills.ts, wu-spawn-context.ts) but the main file still holds the bulk.'
+acceptance:
+  - wu-spawn.ts reduced to under 500 lines (thin facade or re-export module)
+  - Each extracted module has a single responsibility and under 500 lines
+  - All existing wu-spawn tests pass without modification
+  - Public API (index.ts exports) unchanged — zero breaking changes
