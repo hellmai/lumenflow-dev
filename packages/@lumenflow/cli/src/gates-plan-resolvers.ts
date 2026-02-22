@@ -60,6 +60,9 @@ const PRETTIER_CONFIG_FILES = new Set([
   '.prettierignore',
 ]);
 
+const WORKSPACE_ARTIFACT_ROOT_PREFIXES = ['packages/', 'apps/', 'tools/'] as const;
+const DIST_ARTIFACT_ROOT_SUFFIX = '/dist';
+
 // WU-1356: Extended to support multiple build tools and test runners
 const TEST_CONFIG_BASENAMES = new Set([
   'turbo.json', // Turborepo
@@ -86,6 +89,35 @@ export function isPrettierConfigFile(filePath: string): boolean {
   return PRETTIER_CONFIG_FILES.has(basename);
 }
 
+function trimTrailingPathSeparators(filePath: string): string {
+  let trimmed = filePath;
+  while (trimmed.endsWith('/')) {
+    trimmed = trimmed.slice(0, -1);
+  }
+  return trimmed;
+}
+
+export function isWorkspaceDistArtifactRoot(filePath: string): boolean {
+  if (!filePath) {
+    return false;
+  }
+
+  const normalizedPath = trimTrailingPathSeparators(normalizePath(filePath));
+  if (!normalizedPath) {
+    return false;
+  }
+
+  const hasWorkspacePrefix = WORKSPACE_ARTIFACT_ROOT_PREFIXES.some((prefix) =>
+    normalizedPath.startsWith(prefix),
+  );
+
+  return hasWorkspacePrefix && normalizedPath.endsWith(DIST_ARTIFACT_ROOT_SUFFIX);
+}
+
+export function filterFormatCheckChangedFiles(changedFiles: string[]): string[] {
+  return changedFiles.filter((filePath) => !isWorkspaceDistArtifactRoot(filePath));
+}
+
 export function isTestConfigFile(filePath: string): boolean {
   if (!filePath) return false;
   const basename = getBasename(filePath);
@@ -105,16 +137,18 @@ export function resolveFormatCheckPlan({
   changedFiles: string[];
   fileListError?: boolean;
 }): FormatCheckPlan {
+  const filteredChangedFiles = filterFormatCheckChangedFiles(changedFiles);
+
   if (fileListError) {
     return { mode: 'full', files: [], reason: 'file-list-error' };
   }
-  if (changedFiles.some(isPrettierConfigFile)) {
+  if (filteredChangedFiles.some(isPrettierConfigFile)) {
     return { mode: 'full', files: [], reason: 'prettier-config' };
   }
-  if (changedFiles.length === 0) {
+  if (filteredChangedFiles.length === 0) {
     return { mode: 'skip', files: [] };
   }
-  return { mode: 'incremental', files: changedFiles };
+  return { mode: 'incremental', files: filteredChangedFiles };
 }
 
 export function resolveLintPlan({
