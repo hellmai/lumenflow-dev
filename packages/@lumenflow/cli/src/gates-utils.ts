@@ -71,6 +71,18 @@ export function quoteShellArgs(files: string[]): string {
 
 // ── Prettier helpers ───────────────────────────────────────────────────
 
+const PRETTIER_NON_FILE_OUTPUT_MARKERS = [
+  'code style issues found',
+  'all matched files use prettier',
+  'checking formatting',
+  'is a symbolic link',
+] as const;
+
+function isNonFilePrettierOutputLine(line: string): boolean {
+  const normalizedLine = line.toLowerCase();
+  return PRETTIER_NON_FILE_OUTPUT_MARKERS.some((marker) => normalizedLine.includes(marker));
+}
+
 export function parsePrettierListOutput(output: string): string[] {
   if (!output) return [];
   return output
@@ -78,12 +90,7 @@ export function parsePrettierListOutput(output: string): string[] {
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => line.replace(/^\[error\]\s*/i, '').trim())
-    .filter(
-      (line) =>
-        !line.toLowerCase().includes('code style issues found') &&
-        !line.toLowerCase().includes('all matched files use prettier') &&
-        !line.toLowerCase().includes('checking formatting'),
-    );
+    .filter((line) => !isNonFilePrettierOutputLine(line));
 }
 
 export function buildPrettierWriteCommand(files: string[]): string {

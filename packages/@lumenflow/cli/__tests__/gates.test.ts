@@ -41,6 +41,17 @@ describe('gates prettier helpers (WU-1042)', () => {
     expect(parsePrettierListOutput(output)).toEqual(['packages/foo.ts', 'packages/bar.ts']);
   });
 
+  it('ignores symbolic-link diagnostics from prettier output', () => {
+    const output = [
+      '[error] Explicitly specified pattern "packages/@lumenflow/cli/dist" is a symbolic link.',
+      '[error] packages/foo.ts',
+      'packages/bar.ts',
+      '[error] Explicitly specified pattern "packages/@lumenflow/core/dist" is a symbolic link.',
+    ].join('\n');
+
+    expect(parsePrettierListOutput(output)).toEqual(['packages/foo.ts', 'packages/bar.ts']);
+  });
+
   it('builds a prettier write command with quoted files', () => {
     const command = buildPrettierWriteCommand(['packages/foo.ts', 'docs/readme.md']);
     expect(command).toBe('pnpm prettier --write "packages/foo.ts" "docs/readme.md"');
