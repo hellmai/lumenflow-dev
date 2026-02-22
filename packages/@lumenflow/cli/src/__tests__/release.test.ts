@@ -30,6 +30,30 @@ import {
 } from '../release.js';
 import { clearClaimMetadataOnRelease } from '../wu-release.js';
 
+const SCRIPT_COMMAND_SEPARATOR = '&&';
+const BUILD_DIST_SCRIPT_STEPS = [
+  'pnpm run clean',
+  'pnpm run build:dist:deps',
+  'tsup',
+  'node scripts/fix-entry-points.mjs',
+  'node scripts/check-shebangs.mjs',
+] as const;
+const BUILD_DIST_DEPENDENCY_STEPS = [
+  'pnpm --filter @lumenflow/metrics build',
+  'pnpm --filter @lumenflow/kernel build',
+  'pnpm --filter @lumenflow/core build',
+  'pnpm --filter @lumenflow/memory build',
+  'pnpm --filter @lumenflow/agent build',
+  'pnpm --filter @lumenflow/initiatives build',
+] as const;
+
+function splitScriptSteps(script: string): string[] {
+  return script
+    .split(SCRIPT_COMMAND_SEPARATOR)
+    .map((step) => step.trim())
+    .filter((step) => step.length > 0);
+}
+
 describe('release command', () => {
   describe('WU-1462 packaging config invariants', () => {
     const repoRoot = resolve(import.meta.dirname, '../../../../../');
@@ -69,9 +93,18 @@ describe('release command', () => {
       const buildDistScript = cliPackageJson.scripts?.['build:dist'];
 
       expect(buildDistScript).toBeTruthy();
-      expect(buildDistScript).toContain('tsup');
-      expect(buildDistScript).toContain('node scripts/fix-entry-points.mjs');
-      expect(buildDistScript).toContain('node scripts/check-shebangs.mjs');
+      const buildDistSteps = splitScriptSteps(buildDistScript!);
+      expect(buildDistSteps).toEqual(BUILD_DIST_SCRIPT_STEPS);
+
+      const buildDistDepsScript = cliPackageJson.scripts?.['build:dist:deps'];
+      expect(buildDistDepsScript).toBeTruthy();
+      const buildDistDependencySteps = splitScriptSteps(buildDistDepsScript!);
+      expect(buildDistDependencySteps).toEqual(BUILD_DIST_DEPENDENCY_STEPS);
+
+      for (const step of BUILD_DIST_SCRIPT_STEPS.filter((command) => command.startsWith('node '))) {
+        const scriptPath = step.replace('node ', '');
+        expect(existsSync(join(repoRoot, 'packages/@lumenflow/cli', scriptPath))).toBe(true);
+      }
 
       const cliTsupConfigPath = join(repoRoot, 'packages/@lumenflow/cli/tsup.config.ts');
       const cliTsupConfig = readFileSync(cliTsupConfigPath, 'utf-8');

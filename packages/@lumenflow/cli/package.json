@@ -154,7 +154,8 @@
   ],
   "scripts": {
     "build": "tsc && node scripts/check-shebangs.mjs",
-    "build:dist": "tsup && node scripts/fix-entry-points.mjs && node scripts/check-shebangs.mjs",
+    "build:dist:deps": "pnpm --filter @lumenflow/metrics build && pnpm --filter @lumenflow/kernel build && pnpm --filter @lumenflow/core build && pnpm --filter @lumenflow/memory build && pnpm --filter @lumenflow/agent build && pnpm --filter @lumenflow/initiatives build",
+    "build:dist": "pnpm run clean && pnpm run build:dist:deps && tsup && node scripts/fix-entry-points.mjs && node scripts/check-shebangs.mjs",
     "pack:dist": "pnpm pack",
     "clean": "rm -rf dist *.tgz",
     "test": "vitest run",
