@@ -1934,4 +1934,5 @@
 {"type":"complete","wuId":"WU-1989","timestamp":"2026-02-22T00:11:04.133Z"}
 {"type":"claim","wuId":"WU-1990","timestamp":"2026-02-22T00:13:00.863Z","lane":"Operations: Tooling","title":"Format web workspace selector files to restore global format gate"}
 {"type":"complete","wuId":"WU-1990","timestamp":"2026-02-22T00:20:28.065Z"}
-{"type":"claim","wuId":"WU-1991","lane":"Operations: Tooling","title":"Burn down @lumenflow/web lint warnings and restore gates","timestamp":"2026-02-22T00:24:34.382Z"}
+{"type":"claim","wuId":"WU-1991","timestamp":"2026-02-22T00:24:34.382Z","lane":"Operations: Tooling","title":"Burn down @lumenflow/web lint warnings and restore gates"}
+{"type":"complete","wuId":"WU-1991","timestamp":"2026-02-22T00:34:56.666Z"}
