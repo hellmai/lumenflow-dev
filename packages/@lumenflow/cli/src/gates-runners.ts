@@ -20,7 +20,7 @@ import { createGitForPath } from '@lumenflow/core/git-adapter';
 import { resolveGatesCommands, resolveTestRunner } from '@lumenflow/core/gates-config';
 import type { LaneHealthMode } from '@lumenflow/core/gates-config';
 import { validateBacklogSync } from '@lumenflow/core/validators/backlog-sync';
-import { validateClaimValidation } from '@lumenflow/core/validators/claim-validation';
+import { validateClaimValidation } from '@lumenflow/core';
 import { runSupabaseDocsLinter } from '@lumenflow/core/validators/supabase-docs-linter';
 import {
   BRANCHES,

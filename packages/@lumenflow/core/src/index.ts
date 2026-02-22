@@ -148,6 +148,7 @@ export * from './backlog-generator.js';
 export * from './backlog-parser.js';
 export * from './backlog-editor.js';
 export * from './backlog-sync-validator.js';
+export * from './validators/claim-validation.js';
 
 // Worktree utilities
 export * from './worktree-scanner.js';
