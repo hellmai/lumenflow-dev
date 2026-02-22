@@ -1,0 +1,32 @@
+id: WU-2052
+title: Fix filterExistingFiles CWD bug in incremental format check
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-22
+code_paths:
+  - packages/@lumenflow/cli/src/gates-utils.ts
+  - packages/@lumenflow/cli/src/gates-runners.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/gates-utils.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2052.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: filterExistingFiles in gates-utils.ts uses access() with relative paths against process.cwd() instead of effectiveCwd, causing false positives when deleted files exist in main but not in the worktree
+acceptance:
+  - filterExistingFiles accepts an optional cwd parameter and checks paths relative to it
+  - Deleted files are correctly filtered when wu:done gates run from main checkout
