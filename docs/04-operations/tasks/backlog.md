@@ -31,7 +31,7 @@ sections:
 - [WU-2013 — Decompose wu-state-store.ts into focused services (1274 lines)](wu/WU-2013.yaml) — Framework: Core State Recovery
 - [WU-2014 — Decompose wu-done-worktree.ts (1777 lines)](wu/WU-2014.yaml) — Framework: Core Lifecycle
 - [WU-2015 — Decompose wu-consistency-checker.ts (1255 lines)](wu/WU-2015.yaml) — Framework: Core Lifecycle
-- [WU-2016 — Split lumenflow-config-schema.ts into per-section schemas (1564 lines)](wu/WU-2016.yaml) — Framework: Core Lifecycle
+- [WU-2016 — Split lumenflow-config-schema.ts into per-section schemas (1564 lines)](wu/WU-2016.yaml) — Framework: Core Validation
 - [WU-2017 — Replace invariant type dispatch with strategy pattern](wu/WU-2017.yaml) — Framework: Core Validation
 - [WU-2018 — Replace consistency repair switch with strategy map](wu/WU-2018.yaml) — Framework: Core Lifecycle
 - [WU-2019 — Replace work-classifier domain switch with data map](wu/WU-2019.yaml) — Framework: Core Validation

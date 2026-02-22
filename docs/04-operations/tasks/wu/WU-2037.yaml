@@ -1,6 +1,6 @@
 id: WU-2037
 title: Decompose gates-config.ts (856 lines, 9 responsibilities)
-lane: 'Framework: Core Lifecycle'
+lane: 'Framework: Core Validation'
 type: refactor
 status: ready
 priority: P2
@@ -19,6 +19,8 @@ artifacts:
 dependencies: []
 initiative: INIT-034
 phase: 2
+blocked_by:
+  - WU-2010
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
@@ -29,7 +31,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Split gates-config.ts (856 lines, 19 exports, 9 distinct responsibilities) into focused modules: gates-schemas.ts (Zod definitions), gates-presets.ts (preset expansion), gates-coverage.ts (coverage policy resolution), package-manager-resolver.ts (PM/TR resolution), and a slimmed gates-config.ts facade. Currently handles gate schemas, preset expansion, coverage config, package manager resolution, test runner resolution, build commands, gates commands, test policy construction, and ignore pattern generation all in one file.'
+description: 'Split gates-config.ts (856 lines, 19 exports, 9 distinct responsibilities) into
+  focused modules: gates-schemas.ts (Zod definitions), gates-presets.ts (preset expansion),
+  gates-coverage.ts (coverage policy resolution), package-manager-resolver.ts (PM/TR resolution),
+  and a slimmed gates-config.ts facade. Currently handles gate schemas, preset expansion, coverage
+  config, package manager resolution, test runner resolution, build commands, gates commands, test
+  policy construction, and ignore pattern generation all in one file.'
 acceptance:
   - gates-config.ts reduced to under 300 lines (facade)
   - Each extracted module has single responsibility and under 300 lines
