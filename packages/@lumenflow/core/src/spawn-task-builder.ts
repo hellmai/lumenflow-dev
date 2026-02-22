@@ -22,14 +22,8 @@ import type { LumenFlowConfig } from './lumenflow-config-schema.js';
 import { resolvePolicy } from './resolve-policy.js';
 import { classifyWork } from './work-classifier.js';
 import type { SpawnStrategy } from './spawn-strategy.js';
-import {
-  generateExecutionModeSection,
-  generateThinkToolGuidance,
-} from './wu-spawn-helpers.js';
-import {
-  generateClientSkillsGuidance,
-  generateSkillsSelectionSection,
-} from './wu-spawn-skills.js';
+import { generateExecutionModeSection, generateThinkToolGuidance } from './wu-spawn-helpers.js';
+import { generateClientSkillsGuidance, generateSkillsSelectionSection } from './wu-spawn-skills.js';
 import { TRUNCATION_WARNING_BANNER } from './spawn-template-assembler.js';
 import {
   generatePolicyBasedTestGuidance,

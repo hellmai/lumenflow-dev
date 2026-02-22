@@ -95,10 +95,7 @@ export { generateTaskInvocation, generateCodexPrompt } from './spawn-task-builde
 export type { SpawnOptions } from './spawn-task-builder.js';
 
 // From spawn-lane-occupation
-export {
-  checkLaneOccupation,
-  generateLaneOccupationWarning,
-} from './spawn-lane-occupation.js';
+export { checkLaneOccupation, generateLaneOccupationWarning } from './spawn-lane-occupation.js';
 
 // ============================================================================
 // CLI Entry Point
@@ -219,9 +216,8 @@ async function main() {
 
   // WU-1603: Check if lane is already occupied and warn
   const { checkLaneOccupation: checkOccupation } = await import('./spawn-lane-occupation.js');
-  const { generateLaneOccupationWarning: generateWarning } = await import(
-    './spawn-lane-occupation.js'
-  );
+  const { generateLaneOccupationWarning: generateWarning } =
+    await import('./spawn-lane-occupation.js');
   const lane = doc.lane;
   if (lane) {
     const existingLock = checkOccupation(lane);
@@ -293,9 +289,7 @@ async function main() {
     console.log(invocation);
 
     // WU-1270: Emit methodology telemetry (opt-in only)
-    const { emitMethodologyTelemetry: emitTelemetry } = await import(
-      './spawn-policy-resolver.js'
-    );
+    const { emitMethodologyTelemetry: emitTelemetry } = await import('./spawn-policy-resolver.js');
     const policy = resolvePolicy(config);
     emitTelemetry(config, policy);
 
