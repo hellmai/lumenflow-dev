@@ -21,11 +21,25 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import * as yaml from 'yaml';
-import { clearConfigCache, getConfig } from '@lumenflow/core/config';
+import { clearConfigCache, getConfig, WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
+import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 import { WU_PATHS, createWuPaths } from '@lumenflow/core/wu-paths';
 
 /** Config file name constant */
-const CONFIG_FILE = '.lumenflow.config.yaml';
+const CONFIG_FILE = WORKSPACE_CONFIG_FILE_NAME;
+
+async function writeWorkspaceSoftwareDeliveryConfig(
+  projectRoot: string,
+  softwareDeliveryConfig: Record<string, unknown>,
+): Promise<void> {
+  await writeFile(
+    path.join(projectRoot, CONFIG_FILE),
+    yaml.stringify({
+      [WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY]: softwareDeliveryConfig,
+    }),
+    'utf-8',
+  );
+}
 
 describe('WU-1311: CLI path centralization', () => {
   let tempDir: string;
@@ -51,8 +65,7 @@ describe('WU-1311: CLI path centralization', () => {
     });
 
     it('should respect custom config paths for WU operations', async () => {
-      const customConfig = {
-        version: '1.0.0',
+      const customDirectories = {
         directories: {
           wuDir: 'custom/wu',
           backlogPath: 'custom/backlog.md',
@@ -60,7 +73,7 @@ describe('WU-1311: CLI path centralization', () => {
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+      await writeWorkspaceSoftwareDeliveryConfig(tempDir, customDirectories);
       clearConfigCache();
 
       const paths = createWuPaths({ projectRoot: tempDir });
@@ -79,14 +92,13 @@ describe('WU-1311: CLI path centralization', () => {
   describe('AC2: state-doctor warns when configured paths are missing', () => {
     it('should detect missing WU directory', async () => {
       // Create a config pointing to non-existent paths
-      const customConfig = {
-        version: '1.0.0',
+      const customDirectories = {
         directories: {
           wuDir: 'nonexistent/wu',
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+      await writeWorkspaceSoftwareDeliveryConfig(tempDir, customDirectories);
       clearConfigCache();
 
       // getResolvedPaths returns paths even if they don't exist
@@ -102,14 +114,13 @@ describe('WU-1311: CLI path centralization', () => {
 
   describe('AC3: Config overrides are respected across wu-* commands', () => {
     it('should use custom initiatives directory from config', async () => {
-      const customConfig = {
-        version: '1.0.0',
+      const customDirectories = {
         directories: {
           initiativesDir: 'custom/initiatives',
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+      await writeWorkspaceSoftwareDeliveryConfig(tempDir, customDirectories);
       clearConfigCache();
 
       const paths = createWuPaths({ projectRoot: tempDir });
@@ -117,14 +128,13 @@ describe('WU-1311: CLI path centralization', () => {
     });
 
     it('should use custom plans directory from config', async () => {
-      const customConfig = {
-        version: '1.0.0',
+      const customDirectories = {
         directories: {
           plansDir: 'custom/plans',
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+      await writeWorkspaceSoftwareDeliveryConfig(tempDir, customDirectories);
       clearConfigCache();
 
       const paths = createWuPaths({ projectRoot: tempDir });
@@ -132,14 +142,13 @@ describe('WU-1311: CLI path centralization', () => {
     });
 
     it('should use custom templates directory from config', async () => {
-      const customConfig = {
-        version: '1.0.0',
+      const customDirectories = {
         directories: {
           templatesDir: 'custom/templates',
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+      await writeWorkspaceSoftwareDeliveryConfig(tempDir, customDirectories);
       clearConfigCache();
 
       const paths = createWuPaths({ projectRoot: tempDir });
@@ -147,14 +156,13 @@ describe('WU-1311: CLI path centralization', () => {
     });
 
     it('should use custom onboarding directory from config', async () => {
-      const customConfig = {
-        version: '1.0.0',
+      const customDirectories = {
         directories: {
           onboardingDir: 'custom/onboarding',
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+      await writeWorkspaceSoftwareDeliveryConfig(tempDir, customDirectories);
       clearConfigCache();
 
       const paths = createWuPaths({ projectRoot: tempDir });
@@ -164,8 +172,7 @@ describe('WU-1311: CLI path centralization', () => {
 
   describe('AC4: Whitelist paths use config-based values', () => {
     it('should generate correct whitelist paths for wu:done staged file validation', async () => {
-      const customConfig = {
-        version: '1.0.0',
+      const customDirectories = {
         directories: {
           wuDir: 'tasks/wu',
           backlogPath: 'tasks/backlog.md',
@@ -173,7 +180,7 @@ describe('WU-1311: CLI path centralization', () => {
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+      await writeWorkspaceSoftwareDeliveryConfig(tempDir, customDirectories);
       clearConfigCache();
 
       const config = getConfig({ projectRoot: tempDir });
@@ -192,14 +199,13 @@ describe('WU-1311: CLI path centralization', () => {
 
   describe('AC5: Error messages use config-based paths', () => {
     it('should provide config-aware error messages for missing WU', async () => {
-      const customConfig = {
-        version: '1.0.0',
+      const customDirectories = {
         directories: {
           wuDir: 'custom/wu',
         },
       };
 
-      await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+      await writeWorkspaceSoftwareDeliveryConfig(tempDir, customDirectories);
       clearConfigCache();
 
       const config = getConfig({ projectRoot: tempDir });
@@ -227,8 +233,7 @@ describe('WU-1311: validateStagedFiles whitelist paths', () => {
   });
 
   it('should generate whitelist paths from config', async () => {
-    const customConfig = {
-      version: '1.0.0',
+    const customDirectories = {
       directories: {
         wuDir: 'my/tasks/wu',
         backlogPath: 'my/tasks/backlog.md',
@@ -236,7 +241,7 @@ describe('WU-1311: validateStagedFiles whitelist paths', () => {
       },
     };
 
-    await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+    await writeWorkspaceSoftwareDeliveryConfig(tempDir, customDirectories);
     clearConfigCache();
 
     const config = getConfig({ projectRoot: tempDir });
@@ -270,14 +275,13 @@ describe('WU-1311: getWorktreeCommitFiles config paths', () => {
   });
 
   it('should use config-based WU path in commit file list', async () => {
-    const customConfig = {
-      version: '1.0.0',
+    const customDirectories = {
       directories: {
         wuDir: 'custom/wu',
       },
     };
 
-    await writeFile(path.join(tempDir, CONFIG_FILE), yaml.stringify(customConfig), 'utf-8');
+    await writeWorkspaceSoftwareDeliveryConfig(tempDir, customDirectories);
     clearConfigCache();
 
     const config = getConfig({ projectRoot: tempDir });

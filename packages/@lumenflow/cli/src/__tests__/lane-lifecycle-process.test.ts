@@ -11,6 +11,8 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
 import YAML from 'yaml';
+import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
+import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 import {
   classifyLaneLifecycleForProject,
   LANE_LIFECYCLE_STATUS,
@@ -19,7 +21,7 @@ import {
   buildInitiativeCreateLaneLifecycleMessage,
 } from '../lane-lifecycle-process.js';
 
-const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+const CONFIG_FILE_NAME = WORKSPACE_CONFIG_FILE_NAME;
 const LANE_INFERENCE_FILE_NAME = '.lumenflow.lane-inference.yaml';
 
 describe('lane lifecycle process (WU-1748)', () => {
@@ -37,7 +39,13 @@ describe('lane lifecycle process (WU-1748)', () => {
 
   function writeConfig(doc: Record<string, unknown>): void {
     const configPath = path.join(tempDir, CONFIG_FILE_NAME);
-    fs.writeFileSync(configPath, YAML.stringify(doc), 'utf-8');
+    fs.writeFileSync(
+      configPath,
+      YAML.stringify({
+        [WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY]: doc,
+      }),
+      'utf-8',
+    );
   }
 
   function writeLaneInference(content: string): void {

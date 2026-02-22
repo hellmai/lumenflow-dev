@@ -14,6 +14,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_V2_KEYS } from '../config-contract.js';
 
 // Test constants to satisfy sonarjs/no-duplicate-string
 const TEST_REMOTE = 'origin';
@@ -906,7 +907,8 @@ describe('micro-worktree', () => {
       });
 
       expect(formatted).toContain('git.push_retry.retries');
-      expect(formatted).toContain('.lumenflow.config.yaml');
+      expect(formatted).toContain(WORKSPACE_CONFIG_FILE_NAME);
+      expect(formatted).toContain(WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY);
     });
   });
 

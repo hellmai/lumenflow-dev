@@ -6,7 +6,7 @@
  * WU-1356: Tests for package manager and script name configuration.
  *
  * Tests configurable package_manager, gates.commands, test_runner, and build_command
- * in .lumenflow.config.yaml for framework agnosticism.
+ * in workspace.yaml software_delivery for framework agnosticism.
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -21,6 +21,7 @@ import {
   TestRunnerSchema,
   GatesCommandsConfigSchema,
   parseConfig,
+  WORKSPACE_V2_KEYS,
 } from '@lumenflow/core/config-schema';
 import {
   resolvePackageManager,
@@ -29,6 +30,12 @@ import {
   resolveTestRunner,
   getIgnorePatterns,
 } from '@lumenflow/core/gates-config';
+import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
+
+function writeWorkspaceConfig(tempDir: string, config: Record<string, unknown>): void {
+  const configPath = path.join(tempDir, WORKSPACE_CONFIG_FILE_NAME);
+  fs.writeFileSync(configPath, yaml.stringify({ [WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY]: config }));
+}
 
 describe('WU-1356: Package manager and script configuration', () => {
   let tempDir: string;
@@ -192,15 +199,13 @@ describe('WU-1356: Package manager and script configuration', () => {
     });
 
     it('returns configured package manager from config file', () => {
-      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-      fs.writeFileSync(configPath, yaml.stringify({ package_manager: 'npm' }));
+      writeWorkspaceConfig(tempDir, { package_manager: 'npm' });
       const result = resolvePackageManager(tempDir);
       expect(result).toBe('npm');
     });
 
     it('returns yarn when configured', () => {
-      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-      fs.writeFileSync(configPath, yaml.stringify({ package_manager: 'yarn' }));
+      writeWorkspaceConfig(tempDir, { package_manager: 'yarn' });
       const result = resolvePackageManager(tempDir);
       expect(result).toBe('yarn');
     });
@@ -213,15 +218,13 @@ describe('WU-1356: Package manager and script configuration', () => {
     });
 
     it('returns configured build_command from config file', () => {
-      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-      fs.writeFileSync(configPath, yaml.stringify({ build_command: 'npm run build' }));
+      writeWorkspaceConfig(tempDir, { build_command: 'npm run build' });
       const result = resolveBuildCommand(tempDir);
       expect(result).toBe('npm run build');
     });
 
     it('adapts default build command for different package managers', () => {
-      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-      fs.writeFileSync(configPath, yaml.stringify({ package_manager: 'npm' }));
+      writeWorkspaceConfig(tempDir, { package_manager: 'npm' });
       const result = resolveBuildCommand(tempDir);
       expect(result).toContain('npm');
     });
@@ -236,19 +239,15 @@ describe('WU-1356: Package manager and script configuration', () => {
     });
 
     it('returns configured commands from config file', () => {
-      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-      fs.writeFileSync(
-        configPath,
-        yaml.stringify({
-          gates: {
-            commands: {
-              test_full: 'npm test',
-              test_docs_only: 'npm test -- --docs',
-              test_incremental: 'npm test -- --changed',
-            },
+      writeWorkspaceConfig(tempDir, {
+        gates: {
+          commands: {
+            test_full: 'npm test',
+            test_docs_only: 'npm test -- --docs',
+            test_incremental: 'npm test -- --changed',
           },
-        }),
-      );
+        },
+      });
       const commands = resolveGatesCommands(tempDir);
       expect(commands.test_full).toBe('npm test');
       expect(commands.test_docs_only).toBe('npm test -- --docs');
@@ -263,8 +262,7 @@ describe('WU-1356: Package manager and script configuration', () => {
     });
 
     it('returns jest when configured', () => {
-      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-      fs.writeFileSync(configPath, yaml.stringify({ test_runner: 'jest' }));
+      writeWorkspaceConfig(tempDir, { test_runner: 'jest' });
       const result = resolveTestRunner(tempDir);
       expect(result).toBe('jest');
     });
@@ -282,15 +280,11 @@ describe('WU-1356: Package manager and script configuration', () => {
     });
 
     it('returns custom pattern from config', () => {
-      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-      fs.writeFileSync(
-        configPath,
-        yaml.stringify({
-          gates: {
-            ignore_patterns: ['.nx', 'dist'],
-          },
-        }),
-      );
+      writeWorkspaceConfig(tempDir, {
+        gates: {
+          ignore_patterns: ['.nx', 'dist'],
+        },
+      });
       // This would be a config-aware version
       const patterns = getIgnorePatterns('jest');
       expect(Array.isArray(patterns)).toBe(true);
@@ -344,22 +338,18 @@ describe('WU-1356: npm+jest configuration', () => {
   });
 
   it('supports npm+jest configuration', () => {
-    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-    fs.writeFileSync(
-      configPath,
-      yaml.stringify({
-        package_manager: 'npm',
-        test_runner: 'jest',
-        gates: {
-          commands: {
-            test_full: 'npm test',
-            test_docs_only: 'npm test -- --testPathPattern=docs',
-            test_incremental: 'npm test -- --onlyChanged',
-          },
+    writeWorkspaceConfig(tempDir, {
+      package_manager: 'npm',
+      test_runner: 'jest',
+      gates: {
+        commands: {
+          test_full: 'npm test',
+          test_docs_only: 'npm test -- --testPathPattern=docs',
+          test_incremental: 'npm test -- --onlyChanged',
         },
-        build_command: 'npm run build',
-      }),
-    );
+      },
+      build_command: 'npm run build',
+    });
 
     const pkgManager = resolvePackageManager(tempDir);
     const testRunner = resolveTestRunner(tempDir);
@@ -386,22 +376,18 @@ describe('WU-1356: yarn+nx configuration', () => {
   });
 
   it('supports yarn+nx configuration', () => {
-    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
-    fs.writeFileSync(
-      configPath,
-      yaml.stringify({
-        package_manager: 'yarn',
-        test_runner: 'jest',
-        gates: {
-          commands: {
-            test_full: 'yarn nx run-many --target=test --all',
-            test_docs_only: 'yarn nx test docs',
-            test_incremental: 'yarn nx affected --target=test',
-          },
+    writeWorkspaceConfig(tempDir, {
+      package_manager: 'yarn',
+      test_runner: 'jest',
+      gates: {
+        commands: {
+          test_full: 'yarn nx run-many --target=test --all',
+          test_docs_only: 'yarn nx test docs',
+          test_incremental: 'yarn nx affected --target=test',
         },
-        build_command: 'yarn nx build @lumenflow/cli',
-      }),
-    );
+      },
+      build_command: 'yarn nx build @lumenflow/cli',
+    });
 
     const pkgManager = resolvePackageManager(tempDir);
     const commands = resolveGatesCommands(tempDir);

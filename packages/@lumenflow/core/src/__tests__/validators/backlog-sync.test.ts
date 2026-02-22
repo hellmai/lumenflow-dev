@@ -10,6 +10,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_V2_KEYS } from '../../config-contract.js';
 
 import { validateBacklogSync } from '../../validators/backlog-sync.js';
 
@@ -34,13 +35,13 @@ describe('validateBacklogSync', () => {
   });
 
   it('respects custom wuDir and backlogPath from config', async () => {
-    const configPath = path.join(tmpDir, '.lumenflow.config.yaml');
+    const configPath = path.join(tmpDir, WORKSPACE_CONFIG_FILE_NAME);
     const customWuDir = path.join('.lumenflow', 'wus');
     const customBacklog = path.join('.lumenflow', 'backlog.md');
 
     writeFileSync(
       configPath,
-      `directories:\n  wuDir: "${customWuDir}"\n  backlogPath: "${customBacklog}"\n`,
+      `${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY}:\n  directories:\n    wuDir: "${customWuDir}"\n    backlogPath: "${customBacklog}"\n`,
     );
 
     mkdirSync(path.join(tmpDir, customWuDir), { recursive: true });
