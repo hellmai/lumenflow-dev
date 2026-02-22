@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
+import { CONFIG_FILES } from '@lumenflow/core/wu-constants';
+import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 import { verifyWUComplete, debugSummary } from '../src/agent-verification.js';
 
 // Mock the external dependencies
@@ -146,15 +148,23 @@ describe('verifyWUComplete', () => {
 
   describe('Configurable paths', () => {
     it('uses wuDir from config when checking commit history', () => {
+      const projectRoot = '/tmp/project';
+      const configuredWuDir = 'docs/custom-wu';
+      const workspaceConfigPath = `${projectRoot}/${CONFIG_FILES.WORKSPACE_CONFIG}`;
       const mockRun = vi.fn(() => '');
       const mockExists = vi.fn(() => true);
 
       vi.mocked(existsSync).mockImplementation((filePath: string) =>
-        String(filePath).endsWith('.lumenflow.config.yaml'),
+        String(filePath) === workspaceConfigPath,
       );
       vi.mocked(readFileSync).mockImplementation((filePath: string) => {
-        if (String(filePath).endsWith('.lumenflow.config.yaml')) {
-          return 'directories:\n  wuDir: ".lumenflow/wus"\n';
+        if (String(filePath) === workspaceConfigPath) {
+          return [
+            `${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY}:`,
+            '  directories:',
+            `    wuDir: "${configuredWuDir}"`,
+            '',
+          ].join('\n');
         }
         return '';
       });
@@ -162,10 +172,15 @@ describe('verifyWUComplete', () => {
       verifyWUComplete('WU-1234', {
         run: mockRun,
         exists: mockExists,
-        projectRoot: '/tmp/project',
+        projectRoot,
       });
 
-      expect(mockRun).toHaveBeenCalledWith(expect.stringContaining('.lumenflow/wus/WU-1234.yaml'));
+      expect(mockRun).toHaveBeenCalledWith(
+        expect.stringContaining(`${configuredWuDir}/WU-1234.yaml`),
+      );
+      expect(mockRun).not.toHaveBeenCalledWith(
+        expect.stringContaining('.lumenflow/wus/WU-1234.yaml'),
+      );
     });
   });
 
