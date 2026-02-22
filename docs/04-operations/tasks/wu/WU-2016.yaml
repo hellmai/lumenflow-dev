@@ -7,8 +7,9 @@ priority: P2
 created: 2026-02-22
 code_paths:
   - packages/@lumenflow/core/src/lumenflow-config-schema.ts
-  - packages/@lumenflow/core/src/lumenflow-config.ts
   - packages/@lumenflow/core/src/schemas/
+  - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+  - packages/@lumenflow/core/src/__tests__/status-literal-guard.test.ts
 tests:
   manual:
     - Run pnpm gates from worktree — all tests pass
@@ -25,10 +26,17 @@ blocked_by:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-22T15:40:46.879Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2016
+session_id: 4f637ce0-5cda-4aad-b720-f36024639ed6
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T15:40:46.898Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -41,11 +49,3 @@ acceptance:
   - Each section schema is independently importable
   - Full LumenFlowConfig type is backward-compatible (intersection of sections)
   - All existing tests pass without modification
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2016
-claimed_at: 2026-02-22T15:40:46.879Z
-baseline_main_sha: 4e84a6927911ae71559bfdc0cc8595e972afbcdb
-session_id: 4f637ce0-5cda-4aad-b720-f36024639ed6
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-22T15:40:46.898Z
