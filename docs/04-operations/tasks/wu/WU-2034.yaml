@@ -2,7 +2,7 @@ id: WU-2034
 title: Complete kernel-first hard cut from legacy config references
 lane: 'Framework: Core Lifecycle'
 type: tooling
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/memory/src
 tests:
   manual:
-    - 'Run `rg -n "\.lumenflow\.config\.yaml" packages/@lumenflow/{cli,core,memory,metrics}/src` and verify zero runtime hits.'
+    - Run `rg -n "\.lumenflow\.config\.yaml" packages/@lumenflow/{cli,core,memory,metrics}/src` and
+      verify zero runtime hits.
     - Run pnpm --filter @lumenflow/cli test -- --runInBand lane-status and verify lane status
       resolves from workspace config without legacy file.
   unit:
@@ -51,3 +52,6 @@ session_id: c41ee778-699c-4a79-ae56-e761186b8375
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T12:47:21.166Z
+locked: true
+completed_at: 2026-02-22T13:27:25.708Z
+completed: 2026-02-22
