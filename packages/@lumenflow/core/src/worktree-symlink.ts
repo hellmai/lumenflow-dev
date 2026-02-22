@@ -48,6 +48,42 @@ const WORKTREES_PATH_SEGMENT = '/worktrees/';
 const PNPM_DIR = '.pnpm';
 
 /**
+ * Workspace roots scanned for package manifests that may declare bin targets.
+ */
+const WORKSPACE_MANIFEST_ROOTS = ['packages', 'apps'];
+
+/**
+ * Standard package manifest file name.
+ */
+const PACKAGE_MANIFEST_FILE_NAME = 'package.json';
+
+/**
+ * Relative bin path prefix for current directory.
+ */
+const CURRENT_DIRECTORY_PREFIX = './';
+
+/**
+ * Relative bin path prefix for parent directory traversal.
+ */
+const PARENT_DIRECTORY_PREFIX = '../';
+
+/**
+ * POSIX separator used in package.json bin path values.
+ */
+const POSIX_PATH_SEPARATOR = '/';
+
+/**
+ * Windows separator occasionally found in generated manifest paths.
+ */
+const WINDOWS_PATH_SEPARATOR = '\\';
+
+/**
+ * Bin artifact roots that must never be pre-seeded in worktree packages.
+ * node_modules roots are intentionally excluded to avoid interfering with pnpm install.
+ */
+const BIN_ARTIFACT_ROOT_DENYLIST = new Set([NODE_MODULES_DIR]);
+
+/**
  * List of nested package/app paths that have their own node_modules
  *
  * pnpm monorepos create node_modules in each package with symlinks
@@ -102,6 +138,17 @@ interface NestedSymlinkResult {
   created: number;
   skipped: number;
   errors: Error[];
+}
+
+interface WorkspaceBinArtifactSeedResult {
+  created: number;
+  skipped: number;
+  errors: Error[];
+}
+
+interface WorkspacePackageBinTarget {
+  packageRelativeDir: string;
+  binTargetPath: string;
 }
 
 /**
@@ -217,6 +264,200 @@ function nodeModulesExists(targetPath: string): boolean {
   } catch {
     return false;
   }
+}
+
+/**
+ * Returns true when a filesystem entry exists, including broken symlinks.
+ */
+function pathExistsIncludingSymlink(targetPath: string): boolean {
+  try {
+    fs.lstatSync(targetPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Recursively collect package.json manifests from configured workspace roots.
+ */
+function collectWorkspaceManifestPaths(repoRoot: string): string[] {
+  const manifests: string[] = [];
+  const ignoredDirectoryNames = new Set([NODE_MODULES_DIR, '.git', 'worktrees']);
+
+  const visitDirectory = (directoryPath: string): void => {
+    if (!fs.existsSync(directoryPath)) {
+      return;
+    }
+
+    const entries = fs.readdirSync(directoryPath, { withFileTypes: true });
+    for (const entry of entries) {
+      const entryPath = path.join(directoryPath, entry.name);
+      if (entry.isDirectory()) {
+        if (ignoredDirectoryNames.has(entry.name)) {
+          continue;
+        }
+        visitDirectory(entryPath);
+        continue;
+      }
+      if (entry.isFile() && entry.name === PACKAGE_MANIFEST_FILE_NAME) {
+        manifests.push(entryPath);
+      }
+    }
+  };
+
+  for (const workspaceRoot of WORKSPACE_MANIFEST_ROOTS) {
+    visitDirectory(path.join(repoRoot, workspaceRoot));
+  }
+
+  return manifests;
+}
+
+/**
+ * Normalize a package.json bin target into a safe relative path, or null when unsafe.
+ */
+function normalizeBinTargetPath(binTargetPath: string): string | null {
+  const posixTargetPath = binTargetPath
+    .split(WINDOWS_PATH_SEPARATOR)
+    .join(POSIX_PATH_SEPARATOR)
+    .trim();
+
+  if (posixTargetPath.length === 0) {
+    return null;
+  }
+
+  const withoutCurrentDirectoryPrefix = posixTargetPath.startsWith(CURRENT_DIRECTORY_PREFIX)
+    ? posixTargetPath.slice(CURRENT_DIRECTORY_PREFIX.length)
+    : posixTargetPath;
+
+  const normalizedTargetPath = path.posix.normalize(withoutCurrentDirectoryPrefix);
+  if (
+    normalizedTargetPath === '.' ||
+    normalizedTargetPath.length === 0 ||
+    normalizedTargetPath.startsWith(PARENT_DIRECTORY_PREFIX) ||
+    path.posix.isAbsolute(normalizedTargetPath)
+  ) {
+    return null;
+  }
+
+  return normalizedTargetPath;
+}
+
+/**
+ * Collect workspace package bin targets from main checkout package manifests.
+ */
+function collectWorkspaceBinTargets(mainRepoPath: string): WorkspacePackageBinTarget[] {
+  const manifests = collectWorkspaceManifestPaths(mainRepoPath);
+  const binTargets: WorkspacePackageBinTarget[] = [];
+
+  for (const manifestPath of manifests) {
+    try {
+      const packageJson = JSON.parse(fs.readFileSync(manifestPath, 'utf8')) as {
+        bin?: string | Record<string, string>;
+      };
+
+      if (!packageJson.bin) {
+        continue;
+      }
+
+      const packageRelativeDir = path.dirname(path.relative(mainRepoPath, manifestPath));
+      const normalizedTargets =
+        typeof packageJson.bin === 'string'
+          ? [normalizeBinTargetPath(packageJson.bin)]
+          : Object.values(packageJson.bin).map((targetPath) => normalizeBinTargetPath(targetPath));
+
+      for (const normalizedTargetPath of normalizedTargets) {
+        if (!normalizedTargetPath) {
+          continue;
+        }
+        binTargets.push({ packageRelativeDir, binTargetPath: normalizedTargetPath });
+      }
+    } catch {
+      // Skip malformed manifests; claim flow should remain resilient.
+      continue;
+    }
+  }
+
+  return binTargets;
+}
+
+/**
+ * Extract the artifact root directory from a normalized bin target path.
+ */
+function resolveBinArtifactRoot(binTargetPath: string): string | null {
+  const [artifactRoot] = binTargetPath.split(POSIX_PATH_SEPARATOR);
+  if (!artifactRoot || BIN_ARTIFACT_ROOT_DENYLIST.has(artifactRoot)) {
+    return null;
+  }
+  return artifactRoot;
+}
+
+/**
+ * Pre-seed bin artifact roots (for example dist/) in a fresh worktree from main checkout.
+ *
+ * This prevents pnpm install from emitting noisy ENOENT bin-link warnings for workspace packages
+ * whose bin entries point at build artifacts that are not tracked in git.
+ */
+export function symlinkWorkspaceBinArtifactRoots(
+  worktreePath: string,
+  mainRepoPath: string,
+  logger: LoggerLike | null = null,
+): WorkspaceBinArtifactSeedResult {
+  const result: WorkspaceBinArtifactSeedResult = { created: 0, skipped: 0, errors: [] };
+  const workspaceBinTargets = collectWorkspaceBinTargets(mainRepoPath);
+  const attemptedTargets = new Set<string>();
+
+  for (const binTarget of workspaceBinTargets) {
+    const artifactRoot = resolveBinArtifactRoot(binTarget.binTargetPath);
+    if (!artifactRoot) {
+      result.skipped += 1;
+      continue;
+    }
+
+    const dedupeKey = `${binTarget.packageRelativeDir}|${artifactRoot}`;
+    if (attemptedTargets.has(dedupeKey)) {
+      result.skipped += 1;
+      continue;
+    }
+    attemptedTargets.add(dedupeKey);
+
+    const sourceArtifactPath = path.join(mainRepoPath, binTarget.packageRelativeDir, artifactRoot);
+    const worktreeArtifactPath = path.join(
+      worktreePath,
+      binTarget.packageRelativeDir,
+      artifactRoot,
+    );
+
+    if (pathExistsIncludingSymlink(worktreeArtifactPath) || !fs.existsSync(sourceArtifactPath)) {
+      result.skipped += 1;
+      continue;
+    }
+
+    try {
+      fs.mkdirSync(path.dirname(worktreeArtifactPath), { recursive: true });
+      const relativeTargetPath = path.relative(
+        path.dirname(worktreeArtifactPath),
+        sourceArtifactPath,
+      );
+      fs.symlinkSync(relativeTargetPath, worktreeArtifactPath);
+      result.created += 1;
+      if (logger?.info) {
+        logger.info(
+          `${LOG_PREFIX.CLAIM} Seeded ${binTarget.packageRelativeDir}/${artifactRoot} from main checkout`,
+        );
+      }
+    } catch (error: unknown) {
+      const normalizedError = error instanceof Error ? error : new Error(String(error));
+      result.errors.push(normalizedError);
+      if (logger?.warn) {
+        logger.warn(
+          `${LOG_PREFIX.CLAIM} Failed to seed ${binTarget.packageRelativeDir}/${artifactRoot}: ${getErrorMessage(error)}`,
+        );
+      }
+    }
+  }
+
+  return result;
 }
 
 /**

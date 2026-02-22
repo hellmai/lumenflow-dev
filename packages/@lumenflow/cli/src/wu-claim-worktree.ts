@@ -27,7 +27,11 @@ import { getStateStoreDirFromBacklog } from '@lumenflow/core/wu-paths';
 import { emitMandatoryAgentAdvisory } from '@lumenflow/core/orchestration-advisory-loader';
 import { getConfig } from '@lumenflow/core/config';
 import { autoFixWUYaml } from '@lumenflow/core/wu-yaml-fixer';
-import { symlinkNodeModules, symlinkNestedNodeModules } from '@lumenflow/core/worktree-symlink';
+import {
+  symlinkNodeModules,
+  symlinkNestedNodeModules,
+  symlinkWorkspaceBinArtifactRoots,
+} from '@lumenflow/core/worktree-symlink';
 import {
   updateWUYaml,
   appendClaimEventOnly,
@@ -42,6 +46,10 @@ import {
 } from './wu-claim-output.js';
 
 const PREFIX = LOG_PREFIX.CLAIM;
+const PNPM_BINARY_NAME = 'pnpm';
+const PNPM_FROZEN_LOCKFILE_ARGS = ['install', '--frozen-lockfile'];
+const WORKTREE_INSTALL_TIMEOUT_MS = 300000;
+const WORKTREE_SETUP_WARNING_PREVIEW_COUNT = 3;
 
 /**
  * WU-1213: Handle local-only claim metadata update (noPush mode).
@@ -113,7 +121,7 @@ async function handleNoPushMetadataUpdate(ctx: UnsafeAny): Promise<{
  * WU-1213: Setup worktree dependencies (symlink or full install).
  * Extracted to reduce cognitive complexity of claimWorktreeMode.
  */
-async function setupWorktreeDependencies(
+export async function setupWorktreeDependencies(
   worktreePath: string,
   originalCwd: string,
   skipSetup: boolean,
@@ -139,14 +147,30 @@ async function setupWorktreeDependencies(
       }
     }
   } else {
+    const seededBinArtifacts = symlinkWorkspaceBinArtifactRoots(worktreePath, originalCwd, console);
+    if (seededBinArtifacts.created > 0) {
+      console.log(
+        `${PREFIX} ${EMOJI.SUCCESS} Seeded ${seededBinArtifacts.created} workspace bin artifact root(s) from main checkout`,
+      );
+    }
+    if (seededBinArtifacts.errors.length > 0) {
+      const previewErrors = seededBinArtifacts.errors
+        .slice(0, WORKTREE_SETUP_WARNING_PREVIEW_COUNT)
+        .map((error) => error.message)
+        .join(FILE_SYSTEM.NEWLINE + '  - ');
+      console.warn(
+        `${PREFIX} Warning: failed to seed ${seededBinArtifacts.errors.length} workspace artifact root(s):${FILE_SYSTEM.NEWLINE}  - ${previewErrors}`,
+      );
+    }
+
     // WU-1023: Full setup mode (default) - run pnpm install with progress indicator
     console.log(`${PREFIX} Installing worktree dependencies (this may take a moment)...`);
     try {
       const { execFileSync } = await import('node:child_process');
-      execFileSync('pnpm', ['install', '--frozen-lockfile'], {
+      execFileSync(PNPM_BINARY_NAME, PNPM_FROZEN_LOCKFILE_ARGS, {
         cwd: worktreePath,
         stdio: 'inherit',
-        timeout: 300000, // 5 minute timeout
+        timeout: WORKTREE_INSTALL_TIMEOUT_MS, // 5 minute timeout
       });
       console.log(`${PREFIX} ${EMOJI.SUCCESS} Worktree dependencies installed`);
     } catch (installError) {
