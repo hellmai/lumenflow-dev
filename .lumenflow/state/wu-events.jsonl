@@ -1932,3 +1932,4 @@
 {"type":"complete","wuId":"WU-1988","timestamp":"2026-02-22T00:02:19.306Z"}
 {"type":"claim","wuId":"WU-1989","timestamp":"2026-02-22T00:06:50.604Z","lane":"Framework: Core Validation","title":"State doctor: eliminate non-representable status mismatches and false auto-fix claims"}
 {"type":"complete","wuId":"WU-1989","timestamp":"2026-02-22T00:11:04.133Z"}
+{"type":"claim","wuId":"WU-1990","lane":"Operations: Tooling","title":"Format web workspace selector files to restore global format gate","timestamp":"2026-02-22T00:13:00.863Z"}

@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1990 — Format web workspace selector files to restore global format gate](wu/WU-1990.yaml)
 
 ## Completed
 

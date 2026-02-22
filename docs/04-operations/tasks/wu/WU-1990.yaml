@@ -2,7 +2,7 @@ id: WU-1990
 title: Format web workspace selector files to restore global format gate
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -28,8 +28,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Global prettier check on main fails due formatting drift in workspace selector files. Normalize formatting to restore format:check and avoid noisy gate failures.
+description: Global prettier check on main fails due formatting drift in workspace selector files.
+  Normalize formatting to restore format:check and avoid noisy gate failures.
 acceptance:
   - apps/web/__tests__/workspace-selector.test.tsx passes prettier
   - apps/web/src/components/workspace-selector.tsx passes prettier
   - pnpm format:check passes on main
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-1990
+claimed_at: 2026-02-22T00:13:00.830Z
+baseline_main_sha: aba304b7a7b3e2690336333cce092d32551d1b11
+session_id: 135668fb-a59d-41bc-8872-6786a40dd70e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T00:13:00.835Z
