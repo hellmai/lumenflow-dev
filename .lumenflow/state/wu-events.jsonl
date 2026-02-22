@@ -2043,3 +2043,4 @@
 {"type":"claim","wuId":"WU-2007","timestamp":"2026-02-22T21:44:46.929Z","lane":"Framework: CLI Orchestration","title":"Complete runCLI(main) entrypoint standardization for orchestration and agent session commands"}
 {"type":"complete","wuId":"WU-2007","timestamp":"2026-02-22T21:52:57.143Z"}
 {"type":"claim","wuId":"WU-2008","timestamp":"2026-02-22T21:55:21.533Z","lane":"Framework: Core Lifecycle","title":"Remove remaining direct process.exit usage from core modules"}
+{"type":"complete","wuId":"WU-2008","timestamp":"2026-02-22T22:23:10.979Z"}

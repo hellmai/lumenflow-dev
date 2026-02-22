@@ -7,7 +7,7 @@ description: 'Context: LumenFlow is a critical workflow runtime and currently ha
   Solution: execute a hard one-sweep remediation across command execution, compiler and lint
   guardrails, package API boundaries, runtime exit handling, duplicated constants, and process state
   isolation with full regression validation.'
-status: in_progress
+status: done
 priority: P0
 owner: platform
 created: 2026-02-09
@@ -60,7 +60,7 @@ phases:
     status: done
   - id: 16
     title: 'Phase 16: Entry-point and core exit hardening follow-through'
-    status: in_progress
+    status: done
 success_metrics:
   - No string-concatenated shell execution remains in deps-add, deps-remove, or trace-gen.
   - Build and package tsconfig files enforce strict type checking and noEmitOnError.

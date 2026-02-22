@@ -30,7 +30,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2008 — Remove remaining direct process.exit usage from core modules](wu/WU-2008.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1004,6 +1004,7 @@ sections:
 - [WU-2053 — P0: fix TS7006 build break on main](wu/WU-2053.yaml)
 - [WU-2052 — Fix filterExistingFiles CWD bug in incremental format check](wu/WU-2052.yaml)
 - [WU-2007 — Complete runCLI(main) entrypoint standardization for orchestration and agent session commands](wu/WU-2007.yaml)
+- [WU-2008 — Remove remaining direct process.exit usage from core modules](wu/WU-2008.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

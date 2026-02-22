@@ -2,7 +2,7 @@ id: WU-2008
 title: Remove remaining direct process.exit usage from core modules
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -57,3 +57,6 @@ session_id: c5b95660-e236-4974-833d-46b9205e9427
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T21:55:21.512Z
+locked: true
+completed_at: 2026-02-22T22:23:06.174Z
+completed: 2026-02-22

@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-2008 — Remove remaining direct process.exit usage from core modules](wu/WU-2008.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -974,3 +974,4 @@ _Last updated: 2026-02-22_
 - [WU-2053 — P0: fix TS7006 build break on main](wu/WU-2053.yaml) — 2026-02-22
 - [WU-2052 — Fix filterExistingFiles CWD bug in incremental format check](wu/WU-2052.yaml) — 2026-02-22
 - [WU-2007 — Complete runCLI(main) entrypoint standardization for orchestration and agent session commands](wu/WU-2007.yaml) — 2026-02-22
+- [WU-2008 — Remove remaining direct process.exit usage from core modules](wu/WU-2008.yaml) — 2026-02-22
