@@ -40,6 +40,7 @@ const NDJSON_LOG_PATH = resolve(ROOT_DIR, LUMENFLOW_PATHS.TELEMETRY, 'prompt-nig
 // Alert thresholds
 const WARN_THRESHOLD = 400;
 const DELTA_THRESHOLD = 50;
+export const PROMPT_MONITOR_FAILURE_MESSAGE = 'Nightly monitor failed:';
 
 interface PromptMetricsEntry {
   tokenCount: number;
@@ -239,13 +240,36 @@ async function monitor() {
 // Export monitor for testability (WU-1538)
 export { monitor };
 
+export interface PromptMonitorCliDeps {
+  runMonitor: () => Promise<void>;
+  setExitCode: (exitCode: number) => void;
+  logError: (...args: unknown[]) => void;
+}
+
+const DEFAULT_PROMPT_MONITOR_CLI_DEPS: PromptMonitorCliDeps = {
+  runMonitor: monitor,
+  setExitCode: (exitCode) => {
+    process.exitCode = exitCode;
+  },
+  logError: console.error,
+};
+
+export async function runMonitorCli(
+  deps: PromptMonitorCliDeps = DEFAULT_PROMPT_MONITOR_CLI_DEPS,
+): Promise<void> {
+  try {
+    await deps.runMonitor();
+  } catch (error) {
+    if (error instanceof ProcessExitError) {
+      deps.setExitCode(error.exitCode);
+      return;
+    }
+    deps.logError(PROMPT_MONITOR_FAILURE_MESSAGE, error);
+    deps.setExitCode(EXIT_CODES.ERROR);
+  }
+}
+
 // Run monitor when executed directly
 if (import.meta.main) {
-  monitor().catch((error) => {
-    if (error instanceof ProcessExitError) {
-      process.exit(error.exitCode);
-    }
-    console.error('Nightly monitor failed:', error);
-    process.exit(EXIT_CODES.ERROR);
-  });
+  void runMonitorCli();
 }
