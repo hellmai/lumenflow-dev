@@ -2,7 +2,7 @@ id: WU-2042
 title: Finalize kernel-first parity in tests and docs
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-22
 code_paths:
@@ -54,3 +54,6 @@ session_id: cc516dbc-54f6-449a-8243-84e24b8a98f2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T15:55:29.475Z
+locked: true
+completed_at: 2026-02-22T16:06:57.528Z
+completed: 2026-02-22
