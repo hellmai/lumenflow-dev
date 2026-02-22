@@ -27,6 +27,30 @@ interface ActionDiffViewerProps {
   readonly entries: readonly ActionDiffEntry[];
 }
 
+interface ActionDiffRow {
+  readonly entry: ActionDiffEntry;
+  readonly key: string;
+  readonly ordinal: number;
+}
+
+function buildActionDiffRows(entries: readonly ActionDiffEntry[]): readonly ActionDiffRow[] {
+  const seenBaseKeys = new Map<string, number>();
+  const rows: ActionDiffRow[] = [];
+
+  for (const entry of entries) {
+    const baseKey = `${entry.field}::${entry.attempted}::${entry.permitted ?? 'blocked'}::${entry.status}`;
+    const occurrence = seenBaseKeys.get(baseKey) ?? 0;
+    seenBaseKeys.set(baseKey, occurrence + 1);
+    rows.push({
+      entry,
+      key: `${baseKey}::${occurrence}`,
+      ordinal: rows.length,
+    });
+  }
+
+  return rows;
+}
+
 export function ActionDiffViewer({ entries }: ActionDiffViewerProps) {
   if (entries.length === 0) {
     return (
@@ -38,6 +62,8 @@ export function ActionDiffViewer({ entries }: ActionDiffViewerProps) {
       </div>
     );
   }
+
+  const rows = buildActionDiffRows(entries);
 
   return (
     <div data-testid="action-diff-viewer" className="rounded-lg border border-slate-200 bg-white">
@@ -51,25 +77,25 @@ export function ActionDiffViewer({ entries }: ActionDiffViewerProps) {
 
       {/* Diff rows */}
       <div className="divide-y divide-slate-100">
-        {entries.map((entry, index) => (
+        {rows.map((row) => (
           <div
-            key={`${entry.field}-${index}`}
-            data-testid={`action-diff-row-${index}`}
-            data-status={entry.status}
-            className={`grid grid-cols-4 gap-2 border-l-2 px-4 py-2 text-sm ${STATUS_COLORS.get(entry.status) ?? DEFAULT_ROW_COLOR}`}
+            key={row.key}
+            data-testid={`action-diff-row-${row.ordinal}`}
+            data-status={row.entry.status}
+            className={`grid grid-cols-4 gap-2 border-l-2 px-4 py-2 text-sm ${STATUS_COLORS.get(row.entry.status) ?? DEFAULT_ROW_COLOR}`}
           >
             {/* Field name */}
-            <div className="font-medium text-slate-700">{entry.field}</div>
+            <div className="font-medium text-slate-700">{row.entry.field}</div>
 
             {/* Attempted value */}
             <div data-testid="attempted-value" className="font-mono text-slate-600">
-              {entry.attempted}
+              {row.entry.attempted}
             </div>
 
             {/* Permitted value */}
             <div data-testid="permitted-value" className="font-mono text-slate-600">
-              {entry.permitted !== null ? (
-                entry.permitted
+              {row.entry.permitted !== null ? (
+                row.entry.permitted
               ) : (
                 <span
                   data-testid="permitted-blocked"
@@ -83,9 +109,9 @@ export function ActionDiffViewer({ entries }: ActionDiffViewerProps) {
             {/* Status badge */}
             <div>
               <span
-                className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE_COLORS.get(entry.status) ?? DEFAULT_BADGE_COLOR}`}
+                className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE_COLORS.get(row.entry.status) ?? DEFAULT_BADGE_COLOR}`}
               >
-                {entry.status}
+                {row.entry.status}
               </span>
             </div>
           </div>

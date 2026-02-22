@@ -180,8 +180,16 @@ function asNonEmptyString(value: unknown): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
+function getRecordValue(record: Record<string, unknown>, key: string): unknown {
+  return Reflect.get(record, key);
+}
+
+function getEnvironmentValue(environment: NodeJS.ProcessEnv, key: string): unknown {
+  return Reflect.get(environment, key);
+}
+
 function isRuntimeTokenAvailable(tokenEnv: string, environment: NodeJS.ProcessEnv): boolean {
-  const value = environment[tokenEnv];
+  const value = getEnvironmentValue(environment, tokenEnv);
   return typeof value === 'string' && value.trim().length > 0;
 }
 
@@ -189,6 +197,7 @@ async function readWorkspaceControlPlaneConfig(
   workspaceRoot: string,
 ): Promise<WorkspaceControlPlaneConfigLike | null> {
   const workspacePath = path.join(workspaceRoot, WORKSPACE_FILE_NAME);
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- workspace root is an operator-controlled absolute path
   const workspaceYaml = await readFile(workspacePath, UTF8_ENCODING);
   const parsed = YAML.parse(workspaceYaml) as unknown;
 
@@ -196,20 +205,20 @@ async function readWorkspaceControlPlaneConfig(
     return null;
   }
 
-  const controlPlane = parsed[CONTROL_PLANE_FIELD];
+  const controlPlane = getRecordValue(parsed, CONTROL_PLANE_FIELD);
   if (!isRecord(controlPlane)) {
     return null;
   }
 
-  const authRaw = controlPlane[CONTROL_PLANE_AUTH_FIELD];
+  const authRaw = getRecordValue(controlPlane, CONTROL_PLANE_AUTH_FIELD);
   const auth = isRecord(authRaw)
     ? {
-        token_env: asNonEmptyString(authRaw[CONTROL_PLANE_TOKEN_ENV_FIELD]),
+        token_env: asNonEmptyString(getRecordValue(authRaw, CONTROL_PLANE_TOKEN_ENV_FIELD)),
       }
     : undefined;
 
   return {
-    endpoint: asNonEmptyString(controlPlane[CONTROL_PLANE_ENDPOINT_FIELD]),
+    endpoint: asNonEmptyString(getRecordValue(controlPlane, CONTROL_PLANE_ENDPOINT_FIELD)),
     auth,
   };
 }

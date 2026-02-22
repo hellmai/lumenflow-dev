@@ -16,15 +16,26 @@ const TOOL_TRACE_KIND = {
   FINISHED: 'tool_call_finished',
 } as const;
 
+const CSV_COLUMN = {
+  RECEIPT_ID: 'receipt_id',
+  TOOL_NAME: 'tool_name',
+  STARTED_AT: 'started_at',
+  FINISHED_AT: 'finished_at',
+  DURATION_MS: 'duration_ms',
+  RESULT: 'result',
+  SCOPE_REQUESTED_SUMMARY: 'scope_requested_summary',
+  SCOPE_ENFORCED_SUMMARY: 'scope_enforced_summary',
+} as const;
+
 const CSV_COLUMNS = [
-  'receipt_id',
-  'tool_name',
-  'started_at',
-  'finished_at',
-  'duration_ms',
-  'result',
-  'scope_requested_summary',
-  'scope_enforced_summary',
+  CSV_COLUMN.RECEIPT_ID,
+  CSV_COLUMN.TOOL_NAME,
+  CSV_COLUMN.STARTED_AT,
+  CSV_COLUMN.FINISHED_AT,
+  CSV_COLUMN.DURATION_MS,
+  CSV_COLUMN.RESULT,
+  CSV_COLUMN.SCOPE_REQUESTED_SUMMARY,
+  CSV_COLUMN.SCOPE_ENFORCED_SUMMARY,
 ] as const;
 
 interface ScopeEntry {
@@ -138,11 +149,34 @@ function escapeCsvValue(value: string | number): string {
   return str;
 }
 
+function getExportRecordValue(record: ExportRecord, column: (typeof CSV_COLUMNS)[number]): string {
+  switch (column) {
+    case CSV_COLUMN.RECEIPT_ID:
+      return record.receipt_id;
+    case CSV_COLUMN.TOOL_NAME:
+      return record.tool_name;
+    case CSV_COLUMN.STARTED_AT:
+      return record.started_at;
+    case CSV_COLUMN.FINISHED_AT:
+      return record.finished_at;
+    case CSV_COLUMN.DURATION_MS:
+      return String(record.duration_ms);
+    case CSV_COLUMN.RESULT:
+      return record.result;
+    case CSV_COLUMN.SCOPE_REQUESTED_SUMMARY:
+      return record.scope_requested_summary;
+    case CSV_COLUMN.SCOPE_ENFORCED_SUMMARY:
+      return record.scope_enforced_summary;
+    default:
+      throw new Error(`Unsupported export column: ${column}`);
+  }
+}
+
 function recordsToCsv(records: readonly ExportRecord[]): string {
   const header = CSV_COLUMNS.join(',');
 
   const rows = records.map((record) =>
-    CSV_COLUMNS.map((col) => escapeCsvValue(record[col])).join(','),
+    CSV_COLUMNS.map((col) => escapeCsvValue(getExportRecordValue(record, col))).join(','),
   );
 
   return [header, ...rows].join('\n');

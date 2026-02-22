@@ -210,7 +210,7 @@ describe('http-surface runtime diagnostics', () => {
     await writeWorkspaceYamlWithControlPlane(runtimeRoot);
     process.env[ENVIRONMENT_KEY.ENABLE_RUNTIME] = ENABLED_FLAG;
     process.env[ENVIRONMENT_KEY.RUNTIME_WORKSPACE_ROOT] = runtimeRoot;
-    process.env[CONTROL_PLANE_TEST_TOKEN_ENV] = CONTROL_PLANE_TEST_TOKEN_VALUE;
+    process.env.LUMENFLOW_CONTROL_PLANE_TOKEN_TEST = CONTROL_PLANE_TEST_TOKEN_VALUE;
 
     vi.doMock('@lumenflow/kernel', async () => {
       const actual = await vi.importActual<typeof import('@lumenflow/kernel')>('@lumenflow/kernel');

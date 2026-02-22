@@ -148,6 +148,17 @@ export default tseslint.config(
     ...eslintReact.configs['recommended-typescript'],
   },
 
+  // shadcn/Radix UI wrappers intentionally keep forwardRef + context patterns
+  // for broad compatibility across React and third-party primitives.
+  {
+    files: ['apps/web/src/components/ui/**/*.tsx'],
+    rules: {
+      '@eslint-react/no-forward-ref': 'off',
+      '@eslint-react/no-context-provider': 'off',
+      '@eslint-react/no-use-context': 'off',
+    },
+  },
+
   // Project-specific rules (TypeScript — all packages)
   {
     files: ['**/*.ts', '**/*.mts', '**/*.tsx'],
