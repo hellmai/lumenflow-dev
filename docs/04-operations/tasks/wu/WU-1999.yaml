@@ -2,7 +2,7 @@ id: WU-1999
 title: Ignore symlinked dist artifact roots in incremental format gate
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -44,3 +44,6 @@ session_id: 294d8511-2eb6-45a7-a2a6-74a71324736a
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T02:40:16.176Z
+locked: true
+completed_at: 2026-02-22T02:48:54.047Z
+completed: 2026-02-22

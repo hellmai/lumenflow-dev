@@ -1958,4 +1958,5 @@
 {"type":"complete","wuId":"WU-1997","timestamp":"2026-02-22T02:29:00.412Z"}
 {"type":"claim","wuId":"WU-1998","timestamp":"2026-02-22T02:30:56.743Z","lane":"Framework: CLI WU Commands","title":"Reduce misleading no-checkpoint warnings in wu:done warn mode"}
 {"type":"complete","wuId":"WU-1998","timestamp":"2026-02-22T02:38:26.015Z"}
-{"type":"claim","wuId":"WU-1999","lane":"Framework: CLI Enforcement","title":"Ignore symlinked dist artifact roots in incremental format gate","timestamp":"2026-02-22T02:40:16.221Z"}
+{"type":"claim","wuId":"WU-1999","timestamp":"2026-02-22T02:40:16.221Z","lane":"Framework: CLI Enforcement","title":"Ignore symlinked dist artifact roots in incremental format gate"}
+{"type":"complete","wuId":"WU-1999","timestamp":"2026-02-22T02:48:59.106Z"}
