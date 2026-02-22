@@ -24,6 +24,14 @@ import chalk from 'chalk';
 import { die } from '@lumenflow/core/error-handler';
 import { LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
+import {
+  TOP_ISSUES_DISPLAY_LIMIT,
+  RECENT_ISSUES_DISPLAY_LIMIT,
+  ISSUE_TITLE_TRUNCATION_LENGTH,
+  ISSUE_TITLE_TRUNCATED_TEXT_LENGTH,
+  SEVERITY_PADDING_WIDTH,
+  CATEGORY_PADDING_WIDTH,
+} from './constants.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[agent:issues-query]';
@@ -225,7 +233,7 @@ function displaySummary(issues: IssueRecord[], sinceDays: number): void {
     const count = bySeverity.get(severity)?.length ?? 0;
     if (count > 0) {
       const color = getSeverityColor(severity);
-      console.log(`    ${color(severity.toUpperCase().padEnd(10))} ${count}`);
+      console.log(`    ${color(severity.toUpperCase().padEnd(SEVERITY_PADDING_WIDTH))} ${count}`);
     }
   }
   console.log('');
@@ -241,7 +249,7 @@ function displaySummary(issues: IssueRecord[], sinceDays: number): void {
       .filter(Boolean)
       .join(' ');
     console.log(
-      `    ${String(category).padEnd(20)} ${categoryIssues.length} issues (${severityCounts})`,
+      `    ${String(category).padEnd(CATEGORY_PADDING_WIDTH)} ${categoryIssues.length} issues (${severityCounts})`,
     );
   }
   console.log('');
@@ -255,13 +263,16 @@ function displaySummary(issues: IssueRecord[], sinceDays: number): void {
 
   const topIssues = Array.from(issueCount.entries())
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
+    .slice(0, TOP_ISSUES_DISPLAY_LIMIT);
 
   if (topIssues.length > 0) {
-    console.log('  Top 5 Most Common:');
+    console.log(`  Top ${TOP_ISSUES_DISPLAY_LIMIT} Most Common:`);
     for (const [key, count] of topIssues) {
       const [category, title] = key.split(':');
-      const truncatedTitle = title.length > 40 ? title.slice(0, 37) + '...' : title;
+      const truncatedTitle =
+        title.length > ISSUE_TITLE_TRUNCATION_LENGTH
+          ? title.slice(0, ISSUE_TITLE_TRUNCATED_TEXT_LENGTH) + '...'
+          : title;
       console.log(`    ${count}x  [${category}] ${truncatedTitle}`);
     }
     console.log('');
@@ -270,14 +281,17 @@ function displaySummary(issues: IssueRecord[], sinceDays: number): void {
   // Recent issues (last 5)
   const recentIssues = [...issues]
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-    .slice(0, 5);
+    .slice(0, RECENT_ISSUES_DISPLAY_LIMIT);
 
   console.log('  Recent Issues:');
   for (const issue of recentIssues) {
     const date = new Date(issue.timestamp).toISOString().split('T')[0];
     const badge = formatSeverityBadge(issue.severity);
     const wuInfo = issue.wuId ? ` (${issue.wuId})` : '';
-    const truncatedTitle = issue.title.length > 40 ? issue.title.slice(0, 37) + '...' : issue.title;
+    const truncatedTitle =
+      issue.title.length > ISSUE_TITLE_TRUNCATION_LENGTH
+        ? issue.title.slice(0, ISSUE_TITLE_TRUNCATED_TEXT_LENGTH) + '...'
+        : issue.title;
     console.log(`    ${date} ${badge} ${truncatedTitle}${wuInfo}`);
   }
   console.log('');

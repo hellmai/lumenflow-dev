@@ -37,6 +37,13 @@ import {
   type GitContext,
 } from '@lumenflow/core/git-context-extractor';
 import { runCLI } from './cli-entry-point.js';
+import {
+  GIT_SUMMARY_PREVIEW_LENGTH,
+  GIT_CONTEXT_MAX_TOKENS,
+  SYSTEM_PROMPT_PREVIEW_LENGTH,
+  USER_PROMPT_PREVIEW_LENGTH,
+  JSON_INDENT,
+} from './constants.js';
 
 /**
  * CLI option definitions
@@ -282,14 +289,19 @@ function displayDryRun(
       console.log(chalk.gray(`  - Churn hotspots: ${gitContext.churn.length} files identified`));
     }
     console.log(chalk.bold('\nGit Summary (for LLM):'));
-    console.log(chalk.gray(gitSummary.slice(0, 500) + (gitSummary.length > 500 ? '...' : '')));
+    console.log(
+      chalk.gray(
+        gitSummary.slice(0, GIT_SUMMARY_PREVIEW_LENGTH) +
+          (gitSummary.length > GIT_SUMMARY_PREVIEW_LENGTH ? '...' : ''),
+      ),
+    );
   }
 
   console.log(chalk.bold('\nSystem Prompt Preview:'));
-  console.log(chalk.gray(systemPrompt.slice(0, 500) + '...'));
+  console.log(chalk.gray(systemPrompt.slice(0, SYSTEM_PROMPT_PREVIEW_LENGTH) + '...'));
 
   console.log(chalk.bold('\nUser Prompt Preview:'));
-  console.log(chalk.gray(userPrompt.slice(0, 1000) + '...'));
+  console.log(chalk.gray(userPrompt.slice(0, USER_PROMPT_PREVIEW_LENGTH) + '...'));
 
   console.log(chalk.bold('\nDefault Suggestions (without LLM):'));
   const defaults = getDefaultSuggestions(context);
@@ -329,7 +341,7 @@ function outputAsJson(suggestions: LaneSuggestion[], context: ProjectContext): v
     },
   };
   console.log(chalk.bold('\nJSON Output:'));
-  console.log(JSON.stringify(result, null, 2));
+  console.log(JSON.stringify(result, null, JSON_INDENT));
 }
 
 /**
@@ -425,7 +437,7 @@ async function main(): Promise<void> {
     }
 
     // Summarize for LLM prompt (respecting token limits)
-    gitSummary = summarizeGitContext(gitContext, { maxTokens: 500 });
+    gitSummary = summarizeGitContext(gitContext, { maxTokens: GIT_CONTEXT_MAX_TOKENS });
   }
 
   if (opts.dryRun) {

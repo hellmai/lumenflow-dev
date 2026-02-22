@@ -22,6 +22,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { FILE_SYSTEM, EMOJI } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
+import { MIN_AGENT_CONTENT_LENGTH } from './constants.js';
 
 const LOG_PREFIX = '[validate-agent-sync]';
 
@@ -98,7 +99,7 @@ export async function validateAgentSync(
         }
 
         // Check for minimum content
-        if (content.length < 50) {
+        if (content.length < MIN_AGENT_CONTENT_LENGTH) {
           warnings.push(`${agentName}: Agent definition is very short`);
         }
       } catch (e) {

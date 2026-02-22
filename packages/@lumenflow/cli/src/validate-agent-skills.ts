@@ -23,6 +23,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { FILE_SYSTEM, EMOJI } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
+import { MIN_SKILL_CONTENT_LENGTH } from './constants.js';
 
 const LOG_PREFIX = '[validate-agent-skills]';
 
@@ -97,8 +98,8 @@ export function validateSkillFile(skillPath: string): SkillValidationResult {
   }
 
   // Check for minimum content
-  if (content.length < 100) {
-    warnings.push('Skill content is very short (< 100 characters)');
+  if (content.length < MIN_SKILL_CONTENT_LENGTH) {
+    warnings.push(`Skill content is very short (< ${MIN_SKILL_CONTENT_LENGTH} characters)`);
   }
 
   return {

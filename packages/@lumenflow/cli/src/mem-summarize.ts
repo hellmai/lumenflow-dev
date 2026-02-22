@@ -28,6 +28,7 @@ import { summarizeWu } from '@lumenflow/memory/summarize';
 import { createWUParser } from '@lumenflow/core/arg-parser';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
+import { CLEANUP_LIST_DISPLAY_LIMIT, CONTENT_PREVIEW_LENGTH, JSON_INDENT } from './constants.js';
 
 /**
  * Log prefix for mem:summarize output
@@ -147,18 +148,18 @@ function printResult(result: UnsafeAny, quiet: UnsafeAny) {
   if (result.markedForCleanup.length > 0) {
     console.log('');
     console.log('Marked for Cleanup:');
-    for (const nodeId of result.markedForCleanup.slice(0, 10)) {
+    for (const nodeId of result.markedForCleanup.slice(0, CLEANUP_LIST_DISPLAY_LIMIT)) {
       console.log(`  - ${nodeId}`);
     }
-    if (result.markedForCleanup.length > 10) {
-      console.log(`  ... and ${result.markedForCleanup.length - 10} more`);
+    if (result.markedForCleanup.length > CLEANUP_LIST_DISPLAY_LIMIT) {
+      console.log(`  ... and ${result.markedForCleanup.length - CLEANUP_LIST_DISPLAY_LIMIT} more`);
     }
   }
 
   console.log('');
   console.log('Content Preview:');
-  const preview = result.summary.content.slice(0, 200);
-  console.log(`  ${preview}${result.summary.content.length > 200 ? '...' : ''}`);
+  const preview = result.summary.content.slice(0, CONTENT_PREVIEW_LENGTH);
+  console.log(`  ${preview}${result.summary.content.length > CONTENT_PREVIEW_LENGTH ? '...' : ''}`);
 
   if (result.dryRun) {
     console.log('');
@@ -219,7 +220,7 @@ async function main() {
   }
 
   if (args.json) {
-    console.log(JSON.stringify(result, null, 2));
+    console.log(JSON.stringify(result, null, JSON_INDENT));
     process.exit(EXIT_CODES.SUCCESS);
   }
 

@@ -24,6 +24,13 @@ import { parse as parseYaml } from 'yaml';
 import { EXIT_CODES, FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { runCLI } from './cli-entry-point.js';
+import {
+  MAX_WU_ID_LENGTH,
+  COMMIT_SHA_DISPLAY_LENGTH,
+  MARKDOWN_TABLE_TITLE_LENGTH,
+  TRACE_FILES_DISPLAY_LIMIT,
+  JSON_INDENT,
+} from './constants.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[trace:gen]';
@@ -33,7 +40,6 @@ const LOG_PREFIX = '[trace:gen]';
  * Valid format: WU-<digits> (e.g., WU-1112, WU-1, WU-99999)
  */
 const WU_ID_PATTERN = /^WU-\d+$/;
-const MAX_WU_ID_LENGTH = 32;
 
 /**
  * Output formats for trace report
@@ -219,7 +225,7 @@ function getWuCommits(wuId: string): CommitInfo[] {
       if (!line) continue;
       const [sha, date, ...messageParts] = line.split('|');
       commits.push({
-        sha: sha.slice(0, 8),
+        sha: sha.slice(0, COMMIT_SHA_DISPLAY_LENGTH),
         date,
         message: messageParts.join('|'),
       });
@@ -282,7 +288,7 @@ function getWuInfo(wuId: string): { title: string; status: string } | null {
  * Format trace report as JSON
  */
 function formatJson(entries: TraceEntry[]): string {
-  return JSON.stringify(entries, null, 2);
+  return JSON.stringify(entries, null, JSON_INDENT);
 }
 
 /**
@@ -302,7 +308,7 @@ function formatMarkdown(entries: TraceEntry[]): string {
 
   for (const entry of entries) {
     lines.push(
-      `| ${entry.wuId} | ${entry.title.slice(0, 30)} | ${entry.status} | ${entry.commitCount} | ${entry.fileCount} |`,
+      `| ${entry.wuId} | ${entry.title.slice(0, MARKDOWN_TABLE_TITLE_LENGTH)} | ${entry.status} | ${entry.commitCount} | ${entry.fileCount} |`,
     );
   }
 
@@ -321,11 +327,11 @@ function formatMarkdown(entries: TraceEntry[]): string {
 
     if (entry.files && entry.files.length > 0) {
       lines.push('', '**Files changed:**');
-      for (const file of entry.files.slice(0, 20)) {
+      for (const file of entry.files.slice(0, TRACE_FILES_DISPLAY_LIMIT)) {
         lines.push(`- ${file}`);
       }
-      if (entry.files.length > 20) {
-        lines.push(`- ... and ${entry.files.length - 20} more`);
+      if (entry.files.length > TRACE_FILES_DISPLAY_LIMIT) {
+        lines.push(`- ... and ${entry.files.length - TRACE_FILES_DISPLAY_LIMIT} more`);
       }
     }
 

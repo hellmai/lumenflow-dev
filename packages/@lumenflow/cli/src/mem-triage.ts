@@ -28,6 +28,7 @@ import { listOpenDiscoveries, promoteDiscovery, archiveDiscovery } from '@lumenf
 import { createWUParser } from '@lumenflow/core/arg-parser';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
+import { DISCOVERY_CONTENT_TRUNCATION_LENGTH, JSON_INDENT } from './constants.js';
 
 /**
  * Log prefix for mem:triage output
@@ -144,7 +145,10 @@ function formatDiscovery(node: UnsafeAny) {
   }
 
   parts.push('-');
-  parts.push(node.content.substring(0, 60) + (node.content.length > 60 ? '...' : ''));
+  parts.push(
+    node.content.substring(0, DISCOVERY_CONTENT_TRUNCATION_LENGTH) +
+      (node.content.length > DISCOVERY_CONTENT_TRUNCATION_LENGTH ? '...' : ''),
+  );
 
   return parts.join(' ');
 }
@@ -187,7 +191,7 @@ async function handleList(baseDir: string, args: TriageArgs) {
   const discoveries = await listOpenDiscoveries(baseDir, options);
 
   if (args.json) {
-    console.log(JSON.stringify(discoveries, null, 2));
+    console.log(JSON.stringify(discoveries, null, JSON_INDENT));
     return { success: true, count: discoveries.length };
   }
 
@@ -236,7 +240,7 @@ async function handlePromote(baseDir: UnsafeAny, args: UnsafeAny) {
   });
 
   if (args.json) {
-    console.log(JSON.stringify(result, null, 2));
+    console.log(JSON.stringify(result, null, JSON_INDENT));
     return result;
   }
 
@@ -288,7 +292,7 @@ async function handleArchive(baseDir: UnsafeAny, args: UnsafeAny) {
   });
 
   if (args.json) {
-    console.log(JSON.stringify(result, null, 2));
+    console.log(JSON.stringify(result, null, JSON_INDENT));
     return result;
   }
 

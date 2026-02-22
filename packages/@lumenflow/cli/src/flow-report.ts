@@ -34,6 +34,16 @@ import {
 
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { runCLI } from './cli-entry-point.js';
+import {
+  FLOW_REPORT_WU_DISPLAY_LIMIT,
+  FLOW_REPORT_TITLE_COLUMN_WIDTH,
+  WU_ID_COLUMN_WIDTH,
+  LANE_COLUMN_WIDTH,
+  GATE_NAME_COLUMN_WIDTH,
+  MS_PER_HOUR,
+  ONE_DECIMAL_ROUNDING_FACTOR,
+  JSON_INDENT,
+} from './constants.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[flow:report]';
@@ -252,9 +262,9 @@ function calculateCycleTime(wu: Record<string, unknown>): number | undefined {
   const claimed = new Date(wu.claimed_at as string);
   const completed = new Date(wu.completed_at as string);
   const diffMs = completed.getTime() - claimed.getTime();
-  const diffHours = diffMs / (1000 * 60 * 60);
+  const diffHours = diffMs / MS_PER_HOUR;
 
-  return Math.round(diffHours * 10) / 10; // Round to 1 decimal
+  return Math.round(diffHours * ONE_DECIMAL_ROUNDING_FACTOR) / ONE_DECIMAL_ROUNDING_FACTOR;
 }
 
 /**
@@ -293,7 +303,9 @@ function formatAsTable(report: FlowReportData): string {
   lines.push('├─────────────────────────────────────────────────────────────┤');
   lines.push('│ By Name:                                                    │');
   for (const [name, stats] of Object.entries(report.gates.byName)) {
-    lines.push(`│   ${name.padEnd(20)} ${stats.passRate}% (${stats.passed}/${stats.total})`);
+    lines.push(
+      `│   ${name.padEnd(GATE_NAME_COLUMN_WIDTH)} ${stats.passRate}% (${stats.passed}/${stats.total})`,
+    );
   }
   lines.push('└─────────────────────────────────────────────────────────────┘');
   lines.push('');
@@ -304,13 +316,13 @@ function formatAsTable(report: FlowReportData): string {
   lines.push('├─────────────────────────────────────────────────────────────┤');
   lines.push(`│ Completed: ${report.wus.completed}`);
   lines.push('├─────────────────────────────────────────────────────────────┤');
-  for (const wu of report.wus.list.slice(0, 10)) {
+  for (const wu of report.wus.list.slice(0, FLOW_REPORT_WU_DISPLAY_LIMIT)) {
     lines.push(
-      `│ ${wu.wuId.padEnd(8)} ${wu.completedDate}  ${wu.lane.padEnd(15)} ${wu.title.slice(0, 25)}`,
+      `│ ${wu.wuId.padEnd(WU_ID_COLUMN_WIDTH)} ${wu.completedDate}  ${wu.lane.padEnd(LANE_COLUMN_WIDTH)} ${wu.title.slice(0, FLOW_REPORT_TITLE_COLUMN_WIDTH)}`,
     );
   }
-  if (report.wus.list.length > 10) {
-    lines.push(`│ ... and ${report.wus.list.length - 10} more`);
+  if (report.wus.list.length > FLOW_REPORT_WU_DISPLAY_LIMIT) {
+    lines.push(`│ ... and ${report.wus.list.length - FLOW_REPORT_WU_DISPLAY_LIMIT} more`);
   }
   lines.push('└─────────────────────────────────────────────────────────────┘');
   lines.push('');
@@ -378,7 +390,7 @@ async function main() {
   if (opts.format === OUTPUT_FORMATS.TABLE) {
     console.log(formatAsTable(report));
   } else {
-    console.log(JSON.stringify(report, null, 2));
+    console.log(JSON.stringify(report, null, JSON_INDENT));
   }
 }
 

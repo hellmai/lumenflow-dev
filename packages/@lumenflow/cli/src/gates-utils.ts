@@ -27,6 +27,7 @@ import {
   PRETTIER_ARGS,
   PRETTIER_FLAGS,
 } from '@lumenflow/core/wu-constants';
+import { LOG_TAIL_MAX_LINES, LOG_TAIL_MAX_BYTES } from './constants.js';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -209,7 +210,10 @@ export function makeGateLogger({ agentLog, useAgentMode }: GateLogContext) {
   };
 }
 
-export function readLogTail(logPath: string, { maxLines = 40, maxBytes = 64 * 1024 } = {}) {
+export function readLogTail(
+  logPath: string,
+  { maxLines = LOG_TAIL_MAX_LINES, maxBytes = LOG_TAIL_MAX_BYTES } = {},
+) {
   try {
     const stats = statSync(logPath);
     const startPos = Math.max(0, stats.size - maxBytes);
