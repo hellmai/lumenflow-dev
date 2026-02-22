@@ -1,0 +1,32 @@
+id: WU-2035
+title: Fix crypto.randomUUID crash in non-secure HTTP contexts
+lane: 'Operations: Runtime'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-22
+code_paths:
+  - apps/web/src/components/workspace-overview-live.tsx
+tests:
+  manual:
+    - Create a task via the web UI over HTTP - no error
+  unit:
+    - apps/web/src/components/__tests__/workspace-overview-live.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2035.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: ui
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: crypto.randomUUID() is called in workspace-overview-live.tsx (client component) but is unavailable in non-secure contexts (plain HTTP). Users accessing the web UI via HTTP get crypto.randomUUID is not a function when creating tasks.
+acceptance:
+  - Task creation works over plain HTTP (non-secure context)
+  - crypto.getRandomValues fallback generates valid UUID v4
