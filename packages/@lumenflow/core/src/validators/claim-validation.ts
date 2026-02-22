@@ -25,7 +25,8 @@ const LEGACY_CONFIG_CLAIM_PATTERN = /\.lumenflow\.config\.yaml/i;
 const RUNCLI_MAIN_CLAIM_PATTERN = /runcli\s*\(\s*main\s*\)/i;
 const PROCESS_EXIT_CLAIM_PATTERN = /process\.exit/i;
 const CORE_TEXT_PATTERN = /\bcore\b/i;
-const ABSOLUTE_NEGATION_PATTERN = /\b(no|zero|without|remove|removed|eliminate|eliminated|delete|deleted|gone)\b/i;
+const ABSOLUTE_NEGATION_PATTERN =
+  /\b(no|zero|without|remove|removed|eliminate|eliminated|delete|deleted|gone)\b/i;
 const ABSOLUTE_UNIVERSAL_PATTERN = /\b(all|every)\b/i;
 const PROCESS_EXIT_USAGE_PATTERN = /\bprocess\.exit\s*\(/;
 const IMPORT_META_MAIN_PATTERN = /\bimport\.meta\.main\b/;
@@ -53,7 +54,10 @@ const SOURCE_GLOB_IGNORES = [
   '**/node_modules/**',
 ] as const;
 
-const CORE_RUNTIME_IGNORES = [...SOURCE_GLOB_IGNORES, `${DIRECTORIES.PACKAGES}**/core/src/cli/**`] as const;
+const CORE_RUNTIME_IGNORES = [
+  ...SOURCE_GLOB_IGNORES,
+  `${DIRECTORIES.PACKAGES}**/core/src/cli/**`,
+] as const;
 
 export const CLAIM_VALIDATION_IDS = {
   LEGACY_CONFIG_HARD_CUT: 'legacy-config-hard-cut',
@@ -146,7 +150,9 @@ const CHECK_DEFINITIONS: readonly CheckDefinition[] = [
   {
     id: CLAIM_VALIDATION_IDS.RUNCLI_MAIN_REQUIRED,
     isMatch: (claimText: string): boolean => {
-      return RUNCLI_MAIN_CLAIM_PATTERN.test(claimText) && ABSOLUTE_UNIVERSAL_PATTERN.test(claimText);
+      return (
+        RUNCLI_MAIN_CLAIM_PATTERN.test(claimText) && ABSOLUTE_UNIVERSAL_PATTERN.test(claimText)
+      );
     },
     runScan: (projectRoot: string): ClaimValidationEvidence[] => {
       const files = listSourceFiles(projectRoot, SOURCE_GLOBS.CLI_ENTRYPOINTS, SOURCE_GLOB_IGNORES);
@@ -245,7 +251,11 @@ export async function validateClaimValidation(
     : null;
 
   const claims = [...wuSpec.claims, ...(initiativeSpec?.claims ?? [])];
-  const allowlist = [...(options.allowlist ?? []), ...wuSpec.allowlist, ...(initiativeSpec?.allowlist ?? [])];
+  const allowlist = [
+    ...(options.allowlist ?? []),
+    ...wuSpec.allowlist,
+    ...(initiativeSpec?.allowlist ?? []),
+  ];
 
   const checkClaims = claims.flatMap((claim) => {
     return CHECK_DEFINITIONS.filter((check) => check.isMatch(claim.claimText)).map((check) => ({
@@ -477,7 +487,11 @@ function parseAllowlistDirective(
   }
 
   const claimToken = parts[1]?.trim().toLowerCase() ?? '';
-  const pathPattern = parts.slice(2).join(' ').trim().replace(/^['"]|['"]$/g, '');
+  const pathPattern = parts
+    .slice(2)
+    .join(' ')
+    .trim()
+    .replace(/^['"]|['"]$/g, '');
 
   if (!pathPattern) {
     return null;
@@ -520,7 +534,8 @@ function applyAllowlist(
 
   return evidence.filter((item) => {
     for (const allowEntry of allowlist) {
-      const claimMatches = allowEntry.claimId === CLAIM_ALLOWLIST_ALL || allowEntry.claimId === claimId;
+      const claimMatches =
+        allowEntry.claimId === CLAIM_ALLOWLIST_ALL || allowEntry.claimId === claimId;
       if (!claimMatches) {
         continue;
       }

@@ -36,14 +36,19 @@ function writeSpecFiles(baseDir: string, options: { notes?: string[] } = {}): vo
   mkdirSync(initiativesDir, { recursive: true });
 
   const notes = options.notes ?? [];
-  const notesBlock = notes.length > 0 ? `\nnotes:\n${notes.map((note) => `  - '${note}'`).join('\n')}\n` : '';
+  const notesBlock =
+    notes.length > 0 ? `\nnotes:\n${notes.map((note) => `  - '${note}'`).join('\n')}\n` : '';
 
   const wuContent = `id: ${FIXTURE_WU_ID}\ntitle: Claim validator fixture\nlane: 'Framework: Core Validation'\ntype: feature\nstatus: in_progress\ninitiative: ${FIXTURE_INIT_ID}\nacceptance:\n  - All CLI commands use runCLI(main).\n  - No process.exit in core library functions.${notesBlock}`;
 
   const initiativeContent = `id: ${FIXTURE_INIT_ID}\nslug: claim-validation-fixture\ntitle: Claim validation fixture\nstatus: in_progress\nsuccess_metrics:\n  - No runtime dependency on .lumenflow.config.yaml\n`;
 
   writeFileSync(path.join(wuDir, `${FIXTURE_WU_ID}.yaml`), wuContent, UTF8_ENCODING);
-  writeFileSync(path.join(initiativesDir, `${FIXTURE_INIT_ID}.yaml`), initiativeContent, UTF8_ENCODING);
+  writeFileSync(
+    path.join(initiativesDir, `${FIXTURE_INIT_ID}.yaml`),
+    initiativeContent,
+    UTF8_ENCODING,
+  );
 }
 
 function writeViolationFixtures(baseDir: string): void {
