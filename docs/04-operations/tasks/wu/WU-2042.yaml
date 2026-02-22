@@ -1,0 +1,41 @@
+id: WU-2042
+title: Finalize kernel-first parity in tests and docs
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-22
+code_paths:
+  - apps/docs/src/content/docs
+  - docs/04-operations/_frameworks/lumenflow
+  - packages/@lumenflow/cli/__tests__
+  - packages/@lumenflow/cli/e2e
+  - packages/@lumenflow/core/src/__tests__
+tests:
+  manual:
+    - rg -n '\.lumenflow\.config\.yaml' apps/docs/src/content/docs docs/04-operations/_frameworks/lumenflow
+    - rg -n '\.lumenflow\.config\.yaml' packages/@lumenflow/**/__tests__ packages/@lumenflow/**/e2e
+    - pnpm --filter @lumenflow/docs build
+  unit:
+    - packages/@lumenflow/cli/__tests__/doctor-output.test.ts
+    - packages/@lumenflow/core/src/__tests__/path-centralization.test.ts
+  e2e:
+    - packages/@lumenflow/cli/e2e/claude-enforcement.test.ts
+artifacts:
+  - .lumenflow/stamps/WU-2042.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: runtime is workspace-first, but test fixtures and documentation still contain legacy .lumenflow.config.yaml references that no longer reflect current contract. Problem: this creates drift between implementation reality and guidance/verification surfaces. Solution: remove or rewrite remaining non-historical references in tests and active docs to workspace.yaml software_delivery contract, and verify parity with repeatable scans.'
+acceptance:
+  - No active runtime-adjacent test suites (packages/@lumenflow/**/__tests__, packages/@lumenflow/**/e2e) reference .lumenflow.config.yaml.
+  - Internal framework docs and public Starlight docs describe workspace.yaml software_delivery as canonical and do not present .lumenflow.config.yaml as current behavior.
+  - Verification commands for docs and touched tests pass in gates context.
