@@ -1983,3 +1983,4 @@
 {"type":"complete","wuId":"WU-2034","timestamp":"2026-02-22T13:27:30.555Z"}
 {"type":"claim","wuId":"WU-2036","timestamp":"2026-02-22T13:30:47.329Z","lane":"Framework: Core Lifecycle","title":"Complete 100% kernel-first hard cut and docs parity"}
 {"type":"complete","wuId":"WU-2035","timestamp":"2026-02-22T13:43:35.467Z"}
+{"type":"claim","wuId":"WU-2038","lane":"Operations: Tooling","title":"Gitignore next-env.d.ts to prevent build side-effects on main","timestamp":"2026-02-22T14:28:36.366Z"}

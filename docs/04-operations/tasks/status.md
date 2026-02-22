@@ -5,6 +5,7 @@ _Last updated: 2026-02-22_
 ## In Progress
 
 - [WU-2036 — Complete 100% kernel-first hard cut and docs parity](wu/WU-2036.yaml)
+- [WU-2038 — Gitignore next-env.d.ts to prevent build side-effects on main](wu/WU-2038.yaml)
 
 ## Completed
 
