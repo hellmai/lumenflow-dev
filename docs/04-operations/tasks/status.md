@@ -5,6 +5,7 @@ _Last updated: 2026-02-22_
 ## In Progress
 
 - [WU-2035 — Fix crypto.randomUUID crash in non-secure HTTP contexts](wu/WU-2035.yaml)
+- [WU-2036 — Complete 100% kernel-first hard cut and docs parity](wu/WU-2036.yaml)
 
 ## Completed
 

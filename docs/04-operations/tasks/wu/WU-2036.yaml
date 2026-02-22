@@ -2,7 +2,7 @@ id: WU-2036
 title: Complete 100% kernel-first hard cut and docs parity
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-22
 code_paths:
@@ -15,7 +15,8 @@ code_paths:
   - apps/docs
 tests:
   manual:
-    - Run rg for .lumenflow.config.yaml in runtime + docs paths and verify intended zero/legacy-only exceptions
+    - Run rg for .lumenflow.config.yaml in runtime + docs paths and verify intended zero/legacy-only
+      exceptions
   unit:
     - packages/@lumenflow/cli/src/__tests__
     - packages/@lumenflow/core/src/__tests__
@@ -35,8 +36,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-2034 migrated key runtime readers to workspace.yaml but legacy config references remain in source comments/messages/tooling and docs. Problem: not yet truly 100% kernel-first, creating confusion and trust gaps. Solution: remove or replace remaining .lumenflow.config.yaml references where legacy support is no longer required, align runtime/messaging/contracts to workspace.yaml software_delivery, and update internal + public Starlight docs for consistency.'
+description: 'Context: WU-2034 migrated key runtime readers to workspace.yaml but legacy config
+  references remain in source comments/messages/tooling and docs. Problem: not yet truly 100%
+  kernel-first, creating confusion and trust gaps. Solution: remove or replace remaining
+  .lumenflow.config.yaml references where legacy support is no longer required, align
+  runtime/messaging/contracts to workspace.yaml software_delivery, and update internal + public
+  Starlight docs for consistency.'
 acceptance:
   - No runtime source path reads or requires .lumenflow.config.yaml
-  - Internal docs and public Starlight docs reference workspace.yaml/software_delivery as canonical config
+  - Internal docs and public Starlight docs reference workspace.yaml/software_delivery as canonical
+    config
   - Targeted tests and docs checks pass for touched surfaces
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2036
+claimed_at: 2026-02-22T13:30:47.272Z
+baseline_main_sha: 88588de141310f5a1d2e4b2fc8df7973f6a3877b
+session_id: ca3c38c4-64dd-4307-8c54-8b32d002ea94
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T13:30:47.279Z

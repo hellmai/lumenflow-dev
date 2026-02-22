@@ -1981,3 +1981,4 @@
 {"type":"claim","wuId":"WU-2034","timestamp":"2026-02-22T12:47:21.186Z","lane":"Framework: Core Lifecycle","title":"Complete kernel-first hard cut from legacy config references"}
 {"type":"claim","wuId":"WU-2035","timestamp":"2026-02-22T13:24:39.508Z","lane":"Operations: Runtime","title":"Fix crypto.randomUUID crash in non-secure HTTP contexts"}
 {"type":"complete","wuId":"WU-2034","timestamp":"2026-02-22T13:27:30.555Z"}
+{"type":"claim","wuId":"WU-2036","lane":"Framework: Core Lifecycle","title":"Complete 100% kernel-first hard cut and docs parity","timestamp":"2026-02-22T13:30:47.329Z"}
