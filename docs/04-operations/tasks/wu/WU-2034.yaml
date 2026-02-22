@@ -1,0 +1,32 @@
+id: WU-2034
+title: Complete kernel-first hard cut from legacy config references
+lane: 'Framework: Core Lifecycle'
+type: tooling
+status: ready
+priority: P2
+created: 2026-02-22
+code_paths:
+  - packages/@lumenflow/cli/src/**,packages/@lumenflow/core/src/**,packages/@lumenflow/memory/src/**,packages/@lumenflow/metrics/src/**
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/**,packages/@lumenflow/cli/src/__tests__/**,packages/@lumenflow/core/src/__tests__/**,packages/@lumenflow/memory/__tests__/**
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2034.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: WU-2022 closed lane reader migration, but source still contains legacy .lumenflow.config.yaml references in runtime surfaces and generated guidance. Problem: kernel-first contract remains inconsistent and fails hard-cut expectations. Solution: remove remaining runtime/source dependencies on .lumenflow.config.yaml, migrate messaging/templates to workspace.yaml contract, and update tests to match.'
+acceptance:
+  - No runtime source file in scoped packages reads or requires .lumenflow.config.yaml
+  - User-facing guidance in touched CLI templates references workspace.yaml/software_delivery, not legacy config
+  - Targeted regression tests for migrated modules pass
