@@ -1944,3 +1944,4 @@
 {"type":"complete","wuId":"WU-1994","timestamp":"2026-02-22T00:58:37.541Z"}
 {"type":"claim","wuId":"WU-1744","timestamp":"2026-02-22T00:59:57.437Z","lane":"Operations: Tooling","title":"Stabilize flaky full-suite test timeouts"}
 {"type":"complete","wuId":"WU-1744","timestamp":"2026-02-22T01:11:16.333Z"}
+{"type":"claim","wuId":"WU-1960","lane":"Framework: CLI Orchestration","title":"Fix release build:dist invariant drift","timestamp":"2026-02-22T01:11:57.219Z"}

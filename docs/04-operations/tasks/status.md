@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-1960 — Fix release build:dist invariant drift](wu/WU-1960.yaml)
 
 ## Completed
 

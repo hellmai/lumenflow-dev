@@ -2,7 +2,7 @@ id: WU-1960
 title: Fix release build:dist invariant drift
 lane: 'Framework: CLI Orchestration'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-20
 code_paths:
@@ -10,8 +10,8 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__/release.test.ts
 tests:
   manual:
-    - Run pnpm --filter @lumenflow/cli exec vitest run src/__tests__/release.test.ts and confirm
-      the invariant assertions pass
+    - Run pnpm --filter @lumenflow/cli exec vitest run src/__tests__/release.test.ts and confirm the
+      invariant assertions pass
   unit:
     - packages/@lumenflow/cli/src/__tests__/release.test.ts
   e2e: []
@@ -28,6 +28,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Resolve pre-existing mismatch between CLI build:dist script expectations in release invariants and current packaging pipeline so default gates pass without skip.
+description: Resolve pre-existing mismatch between CLI build:dist script expectations in release
+  invariants and current packaging pipeline so default gates pass without skip.
 acceptance:
   - release invariants in release.test.ts pass against the actual CLI build:dist script
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-orchestration-wu-1960
+claimed_at: 2026-02-22T01:11:57.166Z
+baseline_main_sha: d96228db828fbd8a0431dec51b18b5ee2b9e7265
+session_id: b466f4b8-3270-43b0-9858-43c73091daf1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T01:11:57.173Z
