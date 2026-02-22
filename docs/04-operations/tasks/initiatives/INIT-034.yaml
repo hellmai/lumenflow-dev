@@ -1,11 +1,26 @@
 id: INIT-034
 slug: kernel-solid-audit
 title: Kernel SOLID Compliance & Code Quality Audit
-description: ''
-status: draft
+description: 'Full audit and refactoring of the LumenFlow kernel (@lumenflow/core,
+  @lumenflow/kernel, @lumenflow/memory, @lumenflow/metrics) to eliminate magic numbers, hardcoded
+  literals, SOLID violations, god objects, and fat interfaces. Goal: elite-level code quality across
+  ~250 kernel source files.'
+status: open
 priority: P1
 created: 2026-02-22
-phases: []
+phases:
+  - id: 1
+    title: 'Phase 1: Magic Number & Literal Extraction'
+    status: pending
+  - id: 2
+    title: 'Phase 2: God Object Decomposition'
+    status: pending
+  - id: 3
+    title: 'Phase 3: OCP Strategy Patterns'
+    status: pending
+  - id: 4
+    title: 'Phase 4: DIP & ISP Improvements'
+    status: pending
 success_metrics:
   - Zero raw numeric literals (except 0, 1, -1) in kernel business logic
   - No source file exceeds 500 lines
@@ -14,3 +29,5 @@ success_metrics:
   - WUStateStore split into focused interfaces with <10 methods each
   - All gates green after each phase
 labels: []
+lanes:
+  - 'Framework: Core Lifecycle'
