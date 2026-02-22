@@ -1970,3 +1970,4 @@
 {"type":"complete","wuId":"WU-2002","timestamp":"2026-02-22T03:41:40.746Z"}
 {"type":"claim","wuId":"WU-2003","timestamp":"2026-02-22T03:45:46.825Z","lane":"Framework: Core Validation","title":"Detect and heal stale initiative status when all WUs are done"}
 {"type":"complete","wuId":"WU-2003","timestamp":"2026-02-22T03:55:43.111Z"}
+{"type":"claim","wuId":"WU-2004","lane":"Content: Specs Governance","title":"Reconcile completed initiatives still marked in_progress","timestamp":"2026-02-22T03:57:00.609Z"}

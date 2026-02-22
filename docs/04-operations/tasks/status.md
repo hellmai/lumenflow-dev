@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2004 — Reconcile completed initiatives still marked in_progress](wu/WU-2004.yaml)
 
 ## Completed
 

@@ -2,7 +2,7 @@ id: WU-2004
 title: Reconcile completed initiatives still marked in_progress
 lane: 'Content: Specs Governance'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -35,8 +35,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Update legacy initiatives whose WUs are 100% complete but metadata status is still in_progress, so board surfaces and doctor checks are consistent.
+description: Update legacy initiatives whose WUs are 100% complete but metadata status is still
+  in_progress, so board surfaces and doctor checks are consistent.
 acceptance:
   - Completed initiatives currently marked in_progress are set to done
   - initiative:status no longer reports lifecycle mismatch for reconciled initiatives
   - state:doctor --dry-run reports no stale initiative lifecycle mismatches
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-specs-governance-wu-2004
+claimed_at: 2026-02-22T03:57:00.557Z
+baseline_main_sha: 9cf0b60f647dc3c1736678336ce33d24d420af6d
+session_id: 47082c71-cf31-4e36-b76e-6b66b8caf7a3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T03:57:00.565Z
