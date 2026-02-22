@@ -2,7 +2,7 @@ id: WU-2011
 title: Extract magic numbers in CLI package (@lumenflow/cli)
 lane: 'Framework: CLI Orchestration'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -43,3 +43,11 @@ acceptance:
   - No raw numeric literal (except 0, 1, -1, true, false) in business logic of @lumenflow/cli/src/
   - All truncation and padding constants use named exports
   - All existing tests pass without modification
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-orchestration-wu-2011
+claimed_at: 2026-02-22T14:37:26.656Z
+baseline_main_sha: b29d1949204ef2251f7926912c1c0d5c5e115908
+session_id: b82b6023-6b72-4fcf-a9b2-9ca11298a52c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T14:37:26.664Z

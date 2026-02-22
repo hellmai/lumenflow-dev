@@ -5,7 +5,7 @@ description: 'Full audit and refactoring of the LumenFlow kernel (@lumenflow/cor
   @lumenflow/kernel, @lumenflow/memory, @lumenflow/metrics) to eliminate magic numbers, hardcoded
   literals, SOLID violations, god objects, and fat interfaces. Goal: elite-level code quality across
   ~250 kernel source files.'
-status: open
+status: in_progress
 priority: P1
 created: 2026-02-22
 phases:
@@ -29,8 +29,6 @@ success_metrics:
   - WUStateStore split into focused interfaces with <10 methods each
   - All gates green after each phase
 labels: []
-lanes:
-  - 'Framework: Core Lifecycle'
 wus:
   - WU-2010
   - WU-2011

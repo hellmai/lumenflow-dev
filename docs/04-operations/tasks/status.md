@@ -5,6 +5,7 @@ _Last updated: 2026-02-22_
 ## In Progress
 
 - [WU-2036 — Complete 100% kernel-first hard cut and docs parity](wu/WU-2036.yaml)
+- [WU-2011 — Extract magic numbers in CLI package (@lumenflow/cli)](wu/WU-2011.yaml)
 
 ## Completed
 

@@ -26,7 +26,6 @@ sections:
 - [WU-2008 — Remove remaining direct process.exit usage from core modules](wu/WU-2008.yaml) — Framework: Core Lifecycle
 - [WU-2009 — Add claim-validation gate for absolute acceptance criteria drift](wu/WU-2009.yaml) — Framework: Core Validation
 - [WU-2010 — Extract magic numbers into named constants (core kernel)](wu/WU-2010.yaml) — Framework: Core Validation
-- [WU-2011 — Extract magic numbers in CLI package (@lumenflow/cli)](wu/WU-2011.yaml) — Framework: CLI Orchestration
 - [WU-2012 — Decompose wu-spawn.ts god object (2342 lines)](wu/WU-2012.yaml) — Framework: Core Lifecycle
 - [WU-2013 — Decompose wu-state-store.ts into focused services (1274 lines)](wu/WU-2013.yaml) — Framework: Core State Recovery
 - [WU-2014 — Decompose wu-done-worktree.ts (1777 lines)](wu/WU-2014.yaml) — Framework: Core Lifecycle
@@ -42,6 +41,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-2036 — Complete 100% kernel-first hard cut and docs parity](wu/WU-2036.yaml) — Framework: Core Lifecycle
+- [WU-2011 — Extract magic numbers in CLI package (@lumenflow/cli)](wu/WU-2011.yaml) — Framework: CLI Orchestration
 
 ## ⛔ Blocked
 
