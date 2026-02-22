@@ -2,7 +2,7 @@ id: WU-2053
 title: 'P0: fix TS7006 build break on main'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-22
 code_paths:
@@ -45,4 +45,9 @@ acceptance:
   - No TS7006 errors remain under packages/@lumenflow/cli/src
 approved_by:
   - tom@hellm.ai
-approved_at: 2026-02-22T19:18:58.749Z
+approved_at: 2026-02-22T19:37:39.233Z
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2053
+claimed_at: 2026-02-22T19:37:39.227Z
+baseline_main_sha: bad69d2cd1fdd49be3874bb9bfe18fbbaed89dfd
+session_id: 9176d240-25fd-421f-81d7-7390b49ce7ee
