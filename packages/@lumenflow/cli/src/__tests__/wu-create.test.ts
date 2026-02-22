@@ -10,6 +10,7 @@ import { describe, it, expect, vi } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 import {
   buildWUContent,
   collectInitiativeWarnings,
@@ -17,6 +18,7 @@ import {
   resolveLaneLifecycleForWuCreate,
   validateCreateSpec,
 } from '../wu-create.js';
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
 const BASE_WU = {
   id: 'WU-1429',
@@ -243,19 +245,20 @@ describe('WU-1530: single-pass validation', () => {
 describe('WU-1751: wu:create lane lifecycle reads are non-mutating', () => {
   it('does not rewrite legacy config when lifecycle status is inferred', () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wu-create-lifecycle-readonly-'));
-    const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+    const configPath = path.join(tempDir, 'workspace.yaml');
     const inferencePath = path.join(tempDir, '.lumenflow.lane-inference.yaml');
 
     try {
-      const configWithComments = `version: "2.0"
-project: test
-# keep this comment
-lanes:
-  definitions:
-    - name: "Framework: Core"
-      wip_limit: 1
-      code_paths:
-        - "src/core/**"
+      const configWithComments = `${SOFTWARE_DELIVERY_KEY}:
+  version: "2.0"
+  project: test
+  # keep this comment
+  lanes:
+    definitions:
+      - name: "Framework: Core"
+        wip_limit: 1
+        code_paths:
+          - "src/core/**"
 `;
       fs.writeFileSync(configPath, configWithComments, 'utf-8');
       fs.writeFileSync(

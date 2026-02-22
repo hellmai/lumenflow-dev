@@ -317,8 +317,8 @@ describe('docs-structure', () => {
 
       await scaffoldProject(tempDir, options);
 
-      // .lumenflow.config.yaml should reflect simple paths
-      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+      // workspace.yaml should reflect simple paths
+      const configPath = path.join(tempDir, 'workspace.yaml');
       expect(fs.existsSync(configPath)).toBe(true);
     });
   });

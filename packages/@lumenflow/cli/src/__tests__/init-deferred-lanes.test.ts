@@ -14,11 +14,13 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
 import YAML from 'yaml';
+import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 import { scaffoldProject } from '../init.js';
 
-const CONFIG_FILE_NAME = '.lumenflow.config.yaml';
+const CONFIG_FILE_NAME = 'workspace.yaml';
 const LANE_INFERENCE_FILE_NAME = '.lumenflow.lane-inference.yaml';
 const LANE_LIFECYCLE_STATUS_UNCONFIGURED = 'unconfigured';
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
 interface ConfigLanesSection {
   definitions?: unknown[];
@@ -29,6 +31,10 @@ interface ConfigLanesSection {
 
 interface LumenflowConfigDoc {
   lanes?: ConfigLanesSection;
+}
+
+interface WorkspaceDoc {
+  [SOFTWARE_DELIVERY_KEY]?: LumenflowConfigDoc;
 }
 
 describe('init deferred lane lifecycle (WU-1748)', () => {
@@ -47,7 +53,8 @@ describe('init deferred lane lifecycle (WU-1748)', () => {
   function readConfig(): LumenflowConfigDoc {
     const configPath = path.join(tempDir, CONFIG_FILE_NAME);
     const configContent = fs.readFileSync(configPath, 'utf-8');
-    return YAML.parse(configContent) as LumenflowConfigDoc;
+    const workspace = YAML.parse(configContent) as WorkspaceDoc;
+    return workspace[SOFTWARE_DELIVERY_KEY] ?? {};
   }
 
   it('does not scaffold lane inference taxonomy during init', async () => {

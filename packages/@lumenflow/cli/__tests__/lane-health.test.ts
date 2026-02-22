@@ -45,6 +45,18 @@ vi.mock('fs', async () => {
   };
 });
 
+vi.mock('@lumenflow/core/config', async () => {
+  return {
+    WORKSPACE_CONFIG_FILE_NAME: 'workspace.yaml',
+    findProjectRoot: vi.fn(() => TEST_PROJECT_ROOT),
+    getConfig: vi.fn(),
+  };
+});
+
+vi.mock('../dist/cli-entry-point.js', () => ({
+  runCLI: vi.fn(),
+}));
+
 function createProjectFixture(filePaths: readonly string[]): string {
   const projectRoot = mkdtempSync(path.join(tmpdir(), TEMP_PROJECT_PREFIX));
 
@@ -330,25 +342,16 @@ describe('lane:health CLI (WU-1188)', () => {
 
   describe('loadLaneDefinitions', () => {
     it('loads lane definitions from config file', async () => {
-      const fs = await import('fs');
-      const fsMock = fs as {
-        readFileSync: ReturnType<typeof vi.fn>;
-        existsSync: ReturnType<typeof vi.fn>;
-      };
-
-      fsMock.existsSync.mockReturnValue(true);
-      fsMock.readFileSync.mockReturnValue(`
-lanes:
-  definitions:
-    - name: '${LANE_FRAMEWORK_CORE}'
-      wip_limit: 1
-      code_paths:
-        - '${PATH_CORE}'
-    - name: '${LANE_FRAMEWORK_CLI}'
-      wip_limit: 1
-      code_paths:
-        - '${PATH_CLI}'
-`);
+      const coreConfig = await import('@lumenflow/core/config');
+      const configMock = coreConfig as { getConfig: ReturnType<typeof vi.fn> };
+      configMock.getConfig.mockReturnValue({
+        lanes: {
+          definitions: [
+            { name: LANE_FRAMEWORK_CORE, wip_limit: 1, code_paths: [PATH_CORE] },
+            { name: LANE_FRAMEWORK_CLI, wip_limit: 1, code_paths: [PATH_CLI] },
+          ],
+        },
+      });
 
       const { loadLaneDefinitions } = await import('../dist/lane-health.js');
 
@@ -361,10 +364,11 @@ lanes:
     });
 
     it('returns empty array when no config file exists', async () => {
-      const fs = await import('fs');
-      const fsMock = fs as { existsSync: ReturnType<typeof vi.fn> };
-
-      fsMock.existsSync.mockReturnValue(false);
+      const coreConfig = await import('@lumenflow/core/config');
+      const configMock = coreConfig as { getConfig: ReturnType<typeof vi.fn> };
+      configMock.getConfig.mockImplementation(() => {
+        throw new Error('workspace config missing');
+      });
 
       const { loadLaneDefinitions } = await import('../dist/lane-health.js');
 

@@ -1158,7 +1158,7 @@ Before running \`pnpm wu:create\`, verify these items.
 ## Step 1: Check Valid Lanes
 
 \`\`\`bash
-grep -A 30 "lanes:" .lumenflow.config.yaml
+grep -A 30 "lanes:" workspace.yaml
 \`\`\`
 
 **Format:** \`"Parent: Sublane"\` (colon + single space)
@@ -1274,7 +1274,7 @@ A quick-start guide for your first session with LumenFlow.
 
 \`\`\`bash
 # Check LumenFlow is configured
-ls LUMENFLOW.md AGENTS.md .lumenflow.config.yaml
+ls LUMENFLOW.md AGENTS.md workspace.yaml
 
 # Run doctor to verify safety components
 pnpm exec lumenflow doctor
@@ -1375,11 +1375,12 @@ Configure LumenFlow for local development without a remote repository.
 
 ## Configuration
 
-Add this to \`.lumenflow.config.yaml\`:
+Add this to \`workspace.yaml\`:
 
 \`\`\`yaml
-git:
-  requireRemote: false
+software_delivery:
+  git:
+    requireRemote: false
 \`\`\`
 
 ---
@@ -1429,7 +1430,7 @@ When you add an origin remote:
 git remote add origin <url>
 
 # Option 2: Enable local-only mode
-echo "git:\\n  requireRemote: false" >> .lumenflow.config.yaml
+pnpm config:set --key git.requireRemote --value false
 \`\`\`
 `;
 

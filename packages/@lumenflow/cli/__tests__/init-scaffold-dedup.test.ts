@@ -188,7 +188,7 @@ describe('WU-1965: Init scaffold dedup and output fixes', () => {
         full: true,
       });
 
-      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+      const configPath = path.join(tempDir, 'workspace.yaml');
       const content = fs.readFileSync(configPath, 'utf-8');
 
       // Should not contain vitest if it's not installed
@@ -220,7 +220,7 @@ describe('WU-1965: Init scaffold dedup and output fixes', () => {
         full: true,
       });
 
-      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+      const configPath = path.join(tempDir, 'workspace.yaml');
       const content = fs.readFileSync(configPath, 'utf-8');
 
       // Should not contain turbo if it's not installed
@@ -250,7 +250,7 @@ describe('WU-1965: Init scaffold dedup and output fixes', () => {
         full: true,
       });
 
-      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+      const configPath = path.join(tempDir, 'workspace.yaml');
       const content = fs.readFileSync(configPath, 'utf-8');
 
       // When vitest IS present, it's fine to reference it

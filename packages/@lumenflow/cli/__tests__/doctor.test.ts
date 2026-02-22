@@ -11,7 +11,6 @@ import * as os from 'node:os';
 
 /** Test constant for config file name to avoid sonarjs/no-duplicate-string */
 const WORKSPACE_CONFIG_FILE_NAME = 'workspace.yaml';
-const LEGACY_CONFIG_FILE_NAME = '.lumenflow.config.yaml';
 const DEFAULT_WORKSPACE_ID = 'default';
 const DEFAULT_WORKSPACE_NAME = 'Test Workspace';
 const DEFAULT_LANE_TITLE = 'Default';
@@ -36,6 +35,13 @@ function buildWorkspaceConfigYaml(): string {
     `event_namespace: ${DEFAULT_WORKSPACE_ID}`,
     '',
   ].join('\n');
+}
+
+function buildWorkspaceConfigWithLaneDefinitions(definitions: string): string {
+  return buildWorkspaceConfigYaml().replace(
+    'software_delivery: {}',
+    ['software_delivery:', '  lanes:', '    definitions:', definitions].join('\n'),
+  );
 }
 
 describe('lumenflow doctor command (WU-1177)', () => {
@@ -419,19 +425,19 @@ describe('lumenflow doctor command (WU-1177)', () => {
 
       // Add lane definitions to config
       fs.writeFileSync(
-        path.join(tempDir, LEGACY_CONFIG_FILE_NAME),
-        `version: '2.0'
-lanes:
-  definitions:
-    - name: 'Framework: Core'
-      wip_limit: 1
-      code_paths:
-        - 'packages/@lumenflow/core/**'
-    - name: 'Framework: CLI'
-      wip_limit: 1
-      code_paths:
-        - 'packages/@lumenflow/cli/**'
-`,
+        path.join(tempDir, WORKSPACE_CONFIG_FILE_NAME),
+        buildWorkspaceConfigWithLaneDefinitions(
+          [
+            "      - name: 'Framework: Core'",
+            '        wip_limit: 1',
+            '        code_paths:',
+            "          - 'packages/@lumenflow/core/**'",
+            "      - name: 'Framework: CLI'",
+            '        wip_limit: 1',
+            '        code_paths:',
+            "          - 'packages/@lumenflow/cli/**'",
+          ].join('\n'),
+        ),
       );
 
       const result = await runDoctor(tempDir);
@@ -454,19 +460,19 @@ lanes:
 
       // Create overlapping lane definitions
       fs.writeFileSync(
-        path.join(tempDir, LEGACY_CONFIG_FILE_NAME),
-        `version: '2.0'
-lanes:
-  definitions:
-    - name: 'Framework: Core'
-      wip_limit: 1
-      code_paths:
-        - 'packages/@lumenflow/**'
-    - name: 'Framework: CLI'
-      wip_limit: 1
-      code_paths:
-        - 'packages/@lumenflow/cli/**'
-`,
+        path.join(tempDir, WORKSPACE_CONFIG_FILE_NAME),
+        buildWorkspaceConfigWithLaneDefinitions(
+          [
+            "      - name: 'Framework: Core'",
+            '        wip_limit: 1',
+            '        code_paths:',
+            "          - 'packages/@lumenflow/**'",
+            "      - name: 'Framework: CLI'",
+            '        wip_limit: 1',
+            '        code_paths:',
+            "          - 'packages/@lumenflow/cli/**'",
+          ].join('\n'),
+        ),
       );
 
       const result = await runDoctor(tempDir);
@@ -488,19 +494,19 @@ lanes:
 
       // Create non-overlapping lane definitions
       fs.writeFileSync(
-        path.join(tempDir, LEGACY_CONFIG_FILE_NAME),
-        `version: '2.0'
-lanes:
-  definitions:
-    - name: 'Framework: Core'
-      wip_limit: 1
-      code_paths:
-        - 'packages/@lumenflow/core/**'
-    - name: 'Content: Documentation'
-      wip_limit: 1
-      code_paths:
-        - 'docs/**'
-`,
+        path.join(tempDir, WORKSPACE_CONFIG_FILE_NAME),
+        buildWorkspaceConfigWithLaneDefinitions(
+          [
+            "      - name: 'Framework: Core'",
+            '        wip_limit: 1',
+            '        code_paths:',
+            "          - 'packages/@lumenflow/core/**'",
+            "      - name: 'Content: Documentation'",
+            '        wip_limit: 1',
+            '        code_paths:',
+            "          - 'docs/**'",
+          ].join('\n'),
+        ),
       );
 
       const result = await runDoctor(tempDir);
@@ -520,12 +526,7 @@ lanes:
       });
 
       // Config without lane definitions
-      fs.writeFileSync(
-        path.join(tempDir, LEGACY_CONFIG_FILE_NAME),
-        `version: '2.0'
-project: test
-`,
-      );
+      fs.writeFileSync(path.join(tempDir, WORKSPACE_CONFIG_FILE_NAME), buildWorkspaceConfigYaml());
 
       const result = await runDoctor(tempDir);
 
@@ -546,15 +547,15 @@ project: test
       });
 
       fs.writeFileSync(
-        path.join(tempDir, LEGACY_CONFIG_FILE_NAME),
-        `version: '2.0'
-lanes:
-  definitions:
-    - name: 'Framework: Core'
-      wip_limit: 1
-      code_paths:
-        - 'packages/@lumenflow/core/**'
-`,
+        path.join(tempDir, WORKSPACE_CONFIG_FILE_NAME),
+        buildWorkspaceConfigWithLaneDefinitions(
+          [
+            "      - name: 'Framework: Core'",
+            '        wip_limit: 1',
+            '        code_paths:',
+            "          - 'packages/@lumenflow/core/**'",
+          ].join('\n'),
+        ),
       );
 
       const result = await runDoctor(tempDir);

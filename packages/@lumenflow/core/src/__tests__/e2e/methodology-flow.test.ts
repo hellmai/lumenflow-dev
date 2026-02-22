@@ -19,6 +19,7 @@ import * as os from 'node:os';
 import * as yaml from 'yaml';
 
 // Core modules under test
+import { WORKSPACE_V2_KEYS } from '../../config-contract.js';
 import { resolvePolicy } from '../../resolve-policy.js';
 import { parseConfig } from '../../lumenflow-config-schema.js';
 import { resolveCoverageConfig } from '../../gates-config.js';
@@ -37,9 +38,11 @@ const METHODOLOGY_NONE = 'none' as const;
 const WU_TYPE_FEATURE = 'feature' as const;
 const TEST_LANE = 'Framework: Core';
 const TDD_DIRECTIVE_TEXT = 'TDD DIRECTIVE';
+const WORKSPACE_CONFIG_FILE_NAME = 'workspace.yaml';
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
 /**
- * Test fixture: creates a temporary directory with a .lumenflow.config.yaml file
+ * Test fixture: creates a temporary directory with a workspace.yaml file
  */
 interface TestFixture {
   tmpDir: string;
@@ -49,7 +52,7 @@ interface TestFixture {
 
 function createTestFixture(): TestFixture {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lumenflow-e2e-'));
-  const configPath = path.join(tmpDir, '.lumenflow.config.yaml');
+  const configPath = path.join(tmpDir, WORKSPACE_CONFIG_FILE_NAME);
 
   return {
     tmpDir,
@@ -75,11 +78,36 @@ function writeMethodologyConfig(
   },
 ): void {
   const config = {
-    version: '2.0',
-    methodology,
+    [SOFTWARE_DELIVERY_KEY]: {
+      version: '2.0',
+      methodology,
+    },
   };
 
   fs.writeFileSync(fixture.configPath, yaml.stringify(config), 'utf-8');
+}
+
+function readRawSoftwareDeliveryConfig(fixture: TestFixture): Record<string, unknown> {
+  const workspace = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8')) as Record<
+    string,
+    unknown
+  >;
+  const softwareDelivery = workspace[SOFTWARE_DELIVERY_KEY];
+  return softwareDelivery && typeof softwareDelivery === 'object'
+    ? (softwareDelivery as Record<string, unknown>)
+    : {};
+}
+
+function resolveFixturePolicy(fixture: TestFixture): {
+  rawConfig: Record<string, unknown>;
+  policy: ReturnType<typeof resolvePolicy>;
+} {
+  const rawConfig = readRawSoftwareDeliveryConfig(fixture);
+  const config = parseConfig(rawConfig);
+  return {
+    rawConfig,
+    policy: resolvePolicy(config, { rawConfig }),
+  };
 }
 
 describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
@@ -102,9 +130,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_TDD });
 
       // Act: Parse config and resolve policy
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Assert: TDD defaults
       expect(policy.testing).toBe(METHODOLOGY_TDD);
@@ -116,9 +142,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
     it('should generate TDD test guidance in spawn output', () => {
       // Arrange
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_TDD });
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Act: Generate spawn output
       const testGuidance = generatePolicyBasedTestGuidance(WU_TYPE_FEATURE, policy);
@@ -144,9 +168,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
     it('should include enforcement summary in spawn output', () => {
       // Arrange
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_TDD });
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Act
       const summary = generateEnforcementSummary(policy);
@@ -168,9 +190,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_TEST_AFTER });
 
       // Act
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Assert: test-after defaults
       expect(policy.testing).toBe(METHODOLOGY_TEST_AFTER);
@@ -182,9 +202,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
     it('should generate test-after guidance in spawn output', () => {
       // Arrange
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_TEST_AFTER });
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Act
       const testGuidance = generatePolicyBasedTestGuidance(WU_TYPE_FEATURE, policy);
@@ -210,9 +228,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
     it('should include enforcement summary with warn mode', () => {
       // Arrange
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_TEST_AFTER });
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Act
       const summary = generateEnforcementSummary(policy);
@@ -233,9 +249,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_NONE });
 
       // Act
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Assert: none defaults
       expect(policy.testing).toBe(METHODOLOGY_NONE);
@@ -247,9 +261,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
     it('should generate testing optional guidance in spawn output', () => {
       // Arrange
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_NONE });
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Act
       const testGuidance = generatePolicyBasedTestGuidance(WU_TYPE_FEATURE, policy);
@@ -276,9 +288,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
     it('should include enforcement summary showing disabled coverage', () => {
       // Arrange
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_NONE });
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Act
       const summary = generateEnforcementSummary(policy);
@@ -299,9 +309,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
       });
 
       // Act
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Assert: Custom threshold, TDD mode preserved
       expect(policy.testing).toBe(METHODOLOGY_TDD);
@@ -317,9 +325,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
       });
 
       // Act
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Assert
       expect(policy.testing).toBe(METHODOLOGY_TDD);
@@ -335,9 +341,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
       });
 
       // Act
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Assert
       expect(policy.testing).toBe(METHODOLOGY_TEST_AFTER);
@@ -350,9 +354,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
     it('should include policy fields in template context for tdd', () => {
       // Arrange
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_TDD, architecture: 'hexagonal' });
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       const doc = {
         lane: TEST_LANE,
@@ -371,9 +373,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
     it('should include policy fields in template context for test-after', () => {
       // Arrange
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_TEST_AFTER, architecture: 'layered' });
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       const doc = {
         lane: TEST_LANE,
@@ -392,9 +392,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
     it('should include policy fields in template context for none', () => {
       // Arrange
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_NONE, architecture: 'none' });
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       const doc = {
         lane: TEST_LANE,
@@ -419,12 +417,8 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
       // Arrange: TDD config
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_TDD, architecture: 'hexagonal' });
 
-      // Step 1: Load and parse config (as lumenflow-config.ts does)
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-
-      // Step 2: Resolve policy (used by both spawn and gates)
-      const policy = resolvePolicy(config, { rawConfig });
+      // Step 1-2: Load and resolve policy (used by both spawn and gates)
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Step 3: Generate spawn output components
       const testGuidance = generatePolicyBasedTestGuidance(WU_TYPE_FEATURE, policy);
@@ -454,9 +448,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_TEST_AFTER });
 
       // Step 1-4: Full flow
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
       const testGuidance = generatePolicyBasedTestGuidance(WU_TYPE_FEATURE, policy);
       const enforcement = generateEnforcementSummary(policy);
       const coverageConfig = resolveCoverageConfig(fixture.tmpDir);
@@ -477,9 +469,7 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
       writeMethodologyConfig(fixture, { testing: METHODOLOGY_NONE });
 
       // Step 1-4: Full flow
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const config = parseConfig(rawConfig);
-      const policy = resolvePolicy(config, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
       const testGuidance = generatePolicyBasedTestGuidance(WU_TYPE_FEATURE, policy);
       const enforcement = generateEnforcementSummary(policy);
       const coverageConfig = resolveCoverageConfig(fixture.tmpDir);
@@ -498,13 +488,13 @@ describe('E2E: Methodology Config -> Spawn -> Gates Flow', () => {
   describe('Default Behavior (No methodology config)', () => {
     it('should default to TDD when no methodology is specified', () => {
       // Arrange: Config without methodology section
-      const config = { version: '2.0' };
+      const config = {
+        [SOFTWARE_DELIVERY_KEY]: { version: '2.0' },
+      };
       fs.writeFileSync(fixture.configPath, yaml.stringify(config), 'utf-8');
 
       // Act
-      const rawConfig = yaml.parse(fs.readFileSync(fixture.configPath, 'utf-8'));
-      const parsedConfig = parseConfig(rawConfig);
-      const policy = resolvePolicy(parsedConfig, { rawConfig });
+      const { policy } = resolveFixturePolicy(fixture);
 
       // Assert: TDD defaults
       expect(policy.testing).toBe(METHODOLOGY_TDD);

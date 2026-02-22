@@ -20,6 +20,7 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 import { execFileSync } from 'node:child_process';
 
+import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 import { scaffoldProject, type ScaffoldOptions } from '../init.js';
 import { ensureDraftLaneArtifacts } from '../lane-lifecycle-process.js';
 import * as yaml from 'yaml';
@@ -27,8 +28,17 @@ import * as yaml from 'yaml';
 // Constants to avoid duplicate strings
 const ARC42_DOCS_STRUCTURE = 'arc42' as const;
 const STARTING_PROMPT_FILE = 'starting-prompt.md';
-const LUMENFLOW_CONFIG_FILE = '.lumenflow.config.yaml';
+const LUMENFLOW_CONFIG_FILE = 'workspace.yaml';
 const TEST_CLAUDE_CLIENT_ID = 'claude-code';
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
+
+function readSoftwareDeliveryConfig(workspacePath: string): Record<string, unknown> {
+  const workspace = yaml.parse(fs.readFileSync(workspacePath, 'utf-8')) as Record<string, unknown>;
+  const softwareDelivery = workspace[SOFTWARE_DELIVERY_KEY];
+  return softwareDelivery && typeof softwareDelivery === 'object'
+    ? (softwareDelivery as Record<string, unknown>)
+    : {};
+}
 
 describe('greenfield onboarding (WU-1364)', () => {
   let tempDir: string;
@@ -298,8 +308,7 @@ describe('greenfield onboarding (WU-1364)', () => {
       await scaffoldProject(tempDir, getArc42Options());
 
       const configPath = path.join(tempDir, LUMENFLOW_CONFIG_FILE);
-      const content = fs.readFileSync(configPath, 'utf-8');
-      const config = yaml.parse(content) as Record<string, unknown>;
+      const config = readSoftwareDeliveryConfig(configPath);
       const lanes = config.lanes as Record<string, unknown>;
       const lifecycle = lanes.lifecycle as Record<string, unknown>;
       expect(lifecycle.status).toBe('unconfigured');
@@ -467,10 +476,11 @@ describe('greenfield onboarding (WU-1364)', () => {
       await scaffoldProject(tempDir, getClaudeOptions());
 
       const configPath = path.join(tempDir, LUMENFLOW_CONFIG_FILE);
-      const content = fs.readFileSync(configPath, 'utf-8');
-      const config = yaml.parse(content);
+      const config = readSoftwareDeliveryConfig(configPath);
+      const agents = (config.agents as Record<string, unknown> | undefined) ?? {};
+      const clients = (agents.clients as Record<string, unknown> | undefined) ?? {};
 
-      expect(config?.agents?.clients?.[TEST_CLAUDE_CLIENT_ID]).toBeDefined();
+      expect(clients[TEST_CLAUDE_CLIENT_ID]).toBeDefined();
     });
 
     it('should leave integrationFiles empty for non-claude clients', async () => {
@@ -522,8 +532,7 @@ describe('greenfield onboarding (WU-1364)', () => {
       ensureDraftLaneArtifacts(tempDir);
 
       const configPath = path.join(tempDir, LUMENFLOW_CONFIG_FILE);
-      const content = fs.readFileSync(configPath, 'utf-8');
-      const config = yaml.parse(content);
+      const config = readSoftwareDeliveryConfig(configPath);
 
       const lanes = config.lanes?.definitions ?? [];
       expect(lanes.length).toBeGreaterThan(0);
@@ -545,8 +554,7 @@ describe('greenfield onboarding (WU-1364)', () => {
       ensureDraftLaneArtifacts(tempDir);
 
       const configPath = path.join(tempDir, LUMENFLOW_CONFIG_FILE);
-      const content = fs.readFileSync(configPath, 'utf-8');
-      const config = yaml.parse(content);
+      const config = readSoftwareDeliveryConfig(configPath);
 
       const lanes = config.lanes?.definitions ?? [];
 

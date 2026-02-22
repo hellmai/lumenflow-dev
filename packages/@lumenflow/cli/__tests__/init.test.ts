@@ -33,11 +33,11 @@ describe('lumenflow init command (WU-1045)', () => {
   } as const;
 
   describe('scaffoldProject (minimal)', () => {
-    it('should create .lumenflow.config.yaml with defaults', async () => {
+    it('should create workspace.yaml with defaults', async () => {
       const { scaffoldProject } = await import('../src/init.js');
       await scaffoldProject(tempDir, { ...baseOptions });
 
-      const configPath = path.join(tempDir, '.lumenflow.config.yaml');
+      const configPath = path.join(tempDir, 'workspace.yaml');
       expect(fs.existsSync(configPath)).toBe(true);
 
       const content = fs.readFileSync(configPath, 'utf-8');
@@ -118,7 +118,7 @@ describe('lumenflow init command (WU-1045)', () => {
       const { scaffoldProject } = await import('../src/init.js');
       const result = await scaffoldProject(tempDir, { ...baseOptions });
 
-      expect(result.created).toContain('.lumenflow.config.yaml');
+      expect(result.created).toContain('workspace.yaml');
       expect(result.created).toContain('LUMENFLOW.md');
       expect(result.created).toContain('.lumenflow/agents');
     });
@@ -242,7 +242,7 @@ describe('lumenflow init command (WU-1045)', () => {
 
       // Verify lane format documentation
       expect(content).toContain('Parent: Sublane');
-      expect(content).toContain('.lumenflow.config.yaml');
+      expect(content).toContain('workspace.yaml');
     });
 
     it('should include plan storage locations in wu-create-checklist.md', async () => {
