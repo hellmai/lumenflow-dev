@@ -12,7 +12,4 @@
  */
 
 // Re-export lane occupation functions from spawn-task-builder
-export {
-  checkLaneOccupation,
-  generateLaneOccupationWarning,
-} from './spawn-task-builder.js';
+export { checkLaneOccupation, generateLaneOccupationWarning } from './spawn-task-builder.js';
