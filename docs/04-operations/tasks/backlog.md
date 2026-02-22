@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2021 — Filter deleted files from incremental format check input](wu/WU-2021.yaml) — Framework: Core Validation
 - [WU-2020 — Inject WUStateStore via interfaces and replace getConfig() calls](wu/WU-2020.yaml) — Framework: Core Lifecycle
 - [WU-2019 — Replace work-classifier domain switch with data map](wu/WU-2019.yaml) — Framework: Core Lifecycle
 - [WU-2018 — Replace consistency repair switch with strategy map](wu/WU-2018.yaml) — Framework: Core Lifecycle
