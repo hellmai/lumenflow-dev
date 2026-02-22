@@ -2,7 +2,7 @@ id: WU-2040
 title: Fix pre-existing agent-verification wuDir expectation regression
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/agent/__tests__/agent-verification.test.ts
 tests:
   manual:
-    - Run pnpm --filter @lumenflow/agent test -- __tests__/agent-verification.test.ts and confirm green
+    - Run pnpm --filter @lumenflow/agent test -- __tests__/agent-verification.test.ts and confirm
+      green
   unit:
     - packages/@lumenflow/agent/__tests__/agent-verification.test.ts
   e2e: []
@@ -27,8 +28,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: @lumenflow/agent test agent-verification fails on main. Problem: test expects legacy .lumenflow/wus path but runtime now resolves docs/04-operations/tasks/wu path from config, causing gates/test failures unrelated to active WUs. Solution: update agent-verification behavior/tests to align with canonical workspace path resolution and restore green main test baseline.'
+description: 'Context: @lumenflow/agent test agent-verification fails on main. Problem: test expects
+  legacy .lumenflow/wus path but runtime now resolves docs/04-operations/tasks/wu path from config,
+  causing gates/test failures unrelated to active WUs. Solution: update agent-verification
+  behavior/tests to align with canonical workspace path resolution and restore green main test
+  baseline.'
 acceptance:
   - packages/@lumenflow/agent/__tests__/agent-verification.test.ts passes on main without skip-gates.
   - Configurable wuDir behavior is asserted against current canonical path resolution contract.
   - '@lumenflow/agent test suite passes in gates context.'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2040
+claimed_at: 2026-02-22T15:29:05.630Z
+baseline_main_sha: 44ca06c21b5ba6f974da26fd3be59b35477454a0
+session_id: d2d6c38f-3a05-41b3-a3de-4616e7bc472e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T15:29:05.637Z

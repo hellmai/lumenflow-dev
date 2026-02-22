@@ -2006,3 +2006,4 @@
 {"type":"complete","wuId":"WU-2041","timestamp":"2026-02-22T15:25:47.764Z"}
 {"type":"complete","wuId":"WU-2018","timestamp":"2026-02-22T15:26:08.214Z"}
 {"type":"complete","wuId":"WU-2017","timestamp":"2026-02-22T15:27:08.542Z"}
+{"type":"claim","wuId":"WU-2040","lane":"Framework: Core Validation","title":"Fix pre-existing agent-verification wuDir expectation regression","timestamp":"2026-02-22T15:29:05.704Z"}
