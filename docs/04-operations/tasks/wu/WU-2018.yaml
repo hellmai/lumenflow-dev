@@ -1,0 +1,38 @@
+id: WU-2018
+title: Replace consistency repair switch with strategy map
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-22
+code_paths:
+  - packages/@lumenflow/core/src/wu-consistency-checker.ts
+tests:
+  manual:
+    - Run pnpm gates from worktree — all tests pass
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-consistency-checker.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2018.done
+dependencies: []
+initiative: INIT-034
+phase: 3
+blocked_by:
+  - WU-2015
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Replace the switch statement on error type in wu-consistency-checker.ts repairSingleErrorInWorktree() with a ConsistencyRepairer strategy map. Each consistency error type (YAML_DONE_NO_STAMP, YAML_DONE_STATUS_IN_PROGRESS, BACKLOG_DUAL_SECTION, STAMP_EXISTS_YAML_NOT_DONE) gets a handler in a Record map. New error types can be added without modifying existing repair logic (OCP). Depends on WU-2015 (consistency-checker decomposition).
+acceptance:
+  - ConsistencyRepairer interface defined
+  - Each error type has dedicated repair handler
+  - No switch/if-else on error type for dispatch
+  - All existing consistency tests pass
