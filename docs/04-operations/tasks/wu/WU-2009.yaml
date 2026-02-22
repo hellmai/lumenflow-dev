@@ -12,7 +12,10 @@ code_paths:
   - scripts/hooks
   - docs/04-operations/tasks/wu
 tests:
-  manual: []
+  manual:
+    - Add a deliberate absolute-claim mismatch fixture and run the claim-validation gate; verify it
+      fails with file and line evidence.
+    - Remove or allowlist the fixture and rerun gates; verify claim-validation passes.
   unit:
     - packages/@lumenflow/core/src/__tests__/validators
     - packages/@lumenflow/cli/src/__tests__/gates-config.test.ts
@@ -34,9 +37,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: absolute acceptance claims (e.g., no runtime dependency, all commands use runCLI(main), no process.exit in core) drifted from live code without closure blockers. Problem: WUs can close with strong language while contradictory patterns still exist. Solution: add a gate that parses WU/initiative acceptance text for absolute claim patterns and runs targeted source scans; fail gate when contradictions are detected, with actionable mismatch output.'
+description: 'Context: absolute acceptance claims (e.g., no runtime dependency, all commands use
+  runCLI(main), no process.exit in core) drifted from live code without closure blockers. Problem:
+  WUs can close with strong language while contradictory patterns still exist. Solution: add a gate
+  that parses WU/initiative acceptance text for absolute claim patterns and runs targeted source
+  scans; fail gate when contradictions are detected, with actionable mismatch output.'
 acceptance:
-  - New gate identifies absolute acceptance criteria in WU/initiative specs and evaluates mapped code predicates.
-  - Gate fails when claims conflict with live code (including legacy config dependency, missing runCLI wrappers, and direct core process.exit usage).
+  - New gate identifies absolute acceptance criteria in WU/initiative specs and evaluates mapped
+    code predicates.
+  - Gate fails when claims conflict with live code (including legacy config dependency, missing
+    runCLI wrappers, and direct core process.exit usage).
   - Gate integrates with pnpm gates and outputs file/line evidence plus remediation hints.
-  - Tests cover true positives, true negatives, and allowlist/override behavior for documented exceptions.
+  - Tests cover true positives, true negatives, and allowlist/override behavior for documented
+    exceptions.
