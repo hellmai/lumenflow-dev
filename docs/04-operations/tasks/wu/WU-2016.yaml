@@ -2,7 +2,7 @@ id: WU-2016
 title: Split lumenflow-config-schema.ts into per-section schemas (1564 lines)
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -41,3 +41,11 @@ acceptance:
   - Each section schema is independently importable
   - Full LumenFlowConfig type is backward-compatible (intersection of sections)
   - All existing tests pass without modification
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2016
+claimed_at: 2026-02-22T15:40:46.879Z
+baseline_main_sha: 4e84a6927911ae71559bfdc0cc8595e972afbcdb
+session_id: 4f637ce0-5cda-4aad-b720-f36024639ed6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T15:40:46.898Z
