@@ -443,3 +443,13 @@ export type {
 
 // Re-export getDefaultConfig for consumers
 export { getDefaultConfig } from './lumenflow-config-schema.js';
+
+// WU-2020: Re-export config port interfaces for DIP-compliant injection.
+// Consumers migrating from getConfig() can import focused interfaces here.
+export type {
+  IGitConfig,
+  IDirectoriesConfig,
+  IStateConfig,
+  IPathsConfig,
+  IGitOperationConfig,
+} from './ports/config.ports.js';
