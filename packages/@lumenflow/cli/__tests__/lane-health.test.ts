@@ -12,6 +12,9 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 
 // Test constants - avoid duplicate string lint errors
 const LANE_FRAMEWORK_CORE = 'Framework: Core';
@@ -27,6 +30,10 @@ const FILE_WEB_PAGE = 'apps/web/src/page.tsx';
 const FILE_TOOLS_BUILD = 'tools/scripts/build.ts';
 const TEST_PROJECT_ROOT = '/test/project';
 const REPORT_TITLE = 'Lane Health Report';
+const TEMP_PROJECT_PREFIX = 'lane-health-test-';
+const FIXTURE_FILE_CONTENT = '// lane-health fixture\n';
+const MKDIR_RECURSIVE_OPTIONS = { recursive: true } as const;
+const RM_RECURSIVE_FORCE_OPTIONS = { recursive: true, force: true } as const;
 
 // Mock fs module for testing
 vi.mock('fs', async () => {
@@ -38,20 +45,30 @@ vi.mock('fs', async () => {
   };
 });
 
-// Mock fast-glob
-vi.mock('fast-glob', () => ({
-  default: {
-    sync: vi.fn(),
-  },
-}));
+function createProjectFixture(filePaths: readonly string[]): string {
+  const projectRoot = mkdtempSync(path.join(tmpdir(), TEMP_PROJECT_PREFIX));
+
+  for (const relativePath of filePaths) {
+    const absolutePath = path.join(projectRoot, relativePath);
+    mkdirSync(path.dirname(absolutePath), MKDIR_RECURSIVE_OPTIONS);
+    writeFileSync(absolutePath, FIXTURE_FILE_CONTENT);
+  }
+
+  return projectRoot;
+}
+
+function cleanupProjectFixture(projectRoot: string): void {
+  rmSync(projectRoot, RM_RECURSIVE_FORCE_OPTIONS);
+}
 
 describe('lane:health CLI (WU-1188)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('detectLaneOverlaps', () => {
@@ -105,21 +122,6 @@ describe('lane:health CLI (WU-1188)', () => {
 
   describe('detectCoverageGaps', () => {
     it('detects files not covered by any lane', async () => {
-      const fg = await import('fast-glob');
-      const fgMock = fg.default as { sync: ReturnType<typeof vi.fn> };
-
-      // Mock returns different results based on pattern
-      fgMock.sync.mockImplementation((pattern: string) => {
-        if (pattern.includes('*.{')) {
-          return [FILE_CORE_INDEX, FILE_CLI_INDEX, FILE_WEB_PAGE, FILE_TOOLS_BUILD];
-        } else if (pattern.includes('packages/@lumenflow/core')) {
-          return [FILE_CORE_INDEX];
-        } else if (pattern.includes('packages/@lumenflow/cli')) {
-          return [FILE_CLI_INDEX];
-        }
-        return [];
-      });
-
       const { detectCoverageGaps } = await import('../dist/lane-health.js');
 
       const lanes = [
@@ -127,32 +129,28 @@ describe('lane:health CLI (WU-1188)', () => {
         { name: LANE_FRAMEWORK_CLI, code_paths: [PATH_CLI] },
       ];
 
-      const result = detectCoverageGaps(lanes, {
-        projectRoot: TEST_PROJECT_ROOT,
-        excludePatterns: ['node_modules/**', '.git/**'],
-      });
+      const projectRoot = createProjectFixture([
+        FILE_CORE_INDEX,
+        FILE_CLI_INDEX,
+        FILE_WEB_PAGE,
+        FILE_TOOLS_BUILD,
+      ]);
 
-      expect(result.hasGaps).toBe(true);
-      expect(result.uncoveredFiles).toContain(FILE_WEB_PAGE);
-      expect(result.uncoveredFiles).toContain(FILE_TOOLS_BUILD);
+      try {
+        const result = detectCoverageGaps(lanes, {
+          projectRoot,
+          excludePatterns: ['node_modules/**', '.git/**'],
+        });
+
+        expect(result.hasGaps).toBe(true);
+        expect(result.uncoveredFiles).toContain(FILE_WEB_PAGE);
+        expect(result.uncoveredFiles).toContain(FILE_TOOLS_BUILD);
+      } finally {
+        cleanupProjectFixture(projectRoot);
+      }
     });
 
     it('returns no gaps when all files are covered', async () => {
-      const fg = await import('fast-glob');
-      const fgMock = fg.default as { sync: ReturnType<typeof vi.fn> };
-
-      // All files are covered by the lanes
-      fgMock.sync.mockImplementation((pattern: string) => {
-        if (pattern.includes('*.{')) {
-          return [FILE_CORE_INDEX, FILE_CLI_INDEX];
-        } else if (pattern.includes('packages/@lumenflow/core')) {
-          return [FILE_CORE_INDEX];
-        } else if (pattern.includes('packages/@lumenflow/cli')) {
-          return [FILE_CLI_INDEX];
-        }
-        return [];
-      });
-
       const { detectCoverageGaps } = await import('../dist/lane-health.js');
 
       const lanes = [
@@ -160,13 +158,57 @@ describe('lane:health CLI (WU-1188)', () => {
         { name: LANE_FRAMEWORK_CLI, code_paths: [PATH_CLI] },
       ];
 
-      const result = detectCoverageGaps(lanes, {
-        projectRoot: TEST_PROJECT_ROOT,
-        excludePatterns: ['node_modules/**'],
-      });
+      const projectRoot = createProjectFixture([FILE_CORE_INDEX, FILE_CLI_INDEX]);
 
-      expect(result.hasGaps).toBe(false);
-      expect(result.uncoveredFiles).toEqual([]);
+      try {
+        const result = detectCoverageGaps(lanes, {
+          projectRoot,
+          excludePatterns: ['node_modules/**'],
+        });
+
+        expect(result.hasGaps).toBe(false);
+        expect(result.uncoveredFiles).toEqual([]);
+      } finally {
+        cleanupProjectFixture(projectRoot);
+      }
+    });
+
+    it('remains deterministic after prior unmocked module import', async () => {
+      vi.resetModules();
+      const firstLoad = await import('../dist/lane-health.js');
+      const secondLoad = await import('../dist/lane-health.js');
+
+      const lanes = [
+        { name: LANE_FRAMEWORK_CORE, code_paths: [PATH_CORE] },
+        { name: LANE_FRAMEWORK_CLI, code_paths: [PATH_CLI] },
+      ];
+
+      const projectRoot = createProjectFixture([
+        FILE_CORE_INDEX,
+        FILE_CLI_INDEX,
+        FILE_WEB_PAGE,
+        FILE_TOOLS_BUILD,
+      ]);
+
+      try {
+        const firstResult = firstLoad.detectCoverageGaps(lanes, {
+          projectRoot,
+          excludePatterns: ['node_modules/**', '.git/**'],
+        });
+
+        const secondResult = secondLoad.detectCoverageGaps(lanes, {
+          projectRoot,
+          excludePatterns: ['node_modules/**', '.git/**'],
+        });
+
+        expect(firstResult.hasGaps).toBe(true);
+        expect(secondResult.hasGaps).toBe(true);
+        expect(secondResult.uncoveredFiles).toContain(FILE_WEB_PAGE);
+        expect(secondResult.uncoveredFiles).toContain(FILE_TOOLS_BUILD);
+        expect(secondResult).toEqual(firstResult);
+      } finally {
+        cleanupProjectFixture(projectRoot);
+      }
     });
   });
 
