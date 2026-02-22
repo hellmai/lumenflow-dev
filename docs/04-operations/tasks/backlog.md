@@ -37,7 +37,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2011 — Extract magic numbers in CLI package (@lumenflow/cli)](wu/WU-2011.yaml) — Framework: CLI Orchestration
 - [WU-2013 — Decompose wu-state-store.ts into focused services (1274 lines)](wu/WU-2013.yaml) — Framework: Core State Recovery
 - [WU-2010 — Extract magic numbers into named constants (core kernel)](wu/WU-2010.yaml) — Framework: Core Validation
 - [WU-2012 — Decompose wu-spawn.ts god object (2342 lines)](wu/WU-2012.yaml) — Framework: Core Lifecycle
@@ -990,6 +989,7 @@ sections:
 - [WU-2035 — Fix crypto.randomUUID crash in non-secure HTTP contexts](wu/WU-2035.yaml)
 - [WU-2038 — Gitignore next-env.d.ts to prevent build side-effects on main](wu/WU-2038.yaml)
 - [WU-2036 — Complete 100% kernel-first hard cut and docs parity](wu/WU-2036.yaml)
+- [WU-2011 — Extract magic numbers in CLI package (@lumenflow/cli)](wu/WU-2011.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
