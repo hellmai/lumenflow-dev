@@ -2,7 +2,7 @@ id: WU-1994
 title: Eliminate React act warnings in web test suite
 lane: 'Operations: Tooling'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -42,3 +42,6 @@ session_id: 1e3d2be7-2fc5-43bb-b8ee-62719513965e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T00:55:12.545Z
+locked: true
+completed_at: 2026-02-22T00:58:32.803Z
+completed: 2026-02-22
