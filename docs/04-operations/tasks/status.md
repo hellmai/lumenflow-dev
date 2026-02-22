@@ -8,7 +8,6 @@ _Last updated: 2026-02-22_
 - [WU-2014 — Decompose wu-done-worktree.ts (1777 lines)](wu/WU-2014.yaml)
 - [WU-2019 — Replace work-classifier domain switch with data map](wu/WU-2019.yaml)
 - [WU-2018 — Replace consistency repair switch with strategy map](wu/WU-2018.yaml)
-- [WU-2041 — Add missing spawn-policy-resolver and spawn-lane-occupation modules](wu/WU-2041.yaml)
 
 ## Completed
 
@@ -959,3 +958,4 @@ _Last updated: 2026-02-22_
 - [WU-2015 — Decompose wu-consistency-checker.ts (1255 lines)](wu/WU-2015.yaml) — 2026-02-22
 - [WU-2012 — Decompose wu-spawn.ts god object (2342 lines)](wu/WU-2012.yaml) — 2026-02-22
 - [WU-2010 — Extract magic numbers into named constants (core kernel)](wu/WU-2010.yaml) — 2026-02-22
+- [WU-2041 — Add missing spawn-policy-resolver and spawn-lane-occupation modules](wu/WU-2041.yaml) — 2026-02-22
