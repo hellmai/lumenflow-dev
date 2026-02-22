@@ -1,6 +1,6 @@
 id: WU-2019
 title: Replace work-classifier domain switch with data map
-lane: 'Framework: Core Lifecycle'
+lane: 'Framework: Core Validation'
 type: refactor
 status: ready
 priority: P2
@@ -28,7 +28,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Replace 10+ case switch in work-classifier.ts getCapabilities() with Record data map. OCP compliance.
+description: Replace 10+ case switch in work-classifier.ts getCapabilities() with Record data map.
+  OCP compliance.
 acceptance:
   - getCapabilities uses Record lookup, not switch statement
   - All existing work-classifier tests pass
