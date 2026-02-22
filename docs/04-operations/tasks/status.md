@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2046 — Fix pre-existing wu-spawn.test.ts failures](wu/WU-2046.yaml)
 
 ## Completed
 
