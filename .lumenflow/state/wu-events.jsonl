@@ -2007,4 +2007,5 @@
 {"type":"complete","wuId":"WU-2018","timestamp":"2026-02-22T15:26:08.214Z"}
 {"type":"complete","wuId":"WU-2017","timestamp":"2026-02-22T15:27:08.542Z"}
 {"type":"claim","wuId":"WU-2040","lane":"Framework: Core Validation","title":"Fix pre-existing agent-verification wuDir expectation regression","timestamp":"2026-02-22T15:29:05.704Z"}
+{"type":"checkpoint","wuId":"WU-2040","note":"WU-2040","timestamp":"2026-02-22T15:32:22.023Z"}
 {"type":"claim","wuId":"WU-2037","lane":"Framework: Core Validation","title":"Decompose gates-config.ts (856 lines, 9 responsibilities)","timestamp":"2026-02-22T15:29:52.946Z"}

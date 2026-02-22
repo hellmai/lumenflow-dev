@@ -154,8 +154,8 @@ describe('verifyWUComplete', () => {
       const mockRun = vi.fn(() => '');
       const mockExists = vi.fn(() => true);
 
-      vi.mocked(existsSync).mockImplementation((filePath: string) =>
-        String(filePath) === workspaceConfigPath,
+      vi.mocked(existsSync).mockImplementation(
+        (filePath: string) => String(filePath) === workspaceConfigPath,
       );
       vi.mocked(readFileSync).mockImplementation((filePath: string) => {
         if (String(filePath) === workspaceConfigPath) {
