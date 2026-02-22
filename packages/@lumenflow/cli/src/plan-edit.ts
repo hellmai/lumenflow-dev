@@ -205,7 +205,7 @@ export function getCommitMessage(id: string, section: string): string {
   return `docs: update ${section} section in ${idLower} plan`;
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const SECTION_OPTION = {
     name: 'section',
     flags: '--section <name>',

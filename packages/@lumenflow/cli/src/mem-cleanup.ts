@@ -334,7 +334,7 @@ async function runDecayMode(
 /**
  * Main CLI entry point
  */
-async function main() {
+export async function main() {
   const args = parseArguments();
   const baseDir = args.baseDir || process.cwd();
 

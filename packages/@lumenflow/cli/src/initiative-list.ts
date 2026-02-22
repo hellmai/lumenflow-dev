@@ -85,7 +85,7 @@ function truncate(str: string | undefined, maxLen: number): string {
   return str.length > maxLen ? `${str.substring(0, maxLen - 3)}...` : str;
 }
 
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'initiative-list',
     description: 'List all initiatives with progress percentages',

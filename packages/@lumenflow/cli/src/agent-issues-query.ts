@@ -300,7 +300,7 @@ function displaySummary(issues: IssueRecord[], sinceDays: number): void {
 /**
  * Main function
  */
-async function main() {
+export async function main() {
   const opts = parseArgs();
   const baseDir = process.cwd();
 

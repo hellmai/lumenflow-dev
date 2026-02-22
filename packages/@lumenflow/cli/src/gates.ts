@@ -647,7 +647,7 @@ async function executeGates(opts: {
 }
 
 // WU-1537: Wrap executeGates in a standard main() for runCLI consistency
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const opts = parseGatesOptions();
   const ok = await executeGates({ ...opts, argv: process.argv.slice(2) });
   if (!ok) {

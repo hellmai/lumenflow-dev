@@ -1,12 +1,8 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import type { ToolOutput } from '@lumenflow/kernel';
-import { UTF8_ENCODING } from '../constants.js';
-
-const CLI_ENTRY_SCRIPT = 'tools/cli-entry.mjs';
+import { RUNTIME_CLI_COMMANDS, runtimeCliAdapter } from './runtime-cli-adapter.js';
 
 const LIFECYCLE_TOOLS = {
   WU_STATUS: 'wu:status',
@@ -63,100 +59,33 @@ const LIFECYCLE_TOOL_ERROR_CODES: Record<LifecycleToolName, string> = {
 };
 
 interface LifecycleToolCommandSpec {
-  scriptPath: string;
-  scriptSubcommand?: string;
+  command: (typeof RUNTIME_CLI_COMMANDS)[keyof typeof RUNTIME_CLI_COMMANDS];
 }
 
 const LIFECYCLE_TOOL_COMMAND_SPECS: Record<LifecycleToolName, LifecycleToolCommandSpec> = {
-  'wu:status': {
-    scriptPath: 'packages/@lumenflow/cli/dist/wu-status.js',
-  },
-  'wu:create': {
-    scriptPath: 'packages/@lumenflow/cli/dist/wu-create.js',
-  },
-  'wu:claim': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-claim',
-  },
-  'wu:prep': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-prep',
-  },
-  'wu:done': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-done',
-  },
-  'wu:sandbox': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-sandbox',
-  },
-  'wu:prune': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-prune',
-  },
-  'wu:delete': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-delete',
-  },
-  'wu:cleanup': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-cleanup',
-  },
-  'wu:unlock-lane': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-unlock-lane',
-  },
-  'wu:brief': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-brief',
-  },
-  'wu:delegate': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-delegate',
-  },
-  'wu:deps': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-deps',
-  },
-  'wu:edit': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-edit',
-  },
-  'wu:proto': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-proto',
-  },
-  'wu:preflight': {
-    scriptPath: 'packages/@lumenflow/cli/dist/wu-preflight.js',
-  },
-  'wu:validate': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-validate',
-  },
-  'wu:block': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-block',
-  },
-  'wu:unblock': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-unblock',
-  },
-  'wu:release': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-release',
-  },
-  'wu:recover': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-recover',
-  },
-  'wu:repair': {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'wu-repair',
-  },
-  gates: {
-    scriptPath: CLI_ENTRY_SCRIPT,
-    scriptSubcommand: 'gates',
-  },
+  'wu:status': { command: RUNTIME_CLI_COMMANDS.WU_STATUS },
+  'wu:create': { command: RUNTIME_CLI_COMMANDS.WU_CREATE },
+  'wu:claim': { command: RUNTIME_CLI_COMMANDS.WU_CLAIM },
+  'wu:prep': { command: RUNTIME_CLI_COMMANDS.WU_PREP },
+  'wu:done': { command: RUNTIME_CLI_COMMANDS.WU_DONE },
+  'wu:sandbox': { command: RUNTIME_CLI_COMMANDS.WU_SANDBOX },
+  'wu:prune': { command: RUNTIME_CLI_COMMANDS.WU_PRUNE },
+  'wu:delete': { command: RUNTIME_CLI_COMMANDS.WU_DELETE },
+  'wu:cleanup': { command: RUNTIME_CLI_COMMANDS.WU_CLEANUP },
+  'wu:unlock-lane': { command: RUNTIME_CLI_COMMANDS.WU_UNLOCK_LANE },
+  'wu:brief': { command: RUNTIME_CLI_COMMANDS.WU_BRIEF },
+  'wu:delegate': { command: RUNTIME_CLI_COMMANDS.WU_DELEGATE },
+  'wu:deps': { command: RUNTIME_CLI_COMMANDS.WU_DEPS },
+  'wu:edit': { command: RUNTIME_CLI_COMMANDS.WU_EDIT },
+  'wu:proto': { command: RUNTIME_CLI_COMMANDS.WU_PROTO },
+  'wu:preflight': { command: RUNTIME_CLI_COMMANDS.WU_PREFLIGHT },
+  'wu:validate': { command: RUNTIME_CLI_COMMANDS.WU_VALIDATE },
+  'wu:block': { command: RUNTIME_CLI_COMMANDS.WU_BLOCK },
+  'wu:unblock': { command: RUNTIME_CLI_COMMANDS.WU_UNBLOCK },
+  'wu:release': { command: RUNTIME_CLI_COMMANDS.WU_RELEASE },
+  'wu:recover': { command: RUNTIME_CLI_COMMANDS.WU_RECOVER },
+  'wu:repair': { command: RUNTIME_CLI_COMMANDS.WU_REPAIR },
+  gates: { command: RUNTIME_CLI_COMMANDS.GATES },
 };
 
 const MISSING_PARAMETER_MESSAGES = {
@@ -179,7 +108,7 @@ interface CommandExecutionResult {
   status: number;
   stdout: string;
   stderr: string;
-  spawnError?: string;
+  executionError?: string;
 }
 
 interface RunOptions {
@@ -221,25 +150,12 @@ function toIntegerString(value: unknown): string | null {
   return null;
 }
 
-function runLifecycleCommand(toolName: LifecycleToolName, args: string[]): CommandExecutionResult {
+async function runLifecycleCommand(
+  toolName: LifecycleToolName,
+  args: string[],
+): Promise<CommandExecutionResult> {
   const spec = LIFECYCLE_TOOL_COMMAND_SPECS[toolName];
-  const absoluteScriptPath = path.resolve(process.cwd(), spec.scriptPath);
-  const nodeArgs = spec.scriptSubcommand
-    ? [absoluteScriptPath, spec.scriptSubcommand, ...args]
-    : [absoluteScriptPath, ...args];
-
-  const result = spawnSync(process.execPath, nodeArgs, {
-    cwd: process.cwd(),
-    encoding: UTF8_ENCODING,
-  });
-
-  return {
-    ok: result.status === 0 && !result.error,
-    status: result.status ?? 1,
-    stdout: result.stdout ?? '',
-    stderr: result.stderr ?? '',
-    spawnError: result.error?.message,
-  };
+  return runtimeCliAdapter.run(spec.command, args);
 }
 
 function createMissingParameterOutput(message: string): ToolOutput {
@@ -259,7 +175,7 @@ function createFailureOutput(
   const stderrMessage = execution.stderr.trim();
   const stdoutMessage = execution.stdout.trim();
   const message =
-    execution.spawnError ??
+    execution.executionError ??
     (stderrMessage.length > 0
       ? stderrMessage
       : stdoutMessage.length > 0
@@ -313,12 +229,12 @@ function createSuccessOutput(
   };
 }
 
-function executeLifecycleTool(
+async function executeLifecycleTool(
   toolName: LifecycleToolName,
   args: string[],
   options: RunOptions = {},
-): ToolOutput {
-  const execution = runLifecycleCommand(toolName, args);
+): Promise<ToolOutput> {
+  const execution = await runLifecycleCommand(toolName, args);
   if (!execution.ok) {
     return createFailureOutput(toolName, execution);
   }

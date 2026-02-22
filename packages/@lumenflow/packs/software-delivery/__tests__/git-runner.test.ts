@@ -3,15 +3,15 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const spawnSyncMock = vi.fn();
+const execFileSyncMock = vi.fn();
 
 vi.mock('node:child_process', () => ({
-  spawnSync: (...args: unknown[]) => spawnSyncMock(...args),
+  execFileSync: (...args: unknown[]) => execFileSyncMock(...args),
 }));
 
 describe('software delivery git runner', () => {
   beforeEach(() => {
-    spawnSyncMock.mockReset();
+    execFileSyncMock.mockReset();
     delete process.env.LUMENFLOW_GIT_BINARY;
     vi.resetModules();
   });
@@ -22,39 +22,26 @@ describe('software delivery git runner', () => {
     const { GIT_BINARY } = await import('../tool-impl/git-runner.js');
 
     expect(GIT_BINARY).toBe('/custom/git');
-    expect(spawnSyncMock).not.toHaveBeenCalled();
+    expect(execFileSyncMock).not.toHaveBeenCalled();
   });
 
   it('resolves git binary via PATH lookup when no override is configured', async () => {
-    spawnSyncMock.mockReturnValue({
-      status: 0,
-      stdout: '/opt/homebrew/bin/git\n/usr/bin/git\n',
-      stderr: '',
-    });
+    execFileSyncMock.mockReturnValue('/opt/homebrew/bin/git\n/usr/bin/git\n');
 
     const expectedLookupCommand = process.platform === 'win32' ? 'where' : 'which';
     const expectedLookupTarget = process.platform === 'win32' ? 'git.exe' : 'git';
 
     const { GIT_BINARY } = await import('../tool-impl/git-runner.js');
 
-    expect(spawnSyncMock).toHaveBeenCalledWith(expectedLookupCommand, [expectedLookupTarget], {
+    expect(execFileSyncMock).toHaveBeenCalledWith(expectedLookupCommand, [expectedLookupTarget], {
       encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
     });
     expect(GIT_BINARY).toBe('/opt/homebrew/bin/git');
   });
 
   it('runs git commands using resolved defaults and per-call overrides', async () => {
-    spawnSyncMock
-      .mockReturnValueOnce({
-        status: 0,
-        stdout: '/usr/bin/git\n',
-        stderr: '',
-      })
-      .mockReturnValueOnce({
-        status: 0,
-        stdout: 'on branch main\n',
-        stderr: '',
-      });
+    execFileSyncMock.mockReturnValueOnce('/usr/bin/git\n').mockReturnValueOnce('on branch main\n');
 
     const gitRunner = await import('../tool-impl/git-runner.js');
     const result = gitRunner.runGit(['status', '--short'], {
@@ -62,9 +49,10 @@ describe('software delivery git runner', () => {
       gitBinary: 'git',
     });
 
-    expect(spawnSyncMock).toHaveBeenLastCalledWith('git', ['status', '--short'], {
+    expect(execFileSyncMock).toHaveBeenLastCalledWith('git', ['status', '--short'], {
       cwd: '/repo',
       encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
     });
     expect(result).toEqual({
       ok: true,

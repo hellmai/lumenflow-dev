@@ -253,7 +253,7 @@ export function getCommitMessage(id: string, planUri: string): string {
   return `docs: link plan ${filename} to ${idLower}`;
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const PLAN_OPTION = {
     name: 'plan',
     flags: '--plan <uri>',

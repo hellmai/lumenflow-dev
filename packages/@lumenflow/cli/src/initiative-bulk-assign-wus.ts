@@ -319,7 +319,7 @@ function printSummary(stats: {
 /**
  * Main function
  */
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'initiative-bulk-assign-wus',
     description: 'Bulk-assign orphaned WUs to initiatives based on lane prefix rules',

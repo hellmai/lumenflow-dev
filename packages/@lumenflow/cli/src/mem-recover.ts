@@ -170,7 +170,7 @@ function printJsonFormat(result: RecoverResult, wuId: string): void {
 /**
  * Main CLI entry point
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = createWUParser({
     name: 'mem-recover',
     description: 'Generate post-compaction recovery context for agents',

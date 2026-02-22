@@ -186,7 +186,7 @@ function validateAllWUs({ strict = true }: { strict?: boolean } = {}): {
  * Main entry point
  */
 
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'wu-validate',
     description: 'Validate WU YAML files against schema (strict mode by default, WU-1329)',

@@ -45,6 +45,7 @@ import {
 import type { DelegationEvent } from '@lumenflow/core/delegation-registry-schema';
 import chalk from 'chalk';
 import ms, { type StringValue } from 'ms';
+import { runCLI } from './cli-entry-point.js';
 
 // ============================================================================
 // WU-1242: Watch Mode Constants
@@ -656,4 +657,10 @@ const program = new Command()
     }
   });
 
-program.parse();
+export async function main(): Promise<void> {
+  await program.parseAsync(process.argv);
+}
+
+if (import.meta.main) {
+  void runCLI(main);
+}

@@ -34,6 +34,7 @@ import {
 } from '@lumenflow/initiatives';
 import { EXIT_CODES } from '@lumenflow/core/wu-constants';
 import { getConfig } from '@lumenflow/core/config';
+import { runCLI } from './cli-entry-point.js';
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -204,4 +205,10 @@ const program = new Command()
     }
   });
 
-program.parse();
+export async function main(): Promise<void> {
+  await program.parseAsync(process.argv);
+}
+
+if (import.meta.main) {
+  void runCLI(main);
+}

@@ -319,7 +319,7 @@ Micro-Worktree Pattern (WU-1127):
  * Main entry point for lumenflow-upgrade command
  */
 /* istanbul ignore next -- CLI entry point */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = parseUpgradeArgs(process.argv);
 
   if (args.help) {

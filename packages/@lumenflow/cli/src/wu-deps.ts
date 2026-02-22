@@ -25,7 +25,7 @@ import { OUTPUT_FORMATS } from '@lumenflow/initiatives/constants';
 import { PATTERNS } from '@lumenflow/core/wu-constants';
 import { getConfig } from '@lumenflow/core/config';
 
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'wu-deps',
     description: 'Visualize WU dependency graph',

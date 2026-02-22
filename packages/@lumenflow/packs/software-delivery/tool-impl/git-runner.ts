@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import { spawnSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { UTF8_ENCODING } from '../constants.js';
 
 const GIT_BINARY_ENV_VAR = 'LUMENFLOW_GIT_BINARY';
@@ -29,9 +29,7 @@ function firstNonEmptyLine(value: unknown): string | null {
 function resolveGitBinaryFromPath(): string | null {
   const lookupCommand = process.platform === 'win32' ? 'where' : 'which';
   const lookupTarget = process.platform === 'win32' ? WINDOWS_GIT_BINARY : POSIX_GIT_BINARY;
-  const lookupResult = spawnSync(lookupCommand, [lookupTarget], {
-    encoding: UTF8_ENCODING,
-  });
+  const lookupResult = runCommand(lookupCommand, [lookupTarget], {});
 
   if (!lookupResult || lookupResult.status !== 0) {
     return null;
@@ -57,14 +55,63 @@ export function runGit(
   args: string[],
   options: { cwd?: string; gitBinary?: string } = {},
 ): GitCommandResult {
-  const result = spawnSync(options.gitBinary ?? GIT_BINARY, args, {
-    cwd: options.cwd,
-    encoding: UTF8_ENCODING,
-  });
+  const result = runCommand(options.gitBinary ?? GIT_BINARY, args, { cwd: options.cwd });
   return {
     ok: result.status === 0,
-    stdout: (result.stdout || '').toString(),
-    stderr: (result.stderr || '').toString(),
+    stdout: result.stdout,
+    stderr: result.stderr,
     status: result.status ?? 1,
   };
+}
+
+function runCommand(
+  command: string,
+  args: string[],
+  options: { cwd?: string },
+): GitCommandResult {
+  try {
+    const stdout = execFileSync(command, args, {
+      cwd: options.cwd,
+      encoding: UTF8_ENCODING,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    return {
+      ok: true,
+      stdout,
+      stderr: '',
+      status: 0,
+    };
+  } catch (error: unknown) {
+    if (error && typeof error === 'object') {
+      const typedError = error as {
+        status?: number;
+        stdout?: string | Buffer;
+        stderr?: string | Buffer;
+        message?: string;
+      };
+      return {
+        ok: false,
+        stdout: toCommandOutput(typedError.stdout),
+        stderr: toCommandOutput(typedError.stderr) || (typedError.message ?? ''),
+        status: typeof typedError.status === 'number' ? typedError.status : 1,
+      };
+    }
+
+    return {
+      ok: false,
+      stdout: '',
+      stderr: String(error),
+      status: 1,
+    };
+  }
+}
+
+function toCommandOutput(value: string | Buffer | undefined): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (value instanceof Buffer) {
+    return value.toString(UTF8_ENCODING);
+  }
+  return '';
 }

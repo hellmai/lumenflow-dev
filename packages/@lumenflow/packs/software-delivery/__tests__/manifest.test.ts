@@ -8,20 +8,14 @@ import {
   renderSoftwareDeliveryMigrationScorecard,
 } from '../manifest.js';
 
-const PENDING_RUNTIME_TOOL_ENTRY = 'tool-impl/pending-runtime-tools.ts#pendingRuntimeMigrationTool';
-const PENDING_RUNTIME_BASELINE = 0;
-
 describe('software-delivery migration scorecard (WU-1885)', () => {
-  it('reports declared, pending-runtime, and real-handler totals', () => {
-    const pendingRuntimeEntries = SOFTWARE_DELIVERY_MANIFEST.tools.filter(
-      (tool) => tool.entry === PENDING_RUNTIME_TOOL_ENTRY,
-    ).length;
+  it('reports declared, zero-pending, and real-handler totals', () => {
     const declaredTools = SOFTWARE_DELIVERY_MANIFEST.tools.length;
 
     expect(getSoftwareDeliveryMigrationScorecard()).toEqual({
       declaredTools,
-      pendingRuntimeEntries,
-      realHandlerEntries: declaredTools - pendingRuntimeEntries,
+      pendingRuntimeEntries: 0,
+      realHandlerEntries: declaredTools,
     });
   });
 
@@ -36,17 +30,10 @@ describe('software-delivery migration scorecard (WU-1885)', () => {
     });
   });
 
-  it('enforces non-increasing pending runtime migration baseline', () => {
+  it('contains no pending runtime entries in the software-delivery manifest', () => {
     const { pendingRuntimeEntries } = getSoftwareDeliveryMigrationScorecard();
 
-    expect(
-      pendingRuntimeEntries,
-      [
-        `software-delivery pending runtime regression: ${pendingRuntimeEntries} > baseline ${PENDING_RUNTIME_BASELINE}.`,
-        'If this increase is intentional and approved, update PENDING_RUNTIME_BASELINE in manifest.test.ts',
-        'and document the approval in the WU notes.',
-      ].join(' '),
-    ).toBeLessThanOrEqual(PENDING_RUNTIME_BASELINE);
+    expect(pendingRuntimeEntries).toBe(0);
   });
 
   it('routes WU-1887/WU-1893/WU-1894/WU-1895 lifecycle tools to runtime handlers', () => {
@@ -149,6 +136,7 @@ describe('software-delivery migration scorecard (WU-1885)', () => {
       ['plan:edit', 'tool-impl/initiative-orchestration-tools.ts#planEditTool'],
       ['plan:link', 'tool-impl/initiative-orchestration-tools.ts#planLinkTool'],
       ['plan:promote', 'tool-impl/initiative-orchestration-tools.ts#planPromoteTool'],
+      ['cloud:connect', 'tool-impl/initiative-orchestration-tools.ts#cloudConnectTool'],
       ['delegation:list', 'tool-impl/initiative-orchestration-tools.ts#delegationListTool'],
       ['docs:sync', 'tool-impl/initiative-orchestration-tools.ts#docsSyncTool'],
       ['init:plan', 'tool-impl/initiative-orchestration-tools.ts#initPlanTool'],
@@ -157,6 +145,7 @@ describe('software-delivery migration scorecard (WU-1885)', () => {
       ['lumenflow:integrate', 'tool-impl/initiative-orchestration-tools.ts#lumenflowIntegrateTool'],
       ['lumenflow:release', 'tool-impl/initiative-orchestration-tools.ts#lumenflowReleaseTool'],
       ['lumenflow:upgrade', 'tool-impl/initiative-orchestration-tools.ts#lumenflowUpgradeTool'],
+      ['workspace:init', 'tool-impl/initiative-orchestration-tools.ts#workspaceInitTool'],
       ['sync:templates', 'tool-impl/initiative-orchestration-tools.ts#syncTemplatesTool'],
     ]);
 
@@ -168,30 +157,30 @@ describe('software-delivery migration scorecard (WU-1885)', () => {
 
   it('routes WU-1890 remaining migration surfaces to runtime handlers', () => {
     const expectedEntries = new Map<string, string>([
-      ['wu:infer-lane', 'tool-impl/parity-migration-tools.ts#wuInferLaneTool'],
-      ['lane:health', 'tool-impl/parity-migration-tools.ts#laneHealthTool'],
-      ['lane:suggest', 'tool-impl/parity-migration-tools.ts#laneSuggestTool'],
-      ['file:read', 'tool-impl/parity-migration-tools.ts#fileReadTool'],
-      ['file:write', 'tool-impl/parity-migration-tools.ts#fileWriteTool'],
-      ['file:edit', 'tool-impl/parity-migration-tools.ts#fileEditTool'],
-      ['file:delete', 'tool-impl/parity-migration-tools.ts#fileDeleteTool'],
-      ['git:branch', 'tool-impl/parity-migration-tools.ts#gitBranchTool'],
-      ['git:diff', 'tool-impl/parity-migration-tools.ts#gitDiffTool'],
-      ['git:log', 'tool-impl/parity-migration-tools.ts#gitLogTool'],
-      ['state:bootstrap', 'tool-impl/parity-migration-tools.ts#stateBootstrapTool'],
-      ['state:cleanup', 'tool-impl/parity-migration-tools.ts#stateCleanupTool'],
-      ['state:doctor', 'tool-impl/parity-migration-tools.ts#stateDoctorTool'],
-      ['backlog:prune', 'tool-impl/parity-migration-tools.ts#backlogPruneTool'],
-      ['config:get', 'tool-impl/parity-migration-tools.ts#configGetTool'],
-      ['config:set', 'tool-impl/parity-migration-tools.ts#configSetTool'],
-      ['signal:cleanup', 'tool-impl/parity-migration-tools.ts#signalCleanupTool'],
-      ['validate', 'tool-impl/parity-migration-tools.ts#validateTool'],
-      ['lumenflow:metrics', 'tool-impl/parity-migration-tools.ts#lumenflowMetricsTool'],
-      ['lumenflow:validate', 'tool-impl/parity-migration-tools.ts#lumenflowValidateTool'],
-      ['validate:agent-skills', 'tool-impl/parity-migration-tools.ts#validateAgentSkillsTool'],
-      ['validate:agent-sync', 'tool-impl/parity-migration-tools.ts#validateAgentSyncTool'],
-      ['validate:backlog-sync', 'tool-impl/parity-migration-tools.ts#validateBacklogSyncTool'],
-      ['validate:skills-spec', 'tool-impl/parity-migration-tools.ts#validateSkillsSpecTool'],
+      ['wu:infer-lane', 'tool-impl/runtime-native-tools.ts#wuInferLaneTool'],
+      ['lane:health', 'tool-impl/runtime-native-tools.ts#laneHealthTool'],
+      ['lane:suggest', 'tool-impl/runtime-native-tools.ts#laneSuggestTool'],
+      ['file:read', 'tool-impl/runtime-native-tools.ts#fileReadTool'],
+      ['file:write', 'tool-impl/runtime-native-tools.ts#fileWriteTool'],
+      ['file:edit', 'tool-impl/runtime-native-tools.ts#fileEditTool'],
+      ['file:delete', 'tool-impl/runtime-native-tools.ts#fileDeleteTool'],
+      ['git:branch', 'tool-impl/runtime-native-tools.ts#gitBranchTool'],
+      ['git:diff', 'tool-impl/runtime-native-tools.ts#gitDiffTool'],
+      ['git:log', 'tool-impl/runtime-native-tools.ts#gitLogTool'],
+      ['state:bootstrap', 'tool-impl/runtime-native-tools.ts#stateBootstrapTool'],
+      ['state:cleanup', 'tool-impl/runtime-native-tools.ts#stateCleanupTool'],
+      ['state:doctor', 'tool-impl/runtime-native-tools.ts#stateDoctorTool'],
+      ['backlog:prune', 'tool-impl/runtime-native-tools.ts#backlogPruneTool'],
+      ['config:get', 'tool-impl/runtime-native-tools.ts#configGetTool'],
+      ['config:set', 'tool-impl/runtime-native-tools.ts#configSetTool'],
+      ['signal:cleanup', 'tool-impl/runtime-native-tools.ts#signalCleanupTool'],
+      ['validate', 'tool-impl/runtime-native-tools.ts#validateTool'],
+      ['lumenflow:metrics', 'tool-impl/runtime-native-tools.ts#lumenflowMetricsTool'],
+      ['lumenflow:validate', 'tool-impl/runtime-native-tools.ts#lumenflowValidateTool'],
+      ['validate:agent-skills', 'tool-impl/runtime-native-tools.ts#validateAgentSkillsTool'],
+      ['validate:agent-sync', 'tool-impl/runtime-native-tools.ts#validateAgentSyncTool'],
+      ['validate:backlog-sync', 'tool-impl/runtime-native-tools.ts#validateBacklogSyncTool'],
+      ['validate:skills-spec', 'tool-impl/runtime-native-tools.ts#validateSkillsSpecTool'],
       ['flow:bottlenecks', 'tool-impl/flow-metrics-tools.ts#flowBottlenecksTool'],
       ['flow:report', 'tool-impl/flow-metrics-tools.ts#flowReportTool'],
       ['metrics', 'tool-impl/flow-metrics-tools.ts#metricsTool'],

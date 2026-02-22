@@ -304,7 +304,7 @@ This tool:
 /**
  * Main function
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = parseBacklogPruneArgs(process.argv);
 
   if (args.help) {

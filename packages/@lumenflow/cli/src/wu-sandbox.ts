@@ -366,7 +366,7 @@ export async function runWuSandbox(input: WuSandboxExecutionInput): Promise<numb
   return runCommand(commandToRun, commandArgs, worktreePath);
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const options = parseWuSandboxOptions(process.argv);
   const exitCode = await runWuSandbox(options);
   process.exit(exitCode);

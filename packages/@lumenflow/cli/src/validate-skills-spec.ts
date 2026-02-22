@@ -149,7 +149,7 @@ export function validateSkillsSpecDir(dir: string): Map<string, SkillsSpecResult
 /**
  * Main CLI entry point
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
   // Parse arguments

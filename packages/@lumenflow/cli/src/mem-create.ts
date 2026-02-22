@@ -218,7 +218,7 @@ function printMetadata(metadata: NodeMetadata): void {
 /**
  * Main CLI entry point
  */
-async function main() {
+export async function main() {
   const { args, title } = parseArguments();
 
   if (!title) {

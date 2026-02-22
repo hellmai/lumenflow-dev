@@ -59,7 +59,7 @@ export function shouldUseBranchPrReleasePath(doc: { claimed_mode?: string }): bo
   return shouldUseBranchPrStatePath(doc);
 }
 
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'wu-release',
     description: 'Release an orphaned WU from in_progress back to ready state for reclaiming',

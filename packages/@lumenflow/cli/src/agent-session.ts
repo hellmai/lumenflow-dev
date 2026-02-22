@@ -14,6 +14,7 @@ import { Command } from 'commander';
 import { startSession, getCurrentSession } from '@lumenflow/agent';
 import { EXIT_CODES } from '@lumenflow/core/wu-constants';
 import chalk from 'chalk';
+import { runCLI } from './cli-entry-point.js';
 
 const program = new Command()
   .name('agent:session')
@@ -55,4 +56,10 @@ const program = new Command()
     }
   });
 
-program.parse();
+export async function main(): Promise<void> {
+  await program.parseAsync(process.argv);
+}
+
+if (import.meta.main) {
+  void runCLI(main);
+}

@@ -180,7 +180,7 @@ export function getStatusExitCode(context: WuContext): number {
 /**
  * Main entry point
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = createWUParser({
     name: 'wu-status',
     description: 'Show WU status, location, and valid commands (WU-1090)',

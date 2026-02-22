@@ -219,7 +219,7 @@ async function handleWorktreeRemoval(args: UnsafeAny, doc: UnsafeAny) {
   }
 }
 
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'wu-block',
     description: 'Block a work unit and move it from in-progress to blocked status',

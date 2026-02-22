@@ -148,7 +148,7 @@ function handleWorktreeCreation(args: UnsafeAny, doc: UnsafeAny) {
   createWorktree(doc, worktreePath, branchName);
 }
 
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'wu-unblock',
     description: 'Unblock a work unit and move it from blocked to in-progress status',

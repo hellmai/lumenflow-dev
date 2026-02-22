@@ -75,7 +75,7 @@ const CLI_OPTIONS = {
 /**
  * Main CLI entry point
  */
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'mem-init',
     description: 'Initialize memory layer in repository',

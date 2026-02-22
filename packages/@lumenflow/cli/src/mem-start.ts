@@ -86,7 +86,7 @@ const CLI_OPTIONS = {
 /**
  * Main CLI entry point
  */
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'mem-start',
     description: 'Create a session node linked to a WU',

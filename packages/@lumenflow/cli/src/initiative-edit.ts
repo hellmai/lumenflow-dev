@@ -590,7 +590,7 @@ export function buildNoEditsMessage() {
 /**
  * Main entry point
  */
-async function main() {
+export async function main() {
   const opts = parseArgs();
   const { id } = opts;
 

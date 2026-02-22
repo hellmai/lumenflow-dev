@@ -5,12 +5,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import path from 'node:path';
 
 const spawnSyncMock = vi.hoisted(() => vi.fn());
+const runtimeRunMock = vi.hoisted(() => vi.fn());
 
-vi.mock('node:child_process', () => ({
-  spawnSync: spawnSyncMock,
-}));
+vi.mock('../tool-impl/runtime-cli-adapter.js', async () => {
+  const actual = await vi.importActual('../tool-impl/runtime-cli-adapter.js');
+  return {
+    ...actual,
+    runtimeCliAdapter: {
+      run: runtimeRunMock,
+    },
+  };
+});
 
 import {
+  cloudConnectTool,
   delegationListTool,
   docsSyncTool,
   initiativeAddWuTool,
@@ -35,6 +43,7 @@ import {
   planLinkTool,
   planPromoteTool,
   syncTemplatesTool,
+  workspaceInitTool,
 } from '../tool-impl/initiative-orchestration-tools.js';
 
 const INITIATIVE_ADD_WU_SCRIPT_PATH = path.resolve(
@@ -125,6 +134,10 @@ const LUMENFLOW_UPGRADE_SCRIPT_PATH = path.resolve(
   process.cwd(),
   'packages/@lumenflow/cli/dist/lumenflow-upgrade.js',
 );
+const WORKSPACE_INIT_SCRIPT_PATH = path.resolve(
+  process.cwd(),
+  'packages/@lumenflow/cli/dist/workspace-init.js',
+);
 const SYNC_TEMPLATES_SCRIPT_PATH = path.resolve(
   process.cwd(),
   'packages/@lumenflow/cli/dist/sync-templates.js',
@@ -133,6 +146,22 @@ const SYNC_TEMPLATES_SCRIPT_PATH = path.resolve(
 describe('initiative/orchestration tool adapters (WU-1897)', () => {
   beforeEach(() => {
     spawnSyncMock.mockReset();
+    runtimeRunMock.mockReset();
+    runtimeRunMock.mockImplementation(async (command: string, args: string[]) => {
+      const scriptPath = path.resolve(process.cwd(), `packages/@lumenflow/cli/dist/${command}.js`);
+      const result = spawnSyncMock(process.execPath, [scriptPath, ...args], {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+      });
+
+      return {
+        ok: result.status === 0 && !result.error,
+        status: result.status ?? 1,
+        stdout: result.stdout ?? '',
+        stderr: result.stderr ?? '',
+        executionError: result.error?.message,
+      };
+    });
   });
 
   it('maps initiative lifecycle arguments to CLI flags', async () => {
@@ -299,6 +328,17 @@ describe('initiative/orchestration tool adapters (WU-1897)', () => {
 
     await delegationListTool({ wu: 'WU-1897', json: true });
     await docsSyncTool({ vendor: 'claude', force: true });
+    await cloudConnectTool({
+      endpoint: 'https://api.hellm.ai',
+      org_id: 'ORG-01',
+      project_id: 'PROJ-42',
+      token_env: 'LUMENFLOW_TOKEN',
+      policy_mode: 'strict',
+      sync_interval: 60,
+      output: '.',
+      force: true,
+    });
+    await workspaceInitTool({ yes: true, output: '.', force: true });
     await lumenflowTool({ client: 'codex-cli', merge: true });
     await lumenflowTool({});
     await lumenflowDoctorTool({});
@@ -322,41 +362,71 @@ describe('initiative/orchestration tool adapters (WU-1897)', () => {
     expect(spawnSyncMock).toHaveBeenNthCalledWith(
       3,
       process.execPath,
-      [LUMENFLOW_INIT_SCRIPT_PATH, '--client', 'codex-cli', '--merge'],
+      [
+        LUMENFLOW_INIT_SCRIPT_PATH,
+        'cloud:connect',
+        '--endpoint',
+        'https://api.hellm.ai',
+        '--org-id',
+        'ORG-01',
+        '--project-id',
+        'PROJ-42',
+        '--token-env',
+        'LUMENFLOW_TOKEN',
+        '--policy-mode',
+        'strict',
+        '--sync-interval',
+        '60',
+        '--output',
+        '.',
+        '--force',
+      ],
       expect.any(Object),
     );
     expect(spawnSyncMock).toHaveBeenNthCalledWith(
       4,
       process.execPath,
-      [LUMENFLOW_INIT_SCRIPT_PATH, 'commands'],
+      [WORKSPACE_INIT_SCRIPT_PATH, '--yes', '--output', '.', '--force'],
       expect.any(Object),
     );
     expect(spawnSyncMock).toHaveBeenNthCalledWith(
       5,
       process.execPath,
-      [LUMENFLOW_DOCTOR_SCRIPT_PATH],
+      [LUMENFLOW_INIT_SCRIPT_PATH, '--client', 'codex-cli', '--merge'],
       expect.any(Object),
     );
     expect(spawnSyncMock).toHaveBeenNthCalledWith(
       6,
       process.execPath,
-      [LUMENFLOW_INTEGRATE_SCRIPT_PATH, '--client', 'codex-cli'],
+      [LUMENFLOW_INIT_SCRIPT_PATH, 'commands'],
       expect.any(Object),
     );
     expect(spawnSyncMock).toHaveBeenNthCalledWith(
       7,
       process.execPath,
-      [LUMENFLOW_RELEASE_SCRIPT_PATH, '--dry-run'],
+      [LUMENFLOW_DOCTOR_SCRIPT_PATH],
       expect.any(Object),
     );
     expect(spawnSyncMock).toHaveBeenNthCalledWith(
       8,
       process.execPath,
-      [LUMENFLOW_UPGRADE_SCRIPT_PATH],
+      [LUMENFLOW_INTEGRATE_SCRIPT_PATH, '--client', 'codex-cli'],
       expect.any(Object),
     );
     expect(spawnSyncMock).toHaveBeenNthCalledWith(
       9,
+      process.execPath,
+      [LUMENFLOW_RELEASE_SCRIPT_PATH, '--dry-run'],
+      expect.any(Object),
+    );
+    expect(spawnSyncMock).toHaveBeenNthCalledWith(
+      10,
+      process.execPath,
+      [LUMENFLOW_UPGRADE_SCRIPT_PATH],
+      expect.any(Object),
+    );
+    expect(spawnSyncMock).toHaveBeenNthCalledWith(
+      11,
       process.execPath,
       [SYNC_TEMPLATES_SCRIPT_PATH, '--dry-run', '--verbose', '--check-drift'],
       expect.any(Object),
@@ -369,6 +439,10 @@ describe('initiative/orchestration tool adapters (WU-1897)', () => {
     const missingWu = await initiativeAddWuTool({ initiative: 'INIT-030' });
     const missingPlanId = await planPromoteTool({});
     const missingDelegationTarget = await delegationListTool({});
+    const missingCloudConnectEndpoint = await cloudConnectTool({
+      org_id: 'ORG-01',
+      project_id: 'PROJ-42',
+    });
 
     expect(missingInitiativeStatusId.success).toBe(false);
     expect(missingInitiativeStatusId.error?.code).toBe('MISSING_PARAMETER');
@@ -380,6 +454,8 @@ describe('initiative/orchestration tool adapters (WU-1897)', () => {
     expect(missingPlanId.error?.code).toBe('MISSING_PARAMETER');
     expect(missingDelegationTarget.success).toBe(false);
     expect(missingDelegationTarget.error?.code).toBe('MISSING_PARAMETER');
+    expect(missingCloudConnectEndpoint.success).toBe(false);
+    expect(missingCloudConnectEndpoint.error?.code).toBe('MISSING_PARAMETER');
     expect(spawnSyncMock).not.toHaveBeenCalled();
   });
 

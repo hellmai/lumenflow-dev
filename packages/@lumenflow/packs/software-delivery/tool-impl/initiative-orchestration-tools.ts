@@ -1,12 +1,12 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import type { ToolOutput } from '@lumenflow/kernel';
-import { UTF8_ENCODING } from '../constants.js';
+import { RUNTIME_CLI_COMMANDS, runtimeCliAdapter } from './runtime-cli-adapter.js';
 
 const INITIATIVE_ORCHESTRATION_TOOLS = {
+  CLOUD_CONNECT: 'cloud:connect',
+  WORKSPACE_INIT: 'workspace:init',
   INITIATIVE_ADD_WU: 'initiative:add-wu',
   INITIATIVE_BULK_ASSIGN: 'initiative:bulk-assign',
   INITIATIVE_CREATE: 'initiative:create',
@@ -37,6 +37,8 @@ type InitiativeOrchestrationToolName =
   (typeof INITIATIVE_ORCHESTRATION_TOOLS)[keyof typeof INITIATIVE_ORCHESTRATION_TOOLS];
 
 const INITIATIVE_ORCHESTRATION_TOOL_ERROR_CODES: Record<InitiativeOrchestrationToolName, string> = {
+  'cloud:connect': 'CLOUD_CONNECT_ERROR',
+  'workspace:init': 'WORKSPACE_INIT_ERROR',
   'initiative:add-wu': 'INITIATIVE_ADD_WU_ERROR',
   'initiative:bulk-assign': 'INITIATIVE_BULK_ASSIGN_ERROR',
   'initiative:create': 'INITIATIVE_CREATE_ERROR',
@@ -63,33 +65,37 @@ const INITIATIVE_ORCHESTRATION_TOOL_ERROR_CODES: Record<InitiativeOrchestrationT
   'sync:templates': 'SYNC_TEMPLATES_ALIAS_ERROR',
 };
 
-const INITIATIVE_ORCHESTRATION_TOOL_SCRIPT_PATHS: Record<InitiativeOrchestrationToolName, string> =
-  {
-    'initiative:add-wu': 'packages/@lumenflow/cli/dist/initiative-add-wu.js',
-    'initiative:bulk-assign': 'packages/@lumenflow/cli/dist/initiative-bulk-assign-wus.js',
-    'initiative:create': 'packages/@lumenflow/cli/dist/initiative-create.js',
-    'initiative:edit': 'packages/@lumenflow/cli/dist/initiative-edit.js',
-    'initiative:list': 'packages/@lumenflow/cli/dist/initiative-list.js',
-    'initiative:plan': 'packages/@lumenflow/cli/dist/initiative-plan.js',
-    'initiative:remove-wu': 'packages/@lumenflow/cli/dist/initiative-remove-wu.js',
-    'initiative:status': 'packages/@lumenflow/cli/dist/initiative-status.js',
-    'orchestrate:init-status': 'packages/@lumenflow/cli/dist/orchestrate-init-status.js',
-    'orchestrate:initiative': 'packages/@lumenflow/cli/dist/orchestrate-initiative.js',
-    'orchestrate:monitor': 'packages/@lumenflow/cli/dist/orchestrate-monitor.js',
-    'plan:create': 'packages/@lumenflow/cli/dist/plan-create.js',
-    'plan:edit': 'packages/@lumenflow/cli/dist/plan-edit.js',
-    'plan:link': 'packages/@lumenflow/cli/dist/plan-link.js',
-    'plan:promote': 'packages/@lumenflow/cli/dist/plan-promote.js',
-    'delegation:list': 'packages/@lumenflow/cli/dist/delegation-list.js',
-    'docs:sync': 'packages/@lumenflow/cli/dist/docs-sync.js',
-    'init:plan': 'packages/@lumenflow/cli/dist/initiative-plan.js',
-    lumenflow: 'packages/@lumenflow/cli/dist/init.js',
-    'lumenflow:doctor': 'packages/@lumenflow/cli/dist/doctor.js',
-    'lumenflow:integrate': 'packages/@lumenflow/cli/dist/commands/integrate.js',
-    'lumenflow:release': 'packages/@lumenflow/cli/dist/release.js',
-    'lumenflow:upgrade': 'packages/@lumenflow/cli/dist/lumenflow-upgrade.js',
-    'sync:templates': 'packages/@lumenflow/cli/dist/sync-templates.js',
-  };
+const INITIATIVE_ORCHESTRATION_TOOL_COMMANDS: Record<
+  InitiativeOrchestrationToolName,
+  (typeof RUNTIME_CLI_COMMANDS)[keyof typeof RUNTIME_CLI_COMMANDS]
+> = {
+  'cloud:connect': RUNTIME_CLI_COMMANDS.INIT,
+  'workspace:init': RUNTIME_CLI_COMMANDS.WORKSPACE_INIT,
+  'initiative:add-wu': RUNTIME_CLI_COMMANDS.INITIATIVE_ADD_WU,
+  'initiative:bulk-assign': RUNTIME_CLI_COMMANDS.INITIATIVE_BULK_ASSIGN,
+  'initiative:create': RUNTIME_CLI_COMMANDS.INITIATIVE_CREATE,
+  'initiative:edit': RUNTIME_CLI_COMMANDS.INITIATIVE_EDIT,
+  'initiative:list': RUNTIME_CLI_COMMANDS.INITIATIVE_LIST,
+  'initiative:plan': RUNTIME_CLI_COMMANDS.INITIATIVE_PLAN,
+  'initiative:remove-wu': RUNTIME_CLI_COMMANDS.INITIATIVE_REMOVE_WU,
+  'initiative:status': RUNTIME_CLI_COMMANDS.INITIATIVE_STATUS,
+  'orchestrate:init-status': RUNTIME_CLI_COMMANDS.ORCHESTRATE_INIT_STATUS,
+  'orchestrate:initiative': RUNTIME_CLI_COMMANDS.ORCHESTRATE_INITIATIVE,
+  'orchestrate:monitor': RUNTIME_CLI_COMMANDS.ORCHESTRATE_MONITOR,
+  'plan:create': RUNTIME_CLI_COMMANDS.PLAN_CREATE,
+  'plan:edit': RUNTIME_CLI_COMMANDS.PLAN_EDIT,
+  'plan:link': RUNTIME_CLI_COMMANDS.PLAN_LINK,
+  'plan:promote': RUNTIME_CLI_COMMANDS.PLAN_PROMOTE,
+  'delegation:list': RUNTIME_CLI_COMMANDS.DELEGATION_LIST,
+  'docs:sync': RUNTIME_CLI_COMMANDS.DOCS_SYNC,
+  'init:plan': RUNTIME_CLI_COMMANDS.INITIATIVE_PLAN,
+  lumenflow: RUNTIME_CLI_COMMANDS.INIT,
+  'lumenflow:doctor': RUNTIME_CLI_COMMANDS.LUMENFLOW_DOCTOR,
+  'lumenflow:integrate': RUNTIME_CLI_COMMANDS.INTEGRATE,
+  'lumenflow:release': RUNTIME_CLI_COMMANDS.RELEASE,
+  'lumenflow:upgrade': RUNTIME_CLI_COMMANDS.LUMENFLOW_UPGRADE,
+  'sync:templates': RUNTIME_CLI_COMMANDS.SYNC_TEMPLATES,
+};
 
 const FLAG_NAMES = {
   ADD_LANE: '--add-lane',
@@ -105,6 +111,7 @@ const FLAG_NAMES = {
   CREATED: '--created',
   DESCRIPTION: '--description',
   DRY_RUN: '--dry-run',
+  ENDPOINT: '--endpoint',
   FORCE: '--force',
   FORMAT: '--format',
   FRAMEWORK: '--framework',
@@ -115,11 +122,15 @@ const FLAG_NAMES = {
   MERGE: '--merge',
   MINIMAL: '--minimal',
   NOTES: '--notes',
+  ORG_ID: '--org-id',
+  OUTPUT: '--output',
   PHASE: '--phase',
   PHASE_ID: '--phase-id',
   PHASE_STATUS: '--phase-status',
   PLAN: '--plan',
+  POLICY_MODE: '--policy-mode',
   PRIORITY: '--priority',
+  PROJECT_ID: '--project-id',
   PROGRESS: '--progress',
   RECOVER: '--recover',
   REMOVE_LANE: '--remove-lane',
@@ -128,23 +139,30 @@ const FLAG_NAMES = {
   SINCE: '--since',
   SLUG: '--slug',
   STATUS: '--status',
+  SYNC_INTERVAL: '--sync-interval',
   SYNC_FROM_INITIATIVE: '--sync-from-initiative',
   TARGET_DATE: '--target-date',
   THRESHOLD: '--threshold',
+  TOKEN_ENV: '--token-env',
   TITLE: '--title',
   UNBLOCK: '--unblock',
   VENDOR: '--vendor',
   WU: '--wu',
+  YES: '--yes',
 } as const;
 
+const CLOUD_CONNECT_SUBCOMMAND = 'cloud:connect';
 const LUMENFLOW_DEFAULT_SUBCOMMAND = 'commands';
 
 const MISSING_PARAMETER_MESSAGES = {
   CLIENT_REQUIRED: 'client is required',
   DELEGATION_TARGET_REQUIRED: 'Either wu or initiative is required',
+  ENDPOINT_REQUIRED: 'endpoint is required',
   ID_REQUIRED: 'id is required',
   INITIATIVE_REQUIRED: 'initiative is required',
+  ORG_ID_REQUIRED: 'org_id is required',
   PLAN_REQUIRED: 'plan is required',
+  PROJECT_ID_REQUIRED: 'project_id is required',
   TITLE_REQUIRED: 'title is required',
   WU_REQUIRED: 'wu is required',
 } as const;
@@ -154,7 +172,7 @@ interface CommandExecutionResult {
   status: number;
   stdout: string;
   stderr: string;
-  spawnError?: string;
+  executionError?: string;
 }
 
 function toRecord(input: unknown): Record<string, unknown> {
@@ -210,24 +228,11 @@ function appendValueIfPresent(
   }
 }
 
-function runInitiativeOrchestrationCommand(
+async function runInitiativeOrchestrationCommand(
   toolName: InitiativeOrchestrationToolName,
   args: string[],
-): CommandExecutionResult {
-  const scriptPath = INITIATIVE_ORCHESTRATION_TOOL_SCRIPT_PATHS[toolName];
-  const absoluteScriptPath = path.resolve(process.cwd(), scriptPath);
-  const result = spawnSync(process.execPath, [absoluteScriptPath, ...args], {
-    cwd: process.cwd(),
-    encoding: UTF8_ENCODING,
-  });
-
-  return {
-    ok: result.status === 0 && !result.error,
-    status: result.status ?? 1,
-    stdout: result.stdout ?? '',
-    stderr: result.stderr ?? '',
-    spawnError: result.error?.message,
-  };
+): Promise<CommandExecutionResult> {
+  return runtimeCliAdapter.run(INITIATIVE_ORCHESTRATION_TOOL_COMMANDS[toolName], args);
 }
 
 function createMissingParameterOutput(message: string): ToolOutput {
@@ -247,7 +252,7 @@ function createFailureOutput(
   const stderrMessage = execution.stderr.trim();
   const stdoutMessage = execution.stdout.trim();
   const message =
-    execution.spawnError ??
+    execution.executionError ??
     (stderrMessage.length > 0
       ? stderrMessage
       : stdoutMessage.length > 0
@@ -301,11 +306,11 @@ function createSuccessOutput(
   };
 }
 
-function executeInitiativeOrchestrationTool(
+async function executeInitiativeOrchestrationTool(
   toolName: InitiativeOrchestrationToolName,
   args: string[],
-): ToolOutput {
-  const execution = runInitiativeOrchestrationCommand(toolName, args);
+): Promise<ToolOutput> {
+  const execution = await runInitiativeOrchestrationCommand(toolName, args);
   if (!execution.ok) {
     return createFailureOutput(toolName, execution);
   }
@@ -617,6 +622,49 @@ export async function docsSyncTool(input: unknown): Promise<ToolOutput> {
   appendValueIfPresent(args, FLAG_NAMES.VENDOR, parsed.vendor);
   appendFlagIfTrue(args, parsed.force, FLAG_NAMES.FORCE);
   return executeInitiativeOrchestrationTool(INITIATIVE_ORCHESTRATION_TOOLS.DOCS_SYNC, args);
+}
+
+export async function cloudConnectTool(input: unknown): Promise<ToolOutput> {
+  const parsed = toRecord(input);
+  const endpoint = toStringValue(parsed.endpoint);
+  if (!endpoint) {
+    return createMissingParameterOutput(MISSING_PARAMETER_MESSAGES.ENDPOINT_REQUIRED);
+  }
+  const orgId = toStringValue(parsed.org_id);
+  if (!orgId) {
+    return createMissingParameterOutput(MISSING_PARAMETER_MESSAGES.ORG_ID_REQUIRED);
+  }
+  const projectId = toStringValue(parsed.project_id);
+  if (!projectId) {
+    return createMissingParameterOutput(MISSING_PARAMETER_MESSAGES.PROJECT_ID_REQUIRED);
+  }
+
+  const args = [
+    CLOUD_CONNECT_SUBCOMMAND,
+    FLAG_NAMES.ENDPOINT,
+    endpoint,
+    FLAG_NAMES.ORG_ID,
+    orgId,
+    FLAG_NAMES.PROJECT_ID,
+    projectId,
+  ];
+  appendValueIfPresent(args, FLAG_NAMES.TOKEN_ENV, parsed.token_env);
+  appendValueIfPresent(args, FLAG_NAMES.POLICY_MODE, parsed.policy_mode);
+  appendValueIfPresent(args, FLAG_NAMES.SYNC_INTERVAL, parsed.sync_interval, toIntegerString);
+  appendValueIfPresent(args, FLAG_NAMES.OUTPUT, parsed.output);
+  appendFlagIfTrue(args, parsed.force, FLAG_NAMES.FORCE);
+
+  return executeInitiativeOrchestrationTool(INITIATIVE_ORCHESTRATION_TOOLS.CLOUD_CONNECT, args);
+}
+
+export async function workspaceInitTool(input: unknown): Promise<ToolOutput> {
+  const parsed = toRecord(input);
+  const args: string[] = [];
+  appendFlagIfTrue(args, parsed.yes, FLAG_NAMES.YES);
+  appendValueIfPresent(args, FLAG_NAMES.OUTPUT, parsed.output);
+  appendFlagIfTrue(args, parsed.force, FLAG_NAMES.FORCE);
+
+  return executeInitiativeOrchestrationTool(INITIATIVE_ORCHESTRATION_TOOLS.WORKSPACE_INIT, args);
 }
 
 export async function lumenflowTool(input: unknown): Promise<ToolOutput> {

@@ -423,7 +423,7 @@ export function runLaneHealthCheck(options: {
 /**
  * Main entry point
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = createWUParser({
     name: 'lane-health',
     description: 'Check lane configuration health (WU-1188)',

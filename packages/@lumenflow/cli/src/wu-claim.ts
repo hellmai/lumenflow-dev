@@ -232,7 +232,7 @@ export async function maybeLaunchClaimSandboxSession(
 // ============================================================================
 
 // eslint-disable-next-line sonarjs/cognitive-complexity -- main() orchestrates multi-step claim workflow
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'wu-claim',
     description: 'Claim a work unit by creating a worktree/branch and updating status',

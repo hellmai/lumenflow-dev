@@ -1,10 +1,8 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import type { ToolOutput } from '@lumenflow/kernel';
-import { UTF8_ENCODING } from '../constants.js';
+import { RUNTIME_CLI_COMMANDS, runtimeCliAdapter } from './runtime-cli-adapter.js';
 
 const AGENT_TOOLS = {
   AGENT_SESSION: 'agent:session',
@@ -22,11 +20,14 @@ const AGENT_TOOL_ERROR_CODES: Record<AgentToolName, string> = {
   'agent:issues-query': 'AGENT_ISSUES_QUERY_ERROR',
 };
 
-const AGENT_TOOL_SCRIPT_PATHS: Record<AgentToolName, string> = {
-  'agent:session': 'packages/@lumenflow/cli/dist/agent-session.js',
-  'agent:session-end': 'packages/@lumenflow/cli/dist/agent-session-end.js',
-  'agent:log-issue': 'packages/@lumenflow/cli/dist/agent-log-issue.js',
-  'agent:issues-query': 'packages/@lumenflow/cli/dist/agent-issues-query.js',
+const AGENT_TOOL_COMMANDS: Record<
+  AgentToolName,
+  (typeof RUNTIME_CLI_COMMANDS)[keyof typeof RUNTIME_CLI_COMMANDS]
+> = {
+  'agent:session': RUNTIME_CLI_COMMANDS.AGENT_SESSION,
+  'agent:session-end': RUNTIME_CLI_COMMANDS.AGENT_SESSION_END,
+  'agent:log-issue': RUNTIME_CLI_COMMANDS.AGENT_LOG_ISSUE,
+  'agent:issues-query': RUNTIME_CLI_COMMANDS.AGENT_ISSUES_QUERY,
 };
 
 const MISSING_PARAMETER_MESSAGES = {
@@ -43,7 +44,7 @@ interface CommandExecutionResult {
   status: number;
   stdout: string;
   stderr: string;
-  spawnError?: string;
+  executionError?: string;
 }
 
 function toRecord(input: unknown): Record<string, unknown> {
@@ -81,21 +82,11 @@ function toIntegerString(value: unknown): string | null {
   return null;
 }
 
-function runAgentCommand(toolName: AgentToolName, args: string[]): CommandExecutionResult {
-  const scriptPath = AGENT_TOOL_SCRIPT_PATHS[toolName];
-  const absoluteScriptPath = path.resolve(process.cwd(), scriptPath);
-  const result = spawnSync(process.execPath, [absoluteScriptPath, ...args], {
-    cwd: process.cwd(),
-    encoding: UTF8_ENCODING,
-  });
-
-  return {
-    ok: result.status === 0 && !result.error,
-    status: result.status ?? 1,
-    stdout: result.stdout ?? '',
-    stderr: result.stderr ?? '',
-    spawnError: result.error?.message,
-  };
+async function runAgentCommand(
+  toolName: AgentToolName,
+  args: string[],
+): Promise<CommandExecutionResult> {
+  return runtimeCliAdapter.run(AGENT_TOOL_COMMANDS[toolName], args);
 }
 
 function createMissingParameterOutput(message: string): ToolOutput {
@@ -115,7 +106,7 @@ function createFailureOutput(
   const stderrMessage = execution.stderr.trim();
   const stdoutMessage = execution.stdout.trim();
   const message =
-    execution.spawnError ??
+    execution.executionError ??
     (stderrMessage.length > 0
       ? stderrMessage
       : stdoutMessage.length > 0
@@ -168,8 +159,8 @@ function createSuccessOutput(
   };
 }
 
-function executeAgentTool(toolName: AgentToolName, args: string[]): ToolOutput {
-  const execution = runAgentCommand(toolName, args);
+async function executeAgentTool(toolName: AgentToolName, args: string[]): Promise<ToolOutput> {
+  const execution = await runAgentCommand(toolName, args);
   if (!execution.ok) {
     return createFailureOutput(toolName, execution);
   }

@@ -1,10 +1,8 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import type { ToolOutput } from '@lumenflow/kernel';
-import { UTF8_ENCODING } from '../constants.js';
+import { RUNTIME_CLI_COMMANDS, runtimeCliAdapter } from './runtime-cli-adapter.js';
 
 const MEMORY_TOOLS = {
   MEM_INIT: 'mem:init',
@@ -42,21 +40,24 @@ const MEMORY_TOOL_ERROR_CODES: Record<MemoryToolName, string> = {
   'mem:recover': 'MEM_RECOVER_ERROR',
 };
 
-const MEMORY_TOOL_SCRIPT_PATHS: Record<MemoryToolName, string> = {
-  'mem:init': 'packages/@lumenflow/cli/dist/mem-init.js',
-  'mem:start': 'packages/@lumenflow/cli/dist/mem-start.js',
-  'mem:ready': 'packages/@lumenflow/cli/dist/mem-ready.js',
-  'mem:checkpoint': 'packages/@lumenflow/cli/dist/mem-checkpoint.js',
-  'mem:cleanup': 'packages/@lumenflow/cli/dist/mem-cleanup.js',
-  'mem:context': 'packages/@lumenflow/cli/dist/mem-context.js',
-  'mem:create': 'packages/@lumenflow/cli/dist/mem-create.js',
-  'mem:delete': 'packages/@lumenflow/cli/dist/mem-delete.js',
-  'mem:export': 'packages/@lumenflow/cli/dist/mem-export.js',
-  'mem:inbox': 'packages/@lumenflow/cli/dist/mem-inbox.js',
-  'mem:signal': 'packages/@lumenflow/cli/dist/mem-signal.js',
-  'mem:summarize': 'packages/@lumenflow/cli/dist/mem-summarize.js',
-  'mem:triage': 'packages/@lumenflow/cli/dist/mem-triage.js',
-  'mem:recover': 'packages/@lumenflow/cli/dist/mem-recover.js',
+const MEMORY_TOOL_COMMANDS: Record<
+  MemoryToolName,
+  (typeof RUNTIME_CLI_COMMANDS)[keyof typeof RUNTIME_CLI_COMMANDS]
+> = {
+  'mem:init': RUNTIME_CLI_COMMANDS.MEM_INIT,
+  'mem:start': RUNTIME_CLI_COMMANDS.MEM_START,
+  'mem:ready': RUNTIME_CLI_COMMANDS.MEM_READY,
+  'mem:checkpoint': RUNTIME_CLI_COMMANDS.MEM_CHECKPOINT,
+  'mem:cleanup': RUNTIME_CLI_COMMANDS.MEM_CLEANUP,
+  'mem:context': RUNTIME_CLI_COMMANDS.MEM_CONTEXT,
+  'mem:create': RUNTIME_CLI_COMMANDS.MEM_CREATE,
+  'mem:delete': RUNTIME_CLI_COMMANDS.MEM_DELETE,
+  'mem:export': RUNTIME_CLI_COMMANDS.MEM_EXPORT,
+  'mem:inbox': RUNTIME_CLI_COMMANDS.MEM_INBOX,
+  'mem:signal': RUNTIME_CLI_COMMANDS.MEM_SIGNAL,
+  'mem:summarize': RUNTIME_CLI_COMMANDS.MEM_SUMMARIZE,
+  'mem:triage': RUNTIME_CLI_COMMANDS.MEM_TRIAGE,
+  'mem:recover': RUNTIME_CLI_COMMANDS.MEM_RECOVER,
 };
 
 const MISSING_PARAMETER_MESSAGES = {
@@ -70,7 +71,7 @@ interface CommandExecutionResult {
   status: number;
   stdout: string;
   stderr: string;
-  spawnError?: string;
+  executionError?: string;
 }
 
 function toRecord(input: unknown): Record<string, unknown> {
@@ -108,21 +109,11 @@ function toIntegerString(value: unknown): string | null {
   return null;
 }
 
-function runMemoryCommand(toolName: MemoryToolName, args: string[]): CommandExecutionResult {
-  const scriptPath = MEMORY_TOOL_SCRIPT_PATHS[toolName];
-  const absoluteScriptPath = path.resolve(process.cwd(), scriptPath);
-  const result = spawnSync(process.execPath, [absoluteScriptPath, ...args], {
-    cwd: process.cwd(),
-    encoding: UTF8_ENCODING,
-  });
-
-  return {
-    ok: result.status === 0 && !result.error,
-    status: result.status ?? 1,
-    stdout: result.stdout ?? '',
-    stderr: result.stderr ?? '',
-    spawnError: result.error?.message,
-  };
+async function runMemoryCommand(
+  toolName: MemoryToolName,
+  args: string[],
+): Promise<CommandExecutionResult> {
+  return runtimeCliAdapter.run(MEMORY_TOOL_COMMANDS[toolName], args);
 }
 
 function createMissingParameterOutput(message: string): ToolOutput {
@@ -142,7 +133,7 @@ function createFailureOutput(
   const stderrMessage = execution.stderr.trim();
   const stdoutMessage = execution.stdout.trim();
   const message =
-    execution.spawnError ??
+    execution.executionError ??
     (stderrMessage.length > 0
       ? stderrMessage
       : stdoutMessage.length > 0
@@ -195,8 +186,8 @@ function createSuccessOutput(
   };
 }
 
-function executeMemoryTool(toolName: MemoryToolName, args: string[]): ToolOutput {
-  const execution = runMemoryCommand(toolName, args);
+async function executeMemoryTool(toolName: MemoryToolName, args: string[]): Promise<ToolOutput> {
+  const execution = await runMemoryCommand(toolName, args);
   if (!execution.ok) {
     return createFailureOutput(toolName, execution);
   }

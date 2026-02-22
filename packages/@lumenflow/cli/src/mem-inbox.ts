@@ -391,7 +391,7 @@ async function runStandardMode(
 /**
  * Main CLI entry point
  */
-async function main() {
+export async function main() {
   // WU-2202: Validate dependencies BEFORE UnsafeAny other operation
   const depResult = await validateInboxDependencies();
   if (!depResult.valid) {

@@ -304,7 +304,7 @@ function formatSnapshot(snapshot: MetricsSnapshot, type: MetricsSnapshotType): s
 /**
  * Main function
  */
-async function main() {
+export async function main() {
   const opts = parseArgs();
   const baseDir = process.cwd();
   const type = opts.type as MetricsSnapshotType;

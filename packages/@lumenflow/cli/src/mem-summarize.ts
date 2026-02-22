@@ -170,7 +170,7 @@ function printResult(result: UnsafeAny, quiet: UnsafeAny) {
 /**
  * Main CLI entry point
  */
-async function main() {
+export async function main() {
   const args = parseArguments();
   const baseDir = args.baseDir || process.cwd();
   const startedAt = new Date().toISOString();

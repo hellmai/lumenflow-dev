@@ -172,7 +172,7 @@ async function validateWorktree(wt: WorktreeEntry): Promise<WorktreeValidationRe
   return { valid: true, warnings, errors };
 }
 
-async function main() {
+export async function main() {
   const args = parseArgs(process.argv);
   const PREFIX = LOG_PREFIX.PRUNE;
 

@@ -2857,7 +2857,7 @@ function printStateHUD({
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
-async function main() {
+export async function main() {
   // Allow pre-push hook to recognize wu:done automation (WU-1030)
   process.env.LUMENFLOW_WU_TOOL = 'wu-done';
 

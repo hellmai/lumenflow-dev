@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import { spawnSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   createWorktreeTool,
@@ -11,22 +11,22 @@ import {
 import { GIT_BINARY } from '../tool-impl/git-runner.js';
 
 vi.mock('node:child_process', () => ({
-  spawnSync: vi.fn(),
+  execFileSync: vi.fn(),
 }));
 
-const spawnSyncMock = vi.mocked(spawnSync);
+const execFileSyncMock = vi.mocked(execFileSync);
 
-function mockSpawnSyncResult(result: Partial<ReturnType<typeof spawnSync>>) {
-  spawnSyncMock.mockReturnValue(result as ReturnType<typeof spawnSync>);
+function mockExecFileSyncResult(result: string | Buffer) {
+  execFileSyncMock.mockReturnValue(result as ReturnType<typeof execFileSync>);
 }
 
 describe('software delivery worktree tools', () => {
   beforeEach(() => {
-    spawnSyncMock.mockReset();
+    execFileSyncMock.mockReset();
   });
 
   it('creates worktree using git worktree add', async () => {
-    mockSpawnSyncResult({ status: 0, stdout: 'added', stderr: '' });
+    mockExecFileSyncResult('added');
 
     const result = await createWorktreeTool({
       cwd: '/repo',
@@ -34,10 +34,10 @@ describe('software delivery worktree tools', () => {
       branch: 'lane/framework/wu-1',
     });
 
-    expect(spawnSyncMock).toHaveBeenCalledWith(
+    expect(execFileSyncMock).toHaveBeenCalledWith(
       GIT_BINARY,
       ['worktree', 'add', '/repo/worktrees/wu-1', 'lane/framework/wu-1'],
-      { cwd: '/repo', encoding: 'utf8' },
+      { cwd: '/repo', encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
     );
     expect(result).toEqual({
       success: true,
@@ -47,31 +47,33 @@ describe('software delivery worktree tools', () => {
   });
 
   it('removes worktree with optional --force flag', async () => {
-    mockSpawnSyncResult({ status: 0, stdout: '', stderr: '' });
+    mockExecFileSyncResult('');
     await removeWorktreeTool({ cwd: '/repo', path: '/repo/worktrees/wu-1', force: true });
 
-    expect(spawnSyncMock).toHaveBeenCalledWith(
+    expect(execFileSyncMock).toHaveBeenCalledWith(
       GIT_BINARY,
       ['worktree', 'remove', '--force', '/repo/worktrees/wu-1'],
-      { cwd: '/repo', encoding: 'utf8' },
+      { cwd: '/repo', encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
     );
 
-    spawnSyncMock.mockReset();
-    mockSpawnSyncResult({ status: 0, stdout: '', stderr: '' });
+    execFileSyncMock.mockReset();
+    mockExecFileSyncResult('');
     await removeWorktreeTool({ cwd: '/repo', path: '/repo/worktrees/wu-2' });
 
-    expect(spawnSyncMock).toHaveBeenCalledWith(
+    expect(execFileSyncMock).toHaveBeenCalledWith(
       GIT_BINARY,
       ['worktree', 'remove', '/repo/worktrees/wu-2'],
-      { cwd: '/repo', encoding: 'utf8' },
+      { cwd: '/repo', encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
     );
   });
 
   it('returns failed command details when git exits non-zero', async () => {
-    mockSpawnSyncResult({
-      status: 128,
-      stdout: undefined,
-      stderr: Buffer.from('fatal: invalid worktree'),
+    execFileSyncMock.mockImplementation(() => {
+      throw {
+        status: 128,
+        stdout: undefined,
+        stderr: Buffer.from('fatal: invalid worktree'),
+      };
     });
 
     const result = await listWorktreesTool({ cwd: '/repo' });

@@ -183,7 +183,7 @@ export function getCommitMessage(id: string): string {
   return `docs: promote ${idLower} plan to approved`;
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const FORCE_OPTION = {
     name: 'force',
     flags: '-f, --force',

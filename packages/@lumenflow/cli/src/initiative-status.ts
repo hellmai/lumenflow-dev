@@ -383,7 +383,7 @@ function capitalizeFirst(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1).replace(/_/g, ' ');
 }
 
-async function main() {
+export async function main() {
   const args = createWUParser({
     name: 'initiative-status',
     description: 'Show detailed initiative view with phases and WUs',

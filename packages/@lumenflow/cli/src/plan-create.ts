@@ -162,7 +162,7 @@ export function getCommitMessage(id: string, title: string): string {
   return `docs: create plan for ${idLower} - ${title}`;
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args = createWUParser({
     name: 'plan-create',
     description: 'Create a new plan file in repo plansDir',

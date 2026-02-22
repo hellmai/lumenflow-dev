@@ -30,7 +30,7 @@ const BRIEF_LOG_PREFIX = '[wu:brief]';
 /**
  * Main entry point for wu:brief (canonical command)
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   await runBriefLogic({
     parserConfig: {
       name: 'wu-brief',
