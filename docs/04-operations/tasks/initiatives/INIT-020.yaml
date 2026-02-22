@@ -60,7 +60,7 @@ phases:
     status: done
   - id: 16
     title: 'Phase 16: Entry-point and core exit hardening follow-through'
-    status: pending
+    status: in_progress
 success_metrics:
   - No string-concatenated shell execution remains in deps-add, deps-remove, or trace-gen.
   - Build and package tsconfig files enforce strict type checking and noEmitOnError.
