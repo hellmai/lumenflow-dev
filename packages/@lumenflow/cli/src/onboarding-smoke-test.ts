@@ -26,8 +26,11 @@ const PACKAGE_JSON_FILE = 'package.json';
 /** Lane inference file name constant */
 const LANE_INFERENCE_FILE = '.lumenflow.lane-inference.yaml';
 
-/** LumenFlow config file name constant */
-const LUMENFLOW_CONFIG_FILE = '.lumenflow.config.yaml';
+/** Workspace config file name constant */
+const WORKSPACE_CONFIG_FILE = 'workspace.yaml';
+
+/** Canonical workspace software delivery section key */
+const SOFTWARE_DELIVERY_KEY = 'software_delivery';
 
 /** Git binary path - uses system PATH which is acceptable for smoke tests */
 const GIT_BINARY = 'git';
@@ -55,11 +58,19 @@ export interface LaneInferenceValidationResult {
 }
 
 interface LaneLifecycleConfigDoc {
-  lanes?: {
-    lifecycle?: {
-      status?: unknown;
+  software_delivery?: {
+    lanes?: {
+      lifecycle?: {
+        status?: unknown;
+      };
     };
   };
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
 }
 
 /**
@@ -223,7 +234,7 @@ export function validateLaneInferenceFormat(options: {
 }): LaneInferenceValidationResult {
   const { projectDir } = options;
   const laneInferencePath = path.join(projectDir, LANE_INFERENCE_FILE);
-  const configPath = path.join(projectDir, LUMENFLOW_CONFIG_FILE);
+  const configPath = path.join(projectDir, WORKSPACE_CONFIG_FILE);
 
   // Check if file exists
   if (!fs.existsSync(laneInferencePath)) {
@@ -231,7 +242,7 @@ export function validateLaneInferenceFormat(options: {
       try {
         const configRaw = fs.readFileSync(configPath, 'utf-8');
         const configParsed = yaml.parse(configRaw) as LaneLifecycleConfigDoc | null;
-        const lifecycleStatus = configParsed?.lanes?.lifecycle?.status;
+        const lifecycleStatus = configParsed?.software_delivery?.lanes?.lifecycle?.status;
         if (lifecycleStatus === 'unconfigured') {
           return {
             valid: true,
@@ -348,13 +359,18 @@ async function validateWuCreate(options: {
 }): Promise<WuCreateValidationResult> {
   const { projectDir } = options;
 
-  // Create .lumenflow.config.yaml with requireRemote=false
-  const configPath = path.join(projectDir, LUMENFLOW_CONFIG_FILE);
-  const config = `# LumenFlow Configuration (smoke test)
-git:
-  requireRemote: false
-`;
-  fs.writeFileSync(configPath, config);
+  // Update workspace.yaml software_delivery.git.requireRemote=false
+  const configPath = path.join(projectDir, WORKSPACE_CONFIG_FILE);
+  const existingWorkspace = fs.existsSync(configPath)
+    ? asRecord(yaml.parse(fs.readFileSync(configPath, 'utf-8')))
+    : null;
+  const workspace = existingWorkspace ?? {};
+  const softwareDelivery = asRecord(workspace[SOFTWARE_DELIVERY_KEY]) ?? {};
+  const gitConfig = asRecord(softwareDelivery.git) ?? {};
+  gitConfig.requireRemote = false;
+  softwareDelivery.git = gitConfig;
+  workspace[SOFTWARE_DELIVERY_KEY] = softwareDelivery;
+  fs.writeFileSync(configPath, yaml.stringify(workspace));
 
   try {
     initializeGitRepo(projectDir);

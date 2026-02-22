@@ -26,7 +26,6 @@ import { connectWorkspaceToCloud } from '../onboard.js';
 /** Constants for test files to avoid duplicate string literals */
 const PACKAGE_JSON_FILE = 'package.json';
 const LANE_INFERENCE_FILE = '.lumenflow.lane-inference.yaml';
-const LUMENFLOW_CONFIG_FILE = '.lumenflow.config.yaml';
 const WORKSPACE_FILE = 'workspace.yaml';
 const TEST_PROJECT_NAME = 'test-project';
 const TEST_CLOUD_ENDPOINT = 'https://control-plane.example';
@@ -233,11 +232,12 @@ lanes:
     });
 
     it('should pass when lane-inference.yaml does not exist but lifecycle is unconfigured', () => {
-      const configContent = `lanes:
-  lifecycle:
-    status: unconfigured
+      const configContent = `software_delivery:
+  lanes:
+    lifecycle:
+      status: unconfigured
 `;
-      fs.writeFileSync(path.join(tempDir, LUMENFLOW_CONFIG_FILE), configContent);
+      fs.writeFileSync(path.join(tempDir, WORKSPACE_FILE), configContent);
 
       const result = validateLaneInferenceFormat({ projectDir: tempDir });
 
@@ -247,11 +247,12 @@ lanes:
     });
 
     it('should fail when lane-inference.yaml does not exist and lifecycle is locked', () => {
-      const configContent = `lanes:
-  lifecycle:
-    status: locked
+      const configContent = `software_delivery:
+  lanes:
+    lifecycle:
+      status: locked
 `;
-      fs.writeFileSync(path.join(tempDir, LUMENFLOW_CONFIG_FILE), configContent);
+      fs.writeFileSync(path.join(tempDir, WORKSPACE_FILE), configContent);
 
       const result = validateLaneInferenceFormat({ projectDir: tempDir });
 
