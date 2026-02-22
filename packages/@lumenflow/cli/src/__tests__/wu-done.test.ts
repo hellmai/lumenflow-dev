@@ -4,7 +4,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { ensureCleanWorktree } from '../wu-done-check.js';
-import { computeBranchOnlyFallback, getYamlStatusForDisplay } from '../wu-done.js';
+import {
+  CHECKPOINT_GATE_MODES,
+  computeBranchOnlyFallback,
+  enforceCheckpointGateForDone,
+  getYamlStatusForDisplay,
+  resolveCheckpointGateMode,
+} from '../wu-done.js';
 import {
   resolveWuDonePreCommitGateDecision,
   WU_DONE_PRE_COMMIT_GATE_DECISION_REASONS,
@@ -84,6 +90,58 @@ describe('wu-done', () => {
     it('returns unknown when YAML status is invalid', () => {
       expect(getYamlStatusForDisplay(undefined)).toBe('unknown');
       expect(getYamlStatusForDisplay('bad-status')).toBe('unknown');
+    });
+  });
+
+  describe('WU-1998: checkpoint gate messaging semantics', () => {
+    it('resolves invalid checkpoint mode to warn default', () => {
+      const mode = resolveCheckpointGateMode('invalid');
+      expect(mode).toBe(CHECKPOINT_GATE_MODES.WARN);
+    });
+
+    it('warn mode logs informational guidance without failure-style text', async () => {
+      const log = vi.fn();
+      const blocker = vi.fn();
+      const queryByWuFn = vi.fn().mockResolvedValue([]);
+      const hasSessionCheckpointsFn = vi.fn().mockReturnValue(false);
+
+      await enforceCheckpointGateForDone({
+        id: 'WU-1998',
+        workspacePath: 'worktrees/framework-cli-wu-commands-wu-1998',
+        mode: CHECKPOINT_GATE_MODES.WARN,
+        queryByWuFn,
+        hasSessionCheckpointsFn,
+        log,
+        blocker,
+      });
+
+      expect(blocker).not.toHaveBeenCalled();
+      expect(log).toHaveBeenCalled();
+      const loggedText = log.mock.calls.flat().join('\n');
+      expect(loggedText).not.toContain('No checkpoints found');
+      expect(loggedText).toContain('No prior checkpoints recorded');
+      expect(loggedText).toContain('pre-gates checkpoint will be created automatically');
+    });
+
+    it('block mode invokes blocker when checkpoint is required and missing', async () => {
+      const log = vi.fn();
+      const blocker = vi.fn();
+      const queryByWuFn = vi.fn().mockResolvedValue([]);
+      const hasSessionCheckpointsFn = vi.fn().mockReturnValue(false);
+
+      await enforceCheckpointGateForDone({
+        id: 'WU-1998',
+        workspacePath: 'worktrees/framework-cli-wu-commands-wu-1998',
+        mode: CHECKPOINT_GATE_MODES.BLOCK,
+        queryByWuFn,
+        hasSessionCheckpointsFn,
+        log,
+        blocker,
+      });
+
+      expect(log).not.toHaveBeenCalled();
+      expect(blocker).toHaveBeenCalledTimes(1);
+      expect(blocker).toHaveBeenCalledWith(expect.stringContaining('No checkpoints found'));
     });
   });
 

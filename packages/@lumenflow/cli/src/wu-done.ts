@@ -181,6 +181,95 @@ const MEMORY_CHECKPOINT_NOTES = {
 };
 const MEMORY_SIGNAL_WINDOW_MS = 60 * 60 * 1000; // 1 hour for recent signals
 
+export const CHECKPOINT_GATE_MODES = {
+  OFF: 'off',
+  WARN: 'warn',
+  BLOCK: 'block',
+} as const;
+
+type CheckpointGateMode = (typeof CHECKPOINT_GATE_MODES)[keyof typeof CHECKPOINT_GATE_MODES];
+
+const CHECKPOINT_GATE_CONFIG = {
+  PATH: 'memory.enforcement.require_checkpoint_for_done',
+  COMMAND_PREFIX: 'pnpm mem:checkpoint --wu',
+  WARN_TAG: 'WU-1998',
+} as const;
+
+type CheckpointNodes = Awaited<ReturnType<typeof queryByWu>>;
+
+interface EnforceCheckpointGateForDoneOptions {
+  id: string;
+  workspacePath: string;
+  mode: CheckpointGateMode;
+  queryByWuFn?: (basePath: string, wuId: string) => Promise<CheckpointNodes>;
+  hasSessionCheckpointsFn?: (wuId: string, wuNodes: CheckpointNodes) => boolean;
+  log?: (message: string) => void;
+  blocker?: (message: string) => void;
+}
+
+function buildCheckpointGateBlockMessage(id: string): string {
+  return (
+    `${STRING_LITERALS.NEWLINE}${LOG_PREFIX.DONE} ${EMOJI.FAILURE} No checkpoints found for ${id} session.${STRING_LITERALS.NEWLINE}` +
+    `${LOG_PREFIX.DONE} ${CHECKPOINT_GATE_CONFIG.PATH} is set to '${CHECKPOINT_GATE_MODES.BLOCK}'.${STRING_LITERALS.NEWLINE}` +
+    `${LOG_PREFIX.DONE} Create a checkpoint before completing: ${CHECKPOINT_GATE_CONFIG.COMMAND_PREFIX} ${id}${STRING_LITERALS.NEWLINE}`
+  );
+}
+
+function buildCheckpointGateWarnMessages(id: string): string[] {
+  return [
+    `${STRING_LITERALS.NEWLINE}${LOG_PREFIX.DONE} ${EMOJI.INFO} ${CHECKPOINT_GATE_CONFIG.WARN_TAG}: No prior checkpoints recorded for ${id} in this session.`,
+    `${LOG_PREFIX.DONE} A pre-gates checkpoint will be created automatically by wu:done.`,
+    `${LOG_PREFIX.DONE} For earlier crash recovery, run '${CHECKPOINT_GATE_CONFIG.COMMAND_PREFIX} ${id}' after each acceptance criterion, before gates, or every 30 tool calls.${STRING_LITERALS.NEWLINE}`,
+  ];
+}
+
+export function resolveCheckpointGateMode(mode: unknown): CheckpointGateMode {
+  if (mode === CHECKPOINT_GATE_MODES.OFF) {
+    return CHECKPOINT_GATE_MODES.OFF;
+  }
+  if (mode === CHECKPOINT_GATE_MODES.BLOCK) {
+    return CHECKPOINT_GATE_MODES.BLOCK;
+  }
+  return CHECKPOINT_GATE_MODES.WARN;
+}
+
+export async function enforceCheckpointGateForDone({
+  id,
+  workspacePath,
+  mode,
+  queryByWuFn = queryByWu,
+  hasSessionCheckpointsFn = hasSessionCheckpoints,
+  log = console.log,
+  blocker = (message: string) => {
+    die(message);
+  },
+}: EnforceCheckpointGateForDoneOptions): Promise<void> {
+  if (mode === CHECKPOINT_GATE_MODES.OFF) {
+    return;
+  }
+
+  let wuNodes: CheckpointNodes;
+  try {
+    wuNodes = await queryByWuFn(workspacePath, id);
+    if (hasSessionCheckpointsFn(id, wuNodes)) {
+      return;
+    }
+  } catch {
+    // Fail-open: checkpoint discovery issues should not block wu:done.
+    return;
+  }
+
+  if (mode === CHECKPOINT_GATE_MODES.BLOCK) {
+    blocker(buildCheckpointGateBlockMessage(id));
+    return;
+  }
+
+  const warnMessages = buildCheckpointGateWarnMessages(id);
+  for (const message of warnMessages) {
+    log(message);
+  }
+}
+
 type GitAdapter = ReturnType<typeof getGitForCwd>;
 
 interface WUDocLike extends Record<string, unknown> {
@@ -2920,47 +3009,16 @@ async function main() {
   // Step 0: Run gates (WU-1215: extracted to executeGates function)
   const worktreePath = effectiveWorktreePath;
 
-  // WU-1471 AC3: Config-driven checkpoint gate (replaces WU-1943 hardcoded warn)
-  // Reads memory.enforcement.require_checkpoint_for_done from config:
-  //   'off'  - skip checkpoint check entirely
-  //   'warn' - warn but allow wu:done (default, fail-open)
-  //   'block' - fail wu:done if no checkpoints found
-  try {
-    const checkpointGateConfig = getConfig();
-    const requireCheckpoint =
-      checkpointGateConfig.memory?.enforcement?.require_checkpoint_for_done ?? 'warn';
-
-    if (requireCheckpoint !== 'off') {
-      const wuNodes = await queryByWu(worktreePath || mainCheckoutPath, id);
-      if (!hasSessionCheckpoints(id, wuNodes)) {
-        if (requireCheckpoint === 'block') {
-          die(
-            `\n${LOG_PREFIX.DONE} ${EMOJI.FAILURE} No checkpoints found for ${id} session.\n` +
-              `${LOG_PREFIX.DONE} memory.enforcement.require_checkpoint_for_done is set to 'block'.\n` +
-              `${LOG_PREFIX.DONE} Create a checkpoint before completing: pnpm mem:checkpoint --wu ${id}\n`,
-          );
-        } else {
-          // 'warn' mode (default)
-          console.log(
-            `\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1943: No checkpoints found for ${id} session.`,
-          );
-          console.log(
-            `${LOG_PREFIX.DONE} Consider using 'pnpm mem:checkpoint --wu ${id}' periodically for crash recovery.`,
-          );
-          console.log(
-            `${LOG_PREFIX.DONE} Checkpoint triggers: after each acceptance criterion, before gates, every 30 tool calls.\n`,
-          );
-        }
-      }
-    }
-  } catch (checkpointErr) {
-    // Non-blocking in 'warn' mode: checkpoint check failure should not block wu:done
-    // In 'block' mode, die() already exited, so this only catches non-die errors
-    if (checkpointErr instanceof Error && checkpointErr.message?.includes('No checkpoints found')) {
-      throw checkpointErr; // Re-throw die() errors
-    }
-    // Otherwise silently allow - fail-open
-  }
+  // WU-1471 AC3 + WU-1998: Config-driven checkpoint gate with accurate warn-mode messaging.
+  const checkpointGateConfig = getConfig();
+  const requireCheckpoint = resolveCheckpointGateMode(
+    checkpointGateConfig.memory?.enforcement?.require_checkpoint_for_done,
+  );
+  await enforceCheckpointGateForDone({
+    id,
+    workspacePath: worktreePath || mainCheckoutPath,
+    mode: requireCheckpoint,
+  });
 
   // WU-1663: Preparation complete - transition to gating state
   pipelineActor.send({ type: WU_DONE_EVENTS.PREPARATION_COMPLETE });
