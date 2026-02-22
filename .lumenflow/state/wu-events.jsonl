@@ -1960,4 +1960,5 @@
 {"type":"complete","wuId":"WU-1998","timestamp":"2026-02-22T02:38:26.015Z"}
 {"type":"claim","wuId":"WU-1999","timestamp":"2026-02-22T02:40:16.221Z","lane":"Framework: CLI Enforcement","title":"Ignore symlinked dist artifact roots in incremental format gate"}
 {"type":"complete","wuId":"WU-1999","timestamp":"2026-02-22T02:48:59.106Z"}
-{"type":"claim","wuId":"WU-2000","lane":"Framework: CLI Enforcement","title":"Ignore prettier symlink diagnostics in format guidance output","timestamp":"2026-02-22T02:51:21.986Z"}
+{"type":"claim","wuId":"WU-2000","timestamp":"2026-02-22T02:51:21.986Z","lane":"Framework: CLI Enforcement","title":"Ignore prettier symlink diagnostics in format guidance output"}
+{"type":"complete","wuId":"WU-2000","timestamp":"2026-02-22T02:57:14.124Z"}

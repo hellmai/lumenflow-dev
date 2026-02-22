@@ -2,7 +2,7 @@ id: WU-2000
 title: Ignore prettier symlink diagnostics in format guidance output
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -43,3 +43,6 @@ session_id: 30579fa9-6d33-4076-a4eb-e65f12d6c216
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T02:51:21.939Z
+locked: true
+completed_at: 2026-02-22T02:57:09.432Z
+completed: 2026-02-22

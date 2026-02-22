@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-2000 — Ignore prettier symlink diagnostics in format guidance output](wu/WU-2000.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -937,3 +937,4 @@ _Last updated: 2026-02-22_
 - [WU-1997 — Remove UnsafeAny placeholder leakage from user-facing wu:done messaging](wu/WU-1997.yaml) — 2026-02-22
 - [WU-1998 — Reduce misleading no-checkpoint warnings in wu:done warn mode](wu/WU-1998.yaml) — 2026-02-22
 - [WU-1999 — Ignore symlinked dist artifact roots in incremental format gate](wu/WU-1999.yaml) — 2026-02-22
+- [WU-2000 — Ignore prettier symlink diagnostics in format guidance output](wu/WU-2000.yaml) — 2026-02-22
