@@ -2,7 +2,7 @@ id: WU-2013
 title: Decompose wu-state-store.ts into focused services (1274 lines)
 lane: 'Framework: Core State Recovery'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-22
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - Each extracted service has single responsibility and under 300 lines
   - Focused interfaces IWuEventLog, IWuLockManager, IWuStateQuery defined in ports/
   - All existing wu-state-store tests pass without modification
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-state-recovery-wu-2013
+claimed_at: 2026-02-22T14:38:03.224Z
+baseline_main_sha: 9fde424620d16d8498d0a9624bae28fcb9205d8a
+session_id: b82b6023-6b72-4fcf-a9b2-9ca11298a52c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T14:38:03.229Z

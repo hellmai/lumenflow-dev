@@ -1986,3 +1986,4 @@
 {"type":"claim","wuId":"WU-2038","timestamp":"2026-02-22T14:28:36.366Z","lane":"Operations: Tooling","title":"Gitignore next-env.d.ts to prevent build side-effects on main"}
 {"type":"complete","wuId":"WU-2038","timestamp":"2026-02-22T14:35:41.686Z"}
 {"type":"claim","wuId":"WU-2011","lane":"Framework: CLI Orchestration","title":"Extract magic numbers in CLI package (@lumenflow/cli)","timestamp":"2026-02-22T14:37:26.715Z"}
+{"type":"claim","wuId":"WU-2013","lane":"Framework: Core State Recovery","title":"Decompose wu-state-store.ts into focused services (1274 lines)","timestamp":"2026-02-22T14:38:03.262Z"}
