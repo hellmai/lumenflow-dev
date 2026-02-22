@@ -27,7 +27,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2009 — Add claim-validation gate for absolute acceptance criteria drift](wu/WU-2009.yaml) — Framework: Core Validation
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1004,6 +1004,7 @@ sections:
 - [WU-2008 — Remove remaining direct process.exit usage from core modules](wu/WU-2008.yaml)
 - [WU-2046 — Fix pre-existing wu-spawn.test.ts failures](wu/WU-2046.yaml)
 - [WU-2021 — Filter deleted files from incremental format check input](wu/WU-2021.yaml)
+- [WU-2009 — Add claim-validation gate for absolute acceptance criteria drift](wu/WU-2009.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

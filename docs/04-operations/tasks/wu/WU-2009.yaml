@@ -2,7 +2,7 @@ id: WU-2009
 title: Add claim-validation gate for absolute acceptance criteria drift
 lane: 'Framework: Core Validation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -65,3 +65,6 @@ session_id: c446f0d0-6bcf-4cb6-b310-fbbfb624eb44
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T22:52:22.069Z
+locked: true
+completed_at: 2026-02-22T23:24:37.496Z
+completed: 2026-02-22
