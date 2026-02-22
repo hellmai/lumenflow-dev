@@ -6,10 +6,11 @@ status: in_progress
 priority: P1
 created: 2026-02-22
 code_paths:
-  - packages/@lumenflow/core/src/lumenflow-config.ts
-  - packages/@lumenflow/core/src/gates-config.ts
-  - packages/@lumenflow/core/src/config-contract.ts
   - actions/lumenflow-gates/src/index.ts
+  - packages/@lumenflow/core/src/gates-config.ts
+  - packages/@lumenflow/core/src/lumenflow-config.ts
+  - packages/@lumenflow/core/src/object-guards.ts
+  - packages/@lumenflow/core/src/__tests__/gates-config.test.ts
 tests:
   manual:
     - Run rg over touched runtime files to verify no duplicated workspace key/file-name literals
@@ -25,10 +26,17 @@ initiative: INIT-033
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-22T14:44:49.558Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2039
+session_id: bbafff77-d522-4c8a-b72f-e820a2786d34
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T14:44:49.565Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -44,11 +52,3 @@ acceptance:
     from schema/policy defaults where possible.
   - Core tests cover updated helper/constant behavior and pass.
   - Gates pass for touched packages before completion.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2039
-claimed_at: 2026-02-22T14:44:49.558Z
-baseline_main_sha: 0b75201970193eeb48eb6ba3ce4eba6e275719a1
-session_id: bbafff77-d522-4c8a-b72f-e820a2786d34
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-22T14:44:49.565Z
