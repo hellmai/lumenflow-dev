@@ -2,7 +2,7 @@ id: WU-1996
 title: Eliminate wu:claim worktree install bin-link ENOENT warnings
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -47,3 +47,6 @@ session_id: 07bcbd41-2f8b-494b-998b-5a2c89763a22
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T02:10:14.163Z
+locked: true
+completed_at: 2026-02-22T02:20:30.814Z
+completed: 2026-02-22

@@ -1952,4 +1952,5 @@
 {"type":"complete","wuId":"WU-1702","timestamp":"2026-02-22T01:53:58.859Z"}
 {"type":"claim","wuId":"WU-1995","timestamp":"2026-02-22T01:56:29.082Z","lane":"Framework: Core Validation","title":"Harden code_paths validation for glob patterns and symlink loops"}
 {"type":"complete","wuId":"WU-1995","timestamp":"2026-02-22T02:06:13.136Z"}
-{"type":"claim","wuId":"WU-1996","lane":"Framework: CLI WU Commands","title":"Eliminate wu:claim worktree install bin-link ENOENT warnings","timestamp":"2026-02-22T02:10:14.214Z"}
+{"type":"claim","wuId":"WU-1996","timestamp":"2026-02-22T02:10:14.214Z","lane":"Framework: CLI WU Commands","title":"Eliminate wu:claim worktree install bin-link ENOENT warnings"}
+{"type":"complete","wuId":"WU-1996","timestamp":"2026-02-22T02:20:35.614Z"}

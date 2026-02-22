@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-1996 — Eliminate wu:claim worktree install bin-link ENOENT warnings](wu/WU-1996.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -933,3 +933,4 @@ _Last updated: 2026-02-22_
 - [WU-1701 — Emergency cleanup: remove domain-specific code from core package](wu/WU-1701.yaml) — 2026-02-22
 - [WU-1702 — Emergency: remove domain-specific code from CLI and MCP packages](wu/WU-1702.yaml) — 2026-02-22
 - [WU-1995 — Harden code_paths validation for glob patterns and symlink loops](wu/WU-1995.yaml) — 2026-02-22
+- [WU-1996 — Eliminate wu:claim worktree install bin-link ENOENT warnings](wu/WU-1996.yaml) — 2026-02-22
