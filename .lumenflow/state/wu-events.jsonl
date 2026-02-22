@@ -2035,3 +2035,4 @@
 {"type":"complete","wuId":"WU-2048","timestamp":"2026-02-22T18:27:17.533Z"}
 {"type":"complete","wuId":"WU-2051","timestamp":"2026-02-22T18:40:05.107Z"}
 {"type":"claim","wuId":"WU-2053","timestamp":"2026-02-22T19:18:58.782Z","lane":"Framework: CLI WU Commands","title":"P0: fix TS7006 build break on main"}
+{"type":"release","wuId":"WU-2053","timestamp":"2026-02-22T19:24:24.552Z","reason":"obsolete: main build already green and TS7006 emergency resolved upstream"}

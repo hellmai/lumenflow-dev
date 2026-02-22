@@ -22,6 +22,7 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
+- [WU-2053 — P0: fix TS7006 build break on main](wu/WU-2053.yaml) — Framework: CLI WU Commands
 - [WU-2007 — Complete runCLI(main) entrypoint standardization for orchestration and agent session commands](wu/WU-2007.yaml) — Framework: CLI Orchestration
 - [WU-2008 — Remove remaining direct process.exit usage from core modules](wu/WU-2008.yaml) — Framework: Core Lifecycle
 - [WU-2009 — Add claim-validation gate for absolute acceptance criteria drift](wu/WU-2009.yaml) — Framework: Core Validation
@@ -33,7 +34,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2053 — P0: fix TS7006 build break on main](wu/WU-2053.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 

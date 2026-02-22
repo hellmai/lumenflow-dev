@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-2053 — P0: fix TS7006 build break on main](wu/WU-2053.yaml)
+(No items currently in progress)
 
 ## Completed
 
