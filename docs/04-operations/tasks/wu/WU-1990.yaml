@@ -26,7 +26,7 @@ assigned_to: tom@hellm.ai
 claimed_at: 2026-02-22T00:13:00.830Z
 worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-1990
 session_id: 135668fb-a59d-41bc-8872-6786a40dd70e
-exposure: ui
+exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
 approved_by:
