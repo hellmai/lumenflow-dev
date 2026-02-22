@@ -14,6 +14,7 @@ code_paths:
   - packages/@lumenflow/cli/src/gates.ts
   - packages/@lumenflow/cli/src/__tests__/gate-registry-defaults.test.ts
   - packages/@lumenflow/cli/src/__tests__/gates-config.test.ts
+  - packages/@lumenflow/cli/src/__tests__/gates-plan-resolvers.test.ts
   - docs/04-operations/tasks/wu
 tests:
   manual:
@@ -24,6 +25,7 @@ tests:
     - packages/@lumenflow/core/src/__tests__/validators/claim-validation.test.ts
     - packages/@lumenflow/cli/src/__tests__/gate-registry-defaults.test.ts
     - packages/@lumenflow/cli/src/__tests__/gates-config.test.ts
+    - packages/@lumenflow/cli/src/__tests__/gates-plan-resolvers.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2009.done

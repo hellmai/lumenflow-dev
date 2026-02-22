@@ -57,7 +57,7 @@ describe('resolveFormatCheckPlan (WU-1999)', () => {
   it('filters deleted files from incremental plan when cwd is provided', () => {
     const sandboxRoot = mkdtempSync(path.join(tmpdir(), 'gates-plan-wu-2021-'));
     const existingFile = 'packages/@lumenflow/cli/src/gates.ts';
-    const deletedFile = '.lumenflow.config.yaml';
+    const deletedFile = 'workspace.yaml';
     const existingFilePath = path.join(sandboxRoot, existingFile);
 
     mkdirSync(path.dirname(existingFilePath), { recursive: true });

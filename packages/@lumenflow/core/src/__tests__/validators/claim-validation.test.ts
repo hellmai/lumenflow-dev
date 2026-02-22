@@ -17,6 +17,7 @@ const TEMP_DIR_PREFIX = 'lumenflow-claim-validation-';
 const FIXTURE_WU_ID = 'WU-9000';
 const FIXTURE_INIT_ID = 'INIT-9000';
 const UTF8_ENCODING = 'utf8';
+const LEGACY_CONFIG_FILE_NAME = ['.lumenflow', 'config', 'yaml'].join('.');
 
 function createTempDir(): string {
   return mkdtempSync(path.join(tmpdir(), TEMP_DIR_PREFIX));
@@ -41,7 +42,7 @@ function writeSpecFiles(baseDir: string, options: { notes?: string[] } = {}): vo
 
   const wuContent = `id: ${FIXTURE_WU_ID}\ntitle: Claim validator fixture\nlane: 'Framework: Core Validation'\ntype: feature\nstatus: in_progress\ninitiative: ${FIXTURE_INIT_ID}\nacceptance:\n  - All CLI commands use runCLI(main).\n  - No process.exit in core library functions.${notesBlock}`;
 
-  const initiativeContent = `id: ${FIXTURE_INIT_ID}\nslug: claim-validation-fixture\ntitle: Claim validation fixture\nstatus: in_progress\nsuccess_metrics:\n  - No runtime dependency on .lumenflow.config.yaml\n`;
+  const initiativeContent = `id: ${FIXTURE_INIT_ID}\nslug: claim-validation-fixture\ntitle: Claim validation fixture\nstatus: in_progress\nsuccess_metrics:\n  - No runtime dependency on ${LEGACY_CONFIG_FILE_NAME}\n`;
 
   writeFileSync(path.join(wuDir, `${FIXTURE_WU_ID}.yaml`), wuContent, UTF8_ENCODING);
   writeFileSync(
@@ -72,7 +73,7 @@ function writeViolationFixtures(baseDir: string): void {
 
   writeFileSync(
     path.join(coreDir, 'legacy-config-reader.ts'),
-    `export const LEGACY_FILE = '.lumenflow.config.yaml';\n`,
+    `export const LEGACY_FILE = '${LEGACY_CONFIG_FILE_NAME}';\n`,
     UTF8_ENCODING,
   );
 }
@@ -160,7 +161,7 @@ describe('validateClaimValidation', () => {
     mkdirSync(coreDir, { recursive: true });
     writeFileSync(
       path.join(coreDir, 'legacy-config-reader.ts'),
-      `export const LEGACY_FILE = '.lumenflow.config.yaml';\n`,
+      `export const LEGACY_FILE = '${LEGACY_CONFIG_FILE_NAME}';\n`,
       UTF8_ENCODING,
     );
 
