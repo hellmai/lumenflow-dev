@@ -210,7 +210,6 @@ security:
 memory_namespace: lumenflow
 event_namespace: lumenflow
 software_delivery:
-  # INIT-033 hard cut: runtime tooling now resolves config from this block only.
   version: '2.0'
   directories:
     appsWeb: apps/web/
@@ -622,6 +621,8 @@ software_delivery:
         code_paths:
           - docs/**
           - apps/docs/**
+    lifecycle:
+      status: locked
   package_manager: pnpm
   test_runner: vitest
   build_command: pnpm build
