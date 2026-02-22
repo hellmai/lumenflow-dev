@@ -12,6 +12,7 @@ tests:
     - Create a task via the web UI over HTTP - no error
   unit:
     - apps/web/src/components/__tests__/workspace-overview-live.test.ts
+    - apps/web/__tests__/generate-client-uuid.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2035.done
@@ -19,10 +20,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-22T13:24:39.461Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-runtime-wu-2035
+session_id: c41ee778-699c-4a79-ae56-e761186b8375
 exposure: ui
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T13:24:39.466Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -32,11 +40,3 @@ description: crypto.randomUUID() is called in workspace-overview-live.tsx (clien
 acceptance:
   - Task creation works over plain HTTP (non-secure context)
   - crypto.getRandomValues fallback generates valid UUID v4
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/operations-runtime-wu-2035
-claimed_at: 2026-02-22T13:24:39.461Z
-baseline_main_sha: cea8060119227e33d74e5d4ce8d46dba48aa130f
-session_id: c41ee778-699c-4a79-ae56-e761186b8375
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-22T13:24:39.466Z
