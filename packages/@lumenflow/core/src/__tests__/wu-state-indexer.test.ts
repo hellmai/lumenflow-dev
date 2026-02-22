@@ -166,9 +166,7 @@ describe('WUStateIndexer', () => {
           title: 'Test',
         }),
       );
-      indexer.applyEvent(
-        makeEvent({ type: 'block', wuId: 'WU-100', reason: 'Dep' }),
-      );
+      indexer.applyEvent(makeEvent({ type: 'block', wuId: 'WU-100', reason: 'Dep' }));
       indexer.applyEvent(makeEvent({ type: 'unblock', wuId: 'WU-100' }));
 
       expect(indexer.getWUState('WU-100')!.status).toBe('in_progress');
@@ -396,9 +394,7 @@ describe('WUStateIndexer', () => {
           title: 'Test',
         }),
       );
-      indexer.applyEvent(
-        makeEvent({ type: 'block', wuId: 'WU-100', reason: 'Dep' }),
-      );
+      indexer.applyEvent(makeEvent({ type: 'block', wuId: 'WU-100', reason: 'Dep' }));
 
       // WU should still be in the lane index
       expect(indexer.getByLane('Framework: Core').has('WU-100')).toBe(true);

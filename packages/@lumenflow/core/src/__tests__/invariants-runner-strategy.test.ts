@@ -60,9 +60,7 @@ vi.mock('../wu-yaml.js', () => ({
 
 // Mock error-handler
 vi.mock('../error-handler.js', () => ({
-  getErrorMessage: vi.fn((e: unknown) =>
-    e instanceof Error ? e.message : String(e),
-  ),
+  getErrorMessage: vi.fn((e: unknown) => (e instanceof Error ? e.message : String(e))),
 }));
 
 import { globSync } from 'glob';
@@ -221,9 +219,7 @@ describe('MutualExclusivityChecker', () => {
   });
 
   it('should return null when exactly one file exists', () => {
-    vi.mocked(existsSync).mockImplementation((p: unknown) =>
-      String(p).endsWith('a.ts'),
-    );
+    vi.mocked(existsSync).mockImplementation((p: unknown) => String(p).endsWith('a.ts'));
 
     const checker = getInvariantChecker(INVARIANT_TYPES.MUTUAL_EXCLUSIVITY)!;
     const result = checker.validate(

@@ -62,9 +62,7 @@ describe('FILE_REPAIR_STRATEGIES', () => {
   });
 
   it('should have a handler for YAML_DONE_STATUS_IN_PROGRESS', () => {
-    expect(
-      FILE_REPAIR_STRATEGIES[CONSISTENCY_TYPES.YAML_DONE_STATUS_IN_PROGRESS],
-    ).toBeDefined();
+    expect(FILE_REPAIR_STRATEGIES[CONSISTENCY_TYPES.YAML_DONE_STATUS_IN_PROGRESS]).toBeDefined();
   });
 
   it('should have a handler for BACKLOG_DUAL_SECTION', () => {
@@ -72,9 +70,7 @@ describe('FILE_REPAIR_STRATEGIES', () => {
   });
 
   it('should have a handler for STAMP_EXISTS_YAML_NOT_DONE', () => {
-    expect(
-      FILE_REPAIR_STRATEGIES[CONSISTENCY_TYPES.STAMP_EXISTS_YAML_NOT_DONE],
-    ).toBeDefined();
+    expect(FILE_REPAIR_STRATEGIES[CONSISTENCY_TYPES.STAMP_EXISTS_YAML_NOT_DONE]).toBeDefined();
   });
 
   describe('YAML_DONE_NO_STAMP strategy', () => {
@@ -93,9 +89,7 @@ describe('FILE_REPAIR_STRATEGIES', () => {
     });
 
     it('should use WU ID as fallback title when title is missing', async () => {
-      const { createStampInWorktree } = await import(
-        '../wu-consistency-file-repairs.js'
-      );
+      const { createStampInWorktree } = await import('../wu-consistency-file-repairs.js');
       const strategy = FILE_REPAIR_STRATEGIES[CONSISTENCY_TYPES.YAML_DONE_NO_STAMP]!;
       const error = makeError({
         type: CONSISTENCY_TYPES.YAML_DONE_NO_STAMP,
@@ -105,11 +99,7 @@ describe('FILE_REPAIR_STRATEGIES', () => {
 
       await strategy(error, '/tmp/wt', '/project');
 
-      expect(createStampInWorktree).toHaveBeenCalledWith(
-        'WU-200',
-        'WU WU-200',
-        '/tmp/wt',
-      );
+      expect(createStampInWorktree).toHaveBeenCalledWith('WU-200', 'WU WU-200', '/tmp/wt');
     });
   });
 });
@@ -134,9 +124,7 @@ describe('GIT_REPAIR_STRATEGIES', () => {
     });
 
     it('should call removeOrphanWorktree when lane is present', async () => {
-      const { removeOrphanWorktree } = await import(
-        '../wu-consistency-file-repairs.js'
-      );
+      const { removeOrphanWorktree } = await import('../wu-consistency-file-repairs.js');
       const strategy = GIT_REPAIR_STRATEGIES[CONSISTENCY_TYPES.ORPHAN_WORKTREE_DONE]!;
       const error = makeError({
         type: CONSISTENCY_TYPES.ORPHAN_WORKTREE_DONE,
@@ -146,11 +134,7 @@ describe('GIT_REPAIR_STRATEGIES', () => {
 
       await strategy(error, '/project');
 
-      expect(removeOrphanWorktree).toHaveBeenCalledWith(
-        'WU-100',
-        'Framework: Core',
-        '/project',
-      );
+      expect(removeOrphanWorktree).toHaveBeenCalledWith('WU-100', 'Framework: Core', '/project');
     });
   });
 });
@@ -177,12 +161,8 @@ describe('Strategy map completeness', () => {
   });
 
   it('should NOT have MISSING_WORKTREE_CLAIMED in either strategy map (not auto-repairable)', () => {
-    expect(
-      CONSISTENCY_TYPES.MISSING_WORKTREE_CLAIMED in FILE_REPAIR_STRATEGIES,
-    ).toBe(false);
-    expect(
-      CONSISTENCY_TYPES.MISSING_WORKTREE_CLAIMED in GIT_REPAIR_STRATEGIES,
-    ).toBe(false);
+    expect(CONSISTENCY_TYPES.MISSING_WORKTREE_CLAIMED in FILE_REPAIR_STRATEGIES).toBe(false);
+    expect(CONSISTENCY_TYPES.MISSING_WORKTREE_CLAIMED in GIT_REPAIR_STRATEGIES).toBe(false);
   });
 });
 
