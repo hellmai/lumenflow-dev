@@ -1979,3 +1979,4 @@
 {"type":"claim","wuId":"WU-2022","timestamp":"2026-02-22T10:04:16.513Z","lane":"Framework: Core Lifecycle","title":"Close workspace-first hard cut: move remaining legacy config readers"}
 {"type":"complete","wuId":"WU-2022","timestamp":"2026-02-22T10:59:45.972Z"}
 {"type":"claim","wuId":"WU-2034","lane":"Framework: Core Lifecycle","title":"Complete kernel-first hard cut from legacy config references","timestamp":"2026-02-22T12:47:21.186Z"}
+{"type":"claim","wuId":"WU-2035","lane":"Operations: Runtime","title":"Fix crypto.randomUUID crash in non-secure HTTP contexts","timestamp":"2026-02-22T13:24:39.508Z"}

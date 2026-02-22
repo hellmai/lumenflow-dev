@@ -5,6 +5,7 @@ _Last updated: 2026-02-22_
 ## In Progress
 
 - [WU-2034 — Complete kernel-first hard cut from legacy config references](wu/WU-2034.yaml)
+- [WU-2035 — Fix crypto.randomUUID crash in non-secure HTTP contexts](wu/WU-2035.yaml)
 
 ## Completed
 
