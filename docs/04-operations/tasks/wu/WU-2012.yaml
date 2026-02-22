@@ -2,7 +2,7 @@ id: WU-2012
 title: Decompose wu-spawn.ts god object (2342 lines)
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-22
 code_paths:
@@ -31,9 +31,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Break wu-spawn.ts (2342 lines, 20+ exports) into focused modules: spawn-template-assembler.ts (template loading/assembly), spawn-policy-resolver.ts (policy-based generation), spawn-guidance-generators.ts (test/architecture/design sections), spawn-constraints-generator.ts (constraint block generation), spawn-task-builder.ts (task invocation building). Partial decomposition already exists (wu-spawn-helpers.ts, wu-spawn-skills.ts, wu-spawn-context.ts) but the main file still holds the bulk.'
+description: 'Break wu-spawn.ts (2342 lines, 20+ exports) into focused modules:
+  spawn-template-assembler.ts (template loading/assembly), spawn-policy-resolver.ts (policy-based
+  generation), spawn-guidance-generators.ts (test/architecture/design sections),
+  spawn-constraints-generator.ts (constraint block generation), spawn-task-builder.ts (task
+  invocation building). Partial decomposition already exists (wu-spawn-helpers.ts,
+  wu-spawn-skills.ts, wu-spawn-context.ts) but the main file still holds the bulk.'
 acceptance:
   - wu-spawn.ts reduced to under 500 lines (thin facade or re-export module)
   - Each extracted module has a single responsibility and under 500 lines
   - All existing wu-spawn tests pass without modification
   - Public API (index.ts exports) unchanged — zero breaking changes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2012
+claimed_at: 2026-02-22T14:38:45.887Z
+baseline_main_sha: a45dddb22fbd7207e851c83b6ea4f871c15a05ba
+session_id: b82b6023-6b72-4fcf-a9b2-9ca11298a52c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T14:38:45.896Z

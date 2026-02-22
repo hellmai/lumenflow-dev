@@ -8,6 +8,7 @@ _Last updated: 2026-02-22_
 - [WU-2011 — Extract magic numbers in CLI package (@lumenflow/cli)](wu/WU-2011.yaml)
 - [WU-2013 — Decompose wu-state-store.ts into focused services (1274 lines)](wu/WU-2013.yaml)
 - [WU-2010 — Extract magic numbers into named constants (core kernel)](wu/WU-2010.yaml)
+- [WU-2012 — Decompose wu-spawn.ts god object (2342 lines)](wu/WU-2012.yaml)
 
 ## Completed
 
