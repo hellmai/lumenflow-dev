@@ -12,7 +12,11 @@ code_paths:
   - packages/@lumenflow/core/src/stream-error-handler.ts
   - packages/@lumenflow/core/src/error-handler.ts
 tests:
-  manual: []
+  manual:
+    - Run rg 'process\.exit\(' over the four target core modules and confirm no direct process.exit
+      usage remains in core runtime paths.
+    - Execute a CLI path that exercises one migrated core exit intent and verify CLI boundary still
+      returns the expected non-zero exit code.
   unit:
     - packages/@lumenflow/core/src/__tests__/prompt-monitor.test.ts
     - packages/@lumenflow/core/src/__tests__/prompt-linter.test.ts
@@ -35,8 +39,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-020 success metric states core library modules no longer call process.exit directly, but prompt-monitor, prompt-linter, is-agent-branch, and stream-error-handler still invoke process.exit paths. Problem: core package remains responsible for process termination semantics that should live at CLI edges. Solution: replace direct process.exit with typed exit errors/return codes and inject exit handlers only at CLI wrappers.'
+description: 'Context: INIT-020 success metric states core library modules no longer call
+  process.exit directly, but prompt-monitor, prompt-linter, is-agent-branch, and
+  stream-error-handler still invoke process.exit paths. Problem: core package remains responsible
+  for process termination semantics that should live at CLI edges. Solution: replace direct
+  process.exit with typed exit errors/return codes and inject exit handlers only at CLI wrappers.'
 acceptance:
-  - prompt-monitor.ts, prompt-linter.ts, is-agent-branch.ts, and stream-error-handler.ts do not call process.exit directly in core runtime paths.
+  - prompt-monitor.ts, prompt-linter.ts, is-agent-branch.ts, and stream-error-handler.ts do not call
+    process.exit directly in core runtime paths.
   - Core APIs return/throw typed exit intent that CLI entrypoints map to process exit.
   - Regression tests verify equivalent exit codes and failure messaging at CLI boundary.
