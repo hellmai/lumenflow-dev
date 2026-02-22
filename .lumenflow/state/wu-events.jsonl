@@ -1972,4 +1972,5 @@
 {"type":"complete","wuId":"WU-2003","timestamp":"2026-02-22T03:55:43.111Z"}
 {"type":"claim","wuId":"WU-2004","timestamp":"2026-02-22T03:57:00.609Z","lane":"Content: Specs Governance","title":"Reconcile completed initiatives still marked in_progress"}
 {"type":"complete","wuId":"WU-2004","timestamp":"2026-02-22T03:59:46.206Z"}
-{"type":"claim","wuId":"WU-2005","lane":"Framework: Core Validation","title":"Derive initiative phase status from phase WU completion","timestamp":"2026-02-22T04:01:07.647Z"}
+{"type":"claim","wuId":"WU-2005","timestamp":"2026-02-22T04:01:07.647Z","lane":"Framework: Core Validation","title":"Derive initiative phase status from phase WU completion"}
+{"type":"complete","wuId":"WU-2005","timestamp":"2026-02-22T04:06:52.537Z"}

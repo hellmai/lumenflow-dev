@@ -2,7 +2,7 @@ id: WU-2005
 title: Derive initiative phase status from phase WU completion
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -41,3 +41,6 @@ session_id: 3393821e-803f-4231-b2e8-60114a7738fe
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T04:01:07.604Z
+locked: true
+completed_at: 2026-02-22T04:06:47.566Z
+completed: 2026-02-22
