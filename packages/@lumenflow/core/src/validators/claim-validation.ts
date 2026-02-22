@@ -54,6 +54,9 @@ const SOURCE_GLOB_IGNORES = [
   '**/node_modules/**',
 ] as const;
 
+const CLAIM_VALIDATOR_SOURCE_GLOB = `${DIRECTORIES.PACKAGES}**/core/src/validators/claim-validation.ts`;
+const LEGACY_CONFIG_SCAN_IGNORES = [...SOURCE_GLOB_IGNORES, CLAIM_VALIDATOR_SOURCE_GLOB] as const;
+
 const CORE_RUNTIME_IGNORES = [
   ...SOURCE_GLOB_IGNORES,
   `${DIRECTORIES.PACKAGES}**/core/src/cli/**`,
@@ -139,7 +142,7 @@ const CHECK_DEFINITIONS: readonly CheckDefinition[] = [
       return scanLinesForPattern({
         projectRoot,
         globs: SOURCE_GLOBS.LEGACY_CONFIG,
-        ignores: SOURCE_GLOB_IGNORES,
+        ignores: LEGACY_CONFIG_SCAN_IGNORES,
         includeLine: (line: string): boolean => {
           return line.includes(LEGACY_CONFIG_FILE_LITERAL) && !isCommentOnlyLine(line);
         },
