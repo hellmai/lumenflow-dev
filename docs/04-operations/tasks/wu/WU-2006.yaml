@@ -14,7 +14,11 @@ code_paths:
   - tools/cli-entry.mjs
   - workspace.yaml
 tests:
-  manual: []
+  manual:
+    - From repo root
+    - run pnpm lane:status and verify no command or path references .lumenflow.config.yaml.
+    - Temporarily move workspace.yaml aside and run pnpm lane:status; verify fail-fast guidance
+      references workspace.yaml v2 and does not mention legacy fallback.
   unit:
     - packages/@lumenflow/core/src/__tests__/gates-config.test.ts
     - packages/@lumenflow/cli/src/__tests__/doctor.test.ts
@@ -37,9 +41,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-033 hard-cut claims were closed while legacy config readers and scaffolding remained. Problem: .lumenflow.config.yaml is still load-bearing and preserves legacy contract shape. Solution: delete .lumenflow.config.yaml from this repo first, then rewrite remaining runtime/tooling consumers to read workspace.yaml v2 software_delivery directly with no fallback path.'
+description: 'Context: INIT-033 hard-cut claims were closed while legacy config readers and
+  scaffolding remained. Problem: .lumenflow.config.yaml is still load-bearing and preserves legacy
+  contract shape. Solution: delete .lumenflow.config.yaml from this repo first, then rewrite
+  remaining runtime/tooling consumers to read workspace.yaml v2 software_delivery directly with no
+  fallback path.'
 acceptance:
   - Repository no longer contains .lumenflow.config.yaml.
   - No runtime/tooling path falls back to legacy config when workspace.yaml is missing or invalid.
-  - Former legacy readers (core config loader, gates config, lane status/lifecycle entrypoint checks, bootstrap/init surfaces, action/tool wrappers) resolve from workspace.yaml v2 schema.
-  - Regression tests cover delete-first behavior and fail-fast guidance when workspace.yaml is absent/invalid.
+  - Former legacy readers (core config loader, gates config, lane status/lifecycle entrypoint
+    checks, bootstrap/init surfaces, action/tool wrappers) resolve from workspace.yaml v2 schema.
+  - Regression tests cover delete-first behavior and fail-fast guidance when workspace.yaml is
+    absent/invalid.
