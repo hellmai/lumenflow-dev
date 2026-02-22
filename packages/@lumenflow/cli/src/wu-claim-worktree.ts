@@ -20,6 +20,7 @@ import {
   COMMIT_FORMATS,
   EMOJI,
   FILE_SYSTEM,
+  STRING_LITERALS,
 } from '@lumenflow/core/wu-constants';
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { shouldSkipRemoteOperations } from '@lumenflow/core/micro-worktree';
@@ -157,9 +158,9 @@ export async function setupWorktreeDependencies(
       const previewErrors = seededBinArtifacts.errors
         .slice(0, WORKTREE_SETUP_WARNING_PREVIEW_COUNT)
         .map((error) => error.message)
-        .join(FILE_SYSTEM.NEWLINE + '  - ');
+        .join(STRING_LITERALS.NEWLINE + '  - ');
       console.warn(
-        `${PREFIX} Warning: failed to seed ${seededBinArtifacts.errors.length} workspace artifact root(s):${FILE_SYSTEM.NEWLINE}  - ${previewErrors}`,
+        `${PREFIX} Warning: failed to seed ${seededBinArtifacts.errors.length} workspace artifact root(s):${STRING_LITERALS.NEWLINE}  - ${previewErrors}`,
       );
     }
 
