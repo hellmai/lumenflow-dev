@@ -14,7 +14,11 @@ code_paths:
   - packages/@lumenflow/cli/src/agent-log-issue.ts
   - packages/@lumenflow/cli/src/cli-entry-point.ts
 tests:
-  manual: []
+  manual:
+    - Run rg '.parse\(|process\.exit\(' over the six target CLI files and confirm module entry uses
+      runCLI(main) pattern only.
+    - Run one updated command (for example pnpm orchestrate:init-status -i INIT-020) and verify
+      behavior is unchanged with normal exit handling.
   unit:
     - packages/@lumenflow/cli/src/__tests__/cli-entry-point.test.ts
     - packages/@lumenflow/cli/src/__tests__/cli-epipe-resilience.test.ts
@@ -36,8 +40,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: INIT-020 and WU-1537 claim all CLI commands use runCLI(main), but six shebang command files still call commander program.parse/process.exit directly. Problem: inconsistent entrypoint lifecycle and EPIPE handling remain. Solution: wrap remaining orchestration and agent session commands in import.meta.main + runCLI(main), preserving behavior while removing direct top-level parse/exit patterns.'
+description: 'Context: INIT-020 and WU-1537 claim all CLI commands use runCLI(main), but six shebang
+  command files still call commander program.parse/process.exit directly. Problem: inconsistent
+  entrypoint lifecycle and EPIPE handling remain. Solution: wrap remaining orchestration and agent
+  session commands in import.meta.main + runCLI(main), preserving behavior while removing direct
+  top-level parse/exit patterns.'
 acceptance:
   - All shebang command files under packages/@lumenflow/cli/src use import.meta.main + runCLI(main).
-  - orchestrate-initiative.ts, orchestrate-init-status.ts, orchestrate-monitor.ts, agent-session.ts, agent-session-end.ts, and agent-log-issue.ts no longer call top-level program.parse/process.exit outside runCLI handling.
+  - orchestrate-initiative.ts, orchestrate-init-status.ts, orchestrate-monitor.ts, agent-session.ts,
+    agent-session-end.ts, and agent-log-issue.ts no longer call top-level program.parse/process.exit
+    outside runCLI handling.
   - Entry-point regression test enforces runCLI(main) standard for CLI shebang files.
