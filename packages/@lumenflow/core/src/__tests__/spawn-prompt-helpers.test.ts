@@ -187,9 +187,7 @@ describe('generateClientBlocksSection', () => {
   });
 
   it('should return empty string when config has no blocks', () => {
-    expect(
-      generateClientBlocksSection({ name: 'test', config: { blocks: [] } as never }),
-    ).toBe('');
+    expect(generateClientBlocksSection({ name: 'test', config: { blocks: [] } as never })).toBe('');
   });
 
   it('should format client blocks when present', () => {

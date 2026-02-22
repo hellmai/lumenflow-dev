@@ -94,11 +94,7 @@ describe('WUEventSourcer', () => {
 
       expect(validateWUEvent).toHaveBeenCalledWith(event);
       expect(fs.mkdir).toHaveBeenCalledWith(baseDir, { recursive: true });
-      expect(fs.appendFile).toHaveBeenCalledWith(
-        eventsPath,
-        `${JSON.stringify(event)}\n`,
-        'utf-8',
-      );
+      expect(fs.appendFile).toHaveBeenCalledWith(eventsPath, `${JSON.stringify(event)}\n`, 'utf-8');
     });
 
     it('should throw validation error when event is invalid', async () => {
@@ -205,7 +201,9 @@ describe('WUEventSourcer', () => {
         },
       } as ReturnType<typeof validateWUEvent>);
 
-      await expect(sourcer.load()).rejects.toThrow(/Validation error on line 1.*wuId: Invalid WU ID/);
+      await expect(sourcer.load()).rejects.toThrow(
+        /Validation error on line 1.*wuId: Invalid WU ID/,
+      );
     });
 
     it('should replay valid events through the indexer', async () => {
