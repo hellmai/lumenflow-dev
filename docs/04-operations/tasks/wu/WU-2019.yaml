@@ -2,7 +2,7 @@ id: WU-2019
 title: Replace work-classifier domain switch with data map
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -33,3 +33,11 @@ description: Replace 10+ case switch in work-classifier.ts getCapabilities() wit
 acceptance:
   - getCapabilities uses Record lookup, not switch statement
   - All existing work-classifier tests pass
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2019
+claimed_at: 2026-02-22T15:13:04.274Z
+baseline_main_sha: aacbb1efd24f2373e343ae1e8b406a732ec697e1
+session_id: a6e5e991-d861-4a88-b4c4-8132adc82e13
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T15:13:04.279Z
