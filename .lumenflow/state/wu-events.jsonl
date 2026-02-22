@@ -2051,3 +2051,4 @@
 {"type":"claim","wuId":"WU-2009","timestamp":"2026-02-22T22:52:22.115Z","lane":"Framework: Core Validation","title":"Add claim-validation gate for absolute acceptance criteria drift"}
 {"type":"complete","wuId":"WU-2009","timestamp":"2026-02-22T23:24:42.391Z"}
 {"type":"claim","wuId":"WU-2049","timestamp":"2026-02-22T23:25:58.784Z","lane":"Framework: Core Lifecycle","title":"INIT-034 follow-up: consolidate duplicates and fix naming collisions"}
+{"type":"complete","wuId":"WU-2049","timestamp":"2026-02-22T23:45:20.121Z"}
