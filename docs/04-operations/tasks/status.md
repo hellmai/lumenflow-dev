@@ -8,6 +8,7 @@ _Last updated: 2026-02-22_
 - [WU-2012 — Decompose wu-spawn.ts god object (2342 lines)](wu/WU-2012.yaml)
 - [WU-2017 — Replace invariant type dispatch with strategy pattern](wu/WU-2017.yaml)
 - [WU-2014 — Decompose wu-done-worktree.ts (1777 lines)](wu/WU-2014.yaml)
+- [WU-2019 — Replace work-classifier domain switch with data map](wu/WU-2019.yaml)
 
 ## Completed
 
