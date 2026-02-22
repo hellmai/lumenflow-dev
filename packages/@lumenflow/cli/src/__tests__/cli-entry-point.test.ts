@@ -197,13 +197,16 @@ describe('WU-1071/WU-1181: CLI entry point patterns', () => {
     'merge-block.ts', // Not a CLI entry point (no main guard needed)
     'wu-done-check.ts', // Not a CLI entry point (no main guard needed)
     'wu-spawn-completion.ts', // Not a CLI entry point (helper module)
-    'agent-session.ts', // Not a CLI entry point (helper module)
-    'agent-session-end.ts', // Not a CLI entry point (helper module)
-    'agent-log-issue.ts', // Not a CLI entry point (helper module)
-    'orchestrate-init-status.ts', // Not a CLI entry point (helper module)
-    'orchestrate-initiative.ts', // Not a CLI entry point (helper module)
-    'orchestrate-monitor.ts', // Not a CLI entry point (helper module)
   ]);
+
+  const WU_2007_ENTRYPOINT_FILES = [
+    'orchestrate-initiative.ts',
+    'orchestrate-init-status.ts',
+    'orchestrate-monitor.ts',
+    'agent-session.ts',
+    'agent-session-end.ts',
+    'agent-log-issue.ts',
+  ] as const;
 
   // Old broken pattern that fails with pnpm symlinks
   const OLD_BROKEN_PATTERN =
@@ -273,6 +276,24 @@ describe('WU-1071/WU-1181: CLI entry point patterns', () => {
     // This test ensures we're actually discovering files, not returning an empty list
     // WU-1537: Updated to include files that were previously excluded but have entry points
     expect(cliFiles.length).toBeGreaterThan(40);
+  });
+
+  it('WU-2007 entrypoint files should not call process.exit directly', () => {
+    const srcDir = path.resolve(__dirname, '..');
+    const errors: string[] = [];
+
+    for (const file of WU_2007_ENTRYPOINT_FILES) {
+      const filePath = path.join(srcDir, file);
+      const content = readFileSync(filePath, 'utf-8');
+
+      if (/process\.exit\(/.test(content)) {
+        errors.push(`${file} calls process.exit directly`);
+      }
+    }
+
+    if (errors.length > 0) {
+      expect.fail(`WU-2007 process.exit violations:\n${errors.join('\n')}`);
+    }
   });
 
   it('should use import.meta.main instead of process.argv[1] comparison in ALL CLI files', () => {

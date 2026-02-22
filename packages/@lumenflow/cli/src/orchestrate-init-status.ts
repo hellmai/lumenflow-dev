@@ -25,7 +25,7 @@ import {
 } from '@lumenflow/initiatives';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { getConfig } from '@lumenflow/core/config';
-import { getErrorMessage } from '@lumenflow/core/error-handler';
+import { getErrorMessage, ProcessExitError } from '@lumenflow/core/error-handler';
 import chalk from 'chalk';
 import { runCLI } from './cli-entry-point.js';
 
@@ -145,8 +145,12 @@ const program = new Command()
       console.log(chalk.bold('Lane Availability:'));
       console.log(formatLaneAvailability(availability, laneConfigs));
     } catch (err) {
-      console.error(chalk.red(`${LOG_PREFIX} Error: ${getErrorMessage(err)}`));
-      process.exit(EXIT_CODES.ERROR);
+      if (err instanceof ProcessExitError) {
+        throw err;
+      }
+      const message = `${LOG_PREFIX} Error: ${getErrorMessage(err)}`;
+      console.error(chalk.red(message));
+      throw new ProcessExitError(message, EXIT_CODES.ERROR);
     }
   });
 

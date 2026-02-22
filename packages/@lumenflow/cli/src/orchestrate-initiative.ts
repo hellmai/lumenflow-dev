@@ -34,7 +34,7 @@ import {
 } from '@lumenflow/initiatives';
 import { EXIT_CODES } from '@lumenflow/core/wu-constants';
 import { getConfig } from '@lumenflow/core/config';
-import { getErrorMessage } from '@lumenflow/core/error-handler';
+import { getErrorMessage, ProcessExitError } from '@lumenflow/core/error-handler';
 import { runCLI } from './cli-entry-point.js';
 
 const program = new Command()
@@ -58,17 +58,19 @@ const program = new Command()
     try {
       validateCheckpointFlags({ checkpointPerWave, dryRun, noCheckpoint });
     } catch (error) {
-      console.error(chalk.red(`${LOG_PREFIX} Error: ${getErrorMessage(error)}`));
-      process.exit(EXIT_CODES.ERROR);
+      const message = `${LOG_PREFIX} Error: ${getErrorMessage(error)}`;
+      console.error(chalk.red(message));
+      throw new ProcessExitError(message, EXIT_CODES.ERROR);
     }
 
     if (!initIds || initIds.length === 0) {
-      console.error(chalk.red(`${LOG_PREFIX} Error: --initiative is required`));
+      const message = `${LOG_PREFIX} Error: --initiative is required`;
+      console.error(chalk.red(message));
       console.error('');
       console.error('Usage:');
       console.error('  pnpm orchestrate:initiative --initiative INIT-001');
       console.error('  pnpm orchestrate:initiative --initiative INIT-001 --dry-run');
-      process.exit(EXIT_CODES.ERROR);
+      throw new ProcessExitError(message, EXIT_CODES.ERROR);
     }
 
     try {
@@ -105,10 +107,9 @@ const program = new Command()
 
       if (checkpointDecision.enabled) {
         if (initIds.length > 1) {
-          console.error(
-            chalk.red(`${LOG_PREFIX} Error: Checkpoint mode only supports single initiative`),
-          );
-          process.exit(EXIT_CODES.ERROR);
+          const message = `${LOG_PREFIX} Error: Checkpoint mode only supports single initiative`;
+          console.error(chalk.red(message));
+          throw new ProcessExitError(message, EXIT_CODES.ERROR);
         }
 
         const waveData = buildCheckpointWave(initIds[0], { dryRun });
@@ -197,8 +198,12 @@ const program = new Command()
       console.log(chalk.green(`${LOG_PREFIX} Execution plan output complete.`));
       console.log(chalk.cyan('Copy the spawn XML above to execute agents.'));
     } catch (error) {
-      console.error(chalk.red(`${LOG_PREFIX} Error: ${getErrorMessage(error)}`));
-      process.exit(EXIT_CODES.ERROR);
+      if (error instanceof ProcessExitError) {
+        throw error;
+      }
+      const message = `${LOG_PREFIX} Error: ${getErrorMessage(error)}`;
+      console.error(chalk.red(message));
+      throw new ProcessExitError(message, EXIT_CODES.ERROR);
     }
   });
 

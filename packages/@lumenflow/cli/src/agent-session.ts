@@ -13,6 +13,7 @@
 import { Command } from 'commander';
 import { startSession, getCurrentSession } from '@lumenflow/agent';
 import { EXIT_CODES } from '@lumenflow/core/wu-constants';
+import { ProcessExitError } from '@lumenflow/core/error-handler';
 import chalk from 'chalk';
 import { runCLI } from './cli-entry-point.js';
 
@@ -31,15 +32,17 @@ const program = new Command()
       // Check for existing session
       const existing = await getCurrentSession();
       if (existing) {
-        console.error(chalk.red(`Session already active for ${existing.wu_id}`));
+        const message = `Session already active for ${existing.wu_id}`;
+        console.error(chalk.red(message));
         console.error(`Run: pnpm agent:session:end to close it first.`);
-        process.exit(EXIT_CODES.ERROR);
+        throw new ProcessExitError(message, EXIT_CODES.ERROR);
       }
 
       const tier = parseInt(opts.tier, 10);
       if (![1, 2, 3].includes(tier)) {
-        console.error(chalk.red('Invalid tier. Must be 1, 2, or 3.'));
-        process.exit(EXIT_CODES.ERROR);
+        const message = 'Invalid tier. Must be 1, 2, or 3.';
+        console.error(chalk.red(message));
+        throw new ProcessExitError(message, EXIT_CODES.ERROR);
       }
 
       const sessionId = await startSession(opts.wu, tier as 1 | 2 | 3, opts.agentType);
@@ -50,9 +53,12 @@ const program = new Command()
       console.log(`  Tier: ${chalk.cyan(tier)}`);
       console.log(`  Agent: ${chalk.cyan(opts.agentType)}`);
     } catch (err: unknown) {
+      if (err instanceof ProcessExitError) {
+        throw err;
+      }
       const message = err instanceof Error ? err.message : String(err);
       console.error(chalk.red(`Error: ${message}`));
-      process.exit(EXIT_CODES.ERROR);
+      throw new ProcessExitError(message, EXIT_CODES.ERROR);
     }
   });
 

@@ -42,6 +42,7 @@ import {
   DEFAULT_THRESHOLD_MINUTES,
   calculateBackoff,
 } from '@lumenflow/core';
+import { ProcessExitError } from '@lumenflow/core/error-handler';
 import type { DelegationEvent } from '@lumenflow/core/delegation-registry-schema';
 import chalk from 'chalk';
 import ms, { type StringValue } from 'ms';
@@ -316,8 +317,9 @@ async function runDelegationMonitoring(opts: {
   const thresholdMinutes = parseInt(opts.threshold, 10);
 
   if (isNaN(thresholdMinutes) || thresholdMinutes <= 0) {
-    console.error(chalk.red(`${LOG_PREFIX} Invalid threshold: ${opts.threshold}`));
-    process.exit(EXIT_CODES.FAILURE);
+    const message = `${LOG_PREFIX} Invalid threshold: ${opts.threshold}`;
+    console.error(chalk.red(message));
+    throw new ProcessExitError(message, EXIT_CODES.FAILURE);
   }
 
   console.log(chalk.cyan(`${LOG_PREFIX} Analyzing delegation health...`));
@@ -343,7 +345,10 @@ async function runDelegationMonitoring(opts: {
   }
 
   if (result.stuckDelegations.length > 0 || result.zombieLocks.length > 0) {
-    process.exit(EXIT_CODES.ERROR);
+    throw new ProcessExitError(
+      `${LOG_PREFIX} Delegation monitor detected stuck delegations or zombie locks.`,
+      EXIT_CODES.ERROR,
+    );
   }
 }
 
@@ -583,8 +588,9 @@ async function runWatchMode(opts: {
   const thresholdMinutes = parseInt(opts.threshold, 10);
 
   if (isNaN(thresholdMinutes) || thresholdMinutes <= 0) {
-    console.error(chalk.red(`${LOG_PREFIX} Invalid threshold: ${opts.threshold}`));
-    process.exit(EXIT_CODES.FAILURE);
+    const message = `${LOG_PREFIX} Invalid threshold: ${opts.threshold}`;
+    console.error(chalk.red(message));
+    throw new ProcessExitError(message, EXIT_CODES.FAILURE);
   }
 
   const watchOptions = parseWatchOptions(opts);
@@ -613,7 +619,7 @@ async function runWatchMode(opts: {
   // Handle graceful shutdown
   const shutdown = (): void => {
     runner.stop();
-    process.exit(0);
+    process.exitCode = EXIT_CODES.SUCCESS;
   };
 
   process.on('SIGINT', shutdown);
@@ -651,9 +657,12 @@ const program = new Command()
       }
       await runDelegationMonitoring(opts);
     } catch (err: unknown) {
+      if (err instanceof ProcessExitError) {
+        throw err;
+      }
       const message = err instanceof Error ? err.message : String(err);
       console.error(chalk.red(`${LOG_PREFIX} Error: ${message}`));
-      process.exit(EXIT_CODES.ERROR);
+      throw new ProcessExitError(message, EXIT_CODES.ERROR);
     }
   });
 

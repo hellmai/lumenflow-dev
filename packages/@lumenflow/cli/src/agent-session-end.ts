@@ -13,6 +13,7 @@
 import { Command } from 'commander';
 import { endSession, getCurrentSession } from '@lumenflow/agent';
 import { EXIT_CODES } from '@lumenflow/core/wu-constants';
+import { ProcessExitError } from '@lumenflow/core/error-handler';
 import chalk from 'chalk';
 import { runCLI } from './cli-entry-point.js';
 
@@ -23,8 +24,9 @@ const program = new Command()
     try {
       const session = await getCurrentSession();
       if (!session) {
-        console.error(chalk.yellow('No active session to end.'));
-        process.exit(EXIT_CODES.SUCCESS);
+        const message = 'No active session to end.';
+        console.error(chalk.yellow(message));
+        throw new ProcessExitError(message, EXIT_CODES.SUCCESS);
       }
 
       const summary = await endSession();
@@ -35,9 +37,12 @@ const program = new Command()
       console.log(`  Duration: ${chalk.cyan(summary.started)} → ${chalk.cyan(summary.completed)}`);
       console.log(`  Incidents: ${summary.incidents_logged} (${summary.incidents_major} major)`);
     } catch (err: unknown) {
+      if (err instanceof ProcessExitError) {
+        throw err;
+      }
       const message = err instanceof Error ? err.message : String(err);
       console.error(chalk.red(`Error: ${message}`));
-      process.exit(EXIT_CODES.ERROR);
+      throw new ProcessExitError(message, EXIT_CODES.ERROR);
     }
   });
 

@@ -18,6 +18,7 @@
 import { Command } from 'commander';
 import { logIncident, getCurrentSession } from '@lumenflow/agent';
 import { EXIT_CODES, INCIDENT_SEVERITY, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { ProcessExitError } from '@lumenflow/core/error-handler';
 import chalk from 'chalk';
 import { runCLI } from './cli-entry-point.js';
 
@@ -53,9 +54,10 @@ const program = new Command()
     try {
       const session = await getCurrentSession();
       if (!session) {
-        console.error(chalk.red('Error: No active session'));
+        const message = 'Error: No active session';
+        console.error(chalk.red(message));
         console.error('Run: pnpm agent:session --wu WU-XXX --tier N');
-        process.exit(EXIT_CODES.ERROR);
+        throw new ProcessExitError(message, EXIT_CODES.ERROR);
       }
 
       const incident = {
@@ -86,6 +88,9 @@ const program = new Command()
         console.log(chalk.yellow('  ⚠  Consider documenting this in your WU notes as well.'));
       }
     } catch (err: unknown) {
+      if (err instanceof ProcessExitError) {
+        throw err;
+      }
       const error = err as {
         message?: string;
         issues?: Array<{ path: string[]; message: string }>;
@@ -97,7 +102,7 @@ const program = new Command()
           console.error(chalk.red(`  - ${issue.path.join('.')}: ${issue.message}`));
         });
       }
-      process.exit(EXIT_CODES.ERROR);
+      throw new ProcessExitError(error.message ?? 'Unknown error', EXIT_CODES.ERROR);
     }
   });
 
