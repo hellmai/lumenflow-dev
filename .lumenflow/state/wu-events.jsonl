@@ -2029,3 +2029,4 @@
 {"type":"complete","wuId":"WU-2044","timestamp":"2026-02-22T17:28:47.965Z"}
 {"type":"claim","wuId":"WU-2048","lane":"Framework: Core Validation","title":"Final constants DRY sweep: cross-package literals and WUDoc canonicalization","timestamp":"2026-02-22T18:00:19.591Z"}
 {"type":"release","wuId":"WU-2048","reason":"Reset via wu:recover --action reset","timestamp":"2026-02-22T18:01:05.464Z"}
+{"type":"claim","wuId":"WU-2048","lane":"Framework: Core Validation","title":"Final constants DRY sweep: cross-package literals and WUDoc canonicalization","timestamp":"2026-02-22T18:02:08.253Z"}

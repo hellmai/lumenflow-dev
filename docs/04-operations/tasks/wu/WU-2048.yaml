@@ -2,7 +2,7 @@ id: WU-2048
 title: 'Final constants DRY sweep: cross-package literals and WUDoc canonicalization'
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -89,4 +89,9 @@ acceptance:
   - 'spawn-lane-occupation.ts: implementation moved from spawn-task-builder.ts or module inlined'
 approved_by:
   - tom@hellm.ai
-approved_at: 2026-02-22T18:00:19.548Z
+approved_at: 2026-02-22T18:02:08.230Z
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2048
+claimed_at: 2026-02-22T18:02:08.226Z
+baseline_main_sha: 36bd4b9c5f44b1cd523d3a12a4acd7d99b60233c
+session_id: 7ca1a89e-4569-45fb-ac10-0d19b7fda2db

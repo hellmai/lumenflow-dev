@@ -20,22 +20,22 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2052 — Delete stub packs and add manifest examples to docs](wu/WU-2052.yaml) — Framework: Core Lifecycle
-- [WU-2051 — Extract scm-tools reference domain pack](wu/WU-2051.yaml) — Framework: Core Lifecycle
-- [WU-2050 — Bundled pack resolution for end-user bootstrap](wu/WU-2050.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
-- [WU-2048 — Final constants DRY sweep: cross-package literals and WUDoc canonicalization](wu/WU-2048.yaml) — Framework: Core Validation
 - [WU-2007 — Complete runCLI(main) entrypoint standardization for orchestration and agent session commands](wu/WU-2007.yaml) — Framework: CLI Orchestration
 - [WU-2008 — Remove remaining direct process.exit usage from core modules](wu/WU-2008.yaml) — Framework: Core Lifecycle
 - [WU-2009 — Add claim-validation gate for absolute acceptance criteria drift](wu/WU-2009.yaml) — Framework: Core Validation
 - [WU-2021 — Filter deleted files from incremental format check input](wu/WU-2021.yaml) — Framework: Core Validation
 - [WU-2046 — Fix pre-existing wu-spawn.test.ts failures](wu/WU-2046.yaml) — Framework: CLI WU Commands
 - [WU-2049 — INIT-034 follow-up: consolidate duplicates and fix naming collisions](wu/WU-2049.yaml) — Framework: Core Lifecycle
+- [WU-2050 — Bundled pack resolution for end-user bootstrap](wu/WU-2050.yaml) — Framework: Core Lifecycle
+- [WU-2051 — Extract scm-tools reference domain pack](wu/WU-2051.yaml) — Framework: Core Lifecycle
+- [WU-2052 — Delete stub packs and add manifest examples to docs](wu/WU-2052.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
 - [WU-2047 — Hard-cut software-delivery pack to runtime-native handlers (remove CLI spawn bridges)](wu/WU-2047.yaml) — Framework: Core Lifecycle
+- [WU-2048 — Final constants DRY sweep: cross-package literals and WUDoc canonicalization](wu/WU-2048.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 
