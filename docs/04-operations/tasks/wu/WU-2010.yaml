@@ -2,7 +2,7 @@ id: WU-2010
 title: Extract magic numbers into named constants (core kernel)
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -59,3 +59,11 @@ acceptance:
     DURATION_MS constants
   - Coverage/lint thresholds in gates-config.ts (90 minCoverage, 100 maxEslintWarnings) use named
     constants from gate-constants.ts
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2010
+claimed_at: 2026-02-22T14:38:36.812Z
+baseline_main_sha: 3c5c715d1f05972f3ca965a758e29c4b8a057add
+session_id: b82b6023-6b72-4fcf-a9b2-9ca11298a52c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T14:38:36.816Z

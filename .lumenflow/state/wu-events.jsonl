@@ -1987,3 +1987,4 @@
 {"type":"complete","wuId":"WU-2038","timestamp":"2026-02-22T14:35:41.686Z"}
 {"type":"claim","wuId":"WU-2011","lane":"Framework: CLI Orchestration","title":"Extract magic numbers in CLI package (@lumenflow/cli)","timestamp":"2026-02-22T14:37:26.715Z"}
 {"type":"claim","wuId":"WU-2013","lane":"Framework: Core State Recovery","title":"Decompose wu-state-store.ts into focused services (1274 lines)","timestamp":"2026-02-22T14:38:03.262Z"}
+{"type":"claim","wuId":"WU-2010","lane":"Framework: Core Validation","title":"Extract magic numbers into named constants (core kernel)","timestamp":"2026-02-22T14:38:36.841Z"}
