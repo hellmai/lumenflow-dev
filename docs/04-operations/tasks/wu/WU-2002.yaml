@@ -2,7 +2,7 @@ id: WU-2002
 title: Stabilize lane-health test under full CLI test matrix
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -35,3 +35,11 @@ acceptance:
   - lane-health detectCoverageGaps tests pass deterministically in full turbo test matrix
   - pnpm --filter @lumenflow/cli test no longer flakes on lane-health expectations
   - Regression coverage documents the stabilized behavior
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2002
+claimed_at: 2026-02-22T03:28:44.293Z
+baseline_main_sha: 8c5c6a82fc3166db3ec9beff2ea8c8316dc9adb0
+session_id: 8f52232d-3a27-44fa-86ca-3ee9b46415c3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T03:28:44.299Z

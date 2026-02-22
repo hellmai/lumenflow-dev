@@ -1966,3 +1966,4 @@
 {"type":"release","wuId":"WU-2001","timestamp":"2026-02-22T03:06:40.840Z","reason":"Reset via wu:recover --action reset"}
 {"type":"claim","wuId":"WU-2001","timestamp":"2026-02-22T03:07:28.632Z","lane":"Framework: CLI WU Commands","title":"Stabilize wu-done XState graph model tests in changed-test gate runs"}
 {"type":"complete","wuId":"WU-2001","timestamp":"2026-02-22T03:27:23.028Z"}
+{"type":"claim","wuId":"WU-2002","lane":"Framework: Core Validation","title":"Stabilize lane-health test under full CLI test matrix","timestamp":"2026-02-22T03:28:44.343Z"}

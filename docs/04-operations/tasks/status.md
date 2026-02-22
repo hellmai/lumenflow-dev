@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2002 — Stabilize lane-health test under full CLI test matrix](wu/WU-2002.yaml)
 
 ## Completed
 
