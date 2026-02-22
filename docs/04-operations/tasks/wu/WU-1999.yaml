@@ -9,7 +9,9 @@ code_paths:
   - packages/@lumenflow/cli/src/gates.ts
   - packages/@lumenflow/cli/src/__tests__/gates.test.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm wu:prep --id WU-1999 in a freshly claimed worktree and verify format:check does not
+      include symlinked dist artifact-root patterns
   unit:
     - packages/@lumenflow/cli/src/__tests__/gates.test.ts
   e2e: []
@@ -26,7 +28,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: wu:prep/gates incremental format check currently passes symlinked dist artifact roots (seeded for worktree bin-link stability) to prettier --check, which causes false failures due to explicit symlink patterns. Filter symlinked/non-source artifact roots from format:check input while preserving source file coverage.
+description: wu:prep/gates incremental format check currently passes symlinked dist artifact roots
+  (seeded for worktree bin-link stability) to prettier --check, which causes false failures due to
+  explicit symlink patterns. Filter symlinked/non-source artifact roots from format:check input
+  while preserving source file coverage.
 acceptance:
   - format:check incremental input excludes symlinked dist artifact roots
   - wu:prep no longer fails on explicit symlink patterns when code changes are otherwise formatted
