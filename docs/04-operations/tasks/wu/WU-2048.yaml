@@ -20,6 +20,15 @@ code_paths:
   - packages/@lumenflow/initiatives/src/initiative-yaml.ts
   - packages/@lumenflow/cli/src/initiative-add-wu.ts
   - packages/@lumenflow/core/src/dependency-graph.ts
+  - packages/@lumenflow/core/src/constants/lock-constants.ts
+  - packages/@lumenflow/core/src/wu-lock-manager.ts
+  - packages/@lumenflow/core/src/ports/wu-state.ports.ts
+  - packages/@lumenflow/core/src/wu-state-store.ts
+  - packages/@lumenflow/core/src/wu-state-indexer.ts
+  - packages/@lumenflow/core/src/wu-repair-service.ts
+  - packages/@lumenflow/core/src/wu-event-sourcer.ts
+  - packages/@lumenflow/core/src/spawn-lane-occupation.ts
+  - packages/@lumenflow/core/src/spawn-task-builder.ts
 tests:
   manual:
     - Run pnpm gates from worktree — all tests pass
@@ -33,7 +42,18 @@ dependencies: []
 initiative: INIT-034
 phase: 1
 risks: []
-notes: 'Sizing: 14 files, ~40 tool calls. Shallow Multi-File Exception applies (section 1.2 of wu-sizing-guide.md): all changes are uniform import-swap pattern, <=5 lines per file, no structural changes. Single-session strategy. Audit origin: INIT-034 post-completion re-audit (2026-02-22). Excludes COVERAGE_THRESHOLD alias (stable, zero external consumers) and getConfig() calls (already pattern-compliant with options.config fallback).'
+notes: >-
+  Sizing: 14 files, ~40 tool calls. Shallow Multi-File Exception applies (section 1.2 of
+  wu-sizing-guide.md): all changes are uniform import-swap pattern, <=5 lines per file, no
+  structural changes. Single-session strategy. Audit origin: INIT-034 post-completion re-audit
+  (2026-02-22). Excludes COVERAGE_THRESHOLD alias (stable, zero external consumers) and getConfig()
+  calls (already pattern-compliant with options.config fallback).
+
+
+  Updated (2026-02-22): Folded 6 code review items (2 medium, 4 low) into this WU. Total now ~25
+  files, all shallow changes. Shallow Multi-File Exception still applies. Items: lock timeout name
+  collision, duplicate type defs between ports and concrete modules, as WUEvent assertions,
+  getErrorMessage duplication, hollow re-export module.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -42,10 +62,28 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Final sweep of DRY violations identified in INIT-034 post-completion audit. WU-2044 fixed core and CLI packages; this covers remaining packages (memory, agent, mcp, metrics, initiatives). Three categories: (1) MS_PER_DAY raw 24*60*60*1000 in 6 files across memory/agent/mcp — replace with import from @lumenflow/core duration-constants. (2) Raw WU_EVENT_TYPE strings in 4 core production files (wu-repair-core, wu-consistency-file-repairs, wu-delegation-cutover, state-bootstrap) — replace with WU_EVENT_TYPE.* constants. (3) WUDoc independently defined in 3 files (initiatives/initiative-yaml.ts, initiative-add-wu.ts, dependency-graph.ts) — replace with import from wu-doc-types.ts.'
+description: 'Final sweep of DRY violations identified in INIT-034 post-completion audit. WU-2044
+  fixed core and CLI packages; this covers remaining packages (memory, agent, mcp, metrics,
+  initiatives). Three categories: (1) MS_PER_DAY raw 24*60*60*1000 in 6 files across
+  memory/agent/mcp — replace with import from @lumenflow/core duration-constants. (2) Raw
+  WU_EVENT_TYPE strings in 4 core production files (wu-repair-core, wu-consistency-file-repairs,
+  wu-delegation-cutover, state-bootstrap) — replace with WU_EVENT_TYPE.* constants. (3) WUDoc
+  independently defined in 3 files (initiatives/initiative-yaml.ts, initiative-add-wu.ts,
+  dependency-graph.ts) — replace with import from wu-doc-types.ts.'
 acceptance:
   - Zero raw 24*60*60*1000 computations in production code outside duration-constants.ts
   - Zero raw event type string literals in production code — all use WU_EVENT_TYPE.* constants
-  - WUDoc/WUDocLike definitions in initiative-yaml.ts, initiative-add-wu.ts, dependency-graph.ts replaced with imports from wu-doc-types.ts
-  - MS_PER_HOUR duplicate in packages/@lumenflow/cli/src/constants.ts replaced with import from @lumenflow/core
+  - WUDoc/WUDocLike definitions in initiative-yaml.ts, initiative-add-wu.ts, dependency-graph.ts
+    replaced with imports from wu-doc-types.ts
+  - MS_PER_HOUR duplicate in packages/@lumenflow/cli/src/constants.ts replaced with import from
+    @lumenflow/core
   - All existing tests pass via pnpm gates
+  - LOCK_TIMEOUT_MS naming conflict resolved — lock-constants.ts (30s) vs wu-lock-manager.ts (5min)
+    clarified with distinct names
+  - Duplicate type definitions (LockData, RepairResult, WUStateEntry, CheckpointOptions)
+    consolidated — ports/ is canonical source, concrete modules import from ports
+  - 7x as WUEvent type assertions in wu-state-store.ts replaced with typed factory or proper event
+    construction
+  - 3x as WUEvent widening casts in wu-state-indexer.ts eliminated
+  - getErrorMessage() duplication across wu-done modules replaced with import from error-handler.ts
+  - 'spawn-lane-occupation.ts: implementation moved from spawn-task-builder.ts or module inlined'
