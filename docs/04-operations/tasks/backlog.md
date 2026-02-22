@@ -42,7 +42,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-2036 — Complete 100% kernel-first hard cut and docs parity](wu/WU-2036.yaml) — Framework: Core Lifecycle
-- [WU-2038 — Gitignore next-env.d.ts to prevent build side-effects on main](wu/WU-2038.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 
@@ -989,6 +988,7 @@ sections:
 - [WU-2022 — Close workspace-first hard cut: move remaining legacy config readers](wu/WU-2022.yaml)
 - [WU-2034 — Complete kernel-first hard cut from legacy config references](wu/WU-2034.yaml)
 - [WU-2035 — Fix crypto.randomUUID crash in non-secure HTTP contexts](wu/WU-2035.yaml)
+- [WU-2038 — Gitignore next-env.d.ts to prevent build side-effects on main](wu/WU-2038.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

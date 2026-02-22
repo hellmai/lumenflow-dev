@@ -2,7 +2,7 @@ id: WU-2038
 title: Gitignore next-env.d.ts to prevent build side-effects on main
 lane: 'Operations: Tooling'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -39,3 +39,6 @@ session_id: d070cf52-7035-43db-9ca9-c17be1f4b62b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T14:28:36.318Z
+locked: true
+completed_at: 2026-02-22T14:35:36.874Z
+completed: 2026-02-22

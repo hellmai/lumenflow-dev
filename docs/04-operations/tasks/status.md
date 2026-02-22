@@ -5,7 +5,6 @@ _Last updated: 2026-02-22_
 ## In Progress
 
 - [WU-2036 — Complete 100% kernel-first hard cut and docs parity](wu/WU-2036.yaml)
-- [WU-2038 — Gitignore next-env.d.ts to prevent build side-effects on main](wu/WU-2038.yaml)
 
 ## Completed
 
@@ -948,3 +947,4 @@ _Last updated: 2026-02-22_
 - [WU-2022 — Close workspace-first hard cut: move remaining legacy config readers](wu/WU-2022.yaml) — 2026-02-22
 - [WU-2034 — Complete kernel-first hard cut from legacy config references](wu/WU-2034.yaml) — 2026-02-22
 - [WU-2035 — Fix crypto.randomUUID crash in non-secure HTTP contexts](wu/WU-2035.yaml) — 2026-02-22
+- [WU-2038 — Gitignore next-env.d.ts to prevent build side-effects on main](wu/WU-2038.yaml) — 2026-02-22
