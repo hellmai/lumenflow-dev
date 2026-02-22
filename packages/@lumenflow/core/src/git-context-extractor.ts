@@ -248,7 +248,7 @@ export function extractGitContext(
     const { limited, count } = hasLimitedCommitCount(projectRoot);
     if (limited) {
       result.hasLimitedHistory = true;
-      result.error = `Repository has fewer than 10 commits (found ${count})`;
+      result.error = `Repository has fewer than ${GIT_MIN_COMMIT_COUNT} commits (found ${count})`;
       return result;
     }
 
