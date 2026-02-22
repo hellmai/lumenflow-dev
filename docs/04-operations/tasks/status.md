@@ -4,7 +4,7 @@ _Last updated: 2026-02-22_
 
 ## In Progress
 
-- [WU-2009 — Add claim-validation gate for absolute acceptance criteria drift](wu/WU-2009.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -977,3 +977,4 @@ _Last updated: 2026-02-22_
 - [WU-2008 — Remove remaining direct process.exit usage from core modules](wu/WU-2008.yaml) — 2026-02-22
 - [WU-2046 — Fix pre-existing wu-spawn.test.ts failures](wu/WU-2046.yaml) — 2026-02-22
 - [WU-2021 — Filter deleted files from incremental format check input](wu/WU-2021.yaml) — 2026-02-22
+- [WU-2009 — Add claim-validation gate for absolute acceptance criteria drift](wu/WU-2009.yaml) — 2026-02-22
