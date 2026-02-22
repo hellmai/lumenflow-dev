@@ -6,8 +6,8 @@ status: in_progress
 priority: P2
 created: 2026-02-15
 code_paths:
-  - packages/@lumenflow/cli/src/**
-  - packages/@lumenflow/mcp/src/**
+  - packages/@lumenflow/cli/src
+  - packages/@lumenflow/mcp/src
 tests:
   manual:
     - packages/@lumenflow/cli/src/__tests__/file-operations.test.ts
