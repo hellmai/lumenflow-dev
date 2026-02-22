@@ -2,7 +2,7 @@ id: WU-2015
 title: Decompose wu-consistency-checker.ts (1255 lines)
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -45,3 +45,6 @@ session_id: 8a8e6f7f-545d-4f3c-b8da-489d51d80cf6
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T14:56:26.502Z
+locked: true
+completed_at: 2026-02-22T15:09:07.031Z
+completed: 2026-02-22

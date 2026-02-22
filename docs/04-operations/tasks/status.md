@@ -6,7 +6,6 @@ _Last updated: 2026-02-22_
 
 - [WU-2010 — Extract magic numbers into named constants (core kernel)](wu/WU-2010.yaml)
 - [WU-2012 — Decompose wu-spawn.ts god object (2342 lines)](wu/WU-2012.yaml)
-- [WU-2015 — Decompose wu-consistency-checker.ts (1255 lines)](wu/WU-2015.yaml)
 - [WU-2017 — Replace invariant type dispatch with strategy pattern](wu/WU-2017.yaml)
 
 ## Completed
@@ -955,3 +954,4 @@ _Last updated: 2026-02-22_
 - [WU-2011 — Extract magic numbers in CLI package (@lumenflow/cli)](wu/WU-2011.yaml) — 2026-02-22
 - [WU-2013 — Decompose wu-state-store.ts into focused services (1274 lines)](wu/WU-2013.yaml) — 2026-02-22
 - [WU-2039 — Eliminate magic literals in workspace-first config surfaces](wu/WU-2039.yaml) — 2026-02-22
+- [WU-2015 — Decompose wu-consistency-checker.ts (1255 lines)](wu/WU-2015.yaml) — 2026-02-22

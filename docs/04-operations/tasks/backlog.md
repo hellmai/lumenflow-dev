@@ -38,7 +38,6 @@ sections:
 
 - [WU-2010 — Extract magic numbers into named constants (core kernel)](wu/WU-2010.yaml) — Framework: Core Validation
 - [WU-2012 — Decompose wu-spawn.ts god object (2342 lines)](wu/WU-2012.yaml) — Framework: Core Lifecycle
-- [WU-2015 — Decompose wu-consistency-checker.ts (1255 lines)](wu/WU-2015.yaml) — Framework: Core Lifecycle
 - [WU-2017 — Replace invariant type dispatch with strategy pattern](wu/WU-2017.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
@@ -991,6 +990,7 @@ sections:
 - [WU-2011 — Extract magic numbers in CLI package (@lumenflow/cli)](wu/WU-2011.yaml)
 - [WU-2013 — Decompose wu-state-store.ts into focused services (1274 lines)](wu/WU-2013.yaml)
 - [WU-2039 — Eliminate magic literals in workspace-first config surfaces](wu/WU-2039.yaml)
+- [WU-2015 — Decompose wu-consistency-checker.ts (1255 lines)](wu/WU-2015.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
