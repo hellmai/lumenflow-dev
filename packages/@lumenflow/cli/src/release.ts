@@ -554,9 +554,6 @@ export async function main(): Promise<void> {
   }
 }
 
-// Export for testing
-export { main };
-
 // Guard main() for testability
 if (import.meta.main) {
   void runCLI(main);
