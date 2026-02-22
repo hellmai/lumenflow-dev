@@ -501,6 +501,10 @@ software_delivery:
           - packages/@lumenflow/cli/src/__tests__/initiative-*.test.ts
           - packages/@lumenflow/cli/src/__tests__/orchestrate-*.test.ts
           - packages/@lumenflow/cli/src/__tests__/spawn-*.test.ts
+          - packages/@lumenflow/cli/src/trace-*.ts
+          - packages/@lumenflow/cli/src/validate-agent-*.ts
+          - packages/@lumenflow/cli/src/gates-utils.ts
+          - packages/@lumenflow/cli/src/lane-suggest.ts
       - name: 'Framework: CLI Enforcement'
         wip_limit: 1
         lock_policy: all
