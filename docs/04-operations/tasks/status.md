@@ -9,6 +9,7 @@ _Last updated: 2026-02-22_
 - [WU-2012 — Decompose wu-spawn.ts god object (2342 lines)](wu/WU-2012.yaml)
 - [WU-2039 — Eliminate magic literals in workspace-first config surfaces](wu/WU-2039.yaml)
 - [WU-2015 — Decompose wu-consistency-checker.ts (1255 lines)](wu/WU-2015.yaml)
+- [WU-2017 — Replace invariant type dispatch with strategy pattern](wu/WU-2017.yaml)
 
 ## Completed
 

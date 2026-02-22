@@ -2,7 +2,7 @@ id: WU-2017
 title: Replace invariant type dispatch with strategy pattern
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -40,3 +40,11 @@ acceptance:
   - No if-else or switch dispatch on invariant type remains
   - Adding a new invariant type requires only a new class + registry entry
   - All existing invariant tests pass
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2017
+claimed_at: 2026-02-22T14:56:53.842Z
+baseline_main_sha: aed54e9a560236ec9d9b23d3a3225fbea3b2cf0b
+session_id: 8a8e6f7f-545d-4f3c-b8da-489d51d80cf6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T14:56:53.879Z
