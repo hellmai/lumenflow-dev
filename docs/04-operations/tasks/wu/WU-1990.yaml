@@ -2,7 +2,7 @@ id: WU-1990
 title: Format web workspace selector files to restore global format gate
 lane: 'Operations: Tooling'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -41,3 +41,6 @@ acceptance:
   - apps/web/__tests__/workspace-selector.test.tsx passes prettier
   - apps/web/src/components/workspace-selector.tsx passes prettier
   - pnpm format:check passes on main
+locked: true
+completed_at: 2026-02-22T00:20:23.224Z
+completed: 2026-02-22
