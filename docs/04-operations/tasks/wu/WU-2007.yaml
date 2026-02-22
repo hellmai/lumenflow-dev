@@ -2,7 +2,7 @@ id: WU-2007
 title: Complete runCLI(main) entrypoint standardization for orchestration and agent session commands
 lane: 'Framework: CLI Orchestration'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -58,3 +58,6 @@ session_id: cefcb24f-c623-49bb-b2e9-9ff7fd5bbb92
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T21:44:46.881Z
+locked: true
+completed_at: 2026-02-22T21:52:52.347Z
+completed: 2026-02-22
