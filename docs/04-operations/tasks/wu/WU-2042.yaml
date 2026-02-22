@@ -2,7 +2,7 @@ id: WU-2042
 title: Finalize kernel-first parity in tests and docs
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-22
 code_paths:
@@ -13,7 +13,8 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__
 tests:
   manual:
-    - rg -n '\.lumenflow\.config\.yaml' apps/docs/src/content/docs docs/04-operations/_frameworks/lumenflow
+    - rg -n '\.lumenflow\.config\.yaml' apps/docs/src/content/docs
+      docs/04-operations/_frameworks/lumenflow
     - rg -n '\.lumenflow\.config\.yaml' packages/@lumenflow/**/__tests__ packages/@lumenflow/**/e2e
     - pnpm --filter @lumenflow/docs build
   unit:
@@ -34,8 +35,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: runtime is workspace-first, but test fixtures and documentation still contain legacy .lumenflow.config.yaml references that no longer reflect current contract. Problem: this creates drift between implementation reality and guidance/verification surfaces. Solution: remove or rewrite remaining non-historical references in tests and active docs to workspace.yaml software_delivery contract, and verify parity with repeatable scans.'
+description: 'Context: runtime is workspace-first, but test fixtures and documentation still contain
+  legacy .lumenflow.config.yaml references that no longer reflect current contract. Problem: this
+  creates drift between implementation reality and guidance/verification surfaces. Solution: remove
+  or rewrite remaining non-historical references in tests and active docs to workspace.yaml
+  software_delivery contract, and verify parity with repeatable scans.'
 acceptance:
-  - No active runtime-adjacent test suites (packages/@lumenflow/**/__tests__, packages/@lumenflow/**/e2e) reference .lumenflow.config.yaml.
-  - Internal framework docs and public Starlight docs describe workspace.yaml software_delivery as canonical and do not present .lumenflow.config.yaml as current behavior.
+  - No active runtime-adjacent test suites (packages/@lumenflow/**/__tests__,
+    packages/@lumenflow/**/e2e) reference .lumenflow.config.yaml.
+  - Internal framework docs and public Starlight docs describe workspace.yaml software_delivery as
+    canonical and do not present .lumenflow.config.yaml as current behavior.
   - Verification commands for docs and touched tests pass in gates context.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2042
+claimed_at: 2026-02-22T15:55:29.471Z
+baseline_main_sha: 9ea39c4b302ce8e1918037e1bc52dbbe2dfa2b99
+session_id: cc516dbc-54f6-449a-8243-84e24b8a98f2
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-22T15:55:29.475Z
