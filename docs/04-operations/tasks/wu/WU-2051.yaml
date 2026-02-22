@@ -21,7 +21,8 @@ tests:
     - rg -n "\.lumenflow\.config\.yaml" .husky/hooks with historical task/plan excludes returns no matches
     - rg -n "\.lumenflow\.config\.yaml" with historical task/plan/test excludes returns no matches
   unit:
-    - pnpm vitest .husky/hooks/__tests__/pre-commit.test.ts .husky/hooks/__tests__/project-root.test.ts
+    - .husky/hooks/__tests__/pre-commit.test.ts
+    - .husky/hooks/__tests__/project-root.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2051.done
