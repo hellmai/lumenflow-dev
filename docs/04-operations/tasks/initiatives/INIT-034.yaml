@@ -1,0 +1,16 @@
+id: INIT-034
+slug: kernel-solid-audit
+title: Kernel SOLID Compliance & Code Quality Audit
+description: ''
+status: draft
+priority: P1
+created: 2026-02-22
+phases: []
+success_metrics:
+  - Zero raw numeric literals (except 0, 1, -1) in kernel business logic
+  - No source file exceeds 500 lines
+  - No class/module has more than 1 responsibility
+  - All type dispatch uses strategy/map pattern, not switch/if-else
+  - WUStateStore split into focused interfaces with <10 methods each
+  - All gates green after each phase
+labels: []
