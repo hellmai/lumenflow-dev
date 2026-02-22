@@ -39,6 +39,14 @@ describe('AC-1: wu-constants decomposition', () => {
     }
   });
 
+  it('should avoid domain-specific wording in path constants module docs', () => {
+    const pathConstantsPath = path.join(CORE_SRC, 'wu-paths-constants.ts');
+    expect(existsSync(pathConstantsPath)).toBe(true);
+
+    const content = readFileSync(pathConstantsPath, 'utf8');
+    expect(content).not.toContain('domain-specific modularity');
+  });
+
   it('should have no single domain module exceeding 500 lines', () => {
     for (const mod of DOMAIN_MODULES) {
       const fullPath = path.join(CORE_SRC, mod);

@@ -4,7 +4,7 @@
 /**
  * Path and File System Constants
  *
- * WU-1549: Extracted from wu-constants.ts for domain-specific modularity.
+ * WU-1549: Extracted from wu-constants.ts for bounded-concern modularity.
  * Contains LumenFlow directory paths, file extensions, config files, filesystem
  * constants, build artifacts, and path manipulation helpers.
  *
@@ -28,6 +28,8 @@ export interface NodeFsError extends Error {
   code?: string;
 }
 
+const UTF8_ENCODING = 'utf8' as const;
+
 /**
  * File system constants
  *
@@ -35,10 +37,10 @@ export interface NodeFsError extends Error {
  */
 export const FILE_SYSTEM = {
   /** Standard file encoding */
-  ENCODING: 'utf8',
+  ENCODING: UTF8_ENCODING,
 
   /** UTF-8 encoding (alias for compatibility) */
-  UTF8: 'utf8',
+  UTF8: UTF8_ENCODING,
 };
 
 /**
