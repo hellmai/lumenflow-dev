@@ -1,0 +1,45 @@
+id: WU-2006
+title: Hard-delete legacy .lumenflow.config.yaml and remediate runtime readers to workspace.yaml v2
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-22
+code_paths:
+  - packages/@lumenflow/core/src/lumenflow-config.ts
+  - packages/@lumenflow/core/src/gates-config.ts
+  - packages/@lumenflow/cli/src/lane-status.ts
+  - packages/@lumenflow/cli/src/init.ts
+  - actions/lumenflow-gates/src/index.ts
+  - tools/cli-entry.mjs
+  - workspace.yaml
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/gates-config.test.ts
+    - packages/@lumenflow/cli/src/__tests__/doctor.test.ts
+    - packages/@lumenflow/cli/src/__tests__/lane-status.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2006.done
+dependencies: []
+initiative: INIT-033
+phase: 5
+spec_refs:
+  - docs/04-operations/plans/INIT-033-workspace-first-hard-cut-boots.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: INIT-033 hard-cut claims were closed while legacy config readers and scaffolding remained. Problem: .lumenflow.config.yaml is still load-bearing and preserves legacy contract shape. Solution: delete .lumenflow.config.yaml from this repo first, then rewrite remaining runtime/tooling consumers to read workspace.yaml v2 software_delivery directly with no fallback path.'
+acceptance:
+  - Repository no longer contains .lumenflow.config.yaml.
+  - No runtime/tooling path falls back to legacy config when workspace.yaml is missing or invalid.
+  - Former legacy readers (core config loader, gates config, lane status/lifecycle entrypoint checks, bootstrap/init surfaces, action/tool wrappers) resolve from workspace.yaml v2 schema.
+  - Regression tests cover delete-first behavior and fail-fast guidance when workspace.yaml is absent/invalid.
