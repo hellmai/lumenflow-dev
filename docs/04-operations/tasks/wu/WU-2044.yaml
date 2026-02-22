@@ -26,7 +26,8 @@ dependencies: []
 initiative: INIT-034
 phase: 1
 risks: []
-notes: 'Audit origin: INIT-034 code review (2026-02-22). P0 item 3, P1 items 4-9 from audit report. Also removes STRING_LITERALS.NEWLINE over-extraction from wu-ui-constants.ts if feasible (YAGNI).'
+notes: 'Audit origin: INIT-034 code review (2026-02-22). P0 item 3, P1 items 4-9 from audit report.
+  Also removes STRING_LITERALS.NEWLINE over-extraction from wu-ui-constants.ts if feasible (YAGNI).'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -35,13 +36,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "INIT-034 code review found DRY violations that slipped past Phase 1 (WU-2010/2011). Key gaps: (1) MS_PER_DAY exists in duration-constants.ts but is not exported, so 9 files redefine 24*60*60*1000 independently. (2) MS_PER_HOUR defined in 3 separate places. (3) No WU_EVENT_TYPE constant object — 376 raw event type strings ('claim','complete','block' etc.) across 66 production files, unlike WU_STATUS which is well-adopted. (4) WUDoc interface independently defined in 7 files. (5) BYTES_PER_KB + formatBytes() copied in 4 CLI files. (6) Copy-paste duplicate CLI options in wu-spawn.ts:137-147. (7) COVERAGE_THRESHOLD=90 in coverage-gate.ts duplicates DEFAULT_MIN_COVERAGE from gate-constants.ts."
+description: "INIT-034 code review found DRY violations that slipped past Phase 1 (WU-2010/2011).
+  Key gaps: (1) MS_PER_DAY exists in duration-constants.ts but is not exported, so 9 files redefine
+  24*60*60*1000 independently. (2) MS_PER_HOUR defined in 3 separate places. (3) No WU_EVENT_TYPE
+  constant object — 376 raw event type strings ('claim','complete','block' etc.) across 66
+  production files, unlike WU_STATUS which is well-adopted. (4) WUDoc interface independently
+  defined in 7 files. (5) BYTES_PER_KB + formatBytes() copied in 4 CLI files. (6) Copy-paste
+  duplicate CLI options in wu-spawn.ts:137-147. (7) COVERAGE_THRESHOLD=90 in coverage-gate.ts
+  duplicates DEFAULT_MIN_COVERAGE from gate-constants.ts."
 acceptance:
-  - MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE, MS_PER_SECOND exported from duration-constants.ts; all duplicate definitions removed
-  - WU_EVENT_TYPE constant object created (analogous to WU_STATUS) with CREATE, CLAIM, BLOCK, UNBLOCK, COMPLETE, CHECKPOINT, DELEGATION, RELEASE keys
-  - Raw event type strings in production code replaced with WU_EVENT_TYPE.* constants (at minimum core package)
+  - MS_PER_DAY, MS_PER_HOUR, MS_PER_MINUTE, MS_PER_SECOND exported from duration-constants.ts; all
+    duplicate definitions removed
+  - WU_EVENT_TYPE constant object created (analogous to WU_STATUS) with CREATE, CLAIM, BLOCK,
+    UNBLOCK, COMPLETE, CHECKPOINT, DELEGATION, RELEASE keys
+  - Raw event type strings in production code replaced with WU_EVENT_TYPE.* constants (at minimum
+    core package)
   - WUDoc type defined once in a canonical location and imported by all 7 consumer files
   - BYTES_PER_KB and formatBytes() consolidated into single shared location in CLI package
   - Duplicate CLI options in wu-spawn.ts:137-147 removed (copy-paste bug fix)
-  - COVERAGE_THRESHOLD removed from coverage-gate.ts, replaced with import of DEFAULT_MIN_COVERAGE from gate-constants.ts
+  - COVERAGE_THRESHOLD removed from coverage-gate.ts, replaced with import of DEFAULT_MIN_COVERAGE
+    from gate-constants.ts
   - All existing tests pass via pnpm gates
