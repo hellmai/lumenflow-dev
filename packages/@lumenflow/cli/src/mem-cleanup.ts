@@ -40,8 +40,7 @@ import { archiveByDecay } from '@lumenflow/memory/decay/archival';
 import { getConfig } from '@lumenflow/core/config';
 import { createWUParser } from '@lumenflow/core/arg-parser';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
-import { MS_PER_DAY } from '@lumenflow/core/constants/duration-constants';
-import { formatBytes } from './constants.js';
+import { formatBytes, MS_PER_DAY } from './constants.js';
 import { runCLI } from './cli-entry-point.js';
 
 /**
@@ -221,7 +220,7 @@ function printResult(result: UnsafeAny, quiet: UnsafeAny, ttl: UnsafeAny) {
   }
 }
 
-// WU-2044: MS_PER_DAY imported from @lumenflow/core/constants/duration-constants.js
+// WU-2044: MS_PER_DAY imported from ./constants.js (local to avoid cross-package subpath export)
 
 // WU-1548: Using LUMENFLOW_PATHS.MEMORY_DIR from wu-constants (consolidated)
 
