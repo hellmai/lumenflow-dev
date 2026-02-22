@@ -24,7 +24,9 @@ phase: 2
 blocked_by:
   - WU-2010
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: Split 1539-line monolithic Zod config schema into 10 per-section schema files under schemas/.
+  Composition file reduced to 167 lines. All 2799 core tests pass. Guard test allowlists updated for
+  schemas/directories-config.ts.
 requires_review: false
 claimed_mode: worktree
 assigned_to: tom@hellm.ai
