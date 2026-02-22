@@ -18,6 +18,8 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 import * as yaml from 'yaml';
 import { execFileSync } from 'node:child_process';
+import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
+import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 import { scaffoldProject } from './init.js';
 
 /** Package.json file name constant */
@@ -26,11 +28,11 @@ const PACKAGE_JSON_FILE = 'package.json';
 /** Lane inference file name constant */
 const LANE_INFERENCE_FILE = '.lumenflow.lane-inference.yaml';
 
-/** Workspace config file name constant */
-const WORKSPACE_CONFIG_FILE = 'workspace.yaml';
+/** Canonical workspace config file name */
+const WORKSPACE_CONFIG_FILE = WORKSPACE_CONFIG_FILE_NAME;
 
 /** Canonical workspace software delivery section key */
-const SOFTWARE_DELIVERY_KEY = 'software_delivery';
+const SOFTWARE_DELIVERY_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 
 /** Git binary path - uses system PATH which is acceptable for smoke tests */
 const GIT_BINARY = 'git';
