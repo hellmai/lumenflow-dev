@@ -9,7 +9,11 @@ code_paths:
   - packages/@lumenflow/cli/src/lumenflow-upgrade.ts
   - packages/@lumenflow/cli/src/release.ts
 tests:
-  manual: []
+  manual:
+    - From a non-workspace repo
+    - run pnpm lumenflow:upgrade --latest and verify no --workspace-root error
+    - Run release preflight/pack validation and verify it fails when expected dist exports are
+      missing from packed artifact
   unit:
     - packages/@lumenflow/cli/src/__tests__/lumenflow-upgrade.test.ts
     - packages/@lumenflow/cli/src/__tests__/release.test.ts
@@ -18,7 +22,7 @@ artifacts:
   - .lumenflow/stamps/WU-2060.done
 dependencies: []
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: P0 fix for upgrade + publish regressions affecting lumenflow-cloud and patientpath.co.uk
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -27,7 +31,11 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: @lumenflow/core 3.1.3/3.2.0 publishes broken package artifacts and lumenflow-upgrade fails in non-workspace repos due to forced -w flag. Problem: upgrades fail for lumenflow-cloud and patientpath, and release flow can publish incomplete dist artifacts. Solution: make workspace-root flag conditional and add release artifact guards to prevent broken npm publishes.'
+description: 'Context: @lumenflow/core 3.1.3/3.2.0 publishes broken package artifacts and
+  lumenflow-upgrade fails in non-workspace repos due to forced -w flag. Problem: upgrades fail for
+  lumenflow-cloud and patientpath, and release flow can publish incomplete dist artifacts. Solution:
+  make workspace-root flag conditional and add release artifact guards to prevent broken npm
+  publishes.'
 acceptance:
   - lumenflow-upgrade works in both workspace and non-workspace repos
   - release flow blocks publishing when packed artifacts are missing expected dist files
