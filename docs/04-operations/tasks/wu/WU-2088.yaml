@@ -27,6 +27,8 @@ code_paths:
   - packages/@lumenflow/core/src/validation/validate-command.ts
   - packages/@lumenflow/core/src/validation/command-registry.ts
   - packages/@lumenflow/core/src/usecases/validate-command.usecase.ts
+  - packages/@lumenflow/core/src/worktree-symlink.ts
+  - packages/@lumenflow/core/src/wu-done-concurrent-merge.ts
 tests:
   manual: []
   unit:
