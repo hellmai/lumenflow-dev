@@ -18,6 +18,8 @@ import {
   getPublicCommandNames,
   getPublicBinNames,
   isPublicCommand,
+  getDocsVisibleManifest,
+  resolvePublicCommandMetadata,
   type PublicCommand,
 } from '../public-manifest.js';
 import { readFileSync } from 'node:fs';
@@ -200,6 +202,13 @@ describe('public CLI manifest (WU-1432)', () => {
         expect(cmd.category).toBeDefined();
         expect(typeof cmd.category).toBe('string');
         expect(cmd.category.length).toBeGreaterThan(0);
+
+        if (cmd.surface) {
+          expect(['primary', 'alias', 'legacy']).toContain(cmd.surface);
+        }
+        if (cmd.status) {
+          expect(['stable', 'preview', 'deprecated']).toContain(cmd.status);
+        }
       }
     });
 
@@ -250,6 +259,43 @@ describe('public CLI manifest (WU-1432)', () => {
 
       // Trace/debug internals
       expect(names).not.toContain('trace-gen');
+    });
+  });
+
+  describe('docs curation metadata', () => {
+    it('resolves defaults for missing docs metadata', () => {
+      const resolved = resolvePublicCommandMetadata({
+        name: 'wu:create',
+        binName: 'wu-create',
+        binPath: './dist/wu-create.js',
+        description: 'Create WU',
+        category: 'WU Lifecycle',
+      });
+
+      expect(resolved.surface).toBe('primary');
+      expect(resolved.audience).toBe('general');
+      expect(resolved.status).toBe('stable');
+    });
+
+    it('excludes alias and legacy commands from curated docs manifest by default', () => {
+      const docsManifest = getDocsVisibleManifest();
+      const names = docsManifest.map((entry) => entry.name);
+
+      expect(names).toContain('wu:create');
+      expect(names).not.toContain('gates:docs');
+      expect(names).not.toContain('lumenflow-gates');
+      expect(names).not.toContain('onboard');
+      expect(names).not.toContain('workspace:init');
+    });
+
+    it('can include alias and legacy commands explicitly', () => {
+      const docsManifest = getDocsVisibleManifest({ includeAliases: true, includeLegacy: true });
+      const names = docsManifest.map((entry) => entry.name);
+
+      expect(names).toContain('gates:docs');
+      expect(names).toContain('lumenflow-gates');
+      expect(names).toContain('onboard');
+      expect(names).toContain('workspace:init');
     });
   });
 

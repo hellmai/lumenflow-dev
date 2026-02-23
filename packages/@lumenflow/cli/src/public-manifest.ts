@@ -18,6 +18,10 @@
 /**
  * A public CLI command definition
  */
+export type CommandSurface = 'primary' | 'alias' | 'legacy';
+export type CommandAudience = 'general' | 'advanced' | 'maintainer';
+export type CommandStatus = 'stable' | 'preview' | 'deprecated';
+
 export interface PublicCommand {
   /** User-facing command name with colon notation (e.g., 'wu:create') */
   name: string;
@@ -29,6 +33,12 @@ export interface PublicCommand {
   description: string;
   /** Category for grouping in docs/registry */
   category: string;
+  /** Docs surface selection: primary command, alias, or legacy entrypoint */
+  surface?: CommandSurface;
+  /** Optional audience hint for curated docs */
+  audience?: CommandAudience;
+  /** Optional stability hint for curated docs */
+  status?: CommandStatus;
 }
 
 /**
@@ -250,6 +260,7 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     binPath: './dist/gates.js',
     description: 'Run docs-only quality gates (alias)',
     category: COMMAND_CATEGORIES.GATES_QUALITY,
+    surface: 'alias',
   },
   {
     name: 'lumenflow-gates',
@@ -257,6 +268,7 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     binPath: './dist/gates.js',
     description: 'Run all quality gates (alias)',
     category: COMMAND_CATEGORIES.GATES_QUALITY,
+    surface: 'alias',
   },
   {
     name: 'validate',
@@ -271,6 +283,7 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     binPath: './dist/validate.js',
     description: 'Run validation checks (alias)',
     category: COMMAND_CATEGORIES.GATES_QUALITY,
+    surface: 'alias',
   },
   {
     name: 'lane:edit',
@@ -528,6 +541,7 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     binPath: './dist/initiative-plan.js',
     description: 'Link plan to initiative (alias)',
     category: COMMAND_CATEGORIES.PLANS,
+    surface: 'alias',
   },
 
   // ============================================================================
@@ -613,6 +627,7 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     binPath: './dist/init.js',
     description: 'Initialize LumenFlow in a project (alias)',
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+    surface: 'alias',
   },
   {
     name: 'lumenflow:doctor',
@@ -648,6 +663,7 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     binPath: './dist/docs-sync.js',
     description: 'Sync agent docs (for upgrades) (alias)',
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+    surface: 'alias',
   },
   {
     name: 'lumenflow:sync-templates',
@@ -662,6 +678,7 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     binPath: './dist/sync-templates.js',
     description: 'Sync templates to project (alias)',
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+    surface: 'alias',
   },
   {
     name: 'lumenflow:upgrade',
@@ -711,6 +728,8 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     binPath: './dist/onboard.js',
     description: LEGACY_ONBOARD_DESCRIPTION,
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+    surface: 'legacy',
+    status: 'deprecated',
   },
   {
     name: 'lumenflow-onboard',
@@ -718,6 +737,8 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     binPath: './dist/onboard.js',
     description: LEGACY_ONBOARD_DESCRIPTION,
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+    surface: 'legacy',
+    status: 'deprecated',
   },
   {
     name: 'workspace:init',
@@ -725,6 +746,8 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     binPath: './dist/workspace-init.js',
     description: LEGACY_WORKSPACE_INIT_DESCRIPTION,
     category: COMMAND_CATEGORIES.SETUP_DEVELOPMENT,
+    surface: 'legacy',
+    status: 'deprecated',
   },
 
   // ============================================================================
@@ -764,6 +787,7 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
     binPath: './dist/metrics-cli.js',
     description: 'View workflow metrics (alias)',
     category: COMMAND_CATEGORIES.METRICS_FLOW,
+    surface: 'alias',
   },
 
   // ============================================================================
@@ -927,6 +951,46 @@ export const PUBLIC_MANIFEST: PublicCommand[] = [
 // - rotate-progress: Internal progress file rotation
 // - trace-gen: Internal tracing/debugging tool
 // ============================================================================
+
+const DEFAULT_COMMAND_SURFACE: CommandSurface = 'primary';
+const DEFAULT_COMMAND_AUDIENCE: CommandAudience = 'general';
+const DEFAULT_COMMAND_STATUS: CommandStatus = 'stable';
+
+export interface ResolvedPublicCommand extends PublicCommand {
+  surface: CommandSurface;
+  audience: CommandAudience;
+  status: CommandStatus;
+}
+
+export function resolvePublicCommandMetadata(command: PublicCommand): ResolvedPublicCommand {
+  return {
+    ...command,
+    surface: command.surface ?? DEFAULT_COMMAND_SURFACE,
+    audience: command.audience ?? DEFAULT_COMMAND_AUDIENCE,
+    status: command.status ?? DEFAULT_COMMAND_STATUS,
+  };
+}
+
+export function getDocsVisibleManifest(options?: {
+  includeAliases?: boolean;
+  includeLegacy?: boolean;
+}): ResolvedPublicCommand[] {
+  const includeAliases = options?.includeAliases ?? false;
+  const includeLegacy = options?.includeLegacy ?? false;
+
+  return PUBLIC_MANIFEST.map(resolvePublicCommandMetadata).filter((command) => {
+    if (command.surface === 'primary') {
+      return true;
+    }
+    if (command.surface === 'alias') {
+      return includeAliases;
+    }
+    if (command.surface === 'legacy') {
+      return includeLegacy;
+    }
+    return false;
+  });
+}
 
 /**
  * Get the full public manifest
