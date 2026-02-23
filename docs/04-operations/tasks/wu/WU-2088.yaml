@@ -30,7 +30,13 @@ code_paths:
   - packages/@lumenflow/core/src/worktree-symlink.ts
   - packages/@lumenflow/core/src/wu-done-concurrent-merge.ts
 tests:
-  manual: []
+  manual:
+    - Run wu:brief for WU-2088 in default OS repo config and verify generated guidance paths resolve
+      via getConfig() values (no hardcoded docs/04-operations literals in runtime outputs).
+    - Set non-default directories (e.g.
+    - wuDir/worktrees/onboarding docs) in workspace.yaml
+    - run affected core flows
+    - and confirm resolved path guidance follows overrides.
   unit:
     - packages/@lumenflow/core/src/__tests__/path-centralization.test.ts
     - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
