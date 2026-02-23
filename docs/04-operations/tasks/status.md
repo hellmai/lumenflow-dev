@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2070 — INIT-035 A4: Rewrite language guide framework to verified quickstart standard](wu/WU-2070.yaml)
 
 ## Completed
 

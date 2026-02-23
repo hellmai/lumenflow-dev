@@ -2,7 +2,7 @@ id: WU-2070
 title: 'INIT-035 A4: Rewrite language guide framework to verified quickstart standard'
 lane: 'Content: Site Comms'
 type: documentation
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -41,3 +41,11 @@ description: Implement executable language guide sections and enforce data-backe
 acceptance:
   - Every language guide contains support status, verified quickstart, gate preset, repo linkage,
     and smoke-check blocks.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-2070
+claimed_at: 2026-02-23T15:58:16.144Z
+baseline_main_sha: 9ae07ba4cfc68b6ec684eb2ceabe94f04941e257
+session_id: b72329cd-ab6f-4cc9-8263-bd04d5044a84
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T15:58:16.153Z
