@@ -30,6 +30,12 @@ languages:
     verification_ref: pending-wave1-migration
     smoke_command: pnpm wu:prep --id WU-EXAMPLE
     last_verified: 2026-02-23
+    parity_tracking_wu: WU-2078
+    repo_head_sha: 6f177d7e07a1
+    repo_last_pushed_at: 2026-01-19T09:56:45Z
+    smoke_workflow_url: https://github.com/hellmai/lumenflow-example-python/actions
+    smoke_workflow_status: missing
+    parity_notes: Companion repo exists; smoke workflow setup is still pending.
     native_channel_support: out_of_scope
   dotnet:
     label: .NET
