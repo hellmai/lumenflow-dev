@@ -11,8 +11,8 @@
  * @module wu-context-constants
  */
 
-import { createWuPaths } from './wu-paths.js';
 import { LUMENFLOW_CLIENT_IDS, type LumenflowClientId } from './client-ids.js';
+import { getConfig } from './lumenflow-config.js';
 
 function ensureTrailingSlash(value: string): string {
   return value.endsWith('/') ? value : `${value}/`;
@@ -20,7 +20,7 @@ function ensureTrailingSlash(value: string): string {
 
 function getWorktreesDirHint(): string {
   try {
-    return ensureTrailingSlash(createWuPaths().WORKTREES_DIR());
+    return ensureTrailingSlash(getConfig().directories.worktrees);
   } catch {
     return 'worktree/';
   }
@@ -28,7 +28,7 @@ function getWorktreesDirHint(): string {
 
 function getOnboardingDirHint(): string {
   try {
-    return ensureTrailingSlash(createWuPaths().ONBOARDING_DIR());
+    return ensureTrailingSlash(getConfig().directories.onboardingDir);
   } catch {
     return 'onboarding/';
   }
