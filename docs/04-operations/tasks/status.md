@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-- [WU-2065 — Fix release script commit-msg hook incompatibility](wu/WU-2065.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -991,3 +991,4 @@ _Last updated: 2026-02-23_
 - [WU-2062 — Release script: fix JSON parsing and add cleanup-on-failure](wu/WU-2062.yaml) — 2026-02-23
 - [WU-2063 — Release cleanup: add pnpm install to cleanupFailedRelease](wu/WU-2063.yaml) — 2026-02-23
 - [WU-2064 — Remove phantom .d.ts types from CLI package.json exports](wu/WU-2064.yaml) — 2026-02-23
+- [WU-2065 — Fix release script commit-msg hook incompatibility](wu/WU-2065.yaml) — 2026-02-23

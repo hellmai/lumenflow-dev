@@ -25,7 +25,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2065 — Fix release script commit-msg hook incompatibility](wu/WU-2065.yaml) — Operations: Tooling
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1016,6 +1016,7 @@ sections:
 - [WU-2062 — Release script: fix JSON parsing and add cleanup-on-failure](wu/WU-2062.yaml)
 - [WU-2063 — Release cleanup: add pnpm install to cleanupFailedRelease](wu/WU-2063.yaml)
 - [WU-2064 — Remove phantom .d.ts types from CLI package.json exports](wu/WU-2064.yaml)
+- [WU-2065 — Fix release script commit-msg hook incompatibility](wu/WU-2065.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
