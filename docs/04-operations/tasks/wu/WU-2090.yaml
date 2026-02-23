@@ -26,6 +26,7 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-spawn-strategy-resolver.ts
   - packages/@lumenflow/cli/src/wu-claim-resume-handler.ts
   - packages/@lumenflow/cli/src/wu-proto.ts
+  - packages/@lumenflow/cli/src/docs-sync.ts
 tests:
   manual: []
   unit:
