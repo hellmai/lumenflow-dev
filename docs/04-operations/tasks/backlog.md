@@ -22,7 +22,6 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
-- [WU-2081 — INIT-035 L5: Create companion repo for Java](wu/WU-2081.yaml) — Operations: Tooling
 - [WU-2082 — INIT-035 L6: Create companion repo for Rust](wu/WU-2082.yaml) — Operations: Tooling
 - [WU-2083 — INIT-035 L7: Create companion repo for Ruby](wu/WU-2083.yaml) — Operations: Tooling
 - [WU-2084 — INIT-035 L8: Create companion repo for PHP](wu/WU-2084.yaml) — Operations: Tooling
@@ -30,6 +29,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-2087 — lumenflow:upgrade self-bootstrap: run target version's script to avoid chicken-and-egg bugs](wu/WU-2087.yaml) — Framework: CLI WU Commands
+- [WU-2081 — INIT-035 L5: Create companion repo for Java](wu/WU-2081.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 

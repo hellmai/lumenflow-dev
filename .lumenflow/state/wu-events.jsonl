@@ -2113,3 +2113,4 @@
 {"type":"claim","wuId":"WU-2080","timestamp":"2026-02-23T16:57:08.985Z","lane":"Operations: Tooling","title":"INIT-035 L4: Create companion repo for .NET guide parity"}
 {"type":"claim","wuId":"WU-2087","timestamp":"2026-02-23T16:59:48.078Z","lane":"Framework: CLI WU Commands","title":"lumenflow:upgrade self-bootstrap: run target version's script to avoid chicken-and-egg bugs"}
 {"type":"complete","wuId":"WU-2080","timestamp":"2026-02-23T17:00:53.405Z"}
+{"type":"claim","wuId":"WU-2081","timestamp":"2026-02-23T17:02:26.346Z","lane":"Operations: Tooling","title":"INIT-035 L5: Create companion repo for Java"}

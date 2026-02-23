@@ -5,6 +5,7 @@ _Last updated: 2026-02-23_
 ## In Progress
 
 - [WU-2087 — lumenflow:upgrade self-bootstrap: run target version's script to avoid chicken-and-egg bugs](wu/WU-2087.yaml)
+- [WU-2081 — INIT-035 L5: Create companion repo for Java](wu/WU-2081.yaml)
 
 ## Completed
 
