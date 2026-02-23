@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2079 — INIT-035 L3: Migrate companion repo for Go guide parity](wu/WU-2079.yaml) — Operations: Tooling
 - [WU-2078 — INIT-035 L2: Migrate companion repo for Python guide parity](wu/WU-2078.yaml) — Operations: Tooling
 - [WU-2077 — INIT-035 L1: Migrate companion repo for Node guide parity](wu/WU-2077.yaml) — Operations: Tooling
 - [WU-2076 — INIT-035 A9: Add docs audit command and CI enforcement](wu/WU-2076.yaml) — Operations: Tooling
