@@ -5,7 +5,6 @@ _Last updated: 2026-02-23_
 ## In Progress
 
 - [WU-2087 — lumenflow:upgrade self-bootstrap: run target version's script to avoid chicken-and-egg bugs](wu/WU-2087.yaml)
-- [WU-2081 — INIT-035 L5: Create companion repo for Java](wu/WU-2081.yaml)
 
 ## Completed
 
@@ -1010,3 +1009,4 @@ _Last updated: 2026-02-23_
 - [WU-2078 — INIT-035 L2: Migrate companion repo for Python guide parity](wu/WU-2078.yaml) — 2026-02-23
 - [WU-2079 — INIT-035 L3: Migrate companion repo for Go guide parity](wu/WU-2079.yaml) — 2026-02-23
 - [WU-2080 — INIT-035 L4: Create companion repo for .NET guide parity](wu/WU-2080.yaml) — 2026-02-23
+- [WU-2081 — INIT-035 L5: Create companion repo for Java](wu/WU-2081.yaml) — 2026-02-23
