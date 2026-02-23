@@ -1,0 +1,35 @@
+id: WU-2097
+title: Remove pending Memory runtime path literal debt (INIT-036)
+lane: 'Framework: Memory'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-23
+code_paths:
+  - packages/@lumenflow/memory/src/mem-create-core.ts
+  - packages/@lumenflow/memory/src/paths.ts
+tests:
+  manual:
+    - Run memory create/checkpoint flows with default and overridden path config to verify behavior stays correct
+  unit:
+    - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2097.done
+dependencies: []
+initiative: INIT-036
+phase: 1
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Migrate remaining memory runtime path handling to centralized config/constants so docs/worktrees/state paths do not rely on hardcoded literals.
+acceptance:
+  - mem-create-core and memory paths helpers contain no banned runtime path literals
+  - path-literal-guard no longer needs these memory files in INIT-036 pending allowlist

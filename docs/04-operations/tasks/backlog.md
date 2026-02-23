@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2097 — Remove pending Memory runtime path literal debt (INIT-036)](wu/WU-2097.yaml) — Framework: Memory
 - [WU-2096 — Remove pending MCP runtime path literal debt (INIT-036)](wu/WU-2096.yaml) — Framework: MCP
 - [WU-2095 — Eliminate pending CLI runtime path literals (INIT-036)](wu/WU-2095.yaml) — Framework: CLI WU Commands
 - [WU-2094 — Purge residual path literals in core config and prompt helpers](wu/WU-2094.yaml) — Framework: Core Lifecycle
