@@ -2078,3 +2078,4 @@
 {"type":"complete","wuId":"WU-2064","timestamp":"2026-02-23T14:45:43.292Z"}
 {"type":"claim","wuId":"WU-2065","timestamp":"2026-02-23T14:53:59.555Z","lane":"Operations: Tooling","title":"Fix release script commit-msg hook incompatibility"}
 {"type":"complete","wuId":"WU-2065","timestamp":"2026-02-23T14:57:33.070Z"}
+{"type":"claim","wuId":"WU-2066","timestamp":"2026-02-23T15:00:26.236Z","lane":"Operations: Tooling","title":"Release script: bypass worktree discipline for release commits"}

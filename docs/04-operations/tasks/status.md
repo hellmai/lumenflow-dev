@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2066 — Release script: bypass worktree discipline for release commits](wu/WU-2066.yaml)
 
 ## Completed
 
