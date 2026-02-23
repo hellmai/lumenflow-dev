@@ -2125,3 +2125,4 @@
 {"type":"claim","wuId":"WU-2093","timestamp":"2026-02-23T19:26:46.283Z","lane":"Framework: Core Validation","title":"Harden path-literal guards with AST-based multi-package coverage"}
 {"type":"complete","wuId":"WU-2093","timestamp":"2026-02-23T19:40:22.365Z"}
 {"type":"claim","wuId":"WU-2088","timestamp":"2026-02-23T19:47:38.557Z","lane":"Framework: Core Lifecycle","title":"Centralize core docs path resolution via getConfig"}
+{"type":"complete","wuId":"WU-2088","timestamp":"2026-02-23T20:54:01.185Z"}

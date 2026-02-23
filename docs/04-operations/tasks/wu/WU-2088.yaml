@@ -2,7 +2,7 @@ id: WU-2088
 title: Centralize core docs path resolution via getConfig
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -76,3 +76,6 @@ acceptance:
     directories
   - core runtime path/ref consumers for backlog/validator/worktree validation and command-location
     logic are config-driven with no hardcoded docs/worktrees/origin-main literals
+locked: true
+completed_at: 2026-02-23T20:53:56.303Z
+completed: 2026-02-23

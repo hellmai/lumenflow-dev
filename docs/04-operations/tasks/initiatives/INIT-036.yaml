@@ -11,7 +11,7 @@ created: 2026-02-23
 phases:
   - id: 1
     title: Config Foundation and Core Runtime Path Migration
-    status: pending
+    status: done
   - id: 2
     title: MCP Runtime Path Migration
     status: pending

@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-- [WU-2088 — Centralize core docs path resolution via getConfig](wu/WU-2088.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1015,3 +1015,4 @@ _Last updated: 2026-02-23_
 - [WU-2087 — lumenflow:upgrade self-bootstrap: run target version's script to avoid chicken-and-egg bugs](wu/WU-2087.yaml) — 2026-02-23
 - [WU-2084 — INIT-035 L8: Create companion repo for PHP](wu/WU-2084.yaml) — 2026-02-23
 - [WU-2093 — Harden path-literal guards with AST-based multi-package coverage](wu/WU-2093.yaml) — 2026-02-23
+- [WU-2088 — Centralize core docs path resolution via getConfig](wu/WU-2088.yaml) — 2026-02-23
