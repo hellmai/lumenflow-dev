@@ -97,5 +97,11 @@ repos:
     url: https://github.com/hellmai/lumenflow-example-php
     wave: 2
     delivery: create
-    status: planned
+    status: repo_missing
     smoke_ci_required: true
+    parity_tracking_wu: WU-2084
+    repo_exists: false
+    repo_probe_http_status: 404
+    smoke_workflow_url: https://github.com/hellmai/lumenflow-example-php/actions
+    smoke_workflow_status: repo_missing
+    tracking_updated_on: 2026-02-23

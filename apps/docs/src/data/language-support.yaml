@@ -134,3 +134,9 @@ languages:
     verification_ref: planned-wave2
     smoke_command: pnpm wu:prep --id WU-EXAMPLE
     last_verified: 2026-02-23
+    parity_tracking_wu: WU-2084
+    repo_status: missing
+    repo_probe_http_status: 404
+    smoke_workflow_url: https://github.com/hellmai/lumenflow-example-php/actions
+    smoke_workflow_status: repo_missing
+    parity_notes: Companion repo is not present yet; creation and smoke workflow setup are pending.
