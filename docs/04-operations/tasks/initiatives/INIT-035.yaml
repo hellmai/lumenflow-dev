@@ -15,7 +15,7 @@ phases:
     status: done
   - id: 2
     title: 'Wave 2: java/rust/ruby/php companion repos'
-    status: pending
+    status: in_progress
 success_metrics:
   - Kernel vs Packs IA live with repaired internal links
   - Language guides are pack-scoped, YAML-backed, and CI-smoke verified
