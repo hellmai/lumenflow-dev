@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-- [WU-2057 — Document pack execution architecture and fix D2 diagram sizing sitewide](wu/WU-2057.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -983,3 +983,4 @@ _Last updated: 2026-02-23_
 - [WU-2054 — Fix web lint security warnings blocking release gates](wu/WU-2054.yaml) — 2026-02-23
 - [WU-2055 — Prevent release publish artifacts from dirtying main](wu/WU-2055.yaml) — 2026-02-23
 - [WU-2056 — Stabilize consumer integration module-resolution gate](wu/WU-2056.yaml) — 2026-02-23
+- [WU-2057 — Document pack execution architecture and fix D2 diagram sizing sitewide](wu/WU-2057.yaml) — 2026-02-23
