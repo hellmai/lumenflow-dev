@@ -2,7 +2,7 @@ id: WU-2087
 title: "lumenflow:upgrade self-bootstrap: run target version's script to avoid chicken-and-egg bugs"
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -47,3 +47,6 @@ session_id: bacc95b3-fa2f-4626-8b20-08f95e0322dd
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-23T16:59:48.024Z
+locked: true
+completed_at: 2026-02-23T17:12:14.531Z
+completed: 2026-02-23
