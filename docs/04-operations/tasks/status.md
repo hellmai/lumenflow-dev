@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2076 — INIT-035 A9: Add docs audit command and CI enforcement](wu/WU-2076.yaml)
 
 ## Completed
 
