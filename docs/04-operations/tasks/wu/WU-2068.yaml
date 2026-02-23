@@ -2,7 +2,7 @@ id: WU-2068
 title: 'INIT-035 A2: Relocate/rewrite Kernel docs'
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -48,3 +48,6 @@ description: Relocate and rewrite kernel-only concepts into the new kernel route
 acceptance:
   - Kernel documentation lives under kernel routes and reflects kernel-only concepts with repaired
     links.
+locked: true
+completed_at: 2026-02-23T15:52:40.923Z
+completed: 2026-02-23
