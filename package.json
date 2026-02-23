@@ -116,6 +116,7 @@
     "templates:sync": "node packages/@lumenflow/cli/dist/sync-templates.js",
     "docs:generate": "npx tsx tools/generate-cli-docs.ts",
     "docs:validate": "npx tsx tools/generate-cli-docs.ts --validate",
+    "docs:audit": "npx tsx tools/docs-audit.ts",
     "changeset": "changeset",
     "version": "changeset version",
     "release": "node packages/@lumenflow/cli/dist/release.js",

@@ -33,6 +33,28 @@ vi.mock('@lumenflow/core/wu-helpers', () => ({
   ensureOnMain: vi.fn().mockResolvedValue(undefined),
 }));
 
+describe('parseSyncTemplatesOptions', () => {
+  let originalArgv: string[];
+
+  beforeEach(() => {
+    originalArgv = [...process.argv];
+  });
+
+  afterEach(() => {
+    process.argv = originalArgv;
+  });
+
+  it('parses --check-drift and --dry-run flags from CLI args', async () => {
+    process.argv = ['node', 'sync-templates', '--check-drift', '--dry-run'];
+
+    const { parseSyncTemplatesOptions } = await import('../sync-templates.js');
+    const parsed = parseSyncTemplatesOptions();
+
+    expect(parsed.checkDrift).toBe(true);
+    expect(parsed.dryRun).toBe(true);
+  });
+});
+
 describe('sync:templates --check-drift', () => {
   let tempDir: string;
   let originalCwd: string;

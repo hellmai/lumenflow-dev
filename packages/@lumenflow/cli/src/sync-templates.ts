@@ -90,9 +90,10 @@ export function parseSyncTemplatesOptions(): {
   });
 
   return {
-    dryRun: opts['dry-run'] ?? false,
+    // createWUParser/commander return camelCase option keys.
+    dryRun: opts.dryRun ?? opts['dry-run'] ?? false,
     verbose: opts.verbose ?? false,
-    checkDrift: opts['check-drift'] ?? false,
+    checkDrift: opts.checkDrift ?? opts['check-drift'] ?? false,
   };
 }
 
