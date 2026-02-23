@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2065 — Fix release script commit-msg hook incompatibility](wu/WU-2065.yaml)
 
 ## Completed
 
