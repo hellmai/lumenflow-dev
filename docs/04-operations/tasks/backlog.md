@@ -34,7 +34,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2075 — INIT-035 A8: Template sync and drift closure](wu/WU-2075.yaml) — Content: Framework Docs
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1037,6 +1037,7 @@ sections:
 - [WU-2072 — INIT-035 A6a: Extend PublicCommand metadata for curated docs surface](wu/WU-2072.yaml)
 - [WU-2073 — INIT-035 A6b: Render curated CLI docs from manifest metadata](wu/WU-2073.yaml)
 - [WU-2074 — INIT-035 A7: Align canonical internal docs to new IA and command truth](wu/WU-2074.yaml)
+- [WU-2075 — INIT-035 A8: Template sync and drift closure](wu/WU-2075.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

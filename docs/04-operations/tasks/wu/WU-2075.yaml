@@ -2,7 +2,7 @@ id: WU-2075
 title: 'INIT-035 A8: Template sync and drift closure'
 lane: 'Content: Framework Docs'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -46,3 +46,6 @@ description: Sync framework templates and verify drift status so template output
   docs after IA and command updates.
 acceptance:
   - Template sync completes and drift check passes with no stale template artifacts.
+locked: true
+completed_at: 2026-02-23T16:34:40.699Z
+completed: 2026-02-23

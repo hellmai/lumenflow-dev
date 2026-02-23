@@ -2101,3 +2101,4 @@
 {"type":"claim","wuId":"WU-2074","timestamp":"2026-02-23T16:21:07.899Z","lane":"Content: Framework Docs","title":"INIT-035 A7: Align canonical internal docs to new IA and command truth"}
 {"type":"complete","wuId":"WU-2074","timestamp":"2026-02-23T16:26:14.452Z"}
 {"type":"claim","wuId":"WU-2075","timestamp":"2026-02-23T16:27:03.170Z","lane":"Content: Framework Docs","title":"INIT-035 A8: Template sync and drift closure"}
+{"type":"complete","wuId":"WU-2075","timestamp":"2026-02-23T16:34:45.435Z"}

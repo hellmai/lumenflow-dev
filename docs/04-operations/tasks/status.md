@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-- [WU-2075 — INIT-035 A8: Template sync and drift closure](wu/WU-2075.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1003,3 +1003,4 @@ _Last updated: 2026-02-23_
 - [WU-2072 — INIT-035 A6a: Extend PublicCommand metadata for curated docs surface](wu/WU-2072.yaml) — 2026-02-23
 - [WU-2073 — INIT-035 A6b: Render curated CLI docs from manifest metadata](wu/WU-2073.yaml) — 2026-02-23
 - [WU-2074 — INIT-035 A7: Align canonical internal docs to new IA and command truth](wu/WU-2074.yaml) — 2026-02-23
+- [WU-2075 — INIT-035 A8: Template sync and drift closure](wu/WU-2075.yaml) — 2026-02-23
