@@ -2,7 +2,7 @@ id: WU-2074
 title: 'INIT-035 A7: Align canonical internal docs to new IA and command truth'
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -52,3 +52,6 @@ session_id: 027fc055-e5c7-4db0-be47-9cb41c3bc645
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-23T16:21:07.853Z
+locked: true
+completed_at: 2026-02-23T16:26:09.798Z
+completed: 2026-02-23
