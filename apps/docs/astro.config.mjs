@@ -31,8 +31,9 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Architecture',
+          label: 'Kernel',
           items: [
+            { label: 'Overview', slug: 'concepts/kernel' },
             { label: 'Visual Overview', slug: 'concepts/visual-overview' },
             { label: 'Kernel Runtime', slug: 'concepts/kernel' },
             { label: 'Packs', slug: 'concepts/packs' },
@@ -44,79 +45,141 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Software Delivery Pack',
+          label: 'Packs',
           items: [
-            { label: 'Overview', slug: 'pack/overview' },
             {
-              label: 'Concepts',
+              label: 'Software Delivery Pack',
               items: [
-                { label: 'Work Units (WUs)', slug: 'concepts/work-units' },
-                { label: 'Lanes', slug: 'concepts/lanes' },
-                { label: 'Gates', slug: 'concepts/gates' },
-                { label: 'Memory Layer', slug: 'concepts/memory' },
-                { label: 'Constraints', slug: 'concepts/constraints' },
-              ],
-            },
-            {
-              label: 'Workflows',
-              items: [
-                { label: 'A Day with LumenFlow', slug: 'guides/a-day-with-lumenflow' },
-                { label: 'Idea to Shipping', slug: 'guides/idea-to-shipping' },
-                { label: 'Solo Developer Workflow', slug: 'guides/solo-workflow' },
-                { label: 'Team Workflow', slug: 'guides/team-workflow' },
-                { label: 'WU Completion Workflow', slug: 'guides/wu-prep-workflow' },
-                { label: 'Sizing WUs', slug: 'guides/sizing' },
-                { label: 'Cookbook', slug: 'guides/cookbook' },
-                { label: 'Choosing Methodology', slug: 'guides/choosing-methodology' },
-                { label: 'Migrating Methodology', slug: 'guides/migrating-methodology' },
-              ],
-            },
-            {
-              label: 'Advanced',
-              items: [
-                { label: 'Initiatives', slug: 'guides/initiatives' },
-                { label: 'Flow Metrics', slug: 'guides/metrics' },
-                { label: 'Custom Skills', slug: 'guides/custom-skills' },
                 {
-                  label: 'Customizing Spawn Prompts',
-                  slug: 'guides/customizing-spawn-prompts',
+                  label: 'Overview',
+                  slug: 'pack/overview',
+                },
+                {
+                  label: 'Concepts',
+                  items: [
+                    {
+                      label: 'Work Units (WUs)',
+                      slug: 'concepts/work-units',
+                    },
+                    { label: 'Lanes', slug: 'concepts/lanes' },
+                    { label: 'Gates', slug: 'concepts/gates' },
+                    { label: 'Memory Layer', slug: 'concepts/memory' },
+                    { label: 'Constraints', slug: 'concepts/constraints' },
+                  ],
+                },
+                {
+                  label: 'Workflows',
+                  items: [
+                    {
+                      label: 'A Day with LumenFlow',
+                      slug: 'guides/a-day-with-lumenflow',
+                    },
+                    {
+                      label: 'Idea to Shipping',
+                      slug: 'guides/idea-to-shipping',
+                    },
+                    {
+                      label: 'Solo Developer Workflow',
+                      slug: 'guides/solo-workflow',
+                    },
+                    {
+                      label: 'Team Workflow',
+                      slug: 'guides/team-workflow',
+                    },
+                    {
+                      label: 'WU Completion Workflow',
+                      slug: 'guides/wu-prep-workflow',
+                    },
+                    { label: 'Sizing WUs', slug: 'guides/sizing' },
+                    { label: 'Cookbook', slug: 'guides/cookbook' },
+                    {
+                      label: 'Choosing Methodology',
+                      slug: 'guides/choosing-methodology',
+                    },
+                    {
+                      label: 'Migrating Methodology',
+                      slug: 'guides/migrating-methodology',
+                    },
+                  ],
+                },
+                {
+                  label: 'AI Agents',
+                  items: [
+                    {
+                      label: 'Agent Onboarding',
+                      slug: 'guides/agent-onboarding',
+                    },
+                    {
+                      label: 'AI Agent Integration',
+                      slug: 'guides/ai-agents',
+                    },
+                    {
+                      label: 'AI Integrations Setup',
+                      slug: 'guides/ai-integrations',
+                    },
+                    {
+                      label: 'Agent Branch Patterns',
+                      slug: 'guides/agent-patterns',
+                    },
+                    {
+                      label: 'MCP Setup',
+                      slug: 'guides/mcp-setup',
+                    },
+                    { label: 'Agent Safety', slug: 'reference/agent-safety' },
+                  ],
+                },
+                {
+                  label: 'Setup & Migration',
+                  items: [
+                    {
+                      label: 'Existing Projects',
+                      slug: 'guides/existing-projects',
+                    },
+                    {
+                      label: 'Create a Pack',
+                      slug: 'guides/create-a-pack',
+                    },
+                    {
+                      label: 'Migration Guide',
+                      slug: 'guides/migration',
+                    },
+                    { label: 'Upgrading', slug: 'getting-started/upgrade' },
+                    {
+                      label: 'Troubleshooting',
+                      slug: 'guides/troubleshooting',
+                    },
+                  ],
+                },
+                {
+                  label: 'Language Guides',
+                  items: [
+                    { label: 'Overview', slug: 'language-guides' },
+                    { label: 'Python', slug: 'language-guides/python' },
+                    { label: '.NET', slug: 'language-guides/dotnet' },
+                    { label: 'Go', slug: 'language-guides/go' },
+                    { label: 'Rust', slug: 'language-guides/rust' },
+                    { label: 'Java', slug: 'language-guides/java' },
+                    { label: 'Ruby', slug: 'language-guides/ruby' },
+                    { label: 'PHP', slug: 'language-guides/php' },
+                  ],
+                },
+                {
+                  label: 'Advanced',
+                  items: [
+                    { label: 'Initiatives', slug: 'guides/initiatives' },
+                    { label: 'Flow Metrics', slug: 'guides/metrics' },
+                    {
+                      label: 'Custom Skills',
+                      slug: 'guides/custom-skills',
+                    },
+                    {
+                      label: 'Customizing Spawn Prompts',
+                      slug: 'guides/customizing-spawn-prompts',
+                    },
+                  ],
                 },
               ],
             },
-          ],
-        },
-        {
-          label: 'AI Agents',
-          items: [
-            { label: 'Agent Onboarding', slug: 'guides/agent-onboarding' },
-            { label: 'AI Agent Integration', slug: 'guides/ai-agents' },
-            { label: 'AI Integrations Setup', slug: 'guides/ai-integrations' },
-            { label: 'Agent Branch Patterns', slug: 'guides/agent-patterns' },
-            { label: 'MCP Setup', slug: 'guides/mcp-setup' },
-            { label: 'Agent Safety', slug: 'reference/agent-safety' },
-          ],
-        },
-        {
-          label: 'Setup & Migration',
-          items: [
-            { label: 'Existing Projects', slug: 'guides/existing-projects' },
-            { label: 'Create a Pack', slug: 'guides/create-a-pack' },
-            { label: 'Migration Guide', slug: 'guides/migration' },
-            { label: 'Upgrading', slug: 'getting-started/upgrade' },
-            { label: 'Troubleshooting', slug: 'guides/troubleshooting' },
-          ],
-        },
-        {
-          label: 'Language Guides',
-          items: [
-            { label: 'Overview', slug: 'language-guides' },
-            { label: 'Python', slug: 'language-guides/python' },
-            { label: '.NET', slug: 'language-guides/dotnet' },
-            { label: 'Go', slug: 'language-guides/go' },
-            { label: 'Rust', slug: 'language-guides/rust' },
-            { label: 'Java', slug: 'language-guides/java' },
-            { label: 'Ruby', slug: 'language-guides/ruby' },
-            { label: 'PHP', slug: 'language-guides/php' },
           ],
         },
         {
@@ -136,6 +199,10 @@ export default defineConfig({
             { label: 'Compatibility Matrix', slug: 'reference/compatibility' },
             { label: 'Changelog', slug: 'reference/changelog' },
           ],
+        },
+        {
+          label: 'Releases',
+          items: [{ label: 'Release Notes', slug: 'releases' }],
         },
         {
           label: 'Legal',
