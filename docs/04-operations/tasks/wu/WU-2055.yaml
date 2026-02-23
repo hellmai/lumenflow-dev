@@ -2,7 +2,7 @@ id: WU-2055
 title: Prevent release publish artifacts from dirtying main
 lane: 'Operations: Tooling'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -45,3 +45,6 @@ session_id: e805b720-919e-40ba-aed1-42973c4c852d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-23T09:17:36.435Z
+locked: true
+completed_at: 2026-02-23T09:30:25.234Z
+completed: 2026-02-23
