@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2077 — INIT-035 L1: Migrate companion repo for Node guide parity](wu/WU-2077.yaml) — Operations: Tooling
 - [WU-2076 — INIT-035 A9: Add docs audit command and CI enforcement](wu/WU-2076.yaml) — Operations: Tooling
 - [WU-2075 — INIT-035 A8: Template sync and drift closure](wu/WU-2075.yaml) — Content: Framework Docs
 - [WU-2074 — INIT-035 A7: Align canonical internal docs to new IA and command truth](wu/WU-2074.yaml) — Content: Framework Docs
