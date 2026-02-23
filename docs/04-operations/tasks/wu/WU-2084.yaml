@@ -2,7 +2,7 @@ id: WU-2084
 title: 'INIT-035 L8: Create companion repo for PHP'
 lane: 'Operations: Tooling'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-23
 code_paths:
@@ -40,3 +40,11 @@ description: Track creation of PHP companion repository as wave-2 fast-follow wo
 acceptance:
   - PHP companion repository parity tasks and smoke requirements are tracked and linked from support
     matrix data.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-2084
+claimed_at: 2026-02-23T17:10:34.229Z
+baseline_main_sha: d37954b974361fb959056bb08f2dfd176d231f71
+session_id: 8334968b-2e1b-49b2-a29d-b70c843e8efd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T17:10:34.233Z
