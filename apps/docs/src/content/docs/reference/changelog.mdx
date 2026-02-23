@@ -25,7 +25,7 @@ All `@lumenflow/*` packages are versioned together for simplicity. The `@lumenfl
 
 ### Highlights
 
-- **Kernel + Pack architecture**: Domain-agnostic kernel runtime with pluggable packs. The Software Delivery Pack provides 90+ tools; future packs (compliance-audit, infra-ops, security-ops) are scaffolded.
+- **Kernel + Pack architecture**: Domain-agnostic kernel runtime with pluggable packs. The Software Delivery Pack provides 90+ tools; additional domains ship as first-class packs using the same manifest/runtime contract.
 - **`workspace.yaml`**: Unified workspace configuration. Top-level fields define kernel runtime (packs, lanes, security, namespaces), and `software_delivery` configures CLI/tooling behavior.
 - **14 granular lanes**: Framework lanes split into Core Lifecycle, Core Validation, Core State Recovery, CLI WU Commands, CLI Memory State, CLI Orchestration, CLI Enforcement, plus package-specific lanes. Variable WIP limits (1 or 2) with `lock_policy` and `wip_justification` fields.
 - **Runtime API migration complete (INIT-030)**: Zero remaining shell-outs in MCP tools — all tool implementations now use runtime APIs directly.

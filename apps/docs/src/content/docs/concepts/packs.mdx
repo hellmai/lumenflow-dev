@@ -86,7 +86,11 @@ packs:
 
 For each pack pin, the kernel:
 
-1. **Resolves the pack root** — from `packs/` or `packages/@lumenflow/packs/` (local), a git repository (git), or a registry (registry).
+1. **Resolves the pack root** — in order:
+   - `workspaceRoot/packs/`
+   - `workspaceRoot/packages/@lumenflow/packs/` (monorepo development)
+   - bundled CLI packs (`@lumenflow/cli/packs/`) for end-user installs
+   - a git repository (`source: git`) or registry cache (`source: registry`) when configured
 2. **Parses the manifest** — validates against the schema, checks that `id` and `version` match the pin.
 3. **Validates import boundaries** — scans all source files to ensure the pack only imports from allowed dependencies (`node:*` builtins, `@lumenflow/kernel`, and relative imports within the pack). No arbitrary npm packages allowed.
 4. **Verifies integrity** — computes a SHA-256 hash of all pack files and compares it to the pinned hash. A mismatch means the pack was modified and the kernel refuses to load it.
@@ -100,18 +104,14 @@ For each pack pin, the kernel:
 
 ## The Pack Ecosystem
 
-LumenFlow is designed for multiple packs to coexist. Each pack governs a different domain:
+LumenFlow is pack-first. The shipped production pack is:
 
-| Pack                | Domain                                              | Status               |
-| ------------------- | --------------------------------------------------- | -------------------- |
-| `software-delivery` | Software development workflows                      | Production (pack #1) |
-| `infra-ops`         | Infrastructure provisioning (Terraform, Kubernetes) | Scaffold             |
-| `compliance-audit`  | Compliance and audit workflows                      | Scaffold             |
-| `data-pipeline`     | Data pipeline orchestration                         | Scaffold             |
-| `security-ops`      | Security operations                                 | Scaffold             |
-| `legal-ops`         | Legal review workflows                              | Scaffold             |
+| Pack                | Domain                         | Status               |
+| ------------------- | ------------------------------ | -------------------- |
+| `software-delivery` | Software development workflows | Production (pack #1) |
 
-The scaffold packs declare tool names and policies but use placeholder handlers. They define the domain model — the real implementations will follow the same pattern established by the Software Delivery Pack.
+Additional domains are expected to be delivered as fully implemented packs from the same manifest
+contract, loaded from local paths, git sources, or registries.
 
 ## Tool Implementation Pattern
 

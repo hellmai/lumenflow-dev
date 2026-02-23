@@ -7,19 +7,19 @@ priority: P2
 created: 2026-02-22
 code_paths:
   - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
+  - packages/@lumenflow/kernel/src/__tests__/runtime/resolve-packs-root.test.ts
   - packages/@lumenflow/cli/package.json
-  - packages/@lumenflow/packs/security-ops/
-  - packages/@lumenflow/packs/compliance-audit/
-  - packages/@lumenflow/packs/data-pipeline/
-  - packages/@lumenflow/packs/infra-ops/
-  - packages/@lumenflow/packs/legal-ops/
-  - docs/02-concepts/
-  - docs/03-guides/
+  - packages/@lumenflow/cli/scripts/sync-bundled-packs.mjs
+  - packages/@lumenflow/packs/
+  - apps/docs/src/content/docs/concepts/packs.mdx
+  - apps/docs/src/content/docs/guides/create-a-pack.mdx
+  - apps/docs/src/content/docs/pack/overview.mdx
+  - apps/docs/src/content/docs/reference/changelog.mdx
 tests:
   manual:
     - Bootstrap in empty directory outside monorepo
   unit:
-    - packages/@lumenflow/kernel/src/runtime/__tests__/resolve-packs-root.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/runtime/resolve-packs-root.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2050.done

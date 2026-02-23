@@ -4,6 +4,7 @@
 import { randomBytes } from 'node:crypto';
 import { access, mkdir, open, readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 import { z } from 'zod';
 import { canonical_json } from '../canonical-json.js';
@@ -82,6 +83,19 @@ const DEFAULT_PACKS_ROOT_CANDIDATES = [
   PACKS_DIR_NAME,
   path.join(PACKAGES_DIR_NAME, LUMENFLOW_SCOPE_NAME, PACKS_DIR_NAME),
 ];
+const CLI_PACKAGE_DIRECTORY_NAME = 'cli';
+const CLI_PACKS_ROOT_PATH_SEGMENTS = [
+  '..',
+  '..',
+  '..',
+  CLI_PACKAGE_DIRECTORY_NAME,
+  PACKS_DIR_NAME,
+] as const;
+const KERNEL_RUNTIME_MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
+const CLI_PACKS_ROOT_CANDIDATE = path.resolve(
+  KERNEL_RUNTIME_MODULE_DIR,
+  ...CLI_PACKS_ROOT_PATH_SEGMENTS,
+);
 const DEFAULT_PACK_TOOL_INPUT_SCHEMA = z.record(z.string(), z.unknown());
 const DEFAULT_PACK_TOOL_OUTPUT_SCHEMA = z.record(z.string(), z.unknown());
 const JSON_SCHEMA_MAX_DEPTH = 12;
@@ -683,6 +697,10 @@ async function resolvePacksRoot(options: InitializeKernelRuntimeOptions): Promis
     if (await fileExists(absoluteCandidate)) {
       return absoluteCandidate;
     }
+  }
+
+  if (await fileExists(CLI_PACKS_ROOT_CANDIDATE)) {
+    return CLI_PACKS_ROOT_CANDIDATE;
   }
 
   const fallbackCandidate = DEFAULT_PACKS_ROOT_CANDIDATES[0];

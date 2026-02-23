@@ -461,6 +461,17 @@ pnpm pack:install --id my-pack --source registry --version 0.1.0
 For registry installs, `--integrity` is optional. When omitted, the CLI resolves
 the integrity value from registry metadata for the requested version.
 
+### Local source resolution order
+
+When `source: local` is used, the kernel resolves pack roots in this order:
+
+1. `workspaceRoot/packs/<pack-id>`
+2. `workspaceRoot/packages/@lumenflow/packs/<pack-id>` (monorepo development)
+3. `@lumenflow/cli/packs/<pack-id>` bundled in npm CLI installs
+
+This allows the same `workspace.yaml` pack pin to work in monorepo development
+and in end-user npm installs without changing the pack contract.
+
 ### Integrity verification
 
 During development, set `integrity: dev` to skip hash verification. The kernel
