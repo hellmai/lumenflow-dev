@@ -29,6 +29,8 @@ code_paths:
   - packages/@lumenflow/core/src/usecases/validate-command.usecase.ts
   - packages/@lumenflow/core/src/worktree-symlink.ts
   - packages/@lumenflow/core/src/wu-done-concurrent-merge.ts
+  - packages/@lumenflow/core/src/client-ids.ts
+  - packages/@lumenflow/core/src/schemas/agents-config.ts
 tests:
   manual:
     - Run wu:brief for WU-2088 in default OS repo config and verify generated guidance paths resolve
@@ -50,10 +52,17 @@ plan: lumenflow://plans/INIT-036-plan.md
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-23T19:47:38.504Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2088
+session_id: 61864971-9ce1-4ed9-8a46-2084cf4f2a91
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T19:47:38.510Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -68,11 +77,3 @@ acceptance:
     directories
   - core runtime path/ref consumers for backlog/validator/worktree validation and command-location
     logic are config-driven with no hardcoded docs/worktrees/origin-main literals
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2088
-claimed_at: 2026-02-23T19:47:38.504Z
-baseline_main_sha: 56622652d4c682a826edf4a56e7c84ded60f1925
-session_id: 61864971-9ce1-4ed9-8a46-2084cf4f2a91
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-23T19:47:38.510Z
