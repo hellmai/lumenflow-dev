@@ -5,7 +5,6 @@ _Last updated: 2026-02-23_
 ## In Progress
 
 - [WU-2067 — INIT-035 A1: Kernel/Packs IA skeleton and sidebar route map](wu/WU-2067.yaml)
-- [WU-2086 — Release script: restore dist symlinks after successful release](wu/WU-2086.yaml)
 
 ## Completed
 
@@ -995,3 +994,4 @@ _Last updated: 2026-02-23_
 - [WU-2065 — Fix release script commit-msg hook incompatibility](wu/WU-2065.yaml) — 2026-02-23
 - [WU-2066 — Release script: bypass worktree discipline for release commits](wu/WU-2066.yaml) — 2026-02-23
 - [WU-2085 — pre-commit.mjs: bypass main-branch block for release commits](wu/WU-2085.yaml) — 2026-02-23
+- [WU-2086 — Release script: restore dist symlinks after successful release](wu/WU-2086.yaml) — 2026-02-23
