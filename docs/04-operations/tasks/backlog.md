@@ -38,7 +38,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2071 — INIT-035 A5: Align releases/changelog to published stable truth](wu/WU-2071.yaml) — Content: Site Comms
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1037,6 +1037,7 @@ sections:
 - [WU-2068 — INIT-035 A2: Relocate/rewrite Kernel docs](wu/WU-2068.yaml)
 - [WU-2069 — INIT-035 A3: Relocate/rewrite Software Delivery Pack docs](wu/WU-2069.yaml)
 - [WU-2070 — INIT-035 A4: Rewrite language guide framework to verified quickstart standard](wu/WU-2070.yaml)
+- [WU-2071 — INIT-035 A5: Align releases/changelog to published stable truth](wu/WU-2071.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
