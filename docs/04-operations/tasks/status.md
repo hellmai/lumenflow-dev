@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2080 — INIT-035 L4: Create companion repo for .NET guide parity](wu/WU-2080.yaml)
 
 ## Completed
 

@@ -2,7 +2,7 @@ id: WU-2080
 title: 'INIT-035 L4: Create companion repo for .NET guide parity'
 lane: 'Operations: Tooling'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -40,3 +40,11 @@ description: Track creation of .NET companion repository and smoke workflow alig
 acceptance:
   - .NET companion repository parity tasks and smoke requirements are tracked and linked from
     support matrix data.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-2080
+claimed_at: 2026-02-23T16:57:08.936Z
+baseline_main_sha: a244d7a953f28f7cdea251e14bfc9c5a25d96113
+session_id: bacc95b3-fa2f-4626-8b20-08f95e0322dd
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T16:57:08.942Z
