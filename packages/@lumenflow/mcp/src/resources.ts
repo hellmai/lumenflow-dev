@@ -135,8 +135,9 @@ export const backlogResource: ResourceDefinition = {
   async fetch(_uri, options) {
     try {
       const projectRoot = options?.projectRoot || process.cwd();
-      // Security: path is constructed from known static segments, not user input
-      const backlogPath = path.join(projectRoot, 'docs', '04-operations', 'tasks', 'backlog.md');
+      const core = await getCore();
+      const config = core.getConfig({ projectRoot });
+      const backlogPath = path.join(projectRoot, config.directories.backlogPath);
 
       // eslint-disable-next-line security/detect-non-literal-fs-filename
       const content = await fs.readFile(backlogPath, 'utf-8');

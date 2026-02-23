@@ -1944,8 +1944,6 @@ function validationCountMsg(label: string, count: number): string {
 
 const VALIDATION_TOOL_FILE_EXTENSIONS = ['.md', '.yaml', '.yml'] as const;
 const WU_FILE_EXTENSIONS = ['.yaml', '.yml'] as const;
-const SKILLS_DIR_RELATIVE = '.claude/skills';
-const AGENTS_DIR_RELATIVE = '.claude/agents';
 
 const VALIDATE_INPUT_SCHEMA = z.object({
   id: z.string().optional(),
@@ -2088,8 +2086,10 @@ const validateAgentSkillsInProcess: InProcessToolFn = async (rawInput, context) 
   }
 
   try {
+    const core = await getCoreLazy();
     const projectRoot = resolveWorkspaceRoot(context);
-    const skillsDir = path.join(projectRoot, SKILLS_DIR_RELATIVE);
+    const config = core.getConfig({ projectRoot });
+    const skillsDir = path.join(projectRoot, config.directories.skillsDir);
 
     let skillFiles: string[];
     try {
@@ -2134,8 +2134,10 @@ const validateAgentSkillsInProcess: InProcessToolFn = async (rawInput, context) 
  */
 const validateAgentSyncInProcess: InProcessToolFn = async (_rawInput, context) => {
   try {
+    const core = await getCoreLazy();
     const projectRoot = resolveWorkspaceRoot(context);
-    const agentsDir = path.join(projectRoot, AGENTS_DIR_RELATIVE);
+    const config = core.getConfig({ projectRoot });
+    const agentsDir = path.join(projectRoot, config.directories.agentsDir);
 
     let agentFiles: string[];
     try {
@@ -2205,8 +2207,10 @@ const validateBacklogSyncInProcess: InProcessToolFn = async (_rawInput, context)
  */
 const validateSkillsSpecInProcess: InProcessToolFn = async (_rawInput, context) => {
   try {
+    const core = await getCoreLazy();
     const projectRoot = resolveWorkspaceRoot(context);
-    const skillsDir = path.join(projectRoot, SKILLS_DIR_RELATIVE);
+    const config = core.getConfig({ projectRoot });
+    const skillsDir = path.join(projectRoot, config.directories.skillsDir);
 
     let skillFiles: string[];
     try {
@@ -2521,7 +2525,8 @@ const wuInferLaneInProcess: InProcessToolFn = async (rawInput, context) => {
 
     // If id provided and no explicit paths, read from WU YAML
     if (typeof input.id === 'string' && codePaths.length === 0) {
-      const wuFile = path.join(projectRoot, 'docs/04-operations/tasks/wu', `${input.id}.yaml`);
+      const config = core.getConfig({ projectRoot });
+      const wuFile = path.join(projectRoot, config.directories.wuDir, `${input.id}.yaml`);
       try {
         const content = await readFile(wuFile, UTF8_ENCODING);
         const parsed = core.parseYAML(content);

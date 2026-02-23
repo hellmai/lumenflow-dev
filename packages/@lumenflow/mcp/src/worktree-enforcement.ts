@@ -36,12 +36,7 @@ const PROTECTED_BRANCHES = ['main', 'master'] as const;
  * Relative path prefixes that are always allowed on main checkout.
  * Mirrors the allowlist in enforce-worktree.sh.
  */
-const ALLOWLISTED_PATH_PREFIXES = [
-  'docs/04-operations/tasks/wu/',
-  '.lumenflow/',
-  '.claude/',
-  'plan/',
-] as const;
+const STATIC_ALLOWLISTED_PATH_PREFIXES = ['.lumenflow/', '.claude/', 'plan/'] as const;
 
 /**
  * Result of a worktree enforcement check.
@@ -88,6 +83,8 @@ export function checkWorktreeEnforcement(
     // Read enforcement config
     const config = getConfig({ projectRoot });
     const enforcement = config?.agents?.clients?.['claude-code']?.enforcement;
+    const worktreesPrefix = normalizePrefix(config.directories.worktrees);
+    const allowlistedPrefixes = buildAllowlistedPathPrefixes(config);
     if (!enforcement?.block_outside_worktree) {
       return { allowed: true };
     }
@@ -113,12 +110,12 @@ export function checkWorktreeEnforcement(
     }
 
     // Allow if path is inside a worktree
-    if (resolvedPath.startsWith('worktrees/')) {
+    if (resolvedPath.startsWith(worktreesPrefix)) {
       return { allowed: true };
     }
 
     // Allow if path matches the allowlist
-    if (isAllowlistedPath(resolvedPath)) {
+    if (isAllowlistedPath(resolvedPath, allowlistedPrefixes)) {
       return { allowed: true };
     }
 
@@ -185,12 +182,25 @@ function resolveFilePath(filePath: string, projectRoot: string): string | null {
   }
 
   // Return the relative path
-  return path.relative(projectRoot, resolved);
+  return toPosixPath(path.relative(projectRoot, resolved));
 }
 
 /**
  * Check if a relative path matches the allowlist.
  */
-function isAllowlistedPath(relativePath: string): boolean {
-  return ALLOWLISTED_PATH_PREFIXES.some((prefix) => relativePath.startsWith(prefix));
+function isAllowlistedPath(relativePath: string, allowlistedPrefixes: readonly string[]): boolean {
+  return allowlistedPrefixes.some((prefix) => relativePath.startsWith(prefix));
+}
+
+function buildAllowlistedPathPrefixes(config: ReturnType<typeof getConfig>): readonly string[] {
+  return [normalizePrefix(config.directories.wuDir), ...STATIC_ALLOWLISTED_PATH_PREFIXES];
+}
+
+function normalizePrefix(value: string): string {
+  const normalized = toPosixPath(value);
+  return normalized.endsWith('/') ? normalized : `${normalized}/`;
+}
+
+function toPosixPath(value: string): string {
+  return value.replaceAll('\\', '/');
 }

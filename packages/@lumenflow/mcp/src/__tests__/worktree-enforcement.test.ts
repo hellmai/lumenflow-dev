@@ -79,6 +79,10 @@ describe('worktree-enforcement', () => {
   describe('AC1: file_write on main checkout is blocked when enforcement is active', () => {
     it('should block file_write to main checkout path when block_outside_worktree is true', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -105,6 +109,10 @@ describe('worktree-enforcement', () => {
 
     it('should block file_edit to main checkout path when block_outside_worktree is true', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -130,6 +138,10 @@ describe('worktree-enforcement', () => {
 
     it('should allow writes when block_outside_worktree is false', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -154,6 +166,10 @@ describe('worktree-enforcement', () => {
 
     it('should allow writes when not on main/master branch', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -183,6 +199,10 @@ describe('worktree-enforcement', () => {
   describe('AC2: file_write inside a worktree succeeds regardless of enforcement', () => {
     it('should allow writes to worktree paths when enforcement is active', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -207,6 +227,10 @@ describe('worktree-enforcement', () => {
 
     it('should allow writes to worktree paths with relative path inside worktree', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -233,6 +257,10 @@ describe('worktree-enforcement', () => {
   describe('AC3: file_write on allowlisted paths succeeds on main', () => {
     it('should allow writes to .lumenflow/ paths on main', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -257,6 +285,10 @@ describe('worktree-enforcement', () => {
 
     it('should allow writes to .claude/ paths on main', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -281,6 +313,10 @@ describe('worktree-enforcement', () => {
 
     it('should allow writes to WU YAML spec paths on main', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -305,6 +341,10 @@ describe('worktree-enforcement', () => {
 
     it('should allow writes to plan/ paths on main', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -345,6 +385,10 @@ describe('worktree-enforcement', () => {
     it('should allow writes when .lumenflow dir does not exist', () => {
       mockExistsSync.mockReturnValue(false);
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -369,6 +413,10 @@ describe('worktree-enforcement', () => {
 
     it('should allow writes when enforcement config is not present', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {},
         },
@@ -384,6 +432,10 @@ describe('worktree-enforcement', () => {
 
     it('should allow writes when git branch detection fails', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -414,6 +466,10 @@ describe('worktree-enforcement', () => {
   describe('edge cases', () => {
     it('should handle master branch same as main', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -440,6 +496,10 @@ describe('worktree-enforcement', () => {
 
     it('should handle absolute file paths that resolve into the project', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
@@ -464,6 +524,10 @@ describe('worktree-enforcement', () => {
 
     it('should allow writes outside the project root entirely', () => {
       mockGetConfig.mockReturnValue({
+        directories: {
+          worktrees: 'worktrees',
+          wuDir: 'docs/04-operations/tasks/wu',
+        },
         agents: {
           clients: {
             'claude-code': {
