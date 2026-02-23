@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-- [WU-2078 — INIT-035 L2: Migrate companion repo for Python guide parity](wu/WU-2078.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1006,3 +1006,4 @@ _Last updated: 2026-02-23_
 - [WU-2075 — INIT-035 A8: Template sync and drift closure](wu/WU-2075.yaml) — 2026-02-23
 - [WU-2076 — INIT-035 A9: Add docs audit command and CI enforcement](wu/WU-2076.yaml) — 2026-02-23
 - [WU-2077 — INIT-035 L1: Migrate companion repo for Node guide parity](wu/WU-2077.yaml) — 2026-02-23
+- [WU-2078 — INIT-035 L2: Migrate companion repo for Python guide parity](wu/WU-2078.yaml) — 2026-02-23
