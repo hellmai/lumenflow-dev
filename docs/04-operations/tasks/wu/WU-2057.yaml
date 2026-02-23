@@ -2,7 +2,7 @@ id: WU-2057
 title: Document pack execution architecture and fix D2 diagram sizing sitewide
 lane: 'Content: Framework Docs'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -59,3 +59,6 @@ acceptance:
   - astro.config.mjs sidebar updated with new pages
   - kernel.mdx and packs.mdx have cross-references to tool-execution page
   - Docs build passes with all diagrams rendering correctly
+locked: true
+completed_at: 2026-02-23T09:57:11.525Z
+completed: 2026-02-23
