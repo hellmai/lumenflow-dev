@@ -2,7 +2,7 @@ id: WU-2058
 title: Harden sub-agent completion prompts with mandatory status pre-check
 lane: 'Framework: Core Validation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-23
 code_paths:
@@ -13,7 +13,8 @@ code_paths:
 tests:
   manual:
     - Generate WU-2058 brief via pnpm wu:brief --id WU-2058 and verify completion workflow requires
-      pnpm wu:status --id WU-2058 before wu:done, then says status done must stop without wu:done/wu:recover.
+      pnpm wu:status --id WU-2058 before wu:done, then says status done must stop without
+      wu:done/wu:recover.
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-spawn-completion.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts
@@ -48,3 +49,6 @@ session_id: d785fd95-94a7-4ae0-92bb-25f6aac47ed1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-23T10:11:50.567Z
+locked: true
+completed_at: 2026-02-23T10:18:53.227Z
+completed: 2026-02-23
