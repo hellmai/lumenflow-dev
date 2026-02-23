@@ -20,11 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2098 — Make wu:brief / wu:spawn prompt templates path-config aware](wu/WU-2098.yaml) — Framework: CLI WU Commands
-- [WU-2097 — Remove pending Memory runtime path literal debt (INIT-036)](wu/WU-2097.yaml) — Framework: Memory
-- [WU-2096 — Remove pending MCP runtime path literal debt (INIT-036)](wu/WU-2096.yaml) — Framework: MCP
-- [WU-2095 — Eliminate pending CLI runtime path literals (INIT-036)](wu/WU-2095.yaml) — Framework: CLI WU Commands
-- [WU-2094 — Purge residual path literals in core config and prompt helpers](wu/WU-2094.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2089 — Migrate MCP runtime path resolution to getConfig](wu/WU-2089.yaml) — Framework: MCP
