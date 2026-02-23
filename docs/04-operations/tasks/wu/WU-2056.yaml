@@ -2,7 +2,7 @@ id: WU-2056
 title: Stabilize consumer integration module-resolution gate
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -44,3 +44,6 @@ session_id: c5cc1ad1-a82d-4ab9-ac3a-0b9832f00f1e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-23T09:35:27.638Z
+locked: true
+completed_at: 2026-02-23T09:56:03.816Z
+completed: 2026-02-23
