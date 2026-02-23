@@ -20,26 +20,26 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2084 — INIT-035 L8: Create companion repo for PHP](wu/WU-2084.yaml) — Operations: Tooling
-- [WU-2083 — INIT-035 L7: Create companion repo for Ruby](wu/WU-2083.yaml) — Operations: Tooling
-- [WU-2082 — INIT-035 L6: Create companion repo for Rust](wu/WU-2082.yaml) — Operations: Tooling
-- [WU-2081 — INIT-035 L5: Create companion repo for Java](wu/WU-2081.yaml) — Operations: Tooling
-- [WU-2080 — INIT-035 L4: Create companion repo for .NET guide parity](wu/WU-2080.yaml) — Operations: Tooling
-- [WU-2079 — INIT-035 L3: Migrate companion repo for Go guide parity](wu/WU-2079.yaml) — Operations: Tooling
-- [WU-2078 — INIT-035 L2: Migrate companion repo for Python guide parity](wu/WU-2078.yaml) — Operations: Tooling
-- [WU-2077 — INIT-035 L1: Migrate companion repo for Node guide parity](wu/WU-2077.yaml) — Operations: Tooling
-- [WU-2076 — INIT-035 A9: Add docs audit command and CI enforcement](wu/WU-2076.yaml) — Operations: Tooling
-- [WU-2075 — INIT-035 A8: Template sync and drift closure](wu/WU-2075.yaml) — Content: Framework Docs
-- [WU-2074 — INIT-035 A7: Align canonical internal docs to new IA and command truth](wu/WU-2074.yaml) — Content: Framework Docs
-- [WU-2073 — INIT-035 A6b: Render curated CLI docs from manifest metadata](wu/WU-2073.yaml) — Content: Site Comms
-- [WU-2072 — INIT-035 A6a: Extend PublicCommand metadata for curated docs surface](wu/WU-2072.yaml) — Operations: Tooling
-- [WU-2071 — INIT-035 A5: Align releases/changelog to published stable truth](wu/WU-2071.yaml) — Content: Site Comms
-- [WU-2070 — INIT-035 A4: Rewrite language guide framework to verified quickstart standard](wu/WU-2070.yaml) — Content: Site Comms
-- [WU-2069 — INIT-035 A3: Relocate/rewrite Software Delivery Pack docs](wu/WU-2069.yaml) — Content: Site Comms
-- [WU-2068 — INIT-035 A2: Relocate/rewrite Kernel docs](wu/WU-2068.yaml) — Content: Site Comms
-- [WU-2067 — INIT-035 A1: Kernel/Packs IA skeleton and sidebar route map](wu/WU-2067.yaml) — Content: Site Comms
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
+- [WU-2067 — INIT-035 A1: Kernel/Packs IA skeleton and sidebar route map](wu/WU-2067.yaml) — Content: Site Comms
+- [WU-2068 — INIT-035 A2: Relocate/rewrite Kernel docs](wu/WU-2068.yaml) — Content: Site Comms
+- [WU-2069 — INIT-035 A3: Relocate/rewrite Software Delivery Pack docs](wu/WU-2069.yaml) — Content: Site Comms
+- [WU-2070 — INIT-035 A4: Rewrite language guide framework to verified quickstart standard](wu/WU-2070.yaml) — Content: Site Comms
+- [WU-2071 — INIT-035 A5: Align releases/changelog to published stable truth](wu/WU-2071.yaml) — Content: Site Comms
+- [WU-2072 — INIT-035 A6a: Extend PublicCommand metadata for curated docs surface](wu/WU-2072.yaml) — Operations: Tooling
+- [WU-2073 — INIT-035 A6b: Render curated CLI docs from manifest metadata](wu/WU-2073.yaml) — Content: Site Comms
+- [WU-2074 — INIT-035 A7: Align canonical internal docs to new IA and command truth](wu/WU-2074.yaml) — Content: Framework Docs
+- [WU-2075 — INIT-035 A8: Template sync and drift closure](wu/WU-2075.yaml) — Content: Framework Docs
+- [WU-2076 — INIT-035 A9: Add docs audit command and CI enforcement](wu/WU-2076.yaml) — Operations: Tooling
+- [WU-2077 — INIT-035 L1: Migrate companion repo for Node guide parity](wu/WU-2077.yaml) — Operations: Tooling
+- [WU-2078 — INIT-035 L2: Migrate companion repo for Python guide parity](wu/WU-2078.yaml) — Operations: Tooling
+- [WU-2079 — INIT-035 L3: Migrate companion repo for Go guide parity](wu/WU-2079.yaml) — Operations: Tooling
+- [WU-2080 — INIT-035 L4: Create companion repo for .NET guide parity](wu/WU-2080.yaml) — Operations: Tooling
+- [WU-2081 — INIT-035 L5: Create companion repo for Java](wu/WU-2081.yaml) — Operations: Tooling
+- [WU-2082 — INIT-035 L6: Create companion repo for Rust](wu/WU-2082.yaml) — Operations: Tooling
+- [WU-2083 — INIT-035 L7: Create companion repo for Ruby](wu/WU-2083.yaml) — Operations: Tooling
+- [WU-2084 — INIT-035 L8: Create companion repo for PHP](wu/WU-2084.yaml) — Operations: Tooling
 
 ## 🔧 In progress
 

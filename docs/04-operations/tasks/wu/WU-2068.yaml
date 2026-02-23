@@ -19,6 +19,8 @@ artifacts:
 dependencies: []
 initiative: INIT-035
 phase: 1
+blocked_by:
+  - WU-2067
 labels:
   - INIT-035
   - A2
@@ -34,6 +36,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Relocate and rewrite kernel-only concepts into the new kernel route family so runtime semantics are separated from pack-level workflows.
+description: Relocate and rewrite kernel-only concepts into the new kernel route family so runtime
+  semantics are separated from pack-level workflows.
 acceptance:
-  - Kernel documentation lives under kernel routes and reflects kernel-only concepts with repaired links.
+  - Kernel documentation lives under kernel routes and reflects kernel-only concepts with repaired
+    links.
