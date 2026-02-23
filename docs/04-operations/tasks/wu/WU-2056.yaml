@@ -7,7 +7,6 @@ priority: P1
 created: 2026-02-23
 code_paths:
   - packages/@lumenflow/core/__tests__/consumer-integration.test.ts
-  - packages/@lumenflow/core/package.json
 tests:
   manual:
     - Run pnpm --filter @lumenflow/core exec vitest run __tests__/consumer-integration.test.ts and

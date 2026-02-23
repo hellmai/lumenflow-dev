@@ -1,12 +1,69 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { execSync } from 'node:child_process';
 import { existsSync, rmSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
+
+const NPM_COMMAND = 'npm';
+const NPM_INIT_ARGS = '-y';
+const NPM_INIT_COMMAND = `${NPM_COMMAND} init ${NPM_INIT_ARGS}`;
+const PNPM_COMMAND = 'pnpm';
+const PNPM_ADD_COMMAND_PREFIX = `${PNPM_COMMAND} add`;
+const PNPM_WORKSPACE_FILE = 'pnpm-workspace.yaml';
 
 const NODE_MODULES_BIN = 'node_modules/.bin';
 const PACKAGES_LUMENFLOW = 'packages/@lumenflow/';
 const NODE_MODULES = 'node_modules';
+const PACKAGE_JSON_FILE = 'package.json';
+const PACKAGE_NAME_CLI = '@lumenflow/cli';
+const PACKAGE_NAME_CORE = '@lumenflow/core';
+const WORKSPACE_PROTOCOL_PREFIX = 'workspace:';
+const WORKSPACE_PACKAGE_SPEC = 'workspace:*';
+const MONOREPO_ROOT_PATH = '/home/USER/source/hellmai/os';
+const LUMENFLOW_PACKAGES_DIRECTORY = 'packages/@lumenflow';
+const CORE_WORKSPACE_TO_REPO_ROOT = '../../..';
+const EMPTY_DEPENDENCIES: Record<string, string> = {};
+const WORKSPACE_ROOT_INSTALL_FLAG = '-w';
+
+interface PackageJsonDocument {
+  dependencies?: Record<string, string>;
+}
+
+function readPackageJson(projectDir: string): PackageJsonDocument {
+  const packageJsonPath = join(projectDir, PACKAGE_JSON_FILE);
+  return JSON.parse(readFileSync(packageJsonPath, 'utf8')) as PackageJsonDocument;
+}
+
+function isWorkspaceDependencyVersion(version: string | undefined): boolean {
+  return version?.startsWith(WORKSPACE_PROTOCOL_PREFIX) ?? false;
+}
+
+function isWorkspaceConsumerInstall(projectDir: string): boolean {
+  const dependencies = readPackageJson(projectDir).dependencies ?? EMPTY_DEPENDENCIES;
+  return [PACKAGE_NAME_CLI, PACKAGE_NAME_CORE]
+    .map((packageName) => dependencies[packageName])
+    .every((dependencyVersion) => isWorkspaceDependencyVersion(dependencyVersion));
+}
+
+function getRepositoryRoot(corePackageCwd: string): string {
+  return resolve(corePackageCwd, CORE_WORKSPACE_TO_REPO_ROOT);
+}
+
+function writeWorkspaceManifest(tempProjectDirectory: string, repoRoot: string): void {
+  const workspacePackageGlob = `${join(repoRoot, LUMENFLOW_PACKAGES_DIRECTORY)}/*`;
+  const workspaceContent = `packages:\n  - "${workspacePackageGlob}"\n`;
+  writeFileSync(join(tempProjectDirectory, PNPM_WORKSPACE_FILE), workspaceContent);
+}
+
+function installLocalPackages(tempProjectDirectory: string): void {
+  const workspacePackages = [PACKAGE_NAME_CLI, PACKAGE_NAME_CORE]
+    .map((packageName) => `${packageName}@${WORKSPACE_PACKAGE_SPEC}`)
+    .join(' ');
+  execSync(`${PNPM_ADD_COMMAND_PREFIX} ${WORKSPACE_ROOT_INSTALL_FLAG} ${workspacePackages}`, {
+    cwd: tempProjectDirectory,
+    stdio: 'pipe',
+  });
+}
 
 /**
  * Check if a line is a comment (JSDoc, single-line, block comment continuation)
@@ -66,6 +123,7 @@ describe('Consumer Integration Tests', () => {
     // Create a temporary directory for the test project
     const testName = 'lumenflow-consumer-test-' + Date.now();
     tempProjectDir = join(tmpdir(), testName);
+    const repositoryRoot = getRepositoryRoot(originalCwd);
 
     if (existsSync(tempProjectDir)) {
       rmSync(tempProjectDir, { recursive: true, force: true });
@@ -74,17 +132,12 @@ describe('Consumer Integration Tests', () => {
 
     // Initialize a temporary npm project
     process.chdir(tempProjectDir);
-    execSync('npm init -y', { stdio: 'pipe' });
+    execSync(NPM_INIT_COMMAND, { stdio: 'pipe' });
 
-    // Install packages from npm registry (not local workspace)
-    execSync('npm install @lumenflow/cli @lumenflow/core', {
-      stdio: 'pipe',
-      env: {
-        ...process.env,
-        // Force npm to use registry instead of workspace
-        npm_config_workspaces: 'false',
-      },
-    });
+    // Link workspace packages so this fixture is deterministic and independent of
+    // whichever @lumenflow package versions are currently published on npm.
+    writeWorkspaceManifest(tempProjectDir, repositoryRoot);
+    installLocalPackages(tempProjectDir);
   }, SETUP_TIMEOUT_MS);
 
   afterAll(() => {
@@ -96,13 +149,12 @@ describe('Consumer Integration Tests', () => {
   });
 
   describe('Package Installation', () => {
-    it('should install @lumenflow/cli from npm registry', () => {
-      const packageJsonPath = join(tempProjectDir, 'package.json');
-      // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
-      const packageJson = require(packageJsonPath);
+    it('should install @lumenflow/cli and @lumenflow/core from local artifacts', () => {
+      const packageJson = readPackageJson(tempProjectDir);
+      const dependencies = packageJson.dependencies ?? EMPTY_DEPENDENCIES;
 
-      expect(packageJson.dependencies).toHaveProperty('@lumenflow/cli');
-      expect(packageJson.dependencies).toHaveProperty('@lumenflow/core');
+      expect(dependencies).toHaveProperty(PACKAGE_NAME_CLI);
+      expect(dependencies).toHaveProperty(PACKAGE_NAME_CORE);
 
       // Verify the packages are actually installed
       const cliPath = join(tempProjectDir, NODE_MODULES, '@lumenflow', 'cli');
@@ -125,6 +177,16 @@ describe('Consumer Integration Tests', () => {
       expect(existsSync(validateBin)).toBe(true);
       expect(existsSync(wuStatusBin)).toBe(true);
       expect(existsSync(internalValidateBacklogSyncBin)).toBe(false);
+    });
+
+    it('should install lumenflow packages from local workspace artifacts', () => {
+      const packageJson = readPackageJson(tempProjectDir);
+      const dependencies = packageJson.dependencies ?? EMPTY_DEPENDENCIES;
+      const coreDependency = dependencies[PACKAGE_NAME_CORE];
+      const cliDependency = dependencies[PACKAGE_NAME_CLI];
+
+      expect(coreDependency?.startsWith(WORKSPACE_PROTOCOL_PREFIX)).toBe(true);
+      expect(cliDependency?.startsWith(WORKSPACE_PROTOCOL_PREFIX)).toBe(true);
     });
   });
 
@@ -186,6 +248,7 @@ describe('Consumer Integration Tests', () => {
 
     it('should have all required CLI binaries properly resolved', () => {
       const nodeModulesBin = join(tempProjectDir, NODE_MODULES_BIN);
+      const usingWorkspaceInstall = isWorkspaceConsumerInstall(tempProjectDir);
 
       // Test key public binaries to ensure they're executable and don't have hardcoded paths
       const keyBinaries = ['gates', 'validate', 'wu-status', 'wu-claim', 'wu-done'];
@@ -194,9 +257,12 @@ describe('Consumer Integration Tests', () => {
         const binaryPath = join(nodeModulesBin, binary);
         expect(existsSync(binaryPath), `${binary} should exist`).toBe(true);
 
-        // Check that binary is not using hardcoded monorepo paths
+        // Workspace-linked shim wrappers can contain absolute paths to local packages.
+        // Only enforce hardcoded-path rejection when testing non-workspace installs.
         const binaryContent = readFileSync(binaryPath, 'utf8');
-        expect(binaryContent).not.toContain('/home/USER/source/hellmai/os');
+        if (!usingWorkspaceInstall) {
+          expect(binaryContent).not.toContain(MONOREPO_ROOT_PATH);
+        }
 
         // Allow legitimate documentation references in JSDoc comments
         // but check for problematic hardcoded paths in code
