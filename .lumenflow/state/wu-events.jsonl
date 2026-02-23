@@ -2089,3 +2089,4 @@
 {"type":"claim","wuId":"WU-2068","timestamp":"2026-02-23T15:48:56.562Z","lane":"Content: Site Comms","title":"INIT-035 A2: Relocate/rewrite Kernel docs"}
 {"type":"complete","wuId":"WU-2068","timestamp":"2026-02-23T15:52:45.589Z"}
 {"type":"claim","wuId":"WU-2069","timestamp":"2026-02-23T15:53:31.060Z","lane":"Content: Site Comms","title":"INIT-035 A3: Relocate/rewrite Software Delivery Pack docs"}
+{"type":"complete","wuId":"WU-2069","timestamp":"2026-02-23T15:57:34.464Z"}
