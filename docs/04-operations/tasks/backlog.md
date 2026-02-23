@@ -25,7 +25,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2050 — Bundled pack resolution for end-user bootstrap](wu/WU-2050.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1004,6 +1004,7 @@ sections:
 - [WU-2021 — Filter deleted files from incremental format check input](wu/WU-2021.yaml)
 - [WU-2009 — Add claim-validation gate for absolute acceptance criteria drift](wu/WU-2009.yaml)
 - [WU-2049 — INIT-034 follow-up: consolidate duplicates and fix naming collisions](wu/WU-2049.yaml)
+- [WU-2050 — Bundled pack resolution for end-user bootstrap](wu/WU-2050.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
