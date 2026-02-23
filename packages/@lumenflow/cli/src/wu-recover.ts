@@ -24,6 +24,7 @@ import { computeContext } from '@lumenflow/core/context/index';
 import { analyzeRecovery, type RecoveryAnalysis } from '@lumenflow/core/recovery/recovery-analyzer';
 import { die } from '@lumenflow/core/error-handler';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { getConfig } from '@lumenflow/core/config';
 import { readWU, writeWU } from '@lumenflow/core/wu-yaml';
 import {
   CONTEXT_VALIDATION,
@@ -46,6 +47,16 @@ import { join, relative } from 'node:path';
 const { RECOVERY_ACTIONS } = CONTEXT_VALIDATION;
 const LOG_PREFIX = '[wu:recover]';
 const OPERATION_NAME = 'wu-recover';
+
+function resolveStateDir(projectRoot: string): string {
+  const config = getConfig({ projectRoot });
+  return join(projectRoot, config.state.stateDir);
+}
+
+function resolveWuEventsPath(projectRoot: string): string {
+  const config = getConfig({ projectRoot });
+  return `${config.state.stateDir.replace(/\\/g, '/')}/wu-events.jsonl`;
+}
 
 type RecoveryActionType = (typeof RECOVERY_ACTIONS)[keyof typeof RECOVERY_ACTIONS];
 
@@ -344,7 +355,7 @@ async function executeReset(wuId: string): Promise<boolean> {
       const filesToCommit: string[] = [WU_PATHS.WU(wuId)];
       let commitMessage = `fix(wu-recover): reset ${wuId} - clear claim and set status to ready`;
 
-      const stateDir = join(process.cwd(), '.lumenflow', 'state');
+      const stateDir = resolveStateDir(process.cwd());
       const store = new WUStateStore(stateDir);
       await store.load();
       const currentState = store.getWUState(wuId);
@@ -365,7 +376,7 @@ async function executeReset(wuId: string): Promise<boolean> {
         filesToCommit.push(
           WU_PATHS.STATUS(),
           WU_PATHS.BACKLOG(),
-          '.lumenflow/state/wu-events.jsonl',
+          resolveWuEventsPath(process.cwd()),
         );
         commitMessage = `fix(wu-recover): reset ${wuId} - clear claim and emit release event`;
       }
@@ -390,7 +401,7 @@ async function executeReset(wuId: string): Promise<boolean> {
 
           // WU-1419: Emit release event to state store so re-claiming works
           // Without this, state store still thinks WU is in_progress, blocking re-claim
-          const stateDir = join(microPath, '.lumenflow', 'state');
+          const stateDir = resolveStateDir(microPath);
           const store = new WUStateStore(stateDir);
           await store.load();
 
@@ -420,7 +431,7 @@ async function executeReset(wuId: string): Promise<boolean> {
                 relative(process.cwd(), wuPath),
                 WU_PATHS.STATUS(),
                 WU_PATHS.BACKLOG(),
-                '.lumenflow/state/wu-events.jsonl',
+                resolveWuEventsPath(microPath),
               ],
             };
           }

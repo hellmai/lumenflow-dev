@@ -13,6 +13,7 @@ import path from 'node:path';
 import { createGitForPath } from '@lumenflow/core/git-adapter';
 import { die } from '@lumenflow/core/error-handler';
 import { toKebab, LOG_PREFIX, EMOJI } from '@lumenflow/core/wu-constants';
+import { getConfig } from '@lumenflow/core/config';
 import { emitWUFlowEvent } from '@lumenflow/core/telemetry';
 import {
   resumeClaimForHandoff,
@@ -40,7 +41,8 @@ const PREFIX = LOG_PREFIX.CLAIM;
 export async function handleResumeMode(args: UnsafeAny, id: UnsafeAny) {
   const laneK = toKebab(args.lane);
   const idK = id.toLowerCase();
-  const worktree = args.worktree || `worktrees/${laneK}-${idK}`;
+  const configuredWorktreesDir = getConfig({ projectRoot: process.cwd() }).directories.worktrees;
+  const worktree = args.worktree || path.join(configuredWorktreesDir, `${laneK}-${idK}`);
   const worktreePath = path.resolve(worktree);
 
   console.log(`${PREFIX} Attempting to resume ${id} in lane "${args.lane}"...`);

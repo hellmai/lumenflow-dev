@@ -22,6 +22,7 @@ import { readWURaw } from '@lumenflow/core/wu-yaml';
 import {
   PKG_MANAGER,
   SCRIPTS,
+  GIT_REFS,
   FILE_SYSTEM,
   EXIT_CODES,
   PRETTIER_ARGS,
@@ -291,7 +292,7 @@ export async function filterExistingFiles(
 
 export async function getChangedFilesForIncremental({
   git,
-  baseBranch = 'origin/main',
+  baseBranch = GIT_REFS.ORIGIN_MAIN,
 }: {
   git: ReturnType<typeof createGitForPath>;
   baseBranch?: string;

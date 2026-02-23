@@ -51,6 +51,7 @@
 import { Command } from 'commander';
 import path from 'node:path';
 import { EXIT_CODES, LOG_PREFIX, PATTERNS } from '@lumenflow/core/wu-constants';
+import { getConfig } from '@lumenflow/core/config';
 import {
   runConsistencyRepairMode,
   runClaimRepairMode,
@@ -190,8 +191,8 @@ function validateModeRequirements(options: UnsafeAny) {
  * @returns {Promise<{success: boolean, exitCode: number}>}
  */
 async function runStateRepairMode(options: UnsafeAny) {
-  // Default path is .lumenflow/state/wu-events.jsonl relative to cwd
-  const defaultPath = path.join(process.cwd(), '.lumenflow', 'state', WU_EVENTS_FILE_NAME);
+  const config = getConfig({ projectRoot: process.cwd() });
+  const defaultPath = path.join(process.cwd(), config.state.stateDir, WU_EVENTS_FILE_NAME);
   const filePath = options.path || defaultPath;
 
   console.log(`${PREFIX} Repairing state file: ${filePath}`);

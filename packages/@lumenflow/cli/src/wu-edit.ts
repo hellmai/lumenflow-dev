@@ -33,7 +33,7 @@
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { die } from '@lumenflow/core/error-handler';
 import { writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { basename, join, resolve } from 'node:path';
 import type { ZodIssue } from 'zod';
 import { stringifyYAML } from '@lumenflow/core/wu-yaml';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
@@ -539,8 +539,9 @@ export async function main() {
     // WU-1806: Resolve to absolute path correctly even when running from inside a worktree
     // If we're already inside a worktree, check if it matches the target worktree
     const currentWorktree = detectCurrentWorktree();
+    const targetWorktreeName = basename(worktreePath);
     let absoluteWorktreePath;
-    if (currentWorktree && currentWorktree.endsWith(worktreePath.replace('worktrees/', ''))) {
+    if (currentWorktree && basename(currentWorktree) === targetWorktreeName) {
       // We're inside the target worktree - use cwd directly
       absoluteWorktreePath = currentWorktree;
       console.log(`${PREFIX} Running from inside target worktree`);

@@ -26,7 +26,13 @@ import fg from 'fast-glob';
 import { readFile } from 'node:fs/promises';
 import { parse as parseYaml } from 'yaml';
 import path from 'node:path';
-import { LOG_PREFIX, EMOJI, PROTECTED_WU_STATUSES, BRANCHES } from '@lumenflow/core/wu-constants';
+import {
+  LOG_PREFIX,
+  EMOJI,
+  PROTECTED_WU_STATUSES,
+  BRANCHES,
+  LUMENFLOW_PATHS,
+} from '@lumenflow/core/wu-constants';
 import { formatBytes } from './constants.js';
 
 /**
@@ -148,13 +154,27 @@ export async function runAutoCleanupAfterDone(baseDir: string): Promise<void> {
   }
 }
 
-/**
- * WU-1533: State file path prefix that auto-cleanup may modify.
- * WU-1553: Archive prefix added — archiveWuEvents() writes to .lumenflow/archive/.
- * Both prefixes are auto-committed after cleanup to prevent leaving main dirty.
- */
-const STATE_FILE_PREFIX = '.lumenflow/state/';
-const ARCHIVE_FILE_PREFIX = '.lumenflow/archive/';
+function normalizePathPrefix(filePath: string): string {
+  const normalized = filePath.replace(/\\/g, '/');
+  return normalized.endsWith('/') ? normalized : `${normalized}/`;
+}
+
+function resolveCleanupPathPrefixes(projectRoot: string): { state: string; archive: string } {
+  try {
+    const config = getConfig({ projectRoot, reload: true });
+    return {
+      state: normalizePathPrefix(config.state.stateDir),
+      archive: normalizePathPrefix(config.state.archiveDir),
+    };
+  } catch {
+    // Defensive fallback for partial/malformed config loading paths.
+    // Runtime defaults still come from getConfig() under normal conditions.
+    return {
+      state: normalizePathPrefix(LUMENFLOW_PATHS.STATE_DIR),
+      archive: normalizePathPrefix(LUMENFLOW_PATHS.ARCHIVE_DIR),
+    };
+  }
+}
 
 /**
  * WU-1542: Default commit message for auto-cleanup.
@@ -209,11 +229,13 @@ export async function commitCleanupChanges(
     // Parse porcelain status lines to find dirty state/archive files
     // WU-1553: Include .lumenflow/archive/ files created by archiveWuEvents()
     const lines = status.split('\n').filter((line) => line.length >= 4);
+    const cleanupPrefixes = resolveCleanupPathPrefixes(process.cwd());
     const cleanupFiles = lines
       .map((line) => line.slice(3).trim())
       .filter(
         (filePath) =>
-          filePath.startsWith(STATE_FILE_PREFIX) || filePath.startsWith(ARCHIVE_FILE_PREFIX),
+          filePath.startsWith(cleanupPrefixes.state) ||
+          filePath.startsWith(cleanupPrefixes.archive),
       );
 
     if (cleanupFiles.length === 0) {

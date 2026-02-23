@@ -20,6 +20,8 @@ import {
   getConfigFilePresence,
   WORKSPACE_CONFIG_FILE_NAME,
 } from '@lumenflow/core';
+import { getConfig } from '@lumenflow/core/config';
+import { CONFIG_FILES } from '@lumenflow/core/wu-constants';
 import { loadLaneDefinitions, detectLaneOverlaps } from './lane-health.js';
 import { runCLI } from './cli-entry-point.js';
 
@@ -146,13 +148,10 @@ export interface DoctorForInitResult {
  */
 const MANAGED_FILE_PATTERNS = [
   WORKSPACE_CONFIG_FILE_NAME,
-  '.lumenflow.lane-inference.yaml',
+  CONFIG_FILES.LANE_INFERENCE,
   'AGENTS.md',
   'CLAUDE.md',
 ];
-
-/** WU-1386: Managed directories with glob patterns */
-const MANAGED_DIR_PATTERNS = ['docs/04-operations/tasks/'];
 
 /**
  * CLI option definitions for doctor command
@@ -492,6 +491,9 @@ async function checkManagedFilesDirty(projectDir: string): Promise<ManagedFilesD
       stdio: ['pipe', 'pipe', 'pipe'],
     });
 
+    const config = getConfig({ projectRoot: repoRoot });
+    const managedDirPrefix = `${config.directories.wuDir.replace(/\\/g, '/').replace(/\/wu\/?$/, '/')}`;
+
     const dirtyFiles: string[] = [];
 
     // Parse status output and check each line
@@ -504,7 +506,7 @@ async function checkManagedFilesDirty(projectDir: string): Promise<ManagedFilesD
       // Check if file matches managed patterns
       const isManaged =
         MANAGED_FILE_PATTERNS.some((pattern) => filePath === pattern) ||
-        MANAGED_DIR_PATTERNS.some((dir) => filePath.startsWith(dir));
+        filePath.startsWith(managedDirPrefix);
 
       if (isManaged) {
         dirtyFiles.push(filePath);

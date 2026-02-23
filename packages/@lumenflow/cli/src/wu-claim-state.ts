@@ -27,7 +27,6 @@ import {
   GIT_REFS,
   MICRO_WORKTREE_OPERATIONS,
   COMMIT_FORMATS,
-  LUMENFLOW_PATHS,
   FILE_SYSTEM,
 } from '@lumenflow/core/wu-constants';
 import { WU_PATHS, getStateStoreDirFromBacklog } from '@lumenflow/core/wu-paths';
@@ -48,6 +47,11 @@ import {
 import { resolveClaimStatus } from './wu-claim-validation.js';
 
 const PREFIX = LOG_PREFIX.CLAIM;
+
+function resolveWuEventsPath(projectRoot: string): string {
+  const config = getConfig({ projectRoot });
+  return `${config.state.stateDir.replace(/\\/g, '/')}/wu-events.jsonl`;
+}
 
 type ClaimWUDoc = Record<string, unknown> & {
   id?: string;
@@ -218,7 +222,8 @@ export async function recordClaimPickupEvidence(
       ? options.claimedBy.trim()
       : 'unknown';
 
-  const store = new DelegationRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
+  const stateDir = path.join(baseDir, getConfig({ projectRoot: baseDir }).state.stateDir);
+  const store = new DelegationRegistryStore(stateDir);
   await store.load();
 
   const spawnEntry = store.getByTarget(id);
@@ -539,7 +544,7 @@ export function getWorktreeCommitFiles(wuId: string): string[] {
   const config = getConfig();
   return [
     `${config.directories.wuDir}/${wuId}.yaml`,
-    LUMENFLOW_PATHS.WU_EVENTS, // WU-1740: Event store is source of truth
+    resolveWuEventsPath(process.cwd()), // WU-1740: Event store is source of truth
     // WU-1746: Explicitly NOT including backlog.md and status.md
     // These generated files cause merge conflicts when main advances
   ];
@@ -665,7 +670,12 @@ export async function applyCanonicalClaimUpdate(
       ? stagedChanges
           .map((change: ParsedStagedChange) => change.filePath)
           .filter((filePath): filePath is string => Boolean(filePath))
-      : [WU_PATHS.WU(id), WU_PATHS.STATUS(), WU_PATHS.BACKLOG(), LUMENFLOW_PATHS.WU_EVENTS];
+      : [
+          WU_PATHS.WU(id),
+          WU_PATHS.STATUS(),
+          WU_PATHS.BACKLOG(),
+          resolveWuEventsPath(process.cwd()),
+        ];
 
   console.log(`${PREFIX} Updating canonical claim state (push-only)...`);
 
@@ -807,7 +817,7 @@ export async function rollbackCanonicalClaim(
             WU_PATHS.WU(id),
             WU_PATHS.STATUS(),
             WU_PATHS.BACKLOG(),
-            LUMENFLOW_PATHS.WU_EVENTS,
+            resolveWuEventsPath(worktreePath),
           ],
         };
       },

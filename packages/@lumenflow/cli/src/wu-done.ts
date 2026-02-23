@@ -361,7 +361,23 @@ interface StateHudParams {
   STAMPS_DIR: string;
 }
 
-// WU-1539: Use centralized LUMENFLOW_PATHS.WU_EVENTS instead of local constant
+// WU-2090: Resolve state store paths from getConfig() for consumer overrides.
+function resolveConfiguredStateDir(projectRoot: string): string {
+  try {
+    return path.join(projectRoot, getConfig({ projectRoot }).state.stateDir);
+  } catch {
+    return path.join(projectRoot, LUMENFLOW_PATHS.STATE_DIR);
+  }
+}
+
+function resolveConfiguredWuEventsPath(projectRoot: string): string {
+  try {
+    const config = getConfig({ projectRoot });
+    return `${config.state.stateDir.replace(/\\/g, '/')}/wu-events.jsonl`;
+  } catch {
+    return LUMENFLOW_PATHS.WU_EVENTS;
+  }
+}
 
 /**
  * WU-1804: Preflight validation for claim metadata before gates.
@@ -392,8 +408,11 @@ async function validateClaimMetadataBeforeGates(
 
   // Check 2: State store must show WU as in_progress
   const resolvedWorktreePath = path.resolve(worktreePath);
-  const stateDir = path.join(resolvedWorktreePath, '.lumenflow', 'state');
-  const eventsPath = path.join(resolvedWorktreePath, LUMENFLOW_PATHS.WU_EVENTS);
+  const stateDir = resolveConfiguredStateDir(resolvedWorktreePath);
+  const eventsPath = path.join(
+    resolvedWorktreePath,
+    resolveConfiguredWuEventsPath(resolvedWorktreePath),
+  );
 
   try {
     const store = new WUStateStore(stateDir);
@@ -628,8 +647,11 @@ export function buildGatesCommand(options: BuildGatesOptions): string {
 
 async function _assertWorktreeWUInProgressInStateStore(id: string, worktreePath: string) {
   const resolvedWorktreePath = path.resolve(worktreePath);
-  const stateDir = path.join(resolvedWorktreePath, '.lumenflow', 'state');
-  const eventsPath = path.join(resolvedWorktreePath, LUMENFLOW_PATHS.WU_EVENTS);
+  const stateDir = resolveConfiguredStateDir(resolvedWorktreePath);
+  const eventsPath = path.join(
+    resolvedWorktreePath,
+    resolveConfiguredWuEventsPath(resolvedWorktreePath),
+  );
 
   const store = new WUStateStore(stateDir);
   try {
@@ -861,7 +883,7 @@ export async function enforceSpawnProvenanceForDone(
     typeof doc.initiative === 'string' && doc.initiative.trim() ? doc.initiative.trim() : 'unknown';
   const baseDir = options.baseDir ?? process.cwd();
   const force = options.force === true;
-  const store = new DelegationRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
+  const store = new DelegationRegistryStore(resolveConfiguredStateDir(baseDir));
   await store.load();
 
   const spawnEntry = store.getByTarget(id) as SpawnEntryLike | null;
@@ -910,7 +932,7 @@ export async function enforceSpawnProvenanceForDone(
  */
 export async function updateSpawnRegistryOnCompletion(id: string, baseDir: string = process.cwd()) {
   try {
-    const store = new DelegationRegistryStore(path.join(baseDir, '.lumenflow', 'state'));
+    const store = new DelegationRegistryStore(resolveConfiguredStateDir(baseDir));
     await store.load();
 
     const spawnEntry = store.getByTarget(id);
@@ -1625,7 +1647,7 @@ async function validateStagedFiles(
     wuPath,
     config.directories.statusPath,
     config.directories.backlogPath,
-    LUMENFLOW_PATHS.WU_EVENTS,
+    resolveConfiguredWuEventsPath(process.cwd()),
   ];
   const metadataAllowlist = (options.metadataAllowlist ?? []).filter(
     (file): file is string => typeof file === 'string' && file.length > 0,
@@ -2199,13 +2221,14 @@ async function executePreFlightChecks({
   console.log(`${LOG_PREFIX.DONE} Checking approval gates...`);
   const approvalResult = validateApprovalGates(schemaResult.data);
   if (!approvalResult.valid) {
+    const governancePath = getConfig({ projectRoot: process.cwd() }).directories.governancePath;
     die(
       `❌ Approval gates not satisfied:\n\n${approvalResult.errors.map((e) => `  - ${e}`).join(STRING_LITERALS.NEWLINE)}\n\n` +
         `📋 To fix:\n` +
         `   1. Request approval from the required role(s)\n` +
         `   2. Add their email(s) to the 'approved_by' field in the WU YAML\n` +
         `   3. Re-run: pnpm wu:done --id ${id}\n\n` +
-        `   See docs/04-operations/governance/project-governance.md for role definitions.`,
+        `   See ${governancePath} for role definitions.`,
     );
   }
   // Log advisory warnings (non-blocking)
@@ -2298,7 +2321,9 @@ async function executePreFlightChecks({
     // which causes the auto-rebase to fail with "You have unstaged changes"
     if (derivedWorktree) {
       try {
-        execSync(`git -C "${derivedWorktree}" restore "${LUMENFLOW_PATHS.WU_EVENTS}"`);
+        execSync(
+          `git -C "${derivedWorktree}" restore "${resolveConfiguredWuEventsPath(derivedWorktree)}"`,
+        );
       } catch {
         // Non-fatal: file might not exist or already clean
       }
@@ -2615,7 +2640,7 @@ async function executeGates({
   // This restores the file to HEAD state - checkpoint data is preserved in memory store
   if (worktreePath) {
     try {
-      execSync(`git -C "${worktreePath}" restore "${LUMENFLOW_PATHS.WU_EVENTS}"`);
+      execSync(`git -C "${worktreePath}" restore "${resolveConfiguredWuEventsPath(worktreePath)}"`);
     } catch {
       // Non-fatal: file might not exist or already clean
     }

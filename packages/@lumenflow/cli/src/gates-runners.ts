@@ -29,6 +29,7 @@ import {
   ESLINT_FLAGS,
   ESLINT_COMMANDS,
   ESLINT_DEFAULTS,
+  GIT_REFS,
   SCRIPTS,
   CACHE_STRATEGIES,
   DIRECTORIES,
@@ -240,7 +241,7 @@ export async function runIncrementalLint({
 
 // ── Test gates ─────────────────────────────────────────────────────────
 
-const DEFAULT_INCREMENTAL_BASE_BRANCH = 'origin/main';
+const DEFAULT_INCREMENTAL_BASE_BRANCH = GIT_REFS.ORIGIN_MAIN;
 
 export function buildStableVitestIncrementalCommand(
   baseBranch = DEFAULT_INCREMENTAL_BASE_BRANCH,

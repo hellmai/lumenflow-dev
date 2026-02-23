@@ -25,6 +25,7 @@ import { existsSync, readFileSync, writeFileSync, unlinkSync, readdirSync } from
 import { join } from 'node:path';
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { die } from '@lumenflow/core/error-handler';
+import { getConfig } from '@lumenflow/core/config';
 import { parseYAML } from '@lumenflow/core/wu-yaml';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
@@ -310,7 +311,7 @@ export async function cleanupDeletedWUsInWorktree({ worktreePath, ids }: Cleanup
     );
   }
 
-  const stateDir = join(worktreePath, '.lumenflow', 'state');
+  const stateDir = join(worktreePath, getConfig({ projectRoot: worktreePath }).state.stateDir);
   const store = new WUStateStore(stateDir);
   await store.load();
 

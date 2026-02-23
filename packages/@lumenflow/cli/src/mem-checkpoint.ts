@@ -25,6 +25,7 @@ import path from 'node:path';
 import { createCheckpoint } from '@lumenflow/memory/checkpoint';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { EXIT_CODES, LUMENFLOW_PATHS, CONTEXT_VALIDATION } from '@lumenflow/core/wu-constants';
+import { getConfig } from '@lumenflow/core/config';
 import { resolveLocation } from '@lumenflow/core/context/location-resolver';
 import { WUStateStore } from '@lumenflow/core/wu-state-store';
 import { runCLI } from './cli-entry-point.js';
@@ -33,11 +34,6 @@ import { runCLI } from './cli-entry-point.js';
  * Log prefix for mem:checkpoint output
  */
 const LOG_PREFIX = '[mem:checkpoint]';
-
-/**
- * State directory path relative to baseDir
- */
-const STATE_DIR = '.lumenflow/state';
 
 /**
  * Tool name for audit logging
@@ -151,7 +147,8 @@ export async function propagateCheckpointToStateStore(
 
   // Propagate to wu-events.jsonl
   try {
-    const stateDir = path.join(baseDir, STATE_DIR);
+    const config = getConfig({ projectRoot: baseDir });
+    const stateDir = path.join(baseDir, config.state.stateDir);
     const store = new WUStateStore(stateDir);
     await store.checkpoint(wuId, note, {
       sessionId,

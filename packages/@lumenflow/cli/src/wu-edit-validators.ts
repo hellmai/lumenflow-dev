@@ -14,6 +14,7 @@ import { parseYAML } from '@lumenflow/core/wu-yaml';
 import { defaultWorktreeFrom, WU_PATHS } from '@lumenflow/core/wu-paths';
 import { resolve, join } from 'node:path';
 import { createGitForPath } from '@lumenflow/core/git-adapter';
+import { getConfig } from '@lumenflow/core/config';
 import { FILE_SYSTEM, WU_STATUS, WU_EXPOSURE_VALUES } from '@lumenflow/core/wu-constants';
 import { INIT_PATTERNS } from '@lumenflow/initiatives/constants';
 import { INIT_PATHS } from '@lumenflow/initiatives/paths';
@@ -298,25 +299,40 @@ export async function validateWorktreeBranch(
   }
 }
 
-const NON_SCOPE_RELEVANT_PATHS = new Set([
-  '.lumenflow/state/wu-events.jsonl',
-  'docs/04-operations/tasks/backlog.md',
-  'docs/04-operations/tasks/status.md',
-]);
+function toPosixPath(filePath: string): string {
+  return filePath.replace(/\\/g, '/');
+}
+
+function getRuntimePathClassification(projectRoot: string): {
+  nonScopeRelevantPaths: Set<string>;
+  wuDirPrefix: string;
+} {
+  const config = getConfig({ projectRoot });
+  const stateEventsPath = toPosixPath(`${config.state.stateDir}/wu-events.jsonl`);
+  const backlogPath = toPosixPath(config.directories.backlogPath);
+  const statusPath = toPosixPath(config.directories.statusPath);
+  const wuDirPrefix = toPosixPath(config.directories.wuDir).replace(/\/?$/, '/');
+
+  return {
+    nonScopeRelevantPaths: new Set([stateEventsPath, backlogPath, statusPath]),
+    wuDirPrefix,
+  };
+}
 
 /**
  * WU-1618: Treat backlog/state bookkeeping files as non-scope signals.
  */
 export function hasScopeRelevantBranchChanges(changedFiles: string[]): boolean {
+  const { nonScopeRelevantPaths, wuDirPrefix } = getRuntimePathClassification(process.cwd());
   return changedFiles.some((filePath) => {
-    const normalized = filePath.trim().replace(/\\/g, '/');
+    const normalized = toPosixPath(filePath.trim());
     if (!normalized) {
       return false;
     }
-    if (NON_SCOPE_RELEVANT_PATHS.has(normalized)) {
+    if (nonScopeRelevantPaths.has(normalized)) {
       return false;
     }
-    return !normalized.startsWith('docs/04-operations/tasks/wu/');
+    return !normalized.startsWith(wuDirPrefix);
   });
 }
 

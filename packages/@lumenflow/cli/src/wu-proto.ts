@@ -36,6 +36,7 @@ import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { validateWU } from '@lumenflow/core/wu-schema';
 import { COMMIT_FORMATS, FILE_SYSTEM, STRING_LITERALS } from '@lumenflow/core/wu-constants';
+import { getConfig } from '@lumenflow/core/config';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { generateWuIdWithRetry } from '@lumenflow/core/wu-id-generator';
@@ -295,7 +296,8 @@ function claimWU(wuId: string, lane: string): string {
 
     // Fallback: construct expected worktree path
     const laneSuffix = lane.toLowerCase().replace(/[:\s]+/g, '-');
-    return `worktrees/${laneSuffix}-${wuId.toLowerCase()}`;
+    const configuredWorktreesDir = getConfig({ projectRoot: process.cwd() }).directories.worktrees;
+    return join(configuredWorktreesDir, `${laneSuffix}-${wuId.toLowerCase()}`);
   } catch (error) {
     die(`Failed to claim WU: ${(error as Error).message}`);
   }

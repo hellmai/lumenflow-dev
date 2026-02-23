@@ -345,11 +345,12 @@ export async function emitSpawnOutputWithRegistry(
     return;
   }
 
+  const config = getConfig({ projectRoot: process.cwd() });
   const registryResult = await recordSpawn({
     parentWuId: parentWu,
     targetWuId: id,
     lane: lane || 'Unknown',
-    baseDir: '.lumenflow/state',
+    baseDir: config.state.stateDir,
   });
 
   const registryMessage = formatSpawnMessage(registryResult.spawnId, registryResult.error);

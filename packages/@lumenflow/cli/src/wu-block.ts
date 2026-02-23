@@ -44,6 +44,7 @@ import {
   STRING_LITERALS,
   MICRO_WORKTREE_OPERATIONS,
 } from '@lumenflow/core/wu-constants';
+import { getConfig } from '@lumenflow/core/config';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import { ensureStaged } from '@lumenflow/core/git-staged-validator';
 import { withMicroWorktree, LUMENFLOW_WU_TOOL_ENV } from '@lumenflow/core/micro-worktree';
@@ -84,6 +85,11 @@ async function withWuToolEnv<T>(toolName: string, fn: () => Promise<T>): Promise
 
 export function shouldUseBranchPrBlockPath(doc: { claimed_mode?: string }): boolean {
   return shouldUseBranchPrStatePath(doc);
+}
+
+function resolveWuEventsPath(projectRoot: string): string {
+  const config = getConfig({ projectRoot });
+  return `${config.state.stateDir.replace(/\\/g, '/')}/wu-events.jsonl`;
 }
 
 /**
@@ -297,7 +303,7 @@ export async function main() {
       await moveFromInProgressToBlocked(WU_PATHS.STATUS(), id, title, args.reason);
       await regenerateBacklogFromState(WU_PATHS.BACKLOG());
 
-      const stateDir = path.join(process.cwd(), '.lumenflow', 'state');
+      const stateDir = getStateStoreDirFromBacklog(WU_PATHS.BACKLOG());
       const store = new WUStateStore(stateDir);
       await store.load();
       await store.block(id, args.reason || 'No reason provided');
@@ -306,7 +312,7 @@ export async function main() {
         WU_PATHS.WU(id),
         WU_PATHS.STATUS(),
         WU_PATHS.BACKLOG(),
-        '.lumenflow/state/wu-events.jsonl',
+        resolveWuEventsPath(process.cwd()),
       ]);
       await getGitForCwd().commit(commitMsg);
       await getGitForCwd().push(REMOTES.ORIGIN, currentBranch);
@@ -341,7 +347,7 @@ export async function main() {
             await regenerateBacklogFromState(microBacklogPath);
 
             // Append block event to WUStateStore (WU-1573)
-            const stateDir = path.join(worktreePath, '.lumenflow', 'state');
+            const stateDir = getStateStoreDirFromBacklog(microBacklogPath);
             const store = new WUStateStore(stateDir);
             await store.load();
             await store.block(id, args.reason || 'No reason provided');
@@ -352,7 +358,7 @@ export async function main() {
                 WU_PATHS.WU(id),
                 WU_PATHS.STATUS(),
                 WU_PATHS.BACKLOG(),
-                '.lumenflow/state/wu-events.jsonl',
+                resolveWuEventsPath(worktreePath),
               ],
             };
           },

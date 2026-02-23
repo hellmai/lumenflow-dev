@@ -67,6 +67,16 @@ export function shouldUseBranchPrUnblockPath(doc: { claimed_mode?: string }): bo
   return shouldUseBranchPrStatePath(doc);
 }
 
+function resolveStateDir(projectRoot: string): string {
+  const config = getConfig({ projectRoot });
+  return path.join(projectRoot, config.state.stateDir);
+}
+
+function resolveWuEventsPath(projectRoot: string): string {
+  const config = getConfig({ projectRoot });
+  return `${config.state.stateDir.replace(/\\/g, '/')}/wu-events.jsonl`;
+}
+
 function branchExists(branch: UnsafeAny) {
   try {
     getGitForCwd().run(`git rev-parse --verify ${JSON.stringify(branch)}`);
@@ -242,7 +252,7 @@ export async function main() {
       appendNote(doc, noteLine);
       writeWU(mainWUPath, doc);
 
-      const stateDir = path.join(process.cwd(), '.lumenflow', 'state');
+      const stateDir = resolveStateDir(process.cwd());
       const store = new WUStateStore(stateDir);
       await store.load();
       await store.unblock(id);
@@ -261,7 +271,7 @@ export async function main() {
         WU_PATHS.WU(id),
         WU_PATHS.STATUS(),
         WU_PATHS.BACKLOG(),
-        '.lumenflow/state/wu-events.jsonl',
+        resolveWuEventsPath(process.cwd()),
       ]);
       await getGitForCwd().commit(commitMsg);
       await getGitForCwd().push(REMOTES.ORIGIN, currentBranch);
@@ -288,7 +298,7 @@ export async function main() {
           writeWU(microWUPath, microDoc);
 
           // WU-1574: Update state store first, then regenerate backlog.md from state
-          const stateDir = path.join(worktreePath, '.lumenflow', 'state');
+          const stateDir = resolveStateDir(worktreePath);
           const store = new WUStateStore(stateDir);
           await store.load();
           await store.unblock(id);
@@ -310,7 +320,7 @@ export async function main() {
               WU_PATHS.WU(id),
               WU_PATHS.STATUS(),
               WU_PATHS.BACKLOG(),
-              '.lumenflow/state/wu-events.jsonl',
+              resolveWuEventsPath(worktreePath),
             ],
           };
         },

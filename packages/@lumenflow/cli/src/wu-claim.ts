@@ -412,7 +412,8 @@ export async function main() {
     const idK = id.toLowerCase();
     const title = (await readWUTitle(id)) || '';
     const branch = args.branch || `lane/${laneK}/${idK}`;
-    const worktree = args.worktree || `worktrees/${laneK}-${idK}`;
+    const configuredWorktreesDir = getConfig({ projectRoot: process.cwd() }).directories.worktrees;
+    const worktree = args.worktree || path.join(configuredWorktreesDir, `${laneK}-${idK}`);
     const currentBranch = preflightBranch;
     const cloudEffective = preflightCloudEffective;
     const effectiveCloud = cloudEffective.isCloud;
