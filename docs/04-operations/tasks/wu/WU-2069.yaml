@@ -2,7 +2,7 @@ id: WU-2069
 title: 'INIT-035 A3: Relocate/rewrite Software Delivery Pack docs'
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -47,3 +47,6 @@ description: Move software-delivery workflow and concept docs into pack-scoped r
 acceptance:
   - Software Delivery Pack content is under packs/software-delivery with valid navigation and route
     integrity.
+locked: true
+completed_at: 2026-02-23T15:57:29.701Z
+completed: 2026-02-23
