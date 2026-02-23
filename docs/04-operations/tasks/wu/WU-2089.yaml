@@ -38,3 +38,4 @@ acceptance:
   - runtime-tool-resolver uses configured directories.wuDir/skillsDir/agentsDir paths
   - resources.ts resolves backlog path from config-backed directories.backlogPath
   - MCP path behavior remains compatible with OS defaults and consumer overrides
+plan: lumenflow://plans/INIT-036-plan.md
