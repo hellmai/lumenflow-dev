@@ -2130,3 +2130,4 @@
 {"type":"complete","wuId":"WU-2089","timestamp":"2026-02-23T21:21:26.040Z"}
 {"type":"claim","wuId":"WU-2090","timestamp":"2026-02-23T21:22:54.175Z","lane":"Framework: CLI WU Commands","title":"Migrate CLI runtime path/state literals to getConfig and constants"}
 {"type":"complete","wuId":"WU-2090","timestamp":"2026-02-23T21:49:25.857Z"}
+{"type":"claim","wuId":"WU-2094","timestamp":"2026-02-23T23:58:08.928Z","lane":"Framework: Core Lifecycle","title":"Purge residual path literals in core config and prompt helpers"}
