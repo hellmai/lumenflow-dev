@@ -1,8 +1,10 @@
 id: INIT-036
 slug: path-centralization-hardening
 title: Path Centralization and Literal Guard Hardening
-description: Eliminate runtime hardcoded path/ref literals by routing runtime path resolution through getConfig(), and harden regression guards using AST-based detection to protect consumer repos with non-default structures.
-status: draft
+description: Eliminate runtime hardcoded path/ref literals by routing runtime path resolution
+  through getConfig(), and harden regression guards using AST-based detection to protect consumer
+  repos with non-default structures.
+status: in_progress
 priority: P1
 owner: framework
 created: 2026-02-23
@@ -28,6 +30,6 @@ phases:
 success_metrics:
   - No runtime hardcoded docs/state/worktrees/origin/main literals remain in scoped packages
   - Path-literal guard scans core+cli+mcp+memory+initiatives with AST-based detection
-  - Consumer override test (custom directories.wuDir/worktrees) passes for wu:brief and command suggestions
+  - Consumer override test (custom directories.wuDir/worktrees) passes for wu:brief and command
+    suggestions
 labels: []
-related_plan: lumenflow://plans/INIT-036-plan.md

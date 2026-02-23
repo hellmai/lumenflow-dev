@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2093 — Harden path-literal guards with AST-based multi-package coverage](wu/WU-2093.yaml)
 
 ## Completed
 

@@ -2,7 +2,7 @@ id: WU-2093
 title: Harden path-literal guards with AST-based multi-package coverage
 lane: 'Framework: Core Validation'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -45,3 +45,11 @@ acceptance:
   - guard tests include positive, negative, and boundary scenarios for all banned literal categories
   - no custom regex-only ESLint path-literal rule is introduced; enforcement remains AST-based and
     shared
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2093
+claimed_at: 2026-02-23T19:26:46.256Z
+baseline_main_sha: f674c9c77c58cdaeba748de1d01e2c78326b011e
+session_id: fdd00d72-4d0f-4ce6-9216-f9b6f9013f7f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T19:26:46.262Z

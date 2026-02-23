@@ -27,11 +27,10 @@ sections:
 - [WU-2090 — Migrate CLI runtime path/state literals to getConfig and constants](wu/WU-2090.yaml) — Framework: CLI WU Commands
 - [WU-2091 — Align CLI hooks and enforcement messaging with configurable paths](wu/WU-2091.yaml) — Framework: CLI Enforcement
 - [WU-2092 — Consolidate path constants and cross-package parity contracts](wu/WU-2092.yaml) — Framework: Core Lifecycle
-- [WU-2093 — Harden path-literal guards with AST-based multi-package coverage](wu/WU-2093.yaml) — Framework: Core Validation
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2093 — Harden path-literal guards with AST-based multi-package coverage](wu/WU-2093.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 
