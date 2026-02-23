@@ -8,7 +8,10 @@ created: 2026-02-23
 code_paths:
   - packages/@lumenflow/cli/src/wu-spawn-completion.ts,packages/@lumenflow/cli/src/wu-spawn-prompt-builders.ts
 tests:
-  manual: []
+  manual:
+    - Generate WU-2058 brief via pnpm wu:brief --id WU-2058 and verify completion workflow says run
+      pnpm wu:status --id WU-2058 before wu:done; if status is done
+    - stop and report done without wu:done/wu:recover
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-spawn-completion.test.ts,packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts
   e2e: []
@@ -28,7 +31,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add explicit status verification in generated completion workflow so sub-agents do not rerun wu:done or invoke wu:recover on already-done WUs.
+description: Add explicit status verification in generated completion workflow so sub-agents do not
+  rerun wu:done or invoke wu:recover on already-done WUs.
 acceptance:
   - Generated completion prompt instructs running pnpm wu:status --id <WU> from main before wu:done
   - 'Prompt explicitly says: if status=done, stop and report done; do not run wu:done or wu:recover'
