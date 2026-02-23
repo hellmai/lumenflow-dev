@@ -35,9 +35,11 @@ describe('generateClientUUID (via buildTaskSpec)', () => {
     // Simulate non-secure context: crypto exists but randomUUID does not
     const mockGetRandomValues = vi.fn((array: Uint8Array) => {
       // Fill with predictable values for test verification
-      for (let i = 0; i < array.length; i++) {
-        array[i] = (i * 17 + 42) & 0xff;
-      }
+      const seededBytes = Uint8Array.from(
+        { length: array.length },
+        (_, index) => (index * 17 + 42) & 0xff,
+      );
+      array.set(seededBytes);
       return array;
     });
 
