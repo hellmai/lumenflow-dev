@@ -5,6 +5,7 @@ _Last updated: 2026-02-23_
 ## In Progress
 
 - [WU-2087 — lumenflow:upgrade self-bootstrap: run target version's script to avoid chicken-and-egg bugs](wu/WU-2087.yaml)
+- [WU-2082 — INIT-035 L6: Create companion repo for Rust](wu/WU-2082.yaml)
 
 ## Completed
 
