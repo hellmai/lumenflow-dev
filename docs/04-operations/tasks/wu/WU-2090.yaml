@@ -2,7 +2,7 @@ id: WU-2090
 title: Migrate CLI runtime path/state literals to getConfig and constants
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -80,3 +80,6 @@ session_id: 3a0c1cbe-d64b-43ba-9898-3fd5bcba75f6
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-23T21:22:54.128Z
+locked: true
+completed_at: 2026-02-23T21:49:21.030Z
+completed: 2026-02-23
