@@ -1,0 +1,54 @@
+---
+title: Go
+description: Verified quickstart for Go teams using the Software Delivery Pack
+---
+
+## Support Status
+
+- Status: Stable
+- Last verified: 2026-02-23
+- Data source: `apps/docs/src/data/language-support.yaml` (`go`)
+
+## Verified Quickstart
+
+1. Clone `https://github.com/hellmai/lumenflow-example-go`.
+2. Download dependencies: `go mod download`.
+3. Bootstrap workflow files: `npx @lumenflow/cli@3.2.0`.
+4. Run workflow smoke: `pnpm wu:prep --id WU-EXAMPLE`.
+
+## Install and Command Path
+
+```bash
+npx @lumenflow/cli@3.2.0
+pnpm wu:prep --id WU-EXAMPLE
+```
+
+## Gate Preset
+
+```yaml
+software_delivery:
+  gates:
+    execution:
+      preset: go
+```
+
+Preset commands from `packages/@lumenflow/core/src/gates-presets.ts`:
+
+```bash
+gofmt -l . | grep -v "^$" && exit 1 || exit 0
+golangci-lint run
+go vet ./...
+go test ./...
+```
+
+## Companion Repository
+
+- Repo: `hellmai/lumenflow-example-go`
+- Link: https://github.com/hellmai/lumenflow-example-go
+- Verification commit/tag: `pending-wave1-migration`
+
+## Smoke Check
+
+```bash
+pnpm wu:prep --id WU-EXAMPLE
+```

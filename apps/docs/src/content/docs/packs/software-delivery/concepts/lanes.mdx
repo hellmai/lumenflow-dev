@@ -1,0 +1,314 @@
+---
+title: Lanes
+description: Parallel work streams with WIP limits and scope boundaries
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Software Delivery Pack concept">
+  Lanes are provided by the [Software Delivery Pack](/packs/software-delivery/overview). At the kernel level, lanes
+  define **scope boundaries** — one of four levels in the [scope
+  intersection](/kernel/scope-intersection) algorithm. Other [packs](/kernel/packs) can define
+  their own scoping mechanisms that feed into the same kernel intersection.
+</Aside>
+
+Lanes are parallel work streams that organize work by domain and prevent overload through WIP (Work-in-Progress) limits. At the kernel level, lanes also define **scope boundaries** — the [scope intersection](/kernel/scope-intersection) algorithm uses lane `code_paths` as one of four permission levels that determine what an agent can access.
+
+## Why Lanes?
+
+Without lanes:
+
+- Everything competes for attention
+- Context switching kills productivity
+- Bottlenecks form unpredictably
+
+With lanes:
+
+- Work is organized by domain
+- Each lane has focused attention
+- WIP limits prevent overload
+
+## Lane Lifecycle
+
+Lane design is an explicit lifecycle process:
+
+`unconfigured -> draft -> locked`
+
+`lumenflow init` bootstraps tooling and sets lane lifecycle to `unconfigured`. Before creating delivery WUs, run:
+
+```bash
+pnpm lane:setup
+pnpm lane:validate
+pnpm lane:lock
+```
+
+Check current state any time:
+
+```bash
+pnpm lane:status
+```
+
+## Defining Lanes
+
+Lanes use a `Parent: Sublane` naming convention to organize work hierarchically:
+
+```yaml
+# workspace.yaml
+version: '2.0'
+
+lanes:
+  enforcement:
+    require_parent: true # Enforce Parent: Sublane format
+    allow_custom: false # Only taxonomy lanes allowed
+
+  definitions:
+    - name: 'Framework: Core Lifecycle'
+      wip_limit: 2
+      wip_justification: 'Lifecycle work can parallelize when code_paths are disjoint'
+      lock_policy: 'none'
+      code_paths:
+        - 'packages/@lumenflow/kernel/**'
+        - 'packages/@lumenflow/runtime/**'
+        - 'packages/@lumenflow/packs/**'
+
+    - name: 'Framework: Core Validation'
+      wip_limit: 2
+      wip_justification: 'Validators can parallelize across families'
+      lock_policy: 'none'
+      code_paths:
+        - 'packages/@lumenflow/core/src/validation/**'
+        - 'packages/@lumenflow/core/src/validators/**'
+
+    - name: 'Framework: CLI WU Commands'
+      wip_limit: 2
+      lock_policy: 'none'
+      code_paths:
+        - 'packages/@lumenflow/cli/src/wu-*.ts'
+
+    - name: 'Framework: MCP'
+      wip_limit: 1
+      code_paths:
+        - 'packages/@lumenflow/mcp/**'
+
+    - name: 'Content: Site Comms'
+      wip_limit: 2
+      wip_justification: 'Docs site content can parallelize by section'
+      lock_policy: 'none'
+      code_paths:
+        - 'apps/docs/**'
+```
+
+### Parent Lane Categories
+
+| Parent     | Purpose                             |
+| ---------- | ----------------------------------- |
+| Framework  | Core libraries, CLI, memory, agents |
+| Operations | Infrastructure, CI/CD, tooling      |
+| Content    | Documentation, guides               |
+| Experience | UI components, pages                |
+
+## WIP Limits
+
+WIP (Work-in-Progress) limits control how many active WUs a lane can have simultaneously. The default is WIP=1, but lanes can be configured with higher limits when work is safely parallelizable.
+
+- **WIP=1** (default): One active WU per lane. Prevents context switching and merge conflicts.
+- **WIP=2+**: Multiple active WUs allowed. Use when code paths are disjoint and non-overlapping. Requires a `wip_justification` explaining why parallelization is safe.
+
+```yaml
+- name: 'Framework: Core Lifecycle'
+  wip_limit: 2
+  wip_justification: 'Lifecycle work can parallelize when code_paths are disjoint'
+  lock_policy: 'none'
+```
+
+**Parallel work across lanes:** Each lane operates independently. Even with WIP=1 per lane, you achieve concurrency by working in multiple lanes simultaneously.
+
+## Lock Policy
+
+The `lock_policy` field controls how blocked WUs affect lane availability:
+
+```yaml
+lanes:
+  definitions:
+    - name: 'Content: Documentation'
+      wip_limit: 1
+      lock_policy: active # blocked WUs release lane lock
+      code_paths:
+        - 'docs/**'
+```
+
+| Policy   | Behavior                                                                 |
+| -------- | ------------------------------------------------------------------------ |
+| `all`    | Default. Blocked WUs count toward WIP. Lane stays occupied when blocked. |
+| `active` | Only in_progress WUs count. Blocked WUs release the lane lock.           |
+| `none`   | WIP checking disabled. Multiple WUs can be claimed regardless of status. |
+
+### When to Use Each Policy
+
+- **`all` (default)**: High-conflict lanes where blocked work may resume soon
+- **`active`**: Low-conflict lanes like documentation where blocked work is unlikely to cause merge conflicts
+- **`none`**: Experimental. Use only for lanes with guaranteed non-overlapping work
+
+### Pilot Recommendation
+
+Start with `lock_policy: active` on low-conflict lanes like **Content: Documentation**:
+
+1. Documentation WUs are low-conflict (different files, few dependencies)
+2. Blocked docs WUs rarely resume immediately
+3. Easy rollback: change `active` back to `all` in config
+
+### Rollback
+
+If `lock_policy: active` causes issues:
+
+1. Update `workspace.yaml`: change `lock_policy: active` to `lock_policy: all`
+2. Run `pnpm wu:unlock-lane --lane "<lane>"` to clear stale locks
+
+## Lane Lock Lifecycle
+
+Lane locks are file-based locks (`.lumenflow/locks/<lane-kebab>.lock`) that enforce WIP limits. For WIP=1 lanes, a single lock file is used. For WIP=2+ lanes with `lock_policy: none`, lock checking is bypassed entirely. The lock lifecycle has three key phases:
+
+### Acquisition
+
+When `wu:claim` runs, it creates a lock file atomically using the `wx` (write-exclusive) flag. The lock file contains metadata including the WU ID, timestamp, agent session, and the PID of the claiming process.
+
+### Persistence
+
+Because `wu:claim` is a short-lived CLI process, the PID stored in the lock becomes invalid as soon as the claim completes. This is expected behavior -- the lock persists on disk regardless of whether the original process is still running. The lock remains valid until explicitly released by `wu:done` or forcibly cleared.
+
+### Release
+
+Locks are released in three ways:
+
+1. **Normal release**: `wu:done` removes the lock after merging
+2. **Stale zombie auto-clear**: If a lock is both stale (older than 2 hours) AND the PID is no longer running, subsequent `wu:claim` calls auto-clear it. This handles genuinely abandoned locks from crashed processes.
+3. **Manual unlock**: `pnpm wu:unlock-lane --lane "<lane>" --reason "<reason>"` with audit logging
+
+### Zombie Detection Semantics
+
+A "zombie lock" is one where the PID that created it is no longer running. However, a dead PID alone does NOT trigger auto-clearing. Since `wu:claim` exits immediately after creating the worktree, every lock will have a dead PID shortly after creation.
+
+Auto-clearing requires BOTH conditions:
+
+- The lock PID is no longer running (zombie)
+- The lock is older than 2 hours (stale)
+
+This prevents a second `wu:claim` from stealing a lane that was legitimately claimed by a recently exited `wu:claim` process.
+
+### Why WIP=1 Matters
+
+```
+High WIP (anti-pattern):
+→ Multiple things started, none finished
+→ Context switching overhead
+→ Long cycle times
+→ Merge conflicts
+
+WIP=1 (LumenFlow default):
+→ Finish one thing
+→ Start the next
+→ Steady flow
+→ Clean merges
+```
+
+## Scope Boundaries
+
+Lane `code_paths` serve a dual purpose: they organize work AND enforce security boundaries through [scope intersection](/kernel/scope-intersection).
+
+When a tool call executes, the [kernel](/kernel/runtime) computes:
+
+```
+effective_scope = workspace ∩ lane ∩ task ∩ tool
+```
+
+The lane's `code_paths` act as the second narrowing layer. An agent working in `Framework: Core` (paths: `packages/@lumenflow/core/**`) cannot write to `packages/@lumenflow/cli/**` — the intersection is empty, and the kernel denies the call.
+
+<Aside type="note">
+  This enforcement happens at the kernel level, not through git hooks or file permissions. Even if
+  an agent bypasses the CLI and calls a tool directly via MCP, the kernel's scope intersection still
+  applies. See [Scope Intersection](/kernel/scope-intersection) for the full algorithm.
+</Aside>
+
+## Lane Selection
+
+When claiming a WU, specify the full `Parent: Sublane` format:
+
+```bash
+pnpm wu:claim --id WU-042 --lane "Experience: UI"
+```
+
+The WU spec should already have a lane assignment:
+
+```yaml
+# WU-042.yaml
+id: WU-042
+title: Add email validation
+lane: 'Experience: UI' # ← Full Parent: Sublane format
+```
+
+## Auto-Detection via Paths
+
+LumenFlow can auto-detect lanes based on file paths using the lane inference system:
+
+```yaml
+# .lumenflow.lane-inference.yaml
+Framework:
+  Core:
+    code_paths:
+      - 'packages/@lumenflow/core/**'
+    keywords:
+      - 'core library'
+      - 'wu lifecycle'
+```
+
+If a WU's `code_paths` match a pattern, the sublane is suggested automatically.
+
+Note: `.lumenflow.lane-inference.yaml` is created during lane lifecycle setup (not during `lumenflow init`).
+
+## Multiple Lanes
+
+A WU should belong to **one lane**. If work spans multiple domains:
+
+1. **Split the WU** – One WU per lane
+2. **Choose primary** – Assign to the most affected lane
+
+### Example: Feature Spanning UI + Core
+
+Instead of one WU:
+❌ "Add user preferences (UI + API + DB)"
+
+Split into:
+✅ WU-100: "Add preferences API" (lane: Framework: Core)
+✅ WU-101: "Add preferences UI" (lane: Experience: UI)
+✅ WU-102: "Add preferences schema" (lane: Operations: Infrastructure)
+
+## Visualizing Lanes
+
+The status file shows lane state:
+
+```markdown
+# Status
+
+## 🔧 In Progress
+
+- [WU-101 — Add preferences UI](wu/WU-101.yaml) (lane: Experience: UI)
+- [WU-100 — Add preferences API](wu/WU-100.yaml) (lane: Framework: Core)
+
+## 🚀 Ready
+
+- [WU-103 — Add dark mode toggle](wu/WU-103.yaml) (lane: Experience: UI) ← blocked (lane occupied)
+- [WU-104 — Add export feature](wu/WU-104.yaml) (lane: Operations: Infrastructure) ← can claim
+
+## ⛔ Blocked
+
+(none)
+```
+
+Note: WU-103 cannot be claimed because Experience: UI lane already has WU-101 in progress.
+
+## Next Steps
+
+- [Scope Intersection](/kernel/scope-intersection) — How lane paths become permission boundaries
+- [Policy Engine](/kernel/policy-engine) — Lane-level policy rules
+- [Gates](/packs/software-delivery/concepts/gates) — Quality checks per lane
+- [Team Workflow](/packs/software-delivery/workflows/team-workflow) — Lane strategies for teams

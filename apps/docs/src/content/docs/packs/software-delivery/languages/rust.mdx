@@ -1,0 +1,51 @@
+---
+title: Rust
+description: Planned verified quickstart for Rust teams using the Software Delivery Pack
+---
+
+## Support Status
+
+- Status: Planned
+- Last verified: 2026-02-23
+- Data source: `apps/docs/src/data/language-support.yaml` (`rust`)
+
+## Verified Quickstart
+
+Wave 2 companion repo delivery will publish fully executable quickstart steps for this guide.
+Current canonical bootstrap path remains Node-based.
+
+## Install and Command Path
+
+```bash
+npx @lumenflow/cli@3.2.0
+```
+
+## Gate Preset
+
+```yaml
+software_delivery:
+  gates:
+    execution:
+      preset: rust
+```
+
+Preset commands from `packages/@lumenflow/core/src/gates-presets.ts`:
+
+```bash
+cargo fmt --check
+cargo clippy -- -D warnings
+cargo check
+cargo test
+```
+
+## Companion Repository
+
+- Repo: `hellmai/lumenflow-example-rust`
+- Link: https://github.com/hellmai/lumenflow-example-rust
+- Verification commit/tag: `planned-wave2`
+
+## Smoke Check
+
+```bash
+pnpm wu:prep --id WU-EXAMPLE
+```

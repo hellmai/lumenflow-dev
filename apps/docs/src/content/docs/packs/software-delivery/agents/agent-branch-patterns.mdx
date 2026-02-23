@@ -1,0 +1,304 @@
+---
+title: Agent Branch Patterns
+description: Central registry for AI agent branch patterns
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+LumenFlow maintains a **central registry** of AI agent branch patterns that can bypass worktree requirements. This enables cloud-hosted agents and automation tools to work in the main checkout while still enforcing worktree discipline for human developers.
+
+## How It Works
+
+<Steps>
+
+1. **Fetch from Registry** - The `isAgentBranch()` function fetches patterns from `lumenflow.dev/registry/agent-patterns.json`
+2. **Cache Locally** - Patterns are cached for 7 days in `~/.lumenflow/cache/`
+3. **Merge with Config** - Registry patterns are merged with any custom patterns from config
+4. **Check Branch Name** - Branch names are matched against glob patterns using `micromatch`
+
+</Steps>
+
+## Default Patterns
+
+The registry includes patterns for popular AI agents:
+
+```json
+{
+  "patterns": [
+    "agent/*",
+    "claude/*",
+    "codex/*",
+    "copilot/*",
+    "cursor/*",
+    "aider/*",
+    "cline/*",
+    "continue/*",
+    "devin/*",
+    "windsurf/*",
+    "bolt/*",
+    "replit/*",
+    "tabnine/*",
+    "codeium/*",
+    "ai/*",
+    "bot/*",
+    "automation/*"
+  ]
+}
+```
+
+## Usage
+
+### In TypeScript
+
+```typescript
+import { isAgentBranch, isAgentBranchWithDetails } from '@lumenflow/core';
+
+// Check if a branch can bypass worktree requirements
+if (await isAgentBranch('claude/session-12345')) {
+  console.log('Agent branch detected - bypass allowed');
+}
+
+// Get detailed result for observability
+const result = await isAgentBranchWithDetails('claude/session-123');
+if (result.isMatch) {
+  console.log(`Matched via ${result.patternResult.source}`);
+  // source: 'registry' | 'merged' | 'override' | 'config' | 'defaults'
+  console.log(`Registry fetched: ${result.patternResult.registryFetched}`);
+}
+```
+
+### In CLI (Git Hooks)
+
+```bash
+#!/bin/bash
+# Example pre-commit hook
+if node_modules/.bin/is-agent-branch "$BRANCH"; then
+  echo "Agent branch - skipping worktree check"
+  exit 0
+fi
+```
+
+### Synchronous Version (Deprecated)
+
+For backwards compatibility, a sync version is available:
+
+```typescript
+import { isAgentBranchSync } from '@lumenflow/core';
+
+// Uses only local config patterns, no registry fetch
+const result = isAgentBranchSync('agent/task-123');
+```
+
+<Aside type="caution">
+  `isAgentBranchSync()` does not fetch from the registry. Prefer the async `isAgentBranch()` for
+  full registry support.
+</Aside>
+
+## Configuration
+
+Configure agent patterns in `workspace.yaml`. There are three modes:
+
+<Tabs>
+  <TabItem label="Merge Mode (Default)">
+    Custom patterns are merged with registry patterns:
+
+    ```yaml
+    # workspace.yaml
+    git:
+      # These patterns are ADDED to registry patterns
+      agentBranchPatterns:
+        - 'my-custom-agent/*'
+        - 'internal-tool/*'
+    ```
+
+    Result: Your patterns + registry patterns (deduplicated)
+
+  </TabItem>
+
+  <TabItem label="Override Mode">
+    Replace registry patterns entirely:
+
+    ```yaml
+    # workspace.yaml
+    git:
+      # These patterns REPLACE registry patterns
+      agentBranchPatternsOverride:
+        - 'claude/*'
+        - 'codex/*'
+        - 'internal/*'
+    ```
+
+    Result: Only your override patterns (no registry fetch)
+
+  </TabItem>
+
+  <TabItem label="Airgapped Mode">
+    Disable network fetch for isolated environments:
+
+    ```yaml
+    # workspace.yaml
+    git:
+      disableAgentPatternRegistry: true
+      agentBranchPatterns:
+        - 'claude/*'
+        - 'codex/*'
+        - 'internal/*'
+    ```
+
+    Result: Only your config patterns (or defaults if none specified)
+
+  </TabItem>
+</Tabs>
+
+### Configuration Options
+
+| Option                        | Type     | Default     | Description                         |
+| ----------------------------- | -------- | ----------- | ----------------------------------- |
+| `agentBranchPatterns`         | string[] | `[]`        | Patterns to **merge** with registry |
+| `agentBranchPatternsOverride` | string[] | `undefined` | Patterns that **replace** registry  |
+| `disableAgentPatternRegistry` | boolean  | `false`     | Skip network fetch (airgapped mode) |
+
+### Behavior Matrix
+
+| Registry Disabled | Override Set | Config Patterns | Result                   | Source     |
+| ----------------- | ------------ | --------------- | ------------------------ | ---------- |
+| false             | no           | none            | Registry patterns        | `registry` |
+| false             | no           | `['custom/*']`  | Config + Registry        | `merged`   |
+| false             | yes          | any             | Override only            | `override` |
+| true              | no           | none            | Defaults (`['agent/*']`) | `defaults` |
+| true              | no           | `['custom/*']`  | Config only              | `config`   |
+| true              | yes          | any             | Override only            | `override` |
+
+## Protected Branches
+
+Some branches are **never** bypassed, regardless of patterns:
+
+- **Main branch** (from `git.mainBranch` config)
+- **master** (legacy protected)
+- **Lane branches** (matching `lane/*`)
+
+```typescript
+// These always return false
+await isAgentBranch('main'); // false
+await isAgentBranch('master'); // false
+await isAgentBranch('lane/operations/wu-123'); // false
+```
+
+## Cache Behavior
+
+| Scenario              | Behavior                                        |
+| --------------------- | ----------------------------------------------- |
+| Fresh cache (&lt;7d)  | Use cached patterns, no network request         |
+| Stale cache (&gt;=7d) | Attempt fetch, use fresh if successful          |
+| Fetch fails           | Use stale cache if available, else use defaults |
+| No cache, no network  | Use defaults (`['agent/*']`)                    |
+
+### Cache Location
+
+Patterns are cached in:
+
+```
+~/.lumenflow/cache/agent-patterns-cache.json
+```
+
+Or if `LUMENFLOW_HOME` is set:
+
+```
+$LUMENFLOW_HOME/cache/agent-patterns-cache.json
+```
+
+### Clearing the Cache
+
+```typescript
+import { clearCache } from '@lumenflow/core';
+
+// Clear in-memory cache (disk cache remains)
+clearCache();
+```
+
+To clear disk cache, delete the cache file:
+
+```bash
+rm ~/.lumenflow/cache/agent-patterns-cache.json
+```
+
+## Advanced: Programmatic Resolution
+
+Use `resolveAgentPatterns()` for testing or custom resolution:
+
+```typescript
+import { resolveAgentPatterns } from '@lumenflow/core';
+
+// Resolve with custom options
+const result = await resolveAgentPatterns({
+  configPatterns: ['my-agent/*'],
+  // overridePatterns: ['only-this/*'],  // Optional
+  // disableAgentPatternRegistry: true,   // Optional
+});
+
+console.log(result.patterns); // ['my-agent/*', 'claude/*', ...]
+console.log(result.source); // 'merged'
+console.log(result.registryFetched); // true
+```
+
+### Injectable Fetcher
+
+For testing, inject a custom fetcher:
+
+```typescript
+const mockFetcher = async () => ['test/*'];
+
+const result = await resolveAgentPatterns({
+  registryFetcher: mockFetcher,
+});
+
+expect(result.patterns).toEqual(['test/*']);
+```
+
+## Registry API
+
+The registry is served as static JSON:
+
+**URL:** `https://lumenflow.dev/registry/agent-patterns.json`
+
+**Response Schema:**
+
+```typescript
+interface RegistryResponse {
+  version: string;
+  description?: string;
+  patterns: string[];
+  documentation?: string;
+  updated?: string;
+}
+```
+
+### Adding New Patterns
+
+To request a new agent pattern be added:
+
+1. Open an issue on [hellmai/lumenflow](https://github.com/hellmai/lumenflow-dev/issues)
+2. Include the agent name and typical branch pattern
+3. Patterns are added to the registry after review
+
+## Headless Mode
+
+For CI/CD environments that don't use agent branches, enable guarded headless mode:
+
+```bash
+export LUMENFLOW_HEADLESS=1
+export CI=true  # or GITHUB_ACTIONS=true or LUMENFLOW_ADMIN=1
+```
+
+This bypasses all worktree checks. See [AI Agent Integration](/packs/software-delivery/agents/ai-agent-integration#headless-mode-for-cicd) for details.
+
+## Fail-Closed Design
+
+The system is **fail-closed**:
+
+- Unknown branches are protected (require worktrees)
+- Detached HEAD is protected
+- Null/empty branches are protected
+- Network errors fall back to cache/defaults (not bypass)
+
+This ensures accidental work in the wrong location is prevented.

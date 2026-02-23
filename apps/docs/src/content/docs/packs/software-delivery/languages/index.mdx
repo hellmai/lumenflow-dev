@@ -1,0 +1,37 @@
+---
+title: Language Guides
+description: Pack-scoped, verified quickstart guides for Software Delivery Pack adopters
+---
+
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
+
+These guides are pack-scoped and governed by three YAML truth files:
+
+- `apps/docs/src/data/language-support.yaml`
+- `apps/docs/src/data/example-repos.yaml`
+- `apps/docs/src/data/version-policy.yaml`
+
+<Aside type="tip">
+  Canonical install path for every language is Node-based (`npx @lumenflow/cli@3.2.0`).
+  Native PyPI/NuGet channels are out of scope in this initiative.
+</Aside>
+
+## Support Matrix
+
+| Language | Status | Wave | Guide |
+| --- | --- | --- | --- |
+| Node.js | Stable | 1 | [Node.js](/packs/software-delivery/languages/node) |
+| Python | Stable | 1 | [Python](/packs/software-delivery/languages/python) |
+| .NET | Preview | 1 | [.NET](/packs/software-delivery/languages/dotnet) |
+| Go | Stable | 1 | [Go](/packs/software-delivery/languages/go) |
+| Rust | Planned | 2 | [Rust](/packs/software-delivery/languages/rust) |
+| Java | Planned | 2 | [Java](/packs/software-delivery/languages/java) |
+| Ruby | Planned | 2 | [Ruby](/packs/software-delivery/languages/ruby) |
+| PHP | Planned | 2 | [PHP](/packs/software-delivery/languages/php) |
+
+<CardGrid>
+  <Card title="Node.js" icon="seti:nodejs">[Open guide](/packs/software-delivery/languages/node)</Card>
+  <Card title="Python" icon="python">[Open guide](/packs/software-delivery/languages/python)</Card>
+  <Card title=".NET" icon="laptop">[Open guide](/packs/software-delivery/languages/dotnet)</Card>
+  <Card title="Go" icon="terminal">[Open guide](/packs/software-delivery/languages/go)</Card>
+</CardGrid>

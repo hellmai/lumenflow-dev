@@ -1,0 +1,486 @@
+---
+title: Troubleshooting
+description: Common issues and how to fix them
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+This guide covers common issues you may encounter with LumenFlow and how to resolve them.
+
+## Gate Failures
+
+### Format check fails
+
+**Symptom:**
+
+```
+> Format check... FAILED
+>   src/utils/validator.ts needs formatting
+```
+
+**Fix:**
+
+```bash
+# Auto-fix formatting
+pnpm format
+# or
+npx prettier --write .
+# Or fix only the files listed by gates (copy from the gates output):
+pnpm prettier --write "apps/docs/src/content/docs/getting-started/quickstart.mdx"
+
+# Then retry
+pnpm wu:prep --id WU-XXX
+```
+
+### Lint check fails
+
+**Symptom:**
+
+```
+> Lint check... FAILED
+>   src/api/handler.ts:42 - Unexpected any
+```
+
+**Fix:**
+
+1. Read the error message to understand the issue
+2. Fix the code (don't disable the rule unless necessary)
+3. Retry: `pnpm wu:prep --id WU-XXX`
+
+Common lint fixes:
+
+| Error                   | Fix                                    |
+| ----------------------- | -------------------------------------- |
+| `no-explicit-any`       | Add proper TypeScript types            |
+| `no-unused-vars`        | Remove the variable or prefix with `_` |
+| `exhaustive-deps`       | Add missing useEffect dependencies     |
+| `no-restricted-imports` | Use the correct import path            |
+
+### Type check fails
+
+**Symptom:**
+
+```
+> Type check... FAILED
+> error TS2322: Type 'string' is not assignable to type 'number'
+```
+
+**Fix:**
+
+1. Fix the first error (later errors often cascade from earlier ones)
+2. Save and check again
+3. Repeat until clean
+
+<Aside type="tip">
+  TypeScript errors cascade. Fix them one at a time, starting from the first.
+</Aside>
+
+### Tests fail
+
+**Symptom:**
+
+```
+> Tests... FAILED
+>   FAIL src/__tests__/auth.test.ts
+>   Expected: "success"
+>   Received: "error"
+```
+
+**Fix:**
+
+1. Run the failing test in isolation: `pnpm test src/__tests__/auth.test.ts`
+2. Debug: check test setup, mocks, and assertions
+3. Fix and retry
+
+**Common causes:**
+
+- Mocks not reset between tests (use `beforeEach`)
+- Async tests not awaited
+- Environment differences (CI vs local)
+
+### Pre-existing gate failures
+
+If gates fail on code you didn't change:
+
+<Steps>
+
+1. **Verify the failure existed before your changes**
+
+   ```bash
+   # Save your changes as a patch
+   git diff > /tmp/wu-changes.patch
+
+   # Verify on clean main
+   git restore .
+   pnpm gates
+   # If it fails here, it's pre-existing
+
+   # Re-apply your changes
+   git apply /tmp/wu-changes.patch
+   ```
+
+2. **Use skip-gates with documentation**
+
+   ```bash
+   pnpm wu:done --id WU-042 \
+     --skip-gates \
+     --reason "Pre-existing lint failure in src/legacy.ts" \
+     --fix-wu WU-050
+   ```
+
+3. **Create a follow-up WU to fix the issue**
+
+</Steps>
+
+<Aside type="caution">Never skip gates for failures you introduced. Fix them first.</Aside>
+
+## WU State Issues
+
+### WU stuck in `in_progress`
+
+**Symptom:** WU shows `in_progress` but worktree is gone or work is done elsewhere.
+
+**Fix:**
+
+```bash
+# Check current state
+pnpm wu:status --id WU-042
+
+# Recover based on situation
+pnpm wu:recover --id WU-042
+
+# Choose the appropriate action:
+pnpm wu:recover --id WU-042 --action resume   # Reconcile, keep work
+pnpm wu:recover --id WU-042 --action reset    # Reset to ready
+pnpm wu:recover --id WU-042 --action cleanup  # Remove orphaned worktree
+```
+
+### WU status mismatch
+
+**Symptom:** `backlog.md` says one status, WU YAML says another.
+
+**Fix:**
+
+```bash
+# Check for state inconsistencies
+pnpm wu:repair --all --check
+
+# Fix detected inconsistencies (regenerates backlog.md and status.md from state store)
+pnpm wu:repair --all
+```
+
+### Lane already has a WU in progress
+
+**Symptom:**
+
+```
+ERROR: Lane "Framework: Core" already has WU-040 in progress
+```
+
+**Fix:**
+
+1. Check if WU-040 is truly in progress: `pnpm wu:status --id WU-040`
+2. If blocked, mark it: `pnpm wu:block --id WU-040 --reason "Waiting for API"`
+3. If done, complete it: `pnpm wu:done --id WU-040`
+4. If orphaned, recover: `pnpm wu:recover --id WU-040 --action reset`
+
+### Lane lock not auto-clearing despite dead PID
+
+**Symptom:**
+
+```
+ERROR: Lane "Framework: Core" is locked by WU-040 (since 2026-02-19T10:00:00Z)
+```
+
+The lock holder's process is no longer running, but the lock is not auto-cleared.
+
+**Explanation:** Lane locks persist after the `wu:claim` process exits. A dead PID alone does not trigger auto-clearing -- the lock must also be older than 2 hours (stale). This prevents a second claim from stealing a legitimately held lane.
+
+**Fix:**
+
+1. If the lock is recent (less than 2 hours old), it is likely still valid. Complete or release the existing WU first.
+2. If the lock is genuinely abandoned, unlock manually:
+
+```bash
+pnpm wu:unlock-lane --lane "Framework: Core" --reason "Abandoned lock"
+```
+
+3. Locks older than 2 hours with a dead PID will auto-clear on the next `wu:claim` attempt.
+
+## Worktree Issues
+
+### Worktree not found
+
+**Symptom:**
+
+```
+ERROR: Worktree not found for WU-042
+```
+
+**Fix:**
+
+```bash
+# If WU should be in progress, re-claim
+pnpm wu:recover --id WU-042 --action reset
+pnpm wu:claim --id WU-042 --lane "Framework: Core"
+
+# If WU is done but worktree lingers
+pnpm wu:recover --id WU-042 --action cleanup
+```
+
+### Changes made in wrong directory
+
+**Symptom:** You made changes in main instead of the worktree.
+
+**Fix:**
+
+```bash
+# From main checkout, save a patch
+git diff > /tmp/main-changes.patch
+
+# Move to worktree and apply
+cd worktrees/framework-core-wu-042
+git apply /tmp/main-changes.patch
+
+# Clean main
+cd /path/to/main
+git restore .
+
+# Commit in worktree
+cd worktrees/framework-core-wu-042
+git add .
+git commit -m "wu(wu-042): implement feature"
+```
+
+### Worktree has merge conflicts
+
+**Symptom:** Conflicts after rebasing the worktree branch.
+
+**Fix:**
+
+```bash
+cd worktrees/framework-core-wu-042
+
+# Resolve conflicts in each file
+git status  # See conflicting files
+# Edit files to resolve conflicts
+git add <resolved-files>
+git rebase --continue
+```
+
+<Aside type="tip">
+  Prefer small WUs to minimize conflict risk. Large WUs that touch many files are more likely to
+  conflict with parallel work.
+</Aside>
+
+## Git Issues
+
+### wu:done fails with "not a fast-forward"
+
+**Symptom:**
+
+```
+ERROR: Cannot fast-forward merge lane/framework-core/wu-042 to main
+```
+
+**Cause:** Main has new commits since you started your WU.
+
+**Fix:**
+
+```bash
+cd worktrees/framework-core-wu-042
+git fetch origin main
+git rebase origin/main
+# Resolve any conflicts
+git push --force-with-lease origin lane/framework-core/wu-042
+
+# Return to main and retry
+cd /path/to/repo
+pnpm wu:done --id WU-042
+```
+
+### wu:done fails with "Worktree has uncommitted changes"
+
+**Symptom:**
+
+```
+ERROR: Worktree has uncommitted changes. Cannot proceed with wu:done.
+```
+
+**Cause:** `wu:done` requires a clean, committed worktree before it can merge.
+
+**Fix:**
+
+```bash
+cd worktrees/<lane>-wu-xxx
+git status
+git add .
+git commit -m "wu(wu-xxx): describe the change"
+
+# Return to main and retry
+cd /path/to/repo
+pnpm wu:done --id WU-XXX
+```
+
+If the changes were accidental, restore the files, then retry.
+
+### Hooks block my commit
+
+**Symptom:**
+
+```
+ERROR: WU commit attempted from main checkout
+```
+
+**Cause:** You're trying to commit WU work from the main directory.
+
+**Fix:**
+
+```bash
+# Move to the worktree
+cd worktrees/framework-core-wu-042
+git add .
+git commit -m "wu(wu-042): implement feature"
+```
+
+### Commit message missing WU ID
+
+**Symptom:**
+
+```
+BLOCKED: Commit message must reference WU-1305
+```
+
+**Fix:** Include the WU ID in the commit message, for example:
+
+```bash
+git commit -m "wu(wu-1305): document workflow friction"
+```
+
+### Branch drift warning
+
+**Symptom:**
+
+```
+WARNING: Branch is 15 commits behind origin/main
+```
+
+**Fix:**
+
+```bash
+cd worktrees/framework-core-wu-042
+git fetch origin main
+git rebase origin/main
+```
+
+### Parallel completions detected
+
+**Symptom:**
+
+```
+⚠️  PARALLEL COMPLETIONS DETECTED
+```
+
+**Cause:** Other WUs merged to main while your WU was in progress.
+
+**Fix:** Rebase your worktree onto main, then retry:
+
+```bash
+cd worktrees/<lane>-wu-xxx
+git fetch origin main
+git rebase origin/main
+cd /path/to/repo
+pnpm wu:done --id WU-XXX
+```
+
+## CLI Issues
+
+### Command not found: wu-create
+
+**Symptom:**
+
+```
+bash: wu-create: command not found
+```
+
+**Fix:**
+
+```bash
+# Ensure CLI is installed
+pnpm add -D @lumenflow/cli
+
+# Use npx if not in PATH
+npx wu-create --help
+
+# Or add scripts to package.json
+```
+
+### Config validation errors
+
+**Symptom:**
+
+```
+ERROR: Invalid workspace.yaml
+  - lanes.definitions[0].name must match pattern "^[A-Za-z]+: [A-Za-z]+"
+```
+
+**Fix:**
+
+1. Check the error message for the specific field
+2. Compare with the [Configuration Reference](/reference/config)
+3. Fix the YAML syntax or values
+
+Validate without running:
+
+```bash
+pnpm exec lumenflow validate
+```
+
+### Memory checkpoint fails
+
+**Symptom:**
+
+```
+ERROR: Cannot create checkpoint - no session active
+```
+
+**Fix:**
+
+```bash
+# Initialize memory for this WU
+pnpm mem:init --wu WU-042
+
+# Then checkpoint
+pnpm mem:checkpoint --wu WU-042
+```
+
+### wu:done warns about missing checkpoints
+
+**Symptom:**
+
+```
+⚠️  No checkpoints found for WU-XXX session.
+```
+
+**Fix:** Create checkpoints during long sessions:
+
+```bash
+pnpm mem:checkpoint --wu WU-XXX
+```
+
+## Still Stuck?
+
+If these solutions don't help:
+
+1. **Check logs:** `cat .lumenflow/flow.log`
+2. **Run with debug:** `DEBUG=lumenflow:* pnpm wu:done --id WU-042`
+3. **Ask for help:**
+   - [GitHub Discussions](https://github.com/hellmai/lumenflow-dev/discussions)
+   - [Discord](https://discord.gg/lumenflow)
+
+Include in your question:
+
+- The exact error message
+- Your `workspace.yaml` (redact secrets)
+- Output of `pnpm wu:status --id WU-XXX`
+- Your Node.js version: `node --version`

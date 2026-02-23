@@ -1,0 +1,56 @@
+---
+title: .NET
+description: Verified quickstart for .NET teams using the Software Delivery Pack
+---
+
+## Support Status
+
+- Status: Preview
+- Last verified: 2026-02-23
+- Data source: `apps/docs/src/data/language-support.yaml` (`dotnet`)
+
+## Verified Quickstart
+
+1. Clone `https://github.com/hellmai/lumenflow-example-dotnet`.
+2. Restore project dependencies: `dotnet restore`.
+3. Bootstrap workflow files via Node canonical path: `npx @lumenflow/cli@3.2.0`.
+4. Run workflow smoke: `pnpm wu:prep --id WU-EXAMPLE`.
+
+## Install and Command Path
+
+```bash
+npx @lumenflow/cli@3.2.0
+pnpm wu:claim --id WU-EXAMPLE --lane "Framework: Core"
+```
+
+Native NuGet tool channel support is out of scope in this initiative.
+
+## Gate Preset
+
+```yaml
+software_delivery:
+  gates:
+    execution:
+      preset: dotnet
+```
+
+Preset commands from `packages/@lumenflow/core/src/gates-presets.ts`:
+
+```bash
+dotnet restore
+dotnet format --verify-no-changes
+dotnet build --no-restore -warnaserror
+dotnet test --no-restore
+```
+
+## Companion Repository
+
+- Repo: `hellmai/lumenflow-example-dotnet`
+- Link: https://github.com/hellmai/lumenflow-example-dotnet
+- Verification commit/tag: `pending-wave1-creation`
+
+## Smoke Check
+
+```bash
+pnpm wu:prep --id WU-EXAMPLE
+```

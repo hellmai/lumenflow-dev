@@ -1,0 +1,182 @@
+---
+title: Sizing WUs
+description: How to break work into right-sized units
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Right-sizing WUs is critical for flow. Too big = stuck. Too small = overhead.
+
+## Complexity Assessment
+
+Estimate WU "weight" using these heuristics. Agents operate in context windows and tool calls, not clock time.
+
+| Complexity    | Files | Tool Calls | Context Budget | Strategy              |
+| ------------- | ----- | ---------- | -------------- | --------------------- |
+| **Simple**    | \<20  | \<50       | \<30%          | Single Session        |
+| **Medium**    | 20-50 | 50-100     | 30-50%         | Checkpoint-Resume     |
+| **Complex**   | 50+   | 100+       | \>50%          | Orchestrator or Split |
+| **Oversized** | 100+  | 200+       | —              | **Must Split**        |
+
+<Aside type="tip">
+  If you can't complete a WU in a single session, it's too large. Split it using the patterns below.
+</Aside>
+
+## Sizing Heuristics
+
+### Good Size Indicators
+
+- Single clear outcome
+- Touches 1-5 files
+- One test file added/modified
+- Can describe in one sentence
+- No "and then..." in the description
+- Estimated \<50 tool calls
+
+### Too Big Indicators
+
+- Multiple outcomes
+- Touches 10+ files
+- Requires multiple test suites
+- Description has multiple paragraphs
+- Contains "and", "also", "plus"
+- Estimated 100+ tool calls
+
+### Too Small Indicators
+
+- Just a config change
+- Single line fix
+- No tests needed
+- Overhead exceeds value
+
+## Splitting Strategies
+
+### By Layer
+
+**Too big:** "Add user preferences feature"
+
+**Split:**
+
+- WU-100: Add preferences API endpoint (Core)
+- WU-101: Add preferences database schema (Infra)
+- WU-102: Add preferences UI panel (UI)
+
+### By Behavior
+
+**Too big:** "Add form validation"
+
+**Split:**
+
+- WU-110: Add email format validation
+- WU-111: Add password strength check
+- WU-112: Add form error display
+
+### By User Action
+
+**Too big:** "Add checkout flow"
+
+**Split:**
+
+- WU-120: Add cart summary view
+- WU-121: Add payment method selection
+- WU-122: Add order confirmation
+
+## Splitting Patterns
+
+### Pattern A: Tracer Bullet (Risk Reduction)
+
+**Best for:** New integrations, unproven libraries.
+
+| WU   | Title                              | Tool Calls |
+| ---- | ---------------------------------- | ---------- |
+| WU-A | Port + mock adapter + E2E skeleton | ~30        |
+| WU-B | Real adapter + error handling      | ~40        |
+
+### Pattern B: Layer Split (Architectural)
+
+**Best for:** Large backend features, hexagonal architecture.
+
+| WU   | Title                               | Tool Calls |
+| ---- | ----------------------------------- | ---------- |
+| WU-A | Ports + application + unit tests    | ~40        |
+| WU-B | Infrastructure adapters + int tests | ~40        |
+
+### Pattern C: UI/Logic Split (Lane Separation)
+
+**Best for:** Full-stack features.
+
+| WU   | Title                 | Lane |
+| ---- | --------------------- | ---- |
+| WU-A | API + DB + backend    | Core |
+| WU-B | Components + UI state | UI   |
+
+### Pattern D: Feature Flag (Phased Rollout)
+
+**Best for:** High-risk refactoring, breaking changes.
+
+| WU   | Title                                   | Tool Calls |
+| ---- | --------------------------------------- | ---------- |
+| WU-A | New logic behind `ENABLE_NEW=true` flag | ~50        |
+| WU-B | Remove flag + delete old code           | ~30        |
+
+## When to Combine
+
+Sometimes tiny WUs can be combined:
+
+**Too granular:**
+
+- WU-A: Add firstName field
+- WU-B: Add lastName field
+- WU-C: Add email field
+
+**Better:**
+
+- WU-X: Add user profile fields (firstName, lastName, email)
+
+## Dependencies
+
+If WUs depend on each other, note it:
+
+```yaml
+id: WU-201
+title: Add theme toggle component
+dependencies:
+  - WU-200 # Needs theme context first
+```
+
+Execute in order, or work on independent WUs in parallel lanes.
+
+## Context Safety Triggers
+
+If you hit ANY of these during a session, checkpoint and handoff:
+
+- **Token Limit:** Context usage hits 50% (warning) or 80% (critical)
+- **Tool Volume:** 50+ tool calls in current session
+- **File Volume:** 20+ files modified in `git status`
+- **Performance Degradation:** Redundant queries, forgotten context
+
+<Aside type="caution">
+  When triggers fire: commit work, push branch, document progress in WU notes, then clear context
+  and resume fresh.
+</Aside>
+
+## Discovery WUs
+
+When uncertain, create a discovery WU first:
+
+```yaml
+id: WU-299
+title: Spike - evaluate auth libraries
+type: discovery
+acceptance:
+  - Document pros/cons of 3 auth libraries
+  - Recommend one with rationale
+  - No code changes (research only)
+```
+
+Discovery WUs produce decisions, not code. They unblock future implementation WUs.
+
+## Next Steps
+
+- [Work Units](/packs/software-delivery/concepts/work-units) – WU structure and lifecycle
+- [Team Workflow](/packs/software-delivery/workflows/team-workflow) – Collaborative sizing

@@ -1,0 +1,51 @@
+---
+title: Ruby
+description: Planned verified quickstart for Ruby teams using the Software Delivery Pack
+---
+
+## Support Status
+
+- Status: Planned
+- Last verified: 2026-02-23
+- Data source: `apps/docs/src/data/language-support.yaml` (`ruby`)
+
+## Verified Quickstart
+
+Wave 2 companion repo delivery will publish executable Bundler/RSpec quickstart steps.
+Current canonical bootstrap path remains Node-based.
+
+## Install and Command Path
+
+```bash
+npx @lumenflow/cli@3.2.0
+```
+
+## Gate Preset
+
+```yaml
+software_delivery:
+  gates:
+    execution:
+      preset: ruby
+```
+
+Preset commands from `packages/@lumenflow/core/src/gates-presets.ts`:
+
+```bash
+bundle install
+bundle exec rubocop --format simple --fail-level W
+bundle exec rubocop
+bundle exec rspec
+```
+
+## Companion Repository
+
+- Repo: `hellmai/lumenflow-example-ruby`
+- Link: https://github.com/hellmai/lumenflow-example-ruby
+- Verification commit/tag: `planned-wave2`
+
+## Smoke Check
+
+```bash
+pnpm wu:prep --id WU-EXAMPLE
+```

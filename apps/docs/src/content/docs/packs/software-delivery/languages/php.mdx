@@ -1,0 +1,51 @@
+---
+title: PHP
+description: Planned verified quickstart for PHP teams using the Software Delivery Pack
+---
+
+## Support Status
+
+- Status: Planned
+- Last verified: 2026-02-23
+- Data source: `apps/docs/src/data/language-support.yaml` (`php`)
+
+## Verified Quickstart
+
+Wave 2 companion repo delivery will publish executable Composer/PHPUnit quickstart steps.
+Current canonical bootstrap path remains Node-based.
+
+## Install and Command Path
+
+```bash
+npx @lumenflow/cli@3.2.0
+```
+
+## Gate Preset
+
+```yaml
+software_delivery:
+  gates:
+    execution:
+      preset: php
+```
+
+Preset commands from `packages/@lumenflow/core/src/gates-presets.ts`:
+
+```bash
+composer install
+vendor/bin/php-cs-fixer fix --dry-run --diff
+vendor/bin/phpstan analyse
+vendor/bin/phpunit
+```
+
+## Companion Repository
+
+- Repo: `hellmai/lumenflow-example-php`
+- Link: https://github.com/hellmai/lumenflow-example-php
+- Verification commit/tag: `planned-wave2`
+
+## Smoke Check
+
+```bash
+pnpm wu:prep --id WU-EXAMPLE
+```

@@ -1,0 +1,57 @@
+---
+title: Node.js
+description: Verified quickstart for Node.js teams using the Software Delivery Pack
+---
+
+## Support Status
+
+- Status: Stable
+- Last verified: 2026-02-23
+- Data source: `apps/docs/src/data/language-support.yaml` (`node`)
+
+## Verified Quickstart
+
+1. Clone `https://github.com/hellmai/lumenflow-example-node`.
+2. Install dependencies: `pnpm install`.
+3. Bootstrap workflow files: `npx @lumenflow/cli@3.2.0`.
+4. Run a WU lifecycle smoke pass: `pnpm wu:prep --id WU-EXAMPLE`.
+
+## Install and Command Path
+
+Use the Node canonical path:
+
+```bash
+npx @lumenflow/cli@3.2.0
+pnpm wu:claim --id WU-EXAMPLE --lane "Framework: Core"
+```
+
+## Gate Preset
+
+```yaml
+software_delivery:
+  gates:
+    execution:
+      preset: node
+```
+
+Preset commands from `packages/@lumenflow/core/src/gates-presets.ts`:
+
+```bash
+npm ci || npm install
+npx prettier --check .
+npx eslint .
+npx tsc --noEmit
+npm test
+```
+
+## Companion Repository
+
+- Repo: `hellmai/lumenflow-example-node`
+- Link: https://github.com/hellmai/lumenflow-example-node
+- Verification commit/tag: `pending-wave1-migration`
+
+## Smoke Check
+
+```bash
+pnpm wu:prep --id WU-EXAMPLE
+```

@@ -1,0 +1,654 @@
+---
+title: Memory Layer
+description: Context recovery for long-running sessions
+---
+
+import { Aside, Steps, Card, CardGrid } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Software Delivery Pack feature">
+  The Memory Layer is provided by the [Software Delivery Pack](/packs/software-delivery/overview). Memory tools
+  (`mem:checkpoint`, `mem:signal`, `mem:inbox`) are pack tools that produce evidence through the
+  [kernel](/kernel/runtime).
+</Aside>
+
+The Memory Layer preserves context across sessions, enabling AI agents and humans to resume work without losing track.
+
+## Why Memory?
+
+Without memory:
+
+- "What was I working on?"
+- "Why did I make this decision?"
+- "Where did I leave off?"
+
+With memory:
+
+- Automatic checkpoints capture state
+- Session context is recoverable
+- Decisions are documented
+- Discoveries become WUs
+
+## How It Works
+
+```
+Session Start
+     |
+mem:ready (check pending work)
+     |
+Work (changes, decisions)
+     |
+mem:checkpoint (periodic save)
+     |
+Session End
+     |
+Next Session: mem:ready (resume)
+```
+
+## Memory Commands
+
+### Initialize
+
+```bash
+pnpm mem:init
+```
+
+Creates `.lumenflow/memory/` with `memory.jsonl` and `config.yaml`.
+
+### Start Session
+
+```bash
+pnpm mem:start --wu WU-001
+```
+
+Start a new memory session linked to a WU.
+
+### Check Pending Work
+
+```bash
+pnpm mem:ready --wu WU-001
+```
+
+Shows what's in progress and any pending decisions.
+
+### Create Checkpoint
+
+```bash
+pnpm mem:checkpoint --wu WU-042
+```
+
+Saves current session state:
+
+- Active WU
+- Recent changes
+- Decision context
+
+### Signal Progress
+
+```bash
+pnpm mem:signal "Completed validation logic" --wu WU-001
+```
+
+Send a progress signal that other sessions can see.
+
+### Check Inbox
+
+```bash
+pnpm mem:inbox
+```
+
+Check for signals from other sessions or agents.
+
+### Create Memory Node
+
+```bash
+pnpm mem:create "Found a bug in auth flow" --type discovery --wu WU-001
+pnpm mem:create "API changed" --discovered-from mem-abc123 --tags api,breaking
+```
+
+Create a memory node with provenance tracking:
+
+| Flag                | Description                                             |
+| ------------------- | ------------------------------------------------------- |
+| `--type`            | `session`, `discovery`, `checkpoint`, `note`, `summary` |
+| `--discovered-from` | Parent node ID for provenance chain                     |
+| `--wu`              | Link to WU                                              |
+| `--session`         | Link to session                                         |
+| `--tags`            | Comma-separated tags                                    |
+| `--priority`        | P0-P3                                                   |
+
+### Triage Discoveries
+
+```bash
+pnpm mem:triage --list                     # List open discoveries
+pnpm mem:triage --promote mem-abc --lane "Framework: Core" --title "Fix auth bug"
+pnpm mem:triage --archive mem-def --reason "Duplicate of WU-100"
+```
+
+Review discovery nodes and either:
+
+- **Promote** to a new WU
+- **Archive** if not actionable
+
+### Summarize Memory
+
+```bash
+pnpm mem:summarize --wu WU-001
+pnpm mem:summarize --wu WU-001 --dry-run
+```
+
+Roll up older memory nodes into summary nodes. Use when context is getting large.
+
+### Cleanup Memory
+
+```bash
+pnpm mem:cleanup                      # Cleanup based on lifecycle policy
+pnpm mem:cleanup --dry-run            # Preview without changes
+pnpm mem:cleanup --ttl 30d            # Remove nodes older than 30 days
+pnpm mem:cleanup --session-id <uuid>  # Close specific session
+```
+
+Prune memory nodes based on lifecycle policy.
+
+## Memory Structure
+
+```
+.lumenflow/
+├── memory/
+│   ├── memory.jsonl
+│   ├── config.yaml
+│   └── signals.jsonl
+├── sessions/
+│   └── current.json
+├── stamps/
+│   └── WU-041.done
+└── locks/
+    └── core.lock
+```
+
+## Session Context
+
+Each session captures:
+
+```json
+{
+  "session_id": "abc123",
+  "started_at": "2026-01-18T10:00:00Z",
+  "active_wu": "WU-042",
+  "lane": "Framework: Core",
+  "files_touched": ["src/utils/validation.ts", "src/components/LoginForm.tsx"],
+  "decisions": [
+    {
+      "question": "Use Zod or custom validation?",
+      "answer": "Zod - better TypeScript integration",
+      "timestamp": "2026-01-18T10:15:00Z"
+    }
+  ]
+}
+```
+
+## Practical Examples
+
+### Example 1: Agent Session Handoff
+
+A common scenario: one agent works on a WU, hits context limits, and hands off to a fresh agent.
+
+**Agent 1 (hitting context limits):**
+
+```bash
+# Agent 1 is running low on context
+# Save state before ending session
+pnpm mem:checkpoint --wu WU-042
+
+# Signal where we left off
+pnpm mem:signal "Tests written for auth flow, starting integration tests" --wu WU-042
+
+# Document the key decision made
+pnpm mem:create "Decision: Token refresh uses silent retry queue" \
+  --type note \
+  --wu WU-042 \
+  --tags decision,auth \
+  --priority P2
+```
+
+**Agent 2 (resuming):**
+
+```bash
+# New agent checks what's pending
+pnpm mem:ready --wu WU-042
+
+# Output:
+# Session: abc123
+# WU: WU-042 (in_progress)
+# Lane: Framework: Core
+# Last signal: "Tests written for auth flow, starting integration tests"
+# Files touched:
+#   - src/utils/auth.ts
+#   - src/components/LoginForm.tsx
+#   - tests/auth.test.ts
+#
+# Pending decisions: 1
+#   - Token refresh: Silent refresh with retry queue
+
+# Resume work with full context
+cd worktrees/framework-core-wu-042
+```
+
+### Example 2: Discovery to WU Pipeline
+
+Finding bugs or improvements during work and converting them to WUs.
+
+```bash
+# During WU-042, agent finds a bug in unrelated code
+pnpm mem:create "Found race condition in session manager" \
+  --type discovery \
+  --wu WU-042 \
+  --priority P1 \
+  --tags bug,auth,race-condition
+
+# Later, triage the discovery
+pnpm mem:triage --list
+# Output:
+# mem-def456: Found race condition in session manager
+#   Type: discovery
+#   Priority: P1
+#   Discovered during: WU-042
+#   Tags: bug, auth, race-condition
+
+# Promote to a new WU
+pnpm mem:triage --promote mem-def456 \
+  --lane "Framework: Core" \
+  --title "BUG: Fix race condition in session manager"
+
+# Creates WU-043 with:
+# - Type: bug
+# - Priority: P1
+# - discovered_in: WU-042
+# - Linked to memory node for context
+```
+
+### Example 3: Long-Running Research Session
+
+For discovery or research WUs that span multiple days.
+
+```bash
+# Day 1: Start research
+pnpm mem:start --wu WU-050
+
+# Make progress, save decisions
+pnpm mem:create "Decision: OpenTelemetry + Grafana" \
+  --type note \
+  --wu WU-050 \
+  --tags observability,decision
+
+pnpm mem:signal "Evaluated 3 platforms, OTel winning" --wu WU-050
+pnpm mem:checkpoint --wu WU-050
+
+# Day 2: Continue
+pnpm mem:ready --wu WU-050
+# Shows: Last checkpoint from Day 1, decision context preserved
+
+# Add more findings
+pnpm mem:create "OTel has better trace propagation" \
+  --type note \
+  --wu WU-050 \
+  --tags observability,decision
+
+# Day 3: Wrap up
+pnpm mem:summarize --wu WU-050
+# Creates summary node:
+# "Research on observability platforms. Decision: OpenTelemetry + Grafana.
+#  Key factors: vendor neutral, trace propagation, ecosystem maturity."
+```
+
+### Example 4: Multi-Agent Coordination
+
+Multiple agents working on related WUs in different lanes.
+
+<Aside type="note">
+  Configure `progress_signals.enabled: true` in `workspace.yaml` to make signaling mandatory for
+  sub-agents. See [Progress Signals](#progress-signals) for all options.
+</Aside>
+
+```bash
+# Agent A working on Core (WU-100)
+pnpm mem:signal "New validation port added: ValidationService" --wu WU-100
+
+# Agent B working on UI (WU-101) checks inbox
+pnpm mem:inbox
+# Output:
+# From: session-abc (WU-100, Framework: Core)
+#   Signal: "New validation port added: ValidationService"
+#   Time: 5 minutes ago
+
+# Agent B can now use the new port
+# No need for synchronous coordination
+```
+
+### Example 5: Checkpoint Before Context Limit
+
+<Aside type="caution">
+  When approaching context limits (high token usage, 50+ tool calls), create a checkpoint and spawn
+  a fresh agent instead of continuing.
+</Aside>
+
+```bash
+# Agent detects high context usage
+# Before spawning new agent:
+
+# 1. Checkpoint current state
+pnpm mem:checkpoint
+
+# 2. Signal detailed progress
+pnpm mem:signal "Auth flow 80% complete. Remaining: integration tests for refresh token. Files ready: src/auth/*.ts" --wu WU-042
+
+# 3. Document any in-progress decisions
+pnpm mem:create "Decision pending: error handling strategy (throw vs Result type)" \
+  --type note \
+  --wu WU-042 \
+  --tags decision,pending
+
+# 4. Now safe to spawn fresh agent
+# New agent will have full context via mem:ready
+```
+
+## AI Agent Integration
+
+For AI agents, memory is critical:
+
+```bash
+# Agent starts session
+pnpm mem:start --wu WU-042
+
+# Agent checks what's pending
+pnpm mem:ready --wu WU-042
+
+# During work, agent signals progress
+pnpm mem:signal "Completed validation logic, starting tests" --wu WU-042
+
+# Agent creates checkpoint before pause
+pnpm mem:checkpoint --wu WU-042
+
+# Later, agent resumes
+pnpm mem:ready --wu WU-042
+# Shows: "WU-042 in progress, last: 'starting tests'"
+```
+
+## Decision Logging
+
+Capture why decisions were made:
+
+```bash
+pnpm mem:create "Decision: use Zod for validation" \
+  --type note \
+  --wu WU-042 \
+  --tags decision
+```
+
+This creates an audit trail for future reference.
+
+## Configuration
+
+```yaml
+# workspace.yaml
+memory:
+  checkpoint_interval: 30 # minutes
+  max_checkpoints: 10 # per WU
+  auto_checkpoint: true # on significant changes
+```
+
+### Progress Signals
+
+For sub-agent coordination, configure when agents must signal their progress:
+
+```yaml
+# workspace.yaml
+memory:
+  progress_signals:
+    enabled: true # When true, signals become mandatory
+    frequency: 25 # Signal every N tool calls (0 = disabled)
+    on_milestone: true # Signal after each acceptance criterion
+    on_tests_pass: true # Signal when tests first pass
+    before_gates: true # Signal before running gates
+    on_blocked: true # Signal when blocked or waiting
+    auto_checkpoint: false # Create checkpoint with each signal
+```
+
+| Field             | Default | Description                                         |
+| ----------------- | ------- | --------------------------------------------------- |
+| `enabled`         | `false` | When `true`, signals are required at trigger points |
+| `frequency`       | `0`     | Tool calls between auto-signals (0 = no frequency)  |
+| `on_milestone`    | `true`  | Signal after completing each acceptance criterion   |
+| `on_tests_pass`   | `true`  | Signal when tests first pass                        |
+| `before_gates`    | `true`  | Signal before running quality gates                 |
+| `on_blocked`      | `true`  | Signal when blocked or waiting on dependencies      |
+| `auto_checkpoint` | `false` | Automatically create checkpoint with each signal    |
+
+<Aside type="tip" title="Sub-Agent Visibility">
+  Enable `progress_signals.enabled: true` when orchestrating sub-agents. This ensures the parent
+  agent can track progress via `mem:inbox` without polling.
+</Aside>
+
+**When to use:**
+
+- **Parallel WUs**: When multiple agents work on related WUs, signals prevent redundant work
+- **Long-running tasks**: For complex WUs, signals provide progress visibility
+- **Orchestrator patterns**: Parent agents can monitor child progress without context overhead
+
+## Auto-Checkpoint Enforcement
+
+<Aside type="note">
+  Auto-checkpoint enforcement was introduced in INIT-015. All enforcement features are opt-in and
+  fail-open by default.
+</Aside>
+
+When configured, LumenFlow can create checkpoints automatically via Claude Code hooks, removing the need for manual `mem:checkpoint` calls during active work.
+
+### How Auto-Checkpoints Work
+
+```
+PostToolUse hook fires
+     |
+Counter increments (per-WU)
+     |
+Counter reaches interval?
+     ├─ YES → Create checkpoint (backgrounded)
+     └─ NO  → Continue
+```
+
+```
+SubagentStop hook fires
+     |
+Always create checkpoint (sub-agent completed work)
+```
+
+The PostToolUse hook tracks a per-WU counter in `.lumenflow/state/hook-counters/<WU_ID>.json` and creates a checkpoint when the counter reaches the configured interval (default: 30 tool calls). The SubagentStop hook always checkpoints because a sub-agent finishing represents a natural milestone.
+
+Both checkpoint writes are backgrounded in a defensive subshell so the hook returns quickly and does not block the agent.
+
+### Checkpoint Gate on wu:done
+
+`wu:done` can optionally verify that at least one checkpoint exists for the WU:
+
+| Mode    | Behavior                                    |
+| ------- | ------------------------------------------- |
+| `off`   | No checkpoint check                         |
+| `warn`  | Print a warning if no checkpoints (default) |
+| `block` | Block wu:done until a checkpoint exists     |
+
+On completion, wu:done cleans up the per-WU hook counter file.
+
+### Configuration
+
+```yaml
+# workspace.yaml
+memory:
+  enforcement:
+    auto_checkpoint:
+      enabled: true # Generate PostToolUse + SubagentStop hooks
+      interval_tool_calls: 30 # Checkpoint every N tool calls
+    require_checkpoint_for_done: warn # off | warn | block
+```
+
+<Aside type="caution">
+  Auto-checkpoint hooks require the enforcement hooks master switch
+  (`agents.clients.claude-code.enforcement.hooks: true`). When auto-checkpoint is enabled but the
+  master switch is off, LumenFlow emits a warning and remains advisory-only.
+</Aside>
+
+After changing configuration, regenerate hooks:
+
+```bash
+pnpm lumenflow:integrate --client claude-code
+```
+
+## Signal Receipts
+
+<Aside type="note">
+  Append-only signal receipts were introduced in INIT-015 (WU-1472) to fix concurrent read-marking
+  races between parallel agents.
+</Aside>
+
+Previously, marking a signal as read required rewriting the entire `signals.jsonl` file. When multiple agents ran concurrently, this caused lost updates (one agent's read-mark overwritten by another).
+
+Signal receipts solve this by using append-only writes:
+
+- **Reading signals** (`mem:inbox`): Appends receipt entries instead of modifying the original signal
+- **Loading signals** (`loadSignals`): Merges effective read state from inline `read: true` (legacy) and appended receipts
+- **Cleanup** (`signal:cleanup`): Receipt-aware; removes orphaned receipts for deleted signals
+- **No-mark mode** (`mem:inbox --no-mark`): Read signals without generating receipts
+
+### Backward Compatibility
+
+Existing inline `read: true` flags in `signals.jsonl` are honored. All new read-marking uses the receipt mechanism. No migration is required.
+
+## Decay Lifecycle
+
+Memory nodes accumulate over time. Without cleanup, stale nodes consume storage and slow context loading. The decay lifecycle provides automated archival based on a time-based relevance score.
+
+### How Decay Works
+
+Each memory node receives a decay score based on its age and the configured half-life:
+
+```
+score = 2^(-age_in_days / half_life_days)
+```
+
+- A node created today has score 1.0
+- After `half_life_days` (default: 30), score drops to 0.5
+- After two half-lives (60 days), score drops to 0.25
+
+Nodes with a score below the `threshold` (default: 0.1) are archived.
+
+### Trigger Modes
+
+| Trigger   | When decay runs                                         |
+| --------- | ------------------------------------------------------- |
+| `on_done` | Automatically during wu:done (after gates pass)         |
+| `manual`  | Only via `pnpm mem:cleanup` (explicit operator control) |
+
+When `trigger: on_done`, decay archival runs as part of the wu:done lifecycle. Errors never block completion (fail-open). When decay is disabled, existing wu:done behavior is unchanged.
+
+### Configuration
+
+```yaml
+# workspace.yaml
+memory:
+  decay:
+    enabled: true # Enable decay-based archival
+    threshold: 0.1 # Archive nodes below this score (0-1)
+    half_life_days: 30 # Days until relevance halves
+    trigger: on_done # on_done | manual
+```
+
+Manual cleanup remains available regardless of configuration:
+
+```bash
+pnpm mem:cleanup              # Run cleanup
+pnpm mem:cleanup --dry-run    # Preview without changes
+```
+
+## Best Practices
+
+### For Humans
+
+<Steps>
+
+1. Run `mem:ready --wu <WU-ID>` at session start
+2. Create checkpoints before long breaks
+3. Log non-obvious decisions
+4. Triage discoveries weekly
+
+</Steps>
+
+### For AI Agents
+
+<Steps>
+
+1. Always start with `mem:start --wu <WU-ID>`
+2. Signal progress frequently
+3. Checkpoint before context limits
+4. Use discoveries for out-of-scope findings
+
+</Steps>
+
+### Checkpoint Triggers
+
+Create a checkpoint when:
+
+- Completing a significant milestone
+- Before switching to a different task
+- Before a long break or end of day
+- When context usage is high
+- Before spawning a sub-agent
+
+### Discovery Guidelines
+
+Use discoveries for:
+
+- Bugs found in unrelated code
+- Improvement ideas outside current scope
+- Technical debt observations
+- Questions for later research
+
+Do NOT use discoveries for:
+
+- Things you'll fix in the current WU
+- Obvious next steps already in backlog
+- Personal notes (use `--type note` instead)
+
+## Memory Lifecycle
+
+<Card title="Lifecycle Stages" icon="information">
+
+**Active** (during WU work)
+
+- Checkpoints created automatically (if enforcement enabled) or manually
+- Signals sent on milestones with append-only receipts
+- Decisions logged as made
+
+**Decay** (after WU completion, if `memory.decay.enabled`)
+
+- Decay scores computed from node age and half-life
+- Nodes below threshold are archived automatically
+- Triggered by wu:done (fail-open) or manual cleanup
+
+**Archive** (after WU completion)
+
+- Checkpoints summarized
+- Discoveries triaged
+- Session closed
+
+**Cleanup** (periodic maintenance)
+
+- Old checkpoints pruned via TTL
+- Archived sessions cleaned
+- Orphaned signal receipts removed
+- Summary nodes preserved
+
+</Card>
+
+## Next Steps
+
+- [AI Agent Integration](/packs/software-delivery/agents/ai-agent-integration) - Using memory with agents
+- [Agent Onboarding](/packs/software-delivery/agents/agent-onboarding) - Getting started
+- [CLI Reference](/reference/cli) - All memory commands

@@ -1,0 +1,128 @@
+---
+title: Software Delivery Pack
+description: The default pack providing WU lifecycle, lanes, gates, memory, and secure template-first pack authoring
+---
+
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
+
+The **Software Delivery Pack** is the default domain pack shipped with LumenFlow. It provides everything you need for structured software delivery — from work unit lifecycle to quality gates to agent coordination.
+
+<Aside type="note" title="Pack architecture">
+  LumenFlow's [kernel](/kernel/runtime) is domain-agnostic — it provides scope enforcement, policy
+  evaluation, and evidence recording. Packs add domain-specific tools and policies. The Software
+  Delivery Pack is the first production pack. Additional domains should ship as fully implemented
+  packs using the same manifest contract.
+</Aside>
+
+## What the Pack Provides
+
+<CardGrid>
+  <Card title="Work Units" icon="document">
+    Atomic units of work with YAML specs, worktree isolation, and lifecycle tracking. [Learn more
+    →](/packs/software-delivery/concepts/work-units)
+  </Card>
+  <Card title="Lanes" icon="bars">
+    Scoped work streams with WIP limits, lock policies, and path-based access control. [Learn more
+    →](/packs/software-delivery/concepts/lanes)
+  </Card>
+  <Card title="Gates" icon="approve-check">
+    Config-driven quality checks (format, lint, typecheck, test) enforced as kernel policies. [Learn
+    more →](/packs/software-delivery/concepts/gates)
+  </Card>
+  <Card title="Memory Layer" icon="puzzle">
+    Session tracking, checkpoints, coordination signals, and context recovery for agents. [Learn
+    more →](/packs/software-delivery/concepts/memory)
+  </Card>
+</CardGrid>
+
+## CLI Commands
+
+The pack registers **100+ CLI commands** across these categories:
+
+| Category              | Examples                                         | Count |
+| --------------------- | ------------------------------------------------ | ----- |
+| WU Lifecycle          | `wu:create`, `wu:claim`, `wu:prep`, `wu:done`    | 20+   |
+| Memory & Sessions     | `mem:checkpoint`, `mem:inbox`, `mem:signal`      | 14    |
+| Initiatives           | `initiative:create`, `initiative:status`         | 8     |
+| Gates & Validation    | `gates`, `wu:validate`, `lumenflow-doctor`       | 6     |
+| Packs                 | `pack:author`, `pack:install`, `pack:validate`   | 6     |
+| Metrics & Flow        | `flow:report`, `flow:bottlenecks`, `metrics`     | 5     |
+| Agent & Orchestration | `wu:brief`, `wu:delegate`, `orchestrate:monitor` | 7     |
+
+See the [CLI Reference](/reference/cli) for the complete command list.
+
+## Secure Template Authoring (No-Code)
+
+The recommended path for new packs is template-first authoring:
+
+```bash
+pnpm pack:author
+pnpm pack:validate
+```
+
+Template generation enforces least-privilege defaults and validation catches
+unsafe scope/network configurations before install or publish.
+
+Install command shape:
+
+```bash
+pnpm pack:install --id <packId> --source registry --version <version>
+```
+
+## Pack Policies
+
+The Software Delivery Pack ships with policies that the kernel evaluates automatically:
+
+- **Gate policies** — Format, lint, typecheck, and test gates run `on_completion` with deny-wins semantics
+- **Scope policies** — Lane-based path restrictions enforced on every tool call
+- **Constraint policies** — Non-negotiable rules like "no edits outside worktrees" and "no force-push"
+
+See the [Policy Engine](/kernel/policy-engine) for how these are evaluated.
+
+## Why the Software Delivery Pack?
+
+If you are a software team using AI agents, the Software Delivery Pack replaces ad-hoc methodologies with a structured, evidence-based workflow. Here is how it compares to traditional approaches:
+
+### Work Units, Not Stories
+
+Traditional tickets are vague — "Add user authentication." Work Units are **executable specifications** with acceptance criteria, code paths, and test paths. An AI agent can read a WU spec and implement it autonomously. A human can verify completion by checking the criteria.
+
+### Lanes, Not Sprints
+
+Scrum batches work into time-boxed sprints. The Software Delivery Pack flows work through **parallel lanes** — each with a WIP limit (typically 1 for solo work, 2 for teams). Work flows continuously instead of waiting for sprint boundaries.
+
+### Gates, Not Reviews
+
+Code review is a bottleneck. The Software Delivery Pack replaces manual review with **automated quality gates** — format, lint, typecheck, and test checks that must all pass before work can be completed. Critical changes can still require human approval via escalation triggers.
+
+### Memory, Not Standups
+
+Daily standups exist because humans forget context. The Software Delivery Pack's **memory layer** provides checkpointing and context recovery, so both humans and AI agents can resume exactly where they left off.
+
+### Stamps, Not Done Columns
+
+Kanban boards have "Done" columns. The Software Delivery Pack creates **immutable stamps** — created only when all acceptance criteria pass, all gates pass, and work is merged. No ambiguity.
+
+### Comparison Table
+
+| Aspect      | Scrum              | Kanban      | Shape Up       | Software Delivery Pack |
+| ----------- | ------------------ | ----------- | -------------- | ---------------------- |
+| Time unit   | 2-week sprints     | Continuous  | 6-week cycles  | Continuous             |
+| Work item   | User story         | Card        | Pitch          | Work Unit (WU)         |
+| Progress    | Story points       | Cycle time  | Hill charts    | Gates + stamps         |
+| Parallelism | Team velocity      | WIP limits  | Team per pitch | Lane-based WIP         |
+| Reviews     | Sprint review + PR | PR review   | Demo           | Automated gates        |
+| AI-ready    | No                 | Partially   | No             | Yes                    |
+| Context     | Human memory       | Board state | Write-up       | Memory layer           |
+
+<Aside type="tip">
+  The Software Delivery Pack can complement existing methodologies. Use Scrum for planning and
+  stakeholder communication, but execute actual work with the WU/gates/stamps flow.
+</Aside>
+
+## Next Steps
+
+- **Concepts** — [Work Units](/packs/software-delivery/concepts/work-units), [Lanes](/packs/software-delivery/concepts/lanes), [Gates](/packs/software-delivery/concepts/gates), [Memory](/packs/software-delivery/concepts/memory)
+- **Workflows** — [A Day with LumenFlow](/packs/software-delivery/workflows/a-day-with-lumenflow), [Solo](/packs/software-delivery/workflows/solo-workflow), [Team](/packs/software-delivery/workflows/team-workflow)
+- **Advanced** — [Initiatives](/packs/software-delivery/advanced/initiatives), [Flow Metrics](/packs/software-delivery/advanced/metrics), [Custom Skills](/packs/software-delivery/advanced/custom-skills)
+- **Build your own** — [Create a Pack](/packs/software-delivery/setup/create-a-pack)

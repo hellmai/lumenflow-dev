@@ -1,0 +1,75 @@
+---
+title: Current Setup
+description: Canonical workspace-first setup for LumenFlow
+---
+
+import { Steps, Aside, Badge } from '@astrojs/starlight/components';
+
+<Badge text="Current" variant="success" />
+
+This page documents the current setup path for LumenFlow. Use these commands as the canonical workflow.
+
+## Canonical Setup Flow
+
+<Steps>
+1. **Initialize canonical workspace config**: `pnpm workspace-init --yes`
+
+2. **Run canonical bootstrap**
+
+   ```bash
+   npx lumenflow
+   ```
+
+3. **Verify runtime health**
+
+   ```bash
+   pnpm exec lumenflow-doctor
+   ```
+
+4. **Refresh agent docs/templates**
+
+   ```bash
+   pnpm exec lumenflow docs:sync --force
+   ```
+
+</Steps>
+
+## Config Contract
+
+- Runtime reads: `workspace.yaml > software_delivery`
+- Config write command:
+
+```bash
+pnpm config:set --key software_delivery.gates.minCoverage --value 90
+```
+
+- Config read command:
+
+```bash
+pnpm config:get --key software_delivery.methodology.testing
+```
+
+<Aside type="caution" title="Canonical command">
+  Use `npx lumenflow` for setup and onboarding.
+</Aside>
+
+## Troubleshooting
+
+### `workspace.yaml` missing
+
+```bash
+pnpm workspace-init --yes
+```
+
+### Older scripts call split onboarding commands
+
+Replace them with:
+
+```bash
+npx lumenflow
+```
+
+## Next Steps
+
+- [CLI Reference](/reference/cli) — full command surface
+- [Configuration](/reference/config) — canonical config model

@@ -1,0 +1,244 @@
+---
+title: AI Coding Assistant Integrations
+description: LumenFlow works with any AI—enhanced integrations for popular tools
+---
+
+import { Aside, Steps, Card, CardGrid } from '@astrojs/starlight/components';
+
+## Works with Any AI
+
+**LumenFlow is friction-free for any AI coding assistant.** If your AI can read project files, it can use LumenFlow.
+
+<CardGrid>
+  <Card title="Universal Entry Points" icon="document">
+    Every project includes plain markdown files that work with ANY AI: - `AGENTS.md` — Universal
+    agent instructions - `LUMENFLOW.md` — Workflow fundamentals - `.lumenflow/constraints.md` —
+    Non-negotiable rules
+  </Card>
+  <Card title="No Vendor Lock-in" icon="open-book">
+    Point any AI at these files and it understands the workflow. No special setup, no proprietary
+    formats.
+  </Card>
+</CardGrid>
+
+```bash
+# Initialize with universal files only (works with any AI)
+lumenflow init
+```
+
+---
+
+## Enhanced Integrations
+
+For popular AI coding assistants, LumenFlow provides **optional enhanced integrations** with deeper features like auto-detection, skills, and vendor-specific configurations.
+
+| Assistant   | Config File                    | Auto-detected | Enhanced Features               |
+| ----------- | ------------------------------ | ------------- | ------------------------------- |
+| Claude Code | `CLAUDE.md`, `.claude/`        | Yes           | Skills, agents, hooks, settings |
+| Cursor      | `.cursor/rules/lumenflow.md`   | Yes           | Rules integration               |
+| Windsurf    | `.windsurf/rules/lumenflow.md` | Yes           | Rules integration               |
+| Cline       | `.clinerules`                  | No            | Rules file                      |
+| Codex       | `AGENTS.md` (native)           | No            | Uses universal files directly   |
+| Aider       | `.aider.conf.yml`              | No            | Config file                     |
+
+---
+
+## Quick Setup
+
+<Steps>
+
+1. **Any AI (universal)**
+
+   ```bash
+   lumenflow init
+   ```
+
+   Creates `AGENTS.md`, `LUMENFLOW.md`, `.lumenflow/`, and agent onboarding docs (including CLI command reference) — works with any AI that can read files. Use `--minimal` to skip onboarding docs.
+
+2. **Specific AI (enhanced)**
+
+   ```bash
+   lumenflow init --client claude    # Claude Code
+   lumenflow init --client cursor    # Cursor
+   lumenflow init --client windsurf  # Windsurf
+   lumenflow init --client cline     # Cline
+   lumenflow init --client aider     # Aider
+   ```
+
+   Adds vendor-specific configs alongside universal files.
+
+3. **All integrations**
+   ```bash
+   lumenflow init --client all
+   ```
+   Creates config files for all supported AI assistants.
+
+</Steps>
+
+---
+
+## Integration Details
+
+### Claude Code (Anthropic)
+
+Claude Code has the deepest integration with LumenFlow.
+
+**Config Files:**
+
+- `CLAUDE.md` — Root-level instructions
+- `.claude/settings.json` — Permission configuration
+- `.claude/agents/` — Agent definitions
+- `.claude/skills/` — Skill definitions (domain expertise)
+
+**Auto-detection:** Environment variables `CLAUDE_PROJECT_DIR` or `CLAUDE_CODE`
+
+**Unique Features:**
+
+- Skills system for loading domain expertise on demand
+- Agent spawning for parallel work
+- Hooks for automated workflows
+- Memory layer integration
+
+#### Enforcement Hooks
+
+LumenFlow generates Claude Code hooks in `.claude/settings.json` to enforce workflow compliance at the tool level. Configure enforcement in `workspace.yaml`:
+
+```yaml
+agents:
+  clients:
+    claude-code:
+      enforcement:
+        hooks: true # Master switch for all hooks
+        block_outside_worktree: true # Block Write/Edit to main
+        require_wu_for_edits: true # Require claimed WU
+        warn_on_stop_without_wu_done: true # Warn on incomplete session
+```
+
+After configuration, generate the hooks:
+
+```bash
+pnpm lumenflow:integrate --client claude-code
+```
+
+#### Hook Types
+
+LumenFlow generates hooks for the following Claude Code hook events:
+
+| Hook Event   | When It Fires                | What LumenFlow Does                                       |
+| ------------ | ---------------------------- | --------------------------------------------------------- |
+| PreToolUse   | Before Write/Edit operations | Blocks edits outside worktree or without claimed WU       |
+| PostToolUse  | After every tool call        | Auto-checkpoints at configured interval (counter-based)   |
+| SubagentStop | When a sub-agent finishes    | Always creates a checkpoint (sub-agent completed work)    |
+| Stop         | When session ends            | Warns about active worktrees without wu:done              |
+| PreCompact   | Before context compaction    | Saves checkpoint + writes durable recovery file           |
+| SessionStart | After compact/resume/clear   | Reads recovery file, surfaces unread coordination signals |
+
+#### PostToolUse and SubagentStop Hook Wiring
+
+When `memory.enforcement.auto_checkpoint.enabled: true`, the enforcement generator creates hooks for automatic checkpointing:
+
+```yaml
+memory:
+  enforcement:
+    auto_checkpoint:
+      enabled: true
+      interval_tool_calls: 30
+```
+
+**PostToolUse** fires after every tool call. The generated hook script:
+
+1. Detects the active WU from the worktree path
+2. Increments a per-WU counter stored at `.lumenflow/state/hook-counters/<WU_ID>.json`
+3. When the counter reaches `interval_tool_calls`, creates a checkpoint in a background subshell and resets the counter
+4. Returns immediately (exit 0) so the agent is never blocked
+
+**SubagentStop** fires when a spawned sub-agent completes. The generated hook script:
+
+1. Detects the active WU from the worktree path
+2. Always creates a checkpoint (no counter -- sub-agent completion is a natural milestone)
+3. Checkpoint writes are backgrounded to avoid blocking
+
+Both hooks use the same generated script (`auto-checkpoint.sh`) and branch on the `hook_event_name` environment variable set by Claude Code.
+
+<Aside type="caution">
+  Auto-checkpoint hooks require the enforcement master switch
+  (`agents.clients.claude-code.enforcement.hooks: true`). When `auto_checkpoint.enabled` is true but
+  the master switch is off, LumenFlow emits a warning and remains advisory-only.
+</Aside>
+
+#### PreCompact and SessionStart Recovery
+
+The PreCompact hook saves a checkpoint and writes a durable recovery file before context compaction. The SessionStart hook reads recovery files after compaction, resume, or clear events, restoring context for the agent.
+
+For non-worktree orchestrators (agents running on main), these hooks surface unread coordination signals via `mem:inbox` so agents retain coordination awareness after compaction.
+
+### Cursor
+
+**Config Files:**
+
+- `.cursor/rules/lumenflow.md` — LumenFlow rules
+
+**Auto-detection:** Environment variables starting with `CURSOR_`
+
+### Windsurf
+
+**Config Files:**
+
+- `.windsurf/rules/lumenflow.md` — LumenFlow rules
+
+**Auto-detection:** Environment variables starting with `WINDSURF_`
+
+### Cline
+
+**Config Files:**
+
+- `.clinerules` — LumenFlow rules (root-level)
+
+**Auto-detection:** Not supported
+
+### Aider
+
+**Config Files:**
+
+- `.aider.conf.yml` — Aider configuration
+
+---
+
+## Using Another AI?
+
+<Aside type="tip">
+If your AI coding assistant isn't listed above, LumenFlow still works perfectly:
+
+1. Run `lumenflow init` to create universal entry points
+2. Tell your AI to read `AGENTS.md` and `LUMENFLOW.md`
+3. The workflow commands (`wu:claim`, `wu:prep`, `wu:done`) work the same
+
+</Aside>
+
+---
+
+## Keep Configs in Sync
+
+All vendor configs are generated from a single template:
+
+```bash
+# Check if configs are in sync
+./scripts/sync-vendor-configs.sh --check
+
+# Regenerate all configs from template
+./scripts/sync-vendor-configs.sh
+```
+
+The template lives at `templates/vendor-rules.template.md`.
+
+---
+
+## Adding New Integrations
+
+Want to add support for another AI assistant? Contributions welcome:
+
+1. Update `templates/vendor-rules.template.md` (single source of truth)
+2. Add vendor config path to `scripts/sync-vendor-configs.sh`
+3. Add scaffolding in `packages/@lumenflow/cli/src/init.ts`
+4. Update this documentation
+5. Test with `lumenflow init --client <vendor>`

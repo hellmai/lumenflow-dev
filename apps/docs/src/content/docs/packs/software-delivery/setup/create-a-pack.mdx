@@ -1,0 +1,693 @@
+---
+title: 'Create Your First Pack in 10 Minutes'
+description: 'Create a secure pack with template-first no-code authoring, then go deep on manifest and runtime internals.'
+---
+
+import { Aside, Steps, FileTree } from '@astrojs/starlight/components';
+
+A **pack** is a self-contained plugin that teaches the LumenFlow kernel how to
+work in a specific domain. The built-in `software-delivery` pack provides git
+tools, worktree isolation, and quality gates. You can create packs for any
+domain -- customer support, data pipelines, infrastructure provisioning, or
+anything else your agents need to do.
+
+This guide walks through every piece of a pack using the `software-delivery`
+pack's `git:status` tool as a concrete example. By the end you will understand
+the manifest schema, tool implementation pattern, import boundary rules, scoping
+model, policies, and integrity verification.
+
+## Recommended Path: No-Code First
+
+`pack:author` is the fastest and safest way to create a pack now. It generates
+manifest + tool implementation from vetted templates, then runs validation.
+
+```bash
+pnpm pack:author
+```
+
+For automation, use a spec file:
+
+```bash
+pnpm pack:author --spec-file ./pack-author-spec.yaml
+```
+
+Current secure templates:
+
+- `file.read_text`
+- `file.write_text`
+- `http.get_json`
+
+Validation expectations:
+
+- Least-privilege scopes by default
+- Security lint blocks unsafe scope combinations (for example wildcard writes)
+- Network templates require safe URL schemes
+- Generated packs should pass `pnpm pack:validate` without manual edits
+
+This guide continues with the lower-level, manual structure so you can
+customize advanced pack behavior when needed.
+
+## What Is in a Pack?
+
+{/* prettier-ignore */}
+<FileTree>
+- my-pack/
+  - manifest.yaml _(declares tools, policies, evidence types)_
+  - constants.ts _(pack id, version, shared strings)_
+  - tools/
+    - my-tool.ts _(tool descriptor: name, scopes, handler pointer)_
+    - types.ts _(shared type definitions)_
+  - tool-impl/
+    - my-tool.ts _(runtime implementation)_
+</FileTree>
+
+A pack has two layers:
+
+1. **Manifest** -- a YAML file the kernel parses at load time to learn what
+   tools, policies, and evidence types the pack provides.
+2. **Tool implementations** -- TypeScript modules that execute when the kernel
+   dispatches a tool call.
+
+The kernel enforces a strict boundary between these layers and the rest of the
+codebase (see [Import Boundaries](#import-boundaries) below).
+
+---
+
+## Step 1: Write the Manifest
+
+The manifest is the contract between a pack and the kernel. Create
+`manifest.yaml` at the root of your pack directory.
+
+### Minimal manifest
+
+```yaml
+# manifest.yaml
+id: my-pack
+version: 0.1.0
+task_types:
+  - work-unit
+tools: []
+policies: []
+evidence_types: []
+state_aliases: {}
+lane_templates: []
+```
+
+### Schema reference
+
+| Field            | Type                     | Required | Description                                        |
+| ---------------- | ------------------------ | -------- | -------------------------------------------------- |
+| `id`             | `string`                 | Yes      | Unique pack identifier (kebab-case).               |
+| `version`        | `string` (semver)        | Yes      | Pack version. Must be valid semantic versioning.   |
+| `task_types`     | `string[]`               | Yes      | At least one task type the pack handles.           |
+| `tools`          | `Tool[]`                 | No       | Tool definitions (see below).                      |
+| `policies`       | `Policy[]`               | No       | Policy rules evaluated by the kernel.              |
+| `evidence_types` | `string[]`               | No       | Evidence receipt kinds this pack can produce.      |
+| `state_aliases`  | `Record<string, string>` | No       | Map friendly names to kernel state machine states. |
+| `lane_templates` | `{ id: string }[]`       | No       | Pre-defined lane configurations.                   |
+
+### Tool entry schema
+
+Each object in the `tools` array describes one tool:
+
+```yaml
+tools:
+  - name: git:status # Namespaced tool name
+    entry: tool-impl/git-tools.ts#gitStatusTool # Module path # export name
+    permission: read # read | write | admin
+    required_scopes:
+      - type: path
+        pattern: '**'
+        access: read
+```
+
+| Field             | Type      | Required | Description                                                   |
+| ----------------- | --------- | -------- | ------------------------------------------------------------- |
+| `name`            | `string`  | Yes      | Tool name, typically `namespace:action`.                      |
+| `entry`           | `string`  | Yes      | Relative path to implementation, with optional `#exportName`. |
+| `permission`      | `string`  | Yes      | One of `read`, `write`, or `admin`.                           |
+| `required_scopes` | `Scope[]` | Yes      | Minimum scopes the tool needs (at least one).                 |
+| `internal_only`   | `boolean` | No       | If `true`, tool is hidden from external callers.              |
+
+### Scope objects
+
+Scopes declare what access a tool requires. The kernel intersects these with
+workspace, lane, and task scopes at runtime -- all four levels must agree before
+execution proceeds.
+
+```yaml
+# Path scope -- grants filesystem access
+- type: path
+  pattern: '**' # Glob pattern
+  access: read # read | write
+
+# Network scope -- grants network access
+- type: network
+  posture: off # off | full
+```
+
+<Aside type="tip">
+  Use the narrowest scope that works. A read-only tool should never declare `access: write`. The
+  kernel enforces the intersection, so overly broad scopes are capped by the workspace and lane
+  configuration.
+</Aside>
+
+### Real example: software-delivery manifest (excerpt)
+
+Here is how the `software-delivery` pack declares `git:status`:
+
+```yaml
+# packages/@lumenflow/packs/software-delivery/manifest.yaml (excerpt)
+id: software-delivery
+version: 0.1.0
+task_types:
+  - work-unit
+tools:
+  - name: git:status
+    entry: tool-impl/git-tools.ts#gitStatusTool
+    permission: read
+    required_scopes:
+      - type: path
+        pattern: '**'
+        access: read
+```
+
+The `entry` field points to the file `tool-impl/git-tools.ts` and the named
+export `gitStatusTool`. The kernel resolves this path relative to the pack root
+and verifies it stays within the pack boundary.
+
+---
+
+## Step 2: Implement a Tool
+
+Tools have two parts: a **descriptor** (registered with the kernel) and an
+**implementation** (the actual logic).
+
+### Tool descriptor
+
+The descriptor lives in `tools/` and tells the kernel about the tool's metadata.
+
+```typescript
+// tools/git-tools.ts
+import { createToolDescriptor, type ToolDescriptor } from './types.js';
+
+const READ_SCOPE = {
+  type: 'path' as const,
+  pattern: '**',
+  access: 'read' as const,
+};
+
+export const gitStatusTool: ToolDescriptor = createToolDescriptor({
+  name: 'git:status',
+  permission: 'read',
+  required_scopes: [READ_SCOPE],
+  handler: {
+    kind: 'subprocess',
+    entry: 'tool-impl/git-tools.ts#gitStatusTool',
+  },
+  description: 'Inspect git status in a workspace git repository.',
+});
+```
+
+The `createToolDescriptor` helper stamps the tool with the pack's `domain`,
+`version`, and `pack` id so the kernel can trace provenance:
+
+```typescript
+// tools/types.ts (simplified)
+export interface ToolDescriptor {
+  name: string;
+  domain: string; // Pack ID
+  version: string; // Pack version
+  permission: 'read' | 'write' | 'admin';
+  required_scopes: PathScope[];
+  handler: { kind: 'subprocess'; entry: string };
+  description: string;
+  pack: string; // Pack ID
+}
+
+export function createToolDescriptor(input: ToolDescriptorInput): ToolDescriptor {
+  return {
+    ...input,
+    domain: SOFTWARE_DELIVERY_DOMAIN,
+    version: SOFTWARE_DELIVERY_PACK_VERSION,
+    pack: SOFTWARE_DELIVERY_PACK_ID,
+  };
+}
+```
+
+### Tool implementation
+
+The implementation lives in `tool-impl/` and contains the runtime logic. It
+receives an `input` object and a `cwd` string, and returns a structured output:
+
+```typescript
+// tool-impl/git-tools.ts (simplified from the real implementation)
+import { runGit } from './git-runner.js';
+
+export interface GitToolOutput {
+  success: boolean;
+  data?: Record<string, unknown>;
+  error?: { code: string; message: string };
+  metadata?: { artifacts_written?: string[] };
+}
+
+export async function gitStatusTool(
+  input: Record<string, unknown>,
+  cwd: string,
+): Promise<GitToolOutput> {
+  // Ensure we're inside a git repository
+  const check = runGit(['rev-parse', '--is-inside-work-tree'], { cwd });
+  if (!check.ok) {
+    runGit(['init'], { cwd });
+  }
+
+  // Run git status
+  const status = runGit(['status', '--short'], { cwd });
+  if (!status.ok) {
+    return {
+      success: false,
+      error: {
+        code: 'git_status_failed',
+        message: status.stderr || 'git status failed.',
+      },
+    };
+  }
+
+  return {
+    success: true,
+    data: {
+      status: status.stdout.trim(),
+      source: 'child_process',
+    },
+  };
+}
+```
+
+### Output contract
+
+Every tool must return an object matching the kernel's `ToolOutput` schema:
+
+| Field      | Type      | Required | Description                                        |
+| ---------- | --------- | -------- | -------------------------------------------------- |
+| `success`  | `boolean` | Yes      | Whether the operation succeeded.                   |
+| `data`     | `unknown` | No       | Arbitrary result payload.                          |
+| `error`    | `object`  | No       | `{ code: string; message: string }` on failure.    |
+| `metadata` | `object`  | No       | `{ artifacts_written?: string[] }` for provenance. |
+
+The `metadata.artifacts_written` array is important for the evidence layer --
+it records what files the tool modified so evidence receipts can reference them.
+
+---
+
+## Step 3: Understand Import Boundaries
+
+<Aside type="danger">
+  The kernel enforces strict import boundaries on pack source files. Violating these boundaries
+  causes pack loading to fail.
+</Aside>
+
+When the kernel loads a pack, it scans every runtime source file (`.ts`, `.js`,
+`.mts`, `.mjs`, `.cjs`, `.cts`) and validates every import specifier against
+these rules:
+
+### Allowed imports
+
+| Import type             | Example                                    | Allowed? |
+| ----------------------- | ------------------------------------------ | -------- |
+| Node built-ins          | `import fs from 'node:fs'`                 | Yes      |
+| Node built-ins (bare)   | `import path from 'path'`                  | Yes      |
+| `@lumenflow/kernel`     | `import { z } from '@lumenflow/kernel'`    | Yes      |
+| Kernel sub-paths        | `import '@lumenflow/kernel/schemas'`       | Yes      |
+| Relative (within pack)  | `import { runGit } from './git-runner.js'` | Yes      |
+| Explicitly allow-listed | `import simpleGit from 'simple-git'`       | Yes      |
+
+### Blocked imports
+
+| Import type                 | Example                                | Blocked? |
+| --------------------------- | -------------------------------------- | -------- |
+| Other `@lumenflow/*`        | `import { ... } from '@lumenflow/cli'` | **Yes**  |
+| Arbitrary npm packages      | `import lodash from 'lodash'`          | **Yes**  |
+| Absolute paths              | `import '/home/user/file.ts'`          | **Yes**  |
+| Relative paths outside root | `import '../../outside/file.js'`       | **Yes**  |
+
+**Why these restrictions exist:** Packs run inside the kernel's sandbox. If a
+pack could import arbitrary packages or reach outside its root directory, it
+could bypass the sandbox's access controls. The import boundary is an
+additional static-analysis guard on top of the runtime sandbox.
+
+<Aside type="note">
+  The import boundary scanner uses regex-based pattern matching and cannot fully parse all
+  JavaScript/TypeScript import forms (e.g., dynamic `require` or template-string imports). It is an
+  additional guard, not a replacement for runtime sandboxing.
+</Aside>
+
+### Tool entry path resolution
+
+The kernel resolves every tool's `entry` field relative to the pack root and
+rejects any path that escapes:
+
+```
+pack root:  packages/@lumenflow/packs/software-delivery/
+entry:      tool-impl/git-tools.ts#gitStatusTool
+resolved:   packages/@lumenflow/packs/software-delivery/tool-impl/git-tools.ts
+
+entry:      ../../kernel/src/hack.ts#exploit
+  -> ERROR: resolves outside pack root
+```
+
+---
+
+## Step 4: Configure Policies
+
+Policies are rules the kernel evaluates at specific trigger points. Add them to
+your manifest's `policies` array.
+
+### Policy schema
+
+```yaml
+policies:
+  - id: my-pack.gate.format
+    trigger: on_completion # When to evaluate
+    decision: allow # allow | deny
+    reason: Format gate passed # Optional explanation
+```
+
+| Field      | Type     | Required | Description                     |
+| ---------- | -------- | -------- | ------------------------------- |
+| `id`       | `string` | Yes      | Unique policy identifier.       |
+| `trigger`  | `string` | Yes      | One of the trigger types below. |
+| `decision` | `string` | Yes      | `allow` or `deny`.              |
+| `reason`   | `string` | No       | Human-readable justification.   |
+
+### Policy triggers
+
+| Trigger             | When it fires                         |
+| ------------------- | ------------------------------------- |
+| `on_tool_request`   | Before every tool call.               |
+| `on_claim`          | When a task is claimed by an agent.   |
+| `on_completion`     | When a task transitions to done.      |
+| `on_evidence_added` | When an evidence receipt is appended. |
+
+### Deny-wins cascade
+
+Policies cascade through four levels: **workspace > lane > pack > task**. A
+`deny` at any level cannot be overridden by a lower-level `allow`. This means
+a workspace-level deny policy is absolute.
+
+### Real example: software-delivery gate policies
+
+The `software-delivery` pack declares five gate policies that run on task
+completion:
+
+```yaml
+policies:
+  - id: software-delivery.gate.format
+    trigger: on_completion
+    decision: allow
+  - id: software-delivery.gate.lint
+    trigger: on_completion
+    decision: allow
+  - id: software-delivery.gate.typecheck
+    trigger: on_completion
+    decision: allow
+  - id: software-delivery.gate.test
+    trigger: on_completion
+    decision: allow
+  - id: software-delivery.gate.coverage
+    trigger: on_completion
+    decision: allow
+```
+
+These policies default to `allow` and are flipped to `deny` by the gate runner
+if the corresponding check fails.
+
+---
+
+## Step 5: Register the Pack with the Workspace
+
+For the kernel to load your pack, it must be pinned in the workspace
+specification.
+
+### Pack pin
+
+```yaml
+# In your workspace spec
+packs:
+  - id: my-pack
+    version: 0.1.0
+    integrity: dev # Use 'dev' during development
+    source: local # local | git | registry
+```
+
+| Field       | Type     | Description                                     |
+| ----------- | -------- | ----------------------------------------------- |
+| `id`        | `string` | Must match `manifest.yaml` `id`.                |
+| `version`   | `string` | Must match `manifest.yaml` `version`.           |
+| `integrity` | `string` | `dev` (skip verification) or `sha256:<64-hex>`. |
+| `source`    | `string` | Where the pack is loaded from.                  |
+
+Install using the canonical command shape:
+
+```bash
+pnpm pack:install --id my-pack --source local --version 0.1.0
+```
+
+Registry installs use the same shape:
+
+```bash
+pnpm pack:install --id my-pack --source registry --version 0.1.0
+```
+
+For registry installs, `--integrity` is optional. When omitted, the CLI resolves
+the integrity value from registry metadata for the requested version.
+
+### Local source resolution order
+
+When `source: local` is used, the kernel resolves pack roots in this order:
+
+1. `workspaceRoot/packs/<pack-id>`
+2. `workspaceRoot/packages/@lumenflow/packs/<pack-id>` (monorepo development)
+3. `@lumenflow/cli/packs/<pack-id>` bundled in npm CLI installs
+
+This allows the same `workspace.yaml` pack pin to work in monorepo development
+and in end-user npm installs without changing the pack contract.
+
+### Integrity verification
+
+During development, set `integrity: dev` to skip hash verification. The kernel
+logs a warning when it loads a pack with `dev` integrity, and **rejects `dev`
+integrity in production** unless explicitly allowed.
+
+For production, the kernel computes a deterministic SHA-256 hash of all pack
+files (excluding `node_modules/`, `.git/`, `dist/`, `.DS_Store`) and compares
+it to the pinned integrity value:
+
+```
+sha256:a1b2c3d4e5f6...  (64-character hex digest)
+```
+
+The hash is computed by:
+
+<Steps>
+
+1. Listing all files in the pack directory (sorted, exclusions filtered).
+2. For each file: computing its SHA-256 hash.
+3. Concatenating `relativePath \0 fileHash \0` for every file.
+4. Computing a final SHA-256 over the concatenated buffer.
+
+</Steps>
+
+This ensures any change to any file in the pack changes the integrity hash. An
+agent cannot modify pack code without the hash mismatch being detected.
+
+---
+
+## Step 6: Understand the Scope Intersection
+
+When an agent calls a tool, the kernel computes the **scope intersection**
+across four levels:
+
+```
+Workspace allowed scopes
+    ∩ Lane allowed scopes
+    ∩ Task declared scopes
+    ∩ Tool required scopes
+    ───────────────────────
+    = Effective scopes (what the tool can actually do)
+```
+
+If the intersection is empty for any required scope type, the tool call is
+**denied**. This means:
+
+- A workspace can restrict all tools to specific directories.
+- A lane can narrow that further (e.g., only `packages/@app/core/**`).
+- A task declares what scopes it needs.
+- The tool declares what scopes it requires.
+
+All four must overlap for execution to proceed.
+
+### Example: narrowing git:status
+
+```yaml
+# Workspace allows everything
+workspace.allowed_scopes:
+  - { type: path, pattern: '**', access: read }
+
+# Lane restricts to core package
+lane.allowed_scopes:
+  - { type: path, pattern: 'packages/@app/core/**', access: read }
+
+# Task declares needed scope
+task.declared_scopes:
+  - { type: path, pattern: 'packages/@app/core/**', access: read }
+
+# git:status requires read on '**'
+tool.required_scopes:
+  - { type: path, pattern: '**', access: read }
+
+# Result: git:status can only read packages/@app/core/**
+# (the narrowest overlapping pattern)
+```
+
+---
+
+## Putting It All Together
+
+Here is the complete file structure of a minimal pack with one tool:
+
+{/* prettier-ignore */}
+<FileTree>
+- my-pack/
+  - manifest.yaml
+  - constants.ts
+  - tools/
+    - types.ts
+    - hello-tool.ts
+  - tool-impl/
+    - hello-tool.ts
+</FileTree>
+
+### manifest.yaml
+
+```yaml
+id: my-pack
+version: 0.1.0
+task_types:
+  - work-unit
+tools:
+  - name: hello:greet
+    entry: tool-impl/hello-tool.ts#helloGreetTool
+    permission: read
+    required_scopes:
+      - type: path
+        pattern: '**'
+        access: read
+policies: []
+evidence_types: []
+state_aliases: {}
+lane_templates: []
+```
+
+### constants.ts
+
+```typescript
+export const MY_PACK_ID = 'my-pack' as const;
+export const MY_PACK_VERSION = '0.1.0' as const;
+```
+
+### tools/types.ts
+
+```typescript
+import { MY_PACK_ID, MY_PACK_VERSION } from '../constants.js';
+
+export interface PathScope {
+  type: 'path';
+  pattern: string;
+  access: 'read' | 'write';
+}
+
+export interface ToolDescriptor {
+  name: string;
+  domain: string;
+  version: string;
+  permission: 'read' | 'write' | 'admin';
+  required_scopes: PathScope[];
+  handler: { kind: 'subprocess'; entry: string };
+  description: string;
+  pack: string;
+}
+
+export function createToolDescriptor(
+  input: Omit<ToolDescriptor, 'domain' | 'version' | 'pack'>,
+): ToolDescriptor {
+  return { ...input, domain: MY_PACK_ID, version: MY_PACK_VERSION, pack: MY_PACK_ID };
+}
+```
+
+### tools/hello-tool.ts
+
+```typescript
+import { createToolDescriptor, type ToolDescriptor } from './types.js';
+
+export const helloGreetTool: ToolDescriptor = createToolDescriptor({
+  name: 'hello:greet',
+  permission: 'read',
+  required_scopes: [{ type: 'path', pattern: '**', access: 'read' }],
+  handler: { kind: 'subprocess', entry: 'tool-impl/hello-tool.ts#helloGreetTool' },
+  description: 'Return a greeting message.',
+});
+```
+
+### tool-impl/hello-tool.ts
+
+```typescript
+export interface ToolOutput {
+  success: boolean;
+  data?: Record<string, unknown>;
+  error?: { code: string; message: string };
+}
+
+export async function helloGreetTool(
+  input: Record<string, unknown>,
+  cwd: string,
+): Promise<ToolOutput> {
+  const name = typeof input.name === 'string' ? input.name : 'World';
+  return {
+    success: true,
+    data: { greeting: `Hello, ${name}!`, cwd },
+  };
+}
+```
+
+### Workspace pin
+
+```yaml
+packs:
+  - id: my-pack
+    version: 0.1.0
+    integrity: dev
+    source: local
+```
+
+---
+
+## Checklist
+
+Before shipping your pack, verify:
+
+- [ ] `manifest.yaml` passes schema validation (`id`, `version`, `task_types` present)
+- [ ] Every tool `entry` resolves to an existing file within the pack root
+- [ ] All imports stay within [allowed boundaries](#import-boundaries)
+- [ ] `required_scopes` are as narrow as possible
+- [ ] Policies use correct trigger types
+- [ ] Pack is pinned in workspace spec with correct `id` and `version`
+- [ ] Integrity is set to `dev` (development) or valid `sha256:` hash (production)
+- [ ] `pnpm pack:validate` passes with no security lint violations
+- [ ] Pack installs via `pnpm pack:install --id <packId> --source <source> --version <version>`
+- [ ] Tool implementations return the `ToolOutput` contract (`success`, optional `data`/`error`/`metadata`)
+
+## Next Steps
+
+- [Configuration Reference](/reference/config) -- Workspace spec and pack pin options
+- [Gates](/packs/software-delivery/concepts/gates) -- How gate policies work end-to-end
+- [Constraints](/packs/software-delivery/concepts/constraints) -- The rules packs must follow

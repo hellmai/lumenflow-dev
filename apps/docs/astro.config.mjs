@@ -33,15 +33,15 @@ export default defineConfig({
         {
           label: 'Kernel',
           items: [
-            { label: 'Overview', slug: 'concepts/kernel' },
-            { label: 'Visual Overview', slug: 'concepts/visual-overview' },
-            { label: 'Kernel Runtime', slug: 'concepts/kernel' },
-            { label: 'Packs', slug: 'concepts/packs' },
-            { label: 'Tool Execution', slug: 'concepts/tool-execution' },
-            { label: 'Package Architecture', slug: 'concepts/package-architecture' },
-            { label: 'Scope Intersection', slug: 'concepts/scope-intersection' },
-            { label: 'Policy Engine', slug: 'concepts/policy-engine' },
-            { label: 'Evidence Store', slug: 'concepts/evidence' },
+            { label: 'Overview', slug: 'kernel' },
+            { label: 'Visual Overview', slug: 'kernel/visual-overview' },
+            { label: 'Kernel Runtime', slug: 'kernel/runtime' },
+            { label: 'Packs', slug: 'kernel/packs' },
+            { label: 'Tool Execution', slug: 'kernel/tool-execution' },
+            { label: 'Package Architecture', slug: 'kernel/package-architecture' },
+            { label: 'Scope Intersection', slug: 'kernel/scope-intersection' },
+            { label: 'Policy Engine', slug: 'kernel/policy-engine' },
+            { label: 'Evidence Store', slug: 'kernel/evidence-store' },
           ],
         },
         {
@@ -52,19 +52,19 @@ export default defineConfig({
               items: [
                 {
                   label: 'Overview',
-                  slug: 'pack/overview',
+                  slug: 'packs/software-delivery',
                 },
                 {
                   label: 'Concepts',
                   items: [
                     {
                       label: 'Work Units (WUs)',
-                      slug: 'concepts/work-units',
+                      slug: 'packs/software-delivery/concepts/work-units',
                     },
-                    { label: 'Lanes', slug: 'concepts/lanes' },
-                    { label: 'Gates', slug: 'concepts/gates' },
-                    { label: 'Memory Layer', slug: 'concepts/memory' },
-                    { label: 'Constraints', slug: 'concepts/constraints' },
+                    { label: 'Lanes', slug: 'packs/software-delivery/concepts/lanes' },
+                    { label: 'Gates', slug: 'packs/software-delivery/concepts/gates' },
+                    { label: 'Memory Layer', slug: 'packs/software-delivery/concepts/memory' },
+                    { label: 'Constraints', slug: 'packs/software-delivery/concepts/constraints' },
                   ],
                 },
                 {
@@ -72,33 +72,33 @@ export default defineConfig({
                   items: [
                     {
                       label: 'A Day with LumenFlow',
-                      slug: 'guides/a-day-with-lumenflow',
+                      slug: 'packs/software-delivery/workflows/a-day-with-lumenflow',
                     },
                     {
                       label: 'Idea to Shipping',
-                      slug: 'guides/idea-to-shipping',
+                      slug: 'packs/software-delivery/workflows/idea-to-shipping',
                     },
                     {
                       label: 'Solo Developer Workflow',
-                      slug: 'guides/solo-workflow',
+                      slug: 'packs/software-delivery/workflows/solo-workflow',
                     },
                     {
                       label: 'Team Workflow',
-                      slug: 'guides/team-workflow',
+                      slug: 'packs/software-delivery/workflows/team-workflow',
                     },
                     {
                       label: 'WU Completion Workflow',
-                      slug: 'guides/wu-prep-workflow',
+                      slug: 'packs/software-delivery/workflows/wu-prep-workflow',
                     },
-                    { label: 'Sizing WUs', slug: 'guides/sizing' },
-                    { label: 'Cookbook', slug: 'guides/cookbook' },
+                    { label: 'Sizing WUs', slug: 'packs/software-delivery/workflows/sizing' },
+                    { label: 'Cookbook', slug: 'packs/software-delivery/workflows/cookbook' },
                     {
                       label: 'Choosing Methodology',
-                      slug: 'guides/choosing-methodology',
+                      slug: 'packs/software-delivery/workflows/choosing-methodology',
                     },
                     {
                       label: 'Migrating Methodology',
-                      slug: 'guides/migrating-methodology',
+                      slug: 'packs/software-delivery/workflows/migrating-methodology',
                     },
                   ],
                 },
@@ -107,23 +107,23 @@ export default defineConfig({
                   items: [
                     {
                       label: 'Agent Onboarding',
-                      slug: 'guides/agent-onboarding',
+                      slug: 'packs/software-delivery/agents/agent-onboarding',
                     },
                     {
                       label: 'AI Agent Integration',
-                      slug: 'guides/ai-agents',
+                      slug: 'packs/software-delivery/agents/ai-agent-integration',
                     },
                     {
                       label: 'AI Integrations Setup',
-                      slug: 'guides/ai-integrations',
+                      slug: 'packs/software-delivery/agents/ai-integrations-setup',
                     },
                     {
                       label: 'Agent Branch Patterns',
-                      slug: 'guides/agent-patterns',
+                      slug: 'packs/software-delivery/agents/agent-branch-patterns',
                     },
                     {
                       label: 'MCP Setup',
-                      slug: 'guides/mcp-setup',
+                      slug: 'packs/software-delivery/agents/mcp-setup',
                     },
                     { label: 'Agent Safety', slug: 'reference/agent-safety' },
                   ],
@@ -133,48 +133,49 @@ export default defineConfig({
                   items: [
                     {
                       label: 'Existing Projects',
-                      slug: 'guides/existing-projects',
+                      slug: 'packs/software-delivery/setup/existing-projects',
                     },
                     {
                       label: 'Create a Pack',
-                      slug: 'guides/create-a-pack',
+                      slug: 'packs/software-delivery/setup/create-a-pack',
                     },
                     {
                       label: 'Migration Guide',
-                      slug: 'guides/migration',
+                      slug: 'packs/software-delivery/setup/migration-guide',
                     },
-                    { label: 'Upgrading', slug: 'getting-started/upgrade' },
+                    { label: 'Upgrading', slug: 'packs/software-delivery/setup/upgrading' },
                     {
                       label: 'Troubleshooting',
-                      slug: 'guides/troubleshooting',
+                      slug: 'packs/software-delivery/setup/troubleshooting',
                     },
                   ],
                 },
                 {
                   label: 'Language Guides',
                   items: [
-                    { label: 'Overview', slug: 'language-guides' },
-                    { label: 'Python', slug: 'language-guides/python' },
-                    { label: '.NET', slug: 'language-guides/dotnet' },
-                    { label: 'Go', slug: 'language-guides/go' },
-                    { label: 'Rust', slug: 'language-guides/rust' },
-                    { label: 'Java', slug: 'language-guides/java' },
-                    { label: 'Ruby', slug: 'language-guides/ruby' },
-                    { label: 'PHP', slug: 'language-guides/php' },
+                    { label: 'Overview', slug: 'packs/software-delivery/languages' },
+                    { label: 'Node.js', slug: 'packs/software-delivery/languages/node' },
+                    { label: 'Python', slug: 'packs/software-delivery/languages/python' },
+                    { label: '.NET', slug: 'packs/software-delivery/languages/dotnet' },
+                    { label: 'Go', slug: 'packs/software-delivery/languages/go' },
+                    { label: 'Rust', slug: 'packs/software-delivery/languages/rust' },
+                    { label: 'Java', slug: 'packs/software-delivery/languages/java' },
+                    { label: 'Ruby', slug: 'packs/software-delivery/languages/ruby' },
+                    { label: 'PHP', slug: 'packs/software-delivery/languages/php' },
                   ],
                 },
                 {
                   label: 'Advanced',
                   items: [
-                    { label: 'Initiatives', slug: 'guides/initiatives' },
-                    { label: 'Flow Metrics', slug: 'guides/metrics' },
+                    { label: 'Initiatives', slug: 'packs/software-delivery/advanced/initiatives' },
+                    { label: 'Flow Metrics', slug: 'packs/software-delivery/advanced/metrics' },
                     {
                       label: 'Custom Skills',
-                      slug: 'guides/custom-skills',
+                      slug: 'packs/software-delivery/advanced/custom-skills',
                     },
                     {
                       label: 'Customizing Spawn Prompts',
-                      slug: 'guides/customizing-spawn-prompts',
+                      slug: 'packs/software-delivery/advanced/customizing-spawn-prompts',
                     },
                   ],
                 },

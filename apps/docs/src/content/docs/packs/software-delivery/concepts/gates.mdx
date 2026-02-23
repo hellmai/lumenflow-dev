@@ -1,0 +1,340 @@
+---
+title: Gates
+description: Config-driven quality gates enforced as kernel policies
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Gates are automated quality checks that must pass before a WU can be completed. They replace manual code review with consistent, automated enforcement.
+
+<Aside type="note" title="Gates are kernel-enforced policies">
+  In the [Software Delivery Pack](/kernel/packs), gates are implemented as pack-layer policies
+  with `trigger: on_completion`. The [policy engine](/kernel/policy-engine) evaluates them when a
+  task tries to complete — an agent cannot skip gates by calling `completeTask` directly.
+</Aside>
+
+## Why Gates?
+
+Traditional review:
+
+- Human bottleneck (waiting for reviewers)
+- Inconsistent (different reviewers, different standards)
+- Slow feedback (review happens after code is written)
+
+Gates:
+
+- Instant (run automatically)
+- Consistent (same checks every time)
+- Fast feedback (run locally before pushing)
+
+## Config-Driven Gates
+
+Define your gate commands in `workspace.yaml`:
+
+```yaml
+# workspace.yaml
+version: '2.0'
+
+gates:
+  execution:
+    setup: 'pnpm install'
+    format: 'pnpm format:check'
+    lint: 'pnpm lint'
+    typecheck: 'pnpm typecheck'
+    test: 'pnpm test'
+```
+
+This approach works with any language and toolchain.
+
+## Using Presets
+
+For common languages, use a preset to get sensible defaults:
+
+```yaml
+gates:
+  execution:
+    preset: 'python'
+    # Override specific commands
+    lint: 'mypy . && ruff check .'
+```
+
+Available presets: `node`, `python`, `go`, `rust`, `dotnet`, `java`, `ruby`, `php`
+
+### Preset Defaults
+
+| Preset   | Format                   | Lint            | Typecheck      | Test          |
+| -------- | ------------------------ | --------------- | -------------- | ------------- |
+| `node`   | `prettier --check .`     | `eslint .`      | `tsc --noEmit` | `npm test`    |
+| `python` | `ruff format --check .`  | `ruff check .`  | `mypy .`       | `pytest`      |
+| `go`     | `gofmt -l .`             | `golangci-lint` | `go vet ./...` | `go test`     |
+| `rust`   | `cargo fmt --check`      | `cargo clippy`  | `cargo check`  | `cargo test`  |
+| `dotnet` | `dotnet format --verify` | `dotnet build`  | -              | `dotnet test` |
+| `java`   | `spotless:check`         | `checkstyle`    | `mvn compile`  | `mvn test`    |
+| `ruby`   | `rubocop`                | `rubocop`       | -              | `rspec`       |
+| `php`    | `php-cs-fixer`           | `phpstan`       | -              | `phpunit`     |
+
+## Running Gates
+
+```bash
+# Run all gates
+pnpm gates
+
+# Output
+> Format check... pass
+> Lint check... pass
+> Type check... pass
+> Test suite... pass
+> All gates passed!
+```
+
+If any gate fails, `wu:prep` fails and you fix issues in the worktree before completion.
+
+### Gate Flags
+
+| Flag           | Description                                                   |
+| -------------- | ------------------------------------------------------------- |
+| `--docs-only`  | Run only docs-related gates (skip format/lint/typecheck/test) |
+| `--full-tests` | Run full test suites instead of scoped tests                  |
+| `--full-lint`  | Run full lint pass instead of scoped lint                     |
+
+## Command Options
+
+Commands can be strings or objects with options:
+
+```yaml
+gates:
+  execution:
+    format: 'dotnet format --verify-no-changes'
+    test:
+      command: 'dotnet test --no-restore'
+      timeout: 300000 # 5 minutes
+      continueOnError: false
+```
+
+## Language Examples
+
+### Node.js / TypeScript
+
+```yaml
+gates:
+  execution:
+    preset: 'node'
+    # Or custom:
+    setup: 'pnpm install --frozen-lockfile'
+    format: 'pnpm prettier --check .'
+    lint: 'pnpm eslint . --max-warnings 0'
+    typecheck: 'pnpm tsc --noEmit'
+    test: 'pnpm vitest run'
+```
+
+### Python
+
+```yaml
+gates:
+  execution:
+    preset: 'python'
+    # Or custom:
+    setup: 'pip install -e ".[dev]"'
+    format: 'ruff format --check .'
+    lint: 'ruff check . && mypy .'
+    test: 'pytest -v'
+```
+
+### .NET
+
+```yaml
+gates:
+  execution:
+    preset: 'dotnet'
+    # Or custom:
+    setup: 'dotnet restore'
+    format: 'dotnet format --verify-no-changes'
+    lint: 'dotnet build --no-restore -warnaserror'
+    test: 'dotnet test --no-restore'
+```
+
+### Go
+
+```yaml
+gates:
+  execution:
+    preset: 'go'
+    # Or custom:
+    format: 'test -z "$(gofmt -l .)"'
+    lint: 'golangci-lint run'
+    typecheck: 'go vet ./...'
+    test: 'go test -v ./...'
+```
+
+### Rust
+
+```yaml
+gates:
+  execution:
+    preset: 'rust'
+    format: 'cargo fmt --check'
+    lint: 'cargo clippy -- -D warnings'
+    typecheck: 'cargo check'
+    test: 'cargo test'
+```
+
+### Java / JVM
+
+```yaml
+gates:
+  execution:
+    preset: 'java'
+    # Or custom (Maven):
+    format: 'mvn spotless:check'
+    lint: 'mvn checkstyle:check'
+    typecheck: 'mvn compile -DskipTests'
+    test: 'mvn test'
+    # Or Gradle:
+    # format: './gradlew spotlessCheck'
+    # lint: './gradlew checkstyleMain'
+    # typecheck: './gradlew compileJava'
+    # test: './gradlew test'
+```
+
+### Ruby
+
+```yaml
+gates:
+  execution:
+    preset: 'ruby'
+    # Or custom:
+    setup: 'bundle install'
+    format: 'bundle exec rubocop --format simple --fail-level W'
+    lint: 'bundle exec rubocop'
+    test: 'bundle exec rspec'
+```
+
+### PHP
+
+```yaml
+gates:
+  execution:
+    preset: 'php'
+    # Or custom:
+    setup: 'composer install'
+    format: 'vendor/bin/php-cs-fixer fix --dry-run --diff'
+    lint: 'vendor/bin/phpstan analyse'
+    test: 'vendor/bin/phpunit'
+```
+
+## How Gates Work Under the Hood
+
+Each gate maps to a policy rule in the Software Delivery Pack:
+
+| Gate         | Policy ID                          | Trigger         |
+| ------------ | ---------------------------------- | --------------- |
+| Format check | `software-delivery.gate.format`    | `on_completion` |
+| Lint         | `software-delivery.gate.lint`      | `on_completion` |
+| Type check   | `software-delivery.gate.typecheck` | `on_completion` |
+| Test         | `software-delivery.gate.test`      | `on_completion` |
+
+When `wu:prep` or `wu:done` runs, the [kernel](/kernel/runtime) evaluates these policies. A `deny` from any gate makes the completion decision final — the [deny-wins invariant](/kernel/policy-engine#deny-wins-evaluation) applies. The result is recorded in the [evidence store](/kernel/evidence-store) for audit.
+
+## Gate Behavior
+
+### On Claim
+
+When you `wu:claim`:
+
+- Worktree is created
+- Gates status is "pending"
+
+### During Work
+
+Run `pnpm gates` frequently:
+
+```bash
+# Quick feedback loop
+pnpm gates
+# Fix issues
+pnpm gates
+# All green? Continue
+```
+
+### On Prep and Done
+
+When you `wu:prep`:
+
+1. Gates run automatically in the worktree
+2. If any fail, the WU stays `in_progress` until you fix and rerun `wu:prep`
+
+When you `wu:done`:
+
+1. The WU merges to main
+2. The stamp is created
+3. The worktree is cleaned up
+
+## Gate Failures
+
+```bash
+pnpm wu:prep --id WU-042
+
+> Running gates...
+> Format check... FAILED
+>   src/utils/validation.ts - needs formatting
+>
+> Fix the issues above before completing.
+```
+
+Fix and retry:
+
+```bash
+pnpm prettier --write src/utils/validation.ts
+pnpm wu:prep --id WU-042
+# Gates pass, then complete from main:
+cd /path/to/main && pnpm wu:done --id WU-042
+```
+
+## Skip Flags
+
+Skip specific gates when needed:
+
+```bash
+pnpm gates --skip-test
+```
+
+Or in configuration:
+
+```yaml
+gates:
+  execution:
+    format: 'pnpm format:check'
+    lint: 'pnpm lint'
+    # No typecheck or test for this project
+```
+
+## CI Integration
+
+Use the LumenFlow Gates GitHub Action:
+
+```yaml
+# .github/workflows/gates.yml
+name: Gates
+on: [pull_request]
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hellmai/lumenflow-gates@v1
+        with:
+          token: ${{ secrets.LUMENFLOW_TOKEN }}
+```
+
+The action reads your `gates.execution` config automatically. See [GitHub Action docs](/reference/github-action) for details.
+
+## Backwards Compatibility
+
+If no `gates.execution` config is present, LumenFlow falls back to auto-detecting your project type based on files present and uses preset defaults.
+
+## Next Steps
+
+- [Policy Engine](/kernel/policy-engine) — How gates are evaluated as deny-wins policies
+- [Evidence Store](/kernel/evidence-store) — How gate results are recorded for audit
+- [Configuration Reference](/reference/config) — Full gates schema
+- [CLI Reference](/reference/cli) — All gate commands

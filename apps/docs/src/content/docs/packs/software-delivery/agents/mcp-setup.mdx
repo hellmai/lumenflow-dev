@@ -1,0 +1,339 @@
+---
+title: MCP Setup Guide
+description: Configure the LumenFlow MCP server for your AI assistant
+---
+
+import { Aside, Steps, Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
+
+This guide walks you through setting up the LumenFlow MCP server with your AI coding assistant.
+
+## What is MCP?
+
+MCP (Model Context Protocol) is an open standard for AI-to-tool communication. Instead of relying on file-based instructions, MCP provides a programmatic interface for AI assistants to interact with development tools.
+
+<CardGrid>
+  <Card title="Structured Tools" icon="setting">
+    Tools with typed inputs and outputs, not just text parsing
+  </Card>
+  <Card title="Resource Access" icon="document">
+    Direct access to LumenFlow data via URI patterns
+  </Card>
+  <Card title="Consistent Interface" icon="approve-check">
+    Same tools work across different AI clients
+  </Card>
+  <Card title="Safety Maintained" icon="warning">
+    All operations respect LumenFlow workflow rules
+  </Card>
+</CardGrid>
+
+## Prerequisites
+
+Before setting up MCP:
+
+1. **LumenFlow initialized** in your project
+
+   ```bash
+   pnpm exec lumenflow --client <your-client>
+   ```
+
+2. **AI client with MCP support**
+   - Claude Code 0.2.x+
+   - Cursor (MCP-enabled)
+   - Any MCP-compatible client
+
+<Aside type="tip">
+  MCP is optional. LumenFlow works with any AI through markdown files (`AGENTS.md`, `LUMENFLOW.md`).
+  MCP provides enhanced programmatic access for supported clients.
+</Aside>
+
+## Installation
+
+<Steps>
+
+1. **Install the MCP package** (if not already included)
+
+   ```bash
+   pnpm add -D @lumenflow/mcp
+   ```
+
+2. **Verify the binary is available**
+
+   ```bash
+   npx @lumenflow/mcp --help
+   ```
+
+</Steps>
+
+<Aside type="note" title="Private package access required">
+  `@lumenflow/mcp` is distributed through private package channels. If install fails, verify
+  registry auth and package access first. See [Licensing & Access](/legal/licensing/).
+</Aside>
+
+## Client Configuration
+
+<Tabs>
+  <TabItem label="Claude Code">
+
+### Claude Code Setup
+
+Claude Code supports MCP servers via configuration files.
+
+**Option 1: Project-level configuration**
+
+Create or edit `.claude/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "lumenflow": {
+      "command": "npx",
+      "args": ["@lumenflow/mcp"],
+      "env": {
+        "LUMENFLOW_PROJECT_ROOT": "${workspaceFolder}"
+      }
+    }
+  }
+}
+```
+
+**Option 2: Global configuration**
+
+Add to your Claude Code settings (`~/.config/claude/mcp.json` on Linux, `~/Library/Application Support/claude/mcp.json` on macOS):
+
+```json
+{
+  "mcpServers": {
+    "lumenflow": {
+      "command": "npx",
+      "args": ["@lumenflow/mcp"]
+    }
+  }
+}
+```
+
+<Aside type="note">
+  With global configuration, `LUMENFLOW_PROJECT_ROOT` defaults to `process.cwd()`. The server
+  auto-detects the project root from the current working directory.
+</Aside>
+
+**Verify the connection:**
+
+In Claude Code, the LumenFlow tools should appear in the available tools list:
+
+- `context_get`
+- `wu_list`
+- `wu_status`
+- `wu_create`
+- `wu_claim`
+- `wu_done`
+- `gates_run`
+- `file_read`
+- `git_status`
+- `plan_create`
+- `signal_cleanup`
+- `wu_proto`
+
+The full MCP surface is documented in [/reference/mcp](/reference/mcp) and currently includes
+98 tools (90 normalized public-CLI parity tools + 8 MCP-only extras).
+
+</TabItem>
+
+  <TabItem label="Cursor">
+
+### Cursor Setup
+
+Add to your Cursor MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "lumenflow": {
+      "command": "npx",
+      "args": ["@lumenflow/mcp"],
+      "env": {
+        "LUMENFLOW_PROJECT_ROOT": "${workspaceFolder}"
+      }
+    }
+  }
+}
+```
+
+  </TabItem>
+  <TabItem label="Other Clients">
+
+### Generic MCP Client
+
+For any MCP-compatible client, configure:
+
+| Setting   | Value                |
+| --------- | -------------------- |
+| Command   | `npx`                |
+| Arguments | `["@lumenflow/mcp"]` |
+
+**Environment variables:**
+
+| Variable                  | Description            | Default         |
+| ------------------------- | ---------------------- | --------------- |
+| `LUMENFLOW_PROJECT_ROOT`  | Project root directory | `process.cwd()` |
+| `LUMENFLOW_MCP_LOG_LEVEL` | Log level              | `info`          |
+
+  </TabItem>
+</Tabs>
+
+## Using MCP Tools
+
+Once configured, your AI assistant can use LumenFlow tools directly.
+
+<Aside type="tip">
+  If you are validating parity coverage specifically, spot-check at least one tool from each added
+  wave-2 family (for example: `file_read`, `git_status`, `plan_create`, `signal_cleanup`,
+  `wu_proto`).
+</Aside>
+
+### Example Workflow
+
+```
+User: Create a WU for adding authentication
+
+AI uses: wu_create {
+  "lane": "Framework: Core",
+  "title": "Add user authentication",
+  "description": "Context: No auth. Problem: Users cannot log in. Solution: Add auth.",
+  "acceptance": ["Users can register", "Users can log in"],
+  "code_paths": ["src/auth/"],
+  "exposure": "backend-only"
+}
+
+AI: Created WU-123. Would you like me to claim it?
+
+User: Yes, claim it
+
+AI uses: wu_claim {
+  "id": "WU-123",
+  "lane": "Framework: Core"
+}
+
+AI: WU-123 claimed. Worktree created at worktrees/framework-core-wu-123.
+```
+
+### Checking Context
+
+The AI can check current context at any time:
+
+```
+AI uses: context_get {}
+
+Result: {
+  "location": { "type": "worktree", ... },
+  "wu": { "id": "WU-123", "status": "in_progress" }
+}
+```
+
+### Reading Resources
+
+AI assistants can read LumenFlow data via resources:
+
+```
+Read resource: lumenflow://backlog
+Read resource: lumenflow://wu/WU-123
+Read resource: lumenflow://context
+```
+
+## MCP vs CLI vs File-Based
+
+| Approach   | Best For                    | When to Use                   |
+| ---------- | --------------------------- | ----------------------------- |
+| MCP        | Programmatic AI interaction | AI clients with MCP support   |
+| CLI        | Human operators, scripts    | Terminal workflows, CI/CD     |
+| File-based | Universal AI compatibility  | Any AI that can read markdown |
+
+<Aside type="tip">
+  All three approaches work together. An AI can read `LUMENFLOW.md` for context, use MCP tools for
+  operations, and fall back to CLI commands when needed.
+</Aside>
+
+## Troubleshooting
+
+### Server not starting
+
+**Check:** Is the package installed?
+
+```bash
+pnpm list @lumenflow/mcp
+```
+
+**Check:** Can you run it directly?
+
+```bash
+npx @lumenflow/mcp --help
+```
+
+### Tools not appearing
+
+**Check:** Is MCP enabled in your AI client?
+
+**Check:** Is the configuration file in the correct location?
+
+**Check:** Are there any errors in the AI client logs?
+
+### Wrong project root
+
+**Check:** Is `LUMENFLOW_PROJECT_ROOT` set correctly?
+
+**Fix:** Use explicit path or ensure the AI client is opened in the project directory.
+
+### Permission errors
+
+**Check:** Does the user running the AI client have access to the project?
+
+**Check:** Are all LumenFlow files readable?
+
+## Security Considerations
+
+The MCP server:
+
+- Runs with the permissions of the user starting the AI client
+- Only accesses files within the project root
+- Respects all LumenFlow workflow rules (worktree discipline, gates)
+- Cannot bypass safety hooks or constraints
+
+<Aside type="caution">
+  MCP tools execute real operations. `wu_done` will merge and stamp. Ensure your AI client handles
+  tool confirmations appropriately.
+</Aside>
+
+## Advanced Configuration
+
+### Programmatic Server Creation
+
+For custom integrations:
+
+```typescript
+import { createMcpServer } from '@lumenflow/mcp';
+
+const server = createMcpServer({
+  projectRoot: '/path/to/project',
+  logLevel: 'debug',
+});
+
+// List tools
+console.log(server.listTools());
+
+// List resources
+console.log(server.listResources());
+console.log(server.listResourceTemplates());
+
+// Start the server
+await server.start();
+```
+
+### Custom Tool Timeout
+
+Gates can take longer to run. The default timeout for `gates_run` is 10 minutes.
+This is configured in the tool implementation and cannot be overridden via MCP.
+
+## Next Steps
+
+- [MCP Reference](/reference/mcp) - Complete tool and resource documentation
+- [CLI Commands](/reference/cli) - Full CLI reference
+- [AI Integrations](/packs/software-delivery/agents/ai-integrations-setup) - Other integration options

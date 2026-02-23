@@ -1,0 +1,429 @@
+---
+title: AI Agent Integration
+description: Working with AI assistants in LumenFlow
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+LumenFlow treats AI agents as first-class collaborators. This guide covers how to work effectively with AI assistants.
+
+<Aside type="tip" title="Works with Any AI">
+  LumenFlow is **friction-free for any AI coding assistant**. If your AI can read project files, it can use LumenFlow—just point it at `AGENTS.md` and `LUMENFLOW.md`. No vendor lock-in, no special setup required.
+
+Enhanced integrations for Claude Code, Cursor, Windsurf, and Cline provide deeper features but are entirely optional.
+
+</Aside>
+
+## Integration Options
+
+LumenFlow provides three ways for AI agents to interact with the workflow:
+
+| Interface      | Best For                             | Setup                            |
+| -------------- | ------------------------------------ | -------------------------------- |
+| **File-based** | Any AI that can read markdown        | Point AI at `AGENTS.md`          |
+| **CLI**        | Terminal-based agents, scripts       | `pnpm wu:claim`, etc.            |
+| **MCP**        | Programmatic access via MCP protocol | [Setup Guide](/packs/software-delivery/agents/mcp-setup) |
+
+The MCP server (`@lumenflow/mcp`) exposes workflow tools and resources over the [Model Context Protocol](https://modelcontextprotocol.io/), enabling AI assistants to interact with LumenFlow programmatically. See the [MCP Reference](/reference/mcp) for available tools.
+
+## AI as Teammate
+
+LumenFlow is designed for AI agents to:
+
+- Understand work context (WU specs)
+- Execute autonomously (clear acceptance)
+- Prove completion (gates + stamps)
+- Recover context (memory layer)
+
+## Agent Onboarding
+
+Provide agents with:
+
+<Steps>
+
+1. **WU Spec** – The work to be done
+2. **Acceptance Criteria** – Definition of done
+3. **Code Paths** – Where to work
+4. **Memory Context** – What happened before
+
+</Steps>
+
+### Prompt Template
+
+```markdown
+## Context
+
+You are working on WU-042 in the LumenFlow workflow.
+
+## Work Unit
+
+- ID: WU-042
+- Title: Add email validation to login form
+- Lane: UI
+- Status: in_progress
+
+## Acceptance Criteria
+
+1. Email field validates on blur
+2. Invalid emails show "Please enter a valid email"
+3. Valid emails allow form submission
+4. Unit test covers validation logic
+
+## Code Paths
+
+- src/components/LoginForm.tsx
+- src/utils/validation.ts
+
+## Instructions
+
+1. Work in worktree: worktrees/ui-wu-042
+2. Implement changes per acceptance
+3. Run: pnpm wu:prep --id WU-042
+4. From main: pnpm wu:done --id WU-042
+```
+
+## Memory Integration
+
+For long-running agent sessions:
+
+```bash
+# Agent starts session
+pnpm mem:start --wu WU-042
+
+# Agent signals progress
+pnpm mem:signal "Validation logic complete" --wu WU-042
+
+# Agent creates checkpoint (before pause/context limit)
+pnpm mem:checkpoint --wu WU-042
+
+# Agent resumes later
+pnpm mem:ready --wu WU-042
+# → Shows previous progress
+```
+
+## Context Recovery
+
+When an agent session ends and a new one begins:
+
+```bash
+# New agent runs
+pnpm mem:ready --wu WU-042
+
+# Output:
+# WU-042 in progress
+# Last signal: "Validation logic complete"
+# Files touched: src/utils/validation.ts
+# Next: Add unit tests
+```
+
+The agent can continue where the previous session left off.
+
+## Autonomous Execution
+
+For trusted agents, enable autonomous mode:
+
+```yaml
+# WU spec
+autonomous: true
+approval_required: false
+```
+
+The agent can:
+
+- Claim and complete without human approval
+- Make decisions within scope
+- Log decisions for audit
+
+<Aside type="caution">
+  Use autonomous mode only for well-scoped WUs with clear boundaries. Human oversight is still
+  recommended for security-sensitive or customer-facing changes.
+</Aside>
+
+## Safety Guardrails
+
+LumenFlow provides defense-in-depth safety for AI agents through the [kernel runtime](/kernel/runtime), not just repository-level hooks.
+
+### Kernel-Level Enforcement
+
+Every tool call passes through the kernel's authorization gate before execution:
+
+1. **[Scope intersection](/kernel/scope-intersection)** — The kernel computes workspace ∩ lane ∩ task ∩ tool permissions. An agent working in lane `Framework: Core` cannot write to `apps/` even if it tries — the intersection is empty, so the call is denied.
+
+2. **[Policy evaluation](/kernel/policy-engine)** — Pack-declared policies use a deny-wins cascade. A `deny` at any layer (workspace, lane, pack, or task) is final and cannot be reversed. Gates, path restrictions, and approval requirements are all policies.
+
+3. **[Evidence recording](/kernel/evidence-store)** — Every tool call is recorded with content-addressed inputs, scope enforcement results, and policy decisions. Even denied calls produce evidence — the audit trail has no gaps.
+
+4. **Reserved path protection** — Writes to `.lumenflow/**` are denied unconditionally. The kernel's own state is tamper-proof.
+
+<Aside type="tip">
+  These protections are kernel-enforced — they cannot be bypassed by calling tools directly. The
+  agent never interacts with the filesystem without the kernel's authorization gate.
+</Aside>
+
+### Subprocess Isolation
+
+Write operations and anything requiring OS-level isolation run in sandboxed subprocesses. On Linux, the kernel uses `bwrap` (bubblewrap) to create lightweight sandboxes that restrict filesystem access, network access, and system calls. The subprocess can only access paths within the computed scope intersection.
+
+### Repository-Level Safety
+
+Additional protections work for **all agents** regardless of IDE or AI provider:
+
+**Git Safety Wrapper** (`scripts/safe-git`):
+
+```bash
+# Blocks dangerous operations automatically
+./scripts/safe-git worktree remove ...  # BLOCKED
+./scripts/safe-git reset --hard         # BLOCKED
+./scripts/safe-git clean -fd            # BLOCKED
+./scripts/safe-git push --force         # BLOCKED
+```
+
+**Husky Pre-Commit Hooks**:
+
+- Secret scanning (AWS/GitHub/OpenAI keys)
+- Absolute path scanning (common home-dir absolute paths; prefer `~` or relative paths)
+- Lockfile sync validation
+- Worktree discipline enforcement
+
+### Escalation
+
+Agents should escalate when:
+
+- Acceptance criteria are unclear
+- Security concerns arise
+- Scope seems larger than WU
+
+```bash
+pnpm wu:block --id WU-042 --reason "Unclear: should validation be server-side too?"
+```
+
+## Cloud Agent Branches
+
+Cloud-hosted agents (like Prompt Studio, GitHub Actions, or custom automation) that create their own branches can bypass worktree requirements.
+
+### Configuration
+
+Add patterns to your config to allow specific branch prefixes:
+
+```yaml
+# workspace.yaml
+git:
+  mainBranch: main
+  agentBranchPatterns:
+    - 'agent/*' # Default: agent-created branches
+    - 'claude/*' # Optional: Claude-specific branches
+    - 'automation/*' # Optional: CI/CD automation
+```
+
+### How It Works
+
+When a branch matches an `agentBranchPatterns` glob:
+
+- **Worktree requirement bypassed** – Agent can work in main checkout
+- **Git shim allows destructive commands** – Agent manages its own isolation
+- **Write/Edit hooks allow file changes** – No worktree check enforced
+
+<Aside type="caution">
+  Protected branches (`mainBranch` and `master`) are **never** bypassed, even if they match a
+  pattern. Lane branches (`lane/*`) also require worktrees regardless of patterns.
+</Aside>
+
+### Headless Mode for CI/CD
+
+For pipelines that don't use branch patterns, enable guarded headless mode:
+
+```bash
+# Requires one guard to prevent accidental local use
+export LUMENFLOW_HEADLESS=1
+export CI=true  # or LUMENFLOW_ADMIN=1 or GITHUB_ACTIONS=true
+```
+
+This bypasses worktree checks for automation that manages its own isolation.
+
+### Detection Priority
+
+The system evaluates in this order (first match wins):
+
+1. Headless mode (if guarded) → bypass
+2. Detached HEAD → protected (fail-closed)
+3. Agent branch pattern match → bypass
+4. Protected branch → protected
+5. Lane branch → protected (use worktree)
+6. Unknown branch → protected (fail-closed)
+
+<Aside>
+  The **fail-closed** design means unknown branches are blocked when worktrees exist. This prevents
+  accidental work in the wrong location.
+</Aside>
+
+## Multi-Agent Coordination
+
+When multiple agents work in parallel:
+
+### Lane Isolation
+
+Each agent works in a separate lane:
+
+```
+Agent A → Lane: UI → WU-100
+Agent B → Lane: Core → WU-101
+Agent C → Lane: Infra → WU-102
+```
+
+No conflicts, parallel progress.
+
+### Dependency Handling
+
+If WUs depend on each other:
+
+```yaml
+# WU-101
+dependencies:
+  - WU-100 # Agent B waits for Agent A
+```
+
+Agent B blocks until WU-100 is done.
+
+## Agent Types
+
+### Coding Agent
+
+Implements code per WU spec:
+
+- Writes code
+- Writes tests
+- Runs gates
+- Completes WU
+
+### Review Agent
+
+Reviews completed WUs:
+
+- Checks code quality
+- Validates against acceptance
+- Suggests improvements
+
+### Discovery Agent
+
+Explores and documents:
+
+- Research spikes
+- Architecture decisions
+- Documentation updates
+
+## Best Practices
+
+### For Human-Agent Collaboration
+
+1. **Clear WU specs** – Agents need explicit acceptance
+2. **Small WUs** – Easier for agents to complete
+3. **Frequent checkpoints** – Recover from context limits
+4. **Review agent work** – Trust but verify
+
+### For Fully Autonomous Agents
+
+1. **Strict scope limits** – Prevent runaway changes
+2. **Gate enforcement** – Quality checks are non-negotiable
+3. **Audit trails** – Log all decisions and actions
+4. **Kill switch** – Ability to pause/stop agent work
+
+## Skills
+
+LumenFlow supports **agent skills** — modular knowledge bundles that provide domain expertise and validation checklists. Skills are stored in `.claude/skills/` (for Claude Code) or `.lumenflow/skills/` (vendor-agnostic).
+
+### Available Skills
+
+| Skill                      | Purpose                                      |
+| -------------------------- | -------------------------------------------- |
+| `wu-lifecycle`             | WU claim/block/done workflow automation      |
+| `worktree-discipline`      | Prevent absolute path trap in worktrees      |
+| `tdd-workflow`             | RED-GREEN-REFACTOR, test-driven development  |
+| `lumenflow-gates`          | Gate troubleshooting (format/lint/typecheck) |
+| `library-first`            | Validate libraries exist before custom code  |
+| `context-management`       | Session checkpoints, sub-agent spawning      |
+| `bug-classification`       | P0-P3 triage, fix-in-place vs Bug WU         |
+| `code-quality`             | SOLID/DRY patterns, TypeScript standards     |
+| `multi-agent-coordination` | Git branch locking for parallel WUs          |
+| `orchestration`            | Agent dashboard, initiative execution        |
+| `execution-memory`         | Session tracking, context recovery           |
+| `initiative-management`    | Multi-phase INIT-XXX coordination            |
+| `frontend-design`          | React/UI component patterns                  |
+| `ops-maintenance`          | Maintenance tasks, metrics, validation       |
+
+### Loading Skills
+
+Skills are loaded automatically by `wu:brief` based on WU context, or manually:
+
+```bash
+# Claude Code
+/skill wu-lifecycle
+/skill tdd-workflow
+
+# View available skills
+ls .claude/skills/
+```
+
+### Skill Structure
+
+Each skill has a `SKILL.md` with YAML frontmatter:
+
+```yaml
+---
+name: skill-name
+description: One-line description for skill selection
+version: 1.0.0
+source: path/to/canonical/source.md
+last_updated: YYYY-MM-DD
+allowed-tools: Read, Bash, Grep
+---
+```
+
+### Configuration
+
+Skills per lane can be configured in `workspace.yaml`:
+
+```yaml
+agents:
+  clients:
+    claude-code:
+      skills:
+        instructions: 'Load skills based on WU context:'
+        recommended:
+          - wu-lifecycle
+          - worktree-discipline
+        byLane:
+          'Framework: Core':
+            - tdd-workflow
+            - lumenflow-gates
+```
+
+## Agents
+
+Pre-configured agent definitions for Task tool orchestration live in `.claude/agents/`:
+
+| Agent                | Model | Purpose                          |
+| -------------------- | ----- | -------------------------------- |
+| `general-purpose`    | opus  | Standard WU implementation       |
+| `lumenflow-pm`       | opus  | WU lifecycle, backlog management |
+| `test-engineer`      | opus  | TDD, coverage gaps               |
+| `code-reviewer`      | opus  | PR review, quality checks        |
+| `lumenflow-enforcer` | haiku | WU validation, gates enforcement |
+| `bug-triage`         | haiku | Bug classification (P0-P3)       |
+| `lumenflow-doc-sync` | haiku | Documentation synchronization    |
+
+### Spawning Agents
+
+Use `wu:brief` to generate Task tool invocations with proper context:
+
+```bash
+pnpm wu:brief --id WU-001 --client <client>
+```
+
+## Next Steps
+
+- [Kernel Runtime](/kernel/runtime) — How every tool call is authorized and audited
+- [Scope Intersection](/kernel/scope-intersection) — The 4-level permission model
+- [Policy Engine](/kernel/policy-engine) — Deny-wins rule evaluation
+- [Evidence Store](/kernel/evidence-store) — Immutable audit trail
+- [Memory Layer](/packs/software-delivery/concepts/memory) — Context persistence details
+- [CLI Reference](/reference/cli) — Agent-relevant commands

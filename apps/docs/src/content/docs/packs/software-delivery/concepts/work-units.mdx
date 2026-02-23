@@ -1,0 +1,161 @@
+---
+title: Work Units (WUs)
+description: The fundamental unit of work in the Software Delivery Pack
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Software Delivery Pack concept">
+  Work Units are provided by the [Software Delivery Pack](/packs/software-delivery/overview). At the kernel level, WUs
+  map to **tasks** — the kernel's generic lifecycle primitive. Other [packs](/kernel/packs) can
+  model their own domain objects (infrastructure change requests, compliance reviews) using the same
+  kernel [task lifecycle](/kernel/runtime).
+</Aside>
+
+A Work Unit (WU) is a small, well-defined piece of work with clear acceptance criteria and proof of completion.
+
+## Why WUs?
+
+Traditional tickets are:
+
+- Vague ("Fix the login bug")
+- Unbounded (no clear definition of done)
+- Trust-based (marked done without proof)
+
+WUs are:
+
+- Specific ("Add email validation to login form")
+- Bounded (completable in a single session, \<50 tool calls)
+- Evidence-based (tests and artifacts prove completion)
+
+## Anatomy of a WU
+
+```yaml
+id: WU-042
+title: Add email validation to login form
+lane: 'Experience: UI'
+type: feature
+status: ready
+priority: P2
+exposure: ui
+
+description: |
+  Add client-side email validation before form submission.
+  Show inline error message for invalid formats.
+
+acceptance:
+  - Email field validates on blur
+  - Invalid emails show "Please enter a valid email"
+  - Valid emails allow form submission
+  - Unit test covers validation logic
+
+test_paths:
+  unit:
+    - src/components/__tests__/login-form.test.ts
+  e2e:
+    - e2e/login.spec.ts
+
+code_paths:
+  - src/components/LoginForm.tsx
+  - src/utils/validation.ts
+```
+
+:::note[Lane Format]
+Lane names must use the "Parent: Sublane" format. Examples: `Framework: Core`, `Experience: UI`, `Operations: CI/CD`.
+This is enforced by the `lanes.enforcement.require_parent` config setting.
+:::
+
+## WU Lifecycle
+
+```
+ready → in_progress → [blocked] → done
+```
+
+| Status        | Meaning                        |
+| ------------- | ------------------------------ |
+| `ready`       | Approved, can be claimed       |
+| `in_progress` | Someone is working on it       |
+| `blocked`     | Waiting on external dependency |
+| `done`        | Acceptance met, stamp created  |
+
+## Right-Sizing WUs
+
+WUs should be **completable in a single session** (\<50 tool calls, \<30% context). If bigger, split them.
+
+### Too Big
+
+❌ "Implement user authentication system"
+
+### Right-Sized
+
+✅ "Add login form UI"
+✅ "Add password validation"
+✅ "Connect login to auth API"
+✅ "Add session persistence"
+
+See [Sizing Guide](/packs/software-delivery/workflows/sizing) for detailed heuristics.
+
+## WU vs PR
+
+In LumenFlow:
+
+| Traditional                                     | LumenFlow                                           |
+| ----------------------------------------------- | --------------------------------------------------- |
+| Create ticket → Code → Open PR → Review → Merge | Create WU → Claim → Code in worktree → Gates → Done |
+
+The "review" is automated gates, not human PR review. This unblocks flow while maintaining quality.
+
+## Evidence, Not Claims
+
+LumenFlow provides two levels of completion evidence:
+
+### Kernel-Level Evidence
+
+Every tool call during a WU's execution is recorded in the [evidence store](/kernel/evidence-store):
+
+- **Content-addressed inputs** — Tool inputs are hashed with SHA-256 and stored as immutable blobs
+- **Tool traces** — `TOOL_CALL_STARTED` and `TOOL_CALL_FINISHED` entries with timing, scope enforcement results, and [policy decisions](/kernel/policy-engine)
+- **Denial records** — Even denied tool calls produce evidence, proving what the agent _attempted_
+
+### WU-Level Evidence
+
+At completion, `wu:done` creates:
+
+1. **Stamp file** in `.lumenflow/stamps/WU-XXX.done`
+2. **Test results** proving acceptance criteria
+3. **Git history** linking to the WU spec
+
+This audit trail answers: _What was the agent asked to do? Was the action authorized? What actually happened?_ See [Evidence Store](/kernel/evidence-store) for the full model.
+
+## Creating WUs
+
+```bash
+# With required flags
+pnpm wu:create \
+  --title "Add password strength meter" \
+  --lane "Experience: UI" \
+  --type feature \
+  --exposure ui \
+  --description "Show password strength indicator during registration" \
+  --acceptance "Strength meter shows weak/medium/strong" \
+  --acceptance "Meter updates in real-time as user types" \
+  --code-paths "src/components/PasswordStrength.tsx" \
+  --test-paths-unit "src/components/__tests__/password-strength.test.ts" \
+  --plan
+```
+
+The command prints the generated ID. The created WU goes into
+`docs/04-operations/tasks/wu/WU-XXX.yaml` with status `ready`.
+
+**Plan-less conversations:** If your plan lives in chat or a meeting, keep it lightweight:
+use `--plan` to generate a stub at `lumenflow://plans/WU-XXX-plan.md`, summarize the plan
+there, and reference it in `spec_refs`. Feature WUs require `spec_refs`; notes do not replace
+the plan link.
+
+## Next Steps
+
+- [Lanes](/packs/software-delivery/concepts/lanes) — Organizing work streams with scope boundaries
+- [Gates](/packs/software-delivery/concepts/gates) — Quality enforcement as kernel policies
+- [Evidence Store](/kernel/evidence-store) — The immutable audit trail behind every WU
+- [Kernel Runtime](/kernel/runtime) — How WU tasks map to kernel task lifecycle
+- [Sizing Guide](/packs/software-delivery/workflows/sizing) — How to size WUs properly

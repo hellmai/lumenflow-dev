@@ -1,0 +1,57 @@
+---
+title: Python
+description: Verified quickstart for Python teams using the Software Delivery Pack
+---
+
+## Support Status
+
+- Status: Stable
+- Last verified: 2026-02-23
+- Data source: `apps/docs/src/data/language-support.yaml` (`python`)
+
+## Verified Quickstart
+
+1. Clone `https://github.com/hellmai/lumenflow-example-python`.
+2. Install Python dependencies for the sample (`uv sync` or project-native equivalent).
+3. Bootstrap workflow files with Node canonical path: `npx @lumenflow/cli@3.2.0`.
+4. Run workflow smoke: `pnpm wu:prep --id WU-EXAMPLE`.
+
+## Install and Command Path
+
+```bash
+npx @lumenflow/cli@3.2.0
+pnpm wu:create --lane "Framework: Core" --title "Example" --description "..." --acceptance "..." --code-paths "src/**" --test-paths-unit "tests/**" --exposure backend-only
+```
+
+Native `pip` channel support is out of scope in this initiative.
+
+## Gate Preset
+
+```yaml
+software_delivery:
+  gates:
+    execution:
+      preset: python
+```
+
+Preset commands from `packages/@lumenflow/core/src/gates-presets.ts`:
+
+```bash
+pip install -e ".[dev]" || pip install -r requirements.txt
+ruff format --check .
+ruff check .
+mypy .
+pytest
+```
+
+## Companion Repository
+
+- Repo: `hellmai/lumenflow-example-python`
+- Link: https://github.com/hellmai/lumenflow-example-python
+- Verification commit/tag: `pending-wave1-migration`
+
+## Smoke Check
+
+```bash
+pnpm wu:prep --id WU-EXAMPLE
+```
