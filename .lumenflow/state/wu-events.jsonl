@@ -2098,3 +2098,4 @@
 {"type":"complete","wuId":"WU-2072","timestamp":"2026-02-23T16:13:37.067Z"}
 {"type":"claim","wuId":"WU-2073","timestamp":"2026-02-23T16:14:20.006Z","lane":"Content: Site Comms","title":"INIT-035 A6b: Render curated CLI docs from manifest metadata"}
 {"type":"complete","wuId":"WU-2073","timestamp":"2026-02-23T16:20:10.055Z"}
+{"type":"claim","wuId":"WU-2074","timestamp":"2026-02-23T16:21:07.899Z","lane":"Content: Framework Docs","title":"INIT-035 A7: Align canonical internal docs to new IA and command truth"}

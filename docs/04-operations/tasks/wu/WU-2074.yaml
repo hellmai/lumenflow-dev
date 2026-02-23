@@ -2,7 +2,7 @@ id: WU-2074
 title: 'INIT-035 A7: Align canonical internal docs to new IA and command truth'
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -44,3 +44,11 @@ description: Synchronize internal canonical docs to Kernel/Packs IA and updated 
   so internal and public guidance do not drift.
 acceptance:
   - AGENTS, LUMENFLOW, CLAUDE, and START-HERE content matches the new IA and command source of truth.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-framework-docs-wu-2074
+claimed_at: 2026-02-23T16:21:07.846Z
+baseline_main_sha: 2afcacfd4ab8cea64a8a87c4f77e4bbdf69372f4
+session_id: 027fc055-e5c7-4db0-be47-9cb41c3bc645
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T16:21:07.853Z
