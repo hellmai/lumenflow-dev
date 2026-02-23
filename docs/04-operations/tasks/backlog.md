@@ -25,7 +25,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2061 — Fix release script: defer version bump until after validation](wu/WU-2061.yaml) — Operations: Tooling
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1012,6 +1012,7 @@ sections:
 - [WU-2058 — Harden sub-agent completion prompts with mandatory status pre-check](wu/WU-2058.yaml)
 - [WU-2059 — Wire completion workflow guardrails into wu:brief prompt assembly](wu/WU-2059.yaml)
 - [WU-2060 — Fix lumenflow upgrade and release packaging regressions](wu/WU-2060.yaml)
+- [WU-2061 — Fix release script: defer version bump until after validation](wu/WU-2061.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
