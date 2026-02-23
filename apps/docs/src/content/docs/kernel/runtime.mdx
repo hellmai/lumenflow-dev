@@ -1,0 +1,118 @@
+---
+title: Kernel Runtime
+description: The core execution engine that dispatches tools, enforces scope, evaluates policies, and records evidence
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+The **KernelRuntime** is the central component of LumenFlow. Every tool call — whether from an AI agent via MCP, a CLI command, or a programmatic API call — passes through the kernel before anything executes.
+
+The kernel is domain-agnostic. It does not know about Work Units, lanes, or gates. Those concepts come from [packs](/kernel/packs). The kernel provides four capabilities that any pack can build on:
+
+1. [Scope intersection](/kernel/scope-intersection) — permission enforcement
+2. [Policy evaluation](/kernel/policy-engine) — deny-wins rule cascade
+3. [Evidence recording](/kernel/evidence-store) — immutable audit trail
+4. Tool dispatch — routing calls to pack-provided handlers
+
+## What Happens When a Tool Is Called
+
+When an agent calls a tool (e.g., `file:write`), the kernel executes a strict pipeline:
+
+<Steps>
+1. **Tool lookup.** The kernel checks the tool registry. If the tool name is not registered by any loaded pack, the call fails with `TOOL_NOT_FOUND`.
+
+2. **Scope resolution.** The kernel reads four sets of allowed scopes — workspace, lane, task, and tool — and computes their [intersection](/kernel/scope-intersection). If the intersection is empty, the call fails with `SCOPE_DENIED`.
+
+3. **Reserved path check.** Any attempt to write to `.lumenflow/**` is denied unconditionally. This protects the kernel's own state from modification by tools.
+
+4. **Input persistence.** The tool's input is serialized, hashed with SHA-256, and written to the evidence store as a content-addressed blob. This happens _before_ execution — even if the tool fails, the input is recorded.
+
+5. **Policy evaluation.** The kernel's [policy engine](/kernel/policy-engine) evaluates all matching rules with the `on_tool_request` trigger. A single deny from any layer makes the decision final.
+
+6. **Input validation.** If the tool declares a Zod input schema, the input is validated. Invalid inputs are rejected with `INVALID_INPUT`.
+
+7. **Dispatch.** The kernel routes the call to the tool's handler — either an in-process function or a sandboxed subprocess. For details on what happens inside dispatch — including sandbox execution, the tool-runner worker, and the runtime CLI adapter pattern — see [Tool Execution](/kernel/tool-execution).
+
+8. **Evidence recording.** The result (success, failure, denied, or crashed) is appended to the [evidence store](/kernel/evidence-store) with timing, scope enforcement details, and policy decisions.
+
+{/* prettier-ignore */}
+</Steps>
+
+Steps 2–5 are the authorization gate. If any check fails, the tool never executes, but the denial is still recorded as evidence.
+
+## Initialization
+
+The kernel is created by calling `initializeKernelRuntime()` with a workspace root path. During initialization:
+
+1. The `workspace.yaml` spec is read and hashed (SHA-256). This hash is checked on every subsequent `executeTool` call — if the spec changes while the kernel is running, all tool calls return `SPEC_TAMPERED` until the kernel is restarted.
+2. All [packs](/kernel/packs) referenced in the workspace spec are loaded, validated, and their tools registered.
+3. The [policy engine](/kernel/policy-engine) is constructed with a four-layer stack built from pack-declared policies.
+4. The [evidence store](/kernel/evidence-store) is initialized and any orphaned traces from a previous crash are reconciled.
+
+## Task Lifecycle
+
+The kernel manages tasks through an event-sourced state machine:
+
+```
+ready → active → done
+          ↕
+       blocked
+```
+
+| Method         | Transition              | Policy trigger  |
+| -------------- | ----------------------- | --------------- |
+| `createTask`   | — (writes spec to disk) | None            |
+| `claimTask`    | `ready → active`        | `on_claim`      |
+| `blockTask`    | `active → blocked`      | None            |
+| `unblockTask`  | `blocked → active`      | None            |
+| `completeTask` | `active → done`         | `on_completion` |
+
+Task specs are immutable YAML files stored at `.lumenflow/kernel/tasks/<id>.yaml`. State is projected from an append-only event log — there is no mutable state file.
+
+<Aside type="note">
+  Tasks are a kernel-level concept. The Software Delivery Pack maps its Work Units (WUs) to kernel
+  tasks. Other packs can map their own domain objects — infrastructure change requests, compliance
+  reviews, data pipeline runs — to the same task lifecycle.
+</Aside>
+
+## Filesystem Layout
+
+The kernel stores all state under `.lumenflow/kernel/` in the workspace root:
+
+```
+.lumenflow/kernel/
+  tasks/              ← immutable task specs (one YAML per task)
+  events/
+    events.jsonl      ← append-only event log
+    events.lock       ← file-based mutex
+  evidence/
+    traces/
+      tool-traces.jsonl           ← active trace file
+      tool-traces.00000001.jsonl  ← compacted segment
+    inputs/
+      <sha256-hex>    ← content-addressed input blobs
+```
+
+All files are append-only or write-once. The kernel never modifies existing records — it only appends new entries or creates new files.
+
+## Tool Error Codes
+
+When a tool call fails at any stage in the pipeline, the kernel returns a structured error:
+
+| Code                    | Stage          | Meaning                                                |
+| ----------------------- | -------------- | ------------------------------------------------------ |
+| `TOOL_NOT_FOUND`        | Lookup         | Tool name not registered by any pack                   |
+| `SCOPE_DENIED`          | Authorization  | Scope intersection is empty or reserved path violation |
+| `POLICY_DENIED`         | Authorization  | Policy engine returned a deny decision                 |
+| `SPEC_TAMPERED`         | Pre-check      | Workspace spec changed since kernel startup            |
+| `INVALID_INPUT`         | Validation     | Input failed the tool's schema                         |
+| `INVALID_OUTPUT`        | Post-execution | Output failed schema normalization                     |
+| `TOOL_EXECUTION_FAILED` | Execution      | Handler threw an exception                             |
+
+## Next Steps
+
+- [Scope Intersection](/kernel/scope-intersection) — How the 4-level permission model works
+- [Policy Engine](/kernel/policy-engine) — How deny-wins evaluation works
+- [Evidence Store](/kernel/evidence-store) — How the audit trail is built
+- [Packs](/kernel/packs) — How tools are declared and loaded
+- [Create a Pack](/packs/software-delivery/setup/create-a-pack) — Build your own domain pack

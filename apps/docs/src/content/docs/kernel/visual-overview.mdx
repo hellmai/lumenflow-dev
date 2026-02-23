@@ -1,0 +1,645 @@
+---
+title: Visual Overview
+description: Key LumenFlow concepts visualized through diagrams
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Architecture layers">
+  This page visualizes both kernel-level and pack-level concepts. The **Kernel Dispatch Pipeline**
+  diagram shows the domain-agnostic [kernel](/kernel/runtime). The remaining diagrams (WU
+  Lifecycle, Worktree Discipline, Gates Pipeline, Lane WIP, Memory) show concepts from the [Software
+  Delivery Pack](/packs/software-delivery/overview) that build on top of the kernel.
+</Aside>
+
+This page provides visual mental models for the core LumenFlow concepts. Use these diagrams as quick references when working with the framework.
+
+## Kernel Dispatch Pipeline
+
+Every tool call — from CLI, MCP, or programmatic API — passes through the [kernel](/kernel/runtime) before anything executes.
+
+```d2
+direction: down
+
+auth_gate: Authorization Gate {
+  style.fill: "#f5f5f5"
+  style.stroke: "#9e9e9e"
+
+  call: Tool Call {
+    style.fill: "#e3f2fd"
+  }
+
+  lookup: 1. Tool\nLookup {
+    style.fill: "#f5f5f5"
+  }
+
+  scope: 2. Scope\nIntersection {
+    style.fill: "#fff3e0"
+  }
+
+  reserved: 3. Reserved\nPath Check {
+    style.fill: "#fff3e0"
+  }
+
+  persist: 4. Input\nPersistence {
+    style.fill: "#e8f4e8"
+  }
+
+  policy: 5. Policy\nEvaluation {
+    style.fill: "#ffebee"
+  }
+
+  call -> lookup -> scope -> reserved -> persist -> policy
+}
+
+execution: Execution {
+  style.fill: "#f5f5f5"
+  style.stroke: "#9e9e9e"
+
+  validate: 6. Input\nValidation {
+    style.fill: "#f5f5f5"
+  }
+
+  dispatch: 7. Dispatch\n(pack handler) {
+    style.fill: "#e3f2fd"
+  }
+
+  evidence: 8. Evidence\nRecording {
+    style.fill: "#e8f4e8"
+    style.stroke: "#2e7d32"
+  }
+
+  validate -> dispatch -> evidence
+}
+
+auth_gate.policy -> execution.validate
+
+denied: DENIED {
+  style.fill: "#ffebee"
+  style.stroke: "#d32f2f"
+}
+
+auth_gate.scope -> denied: Empty\nintersection {
+  style.stroke: "#d32f2f"
+  style.stroke-dash: 3
+}
+auth_gate.reserved -> denied: .lumenflow/** {
+  style.stroke: "#d32f2f"
+  style.stroke-dash: 3
+}
+auth_gate.policy -> denied: deny-wins {
+  style.stroke: "#d32f2f"
+  style.stroke-dash: 3
+}
+```
+
+**Key points:**
+
+- Steps 2–5 are the authorization gate — denial is still recorded as [evidence](/kernel/evidence-store)
+- [Scope intersection](/kernel/scope-intersection) computes workspace ∩ lane ∩ task ∩ tool permissions
+- [Policy evaluation](/kernel/policy-engine) uses deny-wins cascade across 4 layers
+- [Packs](/kernel/packs) provide the tool handlers; the kernel is domain-agnostic
+
+---
+
+## Tool Execution Stack
+
+Inside step 7 (dispatch), tools execute through a three-layer stack. See [Tool Execution](/kernel/tool-execution) for the full architecture.
+
+```d2
+direction: down
+
+kernel: "@lumenflow/kernel" {
+  style.fill: "#e3f2fd"
+  style.stroke: "#1565c0"
+
+  runtime: KernelRuntime
+  host: ToolHost
+  sandbox: SandboxSubprocess-\nDispatcher
+
+  runtime -> host -> sandbox
+}
+
+pack: "software-delivery pack" {
+  style.fill: "#fff3e0"
+  style.stroke: "#e65100"
+
+  worker: tool-runner-worker
+  loader: worker-loader
+  impl: "tool-impl (~90 functions)"
+  adapter: runtime-cli-adapter
+
+  worker -> loader -> impl -> adapter
+}
+
+cli: "@lumenflow/cli" {
+  style.fill: "#e8f4e8"
+  style.stroke: "#2e7d32"
+
+  commands: "command modules (each exports main())"
+  core: "@lumenflow/core"
+
+  commands -> core
+}
+
+kernel.sandbox -> pack.worker: bwrap sandbox
+pack.adapter -> cli.commands: "~80 tools via adapter"
+
+direct: "Direct implementations\n(~10 tools: git, worktree, lane-lock)" {
+  style.fill: "#f3e5f5"
+  style.stroke: "#7b1fa2"
+  style.stroke-dash: 3
+}
+
+pack.impl -> direct: self-contained {
+  style.stroke: "#7b1fa2"
+  style.stroke-dash: 3
+}
+```
+
+---
+
+## Package Dependencies
+
+LumenFlow is a monorepo with clear dependency boundaries. See [Package Architecture](/kernel/package-architecture) for details.
+
+```d2
+direction: down
+
+cli: "@lumenflow/cli" {
+  style.fill: "#e8f4e8"
+  style.stroke: "#2e7d32"
+}
+
+core: "@lumenflow/core" {
+  style.fill: "#e3f2fd"
+}
+memory: "@lumenflow/memory" {
+  style.fill: "#e3f2fd"
+}
+agent: "@lumenflow/agent" {
+  style.fill: "#e3f2fd"
+}
+metrics: "@lumenflow/metrics" {
+  style.fill: "#e3f2fd"
+}
+initiatives: "@lumenflow/initiatives" {
+  style.fill: "#e3f2fd"
+}
+kernel: "@lumenflow/kernel" {
+  style.fill: "#fff3e0"
+  style.stroke: "#e65100"
+}
+
+pack: "software-delivery pack" {
+  style.fill: "#f3e5f5"
+  style.stroke: "#7b1fa2"
+}
+
+cli -> core
+cli -> memory
+cli -> agent
+cli -> metrics
+cli -> initiatives
+cli -> kernel
+
+pack -> kernel: "type-only import" {
+  style.stroke-dash: 3
+}
+pack -> cli: "runtime (via adapter)" {
+  style.stroke-dash: 3
+  style.stroke: "#7b1fa2"
+}
+```
+
+---
+
+## WU Lifecycle
+
+Work Units progress through 5 states with specific transitions.
+
+```d2
+direction: down
+
+states: {
+  style.fill: transparent
+  style.stroke: transparent
+
+  start: {
+    shape: circle
+    style.fill: "#333"
+  }
+
+  ready: {
+    style.fill: "#e3f2fd"
+  }
+
+  in_progress: {
+    style.fill: "#fff3e0"
+  }
+
+  blocked: {
+    style.fill: "#ffebee"
+  }
+
+  waiting: {
+    style.fill: "#f3e5f5"
+  }
+
+  done: {
+    style.fill: "#c8e6c9"
+    style.stroke: "#2e7d32"
+  }
+
+  end: {
+    shape: circle
+    style.fill: "#333"
+  }
+}
+
+states.start -> states.ready: create
+states.ready -> states.in_progress: claim
+states.in_progress -> states.blocked: block\n(requires reason)
+states.in_progress -> states.waiting: wait
+states.in_progress -> states.done: complete
+states.in_progress -> states.ready: release\n(orphan recovery)
+states.blocked -> states.in_progress: unblock
+states.blocked -> states.done: complete
+states.waiting -> states.in_progress: resume
+states.waiting -> states.done: complete
+states.done -> states.end
+```
+
+**Key points:**
+
+- `done` is terminal (no outgoing transitions)
+- `block` requires a reason
+- `release` enables orphan recovery when agents are interrupted
+
+---
+
+## Worktree Discipline
+
+All work happens in isolated worktrees to prevent the "absolute path trap".
+
+```d2
+direction: down
+
+main: Main Checkout {
+  style.fill: "#e8e8f4"
+  style.stroke: "#2d2d5a"
+
+  create: wu:create
+  claim: wu:claim
+  done: wu:done
+  merged: Merged to main
+
+  create -> claim
+  done -> merged
+}
+
+worktree: Worktree (Isolated) {
+  style.fill: "#e8f4e8"
+  style.stroke: "#2d5a2d"
+
+  cd: cd worktrees/lane-wu-xxxx
+  impl: Implement changes
+  gates: pnpm gates
+  prep: wu:prep
+
+  cd -> impl -> gates -> prep
+}
+
+main.claim -> worktree.cd: Creates worktree
+worktree.prep -> return: Return to main
+return: cd main
+return -> main.done
+```
+
+**Key points:**
+
+- Work happens ONLY in worktree after `wu:claim`
+- `wu:prep` runs gates in the worktree
+- `wu:done` runs from main (merges + cleanup)
+
+---
+
+## State File Relationships
+
+LumenFlow uses a layered state model with YAML specs as the single source of truth.
+
+```d2
+direction: down
+
+primary: Layer 1 - Primary Source {
+  style.fill: "#fff3e0"
+  style.stroke: "#e65100"
+
+  yaml: WU-XXXX.yaml\n(Canonical State)
+}
+
+auxiliary: Layer 2 - Markers & Events {
+  style.fill: "#e3f2fd"
+  style.stroke: "#1565c0"
+
+  stamp: .lumenflow/stamps/\nWU-XXXX.done
+  events: wu-events.jsonl\n(Event Log)
+}
+
+derived: Layer 3 - Derived Views {
+  style.fill: "#f5f5f5"
+  style.stroke: "#9e9e9e"
+
+  status: status.md
+  backlog: backlog.md
+}
+
+primary.yaml -> auxiliary.stamp: wu:done creates
+primary.yaml -> auxiliary.events: wu:claim/done emits
+primary.yaml -> derived.status: Regenerated from
+primary.yaml -> derived.backlog: Regenerated from
+auxiliary.events -> derived.status: Historical input {
+  style.stroke-dash: 3
+}
+```
+
+**Key points:**
+
+- YAML spec is the **single source of truth**
+- Stamps are existence proofs (empty marker files)
+- `status.md` and `backlog.md` are **always regenerable**
+- Events provide audit trail, not authority
+
+---
+
+## WU Spec Anatomy
+
+Fields are populated at different lifecycle stages.
+
+```d2 width=800
+direction: down
+
+create: At wu:create {
+  style.fill: "#e3f2fd"
+
+  id
+  title
+  lane
+  type
+  priority
+  description
+  acceptance
+}
+
+claim: At wu:claim {
+  style.fill: "#fff3e0"
+
+  status: "status: in_progress"
+  claimed_at
+  assigned_to
+  worktree_path
+  session_id
+}
+
+done: At wu:done {
+  style.fill: "#c8e6c9"
+
+  status: "status: done"
+  completed_at
+  locked: "locked: true"
+  code_paths
+}
+
+optional: Optional Fields {
+  style.fill: "#f5f5f5"
+  style.stroke-dash: 3
+
+  dependencies
+  blocked_by
+  initiative
+  spec_refs
+  risks
+}
+
+create -> claim -> done
+```
+
+**Key points:**
+
+- Required fields must exist at creation (no placeholders allowed)
+- Claim adds execution context (worktree, session)
+- Done locks the WU and records completion
+
+---
+
+## Gates Pipeline
+
+Quality gates are [pack policies](/kernel/policy-engine#gates-as-policies) with `trigger: on_completion`, evaluated by the [kernel](/kernel/runtime) before a task can complete.
+
+```d2
+direction: down
+
+gates: pnpm gates {
+  style.fill: "#f5f5f5"
+
+  format: Format\n(prettier)
+  lint: Lint\n(eslint)
+  type: Typecheck\n(tsc)
+  test: Test\n(vitest)
+
+  format -> lint -> type -> test
+}
+
+fixes: Fix Actions {
+  style.fill: "#ffebee"
+  style.stroke: "#d32f2f"
+
+  fix1: "Auto-fix:\npnpm format"
+  fix2: "Manual fix\nrequired"
+  fix3: "Fix types\nbefore continuing"
+  fix4: "Fix tests\nor update snapshots"
+}
+
+ready: Ready for\nwu:prep {
+  style.fill: "#c8e6c9"
+  style.stroke: "#2e7d32"
+}
+
+gates.format -> fixes.fix1: Fail
+gates.lint -> fixes.fix2: Fail
+gates.type -> fixes.fix3: Fail
+gates.test -> fixes.fix4: Fail
+gates.test -> ready: Pass
+
+fixes.fix1 -> gates.format
+fixes.fix2 -> gates.lint
+fixes.fix3 -> gates.type
+fixes.fix4 -> gates.test
+```
+
+**Key points:**
+
+- Gates run in sequence: format → lint → typecheck → test
+- Each gate must pass before the next runs
+- Format failures can auto-fix; others require manual intervention
+- All gates must pass before `wu:prep` / `wu:done`
+
+---
+
+## Lane WIP & Locking
+
+Lanes prevent parallel work conflicts with WIP limits.
+
+```d2
+direction: down
+
+lanes: Lanes (WIP = 1 each) {
+  core: "Framework: Core" {
+    style.fill: "#ffebee"
+
+    wu101: WU-101\nin_progress
+    wu102: WU-102\nready (waiting)
+  }
+
+  cli: "Framework: CLI" {
+    style.fill: "#fff3e0"
+
+    wu201: WU-201\nin_progress
+  }
+
+  docs: "Content: Docs" {
+    style.fill: "#e8f4e8"
+
+    wu301: WU-301\nready (claimable)
+  }
+}
+
+claim1: wu:claim WU-102
+claim2: wu:claim WU-301
+
+claim1 -> lanes.core.wu101: Lane locked {
+  style.stroke: "#d32f2f"
+}
+claim2 -> lanes.docs.wu301: Lane available {
+  style.stroke: "#2e7d32"
+}
+```
+
+**Key points:**
+
+- Each lane has WIP limit of 1 (configurable)
+- `wu:claim` checks lane availability before claiming
+- Lock policies: `all` (blocked holds lock) vs `active` (only in_progress)
+- Prevents merge conflicts from parallel work in same area
+
+---
+
+## Memory & Agent Coordination
+
+Agents communicate via signals, checkpoints, and recovery.
+
+```d2
+direction: down
+
+agents: {
+  A: Agent A
+  M: Memory Layer {
+    style.fill: "#e3f2fd"
+  }
+  B: Agent B
+}
+
+flow: {
+  style.fill: transparent
+  style.stroke: transparent
+
+  step1: "1. Agent A starts work"
+  step2: "2. Agent A signals progress"
+  step3: "3. Agent B checks inbox"
+  step4: "4. Agent B responds"
+  step5: "5. Agent A checkpoints before /clear"
+  step6: "6. Agent A recovers after compaction"
+
+  step1 -> step2 -> step3 -> step4 -> step5 -> step6
+}
+
+agents.A -> agents.M: mem:start --wu WU-123\nmem:signal "Starting core impl"
+agents.B -> agents.M: mem:inbox --since 30m
+agents.M -> agents.B: Signal received
+agents.B -> agents.M: mem:signal "CLI ready"
+agents.A -> agents.M: mem:checkpoint "Tests passing"
+agents.A -> agents.M: mem:recover --wu WU-123
+agents.M -> agents.A: Recovery context
+```
+
+**Key points:**
+
+- Signals enable agent-to-agent coordination
+- Checkpoints preserve progress before `/clear`
+- Recovery restores context after compaction
+- All stored in `.lumenflow/memory/`
+
+---
+
+## Initiative Wave Orchestration
+
+<Aside type="tip" title="Advanced">
+  This section covers initiative orchestration, which is used for coordinating multiple WUs across
+  lanes.
+</Aside>
+
+WUs are organized into parallel execution waves based on dependencies.
+
+```d2
+direction: down
+
+init: Initiative INIT-001 {
+  wave0: Wave 0 (Parallel) {
+    style.fill: "#e3f2fd"
+
+    w0a: WU-1\nCore
+    w0b: WU-3\nCLI
+  }
+
+  wave1: Wave 1 (Parallel) {
+    style.fill: "#fff3e0"
+
+    w1a: WU-2\nCore
+    w1b: WU-4\nCLI
+  }
+
+  wave2: Wave 2 {
+    style.fill: "#c8e6c9"
+
+    w2a: WU-5\nMetrics
+  }
+
+  wave0 -> wave1: All complete
+  wave1 -> wave2: All complete
+}
+
+init.wave0.w0a -> init.wave1.w1a
+init.wave0.w0b -> init.wave1.w1b
+init.wave1.w1a -> init.wave2.w2a
+init.wave1.w1b -> init.wave2.w2a
+```
+
+**Key points:**
+
+- WUs in same wave run in parallel
+- Max 1 WU per lane per wave (prevents contention)
+- Waves execute sequentially
+- Stamp files (`.lumenflow/stamps/WU-XXXX.done`) mark completion for dependency resolution
+
+---
+
+## Next Steps
+
+- [Kernel Runtime](/kernel/runtime) — The execution engine behind every tool call
+- [Tool Execution](/kernel/tool-execution) — How pack tools execute inside dispatch
+- [Package Architecture](/kernel/package-architecture) — Package relationships and build flow
+- [Packs](/kernel/packs) — How domain tools are loaded and dispatched
+- [Work Units](/packs/software-delivery/concepts/work-units) — Deep dive into WU structure
+- [Lanes](/packs/software-delivery/concepts/lanes) — Lane configuration and scope boundaries
+- [Gates](/packs/software-delivery/concepts/gates) — Quality gate configuration
+- [Memory Layer](/packs/software-delivery/concepts/memory) — Memory and coordination details
