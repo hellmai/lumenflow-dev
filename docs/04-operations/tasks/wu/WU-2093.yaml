@@ -9,7 +9,10 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
   - packages/@lumenflow/core/src/__tests__/status-literal-guard.test.ts
 tests:
-  manual: []
+  manual:
+    - Temporarily add a banned runtime path literal in a non-allowlisted file and confirm
+      path-literal guard fails
+    - then revert and confirm guard passes
   unit:
     - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
     - packages/@lumenflow/core/src/__tests__/status-literal-guard.test.ts
