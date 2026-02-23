@@ -21,6 +21,7 @@ code_paths:
   - packages/@lumenflow/cli/src/init-lane-validation.ts
   - packages/@lumenflow/kernel/src/shared-constants.ts
   - packages/@lumenflow/cli/src/onboarding-smoke-test.ts
+  - packages/@lumenflow/memory/src/paths.ts
 tests:
   manual: []
   unit:
