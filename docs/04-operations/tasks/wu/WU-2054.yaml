@@ -9,7 +9,8 @@ code_paths:
   - apps/web/src/components/workspace-overview-live.tsx
   - apps/web/__tests__/generate-client-uuid.test.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm --filter @lumenflow/web lint and verify zero warnings
   unit:
     - apps/web/__tests__/generate-client-uuid.test.ts
   e2e: []
@@ -27,7 +28,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Main release gates fail at lint due security/detect-object-injection warnings in apps/web. Remove warning patterns while preserving behavior so release gates can pass.
+description: Main release gates fail at lint due security/detect-object-injection warnings in
+  apps/web. Remove warning patterns while preserving behavior so release gates can pass.
 acceptance:
   - apps/web lint runs with zero warnings
   - pnpm gates passes lint stage on main
