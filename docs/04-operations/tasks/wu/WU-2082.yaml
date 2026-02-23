@@ -1,7 +1,7 @@
 id: WU-2082
 title: 'INIT-035 L6: Create companion repo for Rust'
 lane: 'Operations: Tooling'
-type: documentation
+type: feature
 status: in_progress
 priority: P2
 created: 2026-02-23
@@ -28,10 +28,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-23T17:05:11.282Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-2082
+session_id: 3896d235-a112-4080-8204-295019d9f3c1
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T17:05:11.288Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +47,3 @@ description: Track creation of Rust companion repository as wave-2 fast-follow w
 acceptance:
   - Rust companion repository parity tasks and smoke requirements are tracked and linked from
     support matrix data.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-2082
-claimed_at: 2026-02-23T17:05:11.282Z
-baseline_main_sha: 8cacd1492d40c522c4aaff5774c857b9fa14d466
-session_id: 3896d235-a112-4080-8204-295019d9f3c1
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-23T17:05:11.288Z
