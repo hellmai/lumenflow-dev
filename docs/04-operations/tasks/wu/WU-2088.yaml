@@ -41,3 +41,4 @@ acceptance:
   - getResolvedPaths() and createWuPaths() expose the new path keys
   - core runtime path consumers (spawn-strategy, backlog-generator, wu-context-constants, wu-helpers, wu-delegation-cutover) read from config-driven paths
   - core path behavior remains unchanged for OS defaults and supports overridden workspace directories
+plan: lumenflow://plans/INIT-036-plan.md
