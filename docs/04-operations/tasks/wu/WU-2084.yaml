@@ -18,6 +18,8 @@ artifacts:
 dependencies: []
 initiative: INIT-035
 phase: 2
+blocked_by:
+  - WU-2070
 labels:
   - INIT-035
   - L8
@@ -33,6 +35,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Track creation of PHP companion repository as wave-2 fast-follow work in the language support rollout.
+description: Track creation of PHP companion repository as wave-2 fast-follow work in the language
+  support rollout.
 acceptance:
-  - PHP companion repository parity tasks and smoke requirements are tracked and linked from support matrix data.
+  - PHP companion repository parity tasks and smoke requirements are tracked and linked from support
+    matrix data.
