@@ -1,6 +1,14 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { execSync } from 'node:child_process';
-import { existsSync, rmSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  rmSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  writeFileSync,
+  symlinkSync,
+} from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 
@@ -9,6 +17,7 @@ const NPM_INIT_ARGS = '-y';
 const NPM_INIT_COMMAND = `${NPM_COMMAND} init ${NPM_INIT_ARGS}`;
 const PNPM_COMMAND = 'pnpm';
 const PNPM_ADD_COMMAND_PREFIX = `${PNPM_COMMAND} add`;
+const PNPM_ADD_IGNORE_SCRIPTS_FLAG = '--ignore-scripts';
 const PNPM_WORKSPACE_FILE = 'pnpm-workspace.yaml';
 
 const NODE_MODULES_BIN = 'node_modules/.bin';
@@ -21,9 +30,16 @@ const WORKSPACE_PROTOCOL_PREFIX = 'workspace:';
 const WORKSPACE_PACKAGE_SPEC = 'workspace:*';
 const MONOREPO_ROOT_PATH = '/home/USER/source/hellmai/os';
 const LUMENFLOW_PACKAGES_DIRECTORY = 'packages/@lumenflow';
-const CORE_WORKSPACE_TO_REPO_ROOT = '../../..';
+const TEST_FILE_TO_REPO_ROOT = '../../../..';
+const TEMP_WORKSPACE_PACKAGES_LINK = 'workspace-packages';
+const TEMP_WORKSPACE_PACKAGES_PATTERN = `${TEMP_WORKSPACE_PACKAGES_LINK}/*`;
 const EMPTY_DEPENDENCIES: Record<string, string> = {};
 const WORKSPACE_ROOT_INSTALL_FLAG = '-w';
+const ENV_KEY_NPM_WORKSPACE_DIR = 'npm_config_workspace_dir';
+const ENV_KEY_NPM_WORKSPACE_DIR_UPPER = 'NPM_CONFIG_WORKSPACE_DIR';
+const ENV_KEY_PNPM_WORKSPACE_DIR = 'PNPM_WORKSPACE_DIR';
+const ENV_KEY_NPM_FILTER = 'npm_config_filter';
+const ENV_KEY_NPM_FILTER_UPPER = 'NPM_CONFIG_FILTER';
 
 interface PackageJsonDocument {
   dependencies?: Record<string, string>;
@@ -45,13 +61,16 @@ function isWorkspaceConsumerInstall(projectDir: string): boolean {
     .every((dependencyVersion) => isWorkspaceDependencyVersion(dependencyVersion));
 }
 
-function getRepositoryRoot(corePackageCwd: string): string {
-  return resolve(corePackageCwd, CORE_WORKSPACE_TO_REPO_ROOT);
+function getRepositoryRoot(): string {
+  return resolve(import.meta.dirname, TEST_FILE_TO_REPO_ROOT);
 }
 
 function writeWorkspaceManifest(tempProjectDirectory: string, repoRoot: string): void {
-  const workspacePackageGlob = `${join(repoRoot, LUMENFLOW_PACKAGES_DIRECTORY)}/*`;
-  const workspaceContent = `packages:\n  - "${workspacePackageGlob}"\n`;
+  const workspacePackagesSource = join(repoRoot, LUMENFLOW_PACKAGES_DIRECTORY);
+  const workspacePackagesLink = join(tempProjectDirectory, TEMP_WORKSPACE_PACKAGES_LINK);
+  symlinkSync(workspacePackagesSource, workspacePackagesLink, 'dir');
+
+  const workspaceContent = `packages:\n  - "${TEMP_WORKSPACE_PACKAGES_PATTERN}"\n`;
   writeFileSync(join(tempProjectDirectory, PNPM_WORKSPACE_FILE), workspaceContent);
 }
 
@@ -59,10 +78,51 @@ function installLocalPackages(tempProjectDirectory: string): void {
   const workspacePackages = [PACKAGE_NAME_CLI, PACKAGE_NAME_CORE]
     .map((packageName) => `${packageName}@${WORKSPACE_PACKAGE_SPEC}`)
     .join(' ');
-  execSync(`${PNPM_ADD_COMMAND_PREFIX} ${WORKSPACE_ROOT_INSTALL_FLAG} ${workspacePackages}`, {
-    cwd: tempProjectDirectory,
-    stdio: 'pipe',
-  });
+  const isolatedEnv = { ...process.env };
+  delete isolatedEnv[ENV_KEY_NPM_WORKSPACE_DIR];
+  delete isolatedEnv[ENV_KEY_NPM_WORKSPACE_DIR_UPPER];
+  delete isolatedEnv[ENV_KEY_PNPM_WORKSPACE_DIR];
+  delete isolatedEnv[ENV_KEY_NPM_FILTER];
+  delete isolatedEnv[ENV_KEY_NPM_FILTER_UPPER];
+
+  try {
+    execSync(
+      `${PNPM_ADD_COMMAND_PREFIX} ${WORKSPACE_ROOT_INSTALL_FLAG} ${PNPM_ADD_IGNORE_SCRIPTS_FLAG} ${workspacePackages}`,
+      {
+        cwd: tempProjectDirectory,
+        stdio: 'pipe',
+        env: isolatedEnv,
+      },
+    );
+  } catch (error: unknown) {
+    const stdout = (() => {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'stdout' in error &&
+        Buffer.isBuffer((error as { stdout?: unknown }).stdout)
+      ) {
+        return (error as { stdout: Buffer }).stdout.toString('utf8');
+      }
+      return '';
+    })();
+
+    const stderr = (() => {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'stderr' in error &&
+        Buffer.isBuffer((error as { stderr?: unknown }).stderr)
+      ) {
+        return (error as { stderr: Buffer }).stderr.toString('utf8');
+      }
+      return '';
+    })();
+
+    throw new Error(
+      `Failed to install workspace dependencies.\nSTDOUT:\n${stdout}\nSTDERR:\n${stderr}`,
+    );
+  }
 }
 
 /**
@@ -123,7 +183,7 @@ describe('Consumer Integration Tests', () => {
     // Create a temporary directory for the test project
     const testName = 'lumenflow-consumer-test-' + Date.now();
     tempProjectDir = join(tmpdir(), testName);
-    const repositoryRoot = getRepositoryRoot(originalCwd);
+    const repositoryRoot = getRepositoryRoot();
 
     if (existsSync(tempProjectDir)) {
       rmSync(tempProjectDir, { recursive: true, force: true });
