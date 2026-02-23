@@ -1,0 +1,38 @@
+id: WU-2075
+title: 'INIT-035 A8: Template sync and drift closure'
+lane: 'Content: Framework Docs'
+type: documentation
+status: ready
+priority: P0
+created: 2026-02-23
+code_paths:
+  - packages/@lumenflow/cli/templates/core/LUMENFLOW.md.template
+  - packages/@lumenflow/cli/templates/core/.lumenflow/constraints.md.template
+tests:
+  manual:
+    - pnpm sync:templates --check-drift
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2075.done
+dependencies: []
+initiative: INIT-035
+phase: 1
+labels:
+  - INIT-035
+  - A8
+spec_refs:
+  - docs/04-operations/tasks/initiatives/INIT-035.yaml
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Sync framework templates and verify drift status so template outputs match canonical docs after IA and command updates.
+acceptance:
+  - Template sync completes and drift check passes with no stale template artifacts.
