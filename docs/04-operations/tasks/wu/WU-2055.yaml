@@ -9,7 +9,7 @@ code_paths:
   - packages/@lumenflow/cli/package.json
   - packages/@lumenflow/cli/src/release.ts
   - packages/@lumenflow/cli/src/__tests__/release.test.ts
-  - packages/@lumenflow/cli/scripts/sync-bundled-packs.mjs
+  - packages/@lumenflow/cli/scripts/clean-bundled-packs.mjs
 tests:
   manual:
     - Run pnpm release --release-version <next> --dry-run and verify no generated packs remain in

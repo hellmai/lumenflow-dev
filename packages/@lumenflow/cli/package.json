@@ -155,7 +155,9 @@
   ],
   "scripts": {
     "sync:bundled-packs": "node scripts/sync-bundled-packs.mjs",
+    "clean:bundled-packs": "node scripts/clean-bundled-packs.mjs",
     "prepack": "pnpm run sync:bundled-packs",
+    "postpack": "pnpm run clean:bundled-packs",
     "build": "tsc && node scripts/check-shebangs.mjs",
     "build:dist:deps": "pnpm --filter @lumenflow/metrics build && pnpm --filter @lumenflow/kernel build && pnpm --filter @lumenflow/core build && pnpm --filter @lumenflow/memory build && pnpm --filter @lumenflow/agent build && pnpm --filter @lumenflow/initiatives build",
     "build:dist": "pnpm run clean && pnpm run build:dist:deps && tsup && node scripts/fix-entry-points.mjs && node scripts/check-shebangs.mjs",

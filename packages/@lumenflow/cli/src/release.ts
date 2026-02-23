@@ -81,6 +81,19 @@ const LUMENFLOW_FORCE_ENV = 'LUMENFLOW_FORCE';
 /** Environment variable to provide reason for force bypass */
 const LUMENFLOW_FORCE_REASON_ENV = 'LUMENFLOW_FORCE_REASON';
 
+/** Release phase label for pre-release clean-tree validation */
+const RELEASE_CLEAN_CHECK_PHASE_BEFORE_RELEASE = 'before release';
+
+/** Release phase label for post-publish clean-tree validation */
+const RELEASE_CLEAN_CHECK_PHASE_AFTER_PUBLISH = 'after npm publish';
+
+/** Command shown when release fails due to dirty working tree */
+const GIT_STATUS_SHORT_COMMAND = 'git status --short';
+
+/** Guidance shown when generated artifacts dirty the repository */
+const CLEAN_TREE_RECOVERY_GUIDANCE =
+  'Commit, stash, or clean generated files before retrying release.';
+
 /**
  * Environment variable for WU tool identification (WU-1296)
  * Pre-push hook checks this to allow approved tool operations
@@ -128,6 +141,36 @@ export interface ReleaseOptions {
   dryRun?: boolean;
   skipPublish?: boolean;
   skipBuild?: boolean;
+}
+
+/**
+ * Minimal git contract for working-tree cleanliness checks.
+ */
+export interface GitWorkingTreeChecker {
+  isClean(): Promise<boolean>;
+}
+
+/**
+ * Assert the current git working tree is clean.
+ *
+ * @param git - Git adapter with cleanliness check
+ * @param phase - Human-readable release phase label
+ */
+export async function assertWorkingTreeClean(
+  git: GitWorkingTreeChecker,
+  phase: string,
+): Promise<void> {
+  const isClean = await git.isClean();
+  if (isClean) {
+    return;
+  }
+
+  die(
+    `Working directory has uncommitted changes ${phase}.\n\n` +
+      `Run this command to inspect unexpected artifacts:\n` +
+      `  ${GIT_STATUS_SHORT_COMMAND}\n` +
+      `${CLEAN_TREE_RECOVERY_GUIDANCE}`,
+  );
 }
 
 /**
@@ -412,15 +455,7 @@ export async function main(): Promise<void> {
   await ensureOnMain(git);
 
   // Check for uncommitted changes
-  const isClean = await git.isClean();
-  if (!isClean) {
-    die(
-      `Working directory has uncommitted changes.\n\n` +
-        `Commit or stash changes before releasing:\n` +
-        `  git status\n` +
-        `  git stash  # or git commit`,
-    );
-  }
+  await assertWorkingTreeClean(git, RELEASE_CLEAN_CHECK_PHASE_BEFORE_RELEASE);
 
   // Find all @lumenflow/* packages to update
   const packagePaths = findPackageJsonPaths();
@@ -526,6 +561,7 @@ export async function main(): Promise<void> {
     } else {
       console.log(`${LOG_PREFIX} Publishing packages to npm...`);
       runCommand(`${PKG_MANAGER} -r publish --access public --no-git-checks`, { label: 'publish' });
+      await assertWorkingTreeClean(git, RELEASE_CLEAN_CHECK_PHASE_AFTER_PUBLISH);
       console.log(`${LOG_PREFIX} ✅ Packages published to npm`);
     }
   } else {

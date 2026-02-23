@@ -26,17 +26,32 @@ import {
   updatePackageVersions,
   buildCommitMessage,
   buildTagName,
+  assertWorkingTreeClean,
   type ReleaseOptions,
 } from '../release.js';
 import { clearClaimMetadataOnRelease } from '../wu-release.js';
 
 const SCRIPT_COMMAND_SEPARATOR = '&&';
+const CLI_SCRIPT_PREFIX = 'node ';
+const CLI_PACKAGE_JSON_PATH = 'packages/@lumenflow/cli/package.json';
+const CLI_PACKAGE_ROOT_PATH = 'packages/@lumenflow/cli';
+const CLI_SYNC_BUNDLED_PACKS_SCRIPT_KEY = 'sync:bundled-packs';
+const CLI_CLEAN_BUNDLED_PACKS_SCRIPT_KEY = 'clean:bundled-packs';
+const CLI_PREPACK_SCRIPT_KEY = 'prepack';
+const CLI_POSTPACK_SCRIPT_KEY = 'postpack';
+const CLI_SYNC_BUNDLED_PACKS_SCRIPT_PATH = 'scripts/sync-bundled-packs.mjs';
+const CLI_CLEAN_BUNDLED_PACKS_SCRIPT_PATH = 'scripts/clean-bundled-packs.mjs';
+const CLI_SYNC_BUNDLED_PACKS_SCRIPT_COMMAND = `${CLI_SCRIPT_PREFIX}${CLI_SYNC_BUNDLED_PACKS_SCRIPT_PATH}`;
+const CLI_CLEAN_BUNDLED_PACKS_SCRIPT_COMMAND = `${CLI_SCRIPT_PREFIX}${CLI_CLEAN_BUNDLED_PACKS_SCRIPT_PATH}`;
+const CLI_PREPACK_SCRIPT_COMMAND = `pnpm run ${CLI_SYNC_BUNDLED_PACKS_SCRIPT_KEY}`;
+const CLI_POSTPACK_SCRIPT_COMMAND = `pnpm run ${CLI_CLEAN_BUNDLED_PACKS_SCRIPT_KEY}`;
+const RELEASE_CLEAN_CHECK_PHASE_AFTER_PUBLISH = 'after npm publish';
 const BUILD_DIST_SCRIPT_STEPS = [
   'pnpm run clean',
   'pnpm run build:dist:deps',
   'tsup',
-  'node scripts/fix-entry-points.mjs',
-  'node scripts/check-shebangs.mjs',
+  `${CLI_SCRIPT_PREFIX}scripts/fix-entry-points.mjs`,
+  `${CLI_SCRIPT_PREFIX}scripts/check-shebangs.mjs`,
 ] as const;
 const BUILD_DIST_DEPENDENCY_STEPS = [
   'pnpm --filter @lumenflow/metrics build',
@@ -86,7 +101,7 @@ describe('release command', () => {
     });
 
     it('cli build:dist enforces clean tsup output and post-build integrity checks', () => {
-      const cliPackageJsonPath = join(repoRoot, 'packages/@lumenflow/cli/package.json');
+      const cliPackageJsonPath = join(repoRoot, CLI_PACKAGE_JSON_PATH);
       const cliPackageJson = JSON.parse(readFileSync(cliPackageJsonPath, 'utf-8')) as {
         scripts?: Record<string, string>;
       };
@@ -101,14 +116,39 @@ describe('release command', () => {
       const buildDistDependencySteps = splitScriptSteps(buildDistDepsScript!);
       expect(buildDistDependencySteps).toEqual(BUILD_DIST_DEPENDENCY_STEPS);
 
-      for (const step of BUILD_DIST_SCRIPT_STEPS.filter((command) => command.startsWith('node '))) {
-        const scriptPath = step.replace('node ', '');
-        expect(existsSync(join(repoRoot, 'packages/@lumenflow/cli', scriptPath))).toBe(true);
+      for (const step of BUILD_DIST_SCRIPT_STEPS.filter((command) =>
+        command.startsWith(CLI_SCRIPT_PREFIX),
+      )) {
+        const scriptPath = step.replace(CLI_SCRIPT_PREFIX, '');
+        expect(existsSync(join(repoRoot, CLI_PACKAGE_ROOT_PATH, scriptPath))).toBe(true);
       }
 
       const cliTsupConfigPath = join(repoRoot, 'packages/@lumenflow/cli/tsup.config.ts');
       const cliTsupConfig = readFileSync(cliTsupConfigPath, 'utf-8');
       expect(cliTsupConfig).toMatch(/\bclean:\s*true\b/);
+    });
+
+    it('cli pack lifecycle scripts sync and clean bundled packs', () => {
+      const cliPackageJsonPath = join(repoRoot, CLI_PACKAGE_JSON_PATH);
+      const cliPackageJson = JSON.parse(readFileSync(cliPackageJsonPath, 'utf-8')) as {
+        scripts?: Record<string, string>;
+      };
+      const scripts = cliPackageJson.scripts ?? {};
+
+      expect(scripts[CLI_SYNC_BUNDLED_PACKS_SCRIPT_KEY]).toBe(CLI_SYNC_BUNDLED_PACKS_SCRIPT_COMMAND);
+      expect(scripts[CLI_PREPACK_SCRIPT_KEY]).toBe(CLI_PREPACK_SCRIPT_COMMAND);
+      expect(scripts[CLI_CLEAN_BUNDLED_PACKS_SCRIPT_KEY]).toBe(
+        CLI_CLEAN_BUNDLED_PACKS_SCRIPT_COMMAND,
+      );
+      expect(scripts[CLI_POSTPACK_SCRIPT_KEY]).toBe(CLI_POSTPACK_SCRIPT_COMMAND);
+
+      const bundledPackScriptPaths = [
+        CLI_SYNC_BUNDLED_PACKS_SCRIPT_PATH,
+        CLI_CLEAN_BUNDLED_PACKS_SCRIPT_PATH,
+      ];
+      for (const scriptPath of bundledPackScriptPaths) {
+        expect(existsSync(join(repoRoot, CLI_PACKAGE_ROOT_PATH, scriptPath))).toBe(true);
+      }
     });
 
     it('cli tsconfig excludes src test artifacts from regular dist output', () => {
@@ -362,6 +402,30 @@ describe('release command integration', () => {
     expect(typeof module.validateSemver).toBe('function');
     expect(typeof module.findPackageJsonPaths).toBe('function');
     expect(typeof module.updatePackageVersions).toBe('function');
+  });
+});
+
+describe('WU-2055 release clean-tree enforcement', () => {
+  it('allows release flow to continue when the working tree is clean', async () => {
+    await expect(
+      assertWorkingTreeClean(
+        {
+          isClean: async () => true,
+        },
+        RELEASE_CLEAN_CHECK_PHASE_AFTER_PUBLISH,
+      ),
+    ).resolves.toBeUndefined();
+  });
+
+  it('fails release flow when the working tree is dirty after publish', async () => {
+    await expect(
+      assertWorkingTreeClean(
+        {
+          isClean: async () => false,
+        },
+        RELEASE_CLEAN_CHECK_PHASE_AFTER_PUBLISH,
+      ),
+    ).rejects.toThrow(RELEASE_CLEAN_CHECK_PHASE_AFTER_PUBLISH);
   });
 });
 
