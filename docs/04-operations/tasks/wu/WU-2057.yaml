@@ -1,7 +1,7 @@
 id: WU-2057
 title: Document pack execution architecture and fix D2 diagram sizing sitewide
 lane: 'Content: Framework Docs'
-type: feature
+type: refactor
 status: in_progress
 priority: P1
 created: 2026-02-23
