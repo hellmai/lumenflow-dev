@@ -68,9 +68,7 @@ import {
   checkMemoryLayerInitialized,
   getMemoryContextMaxSize,
 } from '@lumenflow/core/wu-spawn-context';
-import {
-  generateCompletionWorkflowSection as generateSharedCompletionWorkflowSection,
-} from './wu-spawn-completion.js';
+import { generateCompletionWorkflowSection as generateSharedCompletionWorkflowSection } from './wu-spawn-completion.js';
 
 // Re-export core constants for backwards compatibility
 export {
