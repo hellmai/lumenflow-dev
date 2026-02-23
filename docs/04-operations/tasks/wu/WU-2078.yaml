@@ -1,7 +1,7 @@
 id: WU-2078
 title: 'INIT-035 L2: Migrate companion repo for Python guide parity'
 lane: 'Operations: Tooling'
-type: documentation
+type: feature
 status: in_progress
 priority: P1
 created: 2026-02-23
@@ -28,10 +28,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-23T16:50:31.509Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-2078
+session_id: b0b5d8a3-2c98-491d-9e27-4dc3e85cf5e6
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T16:50:31.515Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +47,3 @@ description: Track migration of Python companion repository examples and smoke w
 acceptance:
   - Python companion repository parity tasks and smoke requirements are tracked and linked from
     support matrix data.
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-2078
-claimed_at: 2026-02-23T16:50:31.509Z
-baseline_main_sha: 4fe1faa43a0a052fc9536ec25a2eead25a437f4d
-session_id: b0b5d8a3-2c98-491d-9e27-4dc3e85cf5e6
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-23T16:50:31.515Z
