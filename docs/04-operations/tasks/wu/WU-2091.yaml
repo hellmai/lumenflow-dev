@@ -42,3 +42,4 @@ acceptance:
   - enforce-worktree hook generator renders configured wu/worktree paths into emitted shell logic
   - guard and plan helper messaging references config-driven docs/plan paths
   - CLI enforcement tests pass under default layout and preserve behavior for customized directories
+plan: lumenflow://plans/INIT-036-plan.md
