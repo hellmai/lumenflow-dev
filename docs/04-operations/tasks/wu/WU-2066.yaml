@@ -1,0 +1,33 @@
+id: WU-2066
+title: 'Release script: bypass worktree discipline for release commits'
+lane: 'Operations: Tooling'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-23
+code_paths:
+  - packages/@lumenflow/cli/src/release.ts
+  - scripts/hooks/validate-worktree-discipline.sh
+tests:
+  manual:
+    - Verify pnpm release --skip-publish succeeds with active worktrees
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/release.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2066.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: The release script commits version bumps on main, but the pre-commit worktree discipline hook blocks all main commits when other agents have active worktrees. Release operations should be allowed regardless of worktree state.
+acceptance:
+  - Release script sets LUMENFLOW_WU_TOOL=release before git commit
+  - Worktree discipline hook allows commits when LUMENFLOW_WU_TOOL=release
