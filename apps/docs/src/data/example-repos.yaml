@@ -19,8 +19,14 @@ repos:
     url: https://github.com/hellmai/lumenflow-example-python
     wave: 1
     delivery: migrate
-    status: in_progress
+    status: repo_verified
     smoke_ci_required: true
+    parity_tracking_wu: WU-2078
+    head_sha: 6f177d7e07a1
+    last_pushed_at: 2026-01-19T09:56:45Z
+    smoke_workflow_url: https://github.com/hellmai/lumenflow-example-python/actions
+    smoke_workflow_status: missing
+    tracking_updated_on: 2026-02-23
   - language: go
     repo: hellmai/lumenflow-example-go
     url: https://github.com/hellmai/lumenflow-example-go
