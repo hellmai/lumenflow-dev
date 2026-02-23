@@ -48,6 +48,12 @@ languages:
     verification_ref: pending-wave1-creation
     smoke_command: pnpm wu:prep --id WU-EXAMPLE
     last_verified: 2026-02-23
+    parity_tracking_wu: WU-2080
+    repo_status: missing
+    repo_probe_http_status: 404
+    smoke_workflow_url: https://github.com/hellmai/lumenflow-example-dotnet/actions
+    smoke_workflow_status: repo_missing
+    parity_notes: Companion repo is not present yet; creation and smoke workflow setup are pending.
     native_channel_support: out_of_scope
   go:
     label: Go
