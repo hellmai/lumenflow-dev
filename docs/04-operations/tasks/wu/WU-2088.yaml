@@ -14,6 +14,19 @@ code_paths:
   - packages/@lumenflow/core/src/wu-context-constants.ts
   - packages/@lumenflow/core/src/wu-helpers.ts
   - packages/@lumenflow/core/src/wu-delegation-cutover.ts
+  - packages/@lumenflow/core/src/wu-validator.ts
+  - packages/@lumenflow/core/src/wu-schema.ts
+  - packages/@lumenflow/core/src/wu-create-validators.ts
+  - packages/@lumenflow/core/src/backlog-sync-validator.ts
+  - packages/@lumenflow/core/src/wu-rules-resolvers.ts
+  - packages/@lumenflow/core/src/incremental-lint.ts
+  - packages/@lumenflow/core/src/wu-done-retry-helpers.ts
+  - packages/@lumenflow/core/src/wu-status-transition.ts
+  - packages/@lumenflow/core/src/wu-done-paths.ts
+  - packages/@lumenflow/core/src/usecases/compute-context.usecase.ts
+  - packages/@lumenflow/core/src/validation/validate-command.ts
+  - packages/@lumenflow/core/src/validation/command-registry.ts
+  - packages/@lumenflow/core/src/usecases/validate-command.usecase.ts
 tests:
   manual: []
   unit:
@@ -25,6 +38,7 @@ artifacts:
 dependencies: []
 initiative: INIT-036
 phase: 1
+plan: lumenflow://plans/INIT-036-plan.md
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
@@ -35,10 +49,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Extend directories schema with missing guide/onboarding/governance path keys and migrate core runtime consumers to getConfig()-driven paths to prevent consumer-repo path drift.
+description: Extend directories schema with missing guide/onboarding/governance path keys and
+  migrate core runtime consumers to getConfig()-driven paths to prevent consumer-repo path drift.
 acceptance:
   - directories schema includes completeGuidePath, quickRefPath, startingPromptPath, governancePath
   - getResolvedPaths() and createWuPaths() expose the new path keys
-  - core runtime path consumers (spawn-strategy, backlog-generator, wu-context-constants, wu-helpers, wu-delegation-cutover) read from config-driven paths
-  - core path behavior remains unchanged for OS defaults and supports overridden workspace directories
-plan: lumenflow://plans/INIT-036-plan.md
+  - core runtime path consumers (spawn-strategy, backlog-generator, wu-context-constants,
+    wu-helpers, wu-delegation-cutover) read from config-driven paths
+  - core path behavior remains unchanged for OS defaults and supports overridden workspace
+    directories
+  - core runtime path/ref consumers for backlog/validator/worktree validation and command-location
+    logic are config-driven with no hardcoded docs/worktrees/origin-main literals
