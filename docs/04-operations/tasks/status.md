@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2064 — Remove phantom .d.ts types from CLI package.json exports](wu/WU-2064.yaml)
 
 ## Completed
 
