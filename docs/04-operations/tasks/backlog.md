@@ -22,7 +22,6 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
-- [WU-2075 — INIT-035 A8: Template sync and drift closure](wu/WU-2075.yaml) — Content: Framework Docs
 - [WU-2076 — INIT-035 A9: Add docs audit command and CI enforcement](wu/WU-2076.yaml) — Operations: Tooling
 - [WU-2077 — INIT-035 L1: Migrate companion repo for Node guide parity](wu/WU-2077.yaml) — Operations: Tooling
 - [WU-2078 — INIT-035 L2: Migrate companion repo for Python guide parity](wu/WU-2078.yaml) — Operations: Tooling
@@ -35,7 +34,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2075 — INIT-035 A8: Template sync and drift closure](wu/WU-2075.yaml) — Content: Framework Docs
 
 ## ⛔ Blocked
 

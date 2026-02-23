@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2075 — INIT-035 A8: Template sync and drift closure](wu/WU-2075.yaml)
 
 ## Completed
 

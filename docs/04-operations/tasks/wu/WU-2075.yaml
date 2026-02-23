@@ -2,7 +2,7 @@ id: WU-2075
 title: 'INIT-035 A8: Template sync and drift closure'
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -39,3 +39,11 @@ description: Sync framework templates and verify drift status so template output
   docs after IA and command updates.
 acceptance:
   - Template sync completes and drift check passes with no stale template artifacts.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-framework-docs-wu-2075
+claimed_at: 2026-02-23T16:27:03.119Z
+baseline_main_sha: 1159694f9cd263d38ad6b3c2fd498f2fff4fd43c
+session_id: 19a1e2b0-d583-4375-a8b8-519adad43ca9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T16:27:03.124Z
