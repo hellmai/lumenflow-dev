@@ -1,0 +1,143 @@
+---
+title: Packs
+description: Pluggable domain extensions that teach the kernel how to work in any domain
+---
+
+import { Aside, FileTree } from '@astrojs/starlight/components';
+
+A **pack** is a self-contained plugin that teaches the [kernel](/kernel/runtime) how to work in a specific domain. The kernel itself is domain-agnostic — it provides scope enforcement, policy evaluation, evidence recording, and tool dispatch. Packs provide the actual tools, policies, and evidence types for a particular workflow.
+
+## Software Delivery Pack (Pack #1)
+
+LumenFlow ships with the **Software Delivery Pack** built in. It provides 90+ tools for software development workflows:
+
+| Namespace       | Tools | Purpose                                                            |
+| --------------- | ----- | ------------------------------------------------------------------ |
+| `wu:*`          | 23    | Work Unit lifecycle (create, claim, prep, done, block, recover...) |
+| `mem:*`         | 14    | Memory layer (checkpoint, inbox, signal, recover...)               |
+| `initiative:*`  | 8     | Initiative management (create, plan, status...)                    |
+| `file:*`        | 4     | File operations with audit trail                                   |
+| `git:*`         | 4     | Git operations with audit trail                                    |
+| `agent:*`       | 4     | Agent session management                                           |
+| `orchestrate:*` | 3     | Multi-agent orchestration                                          |
+| `plan:*`        | 4     | Plan management                                                    |
+| `state:*`       | 3     | State management                                                   |
+| Others          | 23+   | Gates, validation, config, docs, metrics, flow analysis...         |
+
+Every one of these tools routes through the kernel's execution pipeline — scope intersection, policy evaluation, and evidence recording happen on every call.
+
+<Aside type="tip">
+  If you are a software team, the Software Delivery Pack gives you everything out of the box. You
+  only need to think about packs if you want to extend LumenFlow to a new domain or customize its
+  behavior.
+</Aside>
+
+## Pack Structure
+
+A pack is a directory with a `manifest.yaml` at its root:
+
+<FileTree>
+  - my-pack/ - manifest.yaml _(declares tools, policies, evidence types)_ - constants.ts _(pack id,
+  version, shared strings)_ - tools/ - types.ts _(shared type definitions)_ - tool-impl/ -
+  my-tool.ts _(runtime implementation)_
+</FileTree>
+
+The manifest is the contract between a pack and the kernel. It declares:
+
+- **Tools** — what the pack can do (name, entry point, permissions, required scopes)
+- **Policies** — rules the kernel evaluates at specific lifecycle triggers
+- **Evidence types** — kinds of audit records the pack produces
+- **Task types** — what domain objects the pack manages (e.g., `work-unit`)
+- **State aliases** — friendly names for kernel state machine states
+- **Lane templates** — pre-defined lane configurations
+
+### Minimal manifest
+
+```yaml
+id: my-pack
+version: 0.1.0
+task_types:
+  - my-task-type
+tools:
+  - name: my-pack:do-something
+    entry: tool-impl/my-tool.ts#doSomethingTool
+    permission: write
+    required_scopes:
+      - type: path
+        pattern: '**'
+        access: write
+policies: []
+evidence_types: []
+state_aliases: {}
+lane_templates: []
+```
+
+## How Packs Are Loaded
+
+When the kernel starts, it reads the workspace spec (`workspace.yaml`) which lists pinned packs:
+
+```yaml
+packs:
+  - id: software-delivery
+    version: 0.1.0
+    integrity: sha256:a1b2c3...
+    source: local
+```
+
+For each pack pin, the kernel:
+
+1. **Resolves the pack root** — in order:
+   - `workspaceRoot/packs/`
+   - `workspaceRoot/packages/@lumenflow/packs/` (monorepo development)
+   - bundled CLI packs (`@lumenflow/cli/packs/`) for end-user installs
+   - a git repository (`source: git`) or registry cache (`source: registry`) when configured
+2. **Parses the manifest** — validates against the schema, checks that `id` and `version` match the pin.
+3. **Validates import boundaries** — scans all source files to ensure the pack only imports from allowed dependencies (`node:*` builtins, `@lumenflow/kernel`, and relative imports within the pack). No arbitrary npm packages allowed.
+4. **Verifies integrity** — computes a SHA-256 hash of all pack files and compares it to the pinned hash. A mismatch means the pack was modified and the kernel refuses to load it.
+5. **Registers tools** — each tool declared in the manifest becomes available in the kernel's tool registry.
+6. **Injects policies** — pack-declared policies are added to the `pack` layer of the [policy engine](/kernel/policy-engine).
+
+<Aside type="caution">
+  During development, you can use `integrity: dev` to skip hash verification. In production, the
+  kernel requires a valid SHA-256 hash and will refuse to start with unverified packs.
+</Aside>
+
+## The Pack Ecosystem
+
+LumenFlow is pack-first. The shipped production pack is:
+
+| Pack                | Domain                         | Status               |
+| ------------------- | ------------------------------ | -------------------- |
+| `software-delivery` | Software development workflows | Production (pack #1) |
+
+Additional domains are expected to be delivered as fully implemented packs from the same manifest
+contract, loaded from local paths, git sources, or registries.
+
+## Tool Implementation Pattern
+
+Pack tools follow a standard pattern. Each tool returns a `ToolOutput`:
+
+```typescript
+interface ToolOutput {
+  success: boolean;
+  data?: Record<string, unknown>;
+  error?: { code: string; message: string };
+  metadata?: {
+    artifacts_written?: string[]; // paths written (for evidence)
+  };
+}
+```
+
+Tools can be implemented as:
+
+- **In-process handlers** — TypeScript functions that run directly in the kernel process. Used for lightweight read operations.
+- **Subprocess handlers** — executed in a sandboxed subprocess via `spawnSync`. Used for write operations and anything that needs OS-level isolation.
+
+The Software Delivery Pack uses two implementation strategies. Most tools (~80) use the **runtime CLI adapter** to reuse existing CLI command modules in-process. A smaller set (~10) use **direct implementations** with `simple-git` wrappers and Node builtins. See [Tool Execution](/kernel/tool-execution) for the full execution architecture.
+
+## Next Steps
+
+- [Kernel Runtime](/kernel/runtime) — How the kernel dispatches and governs tool calls
+- [Create a Pack](/packs/software-delivery/setup/create-a-pack) — Step-by-step guide to building your own pack
+- [Scope Intersection](/kernel/scope-intersection) — How pack tool scopes interact with other permission levels
+- [Policy Engine](/kernel/policy-engine) — How pack-declared policies are evaluated

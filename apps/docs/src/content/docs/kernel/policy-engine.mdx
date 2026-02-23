@@ -1,0 +1,113 @@
+---
+title: Policy Engine
+description: Layered deny-wins evaluation that ensures restrictive policies cannot be bypassed
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+The **Policy Engine** evaluates rules at every decision point in the [kernel](/kernel/runtime) — tool calls, task claims, and task completions. Its core invariant: **a deny decision at any layer is final and cannot be reversed by any other layer.**
+
+## The Four-Layer Stack
+
+Policies are organized into four layers, evaluated in fixed order:
+
+```
+workspace → lane → pack → task
+```
+
+| Layer         | Who sets it             | Purpose                                                                       |
+| ------------- | ----------------------- | ----------------------------------------------------------------------------- |
+| **Workspace** | Workspace administrator | Organization-wide rules (e.g., "no network access")                           |
+| **Lane**      | Lane configuration      | Domain-specific restrictions (e.g., "this lane is read-only")                 |
+| **Pack**      | Pack manifest           | Domain rules from the pack author (e.g., "gates must pass before completion") |
+| **Task**      | Task specification      | Per-task rules (e.g., "this task cannot modify `src/auth/`")                  |
+
+Each layer can contain a default decision and a list of rules.
+
+## Policy Rules
+
+A rule has four parts:
+
+| Field      | Type    | Description                                                                           |
+| ---------- | ------- | ------------------------------------------------------------------------------------- |
+| `id`       | string  | Unique identifier (e.g., `software-delivery.gate.format`)                             |
+| `trigger`  | enum    | When to evaluate: `on_tool_request`, `on_claim`, `on_completion`, `on_evidence_added` |
+| `decision` | enum    | `allow` or `deny`                                                                     |
+| `reason`   | string? | Human-readable explanation                                                            |
+
+Rules in pack manifests are static — they apply unconditionally when their trigger fires. Runtime rules (set programmatically) can include a `when` predicate for conditional evaluation.
+
+## Deny-Wins Evaluation
+
+The evaluation algorithm processes layers in order:
+
+1. **Start with deny.** The effective decision begins as `deny` (fail-closed).
+2. **Apply defaults.** The first layer to declare a `default_decision` sets the baseline. Subsequent layers can only tighten (deny), not loosen, unless explicitly granted `allow_loosening`.
+3. **Match rules.** For each layer, find rules whose `trigger` matches the current context.
+4. **Sticky deny.** Once any rule emits `deny`, no subsequent `allow` rule in any layer can reverse it.
+
+```
+Workspace: default=allow          → effective: allow
+Lane:      (no default)           → effective: allow
+Pack:      rule deny(on_completion) → effective: deny  ← sticky
+Task:      rule allow(on_completion) → REJECTED (cannot loosen a hard deny)
+                                    → final: deny
+```
+
+<Aside type="caution">
+  The `allow_loosening` flag on a layer only permits loosening an _inherited default decision_, not
+  a hard deny from a specific rule. Once a rule says deny, the decision is final regardless of
+  `allow_loosening`.
+</Aside>
+
+## Triggers
+
+Each trigger fires at a specific lifecycle moment:
+
+| Trigger             | When it fires                             | Example use                                     |
+| ------------------- | ----------------------------------------- | ----------------------------------------------- |
+| `on_tool_request`   | Every tool call, during authorization     | Block specific tools, restrict write operations |
+| `on_claim`          | When a task is claimed (`ready → active`) | Require approval before work starts             |
+| `on_completion`     | When a task completes (`active → done`)   | Enforce gates (format, lint, test)              |
+| `on_evidence_added` | When a new evidence record is written     | Reserved for future use                         |
+
+## Gates as Policies
+
+In the Software Delivery Pack, quality gates (format, lint, typecheck, test) are implemented as pack-layer policies with `trigger: on_completion`. When you run `pnpm wu:prep` or `pnpm gates`, the system evaluates these policies:
+
+| Gate         | Policy ID                          | Trigger         |
+| ------------ | ---------------------------------- | --------------- |
+| Format check | `software-delivery.gate.format`    | `on_completion` |
+| Lint         | `software-delivery.gate.lint`      | `on_completion` |
+| Type check   | `software-delivery.gate.typecheck` | `on_completion` |
+| Test         | `software-delivery.gate.test`      | `on_completion` |
+
+This means gates are not just CLI commands — they are kernel-enforced policies. An agent cannot skip gates by calling `completeTask` directly; the policy engine will deny the completion.
+
+## Built-in Policy IDs
+
+The kernel reserves several policy IDs for internal use:
+
+| ID                           | Purpose                                 |
+| ---------------------------- | --------------------------------------- |
+| `kernel.policy.allow-all`    | Development-only allow-all hook         |
+| `kernel.scope.reserved-path` | Blocks writes to `.lumenflow/**`        |
+| `kernel.scope.boundary`      | Denies when scope intersection is empty |
+| `kernel.reconciliation`      | Marks crash-reconciled evidence entries |
+
+## Evaluation Result
+
+Every policy evaluation returns:
+
+- `decision` — the final `allow` or `deny`
+- `decisions[]` — every rule that matched, with its individual decision and reason
+- `warnings[]` — any loosening attempts that were rejected
+
+All of this is recorded in the [evidence store](/kernel/evidence-store) as part of the tool trace, providing a complete audit trail of _why_ an action was allowed or denied.
+
+## Next Steps
+
+- [Kernel Runtime](/kernel/runtime) — Where policy evaluation fits in the tool execution pipeline
+- [Scope Intersection](/kernel/scope-intersection) — The permission model that runs alongside policies
+- [Evidence Store](/kernel/evidence-store) — How policy decisions are recorded
+- [Gates](/packs/software-delivery/concepts/gates) — How the Software Delivery Pack uses policies for quality checks

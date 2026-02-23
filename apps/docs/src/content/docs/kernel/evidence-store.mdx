@@ -1,0 +1,114 @@
+---
+title: Evidence Store
+description: Immutable audit trail with content-addressed inputs and cryptographic proof
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+The **Evidence Store** records every tool call that passes through the [kernel](/kernel/runtime). It produces immutable, append-only records that prove what was requested, what was allowed, and what happened — regardless of whether the tool succeeded, failed, or was denied.
+
+## What Gets Recorded
+
+Every tool call generates two trace entries:
+
+### 1. TOOL_CALL_STARTED
+
+Written _before_ the tool executes. Contains:
+
+- `receipt_id` — unique identifier for this tool call
+- `task_id` — which task this call belongs to
+- `tool_name` — which tool was called
+- `input_hash` — SHA-256 hash of the serialized input
+- `input_ref` — path to the content-addressed input blob
+- `scope_enforced` — the computed scope intersection result
+- `timestamp` — when the call was initiated
+
+### 2. TOOL_CALL_FINISHED
+
+Written _after_ the tool completes (or fails). Contains:
+
+- `receipt_id` — matches the started entry
+- `result` — one of `success`, `failure`, `denied`, or `crashed`
+- `duration_ms` — execution time
+- `output_hash` — SHA-256 hash of the output
+- `policy_decisions` — every policy rule that was evaluated, with its decision
+- `artifacts_written` — files the tool reports having created or modified
+
+<Aside type="note">
+  Even denied tool calls produce evidence. If scope intersection fails or a policy denies the call,
+  the started trace is still written. This means the evidence store records _attempted_ actions, not
+  just successful ones — critical for security auditing.
+</Aside>
+
+## Content-Addressed Inputs
+
+Before a tool executes, its input is:
+
+1. Serialized to a canonical JSON string (deterministic key ordering)
+2. Hashed with SHA-256
+3. Written to `evidence/inputs/<hash>` using exclusive-create mode (`O_EXCL`)
+
+This means:
+
+- **Identical inputs produce the same hash** — deduplication is automatic
+- **Inputs are immutable** — the exclusive-create flag means an existing blob is never overwritten
+- **Inputs are verifiable** — given a trace entry's `input_hash`, anyone can recompute the hash from the blob and confirm it matches
+
+## Storage Model
+
+The evidence store uses append-only JSONL (JSON Lines) files:
+
+```
+.lumenflow/kernel/evidence/
+  traces/
+    tool-traces.jsonl           ← active append file
+    tool-traces.lock            ← file-based mutex
+    tool-traces.00000001.jsonl  ← compacted segment
+    tool-traces.00000002.jsonl  ← ...
+  inputs/
+    a1b2c3d4e5f6...             ← content-addressed blobs (SHA-256 filename)
+```
+
+### Append-only guarantee
+
+The evidence store never modifies existing records. New entries are appended to `tool-traces.jsonl`. Reads never acquire the file lock — only writes hold the mutex.
+
+### Compaction
+
+When the active trace file exceeds the compaction threshold (default: 10 MiB), it is atomically renamed to a numbered segment file (e.g., `tool-traces.00000001.jsonl`). The next append creates a fresh active file. This keeps individual files manageable while preserving the full history.
+
+Compaction is transparent — reads automatically discover and include segment files.
+
+### Incremental hydration
+
+The evidence store maintains an in-memory index for fast lookups. On first access, it reads all segment files and the active file to build the index. On subsequent accesses, it reads only new bytes appended since the last read — making the hot path O(new data), not O(total data).
+
+## Crash Recovery
+
+If the kernel crashes mid-execution (between `TOOL_CALL_STARTED` and `TOOL_CALL_FINISHED`), the evidence store detects the orphaned started trace on next startup and synthesizes a finished trace with `result: crashed`. This ensures every started trace has a matching finished trace — the audit trail has no gaps.
+
+## Querying Evidence
+
+Evidence can be queried by task:
+
+- `readTracesByTaskId(taskId)` — returns all traces for a specific task
+- `readTraces()` — returns all traces across all tasks
+- `inspectTask(taskId)` — returns the full task inspection including receipts and policy decisions
+
+When a task completes, its in-memory index entries are pruned to free memory. The on-disk records are permanent.
+
+## Why This Matters
+
+The evidence store answers three questions that traditional logging cannot:
+
+1. **What was the agent asked to do?** — Content-addressed input blobs provide the exact request, verifiable by hash.
+2. **Was the action authorized?** — Scope intersection results and policy decisions are recorded on every call.
+3. **What actually happened?** — Success, failure, denial, and crash outcomes are all captured with timing.
+
+This is the foundation for compliance, audit, and post-incident analysis in agent-driven workflows.
+
+## Next Steps
+
+- [Kernel Runtime](/kernel/runtime) — How evidence recording fits into the tool execution pipeline
+- [Policy Engine](/kernel/policy-engine) — How policy decisions are recorded in evidence
+- [Scope Intersection](/kernel/scope-intersection) — How scope enforcement results are captured

@@ -1,0 +1,134 @@
+---
+title: Scope Intersection
+description: The 4-level permission model where workspace, lane, task, and tool scopes must all agree
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Scope intersection** is the permission model at the heart of LumenFlow's security. Before any tool executes, the [kernel](/kernel/runtime) computes the intersection of four independent scope layers. A tool can only operate within the permissions that _all four layers jointly permit_.
+
+## The Four Layers
+
+| Layer         | Source                                     | Who controls it         | Example                                |
+| ------------- | ------------------------------------------ | ----------------------- | -------------------------------------- |
+| **Workspace** | `workspace.yaml` `security.allowed_scopes` | Workspace administrator | `src/**` (read+write), no network      |
+| **Lane**      | Lane configuration `allowed_scopes`        | Lane owner              | `src/core/**` (write), `**` (read)     |
+| **Task**      | Task spec `declared_scopes`                | Task author             | `src/core/auth/**` (write)             |
+| **Tool**      | Pack manifest `required_scopes`            | Pack author             | `**` (write) — tool needs write access |
+
+The intersection narrows progressively:
+
+```
+Workspace allows: src/** (write)
+Lane allows:      src/core/** (write)
+Task declares:    src/core/auth/** (write)
+Tool requires:    ** (write)
+
+Intersection: src/core/auth/** (write)
+  ← narrowest pattern that all four agree on
+```
+
+The tool can only write to `src/core/auth/**`. Even though the tool itself requests `**` (everything), the workspace, lane, and task scopes constrain it.
+
+## How Intersection Works
+
+For each scope type (path-read, path-write, network), the kernel:
+
+1. Takes every possible combination across the four layers
+2. Checks that all four patterns overlap (using `micromatch` as the matching library)
+3. Selects the **narrowest** pattern by specificity score (literal characters minus wildcard penalties)
+4. Deduplicates results by `access:pattern` key
+
+If any layer provides zero scopes for a given access type, the result for that access type is empty — which means denial.
+
+### Empty intersection = denial
+
+```
+Workspace allows: src/** (write)
+Lane allows:      tests/** (write)       ← no overlap with workspace
+Task declares:    src/core/** (write)
+Tool requires:    ** (write)
+
+Intersection: [] (empty)
+  → SCOPE_DENIED
+```
+
+The workspace and lane have no overlapping write patterns, so the intersection is empty and the tool call is denied.
+
+## Scope Types
+
+LumenFlow supports two scope types:
+
+### Path scopes
+
+```yaml
+required_scopes:
+  - type: path
+    pattern: 'src/**'
+    access: read # or 'write'
+```
+
+Path patterns use glob syntax (`*` for single segment, `**` for any depth). The kernel uses `micromatch` for pattern matching and a synthetic-path heuristic for containment checking.
+
+### Network scopes
+
+```yaml
+required_scopes:
+  - type: network
+    posture: full # or 'off'
+```
+
+Network scopes use a simpler model — the `posture` value must match across all four layers. If the workspace says `off` and the tool says `full`, the intersection fails.
+
+## Reserved Path Protection
+
+Regardless of what scopes are configured, the kernel **unconditionally denies** writes to `.lumenflow/**`. This protects the kernel's own state (event log, evidence store, task specs) from being modified by any tool, even if all four scope layers would otherwise allow it.
+
+This check runs _before_ scope intersection — it cannot be overridden by any configuration.
+
+## Security Properties
+
+The 4-level model provides several guarantees:
+
+1. **Principle of least privilege.** Each layer narrows permissions. A broad tool scope is constrained by a narrow task scope.
+2. **No privilege escalation.** A lower layer cannot grant permissions that a higher layer denied. The intersection can only shrink, never grow.
+3. **Fail-closed.** Empty intersection = denied. Missing scopes at any layer = denied. The safe direction is always denial.
+4. **Defense in depth.** Even if one layer is misconfigured (e.g., `**` for everything), the other three layers still constrain the effective scope.
+
+<Aside type="note">
+The scope intersection uses a synthetic-path heuristic for glob containment checking. Known approximations (brace expansion `{a,b}` and character classes `[abc]`) may produce false negatives but never false positives — the safe direction for security. This was verified by property-based fuzz testing with 10,000+ iterations using `micromatch` as the oracle.
+</Aside>
+
+## Example: Multi-Lane Workspace
+
+Consider a workspace with two lanes and a tool that writes files:
+
+```yaml
+# workspace.yaml
+security:
+  allowed_scopes:
+    - type: path
+      pattern: '**'
+      access: write
+
+# Lane: Framework Core
+allowed_scopes:
+  - type: path
+    pattern: 'src/core/**'
+    access: write
+
+# Lane: Experience UI
+allowed_scopes:
+  - type: path
+    pattern: 'src/components/**'
+    access: write
+```
+
+An agent working in the "Framework Core" lane on a task scoped to `src/core/auth/**` can write to `src/core/auth/**` — but cannot touch `src/components/` (lane boundary) or `docs/` (task boundary), even though the workspace allows `**`.
+
+## Next Steps
+
+- [Kernel Runtime](/kernel/runtime) — Where scope intersection happens in the execution pipeline
+- [Policy Engine](/kernel/policy-engine) — The policy layer that runs alongside scope checks
+- [Packs](/kernel/packs) — How tools declare their required scopes
+- [Lanes](/packs/software-delivery/concepts/lanes) — How lanes define scope boundaries

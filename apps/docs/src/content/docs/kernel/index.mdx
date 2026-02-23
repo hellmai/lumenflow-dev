@@ -1,0 +1,34 @@
+---
+title: Kernel
+description: Domain-agnostic runtime capabilities that govern every tool call
+---
+
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
+
+The LumenFlow kernel is domain-agnostic. It enforces policy, scope, and evidence rules for any pack.
+
+<Aside type="tip">
+  Software-delivery workflows (WUs, lanes, gates, memory) are provided by the
+  [Software Delivery Pack](/packs/software-delivery/overview).
+</Aside>
+
+<CardGrid>
+  <Card title="Kernel Runtime" icon="setting">
+    End-to-end execution pipeline for every tool call. [Open](/kernel/runtime)
+  </Card>
+  <Card title="Scope Intersection" icon="approve-check">
+    Four-layer permission model (workspace, lane, task, tool). [Open](/kernel/scope-intersection)
+  </Card>
+  <Card title="Policy Engine" icon="warning">
+    Deny-wins policy cascade and evaluation order. [Open](/kernel/policy-engine)
+  </Card>
+  <Card title="Evidence Store" icon="document">
+    Immutable receipts and append-only audit trail. [Open](/kernel/evidence-store)
+  </Card>
+  <Card title="Tool Execution" icon="launch">
+    Dispatch internals and sandbox execution model. [Open](/kernel/tool-execution)
+  </Card>
+  <Card title="Package Architecture" icon="seti:package">
+    How kernel/runtime/surfaces are split across packages. [Open](/kernel/package-architecture)
+  </Card>
+</CardGrid>
