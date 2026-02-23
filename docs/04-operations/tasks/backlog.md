@@ -22,7 +22,6 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
-- [WU-2088 — Centralize core docs path resolution via getConfig](wu/WU-2088.yaml) — Framework: Core Lifecycle
 - [WU-2089 — Migrate MCP runtime path resolution to getConfig](wu/WU-2089.yaml) — Framework: MCP
 - [WU-2090 — Migrate CLI runtime path/state literals to getConfig and constants](wu/WU-2090.yaml) — Framework: CLI WU Commands
 - [WU-2091 — Align CLI hooks and enforcement messaging with configurable paths](wu/WU-2091.yaml) — Framework: CLI Enforcement
@@ -30,7 +29,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2088 — Centralize core docs path resolution via getConfig](wu/WU-2088.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

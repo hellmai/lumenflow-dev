@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2088 — Centralize core docs path resolution via getConfig](wu/WU-2088.yaml)
 
 ## Completed
 

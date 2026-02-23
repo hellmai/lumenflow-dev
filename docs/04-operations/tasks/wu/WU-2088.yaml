@@ -2,7 +2,7 @@ id: WU-2088
 title: Centralize core docs path resolution via getConfig
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -68,3 +68,11 @@ acceptance:
     directories
   - core runtime path/ref consumers for backlog/validator/worktree validation and command-location
     logic are config-driven with no hardcoded docs/worktrees/origin-main literals
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2088
+claimed_at: 2026-02-23T19:47:38.504Z
+baseline_main_sha: 56622652d4c682a826edf4a56e7c84ded60f1925
+session_id: 61864971-9ce1-4ed9-8a46-2084cf4f2a91
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T19:47:38.510Z
