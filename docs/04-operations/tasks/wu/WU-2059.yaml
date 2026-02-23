@@ -7,12 +7,14 @@ priority: P2
 created: 2026-02-23
 code_paths:
   - packages/@lumenflow/cli/src/wu-spawn-prompt-builders.ts
+  - packages/@lumenflow/cli/src/__tests__/agent-spawn-coordination.test.ts
 tests:
   manual:
     - Run pnpm wu:brief --id WU-2059 and verify prompt contains Completion Workflow with wu:status
       pre-check and done/in_progress status decision guidance
   unit:
-    - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts,packages/@lumenflow/cli/src/__tests__/agent-spawn-coordination.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts
+    - packages/@lumenflow/cli/src/__tests__/agent-spawn-coordination.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2059.done
