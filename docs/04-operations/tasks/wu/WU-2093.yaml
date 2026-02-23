@@ -1,0 +1,38 @@
+id: WU-2093
+title: Harden path-literal guards with AST-based multi-package coverage
+lane: 'Framework: Core Validation'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-23
+code_paths:
+  - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+  - packages/@lumenflow/core/src/__tests__/status-literal-guard.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+    - packages/@lumenflow/core/src/__tests__/status-literal-guard.test.ts
+    - packages/@lumenflow/mcp/src/__tests__/validation-tools.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2093.done
+dependencies: []
+initiative: INIT-036
+phase: 6
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Replace brittle regex-only literal guard logic with AST-based detection and broaden enforcement coverage across core, cli, mcp, memory, and initiatives while preserving explicit allowlists for valid template/schema contexts.
+acceptance:
+  - path literal guard detection is AST-based for string/template literals in runtime source files
+  - guard coverage includes core, cli, mcp, memory, and initiatives packages with explicit allowlisted contexts
+  - workspace.yaml token checks avoid false positives such as pnpm-workspace.yaml
+  - guard tests include positive, negative, and boundary scenarios for all banned literal categories
