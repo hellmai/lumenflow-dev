@@ -2,7 +2,7 @@ id: WU-2067
 title: 'INIT-035 A1: Kernel/Packs IA skeleton and sidebar route map'
 lane: 'Content: Site Comms'
 type: documentation
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -33,6 +33,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Implement the Kernel vs Packs information architecture skeleton in the docs site and rewrite sidebar taxonomy/routes to match the approved initiative target state.
+description: Implement the Kernel vs Packs information architecture skeleton in the docs site and
+  rewrite sidebar taxonomy/routes to match the approved initiative target state.
 acceptance:
-  - Sidebar and top-level taxonomy reflect Kernel + Packs split with Software Delivery Pack section and route map.
+  - Sidebar and top-level taxonomy reflect Kernel + Packs split with Software Delivery Pack section
+    and route map.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-2067
+claimed_at: 2026-02-23T15:39:49.634Z
+baseline_main_sha: f15cf5ea87728639f314a68049e10fc854eda1da
+session_id: 1a39c608-a510-4545-ac24-8ec31f6b4cb8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T15:39:49.638Z

@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2067 — INIT-035 A1: Kernel/Packs IA skeleton and sidebar route map](wu/WU-2067.yaml)
 
 ## Completed
 
