@@ -19,6 +19,8 @@ artifacts:
 dependencies: []
 initiative: INIT-035
 phase: 1
+blocked_by:
+  - WU-2067
 labels:
   - INIT-035
   - A5
@@ -34,6 +36,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Update release and changelog docs to use published stable metadata as source of truth for user-facing latest version claims.
+description: Update release and changelog docs to use published stable metadata as source of truth
+  for user-facing latest version claims.
 acceptance:
-  - Release index and changelog reflect published stable version and stop claiming unreleased versions as latest.
+  - Release index and changelog reflect published stable version and stop claiming unreleased
+    versions as latest.
