@@ -11,7 +11,7 @@
  */
 
 import { z } from 'zod';
-import { LUMENFLOW_CLIENT_IDS } from '../wu-context-constants.js';
+import { LUMENFLOW_CLIENT_IDS } from '../client-ids.js';
 
 /**
  * Methodology defaults (agent-facing project defaults)

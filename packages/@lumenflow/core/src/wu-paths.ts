@@ -10,7 +10,7 @@
  */
 
 import * as path from 'node:path';
-import { getWorktreePath, getProjectRoot as getProjectRootFromConstants } from './wu-constants.js';
+import { getProjectRoot as getProjectRootFromConstants, toKebab } from './wu-domain-constants.js';
 import { getConfig, getProjectRoot as getProjectRootFromConfig } from './lumenflow-config.js';
 
 /**
@@ -152,6 +152,15 @@ export function createWuPaths(options: { projectRoot?: string } = {}) {
     WORKTREES_DIR: () => config.directories.worktrees,
 
     /**
+     * Get path to a specific worktree directory
+     * @param lane - Lane name (e.g., 'Framework: Core')
+     * @param id - WU ID (e.g., 'WU-123')
+     * @returns Path to worktree directory
+     */
+    WORKTREE: (lane: string, id: string) =>
+      path.join(config.directories.worktrees, `${toKebab(lane)}-${id.toLowerCase()}`),
+
+    /**
      * Get path to plans directory
      * @returns Path to plans directory (WU-1301)
      */
@@ -168,6 +177,30 @@ export function createWuPaths(options: { projectRoot?: string } = {}) {
      * @returns Path to onboarding directory (WU-1310)
      */
     ONBOARDING_DIR: () => config.directories.onboardingDir,
+
+    /**
+     * Get path to LumenFlow complete guide
+     * @returns Path to complete guide markdown
+     */
+    COMPLETE_GUIDE_PATH: () => config.directories.completeGuidePath,
+
+    /**
+     * Get path to onboarding quick reference commands
+     * @returns Path to quick reference markdown
+     */
+    QUICK_REF_PATH: () => config.directories.quickRefPath,
+
+    /**
+     * Get path to onboarding starting prompt
+     * @returns Path to starting prompt markdown
+     */
+    STARTING_PROMPT_PATH: () => config.directories.startingPromptPath,
+
+    /**
+     * Get path to governance document
+     * @returns Path to governance markdown
+     */
+    GOVERNANCE_PATH: () => config.directories.governancePath,
   };
 }
 
@@ -200,8 +233,7 @@ export function defaultWorktreeFrom(
   // Check for empty strings after trimming
   if (laneStr === '' || idStr === '') return null;
 
-  // Use centralized getWorktreePath from wu-constants
-  return getWorktreePath(laneStr, idStr);
+  return createWuPaths().WORKTREE(laneStr, idStr);
 }
 
 /**

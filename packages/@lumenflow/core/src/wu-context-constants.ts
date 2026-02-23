@@ -11,6 +11,29 @@
  * @module wu-context-constants
  */
 
+import { createWuPaths } from './wu-paths.js';
+import { LUMENFLOW_CLIENT_IDS, type LumenflowClientId } from './client-ids.js';
+
+function ensureTrailingSlash(value: string): string {
+  return value.endsWith('/') ? value : `${value}/`;
+}
+
+function getWorktreesDirHint(): string {
+  try {
+    return ensureTrailingSlash(createWuPaths().WORKTREES_DIR());
+  } catch {
+    return 'worktree/';
+  }
+}
+
+function getOnboardingDirHint(): string {
+  try {
+    return ensureTrailingSlash(createWuPaths().ONBOARDING_DIR());
+  } catch {
+    return 'onboarding/';
+  }
+}
+
 /**
  * Context validation constants (WU-1090)
  *
@@ -185,7 +208,12 @@ export const HOOK_MESSAGES = {
       HEADER: 'WHAT TO DO',
       HAVE_WU: {
         HEADER: '1. If you have a Work Unit to implement:',
-        COMMANDS: ['pnpm wu:claim --id WU-XXXX --lane "<Lane>"', 'cd worktrees/<lane>-wu-xxxx'],
+        get COMMANDS() {
+          return [
+            'pnpm wu:claim --id WU-XXXX --lane "<Lane>"',
+            `cd ${getWorktreesDirHint()}<lane>-wu-xxxx`,
+          ];
+        },
         NOTE: 'Then make your commits there',
       },
       NEED_WU: {
@@ -202,11 +230,13 @@ export const HOOK_MESSAGES = {
     /** Help resources */
     HELP: {
       HEADER: 'NEED HELP?',
-      RESOURCES: [
-        '• Read: LUMENFLOW.md (workflow overview)',
-        '• Read: docs/04-operations/_frameworks/lumenflow/agent/onboarding/',
-        '• Run:  pnpm wu:help',
-      ],
+      get RESOURCES() {
+        return [
+          '• Read: LUMENFLOW.md (workflow overview)',
+          `• Read: ${getOnboardingDirHint()}`,
+          '• Run:  pnpm wu:help',
+        ];
+      },
     },
 
     /** Emergency bypass (shown last, with warnings) */
@@ -226,22 +256,7 @@ export const HOOK_MESSAGES = {
   },
 } as const;
 
-/**
- * Canonical client IDs for client-specific integrations and config keys.
- *
- * Centralizes runtime client identifiers used across init/integrate flows
- * to avoid string literal drift between CLI commands and schema defaults.
- */
-export const LUMENFLOW_CLIENT_IDS = {
-  CLAUDE_CODE: 'claude-code',
-  CODEX_CLI: 'codex-cli',
-  CURSOR: 'cursor',
-  GEMINI_CLI: 'gemini-cli',
-  WINDSURF: 'windsurf',
-} as const;
-
-/** Type for supported client IDs with integration support */
-export type LumenflowClientId = (typeof LUMENFLOW_CLIENT_IDS)[keyof typeof LUMENFLOW_CLIENT_IDS];
+export { LUMENFLOW_CLIENT_IDS, type LumenflowClientId };
 
 /**
  * Claude Code hook script constants (WU-1394)

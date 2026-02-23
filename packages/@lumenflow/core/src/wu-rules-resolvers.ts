@@ -6,6 +6,7 @@ import path from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import fg from 'fast-glob';
 import { createGitForPath } from './git-adapter.js';
+import { BRANCHES, GIT_REFS } from './wu-constants.js';
 import {
   CLI_PACKAGE_JSON_PATH,
   hasGlobPattern,
@@ -16,7 +17,7 @@ import {
 } from './wu-rules-core.js';
 
 const DEFAULT_HEAD_REF = 'HEAD';
-const BASE_REF_CANDIDATES = ['origin/main', 'main'] as const;
+const BASE_REF_CANDIDATES = [GIT_REFS.ORIGIN_MAIN, BRANCHES.MAIN] as const;
 const BASE_REF_UNAVAILABLE_REASON = `Unable to resolve git base ref (tried ${BASE_REF_CANDIDATES.join(', ')}).`;
 const GLOB_IGNORE_PATTERNS = ['**/node_modules/**'];
 const GLOB_INCLUDE_DOT_ENTRIES = true;

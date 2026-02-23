@@ -17,6 +17,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 import { STDIO } from './wu-constants.js';
+import { createWuPaths } from './wu-paths.js';
 import { PLACEHOLDER_SENTINEL } from './wu-schema.js';
 // WU-2010: Import validation constants to eliminate magic numbers
 import { INLINE_KEYWORD_MAX_OFFSET } from './constants/validation-constants.js';
@@ -583,11 +584,12 @@ ${result.errors.join('\n\n')}
 `;
 
   if (command === 'wu:claim' && wuId) {
+    const wuPathHint = createWuPaths().WU(wuId);
     message += `
 To fix, edit the WU spec:
   pnpm wu:edit --id ${wuId} --description "..." --acceptance "..."
 
-Or manually edit: docs/04-operations/tasks/wu/${wuId}.yaml
+Or manually edit: ${wuPathHint}
 `;
   }
 

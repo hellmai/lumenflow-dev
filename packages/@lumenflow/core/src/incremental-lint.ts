@@ -11,13 +11,21 @@
  */
 
 import { getGitForCwd } from './git-adapter.js';
-import { STRING_LITERALS } from './wu-constants.js';
+import { GIT_REFS, STRING_LITERALS } from './wu-constants.js';
+import { createWuPaths } from './wu-paths.js';
+
+function ensureTrailingSlash(value: string): string {
+  const normalized = value.replace(/\\/g, '/');
+  return normalized.endsWith('/') ? normalized : `${normalized}/`;
+}
+
+const WORKTREES_DIR = ensureTrailingSlash(createWuPaths().WORKTREES_DIR());
 
 /**
  * File extensions that should be linted by ESLint
  * @type {string[]}
  */
-export const LINTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.js'];
+export const LINTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx'];
 
 /**
  * Directory patterns that should be ignored
@@ -32,7 +40,7 @@ const IGNORED_DIRECTORIES = [
   'build/',
   '.turbo/',
   'coverage/',
-  'worktrees/',
+  WORKTREES_DIR,
 ];
 
 /**
@@ -112,7 +120,7 @@ export interface GetChangedLintableFilesOptions {
  * const files = await getChangedLintableFiles({ filterPath: 'apps/web/' });
  */
 export async function getChangedLintableFiles(options: GetChangedLintableFilesOptions = {}) {
-  const { git = getGitForCwd(), baseBranch = 'origin/main', filterPath } = options;
+  const { git = getGitForCwd(), baseBranch = GIT_REFS.ORIGIN_MAIN, filterPath } = options;
 
   // Get the merge base (common ancestor) with the base branch
   const mergeBase = await git.mergeBase('HEAD', baseBranch);

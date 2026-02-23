@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 import { existsSync } from 'node:fs';
+import path from 'node:path';
+import { getConfig } from './lumenflow-config.js';
+import { createWuPaths } from './wu-paths.js';
 
 /**
  * Strategy interface for client-specific spawn behavior
@@ -23,14 +26,15 @@ export interface SpawnStrategy {
  */
 abstract class BaseSpawnStrategy implements SpawnStrategy {
   protected getCorePreamble(wuId: string): string {
+    const wuPaths = createWuPaths();
     return `Load the following context in this order:
 
 1. Read LUMENFLOW.md (workflow fundamentals and critical rules)
 2. Read .lumenflow/constraints.md (non-negotiable constraints)
 3. Read README.md (project structure and tech stack)
-4. Read docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md sections 1-7 (TDD, gates, Definition of Done)
-5. Read docs/04-operations/tasks/wu/${wuId}.yaml (the specific WU you're working on)
-6. Read docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md (CLI tooling reference - USE THESE COMMANDS)`;
+4. Read ${wuPaths.COMPLETE_GUIDE_PATH()} sections 1-7 (TDD, gates, Definition of Done)
+5. Read ${wuPaths.WU(wuId)} (the specific WU you're working on)
+6. Read ${wuPaths.QUICK_REF_PATH()} (CLI tooling reference - USE THESE COMMANDS)`;
   }
 
   abstract getPreamble(wuId: string): string;
@@ -53,26 +57,29 @@ abstract class BaseSpawnStrategy implements SpawnStrategy {
 export class ClaudeCodeStrategy extends BaseSpawnStrategy {
   getPreamble(wuId: string): string {
     let preamble = this.getCorePreamble(wuId);
+    const claudeDir = getConfig().directories.claude;
+    const claudeOverlayPath = path.join(claudeDir, 'CLAUDE.md');
 
     // Vendor overlay
-    if (existsSync('.claude/CLAUDE.md')) {
+    if (existsSync(claudeOverlayPath)) {
       // Insert after LUMENFLOW.md if possible, or just append/prepend
       // For simplicity and clarity, we'll prepend the vendor specific instructions
       // relying on the user to follow the specific order if stated.
       // Actually, checking original behavior: CLAUDE.md was #1.
       // But new plan says LUMENFLOW.md is core.
       // We will append it as an overlay step.
-      preamble += `\n7. Read .claude/CLAUDE.md (Claude-specific workflow overlay)`;
+      preamble += `\n7. Read ${claudeOverlayPath.replace(/\\/g, '/')} (Claude-specific workflow overlay)`;
     }
 
     return preamble;
   }
 
   getSkillLoadingInstruction(): string {
+    const agentsDir = getConfig().directories.agentsDir;
     return `## Skills Selection
     
 1. Check \`.lumenflow/agents\` for available skills.
-2. Check \`.claude/agents\` for Claude-specific overrides or additions.
+2. Check \`${agentsDir}\` for Claude-specific overrides or additions.
 3. Select relevant skills for this task.`;
   }
 }

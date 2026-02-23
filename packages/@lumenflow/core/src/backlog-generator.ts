@@ -118,6 +118,10 @@ function isAsciiAlphaNumeric(char: string) {
   return /[A-Za-z0-9]/.test(char);
 }
 
+function escapeMarkdownPath(pathValue: string): string {
+  return pathValue.replace(/_/g, '\\_');
+}
+
 function escapeMarkdownText(value: unknown): string {
   const normalized = normalizeYamlScalar(value);
   let escaped = '';
@@ -226,6 +230,10 @@ function getMergedBacklogEntry(
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
 export async function generateBacklog(store: BacklogStore, options: BacklogYamlOptions = {}) {
+  const wuPaths = createWuPaths({ projectRoot: options.projectRoot });
+  const startingPromptPath = escapeMarkdownPath(wuPaths.STARTING_PROMPT_PATH());
+  const completeGuidePath = escapeMarkdownPath(wuPaths.COMPLETE_GUIDE_PATH());
+
   // Start with frontmatter
   const frontmatter = `---
 sections:
@@ -243,7 +251,7 @@ sections:
     insertion: after_heading_blank_line
 ---
 
-> Agent: Read **docs/04-operations/\\_frameworks/lumenflow/agent/onboarding/starting-prompt.md** first, then follow **docs/04-operations/\\_frameworks/lumenflow/lumenflow-complete.md** for execution.
+> Agent: Read **${startingPromptPath}** first, then follow **${completeGuidePath}** for execution.
 
 # Backlog (single source of truth)
 

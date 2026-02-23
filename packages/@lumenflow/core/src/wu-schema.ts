@@ -30,6 +30,7 @@ import {
   STRING_LITERALS,
   WU_EXPOSURE_VALUES,
 } from './wu-constants.js';
+import { createWuPaths } from './wu-paths.js';
 import { normalizeISODateTime } from './date-utils.js';
 
 /**
@@ -1044,8 +1045,9 @@ export function validateWUCompleteness(wu: WUCompletenessInput): { warnings: str
     const specRefs = wu.spec_refs as { length?: number } | undefined;
     const hasSpecRefs = !!specRefs && (specRefs.length ?? 0) > 0;
     if (!hasSpecRefs) {
+      const plansDirHint = `${createWuPaths().PLANS_DIR().replace(/\/+$/, '')}/`;
       warnings.push(
-        `${wu.id}: Missing 'spec_refs' field. Link to plan file (docs/04-operations/plans/, lumenflow://plans/, or ~/.lumenflow/plans/) for traceability.`,
+        `${wu.id}: Missing 'spec_refs' field. Link to plan file (${plansDirHint}, lumenflow://plans/, or ~/.lumenflow/plans/) for traceability.`,
       );
     }
   }
