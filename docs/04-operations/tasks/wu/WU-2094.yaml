@@ -1,0 +1,38 @@
+id: WU-2094
+title: Purge residual path literals in core config and prompt helpers
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-23
+code_paths:
+  - packages/@lumenflow/core/src/config-contract.ts
+  - packages/@lumenflow/core/src/lane-inference.ts
+  - packages/@lumenflow/core/src/lane-suggest-prompt.ts
+  - packages/@lumenflow/core/src/wu-spawn-skills.ts
+tests:
+  manual:
+    - Run path-literal guard and verify no new violations in core runtime files
+  unit:
+    - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2094.done
+dependencies: []
+initiative: INIT-036
+phase: 1
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Complete INIT-036 core cleanup by removing remaining banned runtime path literals in config-contract, lane inference prompting, and spawn skills guidance so all runtime refs resolve through centralized constants/config helpers.
+acceptance:
+  - config-contract, lane-inference, lane-suggest-prompt, and wu-spawn-skills contain no banned runtime path literals
+  - path-literal-guard allows removal of these files from INIT-036 pending allowlist
+  - default behavior and generated guidance remain unchanged for OS defaults and respect config overrides
