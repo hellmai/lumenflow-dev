@@ -1,0 +1,94 @@
+version: 1
+owner: core-docs-tooling-team
+pack: software-delivery
+languages:
+  node:
+    label: Node.js
+    support_status: Stable
+    wave: 1
+    guide_slug: /packs/software-delivery/languages/node
+    gate_preset: node
+    companion_repo: hellmai/lumenflow-example-node
+    companion_repo_url: https://github.com/hellmai/lumenflow-example-node
+    verification_ref: pending-wave1-migration
+    smoke_command: pnpm wu:prep --id WU-EXAMPLE
+    last_verified: 2026-02-23
+  python:
+    label: Python
+    support_status: Stable
+    wave: 1
+    guide_slug: /packs/software-delivery/languages/python
+    gate_preset: python
+    companion_repo: hellmai/lumenflow-example-python
+    companion_repo_url: https://github.com/hellmai/lumenflow-example-python
+    verification_ref: pending-wave1-migration
+    smoke_command: pnpm wu:prep --id WU-EXAMPLE
+    last_verified: 2026-02-23
+    native_channel_support: out_of_scope
+  dotnet:
+    label: .NET
+    support_status: Preview
+    wave: 1
+    guide_slug: /packs/software-delivery/languages/dotnet
+    gate_preset: dotnet
+    companion_repo: hellmai/lumenflow-example-dotnet
+    companion_repo_url: https://github.com/hellmai/lumenflow-example-dotnet
+    verification_ref: pending-wave1-creation
+    smoke_command: pnpm wu:prep --id WU-EXAMPLE
+    last_verified: 2026-02-23
+    native_channel_support: out_of_scope
+  go:
+    label: Go
+    support_status: Stable
+    wave: 1
+    guide_slug: /packs/software-delivery/languages/go
+    gate_preset: go
+    companion_repo: hellmai/lumenflow-example-go
+    companion_repo_url: https://github.com/hellmai/lumenflow-example-go
+    verification_ref: pending-wave1-migration
+    smoke_command: pnpm wu:prep --id WU-EXAMPLE
+    last_verified: 2026-02-23
+  rust:
+    label: Rust
+    support_status: Planned
+    wave: 2
+    guide_slug: /packs/software-delivery/languages/rust
+    gate_preset: rust
+    companion_repo: hellmai/lumenflow-example-rust
+    companion_repo_url: https://github.com/hellmai/lumenflow-example-rust
+    verification_ref: planned-wave2
+    smoke_command: pnpm wu:prep --id WU-EXAMPLE
+    last_verified: 2026-02-23
+  java:
+    label: Java
+    support_status: Planned
+    wave: 2
+    guide_slug: /packs/software-delivery/languages/java
+    gate_preset: java
+    companion_repo: hellmai/lumenflow-example-java
+    companion_repo_url: https://github.com/hellmai/lumenflow-example-java
+    verification_ref: planned-wave2
+    smoke_command: pnpm wu:prep --id WU-EXAMPLE
+    last_verified: 2026-02-23
+  ruby:
+    label: Ruby
+    support_status: Planned
+    wave: 2
+    guide_slug: /packs/software-delivery/languages/ruby
+    gate_preset: ruby
+    companion_repo: hellmai/lumenflow-example-ruby
+    companion_repo_url: https://github.com/hellmai/lumenflow-example-ruby
+    verification_ref: planned-wave2
+    smoke_command: pnpm wu:prep --id WU-EXAMPLE
+    last_verified: 2026-02-23
+  php:
+    label: PHP
+    support_status: Planned
+    wave: 2
+    guide_slug: /packs/software-delivery/languages/php
+    gate_preset: php
+    companion_repo: hellmai/lumenflow-example-php
+    companion_repo_url: https://github.com/hellmai/lumenflow-example-php
+    verification_ref: planned-wave2
+    smoke_command: pnpm wu:prep --id WU-EXAMPLE
+    last_verified: 2026-02-23

@@ -1,0 +1,59 @@
+version: 1
+owner: core-docs-tooling-team
+repos:
+  - language: node
+    repo: hellmai/lumenflow-example-node
+    url: https://github.com/hellmai/lumenflow-example-node
+    wave: 1
+    delivery: migrate
+    status: in_progress
+    smoke_ci_required: true
+  - language: python
+    repo: hellmai/lumenflow-example-python
+    url: https://github.com/hellmai/lumenflow-example-python
+    wave: 1
+    delivery: migrate
+    status: in_progress
+    smoke_ci_required: true
+  - language: go
+    repo: hellmai/lumenflow-example-go
+    url: https://github.com/hellmai/lumenflow-example-go
+    wave: 1
+    delivery: migrate
+    status: in_progress
+    smoke_ci_required: true
+  - language: dotnet
+    repo: hellmai/lumenflow-example-dotnet
+    url: https://github.com/hellmai/lumenflow-example-dotnet
+    wave: 1
+    delivery: create
+    status: planned
+    smoke_ci_required: true
+  - language: java
+    repo: hellmai/lumenflow-example-java
+    url: https://github.com/hellmai/lumenflow-example-java
+    wave: 2
+    delivery: create
+    status: planned
+    smoke_ci_required: true
+  - language: rust
+    repo: hellmai/lumenflow-example-rust
+    url: https://github.com/hellmai/lumenflow-example-rust
+    wave: 2
+    delivery: create
+    status: planned
+    smoke_ci_required: true
+  - language: ruby
+    repo: hellmai/lumenflow-example-ruby
+    url: https://github.com/hellmai/lumenflow-example-ruby
+    wave: 2
+    delivery: create
+    status: planned
+    smoke_ci_required: true
+  - language: php
+    repo: hellmai/lumenflow-example-php
+    url: https://github.com/hellmai/lumenflow-example-php
+    wave: 2
+    delivery: create
+    status: planned
+    smoke_ci_required: true
