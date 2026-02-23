@@ -1,0 +1,55 @@
+id: WU-2092
+title: Consolidate path constants and cross-package parity contracts
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-23
+code_paths:
+  - packages/@lumenflow/core/src/wu-paths-constants.ts
+  - packages/@lumenflow/core/src/domain/orchestration.constants.ts
+  - packages/@lumenflow/core/src/sandbox-profile.ts
+  - packages/@lumenflow/core/src/invariants/check-automated-tests.ts
+  - packages/@lumenflow/core/src/lane-inference.ts
+  - packages/@lumenflow/core/src/lane-suggest-prompt.ts
+  - packages/@lumenflow/core/src/config-contract.ts
+  - packages/@lumenflow/core/src/wu-spawn-skills.ts
+  - packages/@lumenflow/core/src/wu-done-docs-only.ts
+  - packages/@lumenflow/core/src/file-classifiers.ts
+  - packages/@lumenflow/cli/src/config-set.ts
+  - packages/@lumenflow/cli/src/workspace-init.ts
+  - packages/@lumenflow/cli/src/init-lane-validation.ts
+  - packages/@lumenflow/kernel/src/shared-constants.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-paths.test.ts
+    - packages/@lumenflow/core/src/__tests__/lane-suggest-prompt.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-spawn-skills.test.ts
+    - packages/@lumenflow/core/src/invariants/__tests__/check-automated-tests.test.ts
+    - packages/@lumenflow/cli/src/__tests__/config-set.test.ts
+    - packages/@lumenflow/cli/src/__tests__/workspace-init.test.ts
+    - packages/@lumenflow/cli/src/__tests__/init-lane-validation.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/shared-constants.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2092.done
+dependencies: []
+initiative: INIT-036
+phase: 5
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Deduplicate workspace/docs/worktree-related constant definitions across core, cli, kernel, and mcp while preserving package boundaries and enforcing parity via tests/contracts.
+acceptance:
+  - runtime code uses getConfig()/shared constants for workspace/worktrees/docs refs with deprecated constants retained only for compatibility
+  - workspace.yaml token definition is centralized and cross-package parity is covered without introducing kernel->core coupling
+  - duplicate docs-only and lane-inference path literals are eliminated or routed through canonical constants
+  - existing command behavior and docs-only classification semantics remain unchanged

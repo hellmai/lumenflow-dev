@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2092 — Consolidate path constants and cross-package parity contracts](wu/WU-2092.yaml) — Framework: Core Lifecycle
 - [WU-2091 — Align CLI hooks and enforcement messaging with configurable paths](wu/WU-2091.yaml) — Framework: CLI Enforcement
 - [WU-2090 — Migrate CLI runtime path/state literals to getConfig and constants](wu/WU-2090.yaml) — Framework: CLI WU Commands
 - [WU-2089 — Migrate MCP runtime path resolution to getConfig](wu/WU-2089.yaml) — Framework: MCP
