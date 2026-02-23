@@ -1,0 +1,34 @@
+id: WU-2061
+title: 'Fix release script: defer version bump until after validation'
+lane: 'Operations: Tooling'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-23
+code_paths:
+  - packages/@lumenflow/cli/src/release.ts
+tests:
+  manual:
+    - Run pnpm release --dry-run and verify ordering shows build+validate before version bump
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/release.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2061.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: The release script pushes a version bump commit to origin/main BEFORE running build, pack validation, and npm publish. If any of those steps fail, main is left with a ghost version bump for a version that was never released. Additionally, parsePackDryRunMetadata fails when pnpm lifecycle output pollutes stdout before JSON. Both issues hit during the 3.2.1 release attempt.
+acceptance:
+  - Version bump commit is only pushed to origin/main after build, validation, and publish all succeed
+  - parsePackDryRunMetadata strips pnpm lifecycle output from stdout before JSON.parse
+  - If any step fails, main remains untouched
+  - Existing tests updated to reflect new ordering
