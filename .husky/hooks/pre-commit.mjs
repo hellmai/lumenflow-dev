@@ -391,6 +391,12 @@ export async function main() {
     process.exit(0);
   }
 
+  // WU-2085: Allow release tool to commit on main (version bumps, tags)
+  // Same approved-tool mechanism as pre-push.mjs and validate-worktree-discipline.sh
+  if (process.env.LUMENFLOW_WU_TOOL === 'release') {
+    process.exit(0);
+  }
+
   let branch;
   try {
     branch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();

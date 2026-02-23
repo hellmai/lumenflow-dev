@@ -174,6 +174,62 @@ describe('pre-commit hook (WU-1164)', () => {
     });
   });
 
+  describe('LUMENFLOW_WU_TOOL=release bypass (WU-2085)', () => {
+    let workDir: string;
+
+    beforeEach(() => {
+      // Create a temp git repo on "main" so the hook reaches the main-branch block
+      workDir = mkdtempSync(join(tmpdir(), 'lf-wu-2085-'));
+      execFileSync('git', ['init', '-b', 'main'], { cwd: workDir, stdio: 'pipe' });
+      execFileSync('git', ['config', 'user.email', 'test@test.com'], {
+        cwd: workDir,
+        stdio: 'pipe',
+      });
+      execFileSync('git', ['config', 'user.name', 'Test'], { cwd: workDir, stdio: 'pipe' });
+      // Need at least one commit so HEAD exists
+      execFileSync('git', ['commit', '--allow-empty', '-m', 'init'], {
+        cwd: workDir,
+        stdio: 'pipe',
+      });
+    });
+
+    afterEach(() => {
+      rmSync(workDir, { recursive: true, force: true });
+    });
+
+    it('blocks on main without LUMENFLOW_WU_TOOL (sanity check)', () => {
+      const hookPath = join(process.cwd(), '.husky/hooks/pre-commit.mjs');
+
+      expect(() => {
+        execFileSync('node', [hookPath], {
+          cwd: workDir,
+          env: {
+            ...process.env,
+            LUMENFLOW_FORCE: undefined,
+            LUMENFLOW_WU_TOOL: undefined,
+          },
+          stdio: 'pipe',
+        });
+      }).toThrow();
+    });
+
+    it('exits 0 when LUMENFLOW_WU_TOOL=release', () => {
+      const hookPath = join(process.cwd(), '.husky/hooks/pre-commit.mjs');
+
+      execFileSync('node', [hookPath], {
+        cwd: workDir,
+        env: {
+          ...process.env,
+          LUMENFLOW_WU_TOOL: 'release',
+        },
+        stdio: 'pipe',
+      });
+
+      // If we get here, hook exited 0 (allowed the commit)
+      expect(true).toBe(true);
+    });
+  });
+
   describe('formatMainBranchBlockMessage (WU-1357)', () => {
     it('explains WHY main is protected', () => {
       const message = formatMainBranchBlockMessage('main');
