@@ -20,6 +20,7 @@
 
 import { isExternalPath, normalizeSpecRef } from './lumenflow-home.js';
 import { PATH_LITERALS } from './wu-constants.js';
+import { createWuPaths } from './wu-paths.js';
 
 /** Confidence threshold for showing suggestion (percentage) */
 const CONFIDENCE_THRESHOLD_LOW = 30;
@@ -191,6 +192,8 @@ export function validateSpecRefs(specRefs: string[]): {
     return { valid: true, errors, warnings };
   }
 
+  const plansDirHint = `${createWuPaths().PLANS_DIR().replace(/\/+$/, '')}/`;
+
   for (const ref of specRefs) {
     // Check for empty refs
     if (!ref || ref.trim().length === 0) {
@@ -213,11 +216,11 @@ export function validateSpecRefs(specRefs: string[]): {
     }
 
     // Repo-relative paths should follow conventions (docs/ without ./ prefix)
-    const isValidRepoPath = ref.startsWith('docs/') || ref.endsWith('.md');
+    const isValidRepoPath = ref.startsWith(plansDirHint) || ref.startsWith('docs/') || ref.endsWith('.md');
 
     if (!isValidRepoPath) {
       warnings.push(
-        `Unconventional spec_ref path: "${ref}" - consider using docs/04-operations/plans/ or lumenflow://plans/`,
+        `Unconventional spec_ref path: "${ref}" - consider using ${plansDirHint} or lumenflow://plans/`,
       );
     }
   }

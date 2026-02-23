@@ -56,6 +56,9 @@ function hasSubLaneTaxonomy(parent: string, projectRoot: string): boolean {
 }
 
 export function validateBacklogSync(backlogPath: string) {
+  const projectRoot = getProjectRoot(import.meta.url);
+  const relativeBacklogPath = path.relative(projectRoot, backlogPath) || backlogPath;
+
   // Parse frontmatter to get configured section headings
   let frontmatter: unknown;
   let markdown: string;
@@ -133,7 +136,7 @@ export function validateBacklogSync(backlogPath: string) {
         .map((wu) => `   - ${wu}`)
         .join(STRING_LITERALS.NEWLINE)}${STRING_LITERALS.DOUBLE_NEWLINE}` +
         `   Fix: Remove from Ready section (they are already complete)${STRING_LITERALS.NEWLINE}` +
-        `   Command: Edit docs/04-operations/tasks/backlog.md and remove duplicate entries`,
+        `   Command: Edit ${relativeBacklogPath} and remove duplicate entries`,
     );
   }
 
@@ -163,7 +166,6 @@ export function validateBacklogSync(backlogPath: string) {
   }
 
   // WU-1137: Check for parent-only WUs in Ready section (sub-lane format preferred)
-  const projectRoot = getProjectRoot(import.meta.url);
   const wuDir = path.join(path.dirname(backlogPath), 'wu');
   const parentOnlyWUs: Array<{ wuId: string; lane: string; parent: string }> = [];
 

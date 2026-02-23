@@ -16,6 +16,7 @@
  * @module usecases/compute-context.usecase
  */
 
+import path from 'node:path';
 import type {
   ILocationResolver,
   IGitStateReader,
@@ -24,6 +25,7 @@ import type {
 } from '../ports/context.ports.js';
 import type { WuContext, WuState, SessionState } from '../validation/types.js';
 import { WU_STATUS } from '../wu-constants.js';
+import { createWuPaths } from '../wu-paths.js';
 
 /**
  * Options for computing WU context.
@@ -128,8 +130,7 @@ export class ComputeContextUseCase {
    * Get expected worktree path for a WU.
    */
   private getWorktreePath(mainCheckout: string, lane: string, wuId: string): string {
-    const laneKebab = lane.toLowerCase().replace(/[: ]+/g, '-');
-    const wuIdLower = wuId.toLowerCase();
-    return `${mainCheckout}/worktrees/${laneKebab}-${wuIdLower}`;
+    const wuPaths = createWuPaths({ projectRoot: mainCheckout });
+    return path.join(mainCheckout, wuPaths.WORKTREE(lane, wuId));
   }
 }

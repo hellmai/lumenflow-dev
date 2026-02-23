@@ -14,9 +14,10 @@ import { execSync, type ExecSyncOptionsWithStringEncoding } from 'node:child_pro
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parse } from 'yaml';
-import { BRANCHES, REMOTES, STDIO, REAL_GIT, PATTERNS } from './wu-constants.js';
+import { BRANCHES, DIRECTORIES, REMOTES, STDIO, REAL_GIT, PATTERNS } from './wu-constants.js';
 import { die } from './error-handler.js';
 import { isAgentBranchWithDetails } from './branch-check.js';
+import { createWuPaths } from './wu-paths.js';
 import type {
   IBranchValidationResult,
   IWuGitAdapter,
@@ -31,6 +32,7 @@ interface ParsedWUYaml {
 type EnsureOnMainGitAdapter = Pick<IWuGitAdapter, 'getCurrentBranch'>;
 type EnsureMainUpToDateGitAdapter = Pick<IWuGitAdapter, 'fetch' | 'getCommitHash'>;
 type RunOptions = Omit<ExecSyncOptionsWithStringEncoding, 'encoding'>;
+const GIT_WORKTREES_SEGMENT = `/${DIRECTORIES.WORKTREES.replace(/\/+$/, '')}/`;
 
 /**
  * Validate WU ID format
@@ -97,7 +99,7 @@ export function isMainWorktree() {
   if (!gitDir) return true;
   const normalized = gitDir.replace(/\\/g, '/');
   // Lane worktrees live under .git/worktrees/<name>
-  return !normalized.includes('/worktrees/');
+  return !normalized.includes(GIT_WORKTREES_SEGMENT);
 }
 
 /**
@@ -157,7 +159,8 @@ export function readWUYaml(wuid: string): ParsedWUYaml | null {
   const repoRoot = run(`${REAL_GIT} rev-parse --show-toplevel`);
   if (!repoRoot) return null;
 
-  const wuPath = path.join(repoRoot, 'docs', '04-operations', 'tasks', 'wu', `${wuid}.yaml`);
+  const wuPaths = createWuPaths({ projectRoot: repoRoot });
+  const wuPath = path.join(repoRoot, wuPaths.WU(wuid));
   if (!existsSync(wuPath)) return null;
 
   try {
@@ -180,10 +183,11 @@ export function checkWUStatus(
 ): IWuStatusCheckResult {
   const wu = readWUYaml(wuid);
   if (!wu) {
+    const wuDirectory = createWuPaths().WU_DIR();
     return {
       allowed: false,
       status: null,
-      error: `WU ${wuid} not found in docs/04-operations/tasks/wu/`,
+      error: `WU ${wuid} not found in ${wuDirectory}/`,
     };
   }
 

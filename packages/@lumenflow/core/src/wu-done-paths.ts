@@ -9,9 +9,16 @@ import path from 'node:path';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { access } from 'node:fs/promises';
 import { getGitForCwd } from './git-adapter.js';
-import { WU_PATHS } from './wu-paths.js';
+import { WU_PATHS, createWuPaths } from './wu-paths.js';
 import { parseYAML, readWU } from './wu-yaml.js';
-import { CLAIMED_MODES, EMOJI, LOG_PREFIX, STRING_LITERALS, toKebab } from './wu-constants.js';
+import {
+  CLAIMED_MODES,
+  DIRECTORIES,
+  EMOJI,
+  LOG_PREFIX,
+  STRING_LITERALS,
+  toKebab,
+} from './wu-constants.js';
 import { detectDocsOnlyByPaths } from './wu-done-docs-only.js';
 
 // WU-2044: Use canonical WUDocBase instead of local definition
@@ -37,6 +44,8 @@ interface DetectModeAndPathsResult {
   docForValidation: WUDocLike;
   isDocsOnly: boolean;
 }
+
+const GIT_WORKTREES_SEGMENT = `.git/${DIRECTORIES.WORKTREES.replace(/\/+$/, '')}/`;
 
 /**
  * Read WU YAML preferring worktree version over main version
@@ -117,7 +126,7 @@ export function detectCurrentWorktree(): string | null {
       const gitContent = readFileSync(gitPath, { encoding: 'utf-8' });
       const match = gitContent.match(/^gitdir:\s*(.+)$/m);
       const gitDir = match?.[1];
-      if (gitDir && gitDir.includes('.git/worktrees/')) {
+      if (gitDir && gitDir.includes(GIT_WORKTREES_SEGMENT)) {
         console.log(
           `${LOG_PREFIX.DONE} ${EMOJI.TARGET} Auto-detected worktree from process.cwd(): ${cwd}`,
         );
@@ -150,12 +159,13 @@ export async function defaultWorktreeFrom(doc: WUDocLike): Promise<string | null
   }
 
   // Priority 2 - calculate from current lane field (legacy behavior)
-  const lane = (doc.lane || '').toString();
+  const lane = (doc.lane || '').toString().trim();
+  const id = (doc.id || '').toString().trim();
   const laneK = toKebab(lane);
-  const idK = (doc.id || '').toLowerCase();
+  const idK = id.toLowerCase();
   if (!laneK || !idK) return null;
 
-  const calculated = `worktrees/${laneK}-${idK}`;
+  const calculated = createWuPaths().WORKTREE(lane, id);
 
   // Priority 3 - verify calculated path exists, or find actual path via git worktree list
   let calculatedExists = true;

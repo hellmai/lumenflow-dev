@@ -22,7 +22,9 @@ import { validateWUEvent, type WUEvent } from './wu-state-schema.js';
 import { generateBacklog, generateStatus } from './backlog-generator.js';
 import { getStateStoreDirFromBacklog } from './wu-paths.js';
 import { getGitForCwd } from './git-adapter.js';
-import { REMOTES, BRANCHES, LUMENFLOW_PATHS, WU_STATUS } from './wu-constants.js';
+import { REMOTES, BRANCHES, GIT_REFS, LUMENFLOW_PATHS, WU_STATUS } from './wu-constants.js';
+
+const ORIGIN_MAIN_REF = GIT_REFS.remote(REMOTES.ORIGIN, BRANCHES.MAIN);
 
 /**
  * Creates a unique key for an event to detect duplicates.
@@ -54,7 +56,7 @@ export async function fetchMainEventsContent(): Promise<string | null> {
 
     // Try to read wu-events.jsonl from origin/main
     const eventsPath = `${LUMENFLOW_PATHS.STATE_DIR}/${WU_EVENTS_FILE_NAME}`;
-    const content = await git.raw(['show', `${REMOTES.ORIGIN}/${BRANCHES.MAIN}:${eventsPath}`]);
+    const content = await git.raw(['show', `${ORIGIN_MAIN_REF}:${eventsPath}`]);
     return content;
   } catch (error) {
     // File may not exist on main (e.g., new repo or first WU)
@@ -290,7 +292,7 @@ export async function mergeWithMainState(worktreeStateDir: string): Promise<WUSt
 
   // Try to fetch main events via git show
   const mainContent = await fetchMainEventsContent();
-  const mainEvents = mainContent ? parseEventsFile(mainContent, 'origin/main') : [];
+  const mainEvents = mainContent ? parseEventsFile(mainContent, ORIGIN_MAIN_REF) : [];
 
   if (mainEvents.length > 0) {
     console.log(
@@ -433,7 +435,7 @@ export async function computeWUEventsContentWithMainMerge(
 
   // Try to fetch main events via git show
   const mainContent = await fetchMainEventsContent();
-  const mainEvents = mainContent ? parseEventsFile(mainContent, 'origin/main') : [];
+  const mainEvents = mainContent ? parseEventsFile(mainContent, ORIGIN_MAIN_REF) : [];
 
   // Merge events
   const mergedEvents = mergeEvents(mainEvents, worktreeEvents);

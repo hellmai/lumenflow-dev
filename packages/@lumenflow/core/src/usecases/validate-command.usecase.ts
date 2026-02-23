@@ -16,9 +16,11 @@
  * @module usecases/validate-command.usecase
  */
 
+import path from 'node:path';
 import type { ICommandRegistry, CommandDefinition, WuContext } from '../ports/validation.ports.js';
 import type { ValidationResult, ValidationError, ValidationWarning } from '../validation/types.js';
 import { CONTEXT_VALIDATION } from '../wu-constants.js';
+import { createWuPaths } from '../wu-paths.js';
 
 const { ERROR_CODES, SEVERITY } = CONTEXT_VALIDATION;
 
@@ -171,7 +173,13 @@ export class ValidateCommandUseCase {
     } else if (requiredLocation === 'worktree') {
       // Need to cd to worktree
       if (context.location.worktreeName) {
-        return `cd ${context.location.mainCheckout}/worktrees/${context.location.worktreeName}`;
+        const wuPaths = createWuPaths({ projectRoot: context.location.mainCheckout });
+        const worktreePath = path.join(
+          context.location.mainCheckout,
+          wuPaths.WORKTREES_DIR(),
+          context.location.worktreeName,
+        );
+        return `cd ${worktreePath}`;
       }
     }
 

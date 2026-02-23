@@ -271,6 +271,10 @@ export function getResolvedPaths(
   plansDir: string;
   templatesDir: string;
   onboardingDir: string;
+  completeGuidePath: string;
+  quickRefPath: string;
+  startingPromptPath: string;
+  governancePath: string;
   /** WU-1654: Safe-git wrapper absolute path */
   safeGitPath: string;
 } {
@@ -294,6 +298,10 @@ export function getResolvedPaths(
     plansDir: path.join(projectRoot, config.directories.plansDir),
     templatesDir: path.join(projectRoot, config.directories.templatesDir),
     onboardingDir: path.join(projectRoot, config.directories.onboardingDir),
+    completeGuidePath: path.join(projectRoot, config.directories.completeGuidePath),
+    quickRefPath: path.join(projectRoot, config.directories.quickRefPath),
+    startingPromptPath: path.join(projectRoot, config.directories.startingPromptPath),
+    governancePath: path.join(projectRoot, config.directories.governancePath),
     safeGitPath: path.join(projectRoot, config.directories.safeGitPath),
   };
 }

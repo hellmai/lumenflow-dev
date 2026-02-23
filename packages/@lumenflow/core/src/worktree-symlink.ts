@@ -20,6 +20,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { LOG_PREFIX } from './wu-constants.js';
 import { getErrorMessage } from './error-handler.js';
+import { createWuPaths } from './wu-paths.js';
 
 /**
  * Relative path from worktree to main repo's node_modules
@@ -36,11 +37,19 @@ const RELATIVE_NODE_MODULES_PATH = '../../node_modules';
  */
 const NODE_MODULES_DIR = 'node_modules';
 
+function normalizeWorktreesDirPath(value: string): string {
+  const normalized = value.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
+  return normalized.length > 0 ? normalized : 'worktrees';
+}
+
+const CONFIGURED_WORKTREES_DIR_PATH = normalizeWorktreesDirPath(createWuPaths().WORKTREES_DIR());
+const CONFIGURED_WORKTREES_DIR_NAME = path.posix.basename(CONFIGURED_WORKTREES_DIR_PATH);
+
 /**
- * Pattern to detect paths that are inside a worktrees directory.
+ * Pattern to detect paths that are inside the configured worktrees directory.
  * Used to identify symlinks that may break when worktrees are removed.
  */
-const WORKTREES_PATH_SEGMENT = '/worktrees/';
+const WORKTREES_PATH_SEGMENT = `/${CONFIGURED_WORKTREES_DIR_PATH}/`;
 
 /**
  * pnpm store directory name (contains package symlinks)
@@ -283,7 +292,7 @@ function pathExistsIncludingSymlink(targetPath: string): boolean {
  */
 function collectWorkspaceManifestPaths(repoRoot: string): string[] {
   const manifests: string[] = [];
-  const ignoredDirectoryNames = new Set([NODE_MODULES_DIR, '.git', 'worktrees']);
+  const ignoredDirectoryNames = new Set([NODE_MODULES_DIR, '.git', CONFIGURED_WORKTREES_DIR_NAME]);
 
   const visitDirectory = (directoryPath: string): void => {
     if (!fs.existsSync(directoryPath)) {

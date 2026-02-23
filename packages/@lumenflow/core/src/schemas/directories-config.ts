@@ -89,6 +89,36 @@ export const DirectoriesSchema = z.object({
   /** Onboarding directory (default: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding') - WU-1310 */
   onboardingDir: z.string().default('docs/04-operations/_frameworks/lumenflow/agent/onboarding'),
 
+  /**
+   * LumenFlow complete guide path
+   * (default: 'docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md')
+   */
+  completeGuidePath: z
+    .string()
+    .default('docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md'),
+
+  /**
+   * Agent quick reference commands path
+   * (default: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md')
+   */
+  quickRefPath: z
+    .string()
+    .default('docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md'),
+
+  /**
+   * Agent starting prompt path
+   * (default: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md')
+   */
+  startingPromptPath: z
+    .string()
+    .default('docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md'),
+
+  /**
+   * Project governance document path
+   * (default: 'docs/04-operations/governance/project-governance.md')
+   */
+  governancePath: z.string().default('docs/04-operations/governance/project-governance.md'),
+
   /** Safe-git wrapper path relative to project root (default: 'scripts/safe-git') - WU-1654 */
   safeGitPath: z.string().default('scripts/safe-git'),
 });

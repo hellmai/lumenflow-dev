@@ -15,7 +15,9 @@
  * @module
  */
 
+import path from 'node:path';
 import { CONTEXT_VALIDATION, WU_STATUS, type LocationType } from '../wu-constants.js';
+import { createWuPaths } from '../wu-paths.js';
 import type { CommandDefinition, CommandPredicate, WuContext } from './types.js';
 
 const { LOCATION_TYPES, COMMANDS, SEVERITY } = CONTEXT_VALIDATION;
@@ -40,7 +42,7 @@ const worktreeCleanPredicate: CommandPredicate = {
   },
   getFixMessage: (context: WuContext) => {
     const worktreePath = context.location.worktreeName
-      ? `worktrees/${context.location.worktreeName}`
+      ? path.posix.join(createWuPaths().WORKTREES_DIR().replace(/\\/g, '/'), context.location.worktreeName)
       : 'worktree';
     return `Commit or stash changes in ${worktreePath} before running wu:done`;
   },
@@ -94,10 +96,11 @@ const wuClaim: CommandDefinition = {
   requiredWuStatus: WU_STATUS.READY,
   predicates: [],
   getNextSteps: (context: WuContext) => {
-    const wuId = context.wu?.id?.toLowerCase() || 'wu-xxx';
-    const lane = context.wu?.lane?.toLowerCase().replace(/[: ]+/g, '-') || 'lane';
+    const wuId = context.wu?.id || 'WU-XXX';
+    const lane = context.wu?.lane || 'lane';
+    const worktreePath = createWuPaths().WORKTREE(lane, wuId);
     return [
-      `1. cd worktrees/${lane}-${wuId}`,
+      `1. cd ${worktreePath}`,
       '2. Implement changes per acceptance criteria',
       '3. Run: pnpm gates',
       `4. Return to main and run: pnpm wu:done --id ${context.wu?.id || 'WU-XXX'}`,

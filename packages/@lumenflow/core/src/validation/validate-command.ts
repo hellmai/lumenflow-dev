@@ -14,11 +14,13 @@
  * @module
  */
 
+import path from 'node:path';
 import {
   CONTEXT_VALIDATION,
   type LocationType,
   type ValidationErrorCode,
 } from '../wu-constants.js';
+import { createWuPaths } from '../wu-paths.js';
 import { getCommandDefinition } from './command-registry.js';
 import type {
   CommandDefinition,
@@ -82,11 +84,11 @@ function validateLocation(def: CommandDefinition, context: WuContext): Validatio
   if (def.requiredLocation === LOCATION_TYPES.MAIN) {
     fixCommand = `cd ${context.location.mainCheckout}`;
   } else if (def.requiredLocation === LOCATION_TYPES.WORKTREE) {
-    // If we know the WU ID, suggest the expected worktree path
-    if (context.wu?.id) {
-      const laneKebab = (context.wu.lane || 'lane').toLowerCase().replace(/[: ]+/g, '-');
-      const wuIdLower = context.wu.id.toLowerCase();
-      fixCommand = `cd ${context.location.mainCheckout}/worktrees/${laneKebab}-${wuIdLower}`;
+    const wuPaths = createWuPaths({ projectRoot: context.location.mainCheckout });
+    if (context.location.worktreeName) {
+      fixCommand = `cd ${path.join(context.location.mainCheckout, wuPaths.WORKTREES_DIR(), context.location.worktreeName)}`;
+    } else if (context.wu?.id && context.wu?.lane) {
+      fixCommand = `cd ${path.join(context.location.mainCheckout, wuPaths.WORKTREE(context.wu.lane, context.wu.id))}`;
     }
   }
 

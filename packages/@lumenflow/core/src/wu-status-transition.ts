@@ -429,15 +429,10 @@ function handleWorktreeCreation(
  * @returns {string | null} Worktree path
  */
 function defaultWorktreeFrom(doc: WUDoc): string | null {
-  const lane = (doc.lane || '').toString();
-  const laneK = lane
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  const idK = (doc.id || '').toLowerCase();
-  if (!laneK || !idK) return null;
-  return `worktrees/${laneK}-${idK}`;
+  const lane = (doc.lane || '').toString().trim();
+  const id = (doc.id || '').toString().trim();
+  if (!lane || !id) return null;
+  return WU_PATHS.WORKTREE(lane, id);
 }
 
 /**

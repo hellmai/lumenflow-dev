@@ -225,7 +225,7 @@ export async function handleParallelCompletions(
   await gitAdapter.fetch();
 
   // Get current origin/main SHA
-  const currentMainSha = await gitAdapter.getCommitHash('origin/main');
+  const currentMainSha = await gitAdapter.getCommitHash(GIT_REFS.ORIGIN_MAIN);
 
   // Get baseline SHA from when WU was claimed
   const baselineSha = doc.baseline_main_sha;
@@ -239,7 +239,7 @@ export async function handleParallelCompletions(
   const newCommits = await gitAdapter.raw([
     'log',
     '--oneline',
-    `${baselineSha}..origin/main`,
+    `${baselineSha}..${GIT_REFS.ORIGIN_MAIN}`,
     '--',
   ]);
 
@@ -261,7 +261,7 @@ export async function handleParallelCompletions(
       ErrorCodes.VALIDATION_ERROR,
       `Parallel completions detected on main since ${wuId} was claimed.\n` +
         `This would cause merge conflicts during wu:done.\n\n` +
-        `Fix: Run 'git fetch origin && git rebase origin/main' in your worktree,\n` +
+        `Fix: Run 'git fetch origin && git rebase ${GIT_REFS.ORIGIN_MAIN}' in your worktree,\n` +
         `then retry wu:done.\n\n` +
         `Or use --no-auto-rebase to disable this check (not recommended).`,
       { wuId, baselineSha, currentMainSha },
@@ -275,7 +275,7 @@ export async function handleParallelCompletions(
 
   try {
     // Rebase the current branch onto origin/main
-    await gitAdapter.rebase('origin/main');
+    await gitAdapter.rebase(GIT_REFS.ORIGIN_MAIN);
 
     console.log(
       `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Auto-rebase complete - parallel completions incorporated`,
@@ -288,7 +288,7 @@ export async function handleParallelCompletions(
       `Auto-rebase failed: ${error.message}\n\n` +
         `Manual resolution required:\n` +
         `1. cd ${worktreePath || 'your-worktree'}\n` +
-        `2. git fetch origin && git rebase origin/main\n` +
+        `2. git fetch origin && git rebase ${GIT_REFS.ORIGIN_MAIN}\n` +
         `3. Resolve conflicts if UnsafeAny\n` +
         `4. Retry wu:done`,
       { wuId, originalError: error.message },

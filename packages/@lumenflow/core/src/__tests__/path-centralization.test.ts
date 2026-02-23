@@ -302,6 +302,22 @@ describe('WU-1310: Core path centralization', () => {
       expect(defaultConfig.directories.plansDir).toBe('docs/04-operations/plans');
     });
 
+    it('should include guide/onboarding/governance doc paths in default config', () => {
+      const defaultConfig = getDefaultConfig();
+      expect(defaultConfig.directories.completeGuidePath).toBe(
+        'docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md',
+      );
+      expect(defaultConfig.directories.quickRefPath).toBe(
+        'docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
+      );
+      expect(defaultConfig.directories.startingPromptPath).toBe(
+        'docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md',
+      );
+      expect(defaultConfig.directories.governancePath).toBe(
+        'docs/04-operations/governance/project-governance.md',
+      );
+    });
+
     it('should have all required directory paths for simple structure support', () => {
       const defaultConfig = getDefaultConfig();
 
@@ -382,6 +398,10 @@ describe('WU-1310: Core path centralization', () => {
       expect(paths.onboardingDir).toBeDefined();
       expect(paths.plansDir).toBeDefined();
       expect(paths.initiativesDir).toBeDefined();
+      expect(paths.completeGuidePath).toBeDefined();
+      expect(paths.quickRefPath).toBeDefined();
+      expect(paths.startingPromptPath).toBeDefined();
+      expect(paths.governancePath).toBeDefined();
 
       // Verify all are absolute paths
       expect(path.isAbsolute(paths.wuDir)).toBe(true);
@@ -391,6 +411,10 @@ describe('WU-1310: Core path centralization', () => {
       expect(path.isAbsolute(paths.onboardingDir)).toBe(true);
       expect(path.isAbsolute(paths.plansDir)).toBe(true);
       expect(path.isAbsolute(paths.initiativesDir)).toBe(true);
+      expect(path.isAbsolute(paths.completeGuidePath)).toBe(true);
+      expect(path.isAbsolute(paths.quickRefPath)).toBe(true);
+      expect(path.isAbsolute(paths.startingPromptPath)).toBe(true);
+      expect(path.isAbsolute(paths.governancePath)).toBe(true);
     });
   });
 
@@ -448,6 +472,10 @@ describe('WU-1310: Core path centralization', () => {
           onboardingDir: 'my/onboarding',
           plansDir: 'my/plans',
           initiativesDir: 'my/initiatives',
+          completeGuidePath: 'my/lumenflow-complete.md',
+          quickRefPath: 'my/quick-ref-commands.md',
+          startingPromptPath: 'my/starting-prompt.md',
+          governancePath: 'my/project-governance.md',
         },
       };
 
@@ -468,6 +496,10 @@ describe('WU-1310: Core path centralization', () => {
       expect(paths.onboardingDir).toBe(path.join(tempDir, 'my/onboarding'));
       expect(paths.plansDir).toBe(path.join(tempDir, 'my/plans'));
       expect(paths.initiativesDir).toBe(path.join(tempDir, 'my/initiatives'));
+      expect(paths.completeGuidePath).toBe(path.join(tempDir, 'my/lumenflow-complete.md'));
+      expect(paths.quickRefPath).toBe(path.join(tempDir, 'my/quick-ref-commands.md'));
+      expect(paths.startingPromptPath).toBe(path.join(tempDir, 'my/starting-prompt.md'));
+      expect(paths.governancePath).toBe(path.join(tempDir, 'my/project-governance.md'));
     });
 
     it('should merge partial config with defaults', async () => {
@@ -496,6 +528,18 @@ describe('WU-1310: Core path centralization', () => {
       expect(config.directories.wuDir).toBe('docs/04-operations/tasks/wu');
       expect(config.directories.onboardingDir).toBe(
         'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
+      );
+      expect(config.directories.completeGuidePath).toBe(
+        'docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md',
+      );
+      expect(config.directories.quickRefPath).toBe(
+        'docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
+      );
+      expect(config.directories.startingPromptPath).toBe(
+        'docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md',
+      );
+      expect(config.directories.governancePath).toBe(
+        'docs/04-operations/governance/project-governance.md',
       );
     });
   });
