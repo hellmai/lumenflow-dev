@@ -42,7 +42,10 @@ const worktreeCleanPredicate: CommandPredicate = {
   },
   getFixMessage: (context: WuContext) => {
     const worktreePath = context.location.worktreeName
-      ? path.posix.join(createWuPaths().WORKTREES_DIR().replace(/\\/g, '/'), context.location.worktreeName)
+      ? path.posix.join(
+          createWuPaths().WORKTREES_DIR().replace(/\\/g, '/'),
+          context.location.worktreeName,
+        )
       : 'worktree';
     return `Commit or stash changes in ${worktreePath} before running wu:done`;
   },
