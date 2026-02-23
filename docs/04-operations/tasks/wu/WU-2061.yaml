@@ -2,7 +2,7 @@ id: WU-2061
 title: 'Fix release script: defer version bump until after validation'
 lane: 'Operations: Tooling'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -44,3 +44,6 @@ session_id: 01352b75-c4e5-45d2-901f-4102811c1938
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-23T11:52:41.570Z
+locked: true
+completed_at: 2026-02-23T12:01:23.840Z
+completed: 2026-02-23
