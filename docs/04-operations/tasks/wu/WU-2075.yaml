@@ -18,6 +18,8 @@ artifacts:
 dependencies: []
 initiative: INIT-035
 phase: 1
+blocked_by:
+  - WU-2074
 labels:
   - INIT-035
   - A8
@@ -33,6 +35,7 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Sync framework templates and verify drift status so template outputs match canonical docs after IA and command updates.
+description: Sync framework templates and verify drift status so template outputs match canonical
+  docs after IA and command updates.
 acceptance:
   - Template sync completes and drift check passes with no stale template artifacts.
