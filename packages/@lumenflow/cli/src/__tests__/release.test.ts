@@ -40,6 +40,7 @@ import {
   ensureDistPathsMaterialized,
   parsePackDryRunMetadata,
   findJsonStartIndex,
+  removeMaterializedDistDirs,
   type ReleaseOptions,
 } from '../release.js';
 import { clearClaimMetadataOnRelease } from '../wu-release.js';
@@ -1100,5 +1101,59 @@ describe('WU-2061/WU-2062: release script safety — parsePackDryRunMetadata JSO
       const result = parsePackDryRunMetadata(input);
       expect(result.entryCount).toBe(42);
     });
+  });
+});
+
+describe('WU-2086: removeMaterializedDistDirs', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = join(tmpdir(), `release-test-wu2086-${Date.now()}`);
+    mkdirSync(tempDir, { recursive: true });
+  });
+
+  afterEach(() => {
+    rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  it('removes real dist directories (materialized symlinks)', () => {
+    const pkgDir = join(tempDir, 'packages', 'cli');
+    mkdirSync(join(pkgDir, 'dist'), { recursive: true });
+    writeFileSync(join(pkgDir, 'dist', 'index.js'), 'console.log("built")');
+
+    expect(existsSync(join(pkgDir, 'dist'))).toBe(true);
+    expect(lstatSync(join(pkgDir, 'dist')).isSymbolicLink()).toBe(false);
+
+    removeMaterializedDistDirs([pkgDir]);
+
+    expect(existsSync(join(pkgDir, 'dist'))).toBe(false);
+  });
+
+  it('preserves dist symlinks (not materialized)', () => {
+    const pkgDir = join(tempDir, 'packages', 'core');
+    mkdirSync(pkgDir, { recursive: true });
+
+    // Create a real target dir and a symlink to it
+    const realDist = join(tempDir, 'real-dist');
+    mkdirSync(realDist, { recursive: true });
+    symlinkSync(realDist, join(pkgDir, 'dist'));
+
+    expect(lstatSync(join(pkgDir, 'dist')).isSymbolicLink()).toBe(true);
+
+    removeMaterializedDistDirs([pkgDir]);
+
+    // Symlink should still exist
+    expect(existsSync(join(pkgDir, 'dist'))).toBe(true);
+    expect(lstatSync(join(pkgDir, 'dist')).isSymbolicLink()).toBe(true);
+  });
+
+  it('skips packages without dist directory', () => {
+    const pkgDir = join(tempDir, 'packages', 'empty');
+    mkdirSync(pkgDir, { recursive: true });
+
+    // Should not throw
+    removeMaterializedDistDirs([pkgDir]);
+
+    expect(existsSync(join(pkgDir, 'dist'))).toBe(false);
   });
 });

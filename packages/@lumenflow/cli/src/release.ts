@@ -1019,20 +1019,28 @@ export async function pushTagWithForce(
  * After cleanup, all tracked files are restored to HEAD state and untracked
  * generated files are removed.
  */
+/**
+ * WU-2086: Remove materialized dist directories so git can restore tracked symlinks.
+ *
+ * ensureDistPathsMaterialized replaces symlinks with real dirs for build/publish.
+ * This function reverses that: deletes real dist dirs while preserving any that
+ * are already symlinks.
+ */
+export function removeMaterializedDistDirs(packageDirs: string[]): void {
+  for (const packageDir of packageDirs) {
+    const distPath = join(packageDir, DIST_DIR_NAME);
+    if (existsSync(distPath) && !lstatSync(distPath).isSymbolicLink()) {
+      rmSync(distPath, { recursive: true, force: true });
+    }
+  }
+}
+
 async function cleanupFailedRelease(packageDirs: string[]): Promise<void> {
   console.error(`\n${LOG_PREFIX} ⚠️  Release failed — cleaning up artifacts on main...`);
 
   try {
     // 1. Remove materialized dist directories so git can restore symlinks.
-    //    ensureDistPathsMaterialized replaces symlinks with real dirs; build fills
-    //    them with untracked output. Must delete before git checkout can recreate
-    //    the tracked symlink.
-    for (const packageDir of packageDirs) {
-      const distPath = join(packageDir, DIST_DIR_NAME);
-      if (existsSync(distPath) && !lstatSync(distPath).isSymbolicLink()) {
-        rmSync(distPath, { recursive: true, force: true });
-      }
-    }
+    removeMaterializedDistDirs(packageDirs);
 
     // 2. Remove untracked generated files (e.g., packs/ from prepack lifecycle scripts).
     //    These are created by sync-bundled-packs.mjs during pack --dry-run but may not
@@ -1248,6 +1256,20 @@ export async function main(): Promise<void> {
     }
 
     releaseComplete = true;
+
+    // WU-2086: Restore dist symlinks after successful release.
+    // The preflight step materialized symlinks into real dirs for build/publish.
+    // Now that the commit is pushed, restore them so git status is clean.
+    if (!dryRun) {
+      removeMaterializedDistDirs(packageDirs);
+      const git = getGitForCwd();
+      await git.raw(['checkout', '--', '.']);
+      execFileSync(PKG_MANAGER, ['install'], {
+        cwd: process.cwd(),
+        stdio: 'pipe',
+        encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
+      });
+    }
 
     // Summary
     console.log(`\n${LOG_PREFIX} 🎉 Release complete!`);
