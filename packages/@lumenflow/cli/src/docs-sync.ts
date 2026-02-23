@@ -12,7 +12,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core';
+import { createWUParser, WU_OPTIONS, getDefaultConfig } from '@lumenflow/core';
+import { getConfig } from '@lumenflow/core/config';
 // WU-1362: Import worktree guard utilities for branch checking
 import { isMainBranch, isInWorktree } from '@lumenflow/core/core/worktree-guard';
 
@@ -62,6 +63,25 @@ export interface SyncResult {
   skipped: string[];
   /** WU-1362: Warnings from branch guard or other checks */
   warnings?: string[];
+}
+
+function resolveDocsSyncDirectories(targetDir: string): {
+  onboardingDir: string;
+  skillsDir: string;
+} {
+  try {
+    const config = getConfig({ projectRoot: targetDir, reload: true });
+    return {
+      onboardingDir: path.join(targetDir, config.directories.onboardingDir),
+      skillsDir: path.join(targetDir, config.directories.skillsDir),
+    };
+  } catch {
+    const defaults = getDefaultConfig();
+    return {
+      onboardingDir: path.join(targetDir, defaults.directories.onboardingDir),
+      skillsDir: path.join(targetDir, defaults.directories.skillsDir),
+    };
+  }
 }
 
 /**
@@ -204,15 +224,7 @@ export async function syncAgentDocs(targetDir: string, options: SyncOptions): Pr
     DATE: getCurrentDate(),
   };
 
-  const onboardingDir = path.join(
-    targetDir,
-    'docs',
-    '04-operations',
-    '_frameworks',
-    'lumenflow',
-    'agent',
-    'onboarding',
-  );
+  const { onboardingDir } = resolveDocsSyncDirectories(targetDir);
 
   await createDirectory(onboardingDir, result, targetDir);
 
@@ -252,7 +264,7 @@ export async function syncSkills(targetDir: string, options: SyncOptions): Promi
     DATE: getCurrentDate(),
   };
 
-  const skillsDir = path.join(targetDir, '.claude', 'skills');
+  const { skillsDir } = resolveDocsSyncDirectories(targetDir);
 
   // WU-1124: Load and process skill templates from bundled files
   for (const [skillName, templatePath] of Object.entries(SKILL_TEMPLATE_PATHS)) {

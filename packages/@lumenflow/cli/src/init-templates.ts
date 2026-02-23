@@ -9,6 +9,16 @@
  * These are pure data constants with no behavioral logic.
  */
 
+import { DIRECTORIES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+
+const DEFAULT_WORKTREES_DIR = DIRECTORIES.WORKTREES;
+const DEFAULT_WORKTREES_PATTERN = DEFAULT_WORKTREES_DIR.endsWith('/')
+  ? DEFAULT_WORKTREES_DIR.slice(0, -1)
+  : DEFAULT_WORKTREES_DIR;
+const DEFAULT_STATE_DIR_IGNORE = LUMENFLOW_PATHS.STATE_DIR.endsWith('/')
+  ? LUMENFLOW_PATHS.STATE_DIR
+  : `${LUMENFLOW_PATHS.STATE_DIR}/`;
+
 // WU-1576: Lane definitions must have zero overlapping code_paths.
 // Each path must appear in exactly one lane to avoid doctor warnings.
 export const DEFAULT_LANE_DEFINITIONS = [
@@ -1856,7 +1866,7 @@ export const REQUIRED_GITIGNORE_EXCLUSIONS: ReadonlyArray<{
   { pattern: '.lumenflow/sessions/', line: '.lumenflow/sessions/' },
   { pattern: '.lumenflow/memory/', line: '.lumenflow/memory/' },
   { pattern: '.logs/', line: '.logs/' },
-  { pattern: 'worktrees', line: 'worktrees/' },
+  { pattern: DEFAULT_WORKTREES_PATTERN, line: DEFAULT_WORKTREES_DIR },
 ];
 
 export const GITIGNORE_TEMPLATE = `# Dependencies
@@ -1873,7 +1883,7 @@ node_modules/
 .logs/
 
 # Worktrees (isolated parallel work directories)
-worktrees/
+${DEFAULT_WORKTREES_DIR}
 
 # Build output
 dist/
@@ -1912,10 +1922,10 @@ coverage/
 .turbo/
 
 # LumenFlow state (local only)
-.lumenflow/state/
+${DEFAULT_STATE_DIR_IGNORE}
 
 # Worktrees
-worktrees/
+${DEFAULT_WORKTREES_DIR}
 
 # Lockfiles (auto-generated)
 pnpm-lock.yaml
