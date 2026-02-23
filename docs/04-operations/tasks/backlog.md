@@ -22,7 +22,6 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
-- [WU-2072 — INIT-035 A6a: Extend PublicCommand metadata for curated docs surface](wu/WU-2072.yaml) — Operations: Tooling
 - [WU-2073 — INIT-035 A6b: Render curated CLI docs from manifest metadata](wu/WU-2073.yaml) — Content: Site Comms
 - [WU-2074 — INIT-035 A7: Align canonical internal docs to new IA and command truth](wu/WU-2074.yaml) — Content: Framework Docs
 - [WU-2075 — INIT-035 A8: Template sync and drift closure](wu/WU-2075.yaml) — Content: Framework Docs
@@ -38,7 +37,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2072 — INIT-035 A6a: Extend PublicCommand metadata for curated docs surface](wu/WU-2072.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 

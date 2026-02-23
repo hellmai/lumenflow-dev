@@ -2094,3 +2094,4 @@
 {"type":"complete","wuId":"WU-2070","timestamp":"2026-02-23T16:01:35.866Z"}
 {"type":"claim","wuId":"WU-2071","timestamp":"2026-02-23T16:02:13.876Z","lane":"Content: Site Comms","title":"INIT-035 A5: Align releases/changelog to published stable truth"}
 {"type":"complete","wuId":"WU-2071","timestamp":"2026-02-23T16:05:30.038Z"}
+{"type":"claim","wuId":"WU-2072","timestamp":"2026-02-23T16:06:15.209Z","lane":"Operations: Tooling","title":"INIT-035 A6a: Extend PublicCommand metadata for curated docs surface"}

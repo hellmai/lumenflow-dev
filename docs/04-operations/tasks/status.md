@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2072 — INIT-035 A6a: Extend PublicCommand metadata for curated docs surface](wu/WU-2072.yaml)
 
 ## Completed
 

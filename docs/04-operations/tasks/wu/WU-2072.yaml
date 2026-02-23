@@ -2,7 +2,7 @@ id: WU-2072
 title: 'INIT-035 A6a: Extend PublicCommand metadata for curated docs surface'
 lane: 'Operations: Tooling'
 type: feature
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -34,6 +34,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add command-surface metadata fields to PublicCommand so docs generation can hide aliases and legacy commands and present a curated primary surface.
+description: Add command-surface metadata fields to PublicCommand so docs generation can hide
+  aliases and legacy commands and present a curated primary surface.
 acceptance:
   - Public manifest includes surface and stability metadata with test coverage for curation behavior.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-2072
+claimed_at: 2026-02-23T16:06:15.160Z
+baseline_main_sha: dc785c89f799b57e6532fba99ecc9deffde8a977
+session_id: fa3b4fe8-d9c6-4e3a-bb3f-bd6bf63159be
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T16:06:15.164Z
