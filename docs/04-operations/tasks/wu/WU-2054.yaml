@@ -11,6 +11,7 @@ code_paths:
 tests:
   manual:
     - Run pnpm --filter @lumenflow/web lint and verify zero warnings
+    - Navigate to / and verify WorkspaceOverviewLive is reachable and renders without runtime errors
   unit:
     - apps/web/__tests__/generate-client-uuid.test.ts
   e2e: []
