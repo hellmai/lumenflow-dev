@@ -42,16 +42,12 @@ import { homedir } from 'node:os';
 import { execSync } from 'node:child_process';
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { die } from '@lumenflow/core/error-handler';
-import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import { REMOTES, FILE_SYSTEM, PKG_MANAGER } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[release]';
-
-/** Micro-worktree operation name */
-const OPERATION_NAME = 'release';
 
 /** Directory containing @lumenflow packages */
 const LUMENFLOW_PACKAGES_DIR = 'packages/@lumenflow';
@@ -92,9 +88,6 @@ const LUMENFLOW_FORCE_REASON_ENV = 'LUMENFLOW_FORCE_REASON';
 
 /** Release phase label for pre-release clean-tree validation */
 const RELEASE_CLEAN_CHECK_PHASE_BEFORE_RELEASE = 'before release';
-
-/** Release phase label for post-publish clean-tree validation */
-const RELEASE_CLEAN_CHECK_PHASE_AFTER_PUBLISH = 'after npm publish';
 
 /** Command shown when release fails due to dirty working tree */
 const GIT_STATUS_SHORT_COMMAND = 'git status --short';
@@ -665,17 +658,6 @@ export function buildTagName(version: string): string {
 }
 
 /**
- * Get relative path from worktree root
- *
- * @param absolutePath - Absolute file path
- * @param worktreePath - Worktree root path
- * @returns Relative path
- */
-function getRelativePath(absolutePath: string, worktreePath: string): string {
-  return absolutePath.replace(worktreePath + '/', '');
-}
-
-/**
  * Execute a shell command and handle errors
  *
  * @param cmd - Command to execute
@@ -723,16 +705,54 @@ function runCommandCapture(cmd: string, options: { cwd?: string; label?: string 
   }
 }
 
+/** Characters that can start a valid JSON value from pack commands */
+const JSON_ARRAY_START = '[';
+const JSON_OBJECT_START = '{';
+
+/**
+ * Find the index of the first JSON-start character (`[` or `{`) in a string.
+ *
+ * pnpm lifecycle scripts can prepend non-JSON output to stdout before the
+ * actual JSON payload. This locates where the JSON begins so the caller
+ * can strip the prefix.
+ *
+ * @returns Index of the first `[` or `{`, or 0 if not found (let JSON.parse report the error)
+ */
+export function findJsonStartIndex(raw: string): number {
+  const bracketIndex = raw.indexOf(JSON_ARRAY_START);
+  const braceIndex = raw.indexOf(JSON_OBJECT_START);
+
+  if (bracketIndex === -1 && braceIndex === -1) {
+    return 0;
+  }
+  if (bracketIndex === -1) {
+    return braceIndex;
+  }
+  if (braceIndex === -1) {
+    return bracketIndex;
+  }
+  return Math.min(bracketIndex, braceIndex);
+}
+
 /**
  * Parse JSON output from npm/pnpm pack dry runs.
+ *
+ * pnpm lifecycle scripts (prepack/postpack) can emit non-JSON text to stdout
+ * before the actual JSON payload. This function strips such prefix noise by
+ * locating the first `[` or `{` character — the start of valid JSON.
  */
-function parsePackDryRunMetadata(rawOutput: string): PackDryRunMetadata {
+export function parsePackDryRunMetadata(rawOutput: string): PackDryRunMetadata {
   const trimmed = rawOutput.trim();
   if (!trimmed) {
     throw new Error(PACK_EMPTY_OUTPUT_ERROR);
   }
 
-  const parsed = JSON.parse(trimmed) as unknown;
+  // pnpm lifecycle scripts (prepack/postpack) can emit text to stdout before
+  // the JSON payload. Strip everything before the first JSON-start character.
+  const jsonStartIndex = findJsonStartIndex(trimmed);
+  const jsonPayload = jsonStartIndex > 0 ? trimmed.slice(jsonStartIndex) : trimmed;
+
+  const parsed = JSON.parse(jsonPayload) as unknown;
   const normalized = Array.isArray(parsed) ? parsed[0] : parsed;
   if (!normalized || typeof normalized !== 'object') {
     throw new Error(PACK_INVALID_JSON_ERROR);
@@ -1029,58 +1049,22 @@ export async function main(): Promise<void> {
     );
   }
 
-  // Execute version bump in micro-worktree
-  if (dryRun) {
-    console.log(`${LOG_PREFIX} Would bump versions to ${version} using micro-worktree isolation`);
-    console.log(`${LOG_PREFIX} Would commit: ${buildCommitMessage(version)}`);
-  } else {
-    console.log(`${LOG_PREFIX} Bumping versions using micro-worktree isolation...`);
-
-    // WU-1296: Use withReleaseEnv to set LUMENFLOW_WU_TOOL=release
-    // This allows the micro-worktree push to main without LUMENFLOW_FORCE
-    await withReleaseEnv(async () => {
-      await withMicroWorktree({
-        operation: OPERATION_NAME,
-        id: `v${version}`,
-        logPrefix: LOG_PREFIX,
-        execute: async ({ worktreePath }) => {
-          // Check and exit changeset pre mode if active
-          if (isInChangesetPreMode(worktreePath)) {
-            console.log(`${LOG_PREFIX} Detected changeset pre-release mode, exiting...`);
-            exitChangesetPreMode(worktreePath);
-            console.log(`${LOG_PREFIX} ✅ Exited changeset pre mode`);
-          }
-
-          // Find package paths within the worktree
-          const worktreePackagePaths = findPackageJsonPaths(worktreePath);
-
-          // Update versions
-          console.log(`${LOG_PREFIX} Updating ${worktreePackagePaths.length} package versions...`);
-          await updatePackageVersions(worktreePackagePaths, version);
-
-          // Get relative paths for commit
-          const relativePaths = worktreePackagePaths.map((p) => getRelativePath(p, worktreePath));
-
-          // If we exited pre mode, include the deleted pre.json in files to commit
-          // (the deletion will be staged automatically by git add -A behavior)
-          const _changesetPrePath = join(CHANGESET_DIR, CHANGESET_PRE_JSON);
-          const filesToCommit = [...relativePaths];
-          // Note: Deletion of pre.json is handled by git detecting the missing file
-
-          console.log(`${LOG_PREFIX} ✅ Versions updated to ${version}`);
-
-          return {
-            commitMessage: buildCommitMessage(version),
-            files: filesToCommit,
-          };
-        },
-      });
-    });
-
-    console.log(`${LOG_PREFIX} ✅ Version bump committed and pushed`);
+  // Exit changeset pre mode if active
+  if (isInChangesetPreMode()) {
+    if (dryRun) {
+      console.log(`${LOG_PREFIX} Would exit changeset pre-release mode`);
+    } else {
+      console.log(`${LOG_PREFIX} Detected changeset pre-release mode, exiting...`);
+      exitChangesetPreMode();
+      console.log(`${LOG_PREFIX} ✅ Exited changeset pre mode`);
+    }
   }
 
-  // Build packages
+  // ── Phase 1: Build & Validate (no writes to origin) ──────────────────
+  // WU-2061: Build and validate BEFORE bumping versions or pushing anything.
+  // If any step here fails, main is untouched.
+
+  // Materialize symlinked dist directories for reliable pack/publish
   const distPreparation = ensureDistPathsMaterialized(packageDirs, { skipBuild, dryRun });
   if (distPreparation.checkedCount > 0 && !dryRun && distPreparation.materializedCount > 0) {
     console.log(
@@ -1103,33 +1087,65 @@ export async function main(): Promise<void> {
     );
   }
 
-  // Create git tag
-  const tagName = buildTagName(version);
+  // ── Phase 2: Version bump (local only, no push yet) ──────────────────
+  // WU-2061: Bump versions locally on main. No micro-worktree needed — if
+  // anything fails after this, `git checkout -- .` restores package.json files.
+  console.log(`${LOG_PREFIX} Bumping versions to ${version}...`);
   if (dryRun) {
-    console.log(`${LOG_PREFIX} Would create tag: ${tagName}`);
-    console.log(`${LOG_PREFIX} Would push tag to ${REMOTES.ORIGIN}`);
+    console.log(`${LOG_PREFIX} Would update ${packagePaths.length} package versions`);
+    console.log(`${LOG_PREFIX} Would commit: ${buildCommitMessage(version)}`);
   } else {
-    console.log(`${LOG_PREFIX} Creating tag ${tagName}...`);
-    await git.raw(['tag', '-a', tagName, '-m', `Release ${tagName}`]);
-    console.log(`${LOG_PREFIX} ✅ Tag created: ${tagName}`);
-
-    console.log(`${LOG_PREFIX} Pushing tag to ${REMOTES.ORIGIN}...`);
-    await pushTagWithForce(git, tagName, 'release: pushing version tag');
-    console.log(`${LOG_PREFIX} ✅ Tag pushed`);
+    await updatePackageVersions(packagePaths, version);
+    console.log(`${LOG_PREFIX} ✅ Versions updated to ${version}`);
   }
 
-  // Publish to npm
+  // ── Phase 3: Publish to npm ──────────────────────────────────────────
+  // Publish BEFORE committing to git. If publish fails, we can restore
+  // package.json files and main stays clean.
   if (!skipPublish) {
     if (dryRun) {
       console.log(`${LOG_PREFIX} Would publish packages to npm`);
     } else {
       console.log(`${LOG_PREFIX} Publishing packages to npm...`);
       runCommand(`${PKG_MANAGER} -r publish --access public --no-git-checks`, { label: 'publish' });
-      await assertWorkingTreeClean(git, RELEASE_CLEAN_CHECK_PHASE_AFTER_PUBLISH);
       console.log(`${LOG_PREFIX} ✅ Packages published to npm`);
     }
   } else {
     console.log(`${LOG_PREFIX} Skipping npm publish (--skip-publish)`);
+  }
+
+  // ── Phase 4: Commit, tag, push (only after everything succeeds) ──────
+  // WU-2061: This is the point of no return. Build passed, validation
+  // passed, npm publish succeeded. Now commit the version bump to main.
+  const tagName = buildTagName(version);
+  if (dryRun) {
+    console.log(`${LOG_PREFIX} Would commit: ${buildCommitMessage(version)}`);
+    console.log(`${LOG_PREFIX} Would create tag: ${tagName}`);
+    console.log(`${LOG_PREFIX} Would push to ${REMOTES.ORIGIN}`);
+  } else {
+    // Format changed files before committing
+    const relativePaths = packagePaths.map((p) => p.replace(process.cwd() + '/', ''));
+    runCommand(`${PKG_MANAGER} prettier --write ${relativePaths.join(' ')}`, {
+      label: 'format',
+    });
+
+    // Stage and commit
+    await git.add(relativePaths);
+    await git.commit(buildCommitMessage(version));
+    console.log(`${LOG_PREFIX} ✅ Committed: ${buildCommitMessage(version)}`);
+
+    // Create and push tag
+    console.log(`${LOG_PREFIX} Creating tag ${tagName}...`);
+    await git.raw(['tag', '-a', tagName, '-m', `Release ${tagName}`]);
+    console.log(`${LOG_PREFIX} ✅ Tag created: ${tagName}`);
+
+    // Push commit + tag together
+    console.log(`${LOG_PREFIX} Pushing to ${REMOTES.ORIGIN}...`);
+    await withReleaseEnv(async () => {
+      await git.push(REMOTES.ORIGIN, 'main');
+      await git.push(REMOTES.ORIGIN, tagName);
+    });
+    console.log(`${LOG_PREFIX} ✅ Pushed to ${REMOTES.ORIGIN}`);
   }
 
   // Summary

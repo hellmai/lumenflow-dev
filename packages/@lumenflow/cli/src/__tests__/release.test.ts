@@ -38,6 +38,8 @@ import {
   extractPackageContractPaths,
   validatePackedArtifacts,
   ensureDistPathsMaterialized,
+  parsePackDryRunMetadata,
+  findJsonStartIndex,
   type ReleaseOptions,
 } from '../release.js';
 import { clearClaimMetadataOnRelease } from '../wu-release.js';
@@ -916,5 +918,108 @@ describe('WU-1077: release script bug fixes', () => {
 
     // Integration test would require git setup - functional verification
     // is done by checking the function uses LUMENFLOW_FORCE env var
+  });
+});
+
+/**
+ * WU-2061: Tests for release script safety fixes
+ *
+ * Verifies:
+ * - parsePackDryRunMetadata strips pnpm lifecycle output prefixed before JSON
+ * - findJsonStartIndex correctly locates the first JSON-start character
+ */
+describe('WU-2061: release script safety — parsePackDryRunMetadata JSON stripping', () => {
+  describe('findJsonStartIndex', () => {
+    it('returns 0 for input starting with [', () => {
+      expect(findJsonStartIndex('[{"files":[]}]')).toBe(0);
+    });
+
+    it('returns 0 for input starting with {', () => {
+      expect(findJsonStartIndex('{"files":[]}')).toBe(0);
+    });
+
+    it('returns index of first [ when preceded by lifecycle output', () => {
+      const input = '> @lumenflow/cli@3.2.1 prepack\n> pnpm run sync:bundled-packs\n[{"files":[]}]';
+      const idx = findJsonStartIndex(input);
+      expect(input[idx]).toBe('[');
+      expect(input.slice(idx)).toBe('[{"files":[]}]');
+    });
+
+    it('returns index of first { when preceded by lifecycle output', () => {
+      const input = '> @lumenflow/cli@3.2.1 prepack\n{"files":[]}';
+      const idx = findJsonStartIndex(input);
+      expect(input[idx]).toBe('{');
+      expect(input.slice(idx)).toBe('{"files":[]}');
+    });
+
+    it('returns 0 when no JSON-start character found (let JSON.parse fail)', () => {
+      expect(findJsonStartIndex('no json here')).toBe(0);
+    });
+
+    it('returns earlier index when both [ and { appear', () => {
+      expect(findJsonStartIndex('prefix[{"a":1}]')).toBe(6);
+      expect(findJsonStartIndex('prefix{"a":[1]}')).toBe(6);
+    });
+  });
+
+  describe('parsePackDryRunMetadata', () => {
+    it('parses clean JSON array from pnpm pack', () => {
+      const input = JSON.stringify([{ files: [{ path: 'dist/index.js' }] }]);
+      const result = parsePackDryRunMetadata(input);
+      expect(result.files).toHaveLength(1);
+      expect(result.files[0].path).toBe('dist/index.js');
+    });
+
+    it('parses clean JSON object from npm pack', () => {
+      const input = JSON.stringify({ files: [{ path: 'dist/index.js' }] });
+      const result = parsePackDryRunMetadata(input);
+      expect(result.files).toHaveLength(1);
+    });
+
+    it('strips pnpm lifecycle output before JSON payload', () => {
+      const lifecycleNoise =
+        '> @lumenflow/cli@3.2.1 prepack\n' +
+        '> pnpm run sync:bundled-packs\n' +
+        '\n' +
+        '> @lumenflow/cli@3.2.1 sync:bundled-packs\n' +
+        '> node scripts/sync-bundled-packs.mjs\n' +
+        '\n';
+      const jsonPayload = JSON.stringify([
+        { files: [{ path: 'dist/index.js' }, { path: 'package.json' }] },
+      ]);
+      const input = lifecycleNoise + jsonPayload;
+
+      const result = parsePackDryRunMetadata(input);
+      expect(result.files).toHaveLength(2);
+      expect(result.files[0].path).toBe('dist/index.js');
+      expect(result.files[1].path).toBe('package.json');
+    });
+
+    it('throws on empty input', () => {
+      expect(() => parsePackDryRunMetadata('')).toThrow('empty output');
+    });
+
+    it('throws on input with no valid JSON structure', () => {
+      expect(() => parsePackDryRunMetadata('just some text without json')).toThrow();
+    });
+
+    it('throws when files array is missing', () => {
+      const input = JSON.stringify({ name: 'test' });
+      expect(() => parsePackDryRunMetadata(input)).toThrow('files[]');
+    });
+
+    it('throws when files entry lacks path string', () => {
+      const input = JSON.stringify({ files: [{ size: 100 }] });
+      expect(() => parsePackDryRunMetadata(input)).toThrow('invalid files[]');
+    });
+
+    it('extracts entryCount when present', () => {
+      const input = JSON.stringify({
+        files: [{ path: 'dist/index.js' }],
+        entryCount: 42,
+      });
+      const result = parsePackDryRunMetadata(input);
+      expect(result.entryCount).toBe(42);
+    });
   });
 });
