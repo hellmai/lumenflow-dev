@@ -5,6 +5,7 @@ _Last updated: 2026-02-23_
 ## In Progress
 
 - [WU-2056 — Stabilize consumer integration module-resolution gate](wu/WU-2056.yaml)
+- [WU-2057 — Document pack execution architecture and fix D2 diagram sizing sitewide](wu/WU-2057.yaml)
 
 ## Completed
 

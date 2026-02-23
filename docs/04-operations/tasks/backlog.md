@@ -20,13 +20,13 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2057 — Document pack execution architecture and fix D2 diagram sizing sitewide](wu/WU-2057.yaml) — Content: Framework Docs
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 
 ## 🔧 In progress
 
 - [WU-2056 — Stabilize consumer integration module-resolution gate](wu/WU-2056.yaml) — Framework: Core Validation
+- [WU-2057 — Document pack execution architecture and fix D2 diagram sizing sitewide](wu/WU-2057.yaml) — Content: Framework Docs
 
 ## ⛔ Blocked
 
