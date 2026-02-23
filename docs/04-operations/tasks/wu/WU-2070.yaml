@@ -2,7 +2,7 @@ id: WU-2070
 title: 'INIT-035 A4: Rewrite language guide framework to verified quickstart standard'
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -48,3 +48,6 @@ description: Implement executable language guide sections and enforce data-backe
 acceptance:
   - Every language guide contains support status, verified quickstart, gate preset, repo linkage,
     and smoke-check blocks.
+locked: true
+completed_at: 2026-02-23T16:01:31.154Z
+completed: 2026-02-23
