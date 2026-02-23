@@ -2,7 +2,7 @@ id: WU-2090
 title: Migrate CLI runtime path/state literals to getConfig and constants
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -72,3 +72,11 @@ acceptance:
     directories.stateDir and directories.archiveDir
   - CLI runtime state/worktree helper commands (including mem checkpoint, spawn strategy resolver,
     claim resume, and wu proto) use config/constant-driven paths
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2090
+claimed_at: 2026-02-23T21:22:54.123Z
+baseline_main_sha: 126a6010d9351143a1cfcd9b210caebc453a5397
+session_id: 3a0c1cbe-d64b-43ba-9898-3fd5bcba75f6
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T21:22:54.128Z

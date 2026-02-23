@@ -2128,3 +2128,4 @@
 {"type":"complete","wuId":"WU-2088","timestamp":"2026-02-23T20:54:01.185Z"}
 {"type":"claim","wuId":"WU-2089","timestamp":"2026-02-23T21:15:24.819Z","lane":"Framework: MCP","title":"Migrate MCP runtime path resolution to getConfig"}
 {"type":"complete","wuId":"WU-2089","timestamp":"2026-02-23T21:21:26.040Z"}
+{"type":"claim","wuId":"WU-2090","timestamp":"2026-02-23T21:22:54.175Z","lane":"Framework: CLI WU Commands","title":"Migrate CLI runtime path/state literals to getConfig and constants"}

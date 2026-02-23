@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2090 — Migrate CLI runtime path/state literals to getConfig and constants](wu/WU-2090.yaml)
 
 ## Completed
 
