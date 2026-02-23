@@ -1,0 +1,16 @@
+id: INIT-035
+slug: kernel-pack-docs-separation-executable-language-guides
+title: Kernel/Pack Docs Separation + Executable Language Guides
+description: ''
+status: draft
+priority: P0
+owner: Core docs/tooling team
+created: 2026-02-23
+target_date: 2026-04-30
+phases: []
+success_metrics:
+  - Kernel vs Packs IA live with repaired internal links
+  - Language guides are pack-scoped, YAML-backed, and CI-smoke verified
+  - Public docs version truth matches published stable release metadata
+  - docs:audit enforced in CI
+labels: []
