@@ -28,7 +28,10 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-proto.ts
   - packages/@lumenflow/cli/src/docs-sync.ts
 tests:
-  manual: []
+  manual:
+    - Override directories.state.stateDir and directories.worktrees in workspace config
+    - then run wu:status and wu:claim path checks to confirm runtime path resolution follows config
+      without .lumenflow/state or worktrees literals.
   unit:
     - packages/@lumenflow/cli/src/__tests__/path-centralization-cli.test.ts
     - packages/@lumenflow/cli/src/__tests__/doctor.test.ts
