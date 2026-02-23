@@ -1,15 +1,16 @@
 id: INIT-035
 slug: kernel-pack-docs-separation-executable-language-guides
 title: Kernel/Pack Docs Separation + Executable Language Guides
-description: Restructure docs into Kernel vs Packs IA, relocate language guides under Software
-  Delivery Pack, align version truth to published stable metadata, enforce docs drift prevention in
-  CI, and deliver language example repo parity in tiered waves.
+description: ''
 status: draft
 priority: P0
 owner: Core docs/tooling team
 created: 2026-02-23
 target_date: 2026-04-30
-phases: []
+phases:
+  - id: 1
+    title: 'Wave 1: IA + docs correctness + automation + node/python/go/dotnet repos'
+    status: pending
 success_metrics:
   - Kernel vs Packs IA live with repaired internal links
   - Language guides are pack-scoped, YAML-backed, and CI-smoke verified
