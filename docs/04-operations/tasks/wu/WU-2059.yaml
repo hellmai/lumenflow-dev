@@ -1,0 +1,35 @@
+id: WU-2059
+title: Wire completion workflow guardrails into wu:brief prompt assembly
+lane: 'Framework: Core Validation'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-23
+code_paths:
+  - packages/@lumenflow/cli/src/wu-spawn-prompt-builders.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/wu-spawn-prompt-builders.test.ts,packages/@lumenflow/cli/src/__tests__/agent-spawn-coordination.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2059.done
+dependencies: []
+plan: lumenflow://plans/WU-2059-plan.md
+spec_refs:
+  - lumenflow://plans/WU-2059-plan.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Inject completion workflow section into generated spawn prompts so status pre-check guardrails are present in live sub-agent handoff output.
+acceptance:
+  - generateTaskInvocation output includes Completion Workflow section with wu:status pre-check before wu:done
+  - Completion Workflow section in assembled prompt includes status done short-circuit (no wu:done, no wu:recover)
+  - Codex prompt output includes equivalent completion workflow guardrails
