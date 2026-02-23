@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2069 — INIT-035 A3: Relocate/rewrite Software Delivery Pack docs](wu/WU-2069.yaml) — Content: Site Comms
 - [WU-2068 — INIT-035 A2: Relocate/rewrite Kernel docs](wu/WU-2068.yaml) — Content: Site Comms
 - [WU-2067 — INIT-035 A1: Kernel/Packs IA skeleton and sidebar route map](wu/WU-2067.yaml) — Content: Site Comms
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
