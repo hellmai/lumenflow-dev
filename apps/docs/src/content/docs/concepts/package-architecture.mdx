@@ -1,0 +1,216 @@
+---
+title: Package Architecture
+description: How LumenFlow's packages relate, what each one does, and how packs are distributed
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+LumenFlow is a TypeScript monorepo with clear dependency boundaries between packages. This page explains the package graph, what each package contains, and how packs are built and distributed.
+
+## Package Dependency Graph
+
+```d2
+direction: down
+
+cli: "@lumenflow/cli" {
+  style.fill: "#e8f4e8"
+  style.stroke: "#2e7d32"
+}
+
+leaf: Leaf Packages {
+  style.fill: "#f5f5f5"
+  style.stroke: "#9e9e9e"
+
+  core: "@lumenflow/core" {
+    style.fill: "#e3f2fd"
+  }
+  memory: "@lumenflow/memory" {
+    style.fill: "#e3f2fd"
+  }
+  agent: "@lumenflow/agent" {
+    style.fill: "#e3f2fd"
+  }
+  metrics: "@lumenflow/metrics" {
+    style.fill: "#e3f2fd"
+  }
+  initiatives: "@lumenflow/initiatives" {
+    style.fill: "#e3f2fd"
+  }
+}
+
+kernel: "@lumenflow/kernel" {
+  style.fill: "#fff3e0"
+  style.stroke: "#e65100"
+}
+
+pack: "software-delivery pack" {
+  style.fill: "#f3e5f5"
+  style.stroke: "#7b1fa2"
+}
+
+standalone: Standalone Packages {
+  style.fill: "#f5f5f5"
+  style.stroke: "#9e9e9e"
+
+  runtime: "@lumenflow/runtime" {
+    style.fill: "#e3f2fd"
+  }
+  mcp: "@lumenflow/mcp" {
+    style.fill: "#e3f2fd"
+  }
+  shims: "@lumenflow/shims" {
+    style.fill: "#e3f2fd"
+  }
+}
+
+cli -> leaf.core
+cli -> leaf.memory
+cli -> leaf.agent
+cli -> leaf.metrics
+cli -> leaf.initiatives
+cli -> kernel
+
+pack -> kernel: "type-only import\n(ToolOutput, ToolScope)" {
+  style.stroke-dash: 3
+}
+pack -> cli: "runtime import\n(via adapter)" {
+  style.stroke-dash: 3
+  style.stroke: "#7b1fa2"
+}
+```
+
+The CLI package sits at the top of the dependency graph. Leaf packages (core, memory, agent, metrics, initiatives) are independently buildable. The kernel is standalone with minimal external dependencies. The pack has a unique dual relationship: it imports kernel types at compile time, but loads CLI modules at runtime via the [runtime CLI adapter](/concepts/tool-execution#runtime-cli-adapter-deep-dive).
+
+## Package Reference
+
+| Package | Path | Role | Key Dependencies |
+|---|---|---|---|
+| `@lumenflow/cli` | `packages/@lumenflow/cli` | 110+ CLI commands, each exporting `main()` | core, memory, agent, metrics, initiatives, kernel |
+| `@lumenflow/core` | `packages/@lumenflow/core` | WU types, YAML parsing, validation, configuration | zod, yaml, fast-glob |
+| `@lumenflow/kernel` | `packages/@lumenflow/kernel` | KernelRuntime, ToolHost, scope intersection, policy engine, evidence store, sandbox dispatch | zod, yaml, micromatch |
+| `@lumenflow/memory` | `packages/@lumenflow/memory` | Session tracking, checkpoints, signals, context recovery | (minimal) |
+| `@lumenflow/agent` | `packages/@lumenflow/agent` | Agent coordination, delegation, spawn management | (minimal) |
+| `@lumenflow/metrics` | `packages/@lumenflow/metrics` | Flow metrics collection and reporting | (minimal) |
+| `@lumenflow/initiatives` | `packages/@lumenflow/initiatives` | Multi-WU initiative tracking and wave orchestration | (minimal) |
+| `@lumenflow/runtime` | `packages/@lumenflow/runtime` | Runtime surface for programmatic API usage | kernel |
+| `@lumenflow/mcp` | `packages/@lumenflow/mcp` | MCP (Model Context Protocol) server for AI agent integration | kernel |
+| `@lumenflow/shims` | `packages/@lumenflow/shims` | Git safety shims (pre-commit, pre-push hooks) | (none) |
+| `software-delivery` | `packages/@lumenflow/packs/software-delivery` | 90+ tool implementations for software development workflows | kernel (types only) |
+
+<Aside type="note">
+  The leaf packages (core, memory, agent, metrics, initiatives) have minimal external dependencies
+  by design. This keeps the dependency graph shallow and build times fast.
+</Aside>
+
+## Build and Distribution
+
+### pnpm bootstrap
+
+The `pnpm bootstrap` command builds the CLI and all its workspace dependencies in the correct order:
+
+```
+turbo build --filter=@lumenflow/cli
+```
+
+Turbo's `^build` dependency means "build all workspace dependencies first." This produces a build order like:
+
+```d2
+direction: down
+
+phase1: "Phase 1 (parallel)" {
+  style.fill: "#e3f2fd"
+
+  core: "@lumenflow/core"
+  memory: "@lumenflow/memory"
+  agent: "@lumenflow/agent"
+  metrics: "@lumenflow/metrics"
+  initiatives: "@lumenflow/initiatives"
+  kernel: "@lumenflow/kernel"
+}
+
+phase2: "Phase 2" {
+  style.fill: "#fff3e0"
+
+  cli: "@lumenflow/cli"
+}
+
+phase1 -> phase2: "all deps built"
+```
+
+Phase 1 packages have no workspace dependencies, so they build in parallel. The CLI builds last because it depends on all of them.
+
+### Pack Bundling
+
+The Software Delivery Pack is bundled into the CLI package for npm distribution. A `sync-bundled-packs.mjs` script handles this:
+
+```d2 width=800
+direction: right
+
+source: "Source packs\n(packages/@lumenflow/packs/\nsoftware-delivery/)" {
+  style.fill: "#e3f2fd"
+}
+
+sync: "sync-bundled-packs.mjs\n(excludes tests,\nnode_modules, dist)" {
+  style.fill: "#fff3e0"
+}
+
+bundled: "CLI bundled packs\n(packages/@lumenflow/cli/\npacks/software-delivery/)" {
+  style.fill: "#e8f4e8"
+}
+
+publish: "npm publish\n(CLI package.json\nfiles includes 'packs')" {
+  style.fill: "#f3e5f5"
+}
+
+source -> sync -> bundled -> publish
+```
+
+The CLI's `package.json` `files` array includes `"packs"`, ensuring the bundled pack ships with the npm package. The `prepack` hook runs sync automatically before `npm publish`.
+
+### Pack Resolution Order
+
+When the kernel starts, it resolves pack locations using `resolvePacksRoot()` with this priority:
+
+1. **Workspace packs directory** — `{workspaceRoot}/packs/` (for projects with local packs)
+2. **Monorepo development path** — `{workspaceRoot}/packages/@lumenflow/packs/` (for LumenFlow development)
+3. **CLI-relative fallback** — `{cliPackageRoot}/packs/` (for end-user npm installs)
+
+```d2 width=800
+direction: right
+
+resolve: "resolvePacksRoot()" {
+  style.fill: "#f5f5f5"
+}
+
+opt1: "workspace/packs/" {
+  style.fill: "#e8f4e8"
+}
+opt2: "workspace/packages/\n@lumenflow/packs/" {
+  style.fill: "#fff3e0"
+}
+opt3: "cli-package/packs/\n(npm fallback)" {
+  style.fill: "#e3f2fd"
+}
+
+resolve -> opt1: "1st priority" {
+  style.stroke: "#2e7d32"
+}
+resolve -> opt2: "2nd priority" {
+  style.stroke-dash: 3
+}
+resolve -> opt3: "3rd priority" {
+  style.stroke-dash: 3
+}
+```
+
+<Aside type="tip">
+  For most users who install LumenFlow via npm, the CLI-relative fallback is used. The workspace and
+  monorepo paths exist for development and advanced pack customization.
+</Aside>
+
+## Next Steps
+
+- [Tool Execution](/concepts/tool-execution) — How tools execute through the three-layer stack
+- [Kernel Runtime](/concepts/kernel) — The execution engine behind every tool call
+- [Packs](/concepts/packs) — How domain tools are declared and loaded
+- [Create a Pack](/guides/create-a-pack) — Build your own domain pack

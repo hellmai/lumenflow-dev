@@ -31,7 +31,7 @@ When an agent calls a tool (e.g., `file:write`), the kernel executes a strict pi
 
 6. **Input validation.** If the tool declares a Zod input schema, the input is validated. Invalid inputs are rejected with `INVALID_INPUT`.
 
-7. **Dispatch.** The kernel routes the call to the tool's handler — either an in-process function or a sandboxed subprocess.
+7. **Dispatch.** The kernel routes the call to the tool's handler — either an in-process function or a sandboxed subprocess. For details on what happens inside dispatch — including sandbox execution, the tool-runner worker, and the runtime CLI adapter pattern — see [Tool Execution](/concepts/tool-execution).
 
 8. **Evidence recording.** The result (success, failure, denied, or crashed) is appended to the [evidence store](/concepts/evidence) with timing, scope enforcement details, and policy decisions.
 

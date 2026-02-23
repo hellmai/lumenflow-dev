@@ -19,61 +19,75 @@ This page provides visual mental models for the core LumenFlow concepts. Use the
 Every tool call — from CLI, MCP, or programmatic API — passes through the [kernel](/concepts/kernel) before anything executes.
 
 ```d2
-direction: right
+direction: down
 
-call: Tool Call {
-  style.fill: "#e3f2fd"
-}
-
-lookup: 1. Tool\nLookup {
+auth_gate: Authorization Gate {
   style.fill: "#f5f5f5"
+  style.stroke: "#9e9e9e"
+
+  call: Tool Call {
+    style.fill: "#e3f2fd"
+  }
+
+  lookup: 1. Tool\nLookup {
+    style.fill: "#f5f5f5"
+  }
+
+  scope: 2. Scope\nIntersection {
+    style.fill: "#fff3e0"
+  }
+
+  reserved: 3. Reserved\nPath Check {
+    style.fill: "#fff3e0"
+  }
+
+  persist: 4. Input\nPersistence {
+    style.fill: "#e8f4e8"
+  }
+
+  policy: 5. Policy\nEvaluation {
+    style.fill: "#ffebee"
+  }
+
+  call -> lookup -> scope -> reserved -> persist -> policy
 }
 
-scope: 2. Scope\nIntersection {
-  style.fill: "#fff3e0"
-}
-
-reserved: 3. Reserved\nPath Check {
-  style.fill: "#fff3e0"
-}
-
-persist: 4. Input\nPersistence {
-  style.fill: "#e8f4e8"
-}
-
-policy: 5. Policy\nEvaluation {
-  style.fill: "#ffebee"
-}
-
-validate: 6. Input\nValidation {
+execution: Execution {
   style.fill: "#f5f5f5"
+  style.stroke: "#9e9e9e"
+
+  validate: 6. Input\nValidation {
+    style.fill: "#f5f5f5"
+  }
+
+  dispatch: 7. Dispatch\n(pack handler) {
+    style.fill: "#e3f2fd"
+  }
+
+  evidence: 8. Evidence\nRecording {
+    style.fill: "#e8f4e8"
+    style.stroke: "#2e7d32"
+  }
+
+  validate -> dispatch -> evidence
 }
 
-dispatch: 7. Dispatch\n(pack handler) {
-  style.fill: "#e3f2fd"
-}
-
-evidence: 8. Evidence\nRecording {
-  style.fill: "#e8f4e8"
-  style.stroke: "#2e7d32"
-}
-
-call -> lookup -> scope -> reserved -> persist -> policy -> validate -> dispatch -> evidence
+auth_gate.policy -> execution.validate
 
 denied: DENIED {
   style.fill: "#ffebee"
   style.stroke: "#d32f2f"
 }
 
-scope -> denied: Empty\nintersection {
+auth_gate.scope -> denied: Empty\nintersection {
   style.stroke: "#d32f2f"
   style.stroke-dash: 3
 }
-reserved -> denied: .lumenflow/** {
+auth_gate.reserved -> denied: .lumenflow/** {
   style.stroke: "#d32f2f"
   style.stroke-dash: 3
 }
-policy -> denied: deny-wins {
+auth_gate.policy -> denied: deny-wins {
   style.stroke: "#d32f2f"
   style.stroke-dash: 3
 }
@@ -88,55 +102,172 @@ policy -> denied: deny-wins {
 
 ---
 
+## Tool Execution Stack
+
+Inside step 7 (dispatch), tools execute through a three-layer stack. See [Tool Execution](/concepts/tool-execution) for the full architecture.
+
+```d2
+direction: down
+
+kernel: "@lumenflow/kernel" {
+  style.fill: "#e3f2fd"
+  style.stroke: "#1565c0"
+
+  runtime: KernelRuntime
+  host: ToolHost
+  sandbox: SandboxSubprocess-\nDispatcher
+
+  runtime -> host -> sandbox
+}
+
+pack: "software-delivery pack" {
+  style.fill: "#fff3e0"
+  style.stroke: "#e65100"
+
+  worker: tool-runner-worker
+  loader: worker-loader
+  impl: "tool-impl (~90 functions)"
+  adapter: runtime-cli-adapter
+
+  worker -> loader -> impl -> adapter
+}
+
+cli: "@lumenflow/cli" {
+  style.fill: "#e8f4e8"
+  style.stroke: "#2e7d32"
+
+  commands: "command modules (each exports main())"
+  core: "@lumenflow/core"
+
+  commands -> core
+}
+
+kernel.sandbox -> pack.worker: bwrap sandbox
+pack.adapter -> cli.commands: "~80 tools via adapter"
+
+direct: "Direct implementations\n(~10 tools: git, worktree, lane-lock)" {
+  style.fill: "#f3e5f5"
+  style.stroke: "#7b1fa2"
+  style.stroke-dash: 3
+}
+
+pack.impl -> direct: self-contained {
+  style.stroke: "#7b1fa2"
+  style.stroke-dash: 3
+}
+```
+
+---
+
+## Package Dependencies
+
+LumenFlow is a monorepo with clear dependency boundaries. See [Package Architecture](/concepts/package-architecture) for details.
+
+```d2
+direction: down
+
+cli: "@lumenflow/cli" {
+  style.fill: "#e8f4e8"
+  style.stroke: "#2e7d32"
+}
+
+core: "@lumenflow/core" {
+  style.fill: "#e3f2fd"
+}
+memory: "@lumenflow/memory" {
+  style.fill: "#e3f2fd"
+}
+agent: "@lumenflow/agent" {
+  style.fill: "#e3f2fd"
+}
+metrics: "@lumenflow/metrics" {
+  style.fill: "#e3f2fd"
+}
+initiatives: "@lumenflow/initiatives" {
+  style.fill: "#e3f2fd"
+}
+kernel: "@lumenflow/kernel" {
+  style.fill: "#fff3e0"
+  style.stroke: "#e65100"
+}
+
+pack: "software-delivery pack" {
+  style.fill: "#f3e5f5"
+  style.stroke: "#7b1fa2"
+}
+
+cli -> core
+cli -> memory
+cli -> agent
+cli -> metrics
+cli -> initiatives
+cli -> kernel
+
+pack -> kernel: "type-only import" {
+  style.stroke-dash: 3
+}
+pack -> cli: "runtime (via adapter)" {
+  style.stroke-dash: 3
+  style.stroke: "#7b1fa2"
+}
+```
+
+---
+
 ## WU Lifecycle
 
 Work Units progress through 5 states with specific transitions.
 
 ```d2
-direction: right
+direction: down
 
-start: {
-  shape: circle
-  style.fill: "#333"
+states: {
+  style.fill: transparent
+  style.stroke: transparent
+
+  start: {
+    shape: circle
+    style.fill: "#333"
+  }
+
+  ready: {
+    style.fill: "#e3f2fd"
+  }
+
+  in_progress: {
+    style.fill: "#fff3e0"
+  }
+
+  blocked: {
+    style.fill: "#ffebee"
+  }
+
+  waiting: {
+    style.fill: "#f3e5f5"
+  }
+
+  done: {
+    style.fill: "#c8e6c9"
+    style.stroke: "#2e7d32"
+  }
+
+  end: {
+    shape: circle
+    style.fill: "#333"
+  }
 }
 
-ready: {
-  style.fill: "#e3f2fd"
-}
-
-in_progress: {
-  style.fill: "#fff3e0"
-}
-
-blocked: {
-  style.fill: "#ffebee"
-}
-
-waiting: {
-  style.fill: "#f3e5f5"
-}
-
-done: {
-  style.fill: "#c8e6c9"
-  style.stroke: "#2e7d32"
-}
-
-end: {
-  shape: circle
-  style.fill: "#333"
-}
-
-start -> ready: create
-ready -> in_progress: claim
-in_progress -> blocked: block\n(requires reason)
-in_progress -> waiting: wait
-in_progress -> done: complete
-in_progress -> ready: release\n(orphan recovery)
-blocked -> in_progress: unblock
-blocked -> done: complete
-waiting -> in_progress: resume
-waiting -> done: complete
-done -> end
+states.start -> states.ready: create
+states.ready -> states.in_progress: claim
+states.in_progress -> states.blocked: block\n(requires reason)
+states.in_progress -> states.waiting: wait
+states.in_progress -> states.done: complete
+states.in_progress -> states.ready: release\n(orphan recovery)
+states.blocked -> states.in_progress: unblock
+states.blocked -> states.done: complete
+states.waiting -> states.in_progress: resume
+states.waiting -> states.done: complete
+states.done -> states.end
 ```
 
 **Key points:**
@@ -245,8 +376,8 @@ auxiliary.events -> derived.status: Historical input {
 
 Fields are populated at different lifecycle stages.
 
-```d2
-direction: right
+```d2 width=800
+direction: down
 
 create: At wu:create {
   style.fill: "#e3f2fd"
@@ -306,7 +437,7 @@ create -> claim -> done
 Quality gates are [pack policies](/concepts/policy-engine#gates-as-policies) with `trigger: on_completion`, evaluated by the [kernel](/concepts/kernel) before a task can complete.
 
 ```d2
-direction: right
+direction: down
 
 gates: pnpm gates {
   style.fill: "#f5f5f5"
@@ -319,17 +450,14 @@ gates: pnpm gates {
   format -> lint -> type -> test
 }
 
-fix1: Auto-fix:\npnpm format {
+fixes: Fix Actions {
   style.fill: "#ffebee"
-}
-fix2: Manual fix\nrequired {
-  style.fill: "#ffebee"
-}
-fix3: Fix types\nbefore continuing {
-  style.fill: "#ffebee"
-}
-fix4: Fix tests\nor update snapshots {
-  style.fill: "#ffebee"
+  style.stroke: "#d32f2f"
+
+  fix1: "Auto-fix:\npnpm format"
+  fix2: "Manual fix\nrequired"
+  fix3: "Fix types\nbefore continuing"
+  fix4: "Fix tests\nor update snapshots"
 }
 
 ready: Ready for\nwu:prep {
@@ -337,16 +465,16 @@ ready: Ready for\nwu:prep {
   style.stroke: "#2e7d32"
 }
 
-gates.format -> fix1: Fail
-gates.lint -> fix2: Fail
-gates.type -> fix3: Fail
-gates.test -> fix4: Fail
+gates.format -> fixes.fix1: Fail
+gates.lint -> fixes.fix2: Fail
+gates.type -> fixes.fix3: Fail
+gates.test -> fixes.fix4: Fail
 gates.test -> ready: Pass
 
-fix1 -> gates.format
-fix2 -> gates.lint
-fix3 -> gates.type
-fix4 -> gates.test
+fixes.fix1 -> gates.format
+fixes.fix2 -> gates.lint
+fixes.fix3 -> gates.type
+fixes.fix4 -> gates.test
 ```
 
 **Key points:**
@@ -463,7 +591,7 @@ agents.M -> agents.A: Recovery context
 WUs are organized into parallel execution waves based on dependencies.
 
 ```d2
-direction: right
+direction: down
 
 init: Initiative INIT-001 {
   wave0: Wave 0 (Parallel) {
@@ -508,6 +636,8 @@ init.wave1.w1b -> init.wave2.w2a
 ## Next Steps
 
 - [Kernel Runtime](/concepts/kernel) — The execution engine behind every tool call
+- [Tool Execution](/concepts/tool-execution) — How pack tools execute inside dispatch
+- [Package Architecture](/concepts/package-architecture) — Package relationships and build flow
 - [Packs](/concepts/packs) — How domain tools are loaded and dispatched
 - [Work Units](/concepts/work-units) — Deep dive into WU structure
 - [Lanes](/concepts/lanes) — Lane configuration and scope boundaries

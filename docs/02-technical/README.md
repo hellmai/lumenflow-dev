@@ -30,11 +30,13 @@ LumenFlow is a monorepo with 7 packages:
 
 ## Architecture
 
-See [architecture/](architecture/) for:
+See [architecture/](architecture/) for system design, package relationships, and data flow.
 
-- System design
-- Package relationships
-- Data flow
+The canonical architecture documentation lives on the Starlight docs site:
+
+- [Tool Execution](https://lumenflow.dev/concepts/tool-execution/) — How pack tools execute: sandbox dispatch, the runtime CLI adapter, and two implementation paths
+- [Package Architecture](https://lumenflow.dev/concepts/package-architecture/) — How packages relate, what each one does, and how packs are distributed
+- [Visual Overview](https://lumenflow.dev/concepts/visual-overview/) — Key concepts visualized through D2 diagrams
 
 ---
 

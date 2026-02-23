@@ -36,6 +36,8 @@ export default defineConfig({
             { label: 'Visual Overview', slug: 'concepts/visual-overview' },
             { label: 'Kernel Runtime', slug: 'concepts/kernel' },
             { label: 'Packs', slug: 'concepts/packs' },
+            { label: 'Tool Execution', slug: 'concepts/tool-execution' },
+            { label: 'Package Architecture', slug: 'concepts/package-architecture' },
             { label: 'Scope Intersection', slug: 'concepts/scope-intersection' },
             { label: 'Policy Engine', slug: 'concepts/policy-engine' },
             { label: 'Evidence Store', slug: 'concepts/evidence' },

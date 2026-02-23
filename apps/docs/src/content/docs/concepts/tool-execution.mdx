@@ -1,0 +1,356 @@
+---
+title: Tool Execution
+description: How pack tools execute — sandbox dispatch, the runtime CLI adapter, and two implementation paths
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+The [Kernel Runtime](/concepts/kernel) page explains the 8-step pipeline that every tool call passes through. This page explains what happens inside **step 7 (dispatch)** — how the kernel routes a tool call into a sandboxed subprocess, how the pack's tool implementation runs, and how the runtime CLI adapter bridges ~80 tools to existing CLI command modules.
+
+## Three-Layer Execution Stack
+
+Tool execution flows through three layers. The kernel dispatches into a sandboxed subprocess, where the pack's tool-runner worker loads the tool implementation, which either calls the runtime CLI adapter or executes directly.
+
+```d2
+direction: down
+
+kernel: "@lumenflow/kernel" {
+  style.fill: "#e3f2fd"
+  style.stroke: "#1565c0"
+
+  runtime: KernelRuntime {
+    style.fill: "#bbdefb"
+  }
+  host: ToolHost {
+    style.fill: "#bbdefb"
+  }
+  dispatcher: SandboxSubprocess-\nDispatcher {
+    style.fill: "#bbdefb"
+  }
+
+  runtime -> host: "executeTool()"
+  host -> dispatcher: "dispatch()"
+}
+
+pack: "software-delivery pack" {
+  style.fill: "#fff3e0"
+  style.stroke: "#e65100"
+
+  worker: tool-runner-worker {
+    style.fill: "#ffe0b2"
+  }
+  loader: worker-loader {
+    style.fill: "#ffe0b2"
+  }
+  impl: "tool-impl\n(~90 exported functions)" {
+    style.fill: "#ffe0b2"
+  }
+  adapter: runtime-cli-adapter {
+    style.fill: "#ffe0b2"
+  }
+
+  worker -> loader: "loadToolImplementation()"
+  loader -> impl: "dynamic import"
+  impl -> adapter: "~80 tools"
+}
+
+cli: "@lumenflow/cli" {
+  style.fill: "#e8f4e8"
+  style.stroke: "#2e7d32"
+
+  commands: "command modules\n(each exports main())" {
+    style.fill: "#c8e6c9"
+  }
+  core: "@lumenflow/core" {
+    style.fill: "#c8e6c9"
+  }
+
+  commands -> core
+}
+
+direct: "Direct implementations\n(~10 tools)" {
+  style.fill: "#f3e5f5"
+  style.stroke: "#7b1fa2"
+  style.stroke-dash: 3
+}
+
+kernel.dispatcher -> pack.worker: "bwrap sandbox\n(JSON on stdin)"
+pack.adapter -> cli.commands: "runtimeCliAdapter.run()"
+pack.impl -> direct: "git-tools, worktree-tools,\nlane-lock" {
+  style.stroke: "#7b1fa2"
+  style.stroke-dash: 3
+}
+```
+
+| Layer | Package | Responsibility |
+|---|---|---|
+| **Kernel** | `@lumenflow/kernel` | Domain-agnostic orchestration: scope enforcement, policy evaluation, evidence recording, sandbox dispatch |
+| **Pack** | `software-delivery` | Tool implementations: 90+ exported functions grouped by domain (WU lifecycle, memory, git, etc.) |
+| **CLI** | `@lumenflow/cli` | Business logic: each command module exports a `main()` function that performs the actual work |
+
+## Complete Execution Trace
+
+Here is the full path a tool call takes, using `wu:create` as an example.
+
+```d2
+direction: down
+
+agent: "Agent calls wu:create" {
+  style.fill: "#e3f2fd"
+}
+
+kernel: Kernel Pipeline {
+  style.fill: "#f5f5f5"
+  style.stroke: "#9e9e9e"
+
+  tamper: "Spec tamper check\n(SHA-256 hash)" {
+    style.fill: "#ffebee"
+  }
+  scope: "Scope intersection\n(workspace ∩ lane ∩ task ∩ tool)" {
+    style.fill: "#fff3e0"
+  }
+  policy: "Policy evaluation\n(deny-wins cascade)" {
+    style.fill: "#fff3e0"
+  }
+  evidence_in: "Persist input\n(content-addressed blob)" {
+    style.fill: "#e8f4e8"
+  }
+
+  tamper -> scope -> policy -> evidence_in
+}
+
+sandbox: Sandbox Subprocess {
+  style.fill: "#f5f5f5"
+  style.stroke: "#9e9e9e"
+
+  bwrap: "bwrap launches Node\nwith sandbox profile" {
+    style.fill: "#e3f2fd"
+  }
+  worker: "tool-runner-worker\nreads JSON from stdin" {
+    style.fill: "#fff3e0"
+  }
+  resolve: "worker-loader resolves\ntool-impl module" {
+    style.fill: "#fff3e0"
+  }
+
+  bwrap -> worker -> resolve
+}
+
+adapter_flow: Runtime CLI Adapter {
+  style.fill: "#f5f5f5"
+  style.stroke: "#9e9e9e"
+
+  serialize: "runExclusive()\nacquires serial lock" {
+    style.fill: "#f3e5f5"
+  }
+  patch: "Patch process.argv,\nprocess.exit, stdout,\nstderr, console.*" {
+    style.fill: "#f3e5f5"
+  }
+  load: "Dynamic import:\ncli/src/wu-create.js" {
+    style.fill: "#e8f4e8"
+  }
+  main: "module.main()\nexecutes business logic" {
+    style.fill: "#e8f4e8"
+  }
+  catch_exit: "Catch RuntimeCliExitSignal\n(exit code capture)" {
+    style.fill: "#fff3e0"
+  }
+  restore: "Restore all patched\nglobals" {
+    style.fill: "#fff3e0"
+  }
+
+  serialize -> patch -> load -> main -> catch_exit -> restore
+}
+
+evidence_out: "Evidence recording\n(result + timing + scope)" {
+  style.fill: "#e8f4e8"
+  style.stroke: "#2e7d32"
+}
+
+agent -> kernel.tamper
+kernel.evidence_in -> sandbox.bwrap
+sandbox.resolve -> adapter_flow.serialize
+adapter_flow.restore -> evidence_out
+```
+
+<Aside type="note">
+  The sandbox boundary is crossed twice: once on the way in (JSON on stdin) and once on the way out
+  (JSON on stdout). The kernel never executes pack code in-process — all tool implementations run
+  inside the sandboxed subprocess.
+</Aside>
+
+## Two Implementation Paths
+
+The Software Delivery Pack uses two strategies for implementing its 90+ tools.
+
+### CLI Adapter Path (~80 tools)
+
+Most tools delegate to existing CLI command modules via the **runtime CLI adapter**. The tool implementation function builds an argument array and calls `runtimeCliAdapter.run(command, args)`, which dynamically imports the corresponding CLI module and calls its `main()` function.
+
+Tool implementation files that use this path:
+
+| File | Domain | Tools |
+|---|---|---|
+| `wu-lifecycle-tools.ts` | WU create, claim, prep, done, block, edit, etc. | ~21 |
+| `runtime-native-tools.ts` | File read/write/edit/delete, config, validation, etc. | ~20 |
+| `memory-tools.ts` | Checkpoint, inbox, signal, recover, etc. | ~14 |
+| `initiative-orchestration-tools.ts` | Initiative create, plan, status, orchestrate, etc. | ~11 |
+| `agent-tools.ts` | Agent session management, delegation | ~8 |
+| `flow-metrics-tools.ts` | Flow reports, bottleneck analysis, metrics | ~6 |
+
+### Direct Implementation Path (~10 tools)
+
+A smaller set of tools are self-contained implementations that do not use the CLI adapter. These use `simple-git` wrappers or Node builtins directly.
+
+| File | Domain | Why direct |
+|---|---|---|
+| `git-tools.ts` | git:add, git:status, git:commit | Needs fine-grained control over git binary invocation and output parsing |
+| `worktree-tools.ts` | Worktree creation and management | Uses `spawnSync` for worktree operations |
+| `lane-lock.ts` | Lane lock acquisition and release | Lightweight file-based locking, no CLI command equivalent |
+
+Direct implementations follow the same `ToolOutput` interface and receive the same `ToolRunnerWorkerContext` — the kernel treats both paths identically.
+
+## Runtime CLI Adapter Deep Dive
+
+The runtime CLI adapter (`runtime-cli-adapter.ts`) is the bridge that lets pack tools reuse CLI command modules without spawning a child process for each command. It loads CLI modules in-process and captures their output.
+
+### Serialized Execution
+
+All adapter invocations are serialized through `runExclusive()` — a promise-based queue that ensures only one CLI module runs at a time. This prevents concurrent mutations to `process.argv` and other patched globals.
+
+```typescript
+// Simplified from runtime-cli-adapter.ts
+let executionQueue: Promise<void> = Promise.resolve();
+
+async function runExclusive<T>(operation: () => Promise<T>): Promise<T> {
+  const scheduled = executionQueue.then(operation, operation);
+  executionQueue = scheduled.then(() => undefined, () => undefined);
+  return scheduled;
+}
+```
+
+### What Gets Patched
+
+Before calling a CLI module's `main()`, the adapter patches six global surfaces:
+
+| Global | Patch | Why |
+|---|---|---|
+| `process.argv` | Set to `[execPath, command, ...args]` | CLI modules parse arguments from `process.argv` |
+| `process.exit` | Replaced with a function that throws `RuntimeCliExitSignal` | Prevents the subprocess from actually exiting; captures the exit code instead |
+| `process.stdout.write` | Redirected to a capture buffer | Captures stdout output as a string |
+| `process.stderr.write` | Redirected to a capture buffer | Captures stderr output as a string |
+| `console.log/info/debug` | Redirected to stdout capture buffer | Captures console output that would otherwise go to the real stdout |
+| `console.error/warn` | Redirected to stderr capture buffer | Captures console errors that would otherwise go to the real stderr |
+
+All patches are restored in a `finally` block, guaranteeing cleanup even when the CLI module throws.
+
+### The RuntimeCliExitSignal Trick
+
+CLI modules call `process.exit(code)` to signal success or failure. In a normal Node process, this terminates the process. The adapter replaces `process.exit` with a function that throws a `RuntimeCliExitSignal` error:
+
+```typescript
+// Simplified from runtime-cli-adapter.ts
+class RuntimeCliExitSignal extends Error {
+  readonly exitCode: number;
+  constructor(exitCode: number) {
+    super(`CLI requested process exit (${exitCode})`);
+    this.exitCode = exitCode;
+  }
+}
+```
+
+The adapter's `try/catch` block recognizes this error and captures the exit code without terminating the worker process.
+
+### Module Resolution
+
+CLI modules are resolved relative to the workspace root:
+
+```
+packages/@lumenflow/cli/src/<command>.js
+```
+
+For example, `wu-create` resolves to `packages/@lumenflow/cli/src/wu-create.js`. The adapter converts this to a `file://` URL and uses dynamic `import()` to load the module.
+
+<Aside type="caution">
+  The adapter loads CLI modules from the workspace source tree, not from `node_modules`. This means
+  the CLI package must be built (`pnpm bootstrap`) before pack tools can execute. In development,
+  this is handled automatically. In production (npm install), the CLI dist is already built.
+</Aside>
+
+## The Sandbox Boundary
+
+The kernel uses `bwrap` (bubblewrap) to create a sandboxed subprocess for each tool execution. This provides OS-level isolation.
+
+```d2 width=800
+direction: right
+
+host: ToolHost {
+  style.fill: "#e3f2fd"
+  style.stroke: "#1565c0"
+
+  dispatch: "dispatch(request)"
+  parse: "parseToolRunnerWorkerResponse()"
+}
+
+sandbox: "bwrap sandbox" {
+  style.fill: "#fff3e0"
+  style.stroke: "#e65100"
+
+  node: "Node.js process"
+  worker: "tool-runner-worker.ts"
+  tool: "tool implementation"
+
+  node -> worker -> tool
+}
+
+host.dispatch -> sandbox.node: "JSON stdin\n(invocation payload)" {
+  style.stroke: "#1565c0"
+}
+sandbox.tool -> host.parse: "JSON stdout\n(ToolOutput)" {
+  style.stroke: "#2e7d32"
+}
+```
+
+The invocation payload sent on stdin contains:
+
+| Field | Purpose |
+|---|---|
+| `tool_name` | Which tool to execute |
+| `handler_entry` | Module path and export name (e.g., `tool-impl/wu-lifecycle-tools.ts#wuCreateTool`) |
+| `input` | The tool's input data |
+| `scope_enforced` | The computed scope intersection (for the tool to reference) |
+| `receipt_id` | UUID linking this execution to the evidence trace |
+
+The response on stdout is a JSON object with an `output` field containing the standard `ToolOutput` structure (`success`, `data`, `error`, `metadata`).
+
+### Sandbox Profile
+
+The `bwrap` sandbox profile is constructed from the enforced scopes. Write-scoped paths get read-write bind mounts; read-scoped paths get read-only bind mounts. Paths outside the scope intersection are not mounted — the tool literally cannot see them.
+
+## Why This Architecture
+
+This architecture is an **intentional incremental migration** from CLI-first to pack-first, not accidental complexity.
+
+<Steps>
+1. **LumenFlow started as a CLI tool.** The original 80+ commands were standalone CLI scripts, each parsing `process.argv` and writing to stdout. This was the fastest way to build and validate the workflow.
+
+2. **The kernel introduced governance.** When the kernel was added to provide scope enforcement, policy evaluation, and evidence recording, every tool call needed to pass through the kernel pipeline. But rewriting 80+ CLI commands as kernel-native tool implementations would have been a multi-month effort.
+
+3. **The runtime CLI adapter bridged the gap.** Instead of rewriting everything, the adapter pattern lets pack tools call existing CLI modules in-process. The CLI modules do not know they are running inside a sandbox — they just call `main()` and write to stdout as usual.
+
+4. **New tools are written pack-native.** The direct implementation path (git-tools, worktree-tools, lane-lock) shows the target architecture: self-contained functions that return `ToolOutput` directly. Over time, more tools will migrate from the adapter path to direct implementations.
+
+{/* prettier-ignore */}
+</Steps>
+
+This design means:
+- **No big rewrite required** — the system works today with full governance
+- **External contributors can add tools either way** — via CLI commands (adapter path) or direct implementations
+- **Migration is incremental** — each tool can be converted independently
+
+## Next Steps
+
+- [Kernel Runtime](/concepts/kernel) — The 8-step pipeline that dispatches tools
+- [Package Architecture](/concepts/package-architecture) — How packages relate and how packs are distributed
+- [Packs](/concepts/packs) — How domain tools are declared and loaded
+- [Create a Pack](/guides/create-a-pack) — Build your own domain pack

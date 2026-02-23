@@ -133,6 +133,8 @@ Tools can be implemented as:
 - **In-process handlers** — TypeScript functions that run directly in the kernel process. Used for lightweight read operations.
 - **Subprocess handlers** — executed in a sandboxed subprocess via `spawnSync`. Used for write operations and anything that needs OS-level isolation.
 
+The Software Delivery Pack uses two implementation strategies. Most tools (~80) use the **runtime CLI adapter** to reuse existing CLI command modules in-process. A smaller set (~10) use **direct implementations** with `simple-git` wrappers and Node builtins. See [Tool Execution](/concepts/tool-execution) for the full execution architecture.
+
 ## Next Steps
 
 - [Kernel Runtime](/concepts/kernel) — How the kernel dispatches and governs tool calls
