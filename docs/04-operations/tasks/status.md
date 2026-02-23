@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2059 — Wire completion workflow guardrails into wu:brief prompt assembly](wu/WU-2059.yaml)
 
 ## Completed
 
