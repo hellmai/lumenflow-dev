@@ -78,18 +78,19 @@ For complete CLI command documentation (60+ commands), see [quick-ref-commands.m
 
 **Essential commands:**
 
-| Command               | Description                                    |
-| --------------------- | ---------------------------------------------- |
-| `pnpm wu:claim`       | Claim WU and create worktree (or `--cloud`)    |
-| `pnpm wu:prep`        | Run gates in worktree, prep for wu:done        |
-| `pnpm wu:done`        | Complete WU (merge or PR, stamp, cleanup)      |
-| `pnpm wu:status`      | Show WU status, location, valid commands       |
-| `pnpm wu:recover`     | Analyze and fix WU state inconsistencies       |
-| `pnpm gates`          | Run all quality gates (`--docs-only` for docs) |
-| `pnpm lane:status`    | Show lane lifecycle status and next step       |
-| `pnpm lane:setup`     | Create/update draft lane artifacts             |
-| `pnpm lane:lock`      | Lock lane lifecycle for delivery WUs           |
-| `pnpm mem:checkpoint` | Save progress checkpoint                       |
+| Command                   | Description                                           |
+| ------------------------- | ----------------------------------------------------- |
+| `pnpm wu:claim`           | Claim WU and create worktree (or `--cloud`)           |
+| `pnpm wu:prep`            | Run gates in worktree, prep for wu:done               |
+| `pnpm wu:done`            | Complete WU (merge or PR, stamp, cleanup)             |
+| `pnpm wu:status`          | Show WU status, location, valid commands              |
+| `pnpm wu:recover`         | Analyze and fix WU state inconsistencies              |
+| `pnpm gates`              | Run all quality gates (`--docs-only` for docs)        |
+| `pnpm lumenflow:commands` | List all public commands (primary + aliases + legacy) |
+| `pnpm lane:status`        | Show lane lifecycle status and next step              |
+| `pnpm lane:setup`         | Create/update draft lane artifacts                    |
+| `pnpm lane:lock`          | Lock lane lifecycle for delivery WUs                  |
+| `pnpm mem:checkpoint`     | Save progress checkpoint                              |
 
 **Two-step completion (wu:prep then wu:done):**
 
@@ -152,6 +153,18 @@ This file provides universal guidance for all AI agents. Additional vendor-speci
 | 4. Prep      | lane branch | `pnpm wu:prep --id WU-XXX` (validates branch, runs gates)                    |
 | 5. Complete  | lane branch | `pnpm wu:done --id WU-XXX` (creates PR)                                      |
 | 6. Cleanup   | after merge | `pnpm wu:cleanup --id WU-XXX` (post-merge stamps)                            |
+
+---
+
+## Public Docs IA (Kernel + Packs)
+
+- Kernel docs source: `apps/docs/src/content/docs/kernel/**`
+- Software Delivery Pack docs source: `apps/docs/src/content/docs/packs/software-delivery/**`
+- Language guides (pack-scoped): `apps/docs/src/content/docs/packs/software-delivery/languages/**`
+- Docs truth YAML files:
+  - `apps/docs/src/data/version-policy.yaml`
+  - `apps/docs/src/data/language-support.yaml`
+  - `apps/docs/src/data/example-repos.yaml`
 
 ---
 

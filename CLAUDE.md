@@ -77,19 +77,22 @@ pnpm wu:infer-lane --paths "packages/@lumenflow/cli/src/init.ts" --desc "Fix ini
 
 ## Commands Reference
 
-| Command               | Description                                       |
-| --------------------- | ------------------------------------------------- |
-| `pnpm setup`          | Install deps and build CLI                        |
-| `pnpm bootstrap`      | Build CLI with dependency closure (worktree-safe) |
-| `pnpm wu:create`      | Create new WU spec                                |
-| `pnpm wu:claim`       | Claim WU and create worktree                      |
-| `pnpm wu:prep`        | Run gates in worktree, prep for wu:done           |
-| `pnpm wu:done`        | Complete WU (merge, stamp, cleanup)               |
-| `pnpm wu:status`      | Show WU status, location, valid commands          |
-| `pnpm wu:recover`     | Analyze and fix WU state inconsistencies          |
-| `pnpm gates`          | Run quality gates                                 |
-| `pnpm mem:init`       | Initialize memory layer                           |
-| `pnpm mem:checkpoint` | Save memory checkpoint                            |
+| Command                   | Description                                         |
+| ------------------------- | --------------------------------------------------- |
+| `pnpm setup`              | Install deps and build CLI                          |
+| `pnpm bootstrap`          | Build CLI with dependency closure (worktree-safe)   |
+| `pnpm wu:create`          | Create new WU spec                                  |
+| `pnpm wu:claim`           | Claim WU and create worktree                        |
+| `pnpm wu:prep`            | Run gates in worktree, prep for wu:done             |
+| `pnpm wu:done`            | Complete WU (merge, stamp, cleanup)                 |
+| `pnpm wu:status`          | Show WU status, location, valid commands            |
+| `pnpm wu:recover`         | Analyze and fix WU state inconsistencies            |
+| `pnpm gates`              | Run quality gates                                   |
+| `pnpm lumenflow:commands` | List all public commands (primary + alias + legacy) |
+| `pnpm docs:generate`      | Regenerate CLI/config reference docs from source    |
+| `pnpm docs:validate`      | Verify generated docs are up-to-date                |
+| `pnpm mem:init`           | Initialize memory layer                             |
+| `pnpm mem:checkpoint`     | Save memory checkpoint                              |
 
 > **CLI reference (60+ commands):** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md). Always run `<command> --help` for the authoritative option list.
 
@@ -176,6 +179,12 @@ This repo follows the vendor-agnostic LumenFlow documentation structure:
 - **.lumenflow/constraints.md** - Non-negotiable rules
 - **.lumenflow/rules/** - Workflow rules
 - **docs/04-operations/\_frameworks/lumenflow/agent/onboarding/** - Agent onboarding docs
+- **apps/docs/src/content/docs/kernel/** - Kernel docs source
+- **apps/docs/src/content/docs/packs/software-delivery/** - Software Delivery Pack docs source
+- **apps/docs/src/content/docs/packs/software-delivery/languages/** - Pack-scoped language guides
+- **apps/docs/src/data/version-policy.yaml** - Stable version truth file
+- **apps/docs/src/data/language-support.yaml** - Language support truth file
+- **apps/docs/src/data/example-repos.yaml** - Example repo truth file
 - **.claude/** - Claude Code-specific configuration
 
 ---

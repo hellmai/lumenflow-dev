@@ -165,6 +165,15 @@ For cloud agents (Codex/Claude web/CI) operating on feature branches:
 - **.lumenflow/rules/** - Workflow rules (git-safety.md, wu-workflow.md, etc.)
 - **docs/04-operations/\_frameworks/lumenflow/agent/onboarding/** - Agent onboarding documentation
 
+### Public Starlight Docs (Kernel/Packs IA)
+
+- **apps/docs/src/content/docs/kernel/** - Kernel-only user docs
+- **apps/docs/src/content/docs/packs/software-delivery/** - Software Delivery Pack docs
+- **apps/docs/src/content/docs/packs/software-delivery/languages/** - Pack-scoped language guides
+- **apps/docs/src/data/version-policy.yaml** - Published stable version source of truth
+- **apps/docs/src/data/language-support.yaml** - Language guide support metadata
+- **apps/docs/src/data/example-repos.yaml** - Companion example-repo mapping
+
 ### Client/Vendor Overlays
 
 - **CLAUDE.md** - Claude Code overlay (single file at root)
@@ -218,25 +227,29 @@ For the full worktree lifecycle (parallel execution, bootstrap, isolation guaran
 
 > **Complete CLI reference (60+ commands):** See [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md). Always run `<command> --help` for the authoritative option list.
 
-| Command               | Description                                            |
-| --------------------- | ------------------------------------------------------ |
-| `pnpm wu:create`      | Create new WU spec                                     |
-| `pnpm wu:claim`       | Claim WU, update canonical state, create worktree      |
-| `pnpm wu:prep`        | Run gates in worktree, prep for wu:done                |
-| `pnpm wu:done`        | Complete WU (merge, stamp, cleanup)                    |
-| `pnpm wu:status`      | Show WU status, location, and valid commands           |
-| `pnpm wu:recover`     | Analyze and fix WU state inconsistencies               |
-| `pnpm wu:block`       | Block WU (transitions to blocked, frees lane)          |
-| `pnpm wu:unblock`     | Unblock WU (transitions to in_progress)                |
-| `pnpm wu:release`     | Release orphaned WU (in_progress to ready for reclaim) |
-| `pnpm gates`          | Run quality gates (`--docs-only` for docs WUs)         |
-| `pnpm lane:status`    | Show lane lifecycle status + next step                 |
-| `pnpm lane:setup`     | Create/update draft lane artifacts                     |
-| `pnpm lane:validate`  | Validate lane artifacts before lock                    |
-| `pnpm lane:lock`      | Lock lane lifecycle for delivery WUs                   |
-| `pnpm mem:checkpoint` | Save memory checkpoint                                 |
+| Command                   | Description                                            |
+| ------------------------- | ------------------------------------------------------ |
+| `pnpm wu:create`          | Create new WU spec                                     |
+| `pnpm wu:claim`           | Claim WU, update canonical state, create worktree      |
+| `pnpm wu:prep`            | Run gates in worktree, prep for wu:done                |
+| `pnpm wu:done`            | Complete WU (merge, stamp, cleanup)                    |
+| `pnpm wu:status`          | Show WU status, location, and valid commands           |
+| `pnpm wu:recover`         | Analyze and fix WU state inconsistencies               |
+| `pnpm wu:block`           | Block WU (transitions to blocked, frees lane)          |
+| `pnpm wu:unblock`         | Unblock WU (transitions to in_progress)                |
+| `pnpm wu:release`         | Release orphaned WU (in_progress to ready for reclaim) |
+| `pnpm gates`              | Run quality gates (`--docs-only` for docs WUs)         |
+| `pnpm lumenflow:commands` | List all public commands (primary + alias + legacy)    |
+| `pnpm docs:generate`      | Regenerate CLI/config reference docs from source       |
+| `pnpm docs:validate`      | Verify generated docs are up-to-date                   |
+| `pnpm lane:status`        | Show lane lifecycle status + next step                 |
+| `pnpm lane:setup`         | Create/update draft lane artifacts                     |
+| `pnpm lane:validate`      | Validate lane artifacts before lock                    |
+| `pnpm lane:lock`          | Lock lane lifecycle for delivery WUs                   |
+| `pnpm mem:checkpoint`     | Save memory checkpoint                                 |
 
 Commands include **context-aware validation** that checks location, WU status, and git state. When validation fails, commands provide copy-paste ready fix commands. Configure in `workspace.yaml` under `software_delivery.experimental.context_validation`.
+The Starlight CLI reference page is intentionally curated to primary commands; use `pnpm lumenflow:commands` for complete discovery.
 
 For recovery commands, state management, memory coordination, and orchestration tools, see [quick-ref-commands.md](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md).
 

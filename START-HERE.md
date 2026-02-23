@@ -31,10 +31,10 @@ pnpm add -D @lumenflow/cli
 pnpm exec lumenflow
 
 # 2. Verify it worked
-pnpm exec lumenflow-doctor
+pnpm lumenflow:doctor
 ```
 
-If `lumenflow doctor` shows "LumenFlow safety: ACTIVE", you're ready to go.
+If `pnpm lumenflow:doctor` reports "LumenFlow safety: ACTIVE", you're ready to go.
 
 ### Joining an Existing LumenFlow Repo
 
@@ -45,7 +45,7 @@ cd your-repo
 pnpm setup
 
 # 2. Verify installation
-pnpm exec lumenflow doctor
+pnpm lumenflow:doctor
 ```
 
 ---
@@ -59,8 +59,8 @@ LumenFlow uses a **trunk-based development** workflow with **Work Units (WUs)**:
                             (ID auto-generated, e.g. WU-1990)
 2. Claim WU            ->  pnpm wu:claim --id WU-1990 --lane <Lane>
 3. Work in worktree    ->  cd worktrees/<lane>-wu-1990
-4. Run gates           ->  pnpm gates
-5. Complete WU         ->  pnpm wu:done --id WU-1990
+4. Prep WU (runs gates)->  pnpm wu:prep --id WU-1990
+5. Complete WU         ->  cd <project-root> && pnpm wu:done --id WU-1990
 ```
 
 For detailed workflow documentation, see [LUMENFLOW.md](LUMENFLOW.md).
@@ -100,6 +100,11 @@ For detailed workflow documentation, see [LUMENFLOW.md](LUMENFLOW.md).
 ├── .clinerules         # Cline AI instructions
 ├── .cursor/rules/      # Cursor AI instructions
 ├── .windsurf/rules/    # Windsurf AI instructions
+├── apps/docs/
+│   └── src/
+│       ├── content/docs/kernel/                         # Kernel docs IA
+│       ├── content/docs/packs/software-delivery/        # Software Delivery Pack docs IA
+│       └── data/                                         # YAML truth files (version/language/repos)
 └── docs/
     └── 04-operations/
         └── _frameworks/
