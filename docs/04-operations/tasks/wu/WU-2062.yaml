@@ -2,7 +2,7 @@ id: WU-2062
 title: 'Release script: fix JSON parsing and add cleanup-on-failure'
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -26,8 +26,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Two remaining release script issues from WU-2061: (1) findJsonStartIndex matches bracket in log prefixes like [sync:bundled-packs] — needs to find [{ or { instead of bare [. (2) Build/validate phase materializes dist symlinks and triggers prepack scripts that generate packs/ files. On failure these artifacts are left on main. Script must restore symlinks and clean generated files on any failure.'
+description: 'Two remaining release script issues from WU-2061: (1) findJsonStartIndex matches
+  bracket in log prefixes like [sync:bundled-packs] — needs to find [{ or { instead of bare [. (2)
+  Build/validate phase materializes dist symlinks and triggers prepack scripts that generate packs/
+  files. On failure these artifacts are left on main. Script must restore symlinks and clean
+  generated files on any failure.'
 acceptance:
-  - parsePackDryRunMetadata correctly parses output with pnpm lifecycle prefixes like [sync:bundled-packs]
+  - parsePackDryRunMetadata correctly parses output with pnpm lifecycle prefixes like
+    [sync:bundled-packs]
   - On any release failure, dist symlinks are restored and generated packs/ files are removed
   - Main working tree is always clean after release script exits, whether success or failure
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-2062
+claimed_at: 2026-02-23T12:06:22.045Z
+baseline_main_sha: 4f822c76603b186e2fc4eede326b6916f6a7aab4
+session_id: 090c7de0-8d27-4afd-bb84-3e6d676d14e9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T12:06:22.052Z

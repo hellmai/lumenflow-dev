@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2062 — Release script: fix JSON parsing and add cleanup-on-failure](wu/WU-2062.yaml)
 
 ## Completed
 

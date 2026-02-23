@@ -2070,3 +2070,4 @@
 {"type":"complete","wuId":"WU-2060","timestamp":"2026-02-23T11:23:51.378Z"}
 {"type":"claim","wuId":"WU-2061","timestamp":"2026-02-23T11:52:41.617Z","lane":"Operations: Tooling","title":"Fix release script: defer version bump until after validation"}
 {"type":"complete","wuId":"WU-2061","timestamp":"2026-02-23T12:01:28.859Z"}
+{"type":"claim","wuId":"WU-2062","timestamp":"2026-02-23T12:06:22.101Z","lane":"Operations: Tooling","title":"Release script: fix JSON parsing and add cleanup-on-failure"}
