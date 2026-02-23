@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-- [WU-2084 — INIT-035 L8: Create companion repo for PHP](wu/WU-2084.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1013,3 +1013,4 @@ _Last updated: 2026-02-23_
 - [WU-2082 — INIT-035 L6: Create companion repo for Rust](wu/WU-2082.yaml) — 2026-02-23
 - [WU-2083 — INIT-035 L7: Create companion repo for Ruby](wu/WU-2083.yaml) — 2026-02-23
 - [WU-2087 — lumenflow:upgrade self-bootstrap: run target version's script to avoid chicken-and-egg bugs](wu/WU-2087.yaml) — 2026-02-23
+- [WU-2084 — INIT-035 L8: Create companion repo for PHP](wu/WU-2084.yaml) — 2026-02-23

@@ -4,7 +4,7 @@ title: Kernel/Pack Docs Separation + Executable Language Guides
 description: Restructure docs into Kernel vs Packs IA, relocate language guides under Software
   Delivery Pack, align version truth to published stable metadata, enforce docs drift prevention in
   CI, and deliver language example repo parity in tiered waves.
-status: in_progress
+status: done
 priority: P0
 owner: Core docs/tooling team
 created: 2026-02-23
@@ -15,7 +15,7 @@ phases:
     status: done
   - id: 2
     title: 'Wave 2: java/rust/ruby/php companion repos'
-    status: in_progress
+    status: done
 success_metrics:
   - Kernel vs Packs IA live with repaired internal links
   - Language guides are pack-scoped, YAML-backed, and CI-smoke verified
