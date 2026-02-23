@@ -20,6 +20,11 @@ artifacts:
 dependencies: []
 initiative: INIT-035
 phase: 1
+blocked_by:
+  - WU-2068
+  - WU-2069
+  - WU-2071
+  - WU-2073
 labels:
   - INIT-035
   - A7
@@ -35,6 +40,7 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Synchronize internal canonical docs to Kernel/Packs IA and updated command conventions so internal and public guidance do not drift.
+description: Synchronize internal canonical docs to Kernel/Packs IA and updated command conventions
+  so internal and public guidance do not drift.
 acceptance:
   - AGENTS, LUMENFLOW, CLAUDE, and START-HERE content matches the new IA and command source of truth.
