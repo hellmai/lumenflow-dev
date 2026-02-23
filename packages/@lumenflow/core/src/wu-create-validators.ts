@@ -216,7 +216,8 @@ export function validateSpecRefs(specRefs: string[]): {
     }
 
     // Repo-relative paths should follow conventions (docs/ without ./ prefix)
-    const isValidRepoPath = ref.startsWith(plansDirHint) || ref.startsWith('docs/') || ref.endsWith('.md');
+    const isValidRepoPath =
+      ref.startsWith(plansDirHint) || ref.startsWith('docs/') || ref.endsWith('.md');
 
     if (!isValidRepoPath) {
       warnings.push(
