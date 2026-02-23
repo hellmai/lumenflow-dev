@@ -22,7 +22,6 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
-- [WU-2080 — INIT-035 L4: Create companion repo for .NET guide parity](wu/WU-2080.yaml) — Operations: Tooling
 - [WU-2081 — INIT-035 L5: Create companion repo for Java](wu/WU-2081.yaml) — Operations: Tooling
 - [WU-2082 — INIT-035 L6: Create companion repo for Rust](wu/WU-2082.yaml) — Operations: Tooling
 - [WU-2083 — INIT-035 L7: Create companion repo for Ruby](wu/WU-2083.yaml) — Operations: Tooling
@@ -30,7 +29,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2080 — INIT-035 L4: Create companion repo for .NET guide parity](wu/WU-2080.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 
