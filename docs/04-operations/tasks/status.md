@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2077 — INIT-035 L1: Migrate companion repo for Node guide parity](wu/WU-2077.yaml)
 
 ## Completed
 

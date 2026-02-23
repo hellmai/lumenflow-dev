@@ -2104,3 +2104,4 @@
 {"type":"complete","wuId":"WU-2075","timestamp":"2026-02-23T16:34:45.435Z"}
 {"type":"claim","wuId":"WU-2076","timestamp":"2026-02-23T16:35:33.252Z","lane":"Operations: Tooling","title":"INIT-035 A9: Add docs audit command and CI enforcement"}
 {"type":"complete","wuId":"WU-2076","timestamp":"2026-02-23T16:44:13.029Z"}
+{"type":"claim","wuId":"WU-2077","timestamp":"2026-02-23T16:46:02.326Z","lane":"Operations: Tooling","title":"INIT-035 L1: Migrate companion repo for Node guide parity"}
