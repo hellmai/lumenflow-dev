@@ -922,13 +922,14 @@ describe('WU-1077: release script bug fixes', () => {
 });
 
 /**
- * WU-2061: Tests for release script safety fixes
+ * WU-2061 + WU-2062: Tests for release script safety fixes
  *
  * Verifies:
  * - parsePackDryRunMetadata strips pnpm lifecycle output prefixed before JSON
  * - findJsonStartIndex correctly locates the first JSON-start character
+ * - WU-2062: findJsonStartIndex skips log-style brackets like [sync:bundled-packs]
  */
-describe('WU-2061: release script safety — parsePackDryRunMetadata JSON stripping', () => {
+describe('WU-2061/WU-2062: release script safety — parsePackDryRunMetadata JSON stripping', () => {
   describe('findJsonStartIndex', () => {
     it('returns 0 for input starting with [', () => {
       expect(findJsonStartIndex('[{"files":[]}]')).toBe(0);
@@ -959,6 +960,56 @@ describe('WU-2061: release script safety — parsePackDryRunMetadata JSON stripp
     it('returns earlier index when both [ and { appear', () => {
       expect(findJsonStartIndex('prefix[{"a":1}]')).toBe(6);
       expect(findJsonStartIndex('prefix{"a":[1]}')).toBe(6);
+    });
+
+    // WU-2062: The critical bug — [sync:bundled-packs] was matched as JSON start
+    it('skips log-style brackets like [sync:bundled-packs] and finds actual JSON', () => {
+      const input =
+        '[sync:bundled-packs] Copied 29 files to packs/software-delivery\n[{"files":[]}]';
+      const idx = findJsonStartIndex(input);
+      expect(input.slice(idx)).toBe('[{"files":[]}]');
+    });
+
+    it('skips multiple log-style brackets before JSON', () => {
+      const input =
+        '[sync:bundled-packs] step 1\n' +
+        '[postpack] cleaning up\n' +
+        '[{"files":[{"path":"dist/index.js"}]}]';
+      const idx = findJsonStartIndex(input);
+      expect(input.slice(idx)).toBe('[{"files":[{"path":"dist/index.js"}]}]');
+    });
+
+    it('handles JSON object after log-style brackets', () => {
+      const input = '[sync:bundled-packs] done\n{"files":[]}';
+      const idx = findJsonStartIndex(input);
+      expect(input.slice(idx)).toBe('{"files":[]}');
+    });
+
+    it('handles JSON with whitespace after opening bracket', () => {
+      expect(findJsonStartIndex('noise[ {"a":1}]')).toBe(5);
+      expect(findJsonStartIndex('noise{ "a":1}')).toBe(5);
+    });
+
+    it('handles empty JSON structures', () => {
+      expect(findJsonStartIndex('prefix[]')).toBe(6);
+      expect(findJsonStartIndex('prefix{}')).toBe(6);
+    });
+
+    it('handles real pnpm lifecycle output with sync:bundled-packs log', () => {
+      const realWorldOutput =
+        '> @lumenflow/cli@3.2.1 prepack\n' +
+        '> pnpm run sync:bundled-packs\n' +
+        '\n' +
+        '> @lumenflow/cli@3.2.1 sync:bundled-packs\n' +
+        '> node scripts/sync-bundled-packs.mjs\n' +
+        '\n' +
+        '[sync:bundled-packs] Copied 29 files to packs/software-delivery\n' +
+        '[{"id":"@lumenflow/cli","name":"@lumenflow-cli-3.2.1.tgz","files":[{"path":"dist/index.js"}]}]';
+      const idx = findJsonStartIndex(realWorldOutput);
+      const json = realWorldOutput.slice(idx);
+      expect(() => JSON.parse(json)).not.toThrow();
+      const parsed = JSON.parse(json) as Array<{ files: Array<{ path: string }> }>;
+      expect(parsed[0].files[0].path).toBe('dist/index.js');
     });
   });
 
@@ -993,6 +1044,26 @@ describe('WU-2061: release script safety — parsePackDryRunMetadata JSON stripp
       expect(result.files).toHaveLength(2);
       expect(result.files[0].path).toBe('dist/index.js');
       expect(result.files[1].path).toBe('package.json');
+    });
+
+    // WU-2062: The exact failure case from the real release attempt
+    it('strips lifecycle output with [sync:bundled-packs] log prefix before JSON', () => {
+      const lifecycleNoise =
+        '> @lumenflow/cli@3.2.1 prepack\n' +
+        '> pnpm run sync:bundled-packs\n' +
+        '\n' +
+        '> @lumenflow/cli@3.2.1 sync:bundled-packs\n' +
+        '> node scripts/sync-bundled-packs.mjs\n' +
+        '\n' +
+        '[sync:bundled-packs] Copied 29 files to packs/software-delivery\n';
+      const jsonPayload = JSON.stringify([
+        { files: [{ path: 'dist/index.js' }, { path: 'package.json' }] },
+      ]);
+      const input = lifecycleNoise + jsonPayload;
+
+      const result = parsePackDryRunMetadata(input);
+      expect(result.files).toHaveLength(2);
+      expect(result.files[0].path).toBe('dist/index.js');
     });
 
     it('throws on empty input', () => {

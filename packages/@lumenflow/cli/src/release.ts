@@ -4,15 +4,16 @@
 /**
  * Release Command
  *
- * Orchestrates npm release for all @lumenflow/* packages using micro-worktree isolation.
+ * Orchestrates npm release for all @lumenflow/* packages.
  *
  * Features:
  * - Validates semver version format
  * - Bumps all @lumenflow/* package versions atomically
- * - Uses micro-worktree isolation for version commit (no main branch pollution)
  * - Builds all packages via turbo
+ * - Validates packed artifacts against package contracts
  * - Publishes to npm with proper auth (requires NPM_TOKEN)
  * - Creates git tag vX.Y.Z
+ * - Cleanup-on-failure ensures main is never left dirty (WU-2062)
  *
  * Usage:
  *   pnpm release --release-version 1.3.0
@@ -710,28 +711,52 @@ const JSON_ARRAY_START = '[';
 const JSON_OBJECT_START = '{';
 
 /**
- * Find the index of the first JSON-start character (`[` or `{`) in a string.
+ * Find the index of the first real JSON-start sequence in a string.
  *
  * pnpm lifecycle scripts can prepend non-JSON output to stdout before the
- * actual JSON payload. This locates where the JSON begins so the caller
- * can strip the prefix.
+ * actual JSON payload — including log-style brackets like `[sync:bundled-packs]`.
+ * A bare `[` is ambiguous, so this function peeks at the next non-whitespace
+ * character to distinguish JSON arrays (`[{`, `["`, `[]`) and objects (`{"`, `{}`)
+ * from log prefixes.
  *
- * @returns Index of the first `[` or `{`, or 0 if not found (let JSON.parse report the error)
+ * WU-2062: Replaces naive indexOf('[') which matched log brackets.
+ *
+ * @returns Index of the first valid JSON start, or 0 if not found (let JSON.parse report the error)
  */
 export function findJsonStartIndex(raw: string): number {
-  const bracketIndex = raw.indexOf(JSON_ARRAY_START);
-  const braceIndex = raw.indexOf(JSON_OBJECT_START);
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i];
+    if (ch !== JSON_ARRAY_START && ch !== JSON_OBJECT_START) {
+      continue;
+    }
 
-  if (bracketIndex === -1 && braceIndex === -1) {
-    return 0;
+    // Peek past optional whitespace to verify this starts a JSON value,
+    // not a log-style bracket like [sync:bundled-packs].
+    let j = i + 1;
+    while (
+      j < raw.length &&
+      (raw[j] === ' ' || raw[j] === '\t' || raw[j] === '\n' || raw[j] === '\r')
+    ) {
+      j++;
+    }
+
+    if (j >= raw.length) {
+      return i;
+    }
+
+    const next = raw[j];
+    // Valid JSON array starts: [{ , [" , [] (empty)
+    if (ch === JSON_ARRAY_START && (next === JSON_OBJECT_START || next === '"' || next === ']')) {
+      return i;
+    }
+    // Valid JSON object starts: {" , {} (empty)
+    if (ch === JSON_OBJECT_START && (next === '"' || next === '}')) {
+      return i;
+    }
   }
-  if (bracketIndex === -1) {
-    return braceIndex;
-  }
-  if (braceIndex === -1) {
-    return bracketIndex;
-  }
-  return Math.min(bracketIndex, braceIndex);
+
+  // Not found — return 0 so JSON.parse reports the actual error
+  return 0;
 }
 
 /**
@@ -984,6 +1009,57 @@ export async function pushTagWithForce(
 }
 
 /**
+ * Clean up release artifacts after a failed release attempt.
+ *
+ * WU-2062: Ensures main is never left dirty by a failed release. Handles:
+ * 1. Materialized dist directories (symlinks replaced with real dirs by preflight)
+ * 2. Generated packs/ directories (from prepack lifecycle scripts)
+ * 3. Version-bumped package.json files (from Phase 2)
+ *
+ * After cleanup, all tracked files are restored to HEAD state and untracked
+ * generated files are removed.
+ */
+async function cleanupFailedRelease(packageDirs: string[]): Promise<void> {
+  console.error(`\n${LOG_PREFIX} ⚠️  Release failed — cleaning up artifacts on main...`);
+
+  try {
+    // 1. Remove materialized dist directories so git can restore symlinks.
+    //    ensureDistPathsMaterialized replaces symlinks with real dirs; build fills
+    //    them with untracked output. Must delete before git checkout can recreate
+    //    the tracked symlink.
+    for (const packageDir of packageDirs) {
+      const distPath = join(packageDir, DIST_DIR_NAME);
+      if (existsSync(distPath) && !lstatSync(distPath).isSymbolicLink()) {
+        rmSync(distPath, { recursive: true, force: true });
+      }
+    }
+
+    // 2. Remove untracked generated files (e.g., packs/ from prepack lifecycle scripts).
+    //    These are created by sync-bundled-packs.mjs during pack --dry-run but may not
+    //    be cleaned up if the release script fails before postpack runs.
+    for (const packageDir of packageDirs) {
+      const packsDir = join(packageDir, 'packs');
+      if (existsSync(packsDir)) {
+        rmSync(packsDir, { recursive: true, force: true });
+        const relativePath = packsDir.replace(`${process.cwd()}/`, '');
+        console.error(`${LOG_PREFIX}   Removed generated ${relativePath}`);
+      }
+    }
+
+    // 3. Restore all tracked files to HEAD state (dist symlinks + package.json versions).
+    //    Safe because assertWorkingTreeClean verified the tree was clean before we started.
+    const git = getGitForCwd();
+    await git.raw(['checkout', '--', '.']);
+
+    console.error(`${LOG_PREFIX} ✅ Cleanup complete — main is clean`);
+  } catch (cleanupError) {
+    const message = cleanupError instanceof Error ? cleanupError.message : String(cleanupError);
+    console.error(`${LOG_PREFIX} ⚠️  Automatic cleanup failed: ${message}`);
+    console.error(`${LOG_PREFIX}   Manual recovery: git checkout -- . && git clean -fd`);
+  }
+}
+
+/**
  * Main release function
  * WU-1085: Renamed --version to --release-version to avoid conflict with CLI --version flag
  */
@@ -1060,113 +1136,152 @@ export async function main(): Promise<void> {
     }
   }
 
-  // ── Phase 1: Build & Validate (no writes to origin) ──────────────────
-  // WU-2061: Build and validate BEFORE bumping versions or pushing anything.
-  // If any step here fails, main is untouched.
+  // WU-2062: Wrap all release phases in try/finally to ensure main is never
+  // left dirty. If anything fails before npm publish, cleanup restores main
+  // to its pre-release state. If npm publish succeeded but git push failed,
+  // we print manual recovery instructions instead of undoing the publish.
+  let npmPublished = false;
+  let releaseComplete = false;
 
-  // Materialize symlinked dist directories for reliable pack/publish
-  const distPreparation = ensureDistPathsMaterialized(packageDirs, { skipBuild, dryRun });
-  if (distPreparation.checkedCount > 0 && !dryRun && distPreparation.materializedCount > 0) {
-    console.log(
-      `${LOG_PREFIX} [${PRE_FLIGHT_LABEL}] Materialized ${distPreparation.materializedCount} symlinked dist directories`,
-    );
-  }
+  try {
+    // ── Phase 1: Build & Validate (no writes to origin) ────────────────
+    // WU-2061: Build and validate BEFORE bumping versions or pushing anything.
+    // If any step here fails, main is untouched.
 
-  if (!skipBuild) {
-    runCommand(`${PKG_MANAGER} build`, { dryRun, label: 'build' });
-    console.log(`${LOG_PREFIX} ✅ Build complete`);
-  } else {
-    console.log(`${LOG_PREFIX} Skipping build (--skip-build)`);
-  }
+    // Materialize symlinked dist directories for reliable pack/publish
+    const distPreparation = ensureDistPathsMaterialized(packageDirs, { skipBuild, dryRun });
+    if (distPreparation.checkedCount > 0 && !dryRun && distPreparation.materializedCount > 0) {
+      console.log(
+        `${LOG_PREFIX} [${PRE_FLIGHT_LABEL}] Materialized ${distPreparation.materializedCount} symlinked dist directories`,
+      );
+    }
 
-  if (!skipPublish) {
-    validateReleaseArtifactsForPublish(packagePaths, Boolean(dryRun));
-  } else if (dryRun) {
-    console.log(
-      `${LOG_PREFIX} [${PACK_VALIDATE_LABEL}] Would skip artifact validation (--skip-publish)`,
-    );
-  }
-
-  // ── Phase 2: Version bump (local only, no push yet) ──────────────────
-  // WU-2061: Bump versions locally on main. No micro-worktree needed — if
-  // anything fails after this, `git checkout -- .` restores package.json files.
-  console.log(`${LOG_PREFIX} Bumping versions to ${version}...`);
-  if (dryRun) {
-    console.log(`${LOG_PREFIX} Would update ${packagePaths.length} package versions`);
-    console.log(`${LOG_PREFIX} Would commit: ${buildCommitMessage(version)}`);
-  } else {
-    await updatePackageVersions(packagePaths, version);
-    console.log(`${LOG_PREFIX} ✅ Versions updated to ${version}`);
-  }
-
-  // ── Phase 3: Publish to npm ──────────────────────────────────────────
-  // Publish BEFORE committing to git. If publish fails, we can restore
-  // package.json files and main stays clean.
-  if (!skipPublish) {
-    if (dryRun) {
-      console.log(`${LOG_PREFIX} Would publish packages to npm`);
+    if (!skipBuild) {
+      runCommand(`${PKG_MANAGER} build`, { dryRun, label: 'build' });
+      console.log(`${LOG_PREFIX} ✅ Build complete`);
     } else {
-      console.log(`${LOG_PREFIX} Publishing packages to npm...`);
-      runCommand(`${PKG_MANAGER} -r publish --access public --no-git-checks`, { label: 'publish' });
-      console.log(`${LOG_PREFIX} ✅ Packages published to npm`);
+      console.log(`${LOG_PREFIX} Skipping build (--skip-build)`);
     }
-  } else {
-    console.log(`${LOG_PREFIX} Skipping npm publish (--skip-publish)`);
-  }
 
-  // ── Phase 4: Commit, tag, push (only after everything succeeds) ──────
-  // WU-2061: This is the point of no return. Build passed, validation
-  // passed, npm publish succeeded. Now commit the version bump to main.
-  const tagName = buildTagName(version);
-  if (dryRun) {
-    console.log(`${LOG_PREFIX} Would commit: ${buildCommitMessage(version)}`);
-    console.log(`${LOG_PREFIX} Would create tag: ${tagName}`);
-    console.log(`${LOG_PREFIX} Would push to ${REMOTES.ORIGIN}`);
-  } else {
-    // Format changed files before committing
-    const relativePaths = packagePaths.map((p) => p.replace(process.cwd() + '/', ''));
-    runCommand(`${PKG_MANAGER} prettier --write ${relativePaths.join(' ')}`, {
-      label: 'format',
-    });
-
-    // Stage and commit
-    await git.add(relativePaths);
-    await git.commit(buildCommitMessage(version));
-    console.log(`${LOG_PREFIX} ✅ Committed: ${buildCommitMessage(version)}`);
-
-    // Create and push tag
-    console.log(`${LOG_PREFIX} Creating tag ${tagName}...`);
-    await git.raw(['tag', '-a', tagName, '-m', `Release ${tagName}`]);
-    console.log(`${LOG_PREFIX} ✅ Tag created: ${tagName}`);
-
-    // Push commit + tag together
-    console.log(`${LOG_PREFIX} Pushing to ${REMOTES.ORIGIN}...`);
-    await withReleaseEnv(async () => {
-      await git.push(REMOTES.ORIGIN, 'main');
-      await git.push(REMOTES.ORIGIN, tagName);
-    });
-    console.log(`${LOG_PREFIX} ✅ Pushed to ${REMOTES.ORIGIN}`);
-  }
-
-  // Summary
-  console.log(`\n${LOG_PREFIX} 🎉 Release complete!`);
-  console.log(`${LOG_PREFIX} Version: ${version}`);
-  console.log(`${LOG_PREFIX} Tag: ${tagName}`);
-  if (!skipPublish && !dryRun) {
-    console.log(`${LOG_PREFIX} npm: https://www.npmjs.com/org/lumenflow`);
-  }
-
-  console.log(`\n${LOG_PREFIX} Next steps:`);
-  if (dryRun) {
-    console.log(`  - Run without --dry-run to execute the release`);
-  } else {
-    console.log(
-      `  - Create GitHub release: gh release create ${tagName} --title "Release ${tagName}"`,
-    );
-    if (skipPublish) {
-      console.log(`  - Publish to npm: ${PKG_MANAGER} -r publish --access public --no-git-checks`);
+    if (!skipPublish) {
+      validateReleaseArtifactsForPublish(packagePaths, Boolean(dryRun));
+    } else if (dryRun) {
+      console.log(
+        `${LOG_PREFIX} [${PACK_VALIDATE_LABEL}] Would skip artifact validation (--skip-publish)`,
+      );
     }
-    console.log(`  - Verify packages: npm view @lumenflow/cli version`);
+
+    // ── Phase 2: Version bump (local only, no push yet) ────────────────
+    // WU-2061: Bump versions locally on main. No micro-worktree needed — if
+    // anything fails after this, cleanup restores package.json files.
+    console.log(`${LOG_PREFIX} Bumping versions to ${version}...`);
+    if (dryRun) {
+      console.log(`${LOG_PREFIX} Would update ${packagePaths.length} package versions`);
+      console.log(`${LOG_PREFIX} Would commit: ${buildCommitMessage(version)}`);
+    } else {
+      await updatePackageVersions(packagePaths, version);
+      console.log(`${LOG_PREFIX} ✅ Versions updated to ${version}`);
+    }
+
+    // ── Phase 3: Publish to npm ────────────────────────────────────────
+    // Publish BEFORE committing to git. If publish fails, cleanup restores
+    // package.json files and main stays clean.
+    if (!skipPublish) {
+      if (dryRun) {
+        console.log(`${LOG_PREFIX} Would publish packages to npm`);
+      } else {
+        console.log(`${LOG_PREFIX} Publishing packages to npm...`);
+        runCommand(`${PKG_MANAGER} -r publish --access public --no-git-checks`, {
+          label: 'publish',
+        });
+        npmPublished = true;
+        console.log(`${LOG_PREFIX} ✅ Packages published to npm`);
+      }
+    } else {
+      console.log(`${LOG_PREFIX} Skipping npm publish (--skip-publish)`);
+    }
+
+    // ── Phase 4: Commit, tag, push (only after everything succeeds) ────
+    // WU-2061: This is the point of no return. Build passed, validation
+    // passed, npm publish succeeded. Now commit the version bump to main.
+    const tagName = buildTagName(version);
+    if (dryRun) {
+      console.log(`${LOG_PREFIX} Would commit: ${buildCommitMessage(version)}`);
+      console.log(`${LOG_PREFIX} Would create tag: ${tagName}`);
+      console.log(`${LOG_PREFIX} Would push to ${REMOTES.ORIGIN}`);
+    } else {
+      // Format changed files before committing
+      const relativePaths = packagePaths.map((p) => p.replace(process.cwd() + '/', ''));
+      runCommand(`${PKG_MANAGER} prettier --write ${relativePaths.join(' ')}`, {
+        label: 'format',
+      });
+
+      // Stage and commit
+      await git.add(relativePaths);
+      await git.commit(buildCommitMessage(version));
+      console.log(`${LOG_PREFIX} ✅ Committed: ${buildCommitMessage(version)}`);
+
+      // Create and push tag
+      console.log(`${LOG_PREFIX} Creating tag ${tagName}...`);
+      await git.raw(['tag', '-a', tagName, '-m', `Release ${tagName}`]);
+      console.log(`${LOG_PREFIX} ✅ Tag created: ${tagName}`);
+
+      // Push commit + tag together
+      console.log(`${LOG_PREFIX} Pushing to ${REMOTES.ORIGIN}...`);
+      await withReleaseEnv(async () => {
+        await git.push(REMOTES.ORIGIN, 'main');
+        await git.push(REMOTES.ORIGIN, tagName);
+      });
+      console.log(`${LOG_PREFIX} ✅ Pushed to ${REMOTES.ORIGIN}`);
+    }
+
+    releaseComplete = true;
+
+    // Summary
+    console.log(`\n${LOG_PREFIX} 🎉 Release complete!`);
+    console.log(`${LOG_PREFIX} Version: ${version}`);
+    console.log(`${LOG_PREFIX} Tag: ${tagName}`);
+    if (!skipPublish && !dryRun) {
+      console.log(`${LOG_PREFIX} npm: https://www.npmjs.com/org/lumenflow`);
+    }
+
+    console.log(`\n${LOG_PREFIX} Next steps:`);
+    if (dryRun) {
+      console.log(`  - Run without --dry-run to execute the release`);
+    } else {
+      console.log(
+        `  - Create GitHub release: gh release create ${tagName} --title "Release ${tagName}"`,
+      );
+      if (skipPublish) {
+        console.log(
+          `  - Publish to npm: ${PKG_MANAGER} -r publish --access public --no-git-checks`,
+        );
+      }
+      console.log(`  - Verify packages: npm view @lumenflow/cli version`);
+    }
+  } finally {
+    // WU-2062: Cleanup on failure — never leave main dirty
+    if (!releaseComplete && !dryRun) {
+      if (!npmPublished) {
+        // Nothing reached npm — safe to fully restore main
+        await cleanupFailedRelease(packageDirs);
+      } else {
+        // npm packages are published but git commit/push failed.
+        // Do NOT undo the version bump — the published packages reference this version.
+        console.error(`\n${LOG_PREFIX} ⚠️  npm publish succeeded but git commit/push failed.`);
+        console.error(`${LOG_PREFIX}   The version bump is still in your working tree.`);
+        console.error(`${LOG_PREFIX}   To complete manually:`);
+        console.error(
+          `${LOG_PREFIX}     git add -A && git commit -m "${buildCommitMessage(version)}"`,
+        );
+        console.error(
+          `${LOG_PREFIX}     git tag -a ${buildTagName(version)} -m "Release ${buildTagName(version)}"`,
+        );
+        console.error(
+          `${LOG_PREFIX}     LUMENFLOW_WU_TOOL=release git push origin main ${buildTagName(version)}`,
+        );
+      }
+    }
   }
 }
 
