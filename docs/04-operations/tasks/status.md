@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2061 — Fix release script: defer version bump until after validation](wu/WU-2061.yaml)
 
 ## Completed
 

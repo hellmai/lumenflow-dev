@@ -2068,3 +2068,4 @@
 {"type":"complete","wuId":"WU-2059","timestamp":"2026-02-23T10:26:42.699Z"}
 {"type":"claim","wuId":"WU-2060","timestamp":"2026-02-23T11:04:18.563Z","lane":"Operations: Tooling","title":"Fix lumenflow upgrade and release packaging regressions"}
 {"type":"complete","wuId":"WU-2060","timestamp":"2026-02-23T11:23:51.378Z"}
+{"type":"claim","wuId":"WU-2061","timestamp":"2026-02-23T11:52:41.617Z","lane":"Operations: Tooling","title":"Fix release script: defer version bump until after validation"}
