@@ -8,9 +8,9 @@ import { Aside } from '@astrojs/starlight/components';
 Gates are automated quality checks that must pass before a WU can be completed. They replace manual code review with consistent, automated enforcement.
 
 <Aside type="note" title="Gates are kernel-enforced policies">
-  In the [Software Delivery Pack](/kernel/packs), gates are implemented as pack-layer policies
-  with `trigger: on_completion`. The [policy engine](/kernel/policy-engine) evaluates them when a
-  task tries to complete — an agent cannot skip gates by calling `completeTask` directly.
+  In the [Software Delivery Pack](/kernel/packs), gates are implemented as pack-layer policies with
+  `trigger: on_completion`. The [policy engine](/kernel/policy-engine) evaluates them when a task
+  tries to complete — an agent cannot skip gates by calling `completeTask` directly.
 </Aside>
 
 ## Why Gates?
