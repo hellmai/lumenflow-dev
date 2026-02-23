@@ -1047,8 +1047,10 @@ async function cleanupFailedRelease(packageDirs: string[]): Promise<void> {
     }
 
     // 3. Restore all tracked files to HEAD state (dist symlinks + package.json versions).
-    //    Safe because assertWorkingTreeClean verified the tree was clean before we started.
+    //    WU-2066: Must reset index first — version bumps may be staged via git add.
+    //    git checkout -- . only restores working tree from index, not from HEAD.
     const git = getGitForCwd();
+    await git.raw(['reset', 'HEAD', '--', '.']);
     await git.raw(['checkout', '--', '.']);
 
     // 4. Reinstall dependencies to restore workspace symlinks.
@@ -1227,19 +1229,18 @@ export async function main(): Promise<void> {
         label: 'format',
       });
 
-      // Stage and commit
-      await git.add(relativePaths);
-      await git.commit(buildCommitMessage(version));
-      console.log(`${LOG_PREFIX} ✅ Committed: ${buildCommitMessage(version)}`);
-
-      // Create and push tag
-      console.log(`${LOG_PREFIX} Creating tag ${tagName}...`);
-      await git.raw(['tag', '-a', tagName, '-m', `Release ${tagName}`]);
-      console.log(`${LOG_PREFIX} ✅ Tag created: ${tagName}`);
-
-      // Push commit + tag together
-      console.log(`${LOG_PREFIX} Pushing to ${REMOTES.ORIGIN}...`);
+      // Stage, commit, tag, and push — all under release env (WU-2066)
+      // The release env var bypasses worktree discipline and pre-push hooks
       await withReleaseEnv(async () => {
+        await git.add(relativePaths);
+        await git.commit(buildCommitMessage(version));
+        console.log(`${LOG_PREFIX} ✅ Committed: ${buildCommitMessage(version)}`);
+
+        console.log(`${LOG_PREFIX} Creating tag ${tagName}...`);
+        await git.raw(['tag', '-a', tagName, '-m', `Release ${tagName}`]);
+        console.log(`${LOG_PREFIX} ✅ Tag created: ${tagName}`);
+
+        console.log(`${LOG_PREFIX} Pushing to ${REMOTES.ORIGIN}...`);
         await git.push(REMOTES.ORIGIN, 'main');
         await git.push(REMOTES.ORIGIN, tagName);
       });

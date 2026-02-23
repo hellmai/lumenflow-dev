@@ -39,6 +39,13 @@ if [[ "${LUMENFLOW_HEADLESS:-}" == "1" ]]; then
   fi
 fi
 
+# 1b. Release tool bypass (WU-2066)
+# The release script commits version bumps on main. This is a controlled
+# operation that must work regardless of other agents' active worktrees.
+if [[ "${LUMENFLOW_WU_TOOL:-}" == "release" ]]; then
+  exit 0
+fi
+
 # 2. Check for Worktrees
 if [[ ! -d "$WORKTREES_DIR" ]]; then
   exit 0
