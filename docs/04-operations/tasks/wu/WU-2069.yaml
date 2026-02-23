@@ -18,6 +18,8 @@ artifacts:
 dependencies: []
 initiative: INIT-035
 phase: 1
+blocked_by:
+  - WU-2067
 labels:
   - INIT-035
   - A3
@@ -33,6 +35,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Move software-delivery workflow and concept docs into pack-scoped routes and align navigation/content to pack ownership boundaries.
+description: Move software-delivery workflow and concept docs into pack-scoped routes and align
+  navigation/content to pack ownership boundaries.
 acceptance:
-  - Software Delivery Pack content is under packs/software-delivery with valid navigation and route integrity.
+  - Software Delivery Pack content is under packs/software-delivery with valid navigation and route
+    integrity.
