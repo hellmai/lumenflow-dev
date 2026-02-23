@@ -2,7 +2,7 @@ id: WU-2079
 title: 'INIT-035 L3: Migrate companion repo for Go guide parity'
 lane: 'Operations: Tooling'
 type: documentation
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -40,3 +40,11 @@ description: Track migration of Go companion repository examples and smoke workf
 acceptance:
   - Go companion repository parity tasks and smoke requirements are tracked and linked from support
     matrix data.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-2079
+claimed_at: 2026-02-23T16:54:10.327Z
+baseline_main_sha: 5c66a3ca26078916d37a5feaeee7dc172509a20a
+session_id: cacff71c-eff0-453d-992d-0244f75fb13b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T16:54:10.332Z
