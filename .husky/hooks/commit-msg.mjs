@@ -133,6 +133,9 @@ const ALLOWED_ON_MAIN = [
   // Merge commits
   /^Merge /i,
 
+  // WU-2065: Release version bump commits
+  /^chore\(release\): .+$/i,
+
   // WU-1076: Emergency/hotfix commits (human override for agents)
   /\[emergency\]/i,
   /\[hotfix\]/i,
@@ -160,6 +163,7 @@ if (MAIN_BRANCHES.includes(branch)) {
     console.error('  fix(wu-123): repair <description>');
     console.error('  chore(repair): <description>');
     console.error('  chore(wu-123): <description>');
+    console.error('  chore(release): <description>');
     console.error('  style: <description>');
     console.error('  [emergency] <description>');
     console.error('  [hotfix] <description>');

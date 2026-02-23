@@ -645,7 +645,7 @@ export function ensureDistPathsMaterialized(
  * @returns Commit message
  */
 export function buildCommitMessage(version: string): string {
-  return `chore: bump all packages to v${version}`;
+  return `chore(release): bump all packages to v${version}`;
 }
 
 /**

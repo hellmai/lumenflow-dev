@@ -394,7 +394,15 @@ describe('release command', () => {
   describe('buildCommitMessage', () => {
     it('should build correct commit message for version bump', () => {
       const message = buildCommitMessage('1.3.0');
-      expect(message).toBe('chore: bump all packages to v1.3.0');
+      expect(message).toBe('chore(release): bump all packages to v1.3.0');
+    });
+
+    it('should match the commit-msg hook allowed pattern for releases (WU-2065)', () => {
+      // This pattern must stay in sync with .husky/hooks/commit-msg.mjs ALLOWED_ON_MAIN
+      const hookPattern = /^chore\(release\): .+$/i;
+      expect(hookPattern.test(buildCommitMessage('1.0.0'))).toBe(true);
+      expect(hookPattern.test(buildCommitMessage('3.2.1'))).toBe(true);
+      expect(hookPattern.test(buildCommitMessage('10.0.0-beta.1'))).toBe(true);
     });
   });
 
