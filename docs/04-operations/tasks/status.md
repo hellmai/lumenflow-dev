@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-- [WU-2062 — Release script: fix JSON parsing and add cleanup-on-failure](wu/WU-2062.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -988,3 +988,4 @@ _Last updated: 2026-02-23_
 - [WU-2059 — Wire completion workflow guardrails into wu:brief prompt assembly](wu/WU-2059.yaml) — 2026-02-23
 - [WU-2060 — Fix lumenflow upgrade and release packaging regressions](wu/WU-2060.yaml) — 2026-02-23
 - [WU-2061 — Fix release script: defer version bump until after validation](wu/WU-2061.yaml) — 2026-02-23
+- [WU-2062 — Release script: fix JSON parsing and add cleanup-on-failure](wu/WU-2062.yaml) — 2026-02-23
