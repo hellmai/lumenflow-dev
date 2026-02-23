@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2063 — Release cleanup: add pnpm install to cleanupFailedRelease](wu/WU-2063.yaml)
 
 ## Completed
 

@@ -2072,3 +2072,4 @@
 {"type":"complete","wuId":"WU-2061","timestamp":"2026-02-23T12:01:28.859Z"}
 {"type":"claim","wuId":"WU-2062","timestamp":"2026-02-23T12:06:22.101Z","lane":"Operations: Tooling","title":"Release script: fix JSON parsing and add cleanup-on-failure"}
 {"type":"complete","wuId":"WU-2062","timestamp":"2026-02-23T12:16:42.733Z"}
+{"type":"claim","wuId":"WU-2063","timestamp":"2026-02-23T14:24:09.136Z","lane":"Operations: Tooling","title":"Release cleanup: add pnpm install to cleanupFailedRelease"}

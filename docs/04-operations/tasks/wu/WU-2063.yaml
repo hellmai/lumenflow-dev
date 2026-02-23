@@ -2,7 +2,7 @@ id: WU-2063
 title: 'Release cleanup: add pnpm install to cleanupFailedRelease'
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-23
 code_paths:
@@ -26,6 +26,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: cleanupFailedRelease runs git checkout -- . but does not run pnpm install, leaving workspace links inconsistent. This disrupted a concurrent Codex agent during a failed 3.2.1 release attempt.
+description: cleanupFailedRelease runs git checkout -- . but does not run pnpm install, leaving
+  workspace links inconsistent. This disrupted a concurrent Codex agent during a failed 3.2.1
+  release attempt.
 acceptance:
   - cleanupFailedRelease runs pnpm install after git checkout to restore workspace links
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-2063
+claimed_at: 2026-02-23T14:24:09.110Z
+baseline_main_sha: 9a9dcdcb67e2481948df1120647c66f6fcbab1ca
+session_id: 080f27e8-f188-47c1-8c8d-8e063babc6b7
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T14:24:09.116Z
