@@ -2,7 +2,7 @@ id: WU-2067
 title: 'INIT-035 A1: Kernel/Packs IA skeleton and sidebar route map'
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -45,3 +45,6 @@ description: Implement the Kernel vs Packs information architecture skeleton in 
 acceptance:
   - Sidebar and top-level taxonomy reflect Kernel + Packs split with Software Delivery Pack section
     and route map.
+locked: true
+completed_at: 2026-02-23T15:48:07.473Z
+completed: 2026-02-23

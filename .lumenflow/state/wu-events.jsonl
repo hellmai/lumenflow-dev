@@ -2085,3 +2085,4 @@
 {"type":"claim","wuId":"WU-2067","timestamp":"2026-02-23T15:39:49.667Z","lane":"Content: Site Comms","title":"INIT-035 A1: Kernel/Packs IA skeleton and sidebar route map"}
 {"type":"claim","wuId":"WU-2086","timestamp":"2026-02-23T15:40:28.862Z","lane":"Operations: Tooling","title":"Release script: restore dist symlinks after successful release"}
 {"type":"complete","wuId":"WU-2086","timestamp":"2026-02-23T15:46:49.922Z"}
+{"type":"complete","wuId":"WU-2067","timestamp":"2026-02-23T15:48:12.220Z"}
