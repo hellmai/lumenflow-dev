@@ -20,6 +20,11 @@ artifacts:
 dependencies: []
 initiative: INIT-035
 phase: 1
+blocked_by:
+  - WU-2067
+  - WU-2070
+  - WU-2071
+  - WU-2073
 labels:
   - INIT-035
   - A9
@@ -35,6 +40,7 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Implement docs audit automation and enforce it in CI to prevent IA/version/language-guide drift from regressing.
+description: Implement docs audit automation and enforce it in CI to prevent
+  IA/version/language-guide drift from regressing.
 acceptance:
   - docs:audit validates required docs truth contracts and is enforced by CI workflow.
