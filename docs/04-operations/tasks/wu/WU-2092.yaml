@@ -53,3 +53,4 @@ acceptance:
   - workspace.yaml token definition is centralized and cross-package parity is covered without introducing kernel->core coupling
   - duplicate docs-only and lane-inference path literals are eliminated or routed through canonical constants
   - existing command behavior and docs-only classification semantics remain unchanged
+plan: lumenflow://plans/INIT-036-plan.md
