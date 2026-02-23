@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2098 — Make wu:brief / wu:spawn prompt templates path-config aware](wu/WU-2098.yaml) — Framework: CLI WU Commands
 - [WU-2097 — Remove pending Memory runtime path literal debt (INIT-036)](wu/WU-2097.yaml) — Framework: Memory
 - [WU-2096 — Remove pending MCP runtime path literal debt (INIT-036)](wu/WU-2096.yaml) — Framework: MCP
 - [WU-2095 — Eliminate pending CLI runtime path literals (INIT-036)](wu/WU-2095.yaml) — Framework: CLI WU Commands
