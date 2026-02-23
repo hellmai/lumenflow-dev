@@ -2,7 +2,7 @@ id: WU-2085
 title: 'pre-commit.mjs: bypass main-branch block for release commits'
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-23
 code_paths:
@@ -25,7 +25,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: The pre-commit.mjs hook unconditionally blocks all commits on main/master. The release script sets LUMENFLOW_WU_TOOL=release but pre-commit.mjs does not check this env var — only LUMENFLOW_FORCE. Add release bypass alongside the existing LUMENFLOW_FORCE check, same pattern as pre-push.mjs and validate-worktree-discipline.sh.
+description: The pre-commit.mjs hook unconditionally blocks all commits on main/master. The release
+  script sets LUMENFLOW_WU_TOOL=release but pre-commit.mjs does not check this env var — only
+  LUMENFLOW_FORCE. Add release bypass alongside the existing LUMENFLOW_FORCE check, same pattern as
+  pre-push.mjs and validate-worktree-discipline.sh.
 acceptance:
   - pre-commit.mjs allows commits when LUMENFLOW_WU_TOOL=release
   - Release script succeeds end-to-end with --skip-publish
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-2085
+claimed_at: 2026-02-23T15:26:20.213Z
+baseline_main_sha: bd1a591cb84a8173779355d3b099f15ea13d5fa2
+session_id: 39bcda3d-eed5-4f42-a7fb-5332a9722040
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T15:26:20.218Z

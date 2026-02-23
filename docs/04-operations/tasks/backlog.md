@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2085 — pre-commit.mjs: bypass main-branch block for release commits](wu/WU-2085.yaml) — Operations: Tooling
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2067 — INIT-035 A1: Kernel/Packs IA skeleton and sidebar route map](wu/WU-2067.yaml) — Content: Site Comms
@@ -44,7 +43,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2085 — pre-commit.mjs: bypass main-branch block for release commits](wu/WU-2085.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 

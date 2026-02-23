@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2085 — pre-commit.mjs: bypass main-branch block for release commits](wu/WU-2085.yaml)
 
 ## Completed
 
