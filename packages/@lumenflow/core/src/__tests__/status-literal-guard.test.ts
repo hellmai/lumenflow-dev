@@ -169,6 +169,13 @@ function scanFileForStatusLiterals(
 }
 
 describe('WU-1574: status guard foundations', () => {
+  it('buildStatusLiteralRegex matches canonical statuses but not partial tokens', () => {
+    const regex = buildStatusLiteralRegex();
+
+    expect("if (status === 'ready') {}".match(regex)?.length).toBeGreaterThan(0);
+    expect("const label = 'already_done'".match(buildStatusLiteralRegex())).toBeNull();
+  });
+
   it('isWUStatus detects valid statuses', () => {
     expect(isWUStatus(WU_STATUS.READY)).toBe(true);
     expect(isWUStatus(WU_STATUS.BLOCKED)).toBe(true);
