@@ -2,7 +2,7 @@ id: WU-2093
 title: Harden path-literal guards with AST-based multi-package coverage
 lane: 'Framework: Core Validation'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -53,3 +53,6 @@ session_id: fdd00d72-4d0f-4ce6-9216-f9b6f9013f7f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-23T19:26:46.262Z
+locked: true
+completed_at: 2026-02-23T19:40:17.483Z
+completed: 2026-02-23

@@ -30,7 +30,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2093 — Harden path-literal guards with AST-based multi-package coverage](wu/WU-2093.yaml) — Framework: Core Validation
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1044,6 +1044,7 @@ sections:
 - [WU-2083 — INIT-035 L7: Create companion repo for Ruby](wu/WU-2083.yaml)
 - [WU-2087 — lumenflow:upgrade self-bootstrap: run target version's script to avoid chicken-and-egg bugs](wu/WU-2087.yaml)
 - [WU-2084 — INIT-035 L8: Create companion repo for PHP](wu/WU-2084.yaml)
+- [WU-2093 — Harden path-literal guards with AST-based multi-package coverage](wu/WU-2093.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

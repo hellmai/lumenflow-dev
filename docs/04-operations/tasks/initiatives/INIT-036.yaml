@@ -26,7 +26,7 @@ phases:
     status: pending
   - id: 6
     title: AST Guard Hardening and Coverage
-    status: pending
+    status: done
 success_metrics:
   - No runtime hardcoded docs/state/worktrees/origin/main literals remain in scoped packages
   - Path-literal guard scans core+cli+mcp+memory+initiatives with AST-based detection
