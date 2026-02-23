@@ -2086,3 +2086,4 @@
 {"type":"claim","wuId":"WU-2086","timestamp":"2026-02-23T15:40:28.862Z","lane":"Operations: Tooling","title":"Release script: restore dist symlinks after successful release"}
 {"type":"complete","wuId":"WU-2086","timestamp":"2026-02-23T15:46:49.922Z"}
 {"type":"complete","wuId":"WU-2067","timestamp":"2026-02-23T15:48:12.220Z"}
+{"type":"claim","wuId":"WU-2068","timestamp":"2026-02-23T15:48:56.562Z","lane":"Content: Site Comms","title":"INIT-035 A2: Relocate/rewrite Kernel docs"}

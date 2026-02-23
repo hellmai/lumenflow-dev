@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2068 — INIT-035 A2: Relocate/rewrite Kernel docs](wu/WU-2068.yaml)
 
 ## Completed
 
