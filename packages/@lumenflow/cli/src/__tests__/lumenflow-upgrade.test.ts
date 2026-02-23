@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { execSync } from 'node:child_process';
+import { execSync, execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
@@ -34,6 +34,7 @@ vi.mock('node:child_process', async (importOriginal) => {
   return {
     ...actual,
     execSync: vi.fn(),
+    execFileSync: vi.fn(),
   };
 });
 
@@ -52,12 +53,16 @@ import {
   UpgradeArgs,
   executeUpgradeInMicroWorktree,
   validateMainCheckout,
+  getInstalledCliVersion,
+  resolveTargetVersion,
+  buildBootstrapCommand,
 } from '../lumenflow-upgrade.js';
 
 // Cast mocks for TypeScript
 const mockWithMicroWorktree = withMicroWorktree as ReturnType<typeof vi.fn>;
 const mockGetGitForCwd = getGitForCwd as ReturnType<typeof vi.fn>;
 const mockExecSync = execSync as ReturnType<typeof vi.fn>;
+const mockExecFileSync = execFileSync as ReturnType<typeof vi.fn>;
 
 describe('lumenflow-upgrade', () => {
   beforeEach(() => {
@@ -414,6 +419,86 @@ describe('lumenflow-upgrade', () => {
       // The new implementation uses micro-worktree and runs from main checkout
       // This test verifies the old validateWorktreeContext is no longer used
       expect(typeof validateMainCheckout).toBe('function');
+    });
+  });
+
+  // WU-2087: Self-bootstrap tests
+  describe('parseUpgradeArgs --no-bootstrap', () => {
+    it('should parse --no-bootstrap flag', () => {
+      const args = parseUpgradeArgs(['node', 'lumenflow-upgrade.js', '--latest', '--no-bootstrap']);
+      expect(args.noBootstrap).toBe(true);
+      expect(args.latest).toBe(true);
+    });
+
+    it('should default noBootstrap to falsy', () => {
+      const args = parseUpgradeArgs(['node', 'lumenflow-upgrade.js', '--latest']);
+      expect(args.noBootstrap).toBeFalsy();
+    });
+  });
+
+  describe('getInstalledCliVersion', () => {
+    it('should return a semver version string', () => {
+      // Reading the actual installed package — in test context this is the local build
+      const version = getInstalledCliVersion();
+      expect(version).toBeTruthy();
+      expect(version).toMatch(/^\d+\.\d+\.\d+/);
+    });
+  });
+
+  describe('resolveTargetVersion', () => {
+    it('should return explicit version from --version flag', async () => {
+      const version = await resolveTargetVersion({ version: '4.0.0' });
+      expect(version).toBe('4.0.0');
+    });
+
+    it('should resolve latest version from npm registry when --latest', async () => {
+      mockExecFileSync.mockReturnValueOnce('3.2.1\n');
+      const version = await resolveTargetVersion({ latest: true });
+      expect(version).toBeTruthy();
+      expect(version).toMatch(/^\d+\.\d+\.\d+/);
+    });
+
+    it('should return null when npm view fails (offline/registry down)', async () => {
+      mockExecFileSync.mockImplementationOnce(() => {
+        throw new Error('npm ERR! network');
+      });
+      const version = await resolveTargetVersion({ latest: true });
+      expect(version).toBeNull();
+    });
+
+    it('should return null when neither --version nor --latest specified', async () => {
+      const version = await resolveTargetVersion({});
+      expect(version).toBeNull();
+    });
+  });
+
+  describe('buildBootstrapCommand', () => {
+    it('should build a node command pointing to target version script in temp dir', () => {
+      const cmd = buildBootstrapCommand('/tmp/lf-bootstrap', '3.5.0', [
+        'node',
+        'lumenflow-upgrade.js',
+        '--latest',
+      ]);
+      // Should run node with the target version's script
+      expect(cmd.script).toContain('/tmp/lf-bootstrap');
+      expect(cmd.script).toContain('lumenflow-upgrade');
+      // Should replace --latest with --version <resolved> to avoid re-resolution
+      expect(cmd.args).not.toContain('--latest');
+      expect(cmd.args).toContain('--version');
+      expect(cmd.args).toContain('3.5.0');
+      // Should add --no-bootstrap to prevent recursion
+      expect(cmd.args).toContain('--no-bootstrap');
+    });
+
+    it('should not duplicate --no-bootstrap if already present', () => {
+      const cmd = buildBootstrapCommand('/tmp/lf-bootstrap', '3.5.0', [
+        'node',
+        'lumenflow-upgrade.js',
+        '--latest',
+        '--no-bootstrap',
+      ]);
+      const count = cmd.args.filter((a: string) => a === '--no-bootstrap').length;
+      expect(count).toBe(1);
     });
   });
 });
