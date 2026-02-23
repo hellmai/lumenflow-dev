@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2081 — INIT-035 L5: Create companion repo for Java](wu/WU-2081.yaml) — Operations: Tooling
 - [WU-2080 — INIT-035 L4: Create companion repo for .NET guide parity](wu/WU-2080.yaml) — Operations: Tooling
 - [WU-2079 — INIT-035 L3: Migrate companion repo for Go guide parity](wu/WU-2079.yaml) — Operations: Tooling
 - [WU-2078 — INIT-035 L2: Migrate companion repo for Python guide parity](wu/WU-2078.yaml) — Operations: Tooling
