@@ -2,7 +2,7 @@ id: WU-2086
 title: 'Release script: restore dist symlinks after successful release'
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-23
 code_paths:
@@ -26,6 +26,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: After a successful release, the 4 materialized dist symlinks (cli, core, mcp, shims) are left as deleted in git status. The failure cleanup path runs pnpm install to restore them, but the success path does not. Add symlink restoration after commit+tag+push in the success path.
+description: After a successful release, the 4 materialized dist symlinks (cli, core, mcp, shims)
+  are left as deleted in git status. The failure cleanup path runs pnpm install to restore them, but
+  the success path does not. Add symlink restoration after commit+tag+push in the success path.
 acceptance:
   - After successful pnpm release, git status is clean (no deleted dist symlinks)
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/operations-tooling-wu-2086
+claimed_at: 2026-02-23T15:40:28.813Z
+baseline_main_sha: 99867ba55033346669fac9e06eb35533363bce2c
+session_id: 1a39c608-a510-4545-ac24-8ec31f6b4cb8
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T15:40:28.818Z

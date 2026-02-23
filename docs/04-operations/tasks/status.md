@@ -5,6 +5,7 @@ _Last updated: 2026-02-23_
 ## In Progress
 
 - [WU-2067 — INIT-035 A1: Kernel/Packs IA skeleton and sidebar route map](wu/WU-2067.yaml)
+- [WU-2086 — Release script: restore dist symlinks after successful release](wu/WU-2086.yaml)
 
 ## Completed
 

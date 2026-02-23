@@ -39,11 +39,11 @@ sections:
 - [WU-2082 — INIT-035 L6: Create companion repo for Rust](wu/WU-2082.yaml) — Operations: Tooling
 - [WU-2083 — INIT-035 L7: Create companion repo for Ruby](wu/WU-2083.yaml) — Operations: Tooling
 - [WU-2084 — INIT-035 L8: Create companion repo for PHP](wu/WU-2084.yaml) — Operations: Tooling
-- [WU-2086 — Release script: restore dist symlinks after successful release](wu/WU-2086.yaml) — Operations: Tooling
 
 ## 🔧 In progress
 
 - [WU-2067 — INIT-035 A1: Kernel/Packs IA skeleton and sidebar route map](wu/WU-2067.yaml) — Content: Site Comms
+- [WU-2086 — Release script: restore dist symlinks after successful release](wu/WU-2086.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 
