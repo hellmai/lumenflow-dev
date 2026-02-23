@@ -20,6 +20,9 @@ artifacts:
 dependencies: []
 initiative: INIT-035
 phase: 1
+blocked_by:
+  - WU-2067
+  - WU-2072
 labels:
   - INIT-035
   - A6b
@@ -35,6 +38,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Update CLI docs generator to consume manifest metadata and output curated public command documentation consistently.
+description: Update CLI docs generator to consume manifest metadata and output curated public
+  command documentation consistently.
 acceptance:
-  - Generated CLI docs hide alias and legacy surfaces and remain reproducible in docs generation checks.
+  - Generated CLI docs hide alias and legacy surfaces and remain reproducible in docs generation
+    checks.
