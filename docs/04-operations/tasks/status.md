@@ -5,7 +5,6 @@ _Last updated: 2026-02-23_
 ## In Progress
 
 - [WU-2087 — lumenflow:upgrade self-bootstrap: run target version's script to avoid chicken-and-egg bugs](wu/WU-2087.yaml)
-- [WU-2083 — INIT-035 L7: Create companion repo for Ruby](wu/WU-2083.yaml)
 
 ## Completed
 
@@ -1012,3 +1011,4 @@ _Last updated: 2026-02-23_
 - [WU-2080 — INIT-035 L4: Create companion repo for .NET guide parity](wu/WU-2080.yaml) — 2026-02-23
 - [WU-2081 — INIT-035 L5: Create companion repo for Java](wu/WU-2081.yaml) — 2026-02-23
 - [WU-2082 — INIT-035 L6: Create companion repo for Rust](wu/WU-2082.yaml) — 2026-02-23
+- [WU-2083 — INIT-035 L7: Create companion repo for Ruby](wu/WU-2083.yaml) — 2026-02-23
