@@ -78,12 +78,14 @@ function installLocalPackages(tempProjectDirectory: string): void {
   const workspacePackages = [PACKAGE_NAME_CLI, PACKAGE_NAME_CORE]
     .map((packageName) => `${packageName}@${WORKSPACE_PACKAGE_SPEC}`)
     .join(' ');
-  const isolatedEnv = { ...process.env };
-  delete isolatedEnv[ENV_KEY_NPM_WORKSPACE_DIR];
-  delete isolatedEnv[ENV_KEY_NPM_WORKSPACE_DIR_UPPER];
-  delete isolatedEnv[ENV_KEY_PNPM_WORKSPACE_DIR];
-  delete isolatedEnv[ENV_KEY_NPM_FILTER];
-  delete isolatedEnv[ENV_KEY_NPM_FILTER_UPPER];
+  const {
+    [ENV_KEY_NPM_WORKSPACE_DIR]: _ignoredWorkspaceDir,
+    [ENV_KEY_NPM_WORKSPACE_DIR_UPPER]: _ignoredWorkspaceDirUpper,
+    [ENV_KEY_PNPM_WORKSPACE_DIR]: _ignoredPnpmWorkspaceDir,
+    [ENV_KEY_NPM_FILTER]: _ignoredNpmFilter,
+    [ENV_KEY_NPM_FILTER_UPPER]: _ignoredNpmFilterUpper,
+    ...isolatedEnv
+  } = process.env;
 
   try {
     execSync(
@@ -121,6 +123,7 @@ function installLocalPackages(tempProjectDirectory: string): void {
 
     throw new Error(
       `Failed to install workspace dependencies.\nSTDOUT:\n${stdout}\nSTDERR:\n${stderr}`,
+      { cause: error },
     );
   }
 }
