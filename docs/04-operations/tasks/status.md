@@ -1,10 +1,10 @@
 # Work Unit Status
 
-_Last updated: 2026-02-22_
+_Last updated: 2026-02-23_
 
 ## In Progress
 
-- [WU-2050 — Bundled pack resolution for end-user bootstrap](wu/WU-2050.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -979,3 +979,4 @@ _Last updated: 2026-02-22_
 - [WU-2021 — Filter deleted files from incremental format check input](wu/WU-2021.yaml) — 2026-02-22
 - [WU-2009 — Add claim-validation gate for absolute acceptance criteria drift](wu/WU-2009.yaml) — 2026-02-22
 - [WU-2049 — INIT-034 follow-up: consolidate duplicates and fix naming collisions](wu/WU-2049.yaml) — 2026-02-22
+- [WU-2050 — Bundled pack resolution for end-user bootstrap](wu/WU-2050.yaml) — 2026-02-23

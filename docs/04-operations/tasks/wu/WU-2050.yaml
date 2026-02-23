@@ -2,7 +2,7 @@ id: WU-2050
 title: Bundled pack resolution for end-user bootstrap
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-22
 code_paths:
@@ -65,3 +65,6 @@ session_id: f5588973-feae-42e8-8c2f-f3bfd4665103
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-22T23:46:13.530Z
+locked: true
+completed_at: 2026-02-23T00:11:05.166Z
+completed: 2026-02-23
