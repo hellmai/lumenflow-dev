@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2094 — Purge residual path literals in core config and prompt helpers](wu/WU-2094.yaml)
 
 ## Completed
 

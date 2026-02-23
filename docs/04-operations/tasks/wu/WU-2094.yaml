@@ -2,7 +2,7 @@ id: WU-2094
 title: Purge residual path literals in core config and prompt helpers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -45,3 +45,11 @@ acceptance:
     overrides
   - incremental-lint and worktree-symlink resolve configured worktrees paths lazily at runtime (no
     module-level createWuPaths/getConfig evaluation)
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2094
+claimed_at: 2026-02-23T23:58:08.876Z
+baseline_main_sha: d40350c3abf4d83cacad01f0a668965fed012eb7
+session_id: 2cc12ba6-a895-4b45-b19a-2151457d6f3e
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T23:58:08.882Z
