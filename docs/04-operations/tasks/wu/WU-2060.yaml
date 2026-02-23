@@ -2,7 +2,7 @@ id: WU-2060
 title: Fix lumenflow upgrade and release packaging regressions
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -40,3 +40,11 @@ acceptance:
   - lumenflow-upgrade works in both workspace and non-workspace repos
   - release flow blocks publishing when packed artifacts are missing expected dist files
   - release flow handles symlinked dist artifacts safely before build/publish
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-2060
+claimed_at: 2026-02-23T11:04:18.497Z
+baseline_main_sha: f239e1c26d4e7f4ff17804955d91b72daa293de8
+session_id: a43374c7-e1a8-4bcc-a7eb-254374843cde
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T11:04:18.505Z

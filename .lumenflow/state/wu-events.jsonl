@@ -2066,3 +2066,4 @@
 {"type":"complete","wuId":"WU-2058","timestamp":"2026-02-23T10:18:58.163Z"}
 {"type":"claim","wuId":"WU-2059","timestamp":"2026-02-23T10:21:43.341Z","lane":"Framework: Core Validation","title":"Wire completion workflow guardrails into wu:brief prompt assembly"}
 {"type":"complete","wuId":"WU-2059","timestamp":"2026-02-23T10:26:42.699Z"}
+{"type":"claim","wuId":"WU-2060","timestamp":"2026-02-23T11:04:18.563Z","lane":"Operations: Tooling","title":"Fix lumenflow upgrade and release packaging regressions"}
