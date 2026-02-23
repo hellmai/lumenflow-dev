@@ -43,7 +43,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2085 — pre-commit.mjs: bypass main-branch block for release commits](wu/WU-2085.yaml) — Operations: Tooling
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1036,6 +1036,7 @@ sections:
 - [WU-2064 — Remove phantom .d.ts types from CLI package.json exports](wu/WU-2064.yaml)
 - [WU-2065 — Fix release script commit-msg hook incompatibility](wu/WU-2065.yaml)
 - [WU-2066 — Release script: bypass worktree discipline for release commits](wu/WU-2066.yaml)
+- [WU-2085 — pre-commit.mjs: bypass main-branch block for release commits](wu/WU-2085.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

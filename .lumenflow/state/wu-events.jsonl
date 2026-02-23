@@ -2081,3 +2081,4 @@
 {"type":"claim","wuId":"WU-2066","timestamp":"2026-02-23T15:00:26.236Z","lane":"Operations: Tooling","title":"Release script: bypass worktree discipline for release commits"}
 {"type":"complete","wuId":"WU-2066","timestamp":"2026-02-23T15:03:46.229Z"}
 {"type":"claim","wuId":"WU-2085","timestamp":"2026-02-23T15:26:20.261Z","lane":"Operations: Tooling","title":"pre-commit.mjs: bypass main-branch block for release commits"}
+{"type":"complete","wuId":"WU-2085","timestamp":"2026-02-23T15:30:24.262Z"}

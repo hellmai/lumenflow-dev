@@ -2,7 +2,7 @@ id: WU-2085
 title: 'pre-commit.mjs: bypass main-branch block for release commits'
 lane: 'Operations: Tooling'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-23
 code_paths:
@@ -40,3 +40,6 @@ session_id: 39bcda3d-eed5-4f42-a7fb-5332a9722040
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-23T15:26:20.218Z
+locked: true
+completed_at: 2026-02-23T15:30:19.788Z
+completed: 2026-02-23
