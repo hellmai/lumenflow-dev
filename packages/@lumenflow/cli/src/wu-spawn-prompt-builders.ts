@@ -1173,6 +1173,8 @@ export function generateTaskInvocation(
     templates.get('search-heuristics') || generateIterativeSearchHeuristics();
   const tokenBudget = templates.get('token-budget') || generateTokenBudgetAwareness(id);
   const completionFormat = generateCompletionFormat(id);
+  const completionWorkflow =
+    templates.get('completion-workflow') || generateCompletionWorkflowSection(id);
 
   // WU-1987: Agent coordination and quick fix sections
   const agentCoordination = generateAgentCoordinationSection(id);
@@ -1279,6 +1281,10 @@ ${completionFormat}
 
 ---
 
+${completionWorkflow}
+
+---
+
 ${agentCoordination}
 
 ---
@@ -1346,6 +1352,7 @@ export function generateCodexPrompt(
   const bugDiscoverySection = generateBugDiscoverySection(id);
   const implementationContext = generateImplementationContext(doc);
   const action = generateActionSection(doc, id);
+  const completionWorkflow = generateCompletionWorkflowSection(id);
   const constraints = generateCodexConstraints(id);
   const clientContext = options.client;
   const config = options.config || getConfig();
@@ -1415,6 +1422,10 @@ ${memoryContextSection ? `---\n\n${memoryContextSection}\n\n` : ''}---
 ## Action
 
 ${action}
+
+---
+
+${completionWorkflow}
 
 ---
 

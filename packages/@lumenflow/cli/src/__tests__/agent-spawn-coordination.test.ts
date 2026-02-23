@@ -25,6 +25,7 @@ import { WU_STATUS } from '@lumenflow/core/wu-constants';
 import { DELEGATION_REGISTRY_FILE_NAME } from '@lumenflow/core/delegation-registry-store';
 import {
   generateTaskInvocation,
+  generateCodexPrompt,
   generateActionSection,
   checkLaneOccupation,
   generateLaneOccupationWarning,
@@ -251,6 +252,56 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
         expect(invocation).toContain('&lt;constraints&gt;');
         expect(invocation).toContain('CRITICAL RULES');
         expect(invocation).toContain('LUMENFLOW_SPAWN_END');
+      });
+
+      it('should include status-guarded completion workflow in task invocation output', () => {
+        // Arrange
+        const doc = {
+          title: TEST_TITLE,
+          lane: TEST_LANE,
+          status: WU_STATUS.IN_PROGRESS,
+          type: 'feature',
+          description: TEST_DESCRIPTION,
+          code_paths: ['packages/@lumenflow/cli/src'],
+          acceptance: ['Test criterion'],
+          worktree_path: 'worktrees/framework-cli-wu-9920',
+        };
+        const strategy = SpawnStrategyFactory.create('claude-code');
+
+        // Act
+        const invocation = generateTaskInvocation(doc, TEST_WU_ID, strategy);
+
+        // Assert
+        expect(invocation).toContain('## Completion Workflow');
+        expect(invocation).toContain(`pnpm wu:status --id ${TEST_WU_ID}`);
+        expect(invocation).toContain('If status is `done`, stop and report already completed.');
+        expect(invocation).toContain(`do NOT run \`pnpm wu:recover --id ${TEST_WU_ID}\``);
+        expect(invocation).toContain('If status is `in_progress`, continue autonomously');
+      });
+
+      it('should include status-guarded completion workflow in codex prompt output', () => {
+        // Arrange
+        const doc = {
+          title: TEST_TITLE,
+          lane: TEST_LANE,
+          status: WU_STATUS.IN_PROGRESS,
+          type: 'feature',
+          description: TEST_DESCRIPTION,
+          code_paths: ['packages/@lumenflow/cli/src'],
+          acceptance: ['Test criterion'],
+          worktree_path: 'worktrees/framework-cli-wu-9920',
+        };
+        const strategy = SpawnStrategyFactory.create('claude-code');
+
+        // Act
+        const prompt = generateCodexPrompt(doc, TEST_WU_ID, strategy);
+
+        // Assert
+        expect(prompt).toContain('## Completion Workflow');
+        expect(prompt).toContain(`pnpm wu:status --id ${TEST_WU_ID}`);
+        expect(prompt).toContain('If status is `done`, stop and report already completed.');
+        expect(prompt).toContain(`do NOT run \`pnpm wu:recover --id ${TEST_WU_ID}\``);
+        expect(prompt).toContain('If status is `in_progress`, continue autonomously');
       });
     });
 
