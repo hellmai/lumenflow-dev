@@ -2,7 +2,7 @@ id: WU-2076
 title: 'INIT-035 A9: Add docs audit command and CI enforcement'
 lane: 'Operations: Tooling'
 type: feature
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-23
 code_paths:
@@ -52,3 +52,6 @@ session_id: 79e702cd-1a15-43a6-a690-524638bc829c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-23T16:35:33.218Z
+locked: true
+completed_at: 2026-02-23T16:44:08.174Z
+completed: 2026-02-23
