@@ -32,7 +32,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2077 — INIT-035 L1: Migrate companion repo for Node guide parity](wu/WU-2077.yaml) — Operations: Tooling
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1037,6 +1037,7 @@ sections:
 - [WU-2074 — INIT-035 A7: Align canonical internal docs to new IA and command truth](wu/WU-2074.yaml)
 - [WU-2075 — INIT-035 A8: Template sync and drift closure](wu/WU-2075.yaml)
 - [WU-2076 — INIT-035 A9: Add docs audit command and CI enforcement](wu/WU-2076.yaml)
+- [WU-2077 — INIT-035 L1: Migrate companion repo for Node guide parity](wu/WU-2077.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
