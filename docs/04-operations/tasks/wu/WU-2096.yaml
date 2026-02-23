@@ -1,0 +1,35 @@
+id: WU-2096
+title: Remove pending MCP runtime path literal debt (INIT-036)
+lane: 'Framework: MCP'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-23
+code_paths:
+  - packages/@lumenflow/mcp/src/runtime-tool-resolver.ts
+  - packages/@lumenflow/mcp/src/worktree-enforcement.ts
+tests:
+  manual:
+    - Run MCP tool resolution and worktree enforcement in a repo with non-default docs/worktrees config and verify behavior remains correct
+  unit:
+    - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2096.done
+dependencies: []
+initiative: INIT-036
+phase: 1
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Migrate remaining MCP runtime path checks and tool resolution logic away from hardcoded docs/worktrees literals to centralized config/constants-driven resolution.
+acceptance:
+  - runtime-tool-resolver and worktree-enforcement contain no banned runtime path literals
+  - path-literal-guard no longer needs these MCP files in INIT-036 pending allowlist
