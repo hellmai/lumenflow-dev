@@ -2,7 +2,7 @@ id: WU-2058
 title: Harden sub-agent completion prompts with mandatory status pre-check
 lane: 'Framework: Core Validation'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-23
 code_paths:
@@ -37,3 +37,11 @@ acceptance:
   - Generated completion prompt instructs running pnpm wu:status --id <WU> from main before wu:done
   - 'Prompt explicitly says: if status=done, stop and report done; do not run wu:done or wu:recover'
   - Prompt keeps autonomous completion behavior when status=in_progress
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2058
+claimed_at: 2026-02-23T10:11:50.563Z
+baseline_main_sha: bfe4b5da712279de5cf111744680915848a04d1f
+session_id: d785fd95-94a7-4ae0-92bb-25f6aac47ed1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-23T10:11:50.567Z

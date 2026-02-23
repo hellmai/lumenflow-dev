@@ -4,7 +4,7 @@ _Last updated: 2026-02-23_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2058 — Harden sub-agent completion prompts with mandatory status pre-check](wu/WU-2058.yaml)
 
 ## Completed
 

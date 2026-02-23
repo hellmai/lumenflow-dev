@@ -2062,3 +2062,4 @@
 {"type":"claim","wuId":"WU-2057","timestamp":"2026-02-23T09:44:09.816Z","lane":"Content: Framework Docs","title":"Document pack execution architecture and fix D2 diagram sizing sitewide"}
 {"type":"complete","wuId":"WU-2056","timestamp":"2026-02-23T09:56:09.059Z"}
 {"type":"complete","wuId":"WU-2057","timestamp":"2026-02-23T09:57:16.300Z"}
+{"type":"claim","wuId":"WU-2058","timestamp":"2026-02-23T10:11:50.586Z","lane":"Framework: Core Validation","title":"Harden sub-agent completion prompts with mandatory status pre-check"}
