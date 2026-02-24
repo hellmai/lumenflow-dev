@@ -1,0 +1,40 @@
+id: WU-2109
+title: Extend path-literal-guard and status-literal-guard to cover all 7 runtime packages
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-24
+code_paths:
+  - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+  - packages/@lumenflow/core/src/__tests__/status-literal-guard.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+    - packages/@lumenflow/core/src/__tests__/status-literal-guard.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2109.done
+dependencies: []
+initiative: INIT-037
+phase: 1
+spec_refs:
+  - /home/tom/.claude/plans/wild-foraging-taco.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'path-literal-guard.test.ts SCAN_TARGETS is missing @lumenflow/agent (7 files) and @lumenflow/metrics (13 files). status-literal-guard.test.ts only scans core/cli/memory AND uses regex — missing 4 packages and more brittle than path-literal-guard. Both guards must cover all 7 runtime packages: core, cli, mcp, memory, initiatives, agent, metrics. status-literal-guard must be upgraded from regex to TypeScript AST for consistency with path-literal-guard.'
+acceptance:
+  - path-literal-guard SCAN_TARGETS includes agent and metrics packages
+  - status-literal-guard SCAN_TARGETS includes all 7 runtime packages
+  - status-literal-guard uses TypeScript AST scanning (ts.isStringLiteral) not regex
+  - pnpm test --testNamePattern=guard passes with 0 violations (or ratcheted baseline)
+  - Test output confirms non-zero file counts for agent and metrics in scan results
