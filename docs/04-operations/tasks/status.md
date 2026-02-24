@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2130 — Harden UnsafeAny ratchet guard to prevent baseline self-healing on failure](wu/WU-2130.yaml)
 
 ## Completed
 

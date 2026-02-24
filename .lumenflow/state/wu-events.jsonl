@@ -2184,3 +2184,4 @@
 {"type":"complete","wuId":"WU-2115","timestamp":"2026-02-24T20:51:00.824Z"}
 {"type":"claim","wuId":"WU-2114","timestamp":"2026-02-24T20:52:39.881Z","lane":"Framework: Core Lifecycle","title":"Extend path-literal-guard to ban raw file extension literals like .yaml .json .md"}
 {"type":"complete","wuId":"WU-2114","timestamp":"2026-02-24T20:58:53.786Z"}
+{"type":"claim","wuId":"WU-2130","timestamp":"2026-02-24T21:00:52.736Z","lane":"Framework: Core Lifecycle","title":"Harden UnsafeAny ratchet guard to prevent baseline self-healing on failure"}
