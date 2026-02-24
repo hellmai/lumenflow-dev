@@ -1,0 +1,38 @@
+id: WU-2129
+title: Enhance initiative orchestration docs with recovery, memory coordination, and delegation
+lane: 'Content: Framework Docs'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-24
+code_paths:
+  - apps/docs/src/content/docs/guides/initiatives.mdx
+  - apps/docs/src/content/docs/packs/software-delivery/advanced/initiatives.mdx
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding/initiative-orchestration.md
+tests:
+  manual:
+    - pnpm build in apps/docs succeeds with no broken links
+    - New internal doc is referenced from starting-prompt.md or quick-ref
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2129.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'The Starlight initiatives guide (guides/initiatives.mdx and packs/software-delivery/advanced/initiatives.mdx) covers creation, lifecycle, and basic orchestration but is missing: (1) failure recovery playbook (escalation levels, stuck agent handling, recovery commands), (2) memory coordination patterns (mem:signal/mem:inbox between waves), (3) delegation lineage (wu:delegate, delegation:list), (4) checkpoint-per-wave mechanics (manifest location, idempotent re-runs). The orchestration skill has this content but it is agent-internal only. Also need an internal agent onboarding doc tying the pieces together.'
+acceptance:
+  - Starlight initiatives guide includes Failure Recovery section with escalation levels and recovery commands
+  - Starlight initiatives guide includes Memory Coordination section covering mem:signal and mem:inbox patterns
+  - Starlight initiatives guide includes Delegation section covering wu:delegate and delegation:list
+  - Starlight initiatives guide checkpoint section explains manifest location and idempotent re-runs
+  - Internal agent onboarding doc exists at docs/04-operations/_frameworks/lumenflow/agent/onboarding/initiative-orchestration.md
+  - Both Starlight files (guides/ and packs/) are updated consistently
