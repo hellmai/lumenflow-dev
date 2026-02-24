@@ -8,7 +8,10 @@ created: 2026-02-24
 code_paths:
   - packages/@lumenflow/cli/src/
 tests:
-  manual: []
+  manual:
+    - Verify zero throw new Error() occurrences in packages/@lumenflow/cli/src/ via grep
+    - Verify error-pattern-guard baseline for cli is 0
+    - Verify pnpm test --filter=@lumenflow/cli passes
   unit:
     - packages/@lumenflow/core/src/__tests__/error-pattern-guard.test.ts
   e2e: []
