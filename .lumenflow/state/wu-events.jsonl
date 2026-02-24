@@ -2181,3 +2181,4 @@
 {"type":"claim","wuId":"WU-2115","timestamp":"2026-02-24T20:42:09.410Z","lane":"Framework: Core Lifecycle","title":"Add Zod schema validation to writeWU() before writing YAML"}
 {"type":"claim","wuId":"WU-2122","timestamp":"2026-02-24T20:43:27.541Z","lane":"Framework: Core Lifecycle","title":"Move hardcoded escalation email from wu-schema.ts to workspace.yaml"}
 {"type":"complete","wuId":"WU-2122","timestamp":"2026-02-24T20:49:42.768Z"}
+{"type":"complete","wuId":"WU-2115","timestamp":"2026-02-24T20:51:00.824Z"}
