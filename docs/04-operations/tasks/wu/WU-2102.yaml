@@ -8,7 +8,8 @@ created: 2026-02-24
 code_paths:
   - packages/@lumenflow/cli/src/wu-prep.ts
   - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/core/src/wu-checkpoint.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
+  - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
 tests:
   manual:
     - Run wu:prep then wu:done on a real WU - verify wu:done prints checkpoint skip message and
@@ -24,10 +25,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-24T10:02:07.515Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2102
+session_id: 82137215-e4a1-4db4-bebc-a4790ebe5a89
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T10:02:07.520Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +50,3 @@ acceptance:
   - wu:done skips gates entirely when a valid wu:prep checkpoint exists (canSkipGates returns true)
   - wu:done uses scopedTestPaths from WU tests.unit when no checkpoint and not --full-tests
   - Existing wu:done self-resumption (WU-1747) still works
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2102
-claimed_at: 2026-02-24T10:02:07.515Z
-baseline_main_sha: 3f828e4e8bf56f81f514af1ef0d1fcb42eb74fb3
-session_id: 82137215-e4a1-4db4-bebc-a4790ebe5a89
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-24T10:02:07.520Z
