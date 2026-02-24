@@ -2187,3 +2187,4 @@
 {"type":"claim","wuId":"WU-2130","timestamp":"2026-02-24T21:00:52.736Z","lane":"Framework: Core Lifecycle","title":"Harden UnsafeAny ratchet guard to prevent baseline self-healing on failure"}
 {"type":"claim","wuId":"WU-2120","timestamp":"2026-02-24T21:02:31.091Z","lane":"Framework: Core Lifecycle","title":"Create ENV_VARS constant and migrate raw LUMENFLOW_ env var references"}
 {"type":"complete","wuId":"WU-2130","timestamp":"2026-02-24T21:07:13.653Z"}
+{"type":"claim","wuId":"WU-2119","timestamp":"2026-02-24T21:10:39.991Z","lane":"Framework: Core Lifecycle","title":"Reduce UnsafeAny usage in highest-churn hotspot files"}

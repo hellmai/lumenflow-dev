@@ -5,6 +5,7 @@ _Last updated: 2026-02-24_
 ## In Progress
 
 - [WU-2120 — Create ENV_VARS constant and migrate raw LUMENFLOW\_ env var references](wu/WU-2120.yaml)
+- [WU-2119 — Reduce UnsafeAny usage in highest-churn hotspot files](wu/WU-2119.yaml)
 
 ## Completed
 

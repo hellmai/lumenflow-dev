@@ -2,7 +2,7 @@ id: WU-2119
 title: Reduce UnsafeAny usage in highest-churn hotspot files
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -48,3 +48,11 @@ acceptance:
   - type-safety-guard baseline decreases measurably (at least 20 fewer than pre-WU baseline)
   - No new unknown + Zod parse calls bypass validation (each parse boundary has schema)
   - pnpm test --filter=@lumenflow/core --filter=@lumenflow/cli passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2119
+claimed_at: 2026-02-24T21:10:39.963Z
+baseline_main_sha: c665a223c4230bb2c6fc062721fe409524a93782
+session_id: f8b5a975-75a8-432c-8ffe-3d58bd90febb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T21:10:39.968Z
