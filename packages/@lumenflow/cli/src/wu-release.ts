@@ -27,7 +27,6 @@ import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generat
 import { todayISO } from '@lumenflow/core/date-utils';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
-import { getConfig } from '@lumenflow/core/config';
 import { readWU, writeWU, appendNote } from '@lumenflow/core/wu-yaml';
 import {
   REMOTES,
@@ -43,6 +42,7 @@ import { WUStateStore } from '@lumenflow/core/wu-state-store';
 import { releaseLaneLock } from '@lumenflow/core/lane-lock';
 import { shouldUseBranchPrStatePath } from './wu-state-cloud.js';
 import { runCLI } from './cli-entry-point.js';
+import { resolveStateDir, resolveWuEventsRelativePath } from './state-path-resolvers.js';
 
 const PREFIX = '[wu-release]';
 
@@ -58,16 +58,6 @@ export function clearClaimMetadataOnRelease(doc: Record<string, unknown>): void 
 
 export function shouldUseBranchPrReleasePath(doc: { claimed_mode?: string }): boolean {
   return shouldUseBranchPrStatePath(doc);
-}
-
-function resolveStateDir(projectRoot: string): string {
-  const config = getConfig({ projectRoot });
-  return path.join(projectRoot, config.state.stateDir);
-}
-
-function resolveWuEventsPath(projectRoot: string): string {
-  const config = getConfig({ projectRoot });
-  return `${config.state.stateDir.replace(/\\/g, '/')}/wu-events.jsonl`;
 }
 
 export async function main() {
@@ -160,7 +150,7 @@ export async function main() {
       WU_PATHS.WU(id),
       WU_PATHS.STATUS(),
       WU_PATHS.BACKLOG(),
-      resolveWuEventsPath(process.cwd()),
+      resolveWuEventsRelativePath(process.cwd()),
     ]);
     await getGitForCwd().commit(commitMsg);
     await getGitForCwd().push(REMOTES.ORIGIN, currentBranch);
@@ -209,7 +199,7 @@ export async function main() {
             WU_PATHS.WU(id),
             WU_PATHS.STATUS(),
             WU_PATHS.BACKLOG(),
-            resolveWuEventsPath(worktreePath),
+            resolveWuEventsRelativePath(worktreePath),
           ],
         };
       },

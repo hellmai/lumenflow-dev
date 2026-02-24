@@ -52,6 +52,7 @@ import type { ZodIssue } from 'zod';
 import { runGates } from './gates.js';
 import { resolveWuDonePreCommitGateDecision } from '@lumenflow/core/gates-agent-mode';
 import { buildClaimRepairCommand } from './wu-claim-repair-guidance.js';
+import { resolveStateDir, resolveWuEventsRelativePath } from './state-path-resolvers.js';
 import { getGitForCwd, createGitForPath } from '@lumenflow/core/git-adapter';
 import { die, getErrorMessage } from '@lumenflow/core/error-handler';
 // WU-1223: Location detection for worktree check
@@ -361,23 +362,7 @@ interface StateHudParams {
   STAMPS_DIR: string;
 }
 
-// WU-2090: Resolve state store paths from getConfig() for consumer overrides.
-function resolveConfiguredStateDir(projectRoot: string): string {
-  try {
-    return path.join(projectRoot, getConfig({ projectRoot }).state.stateDir);
-  } catch {
-    return path.join(projectRoot, LUMENFLOW_PATHS.STATE_DIR);
-  }
-}
-
-function resolveConfiguredWuEventsPath(projectRoot: string): string {
-  try {
-    const config = getConfig({ projectRoot });
-    return `${config.state.stateDir.replace(/\\/g, '/')}/wu-events.jsonl`;
-  } catch {
-    return LUMENFLOW_PATHS.WU_EVENTS;
-  }
-}
+// WU-2099: Shared resolvers extracted to state-path-resolvers.ts
 
 /**
  * WU-1804: Preflight validation for claim metadata before gates.
@@ -408,10 +393,10 @@ async function validateClaimMetadataBeforeGates(
 
   // Check 2: State store must show WU as in_progress
   const resolvedWorktreePath = path.resolve(worktreePath);
-  const stateDir = resolveConfiguredStateDir(resolvedWorktreePath);
+  const stateDir = resolveStateDir(resolvedWorktreePath);
   const eventsPath = path.join(
     resolvedWorktreePath,
-    resolveConfiguredWuEventsPath(resolvedWorktreePath),
+    resolveWuEventsRelativePath(resolvedWorktreePath),
   );
 
   try {
@@ -647,10 +632,10 @@ export function buildGatesCommand(options: BuildGatesOptions): string {
 
 async function _assertWorktreeWUInProgressInStateStore(id: string, worktreePath: string) {
   const resolvedWorktreePath = path.resolve(worktreePath);
-  const stateDir = resolveConfiguredStateDir(resolvedWorktreePath);
+  const stateDir = resolveStateDir(resolvedWorktreePath);
   const eventsPath = path.join(
     resolvedWorktreePath,
-    resolveConfiguredWuEventsPath(resolvedWorktreePath),
+    resolveWuEventsRelativePath(resolvedWorktreePath),
   );
 
   const store = new WUStateStore(stateDir);
@@ -883,7 +868,7 @@ export async function enforceSpawnProvenanceForDone(
     typeof doc.initiative === 'string' && doc.initiative.trim() ? doc.initiative.trim() : 'unknown';
   const baseDir = options.baseDir ?? process.cwd();
   const force = options.force === true;
-  const store = new DelegationRegistryStore(resolveConfiguredStateDir(baseDir));
+  const store = new DelegationRegistryStore(resolveStateDir(baseDir));
   await store.load();
 
   const spawnEntry = store.getByTarget(id) as SpawnEntryLike | null;
@@ -932,7 +917,7 @@ export async function enforceSpawnProvenanceForDone(
  */
 export async function updateSpawnRegistryOnCompletion(id: string, baseDir: string = process.cwd()) {
   try {
-    const store = new DelegationRegistryStore(resolveConfiguredStateDir(baseDir));
+    const store = new DelegationRegistryStore(resolveStateDir(baseDir));
     await store.load();
 
     const spawnEntry = store.getByTarget(id);
@@ -1647,7 +1632,7 @@ async function validateStagedFiles(
     wuPath,
     config.directories.statusPath,
     config.directories.backlogPath,
-    resolveConfiguredWuEventsPath(process.cwd()),
+    resolveWuEventsRelativePath(process.cwd()),
   ];
   const metadataAllowlist = (options.metadataAllowlist ?? []).filter(
     (file): file is string => typeof file === 'string' && file.length > 0,
@@ -2322,7 +2307,7 @@ async function executePreFlightChecks({
     if (derivedWorktree) {
       try {
         execSync(
-          `git -C "${derivedWorktree}" restore "${resolveConfiguredWuEventsPath(derivedWorktree)}"`,
+          `git -C "${derivedWorktree}" restore "${resolveWuEventsRelativePath(derivedWorktree)}"`,
         );
       } catch {
         // Non-fatal: file might not exist or already clean
@@ -2640,7 +2625,7 @@ async function executeGates({
   // This restores the file to HEAD state - checkpoint data is preserved in memory store
   if (worktreePath) {
     try {
-      execSync(`git -C "${worktreePath}" restore "${resolveConfiguredWuEventsPath(worktreePath)}"`);
+      execSync(`git -C "${worktreePath}" restore "${resolveWuEventsRelativePath(worktreePath)}"`);
     } catch {
       // Non-fatal: file might not exist or already clean
     }

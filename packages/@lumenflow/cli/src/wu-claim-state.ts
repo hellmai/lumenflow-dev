@@ -45,13 +45,9 @@ import {
   getInitiativeWUs,
 } from '@lumenflow/initiatives';
 import { resolveClaimStatus } from './wu-claim-validation.js';
+import { resolveWuEventsRelativePath } from './state-path-resolvers.js';
 
 const PREFIX = LOG_PREFIX.CLAIM;
-
-function resolveWuEventsPath(projectRoot: string): string {
-  const config = getConfig({ projectRoot });
-  return `${config.state.stateDir.replace(/\\/g, '/')}/wu-events.jsonl`;
-}
 
 type ClaimWUDoc = Record<string, unknown> & {
   id?: string;
@@ -544,7 +540,7 @@ export function getWorktreeCommitFiles(wuId: string): string[] {
   const config = getConfig();
   return [
     `${config.directories.wuDir}/${wuId}.yaml`,
-    resolveWuEventsPath(process.cwd()), // WU-1740: Event store is source of truth
+    resolveWuEventsRelativePath(process.cwd()), // WU-1740: Event store is source of truth
     // WU-1746: Explicitly NOT including backlog.md and status.md
     // These generated files cause merge conflicts when main advances
   ];
@@ -674,7 +670,7 @@ export async function applyCanonicalClaimUpdate(
           WU_PATHS.WU(id),
           WU_PATHS.STATUS(),
           WU_PATHS.BACKLOG(),
-          resolveWuEventsPath(process.cwd()),
+          resolveWuEventsRelativePath(process.cwd()),
         ];
 
   console.log(`${PREFIX} Updating canonical claim state (push-only)...`);
@@ -817,7 +813,7 @@ export async function rollbackCanonicalClaim(
             WU_PATHS.WU(id),
             WU_PATHS.STATUS(),
             WU_PATHS.BACKLOG(),
-            resolveWuEventsPath(worktreePath),
+            resolveWuEventsRelativePath(worktreePath),
           ],
         };
       },

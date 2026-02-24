@@ -24,7 +24,6 @@ import { computeContext } from '@lumenflow/core/context/index';
 import { analyzeRecovery, type RecoveryAnalysis } from '@lumenflow/core/recovery/recovery-analyzer';
 import { die } from '@lumenflow/core/error-handler';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
-import { getConfig } from '@lumenflow/core/config';
 import { readWU, writeWU } from '@lumenflow/core/wu-yaml';
 import {
   CONTEXT_VALIDATION,
@@ -43,20 +42,11 @@ import { WUStateStore } from '@lumenflow/core/wu-state-store';
 import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generator';
 import { releaseLaneLock } from '@lumenflow/core/lane-lock';
 import { join, relative } from 'node:path';
+import { resolveStateDir, resolveWuEventsRelativePath } from './state-path-resolvers.js';
 
 const { RECOVERY_ACTIONS } = CONTEXT_VALIDATION;
 const LOG_PREFIX = '[wu:recover]';
 const OPERATION_NAME = 'wu-recover';
-
-function resolveStateDir(projectRoot: string): string {
-  const config = getConfig({ projectRoot });
-  return join(projectRoot, config.state.stateDir);
-}
-
-function resolveWuEventsPath(projectRoot: string): string {
-  const config = getConfig({ projectRoot });
-  return `${config.state.stateDir.replace(/\\/g, '/')}/wu-events.jsonl`;
-}
 
 type RecoveryActionType = (typeof RECOVERY_ACTIONS)[keyof typeof RECOVERY_ACTIONS];
 
@@ -376,7 +366,7 @@ async function executeReset(wuId: string): Promise<boolean> {
         filesToCommit.push(
           WU_PATHS.STATUS(),
           WU_PATHS.BACKLOG(),
-          resolveWuEventsPath(process.cwd()),
+          resolveWuEventsRelativePath(process.cwd()),
         );
         commitMessage = `fix(wu-recover): reset ${wuId} - clear claim and emit release event`;
       }
@@ -431,7 +421,7 @@ async function executeReset(wuId: string): Promise<boolean> {
                 relative(process.cwd(), wuPath),
                 WU_PATHS.STATUS(),
                 WU_PATHS.BACKLOG(),
-                resolveWuEventsPath(microPath),
+                resolveWuEventsRelativePath(microPath),
               ],
             };
           }

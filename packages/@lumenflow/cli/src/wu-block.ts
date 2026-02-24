@@ -44,8 +44,8 @@ import {
   STRING_LITERALS,
   MICRO_WORKTREE_OPERATIONS,
 } from '@lumenflow/core/wu-constants';
-import { getConfig } from '@lumenflow/core/config';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
+import { resolveWuEventsRelativePath } from './state-path-resolvers.js';
 import { ensureStaged } from '@lumenflow/core/git-staged-validator';
 import { withMicroWorktree, LUMENFLOW_WU_TOOL_ENV } from '@lumenflow/core/micro-worktree';
 import { WUStateStore } from '@lumenflow/core/wu-state-store';
@@ -85,11 +85,6 @@ async function withWuToolEnv<T>(toolName: string, fn: () => Promise<T>): Promise
 
 export function shouldUseBranchPrBlockPath(doc: { claimed_mode?: string }): boolean {
   return shouldUseBranchPrStatePath(doc);
-}
-
-function resolveWuEventsPath(projectRoot: string): string {
-  const config = getConfig({ projectRoot });
-  return `${config.state.stateDir.replace(/\\/g, '/')}/wu-events.jsonl`;
 }
 
 /**
@@ -312,7 +307,7 @@ export async function main() {
         WU_PATHS.WU(id),
         WU_PATHS.STATUS(),
         WU_PATHS.BACKLOG(),
-        resolveWuEventsPath(process.cwd()),
+        resolveWuEventsRelativePath(process.cwd()),
       ]);
       await getGitForCwd().commit(commitMsg);
       await getGitForCwd().push(REMOTES.ORIGIN, currentBranch);
@@ -358,7 +353,7 @@ export async function main() {
                 WU_PATHS.WU(id),
                 WU_PATHS.STATUS(),
                 WU_PATHS.BACKLOG(),
-                resolveWuEventsPath(worktreePath),
+                resolveWuEventsRelativePath(worktreePath),
               ],
             };
           },

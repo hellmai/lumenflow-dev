@@ -51,6 +51,7 @@ import { WUStateStore } from '@lumenflow/core/wu-state-store';
 import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generator';
 import { shouldUseBranchPrStatePath } from './wu-state-cloud.js';
 import { runCLI } from './cli-entry-point.js';
+import { resolveStateDir, resolveWuEventsRelativePath } from './state-path-resolvers.js';
 
 // ensureOnMain() moved to wu-helpers.ts (WU-1256)
 // ensureStaged() moved to git-staged-validator.ts (WU-1341)
@@ -65,16 +66,6 @@ const PREFIX = LOG_PREFIX.UNBLOCK;
 
 export function shouldUseBranchPrUnblockPath(doc: { claimed_mode?: string }): boolean {
   return shouldUseBranchPrStatePath(doc);
-}
-
-function resolveStateDir(projectRoot: string): string {
-  const config = getConfig({ projectRoot });
-  return path.join(projectRoot, config.state.stateDir);
-}
-
-function resolveWuEventsPath(projectRoot: string): string {
-  const config = getConfig({ projectRoot });
-  return `${config.state.stateDir.replace(/\\/g, '/')}/wu-events.jsonl`;
 }
 
 function branchExists(branch: UnsafeAny) {
@@ -271,7 +262,7 @@ export async function main() {
         WU_PATHS.WU(id),
         WU_PATHS.STATUS(),
         WU_PATHS.BACKLOG(),
-        resolveWuEventsPath(process.cwd()),
+        resolveWuEventsRelativePath(process.cwd()),
       ]);
       await getGitForCwd().commit(commitMsg);
       await getGitForCwd().push(REMOTES.ORIGIN, currentBranch);
@@ -320,7 +311,7 @@ export async function main() {
               WU_PATHS.WU(id),
               WU_PATHS.STATUS(),
               WU_PATHS.BACKLOG(),
-              resolveWuEventsPath(worktreePath),
+              resolveWuEventsRelativePath(worktreePath),
             ],
           };
         },
