@@ -2150,3 +2150,4 @@
 {"type":"complete","wuId":"WU-2100","timestamp":"2026-02-24T09:34:26.557Z"}
 {"type":"claim","wuId":"WU-2101","timestamp":"2026-02-24T09:38:58.960Z","lane":"Framework: Core Lifecycle","title":"Add schemas/ dir to doc-source pathspecs for wu:done auto-regen"}
 {"type":"complete","wuId":"WU-2101","timestamp":"2026-02-24T10:01:24.651Z"}
+{"type":"claim","wuId":"WU-2102","timestamp":"2026-02-24T10:02:07.567Z","lane":"Framework: CLI WU Commands","title":"wu:prep checkpoint enables wu:done gate skip + scoped test fallback"}

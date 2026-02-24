@@ -20,14 +20,12 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2102 — wu:prep checkpoint enables wu:done gate skip + scoped test fallback](wu/WU-2102.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
-- [WU-2102 — wu:prep checkpoint enables wu:done gate skip + scoped test fallback](wu/WU-2102.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2102 — wu:prep checkpoint enables wu:done gate skip + scoped test fallback](wu/WU-2102.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 

@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2102 — wu:prep checkpoint enables wu:done gate skip + scoped test fallback](wu/WU-2102.yaml)
 
 ## Completed
 
