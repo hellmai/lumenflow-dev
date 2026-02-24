@@ -28,7 +28,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2092 — Consolidate path constants and cross-package parity contracts](wu/WU-2092.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1049,6 +1049,7 @@ sections:
 - [WU-2094 — Purge residual path literals in core config and prompt helpers](wu/WU-2094.yaml)
 - [WU-2095 — Eliminate pending CLI runtime path literals (INIT-036)](wu/WU-2095.yaml)
 - [WU-2091 — Align CLI hooks and enforcement messaging with configurable paths](wu/WU-2091.yaml)
+- [WU-2092 — Consolidate path constants and cross-package parity contracts](wu/WU-2092.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

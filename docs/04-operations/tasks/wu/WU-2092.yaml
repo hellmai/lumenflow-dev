@@ -2,7 +2,7 @@ id: WU-2092
 title: Consolidate path constants and cross-package parity contracts
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -78,3 +78,6 @@ acceptance:
   - existing command behavior and docs-only classification semantics remain unchanged
   - lane inference file references in smoke-test gate use CONFIG_FILES.LANE_INFERENCE constant
     instead of duplicated literals
+locked: true
+completed_at: 2026-02-24T01:56:04.321Z
+completed: 2026-02-24

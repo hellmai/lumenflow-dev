@@ -23,7 +23,7 @@ phases:
     status: done
   - id: 5
     title: Constant Dedup and Parity Hardening
-    status: pending
+    status: done
   - id: 6
     title: AST Guard Hardening and Coverage
     status: done
