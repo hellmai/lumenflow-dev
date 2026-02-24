@@ -2,7 +2,7 @@ id: WU-2097
 title: Remove pending Memory runtime path literal debt (INIT-036)
 lane: 'Framework: Memory'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -43,3 +43,6 @@ session_id: 0e86e49b-994a-4bda-a83a-94ffbf9428b8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-24T08:32:29.054Z
+locked: true
+completed_at: 2026-02-24T08:58:54.424Z
+completed: 2026-02-24
