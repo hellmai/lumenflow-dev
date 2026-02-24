@@ -20,7 +20,7 @@ phases:
     status: done
   - id: 4
     title: CLI Hooks and Enforcement Alignment
-    status: pending
+    status: done
   - id: 5
     title: Constant Dedup and Parity Hardening
     status: pending

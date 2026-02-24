@@ -2,7 +2,7 @@ id: WU-2091
 title: Align CLI hooks and enforcement messaging with configurable paths
 lane: 'Framework: CLI Enforcement'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -58,3 +58,6 @@ acceptance:
   - CLI enforcement tests pass under default layout and preserve behavior for customized directories
   - worktree guidance fallback text in spawn prompts/guidance uses configured directories.worktrees
     instead of hardcoded worktrees/ literals
+locked: true
+completed_at: 2026-02-24T01:06:05.601Z
+completed: 2026-02-24
