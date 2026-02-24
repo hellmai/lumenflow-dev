@@ -20,7 +20,12 @@ import { mkdtemp, rm, writeFile, mkdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import * as yaml from 'yaml';
-import { getConfig, clearConfigCache, findProjectRoot, getProjectRoot } from '../lumenflow-config.js';
+import {
+  getConfig,
+  clearConfigCache,
+  findProjectRoot,
+  getProjectRoot,
+} from '../lumenflow-config.js';
 
 /** Config file name used by config loader */
 const WORKSPACE_CONFIG_FILE = 'workspace.yaml';
