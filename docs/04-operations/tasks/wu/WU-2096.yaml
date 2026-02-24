@@ -2,7 +2,7 @@ id: WU-2096
 title: Remove pending MCP runtime path literal debt (INIT-036)
 lane: 'Framework: MCP'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/mcp/src/worktree-enforcement.ts
 tests:
   manual:
-    - Run MCP tool resolution and worktree enforcement in a repo with non-default docs/worktrees config and verify behavior remains correct
+    - Run MCP tool resolution and worktree enforcement in a repo with non-default docs/worktrees
+      config and verify behavior remains correct
   unit:
     - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
   e2e: []
@@ -29,7 +30,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Migrate remaining MCP runtime path checks and tool resolution logic away from hardcoded docs/worktrees literals to centralized config/constants-driven resolution.
+description: Migrate remaining MCP runtime path checks and tool resolution logic away from hardcoded
+  docs/worktrees literals to centralized config/constants-driven resolution.
 acceptance:
   - runtime-tool-resolver and worktree-enforcement contain no banned runtime path literals
   - path-literal-guard no longer needs these MCP files in INIT-036 pending allowlist
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-mcp-wu-2096
+claimed_at: 2026-02-24T08:24:07.500Z
+baseline_main_sha: 0757aabcace1743b1482874a04d212eda2215fe5
+session_id: 99be3ca2-8c38-4481-ae2c-3ffc6b786e1f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T08:24:07.505Z

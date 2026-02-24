@@ -2138,3 +2138,4 @@
 {"type":"complete","wuId":"WU-2091","timestamp":"2026-02-24T01:06:10.403Z"}
 {"type":"claim","wuId":"WU-2092","timestamp":"2026-02-24T01:07:39.033Z","lane":"Framework: Core Lifecycle","title":"Consolidate path constants and cross-package parity contracts"}
 {"type":"complete","wuId":"WU-2092","timestamp":"2026-02-24T01:56:08.963Z"}
+{"type":"claim","wuId":"WU-2096","timestamp":"2026-02-24T08:24:07.544Z","lane":"Framework: MCP","title":"Remove pending MCP runtime path literal debt (INIT-036)"}

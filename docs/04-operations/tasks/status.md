@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2096 — Remove pending MCP runtime path literal debt (INIT-036)](wu/WU-2096.yaml)
 
 ## Completed
 
