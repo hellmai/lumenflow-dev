@@ -1,0 +1,2 @@
+WU WU-2116 — Migrate throw new Error() to createError() in @lumenflow/core (batch)
+Completed: 2026-02-24

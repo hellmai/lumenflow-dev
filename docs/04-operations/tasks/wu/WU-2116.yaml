@@ -2,7 +2,7 @@ id: WU-2116
 title: Migrate throw new Error() to createError() in @lumenflow/core (batch)
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -54,3 +54,6 @@ session_id: f8b5a975-75a8-432c-8ffe-3d58bd90febb
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-24T21:11:38.048Z
+locked: true
+completed_at: 2026-02-24T21:38:18.871Z
+completed: 2026-02-24
