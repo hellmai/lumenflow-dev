@@ -7,8 +7,6 @@ priority: P2
 created: 2026-02-24
 code_paths:
   - packages/@lumenflow/core/src/
-  - packages/@lumenflow/cli/src/
-  - packages/@lumenflow/mcp/src/
 tests:
   manual:
     - Verify PathFactory API is exported from @lumenflow/core and importable by cli and mcp packages
@@ -33,10 +31,17 @@ notes: 'Single-session: ~6 files across 3 packages (core, cli, mcp). Requires de
   wu-sizing-guide.md (under 20 files, estimated ~40 tool calls). Plan: wild-foraging-taco.md Phase 3
   WU-L.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-24T22:12:07.077Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2124
+session_id: 58e2ecb2-7865-4adc-8a0b-d22139c6b900
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T22:12:07.080Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -49,11 +54,3 @@ acceptance:
   - 3 independent path resolution patterns consolidated to use PathFactory
   - All affected packages (core, cli, mcp) use PathFactory
   - pnpm test for affected packages passes
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2124
-claimed_at: 2026-02-24T22:12:07.077Z
-baseline_main_sha: 189db85a1693bb9d4daf41eafd00f29ab3dadb2d
-session_id: 58e2ecb2-7865-4adc-8a0b-d22139c6b900
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-24T22:12:07.080Z
