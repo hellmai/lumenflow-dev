@@ -7,11 +7,15 @@ priority: P1
 created: 2026-02-24
 code_paths:
   - packages/@lumenflow/core/src/branch-check.ts
-  - packages/@lumenflow/core/src/git-shim.ts
+  - packages/@lumenflow/shims/src/git-shim.ts
+  - packages/@lumenflow/core/src/
+  - packages/@lumenflow/cli/src/
+  - packages/@lumenflow/shims/src/
 tests:
   manual: []
   unit:
     - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+    - packages/@lumenflow/core/src/__tests__/branch-check.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2120.done
@@ -23,10 +27,11 @@ blocked_by:
 spec_refs:
   - /home/USER/.claude/plans/wild-foraging-taco.md
 risks: []
-notes: 'Single-session override: ~10 files modified but all are mechanical search-replace of raw
-  LUMENFLOW_X string literals to ENV_VARS.X references. Each change is 1-2 lines, pattern is
-  identical across all files. No structural changes. Complexity: Low (uniform search-replace).
-  Shallow multi-file exception per wu-sizing-guide.md §1.2.'
+notes: 'Single-session override: ~10 files modified across core, cli, shims packages but all are
+  mechanical search-replace of raw LUMENFLOW_X string literals to ENV_VARS.X references. Each change
+  is 1-2 lines, pattern is identical across all files. No structural changes. Complexity: Low
+  (uniform search-replace). Shallow multi-file exception per wu-sizing-guide.md §1.2. Note:
+  git-shim.ts is in @lumenflow/shims (not core); branch-check.ts is in @lumenflow/core.'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -36,10 +41,11 @@ requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
 description: 'After WU-2113 adds the ENV_VARS constant and guard, migrate all raw LUMENFLOW_ string
-  usages to ENV_VARS.*. Files: branch-check.ts, git-shim.ts, hooks, and any others detected by the
-  guard. Shallow multi-file: uniform search-replace LUMENFLOW_X -> ENV_VARS.X. Verify guard passes
-  after migration.'
+  usages to ENV_VARS.*. Scope: all files flagged by the path-literal-guard LUMENFLOW_ rule across
+  core, cli, and shims packages (primary hits: branch-check.ts in core, git-shim.ts in shims, and
+  others found by the guard). Uniform search-replace LUMENFLOW_X -> ENV_VARS.X. Verify guard reports
+  zero violations after migration.'
 acceptance:
-  - All raw LUMENFLOW_ env var strings replaced with ENV_VARS.* references
+  - All raw LUMENFLOW_ env var strings replaced with ENV_VARS.* references across core, cli, shims
   - path-literal-guard LUMENFLOW_ rule reports zero violations
-  - pnpm test --filter=@lumenflow/core --filter=@lumenflow/cli passes
+  - pnpm test --filter=@lumenflow/core --filter=@lumenflow/cli --filter=@lumenflow/shims passes
