@@ -300,8 +300,8 @@ async function executeReset(wuId: string): Promise<boolean> {
 
   const doc = readWU(wuPath, wuId);
   const branchPrPath = shouldUseBranchPrRecoverPath(doc);
-  const worktreePath = getWorktreePath(wuId, doc.lane || '');
-  const lane = doc.lane || '';
+  const worktreePath = getWorktreePath(wuId, (doc.lane as string) || '');
+  const lane = (doc.lane as string) || '';
 
   // Remove worktree if exists (git operation, safe to do directly)
   // WU-1097: Use worktreeRemove() instead of deprecated run() with shell strings
@@ -479,7 +479,7 @@ async function executeNuke(wuId: string): Promise<boolean> {
     console.log(`${LOG_PREFIX} WU file does not exist: ${wuPath}`);
   } else {
     const doc = readWU(wuPath, wuId);
-    const worktreePath = getWorktreePath(wuId, doc.lane || '');
+    const worktreePath = getWorktreePath(wuId, (doc.lane as string) || '');
 
     // Remove worktree if exists
     // WU-1097: Use worktreeRemove() instead of deprecated run() with shell strings
@@ -494,7 +494,7 @@ async function executeNuke(wuId: string): Promise<boolean> {
     }
 
     // WU-1624: Nuke must clear both local and remote branch artifacts.
-    await deleteLaneBranchArtifacts(wuId, doc.lane || '');
+    await deleteLaneBranchArtifacts(wuId, (doc.lane as string) || '');
   }
 
   console.log(`${LOG_PREFIX} ${EMOJI.SUCCESS} Nuke completed - all artifacts removed for ${wuId}`);
@@ -522,7 +522,7 @@ async function executeCleanup(wuId: string): Promise<boolean> {
     return false;
   }
 
-  const worktreePath = getWorktreePath(wuId, doc.lane || '');
+  const worktreePath = getWorktreePath(wuId, (doc.lane as string) || '');
 
   if (!existsSync(worktreePath)) {
     console.log(`${LOG_PREFIX} Worktree does not exist, nothing to cleanup`);

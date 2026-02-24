@@ -225,7 +225,7 @@ export function getInitiativeWUs(initRef: string): WUEntry[] {
         const doc = readWU(filePath, id);
 
         // Check if WU belongs to this initiative (by ID or slug)
-        if (doc.initiative && matchRefs.includes(doc.initiative)) {
+        if (doc.initiative && matchRefs.includes(doc.initiative as string)) {
           return { id, doc, path: filePath } as WUEntry;
         }
         return null;

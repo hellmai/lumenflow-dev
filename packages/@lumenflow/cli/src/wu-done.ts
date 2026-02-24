@@ -2037,7 +2037,7 @@ async function checkOwnership(
       try {
         const text = readFileSync(wtWUPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
         const wtDoc = parseYAML(text);
-        assignedTo = wtDoc?.assigned_to || null;
+        assignedTo = (wtDoc?.assigned_to as string) || null;
         if (assignedTo) {
           console.log(
             `${LOG_PREFIX.DONE} Note: Read assigned_to from worktree YAML (not found in main)`,

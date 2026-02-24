@@ -187,7 +187,7 @@ export async function checkClaimMetadata(
   if (existsSync(wuPath)) {
     try {
       const doc = readWU(wuPath, id);
-      yamlStatus = doc.status;
+      yamlStatus = (doc.status as string) ?? null;
       if (yamlStatus !== WU_STATUS.IN_PROGRESS) {
         errors.push(`WU YAML status is '${yamlStatus}', expected '${WU_STATUS.IN_PROGRESS}'`);
       }

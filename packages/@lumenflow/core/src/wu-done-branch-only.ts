@@ -214,7 +214,7 @@ export async function executeBranchOnlyCompletion(context: UnsafeAny) {
           metadataStampPath,
         } = resolveMetadataPaths(metadataBasePath, id);
         const docForUpdate = readWU(metadataWUPath, id);
-        const currentStatus = docForUpdate.status || WU_STATUS.IN_PROGRESS;
+        const currentStatus = (docForUpdate.status as string) || WU_STATUS.IN_PROGRESS;
 
         assertTransition(currentStatus, WU_STATUS.DONE, id);
 
@@ -323,7 +323,7 @@ export async function executeBranchOnlyCompletion(context: UnsafeAny) {
 
   // Step 3: Read WU YAML and validate current state
   const docForUpdate = readWU(metadataWUPath, id);
-  const currentStatus = docForUpdate.status || 'in_progress';
+  const currentStatus = (docForUpdate.status as string) || 'in_progress';
 
   // Check for zombie state (recovery mode)
   if (detectZombieState(docForUpdate, null)) {
@@ -415,7 +415,7 @@ export async function executeBranchOnlyCompletion(context: UnsafeAny) {
     // WU-1498: Passive lane telemetry (fail-open)
     await emitLaneSignalForCompletion({
       wuId: id,
-      lane: docForUpdate.lane,
+      lane: docForUpdate.lane as string | undefined,
       laneBranch,
       completionMode: WU_DONE_COMPLETION_MODES.BRANCH_ONLY,
       gitAdapter,

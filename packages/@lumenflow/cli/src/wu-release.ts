@@ -91,7 +91,7 @@ export async function main() {
     );
   }
   const title = doc.title || '';
-  const lane = doc.lane || 'Unknown';
+  const lane = (doc.lane as string) || 'Unknown';
   const branchPrPath = shouldUseBranchPrReleasePath(doc);
 
   if (!branchPrPath) {

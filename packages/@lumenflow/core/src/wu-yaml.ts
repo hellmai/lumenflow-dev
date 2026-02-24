@@ -1,10 +1,9 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { existsSync, readFileSync, writeFileSync, promises as fs } from 'node:fs';
 import { parse, stringify } from 'yaml';
-import { createError, ErrorCodes } from './error-handler.js';
+import { createError, ErrorCodes, getErrorMessage } from './error-handler.js';
 import { STRING_LITERALS } from './wu-constants.js';
 import { createWuPaths } from './wu-paths.js';
 import { BaseWUSchema } from './wu-schema.js';
@@ -92,7 +91,7 @@ export const YAML_STRINGIFY_OPTIONS = Object.freeze({
  * @returns {object} Parsed YAML document
  * @throws {Error} If file not found, YAML invalid, or ID mismatch
  */
-export function readWU(wuPath: string, expectedId: string): UnsafeAny {
+export function readWU(wuPath: string, expectedId: string): Record<string, unknown> {
   if (!existsSync(wuPath)) {
     throw createError(ErrorCodes.FILE_NOT_FOUND, `WU file not found: ${wuPath}`, {
       path: wuPath,
@@ -101,27 +100,29 @@ export function readWU(wuPath: string, expectedId: string): UnsafeAny {
   }
 
   const text = readFileSync(wuPath, { encoding: 'utf-8' });
-  let doc;
+  let doc: unknown;
 
   try {
     doc = parse(text);
-  } catch (e) {
-    throw createError(ErrorCodes.YAML_PARSE_ERROR, `Failed to parse YAML ${wuPath}: ${e.message}`, {
+  } catch (e: unknown) {
+    const msg = getErrorMessage(e);
+    throw createError(ErrorCodes.YAML_PARSE_ERROR, `Failed to parse YAML ${wuPath}: ${msg}`, {
       path: wuPath,
-      originalError: e.message,
+      originalError: msg,
     });
   }
 
   // Validate ID matches
-  if (!doc || doc.id !== expectedId) {
+  const parsed = doc as Record<string, unknown> | null;
+  if (!parsed || parsed.id !== expectedId) {
     throw createError(
       ErrorCodes.WU_NOT_FOUND,
-      `WU YAML id mismatch. Expected ${expectedId}, found ${doc && doc.id}`,
-      { path: wuPath, expectedId, foundId: doc && doc.id },
+      `WU YAML id mismatch. Expected ${expectedId}, found ${parsed && parsed.id}`,
+      { path: wuPath, expectedId, foundId: parsed && parsed.id },
     );
   }
 
-  return doc;
+  return parsed as Record<string, unknown>;
 }
 
 /**
@@ -137,36 +138,38 @@ export function readWU(wuPath: string, expectedId: string): UnsafeAny {
  * @returns {Promise<object>} Parsed YAML document
  * @throws {Error} If file not found, YAML invalid, or ID mismatch
  */
-export async function readWUAsync(wuPath: string, expectedId: string): Promise<UnsafeAny> {
+export async function readWUAsync(
+  wuPath: string,
+  expectedId: string,
+): Promise<Record<string, unknown>> {
   try {
     const text = await fs.readFile(wuPath, { encoding: 'utf-8' });
-    let doc;
+    let doc: unknown;
 
     try {
       doc = parse(text);
-    } catch (e) {
-      throw createError(
-        ErrorCodes.YAML_PARSE_ERROR,
-        `Failed to parse YAML ${wuPath}: ${e.message}`,
-        {
-          path: wuPath,
-          originalError: e.message,
-        },
-      );
+    } catch (e: unknown) {
+      const msg = getErrorMessage(e);
+      throw createError(ErrorCodes.YAML_PARSE_ERROR, `Failed to parse YAML ${wuPath}: ${msg}`, {
+        path: wuPath,
+        originalError: msg,
+      });
     }
 
     // Validate ID matches
-    if (!doc || doc.id !== expectedId) {
+    const parsed = doc as Record<string, unknown> | null;
+    if (!parsed || parsed.id !== expectedId) {
       throw createError(
         ErrorCodes.WU_NOT_FOUND,
-        `WU YAML id mismatch. Expected ${expectedId}, found ${doc && doc.id}`,
-        { path: wuPath, expectedId, foundId: doc && doc.id },
+        `WU YAML id mismatch. Expected ${expectedId}, found ${parsed && parsed.id}`,
+        { path: wuPath, expectedId, foundId: parsed && parsed.id },
       );
     }
 
-    return doc;
-  } catch (err) {
-    if (err.code === 'ENOENT') {
+    return parsed as Record<string, unknown>;
+  } catch (err: unknown) {
+    const errObj = err as { code?: string };
+    if (errObj.code === 'ENOENT') {
       throw createError(ErrorCodes.FILE_NOT_FOUND, `WU file not found: ${wuPath}`, {
         path: wuPath,
         expectedId,
@@ -184,8 +187,8 @@ export async function readWUAsync(wuPath: string, expectedId: string): Promise<U
  * @returns {object} Parsed object
  * @throws {Error} If YAML is invalid
  */
-export function parseYAML(text: string): UnsafeAny {
-  return parse(text);
+export function parseYAML(text: string): Record<string, unknown> {
+  return parse(text) as Record<string, unknown>;
 }
 
 /**
@@ -196,7 +199,7 @@ export function parseYAML(text: string): UnsafeAny {
  * @param {object} [options] - Additional stringify options (merged with YAML_STRINGIFY_OPTIONS)
  * @returns {string} YAML string
  */
-export function stringifyYAML(doc: UnsafeAny, options: Record<string, unknown> = {}): string {
+export function stringifyYAML(doc: unknown, options: Record<string, unknown> = {}): string {
   return stringify(doc, { ...YAML_STRINGIFY_OPTIONS, ...options });
 }
 
@@ -208,7 +211,7 @@ export function stringifyYAML(doc: UnsafeAny, options: Record<string, unknown> =
  * @returns {object} Parsed YAML document
  * @throws {Error} If file not found or YAML invalid
  */
-export function readWURaw(yamlPath: string): UnsafeAny {
+export function readWURaw(yamlPath: string): Record<string, unknown> {
   if (!existsSync(yamlPath)) {
     throw createError(ErrorCodes.FILE_NOT_FOUND, `YAML file not found: ${yamlPath}`, {
       path: yamlPath,
@@ -218,16 +221,13 @@ export function readWURaw(yamlPath: string): UnsafeAny {
   const text = readFileSync(yamlPath, { encoding: 'utf-8' });
 
   try {
-    return parse(text);
-  } catch (e) {
-    throw createError(
-      ErrorCodes.YAML_PARSE_ERROR,
-      `Failed to parse YAML ${yamlPath}: ${e.message}`,
-      {
-        path: yamlPath,
-        originalError: e.message,
-      },
-    );
+    return parse(text) as Record<string, unknown>;
+  } catch (e: unknown) {
+    const msg = getErrorMessage(e);
+    throw createError(ErrorCodes.YAML_PARSE_ERROR, `Failed to parse YAML ${yamlPath}: ${msg}`, {
+      path: yamlPath,
+      originalError: msg,
+    });
   }
 }
 
@@ -239,24 +239,22 @@ export function readWURaw(yamlPath: string): UnsafeAny {
  * @returns {Promise<object>} Parsed YAML document
  * @throws {Error} If file not found or YAML invalid
  */
-export async function readWURawAsync(yamlPath: string): Promise<UnsafeAny> {
+export async function readWURawAsync(yamlPath: string): Promise<Record<string, unknown>> {
   try {
     const text = await fs.readFile(yamlPath, { encoding: 'utf-8' });
 
     try {
-      return parse(text);
-    } catch (e) {
-      throw createError(
-        ErrorCodes.YAML_PARSE_ERROR,
-        `Failed to parse YAML ${yamlPath}: ${e.message}`,
-        {
-          path: yamlPath,
-          originalError: e.message,
-        },
-      );
+      return parse(text) as Record<string, unknown>;
+    } catch (e: unknown) {
+      const msg = getErrorMessage(e);
+      throw createError(ErrorCodes.YAML_PARSE_ERROR, `Failed to parse YAML ${yamlPath}: ${msg}`, {
+        path: yamlPath,
+        originalError: msg,
+      });
     }
-  } catch (err) {
-    if (err.code === 'ENOENT') {
+  } catch (err: unknown) {
+    const errObj = err as { code?: string };
+    if (errObj.code === 'ENOENT') {
       throw createError(ErrorCodes.FILE_NOT_FOUND, `YAML file not found: ${yamlPath}`, {
         path: yamlPath,
       });
@@ -275,7 +273,7 @@ export async function readWURawAsync(yamlPath: string): Promise<UnsafeAny> {
  * @param {object} doc - YAML document to write
  * @throws {ZodError} If doc fails BaseWUSchema validation
  */
-export function writeWU(wuPath: string, doc: UnsafeAny): void {
+export function writeWU(wuPath: string, doc: unknown): void {
   // WU-2115: Validate against schema before writing — throws ZodError on invalid data
   BaseWUSchema.parse(doc);
   const out = stringify(doc, YAML_STRINGIFY_OPTIONS);
@@ -295,7 +293,7 @@ export function writeWU(wuPath: string, doc: UnsafeAny): void {
  * @param {object} doc - WU document
  * @param {string} note - Note to append
  */
-export function appendNote(doc: UnsafeAny, note: string): void {
+export function appendNote(doc: Record<string, unknown>, note: string): void {
   // Do nothing if note is falsy
   if (!note) return;
 
@@ -325,7 +323,7 @@ export function appendNote(doc: UnsafeAny, note: string): void {
  * @param {object} sessionData - Session summary from endSession()
  * @throws {Error} if WU file not found
  */
-export function appendAgentSession(wuId: string, sessionData: UnsafeAny): void {
+export function appendAgentSession(wuId: string, sessionData: Record<string, unknown>): void {
   const paths = createWuPaths();
   const wuPath = paths.WU(wuId);
 
@@ -342,7 +340,7 @@ export function appendAgentSession(wuId: string, sessionData: UnsafeAny): void {
   }
 
   // Append session
-  doc.agent_sessions.push(sessionData);
+  (doc.agent_sessions as unknown[]).push(sessionData);
 
   // Write back
   writeWU(wuPath, doc);

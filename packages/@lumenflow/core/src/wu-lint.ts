@@ -26,6 +26,54 @@ import {
 } from './wu-rules-engine.js';
 
 /**
+ * WU-2119: Interfaces for lint input types, replacing untyped parameters.
+ */
+
+/** Minimal WU shape required for lint validation */
+interface LintableWU {
+  id: string;
+  type?: string;
+  status?: string;
+  acceptance?: string[] | Record<string, string[]>;
+  code_paths?: string[];
+  tests?: { unit?: string[]; e2e?: string[]; integration?: string[]; manual?: string[] };
+  test_paths?: { unit?: string[]; e2e?: string[]; integration?: string[]; manual?: string[] };
+}
+
+/** Forbidden file invariant shape */
+interface ForbiddenFileInvariant {
+  type: string;
+  id: string;
+  path: string;
+  description: string;
+  message?: string;
+}
+
+/** Mutual exclusivity invariant shape */
+interface MutualExclusivityInvariant {
+  type: string;
+  id: string;
+  paths: string[];
+  description?: string;
+  message?: string;
+}
+
+/** Union of invariant types for the lint checker */
+type LintInvariant = ForbiddenFileInvariant | MutualExclusivityInvariant;
+
+/** Lint error shape produced by lint functions */
+interface LintError {
+  type: string;
+  wuId: string;
+  message: string;
+  suggestion?: string;
+  path?: string;
+  criterion?: string;
+  invariantId?: string;
+  paths?: string[];
+}
+
+/**
  * Error type constants for WU spec linting
  */
 export const WU_LINT_ERROR_TYPES = {
@@ -73,12 +121,15 @@ const CLI_COMMAND_EXCLUDE_PATTERNS: string[] = [
  */
 const FILE_PATH_PATTERN = /(?:^|[\s'"`])([a-zA-Z0-9_-]+\/[a-zA-Z0-9_./-]+\.[a-zA-Z0-9]+)/g;
 
-function extractFilePaths(text: UnsafeAny) {
-  const paths = [];
+function extractFilePaths(text: string): string[] {
+  const paths: string[] = [];
   let match;
 
   while ((match = FILE_PATH_PATTERN.exec(text)) !== null) {
-    paths.push(match[1]);
+    const captured = match[1];
+    if (captured) {
+      paths.push(captured);
+    }
   }
 
   FILE_PATH_PATTERN.lastIndex = 0;
@@ -86,9 +137,9 @@ function extractFilePaths(text: UnsafeAny) {
 }
 
 /**
- * Check if a file path matches UnsafeAny pattern in code_paths
+ * Check if a file path matches any pattern in code_paths
  */
-function pathMatchesCodePaths(filePath: UnsafeAny, codePaths: UnsafeAny) {
+function pathMatchesCodePaths(filePath: string, codePaths: string[]): boolean {
   for (const pattern of codePaths) {
     if (filePath === pattern) {
       return true;
@@ -105,9 +156,10 @@ function pathMatchesCodePaths(filePath: UnsafeAny, codePaths: UnsafeAny) {
 /**
  * Validate that acceptance criteria only reference paths in code_paths
  */
-export function validateAcceptanceCodePaths(wu: UnsafeAny) {
-  const { id, acceptance = [], code_paths = [] } = wu;
-  const errors = [];
+export function validateAcceptanceCodePaths(wu: LintableWU) {
+  const { id, code_paths = [] } = wu;
+  const acceptance = Array.isArray(wu.acceptance) ? wu.acceptance : [];
+  const errors: LintError[] = [];
 
   for (const criterion of acceptance) {
     const referencedPaths = extractFilePaths(criterion);
@@ -132,9 +184,10 @@ export function validateAcceptanceCodePaths(wu: UnsafeAny) {
   };
 }
 
-function checkForbiddenFileInvariant(invariant: UnsafeAny, wu: UnsafeAny) {
-  const { id, acceptance = [], code_paths = [] } = wu;
-  const errors = [];
+function checkForbiddenFileInvariant(invariant: ForbiddenFileInvariant, wu: LintableWU) {
+  const { id, code_paths = [] } = wu;
+  const acceptance = Array.isArray(wu.acceptance) ? wu.acceptance : [];
+  const errors: LintError[] = [];
 
   if (code_paths.includes(invariant.path)) {
     errors.push({
@@ -164,11 +217,11 @@ function checkForbiddenFileInvariant(invariant: UnsafeAny, wu: UnsafeAny) {
   return errors;
 }
 
-function checkMutualExclusivityInvariant(invariant: UnsafeAny, wu: UnsafeAny) {
+function checkMutualExclusivityInvariant(invariant: MutualExclusivityInvariant, wu: LintableWU) {
   const { id, code_paths = [] } = wu;
-  const errors = [];
+  const errors: LintError[] = [];
 
-  const conflictingPaths = invariant.paths.filter((p: UnsafeAny) => code_paths.includes(p));
+  const conflictingPaths = invariant.paths.filter((p: string) => code_paths.includes(p));
   if (conflictingPaths.length > 1) {
     errors.push({
       type: WU_LINT_ERROR_TYPES.CODE_PATH_CONFLICTS_INVARIANT,
@@ -187,14 +240,14 @@ function checkMutualExclusivityInvariant(invariant: UnsafeAny, wu: UnsafeAny) {
 /**
  * Validate that code_paths and acceptance do not conflict with invariants
  */
-export function validateInvariantsCompliance(wu: UnsafeAny, invariants: UnsafeAny) {
-  const errors = [];
+export function validateInvariantsCompliance(wu: LintableWU, invariants: LintInvariant[]) {
+  const errors: LintError[] = [];
 
   for (const invariant of invariants) {
     if (invariant.type === INVARIANT_TYPES.FORBIDDEN_FILE) {
-      errors.push(...checkForbiddenFileInvariant(invariant, wu));
+      errors.push(...checkForbiddenFileInvariant(invariant as ForbiddenFileInvariant, wu));
     } else if (invariant.type === INVARIANT_TYPES.MUTUAL_EXCLUSIVITY) {
-      errors.push(...checkMutualExclusivityInvariant(invariant, wu));
+      errors.push(...checkMutualExclusivityInvariant(invariant as MutualExclusivityInvariant, wu));
     }
   }
 
@@ -371,9 +424,9 @@ export interface LintWUSpecOptions {
 /**
  * Lint a WU spec against all rules
  */
-export function lintWUSpec(wu: UnsafeAny, options: LintWUSpecOptions = {}) {
-  const allErrors = [];
-  const allWarnings = [];
+export function lintWUSpec(wu: LintableWU, options: LintWUSpecOptions = {}) {
+  const allErrors: LintError[] = [];
+  const allWarnings: LintError[] = [];
   const phase = options.phase || 'structural';
 
   const acceptanceResult = validateAcceptanceCodePaths(wu);
@@ -391,7 +444,7 @@ export function lintWUSpec(wu: UnsafeAny, options: LintWUSpecOptions = {}) {
   }
 
   if (invariants.length > 0) {
-    const invariantsResult = validateInvariantsCompliance(wu, invariants);
+    const invariantsResult = validateInvariantsCompliance(wu, invariants as LintInvariant[]);
     allErrors.push(...invariantsResult.errors);
   }
 
@@ -427,7 +480,7 @@ export function lintWUSpec(wu: UnsafeAny, options: LintWUSpecOptions = {}) {
 /**
  * Format lint errors for display
  */
-export function formatLintErrors(errors: UnsafeAny) {
+export function formatLintErrors(errors: LintError[]): string {
   if (errors.length === 0) {
     return '';
   }

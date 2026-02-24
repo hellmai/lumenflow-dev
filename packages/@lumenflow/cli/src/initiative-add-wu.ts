@@ -399,12 +399,13 @@ function updateInitiativeInWorktree(
     doc.wus = [];
   }
 
+  const wusList = doc.wus as string[];
   const addedWuIds = [];
   for (const wuId of wuIds) {
-    if (doc.wus.includes(wuId)) {
+    if (wusList.includes(wuId)) {
       continue;
     }
-    doc.wus.push(wuId);
+    wusList.push(wuId);
     addedWuIds.push(wuId);
   }
 

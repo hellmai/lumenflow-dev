@@ -367,7 +367,7 @@ export function validatePostMutation({
       errors.push(`Missing required field 'completed_at' in ${id}.yaml`);
     } else {
       // Validate ISO datetime format (YYYY-MM-DDTHH:mm:ss.sssZ or similar)
-      const timestamp = new Date(doc.completed_at);
+      const timestamp = new Date(doc.completed_at as string);
       if (isNaN(timestamp.getTime())) {
         errors.push(`Invalid completed_at timestamp: ${doc.completed_at}`);
       }
