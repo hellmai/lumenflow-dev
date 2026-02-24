@@ -22,6 +22,18 @@ code_paths:
   - packages/@lumenflow/kernel/src/shared-constants.ts
   - packages/@lumenflow/cli/src/onboarding-smoke-test.ts
   - packages/@lumenflow/memory/src/paths.ts
+  - packages/@lumenflow/core/src/lumenflow-config.ts
+  - packages/@lumenflow/core/src/wu-done-paths.ts
+  - packages/@lumenflow/core/src/wu-checkpoint.ts
+  - packages/@lumenflow/core/src/wu-claim-resume.ts
+  - packages/@lumenflow/core/src/context/location-resolver.ts
+  - packages/@lumenflow/core/src/invariants-runner.ts
+  - packages/@lumenflow/core/src/code-paths-overlap.ts
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/docs-sync.ts
+  - packages/@lumenflow/cli/src/lane-health.ts
+  - packages/@lumenflow/memory/src/mem-create-core.ts
+  - packages/@lumenflow/kernel/src/pack/hash.ts
 tests:
   manual:
     - Run path-literal guard and verify no banned runtime path literals remain after constant
@@ -38,6 +50,8 @@ tests:
     - packages/@lumenflow/cli/src/__tests__/init-lane-validation.test.ts
     - packages/@lumenflow/kernel/src/__tests__/shared-constants.test.ts
     - packages/@lumenflow/cli/src/__tests__/onboarding-smoke-test.test.ts
+    - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+    - packages/@lumenflow/cli/src/__tests__/path-constants-parity.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2092.done
@@ -48,10 +62,17 @@ plan: lumenflow://plans/INIT-036-plan.md
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-24T01:07:38.986Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2092
+session_id: b0eda2bb-5543-45d0-9c62-3f13cbbcafef
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T01:07:38.991Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -67,11 +88,3 @@ acceptance:
   - existing command behavior and docs-only classification semantics remain unchanged
   - lane inference file references in smoke-test gate use CONFIG_FILES.LANE_INFERENCE constant
     instead of duplicated literals
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2092
-claimed_at: 2026-02-24T01:07:38.986Z
-baseline_main_sha: bfe1bde89ab85e8aae325e1682cc4c82b1f446c5
-session_id: b0eda2bb-5543-45d0-9c62-3f13cbbcafef
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-24T01:07:38.991Z
