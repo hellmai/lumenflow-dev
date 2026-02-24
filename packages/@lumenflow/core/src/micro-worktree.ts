@@ -69,6 +69,7 @@ import {
 import type { GitAdapter } from './git-adapter.js';
 import type { PushRetryConfig } from './lumenflow-config-schema.js';
 import type { FormatRetryExhaustionOptions } from './micro-worktree-shared.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 /**
  * Context passed to the execute function in withMicroWorktree
@@ -298,11 +299,11 @@ export async function mergeWithRetry(
         await gitWorktree.rebase(BRANCHES.MAIN);
       } else {
         const errMsg = mergeErr instanceof Error ? mergeErr.message : String(mergeErr);
-        throw new Error(
+        throw createError(
+          ErrorCodes.MERGE_EXHAUSTION,
           `FF-only merge failed after ${MAX_MERGE_RETRIES} attempts. ` +
             `Main branch may have significant divergence.\n` +
             `Error: ${errMsg}`,
-          { cause: mergeErr },
         );
       }
     }
@@ -383,14 +384,14 @@ export async function pushWithRetry(
           await mainGit.merge(tempBranchName, { ffOnly: true });
         } else {
           const errMsg = pushErr instanceof Error ? pushErr.message : String(pushErr);
-          throw new Error(
+          throw createError(
+            ErrorCodes.RETRY_EXHAUSTION,
             `Push failed after ${maxRetries} attempts. ` +
               `Origin ${branch} may have significant traffic.\n\n` +
               `Suggestions:\n` +
               `  - Wait a few seconds and retry the operation\n` +
               `  - Check if another agent is rapidly pushing changes\n` +
               `Error: ${errMsg}`,
-            { cause: pushErr },
           );
         }
       }
@@ -505,7 +506,8 @@ export async function pushWithRetryConfig(
       },
     ).catch(() => {
       // p-retry exhausted all retries, throw descriptive error
-      throw new Error(
+      throw createError(
+        ErrorCodes.RETRY_EXHAUSTION,
         `Push failed after ${config.retries} attempts. ` +
           `Origin ${branch} may have significant traffic.\n\n` +
           `Suggestions:\n` +

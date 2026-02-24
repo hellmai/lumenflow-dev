@@ -15,7 +15,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parse } from 'yaml';
 import { BRANCHES, DIRECTORIES, REMOTES, STDIO, REAL_GIT, PATTERNS } from './wu-constants.js';
-import { die } from './error-handler.js';
+import { die, createError, ErrorCodes } from './error-handler.js';
 import { isAgentBranchWithDetails } from './branch-check.js';
 import { createWuPaths } from './wu-paths.js';
 import type {
@@ -279,7 +279,7 @@ export async function ensureOnMain(git: EnsureOnMainGitAdapter): Promise<void> {
       );
       return;
     }
-    throw new Error(`Run from shared checkout on '${BRANCHES.MAIN}' (found '${branch}')`);
+    throw createError(ErrorCodes.BRANCH_ERROR, `Run from shared checkout on '${BRANCHES.MAIN}' (found '${branch}')`);
   }
 }
 
@@ -304,7 +304,8 @@ export async function ensureMainUpToDate(
   const localMain = await git.getCommitHash(BRANCHES.MAIN);
   const remoteMain = await git.getCommitHash(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
   if (localMain !== remoteMain) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.BRANCH_ERROR,
       `Main branch is out of sync with origin.\n\nRun: git pull ${REMOTES.ORIGIN} ${BRANCHES.MAIN}`,
     );
   }

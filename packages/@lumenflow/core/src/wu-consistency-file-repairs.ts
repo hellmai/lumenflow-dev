@@ -30,6 +30,7 @@ import {
 import { WU_EVENT_TYPE } from './wu-state-schema.js';
 import { todayISO, normalizeToDateString } from './date-utils.js';
 import { createGitForPath } from './git-adapter.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 /**
  * Result type for consistency repair operations.
@@ -119,7 +120,7 @@ export async function updateYamlToDoneInWorktree(
   } | null;
 
   if (!wuDoc) {
-    throw new Error(`Failed to parse WU YAML: ${wuReadPath}`);
+    throw createError(ErrorCodes.YAML_PARSE_ERROR, `Failed to parse WU YAML: ${wuReadPath}`);
   }
 
   // Update fields

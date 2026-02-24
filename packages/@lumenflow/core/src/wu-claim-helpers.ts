@@ -9,6 +9,7 @@
  */
 
 import { z } from 'zod';
+import { createError, ErrorCodes } from './error-handler.js';
 
 /**
  * Zod schema for validating email addresses.
@@ -61,7 +62,8 @@ export async function getAssignedEmail(gitAdapter: UnsafeAny) {
 
   // WU-1423: NO silent fallback to username (GIT_USER, USER)
   // These are usernames, not email addresses, and would cause wu:done validation failures
-  throw new Error(
+  throw createError(
+    ErrorCodes.CONFIG_ERROR,
     'Cannot determine assigned_to email address.\n\n' +
       'Checked:\n' +
       '  1. git config user.email - not set or invalid\n' +

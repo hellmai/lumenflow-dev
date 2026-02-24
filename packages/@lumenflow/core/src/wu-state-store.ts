@@ -17,6 +17,7 @@ import { WU_STATUS } from './wu-constants.js';
 import { WUStateIndexer } from './wu-state-indexer.js';
 import { WUEventSourcer } from './wu-event-sourcer.js';
 import type { IWuStateStore } from './ports/wu-state.ports.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 // Re-export the port interface for DIP-compliant consumers (WU-2020)
 export type { IWuStateStore } from './ports/wu-state.ports.js';
@@ -36,7 +37,7 @@ function validateOrThrow(event: Record<string, unknown>): WUEvent {
     const issues = validation.error.issues
       .map((i) => `${i.path.join('.')}: ${i.message}`)
       .join(', ');
-    throw new Error(`Validation error: ${issues}`);
+    throw createError(ErrorCodes.VALIDATION_ERROR, `Validation error: ${issues}`);
   }
   return validation.data;
 }
@@ -45,7 +46,7 @@ function validateOrThrow(event: Record<string, unknown>): WUEvent {
 function assertInProgress(indexer: WUStateIndexer, wuId: string): void {
   const s = indexer.getWUState(wuId);
   if (!s || s.status !== WU_STATUS.IN_PROGRESS) {
-    throw new Error(`WU ${wuId} is not ${WU_STATUS.IN_PROGRESS}`);
+    throw createError(ErrorCodes.STATE_ERROR, `WU ${wuId} is not ${WU_STATUS.IN_PROGRESS}`);
   }
 }
 
@@ -76,7 +77,7 @@ export class WUStateStore implements IWuStateStore {
   async claim(wuId: string, lane: string, title: string): Promise<void> {
     const s = this.indexer.getWUState(wuId);
     if (s && s.status === WU_STATUS.IN_PROGRESS) {
-      throw new Error(`WU ${wuId} is already ${WU_STATUS.IN_PROGRESS}`);
+      throw createError(ErrorCodes.STATE_ERROR, `WU ${wuId} is already ${WU_STATUS.IN_PROGRESS}`);
     }
     await this.sourcer.appendAndApply(
       validateOrThrow({
@@ -128,7 +129,7 @@ export class WUStateStore implements IWuStateStore {
   async unblock(wuId: string): Promise<void> {
     const s = this.indexer.getWUState(wuId);
     if (!s || s.status !== WU_STATUS.BLOCKED) {
-      throw new Error(`WU ${wuId} is not ${WU_STATUS.BLOCKED}`);
+      throw createError(ErrorCodes.STATE_ERROR, `WU ${wuId} is not ${WU_STATUS.BLOCKED}`);
     }
     await this.sourcer.appendAndApply(
       validateOrThrow({

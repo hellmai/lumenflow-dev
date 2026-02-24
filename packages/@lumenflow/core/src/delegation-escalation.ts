@@ -28,6 +28,7 @@ import { DelegationRegistryStore } from './delegation-registry-store.js';
 import { DelegationStatus } from './delegation-registry-schema.js';
 import { RECOVERY_DIR_NAME } from './delegation-recovery.js';
 import { LUMENFLOW_PATHS } from './wu-constants.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 // Optional import from @lumenflow/memory
 type SignalResult = { signal: { id: string } };
@@ -270,31 +271,31 @@ export async function escalateStuckDelegation(
   try {
     await store.load();
   } catch {
-    throw new Error(`Delegation ${delegationId} not found: registry unavailable`);
+    throw createError(ErrorCodes.DELEGATION_NOT_FOUND, `Delegation ${delegationId} not found: registry unavailable`);
   }
 
   // Find the delegation
   const delegation = store.getById(delegationId);
 
   if (!delegation) {
-    throw new Error(`Delegation ${delegationId} not found in registry`);
+    throw createError(ErrorCodes.DELEGATION_NOT_FOUND, `Delegation ${delegationId} not found in registry`);
   }
 
   // Check if signal module is available
   if (!createSignal) {
-    throw new Error('Signal module (@lumenflow/memory) not available - cannot escalate');
+    throw createError(ErrorCodes.SIGNAL_UNAVAILABLE, 'Signal module (@lumenflow/memory) not available - cannot escalate');
   }
 
   // WU-1967: Check if already escalated (prevents duplicate signals)
   if (delegation.status === DelegationStatus.ESCALATED) {
-    throw new Error(`Delegation ${delegationId} already escalated`);
+    throw createError(ErrorCodes.DELEGATION_ALREADY_ESCALATED, `Delegation ${delegationId} already escalated`);
   }
 
   // Find escalation audit log
   const auditLog = await findEscalationAuditLog(baseDir, delegationId);
 
   if (!auditLog) {
-    throw new Error(`No escalation audit log found for delegation ${delegationId}`);
+    throw createError(ErrorCodes.DELEGATION_NOT_FOUND, `No escalation audit log found for delegation ${delegationId}`);
   }
 
   // Count previous escalation attempts

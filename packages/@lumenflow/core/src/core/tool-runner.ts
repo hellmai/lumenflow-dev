@@ -39,6 +39,7 @@ import { validateToolInput, createErrorOutput } from './tool.schemas.js';
 
 import { getWUContext, assertWorktreeRequired } from './worktree-guard.js';
 import { getActiveScope, isPathInScope } from './scope-checker.js';
+import { createError, ErrorCodes } from '../error-handler.js';
 
 // Type definitions
 interface ToolMetadata {
@@ -498,7 +499,7 @@ export class ToolRunner {
     const name = tool.metadata.name;
 
     if (this.#tools.has(name)) {
-      throw new Error(`Tool '${name}' is already registered`);
+      throw createError(ErrorCodes.TOOL_ALREADY_REGISTERED, `Tool '${name}' is already registered`);
     }
 
     this.#tools.set(name, tool);

@@ -41,6 +41,7 @@ import {
 } from './wu-constants.js';
 // WU-2010: Import validation constants to eliminate magic numbers
 import { INLINE_KEYWORD_MAX_OFFSET } from './constants/validation-constants.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 // Type definitions
 interface ExistValidationResult {
@@ -630,7 +631,7 @@ export async function validate(
     case VALIDATION_MODES.LANE: {
       const { lane } = options;
       if (!lane) {
-        throw new Error('Lane name is required for lane validation mode');
+        throw createError(ErrorCodes.INVALID_ARGUMENT, 'Lane name is required for lane validation mode');
       }
       return validateLanePatterns(codePaths, lane);
     }
@@ -641,7 +642,7 @@ export async function validate(
     }
 
     default:
-      throw new Error(`Unknown validation mode: ${mode}`);
+      throw createError(ErrorCodes.INVALID_ARGUMENT, `Unknown validation mode: ${mode}`);
   }
 }
 

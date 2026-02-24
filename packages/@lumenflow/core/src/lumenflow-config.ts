@@ -24,6 +24,7 @@ import {
 import { GIT_DIRECTORY_NAME, WORKSPACE_CONFIG_FILE_NAME } from './config-contract.js';
 import { normalizeConfigKeys } from './normalize-config-keys.js';
 import { asRecord } from './object-guards.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 /** Canonical workspace config file name (workspace-first architecture) */
 export {
@@ -184,7 +185,8 @@ export function getConfig(
   const { workspaceConfigExists } = getConfigFilePresence(projectRoot);
 
   if (strictWorkspace && !workspaceConfigExists) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.CONFIG_ERROR,
       `${WARNING_PREFIX} Missing ${WORKSPACE_CONFIG_FILE_NAME}. ` +
         `Run \`${WORKSPACE_INIT_COMMAND}\` to scaffold workspace config.`,
     );
@@ -194,7 +196,8 @@ export function getConfig(
   const workspaceConfig = loadWorkspaceSoftwareDeliveryConfig(projectRoot);
 
   if (strictWorkspace && workspaceConfigExists && !workspaceConfig) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.CONFIG_ERROR,
       `${WARNING_PREFIX} ${WORKSPACE_CONFIG_FILE_NAME} exists but is invalid. ` +
         `Ensure \`${WORKSPACE_CONFIG_SECTION}\` contains valid configuration values.`,
     );

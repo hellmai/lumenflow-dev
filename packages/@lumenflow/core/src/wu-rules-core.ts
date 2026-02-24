@@ -4,6 +4,7 @@
 import path from 'node:path';
 import { minimatch } from 'minimatch';
 import { TEST_TYPES, WU_TYPES } from './wu-constants.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 export type ValidationPhase = 'intent' | 'structural' | 'reality';
 
@@ -561,7 +562,8 @@ export function validateWURulesSync(
 ): WUValidationResult {
   const phase = options.phase || 'structural';
   if (phase === 'reality') {
-    throw new Error(
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
       'validateWURulesSync does not support phase "reality". Use validateWURulesWithResolvers.',
     );
   }

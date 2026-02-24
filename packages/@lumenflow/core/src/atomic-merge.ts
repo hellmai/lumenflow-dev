@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 import { createGitForPath, getGitForCwd } from './git-adapter.js';
+import { createError, ErrorCodes } from './error-handler.js';
 import {
   MAX_MERGE_RETRIES,
   cleanupMicroWorktree,
@@ -71,9 +72,10 @@ async function mergeLaneBranchWithRetry(options: {
       return;
     } catch (error) {
       if (attempt >= mergeRetries) {
-        throw new Error(buildMergeRetryExhaustionMessage(laneBranch, mergeRetries, command), {
-          cause: error,
-        });
+        throw createError(
+          ErrorCodes.MERGE_EXHAUSTION,
+          buildMergeRetryExhaustionMessage(laneBranch, mergeRetries, command),
+        );
       }
 
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -156,7 +158,7 @@ export async function withAtomicMerge(
     return { tempBranchName, worktreePath };
   } catch (error) {
     if (error instanceof Error && isRetryExhaustionError(error)) {
-      throw new Error(formatRetryExhaustionError(error, { command }), { cause: error });
+      throw createError(ErrorCodes.RETRY_EXHAUSTION, formatRetryExhaustionError(error, { command }));
     }
     throw error;
   } finally {

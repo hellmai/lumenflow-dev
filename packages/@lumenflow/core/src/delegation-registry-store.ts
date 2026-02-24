@@ -25,6 +25,7 @@ import {
   type DelegationEvent,
   type DelegationIntentValue,
 } from './delegation-registry-schema.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 /** Delegation registry file name constant */
 export const DELEGATION_REGISTRY_FILE_NAME = 'delegation-registry.jsonl';
@@ -114,7 +115,7 @@ export class DelegationRegistryStore {
       try {
         parsed = JSON.parse(line);
       } catch (error) {
-        throw new Error(`Malformed JSON on line ${i + 1}: ${error.message}`, { cause: error });
+        throw createError(ErrorCodes.PARSE_ERROR, `Malformed JSON on line ${i + 1}: ${error.message}`);
       }
 
       // Validate against schema
@@ -123,7 +124,7 @@ export class DelegationRegistryStore {
         const issues = validation.error.issues
           .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
           .join(', ');
-        throw new Error(`Validation error on line ${i + 1}: ${issues}`);
+        throw createError(ErrorCodes.VALIDATION_ERROR, `Validation error on line ${i + 1}: ${issues}`);
       }
 
       const event = validation.data;
@@ -178,7 +179,7 @@ export class DelegationRegistryStore {
       const issues = validation.error.issues
         .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
         .join(', ');
-      throw new Error(`Validation error: ${issues}`);
+      throw createError(ErrorCodes.VALIDATION_ERROR, `Validation error: ${issues}`);
     }
 
     const line = JSON.stringify(event) + '\n';
@@ -242,7 +243,7 @@ export class DelegationRegistryStore {
   async updateStatus(delegationId: string, status: string): Promise<void> {
     const existing = this.delegations.get(delegationId);
     if (!existing) {
-      throw new Error(`Delegation ID ${delegationId} not found`);
+      throw createError(ErrorCodes.DELEGATION_NOT_FOUND, `Delegation ID ${delegationId} not found`);
     }
 
     const event: DelegationEvent = {
@@ -270,7 +271,7 @@ export class DelegationRegistryStore {
   async recordPickup(delegationId: string, pickedUpBy: string, pickedUpAt?: string): Promise<void> {
     const existing = this.delegations.get(delegationId);
     if (!existing) {
-      throw new Error(`Delegation ID ${delegationId} not found`);
+      throw createError(ErrorCodes.DELEGATION_NOT_FOUND, `Delegation ID ${delegationId} not found`);
     }
 
     const event: DelegationEvent = {

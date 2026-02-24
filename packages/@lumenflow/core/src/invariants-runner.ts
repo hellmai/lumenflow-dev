@@ -34,7 +34,7 @@ import { globSync } from 'glob';
 import { parseYAML } from './wu-yaml.js';
 // WU-2333: Import automated tests invariant check
 import { checkAutomatedTestsInvariant } from './invariants/check-automated-tests.js';
-import { getErrorMessage } from './error-handler.js';
+import { getErrorMessage, createError, ErrorCodes } from './error-handler.js';
 import { GIT_DIRECTORY_NAME } from './config-contract.js';
 
 /**
@@ -512,7 +512,7 @@ export class InvariantError extends Error {
  */
 export function loadInvariants(filePath: string): InvariantDefinition[] {
   if (!existsSync(filePath)) {
-    throw new Error(`Invariants file not found: ${filePath}`);
+    throw createError(ErrorCodes.FILE_NOT_FOUND, `Invariants file not found: ${filePath}`);
   }
 
   const content = readFileSync(filePath, 'utf-8');
@@ -521,11 +521,11 @@ export function loadInvariants(filePath: string): InvariantDefinition[] {
   try {
     doc = parseYAML(content) as { invariants?: InvariantDefinition[] } | null;
   } catch (e: unknown) {
-    throw new Error(`Invalid YAML in ${filePath}: ${getErrorMessage(e)}`, { cause: e });
+    throw createError(ErrorCodes.YAML_PARSE_ERROR, `Invalid YAML in ${filePath}: ${getErrorMessage(e)}`);
   }
 
   if (!doc || !Array.isArray(doc.invariants)) {
-    throw new Error(`Invalid invariants.yml: expected 'invariants' array at root`);
+    throw createError(ErrorCodes.INVARIANT_ERROR, `Invalid invariants.yml: expected 'invariants' array at root`);
   }
 
   return doc.invariants;

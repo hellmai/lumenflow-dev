@@ -23,6 +23,7 @@ import { generateBacklog, generateStatus } from './backlog-generator.js';
 import { getStateStoreDirFromBacklog } from './wu-paths.js';
 import { getGitForCwd } from './git-adapter.js';
 import { REMOTES, BRANCHES, GIT_REFS, LUMENFLOW_PATHS, WU_STATUS } from './wu-constants.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 const ORIGIN_MAIN_REF = GIT_REFS.remote(REMOTES.ORIGIN, BRANCHES.MAIN);
 
@@ -215,7 +216,7 @@ export async function computeBacklogContentWithMerge(
   const currentState = mergedStore.getWUState(wuId);
 
   if (!currentState) {
-    throw new Error(`WU ${wuId} not found in merged state store`);
+    throw createError(ErrorCodes.STATE_ERROR, `WU ${wuId} not found in merged state store`);
   }
 
   // If not already done, create and apply the complete event
@@ -339,7 +340,8 @@ export async function computeBacklogContentWithMainMerge(
   const currentState = mergedStore.getWUState(wuId);
 
   if (!currentState) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.STATE_ERROR,
       `WU ${wuId} not found in merged state store. ` +
         `This may indicate the WU was never properly claimed.`,
     );
@@ -348,7 +350,8 @@ export async function computeBacklogContentWithMainMerge(
   // If not already done, create and apply the complete event
   if (currentState.status !== WU_STATUS.DONE) {
     if (currentState.status !== WU_STATUS.IN_PROGRESS) {
-      throw new Error(
+      throw createError(
+        ErrorCodes.STATE_ERROR,
         `WU ${wuId} is in status "${currentState.status}", expected "${WU_STATUS.IN_PROGRESS}"`,
       );
     }
@@ -393,7 +396,8 @@ export async function computeStatusContentWithMainMerge(
   const currentState = mergedStore.getWUState(wuId);
 
   if (!currentState) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.STATE_ERROR,
       `WU ${wuId} not found in merged state store. ` +
         `This may indicate the WU was never properly claimed.`,
     );
@@ -402,7 +406,8 @@ export async function computeStatusContentWithMainMerge(
   // If not already done, create and apply the complete event
   if (currentState.status !== WU_STATUS.DONE) {
     if (currentState.status !== WU_STATUS.IN_PROGRESS) {
-      throw new Error(
+      throw createError(
+        ErrorCodes.STATE_ERROR,
         `WU ${wuId} is in status "${currentState.status}", expected "${WU_STATUS.IN_PROGRESS}"`,
       );
     }
@@ -448,7 +453,7 @@ export async function computeWUEventsContentWithMainMerge(
 
   const currentState = tempStore.getWUState(wuId);
   if (!currentState) {
-    throw new Error(`WU ${wuId} not found in merged state store`);
+    throw createError(ErrorCodes.STATE_ERROR, `WU ${wuId} not found in merged state store`);
   }
 
   if (currentState.status === WU_STATUS.DONE) {
@@ -457,7 +462,8 @@ export async function computeWUEventsContentWithMainMerge(
   }
 
   if (currentState.status !== WU_STATUS.IN_PROGRESS) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.STATE_ERROR,
       `WU ${wuId} is in status "${currentState.status}", expected "${WU_STATUS.IN_PROGRESS}"`,
     );
   }

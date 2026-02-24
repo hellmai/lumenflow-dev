@@ -330,7 +330,7 @@ export function appendAgentSession(wuId: string, sessionData: UnsafeAny): void {
   const wuPath = paths.WU(wuId);
 
   if (!existsSync(wuPath)) {
-    throw new Error(`WU file not found: ${wuPath}`);
+    throw createError(ErrorCodes.FILE_NOT_FOUND, `WU file not found: ${wuPath}`);
   }
 
   // Parse WU YAML
