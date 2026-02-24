@@ -95,21 +95,19 @@ describe('WU-2127: path-utils sub-module', () => {
     });
 
     it('should allow paths matching .claude/ prefix', () => {
-      expect(
-        isAllowlistedPath('/test/project/.claude/settings.json', MAIN_REPO, PREFIXES),
-      ).toBe(true);
+      expect(isAllowlistedPath('/test/project/.claude/settings.json', MAIN_REPO, PREFIXES)).toBe(
+        true,
+      );
     });
 
     it('should reject paths not in allowlist', () => {
-      expect(
-        isAllowlistedPath('/test/project/packages/cli/src/file.ts', MAIN_REPO, PREFIXES),
-      ).toBe(false);
+      expect(isAllowlistedPath('/test/project/packages/cli/src/file.ts', MAIN_REPO, PREFIXES)).toBe(
+        false,
+      );
     });
 
     it('should reject paths outside the repo', () => {
-      expect(
-        isAllowlistedPath('/other/repo/.lumenflow/file', MAIN_REPO, PREFIXES),
-      ).toBe(false);
+      expect(isAllowlistedPath('/other/repo/.lumenflow/file', MAIN_REPO, PREFIXES)).toBe(false);
     });
   });
 });
