@@ -8,7 +8,6 @@ created: 2026-02-24
 code_paths:
   - packages/@lumenflow/initiatives/__tests__/initiative-yaml.test.ts
   - packages/@lumenflow/initiatives/__tests__/orchestrate-initiative.test.ts
-  - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
 tests:
   manual:
     - Run pnpm --filter @lumenflow/initiatives exec vitest run __tests__/initiative-yaml.test.ts
@@ -29,10 +28,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-24T23:45:19.643Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2134
+session_id: e07d6019-cc74-4b76-adb0-d6846748263c
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T23:45:19.647Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -47,11 +53,3 @@ acceptance:
     config-driven path resolution
   - Existing orchestrator command-generation assertions remain strict and unchanged
   - Targeted initiatives test suites execute green
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2134
-claimed_at: 2026-02-24T23:45:19.643Z
-baseline_main_sha: 41d6046db2d3468adacbb890bb90ef38982f12c3
-session_id: e07d6019-cc74-4b76-adb0-d6846748263c
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-24T23:45:19.647Z
