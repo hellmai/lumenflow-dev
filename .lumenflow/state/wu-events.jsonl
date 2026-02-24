@@ -2146,3 +2146,4 @@
 {"type":"claim","wuId":"WU-2098","timestamp":"2026-02-24T08:59:44.499Z","lane":"Framework: CLI WU Commands","title":"Make wu:brief / wu:spawn prompt templates path-config aware"}
 {"type":"complete","wuId":"WU-2099","timestamp":"2026-02-24T09:04:01.788Z"}
 {"type":"complete","wuId":"WU-2098","timestamp":"2026-02-24T09:07:52.920Z"}
+{"type":"claim","wuId":"WU-2100","timestamp":"2026-02-24T09:12:38.835Z","lane":"Framework: Core Lifecycle","title":"Harden core spawn literal coverage and config-aware prompts"}

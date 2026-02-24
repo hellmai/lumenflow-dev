@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2100 — Harden core spawn literal coverage and config-aware prompts](wu/WU-2100.yaml)
 
 ## Completed
 
