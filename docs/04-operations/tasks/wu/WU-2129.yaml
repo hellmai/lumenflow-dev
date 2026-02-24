@@ -6,8 +6,6 @@ status: in_progress
 priority: P2
 created: 2026-02-24
 code_paths:
-  - apps/docs/src/content/docs/guides/initiatives.mdx
-  - apps/docs/src/content/docs/packs/software-delivery/advanced/initiatives.mdx
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/initiative-orchestration.md
 tests:
   manual:
@@ -21,10 +19,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-24T19:41:56.935Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-2129
+session_id: f838da68-7157-4f3d-bdc8-07eb403fc7c1
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T19:41:56.940Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -45,11 +50,3 @@ acceptance:
   - Internal agent onboarding doc exists at
     docs/04-operations/_frameworks/lumenflow/agent/onboarding/initiative-orchestration.md
   - Both Starlight files (guides/ and packs/) are updated consistently
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-2129
-claimed_at: 2026-02-24T19:41:56.935Z
-baseline_main_sha: dc38f18b9590121961f660d62a3cf345cb57e46c
-session_id: f838da68-7157-4f3d-bdc8-07eb403fc7c1
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-24T19:41:56.940Z
