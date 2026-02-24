@@ -1,0 +1,2 @@
+WU WU-2118 — Migrate throw new Error() to createError() in mcp, memory, initiatives, agent, metrics (batch)
+Completed: 2026-02-24
