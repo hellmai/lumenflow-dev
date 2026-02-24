@@ -2189,3 +2189,4 @@
 {"type":"complete","wuId":"WU-2130","timestamp":"2026-02-24T21:07:13.653Z"}
 {"type":"claim","wuId":"WU-2119","timestamp":"2026-02-24T21:10:39.991Z","lane":"Framework: Core Lifecycle","title":"Reduce UnsafeAny usage in highest-churn hotspot files"}
 {"type":"claim","wuId":"WU-2121","timestamp":"2026-02-24T21:11:30.457Z","lane":"Framework: Core Lifecycle","title":"Replace raw .endsWith('.yaml') file extension literals with FILE_EXTENSIONS constants"}
+{"type":"claim","wuId":"WU-2116","timestamp":"2026-02-24T21:11:38.107Z","lane":"Framework: Core Lifecycle","title":"Migrate throw new Error() to createError() in @lumenflow/core (batch)"}

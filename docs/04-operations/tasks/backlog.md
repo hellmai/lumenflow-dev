@@ -22,7 +22,6 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
-- [WU-2116 — Migrate throw new Error() to createError() in @lumenflow/core (batch)](wu/WU-2116.yaml) — Framework: Core Lifecycle
 - [WU-2117 — Migrate throw new Error() to createError() in @lumenflow/cli (batch)](wu/WU-2117.yaml) — Framework: CLI WU Commands
 - [WU-2118 — Migrate throw new Error() to createError() in mcp, memory, initiatives, agent, metrics (batch)](wu/WU-2118.yaml) — Framework: Core Lifecycle
 - [WU-2124 — Extract shared path factory in core to replace 3 independent resolution patterns](wu/WU-2124.yaml) — Framework: Core Lifecycle
@@ -36,6 +35,7 @@ sections:
 - [WU-2120 — Create ENV_VARS constant and migrate raw LUMENFLOW\_ env var references](wu/WU-2120.yaml) — Framework: Core Lifecycle
 - [WU-2119 — Reduce UnsafeAny usage in highest-churn hotspot files](wu/WU-2119.yaml) — Framework: Core Lifecycle
 - [WU-2121 — Replace raw .endsWith('.yaml') file extension literals with FILE_EXTENSIONS constants](wu/WU-2121.yaml) — Framework: Core Lifecycle
+- [WU-2116 — Migrate throw new Error() to createError() in @lumenflow/core (batch)](wu/WU-2116.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

@@ -2,7 +2,7 @@ id: WU-2116
 title: Migrate throw new Error() to createError() in @lumenflow/core (batch)
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -46,3 +46,11 @@ acceptance:
   - error-pattern-guard baseline for core decreases to 0
   - All new ErrorCodes are semantically named (not GENERIC_ERROR)
   - pnpm test --filter=@lumenflow/core passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2116
+claimed_at: 2026-02-24T21:11:38.041Z
+baseline_main_sha: 8e700f732a3e9f074b1e906579eed58ab3b76d8b
+session_id: f8b5a975-75a8-432c-8ffe-3d58bd90febb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T21:11:38.048Z
