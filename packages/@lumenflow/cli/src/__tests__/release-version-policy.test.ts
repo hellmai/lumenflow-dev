@@ -94,14 +94,10 @@ describe('WU-2107: version-policy.yaml release integration', () => {
 
     const content = readFileSync(join(policyDir, 'version-policy.yaml'), 'utf-8');
     expect(content).toContain('npm: https://www.npmjs.com/package/@lumenflow/cli');
-    expect(content).toContain(
-      'github_releases: https://github.com/hellmai/lumenflow-dev/releases',
-    );
+    expect(content).toContain('github_releases: https://github.com/hellmai/lumenflow-dev/releases');
     expect(content).toContain('latest_channel: published_stable');
     expect(content).toContain('allow_unreleased_main_claims: false');
-    expect(content).toContain(
-      'note: User-facing docs must describe published stable as latest.',
-    );
+    expect(content).toContain('note: User-facing docs must describe published stable as latest.');
   });
 
   it('handles pre-release versions correctly', async () => {
