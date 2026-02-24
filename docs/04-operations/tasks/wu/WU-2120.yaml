@@ -20,9 +20,8 @@ initiative: INIT-037
 phase: 3
 blocked_by:
   - WU-2113
-plan: /home/tom/.claude/plans/wild-foraging-taco.md
 spec_refs:
-  - /home/tom/.claire/plans/wild-foraging-taco.md
+  - /home/tom/.claude/plans/wild-foraging-taco.md
 risks: []
 notes: 'Single-session override: ~10 files modified but all are mechanical search-replace of raw
   LUMENFLOW_X string literals to ENV_VARS.X references. Each change is 1-2 lines, pattern is
