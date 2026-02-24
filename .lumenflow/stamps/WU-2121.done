@@ -1,0 +1,2 @@
+WU WU-2121 — Replace raw .endsWith('.yaml') file extension literals with FILE_EXTENSIONS constants
+Completed: 2026-02-24
