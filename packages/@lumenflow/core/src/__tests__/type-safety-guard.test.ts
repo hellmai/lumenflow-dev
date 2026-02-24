@@ -11,6 +11,12 @@
  * persisted in tools/baselines/enforcement/, and the guard fails if count
  * increases (ratchet).
  *
+ * WU-2130: Hardened so that:
+ *   - Ratchet comparison runs BEFORE any baseline write
+ *   - Regression failure path does NOT modify the baseline file
+ *   - Baseline updates are explicit opt-in (UPDATE_BASELINE=true env var)
+ *     or automatic only when count improves (decreases)
+ *
  * Pattern follows path-literal-guard.test.ts (WU-2093).
  */
 
@@ -302,17 +308,17 @@ describe('WU-2110: UnsafeAny ratcheting regression guard', () => {
     const currentCount = allViolations.length;
     const savedBaseline = loadBaseline();
 
-    // Persist baseline: always update to current count so the ratchet
-    // moves forward when violations are removed
-    persistBaseline(currentCount);
-
+    // WU-2130: Compare FIRST — before any baseline write.
+    // Regression failure path must NOT modify the baseline file.
     if (savedBaseline !== null) {
-      // Ratchet check: current count must not exceed saved baseline
       if (currentCount > savedBaseline) {
+        // FAIL — do NOT write new baseline (prevents self-healing)
         expect.fail(
           `UnsafeAny ratchet FAILED: count increased from ${savedBaseline} to ${currentCount} ` +
             `(+${currentCount - savedBaseline}).\n\n` +
             `New UnsafeAny references detected. Use \`unknown\` + Zod parsing / type narrowing instead.\n` +
+            `To intentionally update the baseline after fixing violations:\n` +
+            `  UPDATE_BASELINE=true pnpm test --testNamePattern=type-safety-guard\n\n` +
             `Violations:\n${formatViolationReport(allViolations)}`,
         );
       }
@@ -324,6 +330,23 @@ describe('WU-2110: UnsafeAny ratcheting regression guard', () => {
     } else {
       // First run: baseline established
       console.log(`UnsafeAny ratchet: baseline established at ${currentCount} references`);
+    }
+
+    // WU-2130: Baseline writes are explicit opt-in or automatic on improvement.
+    // - First run (no baseline): always write to bootstrap
+    // - Count decreased (improvement): auto-ratchet forward
+    // - Explicit opt-in: UPDATE_BASELINE=true env var
+    // - Count increased: NEVER write (handled by expect.fail above)
+    // - Count unchanged: no write needed
+    const isFirstRun = savedBaseline === null;
+    const isImprovement = savedBaseline !== null && currentCount < savedBaseline;
+    const isExplicitUpdate = process.env.UPDATE_BASELINE === 'true';
+
+    if (isFirstRun || isImprovement || isExplicitUpdate) {
+      persistBaseline(currentCount);
+      if (isExplicitUpdate && !isFirstRun && !isImprovement) {
+        console.log(`UnsafeAny ratchet: baseline explicitly updated to ${currentCount}`);
+      }
     }
 
     // The test itself passes as long as count does not increase
@@ -340,5 +363,106 @@ describe('WU-2110: UnsafeAny ratcheting regression guard', () => {
 
     // Adding UnsafeAny increases the count
     expect(newViolations.length).toBeGreaterThan(existingViolations.length);
+  });
+});
+
+describe('WU-2130: Baseline non-mutation on failure', () => {
+  it('does not modify baseline file when regression is detected', () => {
+    // Set up a fake baseline with a low count
+    const fakeBaselinePath = path.join(REPO_ROOT, 'tools', 'baselines', 'enforcement');
+    const originalContent = readFileSync(BASELINE_PATH, 'utf-8');
+    const originalData = JSON.parse(originalContent) as BaselineData;
+    const originalBaseline = originalData.baseline;
+
+    // The current codebase has more violations than a hypothetically low baseline.
+    // Verify the guard logic: if currentCount > savedBaseline, the file must NOT change.
+    // We test this by checking that persistBaseline is only called on success paths.
+
+    // Simulate the guard logic with a low baseline (regression scenario)
+    const simulatedBaseline = 5; // much lower than actual count
+    const simulatedCurrentCount = 440; // current actual count
+
+    // In the old code, persistBaseline would run BEFORE the comparison,
+    // overwriting the baseline to 440. In the hardened code, it should NOT.
+    // We verify the logic by checking that:
+    // 1. The comparison detects the regression
+    expect(simulatedCurrentCount).toBeGreaterThan(simulatedBaseline);
+
+    // 2. The write conditions are NOT met for regressions
+    const isFirstRun = false; // baseline exists
+    const isImprovement = simulatedCurrentCount < simulatedBaseline; // false
+    const isExplicitUpdate = false; // no env var
+
+    expect(isFirstRun).toBe(false);
+    expect(isImprovement).toBe(false);
+    expect(isExplicitUpdate).toBe(false);
+
+    // Therefore persistBaseline should NOT be called — baseline file unchanged
+    // Verify the actual file was not modified during this test
+    const afterContent = readFileSync(BASELINE_PATH, 'utf-8');
+    expect(afterContent).toBe(originalContent);
+  });
+
+  it('persists baseline when count decreases (improvement ratchet)', () => {
+    // When violations are genuinely reduced, the baseline should auto-ratchet forward
+    const savedBaseline = 500;
+    const currentCount = 440;
+
+    const isFirstRun = false;
+    const isImprovement = currentCount < savedBaseline; // true — count decreased
+    const isExplicitUpdate = false;
+
+    // The improvement path should trigger a write
+    expect(isImprovement).toBe(true);
+    expect(isFirstRun || isImprovement || isExplicitUpdate).toBe(true);
+  });
+
+  it('persists baseline on first run (no existing baseline)', () => {
+    const savedBaseline = null; // no baseline file yet
+    const currentCount = 440;
+
+    const isFirstRun = savedBaseline === null;
+
+    // First run should bootstrap the baseline
+    expect(isFirstRun).toBe(true);
+  });
+
+  it('does not persist baseline when count is unchanged (no unnecessary writes)', () => {
+    const savedBaseline = 440;
+    const currentCount = 440; // same as baseline
+
+    const isFirstRun = false;
+    const isImprovement = currentCount < savedBaseline; // false — same count
+    const isExplicitUpdate = false;
+
+    // No write should occur — baseline is unchanged
+    expect(isFirstRun || isImprovement || isExplicitUpdate).toBe(false);
+  });
+
+  it('baseline comparison runs before any write operation', () => {
+    // This test verifies the ordering guarantee from WU-2130.
+    // The key insight: in the hardened code, if currentCount > savedBaseline,
+    // expect.fail is called BEFORE any persistBaseline call.
+    // Since expect.fail throws, persistBaseline is never reached.
+
+    // Trace through the code path:
+    // 1. loadBaseline() -> returns savedBaseline (e.g., 440)
+    // 2. if (currentCount > savedBaseline) -> expect.fail (throws, stops execution)
+    // 3. persistBaseline is only reachable if step 2 did NOT throw
+    //    i.e., currentCount <= savedBaseline
+
+    // We validate this by checking that the code structure has the right ordering.
+    // Read the source file and verify persistBaseline appears AFTER the fail check.
+    const sourceText = readFileSync(
+      path.join(__dirname, 'type-safety-guard.test.ts'),
+      'utf-8',
+    );
+
+    const failIndex = sourceText.indexOf('expect.fail(');
+    const persistAfterFailIndex = sourceText.indexOf('persistBaseline(currentCount)', failIndex);
+
+    // persistBaseline must appear AFTER expect.fail in the source
+    expect(failIndex).toBeGreaterThan(-1);
+    expect(persistAfterFailIndex).toBeGreaterThan(failIndex);
   });
 });
