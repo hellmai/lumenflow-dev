@@ -25,7 +25,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2099 — DRY path resolvers and lazy-load module-level config (INIT-036 cleanup)](wu/WU-2099.yaml) — Framework: CLI WU Commands
 - [WU-2098 — Make wu:brief / wu:spawn prompt templates path-config aware](wu/WU-2098.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
@@ -1050,6 +1049,7 @@ sections:
 - [WU-2092 — Consolidate path constants and cross-package parity contracts](wu/WU-2092.yaml)
 - [WU-2096 — Remove pending MCP runtime path literal debt (INIT-036)](wu/WU-2096.yaml)
 - [WU-2097 — Remove pending Memory runtime path literal debt (INIT-036)](wu/WU-2097.yaml)
+- [WU-2099 — DRY path resolvers and lazy-load module-level config (INIT-036 cleanup)](wu/WU-2099.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
