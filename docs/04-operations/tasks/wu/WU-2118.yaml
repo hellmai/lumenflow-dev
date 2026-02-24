@@ -12,7 +12,12 @@ code_paths:
   - packages/@lumenflow/agent/src/
   - packages/@lumenflow/metrics/src/
 tests:
-  manual: []
+  manual:
+    - Verify zero throw new Error() in mcp
+    - memory
+    - initiatives
+    - agent
+    - metrics src/ dirs
   unit:
     - packages/@lumenflow/core/src/__tests__/error-pattern-guard.test.ts
   e2e: []
