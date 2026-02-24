@@ -2,7 +2,7 @@ id: WU-2122
 title: Move hardcoded escalation email from wu-schema.ts to workspace.yaml
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-24
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - workspace.yaml updated with software_delivery.escalation.email field
   - wu-schema.ts reads email via getConfig().escalation?.email with fallback
   - pnpm test --filter=@lumenflow/core passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2122
+claimed_at: 2026-02-24T20:43:27.493Z
+baseline_main_sha: ed363ddc92540097ce745f27bccf2696923e2424
+session_id: cc8fd941-79a9-4d23-b19a-8e697a05888d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T20:43:27.498Z
