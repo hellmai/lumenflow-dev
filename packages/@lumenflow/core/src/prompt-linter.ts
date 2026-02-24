@@ -18,21 +18,24 @@ import { analyzePrompt, getLongestLines } from './token-counter.js';
 import { readFile, writeFile, mkdir, appendFile, access } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { glob } from 'glob';
 import yaml from 'yaml';
-import { EXIT_CODES, STRING_LITERALS, LUMENFLOW_PATHS } from './wu-constants.js';
+import { EXIT_CODES, STRING_LITERALS } from './wu-constants.js';
 import { ProcessExitError } from './error-handler.js';
+import { createPathFactory } from './path-factory.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT_DIR = resolve(__dirname, '../..');
+/**
+ * WU-2124: Use PathFactory for project root resolution.
+ * Replaces: resolve(__dirname, '../..')
+ */
+const pathFactory = createPathFactory();
+const ROOT_DIR = pathFactory.projectRoot;
 
 // Default config path
 const DEFAULT_CONFIG_PATH = resolve(ROOT_DIR, 'config/prompts/linter.yml');
 
 // Telemetry cache path (for storing previous metrics) - WU-1430: Use centralized constant
-const METRICS_CACHE_PATH = resolve(ROOT_DIR, LUMENFLOW_PATHS.PROMPT_METRICS);
+const METRICS_CACHE_PATH = pathFactory.resolveLumenflowPath('PROMPT_METRICS');
 export const PROMPT_LINTER_FAILURE_MESSAGE = 'Prompt linter failed:';
 
 /**
@@ -174,8 +177,8 @@ async function log(level: LogLevel, event: string, data: LogData, output: LogOut
     ...data,
   };
 
-  // For CLI, write to telemetry prompt lint file - WU-1430: Use centralized constant
-  const ndjsonPath = resolve(ROOT_DIR, LUMENFLOW_PATHS.PROMPT_LINT);
+  // For CLI, write to telemetry prompt lint file - WU-1430/WU-2124: Use PathFactory
+  const ndjsonPath = pathFactory.resolveLumenflowPath('PROMPT_LINT');
   const line = `${JSON.stringify(entry)}${STRING_LITERALS.NEWLINE}`;
 
   try {

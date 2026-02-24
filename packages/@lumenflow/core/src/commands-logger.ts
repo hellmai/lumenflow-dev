@@ -18,16 +18,23 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { getCurrentBranch, isMainWorktree } from './wu-helpers.js';
-import { GIT_FLAGS, STRING_LITERALS, LUMENFLOW_PATHS } from './wu-constants.js';
+import { GIT_FLAGS, STRING_LITERALS } from './wu-constants.js';
 import { MS_PER_DAY } from './constants/duration-constants.js';
+import { createPathFactory } from './path-factory.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Default log path (can be overridden for testing)
-const DEFAULT_LOG_PATH = path.resolve(__dirname, '../..', LUMENFLOW_PATHS.COMMANDS_LOG);
+/**
+ * Get the default log path using PathFactory (WU-2124).
+ *
+ * Replaces the previous __dirname-relative resolution:
+ *   path.resolve(__dirname, '../..', LUMENFLOW_PATHS.COMMANDS_LOG)
+ *
+ * Uses config-based project root discovery for correctness
+ * regardless of where the compiled JS file lives.
+ */
+function getDefaultLogPath(): string {
+  return createPathFactory().resolveLumenflowPath('COMMANDS_LOG');
+}
 
 // Banned patterns (same as git shim)
 const BANNED_PATTERNS = [
@@ -78,7 +85,7 @@ export interface LogGitCommandOptions {
  */
 export function logGitCommand(
   args: UnsafeAny,
-  logPath = DEFAULT_LOG_PATH,
+  logPath = getDefaultLogPath(),
   options: LogGitCommandOptions = {},
 ) {
   try {
@@ -233,7 +240,7 @@ function isViolation(command: UnsafeAny, branch: UnsafeAny, worktree: UnsafeAny)
  * @param {number} windowMinutes - Session window in minutes (default 60)
  * @returns {Array<{timestamp: string, command: string, branch: string, worktree: string}>}
  */
-export function scanLogForViolations(logPath = DEFAULT_LOG_PATH, windowMinutes = 60) {
+export function scanLogForViolations(logPath = getDefaultLogPath(), windowMinutes = 60) {
   if (!fs.existsSync(logPath)) {
     return [];
   }
@@ -275,7 +282,7 @@ export function scanLogForViolations(logPath = DEFAULT_LOG_PATH, windowMinutes =
  * @param {string} logPath - Path to commands log
  * @param {number} retentionDays - Number of days to keep (default 7)
  */
-export function rotateLog(logPath = DEFAULT_LOG_PATH, retentionDays = 7) {
+export function rotateLog(logPath = getDefaultLogPath(), retentionDays = 7) {
   if (!fs.existsSync(logPath)) {
     return;
   }

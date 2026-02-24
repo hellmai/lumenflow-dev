@@ -171,6 +171,10 @@ export * from './stamp-utils.js';
 // Configuration
 export * from './lumenflow-config.js';
 export * from './lumenflow-config-schema.js';
+
+// WU-2124: PathFactory - shared path resolution for all packages
+export { createPathFactory } from './path-factory.js';
+export type { PathFactory, PathFactoryOptions, LumenflowPathKey } from './path-factory.js';
 export * from './docs-layout-presets.js';
 
 // WU Events Cleanup (WU-1207)

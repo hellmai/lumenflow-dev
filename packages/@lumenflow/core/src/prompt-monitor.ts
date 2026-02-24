@@ -19,23 +19,23 @@
 import { analyzePrompt } from './token-counter.js';
 import { readFile, writeFile, mkdir, appendFile, access } from 'node:fs/promises';
 import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { glob } from 'glob';
-import { EXIT_CODES, STRING_LITERALS, LUMENFLOW_PATHS } from './wu-constants.js';
+import { EXIT_CODES, STRING_LITERALS } from './wu-constants.js';
 import { ProcessExitError } from './error-handler.js';
+import { createPathFactory } from './path-factory.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT_DIR = resolve(__dirname, '../..');
+/**
+ * WU-2124: Use PathFactory for project root resolution.
+ * Replaces: resolve(__dirname, '../..')
+ */
+const pathFactory = createPathFactory();
+const ROOT_DIR = pathFactory.projectRoot;
 
-// Paths
-const YESTERDAY_METRICS_PATH = resolve(
-  ROOT_DIR,
-  LUMENFLOW_PATHS.TELEMETRY,
-  'prompt-metrics-yesterday.json',
-);
-const TODAY_METRICS_PATH = resolve(ROOT_DIR, LUMENFLOW_PATHS.TELEMETRY, 'prompt-metrics.json');
-const NDJSON_LOG_PATH = resolve(ROOT_DIR, LUMENFLOW_PATHS.TELEMETRY, 'prompt-nightly.ndjson');
+// Paths (WU-2124: use PathFactory.resolveLumenflowPath instead of __dirname-relative)
+const TELEMETRY_DIR = pathFactory.resolveLumenflowPath('TELEMETRY');
+const YESTERDAY_METRICS_PATH = resolve(TELEMETRY_DIR, 'prompt-metrics-yesterday.json');
+const TODAY_METRICS_PATH = resolve(TELEMETRY_DIR, 'prompt-metrics.json');
+const NDJSON_LOG_PATH = resolve(TELEMETRY_DIR, 'prompt-nightly.ndjson');
 
 // Alert thresholds
 const WARN_THRESHOLD = 400;
