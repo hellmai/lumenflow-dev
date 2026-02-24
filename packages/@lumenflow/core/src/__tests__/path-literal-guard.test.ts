@@ -6,7 +6,7 @@
  *
  * WU-2093 hardening goals:
  * - Detect banned literals from AST string/template nodes (no line-regex scanning)
- * - Cover core, cli, mcp, memory, and initiatives runtime packages
+ * - Cover all 7 runtime packages: core, cli, mcp, memory, initiatives, agent, metrics
  * - Keep explicit allowlists for constants/schema/template contexts
  */
 
@@ -61,6 +61,14 @@ const SCAN_TARGETS: ScanTarget[] = [
   {
     label: 'initiatives',
     dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'initiatives', 'src'),
+  },
+  {
+    label: 'agent',
+    dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'agent', 'src'),
+  },
+  {
+    label: 'metrics',
+    dir: path.join(REPO_ROOT, 'packages', '@lumenflow', 'metrics', 'src'),
   },
 ];
 
@@ -446,7 +454,7 @@ describe('WU-2093: AST path literal guard foundations', () => {
 });
 
 describe('WU-2093: AST path literal regression guard', () => {
-  it('scans core/cli/mcp/memory/initiatives runtime files for banned literals', async () => {
+  it('scans all 7 runtime packages for banned literals', async () => {
     const filesPerTarget = await Promise.all(
       SCAN_TARGETS.map(async (target) => {
         const files = await getRuntimeSourceFiles(target);
