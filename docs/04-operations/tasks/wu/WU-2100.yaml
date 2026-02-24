@@ -1,0 +1,37 @@
+id: WU-2100
+title: Harden core spawn literal coverage and config-aware prompts
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-24
+code_paths:
+  - packages/@lumenflow/core/src/spawn-constraints-generator.ts
+  - packages/@lumenflow/core/src/spawn-task-builder.ts
+  - packages/@lumenflow/core/src/spawn-agent-guidance.ts
+  - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2100.done
+dependencies: []
+initiative: INIT-036
+phase: 6
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Residual gap after INIT-036: core spawn prompt generators still embed hardcoded origin/main and worktrees literals in multiline template strings, and the AST path-literal guard currently misses these embedded tokens due path-like filtering. This can leak incorrect guidance in consumer repos with non-default directories/worktree settings and weakens regression detection.'
+acceptance:
+  - Core spawn prompt outputs use config/constants-backed main-ref and worktree hints (no inline origin/main/worktrees literals in emitted runtime templates)
+  - path-literal-guard detects banned tokens inside multiline template strings (not only strict path-like literals) without reintroducing brittle regex scanning
+  - Targeted unit tests cover default and overridden directories.worktrees behavior for core spawn prompts and guard coverage for embedded template literals
