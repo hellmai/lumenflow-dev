@@ -1,13 +1,13 @@
 id: INIT-037
 slug: enforcement-hardening
 title: 'Enforcement Hardening: Close Guard Gaps and Eliminate Type Safety Bypasses'
-description: 'Architecture and libraries are sound (9/10), but enforcement has holes — good patterns
+description: 'Architecture and libraries are sound (9/10), but enforcement has holes - good patterns
   exist (createError(), FILE_EXTENSIONS, WU_STATUS.*) but nothing forces their use. Three broken
   enforcement mechanisms: ESLint boundary rules match non-existent dirs, path/status guards miss
   agent+metrics packages, UnsafeAny bypasses no-explicit-any with 510 occurrences across 156
   production files. Strategy: add guardrails first, then fix violations so every fix is permanent.
-  Plan: /home/tom/.claude/plans/wild-foraging-taco.md (WS1: Enforcement integrity; WS2: Debt
-  reduction; WS3: Structural follow-through)'
+  Plan: wild-foraging-taco.md (WS1: Enforcement integrity; WS2: Debt reduction; WS3: Structural
+  follow-through)'
 status: in_progress
 priority: P1
 owner: platform-team
