@@ -9,7 +9,10 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
   - packages/@lumenflow/cli/src/wu-block.ts
   - packages/@lumenflow/cli/src/wu-claim-state.ts
-  - packages/@lumenflow/core/src/incremental-lint.ts
+  - packages/@lumenflow/cli/src/wu-release.ts
+  - packages/@lumenflow/cli/src/wu-unblock.ts
+  - packages/@lumenflow/cli/src/wu-recover.ts
+  - packages/@lumenflow/cli/src/state-path-resolvers.ts
 tests:
   manual:
     - Run wu:done, wu:block, wu:claim against a WU to verify path resolution still works
@@ -23,10 +26,17 @@ initiative: INIT-036
 risks: []
 notes: 'Single-session Simple WU: 4-6 files, uniform mechanical changes, well under sizing thresholds.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-24T08:47:39.928Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2099
+session_id: 0e86e49b-994a-4bda-a83a-94ffbf9428b8
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T08:47:39.933Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +50,3 @@ acceptance:
   - All path resolver functions have consistent try/catch fallback to LUMENFLOW_PATHS constants
   - No module-level createWuPaths() calls in incremental-lint.ts (lazy getter instead)
   - All existing tests pass
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2099
-claimed_at: 2026-02-24T08:47:39.928Z
-baseline_main_sha: 04db411b41b5a045aee040286243dff85011d5d9
-session_id: 0e86e49b-994a-4bda-a83a-94ffbf9428b8
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-24T08:47:39.933Z
