@@ -22,7 +22,6 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
-- [WU-2109 — Extend path-literal-guard and status-literal-guard to cover all 7 runtime packages](wu/WU-2109.yaml) — Framework: Core Lifecycle
 - [WU-2110 — Add ratcheting AST guard for UnsafeAny type alias usage](wu/WU-2110.yaml) — Framework: Core Lifecycle
 - [WU-2111 — Add AST guard banning throw new Error() in production code](wu/WU-2111.yaml) — Framework: Core Lifecycle
 - [WU-2112 — Add optional AST guard preventing reintroduction of as any casts](wu/WU-2112.yaml) — Framework: Core Lifecycle
@@ -47,6 +46,7 @@ sections:
 
 - [WU-2129 — Enhance initiative orchestration docs with recovery, memory coordination, and delegation](wu/WU-2129.yaml) — Content: Framework Docs
 - [WU-2108 — Fix ESLint boundary plugin config to match actual hex directory names](wu/WU-2108.yaml) — Operations: Tooling
+- [WU-2109 — Extend path-literal-guard and status-literal-guard to cover all 7 runtime packages](wu/WU-2109.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
