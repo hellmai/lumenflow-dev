@@ -71,10 +71,10 @@ export function buildRepoInternalPathError(path: string): string {
  * @returns {string} Warning message or empty string if lanes match
  */
 export function generateLaneMismatchWarning(
-  providedLane: UnsafeAny,
-  inferredLane: UnsafeAny,
-  confidence: UnsafeAny,
-) {
+  providedLane: string,
+  inferredLane: string,
+  confidence: number,
+): string {
   // Normalize lanes for comparison (handle parent-only vs sub-lane)
   const normalizedProvided = providedLane.trim();
   const normalizedInferred = inferredLane.trim();
@@ -85,7 +85,7 @@ export function generateLaneMismatchWarning(
   }
 
   // Check if provided is parent-only and inferred is a sub-lane of that parent
-  const inferredParent = normalizedInferred.split(':')[0].trim();
+  const inferredParent = (normalizedInferred.split(':')[0] ?? normalizedInferred).trim();
   if (normalizedProvided === inferredParent) {
     // User provided parent-only, suggest the specific sub-lane
     return formatWarningMessage(normalizedInferred, confidence, true);
@@ -104,10 +104,10 @@ export function generateLaneMismatchWarning(
  * @returns {string} Formatted warning message
  */
 function formatWarningMessage(
-  suggestedLane: UnsafeAny,
-  confidence: UnsafeAny,
-  isSubLaneSuggestion: UnsafeAny,
-) {
+  suggestedLane: string,
+  confidence: number,
+  isSubLaneSuggestion: boolean,
+): string {
   const confidenceStr = `${confidence}%`;
 
   if (confidence < CONFIDENCE_THRESHOLD_LOW) {
@@ -143,10 +143,10 @@ function formatWarningMessage(
  * @returns {{ shouldWarn: boolean, warning: string }} Validation result
  */
 export function validateLaneWithInference(
-  providedLane: UnsafeAny,
-  codePaths: UnsafeAny,
-  description: UnsafeAny,
-  inferSubLane: UnsafeAny,
+  providedLane: string,
+  codePaths: string[],
+  description: string,
+  inferSubLane: (codePaths: string[], description: string) => { lane: string; confidence: number },
 ) {
   // Skip inference if no code paths provided
   if (!codePaths || codePaths.length === 0) {
@@ -239,7 +239,7 @@ export function validateSpecRefs(specRefs: string[]): {
  * WU-1062: Check if spec_refs contains external paths
  *
  * @param {string[]} specRefs - Array of spec reference paths
- * @returns {boolean} True if UnsafeAny spec_ref is an external path
+ * @returns {boolean} True if any spec_ref is an external path
  */
 export function hasExternalSpecRefs(specRefs: string[]): boolean {
   if (!specRefs || specRefs.length === 0) {

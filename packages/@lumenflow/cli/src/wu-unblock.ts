@@ -184,7 +184,7 @@ export async function main() {
     );
   }
   const title = doc.title || '';
-  const lane = doc.lane || 'Unknown';
+  const lane = (doc.lane as string) || 'Unknown';
   const branchPrPath = shouldUseBranchPrUnblockPath(doc);
 
   if (!branchPrPath) {
@@ -192,7 +192,7 @@ export async function main() {
   }
 
   // Validate state transition before micro-worktree
-  const currentStatus = doc.status || WU_STATUS.BLOCKED;
+  const currentStatus = (doc.status as string) || WU_STATUS.BLOCKED;
   try {
     assertTransition(currentStatus, WU_STATUS.IN_PROGRESS, id);
   } catch (error) {

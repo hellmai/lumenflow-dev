@@ -21,9 +21,53 @@ import { existsSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { readLockMetadata, getLockFilePath } from './lane-lock.js';
 import { GIT_DIRECTORY_NAME } from './config-contract.js';
+import { getErrorMessage } from './error-handler.js';
 
 /** Log prefix for resume messages */
 const LOG_PREFIX = '[wu-claim-resume]';
+
+/**
+ * WU-2119: Interfaces for wu-claim-resume, replacing untyped parameters.
+ */
+
+/** Result of a resume claim operation */
+interface ResumeResult {
+  success: boolean;
+  handoff: boolean;
+  previousPid: number | null;
+  previousSession: string | null;
+  error: string | null;
+  uncommittedSummary: string | null;
+}
+
+/** Options for resumeClaimForHandoff */
+interface ResumeClaimOptions {
+  wuId: string;
+  lane: string;
+  worktreePath: string;
+  baseDir?: string | null;
+  agentSession?: string | null;
+}
+
+/** Git adapter interface for getWorktreeUncommittedChanges */
+interface GitStatusAdapter {
+  getStatus(): Promise<string>;
+}
+
+/** Options for createHandoffCheckpoint */
+interface HandoffCheckpointOptions {
+  wuId: string;
+  previousPid: number;
+  newPid: number;
+  previousSession: string | null;
+  uncommittedSummary: string | null;
+  memoryLayer?: MemoryLayerAdapter | null;
+}
+
+/** Memory layer adapter for checkpoint creation */
+interface MemoryLayerAdapter {
+  createCheckpoint(options: Record<string, unknown>): Promise<{ checkpointId: string }>;
+}
 
 /**
  * @typedef {Object} ResumeResult
@@ -42,7 +86,7 @@ const LOG_PREFIX = '[wu-claim-resume]';
  * @param {number} pid - Process ID to check
  * @returns {boolean} True if process is running, false if not
  */
-export function isProcessRunning(pid: UnsafeAny) {
+export function isProcessRunning(pid: unknown): boolean {
   if (typeof pid !== 'number' || !Number.isInteger(pid) || pid <= 0) {
     return false;
   }
@@ -50,10 +94,11 @@ export function isProcessRunning(pid: UnsafeAny) {
   try {
     process.kill(pid, 0);
     return true; // Process exists
-  } catch (err) {
+  } catch (err: unknown) {
     // ESRCH = no such process (dead)
     // EPERM = process exists but we don't have permission (still running)
-    if (err.code === 'EPERM') {
+    const errObj = err as { code?: string };
+    if (errObj.code === 'EPERM') {
       return true; // Process exists, just can't signal it
     }
     return false; // Process doesn't exist
@@ -77,7 +122,7 @@ export function isProcessRunning(pid: UnsafeAny) {
  * @param {string} [options.agentSession] - New agent session ID
  * @returns {Promise<ResumeResult>} Result of the resume operation
  */
-export async function resumeClaimForHandoff(options: UnsafeAny) {
+export async function resumeClaimForHandoff(options: ResumeClaimOptions): Promise<ResumeResult> {
   const { wuId, lane, worktreePath, baseDir = null, agentSession = null } = options;
 
   // Step 1: Verify worktree exists
@@ -152,13 +197,13 @@ export async function resumeClaimForHandoff(options: UnsafeAny) {
 
   try {
     writeFileSync(lockPath, JSON.stringify(newLockMetadata, null, 2), { encoding: 'utf-8' });
-  } catch (err) {
+  } catch (err: unknown) {
     return {
       success: false,
       handoff: false,
       previousPid: existingLock.pid,
       previousSession: existingLock.agentSession,
-      error: `Failed to update lock file: ${err.message}`,
+      error: `Failed to update lock file: ${getErrorMessage(err)}`,
       uncommittedSummary: null,
     };
   }
@@ -181,7 +226,9 @@ export async function resumeClaimForHandoff(options: UnsafeAny) {
  * @param {Object} gitAdapter - Git adapter with getStatus method
  * @returns {Promise<string|null>} Summary of uncommitted changes, or null if clean
  */
-export async function getWorktreeUncommittedChanges(gitAdapter: UnsafeAny) {
+export async function getWorktreeUncommittedChanges(
+  gitAdapter: GitStatusAdapter,
+): Promise<string | null> {
   const status = await gitAdapter.getStatus();
 
   if (!status || status.trim() === '') {
@@ -197,15 +244,15 @@ export async function getWorktreeUncommittedChanges(gitAdapter: UnsafeAny) {
  * @param {string} status - Raw git status output
  * @returns {string} Formatted summary for display
  */
-export function formatUncommittedChanges(status: UnsafeAny) {
+export function formatUncommittedChanges(status: string): string {
   if (!status || status.trim() === '') {
     return 'No uncommitted changes in worktree.';
   }
 
   const lines = status.trim().split('\n');
-  const modified = lines.filter((l: UnsafeAny) => l.startsWith(' M') || l.startsWith('M '));
-  const added = lines.filter((l: UnsafeAny) => l.startsWith('A ') || l.startsWith('??'));
-  const deleted = lines.filter((l: UnsafeAny) => l.startsWith(' D') || l.startsWith('D '));
+  const modified = lines.filter((l: string) => l.startsWith(' M') || l.startsWith('M '));
+  const added = lines.filter((l: string) => l.startsWith('A ') || l.startsWith('??'));
+  const deleted = lines.filter((l: string) => l.startsWith(' D') || l.startsWith('D '));
 
   const parts = [];
   if (modified.length > 0) {
@@ -235,11 +282,13 @@ export function formatUncommittedChanges(status: UnsafeAny) {
  * @param {Object} [options.memoryLayer] - Memory layer interface (for testing)
  * @returns {Promise<{success: boolean, checkpointId?: string, error?: string}>}
  */
-export async function createHandoffCheckpoint(options: UnsafeAny) {
+export async function createHandoffCheckpoint(
+  options: HandoffCheckpointOptions,
+): Promise<{ success: boolean; checkpointId?: string | null; error?: string }> {
   const { wuId, previousPid, newPid, previousSession, uncommittedSummary, memoryLayer } = options;
 
   // If no memory layer provided, try to use the default
-  let ml = memoryLayer;
+  let ml: MemoryLayerAdapter | null = memoryLayer ?? null;
   if (!ml) {
     try {
       // Dynamically import optional @lumenflow/memory peer dependency
@@ -248,7 +297,7 @@ export async function createHandoffCheckpoint(options: UnsafeAny) {
         createCheckpoint: async () => {
           // The mem-checkpoint module expects different args
           // We'll call it with appropriate parameters
-          return { success: true, checkpointId: `handoff-${Date.now()}` };
+          return { checkpointId: `handoff-${Date.now()}` };
         },
       };
     } catch {
@@ -273,9 +322,10 @@ export async function createHandoffCheckpoint(options: UnsafeAny) {
     });
 
     return { success: true, checkpointId: result.checkpointId };
-  } catch (err) {
-    console.warn(`${LOG_PREFIX} Warning: Failed to create handoff checkpoint: ${err.message}`);
-    return { success: false, error: err.message };
+  } catch (err: unknown) {
+    const msg = getErrorMessage(err);
+    console.warn(`${LOG_PREFIX} Warning: Failed to create handoff checkpoint: ${msg}`);
+    return { success: false, error: msg };
   }
 }
 
@@ -286,7 +336,10 @@ export async function createHandoffCheckpoint(options: UnsafeAny) {
  * @param {string} _expectedBranch - Expected branch name (unused, for future validation)
  * @returns {{valid: boolean, error?: string}}
  */
-export function validateWorktreeForResume(worktreePath: UnsafeAny, _expectedBranch: UnsafeAny) {
+export function validateWorktreeForResume(
+  worktreePath: string,
+  _expectedBranch: string,
+): { valid: boolean; error?: string } {
   if (!existsSync(worktreePath)) {
     return {
       valid: false,

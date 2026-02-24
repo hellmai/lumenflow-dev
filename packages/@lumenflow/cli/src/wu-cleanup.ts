@@ -263,7 +263,7 @@ export async function main() {
 
   // Use kebab-case lane naming (match wu-claim.ts logic)
   const laneK =
-    wu.lane
+    (wu.lane as string | undefined)
       ?.toLowerCase()
       .trim()
       .replace(/[^a-z0-9]+/g, '-')
@@ -274,8 +274,8 @@ export async function main() {
 
   // WU-1590: Resolve cleanup branch from claimed_branch (cloud) or lane-derived fallback
   const laneBranch = resolveCleanupBranch({
-    claimed_branch: wu.claimed_branch,
-    lane: wu.lane || '',
+    claimed_branch: wu.claimed_branch as string | undefined,
+    lane: (wu.lane as string) || '',
     id: idK,
   });
   const worktreePath = path.join('worktrees', `${laneK}-${idK}`);
@@ -312,7 +312,7 @@ export async function main() {
     hasUncommittedChanges: skipWorktree ? false : await hasUncommittedChanges(absoluteWorktreePath),
     hasUnpushedCommits: skipWorktree ? false : await hasUnpushedCommits(absoluteWorktreePath),
     hasStamp: hasStampFile(id),
-    yamlStatus: wu.status,
+    yamlStatus: wu.status as string | undefined,
     ghAvailable: isGhCliAvailable(),
     prMerged: null as boolean | null,
   };

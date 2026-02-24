@@ -182,7 +182,7 @@ export async function executeWorktreeCompletion(
   await handleZombieRecovery(docForUpdate, worktreePath, id);
 
   // Capture status AFTER potential zombie recovery reset
-  const currentStatus = docForUpdate.status || WU_STATUS.IN_PROGRESS;
+  const currentStatus = (docForUpdate.status as string) || WU_STATUS.IN_PROGRESS;
   assertTransition(currentStatus, WU_STATUS.DONE, id);
 
   // WU-1577: Abort early if local main is behind origin/main.
@@ -380,7 +380,7 @@ export async function executeWorktreeCompletion(
     clearRecoveryAttempts(id); // WU-1335: Clear recovery attempts on success
     await emitLaneSignalForCompletion({
       wuId: id,
-      lane: docForUpdate.lane,
+      lane: docForUpdate.lane as string | undefined,
       laneBranch,
       completionMode: WU_DONE_COMPLETION_MODES.WORKTREE,
     });

@@ -260,7 +260,7 @@ export async function loadDrafts(baseDir: string): Promise<DraftSpec[]> {
         draft = JSON.parse(content) as DraftSpec;
       } catch {
         // Fall back to YAML parsing
-        draft = parseYAML(content) as DraftSpec;
+        draft = parseYAML(content) as unknown as DraftSpec;
       }
       draft.filePath = path.join(DRAFT_DIRECTORY, file);
       drafts.push(draft);

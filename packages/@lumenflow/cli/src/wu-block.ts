@@ -260,7 +260,7 @@ export async function main() {
   }
 
   // Validate state transition before micro-worktree
-  const currentStatus = doc.status || WU_STATUS.IN_PROGRESS;
+  const currentStatus = (doc.status as string) || WU_STATUS.IN_PROGRESS;
   try {
     assertTransition(currentStatus, WU_STATUS.BLOCKED, id);
   } catch (error) {
@@ -381,7 +381,7 @@ export async function main() {
   // For policy=all, lock is held through block/unblock cycle
   // For policy=none, no lock exists to release
   try {
-    const lane = doc.lane;
+    const lane = doc.lane as string | undefined;
     if (lane) {
       const lockPolicy = getLockPolicyForLane(lane);
       if (lockPolicy === 'active') {

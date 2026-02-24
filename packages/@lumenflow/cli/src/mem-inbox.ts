@@ -31,7 +31,20 @@ import {
   validateInboxDependencies,
   formatDependencyError,
 } from '@lumenflow/core/dependency-validator';
+import { getErrorMessage } from '@lumenflow/core/error-handler';
 import { runCLI } from './cli-entry-point.js';
+
+/**
+ * WU-2119: Signal shape returned by loadSignals.
+ */
+interface Signal {
+  id: string;
+  message: string;
+  created_at?: string;
+  wu_id?: string;
+  lane?: string;
+  read?: boolean;
+}
 
 /**
  * Log prefix for mem:inbox output
@@ -86,7 +99,7 @@ const CLI_OPTIONS = {
  * @param {string} baseDir - Base directory
  * @param {object} entry - Audit log entry
  */
-async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
+async function writeAuditLog(baseDir: string, entry: Record<string, unknown>): Promise<void> {
   try {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
@@ -108,7 +121,7 @@ async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
  * @param {number} count - Number of unread signals
  * @returns {string} Formatted count string
  */
-export function formatCount(count: UnsafeAny) {
+export function formatCount(count: number): string {
   return `${count} unread signal(s)`;
 }
 
@@ -119,9 +132,10 @@ export function formatCount(count: UnsafeAny) {
  * @param {string} timeStr - Time string like "1h", "30m", "2d", or ISO date
  * @returns {Date} Parsed date
  */
-export function parseTimeString(timeStr: UnsafeAny) {
+export function parseTimeString(timeStr: string): Date {
   // Try using ms package for relative time parsing (e.g., "1h", "30m", "2d", "1d")
-  const msValue = ms(timeStr);
+  // Cast to ms.StringValue — runtime validation follows (typeof check + Date fallback)
+  const msValue = ms(timeStr as ms.StringValue);
   if (typeof msValue === 'number') {
     return new Date(Date.now() - msValue);
   }
@@ -140,8 +154,8 @@ export function parseTimeString(timeStr: UnsafeAny) {
  * @param {object} signal - Signal object
  * @returns {string} Formatted signal string
  */
-function formatSignal(signal: UnsafeAny) {
-  const timestamp = new Date(signal.created_at).toLocaleString();
+function formatSignal(signal: Signal): string {
+  const timestamp = new Date(signal.created_at ?? '').toLocaleString();
   const scope = [];
 
   if (signal.wu_id) {
@@ -163,7 +177,7 @@ function formatSignal(signal: UnsafeAny) {
  * @param {object[]} signals - Array of signal objects
  * @param {boolean} quiet - Suppress headers
  */
-function displaySignals(signals: UnsafeAny, quiet: UnsafeAny) {
+function displaySignals(signals: Signal[], quiet: boolean | undefined): void {
   if (signals.length === 0) {
     if (!quiet) {
       console.log(`${LOG_PREFIX} No signals found`);
@@ -189,7 +203,11 @@ function displaySignals(signals: UnsafeAny, quiet: UnsafeAny) {
  * @param {boolean} markAsRead - Whether to mark signals as read
  * @returns {Promise<object[]>} Signals found
  */
-async function checkInbox(baseDir: UnsafeAny, options: UnsafeAny, markAsRead: UnsafeAny) {
+async function checkInbox(
+  baseDir: string,
+  options: FilterOptions,
+  markAsRead: boolean,
+): Promise<Signal[]> {
   const signals = await loadSignals(baseDir, options);
 
   if (markAsRead && signals.length > 0) {
@@ -211,11 +229,11 @@ async function checkInbox(baseDir: UnsafeAny, options: UnsafeAny, markAsRead: Un
  * @param {boolean} quiet - Suppress headers
  */
 async function runWatchMode(
-  baseDir: UnsafeAny,
-  filterOptions: UnsafeAny,
-  markAsRead: UnsafeAny,
-  quiet: UnsafeAny,
-) {
+  baseDir: string,
+  filterOptions: FilterOptions,
+  markAsRead: boolean,
+  quiet: boolean | undefined,
+): Promise<void> {
   if (!quiet) {
     console.log(`${LOG_PREFIX} Watch mode started (Ctrl+C to exit)\n`);
   }
@@ -245,8 +263,8 @@ async function runWatchMode(
       }
 
       lastCheckTime = new Date();
-    } catch (error) {
-      console.error(`${LOG_PREFIX} Watch error: ${error.message}`);
+    } catch (error: unknown) {
+      console.error(`${LOG_PREFIX} Watch error: ${getErrorMessage(error)}`);
     }
   };
 
@@ -262,14 +280,14 @@ async function runWatchMode(
   });
 
   watcher.on('change', () => {
-    onFileChange().catch((err) => {
-      console.error(`${LOG_PREFIX} Watch error: ${err.message}`);
+    onFileChange().catch((err: unknown) => {
+      console.error(`${LOG_PREFIX} Watch error: ${getErrorMessage(err)}`);
     });
   });
 
   watcher.on('add', () => {
-    onFileChange().catch((err) => {
-      console.error(`${LOG_PREFIX} Watch error: ${err.message}`);
+    onFileChange().catch((err: unknown) => {
+      console.error(`${LOG_PREFIX} Watch error: ${getErrorMessage(err)}`);
     });
   });
 
@@ -361,7 +379,7 @@ function buildFilterOptions(args: ParsedArgs): FilterOptions {
  * @param {object} filterOptions - Filter options
  * @returns {Promise<number>} Signal count
  */
-async function runCountMode(baseDir: UnsafeAny, filterOptions: UnsafeAny) {
+async function runCountMode(baseDir: string, filterOptions: FilterOptions): Promise<number> {
   const signals = await loadSignals(baseDir, filterOptions);
   const count = signals.length;
   console.log(formatCount(count));
@@ -378,11 +396,11 @@ async function runCountMode(baseDir: UnsafeAny, filterOptions: UnsafeAny) {
  * @returns {Promise<number>} Signal count
  */
 async function runStandardMode(
-  baseDir: UnsafeAny,
-  filterOptions: UnsafeAny,
-  markAsRead: UnsafeAny,
-  quiet: UnsafeAny,
-) {
+  baseDir: string,
+  filterOptions: FilterOptions,
+  markAsRead: boolean,
+  quiet: boolean | undefined,
+): Promise<number> {
   const signals = await checkInbox(baseDir, filterOptions, markAsRead);
   displaySignals(signals, quiet);
   return signals.length;
@@ -392,7 +410,7 @@ async function runStandardMode(
  * Main CLI entry point
  */
 export async function main() {
-  // WU-2202: Validate dependencies BEFORE UnsafeAny other operation
+  // WU-2202: Validate dependencies BEFORE any other operation
   const depResult = await validateInboxDependencies();
   if (!depResult.valid) {
     console.error(formatDependencyError('mem:inbox', depResult.missing));
@@ -408,8 +426,8 @@ export async function main() {
   let filterOptions;
   try {
     filterOptions = buildFilterOptions(args);
-  } catch (error) {
-    console.error(`${LOG_PREFIX} Error: ${error.message}`);
+  } catch (error: unknown) {
+    console.error(`${LOG_PREFIX} Error: ${getErrorMessage(error)}`);
     process.exit(EXIT_CODES.ERROR);
   }
 
@@ -434,8 +452,8 @@ export async function main() {
     } else {
       signalCount = await runStandardMode(baseDir, filterOptions, markAsRead, args.quiet);
     }
-  } catch (err) {
-    error = err.message;
+  } catch (err: unknown) {
+    error = getErrorMessage(err);
   }
 
   const durationMs = Date.now() - startTime;

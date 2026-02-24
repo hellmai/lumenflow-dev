@@ -231,12 +231,12 @@ export function loadAllWus(): WuPruneInfo[] {
       const doc = readWURaw(filePath);
       if (doc && doc.id) {
         wus.push({
-          id: doc.id,
-          status: doc.status || 'unknown',
-          title: doc.title,
-          created: doc.created,
-          updated: doc.updated,
-          completed: doc.completed,
+          id: doc.id as string,
+          status: (doc.status as string) || 'unknown',
+          title: doc.title as string | undefined,
+          created: doc.created as string | undefined,
+          updated: doc.updated as string | undefined,
+          completed: doc.completed as string | undefined,
         });
       }
     } catch {

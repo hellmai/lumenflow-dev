@@ -80,7 +80,7 @@ export async function handleResumeMode(args: UnsafeAny, id: UnsafeAny) {
   // Create handoff checkpoint in memory layer
   const checkpointResult = await createHandoffCheckpoint({
     wuId: id,
-    previousPid: result.previousPid,
+    previousPid: result.previousPid!,
     newPid: process.pid,
     previousSession: result.previousSession,
     uncommittedSummary: uncommittedStatus,

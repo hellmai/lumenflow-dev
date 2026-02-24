@@ -69,8 +69,8 @@ function checkWUFile(filePath: UnsafeAny, options: CheckWUFileOptions = {}) {
       return { valid: true, wuId: null, error: null };
     }
 
-    const wuId = doc.id || path.basename(filePath, '.yaml');
-    const status = doc.status || '';
+    const wuId = (doc.id as string) || path.basename(filePath, '.yaml');
+    const status = (doc.status as string) || '';
 
     // WU-2425: Skip status check when validating a specific WU (e.g., during wu:done)
     // This is needed because wu:done may set status to 'done' before validation runs
@@ -156,7 +156,7 @@ export function checkAutomatedTestsInvariant(options: CheckAutomatedTestsInvaria
       violations.push({
         id: INVARIANT_ID,
         type: INVARIANT_TYPE,
-        wuId: result.wuId,
+        wuId: result.wuId as string,
         description: `WU ${result.wuId} has code files but no automated tests`,
         message: result.error,
         codeFiles: result.codeFiles,
@@ -188,7 +188,7 @@ export function checkAutomatedTestsInvariant(options: CheckAutomatedTestsInvaria
       violations.push({
         id: INVARIANT_ID,
         type: INVARIANT_TYPE,
-        wuId: result.wuId,
+        wuId: result.wuId as string,
         description: `WU ${result.wuId} has code files but no automated tests`,
         message: result.error,
         codeFiles: result.codeFiles,

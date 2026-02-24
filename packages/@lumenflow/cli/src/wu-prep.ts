@@ -644,7 +644,7 @@ export async function main(): Promise<void> {
 
   const scopedUnitTests = resolveScopedUnitTestsForPrep({
     fullTests: args.fullTests,
-    tests: doc.tests,
+    tests: doc.tests as { unit?: unknown } | undefined,
   });
   if (args.fullTests) {
     console.log(

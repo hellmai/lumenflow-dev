@@ -199,7 +199,7 @@ async function main() {
 
   // Warn if WU is not in ready or in_progress status
   const validStatuses = [WU_STATUS.READY, WU_STATUS.IN_PROGRESS];
-  if (!validStatuses.includes(doc.status)) {
+  if (!validStatuses.includes(doc.status as string)) {
     console.warn(`${LOG_PREFIX} ${EMOJI.WARNING} Warning: ${id} has status '${doc.status}'.`);
     console.warn(
       `${LOG_PREFIX} ${EMOJI.WARNING} Sub-agents typically work on ready or in_progress WUs.`,
@@ -211,7 +211,7 @@ async function main() {
   const { checkLaneOccupation: checkOccupation } = await import('./spawn-task-builder.js');
   const { generateLaneOccupationWarning: generateWarning } =
     await import('./spawn-task-builder.js');
-  const lane = doc.lane;
+  const lane = doc.lane as string | undefined;
   if (lane) {
     const existingLock = checkOccupation(lane);
     if (existingLock && existingLock.wuId !== id) {
