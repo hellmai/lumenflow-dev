@@ -25,7 +25,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2107 — Wire version-policy.yaml into pnpm release and bump to 3.4.0](wu/WU-2107.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1058,6 +1058,7 @@ sections:
 - [WU-2103 — Add Discord and Twitter badges to README](wu/WU-2103.yaml)
 - [WU-2105 — Fix init workspace.yaml: override INIT-036 path defaults for consumer repos](wu/WU-2105.yaml)
 - [WU-2106 — Eliminate residual hardcoded docs-layout literals and audit config-driven abstraction](wu/WU-2106.yaml)
+- [WU-2107 — Wire version-policy.yaml into pnpm release and bump to 3.4.0](wu/WU-2107.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
