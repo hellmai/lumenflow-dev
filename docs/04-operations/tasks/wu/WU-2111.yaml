@@ -2,7 +2,7 @@ id: WU-2111
 title: Add AST guard banning throw new Error() in production code
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -54,3 +54,6 @@ session_id: ce228c30-8633-4460-9c15-098f3f33bc45
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-24T20:28:22.272Z
+locked: true
+completed_at: 2026-02-24T20:32:20.155Z
+completed: 2026-02-24
