@@ -2,7 +2,7 @@ id: WU-2105
 title: 'Fix init workspace.yaml: override INIT-036 path defaults for consumer repos'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -26,7 +26,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'INIT-036 added 4 new directory config properties (completeGuidePath, quickRefPath, startingPromptPath, governancePath) with OS-repo defaults (docs/04-operations/...). The init command (WU-1755 block at line 550-558) overrides schema defaults to match consumer layout, but missed the 4 new properties. Result: npx lumenflow on a fresh project generates workspace.yaml with paths pointing to docs/04-operations/ which does not exist in consumer repos.'
+description: 'INIT-036 added 4 new directory config properties (completeGuidePath, quickRefPath,
+  startingPromptPath, governancePath) with OS-repo defaults (docs/04-operations/...). The init
+  command (WU-1755 block at line 550-558) overrides schema defaults to match consumer layout, but
+  missed the 4 new properties. Result: npx lumenflow on a fresh project generates workspace.yaml
+  with paths pointing to docs/04-operations/ which does not exist in consumer repos.'
 acceptance:
-  - completeGuidePath, quickRefPath, startingPromptPath, governancePath overridden in buildWorkspaceConfig
+  - completeGuidePath, quickRefPath, startingPromptPath, governancePath overridden in
+    buildWorkspaceConfig
   - npx lumenflow init generates workspace.yaml with consumer-correct paths
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2105
+claimed_at: 2026-02-24T15:44:04.840Z
+baseline_main_sha: c462b0a74249aad20094266c712c396e170fc9c6
+session_id: 3dd4b47e-0f48-488f-b4fa-ddd5416265ba
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T15:44:04.845Z
