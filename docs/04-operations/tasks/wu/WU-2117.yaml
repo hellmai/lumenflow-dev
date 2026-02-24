@@ -2,7 +2,7 @@ id: WU-2117
 title: Migrate throw new Error() to createError() in @lumenflow/cli (batch)
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -48,3 +48,11 @@ acceptance:
   - error-pattern-guard baseline for cli decreases to 0
   - All new ErrorCodes are semantically named
   - pnpm test --filter=@lumenflow/cli passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2117
+claimed_at: 2026-02-24T21:41:18.492Z
+baseline_main_sha: adae4a5fd6e04e3fec26fbffe17f573682cf526b
+session_id: ce2669f4-e779-4cff-ba5e-de1afcc6715b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T21:41:18.503Z
