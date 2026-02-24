@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__/error-pattern-guard.test.ts
   - tools/baselines/enforcement/
 tests:
-  manual: []
+  manual:
+    - Run pnpm test --testNamePattern=error-pattern-guard and verify all tests pass
   unit:
     - packages/@lumenflow/core/src/__tests__/error-pattern-guard.test.ts
   e2e: []
@@ -32,9 +33,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 209 occurrences of throw new Error() across 72 production files in the 7-package scope. The canonical pattern is createError(ErrorCodes.*) from error-handler.ts, but nothing enforces it. New AST guard using ts.isThrowStatement + ts.isNewExpression to detect direct Error construction. Dynamic ratcheting baseline persisted in tools/baselines/enforcement/. Scans all 7 runtime packages, allowlists error-handler.ts and test files.
+description: 209 occurrences of throw new Error() across 72 production files in the 7-package scope.
+  The canonical pattern is createError(ErrorCodes.*) from error-handler.ts, but nothing enforces it.
+  New AST guard using ts.isThrowStatement + ts.isNewExpression to detect direct Error construction.
+  Dynamic ratcheting baseline persisted in tools/baselines/enforcement/. Scans all 7 runtime
+  packages, allowlists error-handler.ts and test files.
 acceptance:
-  - 'New file: packages/@lumenflow/core/src/__tests__/error-pattern-guard.test.ts using TypeScript AST'
+  - 'New file: packages/@lumenflow/core/src/__tests__/error-pattern-guard.test.ts using TypeScript
+    AST'
   - 'Guard scans all 7 runtime packages: core, cli, mcp, memory, initiatives, agent, metrics'
   - Guard allowlists error-handler.ts and test files
   - Guard uses dynamic baseline (fails if count increases above baseline)
