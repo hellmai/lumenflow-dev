@@ -861,8 +861,7 @@ function scanSourceTextForFileExtLiterals(
     if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
       const value = node.text;
       if (BARE_FILE_EXTENSION_PATTERN.test(value)) {
-        const line =
-          sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
+        const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
         violations.push({
           file: normalizePath(fileName),
           line,
@@ -1050,9 +1049,7 @@ describe('WU-2114: file extension ratcheting regression guard', () => {
       );
     } else {
       // First run: baseline established
-      console.log(
-        `File extension ratchet: baseline established at ${currentCount} references`,
-      );
+      console.log(`File extension ratchet: baseline established at ${currentCount} references`);
     }
 
     // The test itself passes as long as count does not increase
