@@ -4,7 +4,6 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-- [WU-2130 — Harden UnsafeAny ratchet guard to prevent baseline self-healing on failure](wu/WU-2130.yaml)
 - [WU-2120 — Create ENV_VARS constant and migrate raw LUMENFLOW\_ env var references](wu/WU-2120.yaml)
 
 ## Completed
@@ -1046,3 +1045,4 @@ _Last updated: 2026-02-24_
 - [WU-2122 — Move hardcoded escalation email from wu-schema.ts to workspace.yaml](wu/WU-2122.yaml) — 2026-02-24
 - [WU-2115 — Add Zod schema validation to writeWU() before writing YAML](wu/WU-2115.yaml) — 2026-02-24
 - [WU-2114 — Extend path-literal-guard to ban raw file extension literals like .yaml .json .md](wu/WU-2114.yaml) — 2026-02-24
+- [WU-2130 — Harden UnsafeAny ratchet guard to prevent baseline self-healing on failure](wu/WU-2130.yaml) — 2026-02-24
