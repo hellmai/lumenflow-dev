@@ -147,17 +147,6 @@ export const FILE_EXTENSIONS = {
 };
 
 /**
- * Path patterns for WU-related files
- */
-export const PATH_PATTERNS = {
-  /** Matches WU YAML paths in both legacy and current locations */
-  WU_YAML: /(?:memory-bank|docs(?:\/04-operations)?)\/tasks\/wu\/(WU-\d+)\.ya?ml$/i,
-
-  /** Matches stamp file paths */
-  STAMP: /\.lumenflow\/stamps\/(WU-\d+)\.done$/i,
-};
-
-/**
  * Path-related constants
  *
  * WU-1062: Centralized path literals for lumenflow-home and spec-branch operations.

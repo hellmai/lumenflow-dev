@@ -25,7 +25,8 @@ import path from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { validateWUEvent, WU_EVENT_TYPE, type WUEvent } from './wu-state-schema.js';
 import { LUMENFLOW_PATHS, PATTERNS, WU_STATUS } from './wu-constants.js';
-import { DOCS_LAYOUT_PRESETS } from './docs-layout-presets.js';
+import { WORKSPACE_CONFIG_FILE_NAME } from './config-contract.js';
+import { createWuPaths } from './wu-paths.js';
 
 const CUTOVER = Object.freeze({
   MARKER_FILE: '.delegation-cutover-done',
@@ -38,10 +39,6 @@ const CUTOVER = Object.freeze({
   WU_FILE_PREFIX: 'WU-',
 });
 
-const WU_DOCS_SEGMENT_CANDIDATES = [
-  [...DOCS_LAYOUT_PRESETS.simple.tasks.split('/'), 'wu'],
-  [...DOCS_LAYOUT_PRESETS.arc42.tasks.split('/'), 'wu'],
-] as const;
 const STAMP_SEGMENTS = [LUMENFLOW_PATHS.BASE, 'stamps'];
 const BLOCKED_REASON = 'Bootstrapped from WU YAML (original reason unknown)';
 
@@ -99,11 +96,9 @@ function isLegacyCutoverRequired(stateDir: string, eventsPath: string): boolean 
 }
 
 function resolveProjectRoot(stateDir: string): string {
-  let current = stateDir;
-  for (let depth = 0; depth < 6; depth++) {
-    if (
-      WU_DOCS_SEGMENT_CANDIDATES.some((segments) => existsSync(path.join(current, ...segments)))
-    ) {
+  let current = path.resolve(stateDir);
+  for (let depth = 0; depth < 8; depth++) {
+    if (existsSync(path.join(current, WORKSPACE_CONFIG_FILE_NAME))) {
       return current;
     }
     const parent = path.dirname(current);
@@ -151,10 +146,13 @@ function loadWuBootstrapInfo(filePath: string): BootstrapWUInfo | null {
 }
 
 function readBootstrapWUs(projectRoot: string): BootstrapWUInfo[] {
-  const wuDir = WU_DOCS_SEGMENT_CANDIDATES.map((segments) =>
-    path.join(projectRoot, ...segments),
-  ).find((candidate) => existsSync(candidate));
-  if (!wuDir) return [];
+  let wuDir: string;
+  try {
+    wuDir = path.join(projectRoot, createWuPaths({ projectRoot }).WU_DIR());
+  } catch {
+    return [];
+  }
+  if (!existsSync(wuDir)) return [];
   const results: BootstrapWUInfo[] = [];
   for (const entry of readdirSync(wuDir, { withFileTypes: true })) {
     if (

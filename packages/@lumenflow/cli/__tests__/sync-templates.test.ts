@@ -31,7 +31,6 @@ describe('sync-templates command (WU-1123)', () => {
     const onboardingDir = path.join(
       tempDir,
       'docs',
-      '04-operations',
       '_frameworks',
       'lumenflow',
       'agent',

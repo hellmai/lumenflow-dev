@@ -255,7 +255,7 @@ Plans are markdown documents that capture goals, scope, approach, and success cr
 
 ### Plan Storage
 
-Plans are stored in the repo at `docs/04-operations/plans/` by default (configurable via `directories.plansDir` in `workspace.yaml`).
+Plans are stored in the repo at `docs/plans/` by default (configurable via `directories.plansDir` in `workspace.yaml`).
 
 If the plan exists only in conversation, use `--plan` on `wu:create` to generate a lightweight
 stub in `$LUMENFLOW_HOME/plans/` and automatically set the WU's `plan` field to the
@@ -263,7 +263,7 @@ stub in `$LUMENFLOW_HOME/plans/` and automatically set the WU's `plan` field to 
 
 | Command                                                                  | Description                                                   |
 | ------------------------------------------------------------------------ | ------------------------------------------------------------- |
-| `pnpm plan:create --id INIT-XXX --title "..."`                           | Create a repo-native plan file in `docs/04-operations/plans/` |
+| `pnpm plan:create --id INIT-XXX --title "..."`                           | Create a repo-native plan file in configured `directories.plansDir` |
 | `pnpm plan:edit --id INIT-XXX --section Goal --content "..."`            | Edit a section in a plan file                                 |
 | `pnpm plan:link --id INIT-XXX --plan lumenflow://plans/INIT-XXX-plan.md` | Link plan URI to initiative or WU                             |
 | `pnpm plan:promote --id INIT-XXX`                                        | Promote plan status to approved                               |
@@ -289,7 +289,7 @@ pnpm plan:link --id INIT-001 --plan lumenflow://plans/INIT-001-plan.md
 pnpm initiative:plan --initiative INIT-001 --create
 
 # Link an existing plan file
-pnpm initiative:plan --initiative INIT-001 --plan docs/04-operations/plans/my-plan.md
+pnpm initiative:plan --initiative INIT-001 --plan docs/plans/my-plan.md
 ```
 
 **To a WU (via `plan` field, WU-1683):**

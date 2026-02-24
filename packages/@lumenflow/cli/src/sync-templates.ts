@@ -18,7 +18,7 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { createWUParser, withMicroWorktree, getDocsLayoutPreset } from '@lumenflow/core';
+import { createWUParser, withMicroWorktree } from '@lumenflow/core';
 import { createWuPaths } from '@lumenflow/core/wu-paths';
 
 // Directory name constants to avoid duplicate strings
@@ -53,14 +53,7 @@ export interface DriftResult {
 }
 
 function getOnboardingSourceDir(projectRoot: string): string {
-  const configured = path.join(projectRoot, createWuPaths({ projectRoot }).ONBOARDING_DIR());
-  if (fs.existsSync(configured)) {
-    return configured;
-  }
-
-  // Backward-compatible fallback for repos still on arc42 docs layout.
-  const arc42Fallback = path.join(projectRoot, getDocsLayoutPreset('arc42').onboarding);
-  return fs.existsSync(arc42Fallback) ? arc42Fallback : configured;
+  return path.join(projectRoot, createWuPaths({ projectRoot }).ONBOARDING_DIR());
 }
 
 /**

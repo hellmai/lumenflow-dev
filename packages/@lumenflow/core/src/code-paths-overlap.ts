@@ -17,9 +17,8 @@ import { parseYAML } from './wu-yaml.js';
 import fg from 'fast-glob';
 import micromatch from 'micromatch';
 import { STATUS_SECTIONS, BACKLOG_SECTIONS, STRING_LITERALS } from './wu-constants.js';
-import { GIT_DIRECTORY_NAME } from './config-contract.js';
+import { GIT_DIRECTORY_NAME, WORKSPACE_CONFIG_FILE_NAME } from './config-contract.js';
 import { createWuPaths } from './wu-paths.js';
-import { DOCS_LAYOUT_PRESETS } from './docs-layout-presets.js';
 
 const RECURSIVE_GIT_DIR_GLOB = `${GIT_DIRECTORY_NAME}/**`;
 
@@ -28,6 +27,9 @@ function resolveProjectRootFromStatusPath(statusPath: string): string {
   let current = path.dirname(absoluteStatusPath);
 
   while (true) {
+    if (existsSync(path.join(current, WORKSPACE_CONFIG_FILE_NAME))) {
+      return current;
+    }
     if (path.basename(current) === 'docs') {
       return path.dirname(current);
     }
@@ -38,14 +40,7 @@ function resolveProjectRootFromStatusPath(statusPath: string): string {
     current = parent;
   }
 
-  const normalized = absoluteStatusPath.split(path.sep).join('/');
-  const arc42OperationsSegment = `/${DOCS_LAYOUT_PRESETS.arc42.operations}/`;
-  const fallbackDepth = normalized.includes(arc42OperationsSegment) ? 4 : 3;
-  let fallbackRoot = absoluteStatusPath;
-  for (let i = 0; i < fallbackDepth; i++) {
-    fallbackRoot = path.dirname(fallbackRoot);
-  }
-  return fallbackRoot;
+  return process.cwd();
 }
 
 /**

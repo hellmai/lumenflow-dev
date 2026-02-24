@@ -3,7 +3,8 @@ title: WU Schema
 description: Work Unit YAML specification
 ---
 
-Work Units are defined in YAML files under `docs/04-operations/tasks/wu/`.
+Work Units are defined in YAML files under `docs/tasks/wu/` by default.
+This path is configurable via `software_delivery.directories.wuDir` in `workspace.yaml`.
 
 ## YAML parsing notes
 
@@ -33,7 +34,7 @@ acceptance:
   - Unit test covers validation
 
 spec_refs:
-  - docs/04-operations/plans/WU-001-plan.md
+  - docs/plans/WU-001-plan.md
 
 code_paths:
   - packages/@lumenflow/core/src/validation/email.ts
@@ -73,7 +74,7 @@ acceptance:
   - Criterion 2
 
 spec_refs:
-  - docs/04-operations/plans/WU-001-plan.md
+  - docs/plans/WU-001-plan.md
 
 code_paths:
   - packages/@lumenflow/core/src/example.ts
