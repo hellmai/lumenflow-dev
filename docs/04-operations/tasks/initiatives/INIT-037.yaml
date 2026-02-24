@@ -1,0 +1,16 @@
+id: INIT-037
+slug: enforcement-hardening
+title: 'Enforcement Hardening: Close Guard Gaps and Eliminate Type Safety Bypasses'
+description: ''
+status: draft
+priority: P1
+owner: platform-team
+created: 2026-02-24
+phases: []
+success_metrics:
+  - Guard coverage includes all 7 runtime packages
+  - UnsafeAny baseline trends downward each wave
+  - throw new Error baseline trends downward each wave
+  - No net increase in banned literal patterns
+  - pnpm gates green after all phases
+labels: []
