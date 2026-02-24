@@ -13,7 +13,6 @@ tests:
     - Run pnpm release --dry-run --release-version 9.9.9 and verify version-policy.yaml would be
       updated
   unit:
-    - packages/@lumenflow/cli/tests/release-version-policy.test.ts
     - packages/@lumenflow/cli/src/__tests__/release-version-policy.test.ts
   e2e: []
 artifacts:
