@@ -13,6 +13,7 @@ tests:
     - Change a schema file and run wu:done - verify docs:generate triggers automatically
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-docs-generate.test.ts
+    - packages/@lumenflow/core/src/__tests__/wu-done-docs-detection.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2101.done
