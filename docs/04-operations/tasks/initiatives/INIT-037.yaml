@@ -18,7 +18,7 @@ phases:
     status: done
   - id: 2
     title: 'Phase 1: Add New Enforcement (WU-A through WU-E)'
-    status: in_progress
+    status: done
   - id: 3
     title: 'Phase 2: Fix Existing Violations (WU-F1/F2/F3 through WU-K)'
     status: in_progress

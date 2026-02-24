@@ -2,7 +2,7 @@ id: WU-2130
 title: Harden UnsafeAny ratchet guard to prevent baseline self-healing on failure
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-24
 code_paths:
@@ -51,3 +51,6 @@ acceptance:
   - Baseline updates are explicit opt-in, not default side effects during normal test execution
   - Tests cover non-mutation behavior on failure and baseline refresh path
   - pnpm test --testNamePattern=type-safety-guard passes
+locked: true
+completed_at: 2026-02-24T21:07:08.773Z
+completed: 2026-02-24
