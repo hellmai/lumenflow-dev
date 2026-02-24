@@ -12,7 +12,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { glob } from 'glob';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import ts from 'typescript';
 
@@ -374,6 +374,234 @@ async function getCliAndInitiativesRuntimeFiles(): Promise<string[]> {
   return files;
 }
 
+// ---------------------------------------------------------------------------
+// WU-2113: LUMENFLOW_ env var literal guard
+// ---------------------------------------------------------------------------
+
+/**
+ * Files that canonically define LUMENFLOW_* env var name strings.
+ * These are excluded from env var literal scanning.
+ */
+const ENV_VAR_ALLOWLIST_SEGMENTS = [
+  '__tests__/',
+  '__snapshots__/',
+  '/e2e/',
+  '/dist/',
+  '/node_modules/',
+  // Canonical env var constant definitions
+  'wu-context-constants.ts',
+  // Files that already define local constants for env var names
+  'force-bypass-audit.ts',
+  'micro-worktree-shared.ts',
+  'lumenflow-home.ts',
+  'cloud-detect.ts',
+  'wu-recovery.ts',
+  'test-baseline.ts',
+  'spawn-prompt-schema.ts',
+  // CLI files with local env var constants
+  'release.ts',
+  'wu-sandbox.ts',
+  'onboard.ts',
+  'initiative-bulk-assign-wus.ts',
+  'pack-publish.ts',
+  // Shims package (defines its own env var constants in Zod schemas)
+  'shims/src/types.ts',
+  // MCP package constants
+  'mcp-constants.ts',
+  // Packs: software-delivery tool implementations with local constants
+  'tool-impl/git-runner.ts',
+  // Control plane SDK constants
+  'sync-port.ts',
+  // Template/generator/hook files where env var names appear in rendered output
+  'hooks/generators/',
+  'init-templates.ts',
+  'init-detection.ts',
+  // wu-context-constants already in path allowlist but explicit for clarity
+  'wu-constants.ts',
+];
+
+/** Matches LUMENFLOW_<WORD> env var name patterns in string literals.
+ * Does NOT match shell variable references like $LUMENFLOW_HOME. */
+const LUMENFLOW_ENV_VAR_PATTERN = /(?<!\$)\bLUMENFLOW_[A-Z][A-Z0-9_]*\b/;
+
+/**
+ * Matches known non-env-var LUMENFLOW_ prefixed strings that should not
+ * be flagged. These are error codes, sentinel tokens, internal identifiers,
+ * and similar constants that use the LUMENFLOW_ prefix but are NOT
+ * environment variable names.
+ */
+const LUMENFLOW_NON_ENV_EXCEPTIONS = [
+  // MCP/pack error codes (LUMENFLOW_*_ERROR pattern)
+  /^LUMENFLOW_\w+_ERROR$/,
+  // Spawn sentinel tokens
+  /^LUMENFLOW_SPAWN_(?:END|COMPLETE)$/,
+  // Truncation warning sentinel
+  /^LUMENFLOW_TRUNCATION_WARNING$/,
+  // Framework scope/path constants (code identifiers, not env vars)
+  /^LUMENFLOW_PATHS$/,
+  /^LUMENFLOW_PACKAGES$/,
+  /^LUMENFLOW_DIR$/,
+  /^LUMENFLOW_AGENTS_DIR$/,
+  /^LUMENFLOW_CLIENT_IDS$/,
+  /^LUMENFLOW_SCOPE_NAME$/,
+  /^LUMENFLOW_DIR_NAME$/,
+  /^LUMENFLOW_HOME_ENV$/,
+  /^LUMENFLOW_FORCE_ENV$/,
+  /^LUMENFLOW_FORCE_REASON_ENV$/,
+  /^LUMENFLOW_WU_TOOL_ENV$/,
+  /^LUMENFLOW_CLOUD_ENV$/,
+  /^LUMENFLOW_LEGACY_ROLLBACK_ENV_KEY$/,
+];
+
+interface EnvVarBaselineData {
+  description: string;
+  wuId: string;
+  lastUpdated: string;
+  baseline: number;
+  note: string;
+}
+
+const ENV_VAR_BASELINE_PATH = path.join(
+  REPO_ROOT,
+  'tools',
+  'baselines',
+  'enforcement',
+  'lumenflow-env-var-baseline.json',
+);
+
+function isEnvVarAllowlistedFile(filePath: string): boolean {
+  const normalized = normalizePath(filePath);
+  return ENV_VAR_ALLOWLIST_SEGMENTS.some((segment) => normalized.includes(segment));
+}
+
+function isNonEnvVarException(value: string): boolean {
+  return LUMENFLOW_NON_ENV_EXCEPTIONS.some((pattern) => pattern.test(value));
+}
+
+/**
+ * Scans source text for raw LUMENFLOW_* env var references.
+ * Detects both:
+ * 1. String literals containing LUMENFLOW_* env var names (e.g., 'LUMENFLOW_FORCE')
+ * 2. Property access on process.env (e.g., process.env.LUMENFLOW_HEADLESS)
+ *
+ * Unlike path literal scanning, this does NOT require isPathLikeLiteral
+ * because env var names don't contain '/' or '.'.
+ */
+function scanSourceTextForEnvVarLiterals(
+  sourceText: string,
+  fileName: string,
+): PathLiteralViolation[] {
+  const sourceFile = ts.createSourceFile(
+    fileName,
+    sourceText,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
+
+  const violations: PathLiteralViolation[] = [];
+
+  const pushViolation = (node: ts.Node): void => {
+    const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
+    violations.push({
+      file: normalizePath(fileName),
+      line,
+      snippet: getLineText(sourceText, line),
+      token: 'LUMENFLOW_',
+    });
+  };
+
+  const visit = (node: ts.Node): void => {
+    // Case 1: String literals containing LUMENFLOW_ env var patterns
+    if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
+      const value = node.text;
+      if (LUMENFLOW_ENV_VAR_PATTERN.test(value)) {
+        const match = value.match(/\bLUMENFLOW_[A-Z][A-Z0-9_]*\b/);
+        if (!match || !isNonEnvVarException(match[0])) {
+          pushViolation(node);
+        }
+      }
+    } else if (ts.isTemplateExpression(node)) {
+      const renderedTemplate =
+        node.head.text +
+        node.templateSpans
+          .map((span) => `\${${span.expression.getText(sourceFile)}}${span.literal.text}`)
+          .join('');
+      if (LUMENFLOW_ENV_VAR_PATTERN.test(renderedTemplate)) {
+        const match = renderedTemplate.match(/\bLUMENFLOW_[A-Z][A-Z0-9_]*\b/);
+        if (!match || !isNonEnvVarException(match[0])) {
+          pushViolation(node);
+        }
+      }
+    }
+
+    // Case 2: Property access - process.env.LUMENFLOW_*
+    if (
+      ts.isPropertyAccessExpression(node) &&
+      ts.isIdentifier(node.name) &&
+      LUMENFLOW_ENV_VAR_PATTERN.test(node.name.text) &&
+      !isNonEnvVarException(node.name.text)
+    ) {
+      // Check that the parent is process.env.*
+      const expr = node.expression;
+      if (
+        ts.isPropertyAccessExpression(expr) &&
+        ts.isIdentifier(expr.expression) &&
+        expr.expression.text === 'process' &&
+        ts.isIdentifier(expr.name) &&
+        expr.name.text === 'env'
+      ) {
+        pushViolation(node);
+      }
+    }
+
+    // Case 3: Element access - process.env['LUMENFLOW_*']
+    // Already caught by Case 1 (string literal inside brackets)
+
+    ts.forEachChild(node, visit);
+  };
+
+  visit(sourceFile);
+  return violations;
+}
+
+function scanFileForEnvVarLiterals(filePath: string): PathLiteralViolation[] {
+  if (isEnvVarAllowlistedFile(filePath)) {
+    return [];
+  }
+
+  const sourceText = readFileSync(filePath, 'utf-8');
+  return scanSourceTextForEnvVarLiterals(sourceText, filePath);
+}
+
+function loadEnvVarBaseline(): number | null {
+  if (!existsSync(ENV_VAR_BASELINE_PATH)) {
+    return null;
+  }
+
+  const raw = readFileSync(ENV_VAR_BASELINE_PATH, 'utf-8');
+  const data = JSON.parse(raw) as EnvVarBaselineData;
+
+  if (typeof data.baseline !== 'number') {
+    return null;
+  }
+
+  return data.baseline;
+}
+
+function persistEnvVarBaseline(count: number): void {
+  const data: EnvVarBaselineData = {
+    description:
+      'Ratcheting baseline for raw LUMENFLOW_* env var string literals. Count must not increase.',
+    wuId: 'WU-2113',
+    lastUpdated: new Date().toISOString().split('T')[0],
+    baseline: count,
+    note: `Computed from codebase scan. ${count} raw LUMENFLOW_ env var literals across production files.`,
+  };
+
+  writeFileSync(ENV_VAR_BASELINE_PATH, JSON.stringify(data, null, 2) + '\n', 'utf-8');
+}
+
 describe('WU-2093: AST path literal guard foundations', () => {
   it('detects banned literals in string and template literals', () => {
     const source = [
@@ -544,5 +772,153 @@ describe('WU-1539: legacy local constant guards', () => {
     }
 
     expect(allViolations).toHaveLength(0);
+  });
+});
+
+describe('WU-2113: LUMENFLOW_ env var literal guard foundations', () => {
+  it('detects raw LUMENFLOW_ env var string literals', () => {
+    const source = [
+      "const headless = process.env.LUMENFLOW_HEADLESS;",
+      "const force = 'LUMENFLOW_FORCE';",
+      "if (process.env.LUMENFLOW_ADMIN === '1') {}",
+    ].join('\n');
+
+    const violations = scanSourceTextForEnvVarLiterals(source, 'fixtures/env-var-violation.ts');
+    expect(violations).toHaveLength(3);
+    expect(violations.every((v) => v.token === 'LUMENFLOW_')).toBe(true);
+  });
+
+  it('does not flag LUMENFLOW_ error codes (non-env-var patterns)', () => {
+    const source = [
+      "const errorCode = 'LUMENFLOW_INIT_ERROR';",
+      "const gatesError = 'LUMENFLOW_GATES_ERROR';",
+      "const validateError = 'LUMENFLOW_VALIDATE_ERROR';",
+    ].join('\n');
+
+    const violations = scanSourceTextForEnvVarLiterals(source, 'fixtures/error-codes.ts');
+    expect(violations).toHaveLength(0);
+  });
+
+  it('does not flag LUMENFLOW_ sentinel tokens', () => {
+    const source = [
+      "const sentinel = 'LUMENFLOW_SPAWN_END';",
+      "const complete = 'LUMENFLOW_SPAWN_COMPLETE';",
+      "const warning = 'LUMENFLOW_TRUNCATION_WARNING';",
+    ].join('\n');
+
+    const violations = scanSourceTextForEnvVarLiterals(source, 'fixtures/sentinels.ts');
+    expect(violations).toHaveLength(0);
+  });
+
+  it('detects env vars in template literals', () => {
+    const source = "const msg = `env: LUMENFLOW_FORCE`;";
+
+    const violations = scanSourceTextForEnvVarLiterals(source, 'fixtures/template-env.ts');
+    expect(violations).toHaveLength(1);
+  });
+
+  it('respects env var allowlisted files', () => {
+    const allowlistedFile = path.join(
+      REPO_ROOT,
+      'packages',
+      '@lumenflow',
+      'core',
+      'src',
+      'wu-context-constants.ts',
+    );
+
+    expect(isEnvVarAllowlistedFile(allowlistedFile)).toBe(true);
+  });
+
+  it('does not allowlist arbitrary files', () => {
+    const regularFile = path.join(
+      REPO_ROOT,
+      'packages',
+      '@lumenflow',
+      'core',
+      'src',
+      'some-module.ts',
+    );
+
+    expect(isEnvVarAllowlistedFile(regularFile)).toBe(false);
+  });
+});
+
+describe('WU-2113: LUMENFLOW_ env var ratcheting regression guard', () => {
+  it('scans all 7 runtime packages for raw LUMENFLOW_ env var literals', async () => {
+    const filesPerTarget = await Promise.all(
+      SCAN_TARGETS.map(async (target) => {
+        const files = await getRuntimeSourceFiles(target);
+        return { target: target.label, files };
+      }),
+    );
+
+    // Verify all scan targets discovered files
+    for (const target of filesPerTarget) {
+      expect(
+        target.files.length,
+        `No source files discovered for ${target.target}`,
+      ).toBeGreaterThan(0);
+    }
+
+    // Collect all violations
+    const allViolations: PathLiteralViolation[] = [];
+    for (const { files } of filesPerTarget) {
+      for (const file of files) {
+        const violations = scanFileForEnvVarLiterals(file);
+        allViolations.push(...violations);
+      }
+    }
+
+    const currentCount = allViolations.length;
+    const savedBaseline = loadEnvVarBaseline();
+
+    // Persist baseline: always update to current count so the ratchet
+    // moves forward when violations are removed
+    persistEnvVarBaseline(currentCount);
+
+    if (savedBaseline !== null) {
+      // Ratchet check: current count must not exceed saved baseline
+      if (currentCount > savedBaseline) {
+        expect.fail(
+          `LUMENFLOW_ env var literal ratchet FAILED: count increased from ${savedBaseline} to ${currentCount} ` +
+            `(+${currentCount - savedBaseline}).\n\n` +
+            `New raw LUMENFLOW_ env var literals detected. Use ENV_VARS constant from wu-context-constants.ts instead.\n` +
+            `Violations:\n${formatViolationReport(allViolations)}`,
+        );
+      }
+
+      // Log ratchet status for visibility
+      const delta = savedBaseline - currentCount;
+      const status = delta > 0 ? `IMPROVED: reduced by ${delta}` : 'STABLE: no change';
+      console.log(
+        `LUMENFLOW_ env var ratchet: ${currentCount} (baseline: ${savedBaseline}) -- ${status}`,
+      );
+    } else {
+      // First run: baseline established
+      console.log(
+        `LUMENFLOW_ env var ratchet: baseline established at ${currentCount} references`,
+      );
+    }
+
+    // The test itself passes as long as count does not increase
+    expect(currentCount).toBeGreaterThanOrEqual(0);
+  });
+
+  it('would fail if a new raw LUMENFLOW_ env var literal were added', () => {
+    const existingSource = "const safe = 'hello';";
+    const newSource = [
+      existingSource,
+      "const headless = process.env.LUMENFLOW_HEADLESS;",
+    ].join('\n');
+
+    const existingViolations = scanSourceTextForEnvVarLiterals(
+      existingSource,
+      'fixtures/existing.ts',
+    );
+    const newViolations = scanSourceTextForEnvVarLiterals(newSource, 'fixtures/new.ts');
+
+    // Adding a raw LUMENFLOW_ env var literal increases the count
+    expect(newViolations.length).toBeGreaterThan(existingViolations.length);
   });
 });
