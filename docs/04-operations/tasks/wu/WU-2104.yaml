@@ -2,7 +2,7 @@ id: WU-2104
 title: Remove stale GitHub App artifacts and release doc references
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-24
 code_paths: []
@@ -24,7 +24,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: WU-1414 deleted GitHub App source but left hollow apps/github-app/ dir and stale references in release-process.md. Remove both to avoid confusion.
+description: WU-1414 deleted GitHub App source but left hollow apps/github-app/ dir and stale
+  references in release-process.md. Remove both to avoid confusion.
 acceptance:
   - apps/github-app/ directory removed
   - release-process.md no longer references GitHub App deployment
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-2104
+claimed_at: 2026-02-24T14:53:46.318Z
+baseline_main_sha: 9751006873b007de515f0e83ab8d2d8eee2ed82d
+session_id: 91bc0fd7-7ccd-4fa7-a540-6d0263c0d594
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T14:53:46.321Z
