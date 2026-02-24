@@ -1,0 +1,40 @@
+id: WU-2112
+title: Add optional AST guard preventing reintroduction of as any casts
+lane: 'Framework: Core Lifecycle'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-24
+code_paths:
+  - packages/@lumenflow/core/src/__tests__/as-any-guard.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/as-any-guard.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2112.done
+dependencies: []
+initiative: INIT-037
+phase: 2
+blocked_by:
+  - WU-2110
+spec_refs:
+  - /home/USER/.claude/plans/wild-foraging-taco.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Optional guard to prevent reintroduction of explicit as any casts in production code. Current production scan in 6-package scope is effectively zero, so this can be strict fail-on-any (not ratcheted). Uses TypeScript AST: ts.isAsExpression where type.kind === ts.SyntaxKind.AnyKeyword. Scans all 7 runtime packages, allowlists test files. Lower priority than WU-2110 (UnsafeAny) because as any is visible in code review while UnsafeAny is not.'
+acceptance:
+  - 'New file: packages/@lumenflow/core/src/__tests__/as-any-guard.test.ts using TypeScript AST'
+  - Guard expects zero as any casts in all 7 runtime packages (strict, not ratcheted)
+  - Guard allowlists test files and e2e files
+  - A deliberate new as any in production code causes guard to fail
+  - pnpm test --testNamePattern=as-any-guard passes

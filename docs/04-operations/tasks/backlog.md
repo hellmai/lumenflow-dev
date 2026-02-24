@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2112 — Add optional AST guard preventing reintroduction of as any casts](wu/WU-2112.yaml) — Framework: Core Lifecycle
 - [WU-2111 — Add AST guard banning throw new Error() in production code](wu/WU-2111.yaml) — Framework: Core Lifecycle
 - [WU-2110 — Add ratcheting AST guard for UnsafeAny type alias usage](wu/WU-2110.yaml) — Framework: Core Lifecycle
 - [WU-2109 — Extend path-literal-guard and status-literal-guard to cover all 7 runtime packages](wu/WU-2109.yaml) — Framework: Core Lifecycle
