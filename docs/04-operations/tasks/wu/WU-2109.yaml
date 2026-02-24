@@ -9,7 +9,9 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
   - packages/@lumenflow/core/src/__tests__/status-literal-guard.test.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm test --testNamePattern=guard and verify all 7 packages scanned with non-zero file
+      counts
   unit:
     - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
     - packages/@lumenflow/core/src/__tests__/status-literal-guard.test.ts
@@ -31,7 +33,11 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'path-literal-guard.test.ts SCAN_TARGETS is missing @lumenflow/agent (7 files) and @lumenflow/metrics (13 files). status-literal-guard.test.ts only scans core/cli/memory AND uses regex — missing 4 packages and more brittle than path-literal-guard. Both guards must cover all 7 runtime packages: core, cli, mcp, memory, initiatives, agent, metrics. status-literal-guard must be upgraded from regex to TypeScript AST for consistency with path-literal-guard.'
+description: 'path-literal-guard.test.ts SCAN_TARGETS is missing @lumenflow/agent (7 files) and
+  @lumenflow/metrics (13 files). status-literal-guard.test.ts only scans core/cli/memory AND uses
+  regex — missing 4 packages and more brittle than path-literal-guard. Both guards must cover all 7
+  runtime packages: core, cli, mcp, memory, initiatives, agent, metrics. status-literal-guard must
+  be upgraded from regex to TypeScript AST for consistency with path-literal-guard.'
 acceptance:
   - path-literal-guard SCAN_TARGETS includes agent and metrics packages
   - status-literal-guard SCAN_TARGETS includes all 7 runtime packages
