@@ -119,7 +119,7 @@ function normalizeType(inputType: string): { type: string; aliasTag: string | nu
 }
 
 /**
- * Checks if a path is a git worktree (has .git file pointing to main)
+ * Checks if a path is a git worktree (has git metadata file pointing to main)
  *
  * @param dir - Directory to check
  * @returns Path to main checkout or null if not a worktree
@@ -130,7 +130,7 @@ async function getMainCheckoutFromWorktree(dir: string): Promise<string | null> 
     // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known path
     const stat = await fs.stat(gitPath);
     if (stat.isFile()) {
-      // .git is a file = we're in a worktree
+      // Git metadata file means we're in a worktree
       // eslint-disable-next-line security/detect-non-literal-fs-filename -- Known path
       const gitContent = await fs.readFile(gitPath, { encoding: 'utf-8' as BufferEncoding });
       // Format: "gitdir: /path/to/main/.git/worktrees/name"
@@ -145,7 +145,7 @@ async function getMainCheckoutFromWorktree(dir: string): Promise<string | null> 
       }
     }
   } catch {
-    // Not a worktree or .git doesn't exist
+    // Not a worktree or git metadata file doesn't exist
   }
   return null;
 }
