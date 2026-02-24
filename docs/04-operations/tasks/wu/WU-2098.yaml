@@ -2,7 +2,7 @@ id: WU-2098
 title: Make wu:brief / wu:spawn prompt templates path-config aware
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -47,3 +47,6 @@ session_id: 8ad26135-af0d-4e42-bb9e-734e05e1343c
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-24T08:59:44.454Z
+locked: true
+completed_at: 2026-02-24T09:07:48.207Z
+completed: 2026-02-24

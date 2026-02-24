@@ -2145,3 +2145,4 @@
 {"type":"complete","wuId":"WU-2097","timestamp":"2026-02-24T08:58:59.222Z"}
 {"type":"claim","wuId":"WU-2098","timestamp":"2026-02-24T08:59:44.499Z","lane":"Framework: CLI WU Commands","title":"Make wu:brief / wu:spawn prompt templates path-config aware"}
 {"type":"complete","wuId":"WU-2099","timestamp":"2026-02-24T09:04:01.788Z"}
+{"type":"complete","wuId":"WU-2098","timestamp":"2026-02-24T09:07:52.920Z"}
