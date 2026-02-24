@@ -10,7 +10,10 @@ code_paths:
   - packages/@lumenflow/initiatives/__tests__/orchestrate-initiative.test.ts
   - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm --filter @lumenflow/initiatives exec vitest run __tests__/initiative-yaml.test.ts
+      __tests__/orchestrate-initiative.test.ts __tests__/initiative-orchestrator.test.ts and verify
+      all targeted suites pass
   unit:
     - packages/@lumenflow/initiatives/__tests__/initiative-yaml.test.ts
     - packages/@lumenflow/initiatives/__tests__/orchestrate-initiative.test.ts
@@ -33,9 +36,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Restore enterprise-grade reliability in the initiatives package by removing legacy hardcoded fixture paths in tests that conflict with config-driven runtime paths. The current mismatch causes initiative discovery to return empty sets and breaks multiple orchestration tests in pnpm gates.
+description: Restore enterprise-grade reliability in the initiatives package by removing legacy
+  hardcoded fixture paths in tests that conflict with config-driven runtime paths. The current
+  mismatch causes initiative discovery to return empty sets and breaks multiple orchestration tests
+  in pnpm gates.
 acceptance:
-  - Initiatives tests construct fixture directories from runtime config contracts rather than legacy hardcoded docs/04-operations paths
-  - Initiative discovery and checkpoint-wave orchestration test assertions pass under current config-driven path resolution
+  - Initiatives tests construct fixture directories from runtime config contracts rather than legacy
+    hardcoded docs/04-operations paths
+  - Initiative discovery and checkpoint-wave orchestration test assertions pass under current
+    config-driven path resolution
   - Existing orchestrator command-generation assertions remain strict and unchanged
   - Targeted initiatives test suites execute green
