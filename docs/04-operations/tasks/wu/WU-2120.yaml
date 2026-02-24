@@ -12,7 +12,8 @@ code_paths:
   - packages/@lumenflow/cli/src/
   - packages/@lumenflow/shims/src/
 tests:
-  manual: []
+  manual:
+    - Verify path-literal-guard LUMENFLOW_ rule reports zero violations
   unit:
     - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
     - packages/@lumenflow/core/src/__tests__/branch-check.test.ts
