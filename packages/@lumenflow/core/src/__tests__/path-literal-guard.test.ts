@@ -97,13 +97,6 @@ const ALWAYS_ALLOWED_PATH_SEGMENTS = [
   'domain/context.schemas.ts',
 ];
 
-/**
- * Temporary explicit allowlist for known INIT-036 migration debt.
- * These files are being migrated by WU-2088..WU-2092 and should be removed from
- * this list as those WUs land.
- */
-const INIT_036_PENDING_ALLOWLIST = new Set<string>(['packages/@lumenflow/memory/src/paths.ts']);
-
 const BANNED_RULES: BannedRule[] = [
   {
     token: 'docs/04-operations',
@@ -169,11 +162,6 @@ function isPathLikeLiteral(value: string): boolean {
 
 function isAllowlistedFile(filePath: string): boolean {
   const normalized = normalizePath(filePath);
-  const repoRelative = normalizePath(path.relative(REPO_ROOT, filePath));
-  if (INIT_036_PENDING_ALLOWLIST.has(repoRelative)) {
-    return true;
-  }
-
   return ALWAYS_ALLOWED_PATH_SEGMENTS.some((segment) => normalized.includes(segment));
 }
 

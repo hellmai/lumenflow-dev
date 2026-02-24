@@ -4,14 +4,11 @@
 /**
  * Memory Package Path Constants
  *
- * Defines paths used by the memory layer locally to avoid circular
- * dependencies with @lumenflow/core (which imports from memory).
- *
- * These values MUST match LUMENFLOW_PATHS in @lumenflow/core/wu-constants.ts.
- * When updating paths, update both locations.
- *
- * @see {@link packages/@lumenflow/core/src/wu-constants.ts} - Source of truth
+ * Re-export selected canonical constants from @lumenflow/core/wu-constants.
+ * This avoids local literal drift while preserving a memory-local surface area.
  */
+
+import { LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 
 /**
  * Path constants for LumenFlow memory layer.
@@ -21,15 +18,8 @@
  * MEMORY_PATHS exported from mem-init-core.ts
  */
 export const LUMENFLOW_MEMORY_PATHS = {
-  /** Base directory for all LumenFlow runtime data */
-  BASE: '.lumenflow',
-
-  /** WU state store directory */
-  STATE_DIR: '.lumenflow/state',
-
-  /** Memory layer directory */
-  MEMORY_DIR: '.lumenflow/memory',
-
-  /** Current session file */
-  SESSION_CURRENT: '.lumenflow/sessions/current.json',
+  BASE: LUMENFLOW_PATHS.BASE,
+  STATE_DIR: LUMENFLOW_PATHS.STATE_DIR,
+  MEMORY_DIR: LUMENFLOW_PATHS.MEMORY_DIR,
+  SESSION_CURRENT: LUMENFLOW_PATHS.SESSION_CURRENT,
 } as const;
