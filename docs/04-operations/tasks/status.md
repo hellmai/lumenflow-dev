@@ -4,7 +4,6 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-- [WU-2110 — Add ratcheting AST guard for UnsafeAny type alias usage](wu/WU-2110.yaml)
 - [WU-2123 — Deduplicate GateLogContext type defined in both gate-registry.ts and gates-utils.ts](wu/WU-2123.yaml)
 
 ## Completed
@@ -1038,3 +1037,4 @@ _Last updated: 2026-02-24_
 - [WU-2129 — Enhance initiative orchestration docs with recovery, memory coordination, and delegation](wu/WU-2129.yaml) — 2026-02-24
 - [WU-2108 — Fix ESLint boundary plugin config to match actual hex directory names](wu/WU-2108.yaml) — 2026-02-24
 - [WU-2109 — Extend path-literal-guard and status-literal-guard to cover all 7 runtime packages](wu/WU-2109.yaml) — 2026-02-24
+- [WU-2110 — Add ratcheting AST guard for UnsafeAny type alias usage](wu/WU-2110.yaml) — 2026-02-24
