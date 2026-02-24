@@ -6,7 +6,6 @@ status: in_progress
 priority: P1
 created: 2026-02-24
 code_paths:
-  - packages/@lumenflow/core/src/wu-context-constants.ts
   - packages/@lumenflow/core/src/branch-check.ts
   - packages/@lumenflow/core/src/agent-patterns-registry.ts
   - packages/@lumenflow/core/src/index.ts
