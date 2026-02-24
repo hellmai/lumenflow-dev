@@ -2,7 +2,7 @@ id: WU-2124
 title: Extract shared path factory in core to replace 3 independent resolution patterns
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-24
 code_paths:
@@ -54,3 +54,6 @@ acceptance:
   - 3 independent path resolution patterns consolidated to use PathFactory
   - All affected packages (core, cli, mcp) use PathFactory
   - pnpm test for affected packages passes
+locked: true
+completed_at: 2026-02-24T22:23:49.770Z
+completed: 2026-02-24

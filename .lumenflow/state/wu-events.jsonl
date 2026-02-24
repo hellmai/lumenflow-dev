@@ -2203,3 +2203,4 @@
 {"type":"claim","wuId":"WU-2124","timestamp":"2026-02-24T22:12:07.099Z","lane":"Framework: Core Lifecycle","title":"Extract shared path factory in core to replace 3 independent resolution patterns"}
 {"type":"claim","wuId":"WU-2125","timestamp":"2026-02-24T22:12:48.781Z","lane":"Framework: Core Lifecycle","title":"Extract shared YAML parse logic from readWU() and readWUAsync() into helper"}
 {"type":"complete","wuId":"WU-2125","timestamp":"2026-02-24T22:22:52.710Z"}
+{"type":"complete","wuId":"WU-2124","timestamp":"2026-02-24T22:23:54.567Z"}
