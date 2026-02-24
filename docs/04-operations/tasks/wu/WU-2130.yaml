@@ -7,7 +7,6 @@ priority: P0
 created: 2026-02-24
 code_paths:
   - packages/@lumenflow/core/src/__tests__/type-safety-guard.test.ts
-  - tools/baselines/enforcement/unsafe-any-baseline.json
 tests:
   manual:
     - Run pnpm test --testNamePattern=type-safety-guard with no code changes and verify no baseline
@@ -28,10 +27,17 @@ spec_refs:
 risks: []
 notes: 'Single-session fix: one guard test plus baseline handling semantics; no runtime behavior changes.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-24T21:00:52.682Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2130
+session_id: 573c27ee-1fad-4cd6-905e-033f8ce33d7c
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T21:00:52.691Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -41,15 +47,7 @@ description: WU-2110 introduced a ratcheting guard for UnsafeAny, but baseline p
   refresh is explicit opt-in only.
 acceptance:
   - Ratchet comparison runs before any baseline write operation
-  - Regression failure path does not modify tools/baselines/enforcement/unsafe-any-baseline.json
+  - Regression failure path does not modify the baseline file
   - Baseline updates are explicit opt-in, not default side effects during normal test execution
   - Tests cover non-mutation behavior on failure and baseline refresh path
   - pnpm test --testNamePattern=type-safety-guard passes
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2130
-claimed_at: 2026-02-24T21:00:52.682Z
-baseline_main_sha: c6de49c2d32571ccee03dcd9e0576a656124366d
-session_id: 573c27ee-1fad-4cd6-905e-033f8ce33d7c
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-24T21:00:52.691Z
