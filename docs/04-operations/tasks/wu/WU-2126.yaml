@@ -2,7 +2,7 @@ id: WU-2126
 title: Wire clearConfigCache() to config-mutating operations (wu:done, config:set)
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-24
 code_paths:
@@ -45,3 +45,11 @@ acceptance:
   - clearConfigCache() called after config:set completion
   - Integration test verifies config reads fresh values after cache-invalidating operations
   - pnpm test --filter=@lumenflow/cli --filter=@lumenflow/core passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2126
+claimed_at: 2026-02-24T22:26:55.811Z
+baseline_main_sha: 073ddcf82ecb0d45d7c957aa86a74b143614a537
+session_id: 43d744d6-03f6-4b66-92b8-602f3d735da3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T22:26:55.819Z
