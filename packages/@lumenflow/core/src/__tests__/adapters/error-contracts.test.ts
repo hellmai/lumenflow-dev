@@ -130,9 +130,7 @@ describe('Adapter error contracts (WU-2128)', () => {
     });
 
     it('readGitStateSafe returns Failure on error', async () => {
-      const adapter = new SimpleGitStateAdapter(
-        vi.fn().mockRejectedValue(new Error('git error')),
-      );
+      const adapter = new SimpleGitStateAdapter(vi.fn().mockRejectedValue(new Error('git error')));
 
       const result = await adapter.readGitStateSafe();
 

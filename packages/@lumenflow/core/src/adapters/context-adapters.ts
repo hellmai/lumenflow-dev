@@ -202,10 +202,7 @@ export class FileSystemWuStateAdapter implements IWuStateReader {
    * @param repoRoot - Repository root path
    * @returns Promise<Result<WuStateResult | null>> - Success with state or Failure with error
    */
-  async readWuStateSafe(
-    wuId: string,
-    repoRoot: string,
-  ): Promise<Result<WuStateResult | null>> {
+  async readWuStateSafe(wuId: string, repoRoot: string): Promise<Result<WuStateResult | null>> {
     return tryCatchAsync(() => this.readWuStateFn(wuId, repoRoot));
   }
 }

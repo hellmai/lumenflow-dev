@@ -17,6 +17,7 @@ The `@lumenflow/core` package had inconsistent error handling contracts across i
 3. **CLI command handlers**: Had to guess which calls might throw and wrap them in ad-hoc try-catch blocks, leading to inconsistent error formatting.
 
 This lack of a documented contract made it difficult to:
+
 - Write robust error handling in use cases and command handlers
 - Test error paths consistently
 - Onboard new contributors who needed to understand the expected behavior
@@ -71,8 +72,14 @@ A discriminated union defined in `@lumenflow/core/src/domain/result.ts`:
 ```typescript
 type Result<T, E = Error> = Success<T> | Failure<E>;
 
-interface Success<T> { readonly ok: true; readonly value: T; }
-interface Failure<E> { readonly ok: false; readonly error: E; }
+interface Success<T> {
+  readonly ok: true;
+  readonly value: T;
+}
+interface Failure<E> {
+  readonly ok: false;
+  readonly error: E;
+}
 ```
 
 Constructor functions: `ok(value)`, `fail(error)`
