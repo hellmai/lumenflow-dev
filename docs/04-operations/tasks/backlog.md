@@ -26,7 +26,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2134 — Stabilize initiatives tests under config-driven path resolution](wu/WU-2134.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1085,6 +1085,7 @@ sections:
 - [WU-2126 — Wire clearConfigCache() to config-mutating operations (wu:done, config:set)](wu/WU-2126.yaml)
 - [WU-2128 — Standardize error return contracts: ports throw, adapters return Result, CLI catches](wu/WU-2128.yaml)
 - [WU-2133 — Restore enforcement guard integrity in core](wu/WU-2133.yaml)
+- [WU-2134 — Stabilize initiatives tests under config-driven path resolution](wu/WU-2134.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

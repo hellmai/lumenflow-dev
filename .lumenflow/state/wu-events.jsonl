@@ -2213,3 +2213,4 @@
 {"type":"claim","wuId":"WU-2133","timestamp":"2026-02-24T23:35:03.607Z","lane":"Framework: Core Lifecycle","title":"Restore enforcement guard integrity in core"}
 {"type":"complete","wuId":"WU-2133","timestamp":"2026-02-24T23:44:11.088Z"}
 {"type":"claim","wuId":"WU-2134","timestamp":"2026-02-24T23:45:19.676Z","lane":"Framework: Core Lifecycle","title":"Stabilize initiatives tests under config-driven path resolution"}
+{"type":"complete","wuId":"WU-2134","timestamp":"2026-02-24T23:51:04.661Z"}

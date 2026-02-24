@@ -2,7 +2,7 @@ id: WU-2134
 title: Stabilize initiatives tests under config-driven path resolution
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-24
 code_paths:
@@ -53,3 +53,6 @@ acceptance:
     config-driven path resolution
   - Existing orchestrator command-generation assertions remain strict and unchanged
   - Targeted initiatives test suites execute green
+locked: true
+completed_at: 2026-02-24T23:50:59.978Z
+completed: 2026-02-24

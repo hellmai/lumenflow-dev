@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-- [WU-2134 — Stabilize initiatives tests under config-driven path resolution](wu/WU-2134.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1059,3 +1059,4 @@ _Last updated: 2026-02-24_
 - [WU-2126 — Wire clearConfigCache() to config-mutating operations (wu:done, config:set)](wu/WU-2126.yaml) — 2026-02-24
 - [WU-2128 — Standardize error return contracts: ports throw, adapters return Result, CLI catches](wu/WU-2128.yaml) — 2026-02-24
 - [WU-2133 — Restore enforcement guard integrity in core](wu/WU-2133.yaml) — 2026-02-24
+- [WU-2134 — Stabilize initiatives tests under config-driven path resolution](wu/WU-2134.yaml) — 2026-02-24
