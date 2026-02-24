@@ -9,7 +9,7 @@ code_paths:
   - packages/@lumenflow/core/src/__tests__/error-pattern-guard.test.ts
   - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
   - tools/baselines/enforcement/throw-new-error-baseline.json
-  - tools/baselines/enforcement/file-ext-literal-baseline.json
+  - tools/baselines/enforcement/file-extension-baseline.json
   - tools/baselines/enforcement/lumenflow-env-var-baseline.json
 tests:
   manual:

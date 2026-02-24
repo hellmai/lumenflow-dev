@@ -915,6 +915,16 @@ function persistFileExtBaseline(count: number): void {
   writeFileSync(FILE_EXT_BASELINE_PATH, JSON.stringify(data, null, 2) + '\n', 'utf-8');
 }
 
+function shouldPersistRatchetingBaseline(
+  savedBaseline: number | null,
+  currentCount: number,
+  isExplicitUpdate: boolean,
+): boolean {
+  const isFirstRun = savedBaseline === null;
+  const isImprovement = savedBaseline !== null && currentCount < savedBaseline;
+  return isFirstRun || isImprovement || isExplicitUpdate;
+}
+
 describe('WU-2114: file extension literal guard foundations', () => {
   it('detects bare file extension strings', () => {
     const source = [
@@ -1026,21 +1036,19 @@ describe('WU-2114: file extension ratcheting regression guard', () => {
     const currentCount = allViolations.length;
     const savedBaseline = loadFileExtBaseline();
 
-    // Persist baseline: always update to current count so the ratchet
-    // moves forward when violations are removed
-    persistFileExtBaseline(currentCount);
+    // WU-2131: Compare before writes. Regression failure must not mutate baseline.
+    if (savedBaseline !== null && currentCount > savedBaseline) {
+      expect.fail(
+        `File extension literal ratchet FAILED: count increased from ${savedBaseline} to ${currentCount} ` +
+          `(+${currentCount - savedBaseline}).\n\n` +
+          `New bare file extension literals detected. Use FILE_EXTENSIONS constant from wu-paths-constants.ts instead.\n` +
+          `To intentionally update the baseline after a deliberate migration:\n` +
+          `  UPDATE_BASELINE=true pnpm --filter @lumenflow/core exec vitest run src/__tests__/path-literal-guard.test.ts -t \"file extension ratcheting regression guard\"\n\n` +
+          `Violations:\n${formatViolationReport(allViolations)}`,
+      );
+    }
 
     if (savedBaseline !== null) {
-      // Ratchet check: current count must not exceed saved baseline
-      if (currentCount > savedBaseline) {
-        expect.fail(
-          `File extension literal ratchet FAILED: count increased from ${savedBaseline} to ${currentCount} ` +
-            `(+${currentCount - savedBaseline}).\n\n` +
-            `New bare file extension literals detected. Use FILE_EXTENSIONS constant from wu-paths-constants.ts instead.\n` +
-            `Violations:\n${formatViolationReport(allViolations)}`,
-        );
-      }
-
       // Log ratchet status for visibility
       const delta = savedBaseline - currentCount;
       const status = delta > 0 ? `IMPROVED: reduced by ${delta}` : 'STABLE: no change';
@@ -1050,6 +1058,14 @@ describe('WU-2114: file extension ratcheting regression guard', () => {
     } else {
       // First run: baseline established
       console.log(`File extension ratchet: baseline established at ${currentCount} references`);
+    }
+
+    const isExplicitUpdate = process.env.UPDATE_BASELINE === 'true';
+    if (shouldPersistRatchetingBaseline(savedBaseline, currentCount, isExplicitUpdate)) {
+      persistFileExtBaseline(currentCount);
+      if (isExplicitUpdate && savedBaseline !== null && currentCount === savedBaseline) {
+        console.log(`File extension ratchet: baseline explicitly updated to ${currentCount}`);
+      }
     }
 
     // The test itself passes as long as count does not increase
@@ -1169,21 +1185,19 @@ describe('WU-2113: LUMENFLOW_ env var ratcheting regression guard', () => {
     const currentCount = allViolations.length;
     const savedBaseline = loadEnvVarBaseline();
 
-    // Persist baseline: always update to current count so the ratchet
-    // moves forward when violations are removed
-    persistEnvVarBaseline(currentCount);
+    // WU-2131: Compare before writes. Regression failure must not mutate baseline.
+    if (savedBaseline !== null && currentCount > savedBaseline) {
+      expect.fail(
+        `LUMENFLOW_ env var literal ratchet FAILED: count increased from ${savedBaseline} to ${currentCount} ` +
+          `(+${currentCount - savedBaseline}).\n\n` +
+          `New raw LUMENFLOW_ env var literals detected. Use ENV_VARS constant from wu-context-constants.ts instead.\n` +
+          `To intentionally update the baseline after a deliberate migration:\n` +
+          `  UPDATE_BASELINE=true pnpm --filter @lumenflow/core exec vitest run src/__tests__/path-literal-guard.test.ts -t \"LUMENFLOW_ env var ratcheting regression guard\"\n\n` +
+          `Violations:\n${formatViolationReport(allViolations)}`,
+      );
+    }
 
     if (savedBaseline !== null) {
-      // Ratchet check: current count must not exceed saved baseline
-      if (currentCount > savedBaseline) {
-        expect.fail(
-          `LUMENFLOW_ env var literal ratchet FAILED: count increased from ${savedBaseline} to ${currentCount} ` +
-            `(+${currentCount - savedBaseline}).\n\n` +
-            `New raw LUMENFLOW_ env var literals detected. Use ENV_VARS constant from wu-context-constants.ts instead.\n` +
-            `Violations:\n${formatViolationReport(allViolations)}`,
-        );
-      }
-
       // Log ratchet status for visibility
       const delta = savedBaseline - currentCount;
       const status = delta > 0 ? `IMPROVED: reduced by ${delta}` : 'STABLE: no change';
@@ -1193,6 +1207,14 @@ describe('WU-2113: LUMENFLOW_ env var ratcheting regression guard', () => {
     } else {
       // First run: baseline established
       console.log(`LUMENFLOW_ env var ratchet: baseline established at ${currentCount} references`);
+    }
+
+    const isExplicitUpdate = process.env.UPDATE_BASELINE === 'true';
+    if (shouldPersistRatchetingBaseline(savedBaseline, currentCount, isExplicitUpdate)) {
+      persistEnvVarBaseline(currentCount);
+      if (isExplicitUpdate && savedBaseline !== null && currentCount === savedBaseline) {
+        console.log(`LUMENFLOW_ env var ratchet: baseline explicitly updated to ${currentCount}`);
+      }
     }
 
     // The test itself passes as long as count does not increase
@@ -1213,5 +1235,36 @@ describe('WU-2113: LUMENFLOW_ env var ratcheting regression guard', () => {
 
     // Adding a raw LUMENFLOW_ env var literal increases the count
     expect(newViolations.length).toBeGreaterThan(existingViolations.length);
+  });
+});
+
+describe('WU-2131: path-literal ratchet baseline persistence policy', () => {
+  it('persists on first run, improvement, or explicit update', () => {
+    expect(shouldPersistRatchetingBaseline(null, 10, false)).toBe(true);
+    expect(shouldPersistRatchetingBaseline(10, 9, false)).toBe(true);
+    expect(shouldPersistRatchetingBaseline(10, 10, true)).toBe(true);
+  });
+
+  it('does not persist on unchanged or regressed counts without explicit update', () => {
+    expect(shouldPersistRatchetingBaseline(10, 10, false)).toBe(false);
+    expect(shouldPersistRatchetingBaseline(10, 11, false)).toBe(false);
+  });
+
+  it('keeps file extension regression check before baseline write in source order', () => {
+    const sourceText = readFileSync(path.join(__dirname, 'path-literal-guard.test.ts'), 'utf-8');
+    const failIndex = sourceText.indexOf('File extension literal ratchet FAILED');
+    const persistAfterFailIndex = sourceText.indexOf('persistFileExtBaseline(currentCount)', failIndex);
+
+    expect(failIndex).toBeGreaterThan(-1);
+    expect(persistAfterFailIndex).toBeGreaterThan(failIndex);
+  });
+
+  it('keeps env-var regression check before baseline write in source order', () => {
+    const sourceText = readFileSync(path.join(__dirname, 'path-literal-guard.test.ts'), 'utf-8');
+    const failIndex = sourceText.indexOf('LUMENFLOW_ env var literal ratchet FAILED');
+    const persistAfterFailIndex = sourceText.indexOf('persistEnvVarBaseline(currentCount)', failIndex);
+
+    expect(failIndex).toBeGreaterThan(-1);
+    expect(persistAfterFailIndex).toBeGreaterThan(failIndex);
   });
 });

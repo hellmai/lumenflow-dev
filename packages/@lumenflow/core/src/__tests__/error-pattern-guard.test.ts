@@ -239,6 +239,16 @@ function persistBaseline(count: number): void {
   writeFileSync(BASELINE_PATH, JSON.stringify(data, null, 2) + '\n', 'utf-8');
 }
 
+function shouldPersistBaseline(
+  savedBaseline: number | null,
+  currentCount: number,
+  isExplicitUpdate: boolean,
+): boolean {
+  const isFirstRun = savedBaseline === null;
+  const isImprovement = savedBaseline !== null && currentCount < savedBaseline;
+  return isFirstRun || isImprovement || isExplicitUpdate;
+}
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -348,21 +358,20 @@ describe('WU-2111: throw new Error() ratcheting regression guard', () => {
     const currentCount = allViolations.length;
     const savedBaseline = loadBaseline();
 
-    // Persist baseline: always update to current count so the ratchet
-    // moves forward when violations are removed
-    persistBaseline(currentCount);
+    // WU-2131: Compare before any write. Regression failure path must not
+    // mutate baseline state.
+    if (savedBaseline !== null && currentCount > savedBaseline) {
+      expect.fail(
+        `throw new Error() ratchet FAILED: count increased from ${savedBaseline} to ${currentCount} ` +
+          `(+${currentCount - savedBaseline}).\n\n` +
+          `New throw new Error() detected. Use \`createError(ErrorCodes.*)\` from error-handler.ts instead.\n` +
+          `To intentionally update the baseline after a deliberate migration:\n` +
+          `  UPDATE_BASELINE=true pnpm --filter @lumenflow/core exec vitest run src/__tests__/error-pattern-guard.test.ts\n\n` +
+          `Violations:\n${formatViolationReport(allViolations)}`,
+      );
+    }
 
     if (savedBaseline !== null) {
-      // Ratchet check: current count must not exceed saved baseline
-      if (currentCount > savedBaseline) {
-        expect.fail(
-          `throw new Error() ratchet FAILED: count increased from ${savedBaseline} to ${currentCount} ` +
-            `(+${currentCount - savedBaseline}).\n\n` +
-            `New throw new Error() detected. Use \`createError(ErrorCodes.*)\` from error-handler.ts instead.\n` +
-            `Violations:\n${formatViolationReport(allViolations)}`,
-        );
-      }
-
       // Log ratchet status for visibility
       const delta = savedBaseline - currentCount;
       const status = delta > 0 ? `IMPROVED: reduced by ${delta}` : 'STABLE: no change';
@@ -372,6 +381,15 @@ describe('WU-2111: throw new Error() ratcheting regression guard', () => {
     } else {
       // First run: baseline established
       console.log(`throw new Error() ratchet: baseline established at ${currentCount} occurrences`);
+    }
+
+    // WU-2131: Baseline writes are controlled, never unconditional.
+    const isExplicitUpdate = process.env.UPDATE_BASELINE === 'true';
+    if (shouldPersistBaseline(savedBaseline, currentCount, isExplicitUpdate)) {
+      persistBaseline(currentCount);
+      if (isExplicitUpdate && savedBaseline !== null && currentCount === savedBaseline) {
+        console.log(`throw new Error() ratchet: baseline explicitly updated to ${currentCount}`);
+      }
     }
 
     // The test itself passes as long as count does not increase
@@ -388,5 +406,27 @@ describe('WU-2111: throw new Error() ratcheting regression guard', () => {
 
     // Adding throw new Error() increases the count
     expect(newViolations.length).toBeGreaterThan(existingViolations.length);
+  });
+});
+
+describe('WU-2131: throw new Error() baseline persistence policy', () => {
+  it('persists on first run, improvement, or explicit update', () => {
+    expect(shouldPersistBaseline(null, 10, false)).toBe(true);
+    expect(shouldPersistBaseline(10, 9, false)).toBe(true);
+    expect(shouldPersistBaseline(10, 10, true)).toBe(true);
+  });
+
+  it('does not persist on unchanged or regressed counts without explicit update', () => {
+    expect(shouldPersistBaseline(10, 10, false)).toBe(false);
+    expect(shouldPersistBaseline(10, 11, false)).toBe(false);
+  });
+
+  it('keeps regression check before baseline write in source order', () => {
+    const sourceText = readFileSync(path.join(__dirname, 'error-pattern-guard.test.ts'), 'utf-8');
+    const failIndex = sourceText.indexOf('throw new Error() ratchet FAILED');
+    const persistAfterFailIndex = sourceText.indexOf('persistBaseline(currentCount)', failIndex);
+
+    expect(failIndex).toBeGreaterThan(-1);
+    expect(persistAfterFailIndex).toBeGreaterThan(failIndex);
   });
 });
