@@ -2,7 +2,7 @@ id: WU-2099
 title: DRY path resolvers and lazy-load module-level config (INIT-036 cleanup)
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-24
 code_paths:
@@ -50,3 +50,6 @@ acceptance:
   - All path resolver functions have consistent try/catch fallback to LUMENFLOW_PATHS constants
   - No module-level createWuPaths() calls in incremental-lint.ts (lazy getter instead)
   - All existing tests pass
+locked: true
+completed_at: 2026-02-24T09:03:57.222Z
+completed: 2026-02-24
