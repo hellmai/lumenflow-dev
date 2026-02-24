@@ -2,7 +2,7 @@ id: WU-2109
 title: Extend path-literal-guard and status-literal-guard to cover all 7 runtime packages
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
   - status-literal-guard uses TypeScript AST scanning (ts.isStringLiteral) not regex
   - pnpm test --testNamePattern=guard passes with 0 violations (or ratcheted baseline)
   - Test output confirms non-zero file counts for agent and metrics in scan results
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2109
+claimed_at: 2026-02-24T19:46:04.841Z
+baseline_main_sha: 2b48f3003a3628c06c400af7714d1e19ee156672
+session_id: f838da68-7157-4f3d-bdc8-07eb403fc7c1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T19:46:04.847Z

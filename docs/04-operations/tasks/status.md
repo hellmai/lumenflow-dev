@@ -6,6 +6,7 @@ _Last updated: 2026-02-24_
 
 - [WU-2129 — Enhance initiative orchestration docs with recovery, memory coordination, and delegation](wu/WU-2129.yaml)
 - [WU-2108 — Fix ESLint boundary plugin config to match actual hex directory names](wu/WU-2108.yaml)
+- [WU-2109 — Extend path-literal-guard and status-literal-guard to cover all 7 runtime packages](wu/WU-2109.yaml)
 
 ## Completed
 
