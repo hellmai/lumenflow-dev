@@ -1,0 +1,38 @@
+id: WU-2099
+title: DRY path resolvers and lazy-load module-level config (INIT-036 cleanup)
+lane: 'Framework: CLI WU Commands'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-24
+code_paths:
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-block.ts
+  - packages/@lumenflow/cli/src/wu-claim-state.ts
+  - packages/@lumenflow/core/src/incremental-lint.ts
+tests:
+  manual:
+    - Run wu:done, wu:block, wu:claim against a WU to verify path resolution still works
+  unit:
+    - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2099.done
+dependencies: []
+initiative: INIT-036
+risks: []
+notes: 'Single-session Simple WU: 4-6 files, uniform mechanical changes, well under sizing thresholds.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Code review of INIT-036 found 3 borderline issues: (1) resolveWuEventsPath() duplicated in wu-done.ts, wu-block.ts, wu-claim-state.ts — extract to shared utility; (2) wu-block.ts and wu-claim-state.ts resolvers lack try/catch fallback that wu-done.ts has — add consistent error handling; (3) incremental-lint.ts evaluates createWuPaths() at module level — wrap in lazy getter.'
+acceptance:
+  - resolveWuEventsPath extracted to shared module, imported by wu-done, wu-block, wu-claim-state
+  - All path resolver functions have consistent try/catch fallback to LUMENFLOW_PATHS constants
+  - No module-level createWuPaths() calls in incremental-lint.ts (lazy getter instead)
+  - All existing tests pass
