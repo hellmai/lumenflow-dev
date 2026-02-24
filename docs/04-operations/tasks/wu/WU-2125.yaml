@@ -8,7 +8,8 @@ created: 2026-02-24
 code_paths:
   - packages/@lumenflow/core/src/wu-yaml.ts
 tests:
-  manual: []
+  manual:
+    - Verify pnpm test --filter=@lumenflow/core passes with all existing wu-yaml tests green
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-yaml.test.ts
   e2e: []
@@ -31,7 +32,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'readWU() and readWUAsync() in wu-yaml.ts share nearly identical YAML parsing and validation logic but are maintained as two separate code paths. Extract the shared parsing logic into a private parseWUYaml(content: string) helper. This reduces the DRY violation and makes the parse boundary a single point to add future validation.'
+description: 'readWU() and readWUAsync() in wu-yaml.ts share nearly identical YAML parsing and
+  validation logic but are maintained as two separate code paths. Extract the shared parsing logic
+  into a private parseWUYaml(content: string) helper. This reduces the DRY violation and makes the
+  parse boundary a single point to add future validation.'
 acceptance:
   - Private parseWUYaml helper extracted in wu-yaml.ts
   - Both readWU() and readWUAsync() delegate to the same helper
