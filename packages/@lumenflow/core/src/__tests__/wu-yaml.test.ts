@@ -47,7 +47,8 @@ function validWUDoc(overrides: Record<string, unknown> = {}): Record<string, unk
     priority: 'P1',
     created: '2026-02-24',
     code_paths: ['src/**'],
-    description: 'A description that is long enough to pass the minimum length validation requirement for WU specs',
+    description:
+      'A description that is long enough to pass the minimum length validation requirement for WU specs',
     acceptance: ['Criterion one'],
     ...overrides,
   };
@@ -342,7 +343,8 @@ lane: 'Framework: Core'
         priority: 'P1',
         created: '2026-02-24',
         code_paths: ['src/foo.ts'],
-        description: 'A description that is long enough to pass the minimum length validation requirement for WU specs',
+        description:
+          'A description that is long enough to pass the minimum length validation requirement for WU specs',
         acceptance: ['Criterion one'],
       };
 
