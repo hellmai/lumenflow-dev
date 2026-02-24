@@ -113,6 +113,7 @@ import {
   CONTEXT_VALIDATION,
 } from '@lumenflow/core/wu-constants';
 import { isDocumentationType } from '@lumenflow/core/wu-type-helpers';
+import { getDocsOnlyPrefixes, DOCS_ONLY_ROOT_FILES } from '@lumenflow/core';
 import { printGateFailureBox, printStatusPreview } from '@lumenflow/core/wu-done-ui';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
@@ -556,13 +557,11 @@ export function validateDocsOnlyFlag(
   }
 
   // Check 3: all code_paths are documentation paths
-  const DOCS_ONLY_PREFIXES = ['docs/', 'ai/', '.claude/', 'memory-bank/'];
-  const DOCS_ONLY_ROOT_FILES = ['readme', 'claude'];
-
+  const docsOnlyPrefixes = getDocsOnlyPrefixes().map((prefix) => prefix.toLowerCase());
   const isDocsPath = (p: string): boolean => {
     const path = p.trim().toLowerCase();
     // Check docs prefixes
-    for (const prefix of DOCS_ONLY_PREFIXES) {
+    for (const prefix of docsOnlyPrefixes) {
       if (path.startsWith(prefix)) return true;
     }
     // Check markdown files
@@ -594,7 +593,7 @@ export function validateDocsOnlyFlag(
         `--docs-only requires one of:\n` +
         `  1. exposure: documentation\n` +
         `  2. type: documentation\n` +
-        `  3. All code_paths under docs/, ai/, .claude/, or *.md files\n\n` +
+        `  3. All code_paths under configured docs prefixes (${docsOnlyPrefixes.join(', ')}), or *.md files\n\n` +
         `To fix, either:\n` +
         `  - Remove --docs-only flag and run full gates\n` +
         `  - Change WU exposure to 'documentation' if this is truly a docs-only change`,
@@ -1626,7 +1625,7 @@ async function validateStagedFiles(
   // WU-1541: Accept optional gitAdapter to avoid process.chdir dependency
   const staged = await listStaged(gitAdapter);
 
-  // WU-1311: Use config-based paths instead of hardcoded docs/04-operations paths
+  // WU-1311: Use config-based paths instead of hardcoded docs-layout paths
   const config = getConfig();
   const wuPath = `${config.directories.wuDir}/${id}.yaml`;
 
@@ -3513,15 +3512,26 @@ async function detectChangedDocPaths(worktreePath: string, baseBranch: string) {
     // Get files changed in this branch vs base
     const diff = await git.raw(['diff', '--name-only', baseBranch]);
     const changedFiles: string[] = diff.split('\n').filter(Boolean);
-    // Filter to docs: docs/04-operations/_frameworks/lumenflow/agent/onboarding/, docs/, CLAUDE.md, README.md, *.md in root
-    const docPatterns = [
-      /^ai\/onboarding\//,
-      /^docs\//,
-      /^\.claude\//,
-      /^CLAUDE\.md$/,
-      /^README\.md$/,
-    ];
-    return changedFiles.filter((f: string) => docPatterns.some((p) => p.test(f)));
+    const docsOnlyPrefixes = getDocsOnlyPrefixes({ projectRoot: worktreePath }).map((prefix) =>
+      prefix.toLowerCase(),
+    );
+    const docsRootFiles = DOCS_ONLY_ROOT_FILES.map((pattern) => pattern.toLowerCase());
+
+    // Filter to documentation-related files using configured prefixes.
+    return changedFiles.filter((filePath: string) => {
+      const normalizedPath = filePath.replace(/\\/g, '/').trim();
+      const lowerPath = normalizedPath.toLowerCase();
+
+      if (docsOnlyPrefixes.some((prefix) => lowerPath.startsWith(prefix))) {
+        return true;
+      }
+
+      if (!lowerPath.endsWith('.md')) {
+        return false;
+      }
+
+      return docsRootFiles.some((pattern) => lowerPath.startsWith(pattern));
+    });
   } catch {
     // Non-blocking: return empty on errors
     return [];

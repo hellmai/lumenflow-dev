@@ -478,6 +478,7 @@ export async function addOrReplaceInProgressStatus(
 
 export async function removeFromReadyAndAddToInProgressBacklog(
   backlogPath: string,
+  statusPath: string,
   id: string,
   title: string,
   lane: string,
@@ -497,8 +498,7 @@ export async function removeFromReadyAndAddToInProgressBacklog(
   await writeFile(backlogPath, backlogContent, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   console.log(`${PREFIX} backlog.md regenerated from state store`);
 
-  // Regenerate status.md from state store
-  const statusPath = path.join(path.dirname(backlogPath), 'status.md');
+  // Regenerate status.md from state store (use caller-resolved config path)
   const statusContent = await generateStatus(store);
   await writeFile(statusPath, statusContent, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   console.log(`${PREFIX} status.md regenerated from state store`);
@@ -536,7 +536,7 @@ export async function appendClaimEventOnly(
  * @returns {string[]} List of files to commit
  */
 export function getWorktreeCommitFiles(wuId: string): string[] {
-  // WU-1311: Use config-based paths instead of hardcoded docs/04-operations paths
+  // WU-1311: Use config-based paths instead of hardcoded docs-layout paths
   const config = getConfig();
   return [
     `${config.directories.wuDir}/${wuId}.yaml`,
@@ -618,7 +618,7 @@ export async function ensureCleanOrClaimOnlyWhenNoAuto() {
     .split(STRING_LITERALS.NEWLINE)
     .filter(Boolean)
     .filter((l) => l.startsWith('A ') || l.startsWith('M ') || l.startsWith('R '));
-  // WU-1311: Use config-based paths instead of hardcoded docs/04-operations paths
+  // WU-1311: Use config-based paths instead of hardcoded docs-layout paths
   const config = getConfig();
   const wuDirPattern = config.directories.wuDir.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   // eslint-disable-next-line security/detect-non-literal-regexp -- config path escaped for regex; not user input
@@ -710,6 +710,7 @@ export async function applyCanonicalClaimUpdate(
         await addOrReplaceInProgressStatus(microStatusPath, id, updatedTitle);
         await removeFromReadyAndAddToInProgressBacklog(
           microBacklogPath,
+          microStatusPath,
           id,
           updatedTitle,
           laneForUpdate,

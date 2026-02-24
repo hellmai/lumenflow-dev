@@ -13,6 +13,12 @@ import { Steps, Tabs, TabItem, Aside, FileTree } from '@astrojs/starlight/compon
 
 Adding LumenFlow to an existing project takes about 15 minutes. This guide walks through the process without disrupting your current workflow.
 
+<Aside type="note" title="Path configuration is workspace-driven">
+  Task and docs paths are resolved from `workspace.yaml` (`software_delivery.directories.*`). The
+  default layout is `docs/tasks/*`. If you prefer arc42, run init with `--docs-structure arc42` or
+  set directory paths explicitly.
+</Aside>
+
 ## Prerequisites
 
 Before starting:
@@ -28,7 +34,7 @@ LumenFlow adds:
 - `workspace.yaml` - Configuration file
 - `LUMENFLOW.md` - Workflow entry point
 - `.lumenflow/` - State and constraints
-- `docs/04-operations/tasks/` - WU specs and backlog (optional)
+- `docs/tasks/` - WU specs and backlog (optional)
 - Git hooks for enforcement (optional)
 
 It does **not** require:
@@ -67,7 +73,8 @@ The CLI provides the fastest path to adoption.
    ```bash
    pnpm exec lumenflow \
      --framework nextjs \
-     --main-branch main
+     --main-branch main \
+     --docs-structure simple
    ```
 
    Agent onboarding docs are included by default. Use `--minimal` to skip them.
@@ -100,10 +107,10 @@ The CLI provides the fastest path to adoption.
 
    The init command creates (agent onboarding docs are now included by default):
 
-   <FileTree>
+     <FileTree>
      - workspace.yaml (your configuration) - LUMENFLOW.md (workflow entry point) - AGENTS.md
      (universal AI agent entry point) - .lumenflow/ - constraints.md (non-negotiable rules) -
-     agents/ (AI agent guidance) - docs/04-operations/ - tasks/ - backlog.md - status.md - wu/ (WU
+     agents/ (AI agent guidance) - docs/tasks/ - backlog.md - status.md - wu/ (WU
      spec directory) - _frameworks/lumenflow/agent/onboarding/ - quick-ref-commands.md (CLI command
      reference) - first-wu-mistakes.md (common pitfalls) - troubleshooting-wu-done.md (wu:done
      issues) - agent-safety-card.md (safety reference)
@@ -159,37 +166,32 @@ If you prefer not to use the CLI or are using a non-Node.js project.
    Create `workspace.yaml` in your repo root:
 
    ```yaml
-   version: '2.0'
-
-   directories:
-     wu_specs: docs/04-operations/tasks/wu
-     backlog: docs/04-operations/tasks/backlog.md
-     status: docs/04-operations/tasks/status.md
-     stamps: .lumenflow/stamps
-
-   lanes:
-     enforcement:
-       require_parent: true
-       allow_custom: false
-     definitions:
-       - name: 'Framework: Core'
-         wip_limit: 2
-       - name: 'Experience: UI'
-         wip_limit: 2
-       - name: 'Operations: Infrastructure'
-         wip_limit: 1
-       - name: 'Content: Documentation'
-         wip_limit: 1
-
-   gates:
-     execution:
-       format: 'npm run format:check'
-       lint: 'npm run lint'
-       typecheck: 'npm run typecheck'
-       test: 'npm test'
-
-   git:
-     main_branch: main
+   software_delivery:
+     directories:
+       wu_dir: docs/tasks/wu
+       initiatives_dir: docs/tasks/initiatives
+       backlog_path: docs/tasks/backlog.md
+       status_path: docs/tasks/status.md
+     state:
+       stamps_dir: .lumenflow/stamps
+     lanes:
+       definitions:
+         - name: 'Framework: Core'
+           wip_limit: 2
+         - name: 'Experience: UI'
+           wip_limit: 2
+         - name: 'Operations: Infrastructure'
+           wip_limit: 1
+         - name: 'Content: Documentation'
+           wip_limit: 1
+     gates:
+       execution:
+         format: 'npm run format:check'
+         lint: 'npm run lint'
+         typecheck: 'npm run typecheck'
+         test: 'npm test'
+     git:
+       main_branch: main
    ```
 
 2. **Create LUMENFLOW.md**
@@ -201,8 +203,8 @@ If you prefer not to use the CLI or are using a non-Node.js project.
 
    ## Quick Start
 
-   1. Review backlog: `docs/04-operations/tasks/backlog.md`
-   2. Create WU: Create YAML in `docs/04-operations/tasks/wu/`
+   1. Review backlog: `docs/tasks/backlog.md`
+   2. Create WU: Create YAML in `docs/tasks/wu/`
    3. Claim WU: Update status to `in_progress`
    4. Work: Implement per acceptance criteria
    5. Complete: Run `wu:prep` (gates), then `wu:done` and create the stamp
@@ -216,7 +218,7 @@ If you prefer not to use the CLI or are using a non-Node.js project.
 3. **Create directory structure**
 
    ```bash
-   mkdir -p docs/04-operations/tasks/wu
+   mkdir -p docs/tasks/wu
    mkdir -p .lumenflow/stamps
    ```
 
@@ -234,7 +236,7 @@ If you prefer not to use the CLI or are using a non-Node.js project.
 
 5. **Create your first WU**
 
-   Create `docs/04-operations/tasks/wu/WU-001.yaml`:
+   Create `docs/tasks/wu/WU-001.yaml`:
 
    ```yaml
    id: WU-001

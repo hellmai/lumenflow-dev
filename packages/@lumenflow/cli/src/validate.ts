@@ -19,7 +19,7 @@
  *   1 - Validation errors found
  *
  * @see {@link wu-validate.ts} - Detailed WU validation with schema
- * @see {@link docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md} - WU lifecycle
+ * @see {@link getConfig().directories.completeGuidePath} - WU lifecycle
  */
 
 import {

@@ -14,7 +14,7 @@
  * - code_paths containing only documentation/config files (no code files)
  *
  * @see {@link packages/@lumenflow/cli/src/lib/wu-done-validators.ts} - Integration point
- * @see {@link docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md} - TDD requirements
+ * @see {@link config.directories.completeGuidePath} - TDD requirements
  */
 
 import path from 'node:path';

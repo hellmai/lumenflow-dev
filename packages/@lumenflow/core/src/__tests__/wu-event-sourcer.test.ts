@@ -22,18 +22,12 @@ import type { WUEvent } from '../wu-state-schema.js';
 // Mock node:fs/promises
 vi.mock('node:fs/promises');
 
-// Mock the delegation cutover (external dependency)
-vi.mock('../wu-delegation-cutover.js', () => ({
-  runDelegationCutoverIfNeeded: vi.fn().mockResolvedValue(undefined),
-}));
-
 // Mock validateWUEvent to control validation behavior
 vi.mock('../wu-state-schema.js', () => ({
   validateWUEvent: vi.fn(),
 }));
 
 import { validateWUEvent } from '../wu-state-schema.js';
-import { runDelegationCutoverIfNeeded } from '../wu-delegation-cutover.js';
 
 // Helper to create a mock indexer
 function createMockIndexer(): WUStateIndexer {
@@ -134,16 +128,6 @@ describe('WUEventSourcer', () => {
       await sourcer.load();
 
       expect(indexer.clear).toHaveBeenCalled();
-    });
-
-    it('should run delegation cutover before reading events', async () => {
-      vi.mocked(fs.readFile).mockRejectedValue(
-        Object.assign(new Error('ENOENT'), { code: 'ENOENT' }),
-      );
-
-      await sourcer.load();
-
-      expect(runDelegationCutoverIfNeeded).toHaveBeenCalledWith(baseDir, eventsPath);
     });
 
     it('should return empty state when file does not exist (ENOENT)', async () => {

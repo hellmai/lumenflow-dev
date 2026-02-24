@@ -118,7 +118,7 @@ export interface IGitStateReader {
  *     status: 'in_progress',
  *     lane: 'Framework: Core',
  *     title: 'Test WU',
- *     yamlPath: `${repoRoot}/docs/04-operations/tasks/wu/${wuId}.yaml`,
+ *     yamlPath: `${repoRoot}/${createWuPaths().WU(wuId)}`,
  *     isConsistent: true,
  *     inconsistencyReason: null,
  *   }),

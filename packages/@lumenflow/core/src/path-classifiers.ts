@@ -13,20 +13,27 @@
  *
  * @see {@link ./wu-done-paths.js} - Consumer for detectDocsOnlyByPaths
  */
+import { getDocsOnlyPrefixes, DOCS_ONLY_ROOT_FILES } from './file-classifiers.js';
+
+/**
+ * Extra skip-tests prefixes that are independent of docs layout config.
+ */
+const SKIP_TESTS_EXTRA_PREFIXES = Object.freeze(['tools/', 'scripts/']);
 
 /**
  * Prefixes for paths that should skip web app tests.
- * These are paths for docs, tooling, and configuration that don't affect app functionality.
- *
- * @constant {string[]}
+ * Combines configured docs-only prefixes with tooling/script prefixes.
  */
-export const SKIP_TESTS_PREFIXES = Object.freeze([
-  'docs/',
-  'ai/',
-  '.claude/',
-  'tools/', // WU-1255: Tooling WUs
-  'scripts/', // WU-1255: Scripts WUs
-]);
+export function getSkipTestsPrefixes(
+  options: {
+    projectRoot?: string;
+  } = {},
+): readonly string[] {
+  return Object.freeze([
+    ...getDocsOnlyPrefixes(options),
+    ...SKIP_TESTS_EXTRA_PREFIXES,
+  ]);
+}
 
 /**
  * Root file patterns that should skip web app tests.
@@ -34,10 +41,7 @@ export const SKIP_TESTS_PREFIXES = Object.freeze([
  *
  * @constant {string[]}
  */
-export const SKIP_TESTS_ROOT_FILES = Object.freeze([
-  'readme', // Case-insensitive match
-  'claude', // CLAUDE.md, CLAUDE-core.md, etc.
-]);
+export const SKIP_TESTS_ROOT_FILES = DOCS_ONLY_ROOT_FILES;
 
 /**
  * Check if a single file path should skip web app tests.
@@ -65,7 +69,7 @@ export function isSkipWebTestsPath(filePath: UnsafeAny) {
   }
 
   // Check directory prefixes (docs/, ai/, .claude/, tools/, scripts/)
-  for (const prefix of SKIP_TESTS_PREFIXES) {
+  for (const prefix of getSkipTestsPrefixes()) {
     if (path.startsWith(prefix)) {
       return true;
     }

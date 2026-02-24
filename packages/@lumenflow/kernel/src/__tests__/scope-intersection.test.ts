@@ -40,11 +40,11 @@ describe('scope intersection', () => {
       { type: 'path', pattern: 'packages/**', access: 'write' },
     ];
     const laneAllowed: ToolScope[] = [
-      { type: 'path', pattern: 'docs/04-operations/**', access: 'read' },
+      { type: 'path', pattern: 'docs/**', access: 'read' },
       { type: 'path', pattern: 'packages/@lumenflow/kernel/**', access: 'write' },
     ];
     const taskDeclared: ToolScope[] = [
-      { type: 'path', pattern: 'docs/04-operations/tasks/**', access: 'read' },
+      { type: 'path', pattern: 'docs/tasks/**', access: 'read' },
       { type: 'path', pattern: 'packages/@lumenflow/kernel/src/**', access: 'write' },
     ];
     const toolRequired: ToolScope[] = [
@@ -61,7 +61,7 @@ describe('scope intersection', () => {
 
     expect(intersection).toContainEqual({
       type: 'path',
-      pattern: 'docs/04-operations/tasks/**',
+      pattern: 'docs/tasks/**',
       access: 'read',
     });
     expect(intersection).toContainEqual({
@@ -130,8 +130,8 @@ describe('scope intersection', () => {
   it('returns no path scopes for disjoint wildcard patterns', () => {
     const intersection = intersectToolScopes({
       workspaceAllowed: [{ type: 'path', pattern: 'docs/**', access: 'read' }],
-      laneAllowed: [{ type: 'path', pattern: 'docs/04-operations/**', access: 'read' }],
-      taskDeclared: [{ type: 'path', pattern: 'docs/04-operations/tasks/**', access: 'read' }],
+      laneAllowed: [{ type: 'path', pattern: 'docs/**', access: 'read' }],
+      taskDeclared: [{ type: 'path', pattern: 'docs/tasks/**', access: 'read' }],
       toolRequired: [{ type: 'path', pattern: 'packages/**', access: 'read' }],
     });
 

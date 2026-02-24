@@ -13,8 +13,10 @@ import path from 'node:path';
 import { parseYAML } from './wu-yaml.js';
 import { parseBacklogFrontmatter, getSectionHeadings } from './backlog-parser.js';
 import { extractParent } from './lane-checker.js';
-import { CONFIG_FILES, STRING_LITERALS, WU_STATUS, getProjectRoot } from './wu-constants.js';
+import { CONFIG_FILES, STRING_LITERALS, WU_STATUS } from './wu-constants.js';
 import { getErrorMessage } from './error-handler.js';
+import { createWuPaths } from './wu-paths.js';
+import { findProjectRoot } from './lumenflow-config.js';
 
 const BACKLOG_SECTION_STATUS = {
   ready: WU_STATUS.READY,
@@ -56,14 +58,15 @@ function hasSubLaneTaxonomy(parent: string, projectRoot: string): boolean {
 }
 
 export function validateBacklogSync(backlogPath: string) {
-  const projectRoot = getProjectRoot(import.meta.url);
-  const relativeBacklogPath = path.relative(projectRoot, backlogPath) || backlogPath;
+  const resolvedBacklogPath = path.resolve(backlogPath);
+  const projectRoot = findProjectRoot(path.dirname(resolvedBacklogPath));
+  const relativeBacklogPath = path.relative(projectRoot, resolvedBacklogPath) || resolvedBacklogPath;
 
   // Parse frontmatter to get configured section headings
   let frontmatter: unknown;
   let markdown: string;
   try {
-    ({ frontmatter, markdown } = parseBacklogFrontmatter(backlogPath));
+    ({ frontmatter, markdown } = parseBacklogFrontmatter(resolvedBacklogPath));
   } catch (err: unknown) {
     return { valid: false, errors: [getErrorMessage(err)] };
   }
@@ -166,7 +169,8 @@ export function validateBacklogSync(backlogPath: string) {
   }
 
   // WU-1137: Check for parent-only WUs in Ready section (sub-lane format preferred)
-  const wuDir = path.join(path.dirname(backlogPath), 'wu');
+  // Resolve through workspace config to avoid assuming backlog.md and wu/ are siblings.
+  const wuDir = path.join(projectRoot, createWuPaths({ projectRoot }).WU_DIR());
   const parentOnlyWUs: Array<{ wuId: string; lane: string; parent: string }> = [];
 
   for (const wuId of sections.ready) {

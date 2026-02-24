@@ -81,7 +81,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -111,7 +111,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -140,7 +140,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -168,7 +168,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -201,7 +201,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -229,7 +229,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -259,7 +259,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -287,7 +287,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -315,7 +315,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -332,7 +332,7 @@ describe('worktree-enforcement', () => {
       } as ReturnType<typeof getConfig>);
 
       const result = checkWorktreeEnforcement({
-        filePath: 'docs/04-operations/tasks/wu/WU-1853.yaml',
+        filePath: 'docs/tasks/wu/WU-1853.yaml',
         projectRoot: PROJECT_ROOT,
       });
 
@@ -343,7 +343,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -387,7 +387,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -415,7 +415,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {},
@@ -434,7 +434,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -468,7 +468,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -498,7 +498,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {
@@ -526,7 +526,7 @@ describe('worktree-enforcement', () => {
       mockGetConfig.mockReturnValue({
         directories: {
           worktrees: 'worktrees',
-          wuDir: 'docs/04-operations/tasks/wu',
+          wuDir: 'docs/tasks/wu',
         },
         agents: {
           clients: {

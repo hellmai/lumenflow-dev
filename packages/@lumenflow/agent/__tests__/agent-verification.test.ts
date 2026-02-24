@@ -142,7 +142,7 @@ describe('verifyWUComplete', () => {
 
       expect(result.failures).toHaveLength(1);
       expect(result.failures[0]).toContain('No commit on main');
-      expect(result.failures[0]).toContain('docs/04-operations/tasks/wu/WU-1234.yaml');
+      expect(result.failures[0]).toContain('docs/tasks/wu/WU-1234.yaml');
     });
   });
 

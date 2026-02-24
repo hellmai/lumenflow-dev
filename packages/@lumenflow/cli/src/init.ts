@@ -891,6 +891,10 @@ export async function scaffoldProject(
     DOCS_OPERATIONS_PATH: docsPaths.operations, // WU-1309: For framework overlay
     DOCS_TASKS_PATH: docsPaths.tasks,
     DOCS_ONBOARDING_PATH: docsPaths.onboarding,
+    DOCS_WU_DIR_PATH: `${docsPaths.tasks}/wu`,
+    DOCS_TEMPLATES_DIR_PATH: `${docsPaths.tasks}/templates`,
+    DOCS_BACKLOG_PATH: `${docsPaths.tasks}/backlog.md`,
+    DOCS_STATUS_PATH: `${docsPaths.tasks}/status.md`,
   };
 
   // Upsert workspace.yaml software_delivery defaults (WU-2006 hard cut)
@@ -1271,18 +1275,16 @@ async function scaffoldFullDocs(
   result: import('./init-scaffolding.js').ScaffoldResult,
   tokens: Record<string, string>,
 ): Promise<void> {
-  // WU-1309: Use docs structure from tokens (computed in scaffoldProject)
-  const tasksPath = tokens.DOCS_TASKS_PATH;
-  const tasksDir = path.join(targetDir, tasksPath);
-  const wuDir = path.join(tasksDir, 'wu');
-  const templatesDir = path.join(tasksDir, 'templates');
+  // WU-1309: Use config-derived docs paths from tokens (computed in scaffoldProject)
+  const wuDir = path.join(targetDir, tokens.DOCS_WU_DIR_PATH);
+  const templatesDir = path.join(targetDir, tokens.DOCS_TEMPLATES_DIR_PATH);
 
   await createDirectory(wuDir, result, targetDir);
   await createDirectory(templatesDir, result, targetDir);
   await createFile(path.join(wuDir, '.gitkeep'), '', options.force, result, targetDir);
 
   await createFile(
-    path.join(tasksDir, 'backlog.md'),
+    path.join(targetDir, tokens.DOCS_BACKLOG_PATH),
     BACKLOG_TEMPLATE,
     options.force,
     result,
@@ -1290,7 +1292,7 @@ async function scaffoldFullDocs(
   );
 
   await createFile(
-    path.join(tasksDir, 'status.md'),
+    path.join(targetDir, tokens.DOCS_STATUS_PATH),
     STATUS_TEMPLATE,
     options.force,
     result,

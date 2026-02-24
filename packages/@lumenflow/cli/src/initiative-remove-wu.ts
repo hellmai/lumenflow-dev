@@ -28,13 +28,12 @@ import { die } from '@lumenflow/core/error-handler';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
-import { INIT_PATHS } from '@lumenflow/initiatives/paths';
 import {
   INIT_PATTERNS,
   INIT_COMMIT_FORMATS,
   INIT_LOG_PREFIX,
 } from '@lumenflow/initiatives/constants';
-import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { createWuPaths } from '@lumenflow/core/wu-paths';
 import { PATTERNS } from '@lumenflow/core/wu-constants';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import {
@@ -44,12 +43,22 @@ import {
 } from '@lumenflow/core/micro-worktree';
 import { parseYAML, readWU, stringifyYAML, writeWU } from '@lumenflow/core/wu-yaml';
 import { readInitiative } from '@lumenflow/initiatives/yaml';
+import { getConfig } from '@lumenflow/core/config';
 
 /** Log prefix for console output */
 export const LOG_PREFIX = INIT_LOG_PREFIX.REMOVE_WU;
 
 /** Micro-worktree operation name */
 export const OPERATION_NAME = 'initiative-remove-wu';
+
+function resolveWuRelPath(wuId: string, projectRoot: string = process.cwd()): string {
+  return createWuPaths({ projectRoot }).WU(wuId);
+}
+
+function resolveInitiativeRelPath(initId: string, projectRoot: string = process.cwd()): string {
+  const initiativesDir = getConfig({ projectRoot }).directories.initiativesDir;
+  return join(initiativesDir, `${initId}.yaml`);
+}
 
 /**
  * WU-1621: operation-level push retry override for initiative:remove-wu.
@@ -119,7 +128,7 @@ export function validateWuIdFormat(id: string): void {
  * @returns {object} WU document
  */
 export function checkWUExists(wuId: string): ReturnType<typeof readWU> {
-  const wuPath = WU_PATHS.WU(wuId);
+  const wuPath = resolveWuRelPath(wuId);
   if (!existsSync(wuPath)) {
     die(`WU not found: ${wuId}\n\nFile does not exist: ${wuPath}`);
   }
@@ -132,7 +141,7 @@ export function checkWUExists(wuId: string): ReturnType<typeof readWU> {
  * @returns {object} Initiative document
  */
 export function checkInitiativeExists(initId: string): ReturnType<typeof readInitiative> {
-  const initPath = INIT_PATHS.INITIATIVE(initId);
+  const initPath = resolveInitiativeRelPath(initId);
   if (!existsSync(initPath)) {
     die(`Initiative not found: ${initId}\n\nFile does not exist: ${initPath}`);
   }
@@ -166,7 +175,7 @@ export function checkWUIsLinked(
  * @returns {boolean} True if changes were made
  */
 export function updateWUInWorktree(worktreePath: string, wuId: string, initId: string): boolean {
-  const wuRelPath = WU_PATHS.WU(wuId);
+  const wuRelPath = resolveWuRelPath(wuId, worktreePath);
   const wuAbsPath = join(worktreePath, wuRelPath);
 
   const doc = readWU(wuAbsPath, wuId);
@@ -196,7 +205,7 @@ export function updateInitiativeInWorktree(
   initId: string,
   wuId: string,
 ): boolean {
-  const initRelPath = INIT_PATHS.INITIATIVE(initId);
+  const initRelPath = resolveInitiativeRelPath(initId, worktreePath);
   const initAbsPath = join(worktreePath, initRelPath);
 
   // Read raw YAML to preserve unknown fields like related_plan.
@@ -271,6 +280,7 @@ export async function main(): Promise<void> {
 
   // Ensure on main branch
   await ensureOnMain(getGitForCwd());
+  const projectRoot = process.cwd();
 
   // Transaction: micro-worktree isolation
   try {
@@ -286,13 +296,13 @@ export async function main(): Promise<void> {
         // Update WU YAML (remove initiative field)
         const wuChanged = updateWUInWorktree(worktreePath, wuId, initId);
         if (wuChanged) {
-          files.push(WU_PATHS.WU(wuId));
+          files.push(resolveWuRelPath(wuId, projectRoot));
         }
 
         // Update Initiative YAML (remove WU from wus list)
         const initChanged = updateInitiativeInWorktree(worktreePath, initId, wuId);
         if (initChanged) {
-          files.push(INIT_PATHS.INITIATIVE(initId));
+          files.push(resolveInitiativeRelPath(initId, projectRoot));
         }
 
         // If no changes, this is idempotent (race condition handling)
@@ -301,7 +311,10 @@ export async function main(): Promise<void> {
           // Still need to return something for the commit
           return {
             commitMessage: INIT_COMMIT_FORMATS.UNLINK_WU(wuId, initId),
-            files: [WU_PATHS.WU(wuId), INIT_PATHS.INITIATIVE(initId)],
+            files: [
+              resolveWuRelPath(wuId, projectRoot),
+              resolveInitiativeRelPath(initId, projectRoot),
+            ],
           };
         }
 
@@ -318,7 +331,7 @@ export async function main(): Promise<void> {
     console.log(`  Initiative: ${initId}`);
     console.log(`\nNext steps:`);
     console.log(`  - View initiative status: pnpm initiative:status ${initId}`);
-    console.log(`  - View WU: cat ${WU_PATHS.WU(wuId)}`);
+    console.log(`  - View WU: cat ${resolveWuRelPath(wuId, projectRoot)}`);
   } catch (error) {
     if (error instanceof Error && isRetryExhaustionError(error)) {
       die(formatRetryExhaustionError(error, wuId, initId));

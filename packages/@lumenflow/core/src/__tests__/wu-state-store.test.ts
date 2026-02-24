@@ -21,8 +21,8 @@
  * - isLockStale(), acquireLock(), releaseLock(), repairStateFile()
  */
 
-import { mkdtemp, rm, writeFile, mkdir, readFile } from 'node:fs/promises';
-import { existsSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
+import { mkdtemp, rm, writeFile, readFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { tmpdir, hostname } from 'node:os';
 import path from 'node:path';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -510,73 +510,6 @@ describe('WU State Store - Core Operations (WU-1102)', () => {
 
       expect(store.getWUState('WU-2006')).toBeUndefined();
       expect(store.getWUState('WU-2007')).toBeDefined();
-    });
-  });
-
-  describe('delegation cutover migration (WU-1674)', () => {
-    it('archives legacy spawn-era state and reboots from WU YAML', async () => {
-      const projectRoot = path.join(tempDir, 'project');
-      const stateDir = path.join(projectRoot, '.lumenflow', 'state');
-      const wuDir = path.join(projectRoot, 'docs', '04-operations', 'tasks', 'wu');
-
-      await mkdir(stateDir, { recursive: true });
-      await mkdir(wuDir, { recursive: true });
-
-      await writeFile(
-        path.join(stateDir, WU_EVENTS_FILE_NAME),
-        [
-          JSON.stringify({
-            type: 'claim',
-            wuId: 'WU-9000',
-            lane: 'Framework: Core',
-            title: 'Legacy claim',
-            timestamp: '2026-01-01T00:00:00Z',
-          }),
-          JSON.stringify({
-            type: 'spawn',
-            wuId: 'WU-9001',
-            parentWuId: 'WU-9000',
-            spawnId: 'spawn-legacy',
-            timestamp: '2026-01-01T00:01:00Z',
-          }),
-        ].join('\n') + '\n',
-      );
-      await writeFile(path.join(stateDir, 'spawn-registry.jsonl'), '{"legacy":true}\n');
-
-      await writeFile(
-        path.join(wuDir, 'WU-9001.yaml'),
-        [
-          'id: WU-9001',
-          'title: "Migrated WU"',
-          'lane: "Framework: Core"',
-          'status: in_progress',
-          'created: 2026-01-01',
-        ].join('\n'),
-      );
-
-      const migratedStore = new WUStateStore(stateDir);
-      await migratedStore.load();
-
-      const markerPath = path.join(stateDir, '.delegation-cutover-done');
-      expect(existsSync(markerPath)).toBe(true);
-
-      const archiveRoot = path.join(stateDir, 'archive');
-      const archiveEntries = readdirSync(archiveRoot);
-      expect(archiveEntries.length).toBeGreaterThan(0);
-
-      const archiveDir = path.join(archiveRoot, archiveEntries[0]);
-      expect(existsSync(path.join(archiveDir, WU_EVENTS_FILE_NAME))).toBe(true);
-      expect(existsSync(path.join(archiveDir, 'spawn-registry.jsonl'))).toBe(true);
-
-      expect(existsSync(path.join(stateDir, 'spawn-registry.jsonl'))).toBe(false);
-      expect(existsSync(path.join(stateDir, 'delegation-registry.jsonl'))).toBe(true);
-
-      const migratedEvents = await readFile(path.join(stateDir, WU_EVENTS_FILE_NAME), 'utf-8');
-      expect(migratedEvents).toContain('"type":"claim"');
-      expect(migratedEvents).not.toContain('"type":"spawn"');
-
-      const state = migratedStore.getWUState('WU-9001');
-      expect(state?.status).toBe('in_progress');
     });
   });
 

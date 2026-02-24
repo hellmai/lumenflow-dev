@@ -491,24 +491,6 @@ export function validateTestPathsRequired(wu: WUDoneValidationDoc) {
 }
 
 /**
- * WU-2310: Allowed path patterns for documentation WUs.
- * Mirrors the patterns in gates-pre-commit.ts gateDocsOnlyPathEnforcement()
- * to enable early validation at preflight (before transaction starts).
- *
- * @constant {RegExp[]}
- */
-const DOCS_ONLY_ALLOWED_PATTERNS = [
-  /^memory-bank\//i,
-  /^docs\//i,
-  /\.md$/i,
-  /^\.lumenflow\/stamps\//i,
-  /^\.claude\//i,
-  /^ai\//i,
-  /^README\.md$/i,
-  /^CLAUDE\.md$/i,
-];
-
-/**
  * WU-2310: Check if a path is allowed for documentation WUs.
  *
  * @param {string} filePath - File path to check
@@ -516,7 +498,14 @@ const DOCS_ONLY_ALLOWED_PATTERNS = [
  */
 function isAllowedDocsPath(filePath: string): boolean {
   if (!filePath || typeof filePath !== 'string') return false;
-  return DOCS_ONLY_ALLOWED_PATTERNS.some((pattern) => pattern.test(filePath));
+  const normalized = filePath.replace(/\\/g, '/').trim();
+  if (normalized.length === 0) return false;
+
+  if (normalized.startsWith('.lumenflow/stamps/')) {
+    return true;
+  }
+
+  return isDocumentationPath(normalized);
 }
 
 /**
@@ -576,13 +565,11 @@ Fix options:
      pnpm wu:edit --id ${id} --type engineering
 
   2. Update code_paths to only include documentation files:
-     pnpm wu:edit --id ${id} --code-paths "docs/..." "*.md"
+     pnpm wu:edit --id ${id} --code-paths "<docs-dir>/..." "*.md"
 
 Allowed paths for documentation WUs:
-  - docs/
-  - ai/
-  - .claude/
-  - memory-bank/
+  - configured docs-only prefixes from workspace.yaml software_delivery.directories
+    (docs, ai, claude, memoryBank)
   - .lumenflow/stamps/
   - *.md files
 

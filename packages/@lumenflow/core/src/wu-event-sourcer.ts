@@ -7,20 +7,17 @@
  * Handles event sourcing operations for WU lifecycle:
  * - Loading and replaying events from JSONL file
  * - Appending new events with validation
- * - Delegation cutover migration (delegated to wu-delegation-cutover.ts)
  *
  * Single responsibility: event file I/O and replay.
  *
  * @see {@link ./wu-state-store.ts} - Facade that delegates to this service
  * @see {@link ./wu-state-indexer.ts} - Applies events to in-memory state
- * @see {@link ./wu-delegation-cutover.ts} - Legacy migration logic
  */
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { validateWUEvent, type WUEvent } from './wu-state-schema.js';
 import type { WUStateIndexer } from './wu-state-indexer.js';
-import { runDelegationCutoverIfNeeded } from './wu-delegation-cutover.js';
 import { getErrorMessage } from './error-handler.js';
 
 /**
@@ -47,8 +44,7 @@ function getErrorCode(error: unknown): string | null {
  * WU Event Sourcer
  *
  * Manages event file I/O: loading events from JSONL, replaying them
- * into a WUStateIndexer, appending new validated events, and running
- * the delegation cutover migration on first load.
+ * into a WUStateIndexer and appending new validated events.
  */
 export class WUEventSourcer {
   private readonly baseDir: string;
@@ -80,8 +76,6 @@ export class WUEventSourcer {
    */
   async load(): Promise<void> {
     this.indexer.clear();
-
-    await runDelegationCutoverIfNeeded(this.baseDir, this.eventsFilePath);
 
     let content: string;
     try {

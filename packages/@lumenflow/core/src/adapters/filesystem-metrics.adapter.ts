@@ -6,7 +6,7 @@
  *
  * Hexagonal Architecture - Adapter (Infrastructure Layer)
  * Implements MetricsCollector port by reading from filesystem:
- * - WU YAML files (docs/04-operations/tasks/wu/)
+ * - WU YAML files (configured `directories.wuDir`)
  * - status.md (active/blocked WUs)
  * - telemetry files (.lumenflow/telemetry/)
  *

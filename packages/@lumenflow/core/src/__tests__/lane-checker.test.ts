@@ -65,6 +65,17 @@ function writeWorkspaceConfig(configPath: string, config: Record<string, unknown
   writeFileSync(configPath, stringifyYAML(workspace));
 }
 
+function withArc42Directories(config: Record<string, unknown>): Record<string, unknown> {
+  return {
+    directories: {
+      wuDir: 'docs/04-operations/tasks/wu',
+      statusPath: 'docs/04-operations/tasks/status.md',
+      backlogPath: 'docs/04-operations/tasks/backlog.md',
+    },
+    ...config,
+  };
+}
+
 describe('lane-checker WIP justification', () => {
   let testBaseDir: string;
   let configPath: string;
@@ -102,7 +113,7 @@ describe('lane-checker WIP justification', () => {
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1 }],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       const result = checkWipJustification(TEST_LANE_FRAMEWORK_CORE, { configPath });
 
@@ -123,7 +134,7 @@ describe('lane-checker WIP justification', () => {
           ],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       const result = checkWipJustification(TEST_LANE_CONTENT_DOCS, { configPath });
 
@@ -139,7 +150,7 @@ describe('lane-checker WIP justification', () => {
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2 }],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       const result = checkWipJustification(TEST_LANE_FRAMEWORK_CORE, { configPath });
 
@@ -155,7 +166,7 @@ describe('lane-checker WIP justification', () => {
           definitions: [{ name: TEST_LANE_OPS_INFRA, wip_limit: 3 }],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       const result = checkWipJustification(TEST_LANE_OPS_INFRA, { configPath });
 
@@ -170,7 +181,7 @@ describe('lane-checker WIP justification', () => {
           ],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       const result = checkWipJustification(TEST_LANE_FRAMEWORK_CORE, { configPath });
 
@@ -183,7 +194,7 @@ describe('lane-checker WIP justification', () => {
       const config = {
         lanes: [{ name: TEST_LANE_FRAMEWORK, wip_limit: 2 }],
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       const result = checkWipJustification(TEST_LANE_FRAMEWORK, { configPath });
 
@@ -199,7 +210,7 @@ describe('lane-checker WIP justification', () => {
           business: [{ name: TEST_LANE_CONTENT, wip_limit: 1 }],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       const result = checkWipJustification(TEST_LANE_FRAMEWORK, { configPath });
 
@@ -224,7 +235,7 @@ describe('lane-checker WIP justification', () => {
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1 }],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       const result = checkWipJustification(TEST_LANE_NONEXISTENT, { configPath });
 
@@ -612,7 +623,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2, lock_policy: 'all' }],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       // Create WU files - one in_progress and one blocked
       createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
@@ -639,7 +650,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2 }],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       // Create WU files
       createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
@@ -662,7 +673,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2, lock_policy: 'active' }],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       // Create WU files - one in_progress and one blocked
       createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
@@ -686,7 +697,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1, lock_policy: 'active' }],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       // One in_progress WU
       createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
@@ -709,7 +720,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1, lock_policy: 'none' }],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       // Multiple WUs in the lane
       createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
@@ -730,7 +741,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 1, lock_policy: 'none' }],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       createWuFile(WU_IN_PROGRESS, TEST_LANE_FRAMEWORK_CORE, 'in_progress');
       createStatusFile([WU_IN_PROGRESS], []);
@@ -751,7 +762,7 @@ No completed items
           definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2, lock_policy: 'all' }],
         },
       };
-      writeWorkspaceConfig(configPath, config);
+      writeWorkspaceConfig(configPath, withArc42Directories(config));
 
       // Create status.md without Blocked section
       const content = `# Work Unit Status
@@ -770,6 +781,56 @@ No completed items
       const result = checkLaneFree(statusPath, TEST_LANE_FRAMEWORK_CORE, WU_NEW, { configPath });
 
       // Should work and only count in_progress (since no blocked section)
+      expect(result.error).toBeNull();
+      expect(result.currentCount).toBe(1);
+      expect(result.free).toBe(true);
+    });
+
+    it('should resolve project root for simple docs/tasks layout without fixed-depth assumptions', () => {
+      const config = {
+        lanes: {
+          definitions: [{ name: TEST_LANE_FRAMEWORK_CORE, wip_limit: 2, lock_policy: 'all' }],
+        },
+      };
+      writeWorkspaceConfig(configPath, config);
+
+      const simpleTasksDir = join(testBaseDir, 'docs', 'tasks');
+      const simpleWuDir = join(simpleTasksDir, TEST_WU_DIR_NAME);
+      const simpleStatusPath = join(simpleTasksDir, 'status.md');
+
+      mkdirSync(simpleWuDir, { recursive: true });
+      writeFileSync(
+        join(simpleWuDir, `${WU_IN_PROGRESS}.yaml`),
+        stringifyYAML({
+          id: WU_IN_PROGRESS,
+          title: `Test WU ${WU_IN_PROGRESS}`,
+          lane: TEST_LANE_FRAMEWORK_CORE,
+          status: 'in_progress',
+          type: 'feature',
+        }),
+      );
+      writeFileSync(
+        simpleStatusPath,
+        `# Work Unit Status
+
+## In Progress
+
+- [${WU_IN_PROGRESS} — Test WU](wu/${WU_IN_PROGRESS}.yaml)
+
+## Blocked
+
+No blocked items
+
+## Completed
+
+No completed items
+`,
+      );
+
+      const result = checkLaneFree(simpleStatusPath, TEST_LANE_FRAMEWORK_CORE, WU_NEW, {
+        configPath,
+      });
+
       expect(result.error).toBeNull();
       expect(result.currentCount).toBe(1);
       expect(result.free).toBe(true);

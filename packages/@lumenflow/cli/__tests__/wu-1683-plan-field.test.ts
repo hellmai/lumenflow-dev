@@ -47,7 +47,7 @@ describe('WU schema plan field (WU-1683)', () => {
     acceptance: ['Test criterion'],
     assigned_to: 'test@example.com',
     exposure: 'backend-only',
-    spec_refs: ['docs/04-operations/plans/WU-9999-plan.md'],
+    spec_refs: ['docs/plans/WU-9999-plan.md'],
   };
 
   it('should accept a WU with plan field set', () => {
@@ -122,7 +122,7 @@ describe('wu:create buildWUContent plan field (WU-1683)', () => {
     testPathsManual: ['Verify plan'],
     testPathsUnit: [],
     testPathsE2e: [],
-    specRefs: ['docs/04-operations/plans/WU-9999-plan.md'],
+    specRefs: ['docs/plans/WU-9999-plan.md'],
   };
 
   it('should include plan field when provided in opts', () => {

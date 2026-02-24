@@ -106,7 +106,13 @@ export async function claimBranchOnlyMode(ctx: UnsafeAny) {
       );
       finalTitle = updateResult.title || finalTitle;
       await addOrReplaceInProgressStatus(STATUS_PATH, id, finalTitle);
-      await removeFromReadyAndAddToInProgressBacklog(BACKLOG_PATH, id, finalTitle, args.lane);
+      await removeFromReadyAndAddToInProgressBacklog(
+        BACKLOG_PATH,
+        STATUS_PATH,
+        id,
+        finalTitle,
+        args.lane,
+      );
       const filesToAdd = [WU_PATH, STATUS_PATH, BACKLOG_PATH];
       // WU-1211: Progress initiative status if needed
       if (updateResult.initiative) {

@@ -13,12 +13,39 @@
  * @see tools/lib/wu-validator.ts - Original isTestFile, isMarkdownFile
  * @see tools/lib/code-path-validator.ts - Duplicated implementations
  */
+import { getConfig } from './lumenflow-config.js';
+
+function ensureTrailingSlash(pathValue: string): string {
+  const normalized = pathValue.replace(/\\/g, '/').trim();
+  if (!normalized) {
+    return normalized;
+  }
+  return normalized.endsWith('/') ? normalized : `${normalized}/`;
+}
 
 /**
- * Prefixes for paths that qualify as documentation-only.
- * @constant {string[]}
+ * Build docs-only path prefixes from workspace config.
+ *
+ * Kept lazy (function call, not module-level constant) so imports do not
+ * eagerly resolve config before caller context/cwd is established.
  */
-const DOCS_ONLY_PREFIXES = Object.freeze(['docs/', 'ai/', '.claude/', 'memory-bank/']);
+export function getDocsOnlyPrefixes(
+  options: {
+    projectRoot?: string;
+  } = {},
+): readonly string[] {
+  const directories = getConfig({ projectRoot: options.projectRoot }).directories;
+  const prefixes = [
+    directories.docs,
+    directories.ai,
+    directories.claude,
+    directories.memoryBank,
+  ]
+    .map(ensureTrailingSlash)
+    .filter((prefix) => prefix.length > 0);
+
+  return Object.freeze(Array.from(new Set(prefixes)));
+}
 
 /**
  * Root file patterns that qualify as docs-only.
@@ -96,8 +123,8 @@ export function isDocumentationPath(filePath: UnsafeAny) {
     return false;
   }
 
-  // Check docs-only prefixes (docs/, ai/, .claude/, memory-bank/)
-  for (const prefix of DOCS_ONLY_PREFIXES) {
+  // Check docs-only prefixes from config (docs/, ai/, .claude/, memory-bank/ by default)
+  for (const prefix of getDocsOnlyPrefixes()) {
     if (path.startsWith(prefix)) {
       return true;
     }
@@ -118,4 +145,4 @@ export function isDocumentationPath(filePath: UnsafeAny) {
 }
 
 // Export constants for external use
-export { DOCS_ONLY_PREFIXES, DOCS_ONLY_ROOT_FILES, TEST_FILE_PATTERNS };
+export { DOCS_ONLY_ROOT_FILES, TEST_FILE_PATTERNS };

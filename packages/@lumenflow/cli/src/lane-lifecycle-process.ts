@@ -15,7 +15,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
-import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
+import { WORKSPACE_CONFIG_FILE_NAME, getConfig } from '@lumenflow/core/config';
 import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
 import { CONFIG_FILES, FILE_SYSTEM, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { DEFAULT_LANE_DEFINITIONS, LANE_INFERENCE_TEMPLATE } from './init-templates.js';
@@ -407,12 +407,13 @@ function detectWorkspaceLanes(
     }
   }
 
-  // Always include Content: Documentation if docs/ exists
-  if (existsSync(path.join(projectRoot, 'docs'))) {
+  // Always include Content: Documentation if configured docs dir exists.
+  const docsDir = getConfig({ projectRoot }).directories.docs.replace(/\/+$/, '');
+  if (existsSync(path.join(projectRoot, docsDir))) {
     lanes.push({
       name: 'Content: Documentation',
       wip_limit: 1,
-      code_paths: ['docs/**', '*.md'],
+      code_paths: [`${docsDir}/**`, '*.md'],
     });
   }
 

@@ -15,7 +15,7 @@
  * Complements .claude/hooks/user-prompt-submit-hook (human agent protection).
  *
  * @see {@link .claude/hooks/user-prompt-submit-hook} - Agent blocking hook
- * @see {@link docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md} - Worktree discipline
+ * @see {@link config.directories.completeGuidePath} - Worktree discipline
  */
 
 import path from 'node:path';

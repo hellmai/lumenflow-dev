@@ -162,6 +162,7 @@ export { detectOrphanWorktrees, detectMissingTrackedWorktrees } from './orphan-d
 // Guards and validators
 // NOTE: Configuration added below
 export * from './dependency-guard.js';
+export { getDocsOnlyPrefixes, DOCS_ONLY_ROOT_FILES, TEST_FILE_PATTERNS } from './file-classifiers.js';
 export * from './stamp-utils.js';
 // Configuration
 export * from './lumenflow-config.js';

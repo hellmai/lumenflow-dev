@@ -1039,7 +1039,7 @@ export function validateWUCompleteness(wu: WUCompletenessInput): { warnings: str
   }
 
   // Check for spec_refs (features should link to plans/specs)
-  // WU-1062: Accepts both repo-relative paths (docs/04-operations/plans/) and
+  // WU-1062: Accepts both repo-relative paths (<configured plansDir>/) and
   // external paths (~/.lumenflow/plans/, $LUMENFLOW_HOME/plans/, lumenflow://plans/)
   if (type === 'feature') {
     const specRefs = wu.spec_refs as { length?: number } | undefined;

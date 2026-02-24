@@ -86,7 +86,7 @@ describe('wu:done --docs-only flag (WU-1012)', () => {
         id: TEST_WU_ID,
         exposure: 'documentation',
         type: 'documentation',
-        code_paths: ['docs/04-operations/_frameworks/lumenflow/test.md'],
+        code_paths: ['docs/_frameworks/lumenflow/test.md'],
       };
 
       const result = validateDocsOnlyFlag(wu, { docsOnly: true });
@@ -143,7 +143,7 @@ describe('wu:done --docs-only flag (WU-1012)', () => {
       const wu = {
         id: TEST_WU_ID,
         type: 'documentation',
-        code_paths: ['docs/04-operations/_frameworks/lumenflow/playbook.md', 'CLAUDE.md'],
+        code_paths: ['docs/_frameworks/lumenflow/playbook.md', 'CLAUDE.md'],
       };
 
       const result = validateDocsOnlyFlag(wu, { docsOnly: true });

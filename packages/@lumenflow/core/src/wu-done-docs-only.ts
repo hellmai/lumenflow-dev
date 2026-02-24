@@ -6,7 +6,7 @@
  *
  * WU-1234 + WU-1255 + WU-1539: Detect docs-only WUs from code_paths.
  */
-import { DOCS_ONLY_PREFIXES, DOCS_ONLY_ROOT_FILES } from './file-classifiers.js';
+import { getDocsOnlyPrefixes, DOCS_ONLY_ROOT_FILES } from './file-classifiers.js';
 
 /**
  * Prefixes for paths that qualify as "docs-only" (no code changes).
@@ -35,6 +35,8 @@ export function detectDocsOnlyByPaths(codePaths: UnsafeAny) {
     return false;
   }
 
+  const docsOnlyPrefixes = getDocsOnlyPrefixes();
+
   return codePaths.every((filePath) => {
     if (!filePath || typeof filePath !== 'string') {
       return false;
@@ -46,7 +48,7 @@ export function detectDocsOnlyByPaths(codePaths: UnsafeAny) {
     }
 
     // Check docs-only prefixes (docs/, ai/, .claude/, memory-bank/)
-    for (const prefix of DOCS_ONLY_PREFIXES) {
+    for (const prefix of docsOnlyPrefixes) {
       if (path.startsWith(prefix)) {
         return true;
       }

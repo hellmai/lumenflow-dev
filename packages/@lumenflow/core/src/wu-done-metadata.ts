@@ -38,7 +38,6 @@ import { applyExposureDefaults } from './wu-done-validation.js';
 import { createFileNotFoundError, createValidationError } from './wu-done-errors.js';
 import { writeWU } from './wu-yaml.js';
 import { normalizeToDateString } from './date-utils.js';
-import { findProjectRoot } from './lumenflow-config.js';
 import { getErrorMessage } from './error-handler.js';
 
 const execAsync = promisify(execCallback);
@@ -74,7 +73,7 @@ interface CollectMetadataToTransactionParams extends ValidateMetadataFilesParams
   wuPath: string;
   stampPath: string;
   transaction: WUTransaction;
-  projectRoot?: string | null;
+  projectRoot: string;
 }
 
 interface GitAddAdapter {
@@ -253,7 +252,7 @@ export async function updateMetadataFiles({
  * @param {string} params.backlogPath - Path to backlog.md file
  * @param {string} params.stampPath - Path to stamp file
  * @param {WUTransaction} params.transaction - Transaction to add writes to
- * @param {string} [params.projectRoot] - Repository root for config/path resolution
+ * @param {string} params.projectRoot - Repository root for config/path resolution
  */
 // WU-1574: Made async for computeBacklogContent
 export async function collectMetadataToTransaction({
@@ -265,7 +264,7 @@ export async function collectMetadataToTransaction({
   backlogPath,
   stampPath,
   transaction,
-  projectRoot = null,
+  projectRoot,
 }: CollectMetadataToTransactionParams): Promise<void> {
   // WU-1369: Fail fast before UnsafeAny computations
   validateMetadataFilesExist({ statusPath, backlogPath });
@@ -294,11 +293,10 @@ export async function collectMetadataToTransaction({
     transaction.addWrite(wuEventsUpdate.eventsPath, wuEventsUpdate.content, 'wu-events.jsonl');
   }
 
-  const resolvedProjectRoot = projectRoot ?? findProjectRoot(path.dirname(backlogPath));
   const initiativeSyncWrite = computeInitiativeSyncWriteOnWUComplete({
     wuId: id,
     wuDoc: doc,
-    projectRoot: resolvedProjectRoot,
+    projectRoot,
   });
   if (initiativeSyncWrite) {
     transaction.addWrite(

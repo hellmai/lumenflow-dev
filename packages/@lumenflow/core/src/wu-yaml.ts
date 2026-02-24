@@ -26,16 +26,19 @@ import { createWuPaths } from './wu-paths.js';
  *
  * @example
  * import { readWU, writeWU, appendNote } from './lib/wu-yaml.js';
+ * import { createWuPaths } from './wu-paths.js';
+ *
+ * const wuPaths = createWuPaths();
  *
  * // Read WU
- * const doc = readWU('docs/04-operations/tasks/wu/WU-123.yaml', 'WU-123');
+ * const doc = readWU(wuPaths.WU('WU-123'), 'WU-123');
  *
  * // Modify doc
  * doc.status = 'in_progress';
  * appendNote(doc, 'Started work on this WU');
  *
  * // Write back
- * writeWU('docs/04-operations/tasks/wu/WU-123.yaml', doc);
+ * writeWU(wuPaths.WU('WU-123'), doc);
  */
 
 /**

@@ -1340,7 +1340,7 @@ describe('Wave-1 parity MCP tools (WU-1482)', () => {
     await stateBootstrapTool.execute({
       execute: true,
       force: true,
-      wu_dir: 'docs/04-operations/tasks/wu',
+      wu_dir: 'docs/tasks/wu',
       state_dir: '.lumenflow/state',
     });
     expect(mockExecuteViaPack).toHaveBeenNthCalledWith(
@@ -1349,7 +1349,7 @@ describe('Wave-1 parity MCP tools (WU-1482)', () => {
       expect.objectContaining({
         execute: true,
         force: true,
-        wu_dir: 'docs/04-operations/tasks/wu',
+        wu_dir: 'docs/tasks/wu',
         state_dir: '.lumenflow/state',
       }),
       expect.objectContaining({

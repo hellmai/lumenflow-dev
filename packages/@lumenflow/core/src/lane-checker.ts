@@ -15,7 +15,6 @@ import { getSubLanesForParent } from './lane-inference.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { isInProgressHeader, WU_LINK_PATTERN } from './constants/backlog-patterns.js';
 import { CONFIG_FILES, STRING_LITERALS } from './wu-constants.js';
-import { WU_PATHS } from './wu-paths.js';
 import { findProjectRoot, getConfig, WORKSPACE_CONFIG_FILE_NAME } from './lumenflow-config.js';
 import { WORKSPACE_V2_KEYS } from './config-contract.js';
 import type { LockPolicy } from './lumenflow-config-schema.js';
@@ -677,7 +676,7 @@ function extractBlockedSection(lines: string[]): { section: string } {
 function checkWuLaneMatch(
   activeWuid: string,
   wuid: string,
-  projectRoot: string,
+  wuDir: string,
   targetLane: string,
 ): string | null {
   // Skip if it's the same WU we're trying to claim
@@ -685,7 +684,7 @@ function checkWuLaneMatch(
     return null;
   }
 
-  const wuPath = path.join(projectRoot, WU_PATHS.WU(activeWuid));
+  const wuPath = path.join(wuDir, `${activeWuid}.yaml`);
 
   if (!existsSync(wuPath)) {
     console.warn(
@@ -724,7 +723,7 @@ function checkWuLaneMatch(
 function collectInProgressWUsForLane(
   matches: RegExpMatchArray[],
   wuid: string,
-  projectRoot: string,
+  wuDir: string,
   targetLane: string,
 ): string[] {
   const inProgressWUs: string[] = [];
@@ -734,7 +733,7 @@ function collectInProgressWUsForLane(
     if (!activeWuid) {
       continue;
     }
-    const matchedWu = checkWuLaneMatch(activeWuid, wuid, projectRoot, targetLane);
+    const matchedWu = checkWuLaneMatch(activeWuid, wuid, wuDir, targetLane);
     if (matchedWu) {
       inProgressWUs.push(matchedWu);
     }
@@ -747,14 +746,14 @@ function collectInProgressWUsForLane(
  * WU-1324: Extract WU IDs from a section's WU links and filter by target lane
  * @param section - Section content from status.md
  * @param wuid - WU ID being claimed (excluded from results)
- * @param projectRoot - Project root path
+ * @param wuDir - Absolute path to configured WU directory
  * @param targetLane - Target lane name (normalized lowercase)
  * @returns Array of WU IDs in the target lane
  */
 function extractWUsFromSection(
   section: string,
   wuid: string,
-  projectRoot: string,
+  wuDir: string,
   targetLane: string,
 ): string[] {
   if (!section || section.includes(NO_ITEMS_MARKER)) {
@@ -769,7 +768,7 @@ function extractWUsFromSection(
     return [];
   }
 
-  return collectInProgressWUsForLane(matches, wuid, projectRoot, targetLane);
+  return collectInProgressWUsForLane(matches, wuid, wuDir, targetLane);
 }
 
 /**
@@ -822,18 +821,20 @@ export function checkLaneFree(
       return { free: false, occupiedBy: null, error };
     }
 
-    // Get project root from statusPath (docs/04-operations/tasks/status.md)
-    const projectRoot = path.dirname(path.dirname(path.dirname(path.dirname(statusPath))));
+    // Resolve from statusPath location (config-driven, no fixed-depth path assumptions).
+    const resolvedStatusPath = path.resolve(statusPath);
+    const projectRoot = findProjectRoot(path.dirname(resolvedStatusPath));
+    const wuDir = path.join(projectRoot, getConfig({ projectRoot }).directories.wuDir);
     const targetLane = lane.toString().trim().toLowerCase();
 
     // Collect in_progress WUs
-    const inProgressWUs = extractWUsFromSection(inProgressSection, wuid, projectRoot, targetLane);
+    const inProgressWUs = extractWUsFromSection(inProgressSection, wuid, wuDir, targetLane);
 
     // WU-1324: If policy is 'all', also count blocked WUs
     let blockedWUs: string[] = [];
     if (lockPolicy === 'all') {
       const { section: blockedSection } = extractBlockedSection(lines);
-      blockedWUs = extractWUsFromSection(blockedSection, wuid, projectRoot, targetLane);
+      blockedWUs = extractWUsFromSection(blockedSection, wuid, wuDir, targetLane);
     }
 
     // WU-1324: Calculate total count based on policy

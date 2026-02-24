@@ -8,9 +8,11 @@ created: 2026-02-24
 code_paths:
   - packages/@lumenflow/core/src
   - packages/@lumenflow/cli/src
-  - packages/@lumenflow/core/src/__tests__
-  - packages/@lumenflow/cli/src/__tests__
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding
+  - packages/@lumenflow/agent/__tests__
+  - packages/@lumenflow/kernel/src/__tests__
+  - packages/@lumenflow/mcp/src/__tests__
+  - docs/04-operations/_frameworks/lumenflow
+  - apps/docs/src/content/docs/packs/software-delivery
 tests:
   manual:
     - Run rg scan to confirm no runtime fallback logic remains for docs layout path discovery

@@ -604,7 +604,7 @@ describe('Initiative MCP tools (WU-1424)', () => {
 
       const result = await initiativePlanTool.execute({
         initiative: 'INIT-001',
-        plan: 'docs/04-operations/plans/init-001-plan.md',
+        plan: 'docs/plans/init-001-plan.md',
       });
 
       expect(result.success).toBe(true);
@@ -612,7 +612,7 @@ describe('Initiative MCP tools (WU-1424)', () => {
         'initiative:plan',
         expect.objectContaining({
           initiative: 'INIT-001',
-          plan: 'docs/04-operations/plans/init-001-plan.md',
+          plan: 'docs/plans/init-001-plan.md',
         }),
         expect.objectContaining({
           fallback: expect.objectContaining({
@@ -621,7 +621,7 @@ describe('Initiative MCP tools (WU-1424)', () => {
               '--initiative',
               'INIT-001',
               '--plan',
-              'docs/04-operations/plans/init-001-plan.md',
+              'docs/plans/init-001-plan.md',
             ]),
           }),
         }),

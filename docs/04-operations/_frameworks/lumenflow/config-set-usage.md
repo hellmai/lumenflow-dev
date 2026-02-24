@@ -140,3 +140,13 @@ Like `lane:edit`, `config:set` uses the micro-worktree pattern (WU-1262) to comm
 - Changes are committed in an isolated temporary worktree
 - Push failures are retried with rebase (race-safe)
 - The main checkout is never directly modified
+
+## Path Resolution Invariant
+
+For runtime code, treat `workspace.yaml` as the only path source of truth:
+
+- Resolve paths from `software_delivery.directories.*` (for example via `createWuPaths()` or `getConfig()`).
+- Do not derive sibling paths from other paths (for example `dirname(backlogPath)/status.md`).
+- Do not assume fixed depth (for example repeated `dirname()` calls from `statusPath`).
+
+This keeps layouts fully configurable (`simple`, `arc42`, or custom) without hidden coupling.

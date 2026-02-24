@@ -114,10 +114,7 @@ export interface TemplateContext {
 /** WU-1430: Use centralized constants for template paths */
 const MANIFEST_PATH = LUMENFLOW_PATHS.TEMPLATE_MANIFEST;
 const TEMPLATES_DIR = LUMENFLOW_PATHS.DELEGATION_PROMPT_DIR;
-const TEMPLATE_SUBDIRS = Object.freeze({
-  CURRENT: 'delegation-prompt',
-  LEGACY: 'spawn-prompt',
-});
+const TEMPLATE_SUBDIR = 'delegation-prompt';
 
 /**
  * Validate a template entry from the manifest.
@@ -319,11 +316,7 @@ export function loadTemplate(templatePath: string): LoadedTemplate {
  *
  * Override resolution order:
  * 1. .lumenflow/templates.{client}/delegation-prompt/{template}.md (highest priority)
- * 2. .lumenflow/templates/delegation-prompt/{template}.md (fallback)
- *
- * Compatibility fallback (WU-1674 cutover):
- * - If delegation-prompt directories are missing, loader reads legacy spawn-prompt
- *   directories to avoid hard breaks during phased template migration.
+ * 2. .lumenflow/templates/delegation-prompt/{template}.md
  *
  * @param baseDir - Project root directory
  * @param clientName - Client name for overrides (e.g., 'claude', 'cursor')
@@ -335,32 +328,20 @@ export function loadTemplatesWithOverrides(
 ): Map<string, LoadedTemplate> {
   const templates = new Map<string, LoadedTemplate>();
   const baseTemplatesDir = join(baseDir, TEMPLATES_DIR);
-  const legacyBaseTemplatesDir = join(
-    baseDir,
-    `${LUMENFLOW_PATHS.BASE}/templates/${TEMPLATE_SUBDIRS.LEGACY}`,
-  );
   // WU-1430: Construct client templates path from constants
   const clientTemplatesDir = join(
     baseDir,
-    `${LUMENFLOW_PATHS.BASE}/templates.${clientName}/${TEMPLATE_SUBDIRS.CURRENT}`,
-  );
-  const legacyClientTemplatesDir = join(
-    baseDir,
-    `${LUMENFLOW_PATHS.BASE}/templates.${clientName}/${TEMPLATE_SUBDIRS.LEGACY}`,
+    `${LUMENFLOW_PATHS.BASE}/templates.${clientName}/${TEMPLATE_SUBDIR}`,
   );
 
-  // Load base templates first (prefer delegation-prompt, fallback to spawn-prompt)
+  // Load base templates first.
   if (existsSync(baseTemplatesDir)) {
     loadTemplatesFromDir(baseTemplatesDir, templates);
-  } else if (existsSync(legacyBaseTemplatesDir)) {
-    loadTemplatesFromDir(legacyBaseTemplatesDir, templates);
   }
 
-  // Override with client-specific templates (prefer delegation-prompt, fallback to spawn-prompt)
+  // Override with client-specific templates.
   if (existsSync(clientTemplatesDir)) {
     loadTemplatesFromDir(clientTemplatesDir, templates);
-  } else if (existsSync(legacyClientTemplatesDir)) {
-    loadTemplatesFromDir(legacyClientTemplatesDir, templates);
   }
 
   return templates;

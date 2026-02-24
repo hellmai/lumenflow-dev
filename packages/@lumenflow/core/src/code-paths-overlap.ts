@@ -17,30 +17,15 @@ import { parseYAML } from './wu-yaml.js';
 import fg from 'fast-glob';
 import micromatch from 'micromatch';
 import { STATUS_SECTIONS, BACKLOG_SECTIONS, STRING_LITERALS } from './wu-constants.js';
-import { GIT_DIRECTORY_NAME, WORKSPACE_CONFIG_FILE_NAME } from './config-contract.js';
+import { GIT_DIRECTORY_NAME } from './config-contract.js';
 import { createWuPaths } from './wu-paths.js';
+import { findProjectRoot } from './lumenflow-config.js';
 
 const RECURSIVE_GIT_DIR_GLOB = `${GIT_DIRECTORY_NAME}/**`;
 
 function resolveProjectRootFromStatusPath(statusPath: string): string {
   const absoluteStatusPath = path.resolve(statusPath);
-  let current = path.dirname(absoluteStatusPath);
-
-  while (true) {
-    if (existsSync(path.join(current, WORKSPACE_CONFIG_FILE_NAME))) {
-      return current;
-    }
-    if (path.basename(current) === 'docs') {
-      return path.dirname(current);
-    }
-    const parent = path.dirname(current);
-    if (parent === current) {
-      break;
-    }
-    current = parent;
-  }
-
-  return process.cwd();
+  return findProjectRoot(path.dirname(absoluteStatusPath));
 }
 
 /**
@@ -139,7 +124,8 @@ export function checkOverlap(claimingPaths: UnsafeAny, existingPaths: UnsafeAny)
  * }} List of conflicting WUs and whether to block claim
  *
  * @example
- * detectConflicts('docs/04-operations/tasks/status.md', ['apps/**'], 'WU-901')
+ * const statusPath = createWuPaths().STATUS();
+ * detectConflicts(statusPath, ['apps/**'], 'WU-901')
  * // => { conflicts: [{wuid: 'WU-900', overlaps: ['apps/web/foo.ts']}], hasBlocker: true }
  */
 export function detectConflicts(

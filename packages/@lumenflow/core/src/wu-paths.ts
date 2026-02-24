@@ -14,21 +14,6 @@ import { getProjectRoot as getProjectRootFromConstants, toKebab } from './wu-dom
 import { getConfig, getProjectRoot as getProjectRootFromConfig } from './lumenflow-config.js';
 
 /**
- * Directory depth constants for path resolution.
- * These define how many levels deep each standard file is from repo root.
- */
-const _PATH_DEPTHS = {
-  /** backlog.md is 4 levels deep: docs/04-operations/tasks/backlog.md */
-  BACKLOG: 4,
-  /** status.md is 4 levels deep: docs/04-operations/tasks/status.md */
-  STATUS: 4,
-  /** WU YAML files are 5 levels deep: docs/04-operations/tasks/wu/{id}.yaml */
-  WU_YAML: 5,
-  /** State store is 3 levels deep: .lumenflow/state/wu-events.jsonl */
-  STATE_STORE: 3,
-};
-
-/**
  * Resolve repo root from an absolute file path by traversing up N directory levels.
  *
  * @param absolutePath - Absolute path to a file within the repo
@@ -47,12 +32,11 @@ export function resolveRepoRoot(absolutePath: string, depth: number): string {
  * Compute the directory depth of a relative path (number of path segments).
  *
  * WU-1523: Used to dynamically determine backlog depth from config
- * instead of using hardcoded PATH_DEPTHS constants. This ensures
- * getStateStoreDirFromBacklog works correctly for all docs structures
- * (arc42: docs/04-operations/tasks/backlog.md, simple: docs/tasks/backlog.md, etc.)
+ * instead of fixed depth assumptions. This ensures getStateStoreDirFromBacklog
+ * works correctly for configured docs structures.
  *
- * @param relativePath - Relative file path (e.g., 'docs/tasks/backlog.md')
- * @returns Number of path segments (e.g., 3 for 'docs/tasks/backlog.md')
+ * @param relativePath - Relative file path (e.g., '<configured backlogPath>')
+ * @returns Number of path segments for the configured path
  */
 function computePathDepth(relativePath: string): number {
   // Normalize separators and split on path separator
@@ -64,7 +48,7 @@ function computePathDepth(relativePath: string): number {
  * Get the state store directory path from backlog.md path.
  *
  * WU-1523: Now computes depth dynamically from configured backlog path
- * instead of using a hardcoded depth constant. This fixes empty backlog.md
+ * instead of using fixed depth values. This fixes empty backlog.md
  * and status.md rendering in scaffolded projects with non-default docs structures.
  *
  * @param backlogPath - Absolute path to backlog.md

@@ -14,6 +14,18 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
 import { fileURLToPath } from 'node:url';
+import { getDefaultConfig } from '@lumenflow/core';
+
+function getOnboardingDir(targetDir: string): string {
+  return path.join(targetDir, getDefaultConfig().directories.onboardingDir);
+}
+
+function getQuickRefRelativePath(): string {
+  return path
+    .join(getDefaultConfig().directories.onboardingDir, 'quick-ref-commands.md')
+    .split(path.sep)
+    .join('/');
+}
 
 describe('lumenflow docs:sync command (WU-1083)', () => {
   let tempDir: string;
@@ -36,15 +48,7 @@ describe('lumenflow docs:sync command (WU-1083)', () => {
 
       const result = await syncAgentDocs(tempDir, { force: false });
 
-      const onboardingDir = path.join(
-        tempDir,
-        'docs',
-        '04-operations',
-        '_frameworks',
-        'lumenflow',
-        'agent',
-        'onboarding',
-      );
+      const onboardingDir = getOnboardingDir(tempDir);
 
       expect(fs.existsSync(path.join(onboardingDir, 'quick-ref-commands.md'))).toBe(true);
       expect(fs.existsSync(path.join(onboardingDir, 'wu-create-checklist.md'))).toBe(true);
@@ -55,15 +59,7 @@ describe('lumenflow docs:sync command (WU-1083)', () => {
       const { syncAgentDocs } = await import('../src/docs-sync.js');
 
       // Create existing doc
-      const onboardingDir = path.join(
-        tempDir,
-        'docs',
-        '04-operations',
-        '_frameworks',
-        'lumenflow',
-        'agent',
-        'onboarding',
-      );
+      const onboardingDir = getOnboardingDir(tempDir);
       fs.mkdirSync(onboardingDir, { recursive: true });
       const existingContent = '# Custom Content';
       fs.writeFileSync(path.join(onboardingDir, 'quick-ref-commands.md'), existingContent);
@@ -78,15 +74,7 @@ describe('lumenflow docs:sync command (WU-1083)', () => {
       const { syncAgentDocs } = await import('../src/docs-sync.js');
 
       // Create existing doc
-      const onboardingDir = path.join(
-        tempDir,
-        'docs',
-        '04-operations',
-        '_frameworks',
-        'lumenflow',
-        'agent',
-        'onboarding',
-      );
+      const onboardingDir = getOnboardingDir(tempDir);
       fs.mkdirSync(onboardingDir, { recursive: true });
       const existingContent = '# Custom Content';
       fs.writeFileSync(path.join(onboardingDir, 'quick-ref-commands.md'), existingContent);
@@ -102,23 +90,13 @@ describe('lumenflow docs:sync command (WU-1083)', () => {
       const { syncAgentDocs } = await import('../src/docs-sync.js');
 
       // Create one existing doc
-      const onboardingDir = path.join(
-        tempDir,
-        'docs',
-        '04-operations',
-        '_frameworks',
-        'lumenflow',
-        'agent',
-        'onboarding',
-      );
+      const onboardingDir = getOnboardingDir(tempDir);
       fs.mkdirSync(onboardingDir, { recursive: true });
       fs.writeFileSync(path.join(onboardingDir, 'quick-ref-commands.md'), '# Existing');
 
       const result = await syncAgentDocs(tempDir, { force: false });
 
-      expect(result.skipped).toContain(
-        'docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
-      );
+      expect(result.skipped).toContain(getQuickRefRelativePath());
       expect(result.created.length).toBeGreaterThan(0);
     });
   });
@@ -212,15 +190,7 @@ describe('lumenflow docs:sync command (WU-1083)', () => {
       const result = await syncAgentDocs(tempDir, { force: false });
 
       // Verify content comes from templates (not hardcoded)
-      const onboardingDir = path.join(
-        tempDir,
-        'docs',
-        '04-operations',
-        '_frameworks',
-        'lumenflow',
-        'agent',
-        'onboarding',
-      );
+      const onboardingDir = getOnboardingDir(tempDir);
 
       const quickRefContent = fs.readFileSync(
         path.join(onboardingDir, 'quick-ref-commands.md'),

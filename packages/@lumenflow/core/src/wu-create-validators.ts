@@ -21,6 +21,7 @@
 import { isExternalPath, normalizeSpecRef } from './lumenflow-home.js';
 import { PATH_LITERALS } from './wu-constants.js';
 import { createWuPaths } from './wu-paths.js';
+import { getConfig } from './lumenflow-config.js';
 
 /** Confidence threshold for showing suggestion (percentage) */
 const CONFIDENCE_THRESHOLD_LOW = 30;
@@ -172,7 +173,7 @@ export function validateLaneWithInference(
  * WU-1062: Validate spec_refs paths
  *
  * Accepts:
- * - Repo-relative paths: docs/04-operations/plans/WU-XXX-plan.md
+ * - Repo-relative paths: <configured plansDir>/WU-XXX-plan.md
  * - External paths: lumenflow://plans/WU-XXX-plan.md
  * - Tilde paths: ~/.lumenflow/plans/WU-XXX-plan.md
  * - Env var paths: $LUMENFLOW_HOME/plans/WU-XXX-plan.md
@@ -193,6 +194,7 @@ export function validateSpecRefs(specRefs: string[]): {
   }
 
   const plansDirHint = `${createWuPaths().PLANS_DIR().replace(/\/+$/, '')}/`;
+  const docsDirHint = `${getConfig().directories.docs.replace(/\/+$/, '')}/`;
 
   for (const ref of specRefs) {
     // Check for empty refs
@@ -215,9 +217,9 @@ export function validateSpecRefs(specRefs: string[]): {
       continue;
     }
 
-    // Repo-relative paths should follow conventions (docs/ without ./ prefix)
+    // Repo-relative paths should follow conventions (<docsDir>/ without ./ prefix)
     const isValidRepoPath =
-      ref.startsWith(plansDirHint) || ref.startsWith('docs/') || ref.endsWith('.md');
+      ref.startsWith(plansDirHint) || ref.startsWith(docsDirHint) || ref.endsWith('.md');
 
     if (!isValidRepoPath) {
       warnings.push(

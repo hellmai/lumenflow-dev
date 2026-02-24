@@ -27,15 +27,9 @@
 import path from 'node:path';
 import { WU_EVENTS_FILE_NAME } from './wu-state-store.js';
 import { LUMENFLOW_PATHS, DIRECTORIES, FILE_EXTENSIONS, STRING_LITERALS } from './wu-constants.js';
+import { getDocsOnlyPrefixes } from './file-classifiers.js';
 
 const POSIX = path.posix;
-
-const DOCS_ONLY_PREFIXES = Object.freeze([
-  DIRECTORIES.DOCS,
-  DIRECTORIES.AI,
-  DIRECTORIES.CLAUDE,
-  DIRECTORIES.MEMORY_BANK,
-]);
 
 const TOOLS_TESTS_PREFIX = `${POSIX.join(DIRECTORIES.TOOLS, '__tests__')}${STRING_LITERALS.SLASH}`;
 const STAMPS_PREFIX = `${LUMENFLOW_PATHS.STAMPS_DIR}${STRING_LITERALS.SLASH}`;
@@ -44,9 +38,10 @@ const WU_EVENTS_PATH = POSIX.join(LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME
 /**
  * Check if a file path is allowed for docs-only WUs
  * @param {string} filePath - The file path to validate
+ * @param {readonly string[]} docsOnlyPrefixes - Config-driven docs path prefixes
  * @returns {boolean} - True if the path is allowed
  */
-function isAllowedPath(filePath: UnsafeAny) {
+function isAllowedPath(filePath: UnsafeAny, docsOnlyPrefixes: readonly string[]) {
   if (!filePath) return false;
 
   if (filePath === WU_EVENTS_PATH) return true;
@@ -61,7 +56,7 @@ function isAllowedPath(filePath: UnsafeAny) {
 
   if (filePath.endsWith(FILE_EXTENSIONS.MARKDOWN)) return true;
 
-  for (const prefix of DOCS_ONLY_PREFIXES) {
+  for (const prefix of docsOnlyPrefixes) {
     if (filePath.startsWith(prefix)) {
       return true;
     }
@@ -76,9 +71,10 @@ function isAllowedPath(filePath: UnsafeAny) {
  * @returns {{valid: boolean, violations: string[]}} - Validation result
  */
 export function validateDocsOnly(stagedFiles: UnsafeAny) {
+  const docsOnlyPrefixes = getDocsOnlyPrefixes();
   const violations = [];
   for (const file of stagedFiles) {
-    if (!isAllowedPath(file)) {
+    if (!isAllowedPath(file, docsOnlyPrefixes)) {
       violations.push(file);
     }
   }

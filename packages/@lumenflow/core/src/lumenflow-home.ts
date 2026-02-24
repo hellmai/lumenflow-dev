@@ -133,7 +133,7 @@ export function getPlansDir(): string {
  * isExternalPath('$LUMENFLOW_HOME/plans/plan.md') // true
  * isExternalPath('lumenflow://plans/plan.md') // true
  * isExternalPath('/home/user/.lumenflow/plans/plan.md') // true
- * isExternalPath('docs/04-operations/plans/plan.md') // false
+ * isExternalPath('<configured plansDir>/plan.md') // false
  */
 export function isExternalPath(path: string): boolean {
   // Check for tilde-prefixed paths
@@ -177,8 +177,8 @@ export function isExternalPath(path: string): boolean {
  * // '/home/user/.lumenflow/plans/WU-1062-plan.md'
  *
  * @example
- * normalizeSpecRef('docs/04-operations/plans/plan.md')
- * // 'docs/04-operations/plans/plan.md' (unchanged)
+ * normalizeSpecRef('<configured plansDir>/plan.md')
+ * // '<configured plansDir>/plan.md' (unchanged)
  */
 export function normalizeSpecRef(specRef: string): string {
   // Handle lumenflow:// protocol

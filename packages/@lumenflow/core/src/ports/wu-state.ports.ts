@@ -60,7 +60,6 @@ export interface RepairResult {
  * - Loading events from JSONL storage
  * - Replaying events to rebuild in-memory state
  * - Appending new validated events
- * - Running delegation cutover migration
  */
 export interface IWuEventLog {
   /**

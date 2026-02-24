@@ -27,14 +27,14 @@ import { die } from './error-handler.js';
  *
  * @example
  * // All files staged - success
- * ensureStaged(['docs/file.md', 'tools/script.js']);
+ * ensureStaged(['<configured-doc-file>', 'tools/script.js']);
  *
  * // Directory prefix - matches all files under directory
- * ensureStaged(['docs/04-operations/']);
+ * ensureStaged(['<configured-doc-root>/']);
  *
  * // Missing files - throws error
- * ensureStaged(['docs/file1.md', 'docs/file2.md']);
- * // Error: Stage updates for: docs/file2.md
+ * ensureStaged(['<configured-doc-file-1>', '<configured-doc-file-2>']);
+ * // Error: Stage updates for: <configured-doc-file-2>
  */
 export function ensureStaged(paths: Array<string | null | undefined>) {
   const git = getGitForCwd();

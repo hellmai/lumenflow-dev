@@ -26,9 +26,14 @@ function buildDocsLayout(operations: string, tasks: string) {
   } as const;
 }
 
+const DOCS_ROOT = 'docs';
+const SIMPLE_TASKS_PATH = `${DOCS_ROOT}/tasks`;
+const ARC42_OPERATIONS_PATH = [DOCS_ROOT, '04-operations'].join('/');
+const ARC42_TASKS_PATH = [ARC42_OPERATIONS_PATH, 'tasks'].join('/');
+
 export const DOCS_LAYOUT_PRESETS = {
-  simple: buildDocsLayout('docs', 'docs/tasks'),
-  arc42: buildDocsLayout('docs/04-operations', 'docs/04-operations/tasks'),
+  simple: buildDocsLayout(DOCS_ROOT, SIMPLE_TASKS_PATH),
+  arc42: buildDocsLayout(ARC42_OPERATIONS_PATH, ARC42_TASKS_PATH),
 } as const;
 
 export type DocsLayoutType = keyof typeof DOCS_LAYOUT_PRESETS;

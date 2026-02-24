@@ -22,8 +22,9 @@ import { STRING_LITERALS } from './wu-constants.js';
  *
  * @example
  * import { moveBullet } from './lib/backlog-editor.js';
+ * import { createWuPaths } from './wu-paths.js';
  *
- * moveBullet('docs/04-operations/tasks/backlog.md', {
+ * moveBullet(createWuPaths().BACKLOG(), {
  *   fromSection: '## Ready',
  *   toSection: '## In Progress',
  *   bulletPattern: 'WU-123',

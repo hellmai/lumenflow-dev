@@ -27,10 +27,10 @@ vi.mock('@lumenflow/core/wu-id-generator', () => ({
 
 vi.mock('@lumenflow/core/wu-paths', () => ({
   WU_PATHS: {
-    WU_DIR: () => 'docs/04-operations/tasks/wu',
-    WU: (id: string) => `docs/04-operations/tasks/wu/${id}.yaml`,
-    BACKLOG: () => 'docs/04-operations/tasks/backlog.md',
-    STATUS: () => 'docs/04-operations/tasks/status.md',
+    WU_DIR: () => 'docs/tasks/wu',
+    WU: (id: string) => `docs/tasks/wu/${id}.yaml`,
+    BACKLOG: () => 'docs/tasks/backlog.md',
+    STATUS: () => 'docs/tasks/status.md',
     STAMPS_DIR: () => '.lumenflow/stamps',
     STAMP: (id: string) => `.lumenflow/stamps/${id}.done`,
   },
