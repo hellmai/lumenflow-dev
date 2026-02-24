@@ -8,7 +8,8 @@ created: 2026-02-24
 code_paths:
   - packages/@lumenflow/core/src/
 tests:
-  manual: []
+  manual:
+    - Run pnpm test --filter=@lumenflow/core and verify all tests pass after migration
   unit:
     - packages/@lumenflow/core/src/__tests__/error-pattern-guard.test.ts
   e2e: []
