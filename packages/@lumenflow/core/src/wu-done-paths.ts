@@ -11,13 +11,7 @@ import { access } from 'node:fs/promises';
 import { getGitForCwd } from './git-adapter.js';
 import { WU_PATHS, createWuPaths } from './wu-paths.js';
 import { parseYAML, readWU } from './wu-yaml.js';
-import {
-  CLAIMED_MODES,
-  EMOJI,
-  LOG_PREFIX,
-  STRING_LITERALS,
-  toKebab,
-} from './wu-constants.js';
+import { CLAIMED_MODES, EMOJI, LOG_PREFIX, STRING_LITERALS, toKebab } from './wu-constants.js';
 import { detectDocsOnlyByPaths } from './wu-done-docs-only.js';
 import { GIT_DIRECTORY_NAME, GIT_WORKTREES_SENTINEL } from './config-contract.js';
 

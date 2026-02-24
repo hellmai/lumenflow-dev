@@ -47,6 +47,7 @@ vi.mock('fs', async () => {
 
 vi.mock('@lumenflow/core/config', async () => {
   return {
+    GIT_DIRECTORY_NAME: '.git',
     WORKSPACE_CONFIG_FILE_NAME: 'workspace.yaml',
     findProjectRoot: vi.fn(() => TEST_PROJECT_ROOT),
     getConfig: vi.fn(),

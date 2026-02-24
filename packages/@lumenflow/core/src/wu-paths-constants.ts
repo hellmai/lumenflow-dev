@@ -105,7 +105,11 @@ export const BUILD_ARTIFACT_GLOBS = {
  * Centralized ignore globs for artifact cleanup.
  */
 const GIT_ARTIFACT_IGNORE_GLOB = `**/${GIT_DIRECTORY_NAME}/**`;
-export const BUILD_ARTIFACT_IGNORES = ['**/node_modules/**', GIT_ARTIFACT_IGNORE_GLOB, '**/.turbo/**'];
+export const BUILD_ARTIFACT_IGNORES = [
+  '**/node_modules/**',
+  GIT_ARTIFACT_IGNORE_GLOB,
+  '**/.turbo/**',
+];
 
 /**
  * Script file paths
