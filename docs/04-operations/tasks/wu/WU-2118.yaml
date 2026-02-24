@@ -2,7 +2,7 @@ id: WU-2118
 title: Migrate throw new Error() to createError() in mcp, memory, initiatives, agent, metrics (batch)
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -55,3 +55,11 @@ acceptance:
   - error-pattern-guard baseline for these packages decreases to 0
   - pnpm test --filter=@lumenflow/mcp --filter=@lumenflow/memory --filter=@lumenflow/initiatives
     --filter=@lumenflow/agent --filter=@lumenflow/metrics passes
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2118
+claimed_at: 2026-02-24T21:43:32.155Z
+baseline_main_sha: c8225d99b2e3b5550185d9536b60b5f14ed43220
+session_id: ce2669f4-e779-4cff-ba5e-de1afcc6715b
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T21:43:32.164Z

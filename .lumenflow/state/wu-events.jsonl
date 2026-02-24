@@ -2196,4 +2196,5 @@
 {"type":"complete","wuId":"WU-2121","timestamp":"2026-02-24T21:25:34.251Z"}
 {"type":"complete","wuId":"WU-2116","timestamp":"2026-02-24T21:38:23.526Z"}
 {"type":"claim","wuId":"WU-2117","timestamp":"2026-02-24T21:41:18.536Z","lane":"Framework: CLI WU Commands","title":"Migrate throw new Error() to createError() in @lumenflow/cli (batch)"}
+{"type":"claim","wuId":"WU-2118","timestamp":"2026-02-24T21:43:32.196Z","lane":"Framework: Core Lifecycle","title":"Migrate throw new Error() to createError() in mcp, memory, initiatives, agent, metrics (batch)"}
 {"type":"complete","wuId":"WU-2119","timestamp":"2026-02-24T21:52:33.359Z"}
