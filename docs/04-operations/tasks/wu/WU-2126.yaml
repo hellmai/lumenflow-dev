@@ -2,7 +2,7 @@ id: WU-2126
 title: Wire clearConfigCache() to config-mutating operations (wu:done, config:set)
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-24
 code_paths:
@@ -59,3 +59,6 @@ acceptance:
   - clearConfigCache() called after config:set completion
   - Integration test verifies config reads fresh values after cache-invalidating operations
   - pnpm test --filter=@lumenflow/cli --filter=@lumenflow/core passes
+locked: true
+completed_at: 2026-02-24T22:40:26.264Z
+completed: 2026-02-24
