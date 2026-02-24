@@ -2,7 +2,7 @@ id: WU-2114
 title: Extend path-literal-guard to ban raw file extension literals like .yaml .json .md
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -53,3 +53,6 @@ session_id: ac8abfc5-d758-4e57-9e91-6ed7de96a5e5
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-24T20:52:39.837Z
+locked: true
+completed_at: 2026-02-24T20:58:48.844Z
+completed: 2026-02-24

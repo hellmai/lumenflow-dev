@@ -37,7 +37,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2114 — Extend path-literal-guard to ban raw file extension literals like .yaml .json .md](wu/WU-2114.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1081,6 +1081,7 @@ sections:
 - [WU-2112 — Add optional AST guard preventing reintroduction of as any casts](wu/WU-2112.yaml)
 - [WU-2122 — Move hardcoded escalation email from wu-schema.ts to workspace.yaml](wu/WU-2122.yaml)
 - [WU-2115 — Add Zod schema validation to writeWU() before writing YAML](wu/WU-2115.yaml)
+- [WU-2114 — Extend path-literal-guard to ban raw file extension literals like .yaml .json .md](wu/WU-2114.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
