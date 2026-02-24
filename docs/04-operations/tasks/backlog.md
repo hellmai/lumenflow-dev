@@ -40,7 +40,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2113 — Extend path-literal-guard with ENV_VARS constant and ban raw LUMENFLOW\_ env var strings](wu/WU-2113.yaml) — Framework: Core Lifecycle
 - [WU-2112 — Add optional AST guard preventing reintroduction of as any casts](wu/WU-2112.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
@@ -1081,6 +1080,7 @@ sections:
 - [WU-2110 — Add ratcheting AST guard for UnsafeAny type alias usage](wu/WU-2110.yaml)
 - [WU-2123 — Deduplicate GateLogContext type defined in both gate-registry.ts and gates-utils.ts](wu/WU-2123.yaml)
 - [WU-2111 — Add AST guard banning throw new Error() in production code](wu/WU-2111.yaml)
+- [WU-2113 — Extend path-literal-guard with ENV_VARS constant and ban raw LUMENFLOW\_ env var strings](wu/WU-2113.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
