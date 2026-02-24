@@ -105,7 +105,6 @@ Reusable templates for WUs, PRs, etc.
 ## Related Documentation
 
 - **Root README:** See [/README.md](../README.md) for quickstart and tech stack overview
-- **Apps:** See [/apps/](../apps/) for GitHub App documentation
 
 ---
 

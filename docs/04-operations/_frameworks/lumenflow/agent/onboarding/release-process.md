@@ -1,8 +1,8 @@
 # LumenFlow Release Process
 
-**Last updated:** 2026-01-23
+**Last updated:** 2026-02-24
 
-This document covers the complete release process for LumenFlow, including versioning, npm publishing, documentation updates, and the GitHub App.
+This document covers the complete release process for LumenFlow, including versioning, npm publishing, and documentation updates.
 
 ---
 
@@ -14,7 +14,6 @@ LumenFlow has several components that need to stay in sync:
 | -------------- | ----------------------- | ----------------------------------- |
 | npm packages   | `packages/@lumenflow/*` | Auto via GitHub Actions on tag push |
 | Starlight docs | `apps/docs/`            | Manual via Vercel CLI               |
-| GitHub App     | `apps/github-app/`      | Auto via Vercel Git integration     |
 
 ---
 
@@ -251,39 +250,7 @@ vercel --prod
 ### Important Notes
 
 - **No private repo links**: Starlight docs are public; never link to `github.com/hellmai/lumenflow-dev`
-- **Link to GitHub App**: Use <https://github.com/apps/lumenflow-by-hellmai> for GitHub links
 - **Link to npm**: Use <https://www.npmjs.com/org/lumenflow> for package links
-
----
-
-## GitHub App
-
-The LumenFlow GitHub App provides workflow enforcement for teams.
-
-### Components
-
-- **App manifest**: `apps/github-app/app.yml`
-- **Webhook handler**: `apps/github-app/api/webhook.ts`
-- **Validation endpoints**: `apps/github-app/api/validate-token.ts`
-
-### Deployment
-
-The GitHub App is deployed **automatically** via Vercel Git integration when changes are pushed to `main`.
-
-- **Project**: `lumenflow-app` (ID: `prj_JKfcHVb4QjzAxdjCIJwaUf5PWusG`)
-- **URL**: <https://lumenflow-app.vercel.app>
-
-### Package Configuration
-
-The `apps/github-app/package.json` must have `"private": true` to prevent npm publish attempts.
-
-### Environment Variables (Vercel)
-
-| Variable                | Description                  |
-| ----------------------- | ---------------------------- |
-| `GITHUB_APP_ID`         | GitHub App ID                |
-| `GITHUB_PRIVATE_KEY`    | PEM private key for app auth |
-| `GITHUB_WEBHOOK_SECRET` | Webhook signature secret     |
 
 ---
 
@@ -353,19 +320,17 @@ If you need more control:
 
 - [ ] Verify npm packages accessible: `npm view @lumenflow/cli`
 - [ ] Verify docs updated: <https://lumenflow.dev>
-- [ ] Verify GitHub App functional (if changed)
 
 ---
 
 ## Keeping Components in Sync
 
-| Change Type      | npm           | Docs   | GitHub App   |
-| ---------------- | ------------- | ------ | ------------ |
-| Bug fix in CLI   | Tag + publish | Auto\* | No           |
-| New CLI command  | Tag + publish | Auto\* | No           |
-| Docs-only update | No            | Deploy | No           |
-| GitHub App fix   | No            | No     | Auto on push |
-| Full release     | Tag + publish | Deploy | Auto         |
+| Change Type      | npm           | Docs   |
+| ---------------- | ------------- | ------ |
+| Bug fix in CLI   | Tag + publish | Auto\* |
+| New CLI command  | Tag + publish | Auto\* |
+| Docs-only update | No            | Deploy |
+| Full release     | Tag + publish | Deploy |
 
 \* CLI/config reference docs regenerate automatically during `wu:done` when trigger files change. See [Automatic Docs Generation](./docs-generation.md).
 
@@ -384,12 +349,6 @@ If you need more control:
 1. Check build locally: `cd apps/docs && pnpm build`
 2. Check Vercel CLI auth: `vercel whoami`
 3. Check project link: `vercel link`
-
-### GitHub App webhook failures
-
-1. Check Vercel deployment logs
-2. Verify environment variables set
-3. Check webhook secret matches GitHub App settings
 
 ---
 

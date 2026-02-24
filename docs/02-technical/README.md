@@ -20,14 +20,6 @@ LumenFlow is a monorepo with 7 packages:
 
 ---
 
-## Apps
-
-| App        | Path              | Description                                       |
-| ---------- | ----------------- | ------------------------------------------------- |
-| GitHub App | `apps/github-app` | Vercel-deployed webhook handler for PR validation |
-
----
-
 ## Architecture
 
 See [architecture/](architecture/) for system design, package relationships, and data flow.
