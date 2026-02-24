@@ -1043,7 +1043,7 @@ describe('WU-2114: file extension ratcheting regression guard', () => {
           `(+${currentCount - savedBaseline}).\n\n` +
           `New bare file extension literals detected. Use FILE_EXTENSIONS constant from wu-paths-constants.ts instead.\n` +
           `To intentionally update the baseline after a deliberate migration:\n` +
-          `  UPDATE_BASELINE=true pnpm --filter @lumenflow/core exec vitest run src/__tests__/path-literal-guard.test.ts -t \"file extension ratcheting regression guard\"\n\n` +
+          `  UPDATE_BASELINE=true pnpm --filter @lumenflow/core exec vitest run src/__tests__/path-literal-guard.test.ts -t "file extension ratcheting regression guard"\n\n` +
           `Violations:\n${formatViolationReport(allViolations)}`,
       );
     }
@@ -1192,7 +1192,7 @@ describe('WU-2113: LUMENFLOW_ env var ratcheting regression guard', () => {
           `(+${currentCount - savedBaseline}).\n\n` +
           `New raw LUMENFLOW_ env var literals detected. Use ENV_VARS constant from wu-context-constants.ts instead.\n` +
           `To intentionally update the baseline after a deliberate migration:\n` +
-          `  UPDATE_BASELINE=true pnpm --filter @lumenflow/core exec vitest run src/__tests__/path-literal-guard.test.ts -t \"LUMENFLOW_ env var ratcheting regression guard\"\n\n` +
+          `  UPDATE_BASELINE=true pnpm --filter @lumenflow/core exec vitest run src/__tests__/path-literal-guard.test.ts -t "LUMENFLOW_ env var ratcheting regression guard"\n\n` +
           `Violations:\n${formatViolationReport(allViolations)}`,
       );
     }
