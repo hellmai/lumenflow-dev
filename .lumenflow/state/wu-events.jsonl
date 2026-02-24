@@ -2214,3 +2214,4 @@
 {"type":"complete","wuId":"WU-2133","timestamp":"2026-02-24T23:44:11.088Z"}
 {"type":"claim","wuId":"WU-2134","timestamp":"2026-02-24T23:45:19.676Z","lane":"Framework: Core Lifecycle","title":"Stabilize initiatives tests under config-driven path resolution"}
 {"type":"complete","wuId":"WU-2134","timestamp":"2026-02-24T23:51:04.661Z"}
+{"type":"claim","wuId":"WU-2132","timestamp":"2026-02-24T23:51:59.594Z","lane":"Framework: CLI WU Commands","title":"Enforce TDD provenance and wu:brief evidence in WU lifecycle"}

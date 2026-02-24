@@ -2,7 +2,7 @@ id: WU-2132
 title: Enforce TDD provenance and wu:brief evidence in WU lifecycle
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -12,7 +12,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-event-sourcer.ts
 tests:
   manual:
-    - Run pnpm wu:brief --id <WU> then verify wu:prep/wu:done enforcement blocks when evidence is missing and passes when present
+    - Run pnpm wu:brief --id <WU> then verify wu:prep/wu:done enforcement blocks when evidence is
+      missing and passes when present
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
@@ -34,9 +35,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add lifecycle enforcement so feature/bug WUs must provide TDD provenance before completion. Capture wu:brief execution evidence in WU state and require that evidence during wu:prep/wu:done unless an explicit force-bypass reason is supplied. This closes the gap where agents can skip brief context and implement without test-first discipline.
+description: Add lifecycle enforcement so feature/bug WUs must provide TDD provenance before
+  completion. Capture wu:brief execution evidence in WU state and require that evidence during
+  wu:prep/wu:done unless an explicit force-bypass reason is supplied. This closes the gap where
+  agents can skip brief context and implement without test-first discipline.
 acceptance:
   - wu:brief writes auditable execution evidence tied to WU ID and timestamp
-  - wu:prep fails feature/bug WUs when no TDD evidence exists in working diff (tests touched) and no explicit documented exception
-  - wu:done validates wu:brief evidence exists for claimed WU before completion, with force-bypass audit path unchanged
+  - wu:prep fails feature/bug WUs when no TDD evidence exists in working diff (tests touched) and no
+    explicit documented exception
+  - wu:done validates wu:brief evidence exists for claimed WU before completion, with force-bypass
+    audit path unchanged
   - CLI unit tests cover pass/fail paths for new enforcement in wu:brief, wu:prep, wu:done
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2132
+claimed_at: 2026-02-24T23:51:59.552Z
+baseline_main_sha: 4f453ac1cbcbb60aef88fa2d976e1a4c65b82a25
+session_id: 57baf29f-ba28-45d9-9547-6c72725f4065
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T23:51:59.559Z

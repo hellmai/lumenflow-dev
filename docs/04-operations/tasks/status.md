@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2132 — Enforce TDD provenance and wu:brief evidence in WU lifecycle](wu/WU-2132.yaml)
 
 ## Completed
 
