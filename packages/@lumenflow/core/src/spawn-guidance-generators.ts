@@ -19,7 +19,29 @@
  * @module spawn-guidance-generators
  */
 
+import { DIRECTORIES } from './wu-constants.js';
+import { createWuPaths } from './wu-paths.js';
 import type { ResolvedPolicy } from './resolve-policy.js';
+
+const DEFAULT_WORKTREES_DIR_SEGMENT = DIRECTORIES.WORKTREES.replace(/\/+$/g, '');
+
+function normalizeDirectorySegment(value: string, fallback: string): string {
+  const normalized = value.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
+  return normalized.length > 0 ? normalized : fallback;
+}
+
+function resolveWorktreePathFallback(): string {
+  try {
+    const configuredWorktreesDir = createWuPaths({ projectRoot: process.cwd() }).WORKTREES_DIR();
+    const normalizedDir = normalizeDirectorySegment(
+      configuredWorktreesDir,
+      DEFAULT_WORKTREES_DIR_SEGMENT,
+    );
+    return `${normalizedDir}/<lane>-wu-xxx`;
+  } catch {
+    return `${DEFAULT_WORKTREES_DIR_SEGMENT}/<lane>-wu-xxx`;
+  }
+}
 
 /** WU types by test methodology */
 const _TDD_REQUIRED_TYPES = ['feature', 'bug', 'tooling', 'enhancement'];
@@ -398,12 +420,13 @@ export function generateEnforcementSummary(policy: ResolvedPolicy): string {
 
 /** Generate worktree block recovery section (WU-1192) */
 export function generateWorktreeBlockRecoverySection(worktreePath: string): string {
+  const worktreePathHint = worktreePath || resolveWorktreePathFallback();
   return `## When Blocked by Worktree Hook
 
 If you encounter a "worktree required" or "commit blocked" error:
 
 1. **Check existing worktrees**: \`git worktree list\`
-2. **Navigate to the worktree**: \`cd ${worktreePath || 'worktrees/<lane>-wu-xxx'}\`
+2. **Navigate to the worktree**: \`cd ${worktreePathHint}\`
 3. **Retry your operation** from within the worktree
 4. **Use relative paths only** (never absolute paths)
 
@@ -421,7 +444,7 @@ pwd
 git worktree list
 
 # Navigate to your worktree
-cd ${worktreePath || 'worktrees/<lane>-wu-xxx'}
+cd ${worktreePathHint}
 
 # Retry your commit
 git add . && git commit -m "your message"

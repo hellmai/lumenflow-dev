@@ -15,18 +15,24 @@
  * Exit codes:
  *   0 - WU is not locked (safe to proceed)
  *   1 - WU is locked (block operation)
- *
- * @see {@link docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md} - WU lifecycle
  */
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parseYAML } from '@lumenflow/core/wu-yaml';
-import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { WU_PATHS, createWuPaths } from '@lumenflow/core/wu-paths';
 import { PATTERNS, FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 const LOG_PREFIX = '[guard-locked]';
+
+function resolveCompleteGuidePathHint(): string {
+  try {
+    return createWuPaths({ projectRoot: process.cwd() }).COMPLETE_GUIDE_PATH();
+  } catch {
+    return WU_PATHS.COMPLETE_GUIDE_PATH();
+  }
+}
 
 /**
  * Check if a WU is locked
@@ -76,6 +82,7 @@ export function assertWUNotLocked(wuPath: string): void {
 
   if (doc.locked === true) {
     const wuId = doc.id || path.basename(wuPath, '.yaml');
+    const completeGuidePath = resolveCompleteGuidePathHint();
     throw new Error(
       `${LOG_PREFIX} WU ${wuId} is locked.
 
@@ -87,7 +94,7 @@ If you need to modify this WU:
      pnpm wu:unlock --id ${wuId} --reason "reason for unlocking"
 
 For more information:
-  See docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+  See ${completeGuidePath}
 `,
     );
   }

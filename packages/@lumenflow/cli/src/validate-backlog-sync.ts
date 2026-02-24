@@ -14,8 +14,6 @@
  * Exit codes:
  *   0 - Backlog is in sync
  *   1 - Sync issues found
- *
- * @see {@link docs/04-operations/tasks/backlog.md} - Backlog file
  */
 
 import {

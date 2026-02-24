@@ -15,14 +15,39 @@
  * Exit codes:
  *   0 - Commit allowed
  *   1 - Commit blocked (WU commit from main)
- *
- * @see {@link docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md} - Worktree discipline
  */
 
 import { isInWorktree, isMainBranch } from '@lumenflow/core/core/worktree-guard';
+import { createWuPaths, WU_PATHS } from '@lumenflow/core/wu-paths';
+import { DIRECTORIES } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 
 const LOG_PREFIX = '[guard-worktree-commit]';
+const DEFAULT_WORKTREES_DIR_SEGMENT = DIRECTORIES.WORKTREES.replace(/\/+$/g, '');
+
+function normalizeDirectorySegment(value: string, fallback: string): string {
+  const normalized = value.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
+  return normalized.length > 0 ? normalized : fallback;
+}
+
+function resolveWorktreesDirHint(): string {
+  try {
+    return normalizeDirectorySegment(
+      createWuPaths({ projectRoot: process.cwd() }).WORKTREES_DIR(),
+      DEFAULT_WORKTREES_DIR_SEGMENT,
+    );
+  } catch {
+    return DEFAULT_WORKTREES_DIR_SEGMENT;
+  }
+}
+
+function resolveCompleteGuidePathHint(): string {
+  try {
+    return createWuPaths({ projectRoot: process.cwd() }).COMPLETE_GUIDE_PATH();
+  } catch {
+    return WU_PATHS.COMPLETE_GUIDE_PATH();
+  }
+}
 
 /**
  * Patterns that indicate a WU-related commit message
@@ -71,6 +96,8 @@ export function shouldBlockCommit(options: {
   isInWorktree: boolean;
 }): CommitBlockResult {
   const { commitMessage, isMainCheckout, isInWorktree } = options;
+  const worktreesDirHint = resolveWorktreesDirHint();
+  const completeGuidePath = resolveCompleteGuidePathHint();
 
   // Allow all commits from worktrees
   if (isInWorktree) {
@@ -90,7 +117,7 @@ You are attempting to commit WU work from the main checkout.
 
 To fix:
   1. Navigate to your worktree:
-     cd worktrees/<lane>-wu-xxx/
+     cd ${worktreesDirHint}/<lane>-wu-xxx/
 
   2. Make your commit there:
      git add . && git commit -m "${commitMessage}"
@@ -99,7 +126,7 @@ To fix:
      cd ../.. && pnpm wu:done --id WU-XXX
 
 For more information:
-  See docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+  See ${completeGuidePath}
   See .claude/skills/worktree-discipline/SKILL.md
 `,
     };

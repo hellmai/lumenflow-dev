@@ -27,6 +27,7 @@ import {
 import type { SpawnStrategy } from '@lumenflow/core/spawn-strategy';
 import { findProjectRoot, getConfig } from '@lumenflow/core/config';
 import type { ClientBlock, ClientConfig } from '@lumenflow/core/config-schema';
+import { CONFIG_FILES, DIRECTORIES } from '@lumenflow/core/wu-constants';
 import {
   generateClientSkillsGuidance,
   generateSkillsSelectionSection,
@@ -99,6 +100,44 @@ export { resolvePolicy };
 
 const SPAWN_PROMPT_BUILDERS_DIR = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_TEMPLATE_BASE_DIR = findProjectRoot(SPAWN_PROMPT_BUILDERS_DIR);
+const DEFAULT_WORKTREES_DIR_SEGMENT = DIRECTORIES.WORKTREES.replace(/\/+$/g, '');
+
+function normalizeDirectorySegment(value: string, fallback: string): string {
+  const normalized = value.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
+  return normalized.length > 0 ? normalized : fallback;
+}
+
+function resolveWorktreesDirSegment(config: ReturnType<typeof getConfig> | undefined): string {
+  const configuredWorktreesDir = config?.directories.worktrees;
+  if (configuredWorktreesDir) {
+    return normalizeDirectorySegment(configuredWorktreesDir, DEFAULT_WORKTREES_DIR_SEGMENT);
+  }
+
+  return DEFAULT_WORKTREES_DIR_SEGMENT;
+}
+
+function resolveWorktreePathHint(
+  doc: WUDocument,
+  id: string,
+  config: ReturnType<typeof getConfig> | undefined,
+): string {
+  if (doc.worktree_path) {
+    return doc.worktree_path;
+  }
+  return `${resolveWorktreesDirSegment(config)}/<lane>-${id.toLowerCase()}`;
+}
+
+function resolveClaimWorktreePathHint(
+  lane: string | undefined,
+  id: string,
+  config: ReturnType<typeof getConfig> | undefined,
+): string {
+  const laneSlug = (lane || 'unknown')
+    .toLowerCase()
+    .replace(/[:\s]+/g, '-')
+    .replace(/-+/g, '-');
+  return `${resolveWorktreesDirSegment(config)}/${laneSlug}-${id.toLowerCase()}`;
+}
 
 // ─── Mandatory Agent Detection ───
 
@@ -729,13 +768,17 @@ pnpm typecheck   # Check TypeScript types
  * @param {string} worktreePath - Worktree path from WU YAML
  * @returns {string} Worktree block recovery section
  */
-export function generateWorktreeBlockRecoverySection(worktreePath: string): string {
+export function generateWorktreeBlockRecoverySection(
+  worktreePath: string,
+  config?: ReturnType<typeof getConfig>,
+): string {
+  const worktreePathHint = worktreePath || `${resolveWorktreesDirSegment(config)}/<lane>-wu-xxx`;
   return `## When Blocked by Worktree Hook
 
 If you encounter a "worktree required" or "commit blocked" error:
 
 1. **Check existing worktrees**: \`git worktree list\`
-2. **Navigate to the worktree**: \`cd ${worktreePath || 'worktrees/<lane>-wu-xxx'}\`
+2. **Navigate to the worktree**: \`cd ${worktreePathHint}\`
 3. **Retry your operation** from within the worktree
 4. **Use relative paths only** (never absolute paths starting with /)
 
@@ -753,7 +796,7 @@ pwd
 git worktree list
 
 # Navigate to your worktree
-cd ${worktreePath || 'worktrees/<lane>-wu-xxx'}
+cd ${worktreePathHint}
 
 # Retry your commit
 git add . && git commit -m "your message"
@@ -768,7 +811,9 @@ git add . && git commit -m "your message"
  *
  * @returns {string} Lane Selection section
  */
-export function generateLaneSelectionSection(): string {
+export function generateLaneSelectionSection(
+  laneInferencePath = CONFIG_FILES.LANE_INFERENCE,
+): string {
   return `## Lane Selection
 
 When creating new WUs, use the correct lane to enable parallelization:
@@ -781,7 +826,7 @@ pnpm wu:infer-lane --id WU-XXX
 pnpm wu:infer-lane --paths "tools/**" --desc "CLI improvements"
 \`\`\`
 
-**Lane taxonomy**: See \`.lumenflow.lane-inference.yaml\` for valid lanes and patterns.
+**Lane taxonomy**: See \`${laneInferencePath}\` for valid lanes and patterns.
 
 **Why lanes matter**: WIP=1 per lane means correct lane selection enables parallel work across lanes.`;
 }
@@ -940,7 +985,11 @@ export function generateLaneGuidance(lane: string | undefined): string {
  * @param {string} id - WU ID
  * @returns {string} Action section content
  */
-export function generateActionSection(doc: WUDocument, id: string): string {
+export function generateActionSection(
+  doc: WUDocument,
+  id: string,
+  config?: ReturnType<typeof getConfig>,
+): string {
   const isAlreadyClaimed = doc.claimed_at && doc.worktree_path;
 
   if (isAlreadyClaimed) {
@@ -949,17 +998,13 @@ export function generateActionSection(doc: WUDocument, id: string): string {
 cd ${doc.worktree_path}`;
   }
 
-  // WU is unclaimed - agent needs to claim first
-  const laneSlug = (doc.lane || 'unknown')
-    .toLowerCase()
-    .replace(/[:\s]+/g, '-')
-    .replace(/-+/g, '-');
+  const claimWorktreePathHint = resolveClaimWorktreePathHint(doc.lane, id, config);
 
   return `**FIRST: Claim this WU before starting work:**
 
 \`\`\`bash
 pnpm wu:claim --id ${id} --lane "${doc.lane}"
-cd worktrees/${laneSlug}-${id.toLowerCase()}
+cd ${claimWorktreePathHint}
 \`\`\`
 
 Then implement following all standards above.
@@ -1183,16 +1228,18 @@ export function generateTaskInvocation(
 
   // WU-2107: Lane selection guidance
   // WU-1253: Try template for lane-selection
-  const laneSelection = templates.get('lane-selection') || generateLaneSelectionSection();
+  const laneSelection =
+    templates.get('lane-selection') || generateLaneSelectionSection(CONFIG_FILES.LANE_INFERENCE);
 
   // WU-2362: Worktree path guidance for sub-agents
+  const worktreePathHint = resolveWorktreePathHint(doc, id, config);
   const worktreeGuidance = generateWorktreePathGuidance(doc.worktree_path);
-  const worktreePathHint = doc.worktree_path || `worktrees/<lane>-${id.toLowerCase()}`;
 
   // WU-1134: Worktree block recovery guidance
   // WU-1253: Try template for worktree-recovery
   const worktreeBlockRecovery =
-    templates.get('worktree-recovery') || generateWorktreeBlockRecoverySection(worktreePathHint);
+    templates.get('worktree-recovery') ||
+    generateWorktreeBlockRecoverySection(worktreePathHint, config);
 
   // WU-1240: Memory context section
   // Include if explicitly enabled and not disabled via noContext
@@ -1231,7 +1278,7 @@ ${testGuidance}
 - **Lane:** ${doc.lane || 'Unknown'}
 - **Type:** ${doc.type || 'feature'}
 - **Status:** ${doc.status || 'unknown'}
-- **Worktree:** ${doc.worktree_path || `worktrees/<lane>-${id.toLowerCase()}`}
+- **Worktree:** ${worktreePathHint}
 
 ## Description
 
@@ -1299,7 +1346,7 @@ ${laneSelection}
 
 ${laneGuidance}${laneGuidance ? '\n\n---\n\n' : ''}## Action
 
-${generateActionSection(doc, id)}
+${generateActionSection(doc, id, config)}
 
 ---
 
@@ -1343,6 +1390,7 @@ export function generateCodexPrompt(
 ): string {
   const codePaths = doc.code_paths || [];
   const mandatoryAgents = detectMandatoryAgents(codePaths);
+  const config = options.config || getConfig();
 
   const preamble = generatePreamble(id, strategy);
   // WU-1142: Use type-aware test guidance instead of hardcoded TDD directive
@@ -1351,11 +1399,11 @@ export function generateCodexPrompt(
   const laneGuidance = generateLaneGuidance(doc.lane);
   const bugDiscoverySection = generateBugDiscoverySection(id);
   const implementationContext = generateImplementationContext(doc);
-  const action = generateActionSection(doc, id);
+  const action = generateActionSection(doc, id, config);
   const completionWorkflow = generateCompletionWorkflowSection(id);
   const constraints = generateCodexConstraints(id);
   const clientContext = options.client;
-  const config = options.config || getConfig();
+  const worktreePathHint = resolveWorktreePathHint(doc, id, config);
   // WU-1142: Pass lane to get byLane skills
   const clientSkillsGuidance = generateClientSkillsGuidance(clientContext, doc.lane);
   const skillsSection =
@@ -1371,8 +1419,7 @@ export function generateCodexPrompt(
   const thinkingBlock = thinkingSections ? `${thinkingSections}\n\n---\n\n` : '';
 
   // WU-1134: Worktree block recovery guidance
-  const worktreePathHint = doc.worktree_path || `worktrees/<lane>-${id.toLowerCase()}`;
-  const worktreeBlockRecovery = generateWorktreeBlockRecoverySection(worktreePathHint);
+  const worktreeBlockRecovery = generateWorktreeBlockRecoverySection(worktreePathHint, config);
 
   // WU-1240: Memory context section
   const shouldIncludeMemoryContext = options.includeMemoryContext && !options.noContext;
@@ -1398,7 +1445,7 @@ ${preamble}
 - **Lane:** ${doc.lane || 'Unknown'}
 - **Type:** ${doc.type || 'feature'}
 - **Status:** ${doc.status || 'unknown'}
-- **Worktree:** ${doc.worktree_path || `worktrees/<lane>-${id.toLowerCase()}`}
+- **Worktree:** ${worktreePathHint}
 
 ## Description
 

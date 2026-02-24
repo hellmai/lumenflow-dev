@@ -8,15 +8,47 @@
  * Extracted from enforcement-generator.ts by WU-1645.
  */
 
+import { createWuPaths } from '@lumenflow/core/wu-paths';
+import { DIRECTORIES } from '@lumenflow/core/wu-constants';
+
+const DEFAULT_WORKTREES_DIR_SEGMENT = DIRECTORIES.WORKTREES.replace(/\/+$/g, '');
+const DEFAULT_WU_ALLOWLIST_PREFIX = DIRECTORIES.WU_DIR;
+
+function normalizeDirectorySegment(value: string, fallback: string): string {
+  const normalized = value.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
+  return normalized.length > 0 ? normalized : fallback;
+}
+
+function ensureTrailingSlash(value: string): string {
+  return value.endsWith('/') ? value : `${value}/`;
+}
+
 /**
  * Generate the enforce-worktree.sh hook script content.
  *
  * WU-1501: Fail-closed on main. Blocks Write/Edit when no active claim context.
  * Graceful degradation only when LumenFlow is NOT configured.
- * Allowlist: docs/04-operations/tasks/wu/, .lumenflow/, .claude/, plan/
+ * Allowlist: configured WU directory prefix, .lumenflow/, .claude/, plan/
  * Branch-PR claimed_mode remains writable from main checkout.
  */
-export function generateEnforceWorktreeScript(): string {
+export function generateEnforceWorktreeScript(options: { projectRoot?: string } = {}): string {
+  const projectRoot = options.projectRoot ?? process.cwd();
+  let worktreesDirSegment = DEFAULT_WORKTREES_DIR_SEGMENT;
+  let wuAllowlistPrefix = `${DEFAULT_WU_ALLOWLIST_PREFIX}/`;
+
+  try {
+    const wuPaths = createWuPaths({ projectRoot });
+    worktreesDirSegment = normalizeDirectorySegment(
+      wuPaths.WORKTREES_DIR(),
+      DEFAULT_WORKTREES_DIR_SEGMENT,
+    );
+    wuAllowlistPrefix = ensureTrailingSlash(
+      normalizeDirectorySegment(wuPaths.WU_DIR(), DEFAULT_WU_ALLOWLIST_PREFIX),
+    );
+  } catch {
+    // Keep defaults if config cannot be resolved.
+  }
+
   // Note: Shell variable escapes (\$, \") are intentional for the generated bash script
   /* eslint-disable no-useless-escape */
   return `#!/bin/bash
@@ -27,7 +59,7 @@ export function generateEnforceWorktreeScript(): string {
 # WU-1501: Fail-closed - blocks even when no worktrees exist.
 # Graceful degradation only when LumenFlow is NOT configured.
 #
-# Allowlist: docs/04-operations/tasks/wu/, .lumenflow/, .claude/, plan/
+# Allowlist: ${wuAllowlistPrefix}, .lumenflow/, .claude/, plan/
 # Branch-PR claimed_mode permits writes from main checkout.
 #
 # Exit codes:
@@ -51,7 +83,7 @@ if [[ -z "\${CLAUDE_PROJECT_DIR:-}" ]]; then
 fi
 
 MAIN_REPO_PATH="\$CLAUDE_PROJECT_DIR"
-WORKTREES_DIR="\${MAIN_REPO_PATH}/worktrees"
+WORKTREES_DIR="\${MAIN_REPO_PATH}/${worktreesDirSegment}"
 LUMENFLOW_DIR="\${MAIN_REPO_PATH}/.lumenflow"
 
 # Check if .lumenflow exists (LumenFlow is configured)
@@ -141,7 +173,7 @@ if [[ "\$WORKTREE_COUNT" -gt 0 ]]; then
   echo "Active worktrees: \${ACTIVE_WORKTREES:-none detected}" >&2
   echo "" >&2
   echo "USE INSTEAD:" >&2
-  echo "  1. cd to your worktree: cd worktrees/<lane>-wu-<id>/" >&2
+  echo "  1. cd to your worktree: cd ${worktreesDirSegment}/<lane>-wu-<id>/" >&2
   echo "  2. Make your edits in the worktree" >&2
   echo "" >&2
   echo "See: LUMENFLOW.md for worktree discipline" >&2
@@ -154,7 +186,7 @@ fi
 RELATIVE_PATH="\${RESOLVED_PATH#\${MAIN_REPO_PATH}/}"
 
 case "\$RELATIVE_PATH" in
-  docs/04-operations/tasks/wu/*)  exit 0 ;;  # WU YAML specs
+  ${wuAllowlistPrefix}*)          exit 0 ;;  # WU YAML specs
   .lumenflow/*)                   exit 0 ;;  # LumenFlow state/config
   .claude/*)                      exit 0 ;;  # Claude Code config
   plan/*)                         exit 0 ;;  # Plan/spec scaffolds
@@ -180,7 +212,7 @@ echo "No worktrees exist and no branch-pr WU is in progress." >&2
 echo "" >&2
 echo "WHAT TO DO:" >&2
 echo "  1. Claim a WU: pnpm wu:claim --id WU-XXXX --lane \\"<Lane>\\"" >&2
-echo "  2. cd worktrees/<lane>-wu-xxxx" >&2
+echo "  2. cd ${worktreesDirSegment}/<lane>-wu-xxxx" >&2
 echo "  3. Make your edits in the worktree" >&2
 echo "" >&2
 echo "See: LUMENFLOW.md for worktree discipline" >&2

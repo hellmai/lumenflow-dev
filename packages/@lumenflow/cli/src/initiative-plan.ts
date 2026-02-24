@@ -9,7 +9,7 @@
  * in the initiative YAML.
  *
  * Usage:
- *   pnpm initiative:plan --initiative INIT-001 --plan docs/04-operations/plans/my-plan.md
+ *   pnpm initiative:plan --initiative INIT-001 --plan <plansDir>/my-plan.md
  *   pnpm initiative:plan --initiative INIT-001 --create  # Create new plan template
  *
  * Features:
@@ -38,7 +38,7 @@ import {
 import { readInitiative } from '@lumenflow/initiatives/yaml';
 import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
 import { LOG_PREFIX as CORE_LOG_PREFIX } from '@lumenflow/core/wu-constants';
-import { WU_PATHS } from '@lumenflow/core/wu-paths';
+import { createWuPaths, WU_PATHS } from '@lumenflow/core/wu-paths';
 
 /** Log prefix for console output */
 export const LOG_PREFIX = CORE_LOG_PREFIX.INITIATIVE_PLAN;
@@ -55,11 +55,52 @@ export const INITIATIVE_PLAN_PUSH_RETRY_OVERRIDE = {
   max_delay_ms: 4000,
 };
 
-/** Standard plans directory relative to repo root (WU-1301: uses config-based paths) */
-const PLANS_DIR = WU_PATHS.PLANS_DIR();
-
 /** LumenFlow URI scheme for plan references */
 const PLAN_URI_SCHEME = 'lumenflow://plans/';
+
+function normalizeToPosix(value: string): string {
+  return value.replace(/\\/g, '/');
+}
+
+function trimOuterSlashes(value: string): string {
+  return normalizeToPosix(value).replace(/^\/+|\/+$/g, '');
+}
+
+function resolvePlansDirSegment(projectRoot: string): string {
+  try {
+    return createWuPaths({ projectRoot }).PLANS_DIR();
+  } catch {
+    return WU_PATHS.PLANS_DIR();
+  }
+}
+
+function formatPlanUriFromPlansDir(planPath: string, plansDirSegment: string): string | null {
+  const normalizedPlanPath = normalizeToPosix(planPath);
+  const normalizedPlansDir = trimOuterSlashes(plansDirSegment);
+
+  if (normalizedPlansDir.length === 0) {
+    return null;
+  }
+
+  const plansPrefix = `${normalizedPlansDir}/`;
+  if (normalizedPlanPath.startsWith(plansPrefix)) {
+    const relativePath = normalizedPlanPath.slice(plansPrefix.length);
+    if (relativePath.length > 0) {
+      return `${PLAN_URI_SCHEME}${relativePath}`;
+    }
+  }
+
+  const embeddedPrefix = `/${plansPrefix}`;
+  const embeddedIndex = normalizedPlanPath.lastIndexOf(embeddedPrefix);
+  if (embeddedIndex !== -1) {
+    const relativePath = normalizedPlanPath.slice(embeddedIndex + embeddedPrefix.length);
+    if (relativePath.length > 0) {
+      return `${PLAN_URI_SCHEME}${relativePath}`;
+    }
+  }
+
+  return null;
+}
 
 /**
  * Custom option for plan file path
@@ -153,21 +194,17 @@ export function validatePlanPath(planPath: string): void {
 /**
  * Format plan path as lumenflow:// URI
  *
- * Extracts the filename (and UnsafeAny subdirectory within plans/) and creates
- * a standardized URI for the plan reference.
+ * Extracts the filename (and optional subdirectory) relative to configured
+ * `directories.plansDir` and creates a standardized URI for plan references.
  *
  * @param planPath - Path to plan file (can be relative or absolute)
  * @returns lumenflow://plans/<filename> URI
  */
 export function formatPlanUri(planPath: string): string {
-  // Try to extract path relative to plans directory
-  const plansMarker = '/plans/';
-  const plansIndex = planPath.indexOf(plansMarker);
-
-  if (plansIndex !== -1) {
-    // Extract everything after /plans/
-    const relativePath = planPath.substring(plansIndex + plansMarker.length);
-    return `${PLAN_URI_SCHEME}${relativePath}`;
+  const plansDirSegment = resolvePlansDirSegment(process.cwd());
+  const uriFromPlansDir = formatPlanUriFromPlansDir(planPath, plansDirSegment);
+  if (uriFromPlansDir) {
+    return uriFromPlansDir;
   }
 
   // Fallback: just use the filename
@@ -252,7 +289,7 @@ export function createPlanTemplate(worktreePath: string, initId: string, title: 
     .substring(0, 30);
 
   const filename = `${initId}-${slug}.md`;
-  const plansDir = join(worktreePath, PLANS_DIR);
+  const plansDir = join(worktreePath, resolvePlansDirSegment(worktreePath));
   const planPath = join(plansDir, filename);
 
   if (existsSync(planPath)) {
@@ -437,10 +474,11 @@ export async function main(): Promise<void> {
       );
     }
   } else {
+    const planPathExample = `${resolvePlansDirSegment(process.cwd())}/my-plan.md`;
     die(
       'Either --plan or --create is required\n\n' +
         'Usage:\n' +
-        '  pnpm init:plan --initiative INIT-001 --plan docs/04-operations/plans/my-plan.md\n' +
+        `  pnpm init:plan --initiative INIT-001 --plan ${planPathExample}\n` +
         '  pnpm init:plan --initiative INIT-001 --create',
     );
   }
