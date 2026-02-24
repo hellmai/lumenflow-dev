@@ -109,18 +109,36 @@ export default tseslint.config(
     },
   },
 
-  // Boundaries plugin for hexagonal architecture
+  // Boundaries plugin for hexagonal architecture (scoped to @lumenflow/core)
+  //
+  // Only @lumenflow/core has hex directories (ports, usecases, adapters, domain, schemas).
+  // Patterns are scoped to packages/@lumenflow/core/src/ to avoid dead rules in other packages.
+  //
+  // Dependency rules enforce the hexagonal import hierarchy:
+  //   domain/schemas: pure layers, no cross-hex imports
+  //   ports: may import domain and schemas (type definitions)
+  //   usecases: may import ports, domain, and schemas (orchestrate via interfaces)
+  //   adapters: may import ports, domain, and schemas (implement interfaces)
+  //   adapters MUST NOT import usecases (and vice versa)
   {
     plugins: {
       boundaries,
     },
     settings: {
       'boundaries/elements': [
-        { type: 'ports', pattern: 'packages/@lumenflow/*/src/ports/**' },
-        { type: 'application', pattern: 'packages/@lumenflow/*/src/application/**' },
-        { type: 'infrastructure', pattern: 'packages/@lumenflow/*/src/infrastructure/**' },
-        { type: 'shared', pattern: 'packages/@lumenflow/*/src/shared/**' },
+        { type: 'ports', pattern: 'packages/@lumenflow/core/src/ports/**' },
+        { type: 'usecases', pattern: 'packages/@lumenflow/core/src/usecases/**' },
+        { type: 'adapters', pattern: 'packages/@lumenflow/core/src/adapters/**' },
+        { type: 'domain', pattern: 'packages/@lumenflow/core/src/domain/**' },
+        { type: 'schemas', pattern: 'packages/@lumenflow/core/src/schemas/**' },
       ],
+      // TypeScript resolver enables eslint-module-utils to resolve .js extension
+      // imports back to .ts source files (required by eslint-plugin-boundaries)
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+        },
+      },
     },
     rules: {
       'boundaries/element-types': [
@@ -128,14 +146,16 @@ export default tseslint.config(
         {
           default: 'disallow',
           rules: [
-            // Ports can only import from shared
-            { from: 'ports', allow: ['shared'] },
-            // Application can import from ports and shared
-            { from: 'application', allow: ['ports', 'shared'] },
-            // Infrastructure can import from ports and shared
-            { from: 'infrastructure', allow: ['ports', 'shared'] },
-            // Shared can only import from shared
-            { from: 'shared', allow: ['shared'] },
+            // Domain is a pure layer: may only import from schemas
+            { from: 'domain', allow: ['schemas'] },
+            // Schemas is a pure layer: no cross-hex imports allowed
+            { from: 'schemas', allow: [] },
+            // Ports define interfaces: may import domain types and schemas
+            { from: 'ports', allow: ['domain', 'schemas'] },
+            // Use cases orchestrate via port interfaces: may import ports, domain, schemas
+            { from: 'usecases', allow: ['ports', 'domain', 'schemas'] },
+            // Adapters implement port interfaces: may import ports, domain, schemas
+            { from: 'adapters', allow: ['ports', 'domain', 'schemas'] },
           ],
         },
       ],
