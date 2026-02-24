@@ -2,7 +2,7 @@ id: WU-2109
 title: Extend path-literal-guard and status-literal-guard to cover all 7 runtime packages
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -52,3 +52,6 @@ session_id: f838da68-7157-4f3d-bdc8-07eb403fc7c1
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-24T19:46:04.847Z
+locked: true
+completed_at: 2026-02-24T20:00:57.130Z
+completed: 2026-02-24
