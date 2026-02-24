@@ -9,7 +9,8 @@ code_paths:
   - packages/@lumenflow/core/src/wu-schema.ts
   - workspace.yaml
 tests:
-  manual: []
+  manual:
+    - Run pnpm test --filter=@lumenflow/core and verify all tests pass
   unit:
     - packages/@lumenflow/core/src/__tests__/
   e2e: []
@@ -32,7 +33,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: core/src/wu-schema.ts:775 contains a hardcoded ESCALATION_EMAIL constant. This should be moved to workspace.yaml under software_delivery.escalation.email and read via getConfig().escalation?.email with a sensible fallback. This makes escalation routing configurable per-project without code changes.
+description: core/src/wu-schema.ts:775 contains a hardcoded ESCALATION_EMAIL constant. This should
+  be moved to workspace.yaml under software_delivery.escalation.email and read via
+  getConfig().escalation?.email with a sensible fallback. This makes escalation routing configurable
+  per-project without code changes.
 acceptance:
   - ESCALATION_EMAIL constant removed from wu-schema.ts
   - workspace.yaml updated with software_delivery.escalation.email field
