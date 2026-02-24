@@ -35,7 +35,6 @@ sections:
 - [WU-2119 — Reduce UnsafeAny usage in highest-churn hotspot files](wu/WU-2119.yaml) — Framework: Core Lifecycle
 - [WU-2121 — Replace raw .endsWith('.yaml') file extension literals with FILE_EXTENSIONS constants](wu/WU-2121.yaml) — Framework: Core Lifecycle
 - [WU-2116 — Migrate throw new Error() to createError() in @lumenflow/core (batch)](wu/WU-2116.yaml) — Framework: Core Lifecycle
-- [WU-2131 — Harden remaining ratchet guards to prevent baseline self-healing](wu/WU-2131.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -1082,6 +1081,7 @@ sections:
 - [WU-2114 — Extend path-literal-guard to ban raw file extension literals like .yaml .json .md](wu/WU-2114.yaml)
 - [WU-2130 — Harden UnsafeAny ratchet guard to prevent baseline self-healing on failure](wu/WU-2130.yaml)
 - [WU-2120 — Create ENV_VARS constant and migrate raw LUMENFLOW\_ env var references](wu/WU-2120.yaml)
+- [WU-2131 — Harden remaining ratchet guards to prevent baseline self-healing](wu/WU-2131.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

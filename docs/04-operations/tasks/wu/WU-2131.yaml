@@ -2,7 +2,7 @@ id: WU-2131
 title: Harden remaining ratchet guards to prevent baseline self-healing
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P0
 created: 2026-02-24
 code_paths:
@@ -56,3 +56,6 @@ session_id: f8b5a975-75a8-432c-8ffe-3d58bd90febb
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-24T21:16:17.579Z
+locked: true
+completed_at: 2026-02-24T21:23:33.622Z
+completed: 2026-02-24
