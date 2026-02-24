@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2105 — Fix init workspace.yaml: override INIT-036 path defaults for consumer repos](wu/WU-2105.yaml)
 
 ## Completed
 
