@@ -12,7 +12,9 @@ code_paths:
   - packages/@lumenflow/core/src/wu-claim-resume.ts
   - packages/@lumenflow/cli/src/mem-inbox.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm test --filter=@lumenflow/core --filter=@lumenflow/cli and verify all tests pass with
+      no UnsafeAny usage in target files
   unit:
     - packages/@lumenflow/core/src/__tests__/type-safety-guard.test.ts
   e2e: []
