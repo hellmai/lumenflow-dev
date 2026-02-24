@@ -3,7 +3,7 @@ title: Split monolithic enforcement-checks module into focused path-utils, confi
   git-status-parser, dirty-guard modules
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-24
 code_paths:
@@ -47,3 +47,11 @@ acceptance:
   - Each module has single responsibility (path util, config, git status, dirty check)
   - All existing callers updated to import from correct sub-module
   - pnpm test --filter=@lumenflow/cli passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2127
+claimed_at: 2026-02-24T22:26:09.421Z
+baseline_main_sha: 80435919befd5fd6e94ed05c31495c1383d98d3f
+session_id: 43d744d6-03f6-4b66-92b8-602f3d735da3
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T22:26:09.427Z

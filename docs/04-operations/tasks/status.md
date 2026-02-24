@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2127 — Split monolithic enforcement-checks module into focused path-utils, config-resolver, git-status-parser, dirty-guard modules](wu/WU-2127.yaml)
 
 ## Completed
 
