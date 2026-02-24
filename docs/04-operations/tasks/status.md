@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-- [WU-2091 — Align CLI hooks and enforcement messaging with configurable paths](wu/WU-2091.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1020,3 +1020,4 @@ _Last updated: 2026-02-24_
 - [WU-2090 — Migrate CLI runtime path/state literals to getConfig and constants](wu/WU-2090.yaml) — 2026-02-23
 - [WU-2094 — Purge residual path literals in core config and prompt helpers](wu/WU-2094.yaml) — 2026-02-24
 - [WU-2095 — Eliminate pending CLI runtime path literals (INIT-036)](wu/WU-2095.yaml) — 2026-02-24
+- [WU-2091 — Align CLI hooks and enforcement messaging with configurable paths](wu/WU-2091.yaml) — 2026-02-24
