@@ -22,6 +22,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { GIT_DIRECTORY_NAME, GIT_WORKTREES_SENTINEL } from '@lumenflow/core/config';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { generateMemId } from './mem-id.js';
 import { appendNode } from './memory-store.js';
 import {
@@ -249,7 +250,7 @@ async function appendRelationship(
     const issues = validation.error.issues
       .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
       .join(', ');
-    throw new Error(`Relationship validation error: ${issues}`);
+    throw createError(ErrorCodes.VALIDATION_ERROR, `Relationship validation error: ${issues}`);
   }
 
   const filePath = path.join(memoryDir, RELATIONSHIPS_FILE_NAME);
@@ -364,11 +365,11 @@ export async function createMemoryNode(
 
   // Validate required fields
   if (title == null) {
-    throw new Error(ERROR_MESSAGES.TITLE_REQUIRED);
+    throw createError(ErrorCodes.VALIDATION_ERROR, ERROR_MESSAGES.TITLE_REQUIRED);
   }
 
   if (title === '') {
-    throw new Error(ERROR_MESSAGES.TITLE_EMPTY);
+    throw createError(ErrorCodes.VALIDATION_ERROR, ERROR_MESSAGES.TITLE_EMPTY);
   }
 
   // Normalize type aliases (WU-1762): bug → discovery + tag, idea → discovery + tag
@@ -376,7 +377,7 @@ export async function createMemoryNode(
 
   // Validate node type (after alias normalization) and narrow type
   if (!MEMORY_NODE_TYPES.includes(normalizedType as MemoryNodeType)) {
-    throw new Error(ERROR_MESSAGES.INVALID_TYPE);
+    throw createError(ErrorCodes.VALIDATION_ERROR, ERROR_MESSAGES.INVALID_TYPE);
   }
   // Type is now validated - safe to cast
   const type = normalizedType as MemoryNodeType;
@@ -399,12 +400,12 @@ export async function createMemoryNode(
 
   // Validate WU ID format if provided
   if (wuId && !isValidWuId(wuId)) {
-    throw new Error(ERROR_MESSAGES.WU_ID_INVALID);
+    throw createError(ErrorCodes.INVALID_WU_ID, ERROR_MESSAGES.WU_ID_INVALID);
   }
 
   // Validate discovered-from ID format if provided
   if (discoveredFrom && !isValidMemoryId(discoveredFrom)) {
-    throw new Error(ERROR_MESSAGES.MEMORY_ID_INVALID);
+    throw createError(ErrorCodes.VALIDATION_ERROR, ERROR_MESSAGES.MEMORY_ID_INVALID);
   }
 
   // Ensure memory directory exists
@@ -454,7 +455,7 @@ export async function createMemoryNode(
     const issues = nodeValidation.error.issues
       .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
       .join(', ');
-    throw new Error(`Node validation error: ${issues}`);
+    throw createError(ErrorCodes.VALIDATION_ERROR, `Node validation error: ${issues}`);
   }
 
   // Persist node to memory store

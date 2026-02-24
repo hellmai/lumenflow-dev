@@ -271,4 +271,9 @@ export const ErrorCodes = {
   RETRY_EXHAUSTION: 'RETRY_EXHAUSTION',
   PREFLIGHT_ERROR: 'PREFLIGHT_ERROR',
   INVALID_DURATION: 'INVALID_DURATION',
+
+  // WU-2118: Structured error codes for memory/agent/mcp package migrations
+  NODE_NOT_FOUND: 'NODE_NOT_FOUND',
+  SESSION_ERROR: 'SESSION_ERROR',
+  ALREADY_EXISTS: 'ALREADY_EXISTS',
 };

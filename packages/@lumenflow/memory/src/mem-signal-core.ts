@@ -21,6 +21,7 @@ import { randomBytes } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { NodeFsError } from '@lumenflow/core/wu-constants';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
@@ -246,12 +247,12 @@ export async function createSignal(
 
   // Validate message is provided and non-empty
   if (!message || typeof message !== 'string' || message.trim().length === 0) {
-    throw new Error(ERROR_MESSAGES.MESSAGE_REQUIRED);
+    throw createError(ErrorCodes.VALIDATION_ERROR, ERROR_MESSAGES.MESSAGE_REQUIRED);
   }
 
   // Validate WU ID format if provided
   if (wuId !== undefined && !isValidWuId(wuId)) {
-    throw new Error(ERROR_MESSAGES.INVALID_WU_ID);
+    throw createError(ErrorCodes.INVALID_WU_ID, ERROR_MESSAGES.INVALID_WU_ID);
   }
 
   // Build signal object

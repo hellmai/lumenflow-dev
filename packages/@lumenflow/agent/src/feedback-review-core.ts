@@ -15,6 +15,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { INCIDENT_SEVERITY, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import {
   MS_PER_MINUTE,
   MS_PER_HOUR,
@@ -70,7 +71,10 @@ const DURATION_MULTIPLIERS: Record<string, number> = {
 function parseDuration(duration: string): number {
   const match = duration.match(/^(\d+)([dwhmDWHM])$/);
   if (!match) {
-    throw new Error(`Invalid duration format: ${duration}. Use format like "7d", "1w", "24h"`);
+    throw createError(
+      ErrorCodes.INVALID_DURATION,
+      `Invalid duration format: ${duration}. Use format like "7d", "1w", "24h"`,
+    );
   }
 
   const value = Number.parseInt(match[1] as string, 10);

@@ -24,6 +24,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { ENV_VARS } from '@lumenflow/core/wu-constants';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { registeredTools, runtimeTaskTools } from './tools.js';
 import { staticResources, resourceTemplates, type ResourceDefinition } from './resources.js';
 import { RuntimeTaskToolNames } from './tools/runtime-task-constants.js';
@@ -111,7 +112,10 @@ export function createMcpServer(config: McpServerConfig = {}): McpServer {
   const runtimeToolNames = new Set(runtimeTaskTools.map((tool) => tool.name));
   const missingRuntimeTools = collectMissingTools(runtimeToolNames, REQUIRED_RUNTIME_TOOL_NAMES);
   if (missingRuntimeTools.length > 0) {
-    throw new Error(`${REQUIRED_RUNTIME_MISSING_PREFIX}: ${missingRuntimeTools.join(', ')}`);
+    throw createError(
+      ErrorCodes.CONFIG_ERROR,
+      `${REQUIRED_RUNTIME_MISSING_PREFIX}: ${missingRuntimeTools.join(', ')}`,
+    );
   }
 
   // Create the MCP SDK server

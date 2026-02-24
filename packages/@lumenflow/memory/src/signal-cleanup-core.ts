@@ -24,6 +24,7 @@ const require = createRequire(import.meta.url);
 const ms = require('ms') as (value: string) => number;
 import type { NodeFsError } from '@lumenflow/core/wu-constants';
 import { MS_PER_DAY } from '@lumenflow/core/constants/duration-constants';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 import {
   SIGNAL_FILE_NAME,
@@ -139,19 +140,22 @@ export interface RemovalDecision {
  */
 export function parseSignalTtl(ttlString: string): number {
   if (!ttlString || typeof ttlString !== 'string') {
-    throw new Error('Invalid TTL format: TTL string is required');
+    throw createError(ErrorCodes.INVALID_DURATION, 'Invalid TTL format: TTL string is required');
   }
 
   const trimmed = ttlString.trim();
   if (!trimmed) {
-    throw new Error('Invalid TTL format: TTL string is required');
+    throw createError(ErrorCodes.INVALID_DURATION, 'Invalid TTL format: TTL string is required');
   }
 
   // Use ms package to parse the duration
   const result = ms(trimmed);
 
   if (result == null || result <= 0) {
-    throw new Error(`Invalid TTL format: "${ttlString}" is not a valid duration`);
+    throw createError(
+      ErrorCodes.INVALID_DURATION,
+      `Invalid TTL format: "${ttlString}" is not a valid duration`,
+    );
   }
 
   return result;

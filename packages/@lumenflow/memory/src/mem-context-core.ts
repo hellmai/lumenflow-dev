@@ -26,6 +26,7 @@
  */
 
 import path from 'node:path';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { loadMemory } from './memory-store.js';
 import { MEMORY_PATTERNS, type MemoryNode } from './memory-schema.js';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
@@ -128,15 +129,15 @@ export interface GenerateContextResult {
  */
 function validateWuId(wuId: string): void {
   if (wuId == null) {
-    throw new Error(ERROR_MESSAGES.WU_ID_REQUIRED);
+    throw createError(ErrorCodes.VALIDATION_ERROR, ERROR_MESSAGES.WU_ID_REQUIRED);
   }
 
   if (wuId === '') {
-    throw new Error(ERROR_MESSAGES.WU_ID_EMPTY);
+    throw createError(ErrorCodes.VALIDATION_ERROR, ERROR_MESSAGES.WU_ID_EMPTY);
   }
 
   if (!MEMORY_PATTERNS.WU_ID.test(wuId)) {
-    throw new Error(ERROR_MESSAGES.WU_ID_INVALID);
+    throw createError(ErrorCodes.INVALID_WU_ID, ERROR_MESSAGES.WU_ID_INVALID);
   }
 }
 

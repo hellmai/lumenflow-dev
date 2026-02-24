@@ -22,6 +22,7 @@
  * @see {@link packages/@lumenflow/cli/src/lib/memory-schema.ts} - Schema definitions
  */
 
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { generateMemId } from './mem-id.js';
 import { appendNode } from './memory-store.js';
 import { MEMORY_PATTERNS } from './memory-schema.js';
@@ -151,16 +152,16 @@ export async function createCheckpoint(
 
   // Validate required fields
   if (note == null) {
-    throw new Error(ERROR_MESSAGES.NOTE_REQUIRED);
+    throw createError(ErrorCodes.VALIDATION_ERROR, ERROR_MESSAGES.NOTE_REQUIRED);
   }
 
   if (note === '') {
-    throw new Error(ERROR_MESSAGES.NOTE_EMPTY);
+    throw createError(ErrorCodes.VALIDATION_ERROR, ERROR_MESSAGES.NOTE_EMPTY);
   }
 
   // Validate WU ID format if provided
   if (wuId && !isValidWuId(wuId)) {
-    throw new Error(ERROR_MESSAGES.WU_ID_INVALID);
+    throw createError(ErrorCodes.INVALID_WU_ID, ERROR_MESSAGES.WU_ID_INVALID);
   }
 
   // Ensure memory directory exists

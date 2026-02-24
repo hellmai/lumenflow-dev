@@ -12,6 +12,7 @@ import {
   type ToolOutput,
 } from '@lumenflow/kernel';
 import type { ListWUsOptions } from '@lumenflow/core';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { z } from 'zod';
 import {
   STATE_RUNTIME_CONSTANTS,
@@ -631,7 +632,7 @@ async function resolveInitiativeDoc(
     }
   }
 
-  throw new Error(`Initiative '${initiativeRef}' not found`);
+  throw createError(ErrorCodes.INIT_NOT_FOUND, `Initiative '${initiativeRef}' not found`);
 }
 
 async function getCompletedWuIdsFromStamps(
@@ -670,7 +671,7 @@ function parseSinceInputToDate(sinceInput: string): Date {
 
   const absoluteDate = new Date(sinceInput);
   if (Number.isNaN(absoluteDate.getTime())) {
-    throw new Error(`Invalid time format: ${sinceInput}`);
+    throw createError(ErrorCodes.INVALID_ARGUMENT, `Invalid time format: ${sinceInput}`);
   }
   return absoluteDate;
 }

@@ -21,6 +21,7 @@ import { loadMemory, appendNode } from './memory-store.js';
 import { generateMemId } from './mem-id.js';
 import { validateMemoryNode, type MemoryNode } from './memory-schema.js';
 import path from 'node:path';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
@@ -235,7 +236,7 @@ function createSummaryNode(sourceNodes: MemoryNode[], wuId: string): SummaryNode
     const issues = validation.error.issues
       .map((i) => `${i.path.join('.')}: ${i.message}`)
       .join(', ');
-    throw new Error(`Summary node validation failed: ${issues}`);
+    throw createError(ErrorCodes.VALIDATION_ERROR, `Summary node validation failed: ${issues}`);
   }
 
   return summary;
@@ -304,7 +305,7 @@ export async function summarizeWu(
   const summarizable = filterSummarizableNodes(memory.nodes, wuId);
 
   if (summarizable.length === 0) {
-    throw new Error(`No summarizable nodes found for ${wuId}`);
+    throw createError(ErrorCodes.NODE_NOT_FOUND, `No summarizable nodes found for ${wuId}`);
   }
 
   // Create summary node

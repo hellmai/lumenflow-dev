@@ -28,6 +28,7 @@ import path from 'node:path';
 import { loadMemory } from './memory-store.js';
 import { MEMORY_PATTERNS, type MemoryNode } from './memory-schema.js';
 import type { NodeFsError } from '@lumenflow/core/wu-constants';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
@@ -215,7 +216,10 @@ function isClosed(node: MemoryNode): boolean {
  */
 function validateWuId(wuId: string): void {
   if (!MEMORY_PATTERNS.WU_ID.test(wuId)) {
-    throw new Error(`Invalid WU ID format: ${wuId}. Expected format: WU-XXX (e.g., WU-1234)`);
+    throw createError(
+      ErrorCodes.INVALID_WU_ID,
+      `Invalid WU ID format: ${wuId}. Expected format: WU-XXX (e.g., WU-1234)`,
+    );
   }
 }
 

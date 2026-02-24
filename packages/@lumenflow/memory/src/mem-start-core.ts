@@ -19,6 +19,7 @@
  */
 
 import { randomUUID } from 'node:crypto';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { generateMemId } from './mem-id.js';
 import { appendNode } from './memory-store.js';
 import { MEMORY_PATTERNS, type MemoryNode } from './memory-schema.js';
@@ -131,12 +132,12 @@ export async function startSession(
 
   // Validate required fields
   if (!wuId) {
-    throw new Error(ERROR_MESSAGES.WU_ID_REQUIRED);
+    throw createError(ErrorCodes.VALIDATION_ERROR, ERROR_MESSAGES.WU_ID_REQUIRED);
   }
 
   // Validate WU ID format
   if (!isValidWuId(wuId)) {
-    throw new Error(ERROR_MESSAGES.WU_ID_INVALID);
+    throw createError(ErrorCodes.INVALID_WU_ID, ERROR_MESSAGES.WU_ID_INVALID);
   }
 
   // Ensure memory directory exists
