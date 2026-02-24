@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2129 — Enhance initiative orchestration docs with recovery, memory coordination, and delegation](wu/WU-2129.yaml)
 
 ## Completed
 
