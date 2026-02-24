@@ -2,7 +2,7 @@ id: WU-2128
 title: 'Standardize error return contracts: ports throw, adapters return Result, CLI catches'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-24
 code_paths:
@@ -59,3 +59,6 @@ session_id: 497a0c0f-089a-488b-bf3c-f1cd913b9e79
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-24T22:38:39.975Z
+locked: true
+completed_at: 2026-02-24T22:53:13.548Z
+completed: 2026-02-24
