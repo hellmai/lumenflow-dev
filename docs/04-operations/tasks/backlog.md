@@ -22,11 +22,11 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
-- [WU-2098 — Make wu:brief / wu:spawn prompt templates path-config aware](wu/WU-2098.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
 - [WU-2099 — DRY path resolvers and lazy-load module-level config (INIT-036 cleanup)](wu/WU-2099.yaml) — Framework: CLI WU Commands
+- [WU-2098 — Make wu:brief / wu:spawn prompt templates path-config aware](wu/WU-2098.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 

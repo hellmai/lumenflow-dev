@@ -2,7 +2,7 @@ id: WU-2098
 title: Make wu:brief / wu:spawn prompt templates path-config aware
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-brief.ts
 tests:
   manual:
-    - Run wu:brief under default and overridden directories config; verify generated prompt guidance points to configured docs/worktree locations
+    - Run wu:brief under default and overridden directories config; verify generated prompt guidance
+      points to configured docs/worktree locations
   unit:
     - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
   e2e: []
@@ -30,8 +31,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Remove hardcoded docs/worktrees/origin-main literals from spawn prompt builders used by wu:brief and wu:spawn so generated guidance remains correct for consumer repos with non-default directory layouts.
+description: Remove hardcoded docs/worktrees/origin-main literals from spawn prompt builders used by
+  wu:brief and wu:spawn so generated guidance remains correct for consumer repos with non-default
+  directory layouts.
 acceptance:
   - wu:brief and wu:spawn generated prompts resolve docs/worktree hints from config/WU path helpers
-  - prompt-builder code has no hardcoded docs/04-operations or worktrees literals outside sanctioned constants
+  - prompt-builder code has no hardcoded docs/04-operations or worktrees literals outside sanctioned
+    constants
   - unit coverage verifies prompt output for default and overridden directory configs
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2098
+claimed_at: 2026-02-24T08:59:44.449Z
+baseline_main_sha: f9d0aabc4f83f0e76dab70efe43ebb879ef819bc
+session_id: 8ad26135-af0d-4e42-bb9e-734e05e1343c
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T08:59:44.454Z

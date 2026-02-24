@@ -5,6 +5,7 @@ _Last updated: 2026-02-24_
 ## In Progress
 
 - [WU-2099 — DRY path resolvers and lazy-load module-level config (INIT-036 cleanup)](wu/WU-2099.yaml)
+- [WU-2098 — Make wu:brief / wu:spawn prompt templates path-config aware](wu/WU-2098.yaml)
 
 ## Completed
 
