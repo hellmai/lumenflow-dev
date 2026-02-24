@@ -23,6 +23,7 @@
 import micromatch from 'micromatch';
 import { getWUContext } from './worktree-guard.js';
 import { readWU } from '../wu-yaml.js';
+import { createError, ErrorCodes } from '../error-handler.js';
 import { WU_PATHS } from '../wu-paths.js';
 
 /**
@@ -161,39 +162,33 @@ export function assertPathInScope(
   operation = 'this operation',
 ) {
   if (!scope) {
-    throw new Error(
-      `❌ SCOPE VIOLATION: No active WU context.
-
-Operation: ${operation}
-File path: ${filePath}
-
-You must claim a WU before performing operations.
-Run: pnpm wu:claim --id WU-XXX --lane "<lane>"
-`,
+    throw createError(
+      ErrorCodes.SCOPE_VIOLATION,
+      `❌ SCOPE VIOLATION: No active WU context.\n\n` +
+        `Operation: ${operation}\n` +
+        `File path: ${filePath}\n\n` +
+        `You must claim a WU before performing operations.\n` +
+        `Run: pnpm wu:claim --id WU-XXX --lane "<lane>"`,
     );
   }
 
   if (!isPathInScope(filePath, scope)) {
     const normalizedPath = normalizePath(filePath);
 
-    throw new Error(
-      `❌ SCOPE VIOLATION: File path outside WU code_paths.
-
-Operation: ${operation}
-WU ID: ${scope.wuId}
-File path: ${normalizedPath}
-
-Allowed code_paths:
-${scope.code_paths.map((p: UnsafeAny) => `  - ${p}`).join('\n')}
-
-This file is not authorized for modification in this WU.
-Either:
-  1. Add this path to code_paths in WU YAML (if legitimately needed)
-  2. Create a separate WU for this change
-  3. Choose a different file within scope
-
-See: CLAUDE.md §2 (Worktree Discipline)
-`,
+    throw createError(
+      ErrorCodes.SCOPE_VIOLATION,
+      `❌ SCOPE VIOLATION: File path outside WU code_paths.\n\n` +
+        `Operation: ${operation}\n` +
+        `WU ID: ${scope.wuId}\n` +
+        `File path: ${normalizedPath}\n\n` +
+        `Allowed code_paths:\n` +
+        `${scope.code_paths.map((p: UnsafeAny) => `  - ${p}`).join('\n')}\n\n` +
+        `This file is not authorized for modification in this WU.\n` +
+        `Either:\n` +
+        `  1. Add this path to code_paths in WU YAML (if legitimately needed)\n` +
+        `  2. Create a separate WU for this change\n` +
+        `  3. Choose a different file within scope\n\n` +
+        `See: CLAUDE.md §2 (Worktree Discipline)`,
     );
   }
 }

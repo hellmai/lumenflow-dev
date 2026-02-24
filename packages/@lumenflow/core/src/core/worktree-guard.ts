@@ -21,6 +21,7 @@
 import path from 'node:path';
 import { createGitForPath } from '../git-adapter.js';
 import { BRANCHES } from '../wu-constants.js';
+import { createError, ErrorCodes } from '../error-handler.js';
 
 /**
  * Worktree path pattern: worktrees/<lane-kebab>-wu-<id>
@@ -280,24 +281,19 @@ export async function assertWorktreeRequired(options: WorktreeContextOptions = {
   // Check if on main branch
   const onMain = await isMainBranch({ git });
   if (onMain) {
-    throw new Error(
-      `❌ BLOCKED: Operation '${operation}' requires a worktree.
-
-You are on 'main' branch in main checkout.
-
-To fix:
-  1. Claim a WU first:
-     pnpm wu:claim --id WU-1234 --lane "Operations: Tooling"
-
-  2. Navigate to the worktree:
-     cd worktrees/operations-tooling-wu-1234/
-
-  3. Run your operation from the worktree.
-
-For more information:
-  See CLAUDE.md §2 (Worktree Discipline)
-  See .claude/skills/worktree-discipline/SKILL.md
-`,
+    throw createError(
+      ErrorCodes.WORKTREE_ERROR,
+      `❌ BLOCKED: Operation '${operation}' requires a worktree.\n\n` +
+        `You are on 'main' branch in main checkout.\n\n` +
+        `To fix:\n` +
+        `  1. Claim a WU first:\n` +
+        `     pnpm wu:claim --id WU-1234 --lane "Operations: Tooling"\n\n` +
+        `  2. Navigate to the worktree:\n` +
+        `     cd worktrees/operations-tooling-wu-1234/\n\n` +
+        `  3. Run your operation from the worktree.\n\n` +
+        `For more information:\n` +
+        `  See CLAUDE.md §2 (Worktree Discipline)\n` +
+        `  See .claude/skills/worktree-discipline/SKILL.md`,
     );
   }
 
