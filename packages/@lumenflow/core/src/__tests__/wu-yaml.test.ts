@@ -19,6 +19,7 @@
  * @module __tests__/wu-yaml.test
  */
 
+import { existsSync } from 'node:fs';
 import { mkdtemp, rm, writeFile, readFile, mkdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -34,6 +35,23 @@ import {
   YAML_STRINGIFY_OPTIONS,
 } from '../wu-yaml.js';
 import { ErrorCodes } from '../error-handler.js';
+
+/** Minimal schema-valid WU document for writeWU tests (WU-2115) */
+function validWUDoc(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    id: 'WU-100',
+    title: 'Test WU',
+    lane: 'Framework: Core',
+    type: 'feature',
+    status: 'in_progress',
+    priority: 'P1',
+    created: '2026-02-24',
+    code_paths: ['src/**'],
+    description: 'A description that is long enough to pass the minimum length validation requirement for WU specs',
+    acceptance: ['Criterion one'],
+    ...overrides,
+  };
+}
 
 describe('wu-yaml', () => {
   let tempDir: string;
@@ -272,12 +290,7 @@ lane: 'Framework: Core'
   describe('writeWU', () => {
     it('should write WU document to file with consistent formatting', async () => {
       const wuPath = path.join(tempDir, 'output.yaml');
-      const doc = {
-        id: 'WU-100',
-        title: 'Test WU',
-        status: 'in_progress',
-        code_paths: ['src/**'],
-      };
+      const doc = validWUDoc();
 
       writeWU(wuPath, doc);
 
@@ -293,25 +306,48 @@ lane: 'Framework: Core'
       const wuPath = path.join(tempDir, 'existing.yaml');
       await writeFile(wuPath, 'old: content\n');
 
-      writeWU(wuPath, { id: 'WU-NEW', title: 'New content' });
+      writeWU(wuPath, validWUDoc({ id: 'WU-200', title: 'New content' }));
 
       const content = await readFile(wuPath, 'utf-8');
       expect(content).not.toContain('old: content');
-      expect(content).toContain('id: WU-NEW');
+      expect(content).toContain('id: WU-200');
     });
 
     it('should write valid YAML that can be read back', async () => {
       const wuPath = path.join(tempDir, 'roundtrip.yaml');
-      const doc = {
+      const doc = validWUDoc({
         id: 'WU-123',
         title: 'Roundtrip Test',
         tests: { unit: ['a.test.ts', 'b.test.ts'], e2e: [] },
-      };
+      });
 
       writeWU(wuPath, doc);
       const readBack = readWU(wuPath, 'WU-123');
 
-      expect(readBack).toEqual(doc);
+      // Schema transforms may add defaults; check core fields roundtrip
+      expect(readBack.id).toBe('WU-123');
+      expect(readBack.title).toBe('Roundtrip Test');
+      expect(readBack.tests.unit).toEqual(['a.test.ts', 'b.test.ts']);
+      expect(readBack.tests.e2e).toEqual([]);
+    });
+
+    it('rejects invalid WU before writing YAML and verifies no partial write', () => {
+      const outPath = path.join(tempDir, 'invalid-wu.yaml');
+      const invalidWU = {
+        id: 'WU-999',
+        title: 'Invalid status WU',
+        lane: 'Framework: Core',
+        type: 'feature',
+        status: 'not-a-real-status',
+        priority: 'P1',
+        created: '2026-02-24',
+        code_paths: ['src/foo.ts'],
+        description: 'A description that is long enough to pass the minimum length validation requirement for WU specs',
+        acceptance: ['Criterion one'],
+      };
+
+      expect(() => writeWU(outPath, invalidWU)).toThrow();
+      expect(existsSync(outPath)).toBe(false);
     });
   });
 
@@ -435,43 +471,50 @@ lane: 'Framework: Core'
 
     it('should append session to existing agent_sessions array', async () => {
       const wuPath = path.join(tempDir, 'docs', '04-operations', 'tasks', 'wu', 'WU-100.yaml');
-      await writeFile(
-        wuPath,
-        `id: WU-100
-title: Test WU
-agent_sessions:
-  - sessionId: sess-001
-    startedAt: '2026-01-01T00:00:00Z'
-`,
-      );
+      const existingSession = {
+        session_id: 'a0000000-0000-4000-a000-000000000001',
+        started: '2026-01-01T00:00:00Z',
+        agent_type: 'claude-code',
+        context_tier: 1,
+      };
+      const yamlContent = stringifyYAML({
+        ...validWUDoc({ id: 'WU-100' }),
+        agent_sessions: [existingSession],
+      });
+      await writeFile(wuPath, yamlContent);
 
       const sessionData = {
-        sessionId: 'sess-002',
-        startedAt: '2026-01-02T00:00:00Z',
-        endedAt: '2026-01-02T01:00:00Z',
+        session_id: 'a0000000-0000-4000-a000-000000000002',
+        started: '2026-01-02T00:00:00Z',
+        completed: '2026-01-02T01:00:00Z',
+        agent_type: 'claude-code',
+        context_tier: 1,
       };
 
       appendAgentSession('WU-100', sessionData);
 
       const content = await readFile(wuPath, 'utf-8');
-      expect(content).toContain('sess-001');
-      expect(content).toContain('sess-002');
+      expect(content).toContain('a0000000-0000-4000-a000-000000000001');
+      expect(content).toContain('a0000000-0000-4000-a000-000000000002');
     });
 
     it('should initialize agent_sessions array if not present', async () => {
       const wuPath = path.join(tempDir, 'docs', '04-operations', 'tasks', 'wu', 'WU-200.yaml');
-      await writeFile(wuPath, 'id: WU-200\ntitle: No sessions\n');
+      const yamlContent = stringifyYAML(validWUDoc({ id: 'WU-200', title: 'No sessions' }));
+      await writeFile(wuPath, yamlContent);
 
       const sessionData = {
-        sessionId: 'sess-first',
-        startedAt: '2026-01-03T00:00:00Z',
+        session_id: 'a0000000-0000-4000-a000-000000000003',
+        started: '2026-01-03T00:00:00Z',
+        agent_type: 'claude-code',
+        context_tier: 1,
       };
 
       appendAgentSession('WU-200', sessionData);
 
       const content = await readFile(wuPath, 'utf-8');
       expect(content).toContain('agent_sessions:');
-      expect(content).toContain('sess-first');
+      expect(content).toContain('a0000000-0000-4000-a000-000000000003');
     });
 
     it('should throw error when WU file does not exist', () => {

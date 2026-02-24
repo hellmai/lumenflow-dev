@@ -7,6 +7,7 @@ import { parse, stringify } from 'yaml';
 import { createError, ErrorCodes } from './error-handler.js';
 import { STRING_LITERALS } from './wu-constants.js';
 import { createWuPaths } from './wu-paths.js';
+import { BaseWUSchema } from './wu-schema.js';
 
 /**
  * Unified WU YAML I/O module.
@@ -267,11 +268,16 @@ export async function readWURawAsync(yamlPath: string): Promise<UnsafeAny> {
 /**
  * Write WU YAML file with consistent formatting.
  * WU-1352: Uses YAML_STRINGIFY_OPTIONS for consistent output.
+ * WU-2115: Validates doc against BaseWUSchema before writing to prevent
+ * malformed WU YAML from being silently persisted.
  *
  * @param {string} wuPath - Path to WU YAML file
  * @param {object} doc - YAML document to write
+ * @throws {ZodError} If doc fails BaseWUSchema validation
  */
 export function writeWU(wuPath: string, doc: UnsafeAny): void {
+  // WU-2115: Validate against schema before writing — throws ZodError on invalid data
+  BaseWUSchema.parse(doc);
   const out = stringify(doc, YAML_STRINGIFY_OPTIONS);
   writeFileSync(wuPath, out, { encoding: 'utf-8' });
 }
