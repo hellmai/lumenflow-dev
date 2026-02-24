@@ -4,7 +4,6 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-- [WU-2129 — Enhance initiative orchestration docs with recovery, memory coordination, and delegation](wu/WU-2129.yaml)
 - [WU-2108 — Fix ESLint boundary plugin config to match actual hex directory names](wu/WU-2108.yaml)
 - [WU-2109 — Extend path-literal-guard and status-literal-guard to cover all 7 runtime packages](wu/WU-2109.yaml)
 
@@ -1036,3 +1035,4 @@ _Last updated: 2026-02-24_
 - [WU-2105 — Fix init workspace.yaml: override INIT-036 path defaults for consumer repos](wu/WU-2105.yaml) — 2026-02-24
 - [WU-2106 — Eliminate residual hardcoded docs-layout literals and audit config-driven abstraction](wu/WU-2106.yaml) — 2026-02-24
 - [WU-2107 — Wire version-policy.yaml into pnpm release and bump to 3.4.0](wu/WU-2107.yaml) — 2026-02-24
+- [WU-2129 — Enhance initiative orchestration docs with recovery, memory coordination, and delegation](wu/WU-2129.yaml) — 2026-02-24

@@ -2,7 +2,7 @@ id: WU-2129
 title: Enhance initiative orchestration docs with recovery, memory coordination, and delegation
 lane: 'Content: Framework Docs'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-24
 code_paths:
@@ -50,3 +50,6 @@ acceptance:
   - Internal agent onboarding doc exists at
     docs/04-operations/_frameworks/lumenflow/agent/onboarding/initiative-orchestration.md
   - Both Starlight files (guides/ and packs/) are updated consistently
+locked: true
+completed_at: 2026-02-24T19:55:06.187Z
+completed: 2026-02-24
