@@ -18,12 +18,23 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { resolveWorktreesDirSegment, resolveMainWriteAllowlistPrefixes } from './config-resolver.js';
+import {
+  resolveWorktreesDirSegment,
+  resolveMainWriteAllowlistPrefixes,
+} from './config-resolver.js';
 import { isAllowlistedPath } from './path-utils.js';
 
 // Re-export sub-module public APIs for backward compatibility
-export { normalizeDirectorySegment, ensureRepoRelativePrefix, isAllowlistedPath } from './path-utils.js';
-export { resolveWorktreesDirSegment, resolveWuAllowlistPrefix, resolveMainWriteAllowlistPrefixes } from './config-resolver.js';
+export {
+  normalizeDirectorySegment,
+  ensureRepoRelativePrefix,
+  isAllowlistedPath,
+} from './path-utils.js';
+export {
+  resolveWorktreesDirSegment,
+  resolveWuAllowlistPrefix,
+  resolveMainWriteAllowlistPrefixes,
+} from './config-resolver.js';
 export {
   parseDirtyPathsFromStatus,
   getNonAllowlistedDirtyPaths,
