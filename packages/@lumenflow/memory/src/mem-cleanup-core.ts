@@ -43,6 +43,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const ms = require('ms') as (value: string) => number;
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { loadMemoryAll, MEMORY_FILE_NAME } from './memory-store.js';
 import type { MemoryNode } from './memory-schema.js';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
@@ -172,19 +173,22 @@ export interface CleanupResult {
  */
 export function parseTtl(ttlString: string): number {
   if (!ttlString || typeof ttlString !== 'string') {
-    throw new Error('Invalid TTL format: TTL string is required');
+    throw createError(ErrorCodes.INVALID_DURATION, 'Invalid TTL format: TTL string is required');
   }
 
   const trimmed = ttlString.trim();
   if (!trimmed) {
-    throw new Error('Invalid TTL format: TTL string is required');
+    throw createError(ErrorCodes.INVALID_DURATION, 'Invalid TTL format: TTL string is required');
   }
 
   // Use ms package to parse the duration
   const result = ms(trimmed);
 
   if (result == null || result <= 0) {
-    throw new Error(`Invalid TTL format: "${ttlString}" is not a valid duration`);
+    throw createError(
+      ErrorCodes.INVALID_DURATION,
+      `Invalid TTL format: "${ttlString}" is not a valid duration`,
+    );
   }
 
   return result;

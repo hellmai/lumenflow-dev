@@ -20,6 +20,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { MS_PER_HOUR, MS_PER_DAY } from '@lumenflow/core/constants/duration-constants';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import type { MemoryNode } from './memory-schema.js';
 import { loadMemory, MEMORY_FILE_NAME } from './memory-store.js';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
@@ -87,20 +88,26 @@ function parseDuration(duration: string): number {
   const durationRegex = /^(\d+)([hdw])$/;
   const match = durationRegex.exec(duration);
   if (!match || match.length < 3) {
-    throw new Error(`Invalid duration format: ${duration}. Use format like '7d', '24h', '2w'`);
+    throw createError(
+      ErrorCodes.INVALID_DURATION,
+      `Invalid duration format: ${duration}. Use format like '7d', '24h', '2w'`,
+    );
   }
 
   const valueStr = match[1];
   const unit = match[2];
   if (!valueStr || !unit) {
-    throw new Error(`Invalid duration format: ${duration}. Use format like '7d', '24h', '2w'`);
+    throw createError(
+      ErrorCodes.INVALID_DURATION,
+      `Invalid duration format: ${duration}. Use format like '7d', '24h', '2w'`,
+    );
   }
 
   const value = parseInt(valueStr, 10);
   const multiplier = DURATION_MULTIPLIERS[unit];
 
   if (!multiplier) {
-    throw new Error(`Unknown duration unit: ${unit}`);
+    throw createError(ErrorCodes.INVALID_DURATION, `Unknown duration unit: ${unit}`);
   }
 
   return value * multiplier;

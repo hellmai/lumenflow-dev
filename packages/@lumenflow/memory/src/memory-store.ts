@@ -21,6 +21,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { NodeFsError } from '@lumenflow/core/wu-constants';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { validateMemoryNode, type MemoryNode } from './memory-schema.js';
 
 /**
@@ -204,7 +205,9 @@ function parseAndValidateLine(line: string, lineNumber: number): MemoryNode {
     parsed = JSON.parse(line);
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
-    throw new Error(`Malformed JSON on line ${lineNumber}: ${errMsg}`, { cause: err });
+    throw createError(ErrorCodes.PARSE_ERROR, `Malformed JSON on line ${lineNumber}: ${errMsg}`, {
+      cause: err,
+    });
   }
 
   const validation = validateMemoryNode(parsed);
@@ -212,7 +215,10 @@ function parseAndValidateLine(line: string, lineNumber: number): MemoryNode {
     const issues = validation.error.issues
       .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
       .join(', ');
-    throw new Error(`Validation error on line ${lineNumber}: ${issues}`);
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
+      `Validation error on line ${lineNumber}: ${issues}`,
+    );
   }
 
   return validation.data;
@@ -327,7 +333,7 @@ export async function appendNode(baseDir: string, node: MemoryNode): Promise<Mem
     const issues = validation.error.issues
       .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
       .join(', ');
-    throw new Error(`Validation error: ${issues}`);
+    throw createError(ErrorCodes.VALIDATION_ERROR, `Validation error: ${issues}`);
   }
 
   const filePath = path.join(baseDir, MEMORY_FILE_NAME);

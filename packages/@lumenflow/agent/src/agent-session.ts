@@ -7,6 +7,7 @@ import { join } from 'path';
 import { simpleGit } from 'simple-git';
 import { appendIncident } from './agent-incidents.js';
 import { PATTERNS, INCIDENT_SEVERITY, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 
 const SESSION_DIR = LUMENFLOW_PATHS.SESSIONS;
 const SESSION_FILE = join(SESSION_DIR, 'current.json');
@@ -46,7 +47,8 @@ export async function startSession(
   if (sessionExists) {
     const content = await readFile(SESSION_FILE, { encoding: 'utf-8' });
     const existing = JSON.parse(content) as SessionData;
-    throw new Error(
+    throw createError(
+      ErrorCodes.SESSION_ERROR,
       `Session ${existing.session_id} already active for ${existing.wu_id}. ` +
         `Run 'pnpm agent:session:end' first.`,
     );
@@ -54,12 +56,18 @@ export async function startSession(
 
   // Validate WU ID format
   if (!PATTERNS.WU_ID.test(wuId)) {
-    throw new Error(`Invalid WU ID format: ${wuId}. Must match WU-XXX.`);
+    throw createError(
+      ErrorCodes.INVALID_WU_ID,
+      `Invalid WU ID format: ${wuId}. Must match WU-XXX.`,
+    );
   }
 
   // Validate tier
   if (![1, 2, 3].includes(tier)) {
-    throw new Error(`Invalid context tier: ${tier}. Must be 1, 2, or 3.`);
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
+      `Invalid context tier: ${tier}. Must be 1, 2, or 3.`,
+    );
   }
 
   // Auto-detect lane from git branch if possible
@@ -136,7 +144,10 @@ interface IncidentDataInput {
 export async function logIncident(incidentData: IncidentDataInput): Promise<void> {
   const session = await getCurrentSession();
   if (!session) {
-    throw new Error('No active session. Run: pnpm agent:session start --wu WU-XXX --tier N');
+    throw createError(
+      ErrorCodes.SESSION_ERROR,
+      'No active session. Run: pnpm agent:session start --wu WU-XXX --tier N',
+    );
   }
 
   // Get current git context
@@ -198,7 +209,7 @@ interface SessionSummary {
 export async function endSession(): Promise<SessionSummary> {
   const session = await getCurrentSession();
   if (!session) {
-    throw new Error('No active session to end.');
+    throw createError(ErrorCodes.SESSION_ERROR, 'No active session to end.');
   }
 
   // Finalize session

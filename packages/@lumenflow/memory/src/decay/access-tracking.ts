@@ -17,6 +17,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { loadMemory, MEMORY_FILE_NAME } from '../memory-store.js';
 import type { MemoryNode } from '../memory-schema.js';
 import { computeDecayScore, DEFAULT_HALF_LIFE_MS } from './scoring.js';
@@ -141,7 +142,7 @@ export async function recordAccess(
   // Find the target node
   const targetNode = memory.byId.get(nodeId);
   if (!targetNode) {
-    throw new Error(`Node not found: ${nodeId}`);
+    throw createError(ErrorCodes.NODE_NOT_FOUND, `Node not found: ${nodeId}`);
   }
 
   // Update the node

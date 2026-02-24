@@ -19,6 +19,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { loadMemory, appendNode } from './memory-store.js';
 import type { MemoryNode, Relationship } from './memory-schema.js';
 import { MEMORY_PATTERNS } from './memory-schema.js';
@@ -119,7 +120,7 @@ export interface PromoteFromWuResult {
  */
 function validateTag(tag: string): asserts tag is PromotionTag {
   if (!ALLOWED_PROMOTION_TAGS.includes(tag as PromotionTag)) {
-    throw new Error(ERROR_MESSAGES.INVALID_TAG);
+    throw createError(ErrorCodes.VALIDATION_ERROR, ERROR_MESSAGES.INVALID_TAG);
   }
 }
 
@@ -131,7 +132,7 @@ function validateTag(tag: string): asserts tag is PromotionTag {
  */
 function validateWuId(wuId: string): void {
   if (!MEMORY_PATTERNS.WU_ID.test(wuId)) {
-    throw new Error(ERROR_MESSAGES.INVALID_WU_ID);
+    throw createError(ErrorCodes.INVALID_WU_ID, ERROR_MESSAGES.INVALID_WU_ID);
   }
 }
 
@@ -232,11 +233,11 @@ export async function promoteNode(
   const sourceNode = memory.byId.get(nodeId);
 
   if (!sourceNode) {
-    throw new Error(`${ERROR_MESSAGES.NODE_NOT_FOUND}: ${nodeId}`);
+    throw createError(ErrorCodes.NODE_NOT_FOUND, `${ERROR_MESSAGES.NODE_NOT_FOUND}: ${nodeId}`);
   }
 
   if (sourceNode.lifecycle === 'project') {
-    throw new Error(`${ERROR_MESSAGES.ALREADY_PROJECT}: ${nodeId}`);
+    throw createError(ErrorCodes.ALREADY_EXISTS, `${ERROR_MESSAGES.ALREADY_PROJECT}: ${nodeId}`);
   }
 
   // Create the promoted node

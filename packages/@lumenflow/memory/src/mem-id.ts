@@ -13,6 +13,7 @@
  */
 
 import { createHash } from 'node:crypto';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 
 /**
  * Memory ID prefix constant
@@ -91,12 +92,15 @@ export function generateMemId(content: string): string {
 export function generateHierarchicalId(parentId: string, index: number): string {
   // Validate parent ID
   if (!MEM_ID_PATTERNS.HIERARCHICAL_ID.test(parentId)) {
-    throw new Error(`${ERROR_MESSAGES.INVALID_BASE_ID}: ${parentId}`);
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
+      `${ERROR_MESSAGES.INVALID_BASE_ID}: ${parentId}`,
+    );
   }
 
   // Validate index is positive integer
   if (!Number.isInteger(index) || index < 1) {
-    throw new Error(`${ERROR_MESSAGES.INVALID_INDEX}: ${index}`);
+    throw createError(ErrorCodes.VALIDATION_ERROR, `${ERROR_MESSAGES.INVALID_INDEX}: ${index}`);
   }
 
   return `${parentId}.${index}`;

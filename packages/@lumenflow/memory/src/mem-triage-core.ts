@@ -22,6 +22,7 @@ import type { MemoryNode } from './memory-schema.js';
 import type { NodeFsError } from '@lumenflow/core/wu-constants';
 import { validateLaneFormat } from '@lumenflow/core/lane-checker';
 import { createWuPaths } from '@lumenflow/core/wu-paths';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
@@ -313,15 +314,18 @@ export async function archiveDiscovery(
   const node = memory.byId.get(nodeId) as TriageMemoryNode | undefined;
 
   if (!node) {
-    throw new Error(`Node not found: ${nodeId}`);
+    throw createError(ErrorCodes.NODE_NOT_FOUND, `Node not found: ${nodeId}`);
   }
 
   if (node.type !== 'discovery') {
-    throw new Error(`Node ${nodeId} is not a discovery (type: ${node.type})`);
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
+      `Node ${nodeId} is not a discovery (type: ${node.type})`,
+    );
   }
 
   if (node.metadata?.status === 'archived' || node.metadata?.status === 'closed') {
-    throw new Error(`Node ${nodeId} is already archived/closed`);
+    throw createError(ErrorCodes.ALREADY_EXISTS, `Node ${nodeId} is already archived/closed`);
   }
 
   // Create updated node with archive metadata
@@ -459,22 +463,25 @@ export async function promoteDiscovery(
     validateLaneFormat(lane);
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
-    throw new Error(`Invalid lane format: ${errMsg}`, { cause: err });
+    throw createError(ErrorCodes.INVALID_LANE, `Invalid lane format: ${errMsg}`, { cause: err });
   }
 
   const memory = await loadMemory(memoryDir);
   const node = memory.byId.get(nodeId) as TriageMemoryNode | undefined;
 
   if (!node) {
-    throw new Error(`Node not found: ${nodeId}`);
+    throw createError(ErrorCodes.NODE_NOT_FOUND, `Node not found: ${nodeId}`);
   }
 
   if (node.type !== 'discovery') {
-    throw new Error(`Node ${nodeId} is not a discovery (type: ${node.type})`);
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
+      `Node ${nodeId} is not a discovery (type: ${node.type})`,
+    );
   }
 
   if (node.metadata?.status === 'archived' || node.metadata?.status === 'closed') {
-    throw new Error(`Node ${nodeId} is already archived/closed`);
+    throw createError(ErrorCodes.ALREADY_EXISTS, `Node ${nodeId} is already archived/closed`);
   }
 
   // Generate WU spec
