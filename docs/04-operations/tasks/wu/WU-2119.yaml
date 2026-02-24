@@ -23,6 +23,7 @@ initiative: INIT-037
 phase: 3
 blocked_by:
   - WU-2110
+  - WU-2130
 spec_refs:
   - /home/USER/.claude/plans/wild-foraging-taco.md
 risks: []
@@ -35,9 +36,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Focus on 5 highest-churn files with most UnsafeAny usages: wu-create-validators.ts, wu-yaml.ts, wu-lint.ts, wu-claim-resume.ts, mem-inbox.ts. Replace UnsafeAny params/returns with unknown + narrowing or concrete interfaces. Validate JSON.parse and YAML parse boundaries with Zod before use. Ratchet baseline in type-safety-guard must decrease after this WU.'
+description: 'Focus on 5 highest-churn files with most UnsafeAny usages: wu-create-validators.ts,
+  wu-yaml.ts, wu-lint.ts, wu-claim-resume.ts, mem-inbox.ts. Replace UnsafeAny params/returns with
+  unknown + narrowing or concrete interfaces. Validate JSON.parse and YAML parse boundaries with Zod
+  before use. Ratchet baseline in type-safety-guard must decrease after this WU.'
 acceptance:
-  - UnsafeAny usage eliminated from wu-create-validators.ts, wu-yaml.ts, wu-lint.ts, wu-claim-resume.ts, mem-inbox.ts
+  - UnsafeAny usage eliminated from wu-create-validators.ts, wu-yaml.ts, wu-lint.ts,
+    wu-claim-resume.ts, mem-inbox.ts
   - type-safety-guard baseline decreases measurably (at least 20 fewer than pre-WU baseline)
   - No new unknown + Zod parse calls bypass validation (each parse boundary has schema)
   - pnpm test --filter=@lumenflow/core --filter=@lumenflow/cli passes
