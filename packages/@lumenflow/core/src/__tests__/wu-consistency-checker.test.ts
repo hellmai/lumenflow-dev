@@ -166,10 +166,7 @@ description: Test WU for repair testing
 acceptance:
   - Test acceptance criteria
 `;
-    writeFileSync(
-      resolveWUPath(testProjectRoot, 'WU-8888'),
-      wuContent,
-    );
+    writeFileSync(resolveWUPath(testProjectRoot, 'WU-8888'), wuContent);
   });
 
   afterEach(() => {

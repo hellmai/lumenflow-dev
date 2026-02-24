@@ -526,9 +526,7 @@ describe('WU-1310: Core path centralization', () => {
 
       // Defaults preserved
       expect(config.directories.wuDir).toBe('docs/tasks/wu');
-      expect(config.directories.onboardingDir).toBe(
-        'docs/_frameworks/lumenflow/agent/onboarding',
-      );
+      expect(config.directories.onboardingDir).toBe('docs/_frameworks/lumenflow/agent/onboarding');
       expect(config.directories.completeGuidePath).toBe(
         'docs/_frameworks/lumenflow/lumenflow-complete.md',
       );
@@ -538,9 +536,7 @@ describe('WU-1310: Core path centralization', () => {
       expect(config.directories.startingPromptPath).toBe(
         'docs/_frameworks/lumenflow/agent/onboarding/starting-prompt.md',
       );
-      expect(config.directories.governancePath).toBe(
-        'docs/governance/project-governance.md',
-      );
+      expect(config.directories.governancePath).toBe('docs/governance/project-governance.md');
     });
   });
 });

@@ -39,4 +39,3 @@ export const DEFAULT_DOCS_LAYOUT: DocsLayoutType = 'simple';
 export function getDocsLayoutPreset(layout: DocsLayoutType): DocsLayoutPreset {
   return DOCS_LAYOUT_PRESETS[layout];
 }
-

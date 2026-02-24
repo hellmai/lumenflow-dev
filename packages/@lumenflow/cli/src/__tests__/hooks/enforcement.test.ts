@@ -90,25 +90,21 @@ describe('WU-1367: Hook Generation', () => {
   });
 
   describe('generateEnforcementHooks', () => {
-    it(
-      'should generate PreToolUse hook for Write/Edit blocking when block_outside_worktree=true',
-      async () => {
-        const { generateEnforcementHooks } = await import('../../hooks/enforcement-generator.js');
+    it('should generate PreToolUse hook for Write/Edit blocking when block_outside_worktree=true', async () => {
+      const { generateEnforcementHooks } = await import('../../hooks/enforcement-generator.js');
 
-        const config = {
-          block_outside_worktree: true,
-          require_wu_for_edits: false,
-          warn_on_stop_without_wu_done: false,
-        };
+      const config = {
+        block_outside_worktree: true,
+        require_wu_for_edits: false,
+        warn_on_stop_without_wu_done: false,
+      };
 
-        const hooks = generateEnforcementHooks(config);
+      const hooks = generateEnforcementHooks(config);
 
-        expect(hooks.preToolUse).toBeDefined();
-        expect(hooks.preToolUse?.length).toBeGreaterThan(0);
-        expect(hooks.preToolUse?.[0].matcher).toBe('Write|Edit');
-      },
-      15000,
-    );
+      expect(hooks.preToolUse).toBeDefined();
+      expect(hooks.preToolUse?.length).toBeGreaterThan(0);
+      expect(hooks.preToolUse?.[0].matcher).toBe('Write|Edit');
+    }, 15000);
 
     it('should generate PreToolUse hook for WU requirement when require_wu_for_edits=true', async () => {
       const { generateEnforcementHooks } = await import('../../hooks/enforcement-generator.js');
@@ -523,9 +519,9 @@ describe('WU-1501: Fail-closed default on main', () => {
       const { generateEnforceWorktreeScript } =
         await import('../../hooks/enforcement-generator.js');
       const { createWuPaths } = await import('@lumenflow/core/wu-paths');
-      const expectedWuAllowlistPrefix = `${
-        createWuPaths({ projectRoot: TEST_PROJECT_DIR }).WU_DIR()
-      }/`;
+      const expectedWuAllowlistPrefix = `${createWuPaths({
+        projectRoot: TEST_PROJECT_DIR,
+      }).WU_DIR()}/`;
       const script = generateEnforceWorktreeScript({ projectRoot: TEST_PROJECT_DIR });
 
       // Should contain allowlist checking

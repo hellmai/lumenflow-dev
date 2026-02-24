@@ -101,7 +101,9 @@ function isLegacyCutoverRequired(stateDir: string, eventsPath: string): boolean 
 function resolveProjectRoot(stateDir: string): string {
   let current = stateDir;
   for (let depth = 0; depth < 6; depth++) {
-    if (WU_DOCS_SEGMENT_CANDIDATES.some((segments) => existsSync(path.join(current, ...segments)))) {
+    if (
+      WU_DOCS_SEGMENT_CANDIDATES.some((segments) => existsSync(path.join(current, ...segments)))
+    ) {
       return current;
     }
     const parent = path.dirname(current);
@@ -149,8 +151,9 @@ function loadWuBootstrapInfo(filePath: string): BootstrapWUInfo | null {
 }
 
 function readBootstrapWUs(projectRoot: string): BootstrapWUInfo[] {
-  const wuDir = WU_DOCS_SEGMENT_CANDIDATES.map((segments) => path.join(projectRoot, ...segments))
-    .find((candidate) => existsSync(candidate));
+  const wuDir = WU_DOCS_SEGMENT_CANDIDATES.map((segments) =>
+    path.join(projectRoot, ...segments),
+  ).find((candidate) => existsSync(candidate));
   if (!wuDir) return [];
   const results: BootstrapWUInfo[] = [];
   for (const entry of readdirSync(wuDir, { withFileTypes: true })) {

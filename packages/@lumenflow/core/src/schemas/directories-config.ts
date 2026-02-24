@@ -96,14 +96,10 @@ export const DirectoriesSchema = z.object({
   completeGuidePath: z.string().default(DEFAULT_LAYOUT.completeGuidePath),
 
   /** Agent quick reference commands path (default: docs-layout simple preset quick-ref path) */
-  quickRefPath: z
-    .string()
-    .default(DEFAULT_LAYOUT.quickRefPath),
+  quickRefPath: z.string().default(DEFAULT_LAYOUT.quickRefPath),
 
   /** Agent starting prompt path (default: docs-layout simple preset starting prompt path) */
-  startingPromptPath: z
-    .string()
-    .default(DEFAULT_LAYOUT.startingPromptPath),
+  startingPromptPath: z.string().default(DEFAULT_LAYOUT.startingPromptPath),
 
   /** Project governance document path (default: docs-layout simple preset governance path) */
   governancePath: z.string().default(DEFAULT_LAYOUT.governancePath),

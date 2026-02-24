@@ -585,11 +585,7 @@ describe('WU-1387 Edge Cases - Managed File Detection', () => {
       mkdirSync(join(testDir, getWuDir(testDir)), { recursive: true });
 
       // Create a tracked file in the managed directory
-      writeFileSync(
-        join(testDir, getWuDir(testDir), 'WU-TRACK.yaml'),
-        'id: WU-TRACK\n',
-        'utf-8',
-      );
+      writeFileSync(join(testDir, getWuDir(testDir), 'WU-TRACK.yaml'), 'id: WU-TRACK\n', 'utf-8');
 
       // Commit initial state
       execFileSync('git', ['add', '.'], { cwd: testDir, stdio: 'pipe' });
