@@ -6,34 +6,23 @@ status: in_progress
 priority: P1
 created: 2026-02-23
 code_paths:
-  - packages/@lumenflow/core/src/wu-paths-constants.ts
-  - packages/@lumenflow/core/src/domain/orchestration.constants.ts
-  - packages/@lumenflow/core/src/sandbox-profile.ts
-  - packages/@lumenflow/core/src/invariants/check-automated-tests.ts
-  - packages/@lumenflow/core/src/lane-inference.ts
-  - packages/@lumenflow/core/src/lane-suggest-prompt.ts
-  - packages/@lumenflow/core/src/config-contract.ts
-  - packages/@lumenflow/core/src/wu-spawn-skills.ts
-  - packages/@lumenflow/core/src/wu-done-docs-only.ts
-  - packages/@lumenflow/core/src/file-classifiers.ts
-  - packages/@lumenflow/cli/src/config-set.ts
-  - packages/@lumenflow/cli/src/workspace-init.ts
-  - packages/@lumenflow/cli/src/init-lane-validation.ts
-  - packages/@lumenflow/kernel/src/shared-constants.ts
+  - packages/@lumenflow/cli/src/docs-sync.ts
+  - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/lane-health.ts
   - packages/@lumenflow/cli/src/onboarding-smoke-test.ts
-  - packages/@lumenflow/memory/src/paths.ts
-  - packages/@lumenflow/core/src/lumenflow-config.ts
-  - packages/@lumenflow/core/src/wu-done-paths.ts
-  - packages/@lumenflow/core/src/wu-checkpoint.ts
-  - packages/@lumenflow/core/src/wu-claim-resume.ts
+  - packages/@lumenflow/core/src/code-paths-overlap.ts
+  - packages/@lumenflow/core/src/config-contract.ts
   - packages/@lumenflow/core/src/context/location-resolver.ts
   - packages/@lumenflow/core/src/invariants-runner.ts
-  - packages/@lumenflow/core/src/code-paths-overlap.ts
-  - packages/@lumenflow/cli/src/init.ts
-  - packages/@lumenflow/cli/src/docs-sync.ts
-  - packages/@lumenflow/cli/src/lane-health.ts
-  - packages/@lumenflow/memory/src/mem-create-core.ts
+  - packages/@lumenflow/core/src/lumenflow-config.ts
+  - packages/@lumenflow/core/src/wu-checkpoint.ts
+  - packages/@lumenflow/core/src/wu-claim-resume.ts
+  - packages/@lumenflow/core/src/wu-done-docs-only.ts
+  - packages/@lumenflow/core/src/wu-done-paths.ts
+  - packages/@lumenflow/core/src/wu-paths-constants.ts
   - packages/@lumenflow/kernel/src/pack/hash.ts
+  - packages/@lumenflow/kernel/src/shared-constants.ts
+  - packages/@lumenflow/memory/src/mem-create-core.ts
 tests:
   manual:
     - Run path-literal guard and verify no banned runtime path literals remain after constant
@@ -52,6 +41,7 @@ tests:
     - packages/@lumenflow/cli/src/__tests__/onboarding-smoke-test.test.ts
     - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
     - packages/@lumenflow/cli/src/__tests__/path-constants-parity.test.ts
+    - packages/@lumenflow/cli/__tests__/lane-health.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2092.done
