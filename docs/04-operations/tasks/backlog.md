@@ -42,7 +42,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2123 — Deduplicate GateLogContext type defined in both gate-registry.ts and gates-utils.ts](wu/WU-2123.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1080,6 +1080,7 @@ sections:
 - [WU-2108 — Fix ESLint boundary plugin config to match actual hex directory names](wu/WU-2108.yaml)
 - [WU-2109 — Extend path-literal-guard and status-literal-guard to cover all 7 runtime packages](wu/WU-2109.yaml)
 - [WU-2110 — Add ratcheting AST guard for UnsafeAny type alias usage](wu/WU-2110.yaml)
+- [WU-2123 — Deduplicate GateLogContext type defined in both gate-registry.ts and gates-utils.ts](wu/WU-2123.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

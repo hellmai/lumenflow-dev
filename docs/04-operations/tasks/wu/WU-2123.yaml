@@ -2,7 +2,7 @@ id: WU-2123
 title: Deduplicate GateLogContext type defined in both gate-registry.ts and gates-utils.ts
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-24
 code_paths:
@@ -48,3 +48,6 @@ acceptance:
   - gate-registry.ts imports GateLogContext from gates-utils.ts
   - No duplicate type definition remains
   - pnpm test --filter=@lumenflow/cli passes
+locked: true
+completed_at: 2026-02-24T20:24:38.984Z
+completed: 2026-02-24
