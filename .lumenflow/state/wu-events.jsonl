@@ -2157,3 +2157,4 @@
 {"type":"complete","wuId":"WU-2104","timestamp":"2026-02-24T14:59:32.347Z"}
 {"type":"complete","wuId":"WU-2103","timestamp":"2026-02-24T15:25:22.160Z"}
 {"type":"claim","wuId":"WU-2105","timestamp":"2026-02-24T15:44:04.866Z","lane":"Framework: CLI WU Commands","title":"Fix init workspace.yaml: override INIT-036 path defaults for consumer repos"}
+{"type":"complete","wuId":"WU-2105","timestamp":"2026-02-24T17:07:20.114Z"}

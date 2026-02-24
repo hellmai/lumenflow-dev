@@ -2,7 +2,7 @@ id: WU-2105
 title: 'Fix init workspace.yaml: override INIT-036 path defaults for consumer repos'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -48,3 +48,6 @@ acceptance:
   - Schema defaults are consumer-simple, OS workspace.yaml is explicit for all directory paths
   - Init generates correct workspace.yaml for both simple and arc42 layouts
   - 'No override hack: init writes all directory paths explicitly from DocsPathConfig'
+locked: true
+completed_at: 2026-02-24T17:07:15.263Z
+completed: 2026-02-24
