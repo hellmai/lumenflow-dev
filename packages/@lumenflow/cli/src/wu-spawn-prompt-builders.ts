@@ -27,7 +27,13 @@ import {
 import type { SpawnStrategy } from '@lumenflow/core/spawn-strategy';
 import { findProjectRoot, getConfig } from '@lumenflow/core/config';
 import type { ClientBlock, ClientConfig } from '@lumenflow/core/config-schema';
-import { BRANCHES, CONFIG_FILES, DIRECTORIES, LUMENFLOW_PATHS, REMOTES } from '@lumenflow/core/wu-constants';
+import {
+  BRANCHES,
+  CONFIG_FILES,
+  DIRECTORIES,
+  LUMENFLOW_PATHS,
+  REMOTES,
+} from '@lumenflow/core/wu-constants';
 import {
   generateClientSkillsGuidance,
   generateSkillsSelectionSection,

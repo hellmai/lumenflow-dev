@@ -80,9 +80,7 @@ async function main(): Promise<void> {
   const removalGuidance =
     'wu:spawn has been removed. Use wu:brief for config-aware prompt generation or ' +
     'wu:delegate for explicit delegation lineage.';
-  die(
-    removalGuidance,
-  );
+  die(removalGuidance);
 }
 
 // Guard main() for testability (WU-1366)
