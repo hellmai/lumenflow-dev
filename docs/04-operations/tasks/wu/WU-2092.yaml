@@ -23,7 +23,11 @@ code_paths:
   - packages/@lumenflow/cli/src/onboarding-smoke-test.ts
   - packages/@lumenflow/memory/src/paths.ts
 tests:
-  manual: []
+  manual:
+    - Run path-literal guard and verify no banned runtime path literals remain after constant
+      consolidation.
+    - Validate lane/onboarding prompts and smoke-test guidance under default plus overridden
+      directories.worktrees/wuDir settings.
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-paths.test.ts
     - packages/@lumenflow/core/src/__tests__/lane-suggest-prompt.test.ts
