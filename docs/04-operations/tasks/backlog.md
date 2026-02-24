@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2125 — Extract shared YAML parse logic from readWU() and readWUAsync() into helper](wu/WU-2125.yaml) — Framework: Core Lifecycle
 - [WU-2124 — Extract shared path factory in core to replace 3 independent resolution patterns](wu/WU-2124.yaml) — Framework: Core Lifecycle
 - [WU-2123 — Deduplicate GateLogContext type defined in both gate-registry.ts and gates-utils.ts](wu/WU-2123.yaml) — Framework: CLI WU Commands
 - [WU-2122 — Move hardcoded escalation email from wu-schema.ts to workspace.yaml](wu/WU-2122.yaml) — Framework: Core Lifecycle
