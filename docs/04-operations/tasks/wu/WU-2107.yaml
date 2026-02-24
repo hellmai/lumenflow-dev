@@ -1,0 +1,31 @@
+id: WU-2107
+title: 'Release v3.4.0: update version-policy and deploy Starlight'
+lane: 'Content: Site Comms'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-24
+code_paths:
+  - apps/docs/src/data/version-policy.yaml
+tests:
+  manual:
+    - Verify lumenflow.dev is accessible after deploy
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2107.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: v3.4.0 published to npm with WU-2105/2106 path fixes. Problem: version-policy.yaml still says 3.3.0 and Starlight docs need redeployment. Solution: bump version-policy to 3.4.0 and deploy Starlight.'
+acceptance:
+  - version-policy.yaml shows 3.4.0
+  - Starlight docs deployed to lumenflow.dev
