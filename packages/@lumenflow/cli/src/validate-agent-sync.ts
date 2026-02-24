@@ -20,7 +20,7 @@
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
-import { FILE_SYSTEM, EMOJI } from '@lumenflow/core/wu-constants';
+import { FILE_SYSTEM, FILE_EXTENSIONS, EMOJI } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
 import { MIN_AGENT_CONTENT_LENGTH } from './constants.js';
 
@@ -60,7 +60,9 @@ export async function validateAgentSync(
   }
 
   // Read agent definitions
-  const files = readdirSync(agentDir).filter((f) => f.endsWith('.json') || f.endsWith('.md'));
+  const files = readdirSync(agentDir).filter(
+    (f) => f.endsWith(FILE_EXTENSIONS.JSON) || f.endsWith(FILE_EXTENSIONS.MARKDOWN),
+  );
 
   if (files.length === 0) {
     warnings.push('No agent definitions found in .claude/agents/');
@@ -72,7 +74,7 @@ export async function validateAgentSync(
     const agentName = path.basename(file, path.extname(file));
     agents.push(agentName);
 
-    if (file.endsWith('.json')) {
+    if (file.endsWith(FILE_EXTENSIONS.JSON)) {
       // Validate JSON agent definition
       try {
         const content = readFileSync(filePath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
@@ -88,7 +90,7 @@ export async function validateAgentSync(
       } catch (e) {
         errors.push(`${agentName}: Failed to parse JSON: ${e.message}`);
       }
-    } else if (file.endsWith('.md')) {
+    } else if (file.endsWith(FILE_EXTENSIONS.MARKDOWN)) {
       // Validate markdown agent definition
       try {
         const content = readFileSync(filePath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });

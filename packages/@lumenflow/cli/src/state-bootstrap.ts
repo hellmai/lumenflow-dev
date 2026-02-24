@@ -23,6 +23,7 @@ import {
   CLI_FLAGS,
   EXIT_CODES,
   EMOJI,
+  FILE_EXTENSIONS,
   STRING_LITERALS,
   WU_STATUS,
 } from '@lumenflow/core/wu-constants';
@@ -284,7 +285,7 @@ export async function runStateBootstrap(args: StateBootstrapArgs): Promise<Boots
 
   // Load all WU YAML files
   const wus: WuBootstrapInfo[] = [];
-  const files = readdirSync(args.wuDir).filter((f) => f.endsWith('.yaml'));
+  const files = readdirSync(args.wuDir).filter((f) => f.endsWith(FILE_EXTENSIONS.YAML));
 
   for (const file of files) {
     const filePath = path.join(args.wuDir, file);

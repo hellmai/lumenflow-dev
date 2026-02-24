@@ -139,6 +139,12 @@ export const FILE_EXTENSIONS = {
   /** YAML format */
   YAML: '.yaml',
 
+  /** YAML alternate extension */
+  YML: '.yml',
+
+  /** JSON format */
+  JSON: '.json',
+
   /** Log format */
   LOG: '.log',
 
