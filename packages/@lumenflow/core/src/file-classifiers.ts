@@ -35,12 +35,7 @@ export function getDocsOnlyPrefixes(
   } = {},
 ): readonly string[] {
   const directories = getConfig({ projectRoot: options.projectRoot }).directories;
-  const prefixes = [
-    directories.docs,
-    directories.ai,
-    directories.claude,
-    directories.memoryBank,
-  ]
+  const prefixes = [directories.docs, directories.ai, directories.claude, directories.memoryBank]
     .map(ensureTrailingSlash)
     .filter((prefix) => prefix.length > 0);
 

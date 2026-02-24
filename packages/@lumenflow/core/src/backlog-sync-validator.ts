@@ -60,7 +60,8 @@ function hasSubLaneTaxonomy(parent: string, projectRoot: string): boolean {
 export function validateBacklogSync(backlogPath: string) {
   const resolvedBacklogPath = path.resolve(backlogPath);
   const projectRoot = findProjectRoot(path.dirname(resolvedBacklogPath));
-  const relativeBacklogPath = path.relative(projectRoot, resolvedBacklogPath) || resolvedBacklogPath;
+  const relativeBacklogPath =
+    path.relative(projectRoot, resolvedBacklogPath) || resolvedBacklogPath;
 
   // Parse frontmatter to get configured section headings
   let frontmatter: unknown;

@@ -88,4 +88,3 @@ sections:
     expect(result.errors.some((error) => error.includes('parent-only lane format'))).toBe(true);
   });
 });
-

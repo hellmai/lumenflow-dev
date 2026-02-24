@@ -29,10 +29,7 @@ export function getSkipTestsPrefixes(
     projectRoot?: string;
   } = {},
 ): readonly string[] {
-  return Object.freeze([
-    ...getDocsOnlyPrefixes(options),
-    ...SKIP_TESTS_EXTRA_PREFIXES,
-  ]);
+  return Object.freeze([...getDocsOnlyPrefixes(options), ...SKIP_TESTS_EXTRA_PREFIXES]);
 }
 
 /**
