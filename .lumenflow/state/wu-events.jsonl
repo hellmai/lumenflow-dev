@@ -2160,3 +2160,4 @@
 {"type":"complete","wuId":"WU-2105","timestamp":"2026-02-24T17:07:20.114Z"}
 {"type":"claim","wuId":"WU-2106","timestamp":"2026-02-24T17:11:25.934Z","lane":"Framework: Core Lifecycle","title":"Eliminate residual hardcoded docs-layout literals and audit config-driven abstraction"}
 {"type":"complete","wuId":"WU-2106","timestamp":"2026-02-24T18:11:41.857Z"}
+{"type":"claim","wuId":"WU-2107","timestamp":"2026-02-24T18:57:18.993Z","lane":"Framework: CLI WU Commands","title":"Wire version-policy.yaml into pnpm release and bump to 3.4.0"}

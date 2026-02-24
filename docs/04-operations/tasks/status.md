@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2107 — Wire version-policy.yaml into pnpm release and bump to 3.4.0](wu/WU-2107.yaml)
 
 ## Completed
 
