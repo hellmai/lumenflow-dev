@@ -188,6 +188,34 @@ pnpm orchestrate:initiative --initiative INIT-001 --checkpoint-per-wave
 
 This spawns agents for the current wave, then exits. Run again to process the next wave.
 
+**How checkpoint-per-wave works:**
+
+1. The orchestrator groups WUs by dependency depth using topological sorting (Kahn's algorithm)
+2. Each group becomes a "wave" -- all WUs in a wave can run in parallel
+3. With `--checkpoint-per-wave` (or `-c`), the orchestrator spawns agents for one wave, writes a manifest, then exits
+4. Re-running the same command advances to the next wave (idempotent -- already-completed WUs are skipped)
+
+**Wave manifest location:**
+
+Manifests are written to `.lumenflow/artifacts/waves/` with the naming convention `INIT-XXX-wave-N.json`. Each manifest records:
+
+- Wave number and WU IDs in that wave
+- Spawn timestamps and agent IDs
+- Completion status per WU
+
+**Idempotent re-runs:**
+
+If the orchestrator is interrupted or an agent crashes mid-wave, re-running `orchestrate:initiative` will:
+
+- Skip WUs that already have `status: done`
+- Re-spawn agents for WUs that are still `ready` or `in_progress`
+- Advance to the next wave only when all WUs in the current wave are complete
+
+<Aside type="tip">
+  Checkpoint mode is auto-enabled for initiatives with more than 3 WUs or more than 2 waves. You
+  can always pass `-c` explicitly for smaller initiatives if you prefer the wave-by-wave approach.
+</Aside>
+
 ### Continuous Execution
 
 ```bash
@@ -206,6 +234,258 @@ pnpm orchestrate:init-status -i INIT-001  # Compact progress view
 
 Shows signals from spawned agents. Use `mem:inbox --since <duration>` to check for
 coordination signals between waves.
+
+## Delegation
+
+When orchestrating an initiative, you delegate individual WUs to sub-agents. LumenFlow provides two commands for this, plus a way to inspect the delegation tree.
+
+### wu:brief -- Generate Handoff Prompt
+
+`wu:brief` generates a complete context-loaded prompt for a sub-agent without any side effects:
+
+```bash
+pnpm wu:brief --id WU-100 --client claude-code
+```
+
+The generated prompt includes:
+
+- Context loading preamble (LUMENFLOW.md, constraints, WU YAML)
+- Full acceptance criteria from the WU spec
+- TDD directives and constraints block
+- Truncation sentinels for verification
+
+Use `wu:brief` when you want to review the prompt before spawning, or when delegation lineage tracking is not needed.
+
+### wu:delegate -- Generate Prompt with Lineage
+
+`wu:delegate` does everything `wu:brief` does, plus records an auditable delegation record:
+
+```bash
+pnpm wu:delegate --id WU-100 --parent-wu WU-050 --client claude-code
+```
+
+The delegation record captures:
+
+- Parent WU (the orchestrator's own WU or a coordination WU)
+- Child WU (the delegated work)
+- Timestamp and client type
+- Delegation state (`pending`, `completed`, `timeout`, `crashed`, `escalated`)
+
+Use `wu:delegate` for initiative work where you need traceability of who-delegated-what.
+
+### delegation:list -- Inspect the Tree
+
+View the delegation tree for a specific WU or an entire initiative:
+
+```bash
+# View delegation tree for a WU
+pnpm delegation:list --wu WU-050
+
+# View all delegations for an initiative
+pnpm delegation:list --initiative INIT-001
+
+# JSON output for scripting
+pnpm delegation:list --wu WU-050 --json
+```
+
+### When NOT to Use wu:brief/wu:delegate
+
+Do not use these commands for helper agents working on your own WU:
+
+- **Code reviewer** checking your changes -- use inline context
+- **Test engineer** validating your implementation -- use inline context
+- **Explore agents** for codebase research -- use inline context
+
+These helper agents do not need the full WU handoff prompt because they are assisting with your WU, not taking ownership of a separate one.
+
+## Memory Coordination
+
+During initiative orchestration, agents communicate through the memory layer using signals and an inbox. This is how the orchestrator knows when waves complete and how agents coordinate handoffs.
+
+### Sending Signals
+
+Agents broadcast progress using `mem:signal`:
+
+```bash
+# Agent completing WU-100 broadcasts completion
+pnpm mem:signal "WU-100 complete: auth API merged to main" --wu WU-100
+```
+
+Signals are append-only (they produce immutable receipts) and are written to `.lumenflow/memory/signals.jsonl`.
+
+### Reading the Inbox
+
+The orchestrator (or any interested agent) reads signals via `mem:inbox`:
+
+```bash
+# Check all recent signals
+pnpm mem:inbox --since 30m
+
+# Filter to a specific lane
+pnpm mem:inbox --lane "Framework: Core"
+
+# Filter to a specific WU
+pnpm mem:inbox --wu WU-100
+
+# Filter by signal type (e.g., spawn failures only)
+pnpm mem:inbox --wu WU-100 --type spawn_failure
+
+# Read without marking as read
+pnpm mem:inbox --no-mark
+
+# Watch mode for real-time coordination
+pnpm mem:inbox --since 1h --watch
+```
+
+### Between-Wave Coordination Pattern
+
+When using checkpoint-per-wave execution, the typical coordination flow is:
+
+<Steps>
+
+1. **Orchestrator spawns Wave 1 agents**
+
+   ```bash
+   pnpm orchestrate:initiative -i INIT-001 -c
+   ```
+
+2. **Agents broadcast completion signals as they finish**
+
+   Each agent runs `mem:signal` as part of `wu:done`.
+
+3. **Orchestrator checks inbox before spawning Wave 2**
+
+   ```bash
+   pnpm mem:inbox --since 1h
+   pnpm orchestrate:init-status -i INIT-001
+   ```
+
+4. **Orchestrator spawns next wave**
+
+   ```bash
+   pnpm orchestrate:initiative -i INIT-001 -c
+   ```
+
+</Steps>
+
+### Checkpoint Signals
+
+Agents can also create checkpoints for progress tracking within long-running WUs:
+
+```bash
+# Save progress checkpoint
+pnpm mem:checkpoint "Completed port definitions, starting tests" --wu WU-100
+
+# Query pending checkpoints
+pnpm mem:ready --wu WU-100
+```
+
+Checkpoints are useful for context recovery if an agent hits context limits or crashes mid-WU. The next agent (or resumed session) can read the checkpoint to understand where work left off.
+
+## Failure Recovery
+
+When agents get stuck, crash, or produce incorrect results during initiative execution, the orchestration system provides a structured escalation path.
+
+### Escalation Levels
+
+| Attempt | Severity   | Action           | Outcome                                          |
+| ------- | ---------- | ---------------- | ------------------------------------------------ |
+| 1st     | `warning`  | Retry            | Re-spawn the agent with the same parameters      |
+| 2nd     | `error`    | Block            | Mark the WU as blocked, notify parallel agents   |
+| 3rd+    | `critical` | Human escalation | Create a Bug WU, alert a human operator          |
+
+### Detecting Stuck Agents
+
+The `orchestrate:monitor` command detects agents that have been running longer than expected:
+
+```bash
+# Default threshold: 30 minutes
+pnpm orchestrate:monitor
+
+# Custom threshold
+pnpm orchestrate:monitor --threshold 60
+
+# Filter to a specific initiative
+pnpm orchestrate:monitor --initiative INIT-001
+
+# JSON output for scripting
+pnpm orchestrate:monitor --json
+```
+
+When stuck agents are detected, the monitor outputs copy-paste recovery commands.
+
+### Self-Healing Signal Flow
+
+The system uses an agent-in-loop recovery pattern:
+
+```
+orchestrate:monitor
+      │
+      ▼
+detectStuckSpawns() ──► recoverStuckSpawn()
+                              │
+                              ▼
+                  [auto-recovery failed?]
+                              │
+                              ▼
+                  signalOrchestratorFailure()
+                              │
+              ┌───────────────┴───────────────┐
+              ▼                               ▼
+     mem:signal broadcast           spawn status = ESCALATED
+              │
+              ▼
+     ORCHESTRATOR INBOX
+     (agent-in-loop)
+              │
+              ▼
+     [orchestrator decides]
+```
+
+### Recovery Commands
+
+When issues are detected, use these commands to recover:
+
+```bash
+# For stuck spawns -- block the WU and investigate
+pnpm wu:block --id WU-100 --reason "Spawn stuck for 45 minutes"
+
+# For zombie lane locks -- unlock and re-delegate
+pnpm lane:unlock "Framework: Core" --reason "Zombie lock (PID 12345 not running)"
+
+# Check the orchestrator inbox for failure signals
+pnpm mem:inbox --wu WU-100 --type spawn_failure
+
+# After recovery, unblock and re-delegate
+pnpm wu:unblock --id WU-100
+pnpm wu:brief --id WU-100 --client claude-code
+```
+
+### Handling Abandoned WUs
+
+If an agent crashes and leaves a worktree behind:
+
+```bash
+# Check for stuck agents across all initiatives
+pnpm orchestrate:monitor
+
+# Review the abandoned worktree
+cd worktrees/<lane>-wu-xxx
+git log --oneline -5  # See what the agent committed
+git status            # Check for uncommitted work
+
+# Option A: Resume the WU (take over)
+# Continue working from where the agent left off
+
+# Option B: Release and re-assign
+pnpm wu:release --id WU-100
+pnpm wu:claim --id WU-100 --lane "Framework: Core"
+```
+
+<Aside type="caution">
+  Before taking over an abandoned WU, always check `mem:ready --wu WU-XXX` for the agent's last
+  checkpoint. This tells you where they left off and what remains.
+</Aside>
 
 ## Editing Initiatives
 
@@ -350,20 +630,26 @@ What could go wrong and mitigation strategies
 
 ## CLI Reference
 
-| Command                        | Description            |
-| ------------------------------ | ---------------------- |
-| `pnpm initiative:create`       | Create new initiative  |
-| `pnpm initiative:edit`         | Edit initiative YAML   |
-| `pnpm initiative:list`         | List all initiatives   |
-| `pnpm initiative:status`       | Detailed status view   |
-| `pnpm initiative:add-wu`       | Link WU to initiative  |
-| `pnpm initiative:bulk-assign`  | Bulk assign WUs        |
-| `pnpm orchestrate:initiative`  | Orchestrate execution  |
-| `pnpm orchestrate:init-status` | Compact status view    |
-| `pnpm orchestrate:monitor`     | Monitor agent progress |
+| Command                        | Description                             |
+| ------------------------------ | --------------------------------------- |
+| `pnpm initiative:create`       | Create new initiative                   |
+| `pnpm initiative:edit`         | Edit initiative YAML                    |
+| `pnpm initiative:list`         | List all initiatives                    |
+| `pnpm initiative:status`       | Detailed status view                    |
+| `pnpm initiative:add-wu`       | Link WU to initiative                   |
+| `pnpm initiative:bulk-assign`  | Bulk assign WUs                         |
+| `pnpm orchestrate:initiative`  | Orchestrate execution                   |
+| `pnpm orchestrate:init-status` | Compact status view                     |
+| `pnpm orchestrate:monitor`     | Monitor agent progress                  |
+| `pnpm wu:brief`                | Generate handoff prompt for delegation  |
+| `pnpm wu:delegate`             | Generate prompt with delegation lineage |
+| `pnpm delegation:list`         | View delegation tree                    |
+| `pnpm mem:signal`              | Broadcast coordination signal           |
+| `pnpm mem:inbox`               | Read coordination signals               |
+| `pnpm mem:checkpoint`          | Save progress checkpoint                |
 
 ## Next Steps
 
-- [Flow Metrics](/packs/software-delivery/advanced/metrics) – Track delivery performance
-- [AI Agents](/packs/software-delivery/agents/ai-agent-integration) – Agent orchestration
-- [Work Units](/packs/software-delivery/concepts/work-units) – WU fundamentals
+- [Flow Metrics](/packs/software-delivery/advanced/metrics) -- Track delivery performance
+- [AI Agents](/packs/software-delivery/agents/ai-agent-integration) -- Agent orchestration
+- [Work Units](/packs/software-delivery/concepts/work-units) -- WU fundamentals

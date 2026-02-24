@@ -627,3 +627,4 @@ rm -rf /tmp/nextjs-scaffold
 - [troubleshooting-wu-done.md](troubleshooting-wu-done.md) - Why agents forget wu:done
 - [first-wu-mistakes.md](first-wu-mistakes.md) - Common mistakes to avoid
 - [quick-ref-commands.md](quick-ref-commands.md) - Command reference
+- [initiative-orchestration.md](initiative-orchestration.md) - Initiative orchestration, delegation, recovery

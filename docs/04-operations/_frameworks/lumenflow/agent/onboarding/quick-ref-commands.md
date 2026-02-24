@@ -347,6 +347,8 @@ pnpm initiative:edit --id INIT-025 --phase-id 1 --phase-status in_progress
 | `pnpm orchestrate:monitor`                   | Monitor delegation/agent activity |
 | `pnpm delegation:list`                       | List active delegation records    |
 
+For the complete orchestration workflow (delegation, memory coordination, failure recovery, checkpoint-per-wave mechanics), see [initiative-orchestration.md](initiative-orchestration.md).
+
 ---
 
 ## Metrics & Flow
