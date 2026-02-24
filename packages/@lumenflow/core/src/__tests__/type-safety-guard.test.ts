@@ -138,10 +138,7 @@ function getLineText(sourceText: string, lineNumber: number): string {
  * generic arguments, type assertions, and any other position where
  * UnsafeAny appears as a type reference.
  */
-function scanForUnsafeAnyReferences(
-  sourceText: string,
-  fileName: string,
-): UnsafeAnyViolation[] {
+function scanForUnsafeAnyReferences(sourceText: string, fileName: string): UnsafeAnyViolation[] {
   const sourceFile = ts.createSourceFile(
     fileName,
     sourceText,
@@ -158,8 +155,7 @@ function scanForUnsafeAnyReferences(
       ts.isIdentifier(node.typeName) &&
       node.typeName.text === UNSAFE_ANY_TYPE_NAME
     ) {
-      const line =
-        sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
+      const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
       violations.push({
         file: normalizePath(fileName),
         line,
@@ -183,13 +179,8 @@ function scanFileForUnsafeAny(filePath: string): UnsafeAnyViolation[] {
   return scanForUnsafeAnyReferences(sourceText, filePath);
 }
 
-function formatViolationReport(
-  violations: UnsafeAnyViolation[],
-  maxLines: number = 20,
-): string {
-  const lines = violations
-    .slice(0, maxLines)
-    .map((v) => `  ${v.file}:${v.line} ${v.snippet}`);
+function formatViolationReport(violations: UnsafeAnyViolation[], maxLines: number = 20): string {
+  const lines = violations.slice(0, maxLines).map((v) => `  ${v.file}:${v.line} ${v.snippet}`);
 
   if (violations.length > maxLines) {
     lines.push(`  ... and ${violations.length - maxLines} more`);
@@ -215,8 +206,7 @@ function loadBaseline(): number | null {
 
 function persistBaseline(count: number): void {
   const data: BaselineData = {
-    description:
-      'Ratcheting baseline for UnsafeAny type alias usage. Count must not increase.',
+    description: 'Ratcheting baseline for UnsafeAny type alias usage. Count must not increase.',
     wuId: 'WU-2110',
     lastUpdated: new Date().toISOString().split('T')[0],
     baseline: count,
@@ -329,18 +319,11 @@ describe('WU-2110: UnsafeAny ratcheting regression guard', () => {
 
       // Log ratchet status for visibility
       const delta = savedBaseline - currentCount;
-      const status =
-        delta > 0
-          ? `IMPROVED: reduced by ${delta}`
-          : 'STABLE: no change';
-      console.log(
-        `UnsafeAny ratchet: ${currentCount} (baseline: ${savedBaseline}) -- ${status}`,
-      );
+      const status = delta > 0 ? `IMPROVED: reduced by ${delta}` : 'STABLE: no change';
+      console.log(`UnsafeAny ratchet: ${currentCount} (baseline: ${savedBaseline}) -- ${status}`);
     } else {
       // First run: baseline established
-      console.log(
-        `UnsafeAny ratchet: baseline established at ${currentCount} references`,
-      );
+      console.log(`UnsafeAny ratchet: baseline established at ${currentCount} references`);
     }
 
     // The test itself passes as long as count does not increase
@@ -350,15 +333,9 @@ describe('WU-2110: UnsafeAny ratcheting regression guard', () => {
   it('would fail if a new UnsafeAny usage were added', () => {
     // Simulate: existing code + one new UnsafeAny reference
     const existingSource = 'const safe: string = "hello";';
-    const newSource = [
-      existingSource,
-      'const data: UnsafeAny = JSON.parse("{}");',
-    ].join('\n');
+    const newSource = [existingSource, 'const data: UnsafeAny = JSON.parse("{}");'].join('\n');
 
-    const existingViolations = scanForUnsafeAnyReferences(
-      existingSource,
-      'fixtures/existing.ts',
-    );
+    const existingViolations = scanForUnsafeAnyReferences(existingSource, 'fixtures/existing.ts');
     const newViolations = scanForUnsafeAnyReferences(newSource, 'fixtures/new.ts');
 
     // Adding UnsafeAny increases the count
