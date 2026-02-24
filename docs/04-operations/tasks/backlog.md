@@ -20,20 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2128 — Standardize error return contracts: ports throw, adapters return Result, CLI catches](wu/WU-2128.yaml) — Framework: Core Lifecycle
-- [WU-2127 — Split monolithic enforcement-checks module into focused path-utils, config-resolver, git-status-parser, dirty-guard modules](wu/WU-2127.yaml) — Framework: Core Lifecycle
-- [WU-2126 — Wire clearConfigCache() to config-mutating operations (wu:done, config:set)](wu/WU-2126.yaml) — Framework: Core Lifecycle
-- [WU-2125 — Extract shared YAML parse logic from readWU() and readWUAsync() into helper](wu/WU-2125.yaml) — Framework: Core Lifecycle
-- [WU-2124 — Extract shared path factory in core to replace 3 independent resolution patterns](wu/WU-2124.yaml) — Framework: Core Lifecycle
-- [WU-2123 — Deduplicate GateLogContext type defined in both gate-registry.ts and gates-utils.ts](wu/WU-2123.yaml) — Framework: CLI WU Commands
-- [WU-2122 — Move hardcoded escalation email from wu-schema.ts to workspace.yaml](wu/WU-2122.yaml) — Framework: Core Lifecycle
-- [WU-2121 — Replace raw .endsWith('.yaml') file extension literals with FILE_EXTENSIONS constants](wu/WU-2121.yaml) — Framework: Core Lifecycle
-- [WU-2120 — Create ENV*VARS constant and migrate raw LUMENFLOW* env var references](wu/WU-2120.yaml) — Framework: Core Lifecycle
-- [WU-2119 — Reduce UnsafeAny usage in highest-churn hotspot files](wu/WU-2119.yaml) — Framework: Core Lifecycle
-- [WU-2118 — Migrate throw new Error() to createError() in mcp, memory, initiatives, agent, metrics (batch)](wu/WU-2118.yaml) — Framework: Core Lifecycle
-- [WU-2117 — Migrate throw new Error() to createError() in @lumenflow/cli (batch)](wu/WU-2117.yaml) — Framework: CLI WU Commands
-- [WU-2116 — Migrate throw new Error() to createError() in @lumenflow/core (batch)](wu/WU-2116.yaml) — Framework: Core Lifecycle
-- [WU-2115 — Add Zod schema validation to writeWU() before writing YAML](wu/WU-2115.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2108 — Fix ESLint boundary plugin config to match actual hex directory names](wu/WU-2108.yaml) — Operations: Tooling
@@ -43,6 +29,20 @@ sections:
 - [WU-2112 — Add optional AST guard preventing reintroduction of as any casts](wu/WU-2112.yaml) — Framework: Core Lifecycle
 - [WU-2113 — Extend path-literal-guard with ENV_VARS constant and ban raw LUMENFLOW\_ env var strings](wu/WU-2113.yaml) — Framework: Core Lifecycle
 - [WU-2114 — Extend path-literal-guard to ban raw file extension literals like .yaml .json .md](wu/WU-2114.yaml) — Framework: Core Lifecycle
+- [WU-2115 — Add Zod schema validation to writeWU() before writing YAML](wu/WU-2115.yaml) — Framework: Core Lifecycle
+- [WU-2116 — Migrate throw new Error() to createError() in @lumenflow/core (batch)](wu/WU-2116.yaml) — Framework: Core Lifecycle
+- [WU-2117 — Migrate throw new Error() to createError() in @lumenflow/cli (batch)](wu/WU-2117.yaml) — Framework: CLI WU Commands
+- [WU-2118 — Migrate throw new Error() to createError() in mcp, memory, initiatives, agent, metrics (batch)](wu/WU-2118.yaml) — Framework: Core Lifecycle
+- [WU-2119 — Reduce UnsafeAny usage in highest-churn hotspot files](wu/WU-2119.yaml) — Framework: Core Lifecycle
+- [WU-2120 — Create ENV_VARS constant and migrate raw LUMENFLOW\_ env var references](wu/WU-2120.yaml) — Framework: Core Lifecycle
+- [WU-2121 — Replace raw .endsWith('.yaml') file extension literals with FILE_EXTENSIONS constants](wu/WU-2121.yaml) — Framework: Core Lifecycle
+- [WU-2122 — Move hardcoded escalation email from wu-schema.ts to workspace.yaml](wu/WU-2122.yaml) — Framework: Core Lifecycle
+- [WU-2123 — Deduplicate GateLogContext type defined in both gate-registry.ts and gates-utils.ts](wu/WU-2123.yaml) — Framework: CLI WU Commands
+- [WU-2124 — Extract shared path factory in core to replace 3 independent resolution patterns](wu/WU-2124.yaml) — Framework: Core Lifecycle
+- [WU-2125 — Extract shared YAML parse logic from readWU() and readWUAsync() into helper](wu/WU-2125.yaml) — Framework: Core Lifecycle
+- [WU-2126 — Wire clearConfigCache() to config-mutating operations (wu:done, config:set)](wu/WU-2126.yaml) — Framework: Core Lifecycle
+- [WU-2127 — Split monolithic enforcement-checks module into focused path-utils, config-resolver, git-status-parser, dirty-guard modules](wu/WU-2127.yaml) — Framework: Core Lifecycle
+- [WU-2128 — Standardize error return contracts: ports throw, adapters return Result, CLI catches](wu/WU-2128.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
