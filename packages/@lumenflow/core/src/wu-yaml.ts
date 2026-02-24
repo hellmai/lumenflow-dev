@@ -79,6 +79,50 @@ export const YAML_STRINGIFY_OPTIONS = Object.freeze({
 });
 
 /**
+ * WU-2125: Parse YAML content string into a validated object.
+ *
+ * Shared parse boundary for all read functions. Wraps YAML parse errors
+ * with structured error codes and path context.
+ *
+ * @param {string} text - Raw YAML content
+ * @param {string} sourcePath - File path (for error messages)
+ * @returns {Record<string, unknown>} Parsed document
+ * @throws {Error} YAML_PARSE_ERROR if YAML is invalid
+ */
+function parseWUYaml(text: string, sourcePath: string): Record<string, unknown> {
+  try {
+    return parse(text) as Record<string, unknown>;
+  } catch (e: unknown) {
+    const msg = getErrorMessage(e);
+    throw createError(ErrorCodes.YAML_PARSE_ERROR, `Failed to parse YAML ${sourcePath}: ${msg}`, {
+      path: sourcePath,
+      originalError: msg,
+    });
+  }
+}
+
+/**
+ * WU-2125: Validate that a parsed WU document's id field matches the expected ID.
+ *
+ * @param {unknown} doc - Parsed YAML document (may be null for empty files)
+ * @param {string} expectedId - Expected WU ID (e.g., 'WU-123')
+ * @param {string} wuPath - File path (for error messages)
+ * @returns {Record<string, unknown>} Validated document
+ * @throws {Error} WU_NOT_FOUND if doc is null or ID does not match
+ */
+function validateWUId(doc: unknown, expectedId: string, wuPath: string): Record<string, unknown> {
+  const parsed = doc as Record<string, unknown> | null;
+  if (!parsed || parsed.id !== expectedId) {
+    throw createError(
+      ErrorCodes.WU_NOT_FOUND,
+      `WU YAML id mismatch. Expected ${expectedId}, found ${parsed && parsed.id}`,
+      { path: wuPath, expectedId, foundId: parsed && parsed.id },
+    );
+  }
+  return parsed;
+}
+
+/**
  * Read and parse WU YAML file.
  *
  * Validates:
@@ -100,29 +144,8 @@ export function readWU(wuPath: string, expectedId: string): Record<string, unkno
   }
 
   const text = readFileSync(wuPath, { encoding: 'utf-8' });
-  let doc: unknown;
-
-  try {
-    doc = parse(text);
-  } catch (e: unknown) {
-    const msg = getErrorMessage(e);
-    throw createError(ErrorCodes.YAML_PARSE_ERROR, `Failed to parse YAML ${wuPath}: ${msg}`, {
-      path: wuPath,
-      originalError: msg,
-    });
-  }
-
-  // Validate ID matches
-  const parsed = doc as Record<string, unknown> | null;
-  if (!parsed || parsed.id !== expectedId) {
-    throw createError(
-      ErrorCodes.WU_NOT_FOUND,
-      `WU YAML id mismatch. Expected ${expectedId}, found ${parsed && parsed.id}`,
-      { path: wuPath, expectedId, foundId: parsed && parsed.id },
-    );
-  }
-
-  return parsed as Record<string, unknown>;
+  const doc = parseWUYaml(text, wuPath);
+  return validateWUId(doc, expectedId, wuPath);
 }
 
 /**
@@ -144,29 +167,8 @@ export async function readWUAsync(
 ): Promise<Record<string, unknown>> {
   try {
     const text = await fs.readFile(wuPath, { encoding: 'utf-8' });
-    let doc: unknown;
-
-    try {
-      doc = parse(text);
-    } catch (e: unknown) {
-      const msg = getErrorMessage(e);
-      throw createError(ErrorCodes.YAML_PARSE_ERROR, `Failed to parse YAML ${wuPath}: ${msg}`, {
-        path: wuPath,
-        originalError: msg,
-      });
-    }
-
-    // Validate ID matches
-    const parsed = doc as Record<string, unknown> | null;
-    if (!parsed || parsed.id !== expectedId) {
-      throw createError(
-        ErrorCodes.WU_NOT_FOUND,
-        `WU YAML id mismatch. Expected ${expectedId}, found ${parsed && parsed.id}`,
-        { path: wuPath, expectedId, foundId: parsed && parsed.id },
-      );
-    }
-
-    return parsed as Record<string, unknown>;
+    const doc = parseWUYaml(text, wuPath);
+    return validateWUId(doc, expectedId, wuPath);
   } catch (err: unknown) {
     const errObj = err as { code?: string };
     if (errObj.code === 'ENOENT') {
@@ -219,16 +221,7 @@ export function readWURaw(yamlPath: string): Record<string, unknown> {
   }
 
   const text = readFileSync(yamlPath, { encoding: 'utf-8' });
-
-  try {
-    return parse(text) as Record<string, unknown>;
-  } catch (e: unknown) {
-    const msg = getErrorMessage(e);
-    throw createError(ErrorCodes.YAML_PARSE_ERROR, `Failed to parse YAML ${yamlPath}: ${msg}`, {
-      path: yamlPath,
-      originalError: msg,
-    });
-  }
+  return parseWUYaml(text, yamlPath);
 }
 
 /**
@@ -242,16 +235,7 @@ export function readWURaw(yamlPath: string): Record<string, unknown> {
 export async function readWURawAsync(yamlPath: string): Promise<Record<string, unknown>> {
   try {
     const text = await fs.readFile(yamlPath, { encoding: 'utf-8' });
-
-    try {
-      return parse(text) as Record<string, unknown>;
-    } catch (e: unknown) {
-      const msg = getErrorMessage(e);
-      throw createError(ErrorCodes.YAML_PARSE_ERROR, `Failed to parse YAML ${yamlPath}: ${msg}`, {
-        path: yamlPath,
-        originalError: msg,
-      });
-    }
+    return parseWUYaml(text, yamlPath);
   } catch (err: unknown) {
     const errObj = err as { code?: string };
     if (errObj.code === 'ENOENT') {
