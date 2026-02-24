@@ -2169,3 +2169,4 @@
 {"type":"complete","wuId":"WU-2108","timestamp":"2026-02-24T20:00:06.626Z"}
 {"type":"complete","wuId":"WU-2109","timestamp":"2026-02-24T20:01:02.038Z"}
 {"type":"claim","wuId":"WU-2110","timestamp":"2026-02-24T20:08:08.932Z","lane":"Framework: Core Lifecycle","title":"Add ratcheting AST guard for UnsafeAny type alias usage"}
+{"type":"claim","wuId":"WU-2123","timestamp":"2026-02-24T20:10:07.626Z","lane":"Framework: CLI WU Commands","title":"Deduplicate GateLogContext type defined in both gate-registry.ts and gates-utils.ts"}

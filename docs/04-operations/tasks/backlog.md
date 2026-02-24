@@ -34,7 +34,6 @@ sections:
 - [WU-2120 — Create ENV_VARS constant and migrate raw LUMENFLOW\_ env var references](wu/WU-2120.yaml) — Framework: Core Lifecycle
 - [WU-2121 — Replace raw .endsWith('.yaml') file extension literals with FILE_EXTENSIONS constants](wu/WU-2121.yaml) — Framework: Core Lifecycle
 - [WU-2122 — Move hardcoded escalation email from wu-schema.ts to workspace.yaml](wu/WU-2122.yaml) — Framework: Core Lifecycle
-- [WU-2123 — Deduplicate GateLogContext type defined in both gate-registry.ts and gates-utils.ts](wu/WU-2123.yaml) — Framework: CLI WU Commands
 - [WU-2124 — Extract shared path factory in core to replace 3 independent resolution patterns](wu/WU-2124.yaml) — Framework: Core Lifecycle
 - [WU-2125 — Extract shared YAML parse logic from readWU() and readWUAsync() into helper](wu/WU-2125.yaml) — Framework: Core Lifecycle
 - [WU-2126 — Wire clearConfigCache() to config-mutating operations (wu:done, config:set)](wu/WU-2126.yaml) — Framework: Core Lifecycle
@@ -44,6 +43,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-2110 — Add ratcheting AST guard for UnsafeAny type alias usage](wu/WU-2110.yaml) — Framework: Core Lifecycle
+- [WU-2123 — Deduplicate GateLogContext type defined in both gate-registry.ts and gates-utils.ts](wu/WU-2123.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
