@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-- [WU-2133 — Restore enforcement guard integrity in core](wu/WU-2133.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1058,3 +1058,4 @@ _Last updated: 2026-02-24_
 - [WU-2127 — Split monolithic enforcement-checks module into focused path-utils, config-resolver, git-status-parser, dirty-guard modules](wu/WU-2127.yaml) — 2026-02-24
 - [WU-2126 — Wire clearConfigCache() to config-mutating operations (wu:done, config:set)](wu/WU-2126.yaml) — 2026-02-24
 - [WU-2128 — Standardize error return contracts: ports throw, adapters return Result, CLI catches](wu/WU-2128.yaml) — 2026-02-24
+- [WU-2133 — Restore enforcement guard integrity in core](wu/WU-2133.yaml) — 2026-02-24
