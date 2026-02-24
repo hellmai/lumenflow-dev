@@ -631,7 +631,10 @@ export async function validate(
     case VALIDATION_MODES.LANE: {
       const { lane } = options;
       if (!lane) {
-        throw createError(ErrorCodes.INVALID_ARGUMENT, 'Lane name is required for lane validation mode');
+        throw createError(
+          ErrorCodes.INVALID_ARGUMENT,
+          'Lane name is required for lane validation mode',
+        );
       }
       return validateLanePatterns(codePaths, lane);
     }

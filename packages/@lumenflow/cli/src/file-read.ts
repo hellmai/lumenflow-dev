@@ -18,6 +18,7 @@
 
 import { readFile, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { createError, ErrorCodes } from '@lumenflow/core';
 
 /**
  * Default configuration for file read operations
@@ -166,14 +167,15 @@ export async function readFileWithAudit(args: FileReadArgs): Promise<FileReadRes
   try {
     // Validate path
     if (!filePath) {
-      throw new Error('Path is required');
+      throw createError(ErrorCodes.INVALID_ARGUMENT, 'Path is required');
     }
 
     // Check file size before reading
     const fileStats = await stat(filePath);
 
     if (fileStats.size > maxSize) {
-      throw new Error(
+      throw createError(
+        ErrorCodes.FILE_SIZE_EXCEEDED,
         `File size (${fileStats.size} bytes) exceeds maximum allowed (${maxSize} bytes)`,
       );
     }

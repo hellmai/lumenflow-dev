@@ -22,6 +22,8 @@ import {
   generatePackAuthoringArtifacts,
   PACK_AUTHORING_TEMPLATE_IDS,
   PackAuthoringRequestSchema,
+  createError,
+  ErrorCodes,
   type PackAuthorTemplateConfig,
   type PackAuthoringRequest,
 } from '@lumenflow/core';
@@ -110,13 +112,19 @@ function parseCsvList(input: string): string[] {
 
 function ensureSafeRelativePath(packDir: string, filePath: string): string {
   if (isAbsolute(filePath)) {
-    throw new Error(`Generated file path "${filePath}" must be relative.`);
+    throw createError(
+      ErrorCodes.SCOPE_VIOLATION,
+      `Generated file path "${filePath}" must be relative.`,
+    );
   }
 
   const resolvedPath = resolve(packDir, filePath);
   const relativePath = relative(packDir, resolvedPath);
   if (relativePath.startsWith('..') || relativePath === '..' || relativePath.length === 0) {
-    throw new Error(`Generated file path "${filePath}" escapes the pack directory.`);
+    throw createError(
+      ErrorCodes.SCOPE_VIOLATION,
+      `Generated file path "${filePath}" escapes the pack directory.`,
+    );
   }
 
   return resolvedPath;
@@ -130,10 +138,10 @@ async function promptRequiredText(
   const value = await prompts.text(options);
   if (prompts.isCancel(value)) {
     prompts.cancel(cancelMessage);
-    throw new Error(CANCELLED_MESSAGE);
+    throw createError(ErrorCodes.CANCELLED_BY_USER, CANCELLED_MESSAGE);
   }
   if (typeof value !== 'string' || value.trim().length === 0) {
-    throw new Error(`Invalid input for "${options.message}".`);
+    throw createError(ErrorCodes.INVALID_ARGUMENT, `Invalid input for "${options.message}".`);
   }
   return value.trim();
 }
@@ -141,7 +149,7 @@ async function promptRequiredText(
 function assertNotCancelled<T>(prompts: PromptClient, value: T | symbol): T {
   if (prompts.isCancel(value)) {
     prompts.cancel(CANCELLED_MESSAGE);
-    throw new Error(CANCELLED_MESSAGE);
+    throw createError(ErrorCodes.CANCELLED_BY_USER, CANCELLED_MESSAGE);
   }
   return value as T;
 }
@@ -187,9 +195,13 @@ export async function loadPackAuthoringRequestFromSpec(
     rawContent = await readFile(absoluteSpecPath, UTF8_ENCODING);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    throw new Error(`Failed to read spec file "${absoluteSpecPath}": ${message}`, {
-      cause: error,
-    });
+    throw createError(
+      ErrorCodes.FILE_NOT_FOUND,
+      `Failed to read spec file "${absoluteSpecPath}": ${message}`,
+      {
+        cause: error,
+      },
+    );
   }
 
   let parsedSpec: unknown;
@@ -197,9 +209,13 @@ export async function loadPackAuthoringRequestFromSpec(
     parsedSpec = YAML.parse(rawContent) as unknown;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    throw new Error(`Failed to parse spec file "${absoluteSpecPath}": ${message}`, {
-      cause: error,
-    });
+    throw createError(
+      ErrorCodes.PARSE_ERROR,
+      `Failed to parse spec file "${absoluteSpecPath}": ${message}`,
+      {
+        cause: error,
+      },
+    );
   }
 
   return PackAuthoringRequestSchema.parse(parsedSpec);
@@ -259,7 +275,7 @@ export async function buildInteractivePackAuthoringRequest(
   );
   const taskTypes = parseCsvList(taskTypesInput);
   if (taskTypes.length === 0) {
-    throw new Error('At least one task type is required.');
+    throw createError(ErrorCodes.VALIDATION_ERROR, 'At least one task type is required.');
   }
 
   const templates: PackAuthorTemplateConfig[] = [];
@@ -384,7 +400,8 @@ export async function authorPack(options: AuthorPackOptions): Promise<AuthorPack
   const packDir = resolve(outputDir, parsedRequest.pack_id);
   if (existsSync(packDir)) {
     if (!force) {
-      throw new Error(
+      throw createError(
+        ErrorCodes.PACK_ALREADY_EXISTS,
         `Pack directory "${packDir}" already exists. Use --force to overwrite the generated pack.`,
       );
     }
@@ -410,7 +427,8 @@ export async function authorPack(options: AuthorPackOptions): Promise<AuthorPack
 
   const validation = await validatePack({ packRoot: packDir });
   if (validateGeneratedPack && !validation.allPassed) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
       `Generated pack "${parsedRequest.pack_id}" failed validation:\n${formatValidationReport(validation)}`,
     );
   }

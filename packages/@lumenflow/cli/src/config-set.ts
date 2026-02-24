@@ -18,6 +18,7 @@
  */
 
 import path from 'node:path';
+import { createError, ErrorCodes } from '@lumenflow/core';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import YAML from 'yaml';
 import type { ZodIssue } from 'zod';
@@ -128,11 +129,17 @@ export function parseConfigSetArgs(argv: string[]): ConfigSetOptions {
   }
 
   if (!key) {
-    throw new Error(`${ARG_KEY} is required. Run with ${ARG_HELP} for usage.`);
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
+      `${ARG_KEY} is required. Run with ${ARG_HELP} for usage.`,
+    );
   }
 
   if (value === undefined) {
-    throw new Error(`${ARG_VALUE} is required. Run with ${ARG_HELP} for usage.`);
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
+      `${ARG_VALUE} is required. Run with ${ARG_HELP} for usage.`,
+    );
   }
 
   return { key, value };
@@ -157,7 +164,10 @@ export function parseConfigGetArgs(argv: string[]): ConfigGetOptions {
   }
 
   if (!key) {
-    throw new Error(`${ARG_KEY} is required. Run with ${ARG_HELP} for usage.`);
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
+      `${ARG_KEY} is required. Run with ${ARG_HELP} for usage.`,
+    );
   }
 
   return { key };

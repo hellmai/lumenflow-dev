@@ -23,6 +23,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import ms from 'ms';
+import { createError, ErrorCodes } from '@lumenflow/core';
 import { watch as chokidarWatch } from 'chokidar';
 import { loadSignals, markSignalsAsRead } from '@lumenflow/memory/signal';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
@@ -143,7 +144,10 @@ export function parseTimeString(timeStr: string): Date {
   // Try ISO date or other date format
   const date = new Date(timeStr);
   if (isNaN(date.getTime())) {
-    throw new Error(`Invalid time format: ${timeStr}. Use "1h", "30m", "2d", or ISO date.`);
+    throw createError(
+      ErrorCodes.INVALID_DURATION,
+      `Invalid time format: ${timeStr}. Use "1h", "30m", "2d", or ISO date.`,
+    );
   }
   return date;
 }

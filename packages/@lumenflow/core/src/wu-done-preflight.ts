@@ -271,7 +271,10 @@ export async function validateAllPreCommitHooks(
     // WU-2308: Run from worktree context when provided to ensure audit checks
     // the worktree's dependencies (with fixes) not main's stale dependencies
     if (!options.runGates) {
-      throw createError(ErrorCodes.PREFLIGHT_ERROR, 'runGates not provided for pre-commit validation.');
+      throw createError(
+        ErrorCodes.PREFLIGHT_ERROR,
+        'runGates not provided for pre-commit validation.',
+      );
     }
 
     const ok = await options.runGates({

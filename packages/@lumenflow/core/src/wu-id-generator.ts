@@ -132,5 +132,8 @@ export async function generateWuIdWithRetry(options: GenerateOptions = {}): Prom
     await new Promise((resolve) => setTimeout(resolve, delay));
   }
 
-  throw createError(ErrorCodes.ID_GENERATION_FAILED, `Failed to generate unique WU ID after ${maxRetries} attempts`);
+  throw createError(
+    ErrorCodes.ID_GENERATION_FAILED,
+    `Failed to generate unique WU ID after ${maxRetries} attempts`,
+  );
 }

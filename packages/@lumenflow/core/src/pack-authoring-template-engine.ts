@@ -50,29 +50,47 @@ const StrictVersionSchema = z.string().regex(SEMVER_PATTERN, TEMPLATE_VALIDATION
 
 function validateScopePattern(scopePattern: string, allowBroadPattern: boolean): void {
   if (scopePattern.includes(NULL_BYTE)) {
-    throw createError(ErrorCodes.TEMPLATE_VALIDATION_ERROR, TEMPLATE_VALIDATION_MESSAGES.SCOPE_NULL_BYTE);
+    throw createError(
+      ErrorCodes.TEMPLATE_VALIDATION_ERROR,
+      TEMPLATE_VALIDATION_MESSAGES.SCOPE_NULL_BYTE,
+    );
   }
 
   if (SCOPE_TRAVERSAL_PATTERN.test(scopePattern)) {
-    throw createError(ErrorCodes.TEMPLATE_VALIDATION_ERROR, TEMPLATE_VALIDATION_MESSAGES.SCOPE_TRAVERSAL);
+    throw createError(
+      ErrorCodes.TEMPLATE_VALIDATION_ERROR,
+      TEMPLATE_VALIDATION_MESSAGES.SCOPE_TRAVERSAL,
+    );
   }
 
   const normalized = scopePattern.trim();
   if (!allowBroadPattern && DISALLOWED_SCOPE_PATTERNS.has(normalized)) {
-    throw createError(ErrorCodes.TEMPLATE_VALIDATION_ERROR, TEMPLATE_VALIDATION_MESSAGES.SCOPE_BROAD);
+    throw createError(
+      ErrorCodes.TEMPLATE_VALIDATION_ERROR,
+      TEMPLATE_VALIDATION_MESSAGES.SCOPE_BROAD,
+    );
   }
 }
 
 function validateAllowedUrl(value: string): void {
   const parsed = new URL(value);
   if (parsed.protocol !== 'https:') {
-    throw createError(ErrorCodes.TEMPLATE_VALIDATION_ERROR, TEMPLATE_VALIDATION_MESSAGES.HTTP_HTTPS);
+    throw createError(
+      ErrorCodes.TEMPLATE_VALIDATION_ERROR,
+      TEMPLATE_VALIDATION_MESSAGES.HTTP_HTTPS,
+    );
   }
   if (parsed.username.length > 0 || parsed.password.length > 0) {
-    throw createError(ErrorCodes.TEMPLATE_VALIDATION_ERROR, TEMPLATE_VALIDATION_MESSAGES.HTTP_CREDENTIALS);
+    throw createError(
+      ErrorCodes.TEMPLATE_VALIDATION_ERROR,
+      TEMPLATE_VALIDATION_MESSAGES.HTTP_CREDENTIALS,
+    );
   }
   if (parsed.search.length > 0 || parsed.hash.length > 0) {
-    throw createError(ErrorCodes.TEMPLATE_VALIDATION_ERROR, TEMPLATE_VALIDATION_MESSAGES.HTTP_FRAGMENT_QUERY);
+    throw createError(
+      ErrorCodes.TEMPLATE_VALIDATION_ERROR,
+      TEMPLATE_VALIDATION_MESSAGES.HTTP_FRAGMENT_QUERY,
+    );
   }
 }
 
@@ -239,7 +257,10 @@ function deriveScopePrefix(scopePattern: string): string {
   const prefixCandidate = wildcardIndex === -1 ? trimmed : trimmed.slice(0, wildcardIndex);
   const normalizedPrefix = prefixCandidate.replace(/^\.?\//, '').replace(/\/+$/, '');
   if (normalizedPrefix.length === 0) {
-    throw createError(ErrorCodes.TEMPLATE_VALIDATION_ERROR, TEMPLATE_VALIDATION_MESSAGES.SCOPE_BROAD);
+    throw createError(
+      ErrorCodes.TEMPLATE_VALIDATION_ERROR,
+      TEMPLATE_VALIDATION_MESSAGES.SCOPE_BROAD,
+    );
   }
   return normalizedPrefix;
 }

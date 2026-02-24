@@ -96,7 +96,10 @@ export function parseSpawnArgs(argv: UnsafeAny) {
 export function validateSpawnArgs(args: UnsafeAny) {
   // Check mutually exclusive flags
   if (args.thinking && args.noThinking) {
-    throw createError(ErrorCodes.INVALID_ARGUMENT, '--thinking and --no-thinking are mutually exclusive');
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
+      '--thinking and --no-thinking are mutually exclusive',
+    );
   }
 
   // Budget requires thinking

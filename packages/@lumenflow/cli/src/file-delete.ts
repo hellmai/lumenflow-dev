@@ -18,6 +18,7 @@
 
 import { rm, stat, readdir } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
+import { createError, ErrorCodes } from '@lumenflow/core';
 
 /**
  * Default configuration for file delete operations
@@ -170,7 +171,7 @@ export async function deleteFileWithAudit(args: FileDeleteArgs): Promise<FileDel
   try {
     // Validate path
     if (!targetPath) {
-      throw new Error('Path is required');
+      throw createError(ErrorCodes.INVALID_ARGUMENT, 'Path is required');
     }
 
     // Check if path exists
@@ -191,7 +192,10 @@ export async function deleteFileWithAudit(args: FileDeleteArgs): Promise<FileDel
           auditLog,
         };
       } else {
-        throw new Error(`ENOENT: no such file or directory: ${targetPath}`);
+        throw createError(
+          ErrorCodes.FILE_NOT_FOUND,
+          `ENOENT: no such file or directory: ${targetPath}`,
+        );
       }
     }
 
@@ -200,7 +204,8 @@ export async function deleteFileWithAudit(args: FileDeleteArgs): Promise<FileDel
       // Check if directory is empty
       const entries = await readdir(targetPath);
       if (entries.length > 0) {
-        throw new Error(
+        throw createError(
+          ErrorCodes.DIRECTORY_NOT_EMPTY,
           `ENOTEMPTY: directory not empty: ${targetPath}. Use --recursive to delete non-empty directories.`,
         );
       }

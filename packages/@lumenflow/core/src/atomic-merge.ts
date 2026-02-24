@@ -158,7 +158,10 @@ export async function withAtomicMerge(
     return { tempBranchName, worktreePath };
   } catch (error) {
     if (error instanceof Error && isRetryExhaustionError(error)) {
-      throw createError(ErrorCodes.RETRY_EXHAUSTION, formatRetryExhaustionError(error, { command }));
+      throw createError(
+        ErrorCodes.RETRY_EXHAUSTION,
+        formatRetryExhaustionError(error, { command }),
+      );
     }
     throw error;
   } finally {

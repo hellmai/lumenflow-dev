@@ -55,6 +55,7 @@ import {
 import { existsSync } from 'node:fs';
 import { createStamp } from '@lumenflow/core/stamp-utils';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { createStateDoctorFixDeps } from './state-doctor-fix.js';
 import { runCLI } from './cli-entry-point.js';
 import { resolveStateDoctorStampIds } from './state-doctor-stamps.js';
@@ -600,7 +601,8 @@ function assertCanonicalWorkspace(baseDir: string): void {
     return;
   }
 
-  throw new Error(
+  throw createError(
+    ErrorCodes.WORKSPACE_NOT_FOUND,
     `${LOG_PREFIX} Missing ${WORKSPACE_CONFIG_FILE_NAME}. Run \`${WORKSPACE_INIT_COMMAND}\`.`,
   );
 }

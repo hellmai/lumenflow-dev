@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Hellmai Ltd
 // SPDX-License-Identifier: AGPL-3.0-only
 
+import { createError, ErrorCodes } from '@lumenflow/core';
+
 /**
  * Validator Registry
  *
@@ -57,7 +59,10 @@ export class ValidatorRegistry {
    */
   register(validator: ValidatorDefinition): void {
     if (this.nameIndex.has(validator.name)) {
-      throw new Error(`Validator "${validator.name}" is already registered`);
+      throw createError(
+        ErrorCodes.TOOL_ALREADY_REGISTERED,
+        `Validator "${validator.name}" is already registered`,
+      );
     }
     this.nameIndex.set(validator.name, this.validators.length);
     this.validators.push(validator);

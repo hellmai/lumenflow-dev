@@ -141,18 +141,27 @@ export interface ArchiveWuEventsResult {
  */
 export function parseArchiveAfter(archiveAfterString: string): number {
   if (!archiveAfterString || typeof archiveAfterString !== 'string') {
-    throw createError(ErrorCodes.INVALID_DURATION, 'Invalid archiveAfter format: duration string is required');
+    throw createError(
+      ErrorCodes.INVALID_DURATION,
+      'Invalid archiveAfter format: duration string is required',
+    );
   }
 
   const trimmed = archiveAfterString.trim();
   if (!trimmed) {
-    throw createError(ErrorCodes.INVALID_DURATION, 'Invalid archiveAfter format: duration string is required');
+    throw createError(
+      ErrorCodes.INVALID_DURATION,
+      'Invalid archiveAfter format: duration string is required',
+    );
   }
 
   const result = ms(trimmed);
 
   if (!Number.isFinite(result) || result <= 0) {
-    throw createError(ErrorCodes.INVALID_DURATION, `Invalid archiveAfter format: "${archiveAfterString}" is not a valid duration`);
+    throw createError(
+      ErrorCodes.INVALID_DURATION,
+      `Invalid archiveAfter format: "${archiveAfterString}" is not a valid duration`,
+    );
   }
 
   return result;

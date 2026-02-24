@@ -12,7 +12,13 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createWUParser, WU_OPTIONS, getDefaultConfig } from '@lumenflow/core';
+import {
+  createWUParser,
+  WU_OPTIONS,
+  getDefaultConfig,
+  createError,
+  ErrorCodes,
+} from '@lumenflow/core';
 import { GIT_DIRECTORY_NAME, getConfig } from '@lumenflow/core/config';
 // WU-1362: Import worktree guard utilities for branch checking
 import { isMainBranch, isInWorktree } from '@lumenflow/core/core/worktree-guard';
@@ -106,7 +112,7 @@ export function getTemplatesDir(): string {
     return srcTemplates;
   }
 
-  throw new Error(`Templates directory not found at ${distTemplates}`);
+  throw createError(ErrorCodes.FILE_NOT_FOUND, `Templates directory not found at ${distTemplates}`);
 }
 
 /**
@@ -119,7 +125,10 @@ export function loadTemplate(templatePath: string): string {
   const fullPath = path.join(templatesDir, templatePath);
 
   if (!fs.existsSync(fullPath)) {
-    throw new Error(`Template not found: ${templatePath} (looked at ${fullPath})`);
+    throw createError(
+      ErrorCodes.FILE_NOT_FOUND,
+      `Template not found: ${templatePath} (looked at ${fullPath})`,
+    );
   }
 
   return fs.readFileSync(fullPath, 'utf-8');

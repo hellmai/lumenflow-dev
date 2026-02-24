@@ -22,6 +22,7 @@ import path from 'node:path';
 import { parseYAML } from '@lumenflow/core/wu-yaml';
 import { WU_PATHS, createWuPaths } from '@lumenflow/core/wu-paths';
 import { PATTERNS, FILE_SYSTEM } from '@lumenflow/core/wu-constants';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { runCLI } from './cli-entry-point.js';
 
 const LOG_PREFIX = '[guard-locked]';
@@ -48,7 +49,7 @@ function resolveCompleteGuidePathHint(): string {
  */
 export function isWULocked(wuPath: string): boolean {
   if (!existsSync(wuPath)) {
-    throw new Error(`WU file not found: ${wuPath}`);
+    throw createError(ErrorCodes.FILE_NOT_FOUND, `WU file not found: ${wuPath}`);
   }
 
   const content = readFileSync(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
@@ -74,7 +75,7 @@ export function isWULocked(wuPath: string): boolean {
  */
 export function assertWUNotLocked(wuPath: string): void {
   if (!existsSync(wuPath)) {
-    throw new Error(`WU file not found: ${wuPath}`);
+    throw createError(ErrorCodes.FILE_NOT_FOUND, `WU file not found: ${wuPath}`);
   }
 
   const content = readFileSync(wuPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
@@ -83,7 +84,8 @@ export function assertWUNotLocked(wuPath: string): void {
   if (doc.locked === true) {
     const wuId = doc.id || path.basename(wuPath, '.yaml');
     const completeGuidePath = resolveCompleteGuidePathHint();
-    throw new Error(
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
       `${LOG_PREFIX} WU ${wuId} is locked.
 
 Locked WUs cannot be modified. This prevents accidental changes to completed work.

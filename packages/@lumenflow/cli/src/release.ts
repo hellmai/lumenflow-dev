@@ -43,7 +43,7 @@ import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
 import { homedir } from 'node:os';
 import { execFileSync, execSync } from 'node:child_process';
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
-import { die } from '@lumenflow/core/error-handler';
+import { die, createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import { REMOTES, FILE_SYSTEM, PKG_MANAGER } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
@@ -730,7 +730,9 @@ function runCommand(
       encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
     });
   } catch (error) {
-    throw new Error(`Command failed: ${cmd}`, { cause: error });
+    throw createError(ErrorCodes.COMMAND_EXECUTION_FAILED, `Command failed: ${cmd}`, {
+      cause: error,
+    });
   }
 }
 
@@ -748,7 +750,9 @@ function runCommandCapture(cmd: string, options: { cwd?: string; label?: string 
       encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
     });
   } catch (error) {
-    throw new Error(`Command failed: ${cmd}`, { cause: error });
+    throw createError(ErrorCodes.COMMAND_EXECUTION_FAILED, `Command failed: ${cmd}`, {
+      cause: error,
+    });
   }
 }
 
@@ -815,7 +819,7 @@ export function findJsonStartIndex(raw: string): number {
 export function parsePackDryRunMetadata(rawOutput: string): PackDryRunMetadata {
   const trimmed = rawOutput.trim();
   if (!trimmed) {
-    throw new Error(PACK_EMPTY_OUTPUT_ERROR);
+    throw createError(ErrorCodes.PARSE_ERROR, PACK_EMPTY_OUTPUT_ERROR);
   }
 
   // pnpm lifecycle scripts (prepack/postpack) can emit text to stdout before
@@ -826,12 +830,12 @@ export function parsePackDryRunMetadata(rawOutput: string): PackDryRunMetadata {
   const parsed = JSON.parse(jsonPayload) as unknown;
   const normalized = Array.isArray(parsed) ? parsed[0] : parsed;
   if (!normalized || typeof normalized !== 'object') {
-    throw new Error(PACK_INVALID_JSON_ERROR);
+    throw createError(ErrorCodes.PARSE_ERROR, PACK_INVALID_JSON_ERROR);
   }
 
   const files = (normalized as { files?: unknown }).files;
   if (!Array.isArray(files)) {
-    throw new Error(PACK_MISSING_FILES_ARRAY_ERROR);
+    throw createError(ErrorCodes.PARSE_ERROR, PACK_MISSING_FILES_ARRAY_ERROR);
   }
 
   for (const file of files) {
@@ -840,7 +844,7 @@ export function parsePackDryRunMetadata(rawOutput: string): PackDryRunMetadata {
       typeof file !== 'object' ||
       typeof (file as { path?: unknown }).path !== 'string'
     ) {
-      throw new Error(PACK_INVALID_FILES_ENTRY_ERROR);
+      throw createError(ErrorCodes.PARSE_ERROR, PACK_INVALID_FILES_ENTRY_ERROR);
     }
   }
 

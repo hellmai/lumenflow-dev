@@ -56,7 +56,7 @@ import { resolveWuDonePreCommitGateDecision } from '@lumenflow/core/gates-agent-
 import { buildClaimRepairCommand } from './wu-claim-repair-guidance.js';
 import { resolveStateDir, resolveWuEventsRelativePath } from './state-path-resolvers.js';
 import { getGitForCwd, createGitForPath } from '@lumenflow/core/git-adapter';
-import { die, getErrorMessage } from '@lumenflow/core/error-handler';
+import { die, getErrorMessage, createError, ErrorCodes } from '@lumenflow/core/error-handler';
 // WU-1223: Location detection for worktree check
 import { resolveLocation } from '@lumenflow/core/context/location-resolver';
 import { existsSync, readFileSync, mkdirSync, appendFileSync, unlinkSync, statSync } from 'node:fs';
@@ -1593,7 +1593,7 @@ async function runGatesInWorktree(
       }),
     );
     if (!ok) {
-      throw new Error('Gates failed');
+      throw createError(ErrorCodes.GATES_FAILED, 'Gates failed');
     }
     const duration = Date.now() - startTime;
     console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Gates passed in ${prettyMs(duration)}`);
@@ -2696,7 +2696,7 @@ async function executeGates({
     try {
       const ok = Boolean(await runGates({ docsOnly: useDocsOnlyGates }));
       if (!ok) {
-        throw new Error('Gates failed');
+        throw createError(ErrorCodes.GATES_FAILED, 'Gates failed');
       }
       const duration = Date.now() - startTime;
       console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Gates passed in ${prettyMs(duration)}`);

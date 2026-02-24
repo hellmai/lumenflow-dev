@@ -18,6 +18,7 @@
  */
 
 import { readFile, writeFile } from 'node:fs/promises';
+import { createError, ErrorCodes } from '@lumenflow/core';
 import { resolve } from 'node:path';
 
 /**
@@ -184,11 +185,11 @@ export async function editFileWithAudit(args: FileEditArgs): Promise<FileEditRes
   try {
     // Validate inputs
     if (!filePath) {
-      throw new Error('Path is required');
+      throw createError(ErrorCodes.INVALID_ARGUMENT, 'Path is required');
     }
 
     if (!oldString) {
-      throw new Error('old-string is required');
+      throw createError(ErrorCodes.INVALID_ARGUMENT, 'old-string is required');
     }
 
     // newString can be empty (for deletion)
@@ -200,13 +201,15 @@ export async function editFileWithAudit(args: FileEditArgs): Promise<FileEditRes
     const occurrences = countOccurrences(content, oldString);
 
     if (occurrences === 0) {
-      throw new Error(
+      throw createError(
+        ErrorCodes.STRING_NOT_FOUND,
         `old_string not found in file: "${oldString.slice(0, 50)}${oldString.length > 50 ? '...' : ''}"`,
       );
     }
 
     if (occurrences > 1 && !replaceAll) {
-      throw new Error(
+      throw createError(
+        ErrorCodes.AMBIGUOUS_MATCH,
         `old_string is not unique in file (found ${occurrences} occurrences). ` +
           `Use --replace-all to replace all occurrences, or provide more context to make it unique.`,
       );

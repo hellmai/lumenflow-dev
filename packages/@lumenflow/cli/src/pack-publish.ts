@@ -26,7 +26,7 @@ import {
   PACK_MANIFEST_FILE_NAME,
   UTF8_ENCODING,
 } from '@lumenflow/kernel';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core';
+import { createWUParser, WU_OPTIONS, createError, ErrorCodes } from '@lumenflow/core';
 import { validatePack, type ValidationResult } from './pack-validate.js';
 import { computePackHash } from './pack-hash.js';
 import { runCLI } from './cli-entry-point.js';
@@ -268,7 +268,8 @@ export async function defaultUploadFn(options: {
 
   if (!response.ok) {
     const body = await response.text().catch(() => 'No response body');
-    throw new Error(
+    throw createError(
+      ErrorCodes.REGISTRY_UPLOAD_FAILED,
       `Registry upload failed: ${String(response.status)} ${response.statusText} - ${body}`,
     );
   }
