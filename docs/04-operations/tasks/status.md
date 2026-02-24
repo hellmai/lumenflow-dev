@@ -5,6 +5,7 @@ _Last updated: 2026-02-24_
 ## In Progress
 
 - [WU-2113 — Extend path-literal-guard with ENV_VARS constant and ban raw LUMENFLOW\_ env var strings](wu/WU-2113.yaml)
+- [WU-2112 — Add optional AST guard preventing reintroduction of as any casts](wu/WU-2112.yaml)
 
 ## Completed
 

@@ -2175,3 +2175,4 @@
 {"type":"claim","wuId":"WU-2111","timestamp":"2026-02-24T20:28:22.309Z","lane":"Framework: Core Lifecycle","title":"Add AST guard banning throw new Error() in production code"}
 {"type":"claim","wuId":"WU-2113","timestamp":"2026-02-24T20:30:19.260Z","lane":"Framework: Core Lifecycle","title":"Extend path-literal-guard with ENV_VARS constant and ban raw LUMENFLOW_ env var strings"}
 {"type":"complete","wuId":"WU-2111","timestamp":"2026-02-24T20:32:24.779Z"}
+{"type":"claim","wuId":"WU-2112","timestamp":"2026-02-24T20:35:05.570Z","lane":"Framework: Core Lifecycle","title":"Add optional AST guard preventing reintroduction of as any casts"}

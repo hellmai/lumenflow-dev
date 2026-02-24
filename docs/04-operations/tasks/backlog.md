@@ -22,7 +22,6 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
-- [WU-2112 — Add optional AST guard preventing reintroduction of as any casts](wu/WU-2112.yaml) — Framework: Core Lifecycle
 - [WU-2114 — Extend path-literal-guard to ban raw file extension literals like .yaml .json .md](wu/WU-2114.yaml) — Framework: Core Lifecycle
 - [WU-2115 — Add Zod schema validation to writeWU() before writing YAML](wu/WU-2115.yaml) — Framework: Core Lifecycle
 - [WU-2116 — Migrate throw new Error() to createError() in @lumenflow/core (batch)](wu/WU-2116.yaml) — Framework: Core Lifecycle
@@ -42,6 +41,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-2113 — Extend path-literal-guard with ENV_VARS constant and ban raw LUMENFLOW\_ env var strings](wu/WU-2113.yaml) — Framework: Core Lifecycle
+- [WU-2112 — Add optional AST guard preventing reintroduction of as any casts](wu/WU-2112.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

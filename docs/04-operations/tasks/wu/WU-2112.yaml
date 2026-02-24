@@ -2,7 +2,7 @@ id: WU-2112
 title: Add optional AST guard preventing reintroduction of as any casts
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-24
 code_paths:
@@ -46,3 +46,11 @@ acceptance:
   - Guard allowlists test files and e2e files
   - A deliberate new as any in production code causes guard to fail
   - pnpm test --testNamePattern=as-any-guard passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2112
+claimed_at: 2026-02-24T20:35:05.514Z
+baseline_main_sha: 9a46e5fe1721183713cc9e017569dcd818c74a04
+session_id: ba2a662f-47a4-424d-817d-22f6e1525fd1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T20:35:05.522Z
