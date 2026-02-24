@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2119 — Reduce UnsafeAny usage in highest-churn hotspot files](wu/WU-2119.yaml) — Framework: Core Lifecycle
 - [WU-2118 — Migrate throw new Error() to createError() in mcp, memory, initiatives, agent, metrics (batch)](wu/WU-2118.yaml) — Framework: Core Lifecycle
 - [WU-2117 — Migrate throw new Error() to createError() in @lumenflow/cli (batch)](wu/WU-2117.yaml) — Framework: CLI WU Commands
 - [WU-2116 — Migrate throw new Error() to createError() in @lumenflow/core (batch)](wu/WU-2116.yaml) — Framework: Core Lifecycle
