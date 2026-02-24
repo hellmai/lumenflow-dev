@@ -26,6 +26,7 @@ import { runBriefLogic } from './wu-spawn.js';
 import { runCLI } from './cli-entry-point.js';
 
 const BRIEF_LOG_PREFIX = '[wu:brief]';
+const BRIEF_DESCRIPTION = 'Generate config-aware handoff prompt for sub-agent WU execution';
 
 /**
  * Main entry point for wu:brief (canonical command)
@@ -34,7 +35,7 @@ export async function main(): Promise<void> {
   await runBriefLogic({
     parserConfig: {
       name: 'wu-brief',
-      description: 'Generate handoff prompt for sub-agent WU execution',
+      description: BRIEF_DESCRIPTION,
     },
     logPrefix: BRIEF_LOG_PREFIX,
   });

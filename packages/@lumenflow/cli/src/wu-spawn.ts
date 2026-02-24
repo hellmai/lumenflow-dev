@@ -77,8 +77,11 @@ export type { RunBriefOptions } from './wu-spawn-strategy-resolver.js';
  * WU-1617: command removed in favor of explicit wu:brief and wu:delegate.
  */
 async function main(): Promise<void> {
+  const removalGuidance =
+    'wu:spawn has been removed. Use wu:brief for config-aware prompt generation or ' +
+    'wu:delegate for explicit delegation lineage.';
   die(
-    'wu:spawn has been removed. Use wu:brief for prompt generation or wu:delegate for explicit delegation lineage.',
+    removalGuidance,
   );
 }
 

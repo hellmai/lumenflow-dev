@@ -9,6 +9,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import type { SpawnStrategy } from '@lumenflow/core/spawn-strategy';
+import { LumenFlowConfigSchema } from '@lumenflow/core/config-schema';
 import type { TemplateContext, LoadedTemplate } from '@lumenflow/core/template-loader';
 
 // ─── Test Constants ───
@@ -403,5 +405,61 @@ describe('WU-2058: completion workflow prompt hardening', () => {
     expect(builders.generateCompletionWorkflowSection(testWuId)).toBe(
       completion.generateCompletionWorkflowSection(testWuId),
     );
+  });
+});
+
+describe('WU-2098: prompt path configuration awareness', () => {
+  const id = 'WU-2098';
+  const strategy: SpawnStrategy = {
+    getPreamble: () => 'Load context preamble',
+    getSkillLoadingInstruction: () => 'Load skills instruction',
+  };
+
+  const baseDoc = {
+    title: 'Path-aware prompt',
+    lane: 'Framework: CLI',
+    type: 'feature',
+    status: 'in_progress',
+    code_paths: ['packages/@lumenflow/cli/src/wu-brief.ts'],
+    acceptance: ['Prompt reflects configured paths'],
+    description: 'Validate prompt path hints',
+  };
+
+  it('uses default worktrees hint when no override is configured', async () => {
+    const { generateCodexPrompt } = await import('../wu-spawn-prompt-builders.js');
+
+    const config = LumenFlowConfigSchema.parse({
+      directories: {
+        skillsDir: '.claude/skills',
+        agentsDir: '.claude/agents',
+      },
+    });
+
+    const prompt = generateCodexPrompt(baseDoc, id, strategy, { config });
+    expect(prompt).toContain('- **Worktree:** worktrees/<lane>-wu-2098');
+    expect(prompt).toContain('cd worktrees/framework-cli-wu-2098');
+  });
+
+  it('uses configured worktrees hint when directories.worktrees is overridden', async () => {
+    const { generateCodexPrompt } = await import('../wu-spawn-prompt-builders.js');
+
+    const config = LumenFlowConfigSchema.parse({
+      directories: {
+        skillsDir: '.claude/skills',
+        agentsDir: '.claude/agents',
+        worktrees: 'sandbox/work-lanes',
+      },
+    });
+
+    const prompt = generateCodexPrompt(baseDoc, id, strategy, { config });
+    expect(prompt).toContain('- **Worktree:** sandbox/work-lanes/<lane>-wu-2098');
+    expect(prompt).toContain('cd sandbox/work-lanes/framework-cli-wu-2098');
+  });
+
+  it('keeps git main-ref guidance stable via constants-backed rendering', async () => {
+    const { generateConstraints } = await import('../wu-spawn-prompt-builders.js');
+
+    const constraints = generateConstraints(id);
+    expect(constraints).toContain('git rebase origin/main');
   });
 });
