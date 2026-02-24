@@ -256,6 +256,70 @@ export const HOOK_MESSAGES = {
   },
 } as const;
 
+/**
+ * Canonical LUMENFLOW_* environment variable names (WU-2113)
+ *
+ * All LUMENFLOW_ prefixed env var string literals should reference this
+ * constant instead of using raw strings. The path-literal-guard enforces
+ * this via a banned-pattern rule with ratcheting baseline.
+ *
+ * @example
+ * // Instead of: process.env.LUMENFLOW_HEADLESS
+ * // Use:        process.env[ENV_VARS.HEADLESS]
+ */
+export const ENV_VARS = {
+  /** Headless mode for non-interactive execution */
+  HEADLESS: 'LUMENFLOW_HEADLESS',
+  /** Admin mode for elevated operations */
+  ADMIN: 'LUMENFLOW_ADMIN',
+  /** Force bypass for git hooks */
+  FORCE: 'LUMENFLOW_FORCE',
+  /** Reason for force bypass (audit trail) */
+  FORCE_REASON: 'LUMENFLOW_FORCE_REASON',
+  /** Identifies the WU tool performing a git operation */
+  WU_TOOL: 'LUMENFLOW_WU_TOOL',
+  /** Allows worktree removal operations */
+  WORKTREE_REMOVE_ALLOWED: 'LUMENFLOW_WORKTREE_REMOVE_ALLOWED',
+  /** Claude Code agent detection */
+  CLAUDE_CODE: 'CLAUDE_CODE',
+  /** Cloud mode for branch-PR workflows */
+  CLOUD: 'LUMENFLOW_CLOUD',
+  /** LumenFlow home directory override */
+  HOME: 'LUMENFLOW_HOME',
+  /** Test baseline path override */
+  TEST_BASELINE: 'LUMENFLOW_TEST_BASELINE',
+  /** Legacy rollback mode */
+  LEGACY_ROLLBACK: 'LUMENFLOW_LEGACY_ROLLBACK',
+  /** Git shim recursion guard */
+  GIT_SHIM_ACTIVE: 'LUMENFLOW_GIT_SHIM_ACTIVE',
+  /** pnpm shim recursion guard */
+  PNPM_SHIM_ACTIVE: 'LUMENFLOW_PNPM_SHIM_ACTIVE',
+  /** Agent session identifier */
+  AGENT_SESSION: 'LUMENFLOW_AGENT_SESSION',
+  /** MCP project root override */
+  PROJECT_ROOT: 'LUMENFLOW_PROJECT_ROOT',
+  /** MCP log level override */
+  MCP_LOG_LEVEL: 'LUMENFLOW_MCP_LOG_LEVEL',
+  /** MCP migration compatibility mode */
+  MCP_MIGRATION_COMPAT_MODE: 'LUMENFLOW_MCP_MIGRATION_COMPAT_MODE',
+  /** Sandbox allow unsandboxed override */
+  SANDBOX_ALLOW_UNSANDBOXED: 'LUMENFLOW_SANDBOX_ALLOW_UNSANDBOXED',
+  /** Control plane auth token */
+  CONTROL_PLANE_TOKEN: 'LUMENFLOW_CONTROL_PLANE_TOKEN',
+  /** Custom git binary path */
+  GIT_BINARY: 'LUMENFLOW_GIT_BINARY',
+  /** Registry auth token for pack publishing */
+  REGISTRY_TOKEN: 'LUMENFLOW_REGISTRY_TOKEN',
+  /** Agent log directory override */
+  LOG_DIR: 'LUMENFLOW_LOG_DIR',
+} as const;
+
+/** Type for ENV_VARS keys */
+export type EnvVarKey = keyof typeof ENV_VARS;
+
+/** Type for ENV_VARS values */
+export type EnvVarName = (typeof ENV_VARS)[EnvVarKey];
+
 export { LUMENFLOW_CLIENT_IDS, type LumenflowClientId };
 
 /**

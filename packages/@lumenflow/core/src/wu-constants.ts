@@ -151,6 +151,7 @@ export {
   HOOK_MESSAGES,
   LUMENFLOW_CLIENT_IDS,
   CLAUDE_HOOKS,
+  ENV_VARS,
   getHookCommand,
   type LumenflowClientId,
   type LocationType,
@@ -159,4 +160,6 @@ export {
   type RecoveryIssueCode,
   type PredicateSeverity,
   type ValidationMode,
+  type EnvVarKey,
+  type EnvVarName,
 } from './wu-context-constants.js';
