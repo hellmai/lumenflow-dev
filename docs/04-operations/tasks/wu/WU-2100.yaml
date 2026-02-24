@@ -2,7 +2,7 @@ id: WU-2100
 title: Harden core spawn literal coverage and config-aware prompts
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-24
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
     path-like literals) without reintroducing brittle regex scanning
   - Targeted unit tests cover default and overridden directories.worktrees behavior for core spawn
     prompts and guard coverage for embedded template literals
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2100
+claimed_at: 2026-02-24T09:12:38.781Z
+baseline_main_sha: 704fee3ca8e9e5fea4b32a4d557af7112cc341d4
+session_id: 0e662ce1-f4b7-4889-b23f-ce3ee7ff6bcb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T09:12:38.786Z
