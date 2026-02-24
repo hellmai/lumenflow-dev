@@ -14,6 +14,7 @@ tests:
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-docs-generate.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-done-docs-detection.test.ts
+    - REMOVE_PLACEHOLDER
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2101.done
