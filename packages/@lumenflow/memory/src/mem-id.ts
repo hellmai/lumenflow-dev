@@ -40,7 +40,7 @@ export const MEM_ID_PATTERNS = {
    * Base ID followed by optional dot-separated positive integers
    * Examples: mem-a1b2, mem-a1b2.1, mem-a1b2.1.2
    */
-  HIERARCHICAL_ID: /^mem-[a-f0-9]{4}(\.[1-9][0-9]*)*$/,
+  HIERARCHICAL_ID: /^mem-[a-f\d]{4}(\.[1-9]\d*)*$/,
 };
 
 /**
