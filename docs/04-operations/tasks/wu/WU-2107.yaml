@@ -2,7 +2,7 @@ id: WU-2107
 title: Wire version-policy.yaml into pnpm release and bump to 3.4.0
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -50,3 +50,6 @@ acceptance:
   - version-policy.yaml currently reads 3.4.0 after this WU completes
   - Existing release unit tests pass
   - New unit test covers version-policy bump
+locked: true
+completed_at: 2026-02-24T19:09:03.319Z
+completed: 2026-02-24
