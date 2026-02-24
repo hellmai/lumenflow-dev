@@ -21,7 +21,7 @@ phases:
     status: done
   - id: 3
     title: 'Phase 2: Fix Existing Violations (WU-F1/F2/F3 through WU-K)'
-    status: in_progress
+    status: done
   - id: 4
     title: 'Phase 3: Structural Improvements (WU-L through WU-P)'
     status: pending

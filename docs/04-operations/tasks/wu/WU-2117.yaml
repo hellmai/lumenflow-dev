@@ -2,7 +2,7 @@ id: WU-2117
 title: Migrate throw new Error() to createError() in @lumenflow/cli (batch)
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -56,3 +56,6 @@ session_id: ce2669f4-e779-4cff-ba5e-de1afcc6715b
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-24T21:41:18.503Z
+locked: true
+completed_at: 2026-02-24T22:09:26.257Z
+completed: 2026-02-24
