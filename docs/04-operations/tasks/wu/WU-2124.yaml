@@ -10,7 +10,11 @@ code_paths:
   - packages/@lumenflow/cli/src/
   - packages/@lumenflow/mcp/src/
 tests:
-  manual: []
+  manual:
+    - Verify PathFactory API is exported from @lumenflow/core and importable by cli and mcp packages
+    - Verify pnpm test passes for core
+    - cli
+    - and mcp packages
   unit:
     - packages/@lumenflow/core/src/__tests__/
   e2e: []
