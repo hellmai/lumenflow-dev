@@ -2,7 +2,7 @@ id: WU-2119
 title: Reduce UnsafeAny usage in highest-churn hotspot files
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -56,3 +56,6 @@ session_id: f8b5a975-75a8-432c-8ffe-3d58bd90febb
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-24T21:10:39.968Z
+locked: true
+completed_at: 2026-02-24T21:52:28.497Z
+completed: 2026-02-24
