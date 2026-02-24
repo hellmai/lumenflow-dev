@@ -200,14 +200,17 @@ const ONBOARDING_TEMPLATE_PATHS: Record<string, string> = {
   'wu-create-checklist.md': 'core/ai/onboarding/wu-create-checklist.md.template',
 };
 
+const CLAUDE_VENDOR_TEMPLATE_ROOT = ['vendors', 'claude', '.claude'].join('/');
+const CLAUDE_SKILLS_TEMPLATE_ROOT = `${CLAUDE_VENDOR_TEMPLATE_ROOT}/skills`;
+
 /**
  * WU-1124: Template paths for Claude skills
  * Maps skill names to template paths
  */
 const SKILL_TEMPLATE_PATHS: Record<string, string> = {
-  'wu-lifecycle': 'vendors/claude/.claude/skills/wu-lifecycle/SKILL.md.template',
-  'worktree-discipline': 'vendors/claude/.claude/skills/worktree-discipline/SKILL.md.template',
-  'lumenflow-gates': 'vendors/claude/.claude/skills/lumenflow-gates/SKILL.md.template',
+  'wu-lifecycle': `${CLAUDE_SKILLS_TEMPLATE_ROOT}/wu-lifecycle/SKILL.md.template`,
+  'worktree-discipline': `${CLAUDE_SKILLS_TEMPLATE_ROOT}/worktree-discipline/SKILL.md.template`,
+  'lumenflow-gates': `${CLAUDE_SKILLS_TEMPLATE_ROOT}/lumenflow-gates/SKILL.md.template`,
 };
 
 /**

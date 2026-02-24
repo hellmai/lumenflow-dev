@@ -19,12 +19,13 @@ import * as readline from 'node:readline';
 import * as path from 'node:path';
 import YAML from 'yaml';
 import type { WorkspaceSpec } from '@lumenflow/kernel';
+import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
 import { createFile, type ScaffoldResult } from './init-scaffolding.js';
 import { runCLI } from './cli-entry-point.js';
 
 export const LOG_PREFIX = '[workspace:init]';
 
-export const WORKSPACE_FILENAME = 'workspace.yaml';
+export const WORKSPACE_FILENAME = WORKSPACE_CONFIG_FILE_NAME;
 export const DEFAULT_WORKSPACE_ID = 'default';
 export const DEFAULT_WORKSPACE_NAME = 'My Project';
 export const DEFAULT_PROJECT_NAME = 'my-project';
