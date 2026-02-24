@@ -8,7 +8,8 @@ created: 2026-02-24
 code_paths:
   - packages/@lumenflow/core/src/wu-yaml.ts
 tests:
-  manual: []
+  manual:
+    - Verify writeWU rejects invalid data and produces no partial file on validation failure
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-yaml.test.ts
   e2e: []
@@ -31,10 +32,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: writeWU() in core/src/wu-yaml.ts accepts UnsafeAny and writes directly without validating against BaseWUSchema. The Zod schema exists but is not called pre-write, meaning malformed WU YAML can be silently written. Add BaseWUSchema.parse(doc) before stringify() to throw on invalid data. Add integration regression test verifying no partial write occurs on validation failure.
+description: writeWU() in core/src/wu-yaml.ts accepts UnsafeAny and writes directly without
+  validating against BaseWUSchema. The Zod schema exists but is not called pre-write, meaning
+  malformed WU YAML can be silently written. Add BaseWUSchema.parse(doc) before stringify() to throw
+  on invalid data. Add integration regression test verifying no partial write occurs on validation
+  failure.
 acceptance:
   - writeWU() calls BaseWUSchema.parse(doc) before yaml.stringify()
   - writeWU() throws if passed invalid WU data (e.g. invalid status value)
   - No partial file is written when validation fails
-  - 'New integration test: rejects invalid WU before writing YAML and verifies no partial write (fs.existsSync returns false)'
+  - 'New integration test: rejects invalid WU before writing YAML and verifies no partial write
+    (fs.existsSync returns false)'
   - Existing writeWU callers with valid data continue to work
