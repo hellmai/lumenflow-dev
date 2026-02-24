@@ -775,6 +775,305 @@ describe('WU-1539: legacy local constant guards', () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// WU-2114: File extension literal guard
+// ---------------------------------------------------------------------------
+
+/**
+ * Files that canonically define file extension constants or legitimately
+ * use bare extension strings. These are excluded from file extension scanning.
+ */
+const FILE_EXT_ALLOWLIST_SEGMENTS = [
+  '__tests__/',
+  '__snapshots__/',
+  '/e2e/',
+  '/dist/',
+  '/node_modules/',
+  // Canonical file extension constant definitions
+  'wu-paths-constants.ts',
+  // Files that define local extension-related constants
+  'wu-constants.ts',
+  'config-contract.ts',
+  'lumenflow-config.ts',
+  'lumenflow-config-schema.ts',
+  // Template/generator files where extension strings appear in rendered output
+  'hooks/generators/',
+  'init-templates.ts',
+  'init-detection.ts',
+  // CLI files with extension-related logic
+  'onboarding-smoke-test.ts',
+  // Schema/domain files that reference file patterns
+  'schemas/directories-config.ts',
+  'domain/orchestration.constants.ts',
+  'spawn-prompt-schema.ts',
+  // Docs layout preset definitions
+  'docs-layout-presets.ts',
+];
+
+/**
+ * Matches bare file extension strings — strings that are EXACTLY a dot
+ * followed by a known extension. Does NOT match paths containing extensions
+ * (e.g., 'foo.yaml', '/path/to/file.json', 'README.md content').
+ */
+const BARE_FILE_EXTENSION_PATTERN = /^\.(yaml|yml|json|md|ts|js|mjs|cjs)$/;
+
+interface FileExtBaselineData {
+  description: string;
+  wuId: string;
+  lastUpdated: string;
+  baseline: number;
+  note: string;
+}
+
+const FILE_EXT_BASELINE_PATH = path.join(
+  REPO_ROOT,
+  'tools',
+  'baselines',
+  'enforcement',
+  'file-extension-baseline.json',
+);
+
+function isFileExtAllowlistedFile(filePath: string): boolean {
+  const normalized = normalizePath(filePath);
+  return FILE_EXT_ALLOWLIST_SEGMENTS.some((segment) => normalized.includes(segment));
+}
+
+/**
+ * Scans source text for bare file extension string literals.
+ * Detects string literals that are exactly a bare extension (e.g., '.yaml', '.json').
+ * Does NOT flag paths containing extensions (e.g., 'config.yaml', '/path/to/file.json').
+ */
+function scanSourceTextForFileExtLiterals(
+  sourceText: string,
+  fileName: string,
+): PathLiteralViolation[] {
+  const sourceFile = ts.createSourceFile(
+    fileName,
+    sourceText,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
+
+  const violations: PathLiteralViolation[] = [];
+
+  const visit = (node: ts.Node): void => {
+    if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
+      const value = node.text;
+      if (BARE_FILE_EXTENSION_PATTERN.test(value)) {
+        const line =
+          sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
+        violations.push({
+          file: normalizePath(fileName),
+          line,
+          snippet: getLineText(sourceText, line),
+          token: '.ext literal',
+        });
+      }
+    }
+
+    ts.forEachChild(node, visit);
+  };
+
+  visit(sourceFile);
+  return violations;
+}
+
+function scanFileForFileExtLiterals(filePath: string): PathLiteralViolation[] {
+  if (isFileExtAllowlistedFile(filePath)) {
+    return [];
+  }
+
+  const sourceText = readFileSync(filePath, 'utf-8');
+  return scanSourceTextForFileExtLiterals(sourceText, filePath);
+}
+
+function loadFileExtBaseline(): number | null {
+  if (!existsSync(FILE_EXT_BASELINE_PATH)) {
+    return null;
+  }
+
+  const raw = readFileSync(FILE_EXT_BASELINE_PATH, 'utf-8');
+  const data = JSON.parse(raw) as FileExtBaselineData;
+
+  if (typeof data.baseline !== 'number') {
+    return null;
+  }
+
+  return data.baseline;
+}
+
+function persistFileExtBaseline(count: number): void {
+  const data: FileExtBaselineData = {
+    description:
+      'Ratcheting baseline for bare file extension string literals. Count must not increase.',
+    wuId: 'WU-2114',
+    lastUpdated: new Date().toISOString().split('T')[0],
+    baseline: count,
+    note: `Computed from codebase scan. ${count} bare file extension literals across production files.`,
+  };
+
+  writeFileSync(FILE_EXT_BASELINE_PATH, JSON.stringify(data, null, 2) + '\n', 'utf-8');
+}
+
+describe('WU-2114: file extension literal guard foundations', () => {
+  it('detects bare file extension strings', () => {
+    const source = [
+      "const ext = '.yaml';",
+      "const jsonExt = '.json';",
+      "const mdExt = '.md';",
+      "const tsExt = '.ts';",
+      "const jsExt = '.js';",
+      "const ymlExt = '.yml';",
+      "const mjsExt = '.mjs';",
+      "const cjsExt = '.cjs';",
+    ].join('\n');
+
+    const violations = scanSourceTextForFileExtLiterals(source, 'fixtures/ext-violation.ts');
+    expect(violations).toHaveLength(8);
+    expect(violations.every((v) => v.token === '.ext literal')).toBe(true);
+  });
+
+  it('does not flag paths containing file extensions', () => {
+    const source = [
+      "const configPath = 'config.yaml';",
+      "const filePath = '/path/to/file.json';",
+      "const readme = 'README.md';",
+      "const script = 'index.ts';",
+      "const module = 'app.module.js';",
+      "const fullPath = 'docs/04-operations/tasks/wu/WU-123.yaml';",
+    ].join('\n');
+
+    const violations = scanSourceTextForFileExtLiterals(source, 'fixtures/ext-paths.ts');
+    expect(violations).toHaveLength(0);
+  });
+
+  it('does not flag non-extension dot strings', () => {
+    const source = [
+      "const version = '.1';",
+      "const hidden = '.git';",
+      "const dotFile = '.env';",
+      "const partial = '.lumenflow';",
+    ].join('\n');
+
+    const violations = scanSourceTextForFileExtLiterals(source, 'fixtures/non-ext.ts');
+    expect(violations).toHaveLength(0);
+  });
+
+  it('catches .endsWith style patterns in test scan', () => {
+    const source = [
+      "if (file.endsWith('.yaml')) { doSomething(); }",
+      "const isJson = name.endsWith('.json');",
+      "const isMd = path.endsWith('.md');",
+    ].join('\n');
+
+    const violations = scanSourceTextForFileExtLiterals(source, 'fixtures/endswith.ts');
+    expect(violations).toHaveLength(3);
+  });
+
+  it('respects file extension allowlisted files', () => {
+    const allowlistedFile = path.join(
+      REPO_ROOT,
+      'packages',
+      '@lumenflow',
+      'core',
+      'src',
+      'wu-paths-constants.ts',
+    );
+
+    expect(isFileExtAllowlistedFile(allowlistedFile)).toBe(true);
+  });
+
+  it('does not allowlist arbitrary files', () => {
+    const regularFile = path.join(
+      REPO_ROOT,
+      'packages',
+      '@lumenflow',
+      'core',
+      'src',
+      'some-module.ts',
+    );
+
+    expect(isFileExtAllowlistedFile(regularFile)).toBe(false);
+  });
+});
+
+describe('WU-2114: file extension ratcheting regression guard', () => {
+  it('scans all 7 runtime packages for bare file extension literals', async () => {
+    const filesPerTarget = await Promise.all(
+      SCAN_TARGETS.map(async (target) => {
+        const files = await getRuntimeSourceFiles(target);
+        return { target: target.label, files };
+      }),
+    );
+
+    // Verify all scan targets discovered files
+    for (const target of filesPerTarget) {
+      expect(
+        target.files.length,
+        `No source files discovered for ${target.target}`,
+      ).toBeGreaterThan(0);
+    }
+
+    // Collect all violations
+    const allViolations: PathLiteralViolation[] = [];
+    for (const { files } of filesPerTarget) {
+      for (const file of files) {
+        const violations = scanFileForFileExtLiterals(file);
+        allViolations.push(...violations);
+      }
+    }
+
+    const currentCount = allViolations.length;
+    const savedBaseline = loadFileExtBaseline();
+
+    // Persist baseline: always update to current count so the ratchet
+    // moves forward when violations are removed
+    persistFileExtBaseline(currentCount);
+
+    if (savedBaseline !== null) {
+      // Ratchet check: current count must not exceed saved baseline
+      if (currentCount > savedBaseline) {
+        expect.fail(
+          `File extension literal ratchet FAILED: count increased from ${savedBaseline} to ${currentCount} ` +
+            `(+${currentCount - savedBaseline}).\n\n` +
+            `New bare file extension literals detected. Use FILE_EXTENSIONS constant from wu-paths-constants.ts instead.\n` +
+            `Violations:\n${formatViolationReport(allViolations)}`,
+        );
+      }
+
+      // Log ratchet status for visibility
+      const delta = savedBaseline - currentCount;
+      const status = delta > 0 ? `IMPROVED: reduced by ${delta}` : 'STABLE: no change';
+      console.log(
+        `File extension ratchet: ${currentCount} (baseline: ${savedBaseline}) -- ${status}`,
+      );
+    } else {
+      // First run: baseline established
+      console.log(
+        `File extension ratchet: baseline established at ${currentCount} references`,
+      );
+    }
+
+    // The test itself passes as long as count does not increase
+    expect(currentCount).toBeGreaterThanOrEqual(0);
+  });
+
+  it('would fail if a new bare file extension literal were added', () => {
+    const existingSource = "const safe = 'hello';";
+    const newSource = [existingSource, "const ext = '.yaml';"].join('\n');
+
+    const existingViolations = scanSourceTextForFileExtLiterals(
+      existingSource,
+      'fixtures/existing.ts',
+    );
+    const newViolations = scanSourceTextForFileExtLiterals(newSource, 'fixtures/new.ts');
+
+    // Adding a bare file extension literal increases the count
+    expect(newViolations.length).toBeGreaterThan(existingViolations.length);
+  });
+});
+
 describe('WU-2113: LUMENFLOW_ env var literal guard foundations', () => {
   it('detects raw LUMENFLOW_ env var string literals', () => {
     const source = [
