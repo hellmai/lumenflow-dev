@@ -401,11 +401,7 @@ sections:
         'git',
         ['add', 'docs/tasks', '.lumenflow/state/wu-events.jsonl'],
         sandbox,
-        runCommand(
-          'git',
-          ['add', 'docs/tasks', '.lumenflow/state/wu-events.jsonl'],
-          sandbox,
-        ),
+        runCommand('git', ['add', 'docs/tasks', '.lumenflow/state/wu-events.jsonl'], sandbox),
       );
       assertCommandSuccess(
         'commit isolated task fixture',
@@ -473,10 +469,7 @@ sections:
         path.join(sandbox, 'worktrees', `content-documentation-${wuId.toLowerCase()}`);
       expect(fs.existsSync(extractedWorktree)).toBe(true);
 
-      const worktreeWuPath = path.join(
-        extractedWorktree,
-        `docs/tasks/wu/${wuId}.yaml`,
-      );
+      const worktreeWuPath = path.join(extractedWorktree, `docs/tasks/wu/${wuId}.yaml`);
       const claimedWU = parseYAML(fs.readFileSync(worktreeWuPath, 'utf-8')) as Record<
         string,
         unknown
