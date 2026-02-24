@@ -8,9 +8,6 @@ created: 2026-02-24
 code_paths:
   - packages/@lumenflow/core/src/__tests__/error-pattern-guard.test.ts
   - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
-  - tools/baselines/enforcement/throw-new-error-baseline.json
-  - tools/baselines/enforcement/file-extension-baseline.json
-  - tools/baselines/enforcement/lumenflow-env-var-baseline.json
 tests:
   manual:
     - Run pnpm --filter @lumenflow/core exec vitest run src/__tests__/error-pattern-guard.test.ts
