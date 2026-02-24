@@ -212,8 +212,8 @@ If the orchestrator is interrupted or an agent crashes mid-wave, re-running `orc
 - Advance to the next wave only when all WUs in the current wave are complete
 
 <Aside type="tip">
-  Checkpoint mode is auto-enabled for initiatives with more than 3 WUs or more than 2 waves. You
-  can always pass `-c` explicitly for smaller initiatives if you prefer the wave-by-wave approach.
+  Checkpoint mode is auto-enabled for initiatives with more than 3 WUs or more than 2 waves. You can
+  always pass `-c` explicitly for smaller initiatives if you prefer the wave-by-wave approach.
 </Aside>
 
 ### Continuous Execution
@@ -388,11 +388,11 @@ When agents get stuck, crash, or produce incorrect results during initiative exe
 
 ### Escalation Levels
 
-| Attempt | Severity   | Action           | Outcome                                          |
-| ------- | ---------- | ---------------- | ------------------------------------------------ |
-| 1st     | `warning`  | Retry            | Re-spawn the agent with the same parameters      |
-| 2nd     | `error`    | Block            | Mark the WU as blocked, notify parallel agents   |
-| 3rd+    | `critical` | Human escalation | Create a Bug WU, alert a human operator          |
+| Attempt | Severity   | Action           | Outcome                                        |
+| ------- | ---------- | ---------------- | ---------------------------------------------- |
+| 1st     | `warning`  | Retry            | Re-spawn the agent with the same parameters    |
+| 2nd     | `error`    | Block            | Mark the WU as blocked, notify parallel agents |
+| 3rd+    | `critical` | Human escalation | Create a Bug WU, alert a human operator        |
 
 ### Detecting Stuck Agents
 

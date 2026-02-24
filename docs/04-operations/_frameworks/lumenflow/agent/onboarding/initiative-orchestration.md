@@ -37,11 +37,11 @@ The dry-run output shows:
 
 ### Step 2: Choose Execution Mode
 
-| Mode                   | Command                                                  | When to use                              |
-| ---------------------- | -------------------------------------------------------- | ---------------------------------------- |
-| Checkpoint-per-wave    | `pnpm orchestrate:initiative -i INIT-XXX -c`             | Large initiatives (>3 WUs or >2 waves)   |
-| Continuous             | `pnpm orchestrate:initiative -i INIT-XXX`                | Small initiatives (<=3 WUs, 1-2 waves)   |
-| Manual brief/delegate  | `pnpm wu:brief --id WU-XXX --client <client>` per WU    | Testing individual WUs, debugging        |
+| Mode                  | Command                                              | When to use                            |
+| --------------------- | ---------------------------------------------------- | -------------------------------------- |
+| Checkpoint-per-wave   | `pnpm orchestrate:initiative -i INIT-XXX -c`         | Large initiatives (>3 WUs or >2 waves) |
+| Continuous            | `pnpm orchestrate:initiative -i INIT-XXX`            | Small initiatives (<=3 WUs, 1-2 waves) |
+| Manual brief/delegate | `pnpm wu:brief --id WU-XXX --client <client>` per WU | Testing individual WUs, debugging      |
 
 Checkpoint-per-wave is recommended for most initiatives. It processes one wave at a time and writes a manifest before exiting, giving you control between waves.
 
@@ -146,7 +146,7 @@ Wave 2 Agent (WU-103)                          │
 | `mem:signal "msg" --wu WU-XXX`   | Worker agent   | After significant progress    |
 | `mem:inbox --since <duration>`   | Orchestrator   | Between waves, during polling |
 | `mem:checkpoint "msg" --wu WU-X` | Worker agent   | Before risky operations       |
-| `mem:ready --wu WU-XXX`         | Recovery agent | When taking over a stuck WU   |
+| `mem:ready --wu WU-XXX`          | Recovery agent | When taking over a stuck WU   |
 
 ### Signal Storage
 
@@ -210,11 +210,11 @@ You can always pass `-c` explicitly for smaller initiatives.
 
 The orchestration system uses a 3-level escalation model:
 
-| Attempt | Severity   | Action           | What happens                                     |
-| ------- | ---------- | ---------------- | ------------------------------------------------ |
-| 1st     | `warning`  | Retry            | Re-spawn agent with same parameters              |
-| 2nd     | `error`    | Block            | Mark WU blocked, notify parallel agents via signal|
-| 3rd+    | `critical` | Human escalation | Create Bug WU, alert human operator              |
+| Attempt | Severity   | Action           | What happens                                       |
+| ------- | ---------- | ---------------- | -------------------------------------------------- |
+| 1st     | `warning`  | Retry            | Re-spawn agent with same parameters                |
+| 2nd     | `error`    | Block            | Mark WU blocked, notify parallel agents via signal |
+| 3rd+    | `critical` | Human escalation | Create Bug WU, alert human operator                |
 
 ### Detection: Finding Stuck Agents
 
@@ -351,35 +351,35 @@ pnpm delegation:list --initiative INIT-XXX --json
 
 ### Delegation States
 
-| State       | Meaning                                           |
-| ----------- | ------------------------------------------------- |
-| `pending`   | Agent spawned but not yet complete                 |
-| `completed` | WU completed successfully (wu:done ran)           |
-| `timeout`   | Agent exceeded time threshold without completing   |
-| `crashed`   | Agent process terminated unexpectedly              |
-| `escalated` | Repeated failures, escalated to human              |
+| State       | Meaning                                          |
+| ----------- | ------------------------------------------------ |
+| `pending`   | Agent spawned but not yet complete               |
+| `completed` | WU completed successfully (wu:done ran)          |
+| `timeout`   | Agent exceeded time threshold without completing |
+| `crashed`   | Agent process terminated unexpectedly            |
+| `escalated` | Repeated failures, escalated to human            |
 
 ---
 
 ## Quick Reference: All Orchestration Commands
 
-| Command                                             | Description                                |
-| --------------------------------------------------- | ------------------------------------------ |
-| `pnpm orchestrate:initiative -i INIT-XXX --dry-run` | Preview wave plan without executing        |
-| `pnpm orchestrate:initiative -i INIT-XXX -c`        | Execute one wave then checkpoint and exit   |
-| `pnpm orchestrate:initiative -i INIT-XXX`           | Execute all waves continuously              |
-| `pnpm orchestrate:init-status -i INIT-XXX`          | Compact progress view                      |
-| `pnpm orchestrate:monitor`                          | Detect stuck agents and zombie locks       |
-| `pnpm wu:brief --id WU-XXX --client <client>`       | Generate handoff prompt (no side effects)  |
-| `pnpm wu:delegate --id WU-XXX --parent-wu <P>`      | Generate prompt + record delegation        |
-| `pnpm delegation:list --initiative INIT-XXX`         | View delegation tree                       |
-| `pnpm mem:signal "msg" --wu WU-XXX`                  | Broadcast coordination signal              |
-| `pnpm mem:inbox --since <duration>`                  | Read coordination signals                  |
-| `pnpm mem:checkpoint "msg" --wu WU-XXX`              | Save progress checkpoint                   |
-| `pnpm mem:ready --wu WU-XXX`                         | Check pending work/checkpoints             |
-| `pnpm wu:block --id WU-XXX --reason "..."`           | Block stuck WU                             |
-| `pnpm wu:unblock --id WU-XXX`                        | Unblock recovered WU                       |
-| `pnpm wu:release --id WU-XXX`                        | Release abandoned WU for re-claim          |
+| Command                                             | Description                               |
+| --------------------------------------------------- | ----------------------------------------- |
+| `pnpm orchestrate:initiative -i INIT-XXX --dry-run` | Preview wave plan without executing       |
+| `pnpm orchestrate:initiative -i INIT-XXX -c`        | Execute one wave then checkpoint and exit |
+| `pnpm orchestrate:initiative -i INIT-XXX`           | Execute all waves continuously            |
+| `pnpm orchestrate:init-status -i INIT-XXX`          | Compact progress view                     |
+| `pnpm orchestrate:monitor`                          | Detect stuck agents and zombie locks      |
+| `pnpm wu:brief --id WU-XXX --client <client>`       | Generate handoff prompt (no side effects) |
+| `pnpm wu:delegate --id WU-XXX --parent-wu <P>`      | Generate prompt + record delegation       |
+| `pnpm delegation:list --initiative INIT-XXX`        | View delegation tree                      |
+| `pnpm mem:signal "msg" --wu WU-XXX`                 | Broadcast coordination signal             |
+| `pnpm mem:inbox --since <duration>`                 | Read coordination signals                 |
+| `pnpm mem:checkpoint "msg" --wu WU-XXX`             | Save progress checkpoint                  |
+| `pnpm mem:ready --wu WU-XXX`                        | Check pending work/checkpoints            |
+| `pnpm wu:block --id WU-XXX --reason "..."`          | Block stuck WU                            |
+| `pnpm wu:unblock --id WU-XXX`                       | Unblock recovered WU                      |
+| `pnpm wu:release --id WU-XXX`                       | Release abandoned WU for re-claim         |
 
 ---
 
