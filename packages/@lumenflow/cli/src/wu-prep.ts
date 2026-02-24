@@ -59,7 +59,7 @@ import { defaultBranchFrom } from '@lumenflow/core/wu-done-paths';
 import { getCurrentBranch } from '@lumenflow/core/wu-helpers';
 import { createPreGatesCheckpoint } from '@lumenflow/core/wu-checkpoint';
 import { runGates } from './gates.js';
-import { evaluateMainDirtyMutationGuard } from './hooks/enforcement-checks.js';
+import { evaluateMainDirtyMutationGuard } from './hooks/dirty-guard.js';
 export {
   isCodePathCoveredByChanges,
   findMissingCodePathCoverage,

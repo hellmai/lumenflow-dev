@@ -174,7 +174,7 @@ import { runAutoCleanupAfterDone, commitCleanupChanges } from './wu-done-auto-cl
 import { cleanupHookCounters } from './hooks/auto-checkpoint-utils.js';
 // WU-1473: Mark completed-WU signals as read using receipt-aware behavior
 import { markCompletedWUSignalsAsRead } from './hooks/enforcement-generator.js';
-import { evaluateMainDirtyMutationGuard } from './hooks/enforcement-checks.js';
+import { evaluateMainDirtyMutationGuard } from './hooks/dirty-guard.js';
 // WU-1474: Decay policy invocation during completion lifecycle
 import { runDecayOnDone } from './wu-done-decay.js';
 

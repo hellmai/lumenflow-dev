@@ -5,76 +5,33 @@
  * @file enforcement-checks.ts
  * Runtime enforcement checks for LumenFlow workflow compliance (WU-1367)
  * WU-1501: Fail-closed default on main - block writes when no active claim context
+ * WU-2127: Split into focused sub-modules. This file re-exports the public API
+ * and contains the top-level worktree/WU enforcement checks that compose the
+ * sub-modules.
  *
- * These functions can be used by hooks to validate operations.
- * Graceful degradation: if LumenFlow is NOT configured, operations are allowed.
- * Fail-closed: if LumenFlow IS configured, writes on main require an active
- * claim context (worktree or branch-pr) or an allowlisted path.
+ * Sub-modules:
+ * - path-utils.ts: Path normalization and allowlist utilities
+ * - config-resolver.ts: Configuration-driven path resolution
+ * - git-status-parser.ts: Parse and filter dirty paths from git status output
+ * - dirty-guard.ts: Dirty-main mutation guard for wu:prep/wu:done
  */
-
-// Note: fs operations use runtime-provided paths from LumenFlow configuration
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { createWuPaths } from '@lumenflow/core/wu-paths';
-import { DIRECTORIES } from '@lumenflow/core/wu-constants';
+import { resolveWorktreesDirSegment, resolveMainWriteAllowlistPrefixes } from './config-resolver.js';
+import { isAllowlistedPath } from './path-utils.js';
 
-/**
- * WU-1501: Paths that are always safe to write on main checkout.
- * These are scaffold/state paths that are written by lifecycle commands
- * and must not require a worktree.
- */
-const MAIN_WRITE_STATIC_ALLOWLIST_PREFIXES = ['.lumenflow/', '.claude/', 'plan/'] as const;
-
-const DEFAULT_WORKTREES_DIR_SEGMENT = DIRECTORIES.WORKTREES.replace(/\/+$/g, '');
-const DEFAULT_WU_ALLOWLIST_PREFIX = `${DIRECTORIES.WU_DIR.replace(/\/+$/g, '')}/`;
-
-const GIT_STATUS_PREFIX_LENGTH = 3;
-const GIT_STATUS_RENAME_SEPARATOR = ' -> ';
-const GIT_STATUS_QUOTE = '"';
-const PATH_PREFIX_CURRENT_DIR = './';
-const PATH_SEPARATOR_WINDOWS = '\\';
-const PATH_SEPARATOR_POSIX = '/';
-const MAX_BLOCKED_PATHS_IN_MESSAGE = 10;
-
-function normalizeDirectorySegment(value: string, fallback: string): string {
-  const normalized = value.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
-  return normalized.length > 0 ? normalized : fallback;
-}
-
-function ensureRepoRelativePrefix(value: string): string {
-  const normalized = value.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
-  return normalized.length > 0 ? `${normalized}/` : '';
-}
-
-function resolveWorktreesDirSegment(mainRepoPath: string): string {
-  try {
-    const configuredPath = createWuPaths({ projectRoot: mainRepoPath }).WORKTREES_DIR();
-    return normalizeDirectorySegment(configuredPath, DEFAULT_WORKTREES_DIR_SEGMENT);
-  } catch {
-    return DEFAULT_WORKTREES_DIR_SEGMENT;
-  }
-}
-
-function resolveWuAllowlistPrefix(mainRepoPath: string): string {
-  try {
-    const configuredPath = createWuPaths({ projectRoot: mainRepoPath }).WU_DIR();
-    return ensureRepoRelativePrefix(configuredPath);
-  } catch {
-    return DEFAULT_WU_ALLOWLIST_PREFIX;
-  }
-}
-
-function resolveMainWriteAllowlistPrefixes(mainRepoPath: string): readonly string[] {
-  return [resolveWuAllowlistPrefix(mainRepoPath), ...MAIN_WRITE_STATIC_ALLOWLIST_PREFIXES];
-}
-
-const DIRTY_MAIN_GUARD_REASONS = {
-  BRANCH_PR_MODE: 'branch-pr-mode',
-  NO_WORKTREE_CONTEXT: 'no-worktree-context',
-  CLEAN_OR_ALLOWLISTED: 'clean-or-allowlisted',
-  BLOCKED_NON_ALLOWLISTED_DIRTY_MAIN: 'blocked-non-allowlisted-dirty-main',
-} as const;
+// Re-export sub-module public APIs for backward compatibility
+export { normalizeDirectorySegment, ensureRepoRelativePrefix, isAllowlistedPath } from './path-utils.js';
+export { resolveWorktreesDirSegment, resolveWuAllowlistPrefix, resolveMainWriteAllowlistPrefixes } from './config-resolver.js';
+export {
+  parseDirtyPathsFromStatus,
+  getNonAllowlistedDirtyPaths,
+  formatBlockedPaths,
+  formatMainDirtyMutationGuardMessage,
+} from './git-status-parser.js';
+export type { MainDirtyMutationGuardOptions, MainDirtyMutationGuardResult } from './dirty-guard.js';
+export { evaluateMainDirtyMutationGuard } from './dirty-guard.js';
 
 /**
  * Result of an enforcement check
@@ -94,180 +51,6 @@ export interface EnforcementCheckResult {
 export interface ToolInput {
   file_path: string;
   tool_name: string;
-}
-
-export interface MainDirtyMutationGuardOptions {
-  commandName: string;
-  mainCheckout: string;
-  mainStatus: string;
-  hasActiveWorktreeContext: boolean;
-  isBranchPrMode: boolean;
-}
-
-export interface MainDirtyMutationGuardResult {
-  blocked: boolean;
-  blockedPaths: string[];
-  reason: string;
-  message?: string;
-}
-
-function stripWrappingQuotes(value: string): string {
-  if (value.startsWith(GIT_STATUS_QUOTE) && value.endsWith(GIT_STATUS_QUOTE) && value.length >= 2) {
-    return value.slice(1, -1);
-  }
-  return value;
-}
-
-function normalizeRepoRelativePath(value: string): string {
-  const withoutQuotes = stripWrappingQuotes(value.trim());
-  const normalizedSeparators = withoutQuotes
-    .split(PATH_SEPARATOR_WINDOWS)
-    .join(PATH_SEPARATOR_POSIX);
-  if (normalizedSeparators.startsWith(PATH_PREFIX_CURRENT_DIR)) {
-    return normalizedSeparators.slice(PATH_PREFIX_CURRENT_DIR.length);
-  }
-  return normalizedSeparators;
-}
-
-function parsePathFromStatusLine(line: string): string | null {
-  if (line.length < GIT_STATUS_PREFIX_LENGTH) {
-    return null;
-  }
-
-  const pathField = line.slice(GIT_STATUS_PREFIX_LENGTH).trim();
-  if (pathField.length === 0) {
-    return null;
-  }
-
-  // For renames, git status emits "old -> new". We care about the destination path.
-  const renameSegments = pathField.split(GIT_STATUS_RENAME_SEPARATOR);
-  const destinationPath = renameSegments[renameSegments.length - 1];
-  const normalizedPath = normalizeRepoRelativePath(destinationPath);
-  return normalizedPath.length > 0 ? normalizedPath : null;
-}
-
-export function parseDirtyPathsFromStatus(mainStatus: string): string[] {
-  const uniquePaths = new Set<string>();
-
-  for (const line of mainStatus.split('\n')) {
-    const trimmed = line.trimEnd();
-    if (trimmed.length === 0) {
-      continue;
-    }
-
-    const parsed = parsePathFromStatusLine(trimmed);
-    if (parsed) {
-      uniquePaths.add(parsed);
-    }
-  }
-
-  return Array.from(uniquePaths);
-}
-
-export function getNonAllowlistedDirtyPaths(
-  mainStatus: string,
-  allowlistPrefixes: readonly string[],
-): string[] {
-  return parseDirtyPathsFromStatus(mainStatus).filter(
-    (relativePath) => !allowlistPrefixes.some((prefix) => relativePath.startsWith(prefix)),
-  );
-}
-
-function formatBlockedPaths(paths: string[]): string {
-  const displayed = paths.slice(0, MAX_BLOCKED_PATHS_IN_MESSAGE);
-  const lines = displayed.map((dirtyPath) => `  - ${dirtyPath}`);
-  const remainder = paths.length - displayed.length;
-
-  if (remainder > 0) {
-    lines.push(`  - ... and ${remainder} more`);
-  }
-
-  return lines.join('\n');
-}
-
-export function formatMainDirtyMutationGuardMessage(options: {
-  commandName: string;
-  mainCheckout: string;
-  blockedPaths: string[];
-  allowlistPrefixes: readonly string[];
-}): string {
-  const { commandName, mainCheckout, blockedPaths, allowlistPrefixes } = options;
-  const allowlistLines = allowlistPrefixes.map((prefix) => `  - ${prefix}`).join('\n');
-  return (
-    `${commandName} blocked: main checkout has non-allowlisted dirty files while a worktree WU is active.\n\n` +
-    `Dirty paths:\n${formatBlockedPaths(blockedPaths)}\n\n` +
-    `Allowed dirty prefixes on main:\n${allowlistLines}\n\n` +
-    `How to resolve:\n` +
-    `  1. Move edits into the active worktree (recommended)\n` +
-    `  2. Revert or commit unintended main edits\n` +
-    `  3. If writes came from MCP/tools, rerun them in the worktree path\n` +
-    `  4. Retry ${commandName}\n\n` +
-    `Main checkout: ${mainCheckout}`
-  );
-}
-
-export function evaluateMainDirtyMutationGuard(
-  options: MainDirtyMutationGuardOptions,
-): MainDirtyMutationGuardResult {
-  const { commandName, mainCheckout, mainStatus, hasActiveWorktreeContext, isBranchPrMode } =
-    options;
-  const allowlistPrefixes = resolveMainWriteAllowlistPrefixes(mainCheckout);
-
-  if (isBranchPrMode) {
-    return {
-      blocked: false,
-      blockedPaths: [],
-      reason: DIRTY_MAIN_GUARD_REASONS.BRANCH_PR_MODE,
-    };
-  }
-
-  if (!hasActiveWorktreeContext) {
-    return {
-      blocked: false,
-      blockedPaths: [],
-      reason: DIRTY_MAIN_GUARD_REASONS.NO_WORKTREE_CONTEXT,
-    };
-  }
-
-  const blockedPaths = getNonAllowlistedDirtyPaths(mainStatus, allowlistPrefixes);
-  if (blockedPaths.length === 0) {
-    return {
-      blocked: false,
-      blockedPaths: [],
-      reason: DIRTY_MAIN_GUARD_REASONS.CLEAN_OR_ALLOWLISTED,
-    };
-  }
-
-  return {
-    blocked: true,
-    blockedPaths,
-    reason: DIRTY_MAIN_GUARD_REASONS.BLOCKED_NON_ALLOWLISTED_DIRTY_MAIN,
-    message: formatMainDirtyMutationGuardMessage({
-      commandName,
-      mainCheckout,
-      blockedPaths,
-      allowlistPrefixes,
-    }),
-  };
-}
-
-/**
- * WU-1501: Check if a resolved path matches the main-write allowlist.
- *
- * @param resolvedPath - Absolute resolved path to check
- * @param mainRepoPath - Absolute path to the main repo root
- * @returns True if the path is in the allowlist
- */
-function isAllowlistedPath(resolvedPath: string, mainRepoPath: string): boolean {
-  // Get the path relative to the repo root
-  const repoPrefix = mainRepoPath + path.sep;
-  if (!resolvedPath.startsWith(repoPrefix)) {
-    return false;
-  }
-  const relativePath = resolvedPath.slice(repoPrefix.length);
-
-  const allowlistPrefixes = resolveMainWriteAllowlistPrefixes(mainRepoPath);
-  return allowlistPrefixes.some((prefix) => relativePath.startsWith(prefix));
 }
 
 /**
@@ -396,7 +179,8 @@ export async function checkWorktreeEnforcement(
 
   // WU-1501: No active worktrees - fail-closed on main
   // Check allowlist first (always permitted regardless of claim state)
-  if (isAllowlistedPath(resolvedPath, mainRepoPath)) {
+  const allowlistPrefixes = resolveMainWriteAllowlistPrefixes(mainRepoPath);
+  if (isAllowlistedPath(resolvedPath, mainRepoPath, allowlistPrefixes)) {
     return {
       allowed: true,
       reason: 'allowlist: path is in safe scaffold/state area',
