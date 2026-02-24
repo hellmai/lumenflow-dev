@@ -6,11 +6,22 @@ status: in_progress
 priority: P1
 created: 2026-02-24
 code_paths:
+  - packages/@lumenflow/core/src/wu-context-constants.ts
   - packages/@lumenflow/core/src/branch-check.ts
-  - packages/@lumenflow/shims/src/git-shim.ts
-  - packages/@lumenflow/core/src/
-  - packages/@lumenflow/cli/src/
-  - packages/@lumenflow/shims/src/
+  - packages/@lumenflow/core/src/agent-patterns-registry.ts
+  - packages/@lumenflow/core/src/index.ts
+  - packages/@lumenflow/cli/src/wu-proto.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+  - packages/@lumenflow/cli/src/wu-delete.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-edit.ts
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/cli/src/sync-templates.ts
+  - packages/@lumenflow/cli/src/initiative-create.ts
+  - packages/@lumenflow/cli/src/initiative-edit.ts
+  - packages/@lumenflow/mcp/src/bin.ts
+  - packages/@lumenflow/mcp/src/server.ts
+  - tools/baselines/enforcement/lumenflow-env-var-baseline.json
 tests:
   manual:
     - Verify path-literal-guard LUMENFLOW_ rule reports zero violations
@@ -34,10 +45,17 @@ notes: 'Single-session override: ~10 files modified across core, cli, shims pack
   (uniform search-replace). Shallow multi-file exception per wu-sizing-guide.md §1.2. Note:
   git-shim.ts is in @lumenflow/shims (not core); branch-check.ts is in @lumenflow/core.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-24T21:02:31.049Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2120
+session_id: 573c27ee-1fad-4cd6-905e-033f8ce33d7c
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T21:02:31.056Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -50,11 +68,3 @@ acceptance:
   - All raw LUMENFLOW_ env var strings replaced with ENV_VARS.* references across core, cli, shims
   - path-literal-guard LUMENFLOW_ rule reports zero violations
   - pnpm test --filter=@lumenflow/core --filter=@lumenflow/cli --filter=@lumenflow/shims passes
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2120
-claimed_at: 2026-02-24T21:02:31.049Z
-baseline_main_sha: 23a4280f1a98f83e5ea69df18fbb7598b05ed41f
-session_id: 573c27ee-1fad-4cd6-905e-033f8ce33d7c
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-24T21:02:31.056Z
