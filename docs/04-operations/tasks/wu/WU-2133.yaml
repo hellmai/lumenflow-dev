@@ -8,7 +8,6 @@ created: 2026-02-24
 code_paths:
   - packages/@lumenflow/core/src/path-factory.ts
   - packages/@lumenflow/core/src/__tests__/wu-inconsistency-repairer.test.ts
-  - packages/@lumenflow/core/src/__tests__/error-pattern-guard.test.ts
 tests:
   manual:
     - Run pnpm --filter @lumenflow/core exec vitest run src/__tests__/error-pattern-guard.test.ts
@@ -28,10 +27,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-24T23:35:03.556Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2133
+session_id: 50358513-fc6f-4f75-96b7-0fa347836216
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T23:35:03.564Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -46,11 +52,3 @@ acceptance:
   - WU inconsistency repairer tests assert the current createStampInWorktree call contract and
     remain isolated from stale mock call history
   - Targeted core enforcement and repairer test suite passes
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2133
-claimed_at: 2026-02-24T23:35:03.556Z
-baseline_main_sha: 049f036d2db2e5ac2692b10fb08a0439741449f1
-session_id: 50358513-fc6f-4f75-96b7-0fa347836216
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-24T23:35:03.564Z
