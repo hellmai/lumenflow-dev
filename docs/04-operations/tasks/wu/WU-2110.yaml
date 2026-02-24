@@ -2,7 +2,7 @@ id: WU-2110
 title: Add ratcheting AST guard for UnsafeAny type alias usage
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-24
 code_paths:
@@ -49,3 +49,11 @@ acceptance:
   - Guard passes if count is stable or decreasing
   - Adding a deliberate new UnsafeAny usage causes guard to fail
   - pnpm test --testNamePattern=type-safety-guard passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2110
+claimed_at: 2026-02-24T20:08:08.883Z
+baseline_main_sha: 47583ecb9815ec99e380cc63f513796e5ce8d1d4
+session_id: f2df760b-3c6d-4c20-974d-da2437d84b28
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T20:08:08.889Z
