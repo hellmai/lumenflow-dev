@@ -115,7 +115,10 @@ export function getMemoryContextMaxSize(config: Partial<LumenFlowConfig>): numbe
   };
 
   if (memoryConfig?.memory?.spawn_context_max_size !== undefined) {
-    throw createError(ErrorCodes.DEPRECATED_API, MEMORY_CONTEXT_ERRORS.DEPRECATED_SPAWN_CONTEXT_MAX_SIZE);
+    throw createError(
+      ErrorCodes.DEPRECATED_API,
+      MEMORY_CONTEXT_ERRORS.DEPRECATED_SPAWN_CONTEXT_MAX_SIZE,
+    );
   }
 
   return memoryConfig?.memory?.delegation_context_max_size ?? DEFAULT_MAX_SIZE;

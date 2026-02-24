@@ -178,7 +178,10 @@ export async function acquireLock(lockPath: string): Promise<void> {
     if (acquired) return;
   }
 
-  throw createError(ErrorCodes.LOCK_ERROR, `Failed to acquire lock after ${LOCK_MAX_RETRIES} attempts`);
+  throw createError(
+    ErrorCodes.LOCK_ERROR,
+    `Failed to acquire lock after ${LOCK_MAX_RETRIES} attempts`,
+  );
 }
 
 /**

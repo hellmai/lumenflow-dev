@@ -211,7 +211,10 @@ export async function assertNoConflictArtifactsInIndex(
     .map((line) => line.trim())
     .filter(Boolean);
   if (unresolvedFiles.length > 0) {
-    throw createError(ErrorCodes.REBASE_CONFLICT, REBASE_CONFLICT_MESSAGES.UNMERGED_FILES_REMAIN(unresolvedFiles.join('\n  ')));
+    throw createError(
+      ErrorCodes.REBASE_CONFLICT,
+      REBASE_CONFLICT_MESSAGES.UNMERGED_FILES_REMAIN(unresolvedFiles.join('\n  ')),
+    );
   }
 
   if (options.checkStaged === false) {
@@ -230,7 +233,10 @@ export async function assertNoConflictArtifactsInIndex(
     }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
-    throw createError(ErrorCodes.REBASE_CONFLICT, REBASE_CONFLICT_MESSAGES.STAGED_ARTIFACTS_OR_CHECK_FAILURE(message));
+    throw createError(
+      ErrorCodes.REBASE_CONFLICT,
+      REBASE_CONFLICT_MESSAGES.STAGED_ARTIFACTS_OR_CHECK_FAILURE(message),
+    );
   }
 }
 

@@ -13,7 +13,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import YAML from 'yaml';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core';
+import { createWUParser, WU_OPTIONS, createError, ErrorCodes } from '@lumenflow/core';
 import { runCLI } from './cli-entry-point.js';
 
 export const LOG_PREFIX = '[pack:scaffold]';
@@ -34,7 +34,8 @@ const DEFAULT_OUTPUT_DIR = 'packs';
  */
 export function validatePackId(packId: string): void {
   if (!packId || !PACK_ID_PATTERN.test(packId)) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
       `Invalid pack ID "${packId}". Must be kebab-case (lowercase letters, numbers, hyphens), ` +
         `start with a letter, and not start/end with a hyphen. Examples: "my-domain", "customer-support"`,
     );
@@ -47,7 +48,8 @@ export function validatePackId(packId: string): void {
  */
 export function validateVersion(version: string): void {
   if (!version || !SEMVER_PATTERN.test(version)) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.VALIDATION_ERROR,
       `Invalid version "${version}". Must be valid semver (e.g., "0.1.0", "1.0.0", "2.3.4-beta.1")`,
     );
   }
@@ -211,7 +213,8 @@ export function scaffoldPack(options: ScaffoldPackOptions): ScaffoldPackResult {
 
   // Prevent overwriting
   if (existsSync(packDir)) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.PACK_ALREADY_EXISTS,
       `Pack directory "${packDir}" already exists. Remove it first or choose a different ID.`,
     );
   }

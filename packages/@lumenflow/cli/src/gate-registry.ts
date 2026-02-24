@@ -13,6 +13,7 @@
  * @module gate-registry
  */
 
+import { createError, ErrorCodes } from '@lumenflow/core';
 import type { GateLogContext } from './gates-utils.js';
 
 // Re-export so existing consumers of gate-registry.ts keep working.
@@ -62,7 +63,10 @@ export class GateRegistry {
    */
   register(gate: GateDefinition): void {
     if (this.nameIndex.has(gate.name)) {
-      throw new Error(`Gate "${gate.name}" is already registered`);
+      throw createError(
+        ErrorCodes.TOOL_ALREADY_REGISTERED,
+        `Gate "${gate.name}" is already registered`,
+      );
     }
     this.nameIndex.set(gate.name, this.gates.length);
     this.gates.push(gate);

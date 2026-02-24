@@ -25,7 +25,7 @@ import {
 } from '@lumenflow/core/code-path-validator';
 import { detectConflicts } from '@lumenflow/core/code-paths-overlap';
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
-import { die, getErrorMessage } from '@lumenflow/core/error-handler';
+import { die, getErrorMessage, createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import {
   CLAIMED_MODES,
   LOG_PREFIX,
@@ -276,7 +276,10 @@ export async function handleOrphanCheck(lane: string, id: string): Promise<void>
         // Run repair inside micro-worktree using projectRoot option
         const report = orphanCheck.reports?.[0];
         if (!report) {
-          throw new Error(`Lane ${lane} has orphan done WU: ${orphanId} with missing report`);
+          throw createError(
+            ErrorCodes.ORPHAN_WU_ERROR,
+            `Lane ${lane} has orphan done WU: ${orphanId} with missing report`,
+          );
         }
 
         const repairResult = await repairWUInconsistency(report, {
@@ -284,7 +287,8 @@ export async function handleOrphanCheck(lane: string, id: string): Promise<void>
         });
 
         if (repairResult.failed > 0) {
-          throw new Error(
+          throw createError(
+            ErrorCodes.REPAIR_FAILED,
             `Lane ${lane} has orphan done WU: ${orphanId}\n` +
               `Auto-repair failed. Fix manually with: pnpm wu:repair --id ${orphanId}`,
           );

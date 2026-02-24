@@ -23,6 +23,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import YAML from 'yaml';
 import { findProjectRoot, WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
 import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { die } from '@lumenflow/core/error-handler';
 import { FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
@@ -157,7 +158,10 @@ export function parseLaneEditArgs(argv: string[]): LaneEditOptions {
       case ARG_WIP_LIMIT: {
         const parsed = parseInt(next, 10);
         if (isNaN(parsed) || parsed <= 0) {
-          throw new Error(`${ARG_WIP_LIMIT} must be a positive integer, got: ${next}`);
+          throw createError(
+            ErrorCodes.INVALID_ARGUMENT,
+            `${ARG_WIP_LIMIT} must be a positive integer, got: ${next}`,
+          );
         }
         wipLimit = parsed;
         i++;
@@ -181,7 +185,10 @@ export function parseLaneEditArgs(argv: string[]): LaneEditOptions {
   }
 
   if (!name) {
-    throw new Error(`${ARG_NAME} is required. Run with ${ARG_HELP} for usage.`);
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
+      `${ARG_NAME} is required. Run with ${ARG_HELP} for usage.`,
+    );
   }
 
   const hasEdits =
@@ -192,7 +199,8 @@ export function parseLaneEditArgs(argv: string[]): LaneEditOptions {
     description !== undefined;
 
   if (!hasEdits) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
       `At least one edit flag is required (${ARG_RENAME}, ${ARG_WIP_LIMIT}, ${ARG_ADD_PATH}, ${ARG_REMOVE_PATH}, ${ARG_DESCRIPTION}). Run with ${ARG_HELP} for usage.`,
     );
   }

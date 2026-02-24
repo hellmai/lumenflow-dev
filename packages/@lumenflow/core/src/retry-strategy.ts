@@ -267,7 +267,10 @@ export async function withRetry(fn: UnsafeAny, config: UnsafeAny = DEFAULT_RETRY
   // All attempts failed
   // Defensive: if a caller passes an invalid config, ensure we throw a useful error.
   if (!lastError) {
-    throw createError(ErrorCodes.RETRY_EXHAUSTION, `Operation failed: invalid retry configuration (maxAttempts=${maxAttempts})`);
+    throw createError(
+      ErrorCodes.RETRY_EXHAUSTION,
+      `Operation failed: invalid retry configuration (maxAttempts=${maxAttempts})`,
+    );
   }
   throw createError(
     ErrorCodes.RETRY_EXHAUSTION,

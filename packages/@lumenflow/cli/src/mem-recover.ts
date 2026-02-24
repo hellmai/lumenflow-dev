@@ -18,6 +18,8 @@
  *
  * The recovery context includes:
  * - Last checkpoint for the WU
+ *
+ * WU-2117: Migrated throw new Error() to createError(ErrorCodes.*)
  * - Compact constraints (7 rules)
  * - Essential CLI commands
  * - Guidance to spawn fresh agent
@@ -31,6 +33,7 @@ import path from 'node:path';
 import { generateRecoveryContext } from '@lumenflow/memory/mem-recover-core';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { runCLI } from './cli-entry-point.js';
 
 /**
@@ -113,7 +116,10 @@ function parsePositiveInt(value: string | undefined, optionName: string): number
 
   const parsed = parseInt(value, 10);
   if (isNaN(parsed) || parsed <= 0) {
-    throw new Error(`Invalid ${optionName} value: "${value}". Must be a positive integer.`);
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
+      `Invalid ${optionName} value: "${value}". Must be a positive integer.`,
+    );
   }
 
   return parsed;
@@ -128,7 +134,8 @@ function validateFormat(format: string | undefined): OutputFormat {
   }
 
   if (!VALID_FORMATS.includes(format as OutputFormat)) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
       `Invalid --format value: "${format}". Valid formats: ${VALID_FORMATS.join(', ')}`,
     );
   }

@@ -103,7 +103,10 @@ export class WUEventSourcer {
       try {
         parsed = JSON.parse(line);
       } catch (error) {
-        throw createError(ErrorCodes.PARSE_ERROR, `Malformed JSON on line ${i + 1}: ${getErrorMessage(error)}`);
+        throw createError(
+          ErrorCodes.PARSE_ERROR,
+          `Malformed JSON on line ${i + 1}: ${getErrorMessage(error)}`,
+        );
       }
 
       const validation = validateWUEvent(parsed);
@@ -111,7 +114,10 @@ export class WUEventSourcer {
         const issues = validation.error.issues
           .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
           .join(', ');
-        throw createError(ErrorCodes.VALIDATION_ERROR, `Validation error on line ${i + 1}: ${issues}`);
+        throw createError(
+          ErrorCodes.VALIDATION_ERROR,
+          `Validation error on line ${i + 1}: ${issues}`,
+        );
       }
 
       this.indexer.applyEvent(validation.data);

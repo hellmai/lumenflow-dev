@@ -47,6 +47,7 @@ interface GenerateContextResult {
 }
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
+import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { runCLI } from './cli-entry-point.js';
 
 /**
@@ -157,7 +158,10 @@ function parsePositiveInt(value: string | undefined, optionName: string): number
 
   const parsed = parseInt(value, 10);
   if (isNaN(parsed) || parsed <= 0) {
-    throw new Error(`Invalid ${optionName} value: "${value}". Must be a positive integer.`);
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
+      `Invalid ${optionName} value: "${value}". Must be a positive integer.`,
+    );
   }
 
   return parsed;
@@ -176,7 +180,7 @@ function validateLane(lane: string | undefined): string | undefined {
   }
 
   if (lane === '') {
-    throw new Error('Invalid --lane value: lane cannot be empty.');
+    throw createError(ErrorCodes.INVALID_ARGUMENT, 'Invalid --lane value: lane cannot be empty.');
   }
 
   return lane;
@@ -195,7 +199,8 @@ function validateFormat(format: string | undefined): OutputFormat {
   }
 
   if (!VALID_FORMATS.includes(format as OutputFormat)) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
       `Invalid --format value: "${format}". Valid formats: ${VALID_FORMATS.join(', ')}`,
     );
   }
@@ -284,7 +289,10 @@ export async function main(): Promise<void> {
   // Validate arguments
   try {
     if (args.spawnContextMaxSize) {
-      throw new Error(MEM_CONTEXT_ERRORS.DEPRECATED_SPAWN_CONTEXT_FLAG);
+      throw createError(
+        ErrorCodes.DEPRECATED_API,
+        MEM_CONTEXT_ERRORS.DEPRECATED_SPAWN_CONTEXT_FLAG,
+      );
     }
 
     // --delegation-context-max-size is an alias for --max-size (for config parity)

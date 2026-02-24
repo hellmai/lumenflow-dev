@@ -42,7 +42,7 @@ import {
   DEFAULT_THRESHOLD_MINUTES,
   calculateBackoff,
 } from '@lumenflow/core';
-import { ProcessExitError } from '@lumenflow/core/error-handler';
+import { ProcessExitError, createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import type { DelegationEvent } from '@lumenflow/core/delegation-registry-schema';
 import chalk from 'chalk';
 import ms, { type StringValue } from 'ms';
@@ -224,7 +224,7 @@ function parseTimeString(timeStr: string): Date {
   }
   const date = new Date(timeStr);
   if (isNaN(date.getTime())) {
-    throw new Error(`Invalid time format: ${timeStr}`);
+    throw createError(ErrorCodes.INVALID_DURATION, `Invalid time format: ${timeStr}`);
   }
   return date;
 }

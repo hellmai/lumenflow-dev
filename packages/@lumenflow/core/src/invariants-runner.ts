@@ -521,11 +521,17 @@ export function loadInvariants(filePath: string): InvariantDefinition[] {
   try {
     doc = parseYAML(content) as { invariants?: InvariantDefinition[] } | null;
   } catch (e: unknown) {
-    throw createError(ErrorCodes.YAML_PARSE_ERROR, `Invalid YAML in ${filePath}: ${getErrorMessage(e)}`);
+    throw createError(
+      ErrorCodes.YAML_PARSE_ERROR,
+      `Invalid YAML in ${filePath}: ${getErrorMessage(e)}`,
+    );
   }
 
   if (!doc || !Array.isArray(doc.invariants)) {
-    throw createError(ErrorCodes.INVARIANT_ERROR, `Invalid invariants.yml: expected 'invariants' array at root`);
+    throw createError(
+      ErrorCodes.INVARIANT_ERROR,
+      `Invalid invariants.yml: expected 'invariants' array at root`,
+    );
   }
 
   return doc.invariants;

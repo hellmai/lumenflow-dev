@@ -279,7 +279,10 @@ export async function ensureOnMain(git: EnsureOnMainGitAdapter): Promise<void> {
       );
       return;
     }
-    throw createError(ErrorCodes.BRANCH_ERROR, `Run from shared checkout on '${BRANCHES.MAIN}' (found '${branch}')`);
+    throw createError(
+      ErrorCodes.BRANCH_ERROR,
+      `Run from shared checkout on '${BRANCHES.MAIN}' (found '${branch}')`,
+    );
   }
 }
 

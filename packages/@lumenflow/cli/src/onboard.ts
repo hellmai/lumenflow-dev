@@ -20,7 +20,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { createWUParser } from '@lumenflow/core';
+import { createWUParser, createError, ErrorCodes } from '@lumenflow/core';
 import {
   WorkspaceControlPlaneConfigSchema,
   type WorkspaceControlPlaneConfig,
@@ -206,7 +206,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function parsePositiveInt(value: unknown, fieldName: string): number {
   const parsedValue = typeof value === 'number' ? value : Number(value);
   if (!Number.isInteger(parsedValue) || parsedValue <= 0) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
       `${CLOUD_CONNECT_LOG_PREFIX} Invalid ${fieldName}: expected a positive integer`,
     );
   }
@@ -216,7 +217,8 @@ function parsePositiveInt(value: unknown, fieldName: string): number {
 function parsePolicyMode(value: unknown): WorkspaceControlPlanePolicyMode {
   if (typeof value !== 'string' || !CLOUD_CONNECT_ALLOWED_POLICY_MODE_NAMES.has(value)) {
     const allowedValues = [...CLOUD_CONNECT_ALLOWED_POLICY_MODES].join(', ');
-    throw new Error(
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
       `${CLOUD_CONNECT_LOG_PREFIX} Invalid --policy-mode "${String(value)}". Valid values: ${allowedValues}`,
     );
   }
@@ -229,7 +231,8 @@ function validateEndpoint(endpoint: string): string {
   try {
     parsedEndpoint = new URL(endpoint);
   } catch {
-    throw new Error(
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
       `${CLOUD_CONNECT_LOG_PREFIX} Invalid endpoint "${endpoint}": expected a valid URL`,
     );
   }
@@ -240,7 +243,8 @@ function validateEndpoint(endpoint: string): string {
     parsedEndpoint.protocol === CLOUD_CONNECT_LOCAL_PROTOCOL && isLocalHost === true;
 
   if (!isSecureProtocol && !isLocalHttp) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
       `${CLOUD_CONNECT_LOG_PREFIX} Endpoint must use https (or http for localhost only): ${endpoint}`,
     );
   }
@@ -253,7 +257,8 @@ function validateEndpoint(endpoint: string): string {
 
 function validateTokenEnvName(tokenEnv: string): string {
   if (!CLOUD_CONNECT_ENV_NAME_PATTERN.test(tokenEnv)) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
       `${CLOUD_CONNECT_LOG_PREFIX} Invalid --token-env "${tokenEnv}": expected an uppercase environment variable name`,
     );
   }
@@ -263,7 +268,8 @@ function validateTokenEnvName(tokenEnv: string): string {
 function ensureTokenValue(tokenEnv: string, env: NodeJS.ProcessEnv): string {
   const tokenValue = env[tokenEnv];
   if (!tokenValue || tokenValue.trim().length === 0) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
       `${CLOUD_CONNECT_LOG_PREFIX} Missing token env "${tokenEnv}". Export it before connect. ${CLOUD_CONNECT_HELP_HINT}`,
     );
   }
@@ -312,7 +318,10 @@ function parseCloudConnectCliOptions(): CloudConnectInput {
 
 function validateWorkspaceRootPath(targetDir: string): string {
   if (!targetDir || targetDir.trim().length === 0) {
-    throw new Error(`${CLOUD_CONNECT_LOG_PREFIX} Invalid --output: path must be non-empty`);
+    throw createError(
+      ErrorCodes.INVALID_ARGUMENT,
+      `${CLOUD_CONNECT_LOG_PREFIX} Invalid --output: path must be non-empty`,
+    );
   }
 
   return path.resolve(targetDir);
@@ -320,7 +329,8 @@ function validateWorkspaceRootPath(targetDir: string): string {
 
 function readWorkspaceDocument(workspacePath: string): Record<string, unknown> {
   if (!fs.existsSync(workspacePath)) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.WORKSPACE_NOT_FOUND,
       `${CLOUD_CONNECT_LOG_PREFIX} ${WORKSPACE_FILENAME} not found at ${workspacePath}. Run "lumenflow init" first to bootstrap a workspace.`,
     );
   }
@@ -328,7 +338,8 @@ function readWorkspaceDocument(workspacePath: string): Record<string, unknown> {
   const rawContent = fs.readFileSync(workspacePath, 'utf-8');
   const parsedYaml = YAML.parse(rawContent) as unknown;
   if (!isRecord(parsedYaml)) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.WORKSPACE_MALFORMED,
       `${CLOUD_CONNECT_LOG_PREFIX} ${WORKSPACE_FILENAME} is malformed: expected YAML object at document root`,
     );
   }

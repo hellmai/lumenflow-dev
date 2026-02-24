@@ -115,7 +115,10 @@ export class DelegationRegistryStore {
       try {
         parsed = JSON.parse(line);
       } catch (error) {
-        throw createError(ErrorCodes.PARSE_ERROR, `Malformed JSON on line ${i + 1}: ${error.message}`);
+        throw createError(
+          ErrorCodes.PARSE_ERROR,
+          `Malformed JSON on line ${i + 1}: ${error.message}`,
+        );
       }
 
       // Validate against schema
@@ -124,7 +127,10 @@ export class DelegationRegistryStore {
         const issues = validation.error.issues
           .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
           .join(', ');
-        throw createError(ErrorCodes.VALIDATION_ERROR, `Validation error on line ${i + 1}: ${issues}`);
+        throw createError(
+          ErrorCodes.VALIDATION_ERROR,
+          `Validation error on line ${i + 1}: ${issues}`,
+        );
       }
 
       const event = validation.data;

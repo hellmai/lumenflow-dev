@@ -27,7 +27,7 @@ import { promisify } from 'node:util';
 import YAML from 'yaml';
 import { WORKSPACE_FILE_NAME } from '@lumenflow/kernel';
 import type { PackPin } from '@lumenflow/kernel';
-import { createWUParser, WU_OPTIONS } from '@lumenflow/core';
+import { createWUParser, WU_OPTIONS, createError, ErrorCodes } from '@lumenflow/core';
 import { validatePack, type ValidationResult } from './pack-validate.js';
 import { computePackHash } from './pack-hash.js';
 import { runCLI } from './cli-entry-point.js';
@@ -118,7 +118,8 @@ async function readWorkspaceFile(workspaceRoot: string): Promise<WorkspaceData> 
   const workspacePath = join(workspaceRoot, WORKSPACE_FILE_NAME);
 
   if (!existsSync(workspacePath)) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.WORKSPACE_NOT_FOUND,
       `${WORKSPACE_FILE_NAME} not found at ${workspacePath}. ` +
         'Run "lumenflow init" to create a workspace first.',
     );
@@ -128,7 +129,10 @@ async function readWorkspaceFile(workspaceRoot: string): Promise<WorkspaceData> 
   const parsed = YAML.parse(content) as WorkspaceData;
 
   if (!parsed || typeof parsed !== 'object') {
-    throw new Error(`${WORKSPACE_FILE_NAME} is empty or malformed.`);
+    throw createError(
+      ErrorCodes.WORKSPACE_MALFORMED,
+      `${WORKSPACE_FILE_NAME} is empty or malformed.`,
+    );
   }
 
   // Ensure packs array exists

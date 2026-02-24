@@ -25,6 +25,8 @@ import {
   WU_OPTIONS,
   CLAUDE_HOOKS,
   LUMENFLOW_CLIENT_IDS,
+  createError,
+  ErrorCodes,
 } from '@lumenflow/core';
 import { GIT_DIRECTORY_NAME } from '@lumenflow/core/config';
 import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
@@ -197,7 +199,8 @@ function parseBootstrapDomain(rawDomain: string | undefined): DomainChoice {
   }
 
   const validDomains = Array.from(BOOTSTRAP_VALID_DOMAINS).join(', ');
-  throw new Error(
+  throw createError(
+    ErrorCodes.INVALID_ARGUMENT,
     `${BOOTSTRAP_ERROR_PREFIX} Invalid --bootstrap-domain "${rawDomain}". Valid values: ${validDomains}`,
   );
 }
@@ -496,7 +499,8 @@ function loadWorkspaceDocument(targetDir: string): {
   const content = fs.readFileSync(workspacePath, 'utf-8');
   const workspace = asRecord(yaml.parse(content));
   if (!workspace) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.WORKSPACE_MALFORMED,
       `${INIT_ERROR_PREFIX} ${CONFIG_FILE_NAME} exists but is not a valid YAML object. ` +
         `Fix ${CONFIG_FILE_NAME} and re-run init.`,
     );
@@ -667,7 +671,7 @@ function normalizeFrameworkName(framework: string): { name: string; slug: string
     .replace(/-+$/, '');
 
   if (!slug) {
-    throw new Error(`Invalid framework name: "${framework}"`);
+    throw createError(ErrorCodes.INVALID_ARGUMENT, `Invalid framework name: "${framework}"`);
   }
 
   return { name, slug };
@@ -1737,7 +1741,7 @@ export async function runInitBootstrap(
 
   if (!onboardResult.success) {
     const failureReason = onboardResult.errors.join('; ') || 'unknown onboarding error';
-    throw new Error(`${BOOTSTRAP_ERROR_PREFIX} ${failureReason}`);
+    throw createError(ErrorCodes.ONBOARD_FAILED, `${BOOTSTRAP_ERROR_PREFIX} ${failureReason}`);
   }
 
   if (
@@ -1745,7 +1749,8 @@ export async function runInitBootstrap(
     options.bootstrapDomain !== BOOTSTRAP_CUSTOM_DOMAIN &&
     onboardResult.packInstalled !== true
   ) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.ONBOARD_FAILED,
       `${BOOTSTRAP_ERROR_PREFIX} failed to install ${options.bootstrapDomain} pack with integrity metadata. ` +
         `Retry after fixing registry access or rerun with --skip-bootstrap-pack-install.`,
     );
@@ -1789,7 +1794,8 @@ export async function main(): Promise<void> {
     subcommand === LEGACY_SUBCOMMANDS.WORKSPACE_INIT_COLON ||
     subcommand === LEGACY_SUBCOMMANDS.WORKSPACE_INIT_DASH
   ) {
-    throw new Error(
+    throw createError(
+      ErrorCodes.DEPRECATED_API,
       `${LEGACY_SUBCOMMAND_ERROR_PREFIX} "${subcommand}". ${LEGACY_SUBCOMMAND_GUIDANCE}. ${LEGACY_SUBCOMMAND_HELP_HINT}.`,
     );
   }
@@ -1797,7 +1803,8 @@ export async function main(): Promise<void> {
   if (subcommand === INIT_SUBCOMMANDS.CLOUD) {
     const cloudSubcommand = process.argv[3];
     if (cloudSubcommand !== CLOUD_SUBCOMMANDS.CONNECT) {
-      throw new Error(
+      throw createError(
+        ErrorCodes.INVALID_ARGUMENT,
         `${INIT_ERROR_PREFIX} Unknown cloud subcommand "${cloudSubcommand ?? ''}". ${INIT_CLOUD_CONNECT_HELP}`,
       );
     }

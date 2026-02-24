@@ -17,6 +17,7 @@
 
 import { writeFile, mkdir, stat } from 'node:fs/promises';
 import { resolve, dirname } from 'node:path';
+import { createError, ErrorCodes } from '@lumenflow/core';
 
 /**
  * Default configuration for file write operations
@@ -156,7 +157,7 @@ export async function writeFileWithAudit(args: FileWriteArgs): Promise<FileWrite
   try {
     // Validate path
     if (!filePath) {
-      throw new Error('Path is required');
+      throw createError(ErrorCodes.INVALID_ARGUMENT, 'Path is required');
     }
 
     const parentDir = dirname(filePath);
@@ -170,7 +171,10 @@ export async function writeFileWithAudit(args: FileWriteArgs): Promise<FileWrite
         await mkdir(parentDir, { recursive: true });
         directoriesCreated = true;
       } else {
-        throw new Error(`ENOENT: parent directory does not exist: ${parentDir}`);
+        throw createError(
+          ErrorCodes.PARENT_DIR_NOT_FOUND,
+          `ENOENT: parent directory does not exist: ${parentDir}`,
+        );
       }
     }
 
