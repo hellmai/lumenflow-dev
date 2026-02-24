@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2122 — Move hardcoded escalation email from wu-schema.ts to workspace.yaml](wu/WU-2122.yaml) — Framework: Core Lifecycle
 - [WU-2121 — Replace raw .endsWith('.yaml') file extension literals with FILE_EXTENSIONS constants](wu/WU-2121.yaml) — Framework: Core Lifecycle
 - [WU-2120 — Create ENV*VARS constant and migrate raw LUMENFLOW* env var references](wu/WU-2120.yaml) — Framework: Core Lifecycle
 - [WU-2119 — Reduce UnsafeAny usage in highest-churn hotspot files](wu/WU-2119.yaml) — Framework: Core Lifecycle
