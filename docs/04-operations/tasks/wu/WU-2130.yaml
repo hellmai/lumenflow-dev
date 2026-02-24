@@ -1,0 +1,43 @@
+id: WU-2130
+title: Harden UnsafeAny ratchet guard to prevent baseline self-healing on failure
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P0
+created: 2026-02-24
+code_paths:
+  - packages/@lumenflow/core/src/__tests__/type-safety-guard.test.ts
+  - tools/baselines/enforcement/unsafe-any-baseline.json
+tests:
+  manual:
+    - Run pnpm test --testNamePattern=type-safety-guard with no code changes and verify no baseline file mutation
+    - Add deliberate UnsafeAny usage and verify guard fails without rewriting baseline
+  unit:
+    - packages/@lumenflow/core/src/__tests__/type-safety-guard.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2130.done
+dependencies: []
+initiative: INIT-037
+phase: 2
+blocked_by:
+  - WU-2110
+spec_refs:
+  - /home/tom/.claude/plans/wild-foraging-taco.md
+risks: []
+notes: 'Single-session fix: one guard test plus baseline handling semantics; no runtime behavior changes.'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: WU-2110 introduced a ratcheting guard for UnsafeAny, but baseline persistence happens before regression enforcement. This allows a failing run to raise baseline state and pass on a follow-up run. Harden the guard so failure paths cannot mutate baseline state, and baseline refresh is explicit opt-in only.
+acceptance:
+  - Ratchet comparison runs before any baseline write operation
+  - Regression failure path does not modify tools/baselines/enforcement/unsafe-any-baseline.json
+  - Baseline updates are explicit opt-in, not default side effects during normal test execution
+  - Tests cover non-mutation behavior on failure and baseline refresh path
+  - pnpm test --testNamePattern=type-safety-guard passes
