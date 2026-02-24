@@ -7,7 +7,6 @@ priority: P2
 created: 2026-02-24
 code_paths:
   - packages/@lumenflow/cli/src/gate-registry.ts
-  - packages/@lumenflow/cli/src/gates-utils.ts
 tests:
   manual:
     - Verify GateLogContext type exists only in gates-utils.ts and is imported in gate-registry.ts
@@ -26,10 +25,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-24T20:10:07.602Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2123
+session_id: f2df760b-3c6d-4c20-974d-da2437d84b28
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T20:10:07.607Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +48,3 @@ acceptance:
   - gate-registry.ts imports GateLogContext from gates-utils.ts
   - No duplicate type definition remains
   - pnpm test --filter=@lumenflow/cli passes
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2123
-claimed_at: 2026-02-24T20:10:07.602Z
-baseline_main_sha: cdd11e6bef77fa13b0605474961edabe88d20bb7
-session_id: f2df760b-3c6d-4c20-974d-da2437d84b28
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-24T20:10:07.607Z
