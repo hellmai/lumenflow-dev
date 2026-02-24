@@ -2,7 +2,7 @@ id: WU-2113
 title: Extend path-literal-guard with ENV_VARS constant and ban raw LUMENFLOW_ env var strings
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -53,3 +53,6 @@ session_id: ce228c30-8633-4460-9c15-098f3f33bc45
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-24T20:30:19.212Z
+locked: true
+completed_at: 2026-02-24T20:37:45.344Z
+completed: 2026-02-24
