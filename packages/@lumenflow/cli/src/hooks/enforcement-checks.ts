@@ -16,18 +16,18 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { createWuPaths } from '@lumenflow/core/wu-paths';
+import { DIRECTORIES } from '@lumenflow/core/wu-constants';
 
 /**
  * WU-1501: Paths that are always safe to write on main checkout.
  * These are scaffold/state paths that are written by lifecycle commands
  * and must not require a worktree.
  */
-const MAIN_WRITE_ALLOWLIST_PREFIXES = [
-  'docs/04-operations/tasks/wu/',
-  '.lumenflow/',
-  '.claude/',
-  'plan/',
-] as const;
+const MAIN_WRITE_STATIC_ALLOWLIST_PREFIXES = ['.lumenflow/', '.claude/', 'plan/'] as const;
+
+const DEFAULT_WORKTREES_DIR_SEGMENT = DIRECTORIES.WORKTREES.replace(/\/+$/g, '');
+const DEFAULT_WU_ALLOWLIST_PREFIX = `${DIRECTORIES.WU_DIR.replace(/\/+$/g, '')}/`;
 
 const GIT_STATUS_PREFIX_LENGTH = 3;
 const GIT_STATUS_RENAME_SEPARATOR = ' -> ';
@@ -36,6 +36,38 @@ const PATH_PREFIX_CURRENT_DIR = './';
 const PATH_SEPARATOR_WINDOWS = '\\';
 const PATH_SEPARATOR_POSIX = '/';
 const MAX_BLOCKED_PATHS_IN_MESSAGE = 10;
+
+function normalizeDirectorySegment(value: string, fallback: string): string {
+  const normalized = value.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
+  return normalized.length > 0 ? normalized : fallback;
+}
+
+function ensureRepoRelativePrefix(value: string): string {
+  const normalized = value.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
+  return normalized.length > 0 ? `${normalized}/` : '';
+}
+
+function resolveWorktreesDirSegment(mainRepoPath: string): string {
+  try {
+    const configuredPath = createWuPaths({ projectRoot: mainRepoPath }).WORKTREES_DIR();
+    return normalizeDirectorySegment(configuredPath, DEFAULT_WORKTREES_DIR_SEGMENT);
+  } catch {
+    return DEFAULT_WORKTREES_DIR_SEGMENT;
+  }
+}
+
+function resolveWuAllowlistPrefix(mainRepoPath: string): string {
+  try {
+    const configuredPath = createWuPaths({ projectRoot: mainRepoPath }).WU_DIR();
+    return ensureRepoRelativePrefix(configuredPath);
+  } catch {
+    return DEFAULT_WU_ALLOWLIST_PREFIX;
+  }
+}
+
+function resolveMainWriteAllowlistPrefixes(mainRepoPath: string): readonly string[] {
+  return [resolveWuAllowlistPrefix(mainRepoPath), ...MAIN_WRITE_STATIC_ALLOWLIST_PREFIXES];
+}
 
 const DIRTY_MAIN_GUARD_REASONS = {
   BRANCH_PR_MODE: 'branch-pr-mode',
@@ -134,7 +166,7 @@ export function parseDirtyPathsFromStatus(mainStatus: string): string[] {
 
 export function getNonAllowlistedDirtyPaths(
   mainStatus: string,
-  allowlistPrefixes: readonly string[] = MAIN_WRITE_ALLOWLIST_PREFIXES,
+  allowlistPrefixes: readonly string[],
 ): string[] {
   return parseDirtyPathsFromStatus(mainStatus).filter(
     (relativePath) => !allowlistPrefixes.some((prefix) => relativePath.startsWith(prefix)),
@@ -157,16 +189,14 @@ export function formatMainDirtyMutationGuardMessage(options: {
   commandName: string;
   mainCheckout: string;
   blockedPaths: string[];
+  allowlistPrefixes: readonly string[];
 }): string {
-  const { commandName, mainCheckout, blockedPaths } = options;
+  const { commandName, mainCheckout, blockedPaths, allowlistPrefixes } = options;
+  const allowlistLines = allowlistPrefixes.map((prefix) => `  - ${prefix}`).join('\n');
   return (
     `${commandName} blocked: main checkout has non-allowlisted dirty files while a worktree WU is active.\n\n` +
     `Dirty paths:\n${formatBlockedPaths(blockedPaths)}\n\n` +
-    `Allowed dirty prefixes on main:\n` +
-    `  - docs/04-operations/tasks/wu/\n` +
-    `  - .lumenflow/\n` +
-    `  - .claude/\n` +
-    `  - plan/\n\n` +
+    `Allowed dirty prefixes on main:\n${allowlistLines}\n\n` +
     `How to resolve:\n` +
     `  1. Move edits into the active worktree (recommended)\n` +
     `  2. Revert or commit unintended main edits\n` +
@@ -181,6 +211,7 @@ export function evaluateMainDirtyMutationGuard(
 ): MainDirtyMutationGuardResult {
   const { commandName, mainCheckout, mainStatus, hasActiveWorktreeContext, isBranchPrMode } =
     options;
+  const allowlistPrefixes = resolveMainWriteAllowlistPrefixes(mainCheckout);
 
   if (isBranchPrMode) {
     return {
@@ -198,7 +229,7 @@ export function evaluateMainDirtyMutationGuard(
     };
   }
 
-  const blockedPaths = getNonAllowlistedDirtyPaths(mainStatus);
+  const blockedPaths = getNonAllowlistedDirtyPaths(mainStatus, allowlistPrefixes);
   if (blockedPaths.length === 0) {
     return {
       blocked: false,
@@ -215,6 +246,7 @@ export function evaluateMainDirtyMutationGuard(
       commandName,
       mainCheckout,
       blockedPaths,
+      allowlistPrefixes,
     }),
   };
 }
@@ -234,7 +266,8 @@ function isAllowlistedPath(resolvedPath: string, mainRepoPath: string): boolean 
   }
   const relativePath = resolvedPath.slice(repoPrefix.length);
 
-  return MAIN_WRITE_ALLOWLIST_PREFIXES.some((prefix) => relativePath.startsWith(prefix));
+  const allowlistPrefixes = resolveMainWriteAllowlistPrefixes(mainRepoPath);
+  return allowlistPrefixes.some((prefix) => relativePath.startsWith(prefix));
 }
 
 /**
@@ -293,7 +326,8 @@ export async function checkWorktreeEnforcement(
   }
 
   const lumenflowDir = path.join(mainRepoPath, '.lumenflow');
-  const worktreesDir = path.join(mainRepoPath, 'worktrees');
+  const worktreesDirSegment = resolveWorktreesDirSegment(mainRepoPath);
+  const worktreesDir = path.join(mainRepoPath, worktreesDirSegment);
 
   // Graceful degradation: LumenFlow not configured
   if (!fs.existsSync(lumenflowDir)) {
@@ -356,7 +390,7 @@ export async function checkWorktreeEnforcement(
     return {
       allowed: false,
       reason: `cannot write to main repo while worktrees exist (${activeWorktrees})`,
-      suggestion: 'cd to your worktree: cd worktrees/<lane>-wu-<id>/',
+      suggestion: `cd to your worktree: cd ${worktreesDirSegment}/<lane>-wu-<id>/`,
     };
   }
 
@@ -398,6 +432,7 @@ export async function checkWuRequirement(
   input: ToolInput,
   projectDir?: string,
 ): Promise<EnforcementCheckResult> {
+  void input;
   const mainRepoPath = projectDir ?? process.env.CLAUDE_PROJECT_DIR;
 
   if (!mainRepoPath) {
@@ -408,7 +443,7 @@ export async function checkWuRequirement(
   }
 
   const lumenflowDir = path.join(mainRepoPath, '.lumenflow');
-  const worktreesDir = path.join(mainRepoPath, 'worktrees');
+  const worktreesDir = path.join(mainRepoPath, resolveWorktreesDirSegment(mainRepoPath));
   const stateFile = path.join(lumenflowDir, 'state', 'wu-events.jsonl');
 
   // Graceful degradation: LumenFlow not configured
@@ -473,7 +508,7 @@ export async function checkWuRequirement(
  * @returns True if cwd is inside a worktree
  */
 export function isInsideWorktree(cwd: string, projectDir: string): boolean {
-  const worktreesDir = path.join(projectDir, 'worktrees');
+  const worktreesDir = path.join(projectDir, resolveWorktreesDirSegment(projectDir));
 
   if (!fs.existsSync(worktreesDir)) {
     return false;
@@ -490,7 +525,7 @@ export function isInsideWorktree(cwd: string, projectDir: string): boolean {
  * @returns Array of worktree names
  */
 export function getActiveWorktrees(projectDir: string): string[] {
-  const worktreesDir = path.join(projectDir, 'worktrees');
+  const worktreesDir = path.join(projectDir, resolveWorktreesDirSegment(projectDir));
 
   if (!fs.existsSync(worktreesDir)) {
     return [];

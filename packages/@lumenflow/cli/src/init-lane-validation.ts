@@ -18,6 +18,7 @@ import * as path from 'node:path';
 import * as yaml from 'yaml';
 import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
 import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
+import { CONFIG_FILES } from '@lumenflow/core/wu-constants';
 
 /** Separator between parent and sublane in lane names */
 const LANE_NAME_SEPARATOR = ': ';
@@ -171,7 +172,7 @@ export function extractConfigLanes(configPath: string): LaneDefinition[] {
  */
 export function validateLanesForProject(targetDir: string): LaneValidationResult {
   const configPath = path.join(targetDir, WORKSPACE_CONFIG_FILE_NAME);
-  const inferencePath = path.join(targetDir, '.lumenflow.lane-inference.yaml');
+  const inferencePath = path.join(targetDir, CONFIG_FILES.LANE_INFERENCE);
 
   const configLanes = extractConfigLanes(configPath);
   const inferenceParents = extractInferenceParents(inferencePath);

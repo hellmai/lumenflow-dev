@@ -21,7 +21,7 @@ import path from 'node:path';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import YAML from 'yaml';
 import type { ZodIssue } from 'zod';
-import { findProjectRoot } from '@lumenflow/core/config';
+import { findProjectRoot, WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
 import { die } from '@lumenflow/core/error-handler';
 import { FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
@@ -42,7 +42,7 @@ const ARG_HELP = '--help';
 
 const COMMIT_PREFIX = 'chore: config:set';
 const WORKSPACE_INIT_COMMAND = 'pnpm workspace-init --yes';
-export const WORKSPACE_FILE_NAME = 'workspace.yaml';
+export const WORKSPACE_FILE_NAME = WORKSPACE_CONFIG_FILE_NAME;
 export const WORKSPACE_CONFIG_ROOT_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
 export const WORKSPACE_CONFIG_PREFIX = `${WORKSPACE_CONFIG_ROOT_KEY}.`;
 
@@ -71,7 +71,7 @@ interface ConfigSetResult {
 
 const SET_HELP_TEXT = `Usage: pnpm config:set --key <dotpath> --value <value>
 
-Safely update workspace.yaml via micro-worktree commit.
+Safely update ${WORKSPACE_FILE_NAME} via micro-worktree commit.
 Validates against Zod schema before writing.
 
 Required:
@@ -86,7 +86,7 @@ Examples:
 
 const GET_HELP_TEXT = `Usage: pnpm config:get --key <dotpath>
 
-Read and display a value from workspace.yaml.
+Read and display a value from ${WORKSPACE_FILE_NAME}.
 
 Required:
   ${ARG_KEY} <dotpath>    Config key in dot notation (e.g., software_delivery.methodology.testing)
