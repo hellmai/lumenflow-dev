@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2097 — Remove pending Memory runtime path literal debt (INIT-036)](wu/WU-2097.yaml)
 
 ## Completed
 

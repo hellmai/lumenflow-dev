@@ -2140,3 +2140,4 @@
 {"type":"complete","wuId":"WU-2092","timestamp":"2026-02-24T01:56:08.963Z"}
 {"type":"claim","wuId":"WU-2096","timestamp":"2026-02-24T08:24:07.544Z","lane":"Framework: MCP","title":"Remove pending MCP runtime path literal debt (INIT-036)"}
 {"type":"complete","wuId":"WU-2096","timestamp":"2026-02-24T08:31:51.922Z"}
+{"type":"claim","wuId":"WU-2097","timestamp":"2026-02-24T08:32:29.101Z","lane":"Framework: Memory","title":"Remove pending Memory runtime path literal debt (INIT-036)"}
