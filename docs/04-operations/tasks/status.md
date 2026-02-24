@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2091 — Align CLI hooks and enforcement messaging with configurable paths](wu/WU-2091.yaml)
 
 ## Completed
 

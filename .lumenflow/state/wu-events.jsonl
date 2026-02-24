@@ -2134,3 +2134,4 @@
 {"type":"complete","wuId":"WU-2094","timestamp":"2026-02-24T00:26:03.873Z"}
 {"type":"claim","wuId":"WU-2095","timestamp":"2026-02-24T00:27:13.339Z","lane":"Framework: CLI WU Commands","title":"Eliminate pending CLI runtime path literals (INIT-036)"}
 {"type":"complete","wuId":"WU-2095","timestamp":"2026-02-24T00:37:02.600Z"}
+{"type":"claim","wuId":"WU-2091","timestamp":"2026-02-24T00:38:28.018Z","lane":"Framework: CLI Enforcement","title":"Align CLI hooks and enforcement messaging with configurable paths"}
