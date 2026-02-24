@@ -6,7 +6,10 @@ status: in_progress
 priority: P1
 created: 2026-02-24
 code_paths:
+  - packages/@lumenflow/core/src/schemas/directories-config.ts
   - packages/@lumenflow/cli/src/init.ts
+  - packages/@lumenflow/cli/src/init-detection.ts
+  - workspace.yaml
 tests:
   manual:
     - Run npx lumenflow on fresh project, verify workspace.yaml paths match scaffolded files
@@ -19,10 +22,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-24T15:44:04.840Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2105
+session_id: 3dd4b47e-0f48-488f-b4fa-ddd5416265ba
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T15:44:04.845Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -35,11 +45,6 @@ acceptance:
   - completeGuidePath, quickRefPath, startingPromptPath, governancePath overridden in
     buildWorkspaceConfig
   - npx lumenflow init generates workspace.yaml with consumer-correct paths
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2105
-claimed_at: 2026-02-24T15:44:04.840Z
-baseline_main_sha: c462b0a74249aad20094266c712c396e170fc9c6
-session_id: 3dd4b47e-0f48-488f-b4fa-ddd5416265ba
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-24T15:44:04.845Z
+  - Schema defaults are consumer-simple, OS workspace.yaml is explicit for all directory paths
+  - Init generates correct workspace.yaml for both simple and arc42 layouts
+  - 'No override hack: init writes all directory paths explicitly from DocsPathConfig'
