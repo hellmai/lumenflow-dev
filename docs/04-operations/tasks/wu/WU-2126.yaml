@@ -15,6 +15,8 @@ tests:
       --filter=@lumenflow/core --filter=@lumenflow/cli
   unit:
     - packages/@lumenflow/core/src/__tests__/lumenflow-config.test.ts
+    - packages/@lumenflow/core/src/__tests__/lumenflow-config-schema.test.ts
+    - packages/@lumenflow/cli/src/__tests__/path-centralization-cli.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2126.done
@@ -26,12 +28,24 @@ blocked_by:
 spec_refs:
   - /home/tom/.claude/plans/wild-foraging-taco.md
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  TDD hardening (takeover): include direct config-cache tests and CLI integration coverage; start
+  with failing test for stale-cache behavior.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-24T22:26:55.811Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2126
+session_id: 43d744d6-03f6-4b66-92b8-602f3d735da3
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T22:26:55.819Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -45,11 +59,3 @@ acceptance:
   - clearConfigCache() called after config:set completion
   - Integration test verifies config reads fresh values after cache-invalidating operations
   - pnpm test --filter=@lumenflow/cli --filter=@lumenflow/core passes
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2126
-claimed_at: 2026-02-24T22:26:55.811Z
-baseline_main_sha: 073ddcf82ecb0d45d7c957aa86a74b143614a537
-session_id: 43d744d6-03f6-4b66-92b8-602f3d735da3
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-24T22:26:55.819Z
