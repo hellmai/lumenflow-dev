@@ -2,7 +2,7 @@ id: WU-2096
 title: Remove pending MCP runtime path literal debt (INIT-036)
 lane: 'Framework: MCP'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -43,3 +43,6 @@ session_id: 99be3ca2-8c38-4481-ae2c-3ffc6b786e1f
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-24T08:24:07.505Z
+locked: true
+completed_at: 2026-02-24T08:31:46.950Z
+completed: 2026-02-24
