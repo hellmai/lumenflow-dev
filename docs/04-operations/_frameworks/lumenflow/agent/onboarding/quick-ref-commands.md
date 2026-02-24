@@ -261,14 +261,14 @@ If the plan exists only in conversation, use `--plan` on `wu:create` to generate
 stub in `$LUMENFLOW_HOME/plans/` and automatically set the WU's `plan` field to the
 `lumenflow://plans/` URI. Feature WUs should have a `plan` field; notes do not replace the plan link.
 
-| Command                                                                  | Description                                                   |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| Command                                                                  | Description                                                         |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------- |
 | `pnpm plan:create --id INIT-XXX --title "..."`                           | Create a repo-native plan file in configured `directories.plansDir` |
-| `pnpm plan:edit --id INIT-XXX --section Goal --content "..."`            | Edit a section in a plan file                                 |
-| `pnpm plan:link --id INIT-XXX --plan lumenflow://plans/INIT-XXX-plan.md` | Link plan URI to initiative or WU                             |
-| `pnpm plan:promote --id INIT-XXX`                                        | Promote plan status to approved                               |
-| `pnpm initiative:plan --initiative INIT-XXX --plan <path>`               | Legacy-compatible initiative linking command                  |
-| `pnpm initiative:plan --initiative INIT-XXX --create`                    | Legacy-compatible create-and-link flow                        |
+| `pnpm plan:edit --id INIT-XXX --section Goal --content "..."`            | Edit a section in a plan file                                       |
+| `pnpm plan:link --id INIT-XXX --plan lumenflow://plans/INIT-XXX-plan.md` | Link plan URI to initiative or WU                                   |
+| `pnpm plan:promote --id INIT-XXX`                                        | Promote plan status to approved                                     |
+| `pnpm initiative:plan --initiative INIT-XXX --plan <path>`               | Legacy-compatible initiative linking command                        |
+| `pnpm initiative:plan --initiative INIT-XXX --create`                    | Legacy-compatible create-and-link flow                              |
 
 ### Linking Plans
 
