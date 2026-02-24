@@ -82,6 +82,10 @@ describe('wu-done-docs-detection', () => {
     it('should include CLI package.json', () => {
       expect(DOC_SOURCE_PATHSPECS).toContain('packages/@lumenflow/cli/package.json');
     });
+
+    it('should include core schemas directory for config schema changes', () => {
+      expect(DOC_SOURCE_PATHSPECS).toContain('packages/@lumenflow/core/src/schemas/');
+    });
   });
 
   describe('DOC_OUTPUT_FILES', () => {

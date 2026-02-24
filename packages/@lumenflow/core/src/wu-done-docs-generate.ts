@@ -26,6 +26,7 @@ export const DOC_SOURCE_PATHSPECS = [
   'tools/generate-cli-docs.ts',
   'packages/@lumenflow/core/src/arg-parser.ts',
   'packages/@lumenflow/core/src/lumenflow-config-schema.ts',
+  'packages/@lumenflow/core/src/schemas/',
   'packages/@lumenflow/core/src/index.ts',
   'packages/@lumenflow/cli/package.json',
   'packages/@lumenflow/cli/src/',
