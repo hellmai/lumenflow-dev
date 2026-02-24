@@ -2,7 +2,7 @@ id: WU-2115
 title: Add Zod schema validation to writeWU() before writing YAML
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
   - 'New integration test: rejects invalid WU before writing YAML and verifies no partial write
     (fs.existsSync returns false)'
   - Existing writeWU callers with valid data continue to work
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2115
+claimed_at: 2026-02-24T20:42:09.378Z
+baseline_main_sha: cd9962e9e38e3155548c1ed80c2fd8402b9fde6c
+session_id: cc8fd941-79a9-4d23-b19a-8e697a05888d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T20:42:09.383Z

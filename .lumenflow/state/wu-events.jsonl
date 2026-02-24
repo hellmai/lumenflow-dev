@@ -2178,3 +2178,4 @@
 {"type":"claim","wuId":"WU-2112","timestamp":"2026-02-24T20:35:05.570Z","lane":"Framework: Core Lifecycle","title":"Add optional AST guard preventing reintroduction of as any casts"}
 {"type":"complete","wuId":"WU-2113","timestamp":"2026-02-24T20:37:50.195Z"}
 {"type":"complete","wuId":"WU-2112","timestamp":"2026-02-24T20:39:43.727Z"}
+{"type":"claim","wuId":"WU-2115","timestamp":"2026-02-24T20:42:09.410Z","lane":"Framework: Core Lifecycle","title":"Add Zod schema validation to writeWU() before writing YAML"}

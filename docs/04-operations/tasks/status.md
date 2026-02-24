@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2115 — Add Zod schema validation to writeWU() before writing YAML](wu/WU-2115.yaml)
 
 ## Completed
 
