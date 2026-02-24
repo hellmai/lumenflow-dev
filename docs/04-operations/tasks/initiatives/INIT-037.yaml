@@ -15,7 +15,7 @@ created: 2026-02-24
 phases:
   - id: 1
     title: 'Phase 0: Fix Broken Enforcement (WU-alpha, WU-beta, WU-gamma)'
-    status: in_progress
+    status: done
   - id: 2
     title: 'Phase 1: Add New Enforcement (WU-A through WU-E)'
     status: pending
