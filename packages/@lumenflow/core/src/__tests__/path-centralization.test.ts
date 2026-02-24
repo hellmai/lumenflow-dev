@@ -5,7 +5,7 @@
  * @fileoverview Tests for WU-1301 and WU-1310: CLI path centralization
  *
  * Tests that all CLI commands use config-based paths (WU_PATHS / getResolvedPaths())
- * instead of hardcoded paths like 'docs/04-operations/tasks/wu'.
+ * instead of hardcoded paths like 'docs/tasks/wu'.
  *
  * WU-1301 Acceptance Criteria:
  * - All wu-* commands use WU_PATHS / getResolvedPaths() instead of hardcoded paths
@@ -75,10 +75,10 @@ describe('WU-1301: CLI path centralization', () => {
     it('should use default paths when no config file exists', () => {
       const config = getConfig({ projectRoot: tempDir });
 
-      expect(config.directories.wuDir).toBe('docs/04-operations/tasks/wu');
-      expect(config.directories.backlogPath).toBe('docs/04-operations/tasks/backlog.md');
-      expect(config.directories.statusPath).toBe('docs/04-operations/tasks/status.md');
-      expect(config.directories.initiativesDir).toBe('docs/04-operations/tasks/initiatives');
+      expect(config.directories.wuDir).toBe('docs/tasks/wu');
+      expect(config.directories.backlogPath).toBe('docs/tasks/backlog.md');
+      expect(config.directories.statusPath).toBe('docs/tasks/status.md');
+      expect(config.directories.initiativesDir).toBe('docs/tasks/initiatives');
     });
 
     it('should respect custom paths from config file', async () => {
@@ -148,14 +148,14 @@ describe('WU-1301: CLI path centralization', () => {
       clearConfigCache();
       const config = getConfig({ projectRoot: tempDir });
 
-      expect(config.directories.wuDir).toBe('docs/04-operations/tasks/wu');
+      expect(config.directories.wuDir).toBe('docs/tasks/wu');
     });
 
     it('should use defaults when workspace.yaml is missing', async () => {
       clearConfigCache();
       const config = getConfig({ projectRoot: tempDir });
 
-      expect(config.directories.wuDir).toBe('docs/04-operations/tasks/wu');
+      expect(config.directories.wuDir).toBe('docs/tasks/wu');
     });
   });
 
@@ -182,7 +182,7 @@ describe('WU-1301: CLI path centralization', () => {
     it('should provide simple/arc42 compatible defaults', () => {
       const defaultConfig = getDefaultConfig();
 
-      // The defaults should follow arc42 pattern: docs/04-operations/tasks/...
+      // WU-2105: Defaults follow consumer-simple pattern: docs/tasks/...
       expect(defaultConfig.directories.wuDir).toContain('docs');
       expect(defaultConfig.directories.backlogPath).toContain('docs');
       expect(defaultConfig.directories.statusPath).toContain('docs');
@@ -292,29 +292,29 @@ describe('WU-1310: Core path centralization', () => {
       const defaultConfig = getDefaultConfig();
       expect(defaultConfig.directories.onboardingDir).toBeDefined();
       expect(defaultConfig.directories.onboardingDir).toBe(
-        'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
+        'docs/_frameworks/lumenflow/agent/onboarding',
       );
     });
 
     it('should have plansDir in default config', () => {
       const defaultConfig = getDefaultConfig();
       expect(defaultConfig.directories.plansDir).toBeDefined();
-      expect(defaultConfig.directories.plansDir).toBe('docs/04-operations/plans');
+      expect(defaultConfig.directories.plansDir).toBe('docs/plans');
     });
 
     it('should include guide/onboarding/governance doc paths in default config', () => {
       const defaultConfig = getDefaultConfig();
       expect(defaultConfig.directories.completeGuidePath).toBe(
-        'docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md',
+        'docs/_frameworks/lumenflow/lumenflow-complete.md',
       );
       expect(defaultConfig.directories.quickRefPath).toBe(
-        'docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
+        'docs/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
       );
       expect(defaultConfig.directories.startingPromptPath).toBe(
-        'docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md',
+        'docs/_frameworks/lumenflow/agent/onboarding/starting-prompt.md',
       );
       expect(defaultConfig.directories.governancePath).toBe(
-        'docs/04-operations/governance/project-governance.md',
+        'docs/governance/project-governance.md',
       );
     });
 
@@ -525,21 +525,21 @@ describe('WU-1310: Core path centralization', () => {
       expect(config.directories.templatesDir).toBe('custom/templates');
 
       // Defaults preserved
-      expect(config.directories.wuDir).toBe('docs/04-operations/tasks/wu');
+      expect(config.directories.wuDir).toBe('docs/tasks/wu');
       expect(config.directories.onboardingDir).toBe(
-        'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
+        'docs/_frameworks/lumenflow/agent/onboarding',
       );
       expect(config.directories.completeGuidePath).toBe(
-        'docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md',
+        'docs/_frameworks/lumenflow/lumenflow-complete.md',
       );
       expect(config.directories.quickRefPath).toBe(
-        'docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
+        'docs/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
       );
       expect(config.directories.startingPromptPath).toBe(
-        'docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md',
+        'docs/_frameworks/lumenflow/agent/onboarding/starting-prompt.md',
       );
       expect(config.directories.governancePath).toBe(
-        'docs/04-operations/governance/project-governance.md',
+        'docs/governance/project-governance.md',
       );
     });
   });

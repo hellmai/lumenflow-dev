@@ -18,8 +18,35 @@ import fg from 'fast-glob';
 import micromatch from 'micromatch';
 import { STATUS_SECTIONS, BACKLOG_SECTIONS, STRING_LITERALS } from './wu-constants.js';
 import { GIT_DIRECTORY_NAME } from './config-contract.js';
+import { createWuPaths } from './wu-paths.js';
+import { DOCS_LAYOUT_PRESETS } from './docs-layout-presets.js';
 
 const RECURSIVE_GIT_DIR_GLOB = `${GIT_DIRECTORY_NAME}/**`;
+
+function resolveProjectRootFromStatusPath(statusPath: string): string {
+  const absoluteStatusPath = path.resolve(statusPath);
+  let current = path.dirname(absoluteStatusPath);
+
+  while (true) {
+    if (path.basename(current) === 'docs') {
+      return path.dirname(current);
+    }
+    const parent = path.dirname(current);
+    if (parent === current) {
+      break;
+    }
+    current = parent;
+  }
+
+  const normalized = absoluteStatusPath.split(path.sep).join('/');
+  const arc42OperationsSegment = `/${DOCS_LAYOUT_PRESETS.arc42.operations}/`;
+  const fallbackDepth = normalized.includes(arc42OperationsSegment) ? 4 : 3;
+  let fallbackRoot = absoluteStatusPath;
+  for (let i = 0; i < fallbackDepth; i++) {
+    fallbackRoot = path.dirname(fallbackRoot);
+  }
+  return fallbackRoot;
+}
 
 /**
  * Check for code path overlap between two sets of glob patterns
@@ -169,17 +196,17 @@ export function detectConflicts(
     return { conflicts: [], hasBlocker: false };
   }
 
-  // Compute project root from statusPath
-  // statusPath is at docs/04-operations/tasks/status.md
-  const tasksDir = path.dirname(statusPath); // docs/04-operations/tasks
-  const operationsDir = path.dirname(tasksDir); // docs/04-operations
-  const docsDir = path.dirname(operationsDir); // docs
-  const projectRoot = path.dirname(docsDir); // project root
+  // Compute project root from status path and resolve file paths from config.
+  const projectRoot = resolveProjectRootFromStatusPath(statusPath);
+  const wuPaths = createWuPaths({ projectRoot });
 
   // Check each in-progress WU for overlaps
   const conflicts = [];
   for (const match of matches) {
     const activeWuid = match[1]; // e.g., "WU-334"
+    if (!activeWuid) {
+      continue;
+    }
 
     // Skip claiming WU (shouldn't conflict with itself)
     if (activeWuid === claimingWU) {
@@ -187,14 +214,7 @@ export function detectConflicts(
     }
 
     // Read WU YAML
-    const wuPath = path.join(
-      projectRoot,
-      'docs',
-      '04-operations',
-      'tasks',
-      'wu',
-      `${activeWuid}.yaml`,
-    );
+    const wuPath = path.join(projectRoot, wuPaths.WU(activeWuid));
     if (!existsSync(wuPath)) {
       continue; // Skip if YAML doesn't exist
     }

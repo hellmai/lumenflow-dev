@@ -21,6 +21,7 @@ import {
   WORKSPACE_CONFIG_FILE_NAME,
 } from '@lumenflow/core';
 import { getConfig } from '@lumenflow/core/config';
+import { createWuPaths } from '@lumenflow/core/wu-paths';
 import { CONFIG_FILES } from '@lumenflow/core/wu-constants';
 import { loadLaneDefinitions, detectLaneOverlaps } from './lane-health.js';
 import { runCLI } from './cli-entry-point.js';
@@ -594,7 +595,7 @@ async function checkWorktreeSanity(projectDir: string): Promise<WorktreeSanityRe
  * Calls wu:validate --all --no-strict for full schema/lint validation in warn-only mode
  */
 async function checkWUValidity(projectDir: string): Promise<WUValidityResult> {
-  const wuDir = path.join(projectDir, 'docs', '04-operations', 'tasks', 'wu');
+  const wuDir = path.join(projectDir, createWuPaths({ projectRoot: projectDir }).WU_DIR());
 
   if (!fs.existsSync(wuDir)) {
     return {

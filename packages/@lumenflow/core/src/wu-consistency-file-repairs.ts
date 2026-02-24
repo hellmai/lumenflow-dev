@@ -18,7 +18,7 @@ import path from 'node:path';
 import { existsSync, mkdirSync, writeFileSync, readFileSync, constants } from 'node:fs';
 import { access } from 'node:fs/promises';
 import { parseYAML, stringifyYAML } from './wu-yaml.js';
-import { createWuPaths, WU_PATHS } from './wu-paths.js';
+import { createWuPaths } from './wu-paths.js';
 import {
   LUMENFLOW_PATHS,
   REMOTES,
@@ -59,9 +59,11 @@ export async function createStampInWorktree(
   id: string,
   title: string,
   worktreePath: string,
+  projectRoot: string,
 ): Promise<string[]> {
-  const stampsDir = path.join(worktreePath, WU_PATHS.STAMPS_DIR());
-  const stampRelPath = WU_PATHS.STAMP(id);
+  const paths = createWuPaths({ projectRoot });
+  const stampsDir = path.join(worktreePath, paths.STAMPS_DIR());
+  const stampRelPath = paths.STAMP(id);
   const stampAbsPath = path.join(worktreePath, stampRelPath);
 
   // Ensure stamps directory exists

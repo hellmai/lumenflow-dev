@@ -229,6 +229,10 @@ software_delivery:
     plansDir: docs/04-operations/plans
     templatesDir: .lumenflow/templates
     onboardingDir: docs/04-operations/_frameworks/lumenflow/agent/onboarding
+    completeGuidePath: docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md
+    quickRefPath: docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md
+    startingPromptPath: docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
+    governancePath: docs/04-operations/governance/project-governance.md
     safeGitPath: scripts/safe-git
   state:
     base: .lumenflow

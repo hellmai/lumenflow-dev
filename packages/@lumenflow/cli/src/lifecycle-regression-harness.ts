@@ -10,15 +10,19 @@ import {
   type StateDoctorDeps,
 } from '@lumenflow/core/state-doctor-core';
 import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generator';
+import { createWuPaths } from '@lumenflow/core/wu-paths';
 import { WU_STATUS } from '@lumenflow/core/wu-constants';
 import { WUStateStore, WU_EVENTS_FILE_NAME } from '@lumenflow/core/wu-state-store';
 import { parseYAML, stringifyYAML } from '@lumenflow/core/wu-yaml';
 
-const PATHS = {
-  wuDir: join('docs', '04-operations', 'tasks', 'wu'),
-  stateDir: join('.lumenflow', 'state'),
-  stampsDir: join('.lumenflow', 'stamps'),
-};
+function resolveHarnessPaths(projectDir: string) {
+  const wuPaths = createWuPaths({ projectRoot: projectDir });
+  return {
+    wuDir: join(projectDir, wuPaths.WU_DIR()),
+    stateDir: join(projectDir, wuPaths.STATE_DIR()),
+    stampsDir: join(projectDir, wuPaths.STAMPS_DIR()),
+  };
+}
 
 export type LifecycleStage = 'create' | 'claim' | 'done' | 'delete' | 'doctor';
 
@@ -72,11 +76,12 @@ function assertStage(condition: boolean, stage: LifecycleStage, message: string)
 }
 
 function wuPath(projectDir: string, wuId: string): string {
-  return join(projectDir, PATHS.wuDir, `${wuId}.yaml`);
+  const wuPaths = createWuPaths({ projectRoot: projectDir });
+  return join(projectDir, wuPaths.WU(wuId));
 }
 
 function eventsPath(projectDir: string): string {
-  return join(projectDir, PATHS.stateDir, WU_EVENTS_FILE_NAME);
+  return join(resolveHarnessPaths(projectDir).stateDir, WU_EVENTS_FILE_NAME);
 }
 
 async function readEvents(projectDir: string): Promise<Array<Record<string, unknown>>> {
@@ -98,9 +103,10 @@ async function writeEvents(
 }
 
 async function createDoctorDeps(projectDir: string): Promise<StateDoctorDeps> {
+  const paths = resolveHarnessPaths(projectDir);
   return {
     listWUs: async () => {
-      const dir = join(projectDir, PATHS.wuDir);
+      const dir = paths.wuDir;
       if (!existsSync(dir)) return [];
       const entries = await readdir(dir);
       const docs = [];
@@ -120,7 +126,7 @@ async function createDoctorDeps(projectDir: string): Promise<StateDoctorDeps> {
       return docs;
     },
     listStamps: async () => {
-      const dir = join(projectDir, PATHS.stampsDir);
+      const dir = paths.stampsDir;
       if (!existsSync(dir)) return [];
       const entries = await readdir(dir);
       return entries
@@ -152,12 +158,13 @@ export async function runLifecycleRegressionHarness(
 ): Promise<LifecycleHarnessResult> {
   const { projectDir, wuId, lane, title, skipDoctorFix = false } = options;
   const stageOrder: LifecycleStage[] = [];
-  const stateDir = join(projectDir, PATHS.stateDir);
-  const wuDir = join(projectDir, PATHS.wuDir);
+  const paths = resolveHarnessPaths(projectDir);
+  const stateDir = paths.stateDir;
+  const wuDir = paths.wuDir;
 
   await mkdir(wuDir, { recursive: true });
   await mkdir(stateDir, { recursive: true });
-  await mkdir(join(projectDir, PATHS.stampsDir), { recursive: true });
+  await mkdir(paths.stampsDir, { recursive: true });
 
   await withStage('create', async () => {
     stageOrder.push('create');

@@ -20,6 +20,7 @@ import { join } from 'node:path';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
+import { createWuPaths } from '@lumenflow/core/wu-paths';
 
 /**
  * Import the module under test
@@ -31,7 +32,6 @@ import { runDoctor, runDoctorForInit } from '../doctor.js';
  */
 const HUSKY_DIR = '.husky';
 const SCRIPTS_DIR = 'scripts';
-const DOCS_TASKS_DIR = 'docs/04-operations/tasks';
 const WORKSPACE_CONFIG_FILE_NAME = 'workspace.yaml';
 const WORKSPACE_CONFIG_CONTENT = 'software_delivery: {}\n';
 
@@ -57,6 +57,10 @@ function setupMinimalProject(baseDir: string): void {
 
   // Create canonical workspace.yaml
   writeFileSync(join(baseDir, WORKSPACE_CONFIG_FILE_NAME), WORKSPACE_CONFIG_CONTENT, 'utf-8');
+}
+
+function getWuDir(baseDir: string): string {
+  return createWuPaths({ projectRoot: baseDir }).WU_DIR();
 }
 
 /**
@@ -114,9 +118,9 @@ describe('doctor CLI (WU-1386) - Agent Friction Checks', () => {
       // Create and commit a placeholder file in the tasks directory first
       // This is needed because git shows untracked directories as just "?? docs/"
       // but shows files in tracked directories with full paths
-      mkdirSync(join(testDir, DOCS_TASKS_DIR, 'wu'), { recursive: true });
+      mkdirSync(join(testDir, getWuDir(testDir)), { recursive: true });
       writeFileSync(
-        join(testDir, DOCS_TASKS_DIR, 'wu', 'WU-000.yaml'),
+        join(testDir, getWuDir(testDir), 'WU-000.yaml'),
         'id: WU-000\nstatus: done\nlane: Framework: CLI\n',
         'utf-8',
       );
@@ -127,7 +131,7 @@ describe('doctor CLI (WU-1386) - Agent Friction Checks', () => {
 
       // Now add a new WU file (uncommitted) - git will show full path
       writeFileSync(
-        join(testDir, DOCS_TASKS_DIR, 'wu', 'WU-001.yaml'),
+        join(testDir, getWuDir(testDir), 'WU-001.yaml'),
         'id: WU-001\nstatus: ready\nlane: Framework: CLI\n',
         'utf-8',
       );
@@ -136,7 +140,7 @@ describe('doctor CLI (WU-1386) - Agent Friction Checks', () => {
 
       expect(result.workflowHealth?.managedFilesDirty.passed).toBe(false);
       expect(result.workflowHealth?.managedFilesDirty.files).toContain(
-        'docs/04-operations/tasks/wu/WU-001.yaml',
+        `${getWuDir(testDir)}/WU-001.yaml`,
       );
     });
 
@@ -224,9 +228,9 @@ describe('doctor CLI (WU-1386) - Agent Friction Checks', () => {
 
     it('should include wuValidity in --deep mode', async () => {
       setupMinimalProject(testDir);
-      mkdirSync(join(testDir, DOCS_TASKS_DIR, 'wu'), { recursive: true });
+      mkdirSync(join(testDir, getWuDir(testDir)), { recursive: true });
       writeFileSync(
-        join(testDir, DOCS_TASKS_DIR, 'wu', 'WU-001.yaml'),
+        join(testDir, getWuDir(testDir), 'WU-001.yaml'),
         'id: WU-001\nstatus: ready\nlane: Framework: CLI\n',
         'utf-8',
       );
@@ -455,11 +459,11 @@ describe('WU-1387 Edge Cases - WU Validity Error Handling', () => {
   describe('AC2: CLI error handling', () => {
     it('should handle validation gracefully when wu directory exists but validate fails', async () => {
       setupMinimalProject(testDir);
-      mkdirSync(join(testDir, DOCS_TASKS_DIR, 'wu'), { recursive: true });
+      mkdirSync(join(testDir, getWuDir(testDir)), { recursive: true });
 
       // Create a malformed WU file that will cause validation issues
       writeFileSync(
-        join(testDir, DOCS_TASKS_DIR, 'wu', 'WU-TEST.yaml'),
+        join(testDir, getWuDir(testDir), 'WU-TEST.yaml'),
         'id: WU-TEST\nstatus: invalid_status\nlane: Framework: CLI\n',
         'utf-8',
       );
@@ -578,11 +582,11 @@ describe('WU-1387 Edge Cases - Managed File Detection', () => {
       // Create deeply nested subdirectory
       const deepSubDir = join(testDir, 'packages', 'core', 'src', 'lib');
       mkdirSync(deepSubDir, { recursive: true });
-      mkdirSync(join(testDir, DOCS_TASKS_DIR, 'wu'), { recursive: true });
+      mkdirSync(join(testDir, getWuDir(testDir)), { recursive: true });
 
       // Create a tracked file in the managed directory
       writeFileSync(
-        join(testDir, DOCS_TASKS_DIR, 'wu', 'WU-TRACK.yaml'),
+        join(testDir, getWuDir(testDir), 'WU-TRACK.yaml'),
         'id: WU-TRACK\n',
         'utf-8',
       );
@@ -593,7 +597,7 @@ describe('WU-1387 Edge Cases - Managed File Detection', () => {
 
       // Modify the WU file
       writeFileSync(
-        join(testDir, DOCS_TASKS_DIR, 'wu', 'WU-TRACK.yaml'),
+        join(testDir, getWuDir(testDir), 'WU-TRACK.yaml'),
         'id: WU-TRACK\nmodified: true\n',
         'utf-8',
       );
@@ -667,9 +671,9 @@ describe('WU-1387 AC5: Real Output Parsing', () => {
 
     it('should return structured result with all expected fields', async () => {
       setupMinimalProject(testDir);
-      mkdirSync(join(testDir, DOCS_TASKS_DIR, 'wu'), { recursive: true });
+      mkdirSync(join(testDir, getWuDir(testDir)), { recursive: true });
       writeFileSync(
-        join(testDir, DOCS_TASKS_DIR, 'wu', 'WU-TEST.yaml'),
+        join(testDir, getWuDir(testDir), 'WU-TEST.yaml'),
         'id: WU-TEST\nstatus: ready\nlane: Test\n',
         'utf-8',
       );
@@ -690,9 +694,9 @@ describe('WU-1387 AC5: Real Output Parsing', () => {
 
     it('should set passed=false with clear message when CLI unavailable', async () => {
       setupMinimalProject(testDir);
-      mkdirSync(join(testDir, DOCS_TASKS_DIR, 'wu'), { recursive: true });
+      mkdirSync(join(testDir, getWuDir(testDir)), { recursive: true });
       writeFileSync(
-        join(testDir, DOCS_TASKS_DIR, 'wu', 'WU-TEST.yaml'),
+        join(testDir, getWuDir(testDir), 'WU-TEST.yaml'),
         'id: WU-TEST\nstatus: ready\n',
         'utf-8',
       );

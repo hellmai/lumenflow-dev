@@ -58,10 +58,10 @@ describe('WU-1311: CLI path centralization', () => {
     it('should use config-based paths for WU file path generation', () => {
       const paths = createWuPaths({ projectRoot: tempDir });
 
-      // Paths should be from config, not hardcoded
-      expect(paths.WU('WU-1311')).toBe('docs/04-operations/tasks/wu/WU-1311.yaml');
-      expect(paths.STATUS()).toBe('docs/04-operations/tasks/status.md');
-      expect(paths.BACKLOG()).toBe('docs/04-operations/tasks/backlog.md');
+      // WU-2105: Defaults are consumer-simple (no 04-operations prefix)
+      expect(paths.WU('WU-1311')).toBe('docs/tasks/wu/WU-1311.yaml');
+      expect(paths.STATUS()).toBe('docs/tasks/status.md');
+      expect(paths.BACKLOG()).toBe('docs/tasks/backlog.md');
     });
 
     it('should respect custom config paths for WU operations', async () => {

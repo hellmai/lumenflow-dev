@@ -428,7 +428,11 @@ export async function syncEnforcementHooks(projectDir: string): Promise<boolean>
 
   // Write hook scripts
   if (enforcement.block_outside_worktree) {
-    writeHookScript(projectDir, HOOK_SCRIPTS.ENFORCE_WORKTREE, generateEnforceWorktreeScript());
+    writeHookScript(
+      projectDir,
+      HOOK_SCRIPTS.ENFORCE_WORKTREE,
+      generateEnforceWorktreeScript({ projectRoot: projectDir }),
+    );
   }
 
   if (enforcement.require_wu_for_edits) {

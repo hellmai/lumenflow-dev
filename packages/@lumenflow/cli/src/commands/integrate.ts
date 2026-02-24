@@ -252,7 +252,9 @@ export async function integrateClaudeCode(
   // Write hook scripts — each flag maps to a constant script name and generator
   if (enforcement.block_outside_worktree) {
     const scriptPath = path.join(hooksDir, CLAUDE_HOOKS.SCRIPTS.ENFORCE_WORKTREE);
-    fs.writeFileSync(scriptPath, generateEnforceWorktreeScript(), { mode: 0o755 });
+    fs.writeFileSync(scriptPath, generateEnforceWorktreeScript({ projectRoot: projectDir }), {
+      mode: 0o755,
+    });
     console.log(`[integrate] Generated ${CLAUDE_HOOKS.SCRIPTS.ENFORCE_WORKTREE}`);
     created.push(path.join(DIRECTORIES.CLAUDE_HOOKS, CLAUDE_HOOKS.SCRIPTS.ENFORCE_WORKTREE));
   }

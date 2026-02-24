@@ -699,6 +699,86 @@ describe('lumenflow init', () => {
       });
     });
 
+    // WU-2105: Verify workspace.yaml directory paths match scaffolded layout
+    describe('WU-2105: workspace.yaml directory paths match layout', () => {
+      const SIMPLE_LAYOUT_PATHS = {
+        wuDir: 'docs/tasks/wu',
+        initiativesDir: 'docs/tasks/initiatives',
+        backlogPath: 'docs/tasks/backlog.md',
+        statusPath: 'docs/tasks/status.md',
+        plansDir: 'docs/plans',
+        onboardingDir: 'docs/_frameworks/lumenflow/agent/onboarding',
+        completeGuidePath: 'docs/_frameworks/lumenflow/lumenflow-complete.md',
+        quickRefPath: 'docs/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
+        startingPromptPath: 'docs/_frameworks/lumenflow/agent/onboarding/starting-prompt.md',
+        governancePath: 'docs/governance/project-governance.md',
+      };
+
+      const ARC42_LAYOUT_PATHS = {
+        wuDir: 'docs/04-operations/tasks/wu',
+        initiativesDir: 'docs/04-operations/tasks/initiatives',
+        backlogPath: 'docs/04-operations/tasks/backlog.md',
+        statusPath: 'docs/04-operations/tasks/status.md',
+        plansDir: 'docs/04-operations/plans',
+        onboardingDir: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
+        completeGuidePath: 'docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md',
+        quickRefPath:
+          'docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
+        startingPromptPath:
+          'docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md',
+        governancePath: 'docs/04-operations/governance/project-governance.md',
+      };
+
+      it('simple layout: all directory paths use docs/ prefix (no 04-operations)', async () => {
+        await scaffoldProject(tempDir, { force: false, full: true });
+
+        const sd = readSoftwareDeliveryConfig(tempDir);
+        const dirs = sd.directories as Record<string, string>;
+
+        for (const [key, expected] of Object.entries(SIMPLE_LAYOUT_PATHS)) {
+          expect(dirs[key]).toBe(expected);
+        }
+
+        // No path should contain '04-operations' in simple layout
+        for (const [key, value] of Object.entries(dirs)) {
+          if (typeof value === 'string' && key !== 'appsWeb') {
+            expect(value).not.toContain('04-operations');
+          }
+        }
+      });
+
+      it('arc42 layout: all directory paths use docs/04-operations/ prefix', async () => {
+        await scaffoldProject(tempDir, {
+          force: false,
+          full: true,
+          docsStructure: 'arc42',
+        });
+
+        const sd = readSoftwareDeliveryConfig(tempDir);
+        const dirs = sd.directories as Record<string, string>;
+
+        for (const [key, expected] of Object.entries(ARC42_LAYOUT_PATHS)) {
+          expect(dirs[key]).toBe(expected);
+        }
+      });
+
+      it('no layout-sensitive path relies on schema defaults', async () => {
+        // Both layouts should produce explicit values in workspace.yaml.
+        // If a path were missing from the override block, it would silently
+        // inherit the schema default and could mismatch the scaffolded layout.
+        await scaffoldProject(tempDir, { force: false, full: true });
+
+        const sd = readSoftwareDeliveryConfig(tempDir);
+        const dirs = sd.directories as Record<string, string>;
+
+        // All 10 layout-sensitive keys must be present
+        const requiredKeys = Object.keys(SIMPLE_LAYOUT_PATHS);
+        for (const key of requiredKeys) {
+          expect(dirs[key]).toBeDefined();
+        }
+      });
+    });
+
     describe('lane-inference.yaml managed file header', () => {
       it('should NOT scaffold lane inference file during init', async () => {
         const options: ScaffoldOptions = {

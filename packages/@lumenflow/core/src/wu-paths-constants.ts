@@ -14,6 +14,9 @@
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { GIT_DIRECTORY_NAME, WORKSPACE_CONFIG_FILE_NAME } from './config-contract.js';
+import { DEFAULT_DOCS_LAYOUT, DOCS_LAYOUT_PRESETS } from './docs-layout-presets.js';
+
+const DEFAULT_DOCS_PATHS = DOCS_LAYOUT_PRESETS[DEFAULT_DOCS_LAYOUT];
 
 /**
  * WU-1548: Shared Node.js filesystem error interface.
@@ -72,11 +75,11 @@ export const DIRECTORIES = {
   PACKAGES: 'packages/',
   TOOLS: 'tools/',
   MEMORY_BANK: 'memory-bank/',
-  WU_DIR: 'docs/04-operations/tasks/wu',
-  INITIATIVES_DIR: 'docs/04-operations/tasks/initiatives',
+  WU_DIR: `${DEFAULT_DOCS_PATHS.tasks}/wu`,
+  INITIATIVES_DIR: `${DEFAULT_DOCS_PATHS.tasks}/initiatives`,
   // WU-1814: Paths for active WU detection
-  BACKLOG_PATH: 'docs/04-operations/tasks/backlog.md',
-  STATUS_PATH: 'docs/04-operations/tasks/status.md',
+  BACKLOG_PATH: `${DEFAULT_DOCS_PATHS.tasks}/backlog.md`,
+  STATUS_PATH: `${DEFAULT_DOCS_PATHS.tasks}/status.md`,
 };
 
 /**
@@ -148,7 +151,7 @@ export const FILE_EXTENSIONS = {
  */
 export const PATH_PATTERNS = {
   /** Matches WU YAML paths in both legacy and current locations */
-  WU_YAML: /(?:memory-bank|docs\/04-operations)\/tasks\/wu\/(WU-\d+)\.ya?ml$/i,
+  WU_YAML: /(?:memory-bank|docs(?:\/04-operations)?)\/tasks\/wu\/(WU-\d+)\.ya?ml$/i,
 
   /** Matches stamp file paths */
   STAMP: /\.lumenflow\/stamps\/(WU-\d+)\.done$/i,

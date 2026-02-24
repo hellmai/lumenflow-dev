@@ -11,6 +11,9 @@
 
 import { z } from 'zod';
 import { DURATION_MS } from '../constants/duration-constants.js';
+import { DOCS_LAYOUT_PRESETS } from '../docs-layout-presets.js';
+
+const DEFAULT_LAYOUT = DOCS_LAYOUT_PRESETS.simple;
 
 /**
  * Event archival configuration (WU-1207)
@@ -62,17 +65,17 @@ export const DirectoriesSchema = z.object({
   /** Memory bank directory (default: 'memory-bank/') */
   memoryBank: z.string().default('memory-bank/'),
 
-  /** WU YAML files directory (default: 'docs/04-operations/tasks/wu') */
-  wuDir: z.string().default('docs/04-operations/tasks/wu'),
+  /** WU YAML files directory (default: docs-layout simple preset + '/wu') */
+  wuDir: z.string().default(`${DEFAULT_LAYOUT.tasks}/wu`),
 
-  /** Initiatives directory (default: 'docs/04-operations/tasks/initiatives') */
-  initiativesDir: z.string().default('docs/04-operations/tasks/initiatives'),
+  /** Initiatives directory (default: docs-layout simple preset + '/initiatives') */
+  initiativesDir: z.string().default(`${DEFAULT_LAYOUT.tasks}/initiatives`),
 
-  /** Backlog file path (default: 'docs/04-operations/tasks/backlog.md') */
-  backlogPath: z.string().default('docs/04-operations/tasks/backlog.md'),
+  /** Backlog file path (default: docs-layout simple preset + '/backlog.md') */
+  backlogPath: z.string().default(`${DEFAULT_LAYOUT.tasks}/backlog.md`),
 
-  /** Status file path (default: 'docs/04-operations/tasks/status.md') */
-  statusPath: z.string().default('docs/04-operations/tasks/status.md'),
+  /** Status file path (default: docs-layout simple preset + '/status.md') */
+  statusPath: z.string().default(`${DEFAULT_LAYOUT.tasks}/status.md`),
 
   /** Skills directory (default: '.claude/skills') */
   skillsDir: z.string().default('.claude/skills'),
@@ -80,44 +83,30 @@ export const DirectoriesSchema = z.object({
   /** Agents directory (default: '.claude/agents') */
   agentsDir: z.string().default('.claude/agents'),
 
-  /** Plans directory (default: 'docs/04-operations/plans') - WU-1301 */
-  plansDir: z.string().default('docs/04-operations/plans'),
+  /** Plans directory (default: docs-layout simple preset + '/plans') */
+  plansDir: z.string().default(`${DEFAULT_LAYOUT.operations}/plans`),
 
-  /** Templates directory (default: '.lumenflow/templates') - WU-1310 */
+  /** Templates directory (default: '.lumenflow/templates') */
   templatesDir: z.string().default('.lumenflow/templates'),
 
-  /** Onboarding directory (default: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding') - WU-1310 */
-  onboardingDir: z.string().default('docs/04-operations/_frameworks/lumenflow/agent/onboarding'),
+  /** Onboarding directory (default: docs-layout simple preset onboarding path) */
+  onboardingDir: z.string().default(DEFAULT_LAYOUT.onboarding),
 
-  /**
-   * LumenFlow complete guide path
-   * (default: 'docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md')
-   */
-  completeGuidePath: z
-    .string()
-    .default('docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md'),
+  /** LumenFlow complete guide path (default: docs-layout simple preset complete guide path) */
+  completeGuidePath: z.string().default(DEFAULT_LAYOUT.completeGuidePath),
 
-  /**
-   * Agent quick reference commands path
-   * (default: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md')
-   */
+  /** Agent quick reference commands path (default: docs-layout simple preset quick-ref path) */
   quickRefPath: z
     .string()
-    .default('docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md'),
+    .default(DEFAULT_LAYOUT.quickRefPath),
 
-  /**
-   * Agent starting prompt path
-   * (default: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md')
-   */
+  /** Agent starting prompt path (default: docs-layout simple preset starting prompt path) */
   startingPromptPath: z
     .string()
-    .default('docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md'),
+    .default(DEFAULT_LAYOUT.startingPromptPath),
 
-  /**
-   * Project governance document path
-   * (default: 'docs/04-operations/governance/project-governance.md')
-   */
-  governancePath: z.string().default('docs/04-operations/governance/project-governance.md'),
+  /** Project governance document path (default: docs-layout simple preset governance path) */
+  governancePath: z.string().default(DEFAULT_LAYOUT.governancePath),
 
   /** Safe-git wrapper path relative to project root (default: 'scripts/safe-git') - WU-1654 */
   safeGitPath: z.string().default('scripts/safe-git'),

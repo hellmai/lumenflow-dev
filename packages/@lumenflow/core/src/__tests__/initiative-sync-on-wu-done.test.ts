@@ -7,6 +7,7 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 
 import { parseYAML, stringifyYAML } from '../wu-yaml.js';
+import { createWuPaths } from '../wu-paths.js';
 import { computeInitiativeSyncWriteOnWUComplete } from '../wu-done-initiative-sync.js';
 
 function writeYaml(filePath: string, doc: Record<string, unknown>) {
@@ -24,6 +25,14 @@ function getPhaseStatus(initiative: Record<string, unknown>, phaseId: number): s
   return phase?.status;
 }
 
+function getFixtureDirs(projectRoot: string): { wuDir: string; initiativesDir: string } {
+  const paths = createWuPaths({ projectRoot });
+  return {
+    wuDir: path.join(projectRoot, paths.WU_DIR()),
+    initiativesDir: path.join(projectRoot, paths.INITIATIVES_DIR()),
+  };
+}
+
 describe('computeInitiativeSyncWriteOnWUComplete', () => {
   const tempRoots: string[] = [];
 
@@ -37,8 +46,7 @@ describe('computeInitiativeSyncWriteOnWUComplete', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'wu-init-sync-'));
     tempRoots.push(root);
 
-    const wuDir = path.join(root, 'docs/04-operations/tasks/wu');
-    const initiativesDir = path.join(root, 'docs/04-operations/tasks/initiatives');
+    const { wuDir, initiativesDir } = getFixtureDirs(root);
     mkdirSync(wuDir, { recursive: true });
     mkdirSync(initiativesDir, { recursive: true });
 
@@ -92,8 +100,7 @@ describe('computeInitiativeSyncWriteOnWUComplete', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'wu-init-sync-'));
     tempRoots.push(root);
 
-    const wuDir = path.join(root, 'docs/04-operations/tasks/wu');
-    const initiativesDir = path.join(root, 'docs/04-operations/tasks/initiatives');
+    const { wuDir, initiativesDir } = getFixtureDirs(root);
     mkdirSync(wuDir, { recursive: true });
     mkdirSync(initiativesDir, { recursive: true });
 
@@ -141,8 +148,7 @@ describe('computeInitiativeSyncWriteOnWUComplete', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'wu-init-sync-'));
     tempRoots.push(root);
 
-    const wuDir = path.join(root, 'docs/04-operations/tasks/wu');
-    const initiativesDir = path.join(root, 'docs/04-operations/tasks/initiatives');
+    const { wuDir, initiativesDir } = getFixtureDirs(root);
     mkdirSync(wuDir, { recursive: true });
     mkdirSync(initiativesDir, { recursive: true });
 
@@ -190,8 +196,7 @@ describe('computeInitiativeSyncWriteOnWUComplete', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'wu-init-sync-'));
     tempRoots.push(root);
 
-    const wuDir = path.join(root, 'docs/04-operations/tasks/wu');
-    const initiativesDir = path.join(root, 'docs/04-operations/tasks/initiatives');
+    const { wuDir, initiativesDir } = getFixtureDirs(root);
     mkdirSync(wuDir, { recursive: true });
     mkdirSync(initiativesDir, { recursive: true });
 

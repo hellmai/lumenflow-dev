@@ -2432,14 +2432,7 @@ async function executePreFlightChecks({
 
       // Write updated WU YAML back to worktree
       if (derivedWorktree) {
-        const wtWUPath = path.join(
-          derivedWorktree,
-          'docs',
-          '04-operations',
-          'tasks',
-          'wu',
-          `${id}.yaml`,
-        );
+        const wtWUPath = path.join(derivedWorktree, WU_PATHS.WU(id));
         if (existsSync(wtWUPath)) {
           writeWU(wtWUPath, docForValidation);
         }

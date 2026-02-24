@@ -18,7 +18,8 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { createWUParser, withMicroWorktree } from '@lumenflow/core';
+import { createWUParser, withMicroWorktree, getDocsLayoutPreset } from '@lumenflow/core';
+import { createWuPaths } from '@lumenflow/core/wu-paths';
 
 // Directory name constants to avoid duplicate strings
 const LUMENFLOW_DIR = '.lumenflow';
@@ -49,6 +50,17 @@ export interface DriftResult {
   hasDrift: boolean;
   driftingFiles: string[];
   checkedFiles: string[];
+}
+
+function getOnboardingSourceDir(projectRoot: string): string {
+  const configured = path.join(projectRoot, createWuPaths({ projectRoot }).ONBOARDING_DIR());
+  if (fs.existsSync(configured)) {
+    return configured;
+  }
+
+  // Backward-compatible fallback for repos still on arc42 docs layout.
+  const arc42Fallback = path.join(projectRoot, getDocsLayoutPreset('arc42').onboarding);
+  return fs.existsSync(arc42Fallback) ? arc42Fallback : configured;
 }
 
 /**
@@ -173,15 +185,7 @@ export async function syncOnboardingDocs(
 ): Promise<SyncResult> {
   const result: SyncResult = { synced: [], errors: [] };
 
-  const sourceDir = path.join(
-    projectRoot,
-    'docs',
-    '04-operations',
-    '_frameworks',
-    'lumenflow',
-    'agent',
-    'onboarding',
-  );
+  const sourceDir = getOnboardingSourceDir(projectRoot);
   const targetDir = path.join(getTemplatesDir(projectRoot), 'core', 'ai', 'onboarding');
 
   if (!fs.existsSync(sourceDir)) {
@@ -358,15 +362,7 @@ export async function checkTemplateDrift(projectRoot: string): Promise<DriftResu
   }
 
   // Check onboarding docs
-  const onboardingSourceDir = path.join(
-    projectRoot,
-    'docs',
-    '04-operations',
-    '_frameworks',
-    'lumenflow',
-    'agent',
-    'onboarding',
-  );
+  const onboardingSourceDir = getOnboardingSourceDir(projectRoot);
   const onboardingTargetDir = path.join(templatesDir, 'core', 'ai', 'onboarding');
 
   if (fs.existsSync(onboardingSourceDir)) {
@@ -504,15 +500,7 @@ export async function syncTemplatesWithWorktree(projectRoot: string): Promise<Sy
 
         // Sync onboarding docs
         const onboardingResult: SyncResult = { synced: [], errors: [] };
-        const onboardingSourceDir = path.join(
-          projectRoot,
-          'docs',
-          '04-operations',
-          '_frameworks',
-          'lumenflow',
-          'agent',
-          'onboarding',
-        );
+        const onboardingSourceDir = getOnboardingSourceDir(projectRoot);
         const onboardingTargetDir = path.join(templatesDir, 'core', 'ai', 'onboarding');
 
         if (fs.existsSync(onboardingSourceDir)) {

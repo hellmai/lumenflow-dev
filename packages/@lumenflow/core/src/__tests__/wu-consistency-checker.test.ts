@@ -21,10 +21,20 @@ import {
 } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
+import { createWuPaths } from '../wu-paths.js';
 
 // Track withMicroWorktree calls to verify it's NOT called when projectRoot is provided
 let withMicroWorktreeCalls: Array<{ operation: string; id: string; pushOnly?: boolean }> = [];
 let lastMicroWorktreeFiles = new Map<string, string>();
+
+function getTestPaths(projectRoot: string) {
+  return createWuPaths({ projectRoot });
+}
+
+function resolveWUPath(projectRoot: string, wuId: string): string {
+  const paths = getTestPaths(projectRoot);
+  return path.join(projectRoot, paths.WU(wuId));
+}
 
 // Mock git adapter before importing modules that use it
 const mockGitForCwd = {
@@ -129,7 +139,8 @@ describe('wu-consistency-checker (WU-1370)', () => {
     testProjectRoot = mkdtempSync(path.join(tmpdir(), 'wu-consistency-test-'));
 
     // Create necessary directories
-    mkdirSync(path.join(testProjectRoot, 'docs/04-operations/tasks/wu'), { recursive: true });
+    const paths = getTestPaths(testProjectRoot);
+    mkdirSync(path.join(testProjectRoot, paths.WU_DIR()), { recursive: true });
     mkdirSync(path.join(testProjectRoot, '.lumenflow/stamps'), { recursive: true });
     mkdirSync(path.join(testProjectRoot, '.lumenflow/state'), { recursive: true });
 
@@ -156,7 +167,7 @@ acceptance:
   - Test acceptance criteria
 `;
     writeFileSync(
-      path.join(testProjectRoot, 'docs/04-operations/tasks/wu/WU-8888.yaml'),
+      resolveWUPath(testProjectRoot, 'WU-8888'),
       wuContent,
     );
   });
@@ -263,7 +274,7 @@ acceptance:
       const { repairWUInconsistency } = await import('../wu-consistency-checker.js');
       const { parseYAML } = await import('../wu-yaml.js');
 
-      const wuPath = path.join(testProjectRoot, 'docs/04-operations/tasks/wu/WU-2000.yaml');
+      const wuPath = resolveWUPath(testProjectRoot, 'WU-2000');
       writeFileSync(
         wuPath,
         `id: WU-2000
@@ -388,9 +399,10 @@ acceptance:
     it('should apply cumulative removals for multiple status.md inconsistencies in one batch', async () => {
       const { repairWUInconsistency } = await import('../wu-consistency-checker.js');
 
-      mkdirSync(path.join(testProjectRoot, 'docs/04-operations/tasks'), { recursive: true });
+      const paths = getTestPaths(testProjectRoot);
+      mkdirSync(path.dirname(path.join(testProjectRoot, paths.STATUS())), { recursive: true });
       writeFileSync(
-        path.join(testProjectRoot, 'docs/04-operations/tasks/status.md'),
+        path.join(testProjectRoot, paths.STATUS()),
         `# Work Unit Status
 
 ## In Progress
@@ -431,7 +443,7 @@ acceptance:
         const result = await repairWUInconsistency(report);
         expect(result.repaired).toBe(2);
 
-        const statusOutput = lastMicroWorktreeFiles.get('docs/04-operations/tasks/status.md');
+        const statusOutput = lastMicroWorktreeFiles.get(paths.STATUS());
         expect(statusOutput).toBeDefined();
         expect(statusOutput).not.toContain('WU-3001');
         expect(statusOutput).not.toContain('WU-3002');
@@ -445,7 +457,7 @@ acceptance:
     it('treats an untracked local stamp as missing for done-status consistency checks', async () => {
       const { checkWUConsistency } = await import('../wu-consistency-checker.js');
 
-      const wuPath = path.join(testProjectRoot, 'docs/04-operations/tasks/wu/WU-7777.yaml');
+      const wuPath = resolveWUPath(testProjectRoot, 'WU-7777');
       writeFileSync(
         wuPath,
         `id: WU-7777
@@ -486,7 +498,7 @@ acceptance:
     it('accepts a done stamp when it is tracked', async () => {
       const { checkWUConsistency } = await import('../wu-consistency-checker.js');
 
-      const wuPath = path.join(testProjectRoot, 'docs/04-operations/tasks/wu/WU-7778.yaml');
+      const wuPath = resolveWUPath(testProjectRoot, 'WU-7778');
       writeFileSync(
         wuPath,
         `id: WU-7778
@@ -529,8 +541,8 @@ acceptance:
     it('fetches git worktree list once per full scan instead of once per WU', async () => {
       const { checkAllWUConsistency } = await import('../wu-consistency-checker.js');
 
-      const wuPathA = path.join(testProjectRoot, 'docs/04-operations/tasks/wu/WU-7001.yaml');
-      const wuPathB = path.join(testProjectRoot, 'docs/04-operations/tasks/wu/WU-7002.yaml');
+      const wuPathA = resolveWUPath(testProjectRoot, 'WU-7001');
+      const wuPathB = resolveWUPath(testProjectRoot, 'WU-7002');
       writeFileSync(
         wuPathA,
         `id: WU-7001

@@ -12,6 +12,7 @@ import {
   CLAIM_VALIDATION_IDS,
   type ClaimValidationResult,
 } from '../../validators/claim-validation.js';
+import { createWuPaths } from '../../wu-paths.js';
 
 const TEMP_DIR_PREFIX = 'lumenflow-claim-validation-';
 const FIXTURE_WU_ID = 'WU-9000';
@@ -30,8 +31,9 @@ function writeWorkspaceConfig(baseDir: string): void {
 }
 
 function writeSpecFiles(baseDir: string, options: { notes?: string[] } = {}): void {
-  const wuDir = path.join(baseDir, 'docs', '04-operations', 'tasks', 'wu');
-  const initiativesDir = path.join(baseDir, 'docs', '04-operations', 'tasks', 'initiatives');
+  const paths = createWuPaths({ projectRoot: baseDir });
+  const wuDir = path.join(baseDir, paths.WU_DIR());
+  const initiativesDir = path.join(baseDir, paths.INITIATIVES_DIR());
 
   mkdirSync(wuDir, { recursive: true });
   mkdirSync(initiativesDir, { recursive: true });

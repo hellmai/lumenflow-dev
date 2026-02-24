@@ -19,7 +19,7 @@
  */
 
 import { CONSISTENCY_TYPES, LOG_PREFIX } from './wu-constants.js';
-import { WU_PATHS } from './wu-paths.js';
+import { createWuPaths } from './wu-paths.js';
 import { withMicroWorktree } from './micro-worktree.js';
 import type { ConsistencyError } from './wu-consistency-detector.js';
 import type { WUConsistencyRepairResult } from './wu-consistency-file-repairs.js';
@@ -75,18 +75,20 @@ export type GitRepairStrategy = (
  * File-based repairs run inside a micro-worktree for atomic commits.
  */
 export const FILE_REPAIR_STRATEGIES: Record<string, FileRepairStrategy> = {
-  [CONSISTENCY_TYPES.YAML_DONE_NO_STAMP]: async (error, worktreePath) => {
+  [CONSISTENCY_TYPES.YAML_DONE_NO_STAMP]: async (error, worktreePath, projectRoot) => {
     const files = await createStampInWorktree(
       error.wuId,
       error.title || `WU ${error.wuId}`,
       worktreePath,
+      projectRoot,
     );
     return { success: true, files };
   },
 
   [CONSISTENCY_TYPES.YAML_DONE_STATUS_IN_PROGRESS]: async (error, worktreePath, projectRoot) => {
+    const paths = createWuPaths({ projectRoot });
     const files = await removeWUFromSectionInWorktree(
-      WU_PATHS.STATUS(),
+      paths.STATUS(),
       error.wuId,
       '## In Progress',
       worktreePath,
@@ -96,8 +98,9 @@ export const FILE_REPAIR_STRATEGIES: Record<string, FileRepairStrategy> = {
   },
 
   [CONSISTENCY_TYPES.BACKLOG_DUAL_SECTION]: async (error, worktreePath, projectRoot) => {
+    const paths = createWuPaths({ projectRoot });
     const files = await removeWUFromSectionInWorktree(
-      WU_PATHS.BACKLOG(),
+      paths.BACKLOG(),
       error.wuId,
       '## \uD83D\uDD27 In progress',
       worktreePath,

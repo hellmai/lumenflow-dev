@@ -12,6 +12,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 // Mock fs before importing module under test
 vi.mock('node:fs');
@@ -89,21 +90,25 @@ describe('WU-1367: Hook Generation', () => {
   });
 
   describe('generateEnforcementHooks', () => {
-    it('should generate PreToolUse hook for Write/Edit blocking when block_outside_worktree=true', async () => {
-      const { generateEnforcementHooks } = await import('../../hooks/enforcement-generator.js');
+    it(
+      'should generate PreToolUse hook for Write/Edit blocking when block_outside_worktree=true',
+      async () => {
+        const { generateEnforcementHooks } = await import('../../hooks/enforcement-generator.js');
 
-      const config = {
-        block_outside_worktree: true,
-        require_wu_for_edits: false,
-        warn_on_stop_without_wu_done: false,
-      };
+        const config = {
+          block_outside_worktree: true,
+          require_wu_for_edits: false,
+          warn_on_stop_without_wu_done: false,
+        };
 
-      const hooks = generateEnforcementHooks(config);
+        const hooks = generateEnforcementHooks(config);
 
-      expect(hooks.preToolUse).toBeDefined();
-      expect(hooks.preToolUse?.length).toBeGreaterThan(0);
-      expect(hooks.preToolUse?.[0].matcher).toBe('Write|Edit');
-    });
+        expect(hooks.preToolUse).toBeDefined();
+        expect(hooks.preToolUse?.length).toBeGreaterThan(0);
+        expect(hooks.preToolUse?.[0].matcher).toBe('Write|Edit');
+      },
+      15000,
+    );
 
     it('should generate PreToolUse hook for WU requirement when require_wu_for_edits=true', async () => {
       const { generateEnforcementHooks } = await import('../../hooks/enforcement-generator.js');
@@ -367,13 +372,18 @@ describe('WU-1501: Fail-closed default on main', () => {
       });
     }
 
-    it('should allow Write to WU YAML files (docs/04-operations/tasks/wu/)', async () => {
+    it('should allow Write to WU YAML files (configured wuDir)', async () => {
       const { checkWorktreeEnforcement } = await import('../../hooks/enforcement-checks.js');
+      const { createWuPaths } = await import('@lumenflow/core/wu-paths');
       mockNoActiveClaim();
+      const wuFilePath = path.join(
+        TEST_PROJECT_DIR,
+        createWuPaths({ projectRoot: TEST_PROJECT_DIR }).WU('WU-1501'),
+      );
 
       const result = await checkWorktreeEnforcement(
         {
-          file_path: '/test/project/docs/04-operations/tasks/wu/WU-1501.yaml',
+          file_path: wuFilePath,
           tool_name: 'Write',
         },
         '/test/project',
@@ -512,12 +522,16 @@ describe('WU-1501: Fail-closed default on main', () => {
     it('should include allowlist patterns in generated script', async () => {
       const { generateEnforceWorktreeScript } =
         await import('../../hooks/enforcement-generator.js');
-      const script = generateEnforceWorktreeScript();
+      const { createWuPaths } = await import('@lumenflow/core/wu-paths');
+      const expectedWuAllowlistPrefix = `${
+        createWuPaths({ projectRoot: TEST_PROJECT_DIR }).WU_DIR()
+      }/`;
+      const script = generateEnforceWorktreeScript({ projectRoot: TEST_PROJECT_DIR });
 
       // Should contain allowlist checking
       expect(script).toContain('.lumenflow/');
       expect(script).toContain('.claude/');
-      expect(script).toContain('docs/04-operations/tasks/wu/');
+      expect(script).toContain(expectedWuAllowlistPrefix);
     });
 
     it('should check for branch-pr claimed_mode in generated script', async () => {

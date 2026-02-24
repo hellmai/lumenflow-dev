@@ -12,7 +12,12 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { LUMENFLOW_CLIENT_IDS } from '@lumenflow/core';
+import {
+  LUMENFLOW_CLIENT_IDS,
+  getDocsLayoutPreset,
+  type DocsLayoutPreset,
+  type DocsLayoutType,
+} from '@lumenflow/core';
 
 /**
  * Detected IDE type from environment
@@ -40,21 +45,10 @@ export interface PrerequisiteResults {
 }
 
 /** WU-1300: Docs structure type for scaffolding */
-export type DocsStructureType = 'simple' | 'arc42';
+export type DocsStructureType = DocsLayoutType;
 
-/**
- * WU-1309: Docs paths for different structure types
- */
-export interface DocsPathConfig {
-  /** Base operations directory */
-  operations: string;
-  /** Tasks directory */
-  tasks: string;
-  /** Agent onboarding docs directory */
-  onboarding: string;
-  /** Quick-ref link for AGENTS.md */
-  quickRefLink: string;
-}
+/** WU-1309: Docs paths for different structure types */
+export type DocsPathConfig = DocsLayoutPreset;
 
 /**
  * WU-1364: Detect git state and return config overrides
@@ -190,21 +184,7 @@ export function checkPrerequisites(): PrerequisiteResults {
  * WU-1309: Get docs paths based on structure type
  */
 export function getDocsPath(structure: DocsStructureType): DocsPathConfig {
-  if (structure === 'simple') {
-    return {
-      operations: 'docs',
-      tasks: 'docs/tasks',
-      onboarding: 'docs/_frameworks/lumenflow/agent/onboarding',
-      quickRefLink: 'docs/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
-    };
-  }
-  // arc42 structure
-  return {
-    operations: 'docs/04-operations',
-    tasks: 'docs/04-operations/tasks',
-    onboarding: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
-    quickRefLink: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md',
-  };
+  return getDocsLayoutPreset(structure);
 }
 
 /**

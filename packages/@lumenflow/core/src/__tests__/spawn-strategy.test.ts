@@ -9,11 +9,16 @@ import {
   GenericStrategy,
   SpawnStrategyFactory,
 } from '../spawn-strategy';
+import { createWuPaths } from '../wu-paths.js';
 
 // Mock fs.existsSync
 vi.mock('node:fs', () => ({
   existsSync: vi.fn(),
 }));
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 describe('SpawnStrategy', () => {
   beforeEach(() => {
@@ -33,11 +38,10 @@ describe('SpawnStrategy', () => {
     it('should include quick-ref-commands.md as step 6', () => {
       const strategy = new GenericStrategy();
       const preamble = strategy.getPreamble('WU-1234');
+      const quickRefPath = createWuPaths().QUICK_REF_PATH();
 
       // Check that quick-ref is listed as step 6
-      expect(preamble).toMatch(
-        /6\.\s*Read\s+docs\/04-operations\/_frameworks\/lumenflow\/agent\/onboarding\/quick-ref-commands\.md/,
-      );
+      expect(preamble).toMatch(new RegExp(`6\\.\\s*Read\\s+${escapeRegex(quickRefPath)}`));
     });
 
     it('should include all required context files in correct order', () => {

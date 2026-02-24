@@ -166,6 +166,7 @@ export * from './stamp-utils.js';
 // Configuration
 export * from './lumenflow-config.js';
 export * from './lumenflow-config-schema.js';
+export * from './docs-layout-presets.js';
 
 // WU Events Cleanup (WU-1207)
 export * from './wu-events-cleanup.js';

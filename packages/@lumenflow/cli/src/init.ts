@@ -547,8 +547,10 @@ function buildSoftwareDeliveryConfig(
   const config = getDefaultConfig();
   config.directories.agentsDir = LUMENFLOW_AGENTS_DIR;
 
-  // WU-1755: Override directory paths to match detected docs structure.
-  // Without this, schema defaults (arc42 paths) diverge from scaffolded structure (simple paths).
+  // WU-2105: Write ALL directory paths explicitly from detected docs structure.
+  // Schema defaults are consumer-simple. For arc42 repos, docsPaths provides
+  // the correct values. Either way, workspace.yaml gets explicit paths — no
+  // reliance on schema defaults for layout-sensitive keys.
   if (docsPaths) {
     config.directories.wuDir = `${docsPaths.tasks}/wu`;
     config.directories.initiativesDir = `${docsPaths.tasks}/initiatives`;
@@ -556,6 +558,10 @@ function buildSoftwareDeliveryConfig(
     config.directories.statusPath = `${docsPaths.tasks}/status.md`;
     config.directories.plansDir = `${docsPaths.operations}/plans`;
     config.directories.onboardingDir = docsPaths.onboarding;
+    config.directories.completeGuidePath = docsPaths.completeGuidePath;
+    config.directories.quickRefPath = docsPaths.quickRefPath;
+    config.directories.startingPromptPath = docsPaths.startingPromptPath;
+    config.directories.governancePath = docsPaths.governancePath;
   }
 
   // WU-1067: Add gates.execution section with preset if specified

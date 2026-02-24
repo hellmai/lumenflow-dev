@@ -20,6 +20,7 @@ import * as yaml from 'yaml';
 import { execFileSync } from 'node:child_process';
 import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
 import { WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
+import { createWuPaths } from '@lumenflow/core/wu-paths';
 import { CONFIG_FILES } from '@lumenflow/core/wu-constants';
 import { scaffoldProject } from './init.js';
 
@@ -330,7 +331,7 @@ function initializeGitRepo(projectDir: string): void {
  * Create a sample WU YAML file for testing
  */
 function createSampleWuYaml(projectDir: string): void {
-  const wuDir = path.join(projectDir, 'docs', '04-operations', 'tasks', 'wu');
+  const wuDir = path.join(projectDir, createWuPaths({ projectRoot: projectDir }).WU_DIR());
   fs.mkdirSync(wuDir, { recursive: true });
 
   const wuYaml = `id: WU-TEST-001

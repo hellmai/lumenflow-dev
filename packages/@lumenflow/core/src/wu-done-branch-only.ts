@@ -51,8 +51,20 @@ import { WUTransaction } from './wu-transaction.js';
 import { maybeRegenerateAndStageDocs } from './wu-done-docs-generate.js';
 // WU-1492: Import PR creation utilities for branch-pr mode
 import { createPR, printPRCreatedMessage, WU_DONE_COMPLETION_MODES } from './wu-done-pr.js';
+import { createWuPaths } from './wu-paths.js';
 
 export const LANE_SIGNALS_NDJSON = path.join(LUMENFLOW_PATHS.TELEMETRY, 'lane-signals.ndjson');
+
+function resolveMetadataPaths(basePath: string, id: string) {
+  const wuPaths = createWuPaths({ projectRoot: basePath });
+  return {
+    metadataWUPath: path.join(basePath, wuPaths.WU(id)),
+    metadataStatusPath: path.join(basePath, wuPaths.STATUS()),
+    metadataBacklogPath: path.join(basePath, wuPaths.BACKLOG()),
+    metadataStampsDir: path.join(basePath, wuPaths.STAMPS_DIR()),
+    metadataStampPath: path.join(basePath, wuPaths.STAMP(id)),
+  };
+}
 
 interface LaneCompletionSignalParams {
   wuId: string;
@@ -194,30 +206,13 @@ export async function executeBranchOnlyCompletion(context: UnsafeAny) {
       command: `pnpm wu:done --id ${id}`,
       afterMerge: async ({ worktreePath, gitWorktree }) => {
         const metadataBasePath = worktreePath;
-        const metadataWUPath = path.join(
-          metadataBasePath,
-          'docs',
-          '04-operations',
-          'tasks',
-          'wu',
-          `${id}.yaml`,
-        );
-        const metadataStatusPath = path.join(
-          metadataBasePath,
-          'docs',
-          '04-operations',
-          'tasks',
-          'status.md',
-        );
-        const metadataBacklogPath = path.join(
-          metadataBasePath,
-          'docs',
-          '04-operations',
-          'tasks',
-          'backlog.md',
-        );
-        const metadataStampsDir = path.join(metadataBasePath, LUMENFLOW_PATHS.STAMPS_DIR);
-        const metadataStampPath = path.join(metadataStampsDir, `${id}.done`);
+        const {
+          metadataWUPath,
+          metadataStatusPath,
+          metadataBacklogPath,
+          metadataStampsDir,
+          metadataStampPath,
+        } = resolveMetadataPaths(metadataBasePath, id);
         const docForUpdate = readWU(metadataWUPath, id);
         const currentStatus = docForUpdate.status || WU_STATUS.IN_PROGRESS;
 
@@ -318,30 +313,13 @@ export async function executeBranchOnlyCompletion(context: UnsafeAny) {
 
   // Step 2: Calculate paths relative to main checkout
   const metadataBasePath = '.';
-  const metadataWUPath = path.join(
-    metadataBasePath,
-    'docs',
-    '04-operations',
-    'tasks',
-    'wu',
-    `${id}.yaml`,
-  );
-  const metadataStatusPath = path.join(
-    metadataBasePath,
-    'docs',
-    '04-operations',
-    'tasks',
-    'status.md',
-  );
-  const metadataBacklogPath = path.join(
-    metadataBasePath,
-    'docs',
-    '04-operations',
-    'tasks',
-    'backlog.md',
-  );
-  const metadataStampsDir = path.join(metadataBasePath, LUMENFLOW_PATHS.STAMPS_DIR);
-  const metadataStampPath = path.join(metadataStampsDir, `${id}.done`);
+  const {
+    metadataWUPath,
+    metadataStatusPath,
+    metadataBacklogPath,
+    metadataStampsDir,
+    metadataStampPath,
+  } = resolveMetadataPaths(metadataBasePath, id);
 
   // Step 3: Read WU YAML and validate current state
   const docForUpdate = readWU(metadataWUPath, id);
@@ -513,29 +491,8 @@ export async function executeBranchPRCompletion(context: UnsafeAny) {
 
   // Calculate paths relative to current checkout (lane branch)
   const metadataBasePath = '.';
-  const metadataWUPath = path.join(
-    metadataBasePath,
-    'docs',
-    '04-operations',
-    'tasks',
-    'wu',
-    `${id}.yaml`,
-  );
-  const metadataStatusPath = path.join(
-    metadataBasePath,
-    'docs',
-    '04-operations',
-    'tasks',
-    'status.md',
-  );
-  const metadataBacklogPath = path.join(
-    metadataBasePath,
-    'docs',
-    '04-operations',
-    'tasks',
-    'backlog.md',
-  );
-  const metadataStampsDir = path.join(metadataBasePath, LUMENFLOW_PATHS.STAMPS_DIR);
+  const { metadataWUPath, metadataStatusPath, metadataBacklogPath, metadataStampsDir } =
+    resolveMetadataPaths(metadataBasePath, id);
 
   // Update metadata files on lane branch
   await updateMetadataFiles({
