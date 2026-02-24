@@ -2208,3 +2208,4 @@
 {"type":"claim","wuId":"WU-2126","timestamp":"2026-02-24T22:26:55.861Z","lane":"Framework: Core Lifecycle","title":"Wire clearConfigCache() to config-mutating operations (wu:done, config:set)"}
 {"type":"complete","wuId":"WU-2127","timestamp":"2026-02-24T22:37:08.278Z"}
 {"type":"claim","wuId":"WU-2128","timestamp":"2026-02-24T22:38:39.994Z","lane":"Framework: Core Lifecycle","title":"Standardize error return contracts: ports throw, adapters return Result, CLI catches"}
+{"type":"complete","wuId":"WU-2126","timestamp":"2026-02-24T22:40:31.341Z"}

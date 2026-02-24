@@ -4,7 +4,6 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-- [WU-2126 — Wire clearConfigCache() to config-mutating operations (wu:done, config:set)](wu/WU-2126.yaml)
 - [WU-2128 — Standardize error return contracts: ports throw, adapters return Result, CLI catches](wu/WU-2128.yaml)
 
 ## Completed
@@ -1057,3 +1056,4 @@ _Last updated: 2026-02-24_
 - [WU-2125 — Extract shared YAML parse logic from readWU() and readWUAsync() into helper](wu/WU-2125.yaml) — 2026-02-24
 - [WU-2124 — Extract shared path factory in core to replace 3 independent resolution patterns](wu/WU-2124.yaml) — 2026-02-24
 - [WU-2127 — Split monolithic enforcement-checks module into focused path-utils, config-resolver, git-status-parser, dirty-guard modules](wu/WU-2127.yaml) — 2026-02-24
+- [WU-2126 — Wire clearConfigCache() to config-mutating operations (wu:done, config:set)](wu/WU-2126.yaml) — 2026-02-24
