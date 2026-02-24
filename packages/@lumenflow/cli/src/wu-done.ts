@@ -118,7 +118,7 @@ import { getDocsOnlyPrefixes, DOCS_ONLY_ROOT_FILES } from '@lumenflow/core';
 import { printGateFailureBox, printStatusPreview } from '@lumenflow/core/wu-done-ui';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
-import { getConfig } from '@lumenflow/core/config';
+import { getConfig, clearConfigCache } from '@lumenflow/core/config';
 import { writeWU, appendNote, parseYAML } from '@lumenflow/core/wu-yaml';
 import {
   PLACEHOLDER_SENTINEL,
@@ -3400,6 +3400,10 @@ export async function main() {
   );
   console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Marked done, pushed, and cleaned up.`);
   console.log(`- WU: ${id} — ${title}`);
+
+  // WU-2126: Invalidate config cache so subsequent commands in the same process
+  // read fresh values from disk (wu:done may have mutated workspace.yaml/state).
+  clearConfigCache();
 
   // WU-1763: Print lifecycle nudges (conditional, non-blocking)
   // Discovery summary nudge - only if discoveries exist

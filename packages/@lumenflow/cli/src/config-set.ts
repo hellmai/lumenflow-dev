@@ -22,7 +22,7 @@ import { createError, ErrorCodes } from '@lumenflow/core';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import YAML from 'yaml';
 import type { ZodIssue } from 'zod';
-import { findProjectRoot, WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
+import { findProjectRoot, WORKSPACE_CONFIG_FILE_NAME, clearConfigCache } from '@lumenflow/core/config';
 import { die } from '@lumenflow/core/error-handler';
 import { FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
@@ -455,6 +455,10 @@ export async function main(): Promise<void> {
       };
     },
   });
+
+  // WU-2126: Invalidate config cache so subsequent commands in the same process
+  // read fresh values from disk after config mutation.
+  clearConfigCache();
 
   console.log(`${LOG_PREFIX} Successfully set ${options.key}=${options.value}`);
 }
