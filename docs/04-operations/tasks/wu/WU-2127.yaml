@@ -15,6 +15,9 @@ tests:
     - git-status-parser.ts
     - dirty-guard.ts and all existing callers import from correct sub-module
     - pnpm test --filter=@lumenflow/cli passes with no regressions
+    - 'Demonstrate RED->GREEN in CLI enforcement module split: commit/provide failing test first'
+    - then implementation
+    - then passing tests.
   unit:
     - packages/@lumenflow/cli/src/__tests__/
   e2e: []
@@ -28,12 +31,24 @@ blocked_by:
 spec_refs:
   - /home/tom/.claude/plans/wild-foraging-taco.md
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  TDD hardening (takeover): require explicit red-green evidence for module split to avoid
+  implementation-first drift.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-24T22:26:09.421Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2127
+session_id: 43d744d6-03f6-4b66-92b8-602f3d735da3
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T22:26:09.427Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -47,11 +62,3 @@ acceptance:
   - Each module has single responsibility (path util, config, git status, dirty check)
   - All existing callers updated to import from correct sub-module
   - pnpm test --filter=@lumenflow/cli passes
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2127
-claimed_at: 2026-02-24T22:26:09.421Z
-baseline_main_sha: 80435919befd5fd6e94ed05c31495c1383d98d3f
-session_id: 43d744d6-03f6-4b66-92b8-602f3d735da3
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-24T22:26:09.427Z
