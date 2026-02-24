@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/core/src/state-bootstrap.ts
   - packages/@lumenflow/cli/src/validate-agent-sync.ts
 tests:
-  manual: []
+  manual:
+    - Verify path-literal-guard file extension ratchet reports zero new violations after changes
   unit:
     - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
   e2e: []
@@ -33,7 +34,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'After WU-2114 adds the file extension literal guard, migrate all raw extension literals to FILE_EXTENSIONS constants from wu-paths-constants.ts. Known files: state-cleanup.ts:155, state-bootstrap.ts:287, validate-agent-sync.ts:63-75, and any others found by the guard test. Shallow multi-file: uniform search-replace.'
+description: 'After WU-2114 adds the file extension literal guard, migrate all raw extension
+  literals to FILE_EXTENSIONS constants from wu-paths-constants.ts. Known files:
+  state-cleanup.ts:155, state-bootstrap.ts:287, validate-agent-sync.ts:63-75, and any others found
+  by the guard test. Shallow multi-file: uniform search-replace.'
 acceptance:
   - All raw .yaml, .yml, .json, .md extension literals replaced with FILE_EXTENSIONS.* references
   - path-literal-guard file extension rule reports zero violations
