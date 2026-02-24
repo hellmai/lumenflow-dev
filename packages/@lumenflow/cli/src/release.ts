@@ -39,6 +39,7 @@ import {
 } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
+import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
 import { homedir } from 'node:os';
 import { execFileSync, execSync } from 'node:child_process';
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
@@ -55,6 +56,9 @@ const LUMENFLOW_PACKAGES_DIR = 'packages/@lumenflow';
 
 /** Path to the bare lumenflow wrapper package (WU-1691) */
 const LUMENFLOW_WRAPPER_PACKAGE = 'packages/lumenflow';
+
+/** Relative path to version-policy.yaml truth file (WU-2107) */
+export const VERSION_POLICY_RELATIVE_PATH = 'apps/docs/src/data/version-policy.yaml';
 
 /** Semver regex pattern (strict) */
 // eslint-disable-next-line security/detect-unsafe-regex -- static semver pattern; no backtracking risk
@@ -308,6 +312,48 @@ export async function updatePackageVersions(paths: string[], version: string): P
     const updated = JSON.stringify(pkg, null, JSON_INDENT) + '\n';
     await writeFile(packagePath, updated, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
   }
+}
+
+/**
+ * Update version-policy.yaml with the release version, tag, and current date.
+ *
+ * WU-2107: Integrates version-policy.yaml into the release flow so the
+ * published_stable section stays in sync with each npm release.
+ *
+ * @param version - Semver version string (e.g., "3.4.0")
+ * @param baseDir - Base directory to resolve version-policy.yaml (defaults to cwd)
+ * @returns Absolute path to the updated file, or null if file does not exist
+ */
+export async function updateVersionPolicy(
+  version: string,
+  baseDir: string = process.cwd(),
+): Promise<string | null> {
+  const filePath = join(baseDir, VERSION_POLICY_RELATIVE_PATH);
+
+  if (!existsSync(filePath)) {
+    return null;
+  }
+
+  const raw = await readFile(filePath, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
+  const doc = parseYaml(raw) as {
+    version: number;
+    published_stable: {
+      version: string;
+      release_tag: string;
+      validated_on: string;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  };
+
+  doc.published_stable.version = version;
+  doc.published_stable.release_tag = `v${version}`;
+  doc.published_stable.validated_on = new Date().toISOString().slice(0, 10);
+
+  const updated = stringifyYaml(doc, { lineWidth: 0 });
+  await writeFile(filePath, updated, { encoding: FILE_SYSTEM.ENCODING as BufferEncoding });
+
+  return filePath;
 }
 
 export interface PackageManifestContract {
@@ -1198,9 +1244,14 @@ export async function main(): Promise<void> {
     console.log(`${LOG_PREFIX} Bumping versions to ${version}...`);
     if (dryRun) {
       console.log(`${LOG_PREFIX} Would update ${packagePaths.length} package versions`);
+      console.log(`${LOG_PREFIX} Would update ${VERSION_POLICY_RELATIVE_PATH}`);
       console.log(`${LOG_PREFIX} Would commit: ${buildCommitMessage(version)}`);
     } else {
       await updatePackageVersions(packagePaths, version);
+      const versionPolicyPath = await updateVersionPolicy(version);
+      if (versionPolicyPath) {
+        console.log(`${LOG_PREFIX} ✅ Updated ${VERSION_POLICY_RELATIVE_PATH}`);
+      }
       console.log(`${LOG_PREFIX} ✅ Versions updated to ${version}`);
     }
 
@@ -1233,6 +1284,13 @@ export async function main(): Promise<void> {
     } else {
       // Format changed files before committing
       const relativePaths = packagePaths.map((p) => p.replace(process.cwd() + '/', ''));
+
+      // WU-2107: Include version-policy.yaml in commit if it was updated
+      const versionPolicyAbsPath = join(process.cwd(), VERSION_POLICY_RELATIVE_PATH);
+      if (existsSync(versionPolicyAbsPath)) {
+        relativePaths.push(VERSION_POLICY_RELATIVE_PATH);
+      }
+
       runCommand(`${PKG_MANAGER} prettier --write ${relativePaths.join(' ')}`, {
         label: 'format',
       });
