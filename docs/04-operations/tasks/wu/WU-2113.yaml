@@ -1,0 +1,41 @@
+id: WU-2113
+title: Extend path-literal-guard with ENV_VARS constant and ban raw LUMENFLOW_ env var strings
+lane: 'Framework: Core Lifecycle'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-24
+code_paths:
+  - packages/@lumenflow/core/src/wu-context-constants.ts
+  - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2113.done
+dependencies: []
+initiative: INIT-037
+phase: 2
+blocked_by:
+  - WU-2109
+spec_refs:
+  - /home/tom/.claude/plans/wild-foraging-taco.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Raw LUMENFLOW_ env var strings are scattered across codebase (process.env.LUMENFLOW_HEADLESS, LUMENFLOW_ADMIN, LUMENFLOW_FORCE, etc.) without using a central ENV_VARS constant. Step 1: Create ENV_VARS constant object in core/src/wu-context-constants.ts. Step 2: Add banned rule to path-literal-guard scanning for LUMENFLOW_ pattern in string literals, allowlisting the constants file. Catches both process.env.X and string comparisons.'
+acceptance:
+  - ENV_VARS constant created in packages/@lumenflow/core/src/wu-context-constants.ts with all LUMENFLOW_* env var names
+  - path-literal-guard extended with LUMENFLOW_ banned pattern
+  - Allowlist excludes wu-context-constants.ts (canonical definition)
+  - Guard catches process.env.LUMENFLOW_HEADLESS-style literals in test run
+  - pnpm test --testNamePattern=path-literal-guard passes
