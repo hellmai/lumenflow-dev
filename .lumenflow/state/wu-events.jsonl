@@ -2136,3 +2136,4 @@
 {"type":"complete","wuId":"WU-2095","timestamp":"2026-02-24T00:37:02.600Z"}
 {"type":"claim","wuId":"WU-2091","timestamp":"2026-02-24T00:38:28.018Z","lane":"Framework: CLI Enforcement","title":"Align CLI hooks and enforcement messaging with configurable paths"}
 {"type":"complete","wuId":"WU-2091","timestamp":"2026-02-24T01:06:10.403Z"}
+{"type":"claim","wuId":"WU-2092","timestamp":"2026-02-24T01:07:39.033Z","lane":"Framework: Core Lifecycle","title":"Consolidate path constants and cross-package parity contracts"}

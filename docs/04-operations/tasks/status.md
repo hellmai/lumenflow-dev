@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2092 — Consolidate path constants and cross-package parity contracts](wu/WU-2092.yaml)
 
 ## Completed
 

@@ -2,7 +2,7 @@ id: WU-2092
 title: Consolidate path constants and cross-package parity contracts
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -67,3 +67,11 @@ acceptance:
   - existing command behavior and docs-only classification semantics remain unchanged
   - lane inference file references in smoke-test gate use CONFIG_FILES.LANE_INFERENCE constant
     instead of duplicated literals
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2092
+claimed_at: 2026-02-24T01:07:38.986Z
+baseline_main_sha: bfe1bde89ab85e8aae325e1682cc4c82b1f446c5
+session_id: b0eda2bb-5543-45d0-9c62-3f13cbbcafef
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T01:07:38.991Z
