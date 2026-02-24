@@ -1,0 +1,39 @@
+id: WU-2116
+title: Migrate throw new Error() to createError() in @lumenflow/core (batch)
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P1
+created: 2026-02-24
+code_paths:
+  - packages/@lumenflow/core/src/
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/error-pattern-guard.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2116.done
+dependencies: []
+initiative: INIT-037
+phase: 3
+blocked_by:
+  - WU-2111
+spec_refs:
+  - /home/tom/.claude/plans/wild-foraging-taco.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'With AST guard WU-2111 in place preventing regression, migrate all throw new Error() usages in @lumenflow/core to createError(ErrorCodes.*) from error-handler.ts. Concentrated in wu-yaml.ts, wu-state-store.ts, wu-done-*.ts. Pattern: throw new Error(msg) -> throw createError(ErrorCodes.X, msg). Add missing ErrorCodes as needed. After each batch verify guard baseline decreases.'
+acceptance:
+  - Zero throw new Error() occurrences in packages/@lumenflow/core/src/ (excluding error-handler.ts and tests)
+  - error-pattern-guard baseline for core decreases to 0
+  - All new ErrorCodes are semantically named (not GENERIC_ERROR)
+  - pnpm test --filter=@lumenflow/core passes
