@@ -2148,3 +2148,4 @@
 {"type":"complete","wuId":"WU-2098","timestamp":"2026-02-24T09:07:52.920Z"}
 {"type":"claim","wuId":"WU-2100","timestamp":"2026-02-24T09:12:38.835Z","lane":"Framework: Core Lifecycle","title":"Harden core spawn literal coverage and config-aware prompts"}
 {"type":"complete","wuId":"WU-2100","timestamp":"2026-02-24T09:34:26.557Z"}
+{"type":"claim","wuId":"WU-2101","timestamp":"2026-02-24T09:38:58.960Z","lane":"Framework: Core Lifecycle","title":"Add schemas/ dir to doc-source pathspecs for wu:done auto-regen"}

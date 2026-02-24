@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2101 — Add schemas/ dir to doc-source pathspecs for wu:done auto-regen](wu/WU-2101.yaml)
 
 ## Completed
 
