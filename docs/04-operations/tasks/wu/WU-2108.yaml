@@ -2,7 +2,7 @@ id: WU-2108
 title: Fix ESLint boundary plugin config to match actual hex directory names
 lane: 'Operations: Tooling'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-24
 code_paths:
@@ -29,9 +29,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'The eslint-plugin-boundaries config uses patterns (application/, infrastructure/, shared/) that do not exist in the codebase. Only ports/ matches. Actual hex dirs in @lumenflow/core: usecases/, adapters/, domain/, schemas/. Three of four boundary rules are dead — architecture violations go uncaught. Fix: scope patterns to @lumenflow/core only using packages/@lumenflow/core/src/ prefix.'
+description: 'The eslint-plugin-boundaries config uses patterns (application/, infrastructure/,
+  shared/) that do not exist in the codebase. Only ports/ matches. Actual hex dirs in
+  @lumenflow/core: usecases/, adapters/, domain/, schemas/. Three of four boundary rules are dead —
+  architecture violations go uncaught. Fix: scope patterns to @lumenflow/core only using
+  packages/@lumenflow/core/src/ prefix.'
 acceptance:
-  - boundaries/elements patterns scoped to packages/@lumenflow/core/src/ matching ports/**, usecases/**, adapters/**, domain/**, schemas/**
+  - boundaries/elements patterns scoped to packages/@lumenflow/core/src/ matching ports/**,
+    usecases/**, adapters/**, domain/**, schemas/**
   - pnpm lint passes with updated config
   - Deliberate boundary violation (adapter importing usecase) is caught by lint rule
   - No regression in existing lint output for other packages
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-2108
+claimed_at: 2026-02-24T19:44:44.339Z
+baseline_main_sha: 6e54851e76b81c037d2947d03e04923ec12fa5af
+session_id: f838da68-7157-4f3d-bdc8-07eb403fc7c1
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T19:44:44.346Z

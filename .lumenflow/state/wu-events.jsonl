@@ -2163,3 +2163,4 @@
 {"type":"claim","wuId":"WU-2107","timestamp":"2026-02-24T18:57:18.993Z","lane":"Framework: CLI WU Commands","title":"Wire version-policy.yaml into pnpm release and bump to 3.4.0"}
 {"type":"complete","wuId":"WU-2107","timestamp":"2026-02-24T19:09:08.023Z"}
 {"type":"claim","wuId":"WU-2129","timestamp":"2026-02-24T19:41:56.979Z","lane":"Content: Framework Docs","title":"Enhance initiative orchestration docs with recovery, memory coordination, and delegation"}
+{"type":"claim","wuId":"WU-2108","timestamp":"2026-02-24T19:44:44.373Z","lane":"Operations: Tooling","title":"Fix ESLint boundary plugin config to match actual hex directory names"}

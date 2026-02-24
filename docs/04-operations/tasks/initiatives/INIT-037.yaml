@@ -8,7 +8,7 @@ description: 'Architecture and libraries are sound (9/10), but enforcement has h
   production files. Strategy: add guardrails first, then fix violations so every fix is permanent.
   Plan: /home/tom/.claude/plans/wild-foraging-taco.md (WS1: Enforcement integrity; WS2: Debt
   reduction; WS3: Structural follow-through)'
-status: open
+status: in_progress
 priority: P1
 owner: platform-team
 created: 2026-02-24
@@ -32,4 +32,3 @@ success_metrics:
   - No net increase in banned literal patterns
   - pnpm gates green after all phases
 labels: []
-related_plan: lumenflow://plans/wild-foraging-taco.md
