@@ -27,7 +27,7 @@ import {
 import type { SpawnStrategy } from '@lumenflow/core/spawn-strategy';
 import { findProjectRoot, getConfig } from '@lumenflow/core/config';
 import type { ClientBlock, ClientConfig } from '@lumenflow/core/config-schema';
-import { CONFIG_FILES, DIRECTORIES } from '@lumenflow/core/wu-constants';
+import { BRANCHES, CONFIG_FILES, DIRECTORIES, LUMENFLOW_PATHS, REMOTES } from '@lumenflow/core/wu-constants';
 import {
   generateClientSkillsGuidance,
   generateSkillsSelectionSection,
@@ -101,6 +101,7 @@ export { resolvePolicy };
 const SPAWN_PROMPT_BUILDERS_DIR = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_TEMPLATE_BASE_DIR = findProjectRoot(SPAWN_PROMPT_BUILDERS_DIR);
 const DEFAULT_WORKTREES_DIR_SEGMENT = DIRECTORIES.WORKTREES.replace(/\/+$/g, '');
+const PRIMARY_MAIN_REF = `${REMOTES.ORIGIN}/${BRANCHES.MAIN}`;
 
 function normalizeDirectorySegment(value: string, fallback: string): string {
   const normalized = value.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
@@ -563,7 +564,7 @@ ${neverFabNum}. NEVER FABRICATE COMPLETION
 
 ${gitNum}. GIT WORKFLOW (CRITICAL - GitHub rules reject merge commits)
    - GitHub REJECTS merge commits on main
-   - ALWAYS use \`git rebase origin/main\` before push
+   - ALWAYS use \`git rebase ${PRIMARY_MAIN_REF}\` before push
    - Push to main via \`git push origin lane/...:main\` (fast-forward only)
    - NEVER use \`git merge\` on main branch
    - Let \`pnpm wu:done\` handle the merge workflow
@@ -1010,7 +1011,7 @@ cd ${claimWorktreePathHint}
 Then implement following all standards above.
 
 **CRITICAL:** Never use \`git worktree add\` directly. Always use \`pnpm wu:claim\` to ensure:
-- Event tracking in .lumenflow/state/wu-events.jsonl
+- Event tracking in ${LUMENFLOW_PATHS.WU_EVENTS}
 - Lane lock acquisition (WIP=1 enforcement)
 - Session tracking for context recovery`;
 }
