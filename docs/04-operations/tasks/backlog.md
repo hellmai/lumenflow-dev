@@ -31,7 +31,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2094 — Purge residual path literals in core config and prompt helpers](wu/WU-2094.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1049,6 +1049,7 @@ sections:
 - [WU-2088 — Centralize core docs path resolution via getConfig](wu/WU-2088.yaml)
 - [WU-2089 — Migrate MCP runtime path resolution to getConfig](wu/WU-2089.yaml)
 - [WU-2090 — Migrate CLI runtime path/state literals to getConfig and constants](wu/WU-2090.yaml)
+- [WU-2094 — Purge residual path literals in core config and prompt helpers](wu/WU-2094.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

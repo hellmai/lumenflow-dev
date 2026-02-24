@@ -1,10 +1,10 @@
 # Work Unit Status
 
-_Last updated: 2026-02-23_
+_Last updated: 2026-02-24_
 
 ## In Progress
 
-- [WU-2094 — Purge residual path literals in core config and prompt helpers](wu/WU-2094.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1018,3 +1018,4 @@ _Last updated: 2026-02-23_
 - [WU-2088 — Centralize core docs path resolution via getConfig](wu/WU-2088.yaml) — 2026-02-23
 - [WU-2089 — Migrate MCP runtime path resolution to getConfig](wu/WU-2089.yaml) — 2026-02-23
 - [WU-2090 — Migrate CLI runtime path/state literals to getConfig and constants](wu/WU-2090.yaml) — 2026-02-23
+- [WU-2094 — Purge residual path literals in core config and prompt helpers](wu/WU-2094.yaml) — 2026-02-24

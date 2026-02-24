@@ -2,7 +2,7 @@ id: WU-2094
 title: Purge residual path literals in core config and prompt helpers
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-23
 code_paths:
@@ -53,3 +53,6 @@ session_id: 2cc12ba6-a895-4b45-b19a-2151457d6f3e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-23T23:58:08.882Z
+locked: true
+completed_at: 2026-02-24T00:25:58.962Z
+completed: 2026-02-24
