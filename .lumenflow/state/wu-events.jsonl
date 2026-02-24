@@ -2152,3 +2152,4 @@
 {"type":"complete","wuId":"WU-2101","timestamp":"2026-02-24T10:01:24.651Z"}
 {"type":"claim","wuId":"WU-2102","timestamp":"2026-02-24T10:02:07.567Z","lane":"Framework: CLI WU Commands","title":"wu:prep checkpoint enables wu:done gate skip + scoped test fallback"}
 {"type":"complete","wuId":"WU-2102","timestamp":"2026-02-24T10:22:34.157Z"}
+{"type":"claim","wuId":"WU-2103","timestamp":"2026-02-24T14:51:26.250Z","lane":"Content: Site Comms","title":"Add Discord and Twitter badges to README"}

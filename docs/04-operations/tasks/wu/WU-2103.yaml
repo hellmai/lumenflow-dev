@@ -2,7 +2,7 @@ id: WU-2103
 title: Add Discord and Twitter badges to README
 lane: 'Content: Site Comms'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-24
 code_paths:
@@ -25,8 +25,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add shields.io Discord member count badge and Twitter follow badge to README header. Update nav links to include Discord and Twitter.
+description: Add shields.io Discord member count badge and Twitter follow badge to README header.
+  Update nav links to include Discord and Twitter.
 acceptance:
   - Discord badge renders with member count
   - Twitter follow badge renders
   - 'Nav links updated: Discord and Twitter replace Medium'
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-2103
+claimed_at: 2026-02-24T14:51:26.198Z
+baseline_main_sha: ae9c988dcd6bff0c495290abf736862fd48f6b4b
+session_id: 91bc0fd7-7ccd-4fa7-a540-6d0263c0d594
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T14:51:26.203Z

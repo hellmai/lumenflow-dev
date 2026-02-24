@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2103 — Add Discord and Twitter badges to README](wu/WU-2103.yaml)
 
 ## Completed
 
