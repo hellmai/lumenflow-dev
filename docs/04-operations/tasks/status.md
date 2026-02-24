@@ -4,7 +4,7 @@ _Last updated: 2026-02-24_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2134 — Stabilize initiatives tests under config-driven path resolution](wu/WU-2134.yaml)
 
 ## Completed
 

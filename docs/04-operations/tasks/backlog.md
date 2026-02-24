@@ -23,11 +23,10 @@ sections:
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2132 — Enforce TDD provenance and wu:brief evidence in WU lifecycle](wu/WU-2132.yaml) — Framework: CLI WU Commands
-- [WU-2134 — Stabilize initiatives tests under config-driven path resolution](wu/WU-2134.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2134 — Stabilize initiatives tests under config-driven path resolution](wu/WU-2134.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
