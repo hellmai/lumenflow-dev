@@ -13,14 +13,10 @@
  * @module gate-registry
  */
 
-/**
- * Context passed to gate run functions.
- */
-export type GateLogContext = {
-  agentLog?: { logFd: number; logPath: string } | null;
-  useAgentMode: boolean;
-  cwd?: string;
-};
+import type { GateLogContext } from './gates-utils.js';
+
+// Re-export so existing consumers of gate-registry.ts keep working.
+export type { GateLogContext };
 
 /**
  * Definition of a single gate.
