@@ -2,7 +2,7 @@ id: WU-2131
 title: Harden remaining ratchet guards to prevent baseline self-healing
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P0
 created: 2026-02-24
 code_paths:
@@ -28,7 +28,8 @@ spec_refs:
   - /home/USER/.claude/plans/wild-foraging-taco.md
   - docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
 risks: []
-notes: Single-session refactor across 2 guard files plus 3 baseline files; repeated mechanical pattern from WU-2130. Sized as shallow multi-file exception per wu-sizing-guide.md §1.2.
+notes: Single-session refactor across 2 guard files plus 3 baseline files; repeated mechanical
+  pattern from WU-2130. Sized as shallow multi-file exception per wu-sizing-guide.md §1.2.
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -37,10 +38,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'WU-2130 fixed baseline self-healing for type-safety-guard, but the same persistence-before-check bug remains in error-pattern-guard and path-literal-guard (file-extension + env-var ratchets). A failing run can still overwrite baseline files and pass on the next run. Apply the same ordering hardening pattern across remaining ratchet guards: compare first, fail without writes, then persist only on allowed paths (first-run, improvement, or explicit opt-in).'
+description: 'WU-2130 fixed baseline self-healing for type-safety-guard, but the same
+  persistence-before-check bug remains in error-pattern-guard and path-literal-guard (file-extension
+  + env-var ratchets). A failing run can still overwrite baseline files and pass on the next run.
+  Apply the same ordering hardening pattern across remaining ratchet guards: compare first, fail
+  without writes, then persist only on allowed paths (first-run, improvement, or explicit opt-in).'
 acceptance:
   - error-pattern-guard compares currentCount vs savedBaseline before any baseline write
-  - path-literal file-extension and env-var ratchets compare before writes and never mutate baseline on regression failures
-  - baseline updates are explicit/controlled (first-run, improvement, or explicit opt-in) and not unconditional side-effects
+  - path-literal file-extension and env-var ratchets compare before writes and never mutate baseline
+    on regression failures
+  - baseline updates are explicit/controlled (first-run, improvement, or explicit opt-in) and not
+    unconditional side-effects
   - tests verify non-mutation behavior and ordering guarantees for all hardened ratchets
   - targeted core guard tests pass for error-pattern and path-literal suites
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2131
+claimed_at: 2026-02-24T21:16:17.574Z
+baseline_main_sha: 4e455542ac05fc7c1559eb1c6481125941911da6
+session_id: f8b5a975-75a8-432c-8ffe-3d58bd90febb
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-24T21:16:17.579Z

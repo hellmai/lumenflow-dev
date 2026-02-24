@@ -8,6 +8,7 @@ _Last updated: 2026-02-24_
 - [WU-2119 — Reduce UnsafeAny usage in highest-churn hotspot files](wu/WU-2119.yaml)
 - [WU-2121 — Replace raw .endsWith('.yaml') file extension literals with FILE_EXTENSIONS constants](wu/WU-2121.yaml)
 - [WU-2116 — Migrate throw new Error() to createError() in @lumenflow/core (batch)](wu/WU-2116.yaml)
+- [WU-2131 — Harden remaining ratchet guards to prevent baseline self-healing](wu/WU-2131.yaml)
 
 ## Completed
 
