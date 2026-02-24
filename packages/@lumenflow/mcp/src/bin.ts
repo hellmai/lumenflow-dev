@@ -16,6 +16,7 @@
  */
 
 import { createMcpServer, type LogLevel } from './server.js';
+import { ENV_VARS } from '@lumenflow/core/wu-constants';
 
 /**
  * Log to stderr (stdout is reserved for MCP protocol)
@@ -28,8 +29,8 @@ function log(message: string): void {
  * Main entry point
  */
 async function main(): Promise<void> {
-  const projectRoot = process.env.LUMENFLOW_PROJECT_ROOT;
-  const logLevel = process.env.LUMENFLOW_MCP_LOG_LEVEL as LogLevel | undefined;
+  const projectRoot = process.env[ENV_VARS.PROJECT_ROOT];
+  const logLevel = process.env[ENV_VARS.MCP_LOG_LEVEL] as LogLevel | undefined;
 
   const server = createMcpServer({
     projectRoot,

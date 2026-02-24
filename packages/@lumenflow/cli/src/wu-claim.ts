@@ -64,6 +64,7 @@ import {
   toKebab,
   LOG_PREFIX,
   EMOJI,
+  ENV_VARS,
   EXIT_CODES,
 } from '@lumenflow/core/wu-constants';
 import { shouldSkipRemoteOperations } from '@lumenflow/core/micro-worktree';
@@ -277,7 +278,7 @@ export async function main() {
     const sourceHint =
       preflightCloudEffective.source === CLOUD_ACTIVATION_SOURCE.FLAG
         ? '--cloud'
-        : 'LUMENFLOW_CLOUD=1';
+        : `${ENV_VARS.CLOUD}=1`;
     die(
       `Cloud mode blocked on protected branch "${preflightBranch}".\n\n` +
         `Explicit cloud activation (${sourceHint}) is not allowed on main/master.\n` +

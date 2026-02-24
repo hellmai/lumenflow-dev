@@ -23,6 +23,7 @@ import {
   ListResourceTemplatesRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+import { ENV_VARS } from '@lumenflow/core/wu-constants';
 import { registeredTools, runtimeTaskTools } from './tools.js';
 import { staticResources, resourceTemplates, type ResourceDefinition } from './resources.js';
 import { RuntimeTaskToolNames } from './tools/runtime-task-constants.js';
@@ -103,8 +104,8 @@ function collectMissingTools(
  */
 export function createMcpServer(config: McpServerConfig = {}): McpServer {
   const resolvedConfig: Required<McpServerConfig> = {
-    projectRoot: config.projectRoot || process.env.LUMENFLOW_PROJECT_ROOT || process.cwd(),
-    logLevel: config.logLevel || (process.env.LUMENFLOW_MCP_LOG_LEVEL as LogLevel) || 'info',
+    projectRoot: config.projectRoot || process.env[ENV_VARS.PROJECT_ROOT] || process.cwd(),
+    logLevel: config.logLevel || (process.env[ENV_VARS.MCP_LOG_LEVEL] as LogLevel) || 'info',
   };
 
   const runtimeToolNames = new Set(runtimeTaskTools.map((tool) => tool.name));

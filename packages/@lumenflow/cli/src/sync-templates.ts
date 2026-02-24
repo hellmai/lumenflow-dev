@@ -19,6 +19,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { createWUParser, withMicroWorktree } from '@lumenflow/core';
+import { ENV_VARS } from '@lumenflow/core/wu-constants';
 import { createWuPaths } from '@lumenflow/core/wu-paths';
 
 // Directory name constants to avoid duplicate strings
@@ -459,8 +460,8 @@ export async function syncTemplatesWithWorktree(projectRoot: string): Promise<Sy
   console.log(`${LOG_PREFIX} Using micro-worktree isolation for atomic sync...`);
 
   // Set env var for pre-push hook
-  const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
-  process.env.LUMENFLOW_WU_TOOL = OPERATION_NAME;
+  const previousWuTool = process.env[ENV_VARS.WU_TOOL];
+  process.env[ENV_VARS.WU_TOOL] = OPERATION_NAME;
 
   try {
     let syncResult: SyncSummary = {
@@ -564,9 +565,9 @@ export async function syncTemplatesWithWorktree(projectRoot: string): Promise<Sy
   } finally {
     // Restore env var
     if (previousWuTool === undefined) {
-      delete process.env.LUMENFLOW_WU_TOOL;
+      delete process.env[ENV_VARS.WU_TOOL];
     } else {
-      process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+      process.env[ENV_VARS.WU_TOOL] = previousWuTool;
     }
   }
 }

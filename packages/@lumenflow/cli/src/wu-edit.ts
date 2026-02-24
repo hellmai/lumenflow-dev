@@ -40,6 +40,7 @@ import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import {
   FILE_SYSTEM,
+  ENV_VARS,
   MICRO_WORKTREE_OPERATIONS,
   LOG_PREFIX,
   COMMIT_FORMATS,
@@ -584,8 +585,8 @@ export async function main() {
     const newInitiative = opts.initiative;
     const initiativeChanged = newInitiative && newInitiative !== oldInitiative;
 
-    const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
-    process.env.LUMENFLOW_WU_TOOL = MICRO_WORKTREE_OPERATIONS.WU_EDIT;
+    const previousWuTool = process.env[ENV_VARS.WU_TOOL];
+    process.env[ENV_VARS.WU_TOOL] = MICRO_WORKTREE_OPERATIONS.WU_EDIT;
     try {
       await withMicroWorktree({
         operation: MICRO_WORKTREE_OPERATIONS.WU_EDIT,
@@ -628,9 +629,9 @@ export async function main() {
       });
     } finally {
       if (previousWuTool === undefined) {
-        delete process.env.LUMENFLOW_WU_TOOL;
+        delete process.env[ENV_VARS.WU_TOOL];
       } else {
-        process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+        process.env[ENV_VARS.WU_TOOL] = previousWuTool;
       }
     }
 

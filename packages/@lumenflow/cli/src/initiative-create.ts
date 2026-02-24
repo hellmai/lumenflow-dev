@@ -43,7 +43,7 @@ import {
 } from '@lumenflow/initiatives/constants';
 // WU-1211: Import initiative validation for completeness warnings
 import { validateInitiativeCompleteness } from '@lumenflow/initiatives/initiative-validation';
-import { FILE_SYSTEM } from '@lumenflow/core/wu-constants';
+import { ENV_VARS, FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 // WU-1428: Use date-utils for consistent YYYY-MM-DD format (library-first)
@@ -216,8 +216,8 @@ export async function main() {
 
   // Transaction: micro-worktree isolation (WU-1439)
   // WU-1255: Set LUMENFLOW_WU_TOOL to allow pre-push hook bypass for micro-worktree pushes
-  const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
-  process.env.LUMENFLOW_WU_TOOL = OPERATION_NAME;
+  const previousWuTool = process.env[ENV_VARS.WU_TOOL];
+  process.env[ENV_VARS.WU_TOOL] = OPERATION_NAME;
   try {
     try {
       await withMicroWorktree({
@@ -289,9 +289,9 @@ export async function main() {
   } finally {
     // WU-1255: Restore LUMENFLOW_WU_TOOL to previous value
     if (previousWuTool === undefined) {
-      delete process.env.LUMENFLOW_WU_TOOL;
+      delete process.env[ENV_VARS.WU_TOOL];
     } else {
-      process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+      process.env[ENV_VARS.WU_TOOL] = previousWuTool;
     }
   }
 }

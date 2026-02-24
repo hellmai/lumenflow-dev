@@ -225,6 +225,10 @@ export type { ValidationErrorCode, PredicateSeverity, ValidationMode } from './w
 export { LUMENFLOW_CLIENT_IDS, CLAUDE_HOOKS, getHookCommand } from './wu-constants.js';
 export type { LumenflowClientId } from './wu-constants.js';
 
+// WU-2113: Canonical LUMENFLOW_* env var name constants
+export { ENV_VARS } from './wu-constants.js';
+export type { EnvVarKey, EnvVarName } from './wu-constants.js';
+
 // WU-1126: Enum-style constants for port interfaces (const + type pairs)
 // These provide named constants to avoid magic string literals in code
 // The const objects serve as both runtime values AND types via TypeScript's const/type pattern

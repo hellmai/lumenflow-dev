@@ -35,7 +35,7 @@ import { validateLaneFormat } from '@lumenflow/core/lane-checker';
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { validateWU } from '@lumenflow/core/wu-schema';
-import { COMMIT_FORMATS, FILE_SYSTEM, STRING_LITERALS } from '@lumenflow/core/wu-constants';
+import { COMMIT_FORMATS, ENV_VARS, FILE_SYSTEM, STRING_LITERALS } from '@lumenflow/core/wu-constants';
 import { getConfig } from '@lumenflow/core/config';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
@@ -368,8 +368,8 @@ export async function main(): Promise<void> {
   }
 
   // WU-1255: Set LUMENFLOW_WU_TOOL to allow pre-push hook bypass
-  const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
-  process.env.LUMENFLOW_WU_TOOL = OPERATION_NAME;
+  const previousWuTool = process.env[ENV_VARS.WU_TOOL];
+  process.env[ENV_VARS.WU_TOOL] = OPERATION_NAME;
 
   try {
     await withMicroWorktree({
@@ -420,9 +420,9 @@ export async function main(): Promise<void> {
   } finally {
     // Restore LUMENFLOW_WU_TOOL
     if (previousWuTool === undefined) {
-      delete process.env.LUMENFLOW_WU_TOOL;
+      delete process.env[ENV_VARS.WU_TOOL];
     } else {
-      process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+      process.env[ENV_VARS.WU_TOOL] = previousWuTool;
     }
   }
 }

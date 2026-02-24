@@ -17,6 +17,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
 import { LUMENFLOW_PATHS } from './wu-constants.js';
+import { ENV_VARS } from './wu-context-constants.js';
 import { MS_PER_DAY } from './constants/duration-constants.js';
 
 /** Default agent branch patterns (narrow: just agent/*) */
@@ -118,7 +119,7 @@ export interface ResolveAgentPatternsOptions {
  * @returns Path to cache directory (~/.lumenflow/cache or LUMENFLOW_HOME/cache)
  */
 export function getCacheDir(): string {
-  const lumenflowHome = process.env.LUMENFLOW_HOME;
+  const lumenflowHome = process.env[ENV_VARS.HOME];
   if (lumenflowHome) {
     return path.join(lumenflowHome, LUMENFLOW_PATHS.HOME_CACHE);
   }

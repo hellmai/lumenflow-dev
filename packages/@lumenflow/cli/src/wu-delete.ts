@@ -34,6 +34,7 @@ import { WUStateStore } from '@lumenflow/core/wu-state-store';
 import {
   FILE_SYSTEM,
   EXIT_CODES,
+  ENV_VARS,
   MICRO_WORKTREE_OPERATIONS,
   LOG_PREFIX,
   WU_STATUS,
@@ -388,8 +389,8 @@ async function deleteSingleWU(id: string, dryRun: boolean) {
     console.log(`${PREFIX} Deleting via micro-worktree...`);
 
     // WU-1245: Set LUMENFLOW_WU_TOOL for pre-push hook allowlist
-    const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
-    process.env.LUMENFLOW_WU_TOOL = MICRO_WORKTREE_OPERATIONS.WU_DELETE;
+    const previousWuTool = process.env[ENV_VARS.WU_TOOL];
+    process.env[ENV_VARS.WU_TOOL] = MICRO_WORKTREE_OPERATIONS.WU_DELETE;
     try {
       await withMicroWorktree({
         operation: MICRO_WORKTREE_OPERATIONS.WU_DELETE,
@@ -412,9 +413,9 @@ async function deleteSingleWU(id: string, dryRun: boolean) {
     } finally {
       // Restore previous LUMENFLOW_WU_TOOL value
       if (previousWuTool === undefined) {
-        delete process.env.LUMENFLOW_WU_TOOL;
+        delete process.env[ENV_VARS.WU_TOOL];
       } else {
-        process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+        process.env[ENV_VARS.WU_TOOL] = previousWuTool;
       }
     }
   }
@@ -491,8 +492,8 @@ async function deleteBatchWUs(ids: string[], dryRun: boolean) {
     console.log(`${PREFIX} Deleting ${ids.length} WU(s) via micro-worktree...`);
 
     // WU-1245: Set LUMENFLOW_WU_TOOL for pre-push hook allowlist
-    const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
-    process.env.LUMENFLOW_WU_TOOL = MICRO_WORKTREE_OPERATIONS.WU_DELETE;
+    const previousWuTool = process.env[ENV_VARS.WU_TOOL];
+    process.env[ENV_VARS.WU_TOOL] = MICRO_WORKTREE_OPERATIONS.WU_DELETE;
     try {
       await withMicroWorktree({
         operation: MICRO_WORKTREE_OPERATIONS.WU_DELETE,
@@ -514,9 +515,9 @@ async function deleteBatchWUs(ids: string[], dryRun: boolean) {
     } finally {
       // Restore previous LUMENFLOW_WU_TOOL value
       if (previousWuTool === undefined) {
-        delete process.env.LUMENFLOW_WU_TOOL;
+        delete process.env[ENV_VARS.WU_TOOL];
       } else {
-        process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+        process.env[ENV_VARS.WU_TOOL] = previousWuTool;
       }
     }
   }

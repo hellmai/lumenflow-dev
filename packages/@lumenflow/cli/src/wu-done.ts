@@ -108,6 +108,7 @@ import {
   SKIP_GATES_REASONS,
   CHECKPOINT_MESSAGES,
   LUMENFLOW_PATHS,
+  ENV_VARS,
   getWUStatusDisplay,
   // WU-1223: Location types for worktree detection
   CONTEXT_VALIDATION,
@@ -2874,7 +2875,7 @@ function printStateHUD({
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
 export async function main() {
   // Allow pre-push hook to recognize wu:done automation (WU-1030)
-  process.env.LUMENFLOW_WU_TOOL = 'wu-done';
+  process.env[ENV_VARS.WU_TOOL] = 'wu-done';
 
   // Validate CLI arguments and WU ID format (extracted to wu-done-validators.ts)
   const { args, id } = validateInputs(process.argv);

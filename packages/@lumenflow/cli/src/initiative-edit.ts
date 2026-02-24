@@ -51,7 +51,7 @@ import {
   INIT_LOG_PREFIX,
   INIT_COMMIT_FORMATS,
 } from '@lumenflow/initiatives/constants';
-import { FILE_SYSTEM, MICRO_WORKTREE_OPERATIONS } from '@lumenflow/core/wu-constants';
+import { ENV_VARS, FILE_SYSTEM, MICRO_WORKTREE_OPERATIONS } from '@lumenflow/core/wu-constants';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import {
   withMicroWorktree,
@@ -655,8 +655,8 @@ export async function main() {
   console.log(`${PREFIX} Applying edits via micro-worktree...`);
 
   // WU-1255: Set LUMENFLOW_WU_TOOL to allow pre-push hook bypass for micro-worktree pushes
-  const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
-  process.env.LUMENFLOW_WU_TOOL = MICRO_WORKTREE_OPERATIONS.INITIATIVE_EDIT;
+  const previousWuTool = process.env[ENV_VARS.WU_TOOL];
+  process.env[ENV_VARS.WU_TOOL] = MICRO_WORKTREE_OPERATIONS.INITIATIVE_EDIT;
   try {
     await withMicroWorktree({
       operation: MICRO_WORKTREE_OPERATIONS.INITIATIVE_EDIT,
@@ -689,9 +689,9 @@ export async function main() {
   } finally {
     // WU-1255: Restore LUMENFLOW_WU_TOOL to previous value
     if (previousWuTool === undefined) {
-      delete process.env.LUMENFLOW_WU_TOOL;
+      delete process.env[ENV_VARS.WU_TOOL];
     } else {
-      process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+      process.env[ENV_VARS.WU_TOOL] = previousWuTool;
     }
   }
 }

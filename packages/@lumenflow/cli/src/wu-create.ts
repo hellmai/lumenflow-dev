@@ -42,7 +42,7 @@ import { createWUParser, WU_CREATE_OPTIONS, WU_OPTIONS } from '@lumenflow/core/a
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { getConfig } from '@lumenflow/core/config';
 import { validateSpecRefs, hasSpecRefs } from '@lumenflow/core/wu-create-validators';
-import { COMMIT_FORMATS, REMOTES, STRING_LITERALS, WU_TYPES } from '@lumenflow/core/wu-constants';
+import { COMMIT_FORMATS, ENV_VARS, REMOTES, STRING_LITERALS, WU_TYPES } from '@lumenflow/core/wu-constants';
 import { ensureOnMain, validateWUIDFormat } from '@lumenflow/core/wu-helpers';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { generateWuIdWithRetry } from '@lumenflow/core/wu-id-generator';
@@ -384,7 +384,7 @@ export async function main() {
   });
   if (cloudEffective.blocked) {
     const sourceHint =
-      cloudEffective.source === CLOUD_ACTIVATION_SOURCE.FLAG ? '--cloud' : 'LUMENFLOW_CLOUD=1';
+      cloudEffective.source === CLOUD_ACTIVATION_SOURCE.FLAG ? '--cloud' : `${ENV_VARS.CLOUD}=1`;
     die(
       `${LOG_PREFIX} Cloud mode blocked on protected branch "${currentBranch}".\n\n` +
         `Explicit cloud activation (${sourceHint}) is not allowed on main/master.\n` +
@@ -628,8 +628,8 @@ export async function main() {
       console.log(`${LOG_PREFIX} Cloud mode: committed WU spec on ${cloudCtx.targetBranch}`);
     } else {
       // Standard path: micro-worktree isolation
-      const previousWuTool = process.env.LUMENFLOW_WU_TOOL;
-      process.env.LUMENFLOW_WU_TOOL = OPERATION_NAME;
+      const previousWuTool = process.env[ENV_VARS.WU_TOOL];
+      process.env[ENV_VARS.WU_TOOL] = OPERATION_NAME;
       try {
         await withMicroWorktree({
           operation: OPERATION_NAME,
@@ -663,9 +663,9 @@ export async function main() {
         });
       } finally {
         if (previousWuTool === undefined) {
-          delete process.env.LUMENFLOW_WU_TOOL;
+          delete process.env[ENV_VARS.WU_TOOL];
         } else {
-          process.env.LUMENFLOW_WU_TOOL = previousWuTool;
+          process.env[ENV_VARS.WU_TOOL] = previousWuTool;
         }
       }
     }
