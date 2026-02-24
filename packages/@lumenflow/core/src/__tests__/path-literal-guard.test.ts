@@ -778,7 +778,7 @@ describe('WU-1539: legacy local constant guards', () => {
 describe('WU-2113: LUMENFLOW_ env var literal guard foundations', () => {
   it('detects raw LUMENFLOW_ env var string literals', () => {
     const source = [
-      "const headless = process.env.LUMENFLOW_HEADLESS;",
+      'const headless = process.env.LUMENFLOW_HEADLESS;',
       "const force = 'LUMENFLOW_FORCE';",
       "if (process.env.LUMENFLOW_ADMIN === '1') {}",
     ].join('\n');
@@ -811,7 +811,7 @@ describe('WU-2113: LUMENFLOW_ env var literal guard foundations', () => {
   });
 
   it('detects env vars in template literals', () => {
-    const source = "const msg = `env: LUMENFLOW_FORCE`;";
+    const source = 'const msg = `env: LUMENFLOW_FORCE`;';
 
     const violations = scanSourceTextForEnvVarLiterals(source, 'fixtures/template-env.ts');
     expect(violations).toHaveLength(1);
@@ -896,9 +896,7 @@ describe('WU-2113: LUMENFLOW_ env var ratcheting regression guard', () => {
       );
     } else {
       // First run: baseline established
-      console.log(
-        `LUMENFLOW_ env var ratchet: baseline established at ${currentCount} references`,
-      );
+      console.log(`LUMENFLOW_ env var ratchet: baseline established at ${currentCount} references`);
     }
 
     // The test itself passes as long as count does not increase
@@ -907,10 +905,9 @@ describe('WU-2113: LUMENFLOW_ env var ratcheting regression guard', () => {
 
   it('would fail if a new raw LUMENFLOW_ env var literal were added', () => {
     const existingSource = "const safe = 'hello';";
-    const newSource = [
-      existingSource,
-      "const headless = process.env.LUMENFLOW_HEADLESS;",
-    ].join('\n');
+    const newSource = [existingSource, 'const headless = process.env.LUMENFLOW_HEADLESS;'].join(
+      '\n',
+    );
 
     const existingViolations = scanSourceTextForEnvVarLiterals(
       existingSource,
