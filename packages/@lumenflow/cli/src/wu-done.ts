@@ -3044,7 +3044,7 @@ export async function main() {
 
   // WU-2102: Resolve scoped test paths from WU spec tests.unit for gate fallback
   const scopedTestPathsForDone = resolveScopedUnitTestsForPrep({
-    tests: docMain.tests,
+    tests: docMain.tests as { unit?: unknown } | undefined,
   });
 
   // WU-1663: Wrap gates in try/catch to send pipeline failure event
