@@ -21,6 +21,7 @@ import path from 'node:path';
 import { LOG_PREFIX } from './wu-constants.js';
 import { getErrorMessage } from './error-handler.js';
 import { createWuPaths } from './wu-paths.js';
+import { GIT_DIRECTORY_NAME } from './config-contract.js';
 
 /**
  * Relative path from worktree to main repo's node_modules
@@ -42,14 +43,21 @@ function normalizeWorktreesDirPath(value: string): string {
   return normalized.length > 0 ? normalized : 'worktrees';
 }
 
-const CONFIGURED_WORKTREES_DIR_PATH = normalizeWorktreesDirPath(createWuPaths().WORKTREES_DIR());
-const CONFIGURED_WORKTREES_DIR_NAME = path.posix.basename(CONFIGURED_WORKTREES_DIR_PATH);
+function getConfiguredWorktreesDirPath(): string {
+  return normalizeWorktreesDirPath(createWuPaths({ projectRoot: process.cwd() }).WORKTREES_DIR());
+}
+
+function getConfiguredWorktreesDirName(): string {
+  return path.posix.basename(getConfiguredWorktreesDirPath());
+}
 
 /**
  * Pattern to detect paths that are inside the configured worktrees directory.
  * Used to identify symlinks that may break when worktrees are removed.
  */
-const WORKTREES_PATH_SEGMENT = `/${CONFIGURED_WORKTREES_DIR_PATH}/`;
+function getWorktreesPathSegment(): string {
+  return `/${getConfiguredWorktreesDirPath()}/`;
+}
 
 /**
  * pnpm store directory name (contains package symlinks)
@@ -172,7 +180,7 @@ function checkSymlinkTarget(linkTarget: string, basePath: string): WorktreePathS
     ? linkTarget
     : path.resolve(basePath, linkTarget);
 
-  const isWorktreePath = absoluteTarget.includes(WORKTREES_PATH_SEGMENT);
+  const isWorktreePath = absoluteTarget.includes(getWorktreesPathSegment());
 
   const isBroken = isWorktreePath && !fs.existsSync(absoluteTarget);
 
@@ -292,7 +300,11 @@ function pathExistsIncludingSymlink(targetPath: string): boolean {
  */
 function collectWorkspaceManifestPaths(repoRoot: string): string[] {
   const manifests: string[] = [];
-  const ignoredDirectoryNames = new Set([NODE_MODULES_DIR, '.git', CONFIGURED_WORKTREES_DIR_NAME]);
+  const ignoredDirectoryNames = new Set([
+    NODE_MODULES_DIR,
+    GIT_DIRECTORY_NAME,
+    getConfiguredWorktreesDirName(),
+  ]);
 
   const visitDirectory = (directoryPath: string): void => {
     if (!fs.existsSync(directoryPath)) {

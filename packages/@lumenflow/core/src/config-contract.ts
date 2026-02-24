@@ -8,7 +8,11 @@
  * loaders can import canonical keys without circular imports.
  */
 
-export const WORKSPACE_CONFIG_FILE_NAME = 'workspace.yaml' as const;
+const WORKSPACE_CONFIG_BASENAME = 'workspace' as const;
+const YAML_FILE_EXTENSION = 'yaml' as const;
+export const WORKSPACE_CONFIG_FILE_NAME =
+  `${WORKSPACE_CONFIG_BASENAME}.${YAML_FILE_EXTENSION}` as const;
+export const GIT_DIRECTORY_NAME = '.git' as const;
 
 export const WORKSPACE_V2_KEYS = {
   SOFTWARE_DELIVERY: 'software_delivery',

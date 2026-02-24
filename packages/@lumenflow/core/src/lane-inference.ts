@@ -22,6 +22,7 @@ import { extractParent } from './lane-checker.js'; // Shared utility (WU-1137: c
 import { createError, ErrorCodes } from './error-handler.js';
 import { WEIGHTS, CONFIDENCE } from './wu-validation-constants.js';
 import { findProjectRoot } from './lumenflow-config.js';
+import { CONFIG_FILES } from './wu-constants.js';
 
 interface SubLaneConfig {
   code_paths?: string[];
@@ -53,7 +54,7 @@ function loadConfig(configPath: string | null = null): LaneInferenceConfig {
   if (!resolvedConfigPath) {
     // Use findProjectRoot() to locate config from cwd
     const projectRoot = findProjectRoot();
-    resolvedConfigPath = path.join(projectRoot, '.lumenflow.lane-inference.yaml');
+    resolvedConfigPath = path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
   }
 
   if (!existsSync(resolvedConfigPath)) {
@@ -63,7 +64,7 @@ function loadConfig(configPath: string | null = null): LaneInferenceConfig {
         `This file defines the lane taxonomy for sub-lane validation.\n\n` +
         `To fix this:\n` +
         `  1. Generate a lane taxonomy from your codebase:\n` +
-        `     pnpm lane:suggest --output .lumenflow.lane-inference.yaml\n\n` +
+        `     pnpm lane:suggest --output ${CONFIG_FILES.LANE_INFERENCE}\n\n` +
         `  2. Or copy from an example project and customize.\n\n` +
         `See: LUMENFLOW.md "Setup Notes" section for details.`,
       { path: resolvedConfigPath },

@@ -19,7 +19,9 @@ function ensureTrailingSlash(value: string): string {
   return normalized.endsWith('/') ? normalized : `${normalized}/`;
 }
 
-const WORKTREES_DIR = ensureTrailingSlash(createWuPaths().WORKTREES_DIR());
+function getConfiguredWorktreesDir(): string {
+  return ensureTrailingSlash(createWuPaths({ projectRoot: process.cwd() }).WORKTREES_DIR());
+}
 
 /**
  * File extensions that should be linted by ESLint
@@ -40,7 +42,6 @@ const IGNORED_DIRECTORIES = [
   'build/',
   '.turbo/',
   'coverage/',
-  WORKTREES_DIR,
 ];
 
 /**
@@ -49,8 +50,10 @@ const IGNORED_DIRECTORIES = [
  * @returns {boolean} True if file should be linted
  */
 export function isLintableFile(filePath: UnsafeAny) {
+  const ignoredDirectories = [...IGNORED_DIRECTORIES, getConfiguredWorktreesDir()];
+
   // Check if in ignored directory
-  for (const ignored of IGNORED_DIRECTORIES) {
+  for (const ignored of ignoredDirectories) {
     if (filePath.includes(ignored)) {
       return false;
     }

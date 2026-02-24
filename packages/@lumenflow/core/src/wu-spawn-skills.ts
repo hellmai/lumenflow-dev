@@ -2,21 +2,24 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 import { existsSync } from 'node:fs';
-import type { ClientConfig } from './lumenflow-config-schema.js';
+import { getDefaultConfig, type ClientConfig } from './lumenflow-config-schema.js';
+import { WORKSPACE_CONFIG_FILE_NAME, WORKSPACE_V2_KEYS } from './config-contract.js';
 import { LUMENFLOW_PATHS } from './wu-constants.js';
 import { classifyWork } from './work-classifier.js';
+
+const DEFAULT_CONFIG = getDefaultConfig();
 
 /** WU-1430: Compose known skills directories from centralized constants */
 const KNOWN_SKILLS_DIRS = [
   LUMENFLOW_PATHS.SKILLS_DIR,
-  '.claude/skills',
+  DEFAULT_CONFIG.directories.skillsDir,
   '.codex/skills',
   '.gemini/skills',
 ];
 /** WU-1430: Compose known agents directories from centralized constants */
 const KNOWN_AGENTS_DIRS = [
   LUMENFLOW_PATHS.AGENTS_DIR,
-  '.claude/agents',
+  DEFAULT_CONFIG.directories.agentsDir,
   '.codex/agents',
   '.gemini/agents',
 ];
@@ -30,8 +33,7 @@ const SECTION = {
 };
 const MESSAGES = {
   skillsIntro: '**IMPORTANT**: Before starting work, select and load relevant skills.',
-  catalogMissing:
-    'No skills directories configured or found. Set `directories.skillsDir` or `agents.clients.<client>.skillsDir` in workspace.yaml software_delivery.',
+  catalogMissing: `No skills directories configured or found. Set \`directories.skillsDir\` or \`agents.clients.<client>.skillsDir\` in ${WORKSPACE_CONFIG_FILE_NAME} ${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY}.`,
   baselineFallback:
     '- Load baseline skills: `/skill wu-lifecycle`, `/skill tdd-workflow` (for features)\n- Continue with implementation using Mandatory Standards below',
 };
@@ -128,7 +130,7 @@ export function generateSkillsCatalogGuidance(config: UnsafeAny, clientName: Uns
   const clientHint = clientName
     ? `agents.clients.${clientName}.skillsDir`
     : 'agents.clients.<client>.skillsDir';
-  return `${SECTION.skillsCatalog}\n\n${configuredHint}No skills directories configured or found. Set \`directories.skillsDir\` or \`${clientHint}\` in workspace.yaml software_delivery.\n`;
+  return `${SECTION.skillsCatalog}\n\n${configuredHint}No skills directories configured or found. Set \`directories.skillsDir\` or \`${clientHint}\` in ${WORKSPACE_CONFIG_FILE_NAME} ${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY}.\n`;
 }
 
 /**

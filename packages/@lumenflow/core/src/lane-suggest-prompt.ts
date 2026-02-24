@@ -18,6 +18,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
 import { z } from 'zod';
+import { CONFIG_FILES } from './wu-constants.js';
 
 /**
  * Schema for a single lane suggestion from the LLM
@@ -177,7 +178,7 @@ function gatherPackageNames(projectRoot: string): string[] {
  * Read existing lane configuration
  */
 function readExistingLanes(projectRoot: string): string[] {
-  const laneConfigPath = path.join(projectRoot, '.lumenflow.lane-inference.yaml');
+  const laneConfigPath = path.join(projectRoot, CONFIG_FILES.LANE_INFERENCE);
   if (!existsSync(laneConfigPath)) return [];
 
   try {
