@@ -39,7 +39,7 @@ import {
   DOC_OUTPUT_FILES,
   formatDocOutputs,
 } from './wu-done-docs-generate.js';
-import { getErrorMessage } from './error-handler.js';
+import { getErrorMessage, createError, ErrorCodes } from './error-handler.js';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -131,9 +131,9 @@ function parseWuEventsJsonl(content: string, sourceLabel: string): ParsedWuEvent
     try {
       parsed = JSON.parse(line);
     } catch (error: unknown) {
-      throw new Error(
+      throw createError(
+        ErrorCodes.PARSE_ERROR,
         `wu-events.jsonl ${sourceLabel} has malformed JSON on line ${index + 1}: ${getErrorMessage(error)}`,
-        { cause: error },
       );
     }
 
@@ -142,7 +142,8 @@ function parseWuEventsJsonl(content: string, sourceLabel: string): ParsedWuEvent
       const issues = validation.error.issues
         .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
         .join(', ');
-      throw new Error(
+      throw createError(
+        ErrorCodes.VALIDATION_ERROR,
         `wu-events.jsonl ${sourceLabel} has invalid event on line ${index + 1}: ${issues}`,
       );
     }
@@ -210,7 +211,7 @@ export async function assertNoConflictArtifactsInIndex(
     .map((line) => line.trim())
     .filter(Boolean);
   if (unresolvedFiles.length > 0) {
-    throw new Error(REBASE_CONFLICT_MESSAGES.UNMERGED_FILES_REMAIN(unresolvedFiles.join('\n  ')));
+    throw createError(ErrorCodes.REBASE_CONFLICT, REBASE_CONFLICT_MESSAGES.UNMERGED_FILES_REMAIN(unresolvedFiles.join('\n  ')));
   }
 
   if (options.checkStaged === false) {
@@ -225,13 +226,11 @@ export async function assertNoConflictArtifactsInIndex(
   try {
     const checkOutput = await gitCwd.raw(checkArgs);
     if (checkOutput.trim().length > 0) {
-      throw new Error(checkOutput.trim());
+      throw createError(ErrorCodes.REBASE_CONFLICT, checkOutput.trim());
     }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
-    throw new Error(REBASE_CONFLICT_MESSAGES.STAGED_ARTIFACTS_OR_CHECK_FAILURE(message), {
-      cause: error,
-    });
+    throw createError(ErrorCodes.REBASE_CONFLICT, REBASE_CONFLICT_MESSAGES.STAGED_ARTIFACTS_OR_CHECK_FAILURE(message));
   }
 }
 

@@ -28,6 +28,7 @@ import { existsSync, statSync } from 'node:fs';
 import path from 'node:path';
 import type { LumenFlowConfig } from './lumenflow-config-schema.js';
 import { LUMENFLOW_PATHS } from './wu-constants.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 /**
  * Default maximum context size in bytes (4KB)
@@ -114,7 +115,7 @@ export function getMemoryContextMaxSize(config: Partial<LumenFlowConfig>): numbe
   };
 
   if (memoryConfig?.memory?.spawn_context_max_size !== undefined) {
-    throw new Error(MEMORY_CONTEXT_ERRORS.DEPRECATED_SPAWN_CONTEXT_MAX_SIZE);
+    throw createError(ErrorCodes.DEPRECATED_API, MEMORY_CONTEXT_ERRORS.DEPRECATED_SPAWN_CONTEXT_MAX_SIZE);
   }
 
   return memoryConfig?.memory?.delegation_context_max_size ?? DEFAULT_MAX_SIZE;

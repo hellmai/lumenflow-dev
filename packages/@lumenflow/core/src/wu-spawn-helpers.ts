@@ -16,7 +16,7 @@
 
 import { Command } from 'commander';
 import { DelegationRegistryStore } from './delegation-registry-store.js';
-import { ProcessExitError } from './error-handler.js';
+import { ProcessExitError, createError, ErrorCodes } from './error-handler.js';
 import { EXIT_CODES, LUMENFLOW_PATHS } from './wu-constants.js';
 
 /**
@@ -96,19 +96,19 @@ export function parseSpawnArgs(argv: UnsafeAny) {
 export function validateSpawnArgs(args: UnsafeAny) {
   // Check mutually exclusive flags
   if (args.thinking && args.noThinking) {
-    throw new Error('--thinking and --no-thinking are mutually exclusive');
+    throw createError(ErrorCodes.INVALID_ARGUMENT, '--thinking and --no-thinking are mutually exclusive');
   }
 
   // Budget requires thinking
   if (args.budget && !args.thinking) {
-    throw new Error('--budget requires --thinking flag');
+    throw createError(ErrorCodes.INVALID_ARGUMENT, '--budget requires --thinking flag');
   }
 
   // Budget must be positive integer
   if (args.budget) {
     const budgetNum = parseInt(args.budget, 10);
     if (isNaN(budgetNum) || budgetNum <= 0 || !Number.isInteger(budgetNum)) {
-      throw new Error('--budget must be a positive integer');
+      throw createError(ErrorCodes.INVALID_ARGUMENT, '--budget must be a positive integer');
     }
   }
 }

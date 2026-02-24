@@ -15,6 +15,7 @@
  * @see {@link ./wu-state-store.ts} - Facade that delegates to this service
  */
 
+import { createError, ErrorCodes } from './error-handler.js';
 import {
   existsSync,
   readFileSync,
@@ -177,7 +178,7 @@ export async function acquireLock(lockPath: string): Promise<void> {
     if (acquired) return;
   }
 
-  throw new Error(`Failed to acquire lock after ${LOCK_MAX_RETRIES} attempts`);
+  throw createError(ErrorCodes.LOCK_ERROR, `Failed to acquire lock after ${LOCK_MAX_RETRIES} attempts`);
 }
 
 /**

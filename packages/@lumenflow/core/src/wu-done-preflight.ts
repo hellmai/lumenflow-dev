@@ -9,6 +9,7 @@ import { validatePreflight } from './wu-preflight-validators.js';
 import { LOG_PREFIX, EMOJI } from './wu-constants.js';
 import { WU_PATHS } from './wu-paths.js';
 import { validateSingleWU } from './validators/wu-tasks.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 interface PreflightPaths {
   rootDir: string;
@@ -270,7 +271,7 @@ export async function validateAllPreCommitHooks(
     // WU-2308: Run from worktree context when provided to ensure audit checks
     // the worktree's dependencies (with fixes) not main's stale dependencies
     if (!options.runGates) {
-      throw new Error('runGates not provided for pre-commit validation.');
+      throw createError(ErrorCodes.PREFLIGHT_ERROR, 'runGates not provided for pre-commit validation.');
     }
 
     const ok = await options.runGates({
@@ -283,7 +284,7 @@ export async function validateAllPreCommitHooks(
       return { valid: true, errors: [] };
     }
 
-    throw new Error('Pre-commit hooks failed.');
+    throw createError(ErrorCodes.PREFLIGHT_ERROR, 'Pre-commit hooks failed.');
   } catch {
     // Pre-commit hooks failed
     errors.push('Pre-commit hook validation failed. Fix these issues before wu:done:');

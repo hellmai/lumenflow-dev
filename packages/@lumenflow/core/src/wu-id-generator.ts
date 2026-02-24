@@ -12,6 +12,7 @@
 
 import { existsSync, readdirSync } from 'node:fs';
 import { WU_PATHS } from './wu-paths.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 /** WU ID prefix constant */
 export const WU_ID_PREFIX = 'WU-';
@@ -131,5 +132,5 @@ export async function generateWuIdWithRetry(options: GenerateOptions = {}): Prom
     await new Promise((resolve) => setTimeout(resolve, delay));
   }
 
-  throw new Error(`Failed to generate unique WU ID after ${maxRetries} attempts`);
+  throw createError(ErrorCodes.ID_GENERATION_FAILED, `Failed to generate unique WU ID after ${maxRetries} attempts`);
 }

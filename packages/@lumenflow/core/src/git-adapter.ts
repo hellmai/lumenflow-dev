@@ -23,6 +23,7 @@
 import { simpleGit, type SimpleGit } from 'simple-git';
 import { existsSync, rmSync } from 'node:fs';
 import { GIT_COMMANDS, GIT_FLAGS, GIT_REFS } from './wu-constants.js';
+import { createError, ErrorCodes } from './error-handler.js';
 import type {
   DeleteBranchOptions,
   MergeOptions,
@@ -58,7 +59,7 @@ function assertNonEmptyString(value: unknown, name: string): asserts value is st
     throw new TypeError(`${name} must be a string, got ${typeof value}`);
   }
   if (value === '') {
-    throw new Error(`${name} must be a non-empty string`);
+    throw createError(ErrorCodes.INVALID_ARGUMENT, `${name} must be a non-empty string`);
   }
 }
 
@@ -87,13 +88,13 @@ function assertOptionalString(
 function assertStringOrArray(value: unknown, name: string): asserts value is string | string[] {
   if (typeof value === 'string') {
     if (value === '') {
-      throw new Error(`${name} must be a non-empty string or array`);
+      throw createError(ErrorCodes.INVALID_ARGUMENT, `${name} must be a non-empty string or array`);
     }
     return;
   }
   if (Array.isArray(value)) {
     if (value.length === 0) {
-      throw new Error(`${name} must be a non-empty string or array`);
+      throw createError(ErrorCodes.INVALID_ARGUMENT, `${name} must be a non-empty string or array`);
     }
     return;
   }
@@ -676,7 +677,8 @@ export class GitAdapter {
    * @returns {string} Trimmed command output
    */
   run(cmd: string): never {
-    throw new Error(
+    throw createError(
+      ErrorCodes.DEPRECATED_API,
       'GitAdapter.run() is deprecated (WU-1213). Use async methods instead. ' +
         `Attempted to run: ${cmd}`,
     );

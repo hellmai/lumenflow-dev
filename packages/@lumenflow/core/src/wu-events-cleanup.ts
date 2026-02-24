@@ -38,6 +38,7 @@ import { validateWUEvent, type WUEvent } from './wu-state-schema.js';
 import { WUStateStore, WU_EVENTS_FILE_NAME } from './wu-state-store.js';
 import type { EventArchivalConfig } from './lumenflow-config-schema.js';
 import { MS_PER_DAY } from './constants/duration-constants.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 // Re-export the type for convenience
 export type { EventArchivalConfig };
@@ -140,18 +141,18 @@ export interface ArchiveWuEventsResult {
  */
 export function parseArchiveAfter(archiveAfterString: string): number {
   if (!archiveAfterString || typeof archiveAfterString !== 'string') {
-    throw new Error('Invalid archiveAfter format: duration string is required');
+    throw createError(ErrorCodes.INVALID_DURATION, 'Invalid archiveAfter format: duration string is required');
   }
 
   const trimmed = archiveAfterString.trim();
   if (!trimmed) {
-    throw new Error('Invalid archiveAfter format: duration string is required');
+    throw createError(ErrorCodes.INVALID_DURATION, 'Invalid archiveAfter format: duration string is required');
   }
 
   const result = ms(trimmed);
 
   if (!Number.isFinite(result) || result <= 0) {
-    throw new Error(`Invalid archiveAfter format: "${archiveAfterString}" is not a valid duration`);
+    throw createError(ErrorCodes.INVALID_DURATION, `Invalid archiveAfter format: "${archiveAfterString}" is not a valid duration`);
   }
 
   return result;

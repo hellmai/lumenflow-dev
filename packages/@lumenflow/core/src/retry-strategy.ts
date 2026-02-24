@@ -18,6 +18,7 @@
  */
 
 import { LOG_PREFIX, EMOJI } from './wu-constants.js';
+import { createError, ErrorCodes } from './error-handler.js';
 
 /**
  * Error message patterns that are considered retryable for wu:done operations
@@ -140,7 +141,7 @@ export function createRetryConfig(presetOrOptions: UnsafeAny, options: UnsafeAny
   if (typeof presetOrOptions === 'string') {
     // First arg is preset name
     if (!(presetOrOptions in RETRY_PRESETS)) {
-      throw new Error(`Unknown retry preset: ${presetOrOptions}`);
+      throw createError(ErrorCodes.INVALID_ARGUMENT, `Unknown retry preset: ${presetOrOptions}`);
     }
     baseConfig = RETRY_PRESETS[presetOrOptions as keyof typeof RETRY_PRESETS];
     customOptions = options || {};
@@ -266,9 +267,10 @@ export async function withRetry(fn: UnsafeAny, config: UnsafeAny = DEFAULT_RETRY
   // All attempts failed
   // Defensive: if a caller passes an invalid config, ensure we throw a useful error.
   if (!lastError) {
-    throw new Error(`Operation failed: invalid retry configuration (maxAttempts=${maxAttempts})`);
+    throw createError(ErrorCodes.RETRY_EXHAUSTION, `Operation failed: invalid retry configuration (maxAttempts=${maxAttempts})`);
   }
-  throw new Error(
+  throw createError(
+    ErrorCodes.RETRY_EXHAUSTION,
     `Operation failed after ${attempt} attempt(s): ${lastError.message}\n` +
       `Original error: ${lastError.stack || lastError.message}`,
   );

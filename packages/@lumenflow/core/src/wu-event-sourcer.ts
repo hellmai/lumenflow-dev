@@ -18,7 +18,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { validateWUEvent, type WUEvent } from './wu-state-schema.js';
 import type { WUStateIndexer } from './wu-state-indexer.js';
-import { getErrorMessage } from './error-handler.js';
+import { getErrorMessage, createError, ErrorCodes } from './error-handler.js';
 
 /**
  * WU events file name constant
@@ -103,9 +103,7 @@ export class WUEventSourcer {
       try {
         parsed = JSON.parse(line);
       } catch (error) {
-        throw new Error(`Malformed JSON on line ${i + 1}: ${getErrorMessage(error)}`, {
-          cause: error,
-        });
+        throw createError(ErrorCodes.PARSE_ERROR, `Malformed JSON on line ${i + 1}: ${getErrorMessage(error)}`);
       }
 
       const validation = validateWUEvent(parsed);
@@ -113,7 +111,7 @@ export class WUEventSourcer {
         const issues = validation.error.issues
           .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
           .join(', ');
-        throw new Error(`Validation error on line ${i + 1}: ${issues}`);
+        throw createError(ErrorCodes.VALIDATION_ERROR, `Validation error on line ${i + 1}: ${issues}`);
       }
 
       this.indexer.applyEvent(validation.data);
@@ -132,7 +130,7 @@ export class WUEventSourcer {
       const issues = validation.error.issues
         .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
         .join(', ');
-      throw new Error(`Validation error: ${issues}`);
+      throw createError(ErrorCodes.VALIDATION_ERROR, `Validation error: ${issues}`);
     }
 
     const line = `${JSON.stringify(event)}\n`;
