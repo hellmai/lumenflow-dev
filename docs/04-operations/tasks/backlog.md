@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2117 — Migrate throw new Error() to createError() in @lumenflow/cli (batch)](wu/WU-2117.yaml) — Framework: CLI WU Commands
 - [WU-2116 — Migrate throw new Error() to createError() in @lumenflow/core (batch)](wu/WU-2116.yaml) — Framework: Core Lifecycle
 - [WU-2115 — Add Zod schema validation to writeWU() before writing YAML](wu/WU-2115.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
