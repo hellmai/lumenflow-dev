@@ -12,7 +12,11 @@ code_paths:
   - packages/@lumenflow/cli/src/__tests__
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding
 tests:
-  manual: []
+  manual:
+    - Run rg scan to confirm no runtime fallback logic remains for docs layout path discovery
+      outside explicit preset definitions.
+    - Run lumenflow init in a temp repo for both simple and arc42 docs structure and verify
+      generated workspace directories resolve through config.
   unit:
     - packages/@lumenflow/core/src/__tests__/path-centralization.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-paths.test.ts
@@ -31,9 +35,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: WU-2105 removed several path fallbacks and dead constants, but there are still residual hardcoded docs-layout strings and depth assumptions in runtime-facing code/comments. Problem: Hardcoded layout literals and ad-hoc discovery logic weaken abstraction boundaries and make config-first behavior harder to reason about and evolve. Solution: sweep runtime code for remaining non-config docs-layout literals, replace them with workspace/config-driven resolution where appropriate, remove dead or misleading constants/comments, and run a broader hardcoding audit to identify similar anti-patterns with concrete remediation guidance.'
+description: 'Context: WU-2105 removed several path fallbacks and dead constants, but there are
+  still residual hardcoded docs-layout strings and depth assumptions in runtime-facing
+  code/comments. Problem: Hardcoded layout literals and ad-hoc discovery logic weaken abstraction
+  boundaries and make config-first behavior harder to reason about and evolve. Solution: sweep
+  runtime code for remaining non-config docs-layout literals, replace them with
+  workspace/config-driven resolution where appropriate, remove dead or misleading
+  constants/comments, and run a broader hardcoding audit to identify similar anti-patterns with
+  concrete remediation guidance.'
 acceptance:
-  - Runtime code paths and root resolution are config-driven without arc42/simple fallback heuristics outside explicit layout presets.
+  - Runtime code paths and root resolution are config-driven without arc42/simple fallback
+    heuristics outside explicit layout presets.
   - No dead path-regex constants remain for WU path discovery.
   - Targeted tests cover changed behavior and pass.
-  - Audit summary identifies any remaining high-risk hardcoded patterns and whether they are preset-definitions, docs/examples, tests, or runtime code.
+  - Audit summary identifies any remaining high-risk hardcoded patterns and whether they are
+    preset-definitions, docs/examples, tests, or runtime code.
