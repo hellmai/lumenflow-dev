@@ -23,10 +23,11 @@ sections:
 - [WU-2102 — wu:prep checkpoint enables wu:done gate skip + scoped test fallback](wu/WU-2102.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
+- [WU-2102 — wu:prep checkpoint enables wu:done gate skip + scoped test fallback](wu/WU-2102.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-- [WU-2101 — Add schemas/ dir to doc-source pathspecs for wu:done auto-regen](wu/WU-2101.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1053,6 +1054,7 @@ sections:
 - [WU-2099 — DRY path resolvers and lazy-load module-level config (INIT-036 cleanup)](wu/WU-2099.yaml)
 - [WU-2098 — Make wu:brief / wu:spawn prompt templates path-config aware](wu/WU-2098.yaml)
 - [WU-2100 — Harden core spawn literal coverage and config-aware prompts](wu/WU-2100.yaml)
+- [WU-2101 — Add schemas/ dir to doc-source pathspecs for wu:done auto-regen](wu/WU-2101.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

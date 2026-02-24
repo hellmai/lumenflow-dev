@@ -2,7 +2,7 @@ id: WU-2101
 title: Add schemas/ dir to doc-source pathspecs for wu:done auto-regen
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-24
 code_paths:
@@ -40,3 +40,6 @@ description: wu:done doc-source detection checks lumenflow-config-schema.ts but 
 acceptance:
   - DOC_SOURCE_PATHSPECS includes schemas/ directory
   - docs:validate passes after schema changes without manual docs:generate
+locked: true
+completed_at: 2026-02-24T10:01:19.740Z
+completed: 2026-02-24
