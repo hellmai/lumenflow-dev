@@ -2586,7 +2586,11 @@ async function executeGates({
 
   // WU-1747: Check if gates can be skipped based on valid checkpoint
   // This allows resuming wu:done without re-running gates if nothing changed
-  const skipResult = canSkipGates(id, { currentHeadSha: undefined });
+  // WU-2102: Look for checkpoint in worktree (where wu:prep writes it)
+  const skipResult = canSkipGates(id, {
+    currentHeadSha: undefined,
+    baseDir: worktreePath || undefined,
+  });
   if (skipResult.canSkip) {
     gateResult.skippedByCheckpoint = true;
     gateResult.checkpointId = skipResult.checkpoint.checkpointId;
@@ -2924,7 +2928,11 @@ export async function main() {
   // WU-1663: Determine prepPassed early for pipeline actor input.
   // canSkipGates checks if wu:prep already ran gates successfully via checkpoint.
   // This drives the isPrepPassed guard on the GATES_SKIPPED transition.
-  const earlySkipResult = canSkipGates(id, { currentHeadSha: undefined });
+  // WU-2102: Look for checkpoint in worktree (where wu:prep writes it), not main
+  const earlySkipResult = canSkipGates(id, {
+    currentHeadSha: undefined,
+    baseDir: derivedWorktree || undefined,
+  });
   const prepPassed = earlySkipResult.canSkip;
 
   // WU-1663: Create XState pipeline actor for state-driven orchestration.
