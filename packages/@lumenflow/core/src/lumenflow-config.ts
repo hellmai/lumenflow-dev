@@ -229,9 +229,15 @@ export function getProjectRoot(): string {
 }
 
 /**
- * Clear cached configuration
+ * Clear cached configuration and project root.
  *
- * Useful for testing or when config file changes
+ * Called by config-mutating lifecycle operations (wu:done, config:set) so that
+ * subsequent calls to {@link getConfig} within the same process re-read from
+ * disk instead of returning stale cached values.
+ *
+ * Also useful in tests that manipulate workspace.yaml between assertions.
+ *
+ * @see WU-2126
  */
 export function clearConfigCache(): void {
   cachedConfig = null;
