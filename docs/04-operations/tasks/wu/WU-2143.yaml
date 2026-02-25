@@ -26,7 +26,11 @@ blocked_by:
 spec_refs:
   - /home/USER/.claude/plans/steady-inventing-gosling.md
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+  Ownership override: Completed by test@example.com (assigned to tom@hellm.ai). Reason: git config
+  email is test@example.com but user is tom@hellm.ai
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
