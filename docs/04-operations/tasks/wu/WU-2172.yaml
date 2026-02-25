@@ -1,5 +1,5 @@
 id: WU-2172
-title: 'C1: Migrate remaining raw env reads to ENV_VARS'
+title: Migrate remaining raw env reads to ENV_VARS
 lane: 'Framework: Core Validation'
 type: refactor
 status: ready

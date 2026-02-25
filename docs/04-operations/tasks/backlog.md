@@ -42,7 +42,7 @@ sections:
 - [WU-2168 — Audit and categorize core API surface](wu/WU-2168.yaml) — Framework: Core Lifecycle
 - [WU-2169 — Add domain-scoped core barrel exports](wu/WU-2169.yaml) — Framework: Core Lifecycle
 - [WU-2170 — B3: Migrate consumers and deprecate root core barrel](wu/WU-2170.yaml) — Framework: Core Lifecycle
-- [WU-2171 — B4: Evaluate delegation package extraction](wu/WU-2171.yaml) — Framework: Core Lifecycle
+- [WU-2171 — Evaluate delegation package extraction](wu/WU-2171.yaml) — Framework: Core Lifecycle
 - [WU-2172 — C1: Migrate remaining raw env reads to ENV_VARS](wu/WU-2172.yaml) — Framework: Core Validation
 - [WU-2173 — C2: Add startup environment schema validation](wu/WU-2173.yaml) — Framework: Core Validation
 - [WU-2174 — C3: Introduce getEnv and requireEnv accessors](wu/WU-2174.yaml) — Framework: Core Validation
