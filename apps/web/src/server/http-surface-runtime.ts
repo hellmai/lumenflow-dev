@@ -9,8 +9,14 @@ import {
   type ReplayFilter,
 } from '@lumenflow/kernel';
 import {
+  createHttpControlPlaneSyncPort,
+  parseWorkspaceControlPlaneConfig,
+  type WorkspaceControlPlaneConfig,
+} from '../../../../packages/@lumenflow/control-plane-sdk/src/index';
+import {
   createHttpSurface,
   type HttpSurface,
+  type HttpSurfaceOptions,
 } from '../../../../packages/@lumenflow/surfaces/http/server';
 
 const ENVIRONMENT_KEY = {
@@ -25,11 +31,14 @@ const ENVIRONMENT_VALUE = {
 
 const WORKSPACE_FILE_NAME = 'workspace.yaml';
 const UTF8_ENCODING = 'utf8';
+const WORKSPACE_ID_FIELD = 'id';
 const CONTROL_PLANE_FIELD = 'control_plane';
 const CONTROL_PLANE_AUTH_FIELD = 'auth';
 const CONTROL_PLANE_ENDPOINT_FIELD = 'endpoint';
 const CONTROL_PLANE_TOKEN_ENV_FIELD = 'token_env';
 const CONTROL_PLANE_TOKEN_ENV_PATTERN = /^[A-Z][A-Z0-9_]*$/;
+const MILLISECONDS_PER_SECOND = 1000;
+const CONTROL_PLANE_LOG_PREFIX = '[http-surface-runtime]';
 
 const ERROR_MESSAGE = {
   RUNTIME_UNAVAILABLE:
@@ -84,6 +93,11 @@ interface WorkspaceControlPlaneConfigLike {
   readonly auth?: {
     readonly token_env?: string;
   };
+}
+
+interface WorkspaceControlPlaneRuntimeOptions {
+  readonly workspaceId: string;
+  readonly controlPlane: WorkspaceControlPlaneConfig;
 }
 
 export interface RuntimeControlPlaneDiagnostics {
@@ -223,6 +237,50 @@ async function readWorkspaceControlPlaneConfig(
   };
 }
 
+async function readWorkspaceControlPlaneRuntimeOptions(
+  workspaceRoot: string,
+): Promise<WorkspaceControlPlaneRuntimeOptions | null> {
+  const workspacePath = path.join(workspaceRoot, WORKSPACE_FILE_NAME);
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- workspace root is an operator-controlled absolute path
+  const workspaceYaml = await readFile(workspacePath, UTF8_ENCODING);
+  const parsed = YAML.parse(workspaceYaml) as unknown;
+
+  if (!isRecord(parsed)) {
+    return null;
+  }
+
+  const workspaceId = asNonEmptyString(getRecordValue(parsed, WORKSPACE_ID_FIELD));
+  if (workspaceId === undefined) {
+    return null;
+  }
+
+  const controlPlane = getRecordValue(parsed, CONTROL_PLANE_FIELD);
+  if (!isRecord(controlPlane)) {
+    return null;
+  }
+
+  const runtimeConfig = parseWorkspaceControlPlaneConfig({
+    id: workspaceId,
+    control_plane: controlPlane,
+  });
+
+  return {
+    workspaceId,
+    controlPlane: runtimeConfig.control_plane,
+  };
+}
+
+function createControlPlaneHttpSurfaceOptions(
+  runtimeConfig: WorkspaceControlPlaneRuntimeOptions,
+): HttpSurfaceOptions {
+  return {
+    controlPlaneSyncPort: createHttpControlPlaneSyncPort(runtimeConfig.controlPlane, console),
+    workspaceId: runtimeConfig.workspaceId,
+    controlPlaneSyncIntervalMs: runtimeConfig.controlPlane.sync_interval * MILLISECONDS_PER_SECOND,
+    controlPlaneDiagnosticsLogger: console,
+  };
+}
+
 async function getControlPlaneDiagnostics(input: {
   enabled: boolean;
   available: boolean;
@@ -338,6 +396,18 @@ export async function getKernelRuntimeHealth(): Promise<KernelRuntimeHealth> {
 
 async function createWebHttpSurface(): Promise<HttpSurface> {
   const runtime = await getKernelRuntimeForWeb();
+  const workspaceRoot = resolveRuntimeWorkspaceRoot(process.env);
+
+  try {
+    const runtimeConfig = await readWorkspaceControlPlaneRuntimeOptions(workspaceRoot);
+    if (runtimeConfig !== null) {
+      return createHttpSurface(runtime, createControlPlaneHttpSurfaceOptions(runtimeConfig));
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`${CONTROL_PLANE_LOG_PREFIX} Control-plane sync disabled: ${message}`);
+  }
+
   return createHttpSurface(runtime);
 }
 
