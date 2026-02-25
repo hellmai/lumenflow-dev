@@ -18,6 +18,12 @@ artifacts:
 dependencies: []
 initiative: INIT-041
 phase: 3
+blocked_by:
+  - WU-2162
+  - WU-2163
+  - WU-2164
+  - WU-2165
+  - WU-2166
 risks: []
 notes: 'source_plan: /home/USER/.claude/plans/gleaming-painting-sonnet.md'
 requires_review: false
@@ -28,6 +34,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Refactor wu:done main() into a thin orchestrator that coordinates extracted modules and explicit pipeline states.
+description: Refactor wu:done main() into a thin orchestrator that coordinates extracted modules and
+  explicit pipeline states.
 acceptance:
-  - Main orchestrator is reduced to coordination logic and wu-done.ts stays within target size envelope.
+  - Main orchestrator is reduced to coordination logic and wu-done.ts stays within target size
+    envelope.
