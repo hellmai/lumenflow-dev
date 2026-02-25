@@ -10,7 +10,7 @@ created: 2026-02-25
 phases:
   - id: 1
     title: 'Phase 1: Policy and git operation extraction'
-    status: pending
+    status: in_progress
   - id: 2
     title: 'Phase 2: Preflight and gates decomposition'
     status: pending

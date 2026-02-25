@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-- [WU-2162 — Extract wu:done policy functions](wu/WU-2162.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1080,3 +1080,4 @@ _Last updated: 2026-02-25_
 - [WU-2179 — Add missing commands and tooling operations concept to agent docs](wu/WU-2179.yaml) — 2026-02-25
 - [WU-2180 — Fix gitignore scaffold drift: add missing ephemeral path entries](wu/WU-2180.yaml) — 2026-02-25
 - [WU-2181 — Document gitignore scaffold drift fix and consumer remediation](wu/WU-2181.yaml) — 2026-02-25
+- [WU-2162 — Extract wu:done policy functions](wu/WU-2162.yaml) — 2026-02-25
