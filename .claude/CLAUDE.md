@@ -99,12 +99,12 @@ For details, see the [YAML editing policy](.lumenflow/rules/yaml-editing-policy.
 These commands use micro-worktree isolation — they commit and push atomically.
 Do NOT wrap them in a WU or use raw `pnpm update`/`git commit`.
 
-| Command                                  | Use Instead Of             |
-| ---------------------------------------- | -------------------------- |
-| `pnpm lumenflow:upgrade --version X.Y.Z` | `pnpm update @lumenflow/*` |
-| `pnpm config:set --key <k> --value <v>`  | Manual YAML editing        |
-| `pnpm cloud:connect`                     | Manual control_plane config|
-| `pnpm docs:sync`                         | Manual doc copying         |
+| Command                                  | Use Instead Of              |
+| ---------------------------------------- | --------------------------- |
+| `pnpm lumenflow:upgrade --version X.Y.Z` | `pnpm update @lumenflow/*`  |
+| `pnpm config:set --key <k> --value <v>`  | Manual YAML editing         |
+| `pnpm cloud:connect`                     | Manual control_plane config |
+| `pnpm docs:sync`                         | Manual doc copying          |
 
 ## Quick Reminders
 

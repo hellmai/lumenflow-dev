@@ -84,16 +84,16 @@ pnpm exec lumenflow --client all      # All clients
 These commands use **micro-worktree isolation** internally — they handle their own
 commit and push atomically. Do NOT wrap them in a WU or use raw `pnpm update`/`git commit`.
 
-| Command                                                    | Description                                       |
-| ---------------------------------------------------------- | ------------------------------------------------- |
-| `pnpm lumenflow:upgrade --version 3.5.0`                   | Upgrade all 7 @lumenflow/\* packages              |
-| `pnpm lumenflow:upgrade --latest`                          | Upgrade to latest version                         |
-| `pnpm lumenflow:upgrade --latest --dry-run`                | Preview upgrade without executing                 |
-| `pnpm config:set --key <dotpath> --value <value>`          | Set workspace.yaml config (Zod-validated)         |
-| `pnpm config:get --key <dotpath>`                          | Read workspace.yaml config                        |
-| `pnpm cloud:connect`                                       | Configure cloud control-plane access              |
-| `pnpm docs:sync`                                           | Sync agent docs after upgrade                     |
-| `pnpm sync:templates`                                      | Sync templates to project                         |
+| Command                                           | Description                               |
+| ------------------------------------------------- | ----------------------------------------- |
+| `pnpm lumenflow:upgrade --version 3.5.0`          | Upgrade all 7 @lumenflow/\* packages      |
+| `pnpm lumenflow:upgrade --latest`                 | Upgrade to latest version                 |
+| `pnpm lumenflow:upgrade --latest --dry-run`       | Preview upgrade without executing         |
+| `pnpm config:set --key <dotpath> --value <value>` | Set workspace.yaml config (Zod-validated) |
+| `pnpm config:get --key <dotpath>`                 | Read workspace.yaml config                |
+| `pnpm cloud:connect`                              | Configure cloud control-plane access      |
+| `pnpm docs:sync`                                  | Sync agent docs after upgrade             |
+| `pnpm sync:templates`                             | Sync templates to project                 |
 
 **Key principle:** If a LumenFlow CLI command exists for the operation, use it instead of
 raw pnpm/git. These tooling commands commit directly to main via micro-worktree — no dirty
@@ -122,7 +122,7 @@ files, no manual git, no WU ceremony. Only actual **code changes** need WUs.
 | `pnpm wu:brief --id WU-XXX --client <client>`   | Generate handoff prompt + record evidence (worktree only)    |
 | `pnpm wu:brief --id WU-XXX --no-context`        | Generate prompt without memory context injection             |
 | `pnpm wu:delegate --id WU-XXX --parent-wu <P>`  | Generate prompt and record delegation lineage                |
-| `pnpm wu:sandbox --id WU-XXX -- <cmd>`           | Run command through hardened WU sandbox backend              |
+| `pnpm wu:sandbox --id WU-XXX -- <cmd>`          | Run command through hardened WU sandbox backend              |
 
 ### WU Maintenance
 
@@ -144,22 +144,22 @@ files, no manual git, no WU ceremony. Only actual **code changes** need WUs.
 
 ## Gates & Quality
 
-| Command                           | Description                       |
-| --------------------------------- | --------------------------------- |
-| `pnpm gates`                      | Run all quality gates             |
-| `pnpm gates --docs-only`          | Run gates for docs changes        |
-| `pnpm format`                     | Format all files (Prettier)       |
-| `pnpm format:check`               | Check formatting without changes  |
-| `pnpm lint`                       | Run ESLint                        |
-| `pnpm typecheck`                  | Run TypeScript type checking      |
-| `pnpm test`                       | Run all tests (Vitest)            |
-| `pnpm spec:linter`                | Validate WU specs (all) ¹         |
-| `pnpm lane:health`                | Check lane config health          |
-| `pnpm lane:suggest --paths "..."` | Suggest lane for code paths       |
-| `pnpm lane:status`                | Show lane lifecycle status        |
-| `pnpm lane:setup`                 | Create/update draft lane config   |
-| `pnpm lane:validate`              | Validate lane draft artifacts     |
-| `pnpm lane:lock`                  | Lock lane lifecycle for WU create |
+| Command                           | Description                                     |
+| --------------------------------- | ----------------------------------------------- |
+| `pnpm gates`                      | Run all quality gates                           |
+| `pnpm gates --docs-only`          | Run gates for docs changes                      |
+| `pnpm format`                     | Format all files (Prettier)                     |
+| `pnpm format:check`               | Check formatting without changes                |
+| `pnpm lint`                       | Run ESLint                                      |
+| `pnpm typecheck`                  | Run TypeScript type checking                    |
+| `pnpm test`                       | Run all tests (Vitest)                          |
+| `pnpm spec:linter`                | Validate WU specs (all) ¹                       |
+| `pnpm lane:health`                | Check lane config health                        |
+| `pnpm lane:suggest --paths "..."` | Suggest lane for code paths                     |
+| `pnpm lane:status`                | Show lane lifecycle status                      |
+| `pnpm lane:setup`                 | Create/update draft lane config                 |
+| `pnpm lane:validate`              | Validate lane draft artifacts                   |
+| `pnpm lane:lock`                  | Lock lane lifecycle for WU create               |
 | `pnpm lane:edit --lane <L>`       | Edit lane definition (rename, wip-limit, paths) |
 
 ¹ **Script aliases:** `spec:linter` and `tasks:validate` are pnpm script aliases
@@ -382,12 +382,12 @@ For the complete orchestration workflow (delegation, memory coordination, failur
 
 ## Metrics & Flow
 
-| Command                 | Description                  |
-| ----------------------- | ---------------------------- |
-| `pnpm flow:report`      | Generate flow metrics report                        |
-| `pnpm flow:bottlenecks` | Identify flow bottlenecks                           |
-| `pnpm metrics:snapshot` | Capture metrics snapshot                            |
-| `pnpm metrics`          | View workflow metrics                               |
+| Command                 | Description                                            |
+| ----------------------- | ------------------------------------------------------ |
+| `pnpm flow:report`      | Generate flow metrics report                           |
+| `pnpm flow:bottlenecks` | Identify flow bottlenecks                              |
+| `pnpm metrics:snapshot` | Capture metrics snapshot                               |
+| `pnpm metrics`          | View workflow metrics                                  |
 | `pnpm strict:progress`  | Report strict TypeScript backlog and guard regressions |
 
 ---
@@ -427,15 +427,15 @@ For the complete orchestration workflow (delegation, memory coordination, failur
 
 ## Packs
 
-| Command                                  | Description                         |
-| ---------------------------------------- | ----------------------------------- |
-| `pnpm pack:author`                       | Author a secure domain pack         |
-| `pnpm pack:scaffold --name <name>`       | Scaffold a new domain pack          |
-| `pnpm pack:validate --path <path>`       | Validate a domain pack for integrity|
-| `pnpm pack:hash --path <path>`           | Compute integrity hash for a pack   |
-| `pnpm pack:publish --path <path>`        | Publish a domain pack to registry   |
-| `pnpm pack:install --name <name>`        | Install a domain pack into workspace|
-| `pnpm pack:search --query <query>`       | Search for packs in registry        |
+| Command                            | Description                          |
+| ---------------------------------- | ------------------------------------ |
+| `pnpm pack:author`                 | Author a secure domain pack          |
+| `pnpm pack:scaffold --name <name>` | Scaffold a new domain pack           |
+| `pnpm pack:validate --path <path>` | Validate a domain pack for integrity |
+| `pnpm pack:hash --path <path>`     | Compute integrity hash for a pack    |
+| `pnpm pack:publish --path <path>`  | Publish a domain pack to registry    |
+| `pnpm pack:install --name <name>`  | Install a domain pack into workspace |
+| `pnpm pack:search --query <query>` | Search for packs in registry         |
 
 ---
 
@@ -444,16 +444,16 @@ For the complete orchestration workflow (delegation, memory coordination, failur
 These commands wrap standard file/git operations with audit trail logging.
 Use them when audit evidence is required (e.g., during WU execution).
 
-| Command                          | Description                    |
-| -------------------------------- | ------------------------------ |
-| `pnpm file:read --path <path>`   | Read file with audit trail     |
-| `pnpm file:write --path <path>`  | Write file with audit trail    |
-| `pnpm file:edit --path <path>`   | Edit file with audit trail     |
-| `pnpm file:delete --path <path>` | Delete file with audit trail   |
+| Command                          | Description                      |
+| -------------------------------- | -------------------------------- |
+| `pnpm file:read --path <path>`   | Read file with audit trail       |
+| `pnpm file:write --path <path>`  | Write file with audit trail      |
+| `pnpm file:edit --path <path>`   | Edit file with audit trail       |
+| `pnpm file:delete --path <path>` | Delete file with audit trail     |
 | `pnpm git:status`                | Show git status with audit trail |
-| `pnpm git:diff`                  | Show git diff with audit trail |
-| `pnpm git:log`                   | Show git log with audit trail  |
-| `pnpm git:branch`               | Show git branch with audit trail |
+| `pnpm git:diff`                  | Show git diff with audit trail   |
+| `pnpm git:log`                   | Show git log with audit trail    |
+| `pnpm git:branch`                | Show git branch with audit trail |
 
 ---
 
