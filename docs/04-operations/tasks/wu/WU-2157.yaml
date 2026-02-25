@@ -1,0 +1,49 @@
+id: WU-2157
+title: Enrich post-compaction recovery and extend to all agent clients
+lane: 'Framework: Memory'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-25
+code_paths:
+  - packages/@lumenflow/memory/src/mem-recover-core.ts
+  - packages/@lumenflow/cli/src/mem-recover.ts
+  - packages/@lumenflow/cli/src/commands/integrate.ts
+  - .claude/hooks/session-start-recovery.sh
+  - .claude/hooks/pre-compact-checkpoint.sh
+  - packages/@lumenflow/cli/templates/vendors
+tests:
+  manual:
+    - Run pnpm mem:recover --wu WU-XXX and verify richer output
+    - Run pnpm lumenflow:integrate --client cursor and verify recovery hooks generated
+  unit:
+    - packages/@lumenflow/memory/src/__tests__/mem-recover-core.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2157.done
+dependencies: []
+plan: lumenflow://plans/WU-2157-plan.md
+spec_refs:
+  - lumenflow://plans/WU-2157-plan.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: test@example.com
+exposure: backend-only
+sizing_estimate:
+  estimated_files: 8
+  estimated_tool_calls: 60
+  strategy: single-session
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Recovery after context compaction is too minimal (2KB summary) and only works for Claude Code via hooks. Improve recovery richness and extend to all supported agent clients.
+acceptance:
+  - mem:recover output includes acceptance criteria, code_paths, git diff stat, and loaded skills from last checkpoint
+  - SessionStart hook auto-injects wu:brief-equivalent context instead of just telling agent to run wu:brief
+  - lumenflow:integrate --client cursor generates session-boundary recovery hooks
+  - lumenflow:integrate --client codex-cli generates equivalent recovery mechanism
+  - Recovery budget increased from 2KB to support richer context
+  - Existing Claude Code recovery still works (no regression)
