@@ -14,7 +14,7 @@ phases:
     status: done
   - id: 2
     title: 'Wave 1: Core Foundation (parallel after Wave 0)'
-    status: in_progress
+    status: done
   - id: 3
     title: 'Wave 2: CLI Type Safety'
     status: pending

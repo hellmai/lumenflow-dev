@@ -36,7 +36,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2136 — Reduce UnsafeAny in core hotspot files](wu/WU-2136.yaml) — Framework: Core Lifecycle
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1100,6 +1100,7 @@ sections:
 - [WU-2144 — wu:brief writes checkpoint event to wu-events.jsonl when run outside worktree](wu/WU-2144.yaml)
 - [WU-2135 — Fix release-blocking gate failures on main](wu/WU-2135.yaml)
 - [WU-2137 — Add enforcement E2E matrix across hook/TS/MCP paths](wu/WU-2137.yaml)
+- [WU-2136 — Reduce UnsafeAny in core hotspot files](wu/WU-2136.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

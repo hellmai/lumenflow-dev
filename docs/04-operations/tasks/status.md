@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-- [WU-2136 — Reduce UnsafeAny in core hotspot files](wu/WU-2136.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1064,3 +1064,4 @@ _Last updated: 2026-02-25_
 - [WU-2144 — wu:brief writes checkpoint event to wu-events.jsonl when run outside worktree](wu/WU-2144.yaml) — 2026-02-25
 - [WU-2135 — Fix release-blocking gate failures on main](wu/WU-2135.yaml) — 2026-02-25
 - [WU-2137 — Add enforcement E2E matrix across hook/TS/MCP paths](wu/WU-2137.yaml) — 2026-02-25
+- [WU-2136 — Reduce UnsafeAny in core hotspot files](wu/WU-2136.yaml) — 2026-02-25
