@@ -1,12 +1,22 @@
 id: INIT-040
 slug: agent-memory-coordination
 title: Agent Memory + Coordination Layer
-description: ''
-status: draft
+description: 'Local-first signal surfacing, project-memory promotion, and optional control-plane
+  bridge for agent coordination. OSS-complete: all local behavior works without network.'
+status: open
 priority: P1
 owner: tom@hellm.ai
 created: 2026-02-25
-phases: []
+phases:
+  - id: 1
+    title: 'Phase 1: Local Behavior'
+    status: pending
+  - id: 2
+    title: 'Phase 2: Bridge and SDK Boundary'
+    status: pending
+  - id: 3
+    title: 'Phase 3: Integration Hooks'
+    status: pending
 success_metrics:
   - Project-memory survives wu:done cleanup
   - Signals surface automatically via CLI and MCP touchpoints
