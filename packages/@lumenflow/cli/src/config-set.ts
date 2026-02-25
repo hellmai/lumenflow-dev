@@ -303,8 +303,8 @@ export function routeConfigKey(key: string, packConfigKeys: Map<string, string>)
   }
 
   // 3. Managed root keys (e.g., packs, lanes, security, id, name, policies)
-  const managedCommand = MANAGED_ROOT_KEYS[firstSegment];
-  if (managedCommand !== undefined) {
+  if (firstSegment in MANAGED_ROOT_KEYS) {
+    const managedCommand = MANAGED_ROOT_KEYS[firstSegment];
     return { type: 'managed-error', rootKey: firstSegment, command: managedCommand };
   }
 
@@ -401,6 +401,16 @@ function setNestedValue(
 }
 
 /**
+ * Check if a string represents a numeric value (integer or decimal).
+ * Uses Number() instead of regex to avoid unsafe regex patterns.
+ */
+function isNumericString(value: string): boolean {
+  if (value === '' || value.trim() !== value) return false;
+  const num = Number(value);
+  return !isNaN(num) && isFinite(num);
+}
+
+/**
  * Coerce a string value to the appropriate type based on context.
  *
  * @param value - String value from CLI
@@ -413,7 +423,7 @@ function coerceValue(value: string, existingValue: unknown): unknown {
   if (value === 'false') return false;
 
   // Number coercion (if existing value is a number or value looks numeric)
-  if (typeof existingValue === 'number' || /^\d+(\.\d+)?$/.test(value)) {
+  if (typeof existingValue === 'number' || isNumericString(value)) {
     const numValue = Number(value);
     if (!isNaN(numValue)) return numValue;
   }
