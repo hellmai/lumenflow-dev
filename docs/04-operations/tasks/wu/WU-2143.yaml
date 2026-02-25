@@ -1,8 +1,8 @@
 id: WU-2143
 title: Document tooling-backed sizing guardrails and strict mode
-lane: 'Content: Framework Docs'
+lane: 'Framework: CLI WU Commands'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -35,8 +35,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Update sizing and onboarding docs to reflect new sizing contract behavior, advisory output, and strict mode usage in wu:create/wu:brief.
+description: Update sizing and onboarding docs to reflect new sizing contract behavior, advisory
+  output, and strict mode usage in wu:create/wu:brief.
 acceptance:
   - wu-sizing-guide and onboarding docs describe sizing contract fields and strict-sizing behavior
   - Examples show compliant exception metadata usage
   - Full pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2143
+claimed_at: 2026-02-25T12:30:26.732Z
+baseline_main_sha: e650851b91871a263340d28b6d3f3a40082d289f
+session_id: c3769968-7161-4d76-8b75-eb59072e5059
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T12:30:26.737Z

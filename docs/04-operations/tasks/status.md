@@ -5,6 +5,7 @@ _Last updated: 2026-02-25_
 ## In Progress
 
 - [WU-2142 — Add initiative scope advisory for over-granular execution plans](wu/WU-2142.yaml)
+- [WU-2143 — Document tooling-backed sizing guardrails and strict mode](wu/WU-2143.yaml)
 
 ## Completed
 
