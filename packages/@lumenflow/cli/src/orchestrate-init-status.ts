@@ -145,7 +145,6 @@ const program = new Command()
       const scopeOutput = formatScopeAdvisory(scopeResult);
       if (scopeOutput) {
         console.log('');
-        console.log(chalk.bold('Scope Advisory:'));
         console.log(chalk.yellow(scopeOutput));
       }
 

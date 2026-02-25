@@ -9,8 +9,7 @@
  * wu-sizing-guide.md thresholds. Provides advisory warnings and
  * strict-mode blocking for oversize WUs.
  *
- * Thresholds are derived from:
- * docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md
+ * Thresholds are derived from the sizing guide referenced by SIZING_GUIDE_REF.
  *
  * @see {@link ./wu-create-sizing-advisory.ts} - wu:create integration
  * @see {@link ./wu-brief-sizing.ts} - wu:brief integration

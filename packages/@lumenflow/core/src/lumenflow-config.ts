@@ -284,6 +284,7 @@ export function getResolvedPaths(
   completeGuidePath: string;
   quickRefPath: string;
   startingPromptPath: string;
+  sizingGuidePath: string;
   governancePath: string;
   /** WU-1654: Safe-git wrapper absolute path */
   safeGitPath: string;
@@ -311,6 +312,7 @@ export function getResolvedPaths(
     completeGuidePath: path.join(projectRoot, config.directories.completeGuidePath),
     quickRefPath: path.join(projectRoot, config.directories.quickRefPath),
     startingPromptPath: path.join(projectRoot, config.directories.startingPromptPath),
+    sizingGuidePath: path.join(projectRoot, config.directories.sizingGuidePath),
     governancePath: path.join(projectRoot, config.directories.governancePath),
     safeGitPath: path.join(projectRoot, config.directories.safeGitPath),
   };

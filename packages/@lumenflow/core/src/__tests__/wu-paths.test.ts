@@ -46,6 +46,7 @@ vi.mock('../lumenflow-config.js', () => ({
       plansDir: 'docs/04-operations/plans',
       templatesDir: '.lumenflow/templates',
       onboardingDir: 'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
+      sizingGuidePath: 'docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md',
     },
     state: {
       stampsDir: '.lumenflow/stamps',
@@ -127,6 +128,7 @@ describe('wu-paths', () => {
           plansDir: 'docs/plans',
           templatesDir: '.lumenflow/templates',
           onboardingDir: 'docs/_frameworks/lumenflow/agent/onboarding',
+          sizingGuidePath: 'docs/_frameworks/lumenflow/wu-sizing-guide.md',
         },
         state: {
           stampsDir: '.lumenflow/stamps',
@@ -154,6 +156,7 @@ describe('wu-paths', () => {
           plansDir: 'plans',
           templatesDir: '.lumenflow/templates',
           onboardingDir: '_frameworks/lumenflow/agent/onboarding',
+          sizingGuidePath: '_frameworks/lumenflow/wu-sizing-guide.md',
         },
         state: {
           stampsDir: '.lumenflow/stamps',
@@ -185,6 +188,7 @@ describe('wu-paths', () => {
       expect(typeof paths.PLANS_DIR).toBe('function');
       expect(typeof paths.TEMPLATES_DIR).toBe('function');
       expect(typeof paths.ONBOARDING_DIR).toBe('function');
+      expect(typeof paths.SIZING_GUIDE_PATH).toBe('function');
     });
 
     it('should return correct WU path', () => {
@@ -250,6 +254,13 @@ describe('wu-paths', () => {
       const paths = createWuPaths();
       expect(paths.ONBOARDING_DIR()).toBe(
         'docs/04-operations/_frameworks/lumenflow/agent/onboarding',
+      );
+    });
+
+    it('should return correct SIZING_GUIDE_PATH', () => {
+      const paths = createWuPaths();
+      expect(paths.SIZING_GUIDE_PATH()).toBe(
+        'docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md',
       );
     });
 

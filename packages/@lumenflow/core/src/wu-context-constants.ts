@@ -12,6 +12,7 @@
  */
 
 import { LUMENFLOW_CLIENT_IDS, type LumenflowClientId } from './client-ids.js';
+import { DOCS_LAYOUT_PRESETS } from './docs-layout-presets.js';
 import { getConfig } from './lumenflow-config.js';
 
 function ensureTrailingSlash(value: string): string {
@@ -31,6 +32,14 @@ function getOnboardingDirHint(): string {
     return ensureTrailingSlash(getConfig().directories.onboardingDir);
   } catch {
     return 'onboarding/';
+  }
+}
+
+function getSizingGuideRef(): string {
+  try {
+    return getConfig().directories.sizingGuidePath;
+  } catch {
+    return DOCS_LAYOUT_PRESETS.simple.sizingGuidePath;
   }
 }
 
@@ -323,10 +332,10 @@ export type EnvVarName = (typeof ENV_VARS)[EnvVarKey];
 /**
  * WU sizing guide reference path (WU-2155).
  *
- * Used in sizing advisory warning messages. Centralised here so runtime
- * code does not embed banned `docs/04-operations` path literals.
+ * Used in sizing advisory warning messages. Derived from configured
+ * sizingGuidePath to avoid layout-coupled runtime literals.
  */
-export const SIZING_GUIDE_REF = 'docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md';
+export const SIZING_GUIDE_REF = getSizingGuideRef();
 
 export { LUMENFLOW_CLIENT_IDS, type LumenflowClientId };
 

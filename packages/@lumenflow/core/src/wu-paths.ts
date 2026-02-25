@@ -181,6 +181,12 @@ export function createWuPaths(options: { projectRoot?: string } = {}) {
     STARTING_PROMPT_PATH: () => config.directories.startingPromptPath,
 
     /**
+     * Get path to WU sizing guide
+     * @returns Path to sizing guide markdown
+     */
+    SIZING_GUIDE_PATH: () => config.directories.sizingGuidePath,
+
+    /**
      * Get path to governance document
      * @returns Path to governance markdown
      */

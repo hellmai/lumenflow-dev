@@ -17,6 +17,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { getConfig } from '../lumenflow-config.js';
 import {
   BRANCHES,
   REMOTES,
@@ -31,6 +32,7 @@ import {
   FILE_SYSTEM,
   STRING_LITERALS,
   LUMENFLOW_PATHS,
+  SIZING_GUIDE_REF,
   toKebab,
   getWorktreePath,
   getLaneBranch,
@@ -269,6 +271,12 @@ describe('wu-constants', () => {
 
     it('should export SESSIONS', () => {
       expect(LUMENFLOW_PATHS.SESSIONS).toBe('.lumenflow/sessions');
+    });
+  });
+
+  describe('SIZING_GUIDE_REF', () => {
+    it('should derive from configured sizingGuidePath', () => {
+      expect(SIZING_GUIDE_REF).toBe(getConfig().directories.sizingGuidePath);
     });
   });
 

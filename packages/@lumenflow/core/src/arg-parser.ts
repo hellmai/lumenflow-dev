@@ -541,6 +541,35 @@ export const WU_CREATE_OPTIONS: Record<string, WUOption> = {
     flags: '--plan',
     description: 'Create plan template in $LUMENFLOW_HOME/plans/ (external plan storage)',
   },
+  estimatedFiles: {
+    name: 'estimatedFiles',
+    flags: '--estimated-files <count>',
+    description:
+      'Optional sizing estimate: expected number of files to modify (non-negative integer)',
+  },
+  estimatedToolCalls: {
+    name: 'estimatedToolCalls',
+    flags: '--estimated-tool-calls <count>',
+    description:
+      'Optional sizing estimate: expected number of tool calls (non-negative integer)',
+  },
+  sizingStrategy: {
+    name: 'sizingStrategy',
+    flags: '--sizing-strategy <strategy>',
+    description:
+      'Optional sizing strategy (single-session, checkpoint-resume, orchestrator-worker, decomposition)',
+  },
+  sizingExceptionType: {
+    name: 'sizingExceptionType',
+    flags: '--sizing-exception-type <type>',
+    description:
+      'Optional sizing exception type when thresholds are exceeded (docs-only, shallow-multi-file)',
+  },
+  sizingExceptionReason: {
+    name: 'sizingExceptionReason',
+    flags: '--sizing-exception-reason <text>',
+    description: 'Optional sizing exception justification text',
+  },
 };
 
 /**

@@ -15,6 +15,7 @@ import {
   buildWUContent,
   collectInitiativeWarnings,
   commitCloudCreateArtifacts,
+  resolveSizingEstimateFromCreateArgs,
   resolveLaneLifecycleForWuCreate,
   validateCreateSpec,
 } from '../wu-create.js';
@@ -274,6 +275,43 @@ describe('WU-2155: buildWUContent passes through sizing_estimate', () => {
     });
 
     expect(wu.sizing_estimate).toBeUndefined();
+  });
+});
+
+describe('WU-2155: resolveSizingEstimateFromCreateArgs', () => {
+  it('returns undefined when no sizing flags are provided', () => {
+    const result = resolveSizingEstimateFromCreateArgs({});
+    expect(result.sizingEstimate).toBeUndefined();
+    expect(result.errors).toEqual([]);
+  });
+
+  it('parses valid sizing flags into sizing_estimate', () => {
+    const result = resolveSizingEstimateFromCreateArgs({
+      estimatedFiles: '30',
+      estimatedToolCalls: '90',
+      sizingStrategy: 'checkpoint-resume',
+      sizingExceptionType: 'docs-only',
+      sizingExceptionReason: 'Large docs-only sweep',
+    });
+
+    expect(result.errors).toEqual([]);
+    expect(result.sizingEstimate).toEqual({
+      estimated_files: 30,
+      estimated_tool_calls: 90,
+      strategy: 'checkpoint-resume',
+      exception_type: 'docs-only',
+      exception_reason: 'Large docs-only sweep',
+    });
+  });
+
+  it('returns validation errors for partial sizing input', () => {
+    const result = resolveSizingEstimateFromCreateArgs({
+      estimatedFiles: '20',
+    });
+
+    expect(result.sizingEstimate).toBeUndefined();
+    expect(result.errors.some((error) => error.includes('--estimated-tool-calls'))).toBe(true);
+    expect(result.errors.some((error) => error.includes('--sizing-strategy'))).toBe(true);
   });
 });
 

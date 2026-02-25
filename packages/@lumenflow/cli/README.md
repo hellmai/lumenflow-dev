@@ -51,154 +51,154 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 
 ### Work Unit Management
 
-| Command          | Description                                                   |
-| ---------------- | ------------------------------------------------------------- |
-| `wu-block`       | Block WU with reason                                          |
-| `wu-brief`       | Generate handoff prompt for sub-agent WU execution            |
-| `wu-claim`       | Claim WU and create worktree                                  |
-| `wu-cleanup`     | Cleanup after PR merge                                        |
-| `wu-create`      | Create new WU spec                                            |
-| `wu-delegate`    | Generate delegation prompt and record explicit lineage intent |
-| `wu-delete`      | Delete WU spec and cleanup                                    |
-| `wu-deps`        | Show WU dependencies                                          |
-| `wu-done`        | Complete WU (merge, stamp, cleanup) from main                 |
-| `wu-edit`        | Edit WU spec fields                                           |
-| `wu-infer-lane`  | Infer lane from code paths/description                        |
-| `wu-preflight`   | Pre-flight checks before wu:done                              |
-| `wu-prep`        | Run gates in worktree, prep for wu:done                       |
-| `wu-proto`       | Create WU prototype                                           |
-| `wu-prune`       | Clean stale worktrees                                         |
-| `wu-recover`     | Analyze and fix WU state inconsistencies                      |
-| `wu-release`     | Release orphaned WU (in_progress to ready)                    |
-| `wu-repair`      | Repair WU state issues                                        |
-| `wu-sandbox`     | Run command through hardened WU sandbox backend               |
-| `wu-status`      | Show WU status, location, valid commands                      |
-| `wu-unblock`     | Unblock WU                                                    |
-| `wu-unlock-lane` | Unlock stuck lane                                             |
-| `wu-validate`    | Validate WU spec                                              |
+| Command | Description |
+| ------- | ----------- |
+| `wu-block` | Block WU with reason |
+| `wu-brief` | Generate handoff prompt for sub-agent WU execution |
+| `wu-claim` | Claim WU and create worktree |
+| `wu-cleanup` | Cleanup after PR merge |
+| `wu-create` | Create new WU spec |
+| `wu-delegate` | Generate delegation prompt and record explicit lineage intent |
+| `wu-delete` | Delete WU spec and cleanup |
+| `wu-deps` | Show WU dependencies |
+| `wu-done` | Complete WU (merge, stamp, cleanup) from main |
+| `wu-edit` | Edit WU spec fields |
+| `wu-infer-lane` | Infer lane from code paths/description |
+| `wu-preflight` | Pre-flight checks before wu:done |
+| `wu-prep` | Run gates in worktree, prep for wu:done |
+| `wu-proto` | Create WU prototype |
+| `wu-prune` | Clean stale worktrees |
+| `wu-recover` | Analyze and fix WU state inconsistencies |
+| `wu-release` | Release orphaned WU (in_progress to ready) |
+| `wu-repair` | Repair WU state issues |
+| `wu-sandbox` | Run command through hardened WU sandbox backend |
+| `wu-status` | Show WU status, location, valid commands |
+| `wu-unblock` | Unblock WU |
+| `wu-unlock-lane` | Unlock stuck lane |
+| `wu-validate` | Validate WU spec |
 
 ### Memory & Session
 
-| Command          | Description                                |
-| ---------------- | ------------------------------------------ |
-| `mem-checkpoint` | Save progress checkpoint                   |
-| `mem-cleanup`    | Clean up stale memory data                 |
-| `mem-context`    | Get context for current lane/WU            |
-| `mem-create`     | Create memory node (bug discovery)         |
-| `mem-delete`     | Delete/archive a memory node               |
-| `mem-export`     | Export memory as markdown                  |
-| `mem-inbox`      | Check coordination signals                 |
-| `mem-init`       | Initialize memory for WU                   |
-| `mem-ready`      | Check pending memory nodes                 |
-| `mem-recover`    | Generate recovery context after compaction |
-| `mem-signal`     | Broadcast coordination signal              |
-| `mem-start`      | Start a memory session                     |
-| `mem-summarize`  | Summarize memory context                   |
-| `mem-triage`     | Triage discovered bugs                     |
-| `signal-cleanup` | Clean up stale signals                     |
+| Command | Description |
+| ------- | ----------- |
+| `mem-checkpoint` | Save progress checkpoint |
+| `mem-cleanup` | Clean up stale memory data |
+| `mem-context` | Get context for current lane/WU |
+| `mem-create` | Create memory node (bug discovery) |
+| `mem-delete` | Delete/archive a memory node |
+| `mem-export` | Export memory as markdown |
+| `mem-inbox` | Check coordination signals |
+| `mem-init` | Initialize memory for WU |
+| `mem-ready` | Check pending memory nodes |
+| `mem-recover` | Generate recovery context after compaction |
+| `mem-signal` | Broadcast coordination signal |
+| `mem-start` | Start a memory session |
+| `mem-summarize` | Summarize memory context |
+| `mem-triage` | Triage discovered bugs |
+| `signal-cleanup` | Clean up stale signals |
 
 ### Initiative Orchestration
 
-| Command                      | Description                                 |
-| ---------------------------- | ------------------------------------------- |
-| `agent-issues-query`         | Query GitHub issues for agent work          |
-| `agent-log-issue`            | Log issue during agent session              |
-| `agent-session`              | Start agent session                         |
-| `agent-session-end`          | End agent session                           |
-| `delegation-list`            | List active delegation records              |
-| `initiative-add-wu`          | Add WU to initiative                        |
-| `initiative-bulk-assign-wus` | Bulk assign WUs to initiative               |
-| `initiative-create`          | Create new initiative                       |
-| `initiative-edit`            | Edit initiative fields and phase metadata   |
-| `initiative-list`            | List all initiatives                        |
-| `initiative-plan`            | Link plan to initiative                     |
-| `initiative-remove-wu`       | Remove WU from initiative                   |
-| `initiative-status`          | Show initiative status                      |
-| `orchestrate-init-status`    | Compact initiative progress view            |
-| `orchestrate-initiative`     | Orchestrate initiative execution            |
-| `orchestrate-monitor`        | Monitor spawn/agent activity                |
-| `task-claim`                 | Claim a task directly through KernelRuntime |
+| Command | Description |
+| ------- | ----------- |
+| `agent-issues-query` | Query GitHub issues for agent work |
+| `agent-log-issue` | Log issue during agent session |
+| `agent-session` | Start agent session |
+| `agent-session-end` | End agent session |
+| `delegation-list` | List active delegation records |
+| `initiative-add-wu` | Add WU to initiative |
+| `initiative-bulk-assign-wus` | Bulk assign WUs to initiative |
+| `initiative-create` | Create new initiative |
+| `initiative-edit` | Edit initiative fields and phase metadata |
+| `initiative-list` | List all initiatives |
+| `initiative-plan` | Link plan to initiative |
+| `initiative-remove-wu` | Remove WU from initiative |
+| `initiative-status` | Show initiative status |
+| `orchestrate-init-status` | Compact initiative progress view |
+| `orchestrate-initiative` | Orchestrate initiative execution |
+| `orchestrate-monitor` | Monitor spawn/agent activity |
+| `task-claim` | Claim a task directly through KernelRuntime |
 
 ### Metrics & Analytics
 
-| Command             | Description                   |
-| ------------------- | ----------------------------- |
-| `flow-bottlenecks`  | Identify flow bottlenecks     |
-| `flow-report`       | Generate flow metrics report  |
+| Command | Description |
+| ------- | ----------- |
+| `flow-bottlenecks` | Identify flow bottlenecks |
+| `flow-report` | Generate flow metrics report |
 | `lumenflow-metrics` | View workflow metrics (alias) |
-| `metrics`           | View workflow metrics         |
-| `metrics-snapshot`  | Capture metrics snapshot      |
+| `metrics` | View workflow metrics |
+| `metrics-snapshot` | Capture metrics snapshot |
 
 ### Lane Tooling
 
-| Command         | Description                                                    |
-| --------------- | -------------------------------------------------------------- |
-| `lane-edit`     | Edit a lane definition (rename, wip-limit, paths, description) |
-| `lane-health`   | Check lane config health                                       |
-| `lane-lock`     | Lock lane lifecycle for delivery WUs                           |
-| `lane-setup`    | Create/update draft lane artifacts                             |
-| `lane-status`   | Show lane lifecycle status and next step                       |
-| `lane-suggest`  | Suggest lane for code paths                                    |
-| `lane-validate` | Validate lane artifacts before lock                            |
+| Command | Description |
+| ------- | ----------- |
+| `lane-edit` | Edit a lane definition (rename, wip-limit, paths, description) |
+| `lane-health` | Check lane config health |
+| `lane-lock` | Lock lane lifecycle for delivery WUs |
+| `lane-setup` | Create/update draft lane artifacts |
+| `lane-status` | Show lane lifecycle status and next step |
+| `lane-suggest` | Suggest lane for code paths |
+| `lane-validate` | Validate lane artifacts before lock |
 
 ### Verification & Gates
 
-| Command              | Description                   |
-| -------------------- | ----------------------------- |
-| `gates`              | Run all quality gates         |
-| `lumenflow-gates`    | Run all quality gates (alias) |
+| Command | Description |
+| ------- | ----------- |
+| `gates` | Run all quality gates |
+| `lumenflow-gates` | Run all quality gates (alias) |
 | `lumenflow-validate` | Run validation checks (alias) |
-| `validate`           | Run validation checks         |
+| `validate` | Run validation checks |
 
 ### System & Setup
 
-| Command                    | Description                                                         |
-| -------------------------- | ------------------------------------------------------------------- |
-| `backlog-prune`            | Clean stale backlog entries                                         |
-| `cloud-connect`            | Connect workspace.yaml to cloud control plane                       |
-| `config-get`               | Read and display a value from workspace.yaml software_delivery      |
-| `config-set`               | Safely update workspace.yaml software_delivery via micro-worktree   |
-| `init-plan`                | Link plan to initiative (alias)                                     |
-| `lumenflow`                | Initialize LumenFlow in a project                                   |
-| `lumenflow-commands`       | List all available CLI commands                                     |
-| `lumenflow-docs-sync`      | Sync agent docs (for upgrades) (alias)                              |
-| `lumenflow-doctor`         | Diagnose LumenFlow configuration                                    |
-| `lumenflow-init`           | Initialize LumenFlow in a project (alias)                           |
-| `lumenflow-integrate`      | Generate enforcement hooks for client                               |
-| `lumenflow-onboard`        | Legacy entrypoint; use "npx lumenflow" for bootstrap-all onboarding |
-| `lumenflow-release`        | Run release workflow                                                |
-| `lumenflow-sync-templates` | Sync templates to project                                           |
-| `lumenflow-upgrade`        | Upgrade LumenFlow packages                                          |
-| `onboard`                  | Legacy entrypoint; use "npx lumenflow" for bootstrap-all onboarding |
-| `pack-author`              | Author a secure domain pack from templates                          |
-| `pack-hash`                | Compute integrity hash for a domain pack                            |
-| `pack-install`             | Install a domain pack into workspace                                |
-| `pack-publish`             | Publish a domain pack to a registry                                 |
-| `pack-scaffold`            | Scaffold a new domain pack                                          |
-| `pack-search`              | Search for domain packs in a registry                               |
-| `pack-validate`            | Validate a domain pack for integrity                                |
-| `plan-create`              | Create a new plan                                                   |
-| `plan-edit`                | Edit plan content                                                   |
-| `plan-link`                | Link plan to WU or initiative                                       |
-| `plan-promote`             | Promote plan to WU                                                  |
-| `state-bootstrap`          | Bootstrap state store                                               |
-| `state-cleanup`            | Clean up stale state data                                           |
-| `state-doctor`             | Diagnose state store issues                                         |
-| `sync-templates`           | Sync templates to project (alias)                                   |
-| `workspace-init`           | Legacy entrypoint; use "npx lumenflow" for bootstrap-all onboarding |
+| Command | Description |
+| ------- | ----------- |
+| `backlog-prune` | Clean stale backlog entries |
+| `cloud-connect` | Connect workspace.yaml to cloud control plane |
+| `config-get` | Read and display a value from workspace.yaml software_delivery |
+| `config-set` | Safely update workspace.yaml software_delivery via micro-worktree |
+| `init-plan` | Link plan to initiative (alias) |
+| `lumenflow` | Initialize LumenFlow in a project |
+| `lumenflow-commands` | List all available CLI commands |
+| `lumenflow-docs-sync` | Sync agent docs (for upgrades) (alias) |
+| `lumenflow-doctor` | Diagnose LumenFlow configuration |
+| `lumenflow-init` | Initialize LumenFlow in a project (alias) |
+| `lumenflow-integrate` | Generate enforcement hooks for client |
+| `lumenflow-onboard` | Legacy entrypoint; use "npx lumenflow" for bootstrap-all onboarding |
+| `lumenflow-release` | Run release workflow |
+| `lumenflow-sync-templates` | Sync templates to project |
+| `lumenflow-upgrade` | Upgrade LumenFlow packages |
+| `onboard` | Legacy entrypoint; use "npx lumenflow" for bootstrap-all onboarding |
+| `pack-author` | Author a secure domain pack from templates |
+| `pack-hash` | Compute integrity hash for a domain pack |
+| `pack-install` | Install a domain pack into workspace |
+| `pack-publish` | Publish a domain pack to a registry |
+| `pack-scaffold` | Scaffold a new domain pack |
+| `pack-search` | Search for domain packs in a registry |
+| `pack-validate` | Validate a domain pack for integrity |
+| `plan-create` | Create a new plan |
+| `plan-edit` | Edit plan content |
+| `plan-link` | Link plan to WU or initiative |
+| `plan-promote` | Promote plan to WU |
+| `state-bootstrap` | Bootstrap state store |
+| `state-cleanup` | Clean up stale state data |
+| `state-doctor` | Diagnose state store issues |
+| `sync-templates` | Sync templates to project (alias) |
+| `workspace-init` | Legacy entrypoint; use "npx lumenflow" for bootstrap-all onboarding |
 
 ### File & Git Operations
 
-| Command       | Description                      |
-| ------------- | -------------------------------- |
-| `file-delete` | Delete file with audit trail     |
-| `file-edit`   | Edit file with audit trail       |
-| `file-read`   | Read file with audit trail       |
-| `file-write`  | Write file with audit trail      |
-| `git-branch`  | Show git branch with audit trail |
-| `git-diff`    | Show git diff with audit trail   |
-| `git-log`     | Show git log with audit trail    |
-| `git-status`  | Show git status with audit trail |
+| Command | Description |
+| ------- | ----------- |
+| `file-delete` | Delete file with audit trail |
+| `file-edit` | Edit file with audit trail |
+| `file-read` | Read file with audit trail |
+| `file-write` | Write file with audit trail |
+| `git-branch` | Show git branch with audit trail |
+| `git-diff` | Show git diff with audit trail |
+| `git-log` | Show git log with audit trail |
+| `git-status` | Show git status with audit trail |
 
 <!-- END AUTO-GENERATED SECTION -->
 
@@ -234,18 +234,18 @@ npx gates
 
 All commands support these flags:
 
-| Flag              | Description               |
-| ----------------- | ------------------------- |
-| `--help`, `-h`    | Show help for the command |
-| `--version`, `-V` | Show version number       |
-| `--no-color`      | Disable colored output    |
+| Flag | Description |
+| ---- | ----------- |
+| `--help`, `-h` | Show help for the command |
+| `--version`, `-V` | Show version number |
+| `--no-color` | Disable colored output |
 
 ## Environment Variables
 
-| Variable      | Description                                                                            |
-| ------------- | -------------------------------------------------------------------------------------- |
-| `NO_COLOR`    | Disable colored output when set (any value, per [no-color.org](https://no-color.org/)) |
-| `FORCE_COLOR` | Override color level: `0` (disabled), `1` (basic), `2` (256 colors), `3` (16m colors)  |
+| Variable | Description |
+| -------- | ----------- |
+| `NO_COLOR` | Disable colored output when set (any value, per [no-color.org](https://no-color.org/)) |
+| `FORCE_COLOR` | Override color level: `0` (disabled), `1` (basic), `2` (256 colors), `3` (16m colors) |
 
 ## Integration
 

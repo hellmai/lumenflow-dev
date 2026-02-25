@@ -80,7 +80,6 @@ const ALWAYS_ALLOWED_PATH_SEGMENTS = [
   '/node_modules/',
   // Canonical path/constants/schema sources
   'wu-constants.ts',
-  'wu-context-constants.ts',
   'wu-paths-constants.ts',
   'wu-git-constants.ts',
   'lumenflow-config.ts',

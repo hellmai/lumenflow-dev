@@ -313,6 +313,9 @@ describe('WU-1310: Core path centralization', () => {
       expect(defaultConfig.directories.startingPromptPath).toBe(
         'docs/_frameworks/lumenflow/agent/onboarding/starting-prompt.md',
       );
+      expect(defaultConfig.directories.sizingGuidePath).toBe(
+        'docs/_frameworks/lumenflow/wu-sizing-guide.md',
+      );
       expect(defaultConfig.directories.governancePath).toBe(
         'docs/governance/project-governance.md',
       );
@@ -401,6 +404,7 @@ describe('WU-1310: Core path centralization', () => {
       expect(paths.completeGuidePath).toBeDefined();
       expect(paths.quickRefPath).toBeDefined();
       expect(paths.startingPromptPath).toBeDefined();
+      expect(paths.sizingGuidePath).toBeDefined();
       expect(paths.governancePath).toBeDefined();
 
       // Verify all are absolute paths
@@ -414,6 +418,7 @@ describe('WU-1310: Core path centralization', () => {
       expect(path.isAbsolute(paths.completeGuidePath)).toBe(true);
       expect(path.isAbsolute(paths.quickRefPath)).toBe(true);
       expect(path.isAbsolute(paths.startingPromptPath)).toBe(true);
+      expect(path.isAbsolute(paths.sizingGuidePath)).toBe(true);
       expect(path.isAbsolute(paths.governancePath)).toBe(true);
     });
   });
@@ -475,6 +480,7 @@ describe('WU-1310: Core path centralization', () => {
           completeGuidePath: 'my/lumenflow-complete.md',
           quickRefPath: 'my/quick-ref-commands.md',
           startingPromptPath: 'my/starting-prompt.md',
+          sizingGuidePath: 'my/wu-sizing-guide.md',
           governancePath: 'my/project-governance.md',
         },
       };
@@ -499,6 +505,7 @@ describe('WU-1310: Core path centralization', () => {
       expect(paths.completeGuidePath).toBe(path.join(tempDir, 'my/lumenflow-complete.md'));
       expect(paths.quickRefPath).toBe(path.join(tempDir, 'my/quick-ref-commands.md'));
       expect(paths.startingPromptPath).toBe(path.join(tempDir, 'my/starting-prompt.md'));
+      expect(paths.sizingGuidePath).toBe(path.join(tempDir, 'my/wu-sizing-guide.md'));
       expect(paths.governancePath).toBe(path.join(tempDir, 'my/project-governance.md'));
     });
 
@@ -536,6 +543,7 @@ describe('WU-1310: Core path centralization', () => {
       expect(config.directories.startingPromptPath).toBe(
         'docs/_frameworks/lumenflow/agent/onboarding/starting-prompt.md',
       );
+      expect(config.directories.sizingGuidePath).toBe('docs/_frameworks/lumenflow/wu-sizing-guide.md');
       expect(config.directories.governancePath).toBe('docs/governance/project-governance.md');
     });
   });

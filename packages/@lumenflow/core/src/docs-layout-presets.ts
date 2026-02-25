@@ -22,6 +22,7 @@ function buildDocsLayout(operations: string, tasks: string) {
     completeGuidePath: `${frameworkRoot}/lumenflow-complete.md`,
     quickRefPath: `${onboarding}/quick-ref-commands.md`,
     startingPromptPath: `${onboarding}/starting-prompt.md`,
+    sizingGuidePath: `${frameworkRoot}/wu-sizing-guide.md`,
     governancePath: `${operations}/governance/project-governance.md`,
   } as const;
 }

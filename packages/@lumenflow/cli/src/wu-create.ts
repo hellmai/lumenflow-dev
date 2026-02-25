@@ -89,7 +89,7 @@ import {
 } from './wu-create-content.js';
 import { displayReadinessSummary } from './wu-create-readiness.js';
 import { emitSizingAdvisory } from './wu-create-sizing-advisory.js';
-import type { SizingEstimate } from './wu-sizing-validation.js';
+import { validateSizingEstimate, type SizingEstimate } from './wu-sizing-validation.js';
 
 // Re-export public API for backward compatibility (tests import from wu-create.js)
 export { validateCreateSpec, type CreateWUOptions } from './wu-create-validation.js';
@@ -243,6 +243,128 @@ export interface CloudCreateCommitInput {
   targetBranch: string;
 }
 
+interface SizingArgsInput {
+  estimatedFiles?: unknown;
+  estimatedToolCalls?: unknown;
+  sizingStrategy?: unknown;
+  sizingExceptionType?: unknown;
+  sizingExceptionReason?: unknown;
+}
+
+interface ResolvedSizingEstimateResult {
+  sizingEstimate?: SizingEstimate;
+  errors: string[];
+}
+
+function parseNonNegativeIntegerFlag(
+  value: unknown,
+  flagName: string,
+): { parsed?: number; error?: string } {
+  if (typeof value === 'number') {
+    if (Number.isInteger(value) && value >= 0) {
+      return { parsed: value };
+    }
+    return { error: `${flagName} must be a non-negative integer` };
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (/^\d+$/.test(trimmed)) {
+      return { parsed: Number.parseInt(trimmed, 10) };
+    }
+  }
+
+  return { error: `${flagName} must be a non-negative integer` };
+}
+
+function normalizeOptionalStringFlag(value: unknown): string | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+/**
+ * Resolve optional sizing_estimate fields for wu:create.
+ *
+ * When any sizing flag is provided, estimated_files, estimated_tool_calls, and
+ * sizing_strategy become required as a complete set.
+ */
+export function resolveSizingEstimateFromCreateArgs(
+  args: SizingArgsInput,
+): ResolvedSizingEstimateResult {
+  const hasAnySizingInput =
+    args.estimatedFiles !== undefined ||
+    args.estimatedToolCalls !== undefined ||
+    args.sizingStrategy !== undefined ||
+    args.sizingExceptionType !== undefined ||
+    args.sizingExceptionReason !== undefined;
+
+  if (!hasAnySizingInput) {
+    return { errors: [] };
+  }
+
+  const errors: string[] = [];
+
+  if (args.estimatedFiles === undefined) {
+    errors.push('--estimated-files is required when sizing options are provided');
+  }
+  if (args.estimatedToolCalls === undefined) {
+    errors.push('--estimated-tool-calls is required when sizing options are provided');
+  }
+  if (args.sizingStrategy === undefined) {
+    errors.push('--sizing-strategy is required when sizing options are provided');
+  }
+
+  const filesResult =
+    args.estimatedFiles === undefined
+      ? { parsed: undefined }
+      : parseNonNegativeIntegerFlag(args.estimatedFiles, '--estimated-files');
+  const toolCallsResult =
+    args.estimatedToolCalls === undefined
+      ? { parsed: undefined }
+      : parseNonNegativeIntegerFlag(args.estimatedToolCalls, '--estimated-tool-calls');
+
+  if (filesResult.error) {
+    errors.push(filesResult.error);
+  }
+  if (toolCallsResult.error) {
+    errors.push(toolCallsResult.error);
+  }
+
+  if (typeof args.sizingStrategy !== 'string' || args.sizingStrategy.trim().length === 0) {
+    if (args.sizingStrategy !== undefined) {
+      errors.push('--sizing-strategy must be a non-empty string');
+    }
+  }
+
+  if (errors.length > 0) {
+    return { errors };
+  }
+
+  const sizingEstimate: SizingEstimate = {
+    estimated_files: filesResult.parsed as number,
+    estimated_tool_calls: toolCallsResult.parsed as number,
+    strategy: args.sizingStrategy as SizingEstimate['strategy'],
+    ...(normalizeOptionalStringFlag(args.sizingExceptionType) && {
+      exception_type: normalizeOptionalStringFlag(
+        args.sizingExceptionType,
+      ) as SizingEstimate['exception_type'],
+    }),
+    ...(normalizeOptionalStringFlag(args.sizingExceptionReason) && {
+      exception_reason: normalizeOptionalStringFlag(args.sizingExceptionReason),
+    }),
+  };
+
+  const validation = validateSizingEstimate(sizingEstimate);
+  if (!validation.valid) {
+    return { errors: validation.errors };
+  }
+
+  return { sizingEstimate, errors: [] };
+}
+
 /**
  * Execute cloud-mode wu:create git operations.
  * Stages WU + backlog files, commits, and pushes to the active cloud branch.
@@ -320,6 +442,12 @@ export async function main() {
       WU_OPTIONS.uiPairingWus,
       // WU-1062: External plan options for wu:create
       WU_CREATE_OPTIONS.plan,
+      // WU-2155: Optional sizing_estimate options
+      WU_CREATE_OPTIONS.estimatedFiles,
+      WU_CREATE_OPTIONS.estimatedToolCalls,
+      WU_CREATE_OPTIONS.sizingStrategy,
+      WU_CREATE_OPTIONS.sizingExceptionType,
+      WU_CREATE_OPTIONS.sizingExceptionReason,
       // WU-1329: Strict validation is default, --no-strict bypasses
       WU_OPTIONS.noStrict,
       // WU-1590: Cloud mode for cloud agents
@@ -454,6 +582,15 @@ export async function main() {
     ? [WU_CREATE_DEFAULTS.AUTO_MANUAL_TEST_PLACEHOLDER]
     : (args.testPathsManual as string[] | undefined);
 
+  const sizingResolution = resolveSizingEstimateFromCreateArgs(args);
+  if (sizingResolution.errors.length > 0) {
+    const errorList = sizingResolution.errors
+      .map((error) => `  - ${error}`)
+      .join(STRING_LITERALS.NEWLINE);
+    die(`${LOG_PREFIX} Sizing estimate options are invalid:\n\n${errorList}`);
+  }
+  const resolvedSizingEstimate = sizingResolution.sizingEstimate;
+
   if (canAutoAddManualTests) {
     console.warn(
       `${LOG_PREFIX} No test paths provided; inserting a minimal manual test stub (add automated tests before code changes).`,
@@ -478,6 +615,7 @@ export async function main() {
       userJourney: args.userJourney,
       uiPairingWus: args.uiPairingWus,
       specRefs: mergedRefs,
+      sizingEstimate: resolvedSizingEstimate,
       initiative: args.initiative,
       phase: args.phase,
       blockedBy: args.blockedBy,
@@ -521,6 +659,7 @@ export async function main() {
       uiPairingWus: args.uiPairingWus,
       specRefs: mergedRefs,
       plan: resolvedPlan,
+      sizingEstimate: resolvedSizingEstimate,
       initiative: args.initiative,
       phase: args.phase,
       blockedBy: args.blockedBy,
@@ -617,6 +756,8 @@ export async function main() {
       specRefs: mergedRefs,
       // WU-1683: First-class plan field
       plan: resolvedPlan,
+      // WU-2155: Optional sizing estimate
+      sizingEstimate: resolvedSizingEstimate,
     };
 
     if (cloudCtx.skipMicroWorktree) {

@@ -30,191 +30,205 @@ software_delivery:
 
 Directory paths configuration
 
-| Field                | Type   | Default                          | Description |
-| -------------------- | ------ | -------------------------------- | ----------- |
-| `appsWeb`            | string | `"apps/web/"`                    |             |
-| `worktrees`          | string | `"worktrees/"`                   |             |
-| `ai`                 | string | `"ai/"`                          |             |
-| `claude`             | string | `".claude/"`                     |             |
-| `docs`               | string | `"docs/"`                        |             |
-| `packages`           | string | `"packages/"`                    |             |
-| `tools`              | string | `"tools/"`                       |             |
-| `memoryBank`         | string | `"memory-bank/"`                 |             |
-| `wuDir`              | string | `"docs/tasks/wu"`                |             |
-| `initiativesDir`     | string | `"docs/tasks/initiatives"`       |             |
-| `backlogPath`        | string | `"docs/tasks/backlog.md"`        |             |
-| `statusPath`         | string | `"docs/tasks/status.md"`         |             |
-| `skillsDir`          | string | `".claude/skills"`               |             |
-| `agentsDir`          | string | `".claude/agents"`               |             |
-| `plansDir`           | string | `"docs/plans"`                   |             |
-| `templatesDir`       | string | `".lumenflow/templates"`         |             |
-| `onboardingDir`      | string | `"docs/_frameworks/lumenflow...` |             |
-| `completeGuidePath`  | string | `"docs/_frameworks/lumenflow...` |             |
-| `quickRefPath`       | string | `"docs/_frameworks/lumenflow...` |             |
-| `startingPromptPath` | string | `"docs/_frameworks/lumenflow...` |             |
-| `governancePath`     | string | `"docs/governance/project-go...` |             |
-| `safeGitPath`        | string | `"scripts/safe-git"`             |             |
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `appsWeb` | string | `"apps/web/"` |  |
+| `worktrees` | string | `"worktrees/"` |  |
+| `ai` | string | `"ai/"` |  |
+| `claude` | string | `".claude/"` |  |
+| `docs` | string | `"docs/"` |  |
+| `packages` | string | `"packages/"` |  |
+| `tools` | string | `"tools/"` |  |
+| `memoryBank` | string | `"memory-bank/"` |  |
+| `wuDir` | string | `"docs/tasks/wu"` |  |
+| `initiativesDir` | string | `"docs/tasks/initiatives"` |  |
+| `backlogPath` | string | `"docs/tasks/backlog.md"` |  |
+| `statusPath` | string | `"docs/tasks/status.md"` |  |
+| `skillsDir` | string | `".claude/skills"` |  |
+| `agentsDir` | string | `".claude/agents"` |  |
+| `plansDir` | string | `"docs/plans"` |  |
+| `templatesDir` | string | `".lumenflow/templates"` |  |
+| `onboardingDir` | string | `"docs/_frameworks/lumenflow...` |  |
+| `completeGuidePath` | string | `"docs/_frameworks/lumenflow...` |  |
+| `quickRefPath` | string | `"docs/_frameworks/lumenflow...` |  |
+| `startingPromptPath` | string | `"docs/_frameworks/lumenflow...` |  |
+| `sizingGuidePath` | string | `"docs/_frameworks/lumenflow...` |  |
+| `governancePath` | string | `"docs/governance/project-go...` |  |
+| `safeGitPath` | string | `"scripts/safe-git"` |  |
 
 ### state
 
 State paths configuration (.lumenflow directory structure)
 
-| Field           | Type   | Default                     | Description |
-| --------------- | ------ | --------------------------- | ----------- |
-| `base`          | string | `".lumenflow"`              |             |
-| `stateDir`      | string | `".lumenflow/state"`        |             |
-| `archiveDir`    | string | `".lumenflow/archive"`      |             |
-| `stampsDir`     | string | `".lumenflow/stamps"`       |             |
-| `mergeLock`     | string | `".lumenflow/merge.lock"`   |             |
-| `telemetry`     | string | `".lumenflow/telemetry"`    |             |
-| `flowLog`       | string | `".lumenflow/flow.log"`     |             |
-| `sessions`      | string | `".lumenflow/sessions"`     |             |
-| `incidents`     | string | `".lumenflow/incidents"`    |             |
-| `commandsLog`   | string | `".lumenflow/commands.log"` |             |
-| `eventArchival` | object | `[object Object]`           |             |
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `base` | string | `".lumenflow"` |  |
+| `stateDir` | string | `".lumenflow/state"` |  |
+| `archiveDir` | string | `".lumenflow/archive"` |  |
+| `stampsDir` | string | `".lumenflow/stamps"` |  |
+| `mergeLock` | string | `".lumenflow/merge.lock"` |  |
+| `telemetry` | string | `".lumenflow/telemetry"` |  |
+| `flowLog` | string | `".lumenflow/flow.log"` |  |
+| `sessions` | string | `".lumenflow/sessions"` |  |
+| `incidents` | string | `".lumenflow/incidents"` |  |
+| `commandsLog` | string | `".lumenflow/commands.log"` |  |
+| `eventArchival` | object | `[object Object]` |  |
 
 ### git
 
 Git configuration
 
-| Field                         | Type     | Default           | Description |
-| ----------------------------- | -------- | ----------------- | ----------- |
-| `mainBranch`                  | string   | `"main"`          |             |
-| `defaultRemote`               | string   | `"origin"`        |             |
-| `laneBranchPrefix`            | string   | `"lane/"`         |             |
-| `tempBranchPrefix`            | string   | `"tmp/"`          |             |
-| `realGitPath`                 | string   | `"/usr/bin/git"`  |             |
-| `maxBranchDrift`              | integer  | `20`              |             |
-| `branchDriftWarning`          | integer  | `15`              |             |
-| `branchDriftInfo`             | integer  | `10`              |             |
-| `requireRemote`               | boolean  | `true`            |             |
-| `agentBranchPatterns`         | string[] | `[]`              |             |
-| `agentBranchPatternsOverride` | string[] | `-`               |             |
-| `disableAgentPatternRegistry` | boolean  | `false`           |             |
-| `push_retry`                  | object   | `[object Object]` |             |
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `mainBranch` | string | `"main"` |  |
+| `defaultRemote` | string | `"origin"` |  |
+| `laneBranchPrefix` | string | `"lane/"` |  |
+| `tempBranchPrefix` | string | `"tmp/"` |  |
+| `realGitPath` | string | `"/usr/bin/git"` |  |
+| `maxBranchDrift` | integer | `20` |  |
+| `branchDriftWarning` | integer | `15` |  |
+| `branchDriftInfo` | integer | `10` |  |
+| `requireRemote` | boolean | `true` |  |
+| `agentBranchPatterns` | string[] | `[]` |  |
+| `agentBranchPatternsOverride` | string[] | `-` |  |
+| `disableAgentPatternRegistry` | boolean | `false` |  |
+| `push_retry` | object | `[object Object]` |  |
 
 ### wu
 
 WU (Work Unit) configuration
 
-| Field                  | Type    | Default      | Description |
-| ---------------------- | ------- | ------------ | ----------- |
-| `idPattern`            | string  | `"^WU-\d+$"` |             |
-| `minDescriptionLength` | integer | `50`         |             |
-| `maxCommitSubject`     | integer | `100`        |             |
-| `defaultPriority`      | string  | `"P2"`       |             |
-| `defaultStatus`        | string  | `"ready"`    |             |
-| `defaultType`          | string  | `"feature"`  |             |
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `idPattern` | string | `"^WU-\d+$"` |  |
+| `minDescriptionLength` | integer | `50` |  |
+| `maxCommitSubject` | integer | `100` |  |
+| `defaultPriority` | string | `"P2"` |  |
+| `defaultStatus` | string | `"ready"` |  |
+| `defaultType` | string | `"feature"` |  |
 
 ### gates
 
 Quality gates configuration
 
-| Field                       | Type     | Default           | Description |
-| --------------------------- | -------- | ----------------- | ----------- | -------- | --- |
-| `maxEslintWarnings`         | integer  | `100`             |             |
-| `enableCoverage`            | boolean  | `true`            |             |
-| `minCoverage`               | number   | `90`              |             |
-| `enableSafetyCriticalTests` | boolean  | `true`            |             |
-| `enableInvariants`          | boolean  | `true`            |             |
-| `execution`                 | object   | `-`               |             |
-| `commands`                  | object   | `[object Object]` |             |
-| `ignore_patterns`           | string[] | `-`               |             |
-| `lane_health`               | "warn"   | "error"           | "off"       | `"warn"` |     |
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `maxEslintWarnings` | integer | `100` |  |
+| `enableCoverage` | boolean | `true` |  |
+| `minCoverage` | number | `90` |  |
+| `enableSafetyCriticalTests` | boolean | `true` |  |
+| `enableInvariants` | boolean | `true` |  |
+| `execution` | object | `-` |  |
+| `commands` | object | `[object Object]` |  |
+| `ignore_patterns` | string[] | `-` |  |
+| `lane_health` | `"off" \| "warn" \| "error"` | `"warn"` |  |
 
 ### memory
 
 Memory layer configuration
 
-| Field                         | Type    | Default           | Description |
-| ----------------------------- | ------- | ----------------- | ----------- |
-| `directory`                   | string  | `"memory-bank/"`  |             |
-| `sessionTtl`                  | integer | `604800000`       |             |
-| `checkpointTtl`               | integer | `2592000000`      |             |
-| `enableAutoCleanup`           | boolean | `true`            |             |
-| `progress_signals`            | object  | `-`               |             |
-| `signalCleanup`               | object  | `[object Object]` |             |
-| `delegation_context_max_size` | integer | `4096`            |             |
-| `spawn_context_max_size`      | unknown | `-`               |             |
-| `enforcement`                 | object  | `-`               |             |
-| `decay`                       | object  | `-`               |             |
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `directory` | string | `"memory-bank/"` |  |
+| `sessionTtl` | integer | `604800000` |  |
+| `checkpointTtl` | integer | `2592000000` |  |
+| `enableAutoCleanup` | boolean | `true` |  |
+| `progress_signals` | object | `-` |  |
+| `signalCleanup` | object | `[object Object]` |  |
+| `delegation_context_max_size` | integer | `4096` |  |
+| `spawn_context_max_size` | unknown | `-` |  |
+| `enforcement` | object | `-` |  |
+| `decay` | object | `-` |  |
 
 ### memory.progress_signals
 
 Progress signals configuration for sub-agent coordination (WU-1203)
 
-| Field             | Type    | Default | Description |
-| ----------------- | ------- | ------- | ----------- |
-| `enabled`         | boolean | `false` |             |
-| `frequency`       | integer | `0`     |             |
-| `on_milestone`    | boolean | `true`  |             |
-| `on_tests_pass`   | boolean | `true`  |             |
-| `before_gates`    | boolean | `true`  |             |
-| `on_blocked`      | boolean | `true`  |             |
-| `auto_checkpoint` | boolean | `false` |             |
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enabled` | boolean | `false` |  |
+| `frequency` | integer | `0` |  |
+| `on_milestone` | boolean | `true` |  |
+| `on_tests_pass` | boolean | `true` |  |
+| `before_gates` | boolean | `true` |  |
+| `on_blocked` | boolean | `true` |  |
+| `auto_checkpoint` | boolean | `false` |  |
 
 ### ui
 
 UI configuration
 
-| Field                | Type    | Default | Description |
-| -------------------- | ------- | ------- | ----------- |
-| `errorBoxWidth`      | integer | `70`    |             |
-| `statusPreviewLines` | integer | `5`     |             |
-| `readinessBoxWidth`  | integer | `50`    |             |
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `errorBoxWidth` | integer | `70` |  |
+| `statusPreviewLines` | integer | `5` |  |
+| `readinessBoxWidth` | integer | `50` |  |
 
 ### yaml
 
 YAML serialization configuration
 
-| Field       | Type    | Default | Description |
-| ----------- | ------- | ------- | ----------- |
-| `lineWidth` | integer | `100`   |             |
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `lineWidth` | integer | `100` |  |
 
 ### agents
 
 Agents configuration
 
-| Field           | Type   | Default           | Description |
-| --------------- | ------ | ----------------- | ----------- |
-| `defaultClient` | string | `"claude-code"`   |             |
-| `clients`       | object | `[object Object]` |             |
-| `methodology`   | object | `[object Object]` |             |
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `defaultClient` | string | `"claude-code"` |  |
+| `clients` | object | `[object Object]` |  |
+| `methodology` | object | `[object Object]` |  |
 
 ### agents.methodology
 
 Methodology defaults (agent-facing project defaults)
 
-| Field         | Type       | Default                          | Description  |
-| ------------- | ---------- | -------------------------------- | ------------ | --- |
-| `enabled`     | boolean    | `true`                           |              |
-| `enforcement` | "required" | "recommended"                    | `"required"` |     |
-| `principles`  | string[]   | `["TDD","Hexagonal Architect...` |              |
-| `notes`       | string     | `-`                              |              |
 
-### agents.clients.\*
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enabled` | boolean | `true` |  |
+| `enforcement` | `"required" \| "recommended"` | `"required"` |  |
+| `principles` | string[] | `["TDD","Hexagonal Architect...` |  |
+| `notes` | string | `-` |  |
+
+### agents.clients.*
 
 Client configuration (per-client settings)
 
-| Field              | Type     | Default | Description |
-| ------------------ | -------- | ------- | ----------- |
-| `preamble`         | unknown  | `-`     |             |
-| `skillsDir`        | string   | `-`     |             |
-| `agentsDir`        | string   | `-`     |             |
-| `blocks`           | object[] | `[]`    |             |
-| `skills`           | object   | `-`     |             |
-| `enforcement`      | object   | `-`     |             |
-| `capabilities_map` | object   | `-`     |             |
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `preamble` | unknown | `-` |  |
+| `skillsDir` | string | `-` |  |
+| `agentsDir` | string | `-` |  |
+| `blocks` | object[] | `[]` |  |
+| `skills` | object | `-` |  |
+| `enforcement` | object | `-` |  |
+| `capabilities_map` | object | `-` |  |
 
 ## Framework Agnostic Configuration
 
 LumenFlow supports different package managers and test runners. Configure these at the top level of your config file:
 
-| Field             | Type                                       | Default                                | Description                                |
-| ----------------- | ------------------------------------------ | -------------------------------------- | ------------------------------------------ |
-| `package_manager` | `"pnpm"` \| `"npm"` \| `"yarn"` \| `"bun"` | `"pnpm"`                               | Package manager for CLI operations         |
-| `test_runner`     | `"vitest"` \| `"jest"` \| `"mocha"`        | `"vitest"`                             | Test runner for incremental test detection |
-| `build_command`   | string                                     | `"pnpm --filter @lumenflow/cli build"` | Custom build command for CLI bootstrap     |
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `package_manager` | `"pnpm"` \| `"npm"` \| `"yarn"` \| `"bun"` | `"pnpm"` | Package manager for CLI operations |
+| `test_runner` | `"vitest"` \| `"jest"` \| `"mocha"` | `"vitest"` | Test runner for incremental test detection |
+| `build_command` | string | `"pnpm --filter @lumenflow/cli build"` | Custom build command for CLI bootstrap |
 
 ### Example: npm + Jest
 
@@ -272,11 +286,11 @@ Config values can be overridden via environment variables:
 LUMENFLOW_MAIN_BRANCH=develop pnpm wu:done --id WU-001
 ```
 
-| Variable                | Overrides           |
-| ----------------------- | ------------------- |
-| `LUMENFLOW_CONFIG`      | Config file path    |
-| `LUMENFLOW_MAIN_BRANCH` | `git.mainBranch`    |
-| `LUMENFLOW_WU_SPECS`    | `directories.wuDir` |
+| Variable | Overrides |
+|----------|-----------|
+| `LUMENFLOW_CONFIG` | Config file path |
+| `LUMENFLOW_MAIN_BRANCH` | `git.mainBranch` |
+| `LUMENFLOW_WU_SPECS` | `directories.wuDir` |
 
 ## Validation
 

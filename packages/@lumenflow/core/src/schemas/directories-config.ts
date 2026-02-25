@@ -101,6 +101,9 @@ export const DirectoriesSchema = z.object({
   /** Agent starting prompt path (default: docs-layout simple preset starting prompt path) */
   startingPromptPath: z.string().default(DEFAULT_LAYOUT.startingPromptPath),
 
+  /** WU sizing guide path (default: docs-layout simple preset sizing guide path) */
+  sizingGuidePath: z.string().default(DEFAULT_LAYOUT.sizingGuidePath),
+
   /** Project governance document path (default: docs-layout simple preset governance path) */
   governancePath: z.string().default(DEFAULT_LAYOUT.governancePath),
 
