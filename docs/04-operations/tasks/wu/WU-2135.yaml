@@ -2,7 +2,7 @@ id: WU-2135
 title: Fix release-blocking gate failures on main
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -36,8 +36,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Restore release readiness by fixing the currently failing gate tests: initiative orchestrator timeout, sandbox-profile path drift, and check-automated-tests invariant contract mismatch.'
+description: 'Restore release readiness by fixing the currently failing gate tests: initiative
+  orchestrator timeout, sandbox-profile path drift, and check-automated-tests invariant contract
+  mismatch.'
 acceptance:
   - 'Targeted suite passes: initiatives orchestrator timeout test'
   - 'Targeted suites pass: sandbox-profile and check-automated-tests'
   - Full pnpm gates passes with no skip-gates workaround
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2135
+claimed_at: 2026-02-25T10:17:01.883Z
+baseline_main_sha: 71aa316caa94cf88ba6287cb3b206bd24ec03c44
+session_id: be43d259-8c66-43a0-b32c-3cd9f4b2e901
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T10:17:01.891Z

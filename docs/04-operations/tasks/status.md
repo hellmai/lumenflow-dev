@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2135 — Fix release-blocking gate failures on main](wu/WU-2135.yaml)
 
 ## Completed
 
