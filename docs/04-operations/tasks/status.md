@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2179 — Add missing commands and tooling operations concept to agent docs](wu/WU-2179.yaml)
 
 ## Completed
 

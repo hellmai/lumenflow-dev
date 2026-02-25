@@ -2,7 +2,7 @@ id: WU-2179
 title: Add missing commands and tooling operations concept to agent docs
 lane: 'Content: Framework Docs'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-25
 code_paths: []
@@ -23,7 +23,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "Context: Agent-facing docs (quick-ref-commands.md, CLAUDE.md) have fallen ~25 commands behind the actual CLI surface. Problem: Agents don't discover commands like lumenflow:upgrade, cloud:connect, pack:*, file:*/git:*, agent:session etc. More critically, no doc explains that tooling operations (upgrade, config:set, docs:sync) use micro-worktree and don't need WUs — causing agents to create unnecessary WUs or use raw pnpm commands. Solution: Sweep quick-ref-commands.md against lumenflow:commands output, add all missing commands, and add a Tooling Operations section explaining micro-worktree commands vs WU-required code changes."
+description: "Context: Agent-facing docs (quick-ref-commands.md, CLAUDE.md) have fallen ~25 commands
+  behind the actual CLI surface. Problem: Agents don't discover commands like lumenflow:upgrade,
+  cloud:connect, pack:*, file:*/git:*, agent:session etc. More critically, no doc explains that
+  tooling operations (upgrade, config:set, docs:sync) use micro-worktree and don't need WUs —
+  causing agents to create unnecessary WUs or use raw pnpm commands. Solution: Sweep
+  quick-ref-commands.md against lumenflow:commands output, add all missing commands, and add a
+  Tooling Operations section explaining micro-worktree commands vs WU-required code changes."
 acceptance:
   - All commands from lumenflow:commands are present in quick-ref-commands.md
   - New Tooling Operations section explains micro-worktree commands that don't need WUs
@@ -31,3 +37,11 @@ acceptance:
   - lumenflow:upgrade documented with --version and --latest flags
   - CLAUDE.md and .claude/CLAUDE.md reference tooling operations section
   - docs:validate passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-framework-docs-wu-2179
+claimed_at: 2026-02-25T19:13:23.116Z
+baseline_main_sha: efe48902be576d4c146f8d0b201c672fc630cfbd
+session_id: 3f3e098b-2e01-4845-a7f8-0804994f50ec
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T19:13:23.121Z

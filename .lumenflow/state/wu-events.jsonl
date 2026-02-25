@@ -2260,3 +2260,4 @@
 {"type":"checkpoint","wuId":"WU-2160","timestamp":"2026-02-25T17:27:40.818Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2161","timestamp":"2026-02-25T18:11:57.446Z"}
 {"type":"complete","wuId":"WU-2160","timestamp":"2026-02-25T18:24:16.656Z"}
+{"type":"claim","wuId":"WU-2179","timestamp":"2026-02-25T19:13:23.162Z","lane":"Content: Framework Docs","title":"Add missing commands and tooling operations concept to agent docs"}
