@@ -1,0 +1,33 @@
+id: WU-2179
+title: Add missing commands and tooling operations concept to agent docs
+lane: 'Content: Framework Docs'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-25
+code_paths: []
+tests:
+  manual: []
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2179.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: "Context: Agent-facing docs (quick-ref-commands.md, CLAUDE.md) have fallen ~25 commands behind the actual CLI surface. Problem: Agents don't discover commands like lumenflow:upgrade, cloud:connect, pack:*, file:*/git:*, agent:session etc. More critically, no doc explains that tooling operations (upgrade, config:set, docs:sync) use micro-worktree and don't need WUs — causing agents to create unnecessary WUs or use raw pnpm commands. Solution: Sweep quick-ref-commands.md against lumenflow:commands output, add all missing commands, and add a Tooling Operations section explaining micro-worktree commands vs WU-required code changes."
+acceptance:
+  - All commands from lumenflow:commands are present in quick-ref-commands.md
+  - New Tooling Operations section explains micro-worktree commands that don't need WUs
+  - cloud:connect documented with flags from quickstart.mdx
+  - lumenflow:upgrade documented with --version and --latest flags
+  - CLAUDE.md and .claude/CLAUDE.md reference tooling operations section
+  - docs:validate passes
