@@ -202,6 +202,14 @@ export interface WUDocument {
   risks?: string[];
   tests?: { manual?: string[] };
   claimed_at?: string;
+  /** WU-2141: Optional sizing estimate metadata */
+  sizing_estimate?: {
+    estimated_files: number;
+    estimated_tool_calls: number;
+    strategy: string;
+    exception_type?: string;
+    exception_reason?: string;
+  };
 }
 
 interface Invariant {

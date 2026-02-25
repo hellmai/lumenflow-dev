@@ -516,6 +516,14 @@ export const WU_OPTIONS: Record<string, WUOption> = {
       'Bypass strict validation (skip code_paths/test_paths existence checks, treat warnings as advisory). Logged when used.',
     isNegated: true,
   },
+
+  // WU-2141: Strict sizing enforcement for wu:brief
+  strictSizing: {
+    name: 'strictSizing',
+    flags: '--strict-sizing',
+    description:
+      'Block when sizing_estimate metadata is missing or exceeds thresholds without exception. Advisory by default.',
+  },
 };
 
 /**

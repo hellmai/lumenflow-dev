@@ -45,6 +45,9 @@ import { generateTaskInvocation, generateCodexPrompt } from './wu-spawn-prompt-b
 import { resolveStateDir } from './state-path-resolvers.js';
 // WU-2144: Import worktree detection to gate evidence recording
 import { isInWorktree as isInWorktreeDefault } from '@lumenflow/core/core/worktree-guard';
+// WU-2141: Import sizing check for advisory/strict enforcement
+import { checkBriefSizing } from './wu-brief-sizing.js';
+import type { SizingEstimate } from './wu-sizing-validation.js';
 
 // Re-export types used by consumers
 export type { WUDocument, SpawnOptions, ClientContext };
@@ -142,6 +145,8 @@ interface ParsedArgs {
   client?: string;
   vendor?: string;
   noContext?: boolean;
+  /** WU-2141: Strict sizing enforcement flag */
+  strictSizing?: boolean;
 }
 
 /**
@@ -178,6 +183,7 @@ function parseAndValidateArgs(parserConfig: BriefParserConfig = BRIEF_PARSER_CON
       WU_OPTIONS.client,
       WU_OPTIONS.vendor,
       WU_OPTIONS.noContext, // WU-1240: Skip memory context injection
+      WU_OPTIONS.strictSizing, // WU-2141: Strict sizing enforcement
     ],
     required: ['id'],
     allowPositionalId: true,
@@ -488,6 +494,26 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
 
   // WU-1603: Check if lane is already occupied and warn
   await checkAndWarnLaneOccupation(doc.lane, id, effectiveLogPrefix);
+
+  // WU-2141: Check sizing compliance (advisory or strict)
+  const sizingEstimate = doc.sizing_estimate as SizingEstimate | undefined;
+  const sizingResult = checkBriefSizing({
+    wuId: id,
+    logPrefix: effectiveLogPrefix,
+    strictSizing: Boolean(args.strictSizing),
+    sizingEstimate,
+  });
+
+  if (!sizingResult.pass) {
+    const errorList = sizingResult.errors.map((e) => `  - ${e}`).join('\n');
+    die(
+      `${effectiveLogPrefix} Sizing check failed (--strict-sizing):\n\n${errorList}\n\n` +
+        `Options:\n` +
+        `  1. Add sizing_estimate metadata to WU YAML\n` +
+        `  2. Add exception_type and exception_reason if thresholds are intentionally exceeded\n` +
+        `  3. Remove --strict-sizing to use advisory mode`,
+    );
+  }
 
   // Build thinking mode options for task invocation
   const thinkingOptions = {

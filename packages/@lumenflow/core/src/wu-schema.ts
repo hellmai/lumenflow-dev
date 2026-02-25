@@ -557,6 +557,38 @@ const sharedFields = {
 
   // === End Exposure System Fields ===
 
+  // === Sizing Estimate Fields (WU-2141) ===
+
+  /**
+   * WU-2141: Optional sizing estimate metadata.
+   *
+   * Records expected WU complexity for tooling-backed sizing enforcement.
+   * Absent for historical WUs (backward compatible).
+   *
+   * Fields:
+   * - estimated_files: Expected number of files to modify
+   * - estimated_tool_calls: Expected tool call count
+   * - strategy: Execution strategy from wu-sizing-guide.md
+   * - exception_type: Override type when thresholds intentionally exceeded
+   * - exception_reason: Justification for the exception (required with exception_type)
+   */
+  sizing_estimate: z
+    .object({
+      estimated_files: z.number().int().min(0),
+      estimated_tool_calls: z.number().int().min(0),
+      strategy: z.enum([
+        'single-session',
+        'checkpoint-resume',
+        'orchestrator-worker',
+        'decomposition',
+      ]),
+      exception_type: z.enum(['docs-only', 'shallow-multi-file']).optional(),
+      exception_reason: z.string().optional(),
+    })
+    .optional(),
+
+  // === End Sizing Estimate Fields ===
+
   // === Agent-First Approval Fields (WU-2079 → WU-2080) ===
 
   /**
