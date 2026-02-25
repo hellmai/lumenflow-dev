@@ -16,7 +16,13 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2188.done
-dependencies: []
+dependencies:
+  - WU-2184
+  - WU-2185
+  - WU-2186
+  - WU-2187
+initiative: INIT-045
+phase: 4
 spec_refs:
   - /home/USER/.claude/plans/init-045-multi-pack-config.md
 risks: []
@@ -38,4 +44,3 @@ acceptance:
   - create-a-pack guide documents config_key and config_schema manifest fields
   - config-commands.mdx shows fully-qualified key examples
   - No docs reference implicit software_delivery prefix
-initiative: INIT-045
