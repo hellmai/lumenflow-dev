@@ -1,12 +1,28 @@
 id: INIT-044
 slug: architecture-backlog-hardening
 title: Architecture Backlog Hardening
-description: ''
-status: draft
+description: 'Capture lower-priority architecture debt items from the sweep: interface segregation
+  follow-up, validator ownership documentation, test-helper extraction, and runtime/agent coverage
+  expansion.'
+status: open
 priority: P3
 owner: tom@hellm.ai
 created: 2026-02-25
-phases: []
+phases:
+  - id: 1
+    title: 'Phase 1: Interface and validator-boundary clarity'
+    status: pending
+  - id: 2
+    title: 'Phase 2: Shared test helper foundation'
+    status: pending
+  - id: 3
+    title: 'Phase 3: Runtime and agent coverage expansion'
+    status: pending
 success_metrics:
   - Backlog debt items are captured with clear ownership and acceptance
+  - All low-priority debt items are tracked with explicit acceptance criteria
+  - Test helper reuse reduces fixture duplication across packages
+  - Runtime and agent coverage meets policy target
 labels: []
+notes:
+  - 'source_plan: /home/USER/.claude/plans/gleaming-painting-sonnet.md'
