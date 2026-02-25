@@ -567,6 +567,7 @@ export async function main() {
     }
     const ctx = {
       ...baseCtx,
+      args: baseCtx.args as import('./wu-claim-worktree.js').ClaimArgs,
       sessionId,
       updatedTitle,
     };

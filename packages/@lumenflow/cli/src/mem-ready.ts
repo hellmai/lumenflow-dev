@@ -25,6 +25,22 @@ import { MEMORY_NODE_TYPES } from '@lumenflow/memory/schema';
 import { runCLI } from './cli-entry-point.js';
 
 /**
+ * Memory node shape for display. Mirrors MemoryNode from @lumenflow/memory/schema.
+ * Defined locally because memory package does not emit declaration files.
+ */
+interface MemoryNodeDisplay {
+  id: string;
+  type: string;
+  lifecycle: string;
+  content: string;
+  created_at: string;
+  wu_id?: string;
+  session_id?: string;
+  metadata?: Record<string, unknown>;
+  tags?: string[];
+}
+
+/**
  * Log prefix for mem:ready output
  */
 const LOG_PREFIX = '[mem:ready]';
@@ -66,7 +82,7 @@ const CLI_OPTIONS = {
  * @param {string} baseDir - Base directory
  * @param {object} entry - Audit log entry
  */
-async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
+async function writeAuditLog(baseDir: string, entry: Record<string, unknown>) {
   try {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
@@ -88,7 +104,7 @@ async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
  * @param {number} index - Position in list (0-indexed)
  * @returns {string} Formatted output
  */
-function formatNodeHuman(node: UnsafeAny, index: UnsafeAny) {
+function formatNodeHuman(node: MemoryNodeDisplay, index: number) {
   const priority = node.metadata?.priority || '-';
   const lines = [
     `${index + 1}. [${node.id}] (${node.type})`,
@@ -113,12 +129,21 @@ function formatNodeHuman(node: UnsafeAny, index: UnsafeAny) {
 }
 
 /**
+ * CLI options used by printHumanFormat and printJsonFormat.
+ */
+interface ReadyDisplayOptions {
+  wu: string;
+  type?: string;
+  quiet?: boolean;
+}
+
+/**
  * Print nodes in human-readable format
  *
- * @param {object[]} nodes - Ready nodes
- * @param {object} opts - CLI options
+ * @param {MemoryNodeDisplay[]} nodes - Ready nodes
+ * @param {ReadyDisplayOptions} opts - CLI options
  */
-function printHumanFormat(nodes: UnsafeAny, opts: UnsafeAny) {
+function printHumanFormat(nodes: MemoryNodeDisplay[], opts: ReadyDisplayOptions) {
   if (!opts.quiet) {
     console.log(`${LOG_PREFIX} Ready nodes for ${opts.wu}:`);
     console.log('');
@@ -148,7 +173,7 @@ function printHumanFormat(nodes: UnsafeAny, opts: UnsafeAny) {
  * @param {object[]} nodes - Ready nodes
  * @param {object} opts - CLI options
  */
-function printJsonFormat(nodes: UnsafeAny, opts: UnsafeAny) {
+function printJsonFormat(nodes: MemoryNodeDisplay[], opts: ReadyDisplayOptions) {
   const output = {
     wuId: opts.wu,
     type: opts.type || null,
@@ -225,7 +250,7 @@ export async function main() {
     output: nodes
       ? {
           count: nodes.length,
-          nodeIds: nodes.map((n: UnsafeAny) => n.id),
+          nodeIds: nodes.map((n: MemoryNodeDisplay) => n.id),
         }
       : null,
     error: error ? { message: error } : null,
@@ -237,10 +262,12 @@ export async function main() {
   }
 
   // Print output based on format
+  // Cast CLI args to display options -- createWUParser returns OptionValues (Record<string, any>)
+  const displayOpts: ReadyDisplayOptions = { wu: args.wu, type: args.type, quiet: args.quiet };
   if (format === 'json') {
-    printJsonFormat(nodes, args);
+    printJsonFormat(nodes, displayOpts);
   } else {
-    printHumanFormat(nodes, args);
+    printHumanFormat(nodes, displayOpts);
   }
 }
 

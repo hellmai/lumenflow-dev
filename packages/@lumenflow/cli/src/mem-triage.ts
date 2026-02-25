@@ -25,6 +25,21 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { listOpenDiscoveries, promoteDiscovery, archiveDiscovery } from '@lumenflow/memory/triage';
+/**
+ * Memory node shape for display. Mirrors MemoryNode from @lumenflow/memory/schema.
+ * Defined locally because memory package does not emit declaration files.
+ */
+interface MemoryNodeDisplay {
+  id: string;
+  type: string;
+  lifecycle: string;
+  content: string;
+  created_at: string;
+  wu_id?: string;
+  session_id?: string;
+  metadata?: Record<string, unknown>;
+  tags?: string[];
+}
 import { createWUParser } from '@lumenflow/core/arg-parser';
 import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { runCLI } from './cli-entry-point.js';
@@ -112,7 +127,7 @@ const CLI_OPTIONS = {
  * @param {string} baseDir - Base directory
  * @param {object} entry - Audit log entry
  */
-async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
+async function writeAuditLog(baseDir: string, entry: Record<string, unknown>) {
   try {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
@@ -132,7 +147,7 @@ async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
  * @param {object} node - Discovery node
  * @returns {string} Formatted display string
  */
-function formatDiscovery(node: UnsafeAny) {
+function formatDiscovery(node: MemoryNodeDisplay) {
   const parts = [];
   parts.push(`  ${node.id}`);
 
@@ -223,7 +238,7 @@ async function handleList(baseDir: string, args: TriageArgs) {
  * @param {string} baseDir - Base directory
  * @param {object} args - CLI arguments
  */
-async function handlePromote(baseDir: UnsafeAny, args: UnsafeAny) {
+async function handlePromote(baseDir: string, args: TriageArgs) {
   if (!args.lane) {
     console.error(`${LOG_PREFIX} Error: --lane is required for promotion`);
     console.error('');
@@ -278,7 +293,7 @@ async function handlePromote(baseDir: UnsafeAny, args: UnsafeAny) {
  * @param {string} baseDir - Base directory
  * @param {object} args - CLI arguments
  */
-async function handleArchive(baseDir: UnsafeAny, args: UnsafeAny) {
+async function handleArchive(baseDir: string, args: TriageArgs) {
   if (!args.reason) {
     console.error(`${LOG_PREFIX} Error: --reason is required for archiving`);
     console.error('');

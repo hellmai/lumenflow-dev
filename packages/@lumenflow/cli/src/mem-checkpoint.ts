@@ -169,7 +169,7 @@ export async function propagateCheckpointToStateStore(
  * @param {string} baseDir - Base directory
  * @param {object} entry - Audit log entry
  */
-async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
+async function writeAuditLog(baseDir: string, entry: Record<string, unknown>) {
   try {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
@@ -219,11 +219,32 @@ function parseArguments() {
 }
 
 /**
+ * Shape of a checkpoint node for display purposes.
+ * Matches CheckpointNode from @lumenflow/memory (not exported).
+ */
+interface CheckpointDisplay {
+  id: string;
+  type: string;
+  lifecycle: string;
+  content: string;
+  created_at: string;
+  wu_id?: string;
+  session_id?: string;
+  metadata?: CheckpointMetadataDisplay;
+}
+
+interface CheckpointMetadataDisplay {
+  progress?: string;
+  nextSteps?: string;
+  trigger?: string;
+}
+
+/**
  * Print checkpoint details to console
  *
- * @param {object} checkpoint - The checkpoint node
+ * @param {CheckpointDisplay} checkpoint - The checkpoint node
  */
-function printCheckpointDetails(checkpoint: UnsafeAny) {
+function printCheckpointDetails(checkpoint: CheckpointDisplay) {
   console.log(`${LOG_PREFIX} Checkpoint created (${checkpoint.id})`);
   console.log('');
   console.log('Checkpoint Details:');
@@ -254,7 +275,7 @@ function printCheckpointDetails(checkpoint: UnsafeAny) {
  *
  * @param {object} metadata - Checkpoint metadata
  */
-function printMetadata(metadata: UnsafeAny) {
+function printMetadata(metadata: CheckpointMetadataDisplay) {
   console.log('');
   console.log('Metadata:');
   if (metadata.progress) {
