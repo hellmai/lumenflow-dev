@@ -45,9 +45,7 @@ describe('WU-2184: Runtime diagnostics for misplaced config keys', () => {
       const result = detectMisnestedControlPlane(workspace);
 
       expect(result).not.toBeNull();
-      expect(result?.detectedPath).toBe(
-        `${PACK_KEY_SOFTWARE_DELIVERY}.${ROOT_KEY_CONTROL_PLANE}`,
-      );
+      expect(result?.detectedPath).toBe(`${PACK_KEY_SOFTWARE_DELIVERY}.${ROOT_KEY_CONTROL_PLANE}`);
     });
 
     it('should return null when control_plane is correctly at the root', () => {
@@ -244,9 +242,7 @@ describe('WU-2184: Runtime diagnostics for misplaced config keys', () => {
 
       // No misnesting warning should be emitted
       const warnCalls = mockLogger.warn.mock.calls.map((call: unknown[]) => String(call[0]));
-      const hasMisnestingWarning = warnCalls.some(
-        (msg: string) => msg.includes('misnested'),
-      );
+      const hasMisnestingWarning = warnCalls.some((msg: string) => msg.includes('misnested'));
       expect(hasMisnestingWarning).toBe(false);
 
       rmSync(testDir, { recursive: true, force: true });
