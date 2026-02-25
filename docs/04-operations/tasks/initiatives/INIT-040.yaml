@@ -25,3 +25,4 @@ success_metrics:
 labels: []
 notes:
   - 'related_plan: lumenflow://plans/clever-whistling-lobster.md'
+related_plan: lumenflow://plans/clever-whistling-lobster.md
