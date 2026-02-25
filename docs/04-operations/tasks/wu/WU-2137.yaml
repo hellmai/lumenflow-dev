@@ -7,9 +7,6 @@ priority: P1
 created: 2026-02-25
 code_paths:
   - packages/@lumenflow/cli/e2e/enforcement-matrix.test.ts
-  - packages/@lumenflow/cli/e2e/claude-enforcement.test.ts
-  - packages/@lumenflow/cli/src/hooks/enforcement-checks.ts
-  - packages/@lumenflow/mcp/src/worktree-enforcement.ts
 tests:
   manual:
     - pnpm --filter @lumenflow/cli test -- e2e/enforcement-matrix
@@ -29,10 +26,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-25T10:30:20.130Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2137
+session_id: 881e72ab-28a7-4308-bb22-e9e6a2781796
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T10:30:20.137Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +47,3 @@ acceptance:
   - Covers hook stdin parity and TS parity for 10+ input combinations
   - Covers edge conditions including detached HEAD and branch-pr mode claim paths
   - Full pnpm gates passes
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2137
-claimed_at: 2026-02-25T10:30:20.130Z
-baseline_main_sha: 2375686f1541123a03220a5873ff2d6f74204ca6
-session_id: 881e72ab-28a7-4308-bb22-e9e6a2781796
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-25T10:30:20.137Z
