@@ -8,9 +8,6 @@ created: 2026-02-25
 code_paths:
   - packages/@lumenflow/kernel/src/pack/manifest.ts
   - packages/@lumenflow/packs/software-delivery/manifest.yaml
-  - packages/@lumenflow/kernel/src/pack/pack-loader.ts
-  - packages/@lumenflow/kernel/src/pack/manifest.ts
-  - packages/@lumenflow/packs/software-delivery/manifest.yaml
   - packages/@lumenflow/packs/software-delivery/manifest-schema.ts
   - packages/@lumenflow/packs/software-delivery/manifest.ts
 tests:
