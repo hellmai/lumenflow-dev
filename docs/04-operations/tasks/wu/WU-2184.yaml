@@ -2,7 +2,7 @@ id: WU-2184
 title: Runtime diagnostics for misplaced config keys
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -38,3 +38,11 @@ acceptance:
   - resolveCloudSyncConfig warns when control_plane found at software_delivery.control_plane
   - Warning includes specific remediation command
   - Still returns null (no sync) but with diagnostic output
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2184
+claimed_at: 2026-02-25T22:32:38.255Z
+baseline_main_sha: b746c157d2f103eca278623ecb4f6089f10505d5
+session_id: c5a498b0-8331-4a5a-9c27-abe2b2fa49be
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T22:32:38.260Z
