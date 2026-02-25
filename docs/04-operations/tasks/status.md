@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2140 — Complete UnsafeAny CLI tail cleanup and lock reduced baseline](wu/WU-2140.yaml)
 
 ## Completed
 

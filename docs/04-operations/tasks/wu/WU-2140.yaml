@@ -2,7 +2,7 @@ id: WU-2140
 title: Complete UnsafeAny CLI tail cleanup and lock reduced baseline
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -35,8 +35,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Complete remaining low-count UnsafeAny references in CLI tail files and lock the reduced global baseline once core+CLI tails complete.
+description: Complete remaining low-count UnsafeAny references in CLI tail files and lock the
+  reduced global baseline once core+CLI tails complete.
 acceptance:
   - Global UnsafeAny baseline is <=200
   - unsafe-any baseline file reflects final reduced count
   - Full pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2140
+claimed_at: 2026-02-25T11:43:38.248Z
+baseline_main_sha: f1e923a3916be3f1d7758ffa47e4396dbec4945b
+session_id: c79e67cf-bdd5-4d44-9094-9221a3627b20
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T11:43:38.252Z
