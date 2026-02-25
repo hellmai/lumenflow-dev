@@ -12,6 +12,7 @@ tests:
     - Verify config:set --key control_plane.sync_interval writes at YAML root
   unit:
     - packages/@lumenflow/cli/src/__tests__/config-set.test.ts
+    - packages/@lumenflow/cli/src/__tests__/config-set.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2185.done
