@@ -1,13 +1,28 @@
 id: INIT-042
 slug: core-api-surface-rationalization
 title: Core API Surface Rationalization
-description: ''
-status: draft
+description: Group and rationalize @lumenflow/core exports to improve API discoverability, reduce
+  root barrel sprawl, and create domain-scoped import surfaces.
+status: open
 priority: P2
 owner: tom@hellm.ai
 created: 2026-02-25
-phases: []
+phases:
+  - id: 1
+    title: 'Phase 1: API surface audit and grouping design'
+    status: pending
+  - id: 2
+    title: 'Phase 2: Domain-scoped barrel introduction'
+    status: pending
+  - id: 3
+    title: 'Phase 3: Consumer migration and root-barrel deprecation path'
+    status: pending
 success_metrics:
   - Core exports map and root barrel complexity are reduced
   - Consumers can import through stable domain-scoped barrels
+  - Core export surface has explicit domain groupings
+  - Root barrel usage and churn are measurably reduced
+  - Consumer imports remain backward compatible during migration
 labels: []
+notes:
+  - 'source_plan: /home/USER/.claude/plans/gleaming-painting-sonnet.md'
