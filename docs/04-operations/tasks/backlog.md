@@ -36,7 +36,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2161 — Document wu:brief evidence recording behavior for agent safety](wu/WU-2161.yaml) — Content: Framework Docs
 - [WU-2160 — Implement NDJSON telemetry file shipping for gates-only cloud onboarding](wu/WU-2160.yaml) — Operations: Runtime
 
 ## ⛔ Blocked
@@ -1112,6 +1111,7 @@ sections:
 - [WU-2155 — Fix INIT-038 regressions: path-literal guard, missing runtime wiring, schema gap](wu/WU-2155.yaml)
 - [WU-2157 — Enrich post-compaction recovery and extend to all agent clients](wu/WU-2157.yaml)
 - [WU-2159 — Implement HttpControlPlaneSyncPort adapter for cloud telemetry forwarding](wu/WU-2159.yaml)
+- [WU-2161 — Document wu:brief evidence recording behavior for agent safety](wu/WU-2161.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

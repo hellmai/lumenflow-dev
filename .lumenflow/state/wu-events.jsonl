@@ -2257,3 +2257,4 @@
 {"type":"complete","wuId":"WU-2159","timestamp":"2026-02-25T17:16:42.446Z"}
 {"type":"claim","wuId":"WU-2161","timestamp":"2026-02-25T17:26:33.676Z","lane":"Content: Framework Docs","title":"Document wu:brief evidence recording behavior for agent safety"}
 {"type":"claim","wuId":"WU-2160","timestamp":"2026-02-25T17:27:21.459Z","lane":"Operations: Runtime","title":"Implement NDJSON telemetry file shipping for gates-only cloud onboarding"}
+{"type":"complete","wuId":"WU-2161","timestamp":"2026-02-25T18:11:57.446Z"}
