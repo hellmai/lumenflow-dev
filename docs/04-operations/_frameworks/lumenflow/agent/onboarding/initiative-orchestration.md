@@ -363,23 +363,23 @@ pnpm delegation:list --initiative INIT-XXX --json
 
 ## Quick Reference: All Orchestration Commands
 
-| Command                                             | Description                               |
-| --------------------------------------------------- | ----------------------------------------- |
-| `pnpm orchestrate:initiative -i INIT-XXX --dry-run` | Preview wave plan without executing       |
-| `pnpm orchestrate:initiative -i INIT-XXX -c`        | Execute one wave then checkpoint and exit |
-| `pnpm orchestrate:initiative -i INIT-XXX`           | Execute all waves continuously            |
-| `pnpm orchestrate:init-status -i INIT-XXX`          | Compact progress view                     |
-| `pnpm orchestrate:monitor`                          | Detect stuck agents and zombie locks      |
+| Command                                             | Description                                        |
+| --------------------------------------------------- | -------------------------------------------------- |
+| `pnpm orchestrate:initiative -i INIT-XXX --dry-run` | Preview wave plan without executing                |
+| `pnpm orchestrate:initiative -i INIT-XXX -c`        | Execute one wave then checkpoint and exit          |
+| `pnpm orchestrate:initiative -i INIT-XXX`           | Execute all waves continuously                     |
+| `pnpm orchestrate:init-status -i INIT-XXX`          | Compact progress view                              |
+| `pnpm orchestrate:monitor`                          | Detect stuck agents and zombie locks               |
 | `pnpm wu:brief --id WU-XXX --client <client>`       | Generate handoff prompt + evidence (worktree only) |
-| `pnpm wu:delegate --id WU-XXX --parent-wu <P>`      | Generate prompt + record delegation       |
-| `pnpm delegation:list --initiative INIT-XXX`        | View delegation tree                      |
-| `pnpm mem:signal "msg" --wu WU-XXX`                 | Broadcast coordination signal             |
-| `pnpm mem:inbox --since <duration>`                 | Read coordination signals                 |
-| `pnpm mem:checkpoint "msg" --wu WU-XXX`             | Save progress checkpoint                  |
-| `pnpm mem:ready --wu WU-XXX`                        | Check pending work/checkpoints            |
-| `pnpm wu:block --id WU-XXX --reason "..."`          | Block stuck WU                            |
-| `pnpm wu:unblock --id WU-XXX`                       | Unblock recovered WU                      |
-| `pnpm wu:release --id WU-XXX`                       | Release abandoned WU for re-claim         |
+| `pnpm wu:delegate --id WU-XXX --parent-wu <P>`      | Generate prompt + record delegation                |
+| `pnpm delegation:list --initiative INIT-XXX`        | View delegation tree                               |
+| `pnpm mem:signal "msg" --wu WU-XXX`                 | Broadcast coordination signal                      |
+| `pnpm mem:inbox --since <duration>`                 | Read coordination signals                          |
+| `pnpm mem:checkpoint "msg" --wu WU-XXX`             | Save progress checkpoint                           |
+| `pnpm mem:ready --wu WU-XXX`                        | Check pending work/checkpoints                     |
+| `pnpm wu:block --id WU-XXX --reason "..."`          | Block stuck WU                                     |
+| `pnpm wu:unblock --id WU-XXX`                       | Unblock recovered WU                               |
+| `pnpm wu:release --id WU-XXX`                       | Release abandoned WU for re-claim                  |
 
 ---
 

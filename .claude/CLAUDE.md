@@ -8,15 +8,15 @@ Then read `LUMENFLOW.md` for workflow details.
 
 ### WU Lifecycle
 
-| Command                                        | Description                                 |
-| ---------------------------------------------- | ------------------------------------------- |
-| `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands    |
-| `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree                |
-| `pnpm wu:prep --id WU-XXX`                     | Run gates in worktree                       |
-| `pnpm wu:done --id WU-XXX`                     | Complete WU (from main)                     |
+| Command                                        | Description                                               |
+| ---------------------------------------------- | --------------------------------------------------------- |
+| `pnpm wu:status --id WU-XXX`                   | Show WU status, location, valid commands                  |
+| `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree                              |
+| `pnpm wu:prep --id WU-XXX`                     | Run gates in worktree                                     |
+| `pnpm wu:done --id WU-XXX`                     | Complete WU (from main)                                   |
 | `pnpm wu:brief --id WU-XXX --client <client>`  | Generate handoff prompt + record evidence (worktree only) |
 | `pnpm wu:delegate --id WU-XXX --parent-wu <P>` | Generate prompt + record delegation lineage               |
-| `pnpm wu:recover --id WU-XXX`                  | Fix WU state inconsistencies                |
+| `pnpm wu:recover --id WU-XXX`                  | Fix WU state inconsistencies                              |
 
 ### Gates & Orchestration
 
