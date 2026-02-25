@@ -8,7 +8,7 @@ description: 'Architecture and libraries are sound (9/10), but enforcement has h
   production files. Strategy: add guardrails first, then fix violations so every fix is permanent.
   Plan: lumenflow://plans/wild-foraging-taco.md (WS1: Enforcement integrity; WS2: Debt reduction;
   WS3: Structural follow-through)'
-status: in_progress
+status: done
 priority: P1
 owner: platform-team
 created: 2026-02-24
@@ -24,7 +24,7 @@ phases:
     status: done
   - id: 4
     title: 'Phase 3: Structural Improvements (WU-L through WU-P)'
-    status: in_progress
+    status: done
 success_metrics:
   - Guard coverage includes all 7 runtime packages
   - UnsafeAny baseline trends downward each wave
