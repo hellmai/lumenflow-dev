@@ -37,7 +37,7 @@ sections:
 - [WU-2163 — Extract wu:done git operation helpers](wu/WU-2163.yaml) — Framework: CLI WU Commands
 - [WU-2164 — Extract wu:done preflight CLI module](wu/WU-2164.yaml) — Framework: CLI WU Commands
 - [WU-2165 — Extract wu:done gates orchestration module](wu/WU-2165.yaml) — Framework: CLI WU Commands
-- [WU-2166 — A5: Extract wu:done memory and telemetry module](wu/WU-2166.yaml) — Framework: CLI WU Commands
+- [WU-2166 — Extract wu:done memory and telemetry module](wu/WU-2166.yaml) — Framework: CLI WU Commands
 - [WU-2167 — A6: Slim wu:done main orchestrator](wu/WU-2167.yaml) — Framework: CLI WU Commands
 - [WU-2168 — B1: Audit and categorize core API surface](wu/WU-2168.yaml) — Framework: Core Lifecycle
 - [WU-2169 — B2: Add domain-scoped core barrel exports](wu/WU-2169.yaml) — Framework: Core Lifecycle

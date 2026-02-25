@@ -1,5 +1,5 @@
 id: WU-2167
-title: 'A6: Slim wu:done main orchestrator'
+title: Slim wu:done main orchestrator
 lane: 'Framework: CLI WU Commands'
 type: refactor
 status: ready
