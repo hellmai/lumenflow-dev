@@ -44,10 +44,6 @@ acceptance:
   - pre-commit still allows commits for valid non-placeholder identities and existing lane/main
     workflow checks remain functional
   - hook tests cover both blocked and allowed identity scenarios
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-2159
-claimed_at: 2026-02-25T14:50:24.865Z
-baseline_main_sha: 10dc751444dfb7fe0cc56096bb517d681e62330b
-session_id: 9cbec856-c0e4-4a5a-b542-37a7e428ffb8
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-25T14:50:24.871Z
