@@ -2,7 +2,7 @@ id: WU-2137
 title: Add enforcement E2E matrix across hook/TS/MCP paths
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -36,9 +36,18 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add end-to-end enforcement coverage for shell hook, TypeScript enforcement checks, and MCP worktree guard using real git/filesystem fixtures.
+description: Add end-to-end enforcement coverage for shell hook, TypeScript enforcement checks, and
+  MCP worktree guard using real git/filesystem fixtures.
 acceptance:
   - New enforcement matrix E2E test file added and passing
   - Covers hook stdin parity and TS parity for 10+ input combinations
   - Covers edge conditions including detached HEAD and branch-pr mode claim paths
   - Full pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2137
+claimed_at: 2026-02-25T10:30:20.130Z
+baseline_main_sha: 2375686f1541123a03220a5873ff2d6f74204ca6
+session_id: 881e72ab-28a7-4308-bb22-e9e6a2781796
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T10:30:20.137Z

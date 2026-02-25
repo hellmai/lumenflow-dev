@@ -22,7 +22,6 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
-- [WU-2137 — Add enforcement E2E matrix across hook/TS/MCP paths](wu/WU-2137.yaml) — Framework: Core Lifecycle
 - [WU-2138 — Reduce UnsafeAny in CLI hotspot handlers](wu/WU-2138.yaml) — Framework: CLI WU Commands
 - [WU-2139 — Complete UnsafeAny core tail cleanup tranche](wu/WU-2139.yaml) — Framework: Core Lifecycle
 - [WU-2140 — Complete UnsafeAny CLI tail cleanup and lock reduced baseline](wu/WU-2140.yaml) — Framework: CLI WU Commands
@@ -33,6 +32,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-2136 — Reduce UnsafeAny in core hotspot files](wu/WU-2136.yaml) — Framework: Core Lifecycle
+- [WU-2137 — Add enforcement E2E matrix across hook/TS/MCP paths](wu/WU-2137.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

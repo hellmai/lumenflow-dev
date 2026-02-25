@@ -5,6 +5,7 @@ _Last updated: 2026-02-25_
 ## In Progress
 
 - [WU-2136 — Reduce UnsafeAny in core hotspot files](wu/WU-2136.yaml)
+- [WU-2137 — Add enforcement E2E matrix across hook/TS/MCP paths](wu/WU-2137.yaml)
 
 ## Completed
 
