@@ -7,10 +7,7 @@ priority: P1
 created: 2026-02-25
 code_paths:
   - packages/@lumenflow/cli/src/gates.ts
-  - packages/@lumenflow/cli/src/gates-runners.ts
   - packages/@lumenflow/core/src/telemetry.ts
-  - packages/@lumenflow/control-plane-sdk/src/http/http-control-plane-sync-port.ts
-  - packages/@lumenflow/control-plane-sdk/src/index.ts
 tests:
   manual:
     - Run cloud:connect, execute pnpm gates, and confirm gates-only telemetry appears in cloud
@@ -18,7 +15,6 @@ tests:
     - Disable network during shipping and confirm gates completes locally while warnings are logged.
   unit:
     - packages/@lumenflow/cli/src/__tests__/gates-integration-tests.test.ts
-    - packages/@lumenflow/control-plane-sdk/__tests__/http-sync-port.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2160.done
