@@ -1,5 +1,5 @@
 id: WU-2178
-title: 'D4: Raise runtime and agent test coverage to target'
+title: Raise runtime and agent test coverage to target
 lane: 'Operations: Runtime'
 type: refactor
 status: ready
@@ -16,8 +16,6 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-2178.done
 dependencies: []
-initiative: INIT-044
-phase: 3
 risks: []
 notes: 'source_plan: /home/USER/.claude/plans/gleaming-painting-sonnet.md'
 requires_review: false
