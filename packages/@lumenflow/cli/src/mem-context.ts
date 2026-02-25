@@ -43,6 +43,7 @@ interface GenerateContextResult {
     byType: Record<string, number>;
     truncated: boolean;
     size: number;
+    accessTracked?: number;
   };
 }
 import { createWUParser, WU_OPTIONS } from '@lumenflow/core/arg-parser';
@@ -309,30 +310,26 @@ export async function main(): Promise<void> {
     process.exit(EXIT_CODES.ERROR);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Core returns UnsafeAny type due to loose tsconfig
-  let result: UnsafeAny;
+  let result: GenerateContextResult = {
+    success: false,
+    contextBlock: '',
+    stats: { totalNodes: 0, byType: {}, truncated: false, size: 0 },
+  };
   let error: string | null = null;
 
   try {
-    result = await generateContext(baseDir, {
+    const raw = await generateContext(baseDir, {
       wuId: args.wu,
       maxSize,
       lane,
       maxRecentSummaries,
       maxProjectNodes,
     });
+    result = raw as GenerateContextResult;
   } catch (err) {
     const e = err as Error;
     error = e.message;
-    result = {
-      success: false,
-      contextBlock: '',
-      stats: { totalNodes: 0, byType: {}, truncated: false, size: 0 },
-    };
   }
-
-  // Type assertion for type safety
-  const typedResult = result as GenerateContextResult;
 
   const durationMs = Date.now() - startTime;
 
@@ -353,10 +350,10 @@ export async function main(): Promise<void> {
       format,
       quiet: args.quiet,
     },
-    output: typedResult.success
+    output: result.success
       ? {
-          contextSize: typedResult.contextBlock.length,
-          stats: typedResult.stats,
+          contextSize: result.contextBlock.length,
+          stats: result.stats,
         }
       : null,
     error: error ? { message: error } : null,
@@ -369,9 +366,9 @@ export async function main(): Promise<void> {
 
   // Print output based on format
   if (format === 'json') {
-    printJsonFormat(typedResult, args.wu);
+    printJsonFormat(result, args.wu);
   } else {
-    printHumanFormat(typedResult, args.wu, !!args.quiet);
+    printHumanFormat(result, args.wu, !!args.quiet);
   }
 }
 

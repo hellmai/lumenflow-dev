@@ -31,13 +31,14 @@ import {
 } from './wu-claim-state.js';
 import { shouldPersistClaimMetadataOnBranch } from './wu-claim-state.js';
 import { surfaceUnreadSignalsForDisplay, printLifecycleNudge } from './wu-claim-output.js';
+import type { ClaimContext } from './wu-claim-worktree.js';
 
 const PREFIX = LOG_PREFIX.CLAIM;
 
 /**
  * Execute branch-only mode claim workflow
  */
-export async function claimBranchOnlyMode(ctx: UnsafeAny) {
+export async function claimBranchOnlyMode(ctx: ClaimContext) {
   const {
     args,
     id,

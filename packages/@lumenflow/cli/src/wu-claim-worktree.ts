@@ -46,6 +46,51 @@ import {
   printLifecycleNudge,
 } from './wu-claim-output.js';
 
+/**
+ * CLI argument shape used by claim workflow handlers.
+ */
+export interface ClaimArgs {
+  lane: string;
+  noPush?: boolean;
+  noAuto?: boolean;
+  skipSetup?: boolean;
+  [key: string]: unknown;
+}
+
+/**
+ * Parsed staged change entry from git diff --cached --name-status.
+ * Mirrors ParsedStagedChange in wu-claim-state.ts (not exported).
+ */
+interface ParsedStagedChangeLocal {
+  status: string;
+  from?: string;
+  filePath?: string;
+}
+
+/**
+ * Context object threaded through claim workflow functions.
+ * Built in wu-claim.ts and consumed by claimWorktreeMode / claimBranchOnlyMode.
+ */
+export interface ClaimContext {
+  args: ClaimArgs;
+  id: string;
+  laneK: string;
+  title: string;
+  branch: string;
+  worktree: string;
+  WU_PATH: string;
+  STATUS_PATH: string;
+  BACKLOG_PATH: string;
+  claimedMode: string;
+  shouldCreateBranch?: boolean;
+  currentBranch?: string;
+  currentBranchForCloud?: string;
+  sessionId: string | null;
+  updatedTitle: string | null;
+  fixableIssues?: unknown[];
+  stagedChanges?: ParsedStagedChangeLocal[];
+}
+
 const PREFIX = LOG_PREFIX.CLAIM;
 const PNPM_BINARY_NAME = 'pnpm';
 const PNPM_FROZEN_LOCKFILE_ARGS = ['install', '--frozen-lockfile'];
@@ -58,7 +103,7 @@ const WORKTREE_SETUP_WARNING_PREVIEW_COUNT = 3;
  *
  * @returns {Promise<{finalTitle: string, initPathToCommit: string | null}>}
  */
-async function handleNoPushMetadataUpdate(ctx: UnsafeAny): Promise<{
+async function handleNoPushMetadataUpdate(ctx: ClaimContext & { worktreePath: string }): Promise<{
   finalTitle: string;
   initPathToCommit: string | null;
 }> {
@@ -81,7 +126,7 @@ async function handleNoPushMetadataUpdate(ctx: UnsafeAny): Promise<{
   let initPathToCommit: string | null = null;
 
   if (args.noAuto) {
-    await applyStagedChangesToMicroWorktree(worktreePath, stagedChanges);
+    await applyStagedChangesToMicroWorktree(worktreePath, stagedChanges ?? []);
   } else {
     const wtWUPath = path.join(worktreePath, WU_PATH);
     const wtBacklogPath = path.join(worktreePath, BACKLOG_PATH);
@@ -191,8 +236,8 @@ export async function setupWorktreeDependencies(
  * @param {Console} logger - Logger (console-compatible)
  */
 export function applyFallbackSymlinks(
-  worktreePath: UnsafeAny,
-  mainRepoPath: UnsafeAny,
+  worktreePath: string,
+  mainRepoPath: string,
   logger = console,
 ) {
   const symlinkResult = symlinkNodeModules(worktreePath, logger, mainRepoPath);
@@ -232,7 +277,7 @@ export function applyFallbackSymlinks(
  * - Less network traffic (no push during claim)
  * - Cleaner rollback: delete worktree+branch = claim undone
  */
-export async function claimWorktreeMode(ctx: UnsafeAny) {
+export async function claimWorktreeMode(ctx: ClaimContext) {
   const { args, id, laneK, title, branch, worktree, WU_PATH, updatedTitle } = ctx;
 
   const originalCwd = process.cwd();
@@ -283,7 +328,7 @@ export async function claimWorktreeMode(ctx: UnsafeAny) {
   }
 
   // WU-1023: Auto-setup worktree dependencies
-  await setupWorktreeDependencies(worktreePath, originalCwd, args.skipSetup);
+  await setupWorktreeDependencies(worktreePath, originalCwd, !!args.skipSetup);
 
   console.log(`${PREFIX} Claim recorded in worktree`);
   const worktreeWuDisplay = finalTitle ? `- WU: ${id} — ${finalTitle}` : `- WU: ${id}`;

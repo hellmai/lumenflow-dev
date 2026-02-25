@@ -31,6 +31,35 @@ import { runCLI } from './cli-entry-point.js';
 import { CLEANUP_LIST_DISPLAY_LIMIT, CONTENT_PREVIEW_LENGTH, JSON_INDENT } from './constants.js';
 
 /**
+ * Summary node shape within SummarizeResult.
+ * Mirrors SummaryNode from @lumenflow/memory (not exported with declarations).
+ */
+interface SummaryNodeDisplay {
+  id: string;
+  type: string;
+  lifecycle: string;
+  content: string;
+  created_at: string;
+  wu_id?: string;
+  metadata: {
+    source_count: number;
+    summarized_at: string;
+  };
+}
+
+/**
+ * Summarize result shape. Mirrors SummarizeResult from @lumenflow/memory/summarize.
+ * Defined locally because memory package does not emit declaration files.
+ */
+interface SummarizeResultDisplay {
+  success: boolean;
+  summary: SummaryNodeDisplay;
+  markedForCleanup: string[];
+  dryRun?: boolean;
+  compactionRatio: number;
+}
+
+/**
  * Log prefix for mem:summarize output
  */
 const LOG_PREFIX = '[mem:summarize]';
@@ -77,7 +106,7 @@ const CLI_OPTIONS = {
  * @param {string} baseDir - Base directory
  * @param {object} entry - Audit log entry
  */
-async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
+async function writeAuditLog(baseDir: string, entry: Record<string, unknown>) {
   try {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
@@ -119,7 +148,7 @@ function parseArguments() {
  * @param {object} result - Summarization result
  * @param {boolean} quiet - Suppress verbose output
  */
-function printResult(result: UnsafeAny, quiet: UnsafeAny) {
+function printResult(result: SummarizeResultDisplay, quiet: boolean) {
   if (result.dryRun) {
     console.log(`${LOG_PREFIX} Dry-run: Would create summary with:`);
   } else {
@@ -219,12 +248,17 @@ export async function main() {
     process.exit(EXIT_CODES.ERROR);
   }
 
+  if (!result) {
+    console.error(`${LOG_PREFIX} Error: summarization failed with no result`);
+    process.exit(EXIT_CODES.ERROR);
+  }
+
   if (args.json) {
     console.log(JSON.stringify(result, null, JSON_INDENT));
     process.exit(EXIT_CODES.SUCCESS);
   }
 
-  printResult(result, args.quiet);
+  printResult(result as SummarizeResultDisplay, !!args.quiet);
 }
 
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling
