@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2181 — Document gitignore scaffold drift fix and consumer remediation](wu/WU-2181.yaml) — Content: Site Comms
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — Framework: Memory
