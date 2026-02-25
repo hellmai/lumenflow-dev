@@ -7,8 +7,6 @@ priority: P2
 created: 2026-02-25
 code_paths:
   - .claude/CLAUDE.md
-  - CLAUDE.md
-  - docs/04-operations/_frameworks/lumenflow/agent/onboarding
 tests:
   manual:
     - Read updated docs as an agent would — confirm wu:brief side effects are unambiguous
@@ -21,10 +19,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-25T17:26:33.574Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-framework-docs-wu-2161
+session_id: 8deb831a-4956-4f92-a9c9-4375ffe5baea
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T17:26:33.584Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -74,11 +79,3 @@ acceptance:
     lifecycle commands
   - 'wu:brief vs wu:delegate distinction is clear: brief = evidence + prompt, delegate = lineage +
     evidence + prompt'
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/content-framework-docs-wu-2161
-claimed_at: 2026-02-25T17:26:33.574Z
-baseline_main_sha: a939525331d91ac53875c615e1860b4e36555f0c
-session_id: 8deb831a-4956-4f92-a9c9-4375ffe5baea
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-25T17:26:33.584Z
