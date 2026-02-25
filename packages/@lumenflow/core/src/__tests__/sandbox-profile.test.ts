@@ -14,6 +14,7 @@ import {
   buildSandboxProfile as buildSandboxProfileFromCore,
   resolveSandboxBackendForPlatform as resolveSandboxBackendFromCore,
 } from '../index.js';
+import { DIRECTORIES } from '../wu-constants.js';
 
 describe('sandbox-profile', () => {
   it('builds deterministic writable roots for worktree sandbox profile', () => {
@@ -29,7 +30,7 @@ describe('sandbox-profile', () => {
       path.resolve(repoRoot, 'worktrees/framework-core-validation-wu-1684'),
     );
     expect(profile.wuYamlPath).toBe(
-      path.resolve(repoRoot, 'docs/04-operations/tasks/wu/WU-1684.yaml'),
+      path.resolve(repoRoot, `${DIRECTORIES.WU_DIR}/WU-1684.yaml`),
     );
     expect(profile.statePath).toBe(path.resolve(repoRoot, '.lumenflow/state'));
     expect(profile.tempPath).toBe(path.resolve(os.tmpdir()));
