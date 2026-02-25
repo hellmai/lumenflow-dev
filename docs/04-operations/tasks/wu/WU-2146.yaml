@@ -19,6 +19,7 @@ artifacts:
 dependencies: []
 initiative: INIT-040
 phase: 1
+plan: lumenflow://plans/clever-whistling-lobster.md
 spec_refs:
   - /home/USER/.claude/plans/clever-whistling-lobster.md
 risks: []
@@ -31,7 +32,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Extend local Signal interface with optional type, sender, target_agent, origin, and remote_id fields. Keep flat shape for JSONL performance. All new fields optional for backward compatibility.
+description: Extend local Signal interface with optional type, sender, target_agent, origin, and
+  remote_id fields. Keep flat shape for JSONL performance. All new fields optional for backward
+  compatibility.
 acceptance:
   - Existing signals parse without error
   - New fields round-trip through JSONL read/write
