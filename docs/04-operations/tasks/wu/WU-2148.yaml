@@ -1,0 +1,42 @@
+id: WU-2148
+title: MCP signal enrichment in CallToolRequest handler
+lane: 'Framework: MCP'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-25
+code_paths:
+  - packages/@lumenflow/mcp/src/signal-enrichment.ts
+  - packages/@lumenflow/mcp/src/server.ts
+tests:
+  manual:
+    - pnpm gates
+  unit:
+    - packages/@lumenflow/mcp/src/__tests__/signal-enrichment.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2148.done
+dependencies: []
+initiative: INIT-040
+phase: 1
+blocked_by:
+  - WU-2146
+spec_refs:
+  - /home/tom/.claude/plans/clever-whistling-lobster.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Add _signals payload to MCP tool responses when pending signals exist. Time-based throttle (max once per 5s per process). Trigger local read receipt. Optional remote ack with fail-open.
+acceptance:
+  - _signals field present in tool response when signals pending
+  - Throttle prevents excessive signal checks
+  - Read receipts appended after surfacing
+  - Enrichment errors never break tool responses
+  - pnpm gates passes
