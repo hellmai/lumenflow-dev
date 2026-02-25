@@ -2242,3 +2242,4 @@
 {"type":"complete","wuId":"WU-2142","timestamp":"2026-02-25T12:38:19.673Z"}
 {"type":"complete","wuId":"WU-2143","timestamp":"2026-02-25T12:51:32.448Z"}
 {"type":"claim","wuId":"WU-2155","timestamp":"2026-02-25T13:05:09.794Z","lane":"Framework: CLI WU Commands","title":"Fix INIT-038 regressions: path-literal guard, missing runtime wiring, schema gap"}
+{"type":"claim","wuId":"WU-2156","timestamp":"2026-02-25T13:09:47.478Z","lane":"Framework: CLI WU Commands","title":"Fix manifest-to-scripts alignment: add missing pnpm scripts"}

@@ -5,6 +5,7 @@ _Last updated: 2026-02-25_
 ## In Progress
 
 - [WU-2155 — Fix INIT-038 regressions: path-literal guard, missing runtime wiring, schema gap](wu/WU-2155.yaml)
+- [WU-2156 — Fix manifest-to-scripts alignment: add missing pnpm scripts](wu/WU-2156.yaml)
 
 ## Completed
 

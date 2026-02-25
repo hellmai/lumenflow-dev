@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2156 — Fix manifest-to-scripts alignment: add missing pnpm scripts](wu/WU-2156.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — Framework: Memory
@@ -37,6 +36,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-2155 — Fix INIT-038 regressions: path-literal guard, missing runtime wiring, schema gap](wu/WU-2155.yaml) — Framework: CLI WU Commands
+- [WU-2156 — Fix manifest-to-scripts alignment: add missing pnpm scripts](wu/WU-2156.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
