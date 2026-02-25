@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2141 — Enforce WU sizing contract in wu:create and wu:brief](wu/WU-2141.yaml)
 
 ## Completed
 

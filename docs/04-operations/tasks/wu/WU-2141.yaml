@@ -2,7 +2,7 @@ id: WU-2141
 title: Enforce WU sizing contract in wu:create and wu:brief
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -35,10 +35,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add tooling-backed sizing metadata and advisory/strict checks in wu:create and wu:brief so sizing-guide expectations are enforced in workflow, not only docs.
+description: Add tooling-backed sizing metadata and advisory/strict checks in wu:create and wu:brief
+  so sizing-guide expectations are enforced in workflow, not only docs.
 acceptance:
   - sizing_estimate metadata contract supported without breaking historical WUs
   - wu:create emits advisory warning when oversize estimate lacks exception metadata
   - wu:brief emits advisory warning and supports --strict-sizing blocking mode
   - Unit tests cover warning/no-warning/strict/backward-compatible behavior
   - Full pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2141
+claimed_at: 2026-02-25T12:06:42.835Z
+baseline_main_sha: f4af7342d086a3451c1fb2ba5c27080ad5b0d7ac
+session_id: c4c99d7a-969b-4e3b-b26e-b5897cc14260
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T12:06:42.839Z
