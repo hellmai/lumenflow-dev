@@ -2268,3 +2268,4 @@
 {"type":"claim","wuId":"WU-2181","timestamp":"2026-02-25T19:44:40.192Z","lane":"Content: Site Comms","title":"Document gitignore scaffold drift fix and consumer remediation"}
 {"type":"checkpoint","wuId":"WU-2181","timestamp":"2026-02-25T19:44:56.948Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"checkpoint","wuId":"WU-2181","timestamp":"2026-02-25T19:45:02.463Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"complete","wuId":"WU-2181","timestamp":"2026-02-25T19:51:35.795Z"}
