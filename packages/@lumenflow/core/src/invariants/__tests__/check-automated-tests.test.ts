@@ -24,16 +24,21 @@ import { checkAutomatedTestsInvariant } from '../check-automated-tests.js';
 // Also verify registry contains the invariant
 import { loadInvariants } from '../../invariants-runner.js';
 
+// WU-2135: Use the centralized WU_DIR constant to avoid path drift
+import { DIRECTORIES } from '../../wu-constants.js';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '../../../../');
 // Use os.tmpdir() for cross-platform temp directory instead of hardcoded /tmp
 const TEMP_BASE = path.join(path.resolve('/tmp'), 'lumenflow-test');
+// WU-2135: Derive the WU subdirectory from the constant used by the source
+const WU_SUBDIR = DIRECTORIES.WU_DIR;
 
 describe('INV-AUTOMATED-TESTS-FOR-CODE invariant (WU-2333)', () => {
   const TEST_DIR = path.join(TEMP_BASE, `invariants-automated-tests-${Date.now()}`);
 
   beforeEach(() => {
-    mkdirSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu'), { recursive: true });
+    mkdirSync(path.join(TEST_DIR, WU_SUBDIR), { recursive: true });
   });
 
   afterEach(() => {
@@ -70,7 +75,7 @@ tests:
   manual: []
   e2e: []
 `;
-        writeFileSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-001.yaml'), wuYaml);
+        writeFileSync(path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-001.yaml'), wuYaml);
 
         const result = checkAutomatedTestsInvariant({ baseDir: TEST_DIR });
 
@@ -94,7 +99,7 @@ tests:
     - Verify config changes work
   e2e: []
 `;
-        writeFileSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-002.yaml'), wuYaml);
+        writeFileSync(path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-002.yaml'), wuYaml);
 
         const result = checkAutomatedTestsInvariant({ baseDir: TEST_DIR });
 
@@ -117,7 +122,7 @@ tests:
     - Verify documentation
   e2e: []
 `;
-        writeFileSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-003.yaml'), wuYaml);
+        writeFileSync(path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-003.yaml'), wuYaml);
 
         const result = checkAutomatedTestsInvariant({ baseDir: TEST_DIR });
 
@@ -140,7 +145,7 @@ tests:
     - Manual check
   e2e: []
 `;
-        writeFileSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-004.yaml'), wuYaml);
+        writeFileSync(path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-004.yaml'), wuYaml);
 
         const result = checkAutomatedTestsInvariant({ baseDir: TEST_DIR });
 
@@ -162,7 +167,7 @@ tests:
     - Manual check
   e2e: []
 `;
-        writeFileSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-005.yaml'), wuYaml);
+        writeFileSync(path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-005.yaml'), wuYaml);
 
         const result = checkAutomatedTestsInvariant({ baseDir: TEST_DIR });
 
@@ -184,7 +189,7 @@ tests:
     - Manual check
   e2e: []
 `;
-        writeFileSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-006.yaml'), wuYaml);
+        writeFileSync(path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-006.yaml'), wuYaml);
 
         const result = checkAutomatedTestsInvariant({ baseDir: TEST_DIR });
 
@@ -206,7 +211,7 @@ tests:
   e2e:
     - apps/web/e2e/button.spec.ts
 `;
-        writeFileSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-007.yaml'), wuYaml);
+        writeFileSync(path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-007.yaml'), wuYaml);
 
         const result = checkAutomatedTestsInvariant({ baseDir: TEST_DIR });
 
@@ -228,7 +233,7 @@ tests:
   integration:
     - packages/@lumenflow/core/src/__tests__/integration/foo.test.ts
 `;
-        writeFileSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-008.yaml'), wuYaml);
+        writeFileSync(path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-008.yaml'), wuYaml);
 
         const result = checkAutomatedTestsInvariant({ baseDir: TEST_DIR });
 
@@ -253,7 +258,7 @@ tests:
   e2e: []
 `;
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-FAIL-001.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-FAIL-001.yaml'),
           wuYaml,
         );
 
@@ -280,7 +285,7 @@ tests:
   e2e: []
 `;
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-FAIL-002.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-FAIL-002.yaml'),
           wuYaml,
         );
 
@@ -316,11 +321,11 @@ tests:
     - Manual check
 `;
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-FAIL-003.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-FAIL-003.yaml'),
           wuYaml1,
         );
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-FAIL-004.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-FAIL-004.yaml'),
           wuYaml2,
         );
 
@@ -346,7 +351,7 @@ tests:
     - Verify config works
 `;
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-CONFIG-001.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-CONFIG-001.yaml'),
           wuYaml,
         );
 
@@ -369,7 +374,7 @@ tests:
     - Verify linting works
 `;
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-CONFIG-002.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-CONFIG-002.yaml'),
           wuYaml,
         );
 
@@ -392,7 +397,7 @@ tests:
     - Verify formatting works
 `;
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-CONFIG-003.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-CONFIG-003.yaml'),
           wuYaml,
         );
 
@@ -416,7 +421,7 @@ tests:
     - Verify config works
 `;
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-CONFIG-004.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-CONFIG-004.yaml'),
           wuYaml,
         );
 
@@ -440,7 +445,7 @@ tests:
     - Manual check
 `;
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-EDGE-001.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-EDGE-001.yaml'),
           wuYaml,
         );
 
@@ -463,7 +468,7 @@ tests:
     - Manual check
 `;
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-EDGE-002.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-EDGE-002.yaml'),
           wuYaml,
         );
 
@@ -483,7 +488,7 @@ code_paths:
   - tools/lib/some-module.ts
 `;
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-TEST-EDGE-003.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-TEST-EDGE-003.yaml'),
           wuYaml,
         );
 
@@ -495,7 +500,7 @@ code_paths:
 
       it('should not crash on invalid YAML', () => {
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-INVALID.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-INVALID.yaml'),
           'not: valid: yaml: :::',
         );
 
@@ -535,10 +540,10 @@ tests:
   manual:
     - Manual
 `;
-        writeFileSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-DONE.yaml'), doneWu);
-        writeFileSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-READY.yaml'), readyWu);
+        writeFileSync(path.join(TEST_DIR, WU_SUBDIR, 'WU-DONE.yaml'), doneWu);
+        writeFileSync(path.join(TEST_DIR, WU_SUBDIR, 'WU-READY.yaml'), readyWu);
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-BLOCKED.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-BLOCKED.yaml'),
           blockedWu,
         );
 
@@ -587,11 +592,11 @@ tests:
     - Manual check
 `;
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-VALID-001.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-VALID-001.yaml'),
           validWu,
         );
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-INVALID-001.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-INVALID-001.yaml'),
           invalidWu,
         );
 
@@ -624,7 +629,7 @@ tests:
     - Manual only
 `;
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-SCOPED-FAIL.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-SCOPED-FAIL.yaml'),
           invalidWu,
         );
 
@@ -652,7 +657,7 @@ tests:
   manual:
     - Manual only
 `;
-        writeFileSync(path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-OTHER.yaml'), invalidWu);
+        writeFileSync(path.join(TEST_DIR, WU_SUBDIR, 'WU-OTHER.yaml'), invalidWu);
 
         // Request validation for non-existent WU
         const result = checkAutomatedTestsInvariant({
@@ -680,7 +685,7 @@ tests:
     - Manual only
 `;
         writeFileSync(
-          path.join(TEST_DIR, 'docs/04-operations/tasks/wu/WU-DONE-SCOPED.yaml'),
+          path.join(TEST_DIR, WU_SUBDIR, 'WU-DONE-SCOPED.yaml'),
           doneWu,
         );
 
