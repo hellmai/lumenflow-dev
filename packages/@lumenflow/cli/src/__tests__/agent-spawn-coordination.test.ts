@@ -23,6 +23,7 @@ import { execFileSync } from 'node:child_process';
 import { stringifyYAML, parseYAML } from '@lumenflow/core/wu-yaml';
 import { WU_STATUS } from '@lumenflow/core/wu-constants';
 import { DELEGATION_REGISTRY_FILE_NAME } from '@lumenflow/core/delegation-registry-store';
+import { getLatestWuBriefEvidence } from '@lumenflow/core/wu-state-store';
 import {
   generateTaskInvocation,
   generateCodexPrompt,
@@ -32,6 +33,7 @@ import {
   generateEffortScalingRules,
   generateParallelToolCallGuidance,
   generateCompletionFormat,
+  recordWuBriefEvidence,
 } from '../wu-spawn.js';
 import {
   buildMissingSpawnProvenanceMessage,
@@ -663,6 +665,24 @@ describe('Agent Spawn Coordination Integration Tests (WU-1363)', () => {
         expect(message).toContain('Missing spawn provenance');
         expect(message).toContain('--force');
         expect(message).toContain('wu:delegate');
+      });
+    });
+
+    describe('wu:brief execution evidence (WU-2132)', () => {
+      it('records auditable brief evidence tied to WU id and timestamp', async () => {
+        process.chdir(tempDir);
+
+        await recordWuBriefEvidence({
+          wuId: TEST_WU_ID,
+          workspaceRoot: tempDir,
+          clientName: 'codex-cli',
+        });
+
+        const evidence = await getLatestWuBriefEvidence(join(tempDir, '.lumenflow/state'), TEST_WU_ID);
+        expect(evidence).toBeDefined();
+        expect(evidence?.wuId).toBe(TEST_WU_ID);
+        expect(typeof evidence?.timestamp).toBe('string');
+        expect(evidence?.note).toContain('[wu:brief]');
       });
     });
 

@@ -6,10 +6,13 @@ import { readFile } from 'node:fs/promises';
 import { ensureCleanWorktree } from '../wu-done-check.js';
 import {
   CHECKPOINT_GATE_MODES,
+  buildMissingWuBriefEvidenceMessage,
   computeBranchOnlyFallback,
+  enforceWuBriefEvidenceForDone,
   enforceCheckpointGateForDone,
   getYamlStatusForDisplay,
   resolveCheckpointGateMode,
+  shouldEnforceWuBriefEvidence,
 } from '../wu-done.js';
 import {
   resolveWuDonePreCommitGateDecision,
@@ -142,6 +145,84 @@ describe('wu-done', () => {
       expect(log).not.toHaveBeenCalled();
       expect(blocker).toHaveBeenCalledTimes(1);
       expect(blocker).toHaveBeenCalledWith(expect.stringContaining('No checkpoints found'));
+    });
+  });
+
+  describe('WU-2132: wu:brief evidence enforcement', () => {
+    it('enforces only feature and bug WU types', () => {
+      expect(shouldEnforceWuBriefEvidence({ type: 'feature' })).toBe(true);
+      expect(shouldEnforceWuBriefEvidence({ type: 'bug' })).toBe(true);
+      expect(shouldEnforceWuBriefEvidence({ type: 'documentation' })).toBe(false);
+      expect(shouldEnforceWuBriefEvidence({ type: 'process' })).toBe(false);
+    });
+
+    it('returns actionable remediation text for missing wu:brief evidence', () => {
+      const message = buildMissingWuBriefEvidenceMessage('WU-2132');
+      expect(message).toContain('Missing wu:brief evidence');
+      expect(message).toContain('pnpm wu:brief --id WU-2132');
+      expect(message).toContain('--force');
+    });
+
+    it('blocks completion when brief evidence is missing and --force is not set', async () => {
+      const blocker = vi.fn();
+
+      await enforceWuBriefEvidenceForDone(
+        'WU-2132',
+        { type: 'feature' },
+        {
+          baseDir: '/repo',
+          force: false,
+          getBriefEvidenceFn: vi.fn().mockResolvedValue(null),
+          blocker,
+          warn: vi.fn(),
+        },
+      );
+
+      expect(blocker).toHaveBeenCalledWith(expect.stringContaining('Missing wu:brief evidence'));
+    });
+
+    it('allows completion when brief evidence exists', async () => {
+      const blocker = vi.fn();
+      const warn = vi.fn();
+
+      await enforceWuBriefEvidenceForDone(
+        'WU-2132',
+        { type: 'feature' },
+        {
+          baseDir: '/repo',
+          force: false,
+          getBriefEvidenceFn: vi.fn().mockResolvedValue({
+            wuId: 'WU-2132',
+            timestamp: '2026-02-24T12:00:00.000Z',
+            note: '[wu:brief] evidence',
+          }),
+          blocker,
+          warn,
+        },
+      );
+
+      expect(blocker).not.toHaveBeenCalled();
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('allows missing brief evidence with --force and logs warning', async () => {
+      const blocker = vi.fn();
+      const warn = vi.fn();
+
+      await enforceWuBriefEvidenceForDone(
+        'WU-2132',
+        { type: 'feature' },
+        {
+          baseDir: '/repo',
+          force: true,
+          getBriefEvidenceFn: vi.fn().mockResolvedValue(null),
+          blocker,
+          warn,
+        },
+      );
+
+      expect(blocker).not.toHaveBeenCalled();
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('brief evidence override'));
     });
   });
 

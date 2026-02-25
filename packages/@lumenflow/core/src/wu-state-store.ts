@@ -23,7 +23,12 @@ import { createError, ErrorCodes } from './error-handler.js';
 export type { IWuStateStore } from './ports/wu-state.ports.js';
 
 // Re-export from extracted services for backward compatibility
-export { WU_EVENTS_FILE_NAME } from './wu-event-sourcer.js';
+export {
+  WU_EVENTS_FILE_NAME,
+  WU_BRIEF_EVIDENCE_NOTE_PREFIX,
+  findLatestWuBriefEvidence,
+  getLatestWuBriefEvidence,
+} from './wu-event-sourcer.js';
 export type { WUStateEntry, CheckpointOptions } from './wu-state-indexer.js';
 export { isLockStale, acquireLock, releaseLock } from './wu-lock-manager.js';
 export type { LockData } from './wu-lock-manager.js';

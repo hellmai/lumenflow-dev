@@ -26,6 +26,7 @@ import {
   recordSpawnToRegistry,
   formatSpawnRecordedMessage,
 } from '@lumenflow/core/wu-spawn-helpers';
+import { WUStateStore, WU_BRIEF_EVIDENCE_NOTE_PREFIX } from '@lumenflow/core/wu-state-store';
 import { SpawnStrategyFactory } from '@lumenflow/core/spawn-strategy';
 import { getConfig } from '@lumenflow/core/config';
 import { resolveClientConfig } from '@lumenflow/core/wu-spawn-skills';
@@ -41,6 +42,7 @@ import {
 
 import type { WUDocument, SpawnOptions, ClientContext } from './wu-spawn-prompt-builders.js';
 import { generateTaskInvocation, generateCodexPrompt } from './wu-spawn-prompt-builders.js';
+import { resolveStateDir } from './state-path-resolvers.js';
 
 // Re-export types used by consumers
 export type { WUDocument, SpawnOptions, ClientContext };
@@ -50,6 +52,7 @@ export { SpawnStrategyFactory };
 
 const BRIEF_LOG_PREFIX = '[wu:brief]';
 const DELEGATE_LOG_PREFIX = '[wu:delegate]';
+const BRIEF_EVIDENCE_PROGRESS = 'wu:brief executed';
 
 // ─── Lane Occupation ───
 
@@ -308,6 +311,45 @@ interface SpawnOutputWithRegistryDependencies {
   formatSpawnMessage?: typeof formatSpawnRecordedMessage;
 }
 
+interface RecordWuBriefEvidenceOptions {
+  wuId: string;
+  workspaceRoot: string;
+  clientName: string;
+}
+
+interface BriefEvidenceStore {
+  checkpoint: (
+    wuId: string,
+    note: string,
+    options?: { sessionId?: string; progress?: string; nextSteps?: string },
+  ) => Promise<void>;
+}
+
+interface RecordWuBriefEvidenceDependencies {
+  createStore?: (stateDir: string) => BriefEvidenceStore;
+}
+
+/**
+ * Record auditable wu:brief execution evidence in wu-events.jsonl.
+ *
+ * WU-2132: Completion lifecycle now requires proof that wu:brief was run.
+ */
+export async function recordWuBriefEvidence(
+  options: RecordWuBriefEvidenceOptions,
+  dependencies: RecordWuBriefEvidenceDependencies = {},
+): Promise<void> {
+  const { wuId, workspaceRoot, clientName } = options;
+  const stateDir = resolveStateDir(workspaceRoot);
+  const createStore = dependencies.createStore ?? ((dir: string) => new WUStateStore(dir));
+  const store = createStore(stateDir);
+  const note = `${WU_BRIEF_EVIDENCE_NOTE_PREFIX} generated via ${clientName}`;
+
+  await store.checkpoint(wuId, note, {
+    progress: BRIEF_EVIDENCE_PROGRESS,
+    nextSteps: `client=${clientName}`,
+  });
+}
+
 /**
  * Emit prompt output and optionally persist parent/child lineage.
  *
@@ -473,6 +515,27 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
 
   const isCodexClient = clientName === 'codex-cli' || args.codex;
 
+  const recordEvidenceOrFail = async () => {
+    if (explicitDelegation) {
+      return;
+    }
+
+    try {
+      await recordWuBriefEvidence({
+        wuId: id,
+        workspaceRoot: baseDir,
+        clientName,
+      });
+    } catch (error) {
+      die(
+        `${effectiveLogPrefix} Failed to record wu:brief evidence for ${id}: ${(error as Error).message}\n\n` +
+          `Fix options:\n` +
+          `  1. Ensure state directory is writable\n` +
+          `  2. Retry: pnpm wu:brief --id ${id}`,
+      );
+    }
+  };
+
   if (isCodexClient) {
     const prompt = generateCodexPrompt(doc, id, strategy, {
       ...thinkingOptions,
@@ -488,6 +551,7 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
       recordDelegationIntent: explicitDelegation,
       logPrefix: effectiveLogPrefix,
     });
+    await recordEvidenceOrFail();
     return;
   }
 
@@ -511,4 +575,5 @@ export async function runBriefLogic(options: RunBriefOptions = {}): Promise<void
     recordDelegationIntent: explicitDelegation,
     logPrefix: effectiveLogPrefix,
   });
+  await recordEvidenceOrFail();
 }

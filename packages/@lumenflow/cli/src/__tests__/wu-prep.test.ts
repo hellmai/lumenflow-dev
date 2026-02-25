@@ -469,7 +469,7 @@ describe('wu-prep dirty-main mutation guard (WU-1750)', () => {
       mainCheckout: '/repo',
       isBranchPr: false,
       mainStatus:
-        ' M .lumenflow/state/wu-events.jsonl\n?? docs/04-operations/tasks/wu/WU-1750.yaml\n',
+        ' M .lumenflow/state/wu-events.jsonl\n?? docs/tasks/wu/WU-1750.yaml\n',
     });
 
     expect(result.blocked).toBe(false);
@@ -486,5 +486,118 @@ describe('wu-prep dirty-main mutation guard (WU-1750)', () => {
 
     expect(result.blocked).toBe(false);
     expect(result.blockedPaths).toEqual([]);
+  });
+});
+
+describe('wu-prep TDD provenance enforcement (WU-2132)', () => {
+  describe('hasDocumentedTddException', () => {
+    it('returns true when notes include explicit tdd-exception marker', async () => {
+      const { hasDocumentedTddException } = await import('../wu-prep.js');
+      expect(hasDocumentedTddException('tdd-exception: generated types only')).toBe(true);
+    });
+
+    it('returns false when notes do not include tdd-exception marker', async () => {
+      const { hasDocumentedTddException } = await import('../wu-prep.js');
+      expect(hasDocumentedTddException('routine implementation notes')).toBe(false);
+    });
+  });
+
+  describe('hasTddEvidenceInWorkingDiff', () => {
+    it('returns true when changed files include test files', async () => {
+      const { hasTddEvidenceInWorkingDiff } = await import('../wu-prep.js');
+      expect(
+        hasTddEvidenceInWorkingDiff({
+          changedFiles: ['packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts'],
+          declaredTestPaths: [],
+        }),
+      ).toBe(true);
+    });
+
+    it('returns true when declared tests.unit path is covered by branch diff', async () => {
+      const { hasTddEvidenceInWorkingDiff } = await import('../wu-prep.js');
+      expect(
+        hasTddEvidenceInWorkingDiff({
+          changedFiles: ['packages/@lumenflow/cli/src/__tests__/wu-prep.test.ts'],
+          declaredTestPaths: ['packages/@lumenflow/cli/src/__tests__/**/*.test.ts'],
+        }),
+      ).toBe(true);
+    });
+
+    it('returns false when no test-like changes are present', async () => {
+      const { hasTddEvidenceInWorkingDiff } = await import('../wu-prep.js');
+      expect(
+        hasTddEvidenceInWorkingDiff({
+          changedFiles: ['packages/@lumenflow/cli/src/wu-prep.ts'],
+          declaredTestPaths: [],
+        }),
+      ).toBe(false);
+    });
+  });
+
+  describe('evaluateTddDiffEvidenceForPrep', () => {
+    it('returns valid when WU type is not feature/bug', async () => {
+      const { evaluateTddDiffEvidenceForPrep } = await import('../wu-prep.js');
+      const result = await evaluateTddDiffEvidenceForPrep({
+        wuId: 'WU-2132',
+        doc: { type: 'documentation' },
+        cwd: '/repo/worktree',
+        resolveChangedFilesFn: vi.fn(),
+      });
+
+      expect(result.valid).toBe(true);
+      expect(result.reason).toBe('not-applicable');
+    });
+
+    it('returns valid when notes include documented exception', async () => {
+      const { evaluateTddDiffEvidenceForPrep } = await import('../wu-prep.js');
+      const resolveChangedFilesFn = vi.fn();
+      const result = await evaluateTddDiffEvidenceForPrep({
+        wuId: 'WU-2132',
+        doc: { type: 'feature', notes: 'tdd-exception: config-only refactor' },
+        cwd: '/repo/worktree',
+        resolveChangedFilesFn,
+      });
+
+      expect(result.valid).toBe(true);
+      expect(result.reason).toBe('documented-exception');
+      expect(resolveChangedFilesFn).not.toHaveBeenCalled();
+    });
+
+    it('returns invalid when feature/bug WU has no touched tests and no exception', async () => {
+      const { evaluateTddDiffEvidenceForPrep } = await import('../wu-prep.js');
+      const result = await evaluateTddDiffEvidenceForPrep({
+        wuId: 'WU-2132',
+        doc: { type: 'feature', notes: 'normal notes', tests: { unit: [] } },
+        cwd: '/repo/worktree',
+        resolveChangedFilesFn: vi.fn().mockResolvedValue({
+          ok: true,
+          files: ['packages/@lumenflow/cli/src/wu-prep.ts'],
+          baseRef: 'main',
+          headRef: 'HEAD',
+        }),
+      });
+
+      expect(result.valid).toBe(false);
+      expect(result.reason).toBe('missing-test-diff-evidence');
+      expect(result.changedFiles).toEqual(['packages/@lumenflow/cli/src/wu-prep.ts']);
+    });
+
+    it('returns valid when diff resolver reports touched tests', async () => {
+      const { evaluateTddDiffEvidenceForPrep } = await import('../wu-prep.js');
+      const result = await evaluateTddDiffEvidenceForPrep({
+        wuId: 'WU-2132',
+        doc: { type: 'bug', notes: 'normal notes', tests: { unit: ['tests/**/*.test.ts'] } },
+        cwd: '/repo/worktree',
+        resolveChangedFilesFn: vi.fn().mockResolvedValue({
+          ok: true,
+          files: ['tests/core/wu-prep.test.ts'],
+          baseRef: 'origin/main',
+          headRef: 'HEAD',
+        }),
+      });
+
+      expect(result.valid).toBe(true);
+      expect(result.reason).toBe('test-diff-evidence-found');
+    });
   });
 });

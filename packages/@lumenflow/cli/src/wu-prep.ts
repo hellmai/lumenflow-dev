@@ -42,6 +42,8 @@ import { resolveLocation } from '@lumenflow/core/context/location-resolver';
 import { readWU } from '@lumenflow/core/wu-yaml';
 import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { createGitForPath } from '@lumenflow/core/git-adapter';
+import { TEST_FILE_PATTERNS } from '@lumenflow/core';
+import { resolveChangedFiles, isCodePathCoveredByChangedFiles } from '@lumenflow/core/wu-rules-engine';
 import {
   validatePreflight,
   formatPreflightResult,
@@ -54,6 +56,7 @@ import {
   WU_STATUS,
   EMOJI,
   CLAIMED_MODES,
+  WU_TYPES,
 } from '@lumenflow/core/wu-constants';
 import { defaultBranchFrom } from '@lumenflow/core/wu-done-paths';
 import { getCurrentBranch } from '@lumenflow/core/wu-helpers';
@@ -70,6 +73,26 @@ export {
 } from './wu-code-path-coverage.js';
 
 const { LOCATION_TYPES } = CONTEXT_VALIDATION;
+const TDD_EXCEPTION_MARKER = 'tdd-exception:';
+
+type ResolveChangedFilesFn = typeof resolveChangedFiles;
+
+type EvaluateTddDiffEvidenceResult =
+  | {
+      valid: true;
+      reason: 'not-applicable' | 'documented-exception' | 'test-diff-evidence-found';
+      changedFiles: string[];
+      baseRef?: string;
+      headRef?: string;
+    }
+  | {
+      valid: false;
+      reason: 'diff-unavailable' | 'missing-test-diff-evidence';
+      changedFiles: string[];
+      diffReason?: string;
+      baseRef?: string;
+      headRef?: string;
+    };
 
 /**
  * Log prefix for wu:prep command output.
@@ -110,6 +133,162 @@ export function resolveScopedUnitTestsForPrep(options: {
     .filter((entry): entry is string => typeof entry === 'string')
     .map((entry) => entry.trim())
     .filter(Boolean);
+}
+
+export function shouldEnforceTddDiffEvidence(doc: { type?: unknown }): boolean {
+  return doc.type === WU_TYPES.FEATURE || doc.type === WU_TYPES.BUG;
+}
+
+export function hasDocumentedTddException(notes: unknown): boolean {
+  if (typeof notes === 'string') {
+    return notes.toLowerCase().includes(TDD_EXCEPTION_MARKER);
+  }
+
+  if (Array.isArray(notes)) {
+    return notes.some((entry) => typeof entry === 'string' && hasDocumentedTddException(entry));
+  }
+
+  return false;
+}
+
+function normalizeDeclaredAutomatedTestPaths(tests: {
+  unit?: unknown;
+  e2e?: unknown;
+  integration?: unknown;
+}): string[] {
+  const buckets = ['unit', 'e2e', 'integration'] as const;
+  const paths: string[] = [];
+
+  for (const bucket of buckets) {
+    const value = tests?.[bucket];
+    if (!Array.isArray(value)) {
+      continue;
+    }
+
+    for (const entry of value) {
+      if (typeof entry !== 'string') {
+        continue;
+      }
+      const normalized = entry.trim();
+      if (normalized.length === 0) {
+        continue;
+      }
+      paths.push(normalized);
+    }
+  }
+
+  return paths;
+}
+
+function isTestFileFromDiff(filePath: string): boolean {
+  const normalized = filePath.replace(/\\/g, '/');
+  return TEST_FILE_PATTERNS.some((pattern) => pattern.test(normalized));
+}
+
+export function hasTddEvidenceInWorkingDiff(options: {
+  changedFiles: string[];
+  declaredTestPaths: string[];
+}): boolean {
+  const { changedFiles, declaredTestPaths } = options;
+  if (changedFiles.some((filePath) => isTestFileFromDiff(filePath))) {
+    return true;
+  }
+
+  for (const testPath of declaredTestPaths) {
+    if (isCodePathCoveredByChangedFiles({ codePath: testPath, changedFiles })) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export async function evaluateTddDiffEvidenceForPrep(options: {
+  wuId: string;
+  doc: {
+    type?: unknown;
+    notes?: unknown;
+    tests?: { unit?: unknown; e2e?: unknown; integration?: unknown };
+  };
+  cwd: string;
+  resolveChangedFilesFn?: ResolveChangedFilesFn;
+}): Promise<EvaluateTddDiffEvidenceResult> {
+  const { doc } = options;
+  if (!shouldEnforceTddDiffEvidence(doc)) {
+    return { valid: true, reason: 'not-applicable', changedFiles: [] };
+  }
+
+  if (hasDocumentedTddException(doc.notes)) {
+    return { valid: true, reason: 'documented-exception', changedFiles: [] };
+  }
+
+  const resolveChangedFilesFn = options.resolveChangedFilesFn ?? resolveChangedFiles;
+  const changedFilesResult = await resolveChangedFilesFn({ cwd: options.cwd });
+  if (!changedFilesResult.ok) {
+    return {
+      valid: false,
+      reason: 'diff-unavailable',
+      changedFiles: [],
+      diffReason: changedFilesResult.reason,
+    };
+  }
+
+  const declaredTestPaths = normalizeDeclaredAutomatedTestPaths(doc.tests ?? {});
+  const hasEvidence = hasTddEvidenceInWorkingDiff({
+    changedFiles: changedFilesResult.files,
+    declaredTestPaths,
+  });
+
+  if (hasEvidence) {
+    return {
+      valid: true,
+      reason: 'test-diff-evidence-found',
+      changedFiles: changedFilesResult.files,
+      baseRef: changedFilesResult.baseRef,
+      headRef: changedFilesResult.headRef,
+    };
+  }
+
+  return {
+    valid: false,
+    reason: 'missing-test-diff-evidence',
+    changedFiles: changedFilesResult.files,
+    baseRef: changedFilesResult.baseRef,
+    headRef: changedFilesResult.headRef,
+  };
+}
+
+function formatTddDiffEvidenceFailure(options: {
+  wuId: string;
+  result: Extract<EvaluateTddDiffEvidenceResult, { valid: false }>;
+}): string {
+  const { wuId, result } = options;
+
+  if (result.reason === 'diff-unavailable') {
+    return (
+      `${EMOJI.FAILURE} TDD provenance check failed for ${wuId}.\n\n` +
+      `Unable to evaluate branch diff for test evidence: ${result.diffReason || 'unknown diff error'}\n\n` +
+      `Fix options:\n` +
+      `  1. Ensure base ref is available (origin/main or main)\n` +
+      `  2. Retry: pnpm wu:prep --id ${wuId}`
+    );
+  }
+
+  const changedSection =
+    result.changedFiles.length > 0
+      ? result.changedFiles.map((filePath) => `  - ${filePath}`).join('\n')
+      : '  - (none)';
+
+  return (
+    `${EMOJI.FAILURE} Missing TDD diff evidence for ${wuId}.\n\n` +
+    `Feature/bug WUs must touch at least one automated test file before wu:prep.\n\n` +
+    `Changed files (${result.baseRef || 'main'}...${result.headRef || 'HEAD'}):\n` +
+    `${changedSection}\n\n` +
+    `Fix options:\n` +
+    `  1. Add/update test files in this branch and retry wu:prep\n` +
+    `  2. Add an explicit exception marker in WU notes when test edits are not expected:\n` +
+    `     ${TDD_EXCEPTION_MARKER} <reason>`
+  );
 }
 
 /**
@@ -593,6 +772,15 @@ export async function main(): Promise<void> {
     for (const line of warningLines) {
       console.log(line.startsWith('  - ') ? `${PREP_PREFIX} ${line}` : line);
     }
+  }
+
+  const tddEvidenceResult = await evaluateTddDiffEvidenceForPrep({
+    wuId: id,
+    doc,
+    cwd: location.cwd,
+  });
+  if (!tddEvidenceResult.valid) {
+    die(formatTddDiffEvidenceFailure({ wuId: id, result: tddEvidenceResult }));
   }
 
   // WU-1344: Check for pre-existing spec:linter failures on main BEFORE running gates.

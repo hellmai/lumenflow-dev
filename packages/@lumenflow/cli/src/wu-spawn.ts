@@ -65,6 +65,7 @@ export {
   checkLaneOccupation,
   generateLaneOccupationWarning,
   emitSpawnOutputWithRegistry,
+  recordWuBriefEvidence,
   runBriefLogic,
 } from './wu-spawn-strategy-resolver.js';
 

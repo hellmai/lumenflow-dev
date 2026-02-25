@@ -24,6 +24,13 @@ import { getErrorMessage, createError, ErrorCodes } from './error-handler.js';
  * WU events file name constant
  */
 export const WU_EVENTS_FILE_NAME = 'wu-events.jsonl';
+export const WU_BRIEF_EVIDENCE_NOTE_PREFIX = '[wu:brief]';
+
+export interface WuBriefEvidence {
+  wuId: string;
+  timestamp: string;
+  note: string;
+}
 
 const FILE_NOT_FOUND_ERROR_CODE = 'ENOENT';
 
@@ -38,6 +45,99 @@ function getErrorCode(error: unknown): string | null {
 
   const { code } = error;
   return typeof code === 'string' ? code : null;
+}
+
+function parseValidatedEvents(content: string): WUEvent[] {
+  const events: WUEvent[] = [];
+  const lines = content.split('\n');
+
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = lines[i];
+    if (typeof rawLine !== 'string') {
+      continue;
+    }
+    const line = rawLine.trim();
+    if (!line) {
+      continue;
+    }
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(line);
+    } catch (error) {
+      throw createError(
+        ErrorCodes.PARSE_ERROR,
+        `Malformed JSON on line ${i + 1}: ${getErrorMessage(error)}`,
+      );
+    }
+
+    const validation = validateWUEvent(parsed);
+    if (!validation.success) {
+      const issues = validation.error.issues
+        .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+        .join(', ');
+      throw createError(
+        ErrorCodes.VALIDATION_ERROR,
+        `Validation error on line ${i + 1}: ${issues}`,
+      );
+    }
+
+    events.push(validation.data);
+  }
+
+  return events;
+}
+
+async function readEventsFileSafely(eventsFilePath: string): Promise<string> {
+  try {
+    return await fs.readFile(eventsFilePath, 'utf-8');
+  } catch (error) {
+    if (getErrorCode(error) === FILE_NOT_FOUND_ERROR_CODE) {
+      return '';
+    }
+    throw error;
+  }
+}
+
+/**
+ * Find the latest wu:brief checkpoint evidence in a list of validated events.
+ */
+export function findLatestWuBriefEvidence(
+  events: readonly WUEvent[],
+  wuId: string,
+): WuBriefEvidence | null {
+  for (let i = events.length - 1; i >= 0; i--) {
+    const event = events[i];
+    if (!event || event.type !== 'checkpoint') {
+      continue;
+    }
+
+    if (
+      event.wuId === wuId &&
+      typeof event.note === 'string' &&
+      event.note.startsWith(WU_BRIEF_EVIDENCE_NOTE_PREFIX)
+    ) {
+      return { wuId: event.wuId, timestamp: event.timestamp, note: event.note };
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Read wu-events and return latest wu:brief evidence for a WU (if any).
+ */
+export async function getLatestWuBriefEvidence(
+  baseDir: string,
+  wuId: string,
+): Promise<WuBriefEvidence | null> {
+  const eventsFilePath = path.join(baseDir, WU_EVENTS_FILE_NAME);
+  const content = await readEventsFileSafely(eventsFilePath);
+  if (!content.trim()) {
+    return null;
+  }
+
+  return findLatestWuBriefEvidence(parseValidatedEvents(content), wuId);
 }
 
 /**
@@ -77,50 +177,14 @@ export class WUEventSourcer {
   async load(): Promise<void> {
     this.indexer.clear();
 
-    let content: string;
-    try {
-      content = await fs.readFile(this.eventsFilePath, 'utf-8');
-    } catch (error) {
-      if (getErrorCode(error) === FILE_NOT_FOUND_ERROR_CODE) {
-        return;
-      }
-      throw error;
+    const content = await readEventsFileSafely(this.eventsFilePath);
+    if (!content.trim()) {
+      return;
     }
 
-    const lines = content.split('\n');
-    for (let i = 0; i < lines.length; i++) {
-      const rawLine = lines[i];
-      if (typeof rawLine !== 'string') {
-        continue;
-      }
-      const line = rawLine.trim();
-
-      if (!line) {
-        continue;
-      }
-
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(line);
-      } catch (error) {
-        throw createError(
-          ErrorCodes.PARSE_ERROR,
-          `Malformed JSON on line ${i + 1}: ${getErrorMessage(error)}`,
-        );
-      }
-
-      const validation = validateWUEvent(parsed);
-      if (!validation.success) {
-        const issues = validation.error.issues
-          .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
-          .join(', ');
-        throw createError(
-          ErrorCodes.VALIDATION_ERROR,
-          `Validation error on line ${i + 1}: ${issues}`,
-        );
-      }
-
-      this.indexer.applyEvent(validation.data);
+    const events = parseValidatedEvents(content);
+    for (const event of events) {
+      this.indexer.applyEvent(event);
     }
   }
 

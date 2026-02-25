@@ -15,7 +15,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { WUEventSourcer, WU_EVENTS_FILE_NAME } from '../wu-event-sourcer.js';
+import {
+  WUEventSourcer,
+  WU_EVENTS_FILE_NAME,
+  WU_BRIEF_EVIDENCE_NOTE_PREFIX,
+  findLatestWuBriefEvidence,
+} from '../wu-event-sourcer.js';
 import type { WUStateIndexer } from '../wu-state-indexer.js';
 import type { WUEvent } from '../wu-state-schema.js';
 
@@ -71,6 +76,63 @@ describe('WUEventSourcer', () => {
   describe('constructor and getEventsFilePath', () => {
     it('should compute events file path from baseDir', () => {
       expect(sourcer.getEventsFilePath()).toBe(eventsPath);
+    });
+  });
+
+  describe('findLatestWuBriefEvidence', () => {
+    it('should return null when no wu:brief evidence exists for target WU', () => {
+      const events = [
+        makeClaimEvent('WU-100'),
+        {
+          type: 'checkpoint',
+          wuId: 'WU-100',
+          timestamp: '2026-02-24T10:00:00.000Z',
+          note: 'regular checkpoint',
+        },
+      ] as WUEvent[];
+
+      const result = findLatestWuBriefEvidence(events, 'WU-100');
+      expect(result).toBeNull();
+    });
+
+    it('should return latest wu:brief checkpoint evidence for target WU', () => {
+      const events = [
+        {
+          type: 'checkpoint',
+          wuId: 'WU-100',
+          timestamp: '2026-02-24T10:00:00.000Z',
+          note: `${WU_BRIEF_EVIDENCE_NOTE_PREFIX} initial`,
+        },
+        {
+          type: 'checkpoint',
+          wuId: 'WU-100',
+          timestamp: '2026-02-24T11:00:00.000Z',
+          note: `${WU_BRIEF_EVIDENCE_NOTE_PREFIX} refreshed`,
+        },
+      ] as WUEvent[];
+
+      const result = findLatestWuBriefEvidence(events, 'WU-100');
+      expect(result).toEqual(
+        expect.objectContaining({
+          wuId: 'WU-100',
+          timestamp: '2026-02-24T11:00:00.000Z',
+          note: `${WU_BRIEF_EVIDENCE_NOTE_PREFIX} refreshed`,
+        }),
+      );
+    });
+
+    it('should ignore evidence from other WUs', () => {
+      const events = [
+        {
+          type: 'checkpoint',
+          wuId: 'WU-200',
+          timestamp: '2026-02-24T10:00:00.000Z',
+          note: `${WU_BRIEF_EVIDENCE_NOTE_PREFIX} evidence`,
+        },
+      ] as WUEvent[];
+
+      const result = findLatestWuBriefEvidence(events, 'WU-100');
+      expect(result).toBeNull();
     });
   });
 

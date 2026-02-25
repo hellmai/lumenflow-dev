@@ -97,6 +97,7 @@ import {
   SESSION,
   WU_STATUS,
   WU_EXPOSURE,
+  WU_TYPES,
   PKG_MANAGER,
   SCRIPTS,
   CLI_FLAGS,
@@ -143,7 +144,7 @@ import { checkWUConsistency } from '@lumenflow/core/wu-consistency-checker';
 import { checkMandatoryAgentsComplianceBlocking } from '@lumenflow/core/orchestration-rules';
 import { endSessionForWU } from '@lumenflow/agent/auto-session';
 import { runBackgroundProcessCheck } from '@lumenflow/core/process-detector';
-import { WUStateStore } from '@lumenflow/core/wu-state-store';
+import { WUStateStore, getLatestWuBriefEvidence } from '@lumenflow/core/wu-state-store';
 // WU-1588: INIT-007 memory layer integration
 import { createCheckpoint } from '@lumenflow/memory/checkpoint';
 import { createSignal, loadSignals } from '@lumenflow/memory/signal';
@@ -283,6 +284,7 @@ interface WUDocLike extends Record<string, unknown> {
   title?: string;
   initiative?: string;
   lane?: string;
+  type?: string;
   status?: string;
   locked?: boolean;
   baseline_main_sha?: string;
@@ -767,6 +769,96 @@ async function checkInboxForRecentSignals(id: string, baseDir: string = process.
       `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not check inbox for signals: ${getErrorMessage(err)}`,
     );
   }
+}
+
+/**
+ * Enforce wu:brief evidence for feature and bug WUs.
+ */
+export function shouldEnforceWuBriefEvidence(doc: WUDocLike): boolean {
+  return doc.type === WU_TYPES.FEATURE || doc.type === WU_TYPES.BUG;
+}
+
+/**
+ * Build remediation guidance when wu:brief evidence is missing.
+ */
+export function buildMissingWuBriefEvidenceMessage(id: string): string {
+  return (
+    `Missing wu:brief evidence for ${id}.\n\n` +
+    `Completion policy requires an auditable wu:brief execution record for feature/bug WUs.\n\n` +
+    `Fix options:\n` +
+    `  1. Run wu:brief in the claimed workspace:\n` +
+    `     pnpm wu:brief --id ${id}\n` +
+    `  2. Retry completion:\n` +
+    `     pnpm wu:done --id ${id}\n` +
+    `  3. Legacy/manual override (audited):\n` +
+    `     pnpm wu:done --id ${id} --force`
+  );
+}
+
+function buildWuBriefEvidenceReadFailureMessage(
+  id: string,
+  stateDir: string,
+  error: unknown,
+): string {
+  return (
+    `Could not verify wu:brief evidence for ${id}.\n\n` +
+    `State path: ${stateDir}\n` +
+    `Error: ${getErrorMessage(error)}\n\n` +
+    `Fix options:\n` +
+    `  1. Repair/restore state store, then rerun wu:done\n` +
+    `  2. Use --force for audited override when recovery is not possible`
+  );
+}
+
+export async function enforceWuBriefEvidenceForDone(
+  id: string,
+  doc: WUDocLike,
+  options: {
+    baseDir?: string;
+    force?: boolean;
+    getBriefEvidenceFn?: typeof getLatestWuBriefEvidence;
+    blocker?: (message: string) => void;
+    warn?: (message: string) => void;
+  } = {},
+): Promise<void> {
+  if (!shouldEnforceWuBriefEvidence(doc)) {
+    return;
+  }
+
+  const baseDir = options.baseDir ?? process.cwd();
+  const force = options.force === true;
+  const stateDir = resolveStateDir(baseDir);
+  const getBriefEvidenceFn = options.getBriefEvidenceFn ?? getLatestWuBriefEvidence;
+  const blocker = options.blocker ?? ((message: string) => die(message));
+  const warn = options.warn ?? console.warn;
+
+  let evidence;
+  try {
+    evidence = await getBriefEvidenceFn(stateDir, id);
+  } catch (error) {
+    if (!force) {
+      blocker(buildWuBriefEvidenceReadFailureMessage(id, stateDir, error));
+      return;
+    }
+
+    warn(
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2132: brief evidence verification failed for ${id}, override accepted via --force`,
+    );
+    return;
+  }
+
+  if (evidence) {
+    return;
+  }
+
+  if (!force) {
+    blocker(buildMissingWuBriefEvidenceMessage(id));
+    return;
+  }
+
+  warn(
+    `${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-2132: brief evidence override accepted for ${id} via --force`,
+  );
 }
 
 /**
@@ -3019,6 +3111,12 @@ export async function main() {
 
   // WU-1663: Pre-flight checks passed - transition to preparing state
   pipelineActor.send({ type: WU_DONE_EVENTS.VALIDATION_PASSED });
+
+  // WU-2132: Enforce auditable wu:brief evidence for feature/bug WUs.
+  await enforceWuBriefEvidenceForDone(id, docMain, {
+    baseDir: effectiveWorktreePath || mainCheckoutPath,
+    force: Boolean(args.force),
+  });
 
   // WU-1599: Enforce auditable spawn provenance for initiative-governed WUs.
   await enforceSpawnProvenanceForDone(id, docMain, {
