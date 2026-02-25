@@ -14,7 +14,11 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2186.done
-dependencies: []
+dependencies:
+  - WU-2183
+  - WU-2185
+initiative: INIT-045
+phase: 3
 spec_refs:
   - /home/tom/.claude/plans/init-045-multi-pack-config.md
 risks: []
@@ -34,4 +38,3 @@ acceptance:
   - config:get --key control_plane.endpoint reads from root only
   - config:get --key software_delivery.gates.minCoverage reads from SD block
   - config:get does not fall back to software_delivery when root key not found
-initiative: INIT-045
