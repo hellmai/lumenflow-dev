@@ -1,5 +1,5 @@
 id: WU-2166
-title: 'A5: Extract wu:done memory and telemetry module'
+title: Extract wu:done memory and telemetry module
 lane: 'Framework: CLI WU Commands'
 type: refactor
 status: ready
