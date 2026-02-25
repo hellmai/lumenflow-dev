@@ -2,7 +2,7 @@ id: WU-2181
 title: Document gitignore scaffold drift fix and consumer remediation
 lane: 'Content: Site Comms'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -25,8 +25,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'WU-2180 fixed missing gitignore entries in lumenflow init scaffolding but shipped without documentation. Need: CHANGELOG entry under Unreleased, migration/remediation guidance for consumers who already have tracked ephemeral files, and document that lumenflow init --skip backfills missing entries.'
+description: 'WU-2180 fixed missing gitignore entries in lumenflow init scaffolding but shipped
+  without documentation. Need: CHANGELOG entry under Unreleased, migration/remediation guidance for
+  consumers who already have tracked ephemeral files, and document that lumenflow init --skip
+  backfills missing entries.'
 acceptance:
   - CHANGELOG.md Unreleased section has entry for gitignore scaffold fix
   - Migration/remediation steps documented for consumers with tracked ephemeral files
   - lumenflow init --skip backfill behavior documented
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-2181
+claimed_at: 2026-02-25T19:44:40.170Z
+baseline_main_sha: 90a61f0ed799bfb563ef9df52a722c4bf19d2935
+session_id: 4e51b9cb-c7f8-423a-9d6b-5b1100908b38
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T19:44:40.173Z
