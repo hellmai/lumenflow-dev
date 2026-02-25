@@ -464,7 +464,9 @@ function loadCloudSyncState(statePath: string): CloudSyncState {
     const filesRaw = Reflect.get(parsed, 'files');
     const gatesRaw = isRecord(filesRaw) ? Reflect.get(filesRaw, TELEMETRY_SOURCE.GATES) : undefined;
     const flowRaw = isRecord(filesRaw) ? Reflect.get(filesRaw, TELEMETRY_SOURCE.FLOW) : undefined;
-    const gatesOffset = isRecord(gatesRaw) ? normalizeStateOffset(Reflect.get(gatesRaw, 'offset')) : 0;
+    const gatesOffset = isRecord(gatesRaw)
+      ? normalizeStateOffset(Reflect.get(gatesRaw, 'offset'))
+      : 0;
     const flowOffset = isRecord(flowRaw) ? normalizeStateOffset(Reflect.get(flowRaw, 'offset')) : 0;
     const lastSyncAtMs = normalizeStateOffset(Reflect.get(parsed, 'lastSyncAtMs'));
 
@@ -514,7 +516,10 @@ function resolveTelemetryPath(workspaceRoot: string, source: TelemetrySource): s
   return path.join(workspaceRoot, FLOW_LOG);
 }
 
-function mapGatesEventToTelemetryRecord(payload: Record<string, unknown>, fallbackIso: string): CloudTelemetryRecord {
+function mapGatesEventToTelemetryRecord(
+  payload: Record<string, unknown>,
+  fallbackIso: string,
+): CloudTelemetryRecord {
   const gateName = asNonEmptyString(Reflect.get(payload, 'gate_name')) ?? 'unknown';
   const passedRaw = Reflect.get(payload, 'passed');
   const passed = typeof passedRaw === 'boolean' ? passedRaw : false;
@@ -542,7 +547,10 @@ function mapGatesEventToTelemetryRecord(payload: Record<string, unknown>, fallba
   };
 }
 
-function mapFlowEventToTelemetryRecord(payload: Record<string, unknown>, fallbackIso: string): CloudTelemetryRecord {
+function mapFlowEventToTelemetryRecord(
+  payload: Record<string, unknown>,
+  fallbackIso: string,
+): CloudTelemetryRecord {
   const script = asNonEmptyString(Reflect.get(payload, 'script')) ?? 'unknown';
   const step =
     asNonEmptyString(Reflect.get(payload, 'step')) ??

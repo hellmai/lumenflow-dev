@@ -271,7 +271,10 @@ describe('WU-2160: gates NDJSON cloud sync', () => {
       readFileSync(path.join(root, '.lumenflow', 'telemetry', 'gates.ndjson'), 'utf-8'),
       'utf8',
     );
-    const flowSize = Buffer.byteLength(readFileSync(path.join(root, '.lumenflow', 'flow.log'), 'utf-8'), 'utf8');
+    const flowSize = Buffer.byteLength(
+      readFileSync(path.join(root, '.lumenflow', 'flow.log'), 'utf-8'),
+      'utf8',
+    );
     expect(state.files.gates.offset).toBe(gatesSize);
     expect(state.files.flow.offset).toBe(flowSize);
   });
@@ -303,7 +306,9 @@ describe('WU-2160: gates NDJSON cloud sync', () => {
 
     expect(firstAttempt.recordsSent).toBe(0);
 
-    const secondFetch = vi.fn<typeof fetch>().mockResolvedValue(createJsonResponse({ accepted: 1 }));
+    const secondFetch = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(createJsonResponse({ accepted: 1 }));
     const secondAttempt = await syncGatesTelemetryToCloud({
       cwd: root,
       fetchFn: secondFetch,
@@ -350,7 +355,9 @@ describe('WU-2160: gates NDJSON cloud sync', () => {
     expect(firstAttempt.malformedLines).toBe(1);
     expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('malformed NDJSON'));
 
-    const secondFetch = vi.fn<typeof fetch>().mockResolvedValue(createJsonResponse({ accepted: 1 }));
+    const secondFetch = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(createJsonResponse({ accepted: 1 }));
     const secondAttempt = await syncGatesTelemetryToCloud({
       cwd: root,
       fetchFn: secondFetch,

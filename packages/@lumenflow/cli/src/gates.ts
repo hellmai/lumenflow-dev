@@ -276,13 +276,15 @@ export async function runGates(
   }
 }
 
-export async function syncGatesTelemetryToCloud(input: {
-  cwd?: string;
-  fetchFn?: typeof fetch;
-  logger?: Pick<Console, 'warn'>;
-  now?: () => number;
-  environment?: NodeJS.ProcessEnv;
-} = {}): Promise<TelemetryCloudSyncResult> {
+export async function syncGatesTelemetryToCloud(
+  input: {
+    cwd?: string;
+    fetchFn?: typeof fetch;
+    logger?: Pick<Console, 'warn'>;
+    now?: () => number;
+    environment?: NodeJS.ProcessEnv;
+  } = {},
+): Promise<TelemetryCloudSyncResult> {
   return syncNdjsonTelemetryToCloud({
     workspaceRoot: input.cwd ?? process.cwd(),
     fetchFn: input.fetchFn,
