@@ -2,7 +2,7 @@ id: WU-2159
 title: Implement HttpControlPlaneSyncPort adapter for cloud telemetry forwarding
 lane: 'Operations: Runtime'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -11,8 +11,10 @@ code_paths:
   - apps/web/src/server/http-surface-runtime.ts
 tests:
   manual:
-    - Verify cloud:connect writes config, then runtime event streaming forwards kernel events to cloud dashboard
-    - 'Verify graceful degradation: disconnect network during runtime event forwarding, confirm local web/runtime operations succeed and warnings are logged'
+    - Verify cloud:connect writes config, then runtime event streaming forwards kernel events to
+      cloud dashboard
+    - 'Verify graceful degradation: disconnect network during runtime event forwarding, confirm
+      local web/runtime operations succeed and warnings are logged'
   unit:
     - packages/@lumenflow/control-plane-sdk/__tests__/http-sync-port.test.ts
   e2e: []
@@ -22,43 +24,89 @@ dependencies: []
 spec_refs:
   - docs/04-operations/_frameworks/lumenflow/agent/onboarding/starting-prompt.md
 risks: []
-notes: |-
+notes: >-
   ## Implementation notes
 
+
   ### Reference files
+
   - Port interface: packages/@lumenflow/control-plane-sdk/src/sync-port.ts (7 methods, all async)
+
   - Mock reference: packages/@lumenflow/control-plane-sdk/src/mock/mock-control-plane-sync-port.ts
-  - Sync loop consumer: packages/@lumenflow/surfaces/http/control-plane-event-subscriber.ts (runSyncCycle: pullPolicies → heartbeat → pushKernelEvents)
-  - Runtime wiring point: apps/web/src/server/http-surface-runtime.ts (readWorkspaceControlPlaneConfig + getControlPlaneDiagnostics)
-  - Existing tests: packages/@lumenflow/surfaces/__tests__/control-plane-forwarding.test.ts (patterns for vi.useFakeTimers, mock port)
-  - Config schema: packages/@lumenflow/control-plane-sdk/src/workspace-config.ts (ControlPlaneConfigSchema)
+
+  - Sync loop consumer: packages/@lumenflow/surfaces/http/control-plane-event-subscriber.ts
+  (runSyncCycle: pullPolicies → heartbeat → pushKernelEvents)
+
+  - Runtime wiring point: apps/web/src/server/http-surface-runtime.ts
+  (readWorkspaceControlPlaneConfig + getControlPlaneDiagnostics)
+
+  - Existing tests: packages/@lumenflow/surfaces/__tests__/control-plane-forwarding.test.ts
+  (patterns for vi.useFakeTimers, mock port)
+
+  - Config schema: packages/@lumenflow/control-plane-sdk/src/workspace-config.ts
+  (ControlPlaneConfigSchema)
+
 
   ### Test workspace (for integration smoke test)
+
   - Endpoint: https://cloud.lumenflow.dev
+
   - Org ID: 10762bb6-1bf2-4c15-aa13-c4fd20bbc7b9
+
   - API key env: LUMENFLOW_CLOUD_TOKEN
+
   - Tier: Team (trialing)
 
+
   ### Architecture
-  - HttpControlPlaneSyncPort goes in packages/@lumenflow/control-plane-sdk/src/http/ (mirrors mock/ directory pattern)
+
+  - HttpControlPlaneSyncPort goes in packages/@lumenflow/control-plane-sdk/src/http/ (mirrors mock/
+  directory pattern)
+
   - Export from index.ts alongside MockControlPlaneSyncPort
-  - Factory function: createHttpControlPlaneSyncPort(config: WorkspaceControlPlaneConfig, logger?: Pick<Console, 'warn'>)
+
+  - Factory function: createHttpControlPlaneSyncPort(config: WorkspaceControlPlaneConfig, logger?:
+  Pick<Console, 'warn'>)
+
   - Use native fetch() — no axios/got/undici dependency
-  - ControlPlaneSyncPortLike (minimal interface used by HTTP Surface) is a subset of full ControlPlaneSyncPort — the HTTP adapter implements the full interface
-  - Runtime wiring MUST pass both controlPlaneSyncPort and workspaceId to createHttpSurface; forwarding is not activated without workspaceId
-  - Runtime wiring SHOULD pass controlPlaneSyncIntervalMs from control_plane.sync_interval (seconds -> milliseconds)
+
+  - ControlPlaneSyncPortLike (minimal interface used by HTTP Surface) is a subset of full
+  ControlPlaneSyncPort — the HTTP adapter implements the full interface
+
+  - Runtime wiring MUST pass both controlPlaneSyncPort and workspaceId to createHttpSurface;
+  forwarding is not activated without workspaceId
+
+  - Runtime wiring SHOULD pass controlPlaneSyncIntervalMs from control_plane.sync_interval (seconds
+  -> milliseconds)
+
 
   ### Scope clarification
-  - This WU covers runtime control-plane sync for kernel event stream forwarding (pullPolicies → heartbeat → pushKernelEvents)
-  - This WU does NOT implement NDJSON tailing/shipping for .lumenflow/telemetry/*.ndjson or .lumenflow/flow.log produced by pnpm gates / CLI telemetry emitters
-  - NDJSON file sync is a follow-up scope (separate WU) to satisfy onboarding flows that only run CLI gates
+
+  - This WU covers runtime control-plane sync for kernel event stream forwarding (pullPolicies →
+  heartbeat → pushKernelEvents)
+
+  - This WU does NOT implement NDJSON tailing/shipping for .lumenflow/telemetry/*.ndjson or
+  .lumenflow/flow.log produced by pnpm gates / CLI telemetry emitters
+
+  - NDJSON file sync is a follow-up scope (separate WU) to satisfy onboarding flows that only run
+  CLI gates
+
 
   ### Graceful degradation pattern
+
   - Wrap every fetch() in try/catch
+
   - On network error/non-2xx/timeout: logger.warn() with context
-  - For pullPolicies/heartbeat/pushKernelEvents: rethrow after logging so wrapEventSubscriberWithControlPlaneSync can emit diagnostics and preserve retry/requeue behavior (no silent event loss)
-  - For auxiliary methods not used by sync loop today (pullConfig/pushTelemetry/pushEvidence/authenticate): return safe defaults when feasible
-  - Local operations must remain fail-open because caller layers already catch sync failures and continue serving local workflows
+
+  - For pullPolicies/heartbeat/pushKernelEvents: rethrow after logging so
+  wrapEventSubscriberWithControlPlaneSync can emit diagnostics and preserve retry/requeue behavior
+  (no silent event loss)
+
+  - For auxiliary methods not used by sync loop today
+  (pullConfig/pushTelemetry/pushEvidence/authenticate): return safe defaults when feasible
+
+  - Local operations must remain fail-open because caller layers already catch sync failures and
+  continue serving local workflows
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
@@ -67,40 +115,75 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
+description: >-
   ## Context
 
-  The workspace.yaml control_plane: block is written by lumenflow cloud:connect, and the ControlPlaneSyncPort interface exists with a mock implementation — but no HTTP adapter exists to actually call the Cloud REST API for runtime event forwarding.
+
+  The workspace.yaml control_plane: block is written by lumenflow cloud:connect, and the
+  ControlPlaneSyncPort interface exists with a mock implementation — but no HTTP adapter exists to
+  actually call the Cloud REST API for runtime event forwarding.
+
 
   ## Problem
 
-  Dogfooding the lumenflow-cloud onboarding guide shows that cloud connection setup works, but runtime control-plane forwarding is still mock-only because no HTTP sync implementation exists. The port interface, mock, sync loop (in control-plane-event-subscriber.ts), and config schema are all in place — only the production adapter is missing.
+
+  Dogfooding the lumenflow-cloud onboarding guide shows that cloud connection setup works, but
+  runtime control-plane forwarding is still mock-only because no HTTP sync implementation exists.
+  The port interface, mock, sync loop (in control-plane-event-subscriber.ts), and config schema are
+  all in place — only the production adapter is missing.
+
 
   ## Solution
 
-  Implement HttpControlPlaneSyncPort in @lumenflow/control-plane-sdk that maps the 7 port methods to Cloud REST API endpoints using native fetch(). Wire it into the web app runtime so that when control_plane: config is present in workspace.yaml, the real adapter is instantiated and injected into the HTTP Surface with workspaceId and sync interval wiring.
+
+  Implement HttpControlPlaneSyncPort in @lumenflow/control-plane-sdk that maps the 7 port methods to
+  Cloud REST API endpoints using native fetch(). Wire it into the web app runtime so that when
+  control_plane: config is present in workspace.yaml, the real adapter is instantiated and injected
+  into the HTTP Surface with workspaceId and sync interval wiring.
+
 
   ### Cloud REST API mapping
 
+
   | Port Method | Cloud Endpoint | Auth |
+
   |---|---|---|
+
   | authenticate() | POST /api/v1/authenticate | Bearer <api-key> |
+
   | heartbeat() | POST /api/v1/heartbeat | Bearer <api-key> |
+
   | pushKernelEvents() | POST /api/v1/events | Bearer <api-key> |
+
   | pushEvidence() | POST /api/v1/evidence | Bearer <api-key> |
+
   | pushTelemetry() | POST /api/v1/telemetry | Bearer <api-key> |
+
   | pullPolicies() | POST /api/v1/policies (or GET) | Bearer <api-key> |
+
   | pullConfig() | POST /api/v1/config (or GET) | Bearer <api-key> |
 
-  Auth: reads API key from process.env[control_plane.auth.token_env], sends as Authorization: Bearer header.
+
+  Auth: reads API key from process.env[control_plane.auth.token_env], sends as Authorization: Bearer
+  header.
+
 
   ### Key constraints
 
-  - Graceful degradation: if Cloud is unreachable or returns errors, log warnings and NEVER block local operations
-  - Do not silently drop event batches: sync-loop-facing methods must propagate failure to caller so existing retry/requeue logic remains effective
+
+  - Graceful degradation: if Cloud is unreachable or returns errors, log warnings and NEVER block
+  local operations
+
+  - Do not silently drop event batches: sync-loop-facing methods must propagate failure to caller so
+  existing retry/requeue logic remains effective
+
   - Use native fetch() (Node 18+), no external HTTP library
+
   - Follow MockControlPlaneSyncPort as reference implementation pattern
-  - Respect existing sync loop in control-plane-event-subscriber.ts (pullPolicies → heartbeat → pushKernelEvents cycle)
+
+  - Respect existing sync loop in control-plane-event-subscriber.ts (pullPolicies → heartbeat →
+  pushKernelEvents cycle)
+
   - Non-goal for this WU: NDJSON file shipping for gates/flow telemetry logs
 acceptance:
   - HttpControlPlaneSyncPort class implements ControlPlaneSyncPort interface with all 7 methods
@@ -109,16 +192,15 @@ acceptance:
     process.env[config.auth.token_env]
   - 'All HTTP calls include Authorization: Bearer <api-key> header and Content-Type:
     application/json'
-  - 'For pullPolicies/heartbeat/pushKernelEvents, network/non-2xx/timeout failures are logged and
+  - For pullPolicies/heartbeat/pushKernelEvents, network/non-2xx/timeout failures are logged and
     rethrown so control-plane-event-subscriber can emit diagnostics and preserve retry/requeue
-    semantics'
-  - 'For pullConfig/pushTelemetry/pushEvidence/authenticate, failures are logged and return safe
-    defaults where possible'
+    semantics
+  - For pullConfig/pushTelemetry/pushEvidence/authenticate, failures are logged and return safe
+    defaults where possible
   - Request timeout configurable (default 10s) to prevent hanging on unresponsive cloud endpoints
   - 'Runtime wiring in http-surface-runtime.ts: when control_plane config is present and valid,
     instantiate HttpControlPlaneSyncPort and inject into HttpSurface options with workspaceId'
-  - Runtime wiring uses control_plane.sync_interval (seconds) to configure
-    controlPlaneSyncIntervalMs
+  - Runtime wiring uses control_plane.sync_interval (seconds) to configure controlPlaneSyncIntervalMs
   - Runtime wiring falls back safely (no control-plane injection) when workspace id or control_plane
     config is missing/invalid
   - 'Unit tests cover all 7 methods with msw or nock HTTP mocking: success path, error path (network
@@ -135,3 +217,6 @@ session_id: 7707d36e-be1a-4582-83e7-2866aeed029e
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-25T16:38:06.344Z
+locked: true
+completed_at: 2026-02-25T17:16:37.667Z
+completed: 2026-02-25
