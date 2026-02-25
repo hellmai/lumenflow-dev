@@ -55,7 +55,7 @@ export const SKIP_TESTS_ROOT_FILES = DOCS_ONLY_ROOT_FILES;
  * isSkipWebTestsPath('tools/wu-done.js') // true
  * isSkipWebTestsPath('apps/web/src/page.tsx') // false
  */
-export function isSkipWebTestsPath(filePath: UnsafeAny) {
+export function isSkipWebTestsPath(filePath: string) {
   if (!filePath || typeof filePath !== 'string') {
     return false;
   }
@@ -96,7 +96,7 @@ export function isSkipWebTestsPath(filePath: UnsafeAny) {
  * shouldSkipWebTests(['docs/README.md', 'tools/wu-done.js']) // true
  * shouldSkipWebTests(['docs/README.md', 'apps/web/src/page.tsx']) // false
  */
-export function shouldSkipWebTests(codePaths: UnsafeAny) {
+export function shouldSkipWebTests(codePaths: string[] | null | undefined) {
   if (!codePaths || !Array.isArray(codePaths) || codePaths.length === 0) {
     return false;
   }

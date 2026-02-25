@@ -150,7 +150,7 @@ export function getErrorMessage(error: unknown, fallbackMessage = UNKNOWN_ERROR_
  * die('WU file not found');
  * die('Gates failed', 2);
  */
-export function die(message: UnsafeAny, exitCode = 1): never {
+export function die(message: string, exitCode = 1): never {
   // Auto-detect script name from process.argv[1] (eliminates string literal duplication)
   // WU-1006: Use path.basename() instead of manual split (Library-First principle)
   const scriptPath = process.argv[1] || 'unknown';
@@ -169,7 +169,7 @@ export function die(message: UnsafeAny, exitCode = 1): never {
  * @example
  * throw createError('WU_NOT_FOUND', 'WU-123 not found', { id: 'WU-123' });
  */
-export function createError(code: UnsafeAny, message: UnsafeAny, details = {}) {
+export function createError(code: string, message: string, details: Record<string, unknown> = {}) {
   return new WUError(code, message, details);
 }
 
@@ -202,8 +202,8 @@ export interface AgentFriendlyErrorOptions {
  * );
  */
 export function createAgentFriendlyError(
-  code: UnsafeAny,
-  message: UnsafeAny,
+  code: string,
+  message: string,
   options: AgentFriendlyErrorOptions = {},
 ) {
   const { tryNext, context = {} } = options;

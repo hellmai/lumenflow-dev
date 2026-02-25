@@ -17,7 +17,7 @@ import { createError, ErrorCodes } from './error-handler.js';
  * @returns {{frontmatter: object|null, markdown: string}} Parsed frontmatter and markdown body
  * @throws {Error} If file not found or YAML parsing fails
  */
-export function parseBacklogFrontmatter(backlogPath: UnsafeAny) {
+export function parseBacklogFrontmatter(backlogPath: string) {
   if (!existsSync(backlogPath)) {
     throw createError(ErrorCodes.FILE_NOT_FOUND, `Backlog not found: ${backlogPath}`, {
       path: backlogPath,

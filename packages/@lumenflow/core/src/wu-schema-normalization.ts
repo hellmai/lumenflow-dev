@@ -18,7 +18,7 @@
  * @param {Object} wu - Raw WU object (from YAML parse)
  * @returns {Object} Normalized WU object
  */
-export function normalizeWUSchema(wu: UnsafeAny) {
+export function normalizeWUSchema(wu: Record<string, unknown>) {
   const result = { ...wu };
 
   // 1. summary → description migration
@@ -41,17 +41,18 @@ export function normalizeWUSchema(wu: UnsafeAny) {
   if (typeof result.risks === 'string') {
     result.risks = result.risks
       .split('\n')
-      .map((line: UnsafeAny) => line.trim())
+      .map((line: string) => line.trim())
       .filter(Boolean);
   }
 
   // 4. test_paths → tests migration
   if (result.test_paths && !result.tests) {
-    result.tests = {};
+    const tests: Record<string, unknown> = {};
+    const testPaths = result.test_paths as Record<string, unknown>;
 
-    for (const [key, value] of Object.entries(result.test_paths)) {
+    for (const [key, value] of Object.entries(testPaths)) {
       if (Array.isArray(value)) {
-        result.tests[key] = value.map((item) => {
+        tests[key] = value.map((item: unknown) => {
           // js-yaml parses "Key: Value" as { Key: 'Value' } object
           if (typeof item === 'object' && item !== null) {
             // Convert { 'Manual test': 'Navigate to /settings' } → 'Manual test: Navigate to /settings'
@@ -67,9 +68,11 @@ export function normalizeWUSchema(wu: UnsafeAny) {
           return item;
         });
       } else {
-        result.tests[key] = value;
+        tests[key] = value;
       }
     }
+
+    result.tests = tests;
   }
   delete result.test_paths;
 

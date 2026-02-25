@@ -38,7 +38,7 @@ const OWNER_EMAIL_KEYS = ['owner_email', 'ownerEmail'] as const;
  * @param {string|null|undefined} value - Value to check
  * @returns {boolean} True if value is a valid email
  */
-export function isValidEmail(value: UnsafeAny) {
+export function isValidEmail(value: string | null | undefined) {
   if (!value || typeof value !== 'string') {
     return false;
   }
@@ -54,8 +54,8 @@ export function isValidEmail(value: UnsafeAny) {
  * @param {string} email - Email address
  * @returns {string|null} Domain part or null if invalid
  */
-function extractDomain(email: UnsafeAny) {
-  if (!isValidEmail(email)) {
+function extractDomain(email: string | null | undefined) {
+  if (!email || !isValidEmail(email)) {
     return null;
   }
   const atIndex = email.indexOf('@');
@@ -172,7 +172,7 @@ export async function inferDefaultDomain(cwd = process.cwd()) {
  * @param {string} [domain] - Optional domain override
  * @returns {Promise<string>} Normalized email address, or empty string for null/undefined
  */
-export async function normalizeToEmail(value: UnsafeAny, domain: UnsafeAny) {
+export async function normalizeToEmail(value: string | null | undefined, domain?: string) {
   // Handle null/undefined/empty
   if (!value) {
     return '';

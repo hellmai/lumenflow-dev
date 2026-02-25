@@ -102,7 +102,7 @@ function resolvePolicyFromConfig(rawConfig: Record<string, unknown>) {
         enableInvariants: true,
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Minimal type for config
-    } as UnsafeAny,
+    } as unknown as Parameters<typeof resolvePolicy>[0],
     {
       rawConfig: minimalConfig,
     },

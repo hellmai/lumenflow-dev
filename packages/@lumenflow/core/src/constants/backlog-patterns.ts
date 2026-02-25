@@ -23,7 +23,7 @@ export const WU_LINK_PATTERN = /\[([A-Z]+-\d+)\s*—\s*[^\]]+\]\([^)]+\)/gi;
  * @param {string} line - Line to check (will be trimmed and lowercased)
  * @returns {boolean} True if line is an In Progress header
  */
-export function isInProgressHeader(line: UnsafeAny) {
+export function isInProgressHeader(line: string) {
   const normalized = line.trim().toLowerCase();
   return IN_PROGRESS_HEADERS.some(
     (header) => normalized === header || normalized.startsWith(header),

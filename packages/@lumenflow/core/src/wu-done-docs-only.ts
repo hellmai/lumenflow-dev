@@ -30,7 +30,7 @@ import { getDocsOnlyPrefixes, DOCS_ONLY_ROOT_FILES } from './file-classifiers.js
  * @param {string[]|null|undefined} codePaths - Array of file paths from WU YAML
  * @returns {boolean} True if WU is docs-only (all paths are documentation)
  */
-export function detectDocsOnlyByPaths(codePaths: UnsafeAny) {
+export function detectDocsOnlyByPaths(codePaths: string[] | null | undefined) {
   if (!codePaths || !Array.isArray(codePaths) || codePaths.length === 0) {
     return false;
   }

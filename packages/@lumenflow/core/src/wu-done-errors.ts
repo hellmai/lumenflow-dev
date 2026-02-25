@@ -12,20 +12,20 @@ import { createError, ErrorCodes } from './error-handler.js';
 /**
  * Create a validation error for wu:done validators.
  */
-export function createValidationError(message: UnsafeAny, details = {}) {
+export function createValidationError(message: string, details = {}) {
   return createError(ErrorCodes.VALIDATION_ERROR, message, details);
 }
 
 /**
  * Create a file-not-found error for wu:done validators.
  */
-export function createFileNotFoundError(message: UnsafeAny, details = {}) {
+export function createFileNotFoundError(message: string, details = {}) {
   return createError(ErrorCodes.FILE_NOT_FOUND, message, details);
 }
 
 /**
  * Create a recovery error for wu:done recovery flows.
  */
-export function createRecoveryError(message: UnsafeAny, details = {}) {
+export function createRecoveryError(message: string, details = {}) {
   return createError(ErrorCodes.RECOVERY_ERROR, message, details);
 }

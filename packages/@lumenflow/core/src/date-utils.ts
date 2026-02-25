@@ -33,7 +33,7 @@ export function todayISO() {
  * formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss');
  * formatDate('2025-11-12', 'MMMM d, yyyy'); // "November 12, 2025"
  */
-export function formatDate(date: UnsafeAny, formatString: UnsafeAny) {
+export function formatDate(date: Date | string | number, formatString: string) {
   return format(new Date(date), formatString);
 }
 
@@ -68,7 +68,7 @@ const DATE_FORMAT_ISO = 'yyyy-MM-dd';
  * normalizeToDateString('2025-12-04'); // '2025-12-04'
  * normalizeToDateString(undefined); // undefined
  */
-export function normalizeToDateString(value: UnsafeAny) {
+export function normalizeToDateString(value: unknown) {
   // Preserve undefined/null
   if (value == null) {
     return undefined;
@@ -89,9 +89,9 @@ export function normalizeToDateString(value: UnsafeAny) {
     return format(new Date(value), DATE_FORMAT_ISO);
   }
 
-  // Fallback: try to parse and format
+  // Fallback: try to parse and format (coerce to string for Date constructor)
   try {
-    const date = new Date(value);
+    const date = new Date(String(value));
     if (!isNaN(date.getTime())) {
       return format(date, DATE_FORMAT_ISO);
     }
@@ -123,7 +123,7 @@ export function normalizeToDateString(value: UnsafeAny) {
  * normalizeISODateTime(1732896000000); // '2024-11-29T16:00:00.000Z'
  * normalizeISODateTime(undefined); // undefined
  */
-export function normalizeISODateTime(value: UnsafeAny) {
+export function normalizeISODateTime(value: string | number | null | undefined) {
   // Preserve undefined/null (optional fields)
   if (value == null) {
     return undefined;

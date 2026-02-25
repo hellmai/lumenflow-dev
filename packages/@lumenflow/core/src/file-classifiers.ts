@@ -73,7 +73,7 @@ const TEST_FILE_PATTERNS = Object.freeze([
  * @param {string} filePath - Path to check
  * @returns {boolean} True if file is a test file
  */
-export function isTestFile(filePath: UnsafeAny) {
+export function isTestFile(filePath: string) {
   if (!filePath || typeof filePath !== 'string') {
     return false;
   }
@@ -88,7 +88,7 @@ export function isTestFile(filePath: UnsafeAny) {
  * @param {string} filePath - Path to check
  * @returns {boolean} True if file is a markdown file (.md extension)
  */
-export function isMarkdownFile(filePath: UnsafeAny) {
+export function isMarkdownFile(filePath: string) {
   if (!filePath || typeof filePath !== 'string') {
     return false;
   }
@@ -108,7 +108,7 @@ export function isMarkdownFile(filePath: UnsafeAny) {
  * @param {string} filePath - Path to check
  * @returns {boolean} True if file is in a documentation path
  */
-export function isDocumentationPath(filePath: UnsafeAny) {
+export function isDocumentationPath(filePath: string) {
   if (!filePath || typeof filePath !== 'string') {
     return false;
   }

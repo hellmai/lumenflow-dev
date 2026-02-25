@@ -129,7 +129,7 @@ export async function checkBranchDivergence(
         }
 
         // Rebase failed - throw with detailed instructions
-        throw createError(ErrorCodes.GIT_ERROR, rebaseResult.error, {
+        throw createError(ErrorCodes.GIT_ERROR, rebaseResult.error ?? 'Auto-rebase failed', {
           branch,
           mergeBase,
           mainHead,
@@ -199,7 +199,7 @@ export async function checkMergeCommits(
         }
 
         // Rebase failed - throw with detailed instructions
-        throw createError(ErrorCodes.GIT_ERROR, rebaseResult.error, {
+        throw createError(ErrorCodes.GIT_ERROR, rebaseResult.error ?? 'Auto-rebase failed', {
           branch,
           mergeCommitCount: mergeCount,
           autoRebaseAttempted: true,

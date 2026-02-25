@@ -43,7 +43,7 @@ export const DEFAULT_SECTION_HEADINGS = {
  * @returns {object} Section headings (configured or default)
  */
 export function getSectionHeadingsWithDefaults(
-  frontmatter: UnsafeAny,
+  frontmatter: Record<string, unknown> | null,
   docType: keyof typeof DEFAULT_SECTION_HEADINGS = 'backlog',
 ) {
   const defaults = DEFAULT_SECTION_HEADINGS[docType] as {

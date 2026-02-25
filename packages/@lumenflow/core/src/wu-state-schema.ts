@@ -221,6 +221,6 @@ export type WUEvent = z.infer<typeof WUEventSchema>;
  *   });
  * }
  */
-export function validateWUEvent(data: UnsafeAny) {
+export function validateWUEvent(data: unknown) {
   return WUEventSchema.safeParse(data);
 }

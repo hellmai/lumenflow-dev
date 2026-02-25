@@ -71,7 +71,7 @@ export const LOG_SOURCES = [
  * @param {string} line - JSON log line
  * @returns {object|null} Parsed log object or null if invalid
  */
-export function parseLogLine(line: UnsafeAny) {
+export function parseLogLine(line: string) {
   if (!line || typeof line !== 'string') {
     return null;
   }
@@ -151,7 +151,7 @@ export function filterLogs(logs: LogEntry[], options: FilterLogsOptions = {}): L
  * @param {string} source - Source identifier for tagging
  * @returns {object[]} Parsed log entries with _source field
  */
-function readLogFile(filePath: UnsafeAny, source: UnsafeAny) {
+function readLogFile(filePath: string, source: string) {
   if (!existsSync(filePath)) {
     return [];
   }

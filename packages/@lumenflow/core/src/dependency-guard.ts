@@ -52,7 +52,7 @@ export const DEPENDENCY_MUTATING_COMMANDS = [
  * isDependencyMutatingCommand('pnpm run test'); // false
  * isDependencyMutatingCommand('npm install'); // false (not pnpm)
  */
-export function isDependencyMutatingCommand(command: UnsafeAny) {
+export function isDependencyMutatingCommand(command: string) {
   // Handle null/undefined/empty
   if (!command) {
     return false;
@@ -74,7 +74,7 @@ export function isDependencyMutatingCommand(command: UnsafeAny) {
 
   // Find the first non-flag argument after 'pnpm'
   for (let i = 1; i < parts.length; i++) {
-    const part = parts[i];
+    const part = parts[i] ?? '';
 
     // Skip flags (start with -)
     if (part.startsWith('-')) {
@@ -107,13 +107,14 @@ export function isDependencyMutatingCommand(command: UnsafeAny) {
  * const message = buildDependencyBlockMessage('pnpm add react');
  * // Returns multi-line message with guidance
  */
-export function buildDependencyBlockMessage(command: UnsafeAny) {
+export function buildDependencyBlockMessage(command: string) {
   // Extract the pnpm subcommand for targeted guidance
   const parts = command.trim().split(/\s+/);
   let subcommand = '';
   for (let i = 1; i < parts.length; i++) {
-    if (!parts[i].startsWith('-')) {
-      subcommand = parts[i];
+    const part = parts[i] ?? '';
+    if (!part.startsWith('-')) {
+      subcommand = part;
       break;
     }
   }

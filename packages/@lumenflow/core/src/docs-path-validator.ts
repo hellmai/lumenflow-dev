@@ -41,7 +41,7 @@ const WU_EVENTS_PATH = POSIX.join(LUMENFLOW_PATHS.STATE_DIR, WU_EVENTS_FILE_NAME
  * @param {readonly string[]} docsOnlyPrefixes - Config-driven docs path prefixes
  * @returns {boolean} - True if the path is allowed
  */
-function isAllowedPath(filePath: UnsafeAny, docsOnlyPrefixes: readonly string[]) {
+function isAllowedPath(filePath: string, docsOnlyPrefixes: readonly string[]) {
   if (!filePath) return false;
 
   if (filePath === WU_EVENTS_PATH) return true;
@@ -70,7 +70,7 @@ function isAllowedPath(filePath: UnsafeAny, docsOnlyPrefixes: readonly string[])
  * @param {string[]} stagedFiles - Array of file paths
  * @returns {{valid: boolean, violations: string[]}} - Validation result
  */
-export function validateDocsOnly(stagedFiles: UnsafeAny) {
+export function validateDocsOnly(stagedFiles: string[]) {
   const docsOnlyPrefixes = getDocsOnlyPrefixes();
   const violations = [];
   for (const file of stagedFiles) {

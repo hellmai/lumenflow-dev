@@ -398,10 +398,10 @@ export async function recoverZombieState({
     console.log(RECOVERY.UPDATING_DOCS);
 
     updateStatusRemoveInProgress(statusPath, id);
-    addToStatusCompleted(statusPath, id, doc.title);
+    addToStatusCompleted(statusPath, id, doc.title ?? id);
     results.docs.status = { updated: true };
 
-    await moveWUToDoneBacklog(backlogPath, id, doc.title);
+    await moveWUToDoneBacklog(backlogPath, id, doc.title ?? id);
     results.docs.backlog = { updated: true };
 
     console.log(RECOVERY.DOCS_UPDATED);

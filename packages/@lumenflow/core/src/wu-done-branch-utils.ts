@@ -18,7 +18,7 @@ const SHA_SHORT_LENGTH = 8;
  * @param {string} branch - Lane branch name
  * @returns {Promise<boolean>} Whether branch is already merged
  */
-export async function isBranchAlreadyMerged(branch: UnsafeAny) {
+export async function isBranchAlreadyMerged(branch: string) {
   const gitAdapter = getGitForCwd();
   try {
     const branchTip = (await gitAdapter.getCommitHash(branch)).trim();

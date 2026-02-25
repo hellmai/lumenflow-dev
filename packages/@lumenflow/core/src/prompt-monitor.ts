@@ -87,7 +87,7 @@ async function saveMetrics(metrics: Record<string, PromptMetricsEntry>) {
 /**
  * Log to NDJSON
  */
-async function log(event: UnsafeAny, data: UnsafeAny) {
+async function log(event: string, data: Record<string, unknown>) {
   const entry = {
     timestamp: new Date().toISOString(),
     event,
