@@ -7,7 +7,6 @@ priority: P2
 created: 2026-02-25
 code_paths:
   - packages/@lumenflow/cli/src/init-templates.ts
-  - packages/@lumenflow/cli/src/init.ts
 tests:
   manual:
     - Run lumenflow init on a repo missing checkpoint gitignore entry, verify it gets added
@@ -20,10 +19,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-25T19:27:13.733Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2180
+session_id: aa5eb9ad-1e1e-4d7f-9f6d-292639b53322
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T19:27:13.738Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -37,11 +43,3 @@ acceptance:
   - GITIGNORE_TEMPLATE includes the same entries
   - Sync test exists asserting source .gitignore and REQUIRED_GITIGNORE_EXCLUSIONS stay aligned
   - lumenflow init --skip on a repo missing these entries appends them
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2180
-claimed_at: 2026-02-25T19:27:13.733Z
-baseline_main_sha: 43eb601554f09b3c6386280899c6ead6bc3f9968
-session_id: aa5eb9ad-1e1e-4d7f-9f6d-292639b53322
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-25T19:27:13.738Z
