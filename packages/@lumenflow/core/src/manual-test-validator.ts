@@ -20,6 +20,18 @@
 import path from 'node:path';
 import { TEST_TYPES, WU_TYPES } from './wu-constants.js';
 
+/** Minimal WU document shape for test validation */
+interface WuTestsBlock {
+  [key: string]: unknown[] | undefined;
+}
+
+interface WuDocForTests {
+  type?: string;
+  code_paths?: unknown;
+  tests?: unknown;
+  test_paths?: unknown;
+}
+
 /**
  * Code file extensions that require automated tests.
  * @constant {string[]}
@@ -83,7 +95,7 @@ export const EXEMPT_TYPES = Object.freeze([WU_TYPES.DOCUMENTATION]);
  * @param {string} filePath - File path to check
  * @returns {boolean} True if the file is a code file requiring tests
  */
-export function isCodeFile(filePath: UnsafeAny) {
+export function isCodeFile(filePath: string) {
   if (!filePath || typeof filePath !== 'string') {
     return false;
   }
@@ -112,12 +124,12 @@ export function isCodeFile(filePath: UnsafeAny) {
 }
 
 /**
- * Check if code_paths contains UnsafeAny hex core code.
+ * Check if code_paths contains any hex core code.
  *
  * @param {string[]|null|undefined} codePaths - Array of file paths from WU YAML
- * @returns {boolean} True if UnsafeAny path is in hex core layer
+ * @returns {boolean} True if any path is in hex core layer
  */
-export function containsHexCoreCode(codePaths: UnsafeAny) {
+export function containsHexCoreCode(codePaths: unknown) {
   if (!codePaths || !Array.isArray(codePaths) || codePaths.length === 0) {
     return false;
   }
@@ -138,7 +150,7 @@ export function containsHexCoreCode(codePaths: UnsafeAny) {
  * @param {object} doc - WU YAML document
  * @returns {boolean} True if WU is exempt
  */
-export function isExemptFromAutomatedTests(doc: UnsafeAny) {
+export function isExemptFromAutomatedTests(doc: WuDocForTests | null | undefined) {
   if (!doc) return false;
 
   // Only type: documentation is exempt
@@ -156,25 +168,26 @@ export function isExemptFromAutomatedTests(doc: UnsafeAny) {
  * @param {object} tests - Tests object from WU YAML
  * @returns {boolean} True if has at least one automated test
  */
-function hasAutomatedTest(tests: UnsafeAny) {
-  if (!tests) return false;
+function hasAutomatedTest(tests: unknown): boolean {
+  if (!tests || typeof tests !== 'object') return false;
 
-  const hasItems = (arr: UnsafeAny) => Array.isArray(arr) && arr.length > 0;
+  const hasItems = (arr: unknown) => Array.isArray(arr) && arr.length > 0;
+  const t = tests as Record<string, unknown>;
 
   return (
-    hasItems(tests[TEST_TYPES.UNIT]) ||
-    hasItems(tests[TEST_TYPES.E2E]) ||
-    hasItems(tests[TEST_TYPES.INTEGRATION])
+    hasItems(t[TEST_TYPES.UNIT]) ||
+    hasItems(t[TEST_TYPES.E2E]) ||
+    hasItems(t[TEST_TYPES.INTEGRATION])
   );
 }
 
 /**
- * Check if UnsafeAny code_paths contain actual code files (not docs/config).
+ * Check if any code_paths contain actual code files (not docs/config).
  *
  * @param {string[]} codePaths - Array of file paths from WU YAML
  * @returns {{ hasCodeFiles: boolean, codeFiles: string[] }} Result with list of code files
  */
-function analyzeCodePaths(codePaths: UnsafeAny) {
+function analyzeCodePaths(codePaths: unknown) {
   if (!codePaths || !Array.isArray(codePaths) || codePaths.length === 0) {
     return { hasCodeFiles: false, codeFiles: [] };
   }
@@ -197,7 +210,7 @@ function analyzeCodePaths(codePaths: UnsafeAny) {
  * @param {object} doc - WU YAML document
  * @returns {{ valid: boolean, errors: string[] }} Validation result
  */
-export function validateAutomatedTestRequirement(doc: UnsafeAny) {
+export function validateAutomatedTestRequirement(doc: WuDocForTests | null | undefined) {
   const errors = [];
 
   if (!doc) {

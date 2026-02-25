@@ -24,6 +24,26 @@ import {
 } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 
+/** Git adapter contract for retry helpers.
+ *  Methods are individually optional to support partial adapter objects
+ *  (e.g. CommitTransactionInput.worktreeGit). Callers must ensure
+ *  the methods used at their call site are present. */
+interface RetryHelperGitAdapter {
+  log?(options?: {
+    maxCount?: number;
+  }): Promise<{ all?: ReadonlyArray<{ message: string }> } | null>;
+  getStatus?(): Promise<string>;
+  raw?(args: string[]): Promise<string>;
+  fetch?(): Promise<void>;
+  getCommitHash?(ref: string): Promise<string>;
+  rebase?(onto: string): Promise<void>;
+}
+
+/** Minimal WU document shape needed by handleParallelCompletions */
+interface WuDocForParallel {
+  baseline_main_sha?: string;
+}
+
 /**
  * Regex to match wu:done completion commit messages
  * Format: wu(<id>): done - <title>
@@ -47,12 +67,15 @@ const COMPLETION_COMMIT_PATTERN = /wu\(([^)]+)\):\s*done\s*-/i;
  * @param {object} gitAdapter - Git adapter instance
  * @returns {Promise<number>} Number of completion attempt commits found
  */
-export async function countPreviousCompletionAttempts(wuId: UnsafeAny, gitAdapter: UnsafeAny) {
+export async function countPreviousCompletionAttempts(
+  wuId: string,
+  gitAdapter: RetryHelperGitAdapter,
+) {
   const normalizedId = wuId.toLowerCase();
 
   try {
     // Get recent commit history (limit to reasonable amount)
-    const log = await gitAdapter.log({ maxCount: GIT.LOG_MAX_COUNT });
+    const log = await gitAdapter.log?.({ maxCount: GIT.LOG_MAX_COUNT });
 
     if (!log || !log.all) {
       return 0;
@@ -66,16 +89,17 @@ export async function countPreviousCompletionAttempts(wuId: UnsafeAny, gitAdapte
       const match = commit.message.match(COMPLETION_COMMIT_PATTERN);
       if (!match) break;
 
-      const commitWuId = match[1].toLowerCase();
+      const commitWuId = match[1]?.toLowerCase();
       if (commitWuId !== normalizedId) break;
 
       trailingCount += 1;
     }
 
     return trailingCount;
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not count previous attempts: ${error.message}`,
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not count previous attempts: ${message}`,
     );
     return 0;
   }
@@ -101,9 +125,9 @@ export interface SquashCompletionAttemptsOptions {
 }
 
 export async function squashPreviousCompletionAttempts(
-  wuId: UnsafeAny,
-  count: UnsafeAny,
-  gitAdapter: UnsafeAny,
+  wuId: string,
+  count: number,
+  gitAdapter: RetryHelperGitAdapter,
   options: SquashCompletionAttemptsOptions = {},
 ) {
   const { preserveIndex = true } = options;
@@ -126,7 +150,7 @@ export async function squashPreviousCompletionAttempts(
     // In zombie recovery we want to drop prior completion commits cleanly and start
     // from a known-good state, so we use --hard (index/working tree reset).
     if (!preserveIndex) {
-      const status = (await gitAdapter.getStatus())?.trim?.() ?? '';
+      const status = (await gitAdapter.getStatus?.())?.trim?.() ?? '';
       if (status) {
         throw createError(
           ErrorCodes.RECOVERY_ERROR,
@@ -142,16 +166,17 @@ export async function squashPreviousCompletionAttempts(
 
     const resetMode = preserveIndex ? GIT_FLAGS.SOFT : GIT_FLAGS.HARD;
     const headBackRef = `${GIT_REFS.HEAD}~${count}`;
-    await gitAdapter.raw([GIT_COMMANDS.RESET, resetMode, headBackRef]);
+    await gitAdapter.raw?.([GIT_COMMANDS.RESET, resetMode, headBackRef]);
 
     console.log(
       `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Squashed ${count} previous attempt(s) - will create single completion commit`,
     );
 
     return { squashed: true, count };
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not squash previous attempts: ${error.message}`,
+      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not squash previous attempts: ${message}`,
     );
     return { squashed: false, count: 0 };
   }
@@ -163,13 +188,13 @@ export async function squashPreviousCompletionAttempts(
  * WU-1584 Fix #2: Recovery loop should squash previous attempt commits
  *
  * When recovering from zombie state (status=done but worktree exists),
- * first squash UnsafeAny previous completion attempts to avoid "rebase hell".
+ * first squash any previous completion attempts to avoid "rebase hell".
  *
  * @param {string} wuId - WU ID
  * @param {object} gitAdapter - Git adapter instance
  * @returns {Promise<{ squashedCount: number }>} Result
  */
-export async function prepareRecoveryWithSquash(wuId: UnsafeAny, gitAdapter: UnsafeAny) {
+export async function prepareRecoveryWithSquash(wuId: string, gitAdapter: RetryHelperGitAdapter) {
   console.log(
     `${LOG_PREFIX.DONE} ${EMOJI.INFO} Checking for previous completion attempts before recovery...`,
   );
@@ -214,18 +239,18 @@ export interface HandleParallelCompletionsOptions {
 }
 
 export async function handleParallelCompletions(
-  wuId: UnsafeAny,
-  doc: UnsafeAny,
-  gitAdapter: UnsafeAny,
+  wuId: string,
+  doc: WuDocForParallel,
+  gitAdapter: RetryHelperGitAdapter,
   options: HandleParallelCompletionsOptions = {},
 ) {
   const { worktreePath, autoRebase = true } = options;
 
   // Fetch latest from origin
-  await gitAdapter.fetch();
+  await gitAdapter.fetch?.();
 
   // Get current origin/main SHA
-  const currentMainSha = await gitAdapter.getCommitHash(GIT_REFS.ORIGIN_MAIN);
+  const currentMainSha = await gitAdapter.getCommitHash?.(GIT_REFS.ORIGIN_MAIN);
 
   // Get baseline SHA from when WU was claimed
   const baselineSha = doc.baseline_main_sha;
@@ -236,7 +261,7 @@ export async function handleParallelCompletions(
   }
 
   // Check if changes since baseline include other WU completions
-  const newCommits = await gitAdapter.raw([
+  const newCommits = await gitAdapter.raw?.([
     'log',
     '--oneline',
     `${baselineSha}..${GIT_REFS.ORIGIN_MAIN}`,
@@ -275,23 +300,24 @@ export async function handleParallelCompletions(
 
   try {
     // Rebase the current branch onto origin/main
-    await gitAdapter.rebase(GIT_REFS.ORIGIN_MAIN);
+    await gitAdapter.rebase?.(GIT_REFS.ORIGIN_MAIN);
 
     console.log(
       `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Auto-rebase complete - parallel completions incorporated`,
     );
 
     return { parallelDetected: true, rebaseTriggered: true };
-  } catch (error) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     throw createError(
       ErrorCodes.GIT_ERROR,
-      `Auto-rebase failed: ${error.message}\n\n` +
+      `Auto-rebase failed: ${errorMessage}\n\n` +
         `Manual resolution required:\n` +
         `1. cd ${worktreePath || 'your-worktree'}\n` +
         `2. git fetch origin && git rebase ${GIT_REFS.ORIGIN_MAIN}\n` +
-        `3. Resolve conflicts if UnsafeAny\n` +
+        `3. Resolve conflicts if any\n` +
         `4. Retry wu:done`,
-      { wuId, originalError: error.message },
+      { wuId, originalError: errorMessage },
     );
   }
 }

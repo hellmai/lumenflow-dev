@@ -47,7 +47,10 @@ function resolveProjectRootFromStatusPath(statusPath: string): string {
  * checkOverlap(['apps/web/**'], ['apps/web/prompts/**'])
  * // => { overlaps: true, type: 'concrete', files: [...] }
  */
-export function checkOverlap(claimingPaths: UnsafeAny, existingPaths: UnsafeAny) {
+export function checkOverlap(
+  claimingPaths: readonly string[] | null | undefined,
+  existingPaths: readonly string[] | null | undefined,
+) {
   // Handle empty inputs
   if (!claimingPaths || claimingPaths.length === 0) {
     return { overlaps: false, type: 'none', files: [] };
@@ -57,7 +60,7 @@ export function checkOverlap(claimingPaths: UnsafeAny, existingPaths: UnsafeAny)
   }
 
   // Step 1: Static check (fast pre-filter)
-  // Check if UnsafeAny pattern pair has static containment
+  // Check if any pattern pair has static containment
   let hasStaticOverlap = false;
   for (const claiming of claimingPaths) {
     for (const existing of existingPaths) {
@@ -129,9 +132,9 @@ export function checkOverlap(claimingPaths: UnsafeAny, existingPaths: UnsafeAny)
  * // => { conflicts: [{wuid: 'WU-900', overlaps: ['apps/web/foo.ts']}], hasBlocker: true }
  */
 export function detectConflicts(
-  statusPath: UnsafeAny,
-  claimingPaths: UnsafeAny,
-  claimingWU: UnsafeAny,
+  statusPath: string,
+  claimingPaths: readonly string[] | null | undefined,
+  claimingWU: string,
 ) {
   // Handle empty claiming paths
   if (!claimingPaths || claimingPaths.length === 0) {
@@ -242,7 +245,7 @@ export function detectConflicts(
  * staticGlobContainment('apps/**', 'apps/web/**') // => true
  * staticGlobContainment('apps/web/**', 'packages/**') // => false
  */
-function staticGlobContainment(patternA: UnsafeAny, patternB: UnsafeAny) {
+function staticGlobContainment(patternA: string, patternB: string): boolean {
   // Convert patternB to a test path by replacing wildcards
   // Example: 'apps/web/**' → 'apps/web/test/file.ts'
   const testPath = patternB.replace(/\*\*/g, 'test/nested').replace(/\*/g, 'testfile');
@@ -267,7 +270,7 @@ function staticGlobContainment(patternA: UnsafeAny, patternB: UnsafeAny) {
  * concreteFileIntersection('apps/web/**', 'apps/web/prompts/**')
  * // => { overlaps: true, files: ['apps/web/prompts/base.yaml'] }
  */
-function concreteFileIntersection(patternA: UnsafeAny, patternB: UnsafeAny) {
+function concreteFileIntersection(patternA: string, patternB: string) {
   // Expand globs to real files using fast-glob
   // Use sync for simplicity (wu:claim is not performance-critical)
   const filesA = new Set(
