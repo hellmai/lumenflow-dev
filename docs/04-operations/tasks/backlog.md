@@ -33,11 +33,11 @@ sections:
 - [WU-2153 — Session lifecycle hooks for control-plane registration](wu/WU-2153.yaml) — Framework: Agent
 - [WU-2154 — OSS-complete CI gate for local-only test pass](wu/WU-2154.yaml) — Operations: Tooling
 - [WU-2158 — Add co-change gate to Software Delivery Pack](wu/WU-2158.yaml) — Framework: Core Lifecycle
-- [WU-2160 — Implement NDJSON telemetry file shipping for gates-only cloud onboarding](wu/WU-2160.yaml) — Operations: Runtime
 
 ## 🔧 In progress
 
 - [WU-2161 — Document wu:brief evidence recording behavior for agent safety](wu/WU-2161.yaml) — Content: Framework Docs
+- [WU-2160 — Implement NDJSON telemetry file shipping for gates-only cloud onboarding](wu/WU-2160.yaml) — Operations: Runtime
 
 ## ⛔ Blocked
 

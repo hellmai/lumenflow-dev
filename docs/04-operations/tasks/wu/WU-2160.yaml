@@ -2,7 +2,7 @@ id: WU-2160
 title: Implement NDJSON telemetry file shipping for gates-only cloud onboarding
 lane: 'Operations: Runtime'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -13,7 +13,8 @@ code_paths:
   - packages/@lumenflow/control-plane-sdk/src/index.ts
 tests:
   manual:
-    - Run cloud:connect, execute pnpm gates, and confirm gates-only telemetry appears in cloud dashboard.
+    - Run cloud:connect, execute pnpm gates, and confirm gates-only telemetry appears in cloud
+      dashboard.
     - Disable network during shipping and confirm gates completes locally while warnings are logged.
   unit:
     - packages/@lumenflow/cli/src/__tests__/gates-integration-tests.test.ts
@@ -35,21 +36,47 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: |-
+description: >-
   ## Context
-  WU-2159 delivered runtime control-plane sync for live kernel event forwarding. However, onboarding flows that only run pnpm gates still emit telemetry to local NDJSON files (.lumenflow/telemetry/gates.ndjson and .lumenflow/flow.log) without cloud delivery.
+
+  WU-2159 delivered runtime control-plane sync for live kernel event forwarding. However, onboarding
+  flows that only run pnpm gates still emit telemetry to local NDJSON files
+  (.lumenflow/telemetry/gates.ndjson and .lumenflow/flow.log) without cloud delivery.
+
 
   ## Problem
-  Cloud onboarding still appears disconnected for gates-only workflows because no cursor-based NDJSON reader and sender exists in the CLI/kernel side.
+
+  Cloud onboarding still appears disconnected for gates-only workflows because no cursor-based
+  NDJSON reader and sender exists in the CLI/kernel side.
+
 
   ## Solution
-  Implement NDJSON telemetry file shipping for gates-only flows: read new records cursor-style from local telemetry files, map records to existing control-plane endpoints, batch-send on sync interval, persist cursor checkpoints, and fail-open with warnings so OSS/local operation remains unblocked.
+
+  Implement NDJSON telemetry file shipping for gates-only flows: read new records cursor-style from
+  local telemetry files, map records to existing control-plane endpoints, batch-send on sync
+  interval, persist cursor checkpoints, and fail-open with warnings so OSS/local operation remains
+  unblocked.
 acceptance:
-  - When control_plane config is present and valid, gates-only workflows ship newly appended NDJSON telemetry records from .lumenflow/telemetry/gates.ndjson and .lumenflow/flow.log to configured cloud endpoints.
-  - Cursor/checkpoint state ensures records are sent at-least-once across process restarts without unbounded duplication.
-  - 'Shipping is non-blocking/fail-open: network/non-2xx/timeout errors are logged and local gates workflows continue successfully.'
+  - When control_plane config is present and valid, gates-only workflows ship newly appended NDJSON
+    telemetry records from .lumenflow/telemetry/gates.ndjson and .lumenflow/flow.log to configured
+    cloud endpoints.
+  - Cursor/checkpoint state ensures records are sent at-least-once across process restarts without
+    unbounded duplication.
+  - 'Shipping is non-blocking/fail-open: network/non-2xx/timeout errors are logged and local gates
+    workflows continue successfully.'
   - Batching and sync interval are configurable from control_plane settings with sane defaults.
   - Runtime event-stream forwarding behavior from WU-2159 remains unchanged and fully compatible.
-  - No telemetry shipping occurs when control_plane or required auth token configuration is missing/invalid.
-  - Unit tests cover success path, retry/failure path, cursor persistence, and malformed NDJSON line handling.
-  - 'Manual smoke: run cloud:connect then pnpm gates and verify cloud dashboard receives gates-only telemetry.'
+  - No telemetry shipping occurs when control_plane or required auth token configuration is
+    missing/invalid.
+  - Unit tests cover success path, retry/failure path, cursor persistence, and malformed NDJSON line
+    handling.
+  - 'Manual smoke: run cloud:connect then pnpm gates and verify cloud dashboard receives gates-only
+    telemetry.'
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-runtime-wu-2160
+claimed_at: 2026-02-25T17:27:21.433Z
+baseline_main_sha: f092375d9ead3229865ec166c7f154ab3ec32f72
+session_id: 8deb831a-4956-4f92-a9c9-4375ffe5baea
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T17:27:21.437Z

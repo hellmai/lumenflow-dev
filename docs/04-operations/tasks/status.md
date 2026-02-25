@@ -5,6 +5,7 @@ _Last updated: 2026-02-25_
 ## In Progress
 
 - [WU-2161 — Document wu:brief evidence recording behavior for agent safety](wu/WU-2161.yaml)
+- [WU-2160 — Implement NDJSON telemetry file shipping for gates-only cloud onboarding](wu/WU-2160.yaml)
 
 ## Completed
 
