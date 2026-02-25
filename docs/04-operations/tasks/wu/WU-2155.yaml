@@ -10,9 +10,16 @@ code_paths:
   - packages/@lumenflow/cli/src/wu-create.ts
   - packages/@lumenflow/cli/src/wu-create-validation.ts
   - packages/@lumenflow/cli/src/wu-create-content.ts
-  - packages/@lumenflow/cli/src/wu-create-sizing-advisory.ts
-  - packages/@lumenflow/initiatives/src/orchestrator/scope-advisory.ts
   - packages/@lumenflow/core/src/wu-schema.ts
+  - packages/@lumenflow/core/src/wu-context-constants.ts
+  - packages/@lumenflow/core/src/wu-constants.ts
+  - packages/@lumenflow/cli/src/orchestrate-init-status.ts
+  - packages/@lumenflow/initiatives/src/initiative-orchestrator.ts
+  - packages/@lumenflow/core/src/docs-layout-presets.ts
+  - packages/@lumenflow/core/src/arg-parser.ts
+  - packages/@lumenflow/core/src/schemas/directories-config.ts
+  - packages/@lumenflow/core/src/lumenflow-config.ts
+  - packages/@lumenflow/core/src/wu-paths.ts
 tests:
   manual:
     - Verify pnpm gates passes with zero new path-literal-guard violations
@@ -30,10 +37,17 @@ risks: []
 notes: Discovered during INIT-038 post-completion audit. All four issues are from WU-2141 and
   WU-2142 agent output.
 requires_review: false
+claimed_mode: worktree
 assigned_to: test@example.com
+claimed_at: 2026-02-25T13:05:09.750Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2155
+session_id: 10da36a8-b273-4f76-87fd-3a0a7727a303
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - test@example.com
+approved_at: 2026-02-25T13:05:09.755Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -51,11 +65,3 @@ acceptance:
   - 'P2: Zod schema uses .refine() to enforce exception_reason required when exception_type is set'
   - path-literal-guard.test.ts passes with zero new violations
   - pnpm gates passes
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2155
-claimed_at: 2026-02-25T13:05:09.750Z
-baseline_main_sha: 8dad7904424ac03c15dc2238eab6ef8da8dbe31a
-session_id: 10da36a8-b273-4f76-87fd-3a0a7727a303
-approved_by:
-  - test@example.com
-approved_at: 2026-02-25T13:05:09.755Z
