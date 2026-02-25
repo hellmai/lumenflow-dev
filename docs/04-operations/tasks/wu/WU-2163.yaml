@@ -7,7 +7,6 @@ priority: P1
 created: 2026-02-25
 code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/core/src
   - packages/@lumenflow/cli/src/wu-done-git-ops.ts
 tests:
   manual:
