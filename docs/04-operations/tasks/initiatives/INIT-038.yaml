@@ -4,7 +4,7 @@ title: Post-Enforcement Follow-up (Release-First + Sizing Guardrails)
 description: 'Follow-up to INIT-037: restore release readiness by fixing gate blockers first, reduce
   UnsafeAny baseline to <=200, add enforcement E2E coverage, and enforce sizing intent in wu:create
   + wu:brief.'
-status: in_progress
+status: done
 priority: P1
 owner: platform-team
 created: 2026-02-25
@@ -23,7 +23,7 @@ phases:
     status: done
   - id: 5
     title: 'Wave 4: Governance & Docs (optional follow-up, non-release-critical)'
-    status: in_progress
+    status: done
 success_metrics:
   - pnpm gates green on main after Wave 0
   - UnsafeAny baseline reduced from 378 to <=200

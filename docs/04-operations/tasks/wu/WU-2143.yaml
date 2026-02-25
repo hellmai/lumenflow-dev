@@ -2,7 +2,7 @@ id: WU-2143
 title: Document tooling-backed sizing guardrails and strict mode
 lane: 'Framework: CLI WU Commands'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -34,6 +34,9 @@ notes: >-
 
   Ownership override: Completed by test@example.com (assigned to tom@hellm.ai). Reason: git config
   email is test@example.com but user is tom@hellm.ai
+
+  Ownership override: Completed by test@example.com (assigned to tom@hellm.ai). Reason: git config
+  email is test@example.com but user is tom@hellm.ai
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
@@ -56,3 +59,6 @@ session_id: c3769968-7161-4d76-8b75-eb59072e5059
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-25T12:30:26.737Z
+locked: true
+completed_at: 2026-02-25T12:51:27.832Z
+completed: 2026-02-25

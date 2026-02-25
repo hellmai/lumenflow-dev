@@ -2240,3 +2240,4 @@
 {"type":"claim","wuId":"WU-2143","timestamp":"2026-02-25T12:30:26.782Z","lane":"Framework: CLI WU Commands","title":"Document tooling-backed sizing guardrails and strict mode"}
 {"type":"checkpoint","wuId":"WU-2143","timestamp":"2026-02-25T12:30:48.254Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2142","timestamp":"2026-02-25T12:38:19.673Z"}
+{"type":"complete","wuId":"WU-2143","timestamp":"2026-02-25T12:51:32.448Z"}
