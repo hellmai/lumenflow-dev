@@ -28,11 +28,15 @@ sections:
 - [WU-2141 — Enforce WU sizing contract in wu:create and wu:brief](wu/WU-2141.yaml) — Framework: CLI WU Commands
 - [WU-2142 — Add initiative scope advisory for over-granular execution plans](wu/WU-2142.yaml) — Framework: Core Lifecycle
 - [WU-2143 — Document tooling-backed sizing guardrails and strict mode](wu/WU-2143.yaml) — Content: Framework Docs
+- [WU-2145 — Baseline OSS language audit and blocked-term policy for INIT-039](wu/WU-2145.yaml) — Content: Framework Docs
+- [WU-2146 — Remove commercial/product wording from public docs pages](wu/WU-2146.yaml) — Content: Site Comms
+- [WU-2147 — Neutralize CLI and MCP user-facing cloud product descriptions](wu/WU-2147.yaml) — Framework: CLI WU Commands
+- [WU-2148 — Scrub private product references from operations plans and active task metadata](wu/WU-2148.yaml) — Content: Framework Docs
+- [WU-2149 — Add blocked-term guardrail gate for OSS docs and plans](wu/WU-2149.yaml) — Operations: Tooling
 
 ## 🔧 In progress
 
 - [WU-2136 — Reduce UnsafeAny in core hotspot files](wu/WU-2136.yaml) — Framework: Core Lifecycle
-- [WU-2137 — Add enforcement E2E matrix across hook/TS/MCP paths](wu/WU-2137.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -1095,6 +1099,7 @@ sections:
 - [WU-2132 — Enforce TDD provenance and wu:brief evidence in WU lifecycle](wu/WU-2132.yaml)
 - [WU-2144 — wu:brief writes checkpoint event to wu-events.jsonl when run outside worktree](wu/WU-2144.yaml)
 - [WU-2135 — Fix release-blocking gate failures on main](wu/WU-2135.yaml)
+- [WU-2137 — Add enforcement E2E matrix across hook/TS/MCP paths](wu/WU-2137.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
