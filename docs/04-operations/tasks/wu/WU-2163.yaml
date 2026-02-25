@@ -2,7 +2,7 @@ id: WU-2163
 title: Extract wu:done git operation helpers
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -38,3 +38,11 @@ description: Extract clean tree checks, main sync, merge checks, and staged-file
   orchestration from wu-done.ts.
 acceptance:
   - Git operation helpers are extracted and reused by wu:done with no functional regressions.
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2163
+claimed_at: 2026-02-25T21:15:41.751Z
+baseline_main_sha: f33a2f64eea4772168cd83a6e9269f38596e00b6
+session_id: b0c9c3c0-8476-43fd-b0d4-e9bc187d0e2f
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T21:15:41.757Z

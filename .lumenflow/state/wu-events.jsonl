@@ -2271,3 +2271,4 @@
 {"type":"complete","wuId":"WU-2181","timestamp":"2026-02-25T19:51:35.795Z"}
 {"type":"claim","wuId":"WU-2162","timestamp":"2026-02-25T20:09:54.999Z","lane":"Framework: CLI WU Commands","title":"Extract wu:done policy functions"}
 {"type":"complete","wuId":"WU-2162","timestamp":"2026-02-25T20:24:16.992Z"}
+{"type":"claim","wuId":"WU-2163","timestamp":"2026-02-25T21:15:41.797Z","lane":"Framework: CLI WU Commands","title":"Extract wu:done git operation helpers"}

@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2163 — Extract wu:done git operation helpers](wu/WU-2163.yaml)
 
 ## Completed
 
