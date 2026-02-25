@@ -14,7 +14,11 @@ tests:
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2185.done
-dependencies: []
+dependencies:
+  - WU-2182
+  - WU-2183
+initiative: INIT-045
+phase: 2
 spec_refs:
   - /home/tom/.claude/plans/init-045-multi-pack-config.md
 risks: []
@@ -37,4 +41,3 @@ acceptance:
   - config:set --key gates.minCoverage errors with did-you-mean guidance
   - config:set --key gates.unknown_key errors at write path (strict validation)
   - config:set --key packs.foo errors with use pack:install guidance
-initiative: INIT-045
