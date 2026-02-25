@@ -20,6 +20,7 @@ artifacts:
 dependencies: []
 initiative: INIT-040
 phase: 2
+plan: lumenflow://plans/clever-whistling-lobster.md
 spec_refs:
   - /home/tom/.claude/plans/clever-whistling-lobster.md
 risks: []
@@ -32,7 +33,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Remove @lumenflow/kernel from control-plane-sdk runtime dependencies. Define SdkKernelEvent wire type in SDK. Keep compile-time parity checks in monorepo CI only. Published artifact must have no AGPL dependency.
+description: Remove @lumenflow/kernel from control-plane-sdk runtime dependencies. Define
+  SdkKernelEvent wire type in SDK. Keep compile-time parity checks in monorepo CI only. Published
+  artifact must have no AGPL dependency.
 acceptance:
   - SDK package.json has no @lumenflow/kernel in dependencies
   - SdkKernelEvent wire type defined in SDK
