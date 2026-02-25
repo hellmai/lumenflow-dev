@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2186 — Fix config:get — remove fallback-to-software_delivery behavior](wu/WU-2186.yaml) — Framework: CLI WU Commands
 - [WU-2185 — Rewrite config:set with workspace-aware routing](wu/WU-2185.yaml) — Framework: CLI WU Commands
 - [WU-2184 — Runtime diagnostics for misplaced config keys](wu/WU-2184.yaml) — Framework: Core Lifecycle
 - [WU-2183 — Add workspace root key registry to config-contract](wu/WU-2183.yaml) — Framework: Core Lifecycle
