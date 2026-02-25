@@ -9,7 +9,7 @@ created: 2026-02-25
 phases:
   - id: 1
     title: 'Foundation: manifest contract + root key registry + runtime diagnostics'
-    status: in_progress
+    status: done
   - id: 2
     title: 'Schema + CLI: two-phase kernel validation + config:set rewrite'
     status: pending

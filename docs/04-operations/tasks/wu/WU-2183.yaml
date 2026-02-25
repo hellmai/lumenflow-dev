@@ -2,7 +2,7 @@ id: WU-2183
 title: Add workspace root key registry to config-contract
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -47,3 +47,6 @@ session_id: c5a498b0-8331-4a5a-9c27-abe2b2fa49be
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-25T22:31:58.071Z
+locked: true
+completed_at: 2026-02-25T22:51:41.221Z
+completed: 2026-02-25

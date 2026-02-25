@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-- [WU-2183 — Add workspace root key registry to config-contract](wu/WU-2183.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1084,3 +1084,4 @@ _Last updated: 2026-02-25_
 - [WU-2163 — Extract wu:done git operation helpers](wu/WU-2163.yaml) — 2026-02-25
 - [WU-2184 — Runtime diagnostics for misplaced config keys](wu/WU-2184.yaml) — 2026-02-25
 - [WU-2182 — Add config_key and config_schema to DomainPackManifestSchema](wu/WU-2182.yaml) — 2026-02-25
+- [WU-2183 — Add workspace root key registry to config-contract](wu/WU-2183.yaml) — 2026-02-25
