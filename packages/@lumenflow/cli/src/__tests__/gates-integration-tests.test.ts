@@ -9,8 +9,16 @@
  * Bug 2: docs-only turbo filter uses directory names instead of package names
  */
 
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import YAML from 'yaml';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { extractPackagesFromCodePaths, resolveDocsOnlyTestPlan } from '../gates.js';
+import {
+  extractPackagesFromCodePaths,
+  resolveDocsOnlyTestPlan,
+  syncGatesTelemetryToCloud,
+} from '../gates.js';
 
 describe('WU-1415: Gates infrastructure fixes', () => {
   describe('Bug 1: vitest integration test command', () => {
@@ -125,5 +133,264 @@ describe('WU-1415: Gates infrastructure fixes', () => {
         expect(plan.packages).not.toContain('docs');
       });
     });
+  });
+});
+
+describe('WU-2160: gates NDJSON cloud sync', () => {
+  const TEST_TOKEN_ENV = 'LUMENFLOW_CLOUD_TOKEN_TEST';
+  const TEST_ENDPOINT = 'https://cloud.example.com';
+  const tempDirs: string[] = [];
+
+  function createWorkspaceRoot(): string {
+    const root = mkdtempSync(path.join(tmpdir(), 'gates-cloud-sync-'));
+    tempDirs.push(root);
+    return root;
+  }
+
+  function writeWorkspaceYaml(
+    root: string,
+    input: {
+      workspaceId?: string;
+      includeControlPlane?: boolean;
+      syncInterval?: number;
+      batchSize?: number;
+    } = {},
+  ): void {
+    const workspaceDoc: Record<string, unknown> = {
+      id: input.workspaceId ?? 'workspace-test',
+    };
+
+    if (input.includeControlPlane ?? true) {
+      workspaceDoc.control_plane = {
+        endpoint: TEST_ENDPOINT,
+        org_id: 'org-test',
+        project_id: 'project-test',
+        sync_interval: input.syncInterval ?? 1,
+        batch_size: input.batchSize ?? 2,
+        policy_mode: 'tighten-only',
+        auth: {
+          token_env: TEST_TOKEN_ENV,
+        },
+      };
+    }
+
+    writeFileSync(path.join(root, 'workspace.yaml'), YAML.stringify(workspaceDoc), 'utf-8');
+  }
+
+  function writeTelemetryFiles(root: string, gatesLines: string[], flowLines: string[]): void {
+    const telemetryDir = path.join(root, '.lumenflow', 'telemetry');
+    mkdirSync(telemetryDir, { recursive: true });
+    writeFileSync(path.join(telemetryDir, 'gates.ndjson'), `${gatesLines.join('\n')}\n`, 'utf-8');
+    writeFileSync(path.join(root, '.lumenflow', 'flow.log'), `${flowLines.join('\n')}\n`, 'utf-8');
+  }
+
+  function createJsonResponse(body: unknown, status = 200): Response {
+    return new Response(JSON.stringify(body), {
+      status,
+      headers: {
+        'content-type': 'application/json',
+      },
+    });
+  }
+
+  afterEach(() => {
+    for (const dir of tempDirs.splice(0, tempDirs.length)) {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('ships new gates + flow NDJSON records in batches and persists cursor offsets', async () => {
+    const root = createWorkspaceRoot();
+    writeWorkspaceYaml(root, { syncInterval: 1, batchSize: 2 });
+    writeTelemetryFiles(
+      root,
+      [
+        JSON.stringify({
+          timestamp: '2026-02-25T00:00:00.000Z',
+          gate_name: 'format:check',
+          passed: true,
+          duration_ms: 123,
+          wu_id: 'WU-2160',
+          lane: 'Operations',
+        }),
+        JSON.stringify({
+          timestamp: '2026-02-25T00:00:01.000Z',
+          gate_name: 'lint',
+          passed: true,
+          duration_ms: 456,
+          wu_id: 'WU-2160',
+          lane: 'Operations',
+        }),
+      ],
+      [
+        JSON.stringify({
+          timestamp: '2026-02-25T00:00:02.000Z',
+          script: 'wu:prep',
+          step: 'start',
+          wu_id: 'WU-2160',
+          lane: 'Operations',
+        }),
+      ],
+    );
+
+    const fetchFn = vi.fn<typeof fetch>().mockResolvedValue(createJsonResponse({ accepted: 2 }));
+    const result = await syncGatesTelemetryToCloud({
+      cwd: root,
+      fetchFn,
+      now: () => 20_000,
+      environment: {
+        [TEST_TOKEN_ENV]: 'token-value',
+      },
+    });
+
+    expect(result.recordsSent).toBe(3);
+    expect(fetchFn).toHaveBeenCalledTimes(2);
+    expect(fetchFn.mock.calls[0]?.[0]).toBe('https://cloud.example.com/api/v1/telemetry');
+
+    const firstRequestInit = fetchFn.mock.calls[0]?.[1];
+    const firstHeaders = new Headers(firstRequestInit?.headers as HeadersInit);
+    expect(firstHeaders.get('authorization')).toBe('Bearer token-value');
+    expect(firstHeaders.get('content-type')).toBe('application/json');
+
+    const firstPayload = JSON.parse(String(firstRequestInit?.body)) as {
+      workspace_id: string;
+      records: unknown[];
+    };
+    expect(firstPayload.workspace_id).toBe('workspace-test');
+    expect(firstPayload.records).toHaveLength(2);
+
+    const statePath = path.join(root, '.lumenflow', 'telemetry', 'cloud-sync-state.json');
+    const state = JSON.parse(readFileSync(statePath, 'utf-8')) as {
+      files: {
+        gates: { offset: number };
+        flow: { offset: number };
+      };
+    };
+
+    const gatesSize = Buffer.byteLength(
+      readFileSync(path.join(root, '.lumenflow', 'telemetry', 'gates.ndjson'), 'utf-8'),
+      'utf8',
+    );
+    const flowSize = Buffer.byteLength(readFileSync(path.join(root, '.lumenflow', 'flow.log'), 'utf-8'), 'utf8');
+    expect(state.files.gates.offset).toBe(gatesSize);
+    expect(state.files.flow.offset).toBe(flowSize);
+  });
+
+  it('keeps cursor on network failure and retries on next invocation', async () => {
+    const root = createWorkspaceRoot();
+    writeWorkspaceYaml(root, { syncInterval: 60, batchSize: 10 });
+    writeTelemetryFiles(
+      root,
+      [
+        JSON.stringify({
+          timestamp: '2026-02-25T00:00:00.000Z',
+          gate_name: 'format:check',
+          passed: true,
+          duration_ms: 10,
+        }),
+      ],
+      [],
+    );
+
+    const firstAttempt = await syncGatesTelemetryToCloud({
+      cwd: root,
+      fetchFn: vi.fn<typeof fetch>().mockRejectedValue(new Error('network down')),
+      now: () => 30_000,
+      environment: {
+        [TEST_TOKEN_ENV]: 'token-value',
+      },
+    });
+
+    expect(firstAttempt.recordsSent).toBe(0);
+
+    const secondFetch = vi.fn<typeof fetch>().mockResolvedValue(createJsonResponse({ accepted: 1 }));
+    const secondAttempt = await syncGatesTelemetryToCloud({
+      cwd: root,
+      fetchFn: secondFetch,
+      now: () => 30_001,
+      environment: {
+        [TEST_TOKEN_ENV]: 'token-value',
+      },
+    });
+
+    expect(secondAttempt.recordsSent).toBe(1);
+    expect(secondFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('skips malformed NDJSON lines and still advances cursor after successful sync', async () => {
+    const root = createWorkspaceRoot();
+    writeWorkspaceYaml(root, { syncInterval: 1, batchSize: 10 });
+    writeTelemetryFiles(
+      root,
+      [
+        '{this-is-not-valid-json',
+        JSON.stringify({
+          timestamp: '2026-02-25T00:00:00.000Z',
+          gate_name: 'lint',
+          passed: false,
+          duration_ms: 42,
+        }),
+      ],
+      [],
+    );
+
+    const fetchFn = vi.fn<typeof fetch>().mockResolvedValue(createJsonResponse({ accepted: 1 }));
+    const logger = { warn: vi.fn() };
+    const firstAttempt = await syncGatesTelemetryToCloud({
+      cwd: root,
+      fetchFn,
+      logger,
+      now: () => 50_000,
+      environment: {
+        [TEST_TOKEN_ENV]: 'token-value',
+      },
+    });
+
+    expect(firstAttempt.recordsSent).toBe(1);
+    expect(firstAttempt.malformedLines).toBe(1);
+    expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('malformed NDJSON'));
+
+    const secondFetch = vi.fn<typeof fetch>().mockResolvedValue(createJsonResponse({ accepted: 1 }));
+    const secondAttempt = await syncGatesTelemetryToCloud({
+      cwd: root,
+      fetchFn: secondFetch,
+      now: () => 52_000,
+      environment: {
+        [TEST_TOKEN_ENV]: 'token-value',
+      },
+    });
+
+    expect(secondAttempt.recordsRead).toBe(0);
+    expect(secondFetch).not.toHaveBeenCalled();
+  });
+
+  it('does not ship when control_plane config is missing', async () => {
+    const root = createWorkspaceRoot();
+    writeWorkspaceYaml(root, { includeControlPlane: false });
+    writeTelemetryFiles(
+      root,
+      [
+        JSON.stringify({
+          timestamp: '2026-02-25T00:00:00.000Z',
+          gate_name: 'format:check',
+          passed: true,
+          duration_ms: 10,
+        }),
+      ],
+      [],
+    );
+
+    const fetchFn = vi.fn<typeof fetch>().mockResolvedValue(createJsonResponse({ accepted: 1 }));
+    const result = await syncGatesTelemetryToCloud({
+      cwd: root,
+      fetchFn,
+      now: () => 70_000,
+      environment: {
+        [TEST_TOKEN_ENV]: 'token-value',
+      },
+    });
+
+    expect(result.skippedReason).toBe('control-plane-unavailable');
+    expect(fetchFn).not.toHaveBeenCalled();
   });
 });
