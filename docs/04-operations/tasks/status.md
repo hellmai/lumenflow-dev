@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2181 — Document gitignore scaffold drift fix and consumer remediation](wu/WU-2181.yaml)
 
 ## Completed
 
