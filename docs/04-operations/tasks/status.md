@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2182 — Add config_key and config_schema to DomainPackManifestSchema](wu/WU-2182.yaml)
 
 ## Completed
 

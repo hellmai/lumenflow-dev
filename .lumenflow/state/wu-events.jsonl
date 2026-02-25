@@ -2273,3 +2273,4 @@
 {"type":"complete","wuId":"WU-2162","timestamp":"2026-02-25T20:24:16.992Z"}
 {"type":"claim","wuId":"WU-2163","timestamp":"2026-02-25T21:15:41.797Z","lane":"Framework: CLI WU Commands","title":"Extract wu:done git operation helpers"}
 {"type":"complete","wuId":"WU-2163","timestamp":"2026-02-25T21:25:40.018Z"}
+{"type":"claim","wuId":"WU-2182","timestamp":"2026-02-25T22:30:52.306Z","lane":"Framework: Core Lifecycle","title":"Add config_key and config_schema to DomainPackManifestSchema"}
