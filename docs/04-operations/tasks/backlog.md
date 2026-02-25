@@ -25,7 +25,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2142 — Add initiative scope advisory for over-granular execution plans](wu/WU-2142.yaml) — Framework: CLI WU Commands
 - [WU-2143 — Document tooling-backed sizing guardrails and strict mode](wu/WU-2143.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
@@ -1095,6 +1094,7 @@ sections:
 - [WU-2138 — Reduce UnsafeAny in CLI hotspot handlers](wu/WU-2138.yaml)
 - [WU-2140 — Complete UnsafeAny CLI tail cleanup and lock reduced baseline](wu/WU-2140.yaml)
 - [WU-2141 — Enforce WU sizing contract in wu:create and wu:brief](wu/WU-2141.yaml)
+- [WU-2142 — Add initiative scope advisory for over-granular execution plans](wu/WU-2142.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
