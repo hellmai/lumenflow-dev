@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-- [WU-2157 — Enrich post-compaction recovery and extend to all agent clients](wu/WU-2157.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1073,3 +1073,4 @@ _Last updated: 2026-02-25_
 - [WU-2143 — Document tooling-backed sizing guardrails and strict mode](wu/WU-2143.yaml) — 2026-02-25
 - [WU-2156 — Fix manifest-to-scripts alignment: add missing pnpm scripts](wu/WU-2156.yaml) — 2026-02-25
 - [WU-2155 — Fix INIT-038 regressions: path-literal guard, missing runtime wiring, schema gap](wu/WU-2155.yaml) — 2026-02-25
+- [WU-2157 — Enrich post-compaction recovery and extend to all agent clients](wu/WU-2157.yaml) — 2026-02-25
