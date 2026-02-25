@@ -106,6 +106,10 @@ export const DomainPackManifestSchema = z.object({
   evidence_types: z.array(z.string().min(1)).default([]),
   state_aliases: z.record(z.string().min(1), z.string().min(1)).default({}),
   lane_templates: z.array(DomainPackLaneTemplateSchema).default([]),
+  /** Root key in workspace.yaml that this pack owns for its configuration namespace. */
+  config_key: z.string().min(1).optional(),
+  /** Path to a JSON Schema file (relative to pack root) describing the pack config shape. */
+  config_schema: z.string().optional(),
 });
 
 export type DomainPackManifest = z.infer<typeof DomainPackManifestSchema>;

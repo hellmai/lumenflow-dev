@@ -1,5 +1,6 @@
 id: software-delivery
 version: 0.1.0
+config_key: software_delivery
 task_types:
   - work-unit
 tools:

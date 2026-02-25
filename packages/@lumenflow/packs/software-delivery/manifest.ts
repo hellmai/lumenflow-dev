@@ -404,6 +404,7 @@ const POLICY_SUFFIXES = ['format', 'lint', 'typecheck', 'test', 'coverage'] as c
 export const SOFTWARE_DELIVERY_MANIFEST: SoftwareDeliveryPackManifest = {
   id: SOFTWARE_DELIVERY_PACK_ID,
   version: SOFTWARE_DELIVERY_PACK_VERSION,
+  config_key: 'software_delivery',
   task_types: ['work-unit'],
   tools: createManifestTools(),
   policies: POLICY_SUFFIXES.map((suffix) => ({

@@ -49,6 +49,8 @@ export interface SoftwareDeliveryManifestPolicy {
 export interface SoftwareDeliveryPackManifest {
   id: string;
   version: string;
+  config_key?: string;
+  config_schema?: string;
   task_types: string[];
   tools: SoftwareDeliveryManifestTool[];
   policies: SoftwareDeliveryManifestPolicy[];
