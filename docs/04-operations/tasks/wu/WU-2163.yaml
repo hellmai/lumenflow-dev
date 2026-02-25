@@ -2,7 +2,7 @@ id: WU-2163
 title: Extract wu:done git operation helpers
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -46,3 +46,6 @@ description: Extract clean tree checks, main sync, merge checks, and staged-file
   orchestration from wu-done.ts.
 acceptance:
   - Git operation helpers are extracted and reused by wu:done with no functional regressions.
+locked: true
+completed_at: 2026-02-25T21:25:35.343Z
+completed: 2026-02-25
