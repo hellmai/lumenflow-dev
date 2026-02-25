@@ -4,6 +4,7 @@
 import { z, type ZodTypeAny } from 'zod';
 import { KERNEL_EVENT_KINDS, TOOL_TRACE_KINDS } from './event-kinds.js';
 import { SHA256_HEX_REGEX, SHA256_INTEGRITY_REGEX } from './shared-constants.js';
+import type { DomainPackManifest } from './pack/manifest.js';
 
 const ISO_DATETIME_SCHEMA = z.string().datetime();
 const SEMVER_REGEX = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z-.]+)?(?:\+[0-9A-Za-z-.]+)?$/;
@@ -186,7 +187,7 @@ export const WorkspaceSpecSchema = z.object({
     network_default: z.enum(['off', 'full']),
     deny_overlays: z.array(z.string().min(1)),
   }),
-  software_delivery: z.record(z.string(), z.unknown()),
+  software_delivery: z.record(z.string(), z.unknown()).optional(),
   control_plane: WorkspaceControlPlaneConfigSchema.optional(),
   memory_namespace: z.string().min(1),
   event_namespace: z.string().min(1),
@@ -196,6 +197,86 @@ export type WorkspaceSpec = z.infer<typeof WorkspaceSpecSchema>;
 export type WorkspaceControlPlanePolicyMode = z.infer<typeof WorkspaceControlPlanePolicyModeSchema>;
 export type WorkspaceControlPlaneConfig = z.infer<typeof WorkspaceControlPlaneConfigSchema>;
 export type WorkspaceControlPlaneAuthConfig = z.infer<typeof WorkspaceControlPlaneAuthConfigSchema>;
+
+/**
+ * Root keys owned by the kernel itself. These are always valid in a workspace spec
+ * regardless of which packs are pinned.
+ *
+ * NOTE: `software_delivery` is NOT in this list. It is a pack config_key declared
+ * by the software-delivery pack manifest. Any pack can declare a config_key in its
+ * manifest, and that key becomes a valid workspace root key when the pack is pinned.
+ */
+export const KERNEL_OWNED_ROOT_KEYS = [
+  'id',
+  'name',
+  'packs',
+  'lanes',
+  'policies',
+  'security',
+  'control_plane',
+  'memory_namespace',
+  'event_namespace',
+] as const;
+
+export type KernelOwnedRootKey = (typeof KERNEL_OWNED_ROOT_KEYS)[number];
+
+/**
+ * Two-phase workspace root key validation result.
+ */
+export interface WorkspaceRootKeyValidationResult {
+  valid: boolean;
+  errors: string[];
+}
+
+/**
+ * Two-phase workspace root key validation.
+ *
+ * Phase 1: Validate that all root keys are either kernel-owned root keys
+ *          or declared pack config_keys.
+ * Phase 2: Resolve pack manifests and collect their config_key declarations
+ *          to build the set of valid pack root keys.
+ *
+ * Unknown root keys are rejected hard -- no passthrough, no silent acceptance.
+ *
+ * @param workspaceData - The raw workspace data object (parsed from YAML)
+ * @param packManifests - Loaded pack manifests for all pinned packs
+ * @returns Validation result with errors for unknown root keys
+ */
+export function validateWorkspaceRootKeys(
+  workspaceData: Record<string, unknown>,
+  packManifests: ReadonlyArray<Pick<DomainPackManifest, 'config_key'>>,
+): WorkspaceRootKeyValidationResult {
+  const kernelKeys = new Set<string>(KERNEL_OWNED_ROOT_KEYS);
+
+  // Phase 2: Collect config_keys from pack manifests
+  const packConfigKeys = new Set<string>();
+  for (const manifest of packManifests) {
+    if (manifest.config_key) {
+      packConfigKeys.add(manifest.config_key);
+    }
+  }
+
+  // Validate all root keys in the workspace data
+  const errors: string[] = [];
+  for (const key of Object.keys(workspaceData)) {
+    if (kernelKeys.has(key)) {
+      continue;
+    }
+    if (packConfigKeys.has(key)) {
+      continue;
+    }
+    errors.push(
+      `Unknown workspace root key "${key}". ` +
+        'Only kernel-owned keys and pack-declared config_keys are allowed. ' +
+        'If this key belongs to a pack, ensure the pack is pinned and declares config_key in its manifest.',
+    );
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
 
 const KernelEventBaseSchema = z.object({
   schema_version: z.literal(1),

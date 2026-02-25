@@ -17,7 +17,10 @@ import {
   ToolTraceEntrySchema,
   canonical_json,
   toMcpJsonSchema,
+  KERNEL_OWNED_ROOT_KEYS,
+  validateWorkspaceRootKeys,
 } from '../index.js';
+import type { DomainPackManifest } from '../index.js';
 
 describe('kernel schemas', () => {
   const writeScope = {
@@ -219,7 +222,7 @@ describe('kernel schemas', () => {
       expect(result.success).toBe(true);
     });
 
-    it('rejects workspace spec when software_delivery is missing', () => {
+    it('accepts workspace spec when software_delivery is missing (optional field)', () => {
       const lane = {
         id: 'framework-core',
         title: 'Framework: Core Validation',
@@ -247,7 +250,10 @@ describe('kernel schemas', () => {
         event_namespace: 'events-default',
       });
 
-      expect(result.success).toBe(false);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.software_delivery).toBeUndefined();
+      }
     });
 
     it('accepts control_plane when all fields are valid', () => {
@@ -551,6 +557,182 @@ describe('kernel schemas', () => {
       const hash1 = canonical_json('a:\n  z: 2\n  y: 1\n');
       const hash2 = canonical_json('a:\n  y: 1\n  z: 2\n');
       expect(hash1).toBe(hash2);
+    });
+  });
+
+  describe('KERNEL_OWNED_ROOT_KEYS', () => {
+    it('contains exactly the kernel-owned keys without pack config keys', () => {
+      expect(KERNEL_OWNED_ROOT_KEYS).toContain('id');
+      expect(KERNEL_OWNED_ROOT_KEYS).toContain('name');
+      expect(KERNEL_OWNED_ROOT_KEYS).toContain('packs');
+      expect(KERNEL_OWNED_ROOT_KEYS).toContain('lanes');
+      expect(KERNEL_OWNED_ROOT_KEYS).toContain('policies');
+      expect(KERNEL_OWNED_ROOT_KEYS).toContain('security');
+      expect(KERNEL_OWNED_ROOT_KEYS).toContain('control_plane');
+      expect(KERNEL_OWNED_ROOT_KEYS).toContain('memory_namespace');
+      expect(KERNEL_OWNED_ROOT_KEYS).toContain('event_namespace');
+      // software_delivery is NOT a kernel root key -- it comes from pack manifests
+      expect(KERNEL_OWNED_ROOT_KEYS).not.toContain('software_delivery');
+    });
+  });
+
+  describe('validateWorkspaceRootKeys (two-phase validation)', () => {
+    const baseWorkspaceData = {
+      id: 'workspace-default',
+      name: 'LumenFlow OS',
+      packs: [],
+      lanes: [],
+      security: {
+        allowed_scopes: [{ type: 'network', posture: 'off' }],
+        network_default: 'off',
+        deny_overlays: [],
+      },
+      memory_namespace: 'memory-default',
+      event_namespace: 'events-default',
+    };
+
+    const sdPackManifest: DomainPackManifest = {
+      id: 'software-delivery',
+      version: '1.0.0',
+      task_types: ['feature'],
+      tools: [],
+      policies: [],
+      evidence_types: [],
+      state_aliases: {},
+      lane_templates: [],
+      config_key: 'software_delivery',
+    };
+
+    it('accepts workspace without software_delivery when SD pack not pinned', () => {
+      const result = validateWorkspaceRootKeys(baseWorkspaceData, []);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it('accepts workspace with software_delivery when SD pack is pinned and declares config_key', () => {
+      const data = {
+        ...baseWorkspaceData,
+        software_delivery: { gates: { minCoverage: 90 } },
+      };
+      const result = validateWorkspaceRootKeys(data, [sdPackManifest]);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it('rejects workspace with unknown root key', () => {
+      const data = {
+        ...baseWorkspaceData,
+        observability: { endpoint: 'https://example.com' },
+      };
+      const result = validateWorkspaceRootKeys(data, []);
+      expect(result.valid).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.errors[0]).toContain('observability');
+    });
+
+    it('accepts workspace with declared pack config_key from a custom pack', () => {
+      const observabilityPack: DomainPackManifest = {
+        id: 'observability',
+        version: '1.0.0',
+        task_types: ['monitoring'],
+        tools: [],
+        policies: [],
+        evidence_types: [],
+        state_aliases: {},
+        lane_templates: [],
+        config_key: 'observability',
+      };
+
+      const data = {
+        ...baseWorkspaceData,
+        observability: { endpoint: 'https://example.com' },
+      };
+      const result = validateWorkspaceRootKeys(data, [observabilityPack]);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it('rejects workspace with software_delivery when no pack declares that config_key', () => {
+      const data = {
+        ...baseWorkspaceData,
+        software_delivery: { gates: {} },
+      };
+      // No packs pinned, so software_delivery is an unknown root key
+      const result = validateWorkspaceRootKeys(data, []);
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain('software_delivery');
+    });
+
+    it('accepts all kernel root keys without needing pack manifests', () => {
+      const data = {
+        ...baseWorkspaceData,
+        policies: { default: 'allow' },
+        control_plane: {
+          endpoint: 'https://example.com',
+          org_id: 'org-1',
+          project_id: 'proj-1',
+          sync_interval: 60,
+          policy_mode: 'tighten-only',
+          auth: { token_env: 'TOKEN' },
+        },
+      };
+      const result = validateWorkspaceRootKeys(data, []);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it('reports all unknown root keys in errors', () => {
+      const data = {
+        ...baseWorkspaceData,
+        unknown_one: {},
+        unknown_two: 'value',
+      };
+      const result = validateWorkspaceRootKeys(data, []);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toHaveLength(2);
+      expect(result.errors.some((e: string) => e.includes('unknown_one'))).toBe(true);
+      expect(result.errors.some((e: string) => e.includes('unknown_two'))).toBe(true);
+    });
+
+    it('accepts workspace with multiple pack config_keys', () => {
+      const observabilityPack: DomainPackManifest = {
+        id: 'observability',
+        version: '1.0.0',
+        task_types: ['monitoring'],
+        tools: [],
+        policies: [],
+        evidence_types: [],
+        state_aliases: {},
+        lane_templates: [],
+        config_key: 'observability',
+      };
+
+      const data = {
+        ...baseWorkspaceData,
+        software_delivery: { gates: {} },
+        observability: { endpoint: 'https://example.com' },
+      };
+      const result = validateWorkspaceRootKeys(data, [sdPackManifest, observabilityPack]);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it('ignores packs without config_key', () => {
+      const noConfigPack: DomainPackManifest = {
+        id: 'simple-pack',
+        version: '1.0.0',
+        task_types: ['task'],
+        tools: [],
+        policies: [],
+        evidence_types: [],
+        state_aliases: {},
+        lane_templates: [],
+        // no config_key
+      };
+
+      const result = validateWorkspaceRootKeys(baseWorkspaceData, [noConfigPack]);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
     });
   });
 
