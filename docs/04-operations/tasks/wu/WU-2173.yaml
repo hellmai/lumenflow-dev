@@ -18,6 +18,8 @@ artifacts:
 dependencies: []
 initiative: INIT-043
 phase: 2
+blocked_by:
+  - WU-2172
 risks: []
 notes: 'source_plan: /home/USER/.claude/plans/gleaming-painting-sonnet.md'
 requires_review: false
@@ -28,6 +30,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add typed environment schema validation with fail-fast or soft-warn policy that surfaces actionable startup diagnostics.
+description: Add typed environment schema validation with fail-fast or soft-warn policy that
+  surfaces actionable startup diagnostics.
 acceptance:
-  - Environment schema validation runs at startup and emits clear diagnostics for missing or malformed values.
+  - Environment schema validation runs at startup and emits clear diagnostics for missing or
+    malformed values.
