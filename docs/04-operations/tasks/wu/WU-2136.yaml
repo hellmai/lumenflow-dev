@@ -2,7 +2,7 @@ id: WU-2136
 title: Reduce UnsafeAny in core hotspot files
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -44,8 +44,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Reduce UnsafeAny in the highest-churn core files by replacing unsafe aliases at parse/I/O boundaries with unknown plus schema-driven or explicit narrowing.
+description: Reduce UnsafeAny in the highest-churn core files by replacing unsafe aliases at
+  parse/I/O boundaries with unknown plus schema-driven or explicit narrowing.
 acceptance:
   - UnsafeAny baseline decreases by at least 80 from current baseline
   - Hotspot core files in scope no longer use UnsafeAny
   - Full pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2136
+claimed_at: 2026-02-25T10:29:19.764Z
+baseline_main_sha: 62368b34d46468642373dd5c61d4b52101d36c29
+session_id: 881e72ab-28a7-4308-bb22-e9e6a2781796
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T10:29:19.769Z

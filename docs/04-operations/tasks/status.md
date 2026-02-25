@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2136 — Reduce UnsafeAny in core hotspot files](wu/WU-2136.yaml)
 
 ## Completed
 

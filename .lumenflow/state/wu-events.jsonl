@@ -2222,3 +2222,4 @@
 {"type":"claim","wuId":"WU-2135","timestamp":"2026-02-25T10:17:01.933Z","lane":"Framework: Core Lifecycle","title":"Fix release-blocking gate failures on main"}
 {"type":"checkpoint","wuId":"WU-2135","timestamp":"2026-02-25T10:17:20.474Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2135","timestamp":"2026-02-25T10:28:06.163Z"}
+{"type":"claim","wuId":"WU-2136","timestamp":"2026-02-25T10:29:19.810Z","lane":"Framework: Core Lifecycle","title":"Reduce UnsafeAny in core hotspot files"}
