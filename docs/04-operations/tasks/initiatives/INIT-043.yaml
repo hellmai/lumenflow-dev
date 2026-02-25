@@ -1,13 +1,28 @@
 id: INIT-043
 slug: environment-variable-hardening
 title: Environment Variable Hardening
-description: ''
-status: draft
+description: Eliminate remaining raw process.env access patterns, introduce typed environment
+  validation, and standardize env reads behind explicit access utilities.
+status: open
 priority: P2
 owner: tom@hellm.ai
 created: 2026-02-25
-phases: []
+phases:
+  - id: 1
+    title: 'Phase 1: Migrate raw env reads to ENV_VARS constants'
+    status: pending
+  - id: 2
+    title: 'Phase 2: Add startup env schema validation'
+    status: pending
+  - id: 3
+    title: 'Phase 3: Replace direct reads with getEnv/requireEnv accessors'
+    status: pending
 success_metrics:
   - Raw process.env usage is reduced to approved patterns
   - Startup env validation provides actionable diagnostics
+  - Raw production process.env usage is reduced to approved exceptions
+  - Missing/malformed env values fail fast with actionable diagnostics
+  - Env access patterns are uniform across core, cli, and mcp
 labels: []
+notes:
+  - 'source_plan: /home/USER/.claude/plans/gleaming-painting-sonnet.md'
