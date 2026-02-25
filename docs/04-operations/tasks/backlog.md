@@ -33,11 +33,10 @@ sections:
 - [WU-2153 — Session lifecycle hooks for control-plane registration](wu/WU-2153.yaml) — Framework: Agent
 - [WU-2154 — OSS-complete CI gate for local-only test pass](wu/WU-2154.yaml) — Operations: Tooling
 - [WU-2158 — Add co-change gate to Software Delivery Pack](wu/WU-2158.yaml) — Framework: Core Lifecycle
-- [WU-2159 — Implement HttpControlPlaneSyncPort adapter for cloud telemetry forwarding](wu/WU-2159.yaml) — Operations: Runtime
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2159 — Implement HttpControlPlaneSyncPort adapter for cloud telemetry forwarding](wu/WU-2159.yaml) — Operations: Runtime
 
 ## ⛔ Blocked
 

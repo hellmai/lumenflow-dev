@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2159 — Implement HttpControlPlaneSyncPort adapter for cloud telemetry forwarding](wu/WU-2159.yaml)
 
 ## Completed
 
