@@ -130,7 +130,9 @@ describe('DomainPackManifestSchema config_key and config_schema fields', () => {
     });
 
     it('rejects config_key that is an empty string', () => {
-      expect(() => DomainPackManifestSchema.parse(minimalManifestInput({ config_key: '' }))).toThrow();
+      expect(() =>
+        DomainPackManifestSchema.parse(minimalManifestInput({ config_key: '' })),
+      ).toThrow();
     });
 
     it('rejects config_key that is not a string', () => {
