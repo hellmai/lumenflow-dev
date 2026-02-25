@@ -63,9 +63,19 @@ except:
 
 # Only proceed if we have a WU ID (working in a worktree)
 if [[ -n "$WU_ID" ]]; then
+  # Capture git diff --stat for recovery context (WU-2157)
+  # Shows which files have been modified since the branch diverged from main
+  GIT_DIFF_STAT=$(git diff --stat HEAD 2>/dev/null || echo "")
+
+  # Build checkpoint command with optional git diff stat
+  CHECKPOINT_ARGS=("Auto: pre-${TRIGGER}-compaction" --wu "$WU_ID" --trigger "pre-compact" --quiet)
+  if [[ -n "$GIT_DIFF_STAT" ]]; then
+    CHECKPOINT_ARGS+=(--git-diff-stat "$GIT_DIFF_STAT")
+  fi
+
   # Save checkpoint with pre-compact trigger
   # Note: This may fail if CLI not built, but that's OK - recovery file is more important
-  pnpm mem:checkpoint "Auto: pre-${TRIGGER}-compaction" --wu "$WU_ID" --trigger "pre-compact" --quiet 2>/dev/null || true
+  pnpm mem:checkpoint "${CHECKPOINT_ARGS[@]}" 2>/dev/null || true
 
   # Write durable recovery marker (survives compaction)
   # This is the key mechanism - file persists and is read by session-start-recovery.sh

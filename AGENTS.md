@@ -175,3 +175,23 @@ This file provides universal guidance for all AI agents. Additional vendor-speci
 - [Quick Reference: Commands](docs/04-operations/_frameworks/lumenflow/agent/onboarding/quick-ref-commands.md) -- Complete CLI reference (60+ commands)
 - [Troubleshooting wu:done](docs/04-operations/_frameworks/lumenflow/agent/onboarding/troubleshooting-wu-done.md) -- Most common completion mistakes
 - [LumenFlow Complete Guide](docs/04-operations/_frameworks/lumenflow/lumenflow-complete.md) -- Full framework reference (lifecycle, lanes, gates, DoD)
+
+---
+
+## Context Recovery (WU-2157)
+
+If you are resuming work or have lost context, check for recovery files:
+
+```bash
+# Check for pending recovery
+ls .lumenflow/state/recovery-pending-*.md 2>/dev/null
+
+# Generate fresh recovery context
+pnpm mem:recover --wu WU-XXX
+
+# Or generate a full handoff prompt
+pnpm wu:brief --id WU-XXX --client codex-cli
+```
+
+Recovery files contain your last checkpoint, acceptance criteria, code paths, and changed files.
+Always save checkpoints before long operations: `pnpm mem:checkpoint "progress note" --wu WU-XXX`

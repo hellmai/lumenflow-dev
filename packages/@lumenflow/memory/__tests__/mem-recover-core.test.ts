@@ -277,7 +277,7 @@ describe('mem-recover-core (WU-1390)', () => {
       });
 
       expect(result.context).toContain('Next Action');
-      expect(result.context).toContain(`pnpm wu:brief --id ${TEST_WU_ID} --client claude-code`);
+      expect(result.context).toContain(`pnpm wu:brief --id ${TEST_WU_ID}`);
     });
 
     it('returns size in bytes', async () => {
@@ -292,11 +292,11 @@ describe('mem-recover-core (WU-1390)', () => {
   });
 
   describe('size limiting', () => {
-    it('respects default maxSize of 2KB', async () => {
-      // Create a large checkpoint
+    it('respects default maxSize of 8KB', async () => {
+      // Create a large checkpoint that exceeds 8KB
       await writeMemoryNode(
         createCheckpointNode({
-          content: 'x'.repeat(3000), // 3KB checkpoint
+          content: 'x'.repeat(9000), // 9KB checkpoint
         }),
       );
 
@@ -305,7 +305,7 @@ describe('mem-recover-core (WU-1390)', () => {
         baseDir: testDir,
       });
 
-      const DEFAULT_MAX_SIZE = 2048;
+      const DEFAULT_MAX_SIZE = 8192;
       expect(result.size).toBeLessThanOrEqual(DEFAULT_MAX_SIZE);
       expect(result.truncated).toBe(true);
     });
@@ -416,6 +416,236 @@ describe('mem-recover-core (WU-1390)', () => {
 
       // Should use fallback constraints
       expect(result.context).toContain('Worktree Discipline');
+    });
+  });
+
+  describe('enriched recovery (WU-2157)', () => {
+    /**
+     * Helper to write a WU YAML spec file
+     */
+    async function writeWuYaml(wuId: string, content: string): Promise<void> {
+      const wuDir = path.join(testDir, 'docs', '04-operations', 'tasks', 'wu');
+      await fs.mkdir(wuDir, { recursive: true });
+      await fs.writeFile(path.join(wuDir, `${wuId}.yaml`), content, 'utf-8');
+    }
+
+    describe('increased default budget', () => {
+      it('uses 8KB default budget instead of 2KB', async () => {
+        // Create a checkpoint larger than 2KB but under 8KB
+        await writeMemoryNode(
+          createCheckpointNode({
+            content: 'x'.repeat(3000),
+          }),
+        );
+
+        const result = await generateRecoveryContext({
+          wuId: TEST_WU_ID,
+          baseDir: testDir,
+        });
+
+        // With old 2KB limit this would truncate; with 8KB it should not
+        expect(result.truncated).toBe(false);
+        expect(result.size).toBeGreaterThan(2048);
+      });
+
+      it('still respects explicit maxSize override', async () => {
+        await writeMemoryNode(
+          createCheckpointNode({
+            content: 'x'.repeat(3000),
+          }),
+        );
+
+        const result = await generateRecoveryContext({
+          wuId: TEST_WU_ID,
+          baseDir: testDir,
+          maxSize: 2048, // Explicit override
+        });
+
+        expect(result.size).toBeLessThanOrEqual(2048);
+        expect(result.truncated).toBe(true);
+      });
+    });
+
+    describe('WU metadata inclusion', () => {
+      it('includes acceptance criteria from WU YAML', async () => {
+        await writeWuYaml(
+          TEST_WU_ID,
+          `id: ${TEST_WU_ID}
+title: Test WU
+status: in_progress
+acceptance:
+  - All tests pass
+  - Code coverage above 90%
+code_paths:
+  - packages/@lumenflow/memory/src/mem-recover-core.ts
+`,
+        );
+
+        const result = await generateRecoveryContext({
+          wuId: TEST_WU_ID,
+          baseDir: testDir,
+          includeWuMetadata: true,
+        });
+
+        expect(result.context).toContain('Acceptance Criteria');
+        expect(result.context).toContain('All tests pass');
+        expect(result.context).toContain('Code coverage above 90%');
+      });
+
+      it('includes code_paths from WU YAML', async () => {
+        await writeWuYaml(
+          TEST_WU_ID,
+          `id: ${TEST_WU_ID}
+title: Test WU
+status: in_progress
+acceptance:
+  - Tests pass
+code_paths:
+  - packages/@lumenflow/memory/src/mem-recover-core.ts
+  - packages/@lumenflow/cli/src/mem-recover.ts
+`,
+        );
+
+        const result = await generateRecoveryContext({
+          wuId: TEST_WU_ID,
+          baseDir: testDir,
+          includeWuMetadata: true,
+        });
+
+        expect(result.context).toContain('Code Paths');
+        expect(result.context).toContain('mem-recover-core.ts');
+        expect(result.context).toContain('mem-recover.ts');
+      });
+
+      it('handles missing WU YAML gracefully', async () => {
+        // No WU YAML written — should not crash
+        const result = await generateRecoveryContext({
+          wuId: TEST_WU_ID,
+          baseDir: testDir,
+          includeWuMetadata: true,
+        });
+
+        expect(result.success).toBe(true);
+        // Should not include WU metadata sections
+        expect(result.context).not.toContain('Acceptance Criteria');
+      });
+
+      it('defaults includeWuMetadata to true', async () => {
+        await writeWuYaml(
+          TEST_WU_ID,
+          `id: ${TEST_WU_ID}
+title: Test WU
+status: in_progress
+acceptance:
+  - Tests pass
+code_paths:
+  - src/foo.ts
+`,
+        );
+
+        // No explicit includeWuMetadata — should default to true
+        const result = await generateRecoveryContext({
+          wuId: TEST_WU_ID,
+          baseDir: testDir,
+        });
+
+        expect(result.context).toContain('Acceptance Criteria');
+        expect(result.context).toContain('Tests pass');
+      });
+
+      it('can disable WU metadata with includeWuMetadata: false', async () => {
+        await writeWuYaml(
+          TEST_WU_ID,
+          `id: ${TEST_WU_ID}
+title: Test WU
+status: in_progress
+acceptance:
+  - Tests pass
+code_paths:
+  - src/foo.ts
+`,
+        );
+
+        const result = await generateRecoveryContext({
+          wuId: TEST_WU_ID,
+          baseDir: testDir,
+          includeWuMetadata: false,
+        });
+
+        expect(result.context).not.toContain('Acceptance Criteria');
+        expect(result.context).not.toContain('Code Paths');
+      });
+    });
+
+    describe('git diff stat inclusion', () => {
+      it('includes gitDiffStat when provided in checkpoint metadata', async () => {
+        await writeMemoryNode(
+          createCheckpointNode({
+            metadata: {
+              progress: 'Implementation done',
+              nextSteps: 'Run gates',
+              gitDiffStat:
+                ' src/foo.ts | 10 +++++++---\n src/bar.ts | 5 +++++\n 2 files changed, 12 insertions(+), 3 deletions(-)',
+            },
+          }),
+        );
+
+        const result = await generateRecoveryContext({
+          wuId: TEST_WU_ID,
+          baseDir: testDir,
+        });
+
+        expect(result.context).toContain('Files Changed');
+        expect(result.context).toContain('src/foo.ts');
+        expect(result.context).toContain('src/bar.ts');
+        expect(result.context).toContain('2 files changed');
+      });
+
+      it('does not show Files Changed section when no gitDiffStat in metadata', async () => {
+        await writeMemoryNode(
+          createCheckpointNode({
+            metadata: {
+              progress: 'Working on it',
+            },
+          }),
+        );
+
+        const result = await generateRecoveryContext({
+          wuId: TEST_WU_ID,
+          baseDir: testDir,
+        });
+
+        expect(result.context).not.toContain('Files Changed');
+      });
+    });
+
+    describe('section ordering', () => {
+      it('places WU metadata before constraints', async () => {
+        await writeWuYaml(
+          TEST_WU_ID,
+          `id: ${TEST_WU_ID}
+title: Test WU
+status: in_progress
+acceptance:
+  - Tests pass
+code_paths:
+  - src/foo.ts
+`,
+        );
+
+        const result = await generateRecoveryContext({
+          wuId: TEST_WU_ID,
+          baseDir: testDir,
+          includeWuMetadata: true,
+        });
+
+        const acceptanceIdx = result.context.indexOf('Acceptance Criteria');
+        const constraintsIdx = result.context.indexOf('Critical Rules');
+
+        expect(acceptanceIdx).toBeGreaterThan(-1);
+        expect(constraintsIdx).toBeGreaterThan(-1);
+        expect(acceptanceIdx).toBeLessThan(constraintsIdx);
+      });
     });
   });
 });

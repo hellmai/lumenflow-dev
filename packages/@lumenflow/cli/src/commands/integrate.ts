@@ -40,13 +40,22 @@ import {
 import { runCLI } from '../cli-entry-point.js';
 
 /**
+ * Supported clients for integration (WU-2157)
+ */
+const SUPPORTED_CLIENTS = [
+  LUMENFLOW_CLIENT_IDS.CLAUDE_CODE,
+  LUMENFLOW_CLIENT_IDS.CURSOR,
+  LUMENFLOW_CLIENT_IDS.CODEX_CLI,
+] as const;
+
+/**
  * CLI options for integrate command
  */
 const INTEGRATE_OPTIONS = {
   client: {
     name: 'client',
     flags: '--client <type>',
-    description: `Client type to integrate (${LUMENFLOW_CLIENT_IDS.CLAUDE_CODE})`,
+    description: `Client type to integrate (${SUPPORTED_CLIENTS.join(', ')})`,
   },
   force: WU_OPTIONS.force,
 };
@@ -321,29 +330,152 @@ function readEnforcementConfig(projectDir: string): IntegrateEnforcementConfig |
 }
 
 /**
+ * Recovery rules content for Cursor (WU-2157)
+ *
+ * Cursor uses `.cursor/rules/*.md` files as static rules injected into the system prompt.
+ * Since Cursor has no lifecycle hooks, we use convention-based recovery: the rules instruct
+ * the agent to check for recovery files on session start.
+ */
+const CURSOR_RECOVERY_RULES = `# LumenFlow Context Recovery
+
+## On Session Start
+
+When starting a new session or resuming work, always check for pending recovery context:
+
+\`\`\`bash
+# Check for recovery files
+ls .lumenflow/state/recovery-pending-*.md 2>/dev/null
+\`\`\`
+
+If recovery files exist:
+
+1. Read the recovery file contents — they contain your last checkpoint, acceptance criteria, and code paths
+2. Run \`pnpm mem:recover --wu WU-XXX\` (replace WU-XXX with the WU ID from the filename) for the latest context
+3. Continue working based on the recovery context
+
+## Context Loss Prevention
+
+Before any long operation that might lose context:
+
+\`\`\`bash
+pnpm mem:checkpoint "description of current progress" --wu WU-XXX
+\`\`\`
+
+## Recovery Command Reference
+
+| Command                                     | Purpose                            |
+| ------------------------------------------- | ---------------------------------- |
+| \`pnpm mem:recover --wu WU-XXX\`              | Generate recovery context for a WU |
+| \`pnpm wu:brief --id WU-XXX --client cursor\` | Generate full handoff prompt       |
+| \`pnpm wu:status --id WU-XXX\`                | Check WU status and location       |
+| \`pnpm mem:checkpoint\`                       | Save progress checkpoint           |
+`;
+
+/**
+ * Recovery section for AGENTS.md (WU-2157)
+ *
+ * Codex reads AGENTS.md as its preamble. This section provides recovery instructions
+ * that work for any agent client.
+ */
+const AGENTS_RECOVERY_SECTION = `
+---
+
+## Context Recovery (WU-2157)
+
+If you are resuming work or have lost context, check for recovery files:
+
+\`\`\`bash
+# Check for pending recovery
+ls .lumenflow/state/recovery-pending-*.md 2>/dev/null
+
+# Generate fresh recovery context
+pnpm mem:recover --wu WU-XXX
+
+# Or generate a full handoff prompt
+pnpm wu:brief --id WU-XXX --client codex-cli
+\`\`\`
+
+Recovery files contain your last checkpoint, acceptance criteria, code paths, and changed files.
+Always save checkpoints before long operations: \`pnpm mem:checkpoint "progress note" --wu WU-XXX\`
+`;
+
+/**
+ * Integrate Cursor with LumenFlow recovery rules (WU-2157).
+ *
+ * Creates .cursor/rules/lumenflow-recovery.md with instructions for
+ * checking recovery files on session boundaries.
+ *
+ * @param projectDir - Project directory
+ * @returns List of created file paths
+ */
+export function integrateCursor(projectDir: string): string[] {
+  const created: string[] = [];
+  const rulesDir = path.join(projectDir, '.cursor', 'rules');
+
+  if (!fs.existsSync(rulesDir)) {
+    fs.mkdirSync(rulesDir, { recursive: true });
+    console.log('[integrate] Created .cursor/rules/ directory');
+  }
+
+  const recoveryRulesPath = path.join(rulesDir, 'lumenflow-recovery.md');
+  fs.writeFileSync(recoveryRulesPath, CURSOR_RECOVERY_RULES, 'utf-8');
+  console.log('[integrate] Generated .cursor/rules/lumenflow-recovery.md');
+  created.push('.cursor/rules/lumenflow-recovery.md');
+
+  return created;
+}
+
+/**
+ * Integrate Codex CLI with LumenFlow recovery instructions (WU-2157).
+ *
+ * Appends a recovery section to AGENTS.md if not already present.
+ *
+ * @param projectDir - Project directory
+ * @returns List of modified file paths
+ */
+export function integrateCodexCli(projectDir: string): string[] {
+  const created: string[] = [];
+  const agentsPath = path.join(projectDir, 'AGENTS.md');
+
+  if (!fs.existsSync(agentsPath)) {
+    console.log('[integrate] AGENTS.md not found, skipping Codex integration');
+    return created;
+  }
+
+  const content = fs.readFileSync(agentsPath, 'utf-8');
+
+  // Check if recovery section already exists
+  if (content.includes('## Context Recovery (WU-2157)')) {
+    console.log('[integrate] AGENTS.md already contains recovery section, skipping');
+    return created;
+  }
+
+  fs.writeFileSync(agentsPath, content + AGENTS_RECOVERY_SECTION, 'utf-8');
+  console.log('[integrate] Appended recovery section to AGENTS.md');
+  created.push('AGENTS.md');
+
+  return created;
+}
+
+/**
  * Main entry point for integrate command
  */
 export async function main(): Promise<void> {
   const opts = parseIntegrateOptions();
-
-  if (opts.client !== LUMENFLOW_CLIENT_IDS.CLAUDE_CODE) {
-    console.error(`[integrate] Unsupported client: ${opts.client}`);
-    console.error(`[integrate] Currently only "${LUMENFLOW_CLIENT_IDS.CLAUDE_CODE}" is supported`);
-    process.exit(1);
-  }
-
   const projectDir = process.cwd();
 
-  // Read enforcement config from workspace.yaml software_delivery
-  const enforcement = readEnforcementConfig(projectDir);
+  // WU-2157: Support multiple client types
+  switch (opts.client) {
+    case LUMENFLOW_CLIENT_IDS.CLAUDE_CODE: {
+      const enforcement = readEnforcementConfig(projectDir);
 
-  if (!enforcement) {
-    console.log(
-      `[integrate] No enforcement config found in ${WORKSPACE_CONFIG_FILE_NAME} ` +
-        `${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY}.agents.clients.${LUMENFLOW_CLIENT_IDS.CLAUDE_CODE}`,
-    );
-    console.log('[integrate] Add this to your workspace config to enable enforcement hooks:');
-    console.log(`
+      if (!enforcement) {
+        console.log(
+          `[integrate] No enforcement config found in ${WORKSPACE_CONFIG_FILE_NAME} ` +
+            `${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY}.agents.clients.${LUMENFLOW_CLIENT_IDS.CLAUDE_CODE}`,
+        );
+        console.log('[integrate] Add this to your workspace config to enable enforcement hooks:');
+        console.log(`
 ${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY}:
   agents:
     clients:
@@ -354,11 +486,31 @@ ${WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY}:
           require_wu_for_edits: true
           warn_on_stop_without_wu_done: true
 `);
-    return;
-  }
+        return;
+      }
 
-  await integrateClaudeCode(projectDir, { enforcement });
-  console.log('[integrate] Claude Code integration complete');
+      await integrateClaudeCode(projectDir, { enforcement });
+      console.log('[integrate] Claude Code integration complete');
+      break;
+    }
+
+    case LUMENFLOW_CLIENT_IDS.CURSOR: {
+      integrateCursor(projectDir);
+      console.log('[integrate] Cursor integration complete');
+      break;
+    }
+
+    case LUMENFLOW_CLIENT_IDS.CODEX_CLI: {
+      integrateCodexCli(projectDir);
+      console.log('[integrate] Codex CLI integration complete');
+      break;
+    }
+
+    default:
+      console.error(`[integrate] Unsupported client: ${opts.client}`);
+      console.error(`[integrate] Supported clients: ${SUPPORTED_CLIENTS.join(', ')}`);
+      process.exit(1);
+  }
 }
 
 // Run if executed directly

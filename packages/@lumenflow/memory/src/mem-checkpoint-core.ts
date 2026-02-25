@@ -84,6 +84,8 @@ export interface CreateCheckpointOptions {
   nextSteps?: string;
   /** Handoff trigger (e.g., 'clear', 'handoff') */
   trigger?: string;
+  /** Git diff --stat output captured at checkpoint time (WU-2157) */
+  gitDiffStat?: string;
 }
 
 /**
@@ -148,7 +150,7 @@ export async function createCheckpoint(
   baseDir: string,
   options: CreateCheckpointOptions,
 ): Promise<CreateCheckpointResult> {
-  const { note, sessionId, wuId, progress, nextSteps, trigger } = options;
+  const { note, sessionId, wuId, progress, nextSteps, trigger, gitDiffStat } = options;
 
   // Validate required fields
   if (note == null) {
@@ -185,6 +187,9 @@ export async function createCheckpoint(
   }
   if (trigger) {
     metadata.trigger = trigger;
+  }
+  if (gitDiffStat) {
+    metadata.gitDiffStat = gitDiffStat;
   }
 
   const checkpointNode: CheckpointNode = {

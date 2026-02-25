@@ -69,6 +69,11 @@ const CLI_OPTIONS = {
     flags: '-t, --trigger <type>',
     description: 'Handoff trigger type (e.g., clear, handoff)',
   },
+  gitDiffStat: {
+    name: 'gitDiffStat',
+    flags: '--git-diff-stat <text>',
+    description: 'Git diff --stat output to include in checkpoint metadata (WU-2157)',
+  },
   baseDir: {
     name: 'baseDir',
     flags: '-d, --base-dir <path>',
@@ -200,6 +205,7 @@ function parseArguments() {
       CLI_OPTIONS.progress,
       CLI_OPTIONS.nextSteps,
       CLI_OPTIONS.trigger,
+      CLI_OPTIONS.gitDiffStat,
       CLI_OPTIONS.baseDir,
       CLI_OPTIONS.quiet,
     ],
@@ -318,6 +324,7 @@ export async function main() {
       progress: args.progress,
       nextSteps: args.nextSteps,
       trigger: args.trigger,
+      gitDiffStat: args.gitDiffStat,
     });
 
     // WU-1909: Propagate to wu-events.jsonl only from worktree context
@@ -348,6 +355,7 @@ export async function main() {
       progress: args.progress,
       nextSteps: args.nextSteps,
       trigger: args.trigger,
+      gitDiffStat: args.gitDiffStat,
     },
     output: result
       ? {

@@ -11,7 +11,9 @@
  * - Loads last checkpoint from memory layer
  * - Extracts compact constraints from .lumenflow/constraints.md
  * - Provides essential CLI commands reference
- * - Size-limited output (default 2KB) to prevent truncation
+ * - Loads WU metadata (acceptance criteria, code_paths) from YAML (WU-2157)
+ * - Includes git diff stat from checkpoint metadata (WU-2157)
+ * - Size-limited output (default 8KB) to prevent truncation
  * - Vendor-agnostic (works for any client)
  *
  * @see {@link packages/@lumenflow/cli/src/mem-recover.ts} - CLI wrapper
@@ -20,16 +22,17 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { parse as parseYaml } from 'yaml';
 import { createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { loadMemory } from './memory-store.js';
 import { MEMORY_PATTERNS, type MemoryNode } from './memory-schema.js';
 import { LUMENFLOW_MEMORY_PATHS } from './paths.js';
 
 /**
- * Default maximum recovery context size in bytes (2KB)
- * Smaller than spawn context to ensure it doesn't get truncated
+ * Default maximum recovery context size in bytes (8KB)
+ * Increased from 2KB in WU-2157 to accommodate WU metadata, git diff, and richer context.
  */
-const DEFAULT_MAX_SIZE = 2048;
+const DEFAULT_MAX_SIZE = 8192;
 
 /**
  * Node type constant for checkpoint filtering
@@ -48,6 +51,17 @@ const CONSTRAINTS_FILENAME = 'constraints.md';
 const TIMESTAMP_UNKNOWN = 'unknown';
 
 /**
+ * Maximum number of acceptance criteria items to include in recovery context.
+ * Prevents large WU specs from consuming the entire size budget (review item #5).
+ */
+const MAX_ACCEPTANCE_ITEMS = 8;
+
+/**
+ * Maximum number of code path items to include in recovery context.
+ */
+const MAX_CODE_PATH_ITEMS = 10;
+
+/**
  * Error messages for validation
  */
 const ERROR_MESSAGES = {
@@ -62,6 +76,9 @@ const ERROR_MESSAGES = {
 const SECTION_HEADERS = {
   RECOVERY_TITLE: 'POST-COMPACTION RECOVERY',
   LAST_CHECKPOINT: 'Last Checkpoint',
+  ACCEPTANCE_CRITERIA: 'Acceptance Criteria',
+  CODE_PATHS: 'Code Paths',
+  FILES_CHANGED: 'Files Changed',
   CRITICAL_RULES: 'Critical Rules (DO NOT FORGET)',
   CLI_COMMANDS: 'CLI Commands',
   NEXT_ACTION: 'Next Action',
@@ -73,7 +90,7 @@ const SECTION_HEADERS = {
 const ESSENTIAL_CLI_COMMANDS = `| Command | Purpose |
 |---------|---------|
 | pnpm wu:status --id WU-XXX | Check WU status and location |
-| pnpm wu:brief --id WU-XXX --client claude-code | Generate fresh agent handoff prompt |
+| pnpm wu:brief --id WU-XXX | Generate fresh agent handoff prompt |
 | pnpm gates | Run quality gates before completion |
 | pnpm mem:checkpoint | Save progress checkpoint |`;
 
@@ -97,12 +114,14 @@ export interface RecoverOptions {
   wuId: string;
   /** Base directory (default: current directory) */
   baseDir?: string;
-  /** Maximum output size in bytes (default: 2048) */
+  /** Maximum output size in bytes (default: 8192) */
   maxSize?: number;
   /** Include constraints section (default: true) */
   includeConstraints?: boolean;
   /** Include CLI reference section (default: true) */
   includeCLIRef?: boolean;
+  /** Include WU metadata: acceptance criteria and code_paths (default: true, WU-2157) */
+  includeWuMetadata?: boolean;
 }
 
 /**
@@ -113,6 +132,16 @@ interface CheckpointData {
   timestamp: string;
   progress?: string;
   nextSteps?: string;
+  /** Git diff --stat output captured at checkpoint time (WU-2157) */
+  gitDiffStat?: string;
+}
+
+/**
+ * WU metadata extracted from YAML spec (WU-2157)
+ */
+interface WuMetadata {
+  acceptance: string[];
+  codePaths: string[];
 }
 
 /**
@@ -174,6 +203,7 @@ async function getLastCheckpoint(baseDir: string, wuId: string): Promise<Checkpo
       timestamp: latest.created_at,
       progress: latest.metadata?.progress as string | undefined,
       nextSteps: latest.metadata?.nextSteps as string | undefined,
+      gitDiffStat: latest.metadata?.gitDiffStat as string | undefined,
     };
   } catch {
     // Memory layer not initialized or error loading
@@ -215,6 +245,34 @@ async function loadCompactConstraints(baseDir: string): Promise<string> {
 }
 
 /**
+ * Loads WU metadata (acceptance criteria, code_paths) from YAML spec (WU-2157)
+ */
+async function loadWuMetadata(baseDir: string, wuId: string): Promise<WuMetadata | null> {
+  const wuYamlPath = path.join(baseDir, 'docs', '04-operations', 'tasks', 'wu', `${wuId}.yaml`);
+
+  try {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
+    const content = await fs.readFile(wuYamlPath, 'utf-8');
+    const doc = parseYaml(content) as Record<string, unknown>;
+
+    const acceptance = Array.isArray(doc.acceptance)
+      ? (doc.acceptance as string[]).filter((s) => typeof s === 'string')
+      : [];
+    const codePaths = Array.isArray(doc.code_paths)
+      ? (doc.code_paths as string[]).filter((s) => typeof s === 'string')
+      : [];
+
+    if (acceptance.length === 0 && codePaths.length === 0) {
+      return null;
+    }
+
+    return { acceptance, codePaths };
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Formats the recovery prompt with size budget
  */
 function formatRecoveryPrompt(
@@ -222,6 +280,7 @@ function formatRecoveryPrompt(
   checkpoint: CheckpointData | null,
   constraints: string,
   cliRef: string,
+  wuMetadata: WuMetadata | null,
   maxSize: number,
 ): { context: string; truncated: boolean } {
   const header = `# ${SECTION_HEADERS.RECOVERY_TITLE}
@@ -243,6 +302,38 @@ No checkpoint found for this WU.
 
 `;
 
+  // WU metadata sections (WU-2157)
+  // Limit items to prevent large WU specs from consuming the entire size budget
+  const acceptanceItems = wuMetadata?.acceptance.slice(0, MAX_ACCEPTANCE_ITEMS) ?? [];
+  const acceptanceTruncated = (wuMetadata?.acceptance.length ?? 0) > MAX_ACCEPTANCE_ITEMS;
+  const acceptanceSection =
+    acceptanceItems.length > 0
+      ? `## ${SECTION_HEADERS.ACCEPTANCE_CRITERIA}
+${acceptanceItems.map((ac) => `- [ ] ${ac}`).join('\n')}${acceptanceTruncated ? `\n- ... (${(wuMetadata?.acceptance.length ?? 0) - MAX_ACCEPTANCE_ITEMS} more — run wu:brief for full list)` : ''}
+
+`
+      : '';
+
+  const codePathItems = wuMetadata?.codePaths.slice(0, MAX_CODE_PATH_ITEMS) ?? [];
+  const codePathsTruncated = (wuMetadata?.codePaths.length ?? 0) > MAX_CODE_PATH_ITEMS;
+  const codePathsSection =
+    codePathItems.length > 0
+      ? `## ${SECTION_HEADERS.CODE_PATHS}
+${codePathItems.map((cp) => `- ${cp}`).join('\n')}${codePathsTruncated ? `\n- ... (${(wuMetadata?.codePaths.length ?? 0) - MAX_CODE_PATH_ITEMS} more)` : ''}
+
+`
+      : '';
+
+  // Git diff stat from checkpoint metadata (WU-2157)
+  const gitDiffSection = checkpoint?.gitDiffStat
+    ? `## ${SECTION_HEADERS.FILES_CHANGED}
+\`\`\`
+${checkpoint.gitDiffStat}
+\`\`\`
+
+`
+    : '';
+
   // Only include sections if they have content
   const constraintsSection = constraints
     ? `## ${SECTION_HEADERS.CRITICAL_RULES}
@@ -259,20 +350,28 @@ ${cliRef}
     : '';
 
   const footer = `## ${SECTION_HEADERS.NEXT_ACTION}
-Run \`pnpm wu:brief --id ${wuId} --client claude-code\` to generate a fresh handoff prompt.
+Continue working on the WU using the acceptance criteria and code paths above.
+If you need full context: \`pnpm wu:brief --id ${wuId}\`
 `;
 
   // Build sections in priority order
-  // Priority: header > checkpoint > constraints > CLI > footer
-  // If over budget, truncate checkpoint content first
-  const fixedContent = header + constraintsSection + cliSection + footer;
+  // Priority: header > checkpoint > WU metadata > git diff > constraints > CLI > footer
+  // WU metadata placed before constraints so agent sees acceptance first (WU-2157)
+  const fixedContent =
+    header +
+    acceptanceSection +
+    codePathsSection +
+    gitDiffSection +
+    constraintsSection +
+    cliSection +
+    footer;
   const fixedSize = Buffer.byteLength(fixedContent, 'utf-8');
 
   if (fixedSize > maxSize) {
     // Even fixed content exceeds budget - return minimal recovery
     const minimal = `# ${SECTION_HEADERS.RECOVERY_TITLE}
 WU: ${wuId}
-Run: pnpm wu:brief --id ${wuId} --client claude-code
+Run: pnpm wu:brief --id ${wuId}
 `;
     return { context: minimal, truncated: true };
   }
@@ -282,7 +381,15 @@ Run: pnpm wu:brief --id ${wuId} --client claude-code
 
   if (checkpointSize <= remainingBudget) {
     // Full checkpoint fits
-    const fullContext = header + checkpointSection + constraintsSection + cliSection + footer;
+    const fullContext =
+      header +
+      checkpointSection +
+      acceptanceSection +
+      codePathsSection +
+      gitDiffSection +
+      constraintsSection +
+      cliSection +
+      footer;
     return { context: fullContext, truncated: false };
   }
 
@@ -293,7 +400,15 @@ Run: pnpm wu:brief --id ${wuId} --client claude-code
 
 `;
 
-  const context = header + truncatedCheckpoint + constraintsSection + cliSection + footer;
+  const context =
+    header +
+    truncatedCheckpoint +
+    acceptanceSection +
+    codePathsSection +
+    gitDiffSection +
+    constraintsSection +
+    cliSection +
+    footer;
   return { context, truncated: true };
 }
 
@@ -315,7 +430,8 @@ Run: pnpm wu:brief --id ${wuId} --client claude-code
  * @example
  * const result = await generateRecoveryContext({
  *   wuId: 'WU-1390',
- *   maxSize: 2048,
+ *   maxSize: 8192,
+ *   includeWuMetadata: true,
  * });
  * console.log(result.context);
  */
@@ -326,6 +442,7 @@ export async function generateRecoveryContext(options: RecoverOptions): Promise<
     maxSize = DEFAULT_MAX_SIZE,
     includeConstraints = true,
     includeCLIRef = true,
+    includeWuMetadata = true,
   } = options;
 
   // Validate WU ID
@@ -340,12 +457,16 @@ export async function generateRecoveryContext(options: RecoverOptions): Promise<
   // Get CLI reference (or empty if disabled)
   const cliRef = includeCLIRef ? ESSENTIAL_CLI_COMMANDS : '';
 
+  // Load WU metadata (acceptance criteria, code_paths) from YAML (WU-2157)
+  const wuMetadata = includeWuMetadata ? await loadWuMetadata(baseDir, wuId) : null;
+
   // Format with size budget
   const { context, truncated } = formatRecoveryPrompt(
     wuId,
     checkpoint,
     constraints,
     cliRef,
+    wuMetadata,
     maxSize,
   );
 

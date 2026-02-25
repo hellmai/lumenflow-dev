@@ -2242,13 +2242,14 @@
 {"type":"complete","wuId":"WU-2142","timestamp":"2026-02-25T12:38:19.673Z"}
 {"type":"complete","wuId":"WU-2143","timestamp":"2026-02-25T12:51:32.448Z"}
 {"type":"claim","wuId":"WU-2155","timestamp":"2026-02-25T13:05:09.794Z","lane":"Framework: CLI WU Commands","title":"Fix INIT-038 regressions: path-literal guard, missing runtime wiring, schema gap"}
-{"type":"checkpoint","wuId":"WU-2155","timestamp":"2026-02-25T13:05:27.944Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
-{"type":"checkpoint","wuId":"WU-2155","timestamp":"2026-02-25T13:05:34.331Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"claim","wuId":"WU-2156","timestamp":"2026-02-25T13:09:47.478Z","lane":"Framework: CLI WU Commands","title":"Fix manifest-to-scripts alignment: add missing pnpm scripts"}
-{"type":"checkpoint","wuId":"WU-2155","timestamp":"2026-02-25T13:26:02.559Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"checkpoint","wuId":"WU-2156","timestamp":"2026-02-25T13:27:35.841Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2156","timestamp":"2026-02-25T13:28:21.660Z"}
 {"type":"claim","wuId":"WU-2157","timestamp":"2026-02-25T13:54:12.538Z","lane":"Framework: Memory","title":"Enrich post-compaction recovery and extend to all agent clients"}
+{"type":"checkpoint","wuId":"WU-2157","timestamp":"2026-02-25T13:54:56.247Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"checkpoint","wuId":"WU-2155","timestamp":"2026-02-25T13:05:27.944Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"checkpoint","wuId":"WU-2155","timestamp":"2026-02-25T13:05:34.331Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"checkpoint","wuId":"WU-2155","timestamp":"2026-02-25T13:26:02.559Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2155","timestamp":"2026-02-25T13:59:55.064Z"}
 {"type":"claim","wuId":"WU-2159","timestamp":"2026-02-25T14:50:24.914Z","lane":"Framework: CLI Enforcement","title":"Block placeholder git identity in commit hooks"}
 {"type":"release","wuId":"WU-2159","timestamp":"2026-02-25T14:54:52.345Z","reason":"policy: do not enforce git identity in shared hooks"}

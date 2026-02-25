@@ -53,8 +53,17 @@ for recovery_file in "$RECOVERY_DIR"/recovery-pending-*.md; do
   echo "═══════════════════════════════════════════════════════" >&2
   echo "" >&2
 
-  # Display the recovery context
-  cat "$recovery_file" >&2
+  # Try to regenerate fresh recovery context (WU-2157: richer output)
+  # mem:recover now includes acceptance criteria, code_paths, and git diff stat
+  FRESH_RECOVERY=$(pnpm mem:recover --wu "$WU_ID" --quiet 2>/dev/null || echo "")
+
+  if [[ -n "$FRESH_RECOVERY" ]]; then
+    # Use freshly generated context (includes latest checkpoint + WU metadata)
+    echo "$FRESH_RECOVERY" >&2
+  else
+    # Fallback to the pre-saved recovery file
+    cat "$recovery_file" >&2
+  fi
 
   echo "" >&2
   echo "═══════════════════════════════════════════════════════" >&2
@@ -67,7 +76,7 @@ done
 # Additional context if recovery was displayed
 if [[ "$FOUND_RECOVERY" == "true" ]]; then
   echo "IMPORTANT: Your context was compacted. Review the recovery info above." >&2
-  echo "Recommended: Run 'pnpm wu:brief --id $WU_ID --client claude-code' for fresh full context." >&2
+  echo "Continue working on the WU using the acceptance criteria and code paths provided." >&2
   echo "" >&2
 fi
 
