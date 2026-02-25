@@ -50,7 +50,7 @@ Checkpoint-per-wave is recommended for most initiatives. It processes one wave a
 For each WU in the current wave, generate a handoff prompt:
 
 ```bash
-# Option A: Generate prompt only (no side effects)
+# Option A: Generate prompt + evidence (no lineage side effect)
 pnpm wu:brief --id WU-100 --client claude-code
 
 # Option B: Generate prompt + record delegation lineage (for audit)
@@ -370,7 +370,7 @@ pnpm delegation:list --initiative INIT-XXX --json
 | `pnpm orchestrate:initiative -i INIT-XXX`           | Execute all waves continuously            |
 | `pnpm orchestrate:init-status -i INIT-XXX`          | Compact progress view                     |
 | `pnpm orchestrate:monitor`                          | Detect stuck agents and zombie locks      |
-| `pnpm wu:brief --id WU-XXX --client <client>`       | Generate handoff prompt (no side effects) |
+| `pnpm wu:brief --id WU-XXX --client <client>`       | Generate handoff prompt + evidence (worktree only) |
 | `pnpm wu:delegate --id WU-XXX --parent-wu <P>`      | Generate prompt + record delegation       |
 | `pnpm delegation:list --initiative INIT-XXX`        | View delegation tree                      |
 | `pnpm mem:signal "msg" --wu WU-XXX`                 | Broadcast coordination signal             |

@@ -90,7 +90,7 @@ pnpm exec lumenflow --client all      # All clients
 | `pnpm wu:unblock --id WU-XXX`                   | Unblock WU                                                   |
 | `pnpm wu:release --id WU-XXX`                   | Release orphaned WU (in_progress to ready)                   |
 | `pnpm wu:status --id WU-XXX`                    | Show WU status, location, valid commands                     |
-| `pnpm wu:brief --id WU-XXX --client <client>`   | Generate handoff prompt (does not execute)                   |
+| `pnpm wu:brief --id WU-XXX --client <client>`   | Generate handoff prompt + record evidence (worktree only)    |
 | `pnpm wu:brief --id WU-XXX --no-context`        | Generate prompt without memory context injection             |
 | `pnpm wu:delegate --id WU-XXX --parent-wu <P>`  | Generate prompt and record delegation lineage                |
 
