@@ -170,7 +170,7 @@ export function createRetryConfig(
   // callers often pass option keys conditionally, and spreading `undefined`
   // clobbers required defaults (e.g., maxAttempts) leading to zero-attempt retries.
   const definedOptions = Object.fromEntries(
-    Object.entries(customOptions).filter(([, value]) => value !== undefined),
+    Object.entries(customOptions).filter(([, value]) => value != null),
   );
   return {
     ...baseConfig,

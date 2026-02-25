@@ -21,10 +21,6 @@ import path from 'node:path';
 import { TEST_TYPES, WU_TYPES } from './wu-constants.js';
 
 /** Minimal WU document shape for test validation */
-interface WuTestsBlock {
-  [key: string]: unknown[] | undefined;
-}
-
 interface WuDocForTests {
   type?: string;
   code_paths?: unknown;
