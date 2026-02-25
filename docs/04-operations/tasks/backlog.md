@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2149 — SDK signal and memory sync port interfaces](wu/WU-2149.yaml) — Framework: Core Lifecycle
 - [WU-2148 — MCP signal enrichment in CallToolRequest handler](wu/WU-2148.yaml) — Framework: MCP
 - [WU-2147 — CLI signal middleware for automatic signal surfacing](wu/WU-2147.yaml) — Framework: CLI WU Commands
 - [WU-2146 — Backward-compatible signal schema extension](wu/WU-2146.yaml) — Framework: Memory
