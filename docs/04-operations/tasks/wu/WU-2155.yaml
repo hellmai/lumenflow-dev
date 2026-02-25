@@ -2,7 +2,7 @@ id: WU-2155
 title: 'Fix INIT-038 regressions: path-literal guard, missing runtime wiring, schema gap'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -51,3 +51,11 @@ acceptance:
   - 'P2: Zod schema uses .refine() to enforce exception_reason required when exception_type is set'
   - path-literal-guard.test.ts passes with zero new violations
   - pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2155
+claimed_at: 2026-02-25T13:05:09.750Z
+baseline_main_sha: 8dad7904424ac03c15dc2238eab6ef8da8dbe31a
+session_id: 10da36a8-b273-4f76-87fd-3a0a7727a303
+approved_by:
+  - test@example.com
+approved_at: 2026-02-25T13:05:09.755Z

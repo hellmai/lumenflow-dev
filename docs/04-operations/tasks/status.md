@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2155 — Fix INIT-038 regressions: path-literal guard, missing runtime wiring, schema gap](wu/WU-2155.yaml)
 
 ## Completed
 
