@@ -395,6 +395,31 @@ jobs:
           skip-on-no-wu: true # Only run if WU exists
 ```
 
+## Re-running init to backfill missing entries
+
+Running `lumenflow init` on a repo that already has LumenFlow files is safe. For the
+`.gitignore` specifically, init checks each entry in `REQUIRED_GITIGNORE_EXCLUSIONS`
+against the existing file and appends only the missing ones under a
+`# LumenFlow (auto-added)` header. No existing entries are modified or duplicated.
+
+This is useful after upgrading `@lumenflow/cli` when new ephemeral paths have been added
+to the exclusion list. For example, if your `.gitignore` is missing entries for
+`.lumenflow/checkpoints/` or `.lumenflow/locks/`, re-running init will add them:
+
+```bash
+pnpm exec lumenflow
+```
+
+If ephemeral files are already tracked in git (e.g., checkpoint files committed by an
+agent), remove them from the index after backfilling:
+
+```bash
+git rm --cached -r .lumenflow/checkpoints/ .lumenflow/locks/ .lumenflow/artifacts/ 2>/dev/null
+git rm --cached .lumenflow/state/spawn-registry.jsonl 2>/dev/null
+git add .gitignore
+git commit -m "fix: remove tracked ephemeral files and backfill gitignore entries"
+```
+
 ## Common Concerns
 
 ### "We have hundreds of open tickets"

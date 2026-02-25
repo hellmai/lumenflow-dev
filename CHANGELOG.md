@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Gitignore scaffold drift** (WU-2180): `lumenflow init` was missing four ephemeral paths from `REQUIRED_GITIGNORE_EXCLUSIONS`: `.lumenflow/checkpoints/`, `.lumenflow/locks/`, `.lumenflow/artifacts/`, and `.lumenflow/state/spawn-registry.jsonl`. Consumer repos that ran `lumenflow init` before this fix may have these files tracked in git, causing `wu:done` clean-tree checks to fail. See [Migration](#gitignore-scaffold-drift-remediation) below.
+
+### Migration
+
+#### Gitignore scaffold drift remediation
+
+**Who is affected:** Any repo that ran `lumenflow init` before this fix and has since used `wu:prep` or agent checkpointing. If ephemeral files like `.lumenflow/checkpoints/` are tracked in your repo, you need to clean them up.
+
+**Remediation steps:**
+
+1. Upgrade to the version containing this fix.
+
+2. Re-run init to backfill the missing `.gitignore` entries:
+
+   ```bash
+   pnpm exec lumenflow
+   ```
+
+   When a `.gitignore` already exists, init checks each entry in `REQUIRED_GITIGNORE_EXCLUSIONS` against the file and appends only the missing ones. This is safe to run on existing repos -- it will not duplicate entries or overwrite your custom exclusions.
+
+3. If ephemeral files are already tracked in git, remove them from the index:
+
+   ```bash
+   git rm --cached -r .lumenflow/checkpoints/ .lumenflow/locks/ .lumenflow/artifacts/ 2>/dev/null
+   git rm --cached .lumenflow/state/spawn-registry.jsonl 2>/dev/null
+   ```
+
+   The `-r` flag handles directories recursively. The `2>/dev/null` suppresses errors for paths that do not exist in your repo.
+
+4. Commit the cleanup:
+
+   ```bash
+   git add .gitignore
+   git commit -m "fix: remove tracked ephemeral files and backfill gitignore entries"
+   ```
+
 ## [4.0.0] - 2026-02-21
 
 ### Added
