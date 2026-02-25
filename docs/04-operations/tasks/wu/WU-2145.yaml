@@ -1,0 +1,39 @@
+id: WU-2145
+title: wu:done project-memory promotion to main checkout
+lane: 'Framework: Memory'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-25
+code_paths:
+  - packages/@lumenflow/memory/src
+  - packages/@lumenflow/core/src/wu-done-*.ts
+tests:
+  manual:
+    - pnpm gates
+  unit:
+    - packages/@lumenflow/memory/src/__tests__/memory-promotion.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2145.done
+dependencies: []
+initiative: INIT-040
+phase: 1
+spec_refs:
+  - /home/USER/.claude/plans/clever-whistling-lobster.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Add promoteProjectMemory(worktreeDir, mainDir) in wu:done flow before worktree cleanup. Read worktree memory.jsonl, filter lifecycle:project nodes, append to main checkout memory store.
+acceptance:
+  - Project-lifecycle memory nodes survive wu:done worktree cleanup
+  - Non-project nodes are not promoted
+  - No-op when no project nodes exist
+  - pnpm gates passes
