@@ -37,7 +37,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2157 — Enrich post-compaction recovery and extend to all agent clients](wu/WU-2157.yaml) — Framework: Memory
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1110,6 +1110,7 @@ sections:
 - [WU-2143 — Document tooling-backed sizing guardrails and strict mode](wu/WU-2143.yaml)
 - [WU-2156 — Fix manifest-to-scripts alignment: add missing pnpm scripts](wu/WU-2156.yaml)
 - [WU-2155 — Fix INIT-038 regressions: path-literal guard, missing runtime wiring, schema gap](wu/WU-2155.yaml)
+- [WU-2157 — Enrich post-compaction recovery and extend to all agent clients](wu/WU-2157.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
