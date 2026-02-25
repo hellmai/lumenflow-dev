@@ -19,6 +19,7 @@ artifacts:
 dependencies: []
 initiative: INIT-040
 phase: 2
+plan: lumenflow://plans/clever-whistling-lobster.md
 spec_refs:
   - /home/tom/.claude/plans/clever-whistling-lobster.md
 risks: []
@@ -31,9 +32,12 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add SignalSyncPort, MemorySyncPort, and ControlPlaneSyncPortV2 interfaces to control-plane-sdk. Define all input/output types for push/pull signals, register/list/deregister sessions, and bidirectional memory sync.
+description: Add SignalSyncPort, MemorySyncPort, and ControlPlaneSyncPortV2 interfaces to
+  control-plane-sdk. Define all input/output types for push/pull signals, register/list/deregister
+  sessions, and bidirectional memory sync.
 acceptance:
-  - SignalSyncPort interface with pushSignals, pullSignals, registerSession, deregisterSession, listSessions
+  - SignalSyncPort interface with pushSignals, pullSignals, registerSession, deregisterSession,
+    listSessions
   - MemorySyncPort interface with syncMemory
   - ControlPlaneSyncPortV2 extends both plus existing ControlPlaneSyncPort
   - All input/output types exported
