@@ -25,6 +25,10 @@ notes: 'source_plan: /home/tom/.claude/plans/gleaming-painting-sonnet.md'
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: backend-only
+sizing_estimate:
+  estimated_files: 12
+  estimated_tool_calls: 40
+  strategy: single-session
 escalation_triggers: []
 requires_human_escalation: false
 requires_cso_approval: false
