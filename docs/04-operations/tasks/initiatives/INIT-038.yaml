@@ -1,12 +1,29 @@
 id: INIT-038
 slug: post-enforcement-follow-up
 title: Post-Enforcement Follow-up (Release-First + Sizing Guardrails)
-description: ''
+description: 'Follow-up to INIT-037: restore release readiness by fixing gate blockers first, reduce
+  UnsafeAny baseline to <=200, add enforcement E2E coverage, and enforce sizing intent in wu:create
+  + wu:brief. Plan: /home/tom/.claude/plans/steady-inventing-gosling.md'
 status: draft
 priority: P1
 owner: platform-team
 created: 2026-02-25
-phases: []
+phases:
+  - id: 1
+    title: 'Wave 0: Release Blocker (must complete first)'
+    status: pending
+  - id: 2
+    title: 'Wave 1: Core Foundation (parallel after Wave 0)'
+    status: pending
+  - id: 3
+    title: 'Wave 2: CLI Type Safety'
+    status: pending
+  - id: 4
+    title: 'Wave 3: Tail Cleanup + Lock'
+    status: pending
+  - id: 5
+    title: 'Wave 4: Governance & Docs (optional follow-up, non-release-critical)'
+    status: pending
 success_metrics:
   - pnpm gates green on main after Wave 0
   - UnsafeAny baseline reduced from 378 to <=200
