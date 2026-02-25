@@ -18,6 +18,8 @@ artifacts:
 dependencies: []
 initiative: INIT-043
 phase: 3
+blocked_by:
+  - WU-2173
 risks: []
 notes: 'source_plan: /home/tom/.claude/plans/gleaming-painting-sonnet.md'
 requires_review: false
@@ -30,4 +32,5 @@ requires_cto_approval: false
 requires_design_approval: false
 description: Create standardized environment accessor utilities and migrate direct reads to these APIs.
 acceptance:
-  - Direct environment reads are replaced by accessors in targeted modules and behavior remains consistent.
+  - Direct environment reads are replaced by accessors in targeted modules and behavior remains
+    consistent.
