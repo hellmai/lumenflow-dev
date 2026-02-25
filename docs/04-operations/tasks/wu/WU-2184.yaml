@@ -2,7 +2,7 @@ id: WU-2184
 title: Runtime diagnostics for misplaced config keys
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -46,3 +46,6 @@ session_id: c5a498b0-8331-4a5a-9c27-abe2b2fa49be
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-25T22:32:38.260Z
+locked: true
+completed_at: 2026-02-25T22:41:49.880Z
+completed: 2026-02-25

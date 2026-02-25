@@ -2276,3 +2276,4 @@
 {"type":"claim","wuId":"WU-2182","timestamp":"2026-02-25T22:30:52.306Z","lane":"Framework: Core Lifecycle","title":"Add config_key and config_schema to DomainPackManifestSchema"}
 {"type":"claim","wuId":"WU-2183","timestamp":"2026-02-25T22:31:58.092Z","lane":"Framework: Core Lifecycle","title":"Add workspace root key registry to config-contract"}
 {"type":"claim","wuId":"WU-2184","timestamp":"2026-02-25T22:32:38.305Z","lane":"Framework: Core Lifecycle","title":"Runtime diagnostics for misplaced config keys"}
+{"type":"complete","wuId":"WU-2184","timestamp":"2026-02-25T22:41:54.418Z"}

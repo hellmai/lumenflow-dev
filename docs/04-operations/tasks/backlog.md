@@ -57,7 +57,6 @@ sections:
 
 - [WU-2182 — Add config_key and config_schema to DomainPackManifestSchema](wu/WU-2182.yaml) — Framework: Core Lifecycle
 - [WU-2183 — Add workspace root key registry to config-contract](wu/WU-2183.yaml) — Framework: Core Lifecycle
-- [WU-2184 — Runtime diagnostics for misplaced config keys](wu/WU-2184.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
@@ -1139,6 +1138,7 @@ sections:
 - [WU-2181 — Document gitignore scaffold drift fix and consumer remediation](wu/WU-2181.yaml)
 - [WU-2162 — Extract wu:done policy functions](wu/WU-2162.yaml)
 - [WU-2163 — Extract wu:done git operation helpers](wu/WU-2163.yaml)
+- [WU-2184 — Runtime diagnostics for misplaced config keys](wu/WU-2184.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

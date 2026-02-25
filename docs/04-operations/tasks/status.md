@@ -6,7 +6,6 @@ _Last updated: 2026-02-25_
 
 - [WU-2182 — Add config_key and config_schema to DomainPackManifestSchema](wu/WU-2182.yaml)
 - [WU-2183 — Add workspace root key registry to config-contract](wu/WU-2183.yaml)
-- [WU-2184 — Runtime diagnostics for misplaced config keys](wu/WU-2184.yaml)
 
 ## Completed
 
@@ -1084,3 +1083,4 @@ _Last updated: 2026-02-25_
 - [WU-2181 — Document gitignore scaffold drift fix and consumer remediation](wu/WU-2181.yaml) — 2026-02-25
 - [WU-2162 — Extract wu:done policy functions](wu/WU-2162.yaml) — 2026-02-25
 - [WU-2163 — Extract wu:done git operation helpers](wu/WU-2163.yaml) — 2026-02-25
+- [WU-2184 — Runtime diagnostics for misplaced config keys](wu/WU-2184.yaml) — 2026-02-25
