@@ -26,3 +26,4 @@ success_metrics:
 labels: []
 notes:
   - 'source_plan: /home/USER/.claude/plans/gleaming-painting-sonnet.md'
+related_plan: lumenflow://plans/gleaming-painting-sonnet.md
