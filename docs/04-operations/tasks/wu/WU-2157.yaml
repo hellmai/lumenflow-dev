@@ -19,7 +19,6 @@ tests:
     - Run pnpm mem:recover --wu WU-XXX and verify richer output
     - Run pnpm lumenflow:integrate --client cursor and verify recovery hooks generated
   unit:
-    - packages/@lumenflow/memory/src/__tests__/mem-recover-core.test.ts
     - packages/@lumenflow/memory/__tests__/mem-recover-core.test.ts
   e2e: []
 artifacts:
