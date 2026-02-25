@@ -20,23 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2178 — D4: Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
-- [WU-2177 — D3: Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
-- [WU-2176 — D2: Document validator boundaries and ownership](wu/WU-2176.yaml) — Content: Framework Docs
-- [WU-2175 — D1: Add focused IWuStateStore injection alternatives](wu/WU-2175.yaml) — Framework: Core Lifecycle
-- [WU-2174 — C3: Introduce getEnv and requireEnv accessors](wu/WU-2174.yaml) — Framework: Core Validation
-- [WU-2173 — C2: Add startup environment schema validation](wu/WU-2173.yaml) — Framework: Core Validation
-- [WU-2172 — C1: Migrate remaining raw env reads to ENV_VARS](wu/WU-2172.yaml) — Framework: Core Validation
-- [WU-2171 — B4: Evaluate delegation package extraction](wu/WU-2171.yaml) — Framework: Core Lifecycle
-- [WU-2170 — B3: Migrate consumers and deprecate root core barrel](wu/WU-2170.yaml) — Framework: Core Lifecycle
-- [WU-2169 — B2: Add domain-scoped core barrel exports](wu/WU-2169.yaml) — Framework: Core Lifecycle
-- [WU-2168 — B1: Audit and categorize core API surface](wu/WU-2168.yaml) — Framework: Core Lifecycle
-- [WU-2167 — A6: Slim wu:done main orchestrator](wu/WU-2167.yaml) — Framework: CLI WU Commands
-- [WU-2166 — A5: Extract wu:done memory and telemetry module](wu/WU-2166.yaml) — Framework: CLI WU Commands
-- [WU-2165 — A4: Extract wu:done gates orchestration module](wu/WU-2165.yaml) — Framework: CLI WU Commands
-- [WU-2164 — A3: Extract wu:done preflight CLI module](wu/WU-2164.yaml) — Framework: CLI WU Commands
-- [WU-2163 — A2: Extract wu:done git operation helpers](wu/WU-2163.yaml) — Framework: CLI WU Commands
-- [WU-2162 — A1: Extract wu:done policy functions](wu/WU-2162.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — Framework: Memory
@@ -50,6 +33,23 @@ sections:
 - [WU-2153 — Session lifecycle hooks for control-plane registration](wu/WU-2153.yaml) — Framework: Agent
 - [WU-2154 — OSS-complete CI gate for local-only test pass](wu/WU-2154.yaml) — Operations: Tooling
 - [WU-2158 — Add co-change gate to Software Delivery Pack](wu/WU-2158.yaml) — Framework: Core Lifecycle
+- [WU-2162 — A1: Extract wu:done policy functions](wu/WU-2162.yaml) — Framework: CLI WU Commands
+- [WU-2163 — A2: Extract wu:done git operation helpers](wu/WU-2163.yaml) — Framework: CLI WU Commands
+- [WU-2164 — A3: Extract wu:done preflight CLI module](wu/WU-2164.yaml) — Framework: CLI WU Commands
+- [WU-2165 — A4: Extract wu:done gates orchestration module](wu/WU-2165.yaml) — Framework: CLI WU Commands
+- [WU-2166 — A5: Extract wu:done memory and telemetry module](wu/WU-2166.yaml) — Framework: CLI WU Commands
+- [WU-2167 — A6: Slim wu:done main orchestrator](wu/WU-2167.yaml) — Framework: CLI WU Commands
+- [WU-2168 — B1: Audit and categorize core API surface](wu/WU-2168.yaml) — Framework: Core Lifecycle
+- [WU-2169 — B2: Add domain-scoped core barrel exports](wu/WU-2169.yaml) — Framework: Core Lifecycle
+- [WU-2170 — B3: Migrate consumers and deprecate root core barrel](wu/WU-2170.yaml) — Framework: Core Lifecycle
+- [WU-2171 — B4: Evaluate delegation package extraction](wu/WU-2171.yaml) — Framework: Core Lifecycle
+- [WU-2172 — C1: Migrate remaining raw env reads to ENV_VARS](wu/WU-2172.yaml) — Framework: Core Validation
+- [WU-2173 — C2: Add startup environment schema validation](wu/WU-2173.yaml) — Framework: Core Validation
+- [WU-2174 — C3: Introduce getEnv and requireEnv accessors](wu/WU-2174.yaml) — Framework: Core Validation
+- [WU-2175 — D1: Add focused IWuStateStore injection alternatives](wu/WU-2175.yaml) — Framework: Core Lifecycle
+- [WU-2176 — D2: Document validator boundaries and ownership](wu/WU-2176.yaml) — Content: Framework Docs
+- [WU-2177 — D3: Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
+- [WU-2178 — D4: Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
 
 ## 🔧 In progress
 
