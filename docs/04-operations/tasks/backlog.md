@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2137 — Add enforcement E2E matrix across hook/TS/MCP paths](wu/WU-2137.yaml) — Framework: Core Lifecycle
 - [WU-2136 — Reduce UnsafeAny in core hotspot files](wu/WU-2136.yaml) — Framework: Core Lifecycle
 - [WU-2135 — Fix release-blocking gate failures on main](wu/WU-2135.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
