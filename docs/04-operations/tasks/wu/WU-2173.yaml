@@ -1,0 +1,33 @@
+id: WU-2173
+title: 'C2: Add startup environment schema validation'
+lane: 'Framework: Core Validation'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-25
+code_paths:
+  - packages/@lumenflow/core/src
+  - packages/@lumenflow/mcp/src
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/branch-check.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2173.done
+dependencies: []
+initiative: INIT-043
+phase: 2
+risks: []
+notes: 'source_plan: /home/USER/.claude/plans/gleaming-painting-sonnet.md'
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Add typed environment schema validation with fail-fast or soft-warn policy that surfaces actionable startup diagnostics.
+acceptance:
+  - Environment schema validation runs at startup and emits clear diagnostics for missing or malformed values.
