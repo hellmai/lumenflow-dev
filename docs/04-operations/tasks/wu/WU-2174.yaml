@@ -1,5 +1,5 @@
 id: WU-2174
-title: 'C3: Introduce getEnv and requireEnv accessors'
+title: Introduce getEnv and requireEnv accessors
 lane: 'Framework: Core Validation'
 type: refactor
 status: ready
