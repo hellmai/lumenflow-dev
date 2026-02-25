@@ -5,7 +5,6 @@ _Last updated: 2026-02-25_
 ## In Progress
 
 - [WU-2155 — Fix INIT-038 regressions: path-literal guard, missing runtime wiring, schema gap](wu/WU-2155.yaml)
-- [WU-2156 — Fix manifest-to-scripts alignment: add missing pnpm scripts](wu/WU-2156.yaml)
 
 ## Completed
 
@@ -1072,3 +1071,4 @@ _Last updated: 2026-02-25_
 - [WU-2141 — Enforce WU sizing contract in wu:create and wu:brief](wu/WU-2141.yaml) — 2026-02-25
 - [WU-2142 — Add initiative scope advisory for over-granular execution plans](wu/WU-2142.yaml) — 2026-02-25
 - [WU-2143 — Document tooling-backed sizing guardrails and strict mode](wu/WU-2143.yaml) — 2026-02-25
+- [WU-2156 — Fix manifest-to-scripts alignment: add missing pnpm scripts](wu/WU-2156.yaml) — 2026-02-25

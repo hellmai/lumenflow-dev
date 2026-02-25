@@ -2,7 +2,7 @@ id: WU-2156
 title: 'Fix manifest-to-scripts alignment: add missing pnpm scripts'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -39,3 +39,6 @@ session_id: 10da36a8-b273-4f76-87fd-3a0a7727a303
 approved_by:
   - test@example.com
 approved_at: 2026-02-25T13:09:47.437Z
+locked: true
+completed_at: 2026-02-25T13:28:16.777Z
+completed: 2026-02-25
