@@ -6,11 +6,8 @@ status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
-  - packages/@lumenflow/initiatives/__tests__/initiative-orchestrator.test.ts
   - packages/@lumenflow/core/src/__tests__/sandbox-profile.test.ts
   - packages/@lumenflow/core/src/invariants/__tests__/check-automated-tests.test.ts
-  - packages/@lumenflow/core/src/invariants/check-automated-tests.ts
-  - packages/@lumenflow/core/src/sandbox-profile.ts
 tests:
   manual:
     - pnpm gates
@@ -29,10 +26,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-25T10:17:01.883Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2135
+session_id: be43d259-8c66-43a0-b32c-3cd9f4b2e901
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T10:17:01.891Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +47,3 @@ acceptance:
   - 'Targeted suite passes: initiatives orchestrator timeout test'
   - 'Targeted suites pass: sandbox-profile and check-automated-tests'
   - Full pnpm gates passes with no skip-gates workaround
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2135
-claimed_at: 2026-02-25T10:17:01.883Z
-baseline_main_sha: 71aa316caa94cf88ba6287cb3b206bd24ec03c44
-session_id: be43d259-8c66-43a0-b32c-3cd9f4b2e901
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-25T10:17:01.891Z
