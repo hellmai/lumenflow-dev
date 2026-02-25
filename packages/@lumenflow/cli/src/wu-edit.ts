@@ -436,10 +436,13 @@ export async function main() {
   // This blocks WU edits if acceptance references paths not in code_paths
   // or if code_paths conflicts with tools/invariants.yml
   const invariantsPath = join(process.cwd(), 'tools/invariants.yml');
-  const lintResult = lintWUSpec(normalizedForValidation as Parameters<typeof lintWUSpec>[0], {
-    invariantsPath,
-    phase: 'intent',
-  });
+  const lintResult = lintWUSpec(
+    normalizedForValidation as unknown as Parameters<typeof lintWUSpec>[0],
+    {
+      invariantsPath,
+      phase: 'intent',
+    },
+  );
   if (!lintResult.valid) {
     const formatted = formatLintErrors(lintResult.errors);
     die(
