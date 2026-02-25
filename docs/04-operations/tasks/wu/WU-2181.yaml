@@ -7,6 +7,8 @@ priority: P2
 created: 2026-02-25
 code_paths:
   - CHANGELOG.md
+  - apps/docs/src/content/docs/guides/existing-projects.mdx
+  - apps/docs/src/content/docs/packs/software-delivery/setup/existing-projects.mdx
 tests:
   manual:
     - Review changelog entry and remediation docs for accuracy
@@ -18,10 +20,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-25T19:44:40.170Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-2181
+session_id: 4e51b9cb-c7f8-423a-9d6b-5b1100908b38
 exposure: documentation
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T19:44:40.173Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -33,11 +42,3 @@ acceptance:
   - CHANGELOG.md Unreleased section has entry for gitignore scaffold fix
   - Migration/remediation steps documented for consumers with tracked ephemeral files
   - lumenflow init --skip backfill behavior documented
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/content-site-comms-wu-2181
-claimed_at: 2026-02-25T19:44:40.170Z
-baseline_main_sha: 90a61f0ed799bfb563ef9df52a722c4bf19d2935
-session_id: 4e51b9cb-c7f8-423a-9d6b-5b1100908b38
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-25T19:44:40.173Z
