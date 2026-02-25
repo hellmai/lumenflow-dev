@@ -6,10 +6,10 @@ status: ready
 priority: P2
 created: 2026-02-25
 code_paths:
-  - packages/@lumenflow/packs/software-delivery/
-  - packages/@lumenflow/cli/src/gate-defaults.ts
   - packages/@lumenflow/cli/src/gates-runners.ts
+  - packages/@lumenflow/cli/src/gate-defaults.ts
   - packages/@lumenflow/core/src/schemas/gates-section-config.ts
+  - packages/@lumenflow/core/src/wu-cli-constants.ts
 tests:
   manual:
     - Verify gate warns when schema file changes without migration file
@@ -26,7 +26,13 @@ spec_refs:
   - lumenflow://plans/WU-2158-co-change-gate.md
   - lumenflow://plans/WU-2158-plan.md
 risks: []
-notes: 'Reuse existing getChangedFilesForIncremental() from gates-utils.ts. Register via GateRegistry (WU-1550 pattern). Config lives in pack config section of workspace.yaml, not kernel. See also: co-change pattern generalizes to API-route/OpenAPI, proto/generated-code, type-export/changelog.'
+notes: "Design review decisions: (1) Runner in gates-runners.ts not pack dir — pragmatic, avoids
+  half-extracting runners into packs which creates worse inconsistency. (2) Config in
+  GatesConfigSchema not per-pack config block — per-pack config namespace doesn't exist yet, and
+  kernel schema already has software-specific fields like enableSafetyCriticalTests. (3) Use
+  micromatch for glob matching — already transitive dep via Vitest, handles
+  double-star/brace/negation correctly. (4) Three-state severity (warn/error/off) mirrors
+  lane_health pattern."
 requires_review: false
 assigned_to: test@example.com
 exposure: backend-only
@@ -35,12 +41,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: When schema files change in a WU but no corresponding migration files are included, deployed code can reference tables/columns that don't exist yet. This has happened on PatientPath and LumenFlow Cloud. Add a configurable co-change gate to the Software Delivery Pack that detects when files matching trigger patterns change without corresponding files matching require patterns also changing.
+description: When schema files change in a WU but no corresponding migration files are included,
+  deployed code can reference tables/columns that don't exist yet. This has happened on PatientPath
+  and LumenFlow Cloud. Add a configurable co-change gate to the Software Delivery Pack that detects
+  when files matching trigger patterns change without corresponding files matching require patterns
+  also changing.
 acceptance:
-  - co-change gate type exists in Software Delivery Pack
-  - Gate uses getChangedFilesForIncremental() to detect changed files
-  - Gate is configurable via pack config in workspace.yaml (trigger_patterns, require_patterns, severity)
-  - 'severity: warn logs warning but does not block; severity: error blocks wu:prep'
-  - Multiple co-change rules can be defined (schema/migration is just one use case)
-  - Gate is registered via GateRegistry and runs as part of pnpm gates
-  - 'Unit tests cover: trigger match with no require match (fail), trigger match with require match (pass), no trigger match (skip)'
+  - 'co-change gate runner in gates-runners.ts (pragmatic: alongside existing runners, not in pack
+    directory)'
+  - co_change config field added to GatesConfigSchema as z.array of {name, trigger_patterns,
+    require_patterns, severity} with severity enum warn|error|off
+  - Gate uses getChangedFilesForIncremental() to detect changed files and micromatch for glob
+    matching against relative paths
+  - 'severity: warn logs warning but does not block; severity: error blocks wu:prep; severity: off
+    skips the rule'
+  - Multiple co-change rules can be defined as array entries (schema/migration is just one example
+    config)
+  - Gate registered in registerCodeGates() via CodeGateOptions, positioned after lint but before test
+  - 'Unit tests cover: trigger match with no require match (fail), trigger match with require match
+    (pass), no trigger match (skip), severity off (skip)'
+  - Implementation is generic mechanism only — no domain-specific logic for proto/OpenAPI/changelog
+    cases
