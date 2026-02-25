@@ -82,10 +82,7 @@ function runShellHook(
 /**
  * Build the stdin JSON that Claude Code sends to PreToolUse hooks.
  */
-function buildHookInput(
-  toolName: string,
-  filePath: string,
-): Record<string, unknown> {
+function buildHookInput(toolName: string, filePath: string): Record<string, unknown> {
   return {
     tool_name: toolName,
     tool_input: { file_path: filePath },
@@ -417,9 +414,7 @@ describe('WU-2137: Enforcement Matrix E2E', () => {
         }
 
         it(`ts: ${input.label}`, async () => {
-          const { checkWorktreeEnforcement } = await import(
-            '../src/hooks/enforcement-checks.js'
-          );
+          const { checkWorktreeEnforcement } = await import('../src/hooks/enforcement-checks.js');
 
           const absPath = path.join(repoDir, input.relPath);
           const result = await checkWorktreeEnforcement(
@@ -457,9 +452,7 @@ describe('WU-2137: Enforcement Matrix E2E', () => {
         }
 
         it(`ts: ${input.label}`, async () => {
-          const { checkWorktreeEnforcement } = await import(
-            '../src/hooks/enforcement-checks.js'
-          );
+          const { checkWorktreeEnforcement } = await import('../src/hooks/enforcement-checks.js');
 
           const absPath = path.join(repoDir, input.relPath);
           const result = await checkWorktreeEnforcement(
@@ -535,9 +528,7 @@ describe('WU-2137: Enforcement Matrix E2E', () => {
       });
 
       it('ts: branch-pr claim allows code write on main', async () => {
-        const { checkWorktreeEnforcement } = await import(
-          '../src/hooks/enforcement-checks.js'
-        );
+        const { checkWorktreeEnforcement } = await import('../src/hooks/enforcement-checks.js');
 
         const absPath = path.join(repoDir, 'src/app.ts');
         const result = await checkWorktreeEnforcement(
@@ -557,9 +548,7 @@ describe('WU-2137: Enforcement Matrix E2E', () => {
       });
 
       it('ts: branch-pr claim allows edit on main', async () => {
-        const { checkWorktreeEnforcement } = await import(
-          '../src/hooks/enforcement-checks.js'
-        );
+        const { checkWorktreeEnforcement } = await import('../src/hooks/enforcement-checks.js');
 
         const absPath = path.join(repoDir, 'src/app.ts');
         const result = await checkWorktreeEnforcement(
@@ -610,9 +599,7 @@ describe('WU-2137: Enforcement Matrix E2E', () => {
         // It checks: worktree existence, allowlist, branch-pr claim.
         // With no worktrees and no claim on a configured LumenFlow repo,
         // it returns fail-closed regardless of current branch.
-        const { checkWorktreeEnforcement } = await import(
-          '../src/hooks/enforcement-checks.js'
-        );
+        const { checkWorktreeEnforcement } = await import('../src/hooks/enforcement-checks.js');
 
         const absPath = path.join(repoDir, 'src/app.ts');
         const result = await checkWorktreeEnforcement(
@@ -671,9 +658,7 @@ describe('WU-2137: Enforcement Matrix E2E', () => {
       });
 
       it('ts: allows write when .lumenflow absent', async () => {
-        const { checkWorktreeEnforcement } = await import(
-          '../src/hooks/enforcement-checks.js'
-        );
+        const { checkWorktreeEnforcement } = await import('../src/hooks/enforcement-checks.js');
         const absPath = path.join(repoDir, 'src/app.ts');
         const result = await checkWorktreeEnforcement(
           { file_path: absPath, tool_name: 'Write' },
@@ -719,9 +704,7 @@ describe('WU-2137: Enforcement Matrix E2E', () => {
       });
 
       it('ts: allows write to path outside repo', async () => {
-        const { checkWorktreeEnforcement } = await import(
-          '../src/hooks/enforcement-checks.js'
-        );
+        const { checkWorktreeEnforcement } = await import('../src/hooks/enforcement-checks.js');
         const outsidePath = path.join(os.tmpdir(), 'totally-outside.ts');
         const result = await checkWorktreeEnforcement(
           { file_path: outsidePath, tool_name: 'Write' },
@@ -870,9 +853,7 @@ describe('WU-2137: Enforcement Matrix E2E', () => {
       });
 
       it('ts: path with spaces in allowlisted directory is allowed', async () => {
-        const { checkWorktreeEnforcement } = await import(
-          '../src/hooks/enforcement-checks.js'
-        );
+        const { checkWorktreeEnforcement } = await import('../src/hooks/enforcement-checks.js');
         const absPath = path.join(repoDir, '.lumenflow', 'my config.yaml');
         const result = await checkWorktreeEnforcement(
           { file_path: absPath, tool_name: 'Write' },
