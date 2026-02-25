@@ -43,6 +43,16 @@ import {
   LOCK_POLL_INTERVAL_MS,
 } from './constants/lock-constants.js';
 
+/** Cleanup lock file info */
+interface CleanupLockInfo {
+  wuId: string;
+  lockId: string;
+  createdAt: string;
+  pid: number;
+  hostname: string;
+  worktreePath?: string | null;
+}
+
 /**
  * Default timeout for waiting to acquire lock (ms)
  * After this time, acquisition fails if lock is held
@@ -146,7 +156,7 @@ function deleteLockFile(options: BaseDirOptions = {}) {
  * @param {CleanupLockInfo} lockInfo - Lock info to check
  * @returns {boolean} True if lock is stale
  */
-export function isCleanupLockStale(lockInfo: UnsafeAny) {
+export function isCleanupLockStale(lockInfo: CleanupLockInfo | null) {
   if (!lockInfo || !lockInfo.createdAt) {
     return true;
   }
@@ -161,7 +171,7 @@ export function isCleanupLockStale(lockInfo: UnsafeAny) {
  * @param {CleanupLockInfo} lockInfo - Lock info to check
  * @returns {boolean} True if lock is a zombie (PID not running)
  */
-export function isCleanupLockZombie(lockInfo: UnsafeAny) {
+export function isCleanupLockZombie(lockInfo: CleanupLockInfo | null) {
   if (!lockInfo || typeof lockInfo.pid !== 'number') {
     return true;
   }
@@ -189,7 +199,7 @@ function generateLockId() {
  * @param {number} ms - Milliseconds to sleep
  * @returns {Promise<void>}
  */
-function sleep(ms: UnsafeAny) {
+function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
@@ -230,7 +240,10 @@ export function getCleanupLockInfo(options: BaseDirOptions = {}) {
  * @param {Object} options - Options with baseDir
  * @returns {'acquired' | 'race'} Result of acquisition attempt
  */
-function tryAtomicLockCreate(lockInfo: UnsafeAny, options: UnsafeAny) {
+function tryAtomicLockCreate(
+  lockInfo: CleanupLockInfo,
+  options: BaseDirOptions,
+): 'acquired' | 'race' {
   const lockPath = getLockPath(options);
   const lockDir = path.dirname(lockPath);
   // WU-1174: Ensure lock directory exists (temp directory, not .lumenflow/)
@@ -244,8 +257,8 @@ function tryAtomicLockCreate(lockInfo: UnsafeAny, options: UnsafeAny) {
     writeFileSync(lockPath, JSON.stringify(lockInfo, null, 2));
     closeSync(fd);
     return 'acquired';
-  } catch (err) {
-    if (err.code === 'EEXIST') {
+  } catch (err: unknown) {
+    if (err instanceof Error && 'code' in err && (err as NodeJS.ErrnoException).code === 'EEXIST') {
       return 'race';
     }
     throw err;
@@ -260,7 +273,7 @@ function tryAtomicLockCreate(lockInfo: UnsafeAny, options: UnsafeAny) {
  * @param {Object} options - Options with baseDir
  * @returns {'retry' | null} Whether to retry acquisition
  */
-function handleStaleLock(existingLock: UnsafeAny, options: UnsafeAny) {
+function handleStaleLock(existingLock: CleanupLockInfo, options: BaseDirOptions): 'retry' | null {
   if (isCleanupLockStale(existingLock)) {
     console.log(
       `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Cleaning up stale cleanup lock from ${existingLock.wuId}`,
@@ -301,7 +314,7 @@ export interface AcquireCleanupLockOptions extends BaseDirOptions {
  * @param {AcquireCleanupLockOptions} [options]
  * @returns {Promise<CleanupAcquireResult>} Acquisition result
  */
-export async function acquireCleanupLock(wuId: UnsafeAny, options: AcquireCleanupLockOptions = {}) {
+export async function acquireCleanupLock(wuId: string, options: AcquireCleanupLockOptions = {}) {
   const { baseDir, waitMs = CLEANUP_LOCK_TIMEOUT_MS, worktreePath = null } = options;
   const startTime = Date.now();
 
@@ -367,7 +380,7 @@ export async function acquireCleanupLock(wuId: UnsafeAny, options: AcquireCleanu
  * @param {BaseDirOptions} [options]
  * @returns {boolean} True if lock was released
  */
-export function releaseCleanupLock(lockId: UnsafeAny, options: BaseDirOptions = {}) {
+export function releaseCleanupLock(lockId: string, options: BaseDirOptions = {}) {
   const existingLock = readLockFile(options);
 
   if (!existingLock) {

@@ -13,6 +13,52 @@ import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { LUMENFLOW_PATHS, FILE_EXTENSIONS, STDIO, STRING_LITERALS } from './wu-constants.js';
 
+/** Gate event telemetry data */
+interface GateEventData {
+  wu_id?: string | null;
+  lane?: string | null;
+  gate_name: string;
+  passed: boolean;
+  duration_ms: number;
+}
+
+/** LLM classification start data */
+interface LLMClassificationStartData {
+  classification_type: string;
+  has_context?: boolean;
+  wu_id?: string;
+  lane?: string;
+}
+
+/** LLM classification complete data */
+interface LLMClassificationCompleteData {
+  classification_type: string;
+  duration_ms: number;
+  tokens_used: number;
+  estimated_cost_usd: number;
+  confidence: number;
+  fallback_used: boolean;
+  fallback_reason?: string;
+  wu_id?: string;
+  lane?: string;
+}
+
+/** LLM classification error data */
+interface LLMClassificationErrorData {
+  classification_type: string;
+  error_type: string;
+  error_message: string;
+  duration_ms?: number;
+  wu_id?: string;
+  lane?: string;
+  input_text_preview?: string;
+}
+
+/** WU flow event data */
+interface WUFlowEventData {
+  [key: string]: unknown;
+}
+
 const TELEMETRY_DIR = LUMENFLOW_PATHS.TELEMETRY;
 const GATES_LOG = `${TELEMETRY_DIR}/gates${FILE_EXTENSIONS.NDJSON}`;
 const LLM_CLASSIFICATION_LOG = `${TELEMETRY_DIR}/llm-classification${FILE_EXTENSIONS.NDJSON}`;
@@ -34,7 +80,7 @@ function ensureTelemetryDir() {
  * @param {string} filePath - Path to NDJSON file
  * @param {object} event - Event data to emit
  */
-export function emit(filePath: UnsafeAny, event: UnsafeAny) {
+export function emit(filePath: string, event: Record<string, unknown>) {
   ensureTelemetryDir();
   const line = `${JSON.stringify(event)}${STRING_LITERALS.NEWLINE}`;
   try {
@@ -54,7 +100,7 @@ export function emit(filePath: UnsafeAny, event: UnsafeAny) {
  * @param {boolean} data.passed - Whether gate passed
  * @param {number} data.duration_ms - Execution duration in milliseconds
  */
-export function emitGateEvent(data: UnsafeAny) {
+export function emitGateEvent(data: GateEventData) {
   const event = {
     timestamp: new Date().toISOString(),
     wu_id: data.wu_id || null,
@@ -122,7 +168,10 @@ export function getCurrentLane() {
  * @param {string} [data.lane] - Lane name
  * @param {string} [logPath] - Optional log path override (for testing)
  */
-export function emitLLMClassificationStart(data: UnsafeAny, logPath = LLM_CLASSIFICATION_LOG) {
+export function emitLLMClassificationStart(
+  data: LLMClassificationStartData,
+  logPath = LLM_CLASSIFICATION_LOG,
+) {
   const event = {
     timestamp: new Date().toISOString(),
     event_type: 'llm.classification.start',
@@ -148,8 +197,11 @@ export function emitLLMClassificationStart(data: UnsafeAny, logPath = LLM_CLASSI
  * @param {string} [data.lane] - Lane name
  * @param {string} [logPath] - Optional log path override (for testing)
  */
-export function emitLLMClassificationComplete(data: UnsafeAny, logPath = LLM_CLASSIFICATION_LOG) {
-  // PII Protection: Explicitly exclude UnsafeAny user input fields
+export function emitLLMClassificationComplete(
+  data: LLMClassificationCompleteData,
+  logPath = LLM_CLASSIFICATION_LOG,
+) {
+  // PII Protection: Explicitly exclude any user input fields
   const event: Record<string, unknown> = {
     timestamp: new Date().toISOString(),
     event_type: 'llm.classification.complete',
@@ -182,7 +234,10 @@ export function emitLLMClassificationComplete(data: UnsafeAny, logPath = LLM_CLA
  * @param {string} [data.lane] - Lane name
  * @param {string} [logPath] - Optional log path override (for testing)
  */
-export function emitLLMClassificationError(data: UnsafeAny, logPath = LLM_CLASSIFICATION_LOG) {
+export function emitLLMClassificationError(
+  data: LLMClassificationErrorData,
+  logPath = LLM_CLASSIFICATION_LOG,
+) {
   // PII Protection: Never log user input or sensitive data
   const event: Record<string, unknown> = {
     timestamp: new Date().toISOString(),
@@ -198,7 +253,7 @@ export function emitLLMClassificationError(data: UnsafeAny, logPath = LLM_CLASSI
     event.duration_ms = data.duration_ms;
   }
 
-  // Explicitly redact UnsafeAny input_text_preview to prevent PII leakage
+  // Explicitly redact any input_text_preview to prevent PII leakage
   if (data.input_text_preview) {
     event.input_text_preview = '[REDACTED]';
   }
@@ -215,7 +270,7 @@ export function emitLLMClassificationError(data: UnsafeAny, logPath = LLM_CLASSI
  * @param {object} event - Event data (script, wu_id, lane, step, etc.)
  * @param {string} [logPath] - Optional log path override (for testing)
  */
-export function emitWUFlowEvent(event: UnsafeAny, logPath = FLOW_LOG) {
+export function emitWUFlowEvent(event: WUFlowEventData, logPath = FLOW_LOG) {
   const logDir = path.dirname(logPath);
   if (!existsSync(logDir)) {
     mkdirSync(logDir, { recursive: true });

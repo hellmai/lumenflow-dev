@@ -93,9 +93,10 @@ export function loadConfig(configPath = DEFAULT_CONFIG_PATH) {
       },
       retry_pattern: parsed.retry_pattern ?? defaults.retry_pattern,
     };
-  } catch (_error) {
+  } catch (_error: unknown) {
     // YAML parsing error or other failure, use defaults
-    console.error(`⚠️  Failed to load config from ${configPath}: ${_error.message}`);
+    const errorMessage = _error instanceof Error ? _error.message : String(_error);
+    console.error(`⚠️  Failed to load config from ${configPath}: ${errorMessage}`);
     console.error(`   Using default token budgets.`);
     return defaults;
   }
@@ -125,7 +126,7 @@ async function loadPreviousMetrics() {
  * @param {Object} metrics - Metrics by file path
  * @returns {Promise<void>}
  */
-async function savemetrics(metrics: UnsafeAny) {
+async function savemetrics(metrics: Record<string, unknown>) {
   try {
     const dir = dirname(METRICS_CACHE_PATH);
     const dirExists = await access(dir)
@@ -226,13 +227,37 @@ async function log(level: LogLevel, event: string, data: LogData, output: LogOut
  * @param {{quiet?: boolean, verbose?: boolean}} output - Output mode
  * @returns {Promise<{passed: boolean, tokenCount: number, delta: number, hash: string}>}
  */
+/** Result of linting a single prompt file */
+interface LintFileResult {
+  passed: boolean;
+  tokenCount: number;
+  delta: number;
+  hash: string;
+}
+
+/** Loaded prompt linter configuration */
+interface PromptLinterConfig {
+  version: number;
+  token_budgets: {
+    default: { hard_cap: number; warn_threshold: number };
+    retry: { hard_cap: number };
+  };
+  delta_budgets: { warn: number; block: number };
+  retry_pattern: string;
+}
+
+/** Previous metrics cache keyed by file path */
+interface PreviousMetricsCache {
+  [filePath: string]: { tokenCount: number; hash: string; timestamp: string } | undefined;
+}
+
 async function lintPromptFile(
-  filePath: UnsafeAny,
-  previousMetrics: UnsafeAny,
-  mode: UnsafeAny,
-  config: UnsafeAny,
-  output: UnsafeAny,
-) {
+  filePath: string,
+  previousMetrics: PreviousMetricsCache,
+  mode: string,
+  config: PromptLinterConfig,
+  output: LogOutputOptions,
+): Promise<LintFileResult> {
   // Analyze prompt
   const { tokenCount, hash, text } = analyzePrompt(filePath);
 
@@ -348,7 +373,7 @@ export async function lintPrompts(
   const previousMetrics = await loadPreviousMetrics();
 
   // Lint each file
-  const results: UnsafeAny[] = [];
+  const results: Array<LintFileResult & { filePath: string }> = [];
   let allPassed = true;
 
   for (const filePath of filePaths) {

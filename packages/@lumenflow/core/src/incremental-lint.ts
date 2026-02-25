@@ -49,7 +49,7 @@ const IGNORED_DIRECTORIES = [
  * @param {string} filePath - File path to check
  * @returns {boolean} True if file should be linted
  */
-export function isLintableFile(filePath: UnsafeAny) {
+export function isLintableFile(filePath: string) {
   const ignoredDirectories = [...IGNORED_DIRECTORIES, getConfiguredWorktreesDir()];
 
   // Check if in ignored directory
@@ -74,11 +74,11 @@ export function isLintableFile(filePath: UnsafeAny) {
  * @param {string} output - Git command output
  * @returns {string[]} List of file paths
  */
-function parseGitFileList(output: UnsafeAny) {
+function parseGitFileList(output: string): string[] {
   return output
     .split(STRING_LITERALS.NEWLINE)
-    .map((f: UnsafeAny) => f.trim())
-    .filter((f: UnsafeAny) => f.length > 0);
+    .map((f: string) => f.trim())
+    .filter((f: string) => f.length > 0);
 }
 
 /**
@@ -172,13 +172,13 @@ export async function getChangedLintableFiles(options: GetChangedLintableFilesOp
  * // Returns: ['src/app.ts', 'src/lib.tsx']
  */
 export function convertToPackageRelativePaths(
-  repoRelativePaths: UnsafeAny,
-  packagePrefix: UnsafeAny,
-) {
+  repoRelativePaths: readonly string[],
+  packagePrefix: string,
+): string[] {
   // Normalize the prefix to ensure it ends with a slash
   const normalizedPrefix = packagePrefix.endsWith('/') ? packagePrefix : `${packagePrefix}/`;
 
   return repoRelativePaths
-    .filter((filePath: UnsafeAny) => filePath.startsWith(normalizedPrefix))
-    .map((filePath: UnsafeAny) => filePath.slice(normalizedPrefix.length));
+    .filter((filePath: string) => filePath.startsWith(normalizedPrefix))
+    .map((filePath: string) => filePath.slice(normalizedPrefix.length));
 }

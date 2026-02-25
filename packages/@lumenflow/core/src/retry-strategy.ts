@@ -20,6 +20,17 @@
 import { LOG_PREFIX, EMOJI } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 
+/** Retry configuration */
+interface RetryConfig {
+  maxAttempts: number;
+  baseDelayMs: number;
+  maxDelayMs: number;
+  multiplier: number;
+  jitter: number;
+  shouldRetry: (error: unknown) => boolean;
+  onRetry?: ((attempt: number, error: unknown, delay: number) => void) | null;
+}
+
 /**
  * Error message patterns that are considered retryable for wu:done operations
  * Exported for test consistency
@@ -73,9 +84,9 @@ export const RETRY_PRESETS = Object.freeze({
     maxDelayMs: 60000,
     multiplier: 2,
     jitter: 0.15, // 15% jitter to spread concurrent retries
-    shouldRetry: (error: UnsafeAny) => {
+    shouldRetry: (error: unknown) => {
       // Retry fast-forward failures and network errors using defined patterns
-      const message = error.message || '';
+      const message = error instanceof Error ? error.message : String(error);
       return Object.values(RETRYABLE_ERROR_PATTERNS).some((pattern) => message.includes(pattern));
     },
     onRetry: null,
@@ -133,7 +144,10 @@ export const RETRY_PRESETS = Object.freeze({
  * // Customize preset
  * const config = createRetryConfig('wu_done', { maxAttempts: 10 });
  */
-export function createRetryConfig(presetOrOptions: UnsafeAny, options: UnsafeAny) {
+export function createRetryConfig(
+  presetOrOptions?: string | Partial<RetryConfig>,
+  options?: Partial<RetryConfig>,
+): RetryConfig {
   // Determine base config
   let baseConfig;
   let customOptions;
@@ -174,7 +188,10 @@ export function createRetryConfig(presetOrOptions: UnsafeAny, options: UnsafeAny
  * @param {RetryConfig} config - Retry configuration
  * @returns {number} Delay in milliseconds
  */
-export function calculateBackoffDelay(attempt: UnsafeAny, config: UnsafeAny) {
+export function calculateBackoffDelay(
+  attempt: number,
+  config: Pick<RetryConfig, 'baseDelayMs' | 'multiplier' | 'maxDelayMs' | 'jitter'>,
+) {
   const { baseDelayMs, multiplier, maxDelayMs, jitter } = config;
 
   // Exponential backoff: base * multiplier^attempt
@@ -200,7 +217,7 @@ export function calculateBackoffDelay(attempt: UnsafeAny, config: UnsafeAny) {
  * @param {number} ms - Milliseconds to sleep
  * @returns {Promise<void>}
  */
-function sleep(ms: UnsafeAny) {
+function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
@@ -219,12 +236,11 @@ function sleep(ms: UnsafeAny) {
  *   createRetryConfig('wu_done')
  * );
  */
-export async function withRetry(fn: UnsafeAny, config: UnsafeAny = DEFAULT_RETRY_CONFIG) {
-  const { maxAttempts, shouldRetry, onRetry } = config as {
-    maxAttempts: number;
-    shouldRetry: (error: unknown) => boolean;
-    onRetry?: ((attempt: number, error: unknown, delay: number) => void) | null;
-  };
+export async function withRetry<T>(
+  fn: () => Promise<T>,
+  config: RetryConfig = DEFAULT_RETRY_CONFIG,
+): Promise<T> {
+  const { maxAttempts, shouldRetry, onRetry } = config;
 
   let lastError;
   let attempt = 0;
@@ -254,8 +270,9 @@ export async function withRetry(fn: UnsafeAny, config: UnsafeAny = DEFAULT_RETRY
       }
 
       // Log retry info
+      const retryMessage = error instanceof Error ? error.message : String(error);
       console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Attempt ${attempt}/${maxAttempts} failed: ${error.message}`,
+        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Attempt ${attempt}/${maxAttempts} failed: ${retryMessage}`,
       );
       console.log(`${LOG_PREFIX.DONE} ${EMOJI.INFO} Retrying in ${delay}ms...`);
 
@@ -272,10 +289,12 @@ export async function withRetry(fn: UnsafeAny, config: UnsafeAny = DEFAULT_RETRY
       `Operation failed: invalid retry configuration (maxAttempts=${maxAttempts})`,
     );
   }
+  const lastMessage = lastError instanceof Error ? lastError.message : String(lastError);
+  const lastStack = lastError instanceof Error ? lastError.stack : undefined;
   throw createError(
     ErrorCodes.RETRY_EXHAUSTION,
-    `Operation failed after ${attempt} attempt(s): ${lastError.message}\n` +
-      `Original error: ${lastError.stack || lastError.message}`,
+    `Operation failed after ${attempt} attempt(s): ${lastMessage}\n` +
+      `Original error: ${lastStack || lastMessage}`,
   );
 }
 
@@ -291,7 +310,10 @@ export async function withRetry(fn: UnsafeAny, config: UnsafeAny = DEFAULT_RETRY
  * const retryableMerge = withRetryWrapper(mergeBranch, createRetryConfig('wu_done'));
  * await retryableMerge(branch);
  */
-export function withRetryWrapper(fn: UnsafeAny, config: UnsafeAny = DEFAULT_RETRY_CONFIG) {
+export function withRetryWrapper<T>(
+  fn: (...args: unknown[]) => Promise<T>,
+  config: RetryConfig = DEFAULT_RETRY_CONFIG,
+) {
   return async (...args: unknown[]) => {
     return withRetry(() => fn(...args), config);
   };
@@ -303,8 +325,8 @@ export function withRetryWrapper(fn: UnsafeAny, config: UnsafeAny = DEFAULT_RETR
  * @param {Error} error - Error to check
  * @returns {boolean} True if conflict error
  */
-export function isConflictError(error: UnsafeAny) {
-  const message = error.message || '';
+export function isConflictError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
   return (
     message.includes('conflict') ||
     message.includes('CONFLICT') ||
@@ -319,8 +341,8 @@ export function isConflictError(error: UnsafeAny) {
  * @param {Error} error - Error to check
  * @returns {boolean} True if likely transient
  */
-export function isTransientError(error: UnsafeAny) {
-  const message = error.message || '';
+export function isTransientError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
   return (
     message.includes('ETIMEDOUT') ||
     message.includes('ECONNRESET') ||

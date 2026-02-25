@@ -1,7 +1,7 @@
 {
   "description": "Ratcheting baseline for UnsafeAny type alias usage. Count must not increase.",
   "wuId": "WU-2110",
-  "lastUpdated": "2026-02-24",
-  "baseline": 378,
-  "note": "Computed from codebase scan. 378 UnsafeAny references across production files."
+  "lastUpdated": "2026-02-25",
+  "baseline": 279,
+  "note": "Computed from codebase scan. 279 UnsafeAny references across production files."
 }
