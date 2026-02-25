@@ -1,5 +1,5 @@
 id: WU-2170
-title: 'B3: Migrate consumers and deprecate root core barrel'
+title: Migrate consumers and deprecate root core barrel
 lane: 'Framework: Core Lifecycle'
 type: refactor
 status: ready
