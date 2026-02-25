@@ -1,0 +1,15 @@
+id: INIT-040
+slug: agent-memory-coordination
+title: Agent Memory + Coordination Layer
+description: ''
+status: draft
+priority: P1
+owner: tom@hellm.ai
+created: 2026-02-25
+phases: []
+success_metrics:
+  - Project-memory survives wu:done cleanup
+  - Signals surface automatically via CLI and MCP touchpoints
+  - SDK publishes without AGPL runtime dependency
+  - OSS-complete CI gate enforces local-only test pass
+labels: []
