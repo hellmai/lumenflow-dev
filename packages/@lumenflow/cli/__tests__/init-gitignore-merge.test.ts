@@ -156,9 +156,7 @@ describe('WU-1969: gitignore merge path completeness', () => {
       const templates = await import('../src/init-templates.js');
       const { REQUIRED_GITIGNORE_EXCLUSIONS } = templates;
 
-      const patterns = REQUIRED_GITIGNORE_EXCLUSIONS.map(
-        (e: { pattern: string }) => e.pattern,
-      );
+      const patterns = REQUIRED_GITIGNORE_EXCLUSIONS.map((e: { pattern: string }) => e.pattern);
 
       expect(patterns).toContain('.lumenflow/checkpoints/');
       expect(patterns).toContain('.lumenflow/locks/');
@@ -192,10 +190,7 @@ describe('WU-1969: gitignore merge path completeness', () => {
 
       // Read the source repo .gitignore (the canonical truth)
       const repoRoot = path.resolve(__dirname, '..', '..', '..', '..');
-      const sourceGitignore = fs.readFileSync(
-        path.join(repoRoot, '.gitignore'),
-        'utf-8',
-      );
+      const sourceGitignore = fs.readFileSync(path.join(repoRoot, '.gitignore'), 'utf-8');
 
       // Extract all .lumenflow/* directory/file entries from source .gitignore.
       // We look for lines matching /.lumenflow/<path> or **/.lumenflow/<path>
@@ -259,10 +254,7 @@ describe('WU-1969: gitignore merge path completeness', () => {
 
       // Create a .gitignore with only basic entries (missing the ephemeral paths)
       const gitignorePath = path.join(tempDir, '.gitignore');
-      fs.writeFileSync(
-        gitignorePath,
-        '# Dependencies\nnode_modules/\n.lumenflow/telemetry/\n',
-      );
+      fs.writeFileSync(gitignorePath, '# Dependencies\nnode_modules/\n.lumenflow/telemetry/\n');
 
       // Run init in skip mode -- should append missing entries
       await scaffoldProject(tempDir, { ...baseOptions });
