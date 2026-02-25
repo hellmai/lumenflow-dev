@@ -2,7 +2,7 @@ id: WU-2140
 title: Complete UnsafeAny CLI tail cleanup and lock reduced baseline
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -49,3 +49,6 @@ session_id: c79e67cf-bdd5-4d44-9094-9221a3627b20
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-25T11:43:38.252Z
+locked: true
+completed_at: 2026-02-25T12:05:26.590Z
+completed: 2026-02-25

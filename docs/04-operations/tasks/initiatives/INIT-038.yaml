@@ -20,7 +20,7 @@ phases:
     status: done
   - id: 4
     title: 'Wave 3: Tail Cleanup + Lock'
-    status: in_progress
+    status: done
   - id: 5
     title: 'Wave 4: Governance & Docs (optional follow-up, non-release-critical)'
     status: pending
