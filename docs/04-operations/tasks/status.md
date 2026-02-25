@@ -5,6 +5,7 @@ _Last updated: 2026-02-25_
 ## In Progress
 
 - [WU-2157 — Enrich post-compaction recovery and extend to all agent clients](wu/WU-2157.yaml)
+- [WU-2159 — Block placeholder git identity in commit hooks](wu/WU-2159.yaml)
 
 ## Completed
 

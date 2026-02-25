@@ -2250,3 +2250,4 @@
 {"type":"complete","wuId":"WU-2156","timestamp":"2026-02-25T13:28:21.660Z"}
 {"type":"claim","wuId":"WU-2157","timestamp":"2026-02-25T13:54:12.538Z","lane":"Framework: Memory","title":"Enrich post-compaction recovery and extend to all agent clients"}
 {"type":"complete","wuId":"WU-2155","timestamp":"2026-02-25T13:59:55.064Z"}
+{"type":"claim","wuId":"WU-2159","timestamp":"2026-02-25T14:50:24.914Z","lane":"Framework: CLI Enforcement","title":"Block placeholder git identity in commit hooks"}

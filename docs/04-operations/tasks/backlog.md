@@ -33,11 +33,11 @@ sections:
 - [WU-2153 — Session lifecycle hooks for control-plane registration](wu/WU-2153.yaml) — Framework: Agent
 - [WU-2154 — OSS-complete CI gate for local-only test pass](wu/WU-2154.yaml) — Operations: Tooling
 - [WU-2158 — Add co-change gate to Software Delivery Pack](wu/WU-2158.yaml) — Framework: Core Lifecycle
-- [WU-2159 — Block placeholder git identity in commit hooks](wu/WU-2159.yaml) — Framework: CLI Enforcement
 
 ## 🔧 In progress
 
 - [WU-2157 — Enrich post-compaction recovery and extend to all agent clients](wu/WU-2157.yaml) — Framework: Memory
+- [WU-2159 — Block placeholder git identity in commit hooks](wu/WU-2159.yaml) — Framework: CLI Enforcement
 
 ## ⛔ Blocked
 
