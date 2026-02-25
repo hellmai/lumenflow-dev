@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2186 — Fix config:get — remove fallback-to-software_delivery behavior](wu/WU-2186.yaml)
 
 ## Completed
 
