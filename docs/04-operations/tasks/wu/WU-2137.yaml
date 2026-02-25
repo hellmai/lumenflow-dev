@@ -1,0 +1,44 @@
+id: WU-2137
+title: Add enforcement E2E matrix across hook/TS/MCP paths
+lane: 'Framework: Core Lifecycle'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-25
+code_paths:
+  - packages/@lumenflow/cli/e2e/enforcement-matrix.test.ts
+  - packages/@lumenflow/cli/e2e/claude-enforcement.test.ts
+  - packages/@lumenflow/cli/src/hooks/enforcement-checks.ts
+  - packages/@lumenflow/mcp/src/worktree-enforcement.ts
+tests:
+  manual:
+    - pnpm --filter @lumenflow/cli test -- e2e/enforcement-matrix
+    - pnpm gates
+  unit: []
+  e2e:
+    - packages/@lumenflow/cli/e2e/enforcement-matrix.test.ts
+artifacts:
+  - .lumenflow/stamps/WU-2137.done
+dependencies: []
+initiative: INIT-038
+phase: 2
+blocked_by:
+  - WU-2135
+spec_refs:
+  - /home/tom/.claude/plans/steady-inventing-gosling.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Add end-to-end enforcement coverage for shell hook, TypeScript enforcement checks, and MCP worktree guard using real git/filesystem fixtures.
+acceptance:
+  - New enforcement matrix E2E test file added and passing
+  - Covers hook stdin parity and TS parity for 10+ input combinations
+  - Covers edge conditions including detached HEAD and branch-pr mode claim paths
+  - Full pnpm gates passes
