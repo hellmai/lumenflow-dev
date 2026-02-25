@@ -1,6 +1,6 @@
 # First WU Mistakes
 
-**Last updated:** 2026-02-02
+**Last updated:** 2026-02-25
 
 Common mistakes agents make on their first WU, and how to avoid them.
 
@@ -285,6 +285,45 @@ This means a recently claimed lane (within 2 hours) will NOT be auto-cleared eve
 
 ---
 
+## Mistake 13: Ignoring Sizing Warnings (WU-2141)
+
+### Wrong
+
+```
+[wu:create] WARNING (WU-200): sizing: estimated_files (60) exceeds Simple
+threshold (20). Consider adding exception_type/exception_reason...
+
+Agent: [ignores the warning, proceeds without sizing metadata]
+```
+
+### Right
+
+When `wu:create` or `wu:brief` emits a sizing advisory warning, either:
+
+1. **Add exception metadata** if the oversize WU is justified:
+
+```yaml
+sizing_estimate:
+  estimated_files: 60
+  estimated_tool_calls: 150
+  strategy: orchestrator-worker
+  exception_type: docs-only
+  exception_reason: All markdown documentation files, low complexity
+```
+
+2. **Split the WU** if the estimate genuinely exceeds session capacity (see [wu-sizing-guide.md](../../wu-sizing-guide.md) section 3 for splitting patterns).
+
+**Strict mode:** Teams can enforce sizing compliance for delegated work with `--strict-sizing` on `wu:brief`. In strict mode, missing or non-compliant sizing metadata blocks the operation.
+
+```bash
+# This will block if WU-XXX lacks sizing_estimate or exceeds thresholds
+pnpm wu:brief --id WU-XXX --client claude-code --strict-sizing
+```
+
+See the [WU Sizing Guide](../../wu-sizing-guide.md) section 1.4 for the full contract specification.
+
+---
+
 ## Quick Checklist
 
 Before starting any WU:
@@ -292,6 +331,7 @@ Before starting any WU:
 - [ ] Read the full WU spec
 - [ ] Understand acceptance criteria
 - [ ] Check spec_refs for plans (read linked plans if present)
+- [ ] Review sizing_estimate if present (check thresholds)
 - [ ] Claim the WU with `pnpm wu:claim`
 - [ ] cd to the worktree IMMEDIATELY
 - [ ] Work only in the worktree

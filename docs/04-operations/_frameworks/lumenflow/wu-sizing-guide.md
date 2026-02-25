@@ -97,6 +97,130 @@ A WU touching 30 files where each requires unique logic changes, test updates, o
 
 ---
 
+### 1.4 Sizing Contract (Tooling-Backed Enforcement) (WU-2141)
+
+The sizing thresholds in sections 1.0-1.2 are now enforced by CLI tooling. The `sizing_estimate` metadata contract lets agents declare their sizing intent at WU creation time, and the tooling validates compliance.
+
+#### The `sizing_estimate` Metadata Contract
+
+WU YAML specs support an optional `sizing_estimate` field. When present, `wu:create` and `wu:brief` validate it against the thresholds above.
+
+**Fields:**
+
+| Field                  | Type   | Required | Description                                               |
+| :--------------------- | :----- | :------- | :-------------------------------------------------------- |
+| `estimated_files`      | number | Yes      | Estimated number of files to be modified                  |
+| `estimated_tool_calls` | number | Yes      | Estimated number of tool calls for the session            |
+| `strategy`             | string | Yes      | Execution strategy (see valid values below)               |
+| `exception_type`       | string | No       | Exception type when thresholds are intentionally exceeded |
+| `exception_reason`     | string | No       | Justification for the exception (required with type)      |
+
+**Valid `strategy` values:**
+
+- `single-session` -- Fits within Simple thresholds
+- `checkpoint-resume` -- Medium complexity, requires checkpoint-resume
+- `orchestrator-worker` -- Complex, requires orchestrator-worker pattern
+- `decomposition` -- Must be split into multiple WUs
+
+**Valid `exception_type` values:**
+
+- `docs-only` -- Documentation-only exception (section 1.1)
+- `shallow-multi-file` -- Shallow multi-file exception (section 1.2)
+
+#### Example: Compliant WU with sizing metadata
+
+```yaml
+# WU-XXX.yaml
+id: WU-XXX
+type: feature
+sizing_estimate:
+  estimated_files: 8
+  estimated_tool_calls: 35
+  strategy: single-session
+```
+
+#### Example: Oversize WU with exception metadata
+
+```yaml
+# WU-XXX.yaml
+id: WU-XXX
+type: documentation
+sizing_estimate:
+  estimated_files: 45
+  estimated_tool_calls: 40
+  strategy: single-session
+  exception_type: docs-only
+  exception_reason: >
+    All markdown documentation files. Low cognitive complexity,
+    no test/type/lint dependencies.
+```
+
+#### Example: Shallow multi-file exception
+
+```yaml
+# WU-XXX.yaml
+id: WU-XXX
+type: refactor
+sizing_estimate:
+  estimated_files: 45
+  estimated_tool_calls: 40
+  strategy: single-session
+  exception_type: shallow-multi-file
+  exception_reason: >
+    Uniform import path rename from '@old/path' to '@new/path'.
+    Each file change is 1 line, mechanically identical.
+```
+
+#### Advisory vs Strict Mode
+
+The tooling operates in two modes:
+
+**Advisory mode (default):** `wu:create` and `wu:brief` emit warnings when an estimate exceeds thresholds without valid exception metadata. The operation still proceeds. This mode preserves backward compatibility -- WUs without `sizing_estimate` produce no warnings.
+
+```
+[wu:create] WARNING (WU-100): sizing: estimated_files (30) exceeds Simple
+threshold (20). Consider adding exception_type/exception_reason or splitting
+the WU. See docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md.
+```
+
+**Strict mode (`--strict-sizing`):** `wu:brief` supports a `--strict-sizing` flag that blocks when:
+
+- `sizing_estimate` metadata is missing from the WU YAML
+- The estimate exceeds thresholds without a valid exception
+
+```bash
+# Advisory mode (default) -- warns but proceeds
+pnpm wu:brief --id WU-XXX --client claude-code
+
+# Strict mode -- blocks non-compliant WUs
+pnpm wu:brief --id WU-XXX --client claude-code --strict-sizing
+```
+
+Strict mode is intended for teams that want to enforce sizing discipline before delegating work to agents. It is opt-in and does not affect existing workflows.
+
+#### Backward Compatibility
+
+- WUs created before WU-2141 (without `sizing_estimate`) are fully supported
+- Missing `sizing_estimate` is treated as "no estimate provided" -- no warnings, no errors
+- Advisory mode never blocks WU creation or brief generation
+- Strict mode is opt-in via `--strict-sizing` flag only
+
+#### When to Add Sizing Metadata
+
+**Always recommended for:**
+
+- Feature WUs expected to exceed Simple thresholds
+- WUs being delegated to agents via `wu:brief`
+- Initiative WUs where scope discipline is critical
+
+**Optional for:**
+
+- Simple bug fixes under 10 files
+- Documentation WUs under 20 files
+- Any WU comfortably within Simple thresholds
+
+---
+
 ## 2. Strategy Decision Tree
 
 Use this logic to select your approach. If `git status` ever shows >20 modified files, STOP and re-evaluate.
@@ -361,12 +485,13 @@ pnpm wu:brief --id WU-XXX --client <client>
 
 ---
 
-**Version:** 1.2 (2026-02-01)
-**Last Updated:** 2026-02-01
+**Version:** 1.3 (2026-02-25)
+**Last Updated:** 2026-02-25
 **Contributors:** Claude (research), Codex (pragmatic framing), Gemini (trigger enforcement)
 
 **Changelog:**
 
+- v1.3 (2026-02-25): Added sizing contract section (1.4) documenting tooling-backed enforcement via `sizing_estimate` metadata, advisory warnings in `wu:create`, and `--strict-sizing` mode in `wu:brief` (WU-2141, WU-2143).
 - v1.2 (2026-02-01): Added documentation-only exception (section 1.1), shallow multi-file exception with single-session override criteria (section 1.2), and examples summary table (section 1.3). Updated deviation protocol to reference exceptions.
 - v1.1 (2026-01-17): Removed time-based estimates (hours); replaced with tool-call and context-budget heuristics. Agents operate in context windows, not clock time.
 - v1.0 (2025-11-24): Initial version based on WU-1215 post-mortem.
