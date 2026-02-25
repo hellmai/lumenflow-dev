@@ -23,7 +23,7 @@ phases:
     status: done
   - id: 5
     title: 'Wave 4: Governance & Docs (optional follow-up, non-release-critical)'
-    status: pending
+    status: in_progress
 success_metrics:
   - pnpm gates green on main after Wave 0
   - UnsafeAny baseline reduced from 378 to <=200
