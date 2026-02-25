@@ -1,5 +1,5 @@
 id: WU-2176
-title: 'D2: Document validator boundaries and ownership'
+title: Document validator boundaries and ownership
 lane: 'Content: Framework Docs'
 type: documentation
 status: ready
@@ -16,8 +16,6 @@ tests:
 artifacts:
   - .lumenflow/stamps/WU-2176.done
 dependencies: []
-initiative: INIT-044
-phase: 1
 risks: []
 notes: 'source_plan: /home/USER/.claude/plans/gleaming-painting-sonnet.md'
 requires_review: false
