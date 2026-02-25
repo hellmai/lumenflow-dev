@@ -2,7 +2,7 @@ id: WU-2138
 title: Reduce UnsafeAny in CLI hotspot handlers
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -38,8 +38,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Reduce UnsafeAny in highest-churn CLI handlers using unknown plus explicit narrowing/schema validation and shared core schemas where relevant.
+description: Reduce UnsafeAny in highest-churn CLI handlers using unknown plus explicit
+  narrowing/schema validation and shared core schemas where relevant.
 acceptance:
   - Additional UnsafeAny baseline reduction of at least 60 from post-WU-2136 baseline
   - CLI hotspot files in scope no longer use UnsafeAny
   - Full pnpm gates passes
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2138
+claimed_at: 2026-02-25T11:14:41.123Z
+baseline_main_sha: 9bebf1720600694030f75e53559734dec29f9d94
+session_id: 4ece3245-bfa5-4f7e-abd9-a5ccf4350e66
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T11:14:41.132Z

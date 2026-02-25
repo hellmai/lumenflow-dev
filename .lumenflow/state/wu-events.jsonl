@@ -2229,3 +2229,4 @@
 {"type":"complete","wuId":"WU-2136","timestamp":"2026-02-25T10:54:40.919Z"}
 {"type":"claim","wuId":"WU-2139","timestamp":"2026-02-25T10:56:04.461Z","lane":"Framework: Core Lifecycle","title":"Complete UnsafeAny core tail cleanup tranche"}
 {"type":"complete","wuId":"WU-2139","timestamp":"2026-02-25T11:13:28.338Z"}
+{"type":"claim","wuId":"WU-2138","timestamp":"2026-02-25T11:14:41.172Z","lane":"Framework: CLI WU Commands","title":"Reduce UnsafeAny in CLI hotspot handlers"}

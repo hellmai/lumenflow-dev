@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2138 — Reduce UnsafeAny in CLI hotspot handlers](wu/WU-2138.yaml)
 
 ## Completed
 

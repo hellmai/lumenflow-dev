@@ -22,7 +22,6 @@ sections:
 
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
-- [WU-2138 — Reduce UnsafeAny in CLI hotspot handlers](wu/WU-2138.yaml) — Framework: CLI WU Commands
 - [WU-2140 — Complete UnsafeAny CLI tail cleanup and lock reduced baseline](wu/WU-2140.yaml) — Framework: CLI WU Commands
 - [WU-2141 — Enforce WU sizing contract in wu:create and wu:brief](wu/WU-2141.yaml) — Framework: CLI WU Commands
 - [WU-2142 — Add initiative scope advisory for over-granular execution plans](wu/WU-2142.yaml) — Framework: Core Lifecycle
@@ -30,7 +29,7 @@ sections:
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2138 — Reduce UnsafeAny in CLI hotspot handlers](wu/WU-2138.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
