@@ -1,0 +1,13 @@
+id: INIT-042
+slug: core-api-surface-rationalization
+title: Core API Surface Rationalization
+description: ''
+status: draft
+priority: P2
+owner: tom@hellm.ai
+created: 2026-02-25
+phases: []
+success_metrics:
+  - Core exports map and root barrel complexity are reduced
+  - Consumers can import through stable domain-scoped barrels
+labels: []
