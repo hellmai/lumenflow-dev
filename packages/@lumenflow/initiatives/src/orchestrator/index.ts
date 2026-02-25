@@ -15,3 +15,4 @@ export * from './formatting.js';
 export * from './spawn-status.js';
 export * from './lane-policy.js';
 export * from './initiative-loading.js';
+export * from './scope-advisory.js';
