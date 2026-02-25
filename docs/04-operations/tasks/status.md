@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2162 — Extract wu:done policy functions](wu/WU-2162.yaml)
 
 ## Completed
 

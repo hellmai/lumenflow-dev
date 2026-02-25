@@ -2,7 +2,7 @@ id: WU-2162
 title: Extract wu:done policy functions
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-25
 code_paths:
@@ -38,3 +38,11 @@ description: Extract docs-only validation, exposure warnings, brief evidence, an
   policy logic from wu-done.ts into a focused module.
 acceptance:
   - Policy helpers are extracted and covered with focused tests without changing completion outcomes.
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2162
+claimed_at: 2026-02-25T20:09:54.950Z
+baseline_main_sha: 7bfdaacb8f3b96bb7f212837614c1a8e36ff117c
+session_id: f93e5153-704c-4f9a-8fe3-bdf37fe2e2d9
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T20:09:54.958Z

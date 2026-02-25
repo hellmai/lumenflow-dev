@@ -3,7 +3,7 @@ slug: wu-done-srp-decomposition
 title: wu:done SRP Decomposition
 description: Decompose wu:done into focused modules to reduce change risk in the highest-traffic WU
   completion path and align CLI orchestration with existing extracted core patterns.
-status: open
+status: in_progress
 priority: P1
 owner: tom@hellm.ai
 created: 2026-02-25
@@ -24,6 +24,3 @@ success_metrics:
   - No wu:done behavior regressions in worktree/branch-pr paths
   - pnpm gates passes after each extraction wave
 labels: []
-notes:
-  - 'source_plan: /home/tom/.claude/plans/gleaming-painting-sonnet.md'
-related_plan: lumenflow://plans/gleaming-painting-sonnet.md
