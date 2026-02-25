@@ -94,9 +94,10 @@ export function updateInitiativeWusArrays(
           modifiedFiles.push(INIT_PATHS.INITIATIVE(oldInitId));
           console.log(`${PREFIX} Removed ${wuId} from ${oldInitId} wus: array`);
         }
-      } catch (err) {
+      } catch (err: unknown) {
         // Old initiative may not exist or be invalid - log warning but continue
-        console.warn(`${PREFIX} Could not update old initiative ${oldInitId}: ${err.message}`);
+        const message = err instanceof Error ? err.message : String(err);
+        console.warn(`${PREFIX} Could not update old initiative ${oldInitId}: ${message}`);
       }
     }
   }
@@ -116,8 +117,9 @@ export function updateInitiativeWusArrays(
         modifiedFiles.push(INIT_PATHS.INITIATIVE(newInitId));
         console.log(`${PREFIX} Added ${wuId} to ${newInitId} wus: array`);
       }
-    } catch (err) {
-      die(`Failed to update new initiative ${newInitId}: ${err.message}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      die(`Failed to update new initiative ${newInitId}: ${message}`);
     }
   }
 
@@ -131,7 +133,7 @@ export function updateInitiativeWusArrays(
  * When yaml.dump() serializes them back, it outputs ISO timestamps.
  * This function normalizes Date objects back to YYYY-MM-DD strings.
  */
-export function normalizeWUDates(wu: UnsafeAny) {
+export function normalizeWUDates(wu: Record<string, unknown>): Record<string, unknown> {
   if (wu.created !== undefined) {
     wu.created = normalizeToDateString(wu.created);
   }
@@ -142,14 +144,14 @@ export function normalizeWUDates(wu: UnsafeAny) {
  * Merge array values: replace by default, append if --append flag is set (WU-1388)
  */
 export function mergeArrayField(
-  existing: UnsafeAny,
-  newValues: UnsafeAny,
-  shouldAppend: UnsafeAny,
-) {
+  existing: unknown,
+  newValues: string[],
+  shouldAppend: boolean,
+): string[] {
   if (!shouldAppend) {
     return newValues;
   }
-  const existingArray = Array.isArray(existing) ? existing : [];
+  const existingArray = Array.isArray(existing) ? (existing as string[]) : [];
   return [...existingArray, ...newValues];
 }
 
@@ -193,7 +195,10 @@ export async function regenerateBacklogFromState(backlogPath: string): Promise<v
 /**
  * Load spec file and merge with original WU (preserving id and status)
  */
-function loadSpecFile(specPath: UnsafeAny, originalWU: UnsafeAny) {
+function loadSpecFile(
+  specPath: string,
+  originalWU: Record<string, unknown>,
+): Record<string, unknown> {
   const resolvedPath = resolve(specPath);
 
   if (!existsSync(resolvedPath)) {
@@ -213,12 +218,45 @@ function loadSpecFile(specPath: UnsafeAny, originalWU: UnsafeAny) {
   };
 }
 
+/** Options for applyEdits - parsed from CLI flags */
+export interface ApplyEditsOpts {
+  specFile?: string;
+  description?: string;
+  acceptance?: string[];
+  replaceAcceptance?: boolean;
+  notes?: string;
+  replaceNotes?: boolean;
+  lane?: string;
+  type?: string;
+  priority?: string;
+  initiative?: string;
+  phase?: string | number;
+  codePaths?: string[] | string;
+  replaceCodePaths?: boolean;
+  append?: boolean;
+  risks?: string[] | string;
+  replaceRisks?: boolean;
+  testPathsManual?: string[] | string;
+  testPathsUnit?: string[] | string;
+  testPathsE2e?: string[] | string;
+  blockedBy?: string;
+  replaceBlockedBy?: boolean;
+  addDep?: string;
+  replaceDependencies?: boolean;
+  exposure?: string;
+  plan?: string;
+  [key: string]: unknown;
+}
+
 /**
  * Apply edits to WU YAML
  * Returns the updated WU object
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing complexity, refactor tracked separately
-export function applyEdits(wu: UnsafeAny, opts: UnsafeAny) {
+export function applyEdits(
+  wu: Record<string, unknown>,
+  opts: ApplyEditsOpts,
+): Record<string, unknown> {
   // Full spec replacement from file
   if (opts.specFile) {
     return loadSpecFile(opts.specFile, wu);
@@ -242,7 +280,8 @@ export function applyEdits(wu: UnsafeAny, opts: UnsafeAny) {
   // WU-1144: Handle --notes with append-by-default behavior
   // Appends to existing notes unless --replace-notes is set
   if (opts.notes) {
-    updated.notes = mergeStringField(wu.notes, opts.notes, opts.replaceNotes ?? false);
+    const existingNotes = typeof wu.notes === 'string' ? wu.notes : undefined;
+    updated.notes = mergeStringField(existingNotes, opts.notes, opts.replaceNotes ?? false);
   }
 
   // WU-1456: Handle lane reassignment
@@ -267,8 +306,8 @@ export function applyEdits(wu: UnsafeAny, opts: UnsafeAny) {
     validateInitiativeExists(opts.initiative);
     updated.initiative = opts.initiative;
   }
-  if (opts.phase !== undefined && opts.phase !== null) {
-    const phaseNum = parseInt(opts.phase, 10);
+  if (opts.phase !== undefined) {
+    const phaseNum = typeof opts.phase === 'number' ? opts.phase : parseInt(opts.phase, 10);
     if (isNaN(phaseNum) || phaseNum < 1) {
       die(
         `Invalid phase number: "${opts.phase}"\n\nPhase must be a positive integer (e.g., 1, 2, 3)`,
@@ -289,11 +328,11 @@ export function applyEdits(wu: UnsafeAny, opts: UnsafeAny) {
           .filter(Boolean)
       : rawCodePaths
           .split(',')
-          .map((p: UnsafeAny) => p.trim())
+          .map((p: string) => p.trim())
           .filter(Boolean);
     // WU-1225: Invert logic - append by default, replace with --replace-code-paths
     // Also support legacy --append flag for backwards compatibility
-    const shouldAppend = !opts.replaceCodePaths || opts.append;
+    const shouldAppend = !opts.replaceCodePaths || Boolean(opts.append);
     updated.code_paths = mergeArrayField(wu.code_paths, codePaths, shouldAppend);
   }
 
@@ -308,10 +347,10 @@ export function applyEdits(wu: UnsafeAny, opts: UnsafeAny) {
           .filter(Boolean)
       : rawRisks
           .split(',')
-          .map((risk: UnsafeAny) => risk.trim())
+          .map((risk: string) => risk.trim())
           .filter(Boolean);
     // WU-1225: Invert logic - append by default
-    const shouldAppend = !opts.replaceRisks || opts.append;
+    const shouldAppend = !opts.replaceRisks || Boolean(opts.append);
     updated.risks = mergeArrayField(wu.risks, risks, shouldAppend);
   }
 
@@ -324,8 +363,8 @@ export function applyEdits(wu: UnsafeAny, opts: UnsafeAny) {
   ];
 
   for (const { optKey, field } of testPathMappings) {
-    const rawPaths = opts[optKey];
-    if (rawPaths && rawPaths.length > 0) {
+    const rawPaths = opts[optKey] as string[] | string | undefined;
+    if (rawPaths && (typeof rawPaths === 'string' || rawPaths.length > 0)) {
       // Split comma-separated string into array (options are comma-separated per description)
       // WU-1870: Fix to split comma-separated values WITHIN array elements
       const paths = Array.isArray(rawPaths)
@@ -335,12 +374,20 @@ export function applyEdits(wu: UnsafeAny, opts: UnsafeAny) {
             .filter(Boolean)
         : rawPaths
             .split(',')
-            .map((p: UnsafeAny) => p.trim())
+            .map((p: string) => p.trim())
             .filter(Boolean);
-      updated.tests = updated.tests || {};
+      const existingTests =
+        typeof updated.tests === 'object' && updated.tests !== null
+          ? (updated.tests as Record<string, unknown>)
+          : {};
+      updated.tests = existingTests;
       // WU-1225: Append by default (no individual replace flags for test paths yet)
       const shouldAppend = true;
-      updated.tests[field] = mergeArrayField(wu.tests?.[field], paths, shouldAppend);
+      const wuTests =
+        typeof wu.tests === 'object' && wu.tests !== null
+          ? (wu.tests as Record<string, unknown>)
+          : {};
+      existingTests[field] = mergeArrayField(wuTests[field], paths, shouldAppend);
     }
   }
 
@@ -350,9 +397,9 @@ export function applyEdits(wu: UnsafeAny, opts: UnsafeAny) {
     const rawBlockedBy = opts.blockedBy;
     const blockedByIds = rawBlockedBy
       .split(',')
-      .map((id: UnsafeAny) => id.trim())
+      .map((id: string) => id.trim())
       .filter(Boolean);
-    const shouldAppend = !opts.replaceBlockedBy || opts.append;
+    const shouldAppend = !opts.replaceBlockedBy || Boolean(opts.append);
     updated.blocked_by = mergeArrayField(wu.blocked_by, blockedByIds, shouldAppend);
   }
 
@@ -362,9 +409,9 @@ export function applyEdits(wu: UnsafeAny, opts: UnsafeAny) {
     const rawAddDep = opts.addDep;
     const depIds = rawAddDep
       .split(',')
-      .map((id: UnsafeAny) => id.trim())
+      .map((id: string) => id.trim())
       .filter(Boolean);
-    const shouldAppend = !opts.replaceDependencies || opts.append;
+    const shouldAppend = !opts.replaceDependencies || Boolean(opts.append);
     updated.dependencies = mergeArrayField(wu.dependencies, depIds, shouldAppend);
   }
 
@@ -413,8 +460,9 @@ export async function applyEditsInWorktree({ worktreePath, id, updatedWU }: Work
       stdio: 'pipe',
     });
     console.log(`${PREFIX} Formatted ${id}.yaml`);
-  } catch (err) {
-    console.warn(`${PREFIX} Could not format file: ${err.message}`);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`${PREFIX} Could not format file: ${message}`);
   }
 
   // Stage and commit using git adapter (library-first)
@@ -424,10 +472,11 @@ export async function applyEditsInWorktree({ worktreePath, id, updatedWU }: Work
     await gitAdapter.add(wuPath);
     await gitAdapter.commit(commitMsg);
     console.log(`${PREFIX} Committed: ${commitMsg}`);
-  } catch (err) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     die(
       `Failed to commit edit in worktree.\n\n` +
-        `Error: ${err.message}\n\n` +
+        `Error: ${message}\n\n` +
         `The WU file was updated but could not be committed.\n` +
         `You may need to commit manually in the worktree.`,
     );
@@ -492,8 +541,9 @@ export function displayReadinessSummary(id: string) {
       );
     }
     console.log(`${BOX.BOTTOM_LEFT}${BOX.HORIZONTAL.repeat(BOX_WIDTH)}${BOX.BOTTOM_RIGHT}`);
-  } catch (err) {
+  } catch (err: unknown) {
     // Non-blocking - if validation fails, just warn
-    console.warn(`${PREFIX} Could not validate readiness: ${err.message}`);
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`${PREFIX} Could not validate readiness: ${message}`);
   }
 }

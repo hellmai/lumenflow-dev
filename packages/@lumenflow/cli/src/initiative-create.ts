@@ -65,7 +65,7 @@ const OPERATION_NAME = 'initiative-create';
  * Validate Initiative ID format
  * @param {string} id - Initiative ID to validate
  */
-function validateInitIdFormat(id: UnsafeAny) {
+function validateInitIdFormat(id: string) {
   if (!INIT_PATTERNS.INIT_ID.test(id)) {
     die(`Invalid Initiative ID format: "${id}"\n\nExpected format: INIT-<number> (e.g., INIT-001)`);
   }
@@ -75,7 +75,7 @@ function validateInitIdFormat(id: UnsafeAny) {
  * Validate slug format (kebab-case)
  * @param {string} slug - Slug to validate
  */
-function validateSlugFormat(slug: UnsafeAny) {
+function validateSlugFormat(slug: string) {
   if (!INIT_PATTERNS.SLUG.test(slug)) {
     die(
       `Invalid slug format: "${slug}"\n\n` +
@@ -89,7 +89,7 @@ function validateSlugFormat(slug: UnsafeAny) {
  * Check if Initiative already exists
  * @param {string} id - Initiative ID to check
  */
-function checkInitiativeExists(id: UnsafeAny) {
+function checkInitiativeExists(id: string) {
   const initPath = INIT_PATHS.INITIATIVE(id);
   if (existsSync(initPath)) {
     die(`Initiative already exists: ${initPath}\n\nChoose a different Initiative ID`);

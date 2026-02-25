@@ -50,18 +50,19 @@ export async function surfaceUnreadSignalsForDisplay(baseDir: string): Promise<v
  * @param {object} methodology - Methodology defaults config
  * @returns {string} Formatted output or empty string if disabled
  */
-export function formatProjectDefaults(methodology: UnsafeAny) {
+export function formatProjectDefaults(methodology: Record<string, unknown> | null | undefined) {
   if (!methodology || methodology.enabled === false) return '';
 
-  const enforcement = methodology.enforcement || 'required';
+  const enforcement =
+    typeof methodology.enforcement === 'string' ? methodology.enforcement : 'required';
   const principles = Array.isArray(methodology.principles) ? methodology.principles : [];
   const lines = [
     `${PREFIX} 🧭 Project Defaults (agent-only)`,
     `  Enforcement: ${enforcement}`,
-    `  Principles: ${principles.length > 0 ? principles.join(', ') : 'None'}`,
+    `  Principles: ${principles.length > 0 ? (principles as string[]).join(', ') : 'None'}`,
   ];
 
-  if (methodology.notes) {
+  if (typeof methodology.notes === 'string') {
     lines.push(`  Notes: ${methodology.notes}`);
   }
 
@@ -73,7 +74,7 @@ export function formatProjectDefaults(methodology: UnsafeAny) {
  *
  * @param {object} methodology - Methodology defaults config
  */
-export function printProjectDefaults(methodology: UnsafeAny) {
+export function printProjectDefaults(methodology: Record<string, unknown> | null | undefined) {
   const output = formatProjectDefaults(methodology);
   if (output) {
     console.log(output);
@@ -86,7 +87,7 @@ export function printProjectDefaults(methodology: UnsafeAny) {
  *
  * @param {string} _id - WU ID being claimed (unused, kept for future use)
  */
-export function printLifecycleNudge(_id: UnsafeAny) {
+export function printLifecycleNudge(_id: string) {
   // Single line, concise, actionable
   console.log(
     `\n${PREFIX} 💡 Tip: pnpm session:recommend for context tier, mem:ready for pending work, pnpm file:*/git:* for audited wrappers`,

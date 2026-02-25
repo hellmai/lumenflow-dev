@@ -43,6 +43,46 @@ import { EXIT_CODES, LUMENFLOW_PATHS } from '@lumenflow/core/wu-constants';
 import { formatBytes, MS_PER_DAY } from './constants.js';
 import { runCLI } from './cli-entry-point.js';
 
+/** Cleanup result shape from @lumenflow/memory/cleanup */
+interface CleanupResult {
+  success: boolean;
+  removedIds: string[];
+  retainedIds: string[];
+  bytesFreed: number;
+  compactionRatio: number;
+  dryRun?: boolean;
+  ttlMs?: number;
+  breakdown: {
+    ephemeral: number;
+    session: number;
+    wu: number;
+    sensitive: number;
+    ttlExpired: number;
+    activeSessionProtected: number;
+  };
+}
+
+/** Decay archive result shape from @lumenflow/memory/decay/archival */
+interface DecayArchiveResult {
+  archivedIds: string[];
+  retainedIds: string[];
+  skippedIds: string[];
+  totalProcessed: number;
+  dryRun?: boolean;
+}
+
+/** Audit log entry for tool execution tracking */
+interface AuditLogEntry {
+  tool: string;
+  status: string;
+  startedAt: string;
+  completedAt: string;
+  durationMs: number;
+  input: Record<string, unknown>;
+  output: Record<string, unknown> | null;
+  error: { message: string } | null;
+}
+
 /**
  * Log prefix for mem:cleanup output
  */
@@ -104,7 +144,7 @@ const CLI_OPTIONS = {
  * @param {string} baseDir - Base directory
  * @param {object} entry - Audit log entry
  */
-async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
+async function writeAuditLog(baseDir: string, entry: AuditLogEntry) {
   try {
     const logPath = path.join(baseDir, LUMENFLOW_PATHS.AUDIT_LOG);
     const logDir = path.dirname(logPath);
@@ -127,7 +167,7 @@ async function writeAuditLog(baseDir: UnsafeAny, entry: UnsafeAny) {
  * @param {number} ratio - Compaction ratio (0-1)
  * @returns {string} Formatted percentage
  */
-function formatRatio(ratio: UnsafeAny) {
+function formatRatio(ratio: number): string {
   return `${(ratio * 100).toFixed(1)}%`;
 }
 
@@ -161,7 +201,7 @@ function parseArguments() {
  * @param {boolean} quiet - Suppress verbose output
  * @param {string} [ttl] - TTL string if provided
  */
-function printResult(result: UnsafeAny, quiet: UnsafeAny, ttl: UnsafeAny) {
+function printResult(result: CleanupResult, quiet: boolean | undefined, ttl: string | undefined) {
   if (result.dryRun) {
     console.log(`${LOG_PREFIX} Dry-run: Would remove ${result.removedIds.length} node(s)`);
   } else {
@@ -230,7 +270,7 @@ function printResult(result: UnsafeAny, quiet: UnsafeAny, ttl: UnsafeAny) {
  * @param {object} decayResult - Result from archiveByDecay
  * @param {boolean} quiet - Suppress verbose output
  */
-function printDecayResult(decayResult: UnsafeAny, quiet: UnsafeAny) {
+function printDecayResult(decayResult: DecayArchiveResult, quiet: boolean | undefined) {
   if (decayResult.dryRun) {
     console.log(
       `${LOG_PREFIX} Dry-run: Would archive ${decayResult.archivedIds.length} node(s) by decay`,
@@ -268,16 +308,16 @@ function printDecayResult(decayResult: UnsafeAny, quiet: UnsafeAny) {
  * @param {boolean} quiet - Suppress verbose output
  */
 async function runDecayMode(
-  baseDir: UnsafeAny,
-  dryRun: UnsafeAny,
-  json: UnsafeAny,
-  quiet: UnsafeAny,
+  baseDir: string,
+  dryRun: boolean | undefined,
+  json: boolean | undefined,
+  quiet: boolean | undefined,
 ) {
   const startedAt = new Date().toISOString();
   const startTime = Date.now();
 
-  let decayResult = null;
-  let error = null;
+  let decayResult: DecayArchiveResult | null = null;
+  let error: string | null = null;
 
   try {
     // Read config for threshold and half_life_days; fall back to defaults
@@ -293,8 +333,8 @@ async function runDecayMode(
       halfLifeMs,
       dryRun: dryRun || false,
     });
-  } catch (err) {
-    error = err.message;
+  } catch (err: unknown) {
+    error = err instanceof Error ? err.message : String(err);
   }
 
   const durationMs = Date.now() - startTime;
@@ -328,7 +368,9 @@ async function runDecayMode(
     process.exit(EXIT_CODES.SUCCESS);
   }
 
-  printDecayResult(decayResult, quiet);
+  if (decayResult) {
+    printDecayResult(decayResult, quiet);
+  }
 }
 
 /**
@@ -347,8 +389,8 @@ export async function main() {
   const startedAt = new Date().toISOString();
   const startTime = Date.now();
 
-  let result = null;
-  let error = null;
+  let result: CleanupResult | null = null;
+  let error: string | null = null;
 
   try {
     result = await cleanupMemory(baseDir, {
@@ -356,8 +398,8 @@ export async function main() {
       sessionId: args.sessionId,
       ttl: args.ttl,
     });
-  } catch (err) {
-    error = err.message;
+  } catch (err: unknown) {
+    error = err instanceof Error ? err.message : String(err);
   }
 
   const durationMs = Date.now() - startTime;
@@ -399,7 +441,9 @@ export async function main() {
     process.exit(EXIT_CODES.SUCCESS);
   }
 
-  printResult(result, args.quiet, args.ttl);
+  if (result) {
+    printResult(result, args.quiet, args.ttl);
+  }
 }
 
 // WU-1537: Use import.meta.main + runCLI for consistent EPIPE and error handling

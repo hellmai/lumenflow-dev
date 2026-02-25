@@ -464,7 +464,7 @@ export function printExposureWarnings(wu: Record<string, unknown>, options: Expo
   // Validate exposure
   const result = validateExposure(wu, { skipExposureCheck: options.skipExposureCheck });
 
-  // Print warnings if UnsafeAny
+  // Print warnings if present
   if (result.warnings.length > 0) {
     console.log(`\n${LOG_PREFIX.DONE} ${EMOJI.WARNING} WU-1999: Exposure validation warnings:`);
     for (const warning of result.warnings) {
@@ -1254,7 +1254,7 @@ This may cause rebase conflicts when wu:done attempts to merge.
 Options:
   1. Proceed anyway - rebase will attempt to resolve conflicts
   2. Abort and manually rebase: git fetch origin main && git rebase origin/main
-  3. Check if UnsafeAny completed WUs touched the same files
+  3. Check if other completed WUs touched the same files
 
 Baseline: ${baselineSha.substring(0, 8)}
 Current:  ${currentSha.substring(0, 8)}
@@ -1457,7 +1457,7 @@ function runTripwireCheck() {
   if (hasClean) {
     console.error('📋 git clean detected:');
     console.error('   1. Deleted files may not be recoverable');
-    console.error('   2. Check git status for UnsafeAny remaining untracked files');
+    console.error('   2. Check git status for remaining untracked files');
     console.error('   3. Escalate to human if critical files were deleted\n');
   }
 
@@ -1896,7 +1896,7 @@ async function rollbackTransaction(
   // 3. Remove stamp if created
   // 4. THEN restore files from txState
 
-  // Step 1: Unstage UnsafeAny staged files FIRST
+  // Step 1: Unstage all staged files FIRST
   // Emergency fix Session 2: Use git-adapter instead of raw execSync
   try {
     const gitAdapter = getGitForCwd();
@@ -3194,7 +3194,7 @@ export async function main() {
   });
   console.log(`${LOG_PREFIX.DONE} ${preCommitGateDecision.message}`);
 
-  // Fallback path remains available if gate attestation is missing for UnsafeAny reason.
+  // Fallback path remains available if gate attestation is missing for any reason.
   if (preCommitGateDecision.runPreCommitFullSuite) {
     const hookResult = await validateAllPreCommitHooks(id, worktreePath, {
       runGates: ({ cwd }) => runGates({ cwd, docsOnly: false }),
@@ -3204,7 +3204,7 @@ export async function main() {
     }
   }
 
-  // Step 0.6: WU-1781 - Run tasks:validate preflight BEFORE UnsafeAny merge/push operations
+  // Step 0.6: WU-1781 - Run tasks:validate preflight BEFORE any merge/push operations
   // This prevents deadlocks where validation fails after merge, leaving local main ahead of origin
   // Specifically catches stamp-status mismatches from legacy WUs that would block pre-push hooks
   const tasksValidationResult = runPreflightTasksValidation(id);
@@ -3526,7 +3526,7 @@ export async function main() {
     // Non-fatal: errors are logged but do not block completion
     await runAutoCleanupAfterDone(mainCheckoutPath);
 
-    // WU-1533: Auto-commit UnsafeAny dirty state files left by cleanup.
+    // WU-1533: Auto-commit dirty state files left by cleanup.
     // Branch-aware: in branch-pr mode this stays on the lane branch.
     await commitCleanupChanges({ targetBranch: currentBranch });
   } else {
@@ -3590,10 +3590,12 @@ async function loadDiscoveriesForWU(
   try {
     const memory = await loadMemory(path.join(baseDir, '.lumenflow/memory'));
     const wuNodes = memory.byWu.get(wuId) || [];
-    const discoveries = wuNodes.filter((node: UnsafeAny) => node.type === 'discovery');
+    const discoveries = wuNodes.filter(
+      (node: { type?: string; id: string }) => node.type === 'discovery',
+    );
     return {
       count: discoveries.length,
-      ids: discoveries.map((d: UnsafeAny) => d.id),
+      ids: discoveries.map((d: { id: string }) => d.id),
     };
   } catch {
     // Non-blocking: return empty on errors

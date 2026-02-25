@@ -56,6 +56,15 @@ import { getLockPolicyForLane } from '@lumenflow/core/lane-checker';
 import { shouldUseBranchPrStatePath } from './wu-state-cloud.js';
 import { runCLI } from './cli-entry-point.js';
 
+/** Parsed CLI arguments for wu:block */
+interface BlockCliArgs {
+  id: string;
+  reason?: string;
+  worktree?: string;
+  removeWorktree?: boolean;
+  noAuto?: boolean;
+}
+
 // ensureOnMain() moved to wu-helpers.ts (WU-1256)
 // ensureStaged() moved to git-staged-validator.ts (WU-1341)
 // defaultWorktreeFrom() moved to wu-paths.ts (WU-1341)
@@ -90,15 +99,10 @@ export function shouldUseBranchPrBlockPath(doc: { claimed_mode?: string }): bool
 /**
  * Remove WU entry from in-progress section of lines array
  */
-function removeFromInProgressSection(
-  lines: UnsafeAny,
-  inProgIdx: UnsafeAny,
-  rel: UnsafeAny,
-  id: UnsafeAny,
-) {
+function removeFromInProgressSection(lines: string[], inProgIdx: number, rel: string, id: string) {
   if (inProgIdx === -1) return;
 
-  let endIdx = lines.slice(inProgIdx + 1).findIndex((l: UnsafeAny) => l.startsWith('## '));
+  let endIdx = lines.slice(inProgIdx + 1).findIndex((l) => l.startsWith('## '));
   endIdx = endIdx === -1 ? lines.length : inProgIdx + 1 + endIdx;
 
   for (let i = inProgIdx + 1; i < endIdx; i++) {
@@ -109,7 +113,7 @@ function removeFromInProgressSection(
     }
   }
 
-  const section = lines.slice(inProgIdx + 1, endIdx).filter((l: UnsafeAny) => l.trim() !== '');
+  const section = lines.slice(inProgIdx + 1, endIdx).filter((l) => l.trim() !== '');
   if (section.length === 0) lines.splice(endIdx, 0, '', '(No items currently in progress)', '');
 }
 
@@ -142,10 +146,10 @@ function createMissingBlockedSection(lines: string[], inProgIdx: number): number
 }
 
 async function moveFromInProgressToBlocked(
-  statusPath: UnsafeAny,
-  id: UnsafeAny,
-  title: UnsafeAny,
-  reason: UnsafeAny,
+  statusPath: string,
+  id: string,
+  title: string,
+  reason: string | undefined,
 ) {
   // Check file exists
   const fileExists = await access(statusPath)
@@ -157,7 +161,7 @@ async function moveFromInProgressToBlocked(
 
   const content = await readFile(statusPath, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding });
   const lines = content.split(/\r?\n/);
-  const findHeader = (h: UnsafeAny) =>
+  const findHeader = (h: string) =>
     lines.findIndex((l) => l.trim().toLowerCase() === h.toLowerCase());
   const inProgIdx = findHeader(STATUS_SECTIONS.IN_PROGRESS);
   let blockedIdx = findHeader(STATUS_SECTIONS.BLOCKED);
@@ -184,7 +188,7 @@ async function moveFromInProgressToBlocked(
 }
 
 // WU-1574: Regenerate backlog.md from state store (replaces BacklogManager manipulation)
-async function regenerateBacklogFromState(backlogPath: UnsafeAny) {
+async function regenerateBacklogFromState(backlogPath: string) {
   const stateDir = getStateStoreDirFromBacklog(backlogPath);
 
   const store = new WUStateStore(stateDir);
@@ -196,7 +200,7 @@ async function regenerateBacklogFromState(backlogPath: UnsafeAny) {
 /**
  * Handle worktree removal if requested
  */
-async function handleWorktreeRemoval(args: UnsafeAny, doc: UnsafeAny) {
+async function handleWorktreeRemoval(args: BlockCliArgs, doc: Record<string, unknown>) {
   if (!args.removeWorktree) return;
 
   const wt = args.worktree || defaultWorktreeFrom(doc);
@@ -210,8 +214,9 @@ async function handleWorktreeRemoval(args: UnsafeAny, doc: UnsafeAny) {
   if (wtExists) {
     try {
       await getGitForCwd().worktreeRemove(wt);
-    } catch (e) {
-      console.warn(`${LOG_PREFIX.BLOCK} Could not remove worktree ${wt}: ${e.message}`);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      console.warn(`${LOG_PREFIX.BLOCK} Could not remove worktree ${wt}: ${message}`);
     }
   } else if (wt) {
     console.warn(`${LOG_PREFIX.BLOCK} Worktree path not found; skipping removal`);
@@ -233,7 +238,7 @@ export async function main() {
     ],
     required: ['id'],
     allowPositionalId: true,
-  });
+  }) as BlockCliArgs;
 
   const id = args.id.toUpperCase();
   if (!PATTERNS.WU_ID.test(id)) die(`Invalid WU id '${args.id}'. Expected format WU-123`);
@@ -243,16 +248,17 @@ export async function main() {
   let doc;
   try {
     doc = readWU(mainWUPath, id);
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     die(
-      `Failed to read WU ${id}: ${error.message}\n\n` +
+      `Failed to read WU ${id}: ${message}\n\n` +
         `Options:\n` +
         `  1. Check if WU file exists: ls -la ${mainWUPath}\n` +
         `  2. Validate YAML syntax: pnpm wu:validate --id ${id}\n` +
         `  3. Create WU if missing: pnpm wu:create --id ${id} --lane "<lane>" --title "..."`,
     );
   }
-  const title = doc.title || '';
+  const title = typeof doc.title === 'string' ? doc.title : '';
   const branchPrPath = shouldUseBranchPrBlockPath(doc);
 
   if (!branchPrPath) {
@@ -263,9 +269,10 @@ export async function main() {
   const currentStatus = (doc.status as string) || WU_STATUS.IN_PROGRESS;
   try {
     assertTransition(currentStatus, WU_STATUS.BLOCKED, id);
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     die(
-      `State transition validation failed: ${error.message}\n\n` +
+      `State transition validation failed: ${message}\n\n` +
         `Options:\n` +
         `  1. Check WU current status: grep status ${mainWUPath}\n` +
         `  2. Only in_progress or waiting WUs can be blocked\n` +
@@ -394,9 +401,10 @@ export async function main() {
       }
       // For policy=none, no lock exists - nothing to do
     }
-  } catch (err) {
+  } catch (err: unknown) {
     // Non-blocking: lock release failure should not block the blocking operation
-    console.warn(`${LOG_PREFIX.BLOCK} Warning: Could not release lane lock: ${err.message}`);
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`${LOG_PREFIX.BLOCK} Warning: Could not release lane lock: ${message}`);
   }
 
   console.log(`${STRING_LITERALS.NEWLINE}${LOG_PREFIX.BLOCK} Marked blocked and pushed.`);

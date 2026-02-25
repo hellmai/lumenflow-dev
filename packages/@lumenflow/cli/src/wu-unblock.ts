@@ -59,6 +59,24 @@ import { resolveStateDir, resolveWuEventsRelativePath } from './state-path-resol
 
 const PREFIX = LOG_PREFIX.UNBLOCK;
 
+/** Parsed CLI arguments for wu:unblock */
+interface UnblockCliArgs {
+  id: string;
+  reason?: string;
+  createWorktree?: boolean;
+  worktree?: string;
+  branch?: string;
+  noAuto?: boolean;
+  force?: boolean;
+}
+
+/** Lane occupancy check result from checkLaneFree */
+interface LaneCheckResult {
+  free: boolean;
+  occupiedBy: string | null;
+  error: string | null;
+}
+
 // WU-1574: Removed legacy backlog manipulation functions
 // All backlog/status updates now use WUStateStore + backlog generator
 
@@ -68,7 +86,7 @@ export function shouldUseBranchPrUnblockPath(doc: { claimed_mode?: string }): bo
   return shouldUseBranchPrStatePath(doc);
 }
 
-function branchExists(branch: UnsafeAny) {
+function branchExists(branch: string): boolean {
   try {
     getGitForCwd().run(`git rev-parse --verify ${JSON.stringify(branch)}`);
     return true;
@@ -77,7 +95,11 @@ function branchExists(branch: UnsafeAny) {
   }
 }
 
-function createWorktree(doc: UnsafeAny, worktreePath: UnsafeAny, branchName: UnsafeAny) {
+function createWorktree(
+  doc: Record<string, unknown>,
+  worktreePath: string | null,
+  branchName: string,
+) {
   if (!worktreePath) die('Worktree path required to create a worktree');
 
   if (existsSync(worktreePath)) {
@@ -102,10 +124,10 @@ function createWorktree(doc: UnsafeAny, worktreePath: UnsafeAny, branchName: Uns
  * Handle lane occupancy check and enforce WIP=1 policy
  */
 function handleLaneOccupancy(
-  laneCheck: UnsafeAny,
-  lane: UnsafeAny,
-  id: UnsafeAny,
-  force: UnsafeAny,
+  laneCheck: LaneCheckResult,
+  lane: string,
+  id: string,
+  force: boolean | undefined,
 ) {
   if (laneCheck.free) return;
 
@@ -137,7 +159,7 @@ function handleLaneOccupancy(
 /**
  * Handle optional worktree creation after unblock
  */
-function handleWorktreeCreation(args: UnsafeAny, doc: UnsafeAny) {
+function handleWorktreeCreation(args: UnblockCliArgs, doc: Record<string, unknown>) {
   if (!args.createWorktree) return;
 
   const worktreePath = args.worktree || defaultWorktreeFrom(doc);
@@ -164,7 +186,7 @@ export async function main() {
     ],
     required: ['id'],
     allowPositionalId: true,
-  });
+  }) as UnblockCliArgs;
 
   const id = args.id.toUpperCase();
   if (!PATTERNS.WU_ID.test(id)) die(`Invalid WU id '${args.id}'. Expected format WU-123`);
@@ -174,17 +196,18 @@ export async function main() {
   let doc;
   try {
     doc = readWU(mainWUPath, id);
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     die(
-      `Failed to read WU ${id}: ${error.message}\n\n` +
+      `Failed to read WU ${id}: ${message}\n\n` +
         `Options:\n` +
         `  1. Check if WU file exists: ls -la ${mainWUPath}\n` +
         `  2. Validate YAML syntax: pnpm wu:validate --id ${id}\n` +
         `  3. Create WU if missing: pnpm wu:create --id ${id} --lane "<lane>" --title "..."`,
     );
   }
-  const title = doc.title || '';
-  const lane = (doc.lane as string) || 'Unknown';
+  const title = typeof doc.title === 'string' ? doc.title : '';
+  const lane = typeof doc.lane === 'string' ? doc.lane : 'Unknown';
   const branchPrPath = shouldUseBranchPrUnblockPath(doc);
 
   if (!branchPrPath) {
@@ -195,9 +218,10 @@ export async function main() {
   const currentStatus = (doc.status as string) || WU_STATUS.BLOCKED;
   try {
     assertTransition(currentStatus, WU_STATUS.IN_PROGRESS, id);
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     die(
-      `State transition validation failed: ${error.message}\n\n` +
+      `State transition validation failed: ${message}\n\n` +
         `Options:\n` +
         `  1. Check WU current status: grep status ${mainWUPath}\n` +
         `  2. Only blocked or waiting WUs can be unblocked\n` +
@@ -356,9 +380,10 @@ export async function main() {
       }
       // For policy=none, no lock exists - nothing to do
     }
-  } catch (err) {
+  } catch (err: unknown) {
     // Non-blocking: lock acquisition failure should not block the unblocking operation
-    console.warn(`${PREFIX} Warning: Could not acquire lane lock: ${err.message}`);
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`${PREFIX} Warning: Could not acquire lane lock: ${message}`);
   }
 
   console.log(`\n${PREFIX} Marked in progress and pushed.`);

@@ -38,19 +38,21 @@ const PREFIX = LOG_PREFIX.CLAIM;
  * @param {Object} args - CLI arguments
  * @param {string} id - WU ID
  */
-export async function handleResumeMode(args: UnsafeAny, id: UnsafeAny) {
-  const laneK = toKebab(args.lane);
+export async function handleResumeMode(args: Record<string, unknown>, id: string) {
+  const lane = typeof args.lane === 'string' ? args.lane : '';
+  const laneK = toKebab(lane);
   const idK = id.toLowerCase();
   const configuredWorktreesDir = getConfig({ projectRoot: process.cwd() }).directories.worktrees;
-  const worktree = args.worktree || path.join(configuredWorktreesDir, `${laneK}-${idK}`);
+  const worktreeArg = typeof args.worktree === 'string' ? args.worktree : undefined;
+  const worktree = worktreeArg || path.join(configuredWorktreesDir, `${laneK}-${idK}`);
   const worktreePath = path.resolve(worktree);
 
-  console.log(`${PREFIX} Attempting to resume ${id} in lane "${args.lane}"...`);
+  console.log(`${PREFIX} Attempting to resume ${id} in lane "${lane}"...`);
 
   // Attempt the resume/handoff
   const result = await resumeClaimForHandoff({
     wuId: id,
-    lane: args.lane,
+    lane,
     worktreePath,
     agentSession: null, // Will be populated by session system
   });
@@ -96,7 +98,7 @@ export async function handleResumeMode(args: UnsafeAny, id: UnsafeAny) {
   emitWUFlowEvent({
     script: 'wu-claim',
     wu_id: id,
-    lane: args.lane,
+    lane,
     step: 'resume_handoff',
     previousPid: result.previousPid,
     newPid: process.pid,

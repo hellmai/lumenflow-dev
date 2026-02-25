@@ -61,12 +61,28 @@ import { repairStateFile, WU_EVENTS_FILE_NAME } from '@lumenflow/core/wu-state-s
 
 const PREFIX = LOG_PREFIX.REPAIR;
 
+/** Parsed CLI options for wu:repair */
+interface RepairCliOptions {
+  id?: string;
+  check?: boolean;
+  all?: boolean;
+  claim?: boolean;
+  admin?: boolean;
+  repairState?: boolean;
+  worktree?: string;
+  lane?: string;
+  status?: string;
+  notes?: string;
+  initiative?: string;
+  path?: string;
+}
+
 /**
  * Normalise WU ID to uppercase with WU- prefix
  * @param {string} id - Raw WU ID
  * @returns {string} Normalised WU ID
  */
-function normaliseWUId(id: UnsafeAny) {
+function normaliseWUId(id: string | undefined): string | undefined {
   if (!id) return id;
   let normalised = id.toUpperCase();
   if (!normalised.startsWith('WU-')) {
@@ -80,14 +96,14 @@ function normaliseWUId(id: UnsafeAny) {
  * @param {string} id - WU ID to validate
  * @returns {boolean} True if valid
  */
-function isValidWUId(id: UnsafeAny) {
+function isValidWUId(id: string): boolean {
   return PATTERNS.WU_ID.test(id);
 }
 
 /**
  * Create and configure the CLI program
  */
-function createProgram() {
+function createProgram(): RepairCliOptions {
   const program = new Command();
 
   program
@@ -120,13 +136,13 @@ function createProgram() {
     .option('--path <path>', 'Path to state file to repair (state mode only)')
     .parse(process.argv);
 
-  return program.opts();
+  return program.opts() as RepairCliOptions;
 }
 
 /**
  * Validate options and exit with error if invalid
  */
-function validateOptions(options: UnsafeAny) {
+function validateOptions(options: RepairCliOptions) {
   // Validate mode selection - only one mode at a time
   const modes = [options.claim, options.admin, options.repairState].filter(Boolean);
   if (modes.length > 1) {
@@ -138,8 +154,9 @@ function validateOptions(options: UnsafeAny) {
 
   // Normalise and validate WU ID if provided
   if (options.id) {
-    options.id = normaliseWUId(options.id);
-    if (!isValidWUId(options.id)) {
+    const normalised = normaliseWUId(options.id);
+    options.id = normalised;
+    if (normalised && !isValidWUId(normalised)) {
       console.error(`${PREFIX} Error: Invalid WU ID format '${options.id}'`);
       console.error(`${PREFIX} Expected format: WU-123`);
       process.exit(EXIT_CODES.FAILURE);
@@ -150,7 +167,7 @@ function validateOptions(options: UnsafeAny) {
 /**
  * Validate mode-specific requirements
  */
-function validateModeRequirements(options: UnsafeAny) {
+function validateModeRequirements(options: RepairCliOptions) {
   if (options.claim && !options.id) {
     console.error(`${PREFIX} Error: --id is required for claim mode`);
     console.error(`${PREFIX} Usage: pnpm wu:repair --claim --id WU-123`);
@@ -190,7 +207,7 @@ function validateModeRequirements(options: UnsafeAny) {
  * @param {string} [options.path] - Path to state file (defaults to .lumenflow/state/wu-events.jsonl)
  * @returns {Promise<{success: boolean, exitCode: number}>}
  */
-async function runStateRepairMode(options: UnsafeAny) {
+async function runStateRepairMode(options: RepairCliOptions) {
   const config = getConfig({ projectRoot: process.cwd() });
   const defaultPath = path.join(process.cwd(), config.state.stateDir, WU_EVENTS_FILE_NAME);
   const filePath = options.path || defaultPath;
@@ -222,8 +239,9 @@ async function runStateRepairMode(options: UnsafeAny) {
     }
 
     return { success: true, exitCode: EXIT_CODES.SUCCESS };
-  } catch (error) {
-    console.error(`${PREFIX} Error repairing state file: ${error.message}`);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`${PREFIX} Error repairing state file: ${message}`);
     return { success: false, exitCode: EXIT_CODES.FAILURE };
   }
 }
@@ -231,17 +249,33 @@ async function runStateRepairMode(options: UnsafeAny) {
 /**
  * Route to appropriate repair mode
  */
-async function routeToRepairMode(options: UnsafeAny) {
+async function routeToRepairMode(options: RepairCliOptions) {
   if (options.claim) {
-    return runClaimRepairMode(options);
+    // id is guaranteed by validateModeRequirements
+    return runClaimRepairMode({
+      id: options.id as string,
+      check: options.check,
+      worktree: options.worktree,
+    });
   }
   if (options.admin) {
-    return runAdminRepairMode(options);
+    // id is guaranteed by validateModeRequirements
+    return runAdminRepairMode({
+      id: options.id as string,
+      lane: options.lane,
+      status: options.status,
+      notes: options.notes,
+      initiative: options.initiative,
+    });
   }
   if (options.repairState) {
     return runStateRepairMode(options);
   }
-  return runConsistencyRepairMode(options);
+  return runConsistencyRepairMode({
+    id: options.id,
+    all: options.all,
+    check: options.check,
+  });
 }
 
 export async function main() {
