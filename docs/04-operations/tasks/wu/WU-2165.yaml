@@ -1,5 +1,5 @@
 id: WU-2165
-title: 'A4: Extract wu:done gates orchestration module'
+title: Extract wu:done gates orchestration module
 lane: 'Framework: CLI WU Commands'
 type: refactor
 status: ready
