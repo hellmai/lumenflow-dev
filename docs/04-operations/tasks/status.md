@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2161 — Document wu:brief evidence recording behavior for agent safety](wu/WU-2161.yaml)
 
 ## Completed
 
