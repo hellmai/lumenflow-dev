@@ -1,5 +1,5 @@
 id: WU-2168
-title: 'B1: Audit and categorize core API surface'
+title: Audit and categorize core API surface
 lane: 'Framework: Core Lifecycle'
 type: refactor
 status: ready
