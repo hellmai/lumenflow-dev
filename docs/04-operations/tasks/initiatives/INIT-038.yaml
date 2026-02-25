@@ -3,7 +3,7 @@ slug: post-enforcement-follow-up
 title: Post-Enforcement Follow-up (Release-First + Sizing Guardrails)
 description: 'Follow-up to INIT-037: restore release readiness by fixing gate blockers first, reduce
   UnsafeAny baseline to <=200, add enforcement E2E coverage, and enforce sizing intent in wu:create
-  + wu:brief. Plan: /home/USER/.claude/plans/steady-inventing-gosling.md'
+  + wu:brief.'
 status: in_progress
 priority: P1
 owner: platform-team
