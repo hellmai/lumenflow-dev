@@ -1,0 +1,16 @@
+id: INIT-038
+slug: post-enforcement-follow-up
+title: Post-Enforcement Follow-up (Release-First + Sizing Guardrails)
+description: ''
+status: draft
+priority: P1
+owner: platform-team
+created: 2026-02-25
+phases: []
+success_metrics:
+  - pnpm gates green on main after Wave 0
+  - UnsafeAny baseline reduced from 378 to <=200
+  - Enforcement E2E matrix scenarios pass in CI
+  - Sizing contract warnings/strict mode available in wu:create and wu:brief
+  - No net regression in guard baselines
+labels: []
