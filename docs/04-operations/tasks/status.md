@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-- [WU-2138 — Reduce UnsafeAny in CLI hotspot handlers](wu/WU-2138.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1066,3 +1066,4 @@ _Last updated: 2026-02-25_
 - [WU-2137 — Add enforcement E2E matrix across hook/TS/MCP paths](wu/WU-2137.yaml) — 2026-02-25
 - [WU-2136 — Reduce UnsafeAny in core hotspot files](wu/WU-2136.yaml) — 2026-02-25
 - [WU-2139 — Complete UnsafeAny core tail cleanup tranche](wu/WU-2139.yaml) — 2026-02-25
+- [WU-2138 — Reduce UnsafeAny in CLI hotspot handlers](wu/WU-2138.yaml) — 2026-02-25

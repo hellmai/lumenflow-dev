@@ -17,7 +17,7 @@ phases:
     status: done
   - id: 3
     title: 'Wave 2: CLI Type Safety'
-    status: pending
+    status: done
   - id: 4
     title: 'Wave 3: Tail Cleanup + Lock'
     status: in_progress
