@@ -1,0 +1,44 @@
+id: WU-2155
+title: 'Fix INIT-038 regressions: path-literal guard, missing runtime wiring, schema gap'
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-25
+code_paths:
+  - packages/@lumenflow/cli/src/wu-sizing-validation.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+  - packages/@lumenflow/cli/src/wu-create-validation.ts
+  - packages/@lumenflow/cli/src/wu-create-content.ts
+  - packages/@lumenflow/cli/src/wu-create-sizing-advisory.ts
+  - packages/@lumenflow/initiatives/src/orchestrator/scope-advisory.ts
+  - packages/@lumenflow/core/src/wu-schema.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/path-literal-guard.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-sizing-validation.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-create-sizing-advisory.test.ts
+    - packages/@lumenflow/initiatives/__tests__/scope-advisory.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2155.done
+dependencies: []
+risks: []
+notes: Discovered during INIT-038 post-completion audit. All four issues are from WU-2141 and WU-2142 agent output.
+requires_review: false
+assigned_to: test@example.com
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'INIT-038 introduced four regressions: (P0) wu-sizing-validation.ts:49 embeds banned docs/04-operations path literal that fails path-literal-guard.test.ts; (P1a) emitSizingAdvisory exists but wu:create never calls it - no sizingEstimate in CreateWUOptions or buildWUContent; (P1b) analyseScopeShape/formatScopeAdvisory exported but never invoked in runtime orchestration flow; (P2) Zod schema makes exception_reason unconditionally optional while validator enforces required-when-exception_type-is-set - no .refine() on schema.'
+acceptance:
+  - 'P0: SIZING_GUIDE_REF uses constant from wu-context-constants instead of inline path literal'
+  - 'P1a: wu:create calls emitSizingAdvisory when sizing_estimate is present in WU YAML'
+  - 'P1b: orchestrate:init-status or equivalent runtime view invokes analyseScopeShape and renders output'
+  - 'P2: Zod schema uses .refine() to enforce exception_reason required when exception_type is set'
+  - path-literal-guard.test.ts passes with zero new violations
+  - pnpm gates passes
