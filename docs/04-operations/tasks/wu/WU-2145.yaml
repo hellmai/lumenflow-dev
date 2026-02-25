@@ -19,6 +19,7 @@ artifacts:
 dependencies: []
 initiative: INIT-040
 phase: 1
+plan: lumenflow://plans/clever-whistling-lobster.md
 spec_refs:
   - /home/USER/.claude/plans/clever-whistling-lobster.md
 risks: []
@@ -31,7 +32,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add promoteProjectMemory(worktreeDir, mainDir) in wu:done flow before worktree cleanup. Read worktree memory.jsonl, filter lifecycle:project nodes, append to main checkout memory store.
+description: Add promoteProjectMemory(worktreeDir, mainDir) in wu:done flow before worktree cleanup.
+  Read worktree memory.jsonl, filter lifecycle:project nodes, append to main checkout memory store.
 acceptance:
   - Project-lifecycle memory nodes survive wu:done worktree cleanup
   - Non-project nodes are not promoted

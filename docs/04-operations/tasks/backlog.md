@@ -20,18 +20,18 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2154 — OSS-complete CI gate for local-only test pass](wu/WU-2154.yaml) — Operations: Tooling
-- [WU-2153 — Session lifecycle hooks for control-plane registration](wu/WU-2153.yaml) — Framework: Agent
-- [WU-2152 — Local JSONL to control-plane sync adapter](wu/WU-2152.yaml) — Framework: Memory
-- [WU-2151 — Mock signal and memory sync adapter for testing](wu/WU-2151.yaml) — Framework: Core Lifecycle
-- [WU-2150 — SDK packaging boundary hardening - decouple kernel dependency](wu/WU-2150.yaml) — Framework: Core Lifecycle
-- [WU-2149 — SDK signal and memory sync port interfaces](wu/WU-2149.yaml) — Framework: Core Lifecycle
-- [WU-2148 — MCP signal enrichment in CallToolRequest handler](wu/WU-2148.yaml) — Framework: MCP
-- [WU-2147 — CLI signal middleware for automatic signal surfacing](wu/WU-2147.yaml) — Framework: CLI WU Commands
-- [WU-2146 — Backward-compatible signal schema extension](wu/WU-2146.yaml) — Framework: Memory
-- [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — Framework: Memory
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
+- [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — Framework: Memory
+- [WU-2146 — Backward-compatible signal schema extension](wu/WU-2146.yaml) — Framework: Memory
+- [WU-2147 — CLI signal middleware for automatic signal surfacing](wu/WU-2147.yaml) — Framework: CLI WU Commands
+- [WU-2148 — MCP signal enrichment in CallToolRequest handler](wu/WU-2148.yaml) — Framework: MCP
+- [WU-2149 — SDK signal and memory sync port interfaces](wu/WU-2149.yaml) — Framework: Core Lifecycle
+- [WU-2150 — SDK packaging boundary hardening - decouple kernel dependency](wu/WU-2150.yaml) — Framework: Core Lifecycle
+- [WU-2151 — Mock signal and memory sync adapter for testing](wu/WU-2151.yaml) — Framework: Core Lifecycle
+- [WU-2152 — Local JSONL to control-plane sync adapter](wu/WU-2152.yaml) — Framework: Memory
+- [WU-2153 — Session lifecycle hooks for control-plane registration](wu/WU-2153.yaml) — Framework: Agent
+- [WU-2154 — OSS-complete CI gate for local-only test pass](wu/WU-2154.yaml) — Operations: Tooling
 
 ## 🔧 In progress
 
