@@ -1,0 +1,52 @@
+id: WU-2161
+title: Document wu:brief evidence recording behavior for agent safety
+lane: 'Content: Framework Docs'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-25
+code_paths:
+  - .claude/CLAUDE.md
+  - CLAUDE.md
+  - docs/04-operations/_frameworks/lumenflow/agent/onboarding
+tests:
+  manual:
+    - Read updated docs as an agent would — confirm wu:brief side effects are unambiguous
+    - Confirm wu:done --help or wu:brief --help output is consistent with updated docs
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2161.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: documentation
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: |-
+  ## Context
+
+  wu:brief now records checkpoint evidence to .lumenflow/state/wu-events.jsonl when run from a worktree (WU-2144 gating). This evidence is required by wu:done for feature/bug WUs (WU-2132 enforcement). However, documentation still describes wu:brief as "Generate handoff prompt (no execution)", which agents interpret as "no side effects."
+
+  ## Problem
+
+  Codex deleted wu:brief evidence from wu-events.jsonl during WU-2159 because the docs implied wu:brief has no side effects. This is the exact failure mode the docs should prevent — agents that read "no execution" assume any state writes are incidental churn and clean them up. The coordination signal workaround (sig-714aabe4) only reaches agents that check mem:inbox; the docs reach all agents.
+
+  ## Solution
+
+  Update all agent-facing documentation to clarify that wu:brief records evidence when run from a worktree, and that this evidence is required for wu:done completion on feature/bug WUs. Specifically:
+
+  1. .claude/CLAUDE.md wu:brief table entry: change "(no execution)" to include evidence recording note
+  2. CLAUDE.md if wu:brief is mentioned there
+  3. Agent onboarding docs if they reference wu:brief behavior
+  4. Consider adding a "do not delete wu-events.jsonl entries" note to the worktree discipline or safe YAML rules
+acceptance:
+  - CLAUDE.md and .claude/CLAUDE.md wu:brief descriptions updated to mention evidence recording (worktree only)
+  - Agent onboarding docs mention that wu:brief checkpoint evidence is required by wu:done for feature/bug WUs
+  - Explicit warning that agents must not delete or revert wu-events.jsonl entries written by lifecycle commands
+  - 'wu:brief vs wu:delegate distinction is clear: brief = evidence + prompt, delegate = lineage + evidence + prompt'
