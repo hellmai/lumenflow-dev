@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2165 — A4: Extract wu:done gates orchestration module](wu/WU-2165.yaml) — Framework: CLI WU Commands
 - [WU-2164 — A3: Extract wu:done preflight CLI module](wu/WU-2164.yaml) — Framework: CLI WU Commands
 - [WU-2163 — A2: Extract wu:done git operation helpers](wu/WU-2163.yaml) — Framework: CLI WU Commands
 - [WU-2162 — A1: Extract wu:done policy functions](wu/WU-2162.yaml) — Framework: CLI WU Commands
