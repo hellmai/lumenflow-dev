@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2180 — Fix gitignore scaffold drift: add missing ephemeral path entries](wu/WU-2180.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — Framework: Memory
@@ -41,7 +40,7 @@ sections:
 - [WU-2166 — Extract wu:done memory and telemetry module](wu/WU-2166.yaml) — Framework: CLI WU Commands
 - [WU-2167 — Slim wu:done main orchestrator](wu/WU-2167.yaml) — Framework: CLI WU Commands
 - [WU-2168 — Audit and categorize core API surface](wu/WU-2168.yaml) — Framework: Core Lifecycle
-- [WU-2169 — B2: Add domain-scoped core barrel exports](wu/WU-2169.yaml) — Framework: Core Lifecycle
+- [WU-2169 — Add domain-scoped core barrel exports](wu/WU-2169.yaml) — Framework: Core Lifecycle
 - [WU-2170 — B3: Migrate consumers and deprecate root core barrel](wu/WU-2170.yaml) — Framework: Core Lifecycle
 - [WU-2171 — B4: Evaluate delegation package extraction](wu/WU-2171.yaml) — Framework: Core Lifecycle
 - [WU-2172 — C1: Migrate remaining raw env reads to ENV_VARS](wu/WU-2172.yaml) — Framework: Core Validation
@@ -51,6 +50,7 @@ sections:
 - [WU-2176 — Document validator boundaries and ownership](wu/WU-2176.yaml) — Content: Framework Docs
 - [WU-2177 — Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
+- [WU-2180 — Fix gitignore scaffold drift: add missing ephemeral path entries](wu/WU-2180.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 

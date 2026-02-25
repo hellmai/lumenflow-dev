@@ -1,5 +1,5 @@
 id: WU-2171
-title: 'B4: Evaluate delegation package extraction'
+title: Evaluate delegation package extraction
 lane: 'Framework: Core Lifecycle'
 type: refactor
 status: ready
