@@ -11,6 +11,7 @@ tests:
   manual: []
   unit:
     - packages/@lumenflow/cli/__tests__/config-get.test.ts
+    - packages/@lumenflow/cli/src/__tests__/config-get.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2186.done
