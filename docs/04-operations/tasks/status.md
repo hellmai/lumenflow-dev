@@ -4,7 +4,7 @@ _Last updated: 2026-02-25_
 
 ## In Progress
 
-- [WU-2179 — Add missing commands and tooling operations concept to agent docs](wu/WU-2179.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1077,3 +1077,4 @@ _Last updated: 2026-02-25_
 - [WU-2159 — Implement HttpControlPlaneSyncPort adapter for cloud telemetry forwarding](wu/WU-2159.yaml) — 2026-02-25
 - [WU-2161 — Document wu:brief evidence recording behavior for agent safety](wu/WU-2161.yaml) — 2026-02-25
 - [WU-2160 — Implement NDJSON telemetry file shipping for gates-only cloud onboarding](wu/WU-2160.yaml) — 2026-02-25
+- [WU-2179 — Add missing commands and tooling operations concept to agent docs](wu/WU-2179.yaml) — 2026-02-25
