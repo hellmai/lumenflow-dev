@@ -31,6 +31,9 @@ notes: >-
 
   Ownership override: Completed by test@example.com (assigned to tom@hellm.ai). Reason: git config
   email is test@example.com but user is tom@hellm.ai
+
+  Ownership override: Completed by test@example.com (assigned to tom@hellm.ai). Reason: git config
+  email is test@example.com but user is tom@hellm.ai
 requires_review: false
 assigned_to: tom@hellm.ai
 exposure: documentation
