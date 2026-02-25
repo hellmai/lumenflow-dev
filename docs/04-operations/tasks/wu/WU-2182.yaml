@@ -10,7 +10,9 @@ code_paths:
   - packages/@lumenflow/packs/software-delivery/manifest.yaml
   - packages/@lumenflow/kernel/src/pack/pack-loader.ts
 tests:
-  manual: []
+  manual:
+    - Verify DomainPackManifestSchema.parse accepts manifest with config_key field
+    - 'Verify software-delivery manifest.yaml loads with config_key: software_delivery'
   unit:
     - packages/@lumenflow/kernel/src/__tests__/pack-manifest.test.ts
   e2e: []
