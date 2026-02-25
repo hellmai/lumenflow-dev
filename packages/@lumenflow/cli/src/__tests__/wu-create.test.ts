@@ -242,6 +242,41 @@ describe('WU-1530: single-pass validation', () => {
   });
 });
 
+describe('WU-2155: buildWUContent passes through sizing_estimate', () => {
+  it('should include sizing_estimate in output when sizingEstimate is provided', () => {
+    const wu = buildWUContent({
+      ...BASE_WU,
+      opts: {
+        ...BASE_WU.opts,
+        sizingEstimate: {
+          estimated_files: 30,
+          estimated_tool_calls: 80,
+          strategy: 'checkpoint-resume',
+        },
+      },
+    });
+
+    expect(wu.sizing_estimate).toBeDefined();
+    expect(wu.sizing_estimate).toEqual({
+      estimated_files: 30,
+      estimated_tool_calls: 80,
+      strategy: 'checkpoint-resume',
+    });
+  });
+
+  it('should not include sizing_estimate when sizingEstimate is absent', () => {
+    const wu = buildWUContent({
+      ...BASE_WU,
+      opts: {
+        ...BASE_WU.opts,
+        // No sizingEstimate
+      },
+    });
+
+    expect(wu.sizing_estimate).toBeUndefined();
+  });
+});
+
 describe('WU-1751: wu:create lane lifecycle reads are non-mutating', () => {
   it('does not rewrite legacy config when lifecycle status is inferred', () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wu-create-lifecycle-readonly-'));

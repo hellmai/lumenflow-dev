@@ -20,6 +20,8 @@ import {
   formatProgress,
   getLaneAvailability,
   resolveLaneConfigsFromConfig,
+  analyseScopeShape,
+  formatScopeAdvisory,
   type LaneAvailabilityResult,
   type LaneConfig,
 } from '@lumenflow/initiatives';
@@ -136,6 +138,15 @@ const program = new Command()
         }
 
         console.log(`  ${wu.id}: ${wu.doc.title} [${status}]`);
+      }
+
+      // WU-2155: Scope advisory analysis
+      const scopeResult = analyseScopeShape(wus);
+      const scopeOutput = formatScopeAdvisory(scopeResult);
+      if (scopeOutput) {
+        console.log('');
+        console.log(chalk.bold('Scope Advisory:'));
+        console.log(chalk.yellow(scopeOutput));
       }
 
       const laneConfigs = resolveLaneConfigsFromConfig(getConfig());

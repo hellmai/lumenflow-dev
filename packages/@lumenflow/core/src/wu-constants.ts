@@ -152,6 +152,7 @@ export {
   LUMENFLOW_CLIENT_IDS,
   CLAUDE_HOOKS,
   ENV_VARS,
+  SIZING_GUIDE_REF,
   getHookCommand,
   type LumenflowClientId,
   type LocationType,

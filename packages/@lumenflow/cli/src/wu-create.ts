@@ -88,6 +88,8 @@ import {
   getPlanProtocolRef,
 } from './wu-create-content.js';
 import { displayReadinessSummary } from './wu-create-readiness.js';
+import { emitSizingAdvisory } from './wu-create-sizing-advisory.js';
+import type { SizingEstimate } from './wu-sizing-validation.js';
 
 // Re-export public API for backward compatibility (tests import from wu-create.js)
 export { validateCreateSpec, type CreateWUOptions } from './wu-create-validation.js';
@@ -535,6 +537,16 @@ export async function main() {
       `${LOG_PREFIX} WU SPEC LINT FAILED:\n\n${formatted}\n` +
         `Fix the issues above before creating this WU.`,
     );
+  }
+
+  // WU-2155: Emit sizing advisory when sizing_estimate is present in preflight WU
+  const sizingEstimateData = preflightWU.sizing_estimate as SizingEstimate | undefined;
+  if (sizingEstimateData) {
+    emitSizingAdvisory({
+      wuId: wuId,
+      logPrefix: LOG_PREFIX,
+      sizingEstimate: sizingEstimateData,
+    });
   }
 
   const specRefsList = mergedRefs;

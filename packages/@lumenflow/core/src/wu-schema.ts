@@ -585,6 +585,21 @@ const sharedFields = {
       exception_type: z.enum(['docs-only', 'shallow-multi-file']).optional(),
       exception_reason: z.string().optional(),
     })
+    .refine(
+      (data) => {
+        if (data.exception_type !== undefined) {
+          return (
+            data.exception_reason !== undefined && data.exception_reason.trim().length > 0
+          );
+        }
+        return true;
+      },
+      {
+        message:
+          'sizing_estimate.exception_reason is required and must be non-empty when exception_type is set',
+        path: ['exception_reason'],
+      },
+    )
     .optional(),
 
   // === End Sizing Estimate Fields ===

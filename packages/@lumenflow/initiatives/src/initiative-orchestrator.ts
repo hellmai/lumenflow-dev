@@ -88,3 +88,14 @@ export { getLockPolicyForLane, getLaneAvailability } from './orchestrator/lane-p
 
 // ── Initiative loading ────────────────────────────────────────────────────────
 export { loadInitiativeWUs, loadMultipleInitiatives } from './orchestrator/initiative-loading.js';
+
+// ── Scope advisory (WU-2142/WU-2155) ────────────────────────────────────────
+export {
+  analyseScopeShape,
+  formatScopeAdvisory,
+  SCOPE_ADVISORY_THRESHOLDS,
+  type ScopeAdvisory,
+  type ScopeAdvisoryResult,
+  type ScopeAdvisoryType,
+  type ScopeAdvisorySeverity,
+} from './orchestrator/scope-advisory.js';

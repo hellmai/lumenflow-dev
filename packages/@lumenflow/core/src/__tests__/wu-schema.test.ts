@@ -112,3 +112,83 @@ describe('WU Schema: plan field (WU-1683)', () => {
     // checked on disk. Completeness validation may be added in a future WU.
   });
 });
+
+describe('WU Schema: sizing_estimate .refine() (WU-2155)', () => {
+  it('should accept sizing_estimate without exception fields', () => {
+    const wu = makeValidWU({
+      sizing_estimate: {
+        estimated_files: 5,
+        estimated_tool_calls: 30,
+        strategy: 'single-session',
+      },
+    });
+
+    const result = validateWU(wu);
+    expect(result.success).toBe(true);
+  });
+
+  it('should accept sizing_estimate with both exception_type and exception_reason', () => {
+    const wu = makeValidWU({
+      sizing_estimate: {
+        estimated_files: 50,
+        estimated_tool_calls: 120,
+        strategy: 'checkpoint-resume',
+        exception_type: 'docs-only',
+        exception_reason: 'All markdown documentation files',
+      },
+    });
+
+    const result = validateWU(wu);
+    expect(result.success).toBe(true);
+  });
+
+  it('should reject sizing_estimate with exception_type but no exception_reason', () => {
+    const wu = makeValidWU({
+      sizing_estimate: {
+        estimated_files: 50,
+        estimated_tool_calls: 120,
+        strategy: 'checkpoint-resume',
+        exception_type: 'docs-only',
+      },
+    });
+
+    const result = validateWU(wu);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages.some((m) => m.includes('exception_reason'))).toBe(true);
+    }
+  });
+
+  it('should reject sizing_estimate with exception_type and empty exception_reason', () => {
+    const wu = makeValidWU({
+      sizing_estimate: {
+        estimated_files: 50,
+        estimated_tool_calls: 120,
+        strategy: 'checkpoint-resume',
+        exception_type: 'shallow-multi-file',
+        exception_reason: '   ',
+      },
+    });
+
+    const result = validateWU(wu);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages.some((m) => m.includes('exception_reason'))).toBe(true);
+    }
+  });
+
+  it('should accept sizing_estimate without exception_type (backward compat)', () => {
+    const wu = makeValidWU({
+      sizing_estimate: {
+        estimated_files: 10,
+        estimated_tool_calls: 30,
+        strategy: 'single-session',
+      },
+    });
+
+    const result = validateWU(wu);
+    expect(result.success).toBe(true);
+  });
+});

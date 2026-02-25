@@ -320,6 +320,14 @@ export type EnvVarKey = keyof typeof ENV_VARS;
 /** Type for ENV_VARS values */
 export type EnvVarName = (typeof ENV_VARS)[EnvVarKey];
 
+/**
+ * WU sizing guide reference path (WU-2155).
+ *
+ * Used in sizing advisory warning messages. Centralised here so runtime
+ * code does not embed banned `docs/04-operations` path literals.
+ */
+export const SIZING_GUIDE_REF = 'docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md';
+
 export { LUMENFLOW_CLIENT_IDS, type LumenflowClientId };
 
 /**

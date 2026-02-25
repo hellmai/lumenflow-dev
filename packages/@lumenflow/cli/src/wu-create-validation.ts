@@ -50,6 +50,14 @@ export interface CreateWUOptions {
   plan?: string;
   // WU-1329: Strict validation flag
   strict?: boolean;
+  // WU-2155: Optional sizing estimate for advisory warnings
+  sizingEstimate?: {
+    estimated_files: number;
+    estimated_tool_calls: number;
+    strategy: string;
+    exception_type?: string;
+    exception_reason?: string;
+  };
 }
 
 export function containsCodeFiles(codePaths: string[] | undefined): boolean {

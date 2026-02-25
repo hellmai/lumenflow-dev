@@ -81,6 +81,7 @@ export function buildWUContent({
     uiPairingWus,
     specRefs,
     plan,
+    sizingEstimate,
   } = opts;
 
   // Arrays come directly from Commander.js repeatable options - no parsing needed
@@ -131,6 +132,8 @@ export function buildWUContent({
     ...(specRefs?.length && { spec_refs: specRefs }),
     // WU-1683: First-class plan field
     ...(plan && { plan }),
+    // WU-2155: Pass through sizing_estimate to YAML output
+    ...(sizingEstimate && { sizing_estimate: sizingEstimate }),
   };
 }
 

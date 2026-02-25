@@ -16,6 +16,8 @@
  * @see {@link ./wu-brief-sizing.ts} - wu:brief integration
  */
 
+import { SIZING_GUIDE_REF } from '@lumenflow/core/wu-constants';
+
 // ─── Constants ───
 
 /** Valid strategy values from the sizing guide */
@@ -44,9 +46,6 @@ export const SIZING_THRESHOLDS = {
   /** Docs-only exception thresholds (section 1.1) */
   DOCS_ONLY: { files: 40, tool_calls: 50 },
 } as const;
-
-/** Sizing guide reference path for warning messages */
-const SIZING_GUIDE_REF = 'docs/04-operations/_frameworks/lumenflow/wu-sizing-guide.md';
 
 // ─── Types ───
 
