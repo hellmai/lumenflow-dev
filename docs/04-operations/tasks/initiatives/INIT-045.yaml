@@ -12,7 +12,7 @@ phases:
     status: done
   - id: 2
     title: 'Schema + CLI: two-phase kernel validation + config:set rewrite'
-    status: in_progress
+    status: done
   - id: 3
     title: 'CLI: config:get rewrite'
     status: pending
