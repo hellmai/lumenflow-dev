@@ -1,5 +1,5 @@
 id: WU-2162
-title: 'A1: Extract wu:done policy functions'
+title: Extract wu:done policy functions
 lane: 'Framework: CLI WU Commands'
 type: refactor
 status: ready
