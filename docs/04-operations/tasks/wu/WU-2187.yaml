@@ -2,7 +2,7 @@ id: WU-2187
 title: 'Two-phase workspace validation: dynamic root-key validation against pinned packs'
 lane: 'Framework: Core Validation'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -49,3 +49,6 @@ session_id: 12f47aea-8524-466c-865d-c57943f6d5c5
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-25T22:54:35.227Z
+locked: true
+completed_at: 2026-02-25T23:05:11.014Z
+completed: 2026-02-25

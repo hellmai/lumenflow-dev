@@ -2282,3 +2282,4 @@
 {"type":"complete","wuId":"WU-2183","timestamp":"2026-02-25T22:51:45.956Z"}
 {"type":"claim","wuId":"WU-2185","timestamp":"2026-02-25T22:53:56.710Z","lane":"Framework: CLI WU Commands","title":"Rewrite config:set with workspace-aware routing"}
 {"type":"claim","wuId":"WU-2187","timestamp":"2026-02-25T22:54:35.278Z","lane":"Framework: Core Validation","title":"Two-phase workspace validation: dynamic root-key validation against pinned packs"}
+{"type":"complete","wuId":"WU-2187","timestamp":"2026-02-25T23:05:15.425Z"}

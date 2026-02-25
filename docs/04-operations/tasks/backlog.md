@@ -54,7 +54,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-2185 — Rewrite config:set with workspace-aware routing](wu/WU-2185.yaml) — Framework: CLI WU Commands
-- [WU-2187 — Two-phase workspace validation: dynamic root-key validation against pinned packs](wu/WU-2187.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 
@@ -1139,6 +1138,7 @@ sections:
 - [WU-2184 — Runtime diagnostics for misplaced config keys](wu/WU-2184.yaml)
 - [WU-2182 — Add config_key and config_schema to DomainPackManifestSchema](wu/WU-2182.yaml)
 - [WU-2183 — Add workspace root key registry to config-contract](wu/WU-2183.yaml)
+- [WU-2187 — Two-phase workspace validation: dynamic root-key validation against pinned packs](wu/WU-2187.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

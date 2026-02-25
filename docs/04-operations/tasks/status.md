@@ -5,7 +5,6 @@ _Last updated: 2026-02-25_
 ## In Progress
 
 - [WU-2185 — Rewrite config:set with workspace-aware routing](wu/WU-2185.yaml)
-- [WU-2187 — Two-phase workspace validation: dynamic root-key validation against pinned packs](wu/WU-2187.yaml)
 
 ## Completed
 
@@ -1086,3 +1085,4 @@ _Last updated: 2026-02-25_
 - [WU-2184 — Runtime diagnostics for misplaced config keys](wu/WU-2184.yaml) — 2026-02-25
 - [WU-2182 — Add config_key and config_schema to DomainPackManifestSchema](wu/WU-2182.yaml) — 2026-02-25
 - [WU-2183 — Add workspace root key registry to config-contract](wu/WU-2183.yaml) — 2026-02-25
+- [WU-2187 — Two-phase workspace validation: dynamic root-key validation against pinned packs](wu/WU-2187.yaml) — 2026-02-25
