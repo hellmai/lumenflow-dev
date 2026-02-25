@@ -14,8 +14,8 @@ Then read `LUMENFLOW.md` for workflow details.
 | `pnpm wu:claim --id WU-XXX --lane <Lane>`      | Claim WU and create worktree                |
 | `pnpm wu:prep --id WU-XXX`                     | Run gates in worktree                       |
 | `pnpm wu:done --id WU-XXX`                     | Complete WU (from main)                     |
-| `pnpm wu:brief --id WU-XXX --client <client>`  | Generate handoff prompt (no execution)      |
-| `pnpm wu:delegate --id WU-XXX --parent-wu <P>` | Generate prompt + record delegation lineage |
+| `pnpm wu:brief --id WU-XXX --client <client>`  | Generate handoff prompt + record evidence (worktree only) |
+| `pnpm wu:delegate --id WU-XXX --parent-wu <P>` | Generate prompt + record delegation lineage               |
 | `pnpm wu:recover --id WU-XXX`                  | Fix WU state inconsistencies                |
 
 ### Gates & Orchestration
@@ -58,12 +58,17 @@ View all skills: `ls .claude/skills/`
 Delegate WUs to sub-agents:
 
 ```bash
-pnpm wu:brief --id WU-XXX --client claude-code    # Generate prompt only
-pnpm wu:delegate --id WU-XXX --parent-wu WU-YYY   # Generate prompt + record lineage
+pnpm wu:brief --id WU-XXX --client claude-code    # Generate prompt + evidence (worktree only)
+pnpm wu:delegate --id WU-XXX --parent-wu WU-YYY   # Generate prompt + evidence + delegation lineage
 ```
 
 Use `wu:brief` when you want a context-loaded prompt for another agent.
 Use `wu:delegate` when you also need auditable lineage tracking (initiative work).
+
+**Important:** When run from a worktree, `wu:brief` records a checkpoint event
+to `.lumenflow/state/wu-events.jsonl`. This evidence is **required** — `wu:done`
+blocks feature/bug WUs that are missing it. Do not delete or revert `wu-events.jsonl`
+entries written by lifecycle commands.
 
 Available agents in `.claude/agents/`:
 

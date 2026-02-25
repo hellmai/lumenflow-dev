@@ -413,6 +413,8 @@ pnpm wu:done --id WU-XXX --skip-gates \
 
 Use `wu:brief` to create parallel sub-agent handoff prompts for complex WUs. Use `wu:delegate` when you also need explicit lineage recording.
 
+**Evidence recording:** When run from a worktree, `wu:brief` writes a checkpoint event to `.lumenflow/state/wu-events.jsonl`. This evidence is **required** — `wu:done` blocks feature/bug WUs without it (WU-2132). When run from the main checkout, `wu:brief` is side-effect-free (WU-2144). **Never delete or revert `wu-events.jsonl` entries** written by lifecycle commands — if evidence is accidentally lost, rerun `wu:brief` to recreate it.
+
 ### When to Use wu:brief
 
 - **Parallel work:** Multiple agents needed on the same WU simultaneously
@@ -423,7 +425,7 @@ Use `wu:brief` to create parallel sub-agent handoff prompts for complex WUs. Use
 ### How to Use wu:brief / wu:delegate
 
 ```bash
-# Generate a handoff prompt (no lineage side effect)
+# Generate a handoff prompt + evidence (no lineage side effect)
 pnpm wu:brief --id WU-XXXX --client <client-type>
 
 # Generate + record explicit delegation lineage
@@ -456,7 +458,7 @@ pnpm wu:delegate --id WU-XXXX --parent-wu WU-YYYY --client <client-type>
 | `pnpm wu:claim --id WU-XXX --lane "Lane"`      | Claim WU and create worktree (default)   | Start working (local)       |
 | `pnpm wu:claim --id WU-XXX --lane "L" --cloud` | Claim WU in branch-pr mode (no worktree) | Start working (cloud)       |
 | `pnpm wu:edit --id WU-XXX --field value`       | Edit WU spec fields                      | Update notes/desc           |
-| `pnpm wu:brief --id WU-XXX --client X`         | Generate sub-agent handoff prompt        | Complex WUs                 |
+| `pnpm wu:brief --id WU-XXX --client X`         | Generate handoff prompt + evidence       | Complex WUs                 |
 | `pnpm wu:delegate --id WU-XXX --parent-wu P`   | Generate prompt + record delegation      | Auditable delegation flows  |
 | `pnpm gates`                                   | Run quality gates                        | Before wu:done              |
 | `pnpm gates --docs-only`                       | Run docs-only gates                      | For documentation WUs       |
