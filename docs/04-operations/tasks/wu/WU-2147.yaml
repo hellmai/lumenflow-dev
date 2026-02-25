@@ -22,6 +22,7 @@ initiative: INIT-040
 phase: 1
 blocked_by:
   - WU-2146
+plan: lumenflow://plans/clever-whistling-lobster.md
 spec_refs:
   - /home/USER/.claude/plans/clever-whistling-lobster.md
 risks: []
@@ -34,7 +35,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Add pre-command signal check in runCLI(). Surface pending signals to stderr on high-value commands. Throttle generic commands. Fail-open on all errors. Local checks target <50ms P95. Optional remote pull with 200ms timeout and circuit-breaker.
+description: Add pre-command signal check in runCLI(). Surface pending signals to stderr on
+  high-value commands. Throttle generic commands. Fail-open on all errors. Local checks target <50ms
+  P95. Optional remote pull with 200ms timeout and circuit-breaker.
 acceptance:
   - High-value commands show pending signals on stderr
   - Low-value commands skip signal check
