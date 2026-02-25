@@ -49,7 +49,13 @@
  */
 
 import { writeSync } from 'node:fs';
-import { emitGateEvent, getCurrentWU, getCurrentLane } from '@lumenflow/core/telemetry';
+import {
+  emitGateEvent,
+  getCurrentWU,
+  getCurrentLane,
+  syncNdjsonTelemetryToCloud,
+  type TelemetryCloudSyncResult,
+} from '@lumenflow/core/telemetry';
 import { die } from '@lumenflow/core/error-handler';
 import {
   shouldUseGatesAgentMode,
@@ -270,6 +276,22 @@ export async function runGates(
   }
 }
 
+export async function syncGatesTelemetryToCloud(input: {
+  cwd?: string;
+  fetchFn?: typeof fetch;
+  logger?: Pick<Console, 'warn'>;
+  now?: () => number;
+  environment?: NodeJS.ProcessEnv;
+} = {}): Promise<TelemetryCloudSyncResult> {
+  return syncNdjsonTelemetryToCloud({
+    workspaceRoot: input.cwd ?? process.cwd(),
+    fetchFn: input.fetchFn,
+    logger: input.logger,
+    now: input.now,
+    environment: input.environment,
+  });
+}
+
 // ── Main orchestrator ──────────────────────────────────────────────────
 
 // eslint-disable-next-line sonarjs/cognitive-complexity -- Pre-existing: main() orchestrates multi-step gate workflow
@@ -320,6 +342,27 @@ async function executeGates(opts: {
   const packageJsonScripts = loadPackageJsonScripts(cwd);
   // WU-1520: Track gate results for summary
   const gateResults: GateResult[] = [];
+  const telemetrySyncLogger: Pick<Console, 'warn'> = {
+    warn: (message: string) => {
+      if (useAgentMode) {
+        writeSync(agentLog!.logFd, `${message}\n`);
+        return;
+      }
+      console.warn(message);
+    },
+  };
+
+  async function flushTelemetryToCloud(): Promise<void> {
+    try {
+      await syncGatesTelemetryToCloud({
+        cwd,
+        logger: telemetrySyncLogger,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      telemetrySyncLogger.warn(`[gates] cloud telemetry sync failed unexpectedly: ${message}`);
+    }
+  }
 
   if (useAgentMode) {
     console.log(
@@ -616,6 +659,7 @@ async function executeGates(opts: {
           console.error(`Last log lines:\n${tail}\n`);
         }
       }
+      await flushTelemetryToCloud();
       die(`${gate.name} failed`);
     }
 
@@ -644,6 +688,8 @@ async function executeGates(opts: {
       `${chalk.green('\u2705 All gates passed')} (agent mode). Log: ${agentLog!.logPath}\n`,
     );
   }
+
+  await flushTelemetryToCloud();
 
   return true;
 }

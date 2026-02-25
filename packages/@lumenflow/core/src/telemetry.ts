@@ -8,9 +8,10 @@
  * Used by gates-local.ts and flow-report.ts.
  */
 
-import { appendFileSync, mkdirSync, existsSync } from 'node:fs';
+import { appendFileSync, mkdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
+import YAML from 'yaml';
 import { LUMENFLOW_PATHS, FILE_EXTENSIONS, STDIO, STRING_LITERALS } from './wu-constants.js';
 
 /** Gate event telemetry data */
@@ -63,6 +64,103 @@ const TELEMETRY_DIR = LUMENFLOW_PATHS.TELEMETRY;
 const GATES_LOG = `${TELEMETRY_DIR}/gates${FILE_EXTENSIONS.NDJSON}`;
 const LLM_CLASSIFICATION_LOG = `${TELEMETRY_DIR}/llm-classification${FILE_EXTENSIONS.NDJSON}`;
 const FLOW_LOG = LUMENFLOW_PATHS.FLOW_LOG;
+const WORKSPACE_FILE = 'workspace.yaml';
+const CLOUD_SYNC_STATE_FILE = `${TELEMETRY_DIR}/cloud-sync-state${FILE_EXTENSIONS.JSON}`;
+const CLOUD_SYNC_LOG_PREFIX = '[telemetry:cloud-sync]';
+const CONTROL_PLANE_FIELD = 'control_plane';
+const CONTROL_PLANE_AUTH_FIELD = 'auth';
+const CONTROL_PLANE_ENDPOINT_FIELD = 'endpoint';
+const CONTROL_PLANE_SYNC_INTERVAL_FIELD = 'sync_interval';
+const CONTROL_PLANE_BATCH_SIZE_FIELD = 'batch_size';
+const CONTROL_PLANE_TIMEOUT_MS_FIELD = 'timeout_ms';
+const CONTROL_PLANE_TOKEN_ENV_FIELD = 'token_env';
+const WORKSPACE_ID_FIELD = 'id';
+const HTTP = {
+  METHOD_POST: 'POST',
+  HEADER_AUTHORIZATION: 'authorization',
+  HEADER_CONTENT_TYPE: 'content-type',
+  CONTENT_TYPE_JSON: 'application/json',
+} as const;
+const CONTROL_PLANE_API_PATH = {
+  TELEMETRY: '/api/v1/telemetry',
+} as const;
+const DEFAULT_BATCH_SIZE = 100;
+const DEFAULT_TIMEOUT_MS = 10_000;
+const MS_PER_SECOND = 1000;
+const ERROR_NAME = {
+  ABORT: 'AbortError',
+} as const;
+const CONTROL_PLANE_TOKEN_ENV_PATTERN = /^[A-Z][A-Z0-9_]*$/;
+const METRIC_NAME = {
+  GATES_DURATION_MS: 'gates.duration_ms',
+  FLOW_EVENT: 'flow.event',
+  RAW_GATES: 'telemetry.raw.gates',
+  RAW_FLOW: 'telemetry.raw.flow',
+} as const;
+const TELEMETRY_SOURCE = {
+  GATES: 'gates',
+  FLOW: 'flow',
+} as const;
+
+type TelemetrySource = (typeof TELEMETRY_SOURCE)[keyof typeof TELEMETRY_SOURCE];
+
+type PrimitiveTagValue = string | number | boolean;
+
+type CloudTelemetryRecord = {
+  metric: string;
+  value: number;
+  timestamp: string;
+  tags?: Record<string, PrimitiveTagValue>;
+};
+
+interface ParsedTelemetryLine {
+  readonly record: CloudTelemetryRecord | null;
+  readonly offsetAfterLine: number;
+}
+
+interface CloudSyncConfig {
+  readonly workspaceId: string;
+  readonly endpoint: string;
+  readonly token: string;
+  readonly syncIntervalMs: number;
+  readonly batchSize: number;
+  readonly timeoutMs: number;
+}
+
+type CloudSyncSkippedReason =
+  | 'control-plane-unavailable'
+  | 'sync-interval-not-elapsed'
+  | 'sync-failed';
+
+interface CloudSyncFileState {
+  offset: number;
+}
+
+interface CloudSyncState {
+  version: 1;
+  lastSyncAtMs: number;
+  files: {
+    gates: CloudSyncFileState;
+    flow: CloudSyncFileState;
+  };
+}
+
+export interface TelemetryCloudSyncOptions {
+  workspaceRoot?: string;
+  logger?: Pick<Console, 'warn'>;
+  fetchFn?: typeof fetch;
+  now?: () => number;
+  environment?: NodeJS.ProcessEnv;
+}
+
+export interface TelemetryCloudSyncResult {
+  readonly recordsRead: number;
+  readonly recordsSent: number;
+  readonly malformedLines: number;
+  readonly batchesAttempted: number;
+  readonly batchesSucceeded: number;
+  readonly skippedReason?: CloudSyncSkippedReason;
+}
 
 /**
  * Ensure telemetry directory exists
@@ -283,4 +381,575 @@ export function emitWUFlowEvent(event: WUFlowEventData, logPath = FLOW_LOG) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(`[telemetry] Failed to emit flow event: ${message}`);
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function asNonEmptyString(value: unknown): string | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function asPositiveInteger(value: unknown): number | undefined {
+  if (typeof value !== 'number' || !Number.isInteger(value) || value <= 0) {
+    return undefined;
+  }
+  return value;
+}
+
+function asFiniteNumber(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+}
+
+// eslint-disable-next-line sonarjs/function-return-type -- tag values intentionally preserve primitive type fidelity
+function asPrimitiveTagValue(value: unknown): PrimitiveTagValue | undefined {
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return value;
+  }
+  return undefined;
+}
+
+function normalizeEndpoint(endpoint: string): string {
+  return endpoint.endsWith('/') ? endpoint.slice(0, endpoint.length - 1) : endpoint;
+}
+
+function normalizeTimestamp(value: unknown, fallbackIso: string): string {
+  const rawTimestamp = asNonEmptyString(value);
+  return rawTimestamp ?? fallbackIso;
+}
+
+function warnCloudSync(logger: Pick<Console, 'warn'> | undefined, message: string): void {
+  logger?.warn?.(`${CLOUD_SYNC_LOG_PREFIX} ${message}`);
+}
+
+function createDefaultCloudSyncState(): CloudSyncState {
+  return {
+    version: 1,
+    lastSyncAtMs: 0,
+    files: {
+      gates: {
+        offset: 0,
+      },
+      flow: {
+        offset: 0,
+      },
+    },
+  };
+}
+
+function normalizeStateOffset(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 0) {
+    return 0;
+  }
+  return value;
+}
+
+function loadCloudSyncState(statePath: string): CloudSyncState {
+  if (!existsSync(statePath)) {
+    return createDefaultCloudSyncState();
+  }
+
+  try {
+    const raw = readFileSync(statePath, 'utf-8');
+    const parsed = JSON.parse(raw) as unknown;
+    if (!isRecord(parsed)) {
+      return createDefaultCloudSyncState();
+    }
+
+    const filesRaw = Reflect.get(parsed, 'files');
+    const gatesRaw = isRecord(filesRaw) ? Reflect.get(filesRaw, TELEMETRY_SOURCE.GATES) : undefined;
+    const flowRaw = isRecord(filesRaw) ? Reflect.get(filesRaw, TELEMETRY_SOURCE.FLOW) : undefined;
+    const gatesOffset = isRecord(gatesRaw) ? normalizeStateOffset(Reflect.get(gatesRaw, 'offset')) : 0;
+    const flowOffset = isRecord(flowRaw) ? normalizeStateOffset(Reflect.get(flowRaw, 'offset')) : 0;
+    const lastSyncAtMs = normalizeStateOffset(Reflect.get(parsed, 'lastSyncAtMs'));
+
+    return {
+      version: 1,
+      lastSyncAtMs,
+      files: {
+        gates: {
+          offset: gatesOffset,
+        },
+        flow: {
+          offset: flowOffset,
+        },
+      },
+    };
+  } catch {
+    return createDefaultCloudSyncState();
+  }
+}
+
+function saveCloudSyncState(statePath: string, state: CloudSyncState): void {
+  mkdirSync(path.dirname(statePath), { recursive: true });
+  writeFileSync(statePath, `${JSON.stringify(state, null, 2)}${STRING_LITERALS.NEWLINE}`, {
+    encoding: 'utf-8',
+  });
+}
+
+function getSourceOffset(state: CloudSyncState, source: TelemetrySource): number {
+  if (source === TELEMETRY_SOURCE.GATES) {
+    return state.files.gates.offset;
+  }
+  return state.files.flow.offset;
+}
+
+function setSourceOffset(state: CloudSyncState, source: TelemetrySource, offset: number): void {
+  if (source === TELEMETRY_SOURCE.GATES) {
+    state.files.gates.offset = offset;
+    return;
+  }
+  state.files.flow.offset = offset;
+}
+
+function resolveTelemetryPath(workspaceRoot: string, source: TelemetrySource): string {
+  if (source === TELEMETRY_SOURCE.GATES) {
+    return path.join(workspaceRoot, GATES_LOG);
+  }
+  return path.join(workspaceRoot, FLOW_LOG);
+}
+
+function mapGatesEventToTelemetryRecord(payload: Record<string, unknown>, fallbackIso: string): CloudTelemetryRecord {
+  const gateName = asNonEmptyString(Reflect.get(payload, 'gate_name')) ?? 'unknown';
+  const passedRaw = Reflect.get(payload, 'passed');
+  const passed = typeof passedRaw === 'boolean' ? passedRaw : false;
+  const durationMs = asFiniteNumber(Reflect.get(payload, 'duration_ms')) ?? 0;
+  const wuId = asPrimitiveTagValue(Reflect.get(payload, 'wu_id'));
+  const lane = asPrimitiveTagValue(Reflect.get(payload, 'lane'));
+  const tags: Record<string, PrimitiveTagValue> = {
+    source: TELEMETRY_SOURCE.GATES,
+    gate_name: gateName,
+    passed,
+  };
+
+  if (wuId !== undefined) {
+    tags.wu_id = wuId;
+  }
+  if (lane !== undefined) {
+    tags.lane = lane;
+  }
+
+  return {
+    metric: METRIC_NAME.GATES_DURATION_MS,
+    value: durationMs,
+    timestamp: normalizeTimestamp(Reflect.get(payload, 'timestamp'), fallbackIso),
+    tags,
+  };
+}
+
+function mapFlowEventToTelemetryRecord(payload: Record<string, unknown>, fallbackIso: string): CloudTelemetryRecord {
+  const script = asNonEmptyString(Reflect.get(payload, 'script')) ?? 'unknown';
+  const step =
+    asNonEmptyString(Reflect.get(payload, 'step')) ??
+    asNonEmptyString(Reflect.get(payload, 'event_type')) ??
+    'event';
+  const value = asFiniteNumber(Reflect.get(payload, 'duration_ms')) ?? 1;
+  const status = asPrimitiveTagValue(Reflect.get(payload, 'status'));
+  const wuId = asPrimitiveTagValue(Reflect.get(payload, 'wu_id'));
+  const lane = asPrimitiveTagValue(Reflect.get(payload, 'lane'));
+  const tags: Record<string, PrimitiveTagValue> = {
+    source: TELEMETRY_SOURCE.FLOW,
+    script,
+    step,
+  };
+
+  if (status !== undefined) {
+    tags.status = status;
+  }
+  if (wuId !== undefined) {
+    tags.wu_id = wuId;
+  }
+  if (lane !== undefined) {
+    tags.lane = lane;
+  }
+
+  return {
+    metric: METRIC_NAME.FLOW_EVENT,
+    value,
+    timestamp: normalizeTimestamp(Reflect.get(payload, 'timestamp'), fallbackIso),
+    tags,
+  };
+}
+
+function mapTelemetryLineToRecord(
+  source: TelemetrySource,
+  payload: unknown,
+  fallbackIso: string,
+): CloudTelemetryRecord {
+  if (!isRecord(payload)) {
+    return {
+      metric: source === TELEMETRY_SOURCE.GATES ? METRIC_NAME.RAW_GATES : METRIC_NAME.RAW_FLOW,
+      value: 1,
+      timestamp: fallbackIso,
+      tags: {
+        source,
+      },
+    };
+  }
+
+  if (source === TELEMETRY_SOURCE.GATES) {
+    return mapGatesEventToTelemetryRecord(payload, fallbackIso);
+  }
+  return mapFlowEventToTelemetryRecord(payload, fallbackIso);
+}
+
+function readTelemetryLinesFromOffset(input: {
+  filePath: string;
+  source: TelemetrySource;
+  initialOffset: number;
+  logger?: Pick<Console, 'warn'>;
+  fallbackIso: string;
+}): {
+  items: ParsedTelemetryLine[];
+  malformedLines: number;
+  effectiveOffset: number;
+} {
+  if (!existsSync(input.filePath)) {
+    return {
+      items: [],
+      malformedLines: 0,
+      effectiveOffset: 0,
+    };
+  }
+
+  const fileBuffer = readFileSync(input.filePath);
+  const fileSize = fileBuffer.byteLength;
+  const effectiveOffset = Math.min(input.initialOffset, fileSize);
+  const sliceBuffer = fileBuffer.subarray(effectiveOffset);
+  const content = sliceBuffer.toString('utf-8');
+  let malformedLines = 0;
+  const items: ParsedTelemetryLine[] = [];
+  let cursor = 0;
+  let runningOffset = effectiveOffset;
+
+  while (cursor < content.length) {
+    const newlineIndex = content.indexOf(STRING_LITERALS.NEWLINE, cursor);
+    if (newlineIndex < 0) {
+      break;
+    }
+
+    const lineWithNewline = content.slice(cursor, newlineIndex + 1);
+    runningOffset += Buffer.byteLength(lineWithNewline, 'utf8');
+    const line = content.slice(cursor, newlineIndex).trim();
+    cursor = newlineIndex + 1;
+
+    if (line.length === 0) {
+      items.push({
+        record: null,
+        offsetAfterLine: runningOffset,
+      });
+      continue;
+    }
+
+    try {
+      const parsed = JSON.parse(line) as unknown;
+      items.push({
+        record: mapTelemetryLineToRecord(input.source, parsed, input.fallbackIso),
+        offsetAfterLine: runningOffset,
+      });
+    } catch {
+      malformedLines += 1;
+      warnCloudSync(
+        input.logger,
+        `Skipping malformed NDJSON line in ${input.filePath} at offset ${runningOffset}.`,
+      );
+      items.push({
+        record: null,
+        offsetAfterLine: runningOffset,
+      });
+    }
+  }
+
+  return {
+    items,
+    malformedLines,
+    effectiveOffset,
+  };
+}
+
+function safeResponseText(response: Response): Promise<string> {
+  return response.text().catch(() => '');
+}
+
+async function pushTelemetryBatch(input: {
+  endpoint: string;
+  workspaceId: string;
+  token: string;
+  timeoutMs: number;
+  records: CloudTelemetryRecord[];
+  fetchFn: typeof fetch;
+}): Promise<void> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), input.timeoutMs);
+
+  try {
+    const response = await input.fetchFn(`${input.endpoint}${CONTROL_PLANE_API_PATH.TELEMETRY}`, {
+      method: HTTP.METHOD_POST,
+      headers: {
+        [HTTP.HEADER_AUTHORIZATION]: `Bearer ${input.token}`,
+        [HTTP.HEADER_CONTENT_TYPE]: HTTP.CONTENT_TYPE_JSON,
+      },
+      body: JSON.stringify({
+        workspace_id: input.workspaceId,
+        records: input.records,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const responseText = await safeResponseText(response);
+      const suffix = responseText.length > 0 ? `: ${responseText}` : '';
+      throw new Error(`HTTP ${response.status}${suffix}`);
+    }
+  } catch (error) {
+    if (error instanceof Error && error.name === ERROR_NAME.ABORT) {
+      throw new Error(`request timed out after ${input.timeoutMs}ms`, { cause: error });
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function resolveCloudSyncConfig(input: {
+  workspaceRoot: string;
+  environment: NodeJS.ProcessEnv;
+  logger?: Pick<Console, 'warn'>;
+}): CloudSyncConfig | null {
+  const workspacePath = path.join(input.workspaceRoot, WORKSPACE_FILE);
+  if (!existsSync(workspacePath)) {
+    return null;
+  }
+
+  let parsedWorkspace: unknown;
+  try {
+    parsedWorkspace = YAML.parse(readFileSync(workspacePath, 'utf-8'));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    warnCloudSync(input.logger, `Unable to parse workspace config: ${message}`);
+    return null;
+  }
+
+  if (!isRecord(parsedWorkspace)) {
+    return null;
+  }
+
+  const workspaceId = asNonEmptyString(Reflect.get(parsedWorkspace, WORKSPACE_ID_FIELD));
+  if (!workspaceId) {
+    warnCloudSync(input.logger, 'Skipping sync: workspace id is missing in workspace.yaml.');
+    return null;
+  }
+
+  const controlPlaneRaw = Reflect.get(parsedWorkspace, CONTROL_PLANE_FIELD);
+  if (!isRecord(controlPlaneRaw)) {
+    return null;
+  }
+
+  const endpoint = asNonEmptyString(Reflect.get(controlPlaneRaw, CONTROL_PLANE_ENDPOINT_FIELD));
+  const syncIntervalSeconds = asPositiveInteger(
+    Reflect.get(controlPlaneRaw, CONTROL_PLANE_SYNC_INTERVAL_FIELD),
+  );
+  const batchSize =
+    asPositiveInteger(Reflect.get(controlPlaneRaw, CONTROL_PLANE_BATCH_SIZE_FIELD)) ??
+    DEFAULT_BATCH_SIZE;
+  const timeoutMs =
+    asPositiveInteger(Reflect.get(controlPlaneRaw, CONTROL_PLANE_TIMEOUT_MS_FIELD)) ??
+    DEFAULT_TIMEOUT_MS;
+
+  if (!endpoint || !syncIntervalSeconds) {
+    warnCloudSync(
+      input.logger,
+      'Skipping sync: control_plane endpoint and sync_interval must be configured.',
+    );
+    return null;
+  }
+
+  const authRaw = Reflect.get(controlPlaneRaw, CONTROL_PLANE_AUTH_FIELD);
+  if (!isRecord(authRaw)) {
+    warnCloudSync(input.logger, 'Skipping sync: control_plane.auth is missing.');
+    return null;
+  }
+
+  const tokenEnv = asNonEmptyString(Reflect.get(authRaw, CONTROL_PLANE_TOKEN_ENV_FIELD));
+  if (!tokenEnv || !CONTROL_PLANE_TOKEN_ENV_PATTERN.test(tokenEnv)) {
+    warnCloudSync(input.logger, 'Skipping sync: control_plane.auth.token_env is invalid.');
+    return null;
+  }
+
+  const tokenValue = input.environment[tokenEnv];
+  const token = typeof tokenValue === 'string' ? tokenValue.trim() : '';
+  if (token.length === 0) {
+    warnCloudSync(input.logger, `Skipping sync: missing cloud auth token in env "${tokenEnv}".`);
+    return null;
+  }
+
+  try {
+    void new URL(endpoint);
+  } catch {
+    warnCloudSync(input.logger, `Skipping sync: invalid control_plane endpoint "${endpoint}".`);
+    return null;
+  }
+
+  return {
+    workspaceId,
+    endpoint: normalizeEndpoint(endpoint),
+    token,
+    syncIntervalMs: syncIntervalSeconds * MS_PER_SECOND,
+    batchSize,
+    timeoutMs,
+  };
+}
+
+export async function syncNdjsonTelemetryToCloud(
+  options: TelemetryCloudSyncOptions = {},
+): Promise<TelemetryCloudSyncResult> {
+  const workspaceRoot = options.workspaceRoot ?? process.cwd();
+  const logger = options.logger;
+  const fetchFn = options.fetchFn ?? fetch;
+  const now = options.now ?? Date.now;
+  const environment = options.environment ?? process.env;
+  const statePath = path.join(workspaceRoot, CLOUD_SYNC_STATE_FILE);
+  const config = resolveCloudSyncConfig({
+    workspaceRoot,
+    environment,
+    logger,
+  });
+
+  if (config === null) {
+    return {
+      recordsRead: 0,
+      recordsSent: 0,
+      malformedLines: 0,
+      batchesAttempted: 0,
+      batchesSucceeded: 0,
+      skippedReason: 'control-plane-unavailable',
+    };
+  }
+
+  const state = loadCloudSyncState(statePath);
+  const nowMs = now();
+
+  if (state.lastSyncAtMs > 0 && nowMs - state.lastSyncAtMs < config.syncIntervalMs) {
+    return {
+      recordsRead: 0,
+      recordsSent: 0,
+      malformedLines: 0,
+      batchesAttempted: 0,
+      batchesSucceeded: 0,
+      skippedReason: 'sync-interval-not-elapsed',
+    };
+  }
+
+  const fallbackIso = new Date(nowMs).toISOString();
+  const nextState: CloudSyncState = {
+    version: 1,
+    lastSyncAtMs: state.lastSyncAtMs,
+    files: {
+      gates: { offset: state.files.gates.offset },
+      flow: { offset: state.files.flow.offset },
+    },
+  };
+
+  let malformedLines = 0;
+  let recordsRead = 0;
+  let recordsSent = 0;
+  let batchesAttempted = 0;
+  let batchesSucceeded = 0;
+  let syncFailed = false;
+  let stateChanged = false;
+
+  for (const source of [TELEMETRY_SOURCE.GATES, TELEMETRY_SOURCE.FLOW] as const) {
+    const filePath = resolveTelemetryPath(workspaceRoot, source);
+    const sourceLines = readTelemetryLinesFromOffset({
+      filePath,
+      source,
+      initialOffset: getSourceOffset(nextState, source),
+      logger,
+      fallbackIso,
+    });
+
+    malformedLines += sourceLines.malformedLines;
+    let acknowledgedOffset = sourceLines.effectiveOffset;
+    let index = 0;
+
+    while (index < sourceLines.items.length) {
+      const currentLine = sourceLines.items[index];
+
+      if (currentLine?.record === null) {
+        acknowledgedOffset = currentLine.offsetAfterLine;
+        stateChanged = true;
+        index += 1;
+        continue;
+      }
+
+      const batch: CloudTelemetryRecord[] = [];
+      let lastBatchOffset = acknowledgedOffset;
+
+      while (
+        index < sourceLines.items.length &&
+        sourceLines.items[index]?.record !== null &&
+        batch.length < config.batchSize
+      ) {
+        const line = sourceLines.items[index];
+        if (!line || line.record === null) {
+          break;
+        }
+        batch.push(line.record);
+        lastBatchOffset = line.offsetAfterLine;
+        index += 1;
+      }
+
+      recordsRead += batch.length;
+      batchesAttempted += 1;
+
+      try {
+        await pushTelemetryBatch({
+          endpoint: config.endpoint,
+          workspaceId: config.workspaceId,
+          token: config.token,
+          timeoutMs: config.timeoutMs,
+          records: batch,
+          fetchFn,
+        });
+        recordsSent += batch.length;
+        batchesSucceeded += 1;
+        acknowledgedOffset = lastBatchOffset;
+        stateChanged = true;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        warnCloudSync(logger, `Telemetry sync failed: ${message}`);
+        syncFailed = true;
+        break;
+      }
+    }
+
+    setSourceOffset(nextState, source, acknowledgedOffset);
+    if (syncFailed) {
+      break;
+    }
+  }
+
+  if (stateChanged) {
+    if (!syncFailed) {
+      nextState.lastSyncAtMs = nowMs;
+    }
+    saveCloudSyncState(statePath, nextState);
+  } else if (!syncFailed) {
+    nextState.lastSyncAtMs = nowMs;
+    saveCloudSyncState(statePath, nextState);
+  }
+
+  return {
+    recordsRead,
+    recordsSent,
+    malformedLines,
+    batchesAttempted,
+    batchesSucceeded,
+    ...(syncFailed ? { skippedReason: 'sync-failed' as const } : {}),
+  };
 }
