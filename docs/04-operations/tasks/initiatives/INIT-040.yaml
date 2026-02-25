@@ -23,3 +23,5 @@ success_metrics:
   - SDK publishes without AGPL runtime dependency
   - OSS-complete CI gate enforces local-only test pass
 labels: []
+notes:
+  - 'related_plan: lumenflow://plans/clever-whistling-lobster.md'
