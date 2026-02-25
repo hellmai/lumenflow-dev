@@ -34,7 +34,7 @@ sections:
 - [WU-2154 — OSS-complete CI gate for local-only test pass](wu/WU-2154.yaml) — Operations: Tooling
 - [WU-2158 — Add co-change gate to Software Delivery Pack](wu/WU-2158.yaml) — Framework: Core Lifecycle
 - [WU-2162 — Extract wu:done policy functions](wu/WU-2162.yaml) — Framework: CLI WU Commands
-- [WU-2163 — A2: Extract wu:done git operation helpers](wu/WU-2163.yaml) — Framework: CLI WU Commands
+- [WU-2163 — Extract wu:done git operation helpers](wu/WU-2163.yaml) — Framework: CLI WU Commands
 - [WU-2164 — A3: Extract wu:done preflight CLI module](wu/WU-2164.yaml) — Framework: CLI WU Commands
 - [WU-2165 — A4: Extract wu:done gates orchestration module](wu/WU-2165.yaml) — Framework: CLI WU Commands
 - [WU-2166 — A5: Extract wu:done memory and telemetry module](wu/WU-2166.yaml) — Framework: CLI WU Commands

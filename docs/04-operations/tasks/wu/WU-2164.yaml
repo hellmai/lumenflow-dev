@@ -1,5 +1,5 @@
 id: WU-2164
-title: 'A3: Extract wu:done preflight CLI module'
+title: Extract wu:done preflight CLI module
 lane: 'Framework: CLI WU Commands'
 type: refactor
 status: ready
