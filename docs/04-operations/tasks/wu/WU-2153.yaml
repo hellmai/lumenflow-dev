@@ -1,0 +1,41 @@
+id: WU-2153
+title: Session lifecycle hooks for control-plane registration
+lane: 'Framework: Agent'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-25
+code_paths:
+  - packages/@lumenflow/agent/src/auto-session-integration.ts
+tests:
+  manual:
+    - pnpm gates
+  unit:
+    - packages/@lumenflow/agent/src/__tests__/session-lifecycle-hooks.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2153.done
+dependencies: []
+initiative: INIT-040
+phase: 3
+blocked_by:
+  - WU-2149
+spec_refs:
+  - /home/USER/.claude/plans/clever-whistling-lobster.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Add optional session register/deregister calls in startSessionForWU and endSessionForWU auto-session lifecycle hooks. Only active when control_plane is configured. Fail-open on all remote errors.
+acceptance:
+  - Session registered on wu:claim when control_plane configured
+  - Session deregistered on wu:done when control_plane configured
+  - No-op when control_plane not configured
+  - Remote registration failure does not block claim or done
+  - pnpm gates passes
