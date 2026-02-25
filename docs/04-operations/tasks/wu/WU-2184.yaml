@@ -8,7 +8,8 @@ created: 2026-02-25
 code_paths:
   - packages/@lumenflow/core/src/telemetry.ts
 tests:
-  manual: []
+  manual:
+    - Verify resolveCloudSyncConfig warns when control_plane nested under software_delivery
   unit:
     - packages/@lumenflow/core/src/__tests__/telemetry.test.ts
   e2e: []
