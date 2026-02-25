@@ -550,8 +550,7 @@ export const WU_CREATE_OPTIONS: Record<string, WUOption> = {
   estimatedToolCalls: {
     name: 'estimatedToolCalls',
     flags: '--estimated-tool-calls <count>',
-    description:
-      'Optional sizing estimate: expected number of tool calls (non-negative integer)',
+    description: 'Optional sizing estimate: expected number of tool calls (non-negative integer)',
   },
   sizingStrategy: {
     name: 'sizingStrategy',

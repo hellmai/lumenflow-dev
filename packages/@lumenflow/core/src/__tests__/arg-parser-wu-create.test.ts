@@ -24,9 +24,7 @@ describe('WU_CREATE_OPTIONS', () => {
     expect(WU_CREATE_OPTIONS.estimatedToolCalls.flags).toBe('--estimated-tool-calls <count>');
     expect(WU_CREATE_OPTIONS.sizingStrategy.flags).toBe('--sizing-strategy <strategy>');
     expect(WU_CREATE_OPTIONS.sizingExceptionType.flags).toBe('--sizing-exception-type <type>');
-    expect(WU_CREATE_OPTIONS.sizingExceptionReason.flags).toBe(
-      '--sizing-exception-reason <text>',
-    );
+    expect(WU_CREATE_OPTIONS.sizingExceptionReason.flags).toBe('--sizing-exception-reason <text>');
   });
 
   describe('--plan flag', () => {

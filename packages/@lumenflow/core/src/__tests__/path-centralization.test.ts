@@ -543,7 +543,9 @@ describe('WU-1310: Core path centralization', () => {
       expect(config.directories.startingPromptPath).toBe(
         'docs/_frameworks/lumenflow/agent/onboarding/starting-prompt.md',
       );
-      expect(config.directories.sizingGuidePath).toBe('docs/_frameworks/lumenflow/wu-sizing-guide.md');
+      expect(config.directories.sizingGuidePath).toBe(
+        'docs/_frameworks/lumenflow/wu-sizing-guide.md',
+      );
       expect(config.directories.governancePath).toBe('docs/governance/project-governance.md');
     });
   });
