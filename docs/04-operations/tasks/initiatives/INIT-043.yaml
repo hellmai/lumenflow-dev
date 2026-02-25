@@ -1,0 +1,13 @@
+id: INIT-043
+slug: environment-variable-hardening
+title: Environment Variable Hardening
+description: ''
+status: draft
+priority: P2
+owner: tom@hellm.ai
+created: 2026-02-25
+phases: []
+success_metrics:
+  - Raw process.env usage is reduced to approved patterns
+  - Startup env validation provides actionable diagnostics
+labels: []
