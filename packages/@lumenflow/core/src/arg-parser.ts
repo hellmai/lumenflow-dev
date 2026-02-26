@@ -237,6 +237,13 @@ export const WU_OPTIONS: Record<string, WUOption> = {
     isNegated: true,
   },
 
+  // WU-2211: Finalize-only mode for already-merged WUs
+  alreadyMerged: {
+    name: 'alreadyMerged',
+    flags: '--already-merged',
+    description: 'Skip merge phase; finalize metadata only (stamp/backlog/status) for code already on main (WU-2211)',
+  },
+
   // Initiative system options (WU-1247)
   initiative: {
     name: 'initiative',
@@ -882,6 +889,7 @@ export function parseWUArgs(argv: string[]): OptionValues {
     WU_OPTIONS.prDraft,
     WU_OPTIONS.overrideOwner,
     WU_OPTIONS.noAutoRebase,
+    WU_OPTIONS.alreadyMerged,
 
     WU_OPTIONS.requireAgents,
     WU_OPTIONS.client,
