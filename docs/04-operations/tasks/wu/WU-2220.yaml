@@ -8,7 +8,8 @@ created: 2026-02-26
 code_paths:
   - packages/@lumenflow/cli/src/release.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm release --dry-run and verify no files appear on main checkout
   unit:
     - packages/@lumenflow/cli/src/__tests__/release.test.ts
   e2e: []
@@ -25,7 +26,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: WU-2219 restored micro-worktree isolation but getWorkspacePackedFiles calls runCommandCapture without passing the worktree cwd. This causes pnpm pack --dry-run to run against main checkout, generating packs/ artifacts on main. The cwd must be threaded through validateReleaseArtifactsForPublish to getWorkspacePackedFiles.
+description: WU-2219 restored micro-worktree isolation but getWorkspacePackedFiles calls
+  runCommandCapture without passing the worktree cwd. This causes pnpm pack --dry-run to run against
+  main checkout, generating packs/ artifacts on main. The cwd must be threaded through
+  validateReleaseArtifactsForPublish to getWorkspacePackedFiles.
 acceptance:
   - getWorkspacePackedFiles passes worktree cwd to runCommandCapture
   - validateReleaseArtifactsForPublish accepts and forwards cwd parameter
