@@ -2,7 +2,7 @@ id: WU-2201
 title: 'Phase 1: Canonicalize sync adapter types under ISyncValidatorGitAdapter'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -45,4 +45,9 @@ acceptance:
   - Core tests covering ensureMainUpToDate/validateMainNotBehindOrigin/service validation pass
 approved_by:
   - tom@hellm.ai
-approved_at: 2026-02-26T12:53:10.987Z
+approved_at: 2026-02-26T12:54:36.461Z
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2201
+claimed_at: 2026-02-26T12:54:36.453Z
+baseline_main_sha: c5a44fc1da690f74c9347308018e922ada2ff9f9
+session_id: f36976ce-4014-408c-8fe4-c244fd2cf9f5
