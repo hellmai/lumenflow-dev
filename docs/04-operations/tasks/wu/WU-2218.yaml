@@ -1,0 +1,32 @@
+id: WU-2218
+title: Pre-release formatting fix for v3.6.0
+lane: 'Operations: Tooling'
+type: chore
+status: ready
+priority: P2
+created: 2026-02-26
+code_paths:
+  - packages/@lumenflow/cli/src,packages/@lumenflow/core/src
+tests:
+  manual:
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2218.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-2218-plan.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Fix prettier formatting in 4 files before v3.6.0 release
+acceptance:
+  - All 4 files pass prettier --check
