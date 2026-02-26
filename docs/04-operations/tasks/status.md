@@ -4,7 +4,7 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2188 — Document multi-pack config architecture and updated config:set/get](wu/WU-2188.yaml)
 
 ## Completed
 

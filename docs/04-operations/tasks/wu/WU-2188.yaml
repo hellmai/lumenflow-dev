@@ -2,7 +2,7 @@ id: WU-2188
 title: Document multi-pack config architecture and updated config:set/get
 lane: 'Content: Site Comms'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -44,3 +44,11 @@ acceptance:
   - create-a-pack guide documents config_key and config_schema manifest fields
   - config-commands.mdx shows fully-qualified key examples
   - No docs reference implicit software_delivery prefix
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/content-site-comms-wu-2188
+claimed_at: 2026-02-26T00:05:43.579Z
+baseline_main_sha: 102aec217ec04301617d14b9666362a87e338da3
+session_id: 5ebc718b-e39a-4292-9b77-042150308620
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T00:05:43.587Z
