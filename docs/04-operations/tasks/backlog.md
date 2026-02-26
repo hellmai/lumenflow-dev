@@ -49,7 +49,6 @@ sections:
 - [WU-2177 — Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
 - [WU-2209 — Collision-safe wu:create retry on push race](wu/WU-2209.yaml) — Framework: Core Lifecycle
-- [WU-2212 — Break-glass WU finalization tool (no dist dependency)](wu/WU-2212.yaml) — Operations: Tooling
 - [WU-2213 — Duplicate-ID detector and repair command](wu/WU-2213.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
@@ -57,6 +56,7 @@ sections:
 - [WU-2208 — Remote-aware WU ID generation to prevent cross-machine collisions](wu/WU-2208.yaml) — Framework: Core Lifecycle
 - [WU-2214 — BUG: hook redirect regex false-positives on arrow notation in arguments](wu/WU-2214.yaml) — Framework: CLI Enforcement
 - [WU-2211 — wu:done --already-merged finalize-only mode](wu/WU-2211.yaml) — Framework: CLI WU Commands
+- [WU-2212 — Break-glass WU finalization tool (no dist dependency)](wu/WU-2212.yaml) — Operations: Tooling
 
 ## ⛔ Blocked
 

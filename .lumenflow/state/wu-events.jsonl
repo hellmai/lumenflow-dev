@@ -2347,3 +2347,4 @@
 {"type":"claim","wuId":"WU-2208","timestamp":"2026-02-26T14:02:45.163Z","lane":"Framework: Core Lifecycle","title":"Remote-aware WU ID generation to prevent cross-machine collisions"}
 {"type":"claim","wuId":"WU-2214","timestamp":"2026-02-26T14:03:20.530Z","lane":"Framework: CLI Enforcement","title":"BUG: hook redirect regex false-positives on arrow notation in arguments"}
 {"type":"claim","wuId":"WU-2211","timestamp":"2026-02-26T14:04:03.004Z","lane":"Framework: CLI WU Commands","title":"wu:done --already-merged finalize-only mode"}
+{"type":"claim","wuId":"WU-2212","timestamp":"2026-02-26T14:04:33.911Z","lane":"Operations: Tooling","title":"Break-glass WU finalization tool (no dist dependency)"}

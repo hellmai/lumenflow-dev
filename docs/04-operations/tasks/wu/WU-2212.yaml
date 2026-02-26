@@ -2,7 +2,7 @@ id: WU-2212
 title: Break-glass WU finalization tool (no dist dependency)
 lane: 'Operations: Tooling'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -32,7 +32,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Provide standalone recovery tool for bootstrap failures when CLI dist is broken. Prefer wu-stamp.mjs (Node built-ins only, no project build dependency) over raw bash. Tool creates stamp, appends schema-safe event to wu-events.jsonl, commits via micro-worktree pattern. Clear break-glass-only warnings. Idempotent and auditable.
+description: Provide standalone recovery tool for bootstrap failures when CLI dist is broken. Prefer
+  wu-stamp.mjs (Node built-ins only, no project build dependency) over raw bash. Tool creates stamp,
+  appends schema-safe event to wu-events.jsonl, commits via micro-worktree pattern. Clear
+  break-glass-only warnings. Idempotent and auditable.
 acceptance:
   - scripts/wu-stamp.mjs runs without packages/*/dist
   - Creates valid .lumenflow/stamps/WU-XXX.done file
@@ -40,3 +43,11 @@ acceptance:
   - Commits atomically via micro-worktree pattern
   - Idempotent on re-run (no duplicate stamps or events)
   - Prints break-glass warning on execution
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-2212
+claimed_at: 2026-02-26T14:04:33.867Z
+baseline_main_sha: d6420282a26da29df2ba0d5ef7f407a0d58b3161
+session_id: e4013ae0-f26b-45b2-9d01-e4f287e11263
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T14:04:33.871Z
