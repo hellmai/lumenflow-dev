@@ -6,6 +6,7 @@ _Last updated: 2026-02-26_
 
 - [WU-2196 — Runtime boot rejects legacy workspaces with software_delivery but no SD pack pin](wu/WU-2196.yaml)
 - [WU-2198 — Fix wu-done ensureMainUpToDate swallowing ProcessExitError from die()](wu/WU-2198.yaml)
+- [WU-2197 — findStrippedKeys rejects writes due to pre-existing unknown keys in unrelated paths](wu/WU-2197.yaml)
 
 ## Completed
 
