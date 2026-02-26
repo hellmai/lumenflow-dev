@@ -16,12 +16,12 @@ CLI commands for safely reading and modifying `workspace.yaml` with Zod schema v
 
 When you provide a key, both `config:set` and `config:get` route it based on its first segment:
 
-| First segment matches        | Behavior                                                                       | Example key                               |
-| ---------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------- |
-| **Writable root key**        | Writes/reads directly at the workspace root                                    | `control_plane.sync_interval`             |
-| **Pack config key**          | Writes/reads under the pack's config block, validated against the pack schema  | `software_delivery.gates.minCoverage`     |
-| **Managed root key**         | Error with guidance: "use `<command>` instead"                                 | `packs`, `lanes`, `security`              |
-| **Unknown key**              | Error with did-you-mean suggestion if possible                                 | `gates.minCoverage`                       |
+| First segment matches | Behavior                                                                      | Example key                           |
+| --------------------- | ----------------------------------------------------------------------------- | ------------------------------------- |
+| **Writable root key** | Writes/reads directly at the workspace root                                   | `control_plane.sync_interval`         |
+| **Pack config key**   | Writes/reads under the pack's config block, validated against the pack schema | `software_delivery.gates.minCoverage` |
+| **Managed root key**  | Error with guidance: "use `<command>` instead"                                | `packs`, `lanes`, `security`          |
+| **Unknown key**       | Error with did-you-mean suggestion if possible                                | `gates.minCoverage`                   |
 
 ### Writable root keys
 
@@ -71,11 +71,11 @@ pnpm config:set --key <dotpath> --value <value>
 
 ### Arguments
 
-| Flag      | Required | Description                                                                       |
-| --------- | -------- | --------------------------------------------------------------------------------- |
+| Flag      | Required | Description                                                                              |
+| --------- | -------- | ---------------------------------------------------------------------------------------- |
 | `--key`   | Yes      | Fully qualified config key in dot notation (e.g., `software_delivery.gates.minCoverage`) |
-| `--value` | Yes      | Value to set (comma-separated for array append)                                   |
-| `--help`  | No       | Show usage information                                                            |
+| `--value` | Yes      | Value to set (comma-separated for array append)                                          |
+| `--help`  | No       | Show usage information                                                                   |
 
 ### Examples
 
@@ -165,10 +165,10 @@ pnpm config:get --key <dotpath>
 
 ### Arguments
 
-| Flag     | Required | Description                                                                       |
-| -------- | -------- | --------------------------------------------------------------------------------- |
+| Flag     | Required | Description                                                                                |
+| -------- | -------- | ------------------------------------------------------------------------------------------ |
 | `--key`  | Yes      | Fully qualified config key in dot notation (e.g., `software_delivery.methodology.testing`) |
-| `--help` | No       | Show usage information                                                            |
+| `--help` | No       | Show usage information                                                                     |
 
 ### Examples
 
@@ -202,27 +202,27 @@ pnpm config:get --key software_delivery.nonexistent.key
 
 ### Software Delivery pack (`software_delivery.*`)
 
-| Dotpath                                              | Type     | Values                         |
-| ---------------------------------------------------- | -------- | ------------------------------ |
-| `software_delivery.methodology.testing`              | enum     | `tdd`, `test-after`, `none`    |
-| `software_delivery.methodology.architecture`         | enum     | `hexagonal`, `layered`, `none` |
-| `software_delivery.gates.minCoverage`                | number   | 0-100                          |
-| `software_delivery.gates.enableCoverage`             | boolean  | `true`, `false`                |
-| `software_delivery.gates.maxEslintWarnings`          | number   | Non-negative integer           |
-| `software_delivery.experimental.context_validation`  | boolean  | `true`, `false`                |
-| `software_delivery.experimental.validation_mode`     | enum     | `off`, `warn`, `error`         |
-| `software_delivery.git.requireRemote`                | boolean  | `true`, `false`                |
-| `software_delivery.cleanup.trigger`                  | enum     | `on_done`, `on_init`, `manual` |
-| `software_delivery.agents.methodology.principles`    | string[] | Array of methodology names     |
+| Dotpath                                             | Type     | Values                         |
+| --------------------------------------------------- | -------- | ------------------------------ |
+| `software_delivery.methodology.testing`             | enum     | `tdd`, `test-after`, `none`    |
+| `software_delivery.methodology.architecture`        | enum     | `hexagonal`, `layered`, `none` |
+| `software_delivery.gates.minCoverage`               | number   | 0-100                          |
+| `software_delivery.gates.enableCoverage`            | boolean  | `true`, `false`                |
+| `software_delivery.gates.maxEslintWarnings`         | number   | Non-negative integer           |
+| `software_delivery.experimental.context_validation` | boolean  | `true`, `false`                |
+| `software_delivery.experimental.validation_mode`    | enum     | `off`, `warn`, `error`         |
+| `software_delivery.git.requireRemote`               | boolean  | `true`, `false`                |
+| `software_delivery.cleanup.trigger`                 | enum     | `on_done`, `on_init`, `manual` |
+| `software_delivery.agents.methodology.principles`   | string[] | Array of methodology names     |
 
 ### Kernel root keys
 
-| Dotpath                       | Type   | Description                              |
-| ----------------------------- | ------ | ---------------------------------------- |
-| `control_plane.sync_interval` | number | Seconds between control plane syncs      |
-| `control_plane.endpoint`      | string | Control plane API URL                    |
-| `memory_namespace`            | string | Namespace for memory layer isolation     |
-| `event_namespace`             | string | Namespace for kernel event stream        |
+| Dotpath                       | Type   | Description                          |
+| ----------------------------- | ------ | ------------------------------------ |
+| `control_plane.sync_interval` | number | Seconds between control plane syncs  |
+| `control_plane.endpoint`      | string | Control plane API URL                |
+| `memory_namespace`            | string | Namespace for memory layer isolation |
+| `event_namespace`             | string | Namespace for kernel event stream    |
 
 <Aside type="tip">
   For the complete list of configuration keys and their types, see the [Configuration

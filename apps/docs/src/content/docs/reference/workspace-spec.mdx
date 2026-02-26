@@ -57,18 +57,18 @@ event_namespace: my-workspace
 
 All ten root keys recognized by the kernel's `WorkspaceSpecSchema`:
 
-| Field                | Type       | Required | Managed By                        | Description                                                    |
-| -------------------- | ---------- | -------- | --------------------------------- | -------------------------------------------------------------- |
-| `id`                 | string     | Yes      | `workspace-init`                  | Unique workspace identifier                                    |
-| `name`               | string     | Yes      | `workspace-init`                  | Human-readable workspace name                                  |
-| `packs`              | PackPin[]  | No       | `pack:install`                    | Array of [pack pins](#pack-pins) to load                       |
-| `lanes`              | LaneSpec[] | No       | `lane:edit`                       | Array of [lane definitions](#lane-definitions)                 |
-| `policies`           | object     | No       | `policy:set`                      | Workspace-level policy overrides                               |
-| `security`           | object     | No       | `security:set`                    | Workspace-level [security config](#security)                   |
-| `software_delivery`  | object     | No       | `config:set` (pack config)        | Software Delivery pack configuration (see below)               |
-| `control_plane`      | object     | No       | `config:set` (writable root key)  | Control plane connection and sync settings                     |
-| `memory_namespace`   | string     | No       | `config:set` (writable root key)  | Namespace for memory layer isolation                           |
-| `event_namespace`    | string     | No       | `config:set` (writable root key)  | Namespace for kernel event stream isolation                    |
+| Field               | Type       | Required | Managed By                       | Description                                      |
+| ------------------- | ---------- | -------- | -------------------------------- | ------------------------------------------------ |
+| `id`                | string     | Yes      | `workspace-init`                 | Unique workspace identifier                      |
+| `name`              | string     | Yes      | `workspace-init`                 | Human-readable workspace name                    |
+| `packs`             | PackPin[]  | No       | `pack:install`                   | Array of [pack pins](#pack-pins) to load         |
+| `lanes`             | LaneSpec[] | No       | `lane:edit`                      | Array of [lane definitions](#lane-definitions)   |
+| `policies`          | object     | No       | `policy:set`                     | Workspace-level policy overrides                 |
+| `security`          | object     | No       | `security:set`                   | Workspace-level [security config](#security)     |
+| `software_delivery` | object     | No       | `config:set` (pack config)       | Software Delivery pack configuration (see below) |
+| `control_plane`     | object     | No       | `config:set` (writable root key) | Control plane connection and sync settings       |
+| `memory_namespace`  | string     | No       | `config:set` (writable root key) | Namespace for memory layer isolation             |
+| `event_namespace`   | string     | No       | `config:set` (writable root key) | Namespace for kernel event stream isolation      |
 
 <Aside type="note">
   All config keys must be **fully qualified from the workspace root**. For example, use
@@ -91,8 +91,8 @@ The `software_delivery` field is **optional**. If the Software Delivery pack is 
 
 <Aside type="tip">
   Any custom pack can declare its own `config_key`. For example, a `customer-support` pack could
-  declare `config_key: customer_support`, making `customer_support.*` keys writable via `config:set`.
-  See the [Create a Pack](/guides/create-a-pack) guide for details.
+  declare `config_key: customer_support`, making `customer_support.*` keys writable via
+  `config:set`. See the [Create a Pack](/guides/create-a-pack) guide for details.
 </Aside>
 
 ## Pack Pins
@@ -211,19 +211,19 @@ pnpm task:inspect --workspace-root .
 The `software_delivery` root key is a **pack config block** owned by the Software Delivery pack. It exists in `workspace.yaml` only when the pack is pinned and declares `config_key: software_delivery` in its manifest.
 
 | Concern        | `workspace.yaml` top-level (kernel)  | `workspace.yaml > software_delivery` (pack) |
-| -------------- | ------------------------------------ | -------------------------------------------- |
-| **Audience**   | Kernel runtime                       | CLI and tooling layer                        |
-| **Lanes**      | `LaneSpec` (`id`, scopes, wip)       | Lane definitions (`name`, code_paths)        |
-| **Packs**      | `PackPin` (`id`, version, integrity) | Not present                                  |
-| **Security**   | Scope intersection boundaries        | Git hooks, safe-git wrapper                  |
-| **Gates**      | Pack policies (`on_completion`)      | Gate commands (format, lint, test)            |
-| **Validation** | Zod `WorkspaceSpecSchema` at init    | Pack config schema via `config:set`          |
+| -------------- | ------------------------------------ | ------------------------------------------- |
+| **Audience**   | Kernel runtime                       | CLI and tooling layer                       |
+| **Lanes**      | `LaneSpec` (`id`, scopes, wip)       | Lane definitions (`name`, code_paths)       |
+| **Packs**      | `PackPin` (`id`, version, integrity) | Not present                                 |
+| **Security**   | Scope intersection boundaries        | Git hooks, safe-git wrapper                 |
+| **Gates**      | Pack policies (`on_completion`)      | Gate commands (format, lint, test)          |
+| **Validation** | Zod `WorkspaceSpecSchema` at init    | Pack config schema via `config:set`         |
 
 <Aside type="caution">
-  The `software_delivery` block is validated in two phases. Phase 1 validates kernel root keys
-  at startup. Phase 2 resolves pack manifest `config_key` declarations and validates pack-specific
-  configuration. This two-phase approach allows workspaces to boot even when pack configuration
-  is incomplete.
+  The `software_delivery` block is validated in two phases. Phase 1 validates kernel root keys at
+  startup. Phase 2 resolves pack manifest `config_key` declarations and validates pack-specific
+  configuration. This two-phase approach allows workspaces to boot even when pack configuration is
+  incomplete.
 </Aside>
 
 ## Next Steps

@@ -120,10 +120,10 @@ config_key: software_delivery
 # config_schema: ./config-schema.ts  # optional Zod schema path
 ```
 
-| Field           | Description                                                                                                 |
-| --------------- | ----------------------------------------------------------------------------------------------------------- |
+| Field           | Description                                                                                                   |
+| --------------- | ------------------------------------------------------------------------------------------------------------- |
 | `config_key`    | Declares which root key in `workspace.yaml` holds this pack's config. Must be unique across all loaded packs. |
-| `config_schema` | Optional path (relative to pack root) to a Zod schema module that validates config values on write.         |
+| `config_schema` | Optional path (relative to pack root) to a Zod schema module that validates config values on write.           |
 
 When a pack declares `config_key: software_delivery`:
 
@@ -134,8 +134,8 @@ When a pack declares `config_key: software_delivery`:
 
 <Aside type="tip">
   Any pack can declare its own `config_key`. A hypothetical `customer-support` pack could use
-  `config_key: customer_support`, making `customer_support.routing_rules` a valid config path.
-  Each pack's config key must be unique across all packs pinned in the workspace.
+  `config_key: customer_support`, making `customer_support.routing_rules` a valid config path. Each
+  pack's config key must be unique across all packs pinned in the workspace.
 </Aside>
 
 ### Tool entry schema
