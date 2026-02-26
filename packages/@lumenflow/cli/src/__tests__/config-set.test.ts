@@ -545,12 +545,7 @@ describe('WU-2190 Bug A: root key schema validation', () => {
 
   it('allows valid control_plane.sync_interval write', () => {
     const workspace = createMinimalWorkspace();
-    const result = applyConfigSet(
-      workspace,
-      'control_plane.sync_interval',
-      '60',
-      PACK_CONFIG_KEYS,
-    );
+    const result = applyConfigSet(workspace, 'control_plane.sync_interval', '60', PACK_CONFIG_KEYS);
     expect(result.ok).toBe(true);
     expect(getConfigValue(result.config!, 'control_plane.sync_interval')).toBe(60);
   });
