@@ -85,6 +85,7 @@ async function writeWorkspaceFixture(root: string): Promise<void> {
       '  active: in_progress',
       'evidence_types: []',
       'lane_templates: []',
+      'config_key: software_delivery',
     ].join('\n'),
     'utf8',
   );
