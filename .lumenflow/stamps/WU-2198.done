@@ -1,0 +1,2 @@
+WU WU-2198 — Fix wu-done ensureMainUpToDate swallowing ProcessExitError from die()
+Completed: 2026-02-26
