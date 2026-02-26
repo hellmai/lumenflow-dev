@@ -19,9 +19,18 @@ dependencies: []
 spec_refs:
   - memory/distributed-state-audit.md
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  tdd-exception: standalone break-glass script using only Node built-ins, no project imports
+  available for unit testing. Manual test plan defined in WU spec.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-26T14:04:33.867Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-2212
+session_id: e4013ae0-f26b-45b2-9d01-e4f287e11263
 exposure: backend-only
 sizing_estimate:
   estimated_files: 3
@@ -29,6 +38,9 @@ sizing_estimate:
   strategy: single-session
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T14:04:33.871Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +55,3 @@ acceptance:
   - Commits atomically via micro-worktree pattern
   - Idempotent on re-run (no duplicate stamps or events)
   - Prints break-glass warning on execution
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/operations-tooling-wu-2212
-claimed_at: 2026-02-26T14:04:33.867Z
-baseline_main_sha: d6420282a26da29df2ba0d5ef7f407a0d58b3161
-session_id: e4013ae0-f26b-45b2-9d01-e4f287e11263
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-26T14:04:33.871Z
