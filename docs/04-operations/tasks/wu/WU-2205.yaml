@@ -7,9 +7,7 @@ priority: P1
 created: 2026-02-26
 code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/cli/src/wu-done-git-ops.ts
-  - packages/@lumenflow/core/src/wu-done-main-sync.ts
-  - packages/@lumenflow/core/src/wu-done-worktree.ts
+  - packages/@lumenflow/core/src/sync-validator.ts
   - packages/@lumenflow/core/src/wu-done-worktree-services.ts
 tests:
   manual:
