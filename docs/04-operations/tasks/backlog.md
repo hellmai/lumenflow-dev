@@ -48,12 +48,12 @@ sections:
 - [WU-2176 — Document validator boundaries and ownership](wu/WU-2176.yaml) — Content: Framework Docs
 - [WU-2177 — Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
-- [WU-2196 — Runtime boot rejects legacy workspaces with software_delivery but no SD pack pin](wu/WU-2196.yaml) — Framework: Core Validation
 - [WU-2197 — findStrippedKeys rejects writes due to pre-existing unknown keys in unrelated paths](wu/WU-2197.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
 - [WU-2195 — config:set uses wrong control_plane schema (core vs kernel)](wu/WU-2195.yaml) — Framework: CLI WU Commands
+- [WU-2196 — Runtime boot rejects legacy workspaces with software_delivery but no SD pack pin](wu/WU-2196.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 

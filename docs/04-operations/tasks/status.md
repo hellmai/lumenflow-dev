@@ -5,6 +5,7 @@ _Last updated: 2026-02-26_
 ## In Progress
 
 - [WU-2195 — config:set uses wrong control_plane schema (core vs kernel)](wu/WU-2195.yaml)
+- [WU-2196 — Runtime boot rejects legacy workspaces with software_delivery but no SD pack pin](wu/WU-2196.yaml)
 
 ## Completed
 

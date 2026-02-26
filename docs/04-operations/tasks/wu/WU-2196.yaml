@@ -2,7 +2,7 @@ id: WU-2196
 title: Runtime boot rejects legacy workspaces with software_delivery but no SD pack pin
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/kernel/src/kernel.schemas.ts
 tests:
   manual:
-    - Run kernel startup with packs:[] and software_delivery:{...} and verify actionable migration error
+    - Run kernel startup with packs:[] and software_delivery:{...} and verify actionable migration
+      error
   unit:
     - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
   e2e: []
@@ -31,9 +32,25 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: validateWorkspaceRootKeys (kernel.schemas.ts:245) called at runtime boot (kernel-runtime.ts:1358) rejects any root key not in KERNEL_OWNED_ROOT_KEYS or declared by a pinned pack config_key. software_delivery is intentionally not kernel-owned (kernel.schemas.ts:205). WU-2193 made new workspaces pin SD by default, but pre-existing workspaces with packs:[] + software_delivery:{...} now hard-fail at boot with 'Unknown workspace root key software_delivery'. Need explicit migration path with clear error message and one-step remediation — not a silent fallback.
+description: validateWorkspaceRootKeys (kernel.schemas.ts:245) called at runtime boot
+  (kernel-runtime.ts:1358) rejects any root key not in KERNEL_OWNED_ROOT_KEYS or declared by a
+  pinned pack config_key. software_delivery is intentionally not kernel-owned
+  (kernel.schemas.ts:205). WU-2193 made new workspaces pin SD by default, but pre-existing
+  workspaces with packs:[] + software_delivery:{...} now hard-fail at boot with 'Unknown workspace
+  root key software_delivery'. Need explicit migration path with clear error message and one-step
+  remediation — not a silent fallback.
 acceptance:
-  - Runtime boot detects legacy workspace shape (software_delivery present, no SD pack pinned) and emits an actionable migration error with one-step remediation command or instructions
+  - Runtime boot detects legacy workspace shape (software_delivery present, no SD pack pinned) and
+    emits an actionable migration error with one-step remediation command or instructions
   - No silent fallback or auto-migration — user must explicitly act
   - Workspaces that have already pinned SD pack continue to boot normally
-  - 'Migration tests cover: legacy workspace rejected with actionable message, migrated workspace boots cleanly, workspace without software_delivery boots cleanly'
+  - 'Migration tests cover: legacy workspace rejected with actionable message, migrated workspace
+    boots cleanly, workspace without software_delivery boots cleanly'
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2196
+claimed_at: 2026-02-26T12:10:13.823Z
+baseline_main_sha: 90ff96daa95589cde75095be32c12ce5ac50a036
+session_id: cfa88a85-3208-4e6c-b01f-14425ae6c856
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T12:10:13.829Z
