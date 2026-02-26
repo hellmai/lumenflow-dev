@@ -2,7 +2,7 @@ id: WU-2196
 title: Runtime boot rejects legacy workspaces with software_delivery but no SD pack pin
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -52,3 +52,6 @@ acceptance:
   - Workspaces that have already pinned SD pack continue to boot normally
   - 'Migration tests cover: legacy workspace rejected with actionable message, migrated workspace
     boots cleanly, workspace without software_delivery boots cleanly'
+locked: true
+completed_at: 2026-02-26T12:27:56.426Z
+completed: 2026-02-26
