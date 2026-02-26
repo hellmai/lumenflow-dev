@@ -2,7 +2,7 @@ id: WU-2211
 title: wu:done --already-merged finalize-only mode
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -34,10 +34,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'When code is already on main but WU metadata is incomplete (bootstrap failure, manual merge, aborted wu:done), wu:done requires a worktree that may not exist. Add --already-merged flag to skip merge phase and write stamp/events/backlog via micro-worktree. Safety check: verify code_paths exist on HEAD. Reuse existing metadata transaction from wu-done-metadata.ts.'
+description: 'When code is already on main but WU metadata is incomplete (bootstrap failure, manual
+  merge, aborted wu:done), wu:done requires a worktree that may not exist. Add --already-merged flag
+  to skip merge phase and write stamp/events/backlog via micro-worktree. Safety check: verify
+  code_paths exist on HEAD. Reuse existing metadata transaction from wu-done-metadata.ts.'
 acceptance:
   - wu:done --already-merged --id WU-XXX skips merge phase entirely
   - Safety check verifies code_paths from YAML exist on HEAD of main
   - Stamp, completion event, backlog, and status are written via micro-worktree commit
   - Re-running is idempotent (stamp already_exists is not an error)
   - Fails with clear error if code_paths are NOT on main
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2211
+claimed_at: 2026-02-26T14:04:02.958Z
+baseline_main_sha: 6515ca98f23a460e3a03d623972ccf507a69e5ea
+session_id: e4013ae0-f26b-45b2-9d01-e4f287e11263
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T14:04:02.964Z
