@@ -2,7 +2,7 @@ id: WU-2222
 title: Separate wu:brief evidence from delegation spawning
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -27,9 +27,12 @@ code_paths:
   - packages/@lumenflow/cli/templates/vendors/claude/.claude/skills/initiative-management/SKILL.md.template
 tests:
   manual:
-    - From claimed workspace, run pnpm wu:brief --id <WU-ID> --client codex-cli --evidence-only and verify wu-events evidence is written with no spawn prompt output
-    - Run pnpm wu:brief --id <WU-ID> --client codex-cli (default mode) and verify prompt output + evidence behavior remains intact
-    - Trigger missing-evidence path in wu:done and verify remediation text points to evidence-only self-implementation flow
+    - From claimed workspace, run pnpm wu:brief --id <WU-ID> --client codex-cli --evidence-only and
+      verify wu-events evidence is written with no spawn prompt output
+    - Run pnpm wu:brief --id <WU-ID> --client codex-cli (default mode) and verify prompt output +
+      evidence behavior remains intact
+    - Trigger missing-evidence path in wu:done and verify remediation text points to evidence-only
+      self-implementation flow
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
     - packages/@lumenflow/cli/src/__tests__/agent-spawn-coordination.test.ts
@@ -53,11 +56,30 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:done currently requires wu:brief evidence for feature/bug WUs, while agent docs/skills heavily frame wu:brief as a delegation+spawn precursor. Problem: delegation and self-implementation intents are conflated, which causes unnecessary Task spawning and inconsistent guidance across code/help/docs/templates. Solution: add an explicit self-implementation evidence path (wu:brief --evidence-only), align evidence enforcement with claimed workspace modes (including branch-pr), and update orchestration decision trees/docs so delegation and self-implementation are first-class distinct paths.'
+description: 'Context: wu:done currently requires wu:brief evidence for feature/bug WUs, while agent
+  docs/skills heavily frame wu:brief as a delegation+spawn precursor. Problem: delegation and
+  self-implementation intents are conflated, which causes unnecessary Task spawning and inconsistent
+  guidance across code/help/docs/templates. Solution: add an explicit self-implementation evidence
+  path (wu:brief --evidence-only), align evidence enforcement with claimed workspace modes
+  (including branch-pr), and update orchestration decision trees/docs so delegation and
+  self-implementation are first-class distinct paths.'
 acceptance:
-  - wu:brief supports an explicit evidence-only mode that records auditable evidence without emitting spawn prompt content
-  - wu:done remediation and policy messaging guide self-implementation flows to evidence-only path instead of implying delegation
-  - evidence recording/enforcement behavior is consistent for worktree and branch-pr claimed workflows
-  - orchestration and multi-agent decision trees distinguish delegation (brief/delegate + spawn) from self-implementation (brief evidence-only + implement in-session)
-  - agent onboarding docs and templates are consistent about wu:brief side effects and the self-implementation branch
+  - wu:brief supports an explicit evidence-only mode that records auditable evidence without
+    emitting spawn prompt content
+  - wu:done remediation and policy messaging guide self-implementation flows to evidence-only path
+    instead of implying delegation
+  - evidence recording/enforcement behavior is consistent for worktree and branch-pr claimed
+    workflows
+  - orchestration and multi-agent decision trees distinguish delegation (brief/delegate + spawn)
+    from self-implementation (brief evidence-only + implement in-session)
+  - agent onboarding docs and templates are consistent about wu:brief side effects and the
+    self-implementation branch
   - unit tests cover new flags/schemas/parser parity and pass/fail policy paths
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/lumenflow-dev/worktrees/framework-cli-wu-commands-wu-2222
+claimed_at: 2026-02-26T17:35:24.894Z
+baseline_main_sha: a3ef96391b719ae03bc39f0455c2676d76e23839
+session_id: ab643ebc-c040-4de1-80f3-2700b4540b7d
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T17:35:24.900Z
