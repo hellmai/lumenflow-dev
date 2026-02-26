@@ -468,22 +468,16 @@ function readConfigFromPath(configPath: string): LumenflowConfig | null {
   }
 }
 
-/** Sentinel to distinguish file-missing from parse-failure in readRuntimeConfig */
-const CONFIG_PARSE_FAILED = Symbol('CONFIG_PARSE_FAILED');
-
-/** Coerce CONFIG_PARSE_FAILED sentinel to null for callers that degrade gracefully */
-function coerceConfig(
-  config: LumenflowConfig | null | typeof CONFIG_PARSE_FAILED,
-): LumenflowConfig | null {
-  return config === CONFIG_PARSE_FAILED ? null : config;
+/** WU-2223: Discriminated result for readRuntimeConfig */
+interface RuntimeConfigResult {
+  kind: 'ok' | 'missing' | 'invalid';
+  config: LumenflowConfig | null;
 }
 
-function readRuntimeConfig(
-  projectRoot: string,
-): LumenflowConfig | null | typeof CONFIG_PARSE_FAILED {
+function readRuntimeConfig(projectRoot: string): RuntimeConfigResult {
   const workspacePath = path.join(projectRoot, WORKSPACE_CONFIG_FILE_NAME);
   if (!existsSync(workspacePath)) {
-    return null;
+    return { kind: 'missing', config: null };
   }
 
   try {
@@ -492,11 +486,10 @@ function readRuntimeConfig(
       reload: true,
       strictWorkspace: true,
     });
-    return { lanes: config.lanes as LumenflowConfig['lanes'] };
+    return { kind: 'ok', config: { lanes: config.lanes as LumenflowConfig['lanes'] } };
   } catch {
-    // WU-2223: Return sentinel instead of null so caller can distinguish
-    // file-missing (null) from parse-failure (CONFIG_PARSE_FAILED)
-    return CONFIG_PARSE_FAILED;
+    // WU-2223: Distinguish parse-failure from file-missing
+    return { kind: 'invalid', config: null };
   }
 }
 
@@ -512,20 +505,24 @@ function readRuntimeConfig(
  */
 function isValidParentLane(parent: string, configPath: string | null = null): boolean {
   const resolvedConfigPath = resolveConfigPath(configPath);
-  const config =
-    configPath !== null
-      ? readConfigFromPath(resolvedConfigPath)
-      : readRuntimeConfig(findProjectRoot());
 
-  // WU-2223: Distinguish file-missing from parse-failure
-  if (config === CONFIG_PARSE_FAILED) {
-    throw createError(
-      ErrorCodes.CONFIG_ERROR,
-      `workspace.yaml exists but failed validation: ${resolvedConfigPath}\n\n` +
-        'The control_plane section may have an incompatible schema.\n' +
-        'Run: pnpm lumenflow:doctor  to diagnose config issues.',
-      { path: resolvedConfigPath },
-    );
+  let config: LumenflowConfig | null;
+  if (configPath !== null) {
+    config = readConfigFromPath(resolvedConfigPath);
+  } else {
+    const result = readRuntimeConfig(findProjectRoot());
+
+    // WU-2223: Distinguish file-missing from parse-failure
+    if (result.kind === 'invalid') {
+      throw createError(
+        ErrorCodes.CONFIG_ERROR,
+        `workspace.yaml exists but failed validation: ${resolvedConfigPath}\n\n` +
+          'The control_plane section may have an incompatible schema.\n' +
+          'Run: pnpm lumenflow:doctor  to diagnose config issues.',
+        { path: resolvedConfigPath },
+      );
+    }
+    config = result.config;
   }
 
   if (!config) {
@@ -560,11 +557,9 @@ const DEFAULT_WIP_LIMIT = 1;
  * @returns {number} The WIP limit for the lane (default: 1)
  */
 export function getWipLimitForLane(lane: string, options: GetWipLimitOptions = {}): number {
-  const config = coerceConfig(
-    options.configPath
-      ? readConfigFromPath(options.configPath)
-      : readRuntimeConfig(findProjectRoot()),
-  );
+  const config = options.configPath
+    ? readConfigFromPath(options.configPath)
+    : readRuntimeConfig(findProjectRoot()).config;
   if (!config?.lanes) {
     return DEFAULT_WIP_LIMIT;
   }
@@ -601,11 +596,9 @@ interface GetLockPolicyOptions {
  * @returns {LockPolicy} The lock policy for the lane (default: 'all')
  */
 export function getLockPolicyForLane(lane: string, options: GetLockPolicyOptions = {}): LockPolicy {
-  const config = coerceConfig(
-    options.configPath
-      ? readConfigFromPath(options.configPath)
-      : readRuntimeConfig(findProjectRoot()),
-  );
+  const config = options.configPath
+    ? readConfigFromPath(options.configPath)
+    : readRuntimeConfig(findProjectRoot()).config;
   if (!config?.lanes) {
     return DEFAULT_LOCK_POLICY;
   }
@@ -955,11 +948,9 @@ export function checkWipJustification(
   lane: string,
   options: CheckWipJustificationOptions = {},
 ): CheckWipJustificationResult {
-  const config = coerceConfig(
-    options.configPath
-      ? readConfigFromPath(options.configPath)
-      : readRuntimeConfig(findProjectRoot()),
-  );
+  const config = options.configPath
+    ? readConfigFromPath(options.configPath)
+    : readRuntimeConfig(findProjectRoot()).config;
   if (!config) {
     return NO_JUSTIFICATION_REQUIRED;
   }
