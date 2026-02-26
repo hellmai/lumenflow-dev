@@ -745,7 +745,12 @@ async function resolveAvailablePackManifests(
       }
       const id = parsedManifest.id;
       const version = parsedManifest.version;
-      if (typeof id === 'string' && id.length > 0 && typeof version === 'string' && version.length > 0) {
+      if (
+        typeof id === 'string' &&
+        id.length > 0 &&
+        typeof version === 'string' &&
+        version.length > 0
+      ) {
         manifests.set(id, { id, version });
       }
     } catch {
