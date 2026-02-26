@@ -1,0 +1,31 @@
+id: WU-2221
+title: 'Release script: install deps in micro-worktree before build'
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-26
+code_paths:
+  - packages/@lumenflow/cli/src/release.ts
+tests:
+  manual:
+    - pnpm release --skip-publish succeeds end-to-end
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/release.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2221.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Release micro-worktree has no node_modules. Need pnpm install before pnpm build inside the worktree.
+acceptance:
+  - pnpm install runs in micro-worktree before build step
