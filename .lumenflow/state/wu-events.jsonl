@@ -2327,3 +2327,4 @@
 {"type":"checkpoint","wuId":"WU-2200","timestamp":"2026-02-26T12:44:01.558Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2200","timestamp":"2026-02-26T12:45:03.233Z"}
 {"type":"claim","wuId":"WU-2201","timestamp":"2026-02-26T12:53:11.013Z","lane":"Framework: Core Lifecycle","title":"Phase 1: Canonicalize sync adapter types under ISyncValidatorGitAdapter"}
+{"type":"release","wuId":"WU-2201","timestamp":"2026-02-26T12:54:02.421Z","reason":"Reset via wu:recover --action reset"}
