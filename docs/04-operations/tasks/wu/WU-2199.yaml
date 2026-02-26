@@ -2,7 +2,7 @@ id: WU-2199
 title: Define sync-validator semantics and consolidation plan for main-branch sync checks
 lane: 'Framework: Core Lifecycle'
 type: documentation
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -30,7 +30,14 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Architecture decision record for consolidating scattered main-branch sync logic. Currently: 4 type definitions for the same git adapter shape (wu-helpers.ts, wu-done-main-sync.ts, wu-done-git-ops.ts, wu-done-worktree-services.ts:129), 3 implementations of sync checks, and inconsistent semantics (exact parity vs not-behind vs fail-open). Must answer: (1) wu:done semantics — exact main==origin/main, or only not-behind? (2) fail-open vs fail-closed per command. (3) type consolidation into ports/sync-validator.ports.ts. (4) DI gaps in wu-done-git-ops.ts:216, wu-done-main-sync.ts:81, micro-worktree-shared.ts:317. Produces ADR + phased WU breakdown for implementation.'
+description: 'Architecture decision record for consolidating scattered main-branch sync logic.
+  Currently: 4 type definitions for the same git adapter shape (wu-helpers.ts, wu-done-main-sync.ts,
+  wu-done-git-ops.ts, wu-done-worktree-services.ts:129), 3 implementations of sync checks, and
+  inconsistent semantics (exact parity vs not-behind vs fail-open). Must answer: (1) wu:done
+  semantics — exact main==origin/main, or only not-behind? (2) fail-open vs fail-closed per command.
+  (3) type consolidation into ports/sync-validator.ports.ts. (4) DI gaps in wu-done-git-ops.ts:216,
+  wu-done-main-sync.ts:81, micro-worktree-shared.ts:317. Produces ADR + phased WU breakdown for
+  implementation.'
 acceptance:
   - ADR document written covering sync semantics per command and per mode
   - Type inventory with proposed canonical interface (ISyncValidatorGitAdapter)
@@ -38,3 +45,11 @@ acceptance:
   - Phased WU breakdown (types, module, withMicroWorktree, DI, wu:done simplification)
   - Decision on exact-parity vs not-behind for wu:done worktree mode
   - Decision on fail-open vs fail-closed per command
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2199
+claimed_at: 2026-02-26T12:25:42.752Z
+baseline_main_sha: 84ea8e929c4918172e5dee5e0fd017528d33c3db
+session_id: 0e8cdebb-e20f-4d8a-b588-28a4af59c705
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T12:25:42.758Z

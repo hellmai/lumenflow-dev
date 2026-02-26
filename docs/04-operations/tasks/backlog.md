@@ -48,11 +48,11 @@ sections:
 - [WU-2176 — Document validator boundaries and ownership](wu/WU-2176.yaml) — Content: Framework Docs
 - [WU-2177 — Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
-- [WU-2199 — Define sync-validator semantics and consolidation plan for main-branch sync checks](wu/WU-2199.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
 - [WU-2196 — Runtime boot rejects legacy workspaces with software_delivery but no SD pack pin](wu/WU-2196.yaml) — Framework: Core Validation
+- [WU-2199 — Define sync-validator semantics and consolidation plan for main-branch sync checks](wu/WU-2199.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 
