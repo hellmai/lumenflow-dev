@@ -2,7 +2,7 @@ id: WU-2210
 title: Migration remediation command missing --version and hardcodes --source local
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -31,8 +31,21 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'WU-2200 fixed remediation from config:set to pack:install but command is still not executable: (1) pack:install requires --version (pack-install.ts:692) but error omits it; (2) --source local hardcodes monorepo layout (DEFAULT_PACKS_ROOT at pack-install.ts:614) which fails for external consumers. Fix to use --source registry with valid version.'
+description: 'WU-2200 fixed remediation from config:set to pack:install but command is still not
+  executable: (1) pack:install requires --version (pack-install.ts:692) but error omits it; (2)
+  --source local hardcodes monorepo layout (DEFAULT_PACKS_ROOT at pack-install.ts:614) which fails
+  for external consumers. Fix to use --source registry with valid version.'
 acceptance:
-  - Remediation command includes all required pack:install flags (--id, --source, --version) so it executes without missing-option errors
+  - Remediation command includes all required pack:install flags (--id, --source, --version) so it
+    executes without missing-option errors
   - Remediation command works for external consumers (not monorepo-biased --source local)
-  - Test asserts the command includes --version and validates structural completeness (all required flags present)
+  - Test asserts the command includes --version and validates structural completeness (all required
+    flags present)
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2210
+claimed_at: 2026-02-26T13:56:22.611Z
+baseline_main_sha: 82038eed872e84f03de00cb8f828b04d3b18e544
+session_id: 6964dd09-f119-40a7-8412-9c6caf623d02
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T13:56:22.617Z

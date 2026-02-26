@@ -4,7 +4,7 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2210 — Migration remediation command missing --version and hardcodes --source local](wu/WU-2210.yaml)
 
 ## Completed
 
