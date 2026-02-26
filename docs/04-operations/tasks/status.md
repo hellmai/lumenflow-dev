@@ -5,7 +5,6 @@ _Last updated: 2026-02-26_
 ## In Progress
 
 - [WU-2189 — Enforce two-phase workspace root-key validation during runtime boot](wu/WU-2189.yaml)
-- [WU-2190 — Harden config:set write-path validation for root and pack-scoped keys](wu/WU-2190.yaml)
 
 ## Completed
 
@@ -1090,3 +1089,4 @@ _Last updated: 2026-02-26_
 - [WU-2185 — Rewrite config:set with workspace-aware routing](wu/WU-2185.yaml) — 2026-02-25
 - [WU-2186 — Fix config:get — remove fallback-to-software_delivery behavior](wu/WU-2186.yaml) — 2026-02-26
 - [WU-2188 — Document multi-pack config architecture and updated config:set/get](wu/WU-2188.yaml) — 2026-02-26
+- [WU-2190 — Harden config:set write-path validation for root and pack-scoped keys](wu/WU-2190.yaml) — 2026-02-26

@@ -2,7 +2,7 @@ id: WU-2190
 title: Harden config:set write-path validation for root and pack-scoped keys
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -46,3 +46,6 @@ acceptance:
   - config:set rejects unknown nested keys under software_delivery (e.g.,
     software_delivery.gates.unknown_key)
   - Unit tests cover root schema enforcement and unknown nested-key rejection
+locked: true
+completed_at: 2026-02-26T11:05:13.790Z
+completed: 2026-02-26

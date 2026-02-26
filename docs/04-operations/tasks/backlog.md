@@ -52,11 +52,11 @@ sections:
 - [WU-2191 — Extract shared pack manifest resolution for config commands](wu/WU-2191.yaml) — Framework: Core Lifecycle
 - [WU-2192 — Validate pack-scoped config:set writes using pack-declared config_schema](wu/WU-2192.yaml) — Framework: CLI WU Commands
 - [WU-2193 — Align workspace-init defaults with pack pinning semantics](wu/WU-2193.yaml) — Framework: Core Lifecycle
+- [WU-2194 — Remove redundant ensureMainUpToDate pre-flight checks from micro-worktree commands](wu/WU-2194.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
 - [WU-2189 — Enforce two-phase workspace root-key validation during runtime boot](wu/WU-2189.yaml) — Framework: Core Validation
-- [WU-2190 — Harden config:set write-path validation for root and pack-scoped keys](wu/WU-2190.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -1145,6 +1145,7 @@ sections:
 - [WU-2185 — Rewrite config:set with workspace-aware routing](wu/WU-2185.yaml)
 - [WU-2186 — Fix config:get — remove fallback-to-software_delivery behavior](wu/WU-2186.yaml)
 - [WU-2188 — Document multi-pack config architecture and updated config:set/get](wu/WU-2188.yaml)
+- [WU-2190 — Harden config:set write-path validation for root and pack-scoped keys](wu/WU-2190.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
