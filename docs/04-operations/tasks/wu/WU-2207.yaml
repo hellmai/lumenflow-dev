@@ -7,8 +7,6 @@ priority: P2
 created: 2026-02-26
 code_paths:
   - packages/@lumenflow/cli/src/wu-done-git-ops.ts
-  - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
   - packages/@lumenflow/cli/src/__tests__/wu-done-git-ops-sync-bug.test.ts
 tests:
   manual:
@@ -25,10 +23,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-26T13:39:38.884Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2207
+session_id: 215767af-5470-47d4-aa22-84e83fc5aa6e
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T13:39:38.890Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -42,11 +47,3 @@ acceptance:
     parity-helper tests
   - Keep wu:done preflight and merge-capable sync behavior unchanged (canonical not-behind,
     fail-closed on verification failure)
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2207
-claimed_at: 2026-02-26T13:39:38.884Z
-baseline_main_sha: e74ac489ae4d040b5ad895398176e60bd6903420
-session_id: 215767af-5470-47d4-aa22-84e83fc5aa6e
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-26T13:39:38.890Z
