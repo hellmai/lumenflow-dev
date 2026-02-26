@@ -260,61 +260,6 @@ function collectAllIds(wuDirAbsolute: string): Set<string> {
 }
 
 /**
- * Update WU ID references in all YAML files (blocked_by, dependencies, blocks).
- *
- * @param wuDirAbsolute - Absolute path to WU directory
- * @param oldId - ID being replaced
- * @param newId - New ID
- * @param excludeFile - File to skip (already handled)
- * @returns List of files that were modified
- */
-function updateReferences(
-  wuDirAbsolute: string,
-  oldId: string,
-  newId: string,
-  excludeFile: string,
-): string[] {
-  const touchedFiles: string[] = [];
-  const referenceFields = ['blocked_by', 'dependencies', 'blocks'];
-
-  if (!existsSync(wuDirAbsolute)) return touchedFiles;
-
-  const entries = readdirSync(wuDirAbsolute);
-  for (const entry of entries) {
-    if (!entry.endsWith(WU_YAML_EXTENSION)) continue;
-    const fullPath = path.join(wuDirAbsolute, entry);
-    if (fullPath === excludeFile) continue;
-
-    try {
-      const content = readFileSync(fullPath, 'utf-8');
-      const doc = parse(content) as Record<string, unknown> | null;
-      if (!doc) continue;
-
-      let modified = false;
-      for (const field of referenceFields) {
-        const value = doc[field];
-        if (Array.isArray(value)) {
-          const idx = value.indexOf(oldId);
-          if (idx !== -1) {
-            value[idx] = newId;
-            modified = true;
-          }
-        }
-      }
-
-      if (modified) {
-        writeFileSync(fullPath, stringify(doc, { lineWidth: 0 }), 'utf-8');
-        touchedFiles.push(fullPath);
-      }
-    } catch {
-      // Skip files that can't be processed
-    }
-  }
-
-  return touchedFiles;
-}
-
-/**
  * Update events in wu-events.jsonl for remapped IDs.
  * Only updates events that match the duplicate's context (lane/title).
  *
