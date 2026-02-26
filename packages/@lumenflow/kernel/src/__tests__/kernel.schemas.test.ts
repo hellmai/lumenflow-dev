@@ -663,6 +663,25 @@ describe('kernel schemas', () => {
       expect(result.errors[0]).toContain('software_delivery');
     });
 
+    it('migration error version comes from availableManifests, not a hardcoded constant', () => {
+      const data = {
+        ...baseWorkspaceData,
+        software_delivery: { gates: {} },
+      };
+      // Provide an available manifest with a specific version
+      const sdAvailableManifest: Pick<DomainPackManifest, 'id' | 'version'> = {
+        id: 'software-delivery',
+        version: '2.3.0',
+      };
+      // No pinned packs, but SD manifest is available
+      const result = validateWorkspaceRootKeys(data, [], [sdAvailableManifest]);
+      expect(result.valid).toBe(false);
+      // The error must include the version from the available manifest
+      expect(result.errors[0]).toContain('--version 2.3.0');
+      // Must NOT contain the old hardcoded version
+      expect(result.errors[0]).not.toContain('0.1.0');
+    });
+
     it('accepts all kernel root keys without needing pack manifests', () => {
       const data = {
         ...baseWorkspaceData,
