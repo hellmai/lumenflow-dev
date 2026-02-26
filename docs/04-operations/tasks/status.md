@@ -4,7 +4,6 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-- [WU-2209 — Collision-safe wu:create retry on push race](wu/WU-2209.yaml)
 - [WU-2213 — Duplicate-ID detector and repair command](wu/WU-2213.yaml)
 
 ## Completed
@@ -1116,3 +1115,4 @@ _Last updated: 2026-02-26_
 - [WU-2215 — Migration remediation resolves pack version from manifest instead of hardcoding](wu/WU-2215.yaml) — 2026-02-26
 - [WU-2211 — wu:done --already-merged finalize-only mode](wu/WU-2211.yaml) — 2026-02-26
 - [WU-2216 — Wire runtime to provide available manifests for root-key migration version resolution](wu/WU-2216.yaml) — 2026-02-26
+- [WU-2209 — Collision-safe wu:create retry on push race](wu/WU-2209.yaml) — 2026-02-26
