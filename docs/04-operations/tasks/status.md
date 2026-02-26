@@ -5,6 +5,7 @@ _Last updated: 2026-02-26_
 ## In Progress
 
 - [WU-2209 — Collision-safe wu:create retry on push race](wu/WU-2209.yaml)
+- [WU-2213 — Duplicate-ID detector and repair command](wu/WU-2213.yaml)
 
 ## Completed
 

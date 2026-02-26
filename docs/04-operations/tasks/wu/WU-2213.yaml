@@ -2,7 +2,7 @@ id: WU-2213
 title: Duplicate-ID detector and repair command
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-26
 code_paths:
@@ -33,10 +33,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Add detection and controlled repair for repos already affected by WU ID collisions. New mode: wu:repair --duplicate-ids. Detects collisions across YAML, stamps, and event stream. Dry-run first, explicit apply mode. Emits mapping report with ID remapping and touched files.'
+description: 'Add detection and controlled repair for repos already affected by WU ID collisions.
+  New mode: wu:repair --duplicate-ids. Detects collisions across YAML, stamps, and event stream.
+  Dry-run first, explicit apply mode. Emits mapping report with ID remapping and touched files.'
 acceptance:
   - wu:repair --duplicate-ids detects ID collisions across YAML, stamps, events
   - Dry-run mode is default and non-mutating
   - --apply mode renames colliding WUs with new IDs and updates all references
   - Mapping report emitted showing ID remapping
   - Preserves referential integrity (blocked-by, events, stamps all updated)
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/lumenflow-dev/worktrees/framework-cli-wu-commands-wu-2213
+claimed_at: 2026-02-26T14:57:14.974Z
+baseline_main_sha: da56b17103e2abaefb473a77b1af72365a341a90
+session_id: 66591fd5-94fd-4d7c-bb5a-080d7ded0d74
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T14:57:14.981Z

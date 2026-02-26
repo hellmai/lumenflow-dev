@@ -48,12 +48,12 @@ sections:
 - [WU-2176 — Document validator boundaries and ownership](wu/WU-2176.yaml) — Content: Framework Docs
 - [WU-2177 — Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
-- [WU-2213 — Duplicate-ID detector and repair command](wu/WU-2213.yaml) — Framework: CLI WU Commands
 - [WU-2217 — BUG: Fix pre-existing prettier format failures in wu-done.ts and arg-parser.ts](wu/WU-2217.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
 - [WU-2209 — Collision-safe wu:create retry on push race](wu/WU-2209.yaml) — Framework: Core Lifecycle
+- [WU-2213 — Duplicate-ID detector and repair command](wu/WU-2213.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
