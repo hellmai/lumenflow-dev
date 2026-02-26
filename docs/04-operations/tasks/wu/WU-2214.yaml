@@ -17,9 +17,19 @@ artifacts:
   - .lumenflow/stamps/WU-2214.done
 dependencies: []
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: >-
+  (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+
+
+  tdd-exception: Tests are bash shell scripts (.test.sh), not TypeScript unit tests. The test file
+  block-bash-file-commands.test.sh was updated with 3 new test cases covering arrow notation and
+  redirect detection.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-26T14:03:20.480Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-2214
+session_id: e4013ae0-f26b-45b2-9d01-e4f287e11263
 exposure: backend-only
 sizing_estimate:
   estimated_files: 2
@@ -27,6 +37,9 @@ sizing_estimate:
   strategy: single-session
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T14:03:20.488Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -38,11 +51,3 @@ acceptance:
   - Commands with dash-arrow notation in string arguments are not blocked
   - Actual file redirects are still blocked
   - Hook test suite updated with arrow-in-argument test case
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-2214
-claimed_at: 2026-02-26T14:03:20.480Z
-baseline_main_sha: fa9ba853e296192cd0441e53970b55f5d3a9a0a3
-session_id: e4013ae0-f26b-45b2-9d01-e4f287e11263
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-26T14:03:20.488Z
