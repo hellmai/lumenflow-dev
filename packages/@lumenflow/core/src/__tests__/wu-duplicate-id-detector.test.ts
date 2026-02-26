@@ -87,10 +87,17 @@ describe('wu-duplicate-id-detector', () => {
     });
 
     it('detects event collisions for duplicate IDs', async () => {
-      const events = [
-        JSON.stringify({ type: 'claim', wuId: 'WU-10', lane: 'Core', title: 'A', timestamp: '2026-01-01T00:00:00Z' }),
-        JSON.stringify({ type: 'complete', wuId: 'WU-10', timestamp: '2026-01-02T00:00:00Z' }),
-      ].join('\n') + '\n';
+      const events =
+        [
+          JSON.stringify({
+            type: 'claim',
+            wuId: 'WU-10',
+            lane: 'Core',
+            title: 'A',
+            timestamp: '2026-01-01T00:00:00Z',
+          }),
+          JSON.stringify({ type: 'complete', wuId: 'WU-10', timestamp: '2026-01-02T00:00:00Z' }),
+        ].join('\n') + '\n';
 
       vol.fromJSON({
         [`${WU_DIR}/WU-10.yaml`]: 'id: WU-10\ntitle: One\nstatus: done\nlane: "Core"\n',
@@ -153,7 +160,8 @@ describe('wu-duplicate-id-detector', () => {
       vol.fromJSON({
         [`${WU_DIR}/WU-1.yaml`]: 'id: WU-1\ntitle: First\nstatus: done\nlane: "Core"\n',
         [`${WU_DIR}/WU-1-copy.yaml`]: 'id: WU-1\ntitle: Copy\nstatus: ready\nlane: "Ops"\n',
-        [`${WU_DIR}/WU-3.yaml`]: 'id: WU-3\ntitle: Downstream\nstatus: ready\nlane: "Core"\nblocked_by:\n  - WU-1\n',
+        [`${WU_DIR}/WU-3.yaml`]:
+          'id: WU-3\ntitle: Downstream\nstatus: ready\nlane: "Core"\nblocked_by:\n  - WU-1\n',
       });
 
       const { repairDuplicateIds } = await import('../wu-duplicate-id-detector.js');
@@ -184,9 +192,16 @@ describe('wu-duplicate-id-detector', () => {
     });
 
     it('updates events in wu-events.jsonl for remapped IDs', async () => {
-      const events = [
-        JSON.stringify({ type: 'claim', wuId: 'WU-1', lane: 'Ops', title: 'Copy', timestamp: '2026-01-01T00:00:00Z' }),
-      ].join('\n') + '\n';
+      const events =
+        [
+          JSON.stringify({
+            type: 'claim',
+            wuId: 'WU-1',
+            lane: 'Ops',
+            title: 'Copy',
+            timestamp: '2026-01-01T00:00:00Z',
+          }),
+        ].join('\n') + '\n';
 
       vol.fromJSON({
         [`${WU_DIR}/WU-1.yaml`]: 'id: WU-1\ntitle: First\nstatus: done\nlane: "Core"\n',
@@ -233,7 +248,8 @@ describe('wu-duplicate-id-detector', () => {
       vol.fromJSON({
         [`${WU_DIR}/WU-1.yaml`]: 'id: WU-1\ntitle: First\nstatus: done\nlane: "Core"\n',
         [`${WU_DIR}/WU-1-copy.yaml`]: 'id: WU-1\ntitle: Copy\nstatus: ready\nlane: "Ops"\n',
-        [`${WU_DIR}/WU-4.yaml`]: 'id: WU-4\ntitle: Depends\nstatus: ready\nlane: "Core"\ndependencies:\n  - WU-1\n',
+        [`${WU_DIR}/WU-4.yaml`]:
+          'id: WU-4\ntitle: Depends\nstatus: ready\nlane: "Core"\ndependencies:\n  - WU-1\n',
       });
 
       const { repairDuplicateIds } = await import('../wu-duplicate-id-detector.js');

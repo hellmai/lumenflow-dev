@@ -129,7 +129,10 @@ function createProgram(): RepairCliOptions {
     .option('--claim', 'Claim repair mode: fix missing claim metadata in worktrees')
     .option('--admin', 'Admin repair mode: fix done WUs (lane, status, notes, initiative)')
     .option('--repair-state', 'State repair mode: fix corrupted wu-events.jsonl (WU-2240)')
-    .option('--duplicate-ids', 'Duplicate ID repair mode: detect and fix WU ID collisions (WU-2213)')
+    .option(
+      '--duplicate-ids',
+      'Duplicate ID repair mode: detect and fix WU ID collisions (WU-2213)',
+    )
     // Common flags
     .option('--id <wuId>', 'WU ID to check/repair (e.g., WU-123)')
     .option('--check', 'Audit only, no changes (exits 1 if issues found)')
@@ -156,7 +159,9 @@ function createProgram(): RepairCliOptions {
  */
 function validateOptions(options: RepairCliOptions) {
   // Validate mode selection - only one mode at a time
-  const modes = [options.claim, options.admin, options.repairState, options.duplicateIds].filter(Boolean);
+  const modes = [options.claim, options.admin, options.repairState, options.duplicateIds].filter(
+    Boolean,
+  );
   if (modes.length > 1) {
     console.error(
       `${PREFIX} Error: Cannot specify multiple modes (--claim, --admin, --repair-state, --duplicate-ids are mutually exclusive)`,

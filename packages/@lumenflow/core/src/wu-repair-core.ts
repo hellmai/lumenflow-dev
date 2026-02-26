@@ -946,9 +946,8 @@ export async function runDuplicateIdsMode(
   );
 
   try {
-    const { detectDuplicateIds, repairDuplicateIds } = await import(
-      './wu-duplicate-id-detector.js'
-    );
+    const { detectDuplicateIds, repairDuplicateIds } =
+      await import('./wu-duplicate-id-detector.js');
 
     // Detection phase
     const report = await detectDuplicateIds(projectRoot);
@@ -965,7 +964,9 @@ export async function runDuplicateIdsMode(
       `${PREFIX} ${EMOJI.WARNING} Found ${report.duplicates.length} duplicate ID group(s) across ${report.totalWUs} WU files:`,
     );
     for (const group of report.duplicates) {
-      console.log(`${PREFIX}   ${group.id}: ${group.files.length} files, ${group.stamps.length} stamps, ${group.events.length} events`);
+      console.log(
+        `${PREFIX}   ${group.id}: ${group.files.length} files, ${group.stamps.length} stamps, ${group.events.length} events`,
+      );
       for (const file of group.files) {
         console.log(`${PREFIX}     - ${file}`);
       }
