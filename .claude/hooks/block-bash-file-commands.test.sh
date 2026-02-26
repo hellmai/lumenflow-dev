@@ -94,6 +94,24 @@ expect_exit 0 \
   "main" \
   "1"
 
+# Arrow notation in string arguments should NOT be blocked (WU-2214)
+expect_exit 0 \
+  "Allows arrow notation in string arguments (old->new)" \
+  '{"tool_name":"Bash","tool_input":{"command":"pnpm wu:create --acceptance \"old->new mapping\""}}' \
+  "main"
+
+# Actual file redirect should still be blocked
+expect_exit 2 \
+  "Blocks actual file redirect (echo foo > file.txt)" \
+  '{"tool_name":"Bash","tool_input":{"command":"echo foo > file.txt"}}' \
+  "main"
+
+# Double redirect should still be blocked
+expect_exit 2 \
+  "Blocks double redirect (echo foo >> file.txt)" \
+  '{"tool_name":"Bash","tool_input":{"command":"echo foo >> file.txt"}}' \
+  "main"
+
 echo ""
 echo "======================================"
 echo "Results: ${PASS} passed, ${FAIL} failed"
