@@ -1224,3 +1224,35 @@ describe('WU-2220: validateReleaseArtifactsForPublish cwd parameter', () => {
     }).not.toThrow();
   });
 });
+
+// ---------------------------------------------------------------------------
+// WU-2221: install deps in micro-worktree before build
+// ---------------------------------------------------------------------------
+
+describe('WU-2221: executeReleaseInMicroWorktree installs deps', () => {
+  /**
+   * The execute callback inside withMicroWorktree must run `pnpm install`
+   * before `pnpm build` so that node_modules exist in the micro-worktree.
+   */
+  it('should contain pnpm install command before pnpm build in release source', async () => {
+    // Read the source to verify install happens before build
+    const releaseSource = readFileSync(
+      join(__dirname, '..', 'release.ts'),
+      'utf-8',
+    );
+
+    // Find the positions of install and build commands within the execute callback
+    const installMatch = releaseSource.match(/runCommand\([^)]*install[^)]*worktreePath/);
+    const buildMatch = releaseSource.match(/runCommand\([^)]*build[^)]*worktreePath/);
+
+    expect(installMatch).not.toBeNull();
+    expect(buildMatch).not.toBeNull();
+
+    // Install must appear before build
+    if (installMatch && buildMatch) {
+      const installPos = releaseSource.indexOf(installMatch[0]);
+      const buildPos = releaseSource.indexOf(buildMatch[0]);
+      expect(installPos).toBeLessThan(buildPos);
+    }
+  });
+});

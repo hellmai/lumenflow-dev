@@ -1215,6 +1215,13 @@ export async function executeReleaseInMicroWorktree(opts: ReleaseOptions): Promi
           );
         }
 
+        // WU-2221: Install deps in micro-worktree (no node_modules by default)
+        runCommand(`${PKG_MANAGER} install --frozen-lockfile`, {
+          label: 'install',
+          cwd: worktreePath,
+        });
+        console.log(`${LOG_PREFIX} ✅ Dependencies installed in micro-worktree`);
+
         if (!skipBuild) {
           runCommand(`${PKG_MANAGER} build`, { label: 'build', cwd: worktreePath });
           console.log(`${LOG_PREFIX} ✅ Build complete`);
