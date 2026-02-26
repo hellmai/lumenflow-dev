@@ -43,3 +43,5 @@ acceptance:
   - 4 dist symlinks removed from git tracking
   - pnpm run setup succeeds on a fresh clone
 locked: true
+completed_at: 2026-02-26T13:32:33.039Z
+completed: 2026-02-26

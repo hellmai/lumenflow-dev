@@ -1105,4 +1105,4 @@ _Last updated: 2026-02-26_
 - [WU-2202 — Phase 2: Introduce core sync-validator module with compatibility re-exports](wu/WU-2202.yaml) — 2026-02-26
 - [WU-2203 — Phase 3: Extract withMicroWorktree sync preamble helper without behavior changes](wu/WU-2203.yaml) — 2026-02-26
 - [WU-2204 — Phase 4: Add adapter injection points for sync and micro-worktree shared helpers](wu/WU-2204.yaml) — 2026-02-26
-- [WU-2205 — Phase 5: Simplify wu:done sync checks to canonical not-behind semantics](wu/WU-2205.yaml) — 2026-02-26
+- [WU-2206 — BUG: committed dist symlinks break fresh clone build](wu/WU-2206.yaml) — 2026-02-26

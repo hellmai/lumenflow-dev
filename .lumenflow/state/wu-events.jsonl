@@ -2339,3 +2339,5 @@
 {"type":"claim","wuId":"WU-2205","timestamp":"2026-02-26T13:26:35.614Z","lane":"Framework: Core Lifecycle","title":"Phase 5: Simplify wu:done sync checks to canonical not-behind semantics"}
 {"type":"complete","wuId":"WU-2205","timestamp":"2026-02-26T13:32:30.824Z"}
 {"type":"claim","wuId":"WU-2207","timestamp":"2026-02-26T13:39:38.933Z","lane":"Framework: Core Lifecycle","title":"Phase 6: remove deprecated wu:done parity helper"}
+{"type":"claim","wuId":"WU-2206","timestamp":"2026-02-26T13:31:58.510Z","lane":"Operations: Tooling","title":"BUG: committed dist symlinks break fresh clone build"}
+{"type":"complete","wuId":"WU-2206","timestamp":"2026-02-26T13:32:37.567Z"}
