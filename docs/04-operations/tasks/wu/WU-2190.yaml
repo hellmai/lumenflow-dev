@@ -2,7 +2,7 @@ id: WU-2190
 title: Harden config:set write-path validation for root and pack-scoped keys
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -32,8 +32,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: config:set currently accepts invalid root writes and silently permits unknown nested keys in pack config paths. Enforce write-path validation so control_plane and other writable root keys are schema/type-validated, and unknown nested keys under pack config roots are rejected.
+description: config:set currently accepts invalid root writes and silently permits unknown nested
+  keys in pack config paths. Enforce write-path validation so control_plane and other writable root
+  keys are schema/type-validated, and unknown nested keys under pack config roots are rejected.
 acceptance:
   - config:set rejects invalid root writes such as control_plane scalar overwrite
-  - config:set rejects unknown nested keys under software_delivery (e.g., software_delivery.gates.unknown_key)
+  - config:set rejects unknown nested keys under software_delivery (e.g.,
+    software_delivery.gates.unknown_key)
   - Unit tests cover root schema enforcement and unknown nested-key rejection
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2190
+claimed_at: 2026-02-26T10:55:10.612Z
+baseline_main_sha: 9e9b74da90ac651b8b343f3e751d20c16eae1daf
+session_id: cac8059f-542b-44ce-900e-0d9d7cfc3f77
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T10:55:10.615Z

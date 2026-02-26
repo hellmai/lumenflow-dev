@@ -48,7 +48,6 @@ sections:
 - [WU-2176 — Document validator boundaries and ownership](wu/WU-2176.yaml) — Content: Framework Docs
 - [WU-2177 — Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
-- [WU-2190 — Harden config:set write-path validation for root and pack-scoped keys](wu/WU-2190.yaml) — Framework: CLI WU Commands
 - [WU-2191 — Extract shared pack manifest resolution for config commands](wu/WU-2191.yaml) — Framework: Core Lifecycle
 - [WU-2192 — Validate pack-scoped config:set writes using pack-declared config_schema](wu/WU-2192.yaml) — Framework: CLI WU Commands
 - [WU-2193 — Align workspace-init defaults with pack pinning semantics](wu/WU-2193.yaml) — Framework: Core Lifecycle
@@ -56,6 +55,7 @@ sections:
 ## 🔧 In progress
 
 - [WU-2189 — Enforce two-phase workspace root-key validation during runtime boot](wu/WU-2189.yaml) — Framework: Core Validation
+- [WU-2190 — Harden config:set write-path validation for root and pack-scoped keys](wu/WU-2190.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
