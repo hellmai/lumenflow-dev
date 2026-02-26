@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2204 — Phase 4: Add adapter injection points for sync and micro-worktree shared helpers](wu/WU-2204.yaml) — Framework: Core Lifecycle
 - [WU-2203 — Phase 3: Extract withMicroWorktree sync preamble helper without behavior changes](wu/WU-2203.yaml) — Framework: Core Lifecycle
 - [WU-2202 — Phase 2: Introduce core sync-validator module with compatibility re-exports](wu/WU-2202.yaml) — Framework: Core Lifecycle
 - [WU-2201 — Phase 1: Canonicalize sync adapter types under ISyncValidatorGitAdapter](wu/WU-2201.yaml) — Framework: Core Lifecycle

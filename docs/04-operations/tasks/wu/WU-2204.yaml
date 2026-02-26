@@ -1,0 +1,40 @@
+id: WU-2204
+title: 'Phase 4: Add adapter injection points for sync and micro-worktree shared helpers'
+lane: 'Framework: Core Lifecycle'
+type: refactor
+status: ready
+priority: P2
+created: 2026-02-26
+code_paths:
+  - packages/@lumenflow/cli/src/wu-done-git-ops.ts
+  - packages/@lumenflow/core/src/wu-done-main-sync.ts
+  - packages/@lumenflow/core/src/micro-worktree-shared.ts
+  - packages/@lumenflow/core/src/wu-done-worktree-services.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-done-rollback-leaks.test.ts
+    - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2204.done
+dependencies: []
+blocked_by:
+  - WU-2203
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Context: several sync-related helpers construct Git adapters internally via getGitForCwd/createGitForPath. Problem: hidden adapter construction makes isolated testing and deterministic dependency injection harder. Solution: add optional injected adapter parameters while keeping existing defaults for backward compatibility in wu-done-git-ops, wu-done-main-sync, and micro-worktree-shared helpers.'
+acceptance:
+  - Add optional adapter injection parameters to wu-done-git-ops sync helpers with backward-compatible defaults
+  - Add optional adapter injection parameters to wu-done-main-sync entry points with backward-compatible defaults
+  - Add optional adapter injection parameters to micro-worktree-shared cleanup/sync helpers with backward-compatible defaults
+  - Unit tests can call these helpers without module-level adapter mocking
