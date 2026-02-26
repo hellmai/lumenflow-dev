@@ -47,7 +47,7 @@ import {
   getLaneBranch,
 } from '@lumenflow/core/wu-constants';
 // WU-1593: Use centralized validateWUIDFormat (DRY)
-import { ensureOnMain, ensureMainUpToDate, validateWUIDFormat } from '@lumenflow/core/wu-helpers';
+import { ensureOnMain, validateWUIDFormat } from '@lumenflow/core/wu-helpers';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { validateReadyWU } from '@lumenflow/core/wu-schema';
 // WU-1806: Import detectCurrentWorktree for worktree path resolution
@@ -580,9 +580,9 @@ export async function main() {
   } else {
     // Ready WUs: use micro-worktree on main (existing behavior)
     // Pre-flight checks only needed for micro-worktree mode
+    // WU-2194: Removed ensureMainUpToDate — withMicroWorktree already handles origin sync
     await ensureOnMain(getGitForCwd());
     await ensureCleanWorkingTree();
-    await ensureMainUpToDate(getGitForCwd(), 'wu:edit');
 
     console.log(`${PREFIX} Applying edits via micro-worktree...`);
 

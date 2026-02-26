@@ -77,7 +77,7 @@ vi.mock('@lumenflow/core/wu-constants', () => ({
 
 vi.mock('@lumenflow/core/wu-helpers', () => ({
   ensureOnMain: async () => undefined,
-  ensureMainUpToDate: async () => undefined,
+  // WU-2194: ensureMainUpToDate removed — withMicroWorktree handles origin sync
   validateWUIDFormat: (_id: string) => undefined,
 }));
 

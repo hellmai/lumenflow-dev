@@ -68,7 +68,7 @@ import {
   EXIT_CODES,
 } from '@lumenflow/core/wu-constants';
 import { shouldSkipRemoteOperations } from '@lumenflow/core/micro-worktree';
-import { ensureOnMain, ensureMainUpToDate } from '@lumenflow/core/wu-helpers';
+import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import { emitWUFlowEvent } from '@lumenflow/core/telemetry';
 import { startSessionForWU } from '@lumenflow/agent/auto-session';
 import { getConfig } from '@lumenflow/core/config';
@@ -337,10 +337,11 @@ export async function main() {
 
   // WU-1361: Fetch latest remote before validation (no local main mutation)
   // WU-1653: Also skip when git.requireRemote=false (local-only mode)
+  // WU-2194: Removed ensureMainUpToDate — pushOnly mode bases from origin/main,
+  // not local main, so local-main staleness is irrelevant.
   const skipRemote = shouldSkipRemoteOperations();
   if (!args.noPush && !skipRemote) {
     await getGitForCwd().fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
-    await ensureMainUpToDate(getGitForCwd(), 'wu:claim');
   } else if (skipRemote) {
     console.log(`${PREFIX} Local-only mode (git.requireRemote=false): skipping origin sync`);
   } else {

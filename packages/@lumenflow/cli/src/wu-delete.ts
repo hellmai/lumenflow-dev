@@ -40,7 +40,7 @@ import {
   WU_STATUS,
   LUMENFLOW_PATHS,
 } from '@lumenflow/core/wu-constants';
-import { ensureOnMain, ensureMainUpToDate, validateWUIDFormat } from '@lumenflow/core/wu-helpers';
+import { ensureOnMain, validateWUIDFormat } from '@lumenflow/core/wu-helpers';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { INIT_PATHS } from '@lumenflow/initiatives/paths';
 import { INIT_PATTERNS } from '@lumenflow/initiatives/constants';
@@ -364,7 +364,7 @@ async function deleteSingleWU(id: string, dryRun: boolean) {
   await ensureCleanWorkingTree();
   if (!branchPrPath) {
     await ensureOnMain(getGitForCwd());
-    await ensureMainUpToDate(getGitForCwd(), 'wu:delete');
+    // WU-2194: Removed ensureMainUpToDate — withMicroWorktree already handles origin sync
   }
 
   if (branchPrPath) {
@@ -464,7 +464,7 @@ async function deleteBatchWUs(ids: string[], dryRun: boolean) {
   await ensureCleanWorkingTree();
   if (!branchPrPath) {
     await ensureOnMain(getGitForCwd());
-    await ensureMainUpToDate(getGitForCwd(), 'wu:delete --batch');
+    // WU-2194: Removed ensureMainUpToDate — withMicroWorktree already handles origin sync
   }
 
   if (branchPrPath) {
