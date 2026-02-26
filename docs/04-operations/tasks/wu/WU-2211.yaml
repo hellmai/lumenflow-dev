@@ -2,7 +2,7 @@ id: WU-2211
 title: wu:done --already-merged finalize-only mode
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -50,3 +50,6 @@ acceptance:
   - Stamp, completion event, backlog, and status are written via micro-worktree commit
   - Re-running is idempotent (stamp already_exists is not an error)
   - Fails with clear error if code_paths are NOT on main
+locked: true
+completed_at: 2026-02-26T14:36:21.570Z
+completed: 2026-02-26

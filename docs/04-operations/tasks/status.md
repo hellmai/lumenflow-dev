@@ -4,7 +4,6 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-- [WU-2211 — wu:done --already-merged finalize-only mode](wu/WU-2211.yaml)
 - [WU-2216 — Wire runtime to provide available manifests for root-key migration version resolution](wu/WU-2216.yaml)
 
 ## Completed
@@ -1114,3 +1113,4 @@ _Last updated: 2026-02-26_
 - [WU-2212 — Break-glass WU finalization tool (no dist dependency)](wu/WU-2212.yaml) — 2026-02-26
 - [WU-2208 — Remote-aware WU ID generation to prevent cross-machine collisions](wu/WU-2208.yaml) — 2026-02-26
 - [WU-2215 — Migration remediation resolves pack version from manifest instead of hardcoding](wu/WU-2215.yaml) — 2026-02-26
+- [WU-2211 — wu:done --already-merged finalize-only mode](wu/WU-2211.yaml) — 2026-02-26

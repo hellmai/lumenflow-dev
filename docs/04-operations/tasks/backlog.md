@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2217 — BUG: Fix pre-existing prettier format failures in wu-done.ts and arg-parser.ts](wu/WU-2217.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — Framework: Memory
@@ -51,10 +50,10 @@ sections:
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
 - [WU-2209 — Collision-safe wu:create retry on push race](wu/WU-2209.yaml) — Framework: Core Lifecycle
 - [WU-2213 — Duplicate-ID detector and repair command](wu/WU-2213.yaml) — Framework: CLI WU Commands
+- [WU-2217 — BUG: Fix pre-existing prettier format failures in wu-done.ts and arg-parser.ts](wu/WU-2217.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-- [WU-2211 — wu:done --already-merged finalize-only mode](wu/WU-2211.yaml) — Framework: CLI WU Commands
 - [WU-2216 — Wire runtime to provide available manifests for root-key migration version resolution](wu/WU-2216.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
@@ -1168,6 +1167,7 @@ sections:
 - [WU-2212 — Break-glass WU finalization tool (no dist dependency)](wu/WU-2212.yaml)
 - [WU-2208 — Remote-aware WU ID generation to prevent cross-machine collisions](wu/WU-2208.yaml)
 - [WU-2215 — Migration remediation resolves pack version from manifest instead of hardcoding](wu/WU-2215.yaml)
+- [WU-2211 — wu:done --already-merged finalize-only mode](wu/WU-2211.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
