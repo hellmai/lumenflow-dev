@@ -9,7 +9,9 @@ code_paths:
   - packages/@lumenflow/core/src/schemas/workspace-config.ts
   - packages/@lumenflow/core/src/lane-checker.ts
 tests:
-  manual: []
+  manual:
+    - Run wu:create with a kernel-shape control_plane in workspace.yaml and verify lane validation
+      passes
   unit:
     - packages/@lumenflow/core/src/__tests__/lane-checker.test.ts
     - packages/@lumenflow/core/src/__tests__/workspace-config.test.ts
@@ -27,7 +29,10 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'wu:create fails in cloud-connected workspaces because core WorkspaceV2ExtensionsSchema rejects the control_plane block written by cloud:connect and config:set. Core expects old shape (enabled, local_override) while kernel writes new shape (project_id, auth.token_env). Fix: update core schema to match kernel shape, fix misleading FILE_NOT_FOUND error in isValidParentLane.'
+description: 'wu:create fails in cloud-connected workspaces because core WorkspaceV2ExtensionsSchema
+  rejects the control_plane block written by cloud:connect and config:set. Core expects old shape
+  (enabled, local_override) while kernel writes new shape (project_id, auth.token_env). Fix: update
+  core schema to match kernel shape, fix misleading FILE_NOT_FOUND error in isValidParentLane.'
 acceptance:
   - core WorkspaceControlPlaneConfigSchema matches kernel shape (project_id, auth.token_env)
   - isValidParentLane throws CONFIG_ERROR when workspace.yaml exists but fails validation
