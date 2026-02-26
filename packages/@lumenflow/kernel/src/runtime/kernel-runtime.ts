@@ -46,6 +46,7 @@ import {
   TOOL_HANDLER_KINDS,
   TaskSpecSchema,
   WorkspaceSpecSchema,
+  validateWorkspaceRootKeys,
   type ExecutionContext,
   type KernelEvent,
   type PolicyDecision,
@@ -753,6 +754,8 @@ interface ResolvedWorkspaceSpec {
   workspace_file_path: string;
   workspace_spec: WorkspaceSpec;
   workspace_config_hash: string;
+  /** Raw parsed YAML data before Zod stripping, used for root-key validation. */
+  raw_workspace_data: Record<string, unknown>;
 }
 
 async function resolveWorkspaceSpec(
@@ -765,12 +768,14 @@ async function resolveWorkspaceSpec(
   );
 
   const raw = await readFile(workspaceFilePath, UTF8_ENCODING);
-  const workspaceSpec = WorkspaceSpecSchema.parse(YAML.parse(raw));
+  const rawWorkspaceData = YAML.parse(raw) as Record<string, unknown>;
+  const workspaceSpec = WorkspaceSpecSchema.parse(rawWorkspaceData);
 
   return {
     workspace_file_path: workspaceFilePath,
     workspace_spec: workspaceSpec,
     workspace_config_hash: canonical_json(raw),
+    raw_workspace_data: rawWorkspaceData,
   };
 }
 
@@ -1345,6 +1350,20 @@ export async function initializeKernelRuntime(
       throw new Error(formatRuntimeLoadStageError(pin.id), { cause: error });
     }
     loadedPacks.push(loadedPack);
+  }
+
+  // Two-phase workspace root-key validation: validate raw YAML keys against
+  // kernel-owned keys + pack-declared config_keys. Unknown keys are rejected
+  // hard to prevent silent misconfiguration from Zod's non-strict stripping.
+  const rootKeyValidation = validateWorkspaceRootKeys(
+    resolvedWorkspace.raw_workspace_data,
+    loadedPacks.map((lp) => lp.manifest),
+  );
+  if (!rootKeyValidation.valid) {
+    const keyList = rootKeyValidation.errors.join('\n  - ');
+    throw new Error(
+      `Workspace root-key validation failed:\n  - ${keyList}`,
+    );
   }
 
   const registry = new ToolRegistry();

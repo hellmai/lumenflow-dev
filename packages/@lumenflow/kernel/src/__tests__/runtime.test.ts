@@ -142,6 +142,7 @@ async function writeWorkspaceFixture(root: string): Promise<void> {
       '  active: in_progress',
       'evidence_types: []',
       'lane_templates: []',
+      'config_key: software_delivery',
     ].join('\n'),
     UTF8_ENCODING,
   );
@@ -313,6 +314,7 @@ describe('kernel runtime facade', () => {
       '  active: in_progress',
       'evidence_types: []',
       'lane_templates: []',
+      'config_key: software_delivery',
     ]);
 
     const runtime = await createRuntimeWithDefaultResolver({
@@ -370,6 +372,7 @@ describe('kernel runtime facade', () => {
       '  active: in_progress',
       'evidence_types: []',
       'lane_templates: []',
+      'config_key: software_delivery',
     ]);
 
     const registerSpy = vi.spyOn(ToolRegistry.prototype, 'register');
@@ -1344,5 +1347,147 @@ describe('kernel runtime facade', () => {
     });
 
     expect(resolved.approved).toBe(false);
+  });
+
+  describe('workspace root-key validation during runtime boot', () => {
+    async function writeWorkspaceWithExtraKey(
+      root: string,
+      extraKeys: Record<string, string>,
+    ): Promise<void> {
+      const extraLines = Object.entries(extraKeys).map(([k, v]) => `${k}: ${v}`);
+      await writeFile(
+        join(root, WORKSPACE_FILE_NAME),
+        [
+          'id: workspace-kernel-runtime',
+          'name: Kernel Runtime Workspace',
+          'packs:',
+          `  - id: ${SOFTWARE_DELIVERY_PACK_ID}`,
+          '    version: 1.0.0',
+          '    integrity: dev',
+          '    source: local',
+          'lanes:',
+          '  - id: framework-core-lifecycle',
+          '    title: Framework Core Lifecycle',
+          '    allowed_scopes:',
+          '      - type: path',
+          '        pattern: "**"',
+          '        access: read',
+          'security:',
+          '  allowed_scopes:',
+          '    - type: path',
+          '      pattern: "**"',
+          '      access: read',
+          '  network_default: off',
+          '  deny_overlays: []',
+          'software_delivery: {}',
+          'memory_namespace: mem',
+          'event_namespace: evt',
+          ...extraLines,
+        ].join('\n'),
+        UTF8_ENCODING,
+      );
+    }
+
+    async function writeManifestWithConfigKey(
+      root: string,
+      configKey: string,
+    ): Promise<void> {
+      const packRoot = join(root, PACKS_DIR_NAME, SOFTWARE_DELIVERY_PACK_ID);
+      await writeFile(
+        join(packRoot, PACK_MANIFEST_FILE_NAME),
+        [
+          `id: ${SOFTWARE_DELIVERY_PACK_ID}`,
+          'version: 1.0.0',
+          'task_types:',
+          '  - work-unit',
+          'tools:',
+          `  - name: ${PACK_ECHO_TOOL_NAME}`,
+          '    entry: tools/echo.ts',
+          '    required_scopes:',
+          '      - type: path',
+          '        pattern: "**"',
+          '        access: read',
+          'policies:',
+          '  - id: runtime.completion.allow',
+          '    trigger: on_completion',
+          '    decision: allow',
+          'state_aliases:',
+          '  active: in_progress',
+          'evidence_types: []',
+          'lane_templates: []',
+          `config_key: ${configKey}`,
+        ].join('\n'),
+        UTF8_ENCODING,
+      );
+    }
+
+    it('rejects workspace with unknown root keys during initializeKernelRuntime', async () => {
+      await writeWorkspaceWithExtraKey(tempRoot, { bogus_key: 'true' });
+
+      await expect(createRuntime()).rejects.toThrow('bogus_key');
+    });
+
+    it('rejects workspace with multiple unknown root keys and lists all of them', async () => {
+      await writeWorkspaceWithExtraKey(tempRoot, {
+        bogus_key: 'true',
+        another_unknown: '42',
+      });
+
+      await expect(createRuntime()).rejects.toThrow('bogus_key');
+      await expect(createRuntime()).rejects.toThrow('another_unknown');
+    });
+
+    it('accepts workspace with pack-declared config_key root (software_delivery)', async () => {
+      // The default fixture includes software_delivery: {} in workspace.yaml
+      // and the pack manifest declares config_key: software_delivery
+      await writeManifestWithConfigKey(tempRoot, 'software_delivery');
+
+      // This should NOT throw -- software_delivery is declared by the pack
+      const runtime = await createRuntime();
+      expect(runtime).toBeDefined();
+    });
+
+    it('rejects workspace when pack does NOT declare config_key for an extra root key', async () => {
+      // Workspace has software_delivery: {} but we overwrite the manifest
+      // to NOT declare config_key. Without config_key, software_delivery
+      // is an unknown root key and must be rejected.
+      const packRoot = join(tempRoot, PACKS_DIR_NAME, SOFTWARE_DELIVERY_PACK_ID);
+      await writeFile(
+        join(packRoot, PACK_MANIFEST_FILE_NAME),
+        [
+          `id: ${SOFTWARE_DELIVERY_PACK_ID}`,
+          'version: 1.0.0',
+          'task_types:',
+          '  - work-unit',
+          'tools:',
+          `  - name: ${PACK_ECHO_TOOL_NAME}`,
+          '    entry: tools/echo.ts',
+          '    required_scopes:',
+          '      - type: path',
+          '        pattern: "**"',
+          '        access: read',
+          'policies:',
+          '  - id: runtime.completion.allow',
+          '    trigger: on_completion',
+          '    decision: allow',
+          'state_aliases:',
+          '  active: in_progress',
+          'evidence_types: []',
+          'lane_templates: []',
+          // Deliberately omitting config_key
+        ].join('\n'),
+        UTF8_ENCODING,
+      );
+
+      await expect(createRuntime()).rejects.toThrow('software_delivery');
+    });
+
+    it('error message suggests pack config_key when unknown root key is present', async () => {
+      await writeWorkspaceWithExtraKey(tempRoot, { observability: '{}' });
+
+      await expect(createRuntime()).rejects.toThrow(
+        /pack.*manifest/i,
+      );
+    });
   });
 });
