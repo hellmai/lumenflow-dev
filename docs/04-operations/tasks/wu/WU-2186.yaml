@@ -7,6 +7,8 @@ priority: P2
 created: 2026-02-25
 code_paths:
   - packages/@lumenflow/cli/src/config-get.ts
+  - packages/@lumenflow/cli/src/config-get.ts
+  - packages/@lumenflow/cli/src/config-set.ts
 tests:
   manual:
     - Verify config:get --key control_plane.endpoint reads from root only
@@ -25,10 +27,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-25T23:55:28.285Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2186
+session_id: c309a53d-6885-42a8-b847-1d651b7e9cc5
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-25T23:55:28.293Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -39,11 +48,3 @@ acceptance:
   - config:get --key control_plane.endpoint reads from root only
   - config:get --key software_delivery.gates.minCoverage reads from SD block
   - config:get does not fall back to software_delivery when root key not found
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2186
-claimed_at: 2026-02-25T23:55:28.285Z
-baseline_main_sha: 41a3802054902ae958f0a54328b9f6581ce2e25c
-session_id: c309a53d-6885-42a8-b847-1d651b7e9cc5
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-25T23:55:28.293Z
