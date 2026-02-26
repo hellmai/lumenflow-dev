@@ -4,7 +4,7 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2201 — Phase 1: Canonicalize sync adapter types under ISyncValidatorGitAdapter](wu/WU-2201.yaml)
 
 ## Completed
 

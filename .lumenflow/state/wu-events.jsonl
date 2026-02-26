@@ -2328,3 +2328,4 @@
 {"type":"complete","wuId":"WU-2200","timestamp":"2026-02-26T12:45:03.233Z"}
 {"type":"claim","wuId":"WU-2201","timestamp":"2026-02-26T12:53:11.013Z","lane":"Framework: Core Lifecycle","title":"Phase 1: Canonicalize sync adapter types under ISyncValidatorGitAdapter"}
 {"type":"release","wuId":"WU-2201","timestamp":"2026-02-26T12:54:02.421Z","reason":"Reset via wu:recover --action reset"}
+{"type":"claim","wuId":"WU-2201","timestamp":"2026-02-26T12:54:36.484Z","lane":"Framework: Core Lifecycle","title":"Phase 1: Canonicalize sync adapter types under ISyncValidatorGitAdapter"}
