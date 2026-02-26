@@ -376,12 +376,9 @@ export async function recordWuBriefEvidence(
           return createGitForPath(cwd).getCurrentBranch();
         });
 
-      let activeBranch = '';
-      try {
-        activeBranch = (await getCurrentBranch(workspaceRoot)).trim();
-      } catch {
-        activeBranch = '';
-      }
+      const activeBranch = await getCurrentBranch(workspaceRoot)
+        .then((branch) => branch.trim())
+        .catch(() => '');
 
       const normalizedClaimedBranch = typeof claimedBranch === 'string' ? claimedBranch.trim() : '';
       if (normalizedClaimedBranch.length > 0) {
