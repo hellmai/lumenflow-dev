@@ -6,12 +6,7 @@ status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
-  - packages/@lumenflow/core/src/wu-helpers.ts
-  - packages/@lumenflow/core/src/wu-done-main-sync.ts
-  - packages/@lumenflow/core/src/wu-done-worktree-services.ts
-  - packages/@lumenflow/cli/src/wu-done-git-ops.ts
-  - packages/@lumenflow/core/src/micro-worktree.ts
-  - packages/@lumenflow/core/src/ports/wu-helpers.ports.ts
+  - docs/04-operations/adr/ADR-005-main-branch-sync-semantics.md
 tests:
   manual:
     - ADR reviewed and approved
