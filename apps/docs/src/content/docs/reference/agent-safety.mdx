@@ -104,13 +104,13 @@ Toggles in `workspace.yaml` for features like `block_outside_worktree`, `require
   <TabItem label="Config File">
     ```bash
     # Read a value
-    pnpm config:get --key methodology.testing
+    pnpm config:get --key software_delivery.methodology.testing
 
     # Set a value (Zod-validated, atomic commit)
-    pnpm config:set --key methodology.testing --value test-after
+    pnpm config:set --key software_delivery.methodology.testing --value test-after
 
     # Set a boolean
-    pnpm config:set --key gates.enableCoverage --value false
+    pnpm config:set --key software_delivery.gates.enableCoverage --value false
     ```
 
   </TabItem>

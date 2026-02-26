@@ -5,12 +5,61 @@ description: CLI commands for safe workspace.yaml modification
 
 import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
-CLI commands for safely reading and modifying `workspace.yaml` with Zod schema validation.
+CLI commands for safely reading and modifying `workspace.yaml` with Zod schema validation. Both commands use the same key routing logic: all keys must be **fully qualified from the workspace root** (e.g., `software_delivery.gates.minCoverage`, not `gates.minCoverage`).
 
 <Aside type="caution">
   `config:set` uses the micro-worktree pattern for atomic commits. It writes to `origin/main` via an
   isolated temporary branch, not to the local checkout.
 </Aside>
+
+## Key Routing
+
+When you provide a key, both `config:set` and `config:get` route it based on its first segment:
+
+| First segment matches        | Behavior                                                                       | Example key                               |
+| ---------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------- |
+| **Writable root key**        | Writes/reads directly at the workspace root                                    | `control_plane.sync_interval`             |
+| **Pack config key**          | Writes/reads under the pack's config block, validated against the pack schema  | `software_delivery.gates.minCoverage`     |
+| **Managed root key**         | Error with guidance: "use `<command>` instead"                                 | `packs`, `lanes`, `security`              |
+| **Unknown key**              | Error with did-you-mean suggestion if possible                                 | `gates.minCoverage`                       |
+
+### Writable root keys
+
+These keys can be written directly without a dedicated command:
+
+- `control_plane` -- Control plane connection and sync settings
+- `memory_namespace` -- Memory layer namespace
+- `event_namespace` -- Event stream namespace
+
+### Pack config keys
+
+Pack config keys are declared by domain packs in their `manifest.yaml` via the `config_key` field. For example, the Software Delivery pack declares `config_key: software_delivery`, making all `software_delivery.*` paths writable via `config:set`.
+
+Writes to pack config keys are validated against the pack's config schema if one is provided.
+
+### Managed root keys
+
+These keys require dedicated CLI commands:
+
+| Key        | Command          |
+| ---------- | ---------------- |
+| `id`       | `workspace-init` |
+| `name`     | `workspace-init` |
+| `packs`    | `pack:install`   |
+| `lanes`    | `lane:edit`      |
+| `policies` | `policy:set`     |
+| `security` | `security:set`   |
+
+### Did-you-mean suggestions
+
+If you use an unqualified key that matches a known pack sub-key, the error includes a suggestion:
+
+```
+[config:set] Unknown root key "gates".
+  Did you mean "software_delivery.gates.minCoverage"?
+```
+
+---
 
 ## config:set
 
@@ -22,44 +71,53 @@ pnpm config:set --key <dotpath> --value <value>
 
 ### Arguments
 
-| Flag      | Required | Description                                              |
-| --------- | -------- | -------------------------------------------------------- |
-| `--key`   | Yes      | Config key in dot notation (e.g., `methodology.testing`) |
-| `--value` | Yes      | Value to set (comma-separated for array append)          |
-| `--help`  | No       | Show usage information                                   |
+| Flag      | Required | Description                                                                       |
+| --------- | -------- | --------------------------------------------------------------------------------- |
+| `--key`   | Yes      | Fully qualified config key in dot notation (e.g., `software_delivery.gates.minCoverage`) |
+| `--value` | Yes      | Value to set (comma-separated for array append)                                   |
+| `--help`  | No       | Show usage information                                                            |
 
 ### Examples
 
 <Tabs>
-  <TabItem label="Scalar">
+  <TabItem label="Pack Config (Software Delivery)">
     ```bash
     # Set methodology testing mode
-    pnpm config:set --key methodology.testing --value test-after
+    pnpm config:set --key software_delivery.methodology.testing --value test-after
 
-    # Set numeric value
-    pnpm config:set --key gates.minCoverage --value 85
+    # Set minimum coverage threshold
+    pnpm config:set --key software_delivery.gates.minCoverage --value 85
 
-    # Set boolean value
-    pnpm config:set --key gates.enableCoverage --value false
+    # Disable coverage gate
+    pnpm config:set --key software_delivery.gates.enableCoverage --value false
+
+    # Set experimental feature
+    pnpm config:set --key software_delivery.experimental.context_validation --value true
+    ```
+
+  </TabItem>
+  <TabItem label="Writable Root Keys">
+    ```bash
+    # Set control plane sync interval
+    pnpm config:set --key control_plane.sync_interval --value 60
+
+    # Set control plane endpoint
+    pnpm config:set --key control_plane.endpoint --value https://api.lumenflow.dev
+
+    # Set memory namespace
+    pnpm config:set --key memory_namespace --value my-workspace
+
+    # Set event namespace
+    pnpm config:set --key event_namespace --value my-workspace
     ```
 
   </TabItem>
   <TabItem label="Array">
     ```bash
     # Append items to an array field
-    pnpm config:set --key agents.methodology.principles --value Library-First,KISS
+    pnpm config:set --key software_delivery.agents.methodology.principles --value Library-First,KISS
     ```
     Comma-separated values are appended to existing array fields.
-  </TabItem>
-  <TabItem label="Nested">
-    ```bash
-    # Set deeply nested value
-    pnpm config:set --key experimental.context_validation --value true
-
-    # Set cloud auto-detection
-    pnpm config:set --key cloud.auto_detect --value true
-    ```
-
   </TabItem>
 </Tabs>
 
@@ -80,13 +138,26 @@ pnpm config:set --key <dotpath> --value <value>
 If the value fails Zod schema validation, the command exits with a descriptive error and no changes are written:
 
 ```
-[config:set] Validation failed for methodology.testing=invalid-value:
-  methodology.testing: Invalid enum value. Expected 'tdd' | 'test-after' | 'none', received 'invalid-value'
+[config:set] Validation failed for software_delivery.methodology.testing=invalid-value:
+  Invalid enum value. Expected 'tdd' | 'test-after' | 'none', received 'invalid-value'
+```
+
+If you use an unqualified key, you get a routing error:
+
+```
+[config:set] Unknown root key "gates".
+  Did you mean "software_delivery.gates.minCoverage"?
+```
+
+If you try to write a managed key:
+
+```
+[config:set] Key "packs" is managed by a dedicated command. Use `pnpm pack:install` instead.
 ```
 
 ## config:get
 
-Reads and displays a value from `workspace.yaml`.
+Reads and displays a value from `workspace.yaml`. Uses the same routing logic as `config:set`.
 
 ```bash
 pnpm config:get --key <dotpath>
@@ -94,47 +165,64 @@ pnpm config:get --key <dotpath>
 
 ### Arguments
 
-| Flag     | Required | Description                                              |
-| -------- | -------- | -------------------------------------------------------- |
-| `--key`  | Yes      | Config key in dot notation (e.g., `methodology.testing`) |
-| `--help` | No       | Show usage information                                   |
+| Flag     | Required | Description                                                                       |
+| -------- | -------- | --------------------------------------------------------------------------------- |
+| `--key`  | Yes      | Fully qualified config key in dot notation (e.g., `software_delivery.methodology.testing`) |
+| `--help` | No       | Show usage information                                                            |
 
 ### Examples
 
 ```bash
-# Read a scalar value
-pnpm config:get --key methodology.testing
+# Read a pack config value
+pnpm config:get --key software_delivery.methodology.testing
 # Output: tdd
 
 # Read a numeric value
-pnpm config:get --key gates.minCoverage
+pnpm config:get --key software_delivery.gates.minCoverage
 # Output: 90
 
 # Read an object (outputs as YAML)
-pnpm config:get --key methodology
+pnpm config:get --key software_delivery.methodology
 # Output:
 #   testing: tdd
 #   architecture: hexagonal
 
+# Read a writable root key
+pnpm config:get --key control_plane
+# Output:
+#   sync_interval: 60
+#   endpoint: https://api.lumenflow.dev
+
 # Read a missing key
-pnpm config:get --key nonexistent.key
-# Output: [config:get] Key "nonexistent.key" is not set (undefined)
+pnpm config:get --key software_delivery.nonexistent.key
+# Output: [config:get] Key "software_delivery.nonexistent.key" is not set (undefined)
 ```
 
 ## Common Dotpaths
 
-| Dotpath                           | Type     | Values                         |
-| --------------------------------- | -------- | ------------------------------ |
-| `methodology.testing`             | enum     | `tdd`, `test-after`, `none`    |
-| `methodology.architecture`        | enum     | `hexagonal`, `layered`, `none` |
-| `gates.minCoverage`               | number   | 0-100                          |
-| `gates.enableCoverage`            | boolean  | `true`, `false`                |
-| `gates.maxEslintWarnings`         | number   | Non-negative integer           |
-| `experimental.context_validation` | boolean  | `true`, `false`                |
-| `experimental.validation_mode`    | enum     | `off`, `warn`, `error`         |
-| `git.requireRemote`               | boolean  | `true`, `false`                |
-| `cleanup.trigger`                 | enum     | `on_done`, `on_init`, `manual` |
-| `agents.methodology.principles`   | string[] | Array of methodology names     |
+### Software Delivery pack (`software_delivery.*`)
+
+| Dotpath                                              | Type     | Values                         |
+| ---------------------------------------------------- | -------- | ------------------------------ |
+| `software_delivery.methodology.testing`              | enum     | `tdd`, `test-after`, `none`    |
+| `software_delivery.methodology.architecture`         | enum     | `hexagonal`, `layered`, `none` |
+| `software_delivery.gates.minCoverage`                | number   | 0-100                          |
+| `software_delivery.gates.enableCoverage`             | boolean  | `true`, `false`                |
+| `software_delivery.gates.maxEslintWarnings`          | number   | Non-negative integer           |
+| `software_delivery.experimental.context_validation`  | boolean  | `true`, `false`                |
+| `software_delivery.experimental.validation_mode`     | enum     | `off`, `warn`, `error`         |
+| `software_delivery.git.requireRemote`                | boolean  | `true`, `false`                |
+| `software_delivery.cleanup.trigger`                  | enum     | `on_done`, `on_init`, `manual` |
+| `software_delivery.agents.methodology.principles`    | string[] | Array of methodology names     |
+
+### Kernel root keys
+
+| Dotpath                       | Type   | Description                              |
+| ----------------------------- | ------ | ---------------------------------------- |
+| `control_plane.sync_interval` | number | Seconds between control plane syncs      |
+| `control_plane.endpoint`      | string | Control plane API URL                    |
+| `memory_namespace`            | string | Namespace for memory layer isolation     |
+| `event_namespace`             | string | Namespace for kernel event stream        |
 
 <Aside type="tip">
   For the complete list of configuration keys and their types, see the [Configuration

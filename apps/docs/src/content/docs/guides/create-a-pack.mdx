@@ -95,16 +95,48 @@ lane_templates: []
 
 ### Schema reference
 
-| Field            | Type                     | Required | Description                                        |
-| ---------------- | ------------------------ | -------- | -------------------------------------------------- |
-| `id`             | `string`                 | Yes      | Unique pack identifier (kebab-case).               |
-| `version`        | `string` (semver)        | Yes      | Pack version. Must be valid semantic versioning.   |
-| `task_types`     | `string[]`               | Yes      | At least one task type the pack handles.           |
-| `tools`          | `Tool[]`                 | No       | Tool definitions (see below).                      |
-| `policies`       | `Policy[]`               | No       | Policy rules evaluated by the kernel.              |
-| `evidence_types` | `string[]`               | No       | Evidence receipt kinds this pack can produce.      |
-| `state_aliases`  | `Record<string, string>` | No       | Map friendly names to kernel state machine states. |
-| `lane_templates` | `{ id: string }[]`       | No       | Pre-defined lane configurations.                   |
+| Field            | Type                     | Required | Description                                                            |
+| ---------------- | ------------------------ | -------- | ---------------------------------------------------------------------- |
+| `id`             | `string`                 | Yes      | Unique pack identifier (kebab-case).                                   |
+| `version`        | `string` (semver)        | Yes      | Pack version. Must be valid semantic versioning.                       |
+| `config_key`     | `string`                 | No       | Root key in `workspace.yaml` for this pack's configuration. See below. |
+| `config_schema`  | `string`                 | No       | Path to a Zod schema for validating pack config values.                |
+| `task_types`     | `string[]`               | Yes      | At least one task type the pack handles.                               |
+| `tools`          | `Tool[]`                 | No       | Tool definitions (see below).                                          |
+| `policies`       | `Policy[]`               | No       | Policy rules evaluated by the kernel.                                  |
+| `evidence_types` | `string[]`               | No       | Evidence receipt kinds this pack can produce.                          |
+| `state_aliases`  | `Record<string, string>` | No       | Map friendly names to kernel state machine states.                     |
+| `lane_templates` | `{ id: string }[]`       | No       | Pre-defined lane configurations.                                       |
+
+### Pack configuration
+
+Packs can declare a workspace-level configuration block by setting `config_key` in their manifest. When present, this key becomes a valid root-level field in `workspace.yaml`, and `config:set` routes writes to it through pack schema validation.
+
+```yaml
+# manifest.yaml (excerpt)
+id: software-delivery
+version: 0.1.0
+config_key: software_delivery
+# config_schema: ./config-schema.ts  # optional Zod schema path
+```
+
+| Field           | Description                                                                                                 |
+| --------------- | ----------------------------------------------------------------------------------------------------------- |
+| `config_key`    | Declares which root key in `workspace.yaml` holds this pack's config. Must be unique across all loaded packs. |
+| `config_schema` | Optional path (relative to pack root) to a Zod schema module that validates config values on write.         |
+
+When a pack declares `config_key: software_delivery`:
+
+- The `software_delivery` block in `workspace.yaml` is treated as this pack's configuration.
+- `config:set --key software_delivery.gates.minCoverage --value 85` writes to that block, validated against the pack's schema if provided.
+- `config:get --key software_delivery.methodology.testing` reads from that block.
+- All keys must be **fully qualified** from the workspace root. Using `gates.minCoverage` without the `software_delivery` prefix produces an error with a did-you-mean suggestion.
+
+<Aside type="tip">
+  Any pack can declare its own `config_key`. A hypothetical `customer-support` pack could use
+  `config_key: customer_support`, making `customer_support.routing_rules` a valid config path.
+  Each pack's config key must be unique across all packs pinned in the workspace.
+</Aside>
 
 ### Tool entry schema
 
@@ -160,6 +192,7 @@ Here is how the `software-delivery` pack declares `git:status`:
 # packages/@lumenflow/packs/software-delivery/manifest.yaml (excerpt)
 id: software-delivery
 version: 0.1.0
+config_key: software_delivery
 task_types:
   - work-unit
 tools:
@@ -171,6 +204,8 @@ tools:
         pattern: '**'
         access: read
 ```
+
+The `config_key: software_delivery` declaration tells the kernel that this pack owns the `software_delivery` root key in `workspace.yaml`. Without this declaration, any `software_delivery.*` config operations would fail with an "unknown key" error.
 
 The `entry` field points to the file `tool-impl/git-tools.ts` and the named
 export `gitStatusTool`. The kernel resolves this path relative to the pack root
