@@ -226,10 +226,7 @@ export type KernelOwnedRootKey = (typeof KERNEL_OWNED_ROOT_KEYS)[number];
  * the error should guide the user to pin the pack instead of showing the generic
  * "Unknown workspace root key" message.
  */
-const KNOWN_PACK_CONFIG_KEY_MIGRATIONS: Record<
-  string,
-  { packId: string; packLabel: string }
-> = {
+const KNOWN_PACK_CONFIG_KEY_MIGRATIONS: Record<string, { packId: string; packLabel: string }> = {
   software_delivery: {
     packId: 'software-delivery',
     packLabel: 'software-delivery',
