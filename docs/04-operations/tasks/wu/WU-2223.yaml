@@ -2,7 +2,7 @@ id: WU-2223
 title: Fix control_plane schema mismatch between core and kernel
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -38,3 +38,11 @@ acceptance:
   - isValidParentLane throws CONFIG_ERROR when workspace.yaml exists but fails validation
   - lane-checker tests cover control_plane + lane validation scenario
   - parity test guards against future schema drift
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/lumenflow-dev/worktrees/framework-core-validation-wu-2223
+claimed_at: 2026-02-26T19:07:59.613Z
+baseline_main_sha: 70f9e8f38033c0007818f90228bb5f1537c1006a
+session_id: 224cf554-c0e1-4fc9-a1ec-350e490b5a61
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T19:07:59.621Z

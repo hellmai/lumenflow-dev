@@ -2384,3 +2384,4 @@
 {"type":"claim","wuId":"WU-2222","timestamp":"2026-02-26T17:35:24.920Z","lane":"Framework: CLI WU Commands","title":"Separate wu:brief evidence from delegation spawning"}
 {"type":"checkpoint","wuId":"WU-2222","timestamp":"2026-02-26T17:35:47.073Z","note":"[wu:brief] generated via codex-cli","progress":"wu:brief executed","nextSteps":"client=codex-cli"}
 {"type":"complete","wuId":"WU-2222","timestamp":"2026-02-26T17:48:30.449Z"}
+{"type":"claim","wuId":"WU-2223","timestamp":"2026-02-26T19:07:59.638Z","lane":"Framework: Core Validation","title":"Fix control_plane schema mismatch between core and kernel"}

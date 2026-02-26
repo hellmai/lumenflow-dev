@@ -49,11 +49,11 @@ sections:
 - [WU-2177 — Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
 - [WU-2217 — BUG: Fix pre-existing prettier format failures in wu-done.ts and arg-parser.ts](wu/WU-2217.yaml) — Framework: CLI WU Commands
-- [WU-2223 — Fix control_plane schema mismatch between core and kernel](wu/WU-2223.yaml) — Framework: Core Validation
 
 ## 🔧 In progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
+- [WU-2223 — Fix control_plane schema mismatch between core and kernel](wu/WU-2223.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 
