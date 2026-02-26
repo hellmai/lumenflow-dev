@@ -2,7 +2,7 @@ id: WU-2205
 title: 'Phase 5: Simplify wu:done sync checks to canonical not-behind semantics'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -48,3 +48,11 @@ acceptance:
   - Keep fail-closed behavior for wu:done remote sync validation failures where remote is required
   - Add/adjust tests for behind/ahead/diverged/network-failure wu:done scenarios to match canonical
     policy
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2205
+claimed_at: 2026-02-26T13:26:35.562Z
+baseline_main_sha: 2ad971dd5e58604f706846d456760cb76056f51f
+session_id: a11de0ab-136d-4062-adad-ed47aa385455
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T13:26:35.571Z
