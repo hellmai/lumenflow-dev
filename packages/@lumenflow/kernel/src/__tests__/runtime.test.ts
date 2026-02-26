@@ -1560,9 +1560,23 @@ describe('kernel runtime facade', () => {
       expect(error.message).toContain('pnpm pack:install');
       expect(error.message).toContain('--id software-delivery');
       expect(error.message).toContain('--source registry');
-      expect(error.message).toContain('--version');
+      expect(error.message).toContain('--version 1.0.0');
       // Must NOT be the generic "Unknown workspace root key" message
       expect(error.message).not.toContain('Unknown workspace root key');
+    });
+
+    it('falls back to --version latest when no available manifest can be resolved', async () => {
+      await writeLegacyWorkspace(tempRoot);
+      await rm(join(tempRoot, PACKS_DIR_NAME, SOFTWARE_DELIVERY_PACK_ID, PACK_MANIFEST_FILE_NAME), {
+        force: true,
+      });
+
+      const error = await createRuntime().catch((e: Error) => e);
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toContain('pnpm pack:install');
+      expect(error.message).toContain('--id software-delivery');
+      expect(error.message).toContain('--source registry');
+      expect(error.message).toContain('--version latest');
     });
 
     it('boots cleanly when workspace has no software_delivery key and no packs', async () => {
