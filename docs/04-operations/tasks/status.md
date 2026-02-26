@@ -4,7 +4,7 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-- [WU-2200 — Migration error provides non-executable remediation command](wu/WU-2200.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1100,3 +1100,4 @@ _Last updated: 2026-02-26_
 - [WU-2197 — findStrippedKeys rejects writes due to pre-existing unknown keys in unrelated paths](wu/WU-2197.yaml) — 2026-02-26
 - [WU-2196 — Runtime boot rejects legacy workspaces with software_delivery but no SD pack pin](wu/WU-2196.yaml) — 2026-02-26
 - [WU-2199 — Define sync-validator semantics and consolidation plan for main-branch sync checks](wu/WU-2199.yaml) — 2026-02-26
+- [WU-2200 — Migration error provides non-executable remediation command](wu/WU-2200.yaml) — 2026-02-26

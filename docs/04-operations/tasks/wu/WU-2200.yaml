@@ -2,7 +2,7 @@ id: WU-2200
 title: Migration error provides non-executable remediation command
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -53,3 +53,6 @@ session_id: cce4c6cb-bc8d-4098-8e06-11c2ea326d86
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-26T12:39:32.622Z
+locked: true
+completed_at: 2026-02-26T12:44:58.387Z
+completed: 2026-02-26

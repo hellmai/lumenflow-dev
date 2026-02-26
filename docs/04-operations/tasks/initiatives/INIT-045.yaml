@@ -2,7 +2,7 @@ id: INIT-045
 slug: multi-pack-config
 title: 'Multi-pack config architecture: workspace-aware config:set with pack-declared config namespaces'
 description: ''
-status: in_progress
+status: done
 priority: P0
 owner: tom
 created: 2026-02-25
@@ -18,7 +18,7 @@ phases:
     status: done
   - id: 4
     title: Documentation update
-    status: in_progress
+    status: done
 success_metrics:
   - config:set --key control_plane.sync_interval writes at YAML root
   - config:set rejects unknown keys at write path
