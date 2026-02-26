@@ -13,7 +13,7 @@ import { existsSync, rmSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import pRetry from 'p-retry';
-import { BRANCHES } from './wu-constants.js';
+import { BRANCHES, REMOTES } from './wu-constants.js';
 import { getConfig } from './lumenflow-config.js';
 import type { GitAdapter } from './git-adapter.js';
 import type { PushRetryConfig } from './lumenflow-config-schema.js';
@@ -182,6 +182,50 @@ export function formatRetryExhaustionError(
 export function shouldSkipRemoteOperations(): boolean {
   const config = getConfig();
   return config.git.requireRemote === false;
+}
+
+export interface MicroWorktreeSyncPreambleOptions {
+  mainGit: Pick<GitAdapter, 'fetch' | 'merge'>;
+  logPrefix: string;
+  pushOnly: boolean;
+  skipRemote: boolean;
+}
+
+export interface MicroWorktreeSyncPreambleResult {
+  baseRef: string;
+}
+
+/**
+ * WU-2203: Run the micro-worktree sync preamble and compute the base ref.
+ *
+ * Preserves existing behavior for pushOnly/skipRemote modes:
+ * - standard mode syncs local main to origin/main
+ * - pushOnly mode only refreshes origin/main tracking ref
+ * - local-only mode skips remote operations entirely
+ */
+export async function runMicroWorktreeSyncPreamble(
+  options: MicroWorktreeSyncPreambleOptions,
+): Promise<MicroWorktreeSyncPreambleResult> {
+  const { mainGit, logPrefix, pushOnly, skipRemote } = options;
+
+  if (!skipRemote) {
+    console.log(`${logPrefix} Fetching ${REMOTES.ORIGIN}/${BRANCHES.MAIN} before starting...`);
+    await mainGit.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+    if (pushOnly) {
+      console.log(
+        `${logPrefix} ✅ Push-only mode will base from ${REMOTES.ORIGIN}/${BRANCHES.MAIN}; local main unchanged (WU-1672)`,
+      );
+    } else {
+      // Update local main to match origin/main for standard mode.
+      await mainGit.merge(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`, { ffOnly: true });
+      console.log(`${logPrefix} ✅ Local main synced with ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
+    }
+  } else if (skipRemote) {
+    console.log(`${logPrefix} Local-only mode (git.requireRemote=false): skipping origin sync`);
+  }
+
+  const baseRef = pushOnly && !skipRemote ? `${REMOTES.ORIGIN}/${BRANCHES.MAIN}` : BRANCHES.MAIN;
+  return { baseRef };
 }
 
 /**
