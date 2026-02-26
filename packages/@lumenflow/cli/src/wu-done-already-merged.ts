@@ -23,7 +23,10 @@ import {
   STRING_LITERALS,
   GIT_REFS,
 } from '@lumenflow/core/wu-constants';
-import { executeAlreadyMergedCompletion } from '@lumenflow/core/wu-done-merged-worktree';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
+import { collectMetadataToTransaction } from '@lumenflow/core/wu-done-metadata';
+import { WUTransaction } from '@lumenflow/core/wu-transaction';
+import { WU_PATHS } from '@lumenflow/core/wu-paths';
 import { getErrorMessage } from '@lumenflow/core/error-handler';
 
 // ──────────────────────────────────────────────
@@ -69,6 +72,7 @@ export interface AlreadyMergedFinalizeResult {
 
 const GIT_LS_TREE = 'ls-tree';
 const ALREADY_MERGED_LOG_TAG = 'WU-2211';
+const OPERATION_NAME = 'wu-done-already-merged';
 
 // ──────────────────────────────────────────────
 // Safety Check: Verify code_paths exist on HEAD
@@ -133,18 +137,18 @@ export async function verifyCodePathsOnMainHead(
 }
 
 // ──────────────────────────────────────────────
-// Finalize: Write metadata and commit
+// Finalize: Write metadata via micro-worktree
 // ──────────────────────────────────────────────
 
 /**
  * Execute the finalize-only path for --already-merged mode.
  *
- * Creates stamp, updates WU YAML to done, updates backlog and status.
- * Reuses executeAlreadyMergedCompletion from wu-done-merged-worktree.ts
- * which handles all metadata writes with individual error capture.
+ * Creates stamp, updates WU YAML to done, updates backlog and status,
+ * emits completion event -- all via a micro-worktree atomic commit.
  *
- * The caller (wu:done main()) is responsible for committing and pushing
- * the resulting changes via the micro-worktree pattern.
+ * Uses collectMetadataToTransaction + withMicroWorktree for atomicity.
+ * This ensures all metadata changes are committed and pushed to origin/main
+ * in a single atomic operation.
  *
  * @param params - Finalization parameters
  * @returns Result with per-operation status and any errors
@@ -152,31 +156,60 @@ export async function verifyCodePathsOnMainHead(
 export async function executeAlreadyMergedFinalize(
   params: AlreadyMergedFinalizeParams,
 ): Promise<AlreadyMergedFinalizeResult> {
-  const { id, title, lane } = params;
+  const { id, title, doc } = params;
 
   console.log(
     `${LOG_PREFIX.DONE} ${EMOJI.INFO} ${ALREADY_MERGED_LOG_TAG}: Finalize-only mode -- skipping merge phase`,
   );
+  console.log(
+    `${LOG_PREFIX.DONE} ${EMOJI.INFO} Writing stamp, backlog, status, and events via micro-worktree...`,
+  );
 
   try {
-    const result = await executeAlreadyMergedCompletion({ id, title, lane });
+    await withMicroWorktree({
+      operation: OPERATION_NAME,
+      id,
+      logPrefix: LOG_PREFIX.DONE,
+      pushOnly: true,
+      async execute({ worktreePath }) {
+        const transaction = new WUTransaction(id);
 
-    if (result.success) {
-      console.log(
-        `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} ${ALREADY_MERGED_LOG_TAG}: Finalization complete`,
-      );
-    } else {
-      console.warn(
-        `${LOG_PREFIX.DONE} ${EMOJI.WARNING} ${ALREADY_MERGED_LOG_TAG}: Finalization completed with errors`,
-      );
-    }
+        const wuPath = WU_PATHS.WU(id);
+        const statusPath = WU_PATHS.STATUS();
+        const backlogPath = WU_PATHS.BACKLOG();
+        const stampPath = WU_PATHS.STAMP(id);
+
+        await collectMetadataToTransaction({
+          id,
+          title,
+          doc: { ...doc },
+          wuPath,
+          statusPath,
+          backlogPath,
+          stampPath,
+          transaction,
+          projectRoot: worktreePath,
+        });
+
+        // Write transaction files in the micro-worktree
+        const files = transaction.getPendingWrites().map((w) => w.path);
+        transaction.commit();
+
+        const commitMessage = `wu(${id.toLowerCase()}): done - ${title} [already-merged]`;
+        return { commitMessage, files };
+      },
+    });
+
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} ${ALREADY_MERGED_LOG_TAG}: Finalization complete`,
+    );
 
     return {
-      success: result.success,
-      stamped: result.stamped,
-      yamlUpdated: result.yamlUpdated,
-      backlogUpdated: result.backlogUpdated,
-      errors: result.errors,
+      success: true,
+      stamped: true,
+      yamlUpdated: true,
+      backlogUpdated: true,
+      errors: [],
     };
   } catch (err) {
     const errorMessage = getErrorMessage(err);

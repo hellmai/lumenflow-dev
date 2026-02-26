@@ -38,12 +38,40 @@ vi.mock('@lumenflow/core/git-adapter', () => ({
   createGitForPath: () => mockGitAdapter,
 }));
 
-const mockExecuteAlreadyMergedCompletion = vi.fn();
+const mockWithMicroWorktree = vi.fn();
 
-vi.mock('@lumenflow/core/wu-done-merged-worktree', () => ({
-  executeAlreadyMergedCompletion: (...args: unknown[]) =>
-    mockExecuteAlreadyMergedCompletion(...args),
-  detectAlreadyMergedNoWorktree: vi.fn(),
+vi.mock('@lumenflow/core/micro-worktree', () => ({
+  withMicroWorktree: (...args: unknown[]) => mockWithMicroWorktree(...args),
+}));
+
+const mockCollectMetadataToTransaction = vi.fn();
+
+vi.mock('@lumenflow/core/wu-done-metadata', () => ({
+  collectMetadataToTransaction: (...args: unknown[]) =>
+    mockCollectMetadataToTransaction(...args),
+}));
+
+vi.mock('@lumenflow/core/wu-transaction', () => {
+  const mockTransaction = {
+    addWrite: vi.fn(),
+    getPendingWrites: vi.fn().mockReturnValue([]),
+    commit: vi.fn(),
+    size: 0,
+  };
+  return {
+    WUTransaction: function WUTransaction() {
+      return mockTransaction;
+    },
+  };
+});
+
+vi.mock('@lumenflow/core/wu-paths', () => ({
+  WU_PATHS: {
+    WU: (id: string) => `docs/04-operations/tasks/wu/${id}.yaml`,
+    STATUS: () => 'docs/04-operations/tasks/status.md',
+    BACKLOG: () => 'docs/04-operations/tasks/backlog.md',
+    STAMP: (id: string) => `.lumenflow/stamps/${id}.done`,
+  },
 }));
 
 vi.mock('@lumenflow/core/error-handler', () => ({
@@ -191,26 +219,24 @@ describe('WU-2211: verifyCodePathsOnMainHead', () => {
 });
 
 // ──────────────────────────────────────────────
-// AC3: Stamp, completion event, backlog, and status are written
+// AC3: Stamp, completion event, backlog, and status are written via micro-worktree
 // ──────────────────────────────────────────────
 
 describe('WU-2211: executeAlreadyMergedFinalize', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockExecuteAlreadyMergedCompletion.mockResolvedValue({
-      success: true,
-      stamped: true,
-      yamlUpdated: true,
-      backlogUpdated: true,
-      errors: [],
+    // Default: micro-worktree succeeds by calling the execute callback
+    mockWithMicroWorktree.mockImplementation(async (opts: { execute: (ctx: { worktreePath: string }) => Promise<unknown> }) => {
+      await opts.execute({ worktreePath: '/tmp/micro-worktree' });
     });
+    mockCollectMetadataToTransaction.mockResolvedValue(undefined);
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('delegates to executeAlreadyMergedCompletion with correct params', async () => {
+  it('calls withMicroWorktree with pushOnly mode', async () => {
     await executeAlreadyMergedFinalize({
       id: 'WU-100',
       title: 'Test WU',
@@ -218,14 +244,33 @@ describe('WU-2211: executeAlreadyMergedFinalize', () => {
       doc: { id: 'WU-100', status: 'in_progress' },
     });
 
-    expect(mockExecuteAlreadyMergedCompletion).toHaveBeenCalledWith({
+    expect(mockWithMicroWorktree).toHaveBeenCalledWith(
+      expect.objectContaining({
+        operation: 'wu-done-already-merged',
+        id: 'WU-100',
+        pushOnly: true,
+      }),
+    );
+  });
+
+  it('calls collectMetadataToTransaction inside micro-worktree', async () => {
+    await executeAlreadyMergedFinalize({
       id: 'WU-100',
       title: 'Test WU',
       lane: 'Framework: Core',
+      doc: { id: 'WU-100', status: 'in_progress' },
     });
+
+    expect(mockCollectMetadataToTransaction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'WU-100',
+        title: 'Test WU',
+        projectRoot: '/tmp/micro-worktree',
+      }),
+    );
   });
 
-  it('returns success result with all completion flags', async () => {
+  it('returns success result when micro-worktree succeeds', async () => {
     const result = await executeAlreadyMergedFinalize({
       id: 'WU-100',
       title: 'Test WU',
@@ -240,9 +285,9 @@ describe('WU-2211: executeAlreadyMergedFinalize', () => {
     expect(result.errors).toEqual([]);
   });
 
-  it('returns failure result when completion fails', async () => {
-    mockExecuteAlreadyMergedCompletion.mockRejectedValue(
-      new Error('Stamp creation failed'),
+  it('returns failure result when micro-worktree fails', async () => {
+    mockWithMicroWorktree.mockRejectedValue(
+      new Error('Push failed: non-fast-forward'),
     );
 
     const result = await executeAlreadyMergedFinalize({
@@ -253,16 +298,17 @@ describe('WU-2211: executeAlreadyMergedFinalize', () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.errors).toContain('Stamp creation failed');
+    expect(result.errors).toContain('Push failed: non-fast-forward');
   });
 
-  it('propagates partial success from completion', async () => {
-    mockExecuteAlreadyMergedCompletion.mockResolvedValue({
-      success: false,
-      stamped: true,
-      yamlUpdated: true,
-      backlogUpdated: false,
-      errors: ['Backlog update failed'],
+  it('returns failure result when collectMetadata fails', async () => {
+    mockCollectMetadataToTransaction.mockRejectedValue(
+      new Error('Required metadata files missing'),
+    );
+
+    // The error propagates through withMicroWorktree's execute callback
+    mockWithMicroWorktree.mockImplementation(async (opts: { execute: (ctx: { worktreePath: string }) => Promise<unknown> }) => {
+      await opts.execute({ worktreePath: '/tmp/micro-worktree' });
     });
 
     const result = await executeAlreadyMergedFinalize({
@@ -273,9 +319,7 @@ describe('WU-2211: executeAlreadyMergedFinalize', () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.stamped).toBe(true);
-    expect(result.backlogUpdated).toBe(false);
-    expect(result.errors).toContain('Backlog update failed');
+    expect(result.errors.length).toBeGreaterThan(0);
   });
 });
 
@@ -298,24 +342,27 @@ describe('WU-2211: idempotency', () => {
     expect(result2.valid).toBe(true);
   });
 
-  it('executeAlreadyMergedFinalize succeeds even when stamp already exists', async () => {
-    // Simulate stamp already existing (still returns success)
-    mockExecuteAlreadyMergedCompletion.mockResolvedValue({
-      success: true,
-      stamped: true, // stamp existed but that's fine
-      yamlUpdated: true,
-      backlogUpdated: true,
-      errors: [],
+  it('executeAlreadyMergedFinalize succeeds on repeated calls', async () => {
+    mockWithMicroWorktree.mockImplementation(async (opts: { execute: (ctx: { worktreePath: string }) => Promise<unknown> }) => {
+      await opts.execute({ worktreePath: '/tmp/micro-worktree' });
     });
+    mockCollectMetadataToTransaction.mockResolvedValue(undefined);
 
-    const result = await executeAlreadyMergedFinalize({
+    const result1 = await executeAlreadyMergedFinalize({
+      id: 'WU-100',
+      title: 'Test WU',
+      lane: 'Framework: Core',
+      doc: {},
+    });
+    const result2 = await executeAlreadyMergedFinalize({
       id: 'WU-100',
       title: 'Test WU',
       lane: 'Framework: Core',
       doc: {},
     });
 
-    expect(result.success).toBe(true);
+    expect(result1.success).toBe(true);
+    expect(result2.success).toBe(true);
   });
 });
 
