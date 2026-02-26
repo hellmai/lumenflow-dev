@@ -6,7 +6,6 @@ _Last updated: 2026-02-26_
 
 - [WU-2208 — Remote-aware WU ID generation to prevent cross-machine collisions](wu/WU-2208.yaml)
 - [WU-2211 — wu:done --already-merged finalize-only mode](wu/WU-2211.yaml)
-- [WU-2212 — Break-glass WU finalization tool (no dist dependency)](wu/WU-2212.yaml)
 - [WU-2215 — Migration remediation resolves pack version from manifest instead of hardcoding](wu/WU-2215.yaml)
 
 ## Completed
@@ -1113,3 +1112,4 @@ _Last updated: 2026-02-26_
 - [WU-2207 — Phase 6: remove deprecated wu:done parity helper](wu/WU-2207.yaml) — 2026-02-26
 - [WU-2210 — Migration remediation command missing --version and hardcodes --source local](wu/WU-2210.yaml) — 2026-02-26
 - [WU-2214 — BUG: hook redirect regex false-positives on arrow notation in arguments](wu/WU-2214.yaml) — 2026-02-26
+- [WU-2212 — Break-glass WU finalization tool (no dist dependency)](wu/WU-2212.yaml) — 2026-02-26

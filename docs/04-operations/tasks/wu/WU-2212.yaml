@@ -2,7 +2,7 @@ id: WU-2212
 title: Break-glass WU finalization tool (no dist dependency)
 lane: 'Operations: Tooling'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -58,3 +58,6 @@ acceptance:
   - Commits atomically via micro-worktree pattern
   - Idempotent on re-run (no duplicate stamps or events)
   - Prints break-glass warning on execution
+locked: true
+completed_at: 2026-02-26T14:18:52.332Z
+completed: 2026-02-26
