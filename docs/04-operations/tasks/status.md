@@ -4,7 +4,7 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2205 — Phase 5: Simplify wu:done sync checks to canonical not-behind semantics](wu/WU-2205.yaml)
 
 ## Completed
 
