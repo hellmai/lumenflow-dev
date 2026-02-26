@@ -2,7 +2,7 @@ id: WU-2205
 title: 'Phase 5: Simplify wu:done sync checks to canonical not-behind semantics'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -54,3 +54,6 @@ session_id: a11de0ab-136d-4062-adad-ed47aa385455
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-26T13:26:35.571Z
+locked: true
+completed_at: 2026-02-26T13:32:25.994Z
+completed: 2026-02-26
