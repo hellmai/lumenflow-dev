@@ -5,6 +5,7 @@ _Last updated: 2026-02-26_
 ## In Progress
 
 - [WU-2196 — Runtime boot rejects legacy workspaces with software_delivery but no SD pack pin](wu/WU-2196.yaml)
+- [WU-2199 — Define sync-validator semantics and consolidation plan for main-branch sync checks](wu/WU-2199.yaml)
 
 ## Completed
 
