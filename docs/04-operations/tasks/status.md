@@ -4,7 +4,7 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2208 — Remote-aware WU ID generation to prevent cross-machine collisions](wu/WU-2208.yaml)
 
 ## Completed
 
