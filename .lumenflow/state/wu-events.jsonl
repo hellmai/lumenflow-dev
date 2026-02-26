@@ -2334,3 +2334,4 @@
 {"type":"complete","wuId":"WU-2202","timestamp":"2026-02-26T13:06:45.844Z"}
 {"type":"claim","wuId":"WU-2203","timestamp":"2026-02-26T13:07:23.634Z","lane":"Framework: Core Lifecycle","title":"Phase 3: Extract withMicroWorktree sync preamble helper without behavior changes"}
 {"type":"complete","wuId":"WU-2203","timestamp":"2026-02-26T13:11:40.222Z"}
+{"type":"claim","wuId":"WU-2198","lane":"Operations: Tooling","title":"BUG: committed dist symlinks break fresh clone build","timestamp":"2026-02-26T13:17:34.262Z"}
