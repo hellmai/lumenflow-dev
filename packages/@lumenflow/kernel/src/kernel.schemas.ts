@@ -285,8 +285,8 @@ export function validateWorkspaceRootKeys(
       errors.push(
         `Your workspace has a "${key}" config block but the ${migration.packLabel} pack is not pinned. ` +
           `Since LumenFlow 3.x, pack config keys require explicit pack pinning. ` +
-          `Add the ${migration.packLabel} pack to your workspace.yaml packs array:\n\n` +
-          `  pnpm config:set --key packs --value '[{"id": "${migration.packId}", "version": "*"}]'`,
+          `Add the ${migration.packLabel} pack to your workspace:\n\n` +
+          `  pnpm pack:install --id ${migration.packId} --source local`,
       );
       continue;
     }
