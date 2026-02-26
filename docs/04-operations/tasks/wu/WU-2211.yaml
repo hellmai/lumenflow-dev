@@ -12,6 +12,7 @@ tests:
     - Complete a WU whose code is already on main without a worktree
   unit:
     - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-done-already-merged.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2211.done
