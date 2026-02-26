@@ -195,7 +195,7 @@ is_main_checkout_context() {
 is_mutating_filesystem_command() {
   local base_cmd="$1"
   local raw_command="$2"
-  local redirect_regex='(^|[^0-9])(>>|>)'
+  local redirect_regex='(^|[^0-9-])(>>|>)'
   local merge_redirect_regex='(^|[^0-9])&>'
 
   case "$base_cmd" in
