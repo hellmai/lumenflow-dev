@@ -2,7 +2,7 @@ id: WU-2213
 title: Duplicate-ID detector and repair command
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-26
 code_paths:
@@ -50,3 +50,6 @@ session_id: 66591fd5-94fd-4d7c-bb5a-080d7ded0d74
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-26T14:57:14.981Z
+locked: true
+completed_at: 2026-02-26T15:13:48.545Z
+completed: 2026-02-26
