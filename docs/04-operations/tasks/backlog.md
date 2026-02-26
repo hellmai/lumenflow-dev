@@ -51,7 +51,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2188 — Document multi-pack config architecture and updated config:set/get](wu/WU-2188.yaml) — Content: Site Comms
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1139,6 +1139,7 @@ sections:
 - [WU-2187 — Two-phase workspace validation: dynamic root-key validation against pinned packs](wu/WU-2187.yaml)
 - [WU-2185 — Rewrite config:set with workspace-aware routing](wu/WU-2185.yaml)
 - [WU-2186 — Fix config:get — remove fallback-to-software_delivery behavior](wu/WU-2186.yaml)
+- [WU-2188 — Document multi-pack config architecture and updated config:set/get](wu/WU-2188.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

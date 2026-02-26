@@ -2,7 +2,7 @@ id: WU-2188
 title: Document multi-pack config architecture and updated config:set/get
 lane: 'Content: Site Comms'
 type: feature
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-25
 code_paths:
@@ -51,3 +51,6 @@ acceptance:
   - create-a-pack guide documents config_key and config_schema manifest fields
   - config-commands.mdx shows fully-qualified key examples
   - No docs reference implicit software_delivery prefix
+locked: true
+completed_at: 2026-02-26T00:13:59.217Z
+completed: 2026-02-26
