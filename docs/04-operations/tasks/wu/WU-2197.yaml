@@ -2,14 +2,15 @@ id: WU-2197
 title: findStrippedKeys rejects writes due to pre-existing unknown keys in unrelated paths
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
   - packages/@lumenflow/cli/src/config-set.ts
 tests:
   manual:
-    - With software_delivery.gates.legacy_unknown pre-existing, run config:set --key software_delivery.methodology.testing --value test-after and verify success
+    - With software_delivery.gates.legacy_unknown pre-existing, run config:set --key
+      software_delivery.methodology.testing --value test-after and verify success
   unit:
     - packages/@lumenflow/cli/src/__tests__/config-set.test.ts
   e2e: []
@@ -30,9 +31,26 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "findStrippedKeys() (config-set.ts:432) compares the full normalized pack config against Zod-parsed output to detect stripped unknown keys. The check runs on the entire config tree at line 734, not just the sub-path being written. If a workspace has a pre-existing unknown key anywhere (e.g. software_delivery.gates.legacy_unknown), writing to a completely different path (e.g. software_delivery.methodology.testing=test-after) is rejected with 'Unknown config key(s) rejected: gates.legacy_unknown'. The stripping check must be scoped to the write target path while preserving strictness for that targeted path."
+description: "findStrippedKeys() (config-set.ts:432) compares the full normalized pack config
+  against Zod-parsed output to detect stripped unknown keys. The check runs on the entire config
+  tree at line 734, not just the sub-path being written. If a workspace has a pre-existing unknown
+  key anywhere (e.g. software_delivery.gates.legacy_unknown), writing to a completely different path
+  (e.g. software_delivery.methodology.testing=test-after) is rejected with 'Unknown config key(s)
+  rejected: gates.legacy_unknown'. The stripping check must be scoped to the write target path while
+  preserving strictness for that targeted path."
 acceptance:
   - Unknown-key enforcement is scoped to the sub-path being written, not the full pack config tree
-  - Writes to valid paths succeed even when pre-existing unknown keys exist elsewhere in the same pack config
-  - Strictness is preserved for the targeted write path — unknown keys within the write target are still rejected
-  - 'Tests cover: pre-existing unrelated unknown key does not block valid write; unknown key within the write target path is still rejected; clean config write works as before'
+  - Writes to valid paths succeed even when pre-existing unknown keys exist elsewhere in the same
+    pack config
+  - Strictness is preserved for the targeted write path — unknown keys within the write target are
+    still rejected
+  - 'Tests cover: pre-existing unrelated unknown key does not block valid write; unknown key within
+    the write target path is still rejected; clean config write works as before'
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2197
+claimed_at: 2026-02-26T12:17:42.839Z
+baseline_main_sha: 480d978b01d7579c3bc0d86dc201d778dd1911a2
+session_id: 1c353edc-863b-4529-a3cd-949d36f80d53
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T12:17:42.842Z

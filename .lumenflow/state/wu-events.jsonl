@@ -2314,3 +2314,4 @@
 {"type":"claim","wuId":"WU-2198","timestamp":"2026-02-26T12:13:26.374Z","lane":"Framework: CLI WU Commands","title":"Fix wu-done ensureMainUpToDate swallowing ProcessExitError from die()"}
 {"type":"checkpoint","wuId":"WU-2195","timestamp":"2026-02-26T12:15:34.148Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2195","timestamp":"2026-02-26T12:16:35.921Z"}
+{"type":"claim","wuId":"WU-2197","timestamp":"2026-02-26T12:17:42.861Z","lane":"Framework: CLI WU Commands","title":"findStrippedKeys rejects writes due to pre-existing unknown keys in unrelated paths"}
