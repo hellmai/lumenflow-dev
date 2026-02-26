@@ -1,0 +1,41 @@
+id: WU-2208
+title: Remote-aware WU ID generation to prevent cross-machine collisions
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-26
+code_paths:
+  - packages/@lumenflow/core/src/wu-id-generator.ts
+  - packages/@lumenflow/core/src/ports/sync-validator.ports.ts
+  - packages/@lumenflow/cli/src/wu-create.ts
+tests:
+  manual:
+    - Two repos with stale local state both generate unique IDs
+  unit:
+    - packages/@lumenflow/core/src/__tests__/wu-id-generator.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2208.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+sizing_estimate:
+  estimated_files: 5
+  estimated_tool_calls: 35
+  strategy: single-session
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'wu:create generates IDs from local YAML directory scan only (readdirSync). Two machines independently generated WU-2198 for different bugs on lumenflow-dev (2026-02-26). Fix: extend ISyncValidatorGitAdapter with listTreeAtRef, scan origin/main YAML + stamps + events for highest ID. Add --offline flag. Design adapter interface to accommodate future cloud allocateWuId().'
+acceptance:
+  - ID generation considers remote state (origin/main) by default
+  - getHighestWuId checks local YAML, remote YAML, local stamps, remote stamps, and wu-events.jsonl
+  - --offline flag skips fetch and prints warning
+  - ISyncValidatorGitAdapter extended with listTreeAtRef method
+  - Existing happy-path behavior unchanged when local and remote agree
