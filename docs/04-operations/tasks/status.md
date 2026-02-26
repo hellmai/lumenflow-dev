@@ -4,7 +4,7 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2203 — Phase 3: Extract withMicroWorktree sync preamble helper without behavior changes](wu/WU-2203.yaml)
 
 ## Completed
 

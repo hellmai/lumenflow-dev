@@ -2,7 +2,7 @@ id: WU-2203
 title: 'Phase 3: Extract withMicroWorktree sync preamble helper without behavior changes'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -40,3 +40,11 @@ acceptance:
   - Preserve current behavior for pushOnly, skipRemote, fetch ordering, and baseRef selection
   - No regression in push retry/rebase and cleanup orchestration
   - micro-worktree test suite assertions for pre-fetch/order/baseRef behavior remain green
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2203
+claimed_at: 2026-02-26T13:07:23.585Z
+baseline_main_sha: b74707e6af022aedea2d31eceba29b2f86d95357
+session_id: 5ba2494a-facd-4097-8d33-4c78fe10b8d0
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T13:07:23.591Z
