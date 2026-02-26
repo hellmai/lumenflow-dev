@@ -187,6 +187,8 @@ import {
   validateBranchOnlyMode,
   validateStagedFiles,
 } from './wu-done-git-ops.js';
+import { flushWuLifecycleSync } from './wu-lifecycle-sync/service.js';
+import { WU_LIFECYCLE_COMMANDS } from './wu-lifecycle-sync/constants.js';
 
 export {
   buildGatesCommand,
@@ -2127,9 +2129,7 @@ export async function main() {
   // Skips merge phase, gates, worktree detection. Only writes metadata.
   // ──────────────────────────────────────────────
   if (args.alreadyMerged) {
-    console.log(
-      `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-2211: --already-merged mode activated`,
-    );
+    console.log(`${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-2211: --already-merged mode activated`);
 
     // Safety check: verify code_paths exist on HEAD of main
     const codePaths = (docMain.code_paths as string[]) || [];
@@ -2190,9 +2190,7 @@ export async function main() {
     // Broadcast completion signal (non-blocking)
     await broadcastCompletionSignal(id, title);
 
-    console.log(
-      `\n${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} ${id} finalized via --already-merged`,
-    );
+    console.log(`\n${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} ${id} finalized via --already-merged`);
     console.log(`- WU: ${id} -- ${title}`);
 
     clearConfigCache();
@@ -2644,6 +2642,19 @@ export async function main() {
   // Non-blocking: failures handled internally by updateSpawnRegistryOnCompletion
   // Works in both worktree and branch-only modes (called after completionResult)
   await updateSpawnRegistryOnCompletion(id, mainCheckoutPath);
+
+  await flushWuLifecycleSync(
+    {
+      command: WU_LIFECYCLE_COMMANDS.DONE,
+      wuId: id,
+    },
+    {
+      workspaceRoot: mainCheckoutPath,
+      logger: {
+        warn: (message) => console.warn(`${LOG_PREFIX.DONE} ${message}`),
+      },
+    },
+  );
 
   // WU-1747: Clear checkpoint on successful completion
   // Checkpoint is no longer needed once WU is fully complete

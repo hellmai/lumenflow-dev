@@ -99,6 +99,8 @@ import { claimWorktreeMode } from './wu-claim-worktree.js';
 import { claimBranchOnlyMode } from './wu-claim-branch.js';
 import { handleResumeMode } from './wu-claim-resume-handler.js';
 import { extractSandboxCommandFromArgv, runWuSandbox } from './wu-sandbox.js';
+import { flushWuLifecycleSync } from './wu-lifecycle-sync/service.js';
+import { WU_LIFECYCLE_COMMANDS } from './wu-lifecycle-sync/constants.js';
 
 // ============================================================================
 // RE-EXPORTS: Preserve public API for existing test consumers
@@ -404,6 +406,7 @@ export async function main() {
   // WU-1521: Track canonical claim push state for rollback in finally block
   let canonicalClaimPushed = false;
   let claimTitle = '';
+  let claimActor: string | undefined;
   let postClaimSandboxWorktree: string | null;
   try {
     // Code paths overlap detection (WU-901)
@@ -594,6 +597,7 @@ export async function main() {
         baseDir: process.cwd(),
         claimedBy,
       });
+      claimActor = claimedBy;
       if (pickupResult.recorded) {
         console.log(
           `${PREFIX} ${EMOJI.SUCCESS} Recorded delegation pickup evidence (${pickupResult.spawnId})`,
@@ -608,6 +612,21 @@ export async function main() {
         `${PREFIX} Warning: Could not record delegation pickup evidence: ${getErrorMessage(err)}`,
       );
     }
+
+    await flushWuLifecycleSync(
+      {
+        command: WU_LIFECYCLE_COMMANDS.CLAIM,
+        wuId: id,
+        by: claimActor,
+        sessionId: sessionId ?? undefined,
+      },
+      {
+        workspaceRoot: process.cwd(),
+        logger: {
+          warn: (message) => console.warn(`${PREFIX} ${message}`),
+        },
+      },
+    );
 
     // Mark claim as successful - lock should remain for wu:done to release
     claimSucceeded = true;

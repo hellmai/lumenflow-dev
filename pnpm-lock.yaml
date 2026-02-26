@@ -236,6 +236,9 @@ importers:
       '@lumenflow/agent':
         specifier: workspace:*
         version: link:../agent
+      '@lumenflow/control-plane-sdk':
+        specifier: workspace:*
+        version: link:../control-plane-sdk
       '@lumenflow/core':
         specifier: workspace:*
         version: link:../core

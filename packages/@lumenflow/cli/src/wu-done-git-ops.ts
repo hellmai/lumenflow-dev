@@ -15,6 +15,7 @@ import {
   STRING_LITERALS,
   LUMENFLOW_PATHS,
   EXIT_CODES,
+  WU_STATUS,
 } from '@lumenflow/core/wu-constants';
 import { resolveWuEventsRelativePath } from './state-path-resolvers.js';
 
@@ -95,7 +96,7 @@ function extractCompletedWUIds(logOutput: string, currentId: string): string[] {
   const completedWUs = [];
 
   for (const line of logOutput.split(STRING_LITERALS.NEWLINE)) {
-    if (!line.toLowerCase().includes('done')) continue;
+    if (!line.toLowerCase().includes(WU_STATUS.DONE)) continue;
 
     let match;
     while ((match = wuPattern.exec(line)) !== null) {

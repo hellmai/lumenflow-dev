@@ -185,6 +185,7 @@ This package provides CLI commands for the LumenFlow workflow framework, includi
 | `state-cleanup`            | Clean up stale state data                                           |
 | `state-doctor`             | Diagnose state store issues                                         |
 | `sync-templates`           | Sync templates to project (alias)                                   |
+| `templates-sync`           | Sync templates to project (alias)                                   |
 | `workspace-init`           | Legacy entrypoint; use "npx lumenflow" for bootstrap-all onboarding |
 
 ### File & Git Operations

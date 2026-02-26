@@ -16,6 +16,8 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { WU_PATHS } from './wu-paths.js';
 import { createError, ErrorCodes } from './error-handler.js';
+import { GIT_REFS } from './wu-git-constants.js';
+import { LUMENFLOW_PATHS } from './wu-paths-constants.js';
 import type { IWuIdGitAdapter } from './ports/sync-validator.ports.js';
 
 // Re-export the adapter type for consumers
@@ -31,13 +33,13 @@ const DEFAULT_MAX_RETRIES = 5;
 const RETRY_DELAY_BASE_MS = 50;
 
 /** Default git ref for remote state */
-const DEFAULT_REMOTE_REF = 'origin/main';
+const DEFAULT_REMOTE_REF = GIT_REFS.ORIGIN_MAIN;
 
 /** Log prefix for console output */
 const LOG_PREFIX = '[wu-id-generator]';
 
 /** Relative path to wu-events.jsonl from repo root */
-const WU_EVENTS_RELATIVE_PATH = '.lumenflow/state/wu-events.jsonl';
+const WU_EVENTS_RELATIVE_PATH = LUMENFLOW_PATHS.WU_EVENTS;
 
 /**
  * Parse the numeric part from a WU ID string.

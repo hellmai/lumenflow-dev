@@ -257,16 +257,17 @@ pnpm mem:checkpoint
 
 **Options:**
 
-| Flag                          | Description                                    | Required |
-| ----------------------------- | ---------------------------------------------- | -------- |
-| `--wu &lt;wuId&gt;`           | Work Unit ID to link (e.g., WU-123)            | No       |
-| `-n, --note &lt;text&gt;`     | Checkpoint note (required if not positional)   | No       |
-| `-s, --session &lt;id&gt;`    | Session ID to link checkpoint to (UUID)        | No       |
-| `-p, --progress &lt;text&gt;` | Progress summary                               | No       |
-| `--next-steps &lt;text&gt;`   | Next steps description                         | No       |
-| `-t, --trigger &lt;type&gt;`  | Handoff trigger type (e.g., clear, handoff)    | No       |
-| `-d, --base-dir &lt;path&gt;` | Base directory (defaults to current directory) | No       |
-| `-q, --quiet`                 | Suppress output except errors                  | No       |
+| Flag                           | Description                                                        | Required |
+| ------------------------------ | ------------------------------------------------------------------ | -------- |
+| `--wu &lt;wuId&gt;`            | Work Unit ID to link (e.g., WU-123)                                | No       |
+| `-n, --note &lt;text&gt;`      | Checkpoint note (required if not positional)                       | No       |
+| `-s, --session &lt;id&gt;`     | Session ID to link checkpoint to (UUID)                            | No       |
+| `-p, --progress &lt;text&gt;`  | Progress summary                                                   | No       |
+| `--next-steps &lt;text&gt;`    | Next steps description                                             | No       |
+| `-t, --trigger &lt;type&gt;`   | Handoff trigger type (e.g., clear, handoff)                        | No       |
+| `--git-diff-stat &lt;text&gt;` | Git diff --stat output to include in checkpoint metadata (WU-2157) | No       |
+| `-d, --base-dir &lt;path&gt;`  | Base directory (defaults to current directory)                     | No       |
+| `-q, --quiet`                  | Suppress output except errors                                      | No       |
 
 ### mem:cleanup
 
@@ -1156,6 +1157,7 @@ pnpm wu:create --lane <lane> --title <title>
 | `--sizing-exception-reason &lt;text&gt;` | Optional sizing exception justification text                                                                          | No       |
 | `--no-strict`                            | Bypass strict validation (skip code_paths/test_paths existence checks, treat warnings as advisory). Logged when used. | No       |
 | `--cloud`                                | Use cloud/branch-pr mode (no worktree, PR-based completion for cloud agents and MCP callers)                          | No       |
+| `--offline`                              | Skip remote fetch during ID generation (air-gapped/offline mode)                                                      | No       |
 
 ### wu:delegate
 

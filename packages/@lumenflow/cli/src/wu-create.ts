@@ -34,7 +34,7 @@
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { die } from '@lumenflow/core/error-handler';
 import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve as resolvePath } from 'node:path';
 import { todayISO } from '@lumenflow/core/date-utils';
 import { validateLaneFormat, extractParent } from '@lumenflow/core/lane-checker';
 import { inferSubLane } from '@lumenflow/core/lane-inference';
@@ -95,6 +95,8 @@ import {
 import { displayReadinessSummary } from './wu-create-readiness.js';
 import { emitSizingAdvisory } from './wu-create-sizing-advisory.js';
 import { validateSizingEstimate, type SizingEstimate } from './wu-sizing-validation.js';
+import { flushWuLifecycleSync } from './wu-lifecycle-sync/service.js';
+import { WU_LIFECYCLE_COMMANDS } from './wu-lifecycle-sync/constants.js';
 
 // Re-export public API for backward compatibility (tests import from wu-create.js)
 export { validateCreateSpec, type CreateWUOptions } from './wu-create-validation.js';
@@ -919,6 +921,20 @@ export async function main() {
 
     // WU-1620: Display readiness summary
     displayReadinessSummary(wuId);
+
+    await flushWuLifecycleSync(
+      {
+        command: WU_LIFECYCLE_COMMANDS.CREATE,
+        wuId,
+        specPath: resolvePath(process.cwd(), WU_PATHS.WU(wuId)),
+      },
+      {
+        workspaceRoot: process.cwd(),
+        logger: {
+          warn: (message) => console.warn(`${LOG_PREFIX} ${message}`),
+        },
+      },
+    );
   } catch (error) {
     die(
       `Transaction failed: ${error.message}\n\n` +
