@@ -58,6 +58,7 @@ import {
   isRetryExhaustionError,
   formatRetryExhaustionError,
   shouldSkipRemoteOperations,
+  runMicroWorktreeSyncPreamble,
   getTempBranchName,
   createMicroWorktreeDir,
   findWorktreeByBranch,
@@ -565,27 +566,13 @@ export async function withMicroWorktree(
   // This makes the operation idempotent - a retry after crash/timeout will succeed
   await cleanupOrphanedMicroWorktree(operation, id, mainGit, logPrefix);
 
-  // WU-1179/WU-1672: Fetch origin/main before starting to minimize race condition window.
-  // In pushOnly mode, fetch updates origin/main tracking ref without touching local main.
-  // WU-1308: Skip when git.requireRemote=false (local-only mode).
-  if (!skipRemote) {
-    console.log(`${logPrefix} Fetching ${REMOTES.ORIGIN}/${BRANCHES.MAIN} before starting...`);
-    await mainGit.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
-    if (pushOnly) {
-      console.log(
-        `${logPrefix} ✅ Push-only mode will base from ${REMOTES.ORIGIN}/${BRANCHES.MAIN}; local main unchanged (WU-1672)`,
-      );
-    } else {
-      // Update local main to match origin/main for standard mode.
-      await mainGit.merge(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`, { ffOnly: true });
-      console.log(`${logPrefix} ✅ Local main synced with ${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
-    }
-  } else if (skipRemote) {
-    console.log(`${logPrefix} Local-only mode (git.requireRemote=false): skipping origin sync`);
-  }
-
   const tempBranchName = getTempBranchName(operation, id);
-  const baseRef = pushOnly && !skipRemote ? `${REMOTES.ORIGIN}/${BRANCHES.MAIN}` : BRANCHES.MAIN;
+  const { baseRef } = await runMicroWorktreeSyncPreamble({
+    mainGit,
+    logPrefix,
+    pushOnly,
+    skipRemote,
+  });
   const microWorktreePath = createMicroWorktreeDir(`${operation}-`);
 
   console.log(`${logPrefix} Using micro-worktree isolation (WU-1262)`);
