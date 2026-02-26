@@ -14,7 +14,8 @@ import type { IGitAdapter } from './git-validator.ports.js';
 /**
  * Canonical git adapter shape for sync validation operations.
  */
-export interface ISyncValidatorGitAdapter extends Pick<
-  IGitAdapter,
-  'fetch' | 'getCommitHash' | 'revList'
-> {}
+export interface ISyncValidatorGitAdapter {
+  fetch: IGitAdapter['fetch'];
+  getCommitHash: IGitAdapter['getCommitHash'];
+  revList: IGitAdapter['revList'];
+}
