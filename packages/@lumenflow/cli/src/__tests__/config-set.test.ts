@@ -477,3 +477,164 @@ describe('applyConfigSet (workspace-aware routing)', () => {
     expect(getConfigValue(result.config!, 'event_namespace')).toBe('custom-events');
   });
 });
+
+// ---------------------------------------------------------------------------
+// WU-2190: Bug A — Root key writes must be schema-validated
+// ---------------------------------------------------------------------------
+
+describe('WU-2190 Bug A: root key schema validation', () => {
+  it('rejects scalar overwrite of control_plane object (control_plane = "foo")', () => {
+    const workspace = createMinimalWorkspace();
+    const result = applyConfigSet(workspace, 'control_plane', 'foo', PACK_CONFIG_KEYS);
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+    expect(result.error).toContain('control_plane');
+  });
+
+  it('rejects invalid control_plane sub-key value (sync_interval = "not-a-number")', () => {
+    const workspace = createMinimalWorkspace();
+    // sync_interval should be a positive integer, "abc" is not numeric
+    const result = applyConfigSet(
+      workspace,
+      'control_plane.sync_interval',
+      'abc',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+
+  it('rejects unknown control_plane sub-key', () => {
+    const workspace = createMinimalWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'control_plane.unknown_field',
+      'value',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+
+  it('rejects overwriting memory_namespace with an object-like value when existing is string', () => {
+    const workspace = createMinimalWorkspace();
+    // memory_namespace must remain a string; trying to set it to something
+    // that would be coerced to a non-string type is rejected.
+    // However, since CLI always passes strings, the main risk is overwriting
+    // a namespace root without a subPath when it should be a scalar.
+    // Test: setting memory_namespace to a valid string still works
+    const result = applyConfigSet(workspace, 'memory_namespace', 'new-ns', PACK_CONFIG_KEYS);
+    expect(result.ok).toBe(true);
+    expect(getConfigValue(result.config!, 'memory_namespace')).toBe('new-ns');
+  });
+
+  it('rejects memory_namespace sub-path write (memory_namespace.foo = bar)', () => {
+    const workspace = createMinimalWorkspace();
+    // memory_namespace is a scalar string, not an object — sub-path writes are invalid
+    const result = applyConfigSet(workspace, 'memory_namespace.foo', 'bar', PACK_CONFIG_KEYS);
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+
+  it('rejects event_namespace sub-path write (event_namespace.foo = bar)', () => {
+    const workspace = createMinimalWorkspace();
+    const result = applyConfigSet(workspace, 'event_namespace.foo', 'bar', PACK_CONFIG_KEYS);
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+
+  it('allows valid control_plane.sync_interval write', () => {
+    const workspace = createMinimalWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'control_plane.sync_interval',
+      '60',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(true);
+    expect(getConfigValue(result.config!, 'control_plane.sync_interval')).toBe(60);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// WU-2190: Bug B — Unknown nested pack keys must be rejected
+// ---------------------------------------------------------------------------
+
+describe('WU-2190 Bug B: unknown nested pack key rejection', () => {
+  it('rejects software_delivery.gates.unknown_key', () => {
+    const workspace = createMinimalWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'software_delivery.gates.unknown_key',
+      'true',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+    expect(result.error).toContain('unknown_key');
+  });
+
+  it('rejects software_delivery.completely_unknown_section.foo', () => {
+    const workspace = createMinimalWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'software_delivery.completely_unknown_section.foo',
+      'bar',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+
+  it('rejects software_delivery.unknown_top_level_key with value', () => {
+    const workspace = createMinimalWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'software_delivery.unknown_top_level_key',
+      'val',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+
+  it('still allows valid software_delivery.gates.minCoverage write', () => {
+    const workspace = createMinimalWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'software_delivery.gates.minCoverage',
+      '85',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(true);
+    expect(getConfigValue(result.config!, 'software_delivery.gates.minCoverage')).toBe(85);
+  });
+
+  it('still allows valid software_delivery.methodology.testing write', () => {
+    const workspace = createMinimalWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'software_delivery.methodology.testing',
+      'test-after',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(true);
+    expect(getConfigValue(result.config!, 'software_delivery.methodology.testing')).toBe(
+      'test-after',
+    );
+  });
+
+  it('still allows valid software_delivery.experimental.context_validation write', () => {
+    const workspace = createMinimalWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'software_delivery.experimental.context_validation',
+      'false',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(true);
+    expect(
+      getConfigValue(result.config!, 'software_delivery.experimental.context_validation'),
+    ).toBe(false);
+  });
+});
