@@ -569,6 +569,16 @@ export const WU_CREATE_OPTIONS: Record<string, WUOption> = {
     flags: '--sizing-exception-reason <text>',
     description: 'Optional sizing exception justification text',
   },
+  /**
+   * WU-2208: Skip remote fetch during ID generation (offline/air-gapped mode).
+   * When set, only local filesystem is scanned for highest WU ID.
+   * Prints a warning about collision risk.
+   */
+  offline: {
+    name: 'offline',
+    flags: '--offline',
+    description: 'Skip remote fetch during ID generation (air-gapped/offline mode)',
+  },
 };
 
 /**

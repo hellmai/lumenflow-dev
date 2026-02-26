@@ -667,6 +667,59 @@ export class GitAdapter {
     return result;
   }
 
+  /**
+   * WU-2208: List file/directory names at a given git ref and tree path.
+   *
+   * Uses `git ls-tree --name-only <ref> <path>/` to enumerate entries.
+   * Returns an array of filenames (not full paths) within the directory.
+   * Returns empty array if the path does not exist at the given ref.
+   *
+   * @param ref - Git ref (e.g., 'origin/main')
+   * @param path - Directory path relative to repo root
+   * @returns Array of filenames in the directory at the given ref
+   */
+  async listTreeAtRef(ref: string, path: string): Promise<string[]> {
+    assertNonEmptyString(ref, 'ref');
+    assertNonEmptyString(path, 'path');
+    try {
+      // Ensure path ends with / for directory listing
+      const dirPath = path.endsWith('/') ? path : `${path}/`;
+      const result = await this.git.raw(['ls-tree', '--name-only', ref, dirPath]);
+      if (!result || result.trim().length === 0) {
+        return [];
+      }
+      return result
+        .trim()
+        .split('\n')
+        .filter((line) => line.length > 0);
+    } catch {
+      // Path doesn't exist at ref, or ref doesn't exist
+      return [];
+    }
+  }
+
+  /**
+   * WU-2208: Show a file's content at a given git ref.
+   *
+   * Uses `git show <ref>:<path>` to retrieve file content.
+   * Returns empty string if the file does not exist at the given ref.
+   *
+   * @param ref - Git ref (e.g., 'origin/main')
+   * @param path - File path relative to repo root
+   * @returns File content as string, or empty string if not found
+   */
+  async showFileAtRef(ref: string, path: string): Promise<string> {
+    assertNonEmptyString(ref, 'ref');
+    assertNonEmptyString(path, 'path');
+    try {
+      const result = await this.git.raw(['show', `${ref}:${path}`]);
+      return result ?? '';
+    } catch {
+      // File doesn't exist at ref
+      return '';
+    }
+  }
+
   // Deprecated methods (for backward compatibility during migration)
 
   /**

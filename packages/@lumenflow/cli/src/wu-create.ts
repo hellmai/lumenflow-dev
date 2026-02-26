@@ -51,7 +51,11 @@ import {
 } from '@lumenflow/core/wu-constants';
 import { ensureOnMain, validateWUIDFormat } from '@lumenflow/core/wu-helpers';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
-import { generateWuIdWithRetry } from '@lumenflow/core/wu-id-generator';
+import {
+  generateWuIdWithRetry,
+  getHighestWuIdRemoteAware,
+  WU_ID_PREFIX,
+} from '@lumenflow/core/wu-id-generator';
 import { lintWUSpec, formatLintErrors } from '@lumenflow/core/wu-lint';
 import { WU_CREATE_DEFAULTS } from '@lumenflow/core/wu-create-defaults';
 import { isDocsOrProcessType } from '@lumenflow/core/wu-type-helpers';
@@ -452,31 +456,50 @@ export async function main() {
       WU_OPTIONS.noStrict,
       // WU-1590: Cloud mode for cloud agents
       WU_OPTIONS.cloud,
+      // WU-2208: Offline mode for air-gapped ID generation
+      WU_CREATE_OPTIONS.offline,
     ],
     required: ['lane', 'title'], // WU-1246: --id is now optional (auto-generated if not provided)
     allowPositionalId: false,
   });
 
-  // WU-1246: Auto-generate WU ID if not provided
+  // WU-1246 + WU-2208: Auto-generate WU ID if not provided
+  // WU-2208: Use remote-aware ID generation to prevent cross-machine collisions
   let wuId: string;
   if (args.id) {
     wuId = args.id;
     // Validate explicitly provided ID
     validateWUIDFormat(wuId);
   } else {
-    // Auto-generate next sequential ID
+    // Auto-generate next sequential ID using remote-aware scanning
     console.log(`${LOG_PREFIX} Auto-generating WU ID...`);
     try {
-      wuId = await generateWuIdWithRetry();
+      const gitAdapter = getGitForCwd();
+      const highest = await getHighestWuIdRemoteAware({
+        git: gitAdapter,
+        offline: Boolean(args.offline),
+      });
+      // Use highest from remote-aware scan, then apply retry logic for local conflicts
+      wuId = `${WU_ID_PREFIX}${highest + 1}`;
       console.log(`${LOG_PREFIX} Generated WU ID: ${wuId}`);
     } catch (error) {
-      die(
-        `Failed to auto-generate WU ID: ${error.message}\n\n` +
-          `Options:\n` +
-          `  1. Retry the command (transient file system issue)\n` +
-          `  2. Provide an explicit ID: --id WU-XXXX\n` +
-          `  3. Check for race conditions if running parallel wu:create`,
+      // Fallback to local-only generation if remote-aware fails entirely
+      console.warn(
+        `${LOG_PREFIX} Remote-aware ID generation failed, falling back to local-only: ${error.message}`,
       );
+      try {
+        wuId = await generateWuIdWithRetry();
+        console.log(`${LOG_PREFIX} Generated WU ID (local-only): ${wuId}`);
+      } catch (retryError) {
+        die(
+          `Failed to auto-generate WU ID: ${retryError.message}\n\n` +
+            `Options:\n` +
+            `  1. Retry the command (transient file system issue)\n` +
+            `  2. Provide an explicit ID: --id WU-XXXX\n` +
+            `  3. Check for race conditions if running parallel wu:create\n` +
+            `  4. Use --offline to skip remote state check`,
+        );
+      }
     }
   }
 
