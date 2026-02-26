@@ -2,7 +2,7 @@ id: WU-2222
 title: Separate wu:brief evidence from delegation spawning
 lane: 'Framework: CLI WU Commands'
 type: feature
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -83,3 +83,6 @@ session_id: ab643ebc-c040-4de1-80f3-2700b4540b7d
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-26T17:35:24.900Z
+locked: true
+completed_at: 2026-02-26T17:48:26.008Z
+completed: 2026-02-26
