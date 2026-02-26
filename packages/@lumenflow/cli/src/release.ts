@@ -1176,7 +1176,7 @@ export async function executeReleaseInMicroWorktree(opts: ReleaseOptions): Promi
       operation: RELEASE_OPERATION_NAME,
       id: buildReleaseWorktreeId(version),
       logPrefix: LOG_PREFIX,
-      execute: async ({ worktreePath, gitWorktree }) => {
+      execute: async ({ worktreePath }) => {
         // Resolve package paths relative to micro-worktree
         const worktreePackagePaths = findPackageJsonPaths(worktreePath);
         const worktreePackageDirs = worktreePackagePaths.map((path) => dirname(path));
