@@ -2379,3 +2379,4 @@
 {"type":"claim","wuId":"WU-2221","timestamp":"2026-02-26T17:17:12.979Z","lane":"Framework: CLI WU Commands","title":"Release script: install deps in micro-worktree before build"}
 {"type":"release","wuId":"WU-2221","timestamp":"2026-02-26T17:17:37.370Z","reason":"Reset via wu:recover --action reset"}
 {"type":"claim","wuId":"WU-2221","timestamp":"2026-02-26T17:18:31.040Z","lane":"Framework: CLI WU Commands","title":"Release script: install deps in micro-worktree before build"}
+{"type":"checkpoint","wuId":"WU-2221","timestamp":"2026-02-26T17:21:22.667Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
