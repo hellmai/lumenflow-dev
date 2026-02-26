@@ -1,0 +1,41 @@
+id: WU-2224
+title: Add post-command sync flush for WU lifecycle events to control plane
+lane: 'Framework: CLI WU Commands'
+type: feature
+status: ready
+priority: P1
+created: 2026-02-26
+code_paths:
+  - packages/@lumenflow/cli/src/
+  - packages/@lumenflow/control-plane-sdk/src/
+tests:
+  manual:
+    - Verify wu:create in cloud-connected workspace pushes event to control plane database
+    - Verify wu:done in workspace without control_plane config does not error
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2224.done
+dependencies: []
+plan: lumenflow://plans/WU-2224-plan.md
+spec_refs:
+  - lumenflow://plans/WU-2224-plan.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: CLI wu:* commands (wu:create, wu:claim, wu:done) write WU lifecycle events to local wu-events.jsonl but never push them to the configured control_plane endpoint. Gates already syncs telemetry to /api/v1/telemetry from CLI — the same pattern needs to exist for WU lifecycle events. Add a post-command sync flush that reuses existing control_plane config/token resolution to push WU lifecycle events after each wu:* command.
+acceptance:
+  - wu:create pushes a task.created event to control plane when control_plane config exists
+  - wu:claim pushes a task.claimed event to control plane when control_plane config exists
+  - wu:done pushes a task.completed event to control plane when control_plane config exists
+  - 'Sync flush is non-blocking: failures are logged but do not break the CLI command'
+  - Sync flush reuses existing control_plane config and token_env resolution from workspace.yaml
+  - No sync attempt when control_plane config is absent (CLI-only workspaces unaffected)
