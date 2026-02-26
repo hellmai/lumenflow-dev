@@ -5,6 +5,7 @@ _Last updated: 2026-02-26_
 ## In Progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
+- [WU-2219 — Release script regression: restore micro-worktree isolation (WU-1077 regression)](wu/WU-2219.yaml)
 
 ## Completed
 

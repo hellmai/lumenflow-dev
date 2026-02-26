@@ -2,7 +2,7 @@ id: WU-2219
 title: 'Release script regression: restore micro-worktree isolation (WU-1077 regression)'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -39,3 +39,11 @@ acceptance:
   - pnpm release --dry-run shows micro-worktree flow
   - pnpm release --skip-publish succeeds end-to-end
   - Cleanup on failure leaves main completely untouched
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/lumenflow-dev/worktrees/framework-cli-wu-commands-wu-2219
+claimed_at: 2026-02-26T16:19:28.058Z
+baseline_main_sha: e35a8dd0a424591fa2366ca1de6afc1565995616
+session_id: b405d314-0f84-4776-a9a3-7141f58bd6b5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T16:19:28.064Z

@@ -2368,3 +2368,4 @@
 {"type":"checkpoint","wuId":"WU-2213","timestamp":"2026-02-26T15:13:24.079Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2213","timestamp":"2026-02-26T15:13:52.853Z"}
 {"type":"claim","wuId":"WU-2218","timestamp":"2026-02-26T15:48:38.832Z","lane":"Operations: Tooling","title":"Pre-release formatting fix for v3.6.0"}
+{"type":"claim","wuId":"WU-2219","timestamp":"2026-02-26T16:19:28.083Z","lane":"Framework: CLI WU Commands","title":"Release script regression: restore micro-worktree isolation (WU-1077 regression)"}
