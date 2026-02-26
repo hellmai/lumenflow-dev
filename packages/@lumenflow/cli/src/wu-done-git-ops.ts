@@ -4,7 +4,7 @@
 import { scanLogForViolations, rotateLog } from '@lumenflow/core/commands-logger';
 import { getConfig } from '@lumenflow/core/config';
 import { validateDocsOnly, getAllowedPathsDescription } from '@lumenflow/core/docs-path-validator';
-import { die, getErrorMessage, ProcessExitError } from '@lumenflow/core/error-handler';
+import { die, getErrorMessage } from '@lumenflow/core/error-handler';
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import {
   BRANCHES,
@@ -20,7 +20,6 @@ import { resolveWuEventsRelativePath } from './state-path-resolvers.js';
 
 type GitAdapter = ReturnType<typeof getGitForCwd>;
 type DetectParallelCompletionsGitAdapter = Pick<GitAdapter, 'fetch' | 'getCommitHash' | 'raw'>;
-type EnsureMainUpToDateGitAdapter = Pick<GitAdapter, 'fetch' | 'getCommitHash' | 'revList'>;
 
 interface WUDocLike extends Record<string, unknown> {
   baseline_main_sha?: string;
@@ -204,57 +203,6 @@ export async function detectParallelCompletions(
       `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not detect parallel completions: ${getErrorMessage(err)}`,
     );
     return noParallel;
-  }
-}
-
-/**
- * Ensure main branch is up-to-date with origin before merge operations.
- */
-export async function ensureMainUpToDate(gitAdapter?: EnsureMainUpToDateGitAdapter) {
-  console.log(`${LOG_PREFIX.DONE} Checking if main is up-to-date with origin...`);
-
-  try {
-    const git = gitAdapter ?? getGitForCwd();
-    await git.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
-
-    const localMain = await git.getCommitHash(BRANCHES.MAIN);
-    const remoteMain = await git.getCommitHash(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
-
-    if (localMain !== remoteMain) {
-      const behind = await git.revList([
-        '--count',
-        `${BRANCHES.MAIN}..${REMOTES.ORIGIN}/${BRANCHES.MAIN}`,
-      ]);
-      const ahead = await git.revList([
-        '--count',
-        `${REMOTES.ORIGIN}/${BRANCHES.MAIN}..${BRANCHES.MAIN}`,
-      ]);
-
-      die(
-        `Main branch is out of sync with ${REMOTES.ORIGIN}.\n\n` +
-          `Local ${BRANCHES.MAIN} is ${behind} commits behind and ${ahead} commits ahead of ${REMOTES.ORIGIN}/${BRANCHES.MAIN}.\n\n` +
-          `Update main before running wu:done:\n` +
-          `  git pull origin main\n` +
-          `  # Then retry:\n` +
-          `  pnpm wu:done --id ${process.argv.find((a) => a.startsWith('WU-')) || 'WU-XXX'}\n\n` +
-          `This prevents fast-forward merge failures during wu:done completion.\n\n` +
-          `Why this happens:\n` +
-          `  - Another agent completed a WU and pushed to main\n` +
-          `  - Your main checkout is now behind origin/main\n` +
-          `  - The fast-forward merge will fail without updating first\n\n` +
-          `Multi-agent coordination: See CLAUDE.md §2.7`,
-      );
-    }
-
-    console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Main is up-to-date with origin`);
-  } catch (err) {
-    // WU-2198: Re-throw ProcessExitError from die() — intentional aborts must propagate.
-    // Only catch network/fetch errors (fail-open policy for connectivity issues).
-    if (err instanceof ProcessExitError) throw err;
-    console.warn(
-      `${LOG_PREFIX.DONE} ${EMOJI.WARNING} Could not verify main sync: ${getErrorMessage(err)}`,
-    );
-    console.warn(`${LOG_PREFIX.DONE} Proceeding anyway (network issue or no remote)`);
   }
 }
 
