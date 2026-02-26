@@ -35,6 +35,7 @@ export function validateInputs(argv: string[]) {
         '  --override-owner    Override ownership check (requires --reason, audited)\n' +
         '  --force, -f         Bypass dirty-main pre-merge guard (audited, WU-1503)\n' +
         '  --no-auto-rebase    Disable auto-rebase on branch divergence (WU-1303)\n' +
+        '  --already-merged    Skip merge phase; finalize metadata only for code already on main (WU-2211)\n' +
         '  --require-agents    Block completion if mandatory agents not invoked (WU-1542)\n' +
         '  --help, -h          Show this help\n\n' +
         '⚠️  SKIP-GATES WARNING:\n' +

@@ -132,6 +132,11 @@ import {
   detectAlreadyMergedNoWorktree,
   executeAlreadyMergedCompletion,
 } from '@lumenflow/core/wu-done-merged-worktree';
+// WU-2211: --already-merged finalize-only mode
+import {
+  verifyCodePathsOnMainHead,
+  executeAlreadyMergedFinalize as executeAlreadyMergedFinalizeFromModule,
+} from './wu-done-already-merged.js';
 import { checkWUConsistency } from '@lumenflow/core/wu-consistency-checker';
 // WU-1542: Use blocking mode compliance check (replaces non-blocking checkMandatoryAgentsCompliance)
 import { checkMandatoryAgentsComplianceBlocking } from '@lumenflow/core/orchestration-rules';
@@ -2116,6 +2121,83 @@ export async function main() {
 
   // Capture main checkout path once. process.cwd() may drift later during recovery flows.
   const mainCheckoutPath = process.cwd();
+
+  // ──────────────────────────────────────────────
+  // WU-2211: --already-merged early exit path
+  // Skips merge phase, gates, worktree detection. Only writes metadata.
+  // ──────────────────────────────────────────────
+  if (args.alreadyMerged) {
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.INFO} WU-2211: --already-merged mode activated`,
+    );
+
+    // Safety check: verify code_paths exist on HEAD of main
+    const codePaths = (docMain.code_paths as string[]) || [];
+    const verification = await verifyCodePathsOnMainHead(codePaths);
+
+    if (!verification.valid) {
+      die(
+        `${EMOJI.FAILURE} --already-merged safety check failed\n\n` +
+          `${verification.error}\n\n` +
+          `Cannot finalize ${id}: code_paths must exist on HEAD before using --already-merged.`,
+      );
+    }
+
+    console.log(
+      `${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Safety check passed: all ${codePaths.length} code_paths verified on HEAD`,
+    );
+
+    // Execute finalize-only path
+    const title = String(docMain.title || id);
+    const lane = String(docMain.lane || '');
+    const finalizeResult = await executeAlreadyMergedFinalizeFromModule({
+      id,
+      title,
+      lane,
+      doc: docMain as Record<string, unknown>,
+    });
+
+    if (!finalizeResult.success) {
+      die(
+        `${EMOJI.FAILURE} --already-merged finalization failed\n\n` +
+          `Errors:\n${finalizeResult.errors.map((e) => `  - ${e}`).join('\n')}\n\n` +
+          `Partial state may remain. Rerun: pnpm wu:done --id ${id} --already-merged`,
+      );
+    }
+
+    // Release lane lock (non-blocking, same as normal wu:done)
+    try {
+      const lane = docMain.lane;
+      if (lane) {
+        const releaseResult = releaseLaneLock(lane, { wuId: id });
+        if (releaseResult.released && !releaseResult.notFound) {
+          console.log(`${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} Lane lock released for "${lane}"`);
+        }
+      }
+    } catch (err) {
+      console.warn(
+        `${LOG_PREFIX.DONE} Warning: Could not release lane lock: ${getErrorMessage(err)}`,
+      );
+    }
+
+    // End agent session (non-blocking)
+    try {
+      endSessionForWU();
+    } catch {
+      // Non-blocking
+    }
+
+    // Broadcast completion signal (non-blocking)
+    await broadcastCompletionSignal(id, title);
+
+    console.log(
+      `\n${LOG_PREFIX.DONE} ${EMOJI.SUCCESS} ${id} finalized via --already-merged`,
+    );
+    console.log(`- WU: ${id} -- ${title}`);
+
+    clearConfigCache();
+    process.exit(EXIT_CODES.SUCCESS);
+  }
 
   // WU-1663: Determine prepPassed early for pipeline actor input.
   // canSkipGates checks if wu:prep already ran gates successfully via checkpoint.
