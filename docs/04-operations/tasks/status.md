@@ -5,7 +5,6 @@ _Last updated: 2026-02-26_
 ## In Progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
-- [WU-2219 — Release script regression: restore micro-worktree isolation (WU-1077 regression)](wu/WU-2219.yaml)
 
 ## Completed
 
@@ -1118,3 +1117,4 @@ _Last updated: 2026-02-26_
 - [WU-2216 — Wire runtime to provide available manifests for root-key migration version resolution](wu/WU-2216.yaml) — 2026-02-26
 - [WU-2209 — Collision-safe wu:create retry on push race](wu/WU-2209.yaml) — 2026-02-26
 - [WU-2213 — Duplicate-ID detector and repair command](wu/WU-2213.yaml) — 2026-02-26
+- [WU-2219 — Release script regression: restore micro-worktree isolation (WU-1077 regression)](wu/WU-2219.yaml) — 2026-02-26

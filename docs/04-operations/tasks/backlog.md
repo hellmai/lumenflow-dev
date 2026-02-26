@@ -53,7 +53,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
-- [WU-2219 — Release script regression: restore micro-worktree isolation (WU-1077 regression)](wu/WU-2219.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
@@ -1170,6 +1169,7 @@ sections:
 - [WU-2216 — Wire runtime to provide available manifests for root-key migration version resolution](wu/WU-2216.yaml)
 - [WU-2209 — Collision-safe wu:create retry on push race](wu/WU-2209.yaml)
 - [WU-2213 — Duplicate-ID detector and repair command](wu/WU-2213.yaml)
+- [WU-2219 — Release script regression: restore micro-worktree isolation (WU-1077 regression)](wu/WU-2219.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
