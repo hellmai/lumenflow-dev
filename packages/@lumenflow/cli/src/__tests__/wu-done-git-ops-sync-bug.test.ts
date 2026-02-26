@@ -151,15 +151,11 @@ describe('ensureMainUpToDate sync bug (WU-2198)', () => {
     const injectedGetCommitHash = vi.fn().mockResolvedValue('base1234');
     const injectedRaw = vi.fn().mockResolvedValue('');
 
-    const result = await detectParallelCompletions(
-      'WU-2204',
-      { baseline_main_sha: 'base1234' },
-      {
-        fetch: injectedFetch,
-        getCommitHash: injectedGetCommitHash,
-        raw: injectedRaw,
-      } as never,
-    );
+    const result = await detectParallelCompletions('WU-2204', { baseline_main_sha: 'base1234' }, {
+      fetch: injectedFetch,
+      getCommitHash: injectedGetCommitHash,
+      raw: injectedRaw,
+    } as never);
 
     expect(result).toEqual({
       hasParallelCompletions: false,

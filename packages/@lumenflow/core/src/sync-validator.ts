@@ -10,7 +10,10 @@ import { BRANCHES, REMOTES } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import type { ISyncValidatorGitAdapter } from './ports/sync-validator.ports.js';
 
-export type EnsureMainUpToDateGitAdapter = Pick<ISyncValidatorGitAdapter, 'fetch' | 'getCommitHash'>;
+export type EnsureMainUpToDateGitAdapter = Pick<
+  ISyncValidatorGitAdapter,
+  'fetch' | 'getCommitHash'
+>;
 export type MainSyncGitAdapter = Pick<
   ISyncValidatorGitAdapter,
   'fetch' | 'getCommitHash' | 'revList'

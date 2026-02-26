@@ -10,10 +10,7 @@ import {
   validateMainNotBehindOrigin as validateMainNotBehindOriginCore,
   ensureMainNotBehindOrigin as ensureMainNotBehindOriginCore,
 } from './sync-validator.js';
-import type {
-  EnsureMainNotBehindOriginOptions,
-  MainSyncGitAdapter,
-} from './sync-validator.js';
+import type { EnsureMainNotBehindOriginOptions, MainSyncGitAdapter } from './sync-validator.js';
 
 export type { EnsureMainNotBehindOriginOptions, MainSyncGitAdapter } from './sync-validator.js';
 
