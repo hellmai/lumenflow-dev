@@ -1,10 +1,10 @@
 # Work Unit Status
 
-_Last updated: 2026-02-25_
+_Last updated: 2026-02-26_
 
 ## In Progress
 
-- [WU-2186 — Fix config:get — remove fallback-to-software_delivery behavior](wu/WU-2186.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1087,3 +1087,4 @@ _Last updated: 2026-02-25_
 - [WU-2183 — Add workspace root key registry to config-contract](wu/WU-2183.yaml) — 2026-02-25
 - [WU-2187 — Two-phase workspace validation: dynamic root-key validation against pinned packs](wu/WU-2187.yaml) — 2026-02-25
 - [WU-2185 — Rewrite config:set with workspace-aware routing](wu/WU-2185.yaml) — 2026-02-25
+- [WU-2186 — Fix config:get — remove fallback-to-software_delivery behavior](wu/WU-2186.yaml) — 2026-02-26

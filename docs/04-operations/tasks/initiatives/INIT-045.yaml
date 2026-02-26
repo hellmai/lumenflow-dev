@@ -15,7 +15,7 @@ phases:
     status: done
   - id: 3
     title: 'CLI: config:get rewrite'
-    status: pending
+    status: done
   - id: 4
     title: Documentation update
     status: pending
