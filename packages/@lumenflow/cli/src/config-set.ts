@@ -35,6 +35,7 @@ import { die } from '@lumenflow/core/error-handler';
 import { FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { LumenFlowConfigSchema } from '@lumenflow/core/config-schema';
+import { WorkspaceControlPlaneConfigSchema } from '@lumenflow/core/config-schema';
 import { normalizeConfigKeys } from '@lumenflow/core/normalize-config-keys';
 import { WRITABLE_ROOT_KEYS, MANAGED_ROOT_KEYS, WORKSPACE_ROOT_KEYS } from '@lumenflow/core/config';
 import { runCLI } from './cli-entry-point.js';
@@ -389,6 +390,60 @@ function coerceValue(value: string, existingValue: unknown): unknown {
 }
 
 // ---------------------------------------------------------------------------
+// Unknown key detection (WU-2190)
+// ---------------------------------------------------------------------------
+
+/**
+ * Recursively compare an input object against a Zod-parsed output to find
+ * keys that were silently stripped during parsing (i.e., unknown keys).
+ *
+ * @param input - The pre-parse object (normalized config)
+ * @param parsed - The post-parse object (Zod output with defaults applied)
+ * @param prefix - Dot-notation prefix for nested paths
+ * @returns Array of dotpath strings for keys present in input but missing in parsed output
+ */
+function findStrippedKeys(
+  input: Record<string, unknown>,
+  parsed: Record<string, unknown>,
+  prefix = '',
+): string[] {
+  const stripped: string[] = [];
+
+  for (const key of Object.keys(input)) {
+    const fullPath = prefix ? `${prefix}.${key}` : key;
+
+    if (!(key in parsed)) {
+      stripped.push(fullPath);
+      continue;
+    }
+
+    // Recurse into nested objects (skip arrays and non-objects)
+    const inputVal = input[key];
+    const parsedVal = parsed[key];
+    if (
+      inputVal !== null &&
+      inputVal !== undefined &&
+      typeof inputVal === 'object' &&
+      !Array.isArray(inputVal) &&
+      parsedVal !== null &&
+      parsedVal !== undefined &&
+      typeof parsedVal === 'object' &&
+      !Array.isArray(parsedVal)
+    ) {
+      stripped.push(
+        ...findStrippedKeys(
+          inputVal as Record<string, unknown>,
+          parsedVal as Record<string, unknown>,
+          fullPath,
+        ),
+      );
+    }
+  }
+
+  return stripped;
+}
+
+// ---------------------------------------------------------------------------
 // Core logic: applyConfigSet (workspace-aware routing)
 // ---------------------------------------------------------------------------
 
@@ -436,14 +491,80 @@ export function applyConfigSet(
 }
 
 /**
+ * Scalar-only root keys that must remain simple string values.
+ * Sub-path writes (e.g., memory_namespace.foo) are invalid for these keys.
+ */
+const SCALAR_ROOT_KEYS = new Set(['memory_namespace', 'event_namespace']);
+
+/**
  * Apply a set operation at the workspace root level.
  * Used for WRITABLE_ROOT_KEYS like control_plane, memory_namespace, event_namespace.
+ *
+ * WU-2190: Validates root key writes against schemas/type constraints:
+ * - control_plane: validated against WorkspaceControlPlaneConfigSchema (.strict())
+ * - memory_namespace / event_namespace: must be strings, no sub-path writes
  */
 function applyWorkspaceRootSet(
   workspace: Record<string, unknown>,
   key: string,
   rawValue: string,
 ): ConfigSetResult {
+  const segments = key.split('.');
+  const rootKey = segments[0];
+  const subPath = segments.slice(1).join('.');
+
+  // --- Scalar root keys (memory_namespace, event_namespace) ---
+  if (SCALAR_ROOT_KEYS.has(rootKey)) {
+    if (subPath) {
+      return {
+        ok: false,
+        error: `"${rootKey}" is a scalar value and does not support sub-path writes. Use: config:set --key ${rootKey} --value <string>`,
+      };
+    }
+    // Scalar keys must remain strings
+    return { ok: true, config: setNestedValue(workspace, key, rawValue) };
+  }
+
+  // --- control_plane validation ---
+  if (rootKey === 'control_plane') {
+    // Reject overwriting the entire control_plane object with a scalar
+    if (!subPath) {
+      return {
+        ok: false,
+        error: `Cannot overwrite "control_plane" with a scalar value. Set individual sub-keys instead (e.g., control_plane.sync_interval).`,
+      };
+    }
+
+    // Build the candidate control_plane object with the new value applied
+    const existingCP = workspace.control_plane;
+    const cpConfig: Record<string, unknown> =
+      existingCP && typeof existingCP === 'object' && !Array.isArray(existingCP)
+        ? (JSON.parse(JSON.stringify(existingCP)) as Record<string, unknown>)
+        : {};
+
+    const existingValue = getConfigValue(cpConfig, subPath);
+    const coercedValue = coerceValue(rawValue, existingValue);
+    const updatedCP = setNestedValue(cpConfig, subPath, coercedValue);
+
+    // Validate the updated control_plane against a partial-but-strict schema.
+    // partial() makes all fields optional (real configs may have only a subset),
+    // but .strict() still rejects unknown keys.
+    const parseResult = WorkspaceControlPlaneConfigSchema.partial().strict().safeParse(updatedCP);
+    if (!parseResult.success) {
+      const issues = parseResult.error.issues
+        .map((issue: ZodIssue) => `${issue.path.join('.')}: ${issue.message}`)
+        .join('; ');
+      return {
+        ok: false,
+        error: `Validation failed for ${key}=${rawValue}: ${issues}`,
+      };
+    }
+
+    const updatedWorkspace = { ...workspace, control_plane: updatedCP };
+    return { ok: true, config: updatedWorkspace };
+  }
+
+  // Fallback for any future writable root keys: apply without extra validation
   const existingValue = getConfigValue(workspace, key);
   const coercedValue = coerceValue(rawValue, existingValue);
   const updatedWorkspace = setNestedValue(workspace, key, coercedValue);
@@ -496,6 +617,17 @@ function applyPackConfigSet(
     return {
       ok: false,
       error: `Validation failed for ${route.rootKey}.${route.subPath}=${rawValue}: ${issues}`,
+    };
+  }
+
+  // WU-2190: Detect unknown keys that Zod silently stripped during parsing.
+  // z.object() default mode strips unrecognized keys without error. We compare
+  // the normalized input against the Zod-parsed output to find any differences.
+  const strippedKeys = findStrippedKeys(normalized, parseResult.data as Record<string, unknown>);
+  if (strippedKeys.length > 0) {
+    return {
+      ok: false,
+      error: `Unknown config key(s) rejected: ${strippedKeys.join(', ')}. These keys are not recognized by the ${route.rootKey} schema.`,
     };
   }
 
