@@ -914,3 +914,87 @@ export async function runConsistencyRepairMode(
 
   return { success: true, exitCode: EXIT_CODES.SUCCESS };
 }
+
+// ============================================================================
+// DUPLICATE ID REPAIR MODE (WU-2213)
+// ============================================================================
+
+export interface DuplicateIdsModeOptions {
+  apply?: boolean;
+  projectRoot?: string;
+}
+
+/**
+ * Run duplicate-IDs repair mode
+ *
+ * Detects ID collisions across YAML, stamps, and event stream.
+ * Dry-run is default; --apply to actually rename.
+ *
+ * @param {object} options - CLI options
+ * @param {boolean} [options.apply] - Apply repairs (default: dry-run)
+ * @param {string} [options.projectRoot] - Override project root
+ * @returns {Promise<{success: boolean, exitCode: number}>}
+ */
+export async function runDuplicateIdsMode(
+  options: DuplicateIdsModeOptions,
+): Promise<RepairModeResult> {
+  const projectRoot = options.projectRoot ?? process.cwd();
+  const applyMode = options.apply === true;
+
+  console.log(
+    `${PREFIX} Scanning for duplicate WU IDs${applyMode ? ' (apply mode)' : ' (dry-run)'}...`,
+  );
+
+  try {
+    const { detectDuplicateIds, repairDuplicateIds } = await import(
+      './wu-duplicate-id-detector.js'
+    );
+
+    // Detection phase
+    const report = await detectDuplicateIds(projectRoot);
+
+    if (report.duplicates.length === 0) {
+      console.log(
+        `${PREFIX} ${EMOJI.SUCCESS} No duplicate IDs found across ${report.totalWUs} WU files`,
+      );
+      return { success: true, exitCode: EXIT_CODES.SUCCESS };
+    }
+
+    // Report duplicates
+    console.log(
+      `${PREFIX} ${EMOJI.WARNING} Found ${report.duplicates.length} duplicate ID group(s) across ${report.totalWUs} WU files:`,
+    );
+    for (const group of report.duplicates) {
+      console.log(`${PREFIX}   ${group.id}: ${group.files.length} files, ${group.stamps.length} stamps, ${group.events.length} events`);
+      for (const file of group.files) {
+        console.log(`${PREFIX}     - ${file}`);
+      }
+    }
+
+    // Repair phase
+    const result = await repairDuplicateIds(projectRoot, { apply: applyMode });
+
+    // Emit mapping report
+    if (result.mappings.length > 0) {
+      console.log(`\n${PREFIX} ID Remapping Report:`);
+      for (const mapping of result.mappings) {
+        console.log(`${PREFIX}   ${mapping.oldId} -> ${mapping.newId}`);
+        console.log(`${PREFIX}     File: ${mapping.renamedFile}`);
+        if (mapping.touchedFiles.length > 0) {
+          console.log(`${PREFIX}     Touched: ${mapping.touchedFiles.join(', ')}`);
+        }
+      }
+    }
+
+    if (!applyMode) {
+      console.log(`\n${PREFIX} Dry-run complete. Run with --apply to execute repairs.`);
+      return { success: true, exitCode: EXIT_CODES.SUCCESS };
+    }
+
+    console.log(`\n${PREFIX} ${EMOJI.SUCCESS} Applied ${result.mappings.length} ID remapping(s)`);
+    return { success: true, exitCode: EXIT_CODES.SUCCESS };
+  } catch (error: unknown) {
+    console.error(`${PREFIX} ${EMOJI.FAILURE} ${getErrorMessage(error)}`);
+    return { success: false, exitCode: EXIT_CODES.FAILURE };
+  }
+}

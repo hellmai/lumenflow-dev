@@ -6,11 +6,12 @@
  *
  * Layer 2 defense-in-depth: detect and repair WU state inconsistencies.
  *
- * This unified tool consolidates four repair modes:
+ * This unified tool consolidates five repair modes:
  * - Consistency mode (default): detect/repair state inconsistencies
  * - Claim mode (--claim): repair missing claim metadata in worktrees
  * - Admin mode (--admin): administrative fixes for done WUs
  * - State mode (--repair-state): repair corrupted wu-events.jsonl (WU-2240)
+ * - Duplicate ID mode (--duplicate-ids): detect and repair WU ID collisions (WU-2213)
  *
  * Usage:
  *   # Consistency mode (default)
@@ -34,6 +35,10 @@
  *   pnpm wu:repair --repair-state                    # Repair default state file
  *   pnpm wu:repair --repair-state --path /path/to/wu-events.jsonl  # Repair specific file
  *
+ *   # Duplicate ID mode (WU-2213)
+ *   pnpm wu:repair --duplicate-ids                   # Dry-run: detect collisions
+ *   pnpm wu:repair --duplicate-ids --apply           # Apply: remap duplicate IDs
+ *
  * Exit codes:
  *   0: Success (no issues or all repaired)
  *   1: Issues detected (--check mode)
@@ -56,6 +61,7 @@ import {
   runConsistencyRepairMode,
   runClaimRepairMode,
   runAdminRepairMode,
+  runDuplicateIdsMode,
 } from '@lumenflow/core/wu-repair-core';
 import { repairStateFile, WU_EVENTS_FILE_NAME } from '@lumenflow/core/wu-state-store';
 
@@ -69,6 +75,8 @@ interface RepairCliOptions {
   claim?: boolean;
   admin?: boolean;
   repairState?: boolean;
+  duplicateIds?: boolean;
+  apply?: boolean;
   worktree?: string;
   lane?: string;
   status?: string;
@@ -111,15 +119,17 @@ function createProgram(): RepairCliOptions {
     .description(
       'Unified WU repair tool - detect and fix WU state issues\n\n' +
         'Modes:\n' +
-        '  (default)       Consistency repair - detect/repair state inconsistencies\n' +
-        '  --claim         Claim repair - fix missing claim metadata in worktrees\n' +
-        '  --admin         Admin repair - fix done WUs (lane, status, notes, initiative)\n' +
-        '  --repair-state  State repair - fix corrupted wu-events.jsonl (WU-2240)',
+        '  (default)        Consistency repair - detect/repair state inconsistencies\n' +
+        '  --claim          Claim repair - fix missing claim metadata in worktrees\n' +
+        '  --admin          Admin repair - fix done WUs (lane, status, notes, initiative)\n' +
+        '  --repair-state   State repair - fix corrupted wu-events.jsonl (WU-2240)\n' +
+        '  --duplicate-ids  Detect and repair duplicate WU IDs (WU-2213)',
     )
     // Mode selection flags
     .option('--claim', 'Claim repair mode: fix missing claim metadata in worktrees')
     .option('--admin', 'Admin repair mode: fix done WUs (lane, status, notes, initiative)')
     .option('--repair-state', 'State repair mode: fix corrupted wu-events.jsonl (WU-2240)')
+    .option('--duplicate-ids', 'Duplicate ID repair mode: detect and fix WU ID collisions (WU-2213)')
     // Common flags
     .option('--id <wuId>', 'WU ID to check/repair (e.g., WU-123)')
     .option('--check', 'Audit only, no changes (exits 1 if issues found)')
@@ -134,6 +144,8 @@ function createProgram(): RepairCliOptions {
     .option('--initiative <ref>', 'New initiative reference (admin mode only)')
     // State repair mode flags
     .option('--path <path>', 'Path to state file to repair (state mode only)')
+    // Duplicate ID mode flags
+    .option('--apply', 'Apply repairs (duplicate-ids mode; default is dry-run)')
     .parse(process.argv);
 
   return program.opts() as RepairCliOptions;
@@ -144,10 +156,10 @@ function createProgram(): RepairCliOptions {
  */
 function validateOptions(options: RepairCliOptions) {
   // Validate mode selection - only one mode at a time
-  const modes = [options.claim, options.admin, options.repairState].filter(Boolean);
+  const modes = [options.claim, options.admin, options.repairState, options.duplicateIds].filter(Boolean);
   if (modes.length > 1) {
     console.error(
-      `${PREFIX} Error: Cannot specify multiple modes (--claim, --admin, --repair-state are mutually exclusive)`,
+      `${PREFIX} Error: Cannot specify multiple modes (--claim, --admin, --repair-state, --duplicate-ids are mutually exclusive)`,
     );
     process.exit(EXIT_CODES.FAILURE);
   }
@@ -184,6 +196,11 @@ function validateModeRequirements(options: RepairCliOptions) {
 
   // State repair mode has no required options (uses default path if not specified)
   if (options.repairState) {
+    return; // No additional validation needed
+  }
+
+  // Duplicate ID mode has no required options
+  if (options.duplicateIds) {
     return; // No additional validation needed
   }
 
@@ -270,6 +287,11 @@ async function routeToRepairMode(options: RepairCliOptions) {
   }
   if (options.repairState) {
     return runStateRepairMode(options);
+  }
+  if (options.duplicateIds) {
+    return runDuplicateIdsMode({
+      apply: options.apply,
+    });
   }
   return runConsistencyRepairMode({
     id: options.id,
