@@ -2365,3 +2365,4 @@
 {"type":"claim","wuId":"WU-2213","timestamp":"2026-02-26T14:57:15.002Z","lane":"Framework: CLI WU Commands","title":"Duplicate-ID detector and repair command"}
 {"type":"checkpoint","wuId":"WU-2209","timestamp":"2026-02-26T15:07:16.848Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2209","timestamp":"2026-02-26T15:07:51.375Z"}
+{"type":"checkpoint","wuId":"WU-2213","timestamp":"2026-02-26T15:13:24.079Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
