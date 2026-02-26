@@ -5,7 +5,6 @@ _Last updated: 2026-02-26_
 ## In Progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
-- [WU-2221 — Release script: install deps in micro-worktree before build](wu/WU-2221.yaml)
 
 ## Completed
 
@@ -1120,3 +1119,4 @@ _Last updated: 2026-02-26_
 - [WU-2213 — Duplicate-ID detector and repair command](wu/WU-2213.yaml) — 2026-02-26
 - [WU-2219 — Release script regression: restore micro-worktree isolation (WU-1077 regression)](wu/WU-2219.yaml) — 2026-02-26
 - [WU-2220 — Release script: pass worktree cwd to pack validation commands](wu/WU-2220.yaml) — 2026-02-26
+- [WU-2221 — Release script: install deps in micro-worktree before build](wu/WU-2221.yaml) — 2026-02-26
