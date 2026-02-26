@@ -114,6 +114,7 @@ export * from './wu-done-validators.js';
 // WU-1145: Concurrent backlog merge utilities
 export * from './wu-done-concurrent-merge.js';
 export * from './wu-helpers.js';
+export * from './sync-validator.js';
 export * from './wu-schema.js';
 export * from './wu-validator.js';
 export * from './wu-rules-engine.js';

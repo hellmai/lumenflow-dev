@@ -69,8 +69,8 @@ describe('legacy rollback helper removal (AC2, AC3)', () => {
   });
 
   it('does not include UnsafeAny placeholder text in behind-main abort messaging', async () => {
-    // WU-2014: ensureMainNotBehindOrigin extracted to wu-done-main-sync.ts
-    const source = await readFile(new URL('../wu-done-main-sync.ts', import.meta.url), 'utf-8');
+    // WU-2202: canonical ensureMainNotBehindOrigin implementation lives in sync-validator.ts
+    const source = await readFile(new URL('../sync-validator.ts', import.meta.url), 'utf-8');
     expect(source).toContain('wu:done aborted BEFORE file writes to prevent metadata leaks');
     expect(source).not.toContain('wu:done aborted BEFORE UnsafeAny writes');
   });
