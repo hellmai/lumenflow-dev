@@ -2345,3 +2345,4 @@
 {"type":"claim","wuId":"WU-2210","timestamp":"2026-02-26T13:56:22.661Z","lane":"Framework: Core Validation","title":"Migration remediation command missing --version and hardcodes --source local"}
 {"type":"complete","wuId":"WU-2210","timestamp":"2026-02-26T14:01:42.855Z"}
 {"type":"claim","wuId":"WU-2208","timestamp":"2026-02-26T14:02:45.163Z","lane":"Framework: Core Lifecycle","title":"Remote-aware WU ID generation to prevent cross-machine collisions"}
+{"type":"claim","wuId":"WU-2214","timestamp":"2026-02-26T14:03:20.530Z","lane":"Framework: CLI Enforcement","title":"BUG: hook redirect regex false-positives on arrow notation in arguments"}

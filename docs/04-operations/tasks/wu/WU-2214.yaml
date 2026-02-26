@@ -2,7 +2,7 @@ id: WU-2214
 title: 'BUG: hook redirect regex false-positives on arrow notation in arguments'
 lane: 'Framework: CLI Enforcement'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -30,8 +30,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'block-bash-file-commands.sh redirect detection regex matches dash-angle-bracket arrow notation in string arguments, blocking legitimate pnpm/node commands. Discovered when wu:create acceptance criteria contained arrow text. Fix: exclude arrows preceded by dash from redirect matching.'
+description: 'block-bash-file-commands.sh redirect detection regex matches dash-angle-bracket arrow
+  notation in string arguments, blocking legitimate pnpm/node commands. Discovered when wu:create
+  acceptance criteria contained arrow text. Fix: exclude arrows preceded by dash from redirect
+  matching.'
 acceptance:
   - Commands with dash-arrow notation in string arguments are not blocked
   - Actual file redirects are still blocked
   - Hook test suite updated with arrow-in-argument test case
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-enforcement-wu-2214
+claimed_at: 2026-02-26T14:03:20.480Z
+baseline_main_sha: fa9ba853e296192cd0441e53970b55f5d3a9a0a3
+session_id: e4013ae0-f26b-45b2-9d01-e4f287e11263
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T14:03:20.488Z
