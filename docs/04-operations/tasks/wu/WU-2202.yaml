@@ -2,7 +2,7 @@ id: WU-2202
 title: 'Phase 2: Introduce core sync-validator module with compatibility re-exports'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -51,3 +51,6 @@ session_id: 731a6e74-7d2e-4a05-8e4b-f6da06a24f93
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-26T13:01:55.348Z
+locked: true
+completed_at: 2026-02-26T13:06:41.209Z
+completed: 2026-02-26

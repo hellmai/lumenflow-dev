@@ -4,7 +4,7 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-- [WU-2202 — Phase 2: Introduce core sync-validator module with compatibility re-exports](wu/WU-2202.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1102,3 +1102,4 @@ _Last updated: 2026-02-26_
 - [WU-2199 — Define sync-validator semantics and consolidation plan for main-branch sync checks](wu/WU-2199.yaml) — 2026-02-26
 - [WU-2200 — Migration error provides non-executable remediation command](wu/WU-2200.yaml) — 2026-02-26
 - [WU-2201 — Phase 1: Canonicalize sync adapter types under ISyncValidatorGitAdapter](wu/WU-2201.yaml) — 2026-02-26
+- [WU-2202 — Phase 2: Introduce core sync-validator module with compatibility re-exports](wu/WU-2202.yaml) — 2026-02-26
