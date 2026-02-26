@@ -2,7 +2,7 @@ id: WU-2189
 title: Enforce two-phase workspace root-key validation during runtime boot
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -45,3 +45,6 @@ acceptance:
   - initializeKernelRuntime rejects unknown workspace root keys with actionable error output
   - Workspace with pack-declared config_key roots passes runtime boot
   - Runtime test coverage verifies enforcement path (not only helper function tests)
+locked: true
+completed_at: 2026-02-26T11:07:14.232Z
+completed: 2026-02-26
