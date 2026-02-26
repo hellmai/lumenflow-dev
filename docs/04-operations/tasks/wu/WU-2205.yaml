@@ -12,7 +12,9 @@ code_paths:
   - packages/@lumenflow/core/src/wu-done-worktree.ts
   - packages/@lumenflow/core/src/wu-done-worktree-services.ts
 tests:
-  manual: []
+  manual:
+    - Validate wu:done behind-main path blocks and canonical not-behind behavior aligns across
+      CLI/core service paths
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-rollback-leaks.test.ts
     - packages/@lumenflow/core/src/__tests__/wu-done-worktree-services.test.ts
@@ -34,9 +36,15 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: wu:done currently executes overlapping sync checks across CLI, worktree orchestrator, and service validation layers with mixed semantics (exact parity vs not-behind). Problem: duplicated checks increase maintenance burden and can produce conflicting policy behavior. Solution: simplify wu:done sync checks to one canonical not-behind invariant for merge-capable paths while preserving safety guarantees and branch-pr exclusions.'
+description: 'Context: wu:done currently executes overlapping sync checks across CLI, worktree
+  orchestrator, and service validation layers with mixed semantics (exact parity vs not-behind).
+  Problem: duplicated checks increase maintenance burden and can produce conflicting policy
+  behavior. Solution: simplify wu:done sync checks to one canonical not-behind invariant for
+  merge-capable paths while preserving safety guarantees and branch-pr exclusions.'
 acceptance:
-  - Remove or consolidate redundant wu:done sync checks so merge-capable paths enforce a single canonical not-behind invariant
+  - Remove or consolidate redundant wu:done sync checks so merge-capable paths enforce a single
+    canonical not-behind invariant
   - Ensure branch-pr completion path does not run main-merge sync checks
   - Keep fail-closed behavior for wu:done remote sync validation failures where remote is required
-  - Add/adjust tests for behind/ahead/diverged/network-failure wu:done scenarios to match canonical policy
+  - Add/adjust tests for behind/ahead/diverged/network-failure wu:done scenarios to match canonical
+    policy
