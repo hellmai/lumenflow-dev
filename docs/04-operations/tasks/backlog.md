@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2210 — Migration remediation command missing --version and hardcodes --source local](wu/WU-2210.yaml) — Framework: Core Validation
 - [WU-2209 — Collision-safe wu:create retry on push race](wu/WU-2209.yaml) — Framework: Core Lifecycle
 - [WU-2208 — Remote-aware WU ID generation to prevent cross-machine collisions](wu/WU-2208.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
