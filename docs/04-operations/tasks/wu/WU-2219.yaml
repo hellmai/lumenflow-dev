@@ -1,0 +1,37 @@
+id: WU-2219
+title: 'Release script regression: restore micro-worktree isolation (WU-1077 regression)'
+lane: 'Framework: CLI WU Commands'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-26
+code_paths:
+  - packages/@lumenflow/cli/src/release.ts
+  - packages/@lumenflow/cli/src/__tests__/release.test.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/src/__tests__/release.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2219.done
+dependencies: []
+spec_refs:
+  - lumenflow://plans/WU-2219-plan.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: WU-2061 removed micro-worktree isolation from the release script, replacing it with direct-on-main writes. This regressed WU-1077 which fixed release to work entirely in micro-worktree. The direct-on-main approach breaks cleanup when dist symlinks are no longer tracked in git (WU-2206). Release must use withMicroWorktree like all other tooling commands.
+acceptance:
+  - Release script uses withMicroWorktree for all writes
+  - No direct writes to main checkout during release
+  - pnpm release --dry-run shows micro-worktree flow
+  - pnpm release --skip-publish succeeds end-to-end
+  - Cleanup on failure leaves main completely untouched
