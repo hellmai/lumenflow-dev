@@ -2,7 +2,7 @@ id: WU-2208
 title: Remote-aware WU ID generation to prevent cross-machine collisions
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -32,10 +32,22 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'wu:create generates IDs from local YAML directory scan only (readdirSync). Two machines independently generated WU-2198 for different bugs on lumenflow-dev (2026-02-26). Fix: extend ISyncValidatorGitAdapter with listTreeAtRef, scan origin/main YAML + stamps + events for highest ID. Add --offline flag. Design adapter interface to accommodate future cloud allocateWuId().'
+description: 'wu:create generates IDs from local YAML directory scan only (readdirSync). Two
+  machines independently generated WU-2198 for different bugs on lumenflow-dev (2026-02-26). Fix:
+  extend ISyncValidatorGitAdapter with listTreeAtRef, scan origin/main YAML + stamps + events for
+  highest ID. Add --offline flag. Design adapter interface to accommodate future cloud
+  allocateWuId().'
 acceptance:
   - ID generation considers remote state (origin/main) by default
   - getHighestWuId checks local YAML, remote YAML, local stamps, remote stamps, and wu-events.jsonl
   - --offline flag skips fetch and prints warning
   - ISyncValidatorGitAdapter extended with listTreeAtRef method
   - Existing happy-path behavior unchanged when local and remote agree
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2208
+claimed_at: 2026-02-26T14:02:45.116Z
+baseline_main_sha: f5b0d0a363d080e532cd825bc978246957a1728b
+session_id: e4013ae0-f26b-45b2-9d01-e4f287e11263
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T14:02:45.121Z
