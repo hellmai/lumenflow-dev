@@ -5,7 +5,6 @@ _Last updated: 2026-02-26_
 ## In Progress
 
 - [WU-2192 — Validate pack-scoped config:set writes using pack-declared config_schema](wu/WU-2192.yaml)
-- [WU-2193 — Align workspace-init defaults with pack pinning semantics](wu/WU-2193.yaml)
 
 ## Completed
 
@@ -1094,3 +1093,4 @@ _Last updated: 2026-02-26_
 - [WU-2189 — Enforce two-phase workspace root-key validation during runtime boot](wu/WU-2189.yaml) — 2026-02-26
 - [WU-2194 — Remove redundant ensureMainUpToDate pre-flight checks from micro-worktree commands](wu/WU-2194.yaml) — 2026-02-26
 - [WU-2191 — Extract shared pack manifest resolution for config commands](wu/WU-2191.yaml) — 2026-02-26
+- [WU-2193 — Align workspace-init defaults with pack pinning semantics](wu/WU-2193.yaml) — 2026-02-26

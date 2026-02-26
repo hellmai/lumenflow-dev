@@ -2306,3 +2306,4 @@
 {"type":"claim","wuId":"WU-2192","timestamp":"2026-02-26T11:18:12.225Z","lane":"Framework: CLI WU Commands","title":"Validate pack-scoped config:set writes using pack-declared config_schema"}
 {"type":"claim","wuId":"WU-2193","timestamp":"2026-02-26T11:18:45.809Z","lane":"Framework: Core Lifecycle","title":"Align workspace-init defaults with pack pinning semantics"}
 {"type":"checkpoint","wuId":"WU-2193","timestamp":"2026-02-26T11:19:07.140Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"complete","wuId":"WU-2193","timestamp":"2026-02-26T11:30:00.660Z"}

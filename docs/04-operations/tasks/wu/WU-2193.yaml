@@ -2,7 +2,7 @@ id: WU-2193
 title: Align workspace-init defaults with pack pinning semantics
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-26
 code_paths:
@@ -47,3 +47,6 @@ acceptance:
     software_delivery block)
   - If software_delivery config is emitted by default, software-delivery is pinned by default
   - workspace-init tests cover default output contract for packs + software_delivery
+locked: true
+completed_at: 2026-02-26T11:29:56.009Z
+completed: 2026-02-26
