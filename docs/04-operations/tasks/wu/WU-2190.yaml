@@ -7,7 +7,6 @@ priority: P2
 created: 2026-02-26
 code_paths:
   - packages/@lumenflow/cli/src/config-set.ts
-  - packages/@lumenflow/core/src/lumenflow-config-schema.ts
 tests:
   manual:
     - Run config:set --key control_plane --value foo and verify hard failure
@@ -25,10 +24,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-26T10:55:10.612Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2190
+session_id: cac8059f-542b-44ce-900e-0d9d7cfc3f77
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T10:55:10.615Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +46,3 @@ acceptance:
   - config:set rejects unknown nested keys under software_delivery (e.g.,
     software_delivery.gates.unknown_key)
   - Unit tests cover root schema enforcement and unknown nested-key rejection
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2190
-claimed_at: 2026-02-26T10:55:10.612Z
-baseline_main_sha: 9e9b74da90ac651b8b343f3e751d20c16eae1daf
-session_id: cac8059f-542b-44ce-900e-0d9d7cfc3f77
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-26T10:55:10.615Z
