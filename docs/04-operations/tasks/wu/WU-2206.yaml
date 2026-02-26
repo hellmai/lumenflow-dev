@@ -1,0 +1,36 @@
+id: WU-2206
+title: 'BUG: committed dist symlinks break fresh clone build'
+lane: 'Operations: Tooling'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-26
+code_paths:
+  - .gitignore
+  - packages/@lumenflow/cli/dist
+  - packages/@lumenflow/core/dist
+  - packages/@lumenflow/mcp/dist
+  - packages/@lumenflow/shims/dist
+tests:
+  manual:
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2206.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Four packages (cli, core, mcp, shims) had dist/ committed as broken symlinks pointing outside the repo. .gitignore used dist/ (trailing slash, directories only) so symlinks bypassed the rule. This broke every fresh clone with TS5033 ENOENT errors. Fix: change dist/ to dist in .gitignore and git rm the 4 tracked symlinks. Recurred twice before (WU-2047, WU-2036) without fixing root cause.'
+acceptance:
+  - gitignore changed from dist/ to dist so symlinks are ignored going forward
+  - 4 dist symlinks removed from git tracking
+  - pnpm run setup succeeds on a fresh clone
