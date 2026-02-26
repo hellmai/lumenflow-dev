@@ -7,7 +7,6 @@ priority: P2
 created: 2026-02-26
 code_paths:
   - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
-  - packages/@lumenflow/kernel/src/kernel.schemas.ts
 tests:
   manual:
     - Run kernel startup with unknown root key and verify hard failure
@@ -25,10 +24,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-26T10:54:11.252Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2189
+session_id: cac8059f-542b-44ce-900e-0d9d7cfc3f77
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T10:54:11.256Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -39,11 +45,3 @@ acceptance:
   - initializeKernelRuntime rejects unknown workspace root keys with actionable error output
   - Workspace with pack-declared config_key roots passes runtime boot
   - Runtime test coverage verifies enforcement path (not only helper function tests)
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2189
-claimed_at: 2026-02-26T10:54:11.252Z
-baseline_main_sha: 0c07c8f0434505f2b68b0b20965e04ebf18f245d
-session_id: cac8059f-542b-44ce-900e-0d9d7cfc3f77
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-26T10:54:11.256Z
