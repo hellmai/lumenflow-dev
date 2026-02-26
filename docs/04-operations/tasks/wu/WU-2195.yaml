@@ -2,14 +2,15 @@ id: WU-2195
 title: config:set uses wrong control_plane schema (core vs kernel)
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-26
 code_paths:
   - packages/@lumenflow/cli/src/config-set.ts
 tests:
   manual:
-    - Run config:set --key control_plane.sync_interval --value 60 against a cloud-connected workspace and verify success
+    - Run config:set --key control_plane.sync_interval --value 60 against a cloud-connected
+      workspace and verify success
   unit:
     - packages/@lumenflow/cli/src/__tests__/config-set.test.ts
   e2e: []
@@ -30,8 +31,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "config:set imports WorkspaceControlPlaneConfigSchema from @lumenflow/core (workspace-config.ts) which defines {enabled, endpoint, org_id, sync_interval, local_override}. The kernel schema (kernel.schemas.ts:168) defines the real cloud shape: {endpoint, org_id, project_id, sync_interval, policy_mode, auth: {token_env}}. config:set uses core's schema at line 580 via .partial().strict().safeParse(), so any cloud-connected workspace with project_id/auth is rejected with 'Unrecognized keys'. Single source of truth must be the kernel schema."
+description: "config:set imports WorkspaceControlPlaneConfigSchema from @lumenflow/core
+  (workspace-config.ts) which defines {enabled, endpoint, org_id, sync_interval, local_override}.
+  The kernel schema (kernel.schemas.ts:168) defines the real cloud shape: {endpoint, org_id,
+  project_id, sync_interval, policy_mode, auth: {token_env}}. config:set uses core's schema at line
+  580 via .partial().strict().safeParse(), so any cloud-connected workspace with project_id/auth is
+  rejected with 'Unrecognized keys'. Single source of truth must be the kernel schema."
 acceptance:
-  - config:set control_plane validation uses the kernel WorkspaceControlPlaneConfigSchema as single source of truth (not the core copy)
-  - config:set control_plane.sync_interval, control_plane.project_id, control_plane.auth.token_env all succeed on a cloud-connected workspace shape
-  - Regression tests cover cloud-shaped control_plane writes (project_id, auth.token_env) and rejection of truly unknown keys
+  - config:set control_plane validation uses the kernel WorkspaceControlPlaneConfigSchema as single
+    source of truth (not the core copy)
+  - config:set control_plane.sync_interval, control_plane.project_id, control_plane.auth.token_env
+    all succeed on a cloud-connected workspace shape
+  - Regression tests cover cloud-shaped control_plane writes (project_id, auth.token_env) and
+    rejection of truly unknown keys
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2195
+claimed_at: 2026-02-26T12:09:35.908Z
+baseline_main_sha: ac57aca38938debc83fd6047cf09497b8634c9e6
+session_id: cfa88a85-3208-4e6c-b01f-14425ae6c856
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T12:09:35.916Z

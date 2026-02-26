@@ -4,7 +4,7 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2195 — config:set uses wrong control_plane schema (core vs kernel)](wu/WU-2195.yaml)
 
 ## Completed
 
