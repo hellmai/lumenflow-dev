@@ -2386,3 +2386,4 @@
 {"type":"complete","wuId":"WU-2222","timestamp":"2026-02-26T17:48:30.449Z"}
 {"type":"claim","wuId":"WU-2223","timestamp":"2026-02-26T19:07:59.638Z","lane":"Framework: Core Validation","title":"Fix control_plane schema mismatch between core and kernel"}
 {"type":"checkpoint","wuId":"WU-2223","timestamp":"2026-02-26T19:08:41.404Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"complete","wuId":"WU-2223","timestamp":"2026-02-26T19:24:12.256Z"}

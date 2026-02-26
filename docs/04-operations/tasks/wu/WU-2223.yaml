@@ -2,7 +2,7 @@ id: WU-2223
 title: Fix control_plane schema mismatch between core and kernel
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -46,3 +46,6 @@ session_id: 224cf554-c0e1-4fc9-a1ec-350e490b5a61
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-26T19:07:59.621Z
+locked: true
+completed_at: 2026-02-26T19:24:07.860Z
+completed: 2026-02-26

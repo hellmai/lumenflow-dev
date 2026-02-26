@@ -53,7 +53,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml) — Operations: Tooling
-- [WU-2223 — Fix control_plane schema mismatch between core and kernel](wu/WU-2223.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 
@@ -1174,6 +1173,7 @@ sections:
 - [WU-2220 — Release script: pass worktree cwd to pack validation commands](wu/WU-2220.yaml)
 - [WU-2221 — Release script: install deps in micro-worktree before build](wu/WU-2221.yaml)
 - [WU-2222 — Separate wu:brief evidence from delegation spawning](wu/WU-2222.yaml)
+- [WU-2223 — Fix control_plane schema mismatch between core and kernel](wu/WU-2223.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
