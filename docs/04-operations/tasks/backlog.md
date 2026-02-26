@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2198 — BUG: committed dist symlinks break fresh clone build](wu/WU-2198.yaml) — Operations: Tooling
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — Framework: Memory
@@ -52,7 +51,6 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2199 — Define sync-validator semantics and consolidation plan for main-branch sync checks](wu/WU-2199.yaml) — Framework: Core Lifecycle
 - [WU-2200 — Migration error provides non-executable remediation command](wu/WU-2200.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
@@ -1152,6 +1150,7 @@ sections:
 - [WU-2198 — Fix wu-done ensureMainUpToDate swallowing ProcessExitError from die()](wu/WU-2198.yaml)
 - [WU-2197 — findStrippedKeys rejects writes due to pre-existing unknown keys in unrelated paths](wu/WU-2197.yaml)
 - [WU-2196 — Runtime boot rejects legacy workspaces with software_delivery but no SD pack pin](wu/WU-2196.yaml)
+- [WU-2199 — Define sync-validator semantics and consolidation plan for main-branch sync checks](wu/WU-2199.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

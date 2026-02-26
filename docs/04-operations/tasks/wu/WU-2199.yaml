@@ -2,7 +2,7 @@ id: WU-2199
 title: Define sync-validator semantics and consolidation plan for main-branch sync checks
 lane: 'Framework: Core Lifecycle'
 type: documentation
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -48,3 +48,6 @@ session_id: 0e8cdebb-e20f-4d8a-b588-28a4af59c705
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-26T12:25:42.758Z
+locked: true
+completed_at: 2026-02-26T12:41:16.792Z
+completed: 2026-02-26
