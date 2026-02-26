@@ -1,6 +1,6 @@
 {
   "name": "@lumenflow/initiatives",
-  "version": "3.6.1",
+  "version": "3.6.2",
   "description": "Initiative tracking for LumenFlow workflow framework - multi-phase project coordination",
   "keywords": [
     "lumenflow",
