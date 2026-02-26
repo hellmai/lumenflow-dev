@@ -5,6 +5,7 @@ _Last updated: 2026-02-26_
 ## In Progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
+- [WU-2223 — Fix control_plane schema mismatch between core and kernel](wu/WU-2223.yaml)
 
 ## Completed
 
