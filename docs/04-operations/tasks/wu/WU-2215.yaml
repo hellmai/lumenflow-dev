@@ -2,7 +2,7 @@ id: WU-2215
 title: Migration remediation resolves pack version from manifest instead of hardcoding
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -46,3 +46,6 @@ acceptance:
   - Remediation command version comes from the pack manifest, not a hardcoded constant
   - KNOWN_PACK_CONFIG_KEY_MIGRATIONS no longer contains a version field
   - Test validates the version in the error message matches the manifest version
+locked: true
+completed_at: 2026-02-26T14:24:31.653Z
+completed: 2026-02-26

@@ -54,7 +54,6 @@ sections:
 ## 🔧 In progress
 
 - [WU-2211 — wu:done --already-merged finalize-only mode](wu/WU-2211.yaml) — Framework: CLI WU Commands
-- [WU-2215 — Migration remediation resolves pack version from manifest instead of hardcoding](wu/WU-2215.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 
@@ -1166,6 +1165,7 @@ sections:
 - [WU-2214 — BUG: hook redirect regex false-positives on arrow notation in arguments](wu/WU-2214.yaml)
 - [WU-2212 — Break-glass WU finalization tool (no dist dependency)](wu/WU-2212.yaml)
 - [WU-2208 — Remote-aware WU ID generation to prevent cross-machine collisions](wu/WU-2208.yaml)
+- [WU-2215 — Migration remediation resolves pack version from manifest instead of hardcoding](wu/WU-2215.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
