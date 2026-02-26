@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2197 — findStrippedKeys rejects writes due to pre-existing unknown keys in unrelated paths](wu/WU-2197.yaml) — Framework: CLI WU Commands
 - [WU-2196 — Runtime boot rejects legacy workspaces with software_delivery but no SD pack pin](wu/WU-2196.yaml) — Framework: Core Validation
 - [WU-2195 — config:set uses wrong control_plane schema (core vs kernel)](wu/WU-2195.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
