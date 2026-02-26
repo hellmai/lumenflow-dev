@@ -2,7 +2,7 @@ id: WU-2198
 title: 'BUG: committed dist symlinks break fresh clone build'
 lane: 'Operations: Tooling'
 type: bug
-status: ready
+status: done
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -13,7 +13,8 @@ code_paths:
   - packages/@lumenflow/shims/dist
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -29,9 +30,17 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: Four packages (@lumenflow/cli, core, mcp, shims) have their dist/ directories committed to git as broken symlinks pointing to ../../../../../packages/@lumenflow/<pkg>/dist. The root .gitignore uses dist/ (trailing slash, matches directories only) so symlinks bypass the ignore rule. Every fresh clone fails to build with TS5033 ENOENT errors because TypeScript cannot write to dist/. This has recurred twice before (WU-2047, WU-2036) without fixing the underlying .gitignore pattern.
+description: Four packages (@lumenflow/cli, core, mcp, shims) have their dist/ directories committed
+  to git as broken symlinks pointing to ../../../../../packages/@lumenflow/<pkg>/dist. The root
+  .gitignore uses dist/ (trailing slash, matches directories only) so symlinks bypass the ignore
+  rule. Every fresh clone fails to build with TS5033 ENOENT errors because TypeScript cannot write
+  to dist/. This has recurred twice before (WU-2047, WU-2036) without fixing the underlying
+  .gitignore pattern.
 acceptance:
   - '[ ] git rm --cached removes the four broken dist symlinks from tracking'
   - '[ ] .gitignore updated from dist/ to dist so symlinks are ignored going forward'
   - '[ ] pnpm run setup succeeds on a fresh clone (verified via git stash + reinstall simulation)'
   - '[ ] No dist symlinks appear in git status after build'
+locked: true
+completed_at: 2026-02-26T13:09:45.878Z
+completed: 2026-02-26
