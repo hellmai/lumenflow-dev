@@ -7,8 +7,7 @@ priority: P2
 created: 2026-02-26
 code_paths:
   - packages/@lumenflow/cli/src/config-set.ts
-  - packages/@lumenflow/kernel/src/pack/manifest.ts
-  - packages/@lumenflow/packs/software-delivery/manifest.yaml
+  - packages/@lumenflow/kernel/src/pack/pack-manifest-resolver.ts
 tests:
   manual:
     - Run config:set against non-SD pack config_key and verify schema validation is enforced
@@ -28,10 +27,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-26T11:18:12.187Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2192
+session_id: e9aa4f2e-0906-44a7-b8cd-9ad615b79e76
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T11:18:12.190Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -44,11 +50,3 @@ acceptance:
   - Unknown/invalid keys for a pack are rejected according to that pack schema
   - Unit tests cover schema-based validation for software_delivery and at least one non-SD pack
     fixture
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2192
-claimed_at: 2026-02-26T11:18:12.187Z
-baseline_main_sha: ef86faece699f36dba9113648346c1f32db9fb0c
-session_id: e9aa4f2e-0906-44a7-b8cd-9ad615b79e76
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-26T11:18:12.190Z
