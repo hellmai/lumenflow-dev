@@ -2337,4 +2337,5 @@
 {"type":"claim","wuId":"WU-2204","timestamp":"2026-02-26T13:14:07.459Z","lane":"Framework: Core Lifecycle","title":"Phase 4: Add adapter injection points for sync and micro-worktree shared helpers"}
 {"type":"complete","wuId":"WU-2204","timestamp":"2026-02-26T13:25:01.880Z"}
 {"type":"claim","wuId":"WU-2205","timestamp":"2026-02-26T13:26:35.614Z","lane":"Framework: Core Lifecycle","title":"Phase 5: Simplify wu:done sync checks to canonical not-behind semantics"}
-{"type":"claim","wuId":"WU-2206","lane":"Operations: Tooling","title":"BUG: committed dist symlinks break fresh clone build","timestamp":"2026-02-26T13:31:58.510Z"}
+{"type":"claim","wuId":"WU-2206","timestamp":"2026-02-26T13:31:58.510Z","lane":"Operations: Tooling","title":"BUG: committed dist symlinks break fresh clone build"}
+{"type":"complete","wuId":"WU-2206","timestamp":"2026-02-26T13:32:37.567Z"}

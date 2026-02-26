@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2206 — BUG: committed dist symlinks break fresh clone build](wu/WU-2206.yaml) — Operations: Tooling
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — Framework: Memory
@@ -1157,6 +1156,7 @@ sections:
 - [WU-2202 — Phase 2: Introduce core sync-validator module with compatibility re-exports](wu/WU-2202.yaml)
 - [WU-2203 — Phase 3: Extract withMicroWorktree sync preamble helper without behavior changes](wu/WU-2203.yaml)
 - [WU-2204 — Phase 4: Add adapter injection points for sync and micro-worktree shared helpers](wu/WU-2204.yaml)
+- [WU-2206 — BUG: committed dist symlinks break fresh clone build](wu/WU-2206.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
