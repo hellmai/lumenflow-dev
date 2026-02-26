@@ -14,7 +14,7 @@ import { execSync, type ExecSyncOptionsWithStringEncoding } from 'node:child_pro
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parse } from 'yaml';
-import { BRANCHES, DIRECTORIES, REMOTES, STDIO, REAL_GIT, PATTERNS } from './wu-constants.js';
+import { BRANCHES, DIRECTORIES, STDIO, REAL_GIT, PATTERNS } from './wu-constants.js';
 import { die, createError, ErrorCodes } from './error-handler.js';
 import { isAgentBranchWithDetails } from './branch-check.js';
 import { createWuPaths } from './wu-paths.js';
@@ -23,7 +23,6 @@ import type {
   IWuGitAdapter,
   IWuStatusCheckResult,
 } from './ports/wu-helpers.ports.js';
-import type { ISyncValidatorGitAdapter } from './ports/sync-validator.ports.js';
 
 interface ParsedWUYaml {
   status?: string;
@@ -31,7 +30,6 @@ interface ParsedWUYaml {
 }
 
 type EnsureOnMainGitAdapter = Pick<IWuGitAdapter, 'getCurrentBranch'>;
-type EnsureMainUpToDateGitAdapter = Pick<ISyncValidatorGitAdapter, 'fetch' | 'getCommitHash'>;
 type RunOptions = Omit<ExecSyncOptionsWithStringEncoding, 'encoding'>;
 const GIT_WORKTREES_SEGMENT = `/${DIRECTORIES.WORKTREES.replace(/\/+$/, '')}/`;
 
@@ -287,30 +285,4 @@ export async function ensureOnMain(git: EnsureOnMainGitAdapter): Promise<void> {
   }
 }
 
-/**
- * Ensure main branch is up to date with origin.
- *
- * Centralized from duplicated ensureMainUpToDate() functions across wu-* scripts (WU-1256).
- *
- * @param {object} git - Git adapter with async fetch() and getCommitHash() methods
- * @param {string} [scriptName='wu'] - Script name for logging
- * @param {object} [options] - Options
- * @param {boolean} [options.skipRemote=false] - WU-1653: Skip remote check (requireRemote=false)
- * @throws {Error} If main is out of sync with origin
- */
-export async function ensureMainUpToDate(
-  git: EnsureMainUpToDateGitAdapter,
-  _scriptName = 'wu',
-  { skipRemote = false }: { skipRemote?: boolean } = {},
-): Promise<void> {
-  if (skipRemote) return;
-  await git.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
-  const localMain = await git.getCommitHash(BRANCHES.MAIN);
-  const remoteMain = await git.getCommitHash(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
-  if (localMain !== remoteMain) {
-    throw createError(
-      ErrorCodes.BRANCH_ERROR,
-      `Main branch is out of sync with origin.\n\nRun: git pull ${REMOTES.ORIGIN} ${BRANCHES.MAIN}`,
-    );
-  }
-}
+export { ensureMainUpToDate } from './sync-validator.js';
