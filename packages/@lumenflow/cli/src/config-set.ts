@@ -34,7 +34,7 @@ import {
 import { die } from '@lumenflow/core/error-handler';
 import { FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
-import { LumenFlowConfigSchema, WORKSPACE_V2_KEYS } from '@lumenflow/core/config-schema';
+import { LumenFlowConfigSchema } from '@lumenflow/core/config-schema';
 import { normalizeConfigKeys } from '@lumenflow/core/normalize-config-keys';
 import { WRITABLE_ROOT_KEYS, MANAGED_ROOT_KEYS, WORKSPACE_ROOT_KEYS } from '@lumenflow/core/config';
 import { runCLI } from './cli-entry-point.js';
@@ -53,57 +53,6 @@ const ARG_HELP = '--help';
 const COMMIT_PREFIX = 'chore: config:set';
 const WORKSPACE_INIT_COMMAND = 'pnpm workspace-init --yes';
 export const WORKSPACE_FILE_NAME = WORKSPACE_CONFIG_FILE_NAME;
-
-// ---------------------------------------------------------------------------
-// Backward-compatible exports (deprecated, to be removed by WU-2186)
-// config-get.ts imports these; removing them would break the build.
-// ---------------------------------------------------------------------------
-
-/** @deprecated WU-2185: Use fully-qualified keys. Will be removed by WU-2186. */
-export const WORKSPACE_CONFIG_ROOT_KEY = WORKSPACE_V2_KEYS.SOFTWARE_DELIVERY;
-
-/** @deprecated WU-2185: Use fully-qualified keys. Will be removed by WU-2186. */
-export const WORKSPACE_CONFIG_PREFIX = `${WORKSPACE_CONFIG_ROOT_KEY}.`;
-
-/**
- * @deprecated WU-2185: No implicit prefixing. Use fully-qualified keys.
- * Will be removed by WU-2186.
- */
-export function normalizeWorkspaceConfigKey(key: string): string {
-  if (key === WORKSPACE_CONFIG_ROOT_KEY) {
-    return '';
-  }
-  if (key.startsWith(WORKSPACE_CONFIG_PREFIX)) {
-    return key.slice(WORKSPACE_CONFIG_PREFIX.length);
-  }
-  return key;
-}
-
-/**
- * @deprecated WU-2185: Use workspace-aware routing. Will be removed by WU-2186.
- */
-export function getSoftwareDeliveryConfigFromWorkspace(
-  workspace: Record<string, unknown>,
-): Record<string, unknown> {
-  const section = workspace[WORKSPACE_CONFIG_ROOT_KEY];
-  if (!section || typeof section !== 'object' || Array.isArray(section)) {
-    return {};
-  }
-  return section as Record<string, unknown>;
-}
-
-/**
- * @deprecated WU-2185: Use workspace-aware routing. Will be removed by WU-2186.
- */
-export function setSoftwareDeliveryConfigInWorkspace(
-  workspace: Record<string, unknown>,
-  config: Record<string, unknown>,
-): Record<string, unknown> {
-  return {
-    ...workspace,
-    [WORKSPACE_CONFIG_ROOT_KEY]: config,
-  };
-}
 
 /**
  * Known sub-keys of LumenFlowConfigSchema (software_delivery pack config).
@@ -594,7 +543,7 @@ function writeRawWorkspace(workspacePath: string, workspace: Record<string, unkn
  * @param workspace - Parsed workspace object
  * @returns Map of config_key -> pack_id
  */
-function loadPackConfigKeys(
+export function loadPackConfigKeys(
   projectRoot: string,
   workspace: Record<string, unknown>,
 ): Map<string, string> {
