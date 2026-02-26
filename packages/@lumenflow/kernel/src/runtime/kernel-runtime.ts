@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { randomBytes } from 'node:crypto';
-import { access, mkdir, open, readFile, rm } from 'node:fs/promises';
+import { access, mkdir, open, readFile, readdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
@@ -26,6 +26,7 @@ import {
   LUMENFLOW_DIR_NAME,
   LUMENFLOW_SCOPE_NAME,
   PACKAGES_DIR_NAME,
+  PACK_MANIFEST_FILE_NAME,
   PACKS_DIR_NAME,
   UTF8_ENCODING,
   WORKSPACE_CONFIG_HASH_CONTEXT_KEYS,
@@ -711,6 +712,51 @@ async function resolvePacksRoot(options: InitializeKernelRuntimeOptions): Promis
   return path.resolve(workspaceRoot, fallbackCandidate);
 }
 
+async function resolveAvailablePackManifests(
+  packsRoot: string,
+): Promise<ReadonlyArray<{ id: string; version: string }>> {
+  let entries: Array<import('node:fs').Dirent>;
+  try {
+    entries = await readdir(packsRoot, { withFileTypes: true });
+  } catch (error) {
+    const nodeError = error as NodeJS.ErrnoException;
+    if (nodeError.code === 'ENOENT') {
+      return [];
+    }
+    throw error;
+  }
+
+  const manifests = new Map<string, { id: string; version: string }>();
+  for (const entry of entries) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+
+    const manifestPath = path.join(packsRoot, entry.name, PACK_MANIFEST_FILE_NAME);
+    if (!(await fileExists(manifestPath))) {
+      continue;
+    }
+
+    try {
+      const rawManifest = await readFile(manifestPath, UTF8_ENCODING);
+      const parsedManifest = YAML.parse(rawManifest) as Record<string, unknown> | null;
+      if (!parsedManifest || typeof parsedManifest !== 'object') {
+        continue;
+      }
+      const id = parsedManifest.id;
+      const version = parsedManifest.version;
+      if (typeof id === 'string' && id.length > 0 && typeof version === 'string' && version.length > 0) {
+        manifests.set(id, { id, version });
+      }
+    } catch {
+      // Ignore unreadable or malformed manifests when building advisory migration hints.
+      continue;
+    }
+  }
+
+  return [...manifests.values()];
+}
+
 function resolveTaskSpecPath(taskSpecRoot: string, taskId: string): string {
   return path.join(taskSpecRoot, `${taskId}.yaml`);
 }
@@ -1307,6 +1353,7 @@ export async function initializeKernelRuntime(
   const resolvedWorkspace = await resolveWorkspaceSpec(options);
   const workspaceSpec = resolvedWorkspace.workspace_spec;
   const packsRoot = await resolvePacksRoot(options);
+  const availableManifests = await resolveAvailablePackManifests(packsRoot);
   const now = options.now ?? (() => new Date());
 
   const taskSpecRoot = path.resolve(
@@ -1358,6 +1405,7 @@ export async function initializeKernelRuntime(
   const rootKeyValidation = validateWorkspaceRootKeys(
     resolvedWorkspace.raw_workspace_data,
     loadedPacks.map((lp) => lp.manifest),
+    availableManifests,
   );
   if (!rootKeyValidation.valid) {
     const keyList = rootKeyValidation.errors.join('\n  - ');
