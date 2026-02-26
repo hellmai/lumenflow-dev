@@ -228,12 +228,11 @@ export type KernelOwnedRootKey = (typeof KERNEL_OWNED_ROOT_KEYS)[number];
  */
 const KNOWN_PACK_CONFIG_KEY_MIGRATIONS: Record<
   string,
-  { packId: string; packLabel: string; version: string }
+  { packId: string; packLabel: string }
 > = {
   software_delivery: {
     packId: 'software-delivery',
     packLabel: 'software-delivery',
-    version: '0.1.0',
   },
 };
 
@@ -257,11 +256,13 @@ export interface WorkspaceRootKeyValidationResult {
  *
  * @param workspaceData - The raw workspace data object (parsed from YAML)
  * @param packManifests - Loaded pack manifests for all pinned packs
+ * @param availableManifests - All available pack manifests (including non-pinned) for version lookup in migration errors
  * @returns Validation result with errors for unknown root keys
  */
 export function validateWorkspaceRootKeys(
   workspaceData: Record<string, unknown>,
-  packManifests: ReadonlyArray<Pick<DomainPackManifest, 'config_key'>>,
+  packManifests: ReadonlyArray<Pick<DomainPackManifest, 'config_key' | 'id' | 'version'>>,
+  availableManifests: ReadonlyArray<Pick<DomainPackManifest, 'id' | 'version'>> = [],
 ): WorkspaceRootKeyValidationResult {
   const kernelKeys = new Set<string>(KERNEL_OWNED_ROOT_KEYS);
 
@@ -286,11 +287,18 @@ export function validateWorkspaceRootKeys(
     // Check if this is a known pack config_key that needs a migration-specific error
     const migration = KNOWN_PACK_CONFIG_KEY_MIGRATIONS[key];
     if (migration) {
+      // Look up the real version from available manifests instead of hardcoding
+      const availableManifest =
+        availableManifests.find((m) => m.id === migration.packId) ??
+        packManifests.find((m) => m.id === migration.packId);
+      const versionFlag = availableManifest
+        ? `--version ${availableManifest.version}`
+        : '--version latest';
       errors.push(
         `Your workspace has a "${key}" config block but the ${migration.packLabel} pack is not pinned. ` +
           `Since LumenFlow 3.x, pack config keys require explicit pack pinning. ` +
           `Add the ${migration.packLabel} pack to your workspace:\n\n` +
-          `  pnpm pack:install --id ${migration.packId} --source registry --version ${migration.version}`,
+          `  pnpm pack:install --id ${migration.packId} --source registry ${versionFlag}`,
       );
       continue;
     }
