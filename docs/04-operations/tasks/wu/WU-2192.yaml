@@ -2,7 +2,7 @@ id: WU-2192
 title: Validate pack-scoped config:set writes using pack-declared config_schema
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -35,8 +35,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: config:set currently validates all pack-scoped writes with LumenFlowConfigSchema, which hardcodes software-delivery behavior. Implement pack-aware validation that resolves the owning pack and enforces its declared config_schema contract for write-path validation.
+description: config:set currently validates all pack-scoped writes with LumenFlowConfigSchema, which
+  hardcodes software-delivery behavior. Implement pack-aware validation that resolves the owning
+  pack and enforces its declared config_schema contract for write-path validation.
 acceptance:
-  - config:set routes pack-scoped writes to schema validation for the owning pack instead of always using LumenFlowConfigSchema
+  - config:set routes pack-scoped writes to schema validation for the owning pack instead of always
+    using LumenFlowConfigSchema
   - Unknown/invalid keys for a pack are rejected according to that pack schema
-  - Unit tests cover schema-based validation for software_delivery and at least one non-SD pack fixture
+  - Unit tests cover schema-based validation for software_delivery and at least one non-SD pack
+    fixture
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2192
+claimed_at: 2026-02-26T11:18:12.187Z
+baseline_main_sha: ef86faece699f36dba9113648346c1f32db9fb0c
+session_id: e9aa4f2e-0906-44a7-b8cd-9ad615b79e76
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T11:18:12.190Z

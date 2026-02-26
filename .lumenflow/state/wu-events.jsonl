@@ -2303,3 +2303,4 @@
 {"type":"complete","wuId":"WU-2189","timestamp":"2026-02-26T11:07:18.861Z"}
 {"type":"complete","wuId":"WU-2194","timestamp":"2026-02-26T11:11:57.965Z"}
 {"type":"complete","wuId":"WU-2191","timestamp":"2026-02-26T11:16:48.600Z"}
+{"type":"claim","wuId":"WU-2192","timestamp":"2026-02-26T11:18:12.225Z","lane":"Framework: CLI WU Commands","title":"Validate pack-scoped config:set writes using pack-declared config_schema"}

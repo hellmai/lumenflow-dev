@@ -4,7 +4,7 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2192 — Validate pack-scoped config:set writes using pack-declared config_schema](wu/WU-2192.yaml)
 
 ## Completed
 
