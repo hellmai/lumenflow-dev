@@ -635,6 +635,137 @@ describe('WU-2190 Bug B: unknown nested pack key rejection', () => {
 });
 
 // ---------------------------------------------------------------------------
+// WU-2195: control_plane uses kernel schema (cloud shape)
+// ---------------------------------------------------------------------------
+
+describe('WU-2195: control_plane validates against kernel schema (cloud shape)', () => {
+  /**
+   * Cloud-connected workspaces have the kernel-defined control_plane shape:
+   * { endpoint, org_id, project_id, sync_interval, policy_mode, auth: { token_env } }
+   *
+   * config:set must accept these fields (not reject them as unknown).
+   */
+  function createCloudConnectedWorkspace(): Record<string, unknown> {
+    return {
+      id: 'workspace-id',
+      name: 'Workspace Name',
+      packs: [{ id: 'software-delivery', version: '3.0.0', integrity: 'dev', source: 'local' }],
+      software_delivery: createMinimalSoftwareDeliveryConfig(),
+      control_plane: {
+        endpoint: 'https://api.lumenflow.dev',
+        org_id: 'org-123',
+        project_id: 'proj-456',
+        sync_interval: 30,
+        policy_mode: 'authoritative',
+        auth: { token_env: 'LUMENFLOW_TOKEN' },
+      },
+      memory_namespace: 'lumenflow',
+      event_namespace: 'lumenflow',
+    };
+  }
+
+  it('accepts control_plane.project_id write on cloud-connected workspace', () => {
+    const workspace = createCloudConnectedWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'control_plane.project_id',
+      'new-proj-789',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(true);
+    expect(getConfigValue(result.config!, 'control_plane.project_id')).toBe('new-proj-789');
+  });
+
+  it('accepts control_plane.auth.token_env write on cloud-connected workspace', () => {
+    const workspace = createCloudConnectedWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'control_plane.auth.token_env',
+      'MY_CUSTOM_TOKEN',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(true);
+    expect(getConfigValue(result.config!, 'control_plane.auth.token_env')).toBe('MY_CUSTOM_TOKEN');
+  });
+
+  it('accepts control_plane.sync_interval write on cloud-connected workspace', () => {
+    const workspace = createCloudConnectedWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'control_plane.sync_interval',
+      '120',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(true);
+    expect(getConfigValue(result.config!, 'control_plane.sync_interval')).toBe(120);
+  });
+
+  it('rejects truly unknown control_plane key (control_plane.bogus_field)', () => {
+    const workspace = createCloudConnectedWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'control_plane.bogus_field',
+      'whatever',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+
+  it('accepts control_plane.policy_mode write', () => {
+    const workspace = createCloudConnectedWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'control_plane.policy_mode',
+      'tighten-only',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(true);
+    expect(getConfigValue(result.config!, 'control_plane.policy_mode')).toBe('tighten-only');
+  });
+
+  it('rejects control_plane.auth.token_env with invalid format (lowercase)', () => {
+    const workspace = createCloudConnectedWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'control_plane.auth.token_env',
+      'lowercase_not_valid',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+
+  it('preserves existing cloud fields when writing a single sub-key', () => {
+    const workspace = createCloudConnectedWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'control_plane.sync_interval',
+      '60',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(true);
+    // project_id and auth should be preserved
+    expect(getConfigValue(result.config!, 'control_plane.project_id')).toBe('proj-456');
+    expect(getConfigValue(result.config!, 'control_plane.auth.token_env')).toBe('LUMENFLOW_TOKEN');
+    expect(getConfigValue(result.config!, 'control_plane.sync_interval')).toBe(60);
+  });
+
+  it('rejects core-only fields that do not exist in kernel schema (enabled, local_override)', () => {
+    const workspace = createCloudConnectedWorkspace();
+    // 'enabled' exists in core schema but NOT in kernel schema
+    const result = applyConfigSet(
+      workspace,
+      'control_plane.enabled',
+      'true',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // WU-2192: Pack-aware schema validation
 // ---------------------------------------------------------------------------
 

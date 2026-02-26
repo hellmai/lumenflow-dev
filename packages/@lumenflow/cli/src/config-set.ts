@@ -35,7 +35,7 @@ import { die } from '@lumenflow/core/error-handler';
 import { FILE_SYSTEM } from '@lumenflow/core/wu-constants';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { LumenFlowConfigSchema } from '@lumenflow/core/config-schema';
-import { WorkspaceControlPlaneConfigSchema } from '@lumenflow/core/config-schema';
+import { WorkspaceControlPlaneConfigSchema } from '@lumenflow/kernel/schemas';
 import { normalizeConfigKeys } from '@lumenflow/core/normalize-config-keys';
 import { WRITABLE_ROOT_KEYS, MANAGED_ROOT_KEYS, WORKSPACE_ROOT_KEYS } from '@lumenflow/core/config';
 import { resolvePackManifestPaths, resolvePackSchemaMetadata } from '@lumenflow/kernel/pack';
