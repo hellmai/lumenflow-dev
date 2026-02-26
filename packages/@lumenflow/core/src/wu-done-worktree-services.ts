@@ -45,6 +45,7 @@ import { withAtomicMerge } from './atomic-merge.js';
 import { BRANCHES, LOG_PREFIX, WU_STATUS } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { createValidationError } from './wu-done-errors.js';
+import type { ISyncValidatorGitAdapter } from './ports/sync-validator.ports.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -126,11 +127,7 @@ export interface ValidateWorktreeStateInput {
   /** Absolute path to the main checkout (for main-behind-origin check) */
   mainCheckoutPath: string;
   /** Git adapter scoped to the main checkout */
-  gitAdapterForMain: {
-    getCommitHash: (ref: string) => Promise<string>;
-    fetch: (...args: unknown[]) => Promise<unknown>;
-    revList: (args: string[]) => Promise<string>;
-  };
+  gitAdapterForMain: Pick<ISyncValidatorGitAdapter, 'fetch' | 'getCommitHash' | 'revList'>;
 }
 
 /**
@@ -171,7 +168,7 @@ export async function validateWorktreeState(
 
   // Check main is not behind origin
   try {
-    const mainResult = await validateMainNotBehindOrigin(gitAdapterForMain as never);
+    const mainResult = await validateMainNotBehindOrigin(gitAdapterForMain);
     if (!mainResult.valid) {
       errors.push(
         `Local main is ${mainResult.commitsBehind} commit(s) behind origin/main. ` +

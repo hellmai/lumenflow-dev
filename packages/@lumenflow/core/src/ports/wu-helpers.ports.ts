@@ -13,29 +13,17 @@
  * @module ports/wu-helpers
  */
 
+import type { ISyncValidatorGitAdapter } from './sync-validator.ports.js';
+
 /**
  * Git adapter interface for ensureOnMain and ensureMainUpToDate operations
  */
-export interface IWuGitAdapter {
+export interface IWuGitAdapter extends Pick<ISyncValidatorGitAdapter, 'fetch' | 'getCommitHash'> {
   /**
    * Get the current git branch name
    * @returns Promise resolving to branch name
    */
   getCurrentBranch(): Promise<string>;
-
-  /**
-   * Fetch from a remote
-   * @param remote - Remote name (e.g., 'origin')
-   * @param branch - Branch name (e.g., 'main')
-   */
-  fetch(remote: string, branch: string): Promise<void>;
-
-  /**
-   * Get commit hash for a ref
-   * @param ref - Git ref (branch, tag, or commit)
-   * @returns Promise resolving to commit hash
-   */
-  getCommitHash(ref: string): Promise<string>;
 }
 
 /**

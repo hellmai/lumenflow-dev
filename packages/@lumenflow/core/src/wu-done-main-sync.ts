@@ -15,16 +15,9 @@
 import { createGitForPath } from './git-adapter.js';
 import { BRANCHES, REMOTES } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
+import type { ISyncValidatorGitAdapter } from './ports/sync-validator.ports.js';
 
-/**
- * Minimal git adapter interface for main sync validation.
- * Avoids importing the full GitAdapter type to reduce coupling.
- */
-interface MainSyncGitAdapter {
-  fetch: (remote?: string, branch?: string) => Promise<void>;
-  getCommitHash: (ref: string) => Promise<string>;
-  revList: (args: string[]) => Promise<string>;
-}
+type MainSyncGitAdapter = Pick<ISyncValidatorGitAdapter, 'fetch' | 'getCommitHash' | 'revList'>;
 
 /**
  * WU-1577: Validate that local main is not behind origin/main before transaction.
