@@ -48,14 +48,13 @@ sections:
 - [WU-2176 — Document validator boundaries and ownership](wu/WU-2176.yaml) — Content: Framework Docs
 - [WU-2177 — Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
-- [WU-2202 — Phase 2: Introduce core sync-validator module with compatibility re-exports](wu/WU-2202.yaml) — Framework: Core Lifecycle
 - [WU-2203 — Phase 3: Extract withMicroWorktree sync preamble helper without behavior changes](wu/WU-2203.yaml) — Framework: Core Lifecycle
 - [WU-2204 — Phase 4: Add adapter injection points for sync and micro-worktree shared helpers](wu/WU-2204.yaml) — Framework: Core Lifecycle
 - [WU-2205 — Phase 5: Simplify wu:done sync checks to canonical not-behind semantics](wu/WU-2205.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
-(No items currently in progress)
+- [WU-2202 — Phase 2: Introduce core sync-validator module with compatibility re-exports](wu/WU-2202.yaml) — Framework: Core Lifecycle
 
 ## ⛔ Blocked
 

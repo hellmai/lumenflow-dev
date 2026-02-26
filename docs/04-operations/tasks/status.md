@@ -4,7 +4,7 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2202 — Phase 2: Introduce core sync-validator module with compatibility re-exports](wu/WU-2202.yaml)
 
 ## Completed
 

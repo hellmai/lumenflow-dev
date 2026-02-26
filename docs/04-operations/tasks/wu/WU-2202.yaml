@@ -2,7 +2,7 @@ id: WU-2202
 title: 'Phase 2: Introduce core sync-validator module with compatibility re-exports'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -43,3 +43,11 @@ acceptance:
   - Keep backward compatibility by re-exporting legacy symbols from existing modules during migration
   - Preserve existing runtime behavior and error surfaces for existing call sites
   - Core sync tests pass after module extraction
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2202
+claimed_at: 2026-02-26T13:01:55.341Z
+baseline_main_sha: b47606188b5d1a951cf0288160f1510f6a9d8f0f
+session_id: 731a6e74-7d2e-4a05-8e4b-f6da06a24f93
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T13:01:55.348Z

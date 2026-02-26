@@ -2330,3 +2330,4 @@
 {"type":"release","wuId":"WU-2201","timestamp":"2026-02-26T12:54:02.421Z","reason":"Reset via wu:recover --action reset"}
 {"type":"claim","wuId":"WU-2201","timestamp":"2026-02-26T12:54:36.484Z","lane":"Framework: Core Lifecycle","title":"Phase 1: Canonicalize sync adapter types under ISyncValidatorGitAdapter"}
 {"type":"complete","wuId":"WU-2201","timestamp":"2026-02-26T13:01:06.358Z"}
+{"type":"claim","wuId":"WU-2202","timestamp":"2026-02-26T13:01:55.385Z","lane":"Framework: Core Lifecycle","title":"Phase 2: Introduce core sync-validator module with compatibility re-exports"}
