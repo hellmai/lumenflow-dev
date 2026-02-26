@@ -11,7 +11,9 @@ code_paths:
   - packages/@lumenflow/core/src/micro-worktree-shared.ts
   - packages/@lumenflow/core/src/wu-done-worktree-services.ts
 tests:
-  manual: []
+  manual:
+    - Verify sync helpers accept injected adapters while preserving default behavior with no
+      explicit adapter passed
   unit:
     - packages/@lumenflow/core/src/__tests__/wu-done-rollback-leaks.test.ts
     - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
@@ -32,9 +34,16 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: several sync-related helpers construct Git adapters internally via getGitForCwd/createGitForPath. Problem: hidden adapter construction makes isolated testing and deterministic dependency injection harder. Solution: add optional injected adapter parameters while keeping existing defaults for backward compatibility in wu-done-git-ops, wu-done-main-sync, and micro-worktree-shared helpers.'
+description: 'Context: several sync-related helpers construct Git adapters internally via
+  getGitForCwd/createGitForPath. Problem: hidden adapter construction makes isolated testing and
+  deterministic dependency injection harder. Solution: add optional injected adapter parameters
+  while keeping existing defaults for backward compatibility in wu-done-git-ops, wu-done-main-sync,
+  and micro-worktree-shared helpers.'
 acceptance:
-  - Add optional adapter injection parameters to wu-done-git-ops sync helpers with backward-compatible defaults
-  - Add optional adapter injection parameters to wu-done-main-sync entry points with backward-compatible defaults
-  - Add optional adapter injection parameters to micro-worktree-shared cleanup/sync helpers with backward-compatible defaults
+  - Add optional adapter injection parameters to wu-done-git-ops sync helpers with
+    backward-compatible defaults
+  - Add optional adapter injection parameters to wu-done-main-sync entry points with
+    backward-compatible defaults
+  - Add optional adapter injection parameters to micro-worktree-shared cleanup/sync helpers with
+    backward-compatible defaults
   - Unit tests can call these helpers without module-level adapter mocking
