@@ -2,7 +2,7 @@ id: WU-2207
 title: 'Phase 6: remove deprecated wu:done parity helper'
 lane: 'Framework: Core Lifecycle'
 type: refactor
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -47,3 +47,6 @@ acceptance:
     parity-helper tests
   - Keep wu:done preflight and merge-capable sync behavior unchanged (canonical not-behind,
     fail-closed on verification failure)
+locked: true
+completed_at: 2026-02-26T13:46:18.356Z
+completed: 2026-02-26
