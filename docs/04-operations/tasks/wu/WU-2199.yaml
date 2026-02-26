@@ -1,0 +1,40 @@
+id: WU-2199
+title: Define sync-validator semantics and consolidation plan for main-branch sync checks
+lane: 'Framework: Core Lifecycle'
+type: documentation
+status: ready
+priority: P2
+created: 2026-02-26
+code_paths:
+  - packages/@lumenflow/core/src/wu-helpers.ts
+  - packages/@lumenflow/core/src/wu-done-main-sync.ts
+  - packages/@lumenflow/core/src/wu-done-worktree-services.ts
+  - packages/@lumenflow/cli/src/wu-done-git-ops.ts
+  - packages/@lumenflow/core/src/micro-worktree.ts
+  - packages/@lumenflow/core/src/ports/wu-helpers.ports.ts
+tests:
+  manual:
+    - ADR reviewed and approved
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2199.done
+dependencies: []
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: 'Architecture decision record for consolidating scattered main-branch sync logic. Currently: 4 type definitions for the same git adapter shape (wu-helpers.ts, wu-done-main-sync.ts, wu-done-git-ops.ts, wu-done-worktree-services.ts:129), 3 implementations of sync checks, and inconsistent semantics (exact parity vs not-behind vs fail-open). Must answer: (1) wu:done semantics — exact main==origin/main, or only not-behind? (2) fail-open vs fail-closed per command. (3) type consolidation into ports/sync-validator.ports.ts. (4) DI gaps in wu-done-git-ops.ts:216, wu-done-main-sync.ts:81, micro-worktree-shared.ts:317. Produces ADR + phased WU breakdown for implementation.'
+acceptance:
+  - ADR document written covering sync semantics per command and per mode
+  - Type inventory with proposed canonical interface (ISyncValidatorGitAdapter)
+  - DI gap inventory with proposed injection points
+  - Phased WU breakdown (types, module, withMicroWorktree, DI, wu:done simplification)
+  - Decision on exact-parity vs not-behind for wu:done worktree mode
+  - Decision on fail-open vs fail-closed per command
