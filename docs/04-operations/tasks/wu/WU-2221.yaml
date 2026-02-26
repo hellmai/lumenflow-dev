@@ -2,7 +2,7 @@ id: WU-2221
 title: 'Release script: install deps in micro-worktree before build'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -38,3 +38,6 @@ worktree_path: /home/USER/source/hellmai/lumenflow-dev/worktrees/framework-cli-w
 claimed_at: 2026-02-26T17:18:31.012Z
 baseline_main_sha: 70db457e19767e8b3a48f303d167ffde37705c63
 session_id: 66a81d79-c925-46b5-b6a0-ad40b8ccdd88
+locked: true
+completed_at: 2026-02-26T17:22:36.932Z
+completed: 2026-02-26
