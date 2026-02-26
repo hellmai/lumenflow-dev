@@ -1,0 +1,39 @@
+id: WU-2189
+title: Enforce two-phase workspace root-key validation during runtime boot
+lane: 'Framework: Core Validation'
+type: bug
+status: ready
+priority: P2
+created: 2026-02-26
+code_paths:
+  - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
+  - packages/@lumenflow/kernel/src/kernel.schemas.ts
+tests:
+  manual:
+    - Run kernel startup with unknown root key and verify hard failure
+  unit:
+    - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
+    - packages/@lumenflow/kernel/src/__tests__/kernel.schemas.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2189.done
+dependencies: []
+initiative: INIT-045
+phase: 4
+spec_refs:
+  - /home/USER/.claude/plans/init-045-multi-pack-config.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: resolveWorkspaceSpec currently parses workspace.yaml via WorkspaceSpecSchema without enforcing dynamic root-key validation. Wire validateWorkspaceRootKeys into runtime boot so unknown root keys are rejected at load time using pinned pack config_key declarations.
+acceptance:
+  - initializeKernelRuntime rejects unknown workspace root keys with actionable error output
+  - Workspace with pack-declared config_key roots passes runtime boot
+  - Runtime test coverage verifies enforcement path (not only helper function tests)
