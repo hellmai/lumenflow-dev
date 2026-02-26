@@ -7,7 +7,7 @@ priority: P2
 created: 2026-02-26
 code_paths:
   - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
-  - packages/@lumenflow/kernel/src/kernel.schemas.ts
+  - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
 tests:
   manual:
     - Create legacy workspace with software_delivery + no SD pin and verify runtime error includes
@@ -23,10 +23,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-26T14:32:05.139Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2216
+session_id: 6bf623de-c21b-4d5a-953d-67e1ad96e748
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T14:32:05.147Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -40,11 +47,3 @@ acceptance:
   - Legacy workspace remediation message includes concrete SD version from manifest instead of
     --version latest
   - Runtime tests cover both resolved-version and fallback behavior when manifest is unavailable
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-validation-wu-2216
-claimed_at: 2026-02-26T14:32:05.139Z
-baseline_main_sha: b7dd01876b60d97e515df964bf3c21b19d2d9eed
-session_id: 6bf623de-c21b-4d5a-953d-67e1ad96e748
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-26T14:32:05.147Z
