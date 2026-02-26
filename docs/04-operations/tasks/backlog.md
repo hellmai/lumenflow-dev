@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2199 — Define sync-validator semantics and consolidation plan for main-branch sync checks](wu/WU-2199.yaml) — Framework: Core Lifecycle
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — Framework: Memory
@@ -50,10 +49,10 @@ sections:
 - [WU-2177 — Create shared test-helpers package](wu/WU-2177.yaml) — Framework: Core Validation
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
 - [WU-2197 — findStrippedKeys rejects writes due to pre-existing unknown keys in unrelated paths](wu/WU-2197.yaml) — Framework: CLI WU Commands
+- [WU-2199 — Define sync-validator semantics and consolidation plan for main-branch sync checks](wu/WU-2199.yaml) — Framework: Core Lifecycle
 
 ## 🔧 In progress
 
-- [WU-2195 — config:set uses wrong control_plane schema (core vs kernel)](wu/WU-2195.yaml) — Framework: CLI WU Commands
 - [WU-2196 — Runtime boot rejects legacy workspaces with software_delivery but no SD pack pin](wu/WU-2196.yaml) — Framework: Core Validation
 - [WU-2198 — Fix wu-done ensureMainUpToDate swallowing ProcessExitError from die()](wu/WU-2198.yaml) — Framework: CLI WU Commands
 
@@ -1150,6 +1149,7 @@ sections:
 - [WU-2191 — Extract shared pack manifest resolution for config commands](wu/WU-2191.yaml)
 - [WU-2193 — Align workspace-init defaults with pack pinning semantics](wu/WU-2193.yaml)
 - [WU-2192 — Validate pack-scoped config:set writes using pack-declared config_schema](wu/WU-2192.yaml)
+- [WU-2195 — config:set uses wrong control_plane schema (core vs kernel)](wu/WU-2195.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

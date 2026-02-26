@@ -2,7 +2,7 @@ id: WU-2195
 title: config:set uses wrong control_plane schema (core vs kernel)
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -52,3 +52,6 @@ session_id: cfa88a85-3208-4e6c-b01f-14425ae6c856
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-26T12:09:35.916Z
+locked: true
+completed_at: 2026-02-26T12:16:31.252Z
+completed: 2026-02-26
