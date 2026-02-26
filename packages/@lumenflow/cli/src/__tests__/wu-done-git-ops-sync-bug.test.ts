@@ -97,18 +97,14 @@ describe('ensureMainUpToDate sync bug (WU-2198)', () => {
     await expect(ensureMainUpToDate()).resolves.toBeUndefined();
 
     // Assert: warning was logged
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Proceeding anyway'),
-    );
+    expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('Proceeding anyway'));
   });
 
   it('should succeed silently when main is up-to-date', async () => {
     // Arrange: fetch succeeds, hashes match
     mockFetch.mockResolvedValue(undefined);
     const sameSha = 'cccc3333';
-    mockGetCommitHash
-      .mockResolvedValueOnce(sameSha)
-      .mockResolvedValueOnce(sameSha);
+    mockGetCommitHash.mockResolvedValueOnce(sameSha).mockResolvedValueOnce(sameSha);
 
     const { ensureMainUpToDate } = await import('../wu-done-git-ops.js');
 
@@ -116,8 +112,6 @@ describe('ensureMainUpToDate sync bug (WU-2198)', () => {
     await expect(ensureMainUpToDate()).resolves.toBeUndefined();
 
     // Assert: success message logged
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('up-to-date'),
-    );
+    expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('up-to-date'));
   });
 });
