@@ -19,6 +19,8 @@ import {
 import { resolveWuEventsRelativePath } from './state-path-resolvers.js';
 
 type GitAdapter = ReturnType<typeof getGitForCwd>;
+type DetectParallelCompletionsGitAdapter = Pick<GitAdapter, 'fetch' | 'getCommitHash' | 'raw'>;
+type EnsureMainUpToDateGitAdapter = Pick<GitAdapter, 'fetch' | 'getCommitHash' | 'revList'>;
 
 interface WUDocLike extends Record<string, unknown> {
   baseline_main_sha?: string;
@@ -143,6 +145,7 @@ Current:  ${currentSha.substring(0, 8)}
 export async function detectParallelCompletions(
   id: string,
   doc: WUDocLike,
+  gitAdapter?: DetectParallelCompletionsGitAdapter,
 ): Promise<ParallelCompletionResult> {
   const noParallel: ParallelCompletionResult = {
     hasParallelCompletions: false,
@@ -159,12 +162,10 @@ export async function detectParallelCompletions(
   }
 
   try {
-    const gitAdapter = getGitForCwd();
-    await gitAdapter.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+    const git = gitAdapter ?? getGitForCwd();
+    await git.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
 
-    const currentSha = (
-      await gitAdapter.getCommitHash(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`)
-    ).trim();
+    const currentSha = (await git.getCommitHash(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`)).trim();
 
     if (currentSha === baselineSha) {
       console.log(
@@ -173,7 +174,7 @@ export async function detectParallelCompletions(
       return noParallel;
     }
 
-    const logOutput = await gitAdapter.raw([
+    const logOutput = await git.raw([
       'log',
       '--oneline',
       '--grep=^wu(wu-',
@@ -209,22 +210,22 @@ export async function detectParallelCompletions(
 /**
  * Ensure main branch is up-to-date with origin before merge operations.
  */
-export async function ensureMainUpToDate() {
+export async function ensureMainUpToDate(gitAdapter?: EnsureMainUpToDateGitAdapter) {
   console.log(`${LOG_PREFIX.DONE} Checking if main is up-to-date with origin...`);
 
   try {
-    const gitAdapter = getGitForCwd();
-    await gitAdapter.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
+    const git = gitAdapter ?? getGitForCwd();
+    await git.fetch(REMOTES.ORIGIN, BRANCHES.MAIN);
 
-    const localMain = await gitAdapter.getCommitHash(BRANCHES.MAIN);
-    const remoteMain = await gitAdapter.getCommitHash(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
+    const localMain = await git.getCommitHash(BRANCHES.MAIN);
+    const remoteMain = await git.getCommitHash(`${REMOTES.ORIGIN}/${BRANCHES.MAIN}`);
 
     if (localMain !== remoteMain) {
-      const behind = await gitAdapter.revList([
+      const behind = await git.revList([
         '--count',
         `${BRANCHES.MAIN}..${REMOTES.ORIGIN}/${BRANCHES.MAIN}`,
       ]);
-      const ahead = await gitAdapter.revList([
+      const ahead = await git.revList([
         '--count',
         `${REMOTES.ORIGIN}/${BRANCHES.MAIN}..${BRANCHES.MAIN}`,
       ]);

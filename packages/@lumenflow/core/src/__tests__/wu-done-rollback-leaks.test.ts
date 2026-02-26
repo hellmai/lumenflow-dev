@@ -76,6 +76,42 @@ describe('legacy rollback helper removal (AC2, AC3)', () => {
   });
 });
 
+describe('ensureMainNotBehindOrigin adapter injection (WU-2204)', () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  afterEach(() => {
+    vi.doUnmock('../git-adapter.js');
+  });
+
+  it('uses injected adapter without calling createGitForPath', async () => {
+    const createGitForPath = vi.fn(() => {
+      throw new Error('createGitForPath should not be called when adapter is injected');
+    });
+
+    vi.doMock('../git-adapter.js', () => ({
+      createGitForPath,
+    }));
+
+    const mod = await import('../sync-validator.js');
+    const injectedGit = {
+      fetch: vi.fn().mockResolvedValue(undefined),
+      getCommitHash: vi.fn().mockResolvedValue('same-sha'),
+      revList: vi.fn().mockResolvedValue('0'),
+    };
+
+    await expect(
+      mod.ensureMainNotBehindOrigin('/tmp/does-not-matter', 'WU-2204', {
+        gitAdapterForMain: injectedGit as never,
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(createGitForPath).not.toHaveBeenCalled();
+    expect(injectedGit.fetch).toHaveBeenCalledWith('origin', 'main');
+  });
+});
+
 // ---------------------------------------------------------------------------
 // AC5: worktree merge/push path uses atomic merge orchestration
 // ---------------------------------------------------------------------------

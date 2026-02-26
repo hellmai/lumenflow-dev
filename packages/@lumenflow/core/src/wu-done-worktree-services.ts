@@ -45,7 +45,8 @@ import { withAtomicMerge } from './atomic-merge.js';
 import { BRANCHES, LOG_PREFIX, WU_STATUS } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import { createValidationError } from './wu-done-errors.js';
-import type { ISyncValidatorGitAdapter } from './ports/sync-validator.ports.js';
+import { createGitForPath } from './git-adapter.js';
+import type { MainSyncGitAdapter } from './sync-validator.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -127,7 +128,7 @@ export interface ValidateWorktreeStateInput {
   /** Absolute path to the main checkout (for main-behind-origin check) */
   mainCheckoutPath: string;
   /** Git adapter scoped to the main checkout */
-  gitAdapterForMain: Pick<ISyncValidatorGitAdapter, 'fetch' | 'getCommitHash' | 'revList'>;
+  gitAdapterForMain?: MainSyncGitAdapter;
 }
 
 /**
@@ -146,7 +147,7 @@ export interface ValidateWorktreeStateInput {
 export async function validateWorktreeState(
   input: ValidateWorktreeStateInput,
 ): Promise<WorktreeValidationResult> {
-  const { wuId, worktreePath, doc, gitAdapterForMain } = input;
+  const { wuId, worktreePath, doc, mainCheckoutPath, gitAdapterForMain } = input;
   const errors: string[] = [];
   let zombieDetected = false;
 
@@ -168,7 +169,8 @@ export async function validateWorktreeState(
 
   // Check main is not behind origin
   try {
-    const mainResult = await validateMainNotBehindOrigin(gitAdapterForMain);
+    const mainGit = gitAdapterForMain ?? createGitForPath(mainCheckoutPath);
+    const mainResult = await validateMainNotBehindOrigin(mainGit);
     if (!mainResult.valid) {
       errors.push(
         `Local main is ${mainResult.commitsBehind} commit(s) behind origin/main. ` +

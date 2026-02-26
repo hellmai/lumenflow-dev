@@ -226,6 +226,32 @@ describe('micro-worktree-shared', () => {
     expect(mainGit.deleteBranch).toHaveBeenCalledWith(branch, { force: true });
   });
 
+  it('should use injected main git adapter for cleanup without getGitForCwd', async () => {
+    const expected = mkdtempSync(join(tmpdir(), 'wu-cleanup-injected-'));
+    const branch = 'tmp/wu-create/wu-2204';
+
+    const injectedMainGit = {
+      worktreeRemove: vi.fn().mockResolvedValue(undefined),
+      worktreeList: vi.fn().mockResolvedValue(''),
+      branchExists: vi.fn().mockResolvedValue(false),
+      deleteBranch: vi.fn(),
+    };
+
+    vi.doMock(GIT_ADAPTER_MODULE, () => ({
+      getGitForCwd: vi.fn(() => {
+        throw new Error('getGitForCwd should not be called when adapter is injected');
+      }),
+    }));
+    vi.doMock(CONFIG_MODULE, () => ({ getConfig: vi.fn().mockReturnValue({ git: {} }) }));
+
+    const mod = await import(SHARED_MODULE);
+
+    await mod.cleanupMicroWorktree(expected, branch, '[t]', injectedMainGit as never);
+
+    expect(injectedMainGit.worktreeRemove).toHaveBeenCalledTimes(1);
+    expect(injectedMainGit.worktreeRemove).toHaveBeenCalledWith(expected, { force: true });
+  });
+
   it('should tolerate cleanup errors and fallback for expected path', async () => {
     const expected = mkdtempSync(join(tmpdir(), 'wu-cleanup-fallback-'));
     const branch = 'tmp/wu-create/wu-888';

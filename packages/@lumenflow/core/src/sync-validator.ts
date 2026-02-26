@@ -10,8 +10,14 @@ import { BRANCHES, REMOTES } from './wu-constants.js';
 import { createError, ErrorCodes } from './error-handler.js';
 import type { ISyncValidatorGitAdapter } from './ports/sync-validator.ports.js';
 
-type EnsureMainUpToDateGitAdapter = Pick<ISyncValidatorGitAdapter, 'fetch' | 'getCommitHash'>;
-type MainSyncGitAdapter = Pick<ISyncValidatorGitAdapter, 'fetch' | 'getCommitHash' | 'revList'>;
+export type EnsureMainUpToDateGitAdapter = Pick<ISyncValidatorGitAdapter, 'fetch' | 'getCommitHash'>;
+export type MainSyncGitAdapter = Pick<
+  ISyncValidatorGitAdapter,
+  'fetch' | 'getCommitHash' | 'revList'
+>;
+export interface EnsureMainNotBehindOriginOptions {
+  gitAdapterForMain?: MainSyncGitAdapter;
+}
 
 /**
  * Ensure main branch is up to date with origin.
@@ -82,8 +88,9 @@ export async function validateMainNotBehindOrigin(
 export async function ensureMainNotBehindOrigin(
   mainCheckoutPath: string,
   wuId: string,
+  options: EnsureMainNotBehindOriginOptions = {},
 ): Promise<void> {
-  const gitMainPreCheck = createGitForPath(mainCheckoutPath);
+  const gitMainPreCheck = options.gitAdapterForMain ?? createGitForPath(mainCheckoutPath);
   const result = await validateMainNotBehindOrigin(gitMainPreCheck);
   if (!result.valid) {
     throw createError(

@@ -114,4 +114,59 @@ describe('ensureMainUpToDate sync bug (WU-2198)', () => {
     // Assert: success message logged
     expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('up-to-date'));
   });
+
+  it('should use injected adapter for ensureMainUpToDate when provided', async () => {
+    const { ensureMainUpToDate } = await import('../wu-done-git-ops.js');
+    const { getGitForCwd } = await import('@lumenflow/core/git-adapter');
+
+    vi.mocked(getGitForCwd).mockImplementation(() => {
+      throw new Error('getGitForCwd should not be called with injected adapter');
+    });
+
+    const injectedFetch = vi.fn().mockResolvedValue(undefined);
+    const injectedGetCommitHash = vi.fn().mockResolvedValue('same-sha');
+    const injectedRevList = vi.fn().mockResolvedValue('0');
+
+    await expect(
+      ensureMainUpToDate({
+        fetch: injectedFetch,
+        getCommitHash: injectedGetCommitHash,
+        revList: injectedRevList,
+      } as never),
+    ).resolves.toBeUndefined();
+
+    expect(injectedFetch).toHaveBeenCalledWith('origin', 'main');
+    expect(injectedGetCommitHash).toHaveBeenCalledTimes(2);
+  });
+
+  it('should use injected adapter for detectParallelCompletions when provided', async () => {
+    const { detectParallelCompletions } = await import('../wu-done-git-ops.js');
+    const { getGitForCwd } = await import('@lumenflow/core/git-adapter');
+
+    vi.mocked(getGitForCwd).mockImplementation(() => {
+      throw new Error('getGitForCwd should not be called with injected adapter');
+    });
+
+    const injectedFetch = vi.fn().mockResolvedValue(undefined);
+    const injectedGetCommitHash = vi.fn().mockResolvedValue('base1234');
+    const injectedRaw = vi.fn().mockResolvedValue('');
+
+    const result = await detectParallelCompletions(
+      'WU-2204',
+      { baseline_main_sha: 'base1234' },
+      {
+        fetch: injectedFetch,
+        getCommitHash: injectedGetCommitHash,
+        raw: injectedRaw,
+      } as never,
+    );
+
+    expect(result).toEqual({
+      hasParallelCompletions: false,
+      completedWUs: [],
+      warning: null,
+    });
+    expect(injectedFetch).toHaveBeenCalledWith('origin', 'main');
+    expect(injectedGetCommitHash).toHaveBeenCalledWith('origin/main');
+  });
 });

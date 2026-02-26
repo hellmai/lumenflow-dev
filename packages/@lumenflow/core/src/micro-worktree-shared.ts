@@ -18,6 +18,12 @@ import { getConfig } from './lumenflow-config.js';
 import type { GitAdapter } from './git-adapter.js';
 import type { PushRetryConfig } from './lumenflow-config-schema.js';
 
+type MicroWorktreeSyncGitAdapter = Pick<GitAdapter, 'fetch' | 'merge'>;
+type MicroWorktreeCleanupGitAdapter = Pick<
+  GitAdapter,
+  'worktreeRemove' | 'worktreeList' | 'branchExists' | 'deleteBranch'
+>;
+
 /**
  * Maximum retry attempts for ff-only merge when main moves
  *
@@ -185,7 +191,7 @@ export function shouldSkipRemoteOperations(): boolean {
 }
 
 export interface MicroWorktreeSyncPreambleOptions {
-  mainGit: Pick<GitAdapter, 'fetch' | 'merge'>;
+  mainGit?: MicroWorktreeSyncGitAdapter;
   logPrefix: string;
   pushOnly: boolean;
   skipRemote: boolean;
@@ -206,7 +212,8 @@ export interface MicroWorktreeSyncPreambleResult {
 export async function runMicroWorktreeSyncPreamble(
   options: MicroWorktreeSyncPreambleOptions,
 ): Promise<MicroWorktreeSyncPreambleResult> {
-  const { mainGit, logPrefix, pushOnly, skipRemote } = options;
+  const { logPrefix, pushOnly, skipRemote } = options;
+  const mainGit = options.mainGit ?? getGitForCwd();
 
   if (!skipRemote) {
     console.log(`${logPrefix} Fetching ${REMOTES.ORIGIN}/${BRANCHES.MAIN} before starting...`);
@@ -331,7 +338,7 @@ function tryFilesystemCleanup(worktreePath: string): void {
 }
 
 async function removeWorktreeSafe(
-  gitAdapter: GitAdapter,
+  gitAdapter: MicroWorktreeCleanupGitAdapter,
   worktreePath: string,
   logPrefix: string,
   contextLabel: string = '',
@@ -356,9 +363,10 @@ export async function cleanupMicroWorktree(
   worktreePath: string,
   branchName: string,
   logPrefix: string = DEFAULT_LOG_PREFIX,
+  mainGitAdapter?: MicroWorktreeCleanupGitAdapter,
 ): Promise<void> {
   console.log(`${logPrefix} Cleaning up micro-worktree...`);
-  const mainGit = getGitForCwd();
+  const mainGit = mainGitAdapter ?? getGitForCwd();
 
   if (existsSync(worktreePath)) {
     await removeWorktreeSafe(mainGit, worktreePath, logPrefix);
@@ -371,7 +379,7 @@ export async function cleanupMicroWorktree(
 }
 
 async function cleanupRegisteredWorktreeForBranch(
-  gitAdapter: GitAdapter,
+  gitAdapter: MicroWorktreeCleanupGitAdapter,
   branchName: string,
   expectedPath: string,
   logPrefix: string,
@@ -391,7 +399,7 @@ async function cleanupRegisteredWorktreeForBranch(
 }
 
 async function deleteBranchSafe(
-  gitAdapter: GitAdapter,
+  gitAdapter: MicroWorktreeCleanupGitAdapter,
   branchName: string,
   logPrefix: string,
 ): Promise<void> {
