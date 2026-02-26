@@ -139,6 +139,7 @@
     "./wu-rules-engine": "./dist/wu-rules-engine.js",
     "./wu-paths": "./dist/wu-paths.js",
     "./wu-preflight-validators": "./dist/wu-preflight-validators.js",
+    "./wu-duplicate-id-detector": "./dist/wu-duplicate-id-detector.js",
     "./wu-repair-core": "./dist/wu-repair-core.js",
     "./wu-schema": "./dist/wu-schema.js",
     "./wu-schema-normalization": "./dist/wu-schema-normalization.js",
