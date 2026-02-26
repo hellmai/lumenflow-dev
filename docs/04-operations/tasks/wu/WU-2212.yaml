@@ -1,0 +1,42 @@
+id: WU-2212
+title: Break-glass WU finalization tool (no dist dependency)
+lane: 'Operations: Tooling'
+type: feature
+status: ready
+priority: P2
+created: 2026-02-26
+code_paths:
+  - scripts/wu-stamp.mjs
+tests:
+  manual:
+    - Run with dist/ directories removed, verify stamp and event created
+    - Run twice, verify idempotent
+  unit: []
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2212.done
+dependencies: []
+spec_refs:
+  - memory/distributed-state-audit.md
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+sizing_estimate:
+  estimated_files: 3
+  estimated_tool_calls: 30
+  strategy: single-session
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: Provide standalone recovery tool for bootstrap failures when CLI dist is broken. Prefer wu-stamp.mjs (Node built-ins only, no project build dependency) over raw bash. Tool creates stamp, appends schema-safe event to wu-events.jsonl, commits via micro-worktree pattern. Clear break-glass-only warnings. Idempotent and auditable.
+acceptance:
+  - scripts/wu-stamp.mjs runs without packages/*/dist
+  - Creates valid .lumenflow/stamps/WU-XXX.done file
+  - Appends valid completion event to wu-events.jsonl
+  - Commits atomically via micro-worktree pattern
+  - Idempotent on re-run (no duplicate stamps or events)
+  - Prints break-glass warning on execution
