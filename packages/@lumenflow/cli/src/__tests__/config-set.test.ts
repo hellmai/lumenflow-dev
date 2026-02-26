@@ -633,3 +633,204 @@ describe('WU-2190 Bug B: unknown nested pack key rejection', () => {
     ).toBe(false);
   });
 });
+
+// ---------------------------------------------------------------------------
+// WU-2192: Pack-aware schema validation
+// ---------------------------------------------------------------------------
+
+describe('WU-2192: pack-aware schema validation', () => {
+  /**
+   * Pack config_keys with multiple packs:
+   * - software_delivery -> software-delivery (has LumenFlowConfigSchema)
+   * - observability -> observability-pack (has a JSON Schema file)
+   * - analytics -> analytics-pack (no config_schema declared)
+   */
+  const MULTI_PACK_CONFIG_KEYS = new Map<string, string>([
+    ['software_delivery', 'software-delivery'],
+    ['observability', 'observability-pack'],
+    ['analytics', 'analytics-pack'],
+  ]);
+
+  /**
+   * Pack schema metadata: maps pack_id -> { configSchemaPath } or null.
+   * - software-delivery: has Zod schema (LumenFlowConfigSchema), no JSON Schema path needed
+   * - observability-pack: has config_schema pointing to a JSON Schema file
+   * - analytics-pack: no config_schema declared (null)
+   */
+  const PACK_SCHEMA_MAP = new Map<string, string | undefined>([
+    ['software-delivery', undefined], // SD pack uses built-in LumenFlowConfigSchema
+    ['observability-pack', 'schemas/config.schema.json'], // has external JSON Schema
+    ['analytics-pack', undefined], // no config_schema declared
+  ]);
+
+  /** Flag map: which packs have a config_schema declared in their manifest */
+  const PACK_HAS_SCHEMA = new Map<string, boolean>([
+    ['software-delivery', true], // has built-in Zod schema
+    ['observability-pack', true], // has config_schema field in manifest
+    ['analytics-pack', false], // no config_schema
+  ]);
+
+  // Simple JSON Schema fixture for the observability pack
+  const OBSERVABILITY_JSON_SCHEMA = {
+    type: 'object',
+    properties: {
+      metrics: {
+        type: 'object',
+        properties: {
+          enabled: { type: 'boolean' },
+          interval: { type: 'number' },
+        },
+        additionalProperties: false,
+      },
+      tracing: {
+        type: 'object',
+        properties: {
+          enabled: { type: 'boolean' },
+          endpoint: { type: 'string' },
+        },
+        additionalProperties: false,
+      },
+    },
+    additionalProperties: false,
+  };
+
+  function createMultiPackWorkspace(): Record<string, unknown> {
+    return {
+      id: 'workspace-id',
+      name: 'Workspace Name',
+      packs: [
+        { id: 'software-delivery', version: '3.0.0', integrity: 'dev', source: 'local' },
+        { id: 'observability-pack', version: '1.0.0', integrity: 'dev', source: 'local' },
+        { id: 'analytics-pack', version: '1.0.0', integrity: 'dev', source: 'local' },
+      ],
+      software_delivery: createMinimalSoftwareDeliveryConfig(),
+      observability: {
+        metrics: { enabled: true, interval: 30 },
+        tracing: { enabled: false, endpoint: 'http://localhost:4317' },
+      },
+      analytics: {
+        dashboard_url: 'http://localhost:3000',
+      },
+    };
+  }
+
+  // --- AC1: SD pack continues to use LumenFlowConfigSchema ---
+
+  it('validates SD pack writes using LumenFlowConfigSchema (existing behavior preserved)', () => {
+    const workspace = createMultiPackWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'software_delivery.gates.minCoverage',
+      '85',
+      MULTI_PACK_CONFIG_KEYS,
+      {
+        packSchemaMap: PACK_HAS_SCHEMA,
+        jsonSchemas: new Map([['observability-pack', OBSERVABILITY_JSON_SCHEMA]]),
+      },
+    );
+    expect(result.ok).toBe(true);
+    expect(getConfigValue(result.config!, 'software_delivery.gates.minCoverage')).toBe(85);
+  });
+
+  it('rejects unknown SD pack keys using LumenFlowConfigSchema', () => {
+    const workspace = createMultiPackWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'software_delivery.unknown_section.foo',
+      'bar',
+      MULTI_PACK_CONFIG_KEYS,
+      {
+        packSchemaMap: PACK_HAS_SCHEMA,
+        jsonSchemas: new Map([['observability-pack', OBSERVABILITY_JSON_SCHEMA]]),
+      },
+    );
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+  });
+
+  // --- AC2: Non-SD pack with config_schema gets validated ---
+
+  it('allows valid write for non-SD pack with JSON Schema', () => {
+    const workspace = createMultiPackWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'observability.metrics.interval',
+      '60',
+      MULTI_PACK_CONFIG_KEYS,
+      {
+        packSchemaMap: PACK_HAS_SCHEMA,
+        jsonSchemas: new Map([['observability-pack', OBSERVABILITY_JSON_SCHEMA]]),
+      },
+    );
+    expect(result.ok).toBe(true);
+    expect(getConfigValue(result.config!, 'observability.metrics.interval')).toBe(60);
+  });
+
+  it('rejects unknown key for non-SD pack with JSON Schema', () => {
+    const workspace = createMultiPackWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'observability.unknown_field',
+      'value',
+      MULTI_PACK_CONFIG_KEYS,
+      {
+        packSchemaMap: PACK_HAS_SCHEMA,
+        jsonSchemas: new Map([['observability-pack', OBSERVABILITY_JSON_SCHEMA]]),
+      },
+    );
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+    expect(result.error).toContain('unknown_field');
+  });
+
+  it('rejects unknown nested key for non-SD pack with JSON Schema', () => {
+    const workspace = createMultiPackWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'observability.metrics.unknown_nested',
+      '42',
+      MULTI_PACK_CONFIG_KEYS,
+      {
+        packSchemaMap: PACK_HAS_SCHEMA,
+        jsonSchemas: new Map([['observability-pack', OBSERVABILITY_JSON_SCHEMA]]),
+      },
+    );
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+    expect(result.error).toContain('unknown_nested');
+  });
+
+  // --- AC3: Pack without config_schema rejects all writes ---
+
+  it('rejects writes to pack without config_schema', () => {
+    const workspace = createMultiPackWorkspace();
+    const result = applyConfigSet(
+      workspace,
+      'analytics.dashboard_url',
+      'http://newurl:3000',
+      MULTI_PACK_CONFIG_KEYS,
+      { packSchemaMap: PACK_HAS_SCHEMA, jsonSchemas: new Map() },
+    );
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+    expect(result.error).toContain('analytics');
+    expect(result.error).toContain('no config_schema');
+  });
+
+  // --- Backward compatibility: existing calls without packSchemaOpts ---
+
+  it('existing calls without packSchemaOpts still work for SD pack', () => {
+    const workspace = createMinimalWorkspace();
+    // This simulates existing callers that don't pass the new parameter
+    const result = applyConfigSet(
+      workspace,
+      'software_delivery.methodology.testing',
+      'test-after',
+      PACK_CONFIG_KEYS,
+    );
+    expect(result.ok).toBe(true);
+    expect(getConfigValue(result.config!, 'software_delivery.methodology.testing')).toBe(
+      'test-after',
+    );
+  });
+});

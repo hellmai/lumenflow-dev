@@ -38,7 +38,7 @@ import { LumenFlowConfigSchema } from '@lumenflow/core/config-schema';
 import { WorkspaceControlPlaneConfigSchema } from '@lumenflow/core/config-schema';
 import { normalizeConfigKeys } from '@lumenflow/core/normalize-config-keys';
 import { WRITABLE_ROOT_KEYS, MANAGED_ROOT_KEYS, WORKSPACE_ROOT_KEYS } from '@lumenflow/core/config';
-import { resolvePackManifestPaths } from '@lumenflow/kernel/pack';
+import { resolvePackManifestPaths, resolvePackSchemaMetadata } from '@lumenflow/kernel/pack';
 import { runCLI } from './cli-entry-point.js';
 
 // ---------------------------------------------------------------------------
@@ -101,6 +101,32 @@ interface ConfigSetResult {
   config?: Record<string, unknown>;
   error?: string;
 }
+
+/**
+ * WU-2192: Pack schema options for dynamic pack-aware validation.
+ *
+ * When provided, applyConfigSet uses the owning pack's declared schema
+ * instead of always hardcoding LumenFlowConfigSchema.
+ *
+ * - packSchemaMap: Maps pack_id -> boolean (true = has a schema, false = none)
+ * - jsonSchemas: Maps pack_id -> parsed JSON Schema object for non-SD packs
+ */
+export interface PackSchemaOpts {
+  /** Map of pack_id -> whether the pack declares a config_schema */
+  packSchemaMap: Map<string, boolean>;
+  /** Map of pack_id -> parsed JSON Schema object for non-SD packs */
+  jsonSchemas: Map<string, JsonSchemaObject>;
+}
+
+/** Minimal JSON Schema type used for pack config validation */
+export interface JsonSchemaObject {
+  type?: string;
+  properties?: Record<string, JsonSchemaObject>;
+  additionalProperties?: boolean;
+}
+
+/** Well-known pack ID for the software-delivery pack */
+const SD_PACK_ID = 'software-delivery';
 
 /** Route result from routeConfigKey */
 export type ConfigKeyRoute =
@@ -465,6 +491,7 @@ export function applyConfigSet(
   key: string,
   rawValue: string,
   packConfigKeys: Map<string, string>,
+  packSchemaOpts?: PackSchemaOpts,
 ): ConfigSetResult {
   const route = routeConfigKey(key, packConfigKeys);
 
@@ -487,7 +514,7 @@ export function applyConfigSet(
       return applyWorkspaceRootSet(workspace, key, rawValue);
 
     case 'pack-config':
-      return applyPackConfigSet(workspace, route, rawValue);
+      return applyPackConfigSet(workspace, route, rawValue, packSchemaOpts);
   }
 }
 
@@ -572,6 +599,47 @@ function applyWorkspaceRootSet(
   return { ok: true, config: updatedWorkspace };
 }
 
+// ---------------------------------------------------------------------------
+// JSON Schema validation (WU-2192)
+// ---------------------------------------------------------------------------
+
+/**
+ * Walk a JSON Schema to validate that a dotpath corresponds to a known property.
+ *
+ * For each segment in the dotpath, checks if the current schema level has
+ * a `properties` entry for that segment. Returns the list of unrecognized
+ * segments as dotpath strings.
+ *
+ * This is a lightweight structural validation -- it checks key existence,
+ * not value types. Full JSON Schema validation (via ajv) is deferred to
+ * a future WU if needed.
+ *
+ * @param schema - Parsed JSON Schema object
+ * @param dotpath - Dot-separated path to validate (e.g., "metrics.interval")
+ * @returns Array of unrecognized dotpath segments, or empty array if valid
+ */
+function validateJsonSchemaPath(schema: JsonSchemaObject, dotpath: string): string[] {
+  const segments = dotpath.split('.');
+  let currentSchema: JsonSchemaObject = schema;
+  const unrecognized: string[] = [];
+
+  for (let i = 0; i < segments.length; i++) {
+    const segment = segments[i];
+    const properties = currentSchema.properties;
+
+    if (!properties || !(segment in properties)) {
+      // This segment is not recognized at the current level
+      unrecognized.push(segments.slice(0, i + 1).join('.'));
+      break;
+    }
+
+    // Move deeper into the schema
+    currentSchema = properties[segment];
+  }
+
+  return unrecognized;
+}
+
 /**
  * Apply a set operation within a pack's config block.
  * Extracts the pack section, applies the change, validates via Zod schema,
@@ -581,6 +649,7 @@ function applyPackConfigSet(
   workspace: Record<string, unknown>,
   route: { rootKey: string; subPath: string; packId: string },
   rawValue: string,
+  packSchemaOpts?: PackSchemaOpts,
 ): ConfigSetResult {
   // Extract the pack's config section
   const packSection = workspace[route.rootKey];
@@ -605,6 +674,46 @@ function applyPackConfigSet(
   // Set value in pack config
   const updatedPackConfig = setNestedValue(packConfig, route.subPath, coercedValue);
 
+  // WU-2192: Route validation by pack identity.
+  // SD pack uses the built-in LumenFlowConfigSchema (Zod).
+  // Non-SD packs with config_schema use JSON Schema validation.
+  // Non-SD packs without config_schema reject all writes.
+  if (route.packId === SD_PACK_ID || !packSchemaOpts) {
+    // SD pack path (or legacy callers without schema opts): use LumenFlowConfigSchema
+    return applyPackConfigSetWithZod(workspace, route, rawValue, updatedPackConfig);
+  }
+
+  // Non-SD pack path: check if the pack declares a config_schema
+  const hasSchema = packSchemaOpts.packSchemaMap.get(route.packId);
+  if (!hasSchema) {
+    return {
+      ok: false,
+      error: `Pack "${route.packId}" declares no config_schema. Config writes to "${route.rootKey}" are rejected because the pack has not declared a schema for validation.`,
+    };
+  }
+
+  // Non-SD pack with config_schema: validate using JSON Schema
+  const jsonSchema = packSchemaOpts.jsonSchemas.get(route.packId);
+  if (!jsonSchema) {
+    return {
+      ok: false,
+      error: `Pack "${route.packId}" declares a config_schema but the schema could not be loaded. Config writes to "${route.rootKey}" are rejected.`,
+    };
+  }
+
+  return applyPackConfigSetWithJsonSchema(workspace, route, updatedPackConfig, jsonSchema);
+}
+
+/**
+ * Validate a pack config write using LumenFlowConfigSchema (Zod).
+ * Used for the SD pack and legacy callers.
+ */
+function applyPackConfigSetWithZod(
+  workspace: Record<string, unknown>,
+  route: { rootKey: string; subPath: string; packId: string },
+  rawValue: string,
+  updatedPackConfig: Record<string, unknown>,
+): ConfigSetResult {
   // Normalize keys for Zod compatibility (snake_case -> camelCase)
   const normalized = normalizeConfigKeys(updatedPackConfig);
 
@@ -622,13 +731,43 @@ function applyPackConfigSet(
   }
 
   // WU-2190: Detect unknown keys that Zod silently stripped during parsing.
-  // z.object() default mode strips unrecognized keys without error. We compare
-  // the normalized input against the Zod-parsed output to find any differences.
   const strippedKeys = findStrippedKeys(normalized, parseResult.data as Record<string, unknown>);
   if (strippedKeys.length > 0) {
     return {
       ok: false,
       error: `Unknown config key(s) rejected: ${strippedKeys.join(', ')}. These keys are not recognized by the ${route.rootKey} schema.`,
+    };
+  }
+
+  // Write updated pack config back into workspace
+  const updatedWorkspace = {
+    ...workspace,
+    [route.rootKey]: updatedPackConfig,
+  };
+
+  return { ok: true, config: updatedWorkspace };
+}
+
+/**
+ * Validate a pack config write using a JSON Schema object.
+ * Used for non-SD packs that declare config_schema in their manifest.
+ *
+ * This performs structural validation: checks that the dotpath corresponds
+ * to a known property in the JSON Schema. Full type validation is deferred
+ * to a future WU if needed (would require ajv or similar).
+ */
+function applyPackConfigSetWithJsonSchema(
+  workspace: Record<string, unknown>,
+  route: { rootKey: string; subPath: string; packId: string },
+  updatedPackConfig: Record<string, unknown>,
+  jsonSchema: JsonSchemaObject,
+): ConfigSetResult {
+  // Validate the subPath against the JSON Schema structure
+  const unrecognized = validateJsonSchemaPath(jsonSchema, route.subPath);
+  if (unrecognized.length > 0) {
+    return {
+      ok: false,
+      error: `Unknown config key(s) rejected for pack "${route.packId}": ${unrecognized.join(', ')}. These keys are not recognized by the ${route.rootKey} schema.`,
     };
   }
 
@@ -691,6 +830,63 @@ export function loadPackConfigKeys(
   return resolvePackManifestPaths({ projectRoot, packs });
 }
 
+/**
+ * Load pack schema options for pack-aware validation (WU-2192).
+ *
+ * Reads pack manifests to discover config_schema declarations, then loads
+ * the referenced JSON Schema files from disk. The SD pack is always marked
+ * as having a schema (its built-in Zod schema is used instead).
+ *
+ * @param projectRoot - Absolute path to project root
+ * @param workspace - Parsed workspace object
+ * @returns PackSchemaOpts for use with applyConfigSet
+ */
+export function loadPackSchemaOpts(
+  projectRoot: string,
+  workspace: Record<string, unknown>,
+): PackSchemaOpts {
+  const packs = workspace.packs;
+  const packSchemaMap = new Map<string, boolean>();
+  const jsonSchemas = new Map<string, JsonSchemaObject>();
+
+  if (!Array.isArray(packs)) {
+    return { packSchemaMap, jsonSchemas };
+  }
+
+  // The SD pack always has a schema (built-in Zod)
+  packSchemaMap.set(SD_PACK_ID, true);
+
+  const schemaMetadata = resolvePackSchemaMetadata({ projectRoot, packs });
+
+  for (const [packId, meta] of schemaMetadata) {
+    if (packId === SD_PACK_ID) {
+      // SD pack schema is built-in, already marked above
+      continue;
+    }
+
+    if (meta.hasSchema && meta.schemaPath) {
+      packSchemaMap.set(packId, true);
+
+      // Try to load the JSON Schema file
+      if (existsSync(meta.schemaPath)) {
+        try {
+          const schemaContent = readFileSync(meta.schemaPath, 'utf8');
+          const parsed = JSON.parse(schemaContent) as JsonSchemaObject;
+          jsonSchemas.set(packId, parsed);
+        } catch {
+          // Schema file exists but is unreadable/invalid
+          // packSchemaMap still says true, but jsonSchemas won't have it.
+          // applyPackConfigSet handles this case with a clear error.
+        }
+      }
+    } else {
+      packSchemaMap.set(packId, false);
+    }
+  }
+
+  return { packSchemaMap, jsonSchemas };
+}
+
 // ---------------------------------------------------------------------------
 // Main: config:set
 // ---------------------------------------------------------------------------
@@ -745,11 +941,18 @@ export async function main(): Promise<void> {
       // Read full workspace
       const workspace = readRawWorkspace(mwWorkspacePath);
 
-      // Re-load pack config keys from micro-worktree workspace
+      // Re-load pack config keys and schema opts from micro-worktree workspace
       const mwPackConfigKeys = loadPackConfigKeys(worktreePath, workspace);
+      const mwPackSchemaOpts = loadPackSchemaOpts(worktreePath, workspace);
 
-      // Apply set with workspace-aware routing
-      const result = applyConfigSet(workspace, options.key, options.value, mwPackConfigKeys);
+      // Apply set with workspace-aware routing and pack-specific validation
+      const result = applyConfigSet(
+        workspace,
+        options.key,
+        options.value,
+        mwPackConfigKeys,
+        mwPackSchemaOpts,
+      );
       if (!result.ok) {
         die(`${LOG_PREFIX} ${result.error}`);
       }

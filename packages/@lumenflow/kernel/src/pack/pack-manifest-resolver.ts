@@ -163,3 +163,94 @@ export function resolvePackManifestPaths(input: PackManifestResolverInput): Map<
 
   return result;
 }
+
+// ---------------------------------------------------------------------------
+// Pack schema metadata (WU-2192)
+// ---------------------------------------------------------------------------
+
+/**
+ * Metadata about a pack's config schema declaration.
+ *
+ * @property hasSchema - Whether the pack declares a config_schema field
+ * @property schemaPath - Absolute path to the JSON Schema file (if declared)
+ */
+export interface PackSchemaMetadata {
+  /** Whether the pack declares a config_schema field in its manifest */
+  hasSchema: boolean;
+  /** Absolute path to the JSON Schema file, if config_schema is declared */
+  schemaPath?: string;
+}
+
+/**
+ * Resolve pack schema metadata from workspace pack pins.
+ *
+ * For each pinned pack, reads the manifest to discover config_key and
+ * config_schema fields. Returns a map of pack_id -> schema metadata.
+ *
+ * This is a companion to resolvePackManifestPaths. While that function
+ * returns config_key -> pack_id, this function returns pack_id -> schema info
+ * needed for pack-aware config validation (WU-2192).
+ *
+ * @param input - Project root, pack pins, and optional cache dir override
+ * @returns Map of pack_id -> PackSchemaMetadata
+ */
+export function resolvePackSchemaMetadata(
+  input: PackManifestResolverInput,
+): Map<string, PackSchemaMetadata> {
+  const result = new Map<string, PackSchemaMetadata>();
+  const { projectRoot, packs, packCacheDir } = input;
+
+  if (!Array.isArray(packs)) {
+    return result;
+  }
+
+  const effectiveCacheDir = packCacheDir ?? DEFAULT_PACK_CACHE_DIR;
+
+  for (const pack of packs) {
+    if (!pack || typeof pack !== 'object' || !('id' in pack)) {
+      continue;
+    }
+
+    const packId = String(pack.id);
+    const manifestPath = resolveManifestPath(
+      projectRoot,
+      { ...pack, id: packId },
+      effectiveCacheDir,
+    );
+
+    if (!manifestPath || !existsSync(manifestPath)) {
+      continue;
+    }
+
+    try {
+      const manifestContent = readFileSync(manifestPath, 'utf8');
+      const manifest = YAML.parse(manifestContent) as Record<string, unknown>;
+
+      if (!manifest) continue;
+
+      const configSchema = manifest.config_schema;
+      if (typeof configSchema === 'string' && configSchema.length > 0) {
+        // config_schema is a relative path from the pack root
+        const packRoot = path.dirname(manifestPath);
+        const schemaAbsPath = path.join(packRoot, configSchema);
+        result.set(packId, { hasSchema: true, schemaPath: schemaAbsPath });
+      } else {
+        // Check if this pack has a built-in schema (e.g., SD pack)
+        // The SD pack has config_key but no config_schema file --
+        // its Zod schema is built into the CLI. Mark it as hasSchema=true
+        // so the CLI knows it can validate.
+        const configKey = manifest.config_key;
+        if (typeof configKey === 'string') {
+          // Pack has config_key but no explicit config_schema.
+          // Only the SD pack gets special treatment (built-in Zod schema).
+          // Other packs without config_schema are treated as hasSchema=false.
+          result.set(packId, { hasSchema: false });
+        }
+      }
+    } catch {
+      // Skip unreadable manifests
+    }
+  }
+
+  return result;
+}
