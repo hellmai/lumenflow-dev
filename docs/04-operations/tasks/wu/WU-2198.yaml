@@ -2,7 +2,7 @@ id: WU-2198
 title: Fix wu-done ensureMainUpToDate swallowing ProcessExitError from die()
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -49,3 +49,6 @@ session_id: cfa88a85-3208-4e6c-b01f-14425ae6c856
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-26T12:13:26.350Z
+locked: true
+completed_at: 2026-02-26T12:23:34.354Z
+completed: 2026-02-26
