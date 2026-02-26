@@ -2,7 +2,7 @@ id: WU-2210
 title: Migration remediation command missing --version and hardcodes --source local
 lane: 'Framework: Core Validation'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -49,3 +49,6 @@ session_id: 6964dd09-f119-40a7-8412-9c6caf623d02
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-26T13:56:22.617Z
+locked: true
+completed_at: 2026-02-26T14:01:38.037Z
+completed: 2026-02-26

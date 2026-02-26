@@ -2343,3 +2343,4 @@
 {"type":"claim","wuId":"WU-2207","timestamp":"2026-02-26T13:39:38.933Z","lane":"Framework: Core Lifecycle","title":"Phase 6: remove deprecated wu:done parity helper"}
 {"type":"complete","wuId":"WU-2207","timestamp":"2026-02-26T13:46:23.330Z"}
 {"type":"claim","wuId":"WU-2210","timestamp":"2026-02-26T13:56:22.661Z","lane":"Framework: Core Validation","title":"Migration remediation command missing --version and hardcodes --source local"}
+{"type":"complete","wuId":"WU-2210","timestamp":"2026-02-26T14:01:42.855Z"}

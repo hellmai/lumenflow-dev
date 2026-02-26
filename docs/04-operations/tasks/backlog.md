@@ -53,10 +53,13 @@ sections:
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
 - [WU-2208 — Remote-aware WU ID generation to prevent cross-machine collisions](wu/WU-2208.yaml) — Framework: Core Lifecycle
 - [WU-2209 — Collision-safe wu:create retry on push race](wu/WU-2209.yaml) — Framework: Core Lifecycle
+- [WU-2211 — wu:done --already-merged finalize-only mode](wu/WU-2211.yaml) — Framework: CLI WU Commands
+- [WU-2212 — Break-glass WU finalization tool (no dist dependency)](wu/WU-2212.yaml) — Operations: Tooling
+- [WU-2213 — Duplicate-ID detector and repair command](wu/WU-2213.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
-- [WU-2210 — Migration remediation command missing --version and hardcodes --source local](wu/WU-2210.yaml) — Framework: Core Validation
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1164,6 +1167,7 @@ sections:
 - [WU-2205 — Phase 5: Simplify wu:done sync checks to canonical not-behind semantics](wu/WU-2205.yaml)
 - [WU-2206 — BUG: committed dist symlinks break fresh clone build](wu/WU-2206.yaml)
 - [WU-2207 — Phase 6: remove deprecated wu:done parity helper](wu/WU-2207.yaml)
+- [WU-2210 — Migration remediation command missing --version and hardcodes --source local](wu/WU-2210.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)

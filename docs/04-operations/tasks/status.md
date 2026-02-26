@@ -4,7 +4,7 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-- [WU-2210 — Migration remediation command missing --version and hardcodes --source local](wu/WU-2210.yaml)
+(No items currently in progress)
 
 ## Completed
 
@@ -1108,3 +1108,4 @@ _Last updated: 2026-02-26_
 - [WU-2205 — Phase 5: Simplify wu:done sync checks to canonical not-behind semantics](wu/WU-2205.yaml) — 2026-02-26
 - [WU-2206 — BUG: committed dist symlinks break fresh clone build](wu/WU-2206.yaml) — 2026-02-26
 - [WU-2207 — Phase 6: remove deprecated wu:done parity helper](wu/WU-2207.yaml) — 2026-02-26
+- [WU-2210 — Migration remediation command missing --version and hardcodes --source local](wu/WU-2210.yaml) — 2026-02-26
