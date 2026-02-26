@@ -706,10 +706,10 @@ describe('WU-2192: pack-aware schema validation', () => {
       software_delivery: createMinimalSoftwareDeliveryConfig(),
       observability: {
         metrics: { enabled: true, interval: 30 },
-        tracing: { enabled: false, endpoint: 'http://localhost:4317' },
+        tracing: { enabled: false, endpoint: 'https://localhost:4317' },
       },
       analytics: {
-        dashboard_url: 'http://localhost:3000',
+        dashboard_url: 'https://localhost:3000',
       },
     };
   }
@@ -807,7 +807,7 @@ describe('WU-2192: pack-aware schema validation', () => {
     const result = applyConfigSet(
       workspace,
       'analytics.dashboard_url',
-      'http://newurl:3000',
+      'https://newurl:3000',
       MULTI_PACK_CONFIG_KEYS,
       { packSchemaMap: PACK_HAS_SCHEMA, jsonSchemas: new Map() },
     );
