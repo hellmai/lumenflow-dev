@@ -7,8 +7,6 @@ priority: P2
 created: 2026-02-26
 code_paths:
   - packages/@lumenflow/cli/src/wu-done.ts
-  - packages/@lumenflow/cli/src/wu-done-metadata.ts
-  - packages/@lumenflow/cli/src/wu-done-merge-phase.ts
 tests:
   manual:
     - Complete a WU whose code is already on main without a worktree
@@ -23,7 +21,11 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-26T14:04:02.958Z
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2211
+session_id: e4013ae0-f26b-45b2-9d01-e4f287e11263
 exposure: backend-only
 sizing_estimate:
   estimated_files: 8
@@ -31,6 +33,9 @@ sizing_estimate:
   strategy: single-session
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T14:04:02.964Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -44,11 +49,3 @@ acceptance:
   - Stamp, completion event, backlog, and status are written via micro-worktree commit
   - Re-running is idempotent (stamp already_exists is not an error)
   - Fails with clear error if code_paths are NOT on main
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2211
-claimed_at: 2026-02-26T14:04:02.958Z
-baseline_main_sha: 6515ca98f23a460e3a03d623972ccf507a69e5ea
-session_id: e4013ae0-f26b-45b2-9d01-e4f287e11263
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-26T14:04:02.964Z
