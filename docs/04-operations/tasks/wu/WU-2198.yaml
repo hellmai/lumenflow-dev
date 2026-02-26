@@ -2,7 +2,7 @@ id: WU-2198
 title: 'BUG: committed dist symlinks break fresh clone build'
 lane: 'Operations: Tooling'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -46,6 +46,6 @@ acceptance:
   - '[ ] .gitignore updated from dist/ to dist so symlinks are ignored going forward'
   - '[ ] pnpm run setup succeeds on a fresh clone (verified via git stash + reinstall simulation)'
   - '[ ] No dist symlinks appear in git status after build'
-locked: false
+locked: true
 completed_at: 2026-02-26T13:09:45.878Z
 completed: 2026-02-26
