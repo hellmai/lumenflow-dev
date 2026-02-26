@@ -738,12 +738,7 @@ describe('WU-2195: control_plane validates against kernel schema (cloud shape)',
 
   it('preserves existing cloud fields when writing a single sub-key', () => {
     const workspace = createCloudConnectedWorkspace();
-    const result = applyConfigSet(
-      workspace,
-      'control_plane.sync_interval',
-      '60',
-      PACK_CONFIG_KEYS,
-    );
+    const result = applyConfigSet(workspace, 'control_plane.sync_interval', '60', PACK_CONFIG_KEYS);
     expect(result.ok).toBe(true);
     // project_id and auth should be preserved
     expect(getConfigValue(result.config!, 'control_plane.project_id')).toBe('proj-456');
@@ -754,12 +749,7 @@ describe('WU-2195: control_plane validates against kernel schema (cloud shape)',
   it('rejects core-only fields that do not exist in kernel schema (enabled, local_override)', () => {
     const workspace = createCloudConnectedWorkspace();
     // 'enabled' exists in core schema but NOT in kernel schema
-    const result = applyConfigSet(
-      workspace,
-      'control_plane.enabled',
-      'true',
-      PACK_CONFIG_KEYS,
-    );
+    const result = applyConfigSet(workspace, 'control_plane.enabled', 'true', PACK_CONFIG_KEYS);
     expect(result.ok).toBe(false);
     expect(result.error).toBeDefined();
   });
