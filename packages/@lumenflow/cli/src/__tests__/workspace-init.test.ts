@@ -52,7 +52,6 @@ describe('workspace:init command', () => {
       expect(config).toBeDefined();
       expect(config.id).toBe('default');
       expect(config.name).toBe('My Project');
-      expect(config.packs).toEqual([]);
       expect(config.lanes).toHaveLength(1);
       expect(config.lanes[0].id).toBe('default');
       expect(config.lanes[0].title).toBe('Default');
@@ -61,6 +60,31 @@ describe('workspace:init command', () => {
       expect(config.security.deny_overlays).toEqual(['~/.ssh', '~/.aws', '~/.gnupg', '.env']);
       expect(config.memory_namespace).toBe('default');
       expect(config.event_namespace).toBe('default');
+    });
+
+    it('should pin software-delivery pack by default (WU-2193)', async () => {
+      const { getDefaultWorkspaceConfig } = await import('../workspace-init.js');
+
+      const config = getDefaultWorkspaceConfig();
+
+      expect(config.packs).toHaveLength(1);
+      const sdPin = config.packs[0];
+      expect(sdPin.id).toBe('software-delivery');
+      expect(sdPin.version).toMatch(/^\d+\.\d+\.\d+$/);
+      expect(sdPin.integrity).toBe('dev');
+      expect(sdPin.source).toBe('local');
+    });
+
+    it('should have consistent pack pin and software_delivery config (WU-2193)', async () => {
+      const { getDefaultWorkspaceConfig } = await import('../workspace-init.js');
+
+      const config = getDefaultWorkspaceConfig();
+
+      // If software_delivery config exists, the pack must be pinned
+      const hasSdConfig = config.software_delivery !== undefined;
+      const hasSdPack = config.packs.some((p) => p.id === 'software-delivery');
+      expect(hasSdConfig).toBe(true);
+      expect(hasSdPack).toBe(true);
     });
 
     it('should produce config that validates against WorkspaceSpecSchema', async () => {
@@ -111,6 +135,21 @@ describe('workspace:init command', () => {
       expect(result.success).toBe(true);
     });
 
+    it('should pin software-delivery pack by default (WU-2193)', async () => {
+      const { buildWorkspaceConfig } = await import('../workspace-init.js');
+
+      const config = buildWorkspaceConfig({
+        projectName: 'test-project',
+        lanes: ['Ops'],
+        sandboxProfile: 'off',
+        deniedPaths: [],
+        cloudConnect: false,
+      });
+
+      expect(config.packs).toHaveLength(1);
+      expect(config.packs[0].id).toBe('software-delivery');
+    });
+
     it('should normalize lane names to kebab-case IDs', async () => {
       const { buildWorkspaceConfig } = await import('../workspace-init.js');
 
@@ -146,6 +185,19 @@ describe('workspace:init command', () => {
       expect(yamlContent).toContain('# Security configuration');
       expect(yamlContent).toContain('# Network access');
       expect(yamlContent).toContain('# Paths denied');
+    });
+
+    it('should include software-delivery pack pin in generated YAML (WU-2193)', async () => {
+      const { generateWorkspaceYaml, getDefaultWorkspaceConfig } =
+        await import('../workspace-init.js');
+
+      const config = getDefaultWorkspaceConfig();
+      const yamlContent = generateWorkspaceYaml(config);
+      const parsed = YAML.parse(yamlContent);
+
+      expect(parsed.packs).toHaveLength(1);
+      expect(parsed.packs[0].id).toBe('software-delivery');
+      expect(parsed.packs[0].source).toBe('local');
     });
 
     it('should produce valid YAML that can be parsed back', async () => {

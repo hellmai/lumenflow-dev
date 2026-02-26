@@ -18,7 +18,7 @@
 import * as readline from 'node:readline';
 import * as path from 'node:path';
 import YAML from 'yaml';
-import type { WorkspaceSpec } from '@lumenflow/kernel';
+import type { PackPin, WorkspaceSpec } from '@lumenflow/kernel';
 import { WORKSPACE_CONFIG_FILE_NAME } from '@lumenflow/core/config';
 import { createFile, type ScaffoldResult } from './init-scaffolding.js';
 import { runCLI } from './cli-entry-point.js';
@@ -55,10 +55,34 @@ const CLOUD_CONNECT_TRUTHY = new Set<string>([
   CLOUD_CONNECT_RESPONSE.SHORT_YES,
   CLOUD_CONNECT_RESPONSE.BOOLEAN_TRUE,
 ]);
+/**
+ * Well-known pack constants for the software-delivery pack.
+ * These mirror the canonical values in packages/@lumenflow/packs/software-delivery/constants.ts.
+ * WU-2193: Used to auto-pin SD pack in default workspace configuration.
+ */
+const SD_PACK_ID = 'software-delivery' as const;
+const SD_PACK_VERSION = '0.1.0' as const;
+
 const EMPTY_SOFTWARE_DELIVERY_CONFIG: WorkspaceSpec['software_delivery'] = Object.freeze({});
 
 function createEmptySoftwareDeliveryConfig(): WorkspaceSpec['software_delivery'] {
   return { ...EMPTY_SOFTWARE_DELIVERY_CONFIG };
+}
+
+/**
+ * Default pack pin for the software-delivery pack.
+ * WU-2193: Pinned by default so the software_delivery config block
+ * is always backed by an explicitly pinned pack.
+ */
+export const DEFAULT_SOFTWARE_DELIVERY_PACK_PIN: PackPin = Object.freeze({
+  id: SD_PACK_ID,
+  version: SD_PACK_VERSION,
+  integrity: 'dev' as const,
+  source: 'local' as const,
+});
+
+function createDefaultPackPins(): PackPin[] {
+  return [{ ...DEFAULT_SOFTWARE_DELIVERY_PACK_PIN }];
 }
 
 // --- Question definitions ---
@@ -171,7 +195,7 @@ export function getDefaultWorkspaceConfig(): WorkspaceSpec {
   return {
     id: DEFAULT_WORKSPACE_ID,
     name: DEFAULT_WORKSPACE_NAME,
-    packs: [],
+    packs: createDefaultPackPins(),
     lanes: [
       {
         id: DEFAULT_WORKSPACE_ID,
@@ -204,7 +228,7 @@ export function buildWorkspaceConfig(input: WorkspaceConfigInput): WorkspaceSpec
   return {
     id: toKebabCase(input.projectName),
     name: input.projectName,
-    packs: [],
+    packs: createDefaultPackPins(),
     lanes,
     policies: {},
     security: {
@@ -239,7 +263,17 @@ export function generateWorkspaceYaml(config: WorkspaceSpec): string {
   lines.push('');
   lines.push('# Domain packs - plugins that add tools, policies, and task types');
   lines.push('# Add packs with: pnpm pack:install --id <pack-id>');
-  lines.push(`packs: ${YAML.stringify(config.packs).trim()}`);
+  if (config.packs.length === 0) {
+    lines.push('packs: []');
+  } else {
+    lines.push('packs:');
+    for (const pack of config.packs) {
+      lines.push(`  - id: ${YAML.stringify(pack.id).trim()}`);
+      lines.push(`    version: ${YAML.stringify(pack.version).trim()}`);
+      lines.push(`    integrity: ${YAML.stringify(pack.integrity).trim()}`);
+      lines.push(`    source: ${YAML.stringify(pack.source).trim()}`);
+    }
+  }
   lines.push('');
   lines.push('# Work lanes - partitions for parallel work streams');
   lines.push('# Each lane has an ID, title, and optional scope restrictions');
