@@ -2,7 +2,7 @@ id: WU-2192
 title: Validate pack-scoped config:set writes using pack-declared config_schema
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -50,3 +50,6 @@ acceptance:
   - Unknown/invalid keys for a pack are rejected according to that pack schema
   - Unit tests cover schema-based validation for software_delivery and at least one non-SD pack
     fixture
+locked: true
+completed_at: 2026-02-26T11:30:56.787Z
+completed: 2026-02-26

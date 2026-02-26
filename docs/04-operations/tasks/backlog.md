@@ -51,7 +51,7 @@ sections:
 
 ## 🔧 In progress
 
-- [WU-2192 — Validate pack-scoped config:set writes using pack-declared config_schema](wu/WU-2192.yaml) — Framework: CLI WU Commands
+(No items currently in progress)
 
 ## ⛔ Blocked
 
@@ -1145,6 +1145,7 @@ sections:
 - [WU-2194 — Remove redundant ensureMainUpToDate pre-flight checks from micro-worktree commands](wu/WU-2194.yaml)
 - [WU-2191 — Extract shared pack manifest resolution for config commands](wu/WU-2191.yaml)
 - [WU-2193 — Align workspace-init defaults with pack pinning semantics](wu/WU-2193.yaml)
+- [WU-2192 — Validate pack-scoped config:set writes using pack-declared config_schema](wu/WU-2192.yaml)
 - [WU-1489 — Fix pre-existing lane-lock test regressions blocking gates](wu/WU-1489.yaml)
 - [WU-1669 — Fix pre-existing test failures: cli-flag-verification snapshots and MCP timeout](wu/WU-1669.yaml)
 - [WU-1670 — Fix flaky test timeouts in gates-graceful-degradation and wu-prep-default-exec tests](wu/WU-1670.yaml)
