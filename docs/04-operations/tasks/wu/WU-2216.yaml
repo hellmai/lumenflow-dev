@@ -9,7 +9,10 @@ code_paths:
   - packages/@lumenflow/kernel/src/runtime/kernel-runtime.ts
   - packages/@lumenflow/kernel/src/kernel.schemas.ts
 tests:
-  manual: []
+  manual:
+    - Create legacy workspace with software_delivery + no SD pin and verify runtime error includes
+      concrete --version from available manifest
+    - Simulate unavailable manifest and verify remediation falls back to --version latest
   unit:
     - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
     - packages/@lumenflow/kernel/src/__tests__/kernel.schemas.test.ts
@@ -27,8 +30,13 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: validateWorkspaceRootKeys now supports availableManifests for migration remediation version lookup, but initializeKernelRuntime currently only passes pinned manifests. In legacy workspaces (software_delivery present, SD not pinned), the runtime path falls back to --version latest instead of a concrete manifest version. Wire runtime to supply available manifests and add integration coverage so runtime error messages use manifest-derived versions.
+description: validateWorkspaceRootKeys now supports availableManifests for migration remediation
+  version lookup, but initializeKernelRuntime currently only passes pinned manifests. In legacy
+  workspaces (software_delivery present, SD not pinned), the runtime path falls back to --version
+  latest instead of a concrete manifest version. Wire runtime to supply available manifests and add
+  integration coverage so runtime error messages use manifest-derived versions.
 acceptance:
   - initializeKernelRuntime passes available manifests into validateWorkspaceRootKeys
-  - Legacy workspace remediation message includes concrete SD version from manifest instead of --version latest
+  - Legacy workspace remediation message includes concrete SD version from manifest instead of
+    --version latest
   - Runtime tests cover both resolved-version and fallback behavior when manifest is unavailable
