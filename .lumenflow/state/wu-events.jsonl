@@ -2371,3 +2371,4 @@
 {"type":"claim","wuId":"WU-2219","timestamp":"2026-02-26T16:19:28.083Z","lane":"Framework: CLI WU Commands","title":"Release script regression: restore micro-worktree isolation (WU-1077 regression)"}
 {"type":"checkpoint","wuId":"WU-2219","timestamp":"2026-02-26T16:20:19.706Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"checkpoint","wuId":"WU-2219","timestamp":"2026-02-26T16:20:33.970Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"checkpoint","wuId":"WU-2219","timestamp":"2026-02-26T16:24:06.506Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}

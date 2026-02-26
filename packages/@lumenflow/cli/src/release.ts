@@ -41,11 +41,12 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
 import { homedir } from 'node:os';
-import { execFileSync, execSync } from 'node:child_process';
+import { execSync } from 'node:child_process';
 import { getGitForCwd } from '@lumenflow/core/git-adapter';
 import { die, createError, ErrorCodes } from '@lumenflow/core/error-handler';
 import { ensureOnMain } from '@lumenflow/core/wu-helpers';
 import { REMOTES, FILE_SYSTEM, PKG_MANAGER } from '@lumenflow/core/wu-constants';
+import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { runCLI } from './cli-entry-point.js';
 
 /** Log prefix for console output */
@@ -165,6 +166,22 @@ const LUMENFLOW_WU_TOOL_ENV = 'LUMENFLOW_WU_TOOL';
  * Added to ALLOWED_WU_TOOLS in pre-push.mjs
  */
 export const RELEASE_WU_TOOL = 'release';
+
+/**
+ * Operation name for micro-worktree isolation (WU-2219)
+ * Used as the operation identifier when creating the micro-worktree.
+ */
+export const RELEASE_OPERATION_NAME = 'release';
+
+/**
+ * Build a micro-worktree ID from a release version (WU-2219)
+ *
+ * @param version - Semver version string (e.g., "1.3.0")
+ * @returns ID string for micro-worktree (e.g., "v1.3.0")
+ */
+export function buildReleaseWorktreeId(version: string): string {
+  return buildTagName(version);
+}
 
 /**
  * Execute a function with LUMENFLOW_WU_TOOL set to 'release' (WU-1296)
@@ -1085,54 +1102,194 @@ export function removeMaterializedDistDirs(packageDirs: string[]): void {
   }
 }
 
-async function cleanupFailedRelease(packageDirs: string[]): Promise<void> {
-  console.error(`\n${LOG_PREFIX} ⚠️  Release failed — cleaning up artifacts on main...`);
+/**
+ * Execute the release flow inside a micro-worktree (WU-2219).
+ *
+ * All file writes (version bumps, build artifacts, formatting) happen inside
+ * a temporary micro-worktree. The main checkout is never modified. On failure,
+ * the micro-worktree is cleaned up automatically by withMicroWorktree, leaving
+ * main completely untouched.
+ *
+ * Flow:
+ * 1. Pre-flight checks on main (read-only: validate version, check auth)
+ * 2. withMicroWorktree: version bump, build, validate, publish, commit
+ * 3. Tag creation and push (after micro-worktree merges to main)
+ *
+ * @param opts - Release options (version, dryRun, skipPublish, skipBuild)
+ */
+export async function executeReleaseInMicroWorktree(opts: ReleaseOptions): Promise<void> {
+  const { releaseVersion: version, dryRun, skipPublish, skipBuild } = opts;
+  const mainCwd = process.cwd();
 
-  try {
-    // 1. Remove materialized dist directories so git can restore symlinks.
-    removeMaterializedDistDirs(packageDirs);
+  console.log(`${LOG_PREFIX} Using micro-worktree isolation (WU-2219, restoring WU-1077)`);
 
-    // 2. Remove untracked generated files (e.g., packs/ from prepack lifecycle scripts).
-    //    These are created by sync-bundled-packs.mjs during pack --dry-run but may not
-    //    be cleaned up if the release script fails before postpack runs.
-    for (const packageDir of packageDirs) {
-      const packsDir = join(packageDir, 'packs');
-      if (existsSync(packsDir)) {
-        rmSync(packsDir, { recursive: true, force: true });
-        const relativePath = packsDir.replace(`${process.cwd()}/`, '');
-        console.error(`${LOG_PREFIX}   Removed generated ${relativePath}`);
-      }
-    }
-
-    // 3. Restore all tracked files to HEAD state (dist symlinks + package.json versions).
-    //    WU-2066: Must reset index first — version bumps may be staged via git add.
-    //    git checkout -- . only restores working tree from index, not from HEAD.
-    const git = getGitForCwd();
-    await git.raw(['reset', 'HEAD', '--', '.']);
-    await git.raw(['checkout', '--', '.']);
-
-    // 4. Reinstall dependencies to restore workspace symlinks.
-    //    WU-2063: git checkout -- . can change package.json files and dist symlinks,
-    //    which invalidates pnpm's link state. Running pnpm install ensures
-    //    workspace package links in node_modules/ are consistent.
-    console.error(`${LOG_PREFIX}   Restoring workspace links...`);
-    execFileSync(PKG_MANAGER, ['install'], {
-      cwd: process.cwd(),
-      stdio: 'inherit',
-      encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
-    });
-
-    console.error(`${LOG_PREFIX} ✅ Cleanup complete — main is clean`);
-  } catch (cleanupError) {
-    const message = cleanupError instanceof Error ? cleanupError.message : String(cleanupError);
-    console.error(`${LOG_PREFIX} ⚠️  Automatic cleanup failed: ${message}`);
-    console.error(`${LOG_PREFIX}   Manual recovery: git checkout -- . && git clean -fd`);
+  // ── Pre-flight (read-only on main) ──────────────────────────────────
+  // Find packages before entering micro-worktree so we know what to modify.
+  const mainPackagePaths = findPackageJsonPaths(mainCwd);
+  if (mainPackagePaths.length === 0) {
+    die(`No @lumenflow/* packages found in ${LUMENFLOW_PACKAGES_DIR}`);
   }
+
+  console.log(`${LOG_PREFIX} Found ${mainPackagePaths.length} packages to update:`);
+  for (const p of mainPackagePaths) {
+    console.log(`  - ${p.replace(mainCwd + '/', '')}`);
+  }
+
+  // Check npm authentication for publish (read-only env check)
+  if (!skipPublish && !dryRun && !hasNpmAuth()) {
+    die(
+      `npm authentication not found.\n\n` +
+        `Set one of these environment variables:\n` +
+        `  export NPM_TOKEN=<your-npm-token>\n` +
+        `  export NODE_AUTH_TOKEN=<your-npm-token>\n\n` +
+        `Get a token at: https://www.npmjs.com/settings/tokens\n` +
+        `Or use --skip-publish to only bump versions and create tag.`,
+    );
+  }
+
+  if (dryRun) {
+    // Dry-run: show what would happen, no micro-worktree needed
+    console.log(`${LOG_PREFIX} Would update ${mainPackagePaths.length} package versions`);
+    console.log(`${LOG_PREFIX} Would update ${VERSION_POLICY_RELATIVE_PATH}`);
+    if (!skipBuild) {
+      console.log(`${LOG_PREFIX} Would build packages`);
+    }
+    if (!skipPublish) {
+      console.log(`${LOG_PREFIX} Would validate packed artifacts`);
+      console.log(`${LOG_PREFIX} Would publish packages to npm`);
+    }
+    console.log(`${LOG_PREFIX} Would commit: ${buildCommitMessage(version)}`);
+    console.log(`${LOG_PREFIX} Would create tag: ${buildTagName(version)}`);
+    console.log(`${LOG_PREFIX} Would push to ${REMOTES.ORIGIN} via micro-worktree`);
+
+    console.log(`\n${LOG_PREFIX} DRY RUN complete`);
+    console.log(`  - Run without --dry-run to execute the release`);
+    return;
+  }
+
+  // Exit changeset pre mode if active (read-only check, write to micro-worktree)
+  const changesetPreActive = isInChangesetPreMode(mainCwd);
+
+  // ── Micro-worktree: all writes happen here ──────────────────────────
+  await withReleaseEnv(async () => {
+    await withMicroWorktree({
+      operation: RELEASE_OPERATION_NAME,
+      id: buildReleaseWorktreeId(version),
+      logPrefix: LOG_PREFIX,
+      execute: async ({ worktreePath, gitWorktree }) => {
+        // Resolve package paths relative to micro-worktree
+        const worktreePackagePaths = findPackageJsonPaths(worktreePath);
+        const worktreePackageDirs = worktreePackagePaths.map((path) => dirname(path));
+
+        // Exit changeset pre mode in micro-worktree if it was active on main
+        if (changesetPreActive) {
+          console.log(`${LOG_PREFIX} Detected changeset pre-release mode, exiting...`);
+          exitChangesetPreMode(worktreePath);
+          console.log(`${LOG_PREFIX} ✅ Exited changeset pre mode`);
+        }
+
+        // Phase 1: Materialize dist symlinks and build
+        const distPreparation = ensureDistPathsMaterialized(worktreePackageDirs, {
+          skipBuild,
+          dryRun: false,
+        });
+        if (distPreparation.materializedCount > 0) {
+          console.log(
+            `${LOG_PREFIX} [${PRE_FLIGHT_LABEL}] Materialized ${distPreparation.materializedCount} symlinked dist directories`,
+          );
+        }
+
+        if (!skipBuild) {
+          runCommand(`${PKG_MANAGER} build`, { label: 'build', cwd: worktreePath });
+          console.log(`${LOG_PREFIX} ✅ Build complete`);
+        } else {
+          console.log(`${LOG_PREFIX} Skipping build (--skip-build)`);
+        }
+
+        // Phase 2: Version bump (inside micro-worktree)
+        console.log(`${LOG_PREFIX} Bumping versions to ${version}...`);
+        await updatePackageVersions(worktreePackagePaths, version);
+        const versionPolicyPath = await updateVersionPolicy(version, worktreePath);
+        if (versionPolicyPath) {
+          console.log(`${LOG_PREFIX} ✅ Updated ${VERSION_POLICY_RELATIVE_PATH}`);
+        }
+        console.log(`${LOG_PREFIX} ✅ Versions updated to ${version}`);
+
+        // Phase 3: Validate packed artifacts (after version bump, before publish)
+        if (!skipPublish) {
+          validateReleaseArtifactsForPublish(worktreePackagePaths, false);
+        }
+
+        // Phase 4: Publish to npm (from micro-worktree)
+        if (!skipPublish) {
+          console.log(`${LOG_PREFIX} Publishing packages to npm...`);
+          runCommand(`${PKG_MANAGER} -r publish --access public --no-git-checks`, {
+            label: 'publish',
+            cwd: worktreePath,
+          });
+          console.log(`${LOG_PREFIX} ✅ Packages published to npm`);
+        } else {
+          console.log(`${LOG_PREFIX} Skipping npm publish (--skip-publish)`);
+        }
+
+        // Build list of modified files for commit
+        const relativePaths = worktreePackagePaths.map((p) => p.replace(worktreePath + '/', ''));
+
+        // Include version-policy.yaml if it exists
+        if (existsSync(join(worktreePath, VERSION_POLICY_RELATIVE_PATH))) {
+          relativePaths.push(VERSION_POLICY_RELATIVE_PATH);
+        }
+
+        // Include changeset pre.json removal if applicable
+        if (changesetPreActive) {
+          const changesetPrePath = join(CHANGESET_DIR, CHANGESET_PRE_JSON);
+          relativePaths.push(changesetPrePath);
+        }
+
+        return {
+          commitMessage: buildCommitMessage(version),
+          files: relativePaths,
+        };
+      },
+    });
+  });
+
+  // ── Post micro-worktree: tag and push tag ─────────────────────────
+  // The micro-worktree has already merged the version bump commit to main
+  // and pushed to origin. Now create and push the git tag.
+  const tagName = buildTagName(version);
+  const mainGit = getGitForCwd();
+
+  console.log(`${LOG_PREFIX} Creating tag ${tagName}...`);
+  await mainGit.raw(['tag', '-a', tagName, '-m', `Release ${tagName}`]);
+  console.log(`${LOG_PREFIX} ✅ Tag created: ${tagName}`);
+
+  console.log(`${LOG_PREFIX} Pushing tag ${tagName}...`);
+  await pushTagWithForce(mainGit, tagName);
+  console.log(`${LOG_PREFIX} ✅ Tag pushed to ${REMOTES.ORIGIN}`);
+
+  // Summary
+  console.log(`\n${LOG_PREFIX} Release complete!`);
+  console.log(`${LOG_PREFIX} Version: ${version}`);
+  console.log(`${LOG_PREFIX} Tag: ${tagName}`);
+  if (!skipPublish) {
+    console.log(`${LOG_PREFIX} npm: https://www.npmjs.com/org/lumenflow`);
+  }
+
+  console.log(`\n${LOG_PREFIX} Next steps:`);
+  console.log(
+    `  - Create GitHub release: gh release create ${tagName} --title "Release ${tagName}"`,
+  );
+  if (skipPublish) {
+    console.log(`  - Publish to npm: ${PKG_MANAGER} -r publish --access public --no-git-checks`);
+  }
+  console.log(`  - Verify packages: npm view @lumenflow/cli version`);
 }
 
 /**
  * Main release function
  * WU-1085: Renamed --version to --release-version to avoid conflict with CLI --version flag
+ * WU-2219: Refactored to use micro-worktree isolation for all writes
  */
 export async function main(): Promise<void> {
   const program = new Command()
@@ -1147,9 +1304,7 @@ export async function main(): Promise<void> {
 
   program.parse();
   const opts = program.opts() as ReleaseOptions;
-
-  // WU-1085: Use releaseVersion instead of version (renamed to avoid CLI --version conflict)
-  const { releaseVersion: version, dryRun, skipPublish, skipBuild } = opts;
+  const { releaseVersion: version, dryRun } = opts;
 
   console.log(`${LOG_PREFIX} Starting release process for v${version}`);
   if (dryRun) {
@@ -1169,216 +1324,11 @@ export async function main(): Promise<void> {
   const git = getGitForCwd();
   await ensureOnMain(git);
 
-  // Check for uncommitted changes
+  // Check for uncommitted changes on main before starting
   await assertWorkingTreeClean(git, RELEASE_CLEAN_CHECK_PHASE_BEFORE_RELEASE);
 
-  // Find all @lumenflow/* packages to update
-  const packagePaths = findPackageJsonPaths();
-  if (packagePaths.length === 0) {
-    die(`No @lumenflow/* packages found in ${LUMENFLOW_PACKAGES_DIR}`);
-  }
-
-  console.log(`${LOG_PREFIX} Found ${packagePaths.length} packages to update:`);
-  for (const p of packagePaths) {
-    console.log(`  - ${p.replace(process.cwd() + '/', '')}`);
-  }
-  const packageDirs = packagePaths.map((path) => dirname(path));
-
-  // Check npm authentication for publish
-  if (!skipPublish && !dryRun && !hasNpmAuth()) {
-    die(
-      `npm authentication not found.\n\n` +
-        `Set one of these environment variables:\n` +
-        `  export NPM_TOKEN=<your-npm-token>\n` +
-        `  export NODE_AUTH_TOKEN=<your-npm-token>\n\n` +
-        `Get a token at: https://www.npmjs.com/settings/tokens\n` +
-        `Or use --skip-publish to only bump versions and create tag.`,
-    );
-  }
-
-  // Exit changeset pre mode if active
-  if (isInChangesetPreMode()) {
-    if (dryRun) {
-      console.log(`${LOG_PREFIX} Would exit changeset pre-release mode`);
-    } else {
-      console.log(`${LOG_PREFIX} Detected changeset pre-release mode, exiting...`);
-      exitChangesetPreMode();
-      console.log(`${LOG_PREFIX} ✅ Exited changeset pre mode`);
-    }
-  }
-
-  // WU-2062: Wrap all release phases in try/finally to ensure main is never
-  // left dirty. If anything fails before npm publish, cleanup restores main
-  // to its pre-release state. If npm publish succeeded but git push failed,
-  // we print manual recovery instructions instead of undoing the publish.
-  let npmPublished = false;
-  let releaseComplete = false;
-
-  try {
-    // ── Phase 1: Build & Validate (no writes to origin) ────────────────
-    // WU-2061: Build and validate BEFORE bumping versions or pushing anything.
-    // If any step here fails, main is untouched.
-
-    // Materialize symlinked dist directories for reliable pack/publish
-    const distPreparation = ensureDistPathsMaterialized(packageDirs, { skipBuild, dryRun });
-    if (distPreparation.checkedCount > 0 && !dryRun && distPreparation.materializedCount > 0) {
-      console.log(
-        `${LOG_PREFIX} [${PRE_FLIGHT_LABEL}] Materialized ${distPreparation.materializedCount} symlinked dist directories`,
-      );
-    }
-
-    if (!skipBuild) {
-      runCommand(`${PKG_MANAGER} build`, { dryRun, label: 'build' });
-      console.log(`${LOG_PREFIX} ✅ Build complete`);
-    } else {
-      console.log(`${LOG_PREFIX} Skipping build (--skip-build)`);
-    }
-
-    if (!skipPublish) {
-      validateReleaseArtifactsForPublish(packagePaths, Boolean(dryRun));
-    } else if (dryRun) {
-      console.log(
-        `${LOG_PREFIX} [${PACK_VALIDATE_LABEL}] Would skip artifact validation (--skip-publish)`,
-      );
-    }
-
-    // ── Phase 2: Version bump (local only, no push yet) ────────────────
-    // WU-2061: Bump versions locally on main. No micro-worktree needed — if
-    // anything fails after this, cleanup restores package.json files.
-    console.log(`${LOG_PREFIX} Bumping versions to ${version}...`);
-    if (dryRun) {
-      console.log(`${LOG_PREFIX} Would update ${packagePaths.length} package versions`);
-      console.log(`${LOG_PREFIX} Would update ${VERSION_POLICY_RELATIVE_PATH}`);
-      console.log(`${LOG_PREFIX} Would commit: ${buildCommitMessage(version)}`);
-    } else {
-      await updatePackageVersions(packagePaths, version);
-      const versionPolicyPath = await updateVersionPolicy(version);
-      if (versionPolicyPath) {
-        console.log(`${LOG_PREFIX} ✅ Updated ${VERSION_POLICY_RELATIVE_PATH}`);
-      }
-      console.log(`${LOG_PREFIX} ✅ Versions updated to ${version}`);
-    }
-
-    // ── Phase 3: Publish to npm ────────────────────────────────────────
-    // Publish BEFORE committing to git. If publish fails, cleanup restores
-    // package.json files and main stays clean.
-    if (!skipPublish) {
-      if (dryRun) {
-        console.log(`${LOG_PREFIX} Would publish packages to npm`);
-      } else {
-        console.log(`${LOG_PREFIX} Publishing packages to npm...`);
-        runCommand(`${PKG_MANAGER} -r publish --access public --no-git-checks`, {
-          label: 'publish',
-        });
-        npmPublished = true;
-        console.log(`${LOG_PREFIX} ✅ Packages published to npm`);
-      }
-    } else {
-      console.log(`${LOG_PREFIX} Skipping npm publish (--skip-publish)`);
-    }
-
-    // ── Phase 4: Commit, tag, push (only after everything succeeds) ────
-    // WU-2061: This is the point of no return. Build passed, validation
-    // passed, npm publish succeeded. Now commit the version bump to main.
-    const tagName = buildTagName(version);
-    if (dryRun) {
-      console.log(`${LOG_PREFIX} Would commit: ${buildCommitMessage(version)}`);
-      console.log(`${LOG_PREFIX} Would create tag: ${tagName}`);
-      console.log(`${LOG_PREFIX} Would push to ${REMOTES.ORIGIN}`);
-    } else {
-      // Format changed files before committing
-      const relativePaths = packagePaths.map((p) => p.replace(process.cwd() + '/', ''));
-
-      // WU-2107: Include version-policy.yaml in commit if it was updated
-      const versionPolicyAbsPath = join(process.cwd(), VERSION_POLICY_RELATIVE_PATH);
-      if (existsSync(versionPolicyAbsPath)) {
-        relativePaths.push(VERSION_POLICY_RELATIVE_PATH);
-      }
-
-      runCommand(`${PKG_MANAGER} prettier --write ${relativePaths.join(' ')}`, {
-        label: 'format',
-      });
-
-      // Stage, commit, tag, and push — all under release env (WU-2066)
-      // The release env var bypasses worktree discipline and pre-push hooks
-      await withReleaseEnv(async () => {
-        await git.add(relativePaths);
-        await git.commit(buildCommitMessage(version));
-        console.log(`${LOG_PREFIX} ✅ Committed: ${buildCommitMessage(version)}`);
-
-        console.log(`${LOG_PREFIX} Creating tag ${tagName}...`);
-        await git.raw(['tag', '-a', tagName, '-m', `Release ${tagName}`]);
-        console.log(`${LOG_PREFIX} ✅ Tag created: ${tagName}`);
-
-        console.log(`${LOG_PREFIX} Pushing to ${REMOTES.ORIGIN}...`);
-        await git.push(REMOTES.ORIGIN, 'main');
-        await git.push(REMOTES.ORIGIN, tagName);
-      });
-      console.log(`${LOG_PREFIX} ✅ Pushed to ${REMOTES.ORIGIN}`);
-    }
-
-    releaseComplete = true;
-
-    // WU-2086: Restore dist symlinks after successful release.
-    // The preflight step materialized symlinks into real dirs for build/publish.
-    // Now that the commit is pushed, restore them so git status is clean.
-    if (!dryRun) {
-      removeMaterializedDistDirs(packageDirs);
-      const git = getGitForCwd();
-      await git.raw(['checkout', '--', '.']);
-      execFileSync(PKG_MANAGER, ['install'], {
-        cwd: process.cwd(),
-        stdio: 'pipe',
-        encoding: FILE_SYSTEM.ENCODING as BufferEncoding,
-      });
-    }
-
-    // Summary
-    console.log(`\n${LOG_PREFIX} 🎉 Release complete!`);
-    console.log(`${LOG_PREFIX} Version: ${version}`);
-    console.log(`${LOG_PREFIX} Tag: ${tagName}`);
-    if (!skipPublish && !dryRun) {
-      console.log(`${LOG_PREFIX} npm: https://www.npmjs.com/org/lumenflow`);
-    }
-
-    console.log(`\n${LOG_PREFIX} Next steps:`);
-    if (dryRun) {
-      console.log(`  - Run without --dry-run to execute the release`);
-    } else {
-      console.log(
-        `  - Create GitHub release: gh release create ${tagName} --title "Release ${tagName}"`,
-      );
-      if (skipPublish) {
-        console.log(
-          `  - Publish to npm: ${PKG_MANAGER} -r publish --access public --no-git-checks`,
-        );
-      }
-      console.log(`  - Verify packages: npm view @lumenflow/cli version`);
-    }
-  } finally {
-    // WU-2062: Cleanup on failure — never leave main dirty
-    if (!releaseComplete && !dryRun) {
-      if (!npmPublished) {
-        // Nothing reached npm — safe to fully restore main
-        await cleanupFailedRelease(packageDirs);
-      } else {
-        // npm packages are published but git commit/push failed.
-        // Do NOT undo the version bump — the published packages reference this version.
-        console.error(`\n${LOG_PREFIX} ⚠️  npm publish succeeded but git commit/push failed.`);
-        console.error(`${LOG_PREFIX}   The version bump is still in your working tree.`);
-        console.error(`${LOG_PREFIX}   To complete manually:`);
-        console.error(
-          `${LOG_PREFIX}     git add -A && git commit -m "${buildCommitMessage(version)}"`,
-        );
-        console.error(
-          `${LOG_PREFIX}     git tag -a ${buildTagName(version)} -m "Release ${buildTagName(version)}"`,
-        );
-        console.error(
-          `${LOG_PREFIX}     LUMENFLOW_WU_TOOL=release git push origin main ${buildTagName(version)}`,
-        );
-      }
-    }
-  }
+  // WU-2219: Delegate to micro-worktree based release flow
+  await executeReleaseInMicroWorktree(opts);
 }
 
 // Guard main() for testability

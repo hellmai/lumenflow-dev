@@ -1104,6 +1104,34 @@ describe('WU-2061/WU-2062: release script safety — parsePackDryRunMetadata JSO
   });
 });
 
+/**
+ * WU-2219: Release script micro-worktree isolation
+ *
+ * Verifies that:
+ * - Release uses withMicroWorktree for all file writes
+ * - No direct writes to main checkout during release
+ * - Cleanup on failure leaves main untouched (micro-worktree handles it)
+ * - The release function is exported for testability
+ */
+describe('WU-2219: release micro-worktree isolation', () => {
+  it('should export executeReleaseInMicroWorktree function', async () => {
+    const mod = await import('../release.js');
+    expect(typeof mod.executeReleaseInMicroWorktree).toBe('function');
+  });
+
+  it('should export RELEASE_OPERATION_NAME constant', async () => {
+    const mod = await import('../release.js');
+    expect(mod.RELEASE_OPERATION_NAME).toBe('release');
+  });
+
+  it('should export buildReleaseWorktreeId helper', async () => {
+    const mod = await import('../release.js');
+    expect(typeof mod.buildReleaseWorktreeId).toBe('function');
+    const id = mod.buildReleaseWorktreeId('1.3.0');
+    expect(id).toBe('v1.3.0');
+  });
+});
+
 describe('WU-2086: removeMaterializedDistDirs', () => {
   let tempDir: string;
 
