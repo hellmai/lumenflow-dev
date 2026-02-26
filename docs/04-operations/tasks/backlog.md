@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2215 — Migration remediation resolves pack version from manifest instead of hardcoding](wu/WU-2215.yaml) — Framework: Core Validation
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — Framework: Memory
@@ -58,6 +57,7 @@ sections:
 - [WU-2214 — BUG: hook redirect regex false-positives on arrow notation in arguments](wu/WU-2214.yaml) — Framework: CLI Enforcement
 - [WU-2211 — wu:done --already-merged finalize-only mode](wu/WU-2211.yaml) — Framework: CLI WU Commands
 - [WU-2212 — Break-glass WU finalization tool (no dist dependency)](wu/WU-2212.yaml) — Operations: Tooling
+- [WU-2215 — Migration remediation resolves pack version from manifest instead of hardcoding](wu/WU-2215.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 

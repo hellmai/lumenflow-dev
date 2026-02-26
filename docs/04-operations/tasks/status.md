@@ -8,6 +8,7 @@ _Last updated: 2026-02-26_
 - [WU-2214 — BUG: hook redirect regex false-positives on arrow notation in arguments](wu/WU-2214.yaml)
 - [WU-2211 — wu:done --already-merged finalize-only mode](wu/WU-2211.yaml)
 - [WU-2212 — Break-glass WU finalization tool (no dist dependency)](wu/WU-2212.yaml)
+- [WU-2215 — Migration remediation resolves pack version from manifest instead of hardcoding](wu/WU-2215.yaml)
 
 ## Completed
 

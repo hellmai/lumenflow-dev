@@ -2,7 +2,7 @@ id: WU-2215
 title: Migration remediation resolves pack version from manifest instead of hardcoding
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -31,8 +31,20 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'KNOWN_PACK_CONFIG_KEY_MIGRATIONS hardcodes version: 0.1.0. The pack manifest version is already available via DomainPackManifest.version at the validateWorkspaceRootKeys call site (kernel-runtime.ts:1358). Widen the Pick type to include version+id, look up the known pack in the registry of all available manifests, and use the real version in the remediation command. Remove the hardcoded version field from the migration map.'
+description: 'KNOWN_PACK_CONFIG_KEY_MIGRATIONS hardcodes version: 0.1.0. The pack manifest version
+  is already available via DomainPackManifest.version at the validateWorkspaceRootKeys call site
+  (kernel-runtime.ts:1358). Widen the Pick type to include version+id, look up the known pack in the
+  registry of all available manifests, and use the real version in the remediation command. Remove
+  the hardcoded version field from the migration map.'
 acceptance:
   - Remediation command version comes from the pack manifest, not a hardcoded constant
   - KNOWN_PACK_CONFIG_KEY_MIGRATIONS no longer contains a version field
   - Test validates the version in the error message matches the manifest version
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2215
+claimed_at: 2026-02-26T14:06:48.861Z
+baseline_main_sha: c305a65cfb573ad596fba2cfa8aa4642b4428242
+session_id: e4013ae0-f26b-45b2-9d01-e4f287e11263
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T14:06:48.865Z
