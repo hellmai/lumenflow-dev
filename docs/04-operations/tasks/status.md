@@ -5,6 +5,7 @@ _Last updated: 2026-02-26_
 ## In Progress
 
 - [WU-2199 — Define sync-validator semantics and consolidation plan for main-branch sync checks](wu/WU-2199.yaml)
+- [WU-2200 — Migration error provides non-executable remediation command](wu/WU-2200.yaml)
 
 ## Completed
 

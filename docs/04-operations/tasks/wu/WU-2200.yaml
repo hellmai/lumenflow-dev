@@ -2,7 +2,7 @@ id: WU-2200
 title: Migration error provides non-executable remediation command
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-26
 code_paths:
@@ -10,7 +10,8 @@ code_paths:
   - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
 tests:
   manual:
-    - Run kernel startup with legacy workspace (packs:[] + software_delivery), copy the remediation command from the error, and verify it executes successfully
+    - Run kernel startup with legacy workspace (packs:[] + software_delivery), copy the remediation
+      command from the error, and verify it executes successfully
   unit:
     - packages/@lumenflow/kernel/src/__tests__/runtime.test.ts
   e2e: []
@@ -31,8 +32,24 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'WU-2196 added a migration error in validateWorkspaceRootKeys (kernel.schemas.ts:289) that tells users to run ''pnpm config:set --key packs --value ...'' but: (1) config:set blocks packs as a managed root key (config-contract.ts:66) redirecting to pack:install, so the command fails immediately; (2) the payload uses version:"*" which is invalid for PackPinSchema (kernel.schemas.ts:129 requires strict semver). The test at runtime.test.ts:1560 only asserts /pnpm|packs/i so the bad command was never validated. Fix the remediation to use pack:install with valid arguments, and tighten the test to assert the actual command form.'
+description: 'WU-2196 added a migration error in validateWorkspaceRootKeys (kernel.schemas.ts:289)
+  that tells users to run ''pnpm config:set --key packs --value ...'' but: (1) config:set blocks
+  packs as a managed root key (config-contract.ts:66) redirecting to pack:install, so the command
+  fails immediately; (2) the payload uses version:"*" which is invalid for PackPinSchema
+  (kernel.schemas.ts:129 requires strict semver). The test at runtime.test.ts:1560 only asserts
+  /pnpm|packs/i so the bad command was never validated. Fix the remediation to use pack:install with
+  valid arguments, and tighten the test to assert the actual command form.'
 acceptance:
-  - Migration error remediation command uses pack:install (not config:set --key packs) with valid arguments that PackPinSchema accepts
-  - Running the remediation command from the error message actually succeeds (no managed-key block, no schema rejection)
+  - Migration error remediation command uses pack:install (not config:set --key packs) with valid
+    arguments that PackPinSchema accepts
+  - Running the remediation command from the error message actually succeeds (no managed-key block,
+    no schema rejection)
   - Test assertion validates the exact remediation command form, not just broad keyword matching
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2200
+claimed_at: 2026-02-26T12:39:32.616Z
+baseline_main_sha: 369d59b12059a308f6845e72a82ca8a7437da8cd
+session_id: cce4c6cb-bc8d-4098-8e06-11c2ea326d86
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T12:39:32.622Z
