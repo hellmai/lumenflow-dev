@@ -4,7 +4,7 @@ _Last updated: 2026-02-26_
 
 ## In Progress
 
-(No items currently in progress)
+- [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
 
 ## Completed
 

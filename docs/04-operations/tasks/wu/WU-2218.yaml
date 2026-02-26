@@ -2,14 +2,15 @@ id: WU-2218
 title: Pre-release formatting fix for v3.6.0
 lane: 'Operations: Tooling'
 type: chore
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
   - packages/@lumenflow/cli/src,packages/@lumenflow/core/src
 tests:
   manual:
-    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code files.'
+    - '(auto) Manual check: verify acceptance criteria; add automated tests before changing code
+      files.'
   unit: []
   e2e: []
 artifacts:
@@ -30,3 +31,11 @@ requires_design_approval: false
 description: Fix prettier formatting in 4 files before v3.6.0 release
 acceptance:
   - All 4 files pass prettier --check
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/lumenflow-dev/worktrees/operations-tooling-wu-2218
+claimed_at: 2026-02-26T15:48:38.811Z
+baseline_main_sha: 0bb49ac54b50b960c53092fe7e864b8e01965f10
+session_id: b405d314-0f84-4776-a9a3-7141f58bd6b5
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T15:48:38.816Z
