@@ -5,6 +5,7 @@ _Last updated: 2026-02-26_
 ## In Progress
 
 - [WU-2211 — wu:done --already-merged finalize-only mode](wu/WU-2211.yaml)
+- [WU-2216 — Wire runtime to provide available manifests for root-key migration version resolution](wu/WU-2216.yaml)
 
 ## Completed
 

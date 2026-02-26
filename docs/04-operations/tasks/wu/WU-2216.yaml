@@ -2,7 +2,7 @@ id: WU-2216
 title: Wire runtime to provide available manifests for root-key migration version resolution
 lane: 'Framework: Core Validation'
 type: bug
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -40,3 +40,11 @@ acceptance:
   - Legacy workspace remediation message includes concrete SD version from manifest instead of
     --version latest
   - Runtime tests cover both resolved-version and fallback behavior when manifest is unavailable
+claimed_mode: worktree
+worktree_path: /home/tom/source/hellmai/os/worktrees/framework-core-validation-wu-2216
+claimed_at: 2026-02-26T14:32:05.139Z
+baseline_main_sha: b7dd01876b60d97e515df964bf3c21b19d2d9eed
+session_id: 6bf623de-c21b-4d5a-953d-67e1ad96e748
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T14:32:05.147Z

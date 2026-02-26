@@ -50,11 +50,11 @@ sections:
 - [WU-2178 — Raise runtime and agent test coverage to target](wu/WU-2178.yaml) — Operations: Runtime
 - [WU-2209 — Collision-safe wu:create retry on push race](wu/WU-2209.yaml) — Framework: Core Lifecycle
 - [WU-2213 — Duplicate-ID detector and repair command](wu/WU-2213.yaml) — Framework: CLI WU Commands
-- [WU-2216 — Wire runtime to provide available manifests for root-key migration version resolution](wu/WU-2216.yaml) — Framework: Core Validation
 
 ## 🔧 In progress
 
 - [WU-2211 — wu:done --already-merged finalize-only mode](wu/WU-2211.yaml) — Framework: CLI WU Commands
+- [WU-2216 — Wire runtime to provide available manifests for root-key migration version resolution](wu/WU-2216.yaml) — Framework: Core Validation
 
 ## ⛔ Blocked
 
