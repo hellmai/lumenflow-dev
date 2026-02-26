@@ -5,7 +5,6 @@ _Last updated: 2026-02-26_
 ## In Progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
-- [WU-2224 — Add post-command sync flush for WU lifecycle events to control plane](wu/WU-2224.yaml)
 
 ## Completed
 
@@ -1123,3 +1122,4 @@ _Last updated: 2026-02-26_
 - [WU-2221 — Release script: install deps in micro-worktree before build](wu/WU-2221.yaml) — 2026-02-26
 - [WU-2222 — Separate wu:brief evidence from delegation spawning](wu/WU-2222.yaml) — 2026-02-26
 - [WU-2223 — Fix control_plane schema mismatch between core and kernel](wu/WU-2223.yaml) — 2026-02-26
+- [WU-2224 — Add post-command sync flush for WU lifecycle events to control plane](wu/WU-2224.yaml) — 2026-02-26

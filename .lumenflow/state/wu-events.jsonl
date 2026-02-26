@@ -2388,3 +2388,4 @@
 {"type":"checkpoint","wuId":"WU-2223","timestamp":"2026-02-26T19:08:41.404Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2223","timestamp":"2026-02-26T19:24:12.256Z"}
 {"type":"claim","wuId":"WU-2224","timestamp":"2026-02-26T21:03:44.324Z","lane":"Framework: CLI WU Commands","title":"Add post-command sync flush for WU lifecycle events to control plane"}
+{"type":"complete","wuId":"WU-2224","timestamp":"2026-02-26T22:05:06.617Z"}
