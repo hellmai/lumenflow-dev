@@ -1484,5 +1484,128 @@ describe('kernel runtime facade', () => {
 
       await expect(createRuntime()).rejects.toThrow(/pack.*manifest/i);
     });
+
+    // --- Legacy workspace migration tests (WU-2196) ---
+
+    async function writeLegacyWorkspace(root: string): Promise<void> {
+      // Legacy workspace: has software_delivery config but NO SD pack pinned (packs: [])
+      await writeFile(
+        join(root, WORKSPACE_FILE_NAME),
+        [
+          'id: workspace-kernel-runtime',
+          'name: Kernel Runtime Workspace',
+          'packs: []',
+          'lanes:',
+          '  - id: framework-core-lifecycle',
+          '    title: Framework Core Lifecycle',
+          '    allowed_scopes:',
+          '      - type: path',
+          '        pattern: "**"',
+          '        access: read',
+          'security:',
+          '  allowed_scopes:',
+          '    - type: path',
+          '      pattern: "**"',
+          '      access: read',
+          '  network_default: off',
+          '  deny_overlays: []',
+          'software_delivery:',
+          '  methodology: trunk-based',
+          'memory_namespace: mem',
+          'event_namespace: evt',
+        ].join('\n'),
+        UTF8_ENCODING,
+      );
+    }
+
+    async function writeWorkspaceWithoutSoftwareDelivery(root: string): Promise<void> {
+      // Clean workspace: no software_delivery key at all, no packs
+      await writeFile(
+        join(root, WORKSPACE_FILE_NAME),
+        [
+          'id: workspace-kernel-runtime',
+          'name: Kernel Runtime Workspace',
+          'packs: []',
+          'lanes:',
+          '  - id: framework-core-lifecycle',
+          '    title: Framework Core Lifecycle',
+          '    allowed_scopes:',
+          '      - type: path',
+          '        pattern: "**"',
+          '        access: read',
+          'security:',
+          '  allowed_scopes:',
+          '    - type: path',
+          '      pattern: "**"',
+          '      access: read',
+          '  network_default: off',
+          '  deny_overlays: []',
+          'memory_namespace: mem',
+          'event_namespace: evt',
+        ].join('\n'),
+        UTF8_ENCODING,
+      );
+    }
+
+    it('rejects legacy workspace (software_delivery present, no SD pack pinned) with actionable migration error', async () => {
+      await writeLegacyWorkspace(tempRoot);
+
+      const error = await createRuntime().catch((e: Error) => e);
+      expect(error).toBeInstanceOf(Error);
+      // Must mention the specific key
+      expect(error.message).toContain('software_delivery');
+      // Must include actionable remediation — not the generic error
+      expect(error.message).toMatch(/software-delivery.*pack/i);
+      // Must mention how to fix (pnpm config:set or adding to packs array)
+      expect(error.message).toMatch(/pnpm|packs/i);
+      // Must NOT be the generic "Unknown workspace root key" message
+      expect(error.message).not.toContain('Unknown workspace root key');
+    });
+
+    it('boots cleanly when workspace has no software_delivery key and no packs', async () => {
+      await writeWorkspaceWithoutSoftwareDelivery(tempRoot);
+
+      // No software_delivery key means no migration issue — should boot fine
+      const runtime = await createRuntime();
+      expect(runtime).toBeDefined();
+    });
+
+    it('truly unknown root key still gets generic error even when legacy pattern is also present', async () => {
+      // Legacy workspace with software_delivery AND an unknown key
+      await writeFile(
+        join(tempRoot, WORKSPACE_FILE_NAME),
+        [
+          'id: workspace-kernel-runtime',
+          'name: Kernel Runtime Workspace',
+          'packs: []',
+          'lanes:',
+          '  - id: framework-core-lifecycle',
+          '    title: Framework Core Lifecycle',
+          '    allowed_scopes:',
+          '      - type: path',
+          '        pattern: "**"',
+          '        access: read',
+          'security:',
+          '  allowed_scopes:',
+          '    - type: path',
+          '      pattern: "**"',
+          '      access: read',
+          '  network_default: off',
+          '  deny_overlays: []',
+          'software_delivery: {}',
+          'totally_bogus: true',
+          'memory_namespace: mem',
+          'event_namespace: evt',
+        ].join('\n'),
+        UTF8_ENCODING,
+      );
+
+      const error = await createRuntime().catch((e: Error) => e);
+      expect(error).toBeInstanceOf(Error);
+      // The software_delivery key should get the migration-specific error
+      expect(error.message).toContain('software_delivery');
+      // The truly unknown key should still be reported
+      expect(error.message).toContain('totally_bogus');
+    });
   });
 });

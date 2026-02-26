@@ -2311,6 +2311,7 @@
 {"type":"complete","wuId":"WU-2192","timestamp":"2026-02-26T11:31:01.469Z"}
 {"type":"claim","wuId":"WU-2195","timestamp":"2026-02-26T12:09:35.956Z","lane":"Framework: CLI WU Commands","title":"config:set uses wrong control_plane schema (core vs kernel)"}
 {"type":"claim","wuId":"WU-2196","timestamp":"2026-02-26T12:10:13.869Z","lane":"Framework: Core Validation","title":"Runtime boot rejects legacy workspaces with software_delivery but no SD pack pin"}
+{"type":"checkpoint","wuId":"WU-2196","timestamp":"2026-02-26T12:10:33.723Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"claim","wuId":"WU-2198","timestamp":"2026-02-26T12:13:26.374Z","lane":"Framework: CLI WU Commands","title":"Fix wu-done ensureMainUpToDate swallowing ProcessExitError from die()"}
 {"type":"checkpoint","wuId":"WU-2195","timestamp":"2026-02-26T12:15:34.148Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2195","timestamp":"2026-02-26T12:16:35.921Z"}

@@ -221,6 +221,19 @@ export const KERNEL_OWNED_ROOT_KEYS = [
 export type KernelOwnedRootKey = (typeof KERNEL_OWNED_ROOT_KEYS)[number];
 
 /**
+ * Well-known pack config_keys that have a dedicated migration error message.
+ * When a workspace has one of these keys but no corresponding pack is pinned,
+ * the error should guide the user to pin the pack instead of showing the generic
+ * "Unknown workspace root key" message.
+ */
+const KNOWN_PACK_CONFIG_KEY_MIGRATIONS: Record<string, { packId: string; packLabel: string }> = {
+  software_delivery: {
+    packId: 'software-delivery',
+    packLabel: 'software-delivery',
+  },
+};
+
+/**
  * Two-phase workspace root key validation result.
  */
 export interface WorkspaceRootKeyValidationResult {
@@ -265,6 +278,19 @@ export function validateWorkspaceRootKeys(
     if (packConfigKeys.has(key)) {
       continue;
     }
+
+    // Check if this is a known pack config_key that needs a migration-specific error
+    const migration = KNOWN_PACK_CONFIG_KEY_MIGRATIONS[key];
+    if (migration) {
+      errors.push(
+        `Your workspace has a "${key}" config block but the ${migration.packLabel} pack is not pinned. ` +
+          `Since LumenFlow 3.x, pack config keys require explicit pack pinning. ` +
+          `Add the ${migration.packLabel} pack to your workspace.yaml packs array:\n\n` +
+          `  pnpm config:set --key packs --value '[{"id": "${migration.packId}", "version": "*"}]'`,
+      );
+      continue;
+    }
+
     errors.push(
       `Unknown workspace root key "${key}". ` +
         'Only kernel-owned keys and pack-declared config_keys are allowed. ' +
