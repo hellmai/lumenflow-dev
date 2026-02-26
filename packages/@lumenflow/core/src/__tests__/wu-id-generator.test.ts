@@ -19,8 +19,9 @@ import {
   extractHighestIdFromEntries,
   getHighestWuIdFromEvents,
   getHighestWuIdRemoteAware,
+  retryCreateOnPushCollision,
 } from '../wu-id-generator.js';
-import type { IWuIdGitAdapter } from '../wu-id-generator.js';
+import type { IWuIdGitAdapter, PushCollisionRetryOptions } from '../wu-id-generator.js';
 
 /** Test constant for WU-100.yaml filename (DRY - sonarjs/no-duplicate-string) */
 const WU_100_YAML = 'WU-100.yaml';
@@ -534,6 +535,236 @@ describe('wu-id-generator', () => {
 
       const result = await getHighestWuIdRemoteAware({ git });
       expect(result).toBe(50);
+    });
+  });
+
+  // === WU-2209: Push collision retry tests ===
+
+  describe('retryCreateOnPushCollision (WU-2209)', () => {
+    /** Helper to create a mock IWuIdGitAdapter */
+    function createMockGitAdapter(overrides: Partial<IWuIdGitAdapter> = {}): IWuIdGitAdapter {
+      return {
+        fetch: vi.fn().mockResolvedValue(undefined),
+        listTreeAtRef: vi.fn().mockResolvedValue([]),
+        showFileAtRef: vi.fn().mockResolvedValue(''),
+        ...overrides,
+      };
+    }
+
+    it('should succeed on first attempt when no push collision occurs (AC1)', async () => {
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readdirSync).mockReturnValue([WU_100_YAML] as unknown as fs.Dirent[]);
+
+      const git = createMockGitAdapter({
+        listTreeAtRef: vi.fn().mockResolvedValue(['WU-100.yaml']),
+        showFileAtRef: vi.fn().mockResolvedValue(''),
+      });
+
+      const createFn = vi.fn().mockResolvedValue(undefined);
+
+      const result = await retryCreateOnPushCollision({
+        git,
+        createFn,
+        maxRetries: 3,
+      });
+
+      expect(createFn).toHaveBeenCalledTimes(1);
+      expect(result.wuId).toBe('WU-101');
+      expect(result.attempts).toBe(1);
+    });
+
+    it('should retry with fresh ID when push fails due to duplicate (AC1, AC2)', async () => {
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readdirSync).mockReturnValue([WU_100_YAML] as unknown as fs.Dirent[]);
+
+      let fetchCallCount = 0;
+      const git = createMockGitAdapter({
+        fetch: vi.fn().mockImplementation(async () => {
+          fetchCallCount++;
+        }),
+        listTreeAtRef: vi.fn().mockImplementation(async (_ref: string, path: string) => {
+          if (path.includes('tasks/wu')) {
+            // First fetch (initial scan): remote has WU-100
+            // Second fetch (after collision): remote now has WU-101 too
+            if (fetchCallCount > 1) {
+              return ['WU-100.yaml', 'WU-101.yaml'];
+            }
+            return ['WU-100.yaml'];
+          }
+          return [];
+        }),
+        showFileAtRef: vi.fn().mockResolvedValue(''),
+      });
+
+      let callCount = 0;
+      const createFn = vi.fn().mockImplementation(async () => {
+        callCount++;
+        if (callCount === 1) {
+          // First attempt fails with push error (simulating collision)
+          throw new Error('non-fast-forward: push rejected');
+        }
+        // Second attempt succeeds
+      });
+
+      const result = await retryCreateOnPushCollision({
+        git,
+        createFn,
+        maxRetries: 3,
+        baseDelayMs: 10,
+      });
+
+      // First call with WU-101, second call with WU-102 (after re-fetch sees WU-101)
+      expect(createFn).toHaveBeenCalledTimes(2);
+      expect(createFn).toHaveBeenNthCalledWith(1, 'WU-101');
+      expect(createFn).toHaveBeenNthCalledWith(2, 'WU-102');
+      expect(result.wuId).toBe('WU-102');
+      expect(result.attempts).toBe(2);
+    });
+
+    it('should fetch latest remote state before regenerating ID (AC2)', async () => {
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readdirSync).mockReturnValue([WU_100_YAML] as unknown as fs.Dirent[]);
+
+      const git = createMockGitAdapter({
+        listTreeAtRef: vi.fn().mockImplementation(async (_ref: string, path: string) => {
+          if (path.includes('tasks/wu')) {
+            return ['WU-100.yaml', 'WU-101.yaml'];
+          }
+          return [];
+        }),
+        showFileAtRef: vi.fn().mockResolvedValue(''),
+      });
+
+      const createFn = vi
+        .fn()
+        .mockRejectedValueOnce(new Error('non-fast-forward'))
+        .mockResolvedValueOnce(undefined);
+
+      await retryCreateOnPushCollision({
+        git,
+        createFn,
+        maxRetries: 3,
+      });
+
+      // Fetch should be called at least once for re-scan on retry
+      expect(git.fetch).toHaveBeenCalled();
+    });
+
+    it('should use exponential backoff between retries (AC3)', async () => {
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readdirSync).mockReturnValue([WU_100_YAML] as unknown as fs.Dirent[]);
+
+      const git = createMockGitAdapter({
+        listTreeAtRef: vi.fn().mockResolvedValue(['WU-100.yaml', 'WU-101.yaml', 'WU-102.yaml']),
+        showFileAtRef: vi.fn().mockResolvedValue(''),
+      });
+
+      const createFn = vi
+        .fn()
+        .mockRejectedValueOnce(new Error('non-fast-forward'))
+        .mockRejectedValueOnce(new Error('non-fast-forward'))
+        .mockResolvedValueOnce(undefined);
+
+      const startTime = Date.now();
+      await retryCreateOnPushCollision({
+        git,
+        createFn,
+        maxRetries: 3,
+        baseDelayMs: 50,
+      });
+      const elapsed = Date.now() - startTime;
+
+      // With base 50ms and exponential backoff: 50 + 100 = 150ms minimum
+      expect(elapsed).toBeGreaterThanOrEqual(100);
+      expect(createFn).toHaveBeenCalledTimes(3);
+    });
+
+    it('should throw actionable error after max retries exceeded (AC4)', async () => {
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readdirSync).mockReturnValue([WU_100_YAML] as unknown as fs.Dirent[]);
+
+      const git = createMockGitAdapter({
+        listTreeAtRef: vi.fn().mockResolvedValue(['WU-100.yaml']),
+        showFileAtRef: vi.fn().mockResolvedValue(''),
+      });
+
+      const createFn = vi.fn().mockRejectedValue(new Error('non-fast-forward'));
+
+      await expect(
+        retryCreateOnPushCollision({
+          git,
+          createFn,
+          maxRetries: 3,
+          baseDelayMs: 10,
+        }),
+      ).rejects.toThrow(/after 3 attempts/);
+    });
+
+    it('should produce distinct IDs across retries simulating concurrent creates (AC5)', async () => {
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readdirSync).mockReturnValue([WU_100_YAML] as unknown as fs.Dirent[]);
+
+      let remoteWuCount = 100;
+      const git = createMockGitAdapter({
+        fetch: vi.fn().mockImplementation(async () => {
+          // Simulate another machine creating WUs concurrently
+          remoteWuCount++;
+        }),
+        listTreeAtRef: vi.fn().mockImplementation(async (_ref: string, path: string) => {
+          if (path.includes('tasks/wu')) {
+            const entries: string[] = [];
+            for (let i = 100; i <= remoteWuCount; i++) {
+              entries.push(`WU-${i}.yaml`);
+            }
+            return entries;
+          }
+          return [];
+        }),
+        showFileAtRef: vi.fn().mockResolvedValue(''),
+      });
+
+      const idsUsed: string[] = [];
+      const createFn = vi.fn().mockImplementation(async (wuId: string) => {
+        idsUsed.push(wuId);
+        if (idsUsed.length < 3) {
+          throw new Error('non-fast-forward');
+        }
+      });
+
+      const result = await retryCreateOnPushCollision({
+        git,
+        createFn,
+        maxRetries: 3,
+        baseDelayMs: 10,
+      });
+
+      // All IDs should be distinct
+      const uniqueIds = new Set(idsUsed);
+      expect(uniqueIds.size).toBe(idsUsed.length);
+      expect(result.wuId).toBe(idsUsed[idsUsed.length - 1]);
+    });
+
+    it('should re-throw non-push errors without retry', async () => {
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readdirSync).mockReturnValue([WU_100_YAML] as unknown as fs.Dirent[]);
+
+      const git = createMockGitAdapter({
+        listTreeAtRef: vi.fn().mockResolvedValue(['WU-100.yaml']),
+        showFileAtRef: vi.fn().mockResolvedValue(''),
+      });
+
+      const createFn = vi.fn().mockRejectedValue(new Error('YAML syntax error'));
+
+      await expect(
+        retryCreateOnPushCollision({
+          git,
+          createFn,
+          maxRetries: 3,
+        }),
+      ).rejects.toThrow('YAML syntax error');
+
+      // Should NOT retry for non-push errors
+      expect(createFn).toHaveBeenCalledTimes(1);
     });
   });
 });

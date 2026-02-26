@@ -221,6 +221,141 @@ export async function generateWuIdWithRetry(options: GenerateOptions = {}): Prom
   );
 }
 
+/** Default maximum push collision retries (WU-2209) */
+const DEFAULT_PUSH_COLLISION_MAX_RETRIES = 3;
+
+/** Base delay for push collision retry backoff in milliseconds (WU-2209) */
+const DEFAULT_PUSH_COLLISION_BASE_DELAY_MS = 200;
+
+/**
+ * Patterns that indicate a push failure due to non-fast-forward or duplicate conflict.
+ * These distinguish retryable push collisions from non-retryable errors.
+ */
+const PUSH_COLLISION_PATTERNS = [
+  /non-fast-forward/i,
+  /push rejected/i,
+  /failed to push/i,
+  /fetch first/i,
+  /cannot lock ref/i,
+  /remote rejected/i,
+];
+
+/** Options for push collision retry (WU-2209) */
+export interface PushCollisionRetryOptions {
+  /** Git adapter for remote operations */
+  git: IWuIdGitAdapter;
+  /**
+   * Callback that performs the wu:create transaction for a given WU ID.
+   * Should throw on push failure.
+   */
+  createFn: (wuId: string) => Promise<void>;
+  /** Maximum number of retries (default: 3) */
+  maxRetries?: number;
+  /** Base delay in ms for exponential backoff (default: 200) */
+  baseDelayMs?: number;
+  /** Git ref for remote state (default: 'origin/main') */
+  remoteRef?: string;
+}
+
+/** Result from push collision retry */
+export interface PushCollisionRetryResult {
+  /** The WU ID that was successfully created */
+  wuId: string;
+  /** Number of attempts taken (1 = success on first try) */
+  attempts: number;
+}
+
+/**
+ * Check if an error message indicates a retryable push collision.
+ *
+ * @param message - Error message to check
+ * @returns True if the error looks like a push collision
+ */
+function isPushCollisionError(message: string): boolean {
+  return PUSH_COLLISION_PATTERNS.some((pattern) => pattern.test(message));
+}
+
+/**
+ * Retry wu:create on push collision with fresh ID regeneration.
+ *
+ * WU-2209: Handles the TOCTOU race where two machines fetch simultaneously,
+ * both see the same highest ID, both generate the same next ID. On push
+ * failure (non-fast-forward / duplicate detected):
+ * 1. Fetch latest remote state
+ * 2. Regenerate ID from fresh scan
+ * 3. Rewrite YAML with new ID
+ * 4. Re-commit and re-push
+ *
+ * Non-push errors (e.g., YAML syntax errors) are re-thrown immediately
+ * without retry.
+ *
+ * @param options - Retry configuration
+ * @returns Result with the final WU ID and attempt count
+ * @throws Error if max retries exceeded or non-retryable error occurs
+ */
+export async function retryCreateOnPushCollision(
+  options: PushCollisionRetryOptions,
+): Promise<PushCollisionRetryResult> {
+  const {
+    git,
+    createFn,
+    maxRetries = DEFAULT_PUSH_COLLISION_MAX_RETRIES,
+    baseDelayMs = DEFAULT_PUSH_COLLISION_BASE_DELAY_MS,
+    remoteRef = DEFAULT_REMOTE_REF,
+  } = options;
+
+  // Generate initial ID from remote-aware scan
+  let highest = await getHighestWuIdRemoteAware({ git, remoteRef });
+  let wuId = `${WU_ID_PREFIX}${highest + 1}`;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await createFn(wuId);
+      return { wuId, attempts: attempt };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+
+      // Only retry on push collision errors
+      if (!isPushCollisionError(message)) {
+        throw error;
+      }
+
+      if (attempt >= maxRetries) {
+        throw createError(
+          ErrorCodes.ID_GENERATION_FAILED,
+          `Failed to create WU after ${maxRetries} attempts due to push collisions. ` +
+            `Multiple concurrent wu:create operations are racing.\n\n` +
+            `Last attempted ID: ${wuId}\n` +
+            `Last error: ${message}\n\n` +
+            `Suggestions:\n` +
+            `  1. Wait a few seconds and retry\n` +
+            `  2. Provide an explicit ID: --id WU-XXXX\n` +
+            `  3. Coordinate with other agents to avoid parallel wu:create`,
+        );
+      }
+
+      // Exponential backoff before retry
+      const delay = baseDelayMs * Math.pow(2, attempt - 1);
+      console.warn(
+        `${LOG_PREFIX} Push collision detected (attempt ${attempt}/${maxRetries}). ` +
+          `Retrying with fresh ID in ${delay}ms...`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, delay));
+
+      // Re-scan remote state to get the latest highest ID
+      highest = await getHighestWuIdRemoteAware({ git, remoteRef });
+      wuId = `${WU_ID_PREFIX}${highest + 1}`;
+      console.log(`${LOG_PREFIX} Regenerated ID: ${wuId}`);
+    }
+  }
+
+  // Unreachable, but TypeScript needs it
+  throw createError(
+    ErrorCodes.ID_GENERATION_FAILED,
+    `Unexpected: push collision retry loop exited without result`,
+  );
+}
+
 /** Options for remote-aware ID generation */
 export interface RemoteAwareIdOptions {
   /** Git adapter for remote operations */
