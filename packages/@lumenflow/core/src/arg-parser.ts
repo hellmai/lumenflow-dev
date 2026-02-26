@@ -241,7 +241,8 @@ export const WU_OPTIONS: Record<string, WUOption> = {
   alreadyMerged: {
     name: 'alreadyMerged',
     flags: '--already-merged',
-    description: 'Skip merge phase; finalize metadata only (stamp/backlog/status) for code already on main (WU-2211)',
+    description:
+      'Skip merge phase; finalize metadata only (stamp/backlog/status) for code already on main (WU-2211)',
   },
 
   // Initiative system options (WU-1247)
