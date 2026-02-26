@@ -9,7 +9,9 @@ code_paths:
   - packages/@lumenflow/core/src/micro-worktree.ts
   - packages/@lumenflow/core/src/micro-worktree-shared.ts
 tests:
-  manual: []
+  manual:
+    - Execute micro-worktree test subset and confirm pushOnly/skipRemote/baseRef behavior remains
+      unchanged
   unit:
     - packages/@lumenflow/core/src/__tests__/micro-worktree.test.ts
   e2e: []
@@ -28,7 +30,11 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: 'Context: withMicroWorktree contains inline sync preamble logic that fetches origin/main, conditionally fast-forwards local main, and computes baseRef for pushOnly vs standard mode. Problem: this logic is harder to reason about and difficult to reuse while preserving exact behavior. Solution: extract the preamble into explicit helper(s) that return the derived baseRef while preserving pushOnly and skipRemote semantics byte-for-byte.'
+description: 'Context: withMicroWorktree contains inline sync preamble logic that fetches
+  origin/main, conditionally fast-forwards local main, and computes baseRef for pushOnly vs standard
+  mode. Problem: this logic is harder to reason about and difficult to reuse while preserving exact
+  behavior. Solution: extract the preamble into explicit helper(s) that return the derived baseRef
+  while preserving pushOnly and skipRemote semantics byte-for-byte.'
 acceptance:
   - Extract sync preamble logic from withMicroWorktree into dedicated helper function(s)
   - Preserve current behavior for pushOnly, skipRemote, fetch ordering, and baseRef selection
