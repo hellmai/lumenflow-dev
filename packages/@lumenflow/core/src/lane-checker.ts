@@ -561,7 +561,9 @@ const DEFAULT_WIP_LIMIT = 1;
  */
 export function getWipLimitForLane(lane: string, options: GetWipLimitOptions = {}): number {
   const config = coerceConfig(
-    options.configPath ? readConfigFromPath(options.configPath) : readRuntimeConfig(findProjectRoot()),
+    options.configPath
+      ? readConfigFromPath(options.configPath)
+      : readRuntimeConfig(findProjectRoot()),
   );
   if (!config?.lanes) {
     return DEFAULT_WIP_LIMIT;
@@ -600,7 +602,9 @@ interface GetLockPolicyOptions {
  */
 export function getLockPolicyForLane(lane: string, options: GetLockPolicyOptions = {}): LockPolicy {
   const config = coerceConfig(
-    options.configPath ? readConfigFromPath(options.configPath) : readRuntimeConfig(findProjectRoot()),
+    options.configPath
+      ? readConfigFromPath(options.configPath)
+      : readRuntimeConfig(findProjectRoot()),
   );
   if (!config?.lanes) {
     return DEFAULT_LOCK_POLICY;
@@ -952,7 +956,9 @@ export function checkWipJustification(
   options: CheckWipJustificationOptions = {},
 ): CheckWipJustificationResult {
   const config = coerceConfig(
-    options.configPath ? readConfigFromPath(options.configPath) : readRuntimeConfig(findProjectRoot()),
+    options.configPath
+      ? readConfigFromPath(options.configPath)
+      : readRuntimeConfig(findProjectRoot()),
   );
   if (!config) {
     return NO_JUSTIFICATION_REQUIRED;
