@@ -273,6 +273,7 @@ export type {
   IWuCheckpointManager,
   IWuPaths,
 } from './ports/wu-helpers.ports.js';
+export type { ISyncValidatorGitAdapter } from './ports/sync-validator.ports.js';
 
 // WU-2013: WU state port interfaces (focused decomposition)
 export type { IWuEventLog, IWuLockManager, IWuStateQuery } from './ports/wu-state.ports.js';

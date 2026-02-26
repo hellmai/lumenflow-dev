@@ -23,6 +23,7 @@ import type {
   IWuGitAdapter,
   IWuStatusCheckResult,
 } from './ports/wu-helpers.ports.js';
+import type { ISyncValidatorGitAdapter } from './ports/sync-validator.ports.js';
 
 interface ParsedWUYaml {
   status?: string;
@@ -30,7 +31,7 @@ interface ParsedWUYaml {
 }
 
 type EnsureOnMainGitAdapter = Pick<IWuGitAdapter, 'getCurrentBranch'>;
-type EnsureMainUpToDateGitAdapter = Pick<IWuGitAdapter, 'fetch' | 'getCommitHash'>;
+type EnsureMainUpToDateGitAdapter = Pick<ISyncValidatorGitAdapter, 'fetch' | 'getCommitHash'>;
 type RunOptions = Omit<ExecSyncOptionsWithStringEncoding, 'encoding'>;
 const GIT_WORKTREES_SEGMENT = `/${DIRECTORIES.WORKTREES.replace(/\/+$/, '')}/`;
 
