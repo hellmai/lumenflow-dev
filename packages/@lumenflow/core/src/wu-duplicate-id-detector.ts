@@ -20,6 +20,7 @@ import { readdirSync, readFileSync, writeFileSync, existsSync, renameSync } from
 import path from 'node:path';
 import { parse, stringify } from 'yaml';
 import { getConfig } from './lumenflow-config.js';
+import { WU_STATUS } from './wu-statuses.js';
 
 /** A single ID collision group */
 export interface DuplicateIdGroup {
@@ -393,7 +394,7 @@ export async function repairDuplicateIds(
         if (existsSync(oldStampPath)) {
           // Don't rename the stamp -- it belongs to the canonical.
           // Instead, create a new stamp for the duplicate if it was marked done.
-          if (doc.status === 'done') {
+          if (doc.status === WU_STATUS.DONE) {
             writeFileSync(newStampPath, '', 'utf-8');
             touchedFiles.push(newStampPath);
           }
