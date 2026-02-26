@@ -96,7 +96,6 @@ describe('CLI integration (no mocks)', { timeout: CLI_INTEGRATION_TEST_TIMEOUT_M
     'pack_publish',
     'pack_search',
     'pack_validate',
-    'templates_sync',
   ];
 
   describe('wu:status flags', () => {

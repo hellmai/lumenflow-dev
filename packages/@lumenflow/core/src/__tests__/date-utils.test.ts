@@ -39,8 +39,8 @@ describe('date-utils', () => {
     });
 
     it('should handle date near midnight correctly', () => {
-      // Near local midnight (timezone-stable expectation)
-      vi.setSystemTime(new Date('2026-06-30T23:59:59.999'));
+      // Near midnight UTC
+      vi.setSystemTime(new Date('2026-06-30T23:59:59.999Z'));
 
       const result = todayISO();
 
@@ -58,7 +58,7 @@ describe('date-utils', () => {
 
   describe('formatDate', () => {
     it('should format Date object with custom format string', () => {
-      const date = new Date('2025-11-12T14:30:00.000');
+      const date = new Date('2025-11-12T14:30:00.000Z');
 
       const result = formatDate(date, 'yyyy-MM-dd HH:mm:ss');
 

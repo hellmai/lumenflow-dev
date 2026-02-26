@@ -13,8 +13,6 @@ import { execSync } from 'node:child_process';
 import path from 'node:path';
 import YAML from 'yaml';
 import { LUMENFLOW_PATHS, FILE_EXTENSIONS, STDIO, STRING_LITERALS } from './wu-constants.js';
-import { WORKSPACE_CONFIG_FILE_NAME } from './config-contract.js';
-import { createError, ErrorCodes } from './error-handler.js';
 
 /** Gate event telemetry data */
 interface GateEventData {
@@ -66,7 +64,7 @@ const TELEMETRY_DIR = LUMENFLOW_PATHS.TELEMETRY;
 const GATES_LOG = `${TELEMETRY_DIR}/gates${FILE_EXTENSIONS.NDJSON}`;
 const LLM_CLASSIFICATION_LOG = `${TELEMETRY_DIR}/llm-classification${FILE_EXTENSIONS.NDJSON}`;
 const FLOW_LOG = LUMENFLOW_PATHS.FLOW_LOG;
-const WORKSPACE_FILE = WORKSPACE_CONFIG_FILE_NAME;
+const WORKSPACE_FILE = 'workspace.yaml';
 const CLOUD_SYNC_STATE_FILE = `${TELEMETRY_DIR}/cloud-sync-state${FILE_EXTENSIONS.JSON}`;
 const CLOUD_SYNC_LOG_PREFIX = '[telemetry:cloud-sync]';
 const PACK_KEY_SOFTWARE_DELIVERY = 'software_delivery';
@@ -715,15 +713,11 @@ async function pushTelemetryBatch(input: {
     if (!response.ok) {
       const responseText = await safeResponseText(response);
       const suffix = responseText.length > 0 ? `: ${responseText}` : '';
-      throw createError(ErrorCodes.COMMAND_EXECUTION_FAILED, `HTTP ${response.status}${suffix}`);
+      throw new Error(`HTTP ${response.status}${suffix}`);
     }
   } catch (error) {
     if (error instanceof Error && error.name === ERROR_NAME.ABORT) {
-      throw createError(
-        ErrorCodes.COMMAND_EXECUTION_FAILED,
-        `request timed out after ${input.timeoutMs}ms`,
-        { cause: error },
-      );
+      throw new Error(`request timed out after ${input.timeoutMs}ms`, { cause: error });
     }
     throw error;
   } finally {

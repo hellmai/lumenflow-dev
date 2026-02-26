@@ -1804,7 +1804,6 @@ describe('Manifest parity truth gate (WU-1481)', () => {
     'pack_publish',
     'pack_search',
     'pack_validate',
-    'templates_sync',
   ];
 
   const EXPECTED_ALLOWED_EXTRAS = [
