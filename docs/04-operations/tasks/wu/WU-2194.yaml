@@ -2,7 +2,7 @@ id: WU-2194
 title: Remove redundant ensureMainUpToDate pre-flight checks from micro-worktree commands
 lane: 'Framework: CLI WU Commands'
 type: refactor
-status: ready
+status: in_progress
 priority: P2
 created: 2026-02-26
 code_paths:
@@ -30,11 +30,28 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "wu:claim, wu:edit (ready path), and wu:delete all call ensureMainUpToDate() as a pre-flight check before entering withMicroWorktree/pushOnly mode. This is redundant because: (1) pushOnly mode (wu:claim) bases from origin/main, not local main, (2) standard withMicroWorktree (wu:edit, wu:delete) auto-syncs local main via ff-merge internally. initiative:edit already removed this check in WU-1497 with the comment 'withMicroWorktree already handles origin sync'. The pre-flight check creates serial friction for multi-agent orchestration — each wu:claim pushes to origin, putting the next claim's local main out of sync, requiring manual git pull between claims."
+description: "wu:claim, wu:edit (ready path), and wu:delete all call ensureMainUpToDate() as a
+  pre-flight check before entering withMicroWorktree/pushOnly mode. This is redundant because: (1)
+  pushOnly mode (wu:claim) bases from origin/main, not local main, (2) standard withMicroWorktree
+  (wu:edit, wu:delete) auto-syncs local main via ff-merge internally. initiative:edit already
+  removed this check in WU-1497 with the comment 'withMicroWorktree already handles origin sync'.
+  The pre-flight check creates serial friction for multi-agent orchestration — each wu:claim pushes
+  to origin, putting the next claim's local main out of sync, requiring manual git pull between
+  claims."
 acceptance:
   - ensureMainUpToDate pre-flight call removed from wu-claim.ts
   - ensureMainUpToDate pre-flight call removed from wu-edit.ts ready-WU path
   - ensureMainUpToDate pre-flight call removed from wu-delete.ts (single and batch)
-  - Regression tests assert ensureMainUpToDate is NOT called (following initiative-edit.test.ts pattern from WU-1497)
-  - wu:done retains both ensureMainUpToDate and ensureMainNotBehindOrigin checks (justified — real merge)
+  - Regression tests assert ensureMainUpToDate is NOT called (following initiative-edit.test.ts
+    pattern from WU-1497)
+  - wu:done retains both ensureMainUpToDate and ensureMainNotBehindOrigin checks (justified — real
+    merge)
   - All existing tests pass
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-cli-wu-commands-wu-2194
+claimed_at: 2026-02-26T11:05:33.571Z
+baseline_main_sha: 6e5bfa1d05d6b2c8d0ec77289f8fb9b3b5a3f858
+session_id: cac8059f-542b-44ce-900e-0d9d7cfc3f77
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T11:05:33.578Z

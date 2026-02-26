@@ -2295,3 +2295,4 @@
 {"type":"claim","wuId":"WU-2190","timestamp":"2026-02-26T10:55:10.635Z","lane":"Framework: CLI WU Commands","title":"Harden config:set write-path validation for root and pack-scoped keys"}
 {"type":"checkpoint","wuId":"WU-2190","timestamp":"2026-02-26T10:56:21.864Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2190","timestamp":"2026-02-26T11:05:19.059Z"}
+{"type":"claim","wuId":"WU-2194","timestamp":"2026-02-26T11:05:33.664Z","lane":"Framework: CLI WU Commands","title":"Remove redundant ensureMainUpToDate pre-flight checks from micro-worktree commands"}

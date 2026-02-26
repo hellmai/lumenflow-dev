@@ -20,7 +20,6 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
-- [WU-2194 — Remove redundant ensureMainUpToDate pre-flight checks from micro-worktree commands](wu/WU-2194.yaml) — Framework: CLI WU Commands
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
 - [WU-2145 — wu:done project-memory promotion to main checkout](wu/WU-2145.yaml) — Framework: Memory
@@ -52,11 +51,11 @@ sections:
 - [WU-2191 — Extract shared pack manifest resolution for config commands](wu/WU-2191.yaml) — Framework: Core Lifecycle
 - [WU-2192 — Validate pack-scoped config:set writes using pack-declared config_schema](wu/WU-2192.yaml) — Framework: CLI WU Commands
 - [WU-2193 — Align workspace-init defaults with pack pinning semantics](wu/WU-2193.yaml) — Framework: Core Lifecycle
-- [WU-2194 — Remove redundant ensureMainUpToDate pre-flight checks from micro-worktree commands](wu/WU-2194.yaml) — Framework: CLI WU Commands
 
 ## 🔧 In progress
 
 - [WU-2189 — Enforce two-phase workspace root-key validation during runtime boot](wu/WU-2189.yaml) — Framework: Core Validation
+- [WU-2194 — Remove redundant ensureMainUpToDate pre-flight checks from micro-worktree commands](wu/WU-2194.yaml) — Framework: CLI WU Commands
 
 ## ⛔ Blocked
 
