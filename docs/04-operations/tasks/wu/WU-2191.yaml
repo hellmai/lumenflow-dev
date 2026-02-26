@@ -2,7 +2,7 @@ id: WU-2191
 title: Extract shared pack manifest resolution for config commands
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: in_progress
+status: done
 priority: P3
 created: 2026-02-26
 code_paths:
@@ -50,3 +50,6 @@ acceptance:
     hardcoded monorepo path assumptions
   - Resolver handles local and non-local pack sources consistently with workspace pack pins
   - Unit tests cover resolution behavior for at least local + registry pack pins
+locked: true
+completed_at: 2026-02-26T11:16:43.853Z
+completed: 2026-02-26
