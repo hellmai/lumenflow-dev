@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2190 — Harden config:set write-path validation for root and pack-scoped keys](wu/WU-2190.yaml) — Framework: CLI WU Commands
 - [WU-2189 — Enforce two-phase workspace root-key validation during runtime boot](wu/WU-2189.yaml) — Framework: Core Validation
 - [WU-1553 — Fix commitCleanupChanges to stage archive files alongside state files](wu/WU-1553.yaml) — Framework: CLI WU Commands
 - [WU-1552 — Restructure INIT-020 to 15-WU plan per sizing guide](wu/WU-1552.yaml) — Content: Specs Governance
