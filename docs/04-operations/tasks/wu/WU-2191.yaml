@@ -8,7 +8,8 @@ created: 2026-02-26
 code_paths:
   - packages/@lumenflow/cli/src/config-set.ts
   - packages/@lumenflow/cli/src/config-get.ts
-  - packages/@lumenflow/kernel/src/pack/pack-loader.ts
+  - packages/@lumenflow/kernel/src/pack/pack-manifest-resolver.ts
+  - packages/@lumenflow/kernel/src/pack/index.ts
 tests:
   manual:
     - Run config:get/config:set against a workspace with non-local pack source and verify routing
@@ -28,10 +29,17 @@ spec_refs:
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-26T11:06:39.327Z
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2191
+session_id: e018b485-172c-448b-94b3-462619036339
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T11:06:39.332Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -43,11 +51,3 @@ acceptance:
     hardcoded monorepo path assumptions
   - Resolver handles local and non-local pack sources consistently with workspace pack pins
   - Unit tests cover resolution behavior for at least local + registry pack pins
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2191
-claimed_at: 2026-02-26T11:06:39.327Z
-baseline_main_sha: d3ceb06a4e4cf60f8c113bad5271e929996992e4
-session_id: e018b485-172c-448b-94b3-462619036339
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-26T11:06:39.332Z
