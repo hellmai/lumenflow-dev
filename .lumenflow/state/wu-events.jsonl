@@ -2293,11 +2293,12 @@
 {"type":"complete","wuId":"WU-2188","timestamp":"2026-02-26T00:14:03.652Z"}
 {"type":"claim","wuId":"WU-2189","timestamp":"2026-02-26T10:54:11.296Z","lane":"Framework: Core Validation","title":"Enforce two-phase workspace root-key validation during runtime boot"}
 {"type":"claim","wuId":"WU-2190","timestamp":"2026-02-26T10:55:10.635Z","lane":"Framework: CLI WU Commands","title":"Harden config:set write-path validation for root and pack-scoped keys"}
-{"type":"checkpoint","wuId":"WU-2189","timestamp":"2026-02-26T10:56:19.204Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"checkpoint","wuId":"WU-2190","timestamp":"2026-02-26T10:56:21.864Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
-{"type":"checkpoint","wuId":"WU-2189","timestamp":"2026-02-26T10:56:36.449Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2190","timestamp":"2026-02-26T11:05:19.059Z"}
 {"type":"claim","wuId":"WU-2194","timestamp":"2026-02-26T11:05:33.664Z","lane":"Framework: CLI WU Commands","title":"Remove redundant ensureMainUpToDate pre-flight checks from micro-worktree commands"}
 {"type":"claim","wuId":"WU-2191","timestamp":"2026-02-26T11:06:39.382Z","lane":"Framework: Core Lifecycle","title":"Extract shared pack manifest resolution for config commands"}
+{"type":"checkpoint","wuId":"WU-2191","timestamp":"2026-02-26T11:07:00.197Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"checkpoint","wuId":"WU-2189","timestamp":"2026-02-26T10:56:19.204Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"checkpoint","wuId":"WU-2189","timestamp":"2026-02-26T10:56:36.449Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2189","timestamp":"2026-02-26T11:07:18.861Z"}
 {"type":"complete","wuId":"WU-2194","timestamp":"2026-02-26T11:11:57.965Z"}
