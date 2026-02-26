@@ -6,6 +6,7 @@ _Last updated: 2026-02-26_
 
 - [WU-2189 — Enforce two-phase workspace root-key validation during runtime boot](wu/WU-2189.yaml)
 - [WU-2194 — Remove redundant ensureMainUpToDate pre-flight checks from micro-worktree commands](wu/WU-2194.yaml)
+- [WU-2191 — Extract shared pack manifest resolution for config commands](wu/WU-2191.yaml)
 
 ## Completed
 

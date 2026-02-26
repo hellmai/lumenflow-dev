@@ -2,7 +2,7 @@ id: WU-2191
 title: Extract shared pack manifest resolution for config commands
 lane: 'Framework: Core Lifecycle'
 type: bug
-status: ready
+status: in_progress
 priority: P3
 created: 2026-02-26
 code_paths:
@@ -11,7 +11,8 @@ code_paths:
   - packages/@lumenflow/kernel/src/pack/pack-loader.ts
 tests:
   manual:
-    - Run config:get/config:set against a workspace with non-local pack source and verify routing works
+    - Run config:get/config:set against a workspace with non-local pack source and verify routing
+      works
   unit:
     - packages/@lumenflow/cli/src/__tests__/config-set.test.ts
     - packages/@lumenflow/cli/src/__tests__/config-get.test.ts
@@ -34,8 +35,19 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: config:set/config:get load pack config_key metadata from a monorepo-hardcoded path. Extract shared pack manifest resolution that matches runtime pack source semantics (local/git/registry) so config routing works across workspace topologies.
+description: config:set/config:get load pack config_key metadata from a monorepo-hardcoded path.
+  Extract shared pack manifest resolution that matches runtime pack source semantics
+  (local/git/registry) so config routing works across workspace topologies.
 acceptance:
-  - config:set and config:get resolve pack config_key metadata through shared resolver, not hardcoded monorepo path assumptions
+  - config:set and config:get resolve pack config_key metadata through shared resolver, not
+    hardcoded monorepo path assumptions
   - Resolver handles local and non-local pack sources consistently with workspace pack pins
   - Unit tests cover resolution behavior for at least local + registry pack pins
+claimed_mode: worktree
+worktree_path: /home/USER/source/hellmai/os/worktrees/framework-core-lifecycle-wu-2191
+claimed_at: 2026-02-26T11:06:39.327Z
+baseline_main_sha: d3ceb06a4e4cf60f8c113bad5271e929996992e4
+session_id: e018b485-172c-448b-94b3-462619036339
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-26T11:06:39.332Z
