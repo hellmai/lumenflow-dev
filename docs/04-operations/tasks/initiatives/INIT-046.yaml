@@ -23,4 +23,4 @@ success_metrics:
   - Runtime HTTP tool dispatch endpoint is available with enforcement preserved
   - Pack install/validate/publish readiness is documented and green
 labels: []
-related_plan: lumenflow://plans/INIT-046-plan.md
+related_plan: lumenflow://plans/INIT-046-sidekick-pack-runtime-oss-plan.md
