@@ -1,6 +1,6 @@
 id: WU-2243
 title: initiative:create ignores --phase and --success-metric flags
-lane: 'Framework: CLI WU Commands'
+lane: 'Framework: Initiatives'
 type: bug
 status: ready
 priority: P3
@@ -26,7 +26,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: "initiative:create accepts --phase and --success-metric flags but silently ignores them. The created YAML has no phases or success_metrics. Reproducer: pass --phase and --success-metric, check output warns 'missing recommended fields'."
+description: "initiative:create accepts --phase and --success-metric flags but silently ignores
+  them. The created YAML has no phases or success_metrics. Reproducer: pass --phase and
+  --success-metric, check output warns 'missing recommended fields'."
 acceptance:
   - initiative:create --phase populates phases array in YAML
   - initiative:create --success-metric populates success_metrics array in YAML
