@@ -20,6 +20,7 @@ sections:
 
 ## 🚀 Ready (pull from here)
 
+- [WU-2241 — Add state:emit command for manual corrective events](wu/WU-2241.yaml) — Framework: CLI WU Commands
 - [WU-2240 — wu:recover --action resume does not emit claim event to state store](wu/WU-2240.yaml) — Framework: CLI WU Commands
 - [WU-2239 — wu:edit --spec-file silently overwrites runtime fields](wu/WU-2239.yaml) — Framework: CLI WU Commands
 - [WU-2238 — wu:recover --action reset should require --force for destructive ops](wu/WU-2238.yaml) — Framework: CLI WU Commands
