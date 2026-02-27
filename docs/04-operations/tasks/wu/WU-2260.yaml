@@ -20,12 +20,20 @@ artifacts:
 dependencies: []
 initiative: INIT-047
 risks: []
-notes: ''
+notes: 'Three minor fixes from INIT-047 code review: (1) warn on git status failure in dirty check,
+  (2) tighten ValidEmitType, (3) deduplicate error output for --force check.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-27T16:32:19.396Z
+worktree_path: worktrees/framework-cli-wu-commands-wu-2260
+session_id: 87394ffd-3b29-43a4-bb04-21c769b571ac
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T16:32:19.401Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -38,11 +46,3 @@ acceptance:
   - emitCorrectiveEvent type parameter uses ValidEmitType only, string accepted only at CLI parse
     layer
   - wu:recover reset prints either the detailed warning or the die message, not both
-claimed_mode: worktree
-worktree_path: worktrees/framework-cli-wu-commands-wu-2260
-claimed_at: 2026-02-27T16:32:19.396Z
-baseline_main_sha: 64cb20c1156f2491248f591f663ee656df4eaec7
-session_id: 87394ffd-3b29-43a4-bb04-21c769b571ac
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-27T16:32:19.401Z
