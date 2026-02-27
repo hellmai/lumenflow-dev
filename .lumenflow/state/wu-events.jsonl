@@ -2452,10 +2452,11 @@
 {"type":"complete","wuId":"WU-2241","timestamp":"2026-02-27T15:42:11.578Z"}
 {"type":"complete","wuId":"WU-2246","timestamp":"2026-02-27T15:46:05.986Z"}
 {"type":"claim","wuId":"WU-2257","timestamp":"2026-02-27T15:48:12.170Z","lane":"Framework: CLI Enforcement","title":"Lane lifecycle commands write directly to main, bypass micro-worktree"}
-{"type":"checkpoint","wuId":"WU-2257","timestamp":"2026-02-27T15:48:42.961Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"claim","wuId":"WU-2248","timestamp":"2026-02-27T15:50:05.104Z","lane":"Framework: CLI WU Commands","title":"wu:done --already-merged writes directly to local main bypassing micro-worktree isolation"}
-{"type":"checkpoint","wuId":"WU-2248","timestamp":"2026-02-27T15:50:39.633Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"claim","wuId":"WU-2249","timestamp":"2026-02-27T15:51:36.268Z","lane":"Framework: Core State Recovery","title":"wu:recover --action reset deletes worktree without checking for uncommitted work"}
+{"type":"checkpoint","wuId":"WU-2249","timestamp":"2026-02-27T15:55:53.277Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"checkpoint","wuId":"WU-2257","timestamp":"2026-02-27T15:48:42.961Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"checkpoint","wuId":"WU-2248","timestamp":"2026-02-27T15:50:39.633Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"checkpoint","wuId":"WU-2257","timestamp":"2026-02-27T15:52:44.817Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2257","timestamp":"2026-02-27T15:54:17.287Z"}
 {"type":"complete","wuId":"WU-2248","timestamp":"2026-02-27T15:55:09.971Z"}

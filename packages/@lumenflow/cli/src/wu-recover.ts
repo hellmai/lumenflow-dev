@@ -36,7 +36,7 @@ import {
   GIT_FLAGS,
   getLaneBranch,
 } from '@lumenflow/core/wu-constants';
-import { getGitForCwd } from '@lumenflow/core/git-adapter';
+import { getGitForCwd, createGitForPath } from '@lumenflow/core/git-adapter';
 import { withMicroWorktree } from '@lumenflow/core/micro-worktree';
 import { WUStateStore } from '@lumenflow/core/wu-state-store';
 import { generateBacklog, generateStatus } from '@lumenflow/core/backlog-generator';
@@ -172,6 +172,49 @@ function getWorktreePath(wuId: string, lane: string): string {
   const laneKebab = toKebab(lane);
   const wuIdLower = wuId.toLowerCase();
   return join(process.cwd(), DEFAULTS.WORKTREES_DIR, `${laneKebab}-${wuIdLower}`);
+}
+
+/**
+ * WU-2249: Check if a worktree has uncommitted changes (dirty files).
+ *
+ * @param worktreePath - Absolute path to the worktree directory
+ * @returns Array of dirty file lines (empty if clean or path does not exist)
+ */
+export async function checkWorktreeForDirtyFiles(worktreePath: string): Promise<string[]> {
+  if (!existsSync(worktreePath)) {
+    return [];
+  }
+
+  try {
+    const git = createGitForPath(worktreePath);
+    const status = await git.getStatus();
+    if (!status) {
+      return [];
+    }
+    return status.split('\n').filter((line: string) => line.trim() !== '');
+  } catch {
+    // If git status fails (e.g., not a valid git dir), treat as clean
+    return [];
+  }
+}
+
+/**
+ * WU-2249: Get an abort message when worktree has uncommitted changes.
+ *
+ * @param wuId - The WU ID
+ * @param dirtyFiles - Array of dirty file lines from git status --porcelain
+ * @returns Human-readable abort message with instructions
+ */
+export function getDirtyWorktreeAbortMessage(wuId: string, dirtyFiles: string[]): string {
+  return [
+    `ABORT: Worktree for ${wuId} has uncommitted changes:`,
+    ``,
+    ...dirtyFiles.map((f) => `  ${f}`),
+    ``,
+    `To preserve your work, commit or stash changes in the worktree first.`,
+    `To discard changes and proceed with reset, re-run with --discard-changes:`,
+    `  pnpm wu:recover --id ${wuId} --action reset --force --discard-changes`,
+  ].join('\n');
 }
 
 export function getLaneBranchNameForWU(wuId: string, lane: string): string {
@@ -336,7 +379,7 @@ async function executeResume(wuId: string): Promise<boolean> {
  * Worktree removal still happens directly (git operation, not file write).
  * Changes are pushed via merge, not direct file modification on main.
  */
-async function executeReset(wuId: string): Promise<boolean> {
+async function executeReset(wuId: string, discardChanges = false): Promise<boolean> {
   console.log(`${LOG_PREFIX} Executing reset action for ${wuId}...`);
 
   const wuPath = WU_PATHS.WU(wuId);
@@ -349,6 +392,15 @@ async function executeReset(wuId: string): Promise<boolean> {
   const branchPrPath = shouldUseBranchPrRecoverPath(doc);
   const worktreePath = getWorktreePath(wuId, (doc.lane as string) || '');
   const lane = (doc.lane as string) || '';
+
+  // WU-2249: Check worktree for uncommitted changes before deletion
+  if (existsSync(worktreePath) && !discardChanges) {
+    const dirtyFiles = await checkWorktreeForDirtyFiles(worktreePath);
+    if (dirtyFiles.length > 0) {
+      console.error(getDirtyWorktreeAbortMessage(wuId, dirtyFiles));
+      return false;
+    }
+  }
 
   // Remove worktree if exists (git operation, safe to do directly)
   // WU-1097: Use worktreeRemove() instead of deprecated run() with shell strings
@@ -604,12 +656,13 @@ async function executeCleanup(wuId: string): Promise<boolean> {
 export async function executeRecoveryAction(
   action: RecoveryActionType,
   wuId: string,
+  options?: { discardChanges?: boolean },
 ): Promise<boolean> {
   switch (action) {
     case RECOVERY_ACTIONS.RESUME:
       return executeResume(wuId);
     case RECOVERY_ACTIONS.RESET:
-      return executeReset(wuId);
+      return executeReset(wuId, options?.discardChanges);
     case RECOVERY_ACTIONS.NUKE:
       return executeNuke(wuId);
     case RECOVERY_ACTIONS.CLEANUP:
@@ -642,6 +695,12 @@ export async function main(): Promise<void> {
         description: 'Required for destructive actions (reset, nuke)',
       },
       {
+        name: 'discardChanges',
+        flags: '--discard-changes',
+        type: 'boolean',
+        description: 'Allow reset to proceed even if worktree has uncommitted changes',
+      },
+      {
         name: 'json',
         flags: '-j, --json',
         type: 'boolean',
@@ -652,10 +711,11 @@ export async function main(): Promise<void> {
     allowPositionalId: true,
   });
 
-  const { id, action, force, json } = args as {
+  const { id, action, force, discardChanges, json } = args as {
     id: string;
     action?: string;
     force?: boolean;
+    discardChanges?: boolean;
     json?: boolean;
   };
 
@@ -692,7 +752,9 @@ export async function main(): Promise<void> {
   }
 
   // Execute action
-  const success = await executeRecoveryAction(action as RecoveryActionType, id);
+  const success = await executeRecoveryAction(action as RecoveryActionType, id, {
+    discardChanges,
+  });
 
   if (!success) {
     console.error(`${LOG_PREFIX} ${EMOJI.FAILURE} Recovery action failed`);
