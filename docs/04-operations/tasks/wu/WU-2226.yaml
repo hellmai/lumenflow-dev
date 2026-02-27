@@ -2,7 +2,7 @@ id: WU-2226
 title: lumenflow:upgrade should sync new pnpm script entries from CLI public-manifest
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: done
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -45,3 +45,6 @@ acceptance:
   - Existing script entries are not overwritten or removed
   - New scripts use the same pattern as init-generated scripts
   - 'Unit tests cover: new script added, existing script preserved, no-op when already present'
+locked: true
+completed_at: 2026-02-27T10:29:57.312Z
+completed: 2026-02-27
