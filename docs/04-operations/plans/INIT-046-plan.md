@@ -48,7 +48,17 @@ INIT-046 is complete when:
 
 ## Risks
 
-<!-- What could go wrong? How will you mitigate? -->
+1. Contract drift between manifest declarations and tool implementation behavior.
+   Mitigation: manifest tests + pack validation in each phase.
+
+2. Concurrent write hazards in filesystem-backed storage.
+   Mitigation: explicit lock path and concurrent write tests in storage suite.
+
+3. Scope mismatch causing runtime deny behavior.
+   Mitigation: verify permissions/scopes per tool descriptor and validate through pack:validate.
+
+4. Late integration surprises for runtime dispatch.
+   Mitigation: land endpoint tests and enforcement checks before final validation phase.
 
 ## Open Questions
 
