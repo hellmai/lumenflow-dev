@@ -2,7 +2,7 @@ id: WU-2254
 title: macOS sandbox read confinement and deny overlays
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -41,3 +41,11 @@ acceptance:
   - macOS sandbox restricts file-read to workspace and system paths
   - Deny overlays block reads to sensitive paths like ~/.ssh
   - macOS sandbox behavior matches Linux bwrap confinement
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2254
+claimed_at: 2026-02-27T18:02:36.839Z
+baseline_main_sha: 85041f725145b8cb916261853a3fad75a36a70aa
+session_id: 12064739-5a04-4efd-9948-f2f42b8a6307
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T18:02:36.846Z
