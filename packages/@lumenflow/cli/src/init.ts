@@ -987,9 +987,9 @@ export async function scaffoldProject(
   await scaffoldClientFiles(targetDir, options, result, tokenDefaults, client);
 
   // WU-1300: Inject LumenFlow scripts into package.json
-  if (options.full) {
-    await injectPackageJsonScripts(targetDir, options, result);
-  }
+  // WU-2230: Always inject scripts and devDependencies, not just in full mode.
+  // Without this, CLI commands (wu:create, gates, etc.) don't resolve after init.
+  await injectPackageJsonScripts(targetDir, options, result);
 
   // WU-1576: Run client integrations (enforcement hooks) BEFORE initial commit.
   // Reads the just-scaffolded config, dispatches to registered adapters per client.
@@ -1270,6 +1270,80 @@ async function injectPackageJsonScripts(
   if (modified) {
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
     result.created.push('package.json (scripts updated)');
+  }
+}
+
+/**
+ * WU-2230: Detect the project's package manager and return the install command.
+ * Used after scaffolding to ensure devDependencies are actually installed.
+ */
+type PackageManagerType = 'pnpm' | 'npm' | 'yarn' | 'bun';
+
+interface PostScaffoldInstallResult {
+  packageManager: PackageManagerType;
+  command: string;
+  skipped: boolean;
+  error?: string;
+}
+
+export async function runPostScaffoldInstall(
+  targetDir: string,
+  options?: { dryRun?: boolean },
+): Promise<PostScaffoldInstallResult> {
+  const packageJsonPath = path.join(targetDir, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    return { packageManager: 'npm', command: 'npm install', skipped: true };
+  }
+
+  // Detect package manager
+  let pm: PackageManagerType = 'npm'; // default fallback
+  try {
+    const content = fs.readFileSync(packageJsonPath, 'utf-8');
+    const pkg = JSON.parse(content) as Record<string, unknown>;
+    const pkgManager = pkg.packageManager as string | undefined;
+
+    if (pkgManager?.startsWith('pnpm')) {
+      pm = 'pnpm';
+    } else if (pkgManager?.startsWith('yarn')) {
+      pm = 'yarn';
+    } else if (pkgManager?.startsWith('bun')) {
+      pm = 'bun';
+    } else if (pkgManager?.startsWith('npm')) {
+      pm = 'npm';
+    } else {
+      // No packageManager field — detect from lockfiles
+      if (fs.existsSync(path.join(targetDir, 'pnpm-lock.yaml'))) {
+        pm = 'pnpm';
+      } else if (fs.existsSync(path.join(targetDir, 'yarn.lock'))) {
+        pm = 'yarn';
+      } else if (fs.existsSync(path.join(targetDir, 'bun.lockb')) || fs.existsSync(path.join(targetDir, 'bun.lock'))) {
+        pm = 'bun';
+      }
+      // else default to npm
+    }
+  } catch {
+    // If package.json is malformed, default to npm
+  }
+
+  const command = `${pm} install`;
+
+  if (options?.dryRun) {
+    return { packageManager: pm, command, skipped: false };
+  }
+
+  try {
+    console.log(`\n[lumenflow init] Installing dependencies (${command})...`);
+    execFileSync(pm, ['install'], {
+      cwd: targetDir,
+      stdio: 'inherit',
+    });
+    console.log('[lumenflow init] \u2713 Dependencies installed');
+    return { packageManager: pm, command, skipped: false };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    console.warn(`[lumenflow init] \u26A0 ${command} failed: ${errorMessage}`);
+    console.warn(`[lumenflow init] Run "${command}" manually to install dependencies.`);
+    return { packageManager: pm, command, skipped: false, error: errorMessage };
   }
 }
 
@@ -1696,6 +1770,8 @@ interface InitBootstrapResult {
   reason?: string;
   workspaceGenerated: boolean;
   packInstalled: boolean;
+  /** WU-2230: Warning message when pack install fails non-fatally */
+  warning?: string;
 }
 
 function resolveBootstrapProjectName(targetDir: string): string {
@@ -1744,22 +1820,27 @@ export async function runInitBootstrap(
     throw createError(ErrorCodes.ONBOARD_FAILED, `${BOOTSTRAP_ERROR_PREFIX} ${failureReason}`);
   }
 
-  if (
+  // WU-2230: Pack install failure is non-blocking — warn instead of throwing.
+  // New users hitting a registry issue shouldn't have their entire init fail.
+  const packFailed =
     !options.skipBootstrapPackInstall &&
     options.bootstrapDomain !== BOOTSTRAP_CUSTOM_DOMAIN &&
-    onboardResult.packInstalled !== true
-  ) {
-    throw createError(
-      ErrorCodes.ONBOARD_FAILED,
-      `${BOOTSTRAP_ERROR_PREFIX} failed to install ${options.bootstrapDomain} pack with integrity metadata. ` +
-        `Retry after fixing registry access or rerun with --skip-bootstrap-pack-install.`,
-    );
+    onboardResult.packInstalled !== true;
+
+  const warning = packFailed
+    ? `${BOOTSTRAP_ERROR_PREFIX} failed to install ${options.bootstrapDomain} pack with integrity metadata. ` +
+      `Continuing without pack. Retry later with: pnpm pack:install --id ${options.bootstrapDomain}`
+    : undefined;
+
+  if (warning) {
+    console.warn(`\n\u26A0 ${warning}\n`);
   }
 
   return {
     skipped: false,
     workspaceGenerated: onboardResult.workspaceGenerated === true,
     packInstalled: onboardResult.packInstalled === true,
+    warning,
   };
 }
 
@@ -1883,6 +1964,10 @@ export async function main(): Promise<void> {
     console.log('\nWarnings:');
     result.warnings.forEach((w) => console.log(`  \u26A0 ${w}`));
   }
+
+  // WU-2230: Auto-install dependencies so CLI commands work immediately after init.
+  // Without this, users must manually run `pnpm install` before any `pnpm wu:*` commands.
+  await runPostScaffoldInstall(targetDir);
 
   // WU-1386: Run doctor auto-check (non-blocking)
   // This provides feedback on workflow health without failing init

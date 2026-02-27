@@ -197,14 +197,16 @@ export async function main() {
 
   const dispatchTarget = resolveDispatchTarget(process.argv.slice(2), manifest);
   const entryPath = join(cliPackageRoot, CLI_DIST_DIR, dispatchTarget.entryRelativePath);
-  const initialArgs = process.argv.slice(2);
 
   if (!existsSync(entryPath)) {
     const initFallbackPath = join(cliPackageRoot, CLI_DIST_DIR, DEFAULT_DISPATCH.initEntry);
+    // WU-2230: Use dispatchTarget.forwardedArgs (which has 'init' token stripped)
+    // instead of initialArgs (which includes 'init' and causes Commander to reject it
+    // as an unexpected positional argument).
     const fallbackArgs =
       dispatchTarget.entryRelativePath === DEFAULT_DISPATCH.commandsEntry
         ? [HELP_FLAG_LONG]
-        : initialArgs;
+        : dispatchTarget.forwardedArgs;
     execFileSync(process.execPath, [initFallbackPath, ...fallbackArgs], {
       stdio: 'inherit',
     });

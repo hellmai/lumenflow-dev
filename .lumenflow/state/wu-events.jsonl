@@ -2404,5 +2404,6 @@
 {"type":"checkpoint","wuId":"WU-2229","timestamp":"2026-02-27T11:42:55.579Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2229","timestamp":"2026-02-27T12:01:12.787Z"}
 {"type":"claim","wuId":"WU-2230","timestamp":"2026-02-27T13:05:19.759Z","lane":"Framework: CLI WU Commands","title":"Fix new-user friction: init self-install, template formatting, pack-install default"}
+{"type":"checkpoint","wuId":"WU-2230","timestamp":"2026-02-27T13:10:21.429Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"release","wuId":"WU-2230","timestamp":"2026-02-27T13:34:14.000Z","reason":"Reset via wu:recover --action reset"}
 {"type":"claim","wuId":"WU-2231","timestamp":"2026-02-27T13:45:22.984Z","lane":"Framework: Core Lifecycle","title":"Sidekick pack scaffold and manifest contract"}
