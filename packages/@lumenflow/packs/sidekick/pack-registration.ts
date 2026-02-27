@@ -6,7 +6,8 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SHA256_ALGORITHM, SIDEKICK_MANIFEST_FILE_NAME, UTF8_ENCODING } from './constants.js';
-import { SIDEKICK_MANIFEST, type SidekickPackManifest } from './manifest.js';
+import { SIDEKICK_MANIFEST } from './manifest.js';
+import type { SidekickPackManifest } from './manifest-schema.js';
 
 const NULL_BYTE_BUFFER = Buffer.from([0]);
 const DEFAULT_EXCLUSIONS = ['node_modules/', '.git/', 'dist/', '.DS_Store'];

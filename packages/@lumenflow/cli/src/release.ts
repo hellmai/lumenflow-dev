@@ -58,6 +58,9 @@ const LUMENFLOW_PACKAGES_DIR = 'packages/@lumenflow';
 /** Path to the bare lumenflow wrapper package (WU-1691) */
 const LUMENFLOW_WRAPPER_PACKAGE = 'packages/lumenflow';
 
+/** Subdirectory containing domain packs within @lumenflow (WU-2267) */
+const LUMENFLOW_PACKS_SUBDIR = 'packs';
+
 /** Relative path to version-policy.yaml truth file (WU-2107) */
 export const VERSION_POLICY_RELATIVE_PATH = 'apps/docs/src/data/version-policy.yaml';
 
@@ -290,6 +293,25 @@ export function findPackageJsonPaths(baseDir: string = process.cwd()): string[] 
         // Only include public packages (not marked private)
         if (!content.private) {
           paths.push(packageJsonPath);
+        }
+      }
+    }
+  }
+
+  // WU-2267: Include domain packs (packages/@lumenflow/packs/*)
+  const packsDir = join(packagesDir, LUMENFLOW_PACKS_SUBDIR);
+  if (existsSync(packsDir)) {
+    const packEntries = readdirSync(packsDir);
+    for (const packEntry of packEntries) {
+      const packPath = join(packsDir, packEntry);
+      const packPackageJson = join(packPath, PACKAGE_JSON_FILENAME);
+
+      if (statSync(packPath).isDirectory() && existsSync(packPackageJson)) {
+        const content = JSON.parse(
+          readFileSync(packPackageJson, { encoding: FILE_SYSTEM.UTF8 as BufferEncoding }),
+        );
+        if (!content.private) {
+          paths.push(packPackageJson);
         }
       }
     }

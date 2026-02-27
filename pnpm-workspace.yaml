@@ -1,5 +1,6 @@
 packages:
   - 'packages/@lumenflow/*'
+  - 'packages/@lumenflow/packs/*'
   - 'packages/lumenflow'
   - 'apps/*'
 

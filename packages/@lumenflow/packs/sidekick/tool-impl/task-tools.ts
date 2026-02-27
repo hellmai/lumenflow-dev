@@ -234,7 +234,7 @@ async function taskScheduleTool(input: unknown, context?: ToolContextLike): Prom
       }
       // cron is stored but TaskRecord doesn't have it yet -- extend inline
       if (cron) {
-        (target as Record<string, unknown>).cron = cron;
+        (target as unknown as Record<string, unknown>).cron = cron;
       }
       target.updated_at = nowIso();
       await storage.writeStore('tasks', latest);
