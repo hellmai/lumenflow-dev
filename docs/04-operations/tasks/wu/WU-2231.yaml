@@ -27,6 +27,9 @@ assigned_to: tom@hellm.ai
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T13:45:22.965Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -35,6 +38,4 @@ acceptance:
   - Pack folder scaffolded under packages/@lumenflow/packs/sidekick
   - 16 tool declarations exist with schemas, permissions, and scopes
   - pack:validate passes for sidekick
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-27T13:45:22.965Z
+  - .sidekick/ added to .gitignore
