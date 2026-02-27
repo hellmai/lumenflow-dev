@@ -71,7 +71,10 @@ vi.mock('@lumenflow/core/wu-paths', async () => {
     ...actual,
     defaultWorktreeFrom: vi.fn((doc: { lane?: string; id?: string }) => {
       if (!doc?.lane || !doc?.id) return null;
-      const lanePart = doc.lane.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+      const lanePart = doc.lane
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/-+$/, '');
       return `worktrees/${lanePart}-${doc.id.toLowerCase()}`;
     }),
   };
@@ -301,7 +304,7 @@ describe('wu:escalate', () => {
         'title: Test WU',
         'status: in_progress',
         "lane: 'Framework: Core'",
-        "worktree_path: worktrees/framework-core-wu-14",
+        'worktree_path: worktrees/framework-core-wu-14',
         'escalation_triggers:',
         '  - sensitive_data',
         'requires_human_escalation: true',

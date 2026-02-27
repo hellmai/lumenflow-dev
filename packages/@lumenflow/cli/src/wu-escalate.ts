@@ -140,17 +140,12 @@ export function showEscalationStatus(wu: Record<string, unknown>): void {
  *
  * Returns null to fall back to micro-worktree mode.
  */
-function resolveWorktreeMode(
-  wu: Record<string, unknown>,
-  rootDir?: string,
-): string | null {
+function resolveWorktreeMode(wu: Record<string, unknown>, rootDir?: string): string | null {
   if (wu.status !== 'in_progress') return null;
   if (!wu.worktree_path) return null;
 
   // Use defaultWorktreeFrom to get a canonical worktree path
-  const worktreeRelPath = defaultWorktreeFrom(
-    wu as { lane?: string; id?: string },
-  );
+  const worktreeRelPath = defaultWorktreeFrom(wu as { lane?: string; id?: string });
   if (!worktreeRelPath) return null;
 
   // WU-1806 pattern: resolve correctly even when running from inside a worktree
