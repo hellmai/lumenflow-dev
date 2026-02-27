@@ -5,7 +5,6 @@ _Last updated: 2026-02-27_
 ## In Progress
 
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
-- [WU-2230 — Fix new-user friction: init self-install, template formatting, pack-install default](wu/WU-2230.yaml)
 
 ## Completed
 

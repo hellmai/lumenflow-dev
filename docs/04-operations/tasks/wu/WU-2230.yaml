@@ -2,7 +2,7 @@ id: WU-2230
 title: 'Fix new-user friction: init self-install, template formatting, pack-install default'
 lane: 'Framework: CLI WU Commands'
 type: bug
-status: in_progress
+status: ready
 priority: P2
 created: 2026-02-27
 code_paths:
@@ -38,11 +38,6 @@ acceptance:
   - Scaffolded files pass prettier format check out of the box
   - npx lumenflow init works as invocation (init recognized as implicit)
   - Pack install failure does not block init for new external projects
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/lumenflow-dev/worktrees/framework-cli-wu-commands-wu-2230
-claimed_at: 2026-02-27T13:05:19.736Z
-baseline_main_sha: 74d33aa21f6159be9a9524a854dd68f155ce0cde
-session_id: 8de56ee0-65cc-496d-9eac-dbbb751fb8a2
 approved_by:
   - tom@hellm.ai
 approved_at: 2026-02-27T13:05:19.741Z
