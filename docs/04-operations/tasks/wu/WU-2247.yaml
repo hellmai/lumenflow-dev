@@ -1,0 +1,35 @@
+id: WU-2247
+title: worktree_path stores absolute home paths in version-controlled YAML
+lane: 'Framework: Core Lifecycle'
+type: bug
+status: ready
+priority: P1
+created: 2026-02-27
+code_paths:
+  - packages/@lumenflow/cli/src/wu-claim.ts
+  - packages/@lumenflow/cli/src/wu-done.ts
+tests:
+  manual: []
+  unit:
+    - packages/@lumenflow/cli/__tests__/wu-claim-relative-path.test.ts
+  e2e: []
+artifacts:
+  - .lumenflow/stamps/WU-2247.done
+dependencies: []
+initiative: INIT-047
+risks: []
+notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+requires_review: false
+assigned_to: tom@hellm.ai
+exposure: backend-only
+escalation_triggers: []
+requires_human_escalation: false
+requires_cso_approval: false
+requires_cto_approval: false
+requires_design_approval: false
+description: wu:claim writes absolute paths like /home/tom/... or /home/USER/... into worktree_path in WU YAML. These are committed to git and visible in open source repos. Hundreds of WU YAMLs currently contain these paths. worktree_path should be relative and resolved at runtime, and done WUs should have worktree_path stripped entirely.
+acceptance:
+  - wu:claim writes relative worktree_path (e.g. worktrees/framework-cli-wu-commands-wu-2239)
+  - wu:done strips worktree_path from completed WU YAML
+  - Batch migration strips or relativizes worktree_path from all existing done WUs
+  - No absolute home paths remain in any tracked YAML file
