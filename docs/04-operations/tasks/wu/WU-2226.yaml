@@ -20,10 +20,17 @@ dependencies: []
 risks: []
 notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
-exposure: ui
+claimed_at: 2026-02-27T10:11:08.844Z
+worktree_path: /home/USER/source/hellmai/lumenflow-dev/worktrees/framework-cli-wu-commands-wu-2226
+session_id: a769d0e8-b375-4c06-aee9-d0fe1f8274f2
+exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T10:11:08.851Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -38,11 +45,3 @@ acceptance:
   - Existing script entries are not overwritten or removed
   - New scripts use the same pattern as init-generated scripts
   - 'Unit tests cover: new script added, existing script preserved, no-op when already present'
-claimed_mode: worktree
-worktree_path: /home/USER/source/hellmai/lumenflow-dev/worktrees/framework-cli-wu-commands-wu-2226
-claimed_at: 2026-02-27T10:11:08.844Z
-baseline_main_sha: 0adbb941da955e5f3010d6c4027b06d32fcc2f03
-session_id: a769d0e8-b375-4c06-aee9-d0fe1f8274f2
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-27T10:11:08.851Z
