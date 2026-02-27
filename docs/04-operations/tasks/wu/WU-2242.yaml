@@ -1,6 +1,6 @@
 id: WU-2242
 title: initiative:create requires explicit --id despite documenting auto-gen
-lane: 'Framework: CLI WU Commands'
+lane: 'Framework: Initiatives'
 type: bug
 status: ready
 priority: P3
@@ -26,7 +26,8 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: initiative:create help says 'If not provided, auto-generates next sequential ID' but then errors with 'required option --id not specified'. Auto-generation does not work.
+description: initiative:create help says 'If not provided, auto-generates next sequential ID' but
+  then errors with 'required option --id not specified'. Auto-generation does not work.
 acceptance:
   - initiative:create without --id auto-generates the next sequential INIT-XXX ID
   - Existing --id flag still works for explicit ID override
