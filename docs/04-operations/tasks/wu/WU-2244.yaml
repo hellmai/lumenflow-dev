@@ -1,6 +1,6 @@
 id: WU-2244
 title: initiative:create blocked from non-main branch
-lane: 'Framework: CLI WU Commands'
+lane: 'Framework: Initiatives'
 type: bug
 status: ready
 priority: P3
@@ -26,7 +26,9 @@ requires_human_escalation: false
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
-description: initiative:create fails when run from a non-main branch with local-mode safety rules. Since initiative:create uses micro-worktree isolation and auto-commits to main, the current branch should not matter. This blocks agents working in worktrees from creating initiatives.
+description: initiative:create fails when run from a non-main branch with local-mode safety rules.
+  Since initiative:create uses micro-worktree isolation and auto-commits to main, the current branch
+  should not matter. This blocks agents working in worktrees from creating initiatives.
 acceptance:
   - initiative:create works from any branch (it already uses micro-worktree isolation)
   - 'Or: clear error message explaining why main branch is required with copy-paste fix'
