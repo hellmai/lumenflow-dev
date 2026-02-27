@@ -2,7 +2,7 @@ id: WU-2252
 title: Network allowlist enforcement in bwrap
 lane: 'Framework: Core Lifecycle'
 type: feature
-status: ready
+status: in_progress
 priority: P1
 created: 2026-02-27
 code_paths:
@@ -42,3 +42,11 @@ acceptance:
   - bwrap invocation emits iptables rules for allowlisted hosts
   - Blocked hosts get ECONNREFUSED in sandbox
   - Allowlist threaded through SandboxSubprocessDispatcher
+claimed_mode: worktree
+worktree_path: worktrees/framework-core-lifecycle-wu-2252
+claimed_at: 2026-02-27T17:47:33.712Z
+baseline_main_sha: 23cc156bdacb17315a349a5a0c83eb250952f532
+session_id: c34c4bc3-d629-4f87-be91-79e1b25679da
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T17:47:33.717Z
