@@ -8,7 +8,8 @@ created: 2026-02-27
 code_paths:
   - packages/@lumenflow/cli/src/initiative-create.ts
 tests:
-  manual: []
+  manual:
+    - Run pnpm initiative:create from a non-main branch and verify it completes successfully
   unit:
     - packages/@lumenflow/cli/__tests__/initiative-create-branch.test.ts
   e2e: []
