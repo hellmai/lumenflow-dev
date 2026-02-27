@@ -330,6 +330,98 @@ The response on stdout is a JSON object with an `output` field containing the st
 
 The `bwrap` sandbox profile is constructed from the enforced scopes. Write-scoped paths get read-write bind mounts; read-scoped paths get read-only bind mounts. Paths outside the scope intersection are not mounted — the tool literally cannot see them.
 
+## Platform-Specific Sandbox Backends
+
+The kernel dispatches tool execution through platform-specific sandbox backends. Each backend enforces the same `SandboxProfile` contract — scoped filesystem mounts, network posture, and deny overlays — but uses the native isolation primitive available on that OS.
+
+### Linux: bwrap (bubblewrap)
+
+On Linux, the kernel uses `bwrap` (bubblewrap) to create a user-namespace sandbox. The `SandboxProfile` is translated into bwrap flags:
+
+| Profile field           | bwrap behavior                                                           |
+| ----------------------- | ------------------------------------------------------------------------ |
+| `readonly_bind_mounts`  | `--ro-bind source target` per mount                                      |
+| `writable_bind_mounts`  | `--bind source target` per mount                                         |
+| `deny_overlays`         | `--bind /dev/null path` (files) or `--tmpfs path` (directories)          |
+| `network_posture: off`  | `--unshare-net`                                                          |
+| `network_posture: full` | No network flag (default allows network)                                 |
+
+#### Network allowlist on Linux
+
+When `network_posture` is `allowlist`, bwrap still uses `--unshare-net` to create an isolated network namespace, then runs an iptables script _inside_ the sandbox before executing the tool command. The script is built by `buildIptablesAllowlistScript()`:
+
+1. Allow loopback traffic (`-o lo -j ACCEPT`)
+2. Allow established/related connections (`--state ESTABLISHED,RELATED -j ACCEPT`)
+3. Per-entry ACCEPT rules for each allowlisted host:port or CIDR
+4. Default REJECT with `icmp-port-unreachable` (produces `ECONNREFUSED` at the application level)
+
+The entire iptables setup and tool command are wrapped in a `sh -c` invocation so iptables rules are applied before the tool runs.
+
+```
+bwrap --unshare-net ... -- sh -c \
+  'iptables -A OUTPUT -o lo -j ACCEPT && \
+   iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT && \
+   iptables -A OUTPUT -d registry.npmjs.org -p tcp --dport 443 -j ACCEPT && \
+   iptables -A OUTPUT -j REJECT --reject-with icmp-port-unreachable && \
+   exec node tool-runner-worker.js'
+```
+
+### macOS: sandbox-exec (SBPL)
+
+On macOS, the kernel uses the built-in `sandbox-exec` command with a Seatbelt Profile Language (SBPL) policy string. The backend builds the policy from the `SandboxProfile`:
+
+```
+sandbox-exec -p '(version 1) (deny default) (allow process*) ...' node tool-runner-worker.js
+```
+
+#### Posture-aware network rules
+
+The macOS backend generates network SBPL rules based on the profile's network posture:
+
+| Posture     | SBPL rules generated                                                        |
+| ----------- | --------------------------------------------------------------------------- |
+| `off`       | `(deny network*)`                                                           |
+| `allowlist` | `(deny network*)` + `(allow network-outbound (remote ip "host"))` per entry |
+| `full`      | `(allow network*)`                                                          |
+
+#### Read confinement
+
+Rather than granting broad `(allow file-read*)`, the macOS backend generates scoped read rules for specific paths:
+
+- **Workspace root** — the project directory (covers worktree, state, WU YAML)
+- **System paths** — `/usr`, `/System`, `/Library`, `/bin`, `/sbin`, `/private`, `/dev`, `/tmp`
+- **Temp path** — from the sandbox profile
+
+Each allowed path uses `(allow file-read* (subpath "..."))` to restrict reads to known directories.
+
+#### Deny overlays for sensitive paths
+
+After the allow rules, the backend emits deny rules for sensitive home-directory paths:
+
+- `~/.ssh` — SSH keys and configuration
+- `~/.aws` — AWS credentials and configuration
+- `~/.gnupg` — GPG keys and keyrings
+
+These deny rules use `(deny file-read* (subpath "..."))` and are placed _after_ the allow rules. Because SBPL evaluates rules in order and the last matching rule wins, the deny overlays effectively block access to these directories even if they fall within a broader allow path.
+
+### Cross-platform parity
+
+Both backends enforce the same security properties from the same `SandboxProfile`:
+
+| Property             | Linux (bwrap)                    | macOS (sandbox-exec)            |
+| -------------------- | -------------------------------- | ------------------------------- |
+| Filesystem isolation | Bind mounts (paths not mounted are invisible) | SBPL subpath rules              |
+| Network blocking     | `--unshare-net`                  | `(deny network*)`              |
+| Network allowlist    | iptables OUTPUT rules            | SBPL `network-outbound` rules  |
+| Deny overlays        | `/dev/null` bind / `--tmpfs`     | `(deny file-read*)` rules      |
+| Sensitive paths      | `~/.ssh`, `~/.aws`, `~/.gnupg`, `.env` | `~/.ssh`, `~/.aws`, `~/.gnupg` |
+
+<Aside type="note">
+  On Linux, the default deny overlays also include `.env` files (bind-mounted to `/dev/null`).
+  The macOS backend focuses on home-directory credential directories. Both platforms protect
+  against credential exfiltration by sandboxed tools.
+</Aside>
+
 ## Why This Architecture
 
 This architecture is an **intentional incremental migration** from CLI-first to pack-first, not accidental complexity.

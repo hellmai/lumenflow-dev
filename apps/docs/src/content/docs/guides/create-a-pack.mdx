@@ -175,14 +175,43 @@ execution proceeds.
 
 # Network scope -- grants network access
 - type: network
-  posture: off # off | full
+  posture: off # off | allowlist | full
+
+# Network allowlist scope -- grants access to specific hosts only
+- type: network
+  posture: allowlist
+  allowlist_entries:
+    - 'registry.npmjs.org:443'  # host:port format
+    - '10.0.0.0/24'             # CIDR format
 ```
 
 <Aside type="tip">
-  Use the narrowest scope that works. A read-only tool should never declare `access: write`. The
-  kernel enforces the intersection, so overly broad scopes are capped by the workspace and lane
-  configuration.
+  Use the narrowest scope that works. A read-only tool should never declare `access: write`.
+  For network access, prefer `posture: allowlist` over `posture: full` whenever possible --
+  list only the hosts the tool actually needs. The kernel enforces the intersection, so overly
+  broad scopes are capped by the workspace and lane configuration.
 </Aside>
+
+#### Network allowlist in tool manifests
+
+Tools that need network access to specific services should declare `posture: allowlist` with their required destinations. This is safer than `posture: full` and allows workspace administrators to restrict which hosts are reachable.
+
+```yaml
+tools:
+  - name: registry:publish
+    entry: tool-impl/registry-tools.ts#registryPublishTool
+    permission: write
+    required_scopes:
+      - type: path
+        pattern: 'dist/**'
+        access: read
+      - type: network
+        posture: allowlist
+        allowlist_entries:
+          - 'registry.npmjs.org:443'
+```
+
+If the workspace or lane declares a narrower allowlist, the kernel intersects the entries -- only hosts present in _all_ layers are permitted. If the workspace blocks network entirely (`posture: off`), the tool call is denied regardless of the tool's declared allowlist.
 
 ### Real example: software-delivery manifest (excerpt)
 

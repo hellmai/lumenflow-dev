@@ -75,10 +75,51 @@ Path patterns use glob syntax (`*` for single segment, `**` for any depth). The 
 ```yaml
 required_scopes:
   - type: network
-    posture: full # or 'off'
+    posture: full # 'off' | 'allowlist' | 'full'
 ```
 
-Network scopes use a simpler model — the `posture` value must match across all four layers. If the workspace says `off` and the tool says `full`, the intersection fails.
+Network scopes control whether a tool can access the network and, if so, which hosts it can reach. The `posture` field accepts three values:
+
+| Posture       | Behavior                                                    |
+| ------------- | ----------------------------------------------------------- |
+| `off`         | All network access blocked                                  |
+| `allowlist`   | Only traffic to explicitly listed hosts/CIDRs is permitted  |
+| `full`        | Unrestricted network access                                 |
+
+#### Network allowlist
+
+When posture is `allowlist`, the scope must include an `allowlist_entries` array listing permitted destinations:
+
+```yaml
+required_scopes:
+  - type: network
+    posture: allowlist
+    allowlist_entries:
+      - 'registry.npmjs.org:443'
+      - '10.0.0.0/24'
+```
+
+Each entry is either a `host:port` pair (e.g., `registry.npmjs.org:443`) or a CIDR block (e.g., `10.0.0.0/24`). The `allowlist_entries` field is required when posture is `allowlist` and must contain at least one entry.
+
+#### Network intersection semantics
+
+Network posture intersection follows deny-wins semantics across the four scope layers:
+
+1. **`off` blocks everything.** If any layer declares `off`, the tool cannot use the network regardless of what other layers say.
+2. **`full` is compatible with `allowlist`.** When one layer declares `full` and another declares `allowlist`, the effective posture downgrades to `allowlist`. The `full` layer imposes no restriction, so the `allowlist` layer's entries apply.
+3. **Allowlist entries are set-intersected.** When multiple layers declare `allowlist`, only entries present in _all_ layers survive the intersection. An entry must appear in every restricting layer to be permitted.
+
+```
+Workspace: posture=full
+Lane:      posture=allowlist, entries=[registry.npmjs.org:443, api.github.com:443]
+Task:      posture=allowlist, entries=[registry.npmjs.org:443]
+Tool:      posture=allowlist, entries=[registry.npmjs.org:443, api.github.com:443]
+
+Intersection: posture=allowlist, entries=[registry.npmjs.org:443]
+  ← only entry present in all restricting layers
+```
+
+If the intersection produces an empty entry set, the result is denial — the tool cannot access the network.
 
 ## Reserved Path Protection
 

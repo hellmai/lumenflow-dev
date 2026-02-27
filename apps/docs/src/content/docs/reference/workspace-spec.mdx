@@ -180,6 +180,37 @@ security:
       posture: 'off'
 ```
 
+#### Network scope schema
+
+The network scope `posture` field accepts three values:
+
+| Posture     | Description                                                  |
+| ----------- | ------------------------------------------------------------ |
+| `off`       | All network access blocked                                   |
+| `allowlist` | Only traffic to listed hosts/CIDRs is permitted              |
+| `full`      | Unrestricted network access                                  |
+
+When posture is `allowlist`, the `allowlist_entries` field is required:
+
+| Field               | Type       | Required                     | Description                                    |
+| ------------------- | ---------- | ---------------------------- | ---------------------------------------------- |
+| `allowlist_entries`  | `string[]` | Yes (when posture=allowlist) | Array of permitted `host:port` or CIDR entries  |
+
+```yaml
+security:
+  allowed_scopes:
+    - type: network
+      posture: allowlist
+      allowlist_entries:
+        - 'registry.npmjs.org:443'    # host:port format
+        - 'api.github.com:443'        # host:port format
+        - '10.0.0.0/24'               # CIDR format
+```
+
+The kernel validates that `allowlist_entries` is present and non-empty when posture is `allowlist`. Omitting it or passing an empty array produces a Zod validation error at startup.
+
+Network scopes participate in [scope intersection](/kernel/scope-intersection) across all four layers (workspace, lane, task, tool). See the scope intersection page for the deny-wins semantics and entry-level set intersection behavior.
+
 ### Deny Overlays
 
 Paths in `deny_overlays` are **unconditionally denied** regardless of scope intersection. The kernel checks these before any other authorization step:

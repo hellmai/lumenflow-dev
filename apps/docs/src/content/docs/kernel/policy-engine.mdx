@@ -35,7 +35,7 @@ A rule has four parts:
 | `decision` | enum    | `allow` or `deny`                                                                     |
 | `reason`   | string? | Human-readable explanation                                                            |
 
-Rules in pack manifests are static — they apply unconditionally when their trigger fires. Runtime rules (set programmatically) can include a `when` predicate for conditional evaluation.
+Rules in pack manifests are static — they apply unconditionally when their trigger fires. Runtime rules (set programmatically) can include a `when` predicate for conditional evaluation (see [Conditional Rules with `when()`](#conditional-rules-with-when) below).
 
 ## Deny-Wins Evaluation
 
@@ -94,6 +94,66 @@ The kernel reserves several policy IDs for internal use:
 | `kernel.scope.reserved-path` | Blocks writes to `.lumenflow/**`        |
 | `kernel.scope.boundary`      | Denies when scope intersection is empty |
 | `kernel.reconciliation`      | Marks crash-reconciled evidence entries |
+
+## Conditional Rules with `when()`
+
+Runtime policy rules can include a `when` predicate — a function that receives the full `PolicyEvaluationContext` and returns `true` if the rule should apply. Rules without a `when` predicate match unconditionally whenever their `trigger` fires.
+
+```typescript
+const rule: PolicyRule = {
+  id: 'my-pack.block-dangerous-paths',
+  trigger: 'on_tool_request',
+  decision: 'deny',
+  reason: 'Writes to /etc are not permitted',
+  when: (context) => {
+    const args = context.tool_arguments;
+    if (!args || typeof args.path !== 'string') return false;
+    return args.path.startsWith('/etc');
+  },
+};
+```
+
+### PolicyEvaluationContext
+
+The `when` predicate receives a `PolicyEvaluationContext` with these fields:
+
+| Field             | Type                           | Description                                                |
+| ----------------- | ------------------------------ | ---------------------------------------------------------- |
+| `trigger`         | `string`                       | The trigger type that fired this evaluation                |
+| `run_id`          | `string`                       | Current run identifier                                     |
+| `tool_name`       | `string?`                      | Name of the tool being called (for `on_tool_request`)      |
+| `task_id`         | `string?`                      | Active task identifier                                     |
+| `lane_id`         | `string?`                      | Lane the task belongs to                                   |
+| `pack_id`         | `string?`                      | Pack that provides the tool                                |
+| `tool_arguments`  | `Record<string, unknown>?`     | Parsed tool input arguments (see below)                    |
+
+### Argument-level policy evaluation
+
+The `tool_arguments` field provides the parsed input arguments for the tool being called. The kernel extracts this automatically from the raw tool input: if the input is a plain object, it is passed as `tool_arguments`; otherwise the field is `undefined`.
+
+This enables argument-level policy decisions — rules that inspect _what_ a tool is doing, not just _which_ tool is being called:
+
+```typescript
+// Block file writes to sensitive directories
+const rule: PolicyRule = {
+  id: 'security.block-sensitive-writes',
+  trigger: 'on_tool_request',
+  decision: 'deny',
+  reason: 'Cannot write to credentials directory',
+  when: (context) => {
+    if (context.tool_name !== 'file:write') return false;
+    const args = context.tool_arguments;
+    if (!args || typeof args.path !== 'string') return false;
+    return args.path.includes('.credentials/');
+  },
+};
+```
+
+<Aside type="note">
+  The `tool_arguments` field is backwards compatible. Existing policy rules that do not reference it
+  continue to work unchanged. The field is only populated for `on_tool_request` evaluations where
+  the tool input is a plain object.
+</Aside>
 
 ## Evaluation Result
 
