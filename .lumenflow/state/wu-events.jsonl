@@ -2416,3 +2416,4 @@
 {"type":"checkpoint","wuId":"WU-2242","timestamp":"2026-02-27T14:12:34.081Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"complete","wuId":"WU-2238","timestamp":"2026-02-27T14:14:36.395Z"}
 {"type":"complete","wuId":"WU-2242","timestamp":"2026-02-27T14:16:19.835Z"}
+{"type":"claim","wuId":"WU-2240","timestamp":"2026-02-27T14:17:29.048Z","lane":"Framework: Core State Recovery","title":"wu:recover --action resume does not emit claim event to state store"}

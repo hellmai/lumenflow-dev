@@ -7,6 +7,7 @@ _Last updated: 2026-02-27_
 - [WU-2218 — Pre-release formatting fix for v3.6.0](wu/WU-2218.yaml)
 - [WU-2231 — Sidekick pack scaffold and manifest contract](wu/WU-2231.yaml)
 - [WU-2239 — wu:edit --spec-file silently overwrites runtime fields](wu/WU-2239.yaml)
+- [WU-2240 — wu:recover --action resume does not emit claim event to state store](wu/WU-2240.yaml)
 
 ## Completed
 
