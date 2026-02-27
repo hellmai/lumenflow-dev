@@ -2495,5 +2495,6 @@
 {"type":"complete","wuId":"WU-2251","timestamp":"2026-02-27T17:44:27.811Z"}
 {"type":"complete","wuId":"WU-2233","timestamp":"2026-02-27T17:46:15.139Z"}
 {"type":"claim","wuId":"WU-2252","timestamp":"2026-02-27T17:47:33.735Z","lane":"Framework: Core Lifecycle","title":"Network allowlist enforcement in bwrap"}
-{"type":"checkpoint","wuId":"WU-2252","timestamp":"2026-02-27T17:50:13.211Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
 {"type":"claim","wuId":"WU-2234","timestamp":"2026-02-27T17:48:21.986Z","lane":"Framework: Core Lifecycle","title":"Implement Sidekick channel, routine, and system tool groups"}
+{"type":"checkpoint","wuId":"WU-2252","timestamp":"2026-02-27T17:50:13.211Z","note":"[wu:brief] generated via claude-code","progress":"wu:brief executed","nextSteps":"client=claude-code"}
+{"type":"complete","wuId":"WU-2252","timestamp":"2026-02-27T17:52:43.354Z"}
