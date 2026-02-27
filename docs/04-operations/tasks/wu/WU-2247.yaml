@@ -13,19 +13,28 @@ tests:
     - Claim a test WU and verify worktree_path is relative (worktrees/<lane>-wu-xxxx) with no /home/
       path.
   unit:
-    - packages/@lumenflow/cli/__tests__/wu-claim-relative-path.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-claim.test.ts
+    - packages/@lumenflow/cli/src/__tests__/wu-done.test.ts
   e2e: []
 artifacts:
   - .lumenflow/stamps/WU-2247.done
 dependencies: []
 initiative: INIT-047
 risks: []
-notes: (auto) Add implementation notes, rollout context, or a short summary of the plan/conversation.
+notes: 'WU-2247: normalize claim worktree_path to repo-relative, sanitize done/migrated
+  worktree_path metadata in wu:done, and add regression tests.'
 requires_review: false
+claimed_mode: worktree
 assigned_to: tom@hellm.ai
+claimed_at: 2026-02-27T14:54:18.426Z
+worktree_path: worktrees/framework-core-lifecycle-wu-2247
+session_id: 693d6807-be4b-4d1f-acfa-7a16cdfc0725
 exposure: backend-only
 escalation_triggers: []
 requires_human_escalation: false
+approved_by:
+  - tom@hellm.ai
+approved_at: 2026-02-27T14:54:18.433Z
 requires_cso_approval: false
 requires_cto_approval: false
 requires_design_approval: false
@@ -37,11 +46,3 @@ acceptance:
   - wu:done strips worktree_path from completed WU YAML
   - Batch migration strips or relativizes worktree_path from all existing done WUs
   - No absolute home paths remain in any tracked YAML file
-approved_by:
-  - tom@hellm.ai
-approved_at: 2026-02-27T14:54:18.433Z
-claimed_mode: worktree
-worktree_path: /home/tom/source/hellmai/lumenflow-dev/worktrees/framework-core-lifecycle-wu-2247
-claimed_at: 2026-02-27T14:54:18.426Z
-baseline_main_sha: 22d14213c06b0e82068f2f9d654574bc93b97ebd
-session_id: 693d6807-be4b-4d1f-acfa-7a16cdfc0725
